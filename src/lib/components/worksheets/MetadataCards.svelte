@@ -4,7 +4,7 @@
 
 	Displays worksheet metadata in inline-editable cards format.
 	Shows type, duration, grades, tags, statistics, and dates.
-	Single-click to edit fields, with per-field save buttons and spinners.
+	Single-click to edit fields, with a global save button when changes are detected.
 
 	Usage:
 	```svelte
@@ -39,8 +39,8 @@
 		Type,
 		AlignLeft,
 		Loader2,
-		Check,
-		X
+		X,
+		Save
 	} from 'lucide-svelte';
 	import {
 		WORKSHEET_TYPE_ICONS,
@@ -73,13 +73,8 @@
 	let editingGrades = $state(false);
 	let editingTags = $state(false);
 
-	// Per-field saving flags (for spinner)
-	let savingTitle = $state(false);
-	let savingDescription = $state(false);
-	let savingType = $state(false);
-	let savingDuration = $state(false);
-	let savingGrades = $state(false);
-	let savingTags = $state(false);
+	// Global saving state
+	let isSaving = $state(false);
 
 	// Temporary values for editing
 	let tempTitle = $state(worksheet.title || '');
@@ -102,120 +97,79 @@
 		JSON.stringify(tempTags.sort()) !== JSON.stringify((worksheet.tags || []).sort())
 	);
 
-	// Save functions for each field (show error toast on failure, keep edit mode open)
-	async function saveTitle() {
-		if (!onSave || savingTitle) return;
-		savingTitle = true;
+	// Global change detection (for showing save button)
+	let hasChanges = $derived(
+		titleChanged ||
+			descriptionChanged ||
+			typeChanged ||
+			durationChanged ||
+			gradesChanged ||
+			tagsChanged
+	);
+
+	// Global save function - saves all modified fields
+	async function handleSave() {
+		if (!onSave || isSaving || !hasChanges) return;
+		isSaving = true;
+
 		try {
-			await onSave('title', tempTitle.trim());
-			editingTitle = false;
+			// Save each modified field
+			const savePromises: Promise<void>[] = [];
+
+			if (titleChanged) {
+				savePromises.push(onSave('title', tempTitle.trim()));
+			}
+			if (descriptionChanged) {
+				savePromises.push(onSave('description', tempDescription.trim() || null));
+			}
+			if (typeChanged) {
+				savePromises.push(onSave('type', tempType || null));
+			}
+			if (durationChanged) {
+				savePromises.push(onSave('estimated_duration_minutes', tempDuration));
+			}
+			if (gradesChanged) {
+				savePromises.push(onSave('grade_levels', tempGrades));
+			}
+			if (tagsChanged) {
+				savePromises.push(onSave('tags', tempTags));
+			}
+
+			// Execute all saves in parallel
+			await Promise.all(savePromises);
+
+			// Close all editing modes on success
+			closeAllEditing();
 		} catch (error) {
 			console.error('Save failed:', error);
 			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la sauvegarde');
 		} finally {
-			savingTitle = false;
+			isSaving = false;
 		}
 	}
 
-	async function saveDescription() {
-		if (!onSave || savingDescription) return;
-		savingDescription = true;
-		try {
-			await onSave('description', tempDescription.trim() || null);
-			editingDescription = false;
-		} catch (error) {
-			console.error('Save failed:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la sauvegarde');
-		} finally {
-			savingDescription = false;
-		}
-	}
-
-	async function saveType() {
-		if (!onSave || savingType) return;
-		savingType = true;
-		try {
-			await onSave('type', tempType || null);
-			editingType = false;
-		} catch (error) {
-			console.error('Save failed:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la sauvegarde');
-		} finally {
-			savingType = false;
-		}
-	}
-
-	async function saveDuration() {
-		if (!onSave || savingDuration) return;
-		savingDuration = true;
-		try {
-			await onSave('estimated_duration_minutes', tempDuration);
-			editingDuration = false;
-		} catch (error) {
-			console.error('Save failed:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la sauvegarde');
-		} finally {
-			savingDuration = false;
-		}
-	}
-
-	async function saveGrades() {
-		if (!onSave || savingGrades) return;
-		savingGrades = true;
-		try {
-			await onSave('grade_levels', tempGrades);
-			editingGrades = false;
-		} catch (error) {
-			console.error('Save failed:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la sauvegarde');
-		} finally {
-			savingGrades = false;
-		}
-	}
-
-	async function saveTags() {
-		if (!onSave || savingTags) return;
-		savingTags = true;
-		try {
-			await onSave('tags', tempTags);
-			editingTags = false;
-		} catch (error) {
-			console.error('Save failed:', error);
-			toaster.error(error instanceof Error ? error.message : 'Erreur lors de la sauvegarde');
-		} finally {
-			savingTags = false;
-		}
-	}
-
-	// Cancel functions for each field
-	function cancelEditTitle() {
+	// Close all editing modes (without resetting values)
+	function closeAllEditing() {
 		editingTitle = false;
-		tempTitle = worksheet.title || '';
-	}
-
-	function cancelEditDescription() {
 		editingDescription = false;
-		tempDescription = worksheet.description || '';
-	}
-
-	function cancelEditType() {
 		editingType = false;
-		tempType = worksheet.type || undefined;
-	}
-
-	function cancelEditDuration() {
 		editingDuration = false;
-		tempDuration = worksheet.estimated_duration_minutes;
-	}
-
-	function cancelEditGrades() {
 		editingGrades = false;
-		tempGrades = (worksheet.grade_levels as GradeCode[]) || [];
+		editingTags = false;
 	}
 
-	function cancelEditTags() {
-		editingTags = false;
+	// Cancel all edits and restore original values
+	function cancelAllEdits() {
+		// Reset all temp values to original
+		tempTitle = worksheet.title || '';
+		tempDescription = worksheet.description || '';
+		tempType = worksheet.type || undefined;
+		tempDuration = worksheet.estimated_duration_minutes;
+		tempGrades = (worksheet.grade_levels as GradeCode[]) || [];
 		tempTags = worksheet.tags || [];
+
+		// Close all editing modes
+		closeAllEditing();
 	}
 
 	// Start editing functions (initialize temp values)
@@ -255,18 +209,40 @@
 		editingTags = true;
 	}
 
-	// Handle ESC key to cancel editing
-	function handleKeydown(cancelFn: () => void) {
-		return (e: KeyboardEvent) => {
-			if (e.key === 'Escape') {
-				cancelFn();
-			}
-		};
+	// Handle ESC key to cancel all editing
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') {
+			cancelAllEdits();
+		}
 	}
 
 	// Type options for MySelect (convert to mutable array)
 	const typeOptions = [...WORKSHEET_TYPE_OPTIONS] as { value: string; label: string }[];
 </script>
+
+<!-- Global action bar (appears when changes detected) -->
+{#if hasChanges && onSave}
+	<div
+		class="flex items-center justify-between gap-4 rounded-lg border border-primary/20 bg-primary/10 p-3"
+	>
+		<p class="text-sm text-muted-foreground">
+			Des modifications non enregistrees ont ete detectees
+		</p>
+		<div class="flex items-center gap-2">
+			{#if isSaving}
+				<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+			{/if}
+			<Button size="sm" variant="outline" onclick={cancelAllEdits} disabled={isSaving}>
+				<X class="mr-1 h-4 w-4" />
+				Annuler
+			</Button>
+			<Button size="sm" onclick={handleSave} disabled={isSaving}>
+				<Save class="mr-1 h-4 w-4" />
+				Enregistrer
+			</Button>
+		</div>
+	</div>
+{/if}
 
 <!-- Title Card (always visible, inline-editable) -->
 <Card.Root>
@@ -290,22 +266,20 @@
 						{worksheet.title || '-'}
 					</button>
 				{:else}
-					<!-- EDIT MODE: input + buttons -->
+					<!-- EDIT MODE: input + close button -->
 					<div class="flex items-center gap-2">
 						<Input
 							bind:value={tempTitle}
 							class="flex-1"
 							placeholder="Titre de la feuille"
-							onkeydown={handleKeydown(cancelEditTitle)}
+							onkeydown={handleKeydown}
 						/>
-						{#if savingTitle}
-							<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-						{:else if titleChanged}
-							<Button size="sm" onclick={saveTitle} aria-label="Enregistrer">
-								<Check class="h-4 w-4" />
-							</Button>
-						{/if}
-						<Button size="sm" variant="ghost" onclick={cancelEditTitle} aria-label="Annuler">
+						<Button
+							size="sm"
+							variant="ghost"
+							onclick={() => (editingTitle = false)}
+							aria-label="Fermer"
+						>
 							<X class="h-4 w-4" />
 						</Button>
 					</div>
@@ -339,26 +313,23 @@
 						{worksheet.description || 'Aucune description'}
 					</button>
 				{:else}
-					<!-- EDIT MODE: textarea + buttons -->
+					<!-- EDIT MODE: textarea + close button -->
 					<div class="space-y-2">
 						<Textarea
 							bind:value={tempDescription}
 							class="min-h-[100px] w-full"
 							placeholder="Description de la feuille..."
-							onkeydown={handleKeydown(cancelEditDescription)}
+							onkeydown={handleKeydown}
 						/>
-						<div class="flex items-center justify-end gap-2">
-							{#if savingDescription}
-								<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-							{:else if descriptionChanged}
-								<Button size="sm" onclick={saveDescription}>
-									<Check class="mr-1 h-4 w-4" />
-									Enregistrer
-								</Button>
-							{/if}
-							<Button size="sm" variant="ghost" onclick={cancelEditDescription}>
+						<div class="flex justify-end">
+							<Button
+								size="sm"
+								variant="ghost"
+								onclick={() => (editingDescription = false)}
+								aria-label="Fermer"
+							>
 								<X class="mr-1 h-4 w-4" />
-								Annuler
+								Fermer
 							</Button>
 						</div>
 					</div>
@@ -406,14 +377,12 @@
 								items={typeOptions}
 								placeholder="Choisir un type"
 							/>
-							{#if savingType}
-								<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-							{:else if typeChanged}
-								<Button size="sm" onclick={saveType} aria-label="Enregistrer">
-									<Check class="h-4 w-4" />
-								</Button>
-							{/if}
-							<Button size="sm" variant="ghost" onclick={cancelEditType} aria-label="Annuler">
+							<Button
+								size="sm"
+								variant="ghost"
+								onclick={() => (editingType = false)}
+								aria-label="Fermer"
+							>
 								<X class="h-4 w-4" />
 							</Button>
 						</div>
@@ -450,17 +419,15 @@
 								min={0}
 								max={480}
 								placeholder="min"
-								onkeydown={handleKeydown(cancelEditDuration)}
+								onkeydown={handleKeydown}
 							/>
 							<span class="text-sm text-muted-foreground">min</span>
-							{#if savingDuration}
-								<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-							{:else if durationChanged}
-								<Button size="sm" onclick={saveDuration} aria-label="Enregistrer">
-									<Check class="h-4 w-4" />
-								</Button>
-							{/if}
-							<Button size="sm" variant="ghost" onclick={cancelEditDuration} aria-label="Annuler">
+							<Button
+								size="sm"
+								variant="ghost"
+								onclick={() => (editingDuration = false)}
+								aria-label="Fermer"
+							>
 								<X class="h-4 w-4" />
 							</Button>
 						</div>
@@ -501,18 +468,15 @@
 						<!-- EDIT MODE -->
 						<div class="mt-1 space-y-2">
 							<GradeBadgeSelector bind:value={tempGrades} />
-							<div class="flex items-center gap-2">
-								{#if savingGrades}
-									<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-								{:else if gradesChanged}
-									<Button size="sm" onclick={saveGrades}>
-										<Check class="mr-1 h-4 w-4" />
-										Enregistrer
-									</Button>
-								{/if}
-								<Button size="sm" variant="ghost" onclick={cancelEditGrades}>
+							<div class="flex justify-end">
+								<Button
+									size="sm"
+									variant="ghost"
+									onclick={() => (editingGrades = false)}
+									aria-label="Fermer"
+								>
 									<X class="mr-1 h-4 w-4" />
-									Annuler
+									Fermer
 								</Button>
 							</div>
 						</div>
@@ -551,18 +515,15 @@
 						<!-- EDIT MODE -->
 						<div class="mt-1 space-y-2">
 							<TagBadgeSelector bind:value={tempTags} />
-							<div class="flex items-center gap-2">
-								{#if savingTags}
-									<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-								{:else if tagsChanged}
-									<Button size="sm" onclick={saveTags}>
-										<Check class="mr-1 h-4 w-4" />
-										Enregistrer
-									</Button>
-								{/if}
-								<Button size="sm" variant="ghost" onclick={cancelEditTags}>
+							<div class="flex justify-end">
+								<Button
+									size="sm"
+									variant="ghost"
+									onclick={() => (editingTags = false)}
+									aria-label="Fermer"
+								>
 									<X class="mr-1 h-4 w-4" />
-									Annuler
+									Fermer
 								</Button>
 							</div>
 						</div>
