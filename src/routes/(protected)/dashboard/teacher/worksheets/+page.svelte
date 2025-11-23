@@ -369,23 +369,17 @@
 												</Button>
 											</DropdownMenu.Trigger>
 											<DropdownMenu.Content align="end">
-												<DropdownMenu.Item>
-													<a
-														href="/dashboard/teacher/worksheets/{worksheet.id}"
-														class="flex items-center gap-2"
-													>
-														<Eye class="h-4 w-4" />
-														Voir
-													</a>
+												<DropdownMenu.Item
+													onclick={() => goto(`/dashboard/teacher/worksheets/${worksheet.id}`)}
+												>
+													<Eye class="mr-2 h-4 w-4" />
+													Voir
 												</DropdownMenu.Item>
-												<DropdownMenu.Item>
-													<a
-														href="/dashboard/teacher/worksheets/{worksheet.id}/edit"
-														class="flex items-center gap-2"
-													>
-														<Pencil class="h-4 w-4" />
-														Modifier
-													</a>
+												<DropdownMenu.Item
+													onclick={() => goto(`/dashboard/teacher/worksheets/${worksheet.id}/edit`)}
+												>
+													<Pencil class="mr-2 h-4 w-4" />
+													Modifier
 												</DropdownMenu.Item>
 												<DropdownMenu.Separator />
 												<DropdownMenu.Item onclick={() => handleDuplicate(worksheet.id)}>
