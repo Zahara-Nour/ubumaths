@@ -85,8 +85,15 @@ const csrfHandle: Handle = async ({ event, resolve }) => {
 	const origin = event.request.headers.get('origin');
 	const host = event.request.headers.get('host');
 
-	// Missing headers - reject request
+	// Missing headers - check if internal server-to-server call
 	if (!origin || !host) {
+		// Internal fetch calls from server actions/load functions don't have origin/host headers
+		// These are safe as they don't come from a browser (no CSRF risk)
+		// Allow if BOTH are missing (indicates internal SvelteKit fetch)
+		if (!origin && !host) {
+			return resolve(event);
+		}
+
 		// In development, allow localhost without origin (for testing tools)
 		if (dev && host?.includes('localhost')) {
 			return resolve(event);
