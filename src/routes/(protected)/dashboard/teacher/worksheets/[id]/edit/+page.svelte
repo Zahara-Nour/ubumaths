@@ -11,6 +11,11 @@
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import {
+		WORKSHEET_TYPE_OPTIONS,
+		NUMBERING_STYLE_OPTIONS,
+		PAGE_LAYOUT_OPTIONS
+	} from '$lib/utils/worksheet-constants';
 	import { ArrowLeft, ChevronDown, ChevronUp, Loader2, Save } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type {
@@ -51,28 +56,6 @@
 
 	// Loading state
 	let submitting = $state(false);
-
-	// Type options
-	const typeOptions = [
-		{ value: 'worksheet', label: "Feuille d'exercices" },
-		{ value: 'assessment', label: 'Evaluation' },
-		{ value: 'exam', label: 'Examen' },
-		{ value: 'quiz', label: 'Quiz' },
-		{ value: 'homework', label: 'Devoirs' }
-	];
-
-	// Numbering style options
-	const numberingOptions = [
-		{ value: 'numeric', label: '1, 2, 3...' },
-		{ value: 'alphabetic', label: 'A, B, C...' },
-		{ value: 'roman', label: 'I, II, III...' }
-	];
-
-	// Page layout options
-	const layoutOptions = [
-		{ value: 'A4', label: 'A4' },
-		{ value: 'Letter', label: 'Letter' }
-	];
 
 	// Derived: build config object
 	let config = $derived<WorksheetConfig>({
@@ -191,7 +174,7 @@
 					<!-- Type -->
 					<div class="space-y-2">
 						<Label>Type</Label>
-						<MySelect items={typeOptions} bind:value={worksheetType} />
+						<MySelect items={WORKSHEET_TYPE_OPTIONS} bind:value={worksheetType} />
 					</div>
 
 					<!-- Estimated duration -->
@@ -260,11 +243,11 @@
 						<div class="grid gap-4 sm:grid-cols-2">
 							<div class="space-y-2">
 								<Label>Numerotation</Label>
-								<MySelect items={numberingOptions} bind:value={numberingStyle} />
+								<MySelect items={NUMBERING_STYLE_OPTIONS} bind:value={numberingStyle} />
 							</div>
 							<div class="space-y-2">
 								<Label>Format de page</Label>
-								<MySelect items={layoutOptions} bind:value={pageLayout} />
+								<MySelect items={PAGE_LAYOUT_OPTIONS} bind:value={pageLayout} />
 							</div>
 						</div>
 
