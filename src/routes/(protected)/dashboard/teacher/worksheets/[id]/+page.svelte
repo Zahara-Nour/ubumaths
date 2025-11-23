@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -25,7 +24,7 @@
 		Users,
 		Plus
 	} from 'lucide-svelte';
-	import type { PageData, ActionData } from './$types';
+	import type { PageData } from './$types';
 	import type {
 		WorksheetWithRelations,
 		WorksheetSectionRow,
@@ -42,7 +41,7 @@
 	} from '$lib/utils/worksheet-constants';
 	import type { Exercise } from '$lib/exercises/types';
 
-	let { data, form }: { data: PageData; form: ActionData } = $props();
+	let { data }: { data: PageData } = $props();
 
 	// Loading states
 	let publishing = $state(false);
@@ -83,14 +82,49 @@
 	// Get IDs of already added exercises
 	let existingExerciseIds = $derived(worksheet.exercises?.map((e) => e.exercise_id) ?? []);
 
-	// Show toast on form result
-	$effect(() => {
-		if (form?.success) {
-			toaster.success(form.message || 'Operation reussite');
-		} else if (form?.message) {
-			toaster.error(form.message);
+	/**
+	 * Handle status change (publish/archive/unarchive)
+	 */
+	async function handleStatusChange(newStatus: 'published' | 'archived' | 'draft') {
+		const statusLoading = {
+			published: () => (publishing = true),
+			archived: () => (archiving = true),
+			draft: () => (unarchiving = true)
+		};
+		const statusReset = {
+			published: () => (publishing = false),
+			archived: () => (archiving = false),
+			draft: () => (unarchiving = false)
+		};
+		const statusMessages = {
+			published: { success: 'Feuille publiee', error: 'Erreur lors de la publication' },
+			archived: { success: 'Feuille archivee', error: "Erreur lors de l'archivage" },
+			draft: { success: 'Feuille restauree en brouillon', error: 'Erreur lors de la restauration' }
+		};
+
+		statusLoading[newStatus]();
+
+		try {
+			const response = await fetch(`/api/worksheets/${worksheet.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ status: newStatus })
+			});
+
+			if (!response.ok) {
+				const error = await response.json().catch(() => ({ message: 'Erreur inconnue' }));
+				throw new Error(error.message || statusMessages[newStatus].error);
+			}
+
+			toaster.success(statusMessages[newStatus].success);
+			await invalidateAll();
+		} catch (error) {
+			console.error('Status change error:', error);
+			toaster.error(error instanceof Error ? error.message : statusMessages[newStatus].error);
+		} finally {
+			statusReset[newStatus]();
 		}
-	});
+	}
 
 	/**
 	 * Handle adding selected exercises to worksheet
@@ -297,67 +331,34 @@
 		<!-- Actions -->
 		<div class="flex gap-2">
 			{#if worksheet.status === 'draft'}
-				<form
-					method="POST"
-					action="?/publish"
-					use:enhance={() => {
-						publishing = true;
-						return async ({ result, update }) => {
-							await update();
-							if (result.type === 'success') {
-								await invalidateAll();
-							}
-							publishing = false;
-						};
-					}}
+				<Button
+					variant="default"
+					disabled={publishing}
+					onclick={() => handleStatusChange('published')}
 				>
-					<Button type="submit" variant="default" disabled={publishing}>
-						<Send class="mr-2 h-4 w-4" />
-						{publishing ? 'Publication...' : 'Publier'}
-					</Button>
-				</form>
+					<Send class="mr-2 h-4 w-4" />
+					{publishing ? 'Publication...' : 'Publier'}
+				</Button>
 			{/if}
 			{#if worksheet.status !== 'archived'}
-				<form
-					method="POST"
-					action="?/archive"
-					use:enhance={() => {
-						archiving = true;
-						return async ({ result, update }) => {
-							await update();
-							if (result.type === 'success') {
-								await invalidateAll();
-							}
-							archiving = false;
-						};
-					}}
+				<Button
+					variant="outline"
+					disabled={archiving}
+					onclick={() => handleStatusChange('archived')}
 				>
-					<Button type="submit" variant="outline" disabled={archiving}>
-						<Archive class="mr-2 h-4 w-4" />
-						{archiving ? 'Archivage...' : 'Archiver'}
-					</Button>
-				</form>
+					<Archive class="mr-2 h-4 w-4" />
+					{archiving ? 'Archivage...' : 'Archiver'}
+				</Button>
 			{/if}
 			{#if worksheet.status === 'archived'}
-				<form
-					method="POST"
-					action="?/unarchive"
-					use:enhance={() => {
-						unarchiving = true;
-						return async ({ result, update }) => {
-							await update();
-							if (result.type === 'success') {
-								await invalidateAll();
-							}
-							unarchiving = false;
-						};
-					}}
+				<Button
+					variant="outline"
+					disabled={unarchiving}
+					onclick={() => handleStatusChange('draft')}
 				>
-					<Button type="submit" variant="outline" disabled={unarchiving}>
-						<RotateCcw class="mr-2 h-4 w-4" />
-						{unarchiving ? 'Restauration...' : 'Restaurer'}
-					</Button>
-				</form>
+					<RotateCcw class="mr-2 h-4 w-4" />
+					{unarchiving ? 'Restauration...' : 'Restaurer'}
+				</Button>
 			{/if}
 		</div>
 	</div>
