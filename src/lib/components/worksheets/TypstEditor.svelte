@@ -270,22 +270,15 @@
 	// Derived: used placeholders
 	let usedPlaceholders = $derived(getUsedPlaceholders());
 
-	// Track previous tab to detect actual tab changes
-	let prevTab = $state<string | null>(null);
-
-	// Auto-generate preview when switching to preview tab (only on actual tab change)
-	$effect(() => {
-		const currentTab = activeTab;
-		if (currentTab === 'preview' && prevTab !== 'preview') {
-			prevTab = currentTab;
-			// Use setTimeout to avoid state updates during effect
-			setTimeout(() => {
-				handlePreviewTabActivated();
-			}, 0);
-		} else if (currentTab !== 'preview') {
-			prevTab = currentTab;
+	/**
+	 * Handle tab change - trigger preview generation when switching to preview tab
+	 * Uses event callback instead of $effect to avoid state-in-effect anti-pattern
+	 */
+	function handleTabChange(value: string) {
+		if (value === 'preview') {
+			handlePreviewTabActivated();
 		}
-	});
+	}
 </script>
 
 <div class="space-y-4">
@@ -381,7 +374,7 @@
 	</Card.Root>
 
 	<!-- Editor/Preview tabs -->
-	<Tabs.Root bind:value={activeTab}>
+	<Tabs.Root bind:value={activeTab} onValueChange={handleTabChange}>
 		<Tabs.List class="grid w-full grid-cols-2">
 			<Tabs.Trigger value="editor" class="gap-2">
 				<Code2 class="h-4 w-4" />
