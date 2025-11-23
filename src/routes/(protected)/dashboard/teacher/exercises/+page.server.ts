@@ -19,6 +19,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const search = url.searchParams.get('search') || '';
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const limit = parseInt(url.searchParams.get('limit') || '50');
+	const sortOrder = url.searchParams.get('sort') === 'asc' ? 'asc' : 'desc';
 
 	// Build filters
 	const filters: {
@@ -52,7 +53,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// Fetch exercises
 	const result = await getTeacherExercises(locals.supabase, user.id, filters, {
 		page,
-		limit
+		limit,
+		sortOrder
 	});
 
 	if (result.error) {
@@ -74,7 +76,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			topic: topic || '',
 			grade_levels: grade_levels || [],
 			search
-		}
+		},
+		sortOrder
 	};
 };
 
