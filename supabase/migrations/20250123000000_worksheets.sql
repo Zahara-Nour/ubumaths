@@ -380,8 +380,23 @@ CREATE TRIGGER update_worksheet_assignments_updated_at
 -- ============================================================================
 CREATE OR REPLACE FUNCTION prevent_worksheet_instance_tampering()
 RETURNS TRIGGER AS $$
+DECLARE
+  is_owner BOOLEAN;
 BEGIN
-  -- Only allow modification of specific fields by students
+  -- Check if current user is the worksheet owner (teacher) or admin
+  SELECT EXISTS (
+    SELECT 1 FROM public.worksheets w
+    JOIN public.profiles p ON p.id = auth.uid()
+    WHERE w.id = OLD.worksheet_id
+    AND (w.created_by = auth.uid() OR p.role = 'admin')
+  ) INTO is_owner;
+
+  -- If owner/admin, allow all modifications
+  IF is_owner THEN
+    RETURN NEW;
+  END IF;
+
+  -- For students: only allow modification of specific fields
   -- Critical fields must remain unchanged
   IF OLD.instance_data IS DISTINCT FROM NEW.instance_data THEN
     RAISE EXCEPTION 'Cannot modify instance_data after generation';
@@ -398,19 +413,11 @@ BEGIN
   -- Allow legitimate updates: status, time_spent_seconds, accessed_at, submitted_at, updated_at
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE TRIGGER prevent_instance_tampering
   BEFORE UPDATE ON public.worksheet_instances
   FOR EACH ROW
-  WHEN (
-    -- Only apply to students (non-owners of the worksheet)
-    NOT EXISTS (
-      SELECT 1 FROM public.worksheets
-      WHERE id = OLD.worksheet_id
-      AND created_by = auth.uid()
-    )
-  )
   EXECUTE FUNCTION prevent_worksheet_instance_tampering();
 
 -- ============================================================================
