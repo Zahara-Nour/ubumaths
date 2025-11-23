@@ -4,6 +4,10 @@
  *
  * Generates PDF documents for worksheets using Typst.
  * Supports both worksheet and correction modes.
+ *
+ * NOTE: Server-side PDF generation requires Typst CLI to be installed.
+ * Currently returns 501 Not Implemented - PDF generation should be done client-side
+ * using the PdfPreview component which loads Typst.js in the browser.
  */
 
 import { error, json } from '@sveltejs/kit';
@@ -12,17 +16,17 @@ import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import type { InstanceData, WorksheetWithRelations } from '$lib/types/worksheets';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import { writeFile, unlink, readFile } from 'fs/promises';
+import { tmpdir } from 'os';
+import { join } from 'path';
+
+const execAsync = promisify(exec);
 
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
-
-// Typst.js library type (same as in preview component)
-type TypstLibrary = {
-	setCompilerInitOptions: (options: { getModule: () => string }) => void;
-	setRendererInitOptions: (options: { getModule: () => string }) => void;
-	pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
-};
 
 // Request body schema
 const generatePdfSchema = z.object({
@@ -110,6 +114,15 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			instanceData = generateSimpleInstance(worksheet as WorksheetWithRelations);
 		}
 
+		// Check if Typst CLI is available
+		const typstAvailable = await isTypstAvailable();
+		if (!typstAvailable) {
+			throw error(
+				501,
+				'La génération de PDF côté serveur nécessite Typst CLI. Utilisez la prévisualisation client-side.'
+			);
+		}
+
 		// Generate Typst document
 		const typstContent = generateWorksheetTypst({
 			worksheet: worksheet,
@@ -120,11 +133,8 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			className
 		});
 
-		// Dynamically import and initialize Typst
-		const typst = await initializeTypst();
-
-		// Compile to PDF
-		const pdfData = await typst.pdf({ mainContent: typstContent });
+		// Compile to PDF using CLI
+		const pdfData = await generatePdfWithTypstCli(typstContent);
 
 		// Return PDF as base64
 		const base64 = Buffer.from(pdfData).toString('base64');
@@ -150,31 +160,52 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 // ============================================================================
 
 /**
- * Initialize Typst.js library
- * This is a server-side implementation using dynamic imports
+ * Check if Typst CLI is available
  */
-async function initializeTypst(): Promise<TypstLibrary> {
-	// Import the Typst.js library
-	// Note: In production, you might want to use a different approach
-	// like running Typst CLI in a subprocess or using a dedicated service
-	const { $typst } = (await import('@myriaddreamin/typst.ts')) as { $typst: TypstLibrary };
-
-	if (!$typst) {
-		throw new Error('Failed to load Typst library');
+async function isTypstAvailable(): Promise<boolean> {
+	try {
+		await execAsync('typst --version');
+		return true;
+	} catch {
+		return false;
 	}
+}
 
-	// Initialize compiler and renderer
-	$typst.setCompilerInitOptions({
-		getModule: () =>
-			'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
-	});
+/**
+ * Generate PDF using Typst CLI
+ * Creates a temporary .typ file, compiles it to PDF, and returns the result
+ */
+async function generatePdfWithTypstCli(typstContent: string): Promise<Uint8Array> {
+	const timestamp = Date.now();
+	const random = Math.random().toString(36).substring(7);
+	const baseFilename = `worksheet_${timestamp}_${random}`;
+	const typFilePath = join(tmpdir(), `${baseFilename}.typ`);
+	const pdfFilePath = join(tmpdir(), `${baseFilename}.pdf`);
 
-	$typst.setRendererInitOptions({
-		getModule: () =>
-			'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
-	});
+	try {
+		// Write Typst content to temp file
+		await writeFile(typFilePath, typstContent, 'utf-8');
 
-	return $typst as TypstLibrary;
+		// Compile with Typst CLI
+		await execAsync(`typst compile "${typFilePath}" "${pdfFilePath}"`);
+
+		// Read the generated PDF
+		const pdfData = await readFile(pdfFilePath);
+
+		return new Uint8Array(pdfData);
+	} finally {
+		// Cleanup temp files
+		try {
+			await unlink(typFilePath);
+		} catch {
+			// Ignore cleanup errors
+		}
+		try {
+			await unlink(pdfFilePath);
+		} catch {
+			// Ignore cleanup errors
+		}
+	}
 }
 
 /**
