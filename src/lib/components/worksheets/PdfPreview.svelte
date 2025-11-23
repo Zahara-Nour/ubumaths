@@ -162,7 +162,8 @@
 				},
 				body: JSON.stringify({
 					mode,
-					studentId: selectedStudentId !== 'generic' ? selectedStudentId : undefined,
+					studentId:
+						selectedStudentId && selectedStudentId !== 'generic' ? selectedStudentId : undefined,
 					studentName,
 					className: classId ? 'Classe' : undefined
 				})
@@ -282,10 +283,31 @@
 	// REACTIVE STATEMENTS
 	// ============================================================================
 
-	// Regenerate preview when mode or student changes
+	// Track previous values to detect changes
+	let prevMode = $state<'worksheet' | 'correction' | null>(null);
+	let prevStudentId = $state<string | null | undefined>(undefined);
+
+	// Regenerate preview when mode or student changes (not on initial load or errors)
 	$effect(() => {
-		if (typstLibrary && !isTypstLoading) {
-			generatePreview();
+		// Capture current values to track as dependencies
+		const currentMode = mode;
+		const currentStudentId = selectedStudentId;
+
+		// Only regenerate if typst is ready and values have changed from previous
+		if (typstLibrary && !isTypstLoading && !isGenerating) {
+			// Skip if this is just initialization
+			if (prevMode === null) {
+				prevMode = currentMode;
+				prevStudentId = currentStudentId;
+				return;
+			}
+
+			// Check if mode or student actually changed
+			if (currentMode !== prevMode || currentStudentId !== prevStudentId) {
+				prevMode = currentMode;
+				prevStudentId = currentStudentId;
+				generatePreview();
+			}
 		}
 	});
 </script>
