@@ -108,7 +108,7 @@
 				config,
 				template_id: templateId,
 				estimated_duration_minutes: estimatedDuration,
-				grade_levels: selectedGrades.map((g) => parseInt(g, 10) || g),
+				grade_levels: selectedGrades,
 				tags: selectedTags
 			};
 
