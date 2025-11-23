@@ -102,6 +102,13 @@
 	});
 
 	/**
+	 * Handle edit button click - enable metadata edit mode
+	 */
+	function handleEditClick(): void {
+		editMode = true;
+	}
+
+	/**
 	 * Handle adding selected exercises to worksheet
 	 */
 	async function handleAddExercises(exercises: Exercise[]): Promise<void> {
@@ -313,7 +320,7 @@
 
 		<!-- Actions -->
 		<div class="flex gap-2">
-			<Button variant="outline" href="/dashboard/teacher/worksheets/{worksheet.id}/edit">
+			<Button variant="outline" onclick={handleEditClick}>
 				<Pencil class="mr-2 h-4 w-4" />
 				Modifier
 			</Button>

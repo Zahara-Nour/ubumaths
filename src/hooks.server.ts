@@ -3,7 +3,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 import { logError, getUserContext } from '$lib/server/errorMonitoring';
 import { dev } from '$app/environment';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { initEnv } from '$lib/server/env';
 import { getUserProfile } from '$lib/server/auth';
 
@@ -19,6 +19,24 @@ try {
 	// Application won't start with invalid env vars in production
 	// In development, validation errors are logged but execution continues
 }
+
+/**
+ * URL Redirect Handle
+ * Handles deprecated route redirects to maintain backwards compatibility
+ * Currently redirects /edit pages to their parent pages
+ */
+const redirectHandle: Handle = async ({ event, resolve }) => {
+	const { pathname } = event.url;
+
+	// Redirect deprecated /edit pages to parent worksheet page (307 temporary redirect)
+	// Pattern: /dashboard/teacher/worksheets/[uuid]/edit -> /dashboard/teacher/worksheets/[uuid]
+	if (pathname.match(/^\/dashboard\/teacher\/worksheets\/[a-f0-9-]+\/edit$/)) {
+		const worksheetId = pathname.split('/')[5];
+		throw redirect(307, `/dashboard/teacher/worksheets/${worksheetId}`);
+	}
+
+	return resolve(event);
+};
 
 /**
  * User & Profile Loading Handle
@@ -210,10 +228,11 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 	}
 };
 
-// Combine hooks in sequence: Supabase first, then user/profile, then CSRF protection, then error monitoring
-// Order matters: Supabase auth -> User/Profile loading -> CSRF validation -> Error monitoring
+// Combine hooks in sequence: Supabase first, then redirects, then user/profile, then CSRF protection, then error monitoring
+// Order matters: Supabase auth -> Redirects -> User/Profile loading -> CSRF validation -> Error monitoring
 export const handle: Handle = sequence(
 	supabaseHandle,
+	redirectHandle,
 	userProfileHandle,
 	csrfHandle,
 	errorMonitoringHandle
