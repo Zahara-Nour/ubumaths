@@ -17,15 +17,4 @@ SET
     updated_at = NOW()
 WHERE template_content LIKE '%)[/ %';
 
--- Restore the full page counter syntax that was accidentally simplified in previous migration
--- The original had "Page X sur Y" (page X of Y) functionality
-UPDATE public.worksheet_templates
-SET
-    template_content = REPLACE(
-        template_content,
-        '#align(center)[Page #counter(page).display()]',
-        '#align(center)[Page #counter(page).display() sur #locate(loc => counter(page).final(loc).first())]'
-    ),
-    updated_at = NOW()
-WHERE template_content LIKE '%#align(center)[Page #counter(page).display()]%'
-  AND template_content NOT LIKE '%#locate(loc => counter(page).final(loc).first())%';
+-- Note: Page counter restore moved to separate migration 20251123194050_restore_page_counter_total.sql
