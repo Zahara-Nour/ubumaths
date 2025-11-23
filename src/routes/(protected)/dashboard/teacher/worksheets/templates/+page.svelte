@@ -7,14 +7,12 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		ArrowLeft,
-		MoreHorizontal,
 		Plus,
 		Copy,
 		Trash2,
@@ -240,83 +238,73 @@
 									{formatDate(template.created_at)}
 								</Table.Cell>
 								<Table.Cell>
-									<DropdownMenu.Root>
-										<DropdownMenu.Trigger>
-											<Button variant="ghost" size="icon" class="h-8 w-8">
-												<MoreHorizontal class="h-4 w-4" />
-												<span class="sr-only">Actions</span>
+									<div class="flex items-center gap-1">
+										<Button
+											variant="ghost"
+											size="icon"
+											class="h-8 w-8"
+											href="/dashboard/teacher/worksheets/templates/{template.id}"
+											title="Voir / Modifier"
+										>
+											<Eye class="h-4 w-4" />
+										</Button>
+										<form
+											method="POST"
+											action="?/duplicate"
+											use:enhance={() => {
+												duplicatingId = template.id;
+												return async ({ result, update }) => {
+													await update();
+													if (result.type === 'success') {
+														toaster.success('Template duplique');
+														await invalidateAll();
+													}
+													duplicatingId = null;
+												};
+											}}
+										>
+											<input type="hidden" name="template_id" value={template.id} />
+											<Button
+												type="submit"
+												variant="ghost"
+												size="icon"
+												class="h-8 w-8"
+												disabled={duplicatingId === template.id}
+												title="Dupliquer"
+											>
+												<Copy class="h-4 w-4" />
 											</Button>
-										</DropdownMenu.Trigger>
-										<DropdownMenu.Content align="end">
-											<DropdownMenu.Item>
-												<a
-													href="/dashboard/teacher/worksheets/templates/{template.id}"
-													class="flex items-center gap-2"
-												>
-													<Eye class="h-4 w-4" />
-													Voir / Modifier
-												</a>
-											</DropdownMenu.Item>
-											<DropdownMenu.Separator />
+										</form>
+										{#if isOwnTemplate(template.created_by)}
 											<form
 												method="POST"
-												action="?/duplicate"
+												action="?/delete"
 												use:enhance={() => {
-													duplicatingId = template.id;
+													deletingId = template.id;
 													return async ({ result, update }) => {
 														await update();
 														if (result.type === 'success') {
-															toaster.success('Template duplique');
+															toaster.success('Template supprime');
 															await invalidateAll();
 														}
-														duplicatingId = null;
+														deletingId = null;
 													};
 												}}
 											>
 												<input type="hidden" name="template_id" value={template.id} />
-												<DropdownMenu.Item>
-													<button
-														type="submit"
-														disabled={duplicatingId === template.id}
-														class="flex w-full items-center gap-2"
-													>
-														<Copy class="h-4 w-4" />
-														{duplicatingId === template.id ? 'Duplication...' : 'Dupliquer'}
-													</button>
-												</DropdownMenu.Item>
-											</form>
-											{#if isOwnTemplate(template.created_by)}
-												<DropdownMenu.Separator />
-												<form
-													method="POST"
-													action="?/delete"
-													use:enhance={() => {
-														deletingId = template.id;
-														return async ({ result, update }) => {
-															await update();
-															if (result.type === 'success') {
-																toaster.success('Template supprime');
-																await invalidateAll();
-															}
-															deletingId = null;
-														};
-													}}
+												<Button
+													type="submit"
+													variant="ghost"
+													size="icon"
+													class="h-8 w-8 text-destructive hover:text-destructive"
+													disabled={deletingId === template.id}
+													title="Supprimer"
 												>
-													<input type="hidden" name="template_id" value={template.id} />
-													<DropdownMenu.Item class="text-destructive focus:text-destructive">
-														<button
-															type="submit"
-															disabled={deletingId === template.id}
-															class="flex w-full items-center gap-2"
-														>
-															<Trash2 class="h-4 w-4" />
-															{deletingId === template.id ? 'Suppression...' : 'Supprimer'}
-														</button>
-													</DropdownMenu.Item>
-												</form>
-											{/if}
-										</DropdownMenu.Content>
-									</DropdownMenu.Root>
+													<Trash2 class="h-4 w-4" />
+												</Button>
+											</form>
+										{/if}
+									</div>
 								</Table.Cell>
 							</Table.Row>
 						{/each}
