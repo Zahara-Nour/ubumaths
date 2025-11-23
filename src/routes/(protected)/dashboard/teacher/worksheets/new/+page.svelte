@@ -10,14 +10,15 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
+	import TemplateSelector from '$lib/components/worksheets/TemplateSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, ChevronDown, ChevronUp, Loader2, Save } from 'lucide-svelte';
+	import { ArrowLeft, ChevronDown, ChevronUp, Loader2, Save, FileText } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type {
 		WorksheetType,
 		WorksheetConfig,
 		NumberingStyle,
-		DEFAULT_WORKSHEET_CONFIG
+		WorksheetTemplateRow
 	} from '$lib/types/worksheets';
 	import type { GradeCode } from '$lib/types/grades';
 
@@ -30,6 +31,7 @@
 	let estimatedDuration = $state<number | null>(null);
 	let selectedGrades = $state<GradeCode[]>([]);
 	let selectedTags = $state<string[]>([]);
+	let selectedTemplateId = $state<string | null>(null);
 
 	// Config options state
 	let configOpen = $state(false);
@@ -93,11 +95,18 @@
 		submitting = true;
 
 		try {
+			// Parse template ID (handle default: prefix)
+			let templateId: string | null = null;
+			if (selectedTemplateId && !selectedTemplateId.startsWith('default:')) {
+				templateId = selectedTemplateId;
+			}
+
 			const worksheetData = {
 				title: title.trim(),
 				description: description.trim() || null,
 				type: worksheetType,
 				config,
+				template_id: templateId,
 				estimated_duration_minutes: estimatedDuration,
 				grade_levels: selectedGrades.map((g) => parseInt(g, 10) || g),
 				tags: selectedTags
@@ -214,6 +223,25 @@
 					<Label>Tags</Label>
 					<TagBadgeSelector bind:value={selectedTags} placeholder="Ajouter des tags" />
 				</div>
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Template selection -->
+		<Card.Root>
+			<Card.Header>
+				<div class="flex items-center gap-2">
+					<FileText class="h-5 w-5 text-muted-foreground" />
+					<Card.Title>Template de mise en page</Card.Title>
+				</div>
+				<Card.Description>
+					Choisissez un template pour personnaliser la mise en page PDF de votre feuille
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<TemplateSelector
+					bind:value={selectedTemplateId}
+					templates={data.templates as WorksheetTemplateRow[]}
+				/>
 			</Card.Content>
 		</Card.Root>
 

@@ -448,6 +448,131 @@ export const deleteWorksheetResponseSchema = z.object({
 	message: z.string()
 });
 
+// ============================================================================
+// WORKSHEET TEMPLATE SCHEMAS
+// ============================================================================
+
+/**
+ * Placeholder definition schema
+ */
+export const templatePlaceholderSchema = z.object({
+	key: z.string().trim().min(1, 'Key is required').max(50, 'Key too long'),
+	type: z.enum(['text', 'date', 'dynamic']),
+	label: z.string().trim().max(100, 'Label too long').optional(),
+	default_value: z.string().trim().max(500, 'Default value too long').optional()
+});
+
+/**
+ * Schema for creating a new template (POST /api/worksheets/templates)
+ */
+export const createTemplateSchema = z.object({
+	name: z.string().trim().min(1, 'Name is required').max(255, 'Name too long'),
+	description: z.string().trim().max(2000, 'Description too long').optional().nullable(),
+	template_content: z
+		.string()
+		.min(1, 'Template content is required')
+		.max(50000, 'Template too long'),
+	placeholders: z
+		.array(templatePlaceholderSchema)
+		.max(50, 'Maximum 50 placeholders')
+		.optional()
+		.default([]),
+	is_public: z.boolean().optional().default(false)
+});
+
+/**
+ * Schema for updating a template (PUT /api/worksheets/templates/[id])
+ */
+export const updateTemplateSchema = createTemplateSchema.partial();
+
+/**
+ * Schema for listing templates query parameters (GET /api/worksheets/templates)
+ */
+export const listTemplatesQuerySchema = z.object({
+	page: z.coerce
+		.number()
+		.int('Page must be an integer')
+		.positive('Page must be positive')
+		.max(1000, 'Page too high')
+		.default(1),
+	limit: z.coerce
+		.number()
+		.int('Limit must be an integer')
+		.positive('Limit must be positive')
+		.max(100, 'Maximum 100 items per page')
+		.default(50),
+	include_public: z.coerce.boolean().optional().default(true),
+	search: z.string().trim().max(200, 'Search query too long').optional()
+});
+
+/**
+ * Template response schema
+ */
+export const templateResponseSchema = z.object({
+	id: z.string().uuid(),
+	name: z.string(),
+	description: z.string().nullable(),
+	template_content: z.string(),
+	placeholders: z.array(templatePlaceholderSchema),
+	is_public: z.boolean(),
+	created_by: z.string().uuid().nullable(),
+	created_at: z.string().datetime(),
+	updated_at: z.string().datetime()
+});
+
+/**
+ * Template list response schema
+ */
+export const templateListResponseSchema = z.object({
+	templates: z.array(templateResponseSchema),
+	pagination: z.object({
+		page: z.number().int().positive(),
+		limit: z.number().int().positive(),
+		total: z.number().int().nonnegative(),
+		totalPages: z.number().int().nonnegative()
+	})
+});
+
+/**
+ * Create template response schema
+ */
+export const createTemplateResponseSchema = z.object({
+	template: templateResponseSchema
+});
+
+/**
+ * Delete template response schema
+ */
+export const deleteTemplateResponseSchema = z.object({
+	success: z.literal(true),
+	message: z.string()
+});
+
+// ============================================================================
+// TEMPLATE VALIDATION HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Validate create template request body
+ */
+export function validateCreateTemplate(data: unknown) {
+	return createTemplateSchema.safeParse(data);
+}
+
+/**
+ * Validate update template request body
+ */
+export function validateUpdateTemplate(data: unknown) {
+	return updateTemplateSchema.safeParse(data);
+}
+
+/**
+ * Validate list templates query parameters
+ */
+export function validateListTemplatesQuery(params: URLSearchParams) {
+	return listTemplatesQuerySchema.safeParse(Object.fromEntries(params));
+}
+
 /**
  * Sections list response schema
  */

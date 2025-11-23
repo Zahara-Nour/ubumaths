@@ -56,6 +56,17 @@ Authentification Google OAuth + email/password.
 Banque d'exercices en markdown avec export LaTeX/PDF.
 **Status** : ✅ Production
 
+### [📋 Worksheets](worksheets.md)
+
+Feuilles d'exercices, evaluations et examens avec systeme de variantes et generation PDF.
+**Status** : ✅ Production
+
+**Guides disponibles** :
+
+- [Documentation complete](worksheets.md) - Vue d'ensemble et workflows
+- [Systeme de variantes](worksheet-variants.md) - Generation de variantes par eleve
+- [Architecture PDF](../architecture/worksheet-pdf-generation.md) - Generation Typst/PDF
+
 ### [⚠️ Warnings](warnings/README.md)
 
 Gestion des avertissements comportementaux par période académique.

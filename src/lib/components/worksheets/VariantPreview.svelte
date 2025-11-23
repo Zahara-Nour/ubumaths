@@ -11,9 +11,8 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { MySelect } from '$lib/components/ui/MySelect';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Eye, RefreshCw, Users, Copy, Download } from 'lucide-svelte';
+	import { Eye, RefreshCw, Users, Copy } from 'lucide-svelte';
 	import type { InstanceData } from '$lib/types/worksheets';
-	import type { Profile } from '$lib/types/database';
 
 	interface Props {
 		worksheetId: string;
@@ -301,7 +300,7 @@
 					<div class="grid gap-4 md:grid-cols-2">
 						<div>
 							<h3 class="mb-2 font-semibold">Variante 1 (Seed: {previewData.metadata.seed})</h3>
-							{#each previewData.instanceData.exercises as exercise, i}
+							{#each previewData.instanceData.exercises as exercise, i (exercise.exercise_id + '-' + i)}
 								<Card class="mb-4">
 									<CardHeader class="pb-2">
 										<CardTitle class="text-base">
@@ -312,7 +311,7 @@
 										{#if showParameters && Object.keys(exercise.parameters).length > 0}
 											<div class="mb-3 rounded bg-muted p-2 text-sm">
 												<strong>Paramètres:</strong>
-												{#each Object.entries(exercise.parameters) as [key, value]}
+												{#each Object.entries(exercise.parameters) as [key, value] (key)}
 													<div class="ml-2">
 														<code>{key}</code> = <code>{value}</code>
 													</div>
@@ -329,7 +328,7 @@
 
 						<div>
 							<h3 class="mb-2 font-semibold">Variante 2 (Seed: {compareData.metadata.seed})</h3>
-							{#each compareData.instanceData.exercises as exercise, i}
+							{#each compareData.instanceData.exercises as exercise, i (exercise.exercise_id + '-' + i)}
 								<Card class="mb-4">
 									<CardHeader class="pb-2">
 										<CardTitle class="text-base">
@@ -340,7 +339,7 @@
 										{#if showParameters && Object.keys(exercise.parameters).length > 0}
 											<div class="mb-3 rounded bg-muted p-2 text-sm">
 												<strong>Paramètres:</strong>
-												{#each Object.entries(exercise.parameters) as [key, value]}
+												{#each Object.entries(exercise.parameters) as [key, value] (key)}
 													<div class="ml-2">
 														<code>{key}</code> = <code>{value}</code>
 													</div>
@@ -357,7 +356,7 @@
 					</div>
 				{:else}
 					<!-- Single preview -->
-					{#each previewData.instanceData.exercises as exercise, i}
+					{#each previewData.instanceData.exercises as exercise, i (exercise.exercise_id + '-' + i)}
 						<Card>
 							<CardHeader class="pb-2">
 								<CardTitle class="text-base">
@@ -374,7 +373,7 @@
 									<div class="rounded-md bg-muted p-3">
 										<div class="mb-2 text-sm font-medium">Paramètres générés:</div>
 										<div class="grid gap-1">
-											{#each Object.entries(exercise.parameters) as [key, value]}
+											{#each Object.entries(exercise.parameters) as [key, value] (key)}
 												<div class="font-mono text-sm">
 													<span class="text-muted-foreground">{key}:</span>
 													<span class="ml-2 font-semibold">{value}</span>
