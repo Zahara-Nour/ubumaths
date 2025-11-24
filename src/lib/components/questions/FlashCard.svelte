@@ -43,7 +43,7 @@
 		interactive?: boolean;
 		instance: QuestionInstance;
 		onAnswerSubmit?: (answer: AnswerData) => void;
-		onAnswerChange?: (value: string | string[]) => void;
+		_onAnswerChange?: (value: string | string[]) => void;
 		onComplete?: (stats: QuestionStats) => void;
 		onFlip?: (isFlipped: boolean) => void;
 		size?: 'sm' | 'md' | 'lg';
@@ -56,7 +56,7 @@
 		interactive = false,
 		instance,
 		onAnswerSubmit,
-		onAnswerChange,
+		_onAnswerChange,
 		onComplete,
 		onFlip,
 		size = 'md',
@@ -97,7 +97,6 @@
 	// Type-specific state
 	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
-	let _orderedIndexes = $state<number[]>([]);
 	let blankValidationResults = $state<(boolean | null)[]>([]);
 
 	// ============================================================================
@@ -314,14 +313,6 @@
 		};
 
 		onComplete?.(stats);
-	}
-
-	/**
-	 * Handle answer change (for real-time callbacks)
-	 */
-	function _handleAnswerChange() {
-		const value = prepareAnswerValue();
-		onAnswerChange?.(value as string | string[]);
 	}
 
 	// ============================================================================

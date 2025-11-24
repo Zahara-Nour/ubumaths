@@ -140,8 +140,6 @@
 	const correctionMarkdown = $derived(
 		instance.correction_md || (hasCorrection ? contentFieldsToMarkdown(instance.correction!) : '')
 	);
-	// Note: correctionImages no longer needed as MarkdownRenderer handles embedded images
-	const _correctionImages = $derived(hasCorrection ? extractImages(instance.correction!) : []);
 
 	// Variables
 	const hasVariables = $derived(
@@ -161,9 +159,6 @@
 	const answerArray = $derived(
 		Array.isArray(instance.answer) ? instance.answer : [instance.answer]
 	);
-
-	// Is QCM and answer is indices
-	const _isQCMAnswer = $derived(instance.type === 'multiple_choice');
 
 	// ============================================================================
 	// EVENT HANDLERS

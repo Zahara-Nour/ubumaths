@@ -42,7 +42,7 @@
 		interactive?: boolean;
 		instance: QuestionInstance;
 		onAnswerSubmit?: (answer: AnswerData) => void;
-		onAnswerChange?: (value: string | string[]) => void;
+		_onAnswerChange?: (value: string | string[]) => void;
 		size?: 'sm' | 'md' | 'lg';
 	}
 
@@ -50,7 +50,7 @@
 		interactive = false,
 		instance,
 		onAnswerSubmit,
-		onAnswerChange,
+		_onAnswerChange,
 		size = 'md'
 	}: Props = $props();
 
@@ -70,7 +70,6 @@
 	// Type-specific state
 	let selectedChoices = $state<number[]>([]);
 	let fillBlankValues = $state<string[]>([]);
-	let _blankValidationResults = $state<(boolean | null)[]>([]);
 
 	// ============================================================================
 	// DERIVED STATE
@@ -100,7 +99,6 @@
 	$effect(() => {
 		if (instance.type === 'fill_in_blanks' && instance.blanks) {
 			fillBlankValues = instance.blanks.map(() => '');
-			_blankValidationResults = instance.blanks.map(() => null);
 		}
 
 		if (instance.type === 'multiple_choice' && instance.shuffledChoices) {
@@ -192,14 +190,6 @@
 
 		// Emit event
 		onAnswerSubmit?.(answerData);
-	}
-
-	/**
-	 * Handle answer change (for real-time callbacks)
-	 */
-	function _handleAnswerChange() {
-		const value = prepareAnswerValue();
-		onAnswerChange?.(value as string | string[]);
 	}
 
 	// ============================================================================
