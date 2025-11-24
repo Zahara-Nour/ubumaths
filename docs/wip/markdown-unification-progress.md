@@ -2,9 +2,9 @@
 
 ## État actuel
 
-- **Phase** : 1 (COMPLETE)
-- **Tâche en cours** : Phase 2 à démarrer
-- **Dernier commit** : (en cours de création)
+- **Phase** : 2 (COMPLETE)
+- **Tâche en cours** : Phase 3 à démarrer
+- **Dernier commit** : 1a140325 `feat(markdown): add generic markdown rendering components`
 
 ## Objectif
 
@@ -63,12 +63,14 @@ src/lib/components/markdown/
 - [x] `src/lib/components/markdown/MarkdownRenderer.svelte`
 - [x] `src/lib/components/markdown/MarkdownRaw.svelte`
 
-### Phase 2 : Extension parser pour {{blank:N}}
+### Phase 2 : Extension parser pour {{blank:N}} (COMPLETE)
 
-- [ ] `src/lib/exercises/types.ts` (ajout BlankNode)
-- [ ] `src/lib/exercises/parser/markdown-parser.ts` (parsing {{blank:N}})
-- [ ] `src/lib/components/markdown/nodes/BlankInput.svelte`
-- [ ] Tests unitaires pour blank parsing
+- [x] `src/lib/exercises/types.ts` (ajout BlankNode)
+- [x] `src/lib/exercises/parser/markdown-parser.ts` (parsing {{blank:N}})
+- [x] `src/lib/components/markdown/nodes/BlankInput.svelte`
+- [x] `src/lib/components/markdown/nodes/ParagraphNode.svelte` (intégration)
+- [x] `src/lib/components/markdown/MarkdownRenderer.svelte` (props blanks)
+- [x] Tests unitaires pour blank parsing (7 nouveaux tests)
 
 ### Phase 3 : Intégration Questions → Markdown
 
@@ -107,7 +109,7 @@ src/lib/components/markdown/
 
 | Phase | Commit    | Description                                                  |
 | ----- | --------- | ------------------------------------------------------------ |
-| 1     | (pending) | `feat(markdown): add generic markdown rendering components`  |
+| 1     | 1a140325  | `feat(markdown): add generic markdown rendering components`  |
 | 2     | (pending) | `feat(parser): add {{blank:N}} syntax for fill-in-blanks`    |
 | 3     | (pending) | `feat(questions): migrate to markdown-based rendering`       |
 | 4     | (pending) | `refactor(rendering): unify exercise and question rendering` |

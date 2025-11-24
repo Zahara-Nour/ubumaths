@@ -27,7 +27,8 @@ import type {
 	ListNode,
 	BlockquoteNode,
 	ImageSizeClass,
-	ImageAlignment
+	ImageAlignment,
+	BlankNode
 } from '../types';
 import {
 	extractMath,
@@ -75,6 +76,21 @@ const IMAGE_REGEX = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\{([^}]*)\})?
  * Regex for headings: # Heading or ## Heading, etc.
  */
 const HEADING_REGEX = /^(#{1,6})\s+(.+)$/;
+
+/**
+ * Regex for blank placeholders: {{blank:N}} where N is a positive integer
+ *
+ * Used in fill-in-the-blank questions. The index N is 1-based.
+ * Note: This pattern is distinct from variable placeholders {{varName}}
+ * which use alphanumeric names, not "blank:" prefix.
+ *
+ * @example
+ * ```
+ * {{blank:1}} → BlankNode with index 1
+ * {{blank:42}} → BlankNode with index 42
+ * ```
+ */
+const BLANK_REGEX = /\{\{blank:(\d+)\}\}/g;
 
 // ============================================================================
 // MAIN PARSE FUNCTION
@@ -365,7 +381,51 @@ function parseInlineContent(
 }
 
 /**
- * Parse text formatting (bold, italic, code)
+ * Parse text for blanks ({{blank:N}})
+ *
+ * Extracts blank placeholders from text and returns an array of
+ * text segments and BlankNodes. Text segments will be further processed
+ * for formatting (bold, italic, code).
+ *
+ * @param text - Text possibly containing {{blank:N}} syntax
+ * @returns Array of strings (text segments) and BlankNodes
+ */
+function parseTextForBlanks(text: string): (string | BlankNode)[] {
+	if (!text) return [];
+
+	const results: (string | BlankNode)[] = [];
+	let position = 0;
+
+	// Reset regex state for global matching
+	const blankRegex = new RegExp(BLANK_REGEX.source, 'g');
+	let match: RegExpExecArray | null;
+
+	while ((match = blankRegex.exec(text)) !== null) {
+		// Add text segment before this blank
+		if (match.index > position) {
+			results.push(text.substring(position, match.index));
+		}
+
+		// Add blank node with parsed index
+		const index = parseInt(match[1], 10);
+		results.push({
+			type: 'blank',
+			index
+		});
+
+		position = match.index + match[0].length;
+	}
+
+	// Add remaining text after last blank
+	if (position < text.length) {
+		results.push(text.substring(position));
+	}
+
+	return results;
+}
+
+/**
+ * Parse text formatting (bold, italic, code) for a single text segment
  *
  * Parses markdown inline formatting and returns text nodes with appropriate properties.
  * Priority order: code > bold > italic (to avoid conflicts)
@@ -373,7 +433,7 @@ function parseInlineContent(
  * @param text - Plain text possibly with markdown formatting
  * @returns Array of text nodes with formatting
  */
-function parseTextFormatting(text: string): InlineNode[] {
+function parseTextFormattingSegment(text: string): InlineNode[] {
 	if (!text) return [];
 
 	const nodes: InlineNode[] = [];
@@ -429,6 +489,38 @@ function parseTextFormatting(text: string): InlineNode[] {
 	}
 
 	return nodes.length > 0 ? nodes : [{ type: 'text', content: text }];
+}
+
+/**
+ * Parse text formatting (bold, italic, code) with blank support
+ *
+ * First extracts {{blank:N}} placeholders, then parses markdown inline
+ * formatting on the remaining text segments.
+ * Priority order: blanks > code > bold > italic
+ *
+ * @param text - Plain text possibly with markdown formatting and blanks
+ * @returns Array of inline nodes (text, blank)
+ */
+function parseTextFormatting(text: string): InlineNode[] {
+	if (!text) return [];
+
+	// Step 1: Extract blanks first
+	const segments = parseTextForBlanks(text);
+
+	// Step 2: Process each segment
+	const nodes: InlineNode[] = [];
+	for (const segment of segments) {
+		if (typeof segment === 'string') {
+			// Parse text formatting on text segments
+			const formatted = parseTextFormattingSegment(segment);
+			nodes.push(...formatted);
+		} else {
+			// BlankNode - add directly
+			nodes.push(segment);
+		}
+	}
+
+	return nodes;
 }
 
 // ============================================================================

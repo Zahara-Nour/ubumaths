@@ -198,7 +198,7 @@ export interface MarkdownRendererOptions {
  * ```
  */
 export interface BlankState {
-	/** Index du blank (0-based, corresponds to {{blank:N}}) */
+	/** Index du blank (1-based, corresponds to N in {{blank:N}}) */
 	index: number;
 
 	/** Valeur actuelle saisie par l'utilisateur */
@@ -243,7 +243,7 @@ export interface BlankState {
  * ```
  */
 export interface BlankInputProps {
-	/** Index du blank (0-based) */
+	/** Index du blank (1-based, corresponds to N in {{blank:N}}) */
 	index: number;
 
 	/**

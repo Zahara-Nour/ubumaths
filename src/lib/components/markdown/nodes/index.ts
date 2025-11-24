@@ -29,3 +29,6 @@ export { default as Blockquote } from './Blockquote.svelte';
 export { default as ImageDisplay } from './ImageDisplay.svelte';
 export { default as ListNode } from './ListNode.svelte';
 export { default as TableNode } from './TableNode.svelte';
+
+// Interactive components
+export { default as BlankInput } from './BlankInput.svelte';
