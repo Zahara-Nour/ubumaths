@@ -64,6 +64,12 @@ function extractMarkdownTokens(text: string): Token[] {
 				i = result.endIndex;
 				continue;
 			}
+			// Even if no token returned (e.g., special marker like {{blank:N}}),
+			// advance past the matched braces if successfully parsed
+			if (result.endIndex > i + 2) {
+				i = result.endIndex;
+				continue;
+			}
 		}
 		i++;
 	}
@@ -105,6 +111,13 @@ function extractMarkdownBracedToken(
 	// Determine token type
 	let type: 'variable' | 'random' | 'eval' | null = null;
 	let inner = innerContent;
+
+	// Skip special markers that look like parameterization but aren't
+	// {{blank:N}} is a fill-in-blank marker, not a parameterization token
+	// {{digits:...}} is handled separately
+	if (innerContent.startsWith('blank:') || innerContent.startsWith('digits:')) {
+		return { token: null, endIndex: i };
+	}
 
 	if (innerContent.startsWith('random:')) {
 		type = 'random';
