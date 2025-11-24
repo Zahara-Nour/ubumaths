@@ -234,3 +234,57 @@ describe('tokenize - Edge cases', () => {
 		expect(tokens[0].inner).toBe('a*b+c/d-e^f');
 	});
 });
+
+describe('tokenize - Special markers (non-parameterization)', () => {
+	it('should skip blank markers', () => {
+		const text = 'Answer: {{blank:1}}';
+		const tokens = tokenize(text);
+
+		expect(tokens).toHaveLength(0);
+	});
+
+	it('should skip digits markers', () => {
+		const text = 'Number: {{digits:2-4}}';
+		const tokens = tokenize(text);
+
+		expect(tokens).toHaveLength(0);
+	});
+
+	it('should handle mixed blank and variable tokens', () => {
+		const text = '{{blank:1}} + {{a}} = {{blank:2}}';
+		const tokens = tokenize(text);
+
+		expect(tokens).toHaveLength(1);
+		expect(tokens[0].type).toBe('variable');
+		expect(tokens[0].inner).toBe('a');
+	});
+
+	it('should not confuse similar variable names with markers', () => {
+		const text = '{{blanket}} {{digitsum}}';
+		const tokens = tokenize(text);
+
+		expect(tokens).toHaveLength(2);
+		expect(tokens[0].type).toBe('variable');
+		expect(tokens[0].inner).toBe('blanket');
+		expect(tokens[1].type).toBe('variable');
+		expect(tokens[1].inner).toBe('digitsum');
+	});
+
+	it('should handle complex digits syntax', () => {
+		const text = '{{digits:{{1}};{{1}}}}';
+		const tokens = tokenize(text);
+
+		// Should skip the outer digits: marker
+		// Inner {{1}} tokens are inside a skipped marker
+		expect(tokens).toHaveLength(0);
+	});
+
+	it('should skip blank markers with text around', () => {
+		const text = 'Fill in: {{a}} + {{blank:1}} = {{sum}}';
+		const tokens = tokenize(text);
+
+		expect(tokens).toHaveLength(2);
+		expect(tokens[0].inner).toBe('a');
+		expect(tokens[1].inner).toBe('sum');
+	});
+});
