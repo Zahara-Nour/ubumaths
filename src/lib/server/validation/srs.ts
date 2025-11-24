@@ -5,16 +5,6 @@
 import { z } from 'zod';
 
 /**
- * Content field schema for flashcard content
- * @deprecated Use string (markdown) validation instead
- */
-const _contentFieldSchema = z.object({
-	type: z.enum(['text', 'latex', 'image', 'markdown']),
-	value: z.string().max(5000),
-	metadata: z.record(z.string(), z.any()).optional()
-});
-
-/**
  * Schema for creating a deck
  */
 export const createDeckSchema = z.object({

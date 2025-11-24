@@ -23,12 +23,11 @@
 	import * as Card from '$lib/components/ui/card';
 	import { RotateCw } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import type { ContentField } from '$lib/questions/types';
 	import type { TemplateMarkdown } from '$lib/shared/markdown';
 
 	interface Props {
-		frontContent: TemplateMarkdown | ContentField[];
-		backContent: TemplateMarkdown | ContentField[];
+		frontContent: TemplateMarkdown;
+		backContent: TemplateMarkdown;
 		onFlip?: (isFlipped: boolean) => void;
 		size?: 'sm' | 'md' | 'lg';
 	}
@@ -51,37 +50,9 @@
 	);
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
 
-	// Convert legacy ContentField[] to markdown
-	const frontMarkdown = $derived(convertToMarkdown(frontContent));
-	const backMarkdown = $derived(convertToMarkdown(backContent));
-
-	/**
-	 * Convert ContentField array or TemplateMarkdown to markdown string
-	 */
-	function convertToMarkdown(content: TemplateMarkdown | ContentField[]): string {
-		// If it's already a string (TemplateMarkdown), return it
-		if (typeof content === 'string') {
-			return content;
-		}
-
-		// Legacy ContentField[] format - convert to markdown
-		if (Array.isArray(content)) {
-			if (content.length === 0) return '';
-
-			return content
-				.map((field) => {
-					if (field.type === 'text') {
-						return field.content || '';
-					} else if (field.type === 'image') {
-						return `![${field.alt || ''}](${field.content})`;
-					}
-					return '';
-				})
-				.join('\n\n');
-		}
-
-		return '';
-	}
+	// Markdown content (already TemplateMarkdown strings)
+	const frontMarkdown = $derived(frontContent);
+	const backMarkdown = $derived(backContent);
 
 	// Calculate max viewport height
 	$effect(() => {

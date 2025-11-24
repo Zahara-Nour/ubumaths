@@ -23,57 +23,26 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	import { Eye, Save, X } from 'lucide-svelte';
-	import type { ContentField } from '$lib/questions/types';
 	import type { TemplateMarkdown } from '$lib/shared/markdown';
 	import { templateMarkdown } from '$lib/shared/markdown';
 
 	interface Props {
-		initialFrontContent?: ContentField[] | TemplateMarkdown;
-		initialBackContent?: ContentField[] | TemplateMarkdown;
+		initialFrontContent?: TemplateMarkdown;
+		initialBackContent?: TemplateMarkdown;
 		onSave: (frontContent: TemplateMarkdown, backContent: TemplateMarkdown) => Promise<void>;
 		onCancel?: () => void;
 	}
 
-	let { initialFrontContent = [], initialBackContent = [], onSave, onCancel }: Props = $props();
+	let { initialFrontContent = '', initialBackContent = '', onSave, onCancel }: Props = $props();
 
 	// State
-	let frontMarkdown = $state(convertToMarkdown(initialFrontContent));
-	let backMarkdown = $state(convertToMarkdown(initialBackContent));
+	let frontMarkdown = $state(initialFrontContent || '');
+	let backMarkdown = $state(initialBackContent || '');
 	let isSaving = $state(false);
 	let activeTab = $state('edit');
 
 	// Validation
 	const canSave = $derived(frontMarkdown.trim().length > 0 && backMarkdown.trim().length > 0);
-
-	/**
-	 * Convert ContentField array or TemplateMarkdown to markdown string
-	 */
-	function convertToMarkdown(content: ContentField[] | TemplateMarkdown | undefined): string {
-		if (!content) return '';
-
-		// If it's already a string (TemplateMarkdown), return it
-		if (typeof content === 'string') {
-			return content;
-		}
-
-		// Legacy ContentField[] format - convert to markdown
-		if (Array.isArray(content)) {
-			if (content.length === 0) return '';
-
-			return content
-				.map((field) => {
-					if (field.type === 'text') {
-						return field.content || '';
-					} else if (field.type === 'image') {
-						return `![${field.alt || ''}](${field.content})`;
-					}
-					return '';
-				})
-				.join('\n\n');
-		}
-
-		return '';
-	}
 
 	/**
 	 * Handle save

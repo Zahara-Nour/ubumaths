@@ -16,7 +16,7 @@
  * - Tracks Difficulty, Stability, Retrievability (DSR model)
  */
 
-import type { ContentField, QuestionInstance } from '$lib/questions/types';
+import type { QuestionInstance } from '$lib/questions/types';
 import type { TemplateMarkdown } from '$lib/shared/markdown';
 
 // ============================================================================
@@ -185,16 +185,15 @@ export interface Card {
 /**
  * Database representation of a card
  *
- * Note: Database still stores ContentField[] for backward compatibility.
- * Conversion to/from TemplateMarkdown happens at the boundary layer.
+ * Note: front_content and back_content are now stored as markdown strings in the database.
  */
 export interface DbCard {
 	id: string;
 	deck_id: string;
 	card_type: CardType;
 	template_id: string | null;
-	front_content: ContentField[] | null; // JSONB - will be migrated to string in Phase 7
-	back_content: ContentField[] | null; // JSONB - will be migrated to string in Phase 7
+	front_content: string | null; // JSONB string (markdown)
+	back_content: string | null; // JSONB string (markdown)
 	created_at: string;
 	updated_at: string;
 }
