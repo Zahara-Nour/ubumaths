@@ -338,6 +338,52 @@ export interface VariableHighlightConfig {
 }
 
 // ============================================================================
+// EDITOR TYPES
+// ============================================================================
+
+/**
+ * Configuration for image upload feature in MarkdownEditor
+ *
+ * Enables image upload functionality when provided to MarkdownEditor.
+ * Supports custom upload logic via uploadFn.
+ *
+ * @example Basic usage with Supabase
+ * ```typescript
+ * const imageUpload: ImageUploadConfig = {
+ *   supabase: client,
+ *   userId: user.id,
+ *   bucket: 'exercise-images'
+ * };
+ * ```
+ *
+ * @example With custom upload function
+ * ```typescript
+ * const imageUpload: ImageUploadConfig = {
+ *   supabase: client,
+ *   userId: user.id,
+ *   uploadFn: async (supabase, file, userId) => {
+ *     // Custom upload logic
+ *     return { success: true, url: 'https://...' };
+ *   }
+ * };
+ * ```
+ */
+export interface ImageUploadConfig {
+	/** Supabase client for storage operations */
+	supabase: import('@supabase/supabase-js').SupabaseClient;
+	/** User ID for organizing uploads */
+	userId: string;
+	/** Storage bucket name (default: 'exercise-images') */
+	bucket?: string;
+	/** Upload function - allows custom upload logic */
+	uploadFn?: (
+		supabase: import('@supabase/supabase-js').SupabaseClient,
+		file: File,
+		userId: string
+	) => Promise<{ success: boolean; url?: string; error?: string }>;
+}
+
+// ============================================================================
 // DEFAULT VALUES
 // ============================================================================
 

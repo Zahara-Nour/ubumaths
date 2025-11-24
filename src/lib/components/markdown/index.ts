@@ -92,6 +92,12 @@ export { DEFAULT_HIGHLIGHT_CONFIG, DEFAULT_RENDERER_OPTIONS } from './types';
 // Main renderer component
 export { default as MarkdownRenderer } from './MarkdownRenderer.svelte';
 
+// Markdown editor component
+export { default as MarkdownEditor } from './MarkdownEditor.svelte';
+
+// Editor Types
+export type { ImageUploadConfig } from './types';
+
 // Node components - named with Component suffix to avoid conflicts with AST types
 export { default as MathBlockComponent } from './nodes/MathBlock.svelte';
 export { default as MathInlineComponent } from './nodes/MathInline.svelte';
