@@ -16,7 +16,46 @@ import { resolvedMarkdown, templateMarkdown } from '$lib/shared/markdown';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 import { convertToMarkdownSyntax } from './syntax-adapter';
-import { contentFieldsToMarkdown } from './content-to-markdown';
+
+// ============================================================================
+// INTERNAL HELPERS (formerly in content-to-markdown.ts)
+// ============================================================================
+
+/**
+ * Convert a single ContentField to markdown string
+ *
+ * @param field - The content field to convert
+ * @returns Markdown string representation
+ */
+function contentFieldToMarkdown(field: ContentField): string {
+	if (field.type === 'text') {
+		return field.content;
+	} else if (field.type === 'image') {
+		const alt = field.alt || '';
+		return `![${alt}](${field.content})`;
+	}
+	return '';
+}
+
+/**
+ * Convert an array of ContentFields to a unified markdown string
+ *
+ * Multiple fields are joined with double newlines (paragraph breaks).
+ * Empty fields are filtered out.
+ *
+ * @param fields - Array of content fields to convert
+ * @returns Unified markdown string
+ */
+function contentFieldsToMarkdown(fields: ContentField[]): string {
+	if (!fields || fields.length === 0) {
+		return '';
+	}
+
+	return fields
+		.map(contentFieldToMarkdown)
+		.filter((s) => s.length > 0)
+		.join('\n\n');
+}
 
 /**
  * Resolve markdown content by replacing all placeholders with values

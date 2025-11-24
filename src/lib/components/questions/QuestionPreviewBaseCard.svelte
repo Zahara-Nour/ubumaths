@@ -32,12 +32,12 @@
 
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
+	import type { ContentField } from '$lib/questions/types';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { contentFieldsToMarkdown } from '$lib/questions/generator/content-to-markdown';
 	import {
 		ChevronDown,
 		ChevronRight,
@@ -48,8 +48,27 @@
 		Info,
 		FileText
 	} from 'lucide-svelte';
-	import { extractImages } from '$lib/utils/content-field-helpers';
 	import { cn } from '$lib/utils';
+
+	// Helper function: convert ContentField[] to markdown string
+	function contentFieldsToMarkdown(fields: ContentField[]): string {
+		if (!fields || fields.length === 0) {
+			return '';
+		}
+
+		return fields
+			.map((field) => {
+				if (field.type === 'text') {
+					return field.content;
+				} else if (field.type === 'image') {
+					const alt = field.alt || '';
+					return `![${alt}](${field.content})`;
+				}
+				return '';
+			})
+			.filter((s) => s.length > 0)
+			.join('\n\n');
+	}
 
 	// ============================================================================
 	// PROPS
@@ -120,6 +139,11 @@
 	// ============================================================================
 	// DERIVED STATE
 	// ============================================================================
+
+	// Helper function: extract images from ContentField array
+	function extractImages(fields: typeof instance.statement) {
+		return fields.filter((field) => field.type === 'image');
+	}
 
 	// Statement markdown (with fallback for backward compatibility)
 	const statementMarkdown = $derived(

@@ -22,13 +22,33 @@
 
 <script lang="ts">
 	import type { TestAnswerResult } from '$lib/types/test';
+	import type { ContentField } from '$lib/questions/types';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { contentFieldsToMarkdown } from '$lib/questions/generator/content-to-markdown';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { RotateCw, Check, X, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
+
+	// Helper function: convert ContentField[] to markdown string
+	function contentFieldsToMarkdown(fields: ContentField[]): string {
+		if (!fields || fields.length === 0) {
+			return '';
+		}
+
+		return fields
+			.map((field) => {
+				if (field.type === 'text') {
+					return field.content;
+				} else if (field.type === 'image') {
+					const alt = field.alt || '';
+					return `![${alt}](${field.content})`;
+				}
+				return '';
+			})
+			.filter((s) => s.length > 0)
+			.join('\n\n');
+	}
 
 	// Props
 	interface Props {

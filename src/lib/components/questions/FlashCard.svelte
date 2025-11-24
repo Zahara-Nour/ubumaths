@@ -25,7 +25,6 @@
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { contentFieldsToMarkdown } from '$lib/questions/generator/content-to-markdown';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -37,6 +36,26 @@
 	import AlgebraicInput from '$lib/components/question-inputs/AlgebraicInput.svelte';
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
+
+	// Helper function: convert ContentField[] to markdown string
+	function contentFieldsToMarkdown(fields: typeof instance.statement): string {
+		if (!fields || fields.length === 0) {
+			return '';
+		}
+
+		return fields
+			.map((field) => {
+				if (field.type === 'text') {
+					return field.content;
+				} else if (field.type === 'image') {
+					const alt = field.alt || '';
+					return `![${alt}](${field.content})`;
+				}
+				return '';
+			})
+			.filter((s) => s.length > 0)
+			.join('\n\n');
+	}
 
 	// Props
 	interface Props {
