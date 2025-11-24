@@ -6,13 +6,16 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import * as Tooltip from '$lib/components/ui/tooltip';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import ExportDialog from '$lib/components/exercises/ExportDialog.svelte';
 	import ImportDialog from '$lib/components/exercises/ImportDialog.svelte';
+	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown } from 'lucide-svelte';
+	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown, Eye } from 'lucide-svelte';
+	import type { Exercise } from '$lib/exercises/types';
 	import type { PageData } from './$types';
 	import type { GradeCode } from '$lib/types/grades';
 	import { formatGradeShort, getMinGradeOrder } from '$lib/utils/grades';
@@ -43,6 +46,10 @@
 	let selectedExercises = new SvelteSet<string>();
 	let exportDialogOpen = $state(false);
 	let importDialogOpen = $state(false);
+
+	// Preview state
+	let previewDialogOpen = $state(false);
+	let previewExercise = $state<Exercise | null>(null);
 
 	/**
 	 * Toggle exercise selection
@@ -76,6 +83,14 @@
 	function openDeleteDialog(exercise: { id: string; title: string }) {
 		exerciseToDelete = exercise;
 		deleteDialogOpen = true;
+	}
+
+	/**
+	 * Open preview dialog
+	 */
+	function openPreview(exercise: (typeof exercises)[number]) {
+		previewExercise = exercise as unknown as Exercise;
+		previewDialogOpen = true;
 	}
 
 	/**
@@ -481,6 +496,22 @@
 													<Button
 														size="icon"
 														variant="ghost"
+														onclick={() => openPreview(exercise)}
+														class="h-8 w-8"
+													>
+														<Eye class="h-4 w-4" />
+														<span class="sr-only">Prévisualiser</span>
+													</Button>
+												</Tooltip.Trigger>
+												<Tooltip.Content>
+													<p>Prévisualiser</p>
+												</Tooltip.Content>
+											</Tooltip.Root>
+											<Tooltip.Root>
+												<Tooltip.Trigger>
+													<Button
+														size="icon"
+														variant="ghost"
 														href="/dashboard/teacher/exercises/{exercise.id}/assign"
 														class="h-8 w-8"
 													>
@@ -581,3 +612,21 @@
 	variant="destructive"
 	onConfirm={handleDelete}
 />
+
+<!-- Preview Dialog -->
+<Dialog.Root bind:open={previewDialogOpen}>
+	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
+		<Dialog.Header>
+			<Dialog.Title>{previewExercise?.title || 'Prévisualisation'}</Dialog.Title>
+			<Dialog.Description>Prévisualisation de l'exercice</Dialog.Description>
+		</Dialog.Header>
+		<div class="py-4">
+			{#if previewExercise}
+				<ExerciseDisplay exercise={previewExercise} mode="template" />
+			{/if}
+		</div>
+		<Dialog.Footer>
+			<Button variant="outline" onclick={() => (previewDialogOpen = false)}>Fermer</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
