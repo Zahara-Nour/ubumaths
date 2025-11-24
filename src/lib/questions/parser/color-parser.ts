@@ -57,17 +57,25 @@ export function parseColorExpression(colorExpression: string, seed?: number): Co
 /**
  * Resolves all color references in a text string
  *
- * @param text - Text containing {#color:...} patterns
+ * Supports both syntaxes:
+ * - Legacy: {#color:...} (single brace)
+ * - Markdown: {{color:...}} (double brace)
+ *
+ * @param text - Text containing color patterns
  * @param seed - Optional seed for reproducible colors
  * @returns Text with color references replaced by hex codes
  */
 export function resolveColorReferences(text: string, seed?: number): string {
-	const colorPattern = /\{#color:([^}]+)\}/g;
+	// Support both legacy {#color:...} and new {{color:...}} syntax
+	const colorPattern = /\{#color:([^}]+)\}|\{\{color:([^}]+)\}\}/g;
 
 	// Track color counter for seeding to ensure different colors get different seeds
 	let colorCounter = 0;
 
-	return text.replace(colorPattern, (match, colorExpression) => {
+	return text.replace(colorPattern, (match, legacyGroup, markdownGroup) => {
+		// Use whichever group matched (legacy or markdown syntax)
+		const colorExpression = legacyGroup || markdownGroup;
+
 		// If seed is provided, modify it for each color occurrence to get variety
 		const effectiveSeed = seed !== undefined ? seed + colorCounter++ : undefined;
 

@@ -5,13 +5,14 @@ import { COLOR_PALETTES } from '../colors';
 
 describe('Color Template System - End to End', () => {
 	it('should convert old syntax and resolve to actual colors', () => {
-		// Step 1: Convert old TinyCAS syntax
+		// Step 1: Convert old TinyCAS syntax to new Markdown syntax
 		const oldSyntax = 'Draw a ${get(color1)} circle and a ${get(color2)} square';
 		const conversionResult = convertTinyCASToNew(oldSyntax);
 
 		expect(conversionResult.success).toBe(true);
+		// Now produces pure Markdown syntax {{...}}
 		expect(conversionResult.converted).toBe(
-			'Draw a {#color:primary.0} circle and a {#color:primary.1} square'
+			'Draw a {{color:primary.0}} circle and a {{color:primary.1}} square'
 		);
 
 		// Step 2: Resolve the colors during instance generation
@@ -66,8 +67,9 @@ describe('Color Template System - End to End', () => {
 		const conversionResult = convertTinyCASToNew(oldSyntax);
 
 		expect(conversionResult.success).toBe(true);
+		// Now produces pure Markdown syntax {{...}}
 		expect(conversionResult.converted).toBe(
-			'Color {#color:primary.0}, value {@:a}, result {eval:{@:a}+5}'
+			'Color {{color:primary.0}}, value {{a}}, result {{eval:{{a}}+5}}'
 		);
 
 		// Provide a resolved variable 'a' to test the integration
@@ -87,7 +89,8 @@ describe('Color Template System - End to End', () => {
 		const conversionResult = convertTinyCASToNew(oldSyntax);
 
 		expect(conversionResult.success).toBe(true);
-		expect(conversionResult.converted).toBe('La couleur {#color:primary.0} est belle');
+		// Now produces pure Markdown syntax {{...}}
+		expect(conversionResult.converted).toBe('La couleur {{color:primary.0}} est belle');
 
 		const resolved = resolveExpression(conversionResult.converted!, [], 42);
 		expect(resolved).toContain(COLOR_PALETTES.primary[0]);
