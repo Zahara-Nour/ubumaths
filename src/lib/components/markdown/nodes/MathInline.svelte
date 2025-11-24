@@ -12,7 +12,6 @@
 	- Inherits font size from parent
 
 	@see ExerciseDisplay.svelte for rendering context
-	@see MathDisplay.svelte for alternative math rendering
 -->
 <script lang="ts">
 	import 'mathlive';
