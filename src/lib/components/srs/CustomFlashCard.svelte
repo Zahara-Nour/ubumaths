@@ -6,28 +6,29 @@
 
 	Features:
 	- Front/back flip animation
-	- MathLive rendering for LaTeX
+	- Markdown rendering with MathLive support
 	- Similar UX to FlashCard but simplified for custom content
 	- FlipCard-style height management
+	- Backward compatible with legacy ContentField[] format
 
 	Props:
-	- frontContent: ContentField[] (front side)
-	- backContent: ContentField[] (back side)
+	- frontContent: TemplateMarkdown or ContentField[] (front side)
+	- backContent: TemplateMarkdown or ContentField[] (back side)
 	- onFlip: Callback when flipped
 	- size: 'sm' | 'md' | 'lg'
 -->
 
 <script lang="ts">
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import * as Card from '$lib/components/ui/card';
 	import { RotateCw } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import type { ContentField } from '$lib/questions/types';
+	import type { TemplateMarkdown } from '$lib/shared/markdown';
 
 	interface Props {
-		frontContent: ContentField[];
-		backContent: ContentField[];
+		frontContent: TemplateMarkdown | ContentField[];
+		backContent: TemplateMarkdown | ContentField[];
 		onFlip?: (isFlipped: boolean) => void;
 		size?: 'sm' | 'md' | 'lg';
 	}
@@ -49,6 +50,38 @@
 		Math.min(Math.max(frontHeight, backHeight), maxViewportHeight || 10000)
 	);
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
+
+	// Convert legacy ContentField[] to markdown
+	const frontMarkdown = $derived(convertToMarkdown(frontContent));
+	const backMarkdown = $derived(convertToMarkdown(backContent));
+
+	/**
+	 * Convert ContentField array or TemplateMarkdown to markdown string
+	 */
+	function convertToMarkdown(content: TemplateMarkdown | ContentField[]): string {
+		// If it's already a string (TemplateMarkdown), return it
+		if (typeof content === 'string') {
+			return content;
+		}
+
+		// Legacy ContentField[] format - convert to markdown
+		if (Array.isArray(content)) {
+			if (content.length === 0) return '';
+
+			return content
+				.map((field) => {
+					if (field.type === 'text') {
+						return field.content || '';
+					} else if (field.type === 'image') {
+						return `![${field.alt || ''}](${field.content})`;
+					}
+					return '';
+				})
+				.join('\n\n');
+		}
+
+		return '';
+	}
 
 	// Calculate max viewport height
 	$effect(() => {
@@ -119,17 +152,7 @@
 
 					<Card.Content class="space-y-4">
 						<div class="content-section rounded-lg border bg-card p-4">
-							{#each frontContent as field, i (i)}
-								{#if field.type === 'text'}
-									<MarkdownRenderer content={convertLegacyLatexToMarkdown(field.content || '')} />
-								{:else if field.type === 'image'}
-									<img
-										src={field.content}
-										alt={field.alt || 'Image'}
-										class="my-4 max-w-full rounded-lg"
-									/>
-								{/if}
-							{/each}
+							<MarkdownRenderer content={frontMarkdown} />
 						</div>
 					</Card.Content>
 				</Card.Root>
@@ -158,17 +181,7 @@
 
 					<Card.Content class="space-y-4">
 						<div class="content-section rounded-lg border bg-card p-4">
-							{#each backContent as field, i (i)}
-								{#if field.type === 'text'}
-									<MarkdownRenderer content={convertLegacyLatexToMarkdown(field.content || '')} />
-								{:else if field.type === 'image'}
-									<img
-										src={field.content}
-										alt={field.alt || 'Image'}
-										class="my-4 max-w-full rounded-lg"
-									/>
-								{/if}
-							{/each}
+							<MarkdownRenderer content={backMarkdown} />
 						</div>
 					</Card.Content>
 				</Card.Root>

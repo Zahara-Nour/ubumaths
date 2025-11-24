@@ -23,8 +23,8 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Save, Plus, Trash2, ArrowLeft, BookOpen } from 'lucide-svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
-	import type { ContentField } from '$lib/questions/types';
 	import type { CreateDeckRequest, CreateCardRequest } from '$lib/srs/types';
+	import type { TemplateMarkdown } from '$lib/shared/markdown';
 
 	// State
 	let deckName = $state('');
@@ -39,10 +39,8 @@
 		Array<{
 			type: 'custom';
 			data: {
-				question?: string;
-				answer?: string;
-				frontContent?: ContentField[] | string;
-				backContent?: ContentField[] | string;
+				frontContent: TemplateMarkdown;
+				backContent: TemplateMarkdown;
 			};
 		}>
 	>([]);
@@ -84,19 +82,11 @@
 			// Add pending cards
 			for (const card of pendingCards) {
 				try {
-					// Convert string to ContentField[] if needed
-					const frontContent: ContentField[] = Array.isArray(card.data.frontContent)
-						? card.data.frontContent
-						: [{ type: 'text', content: card.data.frontContent || card.data.question || '' }];
-					const backContent: ContentField[] = Array.isArray(card.data.backContent)
-						? card.data.backContent
-						: [{ type: 'text', content: card.data.backContent || card.data.answer || '' }];
-
 					const cardRequest: CreateCardRequest = {
 						deckId: deck.id,
 						cardType: 'custom',
-						frontContent,
-						backContent
+						frontContent: card.data.frontContent,
+						backContent: card.data.backContent
 					};
 
 					const cardResponse = await fetch('/api/srs/cards', {
@@ -126,7 +116,10 @@
 	/**
 	 * Add custom card
 	 */
-	async function handleSaveCustomCard(frontContent: ContentField[], backContent: ContentField[]) {
+	async function handleSaveCustomCard(
+		frontContent: TemplateMarkdown,
+		backContent: TemplateMarkdown
+	) {
 		pendingCards.push({
 			type: 'custom',
 			data: { frontContent, backContent }

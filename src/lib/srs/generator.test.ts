@@ -12,6 +12,7 @@ import {
 	validateTemplateForSRS
 } from './generator';
 import type { QuestionTemplate } from '$lib/questions/types';
+import { templateMarkdown } from '$lib/shared/markdown';
 
 // Mock the instance generator
 vi.mock('$lib/questions/generator/instance-generator', () => ({
@@ -60,9 +61,9 @@ const createMockTemplate = (overrides: Partial<QuestionTemplate> = {}): Question
 	status: 'published',
 	variations: [
 		{
-			statement: [{ type: 'text', content: 'Question' }],
+			statement: templateMarkdown('Question'),
 			answer: '42',
-			correction: [{ type: 'text', content: 'Solution' }]
+			correction: templateMarkdown('Solution')
 		}
 	],
 	created_at: new Date().toISOString(),
@@ -244,14 +245,14 @@ describe('SRS Generator Edge Cases', () => {
 		const template = createMockTemplate({
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Q1' }],
+					statement: templateMarkdown('Q1'),
 					answer: '1',
-					correction: [{ type: 'text', content: 'S1' }]
+					correction: templateMarkdown('S1')
 				},
 				{
-					statement: [{ type: 'text', content: 'Q2' }],
+					statement: templateMarkdown('Q2'),
 					answer: '2',
-					correction: [{ type: 'text', content: 'S2' }]
+					correction: templateMarkdown('S2')
 				}
 			]
 		});
@@ -264,13 +265,13 @@ describe('SRS Generator Edge Cases', () => {
 		const template = createMockTemplate({
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Solve {@:a} + {@:b}' }],
+					statement: templateMarkdown('Solve {{a}} + {{b}}'),
 					variables: [
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'b', expression: '{#:1-10}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}',
-					correction: [{ type: 'text', content: 'Solution' }]
+					answer: '{eval:{{a}} + {{b}}}',
+					correction: templateMarkdown('Solution')
 				}
 			]
 		});
@@ -334,12 +335,9 @@ describe('Integration with Question System', () => {
 		const template = createMockTemplate({
 			variations: [
 				{
-					statement: [
-						{ type: 'text', content: 'Solve: ' },
-						{ type: 'text', content: 'x^2 + 2x + 1 = 0' }
-					],
+					statement: templateMarkdown('Solve: $x^2 + 2x + 1 = 0$'),
 					answer: '-1',
-					correction: [{ type: 'text', content: 'x = -1' }]
+					correction: templateMarkdown('$x = -1$')
 				}
 			]
 		});

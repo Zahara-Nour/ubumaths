@@ -2,78 +2,77 @@
 	CustomCardEditor Component
 	==========================
 
-	Create or edit custom SRS flashcards with rich content.
+	Create or edit custom SRS flashcards with markdown content.
 
 	Features:
-	- Front and back content editors using FormRichTextEditor
-	- Preview mode
+	- Front and back content editors using MarkdownEditor
+	- Live preview with MarkdownRenderer
 	- Validation
 	- Save/Cancel actions
 
 	Props:
-	- initialFrontContent: Initial front content (for editing)
-	- initialBackContent: Initial back content (for editing)
-	- onSave: Callback with ContentField arrays for front and back
+	- initialFrontContent: Initial front content (markdown or legacy ContentField[])
+	- initialBackContent: Initial back content (markdown or legacy ContentField[])
+	- onSave: Callback with TemplateMarkdown strings for front and back
 	- onCancel: Callback when cancelled
 -->
 
 <script lang="ts">
-	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
+	import { MarkdownEditor, MarkdownRenderer } from '$lib/components/markdown';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import { Eye, Save, X } from 'lucide-svelte';
 	import type { ContentField } from '$lib/questions/types';
+	import type { TemplateMarkdown } from '$lib/shared/markdown';
+	import { templateMarkdown } from '$lib/shared/markdown';
 
 	interface Props {
-		initialFrontContent?: ContentField[];
-		initialBackContent?: ContentField[];
-		onSave: (frontContent: ContentField[], backContent: ContentField[]) => Promise<void>;
+		initialFrontContent?: ContentField[] | TemplateMarkdown;
+		initialBackContent?: ContentField[] | TemplateMarkdown;
+		onSave: (frontContent: TemplateMarkdown, backContent: TemplateMarkdown) => Promise<void>;
 		onCancel?: () => void;
 	}
 
 	let { initialFrontContent = [], initialBackContent = [], onSave, onCancel }: Props = $props();
 
 	// State
-	let frontHTML = $state(contentFieldsToHTML(initialFrontContent));
-	let backHTML = $state(contentFieldsToHTML(initialBackContent));
+	let frontMarkdown = $state(convertToMarkdown(initialFrontContent));
+	let backMarkdown = $state(convertToMarkdown(initialBackContent));
 	let isSaving = $state(false);
 	let activeTab = $state('edit');
 
 	// Validation
-	const canSave = $derived(frontHTML.trim().length > 0 && backHTML.trim().length > 0);
+	const canSave = $derived(frontMarkdown.trim().length > 0 && backMarkdown.trim().length > 0);
 
 	/**
-	 * Convert ContentField array to HTML string
+	 * Convert ContentField array or TemplateMarkdown to markdown string
 	 */
-	function contentFieldsToHTML(fields: ContentField[]): string {
-		if (!fields || fields.length === 0) return '';
+	function convertToMarkdown(content: ContentField[] | TemplateMarkdown | undefined): string {
+		if (!content) return '';
 
-		return fields
-			.map((field) => {
-				if (field.type === 'text') {
-					return field.content;
-				} else if (field.type === 'image') {
-					return `<img src="${field.content}" alt="${field.alt || ''}" />`;
-				}
-				return '';
-			})
-			.join('\n');
-	}
-
-	/**
-	 * Convert HTML string to ContentField array
-	 */
-	function HTMLToContentFields(html: string): ContentField[] {
-		if (!html || html.trim().length === 0) {
-			return [{ type: 'text', content: '' }];
+		// If it's already a string (TemplateMarkdown), return it
+		if (typeof content === 'string') {
+			return content;
 		}
 
-		// For simplicity, treat entire HTML as a single text content field
-		// The HTML can contain math-inline and other rich content
-		return [{ type: 'text', content: html }];
+		// Legacy ContentField[] format - convert to markdown
+		if (Array.isArray(content)) {
+			if (content.length === 0) return '';
+
+			return content
+				.map((field) => {
+					if (field.type === 'text') {
+						return field.content || '';
+					} else if (field.type === 'image') {
+						return `![${field.alt || ''}](${field.content})`;
+					}
+					return '';
+				})
+				.join('\n\n');
+		}
+
+		return '';
 	}
 
 	/**
@@ -85,10 +84,7 @@
 		isSaving = true;
 
 		try {
-			const frontContent = HTMLToContentFields(frontHTML);
-			const backContent = HTMLToContentFields(backHTML);
-
-			await onSave(frontContent, backContent);
+			await onSave(templateMarkdown(frontMarkdown), templateMarkdown(backMarkdown));
 		} catch (error) {
 			console.error('Error saving card:', error);
 		} finally {
@@ -112,7 +108,11 @@
 					<h3 class="text-lg font-semibold">Recto de la carte</h3>
 					<span class="text-sm text-muted-foreground">(Question / Concept)</span>
 				</div>
-				<FormRichTextEditor bind:value={frontHTML} />
+				<MarkdownEditor
+					bind:value={frontMarkdown}
+					placeholder="Écrivez le contenu du recto en markdown..."
+					rows={6}
+				/>
 			</div>
 
 			<!-- Back Content -->
@@ -121,7 +121,11 @@
 					<h3 class="text-lg font-semibold">Verso de la carte</h3>
 					<span class="text-sm text-muted-foreground">(Réponse / Explication)</span>
 				</div>
-				<FormRichTextEditor bind:value={backHTML} />
+				<MarkdownEditor
+					bind:value={backMarkdown}
+					placeholder="Écrivez le contenu du verso en markdown..."
+					rows={6}
+				/>
 			</div>
 		</TabsContent>
 
@@ -134,9 +138,9 @@
 						<Card.Title>Recto</Card.Title>
 					</Card.Header>
 					<Card.Content>
-						{#if frontHTML.trim().length > 0}
+						{#if frontMarkdown.trim().length > 0}
 							<div class="preview-content">
-								<MarkdownRenderer content={convertLegacyLatexToMarkdown(frontHTML)} />
+								<MarkdownRenderer content={frontMarkdown} />
 							</div>
 						{:else}
 							<div class="text-center text-sm text-muted-foreground">Le recto est vide</div>
@@ -150,9 +154,9 @@
 						<Card.Title>Verso</Card.Title>
 					</Card.Header>
 					<Card.Content>
-						{#if backHTML.trim().length > 0}
+						{#if backMarkdown.trim().length > 0}
 							<div class="preview-content">
-								<MarkdownRenderer content={convertLegacyLatexToMarkdown(backHTML)} />
+								<MarkdownRenderer content={backMarkdown} />
 							</div>
 						{:else}
 							<div class="text-center text-sm text-muted-foreground">Le verso est vide</div>
