@@ -38,8 +38,9 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import VariableEditor from './VariableEditor.svelte';
-	import ContentFieldEditor from './ContentFieldEditor.svelte';
+	import { MarkdownEditor } from '$lib/components/markdown';
 	import AnswerEditor from './AnswerEditor.svelte';
+	import { templateMarkdown } from '$lib/shared/markdown';
 	import CategorySelector from './CategorySelector.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Collapsible from '$lib/components/ui/collapsible';
@@ -221,19 +222,23 @@
 	let answerSectionOpen = $state(true); // Open by default as it's required
 
 	// Variations state (NEW)
+	// Note: correction is initialized to empty string for editing, cleaned up in buildTemplate()
 	let variations = $state<QuestionVariation[]>(
 		template?.variations.map((v) => ({
 			...v,
 			variables: v.variables || [],
 			blanks: v.blanks || [],
-			choices: v.choices || []
+			choices: v.choices || [],
+			// Ensure correction is always a string for the editor (cleaned up in buildTemplate)
+			correction: v.correction ?? templateMarkdown('')
 		})) || [
 			{
-				statement: [{ type: 'text', content: '' }],
+				statement: templateMarkdown(''),
 				variables: [],
 				answer: '',
 				blanks: [],
-				choices: []
+				choices: [],
+				correction: templateMarkdown('')
 			}
 		]
 	);
@@ -287,11 +292,12 @@
 		variations = [
 			...variations,
 			{
-				statement: [{ type: 'text', content: '' }],
+				statement: templateMarkdown(''),
 				variables: [],
 				answer: '',
 				blanks: [],
-				choices: []
+				choices: [],
+				correction: templateMarkdown('')
 			}
 		];
 		currentVariationIndex = variations.length - 1;
@@ -325,12 +331,12 @@
 		// Deep copy the source variation
 		const sourceVariation = variations[duplicateSourceIndex];
 		const duplicatedVariation: QuestionVariation = {
-			statement: JSON.parse(JSON.stringify(sourceVariation.statement)),
+			// statement is now a branded string (TemplateMarkdown), so no deep copy needed
+			statement: templateMarkdown(sourceVariation.statement),
 			variables: JSON.parse(JSON.stringify(sourceVariation.variables || [])),
 			answer: sourceVariation.answer,
-			correction: sourceVariation.correction
-				? JSON.parse(JSON.stringify(sourceVariation.correction))
-				: undefined,
+			// correction is also a branded string (TemplateMarkdown), ensure it's always a string for editor
+			correction: templateMarkdown(sourceVariation.correction ?? ''),
 			blanks: sourceVariation.blanks ? JSON.parse(JSON.stringify(sourceVariation.blanks)) : [],
 			choices: sourceVariation.choices ? JSON.parse(JSON.stringify(sourceVariation.choices)) : []
 		};
@@ -345,18 +351,12 @@
 		QuestionTemplate,
 		'id' | 'created_at' | 'updated_at' | 'created_by'
 	> {
-		// Filter empty correction fields from each variation
+		// Clean up empty corrections (correction is now a TemplateMarkdown string)
 		const cleanedVariations = variations.map((variation) => {
-			const filteredCorrection = variation.correction?.filter(
-				(field) =>
-					(field.type === 'text' && field.content.trim() !== '') ||
-					(field.type === 'image' && field.content)
-			);
-
 			return {
 				...variation,
-				correction:
-					filteredCorrection && filteredCorrection.length > 0 ? filteredCorrection : undefined
+				// Keep correction only if it has non-empty content
+				correction: variation.correction?.trim() ? variation.correction : undefined
 			};
 		});
 
@@ -444,8 +444,8 @@
 			variations.length > 0 &&
 			variations.every(
 				(v) =>
-					v.statement.length > 0 &&
-					v.statement.some((s) => s.type === 'text' && s.content.trim().length > 0) &&
+					// statement is now a TemplateMarkdown string
+					v.statement.trim().length > 0 &&
 					(typeof v.answer === 'string' ? v.answer.trim().length > 0 : v.answer.length > 0)
 			) &&
 			grades.length > 0 &&
@@ -781,7 +781,13 @@
 									<Card.Description></Card.Description>
 									<Collapsible.Content>
 										<Card.Content>
-											<ContentFieldEditor bind:fields={variation.statement} />
+											<MarkdownEditor
+												bind:value={variation.statement}
+												showParameterization={true}
+												variables={variation.variables}
+												placeholder="Ecrivez l'enonce de la question en markdown..."
+												rows={6}
+											/>
 										</Card.Content>
 									</Collapsible.Content>
 								</Collapsible.Root>
@@ -894,7 +900,13 @@
 									<Card.Description></Card.Description>
 									<Collapsible.Content>
 										<Card.Content>
-											<ContentFieldEditor bind:fields={variation.correction} />
+											<MarkdownEditor
+												bind:value={variation.correction}
+												showParameterization={true}
+												variables={variation.variables}
+												placeholder="Explication de la solution (optionnel)..."
+												rows={6}
+											/>
 										</Card.Content>
 									</Collapsible.Content>
 								</Collapsible.Root>

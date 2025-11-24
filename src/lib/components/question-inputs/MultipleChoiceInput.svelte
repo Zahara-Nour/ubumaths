@@ -2,11 +2,11 @@
 	Multiple Choice Input Component
 	================================
 
-	Displays choices as buttons or images with selection tracking.
+	Displays choices as buttons with selection tracking.
 	Supports single or multiple answer selection.
 
 	Props:
-	- choices: Array of choices with content (text/image) and correctness
+	- choices: Array of choices with content (ResolvedMarkdown) and correctness
 	- selectedIndexes: Array of selected choice indexes (bindable)
 	- multipleAnswers: Whether multiple selections are allowed
 	- disabled: Whether inputs are disabled
@@ -15,16 +15,18 @@
 -->
 
 <script lang="ts">
+	import type { ResolvedMarkdown } from '$lib/shared/markdown';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import { Check, X } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import type { ContentField } from '$lib/questions/types';
 
 	interface Choice {
-		content: ContentField[]; // Array of content fields (text, images, etc.)
-		originalIndex?: number; // For shuffled choices
-		isCorrect?: boolean; // For validation mode
+		/** Choice content as resolved markdown string */
+		content: ResolvedMarkdown;
+		/** For shuffled choices - original index before shuffling */
+		originalIndex?: number;
+		/** For validation mode - whether this choice is correct */
+		isCorrect?: boolean;
 	}
 
 	interface Props {
@@ -85,7 +87,6 @@
 			{@const selected = isSelected(i)}
 			{@const correct = showValidation && choice.isCorrect}
 			{@const incorrect = showValidation && !choice.isCorrect && selected}
-			{@const contentField = choice.content[0]}
 
 			<button
 				type="button"
@@ -102,19 +103,9 @@
 				<!-- Choice letter badge -->
 				<span class="choice-letter">{getChoiceLetter(i)}</span>
 
-				<!-- Choice content -->
+				<!-- Choice content - now a ResolvedMarkdown string rendered directly -->
 				<div class="choice-content">
-					{#if contentField}
-						{#if contentField.type === 'text'}
-							<MarkdownRenderer content={convertLegacyLatexToMarkdown(contentField.content)} />
-						{:else if contentField.type === 'image'}
-							<img
-								src={contentField.content}
-								alt={contentField.alt || `Choice ${getChoiceLetter(i)}`}
-								class="choice-image"
-							/>
-						{/if}
-					{/if}
+					<MarkdownRenderer content={choice.content} />
 				</div>
 
 				<!-- Validation indicator -->
@@ -248,7 +239,8 @@
 		min-width: 0;
 	}
 
-	.choice-image {
+	/* Images within choice content (rendered by MarkdownRenderer) */
+	.choice-content :global(img) {
 		max-width: 100%;
 		max-height: calc(12rem * var(--font-scale, 1));
 		border-radius: calc(0.375rem * var(--font-scale, 1));

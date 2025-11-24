@@ -8,7 +8,7 @@
 	- numerical_exact/decimal/rounded: Single LaTeX expression + precision
 	- algebraic_transform: LaTeX expression + transform type
 	- fill_in_blanks: Complex blanks with positions and expected answers
-	- multiple_choice: Complex choices with content fields and isCorrect flags
+	- multiple_choice: Choices with TemplateMarkdown content and isCorrect flags
 
 	PROPS:
 	- questionType: QuestionType
@@ -16,14 +16,16 @@
 	- precision: PrecisionType (bindable, for numerical)
 	- transformType: string (bindable, for algebraic)
 	- blanks: { position: number; expectedAnswer: string }[] (bindable, for fill-in-blanks)
-	- choices: { content: ContentField; isCorrect: boolean }[] (bindable, for QCM)
+	- choices: { content: TemplateMarkdown; isCorrect: boolean }[] (bindable, for QCM)
 	- multipleAnswers: boolean (bindable, for QCM)
 
-	UPDATED: Refactored to work with QuestionVariation types (complex blanks/choices)
+	UPDATED: Refactored to use TemplateMarkdown for choice content (branded string type)
 -->
 
 <script lang="ts">
-	import type { QuestionType, PrecisionType, ContentField } from '$lib/questions/types';
+	import type { QuestionType, PrecisionType } from '$lib/questions/types';
+	import type { TemplateMarkdown } from '$lib/shared/markdown';
+	import { templateMarkdown } from '$lib/shared/markdown';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
@@ -40,7 +42,7 @@
 		precision?: PrecisionType;
 		transformType?: string;
 		blanks?: { position: number; expectedAnswer: string }[];
-		choices?: { content: ContentField; isCorrect: boolean }[];
+		choices?: { content: TemplateMarkdown; isCorrect: boolean }[];
 		multipleAnswers?: boolean;
 	}
 
@@ -68,10 +70,10 @@
 		if (questionType === 'multiple_choice') {
 			if (!choices || choices.length === 0) {
 				choices = [
-					{ content: { type: 'text', content: '' }, isCorrect: true },
-					{ content: { type: 'text', content: '' }, isCorrect: false },
-					{ content: { type: 'text', content: '' }, isCorrect: false },
-					{ content: { type: 'text', content: '' }, isCorrect: false }
+					{ content: templateMarkdown(''), isCorrect: true },
+					{ content: templateMarkdown(''), isCorrect: false },
+					{ content: templateMarkdown(''), isCorrect: false },
+					{ content: templateMarkdown(''), isCorrect: false }
 				];
 			}
 			// answer is managed separately (index or indices of correct choices)
@@ -95,7 +97,7 @@
 
 	// QCM: Add choice
 	function addChoice() {
-		choices = [...choices, { content: { type: 'text', content: '' }, isCorrect: false }];
+		choices = [...choices, { content: templateMarkdown(''), isCorrect: false }];
 	}
 
 	// QCM: Remove choice
@@ -472,62 +474,55 @@
 											<Badge class="ml-2">Correct</Badge>
 										{/if}
 									</Label>
-									<!-- Choice content (text only for now - image support would need wrapper) -->
-									{#if choice.content.type === 'text'}
-										<Input
-											id="choice-{index}"
-											bind:value={choice.content.content}
-											placeholder={'Contenu du choix (LaTeX, {{var}}, {{random:...}} supportés)'}
-											class="font-mono"
-										/>
-										<!-- Syntax helper buttons -->
-										<div class="flex flex-wrap gap-1">
-											<Button
-												variant="outline"
-												size="sm"
-												onclick={() =>
-													insertSyntax(
-														`choice-${index}`,
-														'{{}}',
-														(v) => (choice.content.content = v)
-													)}
-												class="h-auto px-2 py-0.5 text-xs"
-											>
-												Variable
-											</Button>
-											<Button
-												variant="outline"
-												size="sm"
-												onclick={() =>
-													insertSyntax(
-														`choice-${index}`,
-														'{{eval:}}',
-														(v) => (choice.content.content = v)
-													)}
-												class="h-auto px-2 py-0.5 text-xs"
-											>
-												Éval
-											</Button>
-											<Button
-												variant="outline"
-												size="sm"
-												onclick={() =>
-													insertSyntax(
-														`choice-${index}`,
-														'\\frac{}{}',
-														(v) => (choice.content.content = v)
-													)}
-												class="h-auto px-2 py-0.5 text-xs"
-											>
-												Frac
-											</Button>
-										</div>
-									{:else}
-										<p class="text-xs text-muted-foreground">
-											Note: Image choices are not yet fully supported in the editor. Type: {choice
-												.content.type}
-										</p>
-									{/if}
+									<!-- Choice content is now a TemplateMarkdown string -->
+									<Input
+										id="choice-{index}"
+										bind:value={choice.content}
+										placeholder={'Contenu du choix (LaTeX, {{var}}, {{random:...}} supportes)'}
+										class="font-mono"
+									/>
+									<!-- Syntax helper buttons -->
+									<div class="flex flex-wrap gap-1">
+										<Button
+											variant="outline"
+											size="sm"
+											onclick={() =>
+												insertSyntax(
+													`choice-${index}`,
+													'{{}}',
+													(v) => (choice.content = templateMarkdown(v))
+												)}
+											class="h-auto px-2 py-0.5 text-xs"
+										>
+											Variable
+										</Button>
+										<Button
+											variant="outline"
+											size="sm"
+											onclick={() =>
+												insertSyntax(
+													`choice-${index}`,
+													'{{eval:}}',
+													(v) => (choice.content = templateMarkdown(v))
+												)}
+											class="h-auto px-2 py-0.5 text-xs"
+										>
+											Eval
+										</Button>
+										<Button
+											variant="outline"
+											size="sm"
+											onclick={() =>
+												insertSyntax(
+													`choice-${index}`,
+													'\\frac{}{}',
+													(v) => (choice.content = templateMarkdown(v))
+												)}
+											class="h-auto px-2 py-0.5 text-xs"
+										>
+											Frac
+										</Button>
+									</div>
 								</div>
 
 								<!-- Delete button -->

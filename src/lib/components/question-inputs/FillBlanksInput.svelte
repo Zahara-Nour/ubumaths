@@ -3,10 +3,10 @@
 	===============================
 
 	Renders a statement with editable MathField inputs at blank positions.
-	Blanks are represented by underscores (__) or placeholders in the statement.
+	Blanks are represented by underscores (____) in the statement.
 
 	Props:
-	- statement: Statement text with LaTeX (from instance.statement)
+	- statement: ResolvedMarkdown - Statement as resolved markdown string
 	- blanks: Array of blank configurations with positions
 	- values: Array of user answers for each blank (bindable)
 	- disabled: Whether inputs are disabled
@@ -15,9 +15,8 @@
 -->
 
 <script lang="ts">
-	import type { ContentField } from '$lib/questions/types';
+	import type { ResolvedMarkdown } from '$lib/shared/markdown';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import MathField from '$lib/components/MathField.svelte';
 	import { Check, X } from 'lucide-svelte';
 
@@ -27,7 +26,8 @@
 	}
 
 	interface Props {
-		statement: ContentField[];
+		/** Statement as resolved markdown (all placeholders resolved) */
+		statement: ResolvedMarkdown;
 		blanks: BlankConfig[];
 		values?: string[];
 		disabled?: boolean;
@@ -59,17 +59,9 @@
 		}
 	}
 
-	// Render statement with blanks as MathFields
-	// Statement is typically a single text field with blanks marked as ____
-	const statementText = $derived(
-		statement
-			.filter((s) => s.type === 'text')
-			.map((s) => (s.type === 'text' ? s.content : ''))
-			.join(' ')
-	);
-
+	// Statement is now a ResolvedMarkdown string directly
 	// Split statement by blank markers (4 underscores)
-	const segments = $derived(statementText.split('____'));
+	const segments = $derived(statement.split('____'));
 </script>
 
 <div class="fill-blanks-container">
@@ -79,7 +71,7 @@
 			<!-- Render text/math segment -->
 			{#if segment.trim()}
 				<span class="segment-text">
-					<MarkdownRenderer content={convertLegacyLatexToMarkdown(segment)} />
+					<MarkdownRenderer content={segment} />
 				</span>
 			{/if}
 
