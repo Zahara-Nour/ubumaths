@@ -2,9 +2,10 @@
 
 ## État actuel
 
-- **Phase** : 4 (COMPLETE - partial)
-- **Tâche en cours** : Quality checks finaux
-- **Dernier commit** : (pending Phase 4 commit)
+- **Phase** : 4 (COMPLETE)
+- **Tâche en cours** : Terminé
+- **Dernier commit** : 82d9d889 `refactor(rendering): deprecate MathDisplay and migrate preview cards`
+- **Quality checks** : Build ✓ | Lint ✓ (0 nouvelles erreurs, erreurs préexistantes dans scripts/ et worksheets/)
 
 ## Objectif
 
@@ -114,10 +115,10 @@ Migration complète possible dans une future phase si nécessaire.
 
 ## Historique des commits
 
-| Phase | Commit    | Description                                                  |
-| ----- | --------- | ------------------------------------------------------------ |
-| 1     | 1a140325  | `feat(markdown): add generic markdown rendering components`  |
-| 2     | 9201ee13  | `feat(parser): add {{blank:N}} syntax for fill-in-blanks`    |
-| 3     | bf4a7ff0  | `feat(questions): migrate to markdown-based rendering`       |
-| 4     | (pending) | `refactor(rendering): unify exercise and question rendering` |
-| 5     | (pending) | `feat(migration): add ContentField to markdown migration`    |
+| Phase | Commit    | Description                                                            |
+| ----- | --------- | ---------------------------------------------------------------------- |
+| 1     | 1a140325  | `feat(markdown): add generic markdown rendering components`            |
+| 2     | 9201ee13  | `feat(parser): add {{blank:N}} syntax for fill-in-blanks`              |
+| 3     | bf4a7ff0  | `feat(questions): migrate to markdown-based rendering`                 |
+| 4     | 82d9d889  | `refactor(rendering): deprecate MathDisplay and migrate preview cards` |
+| 5     | (pending) | `feat(migration): add ContentField to markdown migration`              |

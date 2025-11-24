@@ -22,7 +22,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import { Eye, Save, X } from 'lucide-svelte';
 	import type { ContentField } from '$lib/questions/types';
 
@@ -135,7 +136,7 @@
 					<Card.Content>
 						{#if frontHTML.trim().length > 0}
 							<div class="preview-content">
-								<MathDisplay text={frontHTML} />
+								<MarkdownRenderer content={convertLegacyLatexToMarkdown(frontHTML)} />
 							</div>
 						{:else}
 							<div class="text-center text-sm text-muted-foreground">Le recto est vide</div>
@@ -151,7 +152,7 @@
 					<Card.Content>
 						{#if backHTML.trim().length > 0}
 							<div class="preview-content">
-								<MathDisplay text={backHTML} />
+								<MarkdownRenderer content={convertLegacyLatexToMarkdown(backHTML)} />
 							</div>
 						{:else}
 							<div class="text-center text-sm text-muted-foreground">Le verso est vide</div>
