@@ -11,9 +11,7 @@ import {
 	convertToMarkdownSyntax,
 	convertToQuestionsSyntax,
 	detectSyntax,
-	normalizeToMarkdown,
-	convertVariableToMarkdown,
-	convertContentFieldToMarkdown
+	normalizeToMarkdown
 } from './syntax-adapter';
 
 describe('Syntax Adapter', () => {
@@ -168,16 +166,16 @@ describe('Syntax Adapter', () => {
 	});
 
 	describe('helper functions', () => {
-		it('converts ContentField', () => {
+		it('converts object with content field', () => {
 			const field = { type: 'text', content: 'Value is {@:x}' };
-			const converted = convertContentFieldToMarkdown(field);
+			const converted = { ...field, content: convertToMarkdownSyntax(field.content) };
 			expect(converted.content).toBe('Value is {{x}}');
 			expect(converted.type).toBe('text');
 		});
 
-		it('converts Variable', () => {
+		it('converts variable object', () => {
 			const variable = { name: 'a', expression: '{#:1-{@:max}}' };
-			const converted = convertVariableToMarkdown(variable);
+			const converted = { ...variable, expression: convertToMarkdownSyntax(variable.expression) };
 			expect(converted.expression).toBe('{{random:1-{{max}}}}');
 			expect(converted.name).toBe('a');
 		});
@@ -373,37 +371,37 @@ describe('Syntax Adapter', () => {
 	});
 
 	describe('helper functions comprehensive tests', () => {
-		it('converts ContentField preserving structure', () => {
+		it('converts object with content field preserving structure', () => {
 			const field = {
 				type: 'text',
 				content: '{@:x} + {#:1-10} = {eval:{@:x}+5}'
 			};
-			const converted = convertContentFieldToMarkdown(field);
+			const converted = { ...field, content: convertToMarkdownSyntax(field.content) };
 
 			expect(converted.type).toBe('text');
 			expect(converted.content).toBe('{{x}} + {{random:1-10}} = {{eval:{{x}}+5}}');
 		});
 
-		it('converts Variable preserving name', () => {
+		it('converts variable object preserving name', () => {
 			const variable = {
 				name: 'myVar',
 				expression: '{#:1-{@:max}}'
 			};
-			const converted = convertVariableToMarkdown(variable);
+			const converted = { ...variable, expression: convertToMarkdownSyntax(variable.expression) };
 
 			expect(converted.name).toBe('myVar');
 			expect(converted.expression).toBe('{{random:1-{{max}}}}');
 		});
 
-		it('handles empty ContentField', () => {
+		it('handles empty content field', () => {
 			const field = { type: 'text', content: '' };
-			const converted = convertContentFieldToMarkdown(field);
+			const converted = { ...field, content: convertToMarkdownSyntax(field.content) };
 			expect(converted.content).toBe('');
 		});
 
-		it('handles empty Variable expression', () => {
+		it('handles empty variable expression', () => {
 			const variable = { name: 'x', expression: '' };
-			const converted = convertVariableToMarkdown(variable);
+			const converted = { ...variable, expression: convertToMarkdownSyntax(variable.expression) };
 			expect(converted.expression).toBe('');
 		});
 	});
@@ -422,7 +420,10 @@ describe('Syntax Adapter', () => {
 
 			const converted = {
 				statement: convertToMarkdownSyntax(dbTemplate.statement),
-				variables: dbTemplate.variables.map(convertVariableToMarkdown),
+				variables: dbTemplate.variables.map((v) => ({
+					...v,
+					expression: convertToMarkdownSyntax(v.expression)
+				})),
 				answer: convertToMarkdownSyntax(dbTemplate.answer)
 			};
 

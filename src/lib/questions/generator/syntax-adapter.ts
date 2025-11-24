@@ -266,35 +266,3 @@ export function normalizeToMarkdown(text: string): string {
 			return text;
 	}
 }
-
-/**
- * Convert a ContentField's content to Markdown syntax
- *
- * @param field - ContentField with Questions syntax
- * @returns ContentField with converted content
- */
-export function convertContentFieldToMarkdown(field: { type: string; content: string }): {
-	type: string;
-	content: string;
-} {
-	return {
-		...field,
-		content: convertToMarkdownSyntax(field.content)
-	};
-}
-
-/**
- * Convert a Variable's expression to Markdown syntax
- *
- * @param variable - Variable with Questions syntax expression
- * @returns Variable with converted expression
- */
-export function convertVariableToMarkdown(variable: { name: string; expression: string }): {
-	name: string;
-	expression: string;
-} {
-	return {
-		...variable,
-		expression: convertToMarkdownSyntax(variable.expression)
-	};
-}

@@ -23,7 +23,7 @@ import {
 	resolveVariables as sharedResolveVariables,
 	resolveExpression as sharedResolveExpression
 } from '$lib/shared/parameterization';
-import { convertVariableToMarkdown } from './syntax-adapter';
+import { convertToMarkdownSyntax } from './syntax-adapter';
 
 /**
  * Resolve a single variable expression
@@ -95,7 +95,10 @@ export function resolveVariables(
 	}
 
 	// Convert all variable expressions to Markdown syntax
-	const convertedVariables = variables.map(convertVariableToMarkdown);
+	const convertedVariables = variables.map((v) => ({
+		...v,
+		expression: convertToMarkdownSyntax(v.expression)
+	}));
 
 	// Use shared library resolver with converted variables
 	const result = sharedResolveVariables(convertedVariables, seed);
