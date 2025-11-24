@@ -28,7 +28,7 @@
 	- Uses Svelte 5 runes ($state, $derived, $effect, $props)
 	- Claude API via POST to /api/ai/chat endpoint
 	- Base64 encoding for image attachments
-	- MathDisplay component for LaTeX rendering
+	- MarkdownRenderer component for LaTeX rendering (with legacy syntax adapter)
 	- Smooth scrolling with scroll-behavior CSS
 
 	USAGE:
@@ -45,7 +45,7 @@
 	LIMITATIONS:
 	- Images must be accessible URLs or valid base64 data
 	- Maximum 5MB per image file
-	- LaTeX rendering requires MathJax/KaTeX (via MathDisplay)
+	- LaTeX rendering requires MathLive (via MarkdownRenderer)
 	- Conversation history is session-scoped (not persisted to database)
 
 	@component
@@ -60,7 +60,8 @@
 	import { personalities, type PersonalityKey } from '$lib/config/personalities';
 	import { Trash2, Send, User, Paperclip, X, Link as LinkIcon } from 'lucide-svelte';
 	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 
 	interface TextContent {
 		type: 'text';
@@ -654,20 +655,23 @@
 							>
 								{#if message.role === 'assistant'}
 									<!--
-									Assistant messages: render with MathDisplay for LaTeX support
+									Assistant messages: render with MarkdownRenderer for LaTeX support
 									=================================================================
 
-									The MathDisplay component:
-									- Parses text for $$...$$ LaTeX expressions
+									The MarkdownRenderer component:
+									- Parses text for $...$ (inline) and $$...$$ (block) LaTeX expressions
 									- Renders math as MathLive fields (read-only)
 									- Updates in real-time during typing animation
 									- Blends seamlessly with message bubble background
-									- No borders, no hover effects, transparent background
 
-									See: src/lib/components/MathDisplay.svelte
-									See: src/lib/utils/latex-parser.ts
+									Uses convertLegacyLatexToMarkdown to convert $$...$$ inline to $...$
+
+									See: src/lib/components/markdown
+									See: src/lib/utils/latex-syntax-adapter.ts
 								-->
-									<MathDisplay text={getDisplayedText(index, message)} />
+									<MarkdownRenderer
+										content={convertLegacyLatexToMarkdown(getDisplayedText(index, message) || '')}
+									/>
 									{#if isMessageTyping(index)}
 										<span class="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-current"
 										></span>
@@ -721,20 +725,23 @@
 							>
 								{#if message.role === 'assistant'}
 									<!--
-										Assistant messages: render with MathDisplay for LaTeX support
+										Assistant messages: render with MarkdownRenderer for LaTeX support
 										=================================================================
 
-										The MathDisplay component:
-										- Parses text for $$...$$ LaTeX expressions
+										The MarkdownRenderer component:
+										- Parses text for $...$ (inline) and $$...$$ (block) LaTeX expressions
 										- Renders math as MathLive fields (read-only)
 										- Updates in real-time during typing animation
 										- Blends seamlessly with message bubble background
-										- No borders, no hover effects, transparent background
 
-										See: src/lib/components/MathDisplay.svelte
-										See: src/lib/utils/latex-parser.ts
+										Uses convertLegacyLatexToMarkdown to convert $$...$$ inline to $...$
+
+										See: src/lib/components/markdown
+										See: src/lib/utils/latex-syntax-adapter.ts
 									-->
-									<MathDisplay text={getDisplayedText(index, message)} />
+									<MarkdownRenderer
+										content={convertLegacyLatexToMarkdown(getDisplayedText(index, message) || '')}
+									/>
 									{#if isMessageTyping(index)}
 										<span class="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-current"
 										></span>
