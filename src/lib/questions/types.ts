@@ -33,6 +33,12 @@ export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
 
 // ============================================================================
+// BRANDED MARKDOWN TYPES
+// ============================================================================
+
+import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/shared/markdown';
+
+// ============================================================================
 // GRADE LEVELS (re-exported from unified system)
 // ============================================================================
 
@@ -77,6 +83,9 @@ export type AlgebraicTransformType = 'factor' | 'expand' | 'simplify' | 'solve';
 
 /**
  * Content field: text with LaTeX or image
+ *
+ * @deprecated Use TemplateMarkdown for unresolved content and ResolvedMarkdown for resolved content.
+ * This type is kept for backward compatibility during the migration period.
  *
  * Text content can contain:
  * - LaTeX expressions: $$expression$$
@@ -187,17 +196,17 @@ export type QuestionVariable = SharedVariable;
  * }
  */
 export interface QuestionVariation {
-	/** Question statement (can contain text and images) */
-	statement: ContentField[];
+	/** Question statement as markdown template (can contain {{var}}, {{random:}}, etc.) */
+	statement: TemplateMarkdown;
 
 	/** Variables in declaration order (resolved sequentially) */
 	variables?: QuestionVariable[];
 
-	/** Expected answer(s) - can contain {{var}}, {{random:...}}, {{eval:...}} */
+	/** Expected answer(s) - plain string values (not markdown) */
 	answer: string | string[];
 
-	/** Detailed correction/explanation (optional) */
-	correction?: ContentField[];
+	/** Detailed correction/explanation as markdown template (optional) */
+	correction?: TemplateMarkdown;
 
 	// ---- Type-specific Fields (per-variation) ----
 
@@ -206,14 +215,14 @@ export interface QuestionVariation {
 		/** Position in statement */
 		position: number;
 
-		/** Expected answer (can contain {{var}}) */
+		/** Expected answer - plain string value (not markdown) */
 		expectedAnswer: string;
 	}[];
 
 	/** Choices for multiple choice */
 	choices?: {
-		/** Choice content (text or image, can contain {{var}}, {{random:...}}) */
-		content: ContentField;
+		/** Choice content as markdown template */
+		content: TemplateMarkdown;
 
 		/** Whether this choice is correct */
 		isCorrect: boolean;
@@ -358,20 +367,17 @@ export interface QuestionInstance {
 
 	// ---- Resolved Content ----
 
-	/** Statement with all variables resolved (ContentField[] for backward compatibility) */
-	statement: ContentField[];
-
 	/**
-	 * Statement as unified markdown string (with resolved variables)
+	 * Statement as resolved markdown (all placeholders resolved to values)
 	 * This is the preferred format for rendering via MarkdownRenderer.
 	 * Contains: text, $inline math$, $$block math$$, images, {{blank:N}}, etc.
 	 */
-	statement_md?: string;
+	statement: ResolvedMarkdown;
 
 	/** Resolved variables with final values */
 	resolvedVariables?: ResolvedVariable[];
 
-	/** Resolved answer(s) */
+	/** Resolved answer(s) - plain string values (not markdown) */
 	answer: string | string[];
 
 	// ---- Metadata (copied from template) ----
@@ -393,13 +399,12 @@ export interface QuestionInstance {
 	subdomain?: string;
 	level: number;
 	delay?: number;
-	correction?: ContentField[];
 
 	/**
-	 * Correction as unified markdown string (with resolved variables)
-	 * This is the preferred format for rendering via MarkdownRenderer.
+	 * Correction as resolved markdown (all placeholders resolved)
+	 * Optional detailed explanation with all values resolved.
 	 */
-	correction_md?: string;
+	correction?: ResolvedMarkdown;
 
 	// ---- Type-specific (resolved) ----
 
@@ -407,17 +412,17 @@ export interface QuestionInstance {
 
 	blanks?: {
 		position: number;
-		expectedAnswer: string; // Resolved
+		expectedAnswer: string; // Resolved plain string value
 	}[];
 
 	choices?: {
-		content: ContentField[]; // Resolved (array of fields)
+		content: ResolvedMarkdown; // Resolved markdown for each choice
 		isCorrect: boolean;
 	}[];
 
 	/** Shuffled choices (for display, preserves original index) */
 	shuffledChoices?: {
-		content: ContentField[]; // Array of fields (text, images, etc.)
+		content: ResolvedMarkdown; // Resolved markdown for each choice
 		originalIndex: number; // Index before shuffle
 	}[];
 

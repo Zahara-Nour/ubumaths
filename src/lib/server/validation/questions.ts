@@ -19,13 +19,52 @@ export const questionTypeSchema = z.enum([
 ]);
 
 /**
+ * Variable schema for question templates
+ */
+const variableSchema = z.object({
+	name: z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Variable name must be valid identifier'),
+	expression: z.string().min(1, 'Expression is required')
+});
+
+/**
+ * Variation schema for question templates
+ * Uses string (markdown) instead of ContentField[] for content fields
+ */
+const variationSchema = z.object({
+	statement: z.string().min(1, "L'énoncé est requis"),
+	variables: z.array(variableSchema).optional(),
+	answer: z.union([z.string(), z.array(z.string())]),
+	correction: z.string().optional(),
+	blanks: z
+		.array(
+			z.object({
+				position: z.number().int().nonnegative(),
+				expectedAnswer: z.string()
+			})
+		)
+		.optional(),
+	choices: z
+		.array(
+			z.object({
+				content: z.string(),
+				isCorrect: z.boolean()
+			})
+		)
+		.optional()
+});
+
+/**
  * Schema for creating a question template
  */
 export const createQuestionTemplateSchema = z.object({
 	type: questionTypeSchema,
 	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long (max 200 caractères)'),
 	description: z.string().max(1000).optional(),
-	variations: z.array(z.unknown()).max(50, 'Trop de variations (max 50)').optional(),
+	variations: z
+		.array(variationSchema)
+		.min(1, 'Au moins une variation requise')
+		.max(50, 'Trop de variations (max 50)')
+		.optional(),
 	exerciseInstruction: z.string().max(500).optional(),
 	precision: z
 		.object({
