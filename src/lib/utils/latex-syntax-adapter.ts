@@ -1,15 +1,25 @@
 /**
  * LaTeX Syntax Adapter
  *
- * Converts legacy MathDisplay syntax to standard markdown math syntax.
+ * DEFENSIVE CODE: Converts legacy MathDisplay syntax to standard markdown math syntax.
  *
- * Legacy MathDisplay uses `$$...$$` for ALL math (both inline and block).
+ * Background:
+ * - Database was migrated on 2025-11-24 (migration 090) - all data uses standard markdown
+ * - This function is kept as defensive code to handle edge cases:
+ *   • Manual user input with old $$...$$ inline syntax
+ *   • External imports from legacy sources or documentation
+ *   • Copy-pasted content from old materials
+ *
+ * Legacy MathDisplay used `$$...$$` for ALL math (both inline and block).
  * Standard markdown uses `$...$` for inline and `$$...$$` for block math.
  *
  * Conversion rules:
  * - Single-line `$$content$$` → `$content$` (inline math)
  * - Multi-line `$$\ncontent\n$$` → `$$\ncontent\n$$` (block math, unchanged)
  * - `$$` at start of line followed by newline = block math (unchanged)
+ *
+ * Cost: Minimal (simple regex pass on display)
+ * Benefit: Prevents rendering errors if legacy syntax enters the system
  */
 
 /**
@@ -87,26 +97,4 @@ export function convertLegacyLatexToMarkdown(text: string): string {
 	}
 
 	return result;
-}
-
-/**
- * Checks if the given text contains legacy MathDisplay syntax that needs conversion.
- *
- * @param text - The text to check
- * @returns True if the text contains single-line `$$...$$` patterns that should be inline math
- *
- * @example
- * hasLegacyLatexSyntax('The formula $$x^2$$ is here') // true
- * hasLegacyLatexSyntax('The formula $x^2$ is here')   // false (already standard)
- */
-export function hasLegacyLatexSyntax(text: string): boolean {
-	if (!text) {
-		return false;
-	}
-
-	// Pattern: $$ followed by content without newlines, followed by $$
-	// This indicates inline math written in legacy format
-	// Uses non-greedy +? and allows any char except newline (including single $)
-	const inlineDoublePattern = /\$\$[^\n]+?\$\$/;
-	return inlineDoublePattern.test(text);
 }
