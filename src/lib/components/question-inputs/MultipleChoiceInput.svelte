@@ -15,7 +15,8 @@
 -->
 
 <script lang="ts">
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import { Check, X } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import type { ContentField } from '$lib/questions/types';
@@ -103,14 +104,16 @@
 
 				<!-- Choice content -->
 				<div class="choice-content">
-					{#if contentField.type === 'text'}
-						<MathDisplay text={contentField.content} />
-					{:else if contentField.type === 'image'}
-						<img
-							src={contentField.content}
-							alt={contentField.alt || `Choice ${getChoiceLetter(i)}`}
-							class="choice-image"
-						/>
+					{#if contentField}
+						{#if contentField.type === 'text'}
+							<MarkdownRenderer content={convertLegacyLatexToMarkdown(contentField.content)} />
+						{:else if contentField.type === 'image'}
+							<img
+								src={contentField.content}
+								alt={contentField.alt || `Choice ${getChoiceLetter(i)}`}
+								class="choice-image"
+							/>
+						{/if}
 					{/if}
 				</div>
 
