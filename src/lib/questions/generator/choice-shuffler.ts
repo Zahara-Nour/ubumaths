@@ -8,43 +8,43 @@
  * @module questions/generator/choice-shuffler
  */
 
-import type { ContentField } from '../types';
+import type { ResolvedMarkdown } from '$lib/shared/markdown';
 import { randomInt } from '$lib/utils/random';
 
 /**
  * Shuffled choice with original index
  */
 export interface ShuffledChoice {
-	content: ContentField[]; // Array to support multiple fields (text + image, etc.)
-	originalIndex: number;
+	content: ResolvedMarkdown; // Resolved markdown content for the choice
+	originalIndex: number; // Original position before shuffling
 }
 
 /**
  * Shuffle choices using Fisher-Yates algorithm
  *
- * @param choices - Array of choices with content and isCorrect flags
+ * @param choices - Array of choices with resolved markdown content and isCorrect flags
  * @param seed - Optional seed for reproducible shuffling
  * @returns Array of shuffled choices with original indices
  *
  * @example
  * ```typescript
  * const choices = [
- *   { content: [{ type: 'text', content: 'A' }], isCorrect: true },
- *   { content: [{ type: 'text', content: 'B' }], isCorrect: false },
- *   { content: [{ type: 'text', content: 'C' }], isCorrect: false }
+ *   { content: resolvedMarkdown('$$x = 5$$'), isCorrect: true },
+ *   { content: resolvedMarkdown('$$x = 3$$'), isCorrect: false },
+ *   { content: resolvedMarkdown('$$x = 7$$'), isCorrect: false }
  * ];
  *
  * const shuffled = shuffleChoices(choices);
  * // Returns:
  * // [
- * //   { content: [{ type: 'text', content: 'B' }], originalIndex: 1 },
- * //   { content: [{ type: 'text', content: 'A' }], originalIndex: 0 },
- * //   { content: [{ type: 'text', content: 'C' }], originalIndex: 2 }
+ * //   { content: '$$x = 3$$' as ResolvedMarkdown, originalIndex: 1 },
+ * //   { content: '$$x = 5$$' as ResolvedMarkdown, originalIndex: 0 },
+ * //   { content: '$$x = 7$$' as ResolvedMarkdown, originalIndex: 2 }
  * // ]
  * ```
  */
 export function shuffleChoices(
-	choices: { content: ContentField[]; isCorrect: boolean }[],
+	choices: { content: ResolvedMarkdown; isCorrect: boolean }[],
 	seed?: number
 ): ShuffledChoice[] {
 	// Create array with original indices

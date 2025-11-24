@@ -11,6 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from './instance-generator';
 import type { QuestionTemplate, ResolvedVariable } from '../types';
+import { templateMarkdown } from '$lib/shared/markdown';
 
 /**
  * Helper function to get numeric value from resolved variables array
@@ -30,12 +31,12 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+					statement: templateMarkdown('Calculate {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}'
+					answer: '{{eval:a + b}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -72,9 +73,9 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Value: {@:x}' }],
-					variables: [{ name: 'x', expression: '{#:1-100}' }],
-					answer: '{@:x}'
+					statement: templateMarkdown('Value: {{x}}'),
+					variables: [{ name: 'x', expression: '{{random:1-100}}' }],
+					answer: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -113,9 +114,9 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Value: {@:x}' }],
-					variables: [{ name: 'x', expression: '{#:1-1000}' }],
-					answer: '{@:x}'
+					statement: templateMarkdown('Value: {{x}}'),
+					variables: [{ name: 'x', expression: '{{random:1-1000}}' }],
+					answer: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -150,12 +151,12 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Factor: $$x^2 - {@:c}$$' }],
+					statement: templateMarkdown('Factor: $$x^2 - {{c}}$$'),
 					variables: [
-						{ name: 'a', expression: '{#:2-9}' },
-						{ name: 'c', expression: '{eval:{@:a}^2}' }
+						{ name: 'a', expression: '{{random:2-9}}' },
+						{ name: 'c', expression: '{{eval:a^2}}' }
 					],
-					answer: '(x-{@:a})(x+{@:a})'
+					answer: '(x-{{a}})(x+{{a}})'
 				}
 			],
 			transformType: 'factor',
@@ -191,13 +192,13 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Complete: {@:a} + {@:b} = ___' }],
+					statement: templateMarkdown('Complete: {{a}} + {{b}} = {{blank:1}}'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' }
 					],
-					answer: ['{eval:{@:a} + {@:b}}'],
-					blanks: [{ position: 0, expectedAnswer: '{eval:{@:a} + {@:b}}' }]
+					answer: ['{{eval:a + b}}'],
+					blanks: [{ position: 0, expectedAnswer: '{{eval:a + b}}' }]
 				}
 			],
 			grades: ['6'],
@@ -230,16 +231,16 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: '___ + ___ = {@:sum}' }],
+					statement: templateMarkdown('{{blank:1}} + {{blank:2}} = {{sum}}'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' },
-						{ name: 'sum', expression: '{eval:{@:a} + {@:b}}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' },
+						{ name: 'sum', expression: '{{eval:a + b}}' }
 					],
-					answer: ['{@:a}', '{@:b}'],
+					answer: ['{{a}}', '{{b}}'],
 					blanks: [
-						{ position: 0, expectedAnswer: '{@:a}' },
-						{ position: 1, expectedAnswer: '{@:b}' }
+						{ position: 0, expectedAnswer: '{{a}}' },
+						{ position: 1, expectedAnswer: '{{b}}' }
 					]
 				}
 			],
@@ -273,20 +274,20 @@ describe('generateInstance - Multiple Choice Questions', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'What is {@:a} + {@:b}?' }],
+					statement: templateMarkdown('What is {{a}} + {{b}}?'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' },
-						{ name: 'correct', expression: '{eval:{@:a} + {@:b}}' },
-						{ name: 'wrong1', expression: '{eval:{@:a} + {@:b} + 1}' },
-						{ name: 'wrong2', expression: '{eval:{@:a} + {@:b} - 1}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' },
+						{ name: 'correct', expression: '{{eval:a + b}}' },
+						{ name: 'wrong1', expression: '{{eval:a + b + 1}}' },
+						{ name: 'wrong2', expression: '{{eval:a + b - 1}}' }
 					],
 					answer: '0',
 					choices: [
-						{ content: { type: 'text', content: '{@:correct}' }, isCorrect: true },
-						{ content: { type: 'text', content: '{@:wrong1}' }, isCorrect: false },
-						{ content: { type: 'text', content: '{@:wrong2}' }, isCorrect: false },
-						{ content: { type: 'text', content: '{eval:{@:a} * {@:b}}' }, isCorrect: false }
+						{ content: templateMarkdown('{{correct}}'), isCorrect: true },
+						{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
+						{ content: templateMarkdown('{{wrong2}}'), isCorrect: false },
+						{ content: templateMarkdown('{{eval:a * b}}'), isCorrect: false }
 					]
 				}
 			],
@@ -317,7 +318,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 
 		// Verify the answer index points to a valid choice
 		expect(result.instance.shuffledChoices![shuffledCorrectIndex]).toBeDefined();
-		expect(result.instance.shuffledChoices![shuffledCorrectIndex].content[0].content).toBeDefined();
+		expect(result.instance.shuffledChoices![shuffledCorrectIndex].content).toBeDefined();
 	});
 
 	it('should generate multiple choice with multiple correct answers', () => {
@@ -328,14 +329,14 @@ describe('generateInstance - Multiple Choice Questions', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Select all prime numbers:' }],
+					statement: templateMarkdown('Select all prime numbers:'),
 					variables: [],
 					answer: ['0', '2'],
 					choices: [
-						{ content: { type: 'text', content: '2' }, isCorrect: true },
-						{ content: { type: 'text', content: '4' }, isCorrect: false },
-						{ content: { type: 'text', content: '7' }, isCorrect: true },
-						{ content: { type: 'text', content: '9' }, isCorrect: false }
+						{ content: templateMarkdown('2'), isCorrect: true },
+						{ content: templateMarkdown('4'), isCorrect: false },
+						{ content: templateMarkdown('7'), isCorrect: true },
+						{ content: templateMarkdown('9'), isCorrect: false }
 					]
 				}
 			],
@@ -359,7 +360,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 
 		const answerIndices = result.instance.answer as string[];
 		const correctChoices = answerIndices.map(
-			(i) => result.instance.shuffledChoices![parseInt(i)].content[0].content
+			(i) => result.instance.shuffledChoices![parseInt(i)].content
 		);
 
 		// Verify we have 2 correct answers (don't check which specific ones due to shuffling)
@@ -382,19 +383,16 @@ describe('generateInstance - Complex Variable Resolution', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [
-						{
-							type: 'text',
-							content: 'Calculer: $$\\frac{{@:num1}}{{@:den}} + \\frac{{@:num2}}{{@:den}}$$'
-						}
-					],
+					statement: templateMarkdown(
+						'Calculer: $$\\frac{{{num1}}}{{{{den}}}} + \\frac{{{num2}}}{{{{den}}}}$$'
+					),
 					variables: [
-						{ name: 'den', expression: '{#:2-9}' },
-						{ name: 'denMinus1', expression: '{eval:{@:den}-1}' },
-						{ name: 'num1', expression: '{#:1-{@:denMinus1}}' },
-						{ name: 'num2', expression: '{#:1-{@:denMinus1}}!{@:num1}' }
+						{ name: 'den', expression: '{{random:2-9}}' },
+						{ name: 'denMinus1', expression: '{{eval:den-1}}' },
+						{ name: 'num1', expression: '{{random:1-denMinus1}}' },
+						{ name: 'num2', expression: '{{random:1-denMinus1!num1}}' }
 					],
-					answer: '{eval:({@:num1}+{@:num2})/{@:den}}'
+					answer: '{{eval:(num1+num2)/den}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -429,15 +427,15 @@ describe('generateInstance - Complex Variable Resolution', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Simplifier: $$\\frac{{@:num}}{{@:den}}$$' }],
+					statement: templateMarkdown('Simplifier: $$\frac{{{{num}}}}{{{{den}}}}$$'),
 					variables: [
-						{ name: 'gcd', expression: '{#:2-5}' },
-						{ name: 'a', expression: '{#:2-9}' },
-						{ name: 'b', expression: '{#:2-9!{@:a}}' },
-						{ name: 'num', expression: '{eval:{@:a}*{@:gcd}}' },
-						{ name: 'den', expression: '{eval:{@:b}*{@:gcd}}' }
+						{ name: 'gcd', expression: '{{random:2-5}}' },
+						{ name: 'a', expression: '{{random:2-9}}' },
+						{ name: 'b', expression: '{{random:2-9!a}}' },
+						{ name: 'num', expression: '{{eval:a*gcd}}' },
+						{ name: 'den', expression: '{{eval:b*gcd}}' }
 					],
-					answer: '{eval:{@:num}/{@:den}}'
+					answer: '{{eval:num/den}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -475,12 +473,12 @@ describe('generateInstance - Content Resolution', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'What is {@:x} × {@:y}?' }],
+					statement: templateMarkdown('What is {{x}} × {{y}}?'),
 					variables: [
-						{ name: 'x', expression: '{#:2-9}' },
-						{ name: 'y', expression: '{#:2-9}' }
+						{ name: 'x', expression: '{{random:2-9}}' },
+						{ name: 'y', expression: '{{random:2-9}}' }
 					],
-					answer: '{eval:{@:x} * {@:y}}'
+					answer: '{{eval:x * y}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -500,7 +498,7 @@ describe('generateInstance - Content Resolution', () => {
 
 		const x = getVarValue(result.instance.resolvedVariables, 'x');
 		const y = getVarValue(result.instance.resolvedVariables, 'y');
-		expect(result.instance.statement[0].content).toBe(`What is ${x} × ${y}?`);
+		expect(result.instance.statement).toBe(`What is ${x} × ${y}?`);
 	});
 
 	it('should resolve LaTeX in statement', () => {
@@ -511,12 +509,12 @@ describe('generateInstance - Content Resolution', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: '$$\\frac{{@:a}}{{@:b}}$$' }],
+					statement: templateMarkdown('$$\frac{{{{a}}}}{{{{b}}}}$$'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' }
 					],
-					answer: '{eval:{@:a}/{@:b}}'
+					answer: '{{eval:a/b}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -536,7 +534,7 @@ describe('generateInstance - Content Resolution', () => {
 
 		const a = getVarValue(result.instance.resolvedVariables, 'a');
 		const b = getVarValue(result.instance.resolvedVariables, 'b');
-		expect(result.instance.statement[0].content).toBe(`$$\\frac{${a}}{${b}}$$`);
+		expect(result.instance.statement).toBe(`$$\\frac{${a}}{${b}}$$`);
 	});
 
 	it('should resolve correction field', () => {
@@ -547,15 +545,13 @@ describe('generateInstance - Content Resolution', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+					statement: templateMarkdown('Calculate {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' }
 					],
 					answer: '{eval:{@:a} + {@:b}}',
-					correction: [
-						{ type: 'text', content: 'The answer is {@:a} + {@:b} = {eval:{@:a} + {@:b}}' }
-					]
+					correction: templateMarkdown('The answer is {{a}} + {{b}} = {{eval:a + b}}')
 				}
 			],
 			precision: { type: 'none' },
@@ -576,7 +572,7 @@ describe('generateInstance - Content Resolution', () => {
 		const a = getVarValue(result.instance.resolvedVariables, 'a');
 		const b = getVarValue(result.instance.resolvedVariables, 'b');
 		const sum = a + b;
-		expect(result.instance.correction![0].content).toBe(`The answer is ${a} + ${b} = ${sum}`);
+		expect(result.instance.correction).toBe(`The answer is ${a} + ${b} = ${sum}`);
 	});
 });
 
@@ -589,12 +585,12 @@ describe('generateInstance - Precision Handling', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} / {@:b}' }],
+					statement: templateMarkdown('Calculate {{a}} / {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:2-9}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:2-9}}' }
 					],
-					answer: '{eval:{@:a}/{@:b}}'
+					answer: '{{eval:a/b}}'
 				}
 			],
 			precision: { type: 'decimal', digits: 2 },
@@ -623,8 +619,8 @@ describe('generateInstance - Precision Handling', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Estimate sqrt({@:a})' }],
-					variables: [{ name: 'a', expression: '{#:10-100}' }],
+					statement: templateMarkdown('Estimate sqrt({{a}})'),
+					variables: [{ name: 'a', expression: '{{random:10-100}}' }],
 					answer: '{eval:sqrt({@:a})}'
 				}
 			],
@@ -660,12 +656,12 @@ describe('generateInstance - Validation Errors', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Value: {@:a}' }],
+					statement: templateMarkdown('Value: {{a}}'),
 					variables: [
-						{ name: 'a', expression: '{@:b}' },
-						{ name: 'b', expression: '{@:a}' }
+						{ name: 'a', expression: '{{b}}' },
+						{ name: 'b', expression: '{{a}}' }
 					],
-					answer: '{@:a}'
+					answer: '{{a}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -695,13 +691,13 @@ describe('generateInstance - Validation Errors', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Value: {@:x}' }],
+					statement: templateMarkdown('Value: {{x}}'),
 					variables: [
 						{ name: 'min', expression: '10' },
 						{ name: 'max', expression: '5' },
 						{ name: 'x', expression: '{#:@:min}}-{@:max}' }
 					],
-					answer: '{@:x}'
+					answer: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -731,9 +727,9 @@ describe('generateInstance - Validation Errors', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Value' }],
-					variables: [{ name: 'a', expression: '{eval:invalid syntax}' }],
-					answer: '{@:a}'
+					statement: templateMarkdown('Value'),
+					variables: [{ name: 'a', expression: '{{eval:invalid syntax}}' }],
+					answer: '{{a}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -764,7 +760,7 @@ describe('generateInstance - Edge Cases', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'What is 2 + 2?' }],
+					statement: templateMarkdown('What is 2 + 2?'),
 					variables: [],
 					answer: '4'
 				}
@@ -796,7 +792,7 @@ describe('generateInstance - Edge Cases', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '42'
 				}
@@ -829,13 +825,11 @@ describe('generateInstance - Edge Cases', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [
-						{ type: 'text', content: 'Given {@:a}' },
-						{ type: 'image', content: 'https://example.com/image.png', alt: 'Example image' },
-						{ type: 'text', content: 'Calculate {@:a} × 2' }
-					],
-					variables: [{ name: 'a', expression: '{#:1-10}' }],
-					answer: '{eval:{@:a} * 2}'
+					statement: templateMarkdown(
+						'Given {{a}}\n\n![Example image](https://example.com/image.png)\n\nCalculate {{a}} × 2'
+					),
+					variables: [{ name: 'a', expression: '{{random:1-10}}' }],
+					answer: '{{eval:a * 2}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -853,11 +847,10 @@ describe('generateInstance - Edge Cases', () => {
 		expect(result.success).toBe(true);
 		if (!result.success) return;
 
-		expect(result.instance.statement).toHaveLength(3);
-
 		const a = getVarValue(result.instance.resolvedVariables, 'a');
-		expect(result.instance.statement[0].content).toBe(`Given ${a}`);
-		expect(result.instance.statement[2].content).toBe(`Calculate ${a} × 2`);
+		expect(result.instance.statement).toContain(`Given ${a}`);
+		expect(result.instance.statement).toContain('![Example image](https://example.com/image.png)');
+		expect(result.instance.statement).toContain(`Calculate ${a} × 2`);
 	});
 });
 
@@ -870,14 +863,14 @@ describe('generateInstance - Real-World Templates', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Résoudre: ${@:a}x^2 + {@:b}x + {@:c} = 0$' }],
+					statement: templateMarkdown('Résoudre: ${{a}}x^2 + {{b}}x + {{c}} = 0$'),
 					variables: [
-						{ name: 'a', expression: '{#:1-5}' },
-						{ name: 'b', expression: '{#:-10-10}' },
-						{ name: 'c', expression: '{#:-10-10}' },
-						{ name: 'disc', expression: '{eval:{@:b}^2 - 4*{@:a}*{@:c}}' }
+						{ name: 'a', expression: '{{random:1-5}}' },
+						{ name: 'b', expression: '{{random:-10-10}}' },
+						{ name: 'c', expression: '{{random:-10-10}}' },
+						{ name: 'disc', expression: '{{eval:b^2 - 4*a*c}}' }
 					],
-					answer: 'x = \\frac{-{@:b} \\pm \\sqrt{{@:disc}}}{2{@:a}'
+					answer: 'x = \\frac{-{{b}} \\pm \\sqrt{{{disc}}}}{2{{a}}'
 				}
 			],
 			transformType: 'solve',
@@ -911,16 +904,12 @@ describe('generateInstance - Real-World Templates', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [
-						{
-							type: 'text',
-							content:
-								'Un article coûte {@:price}€. Il y a {@:discount}% de réduction. Quel est le prix final?'
-						}
-					],
+					statement: templateMarkdown(
+						'Un article coûte {{price}}€. Il y a {{discount}}% de réduction. Quel est le prix final?'
+					),
 					variables: [
-						{ name: 'price', expression: '{#:50-200}' },
-						{ name: 'discount', expression: '{#:10-50}' },
+						{ name: 'price', expression: '{{random:50-200}}' },
+						{ name: 'discount', expression: '{{random:10-50}}' },
 						{ name: 'reduction', expression: '{eval:{@:price} * {@:discount} / 100}' }
 					],
 					answer: '{eval:{@:price} - {@:reduction}'
@@ -958,17 +947,17 @@ describe('generateInstance - Variation Selection', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Addition: {@:a} + {@:b}' }],
+					statement: templateMarkdown('Addition: {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' }
 					],
 					answer: '{eval:{@:a} + {@:b}}'
 				},
 				{
-					statement: [{ type: 'text', content: 'Subtraction: {@:a} - {@:b}' }],
+					statement: templateMarkdown('Subtraction: {{a}} - {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{#:10-20}' },
+						{ name: 'a', expression: '{{random:10-20}}' },
 						{ name: 'b', expression: '{#:1-{@:a}}' }
 					],
 					answer: '{eval:{@:a} - {@:b}'
@@ -990,7 +979,7 @@ describe('generateInstance - Variation Selection', () => {
 		if (!result.success) return;
 
 		expect(result.instance.selectedVariationIndex).toBe(0);
-		expect(result.instance.statement[0].content).toContain('Addition');
+		expect(result.instance.statement).toContain('Addition');
 	});
 
 	it('should select second variation with seed 1', () => {
@@ -1001,17 +990,17 @@ describe('generateInstance - Variation Selection', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Addition: {@:a} + {@:b}' }],
+					statement: templateMarkdown('Addition: {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' }
 					],
 					answer: '{eval:{@:a} + {@:b}}'
 				},
 				{
-					statement: [{ type: 'text', content: 'Subtraction: {@:a} - {@:b}' }],
+					statement: templateMarkdown('Subtraction: {{a}} - {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{#:10-20}' },
+						{ name: 'a', expression: '{{random:10-20}}' },
 						{ name: 'b', expression: '{#:1-{@:a}}' }
 					],
 					answer: '{eval:{@:a} - {@:b}'
@@ -1033,7 +1022,7 @@ describe('generateInstance - Variation Selection', () => {
 		if (!result.success) return;
 
 		expect(result.instance.selectedVariationIndex).toBe(1);
-		expect(result.instance.statement[0].content).toContain('Subtraction');
+		expect(result.instance.statement).toContain('Subtraction');
 	});
 
 	it('should handle variation selection with modulo (4 variations)', () => {
@@ -1044,22 +1033,22 @@ describe('generateInstance - Variation Selection', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Op 1' }],
+					statement: templateMarkdown('Op 1'),
 					variables: [],
 					answer: '1'
 				},
 				{
-					statement: [{ type: 'text', content: 'Op 2' }],
+					statement: templateMarkdown('Op 2'),
 					variables: [],
 					answer: '2'
 				},
 				{
-					statement: [{ type: 'text', content: 'Op 3' }],
+					statement: templateMarkdown('Op 3'),
 					variables: [],
 					answer: '3'
 				},
 				{
-					statement: [{ type: 'text', content: 'Op 4' }],
+					statement: templateMarkdown('Op 4'),
 					variables: [],
 					answer: '4'
 				}
@@ -1112,12 +1101,12 @@ describe('generateInstance - Variation Selection', () => {
 			status: 'draft' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Valid variation' }],
+					statement: templateMarkdown('Valid variation'),
 					variables: [],
 					answer: '5'
 				},
 				{
-					statement: [], // Invalid - empty statement
+					statement: templateMarkdown(''), // Invalid - empty statement
 					variables: [],
 					answer: '10'
 				}
