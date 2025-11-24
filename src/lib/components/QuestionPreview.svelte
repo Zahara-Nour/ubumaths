@@ -16,7 +16,7 @@
 -->
 
 <script lang="ts">
-	import type { QuestionTemplate, QuestionInstance, ContentField } from '$lib/questions/types';
+	import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -25,6 +25,7 @@
 	import { AlertCircle, RefreshCw, Check, X } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
 
 	interface Props {
 		template: Omit<QuestionTemplate, 'id' | 'created_at' | 'updated_at' | 'created_by'>;
@@ -119,19 +120,6 @@
 			mathLiveLoaded = true;
 		}
 	});
-
-	// Render content fields
-	function renderContent(fields: ContentField[]): string {
-		return fields
-			.map((field) => {
-				if (field.type === 'text') {
-					return field.content;
-				} else {
-					return `[Image: ${field.content}]`;
-				}
-			})
-			.join(' ');
-	}
 
 	// Format variable value for display
 	function formatVariableValue(value: unknown): string {
@@ -310,8 +298,8 @@
 						<Badge variant="outline">Énoncé</Badge>
 						<Badge>{template.type}</Badge>
 					</div>
-					<div class="rounded-lg border bg-card p-4 font-serif text-lg" use:renderLatex>
-						{renderContent(instance.statement)}
+					<div class="rounded-lg border bg-card p-4" use:renderLatex>
+						<MarkdownRenderer content={instance.statement} />
 					</div>
 				</div>
 
@@ -381,7 +369,7 @@
 					<div class="space-y-2">
 						<Badge variant="outline">Correction</Badge>
 						<div class="rounded-lg border bg-muted/50 p-4 text-sm">
-							{renderContent(instance.correction)}
+							<MarkdownRenderer content={instance.correction} />
 						</div>
 					</div>
 				{/if}

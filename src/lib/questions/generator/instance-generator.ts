@@ -13,17 +13,12 @@
  * @module questions/generator/instance-generator
  */
 
-import type { QuestionTemplate, QuestionInstance, GenerationResult, ContentField } from '../types';
+import type { QuestionTemplate, QuestionInstance, GenerationResult } from '../types';
 import type { ResolvedMarkdown } from '$lib/shared/markdown';
 import { validateTemplate } from '../validators/template-validator';
 import { detectCircularDependencies } from '$lib/shared/parameterization/validator/circular-dependency';
 import { resolveVariables } from './variable-resolver';
-import {
-	resolveMarkdownContent,
-	resolveAnswer,
-	resolveExpression,
-	contentFieldsToTemplateMarkdown
-} from './content-resolver';
+import { resolveMarkdownContent, resolveAnswer, resolveExpression } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
 
 /**
@@ -87,43 +82,24 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// 4. Resolve variables in declaration order
 		const resolvedVariables = resolveVariables(selectedVariation.variables || [], seed);
 
-		// 5. Handle statement - check if it's old format (ContentField[]) or new format (TemplateMarkdown)
-		let resolvedStatement: ResolvedMarkdown;
-		if (Array.isArray(selectedVariation.statement)) {
-			// Old format: ContentField[] - convert to TemplateMarkdown first
-			const templateMd = contentFieldsToTemplateMarkdown(
-				selectedVariation.statement as ContentField[]
-			);
-			resolvedStatement = resolveMarkdownContent(templateMd, resolvedVariables, seed);
-		} else {
-			// New format: TemplateMarkdown - resolve directly
-			resolvedStatement = resolveMarkdownContent(
-				selectedVariation.statement,
-				resolvedVariables,
-				seed
-			);
-		}
+		// 5. Resolve statement markdown
+		const resolvedStatement: ResolvedMarkdown = resolveMarkdownContent(
+			selectedVariation.statement,
+			resolvedVariables,
+			seed
+		);
 
 		// Resolve answer (stays the same - it's a plain string)
 		const resolvedAnswer = resolveAnswer(selectedVariation.answer, resolvedVariables, seed);
 
-		// Handle correction - check format
+		// Resolve correction if present
 		let resolvedCorrection: ResolvedMarkdown | undefined;
 		if (selectedVariation.correction) {
-			if (Array.isArray(selectedVariation.correction)) {
-				// Old format: ContentField[]
-				const correctionTemplateMd = contentFieldsToTemplateMarkdown(
-					selectedVariation.correction as ContentField[]
-				);
-				resolvedCorrection = resolveMarkdownContent(correctionTemplateMd, resolvedVariables, seed);
-			} else {
-				// New format: TemplateMarkdown
-				resolvedCorrection = resolveMarkdownContent(
-					selectedVariation.correction,
-					resolvedVariables,
-					seed
-				);
-			}
+			resolvedCorrection = resolveMarkdownContent(
+				selectedVariation.correction,
+				resolvedVariables,
+				seed
+			);
 		}
 
 		// 6. Resolve type-specific fields from selected variation
@@ -132,19 +108,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let resolvedBlanks;
 
 		if (template.type === 'multiple_choice' && selectedVariation.choices) {
-			// Resolve choice content - check format
+			// Resolve choice content
 			resolvedChoices = selectedVariation.choices.map((choice) => {
-				let resolvedContent: ResolvedMarkdown;
-				if (Array.isArray(choice.content)) {
-					// Old format: ContentField[] (not wrapped in array)
-					const choiceTemplateMd = contentFieldsToTemplateMarkdown(
-						choice.content as ContentField[]
-					);
-					resolvedContent = resolveMarkdownContent(choiceTemplateMd, resolvedVariables, seed);
-				} else {
-					// New format: TemplateMarkdown
-					resolvedContent = resolveMarkdownContent(choice.content, resolvedVariables, seed);
-				}
+				const resolvedContent: ResolvedMarkdown = resolveMarkdownContent(
+					choice.content,
+					resolvedVariables,
+					seed
+				);
 				return {
 					content: resolvedContent,
 					isCorrect: choice.isCorrect

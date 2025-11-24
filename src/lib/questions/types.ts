@@ -78,33 +78,6 @@ export type QuestionType =
 export type AlgebraicTransformType = 'factor' | 'expand' | 'simplify' | 'solve';
 
 // ============================================================================
-// CONTENT FIELDS
-// ============================================================================
-
-/**
- * Content field: text with LaTeX or image
- *
- * @deprecated Use TemplateMarkdown for unresolved content and ResolvedMarkdown for resolved content.
- * This type is kept for backward compatibility during the migration period.
- *
- * Text content can contain:
- * - LaTeX expressions: $$expression$$
- * - Variables: {{varName}}
- * - Random numbers: {{random:1-10}}
- * - Evaluations: {{eval:expression}}
- */
-export type ContentField =
-	| {
-			type: 'text';
-			content: string; // May contain LaTeX, variables, random, eval
-	  }
-	| {
-			type: 'image';
-			content: string; // Image URL (may contain variables like {{imageId}})
-			alt?: string; // Alt text for accessibility
-	  };
-
-// ============================================================================
 // PRECISION TYPES
 // ============================================================================
 

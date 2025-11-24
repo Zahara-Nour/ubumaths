@@ -10,52 +10,12 @@
  * @module questions/generator/content-resolver
  */
 
-import type { ContentField, ResolvedVariable } from '../types';
+import type { ResolvedVariable } from '../types';
 import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/shared/markdown';
-import { resolvedMarkdown, templateMarkdown } from '$lib/shared/markdown';
+import { resolvedMarkdown } from '$lib/shared/markdown';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 import { convertToMarkdownSyntax } from './syntax-adapter';
-
-// ============================================================================
-// INTERNAL HELPERS (formerly in content-to-markdown.ts)
-// ============================================================================
-
-/**
- * Convert a single ContentField to markdown string
- *
- * @param field - The content field to convert
- * @returns Markdown string representation
- */
-function contentFieldToMarkdown(field: ContentField): string {
-	if (field.type === 'text') {
-		return field.content;
-	} else if (field.type === 'image') {
-		const alt = field.alt || '';
-		return `![${alt}](${field.content})`;
-	}
-	return '';
-}
-
-/**
- * Convert an array of ContentFields to a unified markdown string
- *
- * Multiple fields are joined with double newlines (paragraph breaks).
- * Empty fields are filtered out.
- *
- * @param fields - Array of content fields to convert
- * @returns Unified markdown string
- */
-function contentFieldsToMarkdown(fields: ContentField[]): string {
-	if (!fields || fields.length === 0) {
-		return '';
-	}
-
-	return fields
-		.map(contentFieldToMarkdown)
-		.filter((s) => s.length > 0)
-		.join('\n\n');
-}
 
 /**
  * Resolve markdown content by replacing all placeholders with values
@@ -80,69 +40,6 @@ export function resolveMarkdownContent(
 	resolvedContent = resolveColorReferences(resolvedContent, seed);
 
 	return resolvedMarkdown(resolvedContent);
-}
-
-/**
- * Backward compatibility: resolve ContentField arrays
- *
- * @deprecated Use resolveMarkdownContent with TemplateMarkdown instead
- * @param fields - Array of content fields (old format)
- * @param resolvedVariables - Already resolved variables
- * @param seed - Optional seed for random generation
- * @returns Array of resolved content fields
- */
-export function resolveContentFields(
-	fields: ContentField[],
-	resolvedVariables: ResolvedVariable[],
-	seed?: number
-): ContentField[] {
-	return fields.map((field) => resolveContentField(field, resolvedVariables, seed));
-}
-
-/**
- * Backward compatibility: resolve a single content field
- *
- * @deprecated Internal use only for backward compatibility
- * @param field - Content field to resolve
- * @param resolvedVariables - Already resolved variables
- * @param seed - Optional seed for random generation
- * @returns Resolved content field
- */
-export function resolveContentField(
-	field: ContentField,
-	resolvedVariables: ResolvedVariable[],
-	seed?: number
-): ContentField {
-	// Convert Questions syntax to Markdown before resolution
-	const markdownContent = convertToMarkdownSyntax(field.content);
-
-	// Resolve content for both text and image fields (image URLs may contain variables)
-	let resolvedContent = resolveVariableExpression(markdownContent, resolvedVariables, seed);
-
-	// Also resolve color references (after variable resolution)
-	resolvedContent = resolveColorReferences(resolvedContent, seed);
-
-	return {
-		type: field.type,
-		content: resolvedContent
-	};
-}
-
-/**
- * Convert ContentField array to TemplateMarkdown for migration
- *
- * Helps with migration from old ContentField[] format to new TemplateMarkdown format
- *
- * @param fields - ContentField array (old format)
- * @returns TemplateMarkdown string
- */
-export function contentFieldsToTemplateMarkdown(fields: ContentField[]): TemplateMarkdown {
-	if (!fields || fields.length === 0) {
-		return templateMarkdown('');
-	}
-
-	const markdown = contentFieldsToMarkdown(fields);
-	return templateMarkdown(markdown);
 }
 
 /**

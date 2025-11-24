@@ -37,12 +37,7 @@ export {
 	resolveNumberOrVariable
 } from './generator/random-generator';
 
-export {
-	resolveContentField,
-	resolveContentFields,
-	resolveExpression,
-	resolveAnswer
-} from './generator/content-resolver';
+export { resolveExpression, resolveAnswer } from './generator/content-resolver';
 
 export { shuffleChoices, type ShuffledChoice } from './generator/choice-shuffler';
 

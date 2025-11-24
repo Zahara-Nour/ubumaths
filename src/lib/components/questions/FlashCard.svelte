@@ -37,26 +37,6 @@
 	import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 	import MultipleChoiceInput from '$lib/components/question-inputs/MultipleChoiceInput.svelte';
 
-	// Helper function: convert ContentField[] to markdown string
-	function contentFieldsToMarkdown(fields: typeof instance.statement): string {
-		if (!fields || fields.length === 0) {
-			return '';
-		}
-
-		return fields
-			.map((field) => {
-				if (field.type === 'text') {
-					return field.content;
-				} else if (field.type === 'image') {
-					const alt = field.alt || '';
-					return `![${alt}](${field.content})`;
-				}
-				return '';
-			})
-			.filter((s) => s.length > 0)
-			.join('\n\n');
-	}
-
 	// Props
 	interface Props {
 		interactive?: boolean;
@@ -134,14 +114,9 @@
 
 	const isInputDisabled = $derived(!interactive || isSubmitted || hasReachedMaxAttempts);
 
-	// Markdown content (with fallback for backward compatibility)
-	const statementMarkdown = $derived(
-		instance.statement_md || contentFieldsToMarkdown(instance.statement)
-	);
-	const correctionMarkdown = $derived(
-		instance.correction_md ||
-			(instance.correction ? contentFieldsToMarkdown(instance.correction) : '')
-	);
+	// Markdown content - instance.statement and instance.correction are now ResolvedMarkdown (strings)
+	const statementMarkdown = $derived(instance.statement);
+	const correctionMarkdown = $derived(instance.correction || '');
 
 	// ============================================================================
 	// INITIALIZATION

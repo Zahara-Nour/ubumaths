@@ -11,8 +11,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { QuestionInstance } from '$lib/questions/types';
-import type { ContentField } from '$lib/questions/types';
 import type { CardState } from '$lib/srs/types';
+import type { TemplateMarkdown } from '$lib/shared/markdown';
 import { generateSRSInstance } from '$lib/srs/generator';
 import { dueCardsQuerySchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
@@ -43,8 +43,8 @@ type ReviewCard =
 	| {
 			cardId: string;
 			cardType: 'custom';
-			frontContent: ContentField[];
-			backContent: ContentField[];
+			frontContent: TemplateMarkdown;
+			backContent: TemplateMarkdown;
 			stats: ReviewCardStats;
 	  };
 

@@ -32,7 +32,6 @@
 
 <script lang="ts">
 	import type { QuestionInstance } from '$lib/questions/types';
-	import type { ContentField } from '$lib/questions/types';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
@@ -49,26 +48,6 @@
 		FileText
 	} from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-
-	// Helper function: convert ContentField[] to markdown string
-	function contentFieldsToMarkdown(fields: ContentField[]): string {
-		if (!fields || fields.length === 0) {
-			return '';
-		}
-
-		return fields
-			.map((field) => {
-				if (field.type === 'text') {
-					return field.content;
-				} else if (field.type === 'image') {
-					const alt = field.alt || '';
-					return `![${alt}](${field.content})`;
-				}
-				return '';
-			})
-			.filter((s) => s.length > 0)
-			.join('\n\n');
-	}
 
 	// ============================================================================
 	// PROPS
@@ -140,16 +119,8 @@
 	// DERIVED STATE
 	// ============================================================================
 
-	// Helper function: extract images from ContentField array
-	function extractImages(fields: typeof instance.statement) {
-		return fields.filter((field) => field.type === 'image');
-	}
-
-	// Statement markdown (with fallback for backward compatibility)
-	const statementMarkdown = $derived(
-		instance.statement_md || contentFieldsToMarkdown(instance.statement)
-	);
-	const statementImages = $derived(extractImages(instance.statement));
+	// Statement markdown - instance.statement is now ResolvedMarkdown (string)
+	const statementMarkdown = $derived(instance.statement);
 	const needsTruncation = $derived(
 		truncateStatement && !isStatementExpanded && statementMarkdown.length > statementMaxLength
 	);
@@ -157,13 +128,11 @@
 		needsTruncation ? statementMarkdown.substring(0, statementMaxLength) + '...' : statementMarkdown
 	);
 
-	// Correction markdown
+	// Correction markdown - instance.correction is now ResolvedMarkdown (string) or undefined
 	const hasCorrection = $derived(
 		instance.correction && instance.correction.length > 0 && showCorrection
 	);
-	const correctionMarkdown = $derived(
-		instance.correction_md || (hasCorrection ? contentFieldsToMarkdown(instance.correction!) : '')
-	);
+	const correctionMarkdown = $derived(instance.correction || '');
 
 	// Variables
 	const hasVariables = $derived(
@@ -463,7 +432,7 @@
 								{String.fromCharCode(65 + i)}
 							</Badge>
 							<div class="flex-1">
-								<MarkdownRenderer content={contentFieldsToMarkdown(choice.content)} />
+								<MarkdownRenderer content={choice.content} />
 							</div>
 							{#if isCorrect}
 								<CheckCircle class="h-5 w-5 flex-shrink-0 text-green-600" />
