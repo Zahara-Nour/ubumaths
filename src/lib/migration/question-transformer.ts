@@ -32,11 +32,13 @@ import type {
 	QuestionType,
 	QuestionVariation,
 	QuestionVariable,
-	ContentField,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	PrecisionType,
 	AlgebraicTransformType
 } from '$lib/questions/types';
+
+import type { TemplateMarkdown } from '$lib/shared/markdown';
+import { templateMarkdown } from '$lib/shared/markdown';
 
 import {
 	hasChoices,
@@ -233,14 +235,14 @@ function convertVariables(
 // ============================================================================
 
 /**
- * Convert statement and expression to ContentField array
+ * Convert statement and expression to TemplateMarkdown string
  */
 function convertStatement(
 	enonce: string | undefined,
 	expression: string | undefined,
 	warnings: string[]
-): ContentField[] {
-	const fields: ContentField[] = [];
+): TemplateMarkdown {
+	const parts: string[] = [];
 
 	// Process enonce (statement text)
 	if (enonce) {
@@ -248,12 +250,12 @@ function convertStatement(
 
 		if (!conversionResult.success) {
 			warnings.push(`Failed to convert statement: ${conversionResult.errors?.join(', ')}`);
-			fields.push({ type: 'text', content: enonce });
+			parts.push(enonce);
 		} else {
 			if (conversionResult.warnings) {
 				warnings.push(...conversionResult.warnings.map((w) => `Statement: ${w}`));
 			}
-			fields.push({ type: 'text', content: conversionResult.converted || enonce });
+			parts.push(conversionResult.converted || enonce);
 		}
 	}
 
@@ -265,7 +267,7 @@ function convertStatement(
 			warnings.push(`Failed to convert expression: ${conversionResult.errors?.join(', ')}`);
 			// Wrap expression in LaTeX delimiters if not already
 			const content = expression.includes('$$') ? expression : `$$${expression}$$`;
-			fields.push({ type: 'text', content });
+			parts.push(content);
 		} else {
 			if (conversionResult.warnings) {
 				warnings.push(...conversionResult.warnings.map((w) => `Expression: ${w}`));
@@ -273,17 +275,18 @@ function convertStatement(
 			const converted = conversionResult.converted || expression;
 			// Wrap in LaTeX delimiters if not already
 			const content = converted.includes('$$') ? converted : `$$${converted}$$`;
-			fields.push({ type: 'text', content });
+			parts.push(content);
 		}
 	}
 
 	// Fallback if nothing was provided
-	if (fields.length === 0) {
-		fields.push({ type: 'text', content: 'Question content missing' });
+	if (parts.length === 0) {
 		warnings.push('No statement or expression provided');
+		return templateMarkdown('Question content missing');
 	}
 
-	return fields;
+	// Join parts with double newline (paragraph break)
+	return templateMarkdown(parts.join('\n\n'));
 }
 
 // ============================================================================
@@ -334,7 +337,6 @@ function convertAnswer(
 function convertChoices(
 	choices: Choice[] | undefined,
 	correctIndices: (string | number)[] | undefined,
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	warnings: string[]
 ): QuestionVariation['choices'] {
 	if (!choices || choices.length === 0) {
@@ -346,14 +348,23 @@ function convertChoices(
 	);
 
 	return choices.map((choice, index) => {
-		const contentField: ContentField = choice.text
-			? { type: 'text', content: convertTinyCASToNew(choice.text).converted || choice.text }
-			: choice.image
-				? { type: 'image', content: choice.image, alt: `Choice ${index + 1}` }
-				: { type: 'text', content: `Choice ${index + 1}` };
+		let content: TemplateMarkdown;
+
+		if (choice.text) {
+			const conversionResult = convertTinyCASToNew(choice.text);
+			if (!conversionResult.success && conversionResult.errors) {
+				warnings.push(`Choice ${index}: ${conversionResult.errors.join(', ')}`);
+			}
+			content = templateMarkdown(conversionResult.converted || choice.text);
+		} else if (choice.image) {
+			// Convert image to markdown image syntax
+			content = templateMarkdown(`![Choice ${index + 1}](${choice.image})`);
+		} else {
+			content = templateMarkdown(`Choice ${index + 1}`);
+		}
 
 		return {
-			content: contentField,
+			content,
 			isCorrect: correctSet.has(index)
 		};
 	});
@@ -364,28 +375,31 @@ function convertChoices(
 // ============================================================================
 
 /**
- * Convert correction details to ContentField array
+ * Convert correction details to TemplateMarkdown string
  */
 function convertCorrection(
 	correctionDetails: CorrectionDetail[] | undefined,
 	warnings: string[]
-): ContentField[] | undefined {
+): TemplateMarkdown | undefined {
 	if (!correctionDetails || correctionDetails.length === 0) {
 		return undefined;
 	}
 
-	return correctionDetails.map((detail) => {
+	const parts: string[] = [];
+
+	for (const detail of correctionDetails) {
 		const conversionResult = convertTinyCASToNew(detail.text);
 
 		if (!conversionResult.success) {
 			warnings.push(`Failed to convert correction: ${conversionResult.errors?.join(', ')}`);
+			parts.push(detail.text);
+		} else {
+			parts.push(conversionResult.converted || detail.text);
 		}
+	}
 
-		return {
-			type: 'text' as const,
-			content: conversionResult.converted || detail.text
-		};
-	});
+	// Join correction parts with double newline
+	return templateMarkdown(parts.join('\n\n'));
 }
 
 // ============================================================================

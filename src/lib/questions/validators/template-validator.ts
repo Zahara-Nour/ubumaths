@@ -118,18 +118,11 @@ function validateVariation(
 	const errors: string[] = [];
 	const prefix = `Variation ${index + 1}:`;
 
-	// Validate statement
-	if (!variation.statement || variation.statement.length === 0) {
+	// Validate statement (now a TemplateMarkdown string)
+	if (typeof variation.statement !== 'string') {
 		errors.push(`${prefix} Missing required field: statement`);
-	} else {
-		for (const field of variation.statement) {
-			if (field.type === 'text' && !field.content) {
-				errors.push(`${prefix} Text content field cannot be empty`);
-			}
-			if (field.type === 'image' && !field.content) {
-				errors.push(`${prefix} Image field requires content (URL)`);
-			}
-		}
+	} else if (variation.statement.trim().length === 0) {
+		errors.push(`${prefix} Statement cannot be empty`);
 	}
 
 	// Validate answer
@@ -137,15 +130,12 @@ function validateVariation(
 		errors.push(`${prefix} Missing required field: answer`);
 	}
 
-	// Validate correction fields (if present)
-	if (variation.correction && variation.correction.length > 0) {
-		for (const field of variation.correction) {
-			if (field.type === 'text' && !field.content) {
-				errors.push(`${prefix} Correction text field cannot be empty`);
-			}
-			if (field.type === 'image' && !field.content) {
-				errors.push(`${prefix} Correction image field requires content (URL)`);
-			}
+	// Validate correction (if present, now a TemplateMarkdown string)
+	if (variation.correction !== undefined) {
+		if (typeof variation.correction !== 'string') {
+			errors.push(`${prefix} Correction must be a string`);
+		} else if (variation.correction.trim().length === 0) {
+			errors.push(`${prefix} Correction cannot be empty if provided`);
 		}
 	}
 
