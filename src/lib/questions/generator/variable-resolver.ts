@@ -23,7 +23,6 @@ import {
 	resolveVariables as sharedResolveVariables,
 	resolveExpression as sharedResolveExpression
 } from '$lib/shared/parameterization';
-import { convertToMarkdownSyntax } from './syntax-adapter';
 
 /**
  * Resolve a single variable expression
@@ -73,9 +72,9 @@ export function resolveVariableExpression(
  * @example
  * ```typescript
  * const variables = [
- *   { name: 'a', expression: '{#:1-10}' },
- *   { name: 'b', expression: '{@:a} + 5' },
- *   { name: 'sum', expression: '{eval:{@:a} + {@:b}}' }
+ *   { name: 'a', expression: '{{random:1-10}}' },
+ *   { name: 'b', expression: '{{a}} + 5' },
+ *   { name: 'sum', expression: '{{eval:{{a}} + {{b}}}}' }
  * ];
  *
  * const resolved = resolveVariables(variables, 42);
@@ -94,14 +93,9 @@ export function resolveVariables(
 		return [];
 	}
 
-	// Convert all variable expressions to Markdown syntax
-	const convertedVariables = variables.map((v) => ({
-		...v,
-		expression: convertToMarkdownSyntax(v.expression)
-	}));
-
-	// Use shared library resolver with converted variables
-	const result = sharedResolveVariables(convertedVariables, seed);
+	// Database now stores pure markdown syntax ({{...}}) directly
+	// No conversion needed anymore - use variables as-is
+	const result = sharedResolveVariables(variables, seed);
 
 	if (result === null) {
 		throw new Error('Failed to resolve variables');

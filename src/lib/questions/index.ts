@@ -41,14 +41,6 @@ export { resolveExpression, resolveAnswer } from './generator/content-resolver';
 
 export { shuffleChoices, type ShuffledChoice } from './generator/choice-shuffler';
 
-// Syntax Adapter (for converting between database and library syntax)
-export {
-	convertToMarkdownSyntax,
-	convertToQuestionsSyntax,
-	detectSyntax,
-	normalizeToMarkdown
-} from './generator/syntax-adapter';
-
 // Validators
 export { validateTemplate, isValidTemplate } from './validators/template-validator';
 

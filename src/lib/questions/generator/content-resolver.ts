@@ -15,7 +15,6 @@ import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/shared/markdown';
 import { resolvedMarkdown } from '$lib/shared/markdown';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
-import { convertToMarkdownSyntax } from './syntax-adapter';
 
 /**
  * Resolve markdown content by replacing all placeholders with values
@@ -30,11 +29,11 @@ export function resolveMarkdownContent(
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
 ): ResolvedMarkdown {
-	// Convert Questions syntax to Markdown before resolution if needed
-	let resolvedContent = convertToMarkdownSyntax(markdown);
+	// Database now stores pure markdown syntax ({{...}}) directly
+	// No conversion needed anymore - use markdown as-is
 
 	// Resolve variables, random expressions, and eval expressions
-	resolvedContent = resolveVariableExpression(resolvedContent, resolvedVariables, seed);
+	let resolvedContent = resolveVariableExpression(markdown, resolvedVariables, seed);
 
 	// Also resolve color references (after variable resolution)
 	resolvedContent = resolveColorReferences(resolvedContent, seed);
@@ -55,10 +54,9 @@ export function resolveExpression(
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
 ): string {
-	// Convert Questions syntax to Markdown before resolution
-	const markdownExpression = convertToMarkdownSyntax(expression);
-
-	let resolved = resolveVariableExpression(markdownExpression, resolvedVariables, seed);
+	// Database now stores pure markdown syntax ({{...}}) directly
+	// No conversion needed anymore
+	let resolved = resolveVariableExpression(expression, resolvedVariables, seed);
 	// Also resolve color references
 	resolved = resolveColorReferences(resolved, seed);
 	return resolved;
