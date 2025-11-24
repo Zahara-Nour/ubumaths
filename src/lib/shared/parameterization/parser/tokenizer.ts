@@ -115,7 +115,12 @@ function extractMarkdownBracedToken(
 	// Skip special markers that look like parameterization but aren't
 	// {{blank:N}} is a fill-in-blank marker, not a parameterization token
 	// {{digits:...}} is handled separately
-	if (innerContent.startsWith('blank:') || innerContent.startsWith('digits:')) {
+	// {{color:...}} is a color reference marker, resolved by color-parser
+	if (
+		innerContent.startsWith('blank:') ||
+		innerContent.startsWith('digits:') ||
+		innerContent.startsWith('color:')
+	) {
 		return { token: null, endIndex: i };
 	}
 
