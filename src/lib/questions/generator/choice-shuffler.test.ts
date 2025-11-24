@@ -3,25 +3,26 @@
  * ======================
  *
  * Tests for Fisher-Yates shuffling algorithm with seed support.
- * Updated to match current API: shuffleChoices(choices[], seed?) => ShuffledChoice[]
+ * Updated to work with ResolvedMarkdown instead of ContentField[]
  */
 
 import { describe, it, expect } from 'vitest';
 import { shuffleChoices, type ShuffledChoice } from './choice-shuffler';
-import type { ContentField } from '../types';
+import type { ResolvedMarkdown } from '$lib/shared/markdown';
+import { resolvedMarkdown } from '$lib/shared/markdown';
 
-// Helper to create a text content field array (choices now use ContentField[] not ContentField)
-function textField(content: string): ContentField[] {
-	return [{ type: 'text', content }];
+// Helper to create resolved markdown content
+function markdownChoice(content: string): ResolvedMarkdown {
+	return resolvedMarkdown(content);
 }
 
 describe('shuffleChoices - Basic Functionality', () => {
 	it('should shuffle array', () => {
 		const choices = [
-			{ content: textField('A'), isCorrect: true },
-			{ content: textField('B'), isCorrect: false },
-			{ content: textField('C'), isCorrect: false },
-			{ content: textField('D'), isCorrect: false }
+			{ content: markdownChoice('A'), isCorrect: true },
+			{ content: markdownChoice('B'), isCorrect: false },
+			{ content: markdownChoice('C'), isCorrect: false },
+			{ content: markdownChoice('D'), isCorrect: false }
 		];
 
 		const result = shuffleChoices(choices);
@@ -34,24 +35,24 @@ describe('shuffleChoices - Basic Functionality', () => {
 
 	it('should preserve all original elements', () => {
 		const choices = [
-			{ content: textField('A'), isCorrect: false },
-			{ content: textField('B'), isCorrect: false },
-			{ content: textField('C'), isCorrect: true },
-			{ content: textField('D'), isCorrect: false },
-			{ content: textField('E'), isCorrect: false }
+			{ content: markdownChoice('A'), isCorrect: false },
+			{ content: markdownChoice('B'), isCorrect: false },
+			{ content: markdownChoice('C'), isCorrect: true },
+			{ content: markdownChoice('D'), isCorrect: false },
+			{ content: markdownChoice('E'), isCorrect: false }
 		];
 
 		const result = shuffleChoices(choices);
 
-		const contents = result.map((r) => r.content[0].content).sort();
+		const contents = result.map((r) => r.content).sort();
 		expect(contents).toEqual(['A', 'B', 'C', 'D', 'E']);
 	});
 
 	it('should return original indices for each choice', () => {
 		const choices = [
-			{ content: textField('First'), isCorrect: false },
-			{ content: textField('Second'), isCorrect: true },
-			{ content: textField('Third'), isCorrect: false }
+			{ content: markdownChoice('First'), isCorrect: false },
+			{ content: markdownChoice('Second'), isCorrect: true },
+			{ content: markdownChoice('Third'), isCorrect: false }
 		];
 
 		const result = shuffleChoices(choices);
@@ -70,9 +71,9 @@ describe('shuffleChoices - Basic Functionality', () => {
 
 	it('should maintain content integrity', () => {
 		const choices = [
-			{ content: textField('Correct answer'), isCorrect: true },
-			{ content: textField('Wrong answer 1'), isCorrect: false },
-			{ content: textField('Wrong answer 2'), isCorrect: false }
+			{ content: markdownChoice('Correct answer'), isCorrect: true },
+			{ content: markdownChoice('Wrong answer 1'), isCorrect: false },
+			{ content: markdownChoice('Wrong answer 2'), isCorrect: false }
 		];
 
 		const result = shuffleChoices(choices);
@@ -80,18 +81,18 @@ describe('shuffleChoices - Basic Functionality', () => {
 		// Find the correct answer in shuffled results
 		const correctChoice = result.find((r) => r.originalIndex === 0);
 		expect(correctChoice).toBeDefined();
-		expect(correctChoice!.content[0].content).toBe('Correct answer');
+		expect(correctChoice!.content).toBe('Correct answer');
 	});
 });
 
 describe('shuffleChoices - Seeded Random', () => {
 	it('should produce same shuffle with same seed', () => {
 		const choices = [
-			{ content: textField('A'), isCorrect: false },
-			{ content: textField('B'), isCorrect: false },
-			{ content: textField('C'), isCorrect: true },
-			{ content: textField('D'), isCorrect: false },
-			{ content: textField('E'), isCorrect: false }
+			{ content: markdownChoice('A'), isCorrect: false },
+			{ content: markdownChoice('B'), isCorrect: false },
+			{ content: markdownChoice('C'), isCorrect: true },
+			{ content: markdownChoice('D'), isCorrect: false },
+			{ content: markdownChoice('E'), isCorrect: false }
 		];
 
 		const seed = 12345;
@@ -100,17 +101,15 @@ describe('shuffleChoices - Seeded Random', () => {
 		const result2 = shuffleChoices(choices, seed);
 
 		expect(result1.map((r) => r.originalIndex)).toEqual(result2.map((r) => r.originalIndex));
-		expect(result1.map((r) => r.content[0].content)).toEqual(
-			result2.map((r) => r.content[0].content)
-		);
+		expect(result1.map((r) => r.content)).toEqual(result2.map((r) => r.content));
 	});
 
 	it('should be reproducible across multiple calls', () => {
 		const choices = [
-			{ content: textField('A'), isCorrect: false },
-			{ content: textField('B'), isCorrect: true },
-			{ content: textField('C'), isCorrect: false },
-			{ content: textField('D'), isCorrect: false }
+			{ content: markdownChoice('A'), isCorrect: false },
+			{ content: markdownChoice('B'), isCorrect: true },
+			{ content: markdownChoice('C'), isCorrect: false },
+			{ content: markdownChoice('D'), isCorrect: false }
 		];
 
 		const seed = 99999;
@@ -130,10 +129,10 @@ describe('shuffleChoices - Seeded Random', () => {
 
 	it('should handle no seed (random)', () => {
 		const choices = [
-			{ content: textField('A'), isCorrect: false },
-			{ content: textField('B'), isCorrect: false },
-			{ content: textField('C'), isCorrect: false },
-			{ content: textField('D'), isCorrect: false }
+			{ content: markdownChoice('A'), isCorrect: false },
+			{ content: markdownChoice('B'), isCorrect: false },
+			{ content: markdownChoice('C'), isCorrect: false },
+			{ content: markdownChoice('D'), isCorrect: false }
 		];
 
 		const result1 = shuffleChoices(choices);
@@ -148,30 +147,30 @@ describe('shuffleChoices - Seeded Random', () => {
 describe('shuffleChoices - Edge Cases', () => {
 	it('should handle 2-element array', () => {
 		const choices = [
-			{ content: textField('A'), isCorrect: true },
-			{ content: textField('B'), isCorrect: false }
+			{ content: markdownChoice('A'), isCorrect: true },
+			{ content: markdownChoice('B'), isCorrect: false }
 		];
 
 		const result = shuffleChoices(choices, 12345);
 
 		expect(result).toHaveLength(2);
-		const contents = result.map((r) => r.content[0].content).sort();
+		const contents = result.map((r) => r.content).sort();
 		expect(contents).toEqual(['A', 'B']);
 	});
 
 	it('should handle single-element array', () => {
-		const choices = [{ content: textField('Only'), isCorrect: true }];
+		const choices = [{ content: markdownChoice('Only'), isCorrect: true }];
 
 		const result = shuffleChoices(choices);
 
 		expect(result).toHaveLength(1);
-		expect(result[0].content[0].content).toBe('Only');
+		expect(result[0].content).toBe('Only');
 		expect(result[0].originalIndex).toBe(0);
 	});
 
 	it('should handle large arrays', () => {
 		const choices = Array.from({ length: 100 }, (_, i) => ({
-			content: textField(`Choice ${i}`),
+			content: markdownChoice(`Choice ${i}`),
 			isCorrect: i === 42
 		}));
 
@@ -186,11 +185,11 @@ describe('shuffleChoices - Edge Cases', () => {
 	it('should handle choices with image content', () => {
 		const choices = [
 			{
-				content: [{ type: 'image' as const, content: 'http://example.com/a.png', alt: 'A' }],
+				content: markdownChoice('![A](http://example.com/a.png)'),
 				isCorrect: false
 			},
 			{
-				content: [{ type: 'image' as const, content: 'http://example.com/b.png', alt: 'B' }],
+				content: markdownChoice('![B](http://example.com/b.png)'),
 				isCorrect: true
 			}
 		];
@@ -198,20 +197,20 @@ describe('shuffleChoices - Edge Cases', () => {
 		const result = shuffleChoices(choices, 77777);
 
 		expect(result).toHaveLength(2);
-		expect(result.every((r) => r.content[0].type === 'image')).toBe(true);
+		expect(result.every((r) => r.content.includes('!['))).toBe(true);
 	});
 
 	it('should handle choices with special characters', () => {
 		const choices = [
-			{ content: textField('$$x^2 + 5x + 6$$'), isCorrect: false },
-			{ content: textField('é à è ù ô'), isCorrect: true },
-			{ content: textField('<script>alert("xss")</script>'), isCorrect: false }
+			{ content: markdownChoice('$$x^2 + 5x + 6$$'), isCorrect: false },
+			{ content: markdownChoice('é à è ù ô'), isCorrect: true },
+			{ content: markdownChoice('<script>alert("xss")</script>'), isCorrect: false }
 		];
 
 		const result = shuffleChoices(choices);
 
 		expect(result).toHaveLength(3);
-		const contents = result.map((r) => r.content[0].content);
+		const contents = result.map((r) => r.content);
 		expect(contents).toContain('$$x^2 + 5x + 6$$');
 		expect(contents).toContain('é à è ù ô');
 		expect(contents).toContain('<script>alert("xss")</script>');
@@ -219,26 +218,26 @@ describe('shuffleChoices - Edge Cases', () => {
 
 	it('should handle empty strings in content', () => {
 		const choices = [
-			{ content: textField(''), isCorrect: false },
-			{ content: textField('Valid'), isCorrect: true }
+			{ content: markdownChoice(''), isCorrect: false },
+			{ content: markdownChoice('Valid'), isCorrect: true }
 		];
 
 		const result = shuffleChoices(choices);
 
 		expect(result).toHaveLength(2);
-		expect(result.some((r) => r.content[0].content === '')).toBe(true);
+		expect(result.some((r) => r.content === '')).toBe(true);
 	});
 
 	it('should handle duplicate choice values', () => {
 		const choices = [
-			{ content: textField('Same'), isCorrect: false },
-			{ content: textField('Same'), isCorrect: false },
-			{ content: textField('Different'), isCorrect: true }
+			{ content: markdownChoice('Same'), isCorrect: false },
+			{ content: markdownChoice('Same'), isCorrect: false },
+			{ content: markdownChoice('Different'), isCorrect: true }
 		];
 
 		const result = shuffleChoices(choices);
 
-		const sameCount = result.filter((r) => r.content[0].content === 'Same').length;
+		const sameCount = result.filter((r) => r.content === 'Same').length;
 		expect(sameCount).toBe(2);
 	});
 });
@@ -246,9 +245,9 @@ describe('shuffleChoices - Edge Cases', () => {
 describe('shuffleChoices - Fisher-Yates Algorithm Verification', () => {
 	it('should not modify original array', () => {
 		const choices = [
-			{ content: textField('A'), isCorrect: false },
-			{ content: textField('B'), isCorrect: true },
-			{ content: textField('C'), isCorrect: false }
+			{ content: markdownChoice('A'), isCorrect: false },
+			{ content: markdownChoice('B'), isCorrect: true },
+			{ content: markdownChoice('C'), isCorrect: false }
 		];
 
 		const originalJson = JSON.stringify(choices);
@@ -260,16 +259,16 @@ describe('shuffleChoices - Fisher-Yates Algorithm Verification', () => {
 
 	it('should produce valid permutations', () => {
 		const choices = [
-			{ content: textField('A'), isCorrect: false },
-			{ content: textField('B'), isCorrect: false },
-			{ content: textField('C'), isCorrect: false }
+			{ content: markdownChoice('A'), isCorrect: false },
+			{ content: markdownChoice('B'), isCorrect: false },
+			{ content: markdownChoice('C'), isCorrect: false }
 		];
 
 		// Generate multiple shuffles with different seeds
 		const permutations = new Set<string>();
 		for (let seed = 0; seed < 100; seed++) {
 			const result = shuffleChoices(choices, seed);
-			const perm = result.map((r) => r.content[0].content).join('');
+			const perm = result.map((r) => r.content).join('');
 			permutations.add(perm);
 		}
 
@@ -281,39 +280,39 @@ describe('shuffleChoices - Fisher-Yates Algorithm Verification', () => {
 describe('shuffleChoices - Real-World Scenarios', () => {
 	it('should shuffle mathematical expressions', () => {
 		const choices = [
-			{ content: textField('$$x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$'), isCorrect: true },
-			{ content: textField('$$x = \\frac{b \\pm \\sqrt{b^2-4ac}}{2a}$$'), isCorrect: false },
-			{ content: textField('$$x = \\frac{-b \\pm \\sqrt{b^2+4ac}}{2a}$$'), isCorrect: false }
+			{ content: markdownChoice('$$x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$'), isCorrect: true },
+			{ content: markdownChoice('$$x = \\frac{b \\pm \\sqrt{b^2-4ac}}{2a}$$'), isCorrect: false },
+			{ content: markdownChoice('$$x = \\frac{-b \\pm \\sqrt{b^2+4ac}}{2a}$$'), isCorrect: false }
 		];
 
 		const result = shuffleChoices(choices, 11111);
 
 		expect(result).toHaveLength(3);
 		const correctChoice = result.find((r) => r.originalIndex === 0);
-		expect(correctChoice!.content[0].content).toContain('-b \\pm \\sqrt{b^2-4ac}');
+		expect(correctChoice!.content).toContain('-b \\pm \\sqrt{b^2-4ac}');
 	});
 
 	it('should shuffle French text choices', () => {
 		const choices = [
-			{ content: textField('La réponse correcte'), isCorrect: true },
-			{ content: textField('Première erreur'), isCorrect: false },
-			{ content: textField('Deuxième erreur'), isCorrect: false },
-			{ content: textField('Troisième erreur'), isCorrect: false }
+			{ content: markdownChoice('La réponse correcte'), isCorrect: true },
+			{ content: markdownChoice('Première erreur'), isCorrect: false },
+			{ content: markdownChoice('Deuxième erreur'), isCorrect: false },
+			{ content: markdownChoice('Troisième erreur'), isCorrect: false }
 		];
 
 		const result = shuffleChoices(choices, 22222);
 
 		expect(result).toHaveLength(4);
 		const correctChoice = result.find((r) => r.originalIndex === 0);
-		expect(correctChoice!.content[0].content).toBe('La réponse correcte');
+		expect(correctChoice!.content).toBe('La réponse correcte');
 	});
 
 	it('should track all correct answers for multiple choice', () => {
 		const choices = [
-			{ content: textField('Correct 1'), isCorrect: true },
-			{ content: textField('Wrong 1'), isCorrect: false },
-			{ content: textField('Correct 2'), isCorrect: true },
-			{ content: textField('Wrong 2'), isCorrect: false }
+			{ content: markdownChoice('Correct 1'), isCorrect: true },
+			{ content: markdownChoice('Wrong 1'), isCorrect: false },
+			{ content: markdownChoice('Correct 2'), isCorrect: true },
+			{ content: markdownChoice('Wrong 2'), isCorrect: false }
 		];
 
 		const result = shuffleChoices(choices, 33333);
@@ -330,18 +329,18 @@ describe('shuffleChoices - Integration with Instance Generator', () => {
 	it('should work with instance generator pattern', () => {
 		// Simulate how instance-generator.ts uses shuffleChoices
 		const _templateChoices = [
-			{ content: textField('{@:correct}'), isCorrect: true },
-			{ content: textField('{@:wrong1}'), isCorrect: false },
-			{ content: textField('{@:wrong2}'), isCorrect: false },
-			{ content: textField('{eval:{@:a}*{@:b}}'), isCorrect: false }
+			{ content: markdownChoice('{@:correct}'), isCorrect: true },
+			{ content: markdownChoice('{@:wrong1}'), isCorrect: false },
+			{ content: markdownChoice('{@:wrong2}'), isCorrect: false },
+			{ content: markdownChoice('{eval:{@:a}*{@:b}}'), isCorrect: false }
 		];
 
 		// After variable resolution (simulated)
 		const resolvedChoices = [
-			{ content: textField('42'), isCorrect: true },
-			{ content: textField('41'), isCorrect: false },
-			{ content: textField('43'), isCorrect: false },
-			{ content: textField('12'), isCorrect: false }
+			{ content: markdownChoice('42'), isCorrect: true },
+			{ content: markdownChoice('41'), isCorrect: false },
+			{ content: markdownChoice('43'), isCorrect: false },
+			{ content: markdownChoice('12'), isCorrect: false }
 		];
 
 		const shuffled = shuffleChoices(resolvedChoices, 12345);
@@ -352,15 +351,15 @@ describe('shuffleChoices - Integration with Instance Generator', () => {
 
 		expect(correctNewIndex).toBeGreaterThanOrEqual(0);
 		expect(correctNewIndex).toBeLessThan(4);
-		expect(shuffled[correctNewIndex].content[0].content).toBe('42');
+		expect(shuffled[correctNewIndex].content).toBe('42');
 	});
 
 	it('should handle multiple correct answers for checkbox mode', () => {
 		const choices = [
-			{ content: textField('2'), isCorrect: true },
-			{ content: textField('4'), isCorrect: false },
-			{ content: textField('7'), isCorrect: true },
-			{ content: textField('9'), isCorrect: false }
+			{ content: markdownChoice('2'), isCorrect: true },
+			{ content: markdownChoice('4'), isCorrect: false },
+			{ content: markdownChoice('7'), isCorrect: true },
+			{ content: markdownChoice('9'), isCorrect: false }
 		];
 
 		const shuffled = shuffleChoices(choices, 54321);
@@ -371,15 +370,15 @@ describe('shuffleChoices - Integration with Instance Generator', () => {
 			.map((s) => shuffled.indexOf(s));
 
 		expect(correctIndices).toHaveLength(2);
-		expect(shuffled[correctIndices[0]].content[0].content).toMatch(/^(2|7)$/);
-		expect(shuffled[correctIndices[1]].content[0].content).toMatch(/^(2|7)$/);
+		expect(shuffled[correctIndices[0]].content).toMatch(/^(2|7)$/);
+		expect(shuffled[correctIndices[1]].content).toMatch(/^(2|7)$/);
 	});
 });
 
 describe('shuffleChoices - Performance', () => {
 	it('should handle shuffling 1000 times efficiently', () => {
 		const choices = Array.from({ length: 10 }, (_, i) => ({
-			content: textField(`Choice ${i}`),
+			content: markdownChoice(`Choice ${i}`),
 			isCorrect: i === 5
 		}));
 
@@ -395,7 +394,7 @@ describe('shuffleChoices - Performance', () => {
 
 	it('should handle very large choice arrays', () => {
 		const choices = Array.from({ length: 1000 }, (_, i) => ({
-			content: textField(`Choice ${i}`),
+			content: markdownChoice(`Choice ${i}`),
 			isCorrect: i === 500
 		}));
 

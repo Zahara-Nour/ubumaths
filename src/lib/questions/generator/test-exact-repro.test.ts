@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from './instance-generator';
 import type { QuestionTemplate, ResolvedVariable } from '../types';
+import { templateMarkdown } from '$lib/shared/markdown';
 
 function getVarValue(resolvedVariables: ResolvedVariable[] | undefined, varName: string): number {
 	if (!resolvedVariables) return NaN;
@@ -17,12 +18,12 @@ describe('Exact reproduction', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+					statement: templateMarkdown('Calculate {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{#:1-10}' },
-						{ name: 'b', expression: '{#:1-10}' }
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}'
+					answer: '{{eval:a + b}}'
 				}
 			],
 			precision: { type: 'none' },

@@ -1,9 +1,9 @@
 /**
- * Content Field Resolver
- * ======================
+ * Content Resolver
+ * ================
  *
- * Resolves ContentField arrays by replacing variables and generating
- * random values in text content.
+ * Resolves markdown templates by replacing variables and generating
+ * random values in markdown content.
  *
  * Uses variable-resolver which wraps shared library for full resolution pipeline.
  *
@@ -11,16 +11,59 @@
  */
 
 import type { ContentField, ResolvedVariable } from '../types';
+import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/shared/markdown';
+import { resolvedMarkdown, templateMarkdown } from '$lib/shared/markdown';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 import { convertToMarkdownSyntax } from './syntax-adapter';
+import { contentFieldsToMarkdown } from './content-to-markdown';
 
 /**
- * Resolve a single content field
+ * Resolve markdown content by replacing all placeholders with values
  *
- * - Text fields: Resolves variables, random expressions, and eval expressions
- * - Image fields: Resolves variables in URLs
+ * @param markdown - Template markdown containing placeholders
+ * @param resolvedVariables - Already resolved variables
+ * @param seed - Optional seed for random generation
+ * @returns Resolved markdown ready for rendering
+ */
+export function resolveMarkdownContent(
+	markdown: TemplateMarkdown,
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
+): ResolvedMarkdown {
+	// Convert Questions syntax to Markdown before resolution if needed
+	let resolvedContent = convertToMarkdownSyntax(markdown);
+
+	// Resolve variables, random expressions, and eval expressions
+	resolvedContent = resolveVariableExpression(resolvedContent, resolvedVariables, seed);
+
+	// Also resolve color references (after variable resolution)
+	resolvedContent = resolveColorReferences(resolvedContent, seed);
+
+	return resolvedMarkdown(resolvedContent);
+}
+
+/**
+ * Backward compatibility: resolve ContentField arrays
  *
+ * @deprecated Use resolveMarkdownContent with TemplateMarkdown instead
+ * @param fields - Array of content fields (old format)
+ * @param resolvedVariables - Already resolved variables
+ * @param seed - Optional seed for random generation
+ * @returns Array of resolved content fields
+ */
+export function resolveContentFields(
+	fields: ContentField[],
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
+): ContentField[] {
+	return fields.map((field) => resolveContentField(field, resolvedVariables, seed));
+}
+
+/**
+ * Backward compatibility: resolve a single content field
+ *
+ * @deprecated Internal use only for backward compatibility
  * @param field - Content field to resolve
  * @param resolvedVariables - Already resolved variables
  * @param seed - Optional seed for random generation
@@ -47,19 +90,20 @@ export function resolveContentField(
 }
 
 /**
- * Resolve an array of content fields
+ * Convert ContentField array to TemplateMarkdown for migration
  *
- * @param fields - Array of content fields
- * @param resolvedVariables - Already resolved variables
- * @param seed - Optional seed for random generation
- * @returns Array of resolved content fields
+ * Helps with migration from old ContentField[] format to new TemplateMarkdown format
+ *
+ * @param fields - ContentField array (old format)
+ * @returns TemplateMarkdown string
  */
-export function resolveContentFields(
-	fields: ContentField[],
-	resolvedVariables: ResolvedVariable[],
-	seed?: number
-): ContentField[] {
-	return fields.map((field) => resolveContentField(field, resolvedVariables, seed));
+export function contentFieldsToTemplateMarkdown(fields: ContentField[]): TemplateMarkdown {
+	if (!fields || fields.length === 0) {
+		return templateMarkdown('');
+	}
+
+	const markdown = contentFieldsToMarkdown(fields);
+	return templateMarkdown(markdown);
 }
 
 /**
