@@ -5,7 +5,8 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Plus, Check } from 'lucide-svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import type { QuestionInstance, QuestionTemplate } from '$lib/questions/types';
 
@@ -88,14 +89,16 @@
 
 			<!-- Title -->
 			<Card.Title class="">
-				<MathDisplay text={template.title} />
+				<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
 			</Card.Title>
 		</Card.Header>
 
 		<Card.Content class="space-y-3">
 			<!-- Preview statement -->
 			<div class="">
-				<MathDisplay text={getPreviewText(preview.statement)} />
+				<MarkdownRenderer
+					content={convertLegacyLatexToMarkdown(getPreviewText(preview.statement))}
+				/>
 			</div>
 		</Card.Content>
 	</Card.Root>
@@ -106,7 +109,7 @@
 		<Dialog.Content class="max-w-4xl">
 			<Dialog.Header>
 				<Dialog.Title>
-					<MathDisplay text={template.title} />
+					<MarkdownRenderer content={convertLegacyLatexToMarkdown(template.title)} />
 				</Dialog.Title>
 				<Dialog.Description>
 					<div class="mt-2 flex flex-wrap items-center gap-2">

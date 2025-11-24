@@ -14,7 +14,8 @@
 -->
 
 <script lang="ts">
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import { GripVertical, Check, X } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 
@@ -161,7 +162,7 @@
 
 				<!-- Item content -->
 				<div class="item-content">
-					<MathDisplay text={item.content} />
+					<MarkdownRenderer content={convertLegacyLatexToMarkdown(item.content)} />
 				</div>
 
 				<!-- Validation indicator -->

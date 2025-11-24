@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import { Plus, Minus } from 'lucide-svelte';
 	import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
@@ -75,7 +76,7 @@
 			<!-- Preview statement -->
 			{#if instance}
 				<div class="text-sm">
-					<MathDisplay text={getPreviewText()} />
+					<MarkdownRenderer content={convertLegacyLatexToMarkdown(getPreviewText())} />
 				</div>
 			{:else}
 				<div class="text-sm text-muted-foreground italic">Chargement...</div>

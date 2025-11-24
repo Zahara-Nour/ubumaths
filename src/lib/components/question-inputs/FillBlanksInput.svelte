@@ -16,7 +16,8 @@
 
 <script lang="ts">
 	import type { ContentField } from '$lib/questions/types';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import MathField from '$lib/components/MathField.svelte';
 	import { Check, X } from 'lucide-svelte';
 
@@ -78,7 +79,7 @@
 			<!-- Render text/math segment -->
 			{#if segment.trim()}
 				<span class="segment-text">
-					<MathDisplay text={segment} />
+					<MarkdownRenderer content={convertLegacyLatexToMarkdown(segment)} />
 				</span>
 			{/if}
 
