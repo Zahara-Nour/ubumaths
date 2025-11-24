@@ -36,7 +36,8 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Button } from '$lib/components/ui/button';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { contentFieldsToMarkdown } from '$lib/questions/generator/content-to-markdown';
 	import {
 		ChevronDown,
 		ChevronRight,
@@ -47,7 +48,7 @@
 		Info,
 		FileText
 	} from 'lucide-svelte';
-	import { renderContentFields, extractImages } from '$lib/utils/content-field-helpers';
+	import { extractImages } from '$lib/utils/content-field-helpers';
 	import { cn } from '$lib/utils';
 
 	// ============================================================================
@@ -120,22 +121,27 @@
 	// DERIVED STATE
 	// ============================================================================
 
-	// Statement text
-	const statementText = $derived(renderContentFields(instance.statement));
+	// Statement markdown (with fallback for backward compatibility)
+	const statementMarkdown = $derived(
+		instance.statement_md || contentFieldsToMarkdown(instance.statement)
+	);
 	const statementImages = $derived(extractImages(instance.statement));
 	const needsTruncation = $derived(
-		truncateStatement && !isStatementExpanded && statementText.length > statementMaxLength
+		truncateStatement && !isStatementExpanded && statementMarkdown.length > statementMaxLength
 	);
 	const displayedStatement = $derived(
-		needsTruncation ? statementText.substring(0, statementMaxLength) + '...' : statementText
+		needsTruncation ? statementMarkdown.substring(0, statementMaxLength) + '...' : statementMarkdown
 	);
 
-	// Correction
+	// Correction markdown
 	const hasCorrection = $derived(
 		instance.correction && instance.correction.length > 0 && showCorrection
 	);
-	const correctionText = $derived(hasCorrection ? renderContentFields(instance.correction!) : '');
-	const correctionImages = $derived(hasCorrection ? extractImages(instance.correction!) : []);
+	const correctionMarkdown = $derived(
+		instance.correction_md || (hasCorrection ? contentFieldsToMarkdown(instance.correction!) : '')
+	);
+	// Note: correctionImages no longer needed as MarkdownRenderer handles embedded images
+	const _correctionImages = $derived(hasCorrection ? extractImages(instance.correction!) : []);
 
 	// Variables
 	const hasVariables = $derived(
@@ -221,7 +227,7 @@
 		<!-- Title and Type -->
 		<div class="flex items-start justify-between gap-3">
 			<Card.Title class="flex-1 text-xl">
-				<MathDisplay text={instance.title || 'Question sans titre'} />
+				<MarkdownRenderer content={instance.title || 'Question sans titre'} />
 			</Card.Title>
 			<div class="flex flex-shrink-0 items-center gap-2">
 				<Badge variant="secondary" class="text-xs">{instance.type}</Badge>
@@ -232,7 +238,7 @@
 		<!-- Description (if present and enabled) -->
 		{#if showDescription && instance.description}
 			<Card.Description class="text-sm">
-				<MathDisplay text={instance.description} />
+				<MarkdownRenderer content={instance.description} />
 			</Card.Description>
 		{/if}
 
@@ -240,7 +246,7 @@
 		{#if showExerciseInstruction && instance.exerciseInstruction}
 			<div class="flex items-start gap-2 rounded-md bg-muted/50 p-2 text-sm">
 				<FileText class="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
-				<MathDisplay text={instance.exerciseInstruction} />
+				<MarkdownRenderer content={instance.exerciseInstruction} />
 			</div>
 		{/if}
 	</Card.Header>
@@ -322,7 +328,7 @@
 				<span class="text-sm font-semibold">Énoncé</span>
 			</div>
 			<div class="rounded-lg border bg-card p-4">
-				<MathDisplay text={displayedStatement} />
+				<MarkdownRenderer content={displayedStatement} />
 
 				<!-- Statement Images -->
 				{#if statementImages.length > 0}
@@ -338,7 +344,7 @@
 				{/if}
 
 				<!-- Expand/Collapse Button -->
-				{#if truncateStatement && statementText.length > statementMaxLength}
+				{#if truncateStatement && statementMarkdown.length > statementMaxLength}
 					<Button
 						variant="ghost"
 						size="sm"
@@ -380,7 +386,7 @@
 								<div class="flex items-start gap-2 rounded border bg-muted/50 p-2 text-sm">
 									<code class="flex-shrink-0 font-semibold">{variable.name}:</code>
 									<code class="break-all">
-										<MathDisplay text={variable.value} />
+										<MarkdownRenderer content={`$$${variable.value}$$`} />
 									</code>
 								</div>
 							{/each}
@@ -403,12 +409,12 @@
 							{#each answerArray as ans, i (i)}
 								<li class="flex items-center gap-2">
 									<Badge class="bg-green-600">{i + 1}</Badge>
-									<MathDisplay text={String(ans)} />
+									<MarkdownRenderer content={`$$${String(ans)}$$`} />
 								</li>
 							{/each}
 						</ul>
 					{:else}
-						<MathDisplay text={String(answerArray[0])} />
+						<MarkdownRenderer content={`$$${String(answerArray[0])}$$`} />
 					{/if}
 				</div>
 			</div>
@@ -438,17 +444,7 @@
 								{String.fromCharCode(65 + i)}
 							</Badge>
 							<div class="flex-1">
-								{#each choice.content as field, i (i)}
-									{#if field.type === 'text'}
-										<MathDisplay text={field.content} />
-									{:else if field.type === 'image'}
-										<img
-											src={field.content}
-											alt={field.alt || 'Choice image'}
-											class="my-2 max-w-full rounded-lg"
-										/>
-									{/if}
-								{/each}
+								<MarkdownRenderer content={contentFieldsToMarkdown(choice.content)} />
 							</div>
 							{#if isCorrect}
 								<CheckCircle class="h-5 w-5 flex-shrink-0 text-green-600" />
@@ -479,20 +475,7 @@
 
 					<Collapsible.Content class="px-2">
 						<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
-							<MathDisplay text={correctionText} />
-
-							<!-- Correction Images -->
-							{#if correctionImages.length > 0}
-								<div class="space-y-2">
-									{#each correctionImages as image, i (i)}
-										<img
-											src={image.content}
-											alt={image.alt || 'Correction image'}
-											class="max-w-full rounded-lg"
-										/>
-									{/each}
-								</div>
-							{/if}
+							<MarkdownRenderer content={correctionMarkdown} />
 						</div>
 					</Collapsible.Content>
 				</div>
