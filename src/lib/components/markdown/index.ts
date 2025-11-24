@@ -22,14 +22,13 @@
  * <script>
  *   import { MarkdownRenderer, type BlankState } from '$lib/components/markdown';
  *
- *   let blanks: BlankState[] = $state([{ index: 0, value: '' }]);
+ *   const blankStates = new Map<number, BlankState>([[1, { index: 1, value: '' }]]);
  * </script>
  *
  * <MarkdownRenderer
- *   content="The answer is {{blank:0}}"
- *   options={{
- *     onBlankFound: (index, el) => mountBlank(index, el)
- *   }}
+ *   content="The answer is {{blank:1}}"
+ *   {blankStates}
+ *   onBlankChange={(index, value) => console.log(index, value)}
  * />
  * ```
  */
@@ -114,5 +113,5 @@ export { default as BlockquoteComponent } from './nodes/Blockquote.svelte';
 // Utilities
 export { escapeHtml } from './utils';
 
-// TODO: Additional components to be implemented:
-// export { default as BlankInput } from './BlankInput.svelte';
+// Interactive components (fill-in-the-blank)
+export { default as BlankInputComponent } from './nodes/BlankInput.svelte';

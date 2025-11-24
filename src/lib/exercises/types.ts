@@ -733,9 +733,25 @@ export interface LineBreakNode extends BaseNode {
 }
 
 /**
+ * Blank node - represents a fill-in-the-blank input field
+ *
+ * Syntax in markdown: {{blank:N}} where N is the 1-based index
+ *
+ * @example
+ * ```markdown
+ * Calculate $2 + 3$ = {{blank:1}}
+ * ```
+ */
+export interface BlankNode extends BaseNode {
+	type: 'blank';
+	/** 1-based index of the blank (corresponds to the N in {{blank:N}}) */
+	index: number;
+}
+
+/**
  * Union of inline nodes (can appear within paragraphs, headings, etc.)
  */
-export type InlineNode = TextNode | MathInlineNode | LineBreakNode;
+export type InlineNode = TextNode | MathInlineNode | LineBreakNode | BlankNode;
 
 /**
  * Union of block nodes (top-level document structure)

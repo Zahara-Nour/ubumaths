@@ -410,3 +410,168 @@ $$\\int_0^\\pi \\sin(x) dx = 2$$`;
 		expect(mathBlockNode).toBeDefined();
 	});
 });
+
+describe('parseMarkdown - blank support', () => {
+	it('should parse single blank', () => {
+		const markdown = '{{blank:1}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('blank');
+
+			if (paragraph.children[0].type === 'blank') {
+				expect(paragraph.children[0].index).toBe(1);
+			}
+		}
+	});
+
+	it('should parse blank with surrounding text', () => {
+		const markdown = 'Texte {{blank:1}} suite';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(3);
+
+			// First: plain text
+			expect(paragraph.children[0].type).toBe('text');
+			if (paragraph.children[0].type === 'text') {
+				expect(paragraph.children[0].content).toBe('Texte ');
+			}
+
+			// Second: blank
+			expect(paragraph.children[1].type).toBe('blank');
+			if (paragraph.children[1].type === 'blank') {
+				expect(paragraph.children[1].index).toBe(1);
+			}
+
+			// Third: plain text
+			expect(paragraph.children[2].type).toBe('text');
+			if (paragraph.children[2].type === 'text') {
+				expect(paragraph.children[2].content).toBe(' suite');
+			}
+		}
+	});
+
+	it('should parse blank with math', () => {
+		const markdown = '$x$ = {{blank:1}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(3);
+
+			// First: math inline
+			expect(paragraph.children[0].type).toBe('math-inline');
+			if (paragraph.children[0].type === 'math-inline') {
+				expect(paragraph.children[0].latex).toBe('x');
+			}
+
+			// Second: text " = "
+			expect(paragraph.children[1].type).toBe('text');
+			if (paragraph.children[1].type === 'text') {
+				expect(paragraph.children[1].content).toBe(' = ');
+			}
+
+			// Third: blank
+			expect(paragraph.children[2].type).toBe('blank');
+			if (paragraph.children[2].type === 'blank') {
+				expect(paragraph.children[2].index).toBe(1);
+			}
+		}
+	});
+
+	it('should parse multiple blanks', () => {
+		const markdown = 'Calculer $2 + 3$ = {{blank:1}} et $4 + 5$ = {{blank:2}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Find all blanks
+			const blanks = paragraph.children.filter((node) => node.type === 'blank');
+			expect(blanks).toHaveLength(2);
+
+			if (blanks[0].type === 'blank' && blanks[1].type === 'blank') {
+				expect(blanks[0].index).toBe(1);
+				expect(blanks[1].index).toBe(2);
+			}
+		}
+	});
+
+	it('should NOT parse variable placeholders as blanks', () => {
+		const markdown = '{{a}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+
+			// Should be text, not blank
+			expect(paragraph.children[0].type).toBe('text');
+			if (paragraph.children[0].type === 'text') {
+				expect(paragraph.children[0].content).toBe('{{a}}');
+			}
+		}
+	});
+
+	it('should parse blank with formatting', () => {
+		const markdown = '**Reponse:** {{blank:1}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have bold text and blank
+			const boldNode = paragraph.children.find(
+				(n) => n.type === 'text' && n.bold && n.content === 'Reponse:'
+			);
+			expect(boldNode).toBeDefined();
+
+			const blankNode = paragraph.children.find((n) => n.type === 'blank');
+			expect(blankNode).toBeDefined();
+
+			if (blankNode && blankNode.type === 'blank') {
+				expect(blankNode.index).toBe(1);
+			}
+		}
+	});
+
+	it('should parse high index blanks', () => {
+		const markdown = '{{blank:42}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('blank');
+
+			if (paragraph.children[0].type === 'blank') {
+				expect(paragraph.children[0].index).toBe(42);
+			}
+		}
+	});
+});

@@ -23,7 +23,7 @@
 <script lang="ts">
 	import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
 	import type { DocumentNode, ParseOptions } from '$lib/exercises/types';
-	import type { MarkdownDisplayMode } from './types';
+	import type { BlankState, MarkdownDisplayMode } from './types';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -50,6 +50,14 @@
 		class?: string;
 		/** Callback when a blank placeholder is found (for fill_in_blanks) */
 		onBlankFound?: (index: number) => void;
+		/** State of all blanks (indexed by blank index) - for fill_in_blanks */
+		blankStates?: Map<number, BlankState>;
+		/** Callback when a blank value changes */
+		onBlankChange?: (index: number, value: string) => void;
+		/** Callback when user submits a blank (Enter key) */
+		onBlankSubmit?: (index: number) => void;
+		/** Whether blanks are disabled (e.g., after submission) */
+		blanksDisabled?: boolean;
 	}
 
 	let {
@@ -57,7 +65,11 @@
 		mode = 'rendered',
 		parseOptions = {},
 		class: className = '',
-		onBlankFound
+		onBlankFound,
+		blankStates,
+		onBlankChange,
+		onBlankSubmit,
+		blanksDisabled = false
 	}: Props = $props();
 
 	/**
@@ -91,7 +103,13 @@
 		{#if ast}
 			{#each ast.children as node (node)}
 				{#if node.type === 'paragraph'}
-					<ParagraphNode children={node.children} />
+					<ParagraphNode
+						children={node.children}
+						{blankStates}
+						{onBlankChange}
+						{onBlankSubmit}
+						{blanksDisabled}
+					/>
 				{:else if node.type === 'heading'}
 					<HeadingNode level={node.level} children={node.children} />
 				{:else if node.type === 'math-block'}
