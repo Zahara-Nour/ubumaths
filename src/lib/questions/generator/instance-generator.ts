@@ -19,6 +19,7 @@ import { detectCircularDependencies } from '$lib/shared/parameterization/validat
 import { resolveVariables } from './variable-resolver';
 import { resolveContentFields, resolveAnswer, resolveExpression } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
+import { contentFieldsToMarkdown } from './content-to-markdown';
 
 /**
  * Generate a question instance from a template
@@ -117,11 +118,18 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}));
 		}
 
-		// 7. Construct instance
+		// 7. Generate markdown strings from resolved content
+		const statement_md = contentFieldsToMarkdown(resolvedStatement);
+		const correction_md = resolvedCorrection
+			? contentFieldsToMarkdown(resolvedCorrection)
+			: undefined;
+
+		// 8. Construct instance
 		const instance: QuestionInstance = {
 			templateId: template.id,
 			type: template.type,
 			statement: resolvedStatement,
+			statement_md,
 			resolvedVariables,
 			answer: resolvedAnswer,
 			exerciseInstruction: template.exerciseInstruction,
@@ -134,6 +142,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			level: template.level,
 			delay: template.delay,
 			correction: resolvedCorrection,
+			correction_md,
 			transformType: template.transformType,
 			blanks: resolvedBlanks,
 			choices: resolvedChoices,

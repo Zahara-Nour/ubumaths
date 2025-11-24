@@ -358,8 +358,15 @@ export interface QuestionInstance {
 
 	// ---- Resolved Content ----
 
-	/** Statement with all variables resolved */
+	/** Statement with all variables resolved (ContentField[] for backward compatibility) */
 	statement: ContentField[];
+
+	/**
+	 * Statement as unified markdown string (with resolved variables)
+	 * This is the preferred format for rendering via MarkdownRenderer.
+	 * Contains: text, $inline math$, $$block math$$, images, {{blank:N}}, etc.
+	 */
+	statement_md?: string;
 
 	/** Resolved variables with final values */
 	resolvedVariables?: ResolvedVariable[];
@@ -387,6 +394,12 @@ export interface QuestionInstance {
 	level: number;
 	delay?: number;
 	correction?: ContentField[];
+
+	/**
+	 * Correction as unified markdown string (with resolved variables)
+	 * This is the preferred format for rendering via MarkdownRenderer.
+	 */
+	correction_md?: string;
 
 	// ---- Type-specific (resolved) ----
 
