@@ -18,7 +18,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import * as Alert from '$lib/components/ui/alert';
-	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { CheckCircle2, XCircle, User, AlertTriangle, ArrowLeft } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
@@ -137,7 +137,7 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="prose max-w-none dark:prose-invert">
-				{@html sanitizeHtml(data.attempt.riddle.statement)}
+				<MarkdownRenderer content={data.attempt.riddle.statement} />
 			</div>
 			{#if data.attempt.riddle.image_url}
 				<img
@@ -177,7 +177,7 @@
 		<Card.Content>
 			<div class="rounded-lg bg-primary/5 p-4">
 				<div class="prose max-w-none dark:prose-invert">
-					{@html sanitizeHtml(data.attempt.riddle.correction)}
+					<MarkdownRenderer content={data.attempt.riddle.correction} />
 				</div>
 			</div>
 		</Card.Content>

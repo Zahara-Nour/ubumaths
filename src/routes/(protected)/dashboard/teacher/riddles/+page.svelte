@@ -17,7 +17,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { sanitizeHtml } from '$lib/utils/sanitize';
+	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import {
@@ -228,7 +228,7 @@
 					<Card.Content>
 						<!-- Statement Preview (truncated) -->
 						<div class="prose prose-sm line-clamp-2 max-w-none dark:prose-invert">
-							{@html sanitizeHtml(riddle.statement)}
+							<MarkdownRenderer content={riddle.statement} />
 						</div>
 					</Card.Content>
 
