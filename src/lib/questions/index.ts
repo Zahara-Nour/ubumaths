@@ -46,9 +46,7 @@ export {
 	convertToMarkdownSyntax,
 	convertToQuestionsSyntax,
 	detectSyntax,
-	normalizeToMarkdown,
-	convertVariableToMarkdown,
-	convertContentFieldToMarkdown
+	normalizeToMarkdown
 } from './generator/syntax-adapter';
 
 // Validators
