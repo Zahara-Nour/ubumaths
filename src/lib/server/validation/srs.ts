@@ -6,8 +6,9 @@ import { z } from 'zod';
 
 /**
  * Content field schema for flashcard content
+ * @deprecated Use string (markdown) validation instead
  */
-const contentFieldSchema = z.object({
+const _contentFieldSchema = z.object({
 	type: z.enum(['text', 'latex', 'image', 'markdown']),
 	value: z.string().max(5000),
 	metadata: z.record(z.string(), z.any()).optional()
@@ -40,12 +41,13 @@ export const createTemplateCardSchema = z.object({
 
 /**
  * Schema for creating a custom card
+ * Now validates markdown strings instead of ContentField arrays
  */
 export const createCustomCardSchema = z.object({
 	deckId: z.string().uuid(),
 	cardType: z.literal('custom'),
-	frontContent: z.array(contentFieldSchema).min(1).max(10),
-	backContent: z.array(contentFieldSchema).min(1).max(10)
+	frontContent: z.string().min(1, 'Front content is required').max(10000),
+	backContent: z.string().min(1, 'Back content is required').max(10000)
 });
 
 /**
@@ -88,10 +90,11 @@ export const listCardsQuerySchema = z.object({
 
 /**
  * Schema for updating a card (custom cards only)
+ * Now validates markdown strings instead of ContentField arrays
  */
 export const updateCardSchema = z.object({
-	frontContent: z.array(contentFieldSchema).min(1).max(10).optional(),
-	backContent: z.array(contentFieldSchema).min(1).max(10).optional()
+	frontContent: z.string().min(1, 'Front content is required').max(10000).optional(),
+	backContent: z.string().min(1, 'Back content is required').max(10000).optional()
 });
 
 /**

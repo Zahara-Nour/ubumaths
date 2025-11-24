@@ -17,6 +17,7 @@
  */
 
 import type { ContentField, QuestionInstance } from '$lib/questions/types';
+import type { TemplateMarkdown } from '$lib/shared/markdown';
 
 // ============================================================================
 // DECK TYPES
@@ -165,14 +166,14 @@ export interface Card {
 	templateId?: string;
 
 	/**
-	 * For custom cards: Front content (question)
+	 * For custom cards: Front content (question) as markdown template
 	 */
-	frontContent?: ContentField[];
+	frontContent?: TemplateMarkdown;
 
 	/**
-	 * For custom cards: Back content (answer + correction)
+	 * For custom cards: Back content (answer + correction) as markdown template
 	 */
-	backContent?: ContentField[];
+	backContent?: TemplateMarkdown;
 
 	/**
 	 * Creation metadata
@@ -183,14 +184,17 @@ export interface Card {
 
 /**
  * Database representation of a card
+ *
+ * Note: Database still stores ContentField[] for backward compatibility.
+ * Conversion to/from TemplateMarkdown happens at the boundary layer.
  */
 export interface DbCard {
 	id: string;
 	deck_id: string;
 	card_type: CardType;
 	template_id: string | null;
-	front_content: ContentField[] | null; // JSONB
-	back_content: ContentField[] | null; // JSONB
+	front_content: ContentField[] | null; // JSONB - will be migrated to string in Phase 7
+	back_content: ContentField[] | null; // JSONB - will be migrated to string in Phase 7
 	created_at: string;
 	updated_at: string;
 }
@@ -542,8 +546,8 @@ export interface CreateCardRequest {
 	deckId: string;
 	cardType: CardType;
 	templateId?: string;
-	frontContent?: ContentField[];
-	backContent?: ContentField[];
+	frontContent?: TemplateMarkdown;
+	backContent?: TemplateMarkdown;
 }
 
 /**
