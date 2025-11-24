@@ -18,7 +18,8 @@
 -->
 
 <script lang="ts">
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import * as Card from '$lib/components/ui/card';
 	import { RotateCw } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
@@ -120,7 +121,7 @@
 						<div class="content-section rounded-lg border bg-card p-4">
 							{#each frontContent as field, i (i)}
 								{#if field.type === 'text'}
-									<MathDisplay text={field.content} />
+									<MarkdownRenderer content={convertLegacyLatexToMarkdown(field.content || '')} />
 								{:else if field.type === 'image'}
 									<img
 										src={field.content}
@@ -159,7 +160,7 @@
 						<div class="content-section rounded-lg border bg-card p-4">
 							{#each backContent as field, i (i)}
 								{#if field.type === 'text'}
-									<MathDisplay text={field.content} />
+									<MarkdownRenderer content={convertLegacyLatexToMarkdown(field.content || '')} />
 								{:else if field.type === 'image'}
 									<img
 										src={field.content}
