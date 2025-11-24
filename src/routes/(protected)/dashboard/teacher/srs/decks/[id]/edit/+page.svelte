@@ -24,8 +24,8 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Save, Plus, Trash2, ArrowLeft, Sparkles, BookOpen } from 'lucide-svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
-	import type { ContentField } from '$lib/questions/types';
 	import type { FSRSConfig } from '$lib/srs/types';
+	import type { TemplateMarkdown } from '$lib/shared/markdown';
 
 	interface DeckCard {
 		id: string;
@@ -124,7 +124,10 @@
 	/**
 	 * Add custom card
 	 */
-	async function handleSaveCustomCard(frontContent: ContentField[], backContent: ContentField[]) {
+	async function handleSaveCustomCard(
+		frontContent: TemplateMarkdown,
+		backContent: TemplateMarkdown
+	) {
 		try {
 			const response = await fetch('/api/srs/cards', {
 				method: 'POST',

@@ -25,8 +25,8 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Save, Plus, Trash2, BookOpen, ArrowLeft } from 'lucide-svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
-	import type { ContentField } from '$lib/questions/types';
 	import type { CreateDeckRequest, CreateCardRequest } from '$lib/srs/types';
+	import type { TemplateMarkdown } from '$lib/shared/markdown';
 
 	// Card data types
 	type TemplateCardData = {
@@ -35,8 +35,8 @@
 	};
 
 	type CustomCardData = {
-		frontContent: ContentField[];
-		backContent: ContentField[];
+		frontContent: TemplateMarkdown;
+		backContent: TemplateMarkdown;
 		title: string;
 	};
 
@@ -138,7 +138,10 @@
 	/**
 	 * Add custom card
 	 */
-	async function handleSaveCustomCard(frontContent: ContentField[], backContent: ContentField[]) {
+	async function handleSaveCustomCard(
+		frontContent: TemplateMarkdown,
+		backContent: TemplateMarkdown
+	) {
 		pendingCards.push({
 			type: 'custom',
 			data: { frontContent, backContent, title: 'Carte personnalisée' }
