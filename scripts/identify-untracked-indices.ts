@@ -14,7 +14,7 @@ interface OldQuestion {
 	[key: string]: unknown;
 }
 
-function computeQuestionHash(question: OldQuestion): string {
+function _computeQuestionHash(question: OldQuestion): string {
 	const normalized = JSON.stringify(question, Object.keys(question).sort());
 	return createHash('sha256').update(normalized).digest('hex');
 }

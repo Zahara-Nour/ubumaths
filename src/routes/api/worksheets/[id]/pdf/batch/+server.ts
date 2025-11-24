@@ -34,8 +34,8 @@ const batchGenerateSchema = z.object({
 // Student type from database
 interface Student {
 	id: string;
-	first_name: string | null;
-	last_name: string | null;
+	firstname: string | null;
+	lastname: string | null;
 	email: string;
 }
 
@@ -45,10 +45,22 @@ interface Student {
 
 export const POST: RequestHandler = async ({ params, locals, request }) => {
 	// Check authentication
-	const user = await locals.safeGetUser();
-	if (!user || user.role !== 'teacher') {
+	if (!locals.user) {
+		throw error(401, 'Non autorisé');
+	}
+
+	// Check role from profile
+	const { data: userProfile } = await locals.supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', locals.user.id)
+		.single();
+
+	if (!userProfile || userProfile.role !== 'teacher') {
 		throw error(401, 'Non autorisé - enseignant requis');
 	}
+
+	const user = { ...locals.user, role: userProfile.role };
 
 	// Validate request body
 	const body = await request.json().catch(() => null);
@@ -113,8 +125,8 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				`
 				student:profiles!class_students_student_id_fkey(
 					id,
-					first_name,
-					last_name,
+					firstname,
+					lastname,
 					email
 				)
 			`
@@ -126,8 +138,11 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw error(500, 'Erreur lors de la récupération des élèves');
 		}
 
+		// Type the students properly (Supabase returns nested objects)
+		const typedStudents = students as unknown as Array<{ student: Student }>;
+
 		// Check for existing worksheet instances
-		const studentIds = students.map((s) => s.student.id);
+		const studentIds = typedStudents.map((s) => s.student.id);
 		const { data: existingInstances } = await locals.supabase
 			.from('worksheet_instances')
 			.select('student_id, instance_data, variant_seed')
@@ -157,9 +172,9 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		// Process in batches to avoid memory issues
 		const BATCH_SIZE = 5;
-		const batches = [];
-		for (let i = 0; i < students.length; i += BATCH_SIZE) {
-			batches.push(students.slice(i, i + BATCH_SIZE));
+		const batches: Array<Array<{ student: Student }>> = [];
+		for (let i = 0; i < typedStudents.length; i += BATCH_SIZE) {
+			batches.push(typedStudents.slice(i, i + BATCH_SIZE));
 		}
 
 		// Generate PDFs for each batch
@@ -219,14 +234,14 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		}
 
 		// Add summary document
-		const summary = generateBatchSummary(worksheet, students, classData.name, mode);
+		const summary = generateBatchSummary(worksheet, typedStudents, classData.name, mode);
 		folder.file('00_SOMMAIRE.txt', summary);
 
 		// Generate zip file
 		const zipData = await zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
 
 		// Return zip file
-		return new Response(zipData, {
+		return new Response(zipData as unknown as BodyInit, {
 			headers: {
 				'Content-Type': 'application/zip',
 				'Content-Disposition': `attachment; filename="${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${classData.name}_${mode}.zip"`
@@ -276,7 +291,7 @@ async function initializeTypst(): Promise<TypstLibrary> {
  * Generate a simple instance from worksheet exercises
  */
 function generateSimpleInstance(worksheet: WorksheetWithRelations): InstanceData {
-	const exercises = worksheet.worksheet_exercises || [];
+	const exercises = worksheet.exercises || [];
 
 	// Sort exercises by position
 	const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
@@ -303,8 +318,8 @@ function generateSimpleInstance(worksheet: WorksheetWithRelations): InstanceData
  * Format student name for display and filename
  */
 function formatStudentName(student: Student): string {
-	const firstName = student.first_name || '';
-	const lastName = student.last_name || '';
+	const firstName = student.firstname || '';
+	const lastName = student.lastname || '';
 
 	if (firstName && lastName) {
 		return `${lastName.toUpperCase()} ${firstName}`;

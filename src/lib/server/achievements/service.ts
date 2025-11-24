@@ -334,7 +334,7 @@ export async function processEvent(
 		}
 
 		// Parse the JSONB response from SQL function
-		const result = data as {
+		const result = data as unknown as {
 			event_id: string;
 			unlocked_achievements: UnlockedAchievementResponse[];
 			count: number;
@@ -399,7 +399,7 @@ export async function awardAchievement(
 			p_teacher_id: teacherId,
 			p_student_id: studentId,
 			p_achievement_id: achievementId,
-			p_reason: reason || null
+			p_reason: reason
 		});
 
 		if (error) {

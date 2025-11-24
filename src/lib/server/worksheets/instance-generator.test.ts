@@ -298,6 +298,7 @@ describe('Instance Generator', () => {
 			const invalidExercises: WorksheetExerciseWithExercise[] = [
 				{
 					...mockExercises[0],
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					exercise: undefined as any
 				}
 			];

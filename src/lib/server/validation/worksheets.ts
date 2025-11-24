@@ -508,7 +508,7 @@ export const updateTemplateSchema = createTemplateSchema.partial();
 /**
  * Schema for listing templates query parameters (GET /api/worksheets/templates)
  */
-export const listTemplatesQuerySchema = z.object({
+export const listWorksheetTemplatesQuerySchema = z.object({
 	page: z.coerce
 		.number()
 		.int('Page must be an integer')
@@ -590,7 +590,7 @@ export function validateUpdateTemplate(data: unknown) {
  * Validate list templates query parameters
  */
 export function validateListTemplatesQuery(params: URLSearchParams) {
-	return listTemplatesQuerySchema.safeParse(Object.fromEntries(params));
+	return listWorksheetTemplatesQuerySchema.safeParse(Object.fromEntries(params));
 }
 
 /**

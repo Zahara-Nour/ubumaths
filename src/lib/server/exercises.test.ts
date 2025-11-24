@@ -340,7 +340,6 @@ describe('deleteExercise', () => {
 			tags: [],
 			statement_md: 'Test',
 			solution_md: 'Test',
-			estimated_time_minutes: null,
 			grade_levels: null,
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',

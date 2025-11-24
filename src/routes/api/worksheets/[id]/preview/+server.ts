@@ -17,14 +17,9 @@ const previewRequestSchema = z.object({
 	variantSeed: z.number().int().min(0).max(2147483647).optional()
 });
 
-export const POST: RequestHandler = async ({
-	params,
-	request,
-	locals: { supabase, safeGetUser }
-}) => {
+export const POST: RequestHandler = async ({ params, request, locals: { supabase, user } }) => {
 	try {
 		// Authenticate user
-		const user = await safeGetUser();
 		if (!user) {
 			return error(401, 'Unauthorized');
 		}
@@ -46,7 +41,7 @@ export const POST: RequestHandler = async ({
 		// Check if user is a teacher (has permission to preview)
 		const { data: profile } = await supabase
 			.from('profiles')
-			.select('role')
+			.select('role, school_id')
 			.eq('id', user.id)
 			.single();
 

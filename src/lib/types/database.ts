@@ -11442,3 +11442,106 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// ============================================================================
+// Custom Type Aliases for convenience
+// ============================================================================
+
+/** Class row type from the classes table */
+export type Class = Tables<'classes'>;
+
+/** Class schedule row type from the class_schedules table */
+export type ClassSchedule = Tables<'class_schedules'>;
+
+/** Notification row type from the notifications table */
+export type Notification = Tables<'notifications'>;
+
+/** User role enum type */
+export type UserRole = Database['public']['Enums']['user_role'];
+
+/** Gender type (string union - matches profiles.gender column) */
+export type Gender = 'male' | 'female' | null;
+
+/** Notification type */
+export type NotificationType = 'info' | 'alert' | 'announcement' | 'reminder';
+
+/** Notification priority */
+export type NotificationPriority = 'normal' | 'important' | 'urgent';
+
+/** Notification target type */
+export type NotificationTargetType =
+	| 'all'
+	| 'students'
+	| 'teachers'
+	| 'class'
+	| 'user'
+	| 'users'
+	| 'role';
+
+/** System event type for system notifications */
+export type SystemEventType =
+	| 'maintenance'
+	| 'update'
+	| 'feature'
+	| 'security'
+	| 'other'
+	| 'assignment_created'
+	| 'resource_added'
+	| 'reward_earned'
+	| 'badge_unlocked'
+	| 'maintenance_scheduled'
+	| 'feature_released'
+	| 'assessment_assigned'
+	| 'assessment_graded';
+
+/** Friendship status type */
+export type FriendshipType = 'pending' | 'accepted' | 'rejected';
+
+/** Week configuration for school calendar */
+export interface WeekConfig {
+	first_day: number; // 0-6 (0=Sunday)
+	last_day: number; // 0-6 (0=Sunday)
+	school_days: number[]; // Array of day numbers (0-6)
+	weekend_days: number[]; // Array of day numbers (0-6)
+}
+
+/** School period definition */
+export interface SchoolPeriod {
+	number: number;
+	name: string | null;
+	start_time: string; // HH:MM:SS format
+	end_time: string; // HH:MM:SS format
+}
+
+/** School timetable with periods */
+export interface SchoolTimetable {
+	periods: SchoolPeriod[];
+	week_config?: WeekConfig;
+}
+
+/** Friend profile data for friendship display */
+export interface FriendProfile {
+	id: string;
+	full_name: string | null;
+	firstname: string | null;
+	lastname: string | null;
+	avatar_url: string | null;
+	role: string;
+	gender: string | null;
+	presence?: {
+		is_online: boolean;
+		last_seen: string | null;
+	};
+}
+
+/** Friendship with enriched profile data */
+export interface FriendshipWithProfile {
+	id: string;
+	status: FriendshipType;
+	friendship_type: FriendshipType;
+	created_at: string;
+	updated_at: string;
+	requester_id: string;
+	addressee_id: string;
+	friend_profile?: FriendProfile;
+}

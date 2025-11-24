@@ -21,7 +21,7 @@ import type { Database } from '$lib/types/database';
 // TYPES
 // ============================================================================
 
-type QuestionTemplate = Database['public']['Tables']['question_templates']['Row'];
+type _QuestionTemplate = Database['public']['Tables']['question_templates']['Row'];
 
 interface Match {
 	questionId: string;

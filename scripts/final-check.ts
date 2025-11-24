@@ -52,10 +52,18 @@ async function finalCheck() {
 				.eq('phase', 1)
 				.eq('migration_status', 'failed');
 
-			failedDetails?.forEach((q: any) => {
-				console.log(`  - Index ${q.old_question_index}: ${q.old_description?.substring(0, 60)}...`);
-				console.log(`    Erreur: ${q.conversion_errors?.[0]?.substring(0, 100)}...`);
-			});
+			failedDetails?.forEach(
+				(q: {
+					old_question_index: number;
+					old_description: string | null;
+					conversion_errors: string[] | null;
+				}) => {
+					console.log(
+						`  - Index ${q.old_question_index}: ${q.old_description?.substring(0, 60)}...`
+					);
+					console.log(`    Erreur: ${q.conversion_errors?.[0]?.substring(0, 100)}...`);
+				}
+			);
 		}
 	}
 
@@ -67,12 +75,17 @@ async function finalCheck() {
 		.order('created_at', { ascending: false })
 		.limit(5);
 
-	recent?.forEach((q: any, i: number) => {
-		const time = new Date(q.created_at).toLocaleTimeString('fr-FR');
-		console.log(
-			`  ${i + 1}. [${q.type}] ${q.title?.substring(0, 50) || 'Sans titre'}... (${time})`
-		);
-	});
+	recent?.forEach(
+		(
+			q: { title: string | null; description: string | null; type: string; created_at: string },
+			i: number
+		) => {
+			const time = new Date(q.created_at).toLocaleTimeString('fr-FR');
+			console.log(
+				`  ${i + 1}. [${q.type}] ${q.title?.substring(0, 50) || 'Sans titre'}... (${time})`
+			);
+		}
+	);
 
 	// Count by type
 	const { data: allQuestions } = await supabase.from('question_templates').select('type');
@@ -80,7 +93,7 @@ async function finalCheck() {
 	if (allQuestions) {
 		console.log('\n📊 Répartition par type:');
 		const typeCounts: Record<string, number> = {};
-		allQuestions.forEach((q: any) => {
+		allQuestions.forEach((q: { type: string }) => {
 			typeCounts[q.type] = (typeCounts[q.type] || 0) + 1;
 		});
 

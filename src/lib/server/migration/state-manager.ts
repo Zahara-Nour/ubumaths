@@ -277,8 +277,11 @@ export class MigrationStateManager {
 		return (data || []).map((row) => ({
 			...row,
 			phase: row.phase as MigrationPhase | null,
-			conversion_errors: (row.conversion_errors as unknown as ConversionError[]) || []
-		}));
+			migration_status: row.migration_status as MigrationStatus,
+			conversion_errors: (row.conversion_errors as unknown as ConversionError[]) || [],
+			created_at: row.created_at || '',
+			updated_at: row.updated_at || ''
+		})) as MigrationTracking[];
 	}
 
 	/**

@@ -17,7 +17,8 @@ export type AchievementCategory =
 	| 'mastery'
 	| 'participation'
 	| 'social'
-	| 'collection';
+	| 'collection'
+	| 'milestone';
 
 export type AchievementRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 

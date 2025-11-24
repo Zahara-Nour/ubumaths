@@ -426,7 +426,7 @@ class AchievementsManager {
 				result.progress = {
 					current_value: progress.current_value,
 					target_value: progress.target_value,
-					progress_percentage: progress.progress_percentage,
+					progress_percentage: progress.progress_percentage ?? 0,
 					context_key: progress.context_key ?? undefined
 				};
 			}

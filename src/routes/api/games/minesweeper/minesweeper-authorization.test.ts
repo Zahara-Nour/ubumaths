@@ -115,7 +115,7 @@ describe('POST /api/games/minesweeper/start', () => {
 		mockSequence(mockSupabase, [
 			{ data: mockProfiles.student, error: null }, // requireRole profile check
 			{
-				data: { id: TEST_IDS.game, ...mockGame },
+				data: mockGame as any, // Game data already includes id
 				error: null
 			} // insert game
 		]);
@@ -232,13 +232,13 @@ describe('POST /api/games/minesweeper/[id]/complete', () => {
 		mockSequence(mockSupabase, [
 			{ data: mockProfiles.student, error: null }, // requireRole profile check
 			{
-				data: { ...mockGame, grid_state: validGridState },
+				data: { ...mockGame, grid_state: validGridState } as any,
 				error: null
 			} // fetch game
 		]);
 
 		// Mock RPC call with .single() support
-		mockSupabase.rpc.mockReturnValue({
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>).mockReturnValue({
 			single: vi.fn().mockResolvedValue({
 				data: {
 					success: true,
@@ -382,13 +382,13 @@ describe('POST /api/games/minesweeper/[id]/loss', () => {
 		mockSequence(mockSupabase, [
 			{ data: mockProfiles.student, error: null }, // requireRole profile check
 			{
-				data: { ...mockGame, grid_state: validGridState },
+				data: { ...mockGame, grid_state: validGridState } as any,
 				error: null
 			} // fetch game
 		]);
 
 		// Mock RPC call (no return value needed, just success)
-		mockSupabase.rpc.mockResolvedValueOnce({
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
 			data: null,
 			error: null
 		});
@@ -503,7 +503,7 @@ describe('POST /api/games/minesweeper/[id]/hint', () => {
 		mockSuccess(mockSupabase, mockProfiles.student);
 
 		// Mock RPC call with .single() support
-		mockSupabase.rpc.mockReturnValue({
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>).mockReturnValue({
 			single: vi.fn().mockResolvedValue({
 				data: {
 					success: true,
@@ -612,7 +612,7 @@ describe('GET /api/games/minesweeper/current', () => {
 
 		// Mock game fetch with maybeSingle
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
-			data: mockGame,
+			data: mockGame as any,
 			error: null
 		});
 
