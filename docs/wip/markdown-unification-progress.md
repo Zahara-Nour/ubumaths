@@ -72,13 +72,16 @@ src/lib/components/markdown/
 - [x] `src/lib/components/markdown/MarkdownRenderer.svelte` (props blanks)
 - [x] Tests unitaires pour blank parsing (7 nouveaux tests)
 
-### Phase 3 : Intégration Questions → Markdown
+### Phase 3 : Intégration Questions → Markdown (IN PROGRESS)
 
-- [ ] `src/lib/questions/types.ts` (ajout statement_md)
-- [ ] `src/lib/questions/utils/content-to-markdown.ts`
-- [ ] `src/lib/questions/generator/instance-generator.ts`
-- [ ] `src/lib/components/questions/FlashCard.svelte`
-- [ ] `src/lib/components/QuestionPreview.svelte`
+- [x] `src/lib/questions/types.ts` (ajout statement_md, correction_md)
+- [x] `src/lib/questions/generator/content-to-markdown.ts` (NEW - conversion utility)
+- [x] `src/lib/questions/generator/content-to-markdown.test.ts` (NEW - 14 tests)
+- [x] `src/lib/questions/generator/instance-generator.ts` (génère statement_md, correction_md)
+- [x] `src/lib/components/questions/FlashCard.svelte` (→ MarkdownRenderer)
+- [x] `src/lib/components/questions/QuestionCard.svelte` (→ MarkdownRenderer)
+- [x] `src/lib/components/questions/CorrectionCard.svelte` (→ MarkdownRenderer)
+- [ ] Code review Phase 3
 
 ### Phase 4 : Simplification et nettoyage
 
@@ -110,7 +113,7 @@ src/lib/components/markdown/
 | Phase | Commit    | Description                                                  |
 | ----- | --------- | ------------------------------------------------------------ |
 | 1     | 1a140325  | `feat(markdown): add generic markdown rendering components`  |
-| 2     | (pending) | `feat(parser): add {{blank:N}} syntax for fill-in-blanks`    |
+| 2     | 9201ee13  | `feat(parser): add {{blank:N}} syntax for fill-in-blanks`    |
 | 3     | (pending) | `feat(questions): migrate to markdown-based rendering`       |
 | 4     | (pending) | `refactor(rendering): unify exercise and question rendering` |
 | 5     | (pending) | `feat(migration): add ContentField to markdown migration`    |

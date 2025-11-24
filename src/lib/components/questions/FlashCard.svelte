@@ -24,7 +24,8 @@
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { contentFieldsToMarkdown } from '$lib/questions/generator/content-to-markdown';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -114,6 +115,15 @@
 	const hasReachedMaxAttempts = $derived(maxAttempts > 0 && attempts >= maxAttempts);
 
 	const isInputDisabled = $derived(!interactive || isSubmitted || hasReachedMaxAttempts);
+
+	// Markdown content (with fallback for backward compatibility)
+	const statementMarkdown = $derived(
+		instance.statement_md || contentFieldsToMarkdown(instance.statement)
+	);
+	const correctionMarkdown = $derived(
+		instance.correction_md ||
+			(instance.correction ? contentFieldsToMarkdown(instance.correction) : '')
+	);
 
 	// ============================================================================
 	// INITIALIZATION
@@ -357,17 +367,7 @@
 						<div class="statement-section">
 							<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
 							<div class="statement-content rounded-lg border bg-card p-4">
-								{#each instance.statement as field, i (`${i}-${field.type}`)}
-									{#if field.type === 'text'}
-										<MathDisplay text={field.content} />
-									{:else if field.type === 'image'}
-										<img
-											src={field.content}
-											alt={field.alt || 'Question image'}
-											class="my-4 max-w-full rounded-lg"
-										/>
-									{/if}
-								{/each}
+								<MarkdownRenderer content={statementMarkdown} />
 							</div>
 						</div>
 
@@ -520,7 +520,7 @@
 											{/each}
 										</ul>
 									{:else}
-										<MathDisplay text={String(userAnswer)} />
+										<MarkdownRenderer content={`$$${String(userAnswer)}$$`} />
 									{/if}
 								</div>
 							</div>
@@ -533,31 +533,21 @@
 								{#if Array.isArray(instance.answer)}
 									<ul class="space-y-1">
 										{#each instance.answer as ans, i (i)}
-											<li><MathDisplay text={String(ans)} /></li>
+											<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
 										{/each}
 									</ul>
 								{:else}
-									<MathDisplay text={String(instance.answer)} />
+									<MarkdownRenderer content={`$$${String(instance.answer)}$$`} />
 								{/if}
 							</div>
 						</div>
 
 						<!-- Detailed Correction -->
-						{#if instance.correction && instance.correction.length > 0}
+						{#if correctionMarkdown}
 							<div class="correction-steps">
 								<h3 class="mb-3 text-lg font-semibold">Explication détaillée</h3>
 								<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
-									{#each instance.correction as field, i (`corr-${i}-${field.type}`)}
-										{#if field.type === 'text'}
-											<MathDisplay text={field.content} />
-										{:else if field.type === 'image'}
-											<img
-												src={field.content}
-												alt={field.alt || 'Correction image'}
-												class="my-2 max-w-full rounded-lg"
-											/>
-										{/if}
-									{/each}
+									<MarkdownRenderer content={correctionMarkdown} />
 								</div>
 							</div>
 						{/if}

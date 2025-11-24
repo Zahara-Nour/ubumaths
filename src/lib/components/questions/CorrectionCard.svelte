@@ -22,7 +22,8 @@
 
 <script lang="ts">
 	import type { TestAnswerResult } from '$lib/types/test';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { contentFieldsToMarkdown } from '$lib/questions/generator/content-to-markdown';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -68,6 +69,17 @@
 	const isScrollable = $derived(Math.max(frontHeight, backHeight) > maxViewportHeight);
 
 	const isCorrect = $derived(answerResult.isCorrect);
+
+	// Markdown content (with fallback for backward compatibility)
+	const statementMarkdown = $derived(
+		answerResult.instance.statement_md || contentFieldsToMarkdown(answerResult.instance.statement)
+	);
+	const correctionMarkdown = $derived(
+		answerResult.instance.correction_md ||
+			(answerResult.instance.correction
+				? contentFieldsToMarkdown(answerResult.instance.correction)
+				: '')
+	);
 
 	// ============================================================================
 	// INITIALIZATION
@@ -194,17 +206,7 @@
 
 							{#if showStatement}
 								<div class="statement-content rounded-lg border bg-muted/30 p-4">
-									{#each answerResult.instance.statement as field, i (i)}
-										{#if field.type === 'text'}
-											<MathDisplay text={field.content} />
-										{:else if field.type === 'image'}
-											<img
-												src={field.content}
-												alt={field.alt || 'Question image'}
-												class="my-4 max-w-full rounded-lg"
-											/>
-										{/if}
-									{/each}
+									<MarkdownRenderer content={statementMarkdown} />
 								</div>
 							{/if}
 						</div>
@@ -245,11 +247,11 @@
 									{:else if Array.isArray(answerResult.userAnswer.value)}
 										<ul class="space-y-1">
 											{#each answerResult.userAnswer.value as val, i (i)}
-												<li><MathDisplay text={String(val)} /></li>
+												<li><MarkdownRenderer content={`$$${String(val)}$$`} /></li>
 											{/each}
 										</ul>
 									{:else}
-										<MathDisplay text={String(answerResult.userAnswer.value)} />
+										<MarkdownRenderer content={`$$${String(answerResult.userAnswer.value)}$$`} />
 									{/if}
 								</div>
 							</div>
@@ -262,11 +264,11 @@
 								{#if Array.isArray(answerResult.instance.answer)}
 									<ul class="space-y-1">
 										{#each answerResult.instance.answer as ans, i (i)}
-											<li><MathDisplay text={String(ans)} /></li>
+											<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
 										{/each}
 									</ul>
 								{:else}
-									<MathDisplay text={String(answerResult.instance.answer)} />
+									<MarkdownRenderer content={`$$${String(answerResult.instance.answer)}$$`} />
 								{/if}
 							</div>
 						</div>
@@ -308,19 +310,9 @@
 					</Card.Header>
 
 					<Card.Content>
-						{#if answerResult.instance.correction && answerResult.instance.correction.length > 0}
+						{#if correctionMarkdown}
 							<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
-								{#each answerResult.instance.correction as field, i (i)}
-									{#if field.type === 'text'}
-										<MathDisplay text={field.content} />
-									{:else if field.type === 'image'}
-										<img
-											src={field.content}
-											alt={field.alt || 'Correction image'}
-											class="my-2 max-w-full rounded-lg"
-										/>
-									{/if}
-								{/each}
+								<MarkdownRenderer content={correctionMarkdown} />
 							</div>
 						{:else}
 							<div

@@ -23,7 +23,8 @@
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
-	import MathDisplay from '$lib/components/MathDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { contentFieldsToMarkdown } from '$lib/questions/generator/content-to-markdown';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -78,6 +79,11 @@
 	const canSubmit = $derived(interactive && !isSubmitted && hasValidInput());
 
 	const isInputDisabled = $derived(!interactive || isSubmitted);
+
+	// Markdown content (with fallback for backward compatibility)
+	const statementMarkdown = $derived(
+		instance.statement_md || contentFieldsToMarkdown(instance.statement)
+	);
 
 	// ============================================================================
 	// INITIALIZATION
@@ -222,17 +228,7 @@
 			<div class="statement-section">
 				<h3 class="mb-3 text-lg font-semibold">Énoncé</h3>
 				<div class="statement-content rounded-lg border bg-card p-4">
-					{#each instance.statement as field, i (i)}
-						{#if field.type === 'text'}
-							<MathDisplay text={field.content} />
-						{:else if field.type === 'image'}
-							<img
-								src={field.content}
-								alt={field.alt || 'Question image'}
-								class="my-4 max-w-full rounded-lg"
-							/>
-						{/if}
-					{/each}
+					<MarkdownRenderer content={statementMarkdown} />
 				</div>
 			</div>
 
