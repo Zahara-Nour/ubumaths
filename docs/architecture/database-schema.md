@@ -2192,16 +2192,15 @@ Published templates must have a **unique category combination**:
 
 #### Variations Structure
 
-Each template contains one or more variations (stored as JSONB array):
+Each template contains one or more variations (stored as JSONB array).
+
+**IMPORTANT**: As of Migration 090 (2025-11-24), content fields use **markdown strings** instead of ContentField[] arrays.
 
 ```json
 {
 	"variations": [
 		{
-			"statement": [
-				{ "type": "text", "content": "Calculer {a} + {b}" },
-				{ "type": "image", "url": "https://..." }
-			],
+			"statement": "Calculer $${a} + {b}$$\n\nOu utiliser une image: ![alt text](url)",
 			"variables": [
 				{
 					"name": "a",
@@ -2223,11 +2222,39 @@ Each template contains one or more variations (stored as JSONB array):
 				}
 			],
 			"answer": "{result}",
-			"correction": [{ "type": "text", "content": "La somme est {result}" }],
+			"correction": "La somme est **{result}**\n\nCalcul: $${a} + {b} = {result}$$",
 			"blanks": [], // For fill_in_blanks type
-			"choices": [] // For multiple_choice type
+			"choices": [
+				{
+					"content": "{result}",
+					"isCorrect": true
+				},
+				{
+					"content": "{a}",
+					"isCorrect": false
+				}
+			] // For multiple_choice type - content is now a markdown string
 		}
 	]
+}
+```
+
+**Old Format (before Migration 090)**:
+
+```json
+{
+	"statement": [
+		{ "type": "text", "content": "Calculer {a} + {b}" },
+		{ "type": "image", "url": "https://..." }
+	]
+}
+```
+
+**New Format (Migration 090+)**:
+
+```json
+{
+	"statement": "Calculer $${a} + {b}$$\n\n![Image](https://...)"
 }
 ```
 

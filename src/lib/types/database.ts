@@ -6056,6 +6056,9 @@ export type Database = {
 					transform_type: string | null;
 					type: string;
 					updated_at: string | null;
+					// Migration 090: variations now contains markdown strings instead of ContentField[]
+					// Structure: [{ statement: string, variables?: {...}[], answer: string | string[],
+					//              correction?: string, blanks?: {...}[], choices?: { content: string, isCorrect: boolean }[] }]
 					variations: Json;
 				};
 				Insert: {
@@ -7308,31 +7311,31 @@ export type Database = {
 			};
 			srs_cards: {
 				Row: {
-					back_content: Json | null;
+					back_content: string | null; // Markdown string (TEXT) - Migration 090
 					card_type: string;
 					created_at: string;
 					deck_id: string;
-					front_content: Json | null;
+					front_content: string | null; // Markdown string (TEXT) - Migration 090
 					id: string;
 					template_id: string | null;
 					updated_at: string;
 				};
 				Insert: {
-					back_content?: Json | null;
+					back_content?: string | null; // Markdown string (TEXT) - Migration 090
 					card_type: string;
 					created_at?: string;
 					deck_id: string;
-					front_content?: Json | null;
+					front_content?: string | null; // Markdown string (TEXT) - Migration 090
 					id?: string;
 					template_id?: string | null;
 					updated_at?: string;
 				};
 				Update: {
-					back_content?: Json | null;
+					back_content?: string | null; // Markdown string (TEXT) - Migration 090
 					card_type?: string;
 					created_at?: string;
 					deck_id?: string;
-					front_content?: Json | null;
+					front_content?: string | null; // Markdown string (TEXT) - Migration 090
 					id?: string;
 					template_id?: string | null;
 					updated_at?: string;
