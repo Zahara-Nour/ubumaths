@@ -170,30 +170,7 @@ All students in a group see the same instance.
 
 ## Advanced Features
 
-### 6. Pre-parsed AST (Performance Optimization)
-
-If you're rendering many instances, pre-parse the AST for faster rendering.
-
-```svelte
-<script lang="ts">
-	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-
-	// parseAST: true pre-parses markdown to AST during instance generation
-	// Useful when caching instances or rendering lists
-</script>
-
-<ExerciseDisplay exercise={paramExercise} mode="instance" parseAST={true} />
-```
-
-**When to use**:
-
-- Rendering exercise lists
-- Caching instances
-- Improved performance when AST is used multiple times
-
----
-
-### 7. Two-way Binding for Solution Toggle
+### 6. Two-way Binding for Solution Toggle
 
 Control solution visibility from parent component.
 
@@ -218,7 +195,7 @@ Control solution visibility from parent component.
 
 ## Error Handling
 
-### 8. Circular Dependency Error
+### 7. Circular Dependency Error
 
 ```svelte
 <script lang="ts">
@@ -247,7 +224,7 @@ Circular dependency detected: a → b → a
 
 ---
 
-### 9. Missing Required IDs
+### 8. Missing Required IDs
 
 ```svelte
 <script lang="ts">
@@ -342,21 +319,20 @@ The component includes:
 
 1. **Static exercises**: No overhead, renders directly
 2. **Parameterized exercises**: Instance generation is fast (<1ms for simple expressions)
-3. **AST parsing**: Slightly slower (~5-10ms), use `parseAST={true}` only when caching instances
+3. **Markdown rendering**: Handled by MarkdownRenderer component with efficient parsing
 4. **Re-renders**: Component uses `$derived` for efficient reactivity
 
 ---
 
 ## Component Props Reference
 
-| Prop           | Type                       | Default      | Description                                 |
-| -------------- | -------------------------- | ------------ | ------------------------------------------- |
-| `exercise`     | `Exercise`                 | **required** | Exercise template to display                |
-| `mode`         | `'template' \| 'instance'` | `'instance'` | Display mode (teacher vs student)           |
-| `userId`       | `string \| undefined`      | `undefined`  | Student ID for per-student seeding          |
-| `groupId`      | `string \| undefined`      | `undefined`  | Group/assignment ID for per-group seeding   |
-| `showSolution` | `boolean`                  | `false`      | Initial solution visibility (bindable)      |
-| `parseAST`     | `boolean`                  | `false`      | Pre-parse markdown to AST during generation |
+| Prop           | Type                       | Default      | Description                               |
+| -------------- | -------------------------- | ------------ | ----------------------------------------- |
+| `exercise`     | `Exercise`                 | **required** | Exercise template to display              |
+| `mode`         | `'template' \| 'instance'` | `'instance'` | Display mode (teacher vs student)         |
+| `userId`       | `string \| undefined`      | `undefined`  | Student ID for per-student seeding        |
+| `groupId`      | `string \| undefined`      | `undefined`  | Group/assignment ID for per-group seeding |
+| `showSolution` | `boolean`                  | `false`      | Initial solution visibility (bindable)    |
 
 ---
 
