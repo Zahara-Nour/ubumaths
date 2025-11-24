@@ -24,6 +24,7 @@
 	import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
 	import type { DocumentNode, ParseOptions } from '$lib/exercises/types';
 	import type { BlankState, MarkdownDisplayMode } from './types';
+	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -74,14 +75,25 @@
 
 	/**
 	 * Parse the markdown content into an AST.
+	 * Uses LRU cache to avoid re-parsing identical content.
 	 * Returns null if parsing fails.
 	 */
 	let ast = $derived.by<DocumentNode | null>(() => {
 		if (!content) {
 			return { type: 'document', children: [] };
 		}
+
+		// Check cache first
+		const cached = getCachedAST(content, parseOptions);
+		if (cached) {
+			return cached;
+		}
+
+		// Parse and cache
 		try {
-			return parseMarkdown(content, parseOptions);
+			const parsed = parseMarkdown(content, parseOptions);
+			setCachedAST(content, parsed, parseOptions);
+			return parsed;
 		} catch (error) {
 			console.error('Markdown parse error:', error);
 			return null;
