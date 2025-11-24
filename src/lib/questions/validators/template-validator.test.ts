@@ -9,6 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateTemplate } from './template-validator';
 import type { QuestionTemplate } from '../types';
+import { templateMarkdown } from '$lib/shared/markdown';
 
 describe('validateTemplate - Valid Templates', () => {
 	it('should validate simple numerical exact template', () => {
@@ -19,7 +20,7 @@ describe('validateTemplate - Valid Templates', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate 2 + 3' }],
+					statement: templateMarkdown('Calculate 2 + 3'),
 					variables: [],
 					answer: '5'
 				}
@@ -47,7 +48,7 @@ describe('validateTemplate - Valid Templates', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+					statement: templateMarkdown('Calculate {@:a} + {@:b}'),
 					variables: [
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'b', expression: '{#:1-10}' }
@@ -88,7 +89,7 @@ describe('validateTemplate - Valid Templates', () => {
 				status: 'published' as const,
 				variations: [
 					{
-						statement: [{ type: 'text', content: 'Question' }],
+						statement: templateMarkdown('Question'),
 						variables: [],
 						answer:
 							type === 'fill_in_blanks' ? ['answer'] : type === 'multiple_choice' ? '0' : '42',
@@ -97,10 +98,10 @@ describe('validateTemplate - Valid Templates', () => {
 						choices:
 							type === 'multiple_choice'
 								? [
-										{ content: { type: 'text', content: 'A' }, isCorrect: true },
-										{ content: { type: 'text', content: 'B' }, isCorrect: false },
-										{ content: { type: 'text', content: 'C' }, isCorrect: false },
-										{ content: { type: 'text', content: 'D' }, isCorrect: false }
+										{ content: templateMarkdown('A'), isCorrect: true },
+										{ content: templateMarkdown('B'), isCorrect: false },
+										{ content: templateMarkdown('C'), isCorrect: false },
+										{ content: templateMarkdown('D'), isCorrect: false }
 									]
 								: undefined
 					}
@@ -130,7 +131,7 @@ describe('validateTemplate - Valid Templates', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
+					statement: templateMarkdown('Calculate {@:a} + {@:b}'),
 					variables: [
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'b', expression: '{#:1-10}' }
@@ -138,7 +139,7 @@ describe('validateTemplate - Valid Templates', () => {
 					answer: '{eval:{@:a}+{@:b}}'
 				},
 				{
-					statement: [{ type: 'text', content: 'Calculate {@:a} - {@:b}' }],
+					statement: templateMarkdown('Calculate {@:a} - {@:b}'),
 					variables: [
 						{ name: 'a', expression: '{#:10-20}' },
 						{ name: 'b', expression: '{#:1-{@:a}}' }
@@ -170,7 +171,7 @@ describe('validateTemplate - Required Fields', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5'
 				}
@@ -268,7 +269,7 @@ describe('validateTemplate - Required Fields', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: []
 				}
 			],
@@ -295,7 +296,7 @@ describe('validateTemplate - Required Fields', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5'
 				}
@@ -322,7 +323,7 @@ describe('validateTemplate - Required Fields', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5'
 				}
@@ -350,7 +351,7 @@ describe('validateTemplate - Required Fields', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5'
 				}
@@ -377,7 +378,7 @@ describe('validateTemplate - Required Fields', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5'
 				}
@@ -404,7 +405,7 @@ describe('validateTemplate - Required Fields', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5'
 				}
@@ -433,7 +434,7 @@ describe('validateTemplate - Statement Validation', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [],
+					statement: templateMarkdown(''),
 					variables: [],
 					answer: '5'
 				}
@@ -450,7 +451,7 @@ describe('validateTemplate - Statement Validation', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('statement'))).toBe(true);
+		expect(errors.some((e) => e.includes('Statement cannot be empty'))).toBe(true);
 	});
 
 	it('should fail on statement with empty text content', () => {
@@ -461,7 +462,7 @@ describe('validateTemplate - Statement Validation', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: '' }],
+					statement: templateMarkdown(''),
 					variables: [],
 					answer: '5'
 				}
@@ -478,7 +479,7 @@ describe('validateTemplate - Statement Validation', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('Text content'))).toBe(true);
+		expect(errors.some((e) => e.includes('Statement cannot be empty'))).toBe(true);
 	});
 
 	it('should validate statement with image field', () => {
@@ -489,10 +490,7 @@ describe('validateTemplate - Statement Validation', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [
-						{ type: 'text', content: 'What is this?' },
-						{ type: 'image', content: 'https://example.com/image.png', alt: 'Example' }
-					],
+					statement: templateMarkdown('What is this?\n\n![Example](https://example.com/image.png)'),
 					variables: [],
 					answer: '5'
 				}
@@ -522,7 +520,7 @@ describe('validateTemplate - Variable Validation', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'a', expression: '{#:1-10}' }
@@ -553,7 +551,7 @@ describe('validateTemplate - Variable Validation', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [{ name: '', expression: '{#:1-10}' }],
 					answer: '5'
 				}
@@ -581,7 +579,7 @@ describe('validateTemplate - Variable Validation', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: '_private', expression: '{#:1-10}' },
@@ -614,12 +612,12 @@ describe('validateTemplate - Variable Validation', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question 1' }],
+					statement: templateMarkdown('Question 1'),
 					variables: [{ name: 'a', expression: '{#:1-10}' }],
 					answer: '{@:a}'
 				},
 				{
-					statement: [{ type: 'text', content: 'Question 2' }],
+					statement: templateMarkdown('Question 2'),
 					variables: [{ name: 'a', expression: '{#:10-20}' }], // Same name, different variation OK
 					answer: '{@:a}'
 				}
@@ -649,7 +647,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: 'x + 1'
 				}
@@ -679,7 +677,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 				status: 'published',
 				variations: [
 					{
-						statement: [{ type: 'text', content: 'Question' }],
+						statement: templateMarkdown('Question'),
 						variables: [],
 						answer: 'x + 1'
 					}
@@ -707,7 +705,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: ['answer']
 				}
@@ -734,7 +732,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '0'
 				}
@@ -762,10 +760,10 @@ describe('validateTemplate - Type-Specific Validation', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '0',
-					choices: [{ content: { type: 'text', content: 'Only one' }, isCorrect: true }]
+					choices: [{ content: templateMarkdown('Only one'), isCorrect: true }]
 				}
 			],
 			multipleAnswers: false,
@@ -793,12 +791,12 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Valid' }],
+					statement: templateMarkdown('Valid'),
 					variables: [],
 					answer: '5'
 				},
 				{
-					statement: [], // Invalid
+					statement: templateMarkdown(''), // Invalid
 					variables: [],
 					answer: '10'
 				}
@@ -826,12 +824,12 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [], // Invalid variation 1
+					statement: templateMarkdown(''), // Invalid variation 1
 					variables: [],
 					answer: '5'
 				},
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '' // Invalid variation 2
 				}
@@ -862,7 +860,7 @@ describe('validateTemplate - Edge Cases', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5'
 				}
@@ -891,10 +889,10 @@ describe('validateTemplate - Edge Cases', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5',
-					correction: [{ type: 'text', content: 'The answer is 5' }]
+					correction: templateMarkdown('The answer is 5')
 				}
 			],
 			precision: { type: 'none' },
@@ -920,7 +918,7 @@ describe('validateTemplate - Edge Cases', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5'
 				}
@@ -962,7 +960,7 @@ describe('validateTemplate - Edge Cases', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'a'.repeat(5000) }],
+					statement: templateMarkdown('a'.repeat(5000)),
 					variables: [],
 					answer: '5'
 				}
@@ -995,7 +993,7 @@ describe('validateTemplate - Edge Cases', () => {
 			status: 'published',
 			variations: [
 				{
-					statement: [{ type: 'text', content: 'Question' }],
+					statement: templateMarkdown('Question'),
 					variables,
 					answer: '5'
 				}
@@ -1025,7 +1023,7 @@ describe('validateTemplate - Multiple Errors', () => {
 			status: 'published' as const,
 			variations: [
 				{
-					statement: [],
+					statement: templateMarkdown(''),
 					variables: [
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'a', expression: '{#:1-10}' }
@@ -1045,7 +1043,7 @@ describe('validateTemplate - Multiple Errors', () => {
 		expect(errors.length).toBeGreaterThan(1);
 
 		// Should have errors for: empty statement, duplicate variable, empty grades, missing fields
-		expect(errors.some((e) => e.includes('statement'))).toBe(true);
+		expect(errors.some((e) => e.includes('Statement cannot be empty'))).toBe(true);
 		expect(errors.some((e) => e.includes('Duplicate') || e.includes('duplicate'))).toBe(true);
 		expect(errors.some((e) => e.includes('grade'))).toBe(true);
 		expect(errors.some((e) => e.includes('transformType'))).toBe(true);

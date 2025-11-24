@@ -18,6 +18,7 @@ import {
 } from './question-transformer';
 import type { QuestionBase } from './old-question-types';
 import type { QuestionTemplate } from '$lib/questions/types';
+import { templateMarkdown } from '$lib/shared/markdown';
 
 describe('Question Transformer', () => {
 	describe('transformQuestion', () => {
@@ -114,18 +115,13 @@ describe('Question Transformer', () => {
 
 				const choices = result.template?.variations[0]?.choices;
 				expect(choices).toHaveLength(2);
-				expect(choices?.[0]).toEqual({
-					content: { type: 'text', content: 'pair' },
-					isCorrect: true
-				});
-				expect(choices?.[1]).toEqual({
-					content: { type: 'text', content: 'impair' },
-					isCorrect: false
-				});
+				expect(choices?.[0].content).toContain('pair');
+				expect(choices?.[0].isCorrect).toBe(true);
+				expect(choices?.[1].content).toContain('impair');
+				expect(choices?.[1].isCorrect).toBe(false);
 			});
 
 			it('should transform multiple answer questions', () => {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				const oldQuestion: QuestionBase = {
 					description: 'Multiples de 3',
 					enounces: ['Quels nombres sont des multiples de 3 ?'],
@@ -231,11 +227,11 @@ describe('Question Transformer', () => {
 				expect(result.template?.variations).toHaveLength(2);
 
 				const var1 = result.template?.variations[0];
-				expect(var1?.statement[0].content).toContain('Additionner');
+				expect(var1?.statement).toContain('Additionner');
 				expect(var1?.answer).toBe('{{eval:{{1}}+{{2}}}}');
 
 				const var2 = result.template?.variations[1];
-				expect(var2?.statement[0].content).toContain('Soustraire');
+				expect(var2?.statement).toContain('Soustraire');
 				expect(var2?.answer).toBe('{{eval:{{1}}-{{2}}}}');
 			});
 		});
@@ -552,7 +548,7 @@ describe('Question Transformer', () => {
 				title: 'Test Question',
 				variations: [
 					{
-						statement: [{ type: 'text', content: 'Test' }],
+						statement: templateMarkdown('Test'),
 						answer: '42'
 					}
 				],
@@ -593,7 +589,7 @@ describe('Question Transformer', () => {
 				title: 'Test',
 				variations: [
 					{
-						statement: [],
+						statement: templateMarkdown(''),
 						// eslint-disable-next-line @typescript-eslint/no-explicit-any
 						answer: undefined as any
 					}
