@@ -2,9 +2,9 @@
 
 ## État actuel
 
-- **Phase** : 2 (COMPLETE)
-- **Tâche en cours** : Phase 3 à démarrer
-- **Dernier commit** : 1a140325 `feat(markdown): add generic markdown rendering components`
+- **Phase** : 4 (COMPLETE - partial)
+- **Tâche en cours** : Quality checks finaux
+- **Dernier commit** : (pending Phase 4 commit)
 
 ## Objectif
 
@@ -72,7 +72,7 @@ src/lib/components/markdown/
 - [x] `src/lib/components/markdown/MarkdownRenderer.svelte` (props blanks)
 - [x] Tests unitaires pour blank parsing (7 nouveaux tests)
 
-### Phase 3 : Intégration Questions → Markdown (IN PROGRESS)
+### Phase 3 : Intégration Questions → Markdown (COMPLETE)
 
 - [x] `src/lib/questions/types.ts` (ajout statement_md, correction_md)
 - [x] `src/lib/questions/generator/content-to-markdown.ts` (NEW - conversion utility)
@@ -81,13 +81,17 @@ src/lib/components/markdown/
 - [x] `src/lib/components/questions/FlashCard.svelte` (→ MarkdownRenderer)
 - [x] `src/lib/components/questions/QuestionCard.svelte` (→ MarkdownRenderer)
 - [x] `src/lib/components/questions/CorrectionCard.svelte` (→ MarkdownRenderer)
-- [ ] Code review Phase 3
+- [x] Code review Phase 3
 
-### Phase 4 : Simplification et nettoyage
+### Phase 4 : Simplification et nettoyage (COMPLETE - partial)
 
-- [ ] `src/lib/components/exercises/ExerciseDisplay.svelte`
-- [ ] `src/lib/components/MathDisplay.svelte` (dépréciation)
-- [ ] `src/lib/utils/latex-parser.ts` (suppression ou fusion)
+- [x] `src/lib/components/MathDisplay.svelte` (dépréciation notice ajoutée)
+- [x] `src/lib/components/questions/QuestionPreviewBaseCard.svelte` (→ MarkdownRenderer)
+- [ ] `src/lib/components/exercises/ExerciseDisplay.svelte` (conservé - fonctionne avec son propre système AST)
+- [ ] `src/lib/utils/latex-parser.ts` (conservé pour rétrocompatibilité avec ChatBot/SRS)
+
+Note: ExerciseDisplay et les composants ChatBot/SRS conservent MathDisplay pour l'instant.
+Migration complète possible dans une future phase si nécessaire.
 
 ### Phase 5 : Migration données (optionnel)
 
@@ -114,6 +118,6 @@ src/lib/components/markdown/
 | ----- | --------- | ------------------------------------------------------------ |
 | 1     | 1a140325  | `feat(markdown): add generic markdown rendering components`  |
 | 2     | 9201ee13  | `feat(parser): add {{blank:N}} syntax for fill-in-blanks`    |
-| 3     | (pending) | `feat(questions): migrate to markdown-based rendering`       |
+| 3     | bf4a7ff0  | `feat(questions): migrate to markdown-based rendering`       |
 | 4     | (pending) | `refactor(rendering): unify exercise and question rendering` |
 | 5     | (pending) | `feat(migration): add ContentField to markdown migration`    |

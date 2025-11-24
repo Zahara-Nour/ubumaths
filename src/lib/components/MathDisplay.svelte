@@ -2,6 +2,19 @@
 	MathDisplay Component
 	=====================
 
+	@deprecated Use MarkdownRenderer from '$lib/components/markdown' instead.
+	This component is kept for backward compatibility with ChatBot and SRS components.
+	New code should use MarkdownRenderer which supports full markdown + math + images.
+
+	Example migration:
+	- Old: <MathDisplay text="Calculate $$2+3$$" />
+	- New: <MarkdownRenderer content="Calculate $2+3$" />
+
+	Note: MarkdownRenderer uses $...$ for inline math (standard markdown),
+	while MathDisplay uses $$...$$ for both inline and block math.
+
+	---
+
 	Renders text with embedded LaTeX expressions using MathLive.
 	Designed specifically for chatbot responses with real-time typing animation support.
 
