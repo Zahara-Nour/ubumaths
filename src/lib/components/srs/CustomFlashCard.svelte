@@ -6,14 +6,13 @@
 
 	Features:
 	- Front/back flip animation
-	- Markdown rendering with MathLive support
+	- Markdown rendering with KaTeX support
 	- Similar UX to FlashCard but simplified for custom content
 	- FlipCard-style height management
-	- Backward compatible with legacy ContentField[] format
 
 	Props:
-	- frontContent: TemplateMarkdown or ContentField[] (front side)
-	- backContent: TemplateMarkdown or ContentField[] (back side)
+	- frontContent: TemplateMarkdown (front side)
+	- backContent: TemplateMarkdown (back side)
 	- onFlip: Callback when flipped
 	- size: 'sm' | 'md' | 'lg'
 -->

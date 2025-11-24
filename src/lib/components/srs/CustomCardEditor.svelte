@@ -11,8 +11,8 @@
 	- Save/Cancel actions
 
 	Props:
-	- initialFrontContent: Initial front content (markdown or legacy ContentField[])
-	- initialBackContent: Initial back content (markdown or legacy ContentField[])
+	- initialFrontContent: Initial front content (TemplateMarkdown)
+	- initialBackContent: Initial back content (TemplateMarkdown)
 	- onSave: Callback with TemplateMarkdown strings for front and back
 	- onCancel: Callback when cancelled
 -->

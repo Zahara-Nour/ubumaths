@@ -73,8 +73,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  *
  * Body:
  * {
- *   frontContent?: ContentField[],
- *   backContent?: ContentField[]
+ *   frontContent?: string (TemplateMarkdown),
+ *   backContent?: string (TemplateMarkdown)
  * }
  *
  * @returns Updated card

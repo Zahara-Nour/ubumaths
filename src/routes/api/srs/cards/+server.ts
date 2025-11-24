@@ -101,8 +101,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  * {
  *   deckId: string,
  *   cardType: 'custom',
- *   frontContent: ContentField[],
- *   backContent: ContentField[]
+ *   frontContent: string (TemplateMarkdown),
+ *   backContent: string (TemplateMarkdown)
  * }
  *
  * @returns Created card
