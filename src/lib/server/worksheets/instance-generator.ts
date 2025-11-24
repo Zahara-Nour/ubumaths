@@ -14,7 +14,7 @@ import type {
 	InstanceData,
 	WorksheetExerciseWithExercise
 } from '$lib/types/worksheets';
-import type { Variable, ResolvedVariable } from '$lib/shared/parameterization/types';
+import type { Variable } from '$lib/shared/parameterization/types';
 import { resolveVariables, resolveText } from '$lib/shared/parameterization';
 
 /**
@@ -55,7 +55,7 @@ function generateSeed(
 			// Unique seed per student
 			return Math.abs(hash);
 
-		case 'n_versions':
+		case 'n_versions': {
 			// Limited number of versions
 			const nVersions = variantConfig?.n_versions || 3;
 			const versionIndex = Math.abs(hash) % nVersions;
@@ -64,14 +64,16 @@ function generateSeed(
 				worksheetId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) +
 					versionIndex * 1000
 			);
+		}
 
-		case 'group':
+		case 'group': {
 			// Students grouped by seed
 			const groupSize = variantConfig?.group_size || 4;
 			const groupIndex = Math.floor((Math.abs(hash) % 100) / groupSize);
 			return Math.abs(
 				worksheetId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + groupIndex * 1000
 			);
+		}
 
 		default:
 			// Default to individual

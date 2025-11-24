@@ -70,7 +70,7 @@ async function analyzeGap() {
 
 	if (allTracking) {
 		const statuses: Record<string, number> = {};
-		allTracking.forEach((t: any) => {
+		allTracking.forEach((t: { migration_status: string }) => {
 			statuses[t.migration_status] = (statuses[t.migration_status] || 0) + 1;
 		});
 

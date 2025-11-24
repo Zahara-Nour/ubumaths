@@ -650,9 +650,9 @@ describe('Integration Tests: Error Handling', () => {
 		// Should generate warnings
 		expect(result.warnings.length).toBeGreaterThan(0);
 
-		// Check for specific issues
+		// Check for specific issues (unclosed-group or mismatched-environment)
 		const unmatchedWarnings = result.warnings.filter(
-			(w) => w.type === 'unmatched-begin' || w.type === 'unmatched-end'
+			(w) => w.type === 'unclosed-group' || w.type === 'mismatched-environment'
 		);
 		expect(unmatchedWarnings.length).toBeGreaterThan(0);
 

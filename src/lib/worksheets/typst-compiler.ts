@@ -71,7 +71,7 @@ let loadPromise: Promise<TypstCompiler> | null = null;
  */
 function isTypstInitialized(): boolean {
 	if (typeof window === 'undefined') return false;
-	return !!(window as Record<string, unknown>)[TYPST_INIT_KEY];
+	return !!(window as unknown as Record<string, unknown>)[TYPST_INIT_KEY];
 }
 
 /**
@@ -79,7 +79,7 @@ function isTypstInitialized(): boolean {
  */
 function markTypstInitialized(): void {
 	if (typeof window === 'undefined') return;
-	(window as Record<string, unknown>)[TYPST_INIT_KEY] = true;
+	(window as unknown as Record<string, unknown>)[TYPST_INIT_KEY] = true;
 }
 
 /**

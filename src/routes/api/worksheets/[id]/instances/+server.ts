@@ -20,14 +20,9 @@ const createInstancesSchema = z.object({
 /**
  * POST: Generate worksheet instances for all students in a class
  */
-export const POST: RequestHandler = async ({
-	params,
-	request,
-	locals: { supabase, safeGetUser }
-}) => {
+export const POST: RequestHandler = async ({ params, request, locals: { supabase, user } }) => {
 	try {
 		// Authenticate user
-		const user = await safeGetUser();
 		if (!user) {
 			return error(401, 'Unauthorized');
 		}
@@ -49,7 +44,7 @@ export const POST: RequestHandler = async ({
 		// Check if user is a teacher
 		const { data: profile } = await supabase
 			.from('profiles')
-			.select('role')
+			.select('role, school_id')
 			.eq('id', user.id)
 			.single();
 
@@ -229,10 +224,9 @@ export const POST: RequestHandler = async ({
 /**
  * GET: List worksheet instances
  */
-export const GET: RequestHandler = async ({ params, url, locals: { supabase, safeGetUser } }) => {
+export const GET: RequestHandler = async ({ params, url, locals: { supabase, user } }) => {
 	try {
 		// Authenticate user
-		const user = await safeGetUser();
 		if (!user) {
 			return error(401, 'Unauthorized');
 		}

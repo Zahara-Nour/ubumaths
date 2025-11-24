@@ -9,23 +9,29 @@ type ItemWithTemplate = {
 
 type ItemDetailRow = {
 	id: string;
-	quantity: number;
-	is_equipped: boolean;
-	is_locked: boolean;
+	quantity: number | null;
+	is_equipped: boolean | null;
+	is_locked: boolean | null;
 	expires_at: string | null;
-	shop_item_templates: {
+	item_template: {
 		id: string;
-		name: string;
+		display_name: string;
 		description: string | null;
-		is_tradeable: boolean;
+		is_tradeable: boolean | null;
+		rarity: string;
+		icon_url: string | null;
+		category: string;
 	} | null;
 };
 
 type TemplateDetailRow = {
 	id: string;
-	name: string;
+	display_name: string;
 	description: string | null;
-	is_tradeable: boolean;
+	is_tradeable: boolean | null;
+	rarity: string;
+	icon_url: string | null;
+	category: string;
 };
 
 // ============================================================================
@@ -296,7 +302,7 @@ export async function getItemDetails(
       expires_at,
       item_template:shop_item_templates!student_item_inventory_template_id_fkey(
         id,
-        name,
+        display_name,
         description,
         rarity,
         icon_url,
@@ -332,11 +338,12 @@ export async function getItemTemplateDetails(
 		.select(
 			`
       id,
-      name,
+      display_name,
       description,
       rarity,
       icon_url,
-      category
+      category,
+      is_tradeable
     `
 		)
 		.in('id', templateIds);

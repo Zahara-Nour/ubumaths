@@ -75,7 +75,7 @@ async function inspectOrphanContent() {
 		const orphanTimes = orphanQuestions.map((q) => new Date(q.created_at).getTime());
 		const minTime = Math.min(...orphanTimes);
 		const maxTime = Math.max(...orphanTimes);
-		const avgTime = orphanTimes.reduce((a, b) => a + b, 0) / orphanTimes.length;
+		const _avgTime = orphanTimes.reduce((a, b) => a + b, 0) / orphanTimes.length;
 
 		console.log(`\n⏱️  Timing:`);
 		console.log(`   Première orpheline: ${new Date(minTime).toLocaleTimeString('fr-FR')}`);

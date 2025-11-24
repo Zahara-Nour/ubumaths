@@ -41,6 +41,9 @@ const mockStudentId = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 const mockTeacherId = 'teacher-uuid-123';
 const mockAchievementId = 'test_achievement';
 
+// Expected RPC response types for testing
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RpcData = any;
 // ============================================================================
 // TESTS: check_achievement_prerequisites()
 // ============================================================================
@@ -169,7 +172,7 @@ describe('update_achievement_progress()', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'questions_streak_10',
 			p_delta: 1,
-			p_context_key: null
+			p_context_key: undefined
 		});
 
 		expect(data).toEqual(mockResponse);
@@ -178,7 +181,7 @@ describe('update_achievement_progress()', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'questions_streak_10',
 			p_delta: 1,
-			p_context_key: null
+			p_context_key: undefined
 		});
 	});
 
@@ -200,11 +203,11 @@ describe('update_achievement_progress()', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'questions_streak_10',
 			p_delta: 10, // Completes progress
-			p_context_key: null
+			p_context_key: undefined
 		});
 
-		expect(data?.completed).toBe(true);
-		expect(data?.newly_unlocked).toBe(true);
+		expect((data as RpcData)?.completed).toBe(true);
+		expect((data as RpcData)?.newly_unlocked).toBe(true);
 		expect(error).toBeNull();
 	});
 
@@ -247,7 +250,7 @@ describe('update_achievement_progress()', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'minesweeper_first_win', // Not progressive
 			p_delta: 1,
-			p_context_key: null
+			p_context_key: undefined
 		});
 
 		expect(data).toHaveProperty('error');
@@ -267,7 +270,7 @@ describe('update_achievement_progress()', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'non_existent_achievement',
 			p_delta: 1,
-			p_context_key: null
+			p_context_key: undefined
 		});
 
 		expect(data).toHaveProperty('error');
@@ -291,10 +294,10 @@ describe('update_achievement_progress()', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'questions_streak_10',
 			p_delta: -5, // Reduce progress (e.g., streak broken)
-			p_context_key: null
+			p_context_key: undefined
 		});
 
-		expect(data?.current_value).toBe(5);
+		expect((data as RpcData)?.current_value).toBe(5);
 		expect(error).toBeNull();
 	});
 
@@ -316,11 +319,11 @@ describe('update_achievement_progress()', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'test_achievement',
 			p_delta: 2.5,
-			p_context_key: null
+			p_context_key: undefined
 		});
 
-		expect(data?.current_value).toBe(42.5);
-		expect(data?.progress_percentage).toBe(43);
+		expect((data as RpcData)?.current_value).toBe(42.5);
+		expect((data as RpcData)?.progress_percentage).toBe(43);
 		expect(error).toBeNull();
 	});
 });
@@ -371,8 +374,8 @@ describe('process_achievement_event()', () => {
 			}
 		});
 
-		expect(data?.count).toBe(1);
-		expect(data?.unlocked_achievements).toHaveLength(1);
+		expect((data as RpcData)?.count).toBe(1);
+		expect((data as RpcData)?.unlocked_achievements).toHaveLength(1);
 		expect(error).toBeNull();
 	});
 
@@ -413,8 +416,11 @@ describe('process_achievement_event()', () => {
 			}
 		});
 
-		expect(data?.unlocked_achievements).toHaveLength(1);
-		expect(data?.unlocked_achievements?.[0].context_data).toHaveProperty('difficulty', 'expert');
+		expect((data as RpcData)?.unlocked_achievements).toHaveLength(1);
+		expect((data as RpcData)?.unlocked_achievements?.[0].context_data).toHaveProperty(
+			'difficulty',
+			'expert'
+		);
 		expect(error).toBeNull();
 	});
 
@@ -441,7 +447,7 @@ describe('process_achievement_event()', () => {
 			}
 		});
 
-		expect(data?.count).toBe(0); // Progress updated, but not unlocked
+		expect((data as RpcData)?.count).toBe(0); // Progress updated, but not unlocked
 		expect(error).toBeNull();
 	});
 
@@ -485,8 +491,8 @@ describe('process_achievement_event()', () => {
 			}
 		});
 
-		expect(data?.count).toBe(2);
-		expect(data?.unlocked_achievements).toHaveLength(2);
+		expect((data as RpcData)?.count).toBe(2);
+		expect((data as RpcData)?.unlocked_achievements).toHaveLength(2);
 		expect(error).toBeNull();
 	});
 
@@ -519,7 +525,7 @@ describe('process_achievement_event()', () => {
 			}
 		});
 
-		expect(data?.count).toBe(1);
+		expect((data as RpcData)?.count).toBe(1);
 		expect(error).toBeNull();
 	});
 
@@ -554,7 +560,10 @@ describe('process_achievement_event()', () => {
 			}
 		});
 
-		expect(data?.unlocked_achievements?.[0].context_data).toHaveProperty('iteration', 2);
+		expect((data as RpcData)?.unlocked_achievements?.[0].context_data).toHaveProperty(
+			'iteration',
+			2
+		);
 		expect(error).toBeNull();
 	});
 
@@ -580,7 +589,7 @@ describe('process_achievement_event()', () => {
 			}
 		});
 
-		expect(data?.count).toBe(0); // Already has this achievement
+		expect((data as RpcData)?.count).toBe(0); // Already has this achievement
 		expect(error).toBeNull();
 	});
 
@@ -606,7 +615,7 @@ describe('process_achievement_event()', () => {
 			}
 		});
 
-		expect(data?.count).toBe(0); // Prerequisites not met
+		expect((data as RpcData)?.count).toBe(0); // Prerequisites not met
 		expect(error).toBeNull();
 	});
 
@@ -628,7 +637,7 @@ describe('process_achievement_event()', () => {
 			p_event_data: {}
 		});
 
-		expect(data?.count).toBe(0);
+		expect((data as RpcData)?.count).toBe(0);
 		expect(error).toBeNull();
 	});
 });
@@ -678,7 +687,7 @@ describe('award_achievement_manual()', () => {
 			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
-			p_reason: null
+			p_reason: undefined
 		});
 
 		expect(data).toBe(true);
@@ -700,7 +709,7 @@ describe('award_achievement_manual()', () => {
 			p_teacher_id: 'other-teacher-uuid',
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
-			p_reason: null
+			p_reason: undefined
 		});
 
 		expect(data).toBeNull();
@@ -723,7 +732,7 @@ describe('award_achievement_manual()', () => {
 			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'non_existent_achievement',
-			p_reason: null
+			p_reason: undefined
 		});
 
 		expect(data).toBeNull();
@@ -745,7 +754,7 @@ describe('award_achievement_manual()', () => {
 			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'minesweeper_first_win', // Automatic only
-			p_reason: null
+			p_reason: undefined
 		});
 
 		expect(data).toBeNull();
@@ -762,7 +771,7 @@ describe('award_achievement_manual()', () => {
 			p_teacher_id: mockTeacherId,
 			p_student_id: mockStudentId,
 			p_achievement_id: 'special_achievement',
-			p_reason: null
+			p_reason: undefined
 		});
 
 		expect(data).toBe(false);
@@ -814,9 +823,9 @@ describe('Achievement System - Integration Scenarios', () => {
 			}
 		});
 
-		expect(eventData?.count).toBe(1);
-		expect(eventData?.unlocked_achievements?.[0].points).toBe(10);
-		expect(eventData?.unlocked_achievements?.[0].gidouilles).toBe(5);
+		expect((eventData as RpcData)?.count).toBe(1);
+		expect((eventData as RpcData)?.unlocked_achievements?.[0].points).toBe(10);
+		expect((eventData as RpcData)?.unlocked_achievements?.[0].gidouilles).toBe(5);
 	});
 
 	it('should handle progressive achievement flow', async () => {
@@ -838,11 +847,11 @@ describe('Achievement System - Integration Scenarios', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'questions_streak_10',
 			p_delta: 1,
-			p_context_key: null
+			p_context_key: undefined
 		});
 
-		expect(progress1?.progress_percentage).toBe(50);
-		expect(progress1?.completed).toBe(false);
+		expect((progress1 as RpcData)?.progress_percentage).toBe(50);
+		expect((progress1 as RpcData)?.completed).toBe(false);
 
 		// 2. Complete progress
 		const completionResponse = {
@@ -862,11 +871,11 @@ describe('Achievement System - Integration Scenarios', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'questions_streak_10',
 			p_delta: 5, // Complete it
-			p_context_key: null
+			p_context_key: undefined
 		});
 
-		expect(progress2?.completed).toBe(true);
-		expect(progress2?.newly_unlocked).toBe(true);
+		expect((progress2 as RpcData)?.completed).toBe(true);
+		expect((progress2 as RpcData)?.newly_unlocked).toBe(true);
 	});
 
 	it('should handle tiered achievement unlock', async () => {
@@ -888,7 +897,7 @@ describe('Achievement System - Integration Scenarios', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'questions_answered_bronze',
 			p_delta: 10,
-			p_context_key: null
+			p_context_key: undefined
 		});
 
 		// Start silver tier
@@ -909,9 +918,9 @@ describe('Achievement System - Integration Scenarios', () => {
 			p_student_id: mockStudentId,
 			p_achievement_id: 'questions_answered_silver',
 			p_delta: 5,
-			p_context_key: null
+			p_context_key: undefined
 		});
 
-		expect(silverProgress?.progress_percentage).toBe(60);
+		expect((silverProgress as RpcData)?.progress_percentage).toBe(60);
 	});
 });

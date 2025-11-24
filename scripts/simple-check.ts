@@ -40,7 +40,7 @@ async function simpleCheck() {
 
 	if (statuses) {
 		const counts: Record<string, number> = {};
-		statuses.forEach((s: any) => {
+		statuses.forEach((s: { migration_status: string }) => {
 			counts[s.migration_status] = (counts[s.migration_status] || 0) + 1;
 		});
 		console.log('\nStatuts:');

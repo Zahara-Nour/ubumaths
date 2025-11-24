@@ -213,7 +213,7 @@ async function generatePdfWithTypstCli(typstContent: string): Promise<Uint8Array
  * This is a placeholder - in production, use the actual instance generator
  */
 function generateSimpleInstance(worksheet: WorksheetWithRelations): InstanceData {
-	const exercises = worksheet.worksheet_exercises || [];
+	const exercises = worksheet.exercises || [];
 
 	// Sort exercises by position
 	const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);

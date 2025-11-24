@@ -132,9 +132,7 @@ export const leaderboardQuerySchema = z.object({
  * ```
  */
 export const processEventSchema = z.object({
-	eventType: z.enum(ACHIEVEMENT_EVENT_TYPES, {
-		errorMap: () => ({ message: 'Invalid event type' })
-	}),
+	eventType: z.enum(ACHIEVEMENT_EVENT_TYPES).describe('Event type'),
 	studentId: z.string().uuid('Invalid student ID'),
 	eventData: z
 		.object({})
