@@ -17,9 +17,9 @@ import type { Variable, ResolvedVariable } from '../types';
 import { tokenize } from '../parser/tokenizer';
 import { parseVariableReference } from '../parser/variable-parser';
 import { parseRandomSpec } from '../parser/random-parser';
-import { parseEvalExpression } from '../parser/eval-parser';
+import { parseEvalExpressionWithModifiers } from '../parser/eval-parser';
 import { generateRandomNumber } from './random-generator';
-import { evaluateExpression } from '$lib/questions/compute-engine/wrapper';
+import { evaluateWithModifiers } from '$lib/questions/compute-engine/wrapper';
 
 /**
  * Resolve all variables using 3-stage pipeline
@@ -165,15 +165,15 @@ export function resolveExpression(
 		}
 	}
 
-	// STAGE 3: Evaluate {{eval:...}} expressions
+	// STAGE 3: Evaluate {{eval:...}} expressions (with optional modifiers)
 	const evalTokens = tokenize(result).filter((t) => t.type === 'eval');
 
 	// Replace from end to start to preserve positions
 	for (let i = evalTokens.length - 1; i >= 0; i--) {
 		const token = evalTokens[i];
 		try {
-			const evalExpr = parseEvalExpression(token.content);
-			if (!evalExpr) {
+			const parsed = parseEvalExpressionWithModifiers(token.content);
+			if (!parsed) {
 				throw new Error(`Failed to parse eval expression: ${token.content}`);
 			}
 
@@ -181,10 +181,10 @@ export function resolveExpression(
 			// Two cases:
 			// 1. {{eval:{{a}}+{{b}}}} → extract "{{a}}+{{b}}" → resolve to "7+10" → evaluate to 17
 			// 2. {{eval:a+b}} → substitute bare variable names → "7+10" → evaluate to 17
-			let resolvedEvalExpr = evalExpr;
+			let resolvedEvalExpr = parsed.expression;
 
 			// First try to find {{var}} style tokens
-			const varTokensInEval = tokenize(evalExpr).filter((t) => t.type === 'variable');
+			const varTokensInEval = tokenize(parsed.expression).filter((t) => t.type === 'variable');
 
 			if (varTokensInEval.length > 0) {
 				// Case 1: Variables with brackets {{var}}
@@ -214,7 +214,8 @@ export function resolveExpression(
 				}
 			}
 
-			const evaluatedValue = evaluateExpression(resolvedEvalExpr);
+			// Evaluate with modifiers (decimal, positive sign, bracket negative, etc.)
+			const evaluatedValue = evaluateWithModifiers(resolvedEvalExpr, parsed.modifiers);
 			result = result.slice(0, token.start) + String(evaluatedValue) + result.slice(token.end);
 		} catch (error) {
 			throw new Error(

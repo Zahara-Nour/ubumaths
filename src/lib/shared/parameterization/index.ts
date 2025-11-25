@@ -100,7 +100,7 @@ export { parseRandomSpec } from './parser/random-parser';
  * Extracts expression from {{eval:expr}}.
  * See: {@link module:shared/parameterization/parser/eval-parser}
  */
-export { parseEvalExpression } from './parser/eval-parser';
+export { parseEvalExpression, parseEvalExpressionWithModifiers } from './parser/eval-parser';
 
 // ============================================================================
 // RESOLVERS
