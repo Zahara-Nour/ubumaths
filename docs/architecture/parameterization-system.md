@@ -2,8 +2,8 @@
 
 Architectural overview of the shared parameterization library used by Questions and Exercises features.
 
-**Version:** 2.0.0
-**Date:** 2025-01-26
+**Version:** 2.1.0
+**Date:** 2025-11-25
 
 ---
 
@@ -93,6 +93,7 @@ The library is used by:
               │  │  ┌──────────────────┐  │  │
               │  │  │  Eval Parser     │  │  │
               │  │  │  • {{eval:expr}} │  │  │
+              │  │  │  • Modifiers     │  │  │
               │  │  └──────────────────┘  │  │
               │  └────────────────────────┘  │
               │              │               │
@@ -201,7 +202,7 @@ src/lib/shared/parameterization/
 
 - Variables: `{{var}}`
 - Random: `{{random:1-10}}` or `{{1-10}}`
-- Eval: `{{eval:expr}}`
+- Eval: `{{eval:expr}}` or `{{eval:expr|modifiers}}`
 
 **Historical Note:** The system previously supported dual syntax (`{@:}` / `{{}}`) but was simplified to Markdown-only in Phase 5 for consistency and maintainability.
 
@@ -508,6 +509,76 @@ replace: '15'
 - With variables: `{{eval:{{a}}+{{b}}}}`
 - Complex expressions: `{{eval:({{a}})^2-{{b}}}}`
 - LaTeX expressions: `{{eval:\frac{1}{2}}}`
+- With modifiers: `{{eval:1/3|d}}`, `{{eval:x|+,()}}`
+
+### Eval Expression Modifiers
+
+**Added:** 2025-11-25
+
+Eval expressions support optional modifiers to control output formatting:
+
+**Syntax:** `{{eval:expression|modifiers}}`
+
+**Modifier Types:**
+
+| Short | Long         | Effect                     | Example                        |
+| ----- | ------------ | -------------------------- | ------------------------------ |
+| `d`   | `decimal`    | Force decimal output       | `{{eval:1/3\|d}}` → "0.333..." |
+| `+`   | `positive`   | Add + sign for positive    | `{{eval:5\|+}}` → "+5"         |
+| `()`  | `bracket`    | Bracket negative values    | `{{eval:-3\|()}}` → "(-3)"     |
+| `'`   | `derivative` | Take derivative (reserved) | Future feature                 |
+
+**Modifier Parsing:**
+
+```typescript
+interface ParsedEvalExpression {
+	expression: string; // The math expression
+	modifiers: EvalModifiers; // Optional formatting modifiers
+}
+
+interface EvalModifiers {
+	decimal?: boolean; // d: Force decimal
+	addPositive?: boolean; // +: Add + sign
+	bracketNegative?: boolean; // (): Wrap negatives
+	derivative?: boolean; // ': Derivative (reserved)
+}
+```
+
+**Implementation Details:**
+
+1. **Modifier Detection:** Parser uses heuristics to distinguish modifier pipes from LaTeX pipes:
+   - `{{eval:|x|}}` → No modifiers (LaTeX absolute value)
+   - `{{eval:|x||d}}` → Decimal modifier (after last pipe)
+   - Valid modifiers: Only contain `d`, `+`, `()`, `'`, and word variants
+
+2. **Modifier Application:** Applied after evaluation in Stage 3:
+
+   ```typescript
+   // Evaluate expression
+   const numericResult = evaluateExpression(expression);
+
+   // Apply modifiers
+   if (modifiers.decimal) {
+   	result = result.toFixed(precision);
+   }
+   if (modifiers.addPositive && result >= 0) {
+   	result = `+${result}`;
+   }
+   if (modifiers.bracketNegative && result < 0) {
+   	result = `(${result})`;
+   }
+   ```
+
+3. **Combined Modifiers:** Multiple modifiers applied in order:
+   - Decimal conversion (if needed)
+   - Positive sign addition
+   - Negative bracketing
+
+**Use Cases:**
+
+- **Temperature formatting:** `{{eval:{{temp}}|+}}` → "+15" or "-5"
+- **Equation coefficients:** `{{eval:{{b}}|+,()}}` → "+3" or "(-3)"
+- **Decimal results:** `{{eval:{{a}}/{{b}}|d}}` → "0.333..." instead of fraction
 
 ---
 
@@ -1078,6 +1149,6 @@ When adding new features:
 
 ---
 
-**Version:** 2.0.0
-**Last Updated:** 2025-10-26
+**Version:** 2.1.0
+**Last Updated:** 2025-11-25
 **Status:** Production Ready

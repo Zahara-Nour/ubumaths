@@ -170,6 +170,51 @@ export type RandomSpec =
 	  };
 
 // ============================================================================
+// EVAL MODIFIERS
+// ============================================================================
+
+/**
+ * Modifiers for eval expression output formatting
+ *
+ * Used with syntax: {{eval:expression|modifiers}}
+ * Modifiers can be combined with commas: {{eval:x|d,+}}
+ *
+ * @example Decimal output
+ * {{eval:1/3|d}} → "0.333..."
+ *
+ * @example Positive sign
+ * {{eval:5|+}} → "+5"
+ *
+ * @example Bracket negative
+ * {{eval:-3|()}} → "(-3)"
+ *
+ * @example Combined
+ * {{eval:{{a}}*{{b}}|d,+}} → "+15" (if a*b = 15)
+ */
+export interface EvalModifiers {
+	/** Force decimal output (convert fractions to decimals) */
+	decimal?: boolean;
+	/** Add + sign for positive results */
+	addPositive?: boolean;
+	/** Wrap negative results in parentheses: -5 → (-5) */
+	bracketNegative?: boolean;
+	/** Take derivative before evaluating */
+	derivative?: boolean;
+}
+
+/**
+ * Parsed eval expression with optional modifiers
+ *
+ * Result of parsing {{eval:expression|modifiers}} syntax.
+ */
+export interface ParsedEvalExpression {
+	/** The mathematical expression to evaluate */
+	expression: string;
+	/** Optional modifiers for output formatting */
+	modifiers: EvalModifiers;
+}
+
+// ============================================================================
 // RESOLUTION & VALIDATION
 // ============================================================================
 

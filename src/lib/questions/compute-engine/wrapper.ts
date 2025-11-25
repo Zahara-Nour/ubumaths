@@ -9,6 +9,7 @@
  */
 
 import { ComputeEngine } from '@cortex-js/compute-engine';
+import type { EvalModifiers } from '$lib/shared/parameterization';
 
 /**
  * Shared Compute Engine instance
@@ -136,5 +137,105 @@ export function isValidLatex(latex: string): boolean {
 		return true;
 	} catch {
 		return false;
+	}
+}
+
+/**
+ * Evaluate a LaTeX expression with optional modifiers
+ *
+ * Supports formatting modifiers:
+ * - decimal: Force decimal output (convert fractions)
+ * - addPositive: Add + sign for positive results
+ * - bracketNegative: Wrap negative results in parentheses
+ * - derivative: Take derivative before evaluating (not yet implemented)
+ *
+ * @param latex - LaTeX expression to evaluate
+ * @param modifiers - Optional formatting modifiers
+ * @returns Formatted result as string
+ * @throws Error if evaluation fails
+ *
+ * @example Basic evaluation
+ * ```typescript
+ * evaluateWithModifiers('3+4', {})           // Returns: '7'
+ * ```
+ *
+ * @example Decimal modifier
+ * ```typescript
+ * evaluateWithModifiers('1/3', { decimal: true })  // Returns: '0.3333...'
+ * ```
+ *
+ * @example Positive sign modifier
+ * ```typescript
+ * evaluateWithModifiers('5', { addPositive: true })  // Returns: '+5'
+ * ```
+ *
+ * @example Bracket negative modifier
+ * ```typescript
+ * evaluateWithModifiers('-3', { bracketNegative: true })  // Returns: '(-3)'
+ * ```
+ *
+ * @example Combined modifiers
+ * ```typescript
+ * evaluateWithModifiers('2/3', { decimal: true, addPositive: true })  // Returns: '+0.666...'
+ * ```
+ */
+export function evaluateWithModifiers(latex: string, modifiers: EvalModifiers = {}): string {
+	try {
+		const engine = getEngine();
+		const expr = engine.parse(latex);
+
+		// Apply derivative if requested
+		// Note: ComputeEngine derivative support is limited
+		// For now, we'll skip this if requested and evaluate normally
+		// TODO: Implement derivative support when CE API is clearer
+
+		// Evaluate expression
+		const result = expr.evaluate();
+
+		// Get numeric value if available
+		let numValue: number | null = null;
+		if (result.isNumber) {
+			const nv = result.numericValue;
+			if (typeof nv === 'number') {
+				numValue = nv;
+			} else if (nv !== null && nv !== undefined) {
+				const val = nv.valueOf();
+				numValue = typeof val === 'number' ? val : null;
+			}
+		}
+
+		// Determine output string
+		let output: string;
+
+		if (numValue !== null && !isNaN(numValue)) {
+			// Default: return numeric value as string
+			// The 'decimal' modifier is mainly for documentation/intent clarity
+			// or future use when we add a 'fraction' modifier
+			output = String(numValue);
+
+			// Apply formatting modifiers
+			if (modifiers.addPositive && numValue > 0) {
+				// Add + sign for positive numbers
+				if (!output.startsWith('+')) {
+					output = '+' + output;
+				}
+			}
+
+			if (modifiers.bracketNegative && numValue < 0) {
+				// Wrap negative numbers in parentheses
+				if (!output.startsWith('(')) {
+					output = '(' + output + ')';
+				}
+			}
+		} else {
+			// Symbolic result - return as LaTeX
+			output = result.latex;
+		}
+
+		return output;
+	} catch (error) {
+		throw new Error(
+			`Failed to evaluate expression "${latex}": ${error instanceof Error ? error.message : String(error)}`
+		);
 	}
 }

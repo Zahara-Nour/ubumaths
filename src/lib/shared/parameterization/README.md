@@ -2,10 +2,10 @@
 
 Content-agnostic parameterization system for Questions and Exercises features.
 
-**Version:** 2.0.0
+**Version:** 2.1.0
 **Tests:** 447 passing
 **Coverage:** 99%+
-**Syntax:** Markdown-only (`{{var}}`, `{{random:1-10}}`, `{{eval:expr}}`)
+**Syntax:** Markdown-only (`{{var}}`, `{{random:1-10}}`, `{{eval:expr}}`, `{{eval:expr|modifiers}}`)
 
 ---
 
@@ -224,6 +224,48 @@ Evaluate mathematical expressions using MathLive Compute Engine:
 
 **Important:** All variable references inside `{{eval:...}}` are **fully resolved BEFORE** being passed to MathLive. The engine only receives clean mathematical expressions with actual numbers.
 
+### Expression Evaluation with Modifiers (🆕 2025-11-25)
+
+Control output formatting of eval expressions using modifiers:
+
+```typescript
+// Force decimal output
+{ name: 'result', expression: '{{eval:1/3|d}}' }           // → '0.333...'
+
+// Add + sign for positive results
+{ name: 'signed', expression: '{{eval:5|+}}' }             // → '+5'
+
+// Wrap negative values in parentheses
+{ name: 'bracketed', expression: '{{eval:-3|()}}' }        // → '(-3)'
+
+// Combine multiple modifiers
+{ name: 'formatted', expression: '{{eval:{{a}}*{{b}}|d,+}}' }  // Decimal + positive sign
+```
+
+**Available Modifiers:**
+
+| Short | Long         | Effect                                |
+| ----- | ------------ | ------------------------------------- |
+| `d`   | `decimal`    | Force decimal output                  |
+| `+`   | `positive`   | Add + sign for positive results       |
+| `()`  | `bracket`    | Wrap negative values in parentheses   |
+| `'`   | `derivative` | Take derivative (reserved for future) |
+
+**Use Cases:**
+
+```typescript
+// Temperature formatting
+{ name: 'temp', expression: '{{-10-30}}' }
+{ name: 'temp_signed', expression: '{{eval:{{temp}}|+}}' }  // → "+15" or "-5"
+
+// Equation coefficients
+{ name: 'b', expression: '{{-10-10}}' }
+{ name: 'b_coeff', expression: '{{eval:{{b}}|+,()}}' }      // → "+3" or "(-3)"
+
+// Decimal results
+{ name: 'division', expression: '{{eval:{{a}}/{{b}}|d}}' }  // → "0.333..." not "1/3"
+```
+
 ---
 
 ## Parser Layer
@@ -283,12 +325,27 @@ const spec4 = parseRandomSpec('{{{{min}}-{{max}}}}');
 Parse eval expression tokens:
 
 ```typescript
-import { parseEvalExpression } from '$lib/shared/parameterization';
+import {
+	parseEvalExpression,
+	parseEvalExpressionWithModifiers
+} from '$lib/shared/parameterization';
 
+// Basic parsing (backward compatible)
 parseEvalExpression('{{eval:a+b}}'); // → 'a+b'
 
 // With variable references (inner content preserved)
 parseEvalExpression('{{eval:{{a}}+{{b}}}}'); // → '{{a}}+{{b}}'
+
+// Parse with modifiers
+parseEvalExpressionWithModifiers('{{eval:1/3|d}}');
+// → { expression: '1/3', modifiers: { decimal: true } }
+
+parseEvalExpressionWithModifiers('{{eval:x|d,+}}');
+// → { expression: 'x', modifiers: { decimal: true, addPositive: true } }
+
+// Handles LaTeX absolute value correctly
+parseEvalExpressionWithModifiers('{{eval:|x|}}');
+// → { expression: '|x|', modifiers: {} }  // | not treated as modifier separator
 ```
 
 ---
@@ -954,6 +1011,6 @@ If you need to add a new token type (e.g., `{{condition:...}}`):
 
 ---
 
-**Version:** 2.0.0
-**Last Updated:** 2025-10-26
+**Version:** 2.1.0
+**Last Updated:** 2025-11-25
 **Maintainers:** UbuMaths Development Team

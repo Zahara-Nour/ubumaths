@@ -2,6 +2,7 @@
 
 Guide complet pour créer des exercices paramétrés avec des valeurs aléatoires et des calculs dynamiques.
 
+🆕 **2025-11-25** - Ajout des modificateurs d'évaluation pour contrôler le format de sortie des expressions
 🆕 **2025-10-27** - Système de paramétrisation complet avec générateur d'instances et trois modes de distribution
 
 ---
@@ -293,7 +294,7 @@ Variable 3 : x = {{{{min}}-{{max}}}}  ← Utilise les valeurs de min et max
 
 ### 6. Évaluation d'expression : `{{eval:expression}}`
 
-**Syntaxe** : `{{eval:expression mathématique}}`
+**Syntaxe** : `{{eval:expression mathématique}}` ou `{{eval:expression|modifiers}}`
 
 **Usage** : Calculer une expression mathématique en utilisant les valeurs des variables.
 
@@ -336,6 +337,122 @@ Supposons : a = 7, b = 3
 {{eval:Math.sqrt({{a}}^2 + {{b}}^2)}} → Hypoténuse
 ```
 
+### Modificateurs d'évaluation (🆕 2025-11-25)
+
+Les **modificateurs** permettent de contrôler le format de sortie d'une expression `{{eval:}}`.
+
+**Syntaxe** : `{{eval:expression|modifiers}}`
+
+Les modificateurs se placent après l'expression, séparés par une barre verticale `|`. Plusieurs modificateurs peuvent être combinés avec des virgules.
+
+#### Modificateurs disponibles
+
+| Modificateur | Forme longue | Description                                    | Exemple                        |
+| ------------ | ------------ | ---------------------------------------------- | ------------------------------ |
+| `d`          | `decimal`    | Force la sortie décimale                       | `{{eval:1/3\|d}}` → "0.333..." |
+| `+`          | `positive`   | Ajoute le signe + pour les résultats positifs  | `{{eval:5\|+}}` → "+5"         |
+| `()`         | `bracket`    | Entoure les résultats négatifs de parenthèses  | `{{eval:-3\|()}}` → "(-3)"     |
+| `'`          | `derivative` | Dérive l'expression avant évaluation (réservé) | À venir                        |
+
+#### Exemples d'utilisation
+
+**Forcer la sortie décimale** :
+
+```markdown
+Variables :
+a = 1
+b = 3
+quotient = {{eval:{{a}}/{{b}}|d}}
+
+Énoncé : Le quotient de {{a}} par {{b}} est {{quotient}}
+→ "Le quotient de 1 par 3 est 0.333..."
+```
+
+**Ajouter le signe + pour les positifs** :
+
+```markdown
+Variables :
+x = 8
+variation = {{eval:{{x}}-5|+}}
+
+Énoncé : La variation est de {{variation}}
+→ "La variation est de +3"
+```
+
+**Utiliser des parenthèses pour les négatifs** :
+
+```markdown
+Variables :
+x = -5
+valeur = {{eval:{{x}}|()}}
+
+Énoncé : La valeur est {{valeur}}
+→ "La valeur est (-5)"
+```
+
+**Combiner plusieurs modificateurs** :
+
+```markdown
+Variables :
+a = 3
+b = 2
+resultat = {{eval:{{a}}\*{{b}}|d,+}}
+
+Énoncé : Le résultat est {{resultat}}
+→ "Le résultat est +6" (décimal si nécessaire + signe positif)
+```
+
+#### Cas d'usage pratiques
+
+**1. Températures avec signes** :
+
+```markdown
+Variables :
+temp = {{-10-30}}
+temp_signee = {{eval:{{temp}}|+}}
+
+Énoncé : La température est de {{temp_signee}}°C
+→ Génère : "+15°C" ou "-5°C"
+```
+
+**2. Équations avec coefficients signés** :
+
+```markdown
+Variables :
+a = {{-5-5!0}}
+b = {{-10-10}}
+b_signe = {{eval:{{b}}|+,()}}
+
+Énoncé : Résolvez : ${{a}}x {{b_signe}} = 0$
+→ Si b = -3 : "Résolvez : 2x + (-3) = 0"
+→ Si b = 5 : "Résolvez : 2x +5 = 0"
+```
+
+**3. Divisions exactes ou décimales** :
+
+```markdown
+Variables :
+numerateur = {{1-10}}
+denominateur = {{1-10!0}}
+division = {{eval:{{numerateur}}/{{denominateur}}|d}}
+
+Énoncé : Calculez {{numerateur}} ÷ {{denominateur}} = {{division}}
+→ Affiche toujours un résultat décimal : "0.5" au lieu de "1/2"
+```
+
+#### Notes importantes
+
+⚠️ **LaTeX et la barre verticale** :
+
+Si votre expression contient des barres verticales pour la valeur absolue LaTeX (`|x|`), les modificateurs doivent être placés **après** la dernière barre :
+
+```markdown
+✅ Correct : {{eval:|{{x}}||+}} (valeur absolue avec modificateur +)
+❌ Incorrect : {{eval:|{{x}}|+|}}
+```
+
+Le système détecte automatiquement si une barre verticale fait partie de l'expression mathématique ou sert de séparateur de modificateur.
+
 ### Comment fonctionne `{{eval:}}` ?
 
 Le système utilise un pipeline en 3 étapes :
@@ -358,7 +475,14 @@ Le système utilise un pipeline en 3 étapes :
 "{{eval:7+3}}" → Extrait "7+3" → Calcule → "10"
 ```
 
-**Résultat final** : "10"
+**Étape 4 - Application des modificateurs** :
+
+```
+Si modificateurs présents (ex: |d,+)
+"10" → Format selon modificateurs → "+10" ou "10.0"
+```
+
+**Résultat final** : "10" (ou "+10", "10.0", etc. selon modificateurs)
 
 ---
 
@@ -1230,6 +1354,6 @@ total = {{eval:{{pommes_initiales}}+{{pommes_achetees}}}}
 
 ---
 
-**Version** : 1.0.0
-**Dernière mise à jour** : 2025-10-27
+**Version** : 1.1.0
+**Dernière mise à jour** : 2025-11-25
 **Auteurs** : Équipe UbuMaths
