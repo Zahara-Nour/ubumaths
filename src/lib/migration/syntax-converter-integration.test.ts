@@ -453,12 +453,21 @@ describe('TinyCAS Syntax Converter > Integration Tests - Error Handling', () => 
 		expect(result.stats!.total).toBeGreaterThan(0); // Still converted patterns
 	});
 
-	it('should handle unsupported patterns with clear error messages', () => {
-		const input = '$d{1;2} and $f{x}'; // Unsupported patterns
+	it('should convert decimal patterns', () => {
+		const input = '$d{1;2} and $d{2;3}'; // Decimal patterns
 		const result = convertTinyCASToNew(input);
 
-		expect(result.success).toBe(false);
-		expect(result.errors).toBeDefined();
-		expect(result.errors!.some((e) => e.includes('$d{}'))).toBe(true);
+		expect(result.success).toBe(true);
+		expect(result.converted).toBe('{{1.2}} and {{2.3}}');
+		expect(result.stats!.decimals).toBe(2);
+	});
+
+	it('should convert relative integer patterns', () => {
+		const input = '$er[2;9] and $er{1}'; // Relative integer patterns
+		const result = convertTinyCASToNew(input);
+
+		expect(result.success).toBe(true);
+		expect(result.converted).toBe('{{±2..9}} and {{±1..1}}');
+		expect(result.stats!.relativeIntegers).toBe(2);
 	});
 });
