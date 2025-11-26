@@ -16,16 +16,19 @@
 
 This document analyzes the migration from TinyMath/TinyCAS to the new Markdown-based question system, with a focus on validation capabilities.
 
-**Latest Updates (v2.3.0 - 2025-11-26):**
+**Latest Updates (v2.3.1 - 2025-11-26):**
 
 - ✅ **Relative integers** (`$er[min;max]` → `{{±min..max}}`) - Fully supported
 - ✅ **Decimal by digits** (`$d{n;m}` → `{{n.m}}`) - Fully supported
 - ✅ **Double-dot ranges** (`..`) for clearer negative ranges
 - ✅ **Auto-step inference** for decimal ranges without explicit step
-- ✅ **Ternary operators** (`condition ?? trueVal :: falseVal` → `{{if:condition|trueVal|falseVal}}`) - NEW!
-- ✅ **Mini/maxi functions** (`mini(a;b)` → `min(a,b)`, `maxi(a;b)` → `max(a,b)`) - NEW!
+- ✅ **Ternary operators** (`condition ?? trueVal :: falseVal` → `{{if:condition|trueVal|falseVal}}`)
+- ✅ **Mini/maxi functions** (`mini(a;b)` → `min(a,b)`, `maxi(a;b)` → `max(a,b)`)
+- 🆕 **Section 18**: Deep code analysis of validation system gaps with implementation roadmap
 
 **Migration Coverage:** 🎉 **100% of 633 questions** now have fully convertible syntax!
+
+**Validation System:** ⚠️ ~850 lines of new code needed for full validation parity (see Section 18)
 
 ---
 
@@ -765,6 +768,281 @@ Based on 633 questions:
 | `src/lib/utils/answer-validator.ts`           | Extend         | High     |
 | `src/lib/questions/compute-engine/wrapper.ts` | Fix derivative | Medium   |
 | `src/lib/migration/question-transformer.ts`   | Add ternary    | Medium   |
+
+---
+
+## 18. DEEP CODE ANALYSIS - Validation System Gap (v2.3.1 - 2025-11-26)
+
+This section provides a detailed code-level analysis of what needs to be implemented to achieve full validation parity with the old TinyCAS system.
+
+### 18.1 Current vs Required Implementation
+
+#### answer-validator.ts - Current State
+
+```typescript
+// Current: Basic validation only
+export function validateAnswer(userAnswer, instance): ValidationResult {
+	switch (type) {
+		case 'numerical_exact':
+		case 'numerical_decimal':
+		case 'numerical_rounded':
+			return validateNumerical(userAnswer, answer, precision);
+		case 'algebraic_transform':
+			return validateAlgebraic(userAnswer, answer);
+		case 'fill_in_blanks':
+			return validateBlanks(userAnswers, correctAnswers);
+		case 'multiple_choice':
+			return validateChoice(userAnswer, correctAnswer, multipleAnswers);
+	}
+}
+```
+
+**Missing:** Constraint checking, feedback messages, unit validation, form validation.
+
+#### correction.ts (Old System) - Complete Validation Pipeline
+
+```typescript
+// Old system: Full validation pipeline
+// 1. STATUS_EMPTY check
+// 2. Mathematical validity check (isIncorrect())
+// 3. Equivalence check (equals())
+// 4. Constraint checks (10 validators)
+// 5. testAnswers custom validation
+// 6. Form validation (strictlyEquals, matchTemplate)
+```
+
+### 18.2 Feedback Messages Inventory (26 messages)
+
+**Single Answer Messages:**
+| Key | French Message | Priority |
+|-----|----------------|----------|
+| `EMPTY_ANSWER` | "Tu n'as rien répondu." | High |
+| `ZEROS` | "Il y a un ou des zéros inutiles." | Medium |
+| `FACTOR_ONE` | "Tu peux simplifier le ou les facteurs 1." | Medium |
+| `FACTOR_ZERO` | "Tu peux simplifier un ou des facteurs nuls." | Medium |
+| `NULL_TERMS` | "Il y a un ou des termes nuls que tu peux enlever." | Medium |
+| `BRACKETS` | "Il y a des parenthèses inutiles." | Medium |
+| `BRACKETS_FIRST_TERM` | "Il y a des parenthèses inutiles en début de somme." | Low |
+| `SPACES` | "Les chiffres sont mal espacés." | Low |
+| `SIGNS` | "Tu peux faire des simplifications de signes." | Medium |
+| `MATH_INCORRECT` | "Ta réponse n'est pas écrite correctement." | High |
+| `MATH_GLOBALLY_INCORRECT` | "L'expression obtenue n'est pas mathématiquement correcte." | High |
+| `PRODUCTS` | "Tu peux simplifier certains symboles de multiplication." | Medium |
+| `FRACTIONS` | "Il y a une ou des fractions non simplifiées." | Medium |
+| `BAD_FORM` | "Ta réponse n'est pas écrite sous la forme demandée." | High |
+| `BAD_UNIT` | "Ta réponse n'est pas écrite avec l'unité demandée." | High |
+| `TERMS_PERMUTATION` | "Les termes doivent être écrits dans un certain ordre." | Low |
+| `FACTORS_PERMUTATION` | "Les facteurs doivent être écrits dans un certain ordre." | Low |
+| `TERMS_FACTORS_PERMUTATION` | "Les termes et facteurs doivent être écrits dans un certain ordre." | Low |
+| `INCOMPLETE_CHOICES` | "Tu n'as pas choisi toutes les bonnes réponses." | High |
+
+**Multiple Answers Messages:** (13 additional variants - same content, different phrasing)
+
+### 18.3 Constraint Validators to Implement
+
+The old system has 10 constraint check functions. Analysis of each:
+
+#### CE Auto-Handles (5 checks - Tier 1)
+
+These are automatically handled by ComputeEngine canonical form:
+
+| Check             | Old Function         | CE Behavior        | Action Needed       |
+| ----------------- | -------------------- | ------------------ | ------------------- |
+| Reduced fractions | `checkFractions()`   | `6/4` → `3/2` auto | None (CE canonical) |
+| Factor one        | `checkFactorsOne()`  | `1*x` → `x` auto   | None (CE canonical) |
+| Factor zero       | `checkFactorsZero()` | `0*x` → `0` auto   | None (CE canonical) |
+| Null terms        | `checkNullTerms()`   | `x+0` → `x` auto   | None (CE canonical) |
+| Signs             | `checkSigns()`       | `--x` → `x` auto   | None (CE canonical) |
+
+#### Need Custom Implementation (5 checks - Tier 2/3)
+
+| Check    | Old Function      | Implementation                   | Priority              |
+| -------- | ----------------- | -------------------------------- | --------------------- |
+| Spaces   | `checkSpaces()`   | Regex on LaTeX string            | Low (3 questions)     |
+| Products | `checkProducts()` | Check for `\times`, `\cdot`      | Low (2 questions)     |
+| Brackets | `checkBrackets()` | Compare with CE canonical        | Medium (23 questions) |
+| Zeros    | `checkZeros()`    | Regex for leading/trailing zeros | Medium (6 questions)  |
+| Units    | `checkUnits()`    | Custom unit parser               | High (7 questions)    |
+
+### 18.4 Unit Validation System Design
+
+**Units in Database (7 questions):**
+
+- `HMS` - Hours:Minutes:Seconds (4 questions)
+- `€` - Currency (1 question)
+- `km`, `m`, `dm` - Length (2 questions)
+- `kg` - Mass (1 question)
+- `L` - Volume (1 question)
+
+**Proposed Implementation:**
+
+```typescript
+// src/lib/questions/units.ts
+
+interface UnitValidationResult {
+	isValid: boolean;
+	value: number | null;
+	unit: string | null;
+	normalizedUnit: string | null;
+	feedback?: string;
+}
+
+const UNIT_ALIASES: Record<string, string> = {
+	// Length
+	m: 'm',
+	metre: 'm',
+	mètre: 'm',
+	meters: 'm',
+	km: 'km',
+	kilometre: 'km',
+	kilomètre: 'km',
+	cm: 'cm',
+	centimetre: 'cm',
+	centimètre: 'cm',
+	mm: 'mm',
+	dm: 'dm',
+	// Mass
+	kg: 'kg',
+	kilogramme: 'kg',
+	g: 'g',
+	gramme: 'g',
+	// Volume
+	L: 'L',
+	l: 'L',
+	litre: 'L',
+	// Currency
+	'€': '€',
+	EUR: '€',
+	euro: '€',
+	euros: '€'
+};
+
+// HMS requires special parsing
+function parseHMS(input: string): { hours: number; minutes: number; seconds: number } | null {
+	// Parse formats like "2h30min15s", "2:30:15", "2 h 30 min"
+}
+
+function parseValueWithUnit(answer: string): UnitValidationResult {
+	// 1. Try HMS parsing first
+	// 2. Extract numeric value and unit suffix
+	// 3. Normalize unit using UNIT_ALIASES
+	// 4. Return structured result
+}
+
+export function validateWithUnit(
+	userAnswer: string,
+	expectedValue: string,
+	expectedUnit: string | null,
+	options: { requireUnit: boolean; strictUnit: boolean }
+): ValidationResult {
+	// Implementation
+}
+```
+
+### 18.5 Status Codes Mapping
+
+| Old Status | Old Constant            | New Mapping                                         | Use Case             |
+| ---------- | ----------------------- | --------------------------------------------------- | -------------------- |
+| Empty      | `STATUS_EMPTY`          | `{ isCorrect: false, status: 'empty' }`             | No answer            |
+| Incorrect  | `STATUS_INCORRECT`      | `{ isCorrect: false }`                              | Wrong answer         |
+| Unoptimal  | `STATUS_UNOPTIMAL_FORM` | `{ isCorrect: true, partialCredit: 0.5, feedback }` | Right but suboptimal |
+| Bad Form   | `STATUS_BAD_FORM`       | `{ isCorrect: false, feedback }`                    | Wrong form required  |
+| Bad Unit   | `STATUS_BAD_UNIT`       | `{ isCorrect: false, feedback }`                    | Unit mismatch        |
+| Correct    | `STATUS_CORRECT`        | `{ isCorrect: true }`                               | Perfect answer       |
+
+### 18.6 Extended ValidationResult Type
+
+```typescript
+// New type for extended validation results
+export interface ExtendedValidationResult extends ValidationResult {
+	status: 'correct' | 'incorrect' | 'empty' | 'unoptimal' | 'bad_form' | 'bad_unit';
+	partialCredit?: number; // 0-1 for partial answers
+	unoptimals?: string[]; // List of unoptimal aspects
+	feedback?: string; // User-facing message
+	technicalDetails?: {
+		// For debugging
+		constraintsFailed?: string[];
+		userParsed?: unknown;
+		expectedParsed?: unknown;
+	};
+}
+```
+
+### 18.7 Implementation Roadmap
+
+#### Phase 1: Feedback & Status System (Est. 2-3 days)
+
+**File: `src/lib/questions/feedback.ts`**
+
+- Port 26 feedback messages with French translations
+- Create status-to-feedback mapper
+- Add i18n support structure for future translations
+
+**File: `src/lib/questions/types.ts`**
+
+- Add `ExtendedValidationResult` type
+- Add status constants
+- Add constraint check types
+
+#### Phase 2: Unit Validation (Est. 2-3 days)
+
+**File: `src/lib/questions/units.ts`**
+
+- Unit parsing (value + unit extraction)
+- Unit normalization (UNIT_ALIASES)
+- HMS time parsing
+- Unit comparison functions
+
+**File: `src/lib/utils/answer-validator.ts`**
+
+- Integrate unit validation
+- Add `validateWithUnit()` function
+
+#### Phase 3: Constraint Validators (Est. 3-4 days)
+
+**File: `src/lib/questions/constraint-validators.ts`**
+
+```typescript
+// Each validator returns indices of problematic answers
+interface ConstraintCheck {
+	option: [string, string]; // [no-penalty, require]
+	check: (answers: string[], answersLatex: string[]) => number[];
+	feedback: { single: string; multiple: string };
+}
+
+// Implement:
+export function checkSpaces(answersLatex: string[]): number[];
+export function checkProducts(answersLatex: string[]): number[];
+export function checkBrackets(answers: string[]): number[];
+export function checkZeros(answers: string[]): number[];
+export function checkForm(answers: string[], expected: string[]): number[];
+```
+
+#### Phase 4: Options Handling (Est. 2 days)
+
+**File: `src/lib/utils/answer-validator.ts`**
+
+- Map old options to new validation pipeline
+- Implement constraint checking loop
+- Add options parameter to `validateAnswer()`
+
+### 18.8 Quick Wins (Can implement today)
+
+1. **feedback.ts creation** - Just constants, no logic
+2. **Status types** - Add to types.ts
+3. **Unit aliases constant** - Just data structure
+
+### 18.9 Files Summary
+
+| File                                         | Status    | Action                    | Lines Est. |
+| -------------------------------------------- | --------- | ------------------------- | ---------- |
+| `src/lib/questions/feedback.ts`              | ❌ Create | Port 26 messages + mapper | ~100       |
+| `src/lib/questions/units.ts`                 | ❌ Create | Unit parser + validator   | ~200       |
+| `src/lib/questions/constraint-validators.ts` | ❌ Create | 10 constraint checks      | ~300       |
+| `src/lib/questions/types.ts`                 | ⚠️ Extend | Add status/result types   | ~50        |
+| `src/lib/utils/answer-validator.ts`          | ⚠️ Extend | Integrate all validators  | ~200       |
+
+**Total estimated new code: ~850 lines**
 
 ---
 
