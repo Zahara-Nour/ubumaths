@@ -65,6 +65,16 @@ const envSchema = z
 		OPENAI_MODEL: z.string().default('gpt-4-turbo-preview'),
 
 		// ====================================================================
+		// RAG Embeddings Configuration (HuggingFace API)
+		// ====================================================================
+		HF_API_KEY: z.string().min(1, 'HuggingFace API key required').optional(),
+		ENABLE_RAG: z
+			.string()
+			.optional()
+			.default('true')
+			.transform((val) => val === 'true'),
+
+		// ====================================================================
 		// App URLs
 		// ====================================================================
 		PUBLIC_APP_URL: z.string().url('Invalid app URL').optional(),

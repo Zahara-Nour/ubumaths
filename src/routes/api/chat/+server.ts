@@ -10,6 +10,7 @@ import { selectHelpMethod } from '$lib/config/tutor-help-methods';
 import { getAdaptationForGrade } from '$lib/config/tutor-grade-adaptations';
 import { analyzeMessage } from '$lib/server/tutor/cheat-detector';
 import { analyzeStudentMessages, calculateEffortScore } from '$lib/server/tutor/help-escalation';
+import { hybridSearch, formatResultsForPrompt } from '$lib/server/rag';
 import type { GradeCode } from '$lib/types/grades';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -129,9 +130,36 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				includeAntiCheat: true
 			});
 
+			// 7.5. RAG Search for relevant context (if enabled)
+			let ragContext = '';
+			if (env.ENABLE_RAG && userMessageContent.length > 10) {
+				try {
+					const ragResults = await hybridSearch(locals.supabase, userMessageContent, {
+						limit: 3,
+						gradeLevel: gradeCode,
+						topics: topicValue ? [topicValue] : undefined
+					});
+
+					if (ragResults.length > 0) {
+						ragContext = formatResultsForPrompt(ragResults, {
+							maxLength: 1500,
+							includeSource: true
+						});
+					}
+				} catch (ragError) {
+					// RAG failure is non-critical - continue without context
+					console.warn('RAG search failed:', ragError);
+				}
+			}
+
+			// Combine system prompt with RAG context
+			const fullSystemPrompt = ragContext
+				? `${tutorSystemPrompt}\n\n${ragContext}`
+				: tutorSystemPrompt;
+
 			// 8. Call Groq API with tutor prompt
 			const apiMessages = [
-				{ role: 'system', content: tutorSystemPrompt },
+				{ role: 'system', content: fullSystemPrompt },
 				...messages.slice(-10).map(({ role, content }) => ({ role, content }))
 			];
 
