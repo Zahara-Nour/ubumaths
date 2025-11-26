@@ -70,6 +70,8 @@ Resetting the migration system to use pure markdown syntax (`{{...}}`) throughou
 
 ## Phase 2: Migration System Verification - COMPLETED
 
+**Major Update (2025-11-26):** Syntax converter enhanced to support `$er` and `$d{}` patterns.
+
 ### 2.1 Create test script
 
 - **Status**: COMPLETED
@@ -115,14 +117,27 @@ Resetting the migration system to use pure markdown syntax (`{{...}}`) throughou
 
 ### 2.8 Commit Phase 2
 
-- **Status**: PENDING
+- **Status**: COMPLETED
+- **Commit**: `b5c87a7a` - test(migration): add transformer verification script and tokenizer fix
+
+### 2.9 Syntax Converter Enhancement (NEW - 2025-11-26)
+
+- **Status**: COMPLETED
+- **Commits**:
+  - `423f77ec` - feat(parameterization): add relative integers, double-dot ranges, and decimal auto-step
+  - `93e0b592` - feat(migration): add $d{} and $er conversion support to syntax-converter
+- **New Capabilities**:
+  - `$er[min;max]` → `{{±min..max}}` (relative integers, 215 occurrences in old questions)
+  - `$er{n}` → `{{±n..n}}` (single value relative integers)
+  - `$d{n;m}` → `{{n.m}}` (decimal by digits, 36 occurrences in old questions)
+- **Impact**: 251+ additional old questions now fully convertible
 
 ---
 
 ## Next Steps (Phase 3)
 
-1. Re-run full migration with transformer
-2. Populate `question_templates` with correct data
+1. Re-run full migration with enhanced transformer
+2. Populate `question_templates` with correct data (including $er and $d{} patterns)
 3. Test end-to-end question generation in UI
 4. Update documentation
 
@@ -134,9 +149,11 @@ If resuming from crash:
 
 1. **Current branch**: `migration/questions`
 2. **Last Phase 1 commit**: `0f063714`
-3. **Phase 1**: COMPLETED
-4. **Phase 2**: COMPLETED (pending commit)
-5. **Plan file**: `.claude/plans/snug-petting-hummingbird.md`
+3. **Last Phase 2 commit**: `b5c87a7a`
+4. **Latest enhancement commits**: `423f77ec`, `93e0b592`
+5. **Phase 1**: COMPLETED
+6. **Phase 2**: COMPLETED (including syntax converter enhancements)
+7. **Phase 3**: READY TO START
 
 ---
 
