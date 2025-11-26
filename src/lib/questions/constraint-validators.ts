@@ -1,0 +1,561 @@
+/**
+ * Constraint Validators
+ * =====================
+ *
+ * Check if mathematically correct answers are written in proper form.
+ * These validators check the raw student input (LaTeX from MathLive),
+ * not canonical equivalence.
+ *
+ * Each validator returns an array of indices where violations were found,
+ * supporting questions with multiple answers.
+ *
+ * @module questions/constraint-validators
+ */
+
+// ============================================================================
+// SPACING VALIDATOR
+// ============================================================================
+
+/**
+ * Check for incorrect digit spacing in numbers
+ *
+ * French format uses thin spaces to group digits:
+ * - Integer part: groups of 3 from right (1 234 567)
+ * - Decimal part: groups of 3 from left after separator (0,123 456)
+ *
+ * Valid spacing characters: regular space, LaTeX thin space (\,)
+ *
+ * Violations detected:
+ * - 4+ consecutive digits without spacing
+ * - Incorrect space positions (not aligned to groups of 3)
+ *
+ * @param answersLatex - Array of LaTeX strings from MathLive
+ * @returns Indices of answers with spacing violations
+ *
+ * @example
+ * checkSpaces(['1234'])      // Returns [] - 4 digits OK without space (French convention)
+ * checkSpaces(['12345'])     // Returns [0] - 5+ digits needs spacing
+ * checkSpaces(['1 234'])     // Returns [] - correct spacing
+ * checkSpaces(['1\\,234'])   // Returns [] - LaTeX thin space is valid
+ * checkSpaces(['123'])       // Returns [] - 3 digits OK without space
+ * checkSpaces(['0,12345'])   // Returns [0] - decimal part with 5+ digits needs spacing
+ */
+export function checkSpaces(answersLatex: string[]): number[] {
+	const violations: number[] = [];
+
+	for (let i = 0; i < answersLatex.length; i++) {
+		const latex = answersLatex[i];
+
+		// Skip empty strings
+		if (!latex || latex.trim() === '') {
+			continue;
+		}
+
+		if (hasSpacingViolation(latex)) {
+			violations.push(i);
+		}
+	}
+
+	return violations;
+}
+
+/**
+ * Check if a single LaTeX string has spacing violations
+ */
+function hasSpacingViolation(latex: string): boolean {
+	// Normalize LaTeX thin space (\,) to regular space for analysis
+	// Also handle {,} which is French decimal separator in LaTeX
+	let normalized = latex.replace(/\\,/g, ' ');
+
+	// Replace {,} with a placeholder decimal separator
+	// This is the French decimal comma in LaTeX
+	normalized = normalized.replace(/\{,\}/g, '.');
+
+	// Also handle simple comma as decimal separator (common in French input)
+	// But only when it's clearly a decimal comma (digit,digit pattern)
+	// Note: This assumes input is pure numbers, not function calls like f(1,2)
+	normalized = normalized.replace(/(\d),(\d)/g, '$1.$2');
+
+	// Extract all number sequences (with potential spaces and decimal points)
+	// Pattern matches: optional minus, digits with optional spaces, optional decimal part
+	const numberPattern = /-?\d[\d\s]*(?:\.\d[\d\s]*)?/g;
+	const matches = normalized.match(numberPattern);
+
+	if (!matches) {
+		return false;
+	}
+
+	for (const match of matches) {
+		// Split by decimal point
+		const parts = match.replace(/^-/, '').split('.');
+		const integerPart = parts[0] || '';
+		const decimalPart = parts[1] || '';
+
+		// Check integer part: should have spaces creating groups of 3 from right
+		if (hasIntegerSpacingViolation(integerPart)) {
+			return true;
+		}
+
+		// Check decimal part: should have spaces creating groups of 3 from left
+		if (hasDecimalSpacingViolation(decimalPart)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Check integer part for spacing violations
+ * Groups of 3 from right: 1 234 567
+ */
+function hasIntegerSpacingViolation(integerPart: string): boolean {
+	// Remove existing spaces to get pure digits
+	const digits = integerPart.replace(/\s/g, '');
+
+	// 4 or fewer digits: no spacing required
+	if (digits.length <= 4) {
+		// But if there ARE spaces, they should be correct
+		if (integerPart.includes(' ')) {
+			// Verify spacing is at correct positions
+			return !isCorrectIntegerSpacing(integerPart);
+		}
+		return false;
+	}
+
+	// 5+ digits: spacing is required
+	if (!integerPart.includes(' ')) {
+		return true; // Missing required spacing
+	}
+
+	// Verify spacing is at correct positions
+	return !isCorrectIntegerSpacing(integerPart);
+}
+
+/**
+ * Verify integer spacing is correct (groups of 3 from right)
+ */
+function isCorrectIntegerSpacing(integerPart: string): boolean {
+	const digits = integerPart.replace(/\s/g, '');
+
+	// Build expected format with spaces
+	const groups: string[] = [];
+	for (let i = digits.length; i > 0; i -= 3) {
+		const start = Math.max(0, i - 3);
+		groups.unshift(digits.slice(start, i));
+	}
+	const expected = groups.join(' ');
+
+	// Normalize actual spacing (collapse multiple spaces)
+	const actual = integerPart.replace(/\s+/g, ' ').trim();
+
+	return actual === expected;
+}
+
+/**
+ * Check decimal part for spacing violations
+ * Groups of 3 from left: 123 456
+ */
+function hasDecimalSpacingViolation(decimalPart: string): boolean {
+	if (!decimalPart) {
+		return false;
+	}
+
+	// Remove existing spaces to get pure digits
+	const digits = decimalPart.replace(/\s/g, '');
+
+	// 4 or fewer digits: no spacing required
+	if (digits.length <= 4) {
+		// But if there ARE spaces, they should be correct
+		if (decimalPart.includes(' ')) {
+			return !isCorrectDecimalSpacing(decimalPart);
+		}
+		return false;
+	}
+
+	// 5+ digits: spacing is required
+	if (!decimalPart.includes(' ')) {
+		return true;
+	}
+
+	return !isCorrectDecimalSpacing(decimalPart);
+}
+
+/**
+ * Verify decimal spacing is correct (groups of 3 from left)
+ */
+function isCorrectDecimalSpacing(decimalPart: string): boolean {
+	const digits = decimalPart.replace(/\s/g, '');
+
+	// Build expected format with spaces (groups of 3 from left)
+	const groups: string[] = [];
+	for (let i = 0; i < digits.length; i += 3) {
+		groups.push(digits.slice(i, i + 3));
+	}
+	const expected = groups.join(' ');
+
+	const actual = decimalPart.replace(/\s+/g, ' ').trim();
+
+	return actual === expected;
+}
+
+// ============================================================================
+// PRODUCTS VALIDATOR
+// ============================================================================
+
+/**
+ * Check for explicit multiplication symbols that should be implicit
+ *
+ * In mathematical notation, multiplication before a variable or parenthesis
+ * should typically be implicit (2x not 2*x).
+ *
+ * Violations: \times, \cdot, \ast, * when used before a variable or parenthesis
+ * Valid: 2x3 (number x number), or explicit when both operands are numbers
+ *
+ * @param answersLatex - Array of LaTeX strings
+ * @returns Indices of answers with explicit multiplication violations
+ *
+ * @example
+ * checkProducts(['2\\times x'])   // Returns [0] - should be 2x
+ * checkProducts(['2x'])           // Returns [] - implicit is correct
+ * checkProducts(['2\\times 3'])   // Returns [] - number x number is OK
+ * checkProducts(['2\\cdot x'])    // Returns [0] - should be implicit
+ * checkProducts(['a\\times b'])   // Returns [0] - variable x variable should be implicit
+ * checkProducts(['(x+1)\\times y']) // Returns [0] - should be implicit
+ */
+export function checkProducts(answersLatex: string[]): number[] {
+	const violations: number[] = [];
+
+	for (let i = 0; i < answersLatex.length; i++) {
+		const latex = answersLatex[i];
+
+		if (!latex || latex.trim() === '') {
+			continue;
+		}
+
+		if (hasProductViolation(latex)) {
+			violations.push(i);
+		}
+	}
+
+	return violations;
+}
+
+/**
+ * Check if a single LaTeX string has product notation violations
+ */
+function hasProductViolation(latex: string): boolean {
+	// Pattern for multiplication symbols
+	const multSymbols = /\\times|\\cdot|\\ast|\*/g;
+
+	// Find all multiplication symbols
+	let match: RegExpExecArray | null;
+	while ((match = multSymbols.exec(latex)) !== null) {
+		const pos = match.index;
+		const symbolLength = match[0].length;
+
+		// Get what comes after the symbol (skip whitespace)
+		const afterSymbol = latex.slice(pos + symbolLength).replace(/^\s*/, '');
+
+		// Check if followed by a letter (variable), opening paren, or LaTeX command for letter
+		// Variables: a-z, A-Z, Greek letters (\alpha, \beta, etc.)
+		// Parentheses: (, \left(, [, \left[, {
+		if (isFollowedByVariableOrParen(afterSymbol)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Check if string starts with a variable or opening parenthesis
+ */
+function isFollowedByVariableOrParen(str: string): boolean {
+	if (!str) return false;
+
+	// Check for letter (variable)
+	if (/^[a-zA-Z]/.test(str)) {
+		return true;
+	}
+
+	// Check for opening parenthesis/bracket
+	// Note: We don't check for { as it's usually LaTeX grouping (\frac{}, etc.)
+	if (/^[([]/.test(str)) {
+		return true;
+	}
+
+	// Check for \left( or \left[
+	if (/^\\left[([]/.test(str)) {
+		return true;
+	}
+
+	// Check for Greek letters
+	if (
+		/^\\(alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|pi|rho|sigma|tau|upsilon|phi|chi|psi|omega)/i.test(
+			str
+		)
+	) {
+		return true;
+	}
+
+	return false;
+}
+
+// ============================================================================
+// BRACKETS VALIDATOR
+// ============================================================================
+
+/**
+ * Check for unnecessary brackets in student's raw answer
+ *
+ * NOT using CE canonical form comparison - checking actual student input.
+ *
+ * Unnecessary brackets detected:
+ * - Single number in brackets: (5), (-5) unless allowFirstNegative
+ * - Single variable in brackets: (x)
+ * - Double brackets: ((x+1))
+ * - First negative term in brackets at start: (-5)+3 (unless allowed)
+ *
+ * @param answersLatex - Array of LaTeX strings
+ * @param options.allowFirstNegative - Allow brackets around first negative term
+ * @returns Indices of answers with unnecessary brackets
+ *
+ * @example
+ * checkBrackets(['(5)'])                                // Returns [0]
+ * checkBrackets(['(-5)+3'], {allowFirstNegative:true})  // Returns []
+ * checkBrackets(['(-5)+3'], {allowFirstNegative:false}) // Returns [0]
+ * checkBrackets(['(x+1)'])                              // Returns [] - necessary
+ * checkBrackets(['((x+1))'])                            // Returns [0] - double brackets
+ * checkBrackets(['(x)'])                                // Returns [0] - single variable
+ */
+export function checkBrackets(
+	answersLatex: string[],
+	options: { allowFirstNegative?: boolean } = {}
+): number[] {
+	const { allowFirstNegative = false } = options;
+	const violations: number[] = [];
+
+	for (let i = 0; i < answersLatex.length; i++) {
+		const latex = answersLatex[i];
+
+		if (!latex || latex.trim() === '') {
+			continue;
+		}
+
+		if (hasBracketViolation(latex, allowFirstNegative)) {
+			violations.push(i);
+		}
+	}
+
+	return violations;
+}
+
+/**
+ * Check if a single LaTeX string has unnecessary bracket violations
+ */
+function hasBracketViolation(latex: string, allowFirstNegative: boolean): boolean {
+	// Normalize \left( and \right) to regular parentheses
+	let normalized = latex.replace(/\\left\(/g, '(').replace(/\\right\)/g, ')');
+	normalized = normalized.replace(/\\left\[/g, '[').replace(/\\right\]/g, ']');
+
+	// Check for double brackets: ((...))
+	if (/\(\s*\([^)]*\)\s*\)/.test(normalized)) {
+		return true;
+	}
+
+	// Check for single number in brackets: (5), (123), (-5)
+	// But NOT expressions like (5+3) or (5x)
+	const singleNumberPattern = /\(\s*-?\d+(?:\.\d+)?\s*\)/g;
+	let match: RegExpExecArray | null;
+
+	while ((match = singleNumberPattern.exec(normalized)) !== null) {
+		const matchedStr = match[0];
+		const isNegative = matchedStr.includes('-');
+		const isAtStart = match.index === 0;
+
+		// If it's a negative number at the start and allowFirstNegative is true, skip
+		if (isNegative && isAtStart && allowFirstNegative) {
+			continue;
+		}
+
+		// Otherwise, it's a violation
+		return true;
+	}
+
+	// Check for single variable in brackets: (x), (y), (\alpha)
+	// Single letter variable
+	if (/\(\s*[a-zA-Z]\s*\)/.test(normalized)) {
+		return true;
+	}
+
+	// Greek letter variable
+	if (
+		/\(\s*\\(alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|pi|rho|sigma|tau|upsilon|phi|chi|psi|omega)\s*\)/i.test(
+			normalized
+		)
+	) {
+		return true;
+	}
+
+	return false;
+}
+
+// ============================================================================
+// ZEROS VALIDATOR
+// ============================================================================
+
+/**
+ * Check for unnecessary leading or trailing zeros
+ *
+ * Violations:
+ * - Leading zeros: 01, 007 (but 0, 0.5 are valid)
+ * - Trailing decimal zeros: 1.0, 1.20 (but 1.02 is valid)
+ *
+ * @param answers - Array of answer strings (plain text, not LaTeX)
+ * @returns Indices of answers with unnecessary zeros
+ *
+ * @example
+ * checkZeros(['01'])     // Returns [0] - leading zero
+ * checkZeros(['0'])      // Returns [] - valid
+ * checkZeros(['0.5'])    // Returns [] - valid
+ * checkZeros(['0,5'])    // Returns [] - valid (French format)
+ * checkZeros(['1.0'])    // Returns [0] - trailing zero
+ * checkZeros(['1.02'])   // Returns [] - valid (0 is meaningful)
+ * checkZeros(['1.20'])   // Returns [0] - trailing zero
+ * checkZeros(['007'])    // Returns [0] - leading zeros
+ */
+export function checkZeros(answers: string[]): number[] {
+	const violations: number[] = [];
+
+	for (let i = 0; i < answers.length; i++) {
+		const answer = answers[i];
+
+		if (!answer || answer.trim() === '') {
+			continue;
+		}
+
+		if (hasZeroViolation(answer)) {
+			violations.push(i);
+		}
+	}
+
+	return violations;
+}
+
+/**
+ * Check if a single string has unnecessary zero violations
+ */
+function hasZeroViolation(answer: string): boolean {
+	// Normalize French comma to period for analysis
+	const normalized = answer.replace(/,/g, '.');
+
+	// Extract numbers from the string (handles expressions like "5+3")
+	const numberPattern = /-?\d+(?:\.\d+)?/g;
+	const matches = normalized.match(numberPattern);
+
+	if (!matches) {
+		return false;
+	}
+
+	for (const numStr of matches) {
+		const isNegative = numStr.startsWith('-');
+		const absNumStr = isNegative ? numStr.slice(1) : numStr;
+
+		// Check for leading zeros: 01, 007, etc.
+		// Valid: 0, 0.5 (zero before decimal)
+		// Invalid: 01, 007, 00.5
+		if (/^0\d/.test(absNumStr)) {
+			return true;
+		}
+
+		// Check for trailing decimal zeros: 1.0, 1.20
+		// Valid: 1.02 (zero in middle), 10, 100 (not decimals)
+		if (absNumStr.includes('.')) {
+			const decimalPart = absNumStr.split('.')[1];
+			if (decimalPart && decimalPart.endsWith('0')) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+// ============================================================================
+// FORM VALIDATOR
+// ============================================================================
+
+/**
+ * Check if answer matches expected form exactly (strict form check)
+ *
+ * For cases where we need the exact written form, not just mathematical equivalence.
+ * Uses string comparison after whitespace normalization.
+ *
+ * @param answersLatex - Array of user's LaTeX answers
+ * @param expectedLatex - Array of expected LaTeX forms
+ * @param options.strictForm - If true, require exact match
+ * @returns Indices of answers that don't match expected form
+ *
+ * @example
+ * checkForm(['x+1'], ['1+x'], {strictForm: true})   // Returns [0] - different order
+ * checkForm(['x+1'], ['x+1'], {strictForm: true})   // Returns [] - exact match
+ * checkForm(['x + 1'], ['x+1'], {strictForm: true}) // Returns [] - whitespace normalized
+ * checkForm(['x+1'], ['1+x'])                       // Returns [] - strictForm defaults to false
+ */
+export function checkForm(
+	answersLatex: string[],
+	expectedLatex: string[],
+	options: { strictForm?: boolean } = {}
+): number[] {
+	const { strictForm = false } = options;
+
+	// If strictForm is not enabled, no violations
+	if (!strictForm) {
+		return [];
+	}
+
+	const violations: number[] = [];
+
+	// Compare each answer with corresponding expected
+	const maxLength = Math.max(answersLatex.length, expectedLatex.length);
+
+	for (let i = 0; i < maxLength; i++) {
+		const userAnswer = answersLatex[i];
+		const expected = expectedLatex[i];
+
+		// Missing answer or expected value
+		if (userAnswer === undefined || expected === undefined) {
+			violations.push(i);
+			continue;
+		}
+
+		// Normalize and compare
+		const normalizedUser = normalizeForFormComparison(userAnswer);
+		const normalizedExpected = normalizeForFormComparison(expected);
+
+		if (normalizedUser !== normalizedExpected) {
+			violations.push(i);
+		}
+	}
+
+	return violations;
+}
+
+/**
+ * Normalize LaTeX string for form comparison
+ *
+ * - Remove extra whitespace
+ * - Normalize certain LaTeX constructs
+ */
+function normalizeForFormComparison(latex: string): string {
+	return (
+		latex
+			// Collapse multiple spaces to single space
+			.replace(/\s+/g, ' ')
+			// Remove spaces around operators for consistent comparison
+			.replace(/\s*([+\-*/=<>])\s*/g, '$1')
+			// Trim
+			.trim()
+	);
+}
