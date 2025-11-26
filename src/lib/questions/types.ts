@@ -472,3 +472,46 @@ export type GenerationResult =
  * {{random:1-20!5,7-9,{{a}}}} → { ..., exclusions: [...] }
  */
 export type RandomSpec = SharedRandomSpec;
+
+// ============================================================================
+// CONSTRAINT VALIDATION TYPES
+// ============================================================================
+
+/**
+ * Validation status levels for answer checking
+ *
+ * These status levels support partial credit:
+ * - correct: Full points
+ * - unoptimal_form: Partial points (answer correct, form suboptimal)
+ * - bad_form: No points (answer correct but required form violated)
+ * - incorrect: No points (wrong answer)
+ * - empty: No answer provided
+ */
+export type ValidationStatus = 'correct' | 'unoptimal_form' | 'bad_form' | 'incorrect' | 'empty';
+
+/**
+ * Constraint types that can be checked on answers
+ */
+export type ConstraintId = 'spaces' | 'products' | 'brackets' | 'zeros' | 'form';
+
+/**
+ * How to handle constraint violations
+ *
+ * - 'require': Violation results in bad_form (0 points)
+ * - 'no-penalty': Skip this check entirely
+ * - 'check': Violation results in unoptimal_form (partial credit)
+ */
+export type ConstraintMode = 'require' | 'no-penalty' | 'check';
+
+/**
+ * Constraint configuration for question validation
+ */
+export interface ConstraintOptions {
+	spaces?: ConstraintMode;
+	products?: ConstraintMode;
+	brackets?: ConstraintMode;
+	zeros?: ConstraintMode;
+	form?: ConstraintMode;
+	/** Allow brackets around first negative term: (-5)+3 */
+	allowBracketsInFirstNegativeTerm?: boolean;
+}
