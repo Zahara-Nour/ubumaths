@@ -66,11 +66,11 @@ describe('validateAnswer - Constraint Integration', () => {
 		it('should not check constraints when answer is incorrect', () => {
 			const instance = createNumericalInstance('42', {
 				constraints: {
-					spaces: 'require',
-					products: 'require',
-					brackets: 'require',
-					zeros: 'require',
-					form: 'no-penalty'
+					spaces: 'strict',
+					products: 'strict',
+					brackets: 'strict',
+					zeros: 'strict',
+					form: 'off'
 				}
 			});
 
@@ -84,11 +84,11 @@ describe('validateAnswer - Constraint Integration', () => {
 		it('should check constraints when answer is correct', () => {
 			const instance = createNumericalInstance('12345', {
 				constraints: {
-					spaces: 'require',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					spaces: 'strict',
+					products: 'off',
+					brackets: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -105,11 +105,11 @@ describe('validateAnswer - Constraint Integration', () => {
 		it('should skip constraint checks when no LaTeX provided', () => {
 			const instance = createNumericalInstance('42', {
 				constraints: {
-					spaces: 'require',
-					products: 'require',
-					brackets: 'require',
-					zeros: 'require',
-					form: 'no-penalty'
+					spaces: 'strict',
+					products: 'strict',
+					brackets: 'strict',
+					zeros: 'strict',
+					form: 'off'
 				}
 			});
 
@@ -124,11 +124,11 @@ describe('validateAnswer - Constraint Integration', () => {
 		it('should check constraints when LaTeX is provided', () => {
 			const instance = createNumericalInstance('5', {
 				constraints: {
-					brackets: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					brackets: 'strict',
+					spaces: 'off',
+					products: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -141,15 +141,15 @@ describe('validateAnswer - Constraint Integration', () => {
 		});
 	});
 
-	describe('Constraint Mode: require (bad_form)', () => {
-		it('should mark answer as incorrect (bad_form) when constraint is required and violated', () => {
+	describe('Constraint Mode: strict (bad_form)', () => {
+		it('should mark answer as incorrect (bad_form) when constraint is strict and violated', () => {
 			const instance = createNumericalInstance('12345', {
 				constraints: {
-					spaces: 'require',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					spaces: 'strict',
+					products: 'off',
+					brackets: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -166,11 +166,11 @@ describe('validateAnswer - Constraint Integration', () => {
 		it('should use feedback from constraint violation as main feedback', () => {
 			const instance = createNumericalInstance('5', {
 				constraints: {
-					brackets: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					brackets: 'strict',
+					spaces: 'off',
+					products: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -181,15 +181,15 @@ describe('validateAnswer - Constraint Integration', () => {
 		});
 	});
 
-	describe('Constraint Mode: check (unoptimal_form)', () => {
-		it('should give partial credit (unoptimal_form) when constraint is checked and violated', () => {
+	describe('Constraint Mode: warn (unoptimal_form)', () => {
+		it('should give partial credit (unoptimal_form) when constraint is warn and violated', () => {
 			const instance = createNumericalInstance('12345', {
 				constraints: {
-					spaces: 'check',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					spaces: 'warn',
+					products: 'off',
+					brackets: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -206,11 +206,11 @@ describe('validateAnswer - Constraint Integration', () => {
 		it('should keep isCorrect true but add feedback for unoptimal form', () => {
 			const instance = createNumericalInstance('5', {
 				constraints: {
-					brackets: 'check',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					brackets: 'warn',
+					spaces: 'off',
+					products: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -222,15 +222,15 @@ describe('validateAnswer - Constraint Integration', () => {
 		});
 	});
 
-	describe('Constraint Mode: no-penalty', () => {
-		it('should skip constraint when mode is no-penalty', () => {
+	describe('Constraint Mode: off', () => {
+		it('should skip constraint when mode is off', () => {
 			const instance = createNumericalInstance('12345', {
 				constraints: {
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					spaces: 'off',
+					products: 'off',
+					brackets: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -241,14 +241,14 @@ describe('validateAnswer - Constraint Integration', () => {
 			expect(result.constraintViolations).toHaveLength(0);
 		});
 
-		it('should allow violations when no-penalty mode', () => {
+		it('should allow violations when off mode', () => {
 			const instance = createNumericalInstance('5', {
 				constraints: {
-					brackets: 'no-penalty',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					brackets: 'off',
+					spaces: 'off',
+					products: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -297,14 +297,14 @@ describe('validateAnswer - Constraint Integration', () => {
 
 describe('validateAnswer - Specific Constraints', () => {
 	describe('Spaces Constraint', () => {
-		it('should detect spacing violations in require mode', () => {
+		it('should detect spacing violations in strict mode', () => {
 			const instance = createNumericalInstance('12345', {
 				constraints: {
-					spaces: 'require',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					spaces: 'strict',
+					products: 'off',
+					brackets: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -317,11 +317,11 @@ describe('validateAnswer - Specific Constraints', () => {
 		it('should accept correct spacing', () => {
 			const instance = createNumericalInstance('12 345', {
 				constraints: {
-					spaces: 'require',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					spaces: 'strict',
+					products: 'off',
+					brackets: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -333,14 +333,14 @@ describe('validateAnswer - Specific Constraints', () => {
 	});
 
 	describe('Products Constraint', () => {
-		it('should detect explicit multiplication in require mode', () => {
+		it('should detect explicit multiplication in strict mode', () => {
 			const instance = createAlgebraicInstance('2x', {
 				constraints: {
-					products: 'require',
-					spaces: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					products: 'strict',
+					spaces: 'off',
+					brackets: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -353,11 +353,11 @@ describe('validateAnswer - Specific Constraints', () => {
 		it('should accept implicit multiplication', () => {
 			const instance = createAlgebraicInstance('2x', {
 				constraints: {
-					products: 'require',
-					spaces: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					products: 'strict',
+					spaces: 'off',
+					brackets: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -369,14 +369,14 @@ describe('validateAnswer - Specific Constraints', () => {
 	});
 
 	describe('Brackets Constraint', () => {
-		it('should detect unnecessary brackets in require mode', () => {
+		it('should detect unnecessary brackets in strict mode', () => {
 			const instance = createNumericalInstance('5', {
 				constraints: {
-					brackets: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					brackets: 'strict',
+					spaces: 'off',
+					products: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			});
 
@@ -389,11 +389,11 @@ describe('validateAnswer - Specific Constraints', () => {
 		it('should respect allowBracketsInFirstNegativeTerm option', () => {
 			const instance = createAlgebraicInstance('(-5)+3', {
 				constraints: {
-					brackets: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty',
+					brackets: 'strict',
+					spaces: 'off',
+					products: 'off',
+					zeros: 'off',
+					form: 'off',
 					allowBracketsInFirstNegativeTerm: true
 				}
 			});
@@ -407,11 +407,11 @@ describe('validateAnswer - Specific Constraints', () => {
 		it('should detect brackets around first negative when option is false', () => {
 			const instance = createAlgebraicInstance('(-5)+3', {
 				constraints: {
-					brackets: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty',
+					brackets: 'strict',
+					spaces: 'off',
+					products: 'off',
+					zeros: 'off',
+					form: 'off',
 					allowBracketsInFirstNegativeTerm: false
 				}
 			});
@@ -424,14 +424,14 @@ describe('validateAnswer - Specific Constraints', () => {
 	});
 
 	describe('Zeros Constraint', () => {
-		it('should detect leading zeros in require mode', () => {
+		it('should detect leading zeros in strict mode', () => {
 			const instance = createNumericalInstance('1', {
 				constraints: {
-					zeros: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					form: 'no-penalty'
+					zeros: 'strict',
+					spaces: 'off',
+					products: 'off',
+					brackets: 'off',
+					form: 'off'
 				}
 			});
 
@@ -442,14 +442,14 @@ describe('validateAnswer - Specific Constraints', () => {
 			expect(result.constraintViolations![0].constraint).toBe('zeros');
 		});
 
-		it('should detect trailing zeros in require mode', () => {
+		it('should detect trailing zeros in strict mode', () => {
 			const instance = createNumericalInstance('1', {
 				constraints: {
-					zeros: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					form: 'no-penalty'
+					zeros: 'strict',
+					spaces: 'off',
+					products: 'off',
+					brackets: 'off',
+					form: 'off'
 				}
 			});
 
@@ -461,14 +461,14 @@ describe('validateAnswer - Specific Constraints', () => {
 	});
 
 	describe('Form Constraint', () => {
-		it('should detect form violations when form is require mode', () => {
+		it('should detect form violations when form is strict mode', () => {
 			const instance = createAlgebraicInstance('x+1', {
 				constraints: {
-					form: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty'
+					form: 'strict',
+					spaces: 'off',
+					products: 'off',
+					brackets: 'off',
+					zeros: 'off'
 				}
 			});
 
@@ -482,11 +482,11 @@ describe('validateAnswer - Specific Constraints', () => {
 		it('should accept exact form match', () => {
 			const instance = createAlgebraicInstance('x+1', {
 				constraints: {
-					form: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty'
+					form: 'strict',
+					spaces: 'off',
+					products: 'off',
+					brackets: 'off',
+					zeros: 'off'
 				}
 			});
 
@@ -499,11 +499,11 @@ describe('validateAnswer - Specific Constraints', () => {
 		it('should normalize whitespace in form comparison', () => {
 			const instance = createAlgebraicInstance('x+1', {
 				constraints: {
-					form: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					brackets: 'no-penalty',
-					zeros: 'no-penalty'
+					form: 'strict',
+					spaces: 'off',
+					products: 'off',
+					brackets: 'off',
+					zeros: 'off'
 				}
 			});
 
@@ -523,11 +523,11 @@ describe('validateAnswer - Multiple Constraints', () => {
 	it('should check multiple constraints and report first violation', () => {
 		const instance = createAlgebraicInstance('2x', {
 			constraints: {
-				products: 'require',
-				brackets: 'require',
-				spaces: 'no-penalty',
-				zeros: 'no-penalty',
-				form: 'no-penalty'
+				products: 'strict',
+				brackets: 'strict',
+				spaces: 'off',
+				zeros: 'off',
+				form: 'off'
 			}
 		});
 
@@ -538,32 +538,32 @@ describe('validateAnswer - Multiple Constraints', () => {
 		expect(result.constraintViolations![0].constraint).toBe('products');
 	});
 
-	it('should prioritize require mode violations over check mode', () => {
+	it('should prioritize strict mode violations over warn mode', () => {
 		const instance = createNumericalInstance('5', {
 			constraints: {
-				brackets: 'require',
-				zeros: 'check',
-				spaces: 'no-penalty',
-				products: 'no-penalty',
-				form: 'no-penalty'
+				brackets: 'strict',
+				zeros: 'warn',
+				spaces: 'off',
+				products: 'off',
+				form: 'off'
 			}
 		});
 
-		// Violates brackets (require) - should be bad_form, not unoptimal_form
+		// Violates brackets (strict) - should be bad_form, not unoptimal_form
 		const result = validateAnswer('5', instance, '(5)');
 
 		expect(result.status).toBe('bad_form');
 		expect(result.isCorrect).toBe(false);
 	});
 
-	it('should report unoptimal_form when only check violations', () => {
+	it('should report unoptimal_form when only warn violations', () => {
 		const instance = createNumericalInstance('12345', {
 			constraints: {
-				spaces: 'check',
-				products: 'check',
-				brackets: 'no-penalty',
-				zeros: 'no-penalty',
-				form: 'no-penalty'
+				spaces: 'warn',
+				products: 'warn',
+				brackets: 'off',
+				zeros: 'off',
+				form: 'off'
 			}
 		});
 
@@ -596,11 +596,11 @@ describe('validateAnswer - Multiple Answers', () => {
 			],
 			options: {
 				constraints: {
-					brackets: 'require',
-					spaces: 'no-penalty',
-					products: 'no-penalty',
-					zeros: 'no-penalty',
-					form: 'no-penalty'
+					brackets: 'strict',
+					spaces: 'off',
+					products: 'off',
+					zeros: 'off',
+					form: 'off'
 				}
 			}
 		};
@@ -615,11 +615,11 @@ describe('validateAnswer - Multiple Answers', () => {
 	it('should handle array conversion for single answer', () => {
 		const instance = createNumericalInstance('5', {
 			constraints: {
-				brackets: 'require',
-				spaces: 'no-penalty',
-				products: 'no-penalty',
-				zeros: 'no-penalty',
-				form: 'no-penalty'
+				brackets: 'strict',
+				spaces: 'off',
+				products: 'off',
+				zeros: 'off',
+				form: 'off'
 			}
 		});
 
@@ -638,11 +638,11 @@ describe('validateAnswer - Edge Cases', () => {
 	it('should handle empty LaTeX string', () => {
 		const instance = createNumericalInstance('5', {
 			constraints: {
-				brackets: 'require',
-				spaces: 'no-penalty',
-				products: 'no-penalty',
-				zeros: 'no-penalty',
-				form: 'no-penalty'
+				brackets: 'strict',
+				spaces: 'off',
+				products: 'off',
+				zeros: 'off',
+				form: 'off'
 			}
 		});
 
@@ -655,11 +655,11 @@ describe('validateAnswer - Edge Cases', () => {
 	it('should handle constraint check with incorrect answer gracefully', () => {
 		const instance = createNumericalInstance('42', {
 			constraints: {
-				spaces: 'require',
-				products: 'require',
-				brackets: 'require',
-				zeros: 'require',
-				form: 'no-penalty'
+				spaces: 'strict',
+				products: 'strict',
+				brackets: 'strict',
+				zeros: 'strict',
+				form: 'off'
 			}
 		});
 
@@ -673,11 +673,11 @@ describe('validateAnswer - Edge Cases', () => {
 	it('should handle numerical answer type conversion', () => {
 		const instance = createNumericalInstance('5', {
 			constraints: {
-				brackets: 'require',
-				spaces: 'no-penalty',
-				products: 'no-penalty',
-				zeros: 'no-penalty',
-				form: 'no-penalty'
+				brackets: 'strict',
+				spaces: 'off',
+				products: 'off',
+				zeros: 'off',
+				form: 'off'
 			}
 		});
 

@@ -498,13 +498,13 @@ export type ValidationStatus = 'correct' | 'unoptimal_form' | 'bad_form' | 'inco
 export type ConstraintId = 'spaces' | 'products' | 'brackets' | 'zeros' | 'form';
 
 /**
- * How to handle constraint violations
+ * How to handle constraint violations (ordered by decreasing severity)
  *
- * - 'require': Violation results in bad_form (0 points)
- * - 'no-penalty': Skip this check entirely
- * - 'check': Violation results in unoptimal_form (partial credit)
+ * - 'strict': Violation results in bad_form (0 points) - form is required
+ * - 'warn': Violation results in unoptimal_form (partial credit) - just a warning
+ * - 'off': Skip this check entirely - constraint disabled
  */
-export type ConstraintMode = 'require' | 'no-penalty' | 'check';
+export type ConstraintMode = 'strict' | 'warn' | 'off';
 
 /**
  * Constraint configuration for question validation

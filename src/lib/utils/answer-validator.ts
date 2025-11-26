@@ -67,26 +67,26 @@ function applyConstraints(
 		{
 			id: 'form',
 			check: () =>
-				checkForm(answersLatex, expectedAnswers, { strictForm: constraints.form === 'require' })
+				checkForm(answersLatex, expectedAnswers, { strictForm: constraints.form === 'strict' })
 		}
 	];
 
 	for (const { id, check } of checks) {
 		const mode = constraints[id] as ConstraintMode | undefined;
 
-		// Skip if no-penalty or not configured
-		if (!mode || mode === 'no-penalty') continue;
+		// Skip if off or not configured
+		if (!mode || mode === 'off') continue;
 
 		const problematic = check();
 		if (problematic.length > 0) {
 			const isMultiple = answers.length > 1;
 			const feedback = CONSTRAINT_FEEDBACK[id][isMultiple ? 'multiple' : 'single'];
 
-			if (mode === 'require') {
+			if (mode === 'strict') {
 				violations.push({ constraint: id, severity: 'error', feedback });
 				worstStatus = 'bad_form';
 			} else {
-				// mode === 'check' -> partial credit
+				// mode === 'warn' -> partial credit
 				violations.push({ constraint: id, severity: 'warning', feedback });
 				if (worstStatus === 'correct') {
 					worstStatus = 'unoptimal_form';

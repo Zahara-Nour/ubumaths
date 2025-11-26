@@ -78,9 +78,9 @@ Integration tests for constraint checking in `validateAnswer`:
 
 #### Constraint Modes (3 tests)
 
-- ✅ `require` mode → `bad_form` status (incorrect answer)
-- ✅ `check` mode → `unoptimal_form` status (partial credit)
-- ✅ `no-penalty` mode → no violations
+- ✅ `strict` mode → `bad_form` status (incorrect answer)
+- ✅ `warn` mode → `unoptimal_form` status (partial credit)
+- ✅ `off` mode → no violations
 
 #### No Constraints (2 tests)
 
@@ -89,7 +89,7 @@ Integration tests for constraint checking in `validateAnswer`:
 
 #### Specific Constraint Tests (9 tests)
 
-- ✅ **Spaces**: Detect violations in require mode
+- ✅ **Spaces**: Detect violations in strict mode
 - ✅ **Products**: Detect explicit multiplication
 - ✅ **Brackets**: Detect unnecessary brackets
 - ✅ **Brackets**: `allowBracketsInFirstNegativeTerm` option
@@ -99,8 +99,8 @@ Integration tests for constraint checking in `validateAnswer`:
 #### Multiple Constraints (3 tests)
 
 - ✅ Check multiple constraints and report first violation
-- ✅ Prioritize `require` over `check` mode
-- ✅ Report `unoptimal_form` when only `check` violations
+- ✅ Prioritize `strict` over `warn` mode
+- ✅ Report `unoptimal_form` when only `warn` violations
 
 #### Multiple Answers (2 tests)
 
@@ -142,9 +142,9 @@ Total: 133 tests passed
    - Constraints are configured in question options
 
 3. **Constraint Modes**:
-   - `require`: Violation → `bad_form` (error severity, isCorrect=false)
-   - `check`: Violation → `unoptimal_form` (warning severity, isCorrect=true)
-   - `no-penalty`: No checking
+   - `strict`: Violation → `bad_form` (error severity, isCorrect=false)
+   - `warn`: Violation → `unoptimal_form` (warning severity, isCorrect=true)
+   - `off`: No checking
 
 4. **Feedback**: First violation's feedback becomes main feedback
 
