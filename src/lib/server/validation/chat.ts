@@ -108,10 +108,58 @@ export const createConversationSchema = z.object({
 });
 
 // ============================================================================
+// TUTOR MODE SCHEMAS
+// ============================================================================
+
+/**
+ * Exercise context for tutor mode
+ */
+const exerciseContextSchema = z.object({
+	exerciseId: z.string().uuid('ID exercice invalide').optional(),
+	statement: z.string().max(5000, 'Énoncé trop long (max 5000 caractères)'),
+	topic: z.string().max(100, 'Sujet trop long (max 100 caractères)').optional(),
+	domain: z.string().max(100, 'Domaine trop long (max 100 caractères)').optional(),
+	level: z.number().int().min(1).max(5).optional(),
+	studentGrade: z.string().max(20, 'Niveau élève invalide').optional(),
+	attempts: z
+		.array(
+			z.object({
+				answer: z.string().max(1000, 'Réponse trop longue (max 1000 caractères)'),
+				isCorrect: z.boolean(),
+				timestamp: z.string().datetime('Timestamp invalide')
+			})
+		)
+		.max(20, 'Trop de tentatives dans le contexte (max 20)')
+		.optional()
+});
+
+/**
+ * Schema for tutor chat request (POST /api/chat with tutor mode)
+ *
+ * Security constraints:
+ * - Extends chatRequestSchema with tutor-specific fields
+ * - helpLevel limited to 0-7 range
+ * - exerciseContext validated with size limits
+ * - conversationId must be UUID if provided
+ */
+export const tutorRequestSchema = chatRequestSchema.extend({
+	tutorMode: z.boolean().default(false),
+	exerciseContext: exerciseContextSchema.optional(),
+	conversationId: z.string().uuid('ID conversation invalide').optional(),
+	helpLevel: z
+		.number()
+		.int("Niveau d'aide doit être un entier")
+		.min(0, "Niveau d'aide minimum: 0")
+		.max(7, "Niveau d'aide maximum: 7")
+		.default(0)
+});
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
+export type TutorRequest = z.infer<typeof tutorRequestSchema>;
 export type ReportMessageInput = z.infer<typeof reportMessageSchema>;
 export type CreateConversationInput = z.infer<typeof createConversationSchema>;
