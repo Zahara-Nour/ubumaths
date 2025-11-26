@@ -2,7 +2,7 @@
 
 Architectural overview of the shared parameterization library used by Questions and Exercises features.
 
-**Version:** 2.1.0
+**Version:** 2.2.0
 **Date:** 2025-11-25
 
 ---
@@ -14,6 +14,7 @@ Architectural overview of the shared parameterization library used by Questions 
 - [Design Decisions](#design-decisions)
 - [3-Stage Resolution Pipeline](#3-stage-resolution-pipeline)
 - [Random Number Generation](#random-number-generation)
+- [Random Syntax Quick Reference](#random-syntax-quick-reference-v220)
 - [Circular Dependency Detection](#circular-dependency-detection)
 - [Integration Points](#integration-points)
 - [Performance Characteristics](#performance-characteristics)
@@ -448,11 +449,13 @@ replace: '42'
 
 **Handles:**
 
-- Integer range: `{{random:1-10}}` or `{{1-10}}`
-- Decimal by digits: `{{random:2.3}}` or `{{2.3}}`
-- Decimal range: `{{random:0.5-9.99:0.01}}`
-- Exclusions: `{{random:1-10!5,7-9}}`
-- Variable bounds: `{{random:{{min}}-{{max}}}}`
+- Integer range: `{{1-10}}` or `{{1..10}}`
+- Negative ranges: `{{-3..-1}}` (double-dot clearer with negatives)
+- Relative integers: `{{±2..9}}` → union of {-9..-2} ∪ {2..9}
+- Decimal by digits: `{{2.3}}` (2 digits before, 3 after)
+- Decimal range: `{{1..1.6}}` (auto-step=0.1) or `{{0.5-9.99:0.01}}` (explicit step)
+- Exclusions: `{{1-10!5,7-9}}` or `{{1..20!5..7}}`
+- Variable bounds: `{{{{min}}-{{max}}}}` or `{{{{min}}..{{max}}}}`
 
 ### Stage 3: Expression Evaluation
 
@@ -727,6 +730,113 @@ exclusions: [
 resolveExclusions(exclusions, [{ name: 'a', value: '12' }]);
 // → [5, 7, 8, 9, 12]
 ```
+
+### Relative Integer Generation (v2.2.0)
+
+**Purpose:** Generate random integers from symmetric positive/negative ranges, excluding zero.
+
+**Syntax:** `{{±min..max}}` where min and max are positive integers
+
+**Semantics:** Generates from union of {-max..-min} ∪ {min..max}
+
+**Example:**
+
+```typescript
+// {{±2..9}} generates from:
+// {-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9}
+// Never generates: -1, 0, or 1
+
+// With exclusion: {{±2..9!5}}
+// Excludes both +5 and -5
+```
+
+**Use Cases:**
+
+- Non-zero coefficients in equations
+- Non-trivial factors in factorization problems
+- Signed integers without zero
+
+### Auto-Step Inference (v2.2.0)
+
+When using decimal ranges without an explicit step, the step is inferred from the decimal places:
+
+```typescript
+// Auto-step examples:
+{{1..1.6}}      // step = 0.1 (1 decimal in max)
+{{1..1.25}}     // step = 0.01 (2 decimals in max)
+{{0.5..2.5}}    // step = 0.1 (1 decimal in both)
+{{1.25..2}}     // step = 0.01 (2 decimals in min)
+
+// Explicit step overrides auto-step:
+{{1..2:0.5}}    // step = 0.5 (explicit)
+```
+
+**Algorithm:**
+
+```typescript
+function inferStep(minStr: string, maxStr: string): number {
+	const minDecimals = (minStr.split('.')[1] || '').length;
+	const maxDecimals = (maxStr.split('.')[1] || '').length;
+	const precision = Math.max(minDecimals, maxDecimals);
+	return precision === 0 ? 1 : Math.pow(10, -precision);
+}
+```
+
+---
+
+## Random Syntax Quick Reference (v2.2.0)
+
+### Range Separators
+
+| Separator           | Example      | Result     | Notes                             |
+| ------------------- | ------------ | ---------- | --------------------------------- |
+| `-` (dash)          | `{{3-5}}`    | 3, 4, 5    | Traditional, backward compatible  |
+| `..` (double-dot)   | `{{3..5}}`   | 3, 4, 5    | Clearer, especially for negatives |
+| `..` with negatives | `{{-3..-1}}` | -3, -2, -1 | Much clearer than `{{-3--1}}`     |
+
+### Integer Ranges
+
+| Syntax           | Description                  |
+| ---------------- | ---------------------------- |
+| `{{1-10}}`       | Integer 1 to 10              |
+| `{{1..10}}`      | Integer 1 to 10 (double-dot) |
+| `{{-5..5}}`      | Integer -5 to 5              |
+| `{{-3..-1}}`     | Negative integers -3 to -1   |
+| `{{1-10!5}}`     | 1 to 10 excluding 5          |
+| `{{1..10!3..5}}` | 1 to 10 excluding 3, 4, 5    |
+
+### Relative Integers (±)
+
+| Syntax        | Generated Values                 |
+| ------------- | -------------------------------- |
+| `{{±2..9}}`   | {-9..-2} ∪ {2..9}                |
+| `{{±1..9}}`   | {-9..-1} ∪ {1..9} (all non-zero) |
+| `{{±2..9!5}}` | Same but excludes ±5             |
+
+### Decimal by Digits
+
+| Syntax    | Description              | Example Output |
+| --------- | ------------------------ | -------------- |
+| `{{2.3}}` | 2 digits before, 3 after | 45.123         |
+| `{{1.2}}` | 1 digit before, 2 after  | 7.42           |
+| `{{0.1}}` | 0 digits before, 1 after | 0.3            |
+
+### Decimal Ranges
+
+| Syntax              | Step            | Example Values           |
+| ------------------- | --------------- | ------------------------ |
+| `{{1..1.6}}`        | 0.1 (auto)      | 1, 1.1, 1.2, ..., 1.6    |
+| `{{1..1.25}}`       | 0.01 (auto)     | 1, 1.01, 1.02, ..., 1.25 |
+| `{{0.5-9.99:0.01}}` | 0.01 (explicit) | 0.5, 0.51, ..., 9.99     |
+| `{{1..2:0.5}}`      | 0.5 (explicit)  | 1, 1.5, 2                |
+
+### Variables and Exclusions
+
+| Syntax                           | Description                  |
+| -------------------------------- | ---------------------------- |
+| `{{{{min}}..{{max}}}}`           | Variable bounds              |
+| `{{1..10!{{a}}}}`                | Exclude variable value       |
+| `{{±{{min}}..{{max}}!{{excl}}}}` | Full relative with variables |
 
 ---
 

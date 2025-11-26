@@ -147,8 +147,15 @@ export type Exclusion =
  */
 export type RandomSpec =
 	| {
-			/** Integer range: {{random:1-10}} or {{1-10}} */
+			/** Integer range: {{random:1-10}} or {{1-10}} or {{1..10}} */
 			type: 'integer';
+			min: NumberOrVariable;
+			max: NumberOrVariable;
+			exclusions: Exclusion[];
+	  }
+	| {
+			/** Relative integer: {{±2..9}} → union of {-9..-2} ∪ {2..9} (excludes 0) */
+			type: 'relative-integer';
 			min: NumberOrVariable;
 			max: NumberOrVariable;
 			exclusions: Exclusion[];
@@ -161,7 +168,7 @@ export type RandomSpec =
 			exclusions: Exclusion[];
 	  }
 	| {
-			/** Decimal range with step: {{random:0.5-9.99:0.01}} or {{0.5-9.99:0.01}} */
+			/** Decimal range with step: {{0.5-9.99:0.01}} or {{1..1.6}} (auto-step) */
 			type: 'decimal-range';
 			min: NumberOrVariable;
 			max: NumberOrVariable;

@@ -96,13 +96,22 @@ export function generateRandomNumber(
 	let digitsBefore: number | undefined;
 	let digitsAfter: number | undefined;
 
-	if (spec.type === 'integer' || spec.type === 'decimal-range') {
+	if (
+		spec.type === 'integer' ||
+		spec.type === 'decimal-range' ||
+		spec.type === 'relative-integer'
+	) {
 		min = resolveNumberOrVariable(spec.min, resolvedVariables);
 		max = resolveNumberOrVariable(spec.max, resolvedVariables);
 
 		// Validate min <= max (allow single value ranges)
 		if (min > max) {
 			throw new Error(`Invalid range: min (${min}) must be less than or equal to max (${max})`);
+		}
+
+		// For relative integers, min must be positive (represents the absolute value)
+		if (spec.type === 'relative-integer' && min <= 0) {
+			throw new Error(`Relative integer min must be positive, got ${min}`);
 		}
 	}
 
@@ -133,6 +142,10 @@ export function generateRandomNumber(
 		if (exclusion.type === 'value') {
 			const value = resolveNumberOrVariable(exclusion.value, resolvedVariables);
 			excludedValues.add(value);
+			// For relative integers, also exclude the negation
+			if (spec.type === 'relative-integer') {
+				excludedValues.add(-value);
+			}
 		} else if (exclusion.type === 'range') {
 			const excludeMin = resolveNumberOrVariable(exclusion.min, resolvedVariables);
 			const excludeMax = resolveNumberOrVariable(exclusion.max, resolvedVariables);
@@ -145,9 +158,13 @@ export function generateRandomNumber(
 			}
 
 			// Generate all values in range
-			if (spec.type === 'integer') {
+			if (spec.type === 'integer' || spec.type === 'relative-integer') {
 				for (let i = Math.ceil(excludeMin); i <= Math.floor(excludeMax); i++) {
 					excludedValues.add(i);
+					// For relative integers, also exclude the negation
+					if (spec.type === 'relative-integer') {
+						excludedValues.add(-i);
+					}
 				}
 			} else if (spec.type === 'decimal-range') {
 				// For decimals, use step
@@ -167,6 +184,8 @@ export function generateRandomNumber(
 	do {
 		if (spec.type === 'integer') {
 			value = randomInt(min!, max!, seed ? seed + attempts : undefined);
+		} else if (spec.type === 'relative-integer') {
+			value = randomRelativeInt(min!, max!, seed ? seed + attempts : undefined);
 		} else if (spec.type === 'decimal-by-digits') {
 			value = randomDecimalByDigits(
 				digitsBefore!,
@@ -201,6 +220,40 @@ export function generateRandomNumber(
 export function randomInt(min: number, max: number, seed?: number): number {
 	const random = seed !== undefined ? seededRandom(seed) : Math.random();
 	return Math.floor(random * (max - min + 1)) + min;
+}
+
+/**
+ * Generate a random relative integer (non-zero signed integer)
+ *
+ * For {{±min..max}}, generates from union of {-max..-min} ∪ {min..max}
+ * Both min and max are positive, representing absolute value bounds.
+ *
+ * @param min - Minimum absolute value (must be positive)
+ * @param max - Maximum absolute value (must be >= min)
+ * @param seed - Optional seed for reproducibility
+ * @returns Random non-zero integer in [-max,-min] ∪ [min,max]
+ *
+ * @example
+ * ```typescript
+ * randomRelativeInt(2, 9)  // Returns value from {-9..-2} ∪ {2..9}
+ * ```
+ */
+export function randomRelativeInt(min: number, max: number, seed?: number): number {
+	// Range size for one side (e.g., min=2, max=9 → 8 values per side)
+	const rangeSize = max - min + 1;
+	// Total values: both negative and positive ranges
+	const totalValues = rangeSize * 2;
+
+	const random = seed !== undefined ? seededRandom(seed) : Math.random();
+	const index = Math.floor(random * totalValues);
+
+	if (index < rangeSize) {
+		// Negative range: -max to -min
+		return -(max - index);
+	} else {
+		// Positive range: min to max
+		return min + (index - rangeSize);
+	}
 }
 
 /**
