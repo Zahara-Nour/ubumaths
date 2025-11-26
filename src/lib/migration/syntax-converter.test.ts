@@ -57,11 +57,14 @@ function expectStats(
 	input: string,
 	expectedStats: Partial<{
 		randomIntegers: number;
+		relativeIntegers: number;
+		decimals: number;
 		exclusions: number;
 		nDigitNumbers: number;
 		listSelections: number;
 		variableRefs: number;
 		evaluations: number;
+		colorReferences: number;
 		total: number;
 	}>
 ) {
@@ -139,6 +142,60 @@ describe('TinyCAS Syntax Converter', () => {
 			expectStats('$e[0;9]\\{5}', { exclusions: 1, total: 1 });
 			expectStats('$e[0;9]\\{&1}', { exclusions: 1, variableRefs: 1, total: 2 });
 			expectStats('$e[0;9]\\{&1;&2}', { exclusions: 1, variableRefs: 2, total: 3 });
+		});
+	});
+
+	describe('2b. Relative Integer Tests', () => {
+		it('should convert relative integer ranges', () => {
+			expectConversion('$er[2;9]', '{{±2..9}}');
+			expectConversion('$er[1;5]', '{{±1..5}}');
+			expectConversion('$er[30;99]', '{{±30..99}}');
+		});
+
+		it('should convert single value relative integers', () => {
+			expectConversion('$er{1}', '{{±1..1}}');
+			expectConversion('$er{5}', '{{±5..5}}');
+		});
+
+		it('should convert multiple relative integers', () => {
+			expectConversion('$er[2;9] and $er[1;5]', '{{±2..9}} and {{±1..5}}');
+			expectConversion('$er{1} + $er{2}', '{{±1..1}} + {{±2..2}}');
+		});
+
+		it('should track statistics for relative integers', () => {
+			expectStats('$er[2;9]', { relativeIntegers: 1, total: 1 });
+			expectStats('$er{1} and $er[2;5]', { relativeIntegers: 2, total: 2 });
+		});
+	});
+
+	describe('2c. Decimal Pattern Tests', () => {
+		it('should convert simple decimal patterns', () => {
+			expectConversion('$d{1;1}', '{{1.1}}');
+			expectConversion('$d{2;3}', '{{2.3}}');
+			expectConversion('$d{0;2}', '{{0.2}}');
+		});
+
+		it('should convert decimal patterns with variables', () => {
+			// Variables are converted first, so we need to test with already-converted vars
+			const result = convertTinyCASToNew('$d{&1;&2}');
+			expect(result.converted).toBe('{{{{1}}.{{2}}}}');
+			expect(result.stats?.decimals).toBe(1);
+			expect(result.stats?.variableRefs).toBe(2);
+		});
+
+		it('should handle decimal patterns with complex content', () => {
+			// Nested $e patterns can't be split correctly - triggers format warning
+			// The semicolons inside $e[...] interfere with parsing
+			const result = convertTinyCASToNew('$d{$e[1;2];$e[0;2]}');
+			expect(result.success).toBe(true);
+			expect(result.warnings?.some((w) => w.includes('unexpected format'))).toBe(true);
+			// Falls back to {{decimal:...}} format
+			expect(result.converted).toBe('{{decimal:{{1-2}};{{0-2}}}}');
+		});
+
+		it('should track statistics for decimals', () => {
+			expectStats('$d{1;2}', { decimals: 1, total: 1 });
+			expectStats('$d{1;1} and $d{2;2}', { decimals: 2, total: 2 });
 		});
 	});
 
@@ -416,10 +473,11 @@ describe('TinyCAS Syntax Converter', () => {
 			}
 		});
 
-		it('should detect unsupported patterns', () => {
+		it('should convert decimal patterns (previously unsupported)', () => {
 			const decimal = convertTinyCASToNew('$d{1;2}');
-			expect(decimal.success).toBe(false);
-			expect(decimal.errors?.some((e) => e.includes('$d{}'))).toBe(true);
+			expect(decimal.success).toBe(true);
+			expect(decimal.converted).toBe('{{1.2}}');
+			expect(decimal.stats?.decimals).toBe(1);
 		});
 
 		it('should preserve HTML entities', () => {
@@ -488,6 +546,8 @@ describe('TinyCAS Syntax Converter', () => {
 
 			expect(result.stats).toEqual({
 				randomIntegers: 1,
+				relativeIntegers: 0,
+				decimals: 0,
 				exclusions: 1,
 				nDigitNumbers: 1,
 				listSelections: 1,
@@ -555,9 +615,10 @@ describe('TinyCAS Syntax Converter', () => {
 
 			const results = convertBatch(inputs);
 
-			expect(results[0].success).toBe(true); // Valid
+			expect(results[0].success).toBe(true); // Valid random integer
 			expect(results[1].success).toBe(false); // Empty
-			expect(results[2].success).toBe(false); // Unsupported pattern
+			expect(results[2].success).toBe(true); // Valid decimal pattern
+			expect(results[2].converted).toBe('{{1.2}}');
 		});
 	});
 

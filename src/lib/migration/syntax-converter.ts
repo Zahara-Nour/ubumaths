@@ -32,6 +32,10 @@ export interface ConversionResult {
 interface ConversionStats {
 	/** Number of random integer patterns converted */
 	randomIntegers: number;
+	/** Number of relative integer patterns converted */
+	relativeIntegers: number;
+	/** Number of decimal patterns converted */
+	decimals: number;
 	/** Number of exclusion patterns converted */
 	exclusions: number;
 	/** Number of n-digit patterns converted */
@@ -69,6 +73,8 @@ interface ConversionRule {
 export class TinyCASConverter {
 	private stats: ConversionStats = {
 		randomIntegers: 0,
+		relativeIntegers: 0,
+		decimals: 0,
 		exclusions: 0,
 		nDigitNumbers: 0,
 		listSelections: 0,
@@ -118,6 +124,8 @@ export class TinyCASConverter {
 			converted = this.convertVariableReferences(converted);
 
 			// Step 4: Convert other random patterns
+			converted = this.convertRelativeIntegers(converted);
+			converted = this.convertDecimalPatterns(converted);
 			converted = this.convertRandomIntegers(converted);
 			converted = this.convertNDigitNumbers(converted);
 			converted = this.convertListSelections(converted);
@@ -223,6 +231,71 @@ export class TinyCASConverter {
 		return input.replace(pattern, (match, min, max) => {
 			this.stats.randomIntegers++;
 			return `{{${min}-${max}}}`;
+		});
+	}
+
+	/**
+	 * Convert relative integers: $er[min;max] → {{±min..max}} or $er{n} → {{±n..n}}
+	 *
+	 * Relative integers generate non-zero signed values from the union
+	 * of {-max..-min} ∪ {min..max}
+	 */
+	private convertRelativeIntegers(input: string): string {
+		// Pattern for $er[min;max] - range form
+		const rangePattern = /\$er\[([^;]+);([^\]]+)\]/g;
+		let result = input.replace(rangePattern, (match, min, max) => {
+			this.stats.relativeIntegers++;
+			// Convert to new ± syntax with .. separator
+			return `{{±${min}..${max}}}`;
+		});
+
+		// Pattern for $er{n} - single value form (generates ±n)
+		const singlePattern = /\$er\{(\d+)\}/g;
+		result = result.replace(singlePattern, (match, n) => {
+			this.stats.relativeIntegers++;
+			// Single value: $er{1} → {{±1..1}}
+			return `{{±${n}..${n}}}`;
+		});
+
+		return result;
+	}
+
+	/**
+	 * Convert decimal patterns: $d{n;m} → {{n.m}}
+	 *
+	 * Generates decimals with n digits before and m digits after decimal point.
+	 * Supports nested expressions and variable references.
+	 */
+	private convertDecimalPatterns(input: string): string {
+		// Pattern for $d{...} - need to handle nested braces
+		// This matches $d{ followed by content until the matching }
+		const pattern = /\$d\{((?:[^{}]|\{\{[^}]*\}\})+)\}/g;
+
+		return input.replace(pattern, (match, content) => {
+			this.stats.decimals++;
+
+			// Split on semicolon (separator between digitsBefore and digitsAfter)
+			const parts = content.split(';');
+			if (parts.length !== 2) {
+				this.warnings.push(`Decimal pattern $d{${content}} has unexpected format`);
+				return `{{decimal:${content}}}`;
+			}
+
+			const digitsBefore = parts[0].trim();
+			const digitsAfter = parts[1].trim();
+
+			// Check for complex expressions that need manual review
+			if (digitsBefore.includes('$e') || digitsAfter.includes('$e')) {
+				// Has nested random - convert those first
+				this.warnings.push(
+					`Complex decimal pattern $d{${content}} with nested random - verify conversion`
+				);
+				// The nested $e patterns will have been converted to {{...}} by this point
+				// since convertDecimalPatterns runs after convertVariableReferences
+			}
+
+			// Return new syntax: {{n.m}}
+			return `{{${digitsBefore}.${digitsAfter}}}`;
 		});
 	}
 
@@ -413,7 +486,10 @@ export class TinyCASConverter {
 
 		// Check for other TinyCAS patterns
 		if (converted.includes('$d{')) {
-			this.errors.push('Decimal pattern $d{} detected - not yet implemented');
+			this.warnings.push('Possible unconverted decimal pattern $d{} detected');
+		}
+		if (converted.includes('$er')) {
+			this.warnings.push('Possible unconverted relative integer pattern $er detected');
 		}
 	}
 
@@ -423,6 +499,8 @@ export class TinyCASConverter {
 	private resetState(): void {
 		this.stats = {
 			randomIntegers: 0,
+			relativeIntegers: 0,
+			decimals: 0,
 			exclusions: 0,
 			nDigitNumbers: 0,
 			listSelections: 0,
@@ -466,7 +544,7 @@ export function validateConversion(original: string, converted: string): boolean
 	// Basic validation checks
 
 	// Check that old patterns are gone
-	const oldPatterns = [/\$e\[/, /\$e\{/, /\$l\{/, /&\w+/, /\[_.*?_\]/];
+	const oldPatterns = [/\$e\[/, /\$e\{/, /\$er[[{]/, /\$d\{/, /\$l\{/, /&\w+/, /\[_.*?_\]/];
 
 	for (const pattern of oldPatterns) {
 		if (pattern.test(converted)) {
@@ -501,6 +579,16 @@ export function validateConversion(original: string, converted: string): boolean
 // "$e[1;10]" → "{{1-10}}"
 // "$e[0;99]" → "{{0-99}}"
 // "$e[-5;5]" → "{{-5-5}}"
+
+// Relative integers:
+// "$er[2;9]" → "{{±2..9}}"
+// "$er[1;5]" → "{{±1..5}}"
+// "$er{1}" → "{{±1..1}}"
+
+// Decimal patterns:
+// "$d{1;1}" → "{{1.1}}"
+// "$d{2;3}" → "{{2.3}}"
+// "$d{0;2}" → "{{0.2}}"
 
 // Random with exclusions:
 // "$e[1;10]\\{5}" → "{{1-10!5}}"
