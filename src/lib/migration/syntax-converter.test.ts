@@ -554,6 +554,8 @@ describe('TinyCAS Syntax Converter', () => {
 				variableRefs: 2, // &1 and &2
 				evaluations: 1,
 				colorReferences: 0,
+				ternaryOperators: 0,
+				minMaxFunctions: 0,
 				total: 7
 			});
 		});
@@ -819,6 +821,130 @@ describe('TinyCAS Syntax Converter', () => {
 			expectConversion('&1', '{{1}}'); // Start
 			expectConversion('text &1', 'text {{1}}'); // End
 			expectConversion('&1 text &2', '{{1}} text {{2}}'); // Both
+		});
+	});
+
+	describe('21. Ternary Operator Tests', () => {
+		it('should convert simple comparison ternary', () => {
+			expectConversion('&5<&6 ?? 0 :: 1', '{{if:{{5}}<{{6}}|0|1}}');
+			expectConversion('&7<&8 ?? 0 :: 1', '{{if:{{7}}<{{8}}|0|1}}');
+		});
+
+		it('should convert equality ternary', () => {
+			expectConversion('&1=5 ?? yes :: no', '{{if:{{1}}=5|yes|no}}');
+			expectConversion('&2!=0 ?? positive :: zero', '{{if:{{2}}!=0|positive|zero}}');
+		});
+
+		it('should convert ternary with mod function', () => {
+			expectConversion('mod(&1;2)=0 ?? 0 :: 1', '{{if:mod({{1}},2)=0|0|1}}');
+			expectConversion('mod(&1;5)=0 ?? 0 :: 1', '{{if:mod({{1}},5)=0|0|1}}');
+			expectConversion('mod(&1;10)=0 ?? 0 :: 1', '{{if:mod({{1}},10)=0|0|1}}');
+		});
+
+		it('should convert ternary with product comparisons', () => {
+			expectConversion('(&1)*(&2) >0 ?? 0 :: 1', '{{if:({{1}})*({{2}}) >0|0|1}}');
+			expectConversion('(&1)*(&2)*(&3) >0 ?? 0 :: 1', '{{if:({{1}})*({{2}})*({{3}}) >0|0|1}}');
+		});
+
+		it('should convert ternary with evaluated expressions', () => {
+			expectConversion(
+				'&2+&3>59 ?? [_&1+1_] :: &1',
+				'{{if:{{2}}+{{3}}>59|{{eval:{{1}}+1}}|{{1}}}}'
+			);
+		});
+
+		it('should track ternary operator statistics', () => {
+			const result = convertTinyCASToNew('&1<&2 ?? 0 :: 1');
+			expect(result.stats?.ternaryOperators).toBe(1);
+		});
+
+		it('should convert multiple ternaries on separate lines', () => {
+			// In practice, ternaries appear in separate solution entries, not chained
+			const input = '&1<5 ?? A :: B\n&2>10 ?? X :: Y';
+			const result = convertTinyCASToNew(input);
+			expect(result.stats?.ternaryOperators).toBe(2);
+			expect(result.converted).toContain('{{if:{{1}}<5|A|B}}');
+			expect(result.converted).toContain('{{if:{{2}}>10|X|Y}}');
+		});
+	});
+
+	describe('22. Mini/Maxi Function Tests', () => {
+		it('should convert mini function', () => {
+			expectConversion('mini(5;10)', 'min(5,10)');
+			expectConversion('mini(&1;&2)', 'min({{1}},{{2}})');
+			expectConversion('mini(10-&1;&1-1)', 'min(10-{{1}},{{1}}-1)');
+		});
+
+		it('should convert maxi function', () => {
+			expectConversion('maxi(5;10)', 'max(5,10)');
+			expectConversion('maxi(&1;&2)', 'max({{1}},{{2}})');
+			expectConversion('maxi(&2;&3)', 'max({{2}},{{3}})');
+		});
+
+		it('should convert mini/maxi in complex expressions', () => {
+			expectConversion('$e[2;[_mini(10-&1;&1-1)_]]', '{{2-{{eval:min(10-{{1}},{{1}}-1)}}}}');
+		});
+
+		it('should convert mini/maxi in correction text', () => {
+			expectConversion('mini(&2;&3) est plus petit', 'min({{2}},{{3}}) est plus petit');
+			expectConversion('maxi(&2;&3) est plus grand', 'max({{2}},{{3}}) est plus grand');
+		});
+
+		it('should track mini/maxi function statistics', () => {
+			const result = convertTinyCASToNew('mini(&1;&2) and maxi(&3;&4)');
+			expect(result.stats?.minMaxFunctions).toBe(2);
+		});
+
+		it('should handle multiple mini/maxi in one string', () => {
+			const input = 'Compare mini(&1;&2) with maxi(&1;&2)';
+			const expected = 'Compare min({{1}},{{2}}) with max({{1}},{{2}})';
+			expectConversion(input, expected);
+		});
+	});
+
+	describe('23. Combined Ternary and Mini/Maxi Tests', () => {
+		it('should convert both ternary and mini/maxi in same string', () => {
+			const input = '&1<mini(&2;&3) ?? yes :: no';
+			const result = convertTinyCASToNew(input);
+			expect(result.success).toBe(true);
+			expect(result.stats?.ternaryOperators).toBe(1);
+			expect(result.stats?.minMaxFunctions).toBe(1);
+		});
+
+		it('should handle complex correction detail pattern', () => {
+			// Real pattern from old questions
+			const input = 'mini(&1;&2) est plus petite que maxi(&2;&3) car &2<&3 ?? oui :: non';
+			const result = convertTinyCASToNew(input);
+			expect(result.success).toBe(true);
+			expect(result.stats?.minMaxFunctions).toBe(2);
+			expect(result.stats?.ternaryOperators).toBe(1);
+		});
+	});
+
+	describe('24. Real-World Ternary Pattern Tests', () => {
+		it('should convert time overflow pattern', () => {
+			// From real question: hour increment when minutes overflow
+			const input = '&2+&3>59 ?? [_&1+1_] :: &1';
+			const result = convertTinyCASToNew(input);
+			expect(result.success).toBe(true);
+			expect(result.converted).toContain('{{if:');
+			expect(result.converted).toContain('{{eval:');
+		});
+
+		it('should convert sign check pattern', () => {
+			// Pattern for checking if product is positive
+			const input = '(&1)*(&2)>0 ?? positive :: negative';
+			const result = convertTinyCASToNew(input);
+			expect(result.success).toBe(true);
+			expect(result.converted).toBe('{{if:({{1}})*({{2}})>0|positive|negative}}');
+		});
+
+		it('should convert divisibility check pattern', () => {
+			// Pattern for checking even/odd
+			const input = 'mod(&num;2)=0 ?? pair :: impair';
+			const result = convertTinyCASToNew(input);
+			expect(result.success).toBe(true);
+			expect(result.converted).toBe('{{if:mod({{num}},2)=0|pair|impair}}');
 		});
 	});
 });
