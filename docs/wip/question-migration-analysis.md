@@ -26,7 +26,7 @@ This document analyzes the migration from TinyMath/TinyCAS to the new Markdown-b
 - ✅ **Mini/maxi functions** (`mini(a;b)` → `min(a,b)`, `maxi(a;b)` → `max(a,b)`)
 - ✅ **Constraint Validators** - 5 validators implemented with 133 tests (spaces, products, brackets, zeros, form)
 - ✅ **Feedback System** - French feedback messages for constraint violations
-- ✅ **Partial Credit** - `unoptimal_form` status for 'check' mode constraints
+- ✅ **Partial Credit** - `unoptimal_form` status for 'warn' mode constraints
 
 **Migration Coverage:** 🎉 **100% of 633 questions** now have fully convertible syntax!
 
@@ -981,7 +981,7 @@ export interface ExtendedValidationResult extends ValidationResult {
 
 - ✅ `ValidationStatus` type: `'correct' | 'unoptimal_form' | 'bad_form' | 'incorrect' | 'empty'`
 - ✅ `ConstraintId` type: `'spaces' | 'products' | 'brackets' | 'zeros' | 'form'`
-- ✅ `ConstraintMode` type: `'require' | 'no-penalty' | 'check'`
+- ✅ `ConstraintMode` type: `'strict' | 'warn' | 'off'`
 - ✅ `ConstraintOptions` interface
 
 **Commit:** `5daf44d9`
@@ -1021,7 +1021,7 @@ export function checkForm(answers: string[], expected: string[], options?): numb
 
 - ✅ `applyConstraints()` function integrates all validators
 - ✅ `validateAnswer()` accepts optional `userAnswerLatex` parameter
-- ✅ Constraint modes: `require` → `bad_form`, `check` → `unoptimal_form`, `no-penalty` → skip
+- ✅ Constraint modes: `strict` → `bad_form`, `warn` → `unoptimal_form`, `off` → skip
 - ✅ 32 integration tests
 
 **Commit:** `87367ccf`

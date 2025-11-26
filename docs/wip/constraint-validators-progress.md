@@ -52,7 +52,7 @@
 
 - Using regex-based constraint checking (not AST) since TinyCAS is not available
 - Checking raw student LaTeX input for brackets (not CE canonical form)
-- Using partial credit (UNOPTIMAL_FORM) for constraint violations in 'check' mode
+- Using partial credit (UNOPTIMAL_FORM) for constraint violations in 'warn' mode
 - Units excluded - to be implemented separately
 
 ## Issues Encountered
