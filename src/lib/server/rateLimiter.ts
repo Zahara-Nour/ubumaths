@@ -695,7 +695,7 @@ export async function checkOAuthRateLimitByIP(ip: string): Promise<RateLimitResu
  *
  * Prevents AI API abuse and controls costs by limiting chatbot interactions per user.
  * Protects against:
- * - Excessive API calls to Claude (Anthropic API costs)
+ * - Excessive API calls to Groq (Llama model API costs)
  * - Automated bot spam to the chatbot
  * - Resource exhaustion on the backend
  *
@@ -735,7 +735,7 @@ export async function checkOAuthRateLimitByIP(ip: string): Promise<RateLimitResu
  *     return json({ error: chatLimit.message }, { status: 429 });
  *   }
  *
- *   // Process chatbot request with Claude API...
+ *   // Process chatbot request with Groq API...
  * };
  * ```
  *

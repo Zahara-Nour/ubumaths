@@ -1,7 +1,7 @@
 <!--
 	ChatBot Component
 	=================
-	AI-powered mathematical assistant using Claude API (Anthropic)
+	AI-powered mathematical assistant using Groq API (Llama models)
 
 	FEATURES:
 	- Multi-turn conversations with context retention
@@ -26,7 +26,7 @@
 
 	TECHNICAL IMPLEMENTATION:
 	- Uses Svelte 5 runes ($state, $derived, $effect, $props)
-	- Claude API via POST to /api/ai/chat endpoint
+	- Groq API via POST to /api/chat endpoint
 	- Base64 encoding for image attachments
 	- MarkdownRenderer component for LaTeX rendering (with legacy syntax adapter)
 	- Smooth scrolling with scroll-behavior CSS
