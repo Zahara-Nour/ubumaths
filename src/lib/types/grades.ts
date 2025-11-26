@@ -265,3 +265,11 @@ export const HIGH_GRADES: GradeCode[] = [
 	'1_STMG',
 	'T_STMG'
 ];
+
+// Grade options for UI selectors
+export const GRADE_OPTIONS: Array<{ value: GradeCode; label: string }> = GRADE_CODES.map(
+	(code) => ({
+		value: code,
+		label: GRADES[code].displayName
+	})
+);
