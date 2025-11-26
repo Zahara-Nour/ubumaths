@@ -16,7 +16,7 @@
 
 This document analyzes the migration from TinyMath/TinyCAS to the new Markdown-based question system, with a focus on validation capabilities.
 
-**Latest Updates (v2.3.1 - 2025-11-26):**
+**Latest Updates (v2.4.0 - 2025-11-26):**
 
 - ✅ **Relative integers** (`$er[min;max]` → `{{±min..max}}`) - Fully supported
 - ✅ **Decimal by digits** (`$d{n;m}` → `{{n.m}}`) - Fully supported
@@ -24,11 +24,13 @@ This document analyzes the migration from TinyMath/TinyCAS to the new Markdown-b
 - ✅ **Auto-step inference** for decimal ranges without explicit step
 - ✅ **Ternary operators** (`condition ?? trueVal :: falseVal` → `{{if:condition|trueVal|falseVal}}`)
 - ✅ **Mini/maxi functions** (`mini(a;b)` → `min(a,b)`, `maxi(a;b)` → `max(a,b)`)
-- 🆕 **Section 18**: Deep code analysis of validation system gaps with implementation roadmap
+- ✅ **Constraint Validators** - 5 validators implemented with 133 tests (spaces, products, brackets, zeros, form)
+- ✅ **Feedback System** - French feedback messages for constraint violations
+- ✅ **Partial Credit** - `unoptimal_form` status for 'check' mode constraints
 
 **Migration Coverage:** 🎉 **100% of 633 questions** now have fully convertible syntax!
 
-**Validation System:** ⚠️ ~850 lines of new code needed for full validation parity (see Section 18)
+**Validation System:** ✅ Constraint validators implemented! Only **unit validation** (~200 lines) remains for full parity.
 
 ---
 
@@ -771,33 +773,30 @@ Based on 633 questions:
 
 ---
 
-## 18. DEEP CODE ANALYSIS - Validation System Gap (v2.3.1 - 2025-11-26)
+## 18. DEEP CODE ANALYSIS - Validation System Status (v2.4.0 - 2025-11-26)
 
-This section provides a detailed code-level analysis of what needs to be implemented to achieve full validation parity with the old TinyCAS system.
+This section tracks the implementation progress towards full validation parity with the old TinyCAS system.
 
-### 18.1 Current vs Required Implementation
+### 18.1 Current Implementation Status
 
-#### answer-validator.ts - Current State
+#### answer-validator.ts - Updated with Constraint Checking ✅
 
 ```typescript
-// Current: Basic validation only
-export function validateAnswer(userAnswer, instance): ValidationResult {
-	switch (type) {
-		case 'numerical_exact':
-		case 'numerical_decimal':
-		case 'numerical_rounded':
-			return validateNumerical(userAnswer, answer, precision);
-		case 'algebraic_transform':
-			return validateAlgebraic(userAnswer, answer);
-		case 'fill_in_blanks':
-			return validateBlanks(userAnswers, correctAnswers);
-		case 'multiple_choice':
-			return validateChoice(userAnswer, correctAnswer, multipleAnswers);
-	}
+// Now includes constraint validation pipeline:
+export function validateAnswer(
+	userAnswer: string | string[] | number | number[],
+	instance: QuestionInstance,
+	userAnswerLatex?: string | string[] // NEW: for constraint checking
+): ValidationResult {
+	// 1. Type-specific validation (numerical, algebraic, blanks, choice)
+	// 2. If correct AND constraints configured AND LaTeX provided:
+	//    → applyConstraints() checks spaces, products, brackets, zeros, form
+	//    → Returns status: 'correct', 'unoptimal_form', or 'bad_form'
 }
 ```
 
-**Missing:** Constraint checking, feedback messages, unit validation, form validation.
+**Implemented:** ✅ Constraint checking, ✅ Feedback messages, ✅ Form validation
+**Remaining:** ❌ Unit validation only
 
 #### correction.ts (Old System) - Complete Validation Pipeline
 
@@ -854,15 +853,16 @@ These are automatically handled by ComputeEngine canonical form:
 | Null terms        | `checkNullTerms()`   | `x+0` → `x` auto   | None (CE canonical) |
 | Signs             | `checkSigns()`       | `--x` → `x` auto   | None (CE canonical) |
 
-#### Need Custom Implementation (5 checks - Tier 2/3)
+#### Custom Implementation Status (5 checks - Tier 2/3)
 
-| Check    | Old Function      | Implementation                   | Priority              |
-| -------- | ----------------- | -------------------------------- | --------------------- |
-| Spaces   | `checkSpaces()`   | Regex on LaTeX string            | Low (3 questions)     |
-| Products | `checkProducts()` | Check for `\times`, `\cdot`      | Low (2 questions)     |
-| Brackets | `checkBrackets()` | Compare with CE canonical        | Medium (23 questions) |
-| Zeros    | `checkZeros()`    | Regex for leading/trailing zeros | Medium (6 questions)  |
-| Units    | `checkUnits()`    | Custom unit parser               | High (7 questions)    |
+| Check    | Old Function      | Implementation                   | Status                         |
+| -------- | ----------------- | -------------------------------- | ------------------------------ |
+| Spaces   | `checkSpaces()`   | Regex on LaTeX string            | ✅ DONE (20 tests)             |
+| Products | `checkProducts()` | Check for `\times`, `\cdot`      | ✅ DONE (20 tests)             |
+| Brackets | `checkBrackets()` | Check raw student LaTeX          | ✅ DONE (23 tests)             |
+| Zeros    | `checkZeros()`    | Regex for leading/trailing zeros | ✅ DONE (18 tests)             |
+| Form     | `checkForm()`     | Strict form matching             | ✅ DONE (17 tests)             |
+| Units    | `checkUnits()`    | Custom unit parser               | ❌ TODO (7 questions affected) |
 
 ### 18.4 Unit Validation System Design
 
@@ -970,23 +970,25 @@ export interface ExtendedValidationResult extends ValidationResult {
 
 ### 18.7 Implementation Roadmap
 
-#### Phase 1: Feedback & Status System (Est. 2-3 days)
+#### Phase 1: Feedback & Status System ✅ COMPLETED
 
-**File: `src/lib/questions/feedback.ts`**
+**File: `src/lib/questions/feedback.ts`** - Created
 
-- Port 26 feedback messages with French translations
-- Create status-to-feedback mapper
-- Add i18n support structure for future translations
+- ✅ French feedback messages for 5 constraint types (single/multiple variants)
+- ✅ `CONSTRAINT_FEEDBACK` constant exported
 
-**File: `src/lib/questions/types.ts`**
+**File: `src/lib/questions/types.ts`** - Extended
 
-- Add `ExtendedValidationResult` type
-- Add status constants
-- Add constraint check types
+- ✅ `ValidationStatus` type: `'correct' | 'unoptimal_form' | 'bad_form' | 'incorrect' | 'empty'`
+- ✅ `ConstraintId` type: `'spaces' | 'products' | 'brackets' | 'zeros' | 'form'`
+- ✅ `ConstraintMode` type: `'require' | 'no-penalty' | 'check'`
+- ✅ `ConstraintOptions` interface
 
-#### Phase 2: Unit Validation (Est. 2-3 days)
+**Commit:** `5daf44d9`
 
-**File: `src/lib/questions/units.ts`**
+#### Phase 2: Unit Validation ❌ TODO (Est. 2-3 days)
+
+**File: `src/lib/questions/units.ts`** - To create
 
 - Unit parsing (value + unit extraction)
 - Unit normalization (UNIT_ALIASES)
@@ -998,51 +1000,53 @@ export interface ExtendedValidationResult extends ValidationResult {
 - Integrate unit validation
 - Add `validateWithUnit()` function
 
-#### Phase 3: Constraint Validators (Est. 3-4 days)
+#### Phase 3: Constraint Validators ✅ COMPLETED
 
-**File: `src/lib/questions/constraint-validators.ts`**
+**File: `src/lib/questions/constraint-validators.ts`** - Created (~300 lines)
 
 ```typescript
-// Each validator returns indices of problematic answers
-interface ConstraintCheck {
-	option: [string, string]; // [no-penalty, require]
-	check: (answers: string[], answersLatex: string[]) => number[];
-	feedback: { single: string; multiple: string };
-}
-
-// Implement:
-export function checkSpaces(answersLatex: string[]): number[];
-export function checkProducts(answersLatex: string[]): number[];
-export function checkBrackets(answers: string[]): number[];
-export function checkZeros(answers: string[]): number[];
-export function checkForm(answers: string[], expected: string[]): number[];
+// All validators implemented and tested (101 tests total):
+export function checkSpaces(answersLatex: string[]): number[]; // 20 tests
+export function checkProducts(answersLatex: string[]): number[]; // 20 tests
+export function checkBrackets(answersLatex: string[], options?): number[]; // 23 tests
+export function checkZeros(answers: string[]): number[]; // 18 tests
+export function checkForm(answers: string[], expected: string[], options?): number[]; // 17 tests
 ```
 
-#### Phase 4: Options Handling (Est. 2 days)
+**Commit:** `d83f6613`
 
-**File: `src/lib/utils/answer-validator.ts`**
+#### Phase 4: Options Handling ✅ COMPLETED
 
-- Map old options to new validation pipeline
-- Implement constraint checking loop
-- Add options parameter to `validateAnswer()`
+**File: `src/lib/utils/answer-validator.ts`** - Extended
 
-### 18.8 Quick Wins (Can implement today)
+- ✅ `applyConstraints()` function integrates all validators
+- ✅ `validateAnswer()` accepts optional `userAnswerLatex` parameter
+- ✅ Constraint modes: `require` → `bad_form`, `check` → `unoptimal_form`, `no-penalty` → skip
+- ✅ 32 integration tests
 
-1. **feedback.ts creation** - Just constants, no logic
-2. **Status types** - Add to types.ts
-3. **Unit aliases constant** - Just data structure
+**Commit:** `87367ccf`
+
+### 18.8 Remaining Work
+
+Only **unit validation** remains to be implemented:
+
+1. **units.ts creation** - Unit parser with HMS support (~200 lines)
+2. **Integration** - Add `validateWithUnit()` to answer-validator.ts
 
 ### 18.9 Files Summary
 
-| File                                         | Status    | Action                    | Lines Est. |
-| -------------------------------------------- | --------- | ------------------------- | ---------- |
-| `src/lib/questions/feedback.ts`              | ❌ Create | Port 26 messages + mapper | ~100       |
-| `src/lib/questions/units.ts`                 | ❌ Create | Unit parser + validator   | ~200       |
-| `src/lib/questions/constraint-validators.ts` | ❌ Create | 10 constraint checks      | ~300       |
-| `src/lib/questions/types.ts`                 | ⚠️ Extend | Add status/result types   | ~50        |
-| `src/lib/utils/answer-validator.ts`          | ⚠️ Extend | Integrate all validators  | ~200       |
+| File                                         | Status      | Action                      | Lines    |
+| -------------------------------------------- | ----------- | --------------------------- | -------- |
+| `src/lib/questions/feedback.ts`              | ✅ Created  | French feedback messages    | ~30      |
+| `src/lib/questions/units.ts`                 | ❌ TODO     | Unit parser + validator     | ~200 est |
+| `src/lib/questions/constraint-validators.ts` | ✅ Created  | 5 constraint validators     | ~300     |
+| `src/lib/questions/types.ts`                 | ✅ Extended | Status/constraint types     | +50      |
+| `src/lib/utils/answer-validator.ts`          | ✅ Extended | applyConstraints integrated | +70      |
+| `src/lib/types/question-display.ts`          | ✅ Extended | ValidationResult extended   | +10      |
 
-**Total estimated new code: ~850 lines**
+**Test Coverage:** 133 tests (101 constraint-validators + 32 answer-validator integration)
+
+**Remaining work:** ~200 lines for unit validation
 
 ---
 
