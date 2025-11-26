@@ -2,9 +2,9 @@
 
 ## Etat Actuel
 
-- Phase en cours : 2 COMPLETE
-- Derniere etape completee : 2.6 (RAG Integration)
-- Date derniere MAJ : 2025-11-26 23:15
+- Phase en cours : 3 COMPLETE
+- Derniere etape completee : 3.5 (Document Management)
+- Date derniere MAJ : 2025-11-27 00:51
 
 ## Decisions Prises
 
@@ -96,15 +96,54 @@
 
 - `src/lib/server/rag/index.ts` - Exports publics
 
-## Prochaines Etapes (Phase 3)
+## Phase 3 - COMPLETE
 
-1. Upload PDF documents
-2. Google Drive sync
-3. UI gestion documents
-4. Security audit Phase 3
+### PDF Text Extraction (Phase 3.1)
+
+- `src/lib/server/documents/pdf-extractor.ts` - PDF extraction service
+  - pdf-parse for PDF text extraction
+  - Markdown/plain text support
+  - File type detection
+  - Text cleanup
+
+### Document Validation (Phase 3.2)
+
+- `src/lib/server/validation/documents.ts` - Zod schemas
+  - Upload validation (file size, type)
+  - Document metadata validation
+  - Query parameter validation
+
+### API Endpoints (Phase 3.3)
+
+- `src/routes/api/documents/upload/+server.ts` - POST upload
+- `src/routes/api/documents/+server.ts` - GET/DELETE/PATCH CRUD
+
+### UI Components (Phase 3.4)
+
+- `src/lib/components/documents/DocumentUploader.svelte` - Drag-drop upload
+- `src/lib/components/documents/DocumentCard.svelte` - Document display
+- `src/lib/components/documents/DocumentManager.svelte` - List + upload
+- `src/lib/components/documents/index.ts` - Exports
+
+### Teacher Dashboard (Phase 3.5)
+
+- `src/routes/(protected)/dashboard/teacher/documents/+page.svelte`
+- `src/routes/(protected)/dashboard/teacher/documents/+page.server.ts`
+
+### Dependencies
+
+- `pdf-parse` - PDF text extraction
+- `@types/pdf-parse` - Type definitions
+
+## Prochaines Etapes (Optionnel)
+
+1. Google Drive sync (skipped for MVP)
+2. OCR for scanned PDFs
+3. Bulk document upload
+4. Document preview
 
 ## Qualite
 
 - Build: 0 errors
-- Lint: 0 errors
+- Lint: 0 errors (58 warnings - unchanged)
 - TypeScript: Valid
