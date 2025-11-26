@@ -48,6 +48,10 @@ interface ConversionStats {
 	evaluations: number;
 	/** Number of color references converted */
 	colorReferences: number;
+	/** Number of ternary operators converted */
+	ternaryOperators: number;
+	/** Number of mini/maxi functions converted */
+	minMaxFunctions: number;
 	/** Total number of conversions */
 	total: number;
 }
@@ -81,6 +85,8 @@ export class TinyCASConverter {
 		variableRefs: 0,
 		evaluations: 0,
 		colorReferences: 0,
+		ternaryOperators: 0,
+		minMaxFunctions: 0,
 		total: 0
 	};
 
@@ -112,25 +118,33 @@ export class TinyCASConverter {
 			// This prevents color store calls from being treated as evaluations
 			converted = this.convertColorReferences(converted);
 
-			// Step 1: Convert evaluation expressions (before variable conversion)
+			// Step 1: Convert ternary operators BEFORE evaluations
+			// This is critical because ternary values can contain [_..._] patterns
+			// and the :: separator would conflict with {{eval:...}} colons
+			converted = this.convertTernaryOperators(converted);
+
+			// Step 2: Convert mini/maxi functions (before evaluations so they're in the right format)
+			converted = this.convertMinMaxFunctions(converted);
+
+			// Step 3: Convert evaluation expressions (before variable conversion)
 			// This is important because evaluations contain variable references
 			// that need to be converted as part of the evaluation
 			converted = this.convertEvaluations(converted);
 
-			// Step 2: Convert random patterns with exclusions (before simple random)
+			// Step 4: Convert random patterns with exclusions (before simple random)
 			converted = this.convertRandomWithExclusions(converted);
 
-			// Step 3: Convert variable references
+			// Step 5: Convert variable references
 			converted = this.convertVariableReferences(converted);
 
-			// Step 4: Convert other random patterns
+			// Step 6: Convert other random patterns
 			converted = this.convertRelativeIntegers(converted);
 			converted = this.convertDecimalPatterns(converted);
 			converted = this.convertRandomIntegers(converted);
 			converted = this.convertNDigitNumbers(converted);
 			converted = this.convertListSelections(converted);
 
-			// Step 5: Check for unconverted patterns
+			// Step 7: Check for unconverted patterns
 			this.checkForUnconvertedPatterns(converted);
 
 			// Calculate total conversions
@@ -444,6 +458,73 @@ export class TinyCASConverter {
 	}
 
 	/**
+	 * Convert ternary operators: condition ?? trueVal :: falseVal → {{if:condition|trueVal|falseVal}}
+	 *
+	 * TinyCAS ternary syntax:
+	 * - `&5<&6 ?? 0 :: 1` means: if &5 < &6 then 0 else 1
+	 * - `mod(&1;2)=0 ?? 0 :: 1` means: if &1 is even then 0 else 1
+	 *
+	 * IMPORTANT: This runs BEFORE evaluation conversion, so values can contain [_..._]
+	 */
+	private convertTernaryOperators(input: string): string {
+		// Pattern: condition ?? trueValue :: falseValue
+		// Uses a more permissive pattern since this runs early in the pipeline
+		// The trueValue can contain [_..._] patterns (evaluations not yet converted)
+		// Use a greedy match for trueValue that stops at ::
+		const pattern = /([^?\n]+?)\s*\?\?\s*(.+?)\s*::\s*([^\n,\]}"]+)/g;
+
+		return input.replace(pattern, (match, condition, trueVal, falseVal) => {
+			this.stats.ternaryOperators++;
+
+			// Clean up whitespace
+			condition = condition.trim();
+			trueVal = trueVal.trim();
+			falseVal = falseVal.trim();
+
+			// Convert variable references in all parts
+			const convertVars = (s: string) => s.replace(/&(\w+)/g, '{{$1}}');
+			condition = convertVars(condition);
+			trueVal = convertVars(trueVal);
+			falseVal = convertVars(falseVal);
+
+			// Convert mod(a;b) syntax to mod(a,b) in condition
+			condition = condition.replace(/mod\(([^;]+);([^)]+)\)/g, 'mod($1,$2)');
+
+			// Convert comparison operators for consistency
+			// TinyCAS uses = for equality, we keep it as is since it's math notation
+			// But we need to handle := which is NOT assignment but comparison
+			condition = condition.replace(/:=/g, '==');
+
+			return `{{if:${condition}|${trueVal}|${falseVal}}}`;
+		});
+	}
+
+	/**
+	 * Convert mini/maxi functions: mini(a;b) → min(a,b) and maxi(a;b) → max(a,b)
+	 *
+	 * These functions appear in:
+	 * - Variable definitions: $e[2;[_mini(10-&1;&1-1)_]]
+	 * - Correction details: mini(&1;&2) or maxi(&2;&3)
+	 */
+	private convertMinMaxFunctions(input: string): string {
+		// Pattern for mini(a;b) - minimum function
+		const miniPattern = /mini\(([^;)]+);([^)]+)\)/g;
+		let result = input.replace(miniPattern, (match, a, b) => {
+			this.stats.minMaxFunctions++;
+			return `min(${a.trim()},${b.trim()})`;
+		});
+
+		// Pattern for maxi(a;b) - maximum function
+		const maxiPattern = /maxi\(([^;)]+);([^)]+)\)/g;
+		result = result.replace(maxiPattern, (match, a, b) => {
+			this.stats.minMaxFunctions++;
+			return `max(${a.trim()},${b.trim()})`;
+		});
+
+		return result;
+	}
+
+	/**
 	 * Convert exclusion list from semicolon to comma separated
 	 */
 	private convertExclusionList(exclusions: string): string {
@@ -491,6 +572,16 @@ export class TinyCASConverter {
 		if (converted.includes('$er')) {
 			this.warnings.push('Possible unconverted relative integer pattern $er detected');
 		}
+
+		// Check for unconverted ternary operators
+		if (/\?\?.*::/.test(converted)) {
+			this.warnings.push('Possible unconverted ternary operator ?? :: detected');
+		}
+
+		// Check for unconverted mini/maxi functions
+		if (/mini\(|maxi\(/.test(converted)) {
+			this.warnings.push('Possible unconverted mini/maxi function detected');
+		}
 	}
 
 	/**
@@ -507,6 +598,8 @@ export class TinyCASConverter {
 			variableRefs: 0,
 			evaluations: 0,
 			colorReferences: 0,
+			ternaryOperators: 0,
+			minMaxFunctions: 0,
 			total: 0
 		};
 		this.warnings = [];
