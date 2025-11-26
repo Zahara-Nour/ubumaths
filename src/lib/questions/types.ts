@@ -269,6 +269,9 @@ export interface QuestionTemplate {
 
 		/** Parameters for custom validator */
 		validatorParams?: Record<string, unknown>;
+
+		/** Constraint validation options for form checking */
+		constraints?: ConstraintOptions;
 	};
 
 	/** Precision for numerical answers (shared across all variations) */

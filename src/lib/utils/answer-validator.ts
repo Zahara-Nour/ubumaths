@@ -8,9 +8,95 @@
  * @module utils/answer-validator
  */
 
-import type { QuestionInstance, PrecisionType } from '$lib/questions/types';
+import type {
+	QuestionInstance,
+	PrecisionType,
+	ValidationStatus,
+	ConstraintId,
+	ConstraintMode,
+	ConstraintOptions
+} from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
 import { evaluateExpression, areEquivalent } from '$lib/questions/compute-engine/wrapper';
+import {
+	checkSpaces,
+	checkProducts,
+	checkBrackets,
+	checkZeros,
+	checkForm
+} from '$lib/questions/constraint-validators';
+import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
+
+// ============================================================================
+// CONSTRAINT CHECKING
+// ============================================================================
+
+/**
+ * Apply constraint checks to a mathematically correct answer
+ *
+ * @param answers - Plain text answers
+ * @param answersLatex - LaTeX versions of answers (from MathLive)
+ * @param expectedAnswers - Expected answers for form comparison
+ * @param constraints - Constraint configuration from question
+ * @returns Status and list of violations
+ */
+function applyConstraints(
+	answers: string[],
+	answersLatex: string[],
+	expectedAnswers: string[],
+	constraints: ConstraintOptions
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const violations: NonNullable<ValidationResult['constraintViolations']> = [];
+	let worstStatus: ValidationStatus = 'correct';
+
+	// Define constraint checks
+	const checks: Array<{
+		id: ConstraintId;
+		check: () => number[];
+	}> = [
+		{ id: 'spaces', check: () => checkSpaces(answersLatex) },
+		{ id: 'products', check: () => checkProducts(answersLatex) },
+		{
+			id: 'brackets',
+			check: () =>
+				checkBrackets(answersLatex, {
+					allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm
+				})
+		},
+		{ id: 'zeros', check: () => checkZeros(answers) },
+		{
+			id: 'form',
+			check: () =>
+				checkForm(answersLatex, expectedAnswers, { strictForm: constraints.form === 'require' })
+		}
+	];
+
+	for (const { id, check } of checks) {
+		const mode = constraints[id] as ConstraintMode | undefined;
+
+		// Skip if no-penalty or not configured
+		if (!mode || mode === 'no-penalty') continue;
+
+		const problematic = check();
+		if (problematic.length > 0) {
+			const isMultiple = answers.length > 1;
+			const feedback = CONSTRAINT_FEEDBACK[id][isMultiple ? 'multiple' : 'single'];
+
+			if (mode === 'require') {
+				violations.push({ constraint: id, severity: 'error', feedback });
+				worstStatus = 'bad_form';
+			} else {
+				// mode === 'check' -> partial credit
+				violations.push({ constraint: id, severity: 'warning', feedback });
+				if (worstStatus === 'correct') {
+					worstStatus = 'unoptimal_form';
+				}
+			}
+		}
+	}
+
+	return { status: worstStatus, violations };
+}
 
 // ============================================================================
 // MAIN VALIDATION FUNCTION
@@ -21,36 +107,45 @@ import { evaluateExpression, areEquivalent } from '$lib/questions/compute-engine
  *
  * @param userAnswer - User's submitted answer
  * @param instance - Question instance with correct answer
+ * @param userAnswerLatex - Optional LaTeX version of user answer (for constraint checking)
  * @returns Validation result with correctness and feedback
  */
 export function validateAnswer(
 	userAnswer: string | string[] | number | number[],
-	instance: QuestionInstance
+	instance: QuestionInstance,
+	userAnswerLatex?: string | string[]
 ): ValidationResult {
 	const { type, answer, precision } = instance;
 
 	try {
+		// Get validation result based on question type
+		let result: ValidationResult;
+
 		switch (type) {
 			case 'numerical_exact':
 			case 'numerical_decimal':
 			case 'numerical_rounded':
-				return validateNumerical(userAnswer as string | number, answer as string, precision);
+				result = validateNumerical(userAnswer as string | number, answer as string, precision);
+				break;
 
 			case 'algebraic_transform':
-				return validateAlgebraic(userAnswer as string, answer as string);
+				result = validateAlgebraic(userAnswer as string, answer as string);
+				break;
 
 			case 'fill_in_blanks':
-				return validateBlanks(
+				result = validateBlanks(
 					userAnswer as string[],
 					instance.blanks?.map((b) => b.expectedAnswer) || []
 				);
+				break;
 
 			case 'multiple_choice':
-				return validateChoice(
+				result = validateChoice(
 					userAnswer as number | number[],
 					answer as string | string[],
 					instance.multipleAnswers
 				);
+				break;
 
 			default:
 				return {
@@ -58,6 +153,34 @@ export function validateAnswer(
 					message: `Type de question non supporté: ${type}`
 				};
 		}
+
+		// Apply constraint checks if answer is correct, constraints are configured,
+		// AND LaTeX input is available (required for reliable form checking)
+		if (result.isCorrect && instance.options?.constraints && userAnswerLatex) {
+			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
+			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
+			const expected = Array.isArray(answer) ? answer : [answer];
+
+			const { status, violations } = applyConstraints(
+				answers,
+				latex,
+				expected,
+				instance.options.constraints
+			);
+
+			result.status = status;
+			result.constraintViolations = violations;
+
+			if (status === 'bad_form') {
+				result.isCorrect = false;
+				result.feedback = violations[0]?.feedback;
+			} else if (status === 'unoptimal_form') {
+				// Keep isCorrect true but add feedback
+				result.feedback = violations[0]?.feedback;
+			}
+		}
+
+		return result;
 	} catch (error) {
 		return {
 			isCorrect: false,

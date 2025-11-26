@@ -8,7 +8,7 @@
  * @module types/question-display
  */
 
-import type { QuestionInstance } from '$lib/questions/types';
+import type { QuestionInstance, ValidationStatus, ConstraintId } from '$lib/questions/types';
 
 // ============================================================================
 // ANSWER DATA
@@ -148,6 +148,21 @@ export interface ValidationResult {
 
 	/** Detailed feedback (optional) */
 	feedback?: string;
+
+	// Extended validation info for constraint checking
+
+	/** Detailed validation status (correct, unoptimal_form, bad_form, incorrect, empty) */
+	status?: ValidationStatus;
+
+	/** List of constraint violations found */
+	constraintViolations?: {
+		/** Which constraint was violated */
+		constraint: ConstraintId;
+		/** Severity: 'error' = bad_form (0 points), 'warning' = partial credit */
+		severity: 'error' | 'warning';
+		/** French feedback message for student */
+		feedback: string;
+	}[];
 }
 
 // ============================================================================
