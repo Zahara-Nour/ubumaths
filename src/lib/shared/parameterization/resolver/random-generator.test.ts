@@ -572,4 +572,115 @@ describe('generateRandomNumber', () => {
 			expect(value).toBeLessThanOrEqual(100);
 		});
 	});
+
+	// ============================================================================
+	// RELATIVE INTEGERS (±)
+	// ============================================================================
+
+	describe('Relative integers (±)', () => {
+		it('should generate from both positive and negative ranges', () => {
+			const spec: RandomSpec = {
+				type: 'relative-integer',
+				min: { type: 'number', value: 2 },
+				max: { type: 'number', value: 5 },
+				exclusions: []
+			};
+			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, [], i));
+
+			// Should have both positive and negative values
+			const positives = values.filter((v) => v > 0);
+			const negatives = values.filter((v) => v < 0);
+			expect(positives.length).toBeGreaterThan(0);
+			expect(negatives.length).toBeGreaterThan(0);
+
+			// All values should be in valid ranges
+			values.forEach((v) => {
+				if (v > 0) {
+					expect(v).toBeGreaterThanOrEqual(2);
+					expect(v).toBeLessThanOrEqual(5);
+				} else {
+					expect(v).toBeLessThanOrEqual(-2);
+					expect(v).toBeGreaterThanOrEqual(-5);
+				}
+			});
+		});
+
+		it('should never generate zero', () => {
+			const spec: RandomSpec = {
+				type: 'relative-integer',
+				min: { type: 'number', value: 1 },
+				max: { type: 'number', value: 9 },
+				exclusions: []
+			};
+			const values = Array.from({ length: 200 }, (_, i) => generateRandomNumber(spec, [], i));
+			expect(values).not.toContain(0);
+		});
+
+		it('should exclude both positive and negative when excluding a value', () => {
+			const spec: RandomSpec = {
+				type: 'relative-integer',
+				min: { type: 'number', value: 2 },
+				max: { type: 'number', value: 9 },
+				exclusions: [{ type: 'value', value: { type: 'number', value: 5 } }]
+			};
+			const values = Array.from({ length: 200 }, (_, i) => generateRandomNumber(spec, [], i));
+
+			// Should exclude both +5 and -5
+			expect(values).not.toContain(5);
+			expect(values).not.toContain(-5);
+		});
+
+		it('should handle variable bounds', () => {
+			const spec: RandomSpec = {
+				type: 'relative-integer',
+				min: { type: 'variable', name: 'minVal' },
+				max: { type: 'variable', name: 'maxVal' },
+				exclusions: []
+			};
+			const resolved: ResolvedVariable[] = [
+				{ name: 'minVal', value: '3' },
+				{ name: 'maxVal', value: '7' }
+			];
+			const value = generateRandomNumber(spec, resolved, 42);
+			if (value > 0) {
+				expect(value).toBeGreaterThanOrEqual(3);
+				expect(value).toBeLessThanOrEqual(7);
+			} else {
+				expect(value).toBeLessThanOrEqual(-3);
+				expect(value).toBeGreaterThanOrEqual(-7);
+			}
+		});
+
+		it('should distribute uniformly across positive and negative ranges', () => {
+			const spec: RandomSpec = {
+				type: 'relative-integer',
+				min: { type: 'number', value: 1 },
+				max: { type: 'number', value: 5 },
+				exclusions: []
+			};
+			const values = Array.from({ length: 500 }, (_, i) => generateRandomNumber(spec, [], i));
+
+			// Count positive and negative values
+			const positives = values.filter((v) => v > 0).length;
+			const negatives = values.filter((v) => v < 0).length;
+
+			// Should be roughly 50/50 (allow 40-60% range due to random variation)
+			expect(positives / values.length).toBeGreaterThan(0.35);
+			expect(positives / values.length).toBeLessThan(0.65);
+			expect(negatives / values.length).toBeGreaterThan(0.35);
+			expect(negatives / values.length).toBeLessThan(0.65);
+		});
+
+		it('should throw error for non-positive min', () => {
+			const spec: RandomSpec = {
+				type: 'relative-integer',
+				min: { type: 'number', value: 0 },
+				max: { type: 'number', value: 5 },
+				exclusions: []
+			};
+			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+				'Relative integer min must be positive'
+			);
+		});
+	});
 });

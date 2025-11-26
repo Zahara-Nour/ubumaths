@@ -3,11 +3,16 @@
  * ====================================================
  *
  * Parses random number specifications from Markdown syntax:
- * - Integer ranges: {{random:1-10}} or {{1-10}}
- * - Decimal by digits: {{random:2.3}} or {{2.3}}
- * - Decimal ranges with step: {{random:0.5-9.99:0.01}} or {{0.5-9.99:0.01}}
- * - Variable bounds: {{random:{{min}}-{{max}}}} or {{{{min}}-{{max}}}}
- * - Exclusions: {{random:1-20!5,7-9}} or {{1-20!5,7-9}}
+ * - Integer ranges: {{1-10}} or {{1..10}} or {{-3..-1}}
+ * - Relative integers: {{±2..9}} → union of {-9..-2} ∪ {2..9}
+ * - Decimal by digits: {{2.3}} (2 digits before, 3 after)
+ * - Decimal ranges: {{1..1.6}} (auto-step=0.1) or {{0.5-9.99:0.01}} (explicit step)
+ * - Variable bounds: {{{{min}}-{{max}}}} or {{{{min}}..{{max}}}}
+ * - Exclusions: {{1-20!5,7-9}} or {{1..20!5,7..9}}
+ *
+ * Range separators:
+ * - `-` (dash): Traditional, works for positive ranges like {{3-5}}
+ * - `..` (double dot): Clearer for negative ranges like {{-3..-1}}
  *
  * @module shared/parameterization/parser/random-parser
  */
@@ -101,14 +106,19 @@ function parseRandomContent(content: string): RandomSpec {
 	// Split base and exclusions
 	const [baseSpec, exclusionSpec] = splitAtTopLevel(content, '!');
 
+	// Check for ± prefix (relative integer)
+	const isRelative = baseSpec.startsWith('±') || baseSpec.startsWith('+/-');
+	const cleanBaseSpec = isRelative ? baseSpec.replace(/^(±|\+\/-)/, '') : baseSpec;
+
 	// Parse base specification
 	let spec: RandomSpec;
 
-	// Check if it's a decimal by digits format (contains . but no -)
-	if (baseSpec.includes('.') && !baseSpec.includes('-')) {
-		spec = parseDecimalByDigits(baseSpec);
+	// Check if it's a decimal by digits format (e.g., {{2.3}})
+	// This is identified by: contains single `.`, no range separator, and both parts are simple numbers
+	if (isDecimalByDigitsFormat(cleanBaseSpec)) {
+		spec = parseDecimalByDigits(cleanBaseSpec);
 	} else {
-		spec = parseRange(baseSpec);
+		spec = parseRange(cleanBaseSpec, isRelative);
 	}
 
 	// Parse exclusions if present
@@ -119,6 +129,50 @@ function parseRandomContent(content: string): RandomSpec {
 	}
 
 	return spec;
+}
+
+/**
+ * Check if spec is decimal-by-digits format: {{n.m}} where n and m are integers
+ * Not a decimal range like {{1..1.6}} or {{1.5-2.5}}
+ */
+function isDecimalByDigitsFormat(spec: string): boolean {
+	// Must contain a single dot
+	const dotCount = (spec.match(/\./g) || []).length;
+	if (dotCount !== 1) return false;
+
+	// Must NOT contain range separator (- or ..)
+	if (spec.includes('..') || hasRangeSeparator(spec)) return false;
+
+	// Both parts must be simple integers or variables
+	const [before, after] = spec.split('.');
+	return isSimpleIntOrVar(before) && isSimpleIntOrVar(after);
+}
+
+/**
+ * Check if string has a range separator dash (not a negative sign)
+ */
+function hasRangeSeparator(spec: string): boolean {
+	// Look for dash that's not at the start (which would be a negative sign)
+	let braceCount = 0;
+	for (let i = 0; i < spec.length; i++) {
+		const char = spec[i];
+		if (char === '{') braceCount++;
+		if (char === '}') braceCount--;
+		// Dash is separator if: not at start AND not inside braces
+		if (char === '-' && i > 0 && braceCount === 0) return true;
+	}
+	return false;
+}
+
+/**
+ * Check if string is a simple integer or variable reference
+ */
+function isSimpleIntOrVar(str: string): boolean {
+	const trimmed = str.trim();
+	// Variable: {{name}}
+	if (trimmed.startsWith('{{') && trimmed.endsWith('}}')) return true;
+	// Integer
+	return /^\d+$/.test(trimmed);
 }
 
 /**
@@ -141,22 +195,37 @@ function parseDecimalByDigits(spec: string): RandomSpec {
 
 /**
  * Parse range format
- * Examples: {{1-10}}, {{random:1-10}}, {{0.5-9.99:0.01}}, {{{{min}}-{{max}}}}
+ * Examples:
+ * - {{1-10}}, {{1..10}}, {{-3..-1}}
+ * - {{±2..9}} (relative)
+ * - {{0.5-9.99:0.01}}, {{1..1.6}} (decimal with auto-step)
  */
-function parseRange(spec: string): RandomSpec {
+function parseRange(spec: string, isRelative: boolean = false): RandomSpec {
 	// Check for step notation (split at top level to avoid splitting inside variables)
 	const [rangeSpec, stepStr] = splitAtTopLevel(spec, ':');
 
-	// Parse min-max
-	const { min, max } = parseMinMax(rangeSpec);
+	// Parse min-max (now supports both `-` and `..` separators)
+	const { min, max, originalMinStr, originalMaxStr } = parseMinMax(rangeSpec);
 
-	// Determine if decimal or integer
-	const isDecimal =
-		stepStr !== undefined || isNumberOrVariableDecimal(min) || isNumberOrVariableDecimal(max);
+	// Determine if decimal or integer based on:
+	// 1. Explicit step provided
+	// 2. Either bound contains decimals (in the original string)
+	const hasDecimalInBounds = hasDecimalDigits(originalMinStr) || hasDecimalDigits(originalMaxStr);
+	const isDecimal = stepStr !== undefined || hasDecimalInBounds;
 
-	if (isDecimal) {
-		// Decimal range
-		const step = stepStr ? parseFloat(stepStr) : 0.01;
+	if (isRelative) {
+		// Relative integer: {{±2..9}} → union of {-9..-2} ∪ {2..9}
+		return {
+			type: 'relative-integer',
+			min,
+			max,
+			exclusions: []
+		};
+	} else if (isDecimal) {
+		// Decimal range with auto-step inference
+		const step = stepStr
+			? parseFloat(stepStr)
+			: inferStepFromDecimals(originalMinStr, originalMaxStr);
 		return {
 			type: 'decimal-range',
 			min,
@@ -176,64 +245,112 @@ function parseRange(spec: string): RandomSpec {
 }
 
 /**
- * Check if NumberOrVariable represents a decimal
+ * Check if a string representation contains decimal digits
  */
-function isNumberOrVariableDecimal(val: NumberOrVariable): boolean {
-	return val.type === 'number' && !Number.isInteger(val.value);
+function hasDecimalDigits(str: string): boolean {
+	// Remove variable references first
+	const withoutVars = str.replace(/\{\{[^}]+\}\}/g, '');
+	return withoutVars.includes('.');
+}
+
+/**
+ * Infer step size from the maximum decimal places in bounds
+ *
+ * Examples:
+ * - "1", "1.6" → 1 decimal → step = 0.1
+ * - "1", "1.25" → 2 decimals → step = 0.01
+ * - "0.5", "2.5" → 1 decimal → step = 0.1
+ */
+function inferStepFromDecimals(minStr: string, maxStr: string): number {
+	const minDecimals = countDecimalPlaces(minStr);
+	const maxDecimals = countDecimalPlaces(maxStr);
+	const precision = Math.max(minDecimals, maxDecimals);
+	return precision === 0 ? 1 : Math.pow(10, -precision);
+}
+
+/**
+ * Count decimal places in a number string
+ */
+function countDecimalPlaces(str: string): number {
+	// Handle variable references - treat as 0 decimals
+	if (str.includes('{{')) return 0;
+
+	const match = str.match(/\.(\d+)/);
+	return match ? match[1].length : 0;
 }
 
 /**
  * Parse min-max from range string, handling negative numbers and variables
  *
+ * Supports two range separators:
+ * - `-` (dash): Traditional, e.g., "1-10", "-5-10"
+ * - `..` (double dot): Clearer for negatives, e.g., "-3..-1", "1..10"
+ *
  * Examples:
  * - "1-10" → min: 1, max: 10
+ * - "1..10" → min: 1, max: 10
  * - "-5-10" → min: -5, max: 10
- * - "{{min}}-{{max}}" → min: {type:'variable',name:'min'}, max: {...}
+ * - "-3..-1" → min: -3, max: -1
+ * - "{{min}}-{{max}}" → variables
+ * - "{{min}}..{{max}}" → variables
  */
-function parseMinMax(rangeSpec: string): { min: NumberOrVariable; max: NumberOrVariable } {
+function parseMinMax(rangeSpec: string): {
+	min: NumberOrVariable;
+	max: NumberOrVariable;
+	originalMinStr: string;
+	originalMaxStr: string;
+} {
 	let minStr = '';
 	let maxStr = '';
-	let inVariable = false;
 	let braceCount = 0;
 	let foundSeparator = false;
 
-	for (let i = 0; i < rangeSpec.length; i++) {
+	// First, try to find `..` separator (takes priority over `-`)
+	for (let i = 0; i < rangeSpec.length - 1; i++) {
 		const char = rangeSpec[i];
+		const nextChar = rangeSpec[i + 1];
 
-		// Track braces for variables
-		if (char === '{') {
-			braceCount++;
-			inVariable = true;
-		} else if (char === '}') {
-			braceCount--;
-			if (braceCount === 0) {
-				inVariable = false;
-			}
-		}
+		if (char === '{') braceCount++;
+		if (char === '}') braceCount--;
 
-		// Check if this is a separator dash (not a negative sign)
-		// Only treat as separator if we haven't found one yet
-		if (char === '-' && !inVariable && i > 0 && !foundSeparator) {
-			// This is the separator
+		// Check for `..` separator (not inside variable braces)
+		if (char === '.' && nextChar === '.' && braceCount === 0) {
+			minStr = rangeSpec.substring(0, i);
+			maxStr = rangeSpec.substring(i + 2);
 			foundSeparator = true;
-			continue;
-		}
-
-		// Append to appropriate part
-		if (!foundSeparator) {
-			minStr += char;
-		} else {
-			maxStr += char;
+			break;
 		}
 	}
 
+	// If no `..` found, try `-` separator
 	if (!foundSeparator) {
+		braceCount = 0;
+		for (let i = 0; i < rangeSpec.length; i++) {
+			const char = rangeSpec[i];
+
+			if (char === '{') braceCount++;
+			if (char === '}') braceCount--;
+
+			// Check for `-` separator (not at start, not inside variable)
+			// Must be after at least one character (to not confuse with negative sign)
+			if (char === '-' && braceCount === 0 && i > 0 && !foundSeparator) {
+				minStr = rangeSpec.substring(0, i);
+				maxStr = rangeSpec.substring(i + 1);
+				foundSeparator = true;
+				break;
+			}
+		}
+	}
+
+	if (!foundSeparator || !minStr || !maxStr) {
 		throw new Error(`Invalid range specification: ${rangeSpec}`);
 	}
 
 	return {
 		min: parseNumberOrVariable(minStr),
-		max: parseNumberOrVariable(maxStr)
+		max: parseNumberOrVariable(maxStr),
+		originalMinStr: minStr,
+		originalMaxStr: maxStr
 	};
 }
 
@@ -265,7 +382,7 @@ function parseNumberOrVariable(str: string): NumberOrVariable {
 }
 
 /**
- * Parse exclusions: "5,7-9,{{a}},{{b}}-{{c}}"
+ * Parse exclusions: "5,7-9,{{a}},{{b}}-{{c}}" or "5,7..9,{{a}},{{b}}..{{c}}"
  */
 function parseExclusions(spec: string): Exclusion[] {
 	const exclusions: Exclusion[] = [];
@@ -274,14 +391,14 @@ function parseExclusions(spec: string): Exclusion[] {
 	for (const part of parts) {
 		const trimmed = part.trim();
 
-		// Variable reference (Markdown)
+		// Variable reference (Markdown) - single variable, not a range
 		const varPattern = /^\{\{(\w+)\}\}$/;
 		const varMatch = trimmed.match(varPattern);
-		if (varMatch && !trimmed.includes('-')) {
+		if (varMatch && !trimmed.includes('-') && !trimmed.includes('..')) {
 			exclusions.push({ type: 'value', value: { type: 'variable', name: varMatch[1] } });
 		}
-		// Range: detect by trying to parse as range
-		else if (trimmed.includes('-')) {
+		// Range: detect by trying to parse as range (supports both `-` and `..`)
+		else if (trimmed.includes('..') || hasRangeSeparator(trimmed)) {
 			try {
 				const { min, max } = parseMinMax(trimmed);
 				exclusions.push({ type: 'range', min, max });

@@ -442,3 +442,272 @@ describe('parseRandomSpec - Edge cases', () => {
 		expect(range?.type).toBe('decimal-range');
 	});
 });
+
+// ============================================================================
+// NEW SYNTAX TESTS
+// ============================================================================
+
+describe('parseRandomSpec - Double dot (..) range separator', () => {
+	it('should parse integer range with .. separator', () => {
+		const spec = parseRandomSpec('{{3..5}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'number', value: 3 },
+			max: { type: 'number', value: 5 },
+			exclusions: []
+		});
+	});
+
+	it('should parse negative range with .. separator', () => {
+		const spec = parseRandomSpec('{{-3..-1}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'number', value: -3 },
+			max: { type: 'number', value: -1 },
+			exclusions: []
+		});
+	});
+
+	it('should parse range crossing zero with .. separator', () => {
+		const spec = parseRandomSpec('{{-5..5}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'number', value: -5 },
+			max: { type: 'number', value: 5 }
+		});
+	});
+
+	it('should parse variable range with .. separator', () => {
+		const spec = parseRandomSpec('{{{{min}}..{{max}}}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'variable', name: 'min' },
+			max: { type: 'variable', name: 'max' }
+		});
+	});
+
+	it('should parse exclusion range with .. separator', () => {
+		const spec = parseRandomSpec('{{1..20!5..7}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'number', value: 1 },
+			max: { type: 'number', value: 20 }
+		});
+		expect(spec?.exclusions).toHaveLength(1);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'range',
+			min: { type: 'number', value: 5 },
+			max: { type: 'number', value: 7 }
+		});
+	});
+
+	it('should parse mixed exclusions with .. separator', () => {
+		const spec = parseRandomSpec('{{1..100!5,10..15,{{a}}}}');
+
+		expect(spec?.exclusions).toHaveLength(3);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'value',
+			value: { type: 'number', value: 5 }
+		});
+		expect(spec?.exclusions[1]).toMatchObject({
+			type: 'range',
+			min: { type: 'number', value: 10 },
+			max: { type: 'number', value: 15 }
+		});
+		expect(spec?.exclusions[2]).toMatchObject({
+			type: 'value',
+			value: { type: 'variable', name: 'a' }
+		});
+	});
+
+	it('should prefer .. over - when both could be separators', () => {
+		// {{1..10}} should use .. as separator, not interpret as decimal
+		const spec = parseRandomSpec('{{1..10}}');
+
+		expect(spec?.type).toBe('integer');
+		if (spec?.type === 'integer') {
+			expect(spec.min).toMatchObject({ type: 'number', value: 1 });
+			expect(spec.max).toMatchObject({ type: 'number', value: 10 });
+		}
+	});
+});
+
+describe('parseRandomSpec - Relative integers (±)', () => {
+	it('should parse relative integer with ± prefix', () => {
+		const spec = parseRandomSpec('{{±2..9}}');
+
+		expect(spec).toMatchObject({
+			type: 'relative-integer',
+			min: { type: 'number', value: 2 },
+			max: { type: 'number', value: 9 },
+			exclusions: []
+		});
+	});
+
+	it('should parse relative integer with +/- prefix', () => {
+		const spec = parseRandomSpec('{{+/-2..9}}');
+
+		expect(spec).toMatchObject({
+			type: 'relative-integer',
+			min: { type: 'number', value: 2 },
+			max: { type: 'number', value: 9 }
+		});
+	});
+
+	it('should parse relative integer with exclusion', () => {
+		const spec = parseRandomSpec('{{±2..9!5}}');
+
+		expect(spec).toMatchObject({
+			type: 'relative-integer',
+			min: { type: 'number', value: 2 },
+			max: { type: 'number', value: 9 }
+		});
+		expect(spec?.exclusions).toHaveLength(1);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'value',
+			value: { type: 'number', value: 5 }
+		});
+	});
+
+	it('should parse relative integer with variable bounds', () => {
+		const spec = parseRandomSpec('{{±{{min}}..{{max}}}}');
+
+		expect(spec).toMatchObject({
+			type: 'relative-integer',
+			min: { type: 'variable', name: 'min' },
+			max: { type: 'variable', name: 'max' }
+		});
+	});
+
+	it('should parse relative integer with variable exclusion', () => {
+		const spec = parseRandomSpec('{{±2..9!{{a}}}}');
+
+		expect(spec).toMatchObject({
+			type: 'relative-integer'
+		});
+		expect(spec?.exclusions).toHaveLength(1);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'value',
+			value: { type: 'variable', name: 'a' }
+		});
+	});
+});
+
+describe('parseRandomSpec - Decimal auto-step inference', () => {
+	it('should infer step=0.1 from 1 decimal place', () => {
+		const spec = parseRandomSpec('{{1..1.6}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-range',
+			min: { type: 'number', value: 1 },
+			max: { type: 'number', value: 1.6 },
+			step: 0.1
+		});
+	});
+
+	it('should infer step=0.01 from 2 decimal places', () => {
+		const spec = parseRandomSpec('{{1..1.25}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-range',
+			min: { type: 'number', value: 1 },
+			max: { type: 'number', value: 1.25 },
+			step: 0.01
+		});
+	});
+
+	it('should use max decimal places from both bounds', () => {
+		const spec = parseRandomSpec('{{0.5..2.5}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-range',
+			min: { type: 'number', value: 0.5 },
+			max: { type: 'number', value: 2.5 },
+			step: 0.1
+		});
+	});
+
+	it('should infer step from min bound decimals', () => {
+		const spec = parseRandomSpec('{{1.25..2}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-range',
+			step: 0.01
+		});
+	});
+
+	it('should handle negative decimal ranges', () => {
+		const spec = parseRandomSpec('{{-0.5..0.5}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-range',
+			min: { type: 'number', value: -0.5 },
+			max: { type: 'number', value: 0.5 },
+			step: 0.1
+		});
+	});
+
+	it('should allow explicit step to override auto-step', () => {
+		const spec = parseRandomSpec('{{1..2:0.5}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-range',
+			min: { type: 'number', value: 1 },
+			max: { type: 'number', value: 2 },
+			step: 0.5
+		});
+	});
+
+	it('should handle decimal range with exclusion', () => {
+		const spec = parseRandomSpec('{{1..1.6!1.3}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-range',
+			min: { type: 'number', value: 1 },
+			max: { type: 'number', value: 1.6 },
+			step: 0.1
+		});
+		expect(spec?.exclusions).toHaveLength(1);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'value',
+			value: { type: 'number', value: 1.3 }
+		});
+	});
+
+	it('should use traditional dash separator for decimal range', () => {
+		const spec = parseRandomSpec('{{1.5-2.5}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-range',
+			min: { type: 'number', value: 1.5 },
+			max: { type: 'number', value: 2.5 },
+			step: 0.1
+		});
+	});
+
+	it('should still support explicit step with dash separator', () => {
+		const spec = parseRandomSpec('{{0.5-9.99:0.01}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-range',
+			min: { type: 'number', value: 0.5 },
+			max: { type: 'number', value: 9.99 },
+			step: 0.01
+		});
+	});
+
+	it('should not confuse decimal-by-digits with decimal range', () => {
+		// {{2.3}} should be decimal-by-digits (2 digits before, 3 after)
+		const byDigits = parseRandomSpec('{{2.3}}');
+		expect(byDigits?.type).toBe('decimal-by-digits');
+
+		// {{1..1.6}} should be decimal range with auto-step
+		const range = parseRandomSpec('{{1..1.6}}');
+		expect(range?.type).toBe('decimal-range');
+	});
+});
