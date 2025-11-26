@@ -49,9 +49,9 @@ import {
 	isDimensionless,
 	formatUnit,
 	formatUnitUnicode,
-	parseSimpleUnit,
-	type Unit
+	parseSimpleUnit
 } from '../operations';
+import type { Unit } from '../types';
 
 // ============================================================================
 // UNIT RESOLUTION (definitions.ts)

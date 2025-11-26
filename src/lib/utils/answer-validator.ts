@@ -26,6 +26,7 @@ import {
 	checkForm
 } from '$lib/questions/constraint-validators';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
+import { validateQuantityAnswer } from '$lib/questions/units/validator';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -127,6 +128,18 @@ export function validateAnswer(
 			case 'numerical_rounded':
 				result = validateNumerical(userAnswer as string | number, answer as string, precision);
 				break;
+
+			case 'numerical_with_unit': {
+				const latexAnswer = Array.isArray(userAnswerLatex)
+					? userAnswerLatex[0]
+					: (userAnswerLatex ?? String(userAnswer));
+				result = validateNumericalWithUnit(
+					latexAnswer,
+					answer as string,
+					instance.options?.unitOptions
+				);
+				break;
+			}
 
 			case 'algebraic_transform':
 				result = validateAlgebraic(userAnswer as string, answer as string);
@@ -308,6 +321,52 @@ export function validateNumerical(
 	return {
 		isCorrect,
 		message: isCorrect ? 'Correct !' : 'Incorrect'
+	};
+}
+
+// ============================================================================
+// NUMERICAL WITH UNIT VALIDATION
+// ============================================================================
+
+/**
+ * Options for unit validation
+ */
+export interface UnitValidationOptions {
+	/** Require exact unit match (no conversion allowed) */
+	requireExactUnit?: boolean;
+	/** Require matching unit symbols */
+	requireSameSymbol?: boolean;
+	/** Numeric tolerance */
+	tolerance?: {
+		absolute?: number;
+		relative?: number;
+	};
+}
+
+/**
+ * Validate numerical answer with physical unit
+ *
+ * @param userAnswer - User's answer in LaTeX format (from MathLive)
+ * @param correctAnswer - Correct answer in LaTeX format
+ * @param options - Unit validation options
+ * @returns Validation result
+ */
+export function validateNumericalWithUnit(
+	userAnswer: string,
+	correctAnswer: string,
+	options?: UnitValidationOptions
+): ValidationResult {
+	const result = validateQuantityAnswer(userAnswer, correctAnswer, {
+		requireExactUnit: options?.requireExactUnit,
+		requireSameSymbol: options?.requireSameSymbol,
+		tolerance: options?.tolerance
+	});
+
+	// Map to ValidationResult format
+	return {
+		isCorrect: result.isCorrect,
+		message: result.isCorrect ? 'Correct !' : 'Incorrect',
+		feedback: result.feedback ?? undefined
 	};
 }
 

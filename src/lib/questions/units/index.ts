@@ -142,3 +142,69 @@ export {
 	type AnalyzedTerm,
 	type DimensionalCheckResult as DimensionalConsistencyResult
 } from './dimensional';
+
+// ============================================================================
+// VALIDATOR
+// ============================================================================
+
+export { validateQuantityAnswer, type ValidationOptions, type ValidationResult } from './validator';
+
+// ============================================================================
+// CE INTEGRATION
+// ============================================================================
+
+export {
+	// Value evaluation
+	evaluateQuantityValue,
+
+	// Quantity comparison
+	compareQuantities,
+
+	// Unit conversion
+	convertQuantity,
+	normalizeToBaseUnits,
+
+	// Utility functions
+	isValidQuantity,
+	getUnitFromQuantity,
+	getValueFromQuantity,
+
+	// Types
+	type ComparisonResult,
+	type Tolerance
+} from './ce-integration';
+
+// ============================================================================
+// PARSER
+// ============================================================================
+
+export {
+	parseLatexQuantity,
+	parseUnitExpression,
+	extractUnitFromLatex,
+	normalizeUnitString
+} from './parser';
+
+// ============================================================================
+// HMS SUPPORT
+// ============================================================================
+
+export {
+	// Parsing
+	parseHMS,
+
+	// Formatting
+	formatHMS,
+	formatHMSLatex,
+
+	// Conversion
+	hmsToSeconds,
+	secondsToHMS,
+	minutesToHMS,
+
+	// Arithmetic
+	addHMS,
+	subtractHMS,
+	compareHMS,
+	normalizeHMS
+} from './hms';

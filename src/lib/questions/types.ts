@@ -68,6 +68,7 @@ export type QuestionType =
 	| 'numerical_exact' // Exact numerical value required
 	| 'numerical_decimal' // Decimal approximation
 	| 'numerical_rounded' // Rounded value
+	| 'numerical_with_unit' // Numerical value with physical unit
 	| 'algebraic_transform' // Factor, expand, simplify expressions
 	| 'fill_in_blanks' // Fill in missing parts
 	| 'multiple_choice'; // Multiple choice (one or several answers)
@@ -272,6 +273,19 @@ export interface QuestionTemplate {
 
 		/** Constraint validation options for form checking */
 		constraints?: ConstraintOptions;
+
+		/** Unit validation options for numerical_with_unit questions */
+		unitOptions?: {
+			/** Require exact unit match (no conversion allowed) */
+			requireExactUnit?: boolean;
+			/** Require matching unit symbols */
+			requireSameSymbol?: boolean;
+			/** Numeric tolerance */
+			tolerance?: {
+				absolute?: number;
+				relative?: number;
+			};
+		};
 	};
 
 	/** Precision for numerical answers (shared across all variations) */
