@@ -117,6 +117,7 @@ function normalizeSuperscripts(str: string): string {
  * - Plain numbers: "5", "3.14", "-10"
  * - Fractions: "\frac{3}{2}"
  * - Scientific: "1.5 \times 10^{3}"
+ * - Arithmetic expressions: "3+2", "5*3" (returned as string for CE evaluation)
  *
  * @param latex - LaTeX string containing a numeric value
  * @returns Extracted value as number or string (for unevaluated expressions), or null
@@ -148,6 +149,13 @@ function extractValue(latex: string): number | string | null {
 
 		// Return as string if we can't evaluate
 		return `\\frac{${fractionMatch[1]}}{${fractionMatch[2]}}`;
+	}
+
+	// Check if string contains arithmetic operators (but not at the start for negative)
+	// This includes expressions like "3+2", "5*3", "10-2"
+	if (/[+\-*/]/.test(str.slice(1)) || str.includes('\\times') || str.includes('\\cdot')) {
+		// Return as string for ComputeEngine to evaluate
+		return str;
 	}
 
 	// Try decimal/integer
@@ -697,6 +705,9 @@ export function parseLatexQuantity(latex: string): Quantity | null {
 			if (unit) {
 				return { value, unit };
 			}
+		} else {
+			// No unit - return dimensionless quantity
+			return { value, unit: dimensionlessUnit() };
 		}
 	}
 

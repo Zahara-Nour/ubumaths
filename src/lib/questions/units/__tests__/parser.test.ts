@@ -860,9 +860,11 @@ describe('LaTeX Quantity Parsing', () => {
 			expect(qty).toBeNull();
 		});
 
-		test('returns null for number without unit', () => {
+		test('returns dimensionless quantity for number without unit', () => {
 			const qty = parseLatexQuantity('5');
-			expect(qty).toBeNull();
+			expect(qty).not.toBeNull();
+			expect(qty?.value).toBe(5);
+			expect(qty?.unit.components.size).toBe(0); // dimensionless
 		});
 
 		test('returns null for invalid unit', () => {
