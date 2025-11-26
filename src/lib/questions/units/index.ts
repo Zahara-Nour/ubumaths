@@ -120,3 +120,25 @@ export {
 	// Types
 	type UnitFormatStyle
 } from './operations';
+
+// ============================================================================
+// DIMENSIONAL ANALYSIS
+// ============================================================================
+
+export {
+	// Main functions
+	checkDimensionalConsistency,
+	analyzeExpression,
+	getDimensionName,
+
+	// Convenience functions
+	isDimensionallyConsistent,
+	getDimensionalError,
+	quantitiesAreCompatible,
+
+	// Types
+	type DimensionalErrorType,
+	type DimensionalError,
+	type AnalyzedTerm,
+	type DimensionalCheckResult as DimensionalConsistencyResult
+} from './dimensional';
