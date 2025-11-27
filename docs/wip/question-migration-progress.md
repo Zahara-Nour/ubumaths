@@ -6,9 +6,9 @@
 
 ---
 
-## Current Phase: 2 - Types TypeScript
+## Current Phase: 3 - Convertisseurs Placeholders
 
-## Last Commit: 39abfa59
+## Last Commit: e7a6c795
 
 ---
 
@@ -23,18 +23,18 @@
 - [x] Code review (haiku) - no critical issues
 - [x] Commit: 39abfa59
 
+### Phase 2: Types TypeScript ✅
+
+- [x] QuestionCorrection interface
+- [x] ValidationRule discriminated union (7 rule types)
+- [x] correction-placeholders.ts (parsing utilities)
+- [x] Tests unitaires (107 tests)
+- [x] Code review (sonnet) - fixed templateMarkdown usage
+- [x] Commit: e7a6c795
+
 ---
 
 ## Pending Phases
-
-### Phase 2: Types TypeScript
-
-- [ ] QuestionCorrection interface
-- [ ] ValidationRule discriminated union
-- [ ] Placeholder types (correction-placeholders.ts)
-- [ ] Tests unitaires
-- [ ] Code review
-- [ ] Commit
 
 ### Phase 3: Convertisseurs Placeholders
 
@@ -92,9 +92,14 @@
 
 - `docs/wip/question-migration-analysis.md` - Added sections 19-22
 
+### Phase 2
+
+- `src/lib/questions/types.ts` - Added QuestionCorrection, ValidationRule types
+- `src/lib/questions/correction-placeholders.ts` - Placeholder parsing utilities
+- `src/lib/questions/__tests__/correction-types.test.ts` - 107 tests
+
 ### Planned New Files
 
-- `src/lib/questions/correction-placeholders.ts` (Phase 2)
 - `src/lib/migration/placeholder-converter.ts` (Phase 3)
 - `src/lib/migration/conditional-converter.ts` (Phase 3)
 - `src/lib/questions/validation-rule-evaluator.ts` (Phase 5)
@@ -102,7 +107,6 @@
 
 ### Planned Modifications
 
-- `src/lib/questions/types.ts` (Phase 2)
 - `src/lib/migration/question-transformer.ts` (Phase 4)
 
 ---
