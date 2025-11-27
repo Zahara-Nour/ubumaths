@@ -1,0 +1,1094 @@
+{
+	"generatedAt": "2025-11-27T02:52:08.903Z",
+	"sourceFile": "extern/new-tinymath/apps/ubumaths/src/lib/questions/questions.ts",
+	"stats": {
+		"totalReferences": 277,
+		"uniqueImages": 214,
+		"byDirectory": {
+			"entiers/reperage": 20,
+			"relatifs/droite-graduee-operations": 2,
+			"fonctions-affines/reconnaitre": 12,
+			"fonctions-affines/exemples": 30,
+			"fonctions-affines/ordonnee-origine": 30,
+			"fonctions-affines/coef-directeur": 30,
+			"fonctions-affines/equation": 30,
+			"polynome-second-degre/trouver-racines": 30,
+			"polynome-second-degre/forme-canonique": 30
+		},
+		"byExtension": {
+			".png": 214
+		}
+	},
+	"images": [
+		{
+			"path": "relatifs/droite-graduee-operations/droite-graduee--4-4-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-0-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-1-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-2-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-3-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-4-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-5-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-6-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-7-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-8-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-9-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-10-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-11-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-12-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-13-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-14-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-15-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-16-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-17-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-18-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-19-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-20-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-21-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-22-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-23-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-24-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-25-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-26-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-27-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-28-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "fonctions-affines/exemples/fonction_affine-29-600.png",
+			"type": "images",
+			"count": 3
+		},
+		{
+			"path": "relatifs/droite-graduee-operations/droite-graduee--7-7-600.png",
+			"type": "images",
+			"count": 2
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-0-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-1-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-2-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-3-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-4-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-5-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-6-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-7-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-8-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-9-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-10-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-11-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-12-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-13-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-14-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-15-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-16-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-17-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-18-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "entiers/reperage/droite_graduee-10_en_10-19-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-0-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-1-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-2-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-3-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-4-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-5-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-6-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-7-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-8-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-9-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-10-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/reconnaitre/reconnaitre_fonction_affine-11-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-0-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-1-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-2-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-3-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-4-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-5-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-6-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-7-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-8-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-9-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-10-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-11-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-12-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-13-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-14-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-15-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-16-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-17-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-18-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-19-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-20-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-21-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-22-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-23-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-24-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-25-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-26-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-27-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-28-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/ordonnee-origine/correction_ordonnee_origine-29-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-0-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-1-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-2-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-3-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-4-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-5-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-6-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-7-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-8-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-9-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-10-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-11-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-12-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-13-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-14-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-15-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-16-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-17-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-18-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-19-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-20-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-21-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-22-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-23-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-24-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-25-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-26-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-27-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-28-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/coef-directeur/correction_coef_directeur-29-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-0-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-1-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-2-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-3-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-4-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-5-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-6-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-7-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-8-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-9-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-10-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-11-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-12-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-13-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-14-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-15-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-16-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-17-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-18-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-19-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-20-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-21-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-22-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-23-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-24-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-25-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-26-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-27-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-28-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "fonctions-affines/equation/correction_equation-29-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-0-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-1-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-2-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-3-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-4-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-5-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-6-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-7-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-8-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-9-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-10-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-11-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-12-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-13-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/trouver_racines-14-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-0-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-1-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-2-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-3-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-4-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-5-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-6-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-7-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-8-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-9-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-10-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-11-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-12-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-13-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/trouver-racines/correction_trouver_racines-14-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-0-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-1-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-2-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-3-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-4-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-5-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-6-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-7-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-8-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-9-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-10-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-11-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-12-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-13-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/forme-canonique-14-600.png",
+			"type": "images",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-0-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-1-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-2-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-3-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-4-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-5-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-6-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-7-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-8-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-9-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-10-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-11-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-12-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-13-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		},
+		{
+			"path": "polynome-second-degre/forme-canonique/correction-forme-canonique-14-600.png",
+			"type": "imagesCorrection",
+			"count": 1
+		}
+	]
+}
