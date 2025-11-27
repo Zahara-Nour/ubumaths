@@ -14,7 +14,7 @@
 	 */
 
 	import { Badge } from '$lib/components/ui/badge';
-	import { Card } from '$lib/components/ui/card';
+	import * as Card from '$lib/components/ui/card';
 	import { cn } from '$lib/utils';
 	import { AlertCircle, AlertTriangle, CheckCircle2, ChevronRight } from 'lucide-svelte';
 
