@@ -381,3 +381,32 @@ export function detectQuestionType(q: QuestionBase): string {
 	}
 	return 'numerical_exact';
 }
+
+// ============================================================================
+// MIGRATION METADATA
+// ============================================================================
+
+/**
+ * Migration metadata added during extraction
+ * Preserves the question's position in the nested hierarchy
+ */
+export interface MigrationMetadata {
+	/** Theme name (e.g., "Entiers", "Décimaux") */
+	theme: string;
+	/** Domain within the theme (e.g., "Apprivoiser", "Calculs") */
+	domain: string;
+	/** Subdomain within the domain (e.g., "Ecriture", "Addition") */
+	subdomain: string;
+	/** Level/position within the subdomain array (0-indexed) */
+	level: number;
+	/** Global sequential index across all questions (0-632) */
+	globalIndex: number;
+}
+
+/**
+ * Question with migration metadata (post-extraction)
+ * Used after running migrate-questions-loader.ts
+ */
+export interface QuestionWithMigration extends QuestionBase {
+	_migration: MigrationMetadata;
+}
