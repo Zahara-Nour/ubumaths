@@ -130,38 +130,34 @@ const result = expr.subs({ x: 7 }).evaluate(); // Substitute & evaluate
 // result represents True/False
 ```
 
-### Recommendation: Convert to Range/Condition Type
+### Recommendation: Convert to Range/Condition Type ✅ IMPLEMENTED
 
-Instead of arbitrary expressions, create explicit types:
+> **Status (2025-11-27):** Types and evaluator are **IMPLEMENTED** in:
+>
+> - `src/lib/questions/types.ts` (lines 580-685) - ValidationRule discriminated union
+> - `src/lib/questions/validation-rule-evaluator.ts` (665 lines, 71 tests)
+>
+> **Remaining:** Add `validationRules` field to `QuestionVariation` type, integrate in answer-validator, and add transformer conversion. See Section 23.
+
+The typed ValidationRule system is implemented with 7 rule types:
 
 ```typescript
-// NEW: Explicit range validation
-type RangeValidation = {
-	type: 'range';
-	min?: number;
-	max?: number;
-	inclusive?: boolean;
-};
-
-// NEW: Predicate validation
-type PredicateValidation = {
-	type: 'predicate';
-	predicate: 'even' | 'odd' | 'prime' | 'multiple_of' | 'divisible_by';
-	param?: number;
-};
-
-// NEW: Expression validation (for rare cases)
-type ExpressionValidation = {
-	type: 'expression';
-	condition: string; // "{{answer}} > {{min}} && {{answer}} < {{max}}"
-};
+// IMPLEMENTED in src/lib/questions/types.ts
+export type ValidationRule =
+	| DivisorRule // { type: 'divisor', dividend: '{{n}}' }
+	| MultipleRule // { type: 'multiple', base: '{{a}}' }
+	| RangeRule // { type: 'range', min: '1', max: '{{max}}' }
+	| EquationRootRule // { type: 'equation_root', equation: 'x^2 - {{sum}}*x + {{product}} = 0' }
+	| EquivalenceRule // { type: 'equivalent', expression: '{{a}}/{{b}}' }
+	| PredicateRule // { type: 'predicate', predicate: 'isPrime' | 'isEven' | ... }
+	| CustomExpressionRule; // { type: 'custom', expression: 'gcd(answer, {{n}}) > 1' }
 ```
 
 **Why?**
 
 1. **Type-safe**: Predefined predicates are safer than arbitrary expressions
 2. **Easier to migrate**: Most testAnswers are simple ranges
-3. **Backwards compatible**: Expression type handles complex cases
+3. **Backwards compatible**: CustomExpressionRule handles complex cases
 4. **Better UX**: Teachers can select from dropdown instead of writing expressions
 
 ---
@@ -1130,7 +1126,10 @@ Le système est intégré avec ComputeEngine via `ce-integration.ts`:
 
 ---
 
-## 20. Typed ValidationRule Proposal (testAnswerss)
+## 20. Typed ValidationRule Proposal (testAnswerss) ✅ TYPES IMPLEMENTED
+
+> **Status (2025-11-27):** Types and evaluator **IMPLEMENTED** in `src/lib/questions/types.ts` and `validation-rule-evaluator.ts` (71 tests).
+> **Remaining:** Wire up to QuestionVariation type + answer-validator + transformer. See Section 23.
 
 ### Problème Actuel
 
@@ -1646,6 +1645,117 @@ Notre système markdown supporte déjà les attributs de taille via `image-rende
 - `scripts/download-old-images.ts` - Download depuis ancien Supabase
 - `scripts/migrate-question-images.ts` - Conversion WebP + upload
 - `scripts/image-url-mapping.json` - Mapping ancien→nouveau paths
+
+---
+
+## 23. IMPLEMENTATION STATUS UPDATE (2025-11-27)
+
+### Complete Implementation Review
+
+After thorough code analysis, here's the **actual** implementation status:
+
+#### ✅ FULLY IMPLEMENTED (100%)
+
+| Component                 | Location                       | Tests     | Notes                                     |
+| ------------------------- | ------------------------------ | --------- | ----------------------------------------- |
+| **Syntax Conversion**     | `syntax-converter.ts`          | 35 tests  | All 633 questions convertible             |
+| **Constraint Validators** | `constraint-validators.ts`     | 101 tests | spaces, products, brackets, zeros, form   |
+| **Feedback Messages**     | `feedback.ts`                  | -         | French feedback for all constraint types  |
+| **Unit Validation**       | `units/` (~150KB)              | Extensive | Full SI units, HMS, conversions           |
+| **Typed ValidationRule**  | `validation-rule-evaluator.ts` | 71 tests  | Types + evaluator complete (see ⚠️ below) |
+| **Image Migration**       | `migrate-question-images.ts`   | -         | 214/214 images migrated to WebP           |
+| **Answer Validator**      | `answer-validator.ts`          | 32+ tests | Integrated with units + constraints       |
+
+#### ⚠️ PARTIALLY IMPLEMENTED
+
+| Component                      | Status                 | Remaining Work                                                                                                                    |
+| ------------------------------ | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Image URL Mapping**          | Mapping exists         | Transformer currently skips images - need to integrate `scripts/image-url-mapping.json` (856 mappings)                            |
+| **Correction Transform**       | Tests exist            | `correction-integration.test.ts` - needs review                                                                                   |
+| **ValidationRule Integration** | Types + evaluator done | Need: 1) Add `validationRules` field to `QuestionVariation`, 2) Integrate in `answer-validator.ts`, 3) Add transformer conversion |
+
+#### ❌ NOT YET INTEGRATED
+
+| Component                              | Description                                          | Estimated Effort                      |
+| -------------------------------------- | ---------------------------------------------------- | ------------------------------------- |
+| **Transformer Image Support**          | Use image-url-mapping.json in transformer            | ~50 lines                             |
+| **testAnswerss → ValidationRule**      | Convert 8 questions' custom validation patterns      | ~100 lines (transformer + type field) |
+| **ValidationRule in answer-validator** | Call `evaluateRule()` when `validationRules` present | ~30 lines                             |
+
+### Test Summary
+
+```
+✅ validation-rule-evaluator.test.ts: 71 tests PASS
+✅ constraint-validators.test.ts: 101 tests PASS
+✅ syntax-converter.test.ts: 35 tests PASS
+✅ answer-validator.test.ts: 32+ tests PASS
+✅ Build: PASS
+```
+
+### Remaining Work Priority
+
+#### HIGH PRIORITY (Blocks full migration)
+
+1. **Image Path Integration** - Update transformer to use `image-url-mapping.json`
+   - File: `src/lib/migration/question-transformer.ts`
+   - Lines 830-833 currently skip images
+
+#### MEDIUM PRIORITY
+
+2. **testAnswerss to ValidationRule Migration** - 8 questions need conversion
+   - Types fully defined in `src/lib/questions/types.ts` (lines 580-650)
+   - Evaluator implemented in `validation-rule-evaluator.ts`
+   - Just need to update transformer to convert patterns
+
+#### LOW PRIORITY (Polish)
+
+3. **Correction System Enhancement** - Full unification of correctionFormats/correctionDetailss
+4. **HMS Time Edge Cases** - Already supported, may need additional testing
+
+### File Summary
+
+| File                                             | Lines       | Role                     | Status                     |
+| ------------------------------------------------ | ----------- | ------------------------ | -------------------------- |
+| `src/lib/questions/validation-rule-evaluator.ts` | 665         | Typed rule evaluation    | ✅ Complete                |
+| `src/lib/questions/constraint-validators.ts`     | ~300        | 5 constraint validators  | ✅ Complete                |
+| `src/lib/questions/feedback.ts`                  | ~30         | French feedback messages | ✅ Complete                |
+| `src/lib/questions/units/`                       | ~150KB      | Unit validation system   | ✅ Complete                |
+| `src/lib/utils/answer-validator.ts`              | ~500        | Main validation pipeline | ✅ Complete                |
+| `src/lib/migration/question-transformer.ts`      | ~1000       | Migration transformer    | ⚠️ Needs image integration |
+| `scripts/image-url-mapping.json`                 | 856 entries | Image path mapping       | ✅ Ready to use            |
+
+### Next Steps
+
+1. **Integrate image URL mapping** in transformer (~30 mins)
+2. **Complete ValidationRule integration**:
+   - Add `validationRules?: ValidationRule[]` field to `QuestionVariation` type
+   - Add transformer logic to convert `testAnswerss` patterns to typed rules
+   - Integrate `evaluateRule()` call in `answer-validator.ts`
+3. **Run full migration test** on all 633 questions
+4. **Update documentation** to reflect final state
+
+### ValidationRule Integration Details
+
+The evaluator (`validation-rule-evaluator.ts`) is **complete and tested** but not wired up:
+
+```typescript
+// 1. Add to QuestionVariation (types.ts line ~204)
+export interface QuestionVariation {
+	// ... existing fields ...
+	validationRules?: ValidationRule[]; // ADD THIS
+}
+
+// 2. In answer-validator.ts, add check:
+if (instance.validationRules?.length) {
+	const ctx = createEvaluationContext(resolvedVariables, userAnswer);
+	const result = evaluateRules(instance.validationRules, ctx);
+	if (!result.valid) return { isCorrect: false, feedback: result.reason };
+}
+
+// 3. In transformer, convert patterns like:
+// "&answer!=1 && mod(&1*&2; &answer)=0"
+// → { type: 'divisor', dividend: '{{a}}*{{b}}' } + exclusions
+```
 
 ---
 
