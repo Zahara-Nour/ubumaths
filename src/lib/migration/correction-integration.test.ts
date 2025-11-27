@@ -329,11 +329,11 @@ describe('Correction Integration', () => {
 				};
 
 				// This will be processed but not exposed in current implementation
-				const _result = testTransformCorrection(undefined, format, warnings, stats);
+				// Note: testTransformCorrection only returns steps, not feedback, so result may be undefined
+				testTransformCorrection(undefined, format, warnings, stats);
 
-				// Since feedback isn't exposed yet, we just verify it doesn't crash
-				// and that stats are tracked (result stored for future use when feedback is exposed)
-				expect(_result).toBeDefined();
+				// Since feedback isn't exposed yet through variation.correction,
+				// we just verify stats are tracked (conversion happened internally)
 				expect(stats.correctionConversions).toBeGreaterThan(0);
 			});
 
