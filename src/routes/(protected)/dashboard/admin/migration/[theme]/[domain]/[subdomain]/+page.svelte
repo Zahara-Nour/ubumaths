@@ -17,8 +17,10 @@
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { Separator } from '$lib/components/ui/separator';
 	import QuestionCard from '$lib/components/migration/QuestionCard.svelte';
+	import QuestionCompareView from '$lib/components/migration/QuestionCompareView.svelte';
 	import { AlertCircle, AlertTriangle, CheckCircle2, Home, Layers } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
@@ -27,6 +29,10 @@
 	// Filter state
 	type FilterType = 'all' | 'clean' | 'warnings' | 'errors';
 	let activeFilter = $state<FilterType>('all');
+
+	// Selected question for detail view
+	let selectedQuestion = $state<(typeof data.questions)[0] | null>(null);
+	let dialogOpen = $state(false);
 
 	// Filtered questions
 	const filteredQuestions = $derived.by(() => {
@@ -43,10 +49,16 @@
 		}
 	});
 
-	// Handle question click (for now, just log - will implement detail view later)
+	// Handle question click - open detail dialog
 	function handleQuestionClick(question: (typeof data.questions)[0]) {
-		// TODO: Open question review modal or navigate to detail page
-		console.log('Question clicked:', question.globalIndex);
+		selectedQuestion = question;
+		dialogOpen = true;
+	}
+
+	// Close dialog
+	function closeDialog() {
+		dialogOpen = false;
+		selectedQuestion = null;
 	}
 
 	// Navigate back
@@ -217,3 +229,36 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Question Detail Dialog -->
+<Dialog.Root bind:open={dialogOpen}>
+	<Dialog.Content class="max-h-[90vh] max-w-5xl overflow-y-auto">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center gap-2">
+				{#if selectedQuestion}
+					<span>Question #{selectedQuestion.globalIndex}</span>
+					<span class="text-muted-foreground">-</span>
+					<span class="text-muted-foreground">Niveau {selectedQuestion.level}</span>
+				{/if}
+			</Dialog.Title>
+			<Dialog.Description>
+				{#if selectedQuestion}
+					{selectedQuestion.question.description}
+				{/if}
+			</Dialog.Description>
+		</Dialog.Header>
+
+		{#if selectedQuestion}
+			<QuestionCompareView
+				original={selectedQuestion.question}
+				transformed={selectedQuestion.transformed}
+				warnings={selectedQuestion.warnings}
+				errors={selectedQuestion.errors}
+			/>
+		{/if}
+
+		<Dialog.Footer>
+			<Button variant="outline" onclick={closeDialog}>Fermer</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
