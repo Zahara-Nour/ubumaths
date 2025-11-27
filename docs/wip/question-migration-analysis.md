@@ -1759,6 +1759,279 @@ if (instance.validationRules?.length) {
 
 ---
 
+## 24. VERIFIED IMPLEMENTATION STATUS (2025-11-27 Session)
+
+### Deep Code Analysis Summary
+
+This section documents a thorough code-level verification of what's actually implemented vs what's claimed in earlier sections.
+
+### ✅ FULLY IMPLEMENTED & TESTED
+
+| Component                    | File                             | Lines       | Tests     | Status                                  |
+| ---------------------------- | -------------------------------- | ----------- | --------- | --------------------------------------- |
+| **ValidationRule Types**     | `types.ts`                       | 580-685     | -         | 7 rule types defined                    |
+| **ValidationRule Evaluator** | `validation-rule-evaluator.ts`   | ~400        | 71 tests  | All rule types implemented              |
+| **Constraint Validators**    | `constraint-validators.ts`       | ~300        | 101 tests | spaces, products, brackets, zeros, form |
+| **Syntax Converter**         | `syntax-converter.ts`            | ~500        | 35 tests  | 100% pattern coverage                   |
+| **Unit Validation**          | `units/`                         | ~150KB      | Extensive | Full SI units, HMS, conversions         |
+| **Image Migration**          | Script completed                 | -           | -         | 214/214 → 34.6% reduction               |
+| **URL Mappings**             | `scripts/image-url-mapping.json` | 856 entries | -         | 4 key formats per image                 |
+
+### ❌ NOT YET INTEGRATED (Verified Missing)
+
+#### 1. QuestionVariation Type - Missing `validationRules` field
+
+**Location:** `src/lib/questions/types.ts` lines 172-204
+
+**Current State:**
+
+```typescript
+export interface QuestionVariation {
+	statement: TemplateMarkdown;
+	variables?: QuestionVariable[];
+	answer: string | string[];
+	correction?: TemplateMarkdown;
+	blanks?: { position: number; expectedAnswer: string }[];
+	choices?: { content: TemplateMarkdown; isCorrect: boolean }[];
+	// ❌ MISSING: validationRules?: ValidationRule[];
+}
+```
+
+**Action Required:** Add `validationRules?: ValidationRule[];` to `QuestionVariation` interface.
+
+#### 2. Image URL Mapping - Transformer skips images
+
+**Location:** `src/lib/migration/question-transformer.ts` lines 829-833
+
+**Current State:**
+
+```typescript
+if (options?.skipImages) {
+	// Currently skipping images entirely
+}
+```
+
+**Action Required:**
+
+- Load `scripts/image-url-mapping.json`
+- Replace old paths with new WebP URLs
+- Inject `![description]({{imageBase}}/path.webp){size=medium}` into statement
+
+#### 3. ValidationRule in answer-validator - Not wired up
+
+**Location:** `src/lib/utils/answer-validator.ts`
+
+**Current State:** No import of `evaluateRule`, no call to validation-rule-evaluator
+
+**Action Required:**
+
+```typescript
+import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
+
+// In validateAnswer():
+if (instance.validationRules?.length) {
+	const ctx: EvaluationContext = {
+		variables: resolvedVariables,
+		answer: userAnswer.toString(),
+		numericAnswer: Number(userAnswer)
+	};
+	for (const rule of instance.validationRules) {
+		const result = evaluateRule(rule, ctx);
+		if (!result.valid) return { isCorrect: false, feedback: result.reason };
+	}
+}
+```
+
+#### 4. testAnswerss → ValidationRule Conversion
+
+**Location:** Transformer needs new conversion logic
+
+**Current State:** `testAnswerss` patterns not being converted
+
+**8 Question Patterns to Convert:**
+
+```javascript
+// Pattern 1: Divisor validation (4 questions)
+"&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0"
+→ { type: 'divisor', dividend: '{{a}}*{{b}}', excludeValues: ['1', '{{a}}*{{b}}'] }
+
+// Pattern 2: Exact equality (3 questions)
+"&answer=1/&1"
+→ { type: 'equivalent', expression: '1/{{a}}' }
+
+// Pattern 3: Equation root (1 question)
+"(&answer)^2-(&1+(&2))*(&answer)+(&1)*(&2)=0"
+→ { type: 'equation_root', equation: 'x^2-({{a}}+{{b}})*x+{{a}}*{{b}}=0' }
+```
+
+### Implementation Effort Estimate
+
+| Task                                       | Files       | Lines          | Priority |
+| ------------------------------------------ | ----------- | -------------- | -------- |
+| Add `validationRules` to QuestionVariation | 1           | 3              | High     |
+| Wire up evaluateRule in answer-validator   | 1           | ~30            | High     |
+| Image URL mapping in transformer           | 1           | ~50            | Medium   |
+| testAnswerss pattern conversion            | 1           | ~100           | Medium   |
+| **Total**                                  | **3 files** | **~180 lines** |          |
+
+### Quick Win Checklist
+
+```bash
+# 1. Add validationRules field to QuestionVariation (types.ts:204)
+validationRules?: ValidationRule[];
+
+# 2. Add validationRules field to QuestionInstance (types.ts:381)
+validationRules?: ValidationRule[];
+
+# 3. Import and wire up in answer-validator.ts
+# See code snippet above
+
+# 4. Test with:
+pnpm test:unit -- validation-rule-evaluator
+pnpm check
+pnpm build
+```
+
+### Remaining Test Coverage
+
+| Component                         | Tests | Status     |
+| --------------------------------- | ----- | ---------- |
+| validation-rule-evaluator.test.ts | 71    | ✅ Passing |
+| constraint-validators.test.ts     | 101   | ✅ Passing |
+| syntax-converter.test.ts          | 35    | ✅ Passing |
+| answer-validator.test.ts          | 32+   | ✅ Passing |
+| Build                             | -     | ✅ Passing |
+
+---
+
+## 25. Implementation Completed (2025-11-27)
+
+> **Session Summary:** All remaining integration work from Section 24 has been completed.
+
+### Completed Tasks
+
+#### 1. ValidationRules Field Added to Types ✅
+
+**File:** `src/lib/questions/types.ts`
+
+```typescript
+// Line 213 - QuestionVariation interface
+validationRules?: ValidationRule[];
+
+// Line 435 - QuestionInstance interface
+validationRules?: ValidationRule[];
+```
+
+#### 2. evaluateRule Wired Up in answer-validator ✅
+
+**File:** `src/lib/utils/answer-validator.ts`
+
+- Added imports for `ValidationRule`, `evaluateRule`, `EvaluationContext`
+- Added `evaluateValidationRules()` helper function (lines 26-52)
+- Integrated at start of `validateAnswer()` function (lines 183-199)
+- Fixed type error: `String(userAnswer[0])` for array access
+
+#### 3. Image URL Mapping Integration ✅
+
+**File:** `src/lib/migration/question-transformer.ts`
+
+Added:
+
+- `ImageUrlMapping` type (line 77)
+- `lookupImageUrl()` function - tries multiple path formats
+- `convertImageToMarkdown()` function
+- Updated `convertStatement()` to accept images + mapping
+- Updated `convertChoices()` to use image mapping
+- Updated `createVariations()` to pass image mapping
+- Updated `transformQuestion()` options to accept `imageUrlMapping`
+- Updated `transformQuestionBatch()` options and summary stats
+- Added `imagesConverted` and `imagesMissing` to `TransformStats`
+
+#### 4. testAnswerss to ValidationRule Conversion ✅
+
+**File:** `src/lib/migration/question-transformer.ts`
+
+Added (lines 743-928):
+
+- `convertTestAnswers()` - converts array of test answer expressions
+- `parseTestAnswerExpression()` - parses individual expressions to ValidationRule
+- `convertTestAnswerSyntax()` - converts old syntax to new format
+- `convertVariableReference()` - converts `&1` → `{{var1}}`
+
+**Pattern Recognition:**
+| Old Pattern | Converted To |
+|-------------|--------------|
+| `&answer>0` | `PredicateRule { predicate: 'isPositive' }` |
+| `&answer>=0` | `RangeRule { min: '0', max: 'Infinity' }` |
+| `&answer<0` | `PredicateRule { predicate: 'isNegative' }` |
+| `mod(&1;&answer)=0` | `DivisorRule { dividend: '{{var1}}' }` |
+| Complex expressions | `CustomExpressionRule { expression: '...' }` |
+
+### Files Modified
+
+| File                                               | Changes                                                                                 |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `src/lib/questions/types.ts`                       | Added `validationRules` to QuestionVariation (line 213) and QuestionInstance (line 435) |
+| `src/lib/utils/answer-validator.ts`                | Added imports, `evaluateValidationRules()`, integration in `validateAnswer()`           |
+| `src/lib/migration/question-transformer.ts`        | Added image URL mapping support + testAnswerss conversion (~190 lines)                  |
+| `src/lib/migration/correction-integration.test.ts` | Added `imagesConverted`, `imagesMissing` to mock stats                                  |
+
+### Test Status
+
+All tests passing:
+
+- `validation-rule-evaluator.test.ts`: 71 tests ✅
+- `constraint-validators.test.ts`: 101 tests ✅
+- `answer-validator.test.ts`: 32+ tests ✅
+- `correction-integration.test.ts`: all tests ✅
+- Migration tests: all passing ✅
+- TypeScript check: No errors in transformer/validator files ✅
+
+### Usage Examples
+
+**Using Image URL Mapping in Batch Transform:**
+
+```typescript
+import imageMapping from 'scripts/image-url-mapping.json';
+
+const { results, summary } = transformQuestionBatch(oldQuestions, {
+	imageUrlMapping: imageMapping as ImageUrlMapping
+});
+
+console.log(`Images converted: ${summary.imagesConverted}`);
+console.log(`Images missing: ${summary.imagesMissing}`);
+```
+
+**How ValidationRules Work at Runtime:**
+
+```typescript
+// In answer-validator.ts validateAnswer():
+if (instance.validationRules?.length > 0) {
+	const ctx = {
+		variables: buildVariablesFromResolved(instance.resolvedVariables),
+		answer: userAnswerStr,
+		numericAnswer: Number(userAnswerStr)
+	};
+
+	for (const rule of instance.validationRules) {
+		const result = evaluateRule(rule, ctx);
+		if (!result.valid) {
+			return { isCorrect: false, feedback: result.reason };
+		}
+	}
+	return { isCorrect: true };
+}
+```
+
+### What Remains
+
+1. **Full migration run** - Run transformer on all 633 questions with image mapping
+2. **Database import** - Import transformed questions to Supabase
+3. **UI integration** - Ensure question display handles new image URLs
+4. **Manual review** - Review questions with custom validation rules
+
+---
+
 ## Sources
 
 - [Canonical Form Guide](https://mathlive.io/compute-engine/guides/canonical-form/)
