@@ -22,6 +22,7 @@ import type {
 	OldGrade,
 	Choice,
 	CorrectionDetail,
+	CorrectionFormat,
 	Variables,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	VariableName
@@ -32,6 +33,7 @@ import type {
 	QuestionType,
 	QuestionVariation,
 	QuestionVariable,
+	QuestionCorrection,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	PrecisionType,
 	AlgebraicTransformType
@@ -56,6 +58,8 @@ import {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { convertTinyCASToNew, type ConversionResult } from './syntax-converter';
+import { convertPlaceholders } from './placeholder-converter';
+import { convertConditionals } from './conditional-converter';
 
 // ============================================================================
 // RESULT TYPES
@@ -96,6 +100,9 @@ export interface TransformStats {
 
 	/** Number of validation options mapped */
 	optionsMapped: number;
+
+	/** Number of correction syntax conversions (placeholders + conditionals) */
+	correctionConversions: number;
 
 	/** Question type detected */
 	detectedType: string;
@@ -375,9 +382,117 @@ function convertChoices(
 // ============================================================================
 
 /**
- * Convert correction details to TemplateMarkdown string
+ * Apply all legacy syntax conversions to a text string
+ *
+ * Conversion order:
+ * 1. TinyCAS syntax (variable references, evaluations)
+ * 2. Placeholder syntax (&sol, &answer, &expression, etc.)
+ * 3. Conditional syntax (@@condition ?? text@@)
+ *
+ * @param text - The text to convert
+ * @param warnings - Array to collect conversion warnings
+ * @returns The converted text with all legacy syntax transformed to new format
  */
-function convertCorrection(
+function convertLegacySyntax(text: string, warnings: string[]): string {
+	if (!text) return text;
+
+	// Step 1: Convert TinyCAS syntax
+	const casResult = convertTinyCASToNew(text);
+	let converted = text;
+
+	if (!casResult.success) {
+		warnings.push(`TinyCAS conversion warning: ${casResult.errors?.join(', ')}`);
+	} else {
+		converted = casResult.converted || text;
+		if (casResult.warnings) {
+			warnings.push(...casResult.warnings.map((w) => `TinyCAS: ${w}`));
+		}
+	}
+
+	// Step 2: Convert placeholder syntax (&sol, &answer, etc.)
+	const placeholderResult = convertPlaceholders(converted);
+	converted = placeholderResult.converted;
+
+	// Step 3: Convert conditional syntax (@@cond ?? text@@)
+	const conditionalResult = convertConditionals(converted);
+	converted = conditionalResult.converted;
+
+	return converted;
+}
+
+/**
+ * Transform old correction fields to unified QuestionCorrection
+ *
+ * Maps:
+ * - correctionFormats.correct -> feedback.correct
+ * - correctionFormats.uncorrect -> feedback.incorrect
+ * - correctionDetailss -> steps
+ *
+ * @param correctionDetails - Old correction details array (step-by-step explanations)
+ * @param correctionFormat - Old correction format (feedback messages)
+ * @param warnings - Array to collect conversion warnings
+ * @param stats - Statistics object to track conversions
+ * @returns QuestionCorrection object or undefined if nothing to convert
+ */
+function transformCorrection(
+	correctionDetails: CorrectionDetail[] | undefined,
+	correctionFormat: CorrectionFormat | undefined,
+	warnings: string[],
+	stats: TransformStats
+): QuestionCorrection | undefined {
+	const correction: QuestionCorrection = {};
+	let conversionCount = 0;
+
+	// Transform feedback from correctionFormats
+	if (correctionFormat) {
+		correction.feedback = {};
+
+		if (correctionFormat.correct?.length) {
+			// Convert first correct message with all syntax converters
+			const converted = convertLegacySyntax(correctionFormat.correct[0], warnings);
+			correction.feedback.correct = templateMarkdown(converted);
+			conversionCount++;
+		}
+
+		if (correctionFormat.uncorrect?.length) {
+			// Convert first incorrect message with all syntax converters
+			const converted = convertLegacySyntax(correctionFormat.uncorrect[0], warnings);
+			correction.feedback.incorrect = templateMarkdown(converted);
+			conversionCount++;
+		}
+
+		// Remove feedback object if empty
+		if (!correction.feedback.correct && !correction.feedback.incorrect) {
+			delete correction.feedback;
+		}
+	}
+
+	// Transform steps from correctionDetailss
+	if (correctionDetails?.length) {
+		correction.steps = correctionDetails.map((detail) => {
+			const converted = convertLegacySyntax(detail.text, warnings);
+			conversionCount++;
+			return templateMarkdown(converted);
+		});
+	}
+
+	// Track conversion stats
+	stats.correctionConversions += conversionCount;
+
+	// Return undefined if nothing was converted
+	if (!correction.feedback && !correction.steps) {
+		return undefined;
+	}
+
+	return correction;
+}
+
+/**
+ * Convert correction details to TemplateMarkdown string
+ *
+ * @deprecated Use transformCorrection instead for full QuestionCorrection support
+ */
+function _convertCorrection(
 	correctionDetails: CorrectionDetail[] | undefined,
 	warnings: string[]
 ): TemplateMarkdown | undefined {
@@ -576,6 +691,8 @@ function createVariations(
 		const choices = oldQuestion.choicess?.[i] || oldQuestion.choicess?.[0];
 		const correctionDetails =
 			oldQuestion.correctionDetailss?.[i] || oldQuestion.correctionDetailss?.[0];
+		const correctionFormat =
+			oldQuestion.correctionFormats?.[i] || oldQuestion.correctionFormats?.[0];
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const answerField = oldQuestion.answerFields?.[i] || oldQuestion.answerFields?.[0];
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -593,8 +710,14 @@ function createVariations(
 		// Convert answer
 		const answer = convertAnswer(solutions, questionType, warnings);
 
-		// Convert correction
-		const correction = convertCorrection(correctionDetails, warnings);
+		// Transform correction using unified correction system
+		// This handles both correctionFormats (feedback) and correctionDetailss (steps)
+		const questionCorrection = transformCorrection(
+			correctionDetails,
+			correctionFormat,
+			warnings,
+			stats
+		);
 
 		// Create variation
 		const variation: QuestionVariation = {
@@ -607,8 +730,10 @@ function createVariations(
 			variation.variables = convertedVars;
 		}
 
-		if (correction) {
-			variation.correction = correction;
+		// For backward compatibility, convert QuestionCorrection steps to single TemplateMarkdown
+		// The full QuestionCorrection integration will be done in a later phase
+		if (questionCorrection?.steps?.length) {
+			variation.correction = templateMarkdown(questionCorrection.steps.join('\n\n'));
 		}
 
 		// Handle type-specific fields
@@ -691,6 +816,7 @@ export function transformQuestion(
 		variables: 0,
 		syntaxConversions: 0,
 		optionsMapped: 0,
+		correctionConversions: 0,
 		detectedType: '',
 		hasImages: false,
 		hasCustomValidation: false
