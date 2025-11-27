@@ -58,7 +58,7 @@
 			// Path format: "by-category/{theme}/{domain}/{subdomain}"
 			const parts = node.path.split('/');
 			if (parts.length >= 4) {
-				const [, , theme, domain, subdomain] = parts;
+				const [_byCategory, theme, domain, subdomain] = parts;
 				// Encode each part separately for URL
 				const encodedTheme = encodeURIComponent(theme);
 				const encodedDomain = encodeURIComponent(domain);
