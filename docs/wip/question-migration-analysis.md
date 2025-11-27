@@ -1050,6 +1050,593 @@ Only **unit validation** remains to be implemented:
 
 ---
 
+## 19. Unit Validation - DÉJÀ IMPLÉMENTÉ ✅
+
+### Découverte Majeure
+
+Le système d'unités est **déjà entièrement implémenté** dans le codebase !
+
+**Localisation:** `src/lib/questions/units/` (~150KB, 11 fichiers)
+**Documentation:** `docs/claude/units.md` (862 lignes)
+**Commit initial:** `78681c9403f7d75eb3681b3ff0eb6dcc4d535fb5`
+
+### Structure du Système
+
+| Fichier             | Taille | Rôle                                 |
+| ------------------- | ------ | ------------------------------------ |
+| `definitions.ts`    | 14KB   | Définitions des unités SI + préfixes |
+| `operations.ts`     | 22KB   | Opérations sur unités                |
+| `parser.ts`         | 22KB   | Parser LaTeX vers unités             |
+| `hms.ts`            | 15KB   | Gestion temps HMS                    |
+| `dimensional.ts`    | 16KB   | Analyse dimensionnelle               |
+| `validator.ts`      | 13KB   | Logique de validation                |
+| `ce-integration.ts` | 16KB   | Intégration ComputeEngine            |
+| `types.ts`          | 16KB   | Types TypeScript                     |
+| `tokenizer.ts`      | 11KB   | Tokenization LaTeX                   |
+| `index.ts`          | 5KB    | API publique                         |
+
+### Fonctionnalités Complètes
+
+**Unités supportées:**
+
+- Unités SI de base (m, kg, s, A, K, mol, cd)
+- Préfixes SI (nano à giga)
+- Unités dérivées (N, J, W, Pa, Hz, etc.)
+- Unités composées (m/s, km/h, kg·m²/s²)
+- Unités non-SI (min, h, L, t, ha)
+
+**Opérations:**
+
+- Parsing LaTeX depuis MathLive (`\mathrm{m}`, `\text{kg}`, etc.)
+- Conversion entre unités compatibles
+- Multiplication/division d'unités
+- Simplification automatique
+- Analyse dimensionnelle (vérifier cohérence)
+
+**Format HMS (Heures:Minutes:Secondes):**
+
+- Parsing depuis LaTeX (`2\text{h}30\text{min}15\text{s}`)
+- Formatage vers LaTeX
+- Arithmétique sur durées
+- Conversion en secondes et vice-versa
+
+**Messages d'erreur (en français):**
+
+```typescript
+'Unité manquante';
+'Unité incompatible (attendu: {expected}, reçu: {actual})';
+'Analyse dimensionnelle échouée';
+'Format HMS invalide';
+```
+
+### Intégration avec ComputeEngine
+
+Le système est intégré avec ComputeEngine via `ce-integration.ts`:
+
+- Extraction d'unités depuis expressions CE
+- Création d'expressions CE avec unités
+- Validation de cohérence dimensionnelle
+- Conversion automatique entre unités compatibles
+
+### Travail Restant
+
+**Très minime** - Intégration finale avec `answer-validator.ts`:
+
+1. Appeler `validateUnitAnswer()` pour questions avec unités
+2. Mapper `UnitValidationResult` vers `ValidationResult`
+3. Ajouter tests d'intégration (~50 lignes)
+
+**Impact:** Les 7 questions avec unités (HMS, €, km, m, dm, kg, L) sont **déjà supportées** par le système existant. Il suffit de brancher la validation dans le pipeline principal.
+
+---
+
+## 20. Typed ValidationRule Proposal (testAnswerss)
+
+### Problème Actuel
+
+Les `testAnswerss` dans l'ancien système utilisent des expressions arbitraires sans typage:
+
+```javascript
+// 8 questions utilisent des patterns comme:
+'&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0';
+'&answer > 0 && &answer < 10';
+'mod(&1; &answer)=0 && &answer!=1';
+```
+
+Cela pose des problèmes de:
+
+- **Type-safety**: Pas de validation statique
+- **Maintenabilité**: Expressions opaques
+- **Migration**: Difficile à analyser automatiquement
+- **UI**: Impossible de créer interface graphique
+
+### Proposition: Discriminated Union
+
+Créer des types explicites pour les patterns courants:
+
+```typescript
+type ValidationRule =
+	| DivisorRule
+	| MultipleRule
+	| RangeRule
+	| EquationRootRule
+	| EquivalenceRule
+	| PredicateRule
+	| CustomExpressionRule;
+
+interface DivisorRule {
+	type: 'divisor';
+	of: string; // Expression template: "{{a}}*{{b}}"
+	exclude?: string[]; // Valeurs interdites: ["1", "{{a}}*{{b}}"]
+}
+
+interface MultipleRule {
+	type: 'multiple';
+	of: string; // Doit être multiple de...
+}
+
+interface RangeRule {
+	type: 'range';
+	min?: string; // Peut référencer variables: "{{min}}"
+	max?: string;
+	inclusive?: boolean;
+}
+
+interface EquationRootRule {
+	type: 'equation_root';
+	equation: string; // "x^2 - 5x + 6 = 0"
+	// Vérifie que {{answer}} est racine
+}
+
+interface EquivalenceRule {
+	type: 'equivalent';
+	expression: string; // Doit être équivalent à...
+	strictForm?: boolean; // Forme exacte ou équivalence mathématique
+}
+
+interface PredicateRule {
+	type: 'predicate';
+	check: 'prime' | 'even' | 'odd' | 'positive' | 'negative' | 'integer';
+}
+
+interface CustomExpressionRule {
+	type: 'custom';
+	expression: string; // Escape hatch pour cas complexes legacy
+}
+```
+
+### Exemples de Migration
+
+| Ancien Pattern                                          | Nouveau Type                                                                     | Type Rule          |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------ |
+| `&answer!=1 && &answer!=&1*&2 && mod(&1*&2; &answer)=0` | `{ type: 'divisor', of: '{{a}}*{{b}}', exclude: ['1', '{{a}}*{{b}}'] }`          | `DivisorRule`      |
+| `mod(&1; &answer)=0 && &answer!=1`                      | `{ type: 'divisor', of: '{{a}}', exclude: ['1'] }`                               | `DivisorRule`      |
+| `&answer > 0 && &answer < 10`                           | `{ type: 'range', min: '0', max: '10', inclusive: false }`                       | `RangeRule`        |
+| `&answer=1/&1`                                          | `{ type: 'equivalent', expression: '1/{{a}}' }`                                  | `EquivalenceRule`  |
+| `(&answer)^2-(&1+(&2))*(&answer)+(&1)*(&2)=0`           | `{ type: 'equation_root', equation: 'x^2 - ({{a}}+{{b}})*x + {{a}}*{{b}} = 0' }` | `EquationRootRule` |
+
+### Patterns Identifiés (8 questions analysées)
+
+| Pattern Type       | Occurrences | Implementation Effort |
+| ------------------ | ----------- | --------------------- |
+| Divisor validation | 4           | Medium (mod check)    |
+| Exact equality     | 3           | Low (already works)   |
+| Range check        | 1           | Low (simple compare)  |
+| Equation root      | 1           | Medium (substitution) |
+| Custom expression  | 0           | N/A (fallback)        |
+
+### Bénéfices
+
+1. **Type-safe**: TypeScript vérifie la structure
+2. **UI-friendly**: Peut générer formulaires automatiquement
+3. **Migration-friendly**: Patterns courants identifiables
+4. **Backwards compatible**: `CustomExpressionRule` pour cas complexes
+5. **Testable**: Chaque rule type peut avoir ses propres tests unitaires
+6. **Documentable**: Types explicites servent de documentation
+
+### Implémentation
+
+```typescript
+// src/lib/questions/validation-rules.ts
+export function evaluateRule(
+	rule: ValidationRule,
+	userAnswer: string,
+	variables: Record<string, string>
+): boolean {
+	switch (rule.type) {
+		case 'divisor':
+			return checkDivisor(userAnswer, rule.of, rule.exclude, variables);
+		case 'range':
+			return checkRange(userAnswer, rule.min, rule.max, rule.inclusive, variables);
+		case 'equation_root':
+			return checkEquationRoot(userAnswer, rule.equation, variables);
+		// ... autres types
+		case 'custom':
+			return evaluateExpression(rule.expression, { answer: userAnswer, ...variables });
+	}
+}
+```
+
+---
+
+## 21. Correction System Unification
+
+### État Actuel: Deux Systèmes Parallèles
+
+L'analyse de la base de données révèle une duplication:
+
+| Aspect            | `correctionFormats` | `correctionDetailss`             |
+| ----------------- | ------------------- | -------------------------------- |
+| **Usage**         | 11 questions (3%)   | 328 questions (97%)              |
+| **But**           | Feedback rapide     | Explication détaillée pas-à-pas  |
+| **Per-variant**   | Non (global)        | Oui (par variation)              |
+| **Conditionnels** | Non                 | Oui (`@@...??...@@`)             |
+| **Placeholders**  | `&sol`, `&answer`   | `&sol`, `&answer`, `&expression` |
+| **Complexité**    | Templates simples   | Markdown avec LaTeX              |
+
+### Problème
+
+- **Redondance**: Deux champs pour des cas d'usage qui se recoupent
+- **Confusion**: Quelle donnée utiliser en priorité ?
+- **Maintenance**: Deux systèmes à maintenir
+- **Migration**: Deux logiques de conversion différentes
+
+### Décision: Unifier en un Seul Champ
+
+Fusionner les deux systèmes en un seul champ `correction` plus structuré:
+
+```typescript
+interface QuestionCorrection {
+	// Feedback rapide (remplace correctionFormats)
+	feedback?: {
+		correct?: TemplateMarkdown; // Affiché si réponse correcte
+		incorrect?: TemplateMarkdown; // Affiché si réponse incorrecte
+		partial?: TemplateMarkdown; // Affiché si réponse partielle (unoptimal_form)
+	};
+
+	// Explication détaillée (remplace correctionDetailss)
+	steps?: TemplateMarkdown[]; // Array de strings markdown (pas d'objets type: 'image')
+}
+```
+
+### Note Importante: Pas de Champ `type`
+
+Notre système markdown gère déjà nativement **texte ET images** via la syntaxe:
+
+```markdown
+Étape 1: Calculer ${{a}} + {{b}} = {{eval:{{a}}+{{b}}}}$
+
+![Droite graduée]({{imageBase}}/graduee.webp){size=medium}
+
+Conclusion: La réponse est ${{solution}}$.
+```
+
+**Donc pas besoin de** `{ type: 'image', url: '...' }` - le markdown suffit !
+
+### Migration des Placeholders
+
+Harmoniser la syntaxe entre anciens et nouveaux placeholders:
+
+| Ancien Placeholder  | Nouveau Placeholder | Contexte                     |
+| ------------------- | ------------------- | ---------------------------- |
+| `&sol`              | `{{solution}}`      | Réponse attendue             |
+| `&answer`           | `{{answer}}`        | Réponse de l'utilisateur     |
+| `&expression`       | `{{expression}}`    | Expression mathématique      |
+| `&solution[0]`      | `{{solution:0}}`    | Première solution (multi)    |
+| `&solution[1]`      | `{{solution:1}}`    | Deuxième solution (multi)    |
+| `@@cond ?? text @@` | `{{if:cond\|text}}` | Conditionnel (déjà supporté) |
+
+### Exemples de Migration
+
+**Cas 1: correctionFormats simple**
+
+```javascript
+// ANCIEN (correctionFormats)
+{
+	correctionFormats: ['La bonne réponse est &sol'];
+}
+
+// NOUVEAU
+{
+	correction: {
+		feedback: {
+			incorrect: 'La bonne réponse est {{solution}}';
+		}
+	}
+}
+```
+
+**Cas 2: correctionDetailss avec étapes**
+
+```javascript
+// ANCIEN (correctionDetailss)
+{
+	correctionDetailss: [
+		[
+			'Étape 1: On calcule &1 + &2 = [_&1+&2_]',
+			'Étape 2: On multiplie par 3: [_(&1+&2)*3_] = &sol',
+			'Conclusion: La réponse est &sol'
+		]
+	];
+}
+
+// NOUVEAU
+{
+	correction: {
+		steps: [
+			'Étape 1: On calcule ${{a}} + {{b}} = {{eval:{{a}}+{{b}}}}$',
+			'Étape 2: On multiplie par 3: ${{eval:({{a}}+{{b}})*3}} = {{solution}}$',
+			'Conclusion: La réponse est ${{solution}}$'
+		];
+	}
+}
+```
+
+**Cas 3: Avec conditions et feedback**
+
+```javascript
+// ANCIEN
+{
+  correctionFormats: ['Bravo, la réponse est &sol'],
+  correctionDetailss: [
+    [
+      '@@&1 > 0 ?? On commence avec un nombre positif: &1 @@',
+      'La réponse finale est &sol'
+    ]
+  ]
+}
+
+// NOUVEAU
+{
+  correction: {
+    feedback: {
+      correct: 'Bravo, la réponse est {{solution}}'
+    },
+    steps: [
+      '{{if:{{a}}>0|On commence avec un nombre positif: {{a}}}}',
+      'La réponse finale est {{solution}}'
+    ]
+  }
+}
+```
+
+### Bénéfices de l'Unification
+
+1. **Simplicité**: Un seul champ à comprendre
+2. **Flexibilité**: Peut avoir feedback ET étapes
+3. **Cohérence**: Même syntaxe de templates partout
+4. **Type-safety**: Structure TypeScript claire
+5. **Migration simple**: Conversion mécanique possible
+6. **Pas de duplication**: Markdown gère texte + images nativement
+
+### Migration Script
+
+Le transformer peut détecter et convertir automatiquement:
+
+```typescript
+function migrateCorrectionSystem(oldQuestion: OldQuestion): QuestionCorrection | undefined {
+	const correction: QuestionCorrection = {};
+
+	// Migrer correctionFormats → feedback
+	if (oldQuestion.correctionFormats?.length > 0) {
+		correction.feedback = {
+			incorrect: convertPlaceholders(oldQuestion.correctionFormats[0])
+		};
+	}
+
+	// Migrer correctionDetailss → steps
+	if (oldQuestion.correctionDetailss?.length > 0) {
+		correction.steps = oldQuestion.correctionDetailss[0].map(convertPlaceholders);
+	}
+
+	return Object.keys(correction).length > 0 ? correction : undefined;
+}
+
+function convertPlaceholders(text: string): string {
+	return text
+		.replace(/&sol/g, '{{solution}}')
+		.replace(/&answer/g, '{{answer}}')
+		.replace(/&expression/g, '{{expression}}')
+		.replace(/&(\d+)/g, '{{$1}}') // &1 → {{1}}
+		.replace(/\[_(.*?)_\]/g, '{{eval:$1}}') // [_expr_] → {{eval:expr}}
+		.replace(/@@(.*?)\?\?(.*?)@@/g, '{{if:$1|$2}}'); // @@cond??text@@ → {{if:cond|text}}
+}
+```
+
+---
+
+## 22. Image Migration - WebP Simple Strategy
+
+### Contexte: Volume Modeste
+
+Analyse de la base de données:
+
+- **12 questions** avec images (1.9% du total)
+- **157 images** au total
+- Formats actuels: Principalement PNG
+- Tailles variées: petites icônes à diagrammes moyens
+
+### Décision: Pas de CDN, Utiliser Système Existant
+
+**Pourquoi ?**
+
+1. **Volume trop faible** pour justifier un CDN externe (Cloudinary, Imgix)
+2. **Système existant fonctionnel** dans Supabase Storage
+3. **Performance suffisante** pour 197 images (impact minimal)
+4. **Simplicité** - pas de dépendance externe supplémentaire
+
+### Format Choisi: WebP
+
+**Avantages:**
+
+- **Compression ~3x meilleure** que PNG (sans perte visible)
+- **Support navigateur 97%+** (tous navigateurs modernes)
+- **Qualité préservée** pour diagrammes et textes
+- **Intégration native** dans notre système markdown
+
+**Comparaison:**
+
+| Format | Taille moyenne | Support | Qualité diagrammes |
+| ------ | -------------- | ------- | ------------------ |
+| PNG    | 100% (base)    | 100%    | Parfaite           |
+| WebP   | ~30%           | 97%     | Parfaite           |
+| AVIF   | ~20%           | 80%     | Parfaite           |
+| JPEG   | ~50%           | 100%    | Mauvaise (texte)   |
+
+**Verdict:** WebP = meilleur ratio qualité/compatibilité/compression
+
+### Architecture de Migration
+
+**Stockage:** Supabase Storage (bucket existant: `question-images`)
+
+**Organisation:**
+
+```
+question-images/
+├── CE1/
+│   ├── addition-001.webp
+│   └── soustraction-002.webp
+├── CE2/
+│   └── multiplication-003.webp
+└── ...
+```
+
+**Syntaxe Markdown:** (déjà supportée)
+
+```markdown
+![Description]({{imageBase}}/CE1/addition-001.webp){size=medium}
+```
+
+Tailles disponibles: `small`, `medium`, `large`, `full`
+
+### Script de Migration
+
+```typescript
+// scripts/migrate-question-images.ts
+import sharp from 'sharp';
+import { createClient } from '@supabase/supabase-js';
+import { glob } from 'glob';
+import path from 'path';
+
+interface ImageMigrationResult {
+	oldPath: string;
+	newPath: string;
+	oldSize: number;
+	newSize: number;
+	reduction: number; // Percentage
+}
+
+async function migrateQuestionImages(sourceDir: string): Promise<ImageMigrationResult[]> {
+	const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+	const results: ImageMigrationResult[] = [];
+
+	// 1. Trouver toutes les images PNG
+	const imagePaths = await glob(`${sourceDir}/**/*.png`);
+
+	for (const imagePath of imagePaths) {
+		const oldSize = (await fs.stat(imagePath)).size;
+
+		// 2. Convertir en WebP
+		const webpBuffer = await sharp(imagePath)
+			.webp({
+				quality: 85, // Bon équilibre qualité/taille
+				effort: 6 // Compression optimale
+			})
+			.toBuffer();
+
+		// 3. Générer nouveau chemin
+		const relativePath = path.relative(sourceDir, imagePath);
+		const newPath = relativePath.replace(/\.png$/, '.webp');
+
+		// 4. Upload vers Supabase Storage
+		const { error } = await supabase.storage.from('question-images').upload(newPath, webpBuffer, {
+			contentType: 'image/webp',
+			cacheControl: '31536000' // 1 an (images statiques)
+		});
+
+		if (error) throw error;
+
+		// 5. Tracker résultats
+		results.push({
+			oldPath: imagePath,
+			newPath,
+			oldSize,
+			newSize: webpBuffer.length,
+			reduction: ((oldSize - webpBuffer.length) / oldSize) * 100
+		});
+	}
+
+	return results;
+}
+
+// Utilisation:
+const results = await migrateQuestionImages('extern/new-tinymath/apps/ubumaths/public/images');
+console.log(`Migrated ${results.length} images`);
+console.log(
+	`Average reduction: ${results.reduce((sum, r) => sum + r.reduction, 0) / results.length}%`
+);
+```
+
+### Mise à Jour des Questions
+
+Les références d'images dans l'ancien système sont stockées dans `images[]`:
+
+```javascript
+// ANCIEN
+{
+  images: ['/images/CE1/addition-001.png']
+}
+
+// Migration automatique dans transformer:
+function migrateImagePath(oldPath: string): string {
+  return oldPath.replace(/\.png$/, '.webp').replace(/^\/images\//, '');
+}
+
+// NOUVEAU (injecté dans statement)
+statement: `Observe le diagramme:\n\n![Diagramme]({{imageBase}}/CE1/addition-001.webp){size=medium}`
+```
+
+### Gestion des Tailles d'Images
+
+Notre système markdown supporte déjà les attributs de taille via `image-renderer.ts`:
+
+```markdown
+{size=small} → max-width: 300px
+{size=medium} → max-width: 600px (défaut)
+{size=large} → max-width: 900px
+{size=full} → max-width: 100%
+```
+
+### Performance
+
+**Avant (PNG):**
+
+- 157 images × ~50KB moyenne = ~7.85 MB total
+
+**Après (WebP @ 85% quality):**
+
+- 157 images × ~15KB moyenne = ~2.36 MB total
+- **Économie: ~5.5 MB (70% réduction)**
+
+**Impact utilisateur:**
+
+- Chargement 3× plus rapide
+- Moins de bande passante mobile
+- Meilleure expérience sur connexions lentes
+
+### Migration Plan
+
+1. **Audit images existantes** - Lister toutes les images dans `images[]`
+2. **Convertir en batch** - Script sharp pour tout convertir en WebP
+3. **Upload Supabase** - Upload vers `question-images` bucket
+4. **Update transformer** - Ajouter logique de conversion de paths
+5. **Test questions** - Vérifier rendu correct dans UI
+6. **Cleanup** - Supprimer anciennes PNG après validation
+
+**Estimation:** 1-2 jours de travail (incluant tests)
+
+---
+
 ## Sources
 
 - [Canonical Form Guide](https://mathlive.io/compute-engine/guides/canonical-form/)
