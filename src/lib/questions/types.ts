@@ -532,3 +532,150 @@ export interface ConstraintOptions {
 	/** Allow brackets around first negative term: (-5)+3 */
 	allowBracketsInFirstNegativeTerm?: boolean;
 }
+
+// ============================================================================
+// UNIFIED CORRECTION SYSTEM
+// ============================================================================
+
+/**
+ * Unified correction system for questions
+ *
+ * Replaces the old correctionFormats + correctionDetailss pattern.
+ * Uses TemplateMarkdown for all content (handles text, LaTeX, images).
+ *
+ * @example Simple feedback
+ * { feedback: { correct: 'Bravo!' } }
+ *
+ * @example With explanation steps
+ * { steps: ['Étape 1: {{expression}}', 'Étape 2: Résultat = {{solution}}'] }
+ *
+ * @example Complete correction
+ * {
+ *   feedback: {
+ *     correct: 'Excellent!',
+ *     incorrect: 'La réponse était {{solution}}'
+ *   },
+ *   steps: ['On pose...', 'On calcule...', 'Donc {{solution}}']
+ * }
+ */
+export interface QuestionCorrection {
+	feedback?: {
+		correct?: TemplateMarkdown;
+		incorrect?: TemplateMarkdown;
+		partial?: TemplateMarkdown;
+	};
+	steps?: TemplateMarkdown[];
+}
+
+// ============================================================================
+// DYNAMIC VALIDATION RULES
+// ============================================================================
+
+/**
+ * Validation rules for dynamic answer checking (testAnswerss replacement)
+ *
+ * These rules validate answers that can't be hardcoded because they depend
+ * on randomly generated values (e.g., "is answer a divisor of {{n}}?").
+ */
+export type ValidationRule =
+	| DivisorRule
+	| MultipleRule
+	| RangeRule
+	| EquationRootRule
+	| EquivalenceRule
+	| PredicateRule
+	| CustomExpressionRule;
+
+/**
+ * Rule: answer must be a divisor of the dividend
+ *
+ * @example { type: 'divisor', dividend: '{{n}}' }
+ */
+export interface DivisorRule {
+	type: 'divisor';
+	/** Expression for the dividend, e.g., '{{n}}' or '60' */
+	dividend: string;
+}
+
+/**
+ * Rule: answer must be a multiple of the base
+ *
+ * @example { type: 'multiple', base: '{{a}}' }
+ */
+export interface MultipleRule {
+	type: 'multiple';
+	/** Expression for the base, e.g., '{{a}}' */
+	base: string;
+}
+
+/**
+ * Rule: answer must be within a range
+ *
+ * @example { type: 'range', min: '1', max: '{{max}}', inclusive: true }
+ */
+export interface RangeRule {
+	type: 'range';
+	/** Minimum value expression */
+	min: string;
+	/** Maximum value expression */
+	max: string;
+	/** Whether bounds are inclusive (default: true) */
+	inclusive?: boolean;
+}
+
+/**
+ * Rule: answer must be a root of the equation
+ *
+ * @example { type: 'equation_root', equation: 'x^2 - {{sum}}*x + {{product}} = 0' }
+ */
+export interface EquationRootRule {
+	type: 'equation_root';
+	/** Equation expression, e.g., 'x^2 - {{sum}}*x + {{product}} = 0' */
+	equation: string;
+	/** Variable name in the equation (default: 'x') */
+	variable?: string;
+}
+
+/**
+ * Rule: answer must be equivalent to an expression
+ *
+ * @example { type: 'equivalent', expression: '{{a}}/{{b}}' }
+ */
+export interface EquivalenceRule {
+	type: 'equivalent';
+	/** Expression the answer must be equivalent to */
+	expression: string;
+}
+
+/**
+ * Rule: answer must satisfy a predicate
+ *
+ * @example { type: 'predicate', predicate: 'isPrime' }
+ */
+export interface PredicateRule {
+	type: 'predicate';
+	/** Predicate function to apply */
+	predicate:
+		| 'isPrime'
+		| 'isComposite'
+		| 'isEven'
+		| 'isOdd'
+		| 'isPositive'
+		| 'isNegative'
+		| 'isInteger';
+}
+
+/**
+ * Rule: custom expression for legacy or complex patterns
+ *
+ * This is a fallback for validation logic that doesn't fit other rule types.
+ *
+ * @example { type: 'custom', expression: 'gcd(answer, {{n}}) > 1', description: 'Answer shares a factor with n' }
+ */
+export interface CustomExpressionRule {
+	type: 'custom';
+	/** Raw expression to evaluate (legacy fallback) */
+	expression: string;
+	/** Human-readable description for debugging */
+	description?: string;
+}
