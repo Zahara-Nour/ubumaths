@@ -79,12 +79,15 @@
 	const newFields = $derived(
 		transformed
 			? {
-					name: transformed.name || '',
-					description: transformed.description || '',
-					enounce_template: transformed.enounce_template || '',
-					solution_template: transformed.solution_template || '',
-					validation_rules: transformed.validation_rules || [],
-					grade_level: transformed.grade_level || null
+					type: (transformed.type as string) || '',
+					title: (transformed.title as string) || '',
+					variations: (transformed.variations as unknown[]) || [],
+					grades: (transformed.grades as string[]) || [],
+					theme: (transformed.theme as string) || '',
+					domain: (transformed.domain as string) || '',
+					level: transformed.level as number | null,
+					status: (transformed.status as string) || '',
+					delay: transformed.delay as number | null
 				}
 			: null
 	);
@@ -173,51 +176,64 @@
 			</Card.Header>
 			<Card.Content class="space-y-4">
 				{#if newFields}
-					<!-- Name -->
+					<!-- Type -->
 					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">name</h4>
-						<p class="text-sm">{newFields.name}</p>
+						<h4 class="mb-1 text-sm font-medium text-muted-foreground">type</h4>
+						<p class="text-sm">{newFields.type}</p>
 					</div>
 
-					<!-- Description -->
-					{#if newFields.description}
+					<!-- Title -->
+					<div>
+						<h4 class="mb-1 text-sm font-medium text-muted-foreground">title</h4>
+						<p class="text-sm">{newFields.title}</p>
+					</div>
+
+					<!-- Grades -->
+					{#if newFields.grades.length > 0}
 						<div>
-							<h4 class="mb-1 text-sm font-medium text-muted-foreground">description</h4>
-							<p class="text-sm">{newFields.description}</p>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">grades</h4>
+							<p class="text-sm">{newFields.grades.join(', ')}</p>
 						</div>
 					{/if}
 
-					<!-- Grade Level -->
-					{#if newFields.grade_level !== null}
+					<!-- Theme / Domain / Level -->
+					<div class="grid grid-cols-3 gap-4">
 						<div>
-							<h4 class="mb-1 text-sm font-medium text-muted-foreground">grade_level</h4>
-							<p class="text-sm">{newFields.grade_level}e</p>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">theme</h4>
+							<p class="text-sm">{newFields.theme}</p>
 						</div>
-					{/if}
-
-					<!-- Enounce Template -->
-					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">enounce_template</h4>
-						<pre
-							class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{newFields.enounce_template}</pre>
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">domain</h4>
+							<p class="text-sm">{newFields.domain}</p>
+						</div>
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">level</h4>
+							<p class="text-sm">{newFields.level}</p>
+						</div>
 					</div>
 
-					<!-- Solution Template -->
-					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">solution_template</h4>
-						<pre
-							class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{newFields.solution_template}</pre>
+					<!-- Status / Delay -->
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">status</h4>
+							<p class="text-sm">{newFields.status}</p>
+						</div>
+						{#if newFields.delay}
+							<div>
+								<h4 class="mb-1 text-sm font-medium text-muted-foreground">delay</h4>
+								<p class="text-sm">{newFields.delay}s</p>
+							</div>
+						{/if}
 					</div>
 
-					<!-- Validation Rules -->
+					<!-- Variations -->
 					<div>
 						<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-							validation_rules ({Array.isArray(newFields.validation_rules)
-								? newFields.validation_rules.length
-								: 0})
+							variations ({newFields.variations.length})
 						</h4>
-						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-								newFields.validation_rules
+						<pre
+							class="max-h-60 overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+								newFields.variations
 							)}</pre>
 					</div>
 				{:else}
