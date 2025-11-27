@@ -65,8 +65,11 @@ const CONFIG = {
 	quality: 85,
 	// WebP compression effort (0-6) - higher = smaller files but slower
 	effort: 6,
-	// Batch size for uploads (to avoid rate limits)
-	batchSize: 10,
+	// Batch size for uploads (reduced to avoid network timeouts)
+	batchSize: 3,
+	// Retry settings for failed uploads
+	maxRetries: 3,
+	retryDelayMs: 2000,
 	// Output mapping file
 	mappingFile: 'scripts/image-url-mapping.json',
 	// Supported source formats
@@ -263,7 +266,14 @@ async function convertToWebP(sourcePath: string): Promise<Buffer | null> {
 // ============================================================================
 
 /**
- * Upload image buffer to Supabase Storage
+ * Delay helper for retry logic
+ */
+function delay(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Upload image buffer to Supabase Storage with retry logic
  * Returns public URL
  */
 async function uploadToSupabase(
@@ -271,25 +281,41 @@ async function uploadToSupabase(
 	buffer: Buffer,
 	targetPath: string
 ): Promise<string> {
-	// Upload to storage
-	const { error: uploadError } = await supabase.storage
-		.from(CONFIG.bucket)
-		.upload(targetPath, buffer, {
-			contentType: 'image/webp',
-			cacheControl: '31536000', // 1 year (immutable images)
-			upsert: true // Allow re-running script
-		});
+	let lastError: Error | null = null;
 
-	if (uploadError) {
-		throw new Error(`Upload failed: ${uploadError.message}`);
+	for (let attempt = 1; attempt <= CONFIG.maxRetries; attempt++) {
+		try {
+			// Upload to storage
+			const { error: uploadError } = await supabase.storage
+				.from(CONFIG.bucket)
+				.upload(targetPath, buffer, {
+					contentType: 'image/webp',
+					cacheControl: '31536000', // 1 year (immutable images)
+					upsert: true // Allow re-running script
+				});
+
+			if (uploadError) {
+				throw new Error(`Upload failed: ${uploadError.message}`);
+			}
+
+			// Get public URL
+			const {
+				data: { publicUrl }
+			} = supabase.storage.from(CONFIG.bucket).getPublicUrl(targetPath);
+
+			return publicUrl;
+		} catch (error) {
+			lastError = error instanceof Error ? error : new Error(String(error));
+
+			if (attempt < CONFIG.maxRetries) {
+				const waitTime = CONFIG.retryDelayMs * attempt; // Exponential backoff
+				console.log(`   ⚠️  Retry ${attempt}/${CONFIG.maxRetries} in ${waitTime}ms...`);
+				await delay(waitTime);
+			}
+		}
 	}
 
-	// Get public URL
-	const {
-		data: { publicUrl }
-	} = supabase.storage.from(CONFIG.bucket).getPublicUrl(targetPath);
-
-	return publicUrl;
+	throw lastError || new Error('Upload failed after retries');
 }
 
 // ============================================================================
