@@ -10,6 +10,14 @@
 
 ## Last Commit: 0c0b2c95
 
+### Phase 8: Image Upload to Supabase ✅
+
+- [x] Downloaded 214 images from old Supabase project
+- [x] Improved migration script with retry logic and reduced batch size
+- [x] Uploaded all 214 images to new Supabase bucket `question-images`
+- [x] Generated URL mapping (856 entries)
+- [x] Size reduction: 11.17 MB → 7.51 MB (34.6% avg)
+
 ---
 
 ## Completed Phases
@@ -125,6 +133,13 @@
 
 - `src/lib/migration/correction-integration.test.ts` - Fixed test expectation
 
+### Phase 8
+
+- `scripts/download-old-images.ts` - Script to download from old Supabase
+- `scripts/migrate-question-images.ts` - Added retry logic, reduced batch size
+- `scripts/image-url-mapping.json` - Generated URL mapping (856 entries)
+- `static/images/questions/` - Downloaded 214 source images
+
 ---
 
 ## Crash Recovery
@@ -150,5 +165,6 @@
 | Constraint validators  | 5/5 (133 tests) |
 | Unit validation        | DONE (~150KB)   |
 | testAnswerss questions | 8               |
-| Images a migrer        | 197             |
+| Images migrees         | 214/214 (100%)  |
 | Color references       | 683             |
+| Image size reduction   | 34.6% (3.65 MB) |
