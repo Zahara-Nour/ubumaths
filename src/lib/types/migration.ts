@@ -175,3 +175,88 @@ export interface PhaseCompletionStats {
 	duration: number; // in milliseconds
 	errors: ConversionError[];
 }
+
+// ============================================================================
+// Migration Dashboard Types (for UI tree navigation)
+// ============================================================================
+
+/**
+ * Subdomain data from manifest structure
+ */
+export interface SubdomainData {
+	levels: number[];
+	path: string;
+}
+
+/**
+ * Domain data - contains subdomains
+ */
+export interface DomainData {
+	[subdomain: string]: SubdomainData;
+}
+
+/**
+ * Theme data - contains domains
+ */
+export interface ThemeData {
+	[domain: string]: DomainData;
+}
+
+/**
+ * Top-level manifest structure
+ */
+export interface ManifestStructure {
+	[theme: string]: ThemeData;
+}
+
+/**
+ * Full migration manifest from export
+ */
+export interface MigrationManifest {
+	exportDate: string;
+	totalQuestions: number;
+	totalThemes: number;
+	totalDomains: number;
+	totalSubdomains: number;
+	successCount: number;
+	warningCount: number;
+	errorCount: number;
+	structure: ManifestStructure;
+}
+
+/**
+ * Progress tracking for a category
+ */
+export interface CategoryProgress {
+	total: number;
+	approved: number;
+	pending: number;
+	rejected: number;
+}
+
+/**
+ * Tree node for UI representation
+ */
+export interface TreeNode {
+	name: string;
+	type: 'theme' | 'domain' | 'subdomain';
+	path?: string;
+	levels?: number[];
+	levelCount: number;
+	children?: TreeNode[];
+	progress: CategoryProgress;
+}
+
+/**
+ * Migration statistics for dashboard
+ */
+export interface MigrationStats {
+	totalQuestions: number;
+	totalThemes: number;
+	totalDomains: number;
+	totalSubdomains: number;
+	successCount: number;
+	warningCount: number;
+	errorCount: number;
+	exportDate: string | null;
+}
