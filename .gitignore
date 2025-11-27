@@ -60,3 +60,4 @@ validation-audit.json
 supabase/.temp/
 # Downloaded question images (cached, actual images in Supabase)
 static/images/questions/
+data/
