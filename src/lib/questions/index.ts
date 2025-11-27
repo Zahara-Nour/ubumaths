@@ -53,3 +53,13 @@ export {
 	areEquivalent,
 	isValidLatex
 } from './compute-engine/wrapper';
+
+// Validation Rule Evaluator
+export {
+	evaluateRule,
+	evaluateRules,
+	createEvaluationContext,
+	numberTheory,
+	type EvaluationContext,
+	type EvaluationResult
+} from './validation-rule-evaluator';

@@ -6,9 +6,9 @@
 
 ---
 
-## Current Phase: 4 - Integration Correction Unifiee
+## Current Phase: 5 - Typed Validation Rules
 
-## Last Commit: 4bb0b88d
+## Last Commit: d9c97792
 
 ---
 
@@ -39,16 +39,17 @@
 - [x] Code review (sonnet) - no critical issues
 - [x] Commit: 4bb0b88d
 
+### Phase 4: Integration Correction Unifiee ✅
+
+- [x] convertLegacySyntax() chained conversion
+- [x] transformCorrection() unified transformer
+- [x] correction-integration.test.ts (51 tests)
+- [x] Code review (haiku) - no critical issues
+- [x] Commit: d9c97792
+
 ---
 
 ## Pending Phases
-
-### Phase 4: Integration Correction Unifiee
-
-- [ ] Extend question-transformer.ts with transformCorrection()
-- [ ] Tests d'integration
-- [ ] Code review
-- [ ] Commit
 
 ### Phase 5: Typed Validation Rules
 
