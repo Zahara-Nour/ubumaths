@@ -2,11 +2,13 @@
 
 ## Current State
 
-- **Phase**: 2/6 (In Progress)
-- **Last action**: Starting Phase 2 - Database Schema
+- **Phase**: 4/6 (In Progress)
+- **Last action**: Starting Phase 4 - Import/Rollback Scripts
 - **Commits**:
-  - 796dde34 (Phase 0)
-  - da107c15 (Phase 1)
+  - 796dde34 (Phase 0 - Extraction)
+  - da107c15 (Phase 1 - Export)
+  - 0dafe6df (Phase 2 - DB Schema)
+  - ca126ee8 (Phase 3 - UI & API)
 
 ## Completed Phases
 
