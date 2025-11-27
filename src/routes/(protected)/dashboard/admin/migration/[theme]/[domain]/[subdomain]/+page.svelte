@@ -29,7 +29,7 @@
 	let activeFilter = $state<FilterType>('all');
 
 	// Filtered questions
-	const filteredQuestions = $derived(() => {
+	const filteredQuestions = $derived.by(() => {
 		switch (activeFilter) {
 			case 'clean':
 				return data.questions.filter((q) => q.warnings.length === 0 && q.errors.length === 0);
@@ -198,7 +198,7 @@
 
 	<!-- Questions List -->
 	<div class="space-y-3">
-		{#each filteredQuestions() as question (question.globalIndex)}
+		{#each filteredQuestions as question (question.globalIndex)}
 			<QuestionCard {question} onclick={() => handleQuestionClick(question)} />
 		{:else}
 			<Card.Root>
@@ -210,9 +210,9 @@
 	</div>
 
 	<!-- Results Summary -->
-	{#if filteredQuestions().length > 0 && activeFilter !== 'all'}
+	{#if filteredQuestions.length > 0 && activeFilter !== 'all'}
 		<div class="text-center text-sm text-muted-foreground">
-			Affichage de {filteredQuestions().length} question{filteredQuestions().length > 1 ? 's' : ''} sur
+			Affichage de {filteredQuestions.length} question{filteredQuestions.length > 1 ? 's' : ''} sur
 			{data.questions.length}
 		</div>
 	{/if}
