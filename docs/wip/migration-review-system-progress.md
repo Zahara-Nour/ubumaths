@@ -2,51 +2,44 @@
 
 ## Current State
 
-- **Phase**: 1/6 (In Progress)
-- **Last action**: Starting Phase 1 - Export script
-- **Commit**: 796dde34 (Phase 0 completed)
+- **Phase**: 2/6 (In Progress)
+- **Last action**: Starting Phase 2 - Database Schema
+- **Commits**:
+  - 796dde34 (Phase 0)
+  - da107c15 (Phase 1)
 
-## Files Modified
+## Completed Phases
 
-- `scripts/migrate-questions-loader.ts` - Added `_migration` metadata to each question
-- `src/lib/migration/old-question-types.ts` - Added `MigrationMetadata` and `QuestionWithMigration` types
-- `.claude/old-questions.json` - Regenerated with 633 questions including hierarchy
+### Phase 0: Extraction Script
 
-## Decisions Made
+- Modified `scripts/migrate-questions-loader.ts` to preserve hierarchy
+- Added `_migration` metadata to each question
+- Added `MigrationMetadata` types to `old-question-types.ts`
+- Regenerated `.claude/old-questions.json` (633 questions)
 
-1. **Hierarchy preservation**: Each question now has `_migration` object with:
-   - `theme` - Top level category (e.g., "Entiers")
-   - `domain` - Mid level (e.g., "Apprivoiser")
-   - `subdomain` - Bottom level (e.g., "Ecriture")
-   - `level` - Position in subdomain array (0-indexed)
-   - `globalIndex` - Sequential counter (0-632)
+### Phase 1: Export Script
 
-2. **Type centralization**: Types defined in `old-question-types.ts` for reusability
+- Created `scripts/export-questions-for-review.ts`
+- Exports to `data/migration-output/export-YYYY-MM-DD/`
+- 633 questions exported (100% success)
+- 398 with warnings, 0 errors
+- Generates manifest.json, summary.md, reports
 
 ## Statistics
 
 - Total questions: 633
-- Themes: 12
-  - Entiers: 228
-  - Décimaux: 83
-  - Calcul littéral: 68
-  - Fractions: 58
-  - Grandeurs: 45
-  - Fonctions: 39
-  - Relatifs: 36
-  - Proportionnalité: 28
-  - Puissances: 21
-  - Suites: 15
-  - Racines carré: 10
-  - Probabilités: 2
+- Themes: 12 (Entiers: 228, Décimaux: 83, Calcul littéral: 68, etc.)
 
 ## Next Steps
 
-- Phase 1: Create export script for review (`scripts/export-questions-for-review.ts`)
-- Phase 2: Database schema for review workflow
+- **Phase 2**: Database schema for review workflow (IN PROGRESS)
+- Phase 3: UI de Review
+- Phase 4: Import/Rollback scripts
+- Phase 5: Tests
+- Phase 6: Quality checks
 
 ## To Resume
 
 1. Read this file to understand current state
-2. Continue with Phase 1: Export script
-3. Refer to plan: `.claude/plans/crispy-forging-glade.md`
+2. Refer to plan: `.claude/plans/crispy-forging-glade.md`
+3. Current phase: Database schema migration
