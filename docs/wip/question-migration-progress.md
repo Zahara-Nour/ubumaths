@@ -6,9 +6,9 @@
 
 ---
 
-## Current Phase: 3 - Convertisseurs Placeholders
+## Current Phase: 4 - Integration Correction Unifiee
 
-## Last Commit: e7a6c795
+## Last Commit: 4bb0b88d
 
 ---
 
@@ -32,17 +32,16 @@
 - [x] Code review (sonnet) - fixed templateMarkdown usage
 - [x] Commit: e7a6c795
 
+### Phase 3: Convertisseurs Placeholders ✅
+
+- [x] placeholder-converter.ts (61 tests)
+- [x] conditional-converter.ts (64 tests)
+- [x] Code review (sonnet) - no critical issues
+- [x] Commit: 4bb0b88d
+
 ---
 
 ## Pending Phases
-
-### Phase 3: Convertisseurs Placeholders
-
-- [ ] placeholder-converter.ts (`&sol` -> `{{solution}}`)
-- [ ] conditional-converter.ts (`@@cond ?? text@@` -> `{{if:cond|text}}`)
-- [ ] Tests unitaires
-- [ ] Code review
-- [ ] Commit
 
 ### Phase 4: Integration Correction Unifiee
 
@@ -98,10 +97,15 @@
 - `src/lib/questions/correction-placeholders.ts` - Placeholder parsing utilities
 - `src/lib/questions/__tests__/correction-types.test.ts` - 107 tests
 
+### Phase 3
+
+- `src/lib/migration/placeholder-converter.ts` - Legacy placeholder conversion
+- `src/lib/migration/conditional-converter.ts` - Legacy conditional conversion
+- `src/lib/migration/placeholder-converter.test.ts` - 61 tests
+- `src/lib/migration/conditional-converter.test.ts` - 64 tests
+
 ### Planned New Files
 
-- `src/lib/migration/placeholder-converter.ts` (Phase 3)
-- `src/lib/migration/conditional-converter.ts` (Phase 3)
 - `src/lib/questions/validation-rule-evaluator.ts` (Phase 5)
 - `scripts/migrate-question-images.ts` (Phase 6)
 
