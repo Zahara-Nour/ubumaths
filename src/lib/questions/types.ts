@@ -201,6 +201,16 @@ export interface QuestionVariation {
 		/** Whether this choice is correct */
 		isCorrect: boolean;
 	}[];
+
+	/**
+	 * Custom validation rules for testAnswers-style validation
+	 *
+	 * Used when the correct answer depends on generated variables
+	 * (e.g., "find a divisor of {{n}} other than 1")
+	 *
+	 * @see validation-rule-evaluator.ts for rule evaluation
+	 */
+	validationRules?: ValidationRule[];
 }
 
 // ============================================================================
@@ -417,6 +427,12 @@ export interface QuestionInstance {
 	}[];
 
 	multipleAnswers?: boolean;
+
+	/**
+	 * Custom validation rules (copied from variation)
+	 * Evaluated at validation time with resolved variables
+	 */
+	validationRules?: ValidationRule[];
 
 	// ---- Generation Metadata ----
 

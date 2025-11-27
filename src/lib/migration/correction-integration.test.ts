@@ -35,7 +35,9 @@ function createMockStats(): TransformStats {
 		correctionConversions: 0,
 		detectedType: '',
 		hasImages: false,
-		hasCustomValidation: false
+		hasCustomValidation: false,
+		imagesConverted: 0,
+		imagesMissing: 0
 	};
 }
 

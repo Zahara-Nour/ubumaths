@@ -14,7 +14,8 @@ import type {
 	ValidationStatus,
 	ConstraintId,
 	ConstraintMode,
-	ConstraintOptions
+	ConstraintOptions,
+	ValidationRule
 } from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
 import { evaluateExpression, areEquivalent } from '$lib/questions/compute-engine/wrapper';
@@ -27,6 +28,7 @@ import {
 } from '$lib/questions/constraint-validators';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
+import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -100,6 +102,57 @@ function applyConstraints(
 }
 
 // ============================================================================
+// VALIDATION RULES EVALUATION
+// ============================================================================
+
+/**
+ * Evaluate custom validation rules (testAnswers-style)
+ *
+ * Used for questions where the correct answer depends on generated variables
+ * (e.g., "find a divisor of n other than 1 and n itself")
+ *
+ * @param rules - Array of validation rules
+ * @param userAnswer - User's answer as string
+ * @param instance - Question instance with resolved variables
+ * @returns Validation result or undefined if all rules pass
+ */
+function evaluateValidationRules(
+	rules: ValidationRule[],
+	userAnswer: string,
+	instance: QuestionInstance
+): ValidationResult | undefined {
+	// Build context from resolved variables
+	const variables: Record<string, number | string> = {};
+	if (instance.resolvedVariables) {
+		for (const v of instance.resolvedVariables) {
+			// Try to parse as number, otherwise keep as string
+			const numValue = Number(v.value);
+			variables[v.name] = isNaN(numValue) ? v.value : numValue;
+		}
+	}
+
+	const ctx: EvaluationContext = {
+		variables,
+		answer: userAnswer,
+		numericAnswer: Number(userAnswer)
+	};
+
+	// Evaluate each rule
+	for (const rule of rules) {
+		const result = evaluateRule(rule, ctx);
+		if (!result.valid) {
+			return {
+				isCorrect: false,
+				feedback: result.reason || 'La réponse ne satisfait pas les critères demandés.'
+			};
+		}
+	}
+
+	// All rules passed
+	return undefined;
+}
+
+// ============================================================================
 // MAIN VALIDATION FUNCTION
 // ============================================================================
 
@@ -119,6 +172,21 @@ export function validateAnswer(
 	const { type, answer, precision } = instance;
 
 	try {
+		// Check custom validation rules first (for testAnswers-style questions)
+		// These are used when the correct answer depends on generated variables
+		if (instance.validationRules && instance.validationRules.length > 0) {
+			const userAnswerStr = Array.isArray(userAnswer) ? String(userAnswer[0]) : String(userAnswer);
+			const ruleResult = evaluateValidationRules(instance.validationRules, userAnswerStr, instance);
+
+			if (ruleResult) {
+				// Rule validation failed
+				return ruleResult;
+			}
+
+			// All rules passed - answer is correct
+			return { isCorrect: true };
+		}
+
 		// Get validation result based on question type
 		let result: ValidationResult;
 

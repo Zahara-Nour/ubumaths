@@ -36,7 +36,8 @@ import type {
 	QuestionCorrection,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	PrecisionType,
-	AlgebraicTransformType
+	AlgebraicTransformType,
+	ValidationRule
 } from '$lib/questions/types';
 
 import type { TemplateMarkdown } from '$lib/shared/markdown';
@@ -60,6 +61,87 @@ import {
 import { convertTinyCASToNew, type ConversionResult } from './syntax-converter';
 import { convertPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
+
+// ============================================================================
+// IMAGE URL MAPPING TYPE
+// ============================================================================
+
+/**
+ * Mapping from old image paths to new Supabase Storage URLs
+ *
+ * The mapping supports multiple path formats for the same image:
+ * - Full absolute path: /Users/david/Coding/js/ubumaths/static/images/questions/...
+ * - Relative path: entiers/reperage/...
+ * - With leading slash: /entiers/reperage/...
+ * - With /images prefix: /images/entiers/reperage/...
+ */
+export type ImageUrlMapping = Record<string, string>;
+
+/**
+ * Look up new URL for an old image path
+ *
+ * Tries multiple path formats to find a match:
+ * 1. Exact path as provided
+ * 2. Without leading slash
+ * 3. With /images/ prefix removed
+ * 4. Normalized relative path
+ *
+ * @param oldPath - The old image path from the question
+ * @param mapping - The image URL mapping object
+ * @returns The new Supabase Storage URL, or undefined if not found
+ */
+function lookupImageUrl(oldPath: string, mapping: ImageUrlMapping): string | undefined {
+	// Try exact match first
+	if (mapping[oldPath]) {
+		return mapping[oldPath];
+	}
+
+	// Try without leading slash
+	const withoutLeadingSlash = oldPath.replace(/^\//, '');
+	if (mapping[withoutLeadingSlash]) {
+		return mapping[withoutLeadingSlash];
+	}
+
+	// Try with /images/ prefix removed
+	const withoutImages = oldPath.replace(/^\/?images\//, '');
+	if (mapping[withoutImages]) {
+		return mapping[withoutImages];
+	}
+
+	// Try adding /images/ prefix
+	const withImages = `/images/${withoutLeadingSlash}`;
+	if (mapping[withImages]) {
+		return mapping[withImages];
+	}
+
+	// Not found
+	return undefined;
+}
+
+/**
+ * Convert an old image path to markdown image syntax with new URL
+ *
+ * @param oldPath - The old image path
+ * @param mapping - The image URL mapping object
+ * @param altText - Alternative text for the image
+ * @returns Markdown image syntax or undefined if not found
+ */
+function convertImageToMarkdown(
+	oldPath: string,
+	mapping: ImageUrlMapping | undefined,
+	altText: string
+): string | undefined {
+	if (!mapping) {
+		return undefined;
+	}
+
+	const newUrl = lookupImageUrl(oldPath, mapping);
+	if (newUrl) {
+		return `![${altText}](${newUrl})`;
+	}
+
+	return undefined;
+}
 
 // ============================================================================
 // RESULT TYPES
@@ -112,6 +194,12 @@ export interface TransformStats {
 
 	/** Whether custom validation was detected */
 	hasCustomValidation: boolean;
+
+	/** Number of images converted using the mapping */
+	imagesConverted: number;
+
+	/** Number of images that could not be found in mapping */
+	imagesMissing: number;
 }
 
 // ============================================================================
@@ -243,11 +331,22 @@ function convertVariables(
 
 /**
  * Convert statement and expression to TemplateMarkdown string
+ *
+ * @param enonce - The question text (enounce)
+ * @param expression - The mathematical expression
+ * @param images - Array of image paths for this variation
+ * @param imageMapping - Mapping from old paths to new URLs
+ * @param warnings - Array to collect warnings
+ * @param stats - Stats object to track image conversions
+ * @returns TemplateMarkdown with converted content and images
  */
 function convertStatement(
 	enonce: string | undefined,
 	expression: string | undefined,
-	warnings: string[]
+	images: string[] | undefined,
+	imageMapping: ImageUrlMapping | undefined,
+	warnings: string[],
+	stats: TransformStats
 ): TemplateMarkdown {
 	const parts: string[] = [];
 
@@ -283,6 +382,31 @@ function convertStatement(
 			// Wrap in LaTeX delimiters if not already
 			const content = converted.includes('$$') ? converted : `$$${converted}$$`;
 			parts.push(content);
+		}
+	}
+
+	// Process images
+	if (images && images.length > 0) {
+		for (let i = 0; i < images.length; i++) {
+			const imagePath = images[i];
+			const imageMarkdown = convertImageToMarkdown(
+				imagePath,
+				imageMapping,
+				`Question image ${i + 1}`
+			);
+
+			if (imageMarkdown) {
+				parts.push(imageMarkdown);
+				stats.imagesConverted++;
+			} else {
+				// Image not found in mapping
+				stats.imagesMissing++;
+				if (imageMapping) {
+					warnings.push(`Image not found in mapping: ${imagePath}`);
+				}
+				// Include original path as fallback
+				parts.push(`![Question image ${i + 1}](${imagePath})`);
+			}
 		}
 	}
 
@@ -340,11 +464,20 @@ function convertAnswer(
 
 /**
  * Convert choices for multiple choice questions
+ *
+ * @param choices - Array of choice objects from old question
+ * @param correctIndices - Indices of correct choices
+ * @param imageMapping - Mapping from old image paths to new URLs
+ * @param warnings - Array to collect warnings
+ * @param stats - Stats object to track image conversions
+ * @returns Array of converted choices
  */
 function convertChoices(
 	choices: Choice[] | undefined,
 	correctIndices: (string | number)[] | undefined,
-	warnings: string[]
+	imageMapping: ImageUrlMapping | undefined,
+	warnings: string[],
+	stats: TransformStats
 ): QuestionVariation['choices'] {
 	if (!choices || choices.length === 0) {
 		return undefined;
@@ -364,8 +497,24 @@ function convertChoices(
 			}
 			content = templateMarkdown(conversionResult.converted || choice.text);
 		} else if (choice.image) {
-			// Convert image to markdown image syntax
-			content = templateMarkdown(`![Choice ${index + 1}](${choice.image})`);
+			// Convert image using mapping if available
+			const imageMarkdown = convertImageToMarkdown(
+				choice.image,
+				imageMapping,
+				`Choice ${index + 1}`
+			);
+
+			if (imageMarkdown) {
+				content = templateMarkdown(imageMarkdown);
+				stats.imagesConverted++;
+			} else {
+				// Fallback to original path
+				stats.imagesMissing++;
+				if (imageMapping) {
+					warnings.push(`Choice image not found in mapping: ${choice.image}`);
+				}
+				content = templateMarkdown(`![Choice ${index + 1}](${choice.image})`);
+			}
 		} else {
 			content = templateMarkdown(`Choice ${index + 1}`);
 		}
@@ -592,6 +741,197 @@ function convertOptions(
 }
 
 // ============================================================================
+// TESTANSWERS CONVERSION
+// ============================================================================
+
+/**
+ * Convert old testAnswerss patterns to typed ValidationRule objects
+ *
+ * Handles these patterns from old questions:
+ * - `&answer>0` → PredicateRule or RangeRule
+ * - `&answer!=0 && &answer!=1` → CustomExpressionRule (exclude values)
+ * - `mod(&1;&answer)=0` → DivisorRule
+ * - Complex boolean expressions → CustomExpressionRule
+ *
+ * @param testAnswers - Array of test answer expressions for a variation
+ * @param warnings - Array to collect warnings
+ * @returns Array of ValidationRule objects, or undefined if no valid rules
+ */
+function convertTestAnswers(
+	testAnswers: string[] | undefined,
+	warnings: string[]
+): ValidationRule[] | undefined {
+	if (!testAnswers || testAnswers.length === 0) {
+		return undefined;
+	}
+
+	const rules: ValidationRule[] = [];
+
+	for (const expr of testAnswers) {
+		const rule = parseTestAnswerExpression(expr, warnings);
+		if (rule) {
+			rules.push(rule);
+		}
+	}
+
+	return rules.length > 0 ? rules : undefined;
+}
+
+/**
+ * Parse a single testAnswer expression and convert to ValidationRule
+ *
+ * @param expression - The test answer expression
+ * @param warnings - Array to collect warnings
+ * @returns A ValidationRule or undefined if parsing failed
+ */
+function parseTestAnswerExpression(
+	expression: string,
+	warnings: string[]
+): ValidationRule | undefined {
+	// Normalize the expression
+	const normalized = expression.trim();
+
+	// Pattern: &answer>0 (positive check)
+	if (/^&answer\s*>\s*0$/i.test(normalized)) {
+		return {
+			type: 'predicate',
+			predicate: 'isPositive'
+		};
+	}
+
+	// Pattern: &answer>=0 (non-negative)
+	if (/^&answer\s*>=\s*0$/i.test(normalized)) {
+		return {
+			type: 'range',
+			min: '0',
+			max: 'Infinity',
+			inclusive: true
+		};
+	}
+
+	// Pattern: &answer<0 (negative check)
+	if (/^&answer\s*<\s*0$/i.test(normalized)) {
+		return {
+			type: 'predicate',
+			predicate: 'isNegative'
+		};
+	}
+
+	// Pattern: mod(&var;&answer)=0 (divisor check)
+	// e.g., mod(&1;&answer)=0 → answer divides &1
+	const divisorMatch = normalized.match(/mod\s*\(\s*(&\d+(?:\*&\d+)*)\s*;\s*&answer\s*\)\s*=\s*0/i);
+	if (divisorMatch) {
+		const dividend = convertVariableReference(divisorMatch[1]);
+		return {
+			type: 'divisor',
+			dividend
+		};
+	}
+
+	// Pattern: &answer > min && &answer < max (range check)
+	const rangeMatch = normalized.match(
+		/&answer\s*([><]=?)\s*(\d+|&\d+)\s*&&\s*&answer\s*([><]=?)\s*(\d+|&\d+)/i
+	);
+	if (rangeMatch) {
+		const [, op1, val1, op2, val2] = rangeMatch;
+		let min = '',
+			max = '';
+		let inclusive = false;
+
+		// Figure out which is min and which is max
+		if (op1.includes('>') && op2.includes('<')) {
+			min = convertVariableReference(val1);
+			max = convertVariableReference(val2);
+			inclusive = op1.includes('=') || op2.includes('=');
+		} else if (op1.includes('<') && op2.includes('>')) {
+			min = convertVariableReference(val2);
+			max = convertVariableReference(val1);
+			inclusive = op1.includes('=') || op2.includes('=');
+		}
+
+		if (min && max) {
+			return {
+				type: 'range',
+				min,
+				max,
+				inclusive
+			};
+		}
+	}
+
+	// For complex expressions, use CustomExpressionRule as fallback
+	// Convert old syntax to new syntax first
+	const convertedExpr = convertTestAnswerSyntax(normalized);
+
+	warnings.push(`testAnswer expression converted to custom rule: ${expression}`);
+
+	return {
+		type: 'custom',
+		expression: convertedExpr,
+		description: `Legacy testAnswer: ${expression}`
+	};
+}
+
+/**
+ * Convert old testAnswer syntax to new format
+ *
+ * - &answer → answer
+ * - &N → {{varN}} (variable reference)
+ * - mod(a;b) → (a % b)
+ * - != → !== (for consistency)
+ *
+ * @param expression - Old testAnswer expression
+ * @returns Converted expression
+ */
+function convertTestAnswerSyntax(expression: string): string {
+	let result = expression;
+
+	// Convert &answer to 'answer'
+	result = result.replace(/&answer/gi, 'answer');
+
+	// Convert &N*&M to {{varN}} * {{varM}}
+	result = result.replace(/&(\d+)\s*\*\s*&(\d+)/g, '{{var$1}} * {{var$2}}');
+
+	// Convert &N to {{varN}}
+	result = result.replace(/&(\d+)/g, '{{var$1}}');
+
+	// Convert mod(a;b) to (a % b === 0 ? true : false) or keep as mod function call
+	result = result.replace(/mod\s*\(\s*([^;]+)\s*;\s*([^)]+)\s*\)\s*=\s*0/gi, '($1 % $2 === 0)');
+
+	// Convert != to !== for strict comparison
+	result = result.replace(/!=/g, '!==');
+
+	return result;
+}
+
+/**
+ * Convert old variable reference (&1, &2, etc.) to new template syntax
+ *
+ * @param varRef - Old variable reference like "&1" or "&1*&2"
+ * @returns New template syntax like "{{var1}}" or "{{var1}} * {{var2}}"
+ */
+function convertVariableReference(varRef: string): string {
+	// Handle compound expressions like &1*&2
+	if (varRef.includes('*')) {
+		return varRef.replace(/&(\d+)/g, '{{var$1}}');
+	}
+
+	// Simple variable reference
+	const match = varRef.match(/^&(\d+)$/);
+	if (match) {
+		return `{{var${match[1]}}}`;
+	}
+
+	// Numeric literal
+	if (/^\d+$/.test(varRef)) {
+		return varRef;
+	}
+
+	// Unknown format, return as-is
+	return varRef;
+}
+
+// ============================================================================
 // CATEGORY ASSIGNMENT
 // ============================================================================
 
@@ -670,10 +1010,18 @@ function assignCategory(oldQuestion: QuestionBase): {
 
 /**
  * Create variations from old question structure
+ *
+ * @param oldQuestion - The old question object
+ * @param questionType - Detected question type
+ * @param imageMapping - Optional mapping from old image paths to new URLs
+ * @param warnings - Array to collect warnings
+ * @param stats - Stats object to track conversions
+ * @returns Array of converted variations
  */
 function createVariations(
 	oldQuestion: QuestionBase,
 	questionType: QuestionType,
+	imageMapping: ImageUrlMapping | undefined,
 	warnings: string[],
 	stats: TransformStats
 ): QuestionVariation[] {
@@ -681,6 +1029,9 @@ function createVariations(
 	const variations: QuestionVariation[] = [];
 
 	stats.variations = variationCount;
+
+	// Get images array (shared across all variations in old format)
+	const images = oldQuestion.images;
 
 	for (let i = 0; i < variationCount; i++) {
 		// Get data for this variation (arrays indexed by variation)
@@ -697,9 +1048,10 @@ function createVariations(
 		const answerField = oldQuestion.answerFields?.[i] || oldQuestion.answerFields?.[0];
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const prefilled = oldQuestion.prefilleds?.[i] || oldQuestion.prefilleds?.[0];
+		const testAnswers = oldQuestion.testAnswerss?.[i] || oldQuestion.testAnswerss?.[0];
 
-		// Convert statement
-		const statement = convertStatement(enonce, expression, warnings);
+		// Convert statement (with images)
+		const statement = convertStatement(enonce, expression, images, imageMapping, warnings, stats);
 
 		// Convert variables
 		const convertedVars = convertVariables(variables, warnings);
@@ -736,9 +1088,15 @@ function createVariations(
 			variation.correction = templateMarkdown(questionCorrection.steps.join('\n\n'));
 		}
 
+		// Convert testAnswers to ValidationRules
+		const validationRules = convertTestAnswers(testAnswers, warnings);
+		if (validationRules && validationRules.length > 0) {
+			variation.validationRules = validationRules;
+		}
+
 		// Handle type-specific fields
 		if (questionType === 'multiple_choice' && choices) {
-			variation.choices = convertChoices(choices, solutions, warnings);
+			variation.choices = convertChoices(choices, solutions, imageMapping, warnings, stats);
 		}
 
 		if (questionType === 'fill_in_blanks' && expression) {
@@ -800,6 +1158,14 @@ function extractBlanks(
 
 /**
  * Transform a single old question to new format
+ *
+ * @param oldQuestion - The old TinyMath question object
+ * @param questionIndex - Index of this question in the batch
+ * @param options - Transformation options
+ * @param options.skipImages - If true, skip questions with images
+ * @param options.skipCustomValidation - If true, skip questions with testAnswers
+ * @param options.imageUrlMapping - Optional mapping from old image paths to new Supabase URLs
+ * @returns Transformation result with template, warnings, errors, and stats
  */
 export function transformQuestion(
 	oldQuestion: QuestionBase,
@@ -807,6 +1173,7 @@ export function transformQuestion(
 	options?: {
 		skipImages?: boolean;
 		skipCustomValidation?: boolean;
+		imageUrlMapping?: ImageUrlMapping;
 	}
 ): TransformResult {
 	const warnings: string[] = [];
@@ -819,19 +1186,23 @@ export function transformQuestion(
 		correctionConversions: 0,
 		detectedType: '',
 		hasImages: false,
-		hasCustomValidation: false
+		hasCustomValidation: false,
+		imagesConverted: 0,
+		imagesMissing: 0
 	};
 
 	try {
 		// Check for unsupported features
 		if (hasImages(oldQuestion)) {
 			stats.hasImages = true;
-			if (options?.skipImages) {
+			if (options?.skipImages && !options?.imageUrlMapping) {
+				// Only skip if no image mapping provided
 				errors.push('Question contains images - skipping for Phase 1');
 				return { success: false, errors, stats };
-			} else {
+			} else if (!options?.imageUrlMapping) {
 				warnings.push('Question contains images - will need manual review');
 			}
+			// If imageUrlMapping is provided, proceed with conversion
 		}
 
 		if (hasTestAnswers(oldQuestion)) {
@@ -850,8 +1221,14 @@ export function transformQuestion(
 		const questionType = detectQuestionType(oldQuestion);
 		stats.detectedType = questionType;
 
-		// Create variations
-		const variations = createVariations(oldQuestion, questionType, warnings, stats);
+		// Create variations (with image mapping if provided)
+		const variations = createVariations(
+			oldQuestion,
+			questionType,
+			options?.imageUrlMapping,
+			warnings,
+			stats
+		);
 
 		if (variations.length === 0) {
 			errors.push('No variations could be created');
@@ -934,12 +1311,21 @@ export function transformQuestion(
 
 /**
  * Transform multiple questions in batch
+ *
+ * @param questions - Array of old TinyMath questions to transform
+ * @param options - Transformation options
+ * @param options.skipImages - If true, skip questions with images (unless mapping provided)
+ * @param options.skipCustomValidation - If true, skip questions with testAnswers
+ * @param options.imageUrlMapping - Optional mapping from old image paths to new URLs
+ * @param options.onProgress - Progress callback
+ * @returns Results array and summary statistics
  */
 export function transformQuestionBatch(
 	questions: QuestionBase[],
 	options?: {
 		skipImages?: boolean;
 		skipCustomValidation?: boolean;
+		imageUrlMapping?: ImageUrlMapping;
 		onProgress?: (current: number, total: number) => void;
 	}
 ): {
@@ -951,6 +1337,8 @@ export function transformQuestionBatch(
 		warnings: number;
 		skippedImages: number;
 		skippedCustomValidation: number;
+		imagesConverted: number;
+		imagesMissing: number;
 	};
 } {
 	const results: TransformResult[] = [];
@@ -960,7 +1348,9 @@ export function transformQuestionBatch(
 		failed: 0,
 		warnings: 0,
 		skippedImages: 0,
-		skippedCustomValidation: 0
+		skippedCustomValidation: 0,
+		imagesConverted: 0,
+		imagesMissing: 0
 	};
 
 	for (let i = 0; i < questions.length; i++) {
@@ -972,7 +1362,8 @@ export function transformQuestionBatch(
 		// Transform question
 		const result = transformQuestion(questions[i], i, {
 			skipImages: options?.skipImages,
-			skipCustomValidation: options?.skipCustomValidation
+			skipCustomValidation: options?.skipCustomValidation,
+			imageUrlMapping: options?.imageUrlMapping
 		});
 
 		results.push(result);
@@ -982,6 +1373,11 @@ export function transformQuestionBatch(
 			summary.successful++;
 			if (result.warnings && result.warnings.length > 0) {
 				summary.warnings++;
+			}
+			// Track image conversion stats
+			if (result.stats) {
+				summary.imagesConverted += result.stats.imagesConverted;
+				summary.imagesMissing += result.stats.imagesMissing;
 			}
 		} else {
 			summary.failed++;
