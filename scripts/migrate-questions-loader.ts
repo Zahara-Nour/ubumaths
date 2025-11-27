@@ -24,6 +24,13 @@ interface QuestionBase {
 	type?: string;
 	images?: unknown[];
 	conditions?: unknown[];
+	_migration?: {
+		theme: string;
+		domain: string;
+		subdomain: string;
+		level: number;
+		globalIndex: number;
+	};
 	[key: string]: unknown;
 }
 
@@ -174,12 +181,24 @@ async function extractQuestions() {
 		const questions: QuestionBase[] = [];
 
 		// questionsObj has structure: { theme: { domain: { subdomain: [questions] } } }
+		let globalIndex = 0;
 		for (const theme in questionsObj) {
 			for (const domain in questionsObj[theme]) {
 				for (const subdomain in questionsObj[theme][domain]) {
 					const subdomainQuestions = questionsObj[theme][domain][subdomain];
 					if (Array.isArray(subdomainQuestions)) {
-						questions.push(...subdomainQuestions);
+						subdomainQuestions.forEach((question, level) => {
+							questions.push({
+								...question,
+								_migration: {
+									theme,
+									domain,
+									subdomain,
+									level,
+									globalIndex: globalIndex++
+								}
+							});
+						});
 					}
 				}
 			}
