@@ -4,7 +4,7 @@
  *
  * Extracts all parameterization constructs from text using Markdown syntax:
  * - Variables: {{var}}
- * - Random: {{random:1-10}} or {{1-10}}
+ * - Random: {{random:1-10}} or {{1-10}} or {{a|b|c}}
  * - Eval: {{eval:expr}}
  *
  * @module shared/parameterization/parser/tokenizer
@@ -32,9 +32,15 @@ import type { Token } from '../types';
  * // Returns 1 token with type 'random'
  * ```
  *
- * @example Random shorthand
+ * @example Random shorthand (integer range)
  * ```typescript
  * tokenize('Random: {{1-10}}')
+ * // Auto-detects as random token
+ * ```
+ *
+ * @example Random shorthand (discrete list)
+ * ```typescript
+ * tokenize('Color: {{rouge|vert|bleu}}')
  * // Auto-detects as random token
  * ```
  *
@@ -161,15 +167,37 @@ function extractMarkdownBracedToken(
 }
 
 /**
+ * Check if content contains a pipe character at top level (brace depth 0)
+ *
+ * This detects discrete list patterns like "a|b|c" or "{{x}}|{{y}}"
+ * while ignoring nested pipes inside braces.
+ */
+function hasTopLevelPipe(content: string): boolean {
+	let braceDepth = 0;
+	for (const char of content) {
+		if (char === '{') braceDepth++;
+		if (char === '}') braceDepth--;
+		if (char === '|' && braceDepth === 0) return true;
+	}
+	return false;
+}
+
+/**
  * Check if content looks like a random shorthand
  *
  * Random patterns:
- * - Contains "-" with numbers: "1-10", "{{min}}-{{max}}"
- * - Contains "." with digits on both sides: "2.3"
+ * - Contains "|" at top level: "a|b|c", "rouge|vert|bleu", "{{x}}|{{y}}" (discrete list)
+ * - Contains "-" with numbers: "1-10", "{{min}}-{{max}}" (integer range)
+ * - Contains "." with digits on both sides: "2.3" (decimal by digits)
  * - Contains ":" for step notation: "0.5-9.99:0.01"
  * - Contains "!" for exclusions: "1-10!5"
  */
 function isRandomShorthand(content: string): boolean {
+	// Check for discrete list: contains | at top level
+	if (hasTopLevelPipe(content)) {
+		return true;
+	}
+
 	// Check for range: contains "-" with context suggesting numbers
 	// Examples: "1-10", "-5-10", "{{min}}-{{max}}"
 	if (content.includes('-')) {
