@@ -454,7 +454,7 @@ unitFlexible: false // Accept only exact unit (not km for m)
 | **Type System**         | 5 types (Choice, Choices, Fill-in, Result, AnswerField) | 6 types (numerical\_\*, algebraic, fill_in_blanks, multiple_choice) | ✅ Done    | Type mapping in transformer         |
 | **Variable Syntax**     | `$e`, `$er`, `$d`, `$l`, `&var`                         | `{{}}` markdown syntax                                              | ✅ Done    | syntax-converter.ts                 |
 | **Random Integers**     | `$e[1;9]`                                               | `{{1-9}}`                                                           | ✅ Done    | 1,703 occurrences                   |
-| **Relative Integers**   | `$er[1;9]`                                              | `{{±1..9}}`                                                         | ✅ Done    | 212 occurrences                     |
+| **Relative Integers**   | `$er[1;9]`                                              | `{{1..9;±}}`                                                        | ✅ Done    | 212 occurrences                     |
 | **Decimal by Digits**   | `$d{n;m}`                                               | `{{n.m}}`                                                           | ✅ Done    | 36 occurrences                      |
 | **Lists**               | `$l{a;b;c}`                                             | `{{list:a,b,c}}`                                                    | ✅ Done    | 185 occurrences                     |
 | **Computed Values**     | `[_expr_]`                                              | `{{eval:expr}}`                                                     | ✅ Done    | 93 occurrences                      |

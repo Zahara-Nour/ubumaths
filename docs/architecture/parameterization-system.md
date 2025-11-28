@@ -451,7 +451,7 @@ replace: '42'
 
 - Integer range: `{{1..10}}` or `{{1..10}}`
 - Negative ranges: `{{-3..-1}}` (double-dot clearer with negatives)
-- Relative integers: `{{±2..9}}` → union of {-9..-2} ∪ {2..9}
+- Relative integers: `{{2..9;±}}` → union of {-9..-2} ∪ {2..9}
 - Decimal by digits: `{{2.3}}` (2 digits before, 3 after)
 - Decimal range: `{{1..1.6}}` (auto-step=0.1) or `{{0.5..9.99:0.01}}` (explicit step)
 - Exclusions: `{{1..10!5,7-9}}` or `{{1..20!5..7}}`
@@ -512,7 +512,7 @@ replace: '15'
 - With variables: `{{eval:{{a}}+{{b}}}}`
 - Complex expressions: `{{eval:({{a}})^2-{{b}}}}`
 - LaTeX expressions: `{{eval:\frac{1}{2}}}`
-- With modifiers: `{{eval:1/3|d}}`, `{{eval:x|+,()}}`
+- With modifiers: `{{eval:1/3;d}}`, `{{eval:x;+,()}}`
 
 ### Eval Expression Modifiers
 

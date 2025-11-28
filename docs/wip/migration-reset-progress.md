@@ -127,8 +127,8 @@ Resetting the migration system to use pure markdown syntax (`{{...}}`) throughou
   - `423f77ec` - feat(parameterization): add relative integers, double-dot ranges, and decimal auto-step
   - `93e0b592` - feat(migration): add $d{} and $er conversion support to syntax-converter
 - **New Capabilities**:
-  - `$er[min;max]` → `{{±min..max}}` (relative integers, 215 occurrences in old questions)
-  - `$er{n}` → `{{±n..n}}` (single value relative integers)
+  - `$er[min;max]` → `{{min..max;±}}` (relative integers, 215 occurrences in old questions)
+  - `$er{n}` → `{{n..n;±}}` (single value relative integers)
   - `$d{n;m}` → `{{n.m}}` (decimal by digits, 36 occurrences in old questions)
 - **Impact**: 251+ additional old questions now fully convertible
 
