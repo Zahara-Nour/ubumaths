@@ -31,12 +31,15 @@ Migration reussie du separateur de modifiers de `|` vers `;` pour eval et random
 - docs/architecture/parameterization-system.md
 - docs/features/exercises/parameterization-guide.md
 - docs/wip/question-migration-analysis.md
+- docs/migration/question-migration-preparation.md
+- docs/wip/migration-reset-progress.md
 
 ## Commits
 
 1. `5b6ba314` - refactor(eval-parser): change modifier separator from | to ;
 2. `156fb581` - refactor(random-parser): change relative integer from ±prefix to ;± suffix modifier
 3. `e6631a80` - docs: update syntax documentation for ; modifier separator
+4. `4bfa81ec` - docs: complete .. syntax migration across codebase
 
 ## Tests
 
