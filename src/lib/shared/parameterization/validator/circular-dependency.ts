@@ -93,8 +93,8 @@ import { parseEvalExpression } from '../parser/eval-parser';
  * detectCircularDependencies([
  *   { name: 'min', expression: '1' },
  *   { name: 'max', expression: '10' },
- *   { name: 'a', expression: '{{{{min}}-{{max}}}}' },
- *   { name: 'b', expression: '{{{{min}}-{{max}}!{{a}}}}' }
+ *   { name: 'a', expression: '{{{{min}}..{{max}}}}' },
+ *   { name: 'b', expression: '{{{{min}}..{{max}}!{{a}}}}' }
  * ])
  * // → { valid: true, errors: [] }
  * ```
@@ -152,7 +152,7 @@ function getVariableNames(expression: string): string[] {
 				names.push(varName);
 			}
 		} else if (token.type === 'random') {
-			// Extract variables from inside random specs: {{random:1-{{max}}}}
+			// Extract variables from inside random specs: {{random:1..{{max}}}}
 			const randomSpec = parseRandomSpec(token.content);
 			if (randomSpec) {
 				// Check min/max bounds for variable references

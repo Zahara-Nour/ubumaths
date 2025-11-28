@@ -242,8 +242,8 @@ Dans les expressions `eval`, les variables peuvent etre referencees de deux faco
 
 ```
 {{eval:{{a}}+{{b}}}}           Addition avec syntaxe explicite
-{{eval:2*{{a}}-{{b}}/3}}       Expression mixte
-{{eval:({{a}}-{{b}})/({{c}}+{{d}})}}  Expression complexe
+{{eval:2*{{a}}..{{b}}/3}}       Expression mixte
+{{eval:({{a}}..{{b}})/({{c}}+{{d}})}}  Expression complexe
 ```
 
 **Note** : Les deux syntaxes sont equivalentes. La syntaxe simple est plus lisible pour les expressions simples.

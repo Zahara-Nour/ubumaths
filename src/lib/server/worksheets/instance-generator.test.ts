@@ -28,8 +28,8 @@ describe('Instance Generator', () => {
 				solution_md: '{{a}} + {{b}} = {{sum}}',
 				difficulty: 1,
 				variables: [
-					{ name: 'a', expression: '{{random:1-10}}' },
-					{ name: 'b', expression: '{{random:1-10}}' },
+					{ name: 'a', expression: '{{random:1..10}}' },
+					{ name: 'b', expression: '{{random:1..10}}' },
 					{ name: 'sum', expression: '{{eval:a+b}}' }
 				]
 			}
@@ -53,8 +53,8 @@ describe('Instance Generator', () => {
 				solution_md: '{{x}} × {{y}} = {{product}}',
 				difficulty: 2,
 				variables: [
-					{ name: 'x', expression: '{{random:2-9}}' },
-					{ name: 'y', expression: '{{random:2-9}}' },
+					{ name: 'x', expression: '{{random:2..9}}' },
+					{ name: 'y', expression: '{{random:2..9}}' },
 					{ name: 'product', expression: '{{eval:x*y}}' }
 				]
 			}
@@ -325,8 +325,8 @@ describe('Instance Generator', () => {
 						solution_md: 'Détails: a={{a}}, b={{b}}, sum={{sum}}',
 						difficulty: 3,
 						variables: [
-							{ name: 'a', expression: '{{random:10-20}}' },
-							{ name: 'b', expression: '{{random:5-15}}' },
+							{ name: 'a', expression: '{{random:10..20}}' },
+							{ name: 'b', expression: '{{random:5..15}}' },
 							{ name: 'sum', expression: '{{eval:a+b}}' },
 							{ name: 'result', expression: '{{eval:(a+b)*2}}' }
 						]

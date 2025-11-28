@@ -33,8 +33,8 @@ describe('generateInstance - Numerical Exact Questions', () => {
 				{
 					statement: templateMarkdown('Calculate {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' }
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' }
 					],
 					answer: '{{eval:a + b}}'
 				}
@@ -74,7 +74,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			variations: [
 				{
 					statement: templateMarkdown('Value: {{x}}'),
-					variables: [{ name: 'x', expression: '{{random:1-100}}' }],
+					variables: [{ name: 'x', expression: '{{random:1..100}}' }],
 					answer: '{{x}}'
 				}
 			],
@@ -115,7 +115,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 			variations: [
 				{
 					statement: templateMarkdown('Value: {{x}}'),
-					variables: [{ name: 'x', expression: '{{random:1-1000}}' }],
+					variables: [{ name: 'x', expression: '{{random:1..1000}}' }],
 					answer: '{{x}}'
 				}
 			],
@@ -153,7 +153,7 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 				{
 					statement: templateMarkdown('Factor: $$x^2 - {{c}}$$'),
 					variables: [
-						{ name: 'a', expression: '{{random:2-9}}' },
+						{ name: 'a', expression: '{{random:2..9}}' },
 						{ name: 'c', expression: '{{eval:a^2}}' }
 					],
 					answer: '(x-{{a}})(x+{{a}})'
@@ -194,8 +194,8 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 				{
 					statement: templateMarkdown('Complete: {{a}} + {{b}} = {{blank:1}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' }
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' }
 					],
 					answer: ['{{eval:a + b}}'],
 					blanks: [{ position: 0, expectedAnswer: '{{eval:a + b}}' }]
@@ -233,8 +233,8 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 				{
 					statement: templateMarkdown('{{blank:1}} + {{blank:2}} = {{sum}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' },
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' },
 						{ name: 'sum', expression: '{{eval:a + b}}' }
 					],
 					answer: ['{{a}}', '{{b}}'],
@@ -276,8 +276,8 @@ describe('generateInstance - Multiple Choice Questions', () => {
 				{
 					statement: templateMarkdown('What is {{a}} + {{b}}?'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' },
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' },
 						{ name: 'correct', expression: '{{eval:a + b}}' },
 						{ name: 'wrong1', expression: '{{eval:a + b + 1}}' },
 						{ name: 'wrong2', expression: '{{eval:a + b - 1}}' }
@@ -387,7 +387,7 @@ describe('generateInstance - Complex Variable Resolution', () => {
 						'Calculer: $$\\frac{{{num1}}}{{{{den}}}} + \\frac{{{num2}}}{{{{den}}}}$$'
 					),
 					variables: [
-						{ name: 'den', expression: '{{random:2-9}}' },
+						{ name: 'den', expression: '{{random:2..9}}' },
 						{ name: 'denMinus1', expression: '{{eval:den-1}}' },
 						{ name: 'num1', expression: '{{random:1-denMinus1}}' },
 						{ name: 'num2', expression: '{{random:1-denMinus1!num1}}' }
@@ -429,9 +429,9 @@ describe('generateInstance - Complex Variable Resolution', () => {
 				{
 					statement: templateMarkdown('Simplifier: $$\frac{{{{num}}}}{{{{den}}}}$$'),
 					variables: [
-						{ name: 'gcd', expression: '{{random:2-5}}' },
-						{ name: 'a', expression: '{{random:2-9}}' },
-						{ name: 'b', expression: '{{random:2-9!a}}' },
+						{ name: 'gcd', expression: '{{random:2..5}}' },
+						{ name: 'a', expression: '{{random:2..9}}' },
+						{ name: 'b', expression: '{{random:2..9!a}}' },
 						{ name: 'num', expression: '{{eval:a*gcd}}' },
 						{ name: 'den', expression: '{{eval:b*gcd}}' }
 					],
@@ -475,8 +475,8 @@ describe('generateInstance - Content Resolution', () => {
 				{
 					statement: templateMarkdown('What is {{x}} × {{y}}?'),
 					variables: [
-						{ name: 'x', expression: '{{random:2-9}}' },
-						{ name: 'y', expression: '{{random:2-9}}' }
+						{ name: 'x', expression: '{{random:2..9}}' },
+						{ name: 'y', expression: '{{random:2..9}}' }
 					],
 					answer: '{{eval:x * y}}'
 				}
@@ -511,8 +511,8 @@ describe('generateInstance - Content Resolution', () => {
 				{
 					statement: templateMarkdown('$$\frac{{{{a}}}}{{{{b}}}}$$'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' }
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' }
 					],
 					answer: '{{eval:a/b}}'
 				}
@@ -547,8 +547,8 @@ describe('generateInstance - Content Resolution', () => {
 				{
 					statement: templateMarkdown('Calculate {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' }
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' }
 					],
 					answer: '{eval:{@:a} + {@:b}}',
 					correction: {
@@ -595,8 +595,8 @@ describe('generateInstance - Precision Handling', () => {
 				{
 					statement: templateMarkdown('Calculate {{a}} / {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:2-9}}' }
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:2..9}}' }
 					],
 					answer: '{{eval:a/b}}'
 				}
@@ -628,7 +628,7 @@ describe('generateInstance - Precision Handling', () => {
 			variations: [
 				{
 					statement: templateMarkdown('Estimate sqrt({{a}})'),
-					variables: [{ name: 'a', expression: '{{random:10-100}}' }],
+					variables: [{ name: 'a', expression: '{{random:10..100}}' }],
 					answer: '{eval:sqrt({@:a})}'
 				}
 			],
@@ -836,7 +836,7 @@ describe('generateInstance - Edge Cases', () => {
 					statement: templateMarkdown(
 						'Given {{a}}\n\n![Example image](https://example.com/image.png)\n\nCalculate {{a}} × 2'
 					),
-					variables: [{ name: 'a', expression: '{{random:1-10}}' }],
+					variables: [{ name: 'a', expression: '{{random:1..10}}' }],
 					answer: '{{eval:a * 2}}'
 				}
 			],
@@ -873,9 +873,9 @@ describe('generateInstance - Real-World Templates', () => {
 				{
 					statement: templateMarkdown('Résoudre: ${{a}}x^2 + {{b}}x + {{c}} = 0$'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-5}}' },
-						{ name: 'b', expression: '{{random:-10-10}}' },
-						{ name: 'c', expression: '{{random:-10-10}}' },
+						{ name: 'a', expression: '{{random:1..5}}' },
+						{ name: 'b', expression: '{{random:-10..10}}' },
+						{ name: 'c', expression: '{{random:-10..10}}' },
 						{ name: 'disc', expression: '{{eval:b^2 - 4*a*c}}' }
 					],
 					answer: 'x = \\frac{-{{b}} \\pm \\sqrt{{{disc}}}}{2{{a}}'
@@ -916,8 +916,8 @@ describe('generateInstance - Real-World Templates', () => {
 						'Un article coûte {{price}}€. Il y a {{discount}}% de réduction. Quel est le prix final?'
 					),
 					variables: [
-						{ name: 'price', expression: '{{random:50-200}}' },
-						{ name: 'discount', expression: '{{random:10-50}}' },
+						{ name: 'price', expression: '{{random:50..200}}' },
+						{ name: 'discount', expression: '{{random:10..50}}' },
 						{ name: 'reduction', expression: '{eval:{@:price} * {@:discount} / 100}' }
 					],
 					answer: '{eval:{@:price} - {@:reduction}'
@@ -957,15 +957,15 @@ describe('generateInstance - Variation Selection', () => {
 				{
 					statement: templateMarkdown('Addition: {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' }
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' }
 					],
 					answer: '{eval:{@:a} + {@:b}}'
 				},
 				{
 					statement: templateMarkdown('Subtraction: {{a}} - {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:10-20}}' },
+						{ name: 'a', expression: '{{random:10..20}}' },
 						{ name: 'b', expression: '{#:1-{@:a}}' }
 					],
 					answer: '{eval:{@:a} - {@:b}'
@@ -1000,15 +1000,15 @@ describe('generateInstance - Variation Selection', () => {
 				{
 					statement: templateMarkdown('Addition: {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' }
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' }
 					],
 					answer: '{eval:{@:a} + {@:b}}'
 				},
 				{
 					statement: templateMarkdown('Subtraction: {{a}} - {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:10-20}}' },
+						{ name: 'a', expression: '{{random:10..20}}' },
 						{ name: 'b', expression: '{#:1-{@:a}}' }
 					],
 					answer: '{eval:{@:a} - {@:b}'
@@ -1152,8 +1152,8 @@ describe('generateInstance - Shared Fields', () => {
 				{
 					statement: templateMarkdown('Calculate {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' }
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' }
 					],
 					answer: '{{eval:a + b}}'
 				}
@@ -1490,8 +1490,8 @@ describe('generateInstance - Shared Fields', () => {
 			status: 'draft' as const,
 			shared: {
 				variables: [
-					{ name: 'a', expression: '{{random:2-5}}' },
-					{ name: 'b', expression: '{{random:2-5}}' }
+					{ name: 'a', expression: '{{random:2..5}}' },
+					{ name: 'b', expression: '{{random:2..5}}' }
 				]
 			},
 			variations: [

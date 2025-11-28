@@ -511,7 +511,7 @@ UbuMaths currently uses **two different template syntaxes** that are bridged by 
 | **Random Decimal** | `{#:2.3}`        | `{{random:2.3}}` or `{{2.3}}`         |
 | **Exclusions**     | `{#:1..10!5}`    | `{{random:1..10!5}}` or `{{1..10!5}}` |
 | **Evaluation**     | `{eval:expr}`    | `{{eval:expr}}`                       |
-| **Nested**         | `{#:1-{@:max}}`  | `{{random:1-{{max}}}}`                |
+| **Nested**         | `{#:1-{@:max}}`  | `{{random:1..{{max}}}}`               |
 
 #### How the Adapter Works
 
@@ -548,7 +548,7 @@ convertToMarkdownSyntax('{#:1..10}'); // → '{{random:1..10}}'
 convertToMarkdownSyntax('{eval:a+b}'); // → '{{eval:a+b}}'
 
 // Nested conversions
-convertToMarkdownSyntax('{#:1-{@:max}}'); // → '{{random:1-{{max}}}}'
+convertToMarkdownSyntax('{#:1-{@:max}}'); // → '{{random:1..{{max}}}}'
 convertToMarkdownSyntax('{eval:{@:a}+{@:b}}'); // → '{{eval:{{a}}+{{b}}}}'
 ```
 

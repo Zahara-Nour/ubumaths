@@ -5,7 +5,7 @@ Content-agnostic parameterization system for Questions and Exercises features.
 **Version:** 2.1.0
 **Tests:** 447 passing
 **Coverage:** 99%+
-**Syntax:** Markdown-only (`{{var}}`, `{{random:1-10}}`, `{{eval:expr}}`, `{{eval:expr|modifiers}}`)
+**Syntax:** Markdown-only (`{{var}}`, `{{random:1..10}}`, `{{eval:expr}}`, `{{eval:expr|modifiers}}`)
 
 ---
 
@@ -147,10 +147,10 @@ Generate random integer between min and max (inclusive):
 
 ```typescript
 // Explicit syntax
-{ name: 'x', expression: '{{random:1..10}}' } // → Random 1-10
+{ name: 'x', expression: '{{random:1..10}}' } // → Random 1..10
 
 // Shorthand syntax
-{ name: 'x', expression: '{{1..10}}' }        // → Random 1-10
+{ name: 'x', expression: '{{1..10}}' }        // → Random 1..10
 
 // Variable bounds
 { name: 'min', expression: '1' }

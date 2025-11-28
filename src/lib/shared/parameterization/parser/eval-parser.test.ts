@@ -53,7 +53,7 @@ describe('parseEvalExpression - Markdown syntax', () => {
 		});
 
 		it('should return null for random token', () => {
-			expect(parseEvalExpression('{{random:1-10}}')).toBeNull();
+			expect(parseEvalExpression('{{random:1..10}}')).toBeNull();
 		});
 
 		it('should return empty string for empty expression', () => {
@@ -108,7 +108,7 @@ describe('parseEvalExpression - Edge cases', () => {
 	});
 
 	it('should preserve all content between delimiters', () => {
-		const complexExpr = '{{a}}*{{b}}+{{random:1-10}}-{{eval:c+d}}';
+		const complexExpr = '{{a}}*{{b}}+{{random:1..10}}..{{eval:c+d}}';
 		expect(parseEvalExpression(`{{eval:${complexExpr}}}`)).toBe(complexExpr);
 	});
 
@@ -263,7 +263,7 @@ describe('parseEvalExpressionWithModifiers', () => {
 		});
 
 		it('should return null for random token', () => {
-			expect(parseEvalExpressionWithModifiers('{{random:1-10}}')).toBeNull();
+			expect(parseEvalExpressionWithModifiers('{{random:1..10}}')).toBeNull();
 		});
 
 		it('should return null for empty string', () => {

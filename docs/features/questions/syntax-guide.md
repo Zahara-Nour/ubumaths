@@ -47,8 +47,8 @@ Calculate {{a}}^2           → LaTeX with variable
 {{random:1..10}}             → Random integer 1 to 10
 {{1..10}}                    → Shorthand for above
 {{random:-5-5}}             → Random integer -5 to 5
-{{random:{{min}}-{{max}}}}  → Variable bounds
-{{random:1-{{limit}}}}      → Min literal, max variable
+{{random:{{min}}..{{max}}}}  → Variable bounds
+{{random:1..{{limit}}}}      → Min literal, max variable
 ```
 
 ### Decimal by Digits
@@ -74,7 +74,7 @@ Calculate {{a}}^2           → LaTeX with variable
 ```typescript
 {{random:0.5-9.99:0.01}}    → Decimal 0.5 to 9.99 by 0.01
 {{random:0-1:0.1}}          → 0, 0.1, 0.2, ..., 1.0
-{{random:{{min}}-{{max}}:0.5}}  → Variable range with step
+{{random:{{min}}..{{max}}:0.5}}  → Variable range with step
 ```
 
 ### Exclusions
@@ -94,14 +94,14 @@ Calculate {{a}}^2           → LaTeX with variable
 ```typescript
 {{random:1-20!5..7}}         → Except 5, 6, 7
 {{1..100!10..20,50}}          → Except 10..20 and 50
-{{random:1-100!{{min}}-{{max}}}}  → Except variable range
+{{random:1-100!{{min}}..{{max}}}}  → Except variable range
 ```
 
 **Mixed:**
 
 ```typescript
 {{random:1-50!5,7-9,{{x}}}} → Except 5, 7-9, and variable x
-{{1..100!{{a}},{{b}}-{{c}}}} → Multiple variables (shorthand)
+{{1..100!{{a}},{{b}}..{{c}}}} → Multiple variables (shorthand)
 ```
 
 ---
@@ -221,8 +221,8 @@ Solve $${{a}}x^2 + {{b}}x + {{c}} = 0$$
 {
 	"variables": [
 		{ "name": "maxValue", "expression": "10" },
-		{ "name": "a", "expression": "{{random:1-{{maxValue}}}}" },
-		{ "name": "b", "expression": "{{random:1-{{maxValue}}}}" }
+		{ "name": "a", "expression": "{{random:1..{{maxValue}}}}" },
+		{ "name": "b", "expression": "{{random:1..{{maxValue}}}}" }
 	],
 	"statement": [{ "type": "text", "content": "Calculate: $${{a}} \\times {{b}}$$" }],
 	"answer": "{{eval:{{a}}*{{b}}}}"
@@ -265,7 +265,7 @@ Solve $${{a}}x^2 + {{b}}x + {{c}} = 0$$
 	"variables": [
 		{ "name": "min", "expression": "0.5" },
 		{ "name": "max", "expression": "9.99" },
-		{ "name": "value", "expression": "{{random:{{min}}-{{max}}:0.01}}" }
+		{ "name": "value", "expression": "{{random:{{min}}..{{max}}:0.01}}" }
 	],
 	"statement": [{ "type": "text", "content": "Round $${{value}}$$ to 2 decimal places" }],
 	"answer": "{{eval:round({{value}}, 2)}}"
@@ -332,7 +332,7 @@ Solve $${{a}}x^2 + {{b}}x + {{c}} = 0$$
 
 // Wrong answers (common mistakes)
 { name: 'wrong1', expression: '{{eval:{{a}}*{{b}}}}' }      // Multiply instead of add
-{ name: 'wrong2', expression: '{{eval:{{a}}-{{b}}}}' }      // Subtract instead of add
+{ name: 'wrong2', expression: '{{eval:{{a}}..{{b}}}}' }      // Subtract instead of add
 { name: 'wrong3', expression: '{{eval:{{correct}}+1}}' }    // Off by one
 ```
 
@@ -363,7 +363,7 @@ Solve $${{a}}x^2 + {{b}}x + {{c}} = 0$$
 ```typescript
 // Define dependencies first
 { name: 'max', expression: '20' }
-{ name: 'a', expression: '{{random:1-{{max}}}}' }
+{ name: 'a', expression: '{{random:1..{{max}}}}' }
 
 // Use meaningful names
 { name: 'numerator', expression: '{{random:1-100}}' }
@@ -434,9 +434,9 @@ When generating a question instance, one variation is selected either:
       statement: [{ type: 'text', content: 'Calculate {{a}} - {{b}}' }],
       variables: [
         { name: 'a', expression: '{{random:10..20}}' },
-        { name: 'b', expression: '{{random:1-{{a}}}}' }
+        { name: 'b', expression: '{{random:1..{{a}}}}' }
       ],
-      answer: '{{eval:{{a}}-{{b}}}}'
+      answer: '{{eval:{{a}}..{{b}}}}'
     }
   ],
   grades: ['6']
@@ -463,9 +463,9 @@ When generating a question instance, one variation is selected either:
       statement: [{ type: 'text', content: 'Calculate: $${{a}} - {{b}}$$' }],
       variables: [
         { name: 'a', expression: '{{random:20-99}}' },
-        { name: 'b', expression: '{{random:10-{{a}}}}' }
+        { name: 'b', expression: '{{random:10..{{a}}}}' }
       ],
-      answer: '{{eval:{{a}}-{{b}}}}'
+      answer: '{{eval:{{a}}..{{b}}}}'
     },
     {
       statement: [{ type: 'text', content: 'Calculate: $${{a}} \\times {{b}}$$' }],

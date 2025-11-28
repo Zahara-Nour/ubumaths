@@ -82,8 +82,8 @@ describe('detectCircularDependencies', () => {
 			const variables: Variable[] = [
 				{ name: 'min', expression: '1' },
 				{ name: 'max', expression: '10' },
-				{ name: 'a', expression: '{{random:{{min}}-{{max}}}}' },
-				{ name: 'b', expression: '{{random:{{min}}-{{max}}!{{a}}}}' },
+				{ name: 'a', expression: '{{random:{{min}}..{{max}}}}' },
+				{ name: 'b', expression: '{{random:{{min}}..{{max}}!{{a}}}}' },
 				{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 			];
 			const result = detectCircularDependencies(variables);
@@ -218,7 +218,7 @@ describe('detectCircularDependencies', () => {
 	describe('Cycles in complex expressions', () => {
 		it('should detect cycle when variable ref is inside random spec bounds', () => {
 			const variables: Variable[] = [
-				{ name: 'a', expression: '{{random:1-{{b}}}}' },
+				{ name: 'a', expression: '{{random:1..{{b}}}}' },
 				{ name: 'b', expression: '{{a}}' }
 			];
 			const result = detectCircularDependencies(variables);
@@ -290,7 +290,7 @@ describe('detectCircularDependencies', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '42' },
 				{ name: 'b', expression: 'text' },
-				{ name: 'c', expression: '{{random:1-10}}' }
+				{ name: 'c', expression: '{{random:1..10}}' }
 			];
 			const result = detectCircularDependencies(variables);
 			expect(result.valid).toBe(true);

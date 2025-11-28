@@ -4,7 +4,7 @@
  *
  * Resolves variables using a 3-stage pipeline:
  * 1. Replace variable references {{var}} → resolved value
- * 2. Generate random numbers {{random:1-10}} → actual number
+ * 2. Generate random numbers {{random:1..10}} → actual number
  * 3. Evaluate expressions {{eval:a+b}} → calculated result
  *
  * Variables are resolved in declaration order, allowing later
@@ -58,7 +58,7 @@ import { evaluateWithModifiers } from '$lib/questions/compute-engine/wrapper';
  * @example Random numbers
  * ```typescript
  * resolveVariables([
- *   { name: 'rand', expression: '{{random:1-10}}' }
+ *   { name: 'rand', expression: '{{random:1..10}}' }
  * ], 12345)
  * // → [{ name: 'rand', value: '7' }] (deterministic with seed)
  * ```
@@ -78,8 +78,8 @@ import { evaluateWithModifiers } from '$lib/questions/compute-engine/wrapper';
  * resolveVariables([
  *   { name: 'min', expression: '1' },
  *   { name: 'max', expression: '10' },
- *   { name: 'a', expression: '{{random:{{min}}-{{max}}}}' },
- *   { name: 'b', expression: '{{random:{{min}}-{{max}}!{{a}}}}' },
+ *   { name: 'a', expression: '{{random:{{min}}..{{max}}}}' },
+ *   { name: 'b', expression: '{{random:{{min}}..{{max}}!{{a}}}}' },
  *   { name: 'sum', expression: '{{eval:a+b}}' }
  * ], 12345)
  * // → All variables resolved with random values and calculated sum

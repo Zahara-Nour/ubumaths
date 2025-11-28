@@ -45,10 +45,10 @@ describe('Markdown Types', () => {
 		});
 
 		it('should detect random placeholders', () => {
-			expect(hasUnresolvedSyntax('{{random:1-10}}')).toBe(true);
+			expect(hasUnresolvedSyntax('{{random:1..10}}')).toBe(true);
 			expect(hasUnresolvedSyntax('{{random:2.3}}')).toBe(true);
-			expect(hasUnresolvedSyntax('{{random:1-10!5}}')).toBe(true);
-			expect(hasUnresolvedSyntax('{{random:1-10!5,7-9}}')).toBe(true);
+			expect(hasUnresolvedSyntax('{{random:1..10!5}}')).toBe(true);
+			expect(hasUnresolvedSyntax('{{random:1..10!5,7..9}}')).toBe(true);
 		});
 
 		it('should detect eval placeholders', () => {
@@ -118,14 +118,14 @@ describe('Markdown Types', () => {
 			const content = `
 				{{a}} + {{b}} = {{eval:a+b}}
 				{{a}} is repeated
-				Random: {{random:1-10}}
+				Random: {{random:1..10}}
 				Fill: {{blank:1}}
 			`;
 			const placeholders = extractPlaceholders(content);
 			expect(placeholders).toContain('{{a}}');
 			expect(placeholders).toContain('{{b}}');
 			expect(placeholders).toContain('{{eval:a+b}}');
-			expect(placeholders).toContain('{{random:1-10}}');
+			expect(placeholders).toContain('{{random:1..10}}');
 			expect(placeholders).toContain('{{blank:1}}');
 			// Should not have duplicates
 			expect(placeholders.filter((p) => p === '{{a}}').length).toBe(1);
@@ -162,7 +162,7 @@ describe('Markdown Types', () => {
 		});
 
 		it('should identify random placeholders', () => {
-			const types = getPlaceholderTypes('{{random:1-10}}');
+			const types = getPlaceholderTypes('{{random:1..10}}');
 			expect(types.variables).toBe(false);
 			expect(types.random).toBe(true);
 			expect(types.eval).toBe(false);
@@ -186,7 +186,7 @@ describe('Markdown Types', () => {
 		});
 
 		it('should identify multiple types', () => {
-			const types = getPlaceholderTypes('{{a}} + {{random:1-10}} = {{eval:a+5}} {{blank:1}}');
+			const types = getPlaceholderTypes('{{a}} + {{random:1..10}} = {{eval:a+5}} {{blank:1}}');
 			expect(types.variables).toBe(true);
 			expect(types.random).toBe(true);
 			expect(types.eval).toBe(true);

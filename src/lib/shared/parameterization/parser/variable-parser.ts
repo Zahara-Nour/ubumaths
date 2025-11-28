@@ -24,7 +24,7 @@
  *
  * @example Invalid tokens
  * ```typescript
- * parseVariableReference('{{random:5-10}}')  // → null (random, not variable)
+ * parseVariableReference('{{random:5..10}}')  // → null (random, not variable)
  * parseVariableReference('{{eval:a+b}}')      // → null (eval, not variable)
  * ```
  */

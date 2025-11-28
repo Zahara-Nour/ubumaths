@@ -34,7 +34,7 @@ describe('parseVariableReference - Markdown syntax', () => {
 
 	describe('Invalid tokens', () => {
 		it('should return null for random token with prefix', () => {
-			expect(parseVariableReference('{{random:1-10}}')).toBeNull();
+			expect(parseVariableReference('{{random:1..10}}')).toBeNull();
 		});
 
 		it('should return null for eval token', () => {
@@ -42,7 +42,7 @@ describe('parseVariableReference - Markdown syntax', () => {
 		});
 
 		it('should return null for random shorthand (range)', () => {
-			expect(parseVariableReference('{{1-10}}')).toBeNull();
+			expect(parseVariableReference('{{1..10}}')).toBeNull();
 		});
 
 		it('should return null for random shorthand (decimal by digits)', () => {

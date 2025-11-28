@@ -130,7 +130,7 @@ describe('Parameterized Exercises - Simple Variables', () => {
 
 	it('should resolve random integer ranges', () => {
 		const exercise = createExercise({
-			variables: [{ name: 'a', expression: '{{1-10}}' }],
+			variables: [{ name: 'a', expression: '{{1..10}}' }],
 			statement_md: 'The number is {{a}}',
 			solution_md: 'You got it!'
 		});
@@ -290,7 +290,7 @@ describe('Error Handling', () => {
 describe('Seeding', () => {
 	it('should generate random seed when not provided', () => {
 		const exercise = createExercise({
-			variables: [{ name: 'a', expression: '{{1-100}}' }],
+			variables: [{ name: 'a', expression: '{{1..100}}' }],
 			statement_md: 'Number: {{a}}',
 			solution_md: 'Done'
 		});
@@ -309,7 +309,7 @@ describe('Seeding', () => {
 
 	it('should use provided seed for reproducible generation', () => {
 		const exercise = createExercise({
-			variables: [{ name: 'a', expression: '{{1-100}}' }],
+			variables: [{ name: 'a', expression: '{{1..100}}' }],
 			statement_md: 'Number: {{a}}',
 			solution_md: 'Done'
 		});
@@ -443,7 +443,7 @@ describe('AST Parsing', () => {
 describe('Batch Generation', () => {
 	it('should generate multiple instances', () => {
 		const exercise = createExercise({
-			variables: [{ name: 'a', expression: '{{1-10}}' }],
+			variables: [{ name: 'a', expression: '{{1..10}}' }],
 			statement_md: 'Number: {{a}}',
 			solution_md: 'Done'
 		});
@@ -456,7 +456,7 @@ describe('Batch Generation', () => {
 
 	it('should generate instances with deterministic seeds when baseSeed provided', () => {
 		const exercise = createExercise({
-			variables: [{ name: 'a', expression: '{{1-100}}' }],
+			variables: [{ name: 'a', expression: '{{1..100}}' }],
 			statement_md: 'Number: {{a}}',
 			solution_md: 'Done'
 		});
@@ -484,7 +484,7 @@ describe('Batch Generation', () => {
 
 	it('should generate instances with random seeds when baseSeed not provided', () => {
 		const exercise = createExercise({
-			variables: [{ name: 'a', expression: '{{1-100}}' }],
+			variables: [{ name: 'a', expression: '{{1..100}}' }],
 			statement_md: 'Number: {{a}}',
 			solution_md: 'Done'
 		});
@@ -519,7 +519,7 @@ describe('Utility Functions', () => {
 
 	it('isParameterized should return true for exercises with variables', () => {
 		const exercise = createExercise({
-			variables: [{ name: 'a', expression: '{{1-10}}' }]
+			variables: [{ name: 'a', expression: '{{1..10}}' }]
 		});
 		expect(isParameterized(exercise)).toBe(true);
 	});
@@ -536,9 +536,9 @@ describe('Integration Tests', () => {
 			difficulty: 2,
 			tags: ['algebra', 'equations', '2nd'],
 			variables: [
-				{ name: 'a', expression: '{{1-5}}' },
-				{ name: 'b', expression: '{{-10-10}}' },
-				{ name: 'c', expression: '{{-10-10}}' },
+				{ name: 'a', expression: '{{1..5}}' },
+				{ name: 'b', expression: '{{-10..10}}' },
+				{ name: 'c', expression: '{{-10..10}}' },
 				{ name: 'discriminant', expression: '{{eval:{{b}}*{{b}} - 4*{{a}}*{{c}}}}' }
 			],
 			statement_md:

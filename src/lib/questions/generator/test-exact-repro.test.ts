@@ -20,8 +20,8 @@ describe('Exact reproduction', () => {
 				{
 					statement: templateMarkdown('Calculate {{a}} + {{b}}'),
 					variables: [
-						{ name: 'a', expression: '{{random:1-10}}' },
-						{ name: 'b', expression: '{{random:1-10}}' }
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' }
 					],
 					answer: '{{eval:a + b}}'
 				}

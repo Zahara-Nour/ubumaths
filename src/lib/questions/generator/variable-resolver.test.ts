@@ -38,7 +38,7 @@ function toObject(resolved: ResolvedVariable[]): Record<string, unknown> {
 
 describe('resolveVariables - Simple Cases', () => {
 	it('should resolve simple integer random variable', () => {
-		const variables: QuestionVariable[] = [{ name: 'a', expression: '{{random:1-10}}' }];
+		const variables: QuestionVariable[] = [{ name: 'a', expression: '{{random:1..10}}' }];
 
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
@@ -68,8 +68,8 @@ describe('resolveVariables - Simple Cases', () => {
 
 	it('should resolve multiple independent variables', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1-5}}' },
-			{ name: 'b', expression: '{{random:6-10}}' },
+			{ name: 'a', expression: '{{random:1..5}}' },
+			{ name: 'b', expression: '{{random:6..10}}' },
 			{ name: 'c', expression: '{{eval:10+5}}' }
 		];
 
@@ -100,7 +100,7 @@ describe('resolveVariables - Variable References', () => {
 
 	it('should resolve variable in eval expression', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1-10}}' },
+			{ name: 'a', expression: '{{random:1..10}}' },
 			{ name: 'b', expression: '{{eval:{{a}} * 2}}' }
 		];
 
@@ -114,7 +114,7 @@ describe('resolveVariables - Variable References', () => {
 		const variables: QuestionVariable[] = [
 			{ name: 'min', expression: '5' },
 			{ name: 'max', expression: '15' },
-			{ name: 'random', expression: '{{random:{{min}}-{{max}}}}' }
+			{ name: 'random', expression: '{{random:{{min}}..{{max}}}}' }
 		];
 
 		const resolved = resolveVariables(variables);
@@ -126,7 +126,7 @@ describe('resolveVariables - Variable References', () => {
 
 	it('should resolve chain of variable references', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1-5}}' },
+			{ name: 'a', expression: '{{random:1..5}}' },
 			{ name: 'b', expression: '{{eval:{{a}} + 10}}' },
 			{ name: 'c', expression: '{{eval:{{b}} * 2}}' }
 		];
@@ -139,8 +139,8 @@ describe('resolveVariables - Variable References', () => {
 
 	it('should resolve multiple variables in one expression', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1-5}}' },
-			{ name: 'b', expression: '{{random:1-5}}' },
+			{ name: 'a', expression: '{{random:1..5}}' },
+			{ name: 'b', expression: '{{random:1..5}}' },
 			{ name: 'sum', expression: '{{eval:{{a}} + {{b}}}}' }
 		];
 
@@ -156,7 +156,7 @@ describe('resolveVariables - 3-Stage Pipeline', () => {
 		const variables: QuestionVariable[] = [
 			{ name: 'lower', expression: '1' },
 			{ name: 'upper', expression: '10' },
-			{ name: 'random', expression: '{{random:{{lower}}-{{upper}}}}' }
+			{ name: 'random', expression: '{{random:{{lower}}..{{upper}}}}' }
 		];
 
 		const resolved = resolveVariables(variables);
@@ -168,7 +168,7 @@ describe('resolveVariables - 3-Stage Pipeline', () => {
 
 	it('should resolve random before eval', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'random', expression: '{{random:1-10}}' },
+			{ name: 'random', expression: '{{random:1..10}}' },
 			{ name: 'doubled', expression: '{{eval:{{random}} * 2}}' }
 		];
 
@@ -181,7 +181,7 @@ describe('resolveVariables - 3-Stage Pipeline', () => {
 	it('should resolve full pipeline: variable → random → eval', () => {
 		const variables: QuestionVariable[] = [
 			{ name: 'max', expression: '10' },
-			{ name: 'random', expression: '{{random:1-{{max}}}}' },
+			{ name: 'random', expression: '{{random:1..{{max}}}}' },
 			{ name: 'squared', expression: '{{eval:{{random}}^2}}' }
 		];
 
@@ -195,11 +195,11 @@ describe('resolveVariables - 3-Stage Pipeline', () => {
 
 	it('should handle complex multi-stage resolution', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'base', expression: '{{random:2-5}}' },
+			{ name: 'base', expression: '{{random:2..5}}' },
 			{ name: 'multiplier', expression: '{{eval:{{base}} * 2}}' },
 			{ name: 'min', expression: '{{multiplier}}' },
 			{ name: 'max', expression: '{{eval:{{multiplier}} + 10}}' },
-			{ name: 'final', expression: '{{random:{{min}}-{{max}}}}' }
+			{ name: 'final', expression: '{{random:{{min}}..{{max}}}}' }
 		];
 
 		const resolved = resolveVariables(variables);
@@ -220,7 +220,7 @@ describe('resolveVariables - Exclusions with Variables', () => {
 	it('should resolve variable in value exclusion', () => {
 		const variables: QuestionVariable[] = [
 			{ name: 'exclude', expression: '5' },
-			{ name: 'random', expression: '{{random:1-10!{{exclude}}}}' }
+			{ name: 'random', expression: '{{random:1..10!{{exclude}}}}' }
 		];
 
 		const resolved = resolveVariables(variables, 12345);
@@ -235,7 +235,7 @@ describe('resolveVariables - Exclusions with Variables', () => {
 		const variables: QuestionVariable[] = [
 			{ name: 'excludeMin', expression: '5' },
 			{ name: 'excludeMax', expression: '8' },
-			{ name: 'random', expression: '{{random:1-15!{{excludeMin}}-{{excludeMax}}}}' }
+			{ name: 'random', expression: '{{random:1..15!{{excludeMin}}..{{excludeMax}}}}' }
 		];
 
 		const resolved = resolveVariables(variables, 54321);
@@ -248,7 +248,7 @@ describe('resolveVariables - Exclusions with Variables', () => {
 		const variables: QuestionVariable[] = [
 			{ name: 'a', expression: '3' },
 			{ name: 'b', expression: '7' },
-			{ name: 'random', expression: '{{random:1-10!{{a}},{{b}}}}' }
+			{ name: 'random', expression: '{{random:1..10!{{a}},{{b}}}}' }
 		];
 
 		const resolved = resolveVariables(variables, 11111);
@@ -262,8 +262,8 @@ describe('resolveVariables - Exclusions with Variables', () => {
 describe('resolveVariables - Seeded Random', () => {
 	it('should produce same results with same seed', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1-100}}' },
-			{ name: 'b', expression: '{{random:1-100}}' }
+			{ name: 'a', expression: '{{random:1..100}}' },
+			{ name: 'b', expression: '{{random:1..100}}' }
 		];
 
 		const resolved1 = resolveVariables(variables, 99999);
@@ -276,7 +276,7 @@ describe('resolveVariables - Seeded Random', () => {
 	});
 
 	it('should produce different results with different seeds', () => {
-		const variables: QuestionVariable[] = [{ name: 'a', expression: '{{random:1-1000}}' }];
+		const variables: QuestionVariable[] = [{ name: 'a', expression: '{{random:1..1000}}' }];
 
 		const resolved1 = resolveVariables(variables, 11111);
 		const resolved2 = resolveVariables(variables, 22222);
@@ -289,10 +289,10 @@ describe('resolveVariables - Seeded Random', () => {
 
 	it('should produce reproducible results for complex variables', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1-10}}' },
-			{ name: 'b', expression: '{{random:1-10}}' },
+			{ name: 'a', expression: '{{random:1..10}}' },
+			{ name: 'b', expression: '{{random:1..10}}' },
 			{ name: 'sum', expression: '{{eval:{{a}} + {{b}}}}' },
-			{ name: 'random', expression: '{{random:{{sum}}-100}}' }
+			{ name: 'random', expression: '{{random:{{sum}}..100}}' }
 		];
 
 		const resolved1 = resolveVariables(variables, 77777);
@@ -304,7 +304,7 @@ describe('resolveVariables - Seeded Random', () => {
 
 describe('resolveVariables - Decimal Variables', () => {
 	it('should resolve decimal random variable', () => {
-		const variables: QuestionVariable[] = [{ name: 'a', expression: '{{random:0.5-9.99:0.01}}' }];
+		const variables: QuestionVariable[] = [{ name: 'a', expression: '{{random:0.5..9.99:0.01}}' }];
 
 		const resolved = resolveVariables(variables);
 		const result = toObject(resolved);
@@ -325,7 +325,7 @@ describe('resolveVariables - Decimal Variables', () => {
 
 	it('should resolve eval with decimal variables', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1.5-5.5:0.5}}' },
+			{ name: 'a', expression: '{{random:1.5..5.5:0.5}}' },
 			{ name: 'b', expression: '{{eval:{{a}} * 2}}' }
 		];
 
@@ -339,7 +339,7 @@ describe('resolveVariables - Decimal Variables', () => {
 		const variables: QuestionVariable[] = [
 			{ name: 'min', expression: '1.5' },
 			{ name: 'max', expression: '9.5' },
-			{ name: 'random', expression: '{{random:{{min}}-{{max}}:0.1}}' }
+			{ name: 'random', expression: '{{random:{{min}}..{{max}}:0.1}}' }
 		];
 
 		const resolved = resolveVariables(variables);
@@ -353,10 +353,10 @@ describe('resolveVariables - Decimal Variables', () => {
 describe('resolveVariables - Complex Mathematical Examples', () => {
 	it('should resolve fraction addition variables', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'den', expression: '{{random:2-9}}' },
+			{ name: 'den', expression: '{{random:2..9}}' },
 			{ name: 'maxNum', expression: '{{eval:{{den}}-1}}' },
-			{ name: 'num1', expression: '{{random:1-{{maxNum}}}}' },
-			{ name: 'num2', expression: '{{random:1-{{maxNum}}!{{num1}}}}' },
+			{ name: 'num1', expression: '{{random:1..{{maxNum}}}}' },
+			{ name: 'num2', expression: '{{random:1..{{maxNum}}!{{num1}}}}' },
 			{ name: 'answer', expression: '{{eval:({{num1}}+{{num2}})/{{den}}}}' }
 		];
 
@@ -378,9 +378,9 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 
 	it('should resolve GCD/simplification variables', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'gcd', expression: '{{random:2-5}}' },
-			{ name: 'a', expression: '{{random:2-9}}' },
-			{ name: 'b', expression: '{{random:2-9!{{a}}}}' },
+			{ name: 'gcd', expression: '{{random:2..5}}' },
+			{ name: 'a', expression: '{{random:2..9}}' },
+			{ name: 'b', expression: '{{random:2..9!{{a}}}}' },
 			{ name: 'num', expression: '{{eval:{{a}}*{{gcd}}}}' },
 			{ name: 'den', expression: '{{eval:{{b}}*{{gcd}}}}' },
 			{ name: 'answer', expression: '{{eval:{{num}}/{{den}}}}' }
@@ -399,9 +399,9 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 
 	it('should resolve quadratic equation variables', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1-5}}' },
-			{ name: 'b', expression: '{{random:-10-10}}' },
-			{ name: 'c', expression: '{{random:-10-10}}' },
+			{ name: 'a', expression: '{{random:1..5}}' },
+			{ name: 'b', expression: '{{random:-10..10}}' },
+			{ name: 'c', expression: '{{random:-10..10}}' },
 			{ name: 'discriminant', expression: '{{eval:{{b}}^2 - 4*{{a}}*{{c}}}}' }
 		];
 
@@ -415,8 +415,8 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 
 	it('should resolve percentage calculation variables', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'price', expression: '{{random:10-100}}' },
-			{ name: 'discount', expression: '{{random:5-50}}' },
+			{ name: 'price', expression: '{{random:10..100}}' },
+			{ name: 'discount', expression: '{{random:5..50}}' },
 			{ name: 'reduction', expression: '{{eval:{{price}} * {{discount}} / 100}}' },
 			{ name: 'final', expression: '{{eval:{{price}} - {{reduction}}}}' }
 		];
@@ -453,7 +453,7 @@ describe('resolveVariables - Edge Cases', () => {
 
 	it('should handle LaTeX in variable expressions', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1-10}}' },
+			{ name: 'a', expression: '{{random:1..10}}' },
 			{ name: 'latex', expression: '\\frac{{{a}}}{2}' }
 		];
 
@@ -465,7 +465,7 @@ describe('resolveVariables - Edge Cases', () => {
 
 	it('should handle very long variable names', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'very_long_variable_name_for_testing', expression: '{{random:1-10}}' },
+			{ name: 'very_long_variable_name_for_testing', expression: '{{random:1..10}}' },
 			{
 				name: 'result',
 				expression: '{{eval:{{very_long_variable_name_for_testing}} * 2}}'
@@ -480,7 +480,7 @@ describe('resolveVariables - Edge Cases', () => {
 
 	it('should handle negative numbers in eval', () => {
 		const variables: QuestionVariable[] = [
-			{ name: 'a', expression: '{{random:1-10}}' },
+			{ name: 'a', expression: '{{random:1..10}}' },
 			{ name: 'negative', expression: '{{eval:-{{a}}}}' }
 		];
 
@@ -537,7 +537,7 @@ describe('resolveVariables - Error Handling', () => {
 	});
 
 	it('should throw on invalid random expression (min > max)', () => {
-		const variables: QuestionVariable[] = [{ name: 'a', expression: '{{random:10-1}}' }];
+		const variables: QuestionVariable[] = [{ name: 'a', expression: '{{random:10..1}}' }];
 
 		expect(() => resolveVariables(variables)).toThrow();
 	});

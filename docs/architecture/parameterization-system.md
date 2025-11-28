@@ -243,7 +243,7 @@ These need to be resolved in a specific order.
 
 **Why This Order?**
 
-- Variables must be resolved before random generation (for variable bounds: `{{random:{{min}}-{{max}}}}`)
+- Variables must be resolved before random generation (for variable bounds: `{{random:{{min}}..{{max}}}}`)
 - Random numbers must be generated before evaluation (for `{{eval:{{random:1..10}}+5}}`)
 - Evaluation must be last (for `{{eval:{{a}}+{{b}}}}`)
 
@@ -396,7 +396,7 @@ replace {{a}}: '5 + 10'
 **Handles:**
 
 - Simple references: `{{a}}`
-- Nested in random: `{{random:{{min}}-{{max}}}}`
+- Nested in random: `{{random:{{min}}..{{max}}}}`
 - Nested in eval: `{{eval:{{a}}+{{b}}}}`
 - Multiple references: `{{a}} + {{b}} - {{c}}`
 
@@ -434,7 +434,7 @@ replace: '7'
 
 ```typescript
 // Input
-expression: '{{random:{{min}}-{{max}}}}'
+expression: '{{random:{{min}}..{{max}}}}'
 resolved: [{ name: 'min', value: '1' }, { name: 'max', value: '100' }]
 
 // Process (after Stage 1 already replaced variables)
@@ -455,7 +455,7 @@ replace: '42'
 - Decimal by digits: `{{2.3}}` (2 digits before, 3 after)
 - Decimal range: `{{1..1.6}}` (auto-step=0.1) or `{{0.5..9.99:0.01}}` (explicit step)
 - Exclusions: `{{1..10!5,7-9}}` or `{{1..20!5..7}}`
-- Variable bounds: `{{{{min}}-{{max}}}}` or `{{{{min}}..{{max}}}}`
+- Variable bounds: `{{{{min}}..{{max}}}}` or `{{{{min}}..{{max}}}}`
 
 ### Stage 3: Expression Evaluation
 
@@ -876,7 +876,7 @@ function getVariableNames(expression: string): string[] {
 			// Direct reference: {{a}}
 			names.push(parseVariableReference(token.content));
 		} else if (token.type === 'random') {
-			// Inside random spec: {{random:{{min}}-{{max}}!{{exclude}}}}
+			// Inside random spec: {{random:{{min}}..{{max}}!{{exclude}}}}
 			const spec = parseRandomSpec(token.content);
 			if (spec.type === 'integer' || spec.type === 'decimal-range') {
 				if (spec.min.type === 'variable') names.push(spec.min.name);

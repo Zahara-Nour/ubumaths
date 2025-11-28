@@ -87,7 +87,7 @@ function extractMarkdownTokens(text: string): Token[] {
  * Extract a Markdown syntax braced token starting at position
  *
  * Handles nested braces correctly for complex expressions like:
- * {{random:{{min}}-{{max}}}}
+ * {{random:{{min}}..{{max}}}}
  */
 function extractMarkdownBracedToken(
 	text: string,
@@ -187,10 +187,11 @@ function hasTopLevelPipe(content: string): boolean {
  *
  * Random patterns:
  * - Contains "|" at top level: "a|b|c", "rouge|vert|bleu", "{{x}}|{{y}}" (discrete list)
- * - Contains "-" with numbers: "1-10", "{{min}}-{{max}}" (integer range)
- * - Contains "." with digits on both sides: "2.3" (decimal by digits)
- * - Contains ":" for step notation: "0.5-9.99:0.01"
- * - Contains "!" for exclusions: "1-10!5"
+ * - Contains ".." (double dot) for ranges: "1..10", "{{min}}..{{max}}", "-5..10"
+ * - Contains single "." with digits on both sides: "2.3" (decimal by digits)
+ * - Contains ":" for step notation: "0.5..9.99:0.01"
+ * - Contains "!" for exclusions: "1..10!5"
+ * - Contains "±" for relative integers: "±2..9"
  */
 function isRandomShorthand(content: string): boolean {
 	// Check for discrete list: contains | at top level
@@ -198,16 +199,18 @@ function isRandomShorthand(content: string): boolean {
 		return true;
 	}
 
-	// Check for range: contains "-" with context suggesting numbers
-	// Examples: "1-10", "-5-10", "{{min}}-{{max}}"
-	if (content.includes('-')) {
-		// Simple heuristic: if contains digits or nested braces, likely a range
-		if (/\d/.test(content) || content.includes('{{')) {
-			return true;
-		}
+	// Check for range: contains ".." (double dot) separator
+	// Examples: "1..10", "-5..10", "{{min}}..{{max}}"
+	if (content.includes('..')) {
+		return true;
 	}
 
-	// Check for decimal by digits: "2.3" (digit.digit format)
+	// Check for relative integer prefix
+	if (content.startsWith('±') || content.startsWith('+/-')) {
+		return true;
+	}
+
+	// Check for decimal by digits: "2.3" (digit.digit format - single dot only)
 	if (/^\d+\.\d+$/.test(content)) {
 		return true;
 	}

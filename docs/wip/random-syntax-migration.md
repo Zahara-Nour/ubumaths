@@ -51,7 +51,7 @@ Supprimer le support de la syntaxe `-` (tiret simple) pour les plages et ne cons
 - `{{0.5-9.99:0.01}}` → `{{0.5..9.99:0.01}}`
 - `{{random:1-10!5}}` → `{{random:1..10!5}}`
 - `{{1-20!5-9}}` → `{{1..20!5..9}}`
-- `{{{{min}}-{{max}}}}` → `{{{{min}}..{{max}}}}`
+- `{{{{min}}..{{max}}}}` → `{{{{min}}..{{max}}}}`
 - Et tous les autres cas similaires
 
 **Résultat des tests** :
@@ -223,3 +223,55 @@ La syntaxe `{{1-10}}` n'est plus supportée. Utiliser `{{1..10}}`.
 - **Codebase 100% cohérente** avec la syntaxe `..`
 - Documentation, tests, et code source alignés
 - Aucune trace de l'ancienne syntaxe `-` (hors contexte historique)
+
+---
+
+## État : Phase 5 Complétée ✓
+
+### Modifications effectuées
+
+#### Tokenizer (`src/lib/shared/parameterization/parser/tokenizer.ts`)
+
+**Code modifié** :
+
+- `isRandomShorthand()` : Mise à jour pour détecter `..` au lieu de `-`
+  - Avant : `if (content.includes('-'))` pour détecter les plages
+  - Après : `if (content.includes('..'))` pour détecter les plages
+  - Commentaires mis à jour pour refléter la syntaxe `..`
+
+#### Tests mis à jour
+
+**Fichiers modifiés** :
+
+1. `src/lib/shared/parameterization/parser/tokenizer.test.ts` - 31 tests
+2. `src/lib/shared/parameterization/validator/variable-validator.test.ts` - 42 tests
+3. `src/lib/shared/parameterization/validator/circular-dependency.test.ts` - 26 tests
+4. `src/lib/questions/generator/variable-resolver.test.ts` - 39 tests
+5. `src/lib/shared/parameterization/parser/eval-parser.test.ts` - 51 tests
+6. `src/lib/migration/question-transformer.test.ts` - 35 tests
+
+**Patterns corrigés** :
+
+- `{{random:{{min}}-{{max}}}}` → `{{random:{{min}}..{{max}}}}`
+- `{{random:1-{{max}}}}` → `{{random:1..{{max}}}}`
+- `{{random:-10--5}}` → `{{random:-10..-5}}`
+- Correction de patterns `{{eval:...}}` incorrectement convertis (subtraction ≠ range)
+
+**Résultat des tests** :
+✓ 566 tests passent (1 skipped intentionnellement)
+✓ Tous les tests parameterization/migration/questions alignés
+
+### Résumé final complet
+
+| Composant   | Fichier(s)                       | Tests |
+| ----------- | -------------------------------- | ----- |
+| Parser      | `random-parser.ts`               | 69 ✓  |
+| Tokenizer   | `tokenizer.ts`                   | 31 ✓  |
+| Converter   | `syntax-converter.ts`            | 118 ✓ |
+| Validators  | `variable-validator.ts`, etc.    | 68 ✓  |
+| Resolvers   | `variable-resolver.ts` (×2)      | 93 ✓  |
+| Eval Parser | `eval-parser.test.ts`            | 51 ✓  |
+| Transformer | `question-transformer.test.ts`   | 35 ✓  |
+| Docs        | `markdown.md`, `README.md`, etc. | -     |
+
+**Total : 566 tests passent**

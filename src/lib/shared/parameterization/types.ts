@@ -134,7 +134,7 @@ export type Exclusion =
  * Spec: { type: 'decimal-by-digits', digitsBefore: {type:'number',value:2}, digitsAfter: {...,value:3} }
  *
  * @example Decimal range with step
- * Syntax: {{random:0.5-9.99:0.01}} or {{0.5..9.99:0.01}}
+ * Syntax: {{random:0.5..9.99:0.01}} or {{0.5..9.99:0.01}}
  * Spec: { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01 }
  *
  * @example Discrete list
@@ -142,11 +142,11 @@ export type Exclusion =
  * Spec: { type: 'discrete-list', items: ['rouge', 'vert', 'bleu'], exclusions: [] }
  *
  * @example With exclusions
- * Syntax: {{random:1-20!5,7-9}} or {{1..20!5,7-9}}
+ * Syntax: {{random:1..20!5,7..9}} or {{1..20!5,7..9}}
  * Spec: { ..., exclusions: [...] }
  *
  * @example Variable bounds
- * Syntax: {{random:{{min}}-{{max}}}} or {{{{min}}-{{max}}}}
+ * Syntax: {{random:{{min}}..{{max}}}} or {{{{min}}..{{max}}}}
  * Spec: { type: 'integer', min: {type:'variable',name:'min'}, max: {type:'variable',name:'max'} }
  */
 export type RandomSpec =
