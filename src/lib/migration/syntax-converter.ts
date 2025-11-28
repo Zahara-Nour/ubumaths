@@ -362,7 +362,7 @@ export class TinyCASConverter {
 	}
 
 	/**
-	 * Convert random selection from list: $l{item1;item2;item3} → {{list:item1,item2,item3}}
+	 * Convert random selection from list: $l{item1;item2;item3} → {{item1|item2|item3}}
 	 */
 	private convertListSelections(input: string): string {
 		// Pattern for list selection with semicolon separator
@@ -393,8 +393,8 @@ export class TinyCASConverter {
 				return item;
 			});
 
-			// Join with commas for new syntax
-			return `{{list:${itemList.join(',')}}}`;
+			// Join with pipe separator for new syntax
+			return `{{${itemList.join('|')}}}`;
 		});
 	}
 
@@ -695,9 +695,9 @@ export function validateConversion(original: string, converted: string): boolean
 // "$e{4;4}" → "{{1000-9999}}" or "{{4.0}}"
 
 // List selection:
-// "$l{1;2;5;10}" → "{{list:1,2,5,10}}"
-// "$l{rouge;bleu;vert}" → "{{list:rouge,bleu,vert}}"
-// "$l{0;$e[1;9]}" → "{{list:0,{{1-9}}}}" (with warning)
+// "$l{1;2;5;10}" → "{{1|2|5|10}}"
+// "$l{rouge;bleu;vert}" → "{{rouge|bleu|vert}}"
+// "$l{0;$e[1;9]}" → "{{0|{{1-9}}}}" (with warning)
 
 // Variable references:
 // "&1" → "{{1}}"

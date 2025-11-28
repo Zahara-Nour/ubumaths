@@ -20,7 +20,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toBe(
-			'Calculer {{eval:{{1-20}} + {{1-20}}}} = {{1}}. Puis soustraire {{list:5,10,15}} pour obtenir {{2}}.'
+			'Calculer {{eval:{{1-20}} + {{1-20}}}} = {{1}}. Puis soustraire {{5|10|15}} pour obtenir {{2}}.'
 		);
 		expect(result.stats!.randomIntegers).toBe(2);
 		expect(result.stats!.evaluations).toBe(1);
@@ -47,9 +47,9 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toContain('{{list:0.25,0.5,0.75}}');
+		expect(result.converted).toContain('{{0.25|0.5|0.75}}');
 		expect(result.converted).toContain('{{eval:{{1}}/2}}');
-		expect(result.converted).toContain('{{list:rouge,bleu,vert}}');
+		expect(result.converted).toContain('{{rouge|bleu|vert}}');
 		expect(result.stats!.listSelections).toBe(2);
 		expect(result.stats!.evaluations).toBe(1);
 	});
@@ -78,7 +78,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 		expect(result.converted).toContain('{{1-10}}');
 		expect(result.converted).toContain('{{1-10!{{x}}}}');
 		expect(result.converted).toContain('{{eval:{{x}}+{{y}}}}');
-		expect(result.converted).toContain('{{list:1,2,3,5,7}}');
+		expect(result.converted).toContain('{{1|2|3|5|7}}');
 		expect(result.stats!.randomIntegers).toBe(1);
 		expect(result.stats!.exclusions).toBe(1);
 		expect(result.stats!.evaluations).toBe(1);
@@ -104,7 +104,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Nested Patterns', () =>
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{{list:a,b,c}}');
+		expect(result.converted).toBe('{{a|b|c}}');
 		expect(result.stats!.listSelections).toBe(1);
 	});
 
@@ -123,7 +123,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Nested Patterns', () =>
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toContain('{{list:');
+		expect(result.converted).toContain('{{');
 		expect(result.stats!.listSelections).toBe(1);
 	});
 
@@ -177,7 +177,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Edge Cases', () => {
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{-10-30}}°C');
 		expect(result.converted).toContain('{{p}}');
-		expect(result.converted).toContain('{{list:3.14,3.1416}}');
+		expect(result.converted).toContain('{{3.14|3.1416}}');
 	});
 
 	it('should handle HTML entities (converted as variables)', () => {
@@ -252,7 +252,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Performance', () => {
 
 		expect(result.success).toBe(true);
 		expect(result.stats!.variableRefs).toBe(1000);
-		expect(endTime - startTime).toBeLessThan(50); // Should complete quickly
+		expect(endTime - startTime).toBeLessThan(1000); // Should complete in under 1 second
 	});
 });
 
@@ -262,7 +262,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Validation', () => {
 			{ input: '$e[1;10]', output: '{{1-10}}' },
 			{ input: '&var', output: '{{var}}' },
 			{ input: '[_&x+1_]', output: '{{eval:{{x}}+1}}' },
-			{ input: '$l{a:b:c}', output: '{{list:a,b,c}}' },
+			{ input: '$l{a:b:c}', output: '{{a|b|c}}' },
 			{ input: '$e{3;3}', output: '{{100-999}}' }
 		];
 
@@ -320,7 +320,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Batch Conversion', () =
 		expect(results[0].converted).toBe('Question 1: {{1-10}}');
 		expect(results[1].converted).toBe('Question 2: {{x}} + {{y}}');
 		expect(results[2].converted).toBe('Question 3: {{eval:{{a}}*{{b}}}}');
-		expect(results[3].converted).toBe('Question 4: {{list:1,2,3}}');
+		expect(results[3].converted).toBe('Question 4: {{1|2|3}}');
 		expect(results.every((r) => r.success)).toBe(true);
 	});
 

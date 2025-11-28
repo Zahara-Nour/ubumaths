@@ -250,30 +250,30 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('4. Random from List Tests', () => {
 		it('should convert numeric lists', () => {
-			expectConversion('$l{1;2;5;10}', '{{list:1,2,5,10}}');
-			expectConversion('$l{0;1;2;3;4}', '{{list:0,1,2,3,4}}');
-			expectConversion('$l{-5;-2;0;2;5}', '{{list:-5,-2,0,2,5}}');
+			expectConversion('$l{1;2;5;10}', '{{1|2|5|10}}');
+			expectConversion('$l{0;1;2;3;4}', '{{0|1|2|3|4}}');
+			expectConversion('$l{-5;-2;0;2;5}', '{{-5|-2|0|2|5}}');
 		});
 
 		it('should convert string lists', () => {
-			expectConversion('$l{rouge;bleu;vert}', '{{list:rouge,bleu,vert}}');
-			expectConversion('$l{apple;banana;orange}', '{{list:apple,banana,orange}}');
-			expectConversion('$l{A;B;C;D}', '{{list:A,B,C,D}}');
+			expectConversion('$l{rouge;bleu;vert}', '{{rouge|bleu|vert}}');
+			expectConversion('$l{apple;banana;orange}', '{{apple|banana|orange}}');
+			expectConversion('$l{A;B;C;D}', '{{A|B|C|D}}');
 		});
 
 		it('should handle lists with spaces', () => {
-			expectConversion('$l{ rouge ; bleu ; vert }', '{{list:rouge,bleu,vert}}');
-			expectConversion('$l{1 ; 2 ; 3}', '{{list:1,2,3}}');
+			expectConversion('$l{ rouge ; bleu ; vert }', '{{rouge|bleu|vert}}');
+			expectConversion('$l{1 ; 2 ; 3}', '{{1|2|3}}');
 		});
 
 		it('should convert lists with colon separator', () => {
-			expectConversion('$l{a:b:c}', '{{list:a,b,c}}');
-			expectConversion('$l{1:2:3:4}', '{{list:1,2,3,4}}');
+			expectConversion('$l{a:b:c}', '{{a|b|c}}');
+			expectConversion('$l{1:2:3:4}', '{{1|2|3|4}}');
 		});
 
 		it('should handle nested random patterns with warning', () => {
 			const result = convertTinyCASToNew('$l{0;$e[1;9]}');
-			expect(result.converted).toBe('{{list:0,{{1-9}}}}');
+			expect(result.converted).toBe('{{0|{{1-9}}}}');
 			// The converter only warns for nested patterns when present, not for simple cases
 			if (result.warnings) {
 				expectWarning('$l{0;$e[1;9]}', 'Complex list item');
@@ -281,7 +281,7 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should convert multiple lists in one string', () => {
-			expectConversion('Choose $l{A;B;C} or $l{X;Y;Z}', 'Choose {{list:A,B,C}} or {{list:X,Y,Z}}');
+			expectConversion('Choose $l{A;B;C} or $l{X;Y;Z}', 'Choose {{A|B|C}} or {{X|Y|Z}}');
 		});
 
 		it('should track statistics for list selections', () => {
@@ -432,14 +432,14 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should convert multiple different patterns in one string', () => {
 			const input = '$e[1;10] + &var = [_&var+5_] or $l{yes;no}';
-			const expected = '{{1-10}} + {{var}} = {{eval:{{var}}+5}} or {{list:yes,no}}';
+			const expected = '{{1-10}} + {{var}} = {{eval:{{var}}+5}} or {{yes|no}}';
 			expectConversion(input, expected);
 		});
 
 		it('should handle deeply nested patterns', () => {
 			const input = '$l{0;$e[1;9]\\{&1}}';
 			const result = convertTinyCASToNew(input);
-			expect(result.converted).toBe('{{list:0,{{1-9!{{1}}}}}}');
+			expect(result.converted).toBe('{{0|{{1-9!{{1}}}}}}');
 			// The warning may or may not be generated depending on the pattern
 			// Just verify the conversion is correct
 		});
@@ -604,7 +604,7 @@ describe('TinyCAS Syntax Converter', () => {
 			expect(results[0].converted).toBe('{{1-10}}');
 			expect(results[1].converted).toBe('{{1}} + {{2}}');
 			expect(results[2].converted).toBe('{{eval:{{1}}*10}}');
-			expect(results[3].converted).toBe('{{list:red,green,blue}}');
+			expect(results[3].converted).toBe('{{red|green|blue}}');
 
 			// All should be successful
 			results.forEach((result) => {
@@ -667,7 +667,7 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should handle all patterns in correct order', () => {
 			const input = '[_&1*10_] + $e[0;9]\\{&2} + $e[1;5] + &3 + $l{a;b}';
-			const expected = '{{eval:{{1}}*10}} + {{0-9!{{2}}}} + {{1-5}} + {{3}} + {{list:a,b}}';
+			const expected = '{{eval:{{1}}*10}} + {{0-9!{{2}}}} + {{1-5}} + {{3}} + {{a|b}}';
 			expectConversion(input, expected);
 		});
 	});
@@ -704,7 +704,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should handle mixed French and mathematical content', () => {
 			const input = 'Choisis entre $l{rouge;bleu;vert} pour colorier $e[2;5] cercles de rayon &r';
 			const expected =
-				'Choisis entre {{list:rouge,bleu,vert}} pour colorier {{2-5}} cercles de rayon {{r}}';
+				'Choisis entre {{rouge|bleu|vert}} pour colorier {{2-5}} cercles de rayon {{r}}';
 			expectConversion(input, expected);
 		});
 	});
@@ -764,8 +764,8 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('18. Unicode and Special Characters Tests', () => {
 		it('should handle Unicode characters in lists', () => {
-			expectConversion('$l{α;β;γ;δ}', '{{list:α,β,γ,δ}}');
-			expectConversion('$l{😀;😃;😄}', '{{list:😀,😃,😄}}');
+			expectConversion('$l{α;β;γ;δ}', '{{α|β|γ|δ}}');
+			expectConversion('$l{😀;😃;😄}', '{{😀|😃|😄}}');
 		});
 
 		it('should preserve Unicode in text', () => {
@@ -774,7 +774,7 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should handle French accented characters', () => {
-			expectConversion('$l{élève;étudiant;professeur}', '{{list:élève,étudiant,professeur}}');
+			expectConversion('$l{élève;étudiant;professeur}', '{{élève|étudiant|professeur}}');
 		});
 	});
 
