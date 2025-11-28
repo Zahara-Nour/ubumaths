@@ -53,7 +53,7 @@ describe('Question Transformer', () => {
 				expect(variation?.variables).toHaveLength(2);
 				expect(variation?.variables?.[0]).toEqual({
 					name: '1',
-					expression: '{{1-10}}'
+					expression: '{{1..10}}'
 				});
 				expect(variation?.answer).toBe('{{eval:{{1}}+{{2}}}}');
 			});
@@ -411,8 +411,8 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]).toEqual({ name: '1', expression: '{{1-9}}' });
-				expect(vars?.[1]).toEqual({ name: '2', expression: '{{0-9!{{1}}}}' });
+				expect(vars?.[0]).toEqual({ name: '1', expression: '{{1..9}}' });
+				expect(vars?.[1]).toEqual({ name: '2', expression: '{{0..9!{{1}}}}' });
 				expect(vars?.[2]).toEqual({ name: '3', expression: '{{eval:{{1}}*10+{{2}}}}' });
 
 				expect(result.template?.variations[0]?.answer).toBe('{{1}}');
@@ -438,7 +438,7 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]?.expression).toBe('{{1000-9999}}');
+				expect(vars?.[0]?.expression).toBe('{{1000..9999}}');
 			});
 
 			it('should convert list selections', () => {
@@ -603,7 +603,7 @@ describe('Question Transformer', () => {
 			expect(result.template?.shared?.variables).toBeDefined();
 			expect(result.template?.shared?.variables?.length).toBeGreaterThan(0);
 			expect(result.template?.shared?.variables?.[0]?.name).toBe('1');
-			expect(result.template?.shared?.variables?.[0]?.expression).toBe('{{1-10}}');
+			expect(result.template?.shared?.variables?.[0]?.expression).toBe('{{1..10}}');
 		});
 
 		it('should detect shared answer when 1 solutionss for multiple variations', () => {

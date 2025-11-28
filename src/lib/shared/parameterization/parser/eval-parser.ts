@@ -54,7 +54,7 @@ const MODIFIER_ALIASES: Record<string, keyof EvalModifiers> = {
  * @example Invalid tokens
  * ```typescript
  * parseEvalExpression('{{var}}')  // → null (variable, not eval)
- * parseEvalExpression('{{random:1-10}}')  // → null (random, not eval)
+ * parseEvalExpression('{{random:1..10}}')  // → null (random, not eval)
  * ```
  */
 export function parseEvalExpression(token: string): string | null {

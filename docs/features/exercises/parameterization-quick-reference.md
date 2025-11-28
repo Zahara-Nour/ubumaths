@@ -188,16 +188,16 @@ Variables :
 
 ## Operateurs eval
 
-| Operateur      | Syntaxe     | Exemple                     |
-| -------------- | ----------- | --------------------------- |
-| Addition       | `+`         | `{{eval:{{a}}+{{b}}}}`      |
-| Soustraction   | `-`         | `{{eval:{{a}}-{{b}}}}`      |
-| Multiplication | `*`         | `{{eval:{{a}}*{{b}}}}`      |
-| Division       | `/`         | `{{eval:{{a}}/{{b}}}}`      |
-| Puissance      | `^`         | `{{eval:{{a}}^2}}`          |
-| Racine carree  | `sqrt(...)` | `{{eval:sqrt({{a}})}}`      |
-| Valeur absolue | `abs(...)`  | `{{eval:abs({{a}}-{{b}})}}` |
-| Parentheses    | `(...)`     | `{{eval:({{a}}+{{b}})/2}}`  |
+| Operateur      | Syntaxe     | Exemple                      |
+| -------------- | ----------- | ---------------------------- |
+| Addition       | `+`         | `{{eval:{{a}}+{{b}}}}`       |
+| Soustraction   | `-`         | `{{eval:{{a}}..{{b}}}}`      |
+| Multiplication | `*`         | `{{eval:{{a}}*{{b}}}}`       |
+| Division       | `/`         | `{{eval:{{a}}/{{b}}}}`       |
+| Puissance      | `^`         | `{{eval:{{a}}^2}}`           |
+| Racine carree  | `sqrt(...)` | `{{eval:sqrt({{a}})}}`       |
+| Valeur absolue | `abs(...)`  | `{{eval:abs({{a}}..{{b}})}}` |
+| Parentheses    | `(...)`     | `{{eval:({{a}}+{{b}})/2}}`   |
 
 ---
 

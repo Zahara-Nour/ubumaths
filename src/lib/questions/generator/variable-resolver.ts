@@ -39,7 +39,7 @@ import {
  * @example
  * ```typescript
  * // Simple random (Markdown syntax)
- * resolveVariableExpression('{{random:1-10}}', [], 42)  // → "7"
+ * resolveVariableExpression('{{random:1..10}}', [], 42)  // → "7"
  *
  * // Reference to other variable
  * const resolved = [{ name: 'a', value: '5' }];
@@ -72,7 +72,7 @@ export function resolveVariableExpression(
  * @example
  * ```typescript
  * const variables = [
- *   { name: 'a', expression: '{{random:1-10}}' },
+ *   { name: 'a', expression: '{{random:1..10}}' },
  *   { name: 'b', expression: '{{a}} + 5' },
  *   { name: 'sum', expression: '{{eval:{{a}} + {{b}}}}' }
  * ];

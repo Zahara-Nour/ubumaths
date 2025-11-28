@@ -457,7 +457,7 @@ unitFlexible: false // Accept only exact unit (not km for m)
 | **Lists**               | `$l{a;b;c}`                                             | `{{list:a,b,c}}`                                                    | ✅ Done    | 185 occurrences                     |
 | **Computed Values**     | `[_expr_]`                                              | `{{eval:expr}}`                                                     | ✅ Done    | 93 occurrences                      |
 | **Exclusions**          | `\\{val}`                                               | `{{1-10!5}}`                                                        | ✅ Done    |                                     |
-| **Variable Bounds**     | `$e[&1;&2]`                                             | `{{{{a}}-{{b}}}}`                                                   | ✅ Done    |                                     |
+| **Variable Bounds**     | `$e[&1;&2]`                                             | `{{{{a}}..{{b}}}}`                                                  | ✅ Done    |                                     |
 | **Answer Validation**   | TinyCAS `.equals()`                                     | MathLive `areEquivalent()`                                          | ✅ Done    | answer-validator.ts                 |
 | **Template Validation** | N/A                                                     | Zod schemas                                                         | ✅ Done    | template-validator.ts               |
 | **Circular Dependency** | N/A (runtime error)                                     | DFS detection                                                       | ✅ Done    | circular-dependency.ts              |

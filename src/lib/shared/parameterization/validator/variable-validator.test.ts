@@ -82,9 +82,9 @@ describe('validateVariables', () => {
 
 		it('should accept valid random specs', () => {
 			const variables: Variable[] = [
-				{ name: 'a', expression: '{{random:1-10}}' },
+				{ name: 'a', expression: '{{random:1..10}}' },
 				{ name: 'b', expression: '{{random:2.3}}' },
-				{ name: 'c', expression: '{{random:0.5-9.99:0.01}}' }
+				{ name: 'c', expression: '{{random:0.5..9.99:0.01}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -291,7 +291,7 @@ describe('validateVariables', () => {
 		});
 
 		it('should detect invalid range in random spec', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{{random:10-1}}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:10..1}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -301,21 +301,21 @@ describe('validateVariables', () => {
 		});
 
 		it('should accept equal min and max in range', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{{random:5-5}}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:5..5}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		it('should accept negative ranges', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{{random:-10--5}}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:-10..-5}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		it('should detect inverted negative range', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{{random:-1--10}}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:-1..-10}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -329,7 +329,7 @@ describe('validateVariables', () => {
 
 	describe('Random spec validation', () => {
 		it('should accept valid integer range', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{{random:1-10}}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:1..10}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);
@@ -343,7 +343,7 @@ describe('validateVariables', () => {
 		});
 
 		it('should accept valid decimal range with step', () => {
-			const variables: Variable[] = [{ name: 'a', expression: '{{random:0.5-9.99:0.01}}' }];
+			const variables: Variable[] = [{ name: 'a', expression: '{{random:0.5..9.99:0.01}}' }];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
 			expect(result.errors).toHaveLength(0);
@@ -351,9 +351,9 @@ describe('validateVariables', () => {
 
 		it('should accept random with exclusions', () => {
 			const variables: Variable[] = [
-				{ name: 'a', expression: '{{random:1-10!5}}' },
-				{ name: 'b', expression: '{{random:1-20!5-10}}' },
-				{ name: 'c', expression: '{{random:1-30!3,7,9}}' }
+				{ name: 'a', expression: '{{random:1..10!5}}' },
+				{ name: 'b', expression: '{{random:1..20!5..10}}' },
+				{ name: 'c', expression: '{{random:1..30!3,7,9}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -364,7 +364,7 @@ describe('validateVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'min', expression: '1' },
 				{ name: 'max', expression: '10' },
-				{ name: 'rand', expression: '{{random:{{min}}-{{max}}}}' }
+				{ name: 'rand', expression: '{{random:{{min}}..{{max}}}}' }
 			];
 			const result = validateVariables(variables);
 			expect(result.valid).toBe(true);
@@ -376,7 +376,7 @@ describe('validateVariables', () => {
 			const variables: Variable[] = [
 				{ name: 'min', expression: '10' },
 				{ name: 'max', expression: '1' },
-				{ name: 'rand', expression: '{{random:{{min}}-{{max}}}}' }
+				{ name: 'rand', expression: '{{random:{{min}}..{{max}}}}' }
 			];
 			const result = validateVariables(variables);
 			// Should pass validation (runtime will fail during resolution)
@@ -393,7 +393,7 @@ describe('validateVariables', () => {
 			const variables: Variable[] = [
 				{ name: '', expression: '5' }, // Empty name
 				{ name: 'a', expression: '{{undefined}}' }, // Undefined reference
-				{ name: 'b', expression: '{{random:10-1}}' }, // Invalid range
+				{ name: 'b', expression: '{{random:10..1}}' }, // Invalid range
 				{ name: 'a', expression: '10' } // Duplicate name
 			];
 			const result = validateVariables(variables);
@@ -429,7 +429,7 @@ describe('validateVariables', () => {
 		it('should handle complex valid expressions', () => {
 			const variables: Variable[] = [
 				{ name: 'a', expression: '5' },
-				{ name: 'b', expression: '{{random:1-10}}' },
+				{ name: 'b', expression: '{{random:1..10}}' },
 				{ name: 'c', expression: '{{eval:{{a}}+{{b}}}}' },
 				{ name: 'd', expression: 'Text with {{c}} value' }
 			];

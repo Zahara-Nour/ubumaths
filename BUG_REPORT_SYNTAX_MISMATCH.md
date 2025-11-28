@@ -290,7 +290,7 @@ describe('Syntax Adapter', () => {
 	});
 
 	it('handles nested references', () => {
-		expect(convertToMarkdownSyntax('{#:1-{@:max}}')).toBe('{{random:1-{{max}}}}');
+		expect(convertToMarkdownSyntax('{#:1-{@:max}}')).toBe('{{random:1..{{max}}}}');
 	});
 });
 ```

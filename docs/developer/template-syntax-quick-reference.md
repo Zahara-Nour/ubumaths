@@ -122,7 +122,7 @@ UbuMaths currently uses **two different template syntaxes**:
 // Integer range (explicit)
 {{random:1-10}}              // Random integer 1 to 10
 {{random:-5-5}}              // Random integer -5 to 5
-{{random:1-{{max}}}}         // Random with variable upper bound
+{{random:1..{{max}}}}         // Random with variable upper bound
 
 // Integer range (shorthand)
 {{1..10}}                     // Shorthand for random:1-10
@@ -191,7 +191,7 @@ convertToMarkdownSyntax('{#:1..10}'); // → '{{random:1-10}}'
 convertToMarkdownSyntax('{eval:a+b}'); // → '{{eval:a+b}}'
 
 // Nested conversions
-convertToMarkdownSyntax('{#:1-{@:max}}'); // → '{{random:1-{{max}}}}'
+convertToMarkdownSyntax('{#:1-{@:max}}'); // → '{{random:1..{{max}}}}'
 convertToMarkdownSyntax('{eval:{@:a}+{@:b}}'); // → '{{eval:{{a}}+{{b}}}}'
 
 // Complex template
@@ -212,7 +212,7 @@ convertToQuestionsSyntax('{{1..10}}'); // → '{#:1..10}' (shorthand normalized)
 convertToQuestionsSyntax('{{eval:a+b}}'); // → '{eval:a+b}'
 
 // Nested conversions
-convertToQuestionsSyntax('{{random:1-{{max}}}}'); // → '{#:1-{@:max}}'
+convertToQuestionsSyntax('{{random:1..{{max}}}}'); // → '{#:1-{@:max}}'
 convertToQuestionsSyntax('{{eval:{{a}}+{{b}}}}'); // → '{eval:{@:a}+{@:b}}'
 ```
 
@@ -321,7 +321,7 @@ normalizeToMarkdown('Plain text'); // → 'Plain text' (unchanged)
 },
 {
   name: 'a',
-  expression: '{{random:1-{{max}}}}'  // Uses max variable
+  expression: '{{random:1..{{max}}}}'  // Uses max variable
 }
 ```
 

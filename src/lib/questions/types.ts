@@ -6,7 +6,7 @@
  * including templates, instances, random number generation, and validation.
  *
  * Key Features:
- * - Support for variables in random expressions: {{random:{{min}}-{{max}}}}
+ * - Support for variables in random expressions: {{random:{{min}}..{{max}}}}
  * - Multiple question types (numerical, algebraic, QCM, fill-in-blanks)
  * - Complex exclusion patterns (values, ranges, variables)
  * - Precision types for numerical answers
@@ -124,23 +124,23 @@ export type PrecisionType =
  *
  * Expression syntax:
  * - {{otherVar}} - Reference to another variable
- * - {{random:1-10}} - Random integer from 1 to 10
- * - {{random:{{min}}-{{max}}}} - Random with variable bounds
+ * - {{random:1..10}} - Random integer from 1 to 10
+ * - {{random:{{min}}..{{max}}}} - Random with variable bounds
  * - {{random:2.3}} - Random decimal (2 digits before, 3 after)
- * - {{random:1-10!5,7}} - Random excluding 5 and 7
- * - {{random:1-100!{{excluded}}}} - Random excluding variable value
+ * - {{random:1..10!5,7}} - Random excluding 5 and 7
+ * - {{random:1..100!{{excluded}}}} - Random excluding variable value
  * - {{eval:expression}} - Evaluate mathematical expression
  *
  * @example Simple random
- * { name: 'a', expression: '{{random:1-10}}' }
+ * { name: 'a', expression: '{{random:1..10}}' }
  *
  * @example Variable bounds
  * { name: 'max', expression: '20' }
- * { name: 'value', expression: '{{random:1-{{max}}}}' }
+ * { name: 'value', expression: '{{random:1..{{max}}}}' }
  *
  * @example Exclusion
- * { name: 'a', expression: '{{random:1-10}}' }
- * { name: 'b', expression: '{{random:1-10!{{a}}}}' }
+ * { name: 'a', expression: '{{random:1..10}}' }
+ * { name: 'b', expression: '{{random:1..10!{{a}}}}' }
  */
 export type QuestionVariable = SharedVariable;
 
@@ -528,19 +528,19 @@ export type GenerationResult =
  * in bounds, digits, and exclusions.
  *
  * @example Integer range
- * {{random:1-10}} → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10} }
+ * {{random:1..10}} → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10} }
  *
  * @example Variable bounds
- * {{random:{{min}}-{{max}}}} → { type: 'integer', min: {type:'variable',name:'min'}, max: {...} }
+ * {{random:{{min}}..{{max}}}} → { type: 'integer', min: {type:'variable',name:'min'}, max: {...} }
  *
  * @example Decimal by digits
  * {{random:2.3}} → { type: 'decimal-by-digits', digitsBefore: {type:'number',value:2}, digitsAfter: {...,value:3} }
  *
  * @example Decimal range with step
- * {{random:0.5-9.99:0.01}} → { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01 }
+ * {{random:0.5..9.99:0.01}} → { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01 }
  *
  * @example With exclusions
- * {{random:1-20!5,7-9,{{a}}}} → { ..., exclusions: [...] }
+ * {{random:1..20!5,7..9,{{a}}}} → { ..., exclusions: [...] }
  */
 export type RandomSpec = SharedRandomSpec;
 

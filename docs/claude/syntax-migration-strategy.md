@@ -63,7 +63,7 @@ Used in:
 {{random:1-10}}
 
 // Random with variable bounds
-{{random:{{min}}-{{max}}}}
+{{random:{{min}}..{{max}}}}
 
 // Random with exclusions
 {{random:1-10!{{a}}}}
@@ -182,7 +182,7 @@ export function resolveExpression(expression: string, ...): string {
 // Old → New
 {#:1-10}                → {{random:1-10}}
 {#:-5-5}                → {{random:-5-5}}
-{#:{@:min}-{@:max}}     → {{random:{{min}}-{{max}}}}
+{#:{@:min}-{@:max}}     → {{random:{{min}}..{{max}}}}
 ```
 
 ### Random Decimals

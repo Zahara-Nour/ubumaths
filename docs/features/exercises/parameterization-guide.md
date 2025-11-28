@@ -224,7 +224,7 @@ Si $a = {{a}}$ alors...
 ```
 Variable 1 : min = 1
 Variable 2 : max = 100
-Variable 3 : x = {{{{min}}-{{max}}}}  ← Utilise les valeurs de min et max
+Variable 3 : x = {{{{min}}..{{max}}}}  ← Utilise les valeurs de min et max
 ```
 
 ### 3. Nombre décimal par chiffres : `{{avant.après}}`
@@ -289,7 +289,7 @@ Variable 3 : x = {{{{min}}-{{max}}}}  ← Utilise les valeurs de min et max
 
 ```
 {{1..100!5,10-20,50}} → 1..100 sauf 5, 10-20, et 50
-{{1..50!{{a}},{{b}}-{{c}}}} → Exclusions avec variables
+{{1..50!{{a}},{{b}}..{{c}}}} → Exclusions avec variables
 ```
 
 ### 6. Évaluation d'expression : `{{eval:expression}}`
@@ -874,7 +874,7 @@ Vous pouvez utiliser des variables dans les expressions d'autres variables.
 ```
 min = 10
 max = 50
-x = {{{{min}}-{{max}}}}  ← Utilise les valeurs de min et max
+x = {{{{min}}..{{max}}}}  ← Utilise les valeurs de min et max
 ```
 
 **Exemple - Exclusion dynamique** :
@@ -947,7 +947,7 @@ Génère 1..100 sauf 10-20, 30-40, et 50.
 
 ```
 milieu = 50
-x = {{1..100!{{eval:{{milieu}}-5}}-{{eval:{{milieu}}+5}}}}
+x = {{1..100!{{eval:{{milieu}}-5}}..{{eval:{{milieu}}+5}}}}
 ```
 
 Exclut 45-55 si milieu=50.

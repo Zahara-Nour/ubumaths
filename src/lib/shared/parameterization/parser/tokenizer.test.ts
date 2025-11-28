@@ -51,14 +51,14 @@ describe('tokenize - Markdown syntax', () => {
 
 	describe('Random tokens - explicit syntax', () => {
 		it('should extract integer range with random: prefix', () => {
-			const text = 'Random: {{random:1-10}}';
+			const text = 'Random: {{random:1..10}}';
 			const tokens = tokenize(text);
 
 			expect(tokens).toHaveLength(1);
 			expect(tokens[0]).toMatchObject({
 				type: 'random',
-				content: '{{random:1-10}}',
-				inner: '1-10'
+				content: '{{random:1..10}}',
+				inner: '1..10'
 			});
 		});
 
@@ -71,22 +71,22 @@ describe('tokenize - Markdown syntax', () => {
 		});
 
 		it('should extract decimal range with step', () => {
-			const text = '{{random:0.5-9.99:0.01}}';
+			const text = '{{random:0.5..9.99:0.01}}';
 			const tokens = tokenize(text);
 
 			expect(tokens).toHaveLength(1);
-			expect(tokens[0].inner).toBe('0.5-9.99:0.01');
+			expect(tokens[0].inner).toBe('0.5..9.99:0.01');
 		});
 	});
 
 	describe('Random tokens - shorthand auto-detection', () => {
 		it('should auto-detect integer range shorthand', () => {
-			const text = 'Number: {{1-10}}';
+			const text = 'Number: {{1..10}}';
 			const tokens = tokenize(text);
 
 			expect(tokens).toHaveLength(1);
 			expect(tokens[0].type).toBe('random');
-			expect(tokens[0].inner).toBe('1-10');
+			expect(tokens[0].inner).toBe('1..10');
 		});
 
 		it('should auto-detect decimal by digits shorthand', () => {
@@ -98,7 +98,7 @@ describe('tokenize - Markdown syntax', () => {
 		});
 
 		it('should auto-detect with negative numbers', () => {
-			const text = '{{-5-10}}';
+			const text = '{{-5..10}}';
 			const tokens = tokenize(text);
 
 			expect(tokens).toHaveLength(1);
@@ -106,7 +106,7 @@ describe('tokenize - Markdown syntax', () => {
 		});
 
 		it('should auto-detect with exclusions', () => {
-			const text = '{{1-20!5}}';
+			const text = '{{1..20!5}}';
 			const tokens = tokenize(text);
 
 			expect(tokens).toHaveLength(1);
@@ -114,7 +114,7 @@ describe('tokenize - Markdown syntax', () => {
 		});
 
 		it('should auto-detect with step notation', () => {
-			const text = '{{0.5-9.99:0.01}}';
+			const text = '{{0.5..9.99:0.01}}';
 			const tokens = tokenize(text);
 
 			expect(tokens).toHaveLength(1);
@@ -122,7 +122,7 @@ describe('tokenize - Markdown syntax', () => {
 		});
 
 		it('should auto-detect with variable bounds', () => {
-			const text = '{{{{min}}-{{max}}}}';
+			const text = '{{{{min}}..{{max}}}}';
 			const tokens = tokenize(text);
 
 			expect(tokens).toHaveLength(1);
@@ -162,7 +162,7 @@ describe('tokenize - Markdown syntax', () => {
 
 	describe('Mixed token types', () => {
 		it('should extract all token types', () => {
-			const text = 'Var: {{a}}, Random: {{random:1-10}}, Eval: {{eval:a+5}}';
+			const text = 'Var: {{a}}, Random: {{random:1..10}}, Eval: {{eval:a+5}}';
 			const tokens = tokenize(text);
 
 			expect(tokens).toHaveLength(3);
@@ -172,7 +172,7 @@ describe('tokenize - Markdown syntax', () => {
 		});
 
 		it('should maintain order of tokens', () => {
-			const text = '{{random:1-10}} {{a}} {{eval:a+1}}';
+			const text = '{{random:1..10}} {{a}} {{eval:a+1}}';
 			const tokens = tokenize(text);
 
 			expect(tokens[0].type).toBe('random');

@@ -226,7 +226,7 @@
 								<div class="space-y-1 font-mono text-xs">
 									<p><code>{'{{'}random:1-20!5}}</code> → 1 à 20 sauf 5</p>
 									<p><code>{'{{'}random:1-20!5,7}}</code> → exclure 5 et 7</p>
-									<p><code>{'{{'}random:1-20!5-10}}</code> → exclure la plage 5 à 10</p>
+									<p><code>{'{{'}random:1-20!5..10}}</code> → exclure la plage 5 à 10</p>
 									<p>
 										<code>{'{{'}random:1-20!{'{{'}a}}}}</code> → exclure la valeur de la variable a
 									</p>
@@ -442,7 +442,7 @@
 									<Input
 										id="var-expression-{index}"
 										bind:value={variable.expression}
-										placeholder={'Ex: {{random:1-10}}, {{var}}+5, {{eval:2^3}}'}
+										placeholder={'Ex: {{random:1..10}}, {{var}}+5, {{eval:2^3}}'}
 									/>
 								</div>
 
@@ -459,15 +459,15 @@
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() => insertSyntax(index, '{{random:1-10}}')}
+										onclick={() => insertSyntax(index, '{{random:1..10}}')}
 										class="text-xs"
 									>
-										{'{{random:1-10}}'}
+										{'{{random:1..10}}'}
 									</Button>
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() => insertSyntax(index, '{{random:0.5-9.99:0.01}}')}
+										onclick={() => insertSyntax(index, '{{random:0.5..9.99:0.01}}')}
 										class="text-xs"
 									>
 										Décimal
@@ -475,7 +475,7 @@
 									<Button
 										variant="outline"
 										size="sm"
-										onclick={() => insertSyntax(index, '{{random:1-100!5}}')}
+										onclick={() => insertSyntax(index, '{{random:1..100!5}}')}
 										class="text-xs"
 									>
 										Exclusion

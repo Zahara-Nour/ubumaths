@@ -164,7 +164,7 @@ The adapter is applied at 2 critical points:
    - Eval expressions: `{eval:expr}` → `{{eval:expr}}`
 
 2. **Nested References** (8 tests)
-   - Variables in random: `{#:1-{@:max}}` → `{{random:1-{{max}}}}`
+   - Variables in random: `{#:1-{@:max}}` → `{{random:1..{{max}}}}`
    - Variables in eval: `{eval:{@:a}+{@:b}}` → `{{eval:{{a}}+{{b}}}}`
    - Complex nesting: Up to 50 levels deep
 
@@ -340,7 +340,7 @@ Test Files  1 passed (1)
 {{random:0.5-9.99:0.01}}      // Random decimal with step
 {{2.3}}                        // Random by digits (shorthand)
 {{random:1-10!5}}              // Random 1-10 excluding 5
-{{random:1-{{max}}}}           // Random with variable upper bound
+{{random:1..{{max}}}}           // Random with variable upper bound
 
 // Evaluation
 {{eval:a+b}}                   // Evaluate expression
@@ -365,7 +365,7 @@ Test Files  1 passed (1)
 '{@:a}'                  → '{{a}}'
 '{#:1-10}'              → '{{random:1-10}}'
 '{eval:a+b}'            → '{{eval:a+b}}'
-'{#:1-{@:max}}'         → '{{random:1-{{max}}}}'
+'{#:1-{@:max}}'         → '{{random:1..{{max}}}}'
 '{eval:{@:a}+{@:b}}'    → '{{eval:{{a}}+{{b}}}}'
 
 // Markdown → Questions
@@ -373,7 +373,7 @@ Test Files  1 passed (1)
 '{{random:1-10}}'       → '{#:1-10}'
 '{{1-10}}'              → '{#:1-10}'  // Shorthand normalized
 '{{eval:a+b}}'          → '{eval:a+b}'
-'{{random:1-{{max}}}}'  → '{#:1-{@:max}}'
+'{{random:1..{{max}}}}'  → '{#:1-{@:max}}'
 ```
 
 ---

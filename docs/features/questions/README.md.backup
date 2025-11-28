@@ -171,7 +171,7 @@ src/lib/questions/
     { name: 'a', expression: '{{2-9}}' },
     { name: 'b', expression: '{{-20-20!0}}' },
     { name: 'c', expression: '{{-20-20!{{b}}}}' },
-    { name: 'solution', expression: '{{eval:({{c}}-{{b}})/{{a}}}}' },
+    { name: 'solution', expression: '{{eval:({{c}}..{{b}})/{{a}}}}' },
     { name: 'wrong1', expression: '{{eval:({{c}}+{{b}})/{{a}}}}' }
   ],
   answer: '0',  // Index of correct choice
@@ -365,7 +365,7 @@ WHERE title IS NULL;
 
 ```typescript
 {{1-10}}           // Random integer from 1 to 10
-{{{{min}}-{{max}}}}  // Variable bounds
+{{{{min}}..{{max}}}}  // Variable bounds
 ```
 
 **Decimal by Range**:
@@ -387,7 +387,7 @@ WHERE title IS NULL;
 ```typescript
 {{1-50!5}}         // Exclude 5
 {{1-50!5,7-9}}     // Exclude 5, 7, 8, 9
-{{1-100!{{a}},{{b}}-{{c}}}}  // Exclude variables and ranges
+{{1-100!{{a}},{{b}}..{{c}}}}  // Exclude variables and ranges
 ```
 
 #### Mathematical Evaluation: `{{eval:expression}}`
@@ -396,7 +396,7 @@ WHERE title IS NULL;
 {{eval:2+3}}         // Returns "5"
 {{eval:{{a}}^2}}     // Square of variable a
 {{eval:sqrt({{a}}^2+{{b}}^2)}}  // Pythagorean theorem
-{{eval:({{c}}-{{b}})/{{a}}}}    // Complex expression
+{{eval:({{c}}..{{b}})/{{a}}}}    // Complex expression
 ```
 
 **Important:** All variable references (`{{...}}`) and random expressions inside a `{{eval:...}}` expression are **fully resolved BEFORE** being passed to MathLive's Compute Engine. The engine only receives a clean mathematical expression with actual numbers.
@@ -469,7 +469,7 @@ If `a = 5` and `b = 7`, the resolution process is:
 [
 	{ name: 'min', expression: '5' }, // Stage 1: min = 5
 	{ name: 'max', expression: '10' }, // Stage 1: max = 10
-	{ name: 'a', expression: '{{{{min}}-{{max}}}}' }, // Stage 2: a = random(5, 10)
+	{ name: 'a', expression: '{{{{min}}..{{max}}}}' }, // Stage 2: a = random(5, 10)
 	{ name: 'b', expression: '{{1-20!{{a}}}}' }, // Stage 2: b = random(1, 20) excluding a
 	{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' } // Stage 3: sum = a + b (evaluated)
 ];
@@ -692,7 +692,7 @@ The help system provides guidance for:
 - Complete syntax reference with examples
 - Variable references: `{{varName}}`
 - Random numbers: `{{1-10}}`, `{{1.5-9.99:0.01}}`, `{{2.3}}`
-- Exclusions: `{{1-50!5}}`, `{{1-50!5,7-9}}`, `{{1-100!{{a}},{{b}}-{{c}}}}`
+- Exclusions: `{{1-50!5}}`, `{{1-50!5,7-9}}`, `{{1-100!{{a}},{{b}}..{{c}}}}`
 - Evaluation: `{{eval:expression}}`
 - Dependency order and circular reference warnings
 - Interactive examples
@@ -1302,7 +1302,7 @@ The Question Variations System allows question templates to have **multiple vari
         { name: 'a', expression: '{{10-20}}' },
         { name: 'b', expression: '{{1-{{a}}}}' }
       ],
-      answer: '{{eval:{{a}}-{{b}}}}',
+      answer: '{{eval:{{a}}..{{b}}}}',
       correction: [{ type: 'text', content: 'Subtract the numbers...' }]
     }
   ],
@@ -1528,7 +1528,7 @@ Response: {
         { name: 'a', expression: '{{20-99}}' },
         { name: 'b', expression: '{{10-{{a}}}}' }
       ],
-      answer: '{{eval:{{a}}-{{b}}}}'
+      answer: '{{eval:{{a}}..{{b}}}}'
     },
     {
       statement: [{ type: 'text', content: 'Calculate: $${{a}} \\times {{b}}$$' }],

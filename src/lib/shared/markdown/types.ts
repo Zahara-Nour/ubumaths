@@ -7,7 +7,7 @@
  *
  * Custom Markdown Syntax:
  * - Variables: {{variable}}
- * - Random: {{random:1-10}}, {{random:2.3}}, {{random:1-10!5}}
+ * - Random: {{random:1..10}}, {{random:2.3}}, {{random:1..10!5}}
  * - Eval: {{eval:a+b}}
  * - Blanks: {{blank:N}}
  * - Inline math: $inline math$
@@ -40,7 +40,7 @@
  * @example Template with random values
  * ```typescript
  * const template: TemplateMarkdown = templateMarkdown(`
- *   A number between {{random:1-10}} and {{random:20-30}}
+ *   A number between {{random:1..10}} and {{random:20..30}}
  * `);
  * ```
  *
@@ -158,7 +158,7 @@ const UNRESOLVED_PATTERNS = {
  * ```typescript
  * hasUnresolvedSyntax('Hello {{name}}'); // true
  * hasUnresolvedSyntax('Hello World'); // false
- * hasUnresolvedSyntax('Calculate {{random:1-10}}'); // true
+ * hasUnresolvedSyntax('Calculate {{random:1..10}}'); // true
  * hasUnresolvedSyntax('Calculate 7'); // false
  * ```
  */
@@ -250,9 +250,9 @@ export function tryAsResolved(template: TemplateMarkdown): ResolvedMarkdown | nu
  * ```typescript
  * const placeholders = extractPlaceholders(templateMarkdown(`
  *   {{a}} + {{b}} = {{eval:a+b}}
- *   Random: {{random:1-10}}
+ *   Random: {{random:1..10}}
  * `));
- * // Returns: ['{{a}}', '{{b}}', '{{eval:a+b}}', '{{random:1-10}}']
+ * // Returns: ['{{a}}', '{{b}}', '{{eval:a+b}}', '{{random:1..10}}']
  * ```
  */
 export function extractPlaceholders(content: string): string[] {
@@ -288,7 +288,7 @@ export function extractPlaceholders(content: string): string[] {
  *
  * @example
  * ```typescript
- * const types = getPlaceholderTypes(templateMarkdown('{{a}} + {{random:1-10}}'));
+ * const types = getPlaceholderTypes(templateMarkdown('{{a}} + {{random:1..10}}'));
  * // Returns: { variables: true, random: true, eval: false, blanks: false }
  * ```
  */

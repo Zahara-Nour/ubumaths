@@ -206,7 +206,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							onclick={() => insertSyntax('answer', '{{random:1-10}}', (v) => (answer = v))}
+							onclick={() => insertSyntax('answer', '{{random:1..10}}', (v) => (answer = v))}
 							class="text-xs"
 						>
 							Aléatoire
