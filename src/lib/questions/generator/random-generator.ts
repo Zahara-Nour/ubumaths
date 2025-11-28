@@ -233,7 +233,7 @@ export function randomInt(min: number, max: number, seed?: number): number {
 /**
  * Generate a random relative integer (non-zero signed integer)
  *
- * For {{±min..max}}, generates from union of {-max..-min} ∪ {min..max}
+ * For {{min..max;±}}, generates from union of {-max..-min} ∪ {min..max}
  * Both min and max are positive, representing absolute value bounds.
  *
  * @param min - Minimum absolute value (must be positive)

@@ -249,7 +249,7 @@ export class TinyCASConverter {
 	}
 
 	/**
-	 * Convert relative integers: $er[min;max] → {{±min..max}} or $er{n} → {{±n..n}}
+	 * Convert relative integers: $er[min;max] → {{min..max;±}} or $er{n} → {{n..n;±}}
 	 *
 	 * Relative integers generate non-zero signed values from the union
 	 * of {-max..-min} ∪ {min..max}
@@ -259,16 +259,16 @@ export class TinyCASConverter {
 		const rangePattern = /\$er\[([^;]+);([^\]]+)\]/g;
 		let result = input.replace(rangePattern, (match, min, max) => {
 			this.stats.relativeIntegers++;
-			// Convert to new ± syntax with .. separator
-			return `{{±${min}..${max}}}`;
+			// Convert to new ;± suffix syntax with .. separator
+			return `{{${min}..${max};±}}`;
 		});
 
 		// Pattern for $er{n} - single value form (generates ±n)
 		const singlePattern = /\$er\{(\d+)\}/g;
 		result = result.replace(singlePattern, (match, n) => {
 			this.stats.relativeIntegers++;
-			// Single value: $er{1} → {{±1..1}}
-			return `{{±${n}..${n}}}`;
+			// Single value: $er{1} → {{1..1;±}}
+			return `{{${n}..${n};±}}`;
 		});
 
 		return result;
@@ -674,9 +674,9 @@ export function validateConversion(original: string, converted: string): boolean
 // "$e[-5;5]" → "{{-5..5}}"
 
 // Relative integers:
-// "$er[2;9]" → "{{±2..9}}"
-// "$er[1;5]" → "{{±1..5}}"
-// "$er{1}" → "{{±1..1}}"
+// "$er[2;9]" → "{{2..9;±}}"
+// "$er[1;5]" → "{{1..5;±}}"
+// "$er{1}" → "{{1..1;±}}"
 
 // Decimal patterns:
 // "$d{1;1}" → "{{1.1}}"

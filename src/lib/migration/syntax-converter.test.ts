@@ -147,19 +147,19 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('2b. Relative Integer Tests', () => {
 		it('should convert relative integer ranges', () => {
-			expectConversion('$er[2;9]', '{{±2..9}}');
-			expectConversion('$er[1;5]', '{{±1..5}}');
-			expectConversion('$er[30;99]', '{{±30..99}}');
+			expectConversion('$er[2;9]', '{{2..9;±}}');
+			expectConversion('$er[1;5]', '{{1..5;±}}');
+			expectConversion('$er[30;99]', '{{30..99;±}}');
 		});
 
 		it('should convert single value relative integers', () => {
-			expectConversion('$er{1}', '{{±1..1}}');
-			expectConversion('$er{5}', '{{±5..5}}');
+			expectConversion('$er{1}', '{{1..1;±}}');
+			expectConversion('$er{5}', '{{5..5;±}}');
 		});
 
 		it('should convert multiple relative integers', () => {
-			expectConversion('$er[2;9] and $er[1;5]', '{{±2..9}} and {{±1..5}}');
-			expectConversion('$er{1} + $er{2}', '{{±1..1}} + {{±2..2}}');
+			expectConversion('$er[2;9] and $er[1;5]', '{{2..9;±}} and {{1..5;±}}');
+			expectConversion('$er{1} + $er{2}', '{{1..1;±}} + {{2..2;±}}');
 		});
 
 		it('should track statistics for relative integers', () => {

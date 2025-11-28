@@ -537,9 +537,9 @@ describe('parseRandomSpec - Double dot (..) range separator', () => {
 	});
 });
 
-describe('parseRandomSpec - Relative integers (±)', () => {
-	it('should parse relative integer with ± prefix', () => {
-		const spec = parseRandomSpec('{{±2..9}}');
+describe('parseRandomSpec - Relative integers (;±)', () => {
+	it('should parse relative integer with ;± suffix', () => {
+		const spec = parseRandomSpec('{{2..9;±}}');
 
 		expect(spec).toMatchObject({
 			type: 'relative-integer',
@@ -549,8 +549,8 @@ describe('parseRandomSpec - Relative integers (±)', () => {
 		});
 	});
 
-	it('should parse relative integer with +/- prefix', () => {
-		const spec = parseRandomSpec('{{+/-2..9}}');
+	it('should parse relative integer with ;+- suffix', () => {
+		const spec = parseRandomSpec('{{2..9;+-}}');
 
 		expect(spec).toMatchObject({
 			type: 'relative-integer',
@@ -560,7 +560,7 @@ describe('parseRandomSpec - Relative integers (±)', () => {
 	});
 
 	it('should parse relative integer with exclusion', () => {
-		const spec = parseRandomSpec('{{±2..9!5}}');
+		const spec = parseRandomSpec('{{2..9;±!5}}');
 
 		expect(spec).toMatchObject({
 			type: 'relative-integer',
@@ -574,8 +574,27 @@ describe('parseRandomSpec - Relative integers (±)', () => {
 		});
 	});
 
+	it('should parse relative integer with multiple exclusions', () => {
+		const spec = parseRandomSpec('{{2..9;±!5,-5}}');
+
+		expect(spec).toMatchObject({
+			type: 'relative-integer',
+			min: { type: 'number', value: 2 },
+			max: { type: 'number', value: 9 }
+		});
+		expect(spec?.exclusions).toHaveLength(2);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'value',
+			value: { type: 'number', value: 5 }
+		});
+		expect(spec?.exclusions[1]).toMatchObject({
+			type: 'value',
+			value: { type: 'number', value: -5 }
+		});
+	});
+
 	it('should parse relative integer with variable bounds', () => {
-		const spec = parseRandomSpec('{{±{{min}}..{{max}}}}');
+		const spec = parseRandomSpec('{{{{min}}..{{max}};±}}');
 
 		expect(spec).toMatchObject({
 			type: 'relative-integer',
@@ -585,7 +604,7 @@ describe('parseRandomSpec - Relative integers (±)', () => {
 	});
 
 	it('should parse relative integer with variable exclusion', () => {
-		const spec = parseRandomSpec('{{±2..9!{{a}}}}');
+		const spec = parseRandomSpec('{{2..9;±!{{a}}}}');
 
 		expect(spec).toMatchObject({
 			type: 'relative-integer'
