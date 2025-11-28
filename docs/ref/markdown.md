@@ -192,7 +192,7 @@ Evalue des expressions mathematiques avec support complet des operations et fonc
 
 ```
 {{eval:expression}}
-{{eval:expression|modifiers}}
+{{eval:expression;modifiers}}
 ```
 
 #### 1.3.2 Operations supportees
@@ -250,20 +250,20 @@ Dans les expressions `eval`, les variables peuvent etre referencees de deux faco
 
 #### 1.3.5 Modifiers (modificateurs de sortie)
 
-Les modifiers controlent le formatage du resultat. Syntaxe : `{{eval:expr|modifiers}}`
+Les modifiers controlent le formatage du resultat. Syntaxe : `{{eval:expr;modifiers}}`
 
-| Modifier | Alias        | Description                       | Exemple                         |
-| -------- | ------------ | --------------------------------- | ------------------------------- |
-| `d`      | `decimal`    | Force sortie decimale             | `{{eval:1/3\|d}}` -> `0.333...` |
-| `+`      | `positive`   | Ajoute + aux positifs             | `{{eval:5\|+}}` -> `+5`         |
-| `()`     | `bracket`    | Parentheses autour des negatifs   | `{{eval:-3\|()}}` -> `(-3)`     |
-| `'`      | `derivative` | Prend la derivee avant evaluation | `{{eval:x^2\|'}}` -> `2x`       |
+| Modifier | Alias        | Description                       | Exemple                        |
+| -------- | ------------ | --------------------------------- | ------------------------------ |
+| `d`      | `decimal`    | Force sortie decimale             | `{{eval:1/3;d}}` -> `0.333...` |
+| `+`      | `positive`   | Ajoute + aux positifs             | `{{eval:5;+}}` -> `+5`         |
+| `()`     | `bracket`    | Parentheses autour des negatifs   | `{{eval:-3;()}}` -> `(-3)`     |
+| `'`      | `derivative` | Prend la derivee avant evaluation | `{{eval:x^2;'}}` -> `2x`       |
 
 **Combinaison de modifiers** :
 
 ```
-{{eval:a*b|d,+}}       Decimal avec signe positif
-{{eval:a-b|d,()}}      Decimal avec negatifs entre parentheses
+{{eval:a*b;d,+}}       Decimal avec signe positif
+{{eval:a-b;d,()}}      Decimal avec negatifs entre parentheses
 ```
 
 #### 1.3.6 Exemples avances
@@ -649,7 +649,7 @@ On applique le theoreme de Pythagore:
 
 $$c^2 = a^2 + b^2 = {{a}}^2 + {{b}}^2 = {{eval:a^2+b^2}}$$
 
-$$c = \sqrt{{{eval:a^2+b^2}}} = {{eval:sqrt(a^2+b^2)|d}}\ \text{cm}$$
+$$c = \sqrt{{{eval:a^2+b^2}}} = {{eval:sqrt(a^2+b^2);d}}\ \text{cm}$$
 
 > **Remarque**: Verifiez toujours que le triangle est bien rectangle avant d'appliquer Pythagore.
 ```
@@ -739,7 +739,7 @@ TEMPLATES:
   {{a|b|c}}                    Liste discrete (selection aleatoire)
   {{a|b|c!x}}                  Liste discrete avec exclusion
   {{eval:a+b}}                 Expression evaluee
-  {{eval:sqrt(x)|d}}           Avec modifier decimal
+  {{eval:sqrt(x);d}}           Avec modifier decimal
 
 MARKDOWN:
   $x^2$                        Math inline

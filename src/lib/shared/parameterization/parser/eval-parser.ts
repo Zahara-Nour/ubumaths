@@ -3,7 +3,7 @@
  * =================================================
  *
  * Parses eval expressions from Markdown syntax: {{eval:a+b*2}}
- * Supports modifiers: {{eval:expression|modifiers}}
+ * Supports modifiers: {{eval:expression;modifiers}}
  *
  * Modifiers:
  * - d/decimal: Force decimal output
@@ -47,7 +47,7 @@ const MODIFIER_ALIASES: Record<string, keyof EvalModifiers> = {
  *
  * @example With modifiers (modifiers are stripped)
  * ```typescript
- * parseEvalExpression('{{eval:a+b|d,+}}')
+ * parseEvalExpression('{{eval:a+b;d,+}}')
  * // → 'a+b'
  * ```
  *
@@ -66,8 +66,7 @@ export function parseEvalExpression(token: string): string | null {
  * Parse an eval expression token with modifiers
  *
  * Extracts both the expression and any modifiers from the token.
- * Handles edge cases like LaTeX absolute value |x| which should not be
- * interpreted as a modifier separator.
+ * Modifiers are separated from the expression by a semicolon (;).
  *
  * @param token - Full token string including delimiters
  * @returns Parsed expression with modifiers, or null if not a valid eval token
@@ -80,17 +79,17 @@ export function parseEvalExpression(token: string): string | null {
  *
  * @example With decimal modifier
  * ```typescript
- * parseEvalExpressionWithModifiers('{{eval:1/3|d}}')
+ * parseEvalExpressionWithModifiers('{{eval:1/3;d}}')
  * // → { expression: '1/3', modifiers: { decimal: true } }
  * ```
  *
  * @example Combined modifiers
  * ```typescript
- * parseEvalExpressionWithModifiers('{{eval:x|d,+}}')
+ * parseEvalExpressionWithModifiers('{{eval:x;d,+}}')
  * // → { expression: 'x', modifiers: { decimal: true, addPositive: true } }
  * ```
  *
- * @example LaTeX absolute value (| not treated as modifier separator)
+ * @example LaTeX absolute value (no conflict with semicolon)
  * ```typescript
  * parseEvalExpressionWithModifiers('{{eval:|x|}}')
  * // → { expression: '|x|', modifiers: {} }
@@ -108,21 +107,19 @@ export function parseEvalExpressionWithModifiers(token: string): ParsedEvalExpre
 		return { expression: '', modifiers: {} };
 	}
 
-	// Split by | to separate expression from modifiers
-	// But be careful: | might appear in LaTeX (e.g., |x| for absolute value)
-	// Strategy: find the last |, check if suffix looks like valid modifiers
-	const lastPipeIndex = inner.lastIndexOf('|');
+	// Split by ; to separate expression from modifiers
+	const lastSemicolonIndex = inner.lastIndexOf(';');
 
-	if (lastPipeIndex === -1) {
-		// No pipe - no modifiers
+	if (lastSemicolonIndex === -1) {
+		// No semicolon - no modifiers
 		return { expression: inner, modifiers: {} };
 	}
 
-	const potentialModifiers = inner.slice(lastPipeIndex + 1);
+	const potentialModifiers = inner.slice(lastSemicolonIndex + 1);
 
 	// Check if it looks like valid modifiers
 	if (potentialModifiers.length > 0 && isValidModifierString(potentialModifiers)) {
-		const expression = inner.slice(0, lastPipeIndex);
+		const expression = inner.slice(0, lastSemicolonIndex);
 		const modifiers = parseModifiers(potentialModifiers);
 
 		// Only treat as modifiers if we actually parsed something
@@ -131,7 +128,7 @@ export function parseEvalExpressionWithModifiers(token: string): ParsedEvalExpre
 		}
 	}
 
-	// Not valid modifiers (probably LaTeX with |)
+	// Not valid modifiers - treat whole thing as expression
 	return { expression: inner, modifiers: {} };
 }
 

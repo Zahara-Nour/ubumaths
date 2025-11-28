@@ -145,49 +145,49 @@ describe('parseEvalExpressionWithModifiers', () => {
 
 	describe('Single modifiers', () => {
 		it('should parse decimal modifier (short form)', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:1/3|d}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:1/3;d}}');
 			expect(result).toEqual({ expression: '1/3', modifiers: { decimal: true } });
 		});
 
 		it('should parse decimal modifier (long form)', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:x|decimal}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:x;decimal}}');
 			expect(result).toEqual({ expression: 'x', modifiers: { decimal: true } });
 		});
 
 		it('should parse positive modifier (short form)', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:5|+}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:5;+}}');
 			expect(result).toEqual({ expression: '5', modifiers: { addPositive: true } });
 		});
 
 		it('should parse positive modifier (long form)', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:x|positive}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:x;positive}}');
 			expect(result).toEqual({ expression: 'x', modifiers: { addPositive: true } });
 		});
 
 		it('should parse bracket modifier (short form)', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:x|()}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:x;()}}');
 			expect(result).toEqual({ expression: 'x', modifiers: { bracketNegative: true } });
 		});
 
 		it('should parse bracket modifier (long form)', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:x|bracket}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:x;bracket}}');
 			expect(result).toEqual({ expression: 'x', modifiers: { bracketNegative: true } });
 		});
 
 		it('should parse derivative modifier (short form)', () => {
-			const result = parseEvalExpressionWithModifiers("{{eval:x^2|'}}");
+			const result = parseEvalExpressionWithModifiers("{{eval:x^2;'}}");
 			expect(result).toEqual({ expression: 'x^2', modifiers: { derivative: true } });
 		});
 
 		it('should parse derivative modifier (long form)', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:x^2|derivative}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:x^2;derivative}}');
 			expect(result).toEqual({ expression: 'x^2', modifiers: { derivative: true } });
 		});
 	});
 
 	describe('Combined modifiers', () => {
 		it('should parse two modifiers', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:a*b|d,+}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:a*b;d,+}}');
 			expect(result).toEqual({
 				expression: 'a*b',
 				modifiers: { decimal: true, addPositive: true }
@@ -195,7 +195,7 @@ describe('parseEvalExpressionWithModifiers', () => {
 		});
 
 		it('should parse three modifiers', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:x|d,+,()}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:x;d,+,()}}');
 			expect(result).toEqual({
 				expression: 'x',
 				modifiers: { decimal: true, addPositive: true, bracketNegative: true }
@@ -203,7 +203,7 @@ describe('parseEvalExpressionWithModifiers', () => {
 		});
 
 		it('should parse mixed short and long modifiers', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:x|decimal,+}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:x;decimal,+}}');
 			expect(result).toEqual({
 				expression: 'x',
 				modifiers: { decimal: true, addPositive: true }
@@ -211,7 +211,7 @@ describe('parseEvalExpressionWithModifiers', () => {
 		});
 
 		it('should handle spaces around commas', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:x|d , +}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:x;d , +}}');
 			expect(result).toEqual({
 				expression: 'x',
 				modifiers: { decimal: true, addPositive: true }
@@ -219,9 +219,9 @@ describe('parseEvalExpressionWithModifiers', () => {
 		});
 	});
 
-	describe('Edge cases with | character', () => {
-		it('should handle | in LaTeX absolute value', () => {
-			// |x| should not be parsed as modifiers
+	describe('Edge cases with special characters', () => {
+		it('should handle | in LaTeX absolute value (no conflict with semicolon)', () => {
+			// |x| is no longer confused with modifiers since we use semicolon
 			const result = parseEvalExpressionWithModifiers('{{eval:|x|}}');
 			expect(result).toEqual({ expression: '|x|', modifiers: {} });
 		});
@@ -231,25 +231,25 @@ describe('parseEvalExpressionWithModifiers', () => {
 			expect(result).toEqual({ expression: '|a+b|', modifiers: {} });
 		});
 
-		it('should handle trailing | with invalid modifier text', () => {
-			// |abc123| is not valid modifiers (contains digits)
-			const result = parseEvalExpressionWithModifiers('{{eval:x|abc123}}');
-			expect(result).toEqual({ expression: 'x|abc123', modifiers: {} });
+		it('should handle trailing semicolon with invalid modifier text', () => {
+			// abc123 is not valid modifiers (contains digits)
+			const result = parseEvalExpressionWithModifiers('{{eval:x;abc123}}');
+			expect(result).toEqual({ expression: 'x;abc123', modifiers: {} });
 		});
 
 		it('should handle empty modifier section', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:x|}}');
-			expect(result).toEqual({ expression: 'x|', modifiers: {} });
+			const result = parseEvalExpressionWithModifiers('{{eval:x;}}');
+			expect(result).toEqual({ expression: 'x;', modifiers: {} });
 		});
 	});
 
 	describe('Backward compatibility', () => {
 		it('should strip modifiers when using parseEvalExpression', () => {
-			expect(parseEvalExpression('{{eval:a+b|d}}')).toBe('a+b');
+			expect(parseEvalExpression('{{eval:a+b;d}}')).toBe('a+b');
 		});
 
 		it('should strip combined modifiers when using parseEvalExpression', () => {
-			expect(parseEvalExpression('{{eval:x|d,+,()}}')).toBe('x');
+			expect(parseEvalExpression('{{eval:x;d,+,()}}')).toBe('x');
 		});
 
 		it('should return full expression for absolute value with parseEvalExpression', () => {
@@ -277,7 +277,7 @@ describe('parseEvalExpressionWithModifiers', () => {
 
 	describe('Variable references with modifiers', () => {
 		it('should parse expression with variable references and modifiers', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:{{a}}+{{b}}|d}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:{{a}}+{{b}};d}}');
 			expect(result).toEqual({
 				expression: '{{a}}+{{b}}',
 				modifiers: { decimal: true }
@@ -285,7 +285,7 @@ describe('parseEvalExpressionWithModifiers', () => {
 		});
 
 		it('should handle complex expression with variables and multiple modifiers', () => {
-			const result = parseEvalExpressionWithModifiers('{{eval:{{x}}-5|+,()}}');
+			const result = parseEvalExpressionWithModifiers('{{eval:{{x}}-5;+,()}}');
 			expect(result).toEqual({
 				expression: '{{x}}-5',
 				modifiers: { addPositive: true, bracketNegative: true }
