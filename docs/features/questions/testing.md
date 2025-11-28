@@ -164,17 +164,17 @@ Calculer : $${{a}} + {{b}}$$
 1. Click "Ajouter une variable"
 2. Variable 1:
    - Name: `a`
-   - Expression: `{{1-10}}`
+   - Expression: `{{1..10}}`
 3. Click "Ajouter une variable"
 4. Variable 2:
    - Name: `b`
-   - Expression: `{{1-10}}`
+   - Expression: `{{1..10}}`
 
 **Test Syntax Helpers**:
 
 - Click in expression field for variable 2
 - Click "Aléatoire" button
-- Verify `{{1-10}}` inserted at cursor
+- Verify `{{1..10}}` inserted at cursor
 
 **Answer**:
 
@@ -202,8 +202,8 @@ Calculer : $${{a}} + {{b}}$$
 **Test Exclusions**:
 
 1. Create question with variables:
-   - `a`: `{{1-10}}`
-   - `b`: `{{1-10!{{a}}}}`
+   - `a`: `{{1..10}}`
+   - `b`: `{{1..10!{{a}}}}`
 2. Preview multiple times
 3. Verify `b` is never equal to `a`
 
@@ -217,12 +217,12 @@ Calculer : $${{a}} + {{b}}$$
 
 **Test Decimal Generation**:
 
-1. Create variable: `{{0.5-9.99:0.01}}`
+1. Create variable: `{{0.5..9.99:0.01}}`
 2. Preview and verify decimal values
 
 **Test Evaluation**:
 
-1. Create variable: `a = {{2-9}}`
+1. Create variable: `a = {{2..9}}`
 2. Create variable: `square = {{eval:{{a}}^2}}`
 3. Preview and verify square is correct
 

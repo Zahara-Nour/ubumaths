@@ -93,7 +93,7 @@ CREATE TABLE exercises (
   solution_md TEXT NOT NULL,
 
   -- Parameterization
-  variables JSONB,  -- [{ name: 'a', expression: '{{1-10}}' }]
+  variables JSONB,  -- [{ name: 'a', expression: '{{1..10}}' }]
   distribution_mode TEXT DEFAULT 'on_demand'
     CHECK (distribution_mode IN ('on_demand', 'per_student', 'per_group')),
 
@@ -788,7 +788,7 @@ Based on `distribution_mode`, exercises generate different instances.
 │  Template    │
 │  Exercise    │
 └──────┬───────┘
-       │ Has variables: [{ name: 'a', expression: '{{1-10}}' }]
+       │ Has variables: [{ name: 'a', expression: '{{1..10}}' }]
        │ distribution_mode: 'per_student'
        │
        ↓
@@ -1049,9 +1049,9 @@ Exercises integrate with the shared parameterization library (`/src/lib/shared/p
 **Syntax Support**:
 
 - Variable references: `{{varName}}`
-- Random integers: `{{1-20}}`
-- Random decimals: `{{0-1:0.1}}`
-- Exclusions: `{{1-20!5,7}}`
+- Random integers: `{{1..20}}`
+- Random decimals: `{{0..1:0.1}}`
+- Exclusions: `{{1..20!5,7}}`
 - Expressions: `{{eval:a+b}}`
 
 ### Import/Export System

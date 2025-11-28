@@ -29,7 +29,7 @@ Our analysis revealed THREE different syntax patterns in the current database:
 
    ```json
    {
-   	"expression": "{#:1-10}",
+   	"expression": "{#:1..10}",
    	"answer": "{eval:{@:a}+{@:b}}"
    }
    ```
@@ -70,7 +70,7 @@ Our analysis revealed THREE different syntax patterns in the current database:
 | ------------------------ | ------------------------- | --------------------------- |
 | `{@:varName}`            | `{{varName}}`             | Variable reference          |
 | `{{@:varName}}`          | `{{varName}}`             | Hybrid variable (remove @:) |
-| `{#:1-10}`               | `{{1-10}}`                | Random range                |
+| `{#:1..10}`              | `{{1..10}}`               | Random range                |
 | `{#:min-max!exc}`        | `{{min-max!exc}}`         | Random with exclusions      |
 | `{eval:expression}`      | `{{eval:expression}}`     | Evaluation                  |
 | `{#color:palette.index}` | `{{color:palette.index}}` | Color reference             |

@@ -129,7 +129,7 @@ Many tests incorrectly use double-brace syntax. They need to be updated to use t
 ```typescript
 // BEFORE (incorrect - doesn't match database)
 statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }];
-variables: [{ name: 'a', expression: '{{1-10}}' }];
+variables: [{ name: 'a', expression: '{{1..10}}' }];
 
 // AFTER (correct - matches database syntax)
 statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }];

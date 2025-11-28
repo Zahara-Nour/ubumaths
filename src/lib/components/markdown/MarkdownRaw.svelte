@@ -5,7 +5,7 @@
 	 *
 	 * Displays raw markdown source with syntax highlighting for special elements:
 	 * - Variables: {{varName}}
-	 * - Random: {{1-10}}, {{random:1-10}}
+	 * - Random: {{1..10}}, {{random:1..10}}
 	 * - Eval: {{eval:a+b}}
 	 * - Blanks: {{blank:N}}
 	 * - LaTeX: $...$ and $$...$$

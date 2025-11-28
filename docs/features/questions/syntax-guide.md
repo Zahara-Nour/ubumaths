@@ -10,7 +10,7 @@ Quick reference for template expression syntax.
 
 UbuMaths utilise une syntaxe de type Markdown avec des doubles accolades pour la paramétrisation des questions.
 
-**Syntaxe**: `{{variable}}`, `{{random:1-10}}`, `{{eval:expression}}`
+**Syntaxe**: `{{variable}}`, `{{random:1..10}}`, `{{eval:expression}}`
 
 ---
 
@@ -44,8 +44,8 @@ Calculate {{a}}^2           → LaTeX with variable
 **Examples:**
 
 ```typescript
-{{random:1-10}}             → Random integer 1 to 10
-{{1-10}}                    → Shorthand for above
+{{random:1..10}}             → Random integer 1 to 10
+{{1..10}}                    → Shorthand for above
 {{random:-5-5}}             → Random integer -5 to 5
 {{random:{{min}}-{{max}}}}  → Variable bounds
 {{random:1-{{limit}}}}      → Min literal, max variable
@@ -85,15 +85,15 @@ Calculate {{a}}^2           → LaTeX with variable
 
 ```typescript
 {{random:1-10!5}}           → 1 to 10 except 5
-{{1-20!5,7}}                → Except 5 and 7 (shorthand)
+{{1..20!5,7}}                → Except 5 and 7 (shorthand)
 {{random:1-100!{{a}}}}      → Except variable 'a'
 ```
 
 **Ranges:**
 
 ```typescript
-{{random:1-20!5-7}}         → Except 5, 6, 7
-{{1-100!10-20,50}}          → Except 10-20 and 50
+{{random:1-20!5..7}}         → Except 5, 6, 7
+{{1..100!10..20,50}}          → Except 10..20 and 50
 {{random:1-100!{{min}}-{{max}}}}  → Except variable range
 ```
 
@@ -101,7 +101,7 @@ Calculate {{a}}^2           → LaTeX with variable
 
 ```typescript
 {{random:1-50!5,7-9,{{x}}}} → Except 5, 7-9, and variable x
-{{1-100!{{a}},{{b}}-{{c}}}} → Multiple variables (shorthand)
+{{1..100!{{a}},{{b}}-{{c}}}} → Multiple variables (shorthand)
 ```
 
 ---
@@ -146,7 +146,7 @@ Calculate {{a}}^2           → LaTeX with variable
 
    ```typescript
    // Generate random numbers and replace {{random:...}} expressions
-   '{{eval:{{random:1-10}}*2}}' → '{{eval:7*2}}' (if random=7)
+   '{{eval:{{random:1..10}}*2}}' → '{{eval:7*2}}' (if random=7)
    ```
 
 3. **Stage 3 - Evaluate with MathLive:**
@@ -195,7 +195,7 @@ Solve $${{a}}x^2 + {{b}}x + {{c}} = 0$$
 **Can contain:**
 
 - Variable references: `{{varName}}`
-- Random numbers: `{{random:1-10}}` or `{{1-10}}`
+- Random numbers: `{{random:1..10}}` or `{{1..10}}`
 - Evaluations: `{{eval:...}}`
 
 ---
@@ -234,7 +234,7 @@ Solve $${{a}}x^2 + {{b}}x + {{c}} = 0$$
 ```json
 {
 	"variables": [
-		{ "name": "a", "expression": "{{random:1-10}}" },
+		{ "name": "a", "expression": "{{random:1..10}}" },
 		{ "name": "b", "expression": "{{random:1-10!{{a}}}}" }
 	],
 	"statement": [{ "type": "text", "content": "Calculate: $${{a}}^2 - {{b}}^2$$" }],
@@ -305,7 +305,7 @@ Solve $${{a}}x^2 + {{b}}x + {{c}} = 0$$
 { name: 'divisor', expression: '{{random:1-10!0}}' }
 
 // Different from previous
-{ name: 'a', expression: '{{random:1-10}}' }
+{ name: 'a', expression: '{{random:1..10}}' }
 { name: 'b', expression: '{{random:1-10!{{a}}}}' }
 
 // Within specific range excluding middle
@@ -408,8 +408,8 @@ When generating a question instance, one variation is selected either:
   type: 'numerical_exact',
   statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
   variables: [
-    { name: 'a', expression: '{{random:1-10}}' },
-    { name: 'b', expression: '{{random:1-10}}' }
+    { name: 'a', expression: '{{random:1..10}}' },
+    { name: 'b', expression: '{{random:1..10}}' }
   ],
   answer: '{{eval:{{a}}+{{b}}}}',
   grades: ['6']
@@ -425,15 +425,15 @@ When generating a question instance, one variation is selected either:
     {
       statement: [{ type: 'text', content: 'Calculate {{a}} + {{b}}' }],
       variables: [
-        { name: 'a', expression: '{{random:1-10}}' },
-        { name: 'b', expression: '{{random:1-10}}' }
+        { name: 'a', expression: '{{random:1..10}}' },
+        { name: 'b', expression: '{{random:1..10}}' }
       ],
       answer: '{{eval:{{a}}+{{b}}}}'
     },
     {
       statement: [{ type: 'text', content: 'Calculate {{a}} - {{b}}' }],
       variables: [
-        { name: 'a', expression: '{{random:10-20}}' },
+        { name: 'a', expression: '{{random:10..20}}' },
         { name: 'b', expression: '{{random:1-{{a}}}}' }
       ],
       answer: '{{eval:{{a}}-{{b}}}}'
@@ -575,13 +575,13 @@ seed = 100 → Variation 1 (100 % 4 = 0)
 | Syntax                     | Purpose                 | Example              |
 | -------------------------- | ----------------------- | -------------------- |
 | `{{name}}`                 | Variable reference      | `{{a}}`              |
-| `{{random:1-10}}`          | Random integer          | `{{random:5-15}}`    |
-| `{{1-10}}`                 | Random integer (short)  | `{{5-15}}`           |
+| `{{random:1..10}}`         | Random integer          | `{{random:5-15}}`    |
+| `{{1..10}}`                | Random integer (short)  | `{{5..15}}`          |
 | `{{random:2.3}}`           | Random decimal (digits) | `{{1.2}}`            |
 | `{{random:0.5-9.99:0.01}}` | Random decimal (range)  | `{{random:0-1:0.1}}` |
-| `{{1-10!5}}`               | Exclude single value    | `{{1-20!10}}`        |
-| `{{1-20!5-7}}`             | Exclude range           | `{{1-50!10-20}}`     |
-| `{{1-100!{{a}}}}`          | Exclude variable        | `{{1-10!{{x}}}}`     |
+| `{{1..10!5}}`              | Exclude single value    | `{{1..20!10}}`       |
+| `{{1..20!5..7}}`           | Exclude range           | `{{1..50!10..20}}`   |
+| `{{1..100!{{a}}}}`         | Exclude variable        | `{{1..10!{{x}}}}`    |
 | `{{eval:3+4}}`             | Evaluate expression     | `{{eval:{{a}}^2}}`   |
 | `$$...$$`                  | LaTeX math              | `$$\frac{1}{2}$$`    |
 

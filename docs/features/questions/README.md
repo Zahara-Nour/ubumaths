@@ -23,8 +23,8 @@ Comprehensive framework for creating mathematical flashcard questions with varia
 
 ```typescript
 // Variables
-a = {{2-9}}  // Random number between 2 and 9
-b = {{2-9 exclude:a}}  // Random, excluding 'a'
+a = {{2..9}}  // Random number between 2 and 9
+b = {{2..9 exclude:a}}  // Random, excluding 'a'
 
 // Statement
 Calculate: $${{a}} + {{b}}$$

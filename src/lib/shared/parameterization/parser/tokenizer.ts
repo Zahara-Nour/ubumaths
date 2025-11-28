@@ -4,7 +4,7 @@
  *
  * Extracts all parameterization constructs from text using Markdown syntax:
  * - Variables: {{var}}
- * - Random: {{random:1-10}} or {{1-10}} or {{a|b|c}}
+ * - Random: {{random:1..10}} or {{1..10}} or {{a|b|c}}
  * - Eval: {{eval:expr}}
  *
  * @module shared/parameterization/parser/tokenizer
@@ -28,13 +28,13 @@ import type { Token } from '../types';
  *
  * @example Random with explicit prefix
  * ```typescript
- * tokenize('Random: {{random:1-10}}')
+ * tokenize('Random: {{random:1..10}}')
  * // Returns 1 token with type 'random'
  * ```
  *
  * @example Random shorthand (integer range)
  * ```typescript
- * tokenize('Random: {{1-10}}')
+ * tokenize('Random: {{1..10}}')
  * // Auto-detects as random token
  * ```
  *
@@ -55,7 +55,7 @@ export function tokenize(text: string): Token[] {
 }
 
 /**
- * Extract Markdown syntax tokens: {{var}}, {{random:1-10}}, {{eval:expr}}
+ * Extract Markdown syntax tokens: {{var}}, {{random:1..10}}, {{eval:expr}}
  */
 function extractMarkdownTokens(text: string): Token[] {
 	const tokens: Token[] = [];

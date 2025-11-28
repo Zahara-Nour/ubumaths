@@ -482,7 +482,7 @@ import { generateExerciseInstance } from '$lib/exercises/generator/instance-gene
 
 const exercise: Exercise = {
 	id: 'ex-123',
-	variables: [{ name: 'a', expression: '{{1-10}}' }],
+	variables: [{ name: 'a', expression: '{{1..10}}' }],
 	statement_md: `
 Calculate ${{ a }} \\times 2$.
 

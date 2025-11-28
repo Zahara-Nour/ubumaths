@@ -4,7 +4,7 @@
  *
  * Content-agnostic parameterization system using Markdown syntax:
  * - Variables: {{var}}
- * - Random: {{random:1-10}} or {{1-10}}
+ * - Random: {{random:1..10}} or {{1..10}}
  * - Eval: {{eval:expr}}
  *
  * Features:
@@ -59,7 +59,7 @@ export interface Token {
  * { name: 'b', expression: '{{a}}' }
  *
  * @example Random number
- * { name: 'c', expression: '{{random:1-10}}' }
+ * { name: 'c', expression: '{{random:1..10}}' }
  *
  * @example Expression
  * { name: 'd', expression: '{{eval:a+b}}' }
@@ -74,7 +74,7 @@ export interface Variable {
 	 * Can contain:
 	 * - Literal values: "42", "3.14"
 	 * - Variable references: {{var}}
-	 * - Random specs: {{random:1-10}} or {{1-10}}
+	 * - Random specs: {{random:1..10}} or {{1..10}}
 	 * - Eval expressions: {{eval:a+b}}
 	 */
 	expression: string;
@@ -126,7 +126,7 @@ export type Exclusion =
  * Unified type supporting all random number formats using discriminated union.
  *
  * @example Integer range
- * Syntax: {{random:1-10}} or {{1-10}}
+ * Syntax: {{random:1..10}} or {{1..10}}
  * Spec: { type: 'integer', min: {type:'number',value:1}, max: {...,value:10} }
  *
  * @example Decimal by digits
@@ -134,7 +134,7 @@ export type Exclusion =
  * Spec: { type: 'decimal-by-digits', digitsBefore: {type:'number',value:2}, digitsAfter: {...,value:3} }
  *
  * @example Decimal range with step
- * Syntax: {{random:0.5-9.99:0.01}} or {{0.5-9.99:0.01}}
+ * Syntax: {{random:0.5-9.99:0.01}} or {{0.5..9.99:0.01}}
  * Spec: { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01 }
  *
  * @example Discrete list
@@ -142,7 +142,7 @@ export type Exclusion =
  * Spec: { type: 'discrete-list', items: ['rouge', 'vert', 'bleu'], exclusions: [] }
  *
  * @example With exclusions
- * Syntax: {{random:1-20!5,7-9}} or {{1-20!5,7-9}}
+ * Syntax: {{random:1-20!5,7-9}} or {{1..20!5,7-9}}
  * Spec: { ..., exclusions: [...] }
  *
  * @example Variable bounds
@@ -151,7 +151,7 @@ export type Exclusion =
  */
 export type RandomSpec =
 	| {
-			/** Integer range: {{random:1-10}} or {{1-10}} or {{1..10}} */
+			/** Integer range: {{random:1..10}} or {{1..10}} or {{1..10}} */
 			type: 'integer';
 			min: NumberOrVariable;
 			max: NumberOrVariable;
@@ -172,7 +172,7 @@ export type RandomSpec =
 			exclusions: Exclusion[];
 	  }
 	| {
-			/** Decimal range with step: {{0.5-9.99:0.01}} or {{1..1.6}} (auto-step) */
+			/** Decimal range with step: {{0.5..9.99:0.01}} or {{1..1.6}} (auto-step) */
 			type: 'decimal-range';
 			min: NumberOrVariable;
 			max: NumberOrVariable;

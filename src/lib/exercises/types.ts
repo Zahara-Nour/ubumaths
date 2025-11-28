@@ -34,7 +34,7 @@ import type { Variable, ResolvedVariable } from '$lib/shared/parameterization';
  * ```typescript
  * const exercise: Exercise = {
  *   distribution_mode: 'on_demand',
- *   variables: [{ name: 'a', expression: '{{1-10}}' }]
+ *   variables: [{ name: 'a', expression: '{{1..10}}' }]
  * };
  * // Each refresh generates new values
  * ```
@@ -43,7 +43,7 @@ import type { Variable, ResolvedVariable } from '$lib/shared/parameterization';
  * ```typescript
  * const exercise: Exercise = {
  *   distribution_mode: 'per_student',
- *   variables: [{ name: 'a', expression: '{{1-100}}' }]
+ *   variables: [{ name: 'a', expression: '{{1..100}}' }]
  * };
  * // Each student gets consistent values (seeded by student_id)
  * ```
@@ -52,7 +52,7 @@ import type { Variable, ResolvedVariable } from '$lib/shared/parameterization';
  * ```typescript
  * const exercise: Exercise = {
  *   distribution_mode: 'per_group',
- *   variables: [{ name: 'x', expression: '{{1-20}}' }]
+ *   variables: [{ name: 'x', expression: '{{1..20}}' }]
  * };
  * // All students in assignment see same values
  * ```
@@ -166,8 +166,8 @@ export interface InstanceGenerationResult {
  * const exercise: Exercise = {
  *   id: 'ex-456',
  *   variables: [
- *     { name: 'a', expression: '{{1-10}}' },
- *     { name: 'b', expression: '{{1-10}}' },
+ *     { name: 'a', expression: '{{1..10}}' },
+ *     { name: 'b', expression: '{{1..10}}' },
  *     { name: 'sum', expression: '{{eval:a+b}}' }
  *   ],
  *   statement_md: 'Calculate ${{a}} + {{b}}$',
@@ -207,7 +207,7 @@ export interface Exercise {
 	 *
 	 * May contain parameterization syntax:
 	 * - Variable references: {{varName}}
-	 * - Random numbers: {{1-10}}, {{2.3}}, {{0.5-9.99:0.01}}
+	 * - Random numbers: {{1..10}}, {{2.3}}, {{0.5..9.99:0.01}}
 	 * - Expressions: {{eval:a+b}}
 	 */
 	statement_md: string;
@@ -297,8 +297,8 @@ export type ParameterizedExercise = Exercise;
  * const template: Exercise = {
  *   id: 'ex-123',
  *   variables: [
- *     { name: 'a', expression: '{{1-10}}' },
- *     { name: 'b', expression: '{{1-10}}' }
+ *     { name: 'a', expression: '{{1..10}}' },
+ *     { name: 'b', expression: '{{1..10}}' }
  *   ],
  *   statement_md: 'Calculate ${{a}} + {{b}}$',
  *   solution_md: 'The answer is ${{eval:a+b}}$',
@@ -452,8 +452,8 @@ export interface ExerciseInstance {
  *   difficulty: 1,
  *   tags: ['addition', 'arithmetic'],
  *   variables: [
- *     { name: 'a', expression: '{{1-20}}' },
- *     { name: 'b', expression: '{{1-20}}' }
+ *     { name: 'a', expression: '{{1..20}}' },
+ *     { name: 'b', expression: '{{1..20}}' }
  *   ],
  *   statement_md: 'Calculate ${{a}} + {{b}}$',
  *   solution_md: 'The answer is ${{eval:a+b}}$',
@@ -499,7 +499,7 @@ export type ExerciseCreate = Omit<Exercise, 'id' | 'created_at' | 'updated_at'>;
  * const update: ExerciseUpdate = {
  *   id: 'ex-456',
  *   variables: [
- *     { name: 'a', expression: '{{1-10}}' }
+ *     { name: 'a', expression: '{{1..10}}' }
  *   ],
  *   statement_md: 'Calculate {{a}} + 5',
  *   distribution_mode: 'per_student'

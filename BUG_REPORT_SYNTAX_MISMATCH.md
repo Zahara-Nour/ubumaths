@@ -18,7 +18,7 @@ The Questions template system stores templates in the database using **single-br
 However, the shared parameterization library expects **double-brace Markdown syntax**:
 
 - Variables: `{{var}}`
-- Random: `{{1-10}}` or `{{random:1-10}}`
+- Random: `{{1..10}}` or `{{random:1..10}}`
 - Eval: `{{eval:expr}}`
 
 ## Current Behavior
@@ -282,7 +282,7 @@ describe('Syntax Adapter', () => {
 	});
 
 	it('converts random expressions', () => {
-		expect(convertToMarkdownSyntax('{#:1-10}')).toBe('{{random:1-10}}');
+		expect(convertToMarkdownSyntax('{#:1-10}')).toBe('{{random:1..10}}');
 	});
 
 	it('converts eval expressions', () => {

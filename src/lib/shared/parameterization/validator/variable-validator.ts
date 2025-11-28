@@ -92,7 +92,7 @@ import { parseRandomSpec } from '../parser/random-parser';
  * @example Invalid random range
  * ```typescript
  * validateVariables([
- *   { name: 'a', expression: '{{10-1}}' }
+ *   { name: 'a', expression: '{{10..1}}' }
  * ])
  * // → {
  * //     valid: false,
@@ -123,7 +123,7 @@ import { parseRandomSpec } from '../parser/random-parser';
  * ```typescript
  * validateVariables([
  *   { name: 'a', expression: '{{undefined}}' },
- *   { name: 'b', expression: '{{10-1}}' }
+ *   { name: 'b', expression: '{{10..1}}' }
  * ])
  * // → {
  * //     valid: false,

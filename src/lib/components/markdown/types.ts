@@ -292,7 +292,7 @@ export interface BlankInputProps {
  * ```typescript
  * const config: VariableHighlightConfig = {
  *   variableColor: '#3b82f6', // Blue for {{varName}}
- *   randomColor: '#8b5cf6',   // Purple for {{1-10}}
+ *   randomColor: '#8b5cf6',   // Purple for {{1..10}}
  *   evalColor: '#10b981',     // Green for {{eval:...}}
  *   blankColor: '#f59e0b'     // Orange for {{blank:N}}
  * };
@@ -319,7 +319,7 @@ export interface VariableHighlightConfig {
 	variableColor?: string;
 
 	/**
-	 * Couleur pour les expressions random {{1-10}}, {{2.3}}
+	 * Couleur pour les expressions random {{1..10}}, {{2.3}}
 	 * @default '#8b5cf6' (violet-500)
 	 */
 	randomColor?: string;

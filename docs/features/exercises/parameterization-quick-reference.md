@@ -9,15 +9,15 @@ Guide rapide pour la syntaxe de parameterisation des exercices.
 
 ## Syntaxe de base
 
-| Syntaxe            | Description           | Exemple                        |
-| ------------------ | --------------------- | ------------------------------ |
-| `{{nom}}`          | Reference de variable | `{{a}}`, `{{rayon}}`           |
-| `{{min-max}}`      | Entier aleatoire      | `{{1-10}}`, `{{-5-5}}`         |
-| `{{min-max:pas}}`  | Decimal aleatoire     | `{{0-1:0.1}}`, `{{10-20:0.5}}` |
-| `{{eval:expr}}`    | Evaluation            | `{{eval:{{a}}+{{b}}}}`         |
-| `{{min-max!excl}}` | Avec exclusions       | `{{1-10!5}}`, `{{1-20!{{a}}}}` |
-| `$formule$`        | LaTeX inline          | `${{a}}x + {{b}}$`             |
-| `$$formule$$`      | LaTeX bloc            | `$$\frac{{{a}}}{{{b}}}$$`      |
+| Syntaxe            | Description           | Exemple                          |
+| ------------------ | --------------------- | -------------------------------- |
+| `{{nom}}`          | Reference de variable | `{{a}}`, `{{rayon}}`             |
+| `{{min-max}}`      | Entier aleatoire      | `{{1..10}}`, `{{-5..5}}`         |
+| `{{min-max:pas}}`  | Decimal aleatoire     | `{{0..1:0.1}}`, `{{10..20:0.5}}` |
+| `{{eval:expr}}`    | Evaluation            | `{{eval:{{a}}+{{b}}}}`           |
+| `{{min-max!excl}}` | Avec exclusions       | `{{1..10!5}}`, `{{1..20!{{a}}}}` |
+| `$formule$`        | LaTeX inline          | `${{a}}x + {{b}}$`               |
+| `$$formule$$`      | LaTeX bloc            | `$$\frac{{{a}}}{{{b}}}$$`        |
 
 ---
 
@@ -26,27 +26,27 @@ Guide rapide pour la syntaxe de parameterisation des exercices.
 ### Entiers aleatoires
 
 ```
-{{1-10}}           → 7
-{{-5-5}}           → -2
-{{100-999}}        → 456
-{{0-100:10}}       → 0, 10, 20, ..., 100
+{{1..10}}           → 7
+{{-5..5}}           → -2
+{{100..999}}        → 456
+{{0..100:10}}       → 0, 10, 20, ..., 100
 ```
 
 ### Decimaux
 
 ```
-{{0-1:0.1}}        → 0.7
-{{10.5-20.5:0.5}}  → 15.5
-{{0-10:0.01}}      → 7.23
+{{0..1:0.1}}        → 0.7
+{{10.5..20.5:0.5}}  → 15.5
+{{0..10:0.01}}      → 7.23
 ```
 
 ### Exclusions
 
 ```
-{{1-10!5}}         → 1-10 sauf 5
-{{1-20!5,7}}       → 1-20 sauf 5 et 7
-{{1-50!10-20}}     → 1-50 sauf 10-20
-{{1-10!{{a}}}}     → 1-10 sauf valeur de a
+{{1..10!5}}         → 1..10 sauf 5
+{{1..20!5,7}}       → 1..20 sauf 5 et 7
+{{1..50!10-20}}     → 1..50 sauf 10-20
+{{1..10!{{a}}}}     → 1..10 sauf valeur de a
 ```
 
 ### Evaluations
@@ -77,8 +77,8 @@ Guide rapide pour la syntaxe de parameterisation des exercices.
 
 ```
 Variables :
-- a: {{1-20}}
-- b: {{1-20}}
+- a: {{1..20}}
+- b: {{1..20}}
 - somme: {{eval:{{a}}+{{b}}}}
 
 Enonce : Calculez {{a}} + {{b}}
@@ -89,8 +89,8 @@ Solution : {{a}} + {{b}} = {{somme}}
 
 ```
 Variables :
-- longueur: {{5-15}}
-- largeur: {{3-10}}
+- longueur: {{5..15}}
+- largeur: {{3..10}}
 - aire: {{eval:{{longueur}}*{{largeur}}}}
 
 Enonce : Rectangle de {{longueur}} cm × {{largeur}} cm
@@ -101,8 +101,8 @@ Solution : Aire = {{aire}} cm²
 
 ```
 Variables :
-- a: {{2-10}}
-- b: {{1-20}}
+- a: {{2..10}}
+- b: {{1..20}}
 - x: {{eval:{{b}}/{{a}}}}
 
 Enonce : Resolvez ${{a}}x = {{b}}$
@@ -113,9 +113,9 @@ Solution : $x = {{x}}$
 
 ```
 Variables :
-- pgcd: {{2-5}}
-- a: {{2-9}}
-- b: {{2-9!{{a}}}}
+- pgcd: {{2..5}}
+- a: {{2..9}}
+- b: {{2..9!{{a}}}}
 - num: {{eval:{{a}}*{{pgcd}}}}
 - den: {{eval:{{b}}*{{pgcd}}}}
 
@@ -140,7 +140,7 @@ Solution : $\frac{{{a}}}{{{b}}}$
 ❌ a: {{b}}
    b: {{a}}
 
-✅ a: {{1-10}}
+✅ a: {{1..10}}
    b: {{a}}
 ```
 
@@ -177,7 +177,7 @@ Les variables sont resolues **dans l'ordre de declaration** :
 
 ```
 Variables :
-1. a = {{1-10}}              # Etape 1 : Genere 7
+1. a = {{1..10}}              # Etape 1 : Genere 7
 2. b = {{a}}                 # Etape 2 : Reference → 7
 3. somme = {{eval:a+b}}      # Etape 3 : Evalue → 14
 ```
@@ -206,31 +206,31 @@ Variables :
 ### 1. Eviter la division par zero
 
 ```
-✅ diviseur: {{1-10!0}}      # Exclut 0
-✅ diviseur: {{2-10}}         # Commence a 2
+✅ diviseur: {{1..10!0}}      # Exclut 0
+✅ diviseur: {{2..10}}         # Commence a 2
 ```
 
 ### 2. Valeurs differentes
 
 ```
-✅ a: {{1-10}}
-   b: {{1-10!{{a}}}}         # b different de a
+✅ a: {{1..10}}
+   b: {{1..10!{{a}}}}         # b different de a
 ```
 
 ### 3. Plages adaptees
 
 ```
-CM1 : {{1-10}}               # Petits nombres
-College : {{10-100}}         # Nombres moyens
-Lycee : {{-50-50}}           # Nombres relatifs
+CM1 : {{1..10}}               # Petits nombres
+College : {{10..100}}         # Nombres moyens
+Lycee : {{-50..50}}           # Nombres relatifs
 ```
 
 ### 4. Calculs intermediaires
 
 ```
 Variables :
-1. base: {{5-15}}            # Donnee
-2. hauteur: {{3-10}}         # Donnee
+1. base: {{5..15}}            # Donnee
+2. hauteur: {{3..10}}         # Donnee
 3. aire: {{eval:base*hauteur/2}}  # Calcul intermediaire
 ```
 

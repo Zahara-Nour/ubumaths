@@ -56,8 +56,8 @@ const staticExercise: Exercise = {
 const parameterizedExercise: Exercise = {
 	id: 'ex-002',
 	variables: [
-		{ name: 'a', expression: '{{1-10}}' },
-		{ name: 'b', expression: '{{1-10}}' },
+		{ name: 'a', expression: '{{1..10}}' },
+		{ name: 'b', expression: '{{1..10}}' },
 		{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 	],
 	statement_md: 'Calculate ${{a}} + {{b}}$',
@@ -138,7 +138,7 @@ The `distribution_mode` field determines how instances are generated:
 // Teacher creates template
 const exercise: Exercise = {
 	distribution_mode: 'on_demand',
-	variables: [{ name: 'a', expression: '{{1-100}}' }],
+	variables: [{ name: 'a', expression: '{{1..100}}' }],
 	statement_md: 'What is {{a}} + 5?'
 	// ...
 };
@@ -161,7 +161,7 @@ const instance2 = generateExerciseInstance(exercise);
 // Teacher creates template
 const exercise: Exercise = {
 	distribution_mode: 'per_student',
-	variables: [{ name: 'a', expression: '{{1-100}}' }],
+	variables: [{ name: 'a', expression: '{{1..100}}' }],
 	statement_md: 'What is {{a}} + 5?'
 	// ...
 };
@@ -191,7 +191,7 @@ const instanceB = generateExerciseInstance(exercise, { seed: seedB });
 // Teacher creates template
 const exercise: Exercise = {
 	distribution_mode: 'per_group',
-	variables: [{ name: 'a', expression: '{{1-100}}' }],
+	variables: [{ name: 'a', expression: '{{1..100}}' }],
 	statement_md: 'What is {{a}} + 5?'
 	// ...
 };
@@ -278,8 +278,8 @@ if (result.success) {
 const exercise: Exercise = {
 	id: 'ex-addition',
 	variables: [
-		{ name: 'a', expression: '{{1-20}}' },
-		{ name: 'b', expression: '{{1-20}}' },
+		{ name: 'a', expression: '{{1..20}}' },
+		{ name: 'b', expression: '{{1..20}}' },
 		{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 	],
 	statement_md: 'Calculate ${{a}} + {{b}}$',
@@ -335,9 +335,9 @@ if (result.success) {
 const exercise: Exercise = {
 	id: 'ex-quadratic',
 	variables: [
-		{ name: 'a', expression: '{{1-5}}' },
-		{ name: 'b', expression: '{{-10-10}}' },
-		{ name: 'c', expression: '{{-10-10}}' },
+		{ name: 'a', expression: '{{1..5}}' },
+		{ name: 'b', expression: '{{-10..10}}' },
+		{ name: 'c', expression: '{{-10..10}}' },
 		{ name: 'discriminant', expression: '{{eval:{{b}}*{{b}} - 4*{{a}}*{{c}}}}' }
 	],
 	statement_md: `# Résoudre l'équation
@@ -548,13 +548,13 @@ Use descriptive variable names:
 ```typescript
 // ✅ Good
 variables: [
-	{ name: 'radius', expression: '{{1-10}}' },
+	{ name: 'radius', expression: '{{1..10}}' },
 	{ name: 'area', expression: '{{eval:3.14*{{radius}}*{{radius}}}}' }
 ];
 
 // ❌ Bad
 variables: [
-	{ name: 'r', expression: '{{1-10}}' },
+	{ name: 'r', expression: '{{1..10}}' },
 	{ name: 'a', expression: '{{eval:3.14*{{r}}*{{r}}}}' }
 ];
 ```
