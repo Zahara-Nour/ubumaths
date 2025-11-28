@@ -271,7 +271,7 @@ describe('parseRandomSpec - Exclusions (ranges)', () => {
 		const spec = parseRandomSpec('{{random:1-100!10-20,30-40}}');
 
 		expect(spec?.exclusions).toHaveLength(2);
-		if (spec) {
+		if (spec && spec.type !== 'discrete-list') {
 			expect(spec.exclusions[0].type).toBe('range');
 			expect(spec.exclusions[1].type).toBe('range');
 		}
@@ -281,7 +281,7 @@ describe('parseRandomSpec - Exclusions (ranges)', () => {
 		const spec = parseRandomSpec('{{random:1-20!5,7-9,15}}');
 
 		expect(spec?.exclusions).toHaveLength(3);
-		if (spec) {
+		if (spec && spec.type !== 'discrete-list') {
 			expect(spec.exclusions[0].type).toBe('value');
 			expect(spec.exclusions[1].type).toBe('range');
 			expect(spec.exclusions[2].type).toBe('value');
@@ -317,7 +317,7 @@ describe('parseRandomSpec - Exclusions (variables)', () => {
 		const spec = parseRandomSpec('{{random:1-100!{{a}},{{b}}}}');
 
 		expect(spec?.exclusions).toHaveLength(2);
-		if (spec) {
+		if (spec && spec.type !== 'discrete-list') {
 			if (spec.exclusions[0].type === 'value') {
 				expect(spec.exclusions[0].value).toMatchObject({ type: 'variable', name: 'a' });
 			}
@@ -344,7 +344,7 @@ describe('parseRandomSpec - Exclusions (variables)', () => {
 		const spec = parseRandomSpec('{{random:1-100!5,{{a}},10-20}}');
 
 		expect(spec?.exclusions).toHaveLength(3);
-		if (spec) {
+		if (spec && spec.type !== 'discrete-list') {
 			expect(spec.exclusions[0]).toMatchObject({
 				type: 'value',
 				value: { type: 'number', value: 5 }

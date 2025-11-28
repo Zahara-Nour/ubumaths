@@ -1,6 +1,6 @@
 # Progress: Extension {{random:...}} pour listes discrètes
 
-## Status: Phase 2 - En cours
+## Status: Phase 3 - En cours
 
 ## Résumé
 
@@ -13,8 +13,8 @@ Ajout du support pour la sélection aléatoire parmi une liste de valeurs discr�
 | Phase | Description        | Status   | Commit     |
 | ----- | ------------------ | -------- | ---------- |
 | 1     | Types et Parser    | ✅ Done  | `c72006c8` |
-| 2     | Tokenizer          | En cours | -          |
-| 3     | Generator/Resolver | Pending  | -          |
+| 2     | Tokenizer          | ✅ Done  | `adbd6d73` |
+| 3     | Generator/Resolver | En cours | -          |
 | 4     | Tests              | Pending  | -          |
 | 5     | Migration          | Pending  | -          |
 | 6     | Documentation      | Pending  | -          |
@@ -35,13 +35,28 @@ Ajout du support pour la sélection aléatoire parmi une liste de valeurs discr�
 
 ### Code review: APPROVED
 
-## Phase 2: Tokenizer - En cours
+## Phase 2: Tokenizer ✅
+
+### Fichiers modifiés
+
+- [x] `src/lib/shared/parameterization/parser/tokenizer.ts`
+
+### Fonctions ajoutées
+
+- `hasTopLevelPipe()` (dupliqué de random-parser - TODO: extraire)
+- `isRandomShorthand()` mis à jour pour détecter pipes
+
+### Code review: APPROVED (suggestion: extraire hasTopLevelPipe dans module partagé)
+
+## Phase 3: Generator/Resolver - En cours
 
 ### Fichiers à modifier
 
-- [ ] `src/lib/shared/parameterization/parser/tokenizer.ts`
+- [ ] `src/lib/shared/parameterization/resolver/random-generator.ts`
+- [ ] `src/lib/shared/parameterization/resolver/variable-resolver.ts`
 
 ### Objectif
 
-- Modifier `isRandomShorthand()` pour détecter `|` au niveau 0
-- `{{a|b|c}}` doit être reconnu comme type `'random'`
+- `generateFromDiscreteList()` - Sélection aléatoire équiprobable
+- Résolution des noms nus (variables vs littéraux)
+- Support des exclusions

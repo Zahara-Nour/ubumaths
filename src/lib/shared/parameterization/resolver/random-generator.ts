@@ -15,12 +15,13 @@ import type { RandomSpec, ResolvedVariable, NumberOrVariable } from '../types';
 import { seededRandom } from '$lib/utils/random';
 
 /**
- * Generate a random number from specification
+ * Generate a random number or string from specification
  *
  * Supports:
  * - Integer ranges: 1-10
  * - Decimal by digits: 2.3 (2 digits before, 3 after)
  * - Decimal ranges with step: 0.5-9.99:0.01
+ * - Discrete lists: {{a|b|c}} with variable resolution
  * - Variable bounds: min/max from resolved variables
  * - Exclusion patterns: single values, ranges, variables
  * - Seeded generation for reproducibility
@@ -28,7 +29,7 @@ import { seededRandom } from '$lib/utils/random';
  * @param spec - Random specification to generate from
  * @param resolvedVariables - Previously resolved variables (for bounds and exclusions)
  * @param seed - Optional seed for reproducibility
- * @returns Generated random number
+ * @returns Generated random number or string (for discrete lists)
  * @throws Error if spec is invalid or no valid values remain after exclusions
  *
  * @example Integer range
@@ -59,6 +60,16 @@ import { seededRandom } from '$lib/utils/random';
  *   12345
  * )
  * // → 5.37 (multiples of 0.01 between 0.5 and 9.99)
+ * ```
+ *
+ * @example Discrete list
+ * ```typescript
+ * generateRandomNumber(
+ *   { type: 'discrete-list', items: ['rouge', 'vert', 'bleu'], exclusions: [] },
+ *   [],
+ *   12345
+ * )
+ * // → 'vert' (random selection from list)
  * ```
  *
  * @example With exclusions
@@ -118,7 +129,12 @@ export function generateRandomNumber(
 	spec: RandomSpec,
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
-): number {
+): number | string {
+	// Handle discrete lists separately (returns string)
+	if (spec.type === 'discrete-list') {
+		return generateFromDiscreteList(spec, resolvedVariables, seed);
+	}
+
 	// 1. Resolve variables in bounds/digits
 	let min: number | undefined;
 	let max: number | undefined;
@@ -324,4 +340,90 @@ function randomDecimalByRange(min: number, max: number, step: number, seed?: num
 	const steps = Math.floor((max - min) / step);
 	const selectedStep = Math.floor(random * (steps + 1));
 	return parseFloat((min + selectedStep * step).toFixed(10)); // Avoid float errors
+}
+
+/**
+ * Select a random item from a discrete list
+ *
+ * Resolution rules (like eval):
+ * - Each item name is checked against resolvedVariables
+ * - If match found → use variable's value
+ * - Otherwise → treat as literal string
+ *
+ * @param spec - DiscreteListSpec with items and exclusions
+ * @param resolvedVariables - Already resolved variables
+ * @param seed - Optional seed for reproducibility
+ * @returns Selected item value
+ * @throws Error if all items are excluded
+ *
+ * @example Literal strings
+ * ```typescript
+ * generateFromDiscreteList(
+ *   { type: 'discrete-list', items: ['rouge', 'vert', 'bleu'], exclusions: [] },
+ *   [],
+ *   12345
+ * )
+ * // → 'vert' (random selection)
+ * ```
+ *
+ * @example Variable resolution
+ * ```typescript
+ * generateFromDiscreteList(
+ *   { type: 'discrete-list', items: ['a', 'b', 'literal'], exclusions: [] },
+ *   [{ name: 'a', value: '10' }, { name: 'b', value: '20' }],
+ *   12345
+ * )
+ * // → '10', '20', or 'literal'
+ * // Note: 'a' and 'b' are resolved to their variable values
+ * //       'literal' has no variable, so treated as literal string
+ * ```
+ *
+ * @example With exclusions
+ * ```typescript
+ * generateFromDiscreteList(
+ *   { type: 'discrete-list', items: ['a', 'b', 'c'], exclusions: ['b'] },
+ *   [{ name: 'a', value: '10' }, { name: 'b', value: '20' }, { name: 'c', value: '30' }],
+ *   12345
+ * )
+ * // → '10' or '30' (excludes 'b' which resolves to '20')
+ * ```
+ */
+export function generateFromDiscreteList(
+	spec: { type: 'discrete-list'; items: string[]; exclusions: string[] },
+	resolvedVariables: ResolvedVariable[],
+	seed?: number
+): string {
+	// 1. Resolve each item (variable or literal)
+	const resolvedItems = spec.items.map((item) => resolveItemName(item, resolvedVariables));
+
+	// 2. Resolve exclusions
+	const excludedValues = new Set<string>();
+	for (const exclusion of spec.exclusions) {
+		excludedValues.add(resolveItemName(exclusion, resolvedVariables));
+	}
+
+	// 3. Filter available items
+	const availableItems = resolvedItems.filter((item) => !excludedValues.has(item));
+
+	if (availableItems.length === 0) {
+		throw new Error(
+			`All items excluded from discrete list. Items: [${spec.items.join(', ')}], Exclusions: [${spec.exclusions.join(', ')}]`
+		);
+	}
+
+	// 4. Random selection
+	const random = seed !== undefined ? seededRandom(seed) : Math.random();
+	const index = Math.floor(random * availableItems.length);
+
+	return availableItems[index];
+}
+
+/**
+ * Resolve an item name to its value
+ * - If name matches a variable → return variable value
+ * - Otherwise → return name as literal string
+ */
+function resolveItemName(name: string, resolvedVariables: ResolvedVariable[]): string {
+	const variable = resolvedVariables.find((v) => v.name === name);
+	return variable ? variable.value : name;
 }
