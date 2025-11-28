@@ -8,6 +8,9 @@
 - `cc4127e8` - refactor(parser): use only .. syntax for random ranges
 - `c9b3b0b5` - refactor(migration): generate .. syntax in converter
 - `bb38e206` - docs: update random syntax to use only ..
+- `f89dec08` - docs(wip): mark random syntax migration complete
+- `fac7c3bf` - docs: update remaining .. syntax in migration docs
+- `117aef81` - docs: complete .. syntax migration across codebase
 
 ## Objectif
 
@@ -180,3 +183,43 @@ La syntaxe `{{1-10}}` n'est plus supportée. Utiliser `{{1..10}}`.
 - Clarté pour les négatifs : `{{-3..5}}` vs `{{-3-5}}`
 - Une seule syntaxe = moins de confusion
 - Code simplifié (~20 lignes supprimées)
+
+---
+
+## État : Phase 4 Complétée ✓
+
+### Commits finaux
+
+- `fac7c3bf` - docs: update remaining .. syntax in migration docs
+- `117aef81` - docs: complete .. syntax migration across codebase
+
+### Fichiers mis à jour (36 fichiers)
+
+**Documentation** :
+
+- `docs/architecture/database-schema.md`
+- `docs/architecture/parameterization-system.md`
+- `docs/claude/architecture.md`
+- `docs/developer/template-syntax-quick-reference.md`
+- `docs/features/exercises/*.md` (11 fichiers)
+- `docs/features/questions/*.md` (3 fichiers)
+- `docs/features/worksheet-variants.md`
+- `docs/migrations/phase2-template-syntax-unification.md`
+
+**Tests** :
+
+- `e2e/exercises-parameterization.spec.ts`
+- `tests/helpers/exercise-helpers.ts`
+
+**Source (JSDoc/exemples)** :
+
+- `src/lib/exercises/types.ts`
+- `src/lib/exercises/generator/instance-generator.ts`
+- `src/lib/shared/parameterization/*.ts`
+- `src/lib/components/markdown/types.ts`
+
+### Impact final
+
+- **Codebase 100% cohérente** avec la syntaxe `..`
+- Documentation, tests, et code source alignés
+- Aucune trace de l'ancienne syntaxe `-` (hors contexte historique)
