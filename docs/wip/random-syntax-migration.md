@@ -1,10 +1,19 @@
 # Migration de la syntaxe des nombres aléatoires : `-` vers `..`
 
+## Status : COMPLÈTE ✅
+
+**Date** : 2025-11-28
+**Commits** :
+
+- `cc4127e8` - refactor(parser): use only .. syntax for random ranges
+- `c9b3b0b5` - refactor(migration): generate .. syntax in converter
+- `bb38e206` - docs: update random syntax to use only ..
+
 ## Objectif
 
 Supprimer le support de la syntaxe `-` (tiret simple) pour les plages et ne conserver que `..` (double-point).
 
-## État : Phase 1 Complétée ✓
+## Phase 1 Complétée ✓
 
 ### Modifications effectuées
 
@@ -150,20 +159,24 @@ Supprimer le support de la syntaxe `-` (tiret simple) pour les plages et ne cons
 - Les nouveaux utilisateurs n'apprendront que la syntaxe `..`
 - Clarté maximale : pas de confusion entre syntaxes alternatives
 
-### Prochaines étapes (non incluses dans cette phase)
-
-1. **Migration du contenu existant** :
-   - Rechercher tous les templates/questions utilisant l'ancienne syntaxe
-   - Convertir automatiquement via script de migration
-   - Mettre à jour la documentation utilisateur
-
-2. **Validation** :
-   - Vérifier qu'aucun autre fichier du projet n'utilise la syntaxe `-`
-   - Tests d'intégration end-to-end si nécessaire
-
 ---
 
-**Date Phase 1** : 2025-11-28
-**Date Phase 2** : 2025-11-28
-**Date Phase 3** : 2025-11-28
-**Status** : Phases 1, 2 et 3 terminées - Parser, Converter et Documentation synchronisés
+## Résumé final
+
+| Composant | Fichier                    | Tests |
+| --------- | -------------------------- | ----- |
+| Parser    | `random-parser.ts`         | 69 ✓  |
+| Converter | `syntax-converter.ts`      | 118 ✓ |
+| Docs      | `markdown.md`, `README.md` | -     |
+
+**Total : 187 tests passent**
+
+### Breaking change
+
+La syntaxe `{{1-10}}` n'est plus supportée. Utiliser `{{1..10}}`.
+
+### Avantages
+
+- Clarté pour les négatifs : `{{-3..5}}` vs `{{-3-5}}`
+- Une seule syntaxe = moins de confusion
+- Code simplifié (~20 lignes supprimées)
