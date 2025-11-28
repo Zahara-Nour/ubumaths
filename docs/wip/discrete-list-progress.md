@@ -1,6 +1,6 @@
 # Progress: Extension {{random:...}} pour listes discrètes
 
-## Status: Phase 1 - En cours
+## Status: Phase 2 - En cours
 
 ## Résumé
 
@@ -10,30 +10,38 @@ Ajout du support pour la sélection aléatoire parmi une liste de valeurs discr�
 
 ## Phases
 
-| Phase | Description        | Status   |
-| ----- | ------------------ | -------- |
-| 1     | Types et Parser    | En cours |
-| 2     | Tokenizer          | Pending  |
-| 3     | Generator/Resolver | Pending  |
-| 4     | Tests              | Pending  |
-| 5     | Migration          | Pending  |
-| 6     | Documentation      | Pending  |
-| 7     | Quality Checks     | Pending  |
+| Phase | Description        | Status   | Commit     |
+| ----- | ------------------ | -------- | ---------- |
+| 1     | Types et Parser    | ✅ Done  | `c72006c8` |
+| 2     | Tokenizer          | En cours | -          |
+| 3     | Generator/Resolver | Pending  | -          |
+| 4     | Tests              | Pending  | -          |
+| 5     | Migration          | Pending  | -          |
+| 6     | Documentation      | Pending  | -          |
+| 7     | Quality Checks     | Pending  | -          |
 
-## Phase 1: Types et Parser
+## Phase 1: Types et Parser ✅
 
 ### Fichiers modifiés
 
-- [ ] `src/lib/shared/parameterization/types.ts`
-- [ ] `src/lib/shared/parameterization/parser/random-parser.ts`
+- [x] `src/lib/shared/parameterization/types.ts`
+- [x] `src/lib/shared/parameterization/parser/random-parser.ts`
 
-### Décisions prises
+### Fonctions ajoutées
 
-- Type: `'discrete-list'` ajouté à RandomSpec
-- Items: tableau de strings (noms nus résolus au runtime)
-- Exclusions: après `!`, séparées par `,`
+- `hasTopLevelPipe()` - Détecte pipes au niveau 0
+- `splitAtTopLevelMultiple()` - Split en respectant les accolades imbriquées
+- `parseDiscreteList()` - Parser principal pour listes discrètes
 
-### Notes
+### Code review: APPROVED
 
-- Détection pipes au niveau 0 (respecter accolades imbriquées)
-- Cohérent avec le pattern de parseRandomSpec existant
+## Phase 2: Tokenizer - En cours
+
+### Fichiers à modifier
+
+- [ ] `src/lib/shared/parameterization/parser/tokenizer.ts`
+
+### Objectif
+
+- Modifier `isRandomShorthand()` pour détecter `|` au niveau 0
+- `{{a|b|c}}` doit être reconnu comme type `'random'`
