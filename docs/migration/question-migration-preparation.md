@@ -398,10 +398,12 @@ checkForm(['x+1'], ['1+x']); // [] - strictForm=false par défaut
 #### 6. `checkNullTerms` - Termes nuls (Compute Engine)
 
 ```typescript
-// Détecte les additions avec zéro (x+0, 0+y)
+// Détecte les additions/soustractions avec zéro (x+0, x-0, 0+y, 0-y)
 checkNullTerms(['x+0']); // [0] - terme nul détecté
 checkNullTerms(['0+x']); // [0] - terme nul au début
 checkNullTerms(['a+0+b']); // [0] - terme nul au milieu
+checkNullTerms(['x-0']); // [0] - soustraction de zéro (TinyMath improvement)
+checkNullTerms(['0-x']); // [0] - zéro au début d'une soustraction
 checkNullTerms(['x+1']); // [] - pas de terme nul
 checkNullTerms(['0']); // [] - zéro seul n'est pas un terme nul
 checkNullTerms(['(x+0)+y']); // [0] - détection récursive
@@ -410,10 +412,13 @@ checkNullTerms(['(x+0)+y']); // [0] - détection récursive
 #### 7. `checkFactorOne` - Facteurs 1 (Compute Engine)
 
 ```typescript
-// Détecte les multiplications par 1 (1×x, x×1)
+// Détecte les multiplications par 1 (1×x, x×1, 1x)
 checkFactorOne(['1\\times x']); // [0] - facteur 1 détecté
 checkFactorOne(['x\\times 1']); // [0] - facteur 1 à la fin
 checkFactorOne(['1\\cdot x']); // [0] - avec \cdot aussi
+checkFactorOne(['1x']); // [0] - multiplication implicite (TinyMath improvement)
+checkFactorOne(['1a']); // [0] - multiplication implicite avec lettre
+checkFactorOne(['10x']); // [] - coefficient 10, pas 1
 checkFactorOne(['2x']); // [] - coefficient différent de 1
 checkFactorOne(['1']); // [] - 1 seul n'est pas un facteur
 ```
@@ -429,10 +434,10 @@ checkFactorZero(['2x']); // [] - pas de facteur 0
 checkFactorZero(['0']); // [] - 0 seul n'est pas un facteur
 ```
 
-#### 9. `checkSigns` - Signes superflus (regex)
+#### 9. `checkSigns` - Signes superflus (regex + CE)
 
 ```typescript
-// Détecte les signes redondants ou mal placés
+// Détecte les signes redondants ou mal placés (regex)
 checkSigns(['++x']); // [0] - double +
 checkSigns(['--x']); // [0] - double -
 checkSigns(['+-x']); // [0] - +- consécutifs
@@ -440,6 +445,13 @@ checkSigns(['-+x']); // [0] - -+ consécutifs
 checkSigns(['+x']); // [0] - + superflu devant variable
 checkSigns(['-x']); // [] - négatif valide
 checkSigns(['x+3']); // [] - addition normale
+
+// Détecte la parité des signes dans les multiplications (CE - TinyMath improvement)
+checkSigns(['(-2)\\times(-3)']); // [0] - deux négatifs peuvent être simplifiés
+checkSigns(['(-a)\\times(-b)']); // [0] - parité avec variables
+checkSigns(['5\\times(-2)\\times(-3)']); // [0] - deux négatifs dans une chaîne
+checkSigns(['(-x)(-y)']); // [0] - multiplication implicite avec parité
+checkSigns(['(-2)\\times 3']); // [] - un seul négatif est valide
 ```
 
 ### Évaluateur de règles
