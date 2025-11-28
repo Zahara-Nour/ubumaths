@@ -563,7 +563,16 @@ export type ValidationStatus = 'correct' | 'unoptimal_form' | 'bad_form' | 'inco
 /**
  * Constraint types that can be checked on answers
  */
-export type ConstraintId = 'spaces' | 'products' | 'brackets' | 'zeros' | 'form';
+export type ConstraintId =
+	| 'spaces'
+	| 'products'
+	| 'brackets'
+	| 'zeros'
+	| 'form'
+	| 'nullTerms'
+	| 'factorOne'
+	| 'factorZero'
+	| 'signs';
 
 /**
  * How to handle constraint violations (ordered by decreasing severity)
@@ -578,6 +587,7 @@ export type ConstraintMode = 'strict' | 'warn' | 'off';
  * Constraint configuration for question validation
  */
 export interface ConstraintOptions {
+	// Existing validators (text/regex based)
 	spaces?: ConstraintMode;
 	products?: ConstraintMode;
 	brackets?: ConstraintMode;
@@ -585,6 +595,11 @@ export interface ConstraintOptions {
 	form?: ConstraintMode;
 	/** Allow brackets around first negative term: (-5)+3 */
 	allowBracketsInFirstNegativeTerm?: boolean;
+	// New validators (Compute Engine pattern matching)
+	nullTerms?: ConstraintMode;
+	factorOne?: ConstraintMode;
+	factorZero?: ConstraintMode;
+	signs?: ConstraintMode;
 }
 
 // ============================================================================

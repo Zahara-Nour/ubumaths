@@ -24,7 +24,11 @@ import {
 	checkProducts,
 	checkBrackets,
 	checkZeros,
-	checkForm
+	checkForm,
+	checkNullTerms,
+	checkFactorOne,
+	checkFactorZero,
+	checkSigns
 } from '$lib/questions/constraint-validators';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
@@ -57,6 +61,7 @@ function applyConstraints(
 		id: ConstraintId;
 		check: () => number[];
 	}> = [
+		// Existing text/regex-based validators
 		{ id: 'spaces', check: () => checkSpaces(answersLatex) },
 		{ id: 'products', check: () => checkProducts(answersLatex) },
 		{
@@ -71,7 +76,12 @@ function applyConstraints(
 			id: 'form',
 			check: () =>
 				checkForm(answersLatex, expectedAnswers, { strictForm: constraints.form === 'strict' })
-		}
+		},
+		// New Compute Engine pattern-matching validators
+		{ id: 'nullTerms', check: () => checkNullTerms(answersLatex) },
+		{ id: 'factorOne', check: () => checkFactorOne(answersLatex) },
+		{ id: 'factorZero', check: () => checkFactorZero(answersLatex) },
+		{ id: 'signs', check: () => checkSigns(answersLatex) }
 	];
 
 	for (const { id, check } of checks) {

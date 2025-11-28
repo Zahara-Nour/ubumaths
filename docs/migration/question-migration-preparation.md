@@ -331,7 +331,12 @@ Nouveau: {{#if cond1}}texte1{{else}}texte2{{/if}}
 
 ### Validateurs de contraintes
 
-Le fichier `constraint-validators.ts` implémente 5 validateurs pour vérifier la **forme** des réponses (pas l'équivalence mathématique). Chaque validateur retourne un tableau d'indices où des violations ont été trouvées.
+Le fichier `constraint-validators.ts` implémente 9 validateurs pour vérifier la **forme** des réponses (pas l'équivalence mathématique). Chaque validateur retourne un tableau d'indices où des violations ont été trouvées.
+
+**Catégories de validateurs:**
+
+- **Validateurs textuels** (5): `checkSpaces`, `checkProducts`, `checkBrackets`, `checkZeros`, `checkForm`
+- **Validateurs Compute Engine** (4): `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns`
 
 #### 1. `checkSpaces` - Espacement des chiffres (format français)
 
@@ -388,6 +393,53 @@ checkForm(['x+1'], ['1+x'], { strictForm: true }); // [0] - ordre différent
 checkForm(['x+1'], ['x+1'], { strictForm: true }); // [] - correspondance exacte
 checkForm(['x + 1'], ['x+1'], { strictForm: true }); // [] - espaces normalisés
 checkForm(['x+1'], ['1+x']); // [] - strictForm=false par défaut
+```
+
+#### 6. `checkNullTerms` - Termes nuls (Compute Engine)
+
+```typescript
+// Détecte les additions avec zéro (x+0, 0+y)
+checkNullTerms(['x+0']); // [0] - terme nul détecté
+checkNullTerms(['0+x']); // [0] - terme nul au début
+checkNullTerms(['a+0+b']); // [0] - terme nul au milieu
+checkNullTerms(['x+1']); // [] - pas de terme nul
+checkNullTerms(['0']); // [] - zéro seul n'est pas un terme nul
+checkNullTerms(['(x+0)+y']); // [0] - détection récursive
+```
+
+#### 7. `checkFactorOne` - Facteurs 1 (Compute Engine)
+
+```typescript
+// Détecte les multiplications par 1 (1×x, x×1)
+checkFactorOne(['1\\times x']); // [0] - facteur 1 détecté
+checkFactorOne(['x\\times 1']); // [0] - facteur 1 à la fin
+checkFactorOne(['1\\cdot x']); // [0] - avec \cdot aussi
+checkFactorOne(['2x']); // [] - coefficient différent de 1
+checkFactorOne(['1']); // [] - 1 seul n'est pas un facteur
+```
+
+#### 8. `checkFactorZero` - Facteurs 0 (Compute Engine)
+
+```typescript
+// Détecte les multiplications par 0 (0×x, x×0)
+checkFactorZero(['0\\times x']); // [0] - facteur 0 détecté
+checkFactorZero(['x\\times 0']); // [0] - facteur 0 à la fin
+checkFactorZero(['0\\cdot x']); // [0] - avec \cdot aussi
+checkFactorZero(['2x']); // [] - pas de facteur 0
+checkFactorZero(['0']); // [] - 0 seul n'est pas un facteur
+```
+
+#### 9. `checkSigns` - Signes superflus (regex)
+
+```typescript
+// Détecte les signes redondants ou mal placés
+checkSigns(['++x']); // [0] - double +
+checkSigns(['--x']); // [0] - double -
+checkSigns(['+-x']); // [0] - +- consécutifs
+checkSigns(['-+x']); // [0] - -+ consécutifs
+checkSigns(['+x']); // [0] - + superflu devant variable
+checkSigns(['-x']); // [] - négatif valide
+checkSigns(['x+3']); // [] - addition normale
 ```
 
 ### Évaluateur de règles
@@ -569,7 +621,7 @@ interface TransformStats {
 | Composant                           | Tests | Statut     |
 | ----------------------------------- | ----- | ---------- |
 | `validation-rule-evaluator.test.ts` | 71    | ✅ Passent |
-| `constraint-validators.test.ts`     | 101   | ✅ Passent |
+| `constraint-validators.test.ts`     | 136   | ✅ Passent |
 | `syntax-converter.test.ts`          | 35    | ✅ Passent |
 | `answer-validator.test.ts`          | 32+   | ✅ Passent |
 | `correction-integration.test.ts`    | 15+   | ✅ Passent |
@@ -817,14 +869,30 @@ const result2 = validateAnswer('5', instance);
 
 ### B. Mapping des options
 
-| Ancienne option                        | Nouvelle structure                                      |
-| -------------------------------------- | ------------------------------------------------------- |
-| `require-reduced-fractions`            | `canonicalForm: 'fraction', allowDifferentForms: false` |
-| `no-penalty-for-non-reduced-fractions` | `allowDifferentForms: true`                             |
-| `no-penalty-for-extraneous-brackets`   | `allowDifferentForms: true`                             |
-| `require-no-extraneous-zeros`          | `allowEquivalent: false`                                |
-| `solutions-order-not-important`        | `allowDifferentForms: true`                             |
-| `require-implicit-products`            | `validator: 'checkAlgebraic', validatorParams: {...}`   |
+Les options TinyMath sont maintenant mappées vers l'objet `constraints` avec des modes `'strict'`, `'warn'`, ou `'off'`:
+
+| Ancienne option                          | Nouvelle structure                                   |
+| ---------------------------------------- | ---------------------------------------------------- |
+| `require-no-extraneous-brackets`         | `constraints.brackets: 'strict'`                     |
+| `no-penalty-for-extraneous-brackets`     | `constraints.brackets: 'off'`                        |
+| `require-no-extraneous-zeros`            | `constraints.zeros: 'strict'`                        |
+| `no-penalty-for-extraneous-zeros`        | `constraints.zeros: 'off'`                           |
+| `require-specific-products`              | `constraints.products: 'strict'`                     |
+| `no-penalty-for-non-specific-products`   | `constraints.products: 'off'`                        |
+| `require-correct-spaces`                 | `constraints.spaces: 'strict'`                       |
+| `no-penalty-for-spaces`                  | `constraints.spaces: 'off'`                          |
+| `require-no-null-terms`                  | `constraints.nullTerms: 'strict'`                    |
+| `no-penalty-for-null-terms`              | `constraints.nullTerms: 'off'`                       |
+| `require-no-factor-one`                  | `constraints.factorOne: 'strict'`                    |
+| `no-penalty-for-factor-one`              | `constraints.factorOne: 'off'`                       |
+| `require-no-factor-zero`                 | `constraints.factorZero: 'strict'`                   |
+| `no-penalty-for-factor-zero`             | `constraints.factorZero: 'off'`                      |
+| `require-no-useless-signs`               | `constraints.signs: 'strict'`                        |
+| `no-penalty-for-useless-signs`           | `constraints.signs: 'off'`                           |
+| `require-reduced-fractions`              | `canonicalForm: 'fraction'`                          |
+| `no-penalty-for-non-reduced-fractions`   | `allowDifferentForms: true`                          |
+| `solutions-order-not-important`          | `solutionsOrderMatters: false`                       |
+| `allow-brackets-for-first-negative-term` | `constraints.allowBracketsInFirstNegativeTerm: true` |
 
 ### C. Fichiers de documentation liés
 
@@ -856,4 +924,4 @@ const result2 = validateAnswer('5', instance);
 
 ---
 
-_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (syntaxe `..` uniquement pour plages)_
+_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (ajout 4 validateurs CE: nullTerms, factorOne, factorZero, signs)_
