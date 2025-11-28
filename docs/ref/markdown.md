@@ -61,21 +61,20 @@ Genere des nombres aleatoires selon differentes specifications.
 
 #### 1.2.1 Syntaxe generale
 
-| Format       | Syntaxe           | Exemple           | Description       |
-| ------------ | ----------------- | ----------------- | ----------------- |
-| Avec prefixe | `{{random:spec}}` | `{{random:1-10}}` | Syntaxe explicite |
-| Raccourci    | `{{spec}}`        | `{{1-10}}`        | Syntaxe courte    |
+| Format       | Syntaxe           | Exemple            | Description       |
+| ------------ | ----------------- | ------------------ | ----------------- |
+| Avec prefixe | `{{random:spec}}` | `{{random:1..10}}` | Syntaxe explicite |
+| Raccourci    | `{{spec}}`        | `{{1..10}}`        | Syntaxe courte    |
 
 #### 1.2.2 Entiers
 
 **Plage d'entiers** :
 
 ```
-{{1-10}}            Entier entre 1 et 10 (inclusif)
-{{random:1-10}}     Equivalent avec prefixe
-{{-5-10}}           Plage negative vers positive (-5 a 10)
-{{-10..-1}}         Syntaxe double-point pour negatifs (-10 a -1)
-{{1..20}}           Syntaxe double-point (equivalente a 1-20)
+{{1..10}}           Entier entre 1 et 10 (inclusif)
+{{random:1..10}}    Equivalent avec prefixe
+{{-5..10}}          Plage negative vers positive (-5 a 10)
+{{-10..-1}}         Plage de negatifs (-10 a -1)
 ```
 
 **Entiers relatifs (excluant zero)** :
@@ -88,8 +87,8 @@ Genere des nombres aleatoires selon differentes specifications.
 **Bornes variables** :
 
 ```
-{{{{min}}-{{max}}}}      Bornes definies par variables
-{{random:{{a}}-{{b}}}}   Equivalent avec prefixe
+{{{{min}}..{{max}}}}      Bornes definies par variables
+{{random:{{a}}..{{b}}}}   Equivalent avec prefixe
 ```
 
 #### 1.2.3 Decimaux
@@ -105,10 +104,10 @@ Genere des nombres aleatoires selon differentes specifications.
 **Plage decimale avec pas** :
 
 ```
-{{0.5-9.99:0.01}}   Decimal de 0.5 a 9.99, pas de 0.01
-{{1.0-5.0:0.5}}     Decimal de 1.0 a 5.0, pas de 0.5
+{{0.5..9.99:0.01}}  Decimal de 0.5 a 9.99, pas de 0.01
+{{1.0..5.0:0.5}}    Decimal de 1.0 a 5.0, pas de 0.5
 {{1..1.6}}          Auto-detection du pas (0.1 ici)
-{{1.5-2.5}}         Auto-detection du pas (0.1)
+{{1.5..2.5}}        Auto-detection du pas (0.1)
 ```
 
 #### 1.2.4 Exclusions
@@ -118,13 +117,12 @@ Permet d'exclure certaines valeurs de la generation.
 **Syntaxe** : `{{spec!exclusions}}`
 
 ```
-{{1-20!5}}              Exclure 5
-{{1-20!5,7,9}}          Exclure 5, 7 et 9
-{{1-20!7-9}}            Exclure plage 7 a 9
-{{1-20!7..9}}           Equivalent avec double-point
-{{1-20!{{var}}}}        Exclure valeur d'une variable
-{{1-20!{{a}},{{b}}}}    Exclure plusieurs variables
-{{1-100!{{a}}-{{b}}}}   Exclure plage definie par variables
+{{1..20!5}}               Exclure 5
+{{1..20!5,7,9}}           Exclure 5, 7 et 9
+{{1..20!7..9}}            Exclure plage 7 a 9
+{{1..20!{{var}}}}         Exclure valeur d'une variable
+{{1..20!{{a}},{{b}}}}     Exclure plusieurs variables
+{{1..100!{{a}}..{{b}}}}   Exclure plage definie par variables
 ```
 
 #### 1.2.5 Listes discretes
@@ -174,13 +172,13 @@ Comme pour les autres types aleatoires, les exclusions utilisent `!` :
 
 #### 1.2.6 Specifications de type (RandomSpec)
 
-| Type                | Description                     | Exemple             |
-| ------------------- | ------------------------------- | ------------------- |
-| `integer`           | Plage d'entiers                 | `{{1-10}}`          |
-| `relative-integer`  | Entiers relatifs (excluant 0)   | `{{+-2..9}}`        |
-| `decimal-by-digits` | Decimaux par nombre de chiffres | `{{2.3}}`           |
-| `decimal-range`     | Plage decimale avec pas         | `{{0.5-9.99:0.01}}` |
-| `discrete-list`     | Selection dans une liste finie  | `{{a\|b\|c}}`       |
+| Type                | Description                     | Exemple              |
+| ------------------- | ------------------------------- | -------------------- |
+| `integer`           | Plage d'entiers                 | `{{1..10}}`          |
+| `relative-integer`  | Entiers relatifs (excluant 0)   | `{{+-2..9}}`         |
+| `decimal-by-digits` | Decimaux par nombre de chiffres | `{{2.3}}`            |
+| `decimal-range`     | Plage decimale avec pas         | `{{0.5..9.99:0.01}}` |
+| `discrete-list`     | Selection dans une liste finie  | `{{a\|b\|c}}`        |
 
 **Source** : `src/lib/shared/parameterization/parser/random-parser.ts`
 
@@ -575,8 +573,8 @@ const template = {
 	variations: [
 		{
 			variables: [
-				{ name: 'a', expression: '{{2-9}}' },
-				{ name: 'b', expression: '{{2-9!{{a}}}}' }, // b different de a
+				{ name: 'a', expression: '{{2..9}}' },
+				{ name: 'b', expression: '{{2..9!{{a}}}}' }, // b different de a
 				{ name: 'sum', expression: '{{eval:a+b}}' }
 			],
 			statement: 'Calcule ${{a}} + {{b}}$',
@@ -600,8 +598,8 @@ const template = {
 	variations: [
 		{
 			variables: [
-				{ name: 'a', expression: '{{2-5}}' },
-				{ name: 'b', expression: '{{1-4}}' },
+				{ name: 'a', expression: '{{2..5}}' },
+				{ name: 'b', expression: '{{1..4}}' },
 				{ name: 'sum', expression: '{{eval:a+b}}' },
 				{ name: 'product', expression: '{{eval:a*b}}' }
 			],
@@ -665,7 +663,7 @@ const template = {
 	variations: [
 		{
 			variables: [
-				{ name: 'n', expression: '{{2-5}}' },
+				{ name: 'n', expression: '{{2..5}}' },
 				{ name: 'answer', expression: '{{eval:n}}' }
 			],
 			statement: 'Quelle est la derivee de $f(x) = x^{{n}}$ ?',
@@ -732,12 +730,12 @@ Complete les calculs:
 ````
 TEMPLATES:
   {{var}}                      Variable
-  {{1-10}}                     Entier aleatoire 1-10
-  {{-5..5}}                    Entier -5 a 5 (syntaxe double-point)
+  {{1..10}}                    Entier aleatoire 1-10
+  {{-5..5}}                    Entier -5 a 5
   {{+-2..9}}                   Entiers relatifs (hors 0, +-1)
   {{2.3}}                      Decimal: 2 chiffres.3 chiffres
-  {{0.5-9.99:0.01}}            Decimal avec pas
-  {{1-20!5,7-9}}               Avec exclusions
+  {{0.5..9.99:0.01}}           Decimal avec pas
+  {{1..20!5,7..9}}             Avec exclusions
   {{a|b|c}}                    Liste discrete (selection aleatoire)
   {{a|b|c!x}}                  Liste discrete avec exclusion
   {{eval:a+b}}                 Expression evaluee

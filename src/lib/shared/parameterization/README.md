@@ -41,8 +41,8 @@ import { resolveVariables, resolveText } from '$lib/shared/parameterization';
 
 // Define variables using Markdown syntax
 const variables = [
-	{ name: 'a', expression: '{{1-10}}' }, // Shorthand for random
-	{ name: 'b', expression: '{{random:1-10}}' }, // Explicit random
+	{ name: 'a', expression: '{{1..10}}' }, // Shorthand for random
+	{ name: 'b', expression: '{{random:1..10}}' }, // Explicit random
 	{ name: 'sum', expression: '{{eval:a+b}}' }
 ];
 
@@ -147,16 +147,16 @@ Generate random integer between min and max (inclusive):
 
 ```typescript
 // Explicit syntax
-{ name: 'x', expression: '{{random:1-10}}' } // → Random 1-10
+{ name: 'x', expression: '{{random:1..10}}' } // → Random 1-10
 
 // Shorthand syntax
-{ name: 'x', expression: '{{1-10}}' }        // → Random 1-10
+{ name: 'x', expression: '{{1..10}}' }        // → Random 1-10
 
 // Variable bounds
 { name: 'min', expression: '1' }
 { name: 'max', expression: '100' }
-{ name: 'x', expression: '{{random:{{min}}-{{max}}}}' }
-{ name: 'y', expression: '{{{{min}}-{{max}}}}' } // Shorthand
+{ name: 'x', expression: '{{random:{{min}}..{{max}}}}' }
+{ name: 'y', expression: '{{{{min}}..{{max}}}}' } // Shorthand
 ```
 
 #### Decimal by Digits
@@ -178,8 +178,8 @@ Generate decimal with specified digits before/after decimal point:
 Generate decimal in range with specific step:
 
 ```typescript
-{ name: 'x', expression: '{{0.5-9.99:0.01}}' }  // → 0.50 to 9.99 by 0.01
-{ name: 'y', expression: '{{random:0.5-9.99:0.01}}' }  // → Explicit form
+{ name: 'x', expression: '{{0.5..9.99:0.01}}' }  // → 0.50 to 9.99 by 0.01
+{ name: 'y', expression: '{{random:0.5..9.99:0.01}}' }  // → Explicit form
 ```
 
 #### Exclusions
@@ -188,20 +188,20 @@ Exclude specific values or ranges:
 
 ```typescript
 // Single value exclusion
-{ name: 'x', expression: '{{1-10!5}}' }         // Exclude 5
+{ name: 'x', expression: '{{1..10!5}}' }         // Exclude 5
 
 // Multiple values
-{ name: 'x', expression: '{{1-20!5,7}}' }       // Exclude 5 and 7
+{ name: 'x', expression: '{{1..20!5,7}}' }       // Exclude 5 and 7
 
 // Range exclusion
-{ name: 'x', expression: '{{1-50!10-20}}' }     // Exclude 10-20
+{ name: 'x', expression: '{{1..50!10..20}}' }     // Exclude 10-20
 
 // Variable exclusion
-{ name: 'a', expression: '{{1-10}}' }
-{ name: 'b', expression: '{{1-10!{{a}}}}' }     // Exclude a's value
+{ name: 'a', expression: '{{1..10}}' }
+{ name: 'b', expression: '{{1..10!{{a}}}}' }     // Exclude a's value
 
 // Mixed
-{ name: 'x', expression: '{{1-100!5,7-9,{{a}}}}' }  // Exclude 5, 7-9, and a
+{ name: 'x', expression: '{{1..100!5,7..9,{{a}}}}' }  // Exclude 5, 7-9, and a
 ```
 
 ### Expression Evaluation
@@ -255,11 +255,11 @@ Control output formatting of eval expressions using modifiers:
 
 ```typescript
 // Temperature formatting
-{ name: 'temp', expression: '{{-10-30}}' }
+{ name: 'temp', expression: '{{-10..30}}' }
 { name: 'temp_signed', expression: '{{eval:{{temp}}|+}}' }  // → "+15" or "-5"
 
 // Equation coefficients
-{ name: 'b', expression: '{{-10-10}}' }
+{ name: 'b', expression: '{{-10..10}}' }
 { name: 'b_coeff', expression: '{{eval:{{b}}|+,()}}' }      // → "+3" or "(-3)"
 
 // Decimal results
@@ -277,12 +277,12 @@ Extract all parameterization tokens from text:
 ```typescript
 import { tokenize } from '$lib/shared/parameterization';
 
-const text = 'Value: {{a}}, Random: {{1-10}}, Result: {{eval:a+5}}';
+const text = 'Value: {{a}}, Random: {{1..10}}, Result: {{eval:a+5}}';
 const tokens = tokenize(text);
 // → [
 //     { type: 'variable', content: '{{a}}', inner: 'a', start: 7, end: 12 },
-//     { type: 'random', content: '{{1-10}}', inner: '1-10', start: 22, end: 31 },
-//     { type: 'eval', content: '{{eval:a+5}}', inner: 'a+5', start: 41, end: 52 }
+//     { type: 'random', content: '{{1..10}}', inner: '1..10', start: 22, end: 33 },
+//     { type: 'eval', content: '{{eval:a+5}}', inner: 'a+5', start: 43, end: 54 }
 //   ]
 ```
 
@@ -304,7 +304,7 @@ Parse random specification tokens:
 import { parseRandomSpec } from '$lib/shared/parameterization';
 
 // Integer range
-const spec1 = parseRandomSpec('{{1-10}}');
+const spec1 = parseRandomSpec('{{1..10}}');
 // → { type: 'integer', min: { type: 'number', value: 1 }, max: { type: 'number', value: 10 }, exclusions: [] }
 
 // Decimal by digits
@@ -312,11 +312,11 @@ const spec2 = parseRandomSpec('{{2.3}}');
 // → { type: 'decimal-by-digits', digitsBefore: { type: 'number', value: 2 }, digitsAfter: { type: 'number', value: 3 }, exclusions: [] }
 
 // With exclusions
-const spec3 = parseRandomSpec('{{1-20!5,7-9}}');
+const spec3 = parseRandomSpec('{{1..20!5,7..9}}');
 // → { type: 'integer', ..., exclusions: [{ type: 'value', value: { type: 'number', value: 5 } }, { type: 'range', min: ..., max: ... }] }
 
 // Variable bounds
-const spec4 = parseRandomSpec('{{{{min}}-{{max}}}}');
+const spec4 = parseRandomSpec('{{{{min}}..{{max}}}}');
 // → { type: 'integer', min: { type: 'variable', name: 'min' }, max: { type: 'variable', name: 'max' }, exclusions: [] }
 ```
 
@@ -360,8 +360,8 @@ Resolve variables using 3-stage pipeline:
 import { resolveVariables } from '$lib/shared/parameterization';
 
 const variables = [
-	{ name: 'a', expression: '{{1-10}}' },
-	{ name: 'b', expression: '{{1-10}}' },
+	{ name: 'a', expression: '{{1..10}}' },
+	{ name: 'b', expression: '{{1..10}}' },
 	{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 ];
 
@@ -378,20 +378,20 @@ const resolved = resolveVariables(variables, 12345);
 For each variable, the resolver processes the expression through 3 stages:
 
 1. **Replace Variable References** - `{{var}}` → resolved value
-2. **Generate Random Numbers** - `{{1-10}}` → actual number
+2. **Generate Random Numbers** - `{{1..10}}` → actual number
 3. **Evaluate Expressions** - `{{eval:a+b}}` → calculated result
 
 **Example:**
 
 ```typescript
 // Given: a=7 (already resolved)
-// Processing: { name: 'result', expression: '{{eval:{{a}}+{{1-5}}}}' }
+// Processing: { name: 'result', expression: '{{eval:{{a}}+{{1..5}}}}' }
 
 // STAGE 1: Replace variable references
-//   '{{eval:{{a}}+{{1-5}}}}' → '{{eval:7+{{1-5}}}}'
+//   '{{eval:{{a}}+{{1..5}}}}' → '{{eval:7+{{1..5}}}}'
 
 // STAGE 2: Generate random numbers
-//   '{{eval:7+{{1-5}}}}' → '{{eval:7+3}}' (random generated: 3)
+//   '{{eval:7+{{1..5}}}}' → '{{eval:7+3}}' (random generated: 3)
 
 // STAGE 3: Evaluate expressions
 //   '{{eval:7+3}}' → Extract '7+3' → Pass to MathLive → Returns 10
@@ -452,7 +452,7 @@ const spec3 = {
 	max: { type: 'variable', name: 'max' },
 	exclusions: []
 };
-const num3 = generateRandomNumber(spec3, alreadyResolved, 12345); // → Random 1-20
+const num3 = generateRandomNumber(spec3, alreadyResolved, 12345); // → Random 1..20
 
 // Decimal by digits
 const spec4 = {
@@ -577,7 +577,7 @@ Comprehensive validation of variable definitions:
 import { validateVariables } from '$lib/shared/parameterization';
 
 const variables = [
-	{ name: 'a', expression: '{{1-10}}' },
+	{ name: 'a', expression: '{{1..10}}' },
 	{ name: 'b', expression: '{{a}}' },
 	{ name: 'sum', expression: '{{eval:a+b}}' }
 ];
@@ -599,7 +599,7 @@ const result = validateVariables(variables);
 const invalid = [
 	{ name: '', expression: '5' }, // Empty name
 	{ name: 'a', expression: '{{undefined}}' }, // Undefined reference
-	{ name: 'b', expression: '{{10-5}}' }, // Invalid range
+	{ name: 'b', expression: '{{10..5}}' }, // Invalid range
 	{ name: 'c', expression: '{{c}}' } // Self-reference
 ];
 
@@ -625,15 +625,15 @@ All supported random number formats with examples:
 
 ```typescript
 // Basic range
-{{random:1-10}}             // Explicit
-{{1-10}}                    // Shorthand
+{{random:1..10}}             // Explicit
+{{1..10}}                    // Shorthand
 
 // Negative numbers
-{{-10-10}}                  // -10 to 10
+{{-10..10}}                  // -10 to 10
 
 // Variable bounds
-{{random:{{min}}-{{max}}}}  // Explicit
-{{{{min}}-{{max}}}}         // Shorthand
+{{random:{{min}}..{{max}}}}  // Explicit
+{{{{min}}..{{max}}}}         // Shorthand
 ```
 
 ### Decimal by Digits
@@ -652,36 +652,36 @@ All supported random number formats with examples:
 
 ```typescript
 // Fixed step
-{{random:0.5-9.99:0.01}}    // 0.50 to 9.99 by 0.01
-{{0.5-9.99:0.01}}           // Same (shorthand)
+{{random:0.5..9.99:0.01}}    // 0.50 to 9.99 by 0.01
+{{0.5..9.99:0.01}}           // Same (shorthand)
 
 // Common steps
-{{0-1:0.1}}                 // 0.0, 0.1, 0.2, ..., 1.0
-{{0-10:0.5}}                // 0.0, 0.5, 1.0, ..., 10.0
+{{0..1:0.1}}                 // 0.0, 0.1, 0.2, ..., 1.0
+{{0..10:0.5}}                // 0.0, 0.5, 1.0, ..., 10.0
 ```
 
 ### Exclusions
 
 ```typescript
 // Single value
-{{random:1-10!5}}           // Exclude 5
-{{1-10!5}}                  // Shorthand
+{{random:1..10!5}}           // Exclude 5
+{{1..10!5}}                  // Shorthand
 
 // Multiple values
-{{random:1-20!5,7}}         // Exclude 5 and 7
-{{1-20!5,7}}                // Shorthand
+{{random:1..20!5,7}}         // Exclude 5 and 7
+{{1..20!5,7}}                // Shorthand
 
 // Range exclusion
-{{random:1-50!10-20}}       // Exclude 10-20
-{{1-50!10-20}}              // Shorthand
+{{random:1..50!10..20}}      // Exclude 10-20
+{{1..50!10..20}}             // Shorthand
 
 // Variable exclusion
-{{random:1-10!{{a}}}}       // Exclude a's value
-{{1-10!{{a}}}}              // Shorthand
+{{random:1..10!{{a}}}}       // Exclude a's value
+{{1..10!{{a}}}}              // Shorthand
 
 // Mixed
-{{random:1-100!5,7-9,{{x}}}}  // Exclude 5, 7-9, and x
-{{1-100!5,7-9,{{x}}}}         // Shorthand
+{{random:1..100!5,7..9,{{x}}}}  // Exclude 5, 7-9, and x
+{{1..100!5,7..9,{{x}}}}         // Shorthand
 ```
 
 ---
@@ -698,8 +698,8 @@ import { resolveVariables, resolveText } from '$lib/shared/parameterization';
 // Question template with variables
 const template = {
 	variables: [
-		{ name: 'a', expression: '{{1-10}}' },
-		{ name: 'b', expression: '{{1-10}}' },
+		{ name: 'a', expression: '{{1..10}}' },
+		{ name: 'b', expression: '{{1..10}}' },
 		{ name: 'sum', expression: '{{eval:{{a}}+{{b}}}}' }
 	],
 	statement: 'Calculate {{a}} + {{b}}',
@@ -724,7 +724,7 @@ import { resolveVariables, resolveText } from '$lib/shared/parameterization';
 // Exercise with parameterized content
 const exercise = {
 	variables: [
-		{ name: 'side', expression: '{{random:5-15}}' },
+		{ name: 'side', expression: '{{random:5..15}}' },
 		{ name: 'area', expression: '{{eval:side*side}}' }
 	],
 	content: 'A square has side length {{side}} cm. Calculate its area.',
@@ -804,7 +804,7 @@ import { resolveVariables } from '$lib/shared/parameterization';
 describe('Variable Resolver', () => {
 	it('resolves 3-stage pipeline correctly', () => {
 		const variables = [
-			{ name: 'a', expression: '{{1-10}}' },
+			{ name: 'a', expression: '{{1..10}}' },
 			{ name: 'b', expression: '{{a}}' },
 			{ name: 'sum', expression: '{{eval:a+b}}' }
 		];
