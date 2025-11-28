@@ -80,8 +80,8 @@ Genere des nombres aleatoires selon differentes specifications.
 **Entiers relatifs (excluant zero)** :
 
 ```
-{{+-2..9}}           Union de {-9..-2} U {2..9} (exclut 0 et +-1)
-{{+/-2..9}}         Syntaxe alternative
+{{2..9;±}}           Union de {-9..-2} U {2..9} (exclut 0 et +-1)
+{{2..9;+-}}          Syntaxe alternative ASCII
 ```
 
 **Bornes variables** :
@@ -175,7 +175,7 @@ Comme pour les autres types aleatoires, les exclusions utilisent `!` :
 | Type                | Description                     | Exemple              |
 | ------------------- | ------------------------------- | -------------------- |
 | `integer`           | Plage d'entiers                 | `{{1..10}}`          |
-| `relative-integer`  | Entiers relatifs (excluant 0)   | `{{+-2..9}}`         |
+| `relative-integer`  | Entiers relatifs (excluant 0)   | `{{2..9;±}}`         |
 | `decimal-by-digits` | Decimaux par nombre de chiffres | `{{2.3}}`            |
 | `decimal-range`     | Plage decimale avec pas         | `{{0.5..9.99:0.01}}` |
 | `discrete-list`     | Selection dans une liste finie  | `{{a\|b\|c}}`        |
@@ -732,7 +732,7 @@ TEMPLATES:
   {{var}}                      Variable
   {{1..10}}                    Entier aleatoire 1-10
   {{-5..5}}                    Entier -5 a 5
-  {{+-2..9}}                   Entiers relatifs (hors 0, +-1)
+  {{2..9;±}}                   Entiers relatifs (hors 0, +-1)
   {{2.3}}                      Decimal: 2 chiffres.3 chiffres
   {{0.5..9.99:0.01}}           Decimal avec pas
   {{1..20!5,7..9}}             Avec exclusions

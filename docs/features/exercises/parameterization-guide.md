@@ -341,18 +341,18 @@ Supposons : a = 7, b = 3
 
 Les **modificateurs** permettent de contrôler le format de sortie d'une expression `{{eval:}}`.
 
-**Syntaxe** : `{{eval:expression|modifiers}}`
+**Syntaxe** : `{{eval:expression;modifiers}}`
 
-Les modificateurs se placent après l'expression, séparés par une barre verticale `|`. Plusieurs modificateurs peuvent être combinés avec des virgules.
+Les modificateurs se placent après l'expression, séparés par un point-virgule `;`. Plusieurs modificateurs peuvent être combinés avec des virgules.
 
 #### Modificateurs disponibles
 
-| Modificateur | Forme longue | Description                                    | Exemple                        |
-| ------------ | ------------ | ---------------------------------------------- | ------------------------------ |
-| `d`          | `decimal`    | Force la sortie décimale                       | `{{eval:1/3\|d}}` → "0.333..." |
-| `+`          | `positive`   | Ajoute le signe + pour les résultats positifs  | `{{eval:5\|+}}` → "+5"         |
-| `()`         | `bracket`    | Entoure les résultats négatifs de parenthèses  | `{{eval:-3\|()}}` → "(-3)"     |
-| `'`          | `derivative` | Dérive l'expression avant évaluation (réservé) | À venir                        |
+| Modificateur | Forme longue | Description                                    | Exemple                       |
+| ------------ | ------------ | ---------------------------------------------- | ----------------------------- |
+| `d`          | `decimal`    | Force la sortie décimale                       | `{{eval:1/3;d}}` → "0.333..." |
+| `+`          | `positive`   | Ajoute le signe + pour les résultats positifs  | `{{eval:5;+}}` → "+5"         |
+| `()`         | `bracket`    | Entoure les résultats négatifs de parenthèses  | `{{eval:-3;()}}` → "(-3)"     |
+| `'`          | `derivative` | Dérive l'expression avant évaluation (réservé) | À venir                       |
 
 #### Exemples d'utilisation
 
@@ -362,7 +362,7 @@ Les modificateurs se placent après l'expression, séparés par une barre vertic
 Variables :
 a = 1
 b = 3
-quotient = {{eval:{{a}}/{{b}}|d}}
+quotient = {{eval:{{a}}/{{b}};d}}
 
 Énoncé : Le quotient de {{a}} par {{b}} est {{quotient}}
 → "Le quotient de 1 par 3 est 0.333..."
@@ -373,7 +373,7 @@ quotient = {{eval:{{a}}/{{b}}|d}}
 ```markdown
 Variables :
 x = 8
-variation = {{eval:{{x}}-5|+}}
+variation = {{eval:{{x}}-5;+}}
 
 Énoncé : La variation est de {{variation}}
 → "La variation est de +3"
@@ -384,7 +384,7 @@ variation = {{eval:{{x}}-5|+}}
 ```markdown
 Variables :
 x = -5
-valeur = {{eval:{{x}}|()}}
+valeur = {{eval:{{x}};()}}
 
 Énoncé : La valeur est {{valeur}}
 → "La valeur est (-5)"
@@ -396,7 +396,7 @@ valeur = {{eval:{{x}}|()}}
 Variables :
 a = 3
 b = 2
-resultat = {{eval:{{a}}\*{{b}}|d,+}}
+resultat = {{eval:{{a}}\*{{b}};d,+}}
 
 Énoncé : Le résultat est {{resultat}}
 → "Le résultat est +6" (décimal si nécessaire + signe positif)
@@ -409,7 +409,7 @@ resultat = {{eval:{{a}}\*{{b}}|d,+}}
 ```markdown
 Variables :
 temp = {{-10..30}}
-temp_signee = {{eval:{{temp}}|+}}
+temp_signee = {{eval:{{temp}};+}}
 
 Énoncé : La température est de {{temp_signee}}°C
 → Génère : "+15°C" ou "-5°C"
@@ -421,7 +421,7 @@ temp_signee = {{eval:{{temp}}|+}}
 Variables :
 a = {{-5..5!0}}
 b = {{-10..10}}
-b_signe = {{eval:{{b}}|+,()}}
+b_signe = {{eval:{{b}};+,()}}
 
 Énoncé : Résolvez : ${{a}}x {{b_signe}} = 0$
 → Si b = -3 : "Résolvez : 2x + (-3) = 0"
@@ -434,7 +434,7 @@ b_signe = {{eval:{{b}}|+,()}}
 Variables :
 numerateur = {{1..10}}
 denominateur = {{1..10!0}}
-division = {{eval:{{numerateur}}/{{denominateur}}|d}}
+division = {{eval:{{numerateur}}/{{denominateur}};d}}
 
 Énoncé : Calculez {{numerateur}} ÷ {{denominateur}} = {{division}}
 → Affiche toujours un résultat décimal : "0.5" au lieu de "1/2"
@@ -442,16 +442,16 @@ division = {{eval:{{numerateur}}/{{denominateur}}|d}}
 
 #### Notes importantes
 
-⚠️ **LaTeX et la barre verticale** :
+⚠️ **LaTeX et le point-virgule** :
 
-Si votre expression contient des barres verticales pour la valeur absolue LaTeX (`|x|`), les modificateurs doivent être placés **après** la dernière barre :
+Le point-virgule `;` sépare clairement l'expression mathématique des modificateurs, même si l'expression contient des barres verticales pour la valeur absolue :
 
 ```markdown
-✅ Correct : {{eval:|{{x}}||+}} (valeur absolue avec modificateur +)
-❌ Incorrect : {{eval:|{{x}}|+|}}
+✅ Correct : {{eval:|{{x}}|;+}} (valeur absolue avec modificateur +)
+✅ Correct : {{eval:|{{x}}|;d,()}} (valeur absolue avec modificateurs multiples)
 ```
 
-Le système détecte automatiquement si une barre verticale fait partie de l'expression mathématique ou sert de séparateur de modificateur.
+Cette syntaxe évite toute ambiguïté entre le contenu mathématique et les modificateurs de format.
 
 ### Comment fonctionne `{{eval:}}` ?
 

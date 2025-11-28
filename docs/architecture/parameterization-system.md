@@ -520,16 +520,16 @@ replace: '15'
 
 Eval expressions support optional modifiers to control output formatting:
 
-**Syntax:** `{{eval:expression|modifiers}}`
+**Syntax:** `{{eval:expression;modifiers}}`
 
 **Modifier Types:**
 
-| Short | Long         | Effect                     | Example                        |
-| ----- | ------------ | -------------------------- | ------------------------------ |
-| `d`   | `decimal`    | Force decimal output       | `{{eval:1/3\|d}}` → "0.333..." |
-| `+`   | `positive`   | Add + sign for positive    | `{{eval:5\|+}}` → "+5"         |
-| `()`  | `bracket`    | Bracket negative values    | `{{eval:-3\|()}}` → "(-3)"     |
-| `'`   | `derivative` | Take derivative (reserved) | Future feature                 |
+| Short | Long         | Effect                     | Example                       |
+| ----- | ------------ | -------------------------- | ----------------------------- |
+| `d`   | `decimal`    | Force decimal output       | `{{eval:1/3;d}}` → "0.333..." |
+| `+`   | `positive`   | Add + sign for positive    | `{{eval:5;+}}` → "+5"         |
+| `()`  | `bracket`    | Bracket negative values    | `{{eval:-3;()}}` → "(-3)"     |
+| `'`   | `derivative` | Take derivative (reserved) | Future feature                |
 
 **Modifier Parsing:**
 
@@ -549,9 +549,9 @@ interface EvalModifiers {
 
 **Implementation Details:**
 
-1. **Modifier Detection:** Parser uses heuristics to distinguish modifier pipes from LaTeX pipes:
+1. **Modifier Detection:** Parser uses semicolon separator to distinguish modifiers from expression content:
    - `{{eval:|x|}}` → No modifiers (LaTeX absolute value)
-   - `{{eval:|x||d}}` → Decimal modifier (after last pipe)
+   - `{{eval:|x|;d}}` → Decimal modifier (after semicolon)
    - Valid modifiers: Only contain `d`, `+`, `()`, `'`, and word variants
 
 2. **Modifier Application:** Applied after evaluation in Stage 3:
@@ -579,9 +579,9 @@ interface EvalModifiers {
 
 **Use Cases:**
 
-- **Temperature formatting:** `{{eval:{{temp}}|+}}` → "+15" or "-5"
-- **Equation coefficients:** `{{eval:{{b}}|+,()}}` → "+3" or "(-3)"
-- **Decimal results:** `{{eval:{{a}}/{{b}}|d}}` → "0.333..." instead of fraction
+- **Temperature formatting:** `{{eval:{{temp}};+}}` → "+15" or "-5"
+- **Equation coefficients:** `{{eval:{{b}};+,()}}` → "+3" or "(-3)"
+- **Decimal results:** `{{eval:{{a}}/{{b}};d}}` → "0.333..." instead of fraction
 
 ---
 
@@ -735,18 +735,18 @@ resolveExclusions(exclusions, [{ name: 'a', value: '12' }]);
 
 **Purpose:** Generate random integers from symmetric positive/negative ranges, excluding zero.
 
-**Syntax:** `{{±min..max}}` where min and max are positive integers
+**Syntax:** `{{min..max;±}}` where min and max are positive integers
 
 **Semantics:** Generates from union of {-max..-min} ∪ {min..max}
 
 **Example:**
 
 ```typescript
-// {{±2..9}} generates from:
+// {{2..9;±}} generates from:
 // {-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9}
 // Never generates: -1, 0, or 1
 
-// With exclusion: {{±2..9!5}}
+// With exclusion: {{2..9;±!5}}
 // Excludes both +5 and -5
 ```
 
@@ -807,11 +807,11 @@ function inferStep(minStr: string, maxStr: string): number {
 
 ### Relative Integers (±)
 
-| Syntax        | Generated Values                 |
-| ------------- | -------------------------------- |
-| `{{±2..9}}`   | {-9..-2} ∪ {2..9}                |
-| `{{±1..9}}`   | {-9..-1} ∪ {1..9} (all non-zero) |
-| `{{±2..9!5}}` | Same but excludes ±5             |
+| Syntax         | Generated Values                 |
+| -------------- | -------------------------------- |
+| `{{2..9;±}}`   | {-9..-2} ∪ {2..9}                |
+| `{{1..9;±}}`   | {-9..-1} ∪ {1..9} (all non-zero) |
+| `{{2..9;±!5}}` | Same but excludes ±5             |
 
 ### Decimal by Digits
 
@@ -832,11 +832,11 @@ function inferStep(minStr: string, maxStr: string): number {
 
 ### Variables and Exclusions
 
-| Syntax                           | Description                  |
-| -------------------------------- | ---------------------------- |
-| `{{{{min}}..{{max}}}}`           | Variable bounds              |
-| `{{1..10!{{a}}}}`                | Exclude variable value       |
-| `{{±{{min}}..{{max}}!{{excl}}}}` | Full relative with variables |
+| Syntax                            | Description                  |
+| --------------------------------- | ---------------------------- |
+| `{{{{min}}..{{max}}}}`            | Variable bounds              |
+| `{{1..10!{{a}}}}`                 | Exclude variable value       |
+| `{{{{min}}..{{max}};±!{{excl}}}}` | Full relative with variables |
 
 ---
 
