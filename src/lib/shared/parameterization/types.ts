@@ -137,6 +137,10 @@ export type Exclusion =
  * Syntax: {{random:0.5-9.99:0.01}} or {{0.5-9.99:0.01}}
  * Spec: { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01 }
  *
+ * @example Discrete list
+ * Syntax: {{random:rouge|vert|bleu}} or {{a|b|c}}
+ * Spec: { type: 'discrete-list', items: ['rouge', 'vert', 'bleu'], exclusions: [] }
+ *
  * @example With exclusions
  * Syntax: {{random:1-20!5,7-9}} or {{1-20!5,7-9}}
  * Spec: { ..., exclusions: [...] }
@@ -174,6 +178,12 @@ export type RandomSpec =
 			max: NumberOrVariable;
 			step: number;
 			exclusions: Exclusion[];
+	  }
+	| {
+			/** Discrete list: {{random:a|b|c}} or {{a|b|c}} */
+			type: 'discrete-list';
+			items: string[];
+			exclusions: string[];
 	  };
 
 // ============================================================================
