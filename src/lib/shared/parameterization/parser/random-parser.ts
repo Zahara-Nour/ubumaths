@@ -3,16 +3,15 @@
  * ====================================================
  *
  * Parses random number specifications from Markdown syntax:
- * - Integer ranges: {{1-10}} or {{1..10}} or {{-3..-1}}
+ * - Integer ranges: {{1..10}} or {{-3..-1}}
  * - Relative integers: {{±2..9}} → union of {-9..-2} ∪ {2..9}
  * - Decimal by digits: {{2.3}} (2 digits before, 3 after)
- * - Decimal ranges: {{1..1.6}} (auto-step=0.1) or {{0.5-9.99:0.01}} (explicit step)
- * - Variable bounds: {{{{min}}-{{max}}}} or {{{{min}}..{{max}}}}
- * - Exclusions: {{1-20!5,7-9}} or {{1..20!5,7..9}}
+ * - Decimal ranges: {{1..1.6}} (auto-step=0.1) or {{0.5..9.99:0.01}} (explicit step)
+ * - Variable bounds: {{{{min}}..{{max}}}}
+ * - Exclusions: {{1..20!5,7..9}}
  *
- * Range separators:
- * - `-` (dash): Traditional, works for positive ranges like {{3-5}}
- * - `..` (double dot): Clearer for negative ranges like {{-3..-1}}
+ * Range separator:
+ * - `..` (double dot): Used for all ranges including negative ones like {{-3..-1}}
  *
  * @module shared/parameterization/parser/random-parser
  */
@@ -33,13 +32,13 @@ import type { RandomSpec, NumberOrVariable, Exclusion } from '../types';
  *
  * @example Integer range with prefix
  * ```typescript
- * parseRandomSpec('{{random:1-10}}')
+ * parseRandomSpec('{{random:1..10}}')
  * // → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10}, exclusions: [] }
  * ```
  *
  * @example Integer range shorthand
  * ```typescript
- * parseRandomSpec('{{1-10}}')
+ * parseRandomSpec('{{1..10}}')
  * // → { type: 'integer', min: {type:'number',value:1}, max: {...,value:10}, exclusions: [] }
  * ```
  *
@@ -51,7 +50,7 @@ import type { RandomSpec, NumberOrVariable, Exclusion } from '../types';
  *
  * @example Decimal range with step
  * ```typescript
- * parseRandomSpec('{{0.5-9.99:0.01}}')
+ * parseRandomSpec('{{0.5..9.99:0.01}}')
  * // → { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01, exclusions: [] }
  * ```
  *
@@ -63,7 +62,7 @@ import type { RandomSpec, NumberOrVariable, Exclusion } from '../types';
  *
  * @example With exclusions
  * ```typescript
- * parseRandomSpec('{{1-20!5,7-9}}')
+ * parseRandomSpec('{{1..20!5,7..9}}')
  * // → { type: 'integer', ..., exclusions: [
  * //      { type: 'value', value: {type:'number',value:5} },
  * //      { type: 'range', min: {type:'number',value:7}, max: {type:'number',value:9} }
@@ -72,7 +71,7 @@ import type { RandomSpec, NumberOrVariable, Exclusion } from '../types';
  *
  * @example Variable bounds
  * ```typescript
- * parseRandomSpec('{{random:{{min}}-{{max}}}}')
+ * parseRandomSpec('{{random:{{min}}..{{max}}}}')
  * // → { type: 'integer', min: {type:'variable',name:'min'}, max: {type:'variable',name:'max'}, exclusions: [] }
  * ```
  *
@@ -208,15 +207,15 @@ function parseDecimalByDigits(spec: string): RandomSpec {
 /**
  * Parse range format
  * Examples:
- * - {{1-10}}, {{1..10}}, {{-3..-1}}
+ * - {{1..10}}, {{-3..-1}}
  * - {{±2..9}} (relative)
- * - {{0.5-9.99:0.01}}, {{1..1.6}} (decimal with auto-step)
+ * - {{0.5..9.99:0.01}}, {{1..1.6}} (decimal with auto-step)
  */
 function parseRange(spec: string, isRelative: boolean = false): RandomSpec {
 	// Check for step notation (split at top level to avoid splitting inside variables)
 	const [rangeSpec, stepStr] = splitAtTopLevel(spec, ':');
 
-	// Parse min-max (now supports both `-` and `..` separators)
+	// Parse min-max (uses `..` separator)
 	const { min, max, originalMinStr, originalMaxStr } = parseMinMax(rangeSpec);
 
 	// Determine if decimal or integer based on:
@@ -294,16 +293,12 @@ function countDecimalPlaces(str: string): number {
 /**
  * Parse min-max from range string, handling negative numbers and variables
  *
- * Supports two range separators:
- * - `-` (dash): Traditional, e.g., "1-10", "-5-10"
- * - `..` (double dot): Clearer for negatives, e.g., "-3..-1", "1..10"
+ * Uses `..` (double dot) as the range separator.
  *
  * Examples:
- * - "1-10" → min: 1, max: 10
  * - "1..10" → min: 1, max: 10
- * - "-5-10" → min: -5, max: 10
+ * - "-5..10" → min: -5, max: 10
  * - "-3..-1" → min: -3, max: -1
- * - "{{min}}-{{max}}" → variables
  * - "{{min}}..{{max}}" → variables
  */
 function parseMinMax(rangeSpec: string): {
@@ -317,7 +312,7 @@ function parseMinMax(rangeSpec: string): {
 	let braceCount = 0;
 	let foundSeparator = false;
 
-	// First, try to find `..` separator (takes priority over `-`)
+	// Find `..` separator
 	for (let i = 0; i < rangeSpec.length - 1; i++) {
 		const char = rangeSpec[i];
 		const nextChar = rangeSpec[i + 1];
@@ -331,26 +326,6 @@ function parseMinMax(rangeSpec: string): {
 			maxStr = rangeSpec.substring(i + 2);
 			foundSeparator = true;
 			break;
-		}
-	}
-
-	// If no `..` found, try `-` separator
-	if (!foundSeparator) {
-		braceCount = 0;
-		for (let i = 0; i < rangeSpec.length; i++) {
-			const char = rangeSpec[i];
-
-			if (char === '{') braceCount++;
-			if (char === '}') braceCount--;
-
-			// Check for `-` separator (not at start, not inside variable)
-			// Must be after at least one character (to not confuse with negative sign)
-			if (char === '-' && braceCount === 0 && i > 0 && !foundSeparator) {
-				minStr = rangeSpec.substring(0, i);
-				maxStr = rangeSpec.substring(i + 1);
-				foundSeparator = true;
-				break;
-			}
 		}
 	}
 
@@ -394,7 +369,7 @@ function parseNumberOrVariable(str: string): NumberOrVariable {
 }
 
 /**
- * Parse exclusions: "5,7-9,{{a}},{{b}}-{{c}}" or "5,7..9,{{a}},{{b}}..{{c}}"
+ * Parse exclusions: "5,7..9,{{a}},{{b}}..{{c}}"
  */
 function parseExclusions(spec: string): Exclusion[] {
 	const exclusions: Exclusion[] = [];
@@ -406,11 +381,11 @@ function parseExclusions(spec: string): Exclusion[] {
 		// Variable reference (Markdown) - single variable, not a range
 		const varPattern = /^\{\{(\w+)\}\}$/;
 		const varMatch = trimmed.match(varPattern);
-		if (varMatch && !trimmed.includes('-') && !trimmed.includes('..')) {
+		if (varMatch && !trimmed.includes('..')) {
 			exclusions.push({ type: 'value', value: { type: 'variable', name: varMatch[1] } });
 		}
-		// Range: detect by trying to parse as range (supports both `-` and `..`)
-		else if (trimmed.includes('..') || hasRangeSeparator(trimmed)) {
+		// Range: detect by trying to parse as range (uses `..` separator)
+		else if (trimmed.includes('..')) {
 			try {
 				const { min, max } = parseMinMax(trimmed);
 				exclusions.push({ type: 'range', min, max });
@@ -433,7 +408,7 @@ function parseExclusions(spec: string): Exclusion[] {
 /**
  * Split exclusion parts while respecting braces
  *
- * Example: "5,{{a}},{{b}}-{{c}}" → ["5", "{{a}}", "{{b}}-{{c}}"]
+ * Example: "5,{{a}},{{b}}..{{c}}" → ["5", "{{a}}", "{{b}}..{{c}}"]
  */
 function splitExclusionParts(spec: string): string[] {
 	const parts: string[] = [];
@@ -468,8 +443,8 @@ function splitExclusionParts(spec: string): string[] {
  * Split string at character, but only at top level (outside braces)
  *
  * @example
- * splitAtTopLevel('1-10!5', '!') → ['1-10', '5']
- * splitAtTopLevel('{{a}}-{{b}}!{{c}}', '!') → ['{{a}}-{{b}}', '{{c}}']
+ * splitAtTopLevel('1..10!5', '!') → ['1..10', '5']
+ * splitAtTopLevel('{{a}}..{{b}}!{{c}}', '!') → ['{{a}}..{{b}}', '{{c}}']
  */
 function splitAtTopLevel(str: string, separator: string): [string, string | undefined] {
 	let braceCount = 0;
