@@ -158,7 +158,7 @@ export type RandomSpec =
 			exclusions: Exclusion[];
 	  }
 	| {
-			/** Relative integer: {{±2..9}} → union of {-9..-2} ∪ {2..9} (excludes 0) */
+			/** Relative integer: {{2..9;±}} → union of {-9..-2} ∪ {2..9} (excludes 0) */
 			type: 'relative-integer';
 			min: NumberOrVariable;
 			max: NumberOrVariable;

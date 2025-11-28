@@ -191,7 +191,7 @@ function hasTopLevelPipe(content: string): boolean {
  * - Contains single "." with digits on both sides: "2.3" (decimal by digits)
  * - Contains ":" for step notation: "0.5..9.99:0.01"
  * - Contains "!" for exclusions: "1..10!5"
- * - Contains "±" for relative integers: "±2..9"
+ * - Contains ";" for modifiers: "2..9;±" (relative integers)
  */
 function isRandomShorthand(content: string): boolean {
 	// Check for discrete list: contains | at top level
@@ -205,11 +205,6 @@ function isRandomShorthand(content: string): boolean {
 		return true;
 	}
 
-	// Check for relative integer prefix
-	if (content.startsWith('±') || content.startsWith('+/-')) {
-		return true;
-	}
-
 	// Check for decimal by digits: "2.3" (digit.digit format - single dot only)
 	if (/^\d+\.\d+$/.test(content)) {
 		return true;
@@ -220,8 +215,8 @@ function isRandomShorthand(content: string): boolean {
 		return true;
 	}
 
-	// Check for step notation or exclusions
-	if (content.includes(':') || content.includes('!')) {
+	// Check for step notation, exclusions, or modifiers
+	if (content.includes(':') || content.includes('!') || content.includes(';')) {
 		return true;
 	}
 

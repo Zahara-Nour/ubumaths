@@ -467,7 +467,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Error Handling', () => 
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{{±2..9}} and {{±1..1}}');
+		expect(result.converted).toBe('{{2..9;±}} and {{1..1;±}}');
 		expect(result.stats!.relativeIntegers).toBe(2);
 	});
 });

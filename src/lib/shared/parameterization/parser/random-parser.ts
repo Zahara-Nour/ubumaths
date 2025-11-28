@@ -4,14 +4,17 @@
  *
  * Parses random number specifications from Markdown syntax:
  * - Integer ranges: {{1..10}} or {{-3..-1}}
- * - Relative integers: {{±2..9}} → union of {-9..-2} ∪ {2..9}
+ * - Relative integers: {{2..9;±}} or {{2..9;+-}} → union of {-9..-2} ∪ {2..9}
  * - Decimal by digits: {{2.3}} (2 digits before, 3 after)
  * - Decimal ranges: {{1..1.6}} (auto-step=0.1) or {{0.5..9.99:0.01}} (explicit step)
  * - Variable bounds: {{{{min}}..{{max}}}}
  * - Exclusions: {{1..20!5,7..9}}
  *
- * Range separator:
- * - `..` (double dot): Used for all ranges including negative ones like {{-3..-1}}
+ * Syntax order:
+ * - `baseSpec;modifier!exclusions`
+ * - Range separator: `..` (double dot) for all ranges including negative ones like {{-3..-1}}
+ * - Modifier separator: `;` (semicolon) for modifiers like `;±`
+ * - Exclusion separator: `!` for exclusions
  *
  * @module shared/parameterization/parser/random-parser
  */
@@ -109,27 +112,49 @@ export function parseRandomSpec(token: string): RandomSpec | null {
  * Parse the inner content of a random specification
  */
 function parseRandomContent(content: string): RandomSpec {
-	// Split base and exclusions
-	const [baseSpec, exclusionSpec] = splitAtTopLevel(content, '!');
-
-	// Check for discrete list first (contains top-level pipe)
-	if (hasTopLevelPipe(baseSpec)) {
+	// Check for discrete list first (contains top-level pipe before splitting)
+	if (hasTopLevelPipe(content.split(';')[0].split('!')[0])) {
 		return parseDiscreteList(content);
 	}
 
-	// Check for ± prefix (relative integer)
-	const isRelative = baseSpec.startsWith('±') || baseSpec.startsWith('+/-');
-	const cleanBaseSpec = isRelative ? baseSpec.replace(/^(±|\+\/-)/, '') : baseSpec;
+	// Split at semicolon to get modifier
+	const [specPart, modifierAndExclusionsPart] = splitAtTopLevel(content, ';');
+
+	let baseSpec = specPart;
+	let exclusionSpec: string | undefined;
+	let isRelative = false;
+
+	// If modifier part exists, check for relative integer modifier
+	if (modifierAndExclusionsPart) {
+		// Split modifier part at ! to get modifier and exclusions
+		const [modifier, exclusionsAfterModifier] = splitAtTopLevel(modifierAndExclusionsPart, '!');
+
+		// Check if modifier is ± or +-
+		if (modifier === '±' || modifier === '+-') {
+			isRelative = true;
+			exclusionSpec = exclusionsAfterModifier;
+		} else {
+			// No valid modifier found, treat the whole thing as spec!exclusions
+			const [newBase, newExclusions] = splitAtTopLevel(content, '!');
+			baseSpec = newBase;
+			exclusionSpec = newExclusions;
+		}
+	} else {
+		// No semicolon found, split at ! for exclusions
+		const [newBase, newExclusions] = splitAtTopLevel(specPart, '!');
+		baseSpec = newBase;
+		exclusionSpec = newExclusions;
+	}
 
 	// Parse base specification
 	let spec: RandomSpec;
 
 	// Check if it's a decimal by digits format (e.g., {{2.3}})
 	// This is identified by: contains single `.`, no range separator, and both parts are simple numbers
-	if (isDecimalByDigitsFormat(cleanBaseSpec)) {
-		spec = parseDecimalByDigits(cleanBaseSpec);
+	if (isDecimalByDigitsFormat(baseSpec)) {
+		spec = parseDecimalByDigits(baseSpec);
 	} else {
-		spec = parseRange(cleanBaseSpec, isRelative);
+		spec = parseRange(baseSpec, isRelative);
 	}
 
 	// Parse exclusions if present
