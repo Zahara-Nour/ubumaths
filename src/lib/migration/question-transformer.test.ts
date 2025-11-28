@@ -461,7 +461,7 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]?.expression).toBe('{{list:rouge,bleu,vert,jaune}}');
+				expect(vars?.[0]?.expression).toBe('{{rouge|bleu|vert|jaune}}');
 			});
 		});
 	});
