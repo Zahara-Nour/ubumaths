@@ -95,8 +95,8 @@ const exercise: ExerciseCreate = {
 	difficulty: 2,
 	tags: ['geometry', 'triangles'],
 	variables: [
-		{ name: 'a', expression: '{{3-12}}' },
-		{ name: 'b', expression: '{{3-12}}' },
+		{ name: 'a', expression: '{{3..12}}' },
+		{ name: 'b', expression: '{{3..12}}' },
 		{ name: 'c', expression: '{{eval:Math.sqrt(a*a + b*b)}}' }
 	],
 	statement_md: 'If $a={{a}}$ and $b={{b}}$, find $c$',
@@ -196,7 +196,7 @@ if (isParameterized(exercise)) {
 ```typescript
 const update: ExerciseUpdate = {
 	id: exercise.id,
-	variables: [{ name: 'x', expression: '{{1-10}}' }],
+	variables: [{ name: 'x', expression: '{{1..10}}' }],
 	statement_md: 'Solve for x: $2x = {{x}}$',
 	distribution_mode: 'per_student'
 };
@@ -245,15 +245,15 @@ interface ResolvedVariable {
 { name: 'a', expression: '42' }
 
 // Random integer
-{ name: 'b', expression: '{{1-10}}' }
+{ name: 'b', expression: '{{1..10}}' }
 { name: 'c', expression: '{{random:1-10}}' }
 
 // Random decimal
 { name: 'd', expression: '{{2.3}}' }           // 2 digits before, 3 after
-{ name: 'e', expression: '{{0.5-9.99:0.01}}' } // Range with step
+{ name: 'e', expression: '{{0.5..9.99:0.01}}' } // Range with step
 
 // Random with exclusions
-{ name: 'f', expression: '{{1-20!5,7-9}}' }    // Exclude 5, 7, 8, 9
+{ name: 'f', expression: '{{1..20!5,7-9}}' }    // Exclude 5, 7, 8, 9
 
 // Variable reference
 { name: 'g', expression: '{{a}}' }
@@ -264,7 +264,7 @@ interface ResolvedVariable {
 
 // Chaining
 const variables: Variable[] = [
-  { name: 'a', expression: '{{1-10}}' },       // Random
+  { name: 'a', expression: '{{1..10}}' },       // Random
   { name: 'b', expression: '{{a}}' },          // Copy a
   { name: 'c', expression: '{{eval:a*2}}' },   // Double a
   { name: 'd', expression: '{{eval:a+b+c}}' }  // Sum
@@ -347,7 +347,7 @@ describe('Exercise Instance Generation', () => {
 	test('generates reproducible instances with same seed', () => {
 		const exercise: Exercise = {
 			// ... static fields ...
-			variables: [{ name: 'a', expression: '{{1-10}}' }],
+			variables: [{ name: 'a', expression: '{{1..10}}' }],
 			statement_md: 'Value: {{a}}',
 			distribution_mode: 'per_student'
 		};

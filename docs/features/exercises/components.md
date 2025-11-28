@@ -89,8 +89,8 @@ None (uses `$bindable` for two-way binding on `showSolution`).
 	let exercise: Exercise = $state({
 		id: 'ex-123',
 		variables: [
-			{ name: 'a', expression: '{{1-10}}' },
-			{ name: 'b', expression: '{{1-10}}' }
+			{ name: 'a', expression: '{{1..10}}' },
+			{ name: 'b', expression: '{{1..10}}' }
 		],
 		statement_md: 'Calculate ${{a}} + {{b}}$',
 		solution_md: 'The answer is ${{eval:a+b}}$',
@@ -375,8 +375,8 @@ None (uses `$bindable` for two-way binding).
 	import type { Variable, DistributionMode } from '$lib/exercises/types';
 
 	let variables = $state<Variable[]>([
-		{ name: 'a', expression: '{{1-10}}' },
-		{ name: 'b', expression: '{{1-10}}' },
+		{ name: 'a', expression: '{{1..10}}' },
+		{ name: 'b', expression: '{{1..10}}' },
 		{ name: 'sum', expression: '{{eval:a+b}}' }
 	]);
 
@@ -399,9 +399,9 @@ None (uses `$bindable` for two-way binding).
 
 - **Name**: Variable identifier (alphanumeric + underscore)
 - **Expression**: Parameterization syntax
-  - Random: `{{1-20}}`, `{{0-1:0.1}}`
+  - Random: `{{1..20}}`, `{{0..1:0.1}}`
   - Reference: `{{varName}}`
-  - Exclusion: `{{1-20!5,7}}`
+  - Exclusion: `{{1..20!5,7}}`
   - Evaluation: `{{eval:a+b}}`
 
 **3. Distribution Mode Selector**:
@@ -482,8 +482,8 @@ interface Props {
 
 	let markdown = $state('Calculate {{a}} + {{b}} = {{eval:a+b}}');
 	let variables = $state([
-		{ name: 'a', expression: '{{1-10}}' },
-		{ name: 'b', expression: '{{1-10}}' }
+		{ name: 'a', expression: '{{1..10}}' },
+		{ name: 'b', expression: '{{1..10}}' }
 	]);
 </script>
 

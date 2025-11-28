@@ -61,12 +61,12 @@ Nous allons creer 3 variables :
 1. Cliquez sur **"Ajouter une variable"**
 2. Remplissez :
    - **Nom** : `longueur`
-   - **Expression** : `{{5-15}}`
+   - **Expression** : `{{5..15}}`
 3. Cliquez sur **"Valider"** ou appuyez sur Entree
 
 **Explication** :
 
-- `{{5-15}}` genere un entier aleatoire entre 5 et 15
+- `{{5..15}}` genere un entier aleatoire entre 5 et 15
 - Cette variable s'appellera `longueur` dans votre enonce
 
 ### Variable 2 : largeur
@@ -74,12 +74,12 @@ Nous allons creer 3 variables :
 1. Cliquez a nouveau sur **"Ajouter une variable"**
 2. Remplissez :
    - **Nom** : `largeur`
-   - **Expression** : `{{3-10}}`
+   - **Expression** : `{{3..10}}`
 3. Cliquez sur **"Valider"**
 
 **Explication** :
 
-- `{{3-10}}` genere un entier aleatoire entre 3 et 10
+- `{{3..10}}` genere un entier aleatoire entre 3 et 10
 - Valeurs independantes de `longueur`
 
 ### Variable 3 : aire
@@ -102,8 +102,8 @@ Nous allons creer 3 variables :
 
 | Ordre | Nom      | Expression                          | Valeur exemple |
 | ----- | -------- | ----------------------------------- | -------------- |
-| 1     | longueur | `{{5-15}}`                          | 12             |
-| 2     | largeur  | `{{3-10}}`                          | 7              |
+| 1     | longueur | `{{5..15}}`                         | 12             |
+| 2     | largeur  | `{{3..10}}`                         | 7              |
 | 3     | aire     | `{{eval:{{longueur}}*{{largeur}}}}` | 84             |
 
 ---
@@ -290,8 +290,8 @@ Voici votre exercice termine :
 
 | Nom      | Expression                          |
 | -------- | ----------------------------------- |
-| longueur | `{{5-15}}`                          |
-| largeur  | `{{3-10}}`                          |
+| longueur | `{{5..15}}`                         |
+| largeur  | `{{3..10}}`                         |
 | aire     | `{{eval:{{longueur}}*{{largeur}}}}` |
 
 ### Enonce
@@ -344,8 +344,8 @@ Maintenant que vous avez cree votre premier exercice parametre, vous pouvez :
 
 ```
 Variables :
-- base: {{5-15}}
-- hauteur: {{3-10}}
+- base: {{5..15}}
+- hauteur: {{3..10}}
 - aire: {{eval:{{base}}*{{hauteur}}/2}}
 
 Enonce : Triangle de base {{base}} cm et hauteur {{hauteur}} cm
@@ -355,7 +355,7 @@ Enonce : Triangle de base {{base}} cm et hauteur {{hauteur}} cm
 
 ```
 Variables :
-- rayon: {{1-10}}
+- rayon: {{1..10}}
 - aire: {{eval:3.14*{{rayon}}^2}}
 
 Enonce : Cercle de rayon {{rayon}} cm
@@ -367,7 +367,7 @@ Enonce : Cercle de rayon {{rayon}} cm
 
 ```
 Variables :
-- diviseur: {{1-10!0}}  # Exclut 0 pour eviter division par zero
+- diviseur: {{1..10!0}}  # Exclut 0 pour eviter division par zero
 ```
 
 **Decimales** :
@@ -381,8 +381,8 @@ Variables :
 
 ```
 Variables :
-- a: {{1-5}}
-- b: {{-10-10}}
+- a: {{1..5}}
+- b: {{-10..10}}
 - discriminant: {{eval:{{b}}^2-4*{{a}}*{{c}}}}
 ```
 

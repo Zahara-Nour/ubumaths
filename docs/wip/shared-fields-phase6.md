@@ -24,8 +24,8 @@ Date: 2025-11-28 11:35
   "title": "Connaître la position décimale",
   "shared": {
     "variables": [
-      { "name": "1", "expression": "{{1-9}}" },
-      { "name": "2", "expression": "{{0-9!{{1}}}}" },
+      { "name": "1", "expression": "{{1..9}}" },
+      { "name": "2", "expression": "{{0..9!{{1}}}}" },
       ...
     ]
   },

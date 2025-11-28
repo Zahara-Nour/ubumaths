@@ -47,8 +47,8 @@ Shows a sample instance with ability to regenerate different values.
 	const paramExercise: Exercise = {
 		id: 'ex-param-456',
 		variables: [
-			{ name: 'a', expression: '{{1-10}}' },
-			{ name: 'b', expression: '{{1-10}}' },
+			{ name: 'a', expression: '{{1..10}}' },
+			{ name: 'b', expression: '{{1..10}}' },
 			{ name: 'sum', expression: '{{eval:a+b}}' }
 		],
 		statement_md: 'Calculate ${{a}} + {{b}}$.',
@@ -107,7 +107,7 @@ Each student sees consistent values based on their userId.
 
 	const homeworkExercise: Exercise = {
 		id: 'ex-homework-789',
-		variables: [{ name: 'x', expression: '{{1-100}}' }],
+		variables: [{ name: 'x', expression: '{{1..100}}' }],
 		statement_md: 'Solve for $y$ if $x + y = 100$ and $x = {{x}}$.',
 		solution_md: 'Since $x = {{x}}$, we have $y = {{eval:100-x}}$.',
 		distribution_mode: 'per_student',
@@ -143,7 +143,7 @@ All students in a group see the same instance.
 
 	const classExercise: Exercise = {
 		id: 'ex-class-999',
-		variables: [{ name: 'n', expression: '{{1-20}}' }],
+		variables: [{ name: 'n', expression: '{{1..20}}' }],
 		statement_md: 'Find the prime factorization of ${{n}}$.',
 		solution_md: '...',
 		distribution_mode: 'per_group',

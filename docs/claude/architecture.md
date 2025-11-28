@@ -495,8 +495,8 @@ UbuMaths currently uses **two different template syntaxes** that are bridged by 
 
 **Historical Context**:
 
-- Questions module was developed first with single-brace syntax: `{@:var}`, `{#:1-10}`
-- Shared parameterization library was developed later with Markdown-standard double-brace: `{{var}}`, `{{random:1-10}}`
+- Questions module was developed first with single-brace syntax: `{@:var}`, `{#:1..10}`
+- Shared parameterization library was developed later with Markdown-standard double-brace: `{{var}}`, `{{random:1..10}}`
 - Database contains 71+ seed templates using single-brace syntax
 - Exercises module uses double-brace syntax from the start
 
@@ -504,14 +504,14 @@ UbuMaths currently uses **two different template syntaxes** that are bridged by 
 
 #### Syntax Comparison
 
-| Feature            | Questions Syntax | Markdown Syntax                     |
-| ------------------ | ---------------- | ----------------------------------- |
-| **Variables**      | `{@:varName}`    | `{{varName}}`                       |
-| **Random Integer** | `{#:1-10}`       | `{{random:1-10}}` or `{{1-10}}`     |
-| **Random Decimal** | `{#:2.3}`        | `{{random:2.3}}` or `{{2.3}}`       |
-| **Exclusions**     | `{#:1-10!5}`     | `{{random:1-10!5}}` or `{{1-10!5}}` |
-| **Evaluation**     | `{eval:expr}`    | `{{eval:expr}}`                     |
-| **Nested**         | `{#:1-{@:max}}`  | `{{random:1-{{max}}}}`              |
+| Feature            | Questions Syntax | Markdown Syntax                       |
+| ------------------ | ---------------- | ------------------------------------- |
+| **Variables**      | `{@:varName}`    | `{{varName}}`                         |
+| **Random Integer** | `{#:1..10}`      | `{{random:1..10}}` or `{{1..10}}`     |
+| **Random Decimal** | `{#:2.3}`        | `{{random:2.3}}` or `{{2.3}}`         |
+| **Exclusions**     | `{#:1..10!5}`    | `{{random:1..10!5}}` or `{{1..10!5}}` |
+| **Evaluation**     | `{eval:expr}`    | `{{eval:expr}}`                       |
+| **Nested**         | `{#:1-{@:max}}`  | `{{random:1-{{max}}}}`                |
 
 #### How the Adapter Works
 
@@ -544,7 +544,7 @@ export function resolveContentField(field, resolvedVariables, seed) {
 ```typescript
 // Questions → Markdown
 convertToMarkdownSyntax('{@:a}'); // → '{{a}}'
-convertToMarkdownSyntax('{#:1-10}'); // → '{{random:1-10}}'
+convertToMarkdownSyntax('{#:1..10}'); // → '{{random:1..10}}'
 convertToMarkdownSyntax('{eval:a+b}'); // → '{{eval:a+b}}'
 
 // Nested conversions

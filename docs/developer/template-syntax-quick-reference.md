@@ -40,7 +40,7 @@ UbuMaths currently uses **two different template syntaxes**:
 
 ```typescript
 // Integer range
-{#:1-10}                    // Random integer 1 to 10
+{#:1..10}                    // Random integer 1 to 10
 {#:-5-5}                    // Random integer -5 to 5
 {#:1-{@:max}}              // Random with variable upper bound
 
@@ -77,8 +77,8 @@ UbuMaths currently uses **two different template syntaxes**:
     "content": "Calculate {@:a} + {@:b}"
   }],
   "variables": [
-    { "name": "a", "expression": "{#:1-10}" },
-    { "name": "b", "expression": "{#:1-10}" },
+    { "name": "a", "expression": "{#:1..10}" },
+    { "name": "b", "expression": "{#:1..10}" },
     { "name": "sum", "expression": "{eval:{@:a}+{@:b}}" }
   ],
   "answer": "{@:sum}"
@@ -125,8 +125,8 @@ UbuMaths currently uses **two different template syntaxes**:
 {{random:1-{{max}}}}         // Random with variable upper bound
 
 // Integer range (shorthand)
-{{1-10}}                     // Shorthand for random:1-10
-{{-5-5}}                     // Shorthand for random:-5-5
+{{1..10}}                     // Shorthand for random:1-10
+{{-5..5}}                     // Shorthand for random:-5-5
 
 // Decimal by digits (explicit)
 {{random:2.3}}               // 2 digits before, 3 after decimal
@@ -144,9 +144,9 @@ UbuMaths currently uses **two different template syntaxes**:
 {{random:1-20!5-7}}         // Excluding range 5-7
 
 // Exclusions (shorthand)
-{{1-10!5}}                   // Shorthand for random:1-10!5
-{{1-100!{{a}}}}             // Excluding variable
-{{1-50!5,7-9,{{x}}}}        // Multiple exclusions
+{{1..10!5}}                   // Shorthand for random:1-10!5
+{{1..100!{{a}}}}             // Excluding variable
+{{1..50!5,7-9,{{x}}}}        // Multiple exclusions
 ```
 
 ### Evaluation
@@ -187,7 +187,7 @@ import { convertToMarkdownSyntax } from '$lib/questions/generator/syntax-adapter
 
 // Basic conversions
 convertToMarkdownSyntax('{@:a}'); // → '{{a}}'
-convertToMarkdownSyntax('{#:1-10}'); // → '{{random:1-10}}'
+convertToMarkdownSyntax('{#:1..10}'); // → '{{random:1-10}}'
 convertToMarkdownSyntax('{eval:a+b}'); // → '{{eval:a+b}}'
 
 // Nested conversions
@@ -207,8 +207,8 @@ import { convertToQuestionsSyntax } from '$lib/questions/generator/syntax-adapte
 
 // Basic conversions
 convertToQuestionsSyntax('{{a}}'); // → '{@:a}'
-convertToQuestionsSyntax('{{random:1-10}}'); // → '{#:1-10}'
-convertToQuestionsSyntax('{{1-10}}'); // → '{#:1-10}' (shorthand normalized)
+convertToQuestionsSyntax('{{random:1-10}}'); // → '{#:1..10}'
+convertToQuestionsSyntax('{{1..10}}'); // → '{#:1..10}' (shorthand normalized)
 convertToQuestionsSyntax('{{eval:a+b}}'); // → '{eval:a+b}'
 
 // Nested conversions
@@ -246,7 +246,7 @@ normalizeToMarkdown('Plain text'); // → 'Plain text' (unchanged)
    // In template creation UI or seed files
    const template = {
    	statement: 'Calculate {@:a} + {@:b}',
-   	variables: [{ name: 'a', expression: '{#:1-10}' }]
+   	variables: [{ name: 'a', expression: '{#:1..10}' }]
    };
    ```
 
@@ -284,7 +284,7 @@ normalizeToMarkdown('Plain text'); // → 'Plain text' (unchanged)
    // Exercises module uses Markdown syntax
    const exercise = {
    	content: 'Solve {{a}} + {{b}}',
-   	variables: [{ name: 'a', expression: '{{1-10}}' }]
+   	variables: [{ name: 'a', expression: '{{1..10}}' }]
    };
    ```
 
@@ -331,7 +331,7 @@ normalizeToMarkdown('Plain text'); // → 'Plain text' (unchanged)
 // Questions syntax
 {
   name: 'a',
-  expression: '{#:1-10}'
+  expression: '{#:1..10}'
 },
 {
   name: 'b',
@@ -355,11 +355,11 @@ normalizeToMarkdown('Plain text'); // → 'Plain text' (unchanged)
 // Questions syntax
 {
   name: 'a',
-  expression: '{#:1-10}'
+  expression: '{#:1..10}'
 },
 {
   name: 'b',
-  expression: '{#:1-10}'
+  expression: '{#:1..10}'
 },
 {
   name: 'result',
@@ -416,7 +416,7 @@ normalizeToMarkdown('Plain text'); // → 'Plain text' (unchanged)
 {
   statement: "Calculate {@:a} + {{b}}",  // MIXED - will break!
   variables: [
-    { name: 'a', expression: '{#:1-10}' },
+    { name: 'a', expression: '{#:1..10}' },
     { name: 'b', expression: '{{random:1-10}}' }  // MIXED - will break!
   ]
 }
@@ -425,8 +425,8 @@ normalizeToMarkdown('Plain text'); // → 'Plain text' (unchanged)
 {
   statement: "Calculate {@:a} + {@:b}",
   variables: [
-    { name: 'a', expression: '{#:1-10}' },
-    { name: 'b', expression: '{#:1-10}' }
+    { name: 'a', expression: '{#:1..10}' },
+    { name: 'b', expression: '{#:1..10}' }
   ]
 }
 ```
@@ -473,8 +473,8 @@ const template = {
 		{
 			statement: [{ type: 'text', content: 'Calculate {@:a} + {@:b}' }],
 			variables: [
-				{ name: 'a', expression: '{#:1-10}' },
-				{ name: 'b', expression: '{#:1-10}' }
+				{ name: 'a', expression: '{#:1..10}' },
+				{ name: 'b', expression: '{#:1..10}' }
 			],
 			answer: '{eval:{@:a}+{@:b}}'
 		}
@@ -550,13 +550,13 @@ console.log(resolved);
 // ❌ BEFORE (wrong for database tests)
 const template = {
 	statement: 'Calculate {{a}} + {{b}}',
-	variables: [{ name: 'a', expression: '{{1-10}}' }]
+	variables: [{ name: 'a', expression: '{{1..10}}' }]
 };
 
 // ✅ AFTER (correct for database tests)
 const template = {
 	statement: 'Calculate {@:a} + {@:b}',
-	variables: [{ name: 'a', expression: '{#:1-10}' }]
+	variables: [{ name: 'a', expression: '{#:1..10}' }]
 };
 ```
 
@@ -580,7 +580,7 @@ const template = {
 ```
 Are you working with...
 ├─ Database templates?
-│  └─ Use Questions syntax: {@:var}, {#:1-10}
+│  └─ Use Questions syntax: {@:var}, {#:1..10}
 │
 ├─ Shared library directly?
 │  └─ Use Markdown syntax: {{var}}, {{random:1-10}}

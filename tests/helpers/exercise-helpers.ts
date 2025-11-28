@@ -99,8 +99,8 @@ export async function loginAsStudent(
  * const exercise = await createParamExercise(page, {
  *   title: 'Addition Practice',
  *   variables: [
- *     { name: 'a', expression: '{{1-10}}' },
- *     { name: 'b', expression: '{{1-10}}' }
+ *     { name: 'a', expression: '{{1..10}}' },
+ *     { name: 'b', expression: '{{1..10}}' }
  *   ],
  *   statement_md: 'Calculate {{a}} + {{b}}',
  *   solution_md: 'Answer: {{eval:{{a}}+{{b}}}}',

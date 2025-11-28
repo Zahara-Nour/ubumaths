@@ -24,8 +24,8 @@
  * const template: Exercise = {
  *   id: 'ex-123',
  *   variables: [
- *     { name: 'a', expression: '{{1-10}}' },
- *     { name: 'b', expression: '{{1-10}}' }
+ *     { name: 'a', expression: '{{1..10}}' },
+ *     { name: 'b', expression: '{{1..10}}' }
  *   ],
  *   statement_md: 'Calculate ${{a}} + {{b}}$',
  *   solution_md: 'The answer is ${{eval:a+b}}$',
@@ -126,8 +126,8 @@ import { parseMarkdown } from '../parser/markdown-parser';
  * const exercise: Exercise = {
  *   id: 'ex-param',
  *   variables: [
- *     { name: 'a', expression: '{{1-10}}' },
- *     { name: 'b', expression: '{{1-10}}' },
+ *     { name: 'a', expression: '{{1..10}}' },
+ *     { name: 'b', expression: '{{1..10}}' },
  *     { name: 'sum', expression: '{{eval:a+b}}' }
  *   ],
  *   statement_md: 'Calculate ${{a}} + {{b}}$',
@@ -354,7 +354,7 @@ export function generateGroupSeed(exerciseId: string, groupId: string): number {
  * console.log(isParameterized(staticExercise)); // false
  *
  * const parameterizedExercise: Exercise = {
- *   variables: [{ name: 'a', expression: '{{1-10}}' }],
+ *   variables: [{ name: 'a', expression: '{{1..10}}' }],
  *   statement_md: 'Calculate ${{a}} + 3$'
  * };
  * console.log(isParameterized(parameterizedExercise)); // true

@@ -32,7 +32,7 @@ function resolveVariables(variables: VariableDefinition[]): Record<string, numbe
 	for (const variable of variables) {
 		const expression = variable.expression;
 
-		// Parse simple random expressions like {{1-10}}
+		// Parse simple random expressions like {{1..10}}
 		const randomMatch = expression.match(/\{\{(\d+)-(\d+)\}\}/);
 		if (randomMatch) {
 			const min = parseInt(randomMatch[1]);
@@ -41,7 +41,7 @@ function resolveVariables(variables: VariableDefinition[]): Record<string, numbe
 			continue;
 		}
 
-		// Parse random with exclusions like {{1-10!5,7}}
+		// Parse random with exclusions like {{1..10!5,7}}
 		const randomExcludeMatch = expression.match(/\{\{(\d+)-(\d+)!([0-9,]+)\}\}/);
 		if (randomExcludeMatch) {
 			const min = parseInt(randomExcludeMatch[1]);

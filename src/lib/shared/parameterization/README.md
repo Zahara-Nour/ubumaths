@@ -566,7 +566,7 @@ The detector finds variables referenced in:
 
 - Direct variable references: `{{a}}`
 - Inside random specs: `{{{{min}}-{{max}}}}`
-- Inside random exclusions: `{{1-10!{{x}}}}`
+- Inside random exclusions: `{{1..10!{{x}}}}`
 - Inside eval expressions: `{{eval:{{a}}+{{b}}}}`
 
 ### Variable Validator

@@ -67,12 +67,12 @@ test.describe('Teacher Creates Parameterized Exercise', () => {
 		// Add first variable (a)
 		await page.click('button[data-testid="add-variable"]');
 		await page.fill('input[data-testid="variable-name-0"]', 'a');
-		await page.fill('input[data-testid="variable-expression-0"]', '{{1-10}}');
+		await page.fill('input[data-testid="variable-expression-0"]', '{{1..10}}');
 
 		// Add second variable (b)
 		await page.click('button[data-testid="add-variable"]');
 		await page.fill('input[data-testid="variable-name-1"]', 'b');
-		await page.fill('input[data-testid="variable-expression-1"]', '{{1-10}}');
+		await page.fill('input[data-testid="variable-expression-1"]', '{{1..10}}');
 
 		// Set distribution mode
 		await page.selectOption('select[data-testid="distribution-mode"]', 'per_student');
@@ -107,11 +107,11 @@ test.describe('Teacher Creates Parameterized Exercise', () => {
 		// Add variables with dependencies
 		await page.click('button[data-testid="add-variable"]');
 		await page.fill('input[data-testid="variable-name-0"]', 'a');
-		await page.fill('input[data-testid="variable-expression-0"]', '{{3-12}}');
+		await page.fill('input[data-testid="variable-expression-0"]', '{{3..12}}');
 
 		await page.click('button[data-testid="add-variable"]');
 		await page.fill('input[data-testid="variable-name-1"]', 'b');
-		await page.fill('input[data-testid="variable-expression-1"]', '{{3-12}}');
+		await page.fill('input[data-testid="variable-expression-1"]', '{{3..12}}');
 
 		await page.click('button[data-testid="add-variable"]');
 		await page.fill('input[data-testid="variable-name-2"]', 'c');
@@ -139,7 +139,7 @@ test.describe('Teacher Creates Parameterized Exercise', () => {
 		// Create exercise first
 		const exercise = await createParamExercise(page, {
 			title: 'Original Title',
-			variables: [{ name: 'x', expression: '{{1-5}}' }],
+			variables: [{ name: 'x', expression: '{{1..5}}' }],
 			statement_md: 'Solve: $x = {{x}}$',
 			solution_md: 'The answer is {{x}}',
 			distribution_mode: 'on_demand',
@@ -156,7 +156,7 @@ test.describe('Teacher Creates Parameterized Exercise', () => {
 		// Add new variable
 		await page.click('button[data-testid="add-variable"]');
 		await page.fill('input[data-testid="variable-name-1"]', 'y');
-		await page.fill('input[data-testid="variable-expression-1"]', '{{10-20}}');
+		await page.fill('input[data-testid="variable-expression-1"]', '{{10..20}}');
 
 		// Update statement
 		const statementEditor = page.locator('textarea[data-testid="statement-editor"]');
@@ -183,7 +183,7 @@ test.describe('Variable Syntax Helpers', () => {
 		// Add a variable first
 		await page.click('button[data-testid="add-variable"]');
 		await page.fill('input[data-testid="variable-name-0"]', 'x');
-		await page.fill('input[data-testid="variable-expression-0"]', '{{5-15}}');
+		await page.fill('input[data-testid="variable-expression-0"]', '{{5..15}}');
 
 		// Focus statement editor
 		const editor = page.locator('textarea[data-testid="statement-editor"]');
@@ -257,7 +257,7 @@ test.describe('Distribution Modes', () => {
 		// Create exercise with on_demand mode
 		const exercise = await createParamExercise(page, {
 			title: 'Random Practice',
-			variables: [{ name: 'a', expression: '{{1-100}}' }],
+			variables: [{ name: 'a', expression: '{{1..100}}' }],
 			statement_md: 'Number: {{a}}',
 			solution_md: 'The number is {{a}}',
 			distribution_mode: 'on_demand',
@@ -301,7 +301,7 @@ test.describe('Distribution Modes', () => {
 
 		const exercise = await createParamExercise(page, {
 			title: 'Personalized Homework',
-			variables: [{ name: 'a', expression: '{{1-100}}' }],
+			variables: [{ name: 'a', expression: '{{1..100}}' }],
 			statement_md: 'Your number: {{a}}',
 			solution_md: 'Answer: {{a}}',
 			distribution_mode: 'per_student',
@@ -346,7 +346,7 @@ test.describe('Distribution Modes', () => {
 
 			const exercise = await createParamExercise(teacherPage, {
 				title: 'Group Work',
-				variables: [{ name: 'a', expression: '{{1-100}}' }],
+				variables: [{ name: 'a', expression: '{{1..100}}' }],
 				statement_md: 'Group number: {{a}}',
 				solution_md: 'Answer: {{a}}',
 				distribution_mode: 'per_group',
@@ -450,7 +450,7 @@ test.describe('Variable Validation', () => {
 		// Add variable with invalid range (min > max)
 		await page.click('button[data-testid="add-variable"]');
 		await page.fill('input[data-testid="variable-name-0"]', 'x');
-		await page.fill('input[data-testid="variable-expression-0"]', '{{10-1}}'); // Invalid
+		await page.fill('input[data-testid="variable-expression-0"]', '{{10..1}}'); // Invalid
 
 		// Fill required fields
 		const statementEditor = page.locator('textarea[data-testid="statement-editor"]');
@@ -594,7 +594,7 @@ test.describe('Teacher Preview Mode', () => {
 
 		const exercise = await createParamExercise(page, {
 			title: 'Random Preview',
-			variables: [{ name: 'a', expression: '{{1-100}}' }],
+			variables: [{ name: 'a', expression: '{{1..100}}' }],
 			statement_md: 'Number: {{a}}',
 			solution_md: 'The number is {{a}}',
 			distribution_mode: 'on_demand',
@@ -843,7 +843,7 @@ test.describe('Complex Expressions', () => {
 		const exercise = await createParamExercise(page, {
 			title: 'Exclusion Test',
 			variables: [
-				{ name: 'x', expression: '{{1-10!5}}' } // 1-10 excluding 5
+				{ name: 'x', expression: '{{1..10!5}}' } // 1-10 excluding 5
 			],
 			statement_md: 'Value: {{x}} (not 5)',
 			solution_md: 'The value is {{x}}',
@@ -885,8 +885,8 @@ test.describe('Complex Expressions', () => {
 		const exercise = await createParamExercise(page, {
 			title: 'Verification Test',
 			variables: [
-				{ name: 'a', expression: '{{2-9}}' },
-				{ name: 'b', expression: '{{1-9}}' },
+				{ name: 'a', expression: '{{2..9}}' },
+				{ name: 'b', expression: '{{1..9}}' },
 				{ name: 'c', expression: '{{eval:{{a}}*{{b}}}}' }
 			],
 			statement_md: 'If $a = {{a}}$ and $b = {{b}}$, then $c = {{c}}$',

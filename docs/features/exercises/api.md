@@ -140,8 +140,8 @@ List all exercises accessible by the current user.
 			"statement_md": "Dans un triangle rectangle...",
 			"solution_md": "En utilisant le théorème...",
 			"variables": [
-				{ "name": "a", "expression": "{{3-10}}" },
-				{ "name": "b", "expression": "{{4-12}}" }
+				{ "name": "a", "expression": "{{3..10}}" },
+				{ "name": "b", "expression": "{{4..12}}" }
 			],
 			"distribution_mode": "per_student",
 			"is_public": false,
@@ -199,8 +199,8 @@ Create a new exercise.
 	"statement_md": "Calculate ${{a}} + {{b}}$",
 	"solution_md": "The answer is ${{eval:a+b}}$",
 	"variables": [
-		{ "name": "a", "expression": "{{1-20}}" },
-		{ "name": "b", "expression": "{{1-20}}" }
+		{ "name": "a", "expression": "{{1..20}}" },
+		{ "name": "b", "expression": "{{1..20}}" }
 	],
 	"distribution_mode": "on_demand",
 	"is_public": false
@@ -304,7 +304,7 @@ Update an existing exercise.
 	"difficulty": "2",
 	"tags": ["updated", "tags"],
 	"statement_md": "New statement...",
-	"variables": [{ "name": "x", "expression": "{{5-15}}" }],
+	"variables": [{ "name": "x", "expression": "{{5..15}}" }],
 	"distribution_mode": "per_student"
 }
 ```

@@ -4033,10 +4033,10 @@ Exercises can include variables to generate different instances:
 - **Variables**: Defined in the `variables` JSONB array, each variable has a `name` and `expression`
 - **Syntax**: Uses Markdown syntax (`{{}}`) for variable references, random values, and evaluations
   - Variable reference: `{{varName}}`
-  - Random integer: `{{1-10}}` or `{{random:1-10}}`
-  - Random decimal: `{{0.5-9.99:0.01}}`
+  - Random integer: `{{1..10}}` or `{{random:1..10}}`
+  - Random decimal: `{{0.5..9.99:0.01}}`
   - Evaluation: `{{eval:a+b}}`
-  - Exclusions: `{{1-10!{{a}}}}`
+  - Exclusions: `{{1..10!{{a}}}}`
 - **Distribution Modes**:
   - `on_demand`: Students can regenerate unlimited times (random each time)
   - `per_student`: Each student gets unique consistent values (deterministic seed)
@@ -4047,8 +4047,8 @@ Exercises can include variables to generate different instances:
 ```json
 {
 	"variables": [
-		{ "name": "a", "expression": "{{1-10}}" },
-		{ "name": "b", "expression": "{{1-10}}" },
+		{ "name": "a", "expression": "{{1..10}}" },
+		{ "name": "b", "expression": "{{1..10}}" },
 		{ "name": "sum", "expression": "{{eval:{{a}}+{{b}}}}" }
 	],
 	"statement_md": "Calculer : ${{a}} + {{b}}$",
@@ -4251,8 +4251,8 @@ VALUES (
   'Calculer : ${{a}} + {{b}}$',
   'La réponse est ${{sum}}$',
   '[
-    {"name": "a", "expression": "{{1-10}}"},
-    {"name": "b", "expression": "{{1-10}}"},
+    {"name": "a", "expression": "{{1..10}}"},
+    {"name": "b", "expression": "{{1..10}}"},
     {"name": "sum", "expression": "{{eval:{{a}}+{{b}}}}"}
   ]'::jsonb,
   'per_student',

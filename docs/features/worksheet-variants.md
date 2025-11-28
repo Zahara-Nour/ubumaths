@@ -20,7 +20,7 @@ The system supports four variant generation modes:
 Exercises can include parameterized variables using the following syntax:
 
 - **Variables**: `{{variableName}}`
-- **Random numbers**: `{{random:1-10}}` or `{{1-10}}`
+- **Random numbers**: `{{random:1..10}}` or `{{1..10}}`
 - **Evaluated expressions**: `{{eval:a+b}}`
 - **Variable chaining**: Variables can reference other variables
 
@@ -29,8 +29,8 @@ Example exercise with parameters:
 ```markdown
 Variables:
 
-- a: {{random:1-10}}
-- b: {{random:1-10}}
+- a: {{random:1..10}}
+- b: {{random:1..10}}
 - sum: {{eval:a+b}}
 
 Statement: Calculate {{a}} + {{b}}

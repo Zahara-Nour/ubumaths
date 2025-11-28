@@ -6,7 +6,7 @@
  *
  * Uses Markdown syntax:
  * - Variables: {{var}}
- * - Random: {{random:1-10}} or {{1-10}}
+ * - Random: {{random:1..10}} or {{1..10}}
  * - Eval: {{eval:expr}}
  *
  * Features:
@@ -23,8 +23,8 @@
  *
  * // Define variables
  * const variables = [
- *   { name: 'a', expression: '{{random:1-10}}' },
- *   { name: 'b', expression: '{{random:1-10}}' },
+ *   { name: 'a', expression: '{{random:1..10}}' },
+ *   { name: 'b', expression: '{{random:1..10}}' },
  *   { name: 'sum', expression: '{{eval:a+b}}' }
  * ];
  *

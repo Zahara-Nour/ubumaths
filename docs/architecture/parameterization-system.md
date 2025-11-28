@@ -87,7 +87,7 @@ The library is used by:
               │  │  └──────────────────┘  │  │
               │  │  ┌──────────────────┐  │  │
               │  │  │  Random Parser   │  │  │
-              │  │  │  • {{1-10}}      │  │  │
+              │  │  │  • {{1..10}}      │  │  │
               │  │  │  • {{random:}}   │  │  │
               │  │  │  • All formats   │  │  │
               │  │  └──────────────────┘  │  │
@@ -148,7 +148,7 @@ src/lib/shared/parameterization/
 ├── parser/                       # Parser Layer
 │   ├── tokenizer.ts             # Extract tokens from text
 │   ├── variable-parser.ts       # Parse {{var}}
-│   ├── random-parser.ts         # Parse {{1-10}} or {{random:...}}
+│   ├── random-parser.ts         # Parse {{1..10}} or {{random:...}}
 │   └── eval-parser.ts           # Parse {{eval:expr}}
 │
 ├── resolver/                     # Resolver Layer
@@ -202,7 +202,7 @@ src/lib/shared/parameterization/
 **Syntax:**
 
 - Variables: `{{var}}`
-- Random: `{{random:1-10}}` or `{{1-10}}`
+- Random: `{{random:1..10}}` or `{{1..10}}`
 - Eval: `{{eval:expr}}` or `{{eval:expr|modifiers}}`
 
 **Historical Note:** The system previously supported dual syntax (`{@:}` / `{{}}`) but was simplified to Markdown-only in Phase 5 for consistency and maintainability.
@@ -212,7 +212,7 @@ src/lib/shared/parameterization/
 **Problem:** Variable expressions can contain:
 
 1. References to other variables: `{{a}}`
-2. Random number specs: `{{random:1-10}}` or `{{1-10}}`
+2. Random number specs: `{{random:1..10}}` or `{{1..10}}`
 3. Eval expressions: `{{eval:a+b}}`
 
 These need to be resolved in a specific order.
@@ -220,7 +220,7 @@ These need to be resolved in a specific order.
 **Solution:** 3-stage pipeline that processes each variable through:
 
 1. **Stage 1: Replace Variable References** - `{{var}}` → resolved value
-2. **Stage 2: Generate Random Numbers** - `{{random:1-10}}` → actual number
+2. **Stage 2: Generate Random Numbers** - `{{random:1..10}}` → actual number
 3. **Stage 3: Evaluate Expressions** - `{{eval:a+b}}` → calculated result
 
 **Example:**
@@ -244,7 +244,7 @@ These need to be resolved in a specific order.
 **Why This Order?**
 
 - Variables must be resolved before random generation (for variable bounds: `{{random:{{min}}-{{max}}}}`)
-- Random numbers must be generated before evaluation (for `{{eval:{{random:1-10}}+5}}`)
+- Random numbers must be generated before evaluation (for `{{eval:{{random:1..10}}+5}}`)
 - Evaluation must be last (for `{{eval:{{a}}+{{b}}}}`)
 
 **Benefits:**
@@ -407,7 +407,7 @@ replace {{a}}: '5 + 10'
 
 **Process:**
 
-1. Tokenize expression to find all `{{random:...}}` or shorthand `{{1-10}}` tokens
+1. Tokenize expression to find all `{{random:...}}` or shorthand `{{1..10}}` tokens
 2. For each token (reverse order):
    - Parse random specification
    - Resolve variable bounds/exclusions using resolved variables
@@ -418,7 +418,7 @@ replace {{a}}: '5 + 10'
 
 ```typescript
 // Input
-expression: '{{random:1-10}}'
+expression: '{{random:1..10}}'
 seed: 12345
 
 // Process
@@ -449,12 +449,12 @@ replace: '42'
 
 **Handles:**
 
-- Integer range: `{{1-10}}` or `{{1..10}}`
+- Integer range: `{{1..10}}` or `{{1..10}}`
 - Negative ranges: `{{-3..-1}}` (double-dot clearer with negatives)
 - Relative integers: `{{±2..9}}` → union of {-9..-2} ∪ {2..9}
 - Decimal by digits: `{{2.3}}` (2 digits before, 3 after)
-- Decimal range: `{{1..1.6}}` (auto-step=0.1) or `{{0.5-9.99:0.01}}` (explicit step)
-- Exclusions: `{{1-10!5,7-9}}` or `{{1..20!5..7}}`
+- Decimal range: `{{1..1.6}}` (auto-step=0.1) or `{{0.5..9.99:0.01}}` (explicit step)
+- Exclusions: `{{1..10!5,7-9}}` or `{{1..20!5..7}}`
 - Variable bounds: `{{{{min}}-{{max}}}}` or `{{{{min}}..{{max}}}}`
 
 ### Stage 3: Expression Evaluation
@@ -790,19 +790,19 @@ function inferStep(minStr: string, maxStr: string): number {
 
 | Separator           | Example      | Result     | Notes                             |
 | ------------------- | ------------ | ---------- | --------------------------------- |
-| `-` (dash)          | `{{3-5}}`    | 3, 4, 5    | Traditional, backward compatible  |
+| `-` (dash)          | `{{3..5}}`   | 3, 4, 5    | Traditional, backward compatible  |
 | `..` (double-dot)   | `{{3..5}}`   | 3, 4, 5    | Clearer, especially for negatives |
-| `..` with negatives | `{{-3..-1}}` | -3, -2, -1 | Much clearer than `{{-3--1}}`     |
+| `..` with negatives | `{{-3..-1}}` | -3, -2, -1 | Much clearer than `{{-3..-1}}`    |
 
 ### Integer Ranges
 
 | Syntax           | Description                  |
 | ---------------- | ---------------------------- |
-| `{{1-10}}`       | Integer 1 to 10              |
+| `{{1..10}}`      | Integer 1 to 10              |
 | `{{1..10}}`      | Integer 1 to 10 (double-dot) |
 | `{{-5..5}}`      | Integer -5 to 5              |
 | `{{-3..-1}}`     | Negative integers -3 to -1   |
-| `{{1-10!5}}`     | 1 to 10 excluding 5          |
+| `{{1..10!5}}`    | 1 to 10 excluding 5          |
 | `{{1..10!3..5}}` | 1 to 10 excluding 3, 4, 5    |
 
 ### Relative Integers (±)
@@ -823,12 +823,12 @@ function inferStep(minStr: string, maxStr: string): number {
 
 ### Decimal Ranges
 
-| Syntax              | Step            | Example Values           |
-| ------------------- | --------------- | ------------------------ |
-| `{{1..1.6}}`        | 0.1 (auto)      | 1, 1.1, 1.2, ..., 1.6    |
-| `{{1..1.25}}`       | 0.01 (auto)     | 1, 1.01, 1.02, ..., 1.25 |
-| `{{0.5-9.99:0.01}}` | 0.01 (explicit) | 0.5, 0.51, ..., 9.99     |
-| `{{1..2:0.5}}`      | 0.5 (explicit)  | 1, 1.5, 2                |
+| Syntax               | Step            | Example Values           |
+| -------------------- | --------------- | ------------------------ |
+| `{{1..1.6}}`         | 0.1 (auto)      | 1, 1.1, 1.2, ..., 1.6    |
+| `{{1..1.25}}`        | 0.01 (auto)     | 1, 1.01, 1.02, ..., 1.25 |
+| `{{0.5..9.99:0.01}}` | 0.01 (explicit) | 0.5, 0.51, ..., 9.99     |
+| `{{1..2:0.5}}`       | 0.5 (explicit)  | 1, 1.5, 2                |
 
 ### Variables and Exclusions
 

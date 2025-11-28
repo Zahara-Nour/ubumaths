@@ -90,11 +90,11 @@ Cliquez sur "Ajouter une variable" deux fois et remplissez :
 ```
 Variable 1 :
   Nom : a
-  Expression : {{1-20}}
+  Expression : {{1..20}}
 
 Variable 2 :
   Nom : b
-  Expression : {{1-20}}
+  Expression : {{1..20}}
 ```
 
 **Étape 5 : Écrivez l'énoncé avec les variables**
@@ -136,7 +136,7 @@ Chaque élève verra des valeurs différentes, par exemple :
 Une **variable** est un nom qui représente une valeur. Cette valeur peut être :
 
 - Un nombre fixe : `5`
-- Un nombre aléatoire : `{{1-10}}`
+- Un nombre aléatoire : `{{1..10}}`
 - Le résultat d'un calcul : `{{eval:a+b}}`
 - Une référence à une autre variable : `{{a}}`
 
@@ -147,8 +147,8 @@ Une **variable** est un nom qui représente une valeur. Cette valeur peut être 
 **✅ Correct** :
 
 ```
-Variable 1 : a = {{1-10}}
-Variable 2 : b = {{1-10}}
+Variable 1 : a = {{1..10}}
+Variable 2 : b = {{1..10}}
 Variable 3 : somme = {{eval:{{a}}+{{b}}}}
 ```
 
@@ -156,8 +156,8 @@ Variable 3 : somme = {{eval:{{a}}+{{b}}}}
 
 ```
 Variable 1 : somme = {{eval:{{a}}+{{b}}}}  ← Erreur ! a et b n'existent pas encore
-Variable 2 : a = {{1-10}}
-Variable 3 : b = {{1-10}}
+Variable 2 : a = {{1..10}}
+Variable 3 : b = {{1..10}}
 ```
 
 ### Noms de variables
@@ -213,9 +213,9 @@ Si $a = {{a}}$ alors...
 **Exemples** :
 
 ```
-{{1-10}}           → Génère 1, 2, 3, ..., 9, ou 10
+{{1..10}}           → Génère 1, 2, 3, ..., 9, ou 10
 {{random:5-15}}    → Même chose (forme explicite)
-{{-5-5}}           → Génère -5, -4, ..., 4, ou 5
+{{-5..5}}           → Génère -5, -4, ..., 4, ou 5
 {{random:100-200}} → Génère entre 100 et 200
 ```
 
@@ -252,9 +252,9 @@ Variable 3 : x = {{{{min}}-{{max}}}}  ← Utilise les valeurs de min et max
 **Exemples** :
 
 ```
-{{0.5-9.99:0.01}}     → 0.50, 0.51, ..., 9.98, 9.99
+{{0.5..9.99:0.01}}     → 0.50, 0.51, ..., 9.98, 9.99
 {{random:0-1:0.1}}    → 0.0, 0.1, 0.2, ..., 0.9, 1.0
-{{2-10:0.5}}          → 2.0, 2.5, 3.0, ..., 9.5, 10.0
+{{2..10:0.5}}          → 2.0, 2.5, 3.0, ..., 9.5, 10.0
 ```
 
 ### 5. Exclusions : `{{base!exclusions}}`
@@ -266,30 +266,30 @@ Variable 3 : x = {{{{min}}-{{max}}}}  ← Utilise les valeurs de min et max
 #### Exclure une valeur
 
 ```
-{{1-10!5}}           → 1-10 sauf 5
-{{random:1-20!7}}    → 1-20 sauf 7
-{{1-100!{{a}}}}      → 1-100 sauf la valeur de a
+{{1..10!5}}           → 1..10 sauf 5
+{{random:1-20!7}}    → 1..20 sauf 7
+{{1..100!{{a}}}}      → 1..100 sauf la valeur de a
 ```
 
 #### Exclure plusieurs valeurs
 
 ```
-{{1-20!5,7}}         → 1-20 sauf 5 et 7
-{{1-50!10,15,20}}    → 1-50 sauf 10, 15 et 20
+{{1..20!5,7}}         → 1..20 sauf 5 et 7
+{{1..50!10,15,20}}    → 1..50 sauf 10, 15 et 20
 ```
 
 #### Exclure un intervalle
 
 ```
-{{1-100!40-60}}      → 1-100 sauf 40 à 60
-{{random:1-50!10-20}} → 1-50 sauf 10 à 20
+{{1..100!40-60}}      → 1..100 sauf 40 à 60
+{{random:1-50!10-20}} → 1..50 sauf 10 à 20
 ```
 
 #### Exclure mixte (valeurs + intervalles)
 
 ```
-{{1-100!5,10-20,50}} → 1-100 sauf 5, 10-20, et 50
-{{1-50!{{a}},{{b}}-{{c}}}} → Exclusions avec variables
+{{1..100!5,10-20,50}} → 1..100 sauf 5, 10-20, et 50
+{{1..50!{{a}},{{b}}-{{c}}}} → Exclusions avec variables
 ```
 
 ### 6. Évaluation d'expression : `{{eval:expression}}`
@@ -408,7 +408,7 @@ resultat = {{eval:{{a}}\*{{b}}|d,+}}
 
 ```markdown
 Variables :
-temp = {{-10-30}}
+temp = {{-10..30}}
 temp_signee = {{eval:{{temp}}|+}}
 
 Énoncé : La température est de {{temp_signee}}°C
@@ -419,8 +419,8 @@ temp_signee = {{eval:{{temp}}|+}}
 
 ```markdown
 Variables :
-a = {{-5-5!0}}
-b = {{-10-10}}
+a = {{-5..5!0}}
+b = {{-10..10}}
 b_signe = {{eval:{{b}}|+,()}}
 
 Énoncé : Résolvez : ${{a}}x {{b_signe}} = 0$
@@ -432,8 +432,8 @@ b_signe = {{eval:{{b}}|+,()}}
 
 ```markdown
 Variables :
-numerateur = {{1-10}}
-denominateur = {{1-10!0}}
+numerateur = {{1..10}}
+denominateur = {{1..10!0}}
 division = {{eval:{{numerateur}}/{{denominateur}}|d}}
 
 Énoncé : Calculez {{numerateur}} ÷ {{denominateur}} = {{division}}
@@ -466,7 +466,7 @@ Le système utilise un pipeline en 3 étapes :
 **Étape 2 - Génération des nombres aléatoires** :
 
 ```
-"{{eval:7+{{1-5}}}}" → "{{eval:7+3}}" (si random=3)
+"{{eval:7+{{1..5}}}}" → "{{eval:7+3}}" (si random=3)
 ```
 
 **Étape 3 - Évaluation** :
@@ -512,8 +512,8 @@ Le **mode de distribution** détermine comment les valeurs des variables sont at
 ```markdown
 Titre : Tables de multiplication
 Variables :
-a = {{2-9}}
-b = {{2-9}}
+a = {{2..9}}
+b = {{2..9}}
 Énoncé : Calculez {{a}} × {{b}}
 Mode : À la demande
 
@@ -543,8 +543,8 @@ Mode : À la demande
 ```markdown
 Titre : Devoir de géométrie
 Variables :
-longueur = {{5-15}}
-largeur = {{3-10}}
+longueur = {{5..15}}
+largeur = {{3..10}}
 Énoncé : Calculez l'aire d'un rectangle de {{longueur}} cm × {{largeur}} cm
 Mode : Par élève
 
@@ -576,8 +576,8 @@ Mode : Par élève
 ```markdown
 Titre : Exercice du jour
 Variables :
-a = {{10-50}}
-b = {{10-50}}
+a = {{10..50}}
+b = {{10..50}}
 Énoncé : Calculez {{a}} + {{b}}
 Mode : Par groupe
 
@@ -625,8 +625,8 @@ Mode : Par groupe
 **Variables** :
 
 ```
-a = {{1-20}}
-b = {{1-20}}
+a = {{1..20}}
+b = {{1..20}}
 ```
 
 **Énoncé** :
@@ -659,8 +659,8 @@ Solution : 7 + 3 = 10
 **Variables** :
 
 ```
-longueur = {{5-15}}
-largeur = {{3-12}}
+longueur = {{5..15}}
+largeur = {{3..12}}
 perimetre = {{eval:2*({{longueur}}+{{largeur}})}}
 ```
 
@@ -711,8 +711,8 @@ Solution :
 **Variables** :
 
 ```
-a = {{2-9!0}}          ← Exclut 0 pour éviter division par zéro
-b = {{-20-20}}
+a = {{2..9!0}}          ← Exclut 0 pour éviter division par zéro
+b = {{-20..20}}
 solution = {{eval:-{{b}}/{{a}}}}
 ```
 
@@ -762,9 +762,9 @@ Solution :
 **Variables** :
 
 ```
-pgcd = {{2-5}}
-a = {{2-9}}
-b = {{2-9!{{a}}}}      ← b différent de a
+pgcd = {{2..5}}
+a = {{2..9}}
+b = {{2..9!{{a}}}}      ← b différent de a
 numerateur = {{eval:{{a}}*{{pgcd}}}}
 denominateur = {{eval:{{b}}*{{pgcd}}}}
 ```
@@ -811,8 +811,8 @@ Solution :
 **Variables** :
 
 ```
-a = {{3-12}}
-b = {{3-12}}
+a = {{3..12}}
+b = {{3..12}}
 c = {{eval:Math.sqrt({{a}}*{{a}} + {{b}}*{{b}})}}
 c_arrondi = {{eval:Math.round({{c}}*100)/100}}
 ```
@@ -880,9 +880,9 @@ x = {{{{min}}-{{max}}}}  ← Utilise les valeurs de min et max
 **Exemple - Exclusion dynamique** :
 
 ```
-a = {{1-10}}
-b = {{1-10!{{a}}}}  ← b ne peut pas être égal à a
-c = {{1-10!{{a}},{{b}}}}  ← c différent de a et b
+a = {{1..10}}
+b = {{1..10!{{a}}}}  ← b ne peut pas être égal à a
+c = {{1..10!{{a}},{{b}}}}  ← c différent de a et b
 ```
 
 ### 2. Expressions complexes dans eval
@@ -892,18 +892,18 @@ Vous pouvez combiner plusieurs opérations mathématiques.
 **Discriminant d'une équation du second degré** :
 
 ```
-a = {{1-5}}
-b = {{-10-10}}
-c = {{-20-20}}
+a = {{1..5}}
+b = {{-10..10}}
+c = {{-20..20}}
 delta = {{eval:({{b}})^2 - 4*{{a}}*{{c}}}}
 ```
 
 **Moyenne de plusieurs valeurs** :
 
 ```
-note1 = {{0-20}}
-note2 = {{0-20}}
-note3 = {{0-20}}
+note1 = {{0..20}}
+note2 = {{0..20}}
+note3 = {{0..20}}
 moyenne = {{eval:({{note1}}+{{note2}}+{{note3}})/3}}
 moyenne_arrondie = {{eval:Math.round({{moyenne}}*10)/10}}
 ```
@@ -913,7 +913,7 @@ moyenne_arrondie = {{eval:Math.round({{moyenne}}*10)/10}}
 **Arrondir à N décimales** :
 
 ```
-valeur = {{1.5-9.99:0.01}}
+valeur = {{1.5..9.99:0.01}}
 arrondi_1_dec = {{eval:Math.round({{valeur}}*10)/10}}
 arrondi_2_dec = {{eval:Math.round({{valeur}}*100)/100}}
 ```
@@ -921,14 +921,14 @@ arrondi_2_dec = {{eval:Math.round({{valeur}}*100)/100}}
 **Valeur absolue** :
 
 ```
-x = {{-50-50}}
+x = {{-50..50}}
 valeur_abs = {{eval:Math.abs({{x}})}}
 ```
 
 **Plancher et plafond** :
 
 ```
-x = {{1.5-9.99:0.01}}
+x = {{1.5..9.99:0.01}}
 plancher = {{eval:Math.floor({{x}})}}
 plafond = {{eval:Math.ceil({{x}})}}
 ```
@@ -938,16 +938,16 @@ plafond = {{eval:Math.ceil({{x}})}}
 **Exclure plusieurs plages** :
 
 ```
-x = {{1-100!10-20,30-40,50}}
+x = {{1..100!10-20,30-40,50}}
 ```
 
-Génère 1-100 sauf 10-20, 30-40, et 50.
+Génère 1..100 sauf 10-20, 30-40, et 50.
 
 **Exclure autour d'une valeur** :
 
 ```
 milieu = 50
-x = {{1-100!{{eval:{{milieu}}-5}}-{{eval:{{milieu}}+5}}}}
+x = {{1..100!{{eval:{{milieu}}-5}}-{{eval:{{milieu}}+5}}}}
 ```
 
 Exclut 45-55 si milieu=50.
@@ -1001,16 +1001,16 @@ $$\sum_{i=1}^{ {{n}} } i = \frac{ {{n}}({{n}}+1) }{2}$$
 **2. Exclure les cas problématiques**
 
 ```
-✅ diviseur = {{1-10!0}}     ← Exclut 0
-✅ racine = {{1-100}}         ← Évite les racines de négatifs
+✅ diviseur = {{1..10!0}}     ← Exclut 0
+✅ racine = {{1..100}}         ← Évite les racines de négatifs
 ```
 
 **3. Ordonner les variables logiquement**
 
 ```
 ✅
-a = {{1-10}}
-b = {{1-10}}
+a = {{1..10}}
+b = {{1..10}}
 somme = {{eval:{{a}}+{{b}}}}
 ```
 
@@ -1063,15 +1063,15 @@ somme = {{eval:{{a}}+{{b}}}}  ← a et b n'existent pas
 **3. Divisions par zéro**
 
 ```
-❌ diviseur = {{-5-5}}  ← Peut être 0 !
-✅ diviseur = {{-5-5!0}}  ← Exclut 0
+❌ diviseur = {{-5..5}}  ← Peut être 0 !
+✅ diviseur = {{-5..5!0}}  ← Exclut 0
 ```
 
 **4. Intervalles invalides**
 
 ```
-❌ x = {{10-5}}  ← min > max
-✅ x = {{5-10}}
+❌ x = {{10..5}}  ← min > max
+✅ x = {{5..10}}
 ```
 
 **5. Trop de variables inutiles**
@@ -1084,9 +1084,9 @@ somme = {{eval:{{a}}+{{b}}}}  ← a et b n'existent pas
 **6. Plages trop larges ou trop petites**
 
 ```
-❌ x = {{1-1000}}  ← Trop large, difficile à résoudre mentalement
-❌ x = {{5-6}}     ← Trop petit, seulement 2 valeurs possibles
-✅ x = {{1-20}}    ← Juste équilibré
+❌ x = {{1..1000}}  ← Trop large, difficile à résoudre mentalement
+❌ x = {{5..6}}     ← Trop petit, seulement 2 valeurs possibles
+✅ x = {{1..20}}    ← Juste équilibré
 ```
 
 ### Conseils pour les modes de distribution
@@ -1129,7 +1129,7 @@ b = {{a}}
 **Fix** :
 
 ```
-a = {{1-10}}
+a = {{1..10}}
 b = {{a}}
 ```
 
@@ -1143,8 +1143,8 @@ b = {{a}}
 
 ```
 Variable 1 : resultat = {{eval:{{a}}+{{b}}}}
-Variable 2 : a = {{1-10}}
-Variable 3 : b = {{1-10}}
+Variable 2 : a = {{1..10}}
+Variable 3 : b = {{1..10}}
 ```
 
 **Solution** : Définissez les variables dans le bon ordre.
@@ -1152,8 +1152,8 @@ Variable 3 : b = {{1-10}}
 **Fix** :
 
 ```
-Variable 1 : a = {{1-10}}
-Variable 2 : b = {{1-10}}
+Variable 1 : a = {{1..10}}
+Variable 2 : b = {{1..10}}
 Variable 3 : resultat = {{eval:{{a}}+{{b}}}}
 ```
 
@@ -1166,7 +1166,7 @@ Variable 3 : resultat = {{eval:{{a}}+{{b}}}}
 **Exemple problématique** :
 
 ```
-x = {{10-5}}  ← min (10) > max (5)
+x = {{10..5}}  ← min (10) > max (5)
 ```
 
 **Solution** : Inversez min et max.
@@ -1174,7 +1174,7 @@ x = {{10-5}}  ← min (10) > max (5)
 **Fix** :
 
 ```
-x = {{5-10}}
+x = {{5..10}}
 ```
 
 ---
@@ -1220,7 +1220,7 @@ x = {{5-10}}
 ✅ x = {{eval:Math.sqrt({{a}})}}     ← Correct
 
 ❌ x = {{eval:{{a}}/{{b}}}}          ← b peut être 0
-✅ b = {{1-10!0}}                    ← Exclut 0 d'abord
+✅ b = {{1..10!0}}                    ← Exclut 0 d'abord
    x = {{eval:{{a}}/{{b}}}}
 ```
 
@@ -1233,8 +1233,8 @@ x = {{5-10}}
 **Exemple problématique** :
 
 ```
-a = {{1-100}}
-b = {{1-100}}
+a = {{1..100}}
+b = {{1..100}}
 produit = {{eval:{{a}}*{{b}}}}  ← Peut donner 10000 !
 ```
 
@@ -1243,8 +1243,8 @@ produit = {{eval:{{a}}*{{b}}}}  ← Peut donner 10000 !
 **Fix** :
 
 ```
-a = {{2-10}}
-b = {{2-10}}
+a = {{2..10}}
+b = {{2..10}}
 produit = {{eval:{{a}}*{{b}}}}  ← Maximum 100
 ```
 
@@ -1257,7 +1257,7 @@ produit = {{eval:{{a}}*{{b}}}}  ← Maximum 100
 **Exemple problématique** :
 
 ```
-❌ x = {{1-5!1-5}}  ← Exclut toutes les valeurs !
+❌ x = {{1..5!1-5}}  ← Exclut toutes les valeurs !
 ```
 
 **Solution** : Vérifiez que des valeurs restent après exclusion.
@@ -1265,7 +1265,7 @@ produit = {{eval:{{a}}*{{b}}}}  ← Maximum 100
 **Fix** :
 
 ```
-✅ x = {{1-20!5-10}}  ← Il reste 1-4 et 11-20
+✅ x = {{1..20!5-10}}  ← Il reste 1-4 et 11-20
 ```
 
 ---
@@ -1295,8 +1295,8 @@ Solution : Aire = 12 × 8 = 96 cm²
 **Étape 2 : Créez des variables**
 
 ```
-longueur = {{5-15}}
-largeur = {{3-12}}
+longueur = {{5..15}}
+largeur = {{3..12}}
 aire = {{eval:{{longueur}}*{{largeur}}}}
 ```
 
@@ -1338,8 +1338,8 @@ Avant : Marie a 5 pommes et achète 3 pommes de plus.
 Après : Marie a {{pommes_initiales}} pommes et achète {{pommes_achetees}} pommes de plus.
 
 Variables :
-pommes_initiales = {{1-10}}
-pommes_achetees = {{1-10}}
+pommes_initiales = {{1..10}}
+pommes_achetees = {{1..10}}
 total = {{eval:{{pommes_initiales}}+{{pommes_achetees}}}}
 ```
 
