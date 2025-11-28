@@ -121,7 +121,7 @@ interface QuestionVariation {
 	statement: TemplateMarkdown; // Énoncé avec {{variables}}
 	variables?: QuestionVariable[]; // Définitions de variables
 	answer: string | string[]; // Réponse(s) attendue(s)
-	correction?: TemplateMarkdown; // Explication
+	correction?: QuestionCorrection; // Explication
 	validationRules?: ValidationRule[]; // Règles de validation dynamique
 
 	// Pour QCM
@@ -331,61 +331,63 @@ Nouveau: {{#if cond1}}texte1{{else}}texte2{{/if}}
 
 ### Validateurs de contraintes
 
-Le fichier `constraint-validators.ts` implémente 5 validateurs:
+Le fichier `constraint-validators.ts` implémente 5 validateurs pour vérifier la **forme** des réponses (pas l'équivalence mathématique). Chaque validateur retourne un tableau d'indices où des violations ont été trouvées.
 
-#### 1. `validateSpaces` - Espaces dans le LaTeX
+#### 1. `checkSpaces` - Espacement des chiffres (format français)
 
 ```typescript
-// Vérifie que les espaces sont corrects
-validateSpaces('2x + 3', { mode: 'require' });
-// ✓ Valide: espaces autour des opérateurs
-
-validateSpaces('2x+3', { mode: 'forbid' });
-// ✓ Valide: pas d'espaces
+// Vérifie l'espacement des grands nombres (format français: 1 234 567)
+checkSpaces(['1234']); // [] - 4 chiffres OK sans espace
+checkSpaces(['12345']); // [0] - 5+ chiffres nécessite espacement
+checkSpaces(['1 234']); // [] - espacement correct
+checkSpaces(['1\\,234']); // [] - espace fine LaTeX valide
+checkSpaces(['0,12345']); // [0] - partie décimale 5+ chiffres nécessite espacement
 ```
 
-#### 2. `validateProducts` - Produits implicites/explicites
+#### 2. `checkProducts` - Produits explicites/implicites
 
 ```typescript
-// Vérifie la notation des produits
-validateProducts('2 × x', { mode: 'require_explicit' });
-// ✓ Valide: produit explicite
-
-validateProducts('2x', { mode: 'require_implicit' });
-// ✓ Valide: produit implicite
+// Détecte les symboles de multiplication qui devraient être implicites
+checkProducts(['2\\times x']); // [0] - devrait être 2x
+checkProducts(['2x']); // [] - implicite correct
+checkProducts(['2\\times 3']); // [] - nombre × nombre OK
+checkProducts(['2\\cdot x']); // [0] - devrait être implicite
+checkProducts(['a\\times b']); // [0] - variable × variable devrait être implicite
 ```
 
-#### 3. `validateBrackets` - Parenthèses superflues
+#### 3. `checkBrackets` - Parenthèses inutiles
 
 ```typescript
-// Détecte les parenthèses inutiles
-validateBrackets('(2+3)', { mode: 'forbid' });
-// ✗ Invalide: parenthèses superflues
-
-validateBrackets('2+3', { mode: 'forbid' });
-// ✓ Valide
+// Détecte les parenthèses superflues dans l'input brut de l'élève
+checkBrackets(['(5)']); // [0] - nombre seul
+checkBrackets(['(x)']); // [0] - variable seule
+checkBrackets(['((x+1))']); // [0] - doubles parenthèses
+checkBrackets(['(x+1)']); // [] - nécessaires
+checkBrackets(['(-5)+3'], { allowFirstNegative: true }); // [] - autorisé en début
+checkBrackets(['(-5)+3'], { allowFirstNegative: false }); // [0] - violation
 ```
 
-#### 4. `validateZeros` - Zéros superflus
+#### 4. `checkZeros` - Zéros superflus
 
 ```typescript
-// Détecte les zéros inutiles
-validateZeros('x + 0', { mode: 'forbid' });
-// ✗ Invalide: +0 superflu
-
-validateZeros('x', { mode: 'forbid' });
-// ✓ Valide
+// Détecte les zéros inutiles (leading/trailing)
+checkZeros(['01']); // [0] - zéro en tête
+checkZeros(['007']); // [0] - zéros en tête
+checkZeros(['0']); // [] - valide
+checkZeros(['0.5']); // [] - valide
+checkZeros(['1.0']); // [0] - zéro final
+checkZeros(['1.20']); // [0] - zéro final
+checkZeros(['1.02']); // [] - zéro significatif au milieu
 ```
 
-#### 5. `validateForm` - Forme canonique
+#### 5. `checkForm` - Correspondance exacte de forme
 
 ```typescript
-// Vérifie la forme (factorisée, développée, etc.)
-validateForm('(x+2)(x+3)', { expectedForm: 'factored' });
-// ✓ Valide: forme factorisée
-
-validateForm('x^2+5x+6', { expectedForm: 'expanded' });
-// ✓ Valide: forme développée
+// Compare la forme exacte après normalisation des espaces
+checkForm(['x+1'], ['1+x'], { strictForm: true }); // [0] - ordre différent
+checkForm(['x+1'], ['x+1'], { strictForm: true }); // [] - correspondance exacte
+checkForm(['x + 1'], ['x+1'], { strictForm: true }); // [] - espaces normalisés
+checkForm(['x+1'], ['1+x']); // [] - strictForm=false par défaut
 ```
 
 ### Évaluateur de règles
