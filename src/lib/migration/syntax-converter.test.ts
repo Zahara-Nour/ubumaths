@@ -79,30 +79,30 @@ function expectStats(
 describe('TinyCAS Syntax Converter', () => {
 	describe('1. Random Integer Generation Tests', () => {
 		it('should convert basic random integer patterns', () => {
-			expectConversion('$e[1;10]', '{{1-10}}');
-			expectConversion('$e[0;99]', '{{0-99}}');
-			expectConversion('$e[-5;5]', '{{-5-5}}');
-			expectConversion('$e[-100;-50]', '{{-100--50}}');
+			expectConversion('$e[1;10]', '{{1..10}}');
+			expectConversion('$e[0;99]', '{{0..99}}');
+			expectConversion('$e[-5;5]', '{{-5..5}}');
+			expectConversion('$e[-100;-50]', '{{-100..-50}}');
 		});
 
 		it('should handle edge case ranges', () => {
-			expectConversion('$e[0;0]', '{{0-0}}');
-			expectConversion('$e[1000;9999]', '{{1000-9999}}');
-			expectConversion('$e[-9999;-1000]', '{{-9999--1000}}');
+			expectConversion('$e[0;0]', '{{0..0}}');
+			expectConversion('$e[1000;9999]', '{{1000..9999}}');
+			expectConversion('$e[-9999;-1000]', '{{-9999..-1000}}');
 		});
 
 		it('should convert multiple random integers in one string', () => {
-			expectConversion('$e[1;10] + $e[1;10]', '{{1-10}} + {{1-10}}');
-			expectConversion('$e[0;5] × $e[2;9] = ?', '{{0-5}} × {{2-9}} = ?');
+			expectConversion('$e[1;10] + $e[1;10]', '{{1..10}} + {{1..10}}');
+			expectConversion('$e[0;5] × $e[2;9] = ?', '{{0..5}} × {{2..9}} = ?');
 			expectConversion(
 				'Choose between $e[1;3], $e[4;6], and $e[7;9]',
-				'Choose between {{1-3}}, {{4-6}}, and {{7-9}}'
+				'Choose between {{1..3}}, {{4..6}}, and {{7..9}}'
 			);
 		});
 
 		it('should handle random integers with spaces', () => {
-			expectConversion('$e[ 1 ; 10 ]', '{{ 1 - 10 }}');
-			expectConversion('$e[1 ;10]', '{{1 -10}}');
+			expectConversion('$e[ 1 ; 10 ]', '{{ 1 .. 10 }}');
+			expectConversion('$e[1 ;10]', '{{1 ..10}}');
 		});
 
 		it('should track statistics for random integers', () => {
@@ -113,29 +113,29 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('2. Random with Exclusions Tests', () => {
 		it('should convert single exclusion', () => {
-			expectConversion('$e[1;10]\\{5}', '{{1-10!5}}');
-			expectConversion('$e[0;99]\\{50}', '{{0-99!50}}');
+			expectConversion('$e[1;10]\\{5}', '{{1..10!5}}');
+			expectConversion('$e[0;99]\\{50}', '{{0..99!50}}');
 		});
 
 		it('should convert multiple exclusions', () => {
-			expectConversion('$e[1;10]\\{5;7;9}', '{{1-10!5,7,9}}');
-			expectConversion('$e[0;20]\\{0;5;10;15;20}', '{{0-20!0,5,10,15,20}}');
+			expectConversion('$e[1;10]\\{5;7;9}', '{{1..10!5,7,9}}');
+			expectConversion('$e[0;20]\\{0;5;10;15;20}', '{{0..20!0,5,10,15,20}}');
 		});
 
 		it('should convert variable exclusions', () => {
-			expectConversion('$e[0;9]\\{&1}', '{{0-9!{{1}}}}');
-			expectConversion('$e[0;9]\\{&1;&2}', '{{0-9!{{1}},{{2}}}}');
-			expectConversion('$e[1;100]\\{&a;&b;&c}', '{{1-100!{{a}},{{b}},{{c}}}}');
+			expectConversion('$e[0;9]\\{&1}', '{{0..9!{{1}}}}');
+			expectConversion('$e[0;9]\\{&1;&2}', '{{0..9!{{1}},{{2}}}}');
+			expectConversion('$e[1;100]\\{&a;&b;&c}', '{{1..100!{{a}},{{b}},{{c}}}}');
 		});
 
 		it('should convert mixed exclusions (literals and variables)', () => {
-			expectConversion('$e[0;20]\\{5;&1;10}', '{{0-20!5,{{1}},10}}');
-			expectConversion('$e[1;50]\\{&x;25;&y;30}', '{{1-50!{{x}},25,{{y}},30}}');
+			expectConversion('$e[0;20]\\{5;&1;10}', '{{0..20!5,{{1}},10}}');
+			expectConversion('$e[1;50]\\{&x;25;&y;30}', '{{1..50!{{x}},25,{{y}},30}}');
 		});
 
 		it('should handle complex exclusion patterns', () => {
-			expectConversion('$e[-10;10]\\{-5;0;5}', '{{-10-10!-5,0,5}}');
-			expectConversion('$e[1;100]\\{&var1;&var2;50}', '{{1-100!{{var1}},{{var2}},50}}');
+			expectConversion('$e[-10;10]\\{-5;0;5}', '{{-10..10!-5,0,5}}');
+			expectConversion('$e[1;100]\\{&var1;&var2;50}', '{{1..100!{{var1}},{{var2}},50}}');
 		});
 
 		it('should track statistics for exclusions and variable references', () => {
@@ -190,7 +190,7 @@ describe('TinyCAS Syntax Converter', () => {
 			expect(result.success).toBe(true);
 			expect(result.warnings?.some((w) => w.includes('unexpected format'))).toBe(true);
 			// Falls back to {{decimal:...}} format
-			expect(result.converted).toBe('{{decimal:{{1-2}};{{0-2}}}}');
+			expect(result.converted).toBe('{{decimal:{{1..2}};{{0..2}}}}');
 		});
 
 		it('should track statistics for decimals', () => {
@@ -208,24 +208,24 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should convert 2-digit numbers', () => {
-			expectConversion('$e{2;2}', '{{10-99}}');
+			expectConversion('$e{2;2}', '{{10..99}}');
 		});
 
 		it('should convert 3-digit numbers', () => {
-			expectConversion('$e{3;3}', '{{100-999}}');
+			expectConversion('$e{3;3}', '{{100..999}}');
 		});
 
 		it('should convert 4-digit numbers', () => {
-			expectConversion('$e{4;4}', '{{1000-9999}}');
+			expectConversion('$e{4;4}', '{{1000..9999}}');
 		});
 
 		it('should convert 5-digit numbers', () => {
-			expectConversion('$e{5;5}', '{{10000-99999}}');
+			expectConversion('$e{5;5}', '{{10000..99999}}');
 		});
 
 		it('should handle variable digit ranges with warning', () => {
 			const result = convertTinyCASToNew('$e{2;4}');
-			expect(result.converted).toBe('{{digits:2-4}}');
+			expect(result.converted).toBe('{{digits:2..4}}');
 			expectWarning('$e{2;4}', 'Variable digit pattern');
 		});
 
@@ -273,7 +273,7 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should handle nested random patterns with warning', () => {
 			const result = convertTinyCASToNew('$l{0;$e[1;9]}');
-			expect(result.converted).toBe('{{0|{{1-9}}}}');
+			expect(result.converted).toBe('{{0|{{1..9}}}}');
 			// The converter only warns for nested patterns when present, not for simple cases
 			if (result.warnings) {
 				expectWarning('$l{0;$e[1;9]}', 'Complex list item');
@@ -408,13 +408,13 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should convert variables in text with random', () => {
 			expectConversion(
 				'Dans le nombre $$&3$$, le chiffre $e[1;9] est...',
-				'Dans le nombre $${{3}}$$, le chiffre {{1-9}} est...'
+				'Dans le nombre $${{3}}$$, le chiffre {{1..9}} est...'
 			);
 		});
 
 		it('should handle evaluations with random numbers', () => {
-			expectConversion('[_$e[1;10]*&1_]', '{{eval:{{1-10}}*{{1}}}}');
-			expectConversion('[_$e[0;5]+$e[0;5]_]', '{{eval:{{0-5}}+{{0-5}}}}');
+			expectConversion('[_$e[1;10]*&1_]', '{{eval:{{1..10}}*{{1}}}}');
+			expectConversion('[_$e[0;5]+$e[0;5]_]', '{{eval:{{0..5}}+{{0..5}}}}');
 		});
 
 		it('should convert complex real-world pattern', () => {
@@ -426,20 +426,20 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should handle pattern with exclusions and evaluations', () => {
 			const input = '$e[0;9]\\{&1} and [_&1*10+&2_]';
-			const expected = '{{0-9!{{1}}}} and {{eval:{{1}}*10+{{2}}}}';
+			const expected = '{{0..9!{{1}}}} and {{eval:{{1}}*10+{{2}}}}';
 			expectConversion(input, expected);
 		});
 
 		it('should convert multiple different patterns in one string', () => {
 			const input = '$e[1;10] + &var = [_&var+5_] or $l{yes;no}';
-			const expected = '{{1-10}} + {{var}} = {{eval:{{var}}+5}} or {{yes|no}}';
+			const expected = '{{1..10}} + {{var}} = {{eval:{{var}}+5}} or {{yes|no}}';
 			expectConversion(input, expected);
 		});
 
 		it('should handle deeply nested patterns', () => {
 			const input = '$l{0;$e[1;9]\\{&1}}';
 			const result = convertTinyCASToNew(input);
-			expect(result.converted).toBe('{{0|{{1-9!{{1}}}}}}');
+			expect(result.converted).toBe('{{0|{{1..9!{{1}}}}}}');
 			// The warning may or may not be generated depending on the pattern
 			// Just verify the conversion is correct
 		});
@@ -512,10 +512,10 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should convert variables definitions from real questions', () => {
 			// Pattern: '&1': '$e[1;9]'
-			expectConversion('$e[1;9]', '{{1-9}}');
+			expectConversion('$e[1;9]', '{{1..9}}');
 
 			// Pattern: '&2': '$e[0;9]\\{&1}'
-			expectConversion('$e[0;9]\\{&1}', '{{0-9!{{1}}}}');
+			expectConversion('$e[0;9]\\{&1}', '{{0..9!{{1}}}}');
 
 			// Pattern: '&3': '[_&1*10+&2_]'
 			expectConversion('[_&1*10+&2_]', '{{eval:{{1}}*10+{{2}}}}');
@@ -528,13 +528,13 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should convert complex exclusion pattern', () => {
 			// Pattern: '&3': '$e[0;9]\\{&1;&2}'
-			expectConversion('$e[0;9]\\{&1;&2}', '{{0-9!{{1}},{{2}}}}');
+			expectConversion('$e[0;9]\\{&1;&2}', '{{0..9!{{1}},{{2}}}}');
 		});
 
 		it('should handle complete question with multiple patterns', () => {
 			const input = 'Dans le nombre $$[_&1*100+&2*10+&3_]$$, le chiffre $e[0;9]\\{&1;&2;&3} est...';
 			const expected =
-				'Dans le nombre $${{eval:{{1}}*100+{{2}}*10+{{3}}}}$$, le chiffre {{0-9!{{1}},{{2}},{{3}}}} est...';
+				'Dans le nombre $${{eval:{{1}}*100+{{2}}*10+{{3}}}}$$, le chiffre {{0..9!{{1}},{{2}},{{3}}}} est...';
 			expectConversion(input, expected);
 		});
 	});
@@ -601,7 +601,7 @@ describe('TinyCAS Syntax Converter', () => {
 			const results = convertBatch(inputs);
 
 			expect(results).toHaveLength(4);
-			expect(results[0].converted).toBe('{{1-10}}');
+			expect(results[0].converted).toBe('{{1..10}}');
 			expect(results[1].converted).toBe('{{1}} + {{2}}');
 			expect(results[2].converted).toBe('{{eval:{{1}}*10}}');
 			expect(results[3].converted).toBe('{{red|green|blue}}');
@@ -627,7 +627,7 @@ describe('TinyCAS Syntax Converter', () => {
 	describe('13. Validation Function Tests', () => {
 		it('should validate successful conversions', () => {
 			const original = '$e[1;10] and &1 and [_&2+3_]';
-			const converted = '{{1-10}} and {{1}} and {{eval:{{2}}+3}';
+			const converted = '{{1..10}} and {{1}} and {{eval:{{2}}+3}';
 			expect(validateConversion(original, converted)).toBe(true);
 		});
 
@@ -661,13 +661,13 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should convert exclusions before simple random', () => {
 			// This ensures exclusion patterns take precedence
 			const input = '$e[1;10]\\{5} and $e[1;10]';
-			const expected = '{{1-10!5}} and {{1-10}}';
+			const expected = '{{1..10!5}} and {{1..10}}';
 			expectConversion(input, expected);
 		});
 
 		it('should handle all patterns in correct order', () => {
 			const input = '[_&1*10_] + $e[0;9]\\{&2} + $e[1;5] + &3 + $l{a;b}';
-			const expected = '{{eval:{{1}}*10}} + {{0-9!{{2}}}} + {{1-5}} + {{3}} + {{a|b}}';
+			const expected = '{{eval:{{1}}*10}} + {{0..9!{{2}}}} + {{1..5}} + {{3}} + {{a|b}}';
 			expectConversion(input, expected);
 		});
 	});
@@ -677,7 +677,7 @@ describe('TinyCAS Syntax Converter', () => {
 			const input = 'Résous: $$&1 + &2 = [_&1+&2_]$$\n' + 'où &1 = $e[1;10] et &2 = $e[1;10]\\{&1}';
 			const expected =
 				'Résous: $${{1}} + {{2}} = {{eval:{{1}}+{{2}}}}$$\n' +
-				'où {{1}} = {{1-10}} et {{2}} = {{1-10!{{1}}}}';
+				'où {{1}} = {{1..10}} et {{2}} = {{1..10!{{1}}}}';
 			expectConversion(input, expected);
 		});
 
@@ -690,9 +690,9 @@ describe('TinyCAS Syntax Converter', () => {
 			};
 
 			// Convert each variable definition
-			expectConversion(variables['&1'], '{{1-9}}');
-			expectConversion(variables['&2'], '{{0-9!{{1}}}}');
-			expectConversion(variables['&3'], '{{0-9!{{1}},{{2}}}}');
+			expectConversion(variables['&1'], '{{1..9}}');
+			expectConversion(variables['&2'], '{{0..9!{{1}}}}');
+			expectConversion(variables['&3'], '{{0..9!{{1}},{{2}}}}');
 			expectConversion(variables['&4'], '{{eval:{{1}}*100+{{2}}*10+{{3}}}}');
 
 			// Convert the question
@@ -704,7 +704,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should handle mixed French and mathematical content', () => {
 			const input = 'Choisis entre $l{rouge;bleu;vert} pour colorier $e[2;5] cercles de rayon &r';
 			const expected =
-				'Choisis entre {{rouge|bleu|vert}} pour colorier {{2-5}} cercles de rayon {{r}}';
+				'Choisis entre {{rouge|bleu|vert}} pour colorier {{2..5}} cercles de rayon {{r}}';
 			expectConversion(input, expected);
 		});
 	});
@@ -781,13 +781,13 @@ describe('TinyCAS Syntax Converter', () => {
 	describe('19. Regression Tests', () => {
 		it('should not convert escaped backslashes incorrectly', () => {
 			// The \\{ in exclusion patterns should be handled correctly
-			expectConversion('$e[1;10]\\{5}', '{{1-10!5}}');
+			expectConversion('$e[1;10]\\{5}', '{{1..10!5}}');
 			// Should not affect other backslashes
 			expectConversion('text\\nmore text', 'text\\nmore text');
 		});
 
 		it('should handle consecutive patterns without spacing', () => {
-			expectConversion('$e[1;5]$e[6;10]', '{{1-5}}{{6-10}}');
+			expectConversion('$e[1;5]$e[6;10]', '{{1..5}}{{6..10}}');
 			expectConversion('&1&2&3', '{{1}}{{2}}{{3}}');
 		});
 
@@ -882,7 +882,7 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should convert mini/maxi in complex expressions', () => {
-			expectConversion('$e[2;[_mini(10-&1;&1-1)_]]', '{{2-{{eval:min(10-{{1}},{{1}}-1)}}}}');
+			expectConversion('$e[2;[_mini(10-&1;&1-1)_]]', '{{2..{{eval:min(10-{{1}},{{1}}-1)}}}}');
 		});
 
 		it('should convert mini/maxi in correction text', () => {

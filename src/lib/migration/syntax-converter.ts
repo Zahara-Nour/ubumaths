@@ -211,7 +211,7 @@ export class TinyCASConverter {
 	}
 
 	/**
-	 * Convert random integers with exclusions: $e[min;max]\{excl1;excl2} → {{min-max!excl1,excl2}}
+	 * Convert random integers with exclusions: $e[min;max]\{excl1;excl2} → {{min..max!excl1,excl2}}
 	 */
 	private convertRandomWithExclusions(input: string): string {
 		// Pattern for random with exclusions
@@ -231,12 +231,12 @@ export class TinyCASConverter {
 			// Also convert any variable references in exclusions
 			const convertedExclusions = this.convertExclusionList(exclusions);
 
-			return `{{${min}-${max}!${convertedExclusions}}}`;
+			return `{{${min}..${max}!${convertedExclusions}}}`;
 		});
 	}
 
 	/**
-	 * Convert simple random integers: $e[min;max] → {{min-max}}
+	 * Convert simple random integers: $e[min;max] → {{min..max}}
 	 */
 	private convertRandomIntegers(input: string): string {
 		// Pattern for simple random integers (without exclusions)
@@ -244,7 +244,7 @@ export class TinyCASConverter {
 
 		return input.replace(pattern, (match, min, max) => {
 			this.stats.randomIntegers++;
-			return `{{${min}-${max}}}`;
+			return `{{${min}..${max}}}`;
 		});
 	}
 
@@ -314,7 +314,7 @@ export class TinyCASConverter {
 	}
 
 	/**
-	 * Convert n-digit number generation: $e{n;m} → {{n.0}} or {{digits:n-m}}
+	 * Convert n-digit number generation: $e{n;m} → {{n.0}} or {{digits:n..m}}
 	 */
 	private convertNDigitNumbers(input: string): string {
 		// First handle patterns with variable references like $e{&1;&1}
@@ -343,10 +343,10 @@ export class TinyCASConverter {
 			if (n === m) {
 				// Same number of digits - use special notation
 				// $e{3;3} means 3-digit number (100-999)
-				if (n === '2') return '{{10-99}}';
-				if (n === '3') return '{{100-999}}';
-				if (n === '4') return '{{1000-9999}}';
-				if (n === '5') return '{{10000-99999}}';
+				if (n === '2') return '{{10..99}}';
+				if (n === '3') return '{{100..999}}';
+				if (n === '4') return '{{1000..9999}}';
+				if (n === '5') return '{{10000..99999}}';
 
 				// For other cases, use a custom pattern
 				this.warnings.push(
@@ -356,7 +356,7 @@ export class TinyCASConverter {
 			} else {
 				// Variable number of digits
 				this.warnings.push(`Variable digit pattern $e{${n};${m}} needs custom implementation`);
-				return `{{digits:${n}-${m}}}`;
+				return `{{digits:${n}..${m}}}`;
 			}
 		});
 	}
@@ -669,9 +669,9 @@ export function validateConversion(original: string, converted: string): boolean
 // These should all pass when the converter is working correctly:
 
 // Random integers:
-// "$e[1;10]" → "{{1-10}}"
-// "$e[0;99]" → "{{0-99}}"
-// "$e[-5;5]" → "{{-5-5}}"
+// "$e[1;10]" → "{{1..10}}"
+// "$e[0;99]" → "{{0..99}}"
+// "$e[-5;5]" → "{{-5..5}}"
 
 // Relative integers:
 // "$er[2;9]" → "{{±2..9}}"
@@ -684,20 +684,20 @@ export function validateConversion(original: string, converted: string): boolean
 // "$d{0;2}" → "{{0.2}}"
 
 // Random with exclusions:
-// "$e[1;10]\\{5}" → "{{1-10!5}}"
-// "$e[1;10]\\{5;7}" → "{{1-10!5,7}}"
-// "$e[0;9]\\{&1}" → "{{0-9!{{1}}}}"
-// "$e[0;9]\\{&1;&2}" → "{{0-9!{{1}},{{2}}}}"
+// "$e[1;10]\\{5}" → "{{1..10!5}}"
+// "$e[1;10]\\{5;7}" → "{{1..10!5,7}}"
+// "$e[0;9]\\{&1}" → "{{0..9!{{1}}}}"
+// "$e[0;9]\\{&1;&2}" → "{{0..9!{{1}},{{2}}}}"
 
 // N-digit numbers:
-// "$e{3;3}" → "{{100-999}}" or "{{3.0}}"
-// "$e{2;2}" → "{{10-99}}" or "{{2.0}}"
-// "$e{4;4}" → "{{1000-9999}}" or "{{4.0}}"
+// "$e{3;3}" → "{{100..999}}" or "{{3.0}}"
+// "$e{2;2}" → "{{10..99}}" or "{{2.0}}"
+// "$e{4;4}" → "{{1000..9999}}" or "{{4.0}}"
 
 // List selection:
 // "$l{1;2;5;10}" → "{{1|2|5|10}}"
 // "$l{rouge;bleu;vert}" → "{{rouge|bleu|vert}}"
-// "$l{0;$e[1;9]}" → "{{0|{{1-9}}}}" (with warning)
+// "$l{0;$e[1;9]}" → "{{0|{{1..9}}}}" (with warning)
 
 // Variable references:
 // "&1" → "{{1}}"
