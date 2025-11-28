@@ -194,7 +194,7 @@ Le projet utilise la syntaxe **Markdown** (double braces) pour tous les template
 | `{{1-10}}`             | Entier aléatoire (raccourci) | `{{0-99}}`                         |
 | `{{random:...}}`       | Entier aléatoire (explicite) | `{{random:1-10}}`                  |
 | `{{eval:...}}`         | Évaluation mathématique      | `{{eval:{{a}}+{{b}}}}`             |
-| `{{list:...}}`         | Sélection dans liste         | `{{list:a,b,c}}`                   |
+| `{{a\|b\|c}}`          | Sélection dans liste         | `{{rouge\|bleu\|vert}}`            |
 | `{{color:...}}`        | Référence couleur            | `{{color:primary.0}}`              |
 | `{{if:...\|...\|...}}` | Conditionnel                 | `{{if:{{a}}>0\|positif\|négatif}}` |
 
@@ -244,12 +244,25 @@ Le convertisseur `syntax-converter.ts` gère toutes les conversions:
 | `$e{2;4}`        | `{{digits:2-4}}`         | 2 à 4 chiffres (variable) |
 | `$e{&1;&1}`      | `{{digits:{{1}};{{1}}}}` | Chiffres selon variable   |
 
-#### Sélection dans liste
+#### Sélection dans liste (listes discrètes)
 
-| Ancien (TinyCAS)      | Nouveau                    | Description         |
-| --------------------- | -------------------------- | ------------------- |
-| `$l{1;2;5;10}`        | `{{list:1,2,5,10}}`        | Choix parmi valeurs |
-| `$l{rouge;bleu;vert}` | `{{list:rouge,bleu,vert}}` | Choix parmi textes  |
+| Ancien (TinyCAS)      | Nouveau                 | Description         |
+| --------------------- | ----------------------- | ------------------- |
+| `$l{1;2;5;10}`        | `{{1\|2\|5\|10}}`       | Choix parmi valeurs |
+| `$l{rouge;bleu;vert}` | `{{rouge\|bleu\|vert}}` | Choix parmi textes  |
+
+**Résolution des noms nus** : Dans une liste discrète, chaque élément est traité comme un "nom nu" :
+
+- Si le nom correspond à une variable définie, sa valeur est utilisée
+- Sinon, le nom est utilisé comme valeur littérale
+
+```
+Variables: a = 5, b = 10
+{{a|b|15}}    → Sélectionne parmi {5, 10, 15}
+{{x|y|z}}     → Sélectionne parmi {"x", "y", "z"}
+```
+
+**Exclusions** : `{{a|b|c|d!a}}` exclut la valeur de 'a' du résultat.
 
 #### Variables
 
@@ -832,7 +845,8 @@ const result2 = validateAnswer('5', instance);
 | Décimal avec pas     | `{{min-max:step}}`        | `{{0.5-9.99:0.01}}`          |
 | Entier relatif       | `{{±min..max}}`           | `{{±2..9}}` (exclut 0)       |
 | Évaluation           | `{{eval:expr}}`           | `{{eval:{{a}}+{{b}}}}`       |
-| Liste                | `{{list:a,b,c}}`          | `{{list:rouge,bleu,vert}}`   |
+| Liste discrète       | `{{a\|b\|c}}`             | `{{rouge\|bleu\|vert}}`      |
+| Liste avec exclusion | `{{a\|b\|c!x}}`           | `{{1\|2\|3\|4!2}}`           |
 | Couleur              | `{{color:name}}`          | `{{color:primary.0}}`        |
 | Conditionnel         | `{{if:cond\|vrai\|faux}}` | `{{if:{{a}}>0\|+\|-}}`       |
 
@@ -843,4 +857,4 @@ const result2 = validateAnswer('5', instance);
 
 ---
 
-_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (syntaxe corrigée)_
+_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (syntaxe listes discrètes: `{{a|b|c}}`)_
