@@ -678,7 +678,7 @@ describe('Integration - Multiple Constraints', () => {
 // ============================================================================
 
 describe('checkNullTerms', () => {
-	describe('Basic Detection', () => {
+	describe('Basic Detection - Addition', () => {
 		it('should detect x+0 (null term at end)', () => {
 			expect(checkNullTerms(['x+0'])).toEqual([0]);
 		});
@@ -702,10 +702,33 @@ describe('checkNullTerms', () => {
 		});
 	});
 
+	describe('Basic Detection - Subtraction', () => {
+		it('should detect x-0 (subtracting zero)', () => {
+			expect(checkNullTerms(['x-0'])).toEqual([0]);
+		});
+
+		it('should detect a-0+b (subtracting zero in middle)', () => {
+			expect(checkNullTerms(['a-0+b'])).toEqual([0]);
+		});
+
+		it('should accept x-1 (subtracting non-zero)', () => {
+			expect(checkNullTerms(['x-1'])).toHaveLength(0);
+		});
+
+		it('should detect 0-x (zero as first term is still a null term)', () => {
+			// 0-x is equivalent to -x, so the 0 is unnecessary
+			expect(checkNullTerms(['0-x'])).toEqual([0]);
+		});
+	});
+
 	describe('Nested Expressions', () => {
 		it('should detect null term in nested expression', () => {
 			expect(checkNullTerms(['(x+0)+y'])).toEqual([0]);
 			expect(checkNullTerms(['x+(0+y)'])).toEqual([0]);
+		});
+
+		it('should detect subtraction of zero in nested expression', () => {
+			expect(checkNullTerms(['(x-0)+y'])).toEqual([0]);
 		});
 	});
 
@@ -732,7 +755,7 @@ describe('checkNullTerms', () => {
 // ============================================================================
 
 describe('checkFactorOne', () => {
-	describe('Basic Detection', () => {
+	describe('Basic Detection - Explicit Multiplication', () => {
 		it('should detect 1*x (factor one at start)', () => {
 			expect(checkFactorOne(['1\\times x'])).toEqual([0]);
 		});
@@ -756,10 +779,33 @@ describe('checkFactorOne', () => {
 		});
 	});
 
+	describe('Implicit Multiplication (1x notation)', () => {
+		it('should detect 1x (implicit factor one)', () => {
+			expect(checkFactorOne(['1x'])).toEqual([0]);
+		});
+
+		it('should detect 1a (implicit factor one with letter)', () => {
+			expect(checkFactorOne(['1a'])).toEqual([0]);
+		});
+
+		it('should accept 2x (not factor one)', () => {
+			expect(checkFactorOne(['2x'])).toHaveLength(0);
+		});
+
+		it('should accept 10x (not factor one, coefficient is 10)', () => {
+			expect(checkFactorOne(['10x'])).toHaveLength(0);
+		});
+	});
+
 	describe('Multiple Answers', () => {
 		it('should check all answers and return violating indices', () => {
 			const result = checkFactorOne(['2x', '1\\times y', '3z', 'w\\times 1']);
 			expect(result).toEqual([1, 3]);
+		});
+
+		it('should detect implicit 1x in multiple answers', () => {
+			const result = checkFactorOne(['2x', '1x', '3y']);
+			expect(result).toEqual([1]);
 		});
 	});
 
@@ -818,7 +864,7 @@ describe('checkFactorZero', () => {
 // ============================================================================
 
 describe('checkSigns', () => {
-	describe('Double Signs', () => {
+	describe('Double Signs (regex-based)', () => {
 		it('should detect double plus (++)', () => {
 			expect(checkSigns(['x++y'])).toEqual([0]);
 		});
@@ -836,7 +882,7 @@ describe('checkSigns', () => {
 		});
 	});
 
-	describe('Leading Plus Before Variable', () => {
+	describe('Leading Plus Before Variable (regex-based)', () => {
 		it('should detect +x at start', () => {
 			expect(checkSigns(['+x'])).toEqual([0]);
 		});
@@ -855,10 +901,45 @@ describe('checkSigns', () => {
 		});
 	});
 
+	describe('Sign Parity in Multiplication (CE-based)', () => {
+		it('should detect (-2)*(-3) - two negatives can be simplified', () => {
+			expect(checkSigns(['(-2)\\times(-3)'])).toEqual([0]);
+		});
+
+		it('should detect (-a)*(-b) - variable negatives', () => {
+			expect(checkSigns(['(-a)\\times(-b)'])).toEqual([0]);
+		});
+
+		it('should detect 5*(-2)*(-3) - two negatives in chain', () => {
+			expect(checkSigns(['5\\times(-2)\\times(-3)'])).toEqual([0]);
+		});
+
+		it('should detect (-x)(-y) - implicit multiplication', () => {
+			expect(checkSigns(['(-x)(-y)'])).toEqual([0]);
+		});
+
+		it('should accept (-2)*3 - single negative is valid', () => {
+			expect(checkSigns(['(-2)\\times 3'])).toHaveLength(0);
+		});
+
+		it('should accept 5*(-2) - single negative is valid', () => {
+			expect(checkSigns(['5\\times(-2)'])).toHaveLength(0);
+		});
+
+		it('should accept -2*3 - single negative is valid', () => {
+			expect(checkSigns(['-2\\times 3'])).toHaveLength(0);
+		});
+	});
+
 	describe('Multiple Answers', () => {
 		it('should check all answers and return violating indices', () => {
 			const result = checkSigns(['x+y', 'x++z', 'a-b', '+c']);
 			expect(result).toEqual([1, 3]);
+		});
+
+		it('should detect sign parity violations in multiple answers', () => {
+			const result = checkSigns(['2x', '(-a)(-b)', '3y']);
+			expect(result).toEqual([1]);
 		});
 	});
 

@@ -582,14 +582,25 @@ function getCE(): ComputeEngine {
 }
 
 /**
+ * Check if an argument represents zero (either direct 0 or ["Negate", 0])
+ * This handles both x+0 and x-0 (parsed as x+["Negate",0])
+ */
+function isZeroOrNegateZero(arg: unknown): boolean {
+	if (arg === 0) return true;
+	if (Array.isArray(arg) && arg[0] === 'Negate' && arg[1] === 0) return true;
+	return false;
+}
+
+/**
  * Recursively check if a MathJSON expression contains an Add with 0
+ * Also handles x-0 which CE parses as ["Add", "x", ["Negate", 0]]
  */
 function hasAddWithZero(json: unknown): boolean {
 	if (!Array.isArray(json)) return false;
 	const [head, ...args] = json;
 
-	// Check if this is an Add with 0 in its arguments
-	if (head === 'Add' && args.some((arg) => arg === 0)) {
+	// Check if this is an Add with 0 or ["Negate", 0] in its arguments
+	if (head === 'Add' && args.some(isZeroOrNegateZero)) {
 		return true;
 	}
 
@@ -598,16 +609,17 @@ function hasAddWithZero(json: unknown): boolean {
 }
 
 /**
- * Check for null terms in an expression (x+0, y+0+z)
+ * Check for null terms in an expression (x+0, x-0, y+0+z)
  *
  * Parses without canonization to preserve the original form,
- * then inspects the MathJSON for Add expressions containing 0.
+ * then inspects the MathJSON for Add/Subtract expressions containing 0.
  *
  * @param answersLatex - Array of LaTeX strings
  * @returns Indices of answers with null term violations
  *
  * @example
  * checkNullTerms(['x+0'])       // Returns [0] - has null term
+ * checkNullTerms(['x-0'])       // Returns [0] - subtracting zero
  * checkNullTerms(['x+1'])       // Returns [] - no null term
  * checkNullTerms(['3+0+y'])     // Returns [0] - has null term
  * checkNullTerms(['0'])         // Returns [] - just zero, not a null term
@@ -636,6 +648,7 @@ export function checkNullTerms(answersLatex: string[]): number[] {
 
 /**
  * Recursively check if a MathJSON expression contains a Multiply with 1
+ * Also handles InvisibleOperator (implicit multiplication like 1x)
  */
 function hasMultiplyWithOne(json: unknown): boolean {
 	if (!Array.isArray(json)) return false;
@@ -646,21 +659,28 @@ function hasMultiplyWithOne(json: unknown): boolean {
 		return true;
 	}
 
+	// Check if this is an InvisibleOperator (implicit multiplication) with 1
+	// e.g., 1x is parsed as ["InvisibleOperator", 1, "x"]
+	if (head === 'InvisibleOperator' && args.some((arg) => arg === 1)) {
+		return true;
+	}
+
 	// Recursively check nested expressions
 	return args.some((arg) => hasMultiplyWithOne(arg));
 }
 
 /**
- * Check for factor one in an expression (1*x, x*1)
+ * Check for factor one in an expression (1*x, x*1, 1x)
  *
  * Parses without canonization to preserve the original form,
- * then inspects the MathJSON for Multiply expressions containing 1.
+ * then inspects the MathJSON for Multiply/InvisibleOperator expressions containing 1.
  *
  * @param answersLatex - Array of LaTeX strings
  * @returns Indices of answers with factor one violations
  *
  * @example
  * checkFactorOne(['1\\times x'])  // Returns [0] - has factor one
+ * checkFactorOne(['1x'])          // Returns [0] - implicit factor one
  * checkFactorOne(['2x'])          // Returns [] - no factor one
  * checkFactorOne(['x*1*y'])       // Returns [0] - has factor one
  * checkFactorOne(['1'])           // Returns [] - just one, not factor one
@@ -743,26 +763,79 @@ export function checkFactorZero(answersLatex: string[]): number[] {
 }
 
 /**
- * Check for extraneous signs in an expression (+x, --x, ++)
+ * Check if a MathJSON argument is a Negate (possibly wrapped in Delimiter)
+ */
+function isNegateArg(arg: unknown): boolean {
+	if (!Array.isArray(arg)) return false;
+	const [head, inner] = arg;
+
+	// Direct Negate
+	if (head === 'Negate') return true;
+
+	// Delimiter wrapping a Negate: ["Delimiter", ["Negate", ...]]
+	if (head === 'Delimiter' && Array.isArray(inner) && inner[0] === 'Negate') {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Count negatives in a Multiply/InvisibleOperator expression
+ * Returns the count of negated factors
+ */
+function countNegatesInMultiply(json: unknown): number {
+	if (!Array.isArray(json)) return 0;
+	const [head, ...args] = json;
+
+	if (head === 'Multiply' || head === 'InvisibleOperator') {
+		return args.filter(isNegateArg).length;
+	}
+
+	return 0;
+}
+
+/**
+ * Recursively check if any Multiply/InvisibleOperator has 2+ negatives
+ * (sign parity issue: (-a)*(-b) can be simplified to a*b)
+ */
+function hasMultipleNegatesInMultiply(json: unknown): boolean {
+	if (!Array.isArray(json)) return false;
+	const [head, ...args] = json;
+
+	// Check this level
+	if ((head === 'Multiply' || head === 'InvisibleOperator') && countNegatesInMultiply(json) >= 2) {
+		return true;
+	}
+
+	// Recursively check nested expressions
+	return args.some((arg) => hasMultipleNegatesInMultiply(arg));
+}
+
+/**
+ * Check for extraneous signs in an expression (+x, --x, ++, sign parity)
  *
  * Detects patterns like:
  * - Leading plus sign on variables: +x, +a
  * - Double signs: ++, --, +-, -+
+ * - Sign parity in multiplication: (-a)*(-b) can be simplified to a*b
  *
- * Uses regex for detection since CE canonizes these away.
+ * Uses both regex (for textual patterns) and CE (for sign parity).
  *
  * @param answersLatex - Array of LaTeX strings
  * @returns Indices of answers with extraneous sign violations
  *
  * @example
- * checkSigns(['+x'])       // Returns [0] - extraneous +
- * checkSigns(['--5'])      // Returns [0] - double negative
- * checkSigns(['x+-3'])     // Returns [0] - +- signs
- * checkSigns(['-x'])       // Returns [] - valid negative
- * checkSigns(['x+3'])      // Returns [] - normal addition
+ * checkSigns(['+x'])                  // Returns [0] - extraneous +
+ * checkSigns(['--5'])                 // Returns [0] - double negative
+ * checkSigns(['x+-3'])                // Returns [0] - +- signs
+ * checkSigns(['(-2)\\times(-3)'])     // Returns [0] - sign parity
+ * checkSigns(['-x'])                  // Returns [] - valid negative
+ * checkSigns(['x+3'])                 // Returns [] - normal addition
  */
 export function checkSigns(answersLatex: string[]): number[] {
 	const violations: number[] = [];
+	const ce = getCE();
 
 	for (let i = 0; i < answersLatex.length; i++) {
 		const latex = answersLatex[i];
@@ -774,6 +847,18 @@ export function checkSigns(answersLatex: string[]): number[] {
 		// - Leading + before letter: +x, +a (but not +5)
 		if (/\+\+|--|\+-|-\+|^\s*\+[a-zA-Z]/.test(latex)) {
 			violations.push(i);
+			continue;
+		}
+
+		// Check for sign parity using CE
+		// e.g., (-2)*(-3) has 2 negatives that could be simplified
+		try {
+			const expr = ce.parse(latex, { canonical: false });
+			if (hasMultipleNegatesInMultiply(expr.json)) {
+				violations.push(i);
+			}
+		} catch {
+			// Skip invalid LaTeX
 		}
 	}
 
