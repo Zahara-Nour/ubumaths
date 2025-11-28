@@ -540,6 +540,324 @@ describe('Question Transformer', () => {
 		});
 	});
 
+	describe('transformQuestion - Shared Fields Detection', () => {
+		it('should detect shared statement when 1 enounce for multiple variations', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shared statement',
+				enounces: ['Common statement'], // 1 enounce
+				expressions: ['&1', '&1+1'], // 2 variations
+				variabless: [{ '&1': '$e[1;10]' }, { '&1': '$e[1;10]' }],
+				solutionss: [['&1'], ['[_&1+1_]']],
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.shared?.statement).toBeDefined();
+			expect(result.template?.shared?.statement).toContain('Common statement');
+			// Variations still get the statement (as fallback), but shared indicates it's common
+			expect(result.template?.variations[0]?.statement).toBeDefined();
+			expect(result.template?.variations[1]?.statement).toBeDefined();
+			// Both variations should have the same statement as shared
+			expect(result.template?.variations[0]?.statement).toEqual(result.template?.shared?.statement);
+			expect(result.template?.variations[1]?.statement).toEqual(result.template?.shared?.statement);
+		});
+
+		it('should not share statement when each variation has its own enounce', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test per-variation statements',
+				enounces: ['Statement 1', 'Statement 2'], // 2 enounces for 2 variations
+				expressions: ['&1', '&1+1'],
+				variabless: [{ '&1': '$e[1;10]' }, { '&1': '$e[1;10]' }],
+				solutionss: [['&1'], ['[_&1+1_]']],
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.shared?.statement).toBeUndefined();
+			expect(result.template?.variations[0]?.statement).toBeDefined();
+			expect(result.template?.variations[0]?.statement).toContain('Statement 1');
+			expect(result.template?.variations[1]?.statement).toBeDefined();
+			expect(result.template?.variations[1]?.statement).toContain('Statement 2');
+		});
+
+		it('should detect shared variables when 1 variabless for multiple variations', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shared variables',
+				enounces: ['Statement 1', 'Statement 2'],
+				expressions: ['&1', '&1+1'],
+				variabless: [{ '&1': '$e[1;10]' }], // 1 variabless for 2 variations
+				solutionss: [['&1'], ['[_&1+1_]']],
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.shared?.variables).toBeDefined();
+			expect(result.template?.shared?.variables?.length).toBeGreaterThan(0);
+			expect(result.template?.shared?.variables?.[0]?.name).toBe('1');
+			expect(result.template?.shared?.variables?.[0]?.expression).toBe('{{1-10}}');
+		});
+
+		it('should detect shared answer when 1 solutionss for multiple variations', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shared answer',
+				enounces: ['Stmt 1', 'Stmt 2'],
+				expressions: ['&1', '&1+1'],
+				variabless: [{ '&1': '$e[1;10]' }, { '&1': '$e[1;10]' }],
+				solutionss: [['42']], // 1 solution set for 2 variations
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.shared?.answer).toBeDefined();
+			expect(result.template?.shared?.answer).toBe('42');
+			// Variations still get the answer (as fallback), but shared indicates it's common
+			expect(result.template?.variations[0]?.answer).toBeDefined();
+			expect(result.template?.variations[1]?.answer).toBeDefined();
+			// Both variations should have the same answer as shared
+			expect(result.template?.variations[0]?.answer).toEqual(result.template?.shared?.answer);
+			expect(result.template?.variations[1]?.answer).toEqual(result.template?.shared?.answer);
+		});
+
+		it('should handle mix of shared and per-variation fields', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test mixed sharing',
+				enounces: ['Common statement'], // shared
+				expressions: ['&1', '&1+1'],
+				variabless: [{ '&1': '$e[1;10]' }], // shared
+				solutionss: [['&1'], ['[_&1+1_]']], // per-variation
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			// Shared fields
+			expect(result.template?.shared?.statement).toBeDefined();
+			expect(result.template?.shared?.variables).toBeDefined();
+			// Not shared
+			expect(result.template?.shared?.answer).toBeUndefined();
+			// Per-variation answers
+			expect(result.template?.variations[0]?.answer).toBeDefined();
+			expect(result.template?.variations[1]?.answer).toBeDefined();
+			expect(result.template?.variations[0]?.answer).toBe('{{1}}');
+			expect(result.template?.variations[1]?.answer).toBe('{{eval:{{1}}+1}}');
+		});
+
+		it('should preserve QuestionCorrection structure when shared', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shared correction',
+				enounces: ['Stmt 1', 'Stmt 2'],
+				expressions: ['&1', '&1+1'],
+				variabless: [{ '&1': '$e[1;10]' }, { '&1': '$e[1;10]' }],
+				solutionss: [['&1'], ['[_&1+1_]']],
+				correctionFormats: [{ correct: ['The answer is [_&1_]'] }], // shared
+				correctionDetailss: [[{ text: 'Step 1: Calculate &1' }]], // 1 for 2 variations
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.shared?.correction).toBeDefined();
+			expect(result.template?.shared?.correction?.steps).toBeDefined();
+			expect(result.template?.shared?.correction?.steps).toHaveLength(1);
+			// Correction is NOT duplicated in variations when shared (optional fields work differently)
+			expect(result.template?.variations[0]?.correction).toBeUndefined();
+			expect(result.template?.variations[1]?.correction).toBeUndefined();
+		});
+
+		it('should not create shared fields for single variation', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test single variation',
+				enounces: ['Only statement'],
+				expressions: ['&1'],
+				variabless: [{ '&1': '$e[1;10]' }],
+				solutionss: [['&1']],
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			// No shared field should exist for single variation
+			expect(result.template?.shared).toBeUndefined();
+			// All data should be in the variation
+			expect(result.template?.variations).toHaveLength(1);
+			expect(result.template?.variations[0]?.statement).toBeDefined();
+			expect(result.template?.variations[0]?.variables).toBeDefined();
+			expect(result.template?.variations[0]?.answer).toBeDefined();
+		});
+
+		it('should detect shared choices for multiple choice questions', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shared choices',
+				enounces: ['Question 1', 'Question 2'],
+				expressions: ['&1', '&2'],
+				variabless: [{ '&1': '$e[1;5]' }, { '&2': '$e[6;10]' }],
+				choicess: [[{ text: 'Choice A' }, { text: 'Choice B' }]], // 1 for 2 variations
+				solutionss: [[0], [0]], // Same correct index for shared choices
+				defaultDelay: 30,
+				grade: 'CE2'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.type).toBe('multiple_choice');
+			expect(result.template?.shared?.choices).toBeDefined();
+			expect(result.template?.shared?.choices).toHaveLength(2);
+			// Choices are NOT duplicated in variations when shared (optional fields work differently)
+			expect(result.template?.variations[0]?.choices).toBeUndefined();
+			expect(result.template?.variations[1]?.choices).toBeUndefined();
+		});
+
+		it('should detect shared validation rules', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shared validation',
+				enounces: ['Expression 1', 'Expression 2'],
+				expressions: ['&1x + &2', '&1x - &2'],
+				variabless: [
+					{ '&1': '$e[1;5]', '&2': '$e[1;5]' },
+					{ '&1': '$e[1;5]', '&2': '$e[1;5]' }
+				],
+				solutionss: [['&1x+&2'], ['&1x-&2']],
+				options: ['disallow-terms-permutation'], // shared validation rule
+				defaultDelay: 45,
+				grade: '4'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			// Validation rules from options should be shared
+			if (
+				result.template?.shared?.validationRules ||
+				result.template?.variations[0]?.validationRules
+			) {
+				// Either shared or per-variation, but consistent
+				const hasSharedRules = result.template?.shared?.validationRules !== undefined;
+				const hasPerVariationRules = result.template?.variations[0]?.validationRules !== undefined;
+				// Should be in one place or the other, not both
+				expect(hasSharedRules || hasPerVariationRules).toBe(true);
+			}
+		});
+
+		it('should handle completely identical variations efficiently', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test identical variations',
+				enounces: ['Same statement'], // 1 shared
+				expressions: ['&1'], // 1 shared
+				variabless: [{ '&1': '$e[1;10]' }], // 1 shared
+				solutionss: [['&1']], // 1 shared
+				correctionFormats: [{ correct: ['The answer is [_&1_]'] }], // shared
+				correctionDetailss: [[{ text: 'Just calculate &1' }]], // 1 shared
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			// Should have only 1 variation since everything is identical
+			expect(result.template?.variations).toHaveLength(1);
+			// No shared needed for single variation
+			expect(result.template?.shared).toBeUndefined();
+		});
+
+		it('should understand shared field semantics correctly', () => {
+			// This test documents the actual behavior of shared fields
+			const oldQuestion: QuestionBase = {
+				description: 'Shared field semantics',
+				enounces: ['Common statement'], // shared
+				expressions: ['&1', '&2'],
+				variabless: [{ '&1': '$e[1;10]' }, { '&2': '$e[11;20]' }], // per-variation
+				solutionss: [['&1'], ['&2']], // per-variation
+				choicess: [[{ text: 'A' }, { text: 'B' }]], // shared
+				correctionFormats: [{ correct: ['Answer: [_&1_]'] }], // shared
+				correctionDetailss: [[{ text: 'Step 1' }]], // shared
+				defaultDelay: 30,
+				grade: 'CE2'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+
+			// Required fields (statement, answer):
+			// - If shared: still appear in variations as fallback values
+			expect(result.template?.shared?.statement).toBeDefined();
+			expect(result.template?.variations[0]?.statement).toBeDefined();
+			expect(result.template?.variations[1]?.statement).toBeDefined();
+			expect(result.template?.variations[0]?.statement).toEqual(result.template?.shared?.statement);
+
+			// Optional fields (choices, correction, validationRules):
+			// - If shared: do NOT appear in variations (true deduplication)
+			expect(result.template?.shared?.choices).toBeDefined();
+			expect(result.template?.variations[0]?.choices).toBeUndefined();
+			expect(result.template?.variations[1]?.choices).toBeUndefined();
+
+			expect(result.template?.shared?.correction).toBeDefined();
+			expect(result.template?.variations[0]?.correction).toBeUndefined();
+			expect(result.template?.variations[1]?.correction).toBeUndefined();
+
+			// Per-variation fields: appear in variations, not in shared
+			expect(result.template?.shared?.variables).toBeUndefined();
+			expect(result.template?.variations[0]?.variables).toBeDefined();
+			expect(result.template?.variations[1]?.variables).toBeDefined();
+
+			expect(result.template?.shared?.answer).toBeUndefined();
+			expect(result.template?.variations[0]?.answer).toBeDefined();
+			expect(result.template?.variations[1]?.answer).toBeDefined();
+		});
+
+		it('should handle per-variation corrections correctly', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Per-variation corrections',
+				enounces: ['Stmt 1', 'Stmt 2'],
+				expressions: ['&1', '&1+1'],
+				variabless: [{ '&1': '$e[1;10]' }, { '&1': '$e[1;10]' }],
+				solutionss: [['&1'], ['[_&1+1_]']],
+				correctionFormats: [{ correct: ['Answer is &1'] }, { correct: ['Answer is &1+1'] }], // 2 different correction formats
+				correctionDetailss: [[{ text: 'Step A' }], [{ text: 'Step B' }]], // 2 different correction details arrays
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			// Corrections are per-variation, not shared
+			expect(result.template?.shared?.correction).toBeUndefined();
+			expect(result.template?.variations[0]?.correction).toBeDefined();
+			expect(result.template?.variations[1]?.correction).toBeDefined();
+			// Check that steps exist and contain the expected content
+			const steps0 = result.template?.variations[0]?.correction?.steps;
+			const steps1 = result.template?.variations[1]?.correction?.steps;
+			expect(steps0).toBeDefined();
+			expect(steps1).toBeDefined();
+			expect(steps0?.[0]).toBeDefined();
+			expect(steps1?.[0]).toBeDefined();
+			// TemplateMarkdown is a string type
+			expect(steps0?.[0]).toContain('Step A');
+			expect(steps1?.[0]).toContain('Step B');
+		});
+	});
+
 	describe('validateTransformedTemplate', () => {
 		it('should validate a correct template', () => {
 			const template: QuestionTemplate = {

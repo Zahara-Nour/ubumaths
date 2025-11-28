@@ -22,13 +22,13 @@ Duration: 208.7 seconds
 
 ## Warnings
 - [0] Connaître la position décimale - Jusqu'aux dizaines. - [CP]
-    ⚠️ Unknown option: require-no-extraneaous-brackets - needs manual review
+    ⚠️ Unknown option: require-no-extraneous-brackets - needs manual review
 - [1] Connaître la position décimale - Jusqu'aux centaines - [CE1]
-    ⚠️ Unknown option: require-no-extraneaous-brackets - needs manual review
+    ⚠️ Unknown option: require-no-extraneous-brackets - needs manual review
 - [2] Parité d'un nombre entier - [CE1]
     ⚠️ Unknown option: no-shuffle-choices - needs manual review
 - [3] Connaître la position décimale - Jusqu'aux milliers - [CE2]
-    ⚠️ Unknown option: require-no-extraneaous-brackets - needs manual review
+    ⚠️ Unknown option: require-no-extraneous-brackets - needs manual review
 - [4] Ecrire un grand nombre entier avec des espaces - Nombre à 4 chiffres - [CE2]
     ⚠️ No solutions provided
   ⚠️ Unknown option: exp-no-spaces - needs manual review

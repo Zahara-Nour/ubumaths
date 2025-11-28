@@ -130,12 +130,16 @@ function validateVariation(
 		errors.push(`${prefix} Missing required field: answer`);
 	}
 
-	// Validate correction (if present, now a TemplateMarkdown string)
+	// Validate correction (if present, now a QuestionCorrection object)
 	if (variation.correction !== undefined) {
-		if (typeof variation.correction !== 'string') {
-			errors.push(`${prefix} Correction must be a string`);
-		} else if (variation.correction.trim().length === 0) {
-			errors.push(`${prefix} Correction cannot be empty if provided`);
+		if (typeof variation.correction !== 'object' || variation.correction === null) {
+			errors.push(`${prefix} Correction must be an object with feedback and/or steps`);
+		} else {
+			const { feedback, steps } = variation.correction;
+			// At least one of feedback or steps should be present for a non-empty correction
+			if (!feedback && !steps) {
+				errors.push(`${prefix} Correction must have at least feedback or steps`);
+			}
 		}
 	}
 

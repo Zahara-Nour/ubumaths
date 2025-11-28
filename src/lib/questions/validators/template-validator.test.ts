@@ -892,7 +892,12 @@ describe('validateTemplate - Edge Cases', () => {
 					statement: templateMarkdown('Question'),
 					variables: [],
 					answer: '5',
-					correction: templateMarkdown('The answer is 5')
+					correction: {
+						feedback: {
+							correct: templateMarkdown('Correct!'),
+							incorrect: templateMarkdown('The answer is 5')
+						}
+					}
 				}
 			],
 			precision: { type: 'none' },

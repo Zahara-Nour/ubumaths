@@ -63,7 +63,9 @@ const createMockTemplate = (overrides: Partial<QuestionTemplate> = {}): Question
 		{
 			statement: templateMarkdown('Question'),
 			answer: '42',
-			correction: templateMarkdown('Solution')
+			correction: {
+				steps: [templateMarkdown('Solution')]
+			}
 		}
 	],
 	created_at: new Date().toISOString(),
@@ -247,12 +249,12 @@ describe('SRS Generator Edge Cases', () => {
 				{
 					statement: templateMarkdown('Q1'),
 					answer: '1',
-					correction: templateMarkdown('S1')
+					correction: { steps: [templateMarkdown('S1')] }
 				},
 				{
 					statement: templateMarkdown('Q2'),
 					answer: '2',
-					correction: templateMarkdown('S2')
+					correction: { steps: [templateMarkdown('S2')] }
 				}
 			]
 		});
@@ -271,7 +273,7 @@ describe('SRS Generator Edge Cases', () => {
 						{ name: 'b', expression: '{#:1-10}' }
 					],
 					answer: '{eval:{{a}} + {{b}}}',
-					correction: templateMarkdown('Solution')
+					correction: { steps: [templateMarkdown('Solution')] }
 				}
 			]
 		});
@@ -337,7 +339,7 @@ describe('Integration with Question System', () => {
 				{
 					statement: templateMarkdown('Solve: $x^2 + 2x + 1 = 0$'),
 					answer: '-1',
-					correction: templateMarkdown('$x = -1$')
+					correction: { steps: [templateMarkdown('$x = -1$')] }
 				}
 			]
 		});

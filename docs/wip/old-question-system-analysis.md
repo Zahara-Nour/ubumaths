@@ -97,7 +97,7 @@ export const STATUS_BAD_UNIT = 'bad unit'; // Wrong unit
 #### `checkBrackets(item: CorrectedQuestion): number[]`
 
 **Purpose**: Verify unnecessary brackets are removed  
-**Constraint**: `no-penalty-for-extraneous-brackets` vs `require-no-extraneaous-brackets`  
+**Constraint**: `no-penalty-for-extraneous-brackets` vs `require-no-extraneous-brackets`  
 **Special Flag**: `no-penalty-for-extraneous-brackets-in-first-negative-term`  
 **Process**: `expression.removeUnecessaryBrackets(allowBracketsInFirstNegativeTerm) !== original`  
 **Fill-in Special**: For `fill in` questions with expression template, checks the entire resulting expression  
@@ -278,17 +278,17 @@ else {
 'no-penalty-for-explicit-products'; // 2*x is acceptable
 
 // BRACKETS (3 options)
-'require-no-extraneaous-brackets'; // Remove all unnecessary brackets
+'require-no-extraneous-brackets'; // Remove all unnecessary brackets
 'no-penalty-for-extraneous-brackets'; // Brackets are optional
 'no-penalty-for-extraneous-brackets-in-first-negative-term'; // Special case
 
 // ZEROS (2 options)
-'require-no-extraneaous-zeros'; // Remove leading/trailing zeros
+'require-no-extraneous-zeros'; // Remove leading/trailing zeros
 'no-penalty-for-extraneous-zeros'; // Zeros are optional
 'exp-allow-unecessary-zeros'; // Expression rendering allows zeros
 
 // SIGNS (2 options)
-'require-no-extraneaous-signs'; // Simplify double signs
+'require-no-extraneous-signs'; // Simplify double signs
 'no-penalty-for-extraneous-signs'; // Multiple signs acceptable
 
 // FACTORS (2 options)

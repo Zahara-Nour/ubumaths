@@ -81,18 +81,18 @@
 
 ### Paired Options (require/no-penalty)
 
-| Constraint | Require                           | No Penalty                             | Default    |
-| ---------- | --------------------------------- | -------------------------------------- | ---------- |
-| Spaces     | `require-correct-spaces`          | `no-penalty-for-incorrect-spaces`      | Permissive |
-| Products   | `require-implicit-products`       | `no-penalty-for-explicit-products`     | Permissive |
-| Brackets   | `require-no-extraneaous-brackets` | `no-penalty-for-extraneous-brackets`   | Permissive |
-| Zeros      | `require-no-extraneaous-zeros`    | `no-penalty-for-extraneous-zeros`      | Permissive |
-| Signs      | `require-no-extraneaous-signs`    | `no-penalty-for-extraneous-signs`      | Permissive |
-| Factors 1  | `require-no-factor-one`           | `no-penalty-for-factor-one`            | Permissive |
-| Factors 0  | `require-no-factor-zero`          | `no-penalty-for-factor-zero`           | Permissive |
-| Null Terms | `require-no-null-terms`           | `no-penalty-for-null-terms`            | Permissive |
-| Fractions  | `require-reduced-fractions`       | `no-penalty-for-non-reduced-fractions` | Permissive |
-| Units      | `require-specific-unit`           | `no-penalty-for-not-respected-unit`    | Permissive |
+| Constraint | Require                          | No Penalty                             | Default    |
+| ---------- | -------------------------------- | -------------------------------------- | ---------- |
+| Spaces     | `require-correct-spaces`         | `no-penalty-for-incorrect-spaces`      | Permissive |
+| Products   | `require-implicit-products`      | `no-penalty-for-explicit-products`     | Permissive |
+| Brackets   | `require-no-extraneous-brackets` | `no-penalty-for-extraneous-brackets`   | Permissive |
+| Zeros      | `require-no-extraneous-zeros`    | `no-penalty-for-extraneous-zeros`      | Permissive |
+| Signs      | `require-no-extraneous-signs`    | `no-penalty-for-extraneous-signs`      | Permissive |
+| Factors 1  | `require-no-factor-one`          | `no-penalty-for-factor-one`            | Permissive |
+| Factors 0  | `require-no-factor-zero`         | `no-penalty-for-factor-zero`           | Permissive |
+| Null Terms | `require-no-null-terms`          | `no-penalty-for-null-terms`            | Permissive |
+| Fractions  | `require-reduced-fractions`      | `no-penalty-for-non-reduced-fractions` | Permissive |
+| Units      | `require-specific-unit`          | `no-penalty-for-not-respected-unit`    | Permissive |
 
 ### Ordering Options (disallow/penalty)
 

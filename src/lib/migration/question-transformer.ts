@@ -34,6 +34,7 @@ import type {
 	QuestionVariation,
 	QuestionVariable,
 	QuestionCorrection,
+	SharedVariationDefaults,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	PrecisionType,
 	AlgebraicTransformType,
@@ -705,8 +706,9 @@ function convertOptions(
 				break;
 
 			// Algebraic form requirements
-			case 'require-no-extraneaous-zeros':
-			case 'require-no-extraneaous-signs':
+			case 'require-no-extraneous-brackets':
+			case 'require-no-extraneous-zeros':
+			case 'require-no-extraneous-signs':
 			case 'require-no-factor-one':
 			case 'require-no-factor-zero':
 			case 'require-no-null-terms':
@@ -1005,112 +1007,312 @@ function assignCategory(oldQuestion: QuestionBase): {
 }
 
 // ============================================================================
+// SHARED FIELDS DETECTION
+// ============================================================================
+
+/**
+ * Result of shared fields detection
+ */
+interface SharedFieldsResult {
+	/** Shared defaults that apply to all variations */
+	shared: SharedVariationDefaults;
+	/** Per-variation data that differs between variations */
+	perVariation: Partial<QuestionVariation>[];
+}
+
+/**
+ * Detect which fields are shared across all variations.
+ *
+ * In TinyMath, an array with 1 element for N variations means the field is shared.
+ * For example:
+ * - `enounces.length === 1` with `variationCount > 1` → shared statement
+ * - `variabless.length === 1` with `variationCount > 1` → shared variables
+ * - `solutionss.length === 1` with `variationCount > 1` → shared answer
+ * - etc.
+ *
+ * @param oldQuestion - The old TinyMath question
+ * @param variationCount - Number of variations detected
+ * @param questionType - The detected question type
+ * @param imageMapping - Optional mapping for image URLs
+ * @param warnings - Array to collect warnings
+ * @param stats - Stats object to track conversions
+ * @returns Object containing shared defaults and per-variation data
+ */
+function detectSharedFields(
+	oldQuestion: QuestionBase,
+	variationCount: number,
+	questionType: QuestionType,
+	imageMapping: ImageUrlMapping | undefined,
+	warnings: string[],
+	stats: TransformStats
+): SharedFieldsResult {
+	const shared: SharedVariationDefaults = {};
+	const perVariation: Partial<QuestionVariation>[] = Array.from(
+		{ length: variationCount },
+		() => ({})
+	);
+
+	// Get images array (shared across all variations in old format)
+	const images = oldQuestion.images;
+
+	// ---- Detect enounces sharing (→ statement) ----
+	const enounces = oldQuestion.enounces || [];
+	const expressions = oldQuestion.expressions || [];
+
+	// Statement is shared if both enounces and expressions are single or empty
+	const enounceIsShared = enounces.length === 1 && variationCount > 1;
+	const expressionIsShared =
+		(expressions.length === 0 || expressions.length === 1) && variationCount > 1;
+	const statementIsShared = enounceIsShared || (enounces.length === 0 && expressionIsShared);
+
+	if (statementIsShared) {
+		// Use first enounce/expression for shared statement
+		const enonce = enounces[0];
+		const expression = expressions[0];
+		shared.statement = convertStatement(enonce, expression, images, imageMapping, warnings, stats);
+	} else {
+		// Per-variation statements
+		for (let i = 0; i < variationCount; i++) {
+			const enonce = enounces[i] || enounces[0];
+			const expression = expressions[i] || expressions[0];
+			perVariation[i].statement = convertStatement(
+				enonce,
+				expression,
+				images,
+				imageMapping,
+				warnings,
+				stats
+			);
+		}
+	}
+
+	// ---- Detect variabless sharing (→ variables) ----
+	const variabless = oldQuestion.variabless || [];
+	const variablesIsShared = variabless.length === 1 && variationCount > 1;
+
+	if (variablesIsShared) {
+		const convertedVars = convertVariables(variabless[0], warnings);
+		if (convertedVars && convertedVars.length > 0) {
+			shared.variables = convertedVars;
+			stats.variables += convertedVars.length;
+		}
+	} else {
+		for (let i = 0; i < variationCount; i++) {
+			const variables = variabless[i] || variabless[0];
+			const convertedVars = convertVariables(variables, warnings);
+			if (convertedVars && convertedVars.length > 0) {
+				perVariation[i].variables = convertedVars;
+				stats.variables += convertedVars.length;
+			}
+		}
+	}
+
+	// ---- Detect solutionss sharing (→ answer) ----
+	const solutionss = oldQuestion.solutionss || [];
+	const answerIsShared = solutionss.length === 1 && variationCount > 1;
+
+	if (answerIsShared) {
+		shared.answer = convertAnswer(solutionss[0], questionType, warnings);
+	} else {
+		for (let i = 0; i < variationCount; i++) {
+			const solutions = solutionss[i] || solutionss[0];
+			perVariation[i].answer = convertAnswer(solutions, questionType, warnings);
+		}
+	}
+
+	// ---- Detect correction sharing (correctionDetailss + correctionFormats) ----
+	const correctionDetailss = oldQuestion.correctionDetailss || [];
+	const correctionFormats = oldQuestion.correctionFormats || [];
+
+	// Correction is shared if both arrays have 0 or 1 elements for multiple variations
+	const detailsIsShared = correctionDetailss.length <= 1 && variationCount > 1;
+	const formatsIsShared = correctionFormats.length <= 1 && variationCount > 1;
+	const correctionIsShared = detailsIsShared && formatsIsShared;
+
+	if (correctionIsShared && (correctionDetailss.length > 0 || correctionFormats.length > 0)) {
+		const questionCorrection = transformCorrection(
+			correctionDetailss[0],
+			correctionFormats[0],
+			warnings,
+			stats
+		);
+		if (questionCorrection) {
+			shared.correction = questionCorrection;
+		}
+	} else if (correctionDetailss.length > 1 || correctionFormats.length > 1) {
+		for (let i = 0; i < variationCount; i++) {
+			const correctionDetails = correctionDetailss[i] || correctionDetailss[0];
+			const correctionFormat = correctionFormats[i] || correctionFormats[0];
+			const questionCorrection = transformCorrection(
+				correctionDetails,
+				correctionFormat,
+				warnings,
+				stats
+			);
+			if (questionCorrection) {
+				perVariation[i].correction = questionCorrection;
+			}
+		}
+	}
+
+	// ---- Detect choices sharing (for multiple_choice) ----
+	const choicess = oldQuestion.choicess || [];
+	const choicesIsShared = choicess.length === 1 && variationCount > 1;
+
+	if (questionType === 'multiple_choice' && choicess.length > 0) {
+		if (choicesIsShared) {
+			// Shared choices: need to determine correct indices
+			// For shared choices, the correct indices are typically the same across variations
+			// or we use the first solutions array
+			const correctIndices = solutionss[0];
+			shared.choices = convertChoices(choicess[0], correctIndices, imageMapping, warnings, stats);
+		} else {
+			for (let i = 0; i < variationCount; i++) {
+				const choices = choicess[i] || choicess[0];
+				const correctIndices = solutionss[i] || solutionss[0];
+				perVariation[i].choices = convertChoices(
+					choices,
+					correctIndices,
+					imageMapping,
+					warnings,
+					stats
+				);
+			}
+		}
+	}
+
+	// ---- Detect testAnswerss sharing (→ validationRules) ----
+	const testAnswerss = oldQuestion.testAnswerss || [];
+	const testAnswersIsShared = testAnswerss.length === 1 && variationCount > 1;
+
+	if (testAnswerss.length > 0) {
+		if (testAnswersIsShared) {
+			const validationRules = convertTestAnswers(testAnswerss[0], warnings);
+			if (validationRules && validationRules.length > 0) {
+				shared.validationRules = validationRules;
+			}
+		} else {
+			for (let i = 0; i < variationCount; i++) {
+				const testAnswers = testAnswerss[i] || testAnswerss[0];
+				const validationRules = convertTestAnswers(testAnswers, warnings);
+				if (validationRules && validationRules.length > 0) {
+					perVariation[i].validationRules = validationRules;
+				}
+			}
+		}
+	}
+
+	return { shared, perVariation };
+}
+
+/**
+ * Check if shared object has any meaningful content
+ */
+function hasSharedContent(shared: SharedVariationDefaults): boolean {
+	return !!(
+		shared.statement ||
+		(shared.variables && shared.variables.length > 0) ||
+		shared.answer !== undefined ||
+		shared.correction ||
+		(shared.choices && shared.choices.length > 0) ||
+		(shared.validationRules && shared.validationRules.length > 0)
+	);
+}
+
+// ============================================================================
 // VARIATION CREATION
 // ============================================================================
 
 /**
- * Create variations from old question structure
+ * Create variations from old question structure with shared field detection
  *
  * @param oldQuestion - The old question object
  * @param questionType - Detected question type
  * @param imageMapping - Optional mapping from old image paths to new URLs
  * @param warnings - Array to collect warnings
  * @param stats - Stats object to track conversions
- * @returns Array of converted variations
+ * @returns Object containing variations and optionally shared defaults
  */
-function createVariations(
+function createVariationsWithShared(
 	oldQuestion: QuestionBase,
 	questionType: QuestionType,
 	imageMapping: ImageUrlMapping | undefined,
 	warnings: string[],
 	stats: TransformStats
-): QuestionVariation[] {
+): { variations: QuestionVariation[]; shared?: SharedVariationDefaults } {
 	const variationCount = getVariationCount(oldQuestion);
-	const variations: QuestionVariation[] = [];
-
 	stats.variations = variationCount;
 
-	// Get images array (shared across all variations in old format)
-	const images = oldQuestion.images;
+	// Detect shared fields
+	const { shared, perVariation } = detectSharedFields(
+		oldQuestion,
+		variationCount,
+		questionType,
+		imageMapping,
+		warnings,
+		stats
+	);
 
-	for (let i = 0; i < variationCount; i++) {
-		// Get data for this variation (arrays indexed by variation)
-		const enonce = oldQuestion.enounces?.[i] || oldQuestion.enounces?.[0];
-		const expression = oldQuestion.expressions?.[i] || oldQuestion.expressions?.[0];
-		const variables = oldQuestion.variabless?.[i] || oldQuestion.variabless?.[0];
-		const solutions = oldQuestion.solutionss?.[i] || oldQuestion.solutionss?.[0];
-		const choices = oldQuestion.choicess?.[i] || oldQuestion.choicess?.[0];
-		const correctionDetails =
-			oldQuestion.correctionDetailss?.[i] || oldQuestion.correctionDetailss?.[0];
-		const correctionFormat =
-			oldQuestion.correctionFormats?.[i] || oldQuestion.correctionFormats?.[0];
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const answerField = oldQuestion.answerFields?.[i] || oldQuestion.answerFields?.[0];
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const prefilled = oldQuestion.prefilleds?.[i] || oldQuestion.prefilleds?.[0];
-		const testAnswers = oldQuestion.testAnswerss?.[i] || oldQuestion.testAnswerss?.[0];
+	// Handle fill_in_blanks - blanks are always per-variation
+	const expressions = oldQuestion.expressions || [];
+	const solutionss = oldQuestion.solutionss || [];
 
-		// Convert statement (with images)
-		const statement = convertStatement(enonce, expression, images, imageMapping, warnings, stats);
-
-		// Convert variables
-		const convertedVars = convertVariables(variables, warnings);
-		if (convertedVars) {
-			stats.variables += convertedVars.length;
-		}
-
-		// Convert answer
-		const answer = convertAnswer(solutions, questionType, warnings);
-
-		// Transform correction using unified correction system
-		// This handles both correctionFormats (feedback) and correctionDetailss (steps)
-		const questionCorrection = transformCorrection(
-			correctionDetails,
-			correctionFormat,
-			warnings,
-			stats
-		);
-
-		// Create variation
-		const variation: QuestionVariation = {
-			statement,
-			answer
-		};
-
-		// Add optional fields
-		if (convertedVars && convertedVars.length > 0) {
-			variation.variables = convertedVars;
-		}
-
-		// For backward compatibility, convert QuestionCorrection steps to single TemplateMarkdown
-		// The full QuestionCorrection integration will be done in a later phase
-		if (questionCorrection?.steps?.length) {
-			variation.correction = templateMarkdown(questionCorrection.steps.join('\n\n'));
-		}
-
-		// Convert testAnswers to ValidationRules
-		const validationRules = convertTestAnswers(testAnswers, warnings);
-		if (validationRules && validationRules.length > 0) {
-			variation.validationRules = validationRules;
-		}
-
-		// Handle type-specific fields
-		if (questionType === 'multiple_choice' && choices) {
-			variation.choices = convertChoices(choices, solutions, imageMapping, warnings, stats);
-		}
-
-		if (questionType === 'fill_in_blanks' && expression) {
-			// Extract blanks from expression with ?
-			const blanks = extractBlanks(expression, solutions, warnings);
-			if (blanks && blanks.length > 0) {
-				variation.blanks = blanks;
+	if (questionType === 'fill_in_blanks') {
+		for (let i = 0; i < variationCount; i++) {
+			const expression = expressions[i] || expressions[0];
+			const solutions = solutionss[i] || solutionss[0];
+			if (expression) {
+				const blanks = extractBlanks(expression, solutions, warnings);
+				if (blanks && blanks.length > 0) {
+					perVariation[i].blanks = blanks;
+				}
 			}
 		}
-
-		variations.push(variation);
 	}
 
-	return variations;
+	// Build variations array from per-variation data
+	const variations: QuestionVariation[] = perVariation.map((pv, index) => {
+		// Start with required fields - use shared fallback or throw error
+		const statement = pv.statement || shared.statement;
+		const answer = pv.answer ?? shared.answer;
+
+		if (!statement) {
+			warnings.push(`Variation ${index}: missing statement`);
+		}
+		if (answer === undefined) {
+			warnings.push(`Variation ${index}: missing answer`);
+		}
+
+		const variation: QuestionVariation = {
+			statement: statement || templateMarkdown(''),
+			answer: answer ?? ''
+		};
+
+		// Add optional fields only if they exist and are NOT shared
+		if (pv.variables && pv.variables.length > 0) {
+			variation.variables = pv.variables;
+		}
+		if (pv.correction) {
+			variation.correction = pv.correction;
+		}
+		if (pv.choices && pv.choices.length > 0) {
+			variation.choices = pv.choices;
+		}
+		if (pv.validationRules && pv.validationRules.length > 0) {
+			variation.validationRules = pv.validationRules;
+		}
+		if (pv.blanks && pv.blanks.length > 0) {
+			variation.blanks = pv.blanks;
+		}
+
+		return variation;
+	});
+
+	// Return shared only if it has meaningful content
+	return {
+		variations,
+		shared: hasSharedContent(shared) ? shared : undefined
+	};
 }
 
 /**
@@ -1221,8 +1423,8 @@ export function transformQuestion(
 		const questionType = detectQuestionType(oldQuestion);
 		stats.detectedType = questionType;
 
-		// Create variations (with image mapping if provided)
-		const variations = createVariations(
+		// Create variations with shared field detection
+		const { variations, shared } = createVariationsWithShared(
 			oldQuestion,
 			questionType,
 			options?.imageUrlMapping,
@@ -1264,6 +1466,7 @@ export function transformQuestion(
 			type: questionType,
 			title: oldQuestion.description,
 			description: oldQuestion.subdescription,
+			shared, // Include shared defaults when fields are reused across variations
 			variations,
 			exerciseInstruction: oldQuestion.help,
 			options: convertedOptions,

@@ -551,7 +551,12 @@ describe('generateInstance - Content Resolution', () => {
 						{ name: 'b', expression: '{{random:1-10}}' }
 					],
 					answer: '{eval:{@:a} + {@:b}}',
-					correction: templateMarkdown('The answer is {{a}} + {{b}} = {{eval:a + b}}')
+					correction: {
+						feedback: {
+							correct: templateMarkdown('Well done!'),
+							incorrect: templateMarkdown('The answer is {{a}} + {{b}} = {{eval:a + b}}')
+						}
+					}
 				}
 			],
 			precision: { type: 'none' },
@@ -572,7 +577,10 @@ describe('generateInstance - Content Resolution', () => {
 		const a = getVarValue(result.instance.resolvedVariables, 'a');
 		const b = getVarValue(result.instance.resolvedVariables, 'b');
 		const sum = a + b;
-		expect(result.instance.correction).toBe(`The answer is ${a} + ${b} = ${sum}`);
+		expect(result.instance.correction?.feedback?.correct).toBe('Well done!');
+		expect(result.instance.correction?.feedback?.incorrect).toBe(
+			`The answer is ${a} + ${b} = ${sum}`
+		);
 	});
 });
 
@@ -1130,5 +1138,541 @@ describe('generateInstance - Variation Selection', () => {
 		expect(
 			result.errors.some((e: string) => e.includes('Variation 2') || e.includes('variation 1'))
 		).toBe(true);
+	});
+});
+
+describe('generateInstance - Shared Fields', () => {
+	it('should work without shared field (backward compatible)', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-1',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			variations: [
+				{
+					statement: templateMarkdown('Calculate {{a}} + {{b}}'),
+					variables: [
+						{ name: 'a', expression: '{{random:1-10}}' },
+						{ name: 'b', expression: '{{random:1-10}}' }
+					],
+					answer: '{{eval:a + b}}'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template, 12345);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
+		expect(a).not.toBeNaN();
+		expect(b).not.toBeNaN();
+		expect(result.instance.answer).toBe((a + b).toString());
+	});
+
+	it('should use shared.statement when multiple variations share same structure', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-2',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				statement: templateMarkdown('What is {{x}} + {{y}}?'),
+				answer: '{{eval:x + y}}'
+			},
+			variations: [
+				{
+					statement: templateMarkdown('What is {{x}} + {{y}}?'), // Same as shared
+					variables: [
+						{ name: 'x', expression: '5' },
+						{ name: 'y', expression: '3' }
+					],
+					answer: '{{eval:x + y}}'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.statement).toBe('What is 5 + 3?');
+	});
+
+	it('should use variation.statement over shared.statement when both exist', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-3',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				statement: templateMarkdown('Shared statement: {{a}}')
+			},
+			variations: [
+				{
+					statement: templateMarkdown('Variation statement: {{a}}'),
+					variables: [{ name: 'a', expression: '7' }],
+					answer: '7'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.statement).toBe('Variation statement: 7');
+	});
+
+	it('should merge shared.variables with variation.variables', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-4',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				variables: [
+					{ name: 'a', expression: '10' },
+					{ name: 'b', expression: '20' }
+				]
+			},
+			variations: [
+				{
+					statement: templateMarkdown('{{a}}, {{b}}, {{c}}'),
+					variables: [{ name: 'c', expression: '{{eval:a + b}}' }],
+					answer: '{{c}}'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		// All three variables should be resolved
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
+		const c = getVarValue(result.instance.resolvedVariables, 'c');
+
+		expect(a).toBe(10);
+		expect(b).toBe(20);
+		expect(c).toBe(30); // a + b
+		expect(result.instance.statement).toBe('10, 20, 30');
+	});
+
+	it('should override shared variable when variation has same name', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-5',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				variables: [
+					{ name: 'x', expression: '5' },
+					{ name: 'y', expression: '10' }
+				]
+			},
+			variations: [
+				{
+					statement: templateMarkdown('x={{x}}, y={{y}}'),
+					variables: [{ name: 'x', expression: '100' }], // Override x
+					answer: '{{x}}'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const x = getVarValue(result.instance.resolvedVariables, 'x');
+		const y = getVarValue(result.instance.resolvedVariables, 'y');
+
+		expect(x).toBe(100); // Overridden value
+		expect(y).toBe(10); // Shared value
+		expect(result.instance.statement).toBe('x=100, y=10');
+		expect(result.instance.answer).toBe('100');
+	});
+
+	it('should use shared fields when all variations have identical values', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-6',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				statement: templateMarkdown('Result is {{result}}'),
+				variables: [{ name: 'result', expression: '42' }],
+				answer: '{{result}}'
+			},
+			variations: [
+				{
+					statement: templateMarkdown('Result is {{result}}'),
+					variables: [{ name: 'result', expression: '42' }],
+					answer: '{{result}}'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.statement).toBe('Result is 42');
+		expect(result.instance.answer).toBe('42');
+	});
+
+	it('should use shared.correction for consistent feedback across variations', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-7',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				correction: {
+					feedback: {
+						correct: templateMarkdown('Excellent! {{a}} + {{b}} = {{eval:a + b}}'),
+						incorrect: templateMarkdown('Try again. {{a}} + {{b}} = {{eval:a + b}}')
+					}
+				}
+			},
+			variations: [
+				{
+					statement: templateMarkdown('What is {{a}} + {{b}}?'),
+					variables: [
+						{ name: 'a', expression: '5' },
+						{ name: 'b', expression: '3' }
+					],
+					answer: '{{eval:a + b}}'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.statement).toBe('What is 5 + 3?');
+		expect(result.instance.answer).toBe('8');
+		expect(result.instance.correction?.feedback?.correct).toBe('Excellent! 5 + 3 = 8');
+		expect(result.instance.correction?.feedback?.incorrect).toBe('Try again. 5 + 3 = 8');
+	});
+
+	it('should use shared.choices for consistent QCM structure across variations', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-8',
+			type: 'multiple_choice',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				choices: [
+					{ content: templateMarkdown('{{correct}}'), isCorrect: true },
+					{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
+					{ content: templateMarkdown('{{wrong2}}'), isCorrect: false },
+					{ content: templateMarkdown('{{eval:a * b}}'), isCorrect: false }
+				]
+			},
+			variations: [
+				{
+					statement: templateMarkdown('What is {{a}} + {{b}}?'),
+					variables: [
+						{ name: 'a', expression: '5' },
+						{ name: 'b', expression: '3' },
+						{ name: 'correct', expression: '{{eval:a + b}}' },
+						{ name: 'wrong1', expression: '{{eval:a + b + 1}}' },
+						{ name: 'wrong2', expression: '{{eval:a + b - 1}}' }
+					],
+					answer: '0',
+					choices: [
+						{ content: templateMarkdown('{{correct}}'), isCorrect: true },
+						{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
+						{ content: templateMarkdown('{{wrong2}}'), isCorrect: false },
+						{ content: templateMarkdown('{{eval:a * b}}'), isCorrect: false }
+					]
+				}
+			],
+			multipleAnswers: false,
+			grades: ['6'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template, 54321);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.type).toBe('multiple_choice');
+		expect(result.instance.statement).toBe('What is 5 + 3?');
+		expect(result.instance.shuffledChoices).toHaveLength(4);
+
+		// Verify all choice contents are resolved
+		const allChoices = result.instance.shuffledChoices!.map((c) => c.content);
+		expect(allChoices).toContain('8'); // correct
+		expect(allChoices).toContain('9'); // wrong1
+		expect(allChoices).toContain('7'); // wrong2
+		expect(allChoices).toContain('15'); // a * b
+	});
+
+	it('should resolve random expressions in shared variables used by all variations', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-9',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				variables: [
+					{ name: 'a', expression: '{{random:2-5}}' },
+					{ name: 'b', expression: '{{random:2-5}}' }
+				]
+			},
+			variations: [
+				{
+					statement: templateMarkdown('Calculate {{a}} × {{b}}'),
+					variables: [],
+					answer: '{{eval:a * b}}'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Arithmétique',
+			domain: 'Multiplication',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template, 99999);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const a = getVarValue(result.instance.resolvedVariables, 'a');
+		const b = getVarValue(result.instance.resolvedVariables, 'b');
+
+		// Variables should be in range
+		expect(a).toBeGreaterThanOrEqual(2);
+		expect(a).toBeLessThanOrEqual(5);
+		expect(b).toBeGreaterThanOrEqual(2);
+		expect(b).toBeLessThanOrEqual(5);
+
+		// Statement and answer should be resolved correctly
+		expect(result.instance.statement).toBe(`Calculate ${a} × ${b}`);
+		expect(result.instance.answer).toBe((a * b).toString());
+	});
+
+	it('should allow variation to reference shared variables in its own variables', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-10',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				variables: [
+					{ name: 'base', expression: '10' },
+					{ name: 'multiplier', expression: '3' }
+				]
+			},
+			variations: [
+				{
+					statement: templateMarkdown('What is {{result}}?'),
+					variables: [
+						{ name: 'result', expression: '{{eval:base * multiplier}}' } // References shared variables
+					],
+					answer: '{{result}}'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const base = getVarValue(result.instance.resolvedVariables, 'base');
+		const multiplier = getVarValue(result.instance.resolvedVariables, 'multiplier');
+		const resultVar = getVarValue(result.instance.resolvedVariables, 'result');
+
+		expect(base).toBe(10);
+		expect(multiplier).toBe(3);
+		expect(resultVar).toBe(30);
+		expect(result.instance.statement).toBe('What is 30?');
+		expect(result.instance.answer).toBe('30');
+	});
+
+	it('should handle multiple variations each with different overrides of shared', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-11',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				variables: [{ name: 'base', expression: '100' }],
+				answer: '{{base}}'
+			},
+			variations: [
+				{
+					statement: templateMarkdown('Addition: {{base}} + {{extra}}'),
+					variables: [{ name: 'extra', expression: '10' }],
+					answer: '{{eval:base + extra}}' // Override answer
+				},
+				{
+					statement: templateMarkdown('Subtraction: {{base}} - {{deduct}}'),
+					variables: [{ name: 'deduct', expression: '20' }],
+					answer: '{{eval:base - deduct}}' // Override answer
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Test',
+			domain: 'Test',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		// Test first variation (seed 0)
+		const result0 = generateInstance(template, 0);
+		expect(result0.success).toBe(true);
+		if (!result0.success) return;
+
+		expect(result0.instance.selectedVariationIndex).toBe(0);
+		expect(result0.instance.statement).toBe('Addition: 100 + 10');
+		expect(result0.instance.answer).toBe('110');
+
+		// Test second variation (seed 1)
+		const result1 = generateInstance(template, 1);
+		expect(result1.success).toBe(true);
+		if (!result1.success) return;
+
+		expect(result1.instance.selectedVariationIndex).toBe(1);
+		expect(result1.instance.statement).toBe('Subtraction: 100 - 20');
+		expect(result1.instance.answer).toBe('80');
+	});
+
+	it('should use shared.correction with steps for consistent explanations', () => {
+		const template: QuestionTemplate = {
+			id: 'test-shared-12',
+			type: 'numerical_exact',
+			title: 'Test Question',
+			status: 'draft' as const,
+			shared: {
+				correction: {
+					feedback: {
+						correct: templateMarkdown('Perfect!')
+					},
+					steps: [
+						templateMarkdown('Step 1: Identify the numbers: {{a}} and {{b}}'),
+						templateMarkdown('Step 2: Add them: {{a}} + {{b}} = {{eval:a + b}}')
+					]
+				}
+			},
+			variations: [
+				{
+					statement: templateMarkdown('Solve {{a}} + {{b}}'),
+					variables: [
+						{ name: 'a', expression: '7' },
+						{ name: 'b', expression: '8' }
+					],
+					answer: '{{eval:a + b}}'
+				}
+			],
+			precision: { type: 'none' },
+			grades: ['6'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			created_by: 'test-user'
+		};
+
+		const result = generateInstance(template);
+
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.correction?.feedback?.correct).toBe('Perfect!');
+		expect(result.instance.correction?.steps).toHaveLength(2);
+		expect(result.instance.correction?.steps?.[0]).toBe('Step 1: Identify the numbers: 7 and 8');
+		expect(result.instance.correction?.steps?.[1]).toBe('Step 2: Add them: 7 + 8 = 15');
 	});
 });

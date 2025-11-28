@@ -44,15 +44,15 @@ export type OldOption =
 	| 'require-implicit-products'
 	| 'no-penalty-for-explicit-products'
 	// Brackets
-	| 'require-no-extraneaous-brackets'
+	| 'require-no-extraneous-brackets'
 	| 'no-penalty-for-extraneous-brackets'
 	| 'no-penalty-for-extraneous-brackets-in-first-negative-term'
 	// Unnecessary zeros
 	| 'exp-allow-unecessary-zeros'
-	| 'require-no-extraneaous-zeros'
+	| 'require-no-extraneous-zeros'
 	| 'no-penalty-for-extraneous-zeros'
 	// Unnecessary signs
-	| 'require-no-extraneaous-signs'
+	| 'require-no-extraneous-signs'
 	| 'no-penalty-for-extraneous-signs'
 	// Factor handling
 	| 'require-no-factor-one'

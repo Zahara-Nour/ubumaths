@@ -26,9 +26,9 @@
       "\\text{Le chiffre des unités est }$$...$$\\text{.}"
     ],
     "options": [
-      "require-no-extraneaous-zeros",
-      "require-no-extraneaous-brackets",
-      "require-no-extraneaous-signs"
+      "require-no-extraneous-zeros",
+      "require-no-extraneous-brackets",
+      "require-no-extraneous-signs"
     ],
     "defaultDelay": 10,
     "grade": "CP",
@@ -73,9 +73,9 @@
       "\\text{Le chiffre des unités est }$$...$$\\text{.}"
     ],
     "options": [
-      "require-no-extraneaous-zeros",
-      "require-no-extraneaous-brackets",
-      "require-no-extraneaous-signs"
+      "require-no-extraneous-zeros",
+      "require-no-extraneous-brackets",
+      "require-no-extraneous-signs"
     ],
     "defaultDelay": 10,
     "grade": "CE1",
@@ -185,9 +185,9 @@
       "\\text{Le chiffre des unités est }$$...$$\\text{.}"
     ],
     "options": [
-      "require-no-extraneaous-zeros",
-      "require-no-extraneaous-brackets",
-      "require-no-extraneaous-signs"
+      "require-no-extraneous-zeros",
+      "require-no-extraneous-brackets",
+      "require-no-extraneous-signs"
     ],
     "defaultDelay": 10,
     "grade": "CE2",
@@ -309,7 +309,7 @@
     ],
     "options": [
       "exp-allow-unecessary-zeros",
-      "require-no-extraneaous-zeros"
+      "require-no-extraneous-zeros"
     ],
     "defaultDelay": 20,
     "grade": "CM1",
@@ -8145,7 +8145,7 @@
       "\\text{Le chiffre des unités est }$$...$$\\text{.}"
     ],
     "options": [
-      "require-no-extraneaous-zeros"
+      "require-no-extraneous-zeros"
     ],
     "defaultDelay": 10,
     "grade": "CM1",
@@ -8202,7 +8202,7 @@
       "\\text{Le chiffre des centaines est }$$...$$\\text{.}"
     ],
     "options": [
-      "require-no-extraneaous-zeros"
+      "require-no-extraneous-zeros"
     ],
     "defaultDelay": 10,
     "grade": "CM1",
@@ -12198,7 +12198,7 @@
       ]
     ],
     "options": [
-      "require-no-extraneaous-signs"
+      "require-no-extraneous-signs"
     ],
     "defaultDelay": 20,
     "grade": "5",

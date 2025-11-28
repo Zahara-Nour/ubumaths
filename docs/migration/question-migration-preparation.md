@@ -17,8 +17,9 @@
 6. [Migration des images](#6-migration-des-images)
 7. [Le transformateur de questions](#7-le-transformateur-de-questions)
 8. [Tests et couverture](#8-tests-et-couverture)
-9. [Utilisation](#9-utilisation)
-10. [Prochaines étapes](#10-prochaines-étapes)
+9. [Shared Fields](#9-shared-fields)
+10. [Utilisation](#10-utilisation)
+11. [Prochaines étapes](#11-prochaines-étapes)
 
 ---
 
@@ -491,7 +492,101 @@ pnpm check
 
 ---
 
-## 9. Utilisation
+## 9. Shared Fields
+
+### Objectif
+
+Éviter la duplication de champs identiques entre variations. Quand plusieurs variations partagent un même énoncé, les mêmes variables, ou la même correction, ces champs sont factorisés dans un objet `shared`.
+
+### Statistiques
+
+| Métrique                | Valeur      |
+| ----------------------- | ----------- |
+| Questions avec `shared` | 325 (51.3%) |
+| Questions sans `shared` | 308 (48.7%) |
+
+### Types
+
+```typescript
+interface SharedVariationDefaults {
+	statement?: TemplateMarkdown;
+	variables?: QuestionVariable[];
+	answer?: string | string[];
+	correction?: QuestionCorrection;
+	choices?: { content: TemplateMarkdown; isCorrect: boolean }[];
+	validationRules?: ValidationRule[];
+}
+
+interface QuestionTemplate {
+	// ... autres champs
+	variations: QuestionVariation[];
+	shared?: SharedVariationDefaults; // Nouveau champ
+}
+```
+
+### Logique de détection
+
+Le transformateur détecte automatiquement le partage:
+
+| Condition                                          | Champ partagé            |
+| -------------------------------------------------- | ------------------------ |
+| `enounces.length === 1 && variations > 1`          | `shared.statement`       |
+| `variabless.length === 1 && variations > 1`        | `shared.variables`       |
+| `solutionss.length === 1 && variations > 1`        | `shared.answer`          |
+| `correctionDetailss.length <= 1 && variations > 1` | `shared.correction`      |
+| `choicess.length === 1 && variations > 1`          | `shared.choices`         |
+| `testAnswerss.length === 1 && variations > 1`      | `shared.validationRules` |
+
+### Résolution au runtime
+
+Le générateur d'instances fusionne `shared` avec chaque variation:
+
+```typescript
+function resolveVariationWithShared(
+	shared: SharedVariationDefaults | undefined,
+	variation: QuestionVariation
+): QuestionVariation {
+	if (!shared) return variation;
+	return {
+		statement: variation.statement || shared.statement || '',
+		answer: variation.answer ?? shared.answer ?? '',
+		correction: variation.correction ?? shared.correction,
+		choices: variation.choices ?? shared.choices,
+		validationRules: variation.validationRules ?? shared.validationRules,
+		variables: mergeVariables(shared.variables, variation.variables),
+		blanks: variation.blanks
+	};
+}
+```
+
+### Exemple de sortie
+
+```json
+{
+	"type": "numerical_exact",
+	"title": "Connaître la position décimale",
+	"shared": {
+		"variables": [
+			{ "name": "1", "expression": "{{1-9}}" },
+			{ "name": "2", "expression": "{{0-9!{{1}}}}" }
+		]
+	},
+	"variations": [
+		{ "statement": "Quel chiffre est à la position des unités ?", "answer": "{{1}}" },
+		{ "statement": "Quel chiffre est à la position des dizaines ?", "answer": "{{2}}" }
+	]
+}
+```
+
+### Tests
+
+- 12 tests transformer (détection du partage)
+- 12 tests generator (fusion et héritage)
+- Documentation: `docs/wip/shared-fields-phase*.md`
+
+---
+
+## 10. Utilisation
 
 ### Migration complète (à venir)
 
@@ -551,7 +646,7 @@ const result2 = validateAnswer('5', instance);
 
 ---
 
-## 10. Prochaines étapes
+## 11. Prochaines étapes
 
 ### Immédiat
 
@@ -623,7 +718,7 @@ const result2 = validateAnswer('5', instance);
 | `require-reduced-fractions`            | `canonicalForm: 'fraction', allowDifferentForms: false` |
 | `no-penalty-for-non-reduced-fractions` | `allowDifferentForms: true`                             |
 | `no-penalty-for-extraneous-brackets`   | `allowDifferentForms: true`                             |
-| `require-no-extraneaous-zeros`         | `allowEquivalent: false`                                |
+| `require-no-extraneous-zeros`          | `allowEquivalent: false`                                |
 | `solutions-order-not-important`        | `allowDifferentForms: true`                             |
 | `require-implicit-products`            | `validator: 'checkAlgebraic', validatorParams: {...}`   |
 
@@ -635,4 +730,4 @@ const result2 = validateAnswer('5', instance);
 
 ---
 
-_Document généré le 27 novembre 2025_
+_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (shared fields)_
