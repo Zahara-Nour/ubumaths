@@ -18,7 +18,7 @@ This document analyzes the migration from TinyMath/TinyCAS to the new Markdown-b
 
 **Latest Updates (v2.4.0 - 2025-11-26):**
 
-- ✅ **Relative integers** (`$er[min;max]` → `{{±min..max}}`) - Fully supported
+- ✅ **Relative integers** (`$er[min;max]` → `{{min..max;±}}`) - Fully supported
 - ✅ **Decimal by digits** (`$d{n;m}` → `{{n.m}}`) - Fully supported
 - ✅ **Double-dot ranges** (`..`) for clearer negative ranges
 - ✅ **Auto-step inference** for decimal ranges without explicit step
@@ -162,19 +162,20 @@ export type ValidationRule =
 
 ---
 
-## 4. Eval Syntax - Proposed New Format
+## 4. Eval Syntax - Current Format ✅
 
 ### Requirements
 
 - Support all modifiers: decimal `.`, positive `+`, bracket `(`, derivative `'`
 - Combinable modifiers
 - Clean markdown-friendly syntax
+- Avoid ambiguity with LaTeX pipe characters
 
-### Proposed Syntax
+### Implemented Syntax
 
 ```
 {{eval:expression}}          // Basic evaluation
-{{eval:expression|modifiers}} // With modifiers
+{{eval:expression;modifiers}} // With modifiers (semicolon separator)
 ```
 
 **Modifiers (can be combined)**:
@@ -188,11 +189,12 @@ export type ValidationRule =
 
 ```markdown
 {{eval:{{a}}+{{b}}}} // Basic: 3+5 → 8
-{{eval:1/3|decimal}} // Decimal: → 0.333...
-{{eval:{{x}}-5|+}} // Positive: if x=8 → +3
-{{eval:{{x}}|()}} // Bracket: if x=-5 → (-5)
-{{eval:{{a}}\*{{b}}|decimal,+}} // Combined: decimal + positive sign
-{{eval:x^2|'}} // Derivative: → 2x
+{{eval:1/3;decimal}} // Decimal: → 0.333...
+{{eval:{{x}}-5;+}} // Positive: if x=8 → +3
+{{eval:{{x}};()}} // Bracket: if x=-5 → (-5)
+{{eval:{{a}}\*{{b}};decimal,+}} // Combined: decimal + positive sign
+{{eval:x^2;'}} // Derivative: → 2x
+{{eval:|{{x}}|;+}} // Works with LaTeX absolute value
 ```
 
 ### Implementation
@@ -282,10 +284,10 @@ interface QuestionVariation {
 
 | Old TinyCAS Pattern | New UbuMaths v2     | Converter Status | Notes                          |
 | ------------------- | ------------------- | ---------------- | ------------------------------ |
-| `$e[min;max]`       | `{{min-max}}`       | ✅ Supported     | Basic integer range            |
+| `$e[min;max]`       | `{{min..max}}`      | ✅ Supported     | Basic integer range            |
 | `$e{n;m}`           | `{{n.m}}`           | ✅ Supported     | Decimal by digits              |
-| `$er[min;max]`      | `{{±min..max}}`     | ✅ Supported     | Relative integers (v2.2.0)     |
-| `$er{n}`            | `{{±n..n}}`         | ✅ Supported     | Single relative value (v2.2.0) |
+| `$er[min;max]`      | `{{min..max;±}}`    | ✅ Supported     | Relative integers (v2.2.0)     |
+| `$er{n}`            | `{{n..n;±}}`        | ✅ Supported     | Single relative value (v2.2.0) |
 | `$d{n;m}`           | `{{n.m}}`           | ✅ Supported     | Decimal by digits (v2.2.0)     |
 | `$l{a;b;c}`         | `{{list:a,b,c}}`    | ✅ Supported     | List selection                 |
 | `&varName`          | `{{varName}}`       | ✅ Supported     | Variable references            |
