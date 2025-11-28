@@ -223,10 +223,10 @@ Le convertisseur `syntax-converter.ts` gère toutes les conversions:
 
 #### Entiers relatifs (±)
 
-| Ancien (TinyCAS) | Nouveau     | Description        |
-| ---------------- | ----------- | ------------------ |
-| `$er[2;9]`       | `{{±2..9}}` | ±2 à ±9 (exclut 0) |
-| `$er{1}`         | `{{±1..1}}` | ±1 uniquement      |
+| Ancien (TinyCAS) | Nouveau      | Description        |
+| ---------------- | ------------ | ------------------ |
+| `$er[2;9]`       | `{{2..9;±}}` | ±2 à ±9 (exclut 0) |
+| `$er{1}`         | `{{1..1;±}}` | ±1 uniquement      |
 
 #### Décimaux
 
@@ -843,7 +843,7 @@ const result2 = validateAnswer('5', instance);
 | Exclusion variable   | `{{min..max!{{var}}}}`    | `{{1..10!{{a}}}}`            |
 | Décimal par chiffres | `{{n.m}}`                 | `{{2.3}}` (2 avant, 3 après) |
 | Décimal avec pas     | `{{min..max:step}}`       | `{{0.5..9.99:0.01}}`         |
-| Entier relatif       | `{{±min..max}}`           | `{{±2..9}}` (exclut 0)       |
+| Entier relatif       | `{{min..max;±}}`          | `{{2..9;±}}` (exclut 0)      |
 | Évaluation           | `{{eval:expr}}`           | `{{eval:{{a}}+{{b}}}}`       |
 | Liste discrète       | `{{a\|b\|c}}`             | `{{rouge\|bleu\|vert}}`      |
 | Liste avec exclusion | `{{a\|b\|c!x}}`           | `{{1\|2\|3\|4!2}}`           |
