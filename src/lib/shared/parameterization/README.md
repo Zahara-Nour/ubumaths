@@ -943,14 +943,12 @@ Full type definitions: [`types.ts`](./types.ts)
 
 ## Migration History
 
-**Note:** This section describes the historical evolution of the library. The library now uses **Markdown-only syntax** (`{{}}`). References to Questions syntax (`{@:}`, `{#:}`) are for historical context only.
-
 The shared library was extracted from the Questions feature and evolved through several phases:
 
-### Phase 1-2: Extraction and Dual Syntax (Complete) ⚠️ Historical
+### Phase 1-2: Extraction and Dual Syntax (Historical)
 
 - Extracted parameterization code from Questions feature
-- Created shared library supporting both Questions (`{@:}`, `{#:}`) and Markdown (`{{}}`) syntax
+- Created shared library supporting both Questions and Markdown syntax
 - Achieved 447 tests with 99%+ coverage
 
 ### Phase 3-4: Integration and Simplification (Complete)
@@ -962,8 +960,15 @@ The shared library was extracted from the Questions feature and evolved through 
 ### Phase 5: Documentation Update (Complete)
 
 - Updated all documentation to Markdown-only syntax
-- Removed references to Questions syntax
 - Simplified API examples
+
+### Phase 6: Legacy Syntax Removal (Complete - November 2025)
+
+- **Removed legacy parsers** from `src/lib/questions/parser/`:
+  - `random-parser.ts`, `eval-parser.ts`, `variable-parser.ts`, `tokenizer.ts`
+- **Removed legacy tests** (4 test files)
+- **Cleaned up exports** in `src/lib/questions/index.ts`
+- The library now uses **Markdown-only syntax** (`{{}}`)
 
 ### Current State
 
