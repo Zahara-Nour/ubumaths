@@ -26,6 +26,7 @@ import type { RandomSpec, NumberOrVariable, Exclusion } from '../types';
  * - Variable bounds and digit counts
  * - Exclusion patterns (values, ranges, variables)
  * - Multiple decimal formats
+ * - Discrete lists
  *
  * @param token - Full token string including delimiters
  * @returns Parsed RandomSpec, or null if token is not a valid random specification
@@ -52,6 +53,12 @@ import type { RandomSpec, NumberOrVariable, Exclusion } from '../types';
  * ```typescript
  * parseRandomSpec('{{0.5-9.99:0.01}}')
  * // → { type: 'decimal-range', min: {...,value:0.5}, max: {...,value:9.99}, step: 0.01, exclusions: [] }
+ * ```
+ *
+ * @example Discrete list
+ * ```typescript
+ * parseRandomSpec('{{random:rouge|vert|bleu}}')
+ * // → { type: 'discrete-list', items: ['rouge', 'vert', 'bleu'], exclusions: [] }
  * ```
  *
  * @example With exclusions
@@ -105,6 +112,11 @@ export function parseRandomSpec(token: string): RandomSpec | null {
 function parseRandomContent(content: string): RandomSpec {
 	// Split base and exclusions
 	const [baseSpec, exclusionSpec] = splitAtTopLevel(content, '!');
+
+	// Check for discrete list first (contains top-level pipe)
+	if (hasTopLevelPipe(baseSpec)) {
+		return parseDiscreteList(content);
+	}
 
 	// Check for ± prefix (relative integer)
 	const isRelative = baseSpec.startsWith('±') || baseSpec.startsWith('+/-');
@@ -480,4 +492,96 @@ function splitAtTopLevel(str: string, separator: string): [string, string | unde
 	}
 
 	return [str.substring(0, separatorIndex), str.substring(separatorIndex + 1)];
+}
+
+/**
+ * Check if content contains a top-level pipe separator
+ *
+ * @example
+ * hasTopLevelPipe('a|b|c') → true
+ * hasTopLevelPipe('{{a|b}}') → false (pipe inside braces)
+ * hasTopLevelPipe('1-10') → false
+ */
+function hasTopLevelPipe(content: string): boolean {
+	let braceDepth = 0;
+	for (const char of content) {
+		if (char === '{') braceDepth++;
+		if (char === '}') braceDepth--;
+		if (char === '|' && braceDepth === 0) return true;
+	}
+	return false;
+}
+
+/**
+ * Split content at top-level separators, respecting nested braces
+ *
+ * @example
+ * splitAtTopLevelMultiple('a|b|c', '|') → ['a', 'b', 'c']
+ * splitAtTopLevelMultiple('{{a|x}}|b|{{c|y}}', '|') → ['{{a|x}}', 'b', '{{c|y}}']
+ * splitAtTopLevelMultiple('a,b,c', ',') → ['a', 'b', 'c']
+ */
+function splitAtTopLevelMultiple(content: string, separator: string): string[] {
+	const parts: string[] = [];
+	let current = '';
+	let braceDepth = 0;
+
+	for (const char of content) {
+		if (char === '{') braceDepth++;
+		if (char === '}') braceDepth--;
+
+		if (char === separator && braceDepth === 0) {
+			parts.push(current.trim());
+			current = '';
+		} else {
+			current += char;
+		}
+	}
+
+	parts.push(current.trim());
+	return parts;
+}
+
+/**
+ * Parse discrete list specification: {{a|b|c}} or {{a|b|c!x,y}}
+ *
+ * Items and exclusions are stored as raw strings (variable names or literals).
+ * Resolution happens at generation time using the variable context.
+ *
+ * @example
+ * parseDiscreteList('rouge|vert|bleu')
+ * // → { type: 'discrete-list', items: ['rouge', 'vert', 'bleu'], exclusions: [] }
+ *
+ * @example With exclusions
+ * parseDiscreteList('a|b|c|d!b,d')
+ * // → { type: 'discrete-list', items: ['a', 'b', 'c', 'd'], exclusions: ['b', 'd'] }
+ *
+ * @example With variables
+ * parseDiscreteList('{{color1}}|{{color2}}|bleu')
+ * // → { type: 'discrete-list', items: ['{{color1}}', '{{color2}}', 'bleu'], exclusions: [] }
+ *
+ * @returns RandomSpec with discrete-list type, or throws if invalid
+ */
+function parseDiscreteList(content: string): RandomSpec {
+	// Split base items and exclusions
+	const [itemsSpec, exclusionSpec] = splitAtTopLevel(content, '!');
+
+	// Split items by pipe
+	const rawItems = splitAtTopLevelMultiple(itemsSpec, '|');
+
+	// Filter out empty items
+	const items = rawItems.filter((item) => item.trim().length > 0);
+
+	// Validate: must have at least one item
+	if (items.length === 0) {
+		throw new Error('Discrete list must have at least one item');
+	}
+
+	// Parse exclusions if present
+	const exclusions = exclusionSpec ? splitAtTopLevelMultiple(exclusionSpec, ',') : [];
+
+	return {
+		type: 'discrete-list',
+		items,
+		exclusions: exclusions.filter((e) => e.trim().length > 0)
+	};
 }
