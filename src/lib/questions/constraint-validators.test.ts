@@ -12,7 +12,11 @@ import {
 	checkProducts,
 	checkBrackets,
 	checkZeros,
-	checkForm
+	checkForm,
+	checkNullTerms,
+	checkFactorOne,
+	checkFactorZero,
+	checkSigns
 } from './constraint-validators';
 
 // ============================================================================
@@ -666,5 +670,211 @@ describe('Integration - Multiple Constraints', () => {
 
 		// But brackets are necessary here
 		expect(checkBrackets(answer)).toHaveLength(0);
+	});
+});
+
+// ============================================================================
+// NULL TERMS VALIDATOR TESTS (Compute Engine based)
+// ============================================================================
+
+describe('checkNullTerms', () => {
+	describe('Basic Detection', () => {
+		it('should detect x+0 (null term at end)', () => {
+			expect(checkNullTerms(['x+0'])).toEqual([0]);
+		});
+
+		it('should detect 0+x (null term at start)', () => {
+			expect(checkNullTerms(['0+x'])).toEqual([0]);
+		});
+
+		it('should detect null term in middle', () => {
+			expect(checkNullTerms(['a+0+b'])).toEqual([0]);
+		});
+
+		it('should accept expressions without null terms', () => {
+			expect(checkNullTerms(['x+1'])).toHaveLength(0);
+			expect(checkNullTerms(['a+b'])).toHaveLength(0);
+			expect(checkNullTerms(['2+3'])).toHaveLength(0);
+		});
+
+		it('should accept just zero (not a null term)', () => {
+			expect(checkNullTerms(['0'])).toHaveLength(0);
+		});
+	});
+
+	describe('Nested Expressions', () => {
+		it('should detect null term in nested expression', () => {
+			expect(checkNullTerms(['(x+0)+y'])).toEqual([0]);
+			expect(checkNullTerms(['x+(0+y)'])).toEqual([0]);
+		});
+	});
+
+	describe('Multiple Answers', () => {
+		it('should check all answers and return violating indices', () => {
+			const result = checkNullTerms(['x+1', 'y+0', 'z+2', '0+w']);
+			expect(result).toEqual([1, 3]);
+		});
+	});
+
+	describe('Edge Cases', () => {
+		it('should handle empty strings', () => {
+			expect(checkNullTerms([''])).toHaveLength(0);
+		});
+
+		it('should handle whitespace', () => {
+			expect(checkNullTerms(['  '])).toHaveLength(0);
+		});
+	});
+});
+
+// ============================================================================
+// FACTOR ONE VALIDATOR TESTS (Compute Engine based)
+// ============================================================================
+
+describe('checkFactorOne', () => {
+	describe('Basic Detection', () => {
+		it('should detect 1*x (factor one at start)', () => {
+			expect(checkFactorOne(['1\\times x'])).toEqual([0]);
+		});
+
+		it('should detect x*1 (factor one at end)', () => {
+			expect(checkFactorOne(['x\\times 1'])).toEqual([0]);
+		});
+
+		it('should detect 1\\cdot x', () => {
+			expect(checkFactorOne(['1\\cdot x'])).toEqual([0]);
+		});
+
+		it('should accept expressions without factor one', () => {
+			expect(checkFactorOne(['2x'])).toHaveLength(0);
+			expect(checkFactorOne(['x\\times 2'])).toHaveLength(0);
+			expect(checkFactorOne(['ab'])).toHaveLength(0);
+		});
+
+		it('should accept just one (not a factor one)', () => {
+			expect(checkFactorOne(['1'])).toHaveLength(0);
+		});
+	});
+
+	describe('Multiple Answers', () => {
+		it('should check all answers and return violating indices', () => {
+			const result = checkFactorOne(['2x', '1\\times y', '3z', 'w\\times 1']);
+			expect(result).toEqual([1, 3]);
+		});
+	});
+
+	describe('Edge Cases', () => {
+		it('should handle empty strings', () => {
+			expect(checkFactorOne([''])).toHaveLength(0);
+		});
+	});
+});
+
+// ============================================================================
+// FACTOR ZERO VALIDATOR TESTS (Compute Engine based)
+// ============================================================================
+
+describe('checkFactorZero', () => {
+	describe('Basic Detection', () => {
+		it('should detect 0*x (factor zero at start)', () => {
+			expect(checkFactorZero(['0\\times x'])).toEqual([0]);
+		});
+
+		it('should detect x*0 (factor zero at end)', () => {
+			expect(checkFactorZero(['x\\times 0'])).toEqual([0]);
+		});
+
+		it('should detect 0\\cdot x', () => {
+			expect(checkFactorZero(['0\\cdot x'])).toEqual([0]);
+		});
+
+		it('should accept expressions without factor zero', () => {
+			expect(checkFactorZero(['2x'])).toHaveLength(0);
+			expect(checkFactorZero(['x\\times 2'])).toHaveLength(0);
+			expect(checkFactorZero(['ab'])).toHaveLength(0);
+		});
+
+		it('should accept just zero (not a factor zero)', () => {
+			expect(checkFactorZero(['0'])).toHaveLength(0);
+		});
+	});
+
+	describe('Multiple Answers', () => {
+		it('should check all answers and return violating indices', () => {
+			const result = checkFactorZero(['2x', '0\\times y', '3z', 'w\\times 0']);
+			expect(result).toEqual([1, 3]);
+		});
+	});
+
+	describe('Edge Cases', () => {
+		it('should handle empty strings', () => {
+			expect(checkFactorZero([''])).toHaveLength(0);
+		});
+	});
+});
+
+// ============================================================================
+// SIGNS VALIDATOR TESTS
+// ============================================================================
+
+describe('checkSigns', () => {
+	describe('Double Signs', () => {
+		it('should detect double plus (++)', () => {
+			expect(checkSigns(['x++y'])).toEqual([0]);
+		});
+
+		it('should detect double minus (--)', () => {
+			expect(checkSigns(['x--y'])).toEqual([0]);
+		});
+
+		it('should detect plus-minus (+-)', () => {
+			expect(checkSigns(['x+-y'])).toEqual([0]);
+		});
+
+		it('should detect minus-plus (-+)', () => {
+			expect(checkSigns(['x-+y'])).toEqual([0]);
+		});
+	});
+
+	describe('Leading Plus Before Variable', () => {
+		it('should detect +x at start', () => {
+			expect(checkSigns(['+x'])).toEqual([0]);
+		});
+
+		it('should detect +a at start', () => {
+			expect(checkSigns(['+a'])).toEqual([0]);
+		});
+
+		it('should accept -x (valid negative)', () => {
+			expect(checkSigns(['-x'])).toHaveLength(0);
+		});
+
+		it('should accept normal addition', () => {
+			expect(checkSigns(['x+3'])).toHaveLength(0);
+			expect(checkSigns(['a+b'])).toHaveLength(0);
+		});
+	});
+
+	describe('Multiple Answers', () => {
+		it('should check all answers and return violating indices', () => {
+			const result = checkSigns(['x+y', 'x++z', 'a-b', '+c']);
+			expect(result).toEqual([1, 3]);
+		});
+	});
+
+	describe('Edge Cases', () => {
+		it('should handle empty strings', () => {
+			expect(checkSigns([''])).toHaveLength(0);
+		});
+
+		it('should handle whitespace', () => {
+			expect(checkSigns(['  '])).toHaveLength(0);
+		});
+
+		it('should accept leading plus on numbers (debatable)', () => {
+			// +5 could be acceptable notation for positive 5
+			// Our regex only catches +letter, not +digit
+			expect(checkSigns(['+5'])).toHaveLength(0);
+		});
 	});
 });

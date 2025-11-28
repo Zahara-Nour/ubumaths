@@ -18,6 +18,7 @@ import type { ConstraintId } from './types';
  * - multiple: Message for multiple answer questions
  */
 export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multiple: string }> = {
+	// Existing validators (text/regex based)
 	spaces: {
 		single: 'Les chiffres sont mal espacés.',
 		multiple: 'Les chiffres sont mal espacés.'
@@ -37,6 +38,23 @@ export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multipl
 	form: {
 		single: "Ta réponse n'est pas écrite sous la forme demandée.",
 		multiple: "Ta réponse n'est pas écrite sous la forme demandée."
+	},
+	// New validators (Compute Engine pattern matching)
+	nullTerms: {
+		single: 'Il y a des termes nuls (comme +0) qui peuvent être supprimés.',
+		multiple: 'Il y a des termes nuls (comme +0) qui peuvent être supprimés.'
+	},
+	factorOne: {
+		single: 'Il y a des facteurs 1 (comme ×1) qui peuvent être simplifiés.',
+		multiple: 'Il y a des facteurs 1 (comme ×1) qui peuvent être simplifiés.'
+	},
+	factorZero: {
+		single: 'Une multiplication par 0 peut être simplifiée en 0.',
+		multiple: 'Une multiplication par 0 peut être simplifiée en 0.'
+	},
+	signs: {
+		single: 'Il y a des signes superflus (comme ++, --, ou +x).',
+		multiple: 'Il y a des signes superflus (comme ++, --, ou +x).'
 	}
 } as const;
 

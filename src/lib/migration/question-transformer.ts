@@ -38,7 +38,8 @@ import type {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	PrecisionType,
 	AlgebraicTransformType,
-	ValidationRule
+	ValidationRule,
+	ConstraintOptions
 } from '$lib/questions/types';
 
 import type { TemplateMarkdown } from '$lib/shared/markdown';
@@ -673,6 +674,11 @@ function _convertCorrection(
 
 /**
  * Convert old validation options to new format
+ *
+ * Maps old TinyMath options to new ConstraintOptions structure:
+ * - require-* options → constraint: 'strict'
+ * - no-penalty-for-* options → constraint: 'off'
+ * - Display options (enounce-*, exp-*) → silently ignored
  */
 function convertOptions(
 	oldOptions: string[] | undefined,
@@ -683,11 +689,115 @@ function convertOptions(
 	}
 
 	const options: QuestionTemplate['options'] = {};
+	const constraints: ConstraintOptions = {};
 	let mappedCount = 0;
 
 	for (const option of oldOptions) {
 		switch (option) {
-			// Fraction requirements
+			// ================================================================
+			// CONSTRAINT OPTIONS - Spaces
+			// ================================================================
+			case 'require-correct-spaces':
+				constraints.spaces = 'strict';
+				mappedCount++;
+				break;
+			case 'no-penalty-for-incorrect-spaces':
+				constraints.spaces = 'off';
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// CONSTRAINT OPTIONS - Products
+			// ================================================================
+			case 'require-implicit-products':
+				constraints.products = 'strict';
+				mappedCount++;
+				break;
+			case 'no-penalty-for-explicit-products':
+				constraints.products = 'off';
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// CONSTRAINT OPTIONS - Brackets
+			// ================================================================
+			case 'require-no-extraneous-brackets':
+				constraints.brackets = 'strict';
+				mappedCount++;
+				break;
+			case 'no-penalty-for-extraneous-brackets':
+				constraints.brackets = 'off';
+				mappedCount++;
+				break;
+			case 'no-penalty-for-extraneous-brackets-in-first-negative-term':
+				constraints.brackets = 'off';
+				constraints.allowBracketsInFirstNegativeTerm = true;
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// CONSTRAINT OPTIONS - Zeros
+			// ================================================================
+			case 'require-no-extraneous-zeros':
+				constraints.zeros = 'strict';
+				mappedCount++;
+				break;
+			case 'no-penalty-for-extraneous-zeros':
+				constraints.zeros = 'off';
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// CONSTRAINT OPTIONS - Null terms (CE pattern matching)
+			// ================================================================
+			case 'require-no-null-terms':
+				constraints.nullTerms = 'strict';
+				mappedCount++;
+				break;
+			case 'no-penalty-for-null-terms':
+				constraints.nullTerms = 'off';
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// CONSTRAINT OPTIONS - Factor one (CE pattern matching)
+			// ================================================================
+			case 'require-no-factor-one':
+				constraints.factorOne = 'strict';
+				mappedCount++;
+				break;
+			case 'no-penalty-for-factor-one':
+				constraints.factorOne = 'off';
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// CONSTRAINT OPTIONS - Factor zero (CE pattern matching)
+			// ================================================================
+			case 'require-no-factor-zero':
+				constraints.factorZero = 'strict';
+				mappedCount++;
+				break;
+			case 'no-penalty-for-factor-zero':
+				constraints.factorZero = 'off';
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// CONSTRAINT OPTIONS - Signs (CE pattern matching)
+			// ================================================================
+			case 'require-no-extraneous-signs':
+				constraints.signs = 'strict';
+				mappedCount++;
+				break;
+			case 'no-penalty-for-extraneous-signs':
+				constraints.signs = 'off';
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// FRACTION OPTIONS
+			// ================================================================
 			case 'require-reduced-fractions':
 				options.canonicalForm = 'fraction';
 				options.allowDifferentForms = false;
@@ -698,34 +808,23 @@ function convertOptions(
 				mappedCount++;
 				break;
 
-			// Bracket handling
-			case 'no-penalty-for-extraneous-brackets':
-			case 'no-penalty-for-extraneous-brackets-in-first-negative-term':
-				options.allowDifferentForms = true;
-				mappedCount++;
-				break;
-
-			// Algebraic form requirements
-			case 'require-no-extraneous-brackets':
-			case 'require-no-extraneous-zeros':
-			case 'require-no-extraneous-signs':
-			case 'require-no-factor-one':
-			case 'require-no-factor-zero':
-			case 'require-no-null-terms':
-				options.allowEquivalent = false;
-				mappedCount++;
-				break;
-
-			// Solution order
+			// ================================================================
+			// SOLUTION ORDER OPTIONS
+			// ================================================================
 			case 'solutions-order-not-important':
 				options.allowDifferentForms = true;
 				mappedCount++;
 				break;
 
-			// Complex validators
-			case 'require-implicit-products':
+			// ================================================================
+			// PERMUTATION OPTIONS
+			// ================================================================
 			case 'disallow-terms-permutation':
 			case 'disallow-factors-permutation':
+			case 'disallow-terms-and-factors-permutation':
+			case 'penalty-for-terms-permutation':
+			case 'penalty-for-factors-permutation':
+			case 'penalty-for-terms-and-factors-permutation':
 				options.validator = 'checkAlgebraic';
 				if (!options.validatorParams) {
 					options.validatorParams = {};
@@ -734,9 +833,57 @@ function convertOptions(
 				mappedCount++;
 				break;
 
+			// ================================================================
+			// DISPLAY OPTIONS - Silently ignored (not validation)
+			// ================================================================
+			case 'enounce-no-spaces':
+			case 'exp-no-spaces':
+			case 'exp-allow-unecessary-zeros':
+			case 'exp-remove-unecessary-brackets':
+				// These are display options, not validation - ignore silently
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// SHUFFLE OPTIONS - Handled elsewhere
+			// ================================================================
+			case 'shuffle-terms':
+			case 'shuffle-factors':
+			case 'shuffle-terms-and-factors':
+			case 'shallow-shuffle-terms':
+			case 'shallow-shuffle-factors':
+			case 'no-shuffle-choices':
+				// Shuffle options are handled in expression/choice generation
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// OTHER OPTIONS
+			// ================================================================
+			case 'allow-same-expression':
+			case 'allow-same-enounce':
+			case 'remove-null-terms':
+			case 'exhaust':
+			case 'multiples':
+			case 'one-single-form-solution':
+				// Generation/uniqueness options - not validation constraints
+				mappedCount++;
+				break;
+
+			case 'require-specific-unit':
+			case 'no-penalty-for-not-respected-unit':
+				// Unit options - handled via unitOptions in the template
+				mappedCount++;
+				break;
+
 			default:
 				warnings.push(`Unknown option: ${option} - needs manual review`);
 		}
+	}
+
+	// Add constraints to options if any were set
+	if (Object.keys(constraints).length > 0) {
+		options.constraints = constraints;
 	}
 
 	return mappedCount > 0 ? options : undefined;

@@ -559,3 +559,223 @@ function normalizeForFormComparison(latex: string): string {
 			.trim()
 	);
 }
+
+// ============================================================================
+// COMPUTE ENGINE BASED VALIDATORS
+// ============================================================================
+
+import { ComputeEngine } from '@cortex-js/compute-engine';
+
+/**
+ * Shared Compute Engine instance for constraint validation
+ */
+let ceInstance: ComputeEngine | null = null;
+
+/**
+ * Get or create Compute Engine instance
+ */
+function getCE(): ComputeEngine {
+	if (!ceInstance) {
+		ceInstance = new ComputeEngine();
+	}
+	return ceInstance;
+}
+
+/**
+ * Recursively check if a MathJSON expression contains an Add with 0
+ */
+function hasAddWithZero(json: unknown): boolean {
+	if (!Array.isArray(json)) return false;
+	const [head, ...args] = json;
+
+	// Check if this is an Add with 0 in its arguments
+	if (head === 'Add' && args.some((arg) => arg === 0)) {
+		return true;
+	}
+
+	// Recursively check nested expressions
+	return args.some((arg) => hasAddWithZero(arg));
+}
+
+/**
+ * Check for null terms in an expression (x+0, y+0+z)
+ *
+ * Parses without canonization to preserve the original form,
+ * then inspects the MathJSON for Add expressions containing 0.
+ *
+ * @param answersLatex - Array of LaTeX strings
+ * @returns Indices of answers with null term violations
+ *
+ * @example
+ * checkNullTerms(['x+0'])       // Returns [0] - has null term
+ * checkNullTerms(['x+1'])       // Returns [] - no null term
+ * checkNullTerms(['3+0+y'])     // Returns [0] - has null term
+ * checkNullTerms(['0'])         // Returns [] - just zero, not a null term
+ */
+export function checkNullTerms(answersLatex: string[]): number[] {
+	const violations: number[] = [];
+	const ce = getCE();
+
+	for (let i = 0; i < answersLatex.length; i++) {
+		const latex = answersLatex[i];
+		if (!latex?.trim()) continue;
+
+		try {
+			// Parse without canonization to preserve original form
+			const expr = ce.parse(latex, { canonical: false });
+			if (hasAddWithZero(expr.json)) {
+				violations.push(i);
+			}
+		} catch {
+			// Skip invalid LaTeX
+		}
+	}
+
+	return violations;
+}
+
+/**
+ * Recursively check if a MathJSON expression contains a Multiply with 1
+ */
+function hasMultiplyWithOne(json: unknown): boolean {
+	if (!Array.isArray(json)) return false;
+	const [head, ...args] = json;
+
+	// Check if this is a Multiply with 1 in its arguments
+	if (head === 'Multiply' && args.some((arg) => arg === 1)) {
+		return true;
+	}
+
+	// Recursively check nested expressions
+	return args.some((arg) => hasMultiplyWithOne(arg));
+}
+
+/**
+ * Check for factor one in an expression (1*x, x*1)
+ *
+ * Parses without canonization to preserve the original form,
+ * then inspects the MathJSON for Multiply expressions containing 1.
+ *
+ * @param answersLatex - Array of LaTeX strings
+ * @returns Indices of answers with factor one violations
+ *
+ * @example
+ * checkFactorOne(['1\\times x'])  // Returns [0] - has factor one
+ * checkFactorOne(['2x'])          // Returns [] - no factor one
+ * checkFactorOne(['x*1*y'])       // Returns [0] - has factor one
+ * checkFactorOne(['1'])           // Returns [] - just one, not factor one
+ */
+export function checkFactorOne(answersLatex: string[]): number[] {
+	const violations: number[] = [];
+	const ce = getCE();
+
+	for (let i = 0; i < answersLatex.length; i++) {
+		const latex = answersLatex[i];
+		if (!latex?.trim()) continue;
+
+		try {
+			// Parse without canonization to preserve original form
+			const expr = ce.parse(latex, { canonical: false });
+			if (hasMultiplyWithOne(expr.json)) {
+				violations.push(i);
+			}
+		} catch {
+			// Skip invalid LaTeX
+		}
+	}
+
+	return violations;
+}
+
+/**
+ * Recursively check if a MathJSON expression contains a Multiply with 0
+ */
+function hasMultiplyWithZero(json: unknown): boolean {
+	if (!Array.isArray(json)) return false;
+	const [head, ...args] = json;
+
+	// Check if this is a Multiply with 0 in its arguments
+	if (head === 'Multiply' && args.some((arg) => arg === 0)) {
+		return true;
+	}
+
+	// Recursively check nested expressions
+	return args.some((arg) => hasMultiplyWithZero(arg));
+}
+
+/**
+ * Check for factor zero in an expression (0*x, x*0)
+ *
+ * Parses without canonization to preserve the original form,
+ * then inspects the MathJSON for Multiply expressions containing 0.
+ *
+ * Note: This is typically an error since 0*x = 0, but checking separately
+ * allows more specific feedback.
+ *
+ * @param answersLatex - Array of LaTeX strings
+ * @returns Indices of answers with factor zero violations
+ *
+ * @example
+ * checkFactorZero(['0\\times x'])  // Returns [0] - has factor zero
+ * checkFactorZero(['0'])           // Returns [] - just zero
+ * checkFactorZero(['x*0*y'])       // Returns [0] - has factor zero
+ */
+export function checkFactorZero(answersLatex: string[]): number[] {
+	const violations: number[] = [];
+	const ce = getCE();
+
+	for (let i = 0; i < answersLatex.length; i++) {
+		const latex = answersLatex[i];
+		if (!latex?.trim()) continue;
+
+		try {
+			// Parse without canonization to preserve original form
+			const expr = ce.parse(latex, { canonical: false });
+			if (hasMultiplyWithZero(expr.json)) {
+				violations.push(i);
+			}
+		} catch {
+			// Skip invalid LaTeX
+		}
+	}
+
+	return violations;
+}
+
+/**
+ * Check for extraneous signs in an expression (+x, --x, ++)
+ *
+ * Detects patterns like:
+ * - Leading plus sign on variables: +x, +a
+ * - Double signs: ++, --, +-, -+
+ *
+ * Uses regex for detection since CE canonizes these away.
+ *
+ * @param answersLatex - Array of LaTeX strings
+ * @returns Indices of answers with extraneous sign violations
+ *
+ * @example
+ * checkSigns(['+x'])       // Returns [0] - extraneous +
+ * checkSigns(['--5'])      // Returns [0] - double negative
+ * checkSigns(['x+-3'])     // Returns [0] - +- signs
+ * checkSigns(['-x'])       // Returns [] - valid negative
+ * checkSigns(['x+3'])      // Returns [] - normal addition
+ */
+export function checkSigns(answersLatex: string[]): number[] {
+	const violations: number[] = [];
+
+	for (let i = 0; i < answersLatex.length; i++) {
+		const latex = answersLatex[i];
+		if (!latex?.trim()) continue;
+
+		// Detect extraneous signs using regex
+		// Pattern matches:
+		// - Double signs: ++, --, +-, -+
+		// - Leading + before letter: +x, +a (but not +5)
+		if (/\+\+|--|\+-|-\+|^\s*\+[a-zA-Z]/.test(latex)) {
+			violations.push(i);
+		}
+	}
+
+	return violations;
+}
