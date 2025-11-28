@@ -38,7 +38,7 @@ import { parseRandomSpec } from '../parser/random-parser';
  * ```typescript
  * validateVariables([
  *   { name: 'a', expression: '5' },
- *   { name: 'b', expression: '{@:a}' }
+ *   { name: 'b', expression: '{{a}}' }
  * ])
  * // → { valid: true, errors: [] }
  * ```
@@ -77,7 +77,7 @@ import { parseRandomSpec } from '../parser/random-parser';
  * @example Undefined variable reference
  * ```typescript
  * validateVariables([
- *   { name: 'a', expression: '{@:b}' }
+ *   { name: 'a', expression: '{{b}}' }
  * ])
  * // → {
  * //     valid: false,
@@ -92,7 +92,7 @@ import { parseRandomSpec } from '../parser/random-parser';
  * @example Invalid random range
  * ```typescript
  * validateVariables([
- *   { name: 'a', expression: '{#:10-1}' }
+ *   { name: 'a', expression: '{{10-1}}' }
  * ])
  * // → {
  * //     valid: false,
@@ -107,13 +107,13 @@ import { parseRandomSpec } from '../parser/random-parser';
  * @example Invalid syntax (malformed token)
  * ```typescript
  * validateVariables([
- *   { name: 'a', expression: '{@:}' }
+ *   { name: 'a', expression: '{{}}' }
  * ])
  * // → {
  * //     valid: false,
  * //     errors: [{
  * //       type: 'invalid-syntax',
- * //       message: 'Malformed variable reference: {@:}',
+ * //       message: 'Malformed variable reference: {{}}',
  * //       variable: 'a'
  * //     }]
  * //   }
@@ -122,8 +122,8 @@ import { parseRandomSpec } from '../parser/random-parser';
  * @example Multiple errors
  * ```typescript
  * validateVariables([
- *   { name: 'a', expression: '{@:undefined}' },
- *   { name: 'b', expression: '{#:10-1}' }
+ *   { name: 'a', expression: '{{undefined}}' },
+ *   { name: 'b', expression: '{{10-1}}' }
  * ])
  * // → {
  * //     valid: false,

@@ -184,20 +184,109 @@ type Predicate =
 
 ## 4. Conversion de syntaxe
 
+### Syntaxe des templates
+
+Le projet utilise la syntaxe **Markdown** (double braces) pour tous les templates:
+
+| Préfixe                | Usage                        | Exemple                            |
+| ---------------------- | ---------------------------- | ---------------------------------- |
+| `{{name}}`             | Référence variable           | `{{a}}`, `{{max}}`                 |
+| `{{1-10}}`             | Entier aléatoire (raccourci) | `{{0-99}}`                         |
+| `{{random:...}}`       | Entier aléatoire (explicite) | `{{random:1-10}}`                  |
+| `{{eval:...}}`         | Évaluation mathématique      | `{{eval:{{a}}+{{b}}}}`             |
+| `{{list:...}}`         | Sélection dans liste         | `{{list:a,b,c}}`                   |
+| `{{color:...}}`        | Référence couleur            | `{{color:primary.0}}`              |
+| `{{if:...\|...\|...}}` | Conditionnel                 | `{{if:{{a}}>0\|positif\|négatif}}` |
+
+Le convertisseur `syntax-converter.ts` transforme TinyCAS vers cette syntaxe.
+
 ### TinyCAS → Nouveau système
 
 Le convertisseur `syntax-converter.ts` gère toutes les conversions:
 
-| Ancien (TinyCAS)  | Nouveau (Markdown)                 |
-| ----------------- | ---------------------------------- |
-| `[_0;9_]`         | `{{random(0,9)}}`                  |
-| `[_2;10;2_]`      | `{{random(2,10,2)}}`               |
-| `[_1;10\\2;5_]`   | `{{random(1,10,{exclude:[2,5]})}}` |
-| `{a;b;c}`         | `{{choice(['a','b','c'])}}`        |
-| `$e[&a+&b]`       | `{{eval:{{a}}+{{b}}}}`             |
-| `$e{&a*&b;&a+&b}` | `{{eval:{{choice([...])}}}}`       |
-| `&variable`       | `{{variable}}`                     |
-| `$n{2;&a}`        | `{{digits(2,{{a}})}}`              |
+#### Entiers aléatoires
+
+| Ancien (TinyCAS) | Nouveau    | Description             |
+| ---------------- | ---------- | ----------------------- |
+| `$e[1;10]`       | `{{1-10}}` | Entier aléatoire 1 à 10 |
+| `$e[0;99]`       | `{{0-99}}` | Entier aléatoire 0 à 99 |
+| `$e[-5;5]`       | `{{-5-5}}` | Avec bornes négatives   |
+
+#### Exclusions
+
+| Ancien (TinyCAS)  | Nouveau               | Description                 |
+| ----------------- | --------------------- | --------------------------- |
+| `$e[1;10]\{5}`    | `{{1-10!5}}`          | Exclure valeur unique       |
+| `$e[1;10]\{5;7}`  | `{{1-10!5,7}}`        | Exclure plusieurs valeurs   |
+| `$e[0;9]\{&1}`    | `{{0-9!{{1}}}}`       | Exclure valeur de variable  |
+| `$e[0;9]\{&1;&2}` | `{{0-9!{{1}},{{2}}}}` | Exclure plusieurs variables |
+
+#### Entiers relatifs (±)
+
+| Ancien (TinyCAS) | Nouveau     | Description        |
+| ---------------- | ----------- | ------------------ |
+| `$er[2;9]`       | `{{±2..9}}` | ±2 à ±9 (exclut 0) |
+| `$er{1}`         | `{{±1..1}}` | ±1 uniquement      |
+
+#### Décimaux
+
+| Ancien (TinyCAS) | Nouveau   | Description               |
+| ---------------- | --------- | ------------------------- |
+| `$d{1;1}`        | `{{1.1}}` | 1 chiffre avant, 1 après  |
+| `$d{2;3}`        | `{{2.3}}` | 2 chiffres avant, 3 après |
+
+#### Nombres à N chiffres
+
+| Ancien (TinyCAS) | Nouveau                  | Description               |
+| ---------------- | ------------------------ | ------------------------- |
+| `$e{2;2}`        | `{{10-99}}`              | Nombre à 2 chiffres       |
+| `$e{3;3}`        | `{{100-999}}`            | Nombre à 3 chiffres       |
+| `$e{2;4}`        | `{{digits:2-4}}`         | 2 à 4 chiffres (variable) |
+| `$e{&1;&1}`      | `{{digits:{{1}};{{1}}}}` | Chiffres selon variable   |
+
+#### Sélection dans liste
+
+| Ancien (TinyCAS)      | Nouveau                    | Description         |
+| --------------------- | -------------------------- | ------------------- |
+| `$l{1;2;5;10}`        | `{{list:1,2,5,10}}`        | Choix parmi valeurs |
+| `$l{rouge;bleu;vert}` | `{{list:rouge,bleu,vert}}` | Choix parmi textes  |
+
+#### Variables
+
+| Ancien (TinyCAS) | Nouveau       | Description        |
+| ---------------- | ------------- | ------------------ |
+| `&1`             | `{{1}}`       | Variable numérotée |
+| `&varname`       | `{{varname}}` | Variable nommée    |
+
+#### Évaluations
+
+| Ancien (TinyCAS) | Nouveau                   | Description                   |
+| ---------------- | ------------------------- | ----------------------------- |
+| `[_&1+&2_]`      | `{{eval:{{1}}+{{2}}}}`    | Évaluation arithmétique       |
+| `[_&1*10+&2_]`   | `{{eval:{{1}}*10+{{2}}}}` | Expression complexe           |
+| `[._expr_.]`     | `{{eval:expr}}`           | Évaluation décimale (warning) |
+| `[+_expr_]`      | `{{eval:+expr}}`          | Avec signe + (warning)        |
+
+#### Fonctions min/max
+
+| Ancien (TinyCAS) | Nouveau            | Description |
+| ---------------- | ------------------ | ----------- |
+| `mini(&1;&2)`    | `min({{1}},{{2}})` | Minimum     |
+| `maxi(&1;&2)`    | `max({{1}},{{2}})` | Maximum     |
+
+#### Opérateur ternaire
+
+| Ancien (TinyCAS)        | Nouveau                       | Description              |
+| ----------------------- | ----------------------------- | ------------------------ |
+| `&5<&6 ?? 0 :: 1`       | `{{if:{{5}}<{{6}}\|0\|1}}`    | Si condition alors sinon |
+| `mod(&1;2)=0 ?? a :: b` | `{{if:mod({{1}},2)=0\|a\|b}}` | Parité                   |
+
+#### Couleurs (Svelte stores)
+
+| Ancien (TinyCAS) | Nouveau               | Description               |
+| ---------------- | --------------------- | ------------------------- |
+| `${get(color1)}` | `{{color:primary.0}}` | Référence couleur palette |
+| `${get(color2)}` | `{{color:primary.1}}` | Deuxième couleur          |
 
 ### Placeholders de correction
 
@@ -728,6 +817,30 @@ const result2 = validateAnswer('5', instance);
 - `/docs/wip/old-question-system-summary.md` - Résumé de l'ancien système
 - `/docs/wip/old-question-system-analysis.md` - Référence complète ancien système
 
+### D. Référence rapide de la syntaxe Markdown
+
+| Concept              | Syntaxe                   | Exemple                      |
+| -------------------- | ------------------------- | ---------------------------- |
+| Variable             | `{{name}}`                | `{{a}}`, `{{max}}`           |
+| Entier aléatoire     | `{{min-max}}`             | `{{1-10}}`, `{{0-99}}`       |
+| Entier négatif       | `{{min..max}}`            | `{{-5..5}}`, `{{-10..-1}}`   |
+| Bornes variables     | `{{{{min}}-{{max}}}}`     | Min à max                    |
+| Exclusion valeur     | `{{min-max!val}}`         | `{{1-10!5}}`                 |
+| Exclusion plage      | `{{min-max!a..b}}`        | `{{1-20!5..7}}`              |
+| Exclusion variable   | `{{min-max!{{var}}}}`     | `{{1-10!{{a}}}}`             |
+| Décimal par chiffres | `{{n.m}}`                 | `{{2.3}}` (2 avant, 3 après) |
+| Décimal avec pas     | `{{min-max:step}}`        | `{{0.5-9.99:0.01}}`          |
+| Entier relatif       | `{{±min..max}}`           | `{{±2..9}}` (exclut 0)       |
+| Évaluation           | `{{eval:expr}}`           | `{{eval:{{a}}+{{b}}}}`       |
+| Liste                | `{{list:a,b,c}}`          | `{{list:rouge,bleu,vert}}`   |
+| Couleur              | `{{color:name}}`          | `{{color:primary.0}}`        |
+| Conditionnel         | `{{if:cond\|vrai\|faux}}` | `{{if:{{a}}>0\|+\|-}}`       |
+
+**Note sur les séparateurs de plage:**
+
+- `-` : standard pour positifs (`{{1-10}}`)
+- `..` : recommandé pour négatifs (`{{-5..5}}`)
+
 ---
 
-_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (shared fields)_
+_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (syntaxe corrigée)_

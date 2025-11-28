@@ -37,8 +37,8 @@ import { parseEvalExpression } from '../parser/eval-parser';
  * ```typescript
  * detectCircularDependencies([
  *   { name: 'a', expression: '5' },
- *   { name: 'b', expression: '{@:a}' },
- *   { name: 'c', expression: '{@:b}' }
+ *   { name: 'b', expression: '{{a}}' },
+ *   { name: 'c', expression: '{{b}}' }
  * ])
  * // → { valid: true, errors: [] }
  * ```
@@ -46,7 +46,7 @@ import { parseEvalExpression } from '../parser/eval-parser';
  * @example Direct self-reference
  * ```typescript
  * detectCircularDependencies([
- *   { name: 'a', expression: '{@:a}' }
+ *   { name: 'a', expression: '{{a}}' }
  * ])
  * // → {
  * //     valid: false,
@@ -62,9 +62,9 @@ import { parseEvalExpression } from '../parser/eval-parser';
  * @example Indirect circular dependency
  * ```typescript
  * detectCircularDependencies([
- *   { name: 'a', expression: '{@:b}' },
- *   { name: 'b', expression: '{@:c}' },
- *   { name: 'c', expression: '{@:a}' }
+ *   { name: 'a', expression: '{{b}}' },
+ *   { name: 'b', expression: '{{c}}' },
+ *   { name: 'c', expression: '{{a}}' }
  * ])
  * // → {
  * //     valid: false,
@@ -81,9 +81,9 @@ import { parseEvalExpression } from '../parser/eval-parser';
  * ```typescript
  * detectCircularDependencies([
  *   { name: 'a', expression: '1' },
- *   { name: 'b', expression: '{@:a}' },
- *   { name: 'c', expression: '{@:a}' },
- *   { name: 'd', expression: '{eval:b+c}' }
+ *   { name: 'b', expression: '{{a}}' },
+ *   { name: 'c', expression: '{{a}}' },
+ *   { name: 'd', expression: '{{eval:b+c}}' }
  * ])
  * // → { valid: true, errors: [] }
  * ```
@@ -93,8 +93,8 @@ import { parseEvalExpression } from '../parser/eval-parser';
  * detectCircularDependencies([
  *   { name: 'min', expression: '1' },
  *   { name: 'max', expression: '10' },
- *   { name: 'a', expression: '{#:{@:min}-{@:max}}' },
- *   { name: 'b', expression: '{#:{@:min}-{@:max}!{@:a}}' }
+ *   { name: 'a', expression: '{{{{min}}-{{max}}}}' },
+ *   { name: 'b', expression: '{{{{min}}-{{max}}!{{a}}}}' }
  * ])
  * // → { valid: true, errors: [] }
  * ```
