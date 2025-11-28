@@ -233,7 +233,7 @@ function parseDecimalByDigits(spec: string): RandomSpec {
  * Parse range format
  * Examples:
  * - {{1..10}}, {{-3..-1}}
- * - {{±2..9}} (relative)
+ * - {{2..9;±}} (relative, using ;± suffix modifier)
  * - {{0.5..9.99:0.01}}, {{1..1.6}} (decimal with auto-step)
  */
 function parseRange(spec: string, isRelative: boolean = false): RandomSpec {
@@ -250,7 +250,7 @@ function parseRange(spec: string, isRelative: boolean = false): RandomSpec {
 	const isDecimal = stepStr !== undefined || hasDecimalInBounds;
 
 	if (isRelative) {
-		// Relative integer: {{±2..9}} → union of {-9..-2} ∪ {2..9}
+		// Relative integer: {{2..9;±}} → union of {-9..-2} ∪ {2..9}
 		return {
 			type: 'relative-integer',
 			min,
