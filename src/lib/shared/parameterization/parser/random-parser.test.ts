@@ -11,7 +11,7 @@ import { parseRandomSpec } from './random-parser';
 
 describe('parseRandomSpec - Integer ranges (Markdown syntax)', () => {
 	it('should parse with random: prefix', () => {
-		const spec = parseRandomSpec('{{random:1-10}}');
+		const spec = parseRandomSpec('{{random:1..10}}');
 
 		expect(spec).toMatchObject({
 			type: 'integer',
@@ -22,7 +22,7 @@ describe('parseRandomSpec - Integer ranges (Markdown syntax)', () => {
 	});
 
 	it('should parse shorthand syntax', () => {
-		const spec = parseRandomSpec('{{1-10}}');
+		const spec = parseRandomSpec('{{1..10}}');
 
 		expect(spec).toMatchObject({
 			type: 'integer',
@@ -32,7 +32,7 @@ describe('parseRandomSpec - Integer ranges (Markdown syntax)', () => {
 	});
 
 	it('should parse negative numbers in shorthand', () => {
-		const spec = parseRandomSpec('{{-5-10}}');
+		const spec = parseRandomSpec('{{-5..10}}');
 
 		if (spec?.type === 'integer' || spec?.type === 'decimal-range') {
 			expect(spec.min).toMatchObject({ type: 'number', value: -5 });
@@ -41,7 +41,7 @@ describe('parseRandomSpec - Integer ranges (Markdown syntax)', () => {
 	});
 
 	it('should parse with random: prefix and negative numbers', () => {
-		const spec = parseRandomSpec('{{random:-5-10}}');
+		const spec = parseRandomSpec('{{random:-5..10}}');
 
 		if (spec?.type === 'integer' || spec?.type === 'decimal-range') {
 			expect(spec.min).toMatchObject({ type: 'number', value: -5 });
@@ -49,7 +49,7 @@ describe('parseRandomSpec - Integer ranges (Markdown syntax)', () => {
 	});
 
 	it('should parse range with negative minimum and maximum', () => {
-		const spec = parseRandomSpec('{{random:-20--5}}');
+		const spec = parseRandomSpec('{{random:-20..-5}}');
 
 		expect(spec).toMatchObject({
 			type: 'integer',
@@ -59,7 +59,7 @@ describe('parseRandomSpec - Integer ranges (Markdown syntax)', () => {
 	});
 
 	it('should parse large number ranges', () => {
-		const spec = parseRandomSpec('{{random:1000-9999}}');
+		const spec = parseRandomSpec('{{random:1000..9999}}');
 
 		expect(spec).toMatchObject({
 			min: { type: 'number', value: 1000 },
@@ -106,7 +106,7 @@ describe('parseRandomSpec - Decimal by digits', () => {
 
 describe('parseRandomSpec - Decimal range with step', () => {
 	it('should parse Markdown syntax', () => {
-		const spec = parseRandomSpec('{{random:0.5-9.99:0.01}}');
+		const spec = parseRandomSpec('{{random:0.5..9.99:0.01}}');
 
 		expect(spec?.type).toBe('decimal-range');
 		if (spec?.type === 'decimal-range') {
@@ -115,13 +115,13 @@ describe('parseRandomSpec - Decimal range with step', () => {
 	});
 
 	it('should parse Markdown shorthand', () => {
-		const spec = parseRandomSpec('{{0.5-9.99:0.01}}');
+		const spec = parseRandomSpec('{{0.5..9.99:0.01}}');
 
 		expect(spec?.type).toBe('decimal-range');
 	});
 
 	it('should parse with larger step', () => {
-		const spec = parseRandomSpec('{{random:0-100:0.5}}');
+		const spec = parseRandomSpec('{{random:0..100:0.5}}');
 
 		if (spec?.type === 'decimal-range') {
 			expect(spec.step).toBe(0.5);
@@ -129,7 +129,7 @@ describe('parseRandomSpec - Decimal range with step', () => {
 	});
 
 	it('should infer decimal type from decimal bounds without step', () => {
-		const spec = parseRandomSpec('{{random:0.5-9.99}}');
+		const spec = parseRandomSpec('{{random:0.5..9.99}}');
 
 		expect(spec?.type).toBe('decimal-range');
 		if (spec?.type === 'decimal-range') {
@@ -138,7 +138,7 @@ describe('parseRandomSpec - Decimal range with step', () => {
 	});
 
 	it('should parse negative decimal ranges', () => {
-		const spec = parseRandomSpec('{{random:-5.5-5.5:0.1}}');
+		const spec = parseRandomSpec('{{random:-5.5..5.5:0.1}}');
 
 		if (spec?.type === 'decimal-range') {
 			expect(spec.min).toMatchObject({ type: 'number', value: -5.5 });
@@ -149,7 +149,7 @@ describe('parseRandomSpec - Decimal range with step', () => {
 
 describe('parseRandomSpec - Variable bounds', () => {
 	it('should parse Markdown syntax with variable bounds', () => {
-		const spec = parseRandomSpec('{{random:{{min}}-{{max}}}}');
+		const spec = parseRandomSpec('{{random:{{min}}..{{max}}}}');
 
 		if (spec?.type === 'integer' || spec?.type === 'decimal-range') {
 			expect(spec.min).toMatchObject({ type: 'variable', name: 'min' });
@@ -158,7 +158,7 @@ describe('parseRandomSpec - Variable bounds', () => {
 	});
 
 	it('should parse Markdown shorthand with variable bounds', () => {
-		const spec = parseRandomSpec('{{{{min}}-{{max}}}}');
+		const spec = parseRandomSpec('{{{{min}}..{{max}}}}');
 
 		expect(spec?.type).toBe('integer');
 		if (spec?.type === 'integer') {
@@ -167,7 +167,7 @@ describe('parseRandomSpec - Variable bounds', () => {
 	});
 
 	it('should parse mixed number and variable bounds', () => {
-		const spec = parseRandomSpec('{{random:1-{{max}}}}');
+		const spec = parseRandomSpec('{{random:1..{{max}}}}');
 
 		if (spec?.type === 'integer' || spec?.type === 'decimal-range') {
 			expect(spec.min).toMatchObject({ type: 'number', value: 1 });
@@ -176,7 +176,7 @@ describe('parseRandomSpec - Variable bounds', () => {
 	});
 
 	it('should parse variable minimum with number maximum', () => {
-		const spec = parseRandomSpec('{{random:{{min}}-100}}');
+		const spec = parseRandomSpec('{{random:{{min}}..100}}');
 
 		if (spec?.type === 'integer' || spec?.type === 'decimal-range') {
 			expect(spec.min).toMatchObject({ type: 'variable', name: 'min' });
@@ -207,7 +207,7 @@ describe('parseRandomSpec - Variable digits', () => {
 
 describe('parseRandomSpec - Exclusions (single values)', () => {
 	it('should parse single exclusion', () => {
-		const spec = parseRandomSpec('{{random:1-10!5}}');
+		const spec = parseRandomSpec('{{random:1..10!5}}');
 
 		expect(spec?.exclusions).toHaveLength(1);
 		if (spec) {
@@ -219,7 +219,7 @@ describe('parseRandomSpec - Exclusions (single values)', () => {
 	});
 
 	it('should parse multiple exclusions', () => {
-		const spec = parseRandomSpec('{{random:1-10!3,5,7}}');
+		const spec = parseRandomSpec('{{random:1..10!3,5,7}}');
 
 		expect(spec?.exclusions).toHaveLength(3);
 		if (spec) {
@@ -231,13 +231,13 @@ describe('parseRandomSpec - Exclusions (single values)', () => {
 	});
 
 	it('should parse exclusions in Markdown shorthand', () => {
-		const spec = parseRandomSpec('{{1-10!5}}');
+		const spec = parseRandomSpec('{{1..10!5}}');
 
 		expect(spec?.exclusions).toHaveLength(1);
 	});
 
 	it('should parse negative exclusions', () => {
-		const spec = parseRandomSpec('{{random:-10-10!0,-5}}');
+		const spec = parseRandomSpec('{{random:-10..10!0,-5}}');
 
 		expect(spec?.exclusions).toHaveLength(2);
 		if (spec) {
@@ -255,7 +255,7 @@ describe('parseRandomSpec - Exclusions (single values)', () => {
 
 describe('parseRandomSpec - Exclusions (ranges)', () => {
 	it('should parse range exclusion', () => {
-		const spec = parseRandomSpec('{{random:1-20!5-9}}');
+		const spec = parseRandomSpec('{{random:1..20!5..9}}');
 
 		expect(spec?.exclusions).toHaveLength(1);
 		if (spec) {
@@ -268,7 +268,7 @@ describe('parseRandomSpec - Exclusions (ranges)', () => {
 	});
 
 	it('should parse multiple range exclusions', () => {
-		const spec = parseRandomSpec('{{random:1-100!10-20,30-40}}');
+		const spec = parseRandomSpec('{{random:1..100!10..20,30..40}}');
 
 		expect(spec?.exclusions).toHaveLength(2);
 		if (spec && spec.type !== 'discrete-list') {
@@ -278,7 +278,7 @@ describe('parseRandomSpec - Exclusions (ranges)', () => {
 	});
 
 	it('should parse mixed value and range exclusions', () => {
-		const spec = parseRandomSpec('{{random:1-20!5,7-9,15}}');
+		const spec = parseRandomSpec('{{random:1..20!5,7..9,15}}');
 
 		expect(spec?.exclusions).toHaveLength(3);
 		if (spec && spec.type !== 'discrete-list') {
@@ -289,7 +289,7 @@ describe('parseRandomSpec - Exclusions (ranges)', () => {
 	});
 
 	it('should parse negative range exclusions', () => {
-		const spec = parseRandomSpec('{{random:-20-20!-10--5}}');
+		const spec = parseRandomSpec('{{random:-20..20!-10..-5}}');
 
 		if (spec) {
 			expect(spec.exclusions[0]).toMatchObject({
@@ -303,7 +303,7 @@ describe('parseRandomSpec - Exclusions (ranges)', () => {
 
 describe('parseRandomSpec - Exclusions (variables)', () => {
 	it('should parse variable exclusion (Markdown)', () => {
-		const spec = parseRandomSpec('{{random:1-100!{{a}}}}');
+		const spec = parseRandomSpec('{{random:1..100!{{a}}}}');
 
 		if (spec) {
 			expect(spec.exclusions[0]).toMatchObject({
@@ -314,7 +314,7 @@ describe('parseRandomSpec - Exclusions (variables)', () => {
 	});
 
 	it('should parse multiple variable exclusions', () => {
-		const spec = parseRandomSpec('{{random:1-100!{{a}},{{b}}}}');
+		const spec = parseRandomSpec('{{random:1..100!{{a}},{{b}}}}');
 
 		expect(spec?.exclusions).toHaveLength(2);
 		if (spec && spec.type !== 'discrete-list') {
@@ -328,7 +328,7 @@ describe('parseRandomSpec - Exclusions (variables)', () => {
 	});
 
 	it('should parse variable range exclusion', () => {
-		const spec = parseRandomSpec('{{random:1-100!{{min}}-{{max}}}}');
+		const spec = parseRandomSpec('{{random:1..100!{{min}}..{{max}}}}');
 
 		expect(spec?.exclusions).toHaveLength(1);
 		if (spec) {
@@ -341,7 +341,7 @@ describe('parseRandomSpec - Exclusions (variables)', () => {
 	});
 
 	it('should parse mixed number and variable exclusions', () => {
-		const spec = parseRandomSpec('{{random:1-100!5,{{a}},10-20}}');
+		const spec = parseRandomSpec('{{random:1..100!5,{{a}},10..20}}');
 
 		expect(spec?.exclusions).toHaveLength(3);
 		if (spec && spec.type !== 'discrete-list') {
@@ -362,13 +362,13 @@ describe('parseRandomSpec - Exclusions (variables)', () => {
 
 describe('parseRandomSpec - Auto-detection', () => {
 	it('should auto-detect Markdown syntax', () => {
-		const spec = parseRandomSpec('{{random:1-10}}');
+		const spec = parseRandomSpec('{{random:1..10}}');
 
 		expect(spec?.type).toBe('integer');
 	});
 
 	it('should auto-detect Markdown shorthand', () => {
-		const spec = parseRandomSpec('{{1-10}}');
+		const spec = parseRandomSpec('{{1..10}}');
 
 		expect(spec?.type).toBe('integer');
 	});
@@ -384,7 +384,7 @@ describe('parseRandomSpec - Invalid specifications', () => {
 	});
 
 	it('should return null for malformed range', () => {
-		expect(parseRandomSpec('{{random:1-}}')).toBeNull();
+		expect(parseRandomSpec('{{random:1..}}')).toBeNull();
 	});
 
 	it('should return null for missing range separator', () => {
@@ -396,7 +396,7 @@ describe('parseRandomSpec - Invalid specifications', () => {
 	});
 
 	it('should return null for incomplete token', () => {
-		expect(parseRandomSpec('{{random:1-10')).toBeNull();
+		expect(parseRandomSpec('{{random:1..10')).toBeNull();
 	});
 
 	it('should return null for plain text', () => {
@@ -406,13 +406,13 @@ describe('parseRandomSpec - Invalid specifications', () => {
 
 describe('parseRandomSpec - Edge cases', () => {
 	it('should handle whitespace in exclusions', () => {
-		const spec = parseRandomSpec('{{random:1-10!5, 7, 9}}');
+		const spec = parseRandomSpec('{{random:1..10!5, 7, 9}}');
 
 		expect(spec?.exclusions).toHaveLength(3);
 	});
 
 	it('should handle zero in ranges', () => {
-		const spec = parseRandomSpec('{{random:0-10}}');
+		const spec = parseRandomSpec('{{random:0..10}}');
 
 		if (spec?.type === 'integer' || spec?.type === 'decimal-range') {
 			expect(spec.min).toMatchObject({ type: 'number', value: 0 });
@@ -420,7 +420,7 @@ describe('parseRandomSpec - Edge cases', () => {
 	});
 
 	it('should handle very small decimals', () => {
-		const spec = parseRandomSpec('{{random:0.001-0.999:0.001}}');
+		const spec = parseRandomSpec('{{random:0.001..0.999:0.001}}');
 
 		if (spec?.type === 'decimal-range') {
 			expect(spec.min).toMatchObject({ type: 'number', value: 0.001 });
@@ -429,14 +429,14 @@ describe('parseRandomSpec - Edge cases', () => {
 	});
 
 	it('should handle single-digit ranges', () => {
-		const spec = parseRandomSpec('{{random:1-9}}');
+		const spec = parseRandomSpec('{{random:1..9}}');
 
 		expect(spec?.type).toBe('integer');
 	});
 
 	it('should distinguish decimal range from decimal by digits', () => {
 		const byDigits = parseRandomSpec('{{random:2.3}}');
-		const range = parseRandomSpec('{{random:2.5-3.5}}');
+		const range = parseRandomSpec('{{random:2.5..3.5}}');
 
 		expect(byDigits?.type).toBe('decimal-by-digits');
 		expect(range?.type).toBe('decimal-range');
@@ -679,8 +679,8 @@ describe('parseRandomSpec - Decimal auto-step inference', () => {
 		});
 	});
 
-	it('should use traditional dash separator for decimal range', () => {
-		const spec = parseRandomSpec('{{1.5-2.5}}');
+	it('should use double dot separator for decimal range', () => {
+		const spec = parseRandomSpec('{{1.5..2.5}}');
 
 		expect(spec).toMatchObject({
 			type: 'decimal-range',
@@ -690,8 +690,8 @@ describe('parseRandomSpec - Decimal auto-step inference', () => {
 		});
 	});
 
-	it('should still support explicit step with dash separator', () => {
-		const spec = parseRandomSpec('{{0.5-9.99:0.01}}');
+	it('should support explicit step with double dot separator', () => {
+		const spec = parseRandomSpec('{{0.5..9.99:0.01}}');
 
 		expect(spec).toMatchObject({
 			type: 'decimal-range',
