@@ -127,7 +127,52 @@ Permet d'exclure certaines valeurs de la generation.
 {{1-100!{{a}}-{{b}}}}   Exclure plage definie par variables
 ```
 
-#### 1.2.5 Specifications de type (RandomSpec)
+#### 1.2.5 Listes discretes
+
+Permet de selectionner aleatoirement une valeur parmi une liste finie.
+
+**Syntaxe** : `{{item1|item2|item3}}` ou `{{random:item1|item2|item3}}`
+
+```
+{{rouge|bleu|vert}}             Selection parmi 3 couleurs
+{{1|2|5|10}}                    Selection parmi 4 nombres
+{{pomme|poire|banane}}          Selection parmi des chaines
+```
+
+**Resolution de noms** :
+
+Dans une liste discrete, chaque element est traite comme un "nom nu" :
+
+- Si le nom correspond a une variable definie, sa valeur est utilisee
+- Sinon, le nom est utilise comme valeur litterale
+
+```
+Variables:
+  a = 5
+  b = 10
+
+{{a|b|15}}       Selectionne parmi {5, 10, 15} (a et b sont resolus)
+{{x|y|z}}        Selectionne parmi {"x", "y", "z"} (noms litteraux)
+```
+
+**Exclusions** :
+
+Comme pour les autres types aleatoires, les exclusions utilisent `!` :
+
+```
+{{a|b|c|d!a}}           Exclure la valeur de 'a' du resultat
+{{1|2|3|4|5!3}}         Exclure le nombre 3
+{{rouge|bleu|vert!x}}   Exclure la valeur de x (ou "x" si non defini)
+```
+
+**Notes** :
+
+- Le separateur est le pipe `|` au niveau des accolades (profondeur 0)
+- Les elements peuvent etre des nombres ou des chaines
+- Minimum 2 elements requis pour constituer une liste
+- Le type de retour est `number | string` selon les valeurs
+
+#### 1.2.6 Specifications de type (RandomSpec)
 
 | Type                | Description                     | Exemple             |
 | ------------------- | ------------------------------- | ------------------- |
@@ -135,6 +180,7 @@ Permet d'exclure certaines valeurs de la generation.
 | `relative-integer`  | Entiers relatifs (excluant 0)   | `{{+-2..9}}`        |
 | `decimal-by-digits` | Decimaux par nombre de chiffres | `{{2.3}}`           |
 | `decimal-range`     | Plage decimale avec pas         | `{{0.5-9.99:0.01}}` |
+| `discrete-list`     | Selection dans une liste finie  | `{{a\|b\|c}}`       |
 
 **Source** : `src/lib/shared/parameterization/parser/random-parser.ts`
 
@@ -476,7 +522,6 @@ function add(a, b) {
 
 ```markdown
 ---
-
 ---
 
 ---
@@ -689,10 +734,12 @@ TEMPLATES:
   {{var}}                      Variable
   {{1-10}}                     Entier aleatoire 1-10
   {{-5..5}}                    Entier -5 a 5 (syntaxe double-point)
-  {{+-2..9}}                    Entiers relatifs (hors 0, +-1)
+  {{+-2..9}}                   Entiers relatifs (hors 0, +-1)
   {{2.3}}                      Decimal: 2 chiffres.3 chiffres
   {{0.5-9.99:0.01}}            Decimal avec pas
   {{1-20!5,7-9}}               Avec exclusions
+  {{a|b|c}}                    Liste discrete (selection aleatoire)
+  {{a|b|c!x}}                  Liste discrete avec exclusion
   {{eval:a+b}}                 Expression evaluee
   {{eval:sqrt(x)|d}}           Avec modifier decimal
 
