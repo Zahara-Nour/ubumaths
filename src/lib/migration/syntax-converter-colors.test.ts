@@ -74,7 +74,7 @@ describe('TinyCAS Color Conversion', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('Color: {{color:primary.0}}, Random: {{1-10}}, Var: {{x}}');
+		expect(result.converted).toBe('Color: {{color:primary.0}}, Random: {{1..10}}, Var: {{x}}');
 		expect(result.stats?.colorReferences).toBe(1);
 		expect(result.stats?.randomIntegers).toBe(1);
 		expect(result.stats?.variableRefs).toBe(1);

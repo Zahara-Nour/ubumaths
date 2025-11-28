@@ -60,6 +60,57 @@ Supprimer le support de la syntaxe `-` (tiret simple) pour les plages et ne cons
   - Cohérence : une seule syntaxe supportée
   - Code simplifié : ~20 lignes de code supprimées
 
+---
+
+## État : Phase 2 Complétée ✓
+
+### Modifications effectuées
+
+#### Syntax Converter (`src/lib/migration/syntax-converter.ts`)
+
+**Code modifié** :
+
+- Ligne 234 : `{{${min}-${max}!${convertedExclusions}}}` → `{{${min}..${max}!${convertedExclusions}}}`
+- Ligne 247 : `{{${min}-${max}}}` → `{{${min}..${max}}}`
+- Lignes 346-349 : Patterns n-digit numbers
+  - `{{10-99}}` → `{{10..99}}`
+  - `{{100-999}}` → `{{100..999}}`
+  - `{{1000-9999}}` → `{{1000..9999}}`
+  - `{{10000-99999}}` → `{{10000..99999}}`
+- Ligne 359 : `{{digits:${n}-${m}}}` → `{{digits:${n}..${m}}}`
+
+**Documentation mise à jour** :
+
+- Ligne 214 : Commentaire JSDoc de `convertRandomWithExclusions()`
+- Ligne 239 : Commentaire JSDoc de `convertRandomIntegers()`
+- Ligne 317 : Commentaire JSDoc de `convertNDigitNumbers()`
+- Lignes 672-700 : Exemples de test en commentaires (tous les patterns `-` → `..`)
+
+#### Tests mis à jour
+
+**Fichiers modifiés** :
+
+1. `src/lib/migration/syntax-converter.test.ts` : 163 tests
+   - Tous les patterns de test convertis de `-` vers `..`
+   - Exemples : `{{1-10}}` → `{{1..10}}`, `{{-5-5}}` → `{{-5..5}}`, etc.
+
+2. `src/lib/migration/syntax-converter-integration.test.ts` : Tests d'intégration
+   - Patterns simples et complexes mis à jour
+   - Patterns avec exclusions mis à jour
+
+3. `src/lib/migration/syntax-converter-colors.test.ts` : Tests de couleurs
+   - Patterns dans les tests de couleurs mis à jour
+
+**Résultat des tests** :
+✓ Tous les 163 tests passent (3 fichiers de test)
+✓ 0 erreurs, 0 warnings
+
+### Impact de la Phase 2
+
+- Le convertisseur de syntaxe génère maintenant exclusivement la syntaxe `..`
+- Cohérence avec le parser qui n'accepte que `..` (Phase 1)
+- La migration de l'ancienne syntaxe TinyCAS produira la nouvelle syntaxe v2
+
 ### Prochaines étapes (non incluses dans cette phase)
 
 1. **Migration du contenu existant** :
@@ -73,5 +124,6 @@ Supprimer le support de la syntaxe `-` (tiret simple) pour les plages et ne cons
 
 ---
 
-**Date** : 2025-11-28
-**Status** : Phase 1 terminée, tests passent
+**Date Phase 1** : 2025-11-28
+**Date Phase 2** : 2025-11-28
+**Status** : Phases 1 et 2 terminées, tous les tests passent (163/163)
