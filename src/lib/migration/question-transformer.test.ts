@@ -275,7 +275,75 @@ describe('Question Transformer', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				expect(result.template?.options?.allowDifferentForms).toBe(true);
+				expect(result.template?.options?.constraints?.brackets).toBe('off');
+			});
+
+			it('should map CE constraint options (nullTerms, factorOne, factorZero, signs)', () => {
+				const oldQuestion: QuestionBase = {
+					description: 'Expression à simplifier',
+					enounces: ['Simplifier :'],
+					expressions: ['1*x + 0'],
+					solutionss: [['x']],
+					options: [
+						'require-no-null-terms',
+						'require-no-factor-one',
+						'require-no-factor-zero',
+						'require-no-extraneous-signs'
+					],
+					defaultDelay: 30,
+					grade: '6'
+				};
+
+				const result = transformQuestion(oldQuestion, 0);
+
+				expect(result.success).toBe(true);
+				expect(result.template?.options?.constraints?.nullTerms).toBe('strict');
+				expect(result.template?.options?.constraints?.factorOne).toBe('strict');
+				expect(result.template?.options?.constraints?.factorZero).toBe('strict');
+				expect(result.template?.options?.constraints?.signs).toBe('strict');
+			});
+
+			it('should map no-penalty CE constraint options', () => {
+				const oldQuestion: QuestionBase = {
+					description: 'Expression tolérante',
+					enounces: ['Calculer :'],
+					expressions: ['3+2'],
+					solutionss: [['5']],
+					options: [
+						'no-penalty-for-null-terms',
+						'no-penalty-for-factor-one',
+						'no-penalty-for-factor-zero',
+						'no-penalty-for-extraneous-signs'
+					],
+					defaultDelay: 30,
+					grade: '5'
+				};
+
+				const result = transformQuestion(oldQuestion, 0);
+
+				expect(result.success).toBe(true);
+				expect(result.template?.options?.constraints?.nullTerms).toBe('off');
+				expect(result.template?.options?.constraints?.factorOne).toBe('off');
+				expect(result.template?.options?.constraints?.factorZero).toBe('off');
+				expect(result.template?.options?.constraints?.signs).toBe('off');
+			});
+
+			it('should map allowBracketsInFirstNegativeTerm option', () => {
+				const oldQuestion: QuestionBase = {
+					description: 'Expression négative',
+					enounces: ['Simplifier :'],
+					expressions: ['(-3) + 5'],
+					solutionss: [['-3+5']],
+					options: ['no-penalty-for-extraneous-brackets-in-first-negative-term'],
+					defaultDelay: 30,
+					grade: '5'
+				};
+
+				const result = transformQuestion(oldQuestion, 0);
+
+				expect(result.success).toBe(true);
+				expect(result.template?.options?.constraints?.brackets).toBe('off');
+				expect(result.template?.options?.constraints?.allowBracketsInFirstNegativeTerm).toBe(true);
 			});
 		});
 
