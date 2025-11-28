@@ -97,11 +97,23 @@ function testTransformCorrection(
 	const variation = result.template?.variations[0];
 	const correction: { feedback?: { correct?: string; incorrect?: string }; steps?: string[] } = {};
 
-	// Extract feedback if it exists in the template
-	// For now, we extract from correction field which contains steps
+	// Extract correction fields from the new QuestionCorrection structure
 	if (variation?.correction) {
-		// The correction field contains concatenated steps
-		correction.steps = [variation.correction];
+		// Extract steps if present (now an array of TemplateMarkdown)
+		if (variation.correction.steps?.length) {
+			correction.steps = variation.correction.steps.map((step) => String(step));
+		}
+		// Extract feedback if present
+		if (variation.correction.feedback) {
+			correction.feedback = {
+				correct: variation.correction.feedback.correct
+					? String(variation.correction.feedback.correct)
+					: undefined,
+				incorrect: variation.correction.feedback.incorrect
+					? String(variation.correction.feedback.incorrect)
+					: undefined
+			};
+		}
 	}
 
 	return Object.keys(correction).length > 0 ? correction : undefined;

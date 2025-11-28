@@ -13,13 +13,94 @@
  * @module questions/generator/instance-generator
  */
 
-import type { QuestionTemplate, QuestionInstance, GenerationResult } from '../types';
+import type {
+	QuestionTemplate,
+	QuestionInstance,
+	GenerationResult,
+	QuestionVariation,
+	QuestionVariable,
+	SharedVariationDefaults,
+	ResolvedCorrection
+} from '../types';
 import type { ResolvedMarkdown } from '$lib/shared/markdown';
+import { templateMarkdown } from '$lib/shared/markdown';
 import { validateTemplate } from '../validators/template-validator';
 import { detectCircularDependencies } from '$lib/shared/parameterization/validator/circular-dependency';
 import { resolveVariables } from './variable-resolver';
 import { resolveMarkdownContent, resolveAnswer, resolveExpression } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
+
+// ============================================================================
+// SHARED DEFAULTS MERGING
+// ============================================================================
+
+/**
+ * Merge shared and per-variation variables.
+ *
+ * Per-variation variables can reference shared variables (resolved in declaration order).
+ * If a per-variation variable has the same name as a shared variable, it overrides it.
+ *
+ * @param shared - Shared variable definitions (resolved first)
+ * @param perVariation - Per-variation variable definitions (can override shared)
+ * @returns Merged array of variables, or undefined if both are empty
+ */
+function mergeVariables(
+	shared: QuestionVariable[] | undefined,
+	perVariation: QuestionVariable[] | undefined
+): QuestionVariable[] | undefined {
+	if (!shared?.length) return perVariation;
+	if (!perVariation?.length) return shared;
+
+	// Collect names that are overridden by per-variation
+	const overriddenNames = new Set(perVariation.map((v) => v.name));
+
+	// Filter out shared variables that are overridden
+	const effectiveShared = shared.filter((v) => !overriddenNames.has(v.name));
+
+	// Shared variables first (so per-variation can reference them), then per-variation
+	return [...effectiveShared, ...perVariation];
+}
+
+/**
+ * Merge shared defaults with variation-specific values.
+ *
+ * Variation values override shared values for most fields.
+ * Special case: `variables` are MERGED (shared first, per-variation can reference/override).
+ *
+ * @param shared - Shared defaults that apply to all variations
+ * @param variation - Variation-specific values
+ * @returns Resolved variation with shared defaults applied
+ */
+function resolveVariationWithShared(
+	shared: SharedVariationDefaults | undefined,
+	variation: QuestionVariation
+): QuestionVariation {
+	if (!shared) return variation;
+
+	return {
+		// statement: empty string falls through to shared (use ||)
+		// Fall back to empty TemplateMarkdown if neither has value (edge case)
+		statement: variation.statement || shared.statement || templateMarkdown(''),
+
+		// answer: allow explicit empty array/string (use ??)
+		answer: variation.answer ?? shared.answer ?? '',
+
+		// correction: full structure (use ??)
+		correction: variation.correction ?? shared.correction,
+
+		// choices: per-variation overrides entirely (use ??)
+		choices: variation.choices ?? shared.choices,
+
+		// validationRules: per-variation overrides entirely (use ??)
+		validationRules: variation.validationRules ?? shared.validationRules,
+
+		// variables: MERGE (shared first, per-variation can reference/override)
+		variables: mergeVariables(shared.variables, variation.variables),
+
+		// blanks: per-variation only (no shared equivalent)
+		blanks: variation.blanks
+	};
+}
 
 /**
  * Generate a question instance from a template
@@ -68,9 +149,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				: Math.floor(Math.random() * template.variations.length);
 		const selectedVariation = template.variations[variationIndex];
 
-		// 3. Detect circular dependencies in selected variation
-		if (selectedVariation.variables) {
-			const circularResult = detectCircularDependencies(selectedVariation.variables);
+		// 3. Merge shared defaults with variation-specific values
+		const resolvedVariation = resolveVariationWithShared(template.shared, selectedVariation);
+
+		// 4. Detect circular dependencies in resolved variation
+		if (resolvedVariation.variables) {
+			const circularResult = detectCircularDependencies(resolvedVariation.variables);
 			if (!circularResult.valid) {
 				return {
 					success: false,
@@ -79,37 +163,67 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 		}
 
-		// 4. Resolve variables in declaration order
-		const resolvedVariables = resolveVariables(selectedVariation.variables || [], seed);
+		// 5. Resolve variables in declaration order
+		const resolvedVariables = resolveVariables(resolvedVariation.variables || [], seed);
 
-		// 5. Resolve statement markdown
+		// 6. Resolve statement markdown
 		const resolvedStatement: ResolvedMarkdown = resolveMarkdownContent(
-			selectedVariation.statement,
+			resolvedVariation.statement,
 			resolvedVariables,
 			seed
 		);
 
 		// Resolve answer (stays the same - it's a plain string)
-		const resolvedAnswer = resolveAnswer(selectedVariation.answer, resolvedVariables, seed);
+		const resolvedAnswer = resolveAnswer(resolvedVariation.answer, resolvedVariables, seed);
 
-		// Resolve correction if present
-		let resolvedCorrection: ResolvedMarkdown | undefined;
-		if (selectedVariation.correction) {
-			resolvedCorrection = resolveMarkdownContent(
-				selectedVariation.correction,
-				resolvedVariables,
-				seed
-			);
+		// Resolve correction if present (QuestionCorrection has feedback and/or steps)
+		let resolvedCorrection: ResolvedCorrection | undefined;
+		if (resolvedVariation.correction) {
+			const { feedback, steps } = resolvedVariation.correction;
+			resolvedCorrection = {};
+
+			// Resolve feedback messages (correct/incorrect/partial)
+			if (feedback) {
+				resolvedCorrection.feedback = {};
+				if (feedback.correct) {
+					resolvedCorrection.feedback.correct = resolveMarkdownContent(
+						feedback.correct,
+						resolvedVariables,
+						seed
+					);
+				}
+				if (feedback.incorrect) {
+					resolvedCorrection.feedback.incorrect = resolveMarkdownContent(
+						feedback.incorrect,
+						resolvedVariables,
+						seed
+					);
+				}
+				if (feedback.partial) {
+					resolvedCorrection.feedback.partial = resolveMarkdownContent(
+						feedback.partial,
+						resolvedVariables,
+						seed
+					);
+				}
+			}
+
+			// Resolve step-by-step explanation
+			if (steps) {
+				resolvedCorrection.steps = steps.map((step) =>
+					resolveMarkdownContent(step, resolvedVariables, seed)
+				);
+			}
 		}
 
-		// 6. Resolve type-specific fields from selected variation
+		// 7. Resolve type-specific fields from resolved variation
 		let resolvedChoices;
 		let shuffledChoices;
 		let resolvedBlanks;
 
-		if (template.type === 'multiple_choice' && selectedVariation.choices) {
+		if (template.type === 'multiple_choice' && resolvedVariation.choices) {
 			// Resolve choice content
-			resolvedChoices = selectedVariation.choices.map((choice) => {
+			resolvedChoices = resolvedVariation.choices.map((choice) => {
 				const resolvedContent: ResolvedMarkdown = resolveMarkdownContent(
 					choice.content,
 					resolvedVariables,
@@ -125,14 +239,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			shuffledChoices = shuffleChoices(resolvedChoices, seed);
 		}
 
-		if (template.type === 'fill_in_blanks' && selectedVariation.blanks) {
-			resolvedBlanks = selectedVariation.blanks.map((blank) => ({
+		if (template.type === 'fill_in_blanks' && resolvedVariation.blanks) {
+			resolvedBlanks = resolvedVariation.blanks.map((blank) => ({
 				position: blank.position,
 				expectedAnswer: resolveExpression(blank.expectedAnswer, resolvedVariables, seed)
 			}));
 		}
 
-		// 7. Construct instance
+		// 8. Construct instance
 		const instance: QuestionInstance = {
 			templateId: template.id,
 			type: template.type,

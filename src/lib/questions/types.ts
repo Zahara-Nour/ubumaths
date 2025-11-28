@@ -179,8 +179,8 @@ export interface QuestionVariation {
 	/** Expected answer(s) - plain string values (not markdown) */
 	answer: string | string[];
 
-	/** Detailed correction/explanation as markdown template (optional) */
-	correction?: TemplateMarkdown;
+	/** Detailed correction/explanation with full structure (optional) */
+	correction?: QuestionCorrection;
 
 	// ---- Type-specific Fields (per-variation) ----
 
@@ -213,6 +213,36 @@ export interface QuestionVariation {
 	validationRules?: ValidationRule[];
 }
 
+/**
+ * Shared defaults that apply to all variations.
+ * Per-variation fields override these when defined.
+ */
+export interface SharedVariationDefaults {
+	/** Shared question statement template */
+	statement?: TemplateMarkdown;
+
+	/** Shared variable definitions (resolved before per-variation variables) */
+	variables?: QuestionVariable[];
+
+	/** Shared expected answer(s) */
+	answer?: string | string[];
+
+	/** Shared correction with full structure (feedback + steps) */
+	correction?: QuestionCorrection;
+
+	/** Shared choices for choice/qcm types */
+	choices?: {
+		/** Choice content as markdown template */
+		content: TemplateMarkdown;
+
+		/** Whether this choice is correct */
+		isCorrect: boolean;
+	}[];
+
+	/** Shared validation rules */
+	validationRules?: ValidationRule[];
+}
+
 // ============================================================================
 // QUESTION TEMPLATE (stored in database)
 // ============================================================================
@@ -242,6 +272,14 @@ export interface QuestionTemplate {
 	description?: string;
 
 	// ---- Variations ----
+
+	/**
+	 * Shared defaults for all variations (optional).
+	 *
+	 * When defined, variations inherit these values unless they override them.
+	 * For `variables`, shared and per-variation are MERGED (shared resolved first).
+	 */
+	shared?: SharedVariationDefaults;
 
 	/**
 	 * Array of question variations (minimum 1 required)
@@ -401,10 +439,10 @@ export interface QuestionInstance {
 	delay?: number;
 
 	/**
-	 * Correction as resolved markdown (all placeholders resolved)
-	 * Optional detailed explanation with all values resolved.
+	 * Resolved correction with feedback and/or step-by-step explanation.
+	 * All placeholders are resolved to final values.
 	 */
-	correction?: ResolvedMarkdown;
+	correction?: ResolvedCorrection;
 
 	// ---- Type-specific (resolved) ----
 
@@ -581,6 +619,20 @@ export interface QuestionCorrection {
 		partial?: TemplateMarkdown;
 	};
 	steps?: TemplateMarkdown[];
+}
+
+/**
+ * Resolved correction with all placeholders resolved to final values.
+ *
+ * Used in QuestionInstance after template resolution.
+ */
+export interface ResolvedCorrection {
+	feedback?: {
+		correct?: ResolvedMarkdown;
+		incorrect?: ResolvedMarkdown;
+		partial?: ResolvedMarkdown;
+	};
+	steps?: ResolvedMarkdown[];
 }
 
 // ============================================================================

@@ -83,11 +83,11 @@ ComputeEngine automatically applies these when parsing:
 These happen automatically when parsing:
 
 - `require-reduced-fractions` ✅ (canonical reduces fractions)
-- `require-no-extraneaous-zeros` ✅ (canonical removes them)
+- `require-no-extraneous-zeros` ✅ (canonical removes them)
 - `require-no-factor-one` ✅ (canonical removes factor 1)
 - `require-no-factor-zero` ✅ (canonical simplifies)
 - `require-no-null-terms` ✅ (canonical removes +0)
-- `require-no-extraneaous-signs` ✅ (canonical simplifies --)
+- `require-no-extraneous-signs` ✅ (canonical simplifies --)
 
 ### Tier 2: Use Pattern Matching
 
@@ -509,7 +509,7 @@ unitFlexible: false // Accept only exact unit (not km for m)
 | `remove-null-terms`                    | 11    | Display  | ✅ Display only          |
 | `no-penalty-for-non-reduced-fractions` | 10    | Low      | ⚠️ CE canonical handles  |
 | `no-penalty-for-extraneous-zeros`      | 8     | Low      | ⚠️ CE canonical handles  |
-| `require-no-extraneaous-zeros`         | 6     | Medium   | ❌ Need LaTeX check      |
+| `require-no-extraneous-zeros`          | 6     | Medium   | ❌ Need LaTeX check      |
 | `no-penalty-for-factor-one`            | 6     | Low      | ⚠️ CE canonical handles  |
 | `no-penalty-for-not-respected-unit`    | 6     | Medium   | ❌ Need unit system      |
 | `solutions-order-not-important`        | 5     | High     | ✅ `allowDifferentForms` |

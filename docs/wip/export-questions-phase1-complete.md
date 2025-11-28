@@ -124,7 +124,7 @@ Each `level-{n}.json` file contains an array with one question object:
 ## Common Warnings Found
 
 1. **Unknown Options** (most common):
-   - `require-no-extraneaous-brackets`
+   - `require-no-extraneous-brackets`
    - `exp-no-spaces`
    - `require-correct-spaces`
    - `no-shuffle-choices`

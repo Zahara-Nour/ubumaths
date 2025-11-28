@@ -232,7 +232,7 @@
 
 <!-- Question Detail Dialog -->
 <Dialog.Root bind:open={dialogOpen}>
-	<Dialog.Content class="max-h-[90vh] max-w-5xl overflow-y-auto">
+	<Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-[95vw]">
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				{#if selectedQuestion}

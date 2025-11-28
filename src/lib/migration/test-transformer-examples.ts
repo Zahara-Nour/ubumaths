@@ -32,9 +32,9 @@ const realQuestions: QuestionBase[] = [
 			'\\text{Le chiffre des unités est }$$...$$\\text{.}'
 		],
 		options: [
-			'require-no-extraneaous-zeros',
-			'require-no-extraneaous-brackets',
-			'require-no-extraneaous-signs'
+			'require-no-extraneous-zeros',
+			'require-no-extraneous-brackets',
+			'require-no-extraneous-signs'
 		],
 		defaultDelay: 10,
 		grade: 'CP'

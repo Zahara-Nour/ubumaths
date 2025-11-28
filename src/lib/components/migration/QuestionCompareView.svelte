@@ -68,6 +68,7 @@
 		description: original.description || '',
 		subdescription: original.subdescription || '',
 		enounces: original.enounces || [],
+		variabless: original.variabless || [],
 		solutionss: original.solutionss || [],
 		options: original.options || [],
 		grade: original.grade || ''
@@ -136,6 +137,18 @@
 							oldFields.enounces
 						)}</pre>
 				</div>
+
+				<!-- Variables -->
+				{#if Array.isArray(oldFields.variabless) && oldFields.variabless.length > 0}
+					<div>
+						<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+							variabless ({oldFields.variabless.length})
+						</h4>
+						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+								oldFields.variabless
+							)}</pre>
+					</div>
+				{/if}
 
 				<!-- Solutions -->
 				<div>
