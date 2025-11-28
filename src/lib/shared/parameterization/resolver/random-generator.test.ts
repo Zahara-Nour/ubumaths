@@ -454,7 +454,7 @@ describe('generateRandomNumber', () => {
 				step: 0.5,
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], 42) as number;
 			const offset = value - 0.5;
 			expect(offset % 0.5).toBeCloseTo(0, 5);
 		});
@@ -467,7 +467,7 @@ describe('generateRandomNumber', () => {
 				step: 0.01,
 				exclusions: []
 			};
-			const value = generateRandomNumber(spec, [], 42);
+			const value = generateRandomNumber(spec, [], 42) as number;
 			expect(value).toBeGreaterThanOrEqual(0);
 			expect(value).toBeLessThanOrEqual(1);
 			// Check it's a multiple of 0.01
@@ -585,7 +585,9 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 5 },
 				exclusions: []
 			};
-			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 100 }, (_, i) =>
+				generateRandomNumber(spec, [], i)
+			) as number[];
 
 			// Should have both positive and negative values
 			const positives = values.filter((v) => v > 0);
@@ -641,7 +643,7 @@ describe('generateRandomNumber', () => {
 				{ name: 'minVal', value: '3' },
 				{ name: 'maxVal', value: '7' }
 			];
-			const value = generateRandomNumber(spec, resolved, 42);
+			const value = generateRandomNumber(spec, resolved, 42) as number;
 			if (value > 0) {
 				expect(value).toBeGreaterThanOrEqual(3);
 				expect(value).toBeLessThanOrEqual(7);
@@ -658,7 +660,9 @@ describe('generateRandomNumber', () => {
 				max: { type: 'number', value: 5 },
 				exclusions: []
 			};
-			const values = Array.from({ length: 500 }, (_, i) => generateRandomNumber(spec, [], i));
+			const values = Array.from({ length: 500 }, (_, i) =>
+				generateRandomNumber(spec, [], i)
+			) as number[];
 
 			// Count positive and negative values
 			const positives = values.filter((v) => v > 0).length;
@@ -681,6 +685,167 @@ describe('generateRandomNumber', () => {
 			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
 				'Relative integer min must be positive'
 			);
+		});
+	});
+
+	// ============================================================================
+	// DISCRETE LISTS
+	// ============================================================================
+
+	describe('Discrete lists', () => {
+		it('should select a random item from list of literals', () => {
+			const spec: RandomSpec = {
+				type: 'discrete-list',
+				items: ['rouge', 'vert', 'bleu'],
+				exclusions: []
+			};
+			const value = generateRandomNumber(spec, [], 42);
+			expect(['rouge', 'vert', 'bleu']).toContain(value);
+		});
+
+		it('should return same value with same seed', () => {
+			const spec: RandomSpec = {
+				type: 'discrete-list',
+				items: ['a', 'b', 'c', 'd', 'e'],
+				exclusions: []
+			};
+			const value1 = generateRandomNumber(spec, [], 12345);
+			const value2 = generateRandomNumber(spec, [], 12345);
+			expect(value1).toBe(value2);
+		});
+
+		it('should resolve variable names to their values', () => {
+			const spec: RandomSpec = {
+				type: 'discrete-list',
+				items: ['a', 'b', 'literal'],
+				exclusions: []
+			};
+			const resolved: ResolvedVariable[] = [
+				{ name: 'a', value: '10' },
+				{ name: 'b', value: '20' }
+			];
+
+			// Generate many values to check all possibilities
+			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, resolved, i));
+
+			// Should only contain resolved values ('10', '20') or literal 'literal'
+			const uniqueValues = [...new Set(values)];
+			expect(uniqueValues.every((v) => ['10', '20', 'literal'].includes(String(v)))).toBe(true);
+
+			// Should contain at least one of each (with high probability)
+			expect(values).toContain('10'); // 'a' resolved to '10'
+			expect(values).toContain('20'); // 'b' resolved to '20'
+			expect(values).toContain('literal'); // 'literal' stays as literal
+		});
+
+		it('should treat undefined variables as literal strings', () => {
+			const spec: RandomSpec = {
+				type: 'discrete-list',
+				items: ['a', 'b', 'c'],
+				exclusions: []
+			};
+			const resolved: ResolvedVariable[] = [{ name: 'a', value: '100' }];
+
+			const values = Array.from({ length: 50 }, (_, i) => generateRandomNumber(spec, resolved, i));
+
+			// 'a' should be resolved to '100'
+			// 'b' and 'c' have no variables, so treated as literals
+			const uniqueValues = [...new Set(values)];
+			expect(uniqueValues.every((v) => ['100', 'b', 'c'].includes(String(v)))).toBe(true);
+		});
+
+		it('should exclude specified items', () => {
+			const spec: RandomSpec = {
+				type: 'discrete-list',
+				items: ['a', 'b', 'c', 'd'],
+				exclusions: ['b', 'd']
+			};
+
+			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, [], i));
+
+			// Should only contain 'a' and 'c'
+			expect(values.every((v) => ['a', 'c'].includes(String(v)))).toBe(true);
+			expect(values).toContain('a');
+			expect(values).toContain('c');
+			expect(values).not.toContain('b');
+			expect(values).not.toContain('d');
+		});
+
+		it('should resolve variable names in exclusions', () => {
+			const spec: RandomSpec = {
+				type: 'discrete-list',
+				items: ['a', 'b', 'c'],
+				exclusions: ['b']
+			};
+			const resolved: ResolvedVariable[] = [
+				{ name: 'a', value: '10' },
+				{ name: 'b', value: '20' },
+				{ name: 'c', value: '30' }
+			];
+
+			const values = Array.from({ length: 50 }, (_, i) => generateRandomNumber(spec, resolved, i));
+
+			// 'b' is excluded, which resolves to '20'
+			// Should only contain '10' (from 'a') and '30' (from 'c')
+			expect(values.every((v) => ['10', '30'].includes(String(v)))).toBe(true);
+			expect(values).not.toContain('20'); // 'b' excluded
+		});
+
+		it('should throw error when all items are excluded', () => {
+			const spec: RandomSpec = {
+				type: 'discrete-list',
+				items: ['a', 'b', 'c'],
+				exclusions: ['a', 'b', 'c']
+			};
+
+			expect(() => generateRandomNumber(spec, [], 42)).toThrow(
+				'All items excluded from discrete list'
+			);
+		});
+
+		it('should handle mixed variable/literal items with exclusions', () => {
+			const spec: RandomSpec = {
+				type: 'discrete-list',
+				items: ['var1', 'literal1', 'var2', 'literal2'],
+				exclusions: ['var1']
+			};
+			const resolved: ResolvedVariable[] = [
+				{ name: 'var1', value: 'value1' },
+				{ name: 'var2', value: 'value2' }
+			];
+
+			const values = Array.from({ length: 100 }, (_, i) => generateRandomNumber(spec, resolved, i));
+
+			// Should contain: 'literal1', 'value2', 'literal2'
+			// Should NOT contain: 'value1' (var1 excluded)
+			const uniqueValues = [...new Set(values)];
+			expect(
+				uniqueValues.every((v) => ['literal1', 'value2', 'literal2'].includes(String(v)))
+			).toBe(true);
+			expect(values).not.toContain('value1');
+		});
+
+		it('should select uniformly from available items', () => {
+			const spec: RandomSpec = {
+				type: 'discrete-list',
+				items: ['a', 'b', 'c'],
+				exclusions: []
+			};
+
+			const values = Array.from({ length: 300 }, (_, i) => generateRandomNumber(spec, [], i));
+			const counts = {
+				a: values.filter((v) => v === 'a').length,
+				b: values.filter((v) => v === 'b').length,
+				c: values.filter((v) => v === 'c').length
+			};
+
+			// Each item should appear roughly 1/3 of the time (allow 20-40% range)
+			expect(counts.a / values.length).toBeGreaterThan(0.2);
+			expect(counts.a / values.length).toBeLessThan(0.47);
+			expect(counts.b / values.length).toBeGreaterThan(0.2);
+			expect(counts.b / values.length).toBeLessThan(0.47);
+			expect(counts.c / values.length).toBeGreaterThan(0.2);
+			expect(counts.c / values.length).toBeLessThan(0.47);
 		});
 	});
 });

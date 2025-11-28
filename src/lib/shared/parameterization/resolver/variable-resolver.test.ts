@@ -469,4 +469,115 @@ describe('resolveVariables', () => {
 			expect(resolved[1].value).toBe('5');
 		});
 	});
+
+	// ============================================================================
+	// DISCRETE LISTS (INTEGRATION TESTS)
+	// ============================================================================
+
+	describe('Discrete lists', () => {
+		it('should select random item from literal list', () => {
+			const variables: Variable[] = [{ name: 'color', expression: '{{rouge|vert|bleu}}' }];
+			const resolved = resolveVariables(variables, 42);
+			expect(['rouge', 'vert', 'bleu']).toContain(resolved[0].value);
+		});
+
+		it('should resolve variable names in discrete list', () => {
+			const variables: Variable[] = [
+				{ name: 'a', expression: '10' },
+				{ name: 'b', expression: '20' },
+				{ name: 'choice', expression: '{{a|b|literal}}' }
+			];
+
+			// Generate multiple times to verify all possibilities
+			const results = Array.from({ length: 100 }, (_, i) => resolveVariables(variables, i));
+
+			const choiceValues = results.map((r) => r[2].value);
+			expect(choiceValues.some((v) => v === '10')).toBe(true); // 'a' resolved
+			expect(choiceValues.some((v) => v === '20')).toBe(true); // 'b' resolved
+			expect(choiceValues.some((v) => v === 'literal')).toBe(true); // literal stays
+		});
+
+		it('should handle exclusions in discrete list', () => {
+			const variables: Variable[] = [{ name: 'choice', expression: '{{a|b|c|d!b,d}}' }];
+
+			const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+			const values = results.map((r) => r[0].value);
+
+			// Should only contain 'a' and 'c'
+			expect(values.every((v) => ['a', 'c'].includes(v))).toBe(true);
+			expect(values).not.toContain('b');
+			expect(values).not.toContain('d');
+		});
+
+		it('should resolve variables in exclusions', () => {
+			const variables: Variable[] = [
+				{ name: 'a', expression: '10' },
+				{ name: 'b', expression: '20' },
+				{ name: 'c', expression: '30' },
+				{ name: 'choice', expression: '{{a|b|c!b}}' }
+			];
+
+			const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+			const values = results.map((r) => r[3].value);
+
+			// 'b' is excluded (resolves to '20')
+			expect(values.every((v) => ['10', '30'].includes(v))).toBe(true);
+			expect(values).not.toContain('20');
+		});
+
+		it('should use discrete list in text', () => {
+			const variables: Variable[] = [
+				{ name: 'color', expression: '{{rouge|vert|bleu}}' },
+				{ name: 'text', expression: 'La couleur est {{color}}' }
+			];
+
+			const resolved = resolveVariables(variables, 123);
+			expect(resolved[1].value).toMatch(/^La couleur est (rouge|vert|bleu)$/);
+		});
+
+		it('should combine discrete list with eval', () => {
+			const variables: Variable[] = [
+				{ name: 'op', expression: '{{+|-}}' },
+				{ name: 'result', expression: '{{eval:5{{op}}3}}' }
+			];
+
+			// Generate multiple times to ensure we get both operators
+			const results = Array.from({ length: 50 }, (_, i) => resolveVariables(variables, i));
+			const values = results.map((r) => r[1].value);
+
+			// Should have both 8 (+) and 2 (-)
+			expect(values).toContain('8'); // 5+3
+			expect(values).toContain('2'); // 5-3
+		});
+
+		it('should use discrete list with random numbers', () => {
+			const variables: Variable[] = [
+				{ name: 'a', expression: '{{1-10}}' },
+				{ name: 'b', expression: '{{1-10}}' },
+				{ name: 'largest', expression: '{{a|b}}' }
+			];
+
+			const resolved = resolveVariables(variables, 42);
+
+			// 'largest' should be either value of 'a' or 'b'
+			expect([resolved[0].value, resolved[1].value]).toContain(resolved[2].value);
+		});
+
+		it('should handle nested variable references in discrete list', () => {
+			const variables: Variable[] = [
+				{ name: 'x', expression: '{{1-5}}' },
+				{ name: 'y', expression: '{{6-10}}' },
+				{ name: 'choice', expression: '{{x|y}}' },
+				{ name: 'text', expression: 'Chosen: {{choice}}' }
+			];
+
+			const resolved = resolveVariables(variables, 789);
+
+			// choice should be value of x or y
+			expect([resolved[0].value, resolved[1].value]).toContain(resolved[2].value);
+
+			// text should include the chosen value
+			expect(resolved[3].value).toBe(`Chosen: ${resolved[2].value}`);
+		});
+	});
 });

@@ -166,14 +166,18 @@ function getVariableNames(expression: string): string[] {
 					if (randomSpec.digitsAfter.type === 'variable') names.push(randomSpec.digitsAfter.name);
 				}
 				// Check exclusions for variable references
-				for (const exclusion of randomSpec.exclusions) {
-					if (exclusion.type === 'value') {
-						if (exclusion.value.type === 'variable') names.push(exclusion.value.name);
-					} else if (exclusion.type === 'range') {
-						if (exclusion.min.type === 'variable') names.push(exclusion.min.name);
-						if (exclusion.max.type === 'variable') names.push(exclusion.max.name);
+				// Note: discrete-list exclusions are strings, not Exclusion objects
+				if (randomSpec.type !== 'discrete-list') {
+					for (const exclusion of randomSpec.exclusions) {
+						if (exclusion.type === 'value') {
+							if (exclusion.value.type === 'variable') names.push(exclusion.value.name);
+						} else if (exclusion.type === 'range') {
+							if (exclusion.min.type === 'variable') names.push(exclusion.min.name);
+							if (exclusion.max.type === 'variable') names.push(exclusion.max.name);
+						}
 					}
 				}
+				// For discrete-list, items and exclusions are bare names (resolved at runtime)
 			}
 		} else if (token.type === 'eval') {
 			// Extract variables from inside eval expressions: {{eval:{{a}} + {{b}}}}

@@ -90,6 +90,14 @@ export function generateRandomNumber(
 	resolvedVariables: VariableContext,
 	seed?: number
 ): number {
+	// Handle discrete-list separately (returns string, use shared parameterization module)
+	if (spec.type === 'discrete-list') {
+		throw new Error(
+			'discrete-list type is not supported by this generator. ' +
+				'Use the shared parameterization module for discrete list selection.'
+		);
+	}
+
 	// 1. Resolve variables in bounds/digits
 	let min: number | undefined;
 	let max: number | undefined;
