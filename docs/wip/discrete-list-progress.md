@@ -1,6 +1,6 @@
 # Progress: Extension {{random:...}} pour listes discrètes
 
-## Status: Phase 3 - En cours
+## Status: ✅ COMPLETE
 
 ## Résumé
 
@@ -10,53 +10,57 @@ Ajout du support pour la sélection aléatoire parmi une liste de valeurs discr�
 
 ## Phases
 
-| Phase | Description        | Status   | Commit     |
-| ----- | ------------------ | -------- | ---------- |
-| 1     | Types et Parser    | ✅ Done  | `c72006c8` |
-| 2     | Tokenizer          | ✅ Done  | `adbd6d73` |
-| 3     | Generator/Resolver | En cours | -          |
-| 4     | Tests              | Pending  | -          |
-| 5     | Migration          | Pending  | -          |
-| 6     | Documentation      | Pending  | -          |
-| 7     | Quality Checks     | Pending  | -          |
+| Phase | Description        | Status  | Commit     |
+| ----- | ------------------ | ------- | ---------- |
+| 1     | Types et Parser    | ✅ Done | `c72006c8` |
+| 2     | Tokenizer          | ✅ Done | `adbd6d73` |
+| 3     | Generator/Resolver | ✅ Done | `1f17d47d` |
+| 4     | Tests              | ✅ Done | (inclus)   |
+| 5     | Migration          | ✅ Done | `a2cfadc0` |
+| 6     | Documentation      | ✅ Done | `c59522fd` |
+| 7     | Quality Checks     | ✅ Done | `2c860a3b` |
 
 ## Phase 1: Types et Parser ✅
 
-### Fichiers modifiés
-
-- [x] `src/lib/shared/parameterization/types.ts`
-- [x] `src/lib/shared/parameterization/parser/random-parser.ts`
-
-### Fonctions ajoutées
-
-- `hasTopLevelPipe()` - Détecte pipes au niveau 0
-- `splitAtTopLevelMultiple()` - Split en respectant les accolades imbriquées
-- `parseDiscreteList()` - Parser principal pour listes discrètes
-
-### Code review: APPROVED
+- `discrete-list` ajouté à RandomSpec
+- `parseDiscreteList()`, `hasTopLevelPipe()`, `splitAtTopLevelMultiple()`
 
 ## Phase 2: Tokenizer ✅
 
-### Fichiers modifiés
+- `isRandomShorthand()` détecte pipes au niveau 0
+- `{{a|b|c}}` reconnu comme type `'random'`
 
-- [x] `src/lib/shared/parameterization/parser/tokenizer.ts`
+## Phase 3: Generator/Resolver ✅
 
-### Fonctions ajoutées
+- `generateFromDiscreteList()` avec résolution noms nus
+- Support exclusions variables
+- Return type `number | string`
+- Tests inclus (18 nouveaux tests)
 
-- `hasTopLevelPipe()` (dupliqué de random-parser - TODO: extraire)
-- `isRandomShorthand()` mis à jour pour détecter pipes
+## Phase 4: Tests ✅
 
-### Code review: APPROVED (suggestion: extraire hasTopLevelPipe dans module partagé)
+Inclus dans Phase 3:
 
-## Phase 3: Generator/Resolver - En cours
+- 10 tests unitaires random-generator
+- 8 tests intégration variable-resolver
+- **375/375 tests passent**
 
-### Fichiers à modifier
+## Phase 5: Migration ✅
 
-- [ ] `src/lib/shared/parameterization/resolver/random-generator.ts`
-- [ ] `src/lib/shared/parameterization/resolver/variable-resolver.ts`
+- `syntax-converter.ts` mis à jour
+- Sortie de `$l{a;b;c}` → `{{a|b|c}}`
 
-### Objectif
+## Phase 6: Documentation ✅
 
-- `generateFromDiscreteList()` - Sélection aléatoire équiprobable
-- Résolution des noms nus (variables vs littéraux)
-- Support des exclusions
+- `docs/ref/markdown.md` mis à jour
+- Section 1.2.5 Listes discrètes ajoutée
+- Table RandomSpec mise à jour
+- Résumé syntaxique mis à jour
+
+## Phase 7: Quality Checks ✅
+
+- **375/375** tests parameterization passent
+- **118/118** tests syntax-converter passent
+- ESLint: 0 errors
+- TypeScript: 8 erreurs pré-existantes (non liées)
+- Tests migration integration: 42 échecs pré-existants (non liés)
