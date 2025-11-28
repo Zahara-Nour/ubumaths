@@ -191,8 +191,8 @@ Le projet utilise la syntaxe **Markdown** (double braces) pour tous les template
 | Préfixe                | Usage                        | Exemple                            |
 | ---------------------- | ---------------------------- | ---------------------------------- |
 | `{{name}}`             | Référence variable           | `{{a}}`, `{{max}}`                 |
-| `{{1-10}}`             | Entier aléatoire (raccourci) | `{{0-99}}`                         |
-| `{{random:...}}`       | Entier aléatoire (explicite) | `{{random:1-10}}`                  |
+| `{{1..10}}`            | Entier aléatoire (raccourci) | `{{0..99}}`                        |
+| `{{random:...}}`       | Entier aléatoire (explicite) | `{{random:1..10}}`                 |
 | `{{eval:...}}`         | Évaluation mathématique      | `{{eval:{{a}}+{{b}}}}`             |
 | `{{a\|b\|c}}`          | Sélection dans liste         | `{{rouge\|bleu\|vert}}`            |
 | `{{color:...}}`        | Référence couleur            | `{{color:primary.0}}`              |
@@ -206,20 +206,20 @@ Le convertisseur `syntax-converter.ts` gère toutes les conversions:
 
 #### Entiers aléatoires
 
-| Ancien (TinyCAS) | Nouveau    | Description             |
-| ---------------- | ---------- | ----------------------- |
-| `$e[1;10]`       | `{{1-10}}` | Entier aléatoire 1 à 10 |
-| `$e[0;99]`       | `{{0-99}}` | Entier aléatoire 0 à 99 |
-| `$e[-5;5]`       | `{{-5-5}}` | Avec bornes négatives   |
+| Ancien (TinyCAS) | Nouveau     | Description             |
+| ---------------- | ----------- | ----------------------- |
+| `$e[1;10]`       | `{{1..10}}` | Entier aléatoire 1 à 10 |
+| `$e[0;99]`       | `{{0..99}}` | Entier aléatoire 0 à 99 |
+| `$e[-5;5]`       | `{{-5..5}}` | Avec bornes négatives   |
 
 #### Exclusions
 
-| Ancien (TinyCAS)  | Nouveau               | Description                 |
-| ----------------- | --------------------- | --------------------------- |
-| `$e[1;10]\{5}`    | `{{1-10!5}}`          | Exclure valeur unique       |
-| `$e[1;10]\{5;7}`  | `{{1-10!5,7}}`        | Exclure plusieurs valeurs   |
-| `$e[0;9]\{&1}`    | `{{0-9!{{1}}}}`       | Exclure valeur de variable  |
-| `$e[0;9]\{&1;&2}` | `{{0-9!{{1}},{{2}}}}` | Exclure plusieurs variables |
+| Ancien (TinyCAS)  | Nouveau                | Description                 |
+| ----------------- | ---------------------- | --------------------------- |
+| `$e[1;10]\{5}`    | `{{1..10!5}}`          | Exclure valeur unique       |
+| `$e[1;10]\{5;7}`  | `{{1..10!5,7}}`        | Exclure plusieurs valeurs   |
+| `$e[0;9]\{&1}`    | `{{0..9!{{1}}}}`       | Exclure valeur de variable  |
+| `$e[0;9]\{&1;&2}` | `{{0..9!{{1}},{{2}}}}` | Exclure plusieurs variables |
 
 #### Entiers relatifs (±)
 
@@ -237,12 +237,12 @@ Le convertisseur `syntax-converter.ts` gère toutes les conversions:
 
 #### Nombres à N chiffres
 
-| Ancien (TinyCAS) | Nouveau                  | Description               |
-| ---------------- | ------------------------ | ------------------------- |
-| `$e{2;2}`        | `{{10-99}}`              | Nombre à 2 chiffres       |
-| `$e{3;3}`        | `{{100-999}}`            | Nombre à 3 chiffres       |
-| `$e{2;4}`        | `{{digits:2-4}}`         | 2 à 4 chiffres (variable) |
-| `$e{&1;&1}`      | `{{digits:{{1}};{{1}}}}` | Chiffres selon variable   |
+| Ancien (TinyCAS) | Nouveau                   | Description               |
+| ---------------- | ------------------------- | ------------------------- |
+| `$e{2;2}`        | `{{10..99}}`              | Nombre à 2 chiffres       |
+| `$e{3;3}`        | `{{100..999}}`            | Nombre à 3 chiffres       |
+| `$e{2;4}`        | `{{digits:2..4}}`         | 2 à 4 chiffres (variable) |
+| `$e{&1;&1}`      | `{{digits:{{1}}..{{1}}}}` | Chiffres selon variable   |
 
 #### Sélection dans liste (listes discrètes)
 
@@ -669,8 +669,8 @@ function resolveVariationWithShared(
 	"title": "Connaître la position décimale",
 	"shared": {
 		"variables": [
-			{ "name": "1", "expression": "{{1-9}}" },
-			{ "name": "2", "expression": "{{0-9!{{1}}}}" }
+			{ "name": "1", "expression": "{{1..9}}" },
+			{ "name": "2", "expression": "{{0..9!{{1}}}}" }
 		]
 	},
 	"variations": [
@@ -835,14 +835,14 @@ const result2 = validateAnswer('5', instance);
 | Concept              | Syntaxe                   | Exemple                      |
 | -------------------- | ------------------------- | ---------------------------- |
 | Variable             | `{{name}}`                | `{{a}}`, `{{max}}`           |
-| Entier aléatoire     | `{{min-max}}`             | `{{1-10}}`, `{{0-99}}`       |
+| Entier aléatoire     | `{{min..max}}`            | `{{1..10}}`, `{{0..99}}`     |
 | Entier négatif       | `{{min..max}}`            | `{{-5..5}}`, `{{-10..-1}}`   |
-| Bornes variables     | `{{{{min}}-{{max}}}}`     | Min à max                    |
-| Exclusion valeur     | `{{min-max!val}}`         | `{{1-10!5}}`                 |
-| Exclusion plage      | `{{min-max!a..b}}`        | `{{1-20!5..7}}`              |
-| Exclusion variable   | `{{min-max!{{var}}}}`     | `{{1-10!{{a}}}}`             |
+| Bornes variables     | `{{{{min}}..{{max}}}}`    | Min à max                    |
+| Exclusion valeur     | `{{min..max!val}}`        | `{{1..10!5}}`                |
+| Exclusion plage      | `{{min..max!a..b}}`       | `{{1..20!5..7}}`             |
+| Exclusion variable   | `{{min..max!{{var}}}}`    | `{{1..10!{{a}}}}`            |
 | Décimal par chiffres | `{{n.m}}`                 | `{{2.3}}` (2 avant, 3 après) |
-| Décimal avec pas     | `{{min-max:step}}`        | `{{0.5-9.99:0.01}}`          |
+| Décimal avec pas     | `{{min..max:step}}`       | `{{0.5..9.99:0.01}}`         |
 | Entier relatif       | `{{±min..max}}`           | `{{±2..9}}` (exclut 0)       |
 | Évaluation           | `{{eval:expr}}`           | `{{eval:{{a}}+{{b}}}}`       |
 | Liste discrète       | `{{a\|b\|c}}`             | `{{rouge\|bleu\|vert}}`      |
@@ -850,11 +850,8 @@ const result2 = validateAnswer('5', instance);
 | Couleur              | `{{color:name}}`          | `{{color:primary.0}}`        |
 | Conditionnel         | `{{if:cond\|vrai\|faux}}` | `{{if:{{a}}>0\|+\|-}}`       |
 
-**Note sur les séparateurs de plage:**
-
-- `-` : standard pour positifs (`{{1-10}}`)
-- `..` : recommandé pour négatifs (`{{-5..5}}`)
+**Note:** Le séparateur de plage est toujours `..` (double-point). La syntaxe `-` n'est plus supportée.
 
 ---
 
-_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (syntaxe listes discrètes: `{{a|b|c}}`)_
+_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (syntaxe `..` uniquement pour plages)_

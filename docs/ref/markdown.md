@@ -295,8 +295,8 @@ Les variables sont referencees avec la syntaxe `{{nom}}` partout dans le systeme
 | Texte normal            | `{{var}}` | `Calcule {{a}} + {{b}}` |
 | Dans `eval` (simple)    | `var`     | `{{eval:a+b}}`          |
 | Dans `eval` (explicite) | `{{var}}` | `{{eval:{{a}}+{{b}}}}`  |
-| Dans `random`           | `{{var}}` | `{{{{min}}-{{max}}}}`   |
-| Dans exclusions         | `{{var}}` | `{{1-20!{{a}}}}`        |
+| Dans `random`           | `{{var}}` | `{{{{min}}..{{max}}}}`  |
+| Dans exclusions         | `{{var}}` | `{{1..20!{{a}}}}`       |
 
 ---
 
