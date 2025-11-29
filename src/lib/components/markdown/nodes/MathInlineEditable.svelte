@@ -2,17 +2,18 @@
 	MathInlineEditable Component
 	============================
 
-	Renders an inline math formula using MathLive's <math-field>.
+	Editable inline math input using MathLive's <math-field>.
 	Designed to blend with surrounding text while allowing editing.
 
-	Uses <math-field> for editable math input. For read-only display,
+	This component is ALWAYS editable. For read-only display,
 	use MathInline.svelte instead (uses <math-span> for better performance).
 
 	Features:
-	- Editable MathLive field for input
+	- Editable MathLive field for math input
 	- Proper vertical alignment with text baseline
 	- Inherits font size from parent
 	- Bindable value for two-way data binding
+	- Virtual keyboard support
 
 	@see MathInline.svelte for read-only display
 -->
@@ -21,7 +22,6 @@
 
 	interface Props {
 		value?: string;
-		disabled?: boolean;
 		placeholder?: string;
 		class?: string;
 		onchange?: (latex: string) => void;
@@ -29,7 +29,6 @@
 
 	let {
 		value = $bindable(''),
-		disabled = false,
 		placeholder = '',
 		class: className = '',
 		onchange
@@ -42,12 +41,7 @@
 	}
 </script>
 
-<math-field
-	class="inline-math-editable {className}"
-	{value}
-	{disabled}
-	{placeholder}
-	oninput={handleInput}
+<math-field class="inline-math-editable {className}" {value} {placeholder} oninput={handleInput}
 ></math-field>
 
 <style>
@@ -75,11 +69,5 @@
 		outline: 2px solid #3b82f6;
 		outline-offset: 1px;
 		background: white;
-	}
-
-	:global(.inline-math-editable[disabled]) {
-		opacity: 0.5;
-		cursor: not-allowed;
-		background: #f3f4f6;
 	}
 </style>

@@ -2,17 +2,18 @@
 	MathBlockEditable Component
 	===========================
 
-	Renders a block-level (display) math formula using MathLive's <math-field>.
+	Editable block-level math input using MathLive's <math-field>.
 	Centered with appropriate vertical spacing.
 
-	Uses <math-field> for editable math input. For read-only display,
+	This component is ALWAYS editable. For read-only display,
 	use MathBlock.svelte instead (uses <math-div> for better performance).
 
 	Features:
-	- Editable MathLive field for input
+	- Editable MathLive field for math input
 	- Centered layout with vertical margins
 	- Larger font size for display math
 	- Bindable value for two-way data binding
+	- Virtual keyboard support
 
 	@see MathBlock.svelte for read-only display
 -->
@@ -21,7 +22,6 @@
 
 	interface Props {
 		value?: string;
-		disabled?: boolean;
 		placeholder?: string;
 		class?: string;
 		onchange?: (latex: string) => void;
@@ -29,7 +29,6 @@
 
 	let {
 		value = $bindable(''),
-		disabled = false,
 		placeholder = '',
 		class: className = '',
 		onchange
@@ -43,12 +42,7 @@
 </script>
 
 <div class="math-block-editable-container my-6 flex justify-center {className}">
-	<math-field
-		class="math-block-editable text-2xl"
-		{value}
-		{disabled}
-		{placeholder}
-		oninput={handleInput}
+	<math-field class="math-block-editable text-2xl" {value} {placeholder} oninput={handleInput}
 	></math-field>
 </div>
 
@@ -75,11 +69,5 @@
 		outline: 2px solid #3b82f6;
 		outline-offset: 2px;
 		background: white;
-	}
-
-	:global(.math-block-editable[disabled]) {
-		opacity: 0.5;
-		cursor: not-allowed;
-		background: #f3f4f6;
 	}
 </style>
