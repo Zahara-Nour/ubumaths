@@ -190,7 +190,7 @@ interface InputState {
 | Sous-phase | Commit     | Description                                                              |
 | ---------- | ---------- | ------------------------------------------------------------------------ |
 | 4c.1       | `95898307` | `feat(parser): add placeholder detection in math expressions`            |
-| 4c.2       | `6617a4c8` | `feat(components): add MathPrompt component for editable math fields`    |
+| 4c.2       | `76ca26b3` | `feat(components): add MathPrompt component for editable math fields`    |
 | 4c.3       | `008520c9` | `refactor(inputs): unify BlankInput and MathPrompt under InputState API` |
 | 4c.4       | `8d6b5df8` | `test(integration): add comprehensive tests for unified input system`    |
 
