@@ -546,6 +546,10 @@ export interface TextNode extends BaseNode {
 export interface MathInlineNode extends BaseNode {
 	type: 'math-inline';
 	latex: string; // LaTeX without $ delimiters
+	/** Whether this expression contains \placeholder commands */
+	hasPrompts?: boolean;
+	/** Extracted prompt indices from \placeholder[N]{} commands */
+	promptIndices?: number[];
 }
 
 /**
@@ -554,6 +558,10 @@ export interface MathInlineNode extends BaseNode {
 export interface MathBlockNode extends BaseNode {
 	type: 'math-block';
 	latex: string; // LaTeX without $$ delimiters
+	/** Whether this expression contains \placeholder commands */
+	hasPrompts?: boolean;
+	/** Extracted prompt indices from \placeholder[N]{} commands */
+	promptIndices?: number[];
 }
 
 /**
@@ -746,6 +754,44 @@ export interface BlankNode extends BaseNode {
 	type: 'blank';
 	/** 1-based index of the blank (corresponds to the N in {{blank:N}}) */
 	index: number;
+}
+
+/**
+ * Unified state for all input fields (text blanks and math prompts)
+ *
+ * Used by MarkdownRenderer to manage fill-in-the-blank inputs.
+ * The `type` discriminant allows validation logic to differentiate
+ * between text (from {{blank:N}}) and math (from \placeholder[N]{}) inputs.
+ *
+ * @example Text input state
+ * ```typescript
+ * const textInput: InputState = {
+ *   index: 1,
+ *   value: '42',
+ *   type: 'text',
+ *   isCorrect: true
+ * };
+ * ```
+ *
+ * @example Math input state
+ * ```typescript
+ * const mathInput: InputState = {
+ *   index: 2,
+ *   value: 'x^2 + 1',
+ *   type: 'math',
+ *   isCorrect: null // not yet validated
+ * };
+ * ```
+ */
+export interface InputState {
+	/** 1-based index identifying the input field */
+	index: number;
+	/** Current value (text or LaTeX depending on type) */
+	value: string;
+	/** Discriminant: 'text' for {{blank:N}}, 'math' for \placeholder[N]{} */
+	type: 'text' | 'math';
+	/** Validation state: true=correct, false=incorrect, null=not validated */
+	isCorrect: boolean | null;
 }
 
 /**
@@ -980,6 +1026,10 @@ export interface MathPlaceholder {
 	isBlock: boolean; // true for $$...$$ (block), false for $...$ (inline)
 	startIndex: number; // Original position in source text
 	endIndex: number; // Original end position in source text
+	/** Whether this math expression contains \placeholder commands */
+	hasPrompts?: boolean;
+	/** Extracted prompt indices from \placeholder[N]{} commands */
+	promptIndices?: number[];
 }
 
 // ============================================================================
