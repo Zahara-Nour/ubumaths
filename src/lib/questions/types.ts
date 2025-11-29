@@ -351,6 +351,9 @@ export interface QuestionTemplate {
 				relative?: number;
 			};
 		};
+
+		/** Whether to shuffle choices for multiple_choice questions (default: true) */
+		shuffleChoices?: boolean;
 	};
 
 	/** Precision for numerical answers (shared across all variations) */

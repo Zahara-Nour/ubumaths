@@ -1011,4 +1011,194 @@ describe('Question Transformer', () => {
 			expect(result.errors).toContain('Variation 0: multiple choice question missing choices');
 		});
 	});
+
+	describe('Display Options Mapping', () => {
+		it('should map shuffle-terms to defaultDisplayOptions.shuffleTerms', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shuffle terms',
+				enounces: ['Calculer :'],
+				expressions: ['&1 + &2'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1+&2_]']],
+				options: ['shuffle-terms'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.defaultDisplayOptions).toBeDefined();
+			expect(result.template?.defaultDisplayOptions?.shuffleTerms).toBe(true);
+			expect(result.stats?.displayOptionsMapped).toBe(1);
+		});
+
+		it('should map shuffle-factors to defaultDisplayOptions.shuffleFactors', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shuffle factors',
+				enounces: ['Calculer :'],
+				expressions: ['&1 * &2'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1*&2_]']],
+				options: ['shuffle-factors'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.shuffleFactors).toBe(true);
+		});
+
+		it('should map shuffle-terms-and-factors to defaultDisplayOptions.shuffleTermsAndFactors', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shuffle both',
+				enounces: ['Calculer :'],
+				expressions: ['&1 + &2'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1+&2_]']],
+				options: ['shuffle-terms-and-factors'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.shuffleTermsAndFactors).toBe(true);
+		});
+
+		it('should map remove-null-terms to defaultDisplayOptions.removeNullTerms', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test remove null terms',
+				enounces: ['Calculer :'],
+				expressions: ['&1 + 0'],
+				variabless: [{ '&1': '$e[1;10]' }],
+				solutionss: [['[_&1_]']],
+				options: ['remove-null-terms'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.removeNullTerms).toBe(true);
+		});
+
+		it('should map exp-no-spaces to defaultDisplayOptions.addSpaces=false', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test no spaces',
+				enounces: ['Calculer :'],
+				expressions: ['&1+&2'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1+&2_]']],
+				options: ['exp-no-spaces'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.addSpaces).toBe(false);
+		});
+
+		it('should map exp-allow-unecessary-zeros to defaultDisplayOptions.keepUnnecessaryZeros', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test keep zeros',
+				enounces: ['Calculer :'],
+				expressions: ['&1.00'],
+				variabless: [{ '&1': '$e[1;10]' }],
+				solutionss: [['[_&1_]']],
+				options: ['exp-allow-unecessary-zeros'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.keepUnnecessaryZeros).toBe(true);
+		});
+
+		it('should map multiple display options together', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test multiple display options',
+				enounces: ['Calculer :'],
+				expressions: ['&1 + &2 + 0'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1+&2_]']],
+				options: ['shuffle-terms', 'remove-null-terms', 'exp-no-spaces'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.shuffleTerms).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.removeNullTerms).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.addSpaces).toBe(false);
+			expect(result.stats?.displayOptionsMapped).toBe(3);
+		});
+
+		it('should map shallow-shuffle-terms to defaultDisplayOptions.shallowShuffleTerms', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shallow shuffle terms',
+				enounces: ['Calculer :'],
+				expressions: ['&1 + &2'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1+&2_]']],
+				options: ['shallow-shuffle-terms'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.shallowShuffleTerms).toBe(true);
+		});
+
+		it('should map shallow-shuffle-factors to defaultDisplayOptions.shallowShuffleFactors', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test shallow shuffle factors',
+				enounces: ['Calculer :'],
+				expressions: ['&1 * &2'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1*&2_]']],
+				options: ['shallow-shuffle-factors'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.defaultDisplayOptions?.shallowShuffleFactors).toBe(true);
+		});
+
+		it('should keep constraint options separate from display options', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test mixed options',
+				enounces: ['Calculer :'],
+				expressions: ['&1 + &2'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1+&2_]']],
+				options: ['shuffle-terms', 'require-no-extraneous-brackets'],
+				grade: 'CM1',
+				defaultDelay: 20
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			// Display options
+			expect(result.template?.defaultDisplayOptions?.shuffleTerms).toBe(true);
+			// Constraint options
+			expect(result.template?.options?.constraints?.brackets).toBe('strict');
+		});
+	});
 });

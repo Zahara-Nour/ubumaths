@@ -2,13 +2,22 @@
 
 > **Plan**: `/Users/david/.claude/plans/foamy-purring-cerf.md`
 > **Branche**: `migration/questions`
-> **Derniere mise a jour**: 2025-11-27
+> **Derniere mise a jour**: 2025-11-29
 
 ---
 
 ## Current Phase: COMPLETED ✅
 
-## Last Commit: 0c0b2c95
+## Last Commit: fbcf944b
+
+### Phase 9: Display Options Mapping ✅
+
+- [x] Map 6 generation options to `defaultDisplayOptions` (shuffle-terms, shuffle-factors, etc.)
+- [x] Map 2 formatting options (exp-no-spaces, exp-allow-unecessary-zeros)
+- [x] Add `shuffleChoices` to QuestionTemplate options type
+- [x] Add `displayOptionsMapped` to TransformStats
+- [x] Add 10 new tests for display options mapping
+- [x] Total: 49 tests pass for question-transformer
 
 ### Phase 8: Image Upload to Supabase ✅
 
@@ -139,6 +148,13 @@
 - `scripts/migrate-question-images.ts` - Added retry logic, reduced batch size
 - `scripts/image-url-mapping.json` - Generated URL mapping (856 entries)
 - `static/images/questions/` - Downloaded 214 source images
+
+### Phase 9
+
+- `src/lib/migration/question-transformer.ts` - Display options mapping to defaultDisplayOptions
+- `src/lib/migration/question-transformer.test.ts` - 10 new tests for display options
+- `src/lib/migration/correction-integration.test.ts` - Added displayOptionsMapped to mock stats
+- `src/lib/questions/types.ts` - Added shuffleChoices to options type
 
 ---
 
