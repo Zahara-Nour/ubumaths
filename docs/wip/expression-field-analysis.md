@@ -395,6 +395,7 @@ Le seul développement nécessaire est l'ajout de `displayOptions` et l'impléme
 2. `8d7439a5` - feat(parameterization): add expression transformation functions
 3. `3f086ff2` - test(parameterization): add display-options cascade resolution tests
 4. `5e6bfe27` - feat(parameterization): integrate displayOptions in variable resolver
+5. `886c392a` - docs: update expression-field-analysis with completed implementation
 
 ### Tests
 
