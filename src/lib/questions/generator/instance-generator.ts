@@ -27,7 +27,7 @@ import { templateMarkdown } from '$lib/shared/markdown';
 import { validateTemplate } from '../validators/template-validator';
 import { detectCircularDependencies } from '$lib/shared/parameterization/validator/circular-dependency';
 import { resolveVariables } from './variable-resolver';
-import { resolveMarkdownContent, resolveAnswer, resolveExpression } from './content-resolver';
+import { resolveMarkdownContent, resolveSolution, resolveExpression } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
 
 // ============================================================================
@@ -82,8 +82,8 @@ function resolveVariationWithShared(
 		// Fall back to empty TemplateMarkdown if neither has value (edge case)
 		statement: variation.statement || shared.statement || templateMarkdown(''),
 
-		// answer: allow explicit empty array/string (use ??)
-		answer: variation.answer ?? shared.answer ?? '',
+		// solution: allow explicit empty array/string (use ??)
+		solution: variation.solution ?? shared.solution ?? '',
 
 		// correction: full structure (use ??)
 		correction: variation.correction ?? shared.correction,
@@ -119,7 +119,7 @@ function resolveVariationWithShared(
  *     { name: 'a', expression: '{#:1-10}' },
  *     { name: 'b', expression: '{#:1-10}' }
  *   ],
- *   answer: '{eval:{@:a}+{@:b}}',
+ *   solution: '{eval:{@:a}+{@:b}}',
  *   grades: ['6'],
  *   delay: 30
  * };
@@ -127,7 +127,7 @@ function resolveVariationWithShared(
  * const result = generateInstance(template, 42);
  * if (result.success) {
  *   console.log(result.instance.statement[0].content);  // "Calculate $$7 + 3$$"
- *   console.log(result.instance.answer);                 // "10"
+ *   console.log(result.instance.solution);               // "10"
  * }
  * ```
  */
@@ -173,8 +173,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			seed
 		);
 
-		// Resolve answer (stays the same - it's a plain string)
-		const resolvedAnswer = resolveAnswer(resolvedVariation.answer, resolvedVariables, seed);
+		// Resolve solution (stays the same - it's a plain string)
+		const resolvedSolution = resolveSolution(resolvedVariation.solution, resolvedVariables, seed);
 
 		// Resolve correction if present (QuestionCorrection has feedback and/or steps)
 		let resolvedCorrection: ResolvedCorrection | undefined;
@@ -252,7 +252,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			type: template.type,
 			statement: resolvedStatement, // Now ResolvedMarkdown
 			resolvedVariables,
-			answer: resolvedAnswer,
+			solution: resolvedSolution,
 			exerciseInstruction: template.exerciseInstruction,
 			options: template.options,
 			precision: template.precision,

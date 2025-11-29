@@ -181,7 +181,7 @@ export function validateAnswer(
 	instance: QuestionInstance,
 	userAnswerLatex?: string | string[]
 ): ValidationResult {
-	const { type, answer, precision } = instance;
+	const { type, solution, precision } = instance;
 
 	try {
 		// Check custom validation rules first (for testAnswers-style questions)
@@ -206,7 +206,7 @@ export function validateAnswer(
 			case 'numerical_exact':
 			case 'numerical_decimal':
 			case 'numerical_rounded':
-				result = validateNumerical(userAnswer as string | number, answer as string, precision);
+				result = validateNumerical(userAnswer as string | number, solution as string, precision);
 				break;
 
 			case 'numerical_with_unit': {
@@ -215,14 +215,14 @@ export function validateAnswer(
 					: (userAnswerLatex ?? String(userAnswer));
 				result = validateNumericalWithUnit(
 					latexAnswer,
-					answer as string,
+					solution as string,
 					instance.options?.unitOptions
 				);
 				break;
 			}
 
 			case 'algebraic_transform':
-				result = validateAlgebraic(userAnswer as string, answer as string);
+				result = validateAlgebraic(userAnswer as string, solution as string);
 				break;
 
 			case 'fill_in_blanks':
@@ -235,7 +235,7 @@ export function validateAnswer(
 			case 'multiple_choice':
 				result = validateChoice(
 					userAnswer as number | number[],
-					answer as string | string[],
+					solution as string | string[],
 					instance.multipleAnswers
 				);
 				break;
@@ -252,7 +252,7 @@ export function validateAnswer(
 		if (result.isCorrect && instance.options?.constraints && userAnswerLatex) {
 			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
 			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
-			const expected = Array.isArray(answer) ? answer : [answer];
+			const expected = Array.isArray(solution) ? solution : [solution];
 
 			const { status, violations } = applyConstraints(
 				answers,

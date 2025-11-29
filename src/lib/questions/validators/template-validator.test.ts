@@ -22,7 +22,7 @@ describe('validateTemplate - Valid Templates', () => {
 				{
 					statement: templateMarkdown('Calculate 2 + 3'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -53,7 +53,7 @@ describe('validateTemplate - Valid Templates', () => {
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'b', expression: '{#:1-10}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}'
+					solution: '{eval:{@:a} + {@:b}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -91,7 +91,7 @@ describe('validateTemplate - Valid Templates', () => {
 					{
 						statement: templateMarkdown('Question'),
 						variables: [],
-						answer:
+						solution:
 							type === 'fill_in_blanks' ? ['answer'] : type === 'multiple_choice' ? '0' : '42',
 						blanks:
 							type === 'fill_in_blanks' ? [{ position: 0, expectedAnswer: 'answer' }] : undefined,
@@ -136,7 +136,7 @@ describe('validateTemplate - Valid Templates', () => {
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'b', expression: '{#:1-10}' }
 					],
-					answer: '{eval:{@:a}+{@:b}}'
+					solution: '{eval:{@:a}+{@:b}}'
 				},
 				{
 					statement: templateMarkdown('Calculate {@:a} - {@:b}'),
@@ -144,7 +144,7 @@ describe('validateTemplate - Valid Templates', () => {
 						{ name: 'a', expression: '{#:10-20}' },
 						{ name: 'b', expression: '{#:1-{@:a}}' }
 					],
-					answer: '{eval:{@:a}-{@:b}}'
+					solution: '{eval:{@:a}-{@:b}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -173,7 +173,7 @@ describe('validateTemplate - Required Fields', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -243,7 +243,7 @@ describe('validateTemplate - Required Fields', () => {
 			variations: [
 				{
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -261,7 +261,7 @@ describe('validateTemplate - Required Fields', () => {
 		expect(errors.some((e) => e.includes('statement'))).toBe(true);
 	});
 
-	it('should fail on missing answer in variation', () => {
+	it('should fail on missing solution in variation', () => {
 		const template = {
 			id: 'test',
 			type: 'numerical_exact',
@@ -285,7 +285,7 @@ describe('validateTemplate - Required Fields', () => {
 
 		const errors = validateTemplate(template);
 
-		expect(errors.some((e) => e.includes('answer'))).toBe(true);
+		expect(errors.some((e) => e.includes('solution'))).toBe(true);
 	});
 
 	it('should fail on missing grades', () => {
@@ -298,7 +298,7 @@ describe('validateTemplate - Required Fields', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -325,7 +325,7 @@ describe('validateTemplate - Required Fields', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -353,7 +353,7 @@ describe('validateTemplate - Required Fields', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -380,7 +380,7 @@ describe('validateTemplate - Required Fields', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -407,7 +407,7 @@ describe('validateTemplate - Required Fields', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -436,7 +436,7 @@ describe('validateTemplate - Statement Validation', () => {
 				{
 					statement: templateMarkdown(''),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -464,7 +464,7 @@ describe('validateTemplate - Statement Validation', () => {
 				{
 					statement: templateMarkdown(''),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -492,7 +492,7 @@ describe('validateTemplate - Statement Validation', () => {
 				{
 					statement: templateMarkdown('What is this?\n\n![Example](https://example.com/image.png)'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -525,7 +525,7 @@ describe('validateTemplate - Variable Validation', () => {
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'a', expression: '{#:1-10}' }
 					],
-					answer: '{@:a}'
+					solution: '{@:a}'
 				}
 			],
 			precision: { type: 'none' },
@@ -553,7 +553,7 @@ describe('validateTemplate - Variable Validation', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [{ name: '', expression: '{#:1-10}' }],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -586,7 +586,7 @@ describe('validateTemplate - Variable Validation', () => {
 						{ name: 'var123', expression: '{#:1-10}' },
 						{ name: 'my_var', expression: '{#:1-10}' }
 					],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -614,12 +614,12 @@ describe('validateTemplate - Variable Validation', () => {
 				{
 					statement: templateMarkdown('Question 1'),
 					variables: [{ name: 'a', expression: '{#:1-10}' }],
-					answer: '{@:a}'
+					solution: '{@:a}'
 				},
 				{
 					statement: templateMarkdown('Question 2'),
 					variables: [{ name: 'a', expression: '{#:10-20}' }], // Same name, different variation OK
-					answer: '{@:a}'
+					solution: '{@:a}'
 				}
 			],
 			precision: { type: 'none' },
@@ -649,7 +649,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: 'x + 1'
+					solution: 'x + 1'
 				}
 			],
 			grades: ['3'],
@@ -679,7 +679,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 					{
 						statement: templateMarkdown('Question'),
 						variables: [],
-						answer: 'x + 1'
+						solution: 'x + 1'
 					}
 				],
 				transformType: transformType as never,
@@ -707,7 +707,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: ['answer']
+					solution: ['answer']
 				}
 			],
 			grades: ['6'],
@@ -734,7 +734,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '0'
+					solution: '0'
 				}
 			],
 			multipleAnswers: false,
@@ -762,7 +762,7 @@ describe('validateTemplate - Type-Specific Validation', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '0',
+					solution: '0',
 					choices: [{ content: templateMarkdown('Only one'), isCorrect: true }]
 				}
 			],
@@ -793,12 +793,12 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 				{
 					statement: templateMarkdown('Valid'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				},
 				{
 					statement: templateMarkdown(''), // Invalid
 					variables: [],
-					answer: '10'
+					solution: '10'
 				}
 			],
 			precision: { type: 'none' },
@@ -826,12 +826,12 @@ describe('validateTemplate - Variation-Specific Error Messages', () => {
 				{
 					statement: templateMarkdown(''), // Invalid variation 1
 					variables: [],
-					answer: '5'
+					solution: '5'
 				},
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '' // Invalid variation 2
+					solution: '' // Invalid variation 2
 				}
 			],
 			precision: { type: 'none' },
@@ -862,7 +862,7 @@ describe('validateTemplate - Edge Cases', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -891,7 +891,7 @@ describe('validateTemplate - Edge Cases', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '5',
+					solution: '5',
 					correction: {
 						feedback: {
 							correct: templateMarkdown('Correct!'),
@@ -925,7 +925,7 @@ describe('validateTemplate - Edge Cases', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -967,7 +967,7 @@ describe('validateTemplate - Edge Cases', () => {
 				{
 					statement: templateMarkdown('a'.repeat(5000)),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -1000,7 +1000,7 @@ describe('validateTemplate - Edge Cases', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables,
-					answer: '5'
+					solution: '5'
 				}
 			],
 			precision: { type: 'none' },
@@ -1033,7 +1033,7 @@ describe('validateTemplate - Multiple Errors', () => {
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'a', expression: '{#:1-10}' }
 					],
-					answer: 'x'
+					solution: 'x'
 				}
 			],
 			grades: [],

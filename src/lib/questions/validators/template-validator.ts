@@ -125,9 +125,9 @@ function validateVariation(
 		errors.push(`${prefix} Statement cannot be empty`);
 	}
 
-	// Validate answer
-	if (!variation.answer) {
-		errors.push(`${prefix} Missing required field: answer`);
+	// Validate solution
+	if (!variation.solution) {
+		errors.push(`${prefix} Missing required field: solution`);
 	}
 
 	// Validate correction (if present, now a QuestionCorrection object)

@@ -36,7 +36,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 						{ name: 'a', expression: '{{random:1..10}}' },
 						{ name: 'b', expression: '{{random:1..10}}' }
 					],
-					answer: '{{eval:a + b}}'
+					solution: '{{eval:a + b}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -62,7 +62,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 		const b = getVarValue(result.instance.resolvedVariables, 'b');
 		expect(a).not.toBeNaN();
 		expect(b).not.toBeNaN();
-		expect(result.instance.answer).toBe((a + b).toString());
+		expect(result.instance.solution).toBe((a + b).toString());
 	});
 
 	it('should generate reproducible instance with seed', () => {
@@ -75,7 +75,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 				{
 					statement: templateMarkdown('Value: {{x}}'),
 					variables: [{ name: 'x', expression: '{{random:1..100}}' }],
-					answer: '{{x}}'
+					solution: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -116,7 +116,7 @@ describe('generateInstance - Numerical Exact Questions', () => {
 				{
 					statement: templateMarkdown('Value: {{x}}'),
 					variables: [{ name: 'x', expression: '{{random:1..1000}}' }],
-					answer: '{{x}}'
+					solution: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -156,7 +156,7 @@ describe('generateInstance - Algebraic Transform Questions', () => {
 						{ name: 'a', expression: '{{random:2..9}}' },
 						{ name: 'c', expression: '{{eval:a^2}}' }
 					],
-					answer: '(x-{{a}})(x+{{a}})'
+					solution: '(x-{{a}})(x+{{a}})'
 				}
 			],
 			transformType: 'factor',
@@ -197,7 +197,7 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 						{ name: 'a', expression: '{{random:1..10}}' },
 						{ name: 'b', expression: '{{random:1..10}}' }
 					],
-					answer: ['{{eval:a + b}}'],
+					solution: ['{{eval:a + b}}'],
 					blanks: [{ position: 0, expectedAnswer: '{{eval:a + b}}' }]
 				}
 			],
@@ -216,11 +216,11 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 		if (!result.success) return;
 
 		expect(result.instance.type).toBe('fill_in_blanks');
-		expect(Array.isArray(result.instance.answer)).toBe(true);
+		expect(Array.isArray(result.instance.solution)).toBe(true);
 
 		const a = getVarValue(result.instance.resolvedVariables, 'a');
 		const b = getVarValue(result.instance.resolvedVariables, 'b');
-		expect(result.instance.answer[0]).toBe((a + b).toString());
+		expect(result.instance.solution[0]).toBe((a + b).toString());
 	});
 
 	it('should generate fill-in-blanks with multiple blanks', () => {
@@ -237,7 +237,7 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 						{ name: 'b', expression: '{{random:1..10}}' },
 						{ name: 'sum', expression: '{{eval:a + b}}' }
 					],
-					answer: ['{{a}}', '{{b}}'],
+					solution: ['{{a}}', '{{b}}'],
 					blanks: [
 						{ position: 0, expectedAnswer: '{{a}}' },
 						{ position: 1, expectedAnswer: '{{b}}' }
@@ -258,7 +258,7 @@ describe('generateInstance - Fill-in-Blanks Questions', () => {
 		expect(result.success).toBe(true);
 		if (!result.success) return;
 
-		expect(result.instance.answer).toHaveLength(2);
+		expect(result.instance.solution).toHaveLength(2);
 		expect(result.instance.blanks).toHaveLength(2);
 		expect(result.instance.blanks![0].position).toBe(0);
 		expect(result.instance.blanks![1].position).toBe(1);
@@ -282,7 +282,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 						{ name: 'wrong1', expression: '{{eval:a + b + 1}}' },
 						{ name: 'wrong2', expression: '{{eval:a + b - 1}}' }
 					],
-					answer: '0',
+					solution: '0',
 					choices: [
 						{ content: templateMarkdown('{{correct}}'), isCorrect: true },
 						{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
@@ -312,7 +312,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 
 		// Verify correct answer is tracked (don't check specific value, just that it exists)
 		const _correctAnswer = getVarValue(result.instance.resolvedVariables, 'correct');
-		const shuffledCorrectIndex = parseInt(result.instance.answer as string);
+		const shuffledCorrectIndex = parseInt(result.instance.solution as string);
 		expect(shuffledCorrectIndex).toBeGreaterThanOrEqual(0);
 		expect(shuffledCorrectIndex).toBeLessThan(4);
 
@@ -331,7 +331,7 @@ describe('generateInstance - Multiple Choice Questions', () => {
 				{
 					statement: templateMarkdown('Select all prime numbers:'),
 					variables: [],
-					answer: ['0', '2'],
+					solution: ['0', '2'],
 					choices: [
 						{ content: templateMarkdown('2'), isCorrect: true },
 						{ content: templateMarkdown('4'), isCorrect: false },
@@ -356,9 +356,9 @@ describe('generateInstance - Multiple Choice Questions', () => {
 		if (!result.success) return;
 
 		expect(result.instance.multipleAnswers).toBe(true);
-		expect(Array.isArray(result.instance.answer)).toBe(true);
+		expect(Array.isArray(result.instance.solution)).toBe(true);
 
-		const answerIndices = result.instance.answer as string[];
+		const answerIndices = result.instance.solution as string[];
 		const correctChoices = answerIndices.map(
 			(i) => result.instance.shuffledChoices![parseInt(i)].content
 		);
@@ -392,7 +392,7 @@ describe('generateInstance - Complex Variable Resolution', () => {
 						{ name: 'num1', expression: '{{random:1-denMinus1}}' },
 						{ name: 'num2', expression: '{{random:1-denMinus1!num1}}' }
 					],
-					answer: '{{eval:(num1+num2)/den}}'
+					solution: '{{eval:(num1+num2)/den}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -416,7 +416,7 @@ describe('generateInstance - Complex Variable Resolution', () => {
 		expect(num1).not.toBe(num2); // Exclusion working
 		expect(num1).toBeLessThan(den); // Bounds working
 		expect(num2).toBeLessThan(den);
-		expect(parseFloat(result.instance.answer as string)).toBeCloseTo((num1 + num2) / den, 5);
+		expect(parseFloat(result.instance.solution as string)).toBeCloseTo((num1 + num2) / den, 5);
 	});
 
 	it('should generate GCD simplification instance', () => {
@@ -435,7 +435,7 @@ describe('generateInstance - Complex Variable Resolution', () => {
 						{ name: 'num', expression: '{{eval:a*gcd}}' },
 						{ name: 'den', expression: '{{eval:b*gcd}}' }
 					],
-					answer: '{{eval:num/den}}'
+					solution: '{{eval:num/den}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -478,7 +478,7 @@ describe('generateInstance - Content Resolution', () => {
 						{ name: 'x', expression: '{{random:2..9}}' },
 						{ name: 'y', expression: '{{random:2..9}}' }
 					],
-					answer: '{{eval:x * y}}'
+					solution: '{{eval:x * y}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -514,7 +514,7 @@ describe('generateInstance - Content Resolution', () => {
 						{ name: 'a', expression: '{{random:1..10}}' },
 						{ name: 'b', expression: '{{random:1..10}}' }
 					],
-					answer: '{{eval:a/b}}'
+					solution: '{{eval:a/b}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -550,7 +550,7 @@ describe('generateInstance - Content Resolution', () => {
 						{ name: 'a', expression: '{{random:1..10}}' },
 						{ name: 'b', expression: '{{random:1..10}}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}',
+					solution: '{eval:{@:a} + {@:b}}',
 					correction: {
 						feedback: {
 							correct: templateMarkdown('Well done!'),
@@ -598,7 +598,7 @@ describe('generateInstance - Precision Handling', () => {
 						{ name: 'a', expression: '{{random:1..10}}' },
 						{ name: 'b', expression: '{{random:2..9}}' }
 					],
-					answer: '{{eval:a/b}}'
+					solution: '{{eval:a/b}}'
 				}
 			],
 			precision: { type: 'decimal', digits: 2 },
@@ -629,7 +629,7 @@ describe('generateInstance - Precision Handling', () => {
 				{
 					statement: templateMarkdown('Estimate sqrt({{a}})'),
 					variables: [{ name: 'a', expression: '{{random:10..100}}' }],
-					answer: '{eval:sqrt({@:a})}'
+					solution: '{eval:sqrt({@:a})}'
 				}
 			],
 			precision: { type: 'tolerance', tolerance: 0.1, mode: 'absolute' },
@@ -669,7 +669,7 @@ describe('generateInstance - Validation Errors', () => {
 						{ name: 'a', expression: '{{b}}' },
 						{ name: 'b', expression: '{{a}}' }
 					],
-					answer: '{{a}}'
+					solution: '{{a}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -705,7 +705,7 @@ describe('generateInstance - Validation Errors', () => {
 						{ name: 'max', expression: '5' },
 						{ name: 'x', expression: '{#:@:min}}-{@:max}' }
 					],
-					answer: '{{x}}'
+					solution: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -737,7 +737,7 @@ describe('generateInstance - Validation Errors', () => {
 				{
 					statement: templateMarkdown('Value'),
 					variables: [{ name: 'a', expression: '{{eval:invalid syntax}}' }],
-					answer: '{{a}}'
+					solution: '{{a}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -770,7 +770,7 @@ describe('generateInstance - Edge Cases', () => {
 				{
 					statement: templateMarkdown('What is 2 + 2?'),
 					variables: [],
-					answer: '4'
+					solution: '4'
 				}
 			],
 			precision: { type: 'none' },
@@ -789,7 +789,7 @@ describe('generateInstance - Edge Cases', () => {
 		if (!result.success) return;
 
 		expect(result.instance.resolvedVariables).toEqual([]);
-		expect(result.instance.answer).toBe('4');
+		expect(result.instance.solution).toBe('4');
 	});
 
 	it('should generate instance with delay parameter', () => {
@@ -802,7 +802,7 @@ describe('generateInstance - Edge Cases', () => {
 				{
 					statement: templateMarkdown('Question'),
 					variables: [],
-					answer: '42'
+					solution: '42'
 				}
 			],
 			precision: { type: 'none' },
@@ -837,7 +837,7 @@ describe('generateInstance - Edge Cases', () => {
 						'Given {{a}}\n\n![Example image](https://example.com/image.png)\n\nCalculate {{a}} × 2'
 					),
 					variables: [{ name: 'a', expression: '{{random:1..10}}' }],
-					answer: '{{eval:a * 2}}'
+					solution: '{{eval:a * 2}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -878,7 +878,7 @@ describe('generateInstance - Real-World Templates', () => {
 						{ name: 'c', expression: '{{random:-10..10}}' },
 						{ name: 'disc', expression: '{{eval:b^2 - 4*a*c}}' }
 					],
-					answer: 'x = \\frac{-{{b}} \\pm \\sqrt{{{disc}}}}{2{{a}}'
+					solution: 'x = \\frac{-{{b}} \\pm \\sqrt{{{disc}}}}{2{{a}}'
 				}
 			],
 			transformType: 'solve',
@@ -920,7 +920,7 @@ describe('generateInstance - Real-World Templates', () => {
 						{ name: 'discount', expression: '{{random:10..50}}' },
 						{ name: 'reduction', expression: '{eval:{@:price} * {@:discount} / 100}' }
 					],
-					answer: '{eval:{@:price} - {@:reduction}'
+					solution: '{eval:{@:price} - {@:reduction}'
 				}
 			],
 			precision: { type: 'decimal', digits: 2 },
@@ -942,7 +942,7 @@ describe('generateInstance - Real-World Templates', () => {
 		const discount = getVarValue(result.instance.resolvedVariables, 'discount');
 		const reduction = getVarValue(result.instance.resolvedVariables, 'reduction');
 		expect(reduction).toBeCloseTo((price * discount) / 100, 5);
-		expect(parseFloat(result.instance.answer as string)).toBeCloseTo(price - reduction, 5);
+		expect(parseFloat(result.instance.solution as string)).toBeCloseTo(price - reduction, 5);
 	});
 });
 
@@ -960,7 +960,7 @@ describe('generateInstance - Variation Selection', () => {
 						{ name: 'a', expression: '{{random:1..10}}' },
 						{ name: 'b', expression: '{{random:1..10}}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}'
+					solution: '{eval:{@:a} + {@:b}}'
 				},
 				{
 					statement: templateMarkdown('Subtraction: {{a}} - {{b}}'),
@@ -968,7 +968,7 @@ describe('generateInstance - Variation Selection', () => {
 						{ name: 'a', expression: '{{random:10..20}}' },
 						{ name: 'b', expression: '{#:1-{@:a}}' }
 					],
-					answer: '{eval:{@:a} - {@:b}'
+					solution: '{eval:{@:a} - {@:b}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1003,7 +1003,7 @@ describe('generateInstance - Variation Selection', () => {
 						{ name: 'a', expression: '{{random:1..10}}' },
 						{ name: 'b', expression: '{{random:1..10}}' }
 					],
-					answer: '{eval:{@:a} + {@:b}}'
+					solution: '{eval:{@:a} + {@:b}}'
 				},
 				{
 					statement: templateMarkdown('Subtraction: {{a}} - {{b}}'),
@@ -1011,7 +1011,7 @@ describe('generateInstance - Variation Selection', () => {
 						{ name: 'a', expression: '{{random:10..20}}' },
 						{ name: 'b', expression: '{#:1-{@:a}}' }
 					],
-					answer: '{eval:{@:a} - {@:b}'
+					solution: '{eval:{@:a} - {@:b}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1043,22 +1043,22 @@ describe('generateInstance - Variation Selection', () => {
 				{
 					statement: templateMarkdown('Op 1'),
 					variables: [],
-					answer: '1'
+					solution: '1'
 				},
 				{
 					statement: templateMarkdown('Op 2'),
 					variables: [],
-					answer: '2'
+					solution: '2'
 				},
 				{
 					statement: templateMarkdown('Op 3'),
 					variables: [],
-					answer: '3'
+					solution: '3'
 				},
 				{
 					statement: templateMarkdown('Op 4'),
 					variables: [],
-					answer: '4'
+					solution: '4'
 				}
 			],
 			precision: { type: 'none' },
@@ -1111,12 +1111,12 @@ describe('generateInstance - Variation Selection', () => {
 				{
 					statement: templateMarkdown('Valid variation'),
 					variables: [],
-					answer: '5'
+					solution: '5'
 				},
 				{
 					statement: templateMarkdown(''), // Invalid - empty statement
 					variables: [],
-					answer: '10'
+					solution: '10'
 				}
 			],
 			precision: { type: 'none' },
@@ -1155,7 +1155,7 @@ describe('generateInstance - Shared Fields', () => {
 						{ name: 'a', expression: '{{random:1..10}}' },
 						{ name: 'b', expression: '{{random:1..10}}' }
 					],
-					answer: '{{eval:a + b}}'
+					solution: '{{eval:a + b}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1177,7 +1177,7 @@ describe('generateInstance - Shared Fields', () => {
 		const b = getVarValue(result.instance.resolvedVariables, 'b');
 		expect(a).not.toBeNaN();
 		expect(b).not.toBeNaN();
-		expect(result.instance.answer).toBe((a + b).toString());
+		expect(result.instance.solution).toBe((a + b).toString());
 	});
 
 	it('should use shared.statement when multiple variations share same structure', () => {
@@ -1188,7 +1188,7 @@ describe('generateInstance - Shared Fields', () => {
 			status: 'draft' as const,
 			shared: {
 				statement: templateMarkdown('What is {{x}} + {{y}}?'),
-				answer: '{{eval:x + y}}'
+				solution: '{{eval:x + y}}'
 			},
 			variations: [
 				{
@@ -1197,7 +1197,7 @@ describe('generateInstance - Shared Fields', () => {
 						{ name: 'x', expression: '5' },
 						{ name: 'y', expression: '3' }
 					],
-					answer: '{{eval:x + y}}'
+					solution: '{{eval:x + y}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1231,7 +1231,7 @@ describe('generateInstance - Shared Fields', () => {
 				{
 					statement: templateMarkdown('Variation statement: {{a}}'),
 					variables: [{ name: 'a', expression: '7' }],
-					answer: '7'
+					solution: '7'
 				}
 			],
 			precision: { type: 'none' },
@@ -1268,7 +1268,7 @@ describe('generateInstance - Shared Fields', () => {
 				{
 					statement: templateMarkdown('{{a}}, {{b}}, {{c}}'),
 					variables: [{ name: 'c', expression: '{{eval:a + b}}' }],
-					answer: '{{c}}'
+					solution: '{{c}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1313,7 +1313,7 @@ describe('generateInstance - Shared Fields', () => {
 				{
 					statement: templateMarkdown('x={{x}}, y={{y}}'),
 					variables: [{ name: 'x', expression: '100' }], // Override x
-					answer: '{{x}}'
+					solution: '{{x}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1337,7 +1337,7 @@ describe('generateInstance - Shared Fields', () => {
 		expect(x).toBe(100); // Overridden value
 		expect(y).toBe(10); // Shared value
 		expect(result.instance.statement).toBe('x=100, y=10');
-		expect(result.instance.answer).toBe('100');
+		expect(result.instance.solution).toBe('100');
 	});
 
 	it('should use shared fields when all variations have identical values', () => {
@@ -1349,13 +1349,13 @@ describe('generateInstance - Shared Fields', () => {
 			shared: {
 				statement: templateMarkdown('Result is {{result}}'),
 				variables: [{ name: 'result', expression: '42' }],
-				answer: '{{result}}'
+				solution: '{{result}}'
 			},
 			variations: [
 				{
 					statement: templateMarkdown('Result is {{result}}'),
 					variables: [{ name: 'result', expression: '42' }],
-					answer: '{{result}}'
+					solution: '{{result}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1374,7 +1374,7 @@ describe('generateInstance - Shared Fields', () => {
 		if (!result.success) return;
 
 		expect(result.instance.statement).toBe('Result is 42');
-		expect(result.instance.answer).toBe('42');
+		expect(result.instance.solution).toBe('42');
 	});
 
 	it('should use shared.correction for consistent feedback across variations', () => {
@@ -1398,7 +1398,7 @@ describe('generateInstance - Shared Fields', () => {
 						{ name: 'a', expression: '5' },
 						{ name: 'b', expression: '3' }
 					],
-					answer: '{{eval:a + b}}'
+					solution: '{{eval:a + b}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1417,7 +1417,7 @@ describe('generateInstance - Shared Fields', () => {
 		if (!result.success) return;
 
 		expect(result.instance.statement).toBe('What is 5 + 3?');
-		expect(result.instance.answer).toBe('8');
+		expect(result.instance.solution).toBe('8');
 		expect(result.instance.correction?.feedback?.correct).toBe('Excellent! 5 + 3 = 8');
 		expect(result.instance.correction?.feedback?.incorrect).toBe('Try again. 5 + 3 = 8');
 	});
@@ -1446,7 +1446,7 @@ describe('generateInstance - Shared Fields', () => {
 						{ name: 'wrong1', expression: '{{eval:a + b + 1}}' },
 						{ name: 'wrong2', expression: '{{eval:a + b - 1}}' }
 					],
-					answer: '0',
+					solution: '0',
 					choices: [
 						{ content: templateMarkdown('{{correct}}'), isCorrect: true },
 						{ content: templateMarkdown('{{wrong1}}'), isCorrect: false },
@@ -1498,7 +1498,7 @@ describe('generateInstance - Shared Fields', () => {
 				{
 					statement: templateMarkdown('Calculate {{a}} × {{b}}'),
 					variables: [],
-					answer: '{{eval:a * b}}'
+					solution: '{{eval:a * b}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1527,7 +1527,7 @@ describe('generateInstance - Shared Fields', () => {
 
 		// Statement and answer should be resolved correctly
 		expect(result.instance.statement).toBe(`Calculate ${a} × ${b}`);
-		expect(result.instance.answer).toBe((a * b).toString());
+		expect(result.instance.solution).toBe((a * b).toString());
 	});
 
 	it('should allow variation to reference shared variables in its own variables', () => {
@@ -1548,7 +1548,7 @@ describe('generateInstance - Shared Fields', () => {
 					variables: [
 						{ name: 'result', expression: '{{eval:base * multiplier}}' } // References shared variables
 					],
-					answer: '{{result}}'
+					solution: '{{result}}'
 				}
 			],
 			precision: { type: 'none' },
@@ -1574,7 +1574,7 @@ describe('generateInstance - Shared Fields', () => {
 		expect(multiplier).toBe(3);
 		expect(resultVar).toBe(30);
 		expect(result.instance.statement).toBe('What is 30?');
-		expect(result.instance.answer).toBe('30');
+		expect(result.instance.solution).toBe('30');
 	});
 
 	it('should handle multiple variations each with different overrides of shared', () => {
@@ -1585,18 +1585,18 @@ describe('generateInstance - Shared Fields', () => {
 			status: 'draft' as const,
 			shared: {
 				variables: [{ name: 'base', expression: '100' }],
-				answer: '{{base}}'
+				solution: '{{base}}'
 			},
 			variations: [
 				{
 					statement: templateMarkdown('Addition: {{base}} + {{extra}}'),
 					variables: [{ name: 'extra', expression: '10' }],
-					answer: '{{eval:base + extra}}' // Override answer
+					solution: '{{eval:base + extra}}' // Override solution
 				},
 				{
 					statement: templateMarkdown('Subtraction: {{base}} - {{deduct}}'),
 					variables: [{ name: 'deduct', expression: '20' }],
-					answer: '{{eval:base - deduct}}' // Override answer
+					solution: '{{eval:base - deduct}}' // Override solution
 				}
 			],
 			precision: { type: 'none' },
@@ -1616,7 +1616,7 @@ describe('generateInstance - Shared Fields', () => {
 
 		expect(result0.instance.selectedVariationIndex).toBe(0);
 		expect(result0.instance.statement).toBe('Addition: 100 + 10');
-		expect(result0.instance.answer).toBe('110');
+		expect(result0.instance.solution).toBe('110');
 
 		// Test second variation (seed 1)
 		const result1 = generateInstance(template, 1);
@@ -1625,7 +1625,7 @@ describe('generateInstance - Shared Fields', () => {
 
 		expect(result1.instance.selectedVariationIndex).toBe(1);
 		expect(result1.instance.statement).toBe('Subtraction: 100 - 20');
-		expect(result1.instance.answer).toBe('80');
+		expect(result1.instance.solution).toBe('80');
 	});
 
 	it('should use shared.correction with steps for consistent explanations', () => {
@@ -1652,7 +1652,7 @@ describe('generateInstance - Shared Fields', () => {
 						{ name: 'a', expression: '7' },
 						{ name: 'b', expression: '8' }
 					],
-					answer: '{{eval:a + b}}'
+					solution: '{{eval:a + b}}'
 				}
 			],
 			precision: { type: 'none' },

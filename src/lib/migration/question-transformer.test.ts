@@ -55,7 +55,7 @@ describe('Question Transformer', () => {
 					name: '1',
 					expression: '{{1..10}}'
 				});
-				expect(variation?.answer).toBe('{{eval:{{1}}+{{2}}}}');
+				expect(variation?.solution).toBe('{{eval:{{1}}+{{2}}}}');
 			});
 
 			it('should detect and transform decimal questions', () => {
@@ -228,11 +228,11 @@ describe('Question Transformer', () => {
 
 				const var1 = result.template?.variations[0];
 				expect(var1?.statement).toContain('Additionner');
-				expect(var1?.answer).toBe('{{eval:{{1}}+{{2}}}}');
+				expect(var1?.solution).toBe('{{eval:{{1}}+{{2}}}}');
 
 				const var2 = result.template?.variations[1];
 				expect(var2?.statement).toContain('Soustraire');
-				expect(var2?.answer).toBe('{{eval:{{1}}-{{2}}}}');
+				expect(var2?.solution).toBe('{{eval:{{1}}-{{2}}}}');
 			});
 		});
 
@@ -499,7 +499,7 @@ describe('Question Transformer', () => {
 				expect(vars?.[1]).toEqual({ name: '2', expression: '{{0..9!{{1}}}}' });
 				expect(vars?.[2]).toEqual({ name: '3', expression: '{{eval:{{1}}*10+{{2}}}}' });
 
-				expect(result.template?.variations[0]?.answer).toBe('{{1}}');
+				expect(result.template?.variations[0]?.solution).toBe('{{1}}');
 			});
 
 			it('should handle n-digit number patterns', () => {
@@ -690,9 +690,9 @@ describe('Question Transformer', () => {
 			expect(result.template?.shared?.variables?.[0]?.expression).toBe('{{1..10}}');
 		});
 
-		it('should detect shared answer when 1 solutionss for multiple variations', () => {
+		it('should detect shared solution when 1 solutionss for multiple variations', () => {
 			const oldQuestion: QuestionBase = {
-				description: 'Test shared answer',
+				description: 'Test shared solution',
 				enounces: ['Stmt 1', 'Stmt 2'],
 				expressions: ['&1', '&1+1'],
 				variabless: [{ '&1': '$e[1;10]' }, { '&1': '$e[1;10]' }],
@@ -704,14 +704,14 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.shared?.answer).toBeDefined();
-			expect(result.template?.shared?.answer).toBe('42');
-			// Variations still get the answer (as fallback), but shared indicates it's common
-			expect(result.template?.variations[0]?.answer).toBeDefined();
-			expect(result.template?.variations[1]?.answer).toBeDefined();
-			// Both variations should have the same answer as shared
-			expect(result.template?.variations[0]?.answer).toEqual(result.template?.shared?.answer);
-			expect(result.template?.variations[1]?.answer).toEqual(result.template?.shared?.answer);
+			expect(result.template?.shared?.solution).toBeDefined();
+			expect(result.template?.shared?.solution).toBe('42');
+			// Variations still get the solution (as fallback), but shared indicates it's common
+			expect(result.template?.variations[0]?.solution).toBeDefined();
+			expect(result.template?.variations[1]?.solution).toBeDefined();
+			// Both variations should have the same solution as shared
+			expect(result.template?.variations[0]?.solution).toEqual(result.template?.shared?.solution);
+			expect(result.template?.variations[1]?.solution).toEqual(result.template?.shared?.solution);
 		});
 
 		it('should handle mix of shared and per-variation fields', () => {
@@ -732,12 +732,12 @@ describe('Question Transformer', () => {
 			expect(result.template?.shared?.statement).toBeDefined();
 			expect(result.template?.shared?.variables).toBeDefined();
 			// Not shared
-			expect(result.template?.shared?.answer).toBeUndefined();
-			// Per-variation answers
-			expect(result.template?.variations[0]?.answer).toBeDefined();
-			expect(result.template?.variations[1]?.answer).toBeDefined();
-			expect(result.template?.variations[0]?.answer).toBe('{{1}}');
-			expect(result.template?.variations[1]?.answer).toBe('{{eval:{{1}}+1}}');
+			expect(result.template?.shared?.solution).toBeUndefined();
+			// Per-variation solutions
+			expect(result.template?.variations[0]?.solution).toBeDefined();
+			expect(result.template?.variations[1]?.solution).toBeDefined();
+			expect(result.template?.variations[0]?.solution).toBe('{{1}}');
+			expect(result.template?.variations[1]?.solution).toBe('{{eval:{{1}}+1}}');
 		});
 
 		it('should preserve QuestionCorrection structure when shared', () => {
@@ -784,7 +784,7 @@ describe('Question Transformer', () => {
 			expect(result.template?.variations).toHaveLength(1);
 			expect(result.template?.variations[0]?.statement).toBeDefined();
 			expect(result.template?.variations[0]?.variables).toBeDefined();
-			expect(result.template?.variations[0]?.answer).toBeDefined();
+			expect(result.template?.variations[0]?.solution).toBeDefined();
 		});
 
 		it('should detect shared choices for multiple choice questions', () => {
@@ -904,9 +904,9 @@ describe('Question Transformer', () => {
 			expect(result.template?.variations[0]?.variables).toBeDefined();
 			expect(result.template?.variations[1]?.variables).toBeDefined();
 
-			expect(result.template?.shared?.answer).toBeUndefined();
-			expect(result.template?.variations[0]?.answer).toBeDefined();
-			expect(result.template?.variations[1]?.answer).toBeDefined();
+			expect(result.template?.shared?.solution).toBeUndefined();
+			expect(result.template?.variations[0]?.solution).toBeDefined();
+			expect(result.template?.variations[1]?.solution).toBeDefined();
 		});
 
 		it('should handle per-variation corrections correctly', () => {
@@ -951,7 +951,7 @@ describe('Question Transformer', () => {
 				variations: [
 					{
 						statement: templateMarkdown('Test'),
-						answer: '42'
+						solution: '42'
 					}
 				],
 				grades: ['CM1'],
@@ -993,7 +993,7 @@ describe('Question Transformer', () => {
 					{
 						statement: templateMarkdown(''),
 						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						answer: undefined as any
+						solution: undefined as any
 					}
 				],
 				grades: ['CM1'],
@@ -1007,7 +1007,7 @@ describe('Question Transformer', () => {
 
 			expect(result.valid).toBe(false);
 			expect(result.errors).toContain('Variation 0: missing statement');
-			expect(result.errors).toContain('Variation 0: missing answer');
+			expect(result.errors).toContain('Variation 0: missing solution');
 			expect(result.errors).toContain('Variation 0: multiple choice question missing choices');
 		});
 	});
