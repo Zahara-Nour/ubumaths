@@ -123,13 +123,13 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should convert variable exclusions', () => {
-			expectConversion('$e[0;9]\\{&1}', '{{0..9!{{1}}}}');
-			expectConversion('$e[0;9]\\{&1;&2}', '{{0..9!{{1}},{{2}}}}');
+			expectConversion('$e[0;9]\\{&1}', '{{0..9!{{a}}}}');
+			expectConversion('$e[0;9]\\{&1;&2}', '{{0..9!{{a}},{{b}}}}');
 			expectConversion('$e[1;100]\\{&a;&b;&c}', '{{1..100!{{a}},{{b}},{{c}}}}');
 		});
 
 		it('should convert mixed exclusions (literals and variables)', () => {
-			expectConversion('$e[0;20]\\{5;&1;10}', '{{0..20!5,{{1}},10}}');
+			expectConversion('$e[0;20]\\{5;&1;10}', '{{0..20!5,{{a}},10}}');
 			expectConversion('$e[1;50]\\{&x;25;&y;30}', '{{1..50!{{x}},25,{{y}},30}}');
 		});
 
@@ -178,7 +178,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should convert decimal patterns with variables', () => {
 			// Variables are converted first, so we need to test with already-converted vars
 			const result = convertTinyCASToNew('$d{&1;&2}');
-			expect(result.converted).toBe('{{{{1}}.{{2}}}}');
+			expect(result.converted).toBe('{{{{a}}.{{b}}}}');
 			expect(result.stats?.decimals).toBe(1);
 			expect(result.stats?.variableRefs).toBe(2);
 		});
@@ -238,7 +238,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should handle complex patterns with variables', () => {
 			const result = convertTinyCASToNew('$e{&1;&1}');
 			// The converter keeps the semicolon in the content
-			expect(result.converted).toBe('{{digits:{{1}};{{1}}}}');
+			expect(result.converted).toBe('{{digits:{{a}};{{a}}}}');
 			expectWarning('$e{&1;&1}', 'Complex n-digit pattern');
 		});
 
@@ -292,10 +292,10 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('5. Variable Reference Tests', () => {
 		it('should convert numeric variable references', () => {
-			expectConversion('&1', '{{1}}');
-			expectConversion('&2', '{{2}}');
-			expectConversion('&10', '{{10}}');
-			expectConversion('&999', '{{999}}');
+			expectConversion('&1', '{{a}}');
+			expectConversion('&2', '{{b}}');
+			expectConversion('&10', '{{j}}');
+			expectConversion('&999', '{{alk}}');
 		});
 
 		it('should convert named variable references', () => {
@@ -305,14 +305,14 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should convert multiple variable references', () => {
-			expectConversion('&1 + &2', '{{1}} + {{2}}');
+			expectConversion('&1 + &2', '{{a}} + {{b}}');
 			expectConversion('&a × &b = &c', '{{a}} × {{b}} = {{c}}');
 			expectConversion('The value of &x is &y', 'The value of {{x}} is {{y}}');
 		});
 
 		it('should handle variables in mathematical context', () => {
-			expectConversion('$$&1$$', '$${{1}}$$');
-			expectConversion('Dans le nombre $$&3$$', 'Dans le nombre $${{3}}$$');
+			expectConversion('$$&1$$', '$${{a}}$$');
+			expectConversion('Dans le nombre $$&3$$', 'Dans le nombre $${{c}}$$');
 		});
 
 		it('should convert HTML entity-like patterns as variables', () => {
@@ -331,16 +331,16 @@ describe('TinyCAS Syntax Converter', () => {
 
 	describe('6. Expression Evaluation Tests', () => {
 		it('should convert basic evaluations', () => {
-			expectConversion('[_&1+&2_]', '{{eval:{{1}}+{{2}}}}');
-			expectConversion('[_&1*10+&2_]', '{{eval:{{1}}*10+{{2}}}}');
-			expectConversion('[_2*&1_]', '{{eval:2*{{1}}}}');
-			expectConversion('[_10-&1_]', '{{eval:10-{{1}}}}');
+			expectConversion('[_&1+&2_]', '{{eval:{{a}}+{{b}}}}');
+			expectConversion('[_&1*10+&2_]', '{{eval:{{a}}*10+{{b}}}}');
+			expectConversion('[_2*&1_]', '{{eval:2*{{a}}}}');
+			expectConversion('[_10-&1_]', '{{eval:10-{{a}}}}');
 		});
 
 		it('should convert complex evaluations', () => {
-			expectConversion('[_&1*&2-&3_]', '{{eval:{{1}}*{{2}}-{{3}}}}');
-			expectConversion('[_(&1+&2)*&3_]', '{{eval:({{1}}+{{2}})*{{3}}}}');
-			expectConversion('[_&1/&2+&3/&4_]', '{{eval:{{1}}/{{2}}+{{3}}/{{4}}}}');
+			expectConversion('[_&1*&2-&3_]', '{{eval:{{a}}*{{b}}-{{c}}}}');
+			expectConversion('[_(&1+&2)*&3_]', '{{eval:({{a}}+{{b}})*{{c}}}}');
+			expectConversion('[_&1/&2+&3/&4_]', '{{eval:{{a}}/{{b}}+{{c}}/{{d}}}}');
 		});
 
 		it('should handle evaluations without variables', () => {
@@ -351,25 +351,25 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should convert decimal evaluations with warning', () => {
 			const result = convertTinyCASToNew('[._&1+0.5_.]');
-			expect(result.converted).toBe('{{eval:{{1}}+0.5}}');
+			expect(result.converted).toBe('{{eval:{{a}}+0.5}}');
 			expectWarning('[._&1+0.5_.]', 'Decimal evaluation');
 		});
 
 		it('should convert evaluations with plus sign with warning', () => {
 			const result = convertTinyCASToNew('[+_&1+&2_]');
-			expect(result.converted).toBe('{{eval:+{{1}}+{{2}}}}');
+			expect(result.converted).toBe('{{eval:+{{a}}+{{b}}}}');
 			expectWarning('[+_&1+&2_]', 'Evaluation with + sign');
 		});
 
 		it('should convert evaluations with parentheses modifier with warning', () => {
 			const result = convertTinyCASToNew('[(_&1+&2_]');
 			// The converter adds closing parenthesis in the output
-			expect(result.converted).toBe('{{eval:({{1}}+{{2}})}}');
+			expect(result.converted).toBe('{{eval:({{a}}+{{b}})}}');
 			expectWarning('[(_&1+&2_]', 'Evaluation with parentheses');
 		});
 
 		it('should handle multi-line evaluations', () => {
-			expectConversion('[_&1\n+\n&2_]', '{{eval:{{1}}\n+\n{{2}}}}');
+			expectConversion('[_&1\n+\n&2_]', '{{eval:{{a}}\n+\n{{b}}}}');
 		});
 
 		it('should track statistics for evaluations and nested variable references', () => {
@@ -382,24 +382,24 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should handle special evaluation modifiers', () => {
 			// Decimal evaluation
 			const decimal = convertTinyCASToNew('[._3.14*&1_.]');
-			expect(decimal.converted).toBe('{{eval:3.14*{{1}}}}');
+			expect(decimal.converted).toBe('{{eval:3.14*{{a}}}}');
 			expect(decimal.warnings?.some((w) => w.includes('Decimal'))).toBe(true);
 
 			// Plus sign evaluation
 			const plus = convertTinyCASToNew('[+_&1_]');
-			expect(plus.converted).toBe('{{eval:+{{1}}}}');
+			expect(plus.converted).toBe('{{eval:+{{a}}}}');
 			expect(plus.warnings?.some((w) => w.includes('+ sign'))).toBe(true);
 
 			// Parentheses evaluation
 			const parens = convertTinyCASToNew('[(_&1+5_]');
-			expect(parens.converted).toBe('{{eval:({{1}}+5)}}');
+			expect(parens.converted).toBe('{{eval:({{a}}+5)}}');
 			expect(parens.warnings?.some((w) => w.includes('parentheses'))).toBe(true);
 		});
 
 		it('should handle multiple special modifiers in one string', () => {
 			const input = '[._&1_.] and [+_&2_] and [(_&3_]';
 			const result = convertTinyCASToNew(input);
-			expect(result.converted).toBe('{{eval:{{1}}}} and {{eval:+{{2}}}} and {{eval:({{3}})}}');
+			expect(result.converted).toBe('{{eval:{{a}}}} and {{eval:+{{b}}}} and {{eval:({{c}})}}');
 			expect(result.warnings?.length).toBe(3);
 		});
 	});
@@ -408,25 +408,25 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should convert variables in text with random', () => {
 			expectConversion(
 				'Dans le nombre $$&3$$, le chiffre $e[1;9] est...',
-				'Dans le nombre $${{3}}$$, le chiffre {{1..9}} est...'
+				'Dans le nombre $${{c}}$$, le chiffre {{1..9}} est...'
 			);
 		});
 
 		it('should handle evaluations with random numbers', () => {
-			expectConversion('[_$e[1;10]*&1_]', '{{eval:{{1..10}}*{{1}}}}');
+			expectConversion('[_$e[1;10]*&1_]', '{{eval:{{1..10}}*{{a}}}}');
 			expectConversion('[_$e[0;5]+$e[0;5]_]', '{{eval:{{0..5}}+{{0..5}}}}');
 		});
 
 		it('should convert complex real-world pattern', () => {
 			// From actual question data
 			const input = 'Dans le nombre $$&4$$, quel est le chiffre des centaines ?';
-			const expected = 'Dans le nombre $${{4}}$$, quel est le chiffre des centaines ?';
+			const expected = 'Dans le nombre $${{d}}$$, quel est le chiffre des centaines ?';
 			expectConversion(input, expected);
 		});
 
 		it('should handle pattern with exclusions and evaluations', () => {
 			const input = '$e[0;9]\\{&1} and [_&1*10+&2_]';
-			const expected = '{{0..9!{{1}}}} and {{eval:{{1}}*10+{{2}}}}';
+			const expected = '{{0..9!{{a}}}} and {{eval:{{a}}*10+{{b}}}}';
 			expectConversion(input, expected);
 		});
 
@@ -439,7 +439,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should handle deeply nested patterns', () => {
 			const input = '$l{0;$e[1;9]\\{&1}}';
 			const result = convertTinyCASToNew(input);
-			expect(result.converted).toBe('{{0|{{1..9!{{1}}}}}}');
+			expect(result.converted).toBe('{{0|{{1..9!{{a}}}}}}');
 			// The warning may or may not be generated depending on the pattern
 			// Just verify the conversion is correct
 		});
@@ -483,12 +483,12 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should preserve HTML entities', () => {
 			// The converter treats all &word patterns as variables
 			expectConversion('&amp; &lt; &gt; &quot;', '{{amp}}; {{lt}}; {{gt}}; {{quot}};');
-			expectConversion('&1 &amp; &2', '{{1}} {{amp}}; {{2}}');
+			expectConversion('&1 &amp; &2', '{{a}} {{amp}}; {{b}}');
 		});
 
 		it('should handle special characters in text', () => {
 			expectConversion('Text with $$ symbols', 'Text with $$ symbols');
-			expectConversion('Math: $$x^2 + &1$$', 'Math: $$x^2 + {{1}}$$');
+			expectConversion('Math: $$x^2 + &1$$', 'Math: $$x^2 + {{a}}$$');
 			expectConversion('Brackets [] and braces {}', 'Brackets [] and braces {}');
 		});
 
@@ -506,7 +506,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should convert digit position question pattern', () => {
 			// Real example from questions.ts
 			const input = 'Dans le nombre $$&3$$, quel est le chiffre des dizaines ?';
-			const expected = 'Dans le nombre $${{3}}$$, quel est le chiffre des dizaines ?';
+			const expected = 'Dans le nombre $${{c}}$$, quel est le chiffre des dizaines ?';
 			expectConversion(input, expected);
 		});
 
@@ -515,26 +515,26 @@ describe('TinyCAS Syntax Converter', () => {
 			expectConversion('$e[1;9]', '{{1..9}}');
 
 			// Pattern: '&2': '$e[0;9]\\{&1}'
-			expectConversion('$e[0;9]\\{&1}', '{{0..9!{{1}}}}');
+			expectConversion('$e[0;9]\\{&1}', '{{0..9!{{a}}}}');
 
 			// Pattern: '&3': '[_&1*10+&2_]'
-			expectConversion('[_&1*10+&2_]', '{{eval:{{1}}*10+{{2}}}}');
+			expectConversion('[_&1*10+&2_]', '{{eval:{{a}}*10+{{b}}}}');
 		});
 
 		it('should convert 3-digit number pattern', () => {
 			// Pattern: '&4': '[_&1*100+&2*10+&3_]'
-			expectConversion('[_&1*100+&2*10+&3_]', '{{eval:{{1}}*100+{{2}}*10+{{3}}}}');
+			expectConversion('[_&1*100+&2*10+&3_]', '{{eval:{{a}}*100+{{b}}*10+{{c}}}}');
 		});
 
 		it('should convert complex exclusion pattern', () => {
 			// Pattern: '&3': '$e[0;9]\\{&1;&2}'
-			expectConversion('$e[0;9]\\{&1;&2}', '{{0..9!{{1}},{{2}}}}');
+			expectConversion('$e[0;9]\\{&1;&2}', '{{0..9!{{a}},{{b}}}}');
 		});
 
 		it('should handle complete question with multiple patterns', () => {
 			const input = 'Dans le nombre $$[_&1*100+&2*10+&3_]$$, le chiffre $e[0;9]\\{&1;&2;&3} est...';
 			const expected =
-				'Dans le nombre $${{eval:{{1}}*100+{{2}}*10+{{3}}}}$$, le chiffre {{0..9!{{1}},{{2}},{{3}}}} est...';
+				'Dans le nombre $${{eval:{{a}}*100+{{b}}*10+{{c}}}}$$, le chiffre {{0..9!{{a}},{{b}},{{c}}}} est...';
 			expectConversion(input, expected);
 		});
 	});
@@ -602,8 +602,8 @@ describe('TinyCAS Syntax Converter', () => {
 
 			expect(results).toHaveLength(4);
 			expect(results[0].converted).toBe('{{1..10}}');
-			expect(results[1].converted).toBe('{{1}} + {{2}}');
-			expect(results[2].converted).toBe('{{eval:{{1}}*10}}');
+			expect(results[1].converted).toBe('{{a}} + {{b}}');
+			expect(results[2].converted).toBe('{{eval:{{a}}*10}}');
 			expect(results[3].converted).toBe('{{red|green|blue}}');
 
 			// All should be successful
@@ -627,13 +627,13 @@ describe('TinyCAS Syntax Converter', () => {
 	describe('13. Validation Function Tests', () => {
 		it('should validate successful conversions', () => {
 			const original = '$e[1;10] and &1 and [_&2+3_]';
-			const converted = '{{1..10}} and {{1}} and {{eval:{{2}}+3}';
+			const converted = '{{1..10}} and {{a}} and {{eval:{{b}}+3}';
 			expect(validateConversion(original, converted)).toBe(true);
 		});
 
 		it('should detect incomplete conversions', () => {
 			const original = '$e[1;10] and &1';
-			const converted = '$e[1;10] and {{1}}'; // Random not converted
+			const converted = '$e[1;10] and {{a}}'; // Random not converted
 			expect(validateConversion(original, converted)).toBe(false);
 		});
 
@@ -645,7 +645,7 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should handle HTML entities correctly', () => {
 			const original = '&1 &amp; &2';
-			const converted = '{{1}} &amp; {{2}}';
+			const converted = '{{a}} &amp; {{b}}';
 			expect(validateConversion(original, converted)).toBe(true);
 		});
 	});
@@ -654,7 +654,7 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should convert evaluations before variable references', () => {
 			// This ensures variables inside evaluations are converted correctly
 			const input = '[_&1+&2_] and &3';
-			const expected = '{{eval:{{1}}+{{2}}}} and {{3}}';
+			const expected = '{{eval:{{a}}+{{b}}}} and {{c}}';
 			expectConversion(input, expected);
 		});
 
@@ -667,7 +667,7 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should handle all patterns in correct order', () => {
 			const input = '[_&1*10_] + $e[0;9]\\{&2} + $e[1;5] + &3 + $l{a;b}';
-			const expected = '{{eval:{{1}}*10}} + {{0..9!{{2}}}} + {{1..5}} + {{3}} + {{a|b}}';
+			const expected = '{{eval:{{a}}*10}} + {{0..9!{{b}}}} + {{1..5}} + {{c}} + {{a|b}}';
 			expectConversion(input, expected);
 		});
 	});
@@ -676,8 +676,8 @@ describe('TinyCAS Syntax Converter', () => {
 		it('should handle a complete mathematical exercise', () => {
 			const input = 'Résous: $$&1 + &2 = [_&1+&2_]$$\n' + 'où &1 = $e[1;10] et &2 = $e[1;10]\\{&1}';
 			const expected =
-				'Résous: $${{1}} + {{2}} = {{eval:{{1}}+{{2}}}}$$\n' +
-				'où {{1}} = {{1..10}} et {{2}} = {{1..10!{{1}}}}';
+				'Résous: $${{a}} + {{b}} = {{eval:{{a}}+{{b}}}}$$\n' +
+				'où {{a}} = {{1..10}} et {{b}} = {{1..10!{{a}}}}';
 			expectConversion(input, expected);
 		});
 
@@ -691,13 +691,13 @@ describe('TinyCAS Syntax Converter', () => {
 
 			// Convert each variable definition
 			expectConversion(variables['&1'], '{{1..9}}');
-			expectConversion(variables['&2'], '{{0..9!{{1}}}}');
-			expectConversion(variables['&3'], '{{0..9!{{1}},{{2}}}}');
-			expectConversion(variables['&4'], '{{eval:{{1}}*100+{{2}}*10+{{3}}}}');
+			expectConversion(variables['&2'], '{{0..9!{{a}}}}');
+			expectConversion(variables['&3'], '{{0..9!{{a}},{{b}}}}');
+			expectConversion(variables['&4'], '{{eval:{{a}}*100+{{b}}*10+{{c}}}}');
 
 			// Convert the question
 			const question = 'Dans le nombre $$&4$$, quel est le chiffre des centaines ?';
-			const expectedQuestion = 'Dans le nombre $${{4}}$$, quel est le chiffre des centaines ?';
+			const expectedQuestion = 'Dans le nombre $${{d}}$$, quel est le chiffre des centaines ?';
 			expectConversion(question, expectedQuestion);
 		});
 
@@ -769,8 +769,8 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should preserve Unicode in text', () => {
-			expectConversion('Question: π × &1 = ?', 'Question: π × {{1}} = ?');
-			expectConversion('Résultat: [_&1+π_]', 'Résultat: {{eval:{{1}}+π}}');
+			expectConversion('Question: π × &1 = ?', 'Question: π × {{a}} = ?');
+			expectConversion('Résultat: [_&1+π_]', 'Résultat: {{eval:{{a}}+π}}');
 		});
 
 		it('should handle French accented characters', () => {
@@ -788,11 +788,11 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should handle consecutive patterns without spacing', () => {
 			expectConversion('$e[1;5]$e[6;10]', '{{1..5}}{{6..10}}');
-			expectConversion('&1&2&3', '{{1}}{{2}}{{3}}');
+			expectConversion('&1&2&3', '{{a}}{{b}}{{c}}');
 		});
 
 		it('should preserve mathematical operators', () => {
-			expectConversion('&1 + &2 - &3 × &4 ÷ &5', '{{1}} + {{2}} - {{3}} × {{4}} ÷ {{5}}');
+			expectConversion('&1 + &2 - &3 × &4 ÷ &5', '{{a}} + {{b}} - {{c}} × {{d}} ÷ {{e}}');
 		});
 	});
 
@@ -818,38 +818,38 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should handle patterns at string boundaries', () => {
-			expectConversion('&1', '{{1}}'); // Start
-			expectConversion('text &1', 'text {{1}}'); // End
-			expectConversion('&1 text &2', '{{1}} text {{2}}'); // Both
+			expectConversion('&1', '{{a}}'); // Start
+			expectConversion('text &1', 'text {{a}}'); // End
+			expectConversion('&1 text &2', '{{a}} text {{b}}'); // Both
 		});
 	});
 
 	describe('21. Ternary Operator Tests', () => {
 		it('should convert simple comparison ternary', () => {
-			expectConversion('&5<&6 ?? 0 :: 1', '{{if:{{5}}<{{6}}|0|1}}');
-			expectConversion('&7<&8 ?? 0 :: 1', '{{if:{{7}}<{{8}}|0|1}}');
+			expectConversion('&5<&6 ?? 0 :: 1', '{{if:{{e}}<{{f}}|0|1}}');
+			expectConversion('&7<&8 ?? 0 :: 1', '{{if:{{g}}<{{h}}|0|1}}');
 		});
 
 		it('should convert equality ternary', () => {
-			expectConversion('&1=5 ?? yes :: no', '{{if:{{1}}=5|yes|no}}');
-			expectConversion('&2!=0 ?? positive :: zero', '{{if:{{2}}!=0|positive|zero}}');
+			expectConversion('&1=5 ?? yes :: no', '{{if:{{a}}=5|yes|no}}');
+			expectConversion('&2!=0 ?? positive :: zero', '{{if:{{b}}!=0|positive|zero}}');
 		});
 
 		it('should convert ternary with mod function', () => {
-			expectConversion('mod(&1;2)=0 ?? 0 :: 1', '{{if:mod({{1}},2)=0|0|1}}');
-			expectConversion('mod(&1;5)=0 ?? 0 :: 1', '{{if:mod({{1}},5)=0|0|1}}');
-			expectConversion('mod(&1;10)=0 ?? 0 :: 1', '{{if:mod({{1}},10)=0|0|1}}');
+			expectConversion('mod(&1;2)=0 ?? 0 :: 1', '{{if:mod({{a}},2)=0|0|1}}');
+			expectConversion('mod(&1;5)=0 ?? 0 :: 1', '{{if:mod({{a}},5)=0|0|1}}');
+			expectConversion('mod(&1;10)=0 ?? 0 :: 1', '{{if:mod({{a}},10)=0|0|1}}');
 		});
 
 		it('should convert ternary with product comparisons', () => {
-			expectConversion('(&1)*(&2) >0 ?? 0 :: 1', '{{if:({{1}})*({{2}}) >0|0|1}}');
-			expectConversion('(&1)*(&2)*(&3) >0 ?? 0 :: 1', '{{if:({{1}})*({{2}})*({{3}}) >0|0|1}}');
+			expectConversion('(&1)*(&2) >0 ?? 0 :: 1', '{{if:({{a}})*({{b}}) >0|0|1}}');
+			expectConversion('(&1)*(&2)*(&3) >0 ?? 0 :: 1', '{{if:({{a}})*({{b}})*({{c}}) >0|0|1}}');
 		});
 
 		it('should convert ternary with evaluated expressions', () => {
 			expectConversion(
 				'&2+&3>59 ?? [_&1+1_] :: &1',
-				'{{if:{{2}}+{{3}}>59|{{eval:{{1}}+1}}|{{1}}}}'
+				'{{if:{{b}}+{{c}}>59|{{eval:{{a}}+1}}|{{a}}}}'
 			);
 		});
 
@@ -863,31 +863,31 @@ describe('TinyCAS Syntax Converter', () => {
 			const input = '&1<5 ?? A :: B\n&2>10 ?? X :: Y';
 			const result = convertTinyCASToNew(input);
 			expect(result.stats?.ternaryOperators).toBe(2);
-			expect(result.converted).toContain('{{if:{{1}}<5|A|B}}');
-			expect(result.converted).toContain('{{if:{{2}}>10|X|Y}}');
+			expect(result.converted).toContain('{{if:{{a}}<5|A|B}}');
+			expect(result.converted).toContain('{{if:{{b}}>10|X|Y}}');
 		});
 	});
 
 	describe('22. Mini/Maxi Function Tests', () => {
 		it('should convert mini function', () => {
 			expectConversion('mini(5;10)', 'min(5,10)');
-			expectConversion('mini(&1;&2)', 'min({{1}},{{2}})');
-			expectConversion('mini(10-&1;&1-1)', 'min(10-{{1}},{{1}}-1)');
+			expectConversion('mini(&1;&2)', 'min({{a}},{{b}})');
+			expectConversion('mini(10-&1;&1-1)', 'min(10-{{a}},{{a}}-1)');
 		});
 
 		it('should convert maxi function', () => {
 			expectConversion('maxi(5;10)', 'max(5,10)');
-			expectConversion('maxi(&1;&2)', 'max({{1}},{{2}})');
-			expectConversion('maxi(&2;&3)', 'max({{2}},{{3}})');
+			expectConversion('maxi(&1;&2)', 'max({{a}},{{b}})');
+			expectConversion('maxi(&2;&3)', 'max({{b}},{{c}})');
 		});
 
 		it('should convert mini/maxi in complex expressions', () => {
-			expectConversion('$e[2;[_mini(10-&1;&1-1)_]]', '{{2..{{eval:min(10-{{1}},{{1}}-1)}}}}');
+			expectConversion('$e[2;[_mini(10-&1;&1-1)_]]', '{{2..{{eval:min(10-{{a}},{{a}}-1)}}}}');
 		});
 
 		it('should convert mini/maxi in correction text', () => {
-			expectConversion('mini(&2;&3) est plus petit', 'min({{2}},{{3}}) est plus petit');
-			expectConversion('maxi(&2;&3) est plus grand', 'max({{2}},{{3}}) est plus grand');
+			expectConversion('mini(&2;&3) est plus petit', 'min({{b}},{{c}}) est plus petit');
+			expectConversion('maxi(&2;&3) est plus grand', 'max({{b}},{{c}}) est plus grand');
 		});
 
 		it('should track mini/maxi function statistics', () => {
@@ -897,7 +897,7 @@ describe('TinyCAS Syntax Converter', () => {
 
 		it('should handle multiple mini/maxi in one string', () => {
 			const input = 'Compare mini(&1;&2) with maxi(&1;&2)';
-			const expected = 'Compare min({{1}},{{2}}) with max({{1}},{{2}})';
+			const expected = 'Compare min({{a}},{{b}}) with max({{a}},{{b}})';
 			expectConversion(input, expected);
 		});
 	});
@@ -936,7 +936,7 @@ describe('TinyCAS Syntax Converter', () => {
 			const input = '(&1)*(&2)>0 ?? positive :: negative';
 			const result = convertTinyCASToNew(input);
 			expect(result.success).toBe(true);
-			expect(result.converted).toBe('{{if:({{1}})*({{2}})>0|positive|negative}}');
+			expect(result.converted).toBe('{{if:({{a}})*({{b}})>0|positive|negative}}');
 		});
 
 		it('should convert divisibility check pattern', () => {

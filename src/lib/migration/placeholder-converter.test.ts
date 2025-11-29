@@ -105,25 +105,25 @@ describe('Placeholder Converter', () => {
 	});
 
 	describe('4. Numbered Variable Tests', () => {
-		it('should convert single digit variables', () => {
-			expectConversion('&1', '{{1}}');
-			expectConversion('&2', '{{2}}');
-			expectConversion('&9', '{{9}}');
+		it('should convert single digit variables to letters', () => {
+			expectConversion('&1', '{{a}}');
+			expectConversion('&2', '{{b}}');
+			expectConversion('&9', '{{i}}');
 		});
 
-		it('should convert multi-digit variables', () => {
-			expectConversion('&10', '{{10}}');
-			expectConversion('&99', '{{99}}');
-			expectConversion('&123', '{{123}}');
+		it('should convert multi-digit variables to letters', () => {
+			expectConversion('&10', '{{j}}');
+			expectConversion('&99', '{{cu}}');
+			expectConversion('&123', '{{ds}}');
 		});
 
 		it('should handle multiple numbered variables', () => {
-			expectConversion('&1 + &2 = &3', '{{1}} + {{2}} = {{3}}');
-			expectConversion('Values: &1, &2, &3', 'Values: {{1}}, {{2}}, {{3}}');
+			expectConversion('&1 + &2 = &3', '{{a}} + {{b}} = {{c}}');
+			expectConversion('Values: &1, &2, &3', 'Values: {{a}}, {{b}}, {{c}}');
 		});
 
 		it('should convert consecutive numbered variables', () => {
-			expectConversion('&1&2&3', '{{1}}{{2}}{{3}}');
+			expectConversion('&1&2&3', '{{a}}{{b}}{{c}}');
 		});
 
 		it('should not convert &1a or similar patterns', () => {
@@ -166,24 +166,24 @@ describe('Placeholder Converter', () => {
 
 	describe('6. Mixed Placeholder Tests', () => {
 		it('should convert multiple different placeholder types', () => {
-			expectConversion('Answer &sol with &1', 'Answer {{solution}} with {{1}}');
+			expectConversion('Answer &sol with &1', 'Answer {{solution}} with {{a}}');
 			expectConversion(
 				'&answer equals &sol at position &1',
-				'{{answer}} equals {{solution}} at position {{1}}'
+				'{{answer}} equals {{solution}} at position {{a}}'
 			);
 		});
 
 		it('should handle complex mixed content', () => {
 			expectConversion(
 				'&1 + &2 = &sol, color: ${get(color1)}',
-				'{{1}} + {{2}} = {{solution}}, color: {{color:color1}}'
+				'{{a}} + {{b}} = {{solution}}, color: {{color:color1}}'
 			);
 		});
 
 		it('should preserve surrounding text', () => {
 			expectConversion(
 				'Calculate &expression where x = &1 and y = &2',
-				'Calculate {{expression}} where x = {{1}} and y = {{2}}'
+				'Calculate {{expression}} where x = {{a}} and y = {{b}}'
 			);
 		});
 	});
@@ -209,18 +209,18 @@ describe('Placeholder Converter', () => {
 
 		it('should handle adjacent placeholders', () => {
 			expectConversion('&sol&answer', '{{solution}}{{answer}}');
-			expectConversion('&1&2&3', '{{1}}{{2}}{{3}}');
+			expectConversion('&1&2&3', '{{a}}{{b}}{{c}}');
 		});
 
 		it('should preserve LaTeX content', () => {
 			// LaTeX math should be preserved
-			expectConversion('$$&1 + &2$$', '$${{1}} + {{2}}$$');
-			expectConversion('$x^2$ and &1', '$x^2$ and {{1}}');
+			expectConversion('$$&1 + &2$$', '$${{a}} + {{b}}$$');
+			expectConversion('$x^2$ and &1', '$x^2$ and {{a}}');
 		});
 
 		it('should handle newlines and whitespace', () => {
-			expectConversion('&1\n&2\n&3', '{{1}}\n{{2}}\n{{3}}');
-			expectConversion('&1\t&2', '{{1}}\t{{2}}');
+			expectConversion('&1\n&2\n&3', '{{a}}\n{{b}}\n{{c}}');
+			expectConversion('&1\t&2', '{{a}}\t{{b}}');
 		});
 	});
 
@@ -233,8 +233,8 @@ describe('Placeholder Converter', () => {
 			expect(convertSinglePlaceholder('&answer2')).toBe('{{answer:2}}');
 			expect(convertSinglePlaceholder('&expression')).toBe('{{expression}}');
 			expect(convertSinglePlaceholder('&exp')).toBe('{{expression:raw}}');
-			expect(convertSinglePlaceholder('&1')).toBe('{{1}}');
-			expect(convertSinglePlaceholder('&42')).toBe('{{42}}');
+			expect(convertSinglePlaceholder('&1')).toBe('{{a}}');
+			expect(convertSinglePlaceholder('&42')).toBe('{{ap}}');
 			expect(convertSinglePlaceholder('${get(color1)}')).toBe('{{color:color1}}');
 			expect(convertSinglePlaceholder('${myColor}')).toBe('{{color:myColor}}');
 		});
@@ -327,7 +327,7 @@ describe('Placeholder Converter', () => {
 
 			expect(results).toHaveLength(3);
 			expect(results[0].converted).toBe('{{solution}}');
-			expect(results[1].converted).toBe('{{1}} + {{2}}');
+			expect(results[1].converted).toBe('{{a}} + {{b}}');
 			expect(results[2].converted).toBe('{{color:color1}}');
 		});
 
@@ -340,7 +340,7 @@ describe('Placeholder Converter', () => {
 	describe('13. Validation Tests', () => {
 		it('should validate successful conversions', () => {
 			expect(validatePlaceholderConversion('&sol', '{{solution}}')).toBe(true);
-			expect(validatePlaceholderConversion('&1 + &2', '{{1}} + {{2}}')).toBe(true);
+			expect(validatePlaceholderConversion('&1 + &2', '{{a}} + {{b}}')).toBe(true);
 		});
 
 		it('should detect incomplete conversions', () => {
@@ -369,8 +369,8 @@ describe('Placeholder Converter', () => {
 
 		it('should track multiple changes', () => {
 			expectChanges('&1 and &2', [
-				{ original: '&1', replacement: '{{1}}' },
-				{ original: '&2', replacement: '{{2}}' }
+				{ original: '&1', replacement: '{{a}}' },
+				{ original: '&2', replacement: '{{b}}' }
 			]);
 		});
 	});
@@ -379,7 +379,7 @@ describe('Placeholder Converter', () => {
 		it('should convert typical correction format', () => {
 			expectConversion(
 				'La réponse est &sol car &1 + &2 = &sol.',
-				'La réponse est {{solution}} car {{1}} + {{2}} = {{solution}}.'
+				'La réponse est {{solution}} car {{a}} + {{b}} = {{solution}}.'
 			);
 		});
 

@@ -129,18 +129,18 @@ describe('Correction Integration', () => {
 		describe('TinyCAS Syntax Conversion', () => {
 			it('should convert numbered variable references', () => {
 				const result = testLegacySyntaxConversion('Variable &1 equals &2');
-				expect(result).toBe('Variable {{1}} equals {{2}}');
+				expect(result).toBe('Variable {{a}} equals {{b}}');
 			});
 
 			it('should convert evaluation syntax', () => {
 				const result = testLegacySyntaxConversion('Result: [_&1+&2_]');
-				expect(result).toBe('Result: {{eval:{{1}}+{{2}}}}');
+				expect(result).toBe('Result: {{eval:{{a}}+{{b}}}}');
 			});
 
 			it('should preserve LaTeX math', () => {
 				const result = testLegacySyntaxConversion('$$\\frac{&1}{&2}$$');
-				expect(result).toContain('{{1}}');
-				expect(result).toContain('{{2}}');
+				expect(result).toContain('{{a}}');
+				expect(result).toContain('{{b}}');
 			});
 		});
 
@@ -192,26 +192,26 @@ describe('Correction Integration', () => {
 		describe('Conditional Syntax Conversion', () => {
 			it('should convert single conditionals', () => {
 				const result = testLegacySyntaxConversion('@@&1<5 ?? Petit@@');
-				expect(result).toBe('{{if:{{1}}<5|Petit}}');
+				expect(result).toBe('{{if:{{a}}<5|Petit}}');
 			});
 
 			it('should convert paired conditionals (if/else)', () => {
 				const result = testLegacySyntaxConversion('@@&1<5 ?? Petit@@ @@&1>=5 ?? Grand@@');
-				expect(result).toBe('{{if:{{1}}<5|Petit|Grand}}');
+				expect(result).toBe('{{if:{{a}}<5|Petit|Grand}}');
 			});
 
 			it('should convert conditional with addition', () => {
 				const result = testLegacySyntaxConversion(
 					'@@&2+&3<60 ?? Simple @@ @@&2+&3>=60 ?? Avec retenue @@'
 				);
-				expect(result).toBe('{{if:{{2}}+{{3}}<60|Simple|Avec retenue}}');
+				expect(result).toBe('{{if:{{b}}+{{c}}<60|Simple|Avec retenue}}');
 			});
 
 			it('should convert modulo conditionals', () => {
 				const result = testLegacySyntaxConversion(
 					'@@mod(&1;2)=0 ?? pair@@ @@mod(&1;2)!=0 ?? impair@@'
 				);
-				expect(result).toBe('{{if:mod({{1}};2)=0|pair|impair}}');
+				expect(result).toBe('{{if:mod({{a}};2)=0|pair|impair}}');
 			});
 		});
 
@@ -221,9 +221,9 @@ describe('Correction Integration', () => {
 				const result = testLegacySyntaxConversion(input);
 
 				expect(result).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
-				expect(result).toContain('{{1}}');
-				expect(result).toContain('{{2}}');
-				expect(result).toContain('{{if:{{1}}<5|petit}}');
+				expect(result).toContain('{{a}}');
+				expect(result).toContain('{{b}}');
+				expect(result).toContain('{{if:{{a}}<5|petit}}');
 			});
 
 			it('should handle complex real-world example', () => {
@@ -231,7 +231,7 @@ describe('Correction Integration', () => {
 				const result = testLegacySyntaxConversion(input);
 
 				expect(result).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
-				expect(result).toContain('{{eval:{{1}}+{{2}}}}');
+				expect(result).toContain('{{eval:{{a}}+{{b}}}}');
 				expect(result).toContain('{{color:'); // Color conversion
 			});
 
@@ -239,15 +239,15 @@ describe('Correction Integration', () => {
 				const input = '@@[_&1+&2_]<10 ?? [_&1+&2_] est petit@@';
 				const result = testLegacySyntaxConversion(input);
 
-				expect(result).toContain('{{if:{{eval:{{1}}+{{2}}}}<10|');
-				expect(result).toContain('{{eval:{{1}}+{{2}}}} est petit}}');
+				expect(result).toContain('{{if:{{eval:{{a}}+{{b}}}}<10|');
+				expect(result).toContain('{{eval:{{a}}+{{b}}}} est petit}}');
 			});
 
 			it('should handle solution reference in conditional', () => {
 				const input = '@@&1<5 ?? La réponse &sol est petite@@';
 				const result = testLegacySyntaxConversion(input);
 
-				expect(result).toContain('{{if:{{1}}<5|La réponse {{sol}} est petite}}');
+				expect(result).toContain('{{if:{{a}}<5|La réponse {{sol}} est petite}}');
 			});
 		});
 	});
@@ -310,8 +310,8 @@ describe('Correction Integration', () => {
 
 				// Current implementation concatenates steps into single correction field
 				expect(result?.steps).toHaveLength(1);
-				expect(result?.steps?.[0]).toContain('{{1}}');
-				expect(result?.steps?.[0]).toContain('{{2}}');
+				expect(result?.steps?.[0]).toContain('{{a}}');
+				expect(result?.steps?.[0]).toContain('{{b}}');
 				expect(result?.steps?.[0]).toContain('{{sol}}');
 				// Steps should be joined with double newline
 				expect(result?.steps?.[0]).toContain('\n\n');
@@ -326,7 +326,7 @@ describe('Correction Integration', () => {
 
 				const result = testTransformCorrection(details, undefined, warnings, stats);
 
-				expect(result?.steps?.[0]).toContain('{{if:{{1}}<10|');
+				expect(result?.steps?.[0]).toContain('{{if:{{a}}<10|');
 				expect(result?.steps?.[0]).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 			});
 		});
@@ -486,8 +486,8 @@ describe('Correction Integration', () => {
 
 				expect(result.success).toBe(true);
 				expect(result.template?.variations[0].correction).toBeDefined();
-				expect(result.template?.variations[0].correction).toContain('{{1}}');
-				expect(result.template?.variations[0].correction).toContain('{{2}}');
+				expect(result.template?.variations[0].correction).toContain('{{a}}');
+				expect(result.template?.variations[0].correction).toContain('{{b}}');
 				expect(result.template?.variations[0].correction).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 			});
 
@@ -557,7 +557,7 @@ describe('Correction Integration', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				expect(result.template?.variations[0].correction).toContain('{{if:mod({{1}};2)=0|');
+				expect(result.template?.variations[0].correction).toContain('{{if:mod({{a}};2)=0|');
 			});
 
 			it('should handle correction with time addition conditional', () => {
@@ -577,7 +577,7 @@ describe('Correction Integration', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				expect(result.template?.variations[0].correction).toContain('{{if:{{1}}+{{2}}<60|');
+				expect(result.template?.variations[0].correction).toContain('{{if:{{a}}+{{b}}<60|');
 			});
 
 			it('should handle correction with multiple conditionals', () => {
@@ -758,8 +758,8 @@ describe('Correction Integration', () => {
 
 				expect(result.success).toBe(true);
 				const correction = result.template?.variations[0].correction;
-				expect(correction).toContain('{{1}}');
-				expect(correction).toContain('{{2}}');
+				expect(correction).toContain('{{a}}');
+				expect(correction).toContain('{{b}}');
 				expect(correction).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 			});
 		});

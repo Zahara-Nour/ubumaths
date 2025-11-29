@@ -9,6 +9,7 @@
 // Unused import retained for future validation needs
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { z } from 'zod';
+import { numberToLetterName } from './question-transformer';
 
 /**
  * Result of a syntax conversion operation
@@ -198,7 +199,7 @@ export class TinyCASConverter {
 	}
 
 	/**
-	 * Convert variable references: &varname → {{varname}}
+	 * Convert variable references: &varname → {{varname}}, &1 → {{a}}
 	 */
 	private convertVariableReferences(input: string): string {
 		// Match &followed by word characters or digits
@@ -206,7 +207,9 @@ export class TinyCASConverter {
 
 		return input.replace(pattern, (match, varName) => {
 			this.stats.variableRefs++;
-			return `{{${varName}}}`;
+			// Convert numeric variable names to letters
+			const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
+			return `{{${name}}}`;
 		});
 	}
 
@@ -409,8 +412,11 @@ export class TinyCASConverter {
 			if (varMatches) {
 				this.stats.variableRefs += varMatches.length;
 			}
-			// Convert variable references within the expression
-			return expr.replace(/&(\w+)/g, '{{$1}}');
+			// Convert variable references within the expression (numeric → letters)
+			return expr.replace(/&(\w+)/g, (match, varName) => {
+				const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
+				return `{{${name}}}`;
+			});
 		};
 
 		// Pattern for basic evaluation [_..._]
@@ -481,8 +487,12 @@ export class TinyCASConverter {
 			trueVal = trueVal.trim();
 			falseVal = falseVal.trim();
 
-			// Convert variable references in all parts
-			const convertVars = (s: string) => s.replace(/&(\w+)/g, '{{$1}}');
+			// Convert variable references in all parts (numeric → letters)
+			const convertVars = (s: string) =>
+				s.replace(/&(\w+)/g, (match, varName) => {
+					const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
+					return `{{${name}}}`;
+				});
 			condition = convertVars(condition);
 			trueVal = convertVars(trueVal);
 			falseVal = convertVars(falseVal);
@@ -531,8 +541,11 @@ export class TinyCASConverter {
 		// First, handle any variable references in the exclusions
 		let processedExclusions = exclusions;
 
-		// Convert variable references
-		processedExclusions = processedExclusions.replace(/&(\w+)/g, '{{$1}}');
+		// Convert variable references (numeric → letters)
+		processedExclusions = processedExclusions.replace(/&(\w+)/g, (match, varName) => {
+			const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
+			return `{{${name}}}`;
+		});
 
 		// Split by semicolon and join with comma
 		const items = processedExclusions.split(';').map((item) => item.trim());
