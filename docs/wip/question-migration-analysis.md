@@ -16,8 +16,9 @@
 
 This document analyzes the migration from TinyMath/TinyCAS to the new Markdown-based question system, with a focus on validation capabilities.
 
-**Latest Updates (v2.4.0 - 2025-11-26):**
+**Latest Updates (v2.5.0 - 2025-11-29):**
 
+- ✅ **Rename `answer` → `solution`** - Clarified semantics: `solution` = expected answer in template, `answer` = student response
 - ✅ **Relative integers** (`$er[min;max]` → `{{min..max;±}}`) - Fully supported
 - ✅ **Decimal by digits** (`$d{n;m}` → `{{n.m}}`) - Fully supported
 - ✅ **Double-dot ranges** (`..`) for clearer negative ranges
@@ -267,7 +268,7 @@ interface QuestionVariation {
 | `enounces[]`           | `variations[].statement`         | As TemplateMarkdown    |
 | `expressions[]`        | Merged into statement            | Wrap in `$$...$$`      |
 | `variabless[]`         | `variations[].variables`         | Convert `&N` → `{{N}}` |
-| `solutionss[]`         | `variations[].answer`            | Convert syntax         |
+| `solutionss[]`         | `variations[].solution`          | Convert syntax         |
 | `choicess[]`           | `variations[].choices`           | With isCorrect flag    |
 | `correctionDetailss[]` | `variations[].correction`        | As TemplateMarkdown    |
 | `correctionFormats[]`  | `variations[].correctionDisplay` | New structure          |
@@ -411,7 +412,7 @@ const UNIT_ALIASES: Record<string, string> = {
 **Template Syntax for Units**:
 
 ```markdown
-answer: "42"
+solution: "42"
 expectedUnit: "m" // Optional unit
 unitRequired: true // Must include unit
 unitFlexible: false // Accept only exact unit (not km for m)
@@ -1791,7 +1792,7 @@ This section documents a thorough code-level verification of what's actually imp
 export interface QuestionVariation {
 	statement: TemplateMarkdown;
 	variables?: QuestionVariable[];
-	answer: string | string[];
+	solution: string | string[];
 	correction?: TemplateMarkdown;
 	blanks?: { position: number; expectedAnswer: string }[];
 	choices?: { content: TemplateMarkdown; isCorrect: boolean }[];
@@ -2031,6 +2032,78 @@ if (instance.validationRules?.length > 0) {
 2. **Database import** - Import transformed questions to Supabase
 3. **UI integration** - Ensure question display handles new image URLs
 4. **Manual review** - Review questions with custom validation rules
+
+---
+
+## 26. Phase 10: Rename `answer` to `solution` (2025-11-29)
+
+### Rationale
+
+The field `answer` was renamed to `solution` to clarify semantics:
+
+| Term       | Meaning                                     | Context                             |
+| ---------- | ------------------------------------------- | ----------------------------------- |
+| `solution` | The expected/correct answer in the template | QuestionVariation, QuestionInstance |
+| `answer`   | The student's submitted response            | EvaluationContext, user input       |
+
+### Changes Made
+
+#### Types Updated
+
+- `QuestionVariation.answer` → `QuestionVariation.solution`
+- `SharedVariationDefaults.answer` → `SharedVariationDefaults.solution`
+- `QuestionInstance.answer` → `QuestionInstance.solution`
+
+#### Functions Renamed
+
+- `resolveAnswer()` → `resolveSolution()` (content-resolver.ts)
+
+#### Files Modified
+
+| File                                                  | Changes                                     |
+| ----------------------------------------------------- | ------------------------------------------- |
+| `src/lib/questions/types.ts`                          | Field rename in 3 interfaces                |
+| `src/lib/questions/generator/instance-generator.ts`   | Updated to use `solution` field             |
+| `src/lib/questions/generator/content-resolver.ts`     | Renamed `resolveAnswer` → `resolveSolution` |
+| `src/lib/questions/generator/template-validator.ts`   | Updated validation messages                 |
+| `src/lib/utils/answer-validator.ts`                   | Updated to access `instance.solution`       |
+| `src/lib/migration/question-transformer.ts`           | Produces `solution` field                   |
+| `supabase/migrations/*_rename_answer_to_solution.sql` | Database JSONB key migration                |
+
+#### Preserved `answer` Usages
+
+These were intentionally kept as `answer`:
+
+- `EvaluationContext.answer` - Student's submitted response
+- `{{answer}}` placeholder in corrections - Student's answer
+- `expectedAnswer` in blanks - The expected value for a blank (kept for clarity)
+- `multipleAnswers` boolean - Kept as plural form is clearer
+
+#### Database Migration
+
+```sql
+-- Rename 'answer' key to 'solution' in JSONB fields
+UPDATE question_templates
+SET variations = (
+  SELECT jsonb_agg(
+    CASE
+      WHEN elem ? 'answer' THEN (elem - 'answer') || jsonb_build_object('solution', elem->'answer')
+      ELSE elem
+    END
+  )
+  FROM jsonb_array_elements(variations) elem
+)
+WHERE variations IS NOT NULL;
+```
+
+### Test Status
+
+All 107+ tests pass across affected files:
+
+- `question-transformer.test.ts` ✅
+- `srs/generator.test.ts` ✅
+- `answer-validator.ts` ✅
+- `answer-validator.test.ts` ✅
 
 ---
 

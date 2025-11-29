@@ -8,7 +8,20 @@
 
 ## Current Phase: COMPLETED ✅
 
-## Last Commit: fbcf944b
+## Last Commit: 2013750e
+
+### Phase 10: Rename answer to solution ✅
+
+- [x] Renamed `answer` field to `solution` in QuestionVariation, SharedVariationDefaults, QuestionInstance
+- [x] Updated instance-generator.ts, content-resolver.ts (resolveAnswer → resolveSolution)
+- [x] Updated template-validator.ts validation message
+- [x] Updated Zod schema in questions.ts
+- [x] Updated answer-validator.ts to use instance.solution
+- [x] Updated question-transformer.ts to produce solution field
+- [x] Created database migration for JSONB key rename
+- [x] Updated all test files (107+ tests pass)
+- [x] Updated docs/ref/questions.md
+- [x] Preserved `answer` for student responses (EvaluationContext.answer, expectedAnswer in blanks)
 
 ### Phase 9: Display Options Mapping ✅
 
