@@ -22,7 +22,6 @@
 -->
 <script lang="ts">
 	import type { InlineNode, InputState } from '$lib/exercises/types';
-	import type { BlankState } from '../types';
 	import MathInline from './MathInline.svelte';
 	import MathPrompt from './MathPrompt.svelte';
 	import TextNode from './TextNode.svelte';
@@ -31,29 +30,23 @@
 	interface Props {
 		children: InlineNode[];
 		class?: string;
-		/** State of all blanks (indexed by blank index) */
-		blankStates?: Map<number, BlankState>;
-		/** Callback when a blank value changes */
-		onBlankChange?: (index: number, value: string) => void;
-		/** Callback when user submits a blank (Enter key) */
-		onBlankSubmit?: (index: number) => void;
-		/** Whether blanks are disabled (e.g., after submission) */
-		blanksDisabled?: boolean;
-		/** Input states for math prompts (unified with text blanks) */
-		mathInputs?: InputState[];
-		/** Callback when a math prompt value changes */
-		onMathPromptChange?: (index: number, value: string) => void;
+		/** Unified input states for both text blanks and math prompts */
+		inputs?: InputState[];
+		/** Callback when any input value changes (text or math) */
+		onInputChange?: (index: number, value: string) => void;
+		/** Callback when user submits a text blank (Enter key) */
+		onInputSubmit?: (index: number) => void;
+		/** Whether inputs are disabled (e.g., after submission) */
+		inputsDisabled?: boolean;
 	}
 
 	let {
 		children,
 		class: className = '',
-		blankStates,
-		onBlankChange,
-		onBlankSubmit,
-		blanksDisabled = false,
-		mathInputs = [],
-		onMathPromptChange
+		inputs = [],
+		onInputChange,
+		onInputSubmit,
+		inputsDisabled = false
 	}: Props = $props();
 
 	/**
@@ -64,10 +57,10 @@
 	}
 
 	/**
-	 * Get blank state by index
+	 * Get input state by index
 	 */
-	function getBlankState(index: number): BlankState | undefined {
-		return blankStates?.get(index);
+	function getInputState(index: number): InputState | undefined {
+		return inputs.find((i) => i.index === index);
 	}
 
 	/**
@@ -117,21 +110,21 @@
 					latex={child.latex}
 					display="inline"
 					promptIndices={child.promptIndices}
-					inputs={mathInputs}
-					onPromptChange={onMathPromptChange}
+					inputs={inputs.filter((i) => i.type === 'math')}
+					onPromptChange={onInputChange}
 				/>
 			{:else}
 				<MathInline latex={child.latex} />
 			{/if}
 		{:else if child.type === 'blank'}
-			{@const state = getBlankState(child.index)}
+			{@const state = getInputState(child.index)}
 			<BlankInput
 				index={child.index}
 				value={state?.value ?? ''}
-				disabled={blanksDisabled}
-				validationState={state?.isValid ?? null}
-				onValueChange={(value) => onBlankChange?.(child.index, value)}
-				onSubmit={() => onBlankSubmit?.(child.index)}
+				disabled={inputsDisabled}
+				isCorrect={state?.isCorrect ?? null}
+				onValueChange={(value) => onInputChange?.(child.index, value)}
+				onSubmit={() => onInputSubmit?.(child.index)}
 			/>
 		{:else if child.type === 'line-break'}
 			{#if child.hard}<br />{/if}

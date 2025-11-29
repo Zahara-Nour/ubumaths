@@ -23,7 +23,7 @@
 <script lang="ts">
 	import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
 	import type { DocumentNode, ParseOptions, InputState } from '$lib/exercises/types';
-	import type { BlankState, MarkdownDisplayMode } from './types';
+	import type { MarkdownDisplayMode } from './types';
 	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
 
 	// Import node components
@@ -52,18 +52,14 @@
 		class?: string;
 		/** Callback when a blank placeholder is found (for fill_in_blanks) */
 		onBlankFound?: (index: number) => void;
-		/** State of all blanks (indexed by blank index) - for fill_in_blanks */
-		blankStates?: Map<number, BlankState>;
-		/** Callback when a blank value changes */
-		onBlankChange?: (index: number, value: string) => void;
-		/** Callback when user submits a blank (Enter key) */
-		onBlankSubmit?: (index: number) => void;
-		/** Whether blanks are disabled (e.g., after submission) */
-		blanksDisabled?: boolean;
-		/** Input states for math prompts (unified with text blanks) */
-		mathInputs?: InputState[];
-		/** Callback when a math prompt value changes */
-		onMathPromptChange?: (index: number, value: string) => void;
+		/** Unified input states for both text blanks and math prompts */
+		inputs?: InputState[];
+		/** Callback when any input value changes (text or math) */
+		onInputChange?: (index: number, value: string) => void;
+		/** Callback when user submits a text blank (Enter key) */
+		onInputSubmit?: (index: number) => void;
+		/** Whether inputs are disabled (e.g., after submission) */
+		inputsDisabled?: boolean;
 	}
 
 	let {
@@ -72,12 +68,10 @@
 		parseOptions = {},
 		class: className = '',
 		onBlankFound,
-		blankStates,
-		onBlankChange,
-		onBlankSubmit,
-		blanksDisabled = false,
-		mathInputs = [],
-		onMathPromptChange
+		inputs = [],
+		onInputChange,
+		onInputSubmit,
+		inputsDisabled = false
 	}: Props = $props();
 
 	/**
@@ -124,12 +118,10 @@
 				{#if node.type === 'paragraph'}
 					<ParagraphNode
 						children={node.children}
-						{blankStates}
-						{onBlankChange}
-						{onBlankSubmit}
-						{blanksDisabled}
-						{mathInputs}
-						{onMathPromptChange}
+						{inputs}
+						{onInputChange}
+						{onInputSubmit}
+						{inputsDisabled}
 					/>
 				{:else if node.type === 'heading'}
 					<HeadingNode level={node.level} children={node.children} />
@@ -139,8 +131,8 @@
 							latex={node.latex}
 							display="block"
 							promptIndices={node.promptIndices}
-							inputs={mathInputs}
-							onPromptChange={onMathPromptChange}
+							inputs={inputs.filter((i) => i.type === 'math')}
+							onPromptChange={onInputChange}
 						/>
 					{:else}
 						<MathBlock latex={node.latex} />
