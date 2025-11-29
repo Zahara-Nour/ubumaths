@@ -345,36 +345,97 @@ Le seul développement nécessaire est l'ajout de `displayOptions` et l'impléme
 
 ### État actuel
 
-- **Phase complétée**: 1/6
-- **Dernière action**: Phase 1 - Types et infrastructure (implémenté + code review)
-- **Prochaine étape**: Phase 2 - Transformations d'expressions
+- **Phase complétée**: 5/5 (TERMINÉ)
+- **Dernière action**: Phase 5 - Documentation
+- **Statut**: Implémentation complète, prête pour utilisation
 
 ### Fichiers créés/modifiés
 
-#### Phase 1 (terminée)
+#### Phase 1 (terminée) - Types et infrastructure
 
-- `src/lib/shared/parameterization/display-options.ts` (NOUVEAU)
-  - Interface `DisplayOptions`
+- `src/lib/shared/parameterization/display-options.ts` (NOUVEAU - 212 lignes)
+  - Interface `DisplayOptions` avec 9 options
   - Constante `GLOBAL_DISPLAY_DEFAULTS`
   - Fonction `resolveDisplayOptions()` avec expansion de `shuffleTermsAndFactors`
 - `src/lib/shared/parameterization/types.ts`
   - Ajout de `displayOptions?: DisplayOptions` à l'interface `Variable`
+  - Ajout de `displayValue?: string` à l'interface `ResolvedVariable`
 - `src/lib/shared/parameterization/index.ts`
   - Export du module display-options
 - `src/lib/questions/types.ts`
   - Ajout de `defaultDisplayOptions?: DisplayOptions` à `QuestionTemplate`
 
+#### Phase 2 (terminée) - Transformations d'expressions
+
+- `src/lib/shared/parameterization/expression-transforms.ts` (NOUVEAU - 413 lignes)
+  - Fonction `applyDisplayTransforms()` - transformation principale
+  - Fonction `canTransform()` - vérification de validité
+  - Fonction `getExpressionStructure()` - analyse de structure
+  - Utilise Compute Engine pour manipulation MathJSON
+  - Algorithme Fisher-Yates pour shuffles équitables
+
+#### Phase 3 (terminée) - Tests unitaires
+
+- `src/lib/shared/parameterization/display-options.test.ts` (NOUVEAU - 25 tests)
+- `src/lib/shared/parameterization/expression-transforms.test.ts` (NOUVEAU - 32 tests)
+
+#### Phase 4 (terminée) - Intégration dans le resolver
+
+- `src/lib/shared/parameterization/resolver/variable-resolver.ts`
+  - `resolveVariables()` accepte maintenant `templateDisplayDefaults`
+  - Applique les transformations pendant la résolution
+  - Ajoute `displayValue` quand transformé
+- `src/lib/shared/parameterization/resolver/text-resolver.ts`
+  - Interface `ResolveTextOptions` avec `useDisplayValue`
+  - `resolveText()` peut utiliser `displayValue` optionnellement
+
 ### Commits effectués
 
-- (en attente) "feat(parameterization): add DisplayOptions types and cascade resolution"
+1. `b8fbec72` - feat(parameterization): add DisplayOptions types and cascade resolution
+2. `8d7439a5` - feat(parameterization): add expression transformation functions
+3. `3f086ff2` - test(parameterization): add display-options cascade resolution tests
+4. `5e6bfe27` - feat(parameterization): integrate displayOptions in variable resolver
+
+### Tests
+
+- **449 tests** au total dans le module parameterization
+- Tous passent (100%)
 
 ### Décisions prises
 
 1. Cascade simple sans 'inherit' explicite (spread d'objets)
-2. Granularité par variable
-3. Expansion de `shuffleTermsAndFactors` AVANT la cascade (fix du code review)
-4. Options LaTeX via CE.serialize()
+2. Granularité par variable (chaque variable peut avoir ses propres displayOptions)
+3. Expansion de `shuffleTermsAndFactors` AVANT la cascade
+4. Compute Engine pour les transformations (TinyCas retiré)
+5. `displayValue` optionnel sur `ResolvedVariable` (seulement si différent de `value`)
+6. `useDisplayValue` opt-in dans `resolveText()` pour backward compatibility
 
-### Plan détaillé
+### Utilisation
 
-Voir `/Users/david/.claude/plans/unified-forging-catmull.md`
+```typescript
+import { resolveVariables, resolveText, type DisplayOptions } from '$lib/shared/parameterization';
+
+// Variables avec displayOptions
+const variables = [
+	{ name: 'a', expression: '5' },
+	{ name: 'b', expression: '0' },
+	{
+		name: 'expr',
+		expression: '{{a}}+{{b}}',
+		displayOptions: { removeNullTerms: true, shuffleTerms: true }
+	}
+];
+
+// Template-level defaults (optionnel)
+const templateDefaults: DisplayOptions = { addSpaces: true };
+
+// Résolution
+const resolved = resolveVariables(variables, seed, templateDefaults);
+// resolved[2].value = '5+0'
+// resolved[2].displayValue = '5' (null term removed)
+
+// Utilisation dans le texte (pour l'affichage)
+const statement = 'Calcule: $${{expr}}$$';
+const display = resolveText(statement, resolved, { useDisplayValue: true });
+// → 'Calcule: $$5$$'
+```
