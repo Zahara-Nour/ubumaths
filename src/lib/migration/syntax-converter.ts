@@ -413,9 +413,10 @@ export class TinyCASConverter {
 				this.stats.variableRefs += varMatches.length;
 			}
 			// Convert variable references within the expression (numeric → letters)
+			// Simplified syntax - the parser now supports bare variable names
 			return expr.replace(/&(\w+)/g, (match, varName) => {
 				const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
-				return `{{${name}}}`;
+				return name;
 			});
 		};
 
@@ -488,10 +489,11 @@ export class TinyCASConverter {
 			falseVal = falseVal.trim();
 
 			// Convert variable references in all parts (numeric → letters)
+			// Simplified syntax - the parser now supports bare variable names
 			const convertVars = (s: string) =>
 				s.replace(/&(\w+)/g, (match, varName) => {
 					const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
-					return `{{${name}}}`;
+					return name;
 				});
 			condition = convertVars(condition);
 			trueVal = convertVars(trueVal);
@@ -542,9 +544,10 @@ export class TinyCASConverter {
 		let processedExclusions = exclusions;
 
 		// Convert variable references (numeric → letters)
+		// Simplified syntax - the parser now supports bare variable names
 		processedExclusions = processedExclusions.replace(/&(\w+)/g, (match, varName) => {
 			const name = /^\d+$/.test(varName) ? numberToLetterName(parseInt(varName, 10)) : varName;
-			return `{{${name}}}`;
+			return name;
 		});
 
 		// Split by semicolon and join with comma
@@ -699,8 +702,8 @@ export function validateConversion(original: string, converted: string): boolean
 // Random with exclusions:
 // "$e[1;10]\\{5}" → "{{1..10!5}}"
 // "$e[1;10]\\{5;7}" → "{{1..10!5,7}}"
-// "$e[0;9]\\{&1}" → "{{0..9!{{1}}}}"
-// "$e[0;9]\\{&1;&2}" → "{{0..9!{{1}},{{2}}}}"
+// "$e[0;9]\\{&1}" → "{{0..9!a}}"
+// "$e[0;9]\\{&1;&2}" → "{{0..9!a,b}}"
 
 // N-digit numbers:
 // "$e{3;3}" → "{{100..999}}" or "{{3.0}}"
@@ -717,11 +720,11 @@ export function validateConversion(original: string, converted: string): boolean
 // "&2" → "{{2}}"
 // "&varname" → "{{varname}}"
 
-// Evaluations:
-// "[_&1+&2_]" → "{{eval:{{1}}+{{2}}}}"
-// "[_&1*10+&2_]" → "{{eval:{{1}}*10+{{2}}}}"
-// "[_2*&1_]" → "{{eval:2*{{1}}}}"
-// "[_10-&1_]" → "{{eval:10-{{1}}}}"
+// Evaluations (simplified syntax - bare variable names):
+// "[_&1+&2_]" → "{{eval:a+b}}"
+// "[_&1*10+&2_]" → "{{eval:a*10+b}}"
+// "[_2*&1_]" → "{{eval:2*a}}"
+// "[_10-&1_]" → "{{eval:10-a}}"
 // "[._expression_.]" → "{{eval:expression}}" (with warning)
 // "[+_expression_]" → "{{eval:+expression}}" (with warning)
 // "[(_expression_]" → "{{eval:(expression)}}" (with warning)

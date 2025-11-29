@@ -730,3 +730,154 @@ describe('parseRandomSpec - Decimal auto-step inference', () => {
 		expect(range?.type).toBe('decimal-range');
 	});
 });
+
+// ============================================================================
+// BARE VARIABLE NAMES SUPPORT
+// ============================================================================
+
+describe('parseRandomSpec - Bare variable names (without {{}})', () => {
+	it('should parse bare variable names in range bounds', () => {
+		const spec = parseRandomSpec('{{min..max}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'variable', name: 'min' },
+			max: { type: 'variable', name: 'max' },
+			exclusions: []
+		});
+	});
+
+	it('should parse single-letter bare variable names', () => {
+		const spec = parseRandomSpec('{{a..z}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'variable', name: 'a' },
+			max: { type: 'variable', name: 'z' }
+		});
+	});
+
+	it('should parse bare variable names with underscores', () => {
+		const spec = parseRandomSpec('{{_min.._max}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'variable', name: '_min' },
+			max: { type: 'variable', name: '_max' }
+		});
+	});
+
+	it('should parse mixed number and bare variable', () => {
+		const spec = parseRandomSpec('{{1..max}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'number', value: 1 },
+			max: { type: 'variable', name: 'max' }
+		});
+	});
+
+	it('should parse bare variable with number', () => {
+		const spec = parseRandomSpec('{{min..100}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'variable', name: 'min' },
+			max: { type: 'number', value: 100 }
+		});
+	});
+
+	it('should parse bare variable in exclusions', () => {
+		const spec = parseRandomSpec('{{1..10!a}}');
+
+		expect(spec?.exclusions).toHaveLength(1);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'value',
+			value: { type: 'variable', name: 'a' }
+		});
+	});
+
+	it('should parse multiple bare variables in exclusions', () => {
+		const spec = parseRandomSpec('{{1..10!a,b,5}}');
+
+		expect(spec?.exclusions).toHaveLength(3);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'value',
+			value: { type: 'variable', name: 'a' }
+		});
+		expect(spec?.exclusions[1]).toMatchObject({
+			type: 'value',
+			value: { type: 'variable', name: 'b' }
+		});
+		expect(spec?.exclusions[2]).toMatchObject({
+			type: 'value',
+			value: { type: 'number', value: 5 }
+		});
+	});
+
+	it('should still support explicit {{}} syntax (backward compatible)', () => {
+		const spec = parseRandomSpec('{{{{min}}..{{max}}}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'variable', name: 'min' },
+			max: { type: 'variable', name: 'max' }
+		});
+	});
+
+	it('should parse bare variable names in decimal-by-digits', () => {
+		const spec = parseRandomSpec('{{before.after}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-by-digits',
+			digitsBefore: { type: 'variable', name: 'before' },
+			digitsAfter: { type: 'variable', name: 'after' }
+		});
+	});
+
+	it('should parse mixed bare variable and number in decimal-by-digits', () => {
+		const spec = parseRandomSpec('{{2.after}}');
+
+		expect(spec).toMatchObject({
+			type: 'decimal-by-digits',
+			digitsBefore: { type: 'number', value: 2 },
+			digitsAfter: { type: 'variable', name: 'after' }
+		});
+	});
+
+	it('should parse bare variable range in exclusions', () => {
+		const spec = parseRandomSpec('{{1..100!start..end}}');
+
+		expect(spec?.exclusions).toHaveLength(1);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'range',
+			min: { type: 'variable', name: 'start' },
+			max: { type: 'variable', name: 'end' }
+		});
+	});
+
+	it('should parse relative integer with bare variable exclusion', () => {
+		const spec = parseRandomSpec('{{2..9;±!excluded}}');
+
+		expect(spec).toMatchObject({
+			type: 'relative-integer',
+			min: { type: 'number', value: 2 },
+			max: { type: 'number', value: 9 }
+		});
+		expect(spec?.exclusions).toHaveLength(1);
+		expect(spec?.exclusions[0]).toMatchObject({
+			type: 'value',
+			value: { type: 'variable', name: 'excluded' }
+		});
+	});
+
+	it('should handle alphanumeric variable names', () => {
+		const spec = parseRandomSpec('{{min1..max2}}');
+
+		expect(spec).toMatchObject({
+			type: 'integer',
+			min: { type: 'variable', name: 'min1' },
+			max: { type: 'variable', name: 'max2' }
+		});
+	});
+});

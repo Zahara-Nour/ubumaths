@@ -35,7 +35,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{10..50!20,30}}');
-		expect(result.converted).toContain('{{eval:2*({{a}}+{{b}})}}');
+		expect(result.converted).toContain('{{eval:2*(a+b)}}');
 		expect(result.stats!.exclusions).toBe(1); // One exclusion with 2 values
 		expect(result.stats!.evaluations).toBe(1);
 		expect(result.stats!.variableRefs).toBeGreaterThan(0);
@@ -48,7 +48,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{0.25|0.5|0.75}}');
-		expect(result.converted).toContain('{{eval:{{a}}/2}}');
+		expect(result.converted).toContain('{{eval:a/2}}');
 		expect(result.converted).toContain('{{rouge|bleu|vert}}');
 		expect(result.stats!.listSelections).toBe(2);
 		expect(result.stats!.evaluations).toBe(1);
@@ -76,8 +76,8 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{1..10}}');
-		expect(result.converted).toContain('{{1..10!{{x}}}}');
-		expect(result.converted).toContain('{{eval:{{x}}+{{y}}}}');
+		expect(result.converted).toContain('{{1..10!x}}');
+		expect(result.converted).toContain('{{eval:x+y}}');
 		expect(result.converted).toContain('{{1|2|3|5|7}}');
 		expect(result.stats!.randomIntegers).toBe(1);
 		expect(result.stats!.exclusions).toBe(1);
@@ -92,7 +92,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Nested Patterns', () =>
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{{eval:{{a}} + {{b}}}} * {{eval:{{c}} - {{d}}}}');
+		expect(result.converted).toBe('{{eval:a + b}} * {{eval:c - d}}');
 		expect(result.stats!.evaluations).toBe(2);
 		expect(result.stats!.variableRefs).toBe(4);
 	});
@@ -113,7 +113,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Nested Patterns', () =>
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{{1..100!{{a}},{{b}},50}}');
+		expect(result.converted).toBe('{{1..100!a,b,50}}');
 		expect(result.stats!.exclusions).toBe(1);
 		expect(result.stats!.variableRefs).toBe(2);
 	});
@@ -132,7 +132,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Nested Patterns', () =>
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toContain('{{eval:{{1..10!5}} + {{x}}}}');
+		expect(result.converted).toContain('{{eval:{{1..10!5}} + x}}');
 		expect(result.stats!.evaluations).toBe(1);
 		expect(result.stats!.exclusions).toBe(1);
 	});
@@ -197,7 +197,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Edge Cases', () => {
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('$$\\frac{{{a}}}{{{b}}}$$');
 		expect(result.converted).toContain('{{a}} = {{1..9}}');
-		expect(result.converted).toContain('{{b}} = {{1..9!{{a}}}}');
+		expect(result.converted).toContain('{{b}} = {{1..9!a}}');
 	});
 
 	it('should handle extreme negative ranges', () => {
@@ -261,7 +261,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Validation', () => {
 		const testCases = [
 			{ input: '$e[1;10]', output: '{{1..10}}' },
 			{ input: '&var', output: '{{var}}' },
-			{ input: '[_&x+1_]', output: '{{eval:{{x}}+1}}' },
+			{ input: '[_&x+1_]', output: '{{eval:x+1}}' },
 			{ input: '$l{a:b:c}', output: '{{a|b|c}}' },
 			{ input: '$e{3;3}', output: '{{100..999}}' }
 		];
@@ -319,7 +319,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Batch Conversion', () =
 		expect(results.length).toBe(4);
 		expect(results[0].converted).toBe('Question 1: {{1..10}}');
 		expect(results[1].converted).toBe('Question 2: {{x}} + {{y}}');
-		expect(results[2].converted).toBe('Question 3: {{eval:{{a}}*{{b}}}}');
+		expect(results[2].converted).toBe('Question 3: {{eval:a*b}}');
 		expect(results[3].converted).toBe('Question 4: {{1|2|3}}');
 		expect(results.every((r) => r.success)).toBe(true);
 	});
@@ -394,9 +394,9 @@ describe('TinyCAS Syntax Converter > Integration Tests - Real World Examples', (
 		}));
 
 		expect(convertedVars[0].converted).toBe('{{1..9}}');
-		expect(convertedVars[1].converted).toBe('{{0..9!{{a}}}}');
-		expect(convertedVars[2].converted).toBe('{{0..9!{{a}},{{b}}}}');
-		expect(convertedVars[3].converted).toBe('{{eval:{{a}}*100+{{b}}*10+{{c}}}}');
+		expect(convertedVars[1].converted).toBe('{{0..9!a}}');
+		expect(convertedVars[2].converted).toBe('{{0..9!a,b}}');
+		expect(convertedVars[3].converted).toBe('{{eval:a*100+b*10+c}}');
 
 		// Convert question and answer
 		const questionResult = convertTinyCASToNew(question);
@@ -414,7 +414,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Real World Examples', (
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('$$\\frac{{{');
-		expect(result.converted).toContain('{{eval:{{n}}+{{m}}}}');
+		expect(result.converted).toContain('{{eval:n+m}}');
 		expect(result.stats!.randomIntegers).toBe(1);
 		expect(result.stats!.exclusions).toBe(1);
 		expect(result.stats!.evaluations).toBe(1);
@@ -426,8 +426,8 @@ describe('TinyCAS Syntax Converter > Integration Tests - Real World Examples', (
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{10..100}}');
-		expect(result.converted).toContain('{{eval:{{a}}/100}}');
-		expect(result.converted).toContain('{{eval:{{a}}*10}}');
+		expect(result.converted).toContain('{{eval:a/100}}');
+		expect(result.converted).toContain('{{eval:a*10}}');
 		expect(result.stats!.randomIntegers).toBe(1);
 		expect(result.stats!.evaluations).toBe(2);
 		expect(result.warnings!.some((w) => w.includes('Decimal'))).toBe(true);
