@@ -50,24 +50,24 @@ describe('Question Transformer', () => {
 				expect(result.template?.variations).toHaveLength(1);
 
 				const variation = result.template?.variations[0];
-				// 3 variables: 1, 2, and expression1
+				// 3 variables: a, b, and expression1
 				expect(variation?.variables).toHaveLength(3);
 				expect(variation?.variables?.[0]).toEqual({
-					name: '1',
+					name: 'a',
 					expression: '{{1..10}}'
 				});
 				expect(variation?.variables?.[1]).toEqual({
-					name: '2',
+					name: 'b',
 					expression: '{{1..10}}'
 				});
 				// Expression is extracted as a separate variable
 				expect(variation?.variables?.[2]).toEqual({
 					name: 'expression1',
-					expression: '{{1}} + {{2}}'
+					expression: '{{a}} + {{b}}'
 				});
 				// Statement references the expression variable
 				expect(String(variation?.statement)).toContain('$${{expression1}}$$');
-				expect(variation?.solution).toBe('{{eval:{{1}}+{{2}}}}');
+				expect(variation?.solution).toBe('{{eval:{{a}}+{{b}}}}');
 			});
 
 			it('should detect and transform decimal questions', () => {
@@ -185,7 +185,7 @@ describe('Question Transformer', () => {
 				expect(blanks).toHaveLength(1);
 				expect(blanks?.[0]).toEqual({
 					position: 0,
-					expectedAnswer: '{{2}}'
+					expectedAnswer: '{{b}}'
 				});
 			});
 
@@ -213,8 +213,8 @@ describe('Question Transformer', () => {
 
 				const blanks = result.template?.variations[0]?.blanks;
 				expect(blanks).toHaveLength(2);
-				expect(blanks?.[0]?.expectedAnswer).toBe('{{1}}');
-				expect(blanks?.[1]?.expectedAnswer).toBe('{{2}}');
+				expect(blanks?.[0]?.expectedAnswer).toBe('{{a}}');
+				expect(blanks?.[1]?.expectedAnswer).toBe('{{b}}');
 			});
 		});
 
@@ -240,11 +240,11 @@ describe('Question Transformer', () => {
 
 				const var1 = result.template?.variations[0];
 				expect(var1?.statement).toContain('Additionner');
-				expect(var1?.solution).toBe('{{eval:{{1}}+{{2}}}}');
+				expect(var1?.solution).toBe('{{eval:{{a}}+{{b}}}}');
 
 				const var2 = result.template?.variations[1];
 				expect(var2?.statement).toContain('Soustraire');
-				expect(var2?.solution).toBe('{{eval:{{1}}-{{2}}}}');
+				expect(var2?.solution).toBe('{{eval:{{a}}-{{b}}}}');
 			});
 		});
 
@@ -507,11 +507,11 @@ describe('Question Transformer', () => {
 				expect(result.success).toBe(true);
 
 				const vars = result.template?.variations[0]?.variables;
-				expect(vars?.[0]).toEqual({ name: '1', expression: '{{1..9}}' });
-				expect(vars?.[1]).toEqual({ name: '2', expression: '{{0..9!{{1}}}}' });
-				expect(vars?.[2]).toEqual({ name: '3', expression: '{{eval:{{1}}*10+{{2}}}}' });
+				expect(vars?.[0]).toEqual({ name: 'a', expression: '{{1..9}}' });
+				expect(vars?.[1]).toEqual({ name: 'b', expression: '{{0..9!{{a}}}}' });
+				expect(vars?.[2]).toEqual({ name: 'c', expression: '{{eval:{{a}}*10+{{b}}}}' });
 
-				expect(result.template?.variations[0]?.solution).toBe('{{1}}');
+				expect(result.template?.variations[0]?.solution).toBe('{{a}}');
 			});
 
 			it('should handle n-digit number patterns', () => {
@@ -730,7 +730,7 @@ describe('Question Transformer', () => {
 			expect(result.success).toBe(true);
 			expect(result.template?.shared?.variables).toBeDefined();
 			expect(result.template?.shared?.variables?.length).toBeGreaterThan(0);
-			expect(result.template?.shared?.variables?.[0]?.name).toBe('1');
+			expect(result.template?.shared?.variables?.[0]?.name).toBe('a');
 			expect(result.template?.shared?.variables?.[0]?.expression).toBe('{{1..10}}');
 		});
 
@@ -784,8 +784,8 @@ describe('Question Transformer', () => {
 			// Per-variation solutions
 			expect(result.template?.variations[0]?.solution).toBeDefined();
 			expect(result.template?.variations[1]?.solution).toBeDefined();
-			expect(result.template?.variations[0]?.solution).toBe('{{eval:{{1}}+{{2}}}}');
-			expect(result.template?.variations[1]?.solution).toBe('{{eval:{{1}}*2+{{2}}}}');
+			expect(result.template?.variations[0]?.solution).toBe('{{eval:{{a}}+{{b}}}}');
+			expect(result.template?.variations[1]?.solution).toBe('{{eval:{{a}}*2+{{b}}}}');
 		});
 
 		it('should preserve QuestionCorrection structure when shared', () => {
@@ -1162,8 +1162,8 @@ describe('Question Transformer', () => {
 
 			// Variables should be in order: regular variables first, then expression
 			expect(vars).toHaveLength(3);
-			expect(vars?.[0]?.name).toBe('1');
-			expect(vars?.[1]?.name).toBe('2');
+			expect(vars?.[0]?.name).toBe('a');
+			expect(vars?.[1]?.name).toBe('b');
 			expect(vars?.[2]?.name).toBe('expression1');
 		});
 	});

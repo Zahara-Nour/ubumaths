@@ -10,9 +10,11 @@
  * - Paired (if/else): @@&2+&3<60 ?? Simple @@ @@&2+&3>59 ?? Avec retenue @@
  *
  * New syntax:
- * - Single: {{if:{{2}}+{{3}}<60|Simple}}
- * - If/else: {{if:{{2}}+{{3}}<60|Simple|Avec retenue}}
+ * - Single: {{if:{{b}}+{{c}}<60|Simple}}
+ * - If/else: {{if:{{b}}+{{c}}<60|Simple|Avec retenue}}
  */
+
+import { numberToLetterName } from './question-transformer';
 
 /**
  * A single change made during conditional conversion
@@ -69,7 +71,7 @@ export const CONDITIONAL_PATTERNS = {
 
 	/**
 	 * Variable reference in conditions: &N
-	 * Converts to {{N}}
+	 * Converts to {{a}}, {{b}}, etc. (letter names)
 	 */
 	variable: /&(\d+)(?![a-zA-Z])/g
 };
@@ -77,20 +79,22 @@ export const CONDITIONAL_PATTERNS = {
 /**
  * Convert variable references inside conditions
  *
- * Transforms legacy &N references to new {{N}} syntax
+ * Transforms legacy &N references to new {{a}}, {{b}}, etc. syntax (letter names)
  *
  * @param condition - The condition string containing legacy variable references
  * @returns The condition with converted variable references
  *
  * @example
- * convertConditionVariables('&2+&3<60')    // '{{2}}+{{3}}<60'
- * convertConditionVariables('mod(&1;2)=0') // 'mod({{1}};2)=0'
- * convertConditionVariables('&1 > &2')     // '{{1}} > {{2}}'
+ * convertConditionVariables('&2+&3<60')    // '{{b}}+{{c}}<60'
+ * convertConditionVariables('mod(&1;2)=0') // 'mod({{a}};2)=0'
+ * convertConditionVariables('&1 > &2')     // '{{a}} > {{b}}'
  */
 export function convertConditionVariables(condition: string): string {
 	if (!condition) return condition;
 
-	return condition.replace(CONDITIONAL_PATTERNS.variable, '{{$1}}');
+	return condition.replace(CONDITIONAL_PATTERNS.variable, (match, num) => {
+		return `{{${numberToLetterName(parseInt(num, 10))}}}`;
+	});
 }
 
 /**

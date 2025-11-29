@@ -291,6 +291,21 @@ function detectQuestionType(oldQuestion: QuestionBase): QuestionType {
 // ============================================================================
 
 /**
+ * Convert a 1-based number to a letter name (Excel column style)
+ * 1→a, 2→b, ..., 26→z, 27→aa, 28→ab, etc.
+ */
+export function numberToLetterName(num: number): string {
+	let result = '';
+	let n = num;
+	while (n > 0) {
+		n--; // Adjust for 0-based indexing
+		result = String.fromCharCode(97 + (n % 26)) + result;
+		n = Math.floor(n / 26);
+	}
+	return result;
+}
+
+/**
  * Convert old variable definitions to new format
  */
 function convertVariables(
@@ -302,8 +317,9 @@ function convertVariables(
 	const variables: QuestionVariable[] = [];
 
 	for (const [varName, expression] of Object.entries(oldVars)) {
-		// Remove & prefix from variable name
-		const name = varName.substring(1);
+		// Remove & prefix from variable name and convert numeric to letter
+		const rawName = varName.substring(1);
+		const name = /^\d+$/.test(rawName) ? numberToLetterName(parseInt(rawName, 10)) : rawName;
 
 		// Convert TinyCAS syntax to new syntax
 		const conversionResult = convertTinyCASToNew(expression);

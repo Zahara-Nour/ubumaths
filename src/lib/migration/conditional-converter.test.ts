@@ -46,30 +46,30 @@ function expectChanges(
 
 describe('Conditional Converter', () => {
 	describe('1. Variable Conversion in Conditions', () => {
-		it('should convert single digit variables', () => {
-			expect(convertConditionVariables('&1')).toBe('{{1}}');
-			expect(convertConditionVariables('&2')).toBe('{{2}}');
-			expect(convertConditionVariables('&9')).toBe('{{9}}');
+		it('should convert single digit variables to letters', () => {
+			expect(convertConditionVariables('&1')).toBe('{{a}}');
+			expect(convertConditionVariables('&2')).toBe('{{b}}');
+			expect(convertConditionVariables('&9')).toBe('{{i}}');
 		});
 
-		it('should convert multi-digit variables', () => {
-			expect(convertConditionVariables('&10')).toBe('{{10}}');
-			expect(convertConditionVariables('&99')).toBe('{{99}}');
+		it('should convert multi-digit variables to letters', () => {
+			expect(convertConditionVariables('&10')).toBe('{{j}}');
+			expect(convertConditionVariables('&99')).toBe('{{cu}}');
 		});
 
 		it('should convert multiple variables', () => {
-			expect(convertConditionVariables('&1+&2')).toBe('{{1}}+{{2}}');
-			expect(convertConditionVariables('&2+&3<60')).toBe('{{2}}+{{3}}<60');
+			expect(convertConditionVariables('&1+&2')).toBe('{{a}}+{{b}}');
+			expect(convertConditionVariables('&2+&3<60')).toBe('{{b}}+{{c}}<60');
 		});
 
 		it('should handle variables in function calls', () => {
-			expect(convertConditionVariables('mod(&1;2)=0')).toBe('mod({{1}};2)=0');
-			expect(convertConditionVariables('pgcd(&3;&1)=1')).toBe('pgcd({{3}};{{1}})=1');
+			expect(convertConditionVariables('mod(&1;2)=0')).toBe('mod({{a}};2)=0');
+			expect(convertConditionVariables('pgcd(&3;&1)=1')).toBe('pgcd({{c}};{{a}})=1');
 		});
 
 		it('should preserve spaces', () => {
-			expect(convertConditionVariables('&1 + &2 = &3')).toBe('{{1}} + {{2}} = {{3}}');
-			expect(convertConditionVariables('&5 < &6')).toBe('{{5}} < {{6}}');
+			expect(convertConditionVariables('&1 + &2 = &3')).toBe('{{a}} + {{b}} = {{c}}');
+			expect(convertConditionVariables('&5 < &6')).toBe('{{e}} < {{f}}');
 		});
 
 		it('should handle empty or null input', () => {
@@ -125,28 +125,28 @@ describe('Conditional Converter', () => {
 
 	describe('3. Single Conditional Conversion', () => {
 		it('should convert basic single conditionals', () => {
-			expectConversion('@@&1<5 ?? text@@', '{{if:{{1}}<5|text}}');
-			expectConversion('@@&2+&3<60 ?? Simple@@', '{{if:{{2}}+{{3}}<60|Simple}}');
+			expectConversion('@@&1<5 ?? text@@', '{{if:{{a}}<5|text}}');
+			expectConversion('@@&2+&3<60 ?? Simple@@', '{{if:{{b}}+{{c}}<60|Simple}}');
 		});
 
 		it('should convert conditionals with function calls', () => {
-			expectConversion('@@mod(&1;2)=0 ?? even@@', '{{if:mod({{1}};2)=0|even}}');
-			expectConversion('@@pgcd(&3;&1)=1 ?? coprime@@', '{{if:pgcd({{3}};{{1}})=1|coprime}}');
+			expectConversion('@@mod(&1;2)=0 ?? even@@', '{{if:mod({{a}};2)=0|even}}');
+			expectConversion('@@pgcd(&3;&1)=1 ?? coprime@@', '{{if:pgcd({{c}};{{a}})=1|coprime}}');
 		});
 
 		it('should handle whitespace in conditionals', () => {
-			expectConversion('@@ &1 < 5 ?? text @@', '{{if:{{1}} < 5|text}}');
-			expectConversion('@@  &1<5  ??  text  @@', '{{if:{{1}}<5|text}}');
+			expectConversion('@@ &1 < 5 ?? text @@', '{{if:{{a}} < 5|text}}');
+			expectConversion('@@  &1<5  ??  text  @@', '{{if:{{a}}<5|text}}');
 		});
 
 		it('should preserve surrounding text', () => {
-			expectConversion('Before @@&1<5 ?? text@@ after', 'Before {{if:{{1}}<5|text}} after');
+			expectConversion('Before @@&1<5 ?? text@@ after', 'Before {{if:{{a}}<5|text}} after');
 		});
 
 		it('should convert multiple non-paired conditionals', () => {
 			expectConversion(
 				'@@&1<5 ?? small@@ some text @@&2>10 ?? big@@',
-				'{{if:{{1}}<5|small}} some text {{if:{{2}}>10|big}}'
+				'{{if:{{a}}<5|small}} some text {{if:{{b}}>10|big}}'
 			);
 		});
 	});
@@ -155,34 +155,34 @@ describe('Conditional Converter', () => {
 		it('should convert basic paired conditionals', () => {
 			expectConversion(
 				'@@&2+&3<60 ?? Simple @@ @@&2+&3>=60 ?? Avec retenue @@',
-				'{{if:{{2}}+{{3}}<60|Simple|Avec retenue}}'
+				'{{if:{{b}}+{{c}}<60|Simple|Avec retenue}}'
 			);
 		});
 
 		it('should convert paired conditionals with adjacent values', () => {
 			expectConversion(
 				'@@&2+&3<60 ?? Simple @@ @@&2+&3>59 ?? Avec retenue @@',
-				'{{if:{{2}}+{{3}}<60|Simple|Avec retenue}}'
+				'{{if:{{b}}+{{c}}<60|Simple|Avec retenue}}'
 			);
 		});
 
 		it('should convert conditionals with = and !=', () => {
 			expectConversion(
 				'@@mod(&1;2)=0 ?? even@@ @@mod(&1;2)!=0 ?? odd@@',
-				'{{if:mod({{1}};2)=0|even|odd}}'
+				'{{if:mod({{a}};2)=0|even|odd}}'
 			);
 		});
 
 		it('should handle multiple pairs', () => {
 			const input = '@@&1<5 ?? small@@ @@&1>=5 ?? big@@ and @@&2=0 ?? zero@@ @@&2!=0 ?? nonzero@@';
 			const result = convertConditionals(input);
-			expect(result.converted).toBe('{{if:{{1}}<5|small|big}} and {{if:{{2}}=0|zero|nonzero}}');
+			expect(result.converted).toBe('{{if:{{a}}<5|small|big}} and {{if:{{b}}=0|zero|nonzero}}');
 		});
 
 		it('should preserve text between pairs', () => {
 			expectConversion(
 				'Start @@&1<5 ?? small@@ @@&1>=5 ?? big@@ end',
-				'Start {{if:{{1}}<5|small|big}} end'
+				'Start {{if:{{a}}<5|small|big}} end'
 			);
 		});
 	});
@@ -197,14 +197,14 @@ describe('Conditional Converter', () => {
 			expect(result.hasChanges).toBe(true);
 			expect(result.changes.length).toBe(1);
 			expect(result.changes[0].type).toBe('paired');
-			expect(result.converted).toContain('{{if:mod({{1}};2)=0|');
+			expect(result.converted).toContain('{{if:mod({{a}};2)=0|');
 		});
 
 		it('should convert time addition with carry check', () => {
 			const input = '@@&2+&3<60 ?? Simple @@ @@&2+&3>59 ?? Avec retenue @@';
 			const result = convertConditionals(input);
 
-			expect(result.converted).toBe('{{if:{{2}}+{{3}}<60|Simple|Avec retenue}}');
+			expect(result.converted).toBe('{{if:{{b}}+{{c}}<60|Simple|Avec retenue}}');
 		});
 
 		it('should convert probability simplification check', () => {
@@ -232,23 +232,23 @@ describe('Conditional Converter', () => {
 	describe('6. Helper Functions', () => {
 		describe('convertSingleConditional', () => {
 			it('should convert condition and text', () => {
-				expect(convertSingleConditional('&1<5', 'small')).toBe('{{if:{{1}}<5|small}}');
-				expect(convertSingleConditional('&2+&3<60', 'Simple')).toBe('{{if:{{2}}+{{3}}<60|Simple}}');
+				expect(convertSingleConditional('&1<5', 'small')).toBe('{{if:{{a}}<5|small}}');
+				expect(convertSingleConditional('&2+&3<60', 'Simple')).toBe('{{if:{{b}}+{{c}}<60|Simple}}');
 			});
 
 			it('should trim whitespace', () => {
-				expect(convertSingleConditional('  &1<5  ', '  text  ')).toBe('{{if:{{1}}<5|text}}');
+				expect(convertSingleConditional('  &1<5  ', '  text  ')).toBe('{{if:{{a}}<5|text}}');
 			});
 		});
 
 		describe('convertPairedConditional', () => {
 			it('should convert condition with then and else text', () => {
-				expect(convertPairedConditional('&1<5', 'small', 'big')).toBe('{{if:{{1}}<5|small|big}}');
+				expect(convertPairedConditional('&1<5', 'small', 'big')).toBe('{{if:{{a}}<5|small|big}}');
 			});
 
 			it('should trim whitespace', () => {
 				expect(convertPairedConditional('  &1<5  ', '  then  ', '  else  ')).toBe(
-					'{{if:{{1}}<5|then|else}}'
+					'{{if:{{a}}<5|then|else}}'
 				);
 			});
 		});
@@ -262,7 +262,7 @@ describe('Conditional Converter', () => {
 			});
 
 			it('should return false for new syntax', () => {
-				expect(hasLegacyConditionals('{{if:{{1}}<5|text}}')).toBe(false);
+				expect(hasLegacyConditionals('{{if:{{a}}<5|text}}')).toBe(false);
 			});
 
 			it('should return false for empty input', () => {
@@ -322,22 +322,22 @@ describe('Conditional Converter', () => {
 		});
 
 		it('should handle conditionals at boundaries', () => {
-			expectConversion('@@&1<5 ?? text@@', '{{if:{{1}}<5|text}}');
-			expectConversion('@@&1<5 ?? text@@ at end', '{{if:{{1}}<5|text}} at end');
-			expectConversion('at start @@&1<5 ?? text@@', 'at start {{if:{{1}}<5|text}}');
+			expectConversion('@@&1<5 ?? text@@', '{{if:{{a}}<5|text}}');
+			expectConversion('@@&1<5 ?? text@@ at end', '{{if:{{a}}<5|text}} at end');
+			expectConversion('at start @@&1<5 ?? text@@', 'at start {{if:{{a}}<5|text}}');
 		});
 
 		it('should handle newlines and whitespace between pairs', () => {
-			expectConversion('@@&1<5 ?? small@@\n@@&1>=5 ?? big@@', '{{if:{{1}}<5|small|big}}');
-			expectConversion('@@&1<5 ?? small@@\t@@&1>=5 ?? big@@', '{{if:{{1}}<5|small|big}}');
+			expectConversion('@@&1<5 ?? small@@\n@@&1>=5 ?? big@@', '{{if:{{a}}<5|small|big}}');
+			expectConversion('@@&1<5 ?? small@@\t@@&1>=5 ?? big@@', '{{if:{{a}}<5|small|big}}');
 		});
 
 		it('should preserve LaTeX content in text', () => {
-			expectConversion('@@&1<5 ?? $$x^2$$@@', '{{if:{{1}}<5|$$x^2$$}}');
+			expectConversion('@@&1<5 ?? $$x^2$$@@', '{{if:{{a}}<5|$$x^2$$}}');
 		});
 
 		it('should handle special characters in text', () => {
-			expectConversion('@@&1<5 ?? <b>bold</b>@@', '{{if:{{1}}<5|<b>bold</b>}}');
+			expectConversion('@@&1<5 ?? <b>bold</b>@@', '{{if:{{a}}<5|<b>bold</b>}}');
 		});
 	});
 
@@ -372,8 +372,8 @@ describe('Conditional Converter', () => {
 			const results = convertConditionalsBatch(inputs);
 
 			expect(results).toHaveLength(3);
-			expect(results[0].converted).toBe('{{if:{{1}}<5|small}}');
-			expect(results[1].converted).toBe('{{if:{{1}}<5|a|b}}');
+			expect(results[0].converted).toBe('{{if:{{a}}<5|small}}');
+			expect(results[1].converted).toBe('{{if:{{a}}<5|a|b}}');
 			expect(results[2].converted).toBe('No conditionals');
 		});
 
@@ -385,9 +385,9 @@ describe('Conditional Converter', () => {
 
 	describe('11. Validation Tests', () => {
 		it('should validate successful conversions', () => {
-			expect(validateConditionalConversion('@@&1<5 ?? text@@', '{{if:{{1}}<5|text}}')).toBe(true);
+			expect(validateConditionalConversion('@@&1<5 ?? text@@', '{{if:{{a}}<5|text}}')).toBe(true);
 			expect(
-				validateConditionalConversion('@@&1<5 ?? a@@ @@&1>=5 ?? b@@', '{{if:{{1}}<5|a|b}}')
+				validateConditionalConversion('@@&1<5 ?? a@@ @@&1>=5 ?? b@@', '{{if:{{a}}<5|a|b}}')
 			).toBe(true);
 		});
 
@@ -395,7 +395,7 @@ describe('Conditional Converter', () => {
 			expect(
 				validateConditionalConversion(
 					'@@&1<5 ?? a@@ @@&2>10 ?? b@@',
-					'{{if:{{1}}<5|a}} @@&2>10 ?? b@@'
+					'{{if:{{a}}<5|a}} @@&2>10 ?? b@@'
 				)
 			).toBe(false);
 		});
@@ -414,7 +414,7 @@ describe('Conditional Converter', () => {
 			const result = convertConditionals('The @@&1<5 ?? text@@ is here');
 			expect(result.changes).toHaveLength(1);
 			expect(result.changes[0].original).toBe('@@&1<5 ?? text@@');
-			expect(result.changes[0].replacement).toBe('{{if:{{1}}<5|text}}');
+			expect(result.changes[0].replacement).toBe('{{if:{{a}}<5|text}}');
 			expect(result.changes[0].position).toBe(4);
 			expect(result.changes[0].type).toBe('single');
 		});
@@ -423,7 +423,7 @@ describe('Conditional Converter', () => {
 			expectChanges('@@&1<5 ?? small@@ @@&1>=5 ?? big@@', [
 				{
 					original: '@@&1<5 ?? small@@ @@&1>=5 ?? big@@',
-					replacement: '{{if:{{1}}<5|small|big}}',
+					replacement: '{{if:{{a}}<5|small|big}}',
 					type: 'paired'
 				}
 			]);
@@ -454,18 +454,18 @@ describe('Conditional Converter', () => {
 		it('should handle LaTeX in conditional text', () => {
 			expectConversion(
 				'@@&5>=10 ?? $$&1\\times &3 = [_(&5-&6):10_]\\textcolor{${get(correct_color)}}{&6}$$@@',
-				'{{if:{{5}}>=10|$$&1\\times &3 = [_(&5-&6):10_]\\textcolor{${get(correct_color)}}{&6}$$}}'
+				'{{if:{{e}}>=10|$$&1\\times &3 = [_(&5-&6):10_]\\textcolor{${get(correct_color)}}{&6}$$}}'
 			);
 		});
 
 		it('should handle multiple LaTeX expressions', () => {
-			expectConversion('@@&1<5 ?? $$x^2$$ and $$y^2$$@@', '{{if:{{1}}<5|$$x^2$$ and $$y^2$$}}');
+			expectConversion('@@&1<5 ?? $$x^2$$ and $$y^2$$@@', '{{if:{{a}}<5|$$x^2$$ and $$y^2$$}}');
 		});
 
 		it('should handle HTML tags in text', () => {
 			expectConversion(
 				"@@mod(&1;2)!=0 ?? n'est <b>pas</b> divisible@@",
-				"{{if:mod({{1}};2)!=0|n'est <b>pas</b> divisible}}"
+				"{{if:mod({{a}};2)!=0|n'est <b>pas</b> divisible}}"
 			);
 		});
 	});

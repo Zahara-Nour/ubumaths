@@ -20,7 +20,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toBe(
-			'Calculer {{eval:{{1..20}} + {{1..20}}}} = {{1}}. Puis soustraire {{5|10|15}} pour obtenir {{2}}.'
+			'Calculer {{eval:{{1..20}} + {{1..20}}}} = {{a}}. Puis soustraire {{5|10|15}} pour obtenir {{b}}.'
 		);
 		expect(result.stats!.randomIntegers).toBe(2);
 		expect(result.stats!.evaluations).toBe(1);
@@ -35,7 +35,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{10..50!20,30}}');
-		expect(result.converted).toContain('{{eval:2*({{1}}+{{2}})}}');
+		expect(result.converted).toContain('{{eval:2*({{a}}+{{b}})}}');
 		expect(result.stats!.exclusions).toBe(1); // One exclusion with 2 values
 		expect(result.stats!.evaluations).toBe(1);
 		expect(result.stats!.variableRefs).toBeGreaterThan(0);
@@ -48,7 +48,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{0.25|0.5|0.75}}');
-		expect(result.converted).toContain('{{eval:{{1}}/2}}');
+		expect(result.converted).toContain('{{eval:{{a}}/2}}');
 		expect(result.converted).toContain('{{rouge|bleu|vert}}');
 		expect(result.stats!.listSelections).toBe(2);
 		expect(result.stats!.evaluations).toBe(1);
@@ -92,7 +92,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Nested Patterns', () =>
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{{eval:{{1}} + {{2}}}} * {{eval:{{3}} - {{4}}}}');
+		expect(result.converted).toBe('{{eval:{{a}} + {{b}}}} * {{eval:{{c}} - {{d}}}}');
 		expect(result.stats!.evaluations).toBe(2);
 		expect(result.stats!.variableRefs).toBe(4);
 	});
@@ -195,9 +195,9 @@ describe('TinyCAS Syntax Converter > Integration Tests - Edge Cases', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toContain('$$\\frac{{{1}}}{{{2}}}$$');
-		expect(result.converted).toContain('{{1}} = {{1..9}}');
-		expect(result.converted).toContain('{{2}} = {{1..9!{{1}}}}');
+		expect(result.converted).toContain('$$\\frac{{{a}}}{{{b}}}$$');
+		expect(result.converted).toContain('{{a}} = {{1..9}}');
+		expect(result.converted).toContain('{{b}} = {{1..9!{{a}}}}');
 	});
 
 	it('should handle extreme negative ranges', () => {
@@ -394,18 +394,18 @@ describe('TinyCAS Syntax Converter > Integration Tests - Real World Examples', (
 		}));
 
 		expect(convertedVars[0].converted).toBe('{{1..9}}');
-		expect(convertedVars[1].converted).toBe('{{0..9!{{1}}}}');
-		expect(convertedVars[2].converted).toBe('{{0..9!{{1}},{{2}}}}');
-		expect(convertedVars[3].converted).toBe('{{eval:{{1}}*100+{{2}}*10+{{3}}}}');
+		expect(convertedVars[1].converted).toBe('{{0..9!{{a}}}}');
+		expect(convertedVars[2].converted).toBe('{{0..9!{{a}},{{b}}}}');
+		expect(convertedVars[3].converted).toBe('{{eval:{{a}}*100+{{b}}*10+{{c}}}}');
 
 		// Convert question and answer
 		const questionResult = convertTinyCASToNew(question);
 		const answerResult = convertTinyCASToNew(answer);
 
 		expect(questionResult.converted).toBe(
-			'Dans le nombre $${{4}}$$, quel est le chiffre des centaines ?'
+			'Dans le nombre $${{d}}$$, quel est le chiffre des centaines ?'
 		);
-		expect(answerResult.converted).toBe('{{1}}');
+		expect(answerResult.converted).toBe('{{a}}');
 	});
 
 	it('should convert a complete fraction exercise', () => {
@@ -426,8 +426,8 @@ describe('TinyCAS Syntax Converter > Integration Tests - Real World Examples', (
 
 		expect(result.success).toBe(true);
 		expect(result.converted).toContain('{{10..100}}');
-		expect(result.converted).toContain('{{eval:{{1}}/100}}');
-		expect(result.converted).toContain('{{eval:{{1}}*10}}');
+		expect(result.converted).toContain('{{eval:{{a}}/100}}');
+		expect(result.converted).toContain('{{eval:{{a}}*10}}');
 		expect(result.stats!.randomIntegers).toBe(1);
 		expect(result.stats!.evaluations).toBe(2);
 		expect(result.warnings!.some((w) => w.includes('Decimal'))).toBe(true);

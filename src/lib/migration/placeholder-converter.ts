@@ -9,6 +9,8 @@
  * such as &sol, &answer, &expression, and color references.
  */
 
+import { numberToLetterName } from './question-transformer';
+
 /**
  * A single change made during conversion
  */
@@ -152,10 +154,10 @@ export function convertSinglePlaceholder(placeholder: string): string {
 		return '{{expression:raw}}';
 	}
 
-	// Numbered variable: &N
+	// Numbered variable: &N → {{a}}, {{b}}, etc.
 	const numMatch = placeholder.match(/^&(\d+)$/);
 	if (numMatch) {
-		return `{{${numMatch[1]}}}`;
+		return `{{${numberToLetterName(parseInt(numMatch[1], 10))}}}`;
 	}
 
 	// Color references: ${get(colorName)} or ${colorName}
@@ -333,10 +335,10 @@ export function convertPlaceholders(input: string): PlaceholderConversionResult 
 		return '{{expression:raw}}';
 	});
 
-	// Step 7: Convert numbered variables (&1, &2, etc.)
+	// Step 7: Convert numbered variables (&1, &2, etc.) to letter names
 	replaceWithTracking(LEGACY_PLACEHOLDER_PATTERNS.numberedVariable, (match) => {
-		const num = match[1];
-		return `{{${num}}}`;
+		const num = parseInt(match[1], 10);
+		return `{{${numberToLetterName(num)}}}`;
 	});
 
 	return {
