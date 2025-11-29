@@ -26,6 +26,7 @@ Ce document decrit l'architecture complete du systeme de questions mathematiques
    - [Tokenisation](#51-tokenisation)
    - [Parsers specialises](#52-parsers-specialises)
    - [Resolution 3 etapes](#53-resolution-3-etapes)
+   - [Options d'affichage](#54-options-daffichage-displayoptions)
 6. [Validation et evaluation](#6-validation-et-evaluation)
    - [Regles de validation dynamiques](#61-regles-de-validation-dynamiques)
    - [Contraintes de forme](#62-contraintes-de-forme)
@@ -522,6 +523,75 @@ function resolveExpression(
 }
 ```
 
+### 5.4 Options d'affichage (DisplayOptions)
+
+Les variables peuvent avoir des options de transformation appliquees avant affichage.
+
+**Interface DisplayOptions** :
+
+```typescript
+interface DisplayOptions {
+	// Transformations structurelles
+	shuffleTerms?: boolean; // a+b+c → c+a+b (recursif)
+	shuffleFactors?: boolean; // a*b*c → c*a*b (recursif)
+	shuffleTermsAndFactors?: boolean; // Raccourci pour les deux
+	shallowShuffleTerms?: boolean; // Shuffle niveau racine seulement
+	shallowShuffleFactors?: boolean; // Shuffle niveau racine seulement
+	removeNullTerms?: boolean; // x+0 → x
+	removeUnnecessaryBrackets?: boolean; // (x) → x
+
+	// Formatage LaTeX
+	addSpaces?: boolean; // Espaces autour operateurs (defaut: true)
+	keepUnnecessaryZeros?: boolean; // 3.00 au lieu de 3
+}
+```
+
+**Cascade 3 niveaux** : GLOBAL → TEMPLATE → VARIABLE
+
+```typescript
+// Defauts globaux (tous false sauf addSpaces: true)
+const GLOBAL_DISPLAY_DEFAULTS: Required<DisplayOptions>;
+
+// Template-level (optionnel)
+interface QuestionTemplate {
+	defaultDisplayOptions?: DisplayOptions;
+}
+
+// Variable-level (priorite maximale)
+interface QuestionVariable {
+	displayOptions?: DisplayOptions;
+}
+```
+
+**Exemple d'utilisation** :
+
+```typescript
+// Variable avec shuffle
+variables: [
+	{ name: 'a', expression: '5' },
+	{ name: 'b', expression: '3' },
+	{
+		name: 'expr',
+		expression: '{{a}}+{{b}}+7',
+		displayOptions: { shuffleTerms: true, removeNullTerms: true }
+	}
+];
+
+// Resolution
+const resolved = resolveVariables(variables, seed, templateDefaults);
+// resolved[2].value = '5+3+7'
+// resolved[2].displayValue = '7+5+3' (shuffled)
+
+// Utilisation dans le texte
+resolveText('Calcule: $${{expr}}$$', resolved, { useDisplayValue: true });
+// → 'Calcule: $$7+5+3$$'
+```
+
+**Fichiers** :
+
+- `display-options.ts` : Interface et cascade resolution
+- `expression-transforms.ts` : Transformations via Compute Engine
+
 ---
 
 ## 6. Validation et evaluation
@@ -772,16 +842,19 @@ type GenerationResult =
 
 ### Bibliotheque partagee
 
-| Fichier                                                            | Description                       |
-| ------------------------------------------------------------------ | --------------------------------- |
-| `src/lib/shared/parameterization/types.ts`                         | Types Token, Variable, RandomSpec |
-| `src/lib/shared/parameterization/parser/tokenizer.ts`              | Extraction tokens                 |
-| `src/lib/shared/parameterization/parser/random-parser.ts`          | Parse {{random:}}                 |
-| `src/lib/shared/parameterization/parser/eval-parser.ts`            | Parse {{eval:}}                   |
-| `src/lib/shared/parameterization/parser/variable-parser.ts`        | Parse {{var}}                     |
-| `src/lib/shared/parameterization/resolver/variable-resolver.ts`    | Pipeline 3 etapes                 |
-| `src/lib/shared/parameterization/resolver/random-generator.ts`     | Generation aleatoire              |
-| `src/lib/shared/parameterization/validator/circular-dependency.ts` | Detection cycles                  |
+| Fichier                                                            | Description                        |
+| ------------------------------------------------------------------ | ---------------------------------- |
+| `src/lib/shared/parameterization/types.ts`                         | Types Token, Variable, RandomSpec  |
+| `src/lib/shared/parameterization/display-options.ts`               | Options d'affichage expressions    |
+| `src/lib/shared/parameterization/expression-transforms.ts`         | Transformations LaTeX (shuffle)    |
+| `src/lib/shared/parameterization/parser/tokenizer.ts`              | Extraction tokens                  |
+| `src/lib/shared/parameterization/parser/random-parser.ts`          | Parse {{random:}}                  |
+| `src/lib/shared/parameterization/parser/eval-parser.ts`            | Parse {{eval:}}                    |
+| `src/lib/shared/parameterization/parser/variable-parser.ts`        | Parse {{var}}                      |
+| `src/lib/shared/parameterization/resolver/variable-resolver.ts`    | Pipeline 3 etapes                  |
+| `src/lib/shared/parameterization/resolver/random-generator.ts`     | Generation aleatoire               |
+| `src/lib/shared/parameterization/resolver/text-resolver.ts`        | Resolution texte avec displayValue |
+| `src/lib/shared/parameterization/validator/circular-dependency.ts` | Detection cycles                   |
 
 ### Compute Engine
 
