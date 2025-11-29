@@ -50,11 +50,23 @@ describe('Question Transformer', () => {
 				expect(result.template?.variations).toHaveLength(1);
 
 				const variation = result.template?.variations[0];
-				expect(variation?.variables).toHaveLength(2);
+				// 3 variables: 1, 2, and expression1
+				expect(variation?.variables).toHaveLength(3);
 				expect(variation?.variables?.[0]).toEqual({
 					name: '1',
 					expression: '{{1..10}}'
 				});
+				expect(variation?.variables?.[1]).toEqual({
+					name: '2',
+					expression: '{{1..10}}'
+				});
+				// Expression is extracted as a separate variable
+				expect(variation?.variables?.[2]).toEqual({
+					name: 'expression1',
+					expression: '{{1}} + {{2}}'
+				});
+				// Statement references the expression variable
+				expect(String(variation?.statement)).toContain('$${{expression1}}$$');
 				expect(variation?.solution).toBe('{{eval:{{1}}+{{2}}}}');
 			});
 
@@ -625,11 +637,46 @@ describe('Question Transformer', () => {
 	});
 
 	describe('transformQuestion - Shared Fields Detection', () => {
-		it('should detect shared statement when 1 enounce for multiple variations', () => {
+		it('should detect shared statement when 1 enounce AND 1 expression for multiple variations', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test shared statement',
 				enounces: ['Common statement'], // 1 enounce
-				expressions: ['&1', '&1+1'], // 2 variations
+				expressions: ['&1 + &2'], // 1 expression (shared)
+				variabless: [
+					{ '&1': '$e[1;10]', '&2': '$e[1;10]' },
+					{ '&1': '$e[20;30]', '&2': '$e[20;30]' }
+				],
+				solutionss: [['[_&1+&2_]'], ['[_&1+&2_]']],
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.shared?.statement).toBeDefined();
+			expect(String(result.template?.shared?.statement)).toContain('Common statement');
+			expect(String(result.template?.shared?.statement)).toContain('$${{expression1}}$$');
+			// Variations still get the statement (as fallback), but shared indicates it's common
+			expect(result.template?.variations[0]?.statement).toBeDefined();
+			expect(result.template?.variations[1]?.statement).toBeDefined();
+			// Both variations should have the same statement as shared
+			expect(result.template?.variations[0]?.statement).toEqual(result.template?.shared?.statement);
+			expect(result.template?.variations[1]?.statement).toEqual(result.template?.shared?.statement);
+			// Each variation has expression1 variable (with same content)
+			expect(
+				result.template?.variations[0]?.variables?.find((v) => v.name === 'expression1')
+			).toBeDefined();
+			expect(
+				result.template?.variations[1]?.variables?.find((v) => v.name === 'expression1')
+			).toBeDefined();
+		});
+
+		it('should not share statement when expressions differ between variations', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Test per-variation expressions',
+				enounces: ['Common statement'], // 1 enounce
+				expressions: ['&1', '&1+1'], // 2 different expressions
 				variabless: [{ '&1': '$e[1;10]' }, { '&1': '$e[1;10]' }],
 				solutionss: [['&1'], ['[_&1+1_]']],
 				defaultDelay: 30,
@@ -639,14 +686,11 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.shared?.statement).toBeDefined();
-			expect(result.template?.shared?.statement).toContain('Common statement');
-			// Variations still get the statement (as fallback), but shared indicates it's common
-			expect(result.template?.variations[0]?.statement).toBeDefined();
-			expect(result.template?.variations[1]?.statement).toBeDefined();
-			// Both variations should have the same statement as shared
-			expect(result.template?.variations[0]?.statement).toEqual(result.template?.shared?.statement);
-			expect(result.template?.variations[1]?.statement).toEqual(result.template?.shared?.statement);
+			// Statement is NOT shared because expressions differ
+			expect(result.template?.shared?.statement).toBeUndefined();
+			// Each variation has its own statement with different expression reference
+			expect(String(result.template?.variations[0]?.statement)).toContain('expression1');
+			expect(String(result.template?.variations[1]?.statement)).toContain('expression2');
 		});
 
 		it('should not share statement when each variation has its own enounce', () => {
@@ -717,10 +761,10 @@ describe('Question Transformer', () => {
 		it('should handle mix of shared and per-variation fields', () => {
 			const oldQuestion: QuestionBase = {
 				description: 'Test mixed sharing',
-				enounces: ['Common statement'], // shared
-				expressions: ['&1', '&1+1'],
-				variabless: [{ '&1': '$e[1;10]' }], // shared
-				solutionss: [['&1'], ['[_&1+1_]']], // per-variation
+				enounces: ['Common statement'], // shared (1 for 2 variations)
+				expressions: ['&1 + &2'], // shared (1 for 2 variations)
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }], // shared
+				solutionss: [['[_&1+&2_]'], ['[_&1*2+&2_]']], // per-variation (2 different)
 				defaultDelay: 30,
 				grade: 'CE1'
 			};
@@ -731,13 +775,17 @@ describe('Question Transformer', () => {
 			// Shared fields
 			expect(result.template?.shared?.statement).toBeDefined();
 			expect(result.template?.shared?.variables).toBeDefined();
+			// Expression variable is per-variation (even when shared content)
+			expect(
+				result.template?.variations[0]?.variables?.find((v) => v.name === 'expression1')
+			).toBeDefined();
 			// Not shared
 			expect(result.template?.shared?.solution).toBeUndefined();
 			// Per-variation solutions
 			expect(result.template?.variations[0]?.solution).toBeDefined();
 			expect(result.template?.variations[1]?.solution).toBeDefined();
-			expect(result.template?.variations[0]?.solution).toBe('{{1}}');
-			expect(result.template?.variations[1]?.solution).toBe('{{eval:{{1}}+1}}');
+			expect(result.template?.variations[0]?.solution).toBe('{{eval:{{1}}+{{2}}}}');
+			expect(result.template?.variations[1]?.solution).toBe('{{eval:{{1}}*2+{{2}}}}');
 		});
 
 		it('should preserve QuestionCorrection structure when shared', () => {
@@ -867,10 +915,13 @@ describe('Question Transformer', () => {
 			// This test documents the actual behavior of shared fields
 			const oldQuestion: QuestionBase = {
 				description: 'Shared field semantics',
-				enounces: ['Common statement'], // shared
-				expressions: ['&1', '&2'],
-				variabless: [{ '&1': '$e[1;10]' }, { '&2': '$e[11;20]' }], // per-variation
-				solutionss: [['&1'], ['&2']], // per-variation
+				enounces: ['Common statement'], // shared (1 for 2)
+				expressions: ['&1 + &2'], // shared (1 for 2)
+				variabless: [
+					{ '&1': '$e[1;10]', '&2': '$e[1;10]' },
+					{ '&1': '$e[11;20]', '&2': '$e[11;20]' }
+				], // per-variation
+				solutionss: [['[_&1+&2_]'], ['[_&1-&2_]']], // per-variation
 				choicess: [[{ text: 'A' }, { text: 'B' }]], // shared
 				correctionFormats: [{ correct: ['Answer: [_&1_]'] }], // shared
 				correctionDetailss: [[{ text: 'Step 1' }]], // shared
@@ -882,12 +933,20 @@ describe('Question Transformer', () => {
 
 			expect(result.success).toBe(true);
 
-			// Required fields (statement, answer):
-			// - If shared: still appear in variations as fallback values
+			// Required fields (statement):
+			// - Statement is shared when enounce AND expression are both shared
 			expect(result.template?.shared?.statement).toBeDefined();
 			expect(result.template?.variations[0]?.statement).toBeDefined();
 			expect(result.template?.variations[1]?.statement).toBeDefined();
 			expect(result.template?.variations[0]?.statement).toEqual(result.template?.shared?.statement);
+
+			// Expression variable is per-variation (even when content is shared)
+			expect(
+				result.template?.variations[0]?.variables?.find((v) => v.name === 'expression1')
+			).toBeDefined();
+			expect(
+				result.template?.variations[1]?.variables?.find((v) => v.name === 'expression1')
+			).toBeDefined();
 
 			// Optional fields (choices, correction, validationRules):
 			// - If shared: do NOT appear in variations (true deduplication)
@@ -1009,6 +1068,103 @@ describe('Question Transformer', () => {
 			expect(result.errors).toContain('Variation 0: missing statement');
 			expect(result.errors).toContain('Variation 0: missing solution');
 			expect(result.errors).toContain('Variation 0: multiple choice question missing choices');
+		});
+	});
+
+	describe('Expression Variable Extraction', () => {
+		it('should not create expression variable when expressions array is empty', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Question without expression',
+				enounces: ['Dans le nombre $$&1$$, trouve le chiffre des unités'],
+				variabless: [{ '&1': '$e[10;99]' }],
+				solutionss: [['[_&1%10_]']],
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			const vars = result.template?.variations[0]?.variables;
+			// Only regular variables, no expression variable
+			expect(vars?.some((v) => v.name.startsWith('expression'))).toBe(false);
+			// Statement should not contain expression reference
+			expect(String(result.template?.variations[0]?.statement)).not.toContain('{{expression');
+		});
+
+		it('should not duplicate $$ if expression already contains them', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Expression with delimiters',
+				enounces: ['Simplifier :'],
+				expressions: ['$$\\frac{&1}{&2}$$'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1/&2_]']],
+				defaultDelay: 30,
+				grade: 'CM1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			// Statement should NOT have double $$ (no $$$$)
+			const stmt = String(result.template?.variations[0]?.statement);
+			expect(stmt).not.toContain('$$$$');
+			// Statement should contain just {{expression1}} without extra $$
+			expect(stmt).toContain('{{expression1}}');
+		});
+
+		it('should handle multiple per-variation expressions with different names', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Multiple expressions',
+				enounces: ['Calculer :'],
+				expressions: ['&1 + &2', '&1 - &2'], // 2 different expressions
+				variabless: [
+					{ '&1': '$e[1;10]', '&2': '$e[1;10]' },
+					{ '&1': '$e[1;10]', '&2': '$e[1;10]' }
+				],
+				solutionss: [['[_&1+&2_]'], ['[_&1-&2_]']],
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			// Each variation has its own expression variable with different name
+			const var1 = result.template?.variations[0]?.variables?.find((v) => v.name === 'expression1');
+			const var2 = result.template?.variations[1]?.variables?.find((v) => v.name === 'expression2');
+
+			expect(var1).toBeDefined();
+			expect(var2).toBeDefined();
+			expect(var1?.expression).toContain('+');
+			expect(var2?.expression).toContain('-');
+
+			// Statements reference their respective expression variables
+			expect(String(result.template?.variations[0]?.statement)).toContain('{{expression1}}');
+			expect(String(result.template?.variations[1]?.statement)).toContain('{{expression2}}');
+		});
+
+		it('should place expression variable AFTER regular variables for correct resolution order', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Variable order test',
+				enounces: ['Calculer :'],
+				expressions: ['&1 + &2'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				solutionss: [['[_&1+&2_]']],
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			const vars = result.template?.variations[0]?.variables;
+
+			// Variables should be in order: regular variables first, then expression
+			expect(vars).toHaveLength(3);
+			expect(vars?.[0]?.name).toBe('1');
+			expect(vars?.[1]?.name).toBe('2');
+			expect(vars?.[2]?.name).toBe('expression1');
 		});
 	});
 

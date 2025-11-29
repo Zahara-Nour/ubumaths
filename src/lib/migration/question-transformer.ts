@@ -337,25 +337,39 @@ function convertVariables(
 // ============================================================================
 
 /**
- * Convert statement and expression to TemplateMarkdown string
+ * Result of statement conversion including extracted expression variable
+ */
+interface StatementResult {
+	/** The converted statement with expression reference */
+	statement: TemplateMarkdown;
+	/** The extracted expression as a variable (if expression was provided) */
+	expressionVariable?: QuestionVariable;
+}
+
+/**
+ * Convert statement and expression to TemplateMarkdown string.
+ * Expression is extracted as a separate variable and referenced in the statement.
  *
  * @param enonce - The question text (enounce)
- * @param expression - The mathematical expression
+ * @param expression - The mathematical expression (will become a variable)
+ * @param expressionIndex - Index for naming the expression variable (expression1, expression2...)
  * @param images - Array of image paths for this variation
  * @param imageMapping - Mapping from old paths to new URLs
  * @param warnings - Array to collect warnings
  * @param stats - Stats object to track image conversions
- * @returns TemplateMarkdown with converted content and images
+ * @returns StatementResult with statement and optional expression variable
  */
 function convertStatement(
 	enonce: string | undefined,
 	expression: string | undefined,
+	expressionIndex: number,
 	images: string[] | undefined,
 	imageMapping: ImageUrlMapping | undefined,
 	warnings: string[],
 	stats: TransformStats
-): TemplateMarkdown {
+): StatementResult {
 	const parts: string[] = [];
+	let expressionVariable: QuestionVariable | undefined;
 
 	// Process enonce (statement text)
 	if (enonce) {
@@ -372,23 +386,38 @@ function convertStatement(
 		}
 	}
 
-	// Process expression (mathematical content)
+	// Process expression - extract as variable and add reference to statement
 	if (expression) {
 		const conversionResult = convertTinyCASToNew(expression);
+		const varName = `expression${expressionIndex}`;
 
 		if (!conversionResult.success) {
 			warnings.push(`Failed to convert expression: ${conversionResult.errors?.join(', ')}`);
-			// Wrap expression in LaTeX delimiters if not already
-			const content = expression.includes('$$') ? expression : `$$${expression}$$`;
-			parts.push(content);
+			// Still create variable with original expression
+			expressionVariable = {
+				name: varName,
+				expression: expression
+			};
 		} else {
 			if (conversionResult.warnings) {
 				warnings.push(...conversionResult.warnings.map((w) => `Expression: ${w}`));
 			}
-			const converted = conversionResult.converted || expression;
-			// Wrap in LaTeX delimiters if not already
-			const content = converted.includes('$$') ? converted : `$$${converted}$$`;
-			parts.push(content);
+			expressionVariable = {
+				name: varName,
+				expression: conversionResult.converted || expression
+			};
+		}
+
+		// Add reference to statement - check for existing $$ delimiters in the expression
+		const exprContent = expressionVariable.expression;
+		const hasDisplayDelimiters = exprContent.includes('$$');
+
+		if (hasDisplayDelimiters) {
+			// Expression already has $$ - just reference the variable
+			parts.push('{{' + varName + '}}');
+		} else {
+			// Wrap reference in $$ for display math
+			parts.push('$${{' + varName + '}}$$');
 		}
 	}
 
@@ -420,11 +449,17 @@ function convertStatement(
 	// Fallback if nothing was provided
 	if (parts.length === 0) {
 		warnings.push('No statement or expression provided');
-		return templateMarkdown('Question content missing');
+		return {
+			statement: templateMarkdown('Question content missing'),
+			expressionVariable: undefined
+		};
 	}
 
 	// Join parts with double newline (paragraph break)
-	return templateMarkdown(parts.join('\n\n'));
+	return {
+		statement: templateMarkdown(parts.join('\n\n')),
+		expressionVariable
+	};
 }
 
 // ============================================================================
@@ -1265,30 +1300,51 @@ function detectSharedFields(
 	const enounces = oldQuestion.enounces || [];
 	const expressions = oldQuestion.expressions || [];
 
-	// Statement is shared if both enounces and expressions are single or empty
+	// Statement is shared if enounce is shared (expression variables are always per-variation)
 	const enounceIsShared = enounces.length === 1 && variationCount > 1;
 	const expressionIsShared =
 		(expressions.length === 0 || expressions.length === 1) && variationCount > 1;
-	const statementIsShared = enounceIsShared || (enounces.length === 0 && expressionIsShared);
+	const statementIsShared =
+		(enounceIsShared || enounces.length === 0) && (expressionIsShared || expressions.length === 0);
+
+	// Collect expression variables to add to perVariation later (after regular variables)
+	const expressionVariables: (QuestionVariable | undefined)[] = [];
 
 	if (statementIsShared) {
-		// Use first enounce/expression for shared statement
+		// Shared enounce AND shared/no expression - generate statement once
 		const enonce = enounces[0];
 		const expression = expressions[0];
-		shared.statement = convertStatement(enonce, expression, images, imageMapping, warnings, stats);
+		const result = convertStatement(
+			enonce,
+			expression,
+			1, // Always expression1 when shared
+			images,
+			imageMapping,
+			warnings,
+			stats
+		);
+		shared.statement = result.statement;
+		// All variations share the same statement and expression variable
+		for (let i = 0; i < variationCount; i++) {
+			perVariation[i].statement = result.statement;
+			expressionVariables.push(result.expressionVariable);
+		}
 	} else {
-		// Per-variation statements
+		// Per-variation statements or expressions
 		for (let i = 0; i < variationCount; i++) {
 			const enonce = enounces[i] || enounces[0];
 			const expression = expressions[i] || expressions[0];
-			perVariation[i].statement = convertStatement(
+			const result = convertStatement(
 				enonce,
 				expression,
+				i + 1, // expressionIndex varies per variation
 				images,
 				imageMapping,
 				warnings,
 				stats
 			);
+			perVariation[i].statement = result.statement;
+			expressionVariables.push(result.expressionVariable);
 		}
 	}
 
@@ -1310,6 +1366,17 @@ function detectSharedFields(
 				perVariation[i].variables = convertedVars;
 				stats.variables += convertedVars.length;
 			}
+		}
+	}
+
+	// ---- Add expression variables AFTER regular variables (for correct resolution order) ----
+	for (let i = 0; i < variationCount; i++) {
+		const exprVar = expressionVariables[i];
+		if (exprVar) {
+			if (!perVariation[i].variables) {
+				perVariation[i].variables = [];
+			}
+			perVariation[i].variables!.push(exprVar);
 		}
 	}
 
