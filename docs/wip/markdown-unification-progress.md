@@ -94,6 +94,28 @@ src/lib/components/markdown/
 Note: ExerciseDisplay et les composants ChatBot/SRS conservent MathDisplay pour l'instant.
 Migration complète possible dans une future phase si nécessaire.
 
+### Phase 4b : Optimisation MathLive (COMPLETE)
+
+Migration de `<math-field read-only>` vers `<math-span>`/`<math-div>` pour les composants d'affichage statique.
+
+**Motivation** : MathLive recommande `<math-span>` et `<math-div>` pour l'affichage read-only car ils sont :
+
+- Lazy-loaded et viewport-aware
+- Plus légers (pas de machinerie d'éditeur)
+- Conçus spécifiquement pour l'affichage statique
+
+**Fichiers modifiés** :
+
+- [x] `src/lib/components/markdown/nodes/MathBlock.svelte` (→ `<math-div>`)
+- [x] `src/lib/components/markdown/nodes/MathInline.svelte` (→ `<math-span>`)
+
+**Fichiers de sauvegarde créés** :
+
+- [x] `src/lib/components/markdown/nodes/MathBlockOld.svelte` (ancienne version avec `<math-field read-only>`)
+- [x] `src/lib/components/markdown/nodes/MathInlineOld.svelte` (ancienne version avec `<math-field read-only>`)
+
+**Résultat** : ~50% de réduction du code CSS (plus besoin de masquer les styles d'éditeur).
+
 ### Phase 5 : Migration données (optionnel)
 
 - [ ] `scripts/migrate-contentfields-to-markdown.ts`
