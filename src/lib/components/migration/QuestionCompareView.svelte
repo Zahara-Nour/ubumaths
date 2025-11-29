@@ -22,6 +22,7 @@
 	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import ReviewActions from './ReviewActions.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { resolveVariables, resolveExpression, resolveSolution } from '$lib/questions';
 	import type {
 		QuestionVariable,
@@ -224,8 +225,8 @@
 </script>
 
 <div class={cn('space-y-6', className)}>
-	<!-- Comparison Grid - 3 columns -->
-	<div class="grid gap-6 lg:grid-cols-3">
+	<!-- Comparison Grid - 4 columns -->
+	<div class="grid gap-6 lg:grid-cols-4">
 		<!-- Old Format Column -->
 		<Card.Root>
 			<Card.Header>
@@ -541,6 +542,105 @@
 					<div class="flex flex-col items-center justify-center py-12 text-center">
 						<p class="text-sm text-muted-foreground">
 							Sélectionnez une variation pour générer une instance
+						</p>
+					</div>
+				{/if}
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Rendered Preview Column -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title class="flex items-center justify-between">
+					<span>Rendu Visuel</span>
+					<Badge variant="outline" class="font-mono text-xs">Preview</Badge>
+				</Card.Title>
+			</Card.Header>
+			<Card.Content class="space-y-4">
+				{#if resolvedInstance}
+					{#if resolvedInstance.error}
+						<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+							Erreur: {resolvedInstance.error}
+						</div>
+					{:else}
+						<!-- Statement rendered -->
+						<div>
+							<h4 class="mb-2 text-sm font-medium text-muted-foreground">Énoncé</h4>
+							<div class="rounded-lg border bg-card p-4">
+								<MarkdownRenderer content={resolvedInstance.statement} />
+							</div>
+						</div>
+
+						<!-- Solution rendered -->
+						<div>
+							<h4 class="mb-2 text-sm font-medium text-muted-foreground">Solution</h4>
+							<div class="rounded-lg border-2 border-primary/50 bg-primary/5 p-3">
+								{#if Array.isArray(resolvedInstance.solution)}
+									{#each resolvedInstance.solution as sol, si (si)}
+										<div class="mb-1 last:mb-0">
+											<MarkdownRenderer content={`$$${sol}$$`} />
+										</div>
+									{/each}
+								{:else}
+									<MarkdownRenderer content={`$$${resolvedInstance.solution}$$`} />
+								{/if}
+							</div>
+						</div>
+
+						<!-- Choices rendered -->
+						{#if resolvedInstance.choices}
+							<div>
+								<h4 class="mb-2 text-sm font-medium text-muted-foreground">Choix</h4>
+								<div class="space-y-2">
+									{#each resolvedInstance.choices as choice, ci (ci)}
+										<div
+											class={cn(
+												'flex items-center gap-3 rounded-lg border p-3',
+												choice.isCorrect ? 'border-success bg-success/10' : 'border-border bg-card'
+											)}
+										>
+											<Badge variant={choice.isCorrect ? 'default' : 'outline'}>
+												{String.fromCharCode(65 + ci)}
+											</Badge>
+											<div class="flex-1">
+												<MarkdownRenderer content={choice.content} />
+											</div>
+											{#if choice.isCorrect}
+												<CheckCircle2 class="h-4 w-4 text-success" />
+											{/if}
+										</div>
+									{/each}
+								</div>
+							</div>
+						{/if}
+
+						<!-- Correction rendered -->
+						{#if resolvedInstance.correction}
+							<div>
+								<h4 class="mb-2 text-sm font-medium text-muted-foreground">Correction</h4>
+								<div class="space-y-2 rounded-lg border bg-muted/50 p-4">
+									{#if resolvedInstance.correction.feedback}
+										<div class="text-sm">
+											<MarkdownRenderer content={resolvedInstance.correction.feedback} />
+										</div>
+									{/if}
+									{#if resolvedInstance.correction.steps.length > 0}
+										<ol class="list-inside list-decimal space-y-2 text-sm">
+											{#each resolvedInstance.correction.steps as step, si (si)}
+												<li>
+													<MarkdownRenderer content={step} />
+												</li>
+											{/each}
+										</ol>
+									{/if}
+								</div>
+							</div>
+						{/if}
+					{/if}
+				{:else}
+					<div class="flex flex-col items-center justify-center py-12 text-center">
+						<p class="text-sm text-muted-foreground">
+							Sélectionnez une variation pour voir le rendu
 						</p>
 					</div>
 				{/if}
