@@ -40,7 +40,7 @@ Ajouter le support des champs math editables via `\placeholder[N]{}` de MathLive
 - [x] 2.3 Integrer dans `MarkdownRenderer.svelte`
 - [x] 2.4 Tests composant (Svelte autofixer valide, build OK, tests deferred to Phase 4)
 - [x] 2.5 Code review (approved with fixes applied)
-- [x] Commit: `6617a4c8`
+- [x] Commit: `76ca26b3`
 
 **Fichiers crees/modifies** :
 
@@ -83,7 +83,7 @@ Ajouter le support des champs math editables via `\placeholder[N]{}` de MathLive
 - [x] 5.1 Mettre a jour `docs/ref/markdown.md` - Section 2.3 "Champs math editables"
 - [x] 5.2 Mettre a jour `docs/wip/markdown-unification-progress.md` - Phase 4c ajoutee
 - [x] 5.3 Quality checks (build OK, 327 parser tests pass)
-- [x] 5.4 Commit final: `0b6958d0`
+- [x] 5.4 Commit final: `ae8f828f`
 
 ## Commandes pour reprendre
 
@@ -103,7 +103,7 @@ pnpm check:fast
 | Phase | Commit   | Description                                                              |
 | ----- | -------- | ------------------------------------------------------------------------ |
 | 1     | 95898307 | `feat(parser): add placeholder detection in math expressions`            |
-| 2     | 6617a4c8 | `feat(components): add MathPrompt component for editable math fields`    |
+| 2     | 76ca26b3 | `feat(components): add MathPrompt component for editable math fields`    |
 | 3     | 008520c9 | `refactor(inputs): unify BlankInput and MathPrompt under InputState API` |
 | 4     | 8d6b5df8 | `test(integration): add comprehensive tests for unified input system`    |
-| 5     | 0b6958d0 | `docs: add math editable fields documentation`                           |
+| 5     | ae8f828f | `docs: add math editable fields documentation`                           |
