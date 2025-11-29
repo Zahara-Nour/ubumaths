@@ -25,12 +25,14 @@ import type {
 	ResolvedVariable as SharedResolvedVariable,
 	RandomSpec as SharedRandomSpec,
 	NumberOrVariable as SharedNumberOrVariable,
-	Exclusion as SharedExclusion
+	Exclusion as SharedExclusion,
+	DisplayOptions
 } from '$lib/shared/parameterization';
 
 // Re-export shared types for convenience
 export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
+export type { DisplayOptions } from '$lib/shared/parameterization';
 
 // ============================================================================
 // BRANDED MARKDOWN TYPES
@@ -280,6 +282,21 @@ export interface QuestionTemplate {
 	 * For `variables`, shared and per-variation are MERGED (shared resolved first).
 	 */
 	shared?: SharedVariationDefaults;
+
+	/**
+	 * Default display options for all variables in this template
+	 *
+	 * Controls transformations applied to expressions before rendering.
+	 * Individual variables can override these with their own displayOptions.
+	 *
+	 * Cascade priority: GLOBAL < TEMPLATE (this) < VARIABLE
+	 *
+	 * @see DisplayOptions for all available options
+	 *
+	 * @example Enable shuffle for entire template
+	 * { defaultDisplayOptions: { shuffleTerms: true, removeNullTerms: true } }
+	 */
+	defaultDisplayOptions?: DisplayOptions;
 
 	/**
 	 * Array of question variations (minimum 1 required)

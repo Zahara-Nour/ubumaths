@@ -12,9 +12,12 @@
  * - Random number generation (integer, decimal, with exclusions)
  * - Expression evaluation
  * - Circular dependency detection
+ * - Display options for expression formatting
  *
  * @module shared/parameterization/types
  */
+
+import type { DisplayOptions } from './display-options';
 
 // ============================================================================
 // TOKENS
@@ -78,6 +81,18 @@ export interface Variable {
 	 * - Eval expressions: {{eval:a+b}}
 	 */
 	expression: string;
+
+	/**
+	 * Display options for this variable (overrides template defaults)
+	 *
+	 * Controls transformations applied before rendering:
+	 * - Shuffle terms/factors
+	 * - Remove null terms
+	 * - LaTeX formatting
+	 *
+	 * @see DisplayOptions for all available options
+	 */
+	displayOptions?: DisplayOptions;
 }
 
 /**

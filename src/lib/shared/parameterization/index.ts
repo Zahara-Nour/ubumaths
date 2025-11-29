@@ -67,6 +67,19 @@
 export * from './types';
 
 // ============================================================================
+// DISPLAY OPTIONS
+// ============================================================================
+
+/**
+ * Display options for mathematical expressions
+ *
+ * Controls transformations (shuffle, remove nulls, etc.) applied before rendering.
+ * Supports 3-level cascade: global -> template -> variable.
+ * See: {@link module:shared/parameterization/display-options}
+ */
+export * from './display-options';
+
+// ============================================================================
 // PARSERS
 // ============================================================================
 
