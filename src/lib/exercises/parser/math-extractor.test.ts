@@ -12,7 +12,8 @@ import {
 	getPlaceholderIndex,
 	findPlaceholder,
 	splitTextWithPlaceholders,
-	getMathStats
+	getMathStats,
+	extractPromptInfo
 } from './math-extractor';
 
 describe('extractMath', () => {
@@ -261,5 +262,90 @@ describe('Edge Cases', () => {
 		expect(result.placeholders).toHaveLength(2);
 		expect(result.placeholders[0].latex).toContain('\\int');
 		expect(result.placeholders[1].latex).toContain('\\frac');
+	});
+});
+
+describe('extractPromptInfo', () => {
+	it('returns no prompts for regular LaTeX', () => {
+		const result = extractPromptInfo('x^2 + 2x + 1');
+		expect(result.hasPrompts).toBe(false);
+		expect(result.promptIndices).toEqual([]);
+	});
+
+	it('detects single placeholder', () => {
+		const result = extractPromptInfo('x = \\placeholder[1]{}');
+		expect(result.hasPrompts).toBe(true);
+		expect(result.promptIndices).toEqual([1]);
+	});
+
+	it('detects multiple placeholders', () => {
+		const result = extractPromptInfo('\\frac{\\placeholder[1]{}}{\\placeholder[2]{}}');
+		expect(result.hasPrompts).toBe(true);
+		expect(result.promptIndices).toEqual([1, 2]);
+	});
+
+	it('handles placeholders with initial content', () => {
+		const result = extractPromptInfo('\\placeholder[3]{x^2}');
+		expect(result.hasPrompts).toBe(true);
+		expect(result.promptIndices).toEqual([3]);
+	});
+
+	it('deduplicates repeated indices', () => {
+		const result = extractPromptInfo('\\placeholder[1]{} + \\placeholder[1]{}');
+		expect(result.hasPrompts).toBe(true);
+		expect(result.promptIndices).toEqual([1]);
+	});
+
+	it('sorts indices in ascending order', () => {
+		const result = extractPromptInfo(
+			'\\placeholder[5]{} + \\placeholder[2]{} + \\placeholder[8]{}'
+		);
+		expect(result.hasPrompts).toBe(true);
+		expect(result.promptIndices).toEqual([2, 5, 8]);
+	});
+
+	it('handles complex nested LaTeX with placeholders', () => {
+		const result = extractPromptInfo('\\frac{\\sqrt{\\placeholder[1]{}}}{\\placeholder[2]{} + 3}');
+		expect(result.hasPrompts).toBe(true);
+		expect(result.promptIndices).toEqual([1, 2]);
+	});
+});
+
+describe('extractMath with placeholders', () => {
+	it('marks inline math without placeholders as hasPrompts: false', () => {
+		const { placeholders } = extractMath('Calculate $x^2 + 1$');
+		expect(placeholders).toHaveLength(1);
+		expect(placeholders[0].hasPrompts).toBe(false);
+		expect(placeholders[0].promptIndices).toEqual([]);
+	});
+
+	it('marks inline math with placeholder as hasPrompts: true', () => {
+		const { placeholders } = extractMath('Solve: $x = \\placeholder[1]{}$');
+		expect(placeholders).toHaveLength(1);
+		expect(placeholders[0].hasPrompts).toBe(true);
+		expect(placeholders[0].promptIndices).toEqual([1]);
+	});
+
+	it('marks block math without placeholders as hasPrompts: false', () => {
+		const { placeholders } = extractMath('$$\\int_0^1 x dx$$');
+		expect(placeholders).toHaveLength(1);
+		expect(placeholders[0].isBlock).toBe(true);
+		expect(placeholders[0].hasPrompts).toBe(false);
+	});
+
+	it('marks block math with placeholders as hasPrompts: true', () => {
+		const { placeholders } = extractMath('$$\\frac{\\placeholder[1]{}}{\\placeholder[2]{}}$$');
+		expect(placeholders).toHaveLength(1);
+		expect(placeholders[0].isBlock).toBe(true);
+		expect(placeholders[0].hasPrompts).toBe(true);
+		expect(placeholders[0].promptIndices).toEqual([1, 2]);
+	});
+
+	it('handles mixed math with and without placeholders', () => {
+		const { placeholders } = extractMath('Given $a = 5$, find $x = \\placeholder[1]{}$');
+		expect(placeholders).toHaveLength(2);
+		expect(placeholders[0].hasPrompts).toBe(false);
+		expect(placeholders[1].hasPrompts).toBe(true);
+		expect(placeholders[1].promptIndices).toEqual([1]);
 	});
 });

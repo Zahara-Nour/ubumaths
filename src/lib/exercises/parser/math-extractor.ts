@@ -66,6 +66,53 @@ const ESCAPED_DOLLAR_REGEX = /\\\$/g;
  */
 const ESCAPED_DOLLAR_PLACEHOLDER = '___ESCAPED_DOLLAR___';
 
+/**
+ * Regex for detecting \placeholder[N]{...} commands in LaTeX
+ *
+ * Pattern breakdown:
+ * - \\placeholder - Literal \placeholder command
+ * - \[(\d+)\] - Capture group: numeric index in brackets
+ * - \{[^}]*\} - Content in braces (can be empty)
+ */
+const PLACEHOLDER_COMMAND_REGEX = /\\placeholder\[(\d+)\]\{[^}]*\}/g;
+
+/**
+ * Extract prompt indices from LaTeX containing \placeholder[N]{} commands
+ *
+ * @param latex - LaTeX string to analyze
+ * @returns Object with hasPrompts flag and array of indices
+ *
+ * @example
+ * extractPromptInfo('\\frac{\\placeholder[1]{}}{\\placeholder[2]{}}')
+ * // { hasPrompts: true, promptIndices: [1, 2] }
+ *
+ * @example
+ * extractPromptInfo('x^2 + 1')
+ * // { hasPrompts: false, promptIndices: [] }
+ */
+export function extractPromptInfo(latex: string): {
+	hasPrompts: boolean;
+	promptIndices: number[];
+} {
+	const indices: number[] = [];
+	let match: RegExpExecArray | null;
+
+	// Reset regex state
+	PLACEHOLDER_COMMAND_REGEX.lastIndex = 0;
+
+	while ((match = PLACEHOLDER_COMMAND_REGEX.exec(latex)) !== null) {
+		const index = parseInt(match[1], 10);
+		if (!indices.includes(index)) {
+			indices.push(index);
+		}
+	}
+
+	return {
+		hasPrompts: indices.length > 0,
+		promptIndices: indices.sort((a, b) => a - b)
+	};
+}
+
 // ============================================================================
 // EXTRACTION
 // ============================================================================
@@ -103,13 +150,17 @@ export function extractMath(markdown: string): {
 	// This is important because $$ could be misinterpreted as two inline $ delimiters
 	text = text.replace(BLOCK_MATH_REGEX, (match, latex, offset) => {
 		const placeholder = `${PLACEHOLDER_PREFIX}${placeholderIndex}${PLACEHOLDER_SUFFIX}`;
+		const trimmedLatex = latex.trim();
+		const promptInfo = extractPromptInfo(trimmedLatex);
 
 		placeholders.push({
 			placeholder,
-			latex: latex.trim(), // Remove leading/trailing whitespace from LaTeX
+			latex: trimmedLatex, // Remove leading/trailing whitespace from LaTeX
 			isBlock: true,
 			startIndex: offset,
-			endIndex: offset + match.length
+			endIndex: offset + match.length,
+			hasPrompts: promptInfo.hasPrompts,
+			promptIndices: promptInfo.promptIndices
 		});
 
 		placeholderIndex++;
@@ -119,13 +170,17 @@ export function extractMath(markdown: string): {
 	// Step 3: Extract inline math $...$
 	text = text.replace(INLINE_MATH_REGEX, (match, latex, offset) => {
 		const placeholder = `${PLACEHOLDER_PREFIX}${placeholderIndex}${PLACEHOLDER_SUFFIX}`;
+		const trimmedLatex = latex.trim();
+		const promptInfo = extractPromptInfo(trimmedLatex);
 
 		placeholders.push({
 			placeholder,
-			latex: latex.trim(),
+			latex: trimmedLatex,
 			isBlock: false,
 			startIndex: offset,
-			endIndex: offset + match.length
+			endIndex: offset + match.length,
+			hasPrompts: promptInfo.hasPrompts,
+			promptIndices: promptInfo.promptIndices
 		});
 
 		placeholderIndex++;
