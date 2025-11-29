@@ -2,9 +2,9 @@
 
 ## Etat actuel
 
-- **Phase** : 5 (PENDING)
-- **Tache en cours** : Documentation
-- **Dernier commit** : Phase 4 complete
+- **Phase** : COMPLETE
+- **Tache en cours** : Aucune - Feature terminee
+- **Dernier commit** : Phase 5 complete
 
 ## Objectif
 
@@ -56,7 +56,7 @@ Ajouter le support des champs math editables via `\placeholder[N]{}` de MathLive
 - [x] 3.3 Unifier props `MarkdownRenderer` - unified `inputs`, `onInputChange`, `onInputSubmit`, `inputsDisabled`
 - [x] 3.4 Adapter tests existants (no existing tests to adapt)
 - [x] 3.5 Code review (approved)
-- [x] Commit: (pending)
+- [x] Commit: `008520c9`
 
 **Fichiers modifies** :
 
@@ -71,19 +71,19 @@ Ajouter le support des champs math editables via `\placeholder[N]{}` de MathLive
 - [x] 4.2 Tests validation texte vs math
 - [x] 4.3 Bug fix: propagation hasPrompts/promptIndices dans markdown-parser.ts
 - [x] 4.4 Code review (approved)
-- [x] Commit: (pending)
+- [x] Commit: `8d6b5df8`
 
 **Fichiers crees/modifies** :
 
 - `src/lib/exercises/parser/unified-inputs.test.ts` - NOUVEAU : 25 tests d'integration
 - `src/lib/exercises/parser/markdown-parser.ts` - Bug fix: propagation hasPrompts/promptIndices aux noeuds AST
 
-### Phase 5 : Documentation
+### Phase 5 : Documentation (COMPLETE)
 
-- [ ] 5.1 Mettre a jour `docs/ref/markdown.md`
-- [ ] 5.2 Mettre a jour `docs/wip/markdown-unification-progress.md`
-- [ ] 5.3 Quality checks
-- [ ] 5.4 Commit final
+- [x] 5.1 Mettre a jour `docs/ref/markdown.md` - Section 2.3 "Champs math editables"
+- [x] 5.2 Mettre a jour `docs/wip/markdown-unification-progress.md` - Phase 4c ajoutee
+- [x] 5.3 Quality checks (build OK, 327 parser tests pass)
+- [x] 5.4 Commit final: `0b6958d0`
 
 ## Commandes pour reprendre
 
@@ -100,10 +100,10 @@ pnpm check:fast
 
 ## Historique des commits
 
-| Phase | Commit    | Description                                                              |
-| ----- | --------- | ------------------------------------------------------------------------ |
-| 1     | 95898307  | `feat(parser): add placeholder detection in math expressions`            |
-| 2     | 6617a4c8  | `feat(components): add MathPrompt component for editable math fields`    |
-| 3     | (pending) | `refactor(inputs): unify BlankInput and MathPrompt under InputState API` |
-| 4     | (pending) | `test(integration): add comprehensive tests for unified input system`    |
-| 5     | (pending) | `docs: add math editable fields documentation`                           |
+| Phase | Commit   | Description                                                              |
+| ----- | -------- | ------------------------------------------------------------------------ |
+| 1     | 95898307 | `feat(parser): add placeholder detection in math expressions`            |
+| 2     | 6617a4c8 | `feat(components): add MathPrompt component for editable math fields`    |
+| 3     | 008520c9 | `refactor(inputs): unify BlankInput and MathPrompt under InputState API` |
+| 4     | 8d6b5df8 | `test(integration): add comprehensive tests for unified input system`    |
+| 5     | 0b6958d0 | `docs: add math editable fields documentation`                           |
