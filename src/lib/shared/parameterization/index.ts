@@ -152,9 +152,10 @@ export { generateRandomNumber } from './resolver/random-generator';
  * Resolve all parameter tokens in arbitrary text
  *
  * Replaces variables with their resolved values.
+ * Optionally uses displayValue for transformed expression output.
  * See: {@link module:shared/parameterization/resolver/text-resolver}
  */
-export { resolveText } from './resolver/text-resolver';
+export { resolveText, type ResolveTextOptions } from './resolver/text-resolver';
 
 // ============================================================================
 // VALIDATORS

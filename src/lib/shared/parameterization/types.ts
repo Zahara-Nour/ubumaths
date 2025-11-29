@@ -104,6 +104,19 @@ export interface ResolvedVariable {
 
 	/** Final resolved value (as string) */
 	value: string;
+
+	/**
+	 * Transformed display value (after displayOptions applied)
+	 *
+	 * Only present if the variable had displayOptions that resulted in
+	 * a different value than the raw value. For mathematical expressions,
+	 * this contains the LaTeX with shuffled terms, removed nulls, etc.
+	 *
+	 * @example
+	 * For variable { expression: 'a + b + c', displayOptions: { shuffleTerms: true } }
+	 * value might be 'a+b+c' and displayValue might be 'c+a+b'
+	 */
+	displayValue?: string;
 }
 
 // ============================================================================

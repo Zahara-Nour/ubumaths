@@ -13,6 +13,22 @@ import { tokenize } from '../parser/tokenizer';
 import { parseVariableReference } from '../parser/variable-parser';
 
 /**
+ * Options for text resolution
+ */
+export interface ResolveTextOptions {
+	/**
+	 * Use displayValue when available instead of raw value
+	 *
+	 * When true, if a resolved variable has a displayValue (transformed
+	 * by displayOptions like shuffleTerms), that value will be used.
+	 * When false or undefined, always use the raw value.
+	 *
+	 * @default false
+	 */
+	useDisplayValue?: boolean;
+}
+
+/**
  * Resolve all parameter tokens in arbitrary text
  *
  * Replaces variable references with their resolved values while
@@ -20,6 +36,7 @@ import { parseVariableReference } from '../parser/variable-parser';
  *
  * @param text - Text containing parameter tokens
  * @param resolvedVariables - Previously resolved variables
+ * @param options - Resolution options (optional)
  * @returns Text with all tokens replaced by resolved values
  *
  * @example Basic usage
@@ -29,6 +46,16 @@ import { parseVariableReference } from '../parser/variable-parser';
  *   [{ name: 'a', value: '5' }, { name: 'b', value: '15' }]
  * )
  * // → 'The value is 5 and the sum is 15'
+ * ```
+ *
+ * @example Using displayValue
+ * ```typescript
+ * resolveText(
+ *   'Calculate: $${{expr}}$$',
+ *   [{ name: 'expr', value: 'a+b+c', displayValue: 'c+a+b' }],
+ *   { useDisplayValue: true }
+ * )
+ * // → 'Calculate: $$c+a+b$$' (uses shuffled displayValue)
  * ```
  *
  * @example LaTeX content
@@ -55,7 +82,13 @@ import { parseVariableReference } from '../parser/variable-parser';
  * // → 'This is plain text' (unchanged)
  * ```
  */
-export function resolveText(text: string, resolvedVariables: ResolvedVariable[]): string {
+export function resolveText(
+	text: string,
+	resolvedVariables: ResolvedVariable[],
+	options?: ResolveTextOptions
+): string {
+	const useDisplayValue = options?.useDisplayValue ?? false;
+
 	// 1. Tokenize to find all variable references
 	const tokens = tokenize(text);
 
@@ -75,8 +108,14 @@ export function resolveText(text: string, resolvedVariables: ResolvedVariable[])
 			throw new Error(`Variable "${varName}" not found in resolved variables`);
 		}
 
+		// Use displayValue if available and requested, otherwise use raw value
+		const valueToUse =
+			useDisplayValue && resolved.displayValue !== undefined
+				? resolved.displayValue
+				: resolved.value;
+
 		// Replace
-		result = result.slice(0, token.start) + resolved.value + result.slice(token.end);
+		result = result.slice(0, token.start) + valueToUse + result.slice(token.end);
 	}
 
 	return result;

@@ -580,4 +580,112 @@ describe('resolveVariables', () => {
 			expect(resolved[3].value).toBe(`Chosen: ${resolved[2].value}`);
 		});
 	});
+
+	// ============================================================================
+	// DISPLAY OPTIONS INTEGRATION
+	// ============================================================================
+
+	describe('Display options', () => {
+		it('should not add displayValue when no displayOptions are set', () => {
+			const variables: Variable[] = [
+				{ name: 'a', expression: '5' },
+				{ name: 'expr', expression: 'a+b+c' }
+			];
+			const resolved = resolveVariables(variables);
+			expect(resolved[0].displayValue).toBeUndefined();
+			expect(resolved[1].displayValue).toBeUndefined();
+		});
+
+		it('should apply removeNullTerms transform', () => {
+			const variables: Variable[] = [
+				{
+					name: 'expr',
+					expression: 'x+0',
+					displayOptions: { removeNullTerms: true }
+				}
+			];
+			const resolved = resolveVariables(variables);
+			expect(resolved[0].value).toBe('x+0');
+			expect(resolved[0].displayValue).toBe('x');
+		});
+
+		it('should handle template-level displayOptions', () => {
+			const variables: Variable[] = [{ name: 'expr', expression: 'y+0' }];
+			const templateDefaults = { removeNullTerms: true };
+			const resolved = resolveVariables(variables, undefined, templateDefaults);
+			expect(resolved[0].displayValue).toBe('y');
+		});
+
+		it('should allow variable to override template displayOptions', () => {
+			const variables: Variable[] = [
+				{
+					name: 'expr',
+					expression: 'z+0',
+					displayOptions: { removeNullTerms: false }
+				}
+			];
+			const templateDefaults = { removeNullTerms: true };
+			const resolved = resolveVariables(variables, undefined, templateDefaults);
+			// Variable says don't remove null terms, so displayValue should not be set
+			expect(resolved[0].displayValue).toBeUndefined();
+		});
+
+		it('should not set displayValue when value unchanged after transform', () => {
+			const variables: Variable[] = [
+				{
+					name: 'expr',
+					expression: 'x', // No null terms to remove
+					displayOptions: { removeNullTerms: true }
+				}
+			];
+			const resolved = resolveVariables(variables);
+			// 'x' has no null terms, so transform produces same value
+			expect(resolved[0].displayValue).toBeUndefined();
+		});
+
+		it('should handle non-transformable values gracefully', () => {
+			const variables: Variable[] = [
+				{
+					name: 'text',
+					expression: 'not a math expression',
+					displayOptions: { shuffleTerms: true }
+				}
+			];
+			const resolved = resolveVariables(variables);
+			// Non-math content should not crash, just no displayValue
+			expect(resolved[0].value).toBe('not a math expression');
+			// displayValue may or may not be set depending on CE behavior
+		});
+
+		it('should preserve displayOptions through resolution', () => {
+			const variables: Variable[] = [
+				{ name: 'a', expression: '5' },
+				{ name: 'b', expression: '0' },
+				{
+					name: 'expr',
+					expression: '{{a}}+{{b}}',
+					displayOptions: { removeNullTerms: true }
+				}
+			];
+			const resolved = resolveVariables(variables);
+			// 5+0 should become 5 with removeNullTerms
+			expect(resolved[2].value).toBe('5+0');
+			expect(resolved[2].displayValue).toBe('5');
+		});
+
+		it('should handle shuffleTermsAndFactors convenience option', () => {
+			const variables: Variable[] = [
+				{
+					name: 'expr',
+					expression: 'a+b+c',
+					displayOptions: { shuffleTermsAndFactors: true }
+				}
+			];
+			// With shuffling, displayValue should be different (usually)
+			// Run multiple times to check it does something
+			const results = Array.from({ length: 10 }, () => resolveVariables(variables));
+			const hasTransformed = results.some((r) => r[0].displayValue !== undefined);
+			expect(hasTransformed).toBe(true);
+		});
+	});
 });
