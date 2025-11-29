@@ -19,6 +19,24 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import type { MigrationManifest, ManifestStructure, TreeNode } from '$lib/types/migration';
 
+/**
+ * Get the latest export folder from data/migration-output/
+ */
+async function getLatestExportFolder(): Promise<string> {
+	const baseDir = path.join(process.cwd(), 'data/migration-output');
+	const entries = await fs.readdir(baseDir);
+	const exportFolders = entries
+		.filter((e) => e.startsWith('export-'))
+		.sort()
+		.reverse();
+
+	if (exportFolders.length === 0) {
+		throw error(404, 'No export folder found in data/migration-output/');
+	}
+
+	return path.join(baseDir, exportFolders[0]);
+}
+
 export const load: PageServerLoad = async ({ locals }) => {
 	// Authentication check
 	const { user } = await locals.safeGetSession();
@@ -32,11 +50,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(403, 'Acces reserve aux administrateurs');
 	}
 
-	// Read manifest.json from the export directory
-	const manifestPath = path.join(
-		process.cwd(),
-		'data/migration-output/export-2025-11-27/manifest.json'
-	);
+	// Read manifest.json from the latest export directory
+	const latestExport = await getLatestExportFolder();
+	const manifestPath = path.join(latestExport, 'manifest.json');
 
 	try {
 		const manifestContent = await fs.readFile(manifestPath, 'utf-8');

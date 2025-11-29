@@ -12,6 +12,24 @@ import { join } from 'path';
 import type { PageServerLoad } from './$types';
 
 /**
+ * Get the latest export folder from data/migration-output/
+ */
+async function getLatestExportFolder(): Promise<string> {
+	const baseDir = join(process.cwd(), 'data/migration-output');
+	const entries = await readdir(baseDir);
+	const exportFolders = entries
+		.filter((e) => e.startsWith('export-'))
+		.sort()
+		.reverse();
+
+	if (exportFolders.length === 0) {
+		throw error(404, 'No export folder found in data/migration-output/');
+	}
+
+	return join(baseDir, exportFolders[0]);
+}
+
+/**
  * Individual question data structure from level JSON files
  */
 export interface QuestionEntry {
@@ -74,9 +92,10 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	// Build path to subdomain directory
 	// Params come from the path which already has the correct directory names (lowercase, underscores)
+	const latestExport = await getLatestExportFolder();
 	const subdomainPath = join(
-		process.cwd(),
-		'data/migration-output/export-2025-11-27/by-category',
+		latestExport,
+		'by-category',
 		decodedTheme,
 		decodedDomain,
 		decodedSubdomain
