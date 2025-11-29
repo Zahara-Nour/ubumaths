@@ -175,3 +175,19 @@ export { detectCircularDependencies } from './validator/circular-dependency';
  * See: {@link module:shared/parameterization/validator/variable-validator}
  */
 export { validateVariables } from './validator/variable-validator';
+
+// ============================================================================
+// EXPRESSION TRANSFORMS
+// ============================================================================
+
+/**
+ * Apply display transformations to LaTeX expressions
+ *
+ * Transforms expressions based on display options (shuffle, canonize, etc.).
+ * See: {@link module:shared/parameterization/expression-transforms}
+ */
+export {
+	applyDisplayTransforms,
+	canTransform,
+	getExpressionStructure
+} from './expression-transforms';
