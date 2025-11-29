@@ -274,7 +274,7 @@ const variation = template.variations[variationIndex];
 const instance = {
 	selectedVariationIndex: variationIndex,
 	statement: resolveContent(variation.statement, resolvedVars),
-	answer: resolveAnswer(variation.answer, resolvedVars)
+	solution: resolveSolution(variation.solution, resolvedVars)
 	// ...
 };
 ```
@@ -395,7 +395,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		type: template.type,
 		selectedVariationIndex: variationIndex,
 		statement: resolveContent(variation.statement, resolvedVars),
-		answer: resolveAnswer(variation.answer, resolvedVars),
+		solution: resolveSolution(variation.solution, resolvedVars),
 		correction: variation.correction
 			? resolveContent(variation.correction, resolvedVars)
 			: undefined,
