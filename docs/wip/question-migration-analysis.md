@@ -2060,15 +2060,17 @@ The field `answer` was renamed to `solution` to clarify semantics:
 
 #### Files Modified
 
-| File                                                  | Changes                                     |
-| ----------------------------------------------------- | ------------------------------------------- |
-| `src/lib/questions/types.ts`                          | Field rename in 3 interfaces                |
-| `src/lib/questions/generator/instance-generator.ts`   | Updated to use `solution` field             |
-| `src/lib/questions/generator/content-resolver.ts`     | Renamed `resolveAnswer` → `resolveSolution` |
-| `src/lib/questions/generator/template-validator.ts`   | Updated validation messages                 |
-| `src/lib/utils/answer-validator.ts`                   | Updated to access `instance.solution`       |
-| `src/lib/migration/question-transformer.ts`           | Produces `solution` field                   |
-| `supabase/migrations/*_rename_answer_to_solution.sql` | Database JSONB key migration                |
+| File                                                      | Changes                                                        |
+| --------------------------------------------------------- | -------------------------------------------------------------- |
+| `src/lib/questions/types.ts`                              | Field rename in 3 interfaces                                   |
+| `src/lib/questions/generator/instance-generator.ts`       | Updated to use `solution` field                                |
+| `src/lib/questions/generator/content-resolver.ts`         | Renamed `resolveAnswer` → `resolveSolution`                    |
+| `src/lib/questions/generator/template-validator.ts`       | Updated validation messages                                    |
+| `src/lib/utils/answer-validator.ts`                       | Updated to access `instance.solution`                          |
+| `src/lib/migration/question-transformer.ts`               | `convertAnswer` → `convertSolution`, produces `solution` field |
+| `src/lib/components/migration/QuestionCompareView.svelte` | Updated interface and imports                                  |
+| `docs/features/questions/variable-system.md`              | Updated code examples                                          |
+| `supabase/migrations/*_rename_answer_to_solution.sql`     | Database JSONB key migration                                   |
 
 #### Preserved `answer` Usages
 
