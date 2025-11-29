@@ -16,7 +16,8 @@ import {
 	checkNullTerms,
 	checkFactorOne,
 	checkFactorZero,
-	checkSigns
+	checkSigns,
+	checkReducedFractions
 } from './constraint-validators';
 
 // ============================================================================
@@ -956,6 +957,142 @@ describe('checkSigns', () => {
 			// +5 could be acceptable notation for positive 5
 			// Our regex only catches +letter, not +digit
 			expect(checkSigns(['+5'])).toHaveLength(0);
+		});
+	});
+});
+
+// ============================================================================
+// REDUCED FRACTIONS VALIDATOR TESTS
+// ============================================================================
+
+describe('checkReducedFractions', () => {
+	describe('Non-reduced Fractions - Should Flag', () => {
+		it('should detect simple non-reduced fraction 2/4', () => {
+			expect(checkReducedFractions(['\\frac{2}{4}'])).toEqual([0]);
+		});
+
+		it('should detect 6/9 as non-reduced', () => {
+			expect(checkReducedFractions(['\\frac{6}{9}'])).toEqual([0]);
+		});
+
+		it('should detect 10/5 as non-reduced (simplifies to integer)', () => {
+			expect(checkReducedFractions(['\\frac{10}{5}'])).toEqual([0]);
+		});
+
+		it('should detect negative non-reduced fraction -4/6', () => {
+			expect(checkReducedFractions(['\\frac{-4}{6}'])).toEqual([0]);
+		});
+
+		it('should detect fraction with negative denominator 4/-6', () => {
+			expect(checkReducedFractions(['\\frac{4}{-6}'])).toEqual([0]);
+		});
+
+		it('should detect 4/8 as non-reduced', () => {
+			expect(checkReducedFractions(['\\frac{4}{8}'])).toEqual([0]);
+		});
+
+		it('should detect 12/18 as non-reduced', () => {
+			expect(checkReducedFractions(['\\frac{12}{18}'])).toEqual([0]);
+		});
+	});
+
+	describe('Reduced Fractions - Should Accept', () => {
+		it('should accept already reduced fraction 1/2', () => {
+			expect(checkReducedFractions(['\\frac{1}{2}'])).toHaveLength(0);
+		});
+
+		it('should accept already reduced fraction 3/7', () => {
+			expect(checkReducedFractions(['\\frac{3}{7}'])).toHaveLength(0);
+		});
+
+		it('should accept 2/3 as reduced', () => {
+			expect(checkReducedFractions(['\\frac{2}{3}'])).toHaveLength(0);
+		});
+
+		it('should accept 5/7 as reduced', () => {
+			expect(checkReducedFractions(['\\frac{5}{7}'])).toHaveLength(0);
+		});
+
+		it('should accept negative reduced fraction -2/3', () => {
+			expect(checkReducedFractions(['\\frac{-2}{3}'])).toHaveLength(0);
+		});
+
+		it('should flag 1/1 as reducible (equals 1)', () => {
+			// 1/1 can be simplified to 1, so it's not in reduced form
+			expect(checkReducedFractions(['\\frac{1}{1}'])).toEqual([0]);
+		});
+	});
+
+	describe('Non-Fraction Inputs - Should Accept', () => {
+		it('should accept integer (not a fraction)', () => {
+			expect(checkReducedFractions(['2'])).toHaveLength(0);
+		});
+
+		it('should accept variable (not a fraction)', () => {
+			expect(checkReducedFractions(['x'])).toHaveLength(0);
+		});
+
+		it('should accept decimal', () => {
+			expect(checkReducedFractions(['0.5'])).toHaveLength(0);
+		});
+
+		it('should accept expression without fractions', () => {
+			expect(checkReducedFractions(['x + 2'])).toHaveLength(0);
+		});
+	});
+
+	describe('Fractions with Variables', () => {
+		it('should detect non-reduced coefficient 2x/4', () => {
+			expect(checkReducedFractions(['\\frac{2x}{4}'])).toEqual([0]);
+		});
+
+		it('should accept fraction with irreducible variable x/2', () => {
+			expect(checkReducedFractions(['\\frac{x}{2}'])).toHaveLength(0);
+		});
+
+		it('should accept x/y (variables with no common factor)', () => {
+			expect(checkReducedFractions(['\\frac{x}{y}'])).toHaveLength(0);
+		});
+	});
+
+	describe('Multiple Answers', () => {
+		it('should check all answers and return violating indices', () => {
+			const result = checkReducedFractions([
+				'\\frac{1}{2}', // reduced - OK
+				'\\frac{2}{4}', // NOT reduced - violation
+				'\\frac{3}{5}', // reduced - OK
+				'\\frac{6}{9}' // NOT reduced - violation
+			]);
+			expect(result).toEqual([1, 3]);
+		});
+
+		it('should return empty array when all fractions are reduced', () => {
+			const result = checkReducedFractions(['\\frac{1}{2}', '\\frac{2}{3}', '\\frac{3}{7}']);
+			expect(result).toHaveLength(0);
+		});
+
+		it('should flag all indices when no fractions are reduced', () => {
+			const result = checkReducedFractions(['\\frac{2}{4}', '\\frac{4}{6}']);
+			expect(result).toEqual([0, 1]);
+		});
+	});
+
+	describe('Edge Cases', () => {
+		it('should handle empty strings', () => {
+			expect(checkReducedFractions([''])).toHaveLength(0);
+		});
+
+		it('should handle whitespace', () => {
+			expect(checkReducedFractions(['  '])).toHaveLength(0);
+		});
+
+		it('should handle expressions containing fractions', () => {
+			// x + 2/4 contains a non-reduced fraction
+			expect(checkReducedFractions(['x + \\frac{2}{4}'])).toEqual([0]);
+		});
+
+		it('should accept expressions with reduced fractions', () => {
+			expect(checkReducedFractions(['x + \\frac{1}{2}'])).toHaveLength(0);
 		});
 	});
 });

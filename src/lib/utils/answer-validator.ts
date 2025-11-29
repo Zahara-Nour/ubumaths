@@ -28,7 +28,8 @@ import {
 	checkNullTerms,
 	checkFactorOne,
 	checkFactorZero,
-	checkSigns
+	checkSigns,
+	checkReducedFractions
 } from '$lib/questions/constraint-validators';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { validateQuantityAnswer } from '$lib/questions/units/validator';
@@ -81,7 +82,8 @@ function applyConstraints(
 		{ id: 'nullTerms', check: () => checkNullTerms(answersLatex) },
 		{ id: 'factorOne', check: () => checkFactorOne(answersLatex) },
 		{ id: 'factorZero', check: () => checkFactorZero(answersLatex) },
-		{ id: 'signs', check: () => checkSigns(answersLatex) }
+		{ id: 'signs', check: () => checkSigns(answersLatex) },
+		{ id: 'reducedFractions', check: () => checkReducedFractions(answersLatex) }
 	];
 
 	for (const { id, check } of checks) {

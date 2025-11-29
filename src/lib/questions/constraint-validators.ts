@@ -864,3 +864,62 @@ export function checkSigns(answersLatex: string[]): number[] {
 
 	return violations;
 }
+
+// ============================================================================
+// REDUCED FRACTIONS VALIDATOR
+// ============================================================================
+
+/**
+ * Check if fractions are reduced to their lowest terms
+ *
+ * Uses Compute Engine's canonical form to detect reducible fractions.
+ * CE automatically reduces fractions when canonicalizing, so comparing
+ * raw vs canonical LaTeX output reveals non-reduced fractions.
+ *
+ * Works with:
+ * - Simple numeric fractions: 2/4 → 1/2
+ * - Negative fractions: -4/6 → -2/3
+ * - Fractions with variables: 2x/4 → x/2
+ * - Expressions containing fractions: 1 + 2/4
+ *
+ * @param answersLatex - Array of LaTeX strings
+ * @returns Indices of answers with non-reduced fractions
+ *
+ * @example
+ * checkReducedFractions(['\\frac{2}{4}'])    // Returns [0] - can be reduced to 1/2
+ * checkReducedFractions(['\\frac{1}{2}'])    // Returns [] - already reduced
+ * checkReducedFractions(['\\frac{6}{9}'])    // Returns [0] - can be reduced to 2/3
+ * checkReducedFractions(['\\frac{10}{5}'])   // Returns [0] - can be reduced to 2
+ * checkReducedFractions(['\\frac{-4}{6}'])   // Returns [0] - can be reduced to -2/3
+ * checkReducedFractions(['\\frac{2x}{4}'])   // Returns [0] - can be reduced to x/2
+ * checkReducedFractions(['\\frac{3}{7}'])    // Returns [] - already reduced
+ * checkReducedFractions(['2'])               // Returns [] - not a fraction
+ */
+export function checkReducedFractions(answersLatex: string[]): number[] {
+	const violations: number[] = [];
+	const ce = getCE();
+
+	for (let i = 0; i < answersLatex.length; i++) {
+		const latex = answersLatex[i];
+		if (!latex?.trim()) continue;
+
+		// Quick check: skip if no fraction in the answer
+		if (!latex.includes('\\frac')) continue;
+
+		try {
+			// Parse without canonization to preserve original form
+			const rawExpr = ce.parse(latex, { canonical: false });
+			// Parse with canonization (default) - CE will reduce fractions
+			const canonExpr = ce.parse(latex);
+
+			// Compare LaTeX output - if different, fraction was not reduced
+			if (rawExpr.latex !== canonExpr.latex) {
+				violations.push(i);
+			}
+		} catch {
+			// Skip invalid LaTeX
+		}
+	}
+
+	return violations;
+}

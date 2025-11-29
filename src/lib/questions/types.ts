@@ -572,7 +572,8 @@ export type ConstraintId =
 	| 'nullTerms'
 	| 'factorOne'
 	| 'factorZero'
-	| 'signs';
+	| 'signs'
+	| 'reducedFractions';
 
 /**
  * How to handle constraint violations (ordered by decreasing severity)
@@ -600,6 +601,7 @@ export interface ConstraintOptions {
 	factorOne?: ConstraintMode;
 	factorZero?: ConstraintMode;
 	signs?: ConstraintMode;
+	reducedFractions?: ConstraintMode;
 }
 
 // ============================================================================
