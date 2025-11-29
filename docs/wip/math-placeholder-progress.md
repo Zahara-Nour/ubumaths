@@ -2,9 +2,9 @@
 
 ## Etat actuel
 
-- **Phase** : 1 (IN PROGRESS)
-- **Tache en cours** : 1.1 - Definition types TypeScript
-- **Dernier commit** : (aucun encore)
+- **Phase** : 3 (PENDING)
+- **Tache en cours** : Aucune (Phase 2 terminee)
+- **Dernier commit** : `6617a4c8` - Phase 2 complete
 
 ## Objectif
 
@@ -19,28 +19,35 @@ Ajouter le support des champs math editables via `\placeholder[N]{}` de MathLive
 
 ## Phases
 
-### Phase 1 : Types et detection placeholder
+### Phase 1 : Types et detection placeholder (COMPLETE)
 
-- [ ] 1.1 Definir `InputState` et etendre `MathInlineNode`/`MathBlockNode`
-- [ ] 1.2 Detection `\placeholder[N]{}` dans `math-extractor.ts`
-- [ ] 1.3 Tests unitaires
-- [ ] 1.4 Code review
-- [ ] Commit
+- [x] 1.1 Definir `InputState` et etendre `MathInlineNode`/`MathBlockNode`
+- [x] 1.2 Detection `\placeholder[N]{}` dans `math-extractor.ts`
+- [x] 1.3 Tests unitaires (12 tests, tous passent)
+- [x] 1.4 Code review (approuve)
+- [x] Commit: `95898307`
 
-**Fichiers a modifier** :
+**Fichiers modifies** :
 
-- `src/lib/exercises/types.ts`
-- `src/lib/exercises/parser/math-extractor.ts`
-- `src/lib/exercises/parser/math-extractor.test.ts`
+- `src/lib/exercises/types.ts` - InputState, MathInlineNode, MathBlockNode, MathPlaceholder
+- `src/lib/exercises/parser/math-extractor.ts` - extractPromptInfo(), extractMath()
+- `src/lib/exercises/parser/math-extractor.test.ts` - 12 nouveaux tests
 
-### Phase 2 : Composant MathPrompt
+### Phase 2 : Composant MathPrompt (COMPLETE)
 
-- [ ] 2.1 Creer `MathPrompt.svelte`
-- [ ] 2.2 Integrer dans `ParagraphNode.svelte`
-- [ ] 2.3 Integrer dans `MarkdownRenderer.svelte`
-- [ ] 2.4 Tests composant
-- [ ] 2.5 Code review
-- [ ] Commit
+- [x] 2.1 Creer `MathPrompt.svelte`
+- [x] 2.2 Integrer dans `ParagraphNode.svelte`
+- [x] 2.3 Integrer dans `MarkdownRenderer.svelte`
+- [x] 2.4 Tests composant (Svelte autofixer valide, build OK, tests deferred to Phase 4)
+- [x] 2.5 Code review (approved with fixes applied)
+- [x] Commit: `6617a4c8`
+
+**Fichiers crees/modifies** :
+
+- `src/lib/components/markdown/nodes/MathPrompt.svelte` - NOUVEAU : composant editable math
+- `src/lib/components/markdown/nodes/ParagraphNode.svelte` - Import MathPrompt, props mathInputs/onMathPromptChange
+- `src/lib/components/markdown/MarkdownRenderer.svelte` - Import MathPrompt, props mathInputs/onMathPromptChange
+- `src/lib/components/markdown/nodes/index.ts` - Export MathPrompt
 
 ### Phase 3 : Migration BlankInput
 
@@ -83,8 +90,8 @@ pnpm check:fast
 
 | Phase | Commit    | Description                                                              |
 | ----- | --------- | ------------------------------------------------------------------------ |
-| 1     | (pending) | `feat(parser): add placeholder detection in math expressions`            |
-| 2     | (pending) | `feat(components): add MathPrompt component for editable math fields`    |
+| 1     | 95898307  | `feat(parser): add placeholder detection in math expressions`            |
+| 2     | 6617a4c8  | `feat(components): add MathPrompt component for editable math fields`    |
 | 3     | (pending) | `refactor(inputs): unify BlankInput and MathPrompt under InputState API` |
 | 4     | (pending) | `test(integration): add comprehensive tests for unified input system`    |
 | 5     | (pending) | `docs: add math editable fields documentation`                           |
