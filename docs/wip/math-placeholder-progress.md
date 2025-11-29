@@ -2,9 +2,9 @@
 
 ## Etat actuel
 
-- **Phase** : 4 (PENDING)
-- **Tache en cours** : Aucune (Phase 3 terminee)
-- **Dernier commit** : (pending) - Phase 3 complete
+- **Phase** : 5 (PENDING)
+- **Tache en cours** : Documentation
+- **Dernier commit** : Phase 4 complete
 
 ## Objectif
 
@@ -65,13 +65,18 @@ Ajouter le support des champs math editables via `\placeholder[N]{}` de MathLive
 - `src/lib/components/markdown/MarkdownRenderer.svelte` - unified inputs API
 - `src/lib/components/markdown/types.ts` - update BlankInputProps
 
-### Phase 4 : Tests d'integration
+### Phase 4 : Tests d'integration (COMPLETE)
 
-- [ ] 4.1 Tests integration markdown → rendu
-- [ ] 4.2 Tests validation texte vs math
-- [ ] 4.3 Debug si necessaire
-- [ ] 4.4 Code review
-- [ ] Commit
+- [x] 4.1 Tests integration markdown → rendu (25 nouveaux tests)
+- [x] 4.2 Tests validation texte vs math
+- [x] 4.3 Bug fix: propagation hasPrompts/promptIndices dans markdown-parser.ts
+- [x] 4.4 Code review (approved)
+- [x] Commit: (pending)
+
+**Fichiers crees/modifies** :
+
+- `src/lib/exercises/parser/unified-inputs.test.ts` - NOUVEAU : 25 tests d'integration
+- `src/lib/exercises/parser/markdown-parser.ts` - Bug fix: propagation hasPrompts/promptIndices aux noeuds AST
 
 ### Phase 5 : Documentation
 
