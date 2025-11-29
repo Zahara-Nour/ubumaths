@@ -237,7 +237,7 @@ describe('Question Transformer', () => {
 		});
 
 		describe('Option Mapping', () => {
-			it('should map fraction reduction options', () => {
+			it('should map require-reduced-fractions to constraints.reducedFractions strict', () => {
 				const oldQuestion: QuestionBase = {
 					description: 'Simplifier une fraction',
 					enounces: ['Simplifier :'],
@@ -257,8 +257,24 @@ describe('Question Transformer', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				expect(result.template?.options?.canonicalForm).toBe('fraction');
-				expect(result.template?.options?.allowDifferentForms).toBe(false);
+				expect(result.template?.options?.constraints?.reducedFractions).toBe('strict');
+			});
+
+			it('should map no-penalty-for-non-reduced-fractions to constraints.reducedFractions off', () => {
+				const oldQuestion: QuestionBase = {
+					description: 'Addition de fractions',
+					enounces: ['Calculer :'],
+					expressions: ['\\frac{1}{2} + \\frac{1}{4}'],
+					solutionss: [['\\frac{3}{4}']],
+					options: ['no-penalty-for-non-reduced-fractions'],
+					defaultDelay: 60,
+					grade: 'CM2'
+				};
+
+				const result = transformQuestion(oldQuestion, 0);
+
+				expect(result.success).toBe(true);
+				expect(result.template?.options?.constraints?.reducedFractions).toBe('off');
 			});
 
 			it('should map bracket tolerance options', () => {

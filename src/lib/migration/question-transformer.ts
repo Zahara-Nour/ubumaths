@@ -796,15 +796,16 @@ function convertOptions(
 				break;
 
 			// ================================================================
-			// FRACTION OPTIONS
+			// FRACTION OPTIONS → constraints.reducedFractions
 			// ================================================================
 			case 'require-reduced-fractions':
-				options.canonicalForm = 'fraction';
-				options.allowDifferentForms = false;
+				// Require fractions to be reduced to lowest terms
+				constraints.reducedFractions = 'strict';
 				mappedCount++;
 				break;
 			case 'no-penalty-for-non-reduced-fractions':
-				options.allowDifferentForms = true;
+				// Don't penalize non-reduced fractions
+				constraints.reducedFractions = 'off';
 				mappedCount++;
 				break;
 

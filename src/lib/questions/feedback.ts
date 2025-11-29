@@ -55,6 +55,10 @@ export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multipl
 	signs: {
 		single: 'Il y a des signes superflus (comme ++, --, ou +x).',
 		multiple: 'Il y a des signes superflus (comme ++, --, ou +x).'
+	},
+	reducedFractions: {
+		single: 'La fraction peut être simplifiée.',
+		multiple: 'Une ou plusieurs fractions peuvent être simplifiées.'
 	}
 } as const;
 

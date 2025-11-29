@@ -331,12 +331,12 @@ Nouveau: {{#if cond1}}texte1{{else}}texte2{{/if}}
 
 ### Validateurs de contraintes
 
-Le fichier `constraint-validators.ts` implémente 9 validateurs pour vérifier la **forme** des réponses (pas l'équivalence mathématique). Chaque validateur retourne un tableau d'indices où des violations ont été trouvées.
+Le fichier `constraint-validators.ts` implémente 10 validateurs pour vérifier la **forme** des réponses (pas l'équivalence mathématique). Chaque validateur retourne un tableau d'indices où des violations ont été trouvées.
 
 **Catégories de validateurs:**
 
 - **Validateurs textuels** (5): `checkSpaces`, `checkProducts`, `checkBrackets`, `checkZeros`, `checkForm`
-- **Validateurs Compute Engine** (4): `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns`
+- **Validateurs Compute Engine** (5): `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns`, `checkReducedFractions`
 
 #### 1. `checkSpaces` - Espacement des chiffres (format français)
 
@@ -452,6 +452,24 @@ checkSigns(['(-a)\\times(-b)']); // [0] - parité avec variables
 checkSigns(['5\\times(-2)\\times(-3)']); // [0] - deux négatifs dans une chaîne
 checkSigns(['(-x)(-y)']); // [0] - multiplication implicite avec parité
 checkSigns(['(-2)\\times 3']); // [] - un seul négatif est valide
+```
+
+#### 10. `checkReducedFractions` - Fractions non réduites (Compute Engine)
+
+```typescript
+// Détecte les fractions qui ne sont pas sous forme irréductible
+// Utilise la forme canonique CE pour comparer raw vs canonical
+checkReducedFractions(['\\frac{2}{4}']); // [0] - peut être simplifié en 1/2
+checkReducedFractions(['\\frac{6}{9}']); // [0] - peut être simplifié en 2/3
+checkReducedFractions(['\\frac{10}{5}']); // [0] - peut être simplifié en 2
+checkReducedFractions(['\\frac{-4}{6}']); // [0] - peut être simplifié en -2/3
+checkReducedFractions(['\\frac{2x}{4}']); // [0] - coefficient non réduit → x/2
+
+checkReducedFractions(['\\frac{1}{2}']); // [] - déjà réduite
+checkReducedFractions(['\\frac{3}{7}']); // [] - déjà réduite
+checkReducedFractions(['\\frac{x}{2}']); // [] - irréductible
+checkReducedFractions(['2']); // [] - pas une fraction
+checkReducedFractions(['x + \\frac{2}{4}']); // [0] - fraction non réduite dans l'expression
 ```
 
 ### Évaluateur de règles
@@ -901,8 +919,8 @@ Les options TinyMath sont maintenant mappées vers l'objet `constraints` avec de
 | `no-penalty-for-factor-zero`             | `constraints.factorZero: 'off'`                      |
 | `require-no-useless-signs`               | `constraints.signs: 'strict'`                        |
 | `no-penalty-for-useless-signs`           | `constraints.signs: 'off'`                           |
-| `require-reduced-fractions`              | `canonicalForm: 'fraction'`                          |
-| `no-penalty-for-non-reduced-fractions`   | `allowDifferentForms: true`                          |
+| `require-reduced-fractions`              | `constraints.reducedFractions: 'strict'`             |
+| `no-penalty-for-non-reduced-fractions`   | `constraints.reducedFractions: 'off'`                |
 | `solutions-order-not-important`          | `solutionsOrderMatters: false`                       |
 | `allow-brackets-for-first-negative-term` | `constraints.allowBracketsInFirstNegativeTerm: true` |
 
@@ -936,4 +954,4 @@ Les options TinyMath sont maintenant mappées vers l'objet `constraints` avec de
 
 ---
 
-_Document généré le 27 novembre 2025, mis à jour le 28 novembre 2025 (ajout 4 validateurs CE: nullTerms, factorOne, factorZero, signs)_
+_Document généré le 27 novembre 2025, mis à jour le 29 novembre 2025 (ajout validateur CE: reducedFractions)_
