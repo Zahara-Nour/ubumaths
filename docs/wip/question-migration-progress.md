@@ -8,7 +8,7 @@
 
 ## Current Phase: COMPLETED ✅
 
-## Last Commit: 2013750e
+## Last Commit: 739123cd
 
 ### Phase 10: Rename answer to solution ✅
 
@@ -22,6 +22,9 @@
 - [x] Updated all test files (107+ tests pass)
 - [x] Updated docs/ref/questions.md
 - [x] Preserved `answer` for student responses (EvaluationContext.answer, expectedAnswer in blanks)
+- [x] Updated migration scripts: convertAnswer → convertSolution
+- [x] Updated QuestionCompareView.svelte component
+- [x] Updated docs/features/questions/variable-system.md
 
 ### Phase 9: Display Options Mapping ✅
 
