@@ -266,4 +266,68 @@ describe('resolveText', () => {
 			expect(resolveText(text, resolved)).toBe('<div>Value: 42</div>');
 		});
 	});
+
+	// ============================================================================
+	// DISPLAY VALUE SUPPORT
+	// ============================================================================
+
+	describe('displayValue support', () => {
+		it('should use raw value by default when displayValue exists', () => {
+			const text = 'Expression: {{expr}}';
+			const resolved: ResolvedVariable[] = [
+				{ name: 'expr', value: 'a+b+c', displayValue: 'c+a+b' }
+			];
+			expect(resolveText(text, resolved)).toBe('Expression: a+b+c');
+		});
+
+		it('should use displayValue when useDisplayValue option is true', () => {
+			const text = 'Expression: {{expr}}';
+			const resolved: ResolvedVariable[] = [
+				{ name: 'expr', value: 'a+b+c', displayValue: 'c+a+b' }
+			];
+			expect(resolveText(text, resolved, { useDisplayValue: true })).toBe('Expression: c+a+b');
+		});
+
+		it('should fall back to raw value when displayValue is undefined', () => {
+			const text = 'Value: {{a}}';
+			const resolved: ResolvedVariable[] = [{ name: 'a', value: '42' }];
+			expect(resolveText(text, resolved, { useDisplayValue: true })).toBe('Value: 42');
+		});
+
+		it('should handle mixed variables with and without displayValue', () => {
+			const text = '{{a}} + {{expr}}';
+			const resolved: ResolvedVariable[] = [
+				{ name: 'a', value: '5' }, // No displayValue
+				{ name: 'expr', value: 'b+c', displayValue: 'c+b' } // Has displayValue
+			];
+			expect(resolveText(text, resolved, { useDisplayValue: true })).toBe('5 + c+b');
+		});
+
+		it('should use raw value when useDisplayValue is false', () => {
+			const text = '{{expr}}';
+			const resolved: ResolvedVariable[] = [{ name: 'expr', value: 'a+b', displayValue: 'b+a' }];
+			expect(resolveText(text, resolved, { useDisplayValue: false })).toBe('a+b');
+		});
+
+		it('should work with LaTeX expressions', () => {
+			const text = '$${{expr}}$$';
+			const resolved: ResolvedVariable[] = [
+				{ name: 'expr', value: 'x+y+z', displayValue: 'z+x+y' }
+			];
+			expect(resolveText(text, resolved, { useDisplayValue: true })).toBe('$$z+x+y$$');
+		});
+
+		it('should handle empty displayValue by using raw value', () => {
+			const text = '{{expr}}';
+			const resolved: ResolvedVariable[] = [{ name: 'expr', value: 'a+b', displayValue: '' }];
+			// Empty string is falsy but defined, so it should be used
+			expect(resolveText(text, resolved, { useDisplayValue: true })).toBe('');
+		});
+
+		it('should handle multiple occurrences of same variable with displayValue', () => {
+			const text = '{{expr}} and again {{expr}}';
+			const resolved: ResolvedVariable[] = [{ name: 'expr', value: 'a+b', displayValue: 'b+a' }];
+			expect(resolveText(text, resolved, { useDisplayValue: true })).toBe('b+a and again b+a');
+		});
+	});
 });

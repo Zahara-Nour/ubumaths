@@ -14,6 +14,9 @@
  */
 
 import type { Variable, ResolvedVariable } from '../types';
+import type { DisplayOptions } from '../display-options';
+import { resolveDisplayOptions } from '../display-options';
+import { applyDisplayTransforms, canTransform } from '../expression-transforms';
 import { tokenize } from '../parser/tokenizer';
 import { parseVariableReference } from '../parser/variable-parser';
 import { parseRandomSpec } from '../parser/random-parser';
@@ -85,7 +88,11 @@ import { evaluateWithModifiers } from '$lib/questions/compute-engine/wrapper';
  * // → All variables resolved with random values and calculated sum
  * ```
  */
-export function resolveVariables(variables: Variable[], seed?: number): ResolvedVariable[] {
+export function resolveVariables(
+	variables: Variable[],
+	seed?: number,
+	templateDisplayDefaults?: DisplayOptions
+): ResolvedVariable[] {
 	if (!variables || variables.length === 0) {
 		return [];
 	}
@@ -96,10 +103,40 @@ export function resolveVariables(variables: Variable[], seed?: number): Resolved
 		try {
 			const resolvedValue = resolveExpression(variable.expression, resolvedVariables, seed);
 
-			resolvedVariables.push({
+			// Build the resolved variable
+			const resolved: ResolvedVariable = {
 				name: variable.name,
 				value: resolvedValue
-			});
+			};
+
+			// Apply display transforms if variable or template has displayOptions
+			if (variable.displayOptions || templateDisplayDefaults) {
+				const displayOptions = resolveDisplayOptions(
+					templateDisplayDefaults,
+					variable.displayOptions
+				);
+
+				// Only apply transforms if the value is transformable (valid LaTeX)
+				// and at least one transform option is enabled
+				const hasActiveTransforms =
+					displayOptions.shuffleTerms ||
+					displayOptions.shuffleFactors ||
+					displayOptions.shuffleTermsAndFactors ||
+					displayOptions.shallowShuffleTerms ||
+					displayOptions.shallowShuffleFactors ||
+					displayOptions.removeNullTerms ||
+					displayOptions.removeUnnecessaryBrackets;
+
+				if (hasActiveTransforms && canTransform(resolvedValue)) {
+					const displayValue = applyDisplayTransforms(resolvedValue, displayOptions);
+					// Only set displayValue if it's different from the raw value
+					if (displayValue !== resolvedValue) {
+						resolved.displayValue = displayValue;
+					}
+				}
+			}
+
+			resolvedVariables.push(resolved);
 		} catch (error) {
 			throw new Error(
 				`Failed to resolve variable "${variable.name}": ${error instanceof Error ? error.message : String(error)}`
