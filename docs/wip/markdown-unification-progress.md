@@ -28,8 +28,12 @@ src/lib/components/markdown/
 ├── MarkdownRenderer.svelte
 ├── MarkdownRaw.svelte
 └── nodes/
-    ├── MathInline.svelte
-    ├── MathBlock.svelte
+    ├── MathInline.svelte           # Read-only inline (<math-span>)
+    ├── MathInlineEditable.svelte   # Editable inline (<math-field>)
+    ├── MathInlineOld.svelte        # Deprecated (<math-field read-only>)
+    ├── MathBlock.svelte            # Read-only block (<math-div>)
+    ├── MathBlockEditable.svelte    # Editable block (<math-field>)
+    ├── MathBlockOld.svelte         # Deprecated (<math-field read-only>)
     ├── ImageDisplay.svelte
     ├── TextNode.svelte
     ├── ParagraphNode.svelte
@@ -115,6 +119,33 @@ Migration de `<math-field read-only>` vers `<math-span>`/`<math-div>` pour les c
 - [x] `src/lib/components/markdown/nodes/MathInlineOld.svelte` (ancienne version avec `<math-field read-only>`)
 
 **Résultat** : ~50% de réduction du code CSS (plus besoin de masquer les styles d'éditeur).
+
+**Composants éditables ajoutés** :
+
+- [x] `src/lib/components/markdown/nodes/MathBlockEditable.svelte` (éditable avec `<math-field>`)
+- [x] `src/lib/components/markdown/nodes/MathInlineEditable.svelte` (éditable avec `<math-field>`)
+
+**Matrice des composants Math** :
+
+| Composant          | Element MathLive         | Usage                      | Props                                                  |
+| ------------------ | ------------------------ | -------------------------- | ------------------------------------------------------ |
+| MathBlock          | `<math-div>`             | Affichage bloc read-only   | `latex`, `class`                                       |
+| MathInline         | `<math-span>`            | Affichage inline read-only | `latex`, `class`                                       |
+| MathBlockEditable  | `<math-field>`           | Saisie bloc éditable       | `value` (bindable), `placeholder`, `class`, `onchange` |
+| MathInlineEditable | `<math-field>`           | Saisie inline éditable     | `value` (bindable), `placeholder`, `class`, `onchange` |
+| MathBlockOld       | `<math-field read-only>` | Déprécié                   | `latex`, `class`                                       |
+| MathInlineOld      | `<math-field read-only>` | Déprécié                   | `latex`, `class`                                       |
+
+**Usage des composants éditables (Svelte 5)** :
+
+```svelte
+<script lang="ts">
+	import MathInlineEditable from '$lib/components/markdown/nodes/MathInlineEditable.svelte';
+	let latex = $state('x^2');
+</script>
+
+<MathInlineEditable bind:value={latex} /><p>Valeur : {latex}</p>
+```
 
 ### Phase 5 : Migration données (optionnel)
 
