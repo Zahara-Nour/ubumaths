@@ -897,32 +897,112 @@ const result2 = validateAnswer('5', instance);
 | `SPE_T` | `T_SPE`  |
 | `STMG`  | `T_STMG` |
 
-### B. Mapping des options
+### B. Analyse complète des options TinyMath
 
-Les options TinyMath sont maintenant mappées vers l'objet `constraints` avec des modes `'strict'`, `'warn'`, ou `'off'`:
+Cette section documente toutes les 29 options uniques trouvées dans le corpus de 633 questions, leur fonction dans TinyMath, et leur statut de migration.
 
-| Ancienne option                          | Nouvelle structure                                   |
-| ---------------------------------------- | ---------------------------------------------------- |
-| `require-no-extraneous-brackets`         | `constraints.brackets: 'strict'`                     |
-| `no-penalty-for-extraneous-brackets`     | `constraints.brackets: 'off'`                        |
-| `require-no-extraneous-zeros`            | `constraints.zeros: 'strict'`                        |
-| `no-penalty-for-extraneous-zeros`        | `constraints.zeros: 'off'`                           |
-| `require-specific-products`              | `constraints.products: 'strict'`                     |
-| `no-penalty-for-non-specific-products`   | `constraints.products: 'off'`                        |
-| `require-correct-spaces`                 | `constraints.spaces: 'strict'`                       |
-| `no-penalty-for-spaces`                  | `constraints.spaces: 'off'`                          |
-| `require-no-null-terms`                  | `constraints.nullTerms: 'strict'`                    |
-| `no-penalty-for-null-terms`              | `constraints.nullTerms: 'off'`                       |
-| `require-no-factor-one`                  | `constraints.factorOne: 'strict'`                    |
-| `no-penalty-for-factor-one`              | `constraints.factorOne: 'off'`                       |
-| `require-no-factor-zero`                 | `constraints.factorZero: 'strict'`                   |
-| `no-penalty-for-factor-zero`             | `constraints.factorZero: 'off'`                      |
-| `require-no-useless-signs`               | `constraints.signs: 'strict'`                        |
-| `no-penalty-for-useless-signs`           | `constraints.signs: 'off'`                           |
-| `require-reduced-fractions`              | `constraints.reducedFractions: 'strict'`             |
-| `no-penalty-for-non-reduced-fractions`   | `constraints.reducedFractions: 'off'`                |
-| `solutions-order-not-important`          | `solutionsOrderMatters: false`                       |
-| `allow-brackets-for-first-negative-term` | `constraints.allowBracketsInFirstNegativeTerm: true` |
+#### B.1. Options implémentées - Contraintes de validation
+
+Ces options sont entièrement mappées vers l'objet `constraints` avec les modes `'strict'`, `'warn'`, ou `'off'`:
+
+| Option TinyMath                          | Occurrences | Nouvelle structure                                   | Validateur               |
+| ---------------------------------------- | ----------- | ---------------------------------------------------- | ------------------------ |
+| `require-no-extraneous-brackets`         | 7           | `constraints.brackets: 'strict'`                     | `checkBrackets`          |
+| `no-penalty-for-extraneous-brackets`     | 22          | `constraints.brackets: 'off'`                        | `checkBrackets`          |
+| `require-no-extraneous-zeros`            | 6           | `constraints.zeros: 'strict'`                        | `checkZeros`             |
+| `no-penalty-for-extraneous-zeros`        | 4           | `constraints.zeros: 'off'`                           | `checkZeros`             |
+| `require-specific-products`              | 1           | `constraints.products: 'strict'`                     | `checkProducts`          |
+| `no-penalty-for-non-specific-products`   | 6           | `constraints.products: 'off'`                        | `checkProducts`          |
+| `require-correct-spaces`                 | 5           | `constraints.spaces: 'strict'`                       | `checkSpaces`            |
+| `no-penalty-for-spaces`                  | 4           | `constraints.spaces: 'off'`                          | `checkSpaces`            |
+| `require-no-null-terms`                  | 1           | `constraints.nullTerms: 'strict'`                    | `checkNullTerms`         |
+| `no-penalty-for-null-terms`              | 4           | `constraints.nullTerms: 'off'`                       | `checkNullTerms`         |
+| `require-no-factor-one`                  | 3           | `constraints.factorOne: 'strict'`                    | `checkFactorOne`         |
+| `no-penalty-for-factor-one`              | 2           | `constraints.factorOne: 'off'`                       | `checkFactorOne`         |
+| `require-no-factor-zero`                 | 1           | `constraints.factorZero: 'strict'`                   | `checkFactorZero`        |
+| `no-penalty-for-factor-zero`             | -           | `constraints.factorZero: 'off'`                      | `checkFactorZero`        |
+| `require-no-useless-signs`               | 1           | `constraints.signs: 'strict'`                        | `checkSigns`             |
+| `no-penalty-for-useless-signs`           | -           | `constraints.signs: 'off'`                           | `checkSigns`             |
+| `require-reduced-fractions`              | 7           | `constraints.reducedFractions: 'strict'`             | `checkReducedFractions`  |
+| `no-penalty-for-non-reduced-fractions`   | 3           | `constraints.reducedFractions: 'off'`                | `checkReducedFractions`  |
+| `allow-brackets-for-first-negative-term` | 9           | `constraints.allowBracketsInFirstNegativeTerm: true` | `checkBrackets` (option) |
+
+#### B.2. Options implémentées - Autres fonctionnalités
+
+| Option TinyMath                     | Occurrences | Nouvelle structure                    | Description                    |
+| ----------------------------------- | ----------- | ------------------------------------- | ------------------------------ |
+| `no-shuffle-choices`                | 32          | `shuffleChoices: false`               | Désactive le mélange des choix |
+| `require-specific-unit`             | -           | `unitOptions.requireExactUnit`        | Exige l'unité exacte           |
+| `no-penalty-for-not-respected-unit` | 6           | `unitOptions.requireExactUnit: false` | N'exige pas l'unité exacte     |
+
+#### B.3. Options NON implémentées - Génèrent un warning TODO
+
+Ces options sont reconnues mais génèrent un avertissement car leur fonctionnalité n'est pas encore implémentée:
+
+**Validation de l'ordre des réponses** (5 occurrences):
+| Option TinyMath | Description TinyMath | Statut |
+| --- | --- | --- |
+| `solutions-order-not-important` | Pour questions à réponses multiples: accepte les réponses dans n'importe quel ordre | ⚠️ TODO |
+
+**Validation des permutations** (26 occurrences):
+| Option TinyMath | Description TinyMath | Statut |
+| --- | --- | --- |
+| `disallow-terms-permutation` | Refuse `b+a` si réponse attendue est `a+b` | ⚠️ TODO |
+| `disallow-factors-permutation` | Refuse `ba` si réponse attendue est `ab` | ⚠️ TODO |
+| `disallow-terms-and-factors-permutation` | Combine les deux précédentes | ⚠️ TODO |
+| `penalty-for-terms-permutation` | Pénalité (non bloquant) pour ordre des termes | ⚠️ TODO |
+| `penalty-for-factors-permutation` | Pénalité (non bloquant) pour ordre des facteurs | ⚠️ TODO |
+| `penalty-for-terms-and-factors-permutation` | Combine les deux précédentes | ⚠️ TODO |
+
+**Validation de forme stricte**:
+| Option TinyMath | Description TinyMath | Statut |
+| --- | --- | --- |
+| `one-single-form-solution` | Exige correspondance exacte (pas d'équivalence) | ⚠️ TODO |
+
+**Génération - Mélange d'expressions** (9 occurrences):
+| Option TinyMath | Description TinyMath | Statut |
+| --- | --- | --- |
+| `shuffle-terms` | Mélange l'ordre des termes dans l'expression affichée | ⚠️ TODO |
+| `shuffle-factors` | Mélange l'ordre des facteurs | ⚠️ TODO |
+| `shuffle-terms-and-factors` | Combine les deux | ⚠️ TODO |
+| `shallow-shuffle-terms` | Mélange superficiel (1 niveau) des termes | ⚠️ TODO |
+| `shallow-shuffle-factors` | Mélange superficiel des facteurs | ⚠️ TODO |
+
+**Génération - Autres**:
+| Option TinyMath | Description TinyMath | Statut |
+| --- | --- | --- |
+| `exhaust` | Génère toutes les variations possibles sans répétition | ⚠️ TODO |
+| `remove-null-terms` | Supprime les termes +0 de l'expression générée | ⚠️ TODO |
+
+#### B.4. Options ignorées silencieusement
+
+**Options d'affichage** (cosmétiques, n'affectent pas la validation):
+| Option TinyMath | Description | Raison d'ignorer |
+| --- | --- | --- |
+| `enounce-no-spaces` | Supprime espaces dans l'énoncé | Cosmétique uniquement |
+| `exp-no-spaces` | Supprime espaces dans l'expression | Cosmétique uniquement |
+| `exp-allow-unecessary-zeros` | Autorise zéros inutiles à l'affichage | Cosmétique uniquement |
+| `exp-remove-unecessary-brackets` | Supprime parenthèses inutiles à l'affichage | Cosmétique uniquement |
+
+**Options legacy** (non nécessaires dans le nouveau système):
+| Option TinyMath | Description | Raison d'ignorer |
+| --- | --- | --- |
+| `allow-same-expression` | Autorise expressions identiques entre variations | Géré différemment |
+| `allow-same-enounce` | Autorise énoncés identiques entre variations | Géré différemment |
+| `multiples` | Mode de génération multiple | Non nécessaire |
+
+#### B.5. Résumé de la couverture
+
+| Catégorie                 | Options | Occurrences | Statut                    |
+| ------------------------- | ------- | ----------- | ------------------------- |
+| Contraintes de validation | 19      | 86          | ✅ Implémenté             |
+| Autres fonctionnalités    | 3       | 38          | ✅ Implémenté             |
+| Validation (TODO)         | 8       | 31          | ⚠️ Warning généré         |
+| Génération (TODO)         | 7       | 17          | ⚠️ Warning généré         |
+| Affichage (ignoré)        | 4       | ~5          | ➖ Ignoré silencieusement |
+| Legacy (ignoré)           | 3       | ~5          | ➖ Ignoré silencieusement |
+
+**Note**: Les options marquées "TODO" génèrent un warning lors de la transformation mais n'empêchent pas la migration. Ces fonctionnalités devront être implémentées ultérieurement si nécessaire.
 
 ### C. Fichiers de documentation liés
 
@@ -954,4 +1034,4 @@ Les options TinyMath sont maintenant mappées vers l'objet `constraints` avec de
 
 ---
 
-_Document généré le 27 novembre 2025, mis à jour le 29 novembre 2025 (ajout validateur CE: reducedFractions)_
+_Document généré le 27 novembre 2025, mis à jour le 29 novembre 2025 (analyse complète des options TinyMath, mapping corrigé)_
