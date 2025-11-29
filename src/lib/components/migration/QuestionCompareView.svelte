@@ -8,6 +8,7 @@
 	 * Features:
 	 * - Two-column layout (responsive: stacks on mobile)
 	 * - JSON syntax highlighting for complex data
+	 * - Tabbed variation view with instance generation
 	 * - Warnings section (amber/yellow)
 	 * - Errors section (red)
 	 * - Approve/Reject actions
@@ -15,10 +16,18 @@
 	 */
 
 	import * as Card from '$lib/components/ui/card';
+	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
-	import { AlertCircle, AlertTriangle, CheckCircle2 } from 'lucide-svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import ReviewActions from './ReviewActions.svelte';
+	import { resolveVariables, resolveExpression, resolveAnswer } from '$lib/questions';
+	import type {
+		QuestionVariable,
+		ResolvedVariable,
+		QuestionCorrection
+	} from '$lib/questions/types';
 
 	interface Props {
 		original: Record<string, unknown>; // Old question format
@@ -83,6 +92,7 @@
 					type: (transformed.type as string) || '',
 					title: (transformed.title as string) || '',
 					variations: (transformed.variations as unknown[]) || [],
+					shared: transformed.shared as { variables?: QuestionVariable[] } | undefined,
 					grades: (transformed.grades as string[]) || [],
 					theme: (transformed.theme as string) || '',
 					domain: (transformed.domain as string) || '',
@@ -92,11 +102,130 @@
 				}
 			: null
 	);
+
+	// Variation tab state
+	let selectedVariationIndex = $state(0);
+	let instanceSeed = $state(Date.now());
+
+	function regenerateInstance() {
+		instanceSeed = Date.now();
+	}
+
+	// Type for variation from migration export
+	interface MigrationVariation {
+		statement?: string;
+		variables?: QuestionVariable[];
+		answer?: string | string[];
+		correction?: QuestionCorrection;
+		choices?: Array<{ content: string; isCorrect: boolean }>;
+		blanks?: Array<{ position: number; expectedAnswer: string }>;
+	}
+
+	// Resolved instance type
+	interface ResolvedInstance {
+		statement: string;
+		answer: string | string[];
+		correction: { feedback: string; steps: string[] } | null;
+		choices: Array<{ content: string; isCorrect: boolean }> | null;
+		blanks: Array<{ position: number; expectedAnswer: string }> | null;
+		variables: ResolvedVariable[];
+		error?: string;
+	}
+
+	/**
+	 * Resolve correction placeholders
+	 */
+	function resolveCorrection(
+		correction: QuestionCorrection | undefined,
+		resolved: ResolvedVariable[],
+		seed: number
+	): { feedback: string; steps: string[] } | null {
+		if (!correction) return null;
+		try {
+			const feedback = correction.feedback
+				? resolveExpression(correction.feedback, resolved, seed)
+				: '';
+			const steps = correction.steps
+				? correction.steps.map((step) => {
+						if (typeof step === 'string') {
+							return resolveExpression(step, resolved, seed);
+						}
+						return resolveExpression(String(step), resolved, seed);
+					})
+				: [];
+			return { feedback, steps };
+		} catch {
+			return null;
+		}
+	}
+
+	/**
+	 * Generate a resolved instance from a variation
+	 */
+	const resolvedInstance = $derived.by((): ResolvedInstance | null => {
+		if (!newFields?.variations?.length) return null;
+
+		const variation = newFields.variations[selectedVariationIndex] as MigrationVariation;
+		if (!variation) return null;
+
+		try {
+			// Merge shared variables with variation-specific variables
+			const sharedVars = newFields.shared?.variables || [];
+			const variationVars = variation.variables || [];
+			const allVariables = [...sharedVars, ...variationVars];
+
+			// Resolve variables
+			const resolved = resolveVariables(allVariables, instanceSeed);
+
+			// Resolve statement
+			const statement = variation.statement
+				? resolveExpression(variation.statement, resolved, instanceSeed)
+				: '';
+
+			// Resolve answer
+			const answer = variation.answer
+				? resolveAnswer(variation.answer, resolved, instanceSeed)
+				: '';
+
+			// Resolve correction
+			const correction = resolveCorrection(variation.correction, resolved, instanceSeed);
+
+			// Resolve choices
+			const choices = variation.choices
+				? variation.choices.map((c) => ({
+						content: resolveExpression(c.content, resolved, instanceSeed),
+						isCorrect: c.isCorrect
+					}))
+				: null;
+
+			// Keep blanks as-is (expectedAnswer already resolved in answer)
+			const blanks = variation.blanks || null;
+
+			return {
+				statement,
+				answer,
+				correction,
+				choices,
+				blanks,
+				variables: resolved
+			};
+		} catch (e) {
+			return {
+				statement: '',
+				answer: '',
+				correction: null,
+				choices: null,
+				blanks: null,
+				variables: [],
+				error: e instanceof Error ? e.message : String(e)
+			};
+		}
+	});
 </script>
 
 <div class={cn('space-y-6', className)}>
-	<!-- Comparison Grid -->
-	<div class="grid gap-6 lg:grid-cols-2">
+	<!-- Comparison Grid - 3 columns -->
+	<div class="grid gap-6 lg:grid-cols-3">
 		<!-- Old Format Column -->
 		<Card.Root>
 			<Card.Header>
@@ -239,22 +368,179 @@
 						{/if}
 					</div>
 
-					<!-- Variations -->
-					<div>
-						<h4 class="mb-1 text-sm font-medium text-muted-foreground">
-							variations ({newFields.variations.length})
-						</h4>
-						<pre
-							class="max-h-60 overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-								newFields.variations
-							)}</pre>
-					</div>
+					<!-- Shared Variables -->
+					{#if newFields.shared?.variables && newFields.shared.variables.length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+								Variables partagées ({newFields.shared.variables.length})
+							</h4>
+							<div class="space-y-1 rounded-md bg-muted p-3 font-mono text-xs">
+								{#each newFields.shared.variables as v (v.name)}
+									<div>
+										<span class="text-primary">{v.name}</span> = {v.expression}
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
+
+					<!-- Variations with Tabs -->
+					{#if newFields.variations.length > 0}
+						<div class="space-y-4">
+							<h4 class="text-sm font-medium text-muted-foreground">
+								Variations ({newFields.variations.length})
+							</h4>
+
+							<Tabs.Root
+								value={String(selectedVariationIndex)}
+								onValueChange={(v) => {
+									selectedVariationIndex = Number(v);
+								}}
+							>
+								<Tabs.List class="mb-4">
+									{#each newFields.variations as _, i (i)}
+										<Tabs.Trigger value={String(i)}>
+											Var {i + 1}
+										</Tabs.Trigger>
+									{/each}
+								</Tabs.List>
+
+								{#each newFields.variations as variation, i (i)}
+									<Tabs.Content value={String(i)}>
+										<pre
+											class="max-h-80 overflow-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+												variation
+											)}</pre>
+									</Tabs.Content>
+								{/each}
+							</Tabs.Root>
+						</div>
+					{:else}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">variations</h4>
+							<p class="text-sm text-muted-foreground">Aucune variation</p>
+						</div>
+					{/if}
 				{:else}
 					<!-- Transformation Failed -->
 					<div class="flex flex-col items-center justify-center py-12 text-center">
 						<AlertCircle class="mb-3 h-12 w-12 text-destructive" />
 						<p class="text-sm text-muted-foreground">
 							La transformation a échoué. Consultez les erreurs ci-dessous.
+						</p>
+					</div>
+				{/if}
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Instance Generated Column -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title class="flex items-center justify-between">
+					<span>Instance Générée</span>
+					<Button variant="outline" size="sm" onclick={regenerateInstance}>
+						<RefreshCw class="mr-2 h-4 w-4" />
+						Nouvelle
+					</Button>
+				</Card.Title>
+			</Card.Header>
+			<Card.Content class="space-y-4">
+				{#if resolvedInstance}
+					{#if resolvedInstance.error}
+						<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+							Erreur: {resolvedInstance.error}
+						</div>
+					{:else}
+						<!-- Statement -->
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">Énoncé</h4>
+							<p class="text-sm whitespace-pre-wrap">{resolvedInstance.statement}</p>
+						</div>
+
+						<!-- Answer -->
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">Réponse</h4>
+							<p class="font-mono text-sm text-primary">
+								{Array.isArray(resolvedInstance.answer)
+									? resolvedInstance.answer.join(', ')
+									: resolvedInstance.answer}
+							</p>
+						</div>
+
+						<!-- Variables resolved -->
+						{#if resolvedInstance.variables.length > 0}
+							<div>
+								<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+									Variables ({resolvedInstance.variables.length})
+								</h4>
+								<div class="flex flex-wrap gap-2">
+									{#each resolvedInstance.variables as v (v.name)}
+										<Badge variant="secondary" class="font-mono">
+											{v.name}={v.value}
+										</Badge>
+									{/each}
+								</div>
+							</div>
+						{/if}
+
+						<!-- Choices -->
+						{#if resolvedInstance.choices}
+							<div>
+								<h4 class="mb-1 text-sm font-medium text-muted-foreground">Choix</h4>
+								<ul class="space-y-1 text-sm">
+									{#each resolvedInstance.choices as choice, ci (ci)}
+										<li
+											class={cn(
+												'rounded px-2 py-1',
+												choice.isCorrect ? 'bg-success/10 text-success' : 'bg-muted'
+											)}
+										>
+											{ci + 1}. {choice.content}
+											{choice.isCorrect ? '✓' : ''}
+										</li>
+									{/each}
+								</ul>
+							</div>
+						{/if}
+
+						<!-- Blanks -->
+						{#if resolvedInstance.blanks}
+							<div>
+								<h4 class="mb-1 text-sm font-medium text-muted-foreground">Blancs à remplir</h4>
+								<ul class="space-y-1 font-mono text-sm">
+									{#each resolvedInstance.blanks as blank, bi (bi)}
+										<li>
+											Position {blank.position}:
+											<span class="text-primary">{blank.expectedAnswer}</span>
+										</li>
+									{/each}
+								</ul>
+							</div>
+						{/if}
+
+						<!-- Correction -->
+						{#if resolvedInstance.correction}
+							<div>
+								<h4 class="mb-1 text-sm font-medium text-muted-foreground">Correction</h4>
+								{#if resolvedInstance.correction.feedback}
+									<p class="mb-2 text-sm whitespace-pre-wrap">
+										{resolvedInstance.correction.feedback}
+									</p>
+								{/if}
+								{#if resolvedInstance.correction.steps.length > 0}
+									<ol class="list-inside list-decimal space-y-1 text-sm">
+										{#each resolvedInstance.correction.steps as step, si (si)}
+											<li>{step}</li>
+										{/each}
+									</ol>
+								{/if}
+							</div>
+						{/if}
+					{/if}
+				{:else}
+					<div class="flex flex-col items-center justify-center py-12 text-center">
+						<p class="text-sm text-muted-foreground">
+							Sélectionnez une variation pour générer une instance
 						</p>
 					</div>
 				{/if}
