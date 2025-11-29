@@ -8,7 +8,20 @@
 
 ## Current Phase: COMPLETED ✅
 
-## Last Commit: 739123cd
+## Last Commit: 90402217
+
+### Phase 11: Extract expressions to variables ✅
+
+- [x] Added `StatementResult` interface to question-transformer.ts
+- [x] Modified `convertStatement()` to extract expression as separate variable
+- [x] Modified `detectSharedFields()` to add expression variables per-variation
+- [x] Expression variable always added LAST (after regular variables) for correct resolution order
+- [x] Handle expressions with existing `$` delimiters (no duplication)
+- [x] Skip expression variable creation when expressions array is empty
+- [x] Dynamic naming: `expression1`, `expression2`, etc.
+- [x] Added 4 new tests for expression variable extraction
+- [x] Updated existing tests for new behavior
+- [x] Total: 54 tests pass for question-transformer
 
 ### Phase 10: Rename answer to solution ✅
 
@@ -115,6 +128,7 @@
 | Placeholders     | `{{}}` syntax                | Consistent, no conflict with LaTeX           |
 | testAnswerss     | Typed ValidationRule         | Type safety, exhaustive checking             |
 | Steps type field | None                         | TemplateMarkdown handles text+images         |
+| Expressions      | Per-variation variables      | Guarantees correct resolution order          |
 
 ---
 
@@ -171,6 +185,11 @@
 - `src/lib/migration/question-transformer.test.ts` - 10 new tests for display options
 - `src/lib/migration/correction-integration.test.ts` - Added displayOptionsMapped to mock stats
 - `src/lib/questions/types.ts` - Added shuffleChoices to options type
+
+### Phase 11
+
+- `src/lib/migration/question-transformer.ts` - Expression extraction to variables, StatementResult interface
+- `src/lib/migration/question-transformer.test.ts` - 4 new tests for expression extraction, updated existing tests
 
 ---
 
