@@ -810,70 +810,86 @@ function convertOptions(
 				break;
 
 			// ================================================================
-			// SOLUTION ORDER OPTIONS
+			// SHUFFLE CHOICES - Implemented
 			// ================================================================
-			case 'solutions-order-not-important':
-				options.allowDifferentForms = true;
+			case 'no-shuffle-choices':
+				options.shuffleChoices = false;
 				mappedCount++;
 				break;
 
 			// ================================================================
-			// PERMUTATION OPTIONS
+			// UNIT OPTIONS - Implemented
 			// ================================================================
+			case 'require-specific-unit':
+				if (!options.unitOptions) options.unitOptions = {};
+				options.unitOptions.requireExactUnit = true;
+				mappedCount++;
+				break;
+			case 'no-penalty-for-not-respected-unit':
+				if (!options.unitOptions) options.unitOptions = {};
+				options.unitOptions.requireExactUnit = false;
+				mappedCount++;
+				break;
+
+			// ================================================================
+			// NOT IMPLEMENTED - VALIDATION OPTIONS (generate warnings)
+			// ================================================================
+			case 'solutions-order-not-important':
+				// TODO: Allows multiple answers in any order (not about form)
+				warnings.push(`TODO: ${option} - answer order validation not yet implemented`);
+				break;
 			case 'disallow-terms-permutation':
 			case 'disallow-factors-permutation':
 			case 'disallow-terms-and-factors-permutation':
 			case 'penalty-for-terms-permutation':
 			case 'penalty-for-factors-permutation':
 			case 'penalty-for-terms-and-factors-permutation':
-				options.validator = 'checkAlgebraic';
-				if (!options.validatorParams) {
-					options.validatorParams = {};
-				}
-				options.validatorParams[option] = true;
-				mappedCount++;
+				// TODO: Validate that factors/terms are in specific order
+				warnings.push(`TODO: ${option} - permutation validation not yet implemented`);
+				break;
+			case 'one-single-form-solution':
+				// TODO: Requires exact form match (strictlyEquals)
+				warnings.push(`TODO: ${option} - strict form validation not yet implemented`);
 				break;
 
 			// ================================================================
-			// DISPLAY OPTIONS - Silently ignored (not validation)
-			// ================================================================
-			case 'enounce-no-spaces':
-			case 'exp-no-spaces':
-			case 'exp-allow-unecessary-zeros':
-			case 'exp-remove-unecessary-brackets':
-				// These are display options, not validation - ignore silently
-				mappedCount++;
-				break;
-
-			// ================================================================
-			// SHUFFLE OPTIONS - Handled elsewhere
+			// NOT IMPLEMENTED - GENERATION OPTIONS (generate warnings)
 			// ================================================================
 			case 'shuffle-terms':
 			case 'shuffle-factors':
 			case 'shuffle-terms-and-factors':
 			case 'shallow-shuffle-terms':
 			case 'shallow-shuffle-factors':
-			case 'no-shuffle-choices':
-				// Shuffle options are handled in expression/choice generation
+				// TODO: Randomize term/factor order in displayed expression
+				warnings.push(`TODO: ${option} - expression shuffling not yet implemented`);
+				break;
+			case 'exhaust':
+				// TODO: Generate all possible variations without repetition
+				warnings.push(`TODO: ${option} - exhaustive generation not yet implemented`);
+				break;
+			case 'remove-null-terms':
+				// TODO: Remove +0 terms from generated expression
+				warnings.push(`TODO: ${option} - null term removal not yet implemented`);
+				break;
+
+			// ================================================================
+			// DISPLAY OPTIONS - Silently ignored (cosmetic only)
+			// ================================================================
+			case 'enounce-no-spaces':
+			case 'exp-no-spaces':
+			case 'exp-allow-unecessary-zeros':
+			case 'exp-remove-unecessary-brackets':
+				// Display formatting options - cosmetic only, safe to ignore
 				mappedCount++;
 				break;
 
 			// ================================================================
-			// OTHER OPTIONS
+			// LEGACY OPTIONS - Silently ignored (not needed)
 			// ================================================================
 			case 'allow-same-expression':
 			case 'allow-same-enounce':
-			case 'remove-null-terms':
-			case 'exhaust':
 			case 'multiples':
-			case 'one-single-form-solution':
-				// Generation/uniqueness options - not validation constraints
-				mappedCount++;
-				break;
-
-			case 'require-specific-unit':
-			case 'no-penalty-for-not-respected-unit':
-				// Unit options - handled via unitOptions in the template
+				// Legacy generation uniqueness options - not needed in new system
 				mappedCount++;
 				break;
 
