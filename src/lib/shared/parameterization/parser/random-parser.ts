@@ -205,8 +205,10 @@ function hasRangeSeparator(spec: string): boolean {
  */
 function isSimpleIntOrVar(str: string): boolean {
 	const trimmed = str.trim();
-	// Variable: {{name}}
+	// Variable: {{name}} (explicit syntax)
 	if (trimmed.startsWith('{{') && trimmed.endsWith('}}')) return true;
+	// Bare variable name (starts with letter or underscore)
+	if (/^[a-zA-Z_]\w*$/.test(trimmed)) return true;
 	// Integer
 	return /^\d+$/.test(trimmed);
 }
@@ -369,22 +371,35 @@ function parseMinMax(rangeSpec: string): {
 /**
  * Parse a string as number or variable reference
  *
+ * Supports three formats:
+ * 1. Explicit variable syntax: {{varName}} (backward compatible)
+ * 2. Bare variable name: min, max, a, _temp (starts with letter or underscore)
+ * 3. Numbers: 42, -5, 3.14
+ *
  * @example Number
  * parseNumberOrVariable('42') → {type:'number',value:42}
  *
- * @example Variable
+ * @example Explicit variable syntax
  * parseNumberOrVariable('{{varName}}') → {type:'variable',name:'varName'}
+ *
+ * @example Bare variable name
+ * parseNumberOrVariable('min') → {type:'variable',name:'min'}
  */
 function parseNumberOrVariable(str: string): NumberOrVariable {
 	const trimmed = str.trim();
 
-	// Check if it's a variable (Markdown syntax)
+	// Case 1: Explicit variable syntax {{varName}} (backward compatible)
 	if (trimmed.startsWith('{{') && trimmed.endsWith('}}')) {
 		const varName = trimmed.slice(2, -2);
 		return { type: 'variable', name: varName };
 	}
 
-	// It's a number
+	// Case 2: Bare variable name (starts with letter or underscore)
+	if (/^[a-zA-Z_]\w*$/.test(trimmed)) {
+		return { type: 'variable', name: trimmed };
+	}
+
+	// Case 3: Number (integer or decimal)
 	const num = parseFloat(trimmed);
 	if (isNaN(num)) {
 		throw new Error(`Invalid number or variable reference: ${str}`);

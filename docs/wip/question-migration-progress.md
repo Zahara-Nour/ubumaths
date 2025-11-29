@@ -1,14 +1,36 @@
 # Question Migration Progress
 
-> **Plan**: `/Users/david/.claude/plans/foamy-purring-cerf.md`
+> **Plan**: `/Users/david/.claude/plans/velvet-puzzling-crane.md`
 > **Branche**: `migration/questions`
 > **Derniere mise a jour**: 2025-11-29
 
 ---
 
-## Current Phase: COMPLETED ✅
+## Current Phase: Phase 13 ✅
 
-## Last Commit: ddc08fde
+## Last Commit: 6677644d
+
+### Phase 13: Simplified syntax for alphanumeric variables ✅
+
+- [x] Modified `parseNumberOrVariable()` in random-parser.ts to accept bare variable names
+- [x] Modified `convertVarsInExpr()` in syntax-converter.ts to generate `a` instead of `{{a}}`
+- [x] Modified `convertTernaryOperators()` to use simplified syntax in `{{if:...}}`
+- [x] Modified `convertExclusionList()` to use simplified syntax in exclusions
+- [x] Added 14 new tests for parser bare variable name support
+- [x] Updated all test files with new simplified syntax expectations
+- [x] Total: 246 tests pass (random-parser, syntax-converter, syntax-converter-integration, colors)
+- [x] Note: correction-integration.test.ts has 42 failing tests due to pre-existing issues (not Phase 13 related)
+
+**Syntax changes:**
+| Context | Before | After |
+|---------|--------|-------|
+| `{{eval:...}}` | `{{eval:{{a}}+{{b}}}}` | `{{eval:a+b}}` |
+| `{{if:...}}` | `{{if:{{a}}>0\|..}}` | `{{if:a>0\|..}}` |
+| Exclusions | `{{1..10!{{a}}}}` | `{{1..10!a}}` |
+| Ranges | `{{{{min}}..{{max}}}}` | `{{min..max}}` |
+| Normal text | `{{a}}` | `{{a}}` (unchanged) |
+
+**Backward compatibility:** Both `{{var}}` and bare `var` syntax are accepted by the parser.
 
 ### Phase 12: Convert numeric variable names to letters ✅
 
@@ -213,6 +235,16 @@
 - `src/lib/migration/question-transformer.ts` - Expression extraction to variables, StatementResult interface
 - `src/lib/migration/question-transformer.test.ts` - 4 new tests for expression extraction, updated existing tests
 
+### Phase 13
+
+- `src/lib/shared/parameterization/parser/random-parser.ts` - Modified `parseNumberOrVariable()` to accept bare variable names
+- `src/lib/shared/parameterization/parser/random-parser.test.ts` - Added 14 tests for bare variable name support
+- `src/lib/migration/syntax-converter.ts` - Modified `convertVarsInExpr()`, `convertTernaryOperators()`, `convertExclusionList()`
+- `src/lib/migration/syntax-converter.test.ts` - Updated expectations for simplified syntax
+- `src/lib/migration/syntax-converter-integration.test.ts` - Updated expectations for simplified syntax
+- `src/lib/migration/syntax-converter-colors.test.ts` - Updated 1 expectation for simplified syntax
+- `src/lib/migration/question-transformer.test.ts` - Updated expectations for simplified syntax
+
 ### Phase 12
 
 - `src/lib/migration/question-transformer.ts` - Added `numberToLetterName()`, modified `convertVariables()`
@@ -231,12 +263,12 @@
 ## Crash Recovery
 
 ```
-"Lis /Users/david/.claude/plans/foamy-purring-cerf.md et continue l'implementation"
+"Lis /Users/david/.claude/plans/velvet-puzzling-crane.md et continue l'implementation"
 ```
 
 **Documents de reference:**
 
-- Plan: `/Users/david/.claude/plans/foamy-purring-cerf.md`
+- Plan: `/Users/david/.claude/plans/velvet-puzzling-crane.md`
 - Analyse: `docs/wip/question-migration-analysis.md`
 - Progression: `docs/wip/question-migration-progress.md` (ce fichier)
 

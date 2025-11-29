@@ -134,7 +134,7 @@ describe('Correction Integration', () => {
 
 			it('should convert evaluation syntax', () => {
 				const result = testLegacySyntaxConversion('Result: [_&1+&2_]');
-				expect(result).toBe('Result: {{eval:{{a}}+{{b}}}}');
+				expect(result).toBe('Result: {{eval:a+b}}');
 			});
 
 			it('should preserve LaTeX math', () => {
@@ -211,7 +211,7 @@ describe('Correction Integration', () => {
 				const result = testLegacySyntaxConversion(
 					'@@mod(&1;2)=0 ?? pair@@ @@mod(&1;2)!=0 ?? impair@@'
 				);
-				expect(result).toBe('{{if:mod({{a}};2)=0|pair|impair}}');
+				expect(result).toBe('{{if:mod(a;2)=0|pair|impair}}');
 			});
 		});
 
@@ -223,7 +223,7 @@ describe('Correction Integration', () => {
 				expect(result).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 				expect(result).toContain('{{a}}');
 				expect(result).toContain('{{b}}');
-				expect(result).toContain('{{if:{{a}}<5|petit}}');
+				expect(result).toContain('{{if:a<5|petit}}');
 			});
 
 			it('should handle complex real-world example', () => {
@@ -231,7 +231,7 @@ describe('Correction Integration', () => {
 				const result = testLegacySyntaxConversion(input);
 
 				expect(result).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
-				expect(result).toContain('{{eval:{{a}}+{{b}}}}');
+				expect(result).toContain('{{eval:a+b}}');
 				expect(result).toContain('{{color:'); // Color conversion
 			});
 
@@ -239,15 +239,15 @@ describe('Correction Integration', () => {
 				const input = '@@[_&1+&2_]<10 ?? [_&1+&2_] est petit@@';
 				const result = testLegacySyntaxConversion(input);
 
-				expect(result).toContain('{{if:{{eval:{{a}}+{{b}}}}<10|');
-				expect(result).toContain('{{eval:{{a}}+{{b}}}} est petit}}');
+				expect(result).toContain('{{if:{{eval:a+b}}<10|');
+				expect(result).toContain('{{eval:a+b}} est petit}}');
 			});
 
 			it('should handle solution reference in conditional', () => {
 				const input = '@@&1<5 ?? La réponse &sol est petite@@';
 				const result = testLegacySyntaxConversion(input);
 
-				expect(result).toContain('{{if:{{a}}<5|La réponse {{sol}} est petite}}');
+				expect(result).toContain('{{if:a<5|La réponse {{sol}} est petite}}');
 			});
 		});
 	});
@@ -326,7 +326,7 @@ describe('Correction Integration', () => {
 
 				const result = testTransformCorrection(details, undefined, warnings, stats);
 
-				expect(result?.steps?.[0]).toContain('{{if:{{a}}<10|');
+				expect(result?.steps?.[0]).toContain('{{if:a<10|');
 				expect(result?.steps?.[0]).toContain('{{sol}}'); // TinyCAS converts &sol to {{sol}}
 			});
 		});
@@ -557,7 +557,7 @@ describe('Correction Integration', () => {
 				const result = transformQuestion(oldQuestion, 0);
 
 				expect(result.success).toBe(true);
-				expect(result.template?.variations[0].correction).toContain('{{if:mod({{a}};2)=0|');
+				expect(result.template?.variations[0].correction).toContain('{{if:mod(a;2)=0|');
 			});
 
 			it('should handle correction with time addition conditional', () => {

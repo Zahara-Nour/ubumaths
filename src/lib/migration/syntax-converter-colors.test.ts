@@ -64,7 +64,7 @@ describe('TinyCAS Color Conversion', () => {
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
-		expect(result.converted).toBe('{{color:primary.0}} and {{eval:{{a}}+5}}');
+		expect(result.converted).toBe('{{color:primary.0}} and {{eval:a+5}}');
 		expect(result.stats?.colorReferences).toBe(1);
 		expect(result.stats?.evaluations).toBe(1);
 	});
