@@ -127,14 +127,15 @@ Migration de `<math-field read-only>` vers `<math-span>`/`<math-div>` pour les c
 
 **Matrice des composants Math** :
 
-| Composant          | Element MathLive         | Usage                      | Props                                                  |
-| ------------------ | ------------------------ | -------------------------- | ------------------------------------------------------ |
-| MathBlock          | `<math-div>`             | Affichage bloc read-only   | `latex`, `class`                                       |
-| MathInline         | `<math-span>`            | Affichage inline read-only | `latex`, `class`                                       |
-| MathBlockEditable  | `<math-field>`           | Saisie bloc éditable       | `value` (bindable), `placeholder`, `class`, `onchange` |
-| MathInlineEditable | `<math-field>`           | Saisie inline éditable     | `value` (bindable), `placeholder`, `class`, `onchange` |
-| MathBlockOld       | `<math-field read-only>` | Déprécié                   | `latex`, `class`                                       |
-| MathInlineOld      | `<math-field read-only>` | Déprécié                   | `latex`, `class`                                       |
+| Composant          | Element MathLive         | Usage                      | Props                                                           |
+| ------------------ | ------------------------ | -------------------------- | --------------------------------------------------------------- |
+| MathBlock          | `<math-div>`             | Affichage bloc read-only   | `latex`, `class`                                                |
+| MathInline         | `<math-span>`            | Affichage inline read-only | `latex`, `class`                                                |
+| MathBlockEditable  | `<math-field>`           | Saisie bloc éditable       | `value` (bindable), `placeholder`, `class`, `onchange`          |
+| MathInlineEditable | `<math-field>`           | Saisie inline éditable     | `value` (bindable), `placeholder`, `class`, `onchange`          |
+| MathBlockOld       | `<math-field read-only>` | Déprécié                   | `latex`, `class`                                                |
+| MathInlineOld      | `<math-field read-only>` | Déprécié                   | `latex`, `class`                                                |
+| MathPrompt         | `<math-field readonly>`  | Champs éditables in-situ   | `latex`, `display`, `promptIndices`, `inputs`, `onPromptChange` |
 
 **Usage des composants éditables (Svelte 5)** :
 
@@ -146,6 +147,54 @@ Migration de `<math-field read-only>` vers `<math-span>`/`<math-div>` pour les c
 
 <MathInlineEditable bind:value={latex} /><p>Valeur : {latex}</p>
 ```
+
+### Phase 4c : Math Prompts - Champs éditables dans expressions math (COMPLETE)
+
+Support pour les champs fill-in-the-blank directement dans les expressions mathématiques via la syntaxe native MathLive `\placeholder[N]{}`.
+
+**Motivation** : Permettre aux élèves de compléter des expressions mathématiques (fractions, équations, matrices) sans quitter le contexte mathématique.
+
+**Syntaxe** :
+
+```markdown
+Trouve x: $x = \placeholder[1]{}$
+Simplifie: $$\frac{\placeholder[1]{}}{\placeholder[2]{}} = \placeholder[3]{}$$
+```
+
+**API unifiée InputState** :
+
+```typescript
+interface InputState {
+	index: number; // Index 1-based
+	value: string; // Valeur (texte ou LaTeX)
+	type: 'text' | 'math'; // Discriminant
+	isCorrect: boolean | null; // Validation
+}
+```
+
+**Fichiers créés/modifiés** :
+
+- [x] `src/lib/exercises/types.ts` - InputState, extension MathInlineNode/MathBlockNode (hasPrompts, promptIndices)
+- [x] `src/lib/exercises/parser/math-extractor.ts` - extractPromptInfo(), détection \placeholder[N]{}
+- [x] `src/lib/exercises/parser/math-extractor.test.ts` - 12 tests pour placeholder detection
+- [x] `src/lib/components/markdown/nodes/MathPrompt.svelte` - NEW: Composant pour champs math éditables
+- [x] `src/lib/components/markdown/nodes/ParagraphNode.svelte` - Intégration MathPrompt, API unifiée inputs
+- [x] `src/lib/components/markdown/MarkdownRenderer.svelte` - Intégration MathPrompt, API unifiée inputs
+- [x] `src/lib/components/markdown/nodes/BlankInput.svelte` - Renommage validationState → isCorrect
+- [x] `src/lib/components/markdown/types.ts` - Update BlankInputProps
+- [x] `src/lib/exercises/parser/markdown-parser.ts` - Bug fix: propagation hasPrompts/promptIndices aux AST
+- [x] `src/lib/exercises/parser/unified-inputs.test.ts` - NEW: 25 tests d'intégration
+
+**Commits** :
+
+| Sous-phase | Commit     | Description                                                              |
+| ---------- | ---------- | ------------------------------------------------------------------------ |
+| 4c.1       | `95898307` | `feat(parser): add placeholder detection in math expressions`            |
+| 4c.2       | `6617a4c8` | `feat(components): add MathPrompt component for editable math fields`    |
+| 4c.3       | `008520c9` | `refactor(inputs): unify BlankInput and MathPrompt under InputState API` |
+| 4c.4       | `8d6b5df8` | `test(integration): add comprehensive tests for unified input system`    |
+
+**Documentation** : Voir `docs/ref/markdown.md` section 2.3 "Champs math editables"
 
 ### Phase 5 : Migration données (optionnel)
 
