@@ -246,7 +246,9 @@ function parseBlocks(
 			if (placeholder && placeholder.isBlock) {
 				blocks.push({
 					type: 'math-block',
-					latex: placeholder.latex
+					latex: placeholder.latex,
+					hasPrompts: placeholder.hasPrompts ?? false,
+					promptIndices: placeholder.promptIndices ?? []
 				});
 				i++;
 				continue;
@@ -370,9 +372,12 @@ function parseInlineContent(
 			nodes.push(...formatted);
 		} else {
 			// Math placeholder → inline math node
+			// Include prompt info for editable math fields
 			nodes.push({
 				type: 'math-inline',
-				latex: segment.latex
+				latex: segment.latex,
+				hasPrompts: segment.hasPrompts ?? false,
+				promptIndices: segment.promptIndices ?? []
 			});
 		}
 	}
