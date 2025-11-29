@@ -22,7 +22,7 @@
 	import { AlertCircle, AlertTriangle, CheckCircle2, RefreshCw } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 	import ReviewActions from './ReviewActions.svelte';
-	import { resolveVariables, resolveExpression, resolveAnswer } from '$lib/questions';
+	import { resolveVariables, resolveExpression, resolveSolution } from '$lib/questions';
 	import type {
 		QuestionVariable,
 		ResolvedVariable,
@@ -115,7 +115,7 @@
 	interface MigrationVariation {
 		statement?: string;
 		variables?: QuestionVariable[];
-		answer?: string | string[];
+		solution?: string | string[];
 		correction?: QuestionCorrection;
 		choices?: Array<{ content: string; isCorrect: boolean }>;
 		blanks?: Array<{ position: number; expectedAnswer: string }>;
@@ -124,7 +124,7 @@
 	// Resolved instance type
 	interface ResolvedInstance {
 		statement: string;
-		answer: string | string[];
+		solution: string | string[];
 		correction: { feedback: string; steps: string[] } | null;
 		choices: Array<{ content: string; isCorrect: boolean }> | null;
 		blanks: Array<{ position: number; expectedAnswer: string }> | null;
@@ -182,9 +182,9 @@
 				? resolveExpression(variation.statement, resolved, instanceSeed)
 				: '';
 
-			// Resolve answer
-			const answer = variation.answer
-				? resolveAnswer(variation.answer, resolved, instanceSeed)
+			// Resolve solution (expected answer)
+			const solution = variation.solution
+				? resolveSolution(variation.solution, resolved, instanceSeed)
 				: '';
 
 			// Resolve correction
@@ -198,12 +198,12 @@
 					}))
 				: null;
 
-			// Keep blanks as-is (expectedAnswer already resolved in answer)
+			// Keep blanks as-is (expectedAnswer already resolved in solution)
 			const blanks = variation.blanks || null;
 
 			return {
 				statement,
-				answer,
+				solution,
 				correction,
 				choices,
 				blanks,
@@ -212,7 +212,7 @@
 		} catch (e) {
 			return {
 				statement: '',
-				answer: '',
+				solution: '',
 				correction: null,
 				choices: null,
 				blanks: null,
@@ -457,13 +457,13 @@
 							<p class="text-sm whitespace-pre-wrap">{resolvedInstance.statement}</p>
 						</div>
 
-						<!-- Answer -->
+						<!-- Solution -->
 						<div>
-							<h4 class="mb-1 text-sm font-medium text-muted-foreground">Réponse</h4>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">Solution</h4>
 							<p class="font-mono text-sm text-primary">
-								{Array.isArray(resolvedInstance.answer)
-									? resolvedInstance.answer.join(', ')
-									: resolvedInstance.answer}
+								{Array.isArray(resolvedInstance.solution)
+									? resolvedInstance.solution.join(', ')
+									: resolvedInstance.solution}
 							</p>
 						</div>
 

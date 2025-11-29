@@ -428,13 +428,14 @@ function convertStatement(
 }
 
 // ============================================================================
-// ANSWER CONVERSION
+// SOLUTION CONVERSION
 // ============================================================================
 
 /**
- * Convert answer(s) to new format
+ * Convert solution(s) to new format.
+ * Note: This converts the expected solution (from solutionss), not student answers.
  */
-function convertAnswer(
+function convertSolution(
 	solutions: (string | number)[] | undefined,
 	questionType: QuestionType,
 	warnings: string[]
@@ -450,19 +451,19 @@ function convertAnswer(
 	}
 
 	// For other types, convert the expression syntax
-	const answer = String(solutions[0]);
-	const conversionResult = convertTinyCASToNew(answer);
+	const solutionValue = String(solutions[0]);
+	const conversionResult = convertTinyCASToNew(solutionValue);
 
 	if (!conversionResult.success) {
-		warnings.push(`Failed to convert answer: ${conversionResult.errors?.join(', ')}`);
-		return answer;
+		warnings.push(`Failed to convert solution: ${conversionResult.errors?.join(', ')}`);
+		return solutionValue;
 	}
 
 	if (conversionResult.warnings) {
-		warnings.push(...conversionResult.warnings.map((w) => `Answer: ${w}`));
+		warnings.push(...conversionResult.warnings.map((w) => `Solution: ${w}`));
 	}
 
-	return conversionResult.converted || answer;
+	return conversionResult.converted || solutionValue;
 }
 
 // ============================================================================
@@ -1232,7 +1233,7 @@ interface SharedFieldsResult {
  * For example:
  * - `enounces.length === 1` with `variationCount > 1` → shared statement
  * - `variabless.length === 1` with `variationCount > 1` → shared variables
- * - `solutionss.length === 1` with `variationCount > 1` → shared answer
+ * - `solutionss.length === 1` with `variationCount > 1` → shared solution
  * - etc.
  *
  * @param oldQuestion - The old TinyMath question
@@ -1317,11 +1318,11 @@ function detectSharedFields(
 	const solutionIsShared = solutionss.length === 1 && variationCount > 1;
 
 	if (solutionIsShared) {
-		shared.solution = convertAnswer(solutionss[0], questionType, warnings);
+		shared.solution = convertSolution(solutionss[0], questionType, warnings);
 	} else {
 		for (let i = 0; i < variationCount; i++) {
 			const solutions = solutionss[i] || solutionss[0];
-			perVariation[i].solution = convertAnswer(solutions, questionType, warnings);
+			perVariation[i].solution = convertSolution(solutions, questionType, warnings);
 		}
 	}
 
