@@ -29,7 +29,10 @@ pnpm lint                  # ESLint (cached)
 pnpm format                # Prettier
 
 # Tests
-pnpm test:unit             # Unit tests (Vitest)
+pnpm test:unit             # All unit tests (both projects, watch mode)
+pnpm test:unit -- --run    # All unit tests (single run)
+pnpm test:server <path>    # Server tests only (for specific files)
+pnpm test:client <path>    # Client tests only (*.svelte.test.ts)
 pnpm test:triggers         # Database triggers (Docker required)
 
 # Database

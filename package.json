@@ -16,6 +16,8 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint . --cache",
 		"test:unit": "vitest",
+		"test:server": "vitest run --project=server",
+		"test:client": "vitest run --project=client",
 		"test:integration": "vitest run --config vitest.integration.config.ts",
 		"test:integration:watch": "vitest --config vitest.integration.config.ts",
 		"test:triggers": "vitest run --config vitest.triggers.config.ts",
