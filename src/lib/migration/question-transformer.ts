@@ -42,6 +42,8 @@ import type {
 	ConstraintOptions
 } from '$lib/questions/types';
 
+import type { DisplayOptions } from '$lib/shared/parameterization/display-options';
+
 import type { TemplateMarkdown } from '$lib/shared/markdown';
 import { templateMarkdown } from '$lib/shared/markdown';
 
@@ -184,6 +186,9 @@ export interface TransformStats {
 
 	/** Number of validation options mapped */
 	optionsMapped: number;
+
+	/** Number of display options mapped to defaultDisplayOptions */
+	displayOptionsMapped: number;
 
 	/** Number of correction syntax conversions (placeholders + conditionals) */
 	correctionConversions: number;
@@ -678,19 +683,22 @@ function _convertCorrection(
  * Maps old TinyMath options to new ConstraintOptions structure:
  * - require-* options → constraint: 'strict'
  * - no-penalty-for-* options → constraint: 'off'
- * - Display options (enounce-*, exp-*) → silently ignored
+ * - Display/generation options → defaultDisplayOptions
+ * - Display options (enounce-no-spaces) → silently ignored
  */
 function convertOptions(
 	oldOptions: string[] | undefined,
 	warnings: string[]
-): QuestionTemplate['options'] | undefined {
+): { options?: QuestionTemplate['options']; defaultDisplayOptions?: DisplayOptions } {
 	if (!oldOptions || oldOptions.length === 0) {
-		return undefined;
+		return {};
 	}
 
 	const options: QuestionTemplate['options'] = {};
 	const constraints: ConstraintOptions = {};
-	let mappedCount = 0;
+	const displayOptions: DisplayOptions = {};
+	// Note: mappedCount tracked for potential debugging but not used in return
+	let _mappedCount = 0;
 
 	for (const option of oldOptions) {
 		switch (option) {
@@ -699,11 +707,11 @@ function convertOptions(
 			// ================================================================
 			case 'require-correct-spaces':
 				constraints.spaces = 'strict';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-incorrect-spaces':
 				constraints.spaces = 'off';
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -711,11 +719,11 @@ function convertOptions(
 			// ================================================================
 			case 'require-implicit-products':
 				constraints.products = 'strict';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-explicit-products':
 				constraints.products = 'off';
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -723,16 +731,16 @@ function convertOptions(
 			// ================================================================
 			case 'require-no-extraneous-brackets':
 				constraints.brackets = 'strict';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-extraneous-brackets':
 				constraints.brackets = 'off';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-extraneous-brackets-in-first-negative-term':
 				constraints.brackets = 'off';
 				constraints.allowBracketsInFirstNegativeTerm = true;
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -740,11 +748,11 @@ function convertOptions(
 			// ================================================================
 			case 'require-no-extraneous-zeros':
 				constraints.zeros = 'strict';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-extraneous-zeros':
 				constraints.zeros = 'off';
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -752,11 +760,11 @@ function convertOptions(
 			// ================================================================
 			case 'require-no-null-terms':
 				constraints.nullTerms = 'strict';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-null-terms':
 				constraints.nullTerms = 'off';
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -764,11 +772,11 @@ function convertOptions(
 			// ================================================================
 			case 'require-no-factor-one':
 				constraints.factorOne = 'strict';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-factor-one':
 				constraints.factorOne = 'off';
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -776,11 +784,11 @@ function convertOptions(
 			// ================================================================
 			case 'require-no-factor-zero':
 				constraints.factorZero = 'strict';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-factor-zero':
 				constraints.factorZero = 'off';
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -788,11 +796,11 @@ function convertOptions(
 			// ================================================================
 			case 'require-no-extraneous-signs':
 				constraints.signs = 'strict';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-extraneous-signs':
 				constraints.signs = 'off';
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -801,12 +809,12 @@ function convertOptions(
 			case 'require-reduced-fractions':
 				// Require fractions to be reduced to lowest terms
 				constraints.reducedFractions = 'strict';
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-non-reduced-fractions':
 				// Don't penalize non-reduced fractions
 				constraints.reducedFractions = 'off';
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -814,7 +822,7 @@ function convertOptions(
 			// ================================================================
 			case 'no-shuffle-choices':
 				options.shuffleChoices = false;
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -823,12 +831,12 @@ function convertOptions(
 			case 'require-specific-unit':
 				if (!options.unitOptions) options.unitOptions = {};
 				options.unitOptions.requireExactUnit = true;
-				mappedCount++;
+				_mappedCount++;
 				break;
 			case 'no-penalty-for-not-respected-unit':
 				if (!options.unitOptions) options.unitOptions = {};
 				options.unitOptions.requireExactUnit = false;
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -853,34 +861,60 @@ function convertOptions(
 				break;
 
 			// ================================================================
-			// NOT IMPLEMENTED - GENERATION OPTIONS (generate warnings)
+			// DISPLAY GENERATION OPTIONS → defaultDisplayOptions
 			// ================================================================
 			case 'shuffle-terms':
-			case 'shuffle-factors':
-			case 'shuffle-terms-and-factors':
-			case 'shallow-shuffle-terms':
-			case 'shallow-shuffle-factors':
-				// TODO: Randomize term/factor order in displayed expression
-				warnings.push(`TODO: ${option} - expression shuffling not yet implemented`);
+				displayOptions.shuffleTerms = true;
+				_mappedCount++;
 				break;
+			case 'shuffle-factors':
+				displayOptions.shuffleFactors = true;
+				_mappedCount++;
+				break;
+			case 'shuffle-terms-and-factors':
+				displayOptions.shuffleTermsAndFactors = true;
+				_mappedCount++;
+				break;
+			case 'shallow-shuffle-terms':
+				displayOptions.shallowShuffleTerms = true;
+				_mappedCount++;
+				break;
+			case 'shallow-shuffle-factors':
+				displayOptions.shallowShuffleFactors = true;
+				_mappedCount++;
+				break;
+			case 'remove-null-terms':
+				displayOptions.removeNullTerms = true;
+				_mappedCount++;
+				break;
+
+			// ================================================================
+			// NOT IMPLEMENTED - GENERATION OPTIONS (generate warnings)
+			// ================================================================
 			case 'exhaust':
 				// TODO: Generate all possible variations without repetition
 				warnings.push(`TODO: ${option} - exhaustive generation not yet implemented`);
 				break;
-			case 'remove-null-terms':
-				// TODO: Remove +0 terms from generated expression
-				warnings.push(`TODO: ${option} - null term removal not yet implemented`);
+
+			// ================================================================
+			// LATEX FORMATTING OPTIONS → defaultDisplayOptions
+			// ================================================================
+			case 'exp-no-spaces':
+				displayOptions.addSpaces = false;
+				_mappedCount++;
+				break;
+			case 'exp-allow-unecessary-zeros':
+				displayOptions.keepUnnecessaryZeros = true;
+				_mappedCount++;
 				break;
 
 			// ================================================================
 			// DISPLAY OPTIONS - Silently ignored (cosmetic only)
 			// ================================================================
 			case 'enounce-no-spaces':
-			case 'exp-no-spaces':
-			case 'exp-allow-unecessary-zeros':
 			case 'exp-remove-unecessary-brackets':
 				// Display formatting options - cosmetic only, safe to ignore
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			// ================================================================
@@ -890,7 +924,7 @@ function convertOptions(
 			case 'allow-same-enounce':
 			case 'multiples':
 				// Legacy generation uniqueness options - not needed in new system
-				mappedCount++;
+				_mappedCount++;
 				break;
 
 			default:
@@ -903,7 +937,14 @@ function convertOptions(
 		options.constraints = constraints;
 	}
 
-	return mappedCount > 0 ? options : undefined;
+	// Build result object
+	const hasOptions = Object.keys(options).length > 0;
+	const hasDisplayOptions = Object.keys(displayOptions).length > 0;
+
+	return {
+		options: hasOptions ? options : undefined,
+		defaultDisplayOptions: hasDisplayOptions ? displayOptions : undefined
+	};
 }
 
 // ============================================================================
@@ -1549,6 +1590,7 @@ export function transformQuestion(
 		variables: 0,
 		syntaxConversions: 0,
 		optionsMapped: 0,
+		displayOptionsMapped: 0,
 		correctionConversions: 0,
 		detectedType: '',
 		hasImages: false,
@@ -1602,9 +1644,15 @@ export function transformQuestion(
 		}
 
 		// Convert options
-		const convertedOptions = convertOptions(oldQuestion.options, warnings);
+		const { options: convertedOptions, defaultDisplayOptions } = convertOptions(
+			oldQuestion.options,
+			warnings
+		);
 		if (convertedOptions) {
 			stats.optionsMapped = Object.keys(convertedOptions).length;
+		}
+		if (defaultDisplayOptions) {
+			stats.displayOptionsMapped = Object.keys(defaultDisplayOptions).length;
 		}
 
 		// Assign category
@@ -1634,6 +1682,7 @@ export function transformQuestion(
 			variations,
 			exerciseInstruction: oldQuestion.help,
 			options: convertedOptions,
+			defaultDisplayOptions,
 			grades: [mapGrade(oldQuestion.grade)],
 			...category,
 			status: 'draft', // Import as draft for review

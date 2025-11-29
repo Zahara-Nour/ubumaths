@@ -32,6 +32,7 @@ function createMockStats(): TransformStats {
 		variables: 0,
 		syntaxConversions: 0,
 		optionsMapped: 0,
+		displayOptionsMapped: 0,
 		correctionConversions: 0,
 		detectedType: '',
 		hasImages: false,
