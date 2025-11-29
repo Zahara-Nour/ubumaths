@@ -2,9 +2,9 @@
 
 ## Etat actuel
 
-- **Phase** : 3 (PENDING)
-- **Tache en cours** : Aucune (Phase 2 terminee)
-- **Dernier commit** : `6617a4c8` - Phase 2 complete
+- **Phase** : 4 (PENDING)
+- **Tache en cours** : Aucune (Phase 3 terminee)
+- **Dernier commit** : (pending) - Phase 3 complete
 
 ## Objectif
 
@@ -49,14 +49,21 @@ Ajouter le support des champs math editables via `\placeholder[N]{}` de MathLive
 - `src/lib/components/markdown/MarkdownRenderer.svelte` - Import MathPrompt, props mathInputs/onMathPromptChange
 - `src/lib/components/markdown/nodes/index.ts` - Export MathPrompt
 
-### Phase 3 : Migration BlankInput
+### Phase 3 : Migration BlankInput (COMPLETE)
 
-- [ ] 3.1 Adapter `BlankInput.svelte`
-- [ ] 3.2 Adapter `ParagraphNode.svelte`
-- [ ] 3.3 Unifier props `MarkdownRenderer`
-- [ ] 3.4 Adapter tests existants
-- [ ] 3.5 Code review
-- [ ] Commit
+- [x] 3.1 Adapter `BlankInput.svelte` - rename `validationState` to `isCorrect`
+- [x] 3.2 Adapter `ParagraphNode.svelte` - unified `inputs` prop
+- [x] 3.3 Unifier props `MarkdownRenderer` - unified `inputs`, `onInputChange`, `onInputSubmit`, `inputsDisabled`
+- [x] 3.4 Adapter tests existants (no existing tests to adapt)
+- [x] 3.5 Code review (approved)
+- [x] Commit: (pending)
+
+**Fichiers modifies** :
+
+- `src/lib/components/markdown/nodes/BlankInput.svelte` - rename validationState → isCorrect
+- `src/lib/components/markdown/nodes/ParagraphNode.svelte` - unified inputs API
+- `src/lib/components/markdown/MarkdownRenderer.svelte` - unified inputs API
+- `src/lib/components/markdown/types.ts` - update BlankInputProps
 
 ### Phase 4 : Tests d'integration
 

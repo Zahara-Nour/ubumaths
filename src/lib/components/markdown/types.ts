@@ -259,12 +259,12 @@ export interface BlankInputProps {
 	disabled?: boolean;
 
 	/**
-	 * Etat de validation visuel
-	 * - `true`: Show as correct (green)
-	 * - `false`: Show as incorrect (red)
-	 * - `null`: Neutral state (no validation styling)
+	 * Validation state (unified with InputState.isCorrect)
+	 * - `true`: Correct answer (displays as green)
+	 * - `false`: Incorrect answer (displays as red)
+	 * - `null`: Not yet validated (neutral styling)
 	 */
-	validationState?: boolean | null;
+	isCorrect?: boolean | null;
 
 	/**
 	 * Callback when value changes

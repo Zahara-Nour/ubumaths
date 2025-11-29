@@ -26,7 +26,7 @@
 		/** Disabled (read-only) */
 		disabled?: boolean;
 		/** Validation state: true=correct, false=incorrect, null=not validated */
-		validationState?: boolean | null;
+		isCorrect?: boolean | null;
 		/** Callback when value changes */
 		onValueChange?: (value: string) => void;
 		/** Callback when user submits (Enter key) */
@@ -39,7 +39,7 @@
 		index,
 		value = $bindable(''),
 		disabled = false,
-		validationState = null,
+		isCorrect = null,
 		onValueChange,
 		onSubmit,
 		class: className = ''
@@ -81,9 +81,9 @@
 			// Disabled state
 			'disabled:opacity-50 disabled:cursor-not-allowed',
 			// Validation states
-			validationState === true && 'border-green-500/80 bg-green-500/10',
-			validationState === false && 'border-destructive/80 bg-destructive/10',
-			validationState === null && 'border-border',
+			isCorrect === true && 'border-green-500/80 bg-green-500/10',
+			isCorrect === false && 'border-destructive/80 bg-destructive/10',
+			isCorrect === null && 'border-border',
 			// Custom classes
 			className
 		)
@@ -98,7 +98,7 @@
 	onkeydown={handleKeydown}
 	class={inputClasses}
 	aria-label="Reponse {index}"
-	aria-invalid={validationState === false ? 'true' : undefined}
+	aria-invalid={isCorrect === false ? 'true' : undefined}
 	autocomplete="off"
 	spellcheck="false"
 />
