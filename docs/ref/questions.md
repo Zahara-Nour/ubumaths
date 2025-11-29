@@ -254,8 +254,9 @@ interface QuestionVariation {
 	// Variables resolues dans l'ordre
 	variables?: QuestionVariable[];
 
-	// Reponse(s) attendue(s) - valeurs texte
-	answer: string | string[];
+	// Solution attendue - valeur(s) de reference
+	// (Note: "answer" designe la reponse de l'eleve dans le contexte de validation)
+	solution: string | string[];
 
 	// Correction detaillee
 	correction?: QuestionCorrection;
@@ -275,7 +276,7 @@ Defauts partages entre toutes les variations (lignes 220-244) :
 interface SharedVariationDefaults {
 	statement?: TemplateMarkdown; // Enonce partage
 	variables?: QuestionVariable[]; // Variables partagees (fusionnees)
-	answer?: string | string[]; // Reponse partagee
+	solution?: string | string[]; // Solution partagee
 	correction?: QuestionCorrection; // Correction partagee
 	choices?: { content: TemplateMarkdown; isCorrect: boolean }[];
 	validationRules?: ValidationRule[];
@@ -320,7 +321,7 @@ function generateInstance(template: QuestionTemplate, seed?: number): Generation
 
   // 6. Resolution contenu
   const statement = resolveMarkdownContent(resolved.statement, resolvedVariables, seed);
-  const answer = resolveAnswer(resolved.answer, resolvedVariables, seed);
+  const solution = resolveSolution(resolved.solution, resolvedVariables, seed);
 
   // 7. Traitement type-specifique
   if (type === 'multiple_choice') {
@@ -752,7 +753,7 @@ CREATE TABLE question_templates (
   -- Contenu (JSONB)
   statement JSONB NOT NULL,
   variables JSONB,
-  answer JSONB NOT NULL,
+  solution JSONB NOT NULL,
 
   -- Validation
   options JSONB,
@@ -882,7 +883,7 @@ interface QuestionInstance {
 	// Contenu resolu
 	statement: ResolvedMarkdown;
 	resolvedVariables?: ResolvedVariable[];
-	answer: string | string[];
+	solution: string | string[]; // Solution attendue (reference)
 
 	// Metadata (copie template)
 	title?: string;
@@ -936,7 +937,7 @@ const template: QuestionTemplate = {
 				{ name: 'a', expression: '{{random:{{min}}..{{max}}}}' },
 				{ name: 'b', expression: '{{random:{{min}}..{{max}}!{{a}}}}' }
 			],
-			answer: '{{eval:a+b}}',
+			solution: '{{eval:a+b}}',
 			correction: {
 				feedback: {
 					correct: 'Bravo !',

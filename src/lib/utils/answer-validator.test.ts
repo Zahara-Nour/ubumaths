@@ -19,14 +19,14 @@ import type { ResolvedMarkdown } from '$lib/shared/markdown/types';
  * Create a minimal numerical question instance for testing
  */
 function createNumericalInstance(
-	answer: string,
+	solution: string,
 	constraintOptions?: QuestionInstance['options']
 ): QuestionInstance {
 	return {
 		templateId: 'test-template',
 		type: 'numerical_exact',
 		statement: 'Test question' as ResolvedMarkdown,
-		answer,
+		solution,
 		grades: ['6'],
 		theme: 'Test',
 		domain: 'Test',
@@ -40,14 +40,14 @@ function createNumericalInstance(
  * Create a minimal algebraic question instance for testing
  */
 function createAlgebraicInstance(
-	answer: string,
+	solution: string,
 	constraintOptions?: QuestionInstance['options']
 ): QuestionInstance {
 	return {
 		templateId: 'test-template',
 		type: 'algebraic_transform',
 		statement: 'Test question' as ResolvedMarkdown,
-		answer,
+		solution,
 		grades: ['6'],
 		theme: 'Test',
 		domain: 'Test',
@@ -274,7 +274,7 @@ describe('validateAnswer - Constraint Integration', () => {
 				templateId: 'test',
 				type: 'numerical_exact',
 				statement: 'Test' as ResolvedMarkdown,
-				answer: '5',
+				solution: '5',
 				grades: ['6'],
 				theme: 'Test',
 				domain: 'Test',
@@ -584,7 +584,7 @@ describe('validateAnswer - Multiple Answers', () => {
 			templateId: 'test',
 			type: 'fill_in_blanks',
 			statement: 'Test {{blank:0}} and {{blank:1}}' as ResolvedMarkdown,
-			answer: ['5', '10'],
+			solution: ['5', '10'],
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',

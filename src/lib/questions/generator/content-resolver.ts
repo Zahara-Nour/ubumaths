@@ -63,21 +63,21 @@ export function resolveExpression(
 }
 
 /**
- * Resolve answer (can be string or array of strings)
+ * Resolve solution (can be string or array of strings)
  *
- * @param answer - Answer from template
+ * @param solution - Solution from template (expected answer)
  * @param resolvedVariables - Already resolved variables
  * @param seed - Optional seed for random generation
- * @returns Resolved answer
+ * @returns Resolved solution
  */
-export function resolveAnswer(
-	answer: string | string[],
+export function resolveSolution(
+	solution: string | string[],
 	resolvedVariables: ResolvedVariable[],
 	seed?: number
 ): string | string[] {
-	if (Array.isArray(answer)) {
-		return answer.map((ans) => resolveExpression(ans, resolvedVariables, seed));
+	if (Array.isArray(solution)) {
+		return solution.map((sol) => resolveExpression(sol, resolvedVariables, seed));
 	}
 
-	return resolveExpression(answer, resolvedVariables, seed);
+	return resolveExpression(solution, resolvedVariables, seed);
 }

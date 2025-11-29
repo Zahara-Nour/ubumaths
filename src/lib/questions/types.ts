@@ -155,18 +155,18 @@ export type QuestionVariable = SharedVariable;
  *
  * Templates can have multiple variations, and one is randomly selected
  * during instance generation. Each variation contains its own statement,
- * variables, answer, and correction.
+ * variables, solution, and correction.
  *
  * @example Simple numerical question with 2 variations
  * {
  *   variations: [
  *     {
  *       statement: [{ type: 'text', content: 'Calculate $$2 + 3$$' }],
- *       answer: '5'
+ *       solution: '5'
  *     },
  *     {
  *       statement: [{ type: 'text', content: 'Calculate $$7 - 4$$' }],
- *       answer: '3'
+ *       solution: '3'
  *     }
  *   ]
  * }
@@ -178,8 +178,8 @@ export interface QuestionVariation {
 	/** Variables in declaration order (resolved sequentially) */
 	variables?: QuestionVariable[];
 
-	/** Expected answer(s) - plain string values (not markdown) */
-	answer: string | string[];
+	/** Expected solution(s) - plain string values (not markdown) */
+	solution: string | string[];
 
 	/** Detailed correction/explanation with full structure (optional) */
 	correction?: QuestionCorrection;
@@ -226,8 +226,8 @@ export interface SharedVariationDefaults {
 	/** Shared variable definitions (resolved before per-variation variables) */
 	variables?: QuestionVariable[];
 
-	/** Shared expected answer(s) */
-	answer?: string | string[];
+	/** Shared expected solution(s) */
+	solution?: string | string[];
 
 	/** Shared correction with full structure (feedback + steps) */
 	correction?: QuestionCorrection;
@@ -435,8 +435,8 @@ export interface QuestionInstance {
 	/** Resolved variables with final values */
 	resolvedVariables?: ResolvedVariable[];
 
-	/** Resolved answer(s) - plain string values (not markdown) */
-	answer: string | string[];
+	/** Resolved solution(s) - plain string values (not markdown) */
+	solution: string | string[];
 
 	// ---- Metadata (copied from template) ----
 

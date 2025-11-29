@@ -41,8 +41,8 @@ vi.mock('$lib/questions/generator/instance-generator', () => ({
 				variationIndex: 0,
 				parameterValues: {},
 				question: [{ type: 'text', content: 'Generated question' }],
-				solution: [{ type: 'text', content: 'Generated solution' }],
-				answer: { type: 'text', value: '42' },
+				solutionDisplay: [{ type: 'text', content: 'Generated solution' }],
+				solution: '42',
 				points: 5
 			}
 		};
@@ -62,7 +62,7 @@ const createMockTemplate = (overrides: Partial<QuestionTemplate> = {}): Question
 	variations: [
 		{
 			statement: templateMarkdown('Question'),
-			answer: '42',
+			solution: '42',
 			correction: {
 				steps: [templateMarkdown('Solution')]
 			}
@@ -248,12 +248,12 @@ describe('SRS Generator Edge Cases', () => {
 			variations: [
 				{
 					statement: templateMarkdown('Q1'),
-					answer: '1',
+					solution: '1',
 					correction: { steps: [templateMarkdown('S1')] }
 				},
 				{
 					statement: templateMarkdown('Q2'),
-					answer: '2',
+					solution: '2',
 					correction: { steps: [templateMarkdown('S2')] }
 				}
 			]
@@ -272,7 +272,7 @@ describe('SRS Generator Edge Cases', () => {
 						{ name: 'a', expression: '{#:1-10}' },
 						{ name: 'b', expression: '{#:1-10}' }
 					],
-					answer: '{eval:{{a}} + {{b}}}',
+					solution: '{eval:{{a}} + {{b}}}',
 					correction: { steps: [templateMarkdown('Solution')] }
 				}
 			]
@@ -316,8 +316,8 @@ describe('Integration with Question System', () => {
 				seed: expect.any(Number),
 				variationIndex: expect.any(Number),
 				question: expect.any(Array),
-				solution: expect.any(Array),
-				answer: expect.any(Object),
+				solutionDisplay: expect.any(Array),
+				solution: expect.any(String),
 				points: expect.any(Number)
 			});
 		}
@@ -338,7 +338,7 @@ describe('Integration with Question System', () => {
 			variations: [
 				{
 					statement: templateMarkdown('Solve: $x^2 + 2x + 1 = 0$'),
-					answer: '-1',
+					solution: '-1',
 					correction: { steps: [templateMarkdown('$x = -1$')] }
 				}
 			]

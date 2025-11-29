@@ -23,7 +23,7 @@ export {
 	resolveNumberOrVariable
 } from './generator/random-generator';
 
-export { resolveExpression, resolveAnswer } from './generator/content-resolver';
+export { resolveExpression, resolveSolution } from './generator/content-resolver';
 
 export { shuffleChoices, type ShuffledChoice } from './generator/choice-shuffler';
 

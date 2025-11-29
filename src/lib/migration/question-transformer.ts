@@ -1312,16 +1312,16 @@ function detectSharedFields(
 		}
 	}
 
-	// ---- Detect solutionss sharing (→ answer) ----
+	// ---- Detect solutionss sharing (→ solution) ----
 	const solutionss = oldQuestion.solutionss || [];
-	const answerIsShared = solutionss.length === 1 && variationCount > 1;
+	const solutionIsShared = solutionss.length === 1 && variationCount > 1;
 
-	if (answerIsShared) {
-		shared.answer = convertAnswer(solutionss[0], questionType, warnings);
+	if (solutionIsShared) {
+		shared.solution = convertAnswer(solutionss[0], questionType, warnings);
 	} else {
 		for (let i = 0; i < variationCount; i++) {
 			const solutions = solutionss[i] || solutionss[0];
-			perVariation[i].answer = convertAnswer(solutions, questionType, warnings);
+			perVariation[i].solution = convertAnswer(solutions, questionType, warnings);
 		}
 	}
 
@@ -1417,7 +1417,7 @@ function hasSharedContent(shared: SharedVariationDefaults): boolean {
 	return !!(
 		shared.statement ||
 		(shared.variables && shared.variables.length > 0) ||
-		shared.answer !== undefined ||
+		shared.solution !== undefined ||
 		shared.correction ||
 		(shared.choices && shared.choices.length > 0) ||
 		(shared.validationRules && shared.validationRules.length > 0)
@@ -1479,18 +1479,18 @@ function createVariationsWithShared(
 	const variations: QuestionVariation[] = perVariation.map((pv, index) => {
 		// Start with required fields - use shared fallback or throw error
 		const statement = pv.statement || shared.statement;
-		const answer = pv.answer ?? shared.answer;
+		const solution = pv.solution ?? shared.solution;
 
 		if (!statement) {
 			warnings.push(`Variation ${index}: missing statement`);
 		}
-		if (answer === undefined) {
-			warnings.push(`Variation ${index}: missing answer`);
+		if (solution === undefined) {
+			warnings.push(`Variation ${index}: missing solution`);
 		}
 
 		const variation: QuestionVariation = {
 			statement: statement || templateMarkdown(''),
-			answer: answer ?? ''
+			solution: solution ?? ''
 		};
 
 		// Add optional fields only if they exist and are NOT shared
@@ -1863,8 +1863,8 @@ export function validateTransformedTemplate(template: QuestionTemplate): {
 			errors.push(`Variation ${index}: missing statement`);
 		}
 
-		if (variation.answer === undefined || variation.answer === null) {
-			errors.push(`Variation ${index}: missing answer`);
+		if (variation.solution === undefined || variation.solution === null) {
+			errors.push(`Variation ${index}: missing solution`);
 		}
 
 		// Type-specific validation
