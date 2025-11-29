@@ -21,9 +21,10 @@
 	@see BlankInput.svelte for blank input rendering
 -->
 <script lang="ts">
-	import type { InlineNode } from '$lib/exercises/types';
+	import type { InlineNode, InputState } from '$lib/exercises/types';
 	import type { BlankState } from '../types';
 	import MathInline from './MathInline.svelte';
+	import MathPrompt from './MathPrompt.svelte';
 	import TextNode from './TextNode.svelte';
 	import BlankInput from './BlankInput.svelte';
 
@@ -38,6 +39,10 @@
 		onBlankSubmit?: (index: number) => void;
 		/** Whether blanks are disabled (e.g., after submission) */
 		blanksDisabled?: boolean;
+		/** Input states for math prompts (unified with text blanks) */
+		mathInputs?: InputState[];
+		/** Callback when a math prompt value changes */
+		onMathPromptChange?: (index: number, value: string) => void;
 	}
 
 	let {
@@ -46,7 +51,9 @@
 		blankStates,
 		onBlankChange,
 		onBlankSubmit,
-		blanksDisabled = false
+		blanksDisabled = false,
+		mathInputs = [],
+		onMathPromptChange
 	}: Props = $props();
 
 	/**
@@ -105,7 +112,17 @@
 				code={child.code}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
-			<MathInline latex={child.latex} />
+			{#if child.hasPrompts && child.promptIndices}
+				<MathPrompt
+					latex={child.latex}
+					display="inline"
+					promptIndices={child.promptIndices}
+					inputs={mathInputs}
+					onPromptChange={onMathPromptChange}
+				/>
+			{:else}
+				<MathInline latex={child.latex} />
+			{/if}
 		{:else if child.type === 'blank'}
 			{@const state = getBlankState(child.index)}
 			<BlankInput

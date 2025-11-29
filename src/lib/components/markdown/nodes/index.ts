@@ -32,3 +32,4 @@ export { default as TableNode } from './TableNode.svelte';
 
 // Interactive components
 export { default as BlankInput } from './BlankInput.svelte';
+export { default as MathPrompt } from './MathPrompt.svelte';

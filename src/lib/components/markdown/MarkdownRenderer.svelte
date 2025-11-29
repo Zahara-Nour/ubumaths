@@ -22,7 +22,7 @@
 -->
 <script lang="ts">
 	import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
-	import type { DocumentNode, ParseOptions } from '$lib/exercises/types';
+	import type { DocumentNode, ParseOptions, InputState } from '$lib/exercises/types';
 	import type { BlankState, MarkdownDisplayMode } from './types';
 	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
 
@@ -30,6 +30,7 @@
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
 	import HeadingNode from './nodes/HeadingNode.svelte';
 	import MathBlock from './nodes/MathBlock.svelte';
+	import MathPrompt from './nodes/MathPrompt.svelte';
 	import HorizontalRule from './nodes/HorizontalRule.svelte';
 	import ListNode from './nodes/ListNode.svelte';
 	import TableNode from './nodes/TableNode.svelte';
@@ -59,6 +60,10 @@
 		onBlankSubmit?: (index: number) => void;
 		/** Whether blanks are disabled (e.g., after submission) */
 		blanksDisabled?: boolean;
+		/** Input states for math prompts (unified with text blanks) */
+		mathInputs?: InputState[];
+		/** Callback when a math prompt value changes */
+		onMathPromptChange?: (index: number, value: string) => void;
 	}
 
 	let {
@@ -70,7 +75,9 @@
 		blankStates,
 		onBlankChange,
 		onBlankSubmit,
-		blanksDisabled = false
+		blanksDisabled = false,
+		mathInputs = [],
+		onMathPromptChange
 	}: Props = $props();
 
 	/**
@@ -121,11 +128,23 @@
 						{onBlankChange}
 						{onBlankSubmit}
 						{blanksDisabled}
+						{mathInputs}
+						{onMathPromptChange}
 					/>
 				{:else if node.type === 'heading'}
 					<HeadingNode level={node.level} children={node.children} />
 				{:else if node.type === 'math-block'}
-					<MathBlock latex={node.latex} />
+					{#if node.hasPrompts && node.promptIndices}
+						<MathPrompt
+							latex={node.latex}
+							display="block"
+							promptIndices={node.promptIndices}
+							inputs={mathInputs}
+							onPromptChange={onMathPromptChange}
+						/>
+					{:else}
+						<MathBlock latex={node.latex} />
+					{/if}
 				{:else if node.type === 'horizontal-rule'}
 					<HorizontalRule />
 				{:else if node.type === 'list'}
