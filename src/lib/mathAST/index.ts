@@ -233,3 +233,11 @@ export {
 	unflattenSum,
 	unflattenProduct
 } from './flatten';
+
+// =============================================================================
+// LaTeX Generator
+// =============================================================================
+
+export type { LatexGeneratorOptions } from './latex-generator';
+
+export { LatexGenerator, toLatex } from './latex-generator';
