@@ -221,14 +221,15 @@ describe('resolveVariables', () => {
 				{ name: 'b', expression: '{{random:1..100}}' }
 			];
 			const resolved = resolveVariables(variables, 42);
-			// Both random specs start with same seed, so may generate same value
-			// This is expected behavior - test that both are valid numbers
+			// Each variable gets a unique seed, so they generate different values
 			const valueA = parseInt(resolved[0].value);
 			const valueB = parseInt(resolved[1].value);
 			expect(valueA).toBeGreaterThanOrEqual(1);
 			expect(valueA).toBeLessThanOrEqual(100);
 			expect(valueB).toBeGreaterThanOrEqual(1);
 			expect(valueB).toBeLessThanOrEqual(100);
+			// Values should be different (with extremely high probability for range 1..100)
+			expect(valueA).not.toBe(valueB);
 		});
 
 		it('should handle random in text context', () => {

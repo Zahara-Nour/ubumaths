@@ -99,9 +99,13 @@ export function resolveVariables(
 
 	const resolvedVariables: ResolvedVariable[] = [];
 
-	for (const variable of variables) {
+	for (let i = 0; i < variables.length; i++) {
+		const variable = variables[i];
 		try {
-			const resolvedValue = resolveExpression(variable.expression, resolvedVariables, seed);
+			// Use a unique seed for each variable to ensure different random values
+			// Multiply by a large prime to spread seeds apart and avoid collisions
+			const variableSeed = seed !== undefined ? seed + i * 7919 : undefined;
+			const resolvedValue = resolveExpression(variable.expression, resolvedVariables, variableSeed);
 
 			// Build the resolved variable
 			const resolved: ResolvedVariable = {
