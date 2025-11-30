@@ -1408,14 +1408,14 @@ function detectSharedFields(
 		}
 	} else if (expressions.length > 0) {
 		// Fallback: no solutionss but expressions exist
-		// The solution is the evaluated expression value
+		// The solution is the evaluated expression value (use eval to compute the result)
 		const expressionIsSharedForSolution = expressions.length === 1 && variationCount > 1;
 
 		if (expressionIsSharedForSolution) {
-			shared.solution = '{{expression1}}';
+			shared.solution = '{{eval:expression1}}';
 		} else {
 			for (let i = 0; i < variationCount; i++) {
-				perVariation[i].solution = `{{expression${i + 1}}}`;
+				perVariation[i].solution = `{{eval:expression${i + 1}}}`;
 			}
 		}
 	}
