@@ -1396,12 +1396,27 @@ function detectSharedFields(
 	const solutionss = oldQuestion.solutionss || [];
 	const solutionIsShared = solutionss.length === 1 && variationCount > 1;
 
-	if (solutionIsShared) {
-		shared.solution = convertSolution(solutionss[0], questionType, warnings);
-	} else {
-		for (let i = 0; i < variationCount; i++) {
-			const solutions = solutionss[i] || solutionss[0];
-			perVariation[i].solution = convertSolution(solutions, questionType, warnings);
+	if (solutionss.length > 0) {
+		// Case: solutionss exists
+		if (solutionIsShared) {
+			shared.solution = convertSolution(solutionss[0], questionType, warnings);
+		} else {
+			for (let i = 0; i < variationCount; i++) {
+				const solutions = solutionss[i] || solutionss[0];
+				perVariation[i].solution = convertSolution(solutions, questionType, warnings);
+			}
+		}
+	} else if (expressions.length > 0) {
+		// Fallback: no solutionss but expressions exist
+		// The solution is the evaluated expression value
+		const expressionIsSharedForSolution = expressions.length === 1 && variationCount > 1;
+
+		if (expressionIsSharedForSolution) {
+			shared.solution = '{{expression1}}';
+		} else {
+			for (let i = 0; i < variationCount; i++) {
+				perVariation[i].solution = `{{expression${i + 1}}}`;
+			}
 		}
 	}
 

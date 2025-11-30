@@ -1173,6 +1173,42 @@ describe('Question Transformer', () => {
 			expect(vars?.[1]?.name).toBe('b');
 			expect(vars?.[2]?.name).toBe('expression1');
 		});
+
+		it('should generate solution from expression when solutionss is absent', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Addition sans solution explicite',
+				enounces: ['Calculer :'],
+				expressions: ['[_&1+&2_]'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				// No solutionss! Solution should be derived from expression
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			// Solution should reference the expression variable
+			expect(result.template?.variations[0]?.solution).toBe('{{expression1}}');
+		});
+
+		it('should generate per-variation solutions from expressions when solutionss is absent', () => {
+			const oldQuestion: QuestionBase = {
+				description: 'Multiple expressions sans solution',
+				enounces: ['Calculer :'],
+				expressions: ['[_&1+&2_]', '[_&1*&2_]'],
+				variabless: [{ '&1': '$e[1;10]', '&2': '$e[1;10]' }],
+				// No solutionss! Each variation gets its own expression-based solution
+				defaultDelay: 30,
+				grade: 'CE1'
+			};
+
+			const result = transformQuestion(oldQuestion, 0);
+
+			expect(result.success).toBe(true);
+			expect(result.template?.variations[0]?.solution).toBe('{{expression1}}');
+			expect(result.template?.variations[1]?.solution).toBe('{{expression2}}');
+		});
 	});
 
 	describe('Display Options Mapping', () => {

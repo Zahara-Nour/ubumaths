@@ -112,6 +112,7 @@
 		description: original.description || '',
 		subdescription: original.subdescription || '',
 		enounces: original.enounces || [],
+		expressions: original.expressions || [],
 		variabless: original.variabless || [],
 		solutionss: original.solutionss || [],
 		options: original.options || [],
@@ -313,6 +314,18 @@
 							oldFields.enounces
 						)}</pre>
 				</div>
+
+				<!-- Expressions -->
+				{#if Array.isArray(oldFields.expressions) && oldFields.expressions.length > 0}
+					<div>
+						<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+							expressions ({oldFields.expressions.length})
+						</h4>
+						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+								oldFields.expressions
+							)}</pre>
+					</div>
+				{/if}
 
 				<!-- Variables -->
 				{#if Array.isArray(oldFields.variabless) && oldFields.variabless.length > 0}
