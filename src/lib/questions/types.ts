@@ -200,8 +200,15 @@ export interface QuestionVariation {
 		/** Choice content as markdown template */
 		content: TemplateMarkdown;
 
-		/** Whether this choice is correct */
-		isCorrect: boolean;
+		/**
+		 * Whether this choice is correct (optional in template).
+		 *
+		 * For dynamic QCM where the correct answer depends on generated variables,
+		 * isCorrect is NOT set in the template. Instead, the solution contains
+		 * the index (or expression evaluating to the index) of the correct choice,
+		 * and isCorrect is calculated at runtime.
+		 */
+		isCorrect?: boolean;
 	}[];
 
 	/**
@@ -237,8 +244,11 @@ export interface SharedVariationDefaults {
 		/** Choice content as markdown template */
 		content: TemplateMarkdown;
 
-		/** Whether this choice is correct */
-		isCorrect: boolean;
+		/**
+		 * Whether this choice is correct (optional in template).
+		 * See QuestionVariation.choices for details on dynamic QCM.
+		 */
+		isCorrect?: boolean;
 	}[];
 
 	/** Shared validation rules */

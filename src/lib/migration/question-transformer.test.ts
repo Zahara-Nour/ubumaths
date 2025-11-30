@@ -128,9 +128,13 @@ describe('Question Transformer', () => {
 				const choices = result.template?.variations[0]?.choices;
 				expect(choices).toHaveLength(2);
 				expect(choices?.[0].content).toContain('pair');
-				expect(choices?.[0].isCorrect).toBe(true);
 				expect(choices?.[1].content).toContain('impair');
-				expect(choices?.[1].isCorrect).toBe(false);
+				// Note: isCorrect is NOT set in template for dynamic QCM
+				// It's calculated at runtime from the solution (which contains correct index)
+				expect(choices?.[0].isCorrect).toBeUndefined();
+				expect(choices?.[1].isCorrect).toBeUndefined();
+				// The solution contains the correct index
+				expect(result.template?.variations[0]?.solution).toBeDefined();
 			});
 
 			it('should transform multiple answer questions', () => {
@@ -151,10 +155,13 @@ describe('Question Transformer', () => {
 				expect(result.template?.multipleAnswers).toBe(true);
 
 				const choices = result.template?.variations[0]?.choices;
-				expect(choices?.[0]?.isCorrect).toBe(true);
-				expect(choices?.[1]?.isCorrect).toBe(false);
-				expect(choices?.[2]?.isCorrect).toBe(true);
-				expect(choices?.[3]?.isCorrect).toBe(false);
+				// Note: isCorrect is NOT set in template - calculated at runtime from solution
+				expect(choices?.[0]?.isCorrect).toBeUndefined();
+				expect(choices?.[1]?.isCorrect).toBeUndefined();
+				expect(choices?.[2]?.isCorrect).toBeUndefined();
+				expect(choices?.[3]?.isCorrect).toBeUndefined();
+				// The solution contains the correct indices
+				expect(result.template?.variations[0]?.solution).toBeDefined();
 			});
 		});
 
