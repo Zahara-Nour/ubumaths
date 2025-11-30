@@ -61,9 +61,10 @@ describe('Question Transformer', () => {
 					expression: '{{1..10}}'
 				});
 				// Expression is extracted as a separate variable
+				// Note: MathLive's AsciiMath converter removes spaces from expressions
 				expect(variation?.variables?.[2]).toEqual({
 					name: 'expression1',
-					expression: '{{a}} + {{b}}'
+					expression: '{{a}}+{{b}}'
 				});
 				// Statement references the expression variable
 				expect(String(variation?.statement)).toContain('$${{expression1}}$$');
