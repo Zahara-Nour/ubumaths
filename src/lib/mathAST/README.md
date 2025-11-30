@@ -437,6 +437,58 @@ const styled = withMetadata(clone, {
 });
 ```
 
+### Flattening Operations
+
+Flatten binary operation chains into lists for easier manipulation.
+
+**Key rule**: Delimiters (parentheses, brackets, braces) are **intangible boundaries** - flattening stops at them.
+
+```typescript
+// Types
+type Sign = '+' | '-';
+type SignedTerm = { sign: Sign; term: MathNode };
+type FlatSum = readonly SignedTerm[];
+type FlatProduct = readonly MathNode[];
+
+// Shallow flattening - same level only
+flattenSumShallow(node: MathNode): FlatSum
+// a + b - c → [{'+', a}, {'+', b}, {'-', c}]
+// a + (b + c) → [{'+', a}, {'+', (b+c)}]  // stops at delimiter
+
+flattenProductShallow(node: MathNode): FlatProduct
+// a * b * c → [a, b, c]
+
+// Deep flattening - with subLists Map for nested structures
+flattenSumDeep(node: MathNode): DeepFlatSumResult
+flattenProductDeep(node: MathNode): DeepFlatProductResult
+
+// Unflatten - reconstruct binary tree (left-associative)
+unflattenSum(terms: FlatSum): MathNode | null
+// [{'+', a}, {'-', b}, {'+', c}] → ((a - b) + c)
+
+unflattenProduct(factors: FlatProduct, style?: MultiplicationDisplayStyle): MathNode | null
+// [a, b, c] → ((a * b) * c)
+
+// Utility
+flipSign(sign: Sign): Sign  // '+' ↔ '-'
+```
+
+#### Example: Working with Flattened Sums
+
+```typescript
+import { flattenSumShallow, unflattenSum, isVariable } from '$lib/mathAST';
+
+// Flatten: a + b - c + d
+const flat = flattenSumShallow(expr);
+// → [{'+', a}, {'+', b}, {'-', c}, {'+', d}]
+
+// Filter only variables
+const varsOnly = flat.filter(({ term }) => isVariable(term));
+
+// Reconstruct
+const result = unflattenSum(varsOnly);
+```
+
 ---
 
 ## Design Decisions
