@@ -65,6 +65,7 @@ import {
 import { convertTinyCASToNew, type ConversionResult } from './syntax-converter';
 import { convertPlaceholders } from './placeholder-converter';
 import { convertConditionals } from './conditional-converter';
+import { convertAsciiMathToLatexSafe } from './ascii-math-converter';
 
 // ============================================================================
 // IMAGE URL MAPPING TYPE
@@ -207,6 +208,9 @@ export interface TransformStats {
 
 	/** Number of images that could not be found in mapping */
 	imagesMissing: number;
+
+	/** Number of AsciiMath to LaTeX conversions performed */
+	asciiMathConverted: number;
 }
 
 // ============================================================================
@@ -338,9 +342,13 @@ function convertVariables(
 				warnings.push(...conversionResult.warnings.map((w) => `Variable ${varName}: ${w}`));
 			}
 
+			// Convert AsciiMath to LaTeX
+			const afterTinyCAS = conversionResult.converted || expression;
+			const latexResult = convertAsciiMathToLatexSafe(afterTinyCAS);
+
 			variables.push({
 				name,
-				expression: conversionResult.converted || expression
+				expression: latexResult.converted
 			});
 		}
 	}
@@ -418,9 +426,14 @@ function convertStatement(
 			if (conversionResult.warnings) {
 				warnings.push(...conversionResult.warnings.map((w) => `Expression: ${w}`));
 			}
+			// Convert AsciiMath to LaTeX
+			const afterTinyCAS = conversionResult.converted || expression;
+			const latexResult = convertAsciiMathToLatexSafe(afterTinyCAS);
+			stats.asciiMathConverted++;
+
 			expressionVariable = {
 				name: varName,
-				expression: conversionResult.converted || expression
+				expression: latexResult.converted
 			};
 		}
 
@@ -514,7 +527,11 @@ function convertSolution(
 		warnings.push(...conversionResult.warnings.map((w) => `Solution: ${w}`));
 	}
 
-	return conversionResult.converted || solutionValue;
+	// Convert AsciiMath to LaTeX
+	const afterTinyCAS = conversionResult.converted || solutionValue;
+	const latexResult = convertAsciiMathToLatexSafe(afterTinyCAS);
+
+	return latexResult.converted;
 }
 
 // ============================================================================
@@ -1682,7 +1699,8 @@ export function transformQuestion(
 		hasImages: false,
 		hasCustomValidation: false,
 		imagesConverted: 0,
-		imagesMissing: 0
+		imagesMissing: 0,
+		asciiMathConverted: 0
 	};
 
 	try {

@@ -6,9 +6,40 @@
 
 ---
 
-## Current Phase: Phase 14 ✅
+## Current Phase: Phase 15 ✅
 
-## Last Commit: 8cce1531
+## Last Commit: cd002b93
+
+### Phase 15: AsciiMath to LaTeX Conversion ✅
+
+**Problème résolu** : Les expressions et variables utilisent la syntaxe AsciiMath dans l'ancien format, mais le nouveau format nécessite du LaTeX.
+
+**Solution implémentée** :
+
+1. Utilisation de `convertAsciiMathToLatex()` de MathLive (déjà installé)
+2. Protection des placeholders `{{...}}` avec des tokens temporaires
+3. Conversion appliquée après la conversion TinyCAS
+4. S'applique uniquement aux expressions (pas au texte énoncé)
+
+**Exemples de conversion** :
+| Input (AsciiMath) | Output (LaTeX) |
+|-------------------|----------------|
+| `sqrt({{a}})` | `\sqrt{{{a}}}` |
+| `{{a}}^2 + {{b}}^2` | `{{a}}^{2}+{{b}}^{2}` |
+| `pi * {{r}}^2` | `\pi \cdot {{r}}^{2}` |
+| `sin(x)` | `\sin\left(x\right)` |
+
+**Modifications** :
+
+- [x] `src/lib/migration/ascii-math-converter.ts` - Nouveau module de conversion avec protection des placeholders
+- [x] `src/lib/migration/ascii-math-converter.test.ts` - 45 tests (conversion de base, préservation placeholders, cas limites)
+- [x] `src/lib/migration/question-transformer.ts` - Intégration dans `convertVariables()`, `convertStatement()`, `convertSolution()`
+- [x] `src/lib/migration/question-transformer.test.ts` - Tests mis à jour (56 tests passent)
+- [x] Ajout de `asciiMathConverted` aux statistiques de transformation
+
+**Note technique** : Le token placeholder utilise `UBUPLACEHOLDERX<n>X` (pas d'underscores) car MathLive convertit les underscores en indices.
+
+---
 
 ### Phase 14: Dynamic QCM solutions ✅
 
@@ -206,6 +237,7 @@ const choices = rawChoices?.map((c, index) => ({
 | Steps type field | None                         | TemplateMarkdown handles text+images         |
 | Expressions      | Per-variation variables      | Guarantees correct resolution order          |
 | Variable names   | Letters (Excel-style)        | Enables simplified template syntax {{a}}     |
+| Math format      | LaTeX (via MathLive)         | Native support in MathLive rendering         |
 
 ---
 
@@ -290,6 +322,13 @@ const choices = rawChoices?.map((c, index) => ({
 - `src/lib/migration/placeholder-converter.test.ts` - Updated all numeric expectations to letters
 - `src/lib/migration/syntax-converter-integration.test.ts` - Updated all numeric expectations to letters
 - `src/lib/migration/correction-integration.test.ts` - Updated all numeric expectations to letters
+
+### Phase 15
+
+- `src/lib/migration/ascii-math-converter.ts` - NEW: AsciiMath to LaTeX conversion with placeholder protection
+- `src/lib/migration/ascii-math-converter.test.ts` - NEW: 45 tests
+- `src/lib/migration/question-transformer.ts` - Integrated AsciiMath conversion in convertVariables, convertStatement, convertSolution
+- `src/lib/migration/question-transformer.test.ts` - Updated expectations for MathLive output (spaces removed)
 
 ---
 
