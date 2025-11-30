@@ -2,13 +2,46 @@
 
 > **Plan**: `/Users/david/.claude/plans/velvet-puzzling-crane.md`
 > **Branche**: `migration/questions`
-> **Derniere mise a jour**: 2025-11-29
+> **Derniere mise a jour**: 2025-11-30
 
 ---
 
-## Current Phase: Phase 13 ✅
+## Current Phase: Phase 14 ✅
 
-## Last Commit: 6677644d
+## Last Commit: 8cce1531
+
+### Phase 14: Dynamic QCM solutions ✅
+
+**Problème résolu** : Pour les QCM avec solution dynamique (ex: parité d'un nombre), `isCorrect` était calculé statiquement au moment de la transformation au lieu d'être évalué à runtime.
+
+**Solution implémentée** :
+
+1. `isCorrect` n'est plus stocké dans le template pour les QCM
+2. Le template stocke uniquement `choices: { content }[]` (sans `isCorrect`)
+3. La `solution` contient l'indice (ou expression) du choix correct
+4. À runtime, `isCorrect` est calculé en comparant l'index avec la solution évaluée
+
+**Modifications** :
+
+- [x] `src/lib/migration/question-transformer.ts` - `convertChoices()` ne met plus `isCorrect`
+- [x] `src/lib/questions/types.ts` - `isCorrect` rendu optionnel dans `QuestionVariation.choices` et `SharedVariationDefaults.choices`
+- [x] `src/lib/components/migration/QuestionCompareView.svelte` - Calcul de `isCorrect` à runtime depuis solution évaluée
+- [x] `src/lib/migration/question-transformer.test.ts` - Tests mis à jour (54 tests passent)
+
+**Code clé (QuestionCompareView)** :
+
+```typescript
+const correctIndices = Array.isArray(solution)
+	? solution.map((s) => parseInt(String(s), 10))
+	: [parseInt(String(solution), 10)];
+
+const choices = rawChoices?.map((c, index) => ({
+	content: resolveExpression(c.content, resolved, instanceSeed),
+	isCorrect: correctIndices.includes(index)
+}));
+```
+
+---
 
 ### Phase 13: Simplified syntax for alphanumeric variables ✅
 

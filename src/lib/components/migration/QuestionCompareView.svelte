@@ -71,6 +71,40 @@
 		return String(value);
 	}
 
+	// Type for old format choices
+	interface OldChoice {
+		text?: string;
+		image?: string;
+		imageBase64?: string;
+	}
+
+	/**
+	 * Check if this is a QCM (has choices)
+	 */
+	const isQCM = $derived(
+		Array.isArray(original.choicess) && (original.choicess as OldChoice[][]).length > 0
+	);
+
+	/**
+	 * Get the text of correct choices for a variation
+	 */
+	function getCorrectChoicesText(
+		variationIndex: number,
+		solutionIndices: (string | number)[],
+		choicess: OldChoice[][]
+	): string[] {
+		// Handle shared choices (1 array for all variations)
+		const choicesForVariation = choicess.length === 1 ? choicess[0] : choicess[variationIndex];
+		if (!choicesForVariation) return [];
+
+		return solutionIndices.map((idx) => {
+			const index = typeof idx === 'string' ? parseInt(idx, 10) : idx;
+			const choice = choicesForVariation[index];
+			if (!choice) return `[index ${index} invalide]`;
+			return choice.text || choice.image || '[image]';
+		});
+	}
+
 	/**
 	 * Extract key fields from old format
 	 */
@@ -81,6 +115,7 @@
 		variabless: original.variabless || [],
 		solutionss: original.solutionss || [],
 		options: original.options || [],
+		choicess: original.choicess || [],
 		grade: original.grade || ''
 	});
 
@@ -93,7 +128,12 @@
 					type: (transformed.type as string) || '',
 					title: (transformed.title as string) || '',
 					variations: (transformed.variations as unknown[]) || [],
-					shared: transformed.shared as { variables?: QuestionVariable[] } | undefined,
+					shared: transformed.shared as
+						| {
+								variables?: QuestionVariable[];
+								choices?: Array<{ content: string; isCorrect: boolean }>;
+						  }
+						| undefined,
 					grades: (transformed.grades as string[]) || [],
 					theme: (transformed.theme as string) || '',
 					domain: (transformed.domain as string) || '',
@@ -191,11 +231,17 @@
 			// Resolve correction
 			const correction = resolveCorrection(variation.correction, resolved, instanceSeed);
 
-			// Resolve choices
-			const choices = variation.choices
-				? variation.choices.map((c) => ({
+			// Resolve choices (variation overrides shared)
+			// For QCM, isCorrect is determined by comparing index with evaluated solution
+			const rawChoices = variation.choices || newFields.shared?.choices;
+			const correctIndices = Array.isArray(solution)
+				? solution.map((s) => parseInt(String(s), 10))
+				: [parseInt(String(solution), 10)];
+
+			const choices = rawChoices
+				? rawChoices.map((c, index) => ({
 						content: resolveExpression(c.content, resolved, instanceSeed),
-						isCorrect: c.isCorrect
+						isCorrect: correctIndices.includes(index)
 					}))
 				: null;
 
@@ -284,10 +330,46 @@
 				<div>
 					<h4 class="mb-1 text-sm font-medium text-muted-foreground">
 						solutionss ({Array.isArray(oldFields.solutionss) ? oldFields.solutionss.length : 0})
+						{#if isQCM}<span class="text-xs text-muted-foreground/70"
+								>(indices des choix corrects)</span
+							>{/if}
 					</h4>
-					<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
-							oldFields.solutionss
-						)}</pre>
+					{#if isQCM && Array.isArray(oldFields.solutionss)}
+						<!-- QCM: Afficher indices + texte des choix corrects -->
+						<div class="space-y-2 rounded-md bg-muted p-3 text-xs">
+							{#each oldFields.solutionss as sol, vi (vi)}
+								{@const indices = Array.isArray(sol) ? sol : [sol]}
+								{@const texts = getCorrectChoicesText(
+									vi,
+									indices,
+									oldFields.choicess as OldChoice[][]
+								)}
+								<div>
+									<span class="font-medium">Var {vi + 1}:</span>
+									<span class="font-mono text-primary">
+										{#if indices.length === 1}
+											index {indices[0]}
+										{:else}
+											indices [{indices.join(', ')}]
+										{/if}
+									</span>
+									<span class="mx-1 text-muted-foreground">&rarr;</span>
+									<span class="text-success">
+										{#if texts.length === 1}
+											"{texts[0]}"
+										{:else}
+											[{texts.map((t) => `"${t}"`).join(', ')}]
+										{/if}
+									</span>
+								</div>
+							{/each}
+						</div>
+					{:else}
+						<!-- Non-QCM: Affichage JSON normal -->
+						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+								oldFields.solutionss
+							)}</pre>
+					{/if}
 				</div>
 
 				<!-- Options -->
@@ -298,6 +380,18 @@
 						</h4>
 						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
 								oldFields.options
+							)}</pre>
+					</div>
+				{/if}
+
+				<!-- Choices -->
+				{#if Array.isArray(oldFields.choicess) && oldFields.choicess.length > 0}
+					<div>
+						<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+							choicess ({oldFields.choicess.length})
+						</h4>
+						<pre class="overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs">{formatValue(
+								oldFields.choicess
 							)}</pre>
 					</div>
 				{/if}
@@ -379,6 +473,26 @@
 								{#each newFields.shared.variables as v (v.name)}
 									<div>
 										<span class="text-primary">{v.name}</span> = {v.expression}
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
+
+					<!-- Shared Choices -->
+					{#if newFields.shared?.choices && newFields.shared.choices.length > 0}
+						<div>
+							<h4 class="mb-1 text-sm font-medium text-muted-foreground">
+								Choix partagés ({newFields.shared.choices.length})
+							</h4>
+							<p class="mb-1 text-xs text-muted-foreground/70">
+								Le choix correct est déterminé par la solution évaluée
+							</p>
+							<div class="space-y-1 rounded-md bg-muted p-3 text-xs">
+								{#each newFields.shared.choices as choice, ci (ci)}
+									<div class="flex items-center gap-2">
+										<span class="font-mono">{ci}.</span>
+										<span>{choice.content}</span>
 									</div>
 								{/each}
 							</div>
@@ -493,11 +607,11 @@
 										<li
 											class={cn(
 												'rounded px-2 py-1',
-												choice.isCorrect ? 'bg-success/10 text-success' : 'bg-muted'
+												choice.isCorrect === true ? 'bg-success/10 text-success' : 'bg-muted'
 											)}
 										>
 											{ci + 1}. {choice.content}
-											{choice.isCorrect ? '✓' : ''}
+											{choice.isCorrect === true ? '✓' : ''}
 										</li>
 									{/each}
 								</ul>

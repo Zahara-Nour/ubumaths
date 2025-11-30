@@ -533,7 +533,6 @@ function convertSolution(
  */
 function convertChoices(
 	choices: Choice[] | undefined,
-	correctIndices: (string | number)[] | undefined,
 	imageMapping: ImageUrlMapping | undefined,
 	warnings: string[],
 	stats: TransformStats
@@ -542,10 +541,8 @@ function convertChoices(
 		return undefined;
 	}
 
-	const correctSet = new Set(
-		(correctIndices || []).map((idx) => (typeof idx === 'string' ? parseInt(idx, 10) : idx))
-	);
-
+	// Note: isCorrect is no longer set here - the correct choice is determined
+	// at runtime by evaluating the solution (which contains the correct index)
 	return choices.map((choice, index) => {
 		let content: TemplateMarkdown;
 
@@ -579,8 +576,7 @@ function convertChoices(
 		}
 
 		return {
-			content,
-			isCorrect: correctSet.has(index)
+			content
 		};
 	});
 }
@@ -1449,23 +1445,14 @@ function detectSharedFields(
 	const choicesIsShared = choicess.length === 1 && variationCount > 1;
 
 	if (questionType === 'multiple_choice' && choicess.length > 0) {
+		// For QCM, choices don't have isCorrect - the correct choice is determined
+		// at runtime by evaluating the solution (which contains the correct index)
 		if (choicesIsShared) {
-			// Shared choices: need to determine correct indices
-			// For shared choices, the correct indices are typically the same across variations
-			// or we use the first solutions array
-			const correctIndices = solutionss[0];
-			shared.choices = convertChoices(choicess[0], correctIndices, imageMapping, warnings, stats);
+			shared.choices = convertChoices(choicess[0], imageMapping, warnings, stats);
 		} else {
 			for (let i = 0; i < variationCount; i++) {
 				const choices = choicess[i] || choicess[0];
-				const correctIndices = solutionss[i] || solutionss[0];
-				perVariation[i].choices = convertChoices(
-					choices,
-					correctIndices,
-					imageMapping,
-					warnings,
-					stats
-				);
+				perVariation[i].choices = convertChoices(choices, imageMapping, warnings, stats);
 			}
 		}
 	}
