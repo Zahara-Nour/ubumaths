@@ -203,3 +203,33 @@ export {
 	isEquality,
 	isInequality
 } from './guards';
+
+// =============================================================================
+// Flatten Helpers
+// =============================================================================
+
+export type {
+	Sign,
+	SignedTerm,
+	FlatSum,
+	FlatProduct,
+	DeepFlatSumResult,
+	DeepFlatProductResult
+} from './flatten';
+
+export {
+	// Utilities
+	flipSign,
+
+	// Shallow flattening
+	flattenSumShallow,
+	flattenProductShallow,
+
+	// Deep flattening
+	flattenSumDeep,
+	flattenProductDeep,
+
+	// Unflattening (reconstruction)
+	unflattenSum,
+	unflattenProduct
+} from './flatten';
