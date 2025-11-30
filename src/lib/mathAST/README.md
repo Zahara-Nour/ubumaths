@@ -27,12 +27,12 @@ Build expressions using factory functions:
 ```typescript
 // Create: x^2 + 3x - 5 = 0
 const ast = MathAST.equals(
-	MathAST.add(
+	MathAST.subtract(
 		MathAST.add(
 			MathAST.power(MathAST.variable('x'), MathAST.number('2')),
 			MathAST.implicitMultiply(MathAST.number('3'), MathAST.variable('x'))
 		),
-		MathAST.opposite(MathAST.number('5'))
+		MathAST.number('5')
 	),
 	MathAST.number('0')
 );
