@@ -1188,8 +1188,8 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			// Solution should reference the expression variable
-			expect(result.template?.variations[0]?.solution).toBe('{{expression1}}');
+			// Solution should evaluate the expression variable
+			expect(result.template?.variations[0]?.solution).toBe('{{eval:expression1}}');
 		});
 
 		it('should generate per-variation solutions from expressions when solutionss is absent', () => {
@@ -1206,8 +1206,8 @@ describe('Question Transformer', () => {
 			const result = transformQuestion(oldQuestion, 0);
 
 			expect(result.success).toBe(true);
-			expect(result.template?.variations[0]?.solution).toBe('{{expression1}}');
-			expect(result.template?.variations[1]?.solution).toBe('{{expression2}}');
+			expect(result.template?.variations[0]?.solution).toBe('{{eval:expression1}}');
+			expect(result.template?.variations[1]?.solution).toBe('{{eval:expression2}}');
 		});
 	});
 
