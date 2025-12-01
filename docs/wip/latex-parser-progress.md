@@ -139,9 +139,47 @@ parseRDSafe(input: string, options?): ParseResult  // returns errors
 
 ---
 
-## Phase 4: Public API & Integration
+## Phase 4: Public API & Integration ✅
 
-**Status**: Pending
+**Status**: Complete
+**Date**: 2025-12-01
+
+### Files Modified
+
+| File                                   | Description                   |
+| -------------------------------------- | ----------------------------- |
+| `parser/index.ts`                      | Unified public API            |
+| `mathAST/index.ts`                     | Parser exports in main module |
+| `parser/__tests__/integration.test.ts` | 196 integration tests         |
+
+### Test Results
+
+- **196 tests passing**
+- Round-trip tests (Parse → Generate → Parse)
+- Parser comparison (Pratt vs RD equivalence)
+- Complex expression tests
+- Error handling validation
+
+### Public API
+
+```typescript
+// Main API (defaults to Pratt parser)
+parseLatex(input: string, options?: LatexParserOptions): MathNode
+parseLatexSafe(input: string, options?: LatexParserOptions): ParseResult
+validateLatex(input: string): ParseError[]
+
+// Options
+interface LatexParserOptions {
+  mode?: 'strict' | 'tolerant';
+  parser?: 'pratt' | 'rd';
+}
+
+// Direct parser access
+parsePratt(input, options?): MathNode
+parsePrattSafe(input, options?): ParseResult
+parseRD(input, options?): MathNode
+parseRDSafe(input, options?): ParseResult
+```
 
 ---
 
