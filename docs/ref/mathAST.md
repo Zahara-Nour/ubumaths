@@ -14,14 +14,15 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 2. [Architecture](#architecture)
 3. [Type System](#type-system)
 4. [Factory Functions](#factory-functions)
-5. [Transformation Helpers](#transformation-helpers)
-6. [Type Guards](#type-guards)
-7. [Flatten/Unflatten Helpers](#flattenunflatten-helpers)
-8. [LaTeX Generator](#latex-generator)
-9. [Physical Units](#physical-units)
-10. [Dimensional Analysis](#dimensional-analysis)
-11. [Usage Patterns](#usage-patterns)
-12. [API Summary](#api-summary)
+5. [Extended Metadata System](#extended-metadata-system)
+6. [Transformation Helpers](#transformation-helpers)
+7. [Type Guards](#type-guards)
+8. [Flatten/Unflatten Helpers](#flattenunflatten-helpers)
+9. [LaTeX Generator](#latex-generator)
+10. [Physical Units](#physical-units)
+11. [Dimensional Analysis](#dimensional-analysis)
+12. [Usage Patterns](#usage-patterns)
+13. [API Summary](#api-summary)
 
 ---
 
@@ -513,15 +514,227 @@ iff(left, right, metadata?): RelationNode               // ⟺
 
 ---
 
+## Extended Metadata System
+
+The extended metadata system allows fine-grained styling control over specific parts of expressions. Beyond the base `metadata` field (which colors the entire node), you can now target operators, delimiters, function names, relations, and units with independent metadata.
+
+### Overview
+
+Extended metadata fields are available on specific node types:
+
+- **Binary Operations** (`AdditionNode`, `SubtractionNode`, `MultiplicationNode`, `DivisionNode`): `operatorMetadata`
+- **Unary Operations** (`OppositeNode`, `PositiveNode`): `operatorMetadata`
+- **Delimiters** (`DelimiterNode`, `FunctionNode`): `delimiterMetadata`, `leftDelimiterMetadata`, `rightDelimiterMetadata`
+- **Functions** (`FunctionNode`): `nameMetadata` (for the function name itself)
+- **Relations** (`RelationNode`): `relationMetadata`
+- **Units** (`UnitNode`): `unitMetadata`
+
+Each extended metadata field accepts a standard `NodeMetadata` object with optional `color`, `style`, and `annotation` properties.
+
+### Factory Options Types
+
+#### BinaryOpOptions
+
+Used by `add()`, `subtract()`, `multiply()`, `divide()`, `fraction()`:
+
+```typescript
+interface BinaryOpOptions {
+	operatorMetadata?: NodeMetadata; // Metadata for the operator symbol (+, -, *, /)
+	metadata?: NodeMetadata; // Metadata for the entire node
+}
+```
+
+**Backward compatibility**: Factories also accept plain `NodeMetadata` as a shorthand for `{ metadata: NodeMetadata }`.
+
+#### UnaryOpOptions
+
+Used by `opposite()`, `positive()`:
+
+```typescript
+interface UnaryOpOptions {
+	operatorMetadata?: NodeMetadata; // Metadata for the operator (-, +)
+	metadata?: NodeMetadata; // Metadata for the entire node
+}
+```
+
+#### DelimiterOptions
+
+Used by `delimiter()`, `parentheses()`:
+
+```typescript
+interface DelimiterOptions {
+	delimiterMetadata?: NodeMetadata; // Metadata applied to both delimiters (default)
+	leftDelimiterMetadata?: NodeMetadata; // Metadata for opening delimiter only
+	rightDelimiterMetadata?: NodeMetadata; // Metadata for closing delimiter only
+	metadata?: NodeMetadata; // Metadata for the entire node
+}
+```
+
+**Note**: When specific left/right metadata is provided, it takes precedence over the generic `delimiterMetadata`.
+
+#### FunctionMetadataOptions
+
+Used by `func()`, `sin()`, `cos()`, `tan()`, `ln()`, `log()`, `exp()`, `sqrt()`, `abs()`:
+
+```typescript
+interface FunctionMetadataOptions {
+	nameMetadata?: NodeMetadata; // Metadata for the function name (sin, cos, f, etc.)
+	delimiterMetadata?: NodeMetadata; // Metadata applied to both delimiters
+	leftDelimiterMetadata?: NodeMetadata; // Metadata for opening parenthesis only
+	rightDelimiterMetadata?: NodeMetadata; // Metadata for closing parenthesis only
+	metadata?: NodeMetadata; // Metadata for the entire node
+}
+```
+
+#### RelationOptions
+
+Used by `relation()`, `equals()`, `lessThan()`, and all relation factory functions:
+
+```typescript
+interface RelationOptions {
+	relationMetadata?: NodeMetadata; // Metadata for the relation symbol (=, <, etc.)
+	metadata?: NodeMetadata; // Metadata for the entire node
+}
+```
+
+#### UnitOptions
+
+Used by `withUnit()`, `quantity()`, `quantityVar()`:
+
+```typescript
+interface UnitOptions {
+	unitMetadata?: NodeMetadata; // Metadata for the unit part
+	metadata?: NodeMetadata; // Metadata for the entire node (expression + unit)
+}
+```
+
+### Usage Examples
+
+#### Coloring Binary Operators
+
+```typescript
+import { MathAST, toLatex } from '$lib/mathAST';
+
+// Color the + operator red: 3 (red +) 4
+const expr = MathAST.add(MathAST.number('3'), MathAST.number('4'), {
+	operatorMetadata: { color: 'red' }
+});
+// LaTeX with renderMetadata: true → "3\textcolor{red}{+}4"
+
+// Color just the subtraction operator in blue: 5 (blue -) 2
+const sub = MathAST.subtract(MathAST.number('5'), MathAST.number('2'), {
+	operatorMetadata: { color: 'blue', style: 'bold' }
+});
+// LaTeX with renderMetadata: true → "5\mathbf{\textcolor{blue}{-}}2"
+```
+
+#### Coloring Function Names and Delimiters
+
+```typescript
+// Color the function name red, delimiters blue
+const fn = MathAST.sin(MathAST.variable('x'), {
+	nameMetadata: { color: 'red' },
+	delimiterMetadata: { color: 'blue' }
+});
+// LaTeX with renderMetadata: true → "\textcolor{red}{\sin}\textcolor{blue}{\left( x \right)}"
+
+// Color left and right delimiters differently
+const paren = MathAST.parentheses(MathAST.number('42'), {
+	leftDelimiterMetadata: { color: 'blue' },
+	rightDelimiterMetadata: { color: 'green' }
+});
+// LaTeX with renderMetadata: true → "\textcolor{blue}{\left(}42\textcolor{green}{\right)}"
+```
+
+#### Coloring Relation Symbols
+
+```typescript
+// Color the equals sign in green
+const eq = MathAST.equals(MathAST.variable('x'), MathAST.number('5'), {
+	relationMetadata: { color: 'green' }
+});
+// LaTeX with renderMetadata: true → "x\textcolor{green}{=}5"
+```
+
+#### Coloring Units
+
+```typescript
+// Color the unit red, keep the number black
+const qty = MathAST.quantity('5', 'm', {
+	unitMetadata: { color: 'red' }
+});
+// LaTeX with renderMetadata: true → "5~\textcolor{red}{\unit{m}}"
+```
+
+---
+
 ## Transformation Helpers
 
 ### Metadata
+
+#### Standard Metadata
 
 ```typescript
 withMetadata<T extends MathNode>(node: T, metadata: Partial<NodeMetadata>): T
 ```
 
 Merges metadata into a node, returning a new node.
+
+#### Extended Metadata Helpers
+
+```typescript
+// Add/merge operator metadata to binary or unary operations
+withOperatorMetadata<T extends MathNode>(
+	node: T,
+	operatorMetadata: Partial<NodeMetadata>
+): T
+
+// Add/merge delimiter metadata to DelimiterNode or FunctionNode
+// side: 'left' | 'right' | 'both' (default: 'both')
+withDelimiterMetadata<T extends MathNode>(
+	node: T,
+	delimiterMetadata: Partial<NodeMetadata>,
+	side?: 'left' | 'right' | 'both'
+): T
+
+// Add/merge function name metadata to FunctionNode
+withNameMetadata<T extends MathNode>(
+	node: T,
+	nameMetadata: Partial<NodeMetadata>
+): T
+
+// Add/merge relation metadata to RelationNode
+withRelationMetadata<T extends MathNode>(
+	node: T,
+	relationMetadata: Partial<NodeMetadata>
+): T
+
+// Add/merge unit metadata to UnitNode
+withUnitMetadata<T extends MathNode>(
+	node: T,
+	unitMetadata: Partial<NodeMetadata>
+): T
+```
+
+**Behavior**: These helpers safely return the node unchanged if it doesn't support the extended metadata field. For example, calling `withOperatorMetadata()` on a `NumberNode` returns it unchanged.
+
+**Example**:
+
+```typescript
+import { MathAST, withOperatorMetadata, withNameMetadata } from '$lib/mathAST';
+
+// Add operator metadata to existing node
+let expr = MathAST.add(MathAST.number('3'), MathAST.number('4'));
+expr = withOperatorMetadata(expr, { color: 'red' });
+
+// Add function name metadata
+let fn = MathAST.sin(MathAST.variable('x'));
+fn = withNameMetadata(fn, { color: 'blue', style: 'bold' });
+
+// Delimiter metadata with side specificity
+let paren = MathAST.parentheses(MathAST.variable('y'));
+paren = withDelimiterMetadata(paren, { color: 'green' }, 'left'); // Only left delimiter
+```
 
 ### Tree Traversal
 
@@ -634,6 +847,37 @@ isImplicitMultiplication(node): node is MultiplicationNode  // displayStyle: 'im
 isComparison(node): node is RelationNode        // <, >, <=, >=
 isEquality(node): node is RelationNode          // =
 isInequality(node): node is RelationNode        // !=
+```
+
+### Extended Metadata Predicates
+
+```typescript
+// Check for specific extended metadata fields
+hasOperatorMetadata(node: MathNode): boolean       // Check if node has operator metadata
+hasDelimiterMetadata(node: MathNode): boolean      // Check if node has any delimiter metadata
+hasNameMetadata(node: MathNode): boolean           // Check if node has function name metadata
+hasRelationMetadata(node: MathNode): boolean       // Check if node has relation metadata
+hasUnitMetadata(node: MathNode): boolean           // Check if node has unit metadata
+
+// Check for any metadata (standard or extended)
+hasAnyMetadata(node: MathNode): boolean            // true if node has any metadata type
+```
+
+**Example**:
+
+```typescript
+import { hasOperatorMetadata, hasDelimiterMetadata, hasAnyMetadata } from '$lib/mathAST';
+
+const add = MathAST.add(MathAST.number('3'), MathAST.number('4'), {
+	operatorMetadata: { color: 'red' }
+});
+
+hasOperatorMetadata(add); // true
+hasMetadata(add); // false (no standard metadata)
+hasAnyMetadata(add); // true
+
+const num = MathAST.number('42');
+hasAnyMetadata(num); // false
 ```
 
 ---
@@ -926,31 +1170,34 @@ function evaluate(node: MathNode, vars: Map<string, number>): number {
 
 ### Export Counts
 
-| Module             | Exports | Description       |
-| ------------------ | ------- | ----------------- |
-| types.ts           | 27      | Type definitions  |
-| factory.ts         | 55      | Node creation     |
-| transforms.ts      | 10      | Tree manipulation |
-| guards.ts          | 29      | Type checking     |
-| flatten.ts         | 16      | Flatten/unflatten |
-| latex-generator.ts | 3       | LaTeX output      |
-| **index.ts**       | **140** | **Public API**    |
+| Module             | Exports | Description             |
+| ------------------ | ------- | ----------------------- |
+| types.ts           | 27      | Type definitions        |
+| factory.ts         | 61      | Node creation + options |
+| transforms.ts      | 15      | Tree manipulation       |
+| guards.ts          | 35      | Type checking           |
+| flatten.ts         | 16      | Flatten/unflatten       |
+| latex-generator.ts | 3       | LaTeX output            |
+| **index.ts**       | **157** | **Public API**          |
+
+**New in extended metadata**: 6 options types, 5 transform helpers, 6 guard functions
 
 ### Quick Reference
 
-| Category            | Functions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Literals**        | `number`, `variable`, `greek`, `symbol`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| **Binary Ops**      | `add`, `subtract`, `multiply`, `implicitMultiply`, `divide`, `fraction`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| **Unary Ops**       | `opposite`, `positive`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **Functions**       | `func`, `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt`, `abs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| **Structural**      | `delimiter`, `parentheses`, `subscript`, `superscript`, `power`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| **Relations**       | `relation`, `equals`, `lessThan`, `greaterThan`, `lessThanOrEqual`, `greaterThanOrEqual`, `notEquals`, `approx`, `congruent`, `elementOf`, `notElementOf`, `subset`, `subsetOrEqual`, `superset`, `supersetOrEqual`, `implies`, `iff`                                                                                                                                                                                                                                                                                                                                          |
-| **Relation Chains** | `relationChain`, `equalsChain`, `lessThanChain`, `lessThanOrEqualChain`, `greaterThanChain`, `greaterThanOrEqualChain`, `impliesChain`, `iffChain`                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **Transforms**      | `withMetadata`, `getChildren`, `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `cloneNode`, `countNodes`, `getDepth`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| **Guards**          | `isNumber`, `isVariable`, `isGreek`, `isSymbol`, `isAddition`, `isSubtraction`, `isMultiplication`, `isDivision`, `isOpposite`, `isPositive`, `isFunction`, `isDelimiter`, `isSubscript`, `isSuperscript`, `isRelation`, `isLiteralNode`, `isBinaryOperationNode`, `isUnaryOperationNode`, `isStructuralNode`, `hasChildren`, `isLeaf`, `hasMetadata`, `isFraction`, `isImplicitMultiplication`, `isComparison`, `isEquality`, `isInequality`, `isRelationChain`, `isComparisonChain`, `isEqualityChain`, `isImplicationChain`, `isEquivalenceChain`, `getRelationChainLength` |
-| **Flatten**         | `flipSign`, `flattenSumShallow`, `flattenProductShallow`, `flattenSumDeep`, `flattenProductDeep`, `unflattenSum`, `unflattenProduct`, `flattenRelationChain`, `unflattenRelationChain`                                                                                                                                                                                                                                                                                                                                                                                         |
-| **LaTeX**           | `toLatex`, `LatexGenerator`, `LatexGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Category            | Functions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Literals**        | `number`, `variable`, `greek`, `symbol`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Binary Ops**      | `add`, `subtract`, `multiply`, `implicitMultiply`, `divide`, `fraction`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Unary Ops**       | `opposite`, `positive`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Functions**       | `func`, `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt`, `abs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Structural**      | `delimiter`, `parentheses`, `subscript`, `superscript`, `power`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **Relations**       | `relation`, `equals`, `lessThan`, `greaterThan`, `lessThanOrEqual`, `greaterThanOrEqual`, `notEquals`, `approx`, `congruent`, `elementOf`, `notElementOf`, `subset`, `subsetOrEqual`, `superset`, `supersetOrEqual`, `implies`, `iff`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **Relation Chains** | `relationChain`, `equalsChain`, `lessThanChain`, `lessThanOrEqualChain`, `greaterThanChain`, `greaterThanOrEqualChain`, `impliesChain`, `iffChain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Transforms**      | `withMetadata`, `withOperatorMetadata`, `withDelimiterMetadata`, `withNameMetadata`, `withRelationMetadata`, `withUnitMetadata`, `getChildren`, `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `cloneNode`, `countNodes`, `getDepth`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Guards**          | `isNumber`, `isVariable`, `isGreek`, `isSymbol`, `isAddition`, `isSubtraction`, `isMultiplication`, `isDivision`, `isOpposite`, `isPositive`, `isFunction`, `isDelimiter`, `isSubscript`, `isSuperscript`, `isRelation`, `isUnit`, `isLiteralNode`, `isBinaryOperationNode`, `isUnaryOperationNode`, `isStructuralNode`, `hasChildren`, `isLeaf`, `hasMetadata`, `hasOperatorMetadata`, `hasDelimiterMetadata`, `hasNameMetadata`, `hasRelationMetadata`, `hasUnitMetadata`, `hasAnyMetadata`, `isFraction`, `isImplicitMultiplication`, `isComparison`, `isEquality`, `isInequality`, `isRelationChain`, `isComparisonChain`, `isEqualityChain`, `isImplicationChain`, `isEquivalenceChain`, `getRelationChainLength`, `hasUnitDescendant`, `isDimensionlessUnit` |
+| **Flatten**         | `flipSign`, `flattenSumShallow`, `flattenProductShallow`, `flattenSumDeep`, `flattenProductDeep`, `unflattenSum`, `unflattenProduct`, `flattenRelationChain`, `unflattenRelationChain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **LaTeX**           | `toLatex`, `LatexGenerator`, `LatexGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **Options Types**   | `BinaryOpOptions`, `UnaryOpOptions`, `DelimiterOptions`, `FunctionMetadataOptions`, `RelationOptions`, `UnitOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ---
 
@@ -1046,6 +1293,33 @@ When `renderMetadata: true`:
 - **Annotation**: ignored (not rendered)
 
 Metadata wrapping order: style → color
+
+### Coalescence (Merging Adjacent Same-Color Spans)
+
+The LaTeX generator optimizes metadata rendering by merging adjacent spans with the same color. This reduces LaTeX output size and improves rendering efficiency.
+
+**How it works**:
+
+Adjacent spans with identical color values are merged into a single `\textcolor{}` block. Style (bold/italic) is applied per-span independently since different spans can have different styles.
+
+**Examples**:
+
+```
+Input (with operatorMetadata and number colorized red):
+  3 (red) + (red) 4
+
+Output without coalescence:
+  \textcolor{red}{3}\textcolor{red}{+}\textcolor{red}{4}
+
+Output with coalescence:
+  \textcolor{red}{3+4}
+```
+
+**Edge cases**:
+
+- Different colors: `\textcolor{red}{3}\textcolor{blue}{+}\textcolor{red}{4}` - no merging (colors differ)
+- Different styles: `\textcolor{red}{\mathbf{3}}\textcolor{red}{+}` - no merging (styles differ)
+- Same color, no style: `\textcolor{red}{3}\textcolor{red}{+}` → `\textcolor{red}{3+}` (merged)
 
 ### Precedence
 
