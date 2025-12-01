@@ -38,9 +38,48 @@ Parser LaTeX → MathAST avec deux implementations (Pratt et Recursive Descent).
 
 ---
 
-## Phase 2: Pratt Parser
+## Phase 2: Pratt Parser ✅
 
-**Status**: Pending
+**Status**: Complete
+**Date**: 2025-12-01
+
+### Files Created
+
+| File                     | Description                 | Tests |
+| ------------------------ | --------------------------- | ----- |
+| `parser/parser-pratt.ts` | Pratt parser implementation | 137   |
+
+### Test Results
+
+- **137 tests passing**
+- All 16 MathNode types supported
+- Operator precedence verified
+- Implicit multiplication working
+- Right-associativity for chained exponents (x^2^3 → x^(2^3))
+
+### Key Features
+
+- Binding power: RELATION=10, ADDITION=20, MULTIPLY=30, UNARY=40, POWER=50
+- Right-associative: ^ (chained: x^2^3 → x^(2^3)), _ (chained: x_a_b → x_(a_b))
+- Left-to-right for mixed: x_1^2 → (x_1)^2
+- Left-associative: +, -, \*, /
+- Implicit multiplication detection (2x, xy, 2\sin(x), etc.)
+- Color stack integration for nested \textcolor
+- Unit parsing via existing units/parser.ts
+- Error handling: strict (throw) and tolerant (collect) modes
+
+### Code Review Fix
+
+- Fixed right-associativity bug: `parseSuperscriptOperand()` and `parseSubscriptOperand()`
+- Original: used `nud()` → left-associative for all cases
+- Fixed: check for same operator to enable right-associativity only for chained same operators
+
+### API
+
+```typescript
+parsePratt(input: string, options?): MathNode      // throws on error
+parsePrattSafe(input: string, options?): ParseResult  // returns errors
+```
 
 ---
 
