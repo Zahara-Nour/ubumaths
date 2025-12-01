@@ -296,3 +296,24 @@ export {
 export type { LatexGeneratorOptions } from './latex-generator';
 
 export { LatexGenerator, toLatex } from './latex-generator';
+
+// =============================================================================
+// LaTeX Parser
+// =============================================================================
+
+export type { LatexParserOptions } from './parser';
+
+export {
+	// Unified API (recommended)
+	parseLatex,
+	parseLatexSafe,
+	validateLatex,
+	// Direct parser access (for advanced use)
+	parsePratt,
+	parsePrattSafe,
+	parseRD,
+	parseRDSafe,
+	// Parser exceptions
+	PrattParseException,
+	RDParseException
+} from './parser';
