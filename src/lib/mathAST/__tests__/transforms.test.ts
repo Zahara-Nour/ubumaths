@@ -553,7 +553,7 @@ describe('transforms', () => {
 		});
 
 		it('clones delimiter with semantic', () => {
-			const node = delimiter('braces', variable('x'), 'set');
+			const node = delimiter('parentheses', variable('x'), 'set');
 			const clone = cloneNode(node);
 
 			expect(clone).toEqual(node);

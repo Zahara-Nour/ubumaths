@@ -153,34 +153,9 @@ describe('LatexGenerator - Delimiters', () => {
 		expect(toLatex(expr)).toBe('\\left( x \\right)');
 	});
 
-	it('generates brackets', () => {
-		const expr = MathAST.brackets(MathAST.variable('x'));
-		expect(toLatex(expr)).toBe('\\left[ x \\right]');
-	});
-
-	it('generates braces', () => {
-		const expr = MathAST.braces(MathAST.variable('x'));
-		expect(toLatex(expr)).toBe('\\left\\{ x \\right\\}');
-	});
-
-	it('generates invisible delimiter', () => {
-		const expr = MathAST.delimiter('invisible', MathAST.variable('x'));
-		expect(toLatex(expr)).toBe('x');
-	});
-
 	it('generates absolute value', () => {
 		const expr = MathAST.delimiter('absolute', MathAST.variable('x'), 'absolute');
 		expect(toLatex(expr)).toBe('\\left| x \\right|');
-	});
-
-	it('generates floor', () => {
-		const expr = MathAST.delimiter('floor', MathAST.variable('x'), 'floor');
-		expect(toLatex(expr)).toBe('\\left\\lfloor x \\right\\rfloor');
-	});
-
-	it('generates ceiling', () => {
-		const expr = MathAST.delimiter('ceiling', MathAST.variable('x'), 'ceiling');
-		expect(toLatex(expr)).toBe('\\left\\lceil x \\right\\rceil');
 	});
 });
 

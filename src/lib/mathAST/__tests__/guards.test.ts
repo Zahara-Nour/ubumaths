@@ -221,8 +221,7 @@ describe('guards', () => {
 		});
 
 		it('returns true for various delimiter types', () => {
-			expect(isDelimiter(delimiter('brackets', variable('x')))).toBe(true);
-			expect(isDelimiter(delimiter('braces', variable('x')))).toBe(true);
+			expect(isDelimiter(delimiter('absolute', variable('x')))).toBe(true);
 		});
 
 		it('returns false for non-delimiter nodes', () => {

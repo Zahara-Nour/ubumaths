@@ -315,7 +315,7 @@ export function abs(arg: MathNode, metadata?: NodeMetadata): FunctionNode {
 
 /**
  * Creates a delimiter node (content surrounded by delimiters)
- * @param type - Type of delimiter ('parentheses', 'brackets', 'braces', etc.)
+ * @param type - Type of delimiter ('parentheses', 'absolute')
  * @param content - Content inside delimiters
  * @param semantic - Optional semantic meaning ('grouping', 'interval', 'set', etc.)
  * @param metadata - Optional rendering hints
@@ -340,20 +340,6 @@ export function delimiter(
  */
 export function parentheses(content: MathNode, metadata?: NodeMetadata): DelimiterNode {
 	return delimiter('parentheses', content, 'grouping', metadata);
-}
-
-/**
- * Convenience: Creates brackets [content]
- */
-export function brackets(content: MathNode, metadata?: NodeMetadata): DelimiterNode {
-	return delimiter('brackets', content, undefined, metadata);
-}
-
-/**
- * Convenience: Creates braces {content}
- */
-export function braces(content: MathNode, metadata?: NodeMetadata): DelimiterNode {
-	return delimiter('braces', content, 'set', metadata);
 }
 
 /**
@@ -793,8 +779,6 @@ export const MathAST = {
 	// Structural
 	delimiter,
 	parentheses,
-	brackets,
-	braces,
 	subscript,
 	superscript,
 	power,

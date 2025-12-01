@@ -121,8 +121,6 @@ export {
 	// Structural
 	delimiter,
 	parentheses,
-	brackets,
-	braces,
 	subscript,
 	superscript,
 	power,
