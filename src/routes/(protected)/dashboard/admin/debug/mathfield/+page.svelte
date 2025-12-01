@@ -119,7 +119,7 @@
 			// \unit{km} renders with a light background to distinguish from variables
 			unit: {
 				args: 1,
-				def: '\\colorbox{#e8f5e9}{\\textcolor{black}{\\mathsf{#1}}}'
+				def: '\\,\\colorbox{#e8f5e9}{\\textcolor{black}{\\mathsf{#1}}}\\,'
 			}
 		};
 
