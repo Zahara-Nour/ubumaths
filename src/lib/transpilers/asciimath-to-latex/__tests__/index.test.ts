@@ -73,6 +73,60 @@ describe('transpile (end-to-end)', () => {
 		});
 	});
 
+	describe('Implicit multiplication', () => {
+		it('should handle number-variable juxtaposition', () => {
+			expect(transpile('2x').latex).toBe('2x');
+			expect(transpile('3y').latex).toBe('3y');
+			expect(transpile('42abc').latex).toBe('42abc');
+		});
+
+		it('should handle variable-variable juxtaposition', () => {
+			expect(transpile('xy').latex).toBe('xy');
+			expect(transpile('abc').latex).toBe('abc');
+		});
+
+		it('should handle number-parenthesis juxtaposition', () => {
+			expect(transpile('2(x+1)').latex).toBe('2\\left(x+1\\right)');
+			expect(transpile('3(a-b)').latex).toBe('3\\left(a-b\\right)');
+		});
+
+		it('should handle variable-parenthesis juxtaposition', () => {
+			expect(transpile('x(y+1)').latex).toBe('x\\left(y+1\\right)');
+		});
+
+		it('should handle number-greek juxtaposition', () => {
+			expect(transpile('2pi').latex).toBe('2\\pi');
+			expect(transpile('3alpha').latex).toBe('3\\alpha');
+		});
+
+		it('should handle multiple implicit multiplications', () => {
+			expect(transpile('2xy').latex).toBe('2xy');
+			expect(transpile('abc').latex).toBe('abc');
+			expect(transpile('2x3y').latex).toBe('2x3y');
+		});
+
+		it('should handle implicit multiplication in expressions', () => {
+			expect(transpile('2x+3y').latex).toBe('2x+3y');
+			expect(transpile('ax+by+c').latex).toBe('ax+by+c');
+		});
+
+		it('should handle function-function juxtaposition', () => {
+			expect(transpile('sin(x)cos(x)').latex).toBe('\\sin\\left(x\\right)\\cos\\left(x\\right)');
+		});
+
+		it('should distinguish implicit from explicit multiplication', () => {
+			expect(transpile('2x').latex).toBe('2x'); // implicit - no symbol
+			expect(transpile('2*x').latex).toBe('2 \\times x'); // explicit - with \\times
+			expect(transpile('2:x').latex).toBe('2 \\div x'); // division - with \\div
+		});
+
+		it('should handle implicit multiplication with templates', () => {
+			expect(transpile('{{a}}x').latex).toBe('{{a}}x');
+			expect(transpile('2{{b}}').latex).toBe('2{{b}}');
+			expect(transpile('{{a}}{{b}}').latex).toBe('{{a}}{{b}}');
+		});
+	});
+
 	describe('Delimiters', () => {
 		it('should convert () to \\left(\\right)', () => {
 			expect(transpile('(x+1)').latex).toBe('\\left(x+1\\right)');

@@ -210,33 +210,74 @@ export class Parser {
 	}
 
 	/**
-	 * Parse multiplicative: fraction { ("*" | ":") fraction }
+	 * Parse multiplicative: fraction { ("*" | ":" | implicit) fraction }
+	 * Implicit multiplication detected by juxtaposition of atoms
 	 */
 	private parseMultiplicative(): ASTNode {
 		let left = this.parseFraction();
 
-		while (
-			this.checkOperator(':') ||
-			(this.peek().type === 'SYMBOL' && this.peek().value === '*')
-		) {
-			const operator = this.advance();
+		while (true) {
+			// Check for explicit multiplication operators
+			if (this.checkOperator(':') || (this.peek().type === 'SYMBOL' && this.peek().value === '*')) {
+				const operator = this.advance();
 
-			// Disable unary minus after binary operators
-			this.unaryMinusAllowed = false;
-			const right = this.parseFraction();
-			this.unaryMinusAllowed = true;
+				// Disable unary minus after binary operators
+				this.unaryMinusAllowed = false;
+				const right = this.parseFraction();
+				this.unaryMinusAllowed = true;
 
-			left = {
-				type: 'BinaryOp',
-				operator: operator.value,
-				left,
-				right,
-				start: left.start,
-				end: right.end
-			};
+				left = {
+					type: 'BinaryOp',
+					operator: operator.value,
+					left,
+					right,
+					start: left.start,
+					end: right.end
+				};
+				continue;
+			}
+
+			// Check for implicit multiplication (juxtaposition)
+			if (this.canStartAtom()) {
+				// Disable unary minus in implicit multiplication
+				this.unaryMinusAllowed = false;
+				const right = this.parseFraction();
+				this.unaryMinusAllowed = true;
+
+				left = {
+					type: 'ImplicitMul',
+					left,
+					right,
+					start: left.start,
+					end: right.end
+				};
+				continue;
+			}
+
+			break;
 		}
 
 		return left;
+	}
+
+	/**
+	 * Check if current token can start an atom (for implicit multiplication detection)
+	 * Note: PIPE is excluded because it can be a closing delimiter for absolute value
+	 * This means |a||b| will be parsed as |a| followed by |b|, not |a*|b||
+	 */
+	private canStartAtom(): boolean {
+		const token = this.peek();
+		return (
+			token.type === 'NUMBER' ||
+			token.type === 'IDENTIFIER' ||
+			token.type === 'FUNCTION' ||
+			token.type === 'GREEK' ||
+			token.type === 'TEMPLATE' ||
+			token.type === 'LPAREN' ||
+			token.type === 'LBRACKET' ||
+			token.type === 'LBRACE'
+			// PIPE excluded - it's ambiguous (could be closing |x| or starting new |y|)
+		);
 	}
 
 	/**
