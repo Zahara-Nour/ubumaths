@@ -29,6 +29,8 @@
 		ResolvedVariable,
 		QuestionCorrection
 	} from '$lib/questions/types';
+	import { convertAsciiMathToLatex } from 'mathlive';
+	import 'mathlive';
 
 	interface Props {
 		original: Record<string, unknown>; // Old question format
@@ -148,6 +150,10 @@
 	// Variation tab state
 	let selectedVariationIndex = $state(0);
 	let instanceSeed = $state(Date.now());
+
+	// AsciiMath to LaTeX test state
+	let asciiMathInput = $state('sqrt(x^2 + y)');
+	let latexOutput = $derived(convertAsciiMathToLatex(asciiMathInput));
 
 	function regenerateInstance() {
 		instanceSeed = Date.now();
@@ -272,6 +278,39 @@
 </script>
 
 <div class={cn('space-y-6', className)}>
+	<!-- AsciiMath to LaTeX Test Card -->
+	<Card.Root>
+		<Card.Header class="pb-3">
+			<Card.Title class="text-sm">AsciiMath → LaTeX Converter (Test)</Card.Title>
+		</Card.Header>
+		<Card.Content>
+			<div class="grid grid-cols-3 gap-4">
+				<!-- Colonne 1: Input AsciiMath -->
+				<div>
+					<h4 class="mb-2 text-xs font-medium text-muted-foreground">AsciiMath</h4>
+					<input
+						type="text"
+						bind:value={asciiMathInput}
+						class="w-full rounded-md border bg-background px-3 py-2 font-mono text-sm"
+						placeholder="sqrt(x^2 + y)"
+					/>
+				</div>
+
+				<!-- Colonne 2: Output LaTeX -->
+				<div>
+					<h4 class="mb-2 text-xs font-medium text-muted-foreground">LaTeX</h4>
+					<pre class="overflow-x-auto rounded-md bg-muted p-2 font-mono text-sm">{latexOutput}</pre>
+				</div>
+
+				<!-- Colonne 3: Rendu MathLive -->
+				<div>
+					<h4 class="mb-2 text-xs font-medium text-muted-foreground">Rendu</h4>
+					<math-field read-only class="w-full">{latexOutput}</math-field>
+				</div>
+			</div>
+		</Card.Content>
+	</Card.Root>
+
 	<!-- Comparison Grid - 4 columns -->
 	<div class="grid gap-6 lg:grid-cols-4">
 		<!-- Old Format Column -->
