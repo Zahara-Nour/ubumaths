@@ -61,13 +61,13 @@ export interface ValidationOptions {
 	 * If not specified, exact equality is required.
 	 *
 	 * @example Absolute tolerance
-	 * { absolute: 0.01 }  // Accept ±0.01 difference
+	 * { absolute: 0.01}  // Accept ±0.01 difference
 	 *
 	 * @example Relative tolerance
-	 * { relative: 0.01 }  // Accept ±1% difference
+	 * { relative: 0.01}  // Accept ±1% difference
 	 *
 	 * @example Both
-	 * { absolute: 0.1, relative: 0.02 }  // Accept if either tolerance is met
+	 * { absolute: 0.1, relative: 0.02}  // Accept if either tolerance is met
 	 */
 	tolerance?: Tolerance;
 
@@ -174,40 +174,40 @@ const DEFAULT_MESSAGES = {
  *
  * @example Basic usage (compatible units allowed)
  * ```typescript
- * validateQuantityAnswer('5000\\text{ m }', '5\\text{ km }')
- * // { isCorrect: true, feedback: null, ... }
+ * validateQuantityAnswer('5000\\unit{m}', '5\\unit{km}')
+ * // { isCorrect: true, feedback: null, ...}
  * ```
  *
  * @example Require exact unit
  * ```typescript
  * validateQuantityAnswer(
- *   '5000\\text{ m }',
- *   '5\\text{ km }',
- *   { requireExactUnit: true }
+ *   '5000\\unit{m}',
+ *   '5\\unit{km}',
+ *   { requireExactUnit: true}
  * )
- * // { isCorrect: false, errorType: 'wrong_unit', feedback: 'Unité incorrecte.', ... }
+ * // { isCorrect: false, errorType: 'wrong_unit', feedback: 'Unité incorrecte.', ...}
  * ```
  *
  * @example With tolerance
  * ```typescript
  * validateQuantityAnswer(
- *   '3.14\\text{ m }',
- *   '3.15\\text{ m }',
- *   { tolerance: { absolute: 0.1 } }
+ *   '3.14\\unit{m}',
+ *   '3.15\\unit{m}',
+ *   { tolerance: { absolute: 0.1}}
  * )
- * // { isCorrect: true, feedback: null, ... }
+ * // { isCorrect: true, feedback: null, ...}
  * ```
  *
  * @example Wrong value
  * ```typescript
- * validateQuantityAnswer('5\\text{ km }', '6\\text{ km }')
- * // { isCorrect: false, errorType: 'wrong_value', feedback: 'Valeur incorrecte.', ... }
+ * validateQuantityAnswer('5\\unit{km}', '6\\unit{km}')
+ * // { isCorrect: false, errorType: 'wrong_value', feedback: 'Valeur incorrecte.', ...}
  * ```
  *
  * @example Incompatible units
  * ```typescript
- * validateQuantityAnswer('5\\text{ km }', '5\\text{ kg }')
- * // { isCorrect: false, errorType: 'incompatible_units', feedback: 'Les unités ne sont pas compatibles.', ... }
+ * validateQuantityAnswer('5\\unit{km}', '5\\unit{kg}')
+ * // { isCorrect: false, errorType: 'incompatible_units', feedback: 'Les unités ne sont pas compatibles.', ...}
  * ```
  */
 export function validateQuantityAnswer(

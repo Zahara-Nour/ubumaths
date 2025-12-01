@@ -243,39 +243,39 @@ describe('parseHMS - Colon notation', () => {
 // ============================================================================
 
 describe('parseLatexHMS - LaTeX notation', () => {
-	test('parses basic LaTeX "2\\\\text{h}30\\\\text{min}"', () => {
-		const result = parseLatexHMS('2\\text{h}30\\text{min}');
+	test('parses basic LaTeX "\\\\hms{2h30min}"', () => {
+		const result = parseLatexHMS('\\hms{2h30min}');
 		expect(result).toEqual({ hours: 2, minutes: 30, seconds: 0 });
 	});
 
-	test('parses LaTeX with spaces "2 \\\\text{h} 30 \\\\text{min}"', () => {
-		const result = parseLatexHMS('2 \\text{h} 30 \\text{min}');
+	test('parses LaTeX with spaces "\\\\hms{2h 30min}"', () => {
+		const result = parseLatexHMS('\\hms{2h 30min}');
 		expect(result).toEqual({ hours: 2, minutes: 30, seconds: 0 });
 	});
 
-	test('parses full LaTeX HMS "1\\\\text{h} 45\\\\text{min} 30\\\\text{s}"', () => {
-		const result = parseLatexHMS('1\\text{h} 45\\text{min} 30\\text{s}');
+	test('parses full LaTeX HMS "\\\\hms{1h 45min 30s}"', () => {
+		const result = parseLatexHMS('\\hms{1h 45min 30s}');
 		expect(result).toEqual({ hours: 1, minutes: 45, seconds: 30 });
 	});
 
-	test('parses single unit LaTeX "45\\\\text{min}"', () => {
-		const result = parseLatexHMS('45\\text{min}');
+	test('parses single unit LaTeX "\\\\hms{45min}"', () => {
+		const result = parseLatexHMS('\\hms{45min}');
 		expect(result).toEqual({ hours: 0, minutes: 45, seconds: 0 });
 	});
 
-	test('parses LaTeX with \\\\mathrm{} instead of \\\\text{}', () => {
-		const result = parseLatexHMS('2\\mathrm{h}30\\mathrm{min}');
-		expect(result).toEqual({ hours: 2, minutes: 30, seconds: 0 });
+	test('parses hours only "\\\\hms{3h}"', () => {
+		const result = parseLatexHMS('\\hms{3h}');
+		expect(result).toEqual({ hours: 3, minutes: 0, seconds: 0 });
 	});
 
-	test('parses LaTeX with \\\\operatorname{}', () => {
-		const result = parseLatexHMS('2\\operatorname{h}30\\operatorname{min}');
-		expect(result).toEqual({ hours: 2, minutes: 30, seconds: 0 });
+	test('parses seconds only "\\\\hms{45s}"', () => {
+		const result = parseLatexHMS('\\hms{45s}');
+		expect(result).toEqual({ hours: 0, minutes: 0, seconds: 45 });
 	});
 
-	test('parses LaTeX with tilde spaces "2\\\\text{h}~30\\\\text{min}"', () => {
-		const result = parseLatexHMS('2\\text{h}~30\\text{min}');
-		expect(result).toEqual({ hours: 2, minutes: 30, seconds: 0 });
+	test('parses with milliseconds "\\\\hms{1h30min45s250ms}"', () => {
+		const result = parseLatexHMS('\\hms{1h30min45s250ms}');
+		expect(result).toEqual({ hours: 1, minutes: 30, seconds: 45, milliseconds: 250 });
 	});
 
 	test('returns null for non-LaTeX string "not latex"', () => {
@@ -288,8 +288,13 @@ describe('parseLatexHMS - LaTeX notation', () => {
 		expect(result).toBeNull();
 	});
 
-	test('returns null for invalid LaTeX "\\\\text{x}\\\\text{y}"', () => {
-		const result = parseLatexHMS('\\text{x}\\text{y}');
+	test('returns null for old \\\\text{} format (no longer supported)', () => {
+		const result = parseLatexHMS('2\\text{h}30\\text{min}');
+		expect(result).toBeNull();
+	});
+
+	test('returns null for invalid content "\\\\hms{xyz}"', () => {
+		const result = parseLatexHMS('\\hms{xyz}');
 		expect(result).toBeNull();
 	});
 
@@ -445,44 +450,44 @@ describe('formatHMS - short format', () => {
 // ============================================================================
 
 describe('formatHMSLatex', () => {
-	test('formats basic "2\\\\text{h} 30\\\\text{min}"', () => {
+	test('formats basic "\\\\hms{2h30min}"', () => {
 		const result = formatHMSLatex({ hours: 2, minutes: 30, seconds: 0 });
-		expect(result).toBe('2\\text{h} 30\\text{min}');
+		expect(result).toBe('\\hms{2h30min}');
 	});
 
-	test('formats with all components "1\\\\text{h} 30\\\\text{min} 45\\\\text{s}"', () => {
+	test('formats with all components "\\\\hms{1h30min45s}"', () => {
 		const result = formatHMSLatex({ hours: 1, minutes: 30, seconds: 45 });
-		expect(result).toBe('1\\text{h} 30\\text{min} 45\\text{s}');
+		expect(result).toBe('\\hms{1h30min45s}');
 	});
 
-	test('formats hours only "3\\\\text{h}"', () => {
+	test('formats hours only "\\\\hms{3h}"', () => {
 		const result = formatHMSLatex({ hours: 3, minutes: 0, seconds: 0 });
-		expect(result).toBe('3\\text{h}');
+		expect(result).toBe('\\hms{3h}');
 	});
 
-	test('formats minutes only "45\\\\text{min}"', () => {
+	test('formats minutes only "\\\\hms{45min}"', () => {
 		const result = formatHMSLatex({ hours: 0, minutes: 45, seconds: 0 });
-		expect(result).toBe('45\\text{min}');
+		expect(result).toBe('\\hms{45min}');
 	});
 
-	test('formats seconds only "45\\\\text{s}"', () => {
+	test('formats seconds only "\\\\hms{45s}"', () => {
 		const result = formatHMSLatex({ hours: 0, minutes: 0, seconds: 45 });
-		expect(result).toBe('45\\text{s}');
+		expect(result).toBe('\\hms{45s}');
 	});
 
-	test('formats zero values as "0\\\\text{s}"', () => {
+	test('formats zero values as "\\\\hms{0s}"', () => {
 		const result = formatHMSLatex({ hours: 0, minutes: 0, seconds: 0 });
-		expect(result).toBe('0\\text{s}');
+		expect(result).toBe('\\hms{0s}');
 	});
 
-	test('formats with milliseconds "1\\\\text{h} 30\\\\text{min} 45\\\\text{s} 250\\\\text{ms}"', () => {
+	test('formats with milliseconds "\\\\hms{1h30min45s250ms}"', () => {
 		const result = formatHMSLatex({
 			hours: 1,
 			minutes: 30,
 			seconds: 45,
 			milliseconds: 250
 		});
-		expect(result).toBe('1\\text{h} 30\\text{min} 45\\text{s} 250\\text{ms}');
+		expect(result).toBe('\\hms{1h30min45s250ms}');
 	});
 
 	test('omits zero milliseconds', () => {
@@ -492,12 +497,12 @@ describe('formatHMSLatex', () => {
 			seconds: 45,
 			milliseconds: 0
 		});
-		expect(result).toBe('1\\text{h} 30\\text{min} 45\\text{s}');
+		expect(result).toBe('\\hms{1h30min45s}');
 	});
 
 	test('omits undefined milliseconds', () => {
 		const result = formatHMSLatex({ hours: 1, minutes: 30, seconds: 45 });
-		expect(result).toBe('1\\text{h} 30\\text{min} 45\\text{s}');
+		expect(result).toBe('\\hms{1h30min45s}');
 	});
 });
 
@@ -1024,7 +1029,7 @@ describe('Round-trip conversions', () => {
 	});
 
 	test('parseLatex -> formatLatex -> parseLatex preserves value', () => {
-		const original = '2\\text{h} 30\\text{min} 45\\text{s}';
+		const original = '\\hms{2h30min45s}';
 		const parsed = parseLatexHMS(original);
 		const formatted = formatHMSLatex(parsed!);
 		const reparsed = parseLatexHMS(formatted);

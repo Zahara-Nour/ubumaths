@@ -164,24 +164,24 @@ export function evaluateQuantityValue(latex: string): number | null {
  * @returns ComparisonResult with detailed information
  *
  * @example Exact match
- * compareQuantities('5\\text{ km }', '5\\text{ km }')
- * // { isEqual: true, userValue: 5, expectedValue: 5, ... }
+ * compareQuantities('5\\unit{km}', '5\\unit{km}')
+ * // { isEqual: true, userValue: 5, expectedValue: 5, ...}
  *
  * @example Unit conversion
- * compareQuantities('5\\text{ km }', '5000\\text{ m }')
- * // { isEqual: true, userValue: 5, expectedValue: 5000, ... }
+ * compareQuantities('5\\unit{km}', '5000\\unit{m}')
+ * // { isEqual: true, userValue: 5, expectedValue: 5000, ...}
  *
  * @example With tolerance
- * compareQuantities('3.14\\text{ m }', '3.15\\text{ m }', { absolute: 0.1 })
- * // { isEqual: true, ... }
+ * compareQuantities('3.14\\unit{m}', '3.15\\unit{m}', { absolute: 0.1})
+ * // { isEqual: true, ...}
  *
  * @example Incompatible units
- * compareQuantities('5\\text{ km }', '5\\text{ kg }')
- * // { isEqual: false, error: 'incompatible_units', ... }
+ * compareQuantities('5\\unit{km}', '5\\unit{kg}')
+ * // { isEqual: false, error: 'incompatible_units', ...}
  *
  * @example Expression evaluation
- * compareQuantities('3+2\\text{ m }', '5\\text{ m }')
- * // { isEqual: true, userValue: 5, expectedValue: 5, ... }
+ * compareQuantities('3+2\\unit{m}', '5\\unit{m}')
+ * // { isEqual: true, userValue: 5, expectedValue: 5, ...}
  */
 export function compareQuantities(
 	userAnswer: string,
@@ -380,25 +380,25 @@ function formatUnitForDisplay(unit: Unit): string | null {
  *
  * Returns null if units are incompatible (different dimensions).
  *
- * @param quantity - LaTeX quantity string (e.g., "5\\text{ km }")
+ * @param quantity - LaTeX quantity string (e.g., "5\\unit{km}")
  * @param targetUnit - Target unit symbol (e.g., "m")
  * @returns Quantity in target unit or null if incompatible
  *
  * @example Length conversion
- * convertQuantity('5\\text{ km }', 'm')
- * // { value: 5000, unit: { components: Map{'m' => 1}, coefficient: 1 } }
+ * convertQuantity('5\\unit{km}', 'm')
+ * // { value: 5000, unit: { components: Map{'m' => 1}, coefficient: 1}}
  *
  * @example Time conversion
- * convertQuantity('2\\text{ h }', 'min')
- * // { value: 120, unit: { components: Map{'s' => 1}, coefficient: 60 } }
+ * convertQuantity('2\\unit{h}', 'min')
+ * // { value: 120, unit: { components: Map{'s' => 1}, coefficient: 60}}
  *
  * @example Incompatible units
- * convertQuantity('5\\text{ km }', 's')
+ * convertQuantity('5\\unit{km}', 's')
  * // null
  *
  * @example Complex unit conversion
- * convertQuantity('90\\text{ km/h }', 'm/s')
- * // { value: 25, unit: { components: Map{'m' => 1, 's' => -1}, coefficient: 1 } }
+ * convertQuantity('90\\unit{km/h}', 'm/s')
+ * // { value: 25, unit: { components: Map{'m' => 1, 's' => -1}, coefficient: 1}}
  */
 export function convertQuantity(quantity: string, targetUnit: string): Quantity | null {
 	// Parse the input quantity
@@ -473,24 +473,24 @@ function convertQuantityToUnit(quantity: Quantity, targetUnit: Unit): Quantity |
  * @returns Normalized quantity in base units or null if parsing fails
  *
  * @example Length
- * normalizeToBaseUnits('5\\text{ km }')
- * // { value: 5000, unit: { components: Map{'m' => 1}, coefficient: 1 } }
+ * normalizeToBaseUnits('5\\unit{km}')
+ * // { value: 5000, unit: { components: Map{'m' => 1}, coefficient: 1}}
  *
  * @example Time
- * normalizeToBaseUnits('2\\text{ h }')
- * // { value: 7200, unit: { components: Map{'s' => 1}, coefficient: 1 } }
+ * normalizeToBaseUnits('2\\unit{h}')
+ * // { value: 7200, unit: { components: Map{'s' => 1}, coefficient: 1}}
  *
  * @example Speed
- * normalizeToBaseUnits('90\\text{ km/h }')
- * // { value: 25, unit: { components: Map{'m' => 1, 's' => -1}, coefficient: 1 } }
+ * normalizeToBaseUnits('90\\unit{km/h}')
+ * // { value: 25, unit: { components: Map{'m' => 1, 's' => -1}, coefficient: 1}}
  *
  * @example Complex unit
- * normalizeToBaseUnits('1.5\\text{ kg·m²/s² }')
- * // { value: 1.5, unit: { components: Map{'kg' => 1, 'm' => 2, 's' => -2}, coefficient: 1 } }
+ * normalizeToBaseUnits('1.5\\unit{kg·m²/s²}')
+ * // { value: 1.5, unit: { components: Map{'kg' => 1, 'm' => 2, 's' => -2}, coefficient: 1}}
  *
  * @example Already in base units
- * normalizeToBaseUnits('10\\text{ m }')
- * // { value: 10, unit: { components: Map{'m' => 1}, coefficient: 1 } }
+ * normalizeToBaseUnits('10\\unit{m}')
+ * // { value: 10, unit: { components: Map{'m' => 1}, coefficient: 1}}
  */
 export function normalizeToBaseUnits(latex: string): Quantity | null {
 	// Parse the quantity
@@ -535,8 +535,8 @@ export function normalizeToBaseUnits(latex: string): Quantity | null {
  * @returns True if string can be parsed as a valid quantity
  *
  * @example
- * isValidQuantity('5\\text{ km }') // true
- * isValidQuantity('\\frac{1}{0}\\text{ m }') // false (division by zero)
+ * isValidQuantity('5\\unit{km}') // true
+ * isValidQuantity('\\frac{1}{0}\\unit{m}') // false (division by zero)
  * isValidQuantity('invalid') // false
  */
 export function isValidQuantity(latex: string): boolean {
@@ -557,8 +557,8 @@ export function isValidQuantity(latex: string): boolean {
  * @returns Unit object or null if parsing fails
  *
  * @example
- * getUnitFromQuantity('5\\text{ km }')
- * // { components: Map{'m' => 1}, coefficient: 1000 }
+ * getUnitFromQuantity('5\\unit{km}')
+ * // { components: Map{'m' => 1}, coefficient: 1000}
  */
 export function getUnitFromQuantity(latex: string): Unit | null {
 	const quantity = parseLatexQuantity(latex);
@@ -574,8 +574,8 @@ export function getUnitFromQuantity(latex: string): Unit | null {
  * @returns Evaluated numeric value or null
  *
  * @example
- * getValueFromQuantity('5\\text{ km }') // 5
- * getValueFromQuantity('\\frac{3}{2}\\text{ m }') // 1.5
+ * getValueFromQuantity('5\\unit{km}') // 5
+ * getValueFromQuantity('\\frac{3}{2}\\unit{m}') // 1.5
  */
 export function getValueFromQuantity(latex: string): number | null {
 	const quantity = parseLatexQuantity(latex);

@@ -9,7 +9,7 @@
  * - "2h30min", "1h 45min 30s"
  * - "3:25:10" (colon notation)
  * - "45min", "90s"
- * - LaTeX: "2\\text{h}30\\text{min}"
+ * - LaTeX: "\\hms{2h30min}"
  *
  * @module questions/units/hms
  */
@@ -204,37 +204,47 @@ function parseUnitFormat(input: string): HMSValue | null {
 }
 
 /**
+ * Pattern for extracting HMS from \hms{} wrapper
+ *
+ * This is the ONLY supported format for HMS in LaTeX input.
+ *
+ * @example
+ * \hms{2h30min} → '2h30min'
+ * \hms{1h 45min 30s} → '1h 45min 30s'
+ */
+const HMS_PATTERN = /\\hms\{([^}]+)\}/;
+
+/**
  * Parse LaTeX HMS expression
  *
  * Supports:
- * - "2\\text{h}30\\text{min}"
- * - "1\\text{h} 45\\text{min} 30\\text{s}"
- * - "3\\text{h}"
- * - "45\\text{min}"
+ * - "\\hms{2h30min}"
+ * - "\\hms{1h 45min 30s}"
+ * - "\\hms{3h}"
+ * - "\\hms{45min}"
  *
- * @param latex - LaTeX string containing HMS notation
+ * @param latex - LaTeX string containing \hms{} notation
  * @returns Parsed HMSValue or null
  *
  * @example
- * parseLatexHMS('2\\text{h}30\\text{min}') // { hours: 2, minutes: 30, seconds: 0 }
- * parseLatexHMS('1\\text{h} 45\\text{min} 30\\text{s}') // { hours: 1, minutes: 45, seconds: 30 }
+ * parseLatexHMS('\\hms{2h30min}') // { hours: 2, minutes: 30, seconds: 0 }
+ * parseLatexHMS('\\hms{1h 45min 30s}') // { hours: 1, minutes: 45, seconds: 30 }
  */
 export function parseLatexHMS(latex: string): HMSValue | null {
 	if (!latex || typeof latex !== 'string') {
 		return null;
 	}
 
-	// Clean up LaTeX: remove \text{}, \mathrm{}, keep the content
-	const cleaned = latex
-		.replace(/\\text\{([^}]+)\}/g, '$1')
-		.replace(/\\mathrm\{([^}]+)\}/g, '$1')
-		.replace(/\\operatorname\{([^}]+)\}/g, '$1')
-		.replace(/~/g, ' ')
-		.replace(/\\\s+/g, ' ')
-		.trim();
+	// Extract content from \hms{} wrapper
+	const match = latex.match(HMS_PATTERN);
+	if (!match) {
+		return null;
+	}
+
+	const content = match[1].trim();
 
 	// Now try to parse as regular HMS
-	return parseHMS(cleaned);
+	return parseHMS(content);
 }
 
 // ============================================================================
@@ -315,14 +325,14 @@ export function formatHMS(value: HMSValue, format: 'units' | 'colon' | 'short' =
  * Format HMSValue to LaTeX
  *
  * @param value - HMSValue to format
- * @returns LaTeX string using \text{} for units
+ * @returns LaTeX string using \hms{} wrapper
  *
  * @example
  * formatHMSLatex({ hours: 2, minutes: 30, seconds: 0 })
- * // "2\\text{h} 30\\text{min}"
+ * // "\\hms{2h30min}"
  *
  * formatHMSLatex({ hours: 0, minutes: 45, seconds: 30 })
- * // "45\\text{min} 30\\text{s}"
+ * // "\\hms{45min30s}"
  */
 export function formatHMSLatex(value: HMSValue): string {
 	const h = value.hours ?? 0;
@@ -333,27 +343,27 @@ export function formatHMSLatex(value: HMSValue): string {
 	const parts: string[] = [];
 
 	if (h !== 0) {
-		parts.push(`${h}\\text{h}`);
+		parts.push(`${h}h`);
 	}
 
 	if (m !== 0) {
-		parts.push(`${m}\\text{min}`);
+		parts.push(`${m}min`);
 	}
 
 	if (s !== 0) {
-		parts.push(`${s}\\text{s}`);
+		parts.push(`${s}s`);
 	}
 
 	if (ms !== undefined && ms > 0) {
-		parts.push(`${ms}\\text{ms}`);
+		parts.push(`${ms}ms`);
 	}
 
-	// If all values are zero, return "0\text{s}"
+	// If all values are zero, return "\hms{0s}"
 	if (parts.length === 0) {
-		return '0\\text{s}';
+		return '\\hms{0s}';
 	}
 
-	return parts.join(' ');
+	return `\\hms{${parts.join('')}}`;
 }
 
 // ============================================================================
