@@ -173,23 +173,47 @@ interface GreekLetterNode {
 
 ```typescript
 type MathSymbol =
-	// Constants & Operators
+	// Constants
 	| 'infinity'
 	| 'emptyset'
+	| 'aleph'
+	| 'beth'
+	| 'ell'
+	| 'wp'
+	| 'hbar'
+	// Calculus
 	| 'partial'
 	| 'nabla'
+	// Logic
 	| 'forall'
 	| 'exists'
 	| 'nexists'
-	// Set Operations
+	| 'therefore'
+	| 'because'
+	| 'qed'
+	// Sets
 	| 'in'
 	| 'notin'
 	| 'subset'
 	| 'supset'
+	| 'subseteq'
+	| 'supseteq'
 	| 'union'
 	| 'intersection'
+	| 'setminus'
+	// Complex
+	| 'Re'
+	| 'Im'
+	// Relations
+	| 'approx'
+	| 'simeq'
+	| 'cong'
+	| 'propto'
 	// Geometry
+	| 'perp'
+	| 'parallel'
 	| 'angle'
+	| 'measuredangle'
 	| 'triangle'
 	| 'square'
 	| 'diamond'
@@ -199,11 +223,18 @@ type MathSymbol =
 	| 'div'
 	| 'pm'
 	| 'mp'
+	| 'ast'
 	| 'oplus'
 	| 'ominus'
 	| 'otimes'
-	| 'odot';
-// ... 54 symbols total
+	| 'odot'
+	| 'circ'
+	// Misc
+	| 'degree'
+	| 'prime'
+	| 'dprime'
+	| 'star'
+	| 'bullet';
 
 interface SymbolNode {
 	readonly type: 'symbol';
