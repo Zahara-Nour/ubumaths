@@ -1,7 +1,7 @@
 # UnitNode Implementation Progress
 
 **Started**: 2025-12-01
-**Status**: Phase 1 - In Progress (tests en cours)
+**Status**: Complete ✅
 
 ## Decisions de conception
 
@@ -9,9 +9,9 @@
 - **API Complet**: `withUnit()`, `quantity()`, `quantityVar()`
 - **Dossier**: `dimensional/` pour l'analyse dimensionnelle
 
-## Phase 1: UnitNode Core
+## Phase 1: UnitNode Core ✅
 
-### Fichiers a modifier
+### Fichiers modifies
 
 | Fichier                                       | Status  |
 | --------------------------------------------- | ------- |
@@ -35,7 +35,7 @@
 - [x] Code review - Passed
 - [x] Commit - ef2b0e74
 
-## Phase 2: Analyse Dimensionnelle
+## Phase 2: Analyse Dimensionnelle ✅
 
 ### Fichiers crees
 
@@ -55,10 +55,7 @@
 - [x] index.ts - Public exports and DimensionalAnalysis namespace
 - [x] Tests - 146 tests, all passing
 - [x] Code review - Passed with fixes applied
-  - Fixed sqrt/cbrt to properly respect allowFractionalExponents option
-  - Added handleCbrtOutput function
-  - Moved extractNumericValue to helper section
-  - Tests updated to reflect correct behavior
+- [x] Commit - cc381d23
 
 ### Code Review Fixes Applied
 
@@ -72,6 +69,13 @@
 
 3. **Code organization**: Moved `extractNumericValue` to helper section
 
-## Notes
+## Phase 3: Documentation ✅
 
-(Notes de debug ou decisions prises en cours d'implementation)
+- [x] Updated `docs/ref/mathAST.md` with Physical Units and Dimensional Analysis sections
+- [x] Quality checks (TypeScript errors in dimensional module: 0)
+
+## Summary
+
+- **Total new tests**: 221 (75 UnitNode + 146 Dimensional)
+- **Commits**: 2 (ef2b0e74, cc381d23)
+- **New files**: 10 (5 dimensional + 1 test each)

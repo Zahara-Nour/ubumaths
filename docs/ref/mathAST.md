@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 423 passing
+**Tests**: 644 passing (423 core + 75 unit-node + 146 dimensional)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -18,8 +18,10 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 6. [Type Guards](#type-guards)
 7. [Flatten/Unflatten Helpers](#flattenunflatten-helpers)
 8. [LaTeX Generator](#latex-generator)
-9. [Usage Patterns](#usage-patterns)
-10. [API Summary](#api-summary)
+9. [Physical Units](#physical-units)
+10. [Dimensional Analysis](#dimensional-analysis)
+11. [Usage Patterns](#usage-patterns)
+12. [API Summary](#api-summary)
 
 ---
 
@@ -32,25 +34,39 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 | **Immutability**  | All nodes have `readonly` properties, transformations return new nodes |
 | **Type Safety**   | Discriminated unions via `type` field, comprehensive type guards       |
 | **Ergonomics**    | Convenience factories, `MathAST` namespace, optional metadata          |
-| **Extensibility** | 18 node types covering all common mathematical constructs              |
+| **Extensibility** | 16 node types covering all common mathematical constructs              |
 
 ### File Structure
 
 ```
 src/lib/mathAST/
-├── index.ts              # Public exports (140 total)
-├── types.ts              # Type definitions (27 exports)
-├── factory.ts            # Factory functions (55 exports)
-├── transforms.ts         # Tree manipulation (10 exports)
-├── guards.ts             # Type guards (29 exports)
-├── flatten.ts            # Flatten helpers (16 exports)
-├── latex-generator.ts    # LaTeX output (3 exports)
+├── index.ts              # Public exports
+├── types.ts              # Type definitions
+├── factory.ts            # Factory functions (includes unit factories)
+├── transforms.ts         # Tree manipulation
+├── guards.ts             # Type guards (includes unit guards)
+├── flatten.ts            # Flatten helpers
+├── latex-generator.ts    # LaTeX output
+├── units/                # Physical unit system (Unit AST)
+│   ├── types.ts          # Unit type definitions
+│   ├── factory.ts        # Unit creation functions
+│   ├── parser.ts         # Parse unit strings
+│   ├── formatter.ts      # Format units to strings/LaTeX
+│   ├── operations.ts     # Unit arithmetic (multiply, divide, power)
+│   ├── conversion.ts     # Unit compatibility checking
+│   └── definitions.ts    # SI and common unit definitions
+├── dimensional/          # Dimensional analysis
+│   ├── types.ts          # Analysis types and errors
+│   ├── rules.ts          # Function dimensional rules
+│   ├── analyzer.ts       # Main analysis logic
+│   └── index.ts          # Public exports
 └── __tests__/
     ├── factory.test.ts
     ├── transforms.test.ts
     ├── guards.test.ts
     ├── flatten.test.ts
-    └── latex-generator.test.ts
+    ├── latex-generator.test.ts
+    └── unit-node.test.ts
 ```
 
 ---
@@ -60,7 +76,7 @@ src/lib/mathAST/
 ### Node Type Hierarchy
 
 ```
-MathNode (union of 18 types)
+MathNode (union of 16 types)
 ├── LiteralNode (4 types)
 │   ├── NumberNode       # Numeric values: '42', '3.14'
 │   ├── VariableNode     # Identifiers: 'x', 'velocity'
@@ -82,11 +98,11 @@ MathNode (union of 18 types)
 │   ├── SubscriptNode    # x_i
 │   └── SuperscriptNode  # x^2
 │
-├── FunctionNode (1 type)
-│   └── FunctionNode     # sin(x), log_2(x), f^2(x)
+├── FunctionNode         # sin(x), log_2(x), f^2(x)
 │
-└── RelationNode (1 type)
-    └── RelationNode     # x = 5, a < b, A ⊂ B
+├── RelationNode         # x = 5, a < b, A ⊂ B
+│
+└── UnitNode             # 5 m, velocity m/s (expression with physical unit)
 ```
 
 ### Base Node Interface
@@ -1023,6 +1039,178 @@ Example: `add(x, multiply(y, z))` → `x + y z` (no extra parentheses around `y 
 ### Type Safety
 
 The generator uses exhaustive type checking with `never` to ensure all node types are handled.
+
+---
+
+## Physical Units
+
+### Overview
+
+MathAST supports physical units through the `UnitNode` type and the Unit AST system. This enables representing quantities like "5 meters" or "10 m/s" and performing dimensional analysis.
+
+### UnitNode
+
+```typescript
+interface UnitNode {
+	readonly type: 'unit';
+	readonly expression: MathNode; // The numeric/symbolic part
+	readonly unit: Unit; // The physical unit
+	readonly metadata?: NodeMetadata;
+}
+```
+
+### Unit Type
+
+```typescript
+interface Unit {
+	readonly components: ReadonlyMap<string, number>; // symbol -> exponent
+	readonly coefficient: number; // scaling factor
+	readonly original?: string; // original string representation
+}
+
+// Examples:
+// meters: { components: Map([['m', 1]]), coefficient: 1 }
+// m/s: { components: Map([['m', 1], ['s', -1]]), coefficient: 1 }
+// km: { components: Map([['m', 1]]), coefficient: 1000 }
+```
+
+### Factory Functions
+
+```typescript
+// Wrap any expression with a unit
+withUnit(expression: MathNode, unit: Unit, metadata?): UnitNode
+
+// Create quantity with parsed unit string
+quantity(value: string, unitStr: string, metadata?): UnitNode
+// Example: quantity('5', 'm') → 5 m
+// Example: quantity('10', 'm/s') → 10 m/s
+
+// Create variable with unit
+quantityVar(name: string, unitStr: string, metadata?): UnitNode
+// Example: quantityVar('v', 'm/s') → v m/s
+```
+
+### Type Guards
+
+```typescript
+isUnit(node: MathNode): node is UnitNode
+
+// Check if any descendant has a unit
+hasUnitDescendant(node: MathNode): boolean
+
+// Check if unit is dimensionless (all exponents are 0)
+isDimensionlessUnit(node: MathNode): boolean
+```
+
+### LaTeX Output
+
+Units are rendered using the `\unit{}` macro:
+
+```typescript
+quantity('5', 'm'); // → "5~\unit{m}"
+quantity('10', 'm/s'); // → "10~\unit{m.s^{-1}}"
+```
+
+---
+
+## Dimensional Analysis
+
+### Overview
+
+The dimensional analysis module validates unit compatibility in mathematical expressions and computes resulting units. It catches errors like adding meters to seconds.
+
+```typescript
+import { analyzeDimensions, isDimensionallyValid } from '$lib/mathAST/dimensional';
+
+// Valid: adding meters
+const valid = add(quantity('5', 'm'), quantity('3', 'm'));
+const result = analyzeDimensions(valid);
+// { valid: true, resultUnit: { m: 1 }, errors: [] }
+
+// Invalid: adding meters and seconds
+const invalid = add(quantity('5', 'm'), quantity('3', 's'));
+const result2 = analyzeDimensions(invalid);
+// { valid: false, resultUnit: null, errors: [{ code: 'INCOMPATIBLE_UNITS', ... }] }
+```
+
+### Analysis Result
+
+```typescript
+interface DimensionalAnalysisResult {
+	readonly valid: boolean;
+	readonly resultUnit: Unit | null;
+	readonly errors: readonly DimensionalError[];
+	readonly warnings?: readonly DimensionalWarning[];
+}
+```
+
+### Error Codes
+
+| Code                         | Description                              |
+| ---------------------------- | ---------------------------------------- |
+| `INCOMPATIBLE_UNITS`         | Cannot add/subtract different unit types |
+| `INVALID_FUNCTION_INPUT`     | Function received wrong unit type        |
+| `UNDEFINED_VARIABLE`         | Variable not found in context            |
+| `NON_INTEGER_EXPONENT`       | Fractional exponent when not allowed     |
+| `NESTED_UNITS`               | Expression already has units             |
+| `INCONSISTENT_FUNCTION_ARGS` | Function args have different units       |
+| `INVALID_RELATION`           | Comparing incompatible units             |
+
+### Context
+
+Provide variable units and options via context:
+
+```typescript
+const context: DimensionalContext = {
+	variables: new Map([
+		['v', parseUnit('m/s')],
+		['t', parseUnit('s')]
+	]),
+	options: {
+		strictMode: true, // Error on unknown variables (default: true)
+		allowDimensionlessMix: false, // Allow mixing units with dimensionless (default: false)
+		allowFractionalExponents: true // Allow sqrt(m) → m^0.5 (default: true)
+	}
+};
+
+const result = analyzeDimensions(expr, context);
+```
+
+### Function Rules
+
+Built-in functions have dimensional rules:
+
+| Function Category    | Input Requirement   | Output        |
+| -------------------- | ------------------- | ------------- |
+| Trig (sin, cos, tan) | angle/dimensionless | dimensionless |
+| Inverse trig         | dimensionless       | angle         |
+| Hyperbolic           | dimensionless       | dimensionless |
+| Logarithms           | dimensionless       | dimensionless |
+| sqrt                 | any                 | input^0.5     |
+| cbrt                 | any                 | input^(1/3)   |
+| abs, floor, ceil     | any                 | preserve      |
+| min, max             | same units          | preserve      |
+| sign                 | any                 | dimensionless |
+
+### Convenience Functions
+
+```typescript
+// Quick validity check
+isDimensionallyValid(node: MathNode, context?): boolean
+
+// Get resulting unit (null if invalid)
+getResultingUnit(node: MathNode, context?): Unit | null
+```
+
+### Namespace
+
+```typescript
+import { DimensionalAnalysis } from '$lib/mathAST/dimensional';
+
+DimensionalAnalysis.analyze(expr); // Full analysis
+DimensionalAnalysis.isValid(expr); // Quick check
+DimensionalAnalysis.getUnit(expr); // Get unit
+```
 
 ---
 
