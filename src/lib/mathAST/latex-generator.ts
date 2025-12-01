@@ -22,11 +22,13 @@ import type {
 	SubscriptNode,
 	SuperscriptNode,
 	RelationNode,
+	UnitNode,
 	MathSymbol,
 	RelationType,
 	GreekLetter
 } from './types';
 import { flattenRelationChain } from './flatten';
+import { format } from './units/formatter';
 
 // =============================================================================
 // Options
@@ -252,6 +254,9 @@ export class LatexGenerator {
 			case 'relation':
 				content = this.generateRelation(node);
 				break;
+			case 'unit':
+				content = this.generateUnit(node);
+				break;
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -425,6 +430,12 @@ export class LatexGenerator {
 			}
 		}
 		return parts.join('');
+	}
+
+	private generateUnit(node: UnitNode): string {
+		const expr = this.generateNode(node.expression);
+		const unitStr = format(node.unit, 'original');
+		return `${expr}~\\unit{${unitStr}}`;
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {
