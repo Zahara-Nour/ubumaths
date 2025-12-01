@@ -73,6 +73,8 @@ export class LatexGenerator {
 				return this.visitFunction(node);
 			case 'Root':
 				return this.visitRoot(node);
+			case 'ImplicitMul':
+				return this.visitImplicitMul(node);
 			default: {
 				// Exhaustiveness check
 				const _exhaustive: never = node;
@@ -232,6 +234,16 @@ export class LatexGenerator {
 		const index = this.visit(node.index);
 		const radicand = this.visit(node.radicand);
 		return `\\sqrt[${index}]{${radicand}}`;
+	}
+
+	/**
+	 * Visit an implicit multiplication node (e.g., 2x, xy, 2(x+1))
+	 * Output as juxtaposition without any multiplication symbol
+	 */
+	private visitImplicitMul(node: { left: ASTNode; right: ASTNode }): string {
+		const left = this.visit(node.left);
+		const right = this.visit(node.right);
+		return `${left}${right}`;
 	}
 
 	/**

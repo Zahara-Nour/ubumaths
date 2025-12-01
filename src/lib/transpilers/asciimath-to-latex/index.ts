@@ -46,7 +46,8 @@ export type {
 	SubscriptNode,
 	SubSupNode,
 	FunctionNode,
-	RootNode
+	RootNode,
+	ImplicitMulNode
 } from './types.js';
 
 // Re-export symbol utilities

@@ -10,6 +10,7 @@
 | 4     | Generator + tests         | ✅ COMPLETED |
 | 5     | Integration + tests       | ✅ COMPLETED |
 | 6     | Code Review               | ✅ APPROVED  |
+| 7     | Implicit Multiplication   | ✅ COMPLETED |
 
 **TRANSPILEUR COMPLET ET PRÊT À L'USAGE**
 
@@ -392,6 +393,80 @@ Le code a été reviewé et approuvé. Tous les critères sont satisfaits :
 3. Templates mal fermés non détectés par le tokenizer (erreur levée au parser)
 
 Ces issues sont mineurs et n'empêchent pas la mise en production.
+
+---
+
+## Phase 7: Implicit Multiplication
+
+**Statut**: COMPLETED
+
+### Fichiers créés/modifiés
+
+- `src/lib/transpilers/asciimath-to-latex/types.ts`
+  - Added `ImplicitMulNode` interface for representing implicit multiplication
+
+- `src/lib/transpilers/asciimath-to-latex/parser.ts`
+  - Modified `parseMultiplicative()` to detect juxtaposition
+  - Added `canStartAtom()` helper to identify implicit multiplication opportunities
+  - PIPE excluded from implicit mul detection (ambiguous with absolute value)
+
+- `src/lib/transpilers/asciimath-to-latex/generator.ts`
+  - Added `ImplicitMul` case in generator (outputs juxtaposition, no symbol)
+
+- `src/lib/transpilers/asciimath-to-latex/index.ts`
+  - Exported `ImplicitMulNode` type
+
+- `src/lib/transpilers/asciimath-to-latex/__tests__/index.test.ts`
+  - Added 12 tests for implicit multiplication
+
+### Fonctionnalités implémentées
+
+1. **Juxtaposition patterns détectés**
+   - Number-variable: `2x` → `2x`
+   - Variable-variable: `xy` → `xy`
+   - Number-parenthesis: `2(x+1)` → `2\left(x+1\right)`
+   - Variable-parenthesis: `x(y+1)` → `x\left(y+1\right)`
+   - Number-greek: `2pi` → `2\pi`
+   - Function-function: `sin(x)cos(x)` → `\sin\left(x\right)\cos\left(x\right)`
+   - Template combinations: `{{a}}x`, `2{{b}}`
+
+2. **Distinction explicite vs implicite**
+   - `2x` → `2x` (implicit - no symbol)
+   - `2*x` → `2 \times x` (explicit - with \times)
+   - `2:x` → `2 \div x` (division - with \div)
+
+3. **Cas exclus (par design)**
+   - PIPE (`|`) non reconnu pour démarrer une multiplication implicite
+   - Évite l'ambiguïté: `|a||b|` = `|a|` suivi de `|b|`
+
+### Tests
+
+```
+✓ 12 nouveaux tests passants
+  - number-variable juxtaposition (3 tests)
+  - variable-variable juxtaposition (2 tests)
+  - number-parenthesis juxtaposition (2 tests)
+  - variable-parenthesis juxtaposition (1 test)
+  - number-greek juxtaposition (2 tests)
+  - multiple implicit multiplications (3 tests)
+  - implicit in expressions (2 tests)
+  - function-function juxtaposition (1 test)
+  - implicit vs explicit distinction (3 tests)
+  - templates (3 tests)
+```
+
+### Exemples validés
+
+| Input ASCIIMath | Output LaTeX                           |
+| --------------- | -------------------------------------- |
+| `2x`            | `2x`                                   |
+| `xy`            | `xy`                                   |
+| `2(x+1)`        | `2\left(x+1\right)`                    |
+| `2pi`           | `2\pi`                                 |
+| `2x+3y`         | `2x+3y`                                |
+| `sin(x)cos(x)`  | `\sin\left(x\right)\cos\left(x\right)` |
+| `2*x`           | `2 \times x`                           |
+| `{{a}}x`        | `{{a}}x`                               |
 
 ---
 
