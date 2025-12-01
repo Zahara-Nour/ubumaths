@@ -22,6 +22,7 @@ import type {
 	SubscriptNode,
 	SuperscriptNode,
 	RelationNode,
+	UnitNode,
 	LiteralNode,
 	BinaryOperationNode,
 	UnaryOperationNode,
@@ -180,6 +181,13 @@ export function isRelation(node: MathNode): node is RelationNode {
 	return node.type === 'relation';
 }
 
+/**
+ * Type guard for UnitNode
+ */
+export function isUnit(node: MathNode): node is UnitNode {
+	return node.type === 'unit';
+}
+
 // =============================================================================
 // Utility Predicates
 // =============================================================================
@@ -207,6 +215,9 @@ export function hasChildren(node: MathNode): boolean {
 		return true;
 	}
 	if (isRelation(node)) {
+		return true;
+	}
+	if (isUnit(node)) {
 		return true;
 	}
 	return false;
@@ -344,4 +355,73 @@ export function getRelationChainLength(node: MathNode): number {
 
 	const flat = flattenRelationChain(node);
 	return flat.operands.length;
+}
+
+// =============================================================================
+// Unit Predicates
+// =============================================================================
+
+/**
+ * Returns true if the node or any of its descendants is a UnitNode.
+ * Useful for detecting expressions that contain physical units.
+ */
+export function hasUnitDescendant(node: MathNode): boolean {
+	// Recursively check based on node type
+	switch (node.type) {
+		case 'number':
+		case 'variable':
+		case 'greek':
+		case 'symbol':
+			return false;
+
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return hasUnitDescendant(node.left) || hasUnitDescendant(node.right);
+
+		case 'division':
+			return hasUnitDescendant(node.numerator) || hasUnitDescendant(node.denominator);
+
+		case 'opposite':
+		case 'positive':
+			return hasUnitDescendant(node.operand);
+
+		case 'function':
+			return node.args.some(hasUnitDescendant);
+
+		case 'delimiter':
+			return hasUnitDescendant(node.content);
+
+		case 'subscript':
+			return hasUnitDescendant(node.base) || hasUnitDescendant(node.subscript);
+
+		case 'superscript':
+			return hasUnitDescendant(node.base) || hasUnitDescendant(node.superscript);
+
+		case 'relation':
+			return hasUnitDescendant(node.left) || hasUnitDescendant(node.right);
+
+		case 'unit':
+			// A UnitNode itself is a unit, and check its expression for nested units
+			return true;
+
+		default: {
+			const _exhaustive: never = node;
+			return _exhaustive;
+		}
+	}
+}
+
+/**
+ * Returns true if the node is a UnitNode with a dimensionless unit.
+ * A dimensionless unit has all zero exponents (e.g., radians, pure numbers).
+ */
+export function isDimensionlessUnit(node: MathNode): boolean {
+	if (!isUnit(node)) return false;
+
+	// A unit is dimensionless if all its component exponents are 0
+	for (const exponent of node.unit.components.values()) {
+		if (exponent !== 0) return false;
+	}
+	return true;
 }

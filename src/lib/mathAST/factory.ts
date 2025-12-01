@@ -29,8 +29,11 @@ import type {
 	SubtractionNode,
 	SuperscriptNode,
 	SymbolNode,
+	UnitNode,
 	VariableNode
 } from './types';
+import type { Unit } from './units/types';
+import { parseOrThrow } from './units/parser';
 import { unflattenRelationChain } from './flatten';
 
 // =============================================================================
@@ -695,6 +698,62 @@ export function iffChain(...operands: MathNode[]): RelationNode {
 }
 
 // =============================================================================
+// Unit Factories
+// =============================================================================
+
+/**
+ * Creates a unit node that wraps an expression with a physical unit.
+ * @param expression - The numeric or algebraic expression
+ * @param unitValue - The physical unit from Unit AST
+ * @param metadata - Optional rendering hints
+ *
+ * @example
+ * // 5 meters
+ * withUnit(number('5'), parse('m')!)
+ *
+ * // (3 + 4) kilometers
+ * withUnit(add(number('3'), number('4')), parse('km')!)
+ */
+export function withUnit(expression: MathNode, unitValue: Unit, metadata?: NodeMetadata): UnitNode {
+	return {
+		type: 'unit',
+		expression,
+		unit: unitValue,
+		...(metadata && { metadata })
+	} as const;
+}
+
+/**
+ * Convenience: Creates a quantity (number with unit) from value and unit strings.
+ * @param value - Numeric value as string (to preserve exact formatting)
+ * @param unitStr - Unit string to parse (e.g., 'm', 'km/h', 'm.s^-2')
+ * @param metadata - Optional rendering hints
+ * @throws Error if unitStr cannot be parsed
+ *
+ * @example
+ * quantity('5', 'm')      // 5 meters
+ * quantity('100', 'km/h') // 100 km/h
+ */
+export function quantity(value: string, unitStr: string, metadata?: NodeMetadata): UnitNode {
+	return withUnit(number(value), parseOrThrow(unitStr), metadata);
+}
+
+/**
+ * Convenience: Creates a variable with a unit.
+ * @param name - Variable name (single letter or multi-character identifier)
+ * @param unitStr - Unit string to parse (e.g., 'm/s', 'kg')
+ * @param metadata - Optional rendering hints
+ * @throws Error if unitStr cannot be parsed
+ *
+ * @example
+ * quantityVar('v', 'm/s')   // velocity v in m/s
+ * quantityVar('m', 'kg')    // mass m in kg
+ */
+export function quantityVar(name: string, unitStr: string, metadata?: NodeMetadata): UnitNode {
+	return withUnit(variable(name), parseOrThrow(unitStr), metadata);
+}
+
+// =============================================================================
 // MathAST Namespace
 // =============================================================================
 
@@ -767,5 +826,10 @@ export const MathAST = {
 	greaterThanChain,
 	greaterThanOrEqualChain,
 	impliesChain,
-	iffChain
+	iffChain,
+
+	// Units
+	withUnit,
+	quantity,
+	quantityVar
 } as const;

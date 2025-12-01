@@ -22,7 +22,8 @@ import {
 	subtract,
 	superscript,
 	symbol,
-	variable
+	variable,
+	withUnit
 } from './factory';
 
 // =============================================================================
@@ -98,6 +99,10 @@ export function getChildren(node: MathNode): MathNode[] {
 		// Relation
 		case 'relation':
 			return [node.left, node.right];
+
+		// Unit
+		case 'unit':
+			return [node.expression];
 	}
 }
 
@@ -208,6 +213,11 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				node.metadata
 			);
 			break;
+
+		// Unit
+		case 'unit':
+			transformedNode = withUnit(mapNode(node.expression, fn), node.unit, node.metadata);
+			break;
 	}
 
 	// Then apply transformation to the parent
@@ -312,6 +322,14 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				transformedParent.relation,
 				mapNodeTopDown(transformedParent.left, fn),
 				mapNodeTopDown(transformedParent.right, fn),
+				transformedParent.metadata
+			);
+
+		// Unit
+		case 'unit':
+			return withUnit(
+				mapNodeTopDown(transformedParent.expression, fn),
+				transformedParent.unit,
 				transformedParent.metadata
 			);
 	}
@@ -473,6 +491,10 @@ export function cloneNode<T extends MathNode>(node: T): T {
 				cloneNode(node.right),
 				node.metadata
 			) as T;
+
+		// Unit
+		case 'unit':
+			return withUnit(cloneNode(node.expression), node.unit, node.metadata) as T;
 	}
 }
 

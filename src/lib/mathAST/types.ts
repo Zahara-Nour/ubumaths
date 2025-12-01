@@ -5,6 +5,8 @@
  * as an immutable abstract syntax tree.
  */
 
+import type { Unit } from './units/types';
+
 // =============================================================================
 // Greek Letters
 // =============================================================================
@@ -410,6 +412,25 @@ export interface RelationNode extends BaseNode {
 }
 
 // =============================================================================
+// Unit Node
+// =============================================================================
+
+/**
+ * Represents an expression with an associated physical unit.
+ * The expression is wrapped and the unit is attached to the result.
+ *
+ * Examples:
+ * - 5 m: UnitNode(NumberNode('5'), m)
+ * - (3 + 4) km: UnitNode(AdditionNode(...), km)
+ * - v m/s: UnitNode(VariableNode('v'), m/s)
+ */
+export interface UnitNode extends BaseNode {
+	readonly type: 'unit';
+	readonly expression: MathNode;
+	readonly unit: Unit;
+}
+
+// =============================================================================
 // Union Type for All Nodes
 // =============================================================================
 
@@ -431,7 +452,8 @@ export type MathNode =
 	| DelimiterNode
 	| SubscriptNode
 	| SuperscriptNode
-	| RelationNode;
+	| RelationNode
+	| UnitNode;
 
 // =============================================================================
 // Node Type Extraction

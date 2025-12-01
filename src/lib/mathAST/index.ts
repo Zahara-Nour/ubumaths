@@ -68,6 +68,7 @@ export type {
 	SubscriptNode,
 	SuperscriptNode,
 	RelationNode,
+	UnitNode,
 
 	// Union types
 	LiteralNode,
@@ -153,7 +154,12 @@ export {
 	greaterThanChain,
 	greaterThanOrEqualChain,
 	impliesChain,
-	iffChain
+	iffChain,
+
+	// Units
+	withUnit,
+	quantity,
+	quantityVar
 } from './factory';
 
 // =============================================================================
@@ -200,6 +206,7 @@ export {
 	isSubscript,
 	isSuperscript,
 	isRelation,
+	isUnit,
 
 	// Utility predicates
 	hasChildren,
@@ -219,7 +226,11 @@ export {
 	isEqualityChain,
 	isImplicationChain,
 	isEquivalenceChain,
-	getRelationChainLength
+	getRelationChainLength,
+
+	// Unit predicates
+	hasUnitDescendant,
+	isDimensionlessUnit
 } from './guards';
 
 // =============================================================================
