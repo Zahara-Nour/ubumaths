@@ -83,9 +83,59 @@ parsePrattSafe(input: string, options?): ParseResult  // returns errors
 
 ---
 
-## Phase 3: Recursive Descent Parser
+## Phase 3: Recursive Descent Parser ✅
 
-**Status**: Pending
+**Status**: Complete
+**Date**: 2025-12-01
+
+### Files Created
+
+| File                  | Description                             | Tests |
+| --------------------- | --------------------------------------- | ----- |
+| `parser/parser-rd.ts` | Recursive Descent parser implementation | 137   |
+
+### Test Results
+
+- **137 tests passing**
+- Full feature parity with Pratt parser
+- All 16 MathNode types supported
+- Right-associativity for chained exponents
+
+### Key Features
+
+- Grammar-based precedence encoding
+- Right-associative: ^ (chained: x^2^3 → x^(2^3)), _ (chained: x_a_b → x_(a_b))
+- Left-to-right for mixed: x_1^2 → (x_1)^2
+- Implicit multiplication detection
+- Color stack integration for nested \textcolor
+- Unit parsing via existing units/parser.ts
+- Error handling: strict (throw) and tolerant (collect) modes
+
+### Grammar
+
+```
+expression      := relation
+relation        := additive (RELATION_OP additive)*
+additive        := multiplicative (('+' | '-') multiplicative)*
+multiplicative  := unary ((MUL_OP | IMPLICIT) unary)*
+unary           := ('+' | '-')? power
+power           := postfix ('^' powerOperand | '_' subscriptOperand)*
+postfix         := primary ('~' '\unit' group)?
+primary         := NUMBER | LETTER | GREEK | SYMBOL | fraction | sqrt | function | delimiter | color | braceGroup
+```
+
+### Code Review
+
+- Grade: A- (95/100)
+- Fixed TypeScript compilation issue (finalToken pattern)
+- Full feature parity confirmed with Pratt parser
+
+### API
+
+```typescript
+parseRD(input: string, options?): MathNode      // throws on error
+parseRDSafe(input: string, options?): ParseResult  // returns errors
+```
 
 ---
 
