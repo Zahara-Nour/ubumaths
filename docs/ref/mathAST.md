@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 644 passing (423 core + 75 unit-node + 146 dimensional)
+**Tests**: 1351 passing (644 core + 707 parser)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -19,10 +19,11 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 7. [Type Guards](#type-guards)
 8. [Flatten/Unflatten Helpers](#flattenunflatten-helpers)
 9. [LaTeX Generator](#latex-generator)
-10. [Physical Units](#physical-units)
-11. [Dimensional Analysis](#dimensional-analysis)
-12. [Usage Patterns](#usage-patterns)
-13. [API Summary](#api-summary)
+10. [LaTeX Parser](#latex-parser)
+11. [Physical Units](#physical-units)
+12. [Dimensional Analysis](#dimensional-analysis)
+13. [Usage Patterns](#usage-patterns)
+14. [API Summary](#api-summary)
 
 ---
 
@@ -48,6 +49,13 @@ src/lib/mathAST/
 ├── guards.ts             # Type guards (includes unit guards)
 ├── flatten.ts            # Flatten helpers
 ├── latex-generator.ts    # LaTeX output
+├── parser/               # LaTeX parser (707 tests)
+│   ├── types.ts          # Token types, ParserOptions, ParseError
+│   ├── tokenizer.ts      # LaTeX lexer
+│   ├── color-stack.ts    # Color context for nested \textcolor
+│   ├── parser-pratt.ts   # Pratt parser implementation
+│   ├── parser-rd.ts      # Recursive Descent parser
+│   └── index.ts          # Public API (parseLatex, parseLatexSafe)
 ├── units/                # Physical unit system (Unit AST)
 │   ├── types.ts          # Unit type definitions
 │   ├── factory.ts        # Unit creation functions
@@ -1330,6 +1338,137 @@ Example: `add(x, multiply(y, z))` → `x + y z` (no extra parentheses around `y 
 ### Type Safety
 
 The generator uses exhaustive type checking with `never` to ensure all node types are handled.
+
+---
+
+## LaTeX Parser
+
+### Overview
+
+The LaTeX parser converts LaTeX mathematical expressions into MathAST nodes. Two parser implementations are provided for comparison and flexibility:
+
+| Parser           | Style                        | Best For                         |
+| ---------------- | ---------------------------- | -------------------------------- |
+| **Pratt Parser** | Top-down operator precedence | Default, proven algorithm        |
+| **RD Parser**    | Recursive descent grammar    | Educational, clear grammar rules |
+
+Both parsers produce identical ASTs and support all features:
+
+- All 16 MathNode types
+- Nested `\textcolor{color}{content}` via color stack
+- Units with `~\unit{}` syntax
+- Implicit multiplication detection (2x, xy, 2\sin(x))
+- Configurable error handling (strict/tolerant modes)
+
+### Public API
+
+```typescript
+import { parseLatex, parseLatexSafe, validateLatex } from '$lib/mathAST';
+
+// Parse LaTeX (throws on error in strict mode)
+const ast = parseLatex('x^2 + 2x + 1');
+
+// Parse safely with error collection
+const result = parseLatexSafe('x^{2} + 2x + 1');
+if (result.ast) {
+	console.log(result.ast);
+}
+if (result.errors.length > 0) {
+	console.warn('Parse errors:', result.errors);
+}
+
+// Validate syntax only
+const errors = validateLatex('x^{'); // Returns array of ParseError
+```
+
+### Options
+
+```typescript
+interface LatexParserOptions {
+	mode?: 'strict' | 'tolerant'; // Default: 'strict' for parseLatex, 'tolerant' for parseLatexSafe
+	parser?: 'pratt' | 'rd'; // Default: 'pratt'
+}
+
+// Use RD parser with tolerant mode
+const ast = parseLatex('x + y', { parser: 'rd', mode: 'tolerant' });
+```
+
+### Supported LaTeX Syntax
+
+| Category      | Examples                                      |
+| ------------- | --------------------------------------------- | -------- | --- |
+| Numbers       | `42`, `3.14`, `.5`                            |
+| Variables     | `x`, `y`, `velocity`                          |
+| Greek letters | `\alpha`, `\beta`, `\Delta`, `\Omega`         |
+| Symbols       | `\infty`, `\partial`, `\nabla`                |
+| Operations    | `+`, `-`, `*`, `/`, `\cdot`, `\times`         |
+| Powers        | `x^2`, `x^{n+1}`, `x^2^3` (right-associative) |
+| Subscripts    | `x_1`, `x_{ij}`                               |
+| Fractions     | `\frac{a}{b}`, `\frac{x+1}{x-1}`              |
+| Functions     | `\sin(x)`, `\cos^2(x)`, `\log_2(8)`           |
+| Square root   | `\sqrt{x}`, `\sqrt[3]{x}`                     |
+| Delimiters    | `(x)`, `\left( x \right)`, `\left             | x \right | `   |
+| Relations     | `=`, `<`, `>`, `\leq`, `\geq`, `\neq`         |
+| Colors        | `\textcolor{red}{x}`, nested colors           |
+| Units         | `5~\unit{m}`, `v~\unit{m/s}`                  |
+
+### Operator Precedence
+
+```
+Level 1 (lowest): Relations (=, <, >, ≤, ≥)
+Level 2: Addition (+), Subtraction (-)
+Level 3: Multiplication (*, ·, ×, implicit)
+Level 4: Unary (prefix -, +)
+Level 5 (highest): Power (^), Subscript (_)
+```
+
+### Right-Associativity
+
+Power operations are right-associative for chained exponents:
+
+- `x^2^3` → `x^(2^3)` (not `(x^2)^3`)
+- `x_a_b` → `x_(a_b)` (not `(x_a)_b`)
+
+Mixed subscript/superscript uses left-to-right order:
+
+- `x_1^2` → `(x_1)^2`
+- `x^2_1` → `(x^2)_1`
+
+### Error Handling
+
+```typescript
+// Strict mode: throws ParseException
+try {
+	parseLatex('x^{'); // Missing closing brace
+} catch (e) {
+	console.error(e.message, e.position, e.code);
+}
+
+// Tolerant mode: collects errors
+const result = parseLatexSafe('x^{ + y');
+// result.ast may be partial or null
+// result.errors contains all parse errors
+
+// ParseError structure
+interface ParseError {
+	message: string;
+	position: number;
+	length: number;
+	code: ParseErrorCode; // 'UNEXPECTED_TOKEN', 'MISSING_DELIMITER', etc.
+}
+```
+
+### Direct Parser Access
+
+For advanced use cases, access parsers directly:
+
+```typescript
+import { parsePratt, parsePrattSafe, parseRD, parseRDSafe } from '$lib/mathAST';
+
+const ast1 = parsePratt('x + y'); // Pratt parser
+const ast2 = parseRD('x + y'); // RD parser
+const result = parsePrattSafe('x^{'); // Safe Pratt parser
+```
 
 ---
 
