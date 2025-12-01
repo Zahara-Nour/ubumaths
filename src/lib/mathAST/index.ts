@@ -81,7 +81,7 @@ export type {
 } from './types';
 
 // =============================================================================
-// Factory Functions
+// Factory Functions and Options Types
 // =============================================================================
 
 export {
@@ -160,12 +160,27 @@ export {
 	quantityVar
 } from './factory';
 
+// Options types for extended metadata
+export type {
+	BinaryOpOptions,
+	UnaryOpOptions,
+	DelimiterOptions,
+	FunctionMetadataOptions,
+	RelationOptions,
+	UnitOptions
+} from './factory';
+
 // =============================================================================
 // Transformation Helpers
 // =============================================================================
 
 export {
 	withMetadata,
+	withOperatorMetadata,
+	withDelimiterMetadata,
+	withRelationMetadata,
+	withNameMetadata,
+	withUnitMetadata,
 	getChildren,
 	mapNode,
 	mapNodeTopDown,
@@ -228,7 +243,15 @@ export {
 
 	// Unit predicates
 	hasUnitDescendant,
-	isDimensionlessUnit
+	isDimensionlessUnit,
+
+	// Extended metadata predicates
+	hasOperatorMetadata,
+	hasDelimiterMetadata,
+	hasNameMetadata,
+	hasRelationMetadata,
+	hasUnitMetadata,
+	hasAnyMetadata
 } from './guards';
 
 // =============================================================================
