@@ -1,36 +1,33 @@
-# Extended Metadata - Progression
+# Extended Metadata - TERMINÉ
 
-## Etat actuel
+## Etat final
 
 - [x] Bloc 1 : Types + Factories (commit: def388d3)
 - [x] Bloc 2 : LaTeX Generator (commit: f949ab31)
 - [x] Bloc 3 : Guards + Transforms (commit: fae979c1)
 - [x] Bloc 4 : Tests (commit: bf7de1ad)
-- [ ] Bloc 5 : Documentation + Finalisation
+- [x] Bloc 5 : Documentation (commit: 08968917)
 
-## Derniere action
+## Résumé
 
-Bloc 4 termine - 129 tests ajoutes (tous passent)
+Système de métadonnées étendues pour MathAST permettant le coloriage fin des expressions mathématiques.
 
-## Prochaine etape
+### Fonctionnalités implémentées
 
-Bloc 5 : Mettre a jour docs/ref/mathAST.md et quality checks
+1. **Types étendus** : operatorMetadata, delimiterMetadata, leftDelimiterMetadata, rightDelimiterMetadata, nameMetadata, relationMetadata, unitMetadata
 
-## Fichiers modifies
+2. **Factory options** : BinaryOpOptions, UnaryOpOptions, DelimiterOptions, FunctionMetadataOptions, RelationOptions, UnitOptions
 
-- src/lib/mathAST/types.ts
-- src/lib/mathAST/factory.ts
-- src/lib/mathAST/transforms.ts
-- src/lib/mathAST/latex-generator.ts
-- src/lib/mathAST/guards.ts
-- src/lib/mathAST/index.ts
-- src/lib/mathAST/**tests**/extended-metadata.test.ts
+3. **Transform helpers** : withOperatorMetadata, withDelimiterMetadata, withRelationMetadata, withNameMetadata, withUnitMetadata
 
-## Decisions prises
+4. **Guards** : hasOperatorMetadata, hasDelimiterMetadata, hasNameMetadata, hasRelationMetadata, hasUnitMetadata, hasAnyMetadata
 
-- Retrocompatibilite via union type `BinaryOpOptions | NodeMetadata`
-- Coalescence sur couleur uniquement
-- Helpers de normalisation pour chaque type d'options
-- Transforms preservent toutes les metadonnees etendues
-- Type guards pour tous les types de metadonnees etendues
-- Transform helpers avec merge de metadonnees existantes
+5. **LaTeX coalescence** : Fusion des spans adjacents de même couleur
+
+### Tests
+
+129 tests couvrant factories, transforms, guards et coalescence LaTeX.
+
+### Documentation
+
+docs/ref/mathAST.md mis à jour avec section complète sur le système de métadonnées étendues.
