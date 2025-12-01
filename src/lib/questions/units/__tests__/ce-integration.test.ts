@@ -223,7 +223,7 @@ describe('evaluateQuantityValue', () => {
 describe('compareQuantities - exact match', () => {
 	describe('Same value and unit', () => {
 		test('should match identical quantities', () => {
-			const result = compareQuantities('5\\text{ m }', '5\\text{ m }');
+			const result = compareQuantities('5\\unit{m}', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(true);
 			expect(result.userValue).toBe(5);
 			expect(result.expectedValue).toBe(5);
@@ -232,101 +232,101 @@ describe('compareQuantities - exact match', () => {
 		});
 
 		test('should match with multiple spaces', () => {
-			const result = compareQuantities('5\\text{  m  }', '5\\text{ m }');
+			const result = compareQuantities('5\\unit{ m }', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 
 		test('should match different numeric formats', () => {
-			const result = compareQuantities('5.0\\text{ m }', '5\\text{ m }');
+			const result = compareQuantities('5.0\\unit{m}', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 	});
 
 	describe('Different values, same unit', () => {
 		test('should not match different values', () => {
-			const result = compareQuantities('5\\text{ m }', '6\\text{ m }');
+			const result = compareQuantities('5\\unit{m}', '6\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 			expect(result.userValue).toBe(5);
 			expect(result.expectedValue).toBe(6);
 		});
 
 		test('should not match off by one', () => {
-			const result = compareQuantities('4\\text{ m }', '5\\text{ m }');
+			const result = compareQuantities('4\\unit{m}', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 		});
 	});
 
 	describe('Unit conversion', () => {
 		test('should convert km to m', () => {
-			const result = compareQuantities('1\\text{ km }', '1000\\text{ m }');
+			const result = compareQuantities('1\\unit{km}', '1000\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(true);
 			expect(result.userValue).toBe(1);
 			expect(result.expectedValue).toBe(1000);
 		});
 
 		test('should convert m to km', () => {
-			const result = compareQuantities('1000\\text{ m }', '1\\text{ km }');
+			const result = compareQuantities('1000\\unit{m}', '1\\unit{km}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 
 		test('should convert cm to m', () => {
-			const result = compareQuantities('50\\text{ cm }', '0.5\\text{ m }');
+			const result = compareQuantities('50\\unit{cm}', '0.5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 
 		test('should convert mm to m', () => {
-			const result = compareQuantities('1500\\text{ mm }', '1.5\\text{ m }');
+			const result = compareQuantities('1500\\unit{mm}', '1.5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 
 		test('should convert kg to g', () => {
-			const result = compareQuantities('2\\text{ kg }', '2000\\text{ g }');
+			const result = compareQuantities('2\\unit{kg}', '2000\\unit{g}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 
 		test('should convert hours to minutes', () => {
-			const result = compareQuantities('2\\text{ h }', '120\\text{ min }');
+			const result = compareQuantities('2\\unit{h}', '120\\unit{min}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 
 		test('should convert hours to seconds', () => {
-			const result = compareQuantities('1\\text{ h }', '3600\\text{ s }');
+			const result = compareQuantities('1\\unit{h}', '3600\\unit{s}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 
 		test('should convert minutes to seconds', () => {
-			const result = compareQuantities('5\\text{ min }', '300\\text{ s }');
+			const result = compareQuantities('5\\unit{min}', '300\\unit{s}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 	});
 
 	describe('Composite unit conversion', () => {
 		test('should convert km/h to m/s', () => {
-			const result = compareQuantities('90\\text{ km/h }', '25\\text{ m/s }');
+			const result = compareQuantities('90\\unit{km/h}', '25\\unit{m/s}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 
 		test('should convert m/s to km/h', () => {
-			const result = compareQuantities('10\\text{ m/s }', '36\\text{ km/h }');
+			const result = compareQuantities('10\\unit{m/s}', '36\\unit{km/h}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 	});
 
 	describe('Incompatible units', () => {
 		test('should fail for meters vs seconds', () => {
-			const result = compareQuantities('5\\text{ m }', '5\\text{ s }');
+			const result = compareQuantities('5\\unit{m}', '5\\unit{s}');
 			expect(isComparisonEqual(result)).toBe(false);
 			expect(hasComparisonError(result, 'incompatible_units')).toBe(true);
 		});
 
 		test('should fail for kg vs m', () => {
-			const result = compareQuantities('5\\text{ kg }', '5\\text{ m }');
+			const result = compareQuantities('5\\unit{kg}', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 			expect(hasComparisonError(result, 'incompatible_units')).toBe(true);
 		});
 
 		test('should fail for hours vs meters', () => {
-			const result = compareQuantities('2\\text{ h }', '2\\text{ m }');
+			const result = compareQuantities('2\\unit{h}', '2\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 			expect(hasComparisonError(result, 'incompatible_units')).toBe(true);
 		});
@@ -334,58 +334,58 @@ describe('compareQuantities - exact match', () => {
 
 	describe('Expression evaluation in quantities', () => {
 		test('should evaluate arithmetic in value', () => {
-			const result = compareQuantities('3+2\\text{ m }', '5\\text{ m }');
+			const result = compareQuantities('3+2\\unit{m}', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(true);
 			expect(result.userValue).toBe(5);
 		});
 
 		test('should evaluate fraction in value', () => {
-			const result = compareQuantities('\\frac{3}{2}\\text{ m }', '1.5\\text{ m }');
+			const result = compareQuantities('\\frac{3}{2}\\unit{m}', '1.5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(true);
 			expect(result.userValue).toBe(1.5);
 		});
 
 		test('should evaluate scientific notation in value', () => {
-			const result = compareQuantities('5\\times 10^2\\text{ m }', '500\\text{ m }');
+			const result = compareQuantities('5\\times 10^2\\unit{m}', '500\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(true);
 		});
 	});
 
 	describe('Invalid input handling', () => {
 		test('should return error for invalid user expression', () => {
-			const result = compareQuantities('invalid\\text{ m }', '5\\text{ m }');
+			const result = compareQuantities('invalid\\unit{m}', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 			expect(hasComparisonError(result, 'invalid_user_expression')).toBe(true);
 			expect(result.userValue).toBeNull();
 		});
 
 		test('should return error for invalid expected expression', () => {
-			const result = compareQuantities('5\\text{ m }', 'invalid\\text{ m }');
+			const result = compareQuantities('5\\unit{m}', 'invalid\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 			expect(hasComparisonError(result, 'invalid_expected_expression')).toBe(true);
 			expect(result.expectedValue).toBeNull();
 		});
 
 		test('should return error for invalid unit in user answer', () => {
-			const result = compareQuantities('5\\text{ xyz }', '5\\text{ m }');
+			const result = compareQuantities('5\\unit{xyz}', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 		});
 
 		test('should return error for evaluation failure', () => {
-			const result = compareQuantities('\\frac{1}{0}\\text{ m }', '5\\text{ m }');
+			const result = compareQuantities('\\frac{1}{0}\\unit{m}', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 			expect(hasComparisonError(result, 'evaluation_failed')).toBe(true);
 		});
 
 		test('should handle empty user answer', () => {
-			const result = compareQuantities('', '5\\text{ m }');
+			const result = compareQuantities('', '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 			expect(result.error).toBeDefined();
 		});
 
 		test('should handle null values gracefully', () => {
 			// @ts-expect-error Testing invalid input
-			const result = compareQuantities(null, '5\\text{ m }');
+			const result = compareQuantities(null, '5\\unit{m}');
 			expect(isComparisonEqual(result)).toBe(false);
 		});
 	});
@@ -398,37 +398,37 @@ describe('compareQuantities - exact match', () => {
 describe('compareQuantities - absolute tolerance', () => {
 	test('should match within absolute tolerance', () => {
 		const tolerance: Tolerance = { absolute: 0.1 };
-		const result = compareQuantities('5.01\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.01\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should not match outside absolute tolerance', () => {
 		const tolerance: Tolerance = { absolute: 0.1 };
-		const result = compareQuantities('5.2\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.2\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(false);
 	});
 
 	test('should match exactly at tolerance boundary', () => {
 		const tolerance: Tolerance = { absolute: 0.1 };
-		const result = compareQuantities('5.1\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.1\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should work with zero expected value', () => {
 		const tolerance: Tolerance = { absolute: 0.1 };
-		const result = compareQuantities('0.05\\text{ m }', '0\\text{ m }', tolerance);
+		const result = compareQuantities('0.05\\unit{m}', '0\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should work with negative values', () => {
 		const tolerance: Tolerance = { absolute: 0.1 };
-		const result = compareQuantities('-5.05\\text{ m }', '-5\\text{ m }', tolerance);
+		const result = compareQuantities('-5.05\\unit{m}', '-5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should apply tolerance after unit conversion', () => {
 		const tolerance: Tolerance = { absolute: 100 };
-		const result = compareQuantities('1.05\\text{ km }', '1000\\text{ m }', tolerance);
+		const result = compareQuantities('1.05\\unit{km}', '1000\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 });
@@ -440,31 +440,31 @@ describe('compareQuantities - absolute tolerance', () => {
 describe('compareQuantities - relative tolerance', () => {
 	test('should match within relative tolerance', () => {
 		const tolerance: Tolerance = { relative: 0.01 }; // 1%
-		const result = compareQuantities('5.05\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.05\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should not match outside relative tolerance', () => {
 		const tolerance: Tolerance = { relative: 0.01 }; // 1%
-		const result = compareQuantities('5.1\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.1\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(false);
 	});
 
 	test('should match exactly at tolerance boundary', () => {
 		const tolerance: Tolerance = { relative: 0.01 }; // 1%
-		const result = compareQuantities('5.05\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.05\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should use relative tolerance for large values', () => {
 		const tolerance: Tolerance = { relative: 0.01 }; // 1%
-		const result = compareQuantities('1010\\text{ m }', '1000\\text{ m }', tolerance);
+		const result = compareQuantities('1010\\unit{m}', '1000\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should handle relative tolerance with small values', () => {
 		const tolerance: Tolerance = { relative: 0.01 }; // 1%
-		const result = compareQuantities('0.505\\text{ m }', '0.5\\text{ m }', tolerance);
+		const result = compareQuantities('0.505\\unit{m}', '0.5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 });
@@ -476,25 +476,25 @@ describe('compareQuantities - relative tolerance', () => {
 describe('compareQuantities - absolute and relative tolerance', () => {
 	test('should match if either tolerance is satisfied', () => {
 		const tolerance: Tolerance = { absolute: 0.1, relative: 0.001 };
-		const result = compareQuantities('5.05\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.05\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should match if only absolute is satisfied', () => {
 		const tolerance: Tolerance = { absolute: 0.2, relative: 0.001 };
-		const result = compareQuantities('5.1\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.1\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should match if only relative is satisfied', () => {
 		const tolerance: Tolerance = { absolute: 0.001, relative: 0.02 };
-		const result = compareQuantities('5.1\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.1\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 
 	test('should not match if neither is satisfied', () => {
 		const tolerance: Tolerance = { absolute: 0.01, relative: 0.001 };
-		const result = compareQuantities('5.2\\text{ m }', '5\\text{ m }', tolerance);
+		const result = compareQuantities('5.2\\unit{m}', '5\\unit{m}', tolerance);
 		expect(isComparisonEqual(result)).toBe(false);
 	});
 });
@@ -505,32 +505,32 @@ describe('compareQuantities - absolute and relative tolerance', () => {
 
 describe('convertQuantity - length conversions', () => {
 	test('should convert km to m', () => {
-		const result = convertQuantity('5\\text{ km }', 'm');
+		const result = convertQuantity('5\\unit{km}', 'm');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(5000);
 		expect(result?.unit.components.get('m')).toBe(1);
 	});
 
 	test('should convert m to km', () => {
-		const result = convertQuantity('1000\\text{ m }', 'km');
+		const result = convertQuantity('1000\\unit{m}', 'km');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(1);
 	});
 
 	test('should convert cm to m', () => {
-		const result = convertQuantity('100\\text{ cm }', 'm');
+		const result = convertQuantity('100\\unit{cm}', 'm');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(1);
 	});
 
 	test('should convert mm to m', () => {
-		const result = convertQuantity('1000\\text{ mm }', 'm');
+		const result = convertQuantity('1000\\unit{mm}', 'm');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(1);
 	});
 
 	test('should convert m to cm', () => {
-		const result = convertQuantity('5\\text{ m }', 'cm');
+		const result = convertQuantity('5\\unit{m}', 'cm');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(500);
 	});
@@ -542,19 +542,19 @@ describe('convertQuantity - length conversions', () => {
 
 describe('convertQuantity - mass conversions', () => {
 	test('should convert kg to g', () => {
-		const result = convertQuantity('2\\text{ kg }', 'g');
+		const result = convertQuantity('2\\unit{kg}', 'g');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(2000);
 	});
 
 	test('should convert g to kg', () => {
-		const result = convertQuantity('1000\\text{ g }', 'kg');
+		const result = convertQuantity('1000\\unit{g}', 'kg');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(1);
 	});
 
 	test('should convert mg to g', () => {
-		const result = convertQuantity('500\\text{ mg }', 'g');
+		const result = convertQuantity('500\\unit{mg}', 'g');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(0.5);
 	});
@@ -566,25 +566,25 @@ describe('convertQuantity - mass conversions', () => {
 
 describe('convertQuantity - time conversions', () => {
 	test('should convert hours to minutes', () => {
-		const result = convertQuantity('2\\text{ h }', 'min');
+		const result = convertQuantity('2\\unit{h}', 'min');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(120);
 	});
 
 	test('should convert hours to seconds', () => {
-		const result = convertQuantity('1\\text{ h }', 's');
+		const result = convertQuantity('1\\unit{h}', 's');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(3600);
 	});
 
 	test('should convert minutes to seconds', () => {
-		const result = convertQuantity('5\\text{ min }', 's');
+		const result = convertQuantity('5\\unit{min}', 's');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(300);
 	});
 
 	test('should convert seconds to milliseconds', () => {
-		const result = convertQuantity('2\\text{ s }', 'ms');
+		const result = convertQuantity('2\\unit{s}', 'ms');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(2000);
 	});
@@ -596,13 +596,13 @@ describe('convertQuantity - time conversions', () => {
 
 describe('convertQuantity - composite units', () => {
 	test('should convert km/h to m/s', () => {
-		const result = convertQuantity('90\\text{ km/h }', 'm/s');
+		const result = convertQuantity('90\\unit{km/h}', 'm/s');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(25);
 	});
 
 	test('should convert m/s to km/h', () => {
-		const result = convertQuantity('10\\text{ m/s }', 'km/h');
+		const result = convertQuantity('10\\unit{m/s}', 'km/h');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(36);
 	});
@@ -614,22 +614,22 @@ describe('convertQuantity - composite units', () => {
 
 describe('convertQuantity - invalid conversions', () => {
 	test('should return null for incompatible units', () => {
-		const result = convertQuantity('5\\text{ m }', 's');
+		const result = convertQuantity('5\\unit{m}', 's');
 		expect(result).toBeNull();
 	});
 
 	test('should return null for incompatible mass to length', () => {
-		const result = convertQuantity('5\\text{ kg }', 'm');
+		const result = convertQuantity('5\\unit{kg}', 'm');
 		expect(result).toBeNull();
 	});
 
 	test('should return null for invalid target unit', () => {
-		const result = convertQuantity('5\\text{ m }', 'xyz');
+		const result = convertQuantity('5\\unit{m}', 'xyz');
 		expect(result).toBeNull();
 	});
 
 	test('should return null for invalid input quantity', () => {
-		const result = convertQuantity('invalid\\text{ m }', 'km');
+		const result = convertQuantity('invalid\\unit{m}', 'km');
 		expect(result).toBeNull();
 	});
 
@@ -639,7 +639,7 @@ describe('convertQuantity - invalid conversions', () => {
 	});
 
 	test('should return null for unevaluable expression', () => {
-		const result = convertQuantity('\\frac{1}{0}\\text{ m }', 'km');
+		const result = convertQuantity('\\frac{1}{0}\\unit{m}', 'km');
 		expect(result).toBeNull();
 	});
 });
@@ -650,7 +650,7 @@ describe('convertQuantity - invalid conversions', () => {
 
 describe('normalizeToBaseUnits - length', () => {
 	test('should normalize km to m', () => {
-		const result = normalizeToBaseUnits('5\\text{ km }');
+		const result = normalizeToBaseUnits('5\\unit{km}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(5000);
 		expect(result?.unit.components.get('m')).toBe(1);
@@ -658,20 +658,20 @@ describe('normalizeToBaseUnits - length', () => {
 	});
 
 	test('should normalize cm to m', () => {
-		const result = normalizeToBaseUnits('100\\text{ cm }');
+		const result = normalizeToBaseUnits('100\\unit{cm}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(1);
 	});
 
 	test('should keep m as m', () => {
-		const result = normalizeToBaseUnits('10\\text{ m }');
+		const result = normalizeToBaseUnits('10\\unit{m}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(10);
 		expect(result?.unit.components.get('m')).toBe(1);
 	});
 
 	test('should normalize mm to m', () => {
-		const result = normalizeToBaseUnits('1500\\text{ mm }');
+		const result = normalizeToBaseUnits('1500\\unit{mm}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(1.5);
 	});
@@ -683,20 +683,20 @@ describe('normalizeToBaseUnits - length', () => {
 
 describe('normalizeToBaseUnits - mass', () => {
 	test('should normalize kg to base', () => {
-		const result = normalizeToBaseUnits('2\\text{ kg }');
+		const result = normalizeToBaseUnits('2\\unit{kg}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(2000);
 		expect(result?.unit.coefficient).toBe(1);
 	});
 
 	test('should normalize g to base', () => {
-		const result = normalizeToBaseUnits('500\\text{ g }');
+		const result = normalizeToBaseUnits('500\\unit{g}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(500);
 	});
 
 	test('should normalize mg to g', () => {
-		const result = normalizeToBaseUnits('1000\\text{ mg }');
+		const result = normalizeToBaseUnits('1000\\unit{mg}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(1);
 	});
@@ -708,26 +708,26 @@ describe('normalizeToBaseUnits - mass', () => {
 
 describe('normalizeToBaseUnits - time', () => {
 	test('should normalize hours to seconds', () => {
-		const result = normalizeToBaseUnits('2\\text{ h }');
+		const result = normalizeToBaseUnits('2\\unit{h}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(7200);
 		expect(result?.unit.components.get('s')).toBe(1);
 	});
 
 	test('should normalize minutes to seconds', () => {
-		const result = normalizeToBaseUnits('5\\text{ min }');
+		const result = normalizeToBaseUnits('5\\unit{min}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(300);
 	});
 
 	test('should normalize milliseconds to seconds', () => {
-		const result = normalizeToBaseUnits('1000\\text{ ms }');
+		const result = normalizeToBaseUnits('1000\\unit{ms}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(1);
 	});
 
 	test('should keep s as s', () => {
-		const result = normalizeToBaseUnits('60\\text{ s }');
+		const result = normalizeToBaseUnits('60\\unit{s}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(60);
 	});
@@ -739,7 +739,7 @@ describe('normalizeToBaseUnits - time', () => {
 
 describe('normalizeToBaseUnits - composite units', () => {
 	test('should normalize km/h to m/s', () => {
-		const result = normalizeToBaseUnits('90\\text{ km/h }');
+		const result = normalizeToBaseUnits('90\\unit{km/h}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(25);
 		expect(result?.unit.components.get('m')).toBe(1);
@@ -747,7 +747,7 @@ describe('normalizeToBaseUnits - composite units', () => {
 	});
 
 	test('should normalize m/min to m/s', () => {
-		const result = normalizeToBaseUnits('60\\text{ m/min }');
+		const result = normalizeToBaseUnits('60\\unit{m/min}');
 		expect(result).not.toBeNull();
 		expect(result?.value).toBe(1);
 	});
@@ -759,12 +759,12 @@ describe('normalizeToBaseUnits - composite units', () => {
 
 describe('normalizeToBaseUnits - invalid inputs', () => {
 	test('should return null for invalid quantity', () => {
-		const result = normalizeToBaseUnits('invalid\\text{ m }');
+		const result = normalizeToBaseUnits('invalid\\unit{m}');
 		expect(result).toBeNull();
 	});
 
 	test('should return null for unevaluable expression', () => {
-		const result = normalizeToBaseUnits('\\frac{1}{0}\\text{ m }');
+		const result = normalizeToBaseUnits('\\frac{1}{0}\\unit{m}');
 		expect(result).toBeNull();
 	});
 
@@ -774,7 +774,7 @@ describe('normalizeToBaseUnits - invalid inputs', () => {
 	});
 
 	test('should return null for invalid unit', () => {
-		const result = normalizeToBaseUnits('5\\text{ xyz }');
+		const result = normalizeToBaseUnits('5\\unit{xyz}');
 		expect(result).toBeNull();
 	});
 });
@@ -785,19 +785,19 @@ describe('normalizeToBaseUnits - invalid inputs', () => {
 
 describe('isValidQuantity', () => {
 	test('should return true for valid simple quantity', () => {
-		expect(isValidQuantity('5\\text{ m }')).toBe(true);
+		expect(isValidQuantity('5\\unit{m}')).toBe(true);
 	});
 
 	test('should return true for valid quantity with expression', () => {
-		expect(isValidQuantity('3+2\\text{ km }')).toBe(true);
+		expect(isValidQuantity('3+2\\unit{km}')).toBe(true);
 	});
 
 	test('should return true for valid composite unit', () => {
-		expect(isValidQuantity('90\\text{ km/h }')).toBe(true);
+		expect(isValidQuantity('90\\unit{km/h}')).toBe(true);
 	});
 
 	test('should return false for invalid unit', () => {
-		expect(isValidQuantity('5\\text{ xyz }')).toBe(false);
+		expect(isValidQuantity('5\\unit{xyz}')).toBe(false);
 	});
 
 	test('should return false for empty string', () => {
@@ -815,7 +815,7 @@ describe('isValidQuantity', () => {
 	});
 
 	test('should return false for invalid expression', () => {
-		expect(isValidQuantity('\\frac{1}{0}\\text{ m }')).toBe(false);
+		expect(isValidQuantity('\\frac{1}{0}\\unit{m}')).toBe(false);
 	});
 });
 
@@ -825,27 +825,27 @@ describe('isValidQuantity', () => {
 
 describe('getUnitFromQuantity', () => {
 	test('should extract unit from simple quantity', () => {
-		const unit = getUnitFromQuantity('5\\text{ m }');
+		const unit = getUnitFromQuantity('5\\unit{m}');
 		expect(unit).not.toBeNull();
 		expect(unit?.components.get('m')).toBe(1);
 	});
 
 	test('should extract kilometer unit with coefficient', () => {
-		const unit = getUnitFromQuantity('5\\text{ km }');
+		const unit = getUnitFromQuantity('5\\unit{km}');
 		expect(unit).not.toBeNull();
 		expect(unit?.components.get('m')).toBe(1);
 		expect(unit?.coefficient).toBe(1000);
 	});
 
 	test('should extract composite unit', () => {
-		const unit = getUnitFromQuantity('90\\text{ km/h }');
+		const unit = getUnitFromQuantity('90\\unit{km/h}');
 		expect(unit).not.toBeNull();
 		expect(unit?.components.get('m')).toBe(1);
 		expect(unit?.components.get('s')).toBe(-1);
 	});
 
 	test('should return null for invalid quantity', () => {
-		const unit = getUnitFromQuantity('invalid\\text{ xyz }');
+		const unit = getUnitFromQuantity('invalid\\unit{xyz}');
 		expect(unit).toBeNull();
 	});
 
@@ -861,27 +861,27 @@ describe('getUnitFromQuantity', () => {
 
 describe('getValueFromQuantity', () => {
 	test('should extract numeric value from simple quantity', () => {
-		expect(getValueFromQuantity('5\\text{ m }')).toBe(5);
+		expect(getValueFromQuantity('5\\unit{m}')).toBe(5);
 	});
 
 	test('should evaluate expression in quantity', () => {
-		expect(getValueFromQuantity('3+2\\text{ m }')).toBe(5);
+		expect(getValueFromQuantity('3+2\\unit{m}')).toBe(5);
 	});
 
 	test('should evaluate fraction in quantity', () => {
-		expect(getValueFromQuantity('\\frac{3}{2}\\text{ m }')).toBe(1.5);
+		expect(getValueFromQuantity('\\frac{3}{2}\\unit{m}')).toBe(1.5);
 	});
 
 	test('should handle decimal values', () => {
-		expect(getValueFromQuantity('3.14\\text{ m }')).toBe(3.14);
+		expect(getValueFromQuantity('3.14\\unit{m}')).toBe(3.14);
 	});
 
 	test('should handle negative values', () => {
-		expect(getValueFromQuantity('-5\\text{ m }')).toBe(-5);
+		expect(getValueFromQuantity('-5\\unit{m}')).toBe(-5);
 	});
 
 	test('should return null for invalid quantity', () => {
-		expect(getValueFromQuantity('invalid\\text{ xyz }')).toBeNull();
+		expect(getValueFromQuantity('invalid\\unit{xyz}')).toBeNull();
 	});
 
 	test('should return null for empty input', () => {
@@ -889,7 +889,7 @@ describe('getValueFromQuantity', () => {
 	});
 
 	test('should return null for unevaluable expression', () => {
-		expect(getValueFromQuantity('\\frac{1}{0}\\text{ m }')).toBeNull();
+		expect(getValueFromQuantity('\\frac{1}{0}\\unit{m}')).toBeNull();
 	});
 });
 
@@ -899,18 +899,18 @@ describe('getValueFromQuantity', () => {
 
 describe('Edge cases - zero values', () => {
 	test('should handle zero in comparison', () => {
-		const result = compareQuantities('0\\text{ m }', '0\\text{ m }');
+		const result = compareQuantities('0\\unit{m}', '0\\unit{m}');
 		expect(isComparisonEqual(result)).toBe(true);
 		expect(result.userValue).toBe(0);
 	});
 
 	test('should handle zero conversion', () => {
-		const result = convertQuantity('0\\text{ km }', 'm');
+		const result = convertQuantity('0\\unit{km}', 'm');
 		expect(result?.value).toBe(0);
 	});
 
 	test('should handle zero normalization', () => {
-		const result = normalizeToBaseUnits('0\\text{ km }');
+		const result = normalizeToBaseUnits('0\\unit{km}');
 		expect(result?.value).toBe(0);
 	});
 
@@ -919,29 +919,29 @@ describe('Edge cases - zero values', () => {
 	});
 
 	test('should return true for isValidQuantity with zero', () => {
-		expect(isValidQuantity('0\\text{ m }')).toBe(true);
+		expect(isValidQuantity('0\\unit{m}')).toBe(true);
 	});
 });
 
 describe('Edge cases - negative values', () => {
 	test('should handle negative in comparison', () => {
-		const result = compareQuantities('-5\\text{ m }', '-5\\text{ m }');
+		const result = compareQuantities('-5\\unit{m}', '-5\\unit{m}');
 		expect(isComparisonEqual(result)).toBe(true);
 		expect(result.userValue).toBe(-5);
 	});
 
 	test('should handle negative conversion', () => {
-		const result = convertQuantity('-1\\text{ km }', 'm');
+		const result = convertQuantity('-1\\unit{km}', 'm');
 		expect(result?.value).toBe(-1000);
 	});
 
 	test('should handle negative normalization', () => {
-		const result = normalizeToBaseUnits('-5\\text{ km }');
+		const result = normalizeToBaseUnits('-5\\unit{km}');
 		expect(result?.value).toBe(-5000);
 	});
 
 	test('should evaluate negative with unit conversion', () => {
-		const result = compareQuantities('-5\\text{ km }', '-5000\\text{ m }');
+		const result = compareQuantities('-5\\unit{km}', '-5000\\unit{m}');
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 });
@@ -956,7 +956,7 @@ describe('Edge cases - very large/small values', () => {
 	});
 
 	test('should handle very large quantities', () => {
-		const result = compareQuantities('999999\\text{ m }', '999.999\\text{ km }');
+		const result = compareQuantities('999999\\unit{m}', '999.999\\unit{km}');
 		expect(isComparisonEqual(result)).toBe(true);
 	});
 

@@ -9,7 +9,7 @@
  * Test Categories:
  * 1. Tokenizer - Token generation from unit expressions
  * 2. Unit Expression Parsing - Parse unit strings to Unit objects
- * 3. LaTeX Unit Extraction - Extract units from LaTeX patterns
+ * 3. LaTeX Unit Extraction - Extract units from \unit{} pattern
  * 4. LaTeX Quantity Parsing - Parse full LaTeX quantities (value + unit)
  * 5. Unit String Normalization - Normalize Unicode superscripts
  */
@@ -584,98 +584,52 @@ describe('Unit Expression Parsing', () => {
 // ============================================================================
 
 describe('LaTeX Unit Extraction', () => {
-	// --- \\text Pattern ---
+	// --- \\unit{} Pattern ---
 
-	describe('\\text{} pattern', () => {
-		test('extracts unit from \\text{ km }', () => {
-			const unit = extractUnitFromLatex('5\\text{ km }');
+	describe('\\unit{} pattern', () => {
+		test('extracts unit from \\unit{km}', () => {
+			const unit = extractUnitFromLatex('5\\unit{km}');
 			expect(unit).toBe('km');
 		});
 
-		test('extracts unit from \\text{m}', () => {
-			const unit = extractUnitFromLatex('3.14\\text{m}');
+		test('extracts unit from \\unit{m}', () => {
+			const unit = extractUnitFromLatex('3.14\\unit{m}');
 			expect(unit).toBe('m');
 		});
 
-		test('handles internal whitespace in \\text', () => {
-			const unit = extractUnitFromLatex('10\\text{  m  }');
+		test('extracts unit with spaces inside \\unit{}', () => {
+			const unit = extractUnitFromLatex('10\\unit{ m }');
 			expect(unit).toBe('m');
 		});
 
-		test('extracts composite unit from \\text{km/h}', () => {
-			const unit = extractUnitFromLatex('5\\text{km/h}');
+		test('extracts composite unit from \\unit{km/h}', () => {
+			const unit = extractUnitFromLatex('5\\unit{km/h}');
 			expect(unit).toBe('km/h');
 		});
 
-		test('extracts unit with superscripts from \\text{m²}', () => {
-			const unit = extractUnitFromLatex('2\\text{m²}');
+		test('extracts unit with superscripts from \\unit{m²}', () => {
+			const unit = extractUnitFromLatex('2\\unit{m²}');
 			expect(unit).toBe('m²');
 		});
-	});
 
-	// --- \\mathrm Pattern ---
-
-	describe('\\mathrm{} pattern', () => {
-		test('extracts unit from \\mathrm{m}', () => {
-			const unit = extractUnitFromLatex('3.14\\mathrm{m}');
-			expect(unit).toBe('m');
+		test('extracts complex unit expression', () => {
+			const unit = extractUnitFromLatex('9.8\\unit{m/s²}');
+			expect(unit).toBe('m/s²');
 		});
 
-		test('extracts unit from \\mathrm{kg}', () => {
-			const unit = extractUnitFromLatex('2\\mathrm{kg}');
-			expect(unit).toBe('kg');
+		test('extracts unit with dot notation', () => {
+			const unit = extractUnitFromLatex('5\\unit{kg.m.s^{-2}}');
+			expect(unit).toBe('kg.m.s^{-2}');
 		});
 
-		test('extracts composite from \\mathrm{m/s}', () => {
-			const unit = extractUnitFromLatex('10\\mathrm{m/s}');
-			expect(unit).toBe('m/s');
-		});
-	});
-
-	// --- \\operatorname Pattern ---
-
-	describe('\\operatorname{} pattern', () => {
-		test('extracts unit from \\operatorname{kg}', () => {
-			const unit = extractUnitFromLatex('5\\operatorname{kg}');
-			expect(unit).toBe('kg');
-		});
-
-		test('extracts unit from \\operatorname{m}', () => {
-			const unit = extractUnitFromLatex('100\\operatorname{m}');
-			expect(unit).toBe('m');
-		});
-	});
-
-	// --- Tilde Pattern ---
-
-	describe('Tilde (~) pattern', () => {
-		test('extracts currency with tilde', () => {
-			const unit = extractUnitFromLatex('25~€');
+		test('extracts currency symbol', () => {
+			const unit = extractUnitFromLatex('25\\unit{€}');
 			expect(unit).toBe('€');
 		});
 
-		test('extracts unit with tilde', () => {
-			const unit = extractUnitFromLatex('100~km');
-			expect(unit).toBe('km');
-		});
-
-		test('extracts composite unit with tilde', () => {
-			const unit = extractUnitFromLatex('50~km/h');
-			expect(unit).toBe('km/h');
-		});
-	});
-
-	// --- Backslash Space Pattern ---
-
-	describe('Backslash space (\\\\ ) pattern', () => {
-		test('extracts unit with backslash space', () => {
-			const unit = extractUnitFromLatex('5\\ m');
-			expect(unit).toBe('m');
-		});
-
-		test('extracts km with backslash space', () => {
-			const unit = extractUnitFromLatex('100\\ km');
-			expect(unit).toBe('km');
+		test('extracts degree symbol', () => {
+			const unit = extractUnitFromLatex('45\\unit{°}');
+			expect(unit).toBe('°');
 		});
 	});
 
@@ -692,14 +646,24 @@ describe('LaTeX Unit Extraction', () => {
 			expect(unit).toBeNull();
 		});
 
-		test('returns null for invalid unit in pattern', () => {
-			const unit = extractUnitFromLatex('5\\text{xyz}');
-			expect(unit).toBe('xyz'); // Pattern matches, but unit may be invalid
+		test('returns null for old \\text{} pattern (no longer supported)', () => {
+			const unit = extractUnitFromLatex('5\\text{km}');
+			expect(unit).toBeNull();
 		});
 
-		test('prefers first matching pattern', () => {
-			const unit = extractUnitFromLatex('5\\text{km}\\mathrm{m}');
-			expect(unit).toBe('km'); // Should match first pattern
+		test('returns null for old \\mathrm{} pattern (no longer supported)', () => {
+			const unit = extractUnitFromLatex('5\\mathrm{m}');
+			expect(unit).toBeNull();
+		});
+
+		test('returns null for tilde pattern (no longer supported)', () => {
+			const unit = extractUnitFromLatex('25~€');
+			expect(unit).toBeNull();
+		});
+
+		test('handles \\unit{} at different positions', () => {
+			const unit = extractUnitFromLatex('\\frac{3}{2}\\unit{kg}');
+			expect(unit).toBe('kg');
 		});
 	});
 });
@@ -712,31 +676,30 @@ describe('LaTeX Quantity Parsing', () => {
 	// --- Simple Quantities ---
 
 	describe('Simple quantities', () => {
-		test('parses 5\\text{ km }', () => {
-			const qty = parseLatexQuantity('5\\text{ km }');
+		test('parses 5\\unit{km}', () => {
+			const qty = parseLatexQuantity('5\\unit{km}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(5);
 			expect(qty?.unit.components.get('m')).toBe(1);
 			expect(qty?.unit.coefficient).toBe(1000);
 		});
 
-		test('parses 3.14\\mathrm{m}', () => {
-			const qty = parseLatexQuantity('3.14\\mathrm{m}');
+		test('parses 3.14\\unit{m}', () => {
+			const qty = parseLatexQuantity('3.14\\unit{m}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(3.14);
 			expect(qty?.unit.components.get('m')).toBe(1);
 		});
 
-		test('parses -5\\text{ K }', () => {
-			// Note: °C (Celsius) is not in definitions, using K (Kelvin)
-			const qty = parseLatexQuantity('-5\\text{ K }');
+		test('parses -5\\unit{K}', () => {
+			const qty = parseLatexQuantity('-5\\unit{K}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(-5);
 			expect(qty?.unit.components.get('K')).toBe(1);
 		});
 
-		test('parses 100\\text{km/h}', () => {
-			const qty = parseLatexQuantity('100\\text{km/h}');
+		test('parses 100\\unit{km/h}', () => {
+			const qty = parseLatexQuantity('100\\unit{km/h}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(100);
 			expect(qty?.unit.components.get('m')).toBe(1);
@@ -747,21 +710,21 @@ describe('LaTeX Quantity Parsing', () => {
 	// --- Fractions ---
 
 	describe('Fractions', () => {
-		test('parses \\frac{3}{2}\\text{ kg }', () => {
-			const qty = parseLatexQuantity('\\frac{3}{2}\\text{ kg }');
+		test('parses \\frac{3}{2}\\unit{kg}', () => {
+			const qty = parseLatexQuantity('\\frac{3}{2}\\unit{kg}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(1.5);
 			expect(qty?.unit.components.get('g')).toBe(1);
 		});
 
-		test('parses \\frac{1}{2}\\text{ m }', () => {
-			const qty = parseLatexQuantity('\\frac{1}{2}\\text{ m }');
+		test('parses \\frac{1}{2}\\unit{m}', () => {
+			const qty = parseLatexQuantity('\\frac{1}{2}\\unit{m}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(0.5);
 		});
 
 		test('parses complex fraction', () => {
-			const qty = parseLatexQuantity('\\frac{5}{4}\\text{ s }');
+			const qty = parseLatexQuantity('\\frac{5}{4}\\unit{s}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(1.25);
 		});
@@ -770,24 +733,22 @@ describe('LaTeX Quantity Parsing', () => {
 	// --- Scientific Notation ---
 
 	describe('Scientific notation', () => {
-		test('parses 1.5\\times 10^{3}\\text{ m }', () => {
-			const qty = parseLatexQuantity('1.5\\times 10^{3}\\text{ m }');
+		test('parses 1.5\\times 10^{3}\\unit{m}', () => {
+			const qty = parseLatexQuantity('1.5\\times 10^{3}\\unit{m}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(1500);
 			expect(qty?.unit.components.get('m')).toBe(1);
 		});
 
-		test('parses 2\\cdot 10^{-3}\\text{ s }', () => {
-			const qty = parseLatexQuantity('2\\cdot 10^{-3}\\text{ s }');
+		test('parses 2\\cdot 10^{-3}\\unit{s}', () => {
+			const qty = parseLatexQuantity('2\\cdot 10^{-3}\\unit{s}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(0.002);
 		});
 
-		test('parses 3.14\\times 10^{6}\\text{ m }', () => {
-			// Note: Hz is not in definitions, using m instead
-			const qty = parseLatexQuantity('3.14\\times 10^{6}\\text{ m }');
+		test('parses 3.14\\times 10^{6}\\unit{m}', () => {
+			const qty = parseLatexQuantity('3.14\\times 10^{6}\\unit{m}');
 			expect(qty).not.toBeNull();
-			// Value should be computed as 3.14e6 = 3140000
 			expect(qty?.value).toBe(3140000);
 			expect(qty?.unit.components.get('m')).toBe(1);
 		});
@@ -796,49 +757,52 @@ describe('LaTeX Quantity Parsing', () => {
 	// --- Composite Units ---
 
 	describe('Composite units', () => {
-		test('parses 5\\text{ km/h }', () => {
-			const qty = parseLatexQuantity('5\\text{ km/h }');
+		test('parses 5\\unit{km/h}', () => {
+			const qty = parseLatexQuantity('5\\unit{km/h}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(5);
 			expect(qty?.unit.components.get('m')).toBe(1);
 			expect(qty?.unit.components.get('s')).toBe(-1);
 		});
 
-		test('parses 10\\text{ m²/s }', () => {
-			const qty = parseLatexQuantity('10\\text{ m²/s }');
+		test('parses 10\\unit{m²/s}', () => {
+			const qty = parseLatexQuantity('10\\unit{m²/s}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(10);
 			expect(qty?.unit.components.get('m')).toBe(2);
 			expect(qty?.unit.components.get('s')).toBe(-1);
 		});
 
-		test('parses 9.8\\text{ m/s² }', () => {
-			const qty = parseLatexQuantity('9.8\\text{ m/s² }');
+		test('parses 9.8\\unit{m/s²}', () => {
+			const qty = parseLatexQuantity('9.8\\unit{m/s²}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(9.8);
 			expect(qty?.unit.components.get('s')).toBe(-2);
 		});
 	});
 
-	// --- Different LaTeX Patterns ---
+	// --- Dimensionless Quantities ---
 
-	describe('Different LaTeX patterns', () => {
-		test('parses with \\mathrm', () => {
-			const qty = parseLatexQuantity('10\\mathrm{m}');
+	describe('Dimensionless quantities', () => {
+		test('parses number without unit as dimensionless', () => {
+			const qty = parseLatexQuantity('42');
 			expect(qty).not.toBeNull();
-			expect(qty?.value).toBe(10);
+			expect(qty?.value).toBe(42);
+			expect(qty?.unit.components.size).toBe(0);
 		});
 
-		test('parses with tilde separator', () => {
-			const qty = parseLatexQuantity('25~€');
+		test('parses decimal without unit', () => {
+			const qty = parseLatexQuantity('3.14');
 			expect(qty).not.toBeNull();
-			expect(qty?.value).toBe(25);
+			expect(qty?.value).toBe(3.14);
+			expect(qty?.unit.components.size).toBe(0);
 		});
 
-		test('parses with backslash space', () => {
-			const qty = parseLatexQuantity('50\\ km');
+		test('parses fraction without unit', () => {
+			const qty = parseLatexQuantity('\\frac{1}{2}');
 			expect(qty).not.toBeNull();
-			expect(qty?.value).toBe(50);
+			expect(qty?.value).toBe(0.5);
+			expect(qty?.unit.components.size).toBe(0);
 		});
 	});
 
@@ -860,56 +824,56 @@ describe('LaTeX Quantity Parsing', () => {
 			expect(qty).toBeNull();
 		});
 
-		test('returns dimensionless quantity for number without unit', () => {
-			const qty = parseLatexQuantity('5');
-			expect(qty).not.toBeNull();
-			expect(qty?.value).toBe(5);
-			expect(qty?.unit.components.size).toBe(0); // dimensionless
-		});
-
 		test('returns null for invalid unit', () => {
-			const qty = parseLatexQuantity('5\\text{xyz}');
+			const qty = parseLatexQuantity('5\\unit{xyz}');
 			expect(qty).toBeNull();
 		});
 
 		test('returns null for non-numeric value', () => {
-			const qty = parseLatexQuantity('abc\\text{ m }');
+			const qty = parseLatexQuantity('abc\\unit{m}');
 			expect(qty).toBeNull();
+		});
+
+		test('returns null for old \\text{} format', () => {
+			const qty = parseLatexQuantity('5\\text{km}');
+			// Old format no longer supported - returns dimensionless if value parses
+			// but the unit is not extracted
+			expect(qty?.value).toBe(5);
+			expect(qty?.unit.components.size).toBe(0); // No unit extracted
 		});
 	});
 
 	// --- Edge Cases ---
 
 	describe('Edge cases', () => {
-		test('handles whitespace around LaTeX commands', () => {
-			const qty = parseLatexQuantity('  5\\text{ m }  ');
+		test('handles whitespace around LaTeX', () => {
+			const qty = parseLatexQuantity('  5\\unit{m}  ');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(5);
 		});
 
 		test('parses with currency symbol', () => {
-			const qty = parseLatexQuantity('100\\text{ € }');
+			const qty = parseLatexQuantity('100\\unit{€}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(100);
 		});
 
 		test('parses with degree symbol', () => {
-			const qty = parseLatexQuantity('45\\text{ ° }');
+			const qty = parseLatexQuantity('45\\unit{°}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(45);
 		});
 
 		test('parses with micro symbol', () => {
-			const qty = parseLatexQuantity('500\\text{ μm }');
+			const qty = parseLatexQuantity('500\\unit{μm}');
 			expect(qty).not.toBeNull();
 			expect(qty?.value).toBe(500);
 		});
 
 		test('handles comma as decimal separator', () => {
-			const qty = parseLatexQuantity('3,14\\text{ m }');
+			const qty = parseLatexQuantity('3,14\\unit{m}');
 			expect(qty).not.toBeNull();
-			// Comma should be converted to period
-			expect(typeof qty?.value).toBe('number');
+			expect(qty?.value).toBe(3.14);
 		});
 	});
 });
@@ -980,7 +944,6 @@ describe('Unit String Normalization', () => {
 		});
 
 		test('converts middle dot to multiplication', () => {
-			// normalizeUnitString converts · to * for parsing
 			const normalized = normalizeUnitString('m·s');
 			expect(normalized).toBe('m*s');
 		});
@@ -999,7 +962,7 @@ describe('Unit String Normalization', () => {
 
 describe('Integration Tests', () => {
 	test('end-to-end: LaTeX quantity to parsed unit', () => {
-		const qty = parseLatexQuantity('5\\text{ km/h }');
+		const qty = parseLatexQuantity('5\\unit{km/h}');
 		expect(qty).not.toBeNull();
 		expect(qty?.value).toBe(5);
 		expect(qty?.unit.components.get('m')).toBe(1);
@@ -1007,14 +970,14 @@ describe('Integration Tests', () => {
 	});
 
 	test('end-to-end: complex scientific notation', () => {
-		const qty = parseLatexQuantity('1.5\\times 10^{3}\\text{ kg·m²·s⁻² }');
+		const qty = parseLatexQuantity('1.5\\times 10^{3}\\unit{kg·m²·s⁻²}');
 		expect(qty).not.toBeNull();
 		expect(qty?.value).toBe(1500);
 		expect(qty?.unit.components.size).toBeGreaterThan(0);
 	});
 
 	test('end-to-end: fraction with composite unit', () => {
-		const qty = parseLatexQuantity('\\frac{10}{3}\\text{ m/s }');
+		const qty = parseLatexQuantity('\\frac{10}{3}\\unit{m/s}');
 		expect(qty).not.toBeNull();
 		expect(typeof qty?.value).toBe('number');
 		expect(qty?.unit.components.get('m')).toBe(1);
@@ -1038,8 +1001,8 @@ describe('Integration Tests', () => {
 		expect(unit?.components.get('m')).toBe(2);
 	});
 
-	test('extract then parse: \\text{km/h}', () => {
-		const extracted = extractUnitFromLatex('100\\text{km/h}');
+	test('extract then parse: \\unit{km/h}', () => {
+		const extracted = extractUnitFromLatex('100\\unit{km/h}');
 		expect(extracted).not.toBeNull();
 		const unit = parseUnitExpression(extracted!);
 		expect(unit).not.toBeNull();

@@ -15,12 +15,25 @@ The UbuMaths unit system provides complete support for physical quantities (valu
 - Simple and composite units (m, m^2, m/s, kg·m²/s²)
 - SI prefixes from nano to giga (nm, μm, mm, cm, m, km, etc.)
 - Special units (h, min, €, $, °, rad, t, q)
-- HMS time format (2h30min, 3:25:10)
+- HMS time format with `\hms{}` macro
 - Unit arithmetic (multiply, divide, power)
 - Unit conversion with tolerance-based comparison
 - Dimensional analysis for detecting invalid expressions
-- LaTeX parsing from MathLive input
+- LaTeX parsing via `\unit{}` macro from MathLive input
 - ComputeEngine integration for expression evaluation
+
+---
+
+## LaTeX Macros
+
+The system uses two dedicated LaTeX macros for unit input:
+
+| Macro     | Purpose             | Example                             |
+| --------- | ------------------- | ----------------------------------- |
+| `\unit{}` | Physical quantities | `5\unit{km/h}`, `3.14\unit{m}`      |
+| `\hms{}`  | Time durations      | `\hms{2h30min}`, `\hms{1h45min30s}` |
+
+MathLive is configured to output these macros for unit input.
 
 ---
 
@@ -31,7 +44,7 @@ The UbuMaths unit system provides complete support for physical quantities (valu
 ```typescript
 import { validateQuantityAnswer } from '$lib/questions/units';
 
-// Validate student answer "5000\text{ m }" against expected "5\text{ km }"
+// Validate student answer "5000\unit{m}" against expected "5\unit{km}"
 const result = validateQuantityAnswer(
 	userAnswer, // From MathLive
 	expectedAnswer, // Template definition
@@ -52,8 +65,8 @@ Use the `numerical_with_unit` question type in your question template:
 ```typescript
 const questionTemplate = {
 	type: 'numerical_with_unit' as const,
-	question: 'Quelle est la distance en kilomètres ?',
-	answer: '5\\text{ km }', // Expected answer with LaTeX unit
+	question: 'Quelle est la distance en kilometres ?',
+	answer: '5\\unit{km}', // Expected answer with LaTeX unit
 	options: {
 		tolerance: { relative: 0.01 }, // Allow ±1% error
 		requireExactUnit: false // Allow unit conversion (5 km = 5000 m)
@@ -156,7 +169,7 @@ Units can be combined using multiplication and division:
 {
 	type: 'numerical_with_unit',
 	question: 'Quelle est la vitesse en m/s ?',
-	answer: '25\\text{ m/s }',
+	answer: '25\\unit{m/s}',
 	options: {
 		tolerance: { absolute: 0.1 }, // ±0.1 m/s tolerance
 		requireExactUnit: false,      // Allow unit conversion
@@ -211,8 +224,8 @@ requireSameSymbol: true;
 ```typescript
 {
 	type: 'numerical_with_unit',
-	question: 'Un véhicule roule à 90 km/h. Convertir en m/s.',
-	answer: '25\\text{ m/s }',
+	question: 'Un vehicule roule a 90 km/h. Convertir en m/s.',
+	answer: '25\\unit{m/s}',
 	options: {
 		tolerance: { relative: 0.01 },
 		requireExactUnit: false // Allow "25 m/s" or "0.025 km/s"
@@ -225,8 +238,8 @@ requireSameSymbol: true;
 ```typescript
 {
 	type: 'numerical_with_unit',
-	question: 'Convertir 2500 m en kilomètres.',
-	answer: '2.5\\text{ km }',
+	question: 'Convertir 2500 m en kilometres.',
+	answer: '2.5\\unit{km}',
 	options: {
 		requireExactUnit: true // Student MUST answer in km
 	}
@@ -237,14 +250,14 @@ requireSameSymbol: true;
 
 ## HMS Time Support
 
-HMS (Hours-Minutes-Seconds) provides special formatting for time values.
+HMS (Hours-Minutes-Seconds) provides special formatting for time values using the `\hms{}` macro.
 
 ### Parsing HMS
 
 ```typescript
-import { parseHMS, hmsToSeconds } from '$lib/questions/units';
+import { parseHMS, parseLatexHMS, hmsToSeconds } from '$lib/questions/units';
 
-// Unit notation
+// Unit notation (plain text)
 parseHMS('2h30min'); // { hours: 2, minutes: 30, seconds: 0 }
 parseHMS('1h 45min 30s'); // { hours: 1, minutes: 45, seconds: 30 }
 parseHMS('45min'); // { hours: 0, minutes: 45, seconds: 0 }
@@ -252,7 +265,10 @@ parseHMS('45min'); // { hours: 0, minutes: 45, seconds: 0 }
 // Colon notation
 parseHMS('3:25'); // { hours: 3, minutes: 25, seconds: 0 }
 parseHMS('3:25:10'); // { hours: 3, minutes: 25, seconds: 10 }
-parseHMS('00:45:30'); // { hours: 0, minutes: 45, seconds: 30 }
+
+// LaTeX \hms{} notation
+parseLatexHMS('\\hms{2h30min}'); // { hours: 2, minutes: 30, seconds: 0 }
+parseLatexHMS('\\hms{1h 45min 30s}'); // { hours: 1, minutes: 45, seconds: 30 }
 ```
 
 ### Formatting HMS
@@ -266,7 +282,7 @@ formatHMS(hms, 'units'); // "2h 30min 45s"
 formatHMS(hms, 'colon'); // "2:30:45"
 formatHMS(hms, 'short'); // "2h30min45s" (no spaces)
 
-formatHMSLatex(hms); // "2\\text{h} 30\\text{min} 45\\text{s}"
+formatHMSLatex(hms); // "\\hms{2h30min45s}"
 ```
 
 ### Converting HMS
@@ -312,17 +328,17 @@ Prevent students from adding incompatible dimensions (e.g., meters + kilograms).
 import { checkDimensionalConsistency } from '$lib/questions/units';
 
 // Valid expression
-const result1 = checkDimensionalConsistency('5\\text{ m } + 3\\text{ km }');
+const result1 = checkDimensionalConsistency('5\\unit{m} + 3\\unit{km}');
 // { isConsistent: true, errors: [], terms: [...] }
 
 // Invalid expression (different dimensions)
-const result2 = checkDimensionalConsistency('5\\text{ m } + 3\\text{ kg }');
+const result2 = checkDimensionalConsistency('5\\unit{m} + 3\\unit{kg}');
 // {
 //   isConsistent: false,
 //   errors: [{
 //     type: 'addition_mismatch',
 //     message: "Impossible d'additionner longueur et masse.",
-//     terms: ['5\\text{ m }', '3\\text{ kg }'],
+//     terms: ['5\\unit{m}', '3\\unit{kg}'],
 //     dimensions: [{ length: 1 }, { mass: 1 }]
 //   }],
 //   terms: [...]
@@ -335,11 +351,11 @@ const result2 = checkDimensionalConsistency('5\\text{ m } + 3\\text{ kg }');
 import { isDimensionallyConsistent, getDimensionalError } from '$lib/questions/units';
 
 // Boolean check
-isDimensionallyConsistent('5\\text{ m } + 3\\text{ km }'); // true
-isDimensionallyConsistent('5\\text{ m } + 3\\text{ kg }'); // false
+isDimensionallyConsistent('5\\unit{m} + 3\\unit{km}'); // true
+isDimensionallyConsistent('5\\unit{m} + 3\\unit{kg}'); // false
 
 // Get error message
-getDimensionalError('5\\text{ m } + 3\\text{ kg }');
+getDimensionalError('5\\unit{m} + 3\\unit{kg}');
 // "Impossible d'additionner longueur et masse."
 ```
 
@@ -381,12 +397,12 @@ const km = createUnit('km');
 
 **`parseLatexQuantity(latex: string): Quantity | null`**
 
-Parse a LaTeX quantity string (value + unit).
+Parse a LaTeX quantity string (value + unit) using `\unit{}` macro.
 
 ```typescript
 import { parseLatexQuantity } from '$lib/questions/units';
 
-const quantity = parseLatexQuantity('5\\text{ km }');
+const quantity = parseLatexQuantity('5\\unit{km}');
 // {
 //   value: 5,
 //   unit: { components: Map{'m' => 1}, coefficient: 1000 }
@@ -400,7 +416,7 @@ Main validation function for checking student answers.
 ```typescript
 import { validateQuantityAnswer } from '$lib/questions/units';
 
-const result = validateQuantityAnswer('5000\\text{ m }', '5\\text{ km }', {
+const result = validateQuantityAnswer('5000\\unit{m}', '5\\unit{km}', {
 	tolerance: { absolute: 0.1 },
 	requireExactUnit: false
 });
@@ -527,7 +543,7 @@ Compare two quantities with automatic unit conversion.
 ```typescript
 import { compareQuantities } from '$lib/questions/units';
 
-const result = compareQuantities('5\\text{ km }', '5000\\text{ m }', { absolute: 0.1 });
+const result = compareQuantities('5\\unit{km}', '5000\\unit{m}', { absolute: 0.1 });
 
 // {
 //   isEqual: true,
@@ -545,7 +561,7 @@ Convert a quantity to a different unit.
 ```typescript
 import { convertQuantity } from '$lib/questions/units';
 
-const converted = convertQuantity('5\\text{ km }', 'm');
+const converted = convertQuantity('5\\unit{km}', 'm');
 // { value: 5000, unit: { components: Map{'m' => 1}, coefficient: 1 } }
 ```
 
@@ -556,10 +572,10 @@ Normalize to SI base units (removes prefixes).
 ```typescript
 import { normalizeToBaseUnits } from '$lib/questions/units';
 
-normalizeToBaseUnits('5\\text{ km }');
+normalizeToBaseUnits('5\\unit{km}');
 // { value: 5000, unit: { components: Map{'m' => 1}, coefficient: 1 } }
 
-normalizeToBaseUnits('90\\text{ km/h }');
+normalizeToBaseUnits('90\\unit{km/h}');
 // { value: 25, unit: { components: Map{'m' => 1, 's' => -1}, coefficient: 1 } }
 ```
 
@@ -614,49 +630,34 @@ Check if unit has no physical dimension.
 
 ---
 
-## LaTeX Parsing Patterns
+## LaTeX Parsing
 
-The parser recognizes units in various LaTeX formats from MathLive:
+The parser uses the `\unit{}` macro for physical quantities:
 
-**Text Mode**:
-
-```latex
-5\text{ km }     → 5 km
-3.14\text{m}     → 3.14 m
-```
-
-**Math Roman**:
+**Unit Macro**:
 
 ```latex
-5\mathrm{km}     → 5 km
-```
-
-**Operator Name**:
-
-```latex
-5\operatorname{km}  → 5 km
-```
-
-**Tilde Separator**:
-
-```latex
-5~km             → 5 km
-25~€             → 25 €
-```
-
-**Backslash Space**:
-
-```latex
-5\ km            → 5 km
+5\unit{km}           -> 5 km
+3.14\unit{m}         -> 3.14 m
+90\unit{km/h}        -> 90 km/h
+9.8\unit{m/s^2}      -> 9.8 m/s²
 ```
 
 **Composite Units**:
 
 ```latex
-90\text{ km/h }               → 90 km/h
-25\text{ m/s }                → 25 m/s
-9.8\text{ m/s}^{2}            → 9.8 m/s²
-1.5\text{ kg}\cdot\text{m}^{2}/\text{s}^{2}  → 1.5 kg·m²/s²
+90\unit{km/h}                          -> 90 km/h
+25\unit{m/s}                           -> 25 m/s
+9.8\unit{m/s^{-2}}                     -> 9.8 m/s⁻²
+1.5\unit{kg.m^2.s^{-2}}                -> 1.5 kg·m²/s²
+```
+
+**HMS Macro**:
+
+```latex
+\hms{2h30min}          -> 2h 30min
+\hms{1h 45min 30s}     -> 1h 45min 30s
+\hms{45min}            -> 45min
 ```
 
 ---
@@ -669,7 +670,7 @@ The parser recognizes units in various LaTeX formats from MathLive:
 {
 	type: 'numerical_with_unit',
 	question: 'Une voiture parcourt 180 km en 2 heures. Quelle est sa vitesse moyenne en km/h ?',
-	answer: '90\\text{ km/h }',
+	answer: '90\\unit{km/h}',
 	options: {
 		tolerance: { absolute: 0.1 },
 		requireExactUnit: false // Accept "25 m/s" as equivalent
@@ -683,7 +684,7 @@ The parser recognizes units in various LaTeX formats from MathLive:
 {
 	type: 'numerical_with_unit',
 	question: 'Convertir 2.5 kg en grammes.',
-	answer: '2500\\text{ g }',
+	answer: '2500\\unit{g}',
 	options: {
 		requireExactUnit: true // Must answer in grams
 	}
@@ -695,8 +696,8 @@ The parser recognizes units in various LaTeX formats from MathLive:
 ```typescript
 {
 	type: 'numerical_with_unit',
-	question: 'Calculer l\'aire d\'un carré de côté 5 m.',
-	answer: '25\\text{ m}^{2}',
+	question: 'Calculer l\'aire d\'un carre de cote 5 m.',
+	answer: '25\\unit{m^2}',
 	options: {
 		tolerance: { absolute: 0.01 }
 	}
@@ -708,8 +709,8 @@ The parser recognizes units in various LaTeX formats from MathLive:
 ```typescript
 {
 	type: 'numerical_with_unit',
-	question: 'Quelle force faut-il appliquer pour accélérer une masse de 2 kg à 5 m/s² ?',
-	answer: '10\\text{ kg}\\cdot\\text{m}/\\text{s}^{2}', // 10 N
+	question: 'Quelle force faut-il appliquer pour accelerer une masse de 2 kg a 5 m/s² ?',
+	answer: '10\\unit{kg.m/s^{2}}', // 10 N
 	options: {
 		tolerance: { relative: 0.01 }
 	}
@@ -723,12 +724,12 @@ The parser recognizes units in various LaTeX formats from MathLive:
 ### 1. Always Use Tolerance for Real-World Values
 
 ```typescript
-// ✅ Good - accounts for rounding
+// Good - accounts for rounding
 tolerance: {
 	absolute: 0.01;
 }
 
-// ❌ Bad - requires exact match (often fails due to float precision)
+// Bad - requires exact match (often fails due to float precision)
 tolerance: undefined;
 ```
 
@@ -751,8 +752,8 @@ tolerance: {
 ```typescript
 // When testing conversion skills
 {
-	question: 'Convertir 5000 m en kilomètres.',
-	answer: '5\\text{ km }',
+	question: 'Convertir 5000 m en kilometres.',
+	answer: '5\\unit{km}',
 	options: {
 		requireExactUnit: true  // Student must use km, not m
 	}
@@ -765,7 +766,7 @@ tolerance: {
 // When testing problem-solving (not conversion)
 {
 	question: 'Quelle est la vitesse ?',
-	answer: '25\\text{ m/s }',
+	answer: '25\\unit{m/s}',
 	options: {
 		requireExactUnit: false  // Allow km/h, m/s, etc.
 	}
@@ -797,20 +798,20 @@ The system provides French error messages for common mistakes:
 
 | Error Type           | Message                                 | When It Occurs                              |
 | -------------------- | --------------------------------------- | ------------------------------------------- |
-| `invalid_input`      | "Réponse invalide. Vérifiez le format." | Cannot parse answer                         |
-| `incompatible_units` | "Les unités ne sont pas compatibles."   | Different dimensions (m vs kg)              |
-| `wrong_unit`         | "Unité incorrecte."                     | requireExactUnit or requireSameSymbol fails |
+| `invalid_input`      | "Reponse invalide. Verifiez le format." | Cannot parse answer                         |
+| `incompatible_units` | "Les unites ne sont pas compatibles."   | Different dimensions (m vs kg)              |
+| `wrong_unit`         | "Unite incorrecte."                     | requireExactUnit or requireSameSymbol fails |
 | `wrong_value`        | "Valeur incorrecte."                    | Value wrong, unit correct                   |
-| `wrong_both`         | "Valeur et unité incorrectes."          | Both wrong                                  |
+| `wrong_both`         | "Valeur et unite incorrectes."          | Both wrong                                  |
 
 Custom messages can be provided via `ValidationOptions`:
 
 ```typescript
 validateQuantityAnswer(userAnswer, expected, {
 	messages: {
-		incorrectUnit: 'Vous devez répondre en kilomètres.',
-		incorrectValue: 'La valeur numérique est incorrecte.',
-		incompatibleUnit: "L'unité n'est pas compatible avec la question."
+		incorrectUnit: 'Vous devez repondre en kilometres.',
+		incorrectValue: 'La valeur numerique est incorrecte.',
+		incompatibleUnit: "L'unite n'est pas compatible avec la question."
 	}
 });
 ```
@@ -819,28 +820,14 @@ validateQuantityAnswer(userAnswer, expected, {
 
 ## Testing
 
-All unit system functions are thoroughly tested. See:
+All unit system functions are thoroughly tested (767 tests). See:
 
-- **Types & Definitions**: `src/lib/questions/units/definitions.test.ts`
-- **Operations**: `src/lib/questions/units/operations.test.ts`
-- **Parser**: `src/lib/questions/units/parser.test.ts`
-- **HMS**: `src/lib/questions/units/hms.test.ts`
-- **Validator**: `src/lib/questions/units/validator.test.ts`
-- **Dimensional Analysis**: `src/lib/questions/units/dimensional.test.ts`
-- **ComputeEngine Integration**: `src/lib/questions/units/ce-integration.test.ts`
-
----
-
-## Migration from TinyCAS
-
-The unit system was inspired by TinyCAS unit handling but provides:
-
-- **Better TypeScript Support**: Full type safety with discriminated unions
-- **Svelte Integration**: Works seamlessly with MathLive and ComputeEngine
-- **Dimensional Analysis**: Prevents invalid expressions (m + kg)
-- **HMS Support**: Native time format parsing and formatting
-- **Comprehensive Validation**: Detailed error feedback for students
-- **SI Prefix System**: Automatic resolution of prefixed units (km, mg, μL)
+- **Operations**: `src/lib/questions/units/__tests__/operations.test.ts`
+- **Parser**: `src/lib/questions/units/__tests__/parser.test.ts`
+- **HMS**: `src/lib/questions/units/__tests__/hms.test.ts`
+- **Validator**: `src/lib/questions/units/__tests__/validator.test.ts`
+- **Dimensional Analysis**: `src/lib/questions/units/__tests__/dimensional.test.ts`
+- **ComputeEngine Integration**: `src/lib/questions/units/__tests__/ce-integration.test.ts`
 
 ---
 
@@ -849,7 +836,8 @@ The unit system was inspired by TinyCAS unit handling but provides:
 When creating questions with units:
 
 - [ ] Use `numerical_with_unit` question type
-- [ ] Include unit in answer with LaTeX syntax (e.g., `\text{ km }`)
+- [ ] Include unit in answer with `\unit{}` macro (e.g., `\unit{km}`)
+- [ ] Use `\hms{}` macro for time durations (e.g., `\hms{2h30min}`)
 - [ ] Specify tolerance if approximate answers acceptable
 - [ ] Use `requireExactUnit: true` for conversion practice
 - [ ] Use `requireExactUnit: false` for applied problems
@@ -859,4 +847,4 @@ When creating questions with units:
 
 ---
 
-[← Back to Claude Docs](./README.md)
+[<- Back to Claude Docs](./README.md)

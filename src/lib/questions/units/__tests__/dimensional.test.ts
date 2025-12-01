@@ -35,7 +35,7 @@ import { parseLatexQuantity } from '../parser';
 describe('checkDimensionalConsistency', () => {
 	describe('Consistent expressions', () => {
 		test('single term is always consistent', () => {
-			const result = checkDimensionalConsistency('5\\text{ m }');
+			const result = checkDimensionalConsistency('5\\unit{m}');
 
 			expect(result.isConsistent).toBe(true);
 			expect(result.errors).toHaveLength(0);
@@ -43,7 +43,7 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('addition of same units is consistent', () => {
-			const result = checkDimensionalConsistency('5\\text{ m } + 3\\text{ m }');
+			const result = checkDimensionalConsistency('5\\unit{m} + 3\\unit{m}');
 
 			expect(result.isConsistent).toBe(true);
 			expect(result.errors).toHaveLength(0);
@@ -51,21 +51,21 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('addition of compatible units is consistent (m + km)', () => {
-			const result = checkDimensionalConsistency('5\\text{ m } + 3\\text{ km }');
+			const result = checkDimensionalConsistency('5\\unit{m} + 3\\unit{km}');
 
 			expect(result.isConsistent).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		test('subtraction of same units is consistent', () => {
-			const result = checkDimensionalConsistency('10\\text{ kg } - 2\\text{ kg }');
+			const result = checkDimensionalConsistency('10\\unit{kg} - 2\\unit{kg}');
 
 			expect(result.isConsistent).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		test('multiple additions of compatible units', () => {
-			const result = checkDimensionalConsistency('5\\text{ m } + 3\\text{ km } + 100\\text{ cm }');
+			const result = checkDimensionalConsistency('5\\unit{m} + 3\\unit{km} + 100\\unit{cm}');
 
 			expect(result.isConsistent).toBe(true);
 			expect(result.errors).toHaveLength(0);
@@ -73,28 +73,28 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('addition with \\pm operator', () => {
-			const result = checkDimensionalConsistency('100\\text{ cm } \\pm 5\\text{ mm }');
+			const result = checkDimensionalConsistency('100\\unit{cm} \\pm 5\\unit{mm}');
 
 			expect(result.isConsistent).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		test('addition of time units (s + min + h)', () => {
-			const result = checkDimensionalConsistency('30\\text{ s } + 2\\text{ min } + 1\\text{ h }');
+			const result = checkDimensionalConsistency('30\\unit{s} + 2\\unit{min} + 1\\unit{h}');
 
 			expect(result.isConsistent).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		test('addition of mass units (g + kg)', () => {
-			const result = checkDimensionalConsistency('500\\text{ g } + 1\\text{ kg }');
+			const result = checkDimensionalConsistency('500\\unit{g} + 1\\unit{kg}');
 
 			expect(result.isConsistent).toBe(true);
 			expect(result.errors).toHaveLength(0);
 		});
 
 		test('addition of volume units (mL + L)', () => {
-			const result = checkDimensionalConsistency('500\\text{ mL } + 1\\text{ L }');
+			const result = checkDimensionalConsistency('500\\unit{mL} + 1\\unit{L}');
 
 			expect(result.isConsistent).toBe(true);
 			expect(result.errors).toHaveLength(0);
@@ -103,7 +103,7 @@ describe('checkDimensionalConsistency', () => {
 
 	describe('Inconsistent expressions', () => {
 		test('detects length + mass inconsistency', () => {
-			const result = checkDimensionalConsistency('5\\text{ m } + 3\\text{ kg }');
+			const result = checkDimensionalConsistency('5\\unit{m} + 3\\unit{kg}');
 
 			expect(result.isConsistent).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -113,7 +113,7 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('detects length + time inconsistency', () => {
-			const result = checkDimensionalConsistency('10\\text{ m } + 5\\text{ s }');
+			const result = checkDimensionalConsistency('10\\unit{m} + 5\\unit{s}');
 
 			expect(result.isConsistent).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -123,7 +123,7 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('detects mass + time inconsistency', () => {
-			const result = checkDimensionalConsistency('5\\text{ kg } + 10\\text{ h }');
+			const result = checkDimensionalConsistency('5\\unit{kg} + 10\\unit{h}');
 
 			expect(result.isConsistent).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -131,7 +131,7 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('detects area + length inconsistency', () => {
-			const result = checkDimensionalConsistency('5\\text{ m^2 } + 3\\text{ m }');
+			const result = checkDimensionalConsistency('5\\unit{m^2} + 3\\unit{m}');
 
 			expect(result.isConsistent).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -141,7 +141,7 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('detects velocity + length inconsistency', () => {
-			const result = checkDimensionalConsistency('10\\text{ m/s } + 5\\text{ m }');
+			const result = checkDimensionalConsistency('10\\unit{m/s} + 5\\unit{m}');
 
 			expect(result.isConsistent).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -151,7 +151,7 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('detects mixed dimensions in complex expression', () => {
-			const result = checkDimensionalConsistency('5\\text{ m } + 3\\text{ s } - 2\\text{ km }');
+			const result = checkDimensionalConsistency('5\\unit{m} + 3\\unit{s} - 2\\unit{km}');
 
 			expect(result.isConsistent).toBe(false);
 			expect(result.errors.length).toBeGreaterThan(0);
@@ -160,7 +160,7 @@ describe('checkDimensionalConsistency', () => {
 
 	describe('Invalid units', () => {
 		test('detects invalid unit symbol', () => {
-			const result = checkDimensionalConsistency('5\\text{ xyz }');
+			const result = checkDimensionalConsistency('5\\unit{xyz}');
 
 			expect(result.isConsistent).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -169,7 +169,7 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('detects invalid unit in addition', () => {
-			const result = checkDimensionalConsistency('5\\text{ m } + 3\\text{ xyz }');
+			const result = checkDimensionalConsistency('5\\unit{m} + 3\\unit{xyz}');
 
 			expect(result.isConsistent).toBe(false);
 			expect(result.errors).toHaveLength(1);
@@ -177,7 +177,7 @@ describe('checkDimensionalConsistency', () => {
 		});
 
 		test('reports multiple invalid units', () => {
-			const result = checkDimensionalConsistency('5\\text{ abc } + 3\\text{ xyz }');
+			const result = checkDimensionalConsistency('5\\unit{abc} + 3\\unit{xyz}');
 
 			expect(result.isConsistent).toBe(false);
 			expect(result.errors.length).toBeGreaterThan(0);
@@ -186,27 +186,27 @@ describe('checkDimensionalConsistency', () => {
 
 	describe('Error details', () => {
 		test('includes conflicting terms in error', () => {
-			const result = checkDimensionalConsistency('5\\text{ m } + 3\\text{ kg }');
+			const result = checkDimensionalConsistency('5\\unit{m} + 3\\unit{kg}');
 
-			expect(result.errors[0].terms).toEqual(['5\\text{ m }', '3\\text{ kg }']);
+			expect(result.errors[0].terms).toEqual(['5\\unit{m}', '3\\unit{kg}']);
 		});
 
 		test('includes dimension information in error', () => {
-			const result = checkDimensionalConsistency('5\\text{ m } + 3\\text{ kg }');
+			const result = checkDimensionalConsistency('5\\unit{m} + 3\\unit{kg}');
 
 			expect(result.errors[0].dimensions).toBeDefined();
 			expect(result.errors[0].dimensions).toHaveLength(2);
 		});
 
 		test('provides original term strings', () => {
-			const result = checkDimensionalConsistency('10\\text{ m } + 5\\text{ s }');
+			const result = checkDimensionalConsistency('10\\unit{m} + 5\\unit{s}');
 
-			expect(result.terms[0].original).toBe('10\\text{ m }');
-			expect(result.terms[1].original).toBe('5\\text{ s }');
+			expect(result.terms[0].original).toBe('10\\unit{m}');
+			expect(result.terms[1].original).toBe('5\\unit{s}');
 		});
 
 		test('includes parsed quantities in term analysis', () => {
-			const result = checkDimensionalConsistency('5\\text{ m } + 3\\text{ km }');
+			const result = checkDimensionalConsistency('5\\unit{m} + 3\\unit{km}');
 
 			expect(result.terms[0].quantity).toBeDefined();
 			expect(result.terms[1].quantity).toBeDefined();
@@ -223,62 +223,62 @@ describe('checkDimensionalConsistency', () => {
 describe('analyzeExpression', () => {
 	describe('Basic term extraction', () => {
 		test('extracts single term', () => {
-			const terms = analyzeExpression('5\\text{ m }');
+			const terms = analyzeExpression('5\\unit{m}');
 
 			expect(terms).toHaveLength(1);
-			expect(terms[0]).toBe('5\\text{ m }');
+			expect(terms[0]).toBe('5\\unit{m}');
 		});
 
 		test('extracts two terms with addition', () => {
-			const terms = analyzeExpression('5\\text{ m } + 3\\text{ km }');
+			const terms = analyzeExpression('5\\unit{m} + 3\\unit{km}');
 
 			expect(terms).toHaveLength(2);
-			expect(terms[0]).toBe('5\\text{ m }');
-			expect(terms[1]).toBe('3\\text{ km }');
+			expect(terms[0]).toBe('5\\unit{m}');
+			expect(terms[1]).toBe('3\\unit{km}');
 		});
 
 		test('extracts two terms with subtraction', () => {
-			const terms = analyzeExpression('10\\text{ kg } - 2\\text{ kg }');
+			const terms = analyzeExpression('10\\unit{kg} - 2\\unit{kg}');
 
 			expect(terms).toHaveLength(2);
-			expect(terms[0]).toBe('10\\text{ kg }');
-			expect(terms[1].trim()).toBe('- 2\\text{ kg }'); // Note: includes minus with space
+			expect(terms[0]).toBe('10\\unit{kg}');
+			expect(terms[1].trim()).toBe('- 2\\unit{kg}'); // Note: includes minus with space
 		});
 
 		test('extracts three terms', () => {
-			const terms = analyzeExpression('5\\text{ m } + 3\\text{ km } + 100\\text{ cm }');
+			const terms = analyzeExpression('5\\unit{m} + 3\\unit{km} + 100\\unit{cm}');
 
 			expect(terms).toHaveLength(3);
-			expect(terms[0]).toBe('5\\text{ m }');
-			expect(terms[1]).toBe('3\\text{ km }');
-			expect(terms[2]).toBe('100\\text{ cm }');
+			expect(terms[0]).toBe('5\\unit{m}');
+			expect(terms[1]).toBe('3\\unit{km}');
+			expect(terms[2]).toBe('100\\unit{cm}');
 		});
 
 		test('extracts terms with mixed operators', () => {
-			const terms = analyzeExpression('5\\text{ m } + 3\\text{ km } - 100\\text{ cm }');
+			const terms = analyzeExpression('5\\unit{m} + 3\\unit{km} - 100\\unit{cm}');
 
 			expect(terms).toHaveLength(3);
-			expect(terms[2].trim()).toBe('- 100\\text{ cm }'); // Note: includes minus with space
+			expect(terms[2].trim()).toBe('- 100\\unit{cm}'); // Note: includes minus with space
 		});
 	});
 
 	describe('Special operators', () => {
 		test('handles \\pm operator', () => {
-			const terms = analyzeExpression('100\\text{ cm } \\pm 5\\text{ mm }');
+			const terms = analyzeExpression('100\\unit{cm} \\pm 5\\unit{mm}');
 
 			expect(terms).toHaveLength(2);
-			expect(terms[0]).toBe('100\\text{ cm }');
-			expect(terms[1]).toBe('5\\text{ mm }');
+			expect(terms[0]).toBe('100\\unit{cm}');
+			expect(terms[1]).toBe('5\\unit{mm}');
 		});
 
 		test('handles \\mp operator', () => {
-			const terms = analyzeExpression('100\\text{ m } \\mp 2\\text{ cm }');
+			const terms = analyzeExpression('100\\unit{m} \\mp 2\\unit{cm}');
 
 			expect(terms).toHaveLength(2);
 		});
 
 		test('handles multiple \\pm operators', () => {
-			const terms = analyzeExpression('5\\text{ m } \\pm 2\\text{ cm } \\pm 1\\text{ mm }');
+			const terms = analyzeExpression('5\\unit{m} \\pm 2\\unit{cm} \\pm 1\\unit{mm}');
 
 			expect(terms).toHaveLength(3);
 		});
@@ -286,54 +286,54 @@ describe('analyzeExpression', () => {
 
 	describe('Negative numbers', () => {
 		test('preserves leading negative sign', () => {
-			const terms = analyzeExpression('-5\\text{ m } + 3\\text{ km }');
+			const terms = analyzeExpression('-5\\unit{m} + 3\\unit{km}');
 
 			expect(terms).toHaveLength(2);
-			expect(terms[0]).toBe('-5\\text{ m }');
-			expect(terms[1]).toBe('3\\text{ km }');
+			expect(terms[0]).toBe('-5\\unit{m}');
+			expect(terms[1]).toBe('3\\unit{km}');
 		});
 
 		test('preserves negative sign after subtraction', () => {
-			const terms = analyzeExpression('5\\text{ m } - 3\\text{ km }');
+			const terms = analyzeExpression('5\\unit{m} - 3\\unit{km}');
 
 			expect(terms).toHaveLength(2);
-			expect(terms[0]).toBe('5\\text{ m }');
-			expect(terms[1].trim()).toBe('- 3\\text{ km }'); // Note: includes minus with space
+			expect(terms[0]).toBe('5\\unit{m}');
+			expect(terms[1].trim()).toBe('- 3\\unit{km}'); // Note: includes minus with space
 		});
 
 		test('handles multiple negative terms', () => {
-			const terms = analyzeExpression('-5\\text{ m } - 3\\text{ km }');
+			const terms = analyzeExpression('-5\\unit{m} - 3\\unit{km}');
 
 			expect(terms).toHaveLength(2);
-			expect(terms[0]).toBe('-5\\text{ m }');
-			expect(terms[1].trim()).toBe('- 3\\text{ km }'); // Note: includes minus with space
+			expect(terms[0]).toBe('-5\\unit{m}');
+			expect(terms[1].trim()).toBe('- 3\\unit{km}'); // Note: includes minus with space
 		});
 	});
 
 	describe('Complex expressions', () => {
 		test('handles expressions with exponents', () => {
-			const terms = analyzeExpression('5\\text{ m^2 } + 3\\text{ m^2 }');
+			const terms = analyzeExpression('5\\unit{m^2} + 3\\unit{m^2}');
 
 			expect(terms).toHaveLength(2);
-			expect(terms[0]).toBe('5\\text{ m^2 }');
-			expect(terms[1]).toBe('3\\text{ m^2 }');
+			expect(terms[0]).toBe('5\\unit{m^2}');
+			expect(terms[1]).toBe('3\\unit{m^2}');
 		});
 
 		test('handles expressions with negative exponents', () => {
-			const terms = analyzeExpression('10\\text{ m/s } + 5\\text{ m/s }');
+			const terms = analyzeExpression('10\\unit{m/s} + 5\\unit{m/s}');
 
 			expect(terms).toHaveLength(2);
 		});
 
 		test('handles expressions with braces', () => {
-			const terms = analyzeExpression('5\\text{ m } + 3\\times 10^{-3}\\text{ km }');
+			const terms = analyzeExpression('5\\unit{m} + 3\\times 10^{-3}\\unit{km}');
 
 			expect(terms).toHaveLength(2);
 			expect(terms[1]).toContain('10^{-3}');
 		});
 
 		test('handles scientific notation in terms', () => {
-			const terms = analyzeExpression('1.5\\times 10^3\\text{ m } + 2\\times 10^2\\text{ m }');
+			const terms = analyzeExpression('1.5\\times 10^3\\unit{m} + 2\\times 10^2\\unit{m}');
 
 			expect(terms).toHaveLength(2);
 		});
@@ -341,15 +341,15 @@ describe('analyzeExpression', () => {
 
 	describe('Whitespace handling', () => {
 		test('trims whitespace around terms', () => {
-			const terms = analyzeExpression('  5\\text{ m }  +  3\\text{ km }  ');
+			const terms = analyzeExpression('  5\\unit{m}  +  3\\unit{km}  ');
 
 			expect(terms).toHaveLength(2);
-			expect(terms[0]).toBe('5\\text{ m }');
-			expect(terms[1]).toBe('3\\text{ km }');
+			expect(terms[0]).toBe('5\\unit{m}');
+			expect(terms[1]).toBe('3\\unit{km}');
 		});
 
 		test('handles expressions with extra spaces', () => {
-			const terms = analyzeExpression('5\\text{ m }   +   3\\text{ km }');
+			const terms = analyzeExpression('5\\unit{m}   +   3\\unit{km}');
 
 			expect(terms).toHaveLength(2);
 		});
@@ -546,15 +546,15 @@ describe('getDimensionName', () => {
 
 describe('isDimensionallyConsistent', () => {
 	test('returns true for consistent expression', () => {
-		expect(isDimensionallyConsistent('5\\text{ m } + 3\\text{ km }')).toBe(true);
+		expect(isDimensionallyConsistent('5\\unit{m} + 3\\unit{km}')).toBe(true);
 	});
 
 	test('returns false for inconsistent expression', () => {
-		expect(isDimensionallyConsistent('5\\text{ m } + 3\\text{ kg }')).toBe(false);
+		expect(isDimensionallyConsistent('5\\unit{m} + 3\\unit{kg}')).toBe(false);
 	});
 
 	test('returns true for single term', () => {
-		expect(isDimensionallyConsistent('5\\text{ m }')).toBe(true);
+		expect(isDimensionallyConsistent('5\\unit{m}')).toBe(true);
 	});
 
 	test('returns true for empty string', () => {
@@ -562,15 +562,15 @@ describe('isDimensionallyConsistent', () => {
 	});
 
 	test('returns false for invalid unit', () => {
-		expect(isDimensionallyConsistent('5\\text{ xyz }')).toBe(false);
+		expect(isDimensionallyConsistent('5\\unit{xyz}')).toBe(false);
 	});
 
 	test('returns true for compatible time units', () => {
-		expect(isDimensionallyConsistent('30\\text{ s } + 1\\text{ min }')).toBe(true);
+		expect(isDimensionallyConsistent('30\\unit{s} + 1\\unit{min}')).toBe(true);
 	});
 
 	test('returns false for mixed dimensions', () => {
-		expect(isDimensionallyConsistent('5\\text{ m } + 3\\text{ s }')).toBe(false);
+		expect(isDimensionallyConsistent('5\\unit{m} + 3\\unit{s}')).toBe(false);
 	});
 });
 
@@ -580,30 +580,30 @@ describe('isDimensionallyConsistent', () => {
 
 describe('getDimensionalError', () => {
 	test('returns null for consistent expression', () => {
-		const error = getDimensionalError('5\\text{ m } + 3\\text{ km }');
+		const error = getDimensionalError('5\\unit{m} + 3\\unit{km}');
 		expect(error).toBeNull();
 	});
 
 	test('returns error message for inconsistent expression', () => {
-		const error = getDimensionalError('5\\text{ m } + 3\\text{ kg }');
+		const error = getDimensionalError('5\\unit{m} + 3\\unit{kg}');
 		expect(error).not.toBeNull();
 		expect(error).toContain('longueur');
 		expect(error).toContain('masse');
 	});
 
 	test('returns error message for invalid unit', () => {
-		const error = getDimensionalError('5\\text{ xyz }');
+		const error = getDimensionalError('5\\unit{xyz}');
 		expect(error).not.toBeNull();
 		expect(error).toContain('invalide');
 	});
 
 	test('returns first error when multiple errors exist', () => {
-		const error = getDimensionalError('5\\text{ abc } + 3\\text{ xyz }');
+		const error = getDimensionalError('5\\unit{abc} + 3\\unit{xyz}');
 		expect(error).not.toBeNull();
 	});
 
 	test('returns null for single term', () => {
-		const error = getDimensionalError('5\\text{ m }');
+		const error = getDimensionalError('5\\unit{m}');
 		expect(error).toBeNull();
 	});
 
@@ -619,8 +619,8 @@ describe('getDimensionalError', () => {
 
 describe('quantitiesAreCompatible', () => {
 	test('returns true for same units', () => {
-		const meters = parseLatexQuantity('5\\text{ m }');
-		const moreMeters = parseLatexQuantity('10\\text{ m }');
+		const meters = parseLatexQuantity('5\\unit{m}');
+		const moreMeters = parseLatexQuantity('10\\unit{m}');
 
 		if (meters && moreMeters) {
 			expect(quantitiesAreCompatible(meters, moreMeters)).toBe(true);
@@ -630,8 +630,8 @@ describe('quantitiesAreCompatible', () => {
 	});
 
 	test('returns true for compatible units (m and km)', () => {
-		const meters = parseLatexQuantity('5\\text{ m }');
-		const kilometers = parseLatexQuantity('3\\text{ km }');
+		const meters = parseLatexQuantity('5\\unit{m}');
+		const kilometers = parseLatexQuantity('3\\unit{km}');
 
 		if (meters && kilometers) {
 			expect(quantitiesAreCompatible(meters, kilometers)).toBe(true);
@@ -641,8 +641,8 @@ describe('quantitiesAreCompatible', () => {
 	});
 
 	test('returns false for incompatible units (m and kg)', () => {
-		const meters = parseLatexQuantity('5\\text{ m }');
-		const kilograms = parseLatexQuantity('2\\text{ kg }');
+		const meters = parseLatexQuantity('5\\unit{m}');
+		const kilograms = parseLatexQuantity('2\\unit{kg}');
 
 		if (meters && kilograms) {
 			expect(quantitiesAreCompatible(meters, kilograms)).toBe(false);
@@ -652,8 +652,8 @@ describe('quantitiesAreCompatible', () => {
 	});
 
 	test('returns false for different dimensions (m and s)', () => {
-		const meters = parseLatexQuantity('5\\text{ m }');
-		const seconds = parseLatexQuantity('10\\text{ s }');
+		const meters = parseLatexQuantity('5\\unit{m}');
+		const seconds = parseLatexQuantity('10\\unit{s}');
 
 		if (meters && seconds) {
 			expect(quantitiesAreCompatible(meters, seconds)).toBe(false);
@@ -663,8 +663,8 @@ describe('quantitiesAreCompatible', () => {
 	});
 
 	test('returns true for compatible mass units (g and kg)', () => {
-		const grams = parseLatexQuantity('500\\text{ g }');
-		const kilograms = parseLatexQuantity('1\\text{ kg }');
+		const grams = parseLatexQuantity('500\\unit{g}');
+		const kilograms = parseLatexQuantity('1\\unit{kg}');
 
 		if (grams && kilograms) {
 			expect(quantitiesAreCompatible(grams, kilograms)).toBe(true);
@@ -674,8 +674,8 @@ describe('quantitiesAreCompatible', () => {
 	});
 
 	test('returns true for compatible time units (s and h)', () => {
-		const seconds = parseLatexQuantity('3600\\text{ s }');
-		const hours = parseLatexQuantity('1\\text{ h }');
+		const seconds = parseLatexQuantity('3600\\unit{s}');
+		const hours = parseLatexQuantity('1\\unit{h}');
 
 		if (seconds && hours) {
 			expect(quantitiesAreCompatible(seconds, hours)).toBe(true);
@@ -725,29 +725,29 @@ describe('Edge Cases', () => {
 
 	describe('Single terms', () => {
 		test('single length term is consistent', () => {
-			const result = checkDimensionalConsistency('5\\text{ m }');
+			const result = checkDimensionalConsistency('5\\unit{m}');
 			expect(result.isConsistent).toBe(true);
 		});
 
 		test('single mass term is consistent', () => {
-			const result = checkDimensionalConsistency('10\\text{ kg }');
+			const result = checkDimensionalConsistency('10\\unit{kg}');
 			expect(result.isConsistent).toBe(true);
 		});
 
 		test('single time term is consistent', () => {
-			const result = checkDimensionalConsistency('3\\text{ s }');
+			const result = checkDimensionalConsistency('3\\unit{s}');
 			expect(result.isConsistent).toBe(true);
 		});
 
 		test('single composite term is consistent', () => {
-			const result = checkDimensionalConsistency('10\\text{ m/s }');
+			const result = checkDimensionalConsistency('10\\unit{m/s}');
 			expect(result.isConsistent).toBe(true);
 		});
 	});
 
 	describe('Complex scenarios', () => {
 		test('handles very long expressions', () => {
-			const expr = '1\\text{ m } + 2\\text{ m } + 3\\text{ m } + 4\\text{ m } + 5\\text{ m }';
+			const expr = '1\\unit{m} + 2\\unit{m} + 3\\unit{m} + 4\\unit{m} + 5\\unit{m}';
 			const result = checkDimensionalConsistency(expr);
 
 			expect(result.isConsistent).toBe(true);
@@ -755,14 +755,14 @@ describe('Edge Cases', () => {
 		});
 
 		test('handles expressions with parentheses', () => {
-			const result = checkDimensionalConsistency('(5\\text{ m } + 3\\text{ m })');
+			const result = checkDimensionalConsistency('(5\\unit{m} + 3\\unit{m})');
 
 			expect(result.isConsistent).toBe(true);
 		});
 
 		test('reports first mismatch in long expression', () => {
 			const result = checkDimensionalConsistency(
-				'1\\text{ m } + 2\\text{ m } + 3\\text{ kg } + 4\\text{ m }'
+				'1\\unit{m} + 2\\unit{m} + 3\\unit{kg} + 4\\unit{m}'
 			);
 
 			expect(result.isConsistent).toBe(false);

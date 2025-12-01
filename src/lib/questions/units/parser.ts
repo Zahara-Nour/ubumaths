@@ -5,9 +5,8 @@
  * Parser for extracting quantities (value + unit) from LaTeX expressions.
  *
  * Features:
- * - Extract value and unit from LaTeX (MathLive output)
+ * - Extract value and unit from LaTeX using \unit{} wrapper
  * - Parse composite unit expressions (km/h, m.s^-2)
- * - Support for various LaTeX patterns (\text{}, \mathrm{}, ~, etc.)
  * - Handle fractions, decimals, scientific notation
  *
  * @module questions/units/parser
@@ -15,7 +14,7 @@
 
 import type { Unit, Quantity } from './types';
 import { createUnit, multiplyUnits, divideUnits, powerUnit, dimensionlessUnit } from './operations';
-import { resolveUnit, UNIT_WHITELIST } from './definitions';
+import { resolveUnit } from './definitions';
 import { tokenize, type Token } from './tokenizer';
 
 // ============================================================================
@@ -23,22 +22,19 @@ import { tokenize, type Token } from './tokenizer';
 // ============================================================================
 
 /**
- * LaTeX patterns for extracting units from MathLive output
+ * Pattern for extracting units from \unit{} wrapper
  *
- * These patterns match common ways units appear in LaTeX:
- * - \text{ km } - units in text mode (with optional spaces)
- * - \mathrm{m} - units in upright math font
- * - \operatorname{kg} - units as operators
- * - ~km/h - tilde separator (non-breaking space)
- * - \ m - backslash space separator
+ * This is the ONLY supported format for units in LaTeX input.
+ * MathLive is configured to output units using this macro.
+ *
+ * Supports nested braces for exponents like s^{-2}.
+ *
+ * @example
+ * \unit{km} → 'km'
+ * \unit{m/s} → 'm/s'
+ * \unit{kg.m^{-2}} → 'kg.m^{-2}'
  */
-const LATEX_UNIT_PATTERNS: RegExp[] = [
-	/\\text\{\s*([^}]+)\s*\}/, // \text{ km }
-	/\\mathrm\{([^}]+)\}/, // \mathrm{km}
-	/\\operatorname\{([^}]+)\}/, // \operatorname{km}
-	/~([a-zA-Z\u03bc\u20ac$\u00b0]+(?:[\u00b7*/^][a-zA-Z\u03bc\u20ac$\u00b0\u2070\u00b9\u00b2\u00b3\u2074-\u2079\u207b]+)*)/, // ~km/h
-	/\\\s+([a-zA-Z\u03bc\u20ac$\u00b0]+(?:[\u00b7*/^][a-zA-Z\u03bc\u20ac$\u00b0\u2070\u00b9\u00b2\u00b3\u2074-\u2079\u207b]+)*)/ // \ km
-];
+const UNIT_PATTERN = /\\unit\{((?:[^{}]|\{[^{}]*\})+)\}/;
 
 /**
  * Pattern for extracting numeric values from LaTeX
@@ -173,59 +169,6 @@ function extractValue(latex: string): number | string | null {
 	return null;
 }
 
-/**
- * Extract the numeric part from the beginning of a LaTeX string
- *
- * @param latex - Full LaTeX string
- * @returns Tuple of [value, remaining string] or null
- */
-function extractValueFromStart(latex: string): [number | string, string] | null {
-	let str = latex.trim();
-
-	// Handle negative sign
-	let isNegative = false;
-	if (str.startsWith('-')) {
-		isNegative = true;
-		str = str.slice(1).trim();
-	}
-
-	// Try scientific notation
-	const scientificMatch = str.match(
-		/^(-?\d+(?:[.,]\d+)?)\s*(?:\\times|\\cdot)\s*10\^?\{?(-?\d+)\}?(.*)/
-	);
-	if (scientificMatch) {
-		const base = parseFloat(scientificMatch[1].replace(',', '.'));
-		const exp = parseInt(scientificMatch[2], 10);
-		const value = (isNegative ? -1 : 1) * base * Math.pow(10, exp);
-		return [value, scientificMatch[3]];
-	}
-
-	// Try fraction
-	const fractionMatch = str.match(/^\\frac\{([^}]+)\}\{([^}]+)\}(.*)/);
-	if (fractionMatch) {
-		const numerator = extractValue(fractionMatch[1]);
-		const denominator = extractValue(fractionMatch[2]);
-
-		if (typeof numerator === 'number' && typeof denominator === 'number' && denominator !== 0) {
-			const value = (isNegative ? -1 : 1) * (numerator / denominator);
-			return [value, fractionMatch[3]];
-		}
-
-		// Return as string if we can't evaluate
-		const fracStr = `${isNegative ? '-' : ''}\\frac{${fractionMatch[1]}}{${fractionMatch[2]}}`;
-		return [fracStr, fractionMatch[3]];
-	}
-
-	// Try decimal/integer
-	const decimalMatch = str.match(/^(\d+(?:[.,]\d+)?)(.*)/);
-	if (decimalMatch) {
-		const value = (isNegative ? -1 : 1) * parseFloat(decimalMatch[1].replace(',', '.'));
-		return [value, decimalMatch[2]];
-	}
-
-	return null;
-}
-
 // ============================================================================
 // UNIT EXPRESSION PARSING
 // ============================================================================
@@ -273,12 +216,8 @@ export function parseUnitExpression(unitStr: string): Unit | null {
 		// Use tokenizer to break down the expression
 		const tokens = tokenize(normalized);
 		return parseTokensToUnit(tokens);
-	} catch (error) {
+	} catch {
 		// Fallback: try simple parsing without tokenizer
-		// Log in development for debugging
-		if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
-			console.warn('Tokenizer failed, using fallback parser:', error);
-		}
 		return parseUnitExpressionSimple(normalized);
 	}
 }
@@ -558,63 +497,21 @@ function parseUnitWithExponent(str: string): Unit | null {
 // ============================================================================
 
 /**
- * Extract unit string from LaTeX patterns
+ * Extract unit string from \unit{} wrapper
  *
- * Looks for units wrapped in LaTeX commands like \text{}, \mathrm{},
- * or preceded by ~ or backslash space.
+ * This is the ONLY supported format for units.
  *
- * @param latex - LaTeX string potentially containing units
- * @returns Extracted unit string (before parsing) or null
+ * @param latex - LaTeX string containing \unit{...}
+ * @returns Extracted unit string or null
  *
  * @example
- * extractUnitFromLatex('5\\text{ km }') // 'km'
- * extractUnitFromLatex('3.14\\mathrm{m}') // 'm'
- * extractUnitFromLatex('25~\u20ac') // '\u20ac'
+ * extractUnitFromLatex('5\\unit{km}') // 'km'
+ * extractUnitFromLatex('3.14\\unit{m/s}') // 'm/s'
+ * extractUnitFromLatex('42') // null (no unit)
  */
 export function extractUnitFromLatex(latex: string): string | null {
-	// Try each pattern
-	for (const pattern of LATEX_UNIT_PATTERNS) {
-		const match = latex.match(pattern);
-		if (match?.[1]) {
-			// Clean up the extracted unit string
-			return match[1].trim();
-		}
-	}
-
-	// Fallback: look for unit at the end of the string
-	// This handles cases where the unit is just appended without LaTeX wrapper
-	const fallbackMatch = latex.match(
-		/\d\s*([a-zA-Z\u03bc\u20ac$\u00b0]+(?:[\u00b7*/^][a-zA-Z\u03bc\u20ac$\u00b0\u2070\u00b9\u00b2\u00b3\u2074-\u2079\u207b]+)*)\s*$/
-	);
-	if (fallbackMatch?.[1]) {
-		// Verify it's a valid unit
-		const unitStr = fallbackMatch[1];
-		if (isLikelyUnit(unitStr)) {
-			return unitStr;
-		}
-	}
-
-	return null;
-}
-
-/**
- * Check if a string is likely a unit (not just random letters)
- *
- * @param str - String to check
- * @returns True if the string looks like a unit
- */
-function isLikelyUnit(str: string): boolean {
-	// Normalize and check first component
-	const normalized = normalizeSuperscripts(str);
-	const firstUnit = normalized.split(/[*/^]/)[0];
-
-	// Check against whitelist
-	if (UNIT_WHITELIST.has(firstUnit)) {
-		return true;
-	}
-
-	// Try to resolve
-	return resolveUnit(firstUnit) !== null;
+	const match = latex.match(UNIT_PATTERN);
+	return match?.[1]?.trim() ?? null;
 }
 
 // ============================================================================
@@ -625,103 +522,55 @@ function isLikelyUnit(str: string): boolean {
  * Parse a LaTeX string to extract value and unit
  *
  * This is the main entry point for parsing quantities from LaTeX input.
- * It handles various MathLive output formats.
+ * Expects format: <value>\unit{<unit>} or just <value> for dimensionless.
  *
  * @param latex - LaTeX string containing a quantity
  * @returns Quantity object or null if parsing fails
  *
- * @example Various formats
- * parseLatexQuantity('5\\text{ km }')
+ * @example
+ * parseLatexQuantity('5\\unit{km}')
  * // { value: 5, unit: { components: Map{'m' => 1}, coefficient: 1000 } }
  *
- * parseLatexQuantity('3.14\\mathrm{m}')
- * // { value: 3.14, unit: { components: Map{'m' => 1}, coefficient: 1 } }
- *
- * parseLatexQuantity('\\frac{3}{2}\\text{ kg }')
+ * parseLatexQuantity('\\frac{3}{2}\\unit{kg}')
  * // { value: 1.5, unit: { components: Map{'g' => 1}, coefficient: 1000 } }
  *
- * @example Composite units
- * parseLatexQuantity('5\\text{ km/h }')
- * // { value: 5, unit: { components: Map{'m' => 1, 's' => -1}, coefficient: 1000/3600 } }
+ * parseLatexQuantity('42')
+ * // { value: 42, unit: dimensionless }
  */
 export function parseLatexQuantity(latex: string): Quantity | null {
 	if (!latex || typeof latex !== 'string') {
 		return null;
 	}
 
-	// Clean up LaTeX string
 	const str = latex.trim();
+	if (!str) {
+		return null;
+	}
 
-	// First, try to extract the unit using LaTeX patterns
+	// Extract unit from \unit{} wrapper
 	const unitStr = extractUnitFromLatex(str);
 
+	// Remove \unit{...} to get value part
+	const valueStr = str.replace(UNIT_PATTERN, '').trim();
+
+	// Extract numeric value
+	const value = valueStr ? extractValue(valueStr) : null;
+
+	if (value === null) {
+		return null;
+	}
+
+	// Parse unit or return dimensionless
 	if (unitStr) {
-		// Remove the unit part to get the value part
-		let valueStr = str;
-
-		// Remove the matched LaTeX pattern containing the unit
-		for (const pattern of LATEX_UNIT_PATTERNS) {
-			valueStr = valueStr.replace(pattern, '');
-		}
-
-		// Also try removing plain unit at the end
-		const unitRegex = new RegExp(escapeRegex(unitStr) + '\\s*$');
-		valueStr = valueStr.replace(unitRegex, '');
-
-		// Clean up any remaining separators
-		valueStr = valueStr
-			.replace(/~\s*$/, '')
-			.replace(/\\\s+$/, '')
-			.trim();
-
-		// Extract the value
-		const value = extractValue(valueStr);
-
-		// Parse the unit expression
 		const unit = parseUnitExpression(unitStr);
-
-		if (value !== null && unit !== null) {
-			return { value, unit };
+		if (!unit) {
+			return null; // Invalid unit expression
 		}
+		return { value, unit };
 	}
 
-	// Fallback: try extracting value from the beginning
-	const valueResult = extractValueFromStart(str);
-	if (valueResult) {
-		const [value, remaining] = valueResult;
-
-		// Try to parse remaining as unit
-		const cleanRemaining = remaining
-			.replace(/^~/, '')
-			.replace(/^\\\s+/, '')
-			.replace(/^\\text\{\s*/, '')
-			.replace(/\s*\}$/, '')
-			.replace(/^\\mathrm\{/, '')
-			.replace(/^\\operatorname\{/, '')
-			.trim();
-
-		if (cleanRemaining) {
-			const unit = parseUnitExpression(cleanRemaining);
-			if (unit) {
-				return { value, unit };
-			}
-		} else {
-			// No unit - return dimensionless quantity
-			return { value, unit: dimensionlessUnit() };
-		}
-	}
-
-	return null;
-}
-
-/**
- * Escape special regex characters in a string
- *
- * @param str - String to escape
- * @returns Escaped string safe for use in RegExp
- */
-function escapeRegex(str: string): string {
-	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	// No unit = dimensionless quantity
+	return { value, unit: dimensionlessUnit() };
 }
 
 // ============================================================================

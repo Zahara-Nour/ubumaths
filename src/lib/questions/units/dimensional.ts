@@ -136,7 +136,7 @@ const DIMENSION_NAMES: Map<string, string> = new Map([
  * @returns String key
  *
  * @example
- * dimensionMapToKey({ length: 1, time: -1 }) // 'length:1,time:-1'
+ * dimensionMapToKey({ length: 1, time: -1}) // 'length:1,time:-1'
  */
 function dimensionMapToKey(dim: DimensionMap): string {
 	const entries = Object.entries(dim)
@@ -156,12 +156,12 @@ function dimensionMapToKey(dim: DimensionMap): string {
  * @returns Human-readable name in French
  *
  * @example Known dimensions
- * getDimensionName({ length: 1 }) // 'longueur'
- * getDimensionName({ length: 1, time: -1 }) // 'vitesse'
- * getDimensionName({ mass: 1, length: 2, time: -2 }) // 'energie'
+ * getDimensionName({ length: 1}) // 'longueur'
+ * getDimensionName({ length: 1, time: -1}) // 'vitesse'
+ * getDimensionName({ mass: 1, length: 2, time: -2}) // 'energie'
  *
  * @example Unknown dimension
- * getDimensionName({ length: 4 }) // 'dimension inconnue (L^4)'
+ * getDimensionName({ length: 4}) // 'dimension inconnue (L^4)'
  */
 export function getDimensionName(dimension: DimensionMap): string {
 	const key = dimensionMapToKey(dimension);
@@ -238,16 +238,16 @@ function buildDimensionalFormula(dim: DimensionMap): string {
  * @returns Array of term strings
  *
  * @example Simple addition
- * analyzeExpression('5\\text{ m } + 3\\text{ km }')
- * // ['5\\text{ m }', '3\\text{ km }']
+ * analyzeExpression('5\\unit{m} + 3\\unit{km}')
+ * // ['5\\unit{m}', '3\\unit{km}']
  *
  * @example Subtraction
- * analyzeExpression('10\\text{ kg } - 2\\text{ kg }')
- * // ['10\\text{ kg }', '2\\text{ kg }']
+ * analyzeExpression('10\\unit{kg} - 2\\unit{kg}')
+ * // ['10\\unit{kg}', '2\\unit{kg}']
  *
  * @example With \\pm
- * analyzeExpression('100\\text{ cm } \\pm 5\\text{ mm }')
- * // ['100\\text{ cm }', '5\\text{ mm }']
+ * analyzeExpression('100\\unit{cm} \\pm 5\\unit{mm}')
+ * // ['100\\unit{cm}', '5\\unit{mm}']
  */
 export function analyzeExpression(expression: string): string[] {
 	if (!expression || typeof expression !== 'string') {
@@ -372,32 +372,32 @@ export function analyzeExpression(expression: string): string[] {
  * @returns Dimensional check result with details
  *
  * @example Consistent expression
- * checkDimensionalConsistency('5\\text{ m } + 3\\text{ km }')
- * // { isConsistent: true, errors: [], terms: [...] }
+ * checkDimensionalConsistency('5\\unit{m} + 3\\unit{km}')
+ * // { isConsistent: true, errors: [], terms: [...]}
  *
  * @example Inconsistent expression
- * checkDimensionalConsistency('5\\text{ m } + 3\\text{ kg }')
+ * checkDimensionalConsistency('5\\unit{m} + 3\\unit{kg}')
  * // {
  * //   isConsistent: false,
  * //   errors: [{
  * //     type: 'addition_mismatch',
  * //     message: "Impossible d'additionner longueur et masse.",
- * //     terms: ['5\\text{ m }', '3\\text{ kg }'],
- * //     dimensions: [{ length: 1 }, { mass: 1 }]
- * //   }],
+ * //     terms: ['5\\unit{m}', '3\\unit{kg}'],
+ * //     dimensions: [{ length: 1}, { mass: 1}]
+ * //  }],
  * //   terms: [...]
- * // }
+ * //}
  *
  * @example Invalid unit
- * checkDimensionalConsistency('5\\text{ xyz }')
+ * checkDimensionalConsistency('5\\unit{xyz}')
  * // {
  * //   isConsistent: false,
  * //   errors: [{
  * //     type: 'invalid_unit',
  * //     message: "Unite invalide: xyz"
- * //   }],
+ * //  }],
  * //   terms: [...]
- * // }
+ * //}
  */
 export function checkDimensionalConsistency(expression: string): DimensionalCheckResult {
 	// Handle null/undefined/empty
@@ -562,8 +562,8 @@ function dimensionsAreCompatible(dim1: DimensionMap, dim2: DimensionMap): boolea
  * @returns True if expression is dimensionally consistent
  *
  * @example
- * isDimensionallyConsistent('5\\text{ m } + 3\\text{ km }') // true
- * isDimensionallyConsistent('5\\text{ m } + 3\\text{ kg }') // false
+ * isDimensionallyConsistent('5\\unit{m} + 3\\unit{km}') // true
+ * isDimensionallyConsistent('5\\unit{m} + 3\\unit{kg}') // false
  */
 export function isDimensionallyConsistent(expression: string): boolean {
 	return checkDimensionalConsistency(expression).isConsistent;
@@ -578,7 +578,7 @@ export function isDimensionallyConsistent(expression: string): boolean {
  * @returns Error message or null if consistent
  *
  * @example
- * getDimensionalError('5\\text{ m } + 3\\text{ kg }')
+ * getDimensionalError('5\\unit{m} + 3\\unit{kg}')
  * // "Impossible d'additionner longueur et masse."
  */
 export function getDimensionalError(expression: string): string | null {
@@ -596,9 +596,9 @@ export function getDimensionalError(expression: string): string | null {
  * @returns True if quantities can be added/compared
  *
  * @example
- * const meters = parseLatexQuantity('5\\text{ m }');
- * const kilometers = parseLatexQuantity('3\\text{ km }');
- * const kilograms = parseLatexQuantity('2\\text{ kg }');
+ * const meters = parseLatexQuantity('5\\unit{m}');
+ * const kilometers = parseLatexQuantity('3\\unit{km}');
+ * const kilograms = parseLatexQuantity('2\\unit{kg}');
  *
  * quantitiesAreCompatible(meters, kilometers) // true
  * quantitiesAreCompatible(meters, kilograms) // false
