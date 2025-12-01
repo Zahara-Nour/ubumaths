@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 348 passing (71 unit + 15 integration tests for LaTeX generator)
+**Tests**: 423 passing
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -38,12 +38,12 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 
 ```
 src/lib/mathAST/
-├── index.ts              # Public exports (123 total)
+├── index.ts              # Public exports (140 total)
 ├── types.ts              # Type definitions (27 exports)
-├── factory.ts            # Factory functions (47 exports)
+├── factory.ts            # Factory functions (55 exports)
 ├── transforms.ts         # Tree manipulation (10 exports)
-├── guards.ts             # Type guards (23 exports)
-├── flatten.ts            # Flatten helpers (13 exports)
+├── guards.ts             # Type guards (29 exports)
+├── flatten.ts            # Flatten helpers (16 exports)
 ├── latex-generator.ts    # LaTeX output (3 exports)
 └── __tests__/
     ├── factory.test.ts
