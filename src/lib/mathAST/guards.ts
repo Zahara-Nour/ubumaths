@@ -27,6 +27,7 @@ import type {
 	UnaryOperationNode,
 	StructuralNode
 } from './types';
+import { flattenRelationChain } from './flatten';
 
 // =============================================================================
 // Category Type Guards
@@ -262,4 +263,85 @@ export function isEquality(node: MathNode): node is RelationNode {
  */
 export function isInequality(node: MathNode): node is RelationNode {
 	return isRelation(node) && node.relation === '!=';
+}
+
+// =============================================================================
+// Relation Chain Predicates
+// =============================================================================
+
+/**
+ * Returns true if the node is a relation chain (nested relations).
+ * A chain has a RelationNode as its left child.
+ *
+ * Note: A simple binary relation (a = b) returns false.
+ * A chain (a = b = c) returns true.
+ */
+export function isRelationChain(node: MathNode): node is RelationNode {
+	return isRelation(node) && isRelation(node.left);
+}
+
+/**
+ * Returns true if the node is a comparison chain (all relations are <, >, <=, or >=).
+ * Can be homogeneous (a < b < c) or mixed (a <= b < c).
+ */
+export function isComparisonChain(node: MathNode): node is RelationNode {
+	if (!isRelation(node)) return false;
+
+	const flat = flattenRelationChain(node);
+	if (flat.relations.length < 1) return false;
+
+	const comparisonOps = ['<', '>', '<=', '>='];
+	return flat.relations.every((r) => comparisonOps.includes(r));
+}
+
+/**
+ * Returns true if the node is an equality chain (all relations are =).
+ * Example: a = b = c = d
+ */
+export function isEqualityChain(node: MathNode): node is RelationNode {
+	if (!isRelation(node)) return false;
+
+	const flat = flattenRelationChain(node);
+	if (flat.relations.length < 1) return false;
+
+	return flat.relations.every((r) => r === '=');
+}
+
+/**
+ * Returns true if the node is an implication chain (all relations are ⟹).
+ * Example: P ⟹ Q ⟹ R
+ */
+export function isImplicationChain(node: MathNode): node is RelationNode {
+	if (!isRelation(node)) return false;
+
+	const flat = flattenRelationChain(node);
+	if (flat.relations.length < 1) return false;
+
+	return flat.relations.every((r) => r === '⟹');
+}
+
+/**
+ * Returns true if the node is an equivalence chain (all relations are ⟺).
+ * Example: P ⟺ Q ⟺ R
+ */
+export function isEquivalenceChain(node: MathNode): node is RelationNode {
+	if (!isRelation(node)) return false;
+
+	const flat = flattenRelationChain(node);
+	if (flat.relations.length < 1) return false;
+
+	return flat.relations.every((r) => r === '⟺');
+}
+
+/**
+ * Returns the length of a relation chain (number of operands).
+ * For a simple binary relation (a = b), returns 2.
+ * For a chain (a < b < c), returns 3.
+ * For non-relation nodes, returns 0.
+ */
+export function getRelationChainLength(node: MathNode): number {
+	if (!isRelation(node)) return 0;
+
+	const flat = flattenRelationChain(node);
+	return flat.operands.length;
 }

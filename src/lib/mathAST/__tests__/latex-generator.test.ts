@@ -2,6 +2,19 @@ import { describe, it, expect } from 'vitest';
 import { toLatex, LatexGenerator } from '../latex-generator';
 import { MathAST } from '../index';
 import type { RelationType } from '../types';
+import {
+	variable,
+	number,
+	add,
+	parentheses,
+	lessThanChain,
+	equalsChain,
+	relationChain,
+	impliesChain,
+	iffChain,
+	greaterThanChain,
+	lessThanOrEqualChain
+} from '../factory';
 
 describe('LatexGenerator - Literals', () => {
 	it('generates number nodes', () => {
@@ -514,5 +527,81 @@ describe('LatexGenerator - Class API', () => {
 	it('toLatex convenience function works', () => {
 		const expr = MathAST.variable('x');
 		expect(toLatex(expr)).toBe('x');
+	});
+});
+
+describe('LatexGenerator - Relation Chains', () => {
+	it('should generate a < b < c', () => {
+		const chain = lessThanChain(variable('a'), variable('b'), variable('c'));
+		expect(toLatex(chain)).toBe('a < b < c');
+	});
+
+	it('should generate a = b = c = d', () => {
+		const chain = equalsChain(variable('a'), variable('b'), variable('c'), variable('d'));
+		expect(toLatex(chain)).toBe('a = b = c = d');
+	});
+
+	it('should generate a <= b < c (mixed)', () => {
+		const chain = relationChain([variable('a'), variable('b'), variable('c')], ['<=', '<']);
+		expect(toLatex(chain)).toBe('a \\leq b < c');
+	});
+
+	it('should generate P => Q => R', () => {
+		const chain = impliesChain(variable('P'), variable('Q'), variable('R'));
+		expect(toLatex(chain)).toBe('P \\implies Q \\implies R');
+	});
+
+	it('should generate P <=> Q <=> R', () => {
+		const chain = iffChain(variable('P'), variable('Q'), variable('R'));
+		expect(toLatex(chain)).toBe('P \\iff Q \\iff R');
+	});
+
+	it('should handle complex operands in chains', () => {
+		// (x + 1) < (x + 2) < (x + 3)
+		const chain = lessThanChain(
+			parentheses(add(variable('x'), number('1'))),
+			parentheses(add(variable('x'), number('2'))),
+			parentheses(add(variable('x'), number('3')))
+		);
+		expect(toLatex(chain)).toBe(
+			'\\left( x + 1 \\right) < \\left( x + 2 \\right) < \\left( x + 3 \\right)'
+		);
+	});
+
+	it('should generate a > b > c', () => {
+		const chain = greaterThanChain(variable('a'), variable('b'), variable('c'));
+		expect(toLatex(chain)).toBe('a > b > c');
+	});
+
+	it('should generate a <= b <= c', () => {
+		const chain = lessThanOrEqualChain(variable('a'), variable('b'), variable('c'));
+		expect(toLatex(chain)).toBe('a \\leq b \\leq c');
+	});
+
+	it('should handle binary relation (not a chain)', () => {
+		const binary = MathAST.equals(variable('a'), variable('b'));
+		expect(toLatex(binary)).toBe('a = b');
+	});
+
+	it('should generate long equality chain', () => {
+		const chain = equalsChain(
+			variable('a'),
+			variable('b'),
+			variable('c'),
+			variable('d'),
+			variable('e')
+		);
+		expect(toLatex(chain)).toBe('a = b = c = d = e');
+	});
+
+	it('should handle numbers in chains', () => {
+		const chain = lessThanChain(number('1'), number('2'), number('3'));
+		expect(toLatex(chain)).toBe('1 < 2 < 3');
+	});
+
+	it('should generate mixed comparison and equality chain', () => {
+		// a = b < c
+		const chain = relationChain([variable('a'), variable('b'), variable('c')], ['=', '<']);
+		expect(toLatex(chain)).toBe('a = b < c');
 	});
 });

@@ -26,6 +26,7 @@ import type {
 	RelationType,
 	GreekLetter
 } from './types';
+import { flattenRelationChain } from './flatten';
 
 // =============================================================================
 // Options
@@ -412,10 +413,18 @@ export class LatexGenerator {
 	}
 
 	private generateRelation(node: RelationNode): string {
-		const left = this.generateNode(node.left);
-		const right = this.generateNode(node.right);
-		const relation = RELATION_MAP[node.relation];
-		return `${left} ${relation} ${right}`;
+		// Flatten the chain (works for both binary and nested relations)
+		const flat = flattenRelationChain(node);
+
+		// Build the output: operand0 relation0 operand1 relation1 operand2 ...
+		const parts: string[] = [];
+		for (let i = 0; i < flat.operands.length; i++) {
+			parts.push(this.generateNode(flat.operands[i]));
+			if (i < flat.relations.length) {
+				parts.push(` ${RELATION_MAP[flat.relations[i]]} `);
+			}
+		}
+		return parts.join('');
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {
