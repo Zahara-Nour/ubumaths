@@ -146,16 +146,6 @@ describe('LaTeX Generator - Integration Tests', () => {
 		expect(toLatex(expr)).toBe('\\det\\left( A \\right)');
 	});
 
-	it('generates floor and ceiling functions', () => {
-		// ⌊x⌋ + ⌈y⌉
-		const expr = MathAST.add(
-			MathAST.delimiter('floor', MathAST.variable('x'), 'floor'),
-			MathAST.delimiter('ceiling', MathAST.variable('y'), 'ceiling')
-		);
-
-		expect(toLatex(expr)).toBe('\\left\\lfloor x \\right\\rfloor + \\left\\lceil y \\right\\rceil');
-	});
-
 	it('generates implication chain', () => {
 		// P ⟹ Q ⟹ R
 		const expr = MathAST.implies(

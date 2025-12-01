@@ -290,20 +290,13 @@ interface PositiveNode {
 ```typescript
 type DelimiterType =
 	| 'parentheses' // (...)
-	| 'brackets' // [...]
-	| 'braces' // {...}
-	| 'invisible' // Implicit grouping
-	| 'absolute' // |...|
-	| 'floor' // ⌊...⌋
-	| 'ceiling'; // ⌈...⌉
+	| 'absolute'; // |...|
 
 type DelimiterSemantic =
 	| 'grouping' // Default for parentheses
 	| 'interval' // [a, b]
 	| 'set' // {elements}
 	| 'absolute' // |x|
-	| 'floor'
-	| 'ceiling'
 	| 'matrix'
 	| 'vector';
 
@@ -456,8 +449,6 @@ abs(arg, metadata?): FunctionNode
 ```typescript
 delimiter(type, content, semantic?, metadata?): DelimiterNode
 parentheses(content, metadata?): DelimiterNode  // semantic: 'grouping'
-brackets(content, metadata?): DelimiterNode
-braces(content, metadata?): DelimiterNode       // semantic: 'set'
 subscript(base, subscript, metadata?): SubscriptNode
 superscript(base, superscript, metadata?): SuperscriptNode
 power(base, exponent, metadata?): SuperscriptNode  // Alias for superscript
@@ -922,7 +913,7 @@ function evaluate(node: MathNode, vars: Map<string, number>): number {
 | **Binary Ops**      | `add`, `subtract`, `multiply`, `implicitMultiply`, `divide`, `fraction`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **Unary Ops**       | `opposite`, `positive`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | **Functions**       | `func`, `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt`, `abs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| **Structural**      | `delimiter`, `parentheses`, `brackets`, `braces`, `subscript`, `superscript`, `power`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Structural**      | `delimiter`, `parentheses`, `subscript`, `superscript`, `power`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | **Relations**       | `relation`, `equals`, `lessThan`, `greaterThan`, `lessThanOrEqual`, `greaterThanOrEqual`, `notEquals`, `approx`, `congruent`, `elementOf`, `notElementOf`, `subset`, `subsetOrEqual`, `superset`, `supersetOrEqual`, `implies`, `iff`                                                                                                                                                                                                                                                                                                                                          |
 | **Relation Chains** | `relationChain`, `equalsChain`, `lessThanChain`, `lessThanOrEqualChain`, `greaterThanChain`, `greaterThanOrEqualChain`, `impliesChain`, `iffChain`                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **Transforms**      | `withMetadata`, `getChildren`, `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `cloneNode`, `countNodes`, `getDepth`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -993,12 +984,7 @@ interface LatexGeneratorOptions {
 All delimiters use auto-sizing `\left` and `\right`:
 
 - Parentheses: `\left( ... \right)`
-- Brackets: `\left[ ... \right]`
-- Braces: `\left\{ ... \right\}`
 - Absolute: `\left| ... \right|`
-- Floor: `\left\lfloor ... \right\rfloor`
-- Ceiling: `\left\lceil ... \right\rceil`
-- Invisible: no delimiters (just content)
 
 ### Functions
 

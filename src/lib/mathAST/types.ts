@@ -314,27 +314,12 @@ export interface FunctionNode extends BaseNode {
 /**
  * Types of delimiters that can surround content
  */
-export type DelimiterType =
-	| 'parentheses'
-	| 'brackets'
-	| 'braces'
-	| 'invisible'
-	| 'absolute'
-	| 'floor'
-	| 'ceiling';
+export type DelimiterType = 'parentheses' | 'absolute';
 
 /**
  * Semantic meaning of delimited content
  */
-export type DelimiterSemantic =
-	| 'grouping'
-	| 'interval'
-	| 'set'
-	| 'absolute'
-	| 'floor'
-	| 'ceiling'
-	| 'matrix'
-	| 'vector';
+export type DelimiterSemantic = 'grouping' | 'interval' | 'set' | 'absolute' | 'matrix' | 'vector';
 
 /**
  * Represents content surrounded by delimiters

@@ -32,8 +32,6 @@ import {
 	// Structural factories
 	delimiter,
 	parentheses,
-	brackets,
-	braces,
 	subscript,
 	superscript,
 	power,
@@ -459,16 +457,11 @@ describe('factory', () => {
 			const content = variable('x');
 
 			expect(delimiter('parentheses', content).delimiters).toBe('parentheses');
-			expect(delimiter('brackets', content).delimiters).toBe('brackets');
-			expect(delimiter('braces', content).delimiters).toBe('braces');
-			expect(delimiter('invisible', content).delimiters).toBe('invisible');
 			expect(delimiter('absolute', content).delimiters).toBe('absolute');
-			expect(delimiter('floor', content).delimiters).toBe('floor');
-			expect(delimiter('ceiling', content).delimiters).toBe('ceiling');
 		});
 
 		it('includes semantic when provided', () => {
-			const node = delimiter('braces', variable('x'), 'set');
+			const node = delimiter('parentheses', variable('x'), 'set');
 			expect(node.semantic).toBe('set');
 		});
 
@@ -490,25 +483,6 @@ describe('factory', () => {
 
 			expect(node.delimiters).toBe('parentheses');
 			expect(node.semantic).toBe('grouping');
-		});
-	});
-
-	describe('brackets', () => {
-		it('creates brackets delimiter', () => {
-			const content = variable('x');
-			const node = brackets(content);
-
-			expect(node.delimiters).toBe('brackets');
-		});
-	});
-
-	describe('braces', () => {
-		it('creates braces delimiter with set semantic', () => {
-			const content = variable('x');
-			const node = braces(content);
-
-			expect(node.delimiters).toBe('braces');
-			expect(node.semantic).toBe('set');
 		});
 	});
 

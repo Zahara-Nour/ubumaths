@@ -93,11 +93,11 @@ Display styles control how operations are rendered (e.g., `2x` for implicit, `2 
 
 ### Structural Nodes
 
-| Node                | Type            | Purpose                                          | Options                                                                                               |
-| ------------------- | --------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| **DelimiterNode**   | `'delimiter'`   | Content surrounded by delimiters                 | Types: `'parentheses'`, `'brackets'`, `'braces'`, `'invisible'`, `'absolute'`, `'floor'`, `'ceiling'` |
-| **SubscriptNode**   | `'subscript'`   | Subscript/index notation (base_subscript)        | —                                                                                                     |
-| **SuperscriptNode** | `'superscript'` | Superscript/exponent notation (base^superscript) | —                                                                                                     |
+| Node                | Type            | Purpose                                          | Options                              |
+| ------------------- | --------------- | ------------------------------------------------ | ------------------------------------ |
+| **DelimiterNode**   | `'delimiter'`   | Content surrounded by delimiters                 | Types: `'parentheses'`, `'absolute'` |
+| **SubscriptNode**   | `'subscript'`   | Subscript/index notation (base_subscript)        | —                                    |
+| **SuperscriptNode** | `'superscript'` | Superscript/exponent notation (base^superscript) | —                                    |
 
 ### Function Node
 
@@ -167,8 +167,6 @@ abs(arg: MathNode, metadata?: NodeMetadata): FunctionNode
 ```typescript
 delimiter(type: DelimiterType, content: MathNode, semantic?: DelimiterSemantic, metadata?: NodeMetadata): DelimiterNode
 parentheses(content: MathNode, metadata?: NodeMetadata): DelimiterNode
-brackets(content: MathNode, metadata?: NodeMetadata): DelimiterNode
-braces(content: MathNode, metadata?: NodeMetadata): DelimiterNode
 
 subscript(base: MathNode, subscript: MathNode, metadata?: NodeMetadata): SubscriptNode
 superscript(base: MathNode, superscript: MathNode, metadata?: NodeMetadata): SuperscriptNode
@@ -441,7 +439,7 @@ const styled = withMetadata(clone, {
 
 Flatten binary operation chains into lists for easier manipulation.
 
-**Key rule**: Delimiters (parentheses, brackets, braces) are **intangible boundaries** - flattening stops at them.
+**Key rule**: Delimiters (parentheses) are **intangible boundaries** - flattening stops at them.
 
 ```typescript
 // Types

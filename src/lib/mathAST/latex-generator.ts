@@ -384,18 +384,8 @@ export class LatexGenerator {
 		switch (node.delimiters) {
 			case 'parentheses':
 				return `\\left( ${content} \\right)`;
-			case 'brackets':
-				return `\\left[ ${content} \\right]`;
-			case 'braces':
-				return `\\left\\{ ${content} \\right\\}`;
-			case 'invisible':
-				return content;
 			case 'absolute':
 				return `\\left| ${content} \\right|`;
-			case 'floor':
-				return `\\left\\lfloor ${content} \\right\\rfloor`;
-			case 'ceiling':
-				return `\\left\\lceil ${content} \\right\\rceil`;
 			default: {
 				const exhaustive: never = node.delimiters;
 				throw new Error(`Unknown delimiter type: ${exhaustive}`);

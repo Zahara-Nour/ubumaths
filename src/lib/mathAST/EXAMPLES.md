@@ -89,10 +89,6 @@ toLatex(paren); // "\left( x + y \right)"
 // Absolute value: |x|
 const abs = MathAST.delimiter('absolute', MathAST.variable('x'), 'absolute');
 toLatex(abs); // "\left| x \right|"
-
-// Floor: ⌊x⌋
-const floor = MathAST.delimiter('floor', MathAST.variable('x'), 'floor');
-toLatex(floor); // "\left\lfloor x \right\rfloor"
 ```
 
 ### Relations
