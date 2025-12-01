@@ -46,6 +46,103 @@ export function withMetadata<T extends MathNode>(node: T, metadata: Partial<Node
 	} as T;
 }
 
+/**
+ * Adds or merges operator metadata to a node that supports it.
+ * Returns the original node unchanged if it doesn't support operator metadata.
+ */
+export function withOperatorMetadata<T extends MathNode>(
+	node: T,
+	operatorMetadata: Partial<NodeMetadata>
+): T {
+	if (!('operatorMetadata' in node)) return node;
+	const nodeWithOp = node as T & { operatorMetadata?: NodeMetadata };
+	const existing = nodeWithOp.operatorMetadata || {};
+	return {
+		...node,
+		operatorMetadata: { ...existing, ...operatorMetadata }
+	} as T;
+}
+
+/**
+ * Adds or merges delimiter metadata to a node that supports it.
+ * @param side - 'left', 'right', or 'both' (default: 'both')
+ */
+export function withDelimiterMetadata<T extends MathNode>(
+	node: T,
+	delimiterMetadata: Partial<NodeMetadata>,
+	side: 'left' | 'right' | 'both' = 'both'
+): T {
+	if (!('delimiterMetadata' in node)) return node;
+
+	type DelimiterNode = T & {
+		delimiterMetadata?: NodeMetadata;
+		leftDelimiterMetadata?: NodeMetadata;
+		rightDelimiterMetadata?: NodeMetadata;
+	};
+	const nodeWithDelim = node as DelimiterNode;
+	const updates: Record<string, NodeMetadata> = {};
+
+	if (side === 'left' || side === 'both') {
+		const existing = nodeWithDelim.leftDelimiterMetadata ?? nodeWithDelim.delimiterMetadata ?? {};
+		updates.leftDelimiterMetadata = { ...existing, ...delimiterMetadata };
+	}
+
+	if (side === 'right' || side === 'both') {
+		const existing = nodeWithDelim.rightDelimiterMetadata ?? nodeWithDelim.delimiterMetadata ?? {};
+		updates.rightDelimiterMetadata = { ...existing, ...delimiterMetadata };
+	}
+
+	return { ...node, ...updates } as T;
+}
+
+/**
+ * Adds or merges relation metadata to a RelationNode.
+ */
+export function withRelationMetadata<T extends MathNode>(
+	node: T,
+	relationMetadata: Partial<NodeMetadata>
+): T {
+	if (!('relationMetadata' in node)) return node;
+	const nodeWithRel = node as T & { relationMetadata?: NodeMetadata };
+	const existing = nodeWithRel.relationMetadata || {};
+	return {
+		...node,
+		relationMetadata: { ...existing, ...relationMetadata }
+	} as T;
+}
+
+/**
+ * Adds or merges name metadata to a FunctionNode.
+ */
+export function withNameMetadata<T extends MathNode>(
+	node: T,
+	nameMetadata: Partial<NodeMetadata>
+): T {
+	if (!('nameMetadata' in node)) return node;
+	const nodeWithName = node as T & { nameMetadata?: NodeMetadata };
+	const existing = nodeWithName.nameMetadata || {};
+	return {
+		...node,
+		nameMetadata: { ...existing, ...nameMetadata }
+	} as T;
+}
+
+/**
+ * Adds or merges unit metadata to a UnitNode.
+ */
+export function withUnitMetadata<T extends MathNode>(
+	node: T,
+	unitMetadata: Partial<NodeMetadata>
+): T {
+	if (!('unitMetadata' in node)) return node;
+	const nodeWithUnit = node as T & { unitMetadata?: NodeMetadata };
+	const existing = nodeWithUnit.unitMetadata || {};
+	return {
+		...node,
+		unitMetadata: { ...existing, ...unitMetadata }
+	} as T;
+}
+
 // =============================================================================
 // Node Traversal Helpers
 // =============================================================================

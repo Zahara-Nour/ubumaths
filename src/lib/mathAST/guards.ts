@@ -425,3 +425,60 @@ export function isDimensionlessUnit(node: MathNode): boolean {
 	}
 	return true;
 }
+
+// =============================================================================
+// Extended Metadata Predicates
+// =============================================================================
+
+/**
+ * Checks if a node has operator metadata.
+ */
+export function hasOperatorMetadata(node: MathNode): boolean {
+	return 'operatorMetadata' in node && node.operatorMetadata !== undefined;
+}
+
+/**
+ * Checks if a node has any delimiter metadata (default, left, or right).
+ */
+export function hasDelimiterMetadata(node: MathNode): boolean {
+	return (
+		('delimiterMetadata' in node && node.delimiterMetadata !== undefined) ||
+		('leftDelimiterMetadata' in node && node.leftDelimiterMetadata !== undefined) ||
+		('rightDelimiterMetadata' in node && node.rightDelimiterMetadata !== undefined)
+	);
+}
+
+/**
+ * Checks if a node has function name metadata.
+ */
+export function hasNameMetadata(node: MathNode): boolean {
+	return 'nameMetadata' in node && (node as FunctionNode).nameMetadata !== undefined;
+}
+
+/**
+ * Checks if a node has relation metadata.
+ */
+export function hasRelationMetadata(node: MathNode): boolean {
+	return 'relationMetadata' in node && (node as RelationNode).relationMetadata !== undefined;
+}
+
+/**
+ * Checks if a node has unit metadata.
+ */
+export function hasUnitMetadata(node: MathNode): boolean {
+	return 'unitMetadata' in node && (node as UnitNode).unitMetadata !== undefined;
+}
+
+/**
+ * Checks if a node has any kind of metadata (standard or extended).
+ */
+export function hasAnyMetadata(node: MathNode): boolean {
+	return (
+		hasMetadata(node) ||
+		hasOperatorMetadata(node) ||
+		hasDelimiterMetadata(node) ||
+		hasNameMetadata(node) ||
+		hasRelationMetadata(node) ||
+		hasUnitMetadata(node)
+	);
+}
