@@ -37,6 +37,161 @@ import { parseOrThrow } from './units/parser';
 import { unflattenRelationChain } from './flatten';
 
 // =============================================================================
+// Options Types for Extended Metadata
+// =============================================================================
+
+/**
+ * Options for binary operations (add, subtract, multiply, divide)
+ */
+export interface BinaryOpOptions {
+	operatorMetadata?: NodeMetadata;
+	metadata?: NodeMetadata;
+}
+
+/**
+ * Options for unary operations (opposite, positive)
+ */
+export interface UnaryOpOptions {
+	operatorMetadata?: NodeMetadata;
+	metadata?: NodeMetadata;
+}
+
+/**
+ * Options for delimiter nodes
+ */
+export interface DelimiterOptions {
+	delimiterMetadata?: NodeMetadata;
+	leftDelimiterMetadata?: NodeMetadata;
+	rightDelimiterMetadata?: NodeMetadata;
+	metadata?: NodeMetadata;
+}
+
+/**
+ * Options for function nodes with extended metadata
+ */
+export interface FunctionMetadataOptions {
+	nameMetadata?: NodeMetadata;
+	delimiterMetadata?: NodeMetadata;
+	leftDelimiterMetadata?: NodeMetadata;
+	rightDelimiterMetadata?: NodeMetadata;
+	metadata?: NodeMetadata;
+}
+
+/**
+ * Options for relation nodes
+ */
+export interface RelationOptions {
+	relationMetadata?: NodeMetadata;
+	metadata?: NodeMetadata;
+}
+
+/**
+ * Options for unit nodes
+ */
+export interface UnitOptions {
+	unitMetadata?: NodeMetadata;
+	metadata?: NodeMetadata;
+}
+
+// =============================================================================
+// Options Normalization Helpers
+// =============================================================================
+
+/**
+ * Type guard to check if a value is a BinaryOpOptions object
+ */
+function isBinaryOpOptions(opt: unknown): opt is BinaryOpOptions {
+	return (
+		typeof opt === 'object' && opt !== null && ('operatorMetadata' in opt || 'metadata' in opt)
+	);
+}
+
+/**
+ * Normalizes binary operation options for backwards compatibility.
+ * Accepts either BinaryOpOptions or plain NodeMetadata.
+ */
+function normalizeBinaryOpOptions(options?: BinaryOpOptions | NodeMetadata): BinaryOpOptions {
+	if (!options) return {};
+	if (isBinaryOpOptions(options)) return options;
+	return { metadata: options };
+}
+
+/**
+ * Type guard to check if a value is a UnaryOpOptions object
+ */
+function isUnaryOpOptions(opt: unknown): opt is UnaryOpOptions {
+	return (
+		typeof opt === 'object' && opt !== null && ('operatorMetadata' in opt || 'metadata' in opt)
+	);
+}
+
+/**
+ * Normalizes unary operation options for backwards compatibility.
+ */
+function normalizeUnaryOpOptions(options?: UnaryOpOptions | NodeMetadata): UnaryOpOptions {
+	if (!options) return {};
+	if (isUnaryOpOptions(options)) return options;
+	return { metadata: options };
+}
+
+/**
+ * Type guard to check if a value is a DelimiterOptions object
+ */
+function isDelimiterOptions(opt: unknown): opt is DelimiterOptions {
+	return (
+		typeof opt === 'object' &&
+		opt !== null &&
+		('delimiterMetadata' in opt ||
+			'leftDelimiterMetadata' in opt ||
+			'rightDelimiterMetadata' in opt ||
+			'metadata' in opt)
+	);
+}
+
+/**
+ * Normalizes delimiter options for backwards compatibility.
+ */
+function normalizeDelimiterOptions(options?: DelimiterOptions | NodeMetadata): DelimiterOptions {
+	if (!options) return {};
+	if (isDelimiterOptions(options)) return options;
+	return { metadata: options };
+}
+
+/**
+ * Type guard to check if a value is a RelationOptions object
+ */
+function isRelationOptions(opt: unknown): opt is RelationOptions {
+	return (
+		typeof opt === 'object' && opt !== null && ('relationMetadata' in opt || 'metadata' in opt)
+	);
+}
+
+/**
+ * Normalizes relation options for backwards compatibility.
+ */
+function normalizeRelationOptions(options?: RelationOptions | NodeMetadata): RelationOptions {
+	if (!options) return {};
+	if (isRelationOptions(options)) return options;
+	return { metadata: options };
+}
+
+/**
+ * Type guard to check if a value is a UnitOptions object
+ */
+function isUnitOptions(opt: unknown): opt is UnitOptions {
+	return typeof opt === 'object' && opt !== null && ('unitMetadata' in opt || 'metadata' in opt);
+}
+
+/**
+ * Normalizes unit options for backwards compatibility.
+ */
+function normalizeUnitOptions(options?: UnitOptions | NodeMetadata): UnitOptions {
+	if (!options) return {};
+	if (isUnitOptions(options)) return options;
+	return { metadata: options };
+}
+
+// =============================================================================
 // Literal Factories
 // =============================================================================
 
@@ -100,14 +255,20 @@ export function symbol(sym: MathSymbol, metadata?: NodeMetadata): SymbolNode {
  * Creates an addition node: left + right
  * @param left - Left operand
  * @param right - Right operand
- * @param metadata - Optional rendering hints
+ * @param options - Optional BinaryOpOptions or NodeMetadata for rendering hints
  */
-export function add(left: MathNode, right: MathNode, metadata?: NodeMetadata): AdditionNode {
+export function add(
+	left: MathNode,
+	right: MathNode,
+	options?: BinaryOpOptions | NodeMetadata
+): AdditionNode {
+	const opts = normalizeBinaryOpOptions(options);
 	return {
 		type: 'addition',
 		left,
 		right,
-		...(metadata && { metadata })
+		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
 }
 
@@ -115,18 +276,20 @@ export function add(left: MathNode, right: MathNode, metadata?: NodeMetadata): A
  * Creates a subtraction node: left - right
  * @param left - Left operand
  * @param right - Right operand
- * @param metadata - Optional rendering hints
+ * @param options - Optional BinaryOpOptions or NodeMetadata for rendering hints
  */
 export function subtract(
 	left: MathNode,
 	right: MathNode,
-	metadata?: NodeMetadata
+	options?: BinaryOpOptions | NodeMetadata
 ): SubtractionNode {
+	const opts = normalizeBinaryOpOptions(options);
 	return {
 		type: 'subtraction',
 		left,
 		right,
-		...(metadata && { metadata })
+		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
 }
 
@@ -135,20 +298,22 @@ export function subtract(
  * @param left - Left operand
  * @param right - Right operand
  * @param displayStyle - How to render the multiplication ('implicit', 'dot', 'cross', 'star')
- * @param metadata - Optional rendering hints
+ * @param options - Optional BinaryOpOptions or NodeMetadata for rendering hints
  */
 export function multiply(
 	left: MathNode,
 	right: MathNode,
 	displayStyle: MultiplicationDisplayStyle,
-	metadata?: NodeMetadata
+	options?: BinaryOpOptions | NodeMetadata
 ): MultiplicationNode {
+	const opts = normalizeBinaryOpOptions(options);
 	return {
 		type: 'multiplication',
 		left,
 		right,
 		displayStyle,
-		...(metadata && { metadata })
+		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
 }
 
@@ -158,9 +323,9 @@ export function multiply(
 export function implicitMultiply(
 	left: MathNode,
 	right: MathNode,
-	metadata?: NodeMetadata
+	options?: BinaryOpOptions | NodeMetadata
 ): MultiplicationNode {
-	return multiply(left, right, 'implicit', metadata);
+	return multiply(left, right, 'implicit', options);
 }
 
 /**
@@ -168,20 +333,22 @@ export function implicitMultiply(
  * @param numerator - Numerator
  * @param denominator - Denominator
  * @param displayStyle - How to render the division ('fraction', 'inline', 'ratio')
- * @param metadata - Optional rendering hints
+ * @param options - Optional BinaryOpOptions or NodeMetadata for rendering hints
  */
 export function divide(
 	numerator: MathNode,
 	denominator: MathNode,
 	displayStyle: DivisionDisplayStyle,
-	metadata?: NodeMetadata
+	options?: BinaryOpOptions | NodeMetadata
 ): DivisionNode {
+	const opts = normalizeBinaryOpOptions(options);
 	return {
 		type: 'division',
 		numerator,
 		denominator,
 		displayStyle,
-		...(metadata && { metadata })
+		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
 }
 
@@ -191,9 +358,9 @@ export function divide(
 export function fraction(
 	numerator: MathNode,
 	denominator: MathNode,
-	metadata?: NodeMetadata
+	options?: BinaryOpOptions | NodeMetadata
 ): DivisionNode {
-	return divide(numerator, denominator, 'fraction', metadata);
+	return divide(numerator, denominator, 'fraction', options);
 }
 
 // =============================================================================
@@ -203,26 +370,30 @@ export function fraction(
 /**
  * Creates an opposite/negation node: -operand
  * @param operand - The value to negate
- * @param metadata - Optional rendering hints
+ * @param options - Optional UnaryOpOptions or NodeMetadata for rendering hints
  */
-export function opposite(operand: MathNode, metadata?: NodeMetadata): OppositeNode {
+export function opposite(operand: MathNode, options?: UnaryOpOptions | NodeMetadata): OppositeNode {
+	const opts = normalizeUnaryOpOptions(options);
 	return {
 		type: 'opposite',
 		operand,
-		...(metadata && { metadata })
+		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
 }
 
 /**
  * Creates a positive sign node: +operand
  * @param operand - The value with explicit positive sign
- * @param metadata - Optional rendering hints
+ * @param options - Optional UnaryOpOptions or NodeMetadata for rendering hints
  */
-export function positive(operand: MathNode, metadata?: NodeMetadata): PositiveNode {
+export function positive(operand: MathNode, options?: UnaryOpOptions | NodeMetadata): PositiveNode {
+	const opts = normalizeUnaryOpOptions(options);
 	return {
 		type: 'positive',
 		operand,
-		...(metadata && { metadata })
+		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
 }
 
@@ -231,17 +402,28 @@ export function positive(operand: MathNode, metadata?: NodeMetadata): PositiveNo
 // =============================================================================
 
 /**
+ * Combined options for function nodes
+ */
+export interface FunctionOptions {
+	power?: MathNode;
+	base?: MathNode;
+	nameMetadata?: NodeMetadata;
+	delimiterMetadata?: NodeMetadata;
+	leftDelimiterMetadata?: NodeMetadata;
+	rightDelimiterMetadata?: NodeMetadata;
+	metadata?: NodeMetadata;
+}
+
+/**
  * Creates a function application node
  * @param name - Function name (e.g., 'sin', 'log', 'f')
  * @param args - Function arguments
- * @param options - Optional power and base (for log_base or f^2)
- * @param metadata - Optional rendering hints
+ * @param options - Optional power, base, and metadata options
  */
 export function func(
 	name: string,
 	args: readonly MathNode[],
-	options?: { power?: MathNode; base?: MathNode },
-	metadata?: NodeMetadata
+	options?: FunctionOptions
 ): FunctionNode {
 	return {
 		type: 'function',
@@ -249,64 +431,101 @@ export function func(
 		args,
 		...(options?.power && { power: options.power }),
 		...(options?.base && { base: options.base }),
-		...(metadata && { metadata })
+		...(options?.nameMetadata && { nameMetadata: options.nameMetadata }),
+		...(options?.delimiterMetadata && { delimiterMetadata: options.delimiterMetadata }),
+		...(options?.leftDelimiterMetadata && { leftDelimiterMetadata: options.leftDelimiterMetadata }),
+		...(options?.rightDelimiterMetadata && {
+			rightDelimiterMetadata: options.rightDelimiterMetadata
+		}),
+		...(options?.metadata && { metadata: options.metadata })
 	} as const;
+}
+
+/**
+ * Type guard to check if a value is a FunctionOptions object
+ */
+function isFunctionOptions(opt: unknown): opt is FunctionOptions {
+	return (
+		typeof opt === 'object' &&
+		opt !== null &&
+		('metadata' in opt ||
+			'nameMetadata' in opt ||
+			'delimiterMetadata' in opt ||
+			'leftDelimiterMetadata' in opt ||
+			'rightDelimiterMetadata' in opt ||
+			'power' in opt ||
+			'base' in opt)
+	);
+}
+
+/**
+ * Normalizes function options for backwards compatibility.
+ */
+function normalizeFunctionOptions(options?: FunctionOptions | NodeMetadata): FunctionOptions {
+	if (!options) return {};
+	if (isFunctionOptions(options)) return options;
+	return { metadata: options };
 }
 
 /**
  * Convenience: Creates sin(arg)
  */
-export function sin(arg: MathNode, metadata?: NodeMetadata): FunctionNode {
-	return func('sin', [arg], undefined, metadata);
+export function sin(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('sin', [arg], normalizeFunctionOptions(options));
 }
 
 /**
  * Convenience: Creates cos(arg)
  */
-export function cos(arg: MathNode, metadata?: NodeMetadata): FunctionNode {
-	return func('cos', [arg], undefined, metadata);
+export function cos(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('cos', [arg], normalizeFunctionOptions(options));
 }
 
 /**
  * Convenience: Creates tan(arg)
  */
-export function tan(arg: MathNode, metadata?: NodeMetadata): FunctionNode {
-	return func('tan', [arg], undefined, metadata);
+export function tan(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('tan', [arg], normalizeFunctionOptions(options));
 }
 
 /**
  * Convenience: Creates ln(arg)
  */
-export function ln(arg: MathNode, metadata?: NodeMetadata): FunctionNode {
-	return func('ln', [arg], undefined, metadata);
+export function ln(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('ln', [arg], normalizeFunctionOptions(options));
 }
 
 /**
  * Convenience: Creates log(arg) or log_base(arg)
  */
-export function log(arg: MathNode, base?: MathNode, metadata?: NodeMetadata): FunctionNode {
-	return func('log', [arg], base ? { base } : undefined, metadata);
+export function log(
+	arg: MathNode,
+	base?: MathNode,
+	options?: FunctionOptions | NodeMetadata
+): FunctionNode {
+	const opts = normalizeFunctionOptions(options);
+	return func('log', [arg], base ? { ...opts, base } : opts);
 }
 
 /**
  * Convenience: Creates exp(arg)
  */
-export function exp(arg: MathNode, metadata?: NodeMetadata): FunctionNode {
-	return func('exp', [arg], undefined, metadata);
+export function exp(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('exp', [arg], normalizeFunctionOptions(options));
 }
 
 /**
  * Convenience: Creates sqrt(arg)
  */
-export function sqrt(arg: MathNode, metadata?: NodeMetadata): FunctionNode {
-	return func('sqrt', [arg], undefined, metadata);
+export function sqrt(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('sqrt', [arg], normalizeFunctionOptions(options));
 }
 
 /**
  * Convenience: Creates abs(arg)
  */
-export function abs(arg: MathNode, metadata?: NodeMetadata): FunctionNode {
-	return func('abs', [arg], undefined, metadata);
+export function abs(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
+	return func('abs', [arg], normalizeFunctionOptions(options));
 }
 
 // =============================================================================
@@ -318,28 +537,35 @@ export function abs(arg: MathNode, metadata?: NodeMetadata): FunctionNode {
  * @param type - Type of delimiter ('parentheses', 'absolute')
  * @param content - Content inside delimiters
  * @param semantic - Optional semantic meaning ('grouping', 'interval', 'set', etc.)
- * @param metadata - Optional rendering hints
+ * @param options - Optional DelimiterOptions or NodeMetadata for rendering hints
  */
 export function delimiter(
 	type: DelimiterType,
 	content: MathNode,
 	semantic?: DelimiterSemantic,
-	metadata?: NodeMetadata
+	options?: DelimiterOptions | NodeMetadata
 ): DelimiterNode {
+	const opts = normalizeDelimiterOptions(options);
 	return {
 		type: 'delimiter',
 		delimiters: type,
 		content,
 		...(semantic && { semantic }),
-		...(metadata && { metadata })
+		...(opts.delimiterMetadata && { delimiterMetadata: opts.delimiterMetadata }),
+		...(opts.leftDelimiterMetadata && { leftDelimiterMetadata: opts.leftDelimiterMetadata }),
+		...(opts.rightDelimiterMetadata && { rightDelimiterMetadata: opts.rightDelimiterMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
 }
 
 /**
  * Convenience: Creates parentheses (content)
  */
-export function parentheses(content: MathNode, metadata?: NodeMetadata): DelimiterNode {
-	return delimiter('parentheses', content, 'grouping', metadata);
+export function parentheses(
+	content: MathNode,
+	options?: DelimiterOptions | NodeMetadata
+): DelimiterNode {
+	return delimiter('parentheses', content, 'grouping', options);
 }
 
 /**
@@ -400,35 +626,45 @@ export function power(
  * @param type - Relation type ('=', '<', '>', etc.)
  * @param left - Left expression
  * @param right - Right expression
- * @param metadata - Optional rendering hints
+ * @param options - Optional RelationOptions or NodeMetadata for rendering hints
  */
 export function relation(
 	type: RelationType,
 	left: MathNode,
 	right: MathNode,
-	metadata?: NodeMetadata
+	options?: RelationOptions | NodeMetadata
 ): RelationNode {
+	const opts = normalizeRelationOptions(options);
 	return {
 		type: 'relation',
 		relation: type,
 		left,
 		right,
-		...(metadata && { metadata })
+		...(opts.relationMetadata && { relationMetadata: opts.relationMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
 }
 
 /**
  * Convenience: Creates equals relation (left = right)
  */
-export function equals(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('=', left, right, metadata);
+export function equals(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('=', left, right, options);
 }
 
 /**
  * Convenience: Creates less than relation (left < right)
  */
-export function lessThan(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('<', left, right, metadata);
+export function lessThan(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('<', left, right, options);
 }
 
 /**
@@ -437,9 +673,9 @@ export function lessThan(left: MathNode, right: MathNode, metadata?: NodeMetadat
 export function greaterThan(
 	left: MathNode,
 	right: MathNode,
-	metadata?: NodeMetadata
+	options?: RelationOptions | NodeMetadata
 ): RelationNode {
-	return relation('>', left, right, metadata);
+	return relation('>', left, right, options);
 }
 
 /**
@@ -448,9 +684,9 @@ export function greaterThan(
 export function lessThanOrEqual(
 	left: MathNode,
 	right: MathNode,
-	metadata?: NodeMetadata
+	options?: RelationOptions | NodeMetadata
 ): RelationNode {
-	return relation('<=', left, right, metadata);
+	return relation('<=', left, right, options);
 }
 
 /**
@@ -459,37 +695,53 @@ export function lessThanOrEqual(
 export function greaterThanOrEqual(
 	left: MathNode,
 	right: MathNode,
-	metadata?: NodeMetadata
+	options?: RelationOptions | NodeMetadata
 ): RelationNode {
-	return relation('>=', left, right, metadata);
+	return relation('>=', left, right, options);
 }
 
 /**
  * Convenience: Creates not equal relation (left != right)
  */
-export function notEquals(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('!=', left, right, metadata);
+export function notEquals(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('!=', left, right, options);
 }
 
 /**
  * Convenience: Creates approximately equal relation (left ≈ right)
  */
-export function approx(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('≈', left, right, metadata);
+export function approx(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('≈', left, right, options);
 }
 
 /**
  * Convenience: Creates congruent relation (left ≡ right)
  */
-export function congruent(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('≡', left, right, metadata);
+export function congruent(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('≡', left, right, options);
 }
 
 /**
  * Convenience: Creates element of relation (left ∈ right)
  */
-export function elementOf(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('∈', left, right, metadata);
+export function elementOf(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('∈', left, right, options);
 }
 
 /**
@@ -498,16 +750,20 @@ export function elementOf(left: MathNode, right: MathNode, metadata?: NodeMetada
 export function notElementOf(
 	left: MathNode,
 	right: MathNode,
-	metadata?: NodeMetadata
+	options?: RelationOptions | NodeMetadata
 ): RelationNode {
-	return relation('∉', left, right, metadata);
+	return relation('∉', left, right, options);
 }
 
 /**
  * Convenience: Creates subset relation (left ⊂ right)
  */
-export function subset(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('⊂', left, right, metadata);
+export function subset(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('⊂', left, right, options);
 }
 
 /**
@@ -516,16 +772,20 @@ export function subset(left: MathNode, right: MathNode, metadata?: NodeMetadata)
 export function subsetOrEqual(
 	left: MathNode,
 	right: MathNode,
-	metadata?: NodeMetadata
+	options?: RelationOptions | NodeMetadata
 ): RelationNode {
-	return relation('⊆', left, right, metadata);
+	return relation('⊆', left, right, options);
 }
 
 /**
  * Convenience: Creates superset relation (left ⊃ right)
  */
-export function superset(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('⊃', left, right, metadata);
+export function superset(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('⊃', left, right, options);
 }
 
 /**
@@ -534,23 +794,31 @@ export function superset(left: MathNode, right: MathNode, metadata?: NodeMetadat
 export function supersetOrEqual(
 	left: MathNode,
 	right: MathNode,
-	metadata?: NodeMetadata
+	options?: RelationOptions | NodeMetadata
 ): RelationNode {
-	return relation('⊇', left, right, metadata);
+	return relation('⊇', left, right, options);
 }
 
 /**
  * Convenience: Creates implies relation (left ⟹ right)
  */
-export function implies(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('⟹', left, right, metadata);
+export function implies(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('⟹', left, right, options);
 }
 
 /**
  * Convenience: Creates if and only if relation (left ⟺ right)
  */
-export function iff(left: MathNode, right: MathNode, metadata?: NodeMetadata): RelationNode {
-	return relation('⟺', left, right, metadata);
+export function iff(
+	left: MathNode,
+	right: MathNode,
+	options?: RelationOptions | NodeMetadata
+): RelationNode {
+	return relation('⟺', left, right, options);
 }
 
 // =============================================================================
@@ -563,7 +831,7 @@ export function iff(left: MathNode, right: MathNode, metadata?: NodeMetadata): R
  *
  * @param operands - Array of operand nodes (at least 2)
  * @param relations - Array of relation types (length = operands.length - 1)
- * @param metadata - Optional rendering hints (applied to outermost relation)
+ * @param options - Optional RelationOptions or NodeMetadata (applied to outermost relation)
  * @throws Error if operands.length < 2 or relations.length !== operands.length - 1
  *
  * @example
@@ -576,7 +844,7 @@ export function iff(left: MathNode, right: MathNode, metadata?: NodeMetadata): R
 export function relationChain(
 	operands: readonly MathNode[],
 	relations: readonly RelationType[],
-	metadata?: NodeMetadata
+	options?: RelationOptions | NodeMetadata
 ): RelationNode {
 	if (operands.length < 2) {
 		throw new Error('relationChain requires at least 2 operands');
@@ -592,9 +860,14 @@ export function relationChain(
 		throw new Error('relationChain: failed to build relation chain');
 	}
 
-	// Apply metadata to outermost node if provided
-	if (metadata) {
-		return { ...result, metadata } as const;
+	// Apply options to outermost node if provided
+	const opts = normalizeRelationOptions(options);
+	if (opts.relationMetadata || opts.metadata) {
+		return {
+			...result,
+			...(opts.relationMetadata && { relationMetadata: opts.relationMetadata }),
+			...(opts.metadata && { metadata: opts.metadata })
+		} as const;
 	}
 	return result;
 }
@@ -691,7 +964,7 @@ export function iffChain(...operands: MathNode[]): RelationNode {
  * Creates a unit node that wraps an expression with a physical unit.
  * @param expression - The numeric or algebraic expression
  * @param unitValue - The physical unit from Unit AST
- * @param metadata - Optional rendering hints
+ * @param options - Optional UnitOptions or NodeMetadata for rendering hints
  *
  * @example
  * // 5 meters
@@ -700,12 +973,18 @@ export function iffChain(...operands: MathNode[]): RelationNode {
  * // (3 + 4) kilometers
  * withUnit(add(number('3'), number('4')), parse('km')!)
  */
-export function withUnit(expression: MathNode, unitValue: Unit, metadata?: NodeMetadata): UnitNode {
+export function withUnit(
+	expression: MathNode,
+	unitValue: Unit,
+	options?: UnitOptions | NodeMetadata
+): UnitNode {
+	const opts = normalizeUnitOptions(options);
 	return {
 		type: 'unit',
 		expression,
 		unit: unitValue,
-		...(metadata && { metadata })
+		...(opts.unitMetadata && { unitMetadata: opts.unitMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
 }
 
@@ -713,30 +992,38 @@ export function withUnit(expression: MathNode, unitValue: Unit, metadata?: NodeM
  * Convenience: Creates a quantity (number with unit) from value and unit strings.
  * @param value - Numeric value as string (to preserve exact formatting)
  * @param unitStr - Unit string to parse (e.g., 'm', 'km/h', 'm.s^-2')
- * @param metadata - Optional rendering hints
+ * @param options - Optional UnitOptions or NodeMetadata for rendering hints
  * @throws Error if unitStr cannot be parsed
  *
  * @example
  * quantity('5', 'm')      // 5 meters
  * quantity('100', 'km/h') // 100 km/h
  */
-export function quantity(value: string, unitStr: string, metadata?: NodeMetadata): UnitNode {
-	return withUnit(number(value), parseOrThrow(unitStr), metadata);
+export function quantity(
+	value: string,
+	unitStr: string,
+	options?: UnitOptions | NodeMetadata
+): UnitNode {
+	return withUnit(number(value), parseOrThrow(unitStr), options);
 }
 
 /**
  * Convenience: Creates a variable with a unit.
  * @param name - Variable name (single letter or multi-character identifier)
  * @param unitStr - Unit string to parse (e.g., 'm/s', 'kg')
- * @param metadata - Optional rendering hints
+ * @param options - Optional UnitOptions or NodeMetadata for rendering hints
  * @throws Error if unitStr cannot be parsed
  *
  * @example
  * quantityVar('v', 'm/s')   // velocity v in m/s
  * quantityVar('m', 'kg')    // mass m in kg
  */
-export function quantityVar(name: string, unitStr: string, metadata?: NodeMetadata): UnitNode {
-	return withUnit(variable(name), parseOrThrow(unitStr), metadata);
+export function quantityVar(
+	name: string,
+	unitStr: string,
+	options?: UnitOptions | NodeMetadata
+): UnitNode {
+	return withUnit(variable(name), parseOrThrow(unitStr), options);
 }
 
 // =============================================================================

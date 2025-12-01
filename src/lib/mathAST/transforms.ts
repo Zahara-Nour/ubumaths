@@ -131,11 +131,17 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 
 		// Binary operations
 		case 'addition':
-			transformedNode = add(mapNode(node.left, fn), mapNode(node.right, fn), node.metadata);
+			transformedNode = add(mapNode(node.left, fn), mapNode(node.right, fn), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
 			break;
 
 		case 'subtraction':
-			transformedNode = subtract(mapNode(node.left, fn), mapNode(node.right, fn), node.metadata);
+			transformedNode = subtract(mapNode(node.left, fn), mapNode(node.right, fn), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
 			break;
 
 		case 'multiplication':
@@ -143,7 +149,10 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				mapNode(node.left, fn),
 				mapNode(node.right, fn),
 				node.displayStyle,
-				node.metadata
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
 			);
 			break;
 
@@ -152,17 +161,26 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				mapNode(node.numerator, fn),
 				mapNode(node.denominator, fn),
 				node.displayStyle,
-				node.metadata
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
 			);
 			break;
 
 		// Unary operations
 		case 'opposite':
-			transformedNode = opposite(mapNode(node.operand, fn), node.metadata);
+			transformedNode = opposite(mapNode(node.operand, fn), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
 			break;
 
 		case 'positive':
-			transformedNode = positive(mapNode(node.operand, fn), node.metadata);
+			transformedNode = positive(mapNode(node.operand, fn), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
 			break;
 
 		// Function
@@ -172,20 +190,26 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				node.args.map((arg) => mapNode(arg, fn)),
 				{
 					...(node.power && { power: mapNode(node.power, fn) }),
-					...(node.base && { base: mapNode(node.base, fn) })
-				},
-				node.metadata
+					...(node.base && { base: mapNode(node.base, fn) }),
+					...(node.nameMetadata && { nameMetadata: node.nameMetadata }),
+					...(node.delimiterMetadata && { delimiterMetadata: node.delimiterMetadata }),
+					...(node.leftDelimiterMetadata && { leftDelimiterMetadata: node.leftDelimiterMetadata }),
+					...(node.rightDelimiterMetadata && {
+						rightDelimiterMetadata: node.rightDelimiterMetadata
+					}),
+					...(node.metadata && { metadata: node.metadata })
+				}
 			);
 			break;
 
 		// Structural
 		case 'delimiter':
-			transformedNode = delimiter(
-				node.delimiters,
-				mapNode(node.content, fn),
-				node.semantic,
-				node.metadata
-			);
+			transformedNode = delimiter(node.delimiters, mapNode(node.content, fn), node.semantic, {
+				delimiterMetadata: node.delimiterMetadata,
+				leftDelimiterMetadata: node.leftDelimiterMetadata,
+				rightDelimiterMetadata: node.rightDelimiterMetadata,
+				metadata: node.metadata
+			});
 			break;
 
 		case 'subscript':
@@ -206,17 +230,18 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 
 		// Relation
 		case 'relation':
-			transformedNode = relation(
-				node.relation,
-				mapNode(node.left, fn),
-				mapNode(node.right, fn),
-				node.metadata
-			);
+			transformedNode = relation(node.relation, mapNode(node.left, fn), mapNode(node.right, fn), {
+				relationMetadata: node.relationMetadata,
+				metadata: node.metadata
+			});
 			break;
 
 		// Unit
 		case 'unit':
-			transformedNode = withUnit(mapNode(node.expression, fn), node.unit, node.metadata);
+			transformedNode = withUnit(mapNode(node.expression, fn), node.unit, {
+				unitMetadata: node.unitMetadata,
+				metadata: node.metadata
+			});
 			break;
 	}
 
@@ -248,14 +273,20 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 			return add(
 				mapNodeTopDown(transformedParent.left, fn),
 				mapNodeTopDown(transformedParent.right, fn),
-				transformedParent.metadata
+				{
+					operatorMetadata: transformedParent.operatorMetadata,
+					metadata: transformedParent.metadata
+				}
 			);
 
 		case 'subtraction':
 			return subtract(
 				mapNodeTopDown(transformedParent.left, fn),
 				mapNodeTopDown(transformedParent.right, fn),
-				transformedParent.metadata
+				{
+					operatorMetadata: transformedParent.operatorMetadata,
+					metadata: transformedParent.metadata
+				}
 			);
 
 		case 'multiplication':
@@ -263,7 +294,10 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				mapNodeTopDown(transformedParent.left, fn),
 				mapNodeTopDown(transformedParent.right, fn),
 				transformedParent.displayStyle,
-				transformedParent.metadata
+				{
+					operatorMetadata: transformedParent.operatorMetadata,
+					metadata: transformedParent.metadata
+				}
 			);
 
 		case 'division':
@@ -271,15 +305,24 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				mapNodeTopDown(transformedParent.numerator, fn),
 				mapNodeTopDown(transformedParent.denominator, fn),
 				transformedParent.displayStyle,
-				transformedParent.metadata
+				{
+					operatorMetadata: transformedParent.operatorMetadata,
+					metadata: transformedParent.metadata
+				}
 			);
 
 		// Unary operations
 		case 'opposite':
-			return opposite(mapNodeTopDown(transformedParent.operand, fn), transformedParent.metadata);
+			return opposite(mapNodeTopDown(transformedParent.operand, fn), {
+				operatorMetadata: transformedParent.operatorMetadata,
+				metadata: transformedParent.metadata
+			});
 
 		case 'positive':
-			return positive(mapNodeTopDown(transformedParent.operand, fn), transformedParent.metadata);
+			return positive(mapNodeTopDown(transformedParent.operand, fn), {
+				operatorMetadata: transformedParent.operatorMetadata,
+				metadata: transformedParent.metadata
+			});
 
 		// Function
 		case 'function':
@@ -288,9 +331,19 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				transformedParent.args.map((arg) => mapNodeTopDown(arg, fn)),
 				{
 					...(transformedParent.power && { power: mapNodeTopDown(transformedParent.power, fn) }),
-					...(transformedParent.base && { base: mapNodeTopDown(transformedParent.base, fn) })
-				},
-				transformedParent.metadata
+					...(transformedParent.base && { base: mapNodeTopDown(transformedParent.base, fn) }),
+					...(transformedParent.nameMetadata && { nameMetadata: transformedParent.nameMetadata }),
+					...(transformedParent.delimiterMetadata && {
+						delimiterMetadata: transformedParent.delimiterMetadata
+					}),
+					...(transformedParent.leftDelimiterMetadata && {
+						leftDelimiterMetadata: transformedParent.leftDelimiterMetadata
+					}),
+					...(transformedParent.rightDelimiterMetadata && {
+						rightDelimiterMetadata: transformedParent.rightDelimiterMetadata
+					}),
+					...(transformedParent.metadata && { metadata: transformedParent.metadata })
+				}
 			);
 
 		// Structural
@@ -299,7 +352,12 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				transformedParent.delimiters,
 				mapNodeTopDown(transformedParent.content, fn),
 				transformedParent.semantic,
-				transformedParent.metadata
+				{
+					delimiterMetadata: transformedParent.delimiterMetadata,
+					leftDelimiterMetadata: transformedParent.leftDelimiterMetadata,
+					rightDelimiterMetadata: transformedParent.rightDelimiterMetadata,
+					metadata: transformedParent.metadata
+				}
 			);
 
 		case 'subscript':
@@ -322,16 +380,18 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				transformedParent.relation,
 				mapNodeTopDown(transformedParent.left, fn),
 				mapNodeTopDown(transformedParent.right, fn),
-				transformedParent.metadata
+				{
+					relationMetadata: transformedParent.relationMetadata,
+					metadata: transformedParent.metadata
+				}
 			);
 
 		// Unit
 		case 'unit':
-			return withUnit(
-				mapNodeTopDown(transformedParent.expression, fn),
-				transformedParent.unit,
-				transformedParent.metadata
-			);
+			return withUnit(mapNodeTopDown(transformedParent.expression, fn), transformedParent.unit, {
+				unitMetadata: transformedParent.unitMetadata,
+				metadata: transformedParent.metadata
+			});
 	}
 }
 
@@ -433,33 +493,41 @@ export function cloneNode<T extends MathNode>(node: T): T {
 
 		// Binary operations
 		case 'addition':
-			return add(cloneNode(node.left), cloneNode(node.right), node.metadata) as T;
+			return add(cloneNode(node.left), cloneNode(node.right), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			}) as T;
 
 		case 'subtraction':
-			return subtract(cloneNode(node.left), cloneNode(node.right), node.metadata) as T;
+			return subtract(cloneNode(node.left), cloneNode(node.right), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			}) as T;
 
 		case 'multiplication':
-			return multiply(
-				cloneNode(node.left),
-				cloneNode(node.right),
-				node.displayStyle,
-				node.metadata
-			) as T;
+			return multiply(cloneNode(node.left), cloneNode(node.right), node.displayStyle, {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			}) as T;
 
 		case 'division':
-			return divide(
-				cloneNode(node.numerator),
-				cloneNode(node.denominator),
-				node.displayStyle,
-				node.metadata
-			) as T;
+			return divide(cloneNode(node.numerator), cloneNode(node.denominator), node.displayStyle, {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			}) as T;
 
 		// Unary operations
 		case 'opposite':
-			return opposite(cloneNode(node.operand), node.metadata) as T;
+			return opposite(cloneNode(node.operand), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			}) as T;
 
 		case 'positive':
-			return positive(cloneNode(node.operand), node.metadata) as T;
+			return positive(cloneNode(node.operand), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			}) as T;
 
 		// Function
 		case 'function':
@@ -468,14 +536,25 @@ export function cloneNode<T extends MathNode>(node: T): T {
 				node.args.map((arg) => cloneNode(arg)),
 				{
 					...(node.power && { power: cloneNode(node.power) }),
-					...(node.base && { base: cloneNode(node.base) })
-				},
-				node.metadata
+					...(node.base && { base: cloneNode(node.base) }),
+					...(node.nameMetadata && { nameMetadata: node.nameMetadata }),
+					...(node.delimiterMetadata && { delimiterMetadata: node.delimiterMetadata }),
+					...(node.leftDelimiterMetadata && { leftDelimiterMetadata: node.leftDelimiterMetadata }),
+					...(node.rightDelimiterMetadata && {
+						rightDelimiterMetadata: node.rightDelimiterMetadata
+					}),
+					...(node.metadata && { metadata: node.metadata })
+				}
 			) as T;
 
 		// Structural
 		case 'delimiter':
-			return delimiter(node.delimiters, cloneNode(node.content), node.semantic, node.metadata) as T;
+			return delimiter(node.delimiters, cloneNode(node.content), node.semantic, {
+				delimiterMetadata: node.delimiterMetadata,
+				leftDelimiterMetadata: node.leftDelimiterMetadata,
+				rightDelimiterMetadata: node.rightDelimiterMetadata,
+				metadata: node.metadata
+			}) as T;
 
 		case 'subscript':
 			return subscript(cloneNode(node.base), cloneNode(node.subscript), node.metadata) as T;
@@ -485,16 +564,17 @@ export function cloneNode<T extends MathNode>(node: T): T {
 
 		// Relation
 		case 'relation':
-			return relation(
-				node.relation,
-				cloneNode(node.left),
-				cloneNode(node.right),
-				node.metadata
-			) as T;
+			return relation(node.relation, cloneNode(node.left), cloneNode(node.right), {
+				relationMetadata: node.relationMetadata,
+				metadata: node.metadata
+			}) as T;
 
 		// Unit
 		case 'unit':
-			return withUnit(cloneNode(node.expression), node.unit, node.metadata) as T;
+			return withUnit(cloneNode(node.expression), node.unit, {
+				unitMetadata: node.unitMetadata,
+				metadata: node.metadata
+			}) as T;
 	}
 }
 

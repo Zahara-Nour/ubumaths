@@ -214,6 +214,7 @@ export interface AdditionNode extends BaseNode {
 	readonly type: 'addition';
 	readonly left: MathNode;
 	readonly right: MathNode;
+	readonly operatorMetadata?: NodeMetadata;
 }
 
 /**
@@ -223,6 +224,7 @@ export interface SubtractionNode extends BaseNode {
 	readonly type: 'subtraction';
 	readonly left: MathNode;
 	readonly right: MathNode;
+	readonly operatorMetadata?: NodeMetadata;
 }
 
 /**
@@ -239,6 +241,7 @@ export interface MultiplicationNode extends BaseNode {
 	readonly left: MathNode;
 	readonly right: MathNode;
 	readonly displayStyle: MultiplicationDisplayStyle;
+	readonly operatorMetadata?: NodeMetadata;
 }
 
 /**
@@ -255,6 +258,7 @@ export interface DivisionNode extends BaseNode {
 	readonly numerator: MathNode;
 	readonly denominator: MathNode;
 	readonly displayStyle: DivisionDisplayStyle;
+	readonly operatorMetadata?: NodeMetadata;
 }
 
 /**
@@ -276,6 +280,7 @@ export type BinaryOperationNode =
 export interface OppositeNode extends BaseNode {
 	readonly type: 'opposite';
 	readonly operand: MathNode;
+	readonly operatorMetadata?: NodeMetadata;
 }
 
 /**
@@ -284,6 +289,7 @@ export interface OppositeNode extends BaseNode {
 export interface PositiveNode extends BaseNode {
 	readonly type: 'positive';
 	readonly operand: MathNode;
+	readonly operatorMetadata?: NodeMetadata;
 }
 
 /**
@@ -305,6 +311,10 @@ export interface FunctionNode extends BaseNode {
 	readonly args: readonly MathNode[];
 	readonly power?: MathNode;
 	readonly base?: MathNode;
+	readonly nameMetadata?: NodeMetadata;
+	readonly delimiterMetadata?: NodeMetadata;
+	readonly leftDelimiterMetadata?: NodeMetadata;
+	readonly rightDelimiterMetadata?: NodeMetadata;
 }
 
 // =============================================================================
@@ -330,6 +340,9 @@ export interface DelimiterNode extends BaseNode {
 	readonly delimiters: DelimiterType;
 	readonly content: MathNode;
 	readonly semantic?: DelimiterSemantic;
+	readonly delimiterMetadata?: NodeMetadata;
+	readonly leftDelimiterMetadata?: NodeMetadata;
+	readonly rightDelimiterMetadata?: NodeMetadata;
 }
 
 /**
@@ -394,6 +407,7 @@ export interface RelationNode extends BaseNode {
 	readonly relation: RelationType;
 	readonly left: MathNode;
 	readonly right: MathNode;
+	readonly relationMetadata?: NodeMetadata;
 }
 
 // =============================================================================
@@ -413,6 +427,7 @@ export interface UnitNode extends BaseNode {
 	readonly type: 'unit';
 	readonly expression: MathNode;
 	readonly unit: Unit;
+	readonly unitMetadata?: NodeMetadata;
 }
 
 // =============================================================================
