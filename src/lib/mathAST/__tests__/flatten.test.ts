@@ -11,7 +11,11 @@ import {
 	multiply,
 	opposite,
 	positive,
-	parentheses
+	parentheses,
+	equals,
+	relationChain,
+	equalsChain,
+	lessThanChain
 } from '../factory';
 import {
 	flattenSumShallow,
@@ -20,6 +24,8 @@ import {
 	flattenProductDeep,
 	unflattenSum,
 	unflattenProduct,
+	flattenRelationChain,
+	unflattenRelationChain,
 	type FlatSum,
 	type FlatProduct
 } from '../flatten';
@@ -651,6 +657,156 @@ describe('flattenProductDeep', () => {
 		if (prodContent && 'factors' in prodContent) {
 			expect(prodContent.factors).toEqual([c, d]);
 		}
+	});
+});
+
+// =============================================================================
+// Relation Chain Flattening
+// =============================================================================
+
+describe('Relation Chain Flattening', () => {
+	describe('flattenRelationChain', () => {
+		it('should flatten a simple binary relation', () => {
+			const node = equals(variable('a'), variable('b'));
+			const flat = flattenRelationChain(node);
+			expect(flat.operands).toHaveLength(2);
+			expect(flat.relations).toHaveLength(1);
+			expect(flat.relations[0]).toBe('=');
+		});
+
+		it('should flatten a chain of 3 operands', () => {
+			// a < b < c = relation('<', relation('<', a, b), c)
+			const chain = lessThanChain(variable('a'), variable('b'), variable('c'));
+			const flat = flattenRelationChain(chain);
+			expect(flat.operands).toHaveLength(3);
+			expect(flat.relations).toEqual(['<', '<']);
+		});
+
+		it('should flatten a chain of 4 operands', () => {
+			const chain = equalsChain(variable('a'), variable('b'), variable('c'), variable('d'));
+			const flat = flattenRelationChain(chain);
+			expect(flat.operands).toHaveLength(4);
+			expect(flat.relations).toEqual(['=', '=', '=']);
+		});
+
+		it('should flatten a mixed chain', () => {
+			// a <= b < c
+			const chain = relationChain([variable('a'), variable('b'), variable('c')], ['<=', '<']);
+			const flat = flattenRelationChain(chain);
+			expect(flat.operands).toHaveLength(3);
+			expect(flat.relations).toEqual(['<=', '<']);
+		});
+
+		it('should return single operand for non-relation node', () => {
+			const node = variable('x');
+			const flat = flattenRelationChain(node);
+			expect(flat.operands).toHaveLength(1);
+			expect(flat.relations).toHaveLength(0);
+		});
+
+		it('should flatten a chain of 5 operands', () => {
+			const chain = lessThanChain(
+				variable('a'),
+				variable('b'),
+				variable('c'),
+				variable('d'),
+				variable('e')
+			);
+			const flat = flattenRelationChain(chain);
+			expect(flat.operands).toHaveLength(5);
+			expect(flat.relations).toEqual(['<', '<', '<', '<']);
+		});
+
+		it('should preserve operand order', () => {
+			const a = variable('a');
+			const b = variable('b');
+			const c = variable('c');
+			const chain = equalsChain(a, b, c);
+			const flat = flattenRelationChain(chain);
+			expect(flat.operands[0]).toBe(a);
+			expect(flat.operands[1]).toBe(b);
+			expect(flat.operands[2]).toBe(c);
+		});
+	});
+
+	describe('unflattenRelationChain', () => {
+		it('should build a binary relation', () => {
+			const result = unflattenRelationChain([variable('a'), variable('b')], ['=']);
+			expect(result).not.toBeNull();
+			expect(result!.type).toBe('relation');
+			expect(result!.relation).toBe('=');
+		});
+
+		it('should build a chain with left associativity', () => {
+			// [a, b, c] with ['<', '<'] should produce ((a < b) < c)
+			const result = unflattenRelationChain(
+				[variable('a'), variable('b'), variable('c')],
+				['<', '<']
+			);
+			expect(result).not.toBeNull();
+			expect(result!.relation).toBe('<');
+			expect(result!.right.type).toBe('variable');
+			expect(result!.left.type).toBe('relation');
+		});
+
+		it('should return null for less than 2 operands', () => {
+			expect(unflattenRelationChain([variable('a')], [])).toBeNull();
+			expect(unflattenRelationChain([], [])).toBeNull();
+		});
+
+		it('should return null for mismatched lengths', () => {
+			expect(
+				unflattenRelationChain(
+					[variable('a'), variable('b')],
+					['=', '='] // too many relations
+				)
+			).toBeNull();
+		});
+
+		it('should round-trip through flatten/unflatten', () => {
+			const original = lessThanChain(variable('a'), variable('b'), variable('c'));
+			const flat = flattenRelationChain(original);
+			const reconstructed = unflattenRelationChain(flat.operands, flat.relations);
+
+			// Check structure matches
+			expect(reconstructed).not.toBeNull();
+			expect(reconstructed!.relation).toBe(original.relation);
+		});
+
+		it('should build mixed relation chain correctly', () => {
+			// a <= b < c >= d
+			const result = unflattenRelationChain(
+				[variable('a'), variable('b'), variable('c'), variable('d')],
+				['<=', '<', '>=']
+			);
+			expect(result).not.toBeNull();
+			expect(result!.relation).toBe('>=');
+
+			// Check nested structure
+			const middle = result!.left;
+			expect(middle.type).toBe('relation');
+			if (middle.type === 'relation') {
+				expect(middle.relation).toBe('<');
+			}
+		});
+
+		it('should handle implication chain', () => {
+			const result = unflattenRelationChain(
+				[variable('P'), variable('Q'), variable('R')],
+				['⟹', '⟹']
+			);
+			expect(result).not.toBeNull();
+			expect(result!.relation).toBe('⟹');
+		});
+
+		it('should handle equivalence chain', () => {
+			const result = unflattenRelationChain(
+				[variable('P'), variable('Q'), variable('R')],
+				['⟺', '⟺']
+			);
+			expect(result).not.toBeNull();
+			expect(result!.relation).toBe('⟺');
+		});
 	});
 });
 

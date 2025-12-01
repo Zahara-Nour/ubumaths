@@ -692,6 +692,78 @@ flipSign(sign: Sign): Sign  // '+' ↔ '-'
 
 ---
 
+## Relation Chains
+
+### Overview
+
+Relation chains allow expressing multiple consecutive relations like `a < b < c` or `a = b = c = d`. They are implemented as **nested binary relations with left associativity**, reusing the existing `RelationNode` structure.
+
+```typescript
+// a < b < c is represented as:
+relation('<', relation('<', a, b), c); // ((a < b) < c)
+```
+
+### Creating Chains
+
+#### Explicit Factory (for mixed relations)
+
+```typescript
+// a <= b < c (mixed)
+const mixed = relationChain([a, b, c], ['<=', '<']);
+```
+
+#### Convenience Factories (homogeneous chains)
+
+```typescript
+// a = b = c = d
+const eq = equalsChain(a, b, c, d);
+
+// 1 < x < 10
+const comp = lessThanChain(number('1'), variable('x'), number('10'));
+
+// P ⟹ Q ⟹ R
+const impl = impliesChain(P, Q, R);
+
+// P ⟺ Q ⟺ R
+const equiv = iffChain(P, Q, R);
+```
+
+### Flatten/Unflatten
+
+```typescript
+// Flatten: extract operands and relations
+const flat = flattenRelationChain(chain);
+// { operands: [a, b, c], relations: ['<', '<'] }
+
+// Unflatten: rebuild nested structure
+const rebuilt = unflattenRelationChain([a, b, c], ['<', '<']);
+// relation('<', relation('<', a, b), c)
+```
+
+### Type Guards
+
+```typescript
+isRelationChain(node); // true if nested (3+ operands)
+isComparisonChain(node); // all relations are <, >, <=, >=
+isEqualityChain(node); // all relations are =
+isImplicationChain(node); // all relations are ⟹
+isEquivalenceChain(node); // all relations are ⟺
+
+getRelationChainLength(node); // number of operands (2 for binary, 3+ for chains)
+```
+
+### LaTeX Output
+
+| Expression                           | LaTeX                     |
+| ------------------------------------ | ------------------------- |
+| `lessThanChain(a, b, c)`             | `a < b < c`               |
+| `equalsChain(a, b, c, d)`            | `a = b = c = d`           |
+| `relationChain([a,b,c], ['<=','<'])` | `a \leq b < c`            |
+| `impliesChain(P, Q, R)`              | `P \implies Q \implies R` |
+| `iffChain(P, Q, R)`                  | `P \iff Q \iff R`         |
+
+---
+
 ## Usage Patterns
 
 ### Creating Expressions
@@ -819,27 +891,28 @@ function evaluate(node: MathNode, vars: Map<string, number>): number {
 | Module             | Exports | Description       |
 | ------------------ | ------- | ----------------- |
 | types.ts           | 27      | Type definitions  |
-| factory.ts         | 47      | Node creation     |
+| factory.ts         | 55      | Node creation     |
 | transforms.ts      | 10      | Tree manipulation |
-| guards.ts          | 23      | Type checking     |
-| flatten.ts         | 13      | Flatten/unflatten |
+| guards.ts          | 29      | Type checking     |
+| flatten.ts         | 16      | Flatten/unflatten |
 | latex-generator.ts | 3       | LaTeX output      |
-| **index.ts**       | **123** | **Public API**    |
+| **index.ts**       | **140** | **Public API**    |
 
 ### Quick Reference
 
-| Category       | Functions                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Literals**   | `number`, `variable`, `greek`, `symbol`                                                                                                                                                                                                                                                                                                                                                                                                       |
-| **Binary Ops** | `add`, `subtract`, `multiply`, `implicitMultiply`, `divide`, `fraction`                                                                                                                                                                                                                                                                                                                                                                       |
-| **Unary Ops**  | `opposite`, `positive`                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| **Functions**  | `func`, `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt`, `abs`                                                                                                                                                                                                                                                                                                                                                                                |
-| **Structural** | `delimiter`, `parentheses`, `brackets`, `braces`, `subscript`, `superscript`, `power`                                                                                                                                                                                                                                                                                                                                                         |
-| **Relations**  | `relation`, `equals`, `lessThan`, `greaterThan`, `lessThanOrEqual`, `greaterThanOrEqual`, `notEquals`, `approx`, `congruent`, `elementOf`, `notElementOf`, `subset`, `subsetOrEqual`, `superset`, `supersetOrEqual`, `implies`, `iff`                                                                                                                                                                                                         |
-| **Transforms** | `withMetadata`, `getChildren`, `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `cloneNode`, `countNodes`, `getDepth`                                                                                                                                                                                                                                                                                                    |
-| **Guards**     | `isNumber`, `isVariable`, `isGreek`, `isSymbol`, `isAddition`, `isSubtraction`, `isMultiplication`, `isDivision`, `isOpposite`, `isPositive`, `isFunction`, `isDelimiter`, `isSubscript`, `isSuperscript`, `isRelation`, `isLiteralNode`, `isBinaryOperationNode`, `isUnaryOperationNode`, `isStructuralNode`, `hasChildren`, `isLeaf`, `hasMetadata`, `isFraction`, `isImplicitMultiplication`, `isComparison`, `isEquality`, `isInequality` |
-| **Flatten**    | `flipSign`, `flattenSumShallow`, `flattenProductShallow`, `flattenSumDeep`, `flattenProductDeep`, `unflattenSum`, `unflattenProduct`                                                                                                                                                                                                                                                                                                          |
-| **LaTeX**      | `toLatex`, `LatexGenerator`, `LatexGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                          |
+| Category            | Functions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Literals**        | `number`, `variable`, `greek`, `symbol`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Binary Ops**      | `add`, `subtract`, `multiply`, `implicitMultiply`, `divide`, `fraction`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Unary Ops**       | `opposite`, `positive`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **Functions**       | `func`, `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt`, `abs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Structural**      | `delimiter`, `parentheses`, `brackets`, `braces`, `subscript`, `superscript`, `power`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Relations**       | `relation`, `equals`, `lessThan`, `greaterThan`, `lessThanOrEqual`, `greaterThanOrEqual`, `notEquals`, `approx`, `congruent`, `elementOf`, `notElementOf`, `subset`, `subsetOrEqual`, `superset`, `supersetOrEqual`, `implies`, `iff`                                                                                                                                                                                                                                                                                                                                          |
+| **Relation Chains** | `relationChain`, `equalsChain`, `lessThanChain`, `lessThanOrEqualChain`, `greaterThanChain`, `greaterThanOrEqualChain`, `impliesChain`, `iffChain`                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Transforms**      | `withMetadata`, `getChildren`, `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `cloneNode`, `countNodes`, `getDepth`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Guards**          | `isNumber`, `isVariable`, `isGreek`, `isSymbol`, `isAddition`, `isSubtraction`, `isMultiplication`, `isDivision`, `isOpposite`, `isPositive`, `isFunction`, `isDelimiter`, `isSubscript`, `isSuperscript`, `isRelation`, `isLiteralNode`, `isBinaryOperationNode`, `isUnaryOperationNode`, `isStructuralNode`, `hasChildren`, `isLeaf`, `hasMetadata`, `isFraction`, `isImplicitMultiplication`, `isComparison`, `isEquality`, `isInequality`, `isRelationChain`, `isComparisonChain`, `isEqualityChain`, `isImplicationChain`, `isEquivalenceChain`, `getRelationChainLength` |
+| **Flatten**         | `flipSign`, `flattenSumShallow`, `flattenProductShallow`, `flattenSumDeep`, `flattenProductDeep`, `unflattenSum`, `unflattenProduct`, `flattenRelationChain`, `unflattenRelationChain`                                                                                                                                                                                                                                                                                                                                                                                         |
+| **LaTeX**           | `toLatex`, `LatexGenerator`, `LatexGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ---
 

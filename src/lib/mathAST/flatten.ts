@@ -7,8 +7,8 @@
  * Delimiters act as INTANGIBLE boundaries - flattening stops at delimiter nodes.
  */
 
-import type { MathNode, MultiplicationDisplayStyle } from './types';
-import { add, subtract, multiply, opposite } from './factory';
+import type { MathNode, MultiplicationDisplayStyle, RelationNode, RelationType } from './types';
+import { add, subtract, multiply, opposite, relation } from './factory';
 
 // =============================================================================
 // Types
@@ -51,6 +51,17 @@ export type DeepFlatSumResult = {
 export type DeepFlatProductResult = {
 	readonly factors: FlatProduct;
 	readonly subLists: ReadonlyMap<MathNode, DeepFlatSumResult | DeepFlatProductResult>;
+};
+
+/**
+ * A flattened relation chain as arrays of operands and relations.
+ * Invariant: operands.length === relations.length + 1
+ *
+ * Example: a < b < c -> { operands: [a, b, c], relations: ['<', '<'] }
+ */
+export type FlatRelationChain = {
+	readonly operands: readonly MathNode[];
+	readonly relations: readonly RelationType[];
 };
 
 // =============================================================================
@@ -543,6 +554,78 @@ export function unflattenProduct(
 
 	for (let i = 1; i < factors.length; i++) {
 		result = multiply(result, factors[i], displayStyle);
+	}
+
+	return result;
+}
+
+// =============================================================================
+// Relation Chain Flattening
+// =============================================================================
+
+/**
+ * Flattens a relation chain into arrays of operands and relations.
+ *
+ * Relations are nested with LEFT associativity:
+ * - `a < b` -> relation('<', a, b)
+ * - `a < b < c` -> relation('<', relation('<', a, b), c)
+ *
+ * This function extracts:
+ * - operands: [a, b, c]
+ * - relations: ['<', '<']
+ *
+ * For non-relation nodes, returns a single operand with empty relations.
+ *
+ * @param node - The node to flatten
+ * @returns A FlatRelationChain with operands and relations arrays
+ */
+export function flattenRelationChain(node: MathNode): FlatRelationChain {
+	if (node.type !== 'relation') {
+		return { operands: [node], relations: [] };
+	}
+
+	// Recursively flatten the left side (where chained relations are nested)
+	const leftFlat = flattenRelationChain(node.left);
+
+	return {
+		operands: [...leftFlat.operands, node.right],
+		relations: [...leftFlat.relations, node.relation]
+	};
+}
+
+/**
+ * Unflattens a flat relation chain back into nested RelationNodes with LEFT associativity.
+ *
+ * Algorithm:
+ * - If less than 2 operands or mismatched lengths, return null
+ * - Build left-to-right: ((a < b) < c)
+ *
+ * Examples:
+ * - { operands: [a, b], relations: ['='] } -> relation('=', a, b)
+ * - { operands: [a, b, c], relations: ['<', '<'] } -> relation('<', relation('<', a, b), c)
+ * - { operands: [a, b, c], relations: ['<=', '<'] } -> relation('<', relation('<=', a, b), c)
+ *
+ * @param operands - Array of operand nodes (at least 2)
+ * @param relations - Array of relation types (length = operands.length - 1)
+ * @returns A nested RelationNode or null if invalid input
+ */
+export function unflattenRelationChain(
+	operands: readonly MathNode[],
+	relations: readonly RelationType[]
+): RelationNode | null {
+	// Validate invariants
+	if (operands.length < 2) {
+		return null;
+	}
+	if (relations.length !== operands.length - 1) {
+		return null;
+	}
+
+	// Build with left associativity: ((a op b) op c)
+	let result = relation(relations[0], operands[0], operands[1]);
+
+	for (let i = 1; i < relations.length; i++) {
+		result = relation(relations[i], result, operands[i + 1]);
 	}
 
 	return result;

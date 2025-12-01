@@ -29,7 +29,14 @@ import {
 	isImplicitMultiplication,
 	isComparison,
 	isEquality,
-	isInequality
+	isInequality,
+	// Relation chain predicates
+	isRelationChain,
+	isComparisonChain,
+	isEqualityChain,
+	isImplicationChain,
+	isEquivalenceChain,
+	getRelationChainLength
 } from '../guards';
 import {
 	number,
@@ -54,7 +61,15 @@ import {
 	equals,
 	lessThan,
 	greaterThan,
-	notEquals
+	notEquals,
+	// Relation chain factories
+	equalsChain,
+	lessThanChain,
+	lessThanOrEqualChain,
+	greaterThanChain,
+	impliesChain,
+	iffChain,
+	relationChain
 } from '../factory';
 
 describe('guards', () => {
@@ -513,6 +528,154 @@ describe('guards', () => {
 			// Special unicode relations should not be comparisons
 			expect(isComparison(relation('≈', variable('x'), number('5')))).toBe(false);
 			expect(isComparison(relation('≡', variable('x'), number('5')))).toBe(false);
+		});
+	});
+
+	// =============================================================================
+	// Relation Chain Guards
+	// =============================================================================
+
+	describe('Relation Chain Guards', () => {
+		describe('isRelationChain', () => {
+			it('should return false for binary relation', () => {
+				const binary = equals(variable('a'), variable('b'));
+				expect(isRelationChain(binary)).toBe(false);
+			});
+
+			it('should return true for nested relation', () => {
+				const chain = equalsChain(variable('a'), variable('b'), variable('c'));
+				expect(isRelationChain(chain)).toBe(true);
+			});
+
+			it('should return false for non-relation', () => {
+				expect(isRelationChain(variable('x'))).toBe(false);
+			});
+
+			it('should return true for longer chain', () => {
+				const chain = lessThanChain(variable('a'), variable('b'), variable('c'), variable('d'));
+				expect(isRelationChain(chain)).toBe(true);
+			});
+		});
+
+		describe('isComparisonChain', () => {
+			it('should return true for < chain', () => {
+				const chain = lessThanChain(variable('a'), variable('b'), variable('c'));
+				expect(isComparisonChain(chain)).toBe(true);
+			});
+
+			it('should return true for binary <', () => {
+				expect(isComparisonChain(lessThan(variable('a'), variable('b')))).toBe(true);
+			});
+
+			it('should return false for equality', () => {
+				expect(isComparisonChain(equals(variable('a'), variable('b')))).toBe(false);
+			});
+
+			it('should return true for <= chain', () => {
+				const chain = lessThanOrEqualChain(variable('a'), variable('b'), variable('c'));
+				expect(isComparisonChain(chain)).toBe(true);
+			});
+
+			it('should return true for > chain', () => {
+				const chain = greaterThanChain(variable('a'), variable('b'), variable('c'));
+				expect(isComparisonChain(chain)).toBe(true);
+			});
+
+			it('should return true for mixed comparison chain', () => {
+				// a <= b < c
+				const chain = relationChain([variable('a'), variable('b'), variable('c')], ['<=', '<']);
+				expect(isComparisonChain(chain)).toBe(true);
+			});
+
+			it('should return false for equality chain', () => {
+				const chain = equalsChain(variable('a'), variable('b'), variable('c'));
+				expect(isComparisonChain(chain)).toBe(false);
+			});
+		});
+
+		describe('isEqualityChain', () => {
+			it('should return true for = chain', () => {
+				const chain = equalsChain(variable('a'), variable('b'), variable('c'));
+				expect(isEqualityChain(chain)).toBe(true);
+			});
+
+			it('should return false for < chain', () => {
+				const chain = lessThanChain(variable('a'), variable('b'), variable('c'));
+				expect(isEqualityChain(chain)).toBe(false);
+			});
+
+			it('should return true for binary =', () => {
+				expect(isEqualityChain(equals(variable('a'), variable('b')))).toBe(true);
+			});
+
+			it('should return false for mixed chain with equality', () => {
+				// a = b < c is not an equality chain
+				const chain = relationChain([variable('a'), variable('b'), variable('c')], ['=', '<']);
+				expect(isEqualityChain(chain)).toBe(false);
+			});
+		});
+
+		describe('isImplicationChain', () => {
+			it('should return true for => chain', () => {
+				const chain = impliesChain(variable('P'), variable('Q'), variable('R'));
+				expect(isImplicationChain(chain)).toBe(true);
+			});
+
+			it('should return false for equality chain', () => {
+				const chain = equalsChain(variable('a'), variable('b'), variable('c'));
+				expect(isImplicationChain(chain)).toBe(false);
+			});
+
+			it('should return false for non-relation', () => {
+				expect(isImplicationChain(variable('P'))).toBe(false);
+			});
+		});
+
+		describe('isEquivalenceChain', () => {
+			it('should return true for <=> chain', () => {
+				const chain = iffChain(variable('P'), variable('Q'), variable('R'));
+				expect(isEquivalenceChain(chain)).toBe(true);
+			});
+
+			it('should return false for implication chain', () => {
+				const chain = impliesChain(variable('P'), variable('Q'), variable('R'));
+				expect(isEquivalenceChain(chain)).toBe(false);
+			});
+
+			it('should return false for non-relation', () => {
+				expect(isEquivalenceChain(variable('P'))).toBe(false);
+			});
+		});
+
+		describe('getRelationChainLength', () => {
+			it('should return 2 for binary relation', () => {
+				expect(getRelationChainLength(equals(variable('a'), variable('b')))).toBe(2);
+			});
+
+			it('should return 3 for chain of 3', () => {
+				const chain = equalsChain(variable('a'), variable('b'), variable('c'));
+				expect(getRelationChainLength(chain)).toBe(3);
+			});
+
+			it('should return 0 for non-relation', () => {
+				expect(getRelationChainLength(variable('x'))).toBe(0);
+			});
+
+			it('should return 4 for chain of 4', () => {
+				const chain = lessThanChain(variable('a'), variable('b'), variable('c'), variable('d'));
+				expect(getRelationChainLength(chain)).toBe(4);
+			});
+
+			it('should return 5 for chain of 5', () => {
+				const chain = equalsChain(
+					variable('a'),
+					variable('b'),
+					variable('c'),
+					variable('d'),
+					variable('e')
+				);
+				expect(getRelationChainLength(chain)).toBe(5);
+			});
 		});
 	});
 });

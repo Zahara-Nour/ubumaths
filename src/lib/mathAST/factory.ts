@@ -31,6 +31,7 @@ import type {
 	SymbolNode,
 	VariableNode
 } from './types';
+import { unflattenRelationChain } from './flatten';
 
 // =============================================================================
 // Literal Factories
@@ -564,6 +565,136 @@ export function iff(left: MathNode, right: MathNode, metadata?: NodeMetadata): R
 }
 
 // =============================================================================
+// Relation Chain Factories
+// =============================================================================
+
+/**
+ * Creates a relation chain from arrays of operands and relations.
+ * Uses LEFT associativity: a < b < c = ((a < b) < c)
+ *
+ * @param operands - Array of operand nodes (at least 2)
+ * @param relations - Array of relation types (length = operands.length - 1)
+ * @param metadata - Optional rendering hints (applied to outermost relation)
+ * @throws Error if operands.length < 2 or relations.length !== operands.length - 1
+ *
+ * @example
+ * // a < b < c
+ * relationChain([a, b, c], ['<', '<'])
+ *
+ * // a <= b < c (mixed)
+ * relationChain([a, b, c], ['<=', '<'])
+ */
+export function relationChain(
+	operands: readonly MathNode[],
+	relations: readonly RelationType[],
+	metadata?: NodeMetadata
+): RelationNode {
+	if (operands.length < 2) {
+		throw new Error('relationChain requires at least 2 operands');
+	}
+	if (relations.length !== operands.length - 1) {
+		throw new Error(
+			`relationChain: expected ${operands.length - 1} relations for ${operands.length} operands, got ${relations.length}`
+		);
+	}
+
+	const result = unflattenRelationChain(operands, relations);
+	if (!result) {
+		throw new Error('relationChain: failed to build relation chain');
+	}
+
+	// Apply metadata to outermost node if provided
+	if (metadata) {
+		return { ...result, metadata } as const;
+	}
+	return result;
+}
+
+/**
+ * Creates an equality chain: a = b = c = ...
+ * @param operands - At least 2 operand nodes
+ * @throws Error if less than 2 operands
+ */
+export function equalsChain(...operands: MathNode[]): RelationNode {
+	if (operands.length < 2) {
+		throw new Error('equalsChain requires at least 2 operands');
+	}
+	return relationChain(operands, Array(operands.length - 1).fill('='));
+}
+
+/**
+ * Creates a less-than chain: a < b < c < ...
+ * @param operands - At least 2 operand nodes
+ * @throws Error if less than 2 operands
+ */
+export function lessThanChain(...operands: MathNode[]): RelationNode {
+	if (operands.length < 2) {
+		throw new Error('lessThanChain requires at least 2 operands');
+	}
+	return relationChain(operands, Array(operands.length - 1).fill('<'));
+}
+
+/**
+ * Creates a less-than-or-equal chain: a <= b <= c <= ...
+ * @param operands - At least 2 operand nodes
+ * @throws Error if less than 2 operands
+ */
+export function lessThanOrEqualChain(...operands: MathNode[]): RelationNode {
+	if (operands.length < 2) {
+		throw new Error('lessThanOrEqualChain requires at least 2 operands');
+	}
+	return relationChain(operands, Array(operands.length - 1).fill('<='));
+}
+
+/**
+ * Creates a greater-than chain: a > b > c > ...
+ * @param operands - At least 2 operand nodes
+ * @throws Error if less than 2 operands
+ */
+export function greaterThanChain(...operands: MathNode[]): RelationNode {
+	if (operands.length < 2) {
+		throw new Error('greaterThanChain requires at least 2 operands');
+	}
+	return relationChain(operands, Array(operands.length - 1).fill('>'));
+}
+
+/**
+ * Creates a greater-than-or-equal chain: a >= b >= c >= ...
+ * @param operands - At least 2 operand nodes
+ * @throws Error if less than 2 operands
+ */
+export function greaterThanOrEqualChain(...operands: MathNode[]): RelationNode {
+	if (operands.length < 2) {
+		throw new Error('greaterThanOrEqualChain requires at least 2 operands');
+	}
+	return relationChain(operands, Array(operands.length - 1).fill('>='));
+}
+
+/**
+ * Creates an implication chain: P => Q => R => ...
+ * @param operands - At least 2 operand nodes
+ * @throws Error if less than 2 operands
+ */
+export function impliesChain(...operands: MathNode[]): RelationNode {
+	if (operands.length < 2) {
+		throw new Error('impliesChain requires at least 2 operands');
+	}
+	return relationChain(operands, Array(operands.length - 1).fill('⟹'));
+}
+
+/**
+ * Creates an if-and-only-if (equivalence) chain: P <=> Q <=> R <=> ...
+ * @param operands - At least 2 operand nodes
+ * @throws Error if less than 2 operands
+ */
+export function iffChain(...operands: MathNode[]): RelationNode {
+	if (operands.length < 2) {
+		throw new Error('iffChain requires at least 2 operands');
+	}
+	return relationChain(operands, Array(operands.length - 1).fill('⟺'));
+}
+
+// =============================================================================
 // MathAST Namespace
 // =============================================================================
 
@@ -626,5 +757,15 @@ export const MathAST = {
 	superset,
 	supersetOrEqual,
 	implies,
-	iff
+	iff,
+
+	// Relation chains
+	relationChain,
+	equalsChain,
+	lessThanChain,
+	lessThanOrEqualChain,
+	greaterThanChain,
+	greaterThanOrEqualChain,
+	impliesChain,
+	iffChain
 } as const;

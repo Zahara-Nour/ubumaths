@@ -143,7 +143,17 @@ export {
 	superset,
 	supersetOrEqual,
 	implies,
-	iff
+	iff,
+
+	// Relation chains
+	relationChain,
+	equalsChain,
+	lessThanChain,
+	lessThanOrEqualChain,
+	greaterThanChain,
+	greaterThanOrEqualChain,
+	impliesChain,
+	iffChain
 } from './factory';
 
 // =============================================================================
@@ -201,7 +211,15 @@ export {
 	isImplicitMultiplication,
 	isComparison,
 	isEquality,
-	isInequality
+	isInequality,
+
+	// Relation chain predicates
+	isRelationChain,
+	isComparisonChain,
+	isEqualityChain,
+	isImplicationChain,
+	isEquivalenceChain,
+	getRelationChainLength
 } from './guards';
 
 // =============================================================================
@@ -214,7 +232,8 @@ export type {
 	FlatSum,
 	FlatProduct,
 	DeepFlatSumResult,
-	DeepFlatProductResult
+	DeepFlatProductResult,
+	FlatRelationChain
 } from './flatten';
 
 export {
@@ -231,7 +250,11 @@ export {
 
 	// Unflattening (reconstruction)
 	unflattenSum,
-	unflattenProduct
+	unflattenProduct,
+
+	// Relation chain helpers
+	flattenRelationChain,
+	unflattenRelationChain
 } from './flatten';
 
 // =============================================================================

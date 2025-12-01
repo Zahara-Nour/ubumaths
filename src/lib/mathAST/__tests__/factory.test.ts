@@ -54,8 +54,18 @@ import {
 	superset,
 	supersetOrEqual,
 	implies,
-	iff
+	iff,
+	// Relation chain factories
+	relationChain,
+	equalsChain,
+	lessThanChain,
+	lessThanOrEqualChain,
+	greaterThanChain,
+	greaterThanOrEqualChain,
+	impliesChain,
+	iffChain
 } from '../factory';
+import { flattenRelationChain } from '../flatten';
 
 describe('factory', () => {
 	// =============================================================================
@@ -694,6 +704,144 @@ describe('factory', () => {
 		it('creates if and only if relation', () => {
 			const node = iff(variable('P'), variable('Q'));
 			expect(node.relation).toBe('⟺');
+		});
+	});
+
+	// =============================================================================
+	// Relation Chain Factories
+	// =============================================================================
+
+	describe('Relation Chain Factories', () => {
+		describe('relationChain', () => {
+			it('should create a binary relation', () => {
+				const chain = relationChain([variable('a'), variable('b')], ['=']);
+				expect(chain.type).toBe('relation');
+				expect(chain.relation).toBe('=');
+			});
+
+			it('should create a chain of 3 operands', () => {
+				const chain = relationChain([variable('a'), variable('b'), variable('c')], ['<', '<']);
+				expect(chain.type).toBe('relation');
+				// Check it's nested
+				expect(chain.left.type).toBe('relation');
+			});
+
+			it('should apply metadata to outermost node', () => {
+				const chain = relationChain([variable('a'), variable('b'), variable('c')], ['<', '<'], {
+					color: 'red'
+				});
+				expect(chain.metadata?.color).toBe('red');
+			});
+
+			it('should throw for less than 2 operands', () => {
+				expect(() => relationChain([variable('a')], [])).toThrow();
+			});
+
+			it('should throw for mismatched lengths', () => {
+				expect(() => relationChain([variable('a'), variable('b')], ['=', '='])).toThrow();
+			});
+
+			it('should create mixed relation chain', () => {
+				const chain = relationChain([variable('a'), variable('b'), variable('c')], ['<=', '<']);
+				const flat = flattenRelationChain(chain);
+				expect(flat.relations).toEqual(['<=', '<']);
+			});
+		});
+
+		describe('equalsChain', () => {
+			it('should create a = b', () => {
+				const chain = equalsChain(variable('a'), variable('b'));
+				expect(chain.relation).toBe('=');
+			});
+
+			it('should create a = b = c', () => {
+				const chain = equalsChain(variable('a'), variable('b'), variable('c'));
+				expect(chain.relation).toBe('=');
+				expect(chain.left.type).toBe('relation');
+			});
+
+			it('should throw for less than 2 operands', () => {
+				expect(() => equalsChain(variable('a'))).toThrow();
+			});
+
+			it('should create a = b = c = d', () => {
+				const chain = equalsChain(variable('a'), variable('b'), variable('c'), variable('d'));
+				const flat = flattenRelationChain(chain);
+				expect(flat.operands).toHaveLength(4);
+				expect(flat.relations).toEqual(['=', '=', '=']);
+			});
+		});
+
+		describe('lessThanChain', () => {
+			it('should create a < b < c', () => {
+				const chain = lessThanChain(variable('a'), variable('b'), variable('c'));
+				const flat = flattenRelationChain(chain);
+				expect(flat.relations).toEqual(['<', '<']);
+			});
+
+			it('should throw for less than 2 operands', () => {
+				expect(() => lessThanChain(variable('a'))).toThrow();
+			});
+		});
+
+		describe('lessThanOrEqualChain', () => {
+			it('should create a <= b <= c', () => {
+				const chain = lessThanOrEqualChain(variable('a'), variable('b'), variable('c'));
+				const flat = flattenRelationChain(chain);
+				expect(flat.relations).toEqual(['<=', '<=']);
+			});
+
+			it('should throw for less than 2 operands', () => {
+				expect(() => lessThanOrEqualChain(variable('a'))).toThrow();
+			});
+		});
+
+		describe('greaterThanChain', () => {
+			it('should create a > b > c', () => {
+				const chain = greaterThanChain(variable('a'), variable('b'), variable('c'));
+				const flat = flattenRelationChain(chain);
+				expect(flat.relations).toEqual(['>', '>']);
+			});
+
+			it('should throw for less than 2 operands', () => {
+				expect(() => greaterThanChain(variable('a'))).toThrow();
+			});
+		});
+
+		describe('greaterThanOrEqualChain', () => {
+			it('should create a >= b >= c', () => {
+				const chain = greaterThanOrEqualChain(variable('a'), variable('b'), variable('c'));
+				const flat = flattenRelationChain(chain);
+				expect(flat.relations).toEqual(['>=', '>=']);
+			});
+
+			it('should throw for less than 2 operands', () => {
+				expect(() => greaterThanOrEqualChain(variable('a'))).toThrow();
+			});
+		});
+
+		describe('impliesChain', () => {
+			it('should create P => Q => R', () => {
+				const chain = impliesChain(variable('P'), variable('Q'), variable('R'));
+				const flat = flattenRelationChain(chain);
+				expect(flat.relations).toEqual(['⟹', '⟹']);
+			});
+
+			it('should throw for less than 2 operands', () => {
+				expect(() => impliesChain(variable('P'))).toThrow();
+			});
+		});
+
+		describe('iffChain', () => {
+			it('should create P <=> Q <=> R', () => {
+				const chain = iffChain(variable('P'), variable('Q'), variable('R'));
+				const flat = flattenRelationChain(chain);
+				expect(flat.relations).toEqual(['⟺', '⟺']);
+			});
+
+			it('should throw for less than 2 operands', () => {
+				expect(() => iffChain(variable('P'))).toThrow();
+			});
 		});
 	});
 });
