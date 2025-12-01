@@ -25,10 +25,26 @@ import type {
 	UnitNode,
 	MathSymbol,
 	RelationType,
-	GreekLetter
+	GreekLetter,
+	NodeMetadata
 } from './types';
 import { flattenRelationChain } from './flatten';
 import { format } from './units/formatter';
+
+// =============================================================================
+// Types
+// =============================================================================
+
+/**
+ * A styled span for coalescence-based rendering.
+ * Adjacent spans with the same color are merged before final output.
+ * Style (bold/italic) is applied per-span independently.
+ */
+type ColoredSpan = {
+	text: string;
+	color?: string;
+	style?: 'normal' | 'bold' | 'italic';
+};
 
 // =============================================================================
 // Options
@@ -189,11 +205,32 @@ const KNOWN_FUNCTIONS = new Set([
 ]);
 
 // =============================================================================
+// Delimiter Metadata Helpers
+// =============================================================================
+
+/**
+ * Gets the metadata for the left delimiter of a DelimiterNode or FunctionNode.
+ * Falls back to delimiterMetadata if leftDelimiterMetadata is not present.
+ */
+function getLeftDelimiterMetadata(node: DelimiterNode | FunctionNode): NodeMetadata | undefined {
+	return node.leftDelimiterMetadata ?? node.delimiterMetadata;
+}
+
+/**
+ * Gets the metadata for the right delimiter of a DelimiterNode or FunctionNode.
+ * Falls back to delimiterMetadata if rightDelimiterMetadata is not present.
+ */
+function getRightDelimiterMetadata(node: DelimiterNode | FunctionNode): NodeMetadata | undefined {
+	return node.rightDelimiterMetadata ?? node.delimiterMetadata;
+}
+
+// =============================================================================
 // Generator Class
 // =============================================================================
 
 export class LatexGenerator {
 	private readonly options: Required<LatexGeneratorOptions>;
+	private spans: ColoredSpan[] = [];
 
 	constructor(options?: LatexGeneratorOptions) {
 		this.options = {
@@ -202,8 +239,377 @@ export class LatexGenerator {
 	}
 
 	generate(node: MathNode): string {
-		return this.generateNode(node);
+		if (!this.options.renderMetadata) {
+			// Mode simple (existing behavior): generate without coalescence
+			return this.generateNode(node);
+		}
+		// Mode coalescence: use spans and merge adjacent colors
+		this.spans = [];
+		this.visitWithSpans(node);
+		return this.coalesceAndRender();
 	}
+
+	// =========================================================================
+	// Coalescence Mode: Span-based Rendering
+	// =========================================================================
+
+	/**
+	 * Emits a span with optional color and style metadata.
+	 */
+	private emit(text: string, metadata?: NodeMetadata): void {
+		this.spans.push({ text, color: metadata?.color, style: metadata?.style });
+	}
+
+	/**
+	 * Coalesces adjacent spans with the same color and style, then renders to LaTeX.
+	 */
+	private coalesceAndRender(): string {
+		// Merge adjacent spans with the same color AND style
+		const coalesced = this.spans.reduce((acc, span) => {
+			const last = acc[acc.length - 1];
+			if (last && last.color === span.color && last.style === span.style) {
+				last.text += span.text;
+			} else {
+				acc.push({ ...span });
+			}
+			return acc;
+		}, [] as ColoredSpan[]);
+
+		// Render to LaTeX
+		return coalesced
+			.map((s) => {
+				let result = s.text;
+
+				// Apply style first (innermost)
+				if (s.style === 'bold') {
+					result = `\\mathbf{${result}}`;
+				} else if (s.style === 'italic') {
+					result = `\\mathit{${result}}`;
+				}
+
+				// Apply color (outermost)
+				if (s.color) {
+					result = `\\textcolor{${s.color}}{${result}}`;
+				}
+
+				return result;
+			})
+			.join('');
+	}
+
+	/**
+	 * Traverses the AST and emits colored spans for each component.
+	 * Uses extended metadata (operatorMetadata, delimiterMetadata, etc.)
+	 * to color individual parts of the expression.
+	 */
+	private visitWithSpans(node: MathNode): void {
+		switch (node.type) {
+			case 'number':
+				this.emit(node.value, node.metadata);
+				break;
+
+			case 'variable':
+				if (node.name.length === 1) {
+					this.emit(node.name, node.metadata);
+				} else {
+					this.emit(`\\mathit{${node.name}}`, node.metadata);
+				}
+				break;
+
+			case 'greek':
+				if (GREEK_ROMAN_UPPERCASE.has(node.letter)) {
+					this.emit(GREEK_ROMAN_MAP[node.letter], node.metadata);
+				} else {
+					this.emit(`\\${node.letter}`, node.metadata);
+				}
+				break;
+
+			case 'symbol':
+				this.emit(SYMBOL_MAP[node.symbol], node.metadata);
+				break;
+
+			case 'addition':
+				this.visitWithSpans(node.left);
+				this.emit(' + ', node.operatorMetadata ?? node.metadata);
+				this.visitWithSpans(node.right);
+				break;
+
+			case 'subtraction':
+				this.visitWithSpans(node.left);
+				this.emit(' - ', node.operatorMetadata ?? node.metadata);
+				this.visitWithSpans(node.right);
+				break;
+
+			case 'multiplication':
+				this.visitWithSpans(node.left);
+				this.visitMultiplicationOperatorSpan(node);
+				this.visitWithSpans(node.right);
+				break;
+
+			case 'division':
+				this.visitDivisionSpans(node);
+				break;
+
+			case 'opposite':
+				this.emit('-', node.operatorMetadata ?? node.metadata);
+				this.visitWithSpans(node.operand);
+				break;
+
+			case 'positive':
+				this.emit('+', node.operatorMetadata ?? node.metadata);
+				this.visitWithSpans(node.operand);
+				break;
+
+			case 'function':
+				this.visitFunctionSpans(node);
+				break;
+
+			case 'delimiter':
+				this.visitDelimiterSpans(node);
+				break;
+
+			case 'subscript':
+				this.visitWithSpans(node.base);
+				this.emit('_', node.metadata);
+				this.emit('{', node.metadata);
+				this.visitWithSpans(node.subscript);
+				this.emit('}', node.metadata);
+				break;
+
+			case 'superscript':
+				this.visitWithSpans(node.base);
+				this.emit('^', node.metadata);
+				this.emit('{', node.metadata);
+				this.visitWithSpans(node.superscript);
+				this.emit('}', node.metadata);
+				break;
+
+			case 'relation':
+				this.visitRelationSpans(node);
+				break;
+
+			case 'unit':
+				this.visitUnitSpans(node);
+				break;
+
+			default: {
+				const exhaustive: never = node;
+				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
+			}
+		}
+	}
+
+	/**
+	 * Emits the multiplication operator span based on display style.
+	 */
+	private visitMultiplicationOperatorSpan(node: MultiplicationNode): void {
+		const opMeta = node.operatorMetadata ?? node.metadata;
+		switch (node.displayStyle) {
+			case 'implicit':
+				this.emit(' ', opMeta);
+				break;
+			case 'dot':
+				this.emit(' \\cdot ', opMeta);
+				break;
+			case 'cross':
+				this.emit(' \\times ', opMeta);
+				break;
+			case 'star':
+				this.emit(' * ', opMeta);
+				break;
+			default: {
+				const exhaustive: never = node.displayStyle;
+				throw new Error(`Unknown multiplication style: ${exhaustive}`);
+			}
+		}
+	}
+
+	/**
+	 * Emits spans for a division node.
+	 */
+	private visitDivisionSpans(node: DivisionNode): void {
+		const opMeta = node.operatorMetadata ?? node.metadata;
+		switch (node.displayStyle) {
+			case 'fraction':
+				this.emit('\\frac{', opMeta);
+				this.visitWithSpans(node.numerator);
+				this.emit('}{', opMeta);
+				this.visitWithSpans(node.denominator);
+				this.emit('}', opMeta);
+				break;
+			case 'inline':
+				this.visitWithSpans(node.numerator);
+				this.emit(' / ', opMeta);
+				this.visitWithSpans(node.denominator);
+				break;
+			case 'ratio':
+				this.visitWithSpans(node.numerator);
+				this.emit(' : ', opMeta);
+				this.visitWithSpans(node.denominator);
+				break;
+			default: {
+				const exhaustive: never = node.displayStyle;
+				throw new Error(`Unknown division style: ${exhaustive}`);
+			}
+		}
+	}
+
+	/**
+	 * Emits spans for a delimiter node.
+	 */
+	private visitDelimiterSpans(node: DelimiterNode): void {
+		const leftMeta = getLeftDelimiterMetadata(node) ?? node.metadata;
+		const rightMeta = getRightDelimiterMetadata(node) ?? node.metadata;
+
+		switch (node.delimiters) {
+			case 'parentheses':
+				this.emit('\\left( ', leftMeta);
+				this.visitWithSpans(node.content);
+				this.emit(' \\right)', rightMeta);
+				break;
+			case 'absolute':
+				this.emit('\\left| ', leftMeta);
+				this.visitWithSpans(node.content);
+				this.emit(' \\right|', rightMeta);
+				break;
+			default: {
+				const exhaustive: never = node.delimiters;
+				throw new Error(`Unknown delimiter type: ${exhaustive}`);
+			}
+		}
+	}
+
+	/**
+	 * Emits spans for a function node.
+	 */
+	private visitFunctionSpans(node: FunctionNode): void {
+		const isKnown = KNOWN_FUNCTIONS.has(node.name);
+		const funcName = isKnown ? `\\${node.name}` : node.name;
+
+		// Emit function name
+		this.emit(funcName, node.nameMetadata ?? node.metadata);
+
+		// Emit power if present (e.g., sin^2)
+		if (node.power) {
+			this.emit('^{', node.metadata);
+			this.visitWithSpans(node.power);
+			this.emit('}', node.metadata);
+		}
+
+		// Emit base subscript if present (e.g., log_2)
+		if (node.base) {
+			this.emit('_{', node.metadata);
+			this.visitWithSpans(node.base);
+			this.emit('}', node.metadata);
+		}
+
+		// Emit parentheses and arguments
+		const leftMeta = getLeftDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
+		const rightMeta = getRightDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
+
+		this.emit('\\left( ', leftMeta);
+		for (let i = 0; i < node.args.length; i++) {
+			if (i > 0) {
+				this.emit(', ', node.metadata);
+			}
+			this.visitWithSpans(node.args[i]);
+		}
+		this.emit(' \\right)', rightMeta);
+	}
+
+	/**
+	 * Emits spans for a relation node (including chained relations).
+	 */
+	private visitRelationSpans(node: RelationNode): void {
+		// Flatten the chain (works for both binary and nested relations)
+		const flat = flattenRelationChain(node);
+
+		// Build spans: operand0 relation0 operand1 relation1 operand2 ...
+		// We need to walk the original nested structure to get relationMetadata
+		this.visitRelationChainSpans(node, flat.operands.length);
+	}
+
+	/**
+	 * Helper to recursively emit relation chain spans while preserving metadata.
+	 */
+	private visitRelationChainSpans(node: RelationNode, totalOperands: number): void {
+		// If left is a relation, recurse into it first (left-associative nesting)
+		if (node.left.type === 'relation') {
+			this.visitRelationChainSpans(node.left, totalOperands - 1);
+		} else {
+			// Base case: emit the leftmost operand
+			this.visitWithSpans(node.left);
+		}
+
+		// Emit the relation operator
+		const relMeta = node.relationMetadata ?? node.metadata;
+		this.emit(` ${RELATION_MAP[node.relation]} `, relMeta);
+
+		// Emit the right operand
+		this.visitWithSpans(node.right);
+	}
+
+	/**
+	 * Emits spans for a unit node.
+	 * When the UnitNode has metadata, it applies to the entire expression+unit.
+	 * The unitMetadata can override just the unit part if specified.
+	 */
+	private visitUnitSpans(node: UnitNode): void {
+		// Get the effective metadata for each part
+		const nodeMeta = node.metadata;
+		const unitMeta = node.unitMetadata ?? nodeMeta;
+
+		// For the expression part, we need to visit it with the node's metadata
+		// if the expression itself has no metadata
+		this.visitWithSpansInherited(node.expression, nodeMeta);
+
+		// Emit the tilde with the node's metadata (so it coalesces with the expression)
+		this.emit('~', nodeMeta);
+
+		// Emit the unit with unitMetadata (or fallback to node metadata)
+		this.emit(`\\unit{${format(node.unit, 'original')}}`, unitMeta);
+	}
+
+	/**
+	 * Visits a node with inherited metadata.
+	 * If the node has its own metadata, uses that; otherwise uses the inherited metadata.
+	 */
+	private visitWithSpansInherited(node: MathNode, inheritedMeta?: NodeMetadata): void {
+		// Use the node's own metadata if present, otherwise inherit
+		const effectiveMeta = node.metadata ?? inheritedMeta;
+
+		// For leaf nodes, emit directly with effective metadata
+		switch (node.type) {
+			case 'number':
+				this.emit(node.value, effectiveMeta);
+				break;
+			case 'variable':
+				if (node.name.length === 1) {
+					this.emit(node.name, effectiveMeta);
+				} else {
+					this.emit(`\\mathit{${node.name}}`, effectiveMeta);
+				}
+				break;
+			case 'greek':
+				if (GREEK_ROMAN_UPPERCASE.has(node.letter)) {
+					this.emit(GREEK_ROMAN_MAP[node.letter], effectiveMeta);
+				} else {
+					this.emit(`\\${node.letter}`, effectiveMeta);
+				}
+				break;
+			case 'symbol':
+				this.emit(SYMBOL_MAP[node.symbol], effectiveMeta);
+				break;
+			default:
+				// For complex nodes, use normal visitWithSpans
+				// (they will handle their own metadata)
+				this.visitWithSpans(node);
+		}
+	}
+
+	// =========================================================================
+	// Simple Mode: String-based Rendering (existing behavior)
+	// =========================================================================
 
 	private generateNode(node: MathNode): string {
 		let content: string;
