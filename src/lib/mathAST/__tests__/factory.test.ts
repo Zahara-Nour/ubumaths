@@ -337,7 +337,7 @@ describe('factory', () => {
 		});
 
 		it('includes metadata when provided', () => {
-			const node = func('f', [variable('x')], undefined, { color: 'orange' });
+			const node = func('f', [variable('x')], { metadata: { color: 'orange' } });
 			expect(node.metadata?.color).toBe('orange');
 		});
 	});
