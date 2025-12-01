@@ -29,8 +29,8 @@ pnpm lint                  # ESLint (cached)
 pnpm format                # Prettier
 
 # Tests
-pnpm test:unit             # All unit tests (both projects, watch mode)
-pnpm test:unit -- --run    # All unit tests (single run)
+pnpm test:unit             # All unit tests (both projects, watch mode, NOT for specific files !)
+pnpm test:unit -- --run    # All unit tests (single run, NOT for specific files !)
 pnpm test:server <path>    # Server tests only (for specific files)
 pnpm test:client <path>    # Client tests only (*.svelte.test.ts)
 pnpm test:triggers         # Database triggers (Docker required)
@@ -145,15 +145,16 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 
 ### Chaque plan doit inclure
 
-1. **Agents specifies** pour chaque phase
-2. **Code Review** (`code-reviewer`) a la fin de chaque phase
-3. **Commit** apres validation (direct ou agent selon complexite)
-4. **Security Audit** si auth/API sensible
-5. **Performance Audit** si requetes DB lourdes
-6. **Quality Checks** (`pnpm lint`, `pnpm check`) a la FIN du plan uniquement
-7. **Documentation de progression** tout au long de l'implementation
+1. **Agents et modèles specifiés** pour chaque tâche
+2.
+3. **Code Review** (`code-reviewer`) a la fin de chaque phase
+4. **Commit** apres validation du code reviewer (direct ou agent selon complexite)
+5. **Security Audit** si auth/API sensible
+6. **Performance Audit** si requetes DB lourdes
+7. **Quality Checks** (`pnpm lint`, `pnpm check`) a la FIN du plan uniquement
+8. **Documentation de progression** tout au long de l'implementation pour crash recovery
 
-**IMPORTANT** : Les agents ne doivent PAS executer de commandes lint/format/check. Ces verifications sont faites une seule fois a la fin du plan.
+**IMPORTANT** : Les agents ne doivent PAS executer de commandes build/lint/format/check. Ces verifications sont faites une seule fois a la fin du plan.
 
 ### Documentation de reprise (obligatoire)
 
@@ -177,9 +178,10 @@ Format suggere : `docs/wip/<feature>-progress.md`
 
 - [ ] Code fonctionnel
 - [ ] Tests passent
-- [ ] Code review effectue
+- [ ] Code review effectué
 - [ ] Security/Performance audit si applicable
-- [ ] Commit cree
+- [ ] Documentation de progression écrite
+- [ ] Commit créé
 
 ---
 
@@ -187,7 +189,7 @@ Format suggere : `docs/wip/<feature>-progress.md`
 
 ### Migration Workflow
 
-1. Creer `.sql` dans `supabase/migrations/` (format: `<timestamp>_<description>.sql`)
+1. Créer `.sql` dans `supabase/migrations/` (format: `<timestamp>_<description>.sql`)
 2. User push via `pnpm db:migrate`
 3. Update `src/lib/types/database.ts` et `docs/architecture/database-schema.md`
 
