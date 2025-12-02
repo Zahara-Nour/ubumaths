@@ -453,11 +453,9 @@ describe('factory', () => {
 			expect(node.content).toBe(content);
 		});
 
-		it('supports all delimiter types', () => {
+		it('supports parentheses delimiter type', () => {
 			const content = variable('x');
-
 			expect(delimiter('parentheses', content).delimiters).toBe('parentheses');
-			expect(delimiter('absolute', content).delimiters).toBe('absolute');
 		});
 
 		it('includes semantic when provided', () => {

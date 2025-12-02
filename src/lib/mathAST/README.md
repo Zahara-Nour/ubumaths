@@ -93,11 +93,11 @@ Display styles control how operations are rendered (e.g., `2x` for implicit, `2 
 
 ### Structural Nodes
 
-| Node                | Type            | Purpose                                          | Options                              |
-| ------------------- | --------------- | ------------------------------------------------ | ------------------------------------ |
-| **DelimiterNode**   | `'delimiter'`   | Content surrounded by delimiters                 | Types: `'parentheses'`, `'absolute'` |
-| **SubscriptNode**   | `'subscript'`   | Subscript/index notation (base_subscript)        | —                                    |
-| **SuperscriptNode** | `'superscript'` | Superscript/exponent notation (base^superscript) | —                                    |
+| Node                | Type            | Purpose                                          | Options                                                |
+| ------------------- | --------------- | ------------------------------------------------ | ------------------------------------------------------ |
+| **DelimiterNode**   | `'delimiter'`   | Content surrounded by delimiters                 | Type: `'parentheses'` (use `abs()` for absolute value) |
+| **SubscriptNode**   | `'subscript'`   | Subscript/index notation (base_subscript)        | —                                                      |
+| **SuperscriptNode** | `'superscript'` | Superscript/exponent notation (base^superscript) | —                                                      |
 
 ### Function Node
 

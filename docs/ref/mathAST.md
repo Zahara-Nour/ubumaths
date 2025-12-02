@@ -336,15 +336,13 @@ interface PositiveNode {
 #### DelimiterNode
 
 ```typescript
-type DelimiterType =
-	| 'parentheses' // (...)
-	| 'absolute'; // |...|
+type DelimiterType = 'parentheses'; // (...)
+// Note: Absolute value |x| is represented as FunctionNode with name: 'abs'
 
 type DelimiterSemantic =
 	| 'grouping' // Default for parentheses
 	| 'interval' // [a, b]
 	| 'set' // {elements}
-	| 'absolute' // |x|
 	| 'matrix'
 	| 'vector';
 
@@ -1862,24 +1860,24 @@ prettyPrint(ast, { colors: false });
 
 Each node type is displayed with its key information:
 
-| Node Type      | Output Format                             |
-| -------------- | ----------------------------------------- |
-| Number         | `Number: 42`                              |
-| Variable       | `Variable: x`                             |
-| Greek          | `Greek: alpha`                            |
-| Symbol         | `Symbol: infinity`                        |
-| Addition       | `Addition`                                |
-| Subtraction    | `Subtraction`                             |
-| Multiplication | `Multiplication [dot]` or `[implicit]`    |
-| Division       | `Division [fraction]` or `[inline]`       |
-| Opposite       | `Opposite`                                |
-| Positive       | `Positive`                                |
-| Function       | `Function: sin`                           |
-| Delimiter      | `Delimiter [parentheses]` or `(absolute)` |
-| Subscript      | `Subscript`                               |
-| Superscript    | `Superscript`                             |
-| Relation       | `Relation: =`                             |
-| Unit           | `Unit: m`                                 |
+| Node Type      | Output Format                          |
+| -------------- | -------------------------------------- |
+| Number         | `Number: 42`                           |
+| Variable       | `Variable: x`                          |
+| Greek          | `Greek: alpha`                         |
+| Symbol         | `Symbol: infinity`                     |
+| Addition       | `Addition`                             |
+| Subtraction    | `Subtraction`                          |
+| Multiplication | `Multiplication [dot]` or `[implicit]` |
+| Division       | `Division [fraction]` or `[inline]`    |
+| Opposite       | `Opposite`                             |
+| Positive       | `Positive`                             |
+| Function       | `Function: sin`                        |
+| Delimiter      | `Delimiter [parentheses]`              |
+| Subscript      | `Subscript`                            |
+| Superscript    | `Superscript`                          |
+| Relation       | `Relation: =`                          |
+| Unit           | `Unit: m`                              |
 
 #### Metadata Display
 

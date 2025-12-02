@@ -53,7 +53,6 @@ import {
 	positive,
 	func,
 	sin,
-	delimiter,
 	parentheses,
 	subscript,
 	superscript,
@@ -218,10 +217,6 @@ describe('guards', () => {
 		it('returns true for delimiter node', () => {
 			const node = parentheses(variable('x'));
 			expect(isDelimiter(node)).toBe(true);
-		});
-
-		it('returns true for various delimiter types', () => {
-			expect(isDelimiter(delimiter('absolute', variable('x')))).toBe(true);
 		});
 
 		it('returns false for non-delimiter nodes', () => {
