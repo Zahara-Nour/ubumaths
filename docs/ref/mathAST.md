@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 1351 passing (644 core + 707 parser)
+**Tests**: 1441 passing (644 core + 707 parser + 90 Exp)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -18,12 +18,13 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 6. [Transformation Helpers](#transformation-helpers)
 7. [Type Guards](#type-guards)
 8. [Flatten/Unflatten Helpers](#flattenunflatten-helpers)
-9. [LaTeX Generator](#latex-generator)
-10. [LaTeX Parser](#latex-parser)
-11. [Physical Units](#physical-units)
-12. [Dimensional Analysis](#dimensional-analysis)
-13. [Usage Patterns](#usage-patterns)
-14. [API Summary](#api-summary)
+9. [Exp Fluent Wrapper](#exp-fluent-wrapper)
+10. [LaTeX Generator](#latex-generator)
+11. [LaTeX Parser](#latex-parser)
+12. [Physical Units](#physical-units)
+13. [Dimensional Analysis](#dimensional-analysis)
+14. [Usage Patterns](#usage-patterns)
+15. [API Summary](#api-summary)
 
 ---
 
@@ -48,7 +49,9 @@ src/lib/mathAST/
 ├── transforms.ts         # Tree manipulation
 ├── guards.ts             # Type guards (includes unit guards)
 ├── flatten.ts            # Flatten helpers
+├── exp.ts                # Exp fluent wrapper class
 ├── latex-generator.ts    # LaTeX output
+├── pretty-print.ts       # Pretty-print tree output
 ├── parser/               # LaTeX parser (707 tests)
 │   ├── types.ts          # Token types, ParserOptions, ParseError
 │   ├── tokenizer.ts      # LaTeX lexer
@@ -75,6 +78,7 @@ src/lib/mathAST/
     ├── guards.test.ts
     ├── flatten.test.ts
     ├── latex-generator.test.ts
+    ├── exp.test.ts
     └── unit-node.test.ts
 ```
 
@@ -982,6 +986,302 @@ flipSign(sign: Sign): Sign  // '+' ↔ '-'
 
 ---
 
+## Exp Fluent Wrapper
+
+### Overview
+
+The `Exp` class provides a fluent, chainable API for building and manipulating mathematical ASTs. It wraps `MathNode` with ergonomic methods while maintaining immutability - all operations return new `Exp` instances.
+
+```typescript
+import { Exp, isVariable } from '$lib/mathAST';
+
+// Fluent construction: x^2 + 3x - 5 = 0
+const expr = Exp.variable('x')
+	.power(Exp.number('2'))
+	.add(Exp.number('3').multiply(Exp.variable('x')))
+	.subtract(Exp.number('5'))
+	.equals(Exp.number('0'));
+
+console.log(expr.latex); // x^2 + 3 x - 5 = 0
+console.log(expr.tree); // Pretty-printed AST
+
+// Functions: static and instance
+Exp.sin(Exp.variable('x')); // sin(x)
+Exp.variable('x').sin(); // sin(x) - equivalent
+
+// Transformations
+const colored = expr.map((node) =>
+	isVariable(node) ? { ...node, metadata: { color: 'red' } } : node
+);
+```
+
+### Design Principles
+
+| Principle          | Implementation                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| **Immutability**   | All operations return new `Exp` instances                                               |
+| **Interop**        | All methods accept both `Exp` and `MathNode` parameters                                 |
+| **Thin Wrapper**   | Delegates to existing factory/transform functions (no code duplication)                 |
+| **Dual Functions** | Math functions available as both static (`Exp.sin(x)`) and instance methods (`x.sin()`) |
+
+### Output Getters
+
+```typescript
+class Exp {
+	// Get the underlying MathNode
+	get node(): MathNode;
+
+	// Get the node type
+	get type(): MathNode['type'];
+
+	// Generate LaTeX output (default options)
+	get latex(): string;
+
+	// Generate pretty-print tree (default options)
+	get tree(): string;
+
+	// Generate LaTeX with custom options
+	toLatex(options?: LatexGeneratorOptions): string;
+
+	// Generate pretty-print tree with custom options
+	toTree(options?: PrettyPrintOptions): string;
+}
+```
+
+### Static Factories
+
+#### Wrapping & Parsing
+
+```typescript
+// Wrap an existing MathNode
+Exp.from(node: MathNode): Exp
+
+// Parse LaTeX string into Exp
+Exp.parse(latex: string, options?: LatexParserOptions): Exp
+```
+
+#### Literals
+
+```typescript
+Exp.number(value: string, metadata?: NodeMetadata): Exp
+Exp.variable(name: string, metadata?: NodeMetadata): Exp
+Exp.greek(letter: GreekLetter, metadata?: NodeMetadata): Exp
+Exp.symbol(sym: MathSymbol, metadata?: NodeMetadata): Exp
+```
+
+#### Binary Operations
+
+```typescript
+Exp.add(left: Exp | MathNode, right: Exp | MathNode): Exp
+Exp.subtract(left: Exp | MathNode, right: Exp | MathNode): Exp
+Exp.multiply(left: Exp | MathNode, right: Exp | MathNode, style?: MultiplicationDisplayStyle): Exp
+Exp.divide(numerator: Exp | MathNode, denominator: Exp | MathNode, style?: DivisionDisplayStyle): Exp
+Exp.fraction(numerator: Exp | MathNode, denominator: Exp | MathNode): Exp
+```
+
+#### Unary Operations
+
+```typescript
+Exp.opposite(operand: Exp | MathNode): Exp
+Exp.positive(operand: Exp | MathNode): Exp
+```
+
+#### Structural
+
+```typescript
+Exp.power(base: Exp | MathNode, exponent: Exp | MathNode): Exp
+Exp.subscript(base: Exp | MathNode, sub: Exp | MathNode): Exp
+Exp.parentheses(content: Exp | MathNode): Exp
+```
+
+#### Functions
+
+```typescript
+Exp.func(name: string, args: (Exp | MathNode)[], options?: FunctionOptions): Exp
+Exp.sin(arg: Exp | MathNode, options?: FunctionOptions): Exp
+Exp.cos(arg: Exp | MathNode, options?: FunctionOptions): Exp
+Exp.tan(arg: Exp | MathNode, options?: FunctionOptions): Exp
+Exp.ln(arg: Exp | MathNode, options?: FunctionOptions): Exp
+Exp.log(arg: Exp | MathNode, base?: Exp | MathNode, options?: FunctionOptions): Exp
+Exp.exp(arg: Exp | MathNode, options?: FunctionOptions): Exp
+Exp.sqrt(arg: Exp | MathNode, options?: FunctionOptions): Exp
+Exp.abs(arg: Exp | MathNode, options?: FunctionOptions): Exp
+```
+
+#### Relations
+
+```typescript
+Exp.equals(left: Exp | MathNode, right: Exp | MathNode): Exp
+Exp.lessThan(left: Exp | MathNode, right: Exp | MathNode): Exp
+Exp.greaterThan(left: Exp | MathNode, right: Exp | MathNode): Exp
+Exp.lessThanOrEqual(left: Exp | MathNode, right: Exp | MathNode): Exp
+Exp.greaterThanOrEqual(left: Exp | MathNode, right: Exp | MathNode): Exp
+Exp.notEquals(left: Exp | MathNode, right: Exp | MathNode): Exp
+Exp.approx(left: Exp | MathNode, right: Exp | MathNode): Exp
+Exp.congruent(left: Exp | MathNode, right: Exp | MathNode): Exp
+```
+
+### Instance Methods (Fluent)
+
+All instance methods accept `Exp | MathNode` parameters and return new `Exp` instances.
+
+#### Binary Operations
+
+```typescript
+exp.add(other): Exp        // this + other
+exp.subtract(other): Exp   // this - other
+exp.multiply(other, style?): Exp  // this * other (default: 'implicit')
+exp.divide(other, style?): Exp    // this / other (default: 'fraction')
+exp.fraction(other): Exp   // this / other (fraction display)
+```
+
+#### Unary Operations
+
+```typescript
+exp.negate(): Exp    // -this
+exp.positive(): Exp  // +this
+```
+
+#### Structural
+
+```typescript
+exp.power(exponent): Exp    // this^exponent
+exp.subscript(sub): Exp     // this_sub
+exp.parentheses(): Exp      // (this)
+```
+
+#### Functions (applies function to this)
+
+```typescript
+exp.sin(options?): Exp    // sin(this)
+exp.cos(options?): Exp    // cos(this)
+exp.tan(options?): Exp    // tan(this)
+exp.ln(options?): Exp     // ln(this)
+exp.log(base?, options?): Exp  // log(this) or log_base(this)
+exp.exp(options?): Exp    // exp(this)
+exp.sqrt(options?): Exp   // sqrt(this)
+exp.abs(options?): Exp    // abs(this)
+```
+
+#### Relations
+
+```typescript
+exp.equals(other): Exp           // this = other
+exp.lessThan(other): Exp         // this < other
+exp.greaterThan(other): Exp      // this > other
+exp.lessThanOrEqual(other): Exp  // this <= other
+exp.greaterThanOrEqual(other): Exp // this >= other
+exp.notEquals(other): Exp        // this != other
+exp.approx(other): Exp           // this ≈ other
+exp.congruent(other): Exp        // this ≡ other
+```
+
+### Transformations
+
+```typescript
+// Add/merge metadata to this node
+exp.withMetadata(metadata: Partial<NodeMetadata>): Exp
+
+// Transform all nodes recursively (bottom-up: children first)
+exp.map(fn: (node: MathNode) => MathNode): Exp
+
+// Transform all nodes recursively (top-down: parent first)
+exp.mapTopDown(fn: (node: MathNode) => MathNode): Exp
+
+// Find all nodes matching predicate
+exp.find(predicate: (node: MathNode) => boolean): MathNode[]
+
+// Find first node matching predicate
+exp.findFirst(predicate: (node: MathNode) => boolean): MathNode | undefined
+
+// Replace nodes matching predicate
+exp.replace(
+  predicate: (node: MathNode) => boolean,
+  replacement: MathNode | ((node: MathNode) => MathNode)
+): Exp
+
+// Get immediate children as MathNode array
+exp.children(): MathNode[]
+
+// Count total nodes in tree
+exp.count(): number
+
+// Get maximum depth of tree
+exp.depth(): number
+
+// Deep clone this expression
+exp.clone(): Exp
+```
+
+### Usage Examples
+
+#### Building Expressions Fluently
+
+```typescript
+import { Exp } from '$lib/mathAST';
+
+// x^2 + 2x + 1
+const quadratic = Exp.variable('x')
+	.power(Exp.number('2'))
+	.add(Exp.number('2').multiply(Exp.variable('x')))
+	.add(Exp.number('1'));
+
+// sin^2(x) + cos^2(x)
+const identity = Exp.variable('x')
+	.sin()
+	.power(Exp.number('2'))
+	.add(Exp.variable('x').cos().power(Exp.number('2')));
+
+// (a + b) / (a - b)
+const frac = Exp.variable('a')
+	.add(Exp.variable('b'))
+	.parentheses()
+	.fraction(Exp.variable('a').subtract(Exp.variable('b')).parentheses());
+```
+
+#### Parsing and Transforming
+
+```typescript
+// Parse LaTeX
+const parsed = Exp.parse('\\sin(x)^2 + \\cos(x)^2');
+console.log(parsed.tree);
+
+// Color all variables red
+const colored = parsed.map((node) =>
+	node.type === 'variable' ? { ...node, metadata: { color: 'red' } } : node
+);
+console.log(colored.latex);
+```
+
+#### Interop with MathNode
+
+```typescript
+import { Exp, variable, number } from '$lib/mathAST';
+
+// Mix Exp and MathNode freely
+const x = variable('x'); // MathNode
+const expr = Exp.from(x).power(number('2')); // MathNode param works
+
+// Extract MathNode when needed
+const node: MathNode = expr.node;
+```
+
+### Precedence Note
+
+The fluent chaining is left-to-right, which may differ from mathematical precedence. Use nesting for correct mathematical grouping:
+
+```typescript
+// x + y * z (mathematical precedence)
+// WRONG: Exp.variable('x').add(Exp.variable('y')).multiply(Exp.variable('z'))
+//        → (x + y) * z
+
+// CORRECT: Use static factory with proper structure
+Exp.add(Exp.variable('x'), Exp.multiply(Exp.variable('y'), Exp.variable('z')));
+// → x + y z
+```
+
+---
+
 ## Relation Chains
 
 ### Overview
@@ -1186,7 +1486,8 @@ function evaluate(node: MathNode, vars: Map<string, number>): number {
 | guards.ts          | 35      | Type checking           |
 | flatten.ts         | 16      | Flatten/unflatten       |
 | latex-generator.ts | 3       | LaTeX output            |
-| **index.ts**       | **157** | **Public API**          |
+| exp.ts             | 1       | Exp fluent wrapper      |
+| **index.ts**       | **158** | **Public API**          |
 
 **New in extended metadata**: 6 options types, 5 transform helpers, 6 guard functions
 
@@ -1205,6 +1506,7 @@ function evaluate(node: MathNode, vars: Map<string, number>): number {
 | **Guards**          | `isNumber`, `isVariable`, `isGreek`, `isSymbol`, `isAddition`, `isSubtraction`, `isMultiplication`, `isDivision`, `isOpposite`, `isPositive`, `isFunction`, `isDelimiter`, `isSubscript`, `isSuperscript`, `isRelation`, `isUnit`, `isLiteralNode`, `isBinaryOperationNode`, `isUnaryOperationNode`, `isStructuralNode`, `hasChildren`, `isLeaf`, `hasMetadata`, `hasOperatorMetadata`, `hasDelimiterMetadata`, `hasNameMetadata`, `hasRelationMetadata`, `hasUnitMetadata`, `hasAnyMetadata`, `isFraction`, `isImplicitMultiplication`, `isComparison`, `isEquality`, `isInequality`, `isRelationChain`, `isComparisonChain`, `isEqualityChain`, `isImplicationChain`, `isEquivalenceChain`, `getRelationChainLength`, `hasUnitDescendant`, `isDimensionlessUnit` |
 | **Flatten**         | `flipSign`, `flattenSumShallow`, `flattenProductShallow`, `flattenSumDeep`, `flattenProductDeep`, `unflattenSum`, `unflattenProduct`, `flattenRelationChain`, `unflattenRelationChain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **LaTeX**           | `toLatex`, `LatexGenerator`, `LatexGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **Exp Wrapper**     | `Exp` (fluent wrapper class with static factories, instance methods, and transformations)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | **Options Types**   | `BinaryOpOptions`, `UnaryOpOptions`, `DelimiterOptions`, `FunctionMetadataOptions`, `RelationOptions`, `UnitOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ---

@@ -325,3 +325,9 @@ export {
 export type { PrettyPrintOptions } from './pretty-print';
 
 export { prettyPrint } from './pretty-print';
+
+// =============================================================================
+// Exp Fluent Wrapper
+// =============================================================================
+
+export { Exp } from './exp';
