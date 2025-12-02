@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 1531 passing (644 core + 707 parser + 90 Exp + 90 CLI)
+**Tests**: 1561 passing (644 core + 737 parser + 90 Exp + 90 CLI)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -53,12 +53,12 @@ src/lib/mathAST/
 ├── exp.ts                # Exp fluent wrapper class
 ├── latex-generator.ts    # LaTeX output
 ├── pretty-print.ts       # Pretty-print tree output
-├── parser/               # LaTeX parser (707 tests)
+├── parser/               # LaTeX parser (737 tests)
 │   ├── types.ts          # Token types, ParserOptions, ParseError
 │   ├── tokenizer.ts      # LaTeX lexer
 │   ├── color-stack.ts    # Color context for nested \textcolor
-│   ├── parser-pratt.ts   # Pratt parser implementation
-│   ├── parser-rd.ts      # Recursive Descent parser
+│   ├── parser-pratt.ts   # Pratt parser (transparent \textcolor support)
+│   ├── parser-rd.ts      # Recursive Descent parser (transparent \textcolor support)
 │   └── index.ts          # Public API (parseLatex, parseLatexSafe)
 ├── units/                # Physical unit system (Unit AST)
 │   ├── types.ts          # Unit type definitions
@@ -1714,6 +1714,41 @@ const ast = parseLatex('x + y', { parser: 'rd', mode: 'tolerant' });
 | Relations     | `=`, `<`, `>`, `\leq`, `\geq`, `\neq`         |
 | Colors        | `\textcolor{red}{x}`, nested colors           |
 | Units         | `5~\unit{m}`, `v~\unit{m/s}`                  |
+
+### Transparent \textcolor Handling
+
+The `\textcolor` command is **transparent** to the AST structure - it applies color metadata but does not affect operator parsing or precedence. This ensures expressions parse identically with or without color markup.
+
+**Key behavior:**
+
+- `5 \textcolor{red}{+3}` parses as `Addition(5, 3)` with the `+` operator marked red
+- The color is applied to the operator via `operatorMetadata` (or `relationMetadata` for relations)
+- Elements inside the textcolor block inherit the color
+- Works for all operators: `+`, `-`, `*`, `/`, `^`, `_`, `=`, and relation commands
+
+**Examples:**
+
+| LaTeX                         | AST Structure                  | Metadata                  |
+| ----------------------------- | ------------------------------ | ------------------------- |
+| `5 \textcolor{red}{+3}`       | `Addition(5, 3)`               | `op:[red]`, right `[red]` |
+| `5 \textcolor{red}{*3}`       | `Multiplication(5, 3)`         | `op:[red]`, right `[red]` |
+| `a \textcolor{blue}{=} b`     | `Relation(=, a, b)`            | `rel:[blue]`              |
+| `\textcolor{red}{x+y}`        | `Addition(x, y)`               | all nodes `[red]`         |
+| `5 \textcolor{red}{\times 3}` | `Multiplication [cross](5, 3)` | `op:[red]`, right `[red]` |
+
+**Nested colors:**
+
+```latex
+\textcolor{red}{x + \textcolor{blue}{y}}
+```
+
+Parses as `Addition(x [red], y [blue])` with the `+` operator inheriting red from the outer scope.
+
+**Implementation notes:**
+
+- Color is captured at the moment the operator token is seen, before parsing the right operand
+- This ensures correct color attribution even when the color scope closes during right operand parsing
+- Both Pratt and Recursive Descent parsers implement this behavior identically
 
 ### Operator Precedence
 
