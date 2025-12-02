@@ -72,9 +72,9 @@ const TEST_CASES = [
 	// Parentheses
 	'\\left( x + y \\right) z',
 
-	// Greek letters
+	// Greek letters (only lowercase pi, alpha, beta, gamma, theta are supported)
 	'\\alpha + \\beta',
-	'\\Gamma \\Delta',
+	'\\pi \\gamma',
 
 	// Symbols
 	'\\infty + 1',

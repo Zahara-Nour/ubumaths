@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 1561 passing (644 core + 737 parser + 90 Exp + 90 CLI)
+**Tests**: 1655 passing (644 core + 737 parser + 94 custom generator + 90 Exp + 90 CLI)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -21,11 +21,12 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 9. [Exp Fluent Wrapper](#exp-fluent-wrapper)
 10. [LaTeX Generator](#latex-generator)
 11. [LaTeX Parser](#latex-parser)
-12. [Physical Units](#physical-units)
-13. [Dimensional Analysis](#dimensional-analysis)
-14. [Usage Patterns](#usage-patterns)
-15. [API Summary](#api-summary)
-16. [CLI](#cli)
+12. [Custom Syntax Generator](#custom-syntax-generator)
+13. [Physical Units](#physical-units)
+14. [Dimensional Analysis](#dimensional-analysis)
+15. [Usage Patterns](#usage-patterns)
+16. [API Summary](#api-summary)
+17. [CLI](#cli)
 
 ---
 
@@ -1480,18 +1481,20 @@ function evaluate(node: MathNode, vars: Map<string, number>): number {
 
 ### Export Counts
 
-| Module             | Exports | Description             |
-| ------------------ | ------- | ----------------------- |
-| types.ts           | 27      | Type definitions        |
-| factory.ts         | 61      | Node creation + options |
-| transforms.ts      | 15      | Tree manipulation       |
-| guards.ts          | 35      | Type checking           |
-| flatten.ts         | 16      | Flatten/unflatten       |
-| latex-generator.ts | 3       | LaTeX output            |
-| exp.ts             | 1       | Exp fluent wrapper      |
-| **index.ts**       | **158** | **Public API**          |
+| Module              | Exports | Description             |
+| ------------------- | ------- | ----------------------- |
+| types.ts            | 27      | Type definitions        |
+| factory.ts          | 61      | Node creation + options |
+| transforms.ts       | 15      | Tree manipulation       |
+| guards.ts           | 35      | Type checking           |
+| flatten.ts          | 16      | Flatten/unflatten       |
+| latex-generator.ts  | 3       | LaTeX output            |
+| custom-generator.ts | 2       | Custom syntax output    |
+| exp.ts              | 1       | Exp fluent wrapper      |
+| **index.ts**        | **160** | **Public API**          |
 
 **New in extended metadata**: 6 options types, 5 transform helpers, 6 guard functions
+**New in custom generator**: `toCustom`, `CustomGenerator`, `CustomGeneratorOptions`
 
 ### Quick Reference
 
@@ -1508,6 +1511,7 @@ function evaluate(node: MathNode, vars: Map<string, number>): number {
 | **Guards**          | `isNumber`, `isVariable`, `isGreek`, `isSymbol`, `isAddition`, `isSubtraction`, `isMultiplication`, `isDivision`, `isOpposite`, `isPositive`, `isFunction`, `isDelimiter`, `isSubscript`, `isSuperscript`, `isRelation`, `isUnit`, `isLiteralNode`, `isBinaryOperationNode`, `isUnaryOperationNode`, `isStructuralNode`, `hasChildren`, `isLeaf`, `hasMetadata`, `hasOperatorMetadata`, `hasDelimiterMetadata`, `hasNameMetadata`, `hasRelationMetadata`, `hasUnitMetadata`, `hasAnyMetadata`, `isFraction`, `isImplicitMultiplication`, `isComparison`, `isEquality`, `isInequality`, `isRelationChain`, `isComparisonChain`, `isEqualityChain`, `isImplicationChain`, `isEquivalenceChain`, `getRelationChainLength`, `hasUnitDescendant`, `isDimensionlessUnit` |
 | **Flatten**         | `flipSign`, `flattenSumShallow`, `flattenProductShallow`, `flattenSumDeep`, `flattenProductDeep`, `unflattenSum`, `unflattenProduct`, `flattenRelationChain`, `unflattenRelationChain`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **LaTeX**           | `toLatex`, `LatexGenerator`, `LatexGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **Custom Syntax**   | `toCustom`, `CustomGenerator`, `CustomGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **Exp Wrapper**     | `Exp` (fluent wrapper class with static factories, instance methods, and transformations)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | **Options Types**   | `BinaryOpOptions`, `UnaryOpOptions`, `DelimiterOptions`, `FunctionMetadataOptions`, `RelationOptions`, `UnitOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
@@ -1808,6 +1812,185 @@ const ast1 = parsePratt('x + y'); // Pratt parser
 const ast2 = parseRD('x + y'); // RD parser
 const result = parsePrattSafe('x^{'); // Safe Pratt parser
 ```
+
+---
+
+## Custom Syntax Generator
+
+### Overview
+
+The custom syntax generator converts MathAST nodes to custom ASCII Math-style syntax output. It mirrors the LaTeX generator architecture with support for metadata rendering (color/style). The generator produces output compatible with the custom syntax parser for round-trip safety.
+
+```typescript
+import { toCustom, CustomGenerator } from '$lib/mathAST';
+
+// Using the convenience function
+const expr = MathAST.power(MathAST.variable('x'), MathAST.number('2'));
+const custom = toCustom(expr); // "x^2"
+
+// Using the class
+const generator = new CustomGenerator({ renderMetadata: true });
+const custom = generator.generate(expr);
+```
+
+### Key Syntax Mappings
+
+| AST Node                  | Custom Syntax                                | Notes                                           |
+| ------------------------- | -------------------------------------------- | ----------------------------------------------- |
+| Division (fraction)       | `/`                                          | Tight binding at primary level                  |
+| Division (inline)         | `:/`                                         | Multiplicative level                            |
+| Division (ratio)          | `:`                                          | Multiplicative level                            |
+| Multiplication (implicit) | Juxtaposition                                | `2x`, `xy`                                      |
+| Multiplication (explicit) | `*`                                          | All display styles map to `*`                   |
+| Absolute value            | `\|x\|`                                      | Rendered from `abs(x)` function                 |
+| nth root                  | `sqrt[n](x)`                                 | Index in brackets before parentheses            |
+| Colors                    | `@red{...}` or `@#FF0000{...}`               | @ prefix for named or hex colors                |
+| Units                     | `5[m/s]`                                     | Bracket notation                                |
+| Greek letters             | `\pi`, `\alpha`, `\beta`, `\gamma`, `\theta` | Only 5 supported                                |
+| Functions                 | `sin(x)`, `log_2(x)`, `sqrt(x)`              | No backslash, parentheses mandatory             |
+| Grouping                  | `{a+b}`                                      | Transparent (no AST node for round-trip safety) |
+
+### Options
+
+```typescript
+interface CustomGeneratorOptions {
+	readonly renderMetadata?: boolean; // default: false
+}
+```
+
+- `renderMetadata`: When `true`, renders color metadata using `@color{...}` syntax. Style (bold/italic) and annotation are not rendered in custom syntax output.
+
+### Supported Greek Letters
+
+Only 5 Greek letters are supported in custom syntax (matching the parser):
+
+- `pi` (π)
+- `alpha` (α)
+- `beta` (β)
+- `gamma` (γ)
+- `theta` (θ)
+
+Attempting to generate other Greek letters (e.g., `Delta`, `omega`) raises an error.
+
+### Brace Insertion Rules
+
+The generator automatically inserts braces to ensure round-trip safety:
+
+#### For Exponents (Powers)
+
+No braces needed for:
+
+- Single digits: `x^2`
+- Single letters: `x^n`
+- Supported Greek letters: `x^\pi`
+- Multi-digit numbers: `x^12`
+
+Braces required for:
+
+- Negative exponents: `x^{-2}`
+- Multi-letter expressions: `x^{n+1}`, `x^{ab}`
+- Complex expressions: `x^{2a+b}`
+
+#### For Subscripts
+
+No braces needed for:
+
+- Single digits: `x_1`
+- Single letters: `x_n`
+- Multi-digit numbers: `x_12`
+
+Braces required for:
+
+- Multi-letter: `x_{ab}`
+- Greek letters: `x_{\alpha}`
+- Complex expressions: `x_{a+b}`
+
+#### For Fractions (with `/`)
+
+No wrapping needed for:
+
+- Atoms (numbers, variables, Greek letters, symbols)
+- Functions with parentheses: `sin(x)/2`
+- Delimiters (parentheses): `(a+b)/c`
+
+Braces required for:
+
+- Addition/subtraction: `{a+b}/c`
+- Multiplication: `{a*b}/c`
+- Other divisions: `{a/b}/c`
+- Subscripts/superscripts: `{x_1}/y`
+
+### Output Examples
+
+| Expression                                    | Custom Output | Notes                          |
+| --------------------------------------------- | ------------- | ------------------------------ |
+| `number('42')`                                | `42`          |                                |
+| `variable('x')`                               | `x`           |                                |
+| `greek('pi')`                                 | `\pi`         |                                |
+| `power(x, 2)`                                 | `x^2`         |                                |
+| `fraction(a, b)`                              | `a/b`         |                                |
+| `divide(a, b, 'inline')`                      | `a:/b`        |                                |
+| `divide(a, b, 'ratio')`                       | `a:b`         |                                |
+| `multiply(2, x)` with implicit                | `2x`          |                                |
+| `multiply(2, x)` with explicit                | `2*x`         |                                |
+| `sin(x)`                                      | `sin(x)`      | No backslash                   |
+| `sin(x)` with power=2                         | `sin^2(x)`    |                                |
+| `log(x, 2)`                                   | `log_2(x)`    |                                |
+| `sqrt(x, 3)`                                  | `sqrt[3](x)`  |                                |
+| `abs(x)`                                      | `\|x\|`       |                                |
+| `parentheses(x)`                              | `(x)`         |                                |
+| `equals(x, 5)`                                | `x=5`         |                                |
+| `lessThanChain(a, b, c)`                      | `a<b<c`       |                                |
+| `quantity('5', 'm')`                          | `5[m]`        |                                |
+| `number('5', { color: 'red' })` with metadata | `@red{5}`     | Only with renderMetadata: true |
+
+### Round-Trip Guarantee
+
+Custom syntax is designed for safe round-tripping:
+
+```typescript
+import { parseCustom, toCustom } from '$lib/mathAST';
+
+const input = '2x^2+3x+1';
+const ast = parseCustom(input);
+const output = toCustom(ast);
+// output === '2x^2+3x+1' (exact match with input)
+```
+
+The generator produces output that parses back to an equivalent AST. Brace insertion rules ensure unambiguous parsing.
+
+### Metadata Rendering
+
+When `renderMetadata: true`, color metadata is rendered using the `@color{...}` syntax:
+
+```typescript
+const expr = MathAST.add(MathAST.number('3'), MathAST.number('4'), {
+	operatorMetadata: { color: 'red' }
+});
+
+toCustom(expr, { renderMetadata: true });
+// Output: "3@red{+}4"
+```
+
+Adjacent spans with identical colors are merged (coalescence) to minimize output size:
+
+```typescript
+// All red: 3 + 4 (operator and right operand both red)
+toCustom(expr, { renderMetadata: true });
+// Output: "3@red{+4}"
+```
+
+### Comparison with LaTeX Generator
+
+| Feature        | Custom Syntax           | LaTeX                             |
+| -------------- | ----------------------- | --------------------------------- |
+| Division       | `/`, `:/`, `:`          | `\frac{}{}`, inline               |
+| Functions      | `sin(x)`                | `\sin\left( x \right)`            |
+| Greek          | `\pi`, `\alpha`         | `\pi`, `\alpha`                   |
+| Square root    | `sqrt(x)`, `sqrt[n](x)` | `\sqrt{x}`, `\sqrt[n]{x}`         |
+| Absolute value | `\|x\|`                 | `\left\| x \right\|`              |
+| Colors         | `@red{...}`             | `\textcolor{red}{...}`            |
+| Grouping       | `{...}`                 | `\left( ... \right)` or `\{...\}` |
 
 ---
 

@@ -34,25 +34,12 @@ describe('LatexGenerator - Literals', () => {
 		expect(toLatex(MathAST.variable('ab'))).toBe('\\mathit{ab}');
 	});
 
-	it('generates lowercase Greek letters', () => {
+	it('generates supported Greek letters', () => {
+		expect(toLatex(MathAST.greek('pi'))).toBe('\\pi');
 		expect(toLatex(MathAST.greek('alpha'))).toBe('\\alpha');
 		expect(toLatex(MathAST.greek('beta'))).toBe('\\beta');
-		expect(toLatex(MathAST.greek('omega'))).toBe('\\omega');
+		expect(toLatex(MathAST.greek('gamma'))).toBe('\\gamma');
 		expect(toLatex(MathAST.greek('theta'))).toBe('\\theta');
-	});
-
-	it('generates uppercase Greek letters with LaTeX commands', () => {
-		expect(toLatex(MathAST.greek('Gamma'))).toBe('\\Gamma');
-		expect(toLatex(MathAST.greek('Delta'))).toBe('\\Delta');
-		expect(toLatex(MathAST.greek('Omega'))).toBe('\\Omega');
-		expect(toLatex(MathAST.greek('Sigma'))).toBe('\\Sigma');
-	});
-
-	it('generates uppercase Greek letters that are roman letters', () => {
-		expect(toLatex(MathAST.greek('Alpha'))).toBe('A');
-		expect(toLatex(MathAST.greek('Beta'))).toBe('B');
-		expect(toLatex(MathAST.greek('Epsilon'))).toBe('E');
-		expect(toLatex(MathAST.greek('Omicron'))).toBe('O');
 	});
 
 	it('generates mathematical symbols', () => {
