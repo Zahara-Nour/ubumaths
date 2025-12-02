@@ -234,56 +234,12 @@ export type KnownCommand =
 	| 'sqrt'
 	| 'left'
 	| 'right'
-	// Greek lowercase
+	// Greek (limited set - only these are supported by both parsers)
+	| 'pi'
 	| 'alpha'
 	| 'beta'
 	| 'gamma'
-	| 'delta'
-	| 'epsilon'
-	| 'zeta'
-	| 'eta'
 	| 'theta'
-	| 'iota'
-	| 'kappa'
-	| 'lambda'
-	| 'mu'
-	| 'nu'
-	| 'xi'
-	| 'omicron'
-	| 'pi'
-	| 'rho'
-	| 'sigma'
-	| 'tau'
-	| 'upsilon'
-	| 'phi'
-	| 'chi'
-	| 'psi'
-	| 'omega'
-	// Greek uppercase
-	| 'Alpha'
-	| 'Beta'
-	| 'Gamma'
-	| 'Delta'
-	| 'Epsilon'
-	| 'Zeta'
-	| 'Eta'
-	| 'Theta'
-	| 'Iota'
-	| 'Kappa'
-	| 'Lambda'
-	| 'Mu'
-	| 'Nu'
-	| 'Xi'
-	| 'Omicron'
-	| 'Pi'
-	| 'Rho'
-	| 'Sigma'
-	| 'Tau'
-	| 'Upsilon'
-	| 'Phi'
-	| 'Chi'
-	| 'Psi'
-	| 'Omega'
 	// Formatting
 	| 'textcolor'
 	| 'mathbf'
@@ -402,56 +358,12 @@ export const KNOWN_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'sqrt',
 	'left',
 	'right',
-	// Greek lowercase
+	// Greek (limited set - only these are supported by both parsers)
+	'pi',
 	'alpha',
 	'beta',
 	'gamma',
-	'delta',
-	'epsilon',
-	'zeta',
-	'eta',
 	'theta',
-	'iota',
-	'kappa',
-	'lambda',
-	'mu',
-	'nu',
-	'xi',
-	'omicron',
-	'pi',
-	'rho',
-	'sigma',
-	'tau',
-	'upsilon',
-	'phi',
-	'chi',
-	'psi',
-	'omega',
-	// Greek uppercase
-	'Alpha',
-	'Beta',
-	'Gamma',
-	'Delta',
-	'Epsilon',
-	'Zeta',
-	'Eta',
-	'Theta',
-	'Iota',
-	'Kappa',
-	'Lambda',
-	'Mu',
-	'Nu',
-	'Xi',
-	'Omicron',
-	'Pi',
-	'Rho',
-	'Sigma',
-	'Tau',
-	'Upsilon',
-	'Phi',
-	'Chi',
-	'Psi',
-	'Omega',
 	// Formatting
 	'textcolor',
 	'mathbf',
@@ -557,59 +469,18 @@ export const FUNCTION_COMMANDS: ReadonlySet<string> = new Set<string>([
 ]);
 
 /**
- * Commands that are Greek letters
+ * Commands that are Greek letters (limited set).
+ *
+ * Only these Greek letters are supported by both LaTeX and Custom parsers.
+ * Supported: pi, alpha, beta, gamma, theta
+ * Not supported: All other Greek letters (omega, sigma, delta, epsilon, etc.)
  */
 export const GREEK_COMMANDS: ReadonlySet<string> = new Set<string>([
-	// Lowercase
+	'pi',
 	'alpha',
 	'beta',
 	'gamma',
-	'delta',
-	'epsilon',
-	'zeta',
-	'eta',
-	'theta',
-	'iota',
-	'kappa',
-	'lambda',
-	'mu',
-	'nu',
-	'xi',
-	'omicron',
-	'pi',
-	'rho',
-	'sigma',
-	'tau',
-	'upsilon',
-	'phi',
-	'chi',
-	'psi',
-	'omega',
-	// Uppercase
-	'Alpha',
-	'Beta',
-	'Gamma',
-	'Delta',
-	'Epsilon',
-	'Zeta',
-	'Eta',
-	'Theta',
-	'Iota',
-	'Kappa',
-	'Lambda',
-	'Mu',
-	'Nu',
-	'Xi',
-	'Omicron',
-	'Pi',
-	'Rho',
-	'Sigma',
-	'Tau',
-	'Upsilon',
-	'Phi',
-	'Chi',
-	'Psi',
-	'Omega'
+	'theta'
 ]);
 
 /**

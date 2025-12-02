@@ -100,14 +100,8 @@ describe('Literals', () => {
 			expect(node.letter).toBe('alpha');
 		});
 
-		it('should parse uppercase Greek', () => {
-			const node = parse('\\Omega');
-			expectType(node, 'greek');
-			expect(node.letter).toBe('Omega');
-		});
-
-		it('should parse common Greek letters', () => {
-			const letters = ['beta', 'gamma', 'delta', 'pi', 'theta', 'lambda', 'sigma'];
+		it('should parse all supported Greek letters', () => {
+			const letters = ['pi', 'alpha', 'beta', 'gamma', 'theta'];
 			for (const letter of letters) {
 				const node = parse(`\\${letter}`);
 				expectType(node, 'greek');

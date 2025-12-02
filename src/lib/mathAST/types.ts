@@ -12,67 +12,15 @@ import type { Unit } from './units/types';
 // =============================================================================
 
 /**
- * Lowercase Greek letter names
+ * Supported Greek letter names (lowercase only)
+ *
+ * This is a limited set of Greek letters supported by both LaTeX and Custom parsers.
+ * Only these letters can be used in mathematical expressions.
+ *
+ * Supported: pi, alpha, beta, gamma, theta
+ * Not supported: All other Greek letters (omega, sigma, delta, epsilon, etc.)
  */
-export type GreekLetterLowercase =
-	| 'alpha'
-	| 'beta'
-	| 'gamma'
-	| 'delta'
-	| 'epsilon'
-	| 'zeta'
-	| 'eta'
-	| 'theta'
-	| 'iota'
-	| 'kappa'
-	| 'lambda'
-	| 'mu'
-	| 'nu'
-	| 'xi'
-	| 'omicron'
-	| 'pi'
-	| 'rho'
-	| 'sigma'
-	| 'tau'
-	| 'upsilon'
-	| 'phi'
-	| 'chi'
-	| 'psi'
-	| 'omega';
-
-/**
- * Uppercase Greek letter names
- */
-export type GreekLetterUppercase =
-	| 'Alpha'
-	| 'Beta'
-	| 'Gamma'
-	| 'Delta'
-	| 'Epsilon'
-	| 'Zeta'
-	| 'Eta'
-	| 'Theta'
-	| 'Iota'
-	| 'Kappa'
-	| 'Lambda'
-	| 'Mu'
-	| 'Nu'
-	| 'Xi'
-	| 'Omicron'
-	| 'Pi'
-	| 'Rho'
-	| 'Sigma'
-	| 'Tau'
-	| 'Upsilon'
-	| 'Phi'
-	| 'Chi'
-	| 'Psi'
-	| 'Omega';
-
-/**
- * All Greek letter names (lowercase and uppercase)
- */
-export type GreekLetter = GreekLetterLowercase | GreekLetterUppercase;
+export type GreekLetter = 'pi' | 'alpha' | 'beta' | 'gamma' | 'theta';
 
 // =============================================================================
 // Mathematical Symbols

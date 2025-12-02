@@ -118,9 +118,9 @@ describe('factory', () => {
 			expect(node.letter).toBe('alpha');
 		});
 
-		it('handles uppercase Greek letters', () => {
-			const node = greek('Delta');
-			expect(node.letter).toBe('Delta');
+		it('handles all supported Greek letters', () => {
+			const node = greek('gamma');
+			expect(node.letter).toBe('gamma');
 		});
 
 		it('includes metadata when provided', () => {

@@ -223,67 +223,10 @@ describe('Command tokenization', () => {
 		});
 	});
 
-	describe('Greek letters', () => {
-		const greekLowercase = [
-			'alpha',
-			'beta',
-			'gamma',
-			'delta',
-			'epsilon',
-			'zeta',
-			'eta',
-			'theta',
-			'iota',
-			'kappa',
-			'lambda',
-			'mu',
-			'nu',
-			'xi',
-			'omicron',
-			'pi',
-			'rho',
-			'sigma',
-			'tau',
-			'upsilon',
-			'phi',
-			'chi',
-			'psi',
-			'omega'
-		];
+	describe('Supported Greek letters', () => {
+		const supportedGreek = ['pi', 'alpha', 'beta', 'gamma', 'theta'];
 
-		it.each(greekLowercase)('should tokenize lowercase Greek \\%s', (letter) => {
-			const tokens = tokenize(`\\${letter}`);
-			expect(tokens[0].value).toBe(letter);
-		});
-
-		const greekUppercase = [
-			'Alpha',
-			'Beta',
-			'Gamma',
-			'Delta',
-			'Epsilon',
-			'Zeta',
-			'Eta',
-			'Theta',
-			'Iota',
-			'Kappa',
-			'Lambda',
-			'Mu',
-			'Nu',
-			'Xi',
-			'Omicron',
-			'Pi',
-			'Rho',
-			'Sigma',
-			'Tau',
-			'Upsilon',
-			'Phi',
-			'Chi',
-			'Psi',
-			'Omega'
-		];
-
-		it.each(greekUppercase)('should tokenize uppercase Greek \\%s', (letter) => {
+		it.each(supportedGreek)('should tokenize supported Greek \\%s', (letter) => {
 			const tokens = tokenize(`\\${letter}`);
 			expect(tokens[0].value).toBe(letter);
 		});

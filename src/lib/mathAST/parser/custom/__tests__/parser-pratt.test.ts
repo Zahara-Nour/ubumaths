@@ -683,7 +683,7 @@ describe('Functions', () => {
 			const ast = parse('log(x,10)');
 
 			expect(ast.type).toBe('function');
-			const func = ast as { args: MathNode[] };
+			const func = ast as unknown as { args: MathNode[] };
 			expect(func.args).toHaveLength(2);
 		});
 	});
@@ -722,7 +722,7 @@ describe('Absolute Value', () => {
 		const ast = parse('|x+1|');
 
 		expect(ast.type).toBe('function');
-		const func = ast as { args: MathNode[] };
+		const func = ast as unknown as { args: MathNode[] };
 		expect(func.args[0].type).toBe('addition');
 	});
 
@@ -1053,7 +1053,7 @@ describe('Complex expressions', () => {
 		const ast = parse('log_2(x^2)');
 
 		expect(ast.type).toBe('function');
-		const func = ast as { name: string; base?: MathNode; args: MathNode[] };
+		const func = ast as unknown as { name: string; base?: MathNode; args: MathNode[] };
 		expect(func.name).toBe('log');
 		expect(func.base).toEqual({ type: 'number', value: '2' });
 		expect(func.args[0].type).toBe('superscript');

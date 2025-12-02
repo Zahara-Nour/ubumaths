@@ -38,8 +38,6 @@ export type {
 
 	// Greek letters
 	GreekLetter,
-	GreekLetterLowercase,
-	GreekLetterUppercase,
 
 	// Symbols
 	MathSymbol,
@@ -317,6 +315,14 @@ export {
 	PrattParseException,
 	RDParseException
 } from './parser';
+
+// =============================================================================
+// Custom Syntax Generator
+// =============================================================================
+
+export type { CustomGeneratorOptions } from './custom-generator';
+
+export { CustomGenerator, toCustom } from './custom-generator';
 
 // =============================================================================
 // Pretty Printer

@@ -1,8 +1,23 @@
 /**
- * LaTeX Generator for MathAST
+ * Custom Syntax Generator for MathAST
  *
- * Converts MathAST nodes to AMS-LaTeX output with auto-sizing delimiters.
- * Trusts the AST structure for precedence - no smart parentheses insertion.
+ * Converts MathAST nodes to custom syntax (ASCII Math-style) output.
+ * Mirrors the LaTeX generator architecture with dual-mode rendering:
+ * - Simple mode: Direct string generation (no metadata)
+ * - Coalescence mode: Span-based rendering with color/style metadata
+ *
+ * Key differences from LaTeX:
+ * - Functions have NO backslash: sin(x) not \sin(x)
+ * - Fractions use /: a/b not \frac{a}{b}
+ * - Inline division uses :/: a:/b
+ * - Ratio uses :: a:b
+ * - Colors use @: @red{x} or @#FF0000{x}
+ * - Units use brackets: 5[m/s]
+ * - Absolute value uses |: |x| (rendered from abs function)
+ * - Only 5 Greek letters supported: \pi, \alpha, \beta, \gamma, \theta
+ * - Only \infty for infinity symbol
+ *
+ * @module mathAST/custom-generator
  */
 
 import type {
@@ -23,7 +38,6 @@ import type {
 	SuperscriptNode,
 	RelationNode,
 	UnitNode,
-	MathSymbol,
 	RelationType,
 	GreekLetter,
 	NodeMetadata
@@ -50,7 +64,7 @@ type ColoredSpan = {
 // Options
 // =============================================================================
 
-export interface LatexGeneratorOptions {
+export interface CustomGeneratorOptions {
 	readonly renderMetadata?: boolean; // default: false
 }
 
@@ -58,127 +72,45 @@ export interface LatexGeneratorOptions {
 // Symbol Mappings
 // =============================================================================
 
-const SYMBOL_MAP: Record<MathSymbol, string> = {
-	infinity: '\\infty',
-	emptyset: '\\emptyset',
-	partial: '\\partial',
-	nabla: '\\nabla',
-	forall: '\\forall',
-	exists: '\\exists',
-	nexists: '\\nexists',
-	in: '\\in',
-	notin: '\\notin',
-	subset: '\\subset',
-	supset: '\\supset',
-	subseteq: '\\subseteq',
-	supseteq: '\\supseteq',
-	union: '\\cup',
-	intersection: '\\cap',
-	setminus: '\\setminus',
-	therefore: '\\therefore',
-	because: '\\because',
-	qed: '\\blacksquare',
-	aleph: '\\aleph',
-	beth: '\\beth',
-	ell: '\\ell',
-	wp: '\\wp',
-	Re: '\\Re',
-	Im: '\\Im',
-	hbar: '\\hbar',
-	degree: '^\\circ',
-	prime: "'",
-	dprime: "''",
-	approx: '\\approx',
-	simeq: '\\simeq',
-	cong: '\\cong',
-	propto: '\\propto',
-	perp: '\\perp',
-	parallel: '\\parallel',
-	angle: '\\angle',
-	measuredangle: '\\measuredangle',
-	triangle: '\\triangle',
-	square: '\\square',
-	diamond: '\\diamond',
-	star: '\\star',
-	circ: '\\circ',
-	bullet: '\\bullet',
-	cdot: '\\cdot',
-	times: '\\times',
-	div: '\\div',
-	pm: '\\pm',
-	mp: '\\mp',
-	ast: '\\ast',
-	oplus: '\\oplus',
-	ominus: '\\ominus',
-	otimes: '\\otimes',
-	odot: '\\odot'
-};
+/**
+ * Supported Greek letters in custom syntax.
+ * Only these 5 are supported by the custom parser.
+ */
+const SUPPORTED_GREEK: ReadonlySet<GreekLetter> = new Set<GreekLetter>([
+	'pi',
+	'alpha',
+	'beta',
+	'gamma',
+	'theta'
+]);
 
+/**
+ * Map custom syntax relation types to output strings.
+ */
 const RELATION_MAP: Record<RelationType, string> = {
 	'=': '=',
 	'<': '<',
 	'>': '>',
-	'<=': '\\leq',
-	'>=': '\\geq',
-	'!=': '\\neq',
-	'≡': '\\equiv',
-	'≢': '\\not\\equiv',
-	'≈': '\\approx',
-	'≃': '\\simeq',
-	'∼': '\\sim',
-	'≺': '\\prec',
-	'≻': '\\succ',
-	'⊂': '\\subset',
-	'⊃': '\\supset',
-	'⊆': '\\subseteq',
-	'⊇': '\\supseteq',
-	'∈': '\\in',
-	'∉': '\\notin',
-	'⟹': '\\implies',
-	'⟺': '\\iff',
-	'⟸': '\\impliedby'
+	'<=': '<=',
+	'>=': '>=',
+	'!=': '!=',
+	'≡': '=', // Fallback: custom syntax doesn't have equiv
+	'≢': '!=', // Fallback
+	'≈': '=', // Fallback
+	'≃': '=', // Fallback
+	'∼': '=', // Fallback
+	'≺': '<', // Fallback
+	'≻': '>', // Fallback
+	'⊂': '<', // Fallback
+	'⊃': '>', // Fallback
+	'⊆': '<=', // Fallback
+	'⊇': '>=', // Fallback
+	'∈': '=', // Fallback
+	'∉': '!=', // Fallback
+	'⟹': '=>',
+	'⟺': '<=>',
+	'⟸': '=>' // Fallback: reverse as forward
 };
-
-// Uppercase Greek letters that are just roman letters in LaTeX
-// NOTE: We only support lowercase Greek letters (pi, alpha, beta, gamma, theta)
-// This set is kept for potential future expansion but is currently empty
-const GREEK_ROMAN_UPPERCASE = new Set<GreekLetter>([]);
-
-const GREEK_ROMAN_MAP: Record<string, string> = {
-	// Empty - we only support lowercase Greek letters
-};
-
-// Known functions that should use \name syntax
-const KNOWN_FUNCTIONS = new Set([
-	'sin',
-	'cos',
-	'tan',
-	'cot',
-	'sec',
-	'csc',
-	'arcsin',
-	'arccos',
-	'arctan',
-	'sinh',
-	'cosh',
-	'tanh',
-	'ln',
-	'log',
-	'exp',
-	'lim',
-	'min',
-	'max',
-	'sup',
-	'inf',
-	'det',
-	'dim',
-	'ker',
-	'deg',
-	'gcd',
-	'lcm',
-	'arg',
-	'mod'
-]);
 
 // =============================================================================
 // Delimiter Metadata Helpers
@@ -201,14 +133,148 @@ function getRightDelimiterMetadata(node: DelimiterNode | FunctionNode): NodeMeta
 }
 
 // =============================================================================
+// Helper Functions for Round-Trip Safety
+// =============================================================================
+
+/**
+ * Determines if an exponent node needs braces for round-trip safety.
+ *
+ * Rules:
+ * - Single digit: NO braces (x^2)
+ * - Single letter: NO braces (x^n)
+ * - Greek letter (supported): NO braces (x^\pi)
+ * - Multi-digit number: NO braces (x^12)
+ * - Negative exponent: NEEDS braces (x^{-2})
+ * - Multi-letter expression: NEEDS braces (x^{ab}, x^{n+1})
+ * - Any complex expression: NEEDS braces
+ */
+function needsBracesForPower(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+			// Numbers don't need braces (x^2, x^12)
+			return false;
+
+		case 'variable':
+			// Single letter: OK, multi-letter: needs braces
+			return node.name.length > 1;
+
+		case 'greek':
+			// Supported Greek letters don't need braces
+			return !SUPPORTED_GREEK.has(node.letter);
+
+		case 'symbol':
+			// Only \infty is supported
+			return node.symbol !== 'infinity';
+
+		case 'opposite':
+		case 'positive':
+			// Unary signs always need braces: x^{-2}, x^{+2}
+			return true;
+
+		default:
+			// All complex expressions need braces
+			return true;
+	}
+}
+
+/**
+ * Determines if a subscript node needs braces for round-trip safety.
+ *
+ * Rules:
+ * - Single digit: NO braces (x_1)
+ * - Single letter: NO braces (x_n)
+ * - Multi-digit number: NO braces (x_12)
+ * - Multi-letter: NEEDS braces (x_{ab})
+ * - Complex expression: NEEDS braces
+ */
+function needsBracesForSubscript(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+			// Numbers don't need braces
+			return false;
+
+		case 'variable':
+			// Single letter: OK, multi-letter: needs braces
+			return node.name.length > 1;
+
+		case 'greek':
+			// Greek letters need braces in subscript
+			return true;
+
+		case 'symbol':
+			// Symbols need braces in subscript
+			return true;
+
+		default:
+			// All complex expressions need braces
+			return true;
+	}
+}
+
+/**
+ * Determines if a node should be wrapped with braces when used as
+ * a fraction numerator or denominator.
+ *
+ * In custom syntax, `/` is tightly binding at the atom level.
+ * Atoms that parse as a single unit don't need wrapping:
+ * - Numbers, variables, Greek letters, symbols
+ * - Functions (with parens)
+ * - Delimiters (parentheses create grouping)
+ * - Absolute value (|x|)
+ *
+ * Complex expressions need `{}` wrapping:
+ * - Addition, subtraction
+ * - Multiplication (explicit or implicit)
+ * - Division (nested fractions)
+ * - Unary minus/plus
+ * - Subscripts, superscripts
+ */
+function shouldWrapForFraction(node: MathNode): boolean {
+	switch (node.type) {
+		// Atoms: don't need wrapping
+		case 'number':
+		case 'variable':
+		case 'greek':
+		case 'symbol':
+			return false;
+
+		// Functions: have their own parentheses
+		case 'function':
+			return false;
+
+		// Delimiters: parentheses provide grouping
+		case 'delimiter':
+			return false;
+
+		// Complex expressions: need wrapping
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+		case 'division':
+		case 'opposite':
+		case 'positive':
+		case 'subscript':
+		case 'superscript':
+		case 'relation':
+		case 'unit':
+			return true;
+
+		default: {
+			const exhaustive: never = node;
+			throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
+		}
+	}
+}
+
+// =============================================================================
 // Generator Class
 // =============================================================================
 
-export class LatexGenerator {
-	private readonly options: Required<LatexGeneratorOptions>;
+export class CustomGenerator {
+	private readonly options: Required<CustomGeneratorOptions>;
 	private spans: ColoredSpan[] = [];
 
-	constructor(options?: LatexGeneratorOptions) {
+	constructor(options?: CustomGeneratorOptions) {
 		this.options = {
 			renderMetadata: options?.renderMetadata ?? false
 		};
@@ -216,10 +282,10 @@ export class LatexGenerator {
 
 	generate(node: MathNode): string {
 		if (!this.options.renderMetadata) {
-			// Mode simple (existing behavior): generate without coalescence
+			// Simple mode: generate without coalescence
 			return this.generateNode(node);
 		}
-		// Mode coalescence: use spans and merge adjacent colors
+		// Coalescence mode: use spans and merge adjacent colors
 		this.spans = [];
 		this.visitWithSpans(node);
 		return this.coalesceAndRender();
@@ -237,7 +303,7 @@ export class LatexGenerator {
 	}
 
 	/**
-	 * Coalesces adjacent spans with the same color and style, then renders to LaTeX.
+	 * Coalesces adjacent spans with the same color and style, then renders to custom syntax.
 	 */
 	private coalesceAndRender(): string {
 		// Merge adjacent spans with the same color AND style
@@ -251,21 +317,15 @@ export class LatexGenerator {
 			return acc;
 		}, [] as ColoredSpan[]);
 
-		// Render to LaTeX
+		// Render to custom syntax
 		return coalesced
 			.map((s) => {
 				let result = s.text;
 
-				// Apply style first (innermost)
-				if (s.style === 'bold') {
-					result = `\\mathbf{${result}}`;
-				} else if (s.style === 'italic') {
-					result = `\\mathit{${result}}`;
-				}
-
-				// Apply color (outermost)
+				// Apply color (style is not supported in custom syntax text output)
+				// Custom syntax uses @color{...} format
 				if (s.color) {
-					result = `\\textcolor{${s.color}}{${result}}`;
+					result = `@${s.color}{${result}}`;
 				}
 
 				return result;
@@ -275,8 +335,6 @@ export class LatexGenerator {
 
 	/**
 	 * Traverses the AST and emits colored spans for each component.
-	 * Uses extended metadata (operatorMetadata, delimiterMetadata, etc.)
-	 * to color individual parts of the expression.
 	 */
 	private visitWithSpans(node: MathNode): void {
 		switch (node.type) {
@@ -285,34 +343,26 @@ export class LatexGenerator {
 				break;
 
 			case 'variable':
-				if (node.name.length === 1) {
-					this.emit(node.name, node.metadata);
-				} else {
-					this.emit(`\\mathit{${node.name}}`, node.metadata);
-				}
+				this.emit(node.name, node.metadata);
 				break;
 
 			case 'greek':
-				if (GREEK_ROMAN_UPPERCASE.has(node.letter)) {
-					this.emit(GREEK_ROMAN_MAP[node.letter], node.metadata);
-				} else {
-					this.emit(`\\${node.letter}`, node.metadata);
-				}
+				this.emitGreekSpan(node);
 				break;
 
 			case 'symbol':
-				this.emit(SYMBOL_MAP[node.symbol], node.metadata);
+				this.emitSymbolSpan(node);
 				break;
 
 			case 'addition':
 				this.visitWithSpans(node.left);
-				this.emit(' + ', node.operatorMetadata ?? node.metadata);
+				this.emit('+', node.operatorMetadata ?? node.metadata);
 				this.visitWithSpans(node.right);
 				break;
 
 			case 'subtraction':
 				this.visitWithSpans(node.left);
-				this.emit(' - ', node.operatorMetadata ?? node.metadata);
+				this.emit('-', node.operatorMetadata ?? node.metadata);
 				this.visitWithSpans(node.right);
 				break;
 
@@ -345,19 +395,11 @@ export class LatexGenerator {
 				break;
 
 			case 'subscript':
-				this.visitWithSpans(node.base);
-				this.emit('_', node.metadata);
-				this.emit('{', node.metadata);
-				this.visitWithSpans(node.subscript);
-				this.emit('}', node.metadata);
+				this.visitSubscriptSpans(node);
 				break;
 
 			case 'superscript':
-				this.visitWithSpans(node.base);
-				this.emit('^', node.metadata);
-				this.emit('{', node.metadata);
-				this.visitWithSpans(node.superscript);
-				this.emit('}', node.metadata);
+				this.visitSuperscriptSpans(node);
 				break;
 
 			case 'relation':
@@ -376,22 +418,45 @@ export class LatexGenerator {
 	}
 
 	/**
+	 * Emits a Greek letter span.
+	 */
+	private emitGreekSpan(node: GreekLetterNode): void {
+		if (!SUPPORTED_GREEK.has(node.letter)) {
+			throw new Error(
+				`Unsupported Greek letter for custom syntax: ${node.letter}. ` +
+					`Only pi, alpha, beta, gamma, theta are supported.`
+			);
+		}
+		this.emit(`\\${node.letter}`, node.metadata);
+	}
+
+	/**
+	 * Emits a symbol span.
+	 */
+	private emitSymbolSpan(node: SymbolNode): void {
+		if (node.symbol === 'infinity') {
+			this.emit('\\infty', node.metadata);
+		} else {
+			throw new Error(
+				`Unsupported symbol for custom syntax: ${node.symbol}. ` + `Only infinity is supported.`
+			);
+		}
+	}
+
+	/**
 	 * Emits the multiplication operator span based on display style.
 	 */
 	private visitMultiplicationOperatorSpan(node: MultiplicationNode): void {
 		const opMeta = node.operatorMetadata ?? node.metadata;
 		switch (node.displayStyle) {
 			case 'implicit':
-				this.emit(' ', opMeta);
+				// No operator emitted for implicit multiplication (juxtaposition)
 				break;
 			case 'dot':
-				this.emit(' \\cdot ', opMeta);
-				break;
 			case 'cross':
-				this.emit(' \\times ', opMeta);
-				break;
 			case 'star':
-				this.emit(' * ', opMeta);
+				// All explicit multiplications use * in custom syntax
+				this.emit('*', opMeta);
 				break;
 			default: {
 				const exhaustive: never = node.displayStyle;
@@ -406,21 +471,30 @@ export class LatexGenerator {
 	private visitDivisionSpans(node: DivisionNode): void {
 		const opMeta = node.operatorMetadata ?? node.metadata;
 		switch (node.displayStyle) {
-			case 'fraction':
-				this.emit('\\frac{', opMeta);
+			case 'fraction': {
+				// Use / with wrapping if needed
+				const needsLeftWrap = shouldWrapForFraction(node.numerator);
+				const needsRightWrap = shouldWrapForFraction(node.denominator);
+
+				if (needsLeftWrap) this.emit('{', opMeta);
 				this.visitWithSpans(node.numerator);
-				this.emit('}{', opMeta);
+				if (needsLeftWrap) this.emit('}', opMeta);
+
+				this.emit('/', opMeta);
+
+				if (needsRightWrap) this.emit('{', opMeta);
 				this.visitWithSpans(node.denominator);
-				this.emit('}', opMeta);
+				if (needsRightWrap) this.emit('}', opMeta);
 				break;
+			}
 			case 'inline':
 				this.visitWithSpans(node.numerator);
-				this.emit(' / ', opMeta);
+				this.emit(':/', opMeta);
 				this.visitWithSpans(node.denominator);
 				break;
 			case 'ratio':
 				this.visitWithSpans(node.numerator);
-				this.emit(' : ', opMeta);
+				this.emit(':', opMeta);
 				this.visitWithSpans(node.denominator);
 				break;
 			default: {
@@ -439,9 +513,9 @@ export class LatexGenerator {
 
 		switch (node.delimiters) {
 			case 'parentheses':
-				this.emit('\\left( ', leftMeta);
+				this.emit('(', leftMeta);
 				this.visitWithSpans(node.content);
-				this.emit(' \\right)', rightMeta);
+				this.emit(')', rightMeta);
 				break;
 			default: {
 				const exhaustive: never = node.delimiters;
@@ -452,51 +526,85 @@ export class LatexGenerator {
 
 	/**
 	 * Emits spans for a function node.
-	 * Special case: abs(x) is rendered as |x| using \left| \right|
+	 * Special case: abs(x) is rendered as |x|
 	 */
 	private visitFunctionSpans(node: FunctionNode): void {
 		// Special case: abs function renders as |x|
 		if (node.name === 'abs' && node.args.length === 1 && !node.power && !node.base) {
 			const leftMeta = getLeftDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
 			const rightMeta = getRightDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
-			this.emit('\\left| ', leftMeta);
+			this.emit('|', leftMeta);
 			this.visitWithSpans(node.args[0]);
-			this.emit(' \\right|', rightMeta);
+			this.emit('|', rightMeta);
 			return;
 		}
 
-		const isKnown = KNOWN_FUNCTIONS.has(node.name);
-		const funcName = isKnown ? `\\${node.name}` : node.name;
-
-		// Emit function name
-		this.emit(funcName, node.nameMetadata ?? node.metadata);
+		// Regular function: NO backslash in custom syntax
+		this.emit(node.name, node.nameMetadata ?? node.metadata);
 
 		// Emit power if present (e.g., sin^2)
 		if (node.power) {
-			this.emit('^{', node.metadata);
+			this.emit('^', node.metadata);
+			const needsBraces = needsBracesForPower(node.power);
+			if (needsBraces) this.emit('{', node.metadata);
 			this.visitWithSpans(node.power);
-			this.emit('}', node.metadata);
+			if (needsBraces) this.emit('}', node.metadata);
 		}
 
 		// Emit base subscript if present (e.g., log_2)
 		if (node.base) {
-			this.emit('_{', node.metadata);
-			this.visitWithSpans(node.base);
-			this.emit('}', node.metadata);
+			// For sqrt, base is the nth root index: sqrt[n](x)
+			if (node.name === 'sqrt') {
+				this.emit('[', node.metadata);
+				this.visitWithSpans(node.base);
+				this.emit(']', node.metadata);
+			} else {
+				this.emit('_', node.metadata);
+				const needsBraces = needsBracesForSubscript(node.base);
+				if (needsBraces) this.emit('{', node.metadata);
+				this.visitWithSpans(node.base);
+				if (needsBraces) this.emit('}', node.metadata);
+			}
 		}
 
-		// Emit parentheses and arguments
+		// Emit parentheses and arguments (mandatory in custom syntax)
 		const leftMeta = getLeftDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
 		const rightMeta = getRightDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
 
-		this.emit('\\left( ', leftMeta);
+		this.emit('(', leftMeta);
 		for (let i = 0; i < node.args.length; i++) {
 			if (i > 0) {
-				this.emit(', ', node.metadata);
+				this.emit(',', node.metadata);
 			}
 			this.visitWithSpans(node.args[i]);
 		}
-		this.emit(' \\right)', rightMeta);
+		this.emit(')', rightMeta);
+	}
+
+	/**
+	 * Emits spans for a subscript node with proper bracing.
+	 */
+	private visitSubscriptSpans(node: SubscriptNode): void {
+		this.visitWithSpans(node.base);
+		this.emit('_', node.metadata);
+
+		const needsBraces = needsBracesForSubscript(node.subscript);
+		if (needsBraces) this.emit('{', node.metadata);
+		this.visitWithSpans(node.subscript);
+		if (needsBraces) this.emit('}', node.metadata);
+	}
+
+	/**
+	 * Emits spans for a superscript node with proper bracing.
+	 */
+	private visitSuperscriptSpans(node: SuperscriptNode): void {
+		this.visitWithSpans(node.base);
+		this.emit('^', node.metadata);
+
+		const needsBraces = needsBracesForPower(node.superscript);
+		if (needsBraces) this.emit('{', node.metadata);
+		this.visitWithSpans(node.superscript);
+		if (needsBraces) this.emit('}', node.metadata);
 	}
 
 	/**
@@ -506,18 +614,17 @@ export class LatexGenerator {
 		// Flatten the chain (works for both binary and nested relations)
 		const flat = flattenRelationChain(node);
 
-		// Build spans: operand0 relation0 operand1 relation1 operand2 ...
-		// We need to walk the original nested structure to get relationMetadata
+		// Build spans by walking the nested structure to preserve metadata
 		this.visitRelationChainSpans(node, flat.operands.length);
 	}
 
 	/**
 	 * Helper to recursively emit relation chain spans while preserving metadata.
 	 */
-	private visitRelationChainSpans(node: RelationNode, totalOperands: number): void {
+	private visitRelationChainSpans(node: RelationNode, _totalOperands: number): void {
 		// If left is a relation, recurse into it first (left-associative nesting)
 		if (node.left.type === 'relation') {
-			this.visitRelationChainSpans(node.left, totalOperands - 1);
+			this.visitRelationChainSpans(node.left, _totalOperands - 1);
 		} else {
 			// Base case: emit the leftmost operand
 			this.visitWithSpans(node.left);
@@ -525,7 +632,7 @@ export class LatexGenerator {
 
 		// Emit the relation operator
 		const relMeta = node.relationMetadata ?? node.metadata;
-		this.emit(` ${RELATION_MAP[node.relation]} `, relMeta);
+		this.emit(RELATION_MAP[node.relation], relMeta);
 
 		// Emit the right operand
 		this.visitWithSpans(node.right);
@@ -533,23 +640,19 @@ export class LatexGenerator {
 
 	/**
 	 * Emits spans for a unit node.
-	 * When the UnitNode has metadata, it applies to the entire expression+unit.
-	 * The unitMetadata can override just the unit part if specified.
 	 */
 	private visitUnitSpans(node: UnitNode): void {
 		// Get the effective metadata for each part
 		const nodeMeta = node.metadata;
 		const unitMeta = node.unitMetadata ?? nodeMeta;
 
-		// For the expression part, we need to visit it with the node's metadata
-		// if the expression itself has no metadata
+		// Visit the expression with the node's metadata
 		this.visitWithSpansInherited(node.expression, nodeMeta);
 
-		// Emit the tilde with the node's metadata (so it coalesces with the expression)
-		this.emit('~', nodeMeta);
-
-		// Emit the unit with unitMetadata (or fallback to node metadata)
-		this.emit(`\\unit{${format(node.unit, 'original')}}`, unitMeta);
+		// Emit the unit in bracket notation
+		this.emit('[', unitMeta);
+		this.emit(format(node.unit, 'original'), unitMeta);
+		this.emit(']', unitMeta);
 	}
 
 	/**
@@ -566,31 +669,29 @@ export class LatexGenerator {
 				this.emit(node.value, effectiveMeta);
 				break;
 			case 'variable':
-				if (node.name.length === 1) {
-					this.emit(node.name, effectiveMeta);
-				} else {
-					this.emit(`\\mathit{${node.name}}`, effectiveMeta);
-				}
+				this.emit(node.name, effectiveMeta);
 				break;
 			case 'greek':
-				if (GREEK_ROMAN_UPPERCASE.has(node.letter)) {
-					this.emit(GREEK_ROMAN_MAP[node.letter], effectiveMeta);
-				} else {
-					this.emit(`\\${node.letter}`, effectiveMeta);
+				if (!SUPPORTED_GREEK.has(node.letter)) {
+					throw new Error(`Unsupported Greek letter for custom syntax: ${node.letter}`);
 				}
+				this.emit(`\\${node.letter}`, effectiveMeta);
 				break;
 			case 'symbol':
-				this.emit(SYMBOL_MAP[node.symbol], effectiveMeta);
+				if (node.symbol === 'infinity') {
+					this.emit('\\infty', effectiveMeta);
+				} else {
+					throw new Error(`Unsupported symbol for custom syntax: ${node.symbol}`);
+				}
 				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
-				// (they will handle their own metadata)
 				this.visitWithSpans(node);
 		}
 	}
 
 	// =========================================================================
-	// Simple Mode: String-based Rendering (existing behavior)
+	// Simple Mode: String-based Rendering
 	// =========================================================================
 
 	private generateNode(node: MathNode): string {
@@ -659,37 +760,38 @@ export class LatexGenerator {
 	}
 
 	private generateVariable(node: VariableNode): string {
-		// Single character: render as-is
-		if (node.name.length === 1) {
-			return node.name;
-		}
-		// Multi-character: use \mathit{}
-		return `\\mathit{${node.name}}`;
+		return node.name;
 	}
 
 	private generateGreek(node: GreekLetterNode): string {
-		// Check if this is an uppercase letter that's just a roman letter
-		if (GREEK_ROMAN_UPPERCASE.has(node.letter)) {
-			return GREEK_ROMAN_MAP[node.letter];
+		if (!SUPPORTED_GREEK.has(node.letter)) {
+			throw new Error(
+				`Unsupported Greek letter for custom syntax: ${node.letter}. ` +
+					`Only pi, alpha, beta, gamma, theta are supported.`
+			);
 		}
-		// Otherwise use \letter syntax
 		return `\\${node.letter}`;
 	}
 
 	private generateSymbol(node: SymbolNode): string {
-		return SYMBOL_MAP[node.symbol];
+		if (node.symbol === 'infinity') {
+			return '\\infty';
+		}
+		throw new Error(
+			`Unsupported symbol for custom syntax: ${node.symbol}. ` + `Only infinity is supported.`
+		);
 	}
 
 	private generateAddition(node: AdditionNode): string {
 		const left = this.generateNode(node.left);
 		const right = this.generateNode(node.right);
-		return `${left} + ${right}`;
+		return `${left}+${right}`;
 	}
 
 	private generateSubtraction(node: SubtractionNode): string {
 		const left = this.generateNode(node.left);
 		const right = this.generateNode(node.right);
-		return `${left} - ${right}`;
+		return `${left}-${right}`;
 	}
 
 	private generateMultiplication(node: MultiplicationNode): string {
@@ -698,13 +800,13 @@ export class LatexGenerator {
 
 		switch (node.displayStyle) {
 			case 'implicit':
-				return `${left} ${right}`;
+				// Juxtaposition: no operator
+				return `${left}${right}`;
 			case 'dot':
-				return `${left} \\cdot ${right}`;
 			case 'cross':
-				return `${left} \\times ${right}`;
 			case 'star':
-				return `${left} * ${right}`;
+				// All explicit multiplications use * in custom syntax
+				return `${left}*${right}`;
 			default: {
 				const exhaustive: never = node.displayStyle;
 				throw new Error(`Unknown multiplication style: ${exhaustive}`);
@@ -717,12 +819,20 @@ export class LatexGenerator {
 		const denom = this.generateNode(node.denominator);
 
 		switch (node.displayStyle) {
-			case 'fraction':
-				return `\\frac{${num}}{${denom}}`;
+			case 'fraction': {
+				// Use / with {} wrapping for complex expressions
+				const needsLeftWrap = shouldWrapForFraction(node.numerator);
+				const needsRightWrap = shouldWrapForFraction(node.denominator);
+
+				const leftStr = needsLeftWrap ? `{${num}}` : num;
+				const rightStr = needsRightWrap ? `{${denom}}` : denom;
+
+				return `${leftStr}/${rightStr}`;
+			}
 			case 'inline':
-				return `${num} / ${denom}`;
+				return `${num}:/${denom}`;
 			case 'ratio':
-				return `${num} : ${denom}`;
+				return `${num}:${denom}`;
 			default: {
 				const exhaustive: never = node.displayStyle;
 				throw new Error(`Unknown division style: ${exhaustive}`);
@@ -741,39 +851,43 @@ export class LatexGenerator {
 	}
 
 	/**
-	 * Generates LaTeX for a function node.
-	 * Special case: abs(x) is rendered as |x| using \left| \right|
+	 * Generates custom syntax for a function node.
+	 * Special case: abs(x) is rendered as |x|
 	 */
 	private generateFunction(node: FunctionNode): string {
 		// Special case: abs function renders as |x|
 		if (node.name === 'abs' && node.args.length === 1 && !node.power && !node.base) {
 			const content = this.generateNode(node.args[0]);
-			return `\\left| ${content} \\right|`;
+			return `|${content}|`;
 		}
 
-		const isKnown = KNOWN_FUNCTIONS.has(node.name);
-		const funcName = isKnown ? `\\${node.name}` : node.name;
+		// Regular function: NO backslash in custom syntax
+		let result = node.name;
 
-		// Build the function name with optional power
-		let nameWithPower = funcName;
+		// Add power if present (e.g., sin^2)
 		if (node.power) {
 			const powerStr = this.generateNode(node.power);
-			const wrappedPower = this.needsBraces(powerStr) ? `{${powerStr}}` : powerStr;
-			nameWithPower = `${funcName}^${wrappedPower}`;
+			const needsBraces = needsBracesForPower(node.power);
+			result += needsBraces ? `^{${powerStr}}` : `^${powerStr}`;
 		}
 
-		// Build the base subscript if present
-		let nameWithBase = nameWithPower;
+		// Add base if present
 		if (node.base) {
-			const baseStr = this.generateNode(node.base);
-			const wrappedBase = this.needsBraces(baseStr) ? `{${baseStr}}` : baseStr;
-			nameWithBase = `${nameWithPower}_${wrappedBase}`;
+			// For sqrt, base is the nth root index: sqrt[n](x)
+			if (node.name === 'sqrt') {
+				const baseStr = this.generateNode(node.base);
+				result += `[${baseStr}]`;
+			} else {
+				// Regular base subscript: log_2
+				const baseStr = this.generateNode(node.base);
+				const needsBraces = needsBracesForSubscript(node.base);
+				result += needsBraces ? `_{${baseStr}}` : `_${baseStr}`;
+			}
 		}
 
-		// Generate arguments
-		const args = node.args.map((arg) => this.generateNode(arg)).join(', ');
-
-		return `${nameWithBase}\\left( ${args} \\right)`;
+		// Generate arguments (mandatory parentheses in custom syntax)
+		const args = node.args.map((arg) => this.generateNode(arg)).join(',');
+		return `${result}(${args})`;
 	}
 
 	private generateDelimiter(node: DelimiterNode): string {
@@ -781,7 +895,7 @@ export class LatexGenerator {
 
 		switch (node.delimiters) {
 			case 'parentheses':
-				return `\\left( ${content} \\right)`;
+				return `(${content})`;
 			default: {
 				const exhaustive: never = node.delimiters;
 				throw new Error(`Unknown delimiter type: ${exhaustive}`);
@@ -792,14 +906,16 @@ export class LatexGenerator {
 	private generateSubscript(node: SubscriptNode): string {
 		const base = this.generateNode(node.base);
 		const subscript = this.generateNode(node.subscript);
-		const wrappedSubscript = this.needsBraces(subscript) ? `{${subscript}}` : subscript;
+		const needsBraces = needsBracesForSubscript(node.subscript);
+		const wrappedSubscript = needsBraces ? `{${subscript}}` : subscript;
 		return `${base}_${wrappedSubscript}`;
 	}
 
 	private generateSuperscript(node: SuperscriptNode): string {
 		const base = this.generateNode(node.base);
 		const superscript = this.generateNode(node.superscript);
-		const wrappedSuperscript = this.needsBraces(superscript) ? `{${superscript}}` : superscript;
+		const needsBraces = needsBracesForPower(node.superscript);
+		const wrappedSuperscript = needsBraces ? `{${superscript}}` : superscript;
 		return `${base}^${wrappedSuperscript}`;
 	}
 
@@ -812,7 +928,7 @@ export class LatexGenerator {
 		for (let i = 0; i < flat.operands.length; i++) {
 			parts.push(this.generateNode(flat.operands[i]));
 			if (i < flat.relations.length) {
-				parts.push(` ${RELATION_MAP[flat.relations[i]]} `);
+				parts.push(RELATION_MAP[flat.relations[i]]);
 			}
 		}
 		return parts.join('');
@@ -821,7 +937,7 @@ export class LatexGenerator {
 	private generateUnit(node: UnitNode): string {
 		const expr = this.generateNode(node.expression);
 		const unitStr = format(node.unit, 'original');
-		return `${expr}~\\unit{${unitStr}}`;
+		return `${expr}[${unitStr}]`;
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {
@@ -831,44 +947,14 @@ export class LatexGenerator {
 
 		let result = content;
 
-		// Apply style
-		if (node.metadata.style === 'bold') {
-			result = `\\mathbf{${result}}`;
-		} else if (node.metadata.style === 'italic') {
-			result = `\\mathit{${result}}`;
-		}
-
-		// Apply color
+		// Apply color using @color{...} syntax
 		if (node.metadata.color) {
-			result = `\\textcolor{${node.metadata.color}}{${result}}`;
+			result = `@${node.metadata.color}{${result}}`;
 		}
 
-		// Note: annotation is ignored in LaTeX output
+		// Note: style (bold/italic) and annotation are not supported in custom syntax output
 
 		return result;
-	}
-
-	/**
-	 * Determines if a string needs braces when used in subscript/superscript
-	 * Braces are needed if the string is more than one character (excluding LaTeX commands)
-	 */
-	private needsBraces(str: string): boolean {
-		// If it's a single character (not a backslash), no braces needed
-		if (str.length === 1 && str !== '\\') {
-			return false;
-		}
-
-		// If it's a LaTeX command followed by nothing, no braces needed
-		// e.g., "\alpha", "\infty"
-		if (str.startsWith('\\')) {
-			const commandMatch = str.match(/^\\[a-zA-Z]+$/);
-			if (commandMatch) {
-				return false;
-			}
-		}
-
-		// Otherwise, braces are needed
-		return true;
 	}
 }
 
@@ -876,6 +962,25 @@ export class LatexGenerator {
 // Convenience Function
 // =============================================================================
 
-export function toLatex(node: MathNode, options?: LatexGeneratorOptions): string {
-	return new LatexGenerator(options).generate(node);
+/**
+ * Converts a MathAST node to custom syntax string.
+ *
+ * @param node - The MathAST node to convert
+ * @param options - Optional generator options
+ * @returns The custom syntax string representation
+ *
+ * @example
+ * ```typescript
+ * import { toCustom } from '$lib/mathAST/custom-generator';
+ * import { parseCustom } from '$lib/mathAST/parser/custom';
+ *
+ * const ast = parseCustom('2x^2+3x+1');
+ * const output = toCustom(ast);
+ * // output: '2x^2+3x+1'
+ *
+ * // Round-trip safety: parseCustom(toCustom(ast)) produces equivalent AST
+ * ```
+ */
+export function toCustom(node: MathNode, options?: CustomGeneratorOptions): string {
+	return new CustomGenerator(options).generate(node);
 }
