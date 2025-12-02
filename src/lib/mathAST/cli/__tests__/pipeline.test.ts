@@ -134,16 +134,16 @@ describe('parse pipeline', () => {
 			expect(result.errors.length).toBeGreaterThan(0);
 		});
 
-		it('handles unsupported custom format gracefully', () => {
+		it('parses custom format successfully', () => {
 			const result = parse('x + y', { forceFormat: 'custom' });
-			expect(result.errors).toHaveLength(1);
-			expect(result.errors[0].code).toBe('UNSUPPORTED_FORMAT');
+			expect(result.errors).toHaveLength(0);
+			expect(result.ast).toBeDefined();
 		});
 
-		it('provides helpful error message for custom format', () => {
+		it('returns correct format for custom input', () => {
 			const result = parse('x + y', { forceFormat: 'custom' });
-			expect(result.errors[0].message).toContain('Custom syntax not yet supported');
-			expect(result.errors[0].suggestion).toBeDefined();
+			expect(result.inputFormat).toBe('custom');
+			expect(result.ast).toBeDefined();
 		});
 
 		it('handles empty input', () => {
@@ -163,9 +163,9 @@ describe('parse pipeline', () => {
 			expect(result.ast).toBeUndefined();
 		});
 
-		it('does not return AST when format is custom', () => {
+		it('returns AST when format is custom', () => {
 			const result = parse('x', { forceFormat: 'custom' });
-			expect(result.ast).toBeUndefined();
+			expect(result.ast).toBeDefined();
 		});
 	});
 
@@ -185,10 +185,11 @@ describe('parse pipeline', () => {
 			expect(result.ast).toBeDefined();
 		});
 
-		it('returns error for forced custom format', () => {
+		it('parses with forced custom format', () => {
 			const result = parse('x + y', { forceFormat: 'custom' });
 			expect(result.inputFormat).toBe('custom');
-			expect(result.errors.length).toBeGreaterThan(0);
+			expect(result.ast).toBeDefined();
+			expect(result.errors).toHaveLength(0);
 		});
 
 		it('returns error for forced unknown format', () => {

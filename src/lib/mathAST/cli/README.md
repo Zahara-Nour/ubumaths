@@ -1,12 +1,16 @@
 # MathAST CLI
 
-Command-line interface for parsing and displaying mathematical expressions.
+Command-line interface for parsing and displaying mathematical expressions. Supports both LaTeX and custom syntax input.
 
 ## Quick Start
 
 ```bash
-# Parse expression (shows AST tree + LaTeX)
+# Parse expression (shows AST tree + LaTeX + custom syntax)
 pnpm math "x^2 + 3x - 5"
+
+# Parse with specific input format
+pnpm math --format=latex "\frac{a}{b}"
+pnpm math --format=custom "a/b"
 
 # Start interactive REPL
 pnpm math
@@ -16,12 +20,16 @@ pnpm math
 
 ### Parse (default)
 
-Parse an expression and display both AST tree and LaTeX output.
+Parse an expression and display AST tree, LaTeX, and custom syntax output.
 
 ```bash
 pnpm math "x^2 + 3x - 5"
 pnpm math parse "x^2 + 3x - 5"
 pnpm math p "x^2 + 3x - 5"
+
+# Force input format
+pnpm math parse --format=latex "\frac{a}{b}"
+pnpm math parse --format=custom "a/b"
 ```
 
 **Output:**
@@ -41,7 +49,8 @@ Addition
       └─ right:
          └─ Variable: x
 
-LaTeX: x^2 + 3 x - 5
+LaTeX:  x^2 + 3 x - 5
+Custom: x^2+3x-5
 ```
 
 ### Tree
@@ -66,6 +75,25 @@ pnpm math l "\sqrt{x^2 + 1}"
 
 # Include metadata (colors, styles)
 pnpm math latex "\sqrt{x}" --metadata
+
+# Parse custom syntax, output LaTeX
+pnpm math latex --format=custom "sqrt(x^2+1)"
+```
+
+### Custom
+
+Output only the custom syntax representation.
+
+```bash
+pnpm math custom "\frac{a}{b}"
+pnpm math c "\frac{a}{b}"
+# Output: a/b
+
+# Include metadata (colors)
+pnpm math custom "\sqrt{x}" --metadata
+
+# Parse custom syntax, output custom
+pnpm math custom --format=custom "2x^2+3x+1"
 ```
 
 ### REPL
@@ -81,29 +109,29 @@ pnpm math repl
 
 ```
 MathAST REPL
-Enter LaTeX expressions to parse. Commands: .help, .quit
+Enter expressions to parse (LaTeX or custom syntax).
+Mode commands: .latex, .custom, .auto | Other: .help, .quit
 
 math> x^2 + 3x
 [AST tree output]
-LaTeX: x^2 + 3 x
+LaTeX:  x^2 + 3 x
+Custom: x^2+3x
 
 math> \frac{a+b}{c}
 [AST tree output]
-LaTeX: \frac{a + b}{c}
+LaTeX:  \frac{a + b}{c}
+Custom: {a+b}/c
 
-math> .help
-MathAST CLI - Available Commands
+math> .custom
+Input mode: Custom syntax
 
-  parse (p)
-    Parse expression and display AST + LaTeX
-  tree (t, ast)
-    Display the AST as a tree
-  latex (l, tex)
-    Output LaTeX representation
-  help (h, ?)
-    Show available commands
+math[custom]> 2x^2+3x+1
+[AST tree output]
+LaTeX:  2 x^2 + 3 x + 1
+Custom: 2x^2+3x+1
 
-In REPL, prefix commands with . (e.g., .help, .tree)
+math[custom]> .auto
+Input mode: Auto-detect
 
 math> .quit
 Goodbye!
@@ -111,13 +139,17 @@ Goodbye!
 
 **REPL Commands:**
 
-| Command  | Action                               |
-| -------- | ------------------------------------ |
-| `.help`  | Show available commands              |
-| `.quit`  | Exit REPL                            |
-| `.exit`  | Exit REPL (alias)                    |
-| `.tree`  | Show AST of last parsed expression   |
-| `.latex` | Show LaTeX of last parsed expression |
+| Command   | Action                                |
+| --------- | ------------------------------------- |
+| `.help`   | Show available commands               |
+| `.quit`   | Exit REPL                             |
+| `.exit`   | Exit REPL (alias)                     |
+| `.latex`  | Switch to LaTeX input mode            |
+| `.custom` | Switch to custom syntax input mode    |
+| `.auto`   | Switch to auto-detect input mode      |
+| `.tree`   | Show AST of last parsed expression    |
+| `.latex`  | Show LaTeX of last parsed expression  |
+| `.custom` | Show custom of last parsed expression |
 
 ## Supported LaTeX Syntax
 
@@ -167,6 +199,57 @@ Goodbye!
 | -------------- | ----------------------------- | --- | --------- | -------- | --- |
 | Parentheses    | `(x + y)`, `\left( x \right)` |
 | Absolute value | `                             | x   | `, `\left | x \right | `   |
+
+## Supported Custom Syntax
+
+Custom syntax is an ASCII Math-style format that's easier to type.
+
+### Basic
+
+| Type          | Examples                  |
+| ------------- | ------------------------- |
+| Numbers       | `42`, `3.14`              |
+| Variables     | `x`, `y`                  |
+| Greek letters | `\pi`, `\alpha`, `\theta` |
+
+### Operations
+
+| Type           | Examples                |
+| -------------- | ----------------------- |
+| Addition       | `x + y`                 |
+| Subtraction    | `x - y`                 |
+| Multiplication | `2x`, `x*y`             |
+| Fraction       | `a/b` (tight binding)   |
+| Inline div     | `a:/b` (multiplicative) |
+| Ratio          | `a:b`                   |
+| Power          | `x^2`, `x^{n+1}`        |
+| Subscript      | `x_1`, `x_{ij}`         |
+
+### Functions
+
+| Type          | Examples                      |
+| ------------- | ----------------------------- |
+| Trigonometric | `sin(x)`, `cos(x)`, `tan(x)`  |
+| Logarithmic   | `ln(x)`, `log(x)`, `log_2(x)` |
+| Square root   | `sqrt(x)`, `sqrt[3](x)` (nth) |
+| Absolute      | `\|x\|`                       |
+| Powers        | `sin^2(x)`                    |
+
+### Colors and Units
+
+| Type   | Examples                       |
+| ------ | ------------------------------ |
+| Colors | `@red{x}`, `@#FF0000{x}`       |
+| Units  | `5[m]`, `10[m/s]`, `v[kg*m/s]` |
+
+### Grouping
+
+Use `{...}` for transparent grouping:
+
+```
+{a+b}/c    # (a+b)/c as a fraction
+x^{n+1}    # x to the power of n+1
+```
 
 ## Examples
 

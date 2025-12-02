@@ -4,8 +4,8 @@
  * This module provides programmatic access to CLI functionality:
  * - Types for command system
  * - Core infrastructure (detection, parsing, formatting)
- * - Commands (parse, tree, latex, help)
- * - REPL entry point
+ * - Commands (parse, tree, latex, custom, help)
+ * - REPL entry point with mode toggle (LaTeX/custom/auto)
  *
  * @module mathAST/cli
  *
@@ -13,13 +13,16 @@
  * ```typescript
  * import { parse, createDefaultRegistry, startRepl } from '$lib/mathAST/cli';
  *
- * // Parse an expression
+ * // Parse an expression (auto-detects LaTeX or custom syntax)
  * const result = parse('\\frac{a}{b}');
  * if (result.ast) {
  *   const registry = createDefaultRegistry();
  *   const treeCmd = registry.get('tree');
  *   console.log(treeCmd?.execute({ ast: result.ast, ... }).output);
  * }
+ *
+ * // Force custom syntax input
+ * const customResult = parse('a/b', { forceFormat: 'custom' });
  *
  * // Start REPL
  * startRepl();
@@ -66,6 +69,7 @@ export {
 	ParseCommand,
 	TreeCommand,
 	LatexCommand,
+	CustomCommand,
 	HelpCommand,
 	createDefaultRegistry
 } from './commands';
