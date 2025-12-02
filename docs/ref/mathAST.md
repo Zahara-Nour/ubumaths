@@ -2475,11 +2475,18 @@ DimensionalAnalysis.getUnit(expr); // Get unit
 
 ### Overview
 
-MathAST includes a command-line interface for parsing and displaying mathematical expressions. It supports both single-command execution and an interactive REPL mode.
+MathAST includes a command-line interface for parsing and displaying mathematical expressions. It supports both LaTeX and custom syntax input, with automatic format detection. Provides both single-command execution and an interactive REPL mode.
 
 **Location**: `src/lib/mathAST/cli/`
 **Tests**: 90 passing
 **Dependencies**: chalk, commander
+
+**Key Features**:
+
+- Auto-detection of input format (LaTeX vs custom syntax)
+- Dual output: Both LaTeX and custom syntax representations
+- Format-specific parsing with `--format` flag
+- REPL mode with input format switching (.latex, .custom, .auto)
 
 ### Installation
 
@@ -2493,14 +2500,22 @@ pnpm add -D chalk commander
 #### Single-Command Mode
 
 ```bash
-# Parse expression (shows AST tree + LaTeX)
+# Parse expression (shows AST tree + LaTeX + custom syntax)
 pnpm math "x^2 + 3x - 5"
+
+# Parse with specific input format
+pnpm math --format=latex "\frac{a}{b}"
+pnpm math --format=custom "a/b"
+pnpm math --format=auto "x^2"  # auto-detect (default)
 
 # Show AST tree only
 pnpm math tree "\frac{a}{b}"
 
 # Show LaTeX output only
 pnpm math latex "\sqrt{x}"
+
+# Show custom syntax output only
+pnpm math custom "x^2 + 3x"
 
 # Get help
 pnpm math --help
@@ -2518,20 +2533,23 @@ pnpm math repl
 
 **REPL Commands**:
 
-| Command           | Action                         |
-| ----------------- | ------------------------------ |
-| `.help`           | Show available commands        |
-| `.quit` / `.exit` | Exit REPL                      |
-| `.tree`           | Show AST of last expression    |
-| `.latex`          | Show LaTeX of last expression  |
-| `<expression>`    | Parse and display tree + LaTeX |
+| Command           | Action                                     |
+| ----------------- | ------------------------------------------ |
+| `.help`           | Show available commands                    |
+| `.quit` / `.exit` | Exit REPL                                  |
+| `.latex`          | Switch to LaTeX input mode                 |
+| `.custom`         | Switch to custom syntax input mode         |
+| `.auto`           | Switch to auto-detect input mode (default) |
+| `.tree`           | Show AST of last expression                |
+| `<expression>`    | Parse and display tree + LaTeX + custom    |
 
 **Example Session**:
 
 ```
 $ pnpm math
 MathAST REPL
-Enter LaTeX expressions to parse. Commands: .help, .quit
+Enter expressions to parse (LaTeX or custom syntax).
+Mode commands: .latex, .custom, .auto | Other: .help, .quit
 
 math> x^2 + 3x
 Addition
@@ -2548,7 +2566,33 @@ Addition
       └─ right:
          └─ Variable: x
 
-LaTeX: x^2 + 3 x
+LaTeX:  x^2 + 3 x
+Custom: x^2+3x
+
+math> \frac{a+b}{c}
+Division
+├─ numerator:
+│  └─ Addition
+│     ├─ left:
+│     │  └─ Variable: a
+│     └─ right:
+│        └─ Variable: b
+└─ denominator:
+   └─ Variable: c
+
+LaTeX:  \frac{a + b}{c}
+Custom: {a+b}/c
+
+math> .custom
+Input mode: Custom syntax
+
+math[custom]> 2x^2+3x+1
+[AST tree...]
+LaTeX:  2 x^2 + 3 x + 1
+Custom: 2x^2+3x+1
+
+math[custom]> .auto
+Input mode: Auto-detect
 
 math> .quit
 Goodbye!
@@ -2563,15 +2607,16 @@ src/lib/mathAST/cli/
 ├── cli.ts             # Entry point (Commander)
 ├── repl.ts            # Interactive REPL
 ├── core/
-│   ├── input-detector.ts   # LaTeX detection
-│   ├── pipeline.ts         # Parse pipeline
+│   ├── input-detector.ts   # Format detection (LaTeX/custom)
+│   ├── pipeline.ts         # Parse pipeline (supports both formats)
 │   ├── output-formatter.ts # Chalk formatting
 │   └── command-registry.ts # Command registry
 └── commands/
     ├── base-command.ts     # Abstract base
-    ├── parse.command.ts    # Parse + display
+    ├── parse.command.ts    # Parse + display (dual output)
     ├── tree.command.ts     # AST tree
     ├── latex.command.ts    # LaTeX output
+    ├── custom.command.ts   # Custom syntax output
     └── help.command.ts     # Help
 ```
 
@@ -2600,20 +2645,77 @@ export class SimplifyCommand extends BaseCommand {
 registry.register(new SimplifyCommand());
 ```
 
+### Format Detection
+
+The CLI automatically detects whether input is LaTeX or custom syntax based on pattern matching.
+
+**Custom Syntax Indicators** (if any present, input is treated as custom):
+
+- Color annotations: `@color{...}` or `@#hex{...}`
+- Unit annotations: `[unit]`
+- Inline division: `:/`
+- Nth root notation: `sqrt[n](...)`
+- Absolute value with pipes: `|x|`
+
+**Examples**:
+
+```typescript
+// Detected as LaTeX (contains \frac)
+"\\frac{a}{b}" → latex parser
+
+// Detected as custom (contains @color)
+"@red{x} + y" → custom parser
+
+// Detected as custom (contains [unit])
+"5[m/s]" → custom parser
+
+// Detected as custom (contains :/)
+"a:/b" → custom parser
+
+// Detected as LaTeX (/ alone is valid in both, but no custom indicators)
+"a/b" → latex parser
+
+// Detected as custom (contains sqrt[n])
+"sqrt[3](8)" → custom parser
+
+// Detected as custom (contains |...|)
+"|x-1|" → custom parser
+```
+
+**Override Detection**: Use `--format` flag to force a specific parser:
+
+```bash
+pnpm math --format=custom "a/b"  # Force custom parser
+pnpm math --format=latex "a/b"   # Force LaTeX parser
+```
+
 ### Programmatic API
 
 ```typescript
 import { parse, createDefaultRegistry, startRepl } from '$lib/mathAST/cli';
 
-// Parse expression
+// Parse expression (auto-detect format)
 const result = parse('x^2 + y');
 if (result.ast) {
-	console.log(result.ast);
+	console.log('Parsed successfully');
+	console.log('Format detected:', result.inputFormat); // 'latex' or 'custom'
+}
+
+// Parse with specific format
+const latexResult = parse('\\frac{a}{b}', 'latex');
+const customResult = parse('a/b', 'custom');
+
+// Handle errors
+if (result.errors.length > 0) {
+	for (const err of result.errors) {
+		console.error(`Error: ${err.message} at position ${err.position}`);
+	}
 }
 
 // Create command registry
 const registry = createDefaultRegistry();
 const parseCmd = registry.get('parse');
+const customCmd = registry.get('custom');
 
 // Start REPL programmatically
 startRepl();

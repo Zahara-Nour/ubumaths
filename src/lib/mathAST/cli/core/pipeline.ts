@@ -7,6 +7,7 @@
 
 import type { PipelineResult, PipelineError, InputFormat } from '../types';
 import { parseLatexSafe } from '../../parser';
+import { parseCustomSafe } from '../../parser/custom';
 import { detectInputFormat } from './input-detector';
 
 // =============================================================================
@@ -61,16 +62,6 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 
 	const errors: PipelineError[] = [];
 
-	// Handle unsupported custom format
-	if (detection.format === 'custom') {
-		errors.push({
-			code: 'UNSUPPORTED_FORMAT',
-			message: 'Custom syntax not yet supported. Use LaTeX.',
-			suggestion: 'Example: \\frac{a}{b} instead of a/b'
-		});
-		return { errors, inputFormat: detection.format };
-	}
-
 	// Handle unknown format
 	if (detection.format === 'unknown') {
 		errors.push({
@@ -81,7 +72,27 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 		return { errors, inputFormat: detection.format };
 	}
 
-	// Parse as LaTeX
+	// Parse based on detected format
+	if (detection.format === 'custom') {
+		const result = parseCustomSafe(trimmedInput, { mode: 'tolerant' });
+
+		// Convert parser errors to pipeline errors
+		for (const err of result.errors) {
+			errors.push({
+				code: 'PARSE_ERROR',
+				message: err.message,
+				position: err.position
+			});
+		}
+
+		return {
+			ast: result.ast ?? undefined,
+			errors,
+			inputFormat: detection.format
+		};
+	}
+
+	// Parse as LaTeX (default)
 	const result = parseLatexSafe(trimmedInput, { mode: 'tolerant' });
 
 	// Convert parser errors to pipeline errors

@@ -29,6 +29,7 @@ interface ParseOptions {
 	output: string;
 	colors: boolean;
 	metadata?: boolean;
+	format?: 'latex' | 'custom' | 'auto';
 }
 
 // =============================================================================
@@ -50,11 +51,15 @@ program
 program
 	.command('parse <expression>')
 	.alias('p')
-	.description('Parse a LaTeX expression')
-	.option('-o, --output <format>', 'Output format: tree, latex, both', 'both')
+	.description('Parse a mathematical expression')
+	.option('-o, --output <format>', 'Output format: tree, latex, custom, both', 'both')
+	.option('-f, --format <format>', 'Input format: latex, custom, auto', 'auto')
 	.option('--no-colors', 'Disable colored output')
-	.action((expression: string, options: { output: string; colors: boolean }) => {
-		handleParse(expression, options);
+	.action((expression: string, options: { output: string; colors: boolean; format?: string }) => {
+		handleParse(expression, {
+			...options,
+			format: (options.format as 'latex' | 'custom' | 'auto') || 'auto'
+		});
 	});
 
 // Tree command
@@ -72,9 +77,31 @@ program
 	.command('latex <expression>')
 	.alias('l')
 	.description('Output LaTeX')
+	.option('-f, --format <format>', 'Input format: latex, custom, auto', 'auto')
 	.option('--metadata', 'Render metadata')
-	.action((expression: string, options: { metadata?: boolean }) => {
-		handleParse(expression, { output: 'latex', colors: true, metadata: options.metadata });
+	.action((expression: string, options: { metadata?: boolean; format?: string }) => {
+		handleParse(expression, {
+			output: 'latex',
+			colors: true,
+			metadata: options.metadata,
+			format: (options.format as 'latex' | 'custom' | 'auto') || 'auto'
+		});
+	});
+
+// Custom syntax command
+program
+	.command('custom <expression>')
+	.alias('c')
+	.description('Output custom syntax')
+	.option('-f, --format <format>', 'Input format: latex, custom, auto', 'auto')
+	.option('--metadata', 'Render metadata')
+	.action((expression: string, options: { metadata?: boolean; format?: string }) => {
+		handleParse(expression, {
+			output: 'custom',
+			colors: true,
+			metadata: options.metadata,
+			format: (options.format as 'latex' | 'custom' | 'auto') || 'auto'
+		});
 	});
 
 // REPL command
@@ -104,11 +131,13 @@ program
 /**
  * Handle expression parsing with the specified output format.
  *
- * @param expression - The LaTeX expression to parse
+ * @param expression - The expression to parse
  * @param options - Output options
  */
 function handleParse(expression: string, options: ParseOptions): void {
-	const result = parse(expression);
+	// Map format option to pipeline's forceFormat
+	const forceFormat = options.format === 'auto' || !options.format ? undefined : options.format;
+	const result = parse(expression, forceFormat ? { forceFormat } : undefined);
 
 	// Display errors and exit
 	if (result.errors.length > 0) {
@@ -154,6 +183,13 @@ function handleParse(expression: string, options: ParseOptions): void {
 			const latexCmd = registry.get('latex');
 			if (latexCmd) {
 				console.log(latexCmd.execute(ctx).output);
+			}
+			break;
+		}
+		case 'custom': {
+			const customCmd = registry.get('custom');
+			if (customCmd) {
+				console.log(customCmd.execute(ctx).output);
 			}
 			break;
 		}

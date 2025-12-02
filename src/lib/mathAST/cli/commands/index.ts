@@ -12,6 +12,7 @@ export { BaseCommand, type OptionDefinition } from './base-command';
 export { ParseCommand } from './parse.command';
 export { TreeCommand } from './tree.command';
 export { LatexCommand } from './latex.command';
+export { CustomCommand } from './custom.command';
 export { HelpCommand } from './help.command';
 
 // =============================================================================
@@ -22,12 +23,13 @@ import { CommandRegistry } from '../core/command-registry';
 import { ParseCommand } from './parse.command';
 import { TreeCommand } from './tree.command';
 import { LatexCommand } from './latex.command';
+import { CustomCommand } from './custom.command';
 import { HelpCommand } from './help.command';
 
 /**
  * Create a command registry with all default commands registered.
  *
- * Includes: parse, tree, latex, help
+ * Includes: parse, tree, latex, custom, help
  *
  * @returns A fully configured CommandRegistry
  *
@@ -57,6 +59,7 @@ export function createDefaultRegistry(): CommandRegistry {
 	registry.register(new ParseCommand());
 	registry.register(new TreeCommand());
 	registry.register(new LatexCommand());
+	registry.register(new CustomCommand());
 	registry.register(helpCmd);
 
 	// Set registry reference for help command after registration

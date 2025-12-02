@@ -30,10 +30,19 @@ const LATEX_PATTERNS: readonly RegExp[] = [
 
 /**
  * Patterns that suggest custom (non-LaTeX) syntax
- * Currently reserved for future custom syntax support
  */
 const CUSTOM_PATTERNS: readonly RegExp[] = [
-	// Reserved for future custom syntax patterns
+	// Color syntax: @red{...} or @#FF0000{...}
+	/@[a-zA-Z]+\{/,
+	/@#[0-9A-Fa-f]{6}\{/,
+	// Units in brackets: [m/s], [kg], [m]
+	/\d+\[[a-zA-Z/]+\]/,
+	// Inline division: :/
+	/:\/(?![/])/,
+	// nth root: sqrt[3](x)
+	/sqrt\[\d+\]/,
+	// Absolute value in custom syntax: \|x\|
+	/\\\|.*\\\|/
 ];
 
 /**
@@ -62,17 +71,33 @@ export function detectInputFormat(input: string): DetectionResult {
 	}
 
 	// Check for LaTeX-specific patterns (high confidence)
+	let hasLatexPattern = false;
 	for (const pattern of LATEX_PATTERNS) {
 		if (pattern.test(trimmed)) {
-			return { format: 'latex', confidence: 0.9 };
+			hasLatexPattern = true;
+			break;
 		}
 	}
 
-	// Check for custom syntax patterns (reserved for future)
+	// Check for custom syntax patterns
+	let hasCustomPattern = false;
 	for (const pattern of CUSTOM_PATTERNS) {
 		if (pattern.test(trimmed)) {
-			return { format: 'custom', confidence: 0.9 };
+			hasCustomPattern = true;
+			break;
 		}
+	}
+
+	// Decision logic:
+	// - If LaTeX patterns present (backslash commands), it's LaTeX
+	// - If custom patterns present without LaTeX patterns, it's custom
+	// - Otherwise, default to LaTeX for simple expressions like "x + 1"
+	if (hasLatexPattern) {
+		return { format: 'latex', confidence: 0.9 };
+	}
+
+	if (hasCustomPattern) {
+		return { format: 'custom', confidence: 0.9 };
 	}
 
 	// Fallback: treat simple expressions as LaTeX

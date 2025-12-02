@@ -17,9 +17,12 @@ import type { CommandContext } from './types';
 // REPL State
 // =============================================================================
 
+type InputMode = 'latex' | 'custom' | 'auto';
+
 interface ReplState {
 	lastAst: MathNode | undefined;
 	registry: ReturnType<typeof createDefaultRegistry>;
+	inputMode: InputMode;
 }
 
 // =============================================================================
@@ -43,21 +46,33 @@ interface ReplState {
  * startRepl();
  * ```
  */
+/**
+ * Get the prompt string based on current input mode.
+ */
+function getPrompt(mode: InputMode): string {
+	if (mode === 'auto') {
+		return chalk.cyan('math> ');
+	}
+	return chalk.cyan(`math[${mode}]> `);
+}
+
 export function startRepl(): void {
 	const state: ReplState = {
 		lastAst: undefined,
-		registry: createDefaultRegistry()
+		registry: createDefaultRegistry(),
+		inputMode: 'auto'
 	};
 
 	const rl = readline.createInterface({
 		input: process.stdin,
 		output: process.stdout,
-		prompt: chalk.cyan('math> ')
+		prompt: getPrompt(state.inputMode)
 	});
 
 	// Welcome message
 	console.log(chalk.bold('MathAST REPL'));
-	console.log('Enter LaTeX expressions to parse. Commands: .help, .quit');
+	console.log('Enter expressions to parse (LaTeX or custom syntax).');
+	console.log('Mode commands: .latex, .custom, .auto | Other: .help, .quit');
 	console.log('');
 
 	rl.prompt();
@@ -90,7 +105,7 @@ export function startRepl(): void {
 // =============================================================================
 
 /**
- * Handle a REPL dot-command (e.g., .help, .quit).
+ * Handle a REPL dot-command (e.g., .help, .quit, .latex, .custom, .auto).
  */
 function handleReplCommand(input: string, rl: readline.Interface, state: ReplState): void {
 	const parts = input.slice(1).split(/\s+/);
@@ -99,6 +114,26 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
 	// Handle quit/exit commands directly
 	if (cmdName === 'quit' || cmdName === 'exit' || cmdName === 'q') {
 		rl.close();
+		return;
+	}
+
+	// Handle mode toggle commands
+	if (cmdName === 'latex') {
+		state.inputMode = 'latex';
+		rl.setPrompt(getPrompt(state.inputMode));
+		console.log(chalk.cyan('Input mode: LaTeX'));
+		return;
+	}
+	if (cmdName === 'custom') {
+		state.inputMode = 'custom';
+		rl.setPrompt(getPrompt(state.inputMode));
+		console.log(chalk.cyan('Input mode: Custom syntax'));
+		return;
+	}
+	if (cmdName === 'auto') {
+		state.inputMode = 'auto';
+		rl.setPrompt(getPrompt(state.inputMode));
+		console.log(chalk.cyan('Input mode: Auto-detect'));
 		return;
 	}
 
@@ -114,7 +149,7 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
 	const ctx: CommandContext = {
 		ast: state.lastAst,
 		input: '',
-		format: 'latex',
+		format: state.inputMode === 'auto' ? 'latex' : state.inputMode,
 		options: {},
 		isRepl: true
 	};
@@ -135,7 +170,9 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
  * @returns Parsed AST, or undefined on error
  */
 function processExpression(input: string, state: ReplState): MathNode | undefined {
-	const result = parse(input);
+	// Use forced format if mode is not 'auto'
+	const forceFormat = state.inputMode === 'auto' ? undefined : state.inputMode;
+	const result = parse(input, forceFormat ? { forceFormat } : undefined);
 
 	// Display any errors
 	if (result.errors.length > 0) {
