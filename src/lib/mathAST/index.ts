@@ -317,3 +317,11 @@ export {
 	PrattParseException,
 	RDParseException
 } from './parser';
+
+// =============================================================================
+// Pretty Printer
+// =============================================================================
+
+export type { PrettyPrintOptions } from './pretty-print';
+
+export { prettyPrint } from './pretty-print';
