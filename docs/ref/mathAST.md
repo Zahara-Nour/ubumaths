@@ -1472,6 +1472,130 @@ const result = parsePrattSafe('x^{'); // Safe Pratt parser
 
 ---
 
+## Pretty Printer
+
+### Overview
+
+The `prettyPrint` function generates a human-readable tree representation of MathAST nodes. It's designed for debugging and testing, with optional ANSI color output for terminal display.
+
+### Basic Usage
+
+```typescript
+import { prettyPrint, add, number, variable, implicitMultiply, power } from '$lib/mathAST';
+
+// Create expression: x^2 + 2x
+const ast = add(power(variable('x'), number('2')), implicitMultiply(number('2'), variable('x')));
+
+console.log(prettyPrint(ast));
+// Output:
+// Addition
+// ├─ left:
+// │  └─ Superscript
+// │     ├─ base:
+// │     │  └─ Variable: x
+// │     └─ exponent:
+// │        └─ Number: 2
+// └─ right:
+//    └─ Multiplication [implicit]
+//       ├─ left:
+//       │  └─ Number: 2
+//       └─ right:
+//          └─ Variable: x
+```
+
+### Options
+
+```typescript
+interface PrettyPrintOptions {
+	/** Enable ANSI color output (default: true) */
+	readonly colors?: boolean;
+}
+
+// Disable colors (useful for tests)
+prettyPrint(ast, { colors: false });
+```
+
+### Output Format
+
+#### Node Types
+
+Each node type is displayed with its key information:
+
+| Node Type      | Output Format                             |
+| -------------- | ----------------------------------------- |
+| Number         | `Number: 42`                              |
+| Variable       | `Variable: x`                             |
+| Greek          | `Greek: alpha`                            |
+| Symbol         | `Symbol: infinity`                        |
+| Addition       | `Addition`                                |
+| Subtraction    | `Subtraction`                             |
+| Multiplication | `Multiplication [dot]` or `[implicit]`    |
+| Division       | `Division [fraction]` or `[inline]`       |
+| Opposite       | `Opposite`                                |
+| Positive       | `Positive`                                |
+| Function       | `Function: sin`                           |
+| Delimiter      | `Delimiter [parentheses]` or `(absolute)` |
+| Subscript      | `Subscript`                               |
+| Superscript    | `Superscript`                             |
+| Relation       | `Relation: =`                             |
+| Unit           | `Unit: m`                                 |
+
+#### Metadata Display
+
+Metadata is shown as a suffix in square brackets:
+
+```typescript
+const colored = number('42', { color: 'red', style: 'bold' });
+prettyPrint(colored, { colors: false });
+// Output: Number: 42 [red, bold]
+
+const annotated = variable('x', { annotation: 'unknown' });
+prettyPrint(annotated, { colors: false });
+// Output: Variable: x ["unknown"]
+```
+
+Extended metadata (operator, delimiter, relation) is also shown:
+
+```typescript
+const expr = add(number('3'), number('4'), { operatorMetadata: { color: 'red' } });
+prettyPrint(expr, { colors: false });
+// Output: Addition op:[red]
+//         ├─ left:
+//         │  └─ Number: 3
+//         └─ right:
+//            └─ Number: 4
+```
+
+#### ANSI Colors
+
+When `colors: true` (default), the output includes ANSI escape codes:
+
+- Named colors: `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`, `purple`, `orange`, `pink`, `gray`/`grey`, `black`, `white`
+- Hex colors: `#RGB` or `#RRGGBB` (uses 24-bit true color)
+- Styles: `bold`, `italic`
+
+The tree content is colorized based on node metadata for visual debugging.
+
+### Testing Example
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { prettyPrint, fraction, variable, number } from '$lib/mathAST';
+
+describe('expression rendering', () => {
+	it('creates fraction structure', () => {
+		const expr = fraction(variable('x'), number('2'));
+		const result = prettyPrint(expr, { colors: false });
+
+		expect(result).toContain('Division [fraction]');
+		expect(result).toContain('numerator:');
+		expect(result).toContain('denominator:');
+	});
+});
+```
+
+---
+
 ## Physical Units
 
 ### Overview
