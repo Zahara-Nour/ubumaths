@@ -1831,6 +1831,7 @@ const result = parseCustomSafe('2+3/4+5');
 
 | Feature         | Custom Syntax            | LaTeX Equivalent     | Notes                                |
 | --------------- | ------------------------ | -------------------- | ------------------------------------ |
+| Numbers         | `42`, `3.14`, `3,14`     | `42`, `3.14`         | Comma as decimal (French) → dot      |
 | Fractions       | `a/b`                    | `\frac{a}{b}`        | Tight binding at primary level       |
 | Inline division | `a:/b`                   | `a/b`                | At multiplicative level              |
 | Ratio           | `a:b`                    | `a:b`                | At multiplicative level              |
@@ -1838,7 +1839,8 @@ const result = parseCustomSafe('2+3/4+5');
 | Powers          | `x^2`, `x^{-2}`          | `x^2`, `x^{-2}`      | Braces required for negative/complex |
 | Subscripts      | `x_1`, `x_{ab}`          | `x_1`, `x_{ab}`      | Braces required for multi-letter     |
 | Functions       | `sin(x)`                 | `\sin(x)`            | Parentheses mandatory                |
-| Absolute value  | `\|x\|`                  | `\left\| x \right\|` | Pipes syntax                         |
+| nth Root        | `sqrt[n](x)`             | `\sqrt[n]{x}`        | Index in brackets before parens      |
+| Absolute value  | `\|x\|`                  | `\left\| x \right\|` | Pipe delimiters                      |
 | Greek letters   | `\pi`, `\alpha`          | `\pi`, `\alpha`      | Backslash prefix                     |
 | Colors          | `@red{x}`, `@#FF0000{x}` | `\textcolor{red}{x}` | @ prefix                             |
 | Units           | `5[m/s]`                 | `5~\unit{m/s}`       | Bracket syntax                       |
@@ -1904,6 +1906,7 @@ sin^2(x)    → FunctionNode with power=2
 sin(x)^2    → SuperscriptNode(FunctionNode, 2)
 log_2(8)    → FunctionNode with base=2
 sqrt(x)     → OK
+sqrt[3](x)  → FunctionNode with base=3 (cube root)
 ```
 
 **Supported functions**: `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt`
