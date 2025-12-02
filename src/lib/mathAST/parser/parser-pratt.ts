@@ -162,6 +162,8 @@ class PrattParser {
 	private readonly options: ParserOptions;
 	private readonly errors: ParseError[] = [];
 	private currentToken: Token;
+	/** Stack of color brace positions - each entry marks that we're in a \textcolor{} scope */
+	private readonly colorScopeStack: number[] = [];
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new Tokenizer(input);
@@ -300,6 +302,16 @@ class PrattParser {
 
 		// Parse infix/postfix operators (LED)
 		while (true) {
+			// Special handling for \textcolor in LED position
+			// If we see \textcolor{color}{...} and ... starts with an operator,
+			// we want to treat it transparently (not as implicit multiplication)
+			if (this.checkCommand('textcolor')) {
+				this.handleTextColorInLED();
+				// After this, currentToken is the first token inside the { }
+				// Continue the loop - it will be handled appropriately
+				continue;
+			}
+
 			const bp = this.getLeftBindingPower();
 			if (bp <= minBp) {
 				break;
@@ -308,10 +320,17 @@ class PrattParser {
 			// Check for implicit multiplication
 			if (this.shouldInsertImplicitMultiply()) {
 				left = this.parseImplicitMultiply(left);
-				continue;
+			} else {
+				left = this.led(left);
 			}
 
-			left = this.led(left);
+			// Check if we need to close a color scope AFTER parsing the operator
+			// This ensures the operator node gets the color applied before we pop it
+			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
+				this.advance(); // consume }
+				this.colorScopeStack.pop();
+				this.colorStack.pop();
+			}
 		}
 
 		return left;
@@ -411,6 +430,7 @@ class PrattParser {
 				if (token.value === 'times') {
 					return this.parseMultiplicationCommand(left, 'cross');
 				}
+				// \textcolor is now handled in parseExpression() before we get here
 				// Fall through for implicit multiplication
 				break;
 
@@ -470,8 +490,21 @@ class PrattParser {
 				if (token.value === 'cdot' || token.value === 'times') {
 					return BP.MULTIPLY;
 				}
-				// For implicit multiplication with functions/greek
-				if (FUNCTION_COMMANDS.has(token.value) || GREEK_COMMANDS.has(token.value)) {
+				// \textcolor is handled specially - it's transparent
+				if (token.value === 'textcolor') {
+					// Return NONE so it doesn't interfere with expression parsing
+					// It will be handled in LED by checking for it explicitly
+					return BP.MULTIPLY; // Actually, we need this for the LED handler
+				}
+				// For implicit multiplication with functions/greek/special commands
+				if (
+					FUNCTION_COMMANDS.has(token.value) ||
+					GREEK_COMMANDS.has(token.value) ||
+					token.value in SYMBOL_COMMAND_MAP ||
+					token.value === 'frac' ||
+					token.value === 'sqrt' ||
+					token.value === 'left'
+				) {
 					return BP.MULTIPLY;
 				}
 				break;
@@ -572,11 +605,21 @@ class PrattParser {
 
 	/**
 	 * Parse brace group: {...}
+	 *
+	 * Special handling: if this is part of a \textcolor scope,
+	 * the opening brace is already consumed by parseTextColor()
 	 */
 	private parseBraceGroup(): MathNode {
 		this.advance(); // consume {
+		// If this opens a color scope, it was already handled
+		// This is for regular brace groups like {x+y}
 		const content = this.parseExpression(BP.NONE);
 		this.expect('RBRACE', "Expected '}' after expression");
+		// Check if this closes a color scope
+		if (this.colorBraceDepth > 0) {
+			this.colorBraceDepth--;
+			this.colorStack.pop();
+		}
 		return content;
 	}
 
@@ -689,45 +732,55 @@ class PrattParser {
 	 * Parse addition: left + right
 	 */
 	private parseAddition(left: MathNode): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
 		this.advance(); // consume +
 		const right = this.parseExpression(BP.ADDITION);
-		return this.applyColor(MathAST.add(left, right));
+		return this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
 	}
 
 	/**
 	 * Parse subtraction: left - right
 	 */
 	private parseSubtraction(left: MathNode): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
 		this.advance(); // consume -
 		const right = this.parseExpression(BP.ADDITION);
-		return this.applyColor(MathAST.subtract(left, right));
+		return this.applyColorWithOperator(MathAST.subtract(left, right), operatorColor);
 	}
 
 	/**
 	 * Parse multiplication with explicit operator
 	 */
 	private parseMultiplication(left: MathNode, style: 'star' | 'dot' | 'cross'): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.MULTIPLY);
-		return this.applyColor(MathAST.multiply(left, right, style));
+		return this.applyColorWithOperator(MathAST.multiply(left, right, style), operatorColor);
 	}
 
 	/**
 	 * Parse multiplication command (\cdot, \times)
 	 */
 	private parseMultiplicationCommand(left: MathNode, style: 'dot' | 'cross'): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
 		this.advance(); // consume command
 		const right = this.parseExpression(BP.MULTIPLY);
-		return this.applyColor(MathAST.multiply(left, right, style));
+		return this.applyColorWithOperator(MathAST.multiply(left, right, style), operatorColor);
 	}
 
 	/**
 	 * Parse division: left / right or left : right
 	 */
 	private parseDivision(left: MathNode, style: 'inline' | 'ratio'): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.MULTIPLY);
-		return this.applyColor(MathAST.divide(left, right, style));
+		return this.applyColorWithOperator(MathAST.divide(left, right, style), operatorColor);
 	}
 
 	// =========================================================================
@@ -778,8 +831,14 @@ class PrattParser {
 			return false;
 		}
 
+		// \textcolor is special - it should be transparent, not trigger implicit mult
+		// When we see "5 \textcolor{red}{+3}", we want + to be infix, not "5 * \textcolor{red}{+3}"
+		if (token.type === 'COMMAND' && token.value === 'textcolor') {
+			return false;
+		}
+
 		// Tokens that CAN trigger implicit multiplication:
-		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left)
+		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt)
 		return (
 			token.type === 'NUMBER' ||
 			token.type === 'LETTER' ||
@@ -871,18 +930,22 @@ class PrattParser {
 	 * Parse a relation: left op right
 	 */
 	private parseRelation(left: MathNode, relType: RelationType): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.RELATION);
-		return this.applyColor(MathAST.relation(relType, left, right));
+		return this.applyColorWithOperator(MathAST.relation(relType, left, right), operatorColor);
 	}
 
 	/**
 	 * Parse a relation command: left \leq right
 	 */
 	private parseRelationCommand(left: MathNode, relType: RelationType): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
 		this.advance(); // consume command
 		const right = this.parseExpression(BP.RELATION);
-		return this.applyColor(MathAST.relation(relType, left, right));
+		return this.applyColorWithOperator(MathAST.relation(relType, left, right), operatorColor);
 	}
 
 	// =========================================================================
@@ -1020,7 +1083,52 @@ class PrattParser {
 	}
 
 	/**
+	 * Handle \textcolor in LED position (after an operand)
+	 *
+	 * For example: 5 \textcolor{red}{+3}
+	 * We want + to be seen as an infix operator between 5 and 3, not prefix.
+	 *
+	 * This method:
+	 * 1. Consumes \textcolor
+	 * 2. Parses and pushes the color
+	 * 3. Consumes the opening { for content
+	 * 4. Tracks this as a "transparent" color scope
+	 */
+	private handleTextColorInLED(): void {
+		this.advance(); // consume \textcolor
+
+		// Parse color
+		this.expect('LBRACE', "Expected '{' for \\textcolor color");
+		const colorStr = this.parseColorString();
+		this.expect('RBRACE', "Expected '}' after \\textcolor color");
+
+		// Validate and normalize color
+		if (!isValidColor(colorStr)) {
+			this.error(
+				`Invalid color: ${colorStr}`,
+				this.currentToken.position,
+				colorStr.length,
+				'INVALID_COLOR'
+			);
+		}
+		const color = normalizeColor(colorStr);
+
+		// Push color onto stack
+		this.colorStack.push(color);
+
+		// Expect and consume opening brace for content
+		this.expect('LBRACE', "Expected '{' for \\textcolor content");
+
+		// Mark that we're in a transparent color scope
+		// When we see the closing }, we'll pop both this marker and the color
+		this.colorScopeStack.push(1);
+	}
+
+	/**
 	 * Parse \textcolor{color}{content}
+	 *
+	 * This is called from NUD (prefix position) like: \textcolor{red}{x+y}
+	 * It parses the content as a complete expression.
 	 */
 	private parseTextColor(): MathNode {
 		this.advance(); // consume \textcolor
@@ -1044,9 +1152,13 @@ class PrattParser {
 		// Push color onto stack
 		this.colorStack.push(color);
 
-		// Parse content
+		// Parse content - expect opening brace
 		this.expect('LBRACE', "Expected '{' for \\textcolor content");
+
+		// Parse the content as a complete expression
 		const content = this.parseExpression(BP.NONE);
+
+		// Expect closing brace
 		this.expect('RBRACE', "Expected '}' after \\textcolor content");
 
 		// Pop color from stack
@@ -1184,6 +1296,7 @@ class PrattParser {
 
 	/**
 	 * Apply the current color from the stack to a node's metadata
+	 * Also applies operatorMetadata for binary/unary ops, relationMetadata for relations
 	 */
 	private applyColor(node: MathNode): MathNode {
 		const color = this.colorStack.current();
@@ -1196,7 +1309,56 @@ class PrattParser {
 		const newMeta: NodeMetadata = existingMeta ? { ...existingMeta, color } : { color };
 
 		// Create a new node with the metadata
-		return { ...node, metadata: newMeta } as MathNode;
+		let result = { ...node, metadata: newMeta } as MathNode;
+
+		// Also apply extended metadata based on node type
+		const colorMeta: NodeMetadata = { color };
+
+		switch (node.type) {
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+			case 'division':
+			case 'opposite':
+			case 'positive':
+				result = { ...result, operatorMetadata: colorMeta } as MathNode;
+				break;
+			case 'relation':
+				result = { ...result, relationMetadata: colorMeta } as MathNode;
+				break;
+			case 'delimiter':
+				result = { ...result, delimiterMetadata: colorMeta } as MathNode;
+				break;
+			case 'function':
+				result = { ...result, nameMetadata: colorMeta, delimiterMetadata: colorMeta } as MathNode;
+				break;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Apply operator color that was captured before parsing the right side.
+	 * This is needed because the color scope may close while parsing the right side.
+	 */
+	private applyColorWithOperator(node: MathNode, operatorColor: string | null): MathNode {
+		if (!operatorColor) {
+			return node;
+		}
+
+		const colorMeta: NodeMetadata = { color: operatorColor };
+
+		switch (node.type) {
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+			case 'division':
+				return { ...node, metadata: colorMeta, operatorMetadata: colorMeta } as MathNode;
+			case 'relation':
+				return { ...node, metadata: colorMeta, relationMetadata: colorMeta } as MathNode;
+			default:
+				return { ...node, metadata: colorMeta } as MathNode;
+		}
 	}
 }
 

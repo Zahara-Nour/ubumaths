@@ -151,6 +151,8 @@ class RDParser {
 	private readonly options: ParserOptions;
 	private readonly errors: ParseError[] = [];
 	private currentToken: Token;
+	/** Stack of color brace positions - each entry marks that we're in a \textcolor{} scope */
+	private readonly colorScopeStack: number[] = [];
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new Tokenizer(input);
@@ -283,9 +285,18 @@ class RDParser {
 		let left = this.parseAdditive();
 
 		while (this.isRelationOperator()) {
+			// Capture color before consuming operator (color scope may close during parsing)
+			const operatorColor = this.colorStack.current();
 			const relType = this.consumeRelationOperator();
 			const right = this.parseAdditive();
-			left = this.applyColor(MathAST.relation(relType, left, right));
+			left = this.applyColorWithOperator(MathAST.relation(relType, left, right), operatorColor);
+
+			// Check if we need to close a color scope AFTER parsing the operator
+			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
+				this.advance(); // consume }
+				this.colorScopeStack.pop();
+				this.colorStack.pop();
+			}
 		}
 
 		return left;
@@ -341,14 +352,23 @@ class RDParser {
 		let left = this.parseMultiplicative();
 
 		while (this.check('PLUS') || this.check('MINUS')) {
-			if (this.check('PLUS')) {
-				this.advance();
-				const right = this.parseMultiplicative();
-				left = this.applyColor(MathAST.add(left, right));
+			// Capture color BEFORE consuming operator (color scope may close during parsing)
+			const operatorColor = this.colorStack.current();
+			const isPlus = this.check('PLUS');
+			this.advance();
+			const right = this.parseMultiplicative();
+
+			if (isPlus) {
+				left = this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
 			} else {
-				this.advance();
-				const right = this.parseMultiplicative();
-				left = this.applyColor(MathAST.subtract(left, right));
+				left = this.applyColorWithOperator(MathAST.subtract(left, right), operatorColor);
+			}
+
+			// Check if we need to close a color scope AFTER parsing the operator
+			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
+				this.advance(); // consume }
+				this.colorScopeStack.pop();
+				this.colorStack.pop();
 			}
 		}
 
@@ -365,51 +385,62 @@ class RDParser {
 		let left = this.parseUnary();
 
 		while (true) {
+			// Special handling for \textcolor in LED position
+			// If we see \textcolor{color}{...} and ... starts with an operator,
+			// we want to treat it transparently (not as implicit multiplication)
+			if (this.checkCommand('textcolor')) {
+				this.handleTextColorTransparent();
+				// After this, currentToken is the first token inside the { }
+				// Continue the loop - it will be handled appropriately
+				continue;
+			}
+
+			// Capture color BEFORE consuming operator (color scope may close during parsing)
+			const operatorColor = this.colorStack.current();
+
 			// Explicit multiplication operators
 			if (this.check('STAR')) {
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColor(MathAST.multiply(left, right, 'star'));
-				continue;
-			}
-
-			if (this.check('SLASH')) {
+				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'star'), operatorColor);
+			} else if (this.check('SLASH')) {
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColor(MathAST.divide(left, right, 'inline'));
-				continue;
-			}
-
-			if (this.check('COLON')) {
+				left = this.applyColorWithOperator(MathAST.divide(left, right, 'inline'), operatorColor);
+			} else if (this.check('COLON')) {
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColor(MathAST.divide(left, right, 'ratio'));
-				continue;
+				left = this.applyColorWithOperator(MathAST.divide(left, right, 'ratio'), operatorColor);
 			}
-
 			// \cdot and \times commands
-			if (this.checkCommand('cdot')) {
+			else if (this.checkCommand('cdot')) {
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColor(MathAST.multiply(left, right, 'dot'));
-				continue;
-			}
-
-			if (this.checkCommand('times')) {
+				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'dot'), operatorColor);
+			} else if (this.checkCommand('times')) {
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColor(MathAST.multiply(left, right, 'cross'));
-				continue;
+				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'cross'), operatorColor);
 			}
-
 			// Implicit multiplication
-			if (this.shouldInsertImplicitMultiply()) {
+			else if (this.shouldInsertImplicitMultiply()) {
 				const right = this.parseUnary();
-				left = this.applyColor(MathAST.multiply(left, right, 'implicit'));
-				continue;
+				left = this.applyColorWithOperator(
+					MathAST.multiply(left, right, 'implicit'),
+					operatorColor
+				);
+			} else {
+				// No more multiplication operators
+				break;
 			}
 
-			break;
+			// Check if we need to close a color scope AFTER parsing the operator
+			// This ensures the operator node gets the color applied before we pop it
+			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
+				this.advance(); // consume }
+				this.colorScopeStack.pop();
+				this.colorStack.pop();
+			}
 		}
 
 		return left;
@@ -444,7 +475,13 @@ class RDParser {
 	private parsePower(): MathNode {
 		let left = this.parsePostfix();
 
-		while (this.check('CARET') || this.check('UNDERSCORE')) {
+		while (true) {
+			// Special handling for \textcolor in this position
+			if (this.checkCommand('textcolor')) {
+				this.handleTextColorTransparent();
+				continue;
+			}
+
 			if (this.check('CARET')) {
 				this.advance();
 				const exponent = this.parsePowerOperand();
@@ -453,6 +490,15 @@ class RDParser {
 				this.advance();
 				const sub = this.parseSubscriptOperand();
 				left = this.applyColor(MathAST.subscript(left, sub));
+			} else {
+				break;
+			}
+
+			// Check if we need to close a color scope AFTER parsing the operator
+			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
+				this.advance(); // consume }
+				this.colorScopeStack.pop();
+				this.colorStack.pop();
 			}
 		}
 
@@ -630,8 +676,14 @@ class RDParser {
 			return false;
 		}
 
+		// \textcolor is special - it should be transparent, not trigger implicit mult
+		// When we see "5 \textcolor{red}{+3}", we want + to be infix, not "5 * \textcolor{red}{+3}"
+		if (token.type === 'COMMAND' && token.value === 'textcolor') {
+			return false;
+		}
+
 		// Tokens that CAN trigger implicit multiplication:
-		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left)
+		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt)
 		return (
 			token.type === 'NUMBER' ||
 			token.type === 'LETTER' ||
@@ -950,7 +1002,52 @@ class RDParser {
 	}
 
 	/**
+	 * Handle \textcolor transparently (in LED/middle of expression position)
+	 *
+	 * For example: 5 \textcolor{red}{+3}
+	 * We want + to be seen as an infix operator between 5 and 3, not prefix.
+	 *
+	 * This method:
+	 * 1. Consumes \textcolor
+	 * 2. Parses and pushes the color
+	 * 3. Consumes the opening { for content
+	 * 4. Tracks this as a "transparent" color scope
+	 */
+	private handleTextColorTransparent(): void {
+		this.advance(); // consume \textcolor
+
+		// Parse color
+		this.expect('LBRACE', "Expected '{' for \\textcolor color");
+		const colorStr = this.parseColorString();
+		this.expect('RBRACE', "Expected '}' after \\textcolor color");
+
+		// Validate and normalize color
+		if (!isValidColor(colorStr)) {
+			this.error(
+				`Invalid color: ${colorStr}`,
+				this.currentToken.position,
+				colorStr.length,
+				'INVALID_COLOR'
+			);
+		}
+		const color = normalizeColor(colorStr);
+
+		// Push color onto stack
+		this.colorStack.push(color);
+
+		// Expect and consume opening brace for content
+		this.expect('LBRACE', "Expected '{' for \\textcolor content");
+
+		// Mark that we're in a transparent color scope
+		// When we see the closing }, we'll pop both this marker and the color
+		this.colorScopeStack.push(1);
+	}
+
+	/**
 	 * Parse \textcolor{color}{content}
+	 *
+	 * This is called from NUD (prefix position) like: \textcolor{red}{x+y}
+	 * It parses the content as a complete expression.
 	 */
 	private parseTextColor(): MathNode {
 		this.advance(); // consume \textcolor
@@ -1079,6 +1176,7 @@ class RDParser {
 
 	/**
 	 * Apply the current color from the stack to a node's metadata
+	 * Also applies operatorMetadata for binary/unary ops, relationMetadata for relations
 	 */
 	private applyColor(node: MathNode): MathNode {
 		const color = this.colorStack.current();
@@ -1091,7 +1189,57 @@ class RDParser {
 		const newMeta: NodeMetadata = existingMeta ? { ...existingMeta, color } : { color };
 
 		// Create a new node with the metadata
-		return { ...node, metadata: newMeta } as MathNode;
+		let result = { ...node, metadata: newMeta } as MathNode;
+
+		// Also apply extended metadata based on node type
+		const colorMeta: NodeMetadata = { color };
+
+		switch (node.type) {
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+			case 'division':
+			case 'opposite':
+			case 'positive':
+				result = { ...result, operatorMetadata: colorMeta } as MathNode;
+				break;
+			case 'relation':
+				result = { ...result, relationMetadata: colorMeta } as MathNode;
+				break;
+			case 'delimiter':
+				result = { ...result, delimiterMetadata: colorMeta } as MathNode;
+				break;
+			case 'function':
+				result = { ...result, nameMetadata: colorMeta, delimiterMetadata: colorMeta } as MathNode;
+				break;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Apply a pre-captured color to a node's metadata and operator/relation metadata.
+	 * Used when the color must be captured BEFORE parsing the right operand
+	 * (because the color scope might close during parsing).
+	 */
+	private applyColorWithOperator(node: MathNode, operatorColor: string | null): MathNode {
+		if (!operatorColor) {
+			return node;
+		}
+
+		const colorMeta: NodeMetadata = { color: operatorColor };
+
+		switch (node.type) {
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+			case 'division':
+				return { ...node, metadata: colorMeta, operatorMetadata: colorMeta } as MathNode;
+			case 'relation':
+				return { ...node, metadata: colorMeta, relationMetadata: colorMeta } as MathNode;
+			default:
+				return { ...node, metadata: colorMeta } as MathNode;
+		}
 	}
 }
 
