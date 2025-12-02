@@ -1811,6 +1811,171 @@ const result = parsePrattSafe('x^{'); // Safe Pratt parser
 
 ---
 
+## Custom Syntax Parser
+
+### Overview
+
+The custom syntax parser provides an ASCII Math-style alternative to LaTeX for mathematical expressions. It's designed for easier keyboard input while maintaining full AST compatibility.
+
+```typescript
+import { parseCustom, parseCustomSafe } from '$lib/mathAST/parser/custom';
+
+// Parse custom syntax (throws on error)
+const ast = parseCustom('2x^2+3x+1');
+
+// Parse safely with error collection
+const result = parseCustomSafe('2+3/4+5');
+```
+
+### Key Syntax Features
+
+| Feature         | Custom Syntax            | LaTeX Equivalent     | Notes                                |
+| --------------- | ------------------------ | -------------------- | ------------------------------------ |
+| Fractions       | `a/b`                    | `\frac{a}{b}`        | Tight binding at primary level       |
+| Inline division | `a:/b`                   | `a/b`                | At multiplicative level              |
+| Ratio           | `a:b`                    | `a:b`                | At multiplicative level              |
+| Multiplication  | `2x`, `xy`, `2*3`        | `2x`, `xy`, `2*3`    | Implicit or explicit                 |
+| Powers          | `x^2`, `x^{-2}`          | `x^2`, `x^{-2}`      | Braces required for negative/complex |
+| Subscripts      | `x_1`, `x_{ab}`          | `x_1`, `x_{ab}`      | Braces required for multi-letter     |
+| Functions       | `sin(x)`                 | `\sin(x)`            | Parentheses mandatory                |
+| Absolute value  | `\|x\|`                  | `\left\| x \right\|` | Pipes syntax                         |
+| Greek letters   | `\pi`, `\alpha`          | `\pi`, `\alpha`      | Backslash prefix                     |
+| Colors          | `@red{x}`, `@#FF0000{x}` | `\textcolor{red}{x}` | @ prefix                             |
+| Units           | `5[m/s]`                 | `5~\unit{m/s}`       | Bracket syntax                       |
+| Grouping        | `{a+b}`                  | N/A                  | Transparent (no AST node)            |
+
+### Precedence (High to Low)
+
+1. **Primary**: atoms, `()`, `|x|`, functions, `/` (fractions)
+2. **Power**: `^`, `_` (right-associative)
+3. **Unary**: `-x`, `+x`
+4. **Multiplicative**: `*`, `:/`, `:`, implicit
+5. **Additive**: `+`, `-`
+6. **Relations**: `=`, `<`, `>`, `<=`, `>=`, `!=`, `<=>`, `=>`
+
+### Division Operators
+
+The custom syntax has three division operators with different behavior:
+
+| Operator | Level          | Display Style | Example   | Result          |
+| -------- | -------------- | ------------- | --------- | --------------- |
+| `/`      | Primary        | `'fraction'`  | `2+3/4+5` | `2 + (3/4) + 5` |
+| `:/`     | Multiplicative | `'inline'`    | `2*3:/4`  | `(2*3) / 4`     |
+| `:`      | Multiplicative | `'ratio'`     | `a:b`     | `a : b`         |
+
+### Implicit Multiplication Rules
+
+**Allowed:**
+
+- Number followed by variable: `2x`
+- Variable followed by variable: `xy`
+- Number followed by parentheses: `2(x+1)`
+- Parentheses followed by parentheses: `(a)(b)`
+- Function followed by function: `sin(x)cos(x)`
+
+**Not allowed:**
+
+- Variable followed by number: `x2` (error)
+- Parentheses followed by number: `(a)2` (error)
+
+### Subscript/Superscript Validation
+
+```
+x^2       → OK (single digit)
+x^12      → OK (numbers are auto-grouped)
+x^n       → OK (single letter)
+x^{-2}    → OK (braces required for negative)
+x^{ab}    → OK (braces required for multi-letter)
+x^-2      → ERROR (negative needs braces)
+x^ab      → ERROR (multi-letter needs braces)
+x_12      → OK (numbers auto-grouped)
+x_ab      → ERROR (letters need braces)
+x_{ab}    → OK
+```
+
+### Functions
+
+Functions require parentheses (unlike LaTeX where `\sin x` is valid):
+
+```
+sin(x)      → OK
+sin x       → ERROR (parentheses required)
+sin^2(x)    → FunctionNode with power=2
+sin(x)^2    → SuperscriptNode(FunctionNode, 2)
+log_2(8)    → FunctionNode with base=2
+sqrt(x)     → OK
+```
+
+**Supported functions**: `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt`
+
+**Supported symbols**: `\pi`, `\alpha`, `\beta`, `\gamma`, `\theta`, `\infty`
+
+### Colors
+
+```
+@red{x+y}           → x+y with red metadata
+@#FF5500{a}         → a with hex color metadata
+@red{a + @blue{b}}  → nested colors (a red, b blue)
+```
+
+### Units
+
+```
+5[m]        → UnitNode(5, m)
+10[km/h]    → UnitNode(10, km/h)
+{2+3}[kg]   → UnitNode(2+3, kg)
+2+3[m]      → 2 + UnitNode(3, m)  (attaches to last atom)
+```
+
+### Error Handling
+
+```typescript
+// Strict mode (default): throws ParseException
+try {
+	parseCustom('x^ab'); // Multi-letter without braces
+} catch (e) {
+	console.error(e.message); // "Multiple letters in exponent require braces"
+}
+
+// Tolerant mode: collects errors
+const result = parseCustomSafe('sin x', { mode: 'tolerant' });
+// result.errors contains: "Function sin requires parentheses"
+```
+
+### Parser Implementations
+
+Two parser implementations are available (produce identical ASTs):
+
+| Parser | Import             | Description                            |
+| ------ | ------------------ | -------------------------------------- |
+| Pratt  | `parseCustomPratt` | Top-down operator precedence (default) |
+| RD     | `parseCustomRD`    | Recursive descent grammar              |
+
+```typescript
+import {
+	parseCustom, // Alias for parseCustomPratt
+	parseCustomSafe, // Alias for parseCustomPrattSafe
+	parseCustomPratt,
+	parseCustomPrattSafe,
+	parseCustomRD,
+	parseCustomRDSafe
+} from '$lib/mathAST/parser/custom';
+```
+
+### Round-Trip
+
+Custom syntax produces ASTs compatible with the LaTeX generator:
+
+```typescript
+import { parseCustom } from '$lib/mathAST/parser/custom';
+import { toLatex } from '$lib/mathAST';
+
+const ast = parseCustom('2x^2+3x+1');
+const latex = toLatex(ast); // "2 x^2 + 3 x + 1"
+```
+
+---
+
 ## Pretty Printer
 
 ### Overview
