@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 1441 passing (644 core + 707 parser + 90 Exp)
+**Tests**: 1531 passing (644 core + 707 parser + 90 Exp + 90 CLI)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -25,6 +25,7 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 13. [Dimensional Analysis](#dimensional-analysis)
 14. [Usage Patterns](#usage-patterns)
 15. [API Summary](#api-summary)
+16. [CLI](#cli)
 
 ---
 
@@ -2080,3 +2081,153 @@ DimensionalAnalysis.getUnit(expr); // Get unit
 | Delimiter boundaries     | Shallow stops; deep processes content                   |
 | Function optional fields | `power` and `base` included in children only if present |
 | Number precision         | String storage preserves `'3.140'`                      |
+
+---
+
+## CLI
+
+### Overview
+
+MathAST includes a command-line interface for parsing and displaying mathematical expressions. It supports both single-command execution and an interactive REPL mode.
+
+**Location**: `src/lib/mathAST/cli/`
+**Tests**: 90 passing
+**Dependencies**: chalk, commander
+
+### Installation
+
+```bash
+# CLI is included with mathAST, just install dependencies
+pnpm add -D chalk commander
+```
+
+### Usage
+
+#### Single-Command Mode
+
+```bash
+# Parse expression (shows AST tree + LaTeX)
+pnpm math "x^2 + 3x - 5"
+
+# Show AST tree only
+pnpm math tree "\frac{a}{b}"
+
+# Show LaTeX output only
+pnpm math latex "\sqrt{x}"
+
+# Get help
+pnpm math --help
+```
+
+#### REPL Mode
+
+```bash
+# Start interactive REPL
+pnpm math
+
+# Or explicitly
+pnpm math repl
+```
+
+**REPL Commands**:
+
+| Command           | Action                         |
+| ----------------- | ------------------------------ |
+| `.help`           | Show available commands        |
+| `.quit` / `.exit` | Exit REPL                      |
+| `.tree`           | Show AST of last expression    |
+| `.latex`          | Show LaTeX of last expression  |
+| `<expression>`    | Parse and display tree + LaTeX |
+
+**Example Session**:
+
+```
+$ pnpm math
+MathAST REPL
+Enter LaTeX expressions to parse. Commands: .help, .quit
+
+math> x^2 + 3x
+Addition
+├─ left:
+│  └─ Superscript
+│     ├─ base:
+│     │  └─ Variable: x
+│     └─ exponent:
+│        └─ Number: 2
+└─ right:
+   └─ Multiplication [implicit]
+      ├─ left:
+      │  └─ Number: 3
+      └─ right:
+         └─ Variable: x
+
+LaTeX: x^2 + 3 x
+
+math> .quit
+Goodbye!
+```
+
+### Architecture
+
+```
+src/lib/mathAST/cli/
+├── index.ts           # Public exports
+├── types.ts           # CLI types
+├── cli.ts             # Entry point (Commander)
+├── repl.ts            # Interactive REPL
+├── core/
+│   ├── input-detector.ts   # LaTeX detection
+│   ├── pipeline.ts         # Parse pipeline
+│   ├── output-formatter.ts # Chalk formatting
+│   └── command-registry.ts # Command registry
+└── commands/
+    ├── base-command.ts     # Abstract base
+    ├── parse.command.ts    # Parse + display
+    ├── tree.command.ts     # AST tree
+    ├── latex.command.ts    # LaTeX output
+    └── help.command.ts     # Help
+```
+
+### Extensibility
+
+Adding a new command (e.g., future CAS operations):
+
+```typescript
+// 1. Create commands/simplify.command.ts
+import { BaseCommand } from './base-command';
+import type { CommandContext, CommandResult } from '../types';
+
+export class SimplifyCommand extends BaseCommand {
+	readonly name = 'simplify';
+	readonly aliases = ['s'] as const;
+	readonly description = 'Simplify expression';
+	readonly usage = 'simplify <expression>';
+
+	execute(ctx: CommandContext): CommandResult {
+		// Implementation...
+		return { success: true, output: '...' };
+	}
+}
+
+// 2. Register in commands/index.ts createDefaultRegistry()
+registry.register(new SimplifyCommand());
+```
+
+### Programmatic API
+
+```typescript
+import { parse, createDefaultRegistry, startRepl } from '$lib/mathAST/cli';
+
+// Parse expression
+const result = parse('x^2 + y');
+if (result.ast) {
+	console.log(result.ast);
+}
+
+// Create command registry
+const registry = createDefaultRegistry();
+const parseCmd = registry.get('parse');
+
+// Start REPL programmatically
+startRepl();
+```
