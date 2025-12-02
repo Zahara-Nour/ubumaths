@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { parsePratt } from '../parser-pratt';
 import { parseRD } from '../parser-rd';
-import type { MathNode } from '../../types';
+import type { MathNode } from '../../../types';
 
 // =============================================================================
 // Helper Functions

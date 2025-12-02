@@ -1,7 +1,7 @@
 /**
- * Recursive Descent Parser Tests
+ * Pratt Parser Tests
  *
- * Comprehensive tests for the LaTeX to MathAST Recursive Descent parser including:
+ * Comprehensive tests for the LaTeX to MathAST Pratt parser including:
  * - Literal parsing (numbers, variables, greek letters, symbols)
  * - Binary operations with precedence
  * - Unary operations
@@ -14,12 +14,12 @@
  * - Implicit multiplication
  * - Error handling
  *
- * @module mathAST/parser/__tests__/parser-rd.test
+ * @module mathAST/parser/__tests__/parser-pratt.test
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseRD, parseRDSafe, ParseException } from '../parser-rd';
-import type { MathNode } from '../../types';
+import { parsePratt, parsePrattSafe, ParseException } from '../parser-pratt';
+import type { MathNode } from '../../../types';
 
 // =============================================================================
 // Helper Functions
@@ -39,7 +39,7 @@ function expectType<T extends MathNode['type']>(
  * Helper to parse and return node with type assertion
  */
 function parse(input: string): MathNode {
-	return parseRD(input);
+	return parsePratt(input);
 }
 
 // =============================================================================
@@ -961,18 +961,18 @@ describe('Error Handling', () => {
 
 	describe('Tolerant mode', () => {
 		it('should return errors instead of throwing', () => {
-			const result = parseRDSafe('(x + y');
+			const result = parsePrattSafe('(x + y');
 			expect(result.errors.length).toBeGreaterThan(0);
 		});
 
 		it('should include error code in errors', () => {
-			const result = parseRDSafe('\\unknowncommand');
+			const result = parsePrattSafe('\\unknowncommand');
 			expect(result.errors.length).toBeGreaterThan(0);
 			expect(result.errors[0].code).toBeDefined();
 		});
 
 		it('should include position information', () => {
-			const result = parseRDSafe('\\unknowncommand');
+			const result = parsePrattSafe('\\unknowncommand');
 			expect(result.errors[0].position).toBeGreaterThanOrEqual(0);
 			expect(result.errors[0].length).toBeGreaterThan(0);
 		});
