@@ -97,11 +97,7 @@ describe('LaTeX Generator - Integration Tests', () => {
 	it('generates absolute value inequality', () => {
 		// |x - 3| < 5
 		const expr = MathAST.lessThan(
-			MathAST.delimiter(
-				'absolute',
-				MathAST.subtract(MathAST.variable('x'), MathAST.number('3')),
-				'absolute'
-			),
+			MathAST.abs(MathAST.subtract(MathAST.variable('x'), MathAST.number('3'))),
 			MathAST.number('5')
 		);
 

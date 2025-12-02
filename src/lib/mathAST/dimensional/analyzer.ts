@@ -860,6 +860,7 @@ function handleCbrtOutput(
 
 /**
  * Analyze delimiter node - pass through to content
+ * Note: Absolute value is now represented as abs() function, not delimiter
  */
 function analyzeDelimiter(
 	node: DelimiterNode,
@@ -867,13 +868,7 @@ function analyzeDelimiter(
 	errors: DimensionalError[],
 	warnings: DimensionalWarning[]
 ): Unit | null {
-	// Special handling for absolute value delimiters
-	if (node.semantic === 'absolute' || node.delimiters === 'absolute') {
-		// Absolute value preserves units
-		return analyzeNode(node.content, context, errors, warnings);
-	}
-
-	// For other delimiters, pass through to content
+	// Delimiters (parentheses) pass through to content
 	return analyzeNode(node.content, context, errors, warnings);
 }
 

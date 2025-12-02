@@ -38,7 +38,6 @@ import {
 	cos,
 	sqrt,
 	abs,
-	delimiter,
 	parentheses,
 	power,
 	subscript,
@@ -873,8 +872,8 @@ describe('Dimensional Analyzer', () => {
 			expect(result.resultUnit!.components.get('m')).toBe(1);
 		});
 
-		it('should handle absolute value delimiter', () => {
-			const expr = delimiter('absolute', quantity('5', 'm'), 'absolute');
+		it('should handle abs function (absolute value)', () => {
+			const expr = abs(quantity('5', 'm'));
 			const result = analyzeDimensions(expr);
 
 			expect(result.valid).toBe(true);

@@ -534,7 +534,8 @@ export function abs(arg: MathNode, options?: FunctionOptions | NodeMetadata): Fu
 
 /**
  * Creates a delimiter node (content surrounded by delimiters)
- * @param type - Type of delimiter ('parentheses', 'absolute')
+ * Note: For absolute value, use abs() function instead of delimiter
+ * @param type - Type of delimiter ('parentheses')
  * @param content - Content inside delimiters
  * @param semantic - Optional semantic meaning ('grouping', 'interval', 'set', etc.)
  * @param options - Optional DelimiterOptions or NodeMetadata for rendering hints

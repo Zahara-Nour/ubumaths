@@ -253,7 +253,8 @@ describe('Exp - Static Factories (Functions)', () => {
 
 	it('creates abs', () => {
 		const exp = Exp.abs(Exp.variable('x'));
-		expect(exp.latex).toBe('abs\\left( x \\right)');
+		// abs() is rendered as |x| in LaTeX
+		expect(exp.latex).toBe('\\left| x \\right|');
 	});
 });
 
@@ -426,7 +427,8 @@ describe('Exp - Instance Methods (Functions)', () => {
 
 	it('applies abs to this', () => {
 		const exp = Exp.variable('x').abs();
-		expect(exp.latex).toBe('abs\\left( x \\right)');
+		// abs() is rendered as |x| in LaTeX
+		expect(exp.latex).toBe('\\left| x \\right|');
 	});
 
 	it('Exp.sin(x) equals x.sin()', () => {

@@ -467,11 +467,6 @@ export class LatexGenerator {
 				this.visitWithSpans(node.content);
 				this.emit(' \\right)', rightMeta);
 				break;
-			case 'absolute':
-				this.emit('\\left| ', leftMeta);
-				this.visitWithSpans(node.content);
-				this.emit(' \\right|', rightMeta);
-				break;
 			default: {
 				const exhaustive: never = node.delimiters;
 				throw new Error(`Unknown delimiter type: ${exhaustive}`);
@@ -481,8 +476,19 @@ export class LatexGenerator {
 
 	/**
 	 * Emits spans for a function node.
+	 * Special case: abs(x) is rendered as |x| using \left| \right|
 	 */
 	private visitFunctionSpans(node: FunctionNode): void {
+		// Special case: abs function renders as |x|
+		if (node.name === 'abs' && node.args.length === 1 && !node.power && !node.base) {
+			const leftMeta = getLeftDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
+			const rightMeta = getRightDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
+			this.emit('\\left| ', leftMeta);
+			this.visitWithSpans(node.args[0]);
+			this.emit(' \\right|', rightMeta);
+			return;
+		}
+
 		const isKnown = KNOWN_FUNCTIONS.has(node.name);
 		const funcName = isKnown ? `\\${node.name}` : node.name;
 
@@ -758,7 +764,17 @@ export class LatexGenerator {
 		return `+${operand}`;
 	}
 
+	/**
+	 * Generates LaTeX for a function node.
+	 * Special case: abs(x) is rendered as |x| using \left| \right|
+	 */
 	private generateFunction(node: FunctionNode): string {
+		// Special case: abs function renders as |x|
+		if (node.name === 'abs' && node.args.length === 1 && !node.power && !node.base) {
+			const content = this.generateNode(node.args[0]);
+			return `\\left| ${content} \\right|`;
+		}
+
 		const isKnown = KNOWN_FUNCTIONS.has(node.name);
 		const funcName = isKnown ? `\\${node.name}` : node.name;
 
@@ -790,8 +806,6 @@ export class LatexGenerator {
 		switch (node.delimiters) {
 			case 'parentheses':
 				return `\\left( ${content} \\right)`;
-			case 'absolute':
-				return `\\left| ${content} \\right|`;
 			default: {
 				const exhaustive: never = node.delimiters;
 				throw new Error(`Unknown delimiter type: ${exhaustive}`);

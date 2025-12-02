@@ -87,8 +87,8 @@ const paren = MathAST.parentheses(MathAST.add(MathAST.variable('x'), MathAST.var
 toLatex(paren); // "\left( x + y \right)"
 
 // Absolute value: |x|
-const abs = MathAST.delimiter('absolute', MathAST.variable('x'), 'absolute');
-toLatex(abs); // "\left| x \right|"
+const absVal = MathAST.abs(MathAST.variable('x'));
+toLatex(absVal); // "\left| x \right|"
 ```
 
 ### Relations

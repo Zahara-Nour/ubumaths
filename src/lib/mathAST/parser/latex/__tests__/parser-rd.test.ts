@@ -502,24 +502,29 @@ describe('Delimiters', () => {
 			expect(node.delimiters).toBe('parentheses');
 		});
 
-		it('should parse \\left| \\right| (absolute value)', () => {
+		it('should parse \\left| \\right| (absolute value) as abs function', () => {
 			const node = parse('\\left| x \\right|');
-			expectType(node, 'delimiter');
-			expect(node.delimiters).toBe('absolute');
+			expectType(node, 'function');
+			expect(node.name).toBe('abs');
+			expect(node.args).toHaveLength(1);
+			expectType(node.args[0], 'variable');
 		});
 	});
 
 	describe('Absolute value', () => {
-		it('should parse simple absolute value', () => {
+		it('should parse simple absolute value as abs function', () => {
 			const node = parse('|x|');
-			expectType(node, 'delimiter');
-			expect(node.delimiters).toBe('absolute');
+			expectType(node, 'function');
+			expect(node.name).toBe('abs');
+			expect(node.args).toHaveLength(1);
+			expectType(node.args[0], 'variable');
 		});
 
 		it('should parse absolute value of expression', () => {
 			const node = parse('|a - b|');
-			expectType(node, 'delimiter');
-			expectType(node.content, 'subtraction');
+			expectType(node, 'function');
+			expect(node.name).toBe('abs');
+			expectType(node.args[0], 'subtraction');
 		});
 	});
 });

@@ -26,14 +26,7 @@
  * @module mathAST/parser/parser-rd
  */
 
-import type {
-	MathNode,
-	GreekLetter,
-	MathSymbol,
-	RelationType,
-	DelimiterType,
-	NodeMetadata
-} from '../../types';
+import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } from '../../types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
@@ -790,30 +783,30 @@ class RDParser {
 	}
 
 	/**
-	 * Parse absolute value: |...|
+	 * Parse absolute value: |...| → abs(...)
 	 */
 	private parseAbsoluteValue(): MathNode {
 		this.advance(); // consume |
 		const content = this.parseExpression();
 		this.expect('PIPE', "Expected '|' to close absolute value");
-		return this.applyColor(MathAST.delimiter('absolute', content, 'absolute'));
+		return this.applyColor(MathAST.abs(content));
 	}
 
 	/**
 	 * Parse \left...\right delimiters
+	 * Note: \left| x \right| is parsed as abs(x)
 	 */
 	private parseLeftDelimiter(): MathNode {
 		this.advance(); // consume \left
 
 		// Get the opening delimiter
 		const openToken = this.currentToken;
-		let delimType: DelimiterType;
+		let isAbsolute = false;
 
 		if (openToken.type === 'LPAREN' || (openToken.type === 'COMMAND' && openToken.value === '(')) {
-			delimType = 'parentheses';
 			this.advance();
 		} else if (openToken.type === 'PIPE') {
-			delimType = 'absolute';
+			isAbsolute = true;
 			this.advance();
 		} else {
 			this.error(
@@ -840,7 +833,7 @@ class RDParser {
 
 		// Get the closing delimiter
 		const closeToken = this.currentToken;
-		if (delimType === 'parentheses') {
+		if (!isAbsolute) {
 			if (
 				closeToken.type !== 'RPAREN' &&
 				!(closeToken.type === 'COMMAND' && closeToken.value === ')')
@@ -852,7 +845,7 @@ class RDParser {
 					'MISSING_DELIMITER'
 				);
 			}
-		} else if (delimType === 'absolute') {
+		} else {
 			if (closeToken.type !== 'PIPE') {
 				this.error(
 					`Expected '|' after \\right, got ${closeToken.value || closeToken.type}`,
@@ -864,8 +857,11 @@ class RDParser {
 		}
 		this.advance();
 
-		const semantic = delimType === 'absolute' ? 'absolute' : 'grouping';
-		return this.applyColor(MathAST.delimiter(delimType, content, semantic));
+		// Return abs() for absolute value, delimiter for parentheses
+		if (isAbsolute) {
+			return this.applyColor(MathAST.abs(content));
+		}
+		return this.applyColor(MathAST.delimiter('parentheses', content, 'grouping'));
 	}
 
 	// =========================================================================

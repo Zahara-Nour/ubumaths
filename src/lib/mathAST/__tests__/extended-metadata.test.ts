@@ -24,6 +24,7 @@ import {
 	func,
 	sin,
 	cos,
+	abs,
 	delimiter,
 	parentheses,
 	relation,
@@ -877,8 +878,8 @@ describe('Extended Metadata System', () => {
 				expect(latex).toBe('\\textcolor{red}{\\left( }x\\textcolor{blue}{ \\right)}');
 			});
 
-			it('should handle absolute value delimiters', () => {
-				const node = delimiter('absolute', variable('x'), undefined, {
+			it('should handle abs function with delimiter metadata', () => {
+				const node = abs(variable('x'), {
 					delimiterMetadata: { color: 'green' }
 				});
 				const latex = toLatex(node, { renderMetadata: true });

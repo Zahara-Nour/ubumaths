@@ -210,10 +210,10 @@ describe('prettyPrint', () => {
 		});
 
 		it('prints delimiter with semantic', () => {
-			const result = prettyPrint(delimiter('absolute', variable('x'), 'absolute'), {
+			const result = prettyPrint(delimiter('parentheses', variable('x'), 'set'), {
 				colors: false
 			});
-			expect(result).toContain('Delimiter [absolute] (absolute)');
+			expect(result).toContain('Delimiter [parentheses] (set)');
 		});
 
 		it('prints subscript', () => {

@@ -153,8 +153,8 @@ describe('LatexGenerator - Delimiters', () => {
 		expect(toLatex(expr)).toBe('\\left( x \\right)');
 	});
 
-	it('generates absolute value', () => {
-		const expr = MathAST.delimiter('absolute', MathAST.variable('x'), 'absolute');
+	it('generates absolute value via abs function', () => {
+		const expr = MathAST.abs(MathAST.variable('x'));
 		expect(toLatex(expr)).toBe('\\left| x \\right|');
 	});
 });
@@ -383,13 +383,9 @@ describe('LatexGenerator - Complex Expressions', () => {
 		expect(toLatex(expr)).toBe('\\alpha + \\beta = \\gamma');
 	});
 
-	it('generates absolute value', () => {
+	it('generates absolute value via abs function', () => {
 		// |x - y|
-		const expr = MathAST.delimiter(
-			'absolute',
-			MathAST.subtract(MathAST.variable('x'), MathAST.variable('y')),
-			'absolute'
-		);
+		const expr = MathAST.abs(MathAST.subtract(MathAST.variable('x'), MathAST.variable('y')));
 		expect(toLatex(expr)).toBe('\\left| x - y \\right|');
 	});
 
