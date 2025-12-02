@@ -966,6 +966,14 @@ class CustomPrattParser {
 			base = this.parseSubscriptOperand();
 		}
 
+		// Handle sqrt[n] for nth root - check for bracket BEFORE parentheses
+		let nthRoot: MathNode | undefined;
+		if (name === 'sqrt' && this.check('LBRACKET')) {
+			this.advance();
+			nthRoot = this.parseExpression(BP.NONE);
+			this.expect('RBRACKET', "Expected ']' after nth root index");
+		}
+
 		// Parentheses are MANDATORY
 		if (!this.check('LPAREN')) {
 			this.error(
@@ -977,14 +985,6 @@ class CustomPrattParser {
 		}
 
 		this.advance(); // consume (
-
-		// Handle sqrt[n] for nth root - check for bracket INSIDE parentheses
-		let nthRoot: MathNode | undefined;
-		if (name === 'sqrt' && this.check('LBRACKET')) {
-			this.advance();
-			nthRoot = this.parseExpression(BP.NONE);
-			this.expect('RBRACKET', "Expected ']' after nth root index");
-		}
 
 		// Parse arguments
 		const args: MathNode[] = [];

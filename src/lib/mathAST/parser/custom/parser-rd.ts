@@ -924,7 +924,7 @@ class CustomRDParser {
 	// =========================================================================
 
 	/**
-	 * Parse a function: sin(x), log_2(x), sin^2(x), sqrt([n]x)
+	 * Parse a function: sin(x), log_2(x), sin^2(x), sqrt[n](x)
 	 *
 	 * Parentheses are MANDATORY in custom syntax.
 	 */
@@ -946,6 +946,14 @@ class CustomRDParser {
 			base = this.parseSubscriptOperand();
 		}
 
+		// Handle sqrt[n] for nth root - check for bracket BEFORE parentheses
+		let nthRoot: MathNode | undefined;
+		if (name === 'sqrt' && this.check('LBRACKET')) {
+			this.advance();
+			nthRoot = this.parseExpression();
+			this.expect('RBRACKET', "Expected ']' after nth root index");
+		}
+
 		// Parentheses are MANDATORY
 		if (!this.check('LPAREN')) {
 			this.error(
@@ -957,14 +965,6 @@ class CustomRDParser {
 		}
 
 		this.advance(); // consume (
-
-		// Handle sqrt([n]x) for nth root - check for bracket INSIDE parentheses
-		let nthRoot: MathNode | undefined;
-		if (name === 'sqrt' && this.check('LBRACKET')) {
-			this.advance();
-			nthRoot = this.parseExpression();
-			this.expect('RBRACKET', "Expected ']' after nth root index");
-		}
 
 		// Parse arguments
 		const args: MathNode[] = [];

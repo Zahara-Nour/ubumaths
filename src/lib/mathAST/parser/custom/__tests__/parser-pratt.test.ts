@@ -665,8 +665,8 @@ describe('Functions', () => {
 	});
 
 	describe('sqrt with nth root', () => {
-		it('sqrt([3]x) - cube root', () => {
-			const ast = parse('sqrt([3]x)');
+		it('sqrt[3](x) - cube root', () => {
+			const ast = parse('sqrt[3](x)');
 
 			expect(ast.type).toBe('function');
 			expect(ast).toMatchObject({
