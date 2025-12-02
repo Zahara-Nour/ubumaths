@@ -18,7 +18,7 @@
  * @module mathAST/parser/tokenizer
  */
 
-import type { Token, TokenType } from './types';
+import type { Token, TokenType } from '../types';
 
 // =============================================================================
 // Tokenizer Class

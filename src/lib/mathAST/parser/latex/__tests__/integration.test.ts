@@ -6,8 +6,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parseLatex, parseLatexSafe, validateLatex, parsePratt, parseRD } from '../index';
-import { toLatex } from '../../latex-generator';
+import { parseLatex, parseLatexSafe, validateLatex, parsePratt, parseRD } from '../../index';
+import { toLatex } from '../../../latex-generator';
 
 // =============================================================================
 // Test Cases

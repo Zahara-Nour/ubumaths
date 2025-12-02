@@ -1,13 +1,12 @@
 /**
- * LaTeX Parser Infrastructure
+ * Parser Infrastructure
  *
- * This module provides the shared infrastructure for parsing LaTeX
+ * This module provides the shared infrastructure for parsing
  * mathematical expressions into MathAST nodes.
  *
  * Components:
  * - Types: Token, ParseResult, ParseError, ParserOptions
- * - Tokenizer: LaTeX lexer that converts strings to tokens
- * - ColorStack: Color context management for nested \textcolor
+ * - LaTeX Parser: Tokenizer, Pratt parser, RD parser
  *
  * @module mathAST/parser
  */
@@ -37,10 +36,11 @@ export {
 } from './types';
 
 // =============================================================================
-// Tokenizer Exports
+// LaTeX Parser Exports (re-exported from latex/)
 // =============================================================================
 
 export {
+	// Tokenizer
 	Tokenizer,
 	tokenize,
 	filterWhitespace,
@@ -49,24 +49,21 @@ export {
 	isLeftDelimiter,
 	isRightDelimiter,
 	tokenTypeToString,
-	tokenToString
-} from './tokenizer';
-
-// =============================================================================
-// Color Stack Exports
-// =============================================================================
-
-export { ColorStack, STANDARD_COLORS, isValidColor, normalizeColor } from './color-stack';
-
-// =============================================================================
-// Parser Exports
-// =============================================================================
-
-// Export Pratt parser
-export { parsePratt, parsePrattSafe, ParseException as PrattParseException } from './parser-pratt';
-
-// Export RD parser
-export { parseRD, parseRDSafe, ParseException as RDParseException } from './parser-rd';
+	tokenToString,
+	// Color Stack
+	ColorStack,
+	STANDARD_COLORS,
+	isValidColor,
+	normalizeColor,
+	// Pratt parser
+	parsePratt,
+	parsePrattSafe,
+	PrattParseException,
+	// RD parser
+	parseRD,
+	parseRDSafe,
+	RDParseException
+} from './latex';
 
 // =============================================================================
 // Unified API
@@ -74,8 +71,8 @@ export { parseRD, parseRDSafe, ParseException as RDParseException } from './pars
 
 import type { MathNode } from '../types';
 import type { ParseResult, ParseError } from './types';
-import { parsePratt, parsePrattSafe } from './parser-pratt';
-import { parseRD, parseRDSafe } from './parser-rd';
+import { parsePratt, parsePrattSafe } from './latex';
+import { parseRD, parseRDSafe } from './latex';
 
 /**
  * Options for the unified LaTeX parser API

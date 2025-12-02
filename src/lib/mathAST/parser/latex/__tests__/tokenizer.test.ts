@@ -25,7 +25,7 @@ import {
 	tokenTypeToString,
 	tokenToString
 } from '../tokenizer';
-import type { Token } from '../types';
+import type { Token } from '../../types';
 
 // =============================================================================
 // Helper Functions

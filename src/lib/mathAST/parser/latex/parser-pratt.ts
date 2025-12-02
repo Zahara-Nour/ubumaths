@@ -1,29 +1,17 @@
 /**
- * Recursive Descent Parser for LaTeX to MathAST
+ * Pratt Parser for LaTeX to MathAST
  *
- * A Recursive Descent parser for converting LaTeX mathematical expressions
- * into MathAST nodes. This is an alternative implementation to the Pratt parser.
+ * A Top-Down Operator Precedence (Pratt) parser for converting LaTeX
+ * mathematical expressions into MathAST nodes.
  *
  * Features:
- * - Proper operator precedence handling via grammar rules
+ * - Proper operator precedence handling
  * - Support for all MathAST node types
  * - Implicit multiplication detection
  * - Color stack for \textcolor nesting
  * - Tolerant and strict parsing modes
- * - Right-associative chained exponents: x^2^3 -> x^(2^3)
- * - Left-to-right for mixed: x_1^2 -> (x_1)^2
  *
- * Grammar:
- *   expression      := relation
- *   relation        := additive (RELATION_OP additive)*
- *   additive        := multiplicative (('+' | '-') multiplicative)*
- *   multiplicative  := unary ((MUL_OP | IMPLICIT) unary)*
- *   unary           := ('+' | '-')? power
- *   power           := postfix ('^' powerOperand | '_' subscriptOperand)*
- *   postfix         := primary ('~' '\unit' group)?
- *   primary         := NUMBER | LETTER | GREEK | SYMBOL | fraction | sqrt | function | delimiter | color | braceGroup
- *
- * @module mathAST/parser/parser-rd
+ * @module mathAST/parser/parser-pratt
  */
 
 import type {
@@ -33,13 +21,35 @@ import type {
 	RelationType,
 	DelimiterType,
 	NodeMetadata
-} from '../types';
-import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from './types';
+} from '../../types';
+import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
-import { MathAST } from '../factory';
-import { parse as parseUnit } from '../units/parser';
-import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from './types';
+import { MathAST } from '../../factory';
+import { parse as parseUnit } from '../../units/parser';
+import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
+
+// =============================================================================
+// Binding Power (Precedence)
+// =============================================================================
+
+/**
+ * Binding power constants for operator precedence.
+ * Higher values bind tighter.
+ * Note: POWER and SUBSCRIPT intentionally share the same binding power (50)
+ * for correct mathematical semantics (x_1^2 parses as (x_1)^2).
+ */
+/* eslint-disable @typescript-eslint/no-duplicate-enum-values */
+const enum BP {
+	NONE = 0,
+	RELATION = 10, // =, <, >, <=, >=, !=, etc.
+	ADDITION = 20, // +, -
+	MULTIPLY = 30, // *, implicit, \cdot, \times
+	UNARY = 40, // prefix -, +
+	POWER = 50, // ^ (right-associative)
+	SUBSCRIPT = 50 // _ (same as POWER for mixed sub/superscript handling)
+}
+/* eslint-enable @typescript-eslint/no-duplicate-enum-values */
 
 // =============================================================================
 // Command Classification
@@ -136,16 +146,17 @@ export class ParseException extends Error {
 }
 
 // =============================================================================
-// Recursive Descent Parser Class
+// Pratt Parser Class
 // =============================================================================
 
 /**
- * Recursive Descent parser for LaTeX to MathAST conversion.
+ * Pratt parser for LaTeX to MathAST conversion.
  *
- * Uses a grammar-based approach with explicit precedence levels encoded
- * in the grammar structure itself.
+ * Uses top-down operator precedence parsing with:
+ * - NUD (Null Denotation) for prefix/primary expressions
+ * - LED (Left Denotation) for infix/postfix expressions
  */
-class RDParser {
+class PrattParser {
 	private readonly tokenizer: Tokenizer;
 	private readonly colorStack: ColorStack;
 	private readonly options: ParserOptions;
@@ -174,7 +185,7 @@ class RDParser {
 		}
 
 		try {
-			const result = this.parseExpression();
+			const result = this.parseExpression(BP.NONE);
 			// Ensure we consumed all input
 			// Re-read currentToken to get fresh type - parseExpression may have advanced it
 			const finalToken = this.currentToken;
@@ -230,6 +241,19 @@ class RDParser {
 	}
 
 	/**
+	 * Peek at the next non-whitespace token without consuming
+	 */
+	private peekNextNonWhitespace(): Token {
+		let offset = 0;
+		let token = this.tokenizer.peekAt(offset);
+		while (token.type === 'WHITESPACE') {
+			offset++;
+			token = this.tokenizer.peekAt(offset);
+		}
+		return token;
+	}
+
+	/**
 	 * Check if the current token matches the given type
 	 */
 	private check(type: Token['type']): boolean {
@@ -266,172 +290,38 @@ class RDParser {
 	}
 
 	// =========================================================================
-	// Grammar Rules
+	// Main Parsing Methods
 	// =========================================================================
 
 	/**
-	 * expression := relation
+	 * Parse an expression with the given minimum binding power
 	 */
-	private parseExpression(): MathNode {
-		return this.parseRelation();
-	}
+	private parseExpression(minBp: number): MathNode {
+		// Parse prefix/primary (NUD)
+		let left = this.nud();
 
-	/**
-	 * relation := additive (RELATION_OP additive)*
-	 *
-	 * Relations are left-associative for chains: a < b < c => (a < b) < c
-	 */
-	private parseRelation(): MathNode {
-		let left = this.parseAdditive();
-
-		while (this.isRelationOperator()) {
-			// Capture color before consuming operator (color scope may close during parsing)
-			const operatorColor = this.colorStack.current();
-			const relType = this.consumeRelationOperator();
-			const right = this.parseAdditive();
-			left = this.applyColorWithOperator(MathAST.relation(relType, left, right), operatorColor);
-
-			// Check if we need to close a color scope AFTER parsing the operator
-			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
-				this.advance(); // consume }
-				this.colorScopeStack.pop();
-				this.colorStack.pop();
-			}
-		}
-
-		return left;
-	}
-
-	/**
-	 * Check if current token is a relation operator
-	 */
-	private isRelationOperator(): boolean {
-		if (this.check('EQUALS') || this.check('LESS') || this.check('GREATER')) {
-			return true;
-		}
-		if (this.currentToken.type === 'COMMAND' && RELATION_COMMANDS.has(this.currentToken.value)) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Consume a relation operator and return its type
-	 */
-	private consumeRelationOperator(): RelationType {
-		const token = this.currentToken;
-
-		if (token.type === 'EQUALS') {
-			this.advance();
-			return '=';
-		}
-		if (token.type === 'LESS') {
-			this.advance();
-			return '<';
-		}
-		if (token.type === 'GREATER') {
-			this.advance();
-			return '>';
-		}
-		if (token.type === 'COMMAND' && RELATION_COMMANDS.has(token.value)) {
-			const relType = RELATION_COMMAND_MAP[token.value];
-			this.advance();
-			return relType;
-		}
-
-		// Should not reach here
-		this.error(`Expected relation operator`, token.position, token.length, 'UNEXPECTED_TOKEN');
-	}
-
-	/**
-	 * additive := multiplicative (('+' | '-') multiplicative)*
-	 *
-	 * Addition and subtraction are left-associative
-	 */
-	private parseAdditive(): MathNode {
-		let left = this.parseMultiplicative();
-
-		while (this.check('PLUS') || this.check('MINUS')) {
-			// Capture color BEFORE consuming operator (color scope may close during parsing)
-			const operatorColor = this.colorStack.current();
-			const isPlus = this.check('PLUS');
-			this.advance();
-			const right = this.parseMultiplicative();
-
-			if (isPlus) {
-				left = this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
-			} else {
-				left = this.applyColorWithOperator(MathAST.subtract(left, right), operatorColor);
-			}
-
-			// Check if we need to close a color scope AFTER parsing the operator
-			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
-				this.advance(); // consume }
-				this.colorScopeStack.pop();
-				this.colorStack.pop();
-			}
-		}
-
-		return left;
-	}
-
-	/**
-	 * multiplicative := unary ((MUL_OP | IMPLICIT) unary)*
-	 *
-	 * Multiplication and division are left-associative
-	 * Includes implicit multiplication detection
-	 */
-	private parseMultiplicative(): MathNode {
-		let left = this.parseUnary();
-
+		// Parse infix/postfix operators (LED)
 		while (true) {
 			// Special handling for \textcolor in LED position
 			// If we see \textcolor{color}{...} and ... starts with an operator,
 			// we want to treat it transparently (not as implicit multiplication)
 			if (this.checkCommand('textcolor')) {
-				this.handleTextColorTransparent();
+				this.handleTextColorInLED();
 				// After this, currentToken is the first token inside the { }
 				// Continue the loop - it will be handled appropriately
 				continue;
 			}
 
-			// Capture color BEFORE consuming operator (color scope may close during parsing)
-			const operatorColor = this.colorStack.current();
-
-			// Explicit multiplication operators
-			if (this.check('STAR')) {
-				this.advance();
-				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'star'), operatorColor);
-			} else if (this.check('SLASH')) {
-				this.advance();
-				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'inline'), operatorColor);
-			} else if (this.check('COLON')) {
-				this.advance();
-				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'ratio'), operatorColor);
-			}
-			// \cdot and \times commands
-			else if (this.checkCommand('cdot')) {
-				this.advance();
-				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'dot'), operatorColor);
-			} else if (this.checkCommand('times')) {
-				this.advance();
-				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'cross'), operatorColor);
-			}
-			// Implicit multiplication
-			else if (this.shouldInsertImplicitMultiply()) {
-				const right = this.parseUnary();
-				left = this.applyColorWithOperator(
-					MathAST.multiply(left, right, 'implicit'),
-					operatorColor
-				);
-			} else {
-				// No more multiplication operators
+			const bp = this.getLeftBindingPower();
+			if (bp <= minBp) {
 				break;
+			}
+
+			// Check for implicit multiplication
+			if (this.shouldInsertImplicitMultiply()) {
+				left = this.parseImplicitMultiply(left);
+			} else {
+				left = this.led(left);
 			}
 
 			// Check if we need to close a color scope AFTER parsing the operator
@@ -447,156 +337,9 @@ class RDParser {
 	}
 
 	/**
-	 * unary := ('+' | '-')? power
+	 * NUD (Null Denotation) - Parse prefix/primary expressions
 	 */
-	private parseUnary(): MathNode {
-		if (this.check('MINUS')) {
-			this.advance();
-			const operand = this.parseUnary();
-			return this.applyColor(MathAST.opposite(operand));
-		}
-
-		if (this.check('PLUS')) {
-			this.advance();
-			const operand = this.parseUnary();
-			return this.applyColor(MathAST.positive(operand));
-		}
-
-		return this.parsePower();
-	}
-
-	/**
-	 * power := postfix ('^' powerOperand | '_' subscriptOperand)*
-	 *
-	 * Handles both superscript and subscript with special right-associativity rules:
-	 * - x^2^3 => x^(2^3) (right-associative for chained same operator)
-	 * - x_1^2 => (x_1)^2 (left-to-right for mixed operators)
-	 */
-	private parsePower(): MathNode {
-		let left = this.parsePostfix();
-
-		while (true) {
-			// Special handling for \textcolor in this position
-			if (this.checkCommand('textcolor')) {
-				this.handleTextColorTransparent();
-				continue;
-			}
-
-			if (this.check('CARET')) {
-				this.advance();
-				const exponent = this.parsePowerOperand();
-				left = this.applyColor(MathAST.superscript(left, exponent));
-			} else if (this.check('UNDERSCORE')) {
-				this.advance();
-				const sub = this.parseSubscriptOperand();
-				left = this.applyColor(MathAST.subscript(left, sub));
-			} else {
-				break;
-			}
-
-			// Check if we need to close a color scope AFTER parsing the operator
-			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
-				this.advance(); // consume }
-				this.colorScopeStack.pop();
-				this.colorStack.pop();
-			}
-		}
-
-		return left;
-	}
-
-	/**
-	 * Parse the operand of a superscript (handles braces and right-associativity)
-	 * For x^2^3 to parse as x^(2^3):
-	 * - If braced, just parse the brace group
-	 * - If not braced, parse a single primary, then check for chained ^
-	 */
-	private parsePowerOperand(): MathNode {
-		if (this.check('LBRACE')) {
-			return this.parseBraceGroup();
-		}
-
-		// Parse single primary token
-		const operand = this.parsePrimary();
-
-		// Check for chained superscript (right-associativity)
-		if (this.check('CARET')) {
-			this.advance();
-			const nextOperand = this.parsePowerOperand();
-			return this.applyColor(MathAST.superscript(operand, nextOperand));
-		}
-
-		return operand;
-	}
-
-	/**
-	 * Parse the operand of a subscript (handles braces and right-associativity)
-	 * For x_a_b to parse as x_(a_b):
-	 * - If braced, just parse the brace group
-	 * - If not braced, parse a single primary, then check for chained _
-	 */
-	private parseSubscriptOperand(): MathNode {
-		if (this.check('LBRACE')) {
-			return this.parseBraceGroup();
-		}
-
-		// Parse single primary token
-		const operand = this.parsePrimary();
-
-		// Check for chained subscript (right-associativity)
-		if (this.check('UNDERSCORE')) {
-			this.advance();
-			const nextOperand = this.parseSubscriptOperand();
-			return this.applyColor(MathAST.subscript(operand, nextOperand));
-		}
-
-		return operand;
-	}
-
-	/**
-	 * postfix := primary ('~' '\unit' group)?
-	 */
-	private parsePostfix(): MathNode {
-		let node = this.parsePrimary();
-
-		if (this.check('TILDE')) {
-			this.advance();
-
-			// Expect \unit command
-			if (!this.checkCommand('unit')) {
-				this.error(
-					`Expected \\unit after ~`,
-					this.currentToken.position,
-					this.currentToken.length,
-					'INVALID_UNIT'
-				);
-			}
-			this.advance(); // consume \unit
-
-			this.expect('LBRACE', "Expected '{' for \\unit");
-			const unitStr = this.parseUnitString();
-			this.expect('RBRACE', "Expected '}' after \\unit");
-
-			const unit = parseUnit(unitStr);
-			if (!unit) {
-				this.error(
-					`Invalid unit: ${unitStr}`,
-					this.currentToken.position,
-					unitStr.length,
-					'INVALID_UNIT'
-				);
-			}
-
-			node = this.applyColor(MathAST.withUnit(node, unit));
-		}
-
-		return node;
-	}
-
-	/**
-	 * primary := NUMBER | LETTER | GREEK | SYMBOL | fraction | sqrt | function | delimiter | color | braceGroup
-	 */
-	private parsePrimary(): MathNode {
+	private nud(): MathNode {
 		const token = this.currentToken;
 
 		switch (token.type) {
@@ -611,6 +354,12 @@ class RDParser {
 
 			case 'LPAREN':
 				return this.parseParentheses();
+
+			case 'MINUS':
+				return this.parsePrefixMinus();
+
+			case 'PLUS':
+				return this.parsePrefixPlus();
 
 			case 'LBRACE':
 				return this.parseBraceGroup();
@@ -628,74 +377,149 @@ class RDParser {
 		}
 	}
 
+	/**
+	 * LED (Left Denotation) - Parse infix/postfix expressions
+	 */
+	private led(left: MathNode): MathNode {
+		const token = this.currentToken;
+
+		switch (token.type) {
+			case 'PLUS':
+				return this.parseAddition(left);
+
+			case 'MINUS':
+				return this.parseSubtraction(left);
+
+			case 'STAR':
+				return this.parseMultiplication(left, 'star');
+
+			case 'SLASH':
+				return this.parseDivision(left, 'inline');
+
+			case 'COLON':
+				return this.parseDivision(left, 'ratio');
+
+			case 'CARET':
+				return this.parseSuperscript(left);
+
+			case 'UNDERSCORE':
+				return this.parseSubscript(left);
+
+			case 'EQUALS':
+				return this.parseRelation(left, '=');
+
+			case 'LESS':
+				return this.parseRelation(left, '<');
+
+			case 'GREATER':
+				return this.parseRelation(left, '>');
+
+			case 'TILDE':
+				return this.parseUnit(left);
+
+			case 'COMMAND':
+				if (RELATION_COMMANDS.has(token.value)) {
+					const relType = RELATION_COMMAND_MAP[token.value];
+					if (relType) {
+						return this.parseRelationCommand(left, relType);
+					}
+				}
+				if (token.value === 'cdot') {
+					return this.parseMultiplicationCommand(left, 'dot');
+				}
+				if (token.value === 'times') {
+					return this.parseMultiplicationCommand(left, 'cross');
+				}
+				// \textcolor is now handled in parseExpression() before we get here
+				// Fall through for implicit multiplication
+				break;
+
+			default:
+				break;
+		}
+
+		// If we get here, try implicit multiplication
+		if (this.shouldInsertImplicitMultiply()) {
+			return this.parseImplicitMultiply(left);
+		}
+
+		this.error(
+			`Unexpected token in expression: ${token.value || token.type}`,
+			token.position,
+			token.length,
+			'UNEXPECTED_TOKEN'
+		);
+	}
+
 	// =========================================================================
-	// Implicit Multiplication
+	// Binding Power
 	// =========================================================================
 
 	/**
-	 * Check if we should insert implicit multiplication
+	 * Get the left binding power of the current token
 	 */
-	private shouldInsertImplicitMultiply(): boolean {
+	private getLeftBindingPower(): number {
 		const token = this.currentToken;
 
-		// Can't have implicit mult at start or after operators
-		if (
-			token.type === 'EOF' ||
-			token.type === 'PLUS' ||
-			token.type === 'MINUS' ||
-			token.type === 'STAR' ||
-			token.type === 'SLASH' ||
-			token.type === 'CARET' ||
-			token.type === 'UNDERSCORE' ||
-			token.type === 'EQUALS' ||
-			token.type === 'LESS' ||
-			token.type === 'GREATER' ||
-			token.type === 'COLON' ||
-			token.type === 'TILDE' ||
-			token.type === 'RPAREN' ||
-			token.type === 'RBRACE' ||
-			token.type === 'RBRACKET' ||
-			token.type === 'PIPE' ||
-			token.type === 'COMMA'
-		) {
-			return false;
-		}
+		switch (token.type) {
+			case 'PLUS':
+			case 'MINUS':
+				return BP.ADDITION;
 
-		// Check for relation commands
-		if (token.type === 'COMMAND' && RELATION_COMMANDS.has(token.value)) {
-			return false;
-		}
+			case 'STAR':
+			case 'SLASH':
+			case 'COLON':
+				return BP.MULTIPLY;
 
-		// Check for multiplication commands
-		if (token.type === 'COMMAND' && (token.value === 'cdot' || token.value === 'times')) {
-			return false;
-		}
+			case 'CARET':
+			case 'UNDERSCORE':
+				return BP.POWER;
 
-		// Check for \right
-		if (token.type === 'COMMAND' && token.value === 'right') {
-			return false;
-		}
+			case 'EQUALS':
+			case 'LESS':
+			case 'GREATER':
+				return BP.RELATION;
 
-		// \textcolor is special - it should be transparent, not trigger implicit mult
-		// When we see "5 \textcolor{red}{+3}", we want + to be infix, not "5 * \textcolor{red}{+3}"
-		if (token.type === 'COMMAND' && token.value === 'textcolor') {
-			return false;
-		}
+			case 'TILDE':
+				return BP.MULTIPLY + 1; // Slightly higher than multiply to bind units
 
-		// Tokens that CAN trigger implicit multiplication:
-		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt)
-		return (
-			token.type === 'NUMBER' ||
-			token.type === 'LETTER' ||
-			token.type === 'LPAREN' ||
-			(token.type === 'COMMAND' &&
-				(GREEK_COMMANDS.has(token.value) ||
+			case 'COMMAND':
+				if (RELATION_COMMANDS.has(token.value)) {
+					return BP.RELATION;
+				}
+				if (token.value === 'cdot' || token.value === 'times') {
+					return BP.MULTIPLY;
+				}
+				// \textcolor is handled specially - it's transparent
+				if (token.value === 'textcolor') {
+					// Return NONE so it doesn't interfere with expression parsing
+					// It will be handled in LED by checking for it explicitly
+					return BP.MULTIPLY; // Actually, we need this for the LED handler
+				}
+				// For implicit multiplication with functions/greek/special commands
+				if (
 					FUNCTION_COMMANDS.has(token.value) ||
+					GREEK_COMMANDS.has(token.value) ||
 					token.value in SYMBOL_COMMAND_MAP ||
 					token.value === 'frac' ||
 					token.value === 'sqrt' ||
-					token.value === 'left'))
-		);
+					token.value === 'left'
+				) {
+					return BP.MULTIPLY;
+				}
+				break;
+
+			case 'NUMBER':
+			case 'LETTER':
+			case 'LPAREN':
+				// Implicit multiplication
+				return BP.MULTIPLY;
+
+			default:
+				break;
+		}
+
+		return BP.NONE;
 	}
 
 	// =========================================================================
@@ -774,18 +598,28 @@ class RDParser {
 	 */
 	private parseParentheses(): MathNode {
 		this.advance(); // consume (
-		const content = this.parseExpression();
+		const content = this.parseExpression(BP.NONE);
 		this.expect('RPAREN', "Expected ')' after expression");
 		return this.applyColor(MathAST.delimiter('parentheses', content, 'grouping'));
 	}
 
 	/**
 	 * Parse brace group: {...}
+	 *
+	 * Special handling: if this is part of a \textcolor scope,
+	 * the opening brace is already consumed by parseTextColor()
 	 */
 	private parseBraceGroup(): MathNode {
 		this.advance(); // consume {
-		const content = this.parseExpression();
+		// If this opens a color scope, it was already handled
+		// This is for regular brace groups like {x+y}
+		const content = this.parseExpression(BP.NONE);
 		this.expect('RBRACE', "Expected '}' after expression");
+		// Check if this closes a color scope
+		if (this.colorBraceDepth > 0) {
+			this.colorBraceDepth--;
+			this.colorStack.pop();
+		}
 		return content;
 	}
 
@@ -794,7 +628,7 @@ class RDParser {
 	 */
 	private parseAbsoluteValue(): MathNode {
 		this.advance(); // consume |
-		const content = this.parseExpression();
+		const content = this.parseExpression(BP.NONE);
 		this.expect('PIPE', "Expected '|' to close absolute value");
 		return this.applyColor(MathAST.delimiter('absolute', content, 'absolute'));
 	}
@@ -825,7 +659,7 @@ class RDParser {
 		}
 
 		// Parse content
-		const content = this.parseExpression();
+		const content = this.parseExpression(BP.NONE);
 
 		// Expect \right
 		if (!this.checkCommand('right')) {
@@ -869,6 +703,252 @@ class RDParser {
 	}
 
 	// =========================================================================
+	// Unary Operators
+	// =========================================================================
+
+	/**
+	 * Parse prefix minus: -x
+	 */
+	private parsePrefixMinus(): MathNode {
+		this.advance(); // consume -
+		const operand = this.parseExpression(BP.UNARY);
+		return this.applyColor(MathAST.opposite(operand));
+	}
+
+	/**
+	 * Parse prefix plus: +x
+	 */
+	private parsePrefixPlus(): MathNode {
+		this.advance(); // consume +
+		const operand = this.parseExpression(BP.UNARY);
+		return this.applyColor(MathAST.positive(operand));
+	}
+
+	// =========================================================================
+	// Binary Operators
+	// =========================================================================
+
+	/**
+	 * Parse addition: left + right
+	 */
+	private parseAddition(left: MathNode): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume +
+		const right = this.parseExpression(BP.ADDITION);
+		return this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
+	}
+
+	/**
+	 * Parse subtraction: left - right
+	 */
+	private parseSubtraction(left: MathNode): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume -
+		const right = this.parseExpression(BP.ADDITION);
+		return this.applyColorWithOperator(MathAST.subtract(left, right), operatorColor);
+	}
+
+	/**
+	 * Parse multiplication with explicit operator
+	 */
+	private parseMultiplication(left: MathNode, style: 'star' | 'dot' | 'cross'): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume operator
+		const right = this.parseExpression(BP.MULTIPLY);
+		return this.applyColorWithOperator(MathAST.multiply(left, right, style), operatorColor);
+	}
+
+	/**
+	 * Parse multiplication command (\cdot, \times)
+	 */
+	private parseMultiplicationCommand(left: MathNode, style: 'dot' | 'cross'): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume command
+		const right = this.parseExpression(BP.MULTIPLY);
+		return this.applyColorWithOperator(MathAST.multiply(left, right, style), operatorColor);
+	}
+
+	/**
+	 * Parse division: left / right or left : right
+	 */
+	private parseDivision(left: MathNode, style: 'inline' | 'ratio'): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume operator
+		const right = this.parseExpression(BP.MULTIPLY);
+		return this.applyColorWithOperator(MathAST.divide(left, right, style), operatorColor);
+	}
+
+	// =========================================================================
+	// Implicit Multiplication
+	// =========================================================================
+
+	/**
+	 * Check if we should insert implicit multiplication
+	 */
+	private shouldInsertImplicitMultiply(): boolean {
+		const token = this.currentToken;
+
+		// Can't have implicit mult at start or after operators
+		if (
+			token.type === 'EOF' ||
+			token.type === 'PLUS' ||
+			token.type === 'MINUS' ||
+			token.type === 'STAR' ||
+			token.type === 'SLASH' ||
+			token.type === 'CARET' ||
+			token.type === 'UNDERSCORE' ||
+			token.type === 'EQUALS' ||
+			token.type === 'LESS' ||
+			token.type === 'GREATER' ||
+			token.type === 'COLON' ||
+			token.type === 'TILDE' ||
+			token.type === 'RPAREN' ||
+			token.type === 'RBRACE' ||
+			token.type === 'RBRACKET' ||
+			token.type === 'PIPE' ||
+			token.type === 'COMMA'
+		) {
+			return false;
+		}
+
+		// Check for relation commands
+		if (token.type === 'COMMAND' && RELATION_COMMANDS.has(token.value)) {
+			return false;
+		}
+
+		// Check for multiplication commands
+		if (token.type === 'COMMAND' && (token.value === 'cdot' || token.value === 'times')) {
+			return false;
+		}
+
+		// Check for \right
+		if (token.type === 'COMMAND' && token.value === 'right') {
+			return false;
+		}
+
+		// \textcolor is special - it should be transparent, not trigger implicit mult
+		// When we see "5 \textcolor{red}{+3}", we want + to be infix, not "5 * \textcolor{red}{+3}"
+		if (token.type === 'COMMAND' && token.value === 'textcolor') {
+			return false;
+		}
+
+		// Tokens that CAN trigger implicit multiplication:
+		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt)
+		return (
+			token.type === 'NUMBER' ||
+			token.type === 'LETTER' ||
+			token.type === 'LPAREN' ||
+			(token.type === 'COMMAND' &&
+				(GREEK_COMMANDS.has(token.value) ||
+					FUNCTION_COMMANDS.has(token.value) ||
+					token.value in SYMBOL_COMMAND_MAP ||
+					token.value === 'frac' ||
+					token.value === 'sqrt' ||
+					token.value === 'left'))
+		);
+	}
+
+	/**
+	 * Parse implicit multiplication
+	 */
+	private parseImplicitMultiply(left: MathNode): MathNode {
+		// Don't advance - nud will consume the next token
+		const right = this.parseExpression(BP.MULTIPLY);
+		return this.applyColor(MathAST.multiply(left, right, 'implicit'));
+	}
+
+	// =========================================================================
+	// Superscript and Subscript
+	// =========================================================================
+
+	/**
+	 * Parse superscript: base^exponent (right-associative)
+	 */
+	private parseSuperscript(left: MathNode): MathNode {
+		this.advance(); // consume ^
+		const exponent = this.parseSuperscriptOperand();
+		return this.applyColor(MathAST.superscript(left, exponent));
+	}
+
+	/**
+	 * Parse subscript: base_subscript (right-associative)
+	 */
+	private parseSubscript(left: MathNode): MathNode {
+		this.advance(); // consume _
+		const subscript = this.parseSubscriptOperand();
+		return this.applyColor(MathAST.subscript(left, subscript));
+	}
+
+	/**
+	 * Parse the operand of a superscript (handles braces and single tokens)
+	 * Right-associative only for chained superscripts: x^2^3 → x^(2^3)
+	 * But left-to-right for mixed: x_1^2 → (x_1)^2
+	 */
+	private parseSuperscriptOperand(): MathNode {
+		if (this.check('LBRACE')) {
+			return this.parseBraceGroup();
+		}
+		// Parse single token first
+		const operand = this.nud();
+		// Check for chained superscript (same operator → right-associative)
+		if (this.check('CARET')) {
+			// x^2^3 → x^(2^3)
+			return this.parseSuperscript(operand);
+		}
+		return operand;
+	}
+
+	/**
+	 * Parse the operand of a subscript (handles braces and single tokens)
+	 * Right-associative only for chained subscripts: x_a_b → x_(a_b)
+	 * But left-to-right for mixed: x^2_1 → (x^2)_1
+	 */
+	private parseSubscriptOperand(): MathNode {
+		if (this.check('LBRACE')) {
+			return this.parseBraceGroup();
+		}
+		// Parse single token first
+		const operand = this.nud();
+		// Check for chained subscript (same operator → right-associative)
+		if (this.check('UNDERSCORE')) {
+			// x_a_b → x_(a_b)
+			return this.parseSubscript(operand);
+		}
+		return operand;
+	}
+
+	// =========================================================================
+	// Relations
+	// =========================================================================
+
+	/**
+	 * Parse a relation: left op right
+	 */
+	private parseRelation(left: MathNode, relType: RelationType): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume operator
+		const right = this.parseExpression(BP.RELATION);
+		return this.applyColorWithOperator(MathAST.relation(relType, left, right), operatorColor);
+	}
+
+	/**
+	 * Parse a relation command: left \leq right
+	 */
+	private parseRelationCommand(left: MathNode, relType: RelationType): MathNode {
+		// Capture color before parsing right side (which may close color scope)
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume command
+		const right = this.parseExpression(BP.RELATION);
+		return this.applyColorWithOperator(MathAST.relation(relType, left, right), operatorColor);
+	}
+
+	// =========================================================================
 	// Functions
 	// =========================================================================
 
@@ -883,7 +963,7 @@ class RDParser {
 		let power: MathNode | undefined;
 		if (this.check('CARET')) {
 			this.advance();
-			power = this.parsePowerOperand();
+			power = this.parseSuperscriptOperand();
 		}
 
 		// Check for base (log only): \log_2
@@ -931,7 +1011,7 @@ class RDParser {
 		}
 
 		// Single token argument
-		const arg = this.parsePrimary();
+		const arg = this.nud();
 		return [arg];
 	}
 
@@ -941,11 +1021,11 @@ class RDParser {
 	private parseCommaList(): MathNode[] {
 		const items: MathNode[] = [];
 
-		items.push(this.parseExpression());
+		items.push(this.parseExpression(BP.NONE));
 
 		while (this.check('COMMA')) {
 			this.advance();
-			items.push(this.parseExpression());
+			items.push(this.parseExpression(BP.NONE));
 		}
 
 		return items;
@@ -963,12 +1043,12 @@ class RDParser {
 
 		// Parse numerator
 		this.expect('LBRACE', "Expected '{' for \\frac numerator");
-		const numerator = this.parseExpression();
+		const numerator = this.parseExpression(BP.NONE);
 		this.expect('RBRACE', "Expected '}' after \\frac numerator");
 
 		// Parse denominator
 		this.expect('LBRACE', "Expected '{' for \\frac denominator");
-		const denominator = this.parseExpression();
+		const denominator = this.parseExpression(BP.NONE);
 		this.expect('RBRACE', "Expected '}' after \\frac denominator");
 
 		return this.applyColor(MathAST.divide(numerator, denominator, 'fraction'));
@@ -984,16 +1064,17 @@ class RDParser {
 		let nthRoot: MathNode | undefined;
 		if (this.check('LBRACKET')) {
 			this.advance();
-			nthRoot = this.parseExpression();
+			nthRoot = this.parseExpression(BP.NONE);
 			this.expect('RBRACKET', "Expected ']' after sqrt index");
 		}
 
 		// Parse radicand
 		this.expect('LBRACE', "Expected '{' for \\sqrt argument");
-		const radicand = this.parseExpression();
+		const radicand = this.parseExpression(BP.NONE);
 		this.expect('RBRACE', "Expected '}' after \\sqrt argument");
 
-		// If nth root specified, use base for the index
+		// If nth root specified, use a different representation
+		// For now, we'll just use sqrt function
 		if (nthRoot) {
 			return this.applyColor(MathAST.func('sqrt', [radicand], { base: nthRoot }));
 		}
@@ -1002,7 +1083,7 @@ class RDParser {
 	}
 
 	/**
-	 * Handle \textcolor transparently (in LED/middle of expression position)
+	 * Handle \textcolor in LED position (after an operand)
 	 *
 	 * For example: 5 \textcolor{red}{+3}
 	 * We want + to be seen as an infix operator between 5 and 3, not prefix.
@@ -1013,7 +1094,7 @@ class RDParser {
 	 * 3. Consumes the opening { for content
 	 * 4. Tracks this as a "transparent" color scope
 	 */
-	private handleTextColorTransparent(): void {
+	private handleTextColorInLED(): void {
 		this.advance(); // consume \textcolor
 
 		// Parse color
@@ -1071,9 +1152,13 @@ class RDParser {
 		// Push color onto stack
 		this.colorStack.push(color);
 
-		// Parse content
+		// Parse content - expect opening brace
 		this.expect('LBRACE', "Expected '{' for \\textcolor content");
-		const content = this.parseExpression();
+
+		// Parse the content as a complete expression
+		const content = this.parseExpression(BP.NONE);
+
+		// Expect closing brace
 		this.expect('RBRACE', "Expected '}' after \\textcolor content");
 
 		// Pop color from stack
@@ -1124,6 +1209,7 @@ class RDParser {
 		}
 
 		// Create a unit node with empty expression (just the unit)
+		// This is unusual - normally units are attached to expressions
 		// Return a number 1 with the unit for standalone \unit
 		return this.applyColor(MathAST.withUnit(MathAST.number('1'), unit));
 	}
@@ -1131,6 +1217,40 @@ class RDParser {
 	// =========================================================================
 	// Unit Parsing
 	// =========================================================================
+
+	/**
+	 * Parse unit after tilde: expr ~ \unit{...}
+	 */
+	private parseUnit(left: MathNode): MathNode {
+		this.advance(); // consume ~
+
+		// Expect \unit command
+		if (!this.checkCommand('unit')) {
+			this.error(
+				`Expected \\unit after ~`,
+				this.currentToken.position,
+				this.currentToken.length,
+				'INVALID_UNIT'
+			);
+		}
+		this.advance(); // consume \unit
+
+		this.expect('LBRACE', "Expected '{' for \\unit");
+		const unitStr = this.parseUnitString();
+		this.expect('RBRACE', "Expected '}' after \\unit");
+
+		const unit = parseUnit(unitStr);
+		if (!unit) {
+			this.error(
+				`Invalid unit: ${unitStr}`,
+				this.currentToken.position,
+				unitStr.length,
+				'INVALID_UNIT'
+			);
+		}
+
+		return this.applyColor(MathAST.withUnit(left, unit));
+	}
 
 	/**
 	 * Parse the content of a \unit{...} command
@@ -1218,9 +1338,8 @@ class RDParser {
 	}
 
 	/**
-	 * Apply a pre-captured color to a node's metadata and operator/relation metadata.
-	 * Used when the color must be captured BEFORE parsing the right operand
-	 * (because the color scope might close during parsing).
+	 * Apply operator color that was captured before parsing the right side.
+	 * This is needed because the color scope may close while parsing the right side.
 	 */
 	private applyColorWithOperator(node: MathNode, operatorColor: string | null): MathNode {
 		if (!operatorColor) {
@@ -1248,7 +1367,7 @@ class RDParser {
 // =============================================================================
 
 /**
- * Parse a LaTeX string into a MathAST node using Recursive Descent.
+ * Parse a LaTeX string into a MathAST node.
  * Throws ParseException on error in strict mode.
  *
  * @param input - The LaTeX string to parse
@@ -1256,13 +1375,13 @@ class RDParser {
  * @returns The parsed MathNode
  * @throws ParseException if parsing fails in strict mode
  */
-export function parseRD(input: string, options?: Partial<ParserOptions>): MathNode {
+export function parsePratt(input: string, options?: Partial<ParserOptions>): MathNode {
 	const fullOptions: ParserOptions = {
 		mode: 'strict',
 		...options
 	};
 
-	const parser = new RDParser(input, fullOptions);
+	const parser = new PrattParser(input, fullOptions);
 	const result = parser.parse();
 
 	if (result === null) {
@@ -1289,13 +1408,13 @@ export function parseRD(input: string, options?: Partial<ParserOptions>): MathNo
  * @param options - Parser options (default: tolerant mode)
  * @returns ParseResult containing the AST and errors
  */
-export function parseRDSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
+export function parsePrattSafe(input: string, options?: Partial<ParserOptions>): ParseResult {
 	const fullOptions: ParserOptions = {
 		mode: 'tolerant',
 		...options
 	};
 
-	const parser = new RDParser(input, fullOptions);
+	const parser = new PrattParser(input, fullOptions);
 
 	try {
 		const ast = parser.parse();

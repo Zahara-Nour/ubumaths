@@ -53,13 +53,16 @@ src/lib/mathAST/
 ├── exp.ts                # Exp fluent wrapper class
 ├── latex-generator.ts    # LaTeX output
 ├── pretty-print.ts       # Pretty-print tree output
-├── parser/               # LaTeX parser (737 tests)
+├── parser/               # Parser infrastructure (737 tests)
+│   ├── index.ts          # Public API (parseLatex, parseLatexSafe)
 │   ├── types.ts          # Token types, ParserOptions, ParseError
-│   ├── tokenizer.ts      # LaTeX lexer
-│   ├── color-stack.ts    # Color context for nested \textcolor
-│   ├── parser-pratt.ts   # Pratt parser (transparent \textcolor support)
-│   ├── parser-rd.ts      # Recursive Descent parser (transparent \textcolor support)
-│   └── index.ts          # Public API (parseLatex, parseLatexSafe)
+│   └── latex/            # LaTeX parser implementation
+│       ├── index.ts      # LaTeX parser exports
+│       ├── tokenizer.ts  # LaTeX lexer
+│       ├── color-stack.ts # Color context for nested \textcolor
+│       ├── parser-pratt.ts # Pratt parser (transparent \textcolor support)
+│       ├── parser-rd.ts  # Recursive Descent parser (transparent \textcolor support)
+│       └── __tests__/    # LaTeX parser tests
 ├── units/                # Physical unit system (Unit AST)
 │   ├── types.ts          # Unit type definitions
 │   ├── factory.ts        # Unit creation functions
