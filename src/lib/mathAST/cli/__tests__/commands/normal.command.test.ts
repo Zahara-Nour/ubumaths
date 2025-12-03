@@ -104,7 +104,7 @@ describe('NormalCommand', () => {
 			expect(result.output).toContain('Hash:');
 		});
 
-		it('includes polynomial string in output', () => {
+		it('includes normal form structure in output', () => {
 			const pipelineResult = parse('x');
 			const ctx: CommandContext = {
 				ast: pipelineResult.ast,
@@ -115,7 +115,7 @@ describe('NormalCommand', () => {
 			};
 
 			const result = command.execute(ctx);
-			expect(result.output).toContain('Polynomial:');
+			expect(result.output).toContain('NormalForm:');
 		});
 
 		it('shows term information', () => {

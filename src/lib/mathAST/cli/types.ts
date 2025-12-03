@@ -6,6 +6,7 @@
  */
 
 import type { MathNode } from '../types';
+import type { EvalState } from './core/eval-state';
 
 // =============================================================================
 // Input/Output Formats
@@ -63,6 +64,8 @@ export interface CommandContext {
 	readonly format: InputFormat;
 	readonly options: Record<string, unknown>;
 	readonly isRepl: boolean;
+	/** Evaluation state for variable bindings and mode (REPL only) */
+	readonly evalState?: EvalState;
 }
 
 /**

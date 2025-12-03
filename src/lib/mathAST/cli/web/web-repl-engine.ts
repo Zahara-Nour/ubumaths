@@ -7,7 +7,8 @@
 
 import type { MathNode } from '../../types';
 import type { CommandContext, ErrorCode } from '../types';
-import { CommandRegistry, parse } from '../core';
+import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
+import type { EvalState } from '../core';
 import { createDefaultRegistry } from '../commands';
 import type { ReplExecutionResult, ReplInputMode } from './types';
 import {
@@ -16,6 +17,7 @@ import {
 	formatSuccessHtml,
 	formatTreeHtml
 } from './output-formatter-web';
+import { toCustom, toLatex, getVariables, hasAllBindings, evaluate, substitute } from '../../index';
 
 // =============================================================================
 // Web REPL Engine
@@ -53,9 +55,11 @@ export class WebReplEngine {
 	private registry: CommandRegistry;
 	private inputMode: ReplInputMode = 'auto';
 	private lastAst: MathNode | undefined;
+	private evalState: EvalState;
 
 	constructor() {
 		this.registry = createDefaultRegistry();
+		this.evalState = createEvalState();
 	}
 
 	// ===========================================================================
@@ -81,6 +85,13 @@ export class WebReplEngine {
 		// Handle dot-commands
 		if (trimmedInput.startsWith('.')) {
 			return this.executeCommand(trimmedInput);
+		}
+
+		// Check for inline assignment syntax: "x = 5" or "x=5"
+		// But not equivalence syntax (===)
+		const assignmentMatch = trimmedInput.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$/);
+		if (assignmentMatch && !trimmedInput.includes('===')) {
+			return this.executeInlineAssignment(assignmentMatch[1], assignmentMatch[2]);
 		}
 
 		// Handle equivalence syntax: expr1 === expr2
@@ -117,6 +128,15 @@ export class WebReplEngine {
 	 */
 	getLastAst(): MathNode | undefined {
 		return this.lastAst;
+	}
+
+	/**
+	 * Get the current evaluation state.
+	 *
+	 * @returns Current evaluation state with bindings and mode
+	 */
+	getEvalState(): EvalState {
+		return this.evalState;
 	}
 
 	/**
@@ -204,7 +224,8 @@ export class WebReplEngine {
 					input: args,
 					format: this.inputMode === 'auto' ? 'latex' : this.inputMode,
 					options: {},
-					isRepl: true
+					isRepl: true,
+					evalState: this.evalState
 				};
 				const result = command.execute(ctx);
 				return this.commandResultToReplResult(result);
@@ -238,11 +259,61 @@ export class WebReplEngine {
 			input: cmdInput,
 			format: this.inputMode === 'auto' ? 'latex' : this.inputMode,
 			options: {},
-			isRepl: true
+			isRepl: true,
+			evalState: this.evalState
 		};
 
 		const result = command.execute(ctx);
 		return this.commandResultToReplResult(result, ast);
+	}
+
+	/**
+	 * Execute inline variable assignment: "x = 5" or "x=5"
+	 * Parses the value and stores it in evalState.bindings.
+	 */
+	private executeInlineAssignment(varName: string, valueExpr: string): ReplExecutionResult {
+		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
+		const parseResult = parse(valueExpr, forceFormat ? { forceFormat } : undefined);
+
+		if (parseResult.errors.length > 0 || !parseResult.ast) {
+			const error = parseResult.errors[0];
+			let outputHtml: string;
+
+			if (error?.position !== undefined) {
+				outputHtml = formatInputErrorHtml(valueExpr, error.position, error.message);
+			} else {
+				outputHtml = formatErrorHtml(
+					error || { code: 'PARSE_ERROR', message: 'Failed to parse expression' }
+				);
+			}
+
+			return {
+				success: false,
+				output: error?.message || 'Failed to parse expression',
+				outputHtml,
+				error: {
+					code: error?.code || 'PARSE_ERROR',
+					message: error?.message || 'Failed to parse expression',
+					position: error?.position
+				}
+			};
+		}
+
+		// Store the binding
+		setBinding(this.evalState, varName, parseResult.ast);
+		this.lastAst = parseResult.ast;
+
+		// Format output
+		const valueStr = toCustom(parseResult.ast);
+		const output = `${varName} = ${valueStr}`;
+		const outputHtml = `<strong>${this.escapeHtml(varName)}</strong> = <span class="text-cyan-400">${this.escapeHtml(valueStr)}</span>`;
+
+		return {
+			success: true,
+			output,
+			outputHtml,
+			ast: parseResult.ast
+		};
 	}
 
 	/**
@@ -266,7 +337,8 @@ export class WebReplEngine {
 			input,
 			format: this.inputMode === 'auto' ? 'latex' : this.inputMode,
 			options: {},
-			isRepl: true
+			isRepl: true,
+			evalState: this.evalState
 		};
 
 		const result = equivCmd.execute(ctx);
@@ -275,6 +347,7 @@ export class WebReplEngine {
 
 	/**
 	 * Parse and display a mathematical expression.
+	 * If the expression contains variables and all are bound, auto-evaluates it.
 	 */
 	private executeExpression(input: string): ReplExecutionResult {
 		// Use forced format if mode is not 'auto'
@@ -324,7 +397,21 @@ export class WebReplEngine {
 		// Update last AST
 		this.lastAst = result.ast;
 
-		// Use parse command to display the result
+		// Check if expression has variables and all are bound - auto-evaluate
+		const bindings = bindingsToRecord(this.evalState.bindings);
+		const variables = getVariables(result.ast);
+
+		// Auto-evaluate when:
+		// 1. All variables are bound (if any), OR
+		// 2. No variables and expression is evaluable (like sqrt(2))
+		const canAutoEvaluate = variables.size === 0 || hasAllBindings(result.ast, bindings);
+
+		if (canAutoEvaluate) {
+			// Auto-evaluate since all variables are bound (or no variables)
+			return this.createAutoEvaluationResult(result.ast);
+		}
+
+		// Use parse command to display the result (no variables or some unbound)
 		const parseCmd = this.registry.get('parse');
 		if (parseCmd) {
 			const ctx: CommandContext = {
@@ -332,7 +419,8 @@ export class WebReplEngine {
 				input,
 				format: result.inputFormat,
 				options: {},
-				isRepl: true
+				isRepl: true,
+				evalState: this.evalState
 			};
 			const cmdResult = parseCmd.execute(ctx);
 			return this.commandResultToReplResult(cmdResult, result.ast);
@@ -344,6 +432,84 @@ export class WebReplEngine {
 			output: 'Parsed successfully',
 			ast: result.ast
 		};
+	}
+
+	/**
+	 * Create auto-evaluation result for an expression with all variables bound.
+	 */
+	private createAutoEvaluationResult(ast: MathNode): ReplExecutionResult {
+		try {
+			const bindings = bindingsToRecord(this.evalState.bindings);
+			const variables = getVariables(ast);
+
+			// Show which bindings are being used (only if there are variables)
+			let bindingsStr = '';
+			if (variables.size > 0) {
+				const bindingsList: string[] = [];
+				for (const varName of variables) {
+					const value = this.evalState.bindings.get(varName);
+					if (value) {
+						bindingsList.push(`${varName}: ${toCustom(value)}`);
+					}
+				}
+				bindingsStr = '{' + bindingsList.join(', ') + '}';
+			}
+
+			// Substitute variables
+			const substituted = substitute(ast, bindings);
+
+			// Evaluate using current mode
+			const evalResult = evaluate(substituted, { mode: this.evalState.mode });
+
+			// Format the result
+			const resultStr = toCustom(evalResult.node);
+			const latexStr = toLatex(evalResult.node);
+			const exactStr = evalResult.exact ? '(exact)' : '(approximate)';
+
+			// Build output
+			const lines: string[] = [];
+			if (bindingsStr) {
+				lines.push(`Evaluating with: ${bindingsStr}`);
+			}
+			lines.push(`Result: ${resultStr} ${exactStr}`);
+			lines.push(`LaTeX:  ${latexStr}`);
+			const output = lines.join('\n');
+
+			// Build HTML output
+			const exactClass = evalResult.exact ? 'text-green-400' : 'text-yellow-400';
+			const htmlLines: string[] = [];
+			if (bindingsStr) {
+				htmlLines.push(
+					`<span class="text-gray-400">Evaluating with:</span> ${this.escapeHtml(bindingsStr)}`
+				);
+			}
+			htmlLines.push(
+				`<strong>Result:</strong> <span class="text-cyan-400">${this.escapeHtml(resultStr)}</span> <span class="${exactClass}">${exactStr}</span>`
+			);
+			htmlLines.push(`<span class="text-gray-400">LaTeX:</span>  ${this.escapeHtml(latexStr)}`);
+			const outputHtml = htmlLines.join('<br>');
+
+			return {
+				success: true,
+				output,
+				outputHtml,
+				ast: evalResult.node
+			};
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
+			return {
+				success: false,
+				output: `Evaluation error: ${message}`,
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: `Evaluation error: ${message}`
+				}),
+				error: {
+					code: 'PARSE_ERROR',
+					message
+				}
+			};
+		}
 	}
 
 	// ===========================================================================
