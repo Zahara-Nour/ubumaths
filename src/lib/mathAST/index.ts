@@ -346,3 +346,13 @@ export { Exp } from './exp';
 // =============================================================================
 
 export * from './normal/index.js';
+
+// =============================================================================
+// Evaluation and Substitution
+// =============================================================================
+
+export { substitute, evaluate } from './eval';
+export type { EvalBindings, EvalOptions, EvalResult } from './eval';
+
+// Helper utilities for variable analysis
+export { getVariables, hasVariable, hasAllBindings, getMissingBindings } from './eval';

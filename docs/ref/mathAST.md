@@ -1640,6 +1640,7 @@ function evaluate(node: MathNode, vars: Map<string, number>): number {
 | **Custom Syntax**   | `toCustom`, `CustomGenerator`, `CustomGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **Exp Wrapper**     | `Exp` (fluent wrapper class with static factories, instance methods, and transformations)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | **Normalization**   | `normalize`, `denormalize`, `NormalForm`, `AlgebraicCoefficient`, `simplify`, `hashNormalForm`, `normalFormsEquivalent`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Evaluation**      | `substitute`, `evaluate`, `getVariables`, `hasVariable`, `hasAllBindings`, `getMissingBindings`, `EvalBindings`, `EvalOptions`, `EvalResult`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **Options Types**   | `BinaryOpOptions`, `UnaryOpOptions`, `DelimiterOptions`, `FunctionMetadataOptions`, `RelationOptions`, `UnitOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ---
@@ -1809,6 +1810,565 @@ e1.simplify().latex; // "5x"
 
 // Access NormalForm directly
 e1.normal; // NormalForm object
+```
+
+---
+
+## Evaluation System
+
+### Overview
+
+The evaluation system enables numeric computation of mathematical expressions by substituting variables and evaluating the resulting expression to numeric values. It supports both exact arithmetic using BigInt rationals and approximate decimal values for transcendental functions.
+
+**Key features:**
+
+- Variable substitution with recursive resolution
+- Exact rational arithmetic (no floating-point errors)
+- Optional decimal mode for transcendental values
+- Integration with the fluent `Exp` API
+- Greek letter support (`alpha`, `beta`, etc.)
+
+```typescript
+import { substitute, evaluate, getVariables } from '$lib/mathAST';
+import { parseLatex } from '$lib/mathAST';
+
+// Substitute and evaluate
+const expr = parseLatex('x^2 + 3x - 5');
+const substituted = substitute(expr, { x: 2 });
+const result = evaluate(substituted);
+// result.value = { n: 5n, d: 1n } (Rational: 2^2 + 3*2 - 5 = 5)
+
+// Or use the Exp fluent API
+const value = Exp.parse('x^2 + 3x - 5').evalWith({ x: 2 });
+// value.value = { n: 5n, d: 1n }
+```
+
+---
+
+### Variable Substitution
+
+The `substitute()` function replaces variables with their corresponding values. Substitution is **recursive**, meaning if a substituted value contains variables with bindings, those will also be substituted.
+
+#### Function Signature
+
+```typescript
+function substitute(node: MathNode, bindings: EvalBindings, options?: SubstituteOptions): MathNode;
+```
+
+#### Bindings Type
+
+```typescript
+type EvalBindings = Record<string, BindingValue>;
+type BindingValue = number | string | MathNode;
+```
+
+Variables can be bound to:
+
+- **Numbers**: Converted to `NumberNode` instances
+- **Strings**: Parsed as LaTeX expressions
+- **MathNodes**: Used directly
+
+#### Examples
+
+**Simple substitution:**
+
+```typescript
+const expr = parseLatex('x + 1');
+const result = substitute(expr, { x: 5 });
+toLatex(result); // "5 + 1"
+```
+
+**Multiple variables:**
+
+```typescript
+const expr = parseLatex('x \\cdot y + z');
+const result = substitute(expr, { x: 2, y: 3, z: 5 });
+toLatex(result); // "2 \\cdot 3 + 5"
+```
+
+**Greek letters:**
+
+```typescript
+const expr = parseLatex('\\alpha^2 + \\beta');
+const result = substitute(expr, { alpha: 5, beta: 3 });
+toLatex(result); // "5^{2} + 3"
+```
+
+**String substitution (parsed as LaTeX):**
+
+```typescript
+const expr = parseLatex('x^2');
+const result = substitute(expr, { x: 'a+b' });
+toLatex(result); // "(a + b)^{2}"
+```
+
+**Recursive substitution:**
+
+```typescript
+const expr = parseLatex('a + 1');
+const result = substitute(expr, { a: '2b', b: 3 });
+// First pass: a -> 2*b, giving (2*b) + 1
+// Second pass: b -> 3, giving (2*3) + 1
+toLatex(result); // "2 \\cdot 3 + 1"
+```
+
+**MathNode substitution:**
+
+```typescript
+const expr = parseLatex('f(x)');
+const value = MathAST.power(MathAST.variable('y'), MathAST.number('2'));
+const result = substitute(expr, { x: value });
+toLatex(result); // "f(y^{2})"
+```
+
+#### Options
+
+```typescript
+interface SubstituteOptions {
+	readonly maxIterations?: number; // Default: 100
+}
+```
+
+The `maxIterations` option controls the maximum number of recursive substitution passes. This prevents infinite loops in case of circular dependencies (e.g., `{ a: 'b', b: 'a' }`).
+
+---
+
+### Numeric Evaluation
+
+The `evaluate()` function computes the numeric value of a mathematical expression. The expression **must not contain unsubstituted variables** (use `substitute()` first or use the `Exp.evalWith()` shorthand).
+
+#### Function Signature
+
+```typescript
+function evaluate(node: MathNode, options?: EvalOptions): EvalResult;
+```
+
+#### Result Type
+
+```typescript
+interface EvalResult {
+	readonly value: Rational | number;
+	readonly exact: boolean;
+	readonly node: MathNode;
+}
+
+interface Rational {
+	readonly n: bigint; // numerator
+	readonly d: bigint; // denominator (always positive, in lowest terms)
+}
+```
+
+- **`value`**: The numeric result (Rational for exact mode, number for decimal mode)
+- **`exact`**: `true` if the result is mathematically exact, `false` for approximations
+- **`node`**: The original AST node (for reference)
+
+#### Evaluation Modes
+
+```typescript
+interface EvalOptions {
+	readonly mode?: 'exact' | 'decimal'; // Default: 'exact'
+	readonly precision?: number; // Default: 15 (for decimal mode)
+}
+```
+
+**Exact mode** (default):
+
+- Uses BigInt rational arithmetic
+- Guarantees exact results for arithmetic operations
+- Falls back to decimal for transcendental functions (sin, cos, sqrt, etc.)
+
+**Decimal mode**:
+
+- Uses JavaScript number (IEEE 754 floating-point)
+- Suitable for transcendental functions
+- May lose precision for large integers or many operations
+
+#### Examples
+
+**Exact arithmetic:**
+
+```typescript
+const expr = parseLatex('2 + 3');
+const result = evaluate(expr);
+// result = {
+//   value: { n: 5n, d: 1n },
+//   exact: true,
+//   node: ...
+// }
+```
+
+**Exact fraction arithmetic:**
+
+```typescript
+const expr = parseLatex('\\frac{1}{3} + \\frac{1}{3} + \\frac{1}{3}');
+const result = evaluate(expr);
+// result.value = { n: 1n, d: 1n } (equals 1 exactly!)
+// result.exact = true
+```
+
+**Transcendental functions (automatic decimal fallback):**
+
+```typescript
+const expr = parseLatex('\\sqrt{2}');
+const result = evaluate(expr);
+// result = {
+//   value: 1.4142135623730951,
+//   exact: false,  // Indicates approximation
+//   node: ...
+// }
+```
+
+**Decimal mode:**
+
+```typescript
+const expr = parseLatex('\\frac{1}{3}');
+const result = evaluate(expr, { mode: 'decimal' });
+// result = {
+//   value: 0.3333333333333333,
+//   exact: false,
+//   node: ...
+// }
+```
+
+**Error handling (unsubstituted variable):**
+
+```typescript
+const expr = parseLatex('x + 1');
+evaluate(expr);
+// throws Error: Cannot evaluate expression with unsubstituted variables: x
+```
+
+**Converting Rational to decimal:**
+
+```typescript
+import { rationalToNumber } from '$lib/mathAST/normal';
+
+const result = evaluate(parseLatex('\\frac{22}{7}'));
+const decimal = rationalToNumber(result.value as Rational);
+// decimal = 3.142857142857143
+```
+
+---
+
+### Exp Integration
+
+The `Exp` class provides convenient methods that combine substitution and evaluation.
+
+#### Exp.eval()
+
+Evaluates an expression that contains **no unsubstituted variables**.
+
+```typescript
+class Exp {
+	eval(options?: EvalOptions): EvalResult;
+}
+```
+
+**Examples:**
+
+```typescript
+// Simple evaluation
+Exp.parse('2+3').eval();
+// { value: { n: 5n, d: 1n }, exact: true, node: ... }
+
+// Decimal mode
+Exp.parse('\\sqrt{2}').eval({ mode: 'decimal' });
+// { value: 1.4142135623730951, exact: false, node: ... }
+
+// Error: unsubstituted variable
+Exp.parse('x+1').eval();
+// throws Error: Cannot evaluate expression with unsubstituted variables: x
+```
+
+#### Exp.evalWith()
+
+Combines `substitute()` and `eval()` in a single call. This is the recommended approach when you have variables to substitute.
+
+```typescript
+class Exp {
+	evalWith(bindings: EvalBindings, options?: EvalOptions): EvalResult;
+}
+```
+
+**Examples:**
+
+```typescript
+// Simple substitution and evaluation
+Exp.parse('x^2').evalWith({ x: 3 });
+// { value: { n: 9n, d: 1n }, exact: true, node: ... }
+
+// Multiple variables
+Exp.parse('x \\cdot y + z').evalWith({ x: 2, y: 3, z: 5 });
+// { value: { n: 11n, d: 1n }, exact: true, node: ... }
+
+// String bindings (parsed as LaTeX)
+Exp.parse('x+1').evalWith({ x: '2+3' });
+// { value: { n: 6n, d: 1n }, exact: true, node: ... }
+
+// Greek letters
+Exp.parse('\\alpha^2 + \\beta').evalWith({ alpha: 5, beta: 3 });
+// { value: { n: 28n, d: 1n }, exact: true, node: ... }
+
+// Decimal mode
+Exp.parse('\\sqrt{x}').evalWith({ x: 2 }, { mode: 'decimal' });
+// { value: 1.4142135623730951, exact: false, node: ... }
+```
+
+#### Exp.substitute()
+
+Substitutes variables **without** evaluating. Returns a new `Exp` with the substituted expression.
+
+```typescript
+class Exp {
+	substitute(bindings: EvalBindings): Exp;
+}
+```
+
+**Examples:**
+
+```typescript
+// Simple substitution
+const original = Exp.parse('x+1');
+const substituted = original.substitute({ x: 5 });
+substituted.latex; // '5 + 1'
+original.latex; // 'x + 1' (unchanged - immutable)
+
+// Multiple variables
+Exp.parse('x \\cdot y').substitute({ x: 2, y: 3 }).latex;
+// '2 \\cdot 3'
+
+// String substitution (parsed as LaTeX)
+Exp.parse('x^2').substitute({ x: 'a+b' }).latex;
+// '(a + b)^{2}'
+
+// Greek letters
+Exp.parse('\\alpha + \\beta').substitute({ alpha: 5 }).latex;
+// '5 + \\beta'
+
+// Chaining: substitute then evaluate
+const result = Exp.parse('x^2').substitute({ x: 3 }).eval();
+// result.value = { n: 9n, d: 1n }
+```
+
+---
+
+### Utility Functions
+
+Helper functions for analyzing variable requirements before substitution or evaluation.
+
+#### getVariables()
+
+Returns all variable names (including Greek letters) present in an expression.
+
+```typescript
+function getVariables(node: MathNode): Set<string>;
+```
+
+**Example:**
+
+```typescript
+const expr = parseLatex('x + y + \\alpha');
+const vars = getVariables(expr);
+// vars = Set { 'x', 'y', 'alpha' }
+```
+
+#### hasVariable()
+
+Checks if a specific variable is present in an expression.
+
+```typescript
+function hasVariable(node: MathNode, name: string): boolean;
+```
+
+**Example:**
+
+```typescript
+const expr = parseLatex('x^2 + 3x - 5');
+hasVariable(expr, 'x'); // true
+hasVariable(expr, 'y'); // false
+hasVariable(parseLatex('\\alpha + 1'), 'alpha'); // true
+```
+
+#### hasAllBindings()
+
+Checks if all variables in an expression have corresponding bindings.
+
+```typescript
+function hasAllBindings(node: MathNode, bindings: EvalBindings): boolean;
+```
+
+**Example:**
+
+```typescript
+const expr = parseLatex('x + y');
+hasAllBindings(expr, { x: 1, y: 2 }); // true
+hasAllBindings(expr, { x: 1 }); // false (missing y)
+hasAllBindings(expr, { x: 1, y: 2, z: 3 }); // true (extra bindings are ok)
+```
+
+#### getMissingBindings()
+
+Returns the set of variables that are present in the expression but missing from the bindings.
+
+```typescript
+function getMissingBindings(node: MathNode, bindings: EvalBindings): Set<string>;
+```
+
+**Example:**
+
+```typescript
+const expr = parseLatex('x + y + z');
+getMissingBindings(expr, { x: 1 });
+// Set { 'y', 'z' }
+
+getMissingBindings(expr, { x: 1, y: 2, z: 3 });
+// Set {} (empty - all variables bound)
+```
+
+**Typical usage pattern:**
+
+```typescript
+const expr = parseLatex('x^2 + y');
+const bindings = { x: 3 };
+
+if (!hasAllBindings(expr, bindings)) {
+	const missing = getMissingBindings(expr, bindings);
+	console.error(`Missing variables: ${[...missing].join(', ')}`);
+	// "Missing variables: y"
+} else {
+	const result = evaluate(substitute(expr, bindings));
+	console.log(result.value);
+}
+```
+
+---
+
+### Supported Operations
+
+The evaluation system supports the following operations:
+
+| Category         | Operations                                                              |
+| ---------------- | ----------------------------------------------------------------------- |
+| **Arithmetic**   | Addition (`+`), Subtraction (`-`), Multiplication (`*`), Division (`/`) |
+| **Powers**       | Exponentiation (`^`), Square roots (`√`)                                |
+| **Trigonometry** | `sin`, `cos`, `tan` (arguments in radians)                              |
+| **Exponential**  | `exp` (e^x), `ln` (natural log), `log` (base 10)                        |
+| **Other**        | `abs` (absolute value), Unary `+` and `-`                               |
+| **Constants**    | `pi` (π), `e` (Euler's number)                                          |
+| **Delimiters**   | Parentheses (transparent - evaluate inner expression)                   |
+
+**Notes:**
+
+- **Exact mode**: Integer arithmetic, exact rationals, automatic fallback to decimal for transcendental functions
+- **Decimal mode**: All operations use JavaScript `number` (IEEE 754 double precision)
+- **Trigonometric arguments**: Always in radians (e.g., `sin(π/2)` evaluates to `1`)
+- **Unsupported nodes**: Relations (`=`, `<`), Units, Holes throw errors during evaluation
+
+---
+
+### Complete Examples
+
+#### Example 1: Quadratic Formula
+
+```typescript
+import { Exp } from '$lib/mathAST';
+
+// Formula: x = (-b ± √(b² - 4ac)) / (2a)
+// For equation: 2x² + 5x - 3 = 0
+
+const a = 2,
+	b = 5,
+	c = -3;
+
+// Discriminant: b² - 4ac
+const discriminant = Exp.parse('b^2 - 4ac').evalWith({ a, b, c });
+// discriminant.value = { n: 49n, d: 1n } (exact: 25 + 24 = 49)
+
+// Square root of discriminant
+const sqrtDisc = Exp.parse('\\sqrt{d}').evalWith({ d: 49 });
+// sqrtDisc.value = { n: 7n, d: 1n } (exact: √49 = 7)
+
+// Solution 1: (-b + √Δ) / 2a
+const x1 = Exp.parse('\\frac{-b + s}{2a}').evalWith({ a, b, s: 7 });
+// x1.value = { n: 1n, d: 2n } (exact: 0.5)
+
+// Solution 2: (-b - √Δ) / 2a
+const x2 = Exp.parse('\\frac{-b - s}{2a}').evalWith({ a, b, s: 7 });
+// x2.value = { n: -3n, d: 1n } (exact: -3)
+```
+
+#### Example 2: Distance Formula
+
+```typescript
+// Distance between two points: √((x2-x1)² + (y2-y1)²)
+const distance = Exp.parse('\\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}').evalWith(
+	{
+		x_1: 1,
+		y_1: 2,
+		x_2: 4,
+		y_2: 6
+	},
+	{ mode: 'decimal' }
+);
+
+console.log(distance.value); // 5 (exact distance)
+```
+
+#### Example 3: Compound Interest
+
+```typescript
+// Formula: A = P(1 + r/n)^(nt)
+// P = principal, r = rate, n = compounds per year, t = years
+
+const amount = Exp.parse('P \\cdot (1 + \\frac{r}{n})^{n \\cdot t}').evalWith(
+	{
+		P: 1000, // $1000 principal
+		r: 0.05, // 5% annual rate
+		n: 12, // Monthly compounding
+		t: 10 // 10 years
+	},
+	{ mode: 'decimal' }
+);
+
+console.log(amount.value); // ~1647.01
+```
+
+#### Example 4: Variable Analysis
+
+```typescript
+const expr = parseLatex('\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}');
+
+// Get all variables
+const vars = getVariables(expr);
+console.log([...vars]); // ['b', 'a', 'c']
+
+// Check if ready to evaluate
+const bindings = { a: 1, b: -5 }; // Missing 'c'
+
+if (!hasAllBindings(expr, bindings)) {
+	const missing = getMissingBindings(expr, bindings);
+	console.error(`Cannot evaluate: missing ${[...missing].join(', ')}`);
+	// "Cannot evaluate: missing c"
+}
+```
+
+#### Example 5: Recursive Substitution
+
+```typescript
+// Define x in terms of y, and y in terms of z
+const expr = parseLatex('x^2 + 1');
+const result = substitute(expr, {
+	x: '2y', // First substitution: x -> 2y
+	y: 'z + 1', // Second substitution: y -> z+1
+	z: 3 // Third substitution: z -> 3
+});
+
+// Result: (2(3+1))² + 1 = (2·4)² + 1 = 8² + 1 = 65
+evaluate(result).value; // { n: 65n, d: 1n }
+
+// Or using Exp:
+Exp.parse('x^2 + 1').evalWith({ x: '2y', y: 'z+1', z: 3 });
+// { value: { n: 65n, d: 1n }, exact: true, ... }
 ```
 
 ---

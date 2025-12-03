@@ -99,6 +99,9 @@ import { normalize } from './normal/normalize';
 import { denormalize } from './normal/denormalize';
 import { normalFormsEquivalent, hashNormalForm } from './normal/hash';
 
+import { substitute as substituteFunc, evaluate as evaluateFunc } from './eval';
+import type { EvalBindings, EvalOptions, EvalResult } from './eval';
+
 // =============================================================================
 // Type for Exp or MathNode parameters
 // =============================================================================
@@ -631,5 +634,115 @@ export class Exp {
 	 */
 	simplify(): Exp {
 		return new Exp(denormalize(this.normal));
+	}
+
+	// =========================================================================
+	// Instance Methods - Evaluation
+	// =========================================================================
+
+	/**
+	 * Evaluate this expression numerically (must not contain unsubstituted variables).
+	 *
+	 * The expression must be fully substituted before evaluation. Use `evalWith()`
+	 * if you have variables to substitute, or call `substitute()` first.
+	 *
+	 * @param options - Evaluation options (mode: 'exact' or 'decimal', precision)
+	 * @returns EvalResult containing the numeric value, AST node, and exactness flag
+	 * @throws Error if expression contains unsubstituted variables
+	 *
+	 * @example
+	 * // Exact evaluation
+	 * Exp.parse('2+3').eval()
+	 * // { value: { n: 5n, d: 1n }, exact: true, node: ... }
+	 *
+	 * @example
+	 * // Decimal mode for transcendental functions
+	 * Exp.parse('\\sqrt{2}').eval({ mode: 'decimal' })
+	 * // { value: 1.4142135623730951, exact: false, node: ... }
+	 *
+	 * @example
+	 * // Error: unsubstituted variable
+	 * Exp.parse('x+1').eval()
+	 * // throws Error: Cannot evaluate expression with unsubstituted variables: x
+	 */
+	eval(options?: EvalOptions): EvalResult {
+		return evaluateFunc(this.#node, options);
+	}
+
+	/**
+	 * Substitute variables then evaluate to numeric value.
+	 *
+	 * This is a convenience method that combines `substitute()` and `eval()`.
+	 * It first replaces variables with the provided bindings, then evaluates
+	 * the resulting expression to a numeric value.
+	 *
+	 * @param bindings - Map of variable names to their replacement values
+	 * @param options - Evaluation options (mode: 'exact' or 'decimal', precision)
+	 * @returns EvalResult containing the numeric value, AST node, and exactness flag
+	 *
+	 * @example
+	 * // Substitute and evaluate: x^2 with x = 3
+	 * Exp.parse('x^2').evalWith({ x: 3 })
+	 * // { value: { n: 9n, d: 1n }, exact: true, node: ... }
+	 *
+	 * @example
+	 * // Multiple variables: x * y + z with x = 2, y = 3, z = 5
+	 * Exp.parse('x \\cdot y + z').evalWith({ x: 2, y: 3, z: 5 })
+	 * // { value: { n: 11n, d: 1n }, exact: true, node: ... }
+	 *
+	 * @example
+	 * // String bindings (parsed as LaTeX): x + 1 with x = '2+3'
+	 * Exp.parse('x+1').evalWith({ x: '2+3' })
+	 * // { value: { n: 6n, d: 1n }, exact: true, node: ... }
+	 *
+	 * @example
+	 * // Greek letters: alpha^2 + beta with alpha = 5, beta = 3
+	 * Exp.parse('\\alpha^2 + \\beta').evalWith({ alpha: 5, beta: 3 })
+	 * // { value: { n: 28n, d: 1n }, exact: true, node: ... }
+	 */
+	evalWith(bindings: EvalBindings, options?: EvalOptions): EvalResult {
+		const substituted = substituteFunc(this.#node, bindings);
+		return evaluateFunc(substituted, options);
+	}
+
+	/**
+	 * Substitute variables without evaluating (returns new Exp).
+	 *
+	 * Replaces all variables (regular and Greek letters) that have bindings
+	 * with their corresponding values. Returns a new Exp with the substituted
+	 * expression. The original Exp is unchanged (immutable operation).
+	 *
+	 * Substitution values can be:
+	 * - numbers: Converted to NumberNode (e.g., 5 -> number('5'))
+	 * - strings: Parsed as LaTeX expressions
+	 * - MathNode: Used directly
+	 *
+	 * @param bindings - Map of variable names to their replacement values
+	 * @returns A new Exp with variables substituted
+	 *
+	 * @example
+	 * // Simple substitution: x + 1 with x = 5
+	 * const original = Exp.parse('x+1');
+	 * const substituted = original.substitute({ x: 5 });
+	 * substituted.latex // '5 + 1'
+	 * original.latex    // 'x + 1' (unchanged)
+	 *
+	 * @example
+	 * // Multiple variables: x * y with x = 2, y = 3
+	 * Exp.parse('x \\cdot y').substitute({ x: 2, y: 3 }).latex
+	 * // '2 \\cdot 3'
+	 *
+	 * @example
+	 * // String substitution (parsed): x^2 with x = 'a+b'
+	 * Exp.parse('x^2').substitute({ x: 'a+b' }).latex
+	 * // '(a + b)^{2}'
+	 *
+	 * @example
+	 * // Greek letters: alpha + beta with alpha = 5
+	 * Exp.parse('\\alpha + \\beta').substitute({ alpha: 5 }).latex
+	 * // '5 + \\beta'
+	 */
+	substitute(bindings: EvalBindings): Exp {
+		return new Exp(substituteFunc(this.#node, bindings));
 	}
 }
