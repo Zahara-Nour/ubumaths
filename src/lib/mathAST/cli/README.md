@@ -96,6 +96,88 @@ pnpm math custom "\sqrt{x}" --metadata
 pnpm math custom --format=custom "2x^2+3x+1"
 ```
 
+### Simplify
+
+Simplify a mathematical expression and display the canonical form.
+
+```bash
+pnpm math simplify "2x + 3x"
+pnpm math s "2x + 3x"
+pnpm math simp "x^2 - x^2 + 5"
+```
+
+**Output:**
+
+```
+Simplified: 5x
+LaTeX:  5 x
+Custom: 5x
+Hash:   V(x)*5
+```
+
+### Normal
+
+Display the detailed normal form structure of an expression.
+
+```bash
+pnpm math normal "2x + 3x"
+pnpm math n "x^2 + 2x + 1"
+pnpm math norm "(a+b)^2"
+```
+
+**Output:**
+
+```
+NormalForm:
+  Numerator:
+    Term 1: coefficient=5, monomial=[x^1]
+  Denominator: [1]
+
+Polynomial: 5x
+Hash:       V(x)*5
+```
+
+### Hash
+
+Compute the canonical hash of an expression. Equivalent expressions have identical hashes.
+
+```bash
+pnpm math hash "2x + 3x"
+pnpm math h "5x"
+```
+
+**Output:**
+
+```
+Hash: V(x)*5
+```
+
+### Equiv
+
+Check if two mathematical expressions are equivalent. Supports two syntaxes:
+
+```bash
+# Two argument syntax
+pnpm math equiv "2x + 3x" "5x"
+pnpm math eq "x^2 - 1" "(x+1)(x-1)"
+
+# === operator syntax (single argument)
+pnpm math "2x + 3x === 5x"
+pnpm math "(a+b)^2 === a^2 + 2ab + b^2"
+```
+
+**Output:**
+
+```
+Equivalent: true
+
+Expression 1: 2x + 3x
+  Hash: V(x)*5
+
+Expression 2: 5x
+  Hash: V(x)*5
+```
+
 ### REPL
 
 Start an interactive Read-Eval-Print Loop.
@@ -139,17 +221,21 @@ Goodbye!
 
 **REPL Commands:**
 
-| Command   | Action                                |
-| --------- | ------------------------------------- |
-| `.help`   | Show available commands               |
-| `.quit`   | Exit REPL                             |
-| `.exit`   | Exit REPL (alias)                     |
-| `.latex`  | Switch to LaTeX input mode            |
-| `.custom` | Switch to custom syntax input mode    |
-| `.auto`   | Switch to auto-detect input mode      |
-| `.tree`   | Show AST of last parsed expression    |
-| `.latex`  | Show LaTeX of last parsed expression  |
-| `.custom` | Show custom of last parsed expression |
+| Command     | Action                                  |
+| ----------- | --------------------------------------- |
+| `.help`     | Show available commands                 |
+| `.quit`     | Exit REPL                               |
+| `.exit`     | Exit REPL (alias)                       |
+| `.latex`    | Switch to LaTeX input mode              |
+| `.custom`   | Switch to custom syntax input mode      |
+| `.auto`     | Switch to auto-detect input mode        |
+| `.tree`     | Show AST of last parsed expression      |
+| `.latex`    | Show LaTeX of last parsed expression    |
+| `.custom`   | Show custom of last parsed expression   |
+| `.simplify` | Simplify the last parsed expression     |
+| `.normal`   | Show normal form of last expression     |
+| `.hash`     | Show hash of last parsed expression     |
+| `.equiv`    | Check equivalence (use with === syntax) |
 
 ## Supported LaTeX Syntax
 
@@ -338,11 +424,16 @@ cli/
 │   ├── output-formatter.ts # Chalk formatting
 │   └── command-registry.ts # Command registry
 └── commands/
-    ├── base-command.ts     # Abstract base class
-    ├── parse.command.ts    # Parse + display
-    ├── tree.command.ts     # AST tree output
-    ├── latex.command.ts    # LaTeX output
-    └── help.command.ts     # Help command
+    ├── base-command.ts       # Abstract base class
+    ├── parse.command.ts      # Parse + display
+    ├── tree.command.ts       # AST tree output
+    ├── latex.command.ts      # LaTeX output
+    ├── custom.command.ts     # Custom syntax output
+    ├── simplify.command.ts   # Simplify expression
+    ├── normal.command.ts     # Normal form display
+    ├── hash.command.ts       # Canonical hash
+    ├── equiv.command.ts      # Equivalence check
+    └── help.command.ts       # Help command
 ```
 
 ## Adding New Commands
