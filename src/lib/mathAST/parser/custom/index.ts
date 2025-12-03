@@ -103,3 +103,15 @@ export { parseCustomPratt as parseCustom } from './parser-pratt';
  * ```
  */
 export { parseCustomPrattSafe as parseCustomSafe } from './parser-pratt';
+
+// =============================================================================
+// Pattern parser exports
+// =============================================================================
+
+export { parsePattern, PatternPrattParser, PatternParseError } from './pattern-parser';
+export {
+	PatternTokenizer,
+	tokenizePattern,
+	type PatternTokenType,
+	type PatternToken
+} from './pattern-tokenizer';

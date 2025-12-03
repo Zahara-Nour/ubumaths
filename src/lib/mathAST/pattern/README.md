@@ -26,20 +26,20 @@ The pattern matching system provides a declarative way to match, transform, and 
 ## Quick Start
 
 ```typescript
-import { P, match, applyRules } from '$lib/mathAST/pattern';
+import { P, parsePattern, match, applyRules } from '$lib/mathAST/pattern';
 import { Exp } from '$lib/mathAST';
 
-// Check if expression matches form: 2*x + y
+// Check if expression matches form: 2*x + y (using pattern strings)
 const expr = Exp.parse('2a + b');
-const isMatch = expr.matches(P.add(P.mul(P.num(2), P._('x')), P._('y')));
+const isMatch = expr.matches(parsePattern('2 * _x + _y'));
 // true - binds x→a, y→b
 
 // Extract bindings from pattern match
-const bindings = expr.extract(P.add(P._('left'), P._('right')));
+const bindings = expr.extract(parsePattern('_left + _right'));
 // bindings.get('left') => multiplication node (2*a)
 // bindings.get('right') => variable node (b)
 
-// Create and apply a simplification rule
+// Create and apply a simplification rule (using builder API)
 const rule = P.rule(
 	P.add(P._('x'), P.num(0)), // Pattern: x + 0
 	P._('x'), // Replacement: x
@@ -48,6 +48,178 @@ const rule = P.rule(
 
 const simplified = Exp.parse('(a + 0) * 1').simplifyWith([rule]);
 // simplified.latex => 'a \\cdot 1'
+```
+
+---
+
+## Pattern Strings
+
+Pattern strings provide a concise, readable syntax for creating patterns. They are an alternative to the builder API (`P` namespace) and are particularly useful for simple to moderately complex patterns.
+
+### Overview
+
+Instead of building patterns programmatically with the `P` namespace, you can write them as strings using familiar mathematical notation:
+
+```typescript
+// Pattern string syntax (concise)
+parsePattern('_x + 0');
+
+// Equivalent builder API (verbose)
+P.add(P._('x'), P.num(0));
+
+// Or use the P.parse() convenience alias
+P.parse('_x + 0');
+```
+
+Both syntaxes produce identical patterns and can be used interchangeably based on your preference and use case.
+
+### Wildcard Syntax
+
+Wildcards in pattern strings use underscore prefix (`_name`) with optional type constraints using colon syntax (`_name:type`):
+
+| Syntax        | Equivalent Builder         | Description                |
+| ------------- | -------------------------- | -------------------------- |
+| `_x`          | `P._('x')`                 | Wildcard, matches anything |
+| `_x:number`   | `P._('x', P.isNumber())`   | Must match a number        |
+| `_x:integer`  | `P._('x', P.isInteger())`  | Must match an integer      |
+| `_x:positive` | `P._('x', P.isPositive())` | Must be positive           |
+| `_x:negative` | `P._('x', P.isNegative())` | Must be negative           |
+| `_x:nonzero`  | `P._('x', P.isNonzero())`  | Must be non-zero           |
+| `_x:variable` | `P._('x', P.isVariable())` | Must match a variable      |
+
+### Operators
+
+Pattern strings support standard mathematical operators with correct precedence:
+
+| Operator     | Pattern Type   | Precedence  | Associativity |
+| ------------ | -------------- | ----------- | ------------- |
+| `+`          | Addition       | Low (10)    | Left          |
+| `-`          | Subtraction    | Low (10)    | Left          |
+| `*`          | Multiplication | Medium (20) | Left          |
+| `/`          | Division       | Medium (25) | Left          |
+| `^`          | Power          | High (40)   | Right         |
+| `-x` (unary) | Opposite       | High (30)   | -             |
+
+Parentheses can be used to override precedence: `(_x + _y) * _z`
+
+### Functions
+
+All standard mathematical functions are supported:
+
+- **Trigonometric**: `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`
+- **Logarithmic**: `ln`, `log`, `exp`
+- **Other**: `sqrt`, `abs`, `floor`, `ceil`, `round`, `sign`
+
+Functions use standard notation: `sin(_x)`, `sqrt(_x^2 + _y^2)`, `ln(_x:positive)`
+
+### Examples
+
+#### Simple Identity Patterns
+
+```typescript
+// Additive identity
+parsePattern('_x + 0'); // matches: x + 0, a + 0, (a+b) + 0
+
+// Multiplicative identity
+parsePattern('_x * 1'); // matches: x * 1, 2 * 1, (a/b) * 1
+
+// Subtractive identity
+parsePattern('_x - 0'); // matches: x - 0, 5 - 0
+```
+
+#### Patterns with Constraints
+
+```typescript
+// Coefficient must be a number
+parsePattern('_n:number * _x'); // matches: 2*x, 3.5*y, -1*z
+
+// Denominator cannot be zero
+parsePattern('_x / _d:nonzero'); // matches: a/b, 5/3, x/y (but ensures d≠0)
+
+// Integer coefficient
+parsePattern('_k:integer * _x'); // matches: 2*x, -5*y (not 2.5*x)
+```
+
+#### Complex Mathematical Patterns
+
+```typescript
+// Quadratic form
+parsePattern('_a * _x^2 + _b * _x + _c');
+// matches: x^2 + 2x + 1, 2x^2 - 3x + 5
+
+// Pythagorean identity
+parsePattern('sin(_x)^2 + cos(_x)^2');
+// matches: sin(x)^2 + cos(x)^2, sin(2a)^2 + cos(2a)^2
+
+// Difference of squares
+parsePattern('_a^2 - _b^2');
+// matches: x^2 - y^2, (a+b)^2 - c^2
+
+// Logarithm properties
+parsePattern('ln(_x) + ln(_y)');
+// matches: ln(a) + ln(b), ln(x+1) + ln(x-1)
+```
+
+#### Same-Value Matching
+
+Wildcards with the same name must match identical expressions:
+
+```typescript
+// Doubling pattern (x + x)
+parsePattern('_x + _x');
+// matches: a + a, 2b + 2b
+// does NOT match: a + b, x + y
+
+// Self-division (x / x)
+parsePattern('_x / _x');
+// matches: a / a, (x+1) / (x+1)
+// does NOT match: a / b
+```
+
+### Equivalence with Builder API
+
+Pattern strings and the builder API are completely equivalent - use whichever is clearer for your use case:
+
+```typescript
+// These produce identical patterns:
+const p1 = parsePattern('_a * _x^2 + _b * _x + _c');
+const p2 = P.add(
+	P.add(P.mul(P._('a'), P.pow(P._('x'), P.num(2))), P.mul(P._('b'), P._('x'))),
+	P._('c')
+);
+
+// Both match the same expressions
+const expr = Exp.parse('2x^2 + 3x + 1');
+expr.matches(p1); // true
+expr.matches(p2); // true
+```
+
+**When to use pattern strings:**
+
+- Simple to moderately complex patterns
+- When readability is more important than programmatic construction
+- When writing many similar patterns
+- For teaching or documentation examples
+
+**When to use builder API:**
+
+- Very complex patterns with nested structures
+- When building patterns programmatically
+- When you need constraint combinators (`P.and()`, `P.or()`, `P.not()`)
+- When you need custom constraints (`P.custom()`)
+
+### Import
+
+```typescript
+import { parsePattern, P } from '$lib/mathAST/pattern';
+
+// Using parsePattern directly
+const pattern1 = parsePattern('_x + 0');
+
+// Using P.parse() alias
+const pattern2 = P.parse('_x + 0');
+
+// Both are equivalent
 ```
 
 ---
@@ -567,6 +739,16 @@ Set `maxIterations` to prevent infinite loops if rules create cycles.
 ---
 
 ## API Reference Summary
+
+### Pattern Strings
+
+```typescript
+// Parse pattern from string
+parsePattern(patternString: string): Pattern
+
+// Alias via P namespace
+P.parse(patternString: string): Pattern
+```
 
 ### Pattern Builder (`P`)
 
