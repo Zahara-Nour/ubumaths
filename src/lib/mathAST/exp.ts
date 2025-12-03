@@ -42,6 +42,7 @@ import type { LatexGeneratorOptions } from './latex-generator';
 import type { PrettyPrintOptions } from './pretty-print';
 import type { LatexParserOptions } from './parser';
 import type { FunctionOptions } from './factory';
+import type { NormalForm } from './normal/types';
 
 import { toLatex } from './latex-generator';
 import { prettyPrint } from './pretty-print';
@@ -94,6 +95,10 @@ import {
 	cloneNode
 } from './transforms';
 
+import { normalize } from './normal/normalize';
+import { denormalize } from './normal/denormalize';
+import { normalFormsEquivalent, hashNormalForm } from './normal/hash';
+
 // =============================================================================
 // Type for Exp or MathNode parameters
 // =============================================================================
@@ -110,6 +115,7 @@ type ExpOrNode = Exp | MathNode;
  */
 export class Exp {
 	readonly #node: MathNode;
+	#cachedNormal?: NormalForm;
 
 	private constructor(node: MathNode) {
 		this.#node = node;
@@ -563,5 +569,67 @@ export class Exp {
 	/** Deep clone this expression */
 	clone(): Exp {
 		return new Exp(cloneNode(this.#node));
+	}
+
+	// =========================================================================
+	// Instance Methods - Normalization
+	// =========================================================================
+
+	/**
+	 * Get the normal form of this expression (lazy, cached).
+	 *
+	 * The normal form is a canonical representation that allows
+	 * exact comparison of mathematical equivalence.
+	 */
+	get normal(): NormalForm {
+		if (!this.#cachedNormal) {
+			this.#cachedNormal = normalize(this.#node);
+		}
+		return this.#cachedNormal;
+	}
+
+	/**
+	 * Get the canonical hash of this expression.
+	 *
+	 * Two mathematically equivalent expressions will have the same hash.
+	 */
+	get hash(): string {
+		return hashNormalForm(this.normal);
+	}
+
+	/**
+	 * Check if this expression is mathematically equivalent to another.
+	 *
+	 * @param other - The expression to compare with
+	 * @returns true if the expressions are mathematically equivalent
+	 *
+	 * @example
+	 * const a = Exp.parse('2x + 3x');
+	 * const b = Exp.parse('5x');
+	 * a.isEquivalent(b) // true
+	 *
+	 * const c = Exp.parse('(a + b)^2');
+	 * const d = Exp.parse('a^2 + 2ab + b^2');
+	 * c.isEquivalent(d) // true
+	 */
+	isEquivalent(other: ExpOrNode): boolean {
+		const otherExp = other instanceof Exp ? other : Exp.from(other);
+		return normalFormsEquivalent(this.normal, otherExp.normal);
+	}
+
+	/**
+	 * Get a simplified version of this expression.
+	 *
+	 * This normalizes the expression and then converts it back to a MathNode,
+	 * producing a simplified but human-readable form.
+	 *
+	 * @returns A new Exp with the simplified expression
+	 *
+	 * @example
+	 * const expr = Exp.parse('2x + 3x');
+	 * expr.simplify().latex // '5x'
+	 */
+	simplify(): Exp {
+		return new Exp(denormalize(this.normal));
 	}
 }
