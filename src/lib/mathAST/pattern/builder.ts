@@ -6,6 +6,7 @@
  */
 
 import type { MathNode, MathNodeType, RelationType } from '../types';
+import { parsePattern } from '../parser/custom/pattern-parser';
 import { number as astNumber, variable as astVariable } from '../factory';
 import type {
 	// Pattern types
@@ -630,6 +631,9 @@ function rule(
  *
  * // Match sin(x) where x is any expression
  * const sinPattern = P.func('sin', [P._('x')]);
+ *
+ * // Parse pattern from string
+ * const parsed = P.parse('_x + 0');
  */
 export const P = {
 	// Wildcards
@@ -668,7 +672,10 @@ export const P = {
 	not,
 
 	// Rules
-	rule
+	rule,
+
+	// Parser
+	parse: parsePattern
 } as const;
 
 // =============================================================================
