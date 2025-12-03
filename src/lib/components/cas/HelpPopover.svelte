@@ -10,10 +10,12 @@
 </script>
 
 <Popover.Root>
-	<Popover.Trigger asChild let:builder>
-		<Button builders={[builder]} variant="ghost" size="icon" aria-label="Aide">
-			<HelpCircle class="size-4" />
-		</Button>
+	<Popover.Trigger>
+		{#snippet child({ props })}
+			<Button {...props} variant="ghost" size="icon" aria-label="Aide">
+				<HelpCircle class="size-4" />
+			</Button>
+		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content class="w-[400px]" align="end">
 		<div class="space-y-4">

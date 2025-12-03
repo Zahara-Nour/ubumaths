@@ -524,6 +524,15 @@ export class WebReplEngine {
 	}
 
 	/**
+	 * Strip ANSI escape codes from text.
+	 * Handles color codes, styling codes, and cursor movement codes.
+	 */
+	private stripAnsi(text: string): string {
+		// eslint-disable-next-line no-control-regex
+		return text.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '');
+	}
+
+	/**
 	 * Escape HTML special characters to prevent XSS.
 	 */
 	private escapeHtml(text: string): string {
@@ -563,13 +572,16 @@ export class WebReplEngine {
 			};
 		}
 
+		// Strip ANSI codes from command output (chalk colors from CLI commands)
+		const cleanOutput = this.stripAnsi(cmdResult.output);
+
 		// For successful commands, check if output looks like a tree (has box-drawing chars)
 		let outputHtml: string;
-		if (cmdResult.output.includes('├') || cmdResult.output.includes('└')) {
-			outputHtml = formatTreeHtml(cmdResult.output);
+		if (cleanOutput.includes('├') || cleanOutput.includes('└')) {
+			outputHtml = formatTreeHtml(cleanOutput);
 		} else {
 			// Escape HTML and preserve line breaks
-			const lines = cmdResult.output.split('\n');
+			const lines = cleanOutput.split('\n');
 			outputHtml = lines.map((line) => this.escapeHtml(line)).join('<br>');
 		}
 
