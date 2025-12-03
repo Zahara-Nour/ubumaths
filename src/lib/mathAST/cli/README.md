@@ -117,7 +117,7 @@ Hash:   V(x)*5
 
 ### Normal
 
-Display the detailed normal form structure of an expression.
+Display the detailed normal form structure of an expression, including a simplified human-readable version.
 
 ```bash
 pnpm math normal "2x + 3x"
@@ -133,6 +133,7 @@ NormalForm:
     Term 1: coefficient=5, monomial=[x^1]
   Denominator: [1]
 
+Simplified: 5x
 Polynomial: 5x
 Hash:       V(x)*5
 ```
