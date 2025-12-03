@@ -3576,3 +3576,48 @@ const customCmd = registry.get('custom');
 // Start REPL programmatically
 startRepl();
 ```
+
+### Variable Bindings & Evaluation
+
+🆕 2025-12-03
+
+The CLI REPL now supports **variable bindings** and **numeric evaluation**, making it a powerful calculator for mathematical expressions.
+
+**Key Features**:
+
+- Define variables with `.let x=5` or inline syntax `x = 5`
+- Auto-evaluation when all variables are defined
+- Two evaluation modes: `exact` (default, preserves fractions/radicals) and `decimal` (numeric approximations)
+- Evaluation commands: `.eval`, `.vars`, `.clear`, `.unset`, `.mode`
+
+**Quick Example**:
+
+```
+math> x = 5
+x = 5
+
+math> y = 3
+y = 3
+
+math> x^2 + 2*x*y + y^2
+Evaluating with: {x: 5, y: 3}
+Result: 64 (exact)
+```
+
+**Evaluation Commands**:
+
+| Command                  | Description                |
+| ------------------------ | -------------------------- |
+| `.let x=5` or `x = 5`    | Define variable            |
+| `.eval <expr>`           | Evaluate with substitution |
+| `.vars`                  | List all variables         |
+| `.clear`                 | Clear all variables        |
+| `.unset x`               | Remove one variable        |
+| `.mode [exact\|decimal]` | Show/set evaluation mode   |
+
+**Evaluation Modes**:
+
+- **exact** (default): Preserves exact values (`1/2`, `sqrt(2)`)
+- **decimal**: Converts to decimal approximations (`0.5`, `1.414...`)
+
+**Full Documentation**: See [CLI README](../../../src/lib/mathAST/cli/README.md) for complete details on variable bindings, evaluation modes, and usage examples.
