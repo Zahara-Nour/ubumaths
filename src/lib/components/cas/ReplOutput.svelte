@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { replStore } from '$lib/stores/repl.svelte';
 	import HistoryEntry from './HistoryEntry.svelte';
-	import type { TabStyle } from '$lib/mathAST/cli/web';
+	import type { TabStyle, ReplHistoryEntry } from '$lib/mathAST/cli/web';
 
 	interface Props {
 		variant: TabStyle;
+		onShowAst?: (entry: ReplHistoryEntry) => void;
 	}
 
-	let { variant }: Props = $props();
+	let { variant, onShowAst }: Props = $props();
 
 	let outputContainer: HTMLDivElement | undefined = $state();
 
@@ -40,7 +41,7 @@
 		<div class="space-y-4">
 			<!-- Display history in reverse order (newest first from store, but oldest first visually) -->
 			{#each [...replStore.history].reverse() as entry (entry.id)}
-				<HistoryEntry {entry} {variant} />
+				<HistoryEntry {entry} {variant} {onShowAst} />
 			{/each}
 		</div>
 	{:else}

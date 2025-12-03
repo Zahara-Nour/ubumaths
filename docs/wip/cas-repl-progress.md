@@ -2,8 +2,8 @@
 
 ## Statut actuel
 
-**Phase**: 3 - Tabs specifiques
-**Progression**: 30%
+**Phase**: 5 - Help, Keyboard & Polish
+**Progression**: 60%
 **Derniere mise a jour**: 2025-12-03
 
 ---
@@ -14,8 +14,8 @@
 | ----- | ----------------------- | ------------- | --------------------------------- | ------------ |
 | 1     | Infrastructure REPL Web | ✅ Termine    | backend-developer                 | sonnet       |
 | 2     | Composants de base      | ✅ Termine    | frontend-developer                | sonnet       |
-| 3     | Tabs specifiques        | ⏳ En attente | frontend-developer                | sonnet       |
-| 4     | AST Viewer + Highlight  | ⏳ En attente | frontend-developer                | opus         |
+| 3     | Tabs specifiques        | ✅ Termine    | (integre Phase 2)                 | -            |
+| 4     | AST Viewer + Highlight  | ✅ Termine    | frontend-developer                | opus         |
 | 5     | Help, Keyboard & Polish | ⏳ En attente | frontend-developer                | sonnet       |
 | 6     | Sidebar + Tests         | ⏳ En attente | frontend-developer/test-automator | haiku/sonnet |
 | 7     | Quality Checks          | ⏳ En attente | -                                 | -            |
@@ -41,10 +41,22 @@
 - [x] `src/lib/components/cas/ReplOutput.svelte` (+ accessibility, remove unused import)
 - [x] `src/lib/components/cas/HistoryEntry.svelte`
 
-### Phase 3 (a venir)
+### Phase 4 ✅
 
-- [ ] Integration des 3 tabs specifiques (Terminal, Modern, Hybrid)
-- [ ] Affinage UX par tab
+- [x] `src/lib/components/cas/AstDrawer.svelte` - Drawer avec bits-ui Dialog
+- [x] `src/lib/components/cas/AstTreeViewer.svelte` - Visualisation recursive avec:
+  - Categories colorees (literal, binary, unary, function, structure, relation, unit)
+  - Expand/collapse avec profondeur max 20
+  - Highlight bidirectionnel via store
+  - Accessibilite clavier (Enter/Space)
+- [x] `src/lib/components/cas/HistoryEntry.svelte` - Ajout callback onShowAst
+- [x] `src/lib/components/cas/ReplContainer.svelte` - Integration AstDrawer
+
+### Phase 5 (a venir)
+
+- [ ] Systeme d'aide (Tooltip/Popover)
+- [ ] Raccourcis clavier documentes
+- [ ] Polish UI
 
 ---
 
@@ -55,36 +67,41 @@
 3. **AST**: Highlight bidirectionnel (hover noeud <-> expression)
 4. **Historique**: localStorage, max 100 entrees
 5. **Aide**: Tooltip/Popover avec icone `?`
+6. **AST Drawer**: Utilise bits-ui Dialog au lieu de Shadcn Sheet
+7. **Max depth**: 20 niveaux pour l'AST viewer
 
 ---
 
-## Corrections Phase 2 (Code Review)
+## Corrections appliquees
 
-1. **Accessibility**: Ajout `aria-label`, `role="log"`, `aria-live="polite"`
-2. **MathField**: Ajout bouton submit + handler `onkeydown` pour Enter
-3. **Unused import**: Suppression `onMount` dans ReplOutput.svelte
-4. **Type fix**: Ajout `UNKNOWN_ERROR` au type `ErrorCode`
+### Phase 1
+
+- XSS: escapeHtml() avec backticks
+- Type safety: type guards au lieu d'assertions
+
+### Phase 2
+
+- Accessibility: aria-label, role="log", aria-live="polite"
+- MathField: bouton submit + handler onkeydown
+- Unused import: suppression onMount
+
+### Phase 4
+
+- Max depth protection (20 niveaux)
+- ARIA role conflict: suppression role="button" redondant
 
 ---
 
 ## Prochaines etapes
 
-1. Lancer Phase 3: Tabs specifiques
-2. Phase 4: AST Viewer avec highlight bidirectionnel (opus)
-3. Phase 5: Aide et polish
-4. Phase 6: Sidebar + Tests
-
----
-
-## Blocages
-
-Aucun pour le moment.
+1. Phase 5: Aide et polish
+2. Phase 6: Sidebar + Tests
+3. Phase 7: Quality Checks
 
 ---
 
 ## Notes
 
 - CLI existant est 95% browser-compatible
-- Seuls `repl.ts` et `cli.ts` utilisent Node.js APIs
-- `chalk` remplace par classes CSS
-- XSS: HTML genere cote serveur (output-formatter-web.ts) est deja sanitize
+- XSS: HTML genere dans output-formatter-web.ts est deja sanitize
+- Self-import pattern pour recursion AstTreeViewer (Svelte 5)

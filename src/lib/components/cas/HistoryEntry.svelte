@@ -2,21 +2,25 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Eye } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
+	import { replStore } from '$lib/stores/repl.svelte';
 	import type { ReplHistoryEntry, TabStyle } from '$lib/mathAST/cli/web';
 
 	interface Props {
 		entry: ReplHistoryEntry;
 		variant: TabStyle;
+		onShowAst?: (entry: ReplHistoryEntry) => void;
 	}
 
-	let { entry, variant }: Props = $props();
+	let { entry, variant, onShowAst }: Props = $props();
 
 	/**
-	 * Toggle AST drawer visibility (placeholder for future implementation).
+	 * Open AST drawer for this entry's expression.
 	 */
 	function showAst(): void {
-		// TODO: Implement AST drawer
-		console.log('Show AST for entry:', entry.id);
+		if (onShowAst) {
+			onShowAst(entry);
+		}
+		replStore.showAstDrawer = true;
 	}
 
 	// Determine if entry is an error
