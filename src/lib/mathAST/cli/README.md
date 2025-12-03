@@ -290,6 +290,8 @@ Goodbye!
 
 Custom syntax is an ASCII Math-style format that's easier to type.
 
+> **Auto-detection**: Functions like `sqrt(x)`, `sin(x)`, `cos(x)`, `ln(x)`, etc. are automatically detected as custom syntax and don't require the `.custom` mode.
+
 ### Basic
 
 | Type          | Examples                  |
