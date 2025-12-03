@@ -96,7 +96,7 @@
 	<div class="flex flex-1 overflow-hidden">
 		<!-- Sidebar - only show on non-dashboard routes, hidden on small/medium screens, visible on large screens -->
 		{#if !isDashboardRoute}
-			<Sidebar />
+			<Sidebar profile={data.profile} />
 		{/if}
 
 		<!-- Main content -->

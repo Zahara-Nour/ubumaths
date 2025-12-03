@@ -831,4 +831,53 @@ The modal uses Shadcn Dialog with Tailwind classes:
 
 ---
 
+## Sidebar Component
+
+Le composant Sidebar affiche la navigation principale sur les routes non-dashboard.
+
+**Location**: `src/lib/components/Sidebar.svelte`
+
+### Props
+
+```typescript
+type NavItem = {
+  label: string;
+  href: string;
+  icon: ComponentType;
+  roles?: string[];  // Optional: restrict to specific roles
+};
+
+let {
+  profile = null,        // User profile for role-based filtering
+  items = [...]          // Navigation items with optional role restrictions
+}: {
+  profile?: Tables<'profiles'> | null;
+  items?: NavItem[];
+} = $props();
+```
+
+### Role-Based Navigation
+
+Les items peuvent être restreints à certains rôles via la propriété `roles` :
+
+```svelte
+<script>
+	const items = [
+		{ label: 'Accueil', href: '/', icon: Home }, // Visible à tous
+		{
+			label: 'Calculatrice',
+			href: '/calculatrice',
+			icon: Calculator,
+			roles: ['student', 'teacher']
+		} // Student/Teacher uniquement
+	];
+</script>
+
+<Sidebar profile={data.profile} {items} />
+```
+
+Si `roles` est défini mais l'utilisateur n'est pas connecté (`profile = null`), l'item est masqué.
+
+---
+
 [← Back to Claude Docs](./README.md)
