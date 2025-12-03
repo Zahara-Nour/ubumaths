@@ -136,6 +136,7 @@ class CustomPrattParser {
 	private readonly options: ParserOptions;
 	private readonly errors: ParseError[] = [];
 	private currentToken: CustomToken;
+	private holeCounter: number = 0;
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new CustomTokenizer(input);
@@ -303,6 +304,9 @@ class CustomPrattParser {
 			case 'AT':
 				return this.parseAtomWithFraction();
 
+			case 'QUESTION':
+				return this.parseAtomWithFraction();
+
 			case 'MINUS':
 				return this.parsePrefixMinus();
 
@@ -447,6 +451,7 @@ class CustomPrattParser {
 			case 'SYMBOL':
 			case 'BACKSLASH':
 			case 'AT':
+			case 'QUESTION':
 				return BP.MULTIPLY;
 
 			default:
@@ -518,6 +523,9 @@ class CustomPrattParser {
 			case 'AT':
 				return this.parseColor();
 
+			case 'QUESTION':
+				return this.parseHole();
+
 			default:
 				this.error(
 					`Unexpected token in atom: ${token.value || token.type}`,
@@ -534,6 +542,16 @@ class CustomPrattParser {
 	private parseNumber(): MathNode {
 		const token = this.advance();
 		return this.applyColor(MathAST.number(token.value));
+	}
+
+	/**
+	 * Parse a hole/placeholder: ?
+	 * Index is auto-assigned sequentially (1, 2, 3...)
+	 */
+	private parseHole(): MathNode {
+		this.advance(); // consume ?
+		this.holeCounter++;
+		return this.applyColor(MathAST.hole(this.holeCounter));
 	}
 
 	/**
@@ -753,7 +771,8 @@ class CustomPrattParser {
 			token.type === 'FUNC' ||
 			token.type === 'SYMBOL' ||
 			token.type === 'BACKSLASH' ||
-			token.type === 'AT'
+			token.type === 'AT' ||
+			token.type === 'QUESTION'
 		);
 	}
 

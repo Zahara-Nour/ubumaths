@@ -26,6 +26,7 @@ import type {
 	VariableNode,
 	GreekLetterNode,
 	SymbolNode,
+	HoleNode,
 	AdditionNode,
 	SubtractionNode,
 	MultiplicationNode,
@@ -166,6 +167,10 @@ function needsBracesForPower(node: MathNode): boolean {
 			// Only \infty is supported
 			return node.symbol !== 'infinity';
 
+		case 'hole':
+			// Holes are atoms, don't need braces
+			return false;
+
 		case 'opposite':
 		case 'positive':
 			// Unary signs always need braces: x^{-2}, x^{+2}
@@ -205,6 +210,10 @@ function needsBracesForSubscript(node: MathNode): boolean {
 			// Symbols need braces in subscript
 			return true;
 
+		case 'hole':
+			// Holes are atoms, don't need braces
+			return false;
+
 		default:
 			// All complex expressions need braces
 			return true;
@@ -236,6 +245,7 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'variable':
 		case 'greek':
 		case 'symbol':
+		case 'hole':
 			return false;
 
 		// Functions: have their own parentheses
@@ -408,6 +418,10 @@ export class CustomGenerator {
 
 			case 'unit':
 				this.visitUnitSpans(node);
+				break;
+
+			case 'hole':
+				this.emit('?', node.metadata);
 				break;
 
 			default: {
@@ -684,6 +698,9 @@ export class CustomGenerator {
 					throw new Error(`Unsupported symbol for custom syntax: ${node.symbol}`);
 				}
 				break;
+			case 'hole':
+				this.emit('?', effectiveMeta);
+				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
 				this.visitWithSpans(node);
@@ -745,6 +762,9 @@ export class CustomGenerator {
 				break;
 			case 'unit':
 				content = this.generateUnit(node);
+				break;
+			case 'hole':
+				content = this.generateHole(node);
 				break;
 			default: {
 				const exhaustive: never = node;
@@ -938,6 +958,14 @@ export class CustomGenerator {
 		const expr = this.generateNode(node.expression);
 		const unitStr = format(node.unit, 'original');
 		return `${expr}[${unitStr}]`;
+	}
+
+	/**
+	 * Generates a hole/placeholder.
+	 * In custom syntax, holes are always output as `?` (index is not included).
+	 */
+	private generateHole(_node: HoleNode): string {
+		return '?';
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {

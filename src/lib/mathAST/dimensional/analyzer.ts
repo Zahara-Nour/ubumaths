@@ -1017,6 +1017,10 @@ function analyzeNode(
 		case 'unit':
 			return analyzeUnit(node, context, errors, warnings);
 
+		case 'hole':
+			// Holes are dimensionless placeholders - they have no inherent dimension
+			return createDimensionlessUnit();
+
 		default: {
 			// TypeScript exhaustiveness check
 			const _exhaustive: never = node;

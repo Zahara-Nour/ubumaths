@@ -11,6 +11,7 @@ import type {
 	VariableNode,
 	GreekLetterNode,
 	SymbolNode,
+	HoleNode,
 	AdditionNode,
 	SubtractionNode,
 	MultiplicationNode,
@@ -368,6 +369,10 @@ export class LatexGenerator {
 				this.visitUnitSpans(node);
 				break;
 
+			case 'hole':
+				this.emit(`\\placeholder[${node.index}]{}`, node.metadata);
+				break;
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -582,6 +587,9 @@ export class LatexGenerator {
 			case 'symbol':
 				this.emit(SYMBOL_MAP[node.symbol], effectiveMeta);
 				break;
+			case 'hole':
+				this.emit(`\\placeholder[${node.index}]{}`, effectiveMeta);
+				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
 				// (they will handle their own metadata)
@@ -644,6 +652,9 @@ export class LatexGenerator {
 				break;
 			case 'unit':
 				content = this.generateUnit(node);
+				break;
+			case 'hole':
+				content = this.generateHole(node);
 				break;
 			default: {
 				const exhaustive: never = node;
@@ -822,6 +833,13 @@ export class LatexGenerator {
 		const expr = this.generateNode(node.expression);
 		const unitStr = format(node.unit, 'original');
 		return `${expr}~\\unit{${unitStr}}`;
+	}
+
+	/**
+	 * Generates a hole/placeholder as \placeholder[N]{}
+	 */
+	private generateHole(node: HoleNode): string {
+		return `\\placeholder[${node.index}]{}`;
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {

@@ -221,6 +221,10 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			addLine(ctx, prefix, `Symbol: ${node.symbol}`, node.metadata);
 			break;
 
+		case 'hole':
+			addLine(ctx, prefix, `Hole: ?${node.index}`, node.metadata);
+			break;
+
 		// =========================================================================
 		// Binary Operations
 		// =========================================================================

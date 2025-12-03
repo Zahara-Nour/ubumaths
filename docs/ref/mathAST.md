@@ -94,12 +94,13 @@ src/lib/mathAST/
 ### Node Type Hierarchy
 
 ```
-MathNode (union of 16 types)
-├── LiteralNode (4 types)
+MathNode (union of 17 types)
+├── LiteralNode (5 types)
 │   ├── NumberNode       # Numeric values: '42', '3.14'
 │   ├── VariableNode     # Identifiers: 'x', 'velocity'
 │   ├── GreekLetterNode  # Greek: 'alpha', 'Delta'
-│   └── SymbolNode       # Mathematical: 'infinity', 'partial'
+│   ├── SymbolNode       # Mathematical: 'infinity', 'partial'
+│   └── HoleNode         # Placeholders: ? (fill-in-the-blank)
 │
 ├── BinaryOperationNode (4 types)
 │   ├── AdditionNode       # a + b
@@ -259,6 +260,37 @@ interface SymbolNode {
 	readonly symbol: MathSymbol;
 	readonly metadata?: NodeMetadata;
 }
+```
+
+#### HoleNode
+
+Represents a placeholder or "fill-in-the-blank" in mathematical expressions. Used for exercises where students need to complete an expression.
+
+```typescript
+interface HoleNode {
+	readonly type: 'hole';
+	readonly index: number; // Position identifier (1, 2, 3...)
+	readonly placeholder?: string; // Optional hint text
+	readonly metadata?: NodeMetadata;
+}
+```
+
+**Syntax**:
+
+- Custom: `?` (indices assigned sequentially during parsing: 1, 2, 3...)
+- LaTeX: `\placeholder[N]{}` where N is the hole index
+
+**Examples**:
+
+```typescript
+// Single hole: ?
+hole(1); // { type: 'hole', index: 1 }
+
+// Multiple holes in "? + ? = 10"
+// Parsed as: hole(1) + hole(2) = 10
+
+// LaTeX with explicit index
+parseLatex('\\placeholder[3]{}'); // { type: 'hole', index: 3 }
 ```
 
 ### Binary Operations
@@ -454,6 +486,7 @@ number(value: string, metadata?): NumberNode
 variable(name: string, metadata?): VariableNode
 greek(letter: GreekLetter, metadata?): GreekLetterNode
 symbol(sym: MathSymbol, metadata?): SymbolNode
+hole(index: number, placeholder?: string, metadata?): HoleNode
 ```
 
 ### Binary Operation Factories
@@ -817,7 +850,7 @@ isUnaryOperationNode(node): node is UnaryOperationNode
 isStructuralNode(node): node is StructuralNode
 ```
 
-### Individual Guards (18 total)
+### Individual Guards (19 total)
 
 ```typescript
 // Literals
@@ -825,6 +858,7 @@ isNumber(node): node is NumberNode
 isVariable(node): node is VariableNode
 isGreek(node): node is GreekLetterNode
 isSymbol(node): node is SymbolNode
+isHole(node): node is HoleNode
 
 // Binary Operations
 isAddition(node): node is AdditionNode
