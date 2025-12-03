@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 2229 passing (644 core + 737 parser + 94 custom generator + 90 Exp + 90 CLI + 574 normalization)
+**Tests**: 2341 passing (644 core + 737 parser + 94 custom generator + 90 Exp + 90 CLI + 574 normalization + 112 pattern)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -20,14 +20,15 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 8. [Flatten/Unflatten Helpers](#flattenunflatten-helpers)
 9. [Exp Fluent Wrapper](#exp-fluent-wrapper)
 10. [Normalization & Equivalence](#normalization--equivalence)
-11. [LaTeX Generator](#latex-generator)
-12. [LaTeX Parser](#latex-parser)
-13. [Custom Syntax Generator](#custom-syntax-generator)
-14. [Physical Units](#physical-units)
-15. [Dimensional Analysis](#dimensional-analysis)
-16. [Usage Patterns](#usage-patterns)
-17. [API Summary](#api-summary)
-18. [CLI](#cli)
+11. [Pattern Matching](#pattern-matching)
+12. [LaTeX Generator](#latex-generator)
+13. [LaTeX Parser](#latex-parser)
+14. [Custom Syntax Generator](#custom-syntax-generator)
+15. [Physical Units](#physical-units)
+16. [Dimensional Analysis](#dimensional-analysis)
+17. [Usage Patterns](#usage-patterns)
+18. [API Summary](#api-summary)
+19. [CLI](#cli)
 
 ---
 
@@ -2370,6 +2371,306 @@ evaluate(result).value; // { n: 65n, d: 1n }
 Exp.parse('x^2 + 1').evalWith({ x: '2y', y: 'z+1', z: 3 });
 // { value: { n: 65n, d: 1n }, exact: true, ... }
 ```
+
+---
+
+## Pattern Matching
+
+### Overview
+
+The pattern matching system provides declarative pattern matching and rule-based transformations for MathAST expressions. It enables:
+
+- **Structure verification** - Check if expressions match specific forms
+- **Subexpression extraction** - Capture parts using wildcards
+- **Transformation rules** - Define rewrite rules like `x + 0 → x`
+- **Simplification engines** - Apply rules recursively
+
+**Location**: `src/lib/mathAST/pattern/`
+**Tests**: 112 passing
+
+```typescript
+import { P, parsePattern, match, applyRules } from '$lib/mathAST/pattern';
+import { Exp } from '$lib/mathAST';
+
+// Pattern string syntax (concise)
+const pattern = parsePattern('_x + 0');
+
+// Or builder API (verbose but flexible)
+const patternB = P.add(P._('x'), P.num(0));
+
+// Check if expression matches
+const expr = Exp.parse('a + 0');
+expr.matches(pattern); // true
+
+// Extract bindings
+const bindings = expr.extract(parsePattern('_left + _right'));
+// bindings.get('left') => variable('a')
+// bindings.get('right') => number('0')
+```
+
+### Pattern Strings
+
+Pattern strings provide concise, readable syntax for creating patterns. Use `parsePattern()` or `P.parse()`:
+
+```typescript
+// These are equivalent:
+parsePattern('_x + 0');
+P.parse('_x + 0');
+P.add(P._('x'), P.num(0));
+```
+
+#### Wildcard Syntax
+
+| Syntax        | Builder Equivalent         | Description        |
+| ------------- | -------------------------- | ------------------ |
+| `_x`          | `P._('x')`                 | Matches anything   |
+| `_x:number`   | `P._('x', P.isNumber())`   | Must be a number   |
+| `_x:integer`  | `P._('x', P.isInteger())`  | Must be an integer |
+| `_x:positive` | `P._('x', P.isPositive())` | Must be positive   |
+| `_x:negative` | `P._('x', P.isNegative())` | Must be negative   |
+| `_x:nonzero`  | `P._('x', P.isNonzero())`  | Must be non-zero   |
+| `_x:variable` | `P._('x', P.isVariable())` | Must be a variable |
+
+#### Operators
+
+| Operator     | Pattern Type   | Precedence  | Associativity |
+| ------------ | -------------- | ----------- | ------------- |
+| `+`          | Addition       | Low (10)    | Left          |
+| `-`          | Subtraction    | Low (10)    | Left          |
+| `*`          | Multiplication | Medium (20) | Left          |
+| `/`          | Division       | Medium (25) | Left          |
+| `^`          | Power          | High (40)   | Right         |
+| `-x` (unary) | Opposite       | High (30)   | Prefix        |
+
+#### Functions
+
+All standard functions: `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt`, `abs`, `arcsin`, `arccos`, `floor`, `ceil`, etc.
+
+```typescript
+parsePattern('sin(_x)'); // sin function
+parsePattern('sqrt(_x^2 + _y^2)'); // nested expression
+parsePattern('ln(_x:positive)'); // with constraint
+```
+
+#### Examples
+
+```typescript
+// Simple identity patterns
+parsePattern('_x + 0'); // additive identity
+parsePattern('_x * 1'); // multiplicative identity
+parsePattern('_x^1'); // power identity
+
+// Patterns with constraints
+parsePattern('_n:number * _x'); // coefficient must be number
+parsePattern('_x / _d:nonzero'); // denominator cannot be zero
+
+// Same-value matching (wildcards with same name must match identical expressions)
+parsePattern('_x + _x'); // matches: a + a, NOT: a + b
+parsePattern('_x / _x'); // matches: a / a (self-division)
+
+// Complex patterns
+parsePattern('_a * _x^2 + _b * _x + _c'); // quadratic form
+parsePattern('sin(_x)^2 + cos(_x)^2'); // trig identity
+```
+
+### Pattern Builder API (`P` namespace)
+
+For complex patterns or programmatic construction, use the `P` namespace:
+
+#### Wildcards
+
+```typescript
+P._('x'); // Match any expression
+P._('n', P.isNumber()); // Match numbers only
+P._('k', P.and(P.isInteger(), P.isPositive())); // Positive integers
+P._('c', P.isFreeOf('x')); // Expression without x
+```
+
+#### Literals
+
+```typescript
+P.num(0); // Exactly the number 0
+P.num(1); // Exactly the number 1
+P.var('x'); // Exactly the variable x
+P.lit(node); // Exactly the given MathNode
+```
+
+#### Structural Patterns
+
+```typescript
+// Binary operations
+P.add(left, right); // Addition: left + right
+P.sub(left, right); // Subtraction: left - right
+P.mul(left, right); // Multiplication: left * right
+P.div(numerator, denominator); // Division: num / denom
+P.pow(base, exponent); // Power: base^exp
+
+// Unary operations
+P.neg(operand); // Negation: -operand
+P.pos(operand); // Positive: +operand
+P.paren(content); // Parentheses: (content)
+
+// Other structures
+P.func(name, args); // Function: name(args...)
+P.subscript(base, sub); // Subscript: base_sub
+P.rel(relation, left, right); // Relation: left rel right
+```
+
+#### Constraints
+
+```typescript
+// Type constraints
+P.isNumber(); // Match number nodes
+P.isVariable(); // Match variable nodes
+P.isType('number', 'variable'); // Match either
+
+// Value constraints
+P.isPositive(); // Positive values
+P.isNegative(); // Negative values
+P.isNonzero(); // Non-zero (for denominators)
+P.isInteger(); // Integer numbers
+
+// Structural constraints
+P.isFreeOf('x'); // Does not contain x
+P.isFreeOf('x', 'y'); // Contains neither x nor y
+
+// Custom constraint
+P.custom((node) => node.type === 'number' && parseFloat(node.value) > 10, 'greater than 10');
+
+// Logical combinators
+P.and(constraint1, constraint2); // ALL must match
+P.or(constraint1, constraint2); // ANY must match
+P.not(constraint); // Must NOT match
+```
+
+### Matching Functions
+
+#### `match(pattern, node)`
+
+Returns detailed match result with bindings:
+
+```typescript
+import { match, P } from '$lib/mathAST/pattern';
+
+const pattern = P.add(P._('x'), P._('y'));
+const node = add(variable('a'), number('5'));
+const result = match(pattern, node);
+
+if (result.success) {
+	const x = result.bindings.get('x'); // variable('a')
+	const y = result.bindings.get('y'); // number('5')
+}
+```
+
+#### `matches(pattern, node)`
+
+Returns boolean for simple checks:
+
+```typescript
+import { matches, P } from '$lib/mathAST/pattern';
+
+if (matches(P.mul(P.num(2), P._('x')), node)) {
+	// node is multiplication by 2
+}
+```
+
+#### `tryMatch(pattern, node)`
+
+Returns bindings map or `undefined`:
+
+```typescript
+const bindings = tryMatch(P.add(P._('a'), P._('b')), node);
+if (bindings) {
+	const a = bindings.get('a');
+}
+```
+
+#### Exp Class Methods
+
+```typescript
+const expr = Exp.parse('x + 0');
+
+// Check if matches pattern (string or Pattern)
+expr.matches('_x + 0'); // true
+expr.matches(P.add(P._('x'), P.num(0))); // true
+
+// Extract bindings (null if no match)
+const bindings = expr.extract('_left + _right');
+// bindings.get('left')  => variable('x')
+// bindings.get('right') => number('0')
+```
+
+### Rule System
+
+Rules define transformations: pattern → replacement.
+
+#### Creating Rules
+
+```typescript
+import { P } from '$lib/mathAST/pattern';
+
+// Basic rule
+P.rule(
+	P.add(P._('x'), P.num(0)), // Pattern: x + 0
+	P._('x'), // Replacement: x
+	{ name: 'additive-identity' }
+);
+
+// Rule with condition
+P.rule(P.div(P._('x'), P._('x')), P.num(1), {
+	name: 'self-division',
+	condition: (bindings) => {
+		const x = bindings.get('x');
+		return x?.type !== 'number' || x.value !== '0';
+	}
+});
+
+// Rule with function replacement
+P.rule(P.sub(P.num(0), P._('x')), (bindings) => opposite(bindings.get('x')!), {
+	name: 'zero-minus'
+});
+
+// Rule with priority (higher = applied first)
+P.rule(P.mul(P.num(0), P._('x')), P.num(0), {
+	name: 'multiply-by-zero',
+	priority: 10
+});
+```
+
+#### Applying Rules
+
+```typescript
+import { applyRule, applyRuleDeep, applyRules } from '$lib/mathAST/pattern';
+
+// Apply to single node (top-level only)
+const result = applyRule(rule, node);
+
+// Apply recursively (bottom-up)
+const result = applyRuleDeep(rule, node);
+
+// Apply multiple rules to fixpoint
+const rules = [
+	P.rule(P.add(P._('x'), P.num(0)), P._('x')),
+	P.rule(P.mul(P._('x'), P.num(1)), P._('x'))
+];
+const simplified = applyRules(rules, node);
+
+// Or use Exp class method
+const expr = Exp.parse('(x + 0) * 1');
+const simplified = expr.simplifyWith(rules);
+// simplified.latex => 'x'
+```
+
+### API Summary
+
+| Category        | Functions                                                                                                                                      |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Parsing**     | `parsePattern`, `P.parse`                                                                                                                      |
+| **Wildcards**   | `P._`, `P.num`, `P.var`, `P.lit`                                                                                                               |
+| **Structural**  | `P.add`, `P.sub`, `P.mul`, `P.div`, `P.pow`, `P.neg`, `P.paren`, `P.func`                                                                      |
+| **Constraints** | `P.isNumber`, `P.isVariable`, `P.isInteger`, `P.isPositive`, `P.isNegative`, `P.isNonzero`, `P.isFreeOf`, `P.and`, `P.or`, `P.not`, `P.custom` |
+| **Matching**    | `match`, `matches`, `tryMatch`, `Exp.matches`, `Exp.extract`                                                                                   |
+| **Rules**       | `P.rule`, `applyRule`, `applyRuleDeep`, `applyRules`, `Exp.simplifyWith`                                                                       |
 
 ---
 
