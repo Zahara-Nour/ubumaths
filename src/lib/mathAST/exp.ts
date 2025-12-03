@@ -102,6 +102,9 @@ import { normalFormsEquivalent, hashNormalForm } from './normal/hash';
 import { substitute as substituteFunc, evaluate as evaluateFunc } from './eval';
 import type { EvalBindings, EvalOptions, EvalResult } from './eval';
 
+import { match, applyRules } from './pattern';
+import type { Pattern, Rule } from './pattern';
+
 // =============================================================================
 // Type for Exp or MathNode parameters
 // =============================================================================
@@ -634,6 +637,77 @@ export class Exp {
 	 */
 	simplify(): Exp {
 		return new Exp(denormalize(this.normal));
+	}
+
+	// =========================================================================
+	// Instance Methods - Pattern Matching
+	// =========================================================================
+
+	/**
+	 * Check if this expression matches a pattern.
+	 *
+	 * @param pattern - The pattern to match against
+	 * @returns true if the expression matches the pattern
+	 *
+	 * @example
+	 * const expr = Exp.parse('x + 0');
+	 * expr.matches(P.add(P._('a'), P.num(0))) // true
+	 * expr.matches(P.mul(P._('a'), P.num(0))) // false
+	 */
+	matches(pattern: Pattern): boolean {
+		return match(pattern, this.#node).success;
+	}
+
+	/**
+	 * Extract bindings from pattern match.
+	 *
+	 * Returns a map of wildcard names to matched nodes if the pattern matches,
+	 * or null if the pattern doesn't match.
+	 *
+	 * @param pattern - The pattern to match against
+	 * @returns Map of bindings if match succeeds, null otherwise
+	 *
+	 * @example
+	 * const expr = Exp.parse('x + 5');
+	 * const bindings = expr.extract(P.add(P._('left'), P._('right')));
+	 * // bindings.get('left') => variable('x')
+	 * // bindings.get('right') => number('5')
+	 *
+	 * const noMatch = expr.extract(P.mul(P._('a'), P._('b')));
+	 * // noMatch => null
+	 */
+	extract(pattern: Pattern): Map<string, MathNode> | null {
+		const result = match(pattern, this.#node);
+		return result.success ? new Map(result.bindings) : null;
+	}
+
+	/**
+	 * Apply simplification rules to this expression.
+	 *
+	 * Rules are applied recursively until no more changes occur (fixpoint).
+	 * Rules are sorted by priority (higher priority first) and applied in order.
+	 *
+	 * @param rules - Array of rules to apply
+	 * @param maxIterations - Maximum iterations to prevent infinite loops (default 100)
+	 * @returns A new Exp with rules applied
+	 *
+	 * @example
+	 * import { arithmeticRules } from '$lib/mathAST/pattern';
+	 *
+	 * const expr = Exp.parse('(x + 0) * 1');
+	 * const simplified = expr.simplifyWith(arithmeticRules);
+	 * // simplified.latex => 'x'
+	 *
+	 * @example
+	 * import { allRules } from '$lib/mathAST/pattern';
+	 *
+	 * const expr = Exp.parse('x^1 + 0');
+	 * const simplified = expr.simplifyWith(allRules);
+	 * // simplified.latex => 'x'
+	 */
+	simplifyWith(rules: readonly Rule[], maxIterations?: number): Exp {
+		const newNode = applyRules([...rules], this.#node, maxIterations);
+		return new Exp(newNode);
 	}
 
 	// =========================================================================

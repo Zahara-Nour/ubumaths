@@ -356,3 +356,9 @@ export type { EvalBindings, EvalOptions, EvalResult } from './eval';
 
 // Helper utilities for variable analysis
 export { getVariables, hasVariable, hasAllBindings, getMissingBindings } from './eval';
+
+// =============================================================================
+// Pattern Matching
+// =============================================================================
+
+export * from './pattern';
