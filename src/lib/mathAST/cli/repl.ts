@@ -9,9 +9,18 @@
 import * as readline from 'readline';
 import chalk from 'chalk';
 import type { MathNode } from '../types';
-import { parse, formatError, formatInputError } from './core';
+import {
+	parse,
+	formatError,
+	formatInputError,
+	createEvalState,
+	bindingsToRecord,
+	setBinding
+} from './core';
+import type { EvalState } from './core';
 import { createDefaultRegistry } from './commands';
 import type { CommandContext } from './types';
+import { toCustom, toLatex, getVariables, hasAllBindings, evaluate, substitute } from '../index';
 
 // =============================================================================
 // REPL State
@@ -23,6 +32,7 @@ interface ReplState {
 	lastAst: MathNode | undefined;
 	registry: ReturnType<typeof createDefaultRegistry>;
 	inputMode: InputMode;
+	evalState: EvalState;
 }
 
 // =============================================================================
@@ -60,7 +70,8 @@ export function startRepl(): void {
 	const state: ReplState = {
 		lastAst: undefined,
 		registry: createDefaultRegistry(),
-		inputMode: 'auto'
+		inputMode: 'auto',
+		evalState: createEvalState()
 	};
 
 	const rl = readline.createInterface({
@@ -88,7 +99,13 @@ export function startRepl(): void {
 		if (input.startsWith('.')) {
 			handleReplCommand(input, rl, state);
 		} else {
-			state.lastAst = processExpression(input, state);
+			// Check for inline assignment syntax: "x = 5" or "x=5"
+			const assignmentMatch = input.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$/);
+			if (assignmentMatch && !input.includes('===')) {
+				handleInlineAssignment(assignmentMatch[1], assignmentMatch[2], state);
+			} else {
+				state.lastAst = processExpression(input, state);
+			}
 		}
 
 		rl.prompt();
@@ -98,6 +115,42 @@ export function startRepl(): void {
 		console.log(chalk.gray('\nGoodbye!'));
 		process.exit(0);
 	});
+}
+
+// =============================================================================
+// Inline Assignment Handler
+// =============================================================================
+
+/**
+ * Handle inline variable assignment: "x = 5" or "x=5"
+ * Parses the value and stores it in evalState.bindings.
+ *
+ * @param varName - Variable name
+ * @param valueExpr - Expression to assign
+ * @param state - Current REPL state
+ */
+function handleInlineAssignment(varName: string, valueExpr: string, state: ReplState): void {
+	const forceFormat = state.inputMode === 'auto' ? undefined : state.inputMode;
+	const parseResult = parse(valueExpr, forceFormat ? { forceFormat } : undefined);
+
+	if (parseResult.errors.length > 0 || !parseResult.ast) {
+		for (const err of parseResult.errors) {
+			if (err.position !== undefined) {
+				console.log(formatInputError(valueExpr, err.position, err.message));
+			} else {
+				console.log(formatError(err));
+			}
+		}
+		return;
+	}
+
+	// Store the binding
+	setBinding(state.evalState, varName, parseResult.ast);
+	state.lastAst = parseResult.ast;
+
+	// Format output
+	const valueStr = toCustom(parseResult.ast);
+	console.log(chalk.bold(varName) + ' = ' + chalk.cyan(valueStr));
 }
 
 // =============================================================================
@@ -159,7 +212,8 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
 				input: args,
 				format: state.inputMode === 'auto' ? 'latex' : state.inputMode,
 				options: {},
-				isRepl: true
+				isRepl: true,
+				evalState: state.evalState
 			};
 			const result = command.execute(ctx);
 			console.log(result.output);
@@ -186,7 +240,8 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
 		input: cmdInput,
 		format: state.inputMode === 'auto' ? 'latex' : state.inputMode,
 		options: {},
-		isRepl: true
+		isRepl: true,
+		evalState: state.evalState
 	};
 
 	const result = command.execute(ctx);
@@ -215,7 +270,8 @@ function handleEquivExpression(input: string, state: ReplState): void {
 		input,
 		format: state.inputMode === 'auto' ? 'latex' : state.inputMode,
 		options: {},
-		isRepl: true
+		isRepl: true,
+		evalState: state.evalState
 	};
 
 	const result = equivCmd.execute(ctx);
@@ -224,6 +280,7 @@ function handleEquivExpression(input: string, state: ReplState): void {
 
 /**
  * Parse and display a mathematical expression.
+ * If the expression contains variables and all are bound, auto-evaluates it.
  *
  * @param input - The expression to parse
  * @param state - Current REPL state
@@ -258,19 +315,76 @@ function processExpression(input: string, state: ReplState): MathNode | undefine
 		return undefined;
 	}
 
-	// Use parse command to display the result
-	const parseCmd = state.registry.get('parse');
-	if (parseCmd) {
-		const ctx: CommandContext = {
-			ast: result.ast,
-			input,
-			format: result.inputFormat,
-			options: {},
-			isRepl: true
-		};
-		const cmdResult = parseCmd.execute(ctx);
-		console.log(cmdResult.output);
+	// Check if expression has variables and all are bound - auto-evaluate
+	const bindings = bindingsToRecord(state.evalState.bindings);
+	const variables = getVariables(result.ast);
+
+	// Auto-evaluate when:
+	// 1. All variables are bound (if any), OR
+	// 2. No variables and expression is evaluable (like sqrt(2))
+	const canAutoEvaluate = variables.size === 0 || hasAllBindings(result.ast, bindings);
+
+	if (canAutoEvaluate) {
+		// Auto-evaluate since all variables are bound (or no variables)
+		displayAutoEvaluation(result.ast, state);
+	} else {
+		// Use parse command to display the result (some variables unbound)
+		const parseCmd = state.registry.get('parse');
+		if (parseCmd) {
+			const ctx: CommandContext = {
+				ast: result.ast,
+				input,
+				format: result.inputFormat,
+				options: {},
+				isRepl: true,
+				evalState: state.evalState
+			};
+			const cmdResult = parseCmd.execute(ctx);
+			console.log(cmdResult.output);
+		}
 	}
 
 	return result.ast;
+}
+
+/**
+ * Display auto-evaluation result for an expression with all variables bound.
+ *
+ * @param ast - The AST to evaluate
+ * @param state - Current REPL state
+ */
+function displayAutoEvaluation(ast: MathNode, state: ReplState): void {
+	try {
+		const bindings = bindingsToRecord(state.evalState.bindings);
+		const variables = getVariables(ast);
+
+		// Show which bindings are being used (only if there are variables)
+		if (variables.size > 0) {
+			const bindingsList: string[] = [];
+			for (const varName of variables) {
+				const value = state.evalState.bindings.get(varName);
+				if (value) {
+					bindingsList.push(`${varName}: ${toCustom(value)}`);
+				}
+			}
+			console.log(chalk.dim('Evaluating with:') + ' {' + bindingsList.join(', ') + '}');
+		}
+
+		// Substitute variables
+		const substituted = substitute(ast, bindings);
+
+		// Evaluate using current mode
+		const evalResult = evaluate(substituted, { mode: state.evalState.mode });
+
+		// Format the result
+		const resultStr = toCustom(evalResult.node);
+		const latexStr = toLatex(evalResult.node);
+		const exactStr = evalResult.exact ? chalk.green('(exact)') : chalk.yellow('(approximate)');
+
+		console.log(chalk.bold('Result:') + ' ' + chalk.cyan(resultStr) + ' ' + exactStr);
+		console.log(chalk.dim('LaTeX:') + '  ' + latexStr);
+	} catch (err) {
+		const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
+		console.log(chalk.red('Evaluation error:') + ' ' + message);
+	}
 }

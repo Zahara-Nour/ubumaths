@@ -221,21 +221,403 @@ Goodbye!
 
 **REPL Commands:**
 
-| Command     | Action                                  |
-| ----------- | --------------------------------------- |
-| `.help`     | Show available commands                 |
-| `.quit`     | Exit REPL                               |
-| `.exit`     | Exit REPL (alias)                       |
-| `.latex`    | Switch to LaTeX input mode              |
-| `.custom`   | Switch to custom syntax input mode      |
-| `.auto`     | Switch to auto-detect input mode        |
-| `.tree`     | Show AST of last parsed expression      |
-| `.latex`    | Show LaTeX of last parsed expression    |
-| `.custom`   | Show custom of last parsed expression   |
-| `.simplify` | Simplify the last parsed expression     |
-| `.normal`   | Show normal form of last expression     |
-| `.hash`     | Show hash of last parsed expression     |
-| `.equiv`    | Check equivalence (use with === syntax) |
+| Command                  | Action                                  |
+| ------------------------ | --------------------------------------- |
+| `.help`                  | Show available commands                 |
+| `.quit`                  | Exit REPL                               |
+| `.exit`                  | Exit REPL (alias)                       |
+| `.latex`                 | Switch to LaTeX input mode              |
+| `.custom`                | Switch to custom syntax input mode      |
+| `.auto`                  | Switch to auto-detect input mode        |
+| `.tree`                  | Show AST of last parsed expression      |
+| `.latex`                 | Show LaTeX of last parsed expression    |
+| `.custom`                | Show custom of last parsed expression   |
+| `.simplify`              | Simplify the last parsed expression     |
+| `.normal`                | Show normal form of last expression     |
+| `.hash`                  | Show hash of last parsed expression     |
+| `.equiv`                 | Check equivalence (use with === syntax) |
+| `.eval` or `.e`          | Evaluate expression with variables      |
+| `.let <name>=<expr>`     | Define a variable binding               |
+| `.vars` or `.v`          | List all defined variables              |
+| `.clear` or `.clr`       | Clear all variable bindings             |
+| `.unset <name>`          | Remove a single variable                |
+| `.mode [exact\|decimal]` | Show or set evaluation mode             |
+
+## Variable Bindings
+
+The REPL supports defining and using variables through an evaluation state system. Variables can be defined, listed, evaluated, and removed during your REPL session.
+
+### Defining Variables with `.let`
+
+Use the `.let` command to define a variable binding:
+
+```
+math> .let x=5
+Defined: x = 5
+
+math> .let y = 2+3
+Defined: y = 2+3
+
+math> .let velocity = sqrt(2*9.81*10)
+Defined: velocity = sqrt(2*9.81*10)
+```
+
+**Syntax:**
+
+- `.let <name>=<expression>` - Define a variable
+- Variable names must start with a letter or underscore
+- Variable names can contain letters, numbers, and underscores
+- Spaces around `=` are optional
+- The expression is parsed but NOT evaluated (stored as AST)
+
+### Inline Variable Assignment
+
+You can also define variables without the `.let` command using inline syntax:
+
+```
+math> x = 5
+x = 5
+
+math> y = x * 2
+y = x * 2
+
+math> result = x^2 + y
+result = x^2 + y
+```
+
+The REPL automatically detects assignment syntax (pattern: `name = expression`) and treats it as `.let`.
+
+### Listing Variables with `.vars`
+
+Use `.vars` (or `.v` or `.variables`) to list all defined variables:
+
+```
+math> .vars
+Variables:
+  result = x^2 + y
+  velocity = sqrt(2*9.81*10)
+  x = 5
+  y = x * 2
+```
+
+Variables are displayed in alphabetical order with their stored expressions (not evaluated values).
+
+### Removing Variables
+
+**Remove one variable:**
+
+```
+math> .unset x
+Removed variable: x
+
+math> .unset velocity
+Removed variable: velocity
+```
+
+Aliases: `.del`, `.delete`
+
+**Clear all variables:**
+
+```
+math> .clear
+Cleared 4 variable(s)
+
+math> .vars
+No variables defined
+```
+
+Alias: `.clr`
+
+### Variable Scope
+
+Variables are session-scoped:
+
+- Defined variables persist throughout your REPL session
+- Variables are NOT shared between different REPL sessions
+- Exiting the REPL clears all variables
+- Variables can be redefined (overwritten) at any time
+
+## Evaluation
+
+The REPL includes a powerful evaluation engine that can substitute variables and compute numeric results.
+
+### Evaluating Expressions with `.eval`
+
+Use `.eval` (or `.e`) to evaluate an expression with variable substitution:
+
+```
+math> .let x=5
+Defined: x = 5
+
+math> .let y=3
+Defined: y = 3
+
+math> .eval x^2 + y
+Result: 28 (exact)
+Mode:   exact
+
+math> .eval sin(x) + cos(y)
+Result: -1.8488724885405782 (approximate)
+Mode:   exact
+```
+
+**How it works:**
+
+1. Substitutes all defined variables in the expression
+2. Evaluates the resulting expression numerically
+3. Shows whether the result is exact or approximate
+4. Respects the current evaluation mode (exact or decimal)
+
+### Auto-Evaluation
+
+If you enter an expression that contains only defined variables, the REPL automatically evaluates it:
+
+```
+math> x = 5
+x = 5
+
+math> y = 3
+y = 3
+
+math> x + y
+Evaluating with: {x: 5, y: 3}
+Result: 8 (exact)
+LaTeX:  8
+```
+
+Auto-evaluation only triggers when ALL variables in the expression are defined. If any variable is undefined, the expression is displayed without evaluation:
+
+```
+math> x = 5
+x = 5
+
+math> x + z
+[AST tree output]
+LaTeX:  x + z
+Custom: x+z
+```
+
+### Evaluation Modes
+
+The evaluation system supports two modes: **exact** (default) and **decimal**.
+
+**Exact Mode** (default):
+
+- Preserves exact values when possible
+- Fractions remain as fractions: `1/2` stays `1/2`
+- Square roots remain symbolic: `sqrt(2)` stays `sqrt(2)`
+- Rational arithmetic is exact
+
+**Decimal Mode**:
+
+- Converts results to decimal approximations
+- `1/2` becomes `0.5`
+- `sqrt(2)` becomes `1.4142135623730951`
+- Useful for numeric approximations
+
+**Switching modes:**
+
+```
+math> .mode
+Current mode: exact
+
+math> .mode decimal
+Mode set to: decimal
+
+math> .eval 1/3
+Result: 0.3333333333333333 (approximate)
+Mode:   decimal
+
+math> .mode exact
+Mode set to: exact
+
+math> .eval 1/3
+Result: 1/3 (exact)
+Mode:   exact
+```
+
+Alias: `.m`
+
+### Evaluation Examples
+
+**Arithmetic with variables:**
+
+```
+math> x = 10
+math> y = 20
+math> .eval x + y * 2
+Result: 50 (exact)
+```
+
+**Trigonometric functions:**
+
+```
+math> angle = 0
+math> .eval sin(angle)
+Result: 0 (exact)
+```
+
+**Complex expressions:**
+
+```
+math> a = 2
+math> b = 3
+math> c = 4
+math> .eval sqrt(a^2 + b^2 + c^2)
+Result: 5.385164807134504 (approximate)
+```
+
+**Undefined variables:**
+
+```
+math> .eval x + undefined_var
+Result: 5 + undefined_var (partial evaluation)
+```
+
+## Inline Syntax
+
+The REPL supports convenient inline syntax for common operations without needing explicit commands.
+
+### Variable Assignment: `x = 5`
+
+Any input matching the pattern `<name> = <expression>` is automatically treated as a variable definition:
+
+```
+math> x = 5
+x = 5
+
+math> velocity = 100 * 0.277778
+velocity = 100 * 0.277778
+```
+
+**Equivalent to:** `.let x=5`
+
+**Detection rules:**
+
+- Variable name must start with a letter or underscore
+- Variable name can contain letters, numbers, underscores
+- Optional spaces around `=`
+- Everything after `=` is parsed as an expression
+
+### Auto-Evaluation: Expressions with Known Variables
+
+If all variables in an expression are defined, the REPL automatically evaluates it:
+
+```
+math> x = 5
+x = 5
+
+math> y = 3
+y = 3
+
+math> x^2 + 2*x*y + y^2
+Evaluating with: {x: 5, y: 3}
+Result: 64 (exact)
+LaTeX:  64
+```
+
+**When auto-evaluation triggers:**
+
+- Expression contains one or more variables
+- ALL variables are defined in the current state
+- Expression is not a command (doesn't start with `.`)
+- Not an assignment (doesn't contain `=`)
+
+**When auto-evaluation does NOT trigger:**
+
+- Expression contains undefined variables
+- Expression is purely numeric: `2+3` (just displays AST)
+- Empty bindings (no variables defined)
+
+### Mixed Usage Example
+
+```
+math> # Define variables
+math> x = 10
+x = 10
+
+math> y = 5
+y = 5
+
+math> # Auto-evaluates (all vars defined)
+math> x + y
+Evaluating with: {x: 10, y: 5}
+Result: 15 (exact)
+
+math> # Explicit evaluation
+math> .eval x * y
+Result: 50 (exact)
+Mode:   exact
+
+math> # New expression with undefined var
+math> x + z
+[AST tree - z is undefined, no evaluation]
+
+math> # Define missing var
+math> z = 3
+z = 3
+
+math> # Now auto-evaluates
+math> x + z
+Evaluating with: {x: 10, z: 3}
+Result: 13 (exact)
+```
+
+### Workflow Example
+
+Complete workflow showing variable bindings and evaluation:
+
+```
+MathAST REPL
+Enter expressions to parse (LaTeX or custom syntax).
+Mode commands: .latex, .custom, .auto | Other: .help, .quit
+
+math> # Set up a physics problem
+math> g = 9.81
+g = 9.81
+
+math> h = 10
+h = 10
+
+math> # Calculate velocity
+math> v = sqrt(2*g*h)
+v = sqrt(2*g*h)
+
+math> # Check our variables
+math> .vars
+Variables:
+  g = 9.81
+  h = 10
+  v = sqrt(2*g*h)
+
+math> # Evaluate velocity (exact mode)
+math> .eval v
+Result: sqrt(196.2) (exact)
+Mode:   exact
+
+math> # Switch to decimal for numeric result
+math> .mode decimal
+Mode set to: decimal
+
+math> .eval v
+Result: 14.007141035914502 (approximate)
+Mode:   decimal
+
+math> # Use in another calculation
+math> kinetic_energy = 0.5 * 2 * v^2
+kinetic_energy = 0.5 * 2 * v^2
+
+math> kinetic_energy
+Evaluating with: {kinetic_energy: 0.5 * 2 * v^2, v: sqrt(2*g*h), g: 9.81, h: 10}
+Result: 196.20000000000002 (approximate)
+
+math> # Clean up
+math> .clear
+Cleared 4 variable(s)
+
+math> .quit
+Goodbye!
+```
 
 ## Supported LaTeX Syntax
 

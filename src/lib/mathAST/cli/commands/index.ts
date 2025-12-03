@@ -19,6 +19,14 @@ export { NormalCommand } from './normal.command';
 export { HashCommand } from './hash.command';
 export { EquivCommand } from './equiv.command';
 
+// Evaluation commands
+export { EvalCommand } from './eval.command';
+export { LetCommand } from './let.command';
+export { VarsCommand } from './vars.command';
+export { ClearCommand } from './clear.command';
+export { UnsetCommand } from './unset.command';
+export { ModeCommand } from './mode.command';
+
 // =============================================================================
 // Default Registry Factory
 // =============================================================================
@@ -33,6 +41,12 @@ import { SimplifyCommand } from './simplify.command';
 import { NormalCommand } from './normal.command';
 import { HashCommand } from './hash.command';
 import { EquivCommand } from './equiv.command';
+import { EvalCommand } from './eval.command';
+import { LetCommand } from './let.command';
+import { VarsCommand } from './vars.command';
+import { ClearCommand } from './clear.command';
+import { UnsetCommand } from './unset.command';
+import { ModeCommand } from './mode.command';
 
 /**
  * Create a command registry with all default commands registered.
@@ -76,6 +90,14 @@ export function createDefaultRegistry(): CommandRegistry {
 	registry.register(new NormalCommand());
 	registry.register(new HashCommand());
 	registry.register(new EquivCommand());
+
+	// Evaluation commands
+	registry.register(new EvalCommand());
+	registry.register(new LetCommand());
+	registry.register(new VarsCommand());
+	registry.register(new ClearCommand());
+	registry.register(new UnsetCommand());
+	registry.register(new ModeCommand());
 
 	// Set registry reference for help command after registration
 	helpCmd.setRegistry(registry);

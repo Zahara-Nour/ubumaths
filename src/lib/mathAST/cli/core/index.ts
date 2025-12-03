@@ -40,3 +40,22 @@ export {
 
 export { CommandRegistry } from './command-registry';
 export type { Command } from './command-registry';
+
+// =============================================================================
+// Evaluation State
+// =============================================================================
+
+export {
+	createEvalState,
+	bindingsToRecord,
+	setBinding,
+	getBinding,
+	hasBinding,
+	unsetBinding,
+	clearBindings,
+	getBindingCount,
+	getBindingNames,
+	setMode,
+	toggleMode
+} from './eval-state';
+export type { EvalMode, EvalState } from './eval-state';
