@@ -45,11 +45,53 @@
 			{/each}
 		</div>
 	{:else}
-		<!-- Empty state -->
+		<!-- Empty state with examples -->
 		<div class="flex h-full min-h-[200px] items-center justify-center">
-			<div class="text-center text-muted-foreground">
-				<p class="mb-2 text-sm">Aucun historique</p>
-				<p class="text-xs">Entrez une expression pour commencer</p>
+			<div class="max-w-md space-y-4 text-center">
+				<div>
+					<h3 class="text-lg font-semibold text-foreground">Bienvenue dans le REPL mathématique</h3>
+					<p class="mt-1 text-sm text-muted-foreground">
+						Console interactive pour le calcul symbolique
+					</p>
+				</div>
+
+				<!-- Example commands -->
+				<div class="space-y-2 rounded-lg border border-border bg-muted/50 p-4 text-left">
+					<h4 class="text-sm font-medium text-foreground">Essayez ces exemples :</h4>
+					<div class="space-y-1 text-xs">
+						<div>
+							<code class="rounded bg-background px-2 py-1 font-mono text-primary"
+								>2x^2 + 3x - 5</code
+							>
+							<span class="ml-2 text-muted-foreground">Expression mathématique</span>
+						</div>
+						<div>
+							<code class="rounded bg-background px-2 py-1 font-mono text-primary">.simplify</code>
+							<span class="ml-2 text-muted-foreground">Simplifier l'expression précédente</span>
+						</div>
+						<div>
+							<code class="rounded bg-background px-2 py-1 font-mono text-primary">.tree</code>
+							<span class="ml-2 text-muted-foreground">Afficher l'arbre AST</span>
+						</div>
+						<div>
+							<code class="rounded bg-background px-2 py-1 font-mono text-primary">.latex</code>
+							<span class="ml-2 text-muted-foreground">Convertir en LaTeX</span>
+						</div>
+						<div>
+							<code class="rounded bg-background px-2 py-1 font-mono text-primary">.help</code>
+							<span class="ml-2 text-muted-foreground">Liste complète des commandes</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Keyboard hint -->
+				<p class="text-xs text-muted-foreground">
+					Utilisez <kbd
+						class="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">↑</kbd
+					>
+					<kbd class="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">↓</kbd>
+					pour naviguer dans l'historique
+				</p>
 			</div>
 		</div>
 	{/if}
