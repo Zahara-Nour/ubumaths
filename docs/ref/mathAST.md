@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 1655 passing (644 core + 737 parser + 94 custom generator + 90 Exp + 90 CLI)
+**Tests**: 2210 passing (644 core + 737 parser + 94 custom generator + 90 Exp + 90 CLI + 555 normalization)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -19,14 +19,15 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 7. [Type Guards](#type-guards)
 8. [Flatten/Unflatten Helpers](#flattenunflatten-helpers)
 9. [Exp Fluent Wrapper](#exp-fluent-wrapper)
-10. [LaTeX Generator](#latex-generator)
-11. [LaTeX Parser](#latex-parser)
-12. [Custom Syntax Generator](#custom-syntax-generator)
-13. [Physical Units](#physical-units)
-14. [Dimensional Analysis](#dimensional-analysis)
-15. [Usage Patterns](#usage-patterns)
-16. [API Summary](#api-summary)
-17. [CLI](#cli)
+10. [Normalization & Equivalence](#normalization--equivalence)
+11. [LaTeX Generator](#latex-generator)
+12. [LaTeX Parser](#latex-parser)
+13. [Custom Syntax Generator](#custom-syntax-generator)
+14. [Physical Units](#physical-units)
+15. [Dimensional Analysis](#dimensional-analysis)
+16. [Usage Patterns](#usage-patterns)
+17. [API Summary](#api-summary)
+18. [CLI](#cli)
 
 ---
 
@@ -64,6 +65,25 @@ src/lib/mathAST/
 │       ├── parser-pratt.ts # Pratt parser (transparent \textcolor support)
 │       ├── parser-rd.ts  # Recursive Descent parser (transparent \textcolor support)
 │       └── __tests__/    # LaTeX parser tests
+├── normal/               # Normalization & equivalence (555 tests)
+│   ├── types.ts          # NormalForm, AlgebraicCoefficient types
+│   ├── rational.ts       # BigInt exact arithmetic
+│   ├── radical.ts        # Radical simplification (√18 → 3√2)
+│   ├── algebraic.ts      # Algebraic coefficient operations
+│   ├── monomial.ts       # Symbolic monomial operations
+│   ├── term.ts           # NormalTerm operations
+│   ├── polynomial.ts     # Polynomial arithmetic
+│   ├── compare.ts        # 4-level canonical ordering
+│   ├── hash.ts           # Structural hashing for O(1) comparison
+│   ├── normalize.ts      # MathNode → NormalForm
+│   ├── denormalize.ts    # NormalForm → MathNode
+│   ├── index.ts          # Public exports
+│   └── rules/            # Simplification rules
+│       ├── arithmetic.ts # 0+x=x, 1*x=x, x^0=1
+│       ├── powers.ts     # x^a·x^b, (x^a)^b
+│       ├── radicals.ts   # √18→3√2, √2·√8→4
+│       ├── transcendental.ts # sin/cos/tan, ln/exp
+│       └── index.ts      # Combined simplify()
 ├── units/                # Physical unit system (Unit AST)
 │   ├── types.ts          # Unit type definitions
 │   ├── factory.ts        # Unit creation functions
@@ -1317,6 +1337,78 @@ Exp.add(Exp.variable('x'), Exp.multiply(Exp.variable('y'), Exp.variable('z')));
 // → x + y z
 ```
 
+### Normalization & Equivalence
+
+The `Exp` class provides algebraic normalization to test mathematical equivalence. Two expressions are equivalent if they normalize to the same canonical form.
+
+#### API
+
+```typescript
+// Get the normalized form (lazy, cached)
+exp.normal: NormalForm
+
+// Get structural hash for O(1) comparison
+exp.hash: string
+
+// Check algebraic equivalence
+exp.isEquivalent(other: Exp | MathNode): boolean
+
+// Get simplified expression
+exp.simplify(): Exp
+```
+
+#### Examples
+
+```typescript
+import { Exp } from '$lib/mathAST';
+
+// Basic equivalence
+const e1 = Exp.parse('2x + 3x');
+const e2 = Exp.parse('5x');
+e1.isEquivalent(e2); // true
+
+// Expanded form
+const e3 = Exp.parse('(a+b)^2');
+const e4 = Exp.parse('a^2 + 2ab + b^2');
+e3.isEquivalent(e4); // true
+
+// Radical simplification
+const e5 = Exp.parse('\\sqrt{18}');
+const e6 = Exp.parse('3\\sqrt{2}');
+e5.isEquivalent(e6); // true
+
+// Algebraic coefficients
+const e7 = Exp.parse('\\sqrt{2}x + \\sqrt{3}x');
+e7.simplify().latex; // "(√2 + √3)x"
+
+// Commutative equivalence
+Exp.parse('xy').isEquivalent(Exp.parse('yx')); // true
+
+// Hash-based comparison (O(1))
+e1.hash === e2.hash; // true
+```
+
+#### How It Works
+
+1. **Normalization**: Expressions are converted to `NormalForm` - a canonical polynomial representation with algebraic coefficients
+2. **Algebraic Coefficients**: Support irrational coefficients like `√2 + √3` through the `AlgebraicCoefficient` type
+3. **BigInt Arithmetic**: All computations use BigInt for exact results (no floating-point errors)
+4. **Canonical Ordering**: Terms and factors are sorted using a 4-level comparison algorithm
+5. **Structural Hash**: Deterministic hash enables O(1) equivalence checking
+
+#### Supported Simplifications
+
+| Category      | Examples                                       |
+| ------------- | ---------------------------------------------- |
+| Arithmetic    | `0 + x → x`, `1 * x → x`, `x^0 → 1`            |
+| Like terms    | `2x + 3x → 5x`, `√2x + √3x → (√2+√3)x`         |
+| Expansion     | `(a+b)² → a² + 2ab + b²`                       |
+| Powers        | `x^a · x^b → x^(a+b)`, `(x^a)^b → x^(ab)`      |
+| Radicals      | `√18 → 3√2`, `√2 · √8 → 4`                     |
+| Trigonometric | `sin(0) → 0`, `cos(π) → -1`, `sin(π/4) → √2/2` |
+| Logarithmic   | `ln(1) → 0`, `ln(e) → 1`                       |
+| Exponential   | `exp(0) → 1`, `e^0 → 1`                        |
+
 ---
 
 ## Relation Chains
@@ -1547,7 +1639,165 @@ function evaluate(node: MathNode, vars: Map<string, number>): number {
 | **LaTeX**           | `toLatex`, `LatexGenerator`, `LatexGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **Custom Syntax**   | `toCustom`, `CustomGenerator`, `CustomGeneratorOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **Exp Wrapper**     | `Exp` (fluent wrapper class with static factories, instance methods, and transformations)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Normalization**   | `normalize`, `denormalize`, `NormalForm`, `AlgebraicCoefficient`, `simplify`, `hashNormalForm`, `normalFormsEquivalent`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **Options Types**   | `BinaryOpOptions`, `UnaryOpOptions`, `DelimiterOptions`, `FunctionMetadataOptions`, `RelationOptions`, `UnitOptions`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+
+---
+
+## Normalization & Equivalence
+
+### Overview
+
+The normalization module provides algebraic equivalence testing by converting expressions to a canonical form. Two mathematically equivalent expressions will always produce identical normal forms, enabling O(1) comparison via structural hashing.
+
+```typescript
+import { normalize, denormalize, normalFormsEquivalent } from '$lib/mathAST/normal';
+
+// Normalize an expression
+const form = normalize(node); // MathNode → NormalForm
+
+// Check equivalence
+const equiv = normalFormsEquivalent(form1, form2); // O(1) via hash
+
+// Convert back to simplified MathNode
+const simplified = denormalize(form); // NormalForm → MathNode
+```
+
+### Type Definitions
+
+```typescript
+/** BigInt exact rational number */
+interface Rational {
+	readonly n: bigint; // numerator
+	readonly d: bigint; // denominator (always positive)
+}
+
+/** Simplified radical √[index](radicand) */
+interface SimplifiedRadical {
+	readonly radicand: bigint; // Must be positive, square-free for index=2
+	readonly index: bigint; // Root index (2 for square root)
+}
+
+/** Term in an algebraic coefficient: rational × √r1 × √r2 × ... */
+interface AlgebraicTerm {
+	readonly rational: Rational;
+	readonly radicals: readonly SimplifiedRadical[]; // Sorted, simplified
+}
+
+/** Sum of algebraic terms: Σ(rational × Π(radicals)) */
+interface AlgebraicCoefficient {
+	readonly terms: readonly AlgebraicTerm[]; // Sorted, collected
+}
+
+/** Symbolic factor: base^exponent where exponent is rational */
+interface SymbolicFactor {
+	readonly base: MathNode; // Variable, Greek letter, or opaque expression
+	readonly exponent: Rational;
+}
+
+/** A term in the normal form: coefficient × monomial */
+interface NormalTerm {
+	readonly coefficient: AlgebraicCoefficient;
+	readonly monomial: readonly SymbolicFactor[]; // Sorted by canonical order
+}
+
+/** Canonical normal form: numerator / denominator */
+interface NormalForm {
+	readonly numerator: readonly NormalTerm[];
+	readonly denominator: readonly NormalTerm[];
+	readonly hash: string; // Structural hash for O(1) comparison
+}
+```
+
+### Normalization Pipeline
+
+1. **Parse** → MathNode AST
+2. **Simplify** → Apply algebraic rules (arithmetic, powers, radicals, transcendental)
+3. **Normalize** → Convert to NormalForm (canonical polynomial with algebraic coefficients)
+4. **Hash** → Generate deterministic structural hash
+5. **Compare** → O(1) equivalence via hash comparison
+6. **Denormalize** → Convert back to simplified MathNode
+
+### Simplification Rules
+
+The `simplify()` function applies rules in a fixed-point loop until no more simplifications are possible:
+
+```typescript
+import { simplify } from '$lib/mathAST/normal/rules';
+
+const simplified = simplify(node); // Apply all rules to fixed point
+```
+
+#### Arithmetic Rules
+
+| Rule       | Before  | After |
+| ---------- | ------- | ----- |
+| Zero add   | `0 + x` | `x`   |
+| Zero mul   | `0 * x` | `0`   |
+| One mul    | `1 * x` | `x`   |
+| Zero power | `x^0`   | `1`   |
+| One power  | `x^1`   | `x`   |
+| Number ops | `2 + 3` | `5`   |
+| Negation   | `--x`   | `x`   |
+
+#### Power Rules
+
+| Rule           | Before      | After     |
+| -------------- | ----------- | --------- |
+| Product same   | `x^a · x^b` | `x^(a+b)` |
+| Power of power | `(x^a)^b`   | `x^(a·b)` |
+| Product power  | `(xy)^n`    | `x^n·y^n` |
+| Quotient power | `(x/y)^n`   | `x^n/y^n` |
+
+#### Radical Rules
+
+| Rule     | Before    | After |
+| -------- | --------- | ----- |
+| Perfect  | `√4`      | `2`   |
+| Simplify | `√18`     | `3√2` |
+| Multiply | `√2 · √8` | `4`   |
+| Nested   | `√(√16)`  | `2`   |
+
+#### Transcendental Rules
+
+| Rule     | Before     | After  |
+| -------- | ---------- | ------ |
+| sin(0)   | `sin(0)`   | `0`    |
+| sin(π/6) | `sin(π/6)` | `1/2`  |
+| sin(π/4) | `sin(π/4)` | `√2/2` |
+| cos(π)   | `cos(π)`   | `-1`   |
+| tan(π/4) | `tan(π/4)` | `1`    |
+| ln(1)    | `ln(1)`    | `0`    |
+| ln(e)    | `ln(e)`    | `1`    |
+| exp(0)   | `exp(0)`   | `1`    |
+
+### Canonical Ordering
+
+Terms and factors are sorted using a 4-level comparison algorithm:
+
+1. **Radicals**: Sorted by (index, radicand)
+2. **Algebraic terms**: Sorted by radicals, then rational coefficient
+3. **Symbolic factors**: By node type priority, then lexicographic
+4. **Normal terms**: Graded lexicographic (degree descending, then lex)
+
+### Usage with Exp
+
+The `Exp` class provides convenient access to normalization:
+
+```typescript
+const e1 = Exp.parse('2x + 3x');
+const e2 = Exp.parse('5x');
+
+// All return true
+e1.isEquivalent(e2);
+e1.hash === e2.hash;
+
+// Get simplified form
+e1.simplify().latex; // "5x"
+
+// Access NormalForm directly
+e1.normal; // NormalForm object
+```
 
 ---
 
