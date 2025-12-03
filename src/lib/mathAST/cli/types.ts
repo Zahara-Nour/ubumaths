@@ -27,6 +27,7 @@ export type ErrorCode =
 	| 'PARSE_ERROR'
 	| 'NO_AST'
 	| 'UNKNOWN_COMMAND'
+	| 'UNKNOWN_ERROR'
 	| 'INVALID_OPTIONS'
 	| 'UNSUPPORTED_FORMAT';
 
