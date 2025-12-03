@@ -6,7 +6,7 @@
  */
 
 import type { MathNode } from '../../types';
-import type { CommandContext } from '../types';
+import type { CommandContext, ErrorCode } from '../types';
 import { CommandRegistry, parse } from '../core';
 import { createDefaultRegistry } from '../commands';
 import type { ReplExecutionResult, ReplInputMode } from './types';
@@ -383,13 +383,13 @@ export class WebReplEngine {
 		if (!cmdResult.success && cmdResult.error) {
 			// Use type guard instead of assertion
 			const errorObj = this.isErrorLike(cmdResult.error) ? cmdResult.error : null;
-			const errorCode = errorObj?.code || 'UNKNOWN_ERROR';
+			const errorCode = (errorObj?.code as string) || 'UNKNOWN_ERROR';
 			const errorMessage = errorObj?.message || cmdResult.output;
 
 			return {
 				success: false,
 				output: cmdResult.output,
-				outputHtml: formatErrorHtml({ code: errorCode, message: errorMessage }),
+				outputHtml: formatErrorHtml({ code: errorCode as ErrorCode, message: errorMessage }),
 				error: {
 					code: errorCode,
 					message: errorMessage
