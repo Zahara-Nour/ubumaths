@@ -76,10 +76,20 @@ function myFunction() { ... }
 │   └── /signup
 └── (protected)/+layout.svelte
     ├── /dashboard
-    └── /assessments
+    ├── /assessments
+    └── /calculatrice    # NumWorks calculator (student/teacher only)
 ```
 
 **Important** : Les layouts héritent automatiquement. Auth check dans `(protected)/+layout.server.ts`.
+
+### Role-Based Access
+
+Certaines routes protégées ont des restrictions de rôle supplémentaires :
+
+| Route              | Rôles autorisés  | Description          |
+| ------------------ | ---------------- | -------------------- |
+| `/calculatrice`    | student, teacher | Simulateur NumWorks  |
+| `/dashboard/admin` | admin            | Panel administrateur |
 
 **Référence** : [docs/architecture/routing.md](../architecture/routing.md)
 
