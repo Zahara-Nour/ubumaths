@@ -104,6 +104,48 @@ program
 		});
 	});
 
+// Simplify command
+program
+	.command('simplify <expression>')
+	.alias('s')
+	.description('Simplify mathematical expression')
+	.action((expression: string) => {
+		handleCommand('simplify', expression);
+	});
+
+// Normal form command
+program
+	.command('normal <expression>')
+	.alias('n')
+	.description('Display normal form structure')
+	.action((expression: string) => {
+		handleCommand('normal', expression);
+	});
+
+// Hash command
+program
+	.command('hash <expression>')
+	.alias('h')
+	.description('Compute canonical hash')
+	.action((expression: string) => {
+		handleCommand('hash', expression);
+	});
+
+// Equiv command (two expressions)
+program
+	.command('equiv <expr1> [expr2]')
+	.alias('eq')
+	.description('Check if expressions are equivalent')
+	.action((expr1: string, expr2?: string) => {
+		if (expr2) {
+			// Two arguments: equiv "expr1" "expr2"
+			handleEquiv(expr1, expr2);
+		} else {
+			// Single argument with === operator
+			handleEquiv(expr1);
+		}
+	});
+
 // REPL command
 program
 	.command('repl')
@@ -113,12 +155,17 @@ program
 	});
 
 // Default: if no command and no args, start REPL
-// If args provided without command, treat as parse
+// If args provided without command, treat as parse or equiv (if contains ===)
 program
 	.argument('[expression]', 'Expression to parse (starts REPL if omitted)')
 	.action((expression?: string) => {
 		if (expression) {
-			handleParse(expression, { output: 'both', colors: true });
+			// Check for === operator for equivalence checking
+			if (expression.includes('===')) {
+				handleEquiv(expression);
+			} else {
+				handleParse(expression, { output: 'both', colors: true });
+			}
 		} else {
 			startRepl();
 		}
@@ -201,6 +248,108 @@ function handleParse(expression: string, options: ParseOptions): void {
 			}
 			break;
 		}
+	}
+}
+
+// =============================================================================
+// Command Handler
+// =============================================================================
+
+/**
+ * Handle a generic command execution.
+ *
+ * @param commandName - The command to execute
+ * @param expression - The expression to process
+ */
+function handleCommand(commandName: string, expression: string): void {
+	const result = parse(expression);
+
+	// Display errors and exit
+	if (result.errors.length > 0) {
+		for (const err of result.errors) {
+			if (err.position !== undefined) {
+				console.log(formatInputError(expression, err.position, err.message));
+			} else {
+				console.log(formatError(err));
+			}
+		}
+		process.exit(1);
+	}
+
+	// Handle missing AST
+	if (!result.ast) {
+		console.log(chalk.red('Failed to parse expression'));
+		process.exit(1);
+	}
+
+	// Get command registry and build context
+	const registry = createDefaultRegistry();
+	const ctx: CommandContext = {
+		ast: result.ast,
+		input: expression,
+		format: result.inputFormat,
+		options: { colors: true },
+		isRepl: false
+	};
+
+	// Execute the command
+	const cmd = registry.get(commandName);
+	if (cmd) {
+		const cmdResult = cmd.execute(ctx);
+		if (cmdResult.success) {
+			console.log(cmdResult.output);
+		} else {
+			console.log(chalk.red(`Error: ${cmdResult.error?.message || 'Unknown error'}`));
+			process.exit(1);
+		}
+	} else {
+		console.log(chalk.red(`Unknown command: ${commandName}`));
+		process.exit(1);
+	}
+}
+
+// =============================================================================
+// Equiv Handler
+// =============================================================================
+
+/**
+ * Handle equivalence checking between two expressions.
+ *
+ * @param expr1OrCombined - First expression, or combined expression with ===
+ * @param expr2 - Optional second expression
+ */
+function handleEquiv(expr1OrCombined: string, expr2?: string): void {
+	const registry = createDefaultRegistry();
+	const equivCmd = registry.get('equiv');
+
+	if (!equivCmd) {
+		console.log(chalk.red('Equiv command not found'));
+		process.exit(1);
+	}
+
+	let input: string;
+	if (expr2) {
+		// Two separate expressions - combine them for the command
+		input = `"${expr1OrCombined}" "${expr2}"`;
+	} else {
+		// Single expression (may contain ===)
+		input = expr1OrCombined;
+	}
+
+	// Build context without AST - equiv command handles parsing itself
+	const ctx: CommandContext = {
+		input,
+		format: 'unknown',
+		options: { colors: true },
+		isRepl: false
+	};
+
+	const result = equivCmd.execute(ctx);
+	if (result.success) {
+		console.log(result.output);
+	} else {
+		console.log(chalk.red(`Error: ${result.error?.message || 'Unknown error'}`));
+		process.exit(1);
 	}
 }
 
