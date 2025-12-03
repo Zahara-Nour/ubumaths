@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Home, Gamepad2, Calculator } from 'lucide-svelte';
+	import { Home, Gamepad2, Calculator, Terminal } from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
 
 	// Default navigation items
@@ -8,7 +8,8 @@
 		items = [
 			{ label: 'Accueil', href: '/', icon: Home },
 			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
-			{ label: 'Automaths', href: '/automaths', icon: Calculator }
+			{ label: 'Automaths', href: '/automaths', icon: Calculator },
+			{ label: 'CAS', href: '/cas', icon: Terminal }
 		]
 	}: {
 		items?: Array<{ label: string; href: string; icon: ComponentType }>;
