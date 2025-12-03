@@ -3,7 +3,9 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import ReplOutput from './ReplOutput.svelte';
 	import ReplInput from './ReplInput.svelte';
-	import type { TabStyle } from '$lib/mathAST/cli/web';
+	import AstDrawer from './AstDrawer.svelte';
+	import type { TabStyle, ReplHistoryEntry } from '$lib/mathAST/cli/web';
+	import type { MathNode } from '$lib/mathAST/types';
 
 	// Map tab IDs to TabStyle
 	const tabMap: Record<string, TabStyle> = {
@@ -11,6 +13,20 @@
 		modern: 'modern',
 		hybrid: 'hybrid'
 	};
+
+	// Track the selected entry for the AST drawer
+	let selectedAstEntry = $state<ReplHistoryEntry | null>(null);
+
+	// Derived values for the drawer
+	let selectedAst = $derived<MathNode | undefined>(selectedAstEntry?.result.ast);
+	let selectedExpression = $derived<string | undefined>(selectedAstEntry?.input);
+
+	/**
+	 * Handle showing AST for a specific entry.
+	 */
+	function handleShowAst(entry: ReplHistoryEntry): void {
+		selectedAstEntry = entry;
+	}
 </script>
 
 <div class="rounded-lg border border-border bg-card shadow-lg">
@@ -28,7 +44,7 @@
 				<div class="flex min-h-[500px] flex-col">
 					<!-- Output area (scrollable) -->
 					<div class="flex-1 overflow-y-auto">
-						<ReplOutput {variant} />
+						<ReplOutput {variant} onShowAst={handleShowAst} />
 					</div>
 
 					<!-- Input area (fixed at bottom) -->
@@ -40,3 +56,6 @@
 		{/each}
 	</Tabs.Root>
 </div>
+
+<!-- AST Drawer -->
+<AstDrawer ast={selectedAst} expression={selectedExpression} />
