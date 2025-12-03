@@ -5,8 +5,8 @@
  * A polynomial is represented as a sorted list of terms with distinct monomials.
  */
 
-import type { NormalTerm, AlgebraicCoefficient } from './types';
-import { addAlgebraic, isZeroAlgebraic } from './algebraic';
+import type { NormalTerm, AlgebraicCoefficient, SymbolicFactor } from './types';
+import { ALGEBRAIC_ONE, addAlgebraic, isZeroAlgebraic } from './algebraic';
 import {
 	ONE_TERM,
 	mulTerms,
@@ -15,6 +15,7 @@ import {
 	getMonomialSignature,
 	sortNormalTerms
 } from './term';
+import { gcdMonomials, divMonomials } from './monomial';
 
 // =============================================================================
 // Constants
@@ -371,6 +372,92 @@ export function polynomialDegree(p: readonly NormalTerm[]): number {
 export function leadingTerm(p: readonly NormalTerm[]): NormalTerm | null {
 	if (p.length === 0) return null;
 	return p[0];
+}
+
+// =============================================================================
+// Polynomial GCD (for fraction reduction)
+// =============================================================================
+
+/**
+ * Computes the GCD of two polynomials for fraction reduction.
+ *
+ * This implementation handles the common case where both polynomials
+ * are monomials (single terms), which allows canceling common variable factors.
+ *
+ * For multi-term polynomials, we currently only extract common monomial factors.
+ * Full polynomial GCD is complex and not implemented yet.
+ *
+ * @param a - First polynomial
+ * @param b - Second polynomial
+ * @returns GCD polynomial (single term representing common monomial factor)
+ */
+export function gcdPolynomials(a: readonly NormalTerm[], b: readonly NormalTerm[]): NormalTerm[] {
+	if (a.length === 0 || b.length === 0) return [...ONE_POLYNOMIAL];
+
+	// Extract common monomial factor from each polynomial
+	const monomialGcdA = extractCommonMonomial(a);
+	const monomialGcdB = extractCommonMonomial(b);
+
+	// GCD of the common monomials
+	const commonMonomial = gcdMonomials(monomialGcdA, monomialGcdB);
+
+	if (commonMonomial.length === 0) {
+		return [...ONE_POLYNOMIAL];
+	}
+
+	// Return as a single term with coefficient 1
+	return [{ coefficient: ALGEBRAIC_ONE, monomial: commonMonomial }];
+}
+
+/**
+ * Extracts the common monomial factor from a polynomial.
+ *
+ * For a polynomial like 3x^2 + 6x, the common monomial is x (not 3x).
+ * We only extract variable factors, not numeric GCDs.
+ *
+ * @param p - A polynomial
+ * @returns The common monomial (intersection of all term monomials with min exponents)
+ */
+function extractCommonMonomial(p: readonly NormalTerm[]): SymbolicFactor[] {
+	if (p.length === 0) return [];
+	if (p.length === 1) return [...p[0].monomial];
+
+	// Start with the first term's monomial
+	let common = [...p[0].monomial];
+
+	// Intersect with each subsequent term's monomial
+	for (let i = 1; i < p.length && common.length > 0; i++) {
+		common = gcdMonomials(common, p[i].monomial);
+	}
+
+	return common;
+}
+
+/**
+ * Divides a polynomial by a monomial.
+ *
+ * @param p - The polynomial to divide
+ * @param m - The monomial divisor
+ * @returns The quotient polynomial
+ */
+export function divPolynomialByMonomial(
+	p: readonly NormalTerm[],
+	m: readonly SymbolicFactor[]
+): NormalTerm[] {
+	if (m.length === 0) return [...p];
+	if (p.length === 0) return [];
+
+	const result: NormalTerm[] = [];
+
+	for (const term of p) {
+		const newMonomial = divMonomials(term.monomial, m);
+		result.push({
+			coefficient: term.coefficient,
+			monomial: newMonomial
+		});
+	}
+
+	return collectLikeTerms(result);
 }
 
 // =============================================================================

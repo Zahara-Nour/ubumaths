@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 2210 passing (644 core + 737 parser + 94 custom generator + 90 Exp + 90 CLI + 555 normalization)
+**Tests**: 2229 passing (644 core + 737 parser + 94 custom generator + 90 Exp + 90 CLI + 574 normalization)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -1757,6 +1757,18 @@ const simplified = simplify(node); // Apply all rules to fixed point
 | Simplify | `√18`     | `3√2` |
 | Multiply | `√2 · √8` | `4`   |
 | Nested   | `√(√16)`  | `2`   |
+
+#### Fraction Reduction
+
+The normalization system automatically reduces common factors in fractions:
+
+| Rule              | Before      | After |
+| ----------------- | ----------- | ----- |
+| Common variable   | `9x/x`      | `9`   |
+| Monomial GCD      | `x²y/(xy)`  | `x`   |
+| Coefficient + var | `6x²/(2x)`  | `3x`  |
+| Polynomial        | `(x²+xy)/x` | `x+y` |
+| Pure numeric      | `6/2`       | `3`   |
 
 #### Transcendental Rules
 
