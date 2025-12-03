@@ -4,6 +4,9 @@
 	import ReplOutput from './ReplOutput.svelte';
 	import ReplInput from './ReplInput.svelte';
 	import AstDrawer from './AstDrawer.svelte';
+	import HelpPopover from './HelpPopover.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { Trash2 } from 'lucide-svelte';
 	import type { TabStyle, ReplHistoryEntry } from '$lib/mathAST/cli/web';
 	import type { MathNode } from '$lib/mathAST/types';
 
@@ -27,16 +30,50 @@
 	function handleShowAst(entry: ReplHistoryEntry): void {
 		selectedAstEntry = entry;
 	}
+
+	/**
+	 * Clear all history entries.
+	 */
+	function handleClearHistory(): void {
+		replStore.clearHistory();
+		selectedAstEntry = null;
+	}
 </script>
 
 <div class="rounded-lg border border-border bg-card shadow-lg">
 	<Tabs.Root bind:value={replStore.activeTab}>
 		<div class="border-b border-border p-4">
-			<Tabs.List>
-				<Tabs.Trigger value="terminal">Terminal</Tabs.Trigger>
-				<Tabs.Trigger value="modern">Moderne</Tabs.Trigger>
-				<Tabs.Trigger value="hybrid">Hybride</Tabs.Trigger>
-			</Tabs.List>
+			<div class="flex items-center justify-between gap-4">
+				<Tabs.List>
+					<Tabs.Trigger value="terminal">Terminal</Tabs.Trigger>
+					<Tabs.Trigger value="modern">Moderne</Tabs.Trigger>
+					<Tabs.Trigger value="hybrid">Hybride</Tabs.Trigger>
+				</Tabs.List>
+
+				<!-- Header actions -->
+				<div class="flex items-center gap-2">
+					<!-- Input mode indicator -->
+					<span class="text-xs text-muted-foreground">
+						Mode: <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-primary"
+							>{replStore.inputMode}</code
+						>
+					</span>
+
+					<!-- Clear history button -->
+					<Button
+						variant="ghost"
+						size="icon"
+						onclick={handleClearHistory}
+						disabled={!replStore.hasHistory}
+						aria-label="Effacer l'historique"
+					>
+						<Trash2 class="size-4" />
+					</Button>
+
+					<!-- Help button -->
+					<HelpPopover />
+				</div>
+			</div>
 		</div>
 
 		{#each Object.entries(tabMap) as [id, variant] (id)}
