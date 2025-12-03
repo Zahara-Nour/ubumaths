@@ -13,9 +13,11 @@ import {
 	hashNormalForm,
 	polynomialToString,
 	monomialToString,
-	algebraicToString
+	algebraicToString,
+	denormalize
 } from '../../normal';
 import type { NormalForm, NormalTerm } from '../../normal/types';
+import { toCustom } from '../../custom-generator';
 
 // =============================================================================
 // Helper Functions
@@ -129,6 +131,10 @@ export class NormalCommand extends BaseCommand {
 			// Format the structure
 			const structureLines = formatNormalForm(normalForm);
 
+			// Denormalize back to MathNode and convert to custom syntax
+			const denormalizedAst = denormalize(normalForm);
+			const simplifiedExpr = toCustom(denormalizedAst);
+
 			// Add hash and polynomial string
 			const hash = hashNormalForm(normalForm);
 			const polyStr = polynomialToString(normalForm.numerator);
@@ -136,6 +142,7 @@ export class NormalCommand extends BaseCommand {
 			const lines = [
 				...structureLines,
 				'',
+				chalk.dim('Simplified:') + ' ' + chalk.magenta(simplifiedExpr),
 				chalk.dim('Polynomial:') + ' ' + chalk.green(polyStr),
 				chalk.dim('Hash:') + '       ' + chalk.cyan(hash)
 			];
