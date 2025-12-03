@@ -108,6 +108,7 @@ class CustomRDParser {
 	private readonly options: ParserOptions;
 	private readonly errors: ParseError[] = [];
 	private currentToken: CustomToken;
+	private holeCounter: number = 0;
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new CustomTokenizer(input);
@@ -563,6 +564,9 @@ class CustomRDParser {
 			case 'AT':
 				return this.parseColor();
 
+			case 'QUESTION':
+				return this.parseHole();
+
 			default:
 				this.error(
 					`Unexpected token: ${token.value || token.type}`,
@@ -571,6 +575,16 @@ class CustomRDParser {
 					'UNEXPECTED_TOKEN'
 				);
 		}
+	}
+
+	/**
+	 * Parse a hole/placeholder: ?
+	 * Index is auto-assigned sequentially (1, 2, 3...)
+	 */
+	private parseHole(): MathNode {
+		this.advance(); // consume ?
+		this.holeCounter++;
+		return this.applyColor(MathAST.hole(this.holeCounter));
 	}
 
 	// =========================================================================
@@ -622,7 +636,8 @@ class CustomRDParser {
 			token.type === 'FUNC' ||
 			token.type === 'SYMBOL' ||
 			token.type === 'BACKSLASH' ||
-			token.type === 'AT'
+			token.type === 'AT' ||
+			token.type === 'QUESTION'
 		);
 	}
 

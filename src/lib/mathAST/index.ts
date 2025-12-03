@@ -55,6 +55,7 @@ export type {
 	VariableNode,
 	GreekLetterNode,
 	SymbolNode,
+	HoleNode,
 	AdditionNode,
 	SubtractionNode,
 	MultiplicationNode,
@@ -92,6 +93,7 @@ export {
 	variable,
 	greek,
 	symbol,
+	hole,
 
 	// Binary operations
 	add,
@@ -206,6 +208,7 @@ export {
 	isVariable,
 	isGreek,
 	isSymbol,
+	isHole,
 	isAddition,
 	isSubtraction,
 	isMultiplication,

@@ -15,6 +15,7 @@ import type {
 	FunctionNode,
 	GreekLetter,
 	GreekLetterNode,
+	HoleNode,
 	MathNode,
 	MathSymbol,
 	MultiplicationDisplayStyle,
@@ -243,6 +244,21 @@ export function symbol(sym: MathSymbol, metadata?: NodeMetadata): SymbolNode {
 	return {
 		type: 'symbol',
 		symbol: sym,
+		...(metadata && { metadata })
+	} as const;
+}
+
+/**
+ * Creates a hole/placeholder node for fill-in-the-blank expressions
+ * @param index - The index of this hole (1-based, used for ordering)
+ * @param placeholder - Optional placeholder text to display
+ * @param metadata - Optional rendering hints
+ */
+export function hole(index: number, placeholder?: string, metadata?: NodeMetadata): HoleNode {
+	return {
+		type: 'hole',
+		index,
+		...(placeholder && { placeholder }),
 		...(metadata && { metadata })
 	} as const;
 }
@@ -1040,6 +1056,7 @@ export const MathAST = {
 	variable,
 	greek,
 	symbol,
+	hole,
 
 	// Binary operations
 	add,

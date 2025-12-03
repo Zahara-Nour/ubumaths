@@ -577,6 +577,9 @@ class PrattParser {
 				// \unit{...} as a standalone command - parse the unit
 				return this.parseUnitCommand();
 
+			case 'placeholder':
+				return this.parsePlaceholder();
+
 			default:
 				this.error(`Unknown command: \\${cmd}`, token.position, token.length, 'UNKNOWN_COMMAND');
 		}
@@ -942,6 +945,36 @@ class PrattParser {
 		this.advance(); // consume command
 		const right = this.parseExpression(BP.RELATION);
 		return this.applyColorWithOperator(MathAST.relation(relType, left, right), operatorColor);
+	}
+
+	// =========================================================================
+	// Placeholder (Hole) Parser
+	// =========================================================================
+
+	/**
+	 * Parse a placeholder/hole: \placeholder[N]{}
+	 * The index N is preserved from the LaTeX source.
+	 * If N is not provided, defaults to 1.
+	 */
+	private parsePlaceholder(): MathNode {
+		this.advance(); // consume \placeholder
+
+		// Parse optional index: [N]
+		let index = 1;
+		if (this.check('LBRACKET')) {
+			this.advance(); // consume [
+			if (this.check('NUMBER')) {
+				const indexToken = this.advance();
+				index = parseInt(indexToken.value, 10);
+			}
+			this.expect('RBRACKET', "Expected ']' after placeholder index");
+		}
+
+		// Parse required empty braces: {}
+		this.expect('LBRACE', "Expected '{' after \\placeholder");
+		this.expect('RBRACE', "Expected '}' to close \\placeholder");
+
+		return this.applyColor(MathAST.hole(index));
 	}
 
 	// =========================================================================

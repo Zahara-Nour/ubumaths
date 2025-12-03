@@ -147,9 +147,19 @@ export interface SymbolNode extends BaseNode {
 }
 
 /**
+ * Represents a placeholder/hole to be filled in by the user
+ * Used for interactive exercises and fill-in-the-blank questions
+ */
+export interface HoleNode extends BaseNode {
+	readonly type: 'hole';
+	readonly index: number;
+	readonly placeholder?: string;
+}
+
+/**
  * Union of all literal node types
  */
-export type LiteralNode = NumberNode | VariableNode | GreekLetterNode | SymbolNode;
+export type LiteralNode = NumberNode | VariableNode | GreekLetterNode | SymbolNode | HoleNode;
 
 // =============================================================================
 // Binary Operation Nodes
@@ -390,6 +400,7 @@ export type MathNode =
 	| VariableNode
 	| GreekLetterNode
 	| SymbolNode
+	| HoleNode
 	| AdditionNode
 	| SubtractionNode
 	| MultiplicationNode

@@ -11,6 +11,7 @@ import type {
 	VariableNode,
 	GreekLetterNode,
 	SymbolNode,
+	HoleNode,
 	AdditionNode,
 	SubtractionNode,
 	MultiplicationNode,
@@ -42,7 +43,8 @@ export function isLiteralNode(node: MathNode): node is LiteralNode {
 		node.type === 'number' ||
 		node.type === 'variable' ||
 		node.type === 'greek' ||
-		node.type === 'symbol'
+		node.type === 'symbol' ||
+		node.type === 'hole'
 	);
 }
 
@@ -102,6 +104,13 @@ export function isGreek(node: MathNode): node is GreekLetterNode {
  */
 export function isSymbol(node: MathNode): node is SymbolNode {
 	return node.type === 'symbol';
+}
+
+/**
+ * Type guard for HoleNode
+ */
+export function isHole(node: MathNode): node is HoleNode {
+	return node.type === 'hole';
 }
 
 /**
@@ -372,6 +381,7 @@ export function hasUnitDescendant(node: MathNode): boolean {
 		case 'variable':
 		case 'greek':
 		case 'symbol':
+		case 'hole':
 			return false;
 
 		case 'addition':
