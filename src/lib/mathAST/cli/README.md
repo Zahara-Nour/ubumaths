@@ -134,8 +134,7 @@ NormalForm:
   Denominator: [1]
 
 Simplified: 5x
-Polynomial: 5x
-Hash:       V(x)*5
+Hash:       5*V(x)
 ```
 
 ### Hash

@@ -11,7 +11,6 @@ import type { CommandContext, CommandResult } from '../types';
 import {
 	normalize,
 	hashNormalForm,
-	polynomialToString,
 	monomialToString,
 	algebraicToString,
 	denormalize
@@ -135,15 +134,13 @@ export class NormalCommand extends BaseCommand {
 			const denormalizedAst = denormalize(normalForm);
 			const simplifiedExpr = toCustom(denormalizedAst);
 
-			// Add hash and polynomial string
+			// Add hash
 			const hash = hashNormalForm(normalForm);
-			const polyStr = polynomialToString(normalForm.numerator);
 
 			const lines = [
 				...structureLines,
 				'',
 				chalk.dim('Simplified:') + ' ' + chalk.magenta(simplifiedExpr),
-				chalk.dim('Polynomial:') + ' ' + chalk.green(polyStr),
 				chalk.dim('Hash:') + '       ' + chalk.cyan(hash)
 			];
 
