@@ -42,7 +42,10 @@ const CUSTOM_PATTERNS: readonly RegExp[] = [
 	// nth root: sqrt[3](x)
 	/sqrt\[\d+\]/,
 	// Absolute value in custom syntax: \|x\|
-	/\\\|.*\\\|/
+	/\\\|.*\\\|/,
+	// Functions without backslash: sqrt(, sin(, cos(, tan(, ln(, log(, exp(, abs(
+	// These are custom syntax - LaTeX requires \sqrt, \sin, etc.
+	/\b(sqrt|sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|abs)\s*\(/
 ];
 
 /**
