@@ -71,8 +71,8 @@ export function startRepl(): void {
 
 	// Welcome message
 	console.log(chalk.bold('MathAST REPL'));
-	console.log('Enter expressions to parse (LaTeX or custom syntax).');
-	console.log('Mode commands: .latex, .custom, .auto | Other: .help, .quit');
+	console.log('Enter expressions to parse, or use expr1 === expr2 for equivalence.');
+	console.log('Commands: .simplify, .normal, .hash, .equiv | .help, .quit');
 	console.log('');
 
 	rl.prompt();
@@ -106,10 +106,12 @@ export function startRepl(): void {
 
 /**
  * Handle a REPL dot-command (e.g., .help, .quit, .latex, .custom, .auto).
+ * Supports passing arguments to commands: .simplify 2x+3x
  */
 function handleReplCommand(input: string, rl: readline.Interface, state: ReplState): void {
 	const parts = input.slice(1).split(/\s+/);
 	const cmdName = parts[0].toLowerCase();
+	const args = parts.slice(1).join(' ').trim(); // Get everything after command name
 
 	// Handle quit/exit commands directly
 	if (cmdName === 'quit' || cmdName === 'exit' || cmdName === 'q') {
@@ -145,10 +147,43 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
 		return;
 	}
 
+	// If command has arguments, handle them
+	let ast = state.lastAst;
+	let cmdInput = args;
+
+	if (args) {
+		// For equiv command, handle specially (may have two expressions or compare with lastAst)
+		if (cmdName === 'equiv' || cmdName === 'eq' || cmdName === 'equivalent') {
+			const ctx: CommandContext = {
+				ast: state.lastAst, // Pass lastAst for single-arg case
+				input: args,
+				format: state.inputMode === 'auto' ? 'latex' : state.inputMode,
+				options: {},
+				isRepl: true
+			};
+			const result = command.execute(ctx);
+			console.log(result.output);
+			return;
+		}
+
+		// For other commands, parse the argument as an expression
+		const forceFormat = state.inputMode === 'auto' ? undefined : state.inputMode;
+		const parseResult = parse(args, forceFormat ? { forceFormat } : undefined);
+		if (parseResult.ast) {
+			ast = parseResult.ast;
+			cmdInput = args;
+		} else if (parseResult.errors.length > 0) {
+			for (const err of parseResult.errors) {
+				console.log(formatError(err));
+			}
+			return;
+		}
+	}
+
 	// Build context for command execution
 	const ctx: CommandContext = {
-		ast: state.lastAst,
-		input: '',
+		ast,
+		input: cmdInput,
 		format: state.inputMode === 'auto' ? 'latex' : state.inputMode,
 		options: {},
 		isRepl: true
@@ -163,6 +198,31 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
 // =============================================================================
 
 /**
+ * Handle equivalence syntax: expr1 === expr2
+ *
+ * @param input - The input containing ===
+ * @param state - Current REPL state
+ */
+function handleEquivExpression(input: string, state: ReplState): void {
+	const equivCmd = state.registry.get('equiv');
+	if (!equivCmd) {
+		console.log(chalk.yellow('equiv command not available'));
+		return;
+	}
+
+	const ctx: CommandContext = {
+		ast: undefined,
+		input,
+		format: state.inputMode === 'auto' ? 'latex' : state.inputMode,
+		options: {},
+		isRepl: true
+	};
+
+	const result = equivCmd.execute(ctx);
+	console.log(result.output);
+}
+
+/**
  * Parse and display a mathematical expression.
  *
  * @param input - The expression to parse
@@ -170,6 +230,12 @@ function handleReplCommand(input: string, rl: readline.Interface, state: ReplSta
  * @returns Parsed AST, or undefined on error
  */
 function processExpression(input: string, state: ReplState): MathNode | undefined {
+	// Check for equivalence syntax: expr1 === expr2
+	if (input.includes('===')) {
+		handleEquivExpression(input, state);
+		return state.lastAst; // Don't update lastAst for equiv
+	}
+
 	// Use forced format if mode is not 'auto'
 	const forceFormat = state.inputMode === 'auto' ? undefined : state.inputMode;
 	const result = parse(input, forceFormat ? { forceFormat } : undefined);

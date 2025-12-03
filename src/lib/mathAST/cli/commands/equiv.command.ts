@@ -57,7 +57,22 @@ export class EquivCommand extends BaseCommand {
 
 		if (!secondExpr) {
 			// If no second expression, check if input contains two quoted expressions
-			return this.handleTwoExpressions(input);
+			const twoExprResult = this.handleTwoExpressions(input);
+			if (twoExprResult.success || !ctx.isRepl) {
+				return twoExprResult;
+			}
+
+			// In REPL mode: try to parse input as a single expression and compare with lastAst
+			if (ctx.ast && input) {
+				const result = parse(input);
+				if (result.ast) {
+					// Compare lastAst with the new expression
+					return this.compareExpressions('(previous)', ctx.ast, input, result.ast);
+				}
+			}
+
+			// If we still don't have a match, return the error from handleTwoExpressions
+			return twoExprResult;
 		}
 
 		if (!ctx.ast) {
