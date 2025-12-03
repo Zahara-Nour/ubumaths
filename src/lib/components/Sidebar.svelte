@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Home, Gamepad2, Calculator, Terminal, CalculatorIcon } from 'lucide-svelte';
+	import { Home, Gamepad2, Calculator, Terminal, CalculatorIcon, LineChart } from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
 	import type { Tables } from '$lib/types/database';
 
@@ -18,6 +18,12 @@
 				label: 'Calculatrice',
 				href: '/calculatrice',
 				icon: CalculatorIcon,
+				roles: ['student', 'teacher']
+			},
+			{
+				label: 'Grapheur',
+				href: '/grapheur',
+				icon: LineChart,
 				roles: ['student', 'teacher']
 			}
 		]
