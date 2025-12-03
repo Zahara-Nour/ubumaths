@@ -449,6 +449,135 @@ export function sortSymbolicFactors(factors: SymbolicFactor[]): SymbolicFactor[]
 }
 
 // =============================================================================
+// Monomial GCD and Division (for fraction reduction)
+// =============================================================================
+
+/**
+ * Computes the GCD of two monomials.
+ *
+ * The GCD of two monomials is the monomial with:
+ * - Only factors appearing in both monomials
+ * - Exponent = min(exp_a, exp_b) for each common factor
+ *
+ * @param a - First monomial
+ * @param b - Second monomial
+ * @returns GCD monomial (empty if no common factors)
+ *
+ * @example
+ * // gcd(x^2 * y, x * y^2) = x * y
+ * gcdMonomials([x^2, y], [x, y^2]) // [x, y]
+ *
+ * // gcd(x^2, y^2) = 1 (empty monomial)
+ * gcdMonomials([x^2], [y^2]) // []
+ */
+export function gcdMonomials(
+	a: readonly SymbolicFactor[],
+	b: readonly SymbolicFactor[]
+): SymbolicFactor[] {
+	if (a.length === 0 || b.length === 0) return [];
+
+	// Build maps for O(n) lookup
+	const mapA = new Map<string, SymbolicFactor>();
+	for (const factor of a) {
+		mapA.set(hashNode(factor.base), factor);
+	}
+
+	const result: SymbolicFactor[] = [];
+
+	for (const factorB of b) {
+		const hash = hashNode(factorB.base);
+		const factorA = mapA.get(hash);
+
+		if (factorA) {
+			// Common factor: take minimum exponent
+			const minExp = minRational(factorA.exponent, factorB.exponent);
+			if (!isZeroRational(minExp)) {
+				result.push({ base: factorA.base, exponent: minExp });
+			}
+		}
+	}
+
+	return sortSymbolicFactors(result);
+}
+
+/**
+ * Divides monomial a by monomial b.
+ *
+ * Subtracts exponents for common factors.
+ * Assumes b divides a (all exponents in result are non-negative).
+ *
+ * @param a - Dividend monomial
+ * @param b - Divisor monomial
+ * @returns Quotient monomial
+ *
+ * @example
+ * // x^2 / x = x
+ * divMonomials([x^2], [x]) // [x]
+ *
+ * // x^2 * y / x = x * y
+ * divMonomials([x^2, y], [x]) // [x, y]
+ */
+export function divMonomials(
+	a: readonly SymbolicFactor[],
+	b: readonly SymbolicFactor[]
+): SymbolicFactor[] {
+	if (b.length === 0) return [...a];
+	if (a.length === 0) {
+		// 1 / b^n - result has negative exponents
+		return b.map((f) => ({ base: f.base, exponent: negateRational(f.exponent) }));
+	}
+
+	// Build map from a
+	const factors = new Map<string, { base: MathNode; exponent: Rational }>();
+	for (const factor of a) {
+		factors.set(hashNode(factor.base), { base: factor.base, exponent: factor.exponent });
+	}
+
+	// Subtract exponents from b
+	for (const factor of b) {
+		const hash = hashNode(factor.base);
+		const existing = factors.get(hash);
+
+		if (existing) {
+			const newExp = subtractRational(existing.exponent, factor.exponent);
+			if (isZeroRational(newExp)) {
+				factors.delete(hash);
+			} else {
+				factors.set(hash, { base: existing.base, exponent: newExp });
+			}
+		} else {
+			// Factor not in a: results in negative exponent
+			factors.set(hash, { base: factor.base, exponent: negateRational(factor.exponent) });
+		}
+	}
+
+	const result: SymbolicFactor[] = Array.from(factors.values());
+	return sortSymbolicFactors(result);
+}
+
+/**
+ * Returns the minimum of two rationals.
+ */
+function minRational(a: Rational, b: Rational): Rational {
+	const cmp = compareRational(a, b);
+	return cmp <= 0 ? a : b;
+}
+
+/**
+ * Subtracts two rationals: a - b
+ */
+function subtractRational(a: Rational, b: Rational): Rational {
+	return addRational(a, negateRational(b));
+}
+
+/**
+ * Negates a rational: -a
+ */
+function negateRational(r: Rational): Rational {
+	return { n: -r.n, d: r.d };
+}
+
+// =============================================================================
 // Conversion
 // =============================================================================
 

@@ -22,6 +22,9 @@ import {
 	hashMonomial,
 	monomialDegree,
 	monomialsEqual,
+	// GCD operations
+	gcdMonomials,
+	divMonomials,
 	// Sorting
 	sortSymbolicFactors,
 	// Conversion
@@ -473,6 +476,107 @@ describe('monomial', () => {
 
 			// Within degree 1: x < y
 			expect(compareMonomials(x1, y1)).toBe(-1);
+		});
+	});
+
+	// ===========================================================================
+	// GCD and Division Operations
+	// ===========================================================================
+
+	describe('gcdMonomials', () => {
+		it('returns empty for empty monomials', () => {
+			expect(gcdMonomials([], [factor(x, r(1n))])).toEqual([]);
+			expect(gcdMonomials([factor(x, r(1n))], [])).toEqual([]);
+			expect(gcdMonomials([], [])).toEqual([]);
+		});
+
+		it('gcd of x^2 and x is x', () => {
+			const a = [factor(x, r(2n))];
+			const b = [factor(x, r(1n))];
+			const gcd = gcdMonomials(a, b);
+			expect(gcd.length).toBe(1);
+			expect((gcd[0].base as VariableNode).name).toBe('x');
+			expect(gcd[0].exponent.n).toBe(1n);
+		});
+
+		it('gcd of x^2*y and x*y^2 is x*y', () => {
+			const a = [factor(x, r(2n)), factor(y, r(1n))];
+			const b = [factor(x, r(1n)), factor(y, r(2n))];
+			const gcd = gcdMonomials(a, b);
+			expect(gcd.length).toBe(2);
+			// GCD should have x^1 and y^1
+			const xFactor = gcd.find((f) => (f.base as VariableNode).name === 'x');
+			const yFactor = gcd.find((f) => (f.base as VariableNode).name === 'y');
+			expect(xFactor?.exponent.n).toBe(1n);
+			expect(yFactor?.exponent.n).toBe(1n);
+		});
+
+		it('gcd of x^2 and y^2 is 1 (empty monomial)', () => {
+			const a = [factor(x, r(2n))];
+			const b = [factor(y, r(2n))];
+			const gcd = gcdMonomials(a, b);
+			expect(gcd.length).toBe(0);
+		});
+
+		it('gcd of x^3*y^2 and x^2*y^3 is x^2*y^2', () => {
+			const a = [factor(x, r(3n)), factor(y, r(2n))];
+			const b = [factor(x, r(2n)), factor(y, r(3n))];
+			const gcd = gcdMonomials(a, b);
+			expect(gcd.length).toBe(2);
+			const xFactor = gcd.find((f) => (f.base as VariableNode).name === 'x');
+			const yFactor = gcd.find((f) => (f.base as VariableNode).name === 'y');
+			expect(xFactor?.exponent.n).toBe(2n);
+			expect(yFactor?.exponent.n).toBe(2n);
+		});
+
+		it('gcd of x and x is x', () => {
+			const a = [factor(x, r(1n))];
+			const b = [factor(x, r(1n))];
+			const gcd = gcdMonomials(a, b);
+			expect(gcd.length).toBe(1);
+			expect(gcd[0].exponent.n).toBe(1n);
+		});
+	});
+
+	describe('divMonomials', () => {
+		it('x^2 / x = x', () => {
+			const a = [factor(x, r(2n))];
+			const b = [factor(x, r(1n))];
+			const result = divMonomials(a, b);
+			expect(result.length).toBe(1);
+			expect((result[0].base as VariableNode).name).toBe('x');
+			expect(result[0].exponent.n).toBe(1n);
+		});
+
+		it('x^3*y^2 / x*y = x^2*y', () => {
+			const a = [factor(x, r(3n)), factor(y, r(2n))];
+			const b = [factor(x, r(1n)), factor(y, r(1n))];
+			const result = divMonomials(a, b);
+			expect(result.length).toBe(2);
+			const xFactor = result.find((f) => (f.base as VariableNode).name === 'x');
+			const yFactor = result.find((f) => (f.base as VariableNode).name === 'y');
+			expect(xFactor?.exponent.n).toBe(2n);
+			expect(yFactor?.exponent.n).toBe(1n);
+		});
+
+		it('x / x = 1 (empty monomial)', () => {
+			const a = [factor(x, r(1n))];
+			const b = [factor(x, r(1n))];
+			const result = divMonomials(a, b);
+			expect(result.length).toBe(0);
+		});
+
+		it('division by empty monomial returns original', () => {
+			const a = [factor(x, r(2n))];
+			const result = divMonomials(a, []);
+			expect(result.length).toBe(1);
+			expect(result[0].exponent.n).toBe(2n);
+		});
+
+		it('division of empty monomial returns inverse', () => {
+			const result = divMonomials([], [factor(x, r(2n))]);
+			expect(result.length).toBe(1);
+			expect(result[0].exponent.n).toBe(-2n);
 		});
 	});
 });

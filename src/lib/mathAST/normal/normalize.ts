@@ -29,7 +29,9 @@ import {
 	negPolynomial,
 	powPolynomial,
 	isZeroPolynomial,
-	isOnePolynomial
+	isOnePolynomial,
+	gcdPolynomials,
+	divPolynomialByMonomial
 } from './polynomial';
 import { ZERO_TERM } from './term';
 import { EMPTY_MONOMIAL, symbolicFactor } from './monomial';
@@ -79,6 +81,7 @@ function normalFormFromPolynomial(terms: NormalTerm[]): NormalForm {
 
 /**
  * Creates a NormalForm from numerator and denominator polynomials.
+ * Automatically reduces common monomial factors and numeric coefficients.
  */
 function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm[]): NormalForm {
 	// Handle zero numerator
@@ -91,11 +94,56 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 		return normalFormFromPolynomial(numerator);
 	}
 
-	// TODO: Reduce common factors between numerator and denominator
+	// Reduce common monomial factors between numerator and denominator
+	const gcd = gcdPolynomials(numerator, denominator);
+
+	let reducedNumerator = numerator;
+	let reducedDenominator = denominator;
+
+	// If GCD is not 1, divide both by it
+	if (!isOnePolynomial(gcd) && gcd.length === 1) {
+		const gcdMonomial = gcd[0].monomial;
+		reducedNumerator = divPolynomialByMonomial(numerator, gcdMonomial);
+		reducedDenominator = divPolynomialByMonomial(denominator, gcdMonomial);
+	}
+
+	// After reduction, check if denominator became 1
+	if (isOnePolynomial(reducedDenominator)) {
+		return normalFormFromPolynomial(reducedNumerator);
+	}
+
+	// Special case: single term numerator and single term constant denominator
+	// e.g., 6x / 2 → 3x / 1 = 3x
+	if (
+		reducedNumerator.length === 1 &&
+		reducedDenominator.length === 1 &&
+		reducedDenominator[0].monomial.length === 0
+	) {
+		const numTerm = reducedNumerator[0];
+		const denTerm = reducedDenominator[0];
+
+		// Both must have pure rational coefficients for simplification
+		const numCoeff = getPureRationalCoeff(numTerm.coefficient);
+		const denCoeff = getPureRationalCoeff(denTerm.coefficient);
+
+		if (numCoeff && denCoeff) {
+			// Divide rational coefficients: (n1/d1) / (n2/d2) = (n1*d2) / (d1*n2)
+			const resultN = numCoeff.n * denCoeff.d;
+			const resultD = numCoeff.d * denCoeff.n;
+
+			// Create the simplified result
+			const newCoeff = algebraicFromRational(rational(resultN, resultD));
+			const simplifiedTerm: NormalTerm = {
+				coefficient: newCoeff,
+				monomial: numTerm.monomial
+			};
+			return normalFormFromPolynomial([simplifiedTerm]);
+		}
+	}
 
 	const form: NormalForm = {
-		numerator,
-		denominator,
+		numerator: reducedNumerator,
+		denominator: reducedDenominator,
 		hash: '' // Will be computed below
 	};
 
@@ -104,6 +152,17 @@ function normalFormFromFraction(numerator: NormalTerm[], denominator: NormalTerm
 		...form,
 		hash: hashNormalForm(form)
 	};
+}
+
+/**
+ * Extracts a pure rational coefficient from an AlgebraicCoefficient.
+ * Returns null if the coefficient contains radicals or multiple terms.
+ */
+function getPureRationalCoeff(coeff: import('./types').AlgebraicCoefficient): Rational | null {
+	if (coeff.terms.length !== 1) return null;
+	const term = coeff.terms[0];
+	if (term.radicals.length !== 0) return null;
+	return term.rational;
 }
 
 /**

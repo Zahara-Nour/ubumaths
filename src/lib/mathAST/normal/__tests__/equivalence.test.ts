@@ -263,3 +263,75 @@ describe('Exp.normal', () => {
 		expect(normal1).toBe(normal2); // Same object reference
 	});
 });
+
+// =============================================================================
+// Fraction Reduction Tests
+// =============================================================================
+
+describe('fraction reduction', () => {
+	test('(2x+7x)/x === 9', () => {
+		// (2x+7x)/x = 9x/x = 9
+		const expr = Exp.divide(
+			Exp.add(
+				Exp.multiply(Exp.number('2'), Exp.variable('x')),
+				Exp.multiply(Exp.number('7'), Exp.variable('x'))
+			),
+			Exp.variable('x')
+		);
+		expect(expr.isEquivalent(Exp.number('9'))).toBe(true);
+	});
+
+	test('6x^2/(2x) === 3x', () => {
+		// 6x^2 / 2x = 3x
+		const expr = Exp.divide(
+			Exp.multiply(Exp.number('6'), Exp.power(Exp.variable('x'), Exp.number('2'))),
+			Exp.multiply(Exp.number('2'), Exp.variable('x'))
+		);
+		expect(expr.isEquivalent(Exp.multiply(Exp.number('3'), Exp.variable('x')))).toBe(true);
+	});
+
+	test('x^2y/(xy) === x', () => {
+		// x^2*y / (x*y) = x
+		const expr = Exp.divide(
+			Exp.multiply(Exp.power(Exp.variable('x'), Exp.number('2')), Exp.variable('y')),
+			Exp.multiply(Exp.variable('x'), Exp.variable('y'))
+		);
+		expect(expr.isEquivalent(Exp.variable('x'))).toBe(true);
+	});
+
+	test('2xy/(xy) === 2', () => {
+		// 2*x*y / (x*y) = 2
+		const expr = Exp.divide(
+			Exp.multiply(Exp.number('2'), Exp.multiply(Exp.variable('x'), Exp.variable('y'))),
+			Exp.multiply(Exp.variable('x'), Exp.variable('y'))
+		);
+		expect(expr.isEquivalent(Exp.number('2'))).toBe(true);
+	});
+
+	test('(x^2+xy)/x === x+y', () => {
+		// (x^2 + x*y) / x = x + y
+		const expr = Exp.divide(
+			Exp.add(
+				Exp.power(Exp.variable('x'), Exp.number('2')),
+				Exp.multiply(Exp.variable('x'), Exp.variable('y'))
+			),
+			Exp.variable('x')
+		);
+		expect(expr.isEquivalent(Exp.add(Exp.variable('x'), Exp.variable('y')))).toBe(true);
+	});
+
+	test('x/x === 1', () => {
+		const expr = Exp.divide(Exp.variable('x'), Exp.variable('x'));
+		expect(expr.isEquivalent(Exp.number('1'))).toBe(true);
+	});
+
+	test('4/2 === 2', () => {
+		const expr = Exp.divide(Exp.number('4'), Exp.number('2'));
+		expect(expr.isEquivalent(Exp.number('2'))).toBe(true);
+	});
+
+	test('3x/1 === 3x', () => {
+		const expr = Exp.divide(Exp.multiply(Exp.number('3'), Exp.variable('x')), Exp.number('1'));
+		expect(expr.isEquivalent(Exp.multiply(Exp.number('3'), Exp.variable('x')))).toBe(true);
+	});
+});
