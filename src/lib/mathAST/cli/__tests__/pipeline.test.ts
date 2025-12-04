@@ -6,7 +6,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { parse } from '../core/pipeline';
+import { parse, getParserOptions } from '../core/pipeline';
+import { createEvalState, createFunctionBinding } from '../core/eval-state';
+import { number, variable, superscript } from '../../factory';
+import { isFunction } from '../../guards';
 
 describe('parse pipeline', () => {
 	// =============================================================================
@@ -269,6 +272,112 @@ describe('parse pipeline', () => {
 					expect(typeof error.position).toBe('number');
 				}
 			}
+		});
+	});
+
+	// =============================================================================
+	// Parser Options from State
+	// =============================================================================
+
+	describe('getParserOptions', () => {
+		it('returns empty object for undefined state', () => {
+			const options = getParserOptions(undefined);
+			expect(options).toEqual({});
+		});
+
+		it('returns empty object for state with no functions', () => {
+			const state = createEvalState();
+			const options = getParserOptions(state);
+			expect(options).toEqual({});
+		});
+
+		it('returns genericFunctions config when functions are defined', () => {
+			const state = createEvalState();
+			createFunctionBinding(state, 'f', ['x'], number(1));
+
+			const options = getParserOptions(state);
+
+			expect(options.genericFunctions).toBeDefined();
+			expect(options.genericFunctions?.names).toContain('f');
+			expect(options.genericFunctions?.allowDerivatives).toBe(true);
+			expect(options.genericFunctions?.allowInverse).toBe(true);
+			expect(options.genericFunctions?.allowComposition).toBe(true);
+		});
+
+		it('includes all function names in parser config', () => {
+			const state = createEvalState();
+			createFunctionBinding(state, 'f', ['x'], number(1));
+			createFunctionBinding(state, 'g', ['x'], number(2));
+			createFunctionBinding(state, 'h', ['x', 'y'], number(3));
+
+			const options = getParserOptions(state);
+			const names = options.genericFunctions?.names ?? [];
+
+			expect(names).toHaveLength(3);
+			expect(names).toContain('f');
+			expect(names).toContain('g');
+			expect(names).toContain('h');
+		});
+	});
+
+	// =============================================================================
+	// State-Aware Parsing
+	// =============================================================================
+
+	describe('state-aware parsing', () => {
+		it('parses f(x) as generic function when f is defined in state', () => {
+			const state = createEvalState();
+			createFunctionBinding(state, 'f', ['x'], superscript(variable('x'), number(2)));
+
+			const result = parse('f(x)', { evalState: state });
+
+			expect(result.ast).toBeDefined();
+			expect(result.errors).toHaveLength(0);
+			// Should be parsed as a function node named 'f'
+			if (isFunction(result.ast!)) {
+				expect(result.ast.name).toBe('f');
+				expect(result.ast.args).toHaveLength(1);
+			}
+		});
+
+		it('parses f(3) with numeric argument', () => {
+			const state = createEvalState();
+			createFunctionBinding(state, 'f', ['x'], number(1));
+
+			const result = parse('f(3)', { evalState: state });
+
+			expect(result.ast).toBeDefined();
+			expect(result.errors).toHaveLength(0);
+			if (isFunction(result.ast!)) {
+				expect(result.ast.name).toBe('f');
+			}
+		});
+
+		it('parses multiple defined functions', () => {
+			const state = createEvalState();
+			createFunctionBinding(state, 'f', ['x'], number(1));
+			createFunctionBinding(state, 'g', ['x'], number(2));
+
+			// Parse f(x) + g(x)
+			const result = parse('f(x) + g(x)', { evalState: state });
+
+			expect(result.ast).toBeDefined();
+			expect(result.errors).toHaveLength(0);
+		});
+
+		it('works without state (backward compatibility)', () => {
+			const result = parse('x + y');
+
+			expect(result.ast).toBeDefined();
+			expect(result.errors).toHaveLength(0);
+		});
+
+		it('works with empty state', () => {
+			const state = createEvalState();
+			const result = parse('x + y', { evalState: state });
+
+			expect(result.ast).toBeDefined();
+			expect(result.errors).toHaveLength(0);
 		});
 	});
 });
