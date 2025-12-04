@@ -64,6 +64,9 @@ class SpreadsheetStore {
 	/** Computed values cache (formula results) */
 	private _computedValues = new SvelteMap<string, ComputedValue>();
 
+	/** Version counter to trigger reactivity when computed values change */
+	private _computedVersion = $state(0);
+
 	/** Currently selected cell (e.g., "A1") */
 	selectedCell = $state<string | null>('A1');
 
@@ -156,6 +159,8 @@ class SpreadsheetStore {
 	 * @returns The computed value (number, string, boolean, error, or empty)
 	 */
 	getComputedValue(ref: string): ComputedValue {
+		// Access version to create reactive dependency
+		void this._computedVersion;
 		return this._computedValues.get(ref.toUpperCase()) ?? { type: 'empty' };
 	}
 
@@ -349,7 +354,8 @@ class SpreadsheetStore {
 			const computed = this.evaluateCell(cellRef, cellValue);
 			this._computedValues.set(cellRef, computed);
 		}
-		// SvelteMap mutations are automatically reactive, no reassignment needed
+		// Increment version to trigger reactivity in components
+		this._computedVersion++;
 	}
 
 	/**
