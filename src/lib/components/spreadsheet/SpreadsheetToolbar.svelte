@@ -20,7 +20,6 @@
 <script lang="ts">
 	import { spreadsheetStore } from '$lib/spreadsheet/store.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import {
 		Bold,
@@ -172,264 +171,216 @@
 	}
 </script>
 
-<Tooltip.Provider>
-	<div
-		class="flex flex-wrap items-center gap-1 bg-muted/30 p-2"
-		role="toolbar"
-		aria-label="Barre d'outils de formatage"
-	>
-		<!-- Groupe Formatage texte -->
-		<div class="flex items-center gap-0.5 border-r border-border pr-2">
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<Button
-						variant={isBold ? 'secondary' : 'ghost'}
-						size="icon"
-						class="h-8 w-8"
-						onclick={toggleBold}
-						aria-label="Gras"
-						aria-pressed={isBold}
-					>
-						<Bold class="h-4 w-4" />
-					</Button>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Gras (Ctrl+B)</Tooltip.Content>
-			</Tooltip.Root>
+<div
+	class="flex flex-wrap items-center gap-1 bg-muted/30 p-2"
+	role="toolbar"
+	aria-label="Barre d'outils de formatage"
+>
+	<!-- Groupe Formatage texte -->
+	<div class="flex items-center gap-0.5 border-r border-border pr-2">
+		<Button
+			variant={isBold ? 'secondary' : 'ghost'}
+			size="icon"
+			class="h-8 w-8"
+			onclick={toggleBold}
+			aria-label="Gras"
+			aria-pressed={isBold}
+			title="Gras (Ctrl+B)"
+		>
+			<Bold class="h-4 w-4" />
+		</Button>
 
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<Button
-						variant={isItalic ? 'secondary' : 'ghost'}
-						size="icon"
-						class="h-8 w-8"
-						onclick={toggleItalic}
-						aria-label="Italique"
-						aria-pressed={isItalic}
-					>
-						<Italic class="h-4 w-4" />
-					</Button>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Italique (Ctrl+I)</Tooltip.Content>
-			</Tooltip.Root>
-		</div>
-
-		<!-- Groupe Alignement -->
-		<div class="flex items-center gap-0.5 border-r border-border pr-2">
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<Button
-						variant={currentAlign === 'left' ? 'secondary' : 'ghost'}
-						size="icon"
-						class="h-8 w-8"
-						onclick={() => setAlignment('left')}
-						aria-label="Aligner à gauche"
-					>
-						<AlignLeft class="h-4 w-4" />
-					</Button>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Aligner à gauche</Tooltip.Content>
-			</Tooltip.Root>
-
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<Button
-						variant={currentAlign === 'center' ? 'secondary' : 'ghost'}
-						size="icon"
-						class="h-8 w-8"
-						onclick={() => setAlignment('center')}
-						aria-label="Centrer"
-					>
-						<AlignCenter class="h-4 w-4" />
-					</Button>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Centrer</Tooltip.Content>
-			</Tooltip.Root>
-
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<Button
-						variant={currentAlign === 'right' ? 'secondary' : 'ghost'}
-						size="icon"
-						class="h-8 w-8"
-						onclick={() => setAlignment('right')}
-						aria-label="Aligner à droite"
-					>
-						<AlignRight class="h-4 w-4" />
-					</Button>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Aligner à droite</Tooltip.Content>
-			</Tooltip.Root>
-		</div>
-
-		<!-- Groupe Couleurs -->
-		<div class="flex items-center gap-0.5 border-r border-border pr-2">
-			<!-- Text Color -->
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger asChild let:builder>
-							<Button
-								builders={[builder]}
-								variant="ghost"
-								size="icon"
-								class="relative h-8 w-8"
-								aria-label="Couleur du texte"
-							>
-								<Paintbrush class="h-4 w-4" />
-								<div
-									class="absolute bottom-0.5 left-1/2 h-0.5 w-4 -translate-x-1/2"
-									style="background-color: {currentTextColor}"
-								></div>
-							</Button>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content class="w-48">
-							<DropdownMenu.Label>Couleur du texte</DropdownMenu.Label>
-							<DropdownMenu.Separator />
-							<div class="grid grid-cols-4 gap-1 p-2">
-								{#each TEXT_COLORS as color (color.value)}
-									<button
-										class="h-8 w-8 rounded border border-border transition-colors hover:border-foreground"
-										style="background-color: {color.value}"
-										onclick={() => setTextColor(color.value)}
-										aria-label={color.label}
-										title={color.label}
-									>
-										{#if currentTextColor === color.value}
-											<div class="flex items-center justify-center">
-												<div class="h-2 w-2 rounded-full bg-background"></div>
-											</div>
-										{/if}
-									</button>
-								{/each}
-							</div>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Couleur du texte</Tooltip.Content>
-			</Tooltip.Root>
-
-			<!-- Background Color -->
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger asChild let:builder>
-							<Button
-								builders={[builder]}
-								variant="ghost"
-								size="icon"
-								class="relative h-8 w-8"
-								aria-label="Couleur de fond"
-							>
-								<Palette class="h-4 w-4" />
-								{#if currentBgColor}
-									<div
-										class="absolute bottom-0.5 left-1/2 h-0.5 w-4 -translate-x-1/2"
-										style="background-color: {currentBgColor}"
-									></div>
-								{/if}
-							</Button>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content class="w-48">
-							<DropdownMenu.Label>Couleur de fond</DropdownMenu.Label>
-							<DropdownMenu.Separator />
-							<div class="grid grid-cols-4 gap-1 p-2">
-								{#each BG_COLORS as color (color.label)}
-									<button
-										class="h-8 w-8 rounded border border-border transition-colors hover:border-foreground"
-										style="background-color: {color.value || 'transparent'}"
-										onclick={() => setBgColor(color.value)}
-										aria-label={color.label}
-										title={color.label}
-									>
-										{#if currentBgColor === color.value}
-											<div class="flex items-center justify-center">
-												<div
-													class="h-2 w-2 rounded-full"
-													style="background-color: {color.value ? '#000' : '#999'}"
-												></div>
-											</div>
-										{/if}
-									</button>
-								{/each}
-							</div>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Couleur de fond</Tooltip.Content>
-			</Tooltip.Root>
-		</div>
-
-		<!-- Groupe Format nombre -->
-		<div class="flex items-center gap-0.5 border-r border-border pr-2">
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger asChild let:builder>
-							<Button
-								builders={[builder]}
-								variant="ghost"
-								size="icon"
-								class="h-8 w-8"
-								aria-label="Format nombre"
-							>
-								<Hash class="h-4 w-4" />
-							</Button>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content class="w-40">
-							<DropdownMenu.Label>Format nombre</DropdownMenu.Label>
-							<DropdownMenu.Separator />
-							<DropdownMenu.RadioGroup value={currentNumberFormat}>
-								<DropdownMenu.RadioItem value="number" onclick={() => setNumberFormat('number')}>
-									Nombre
-								</DropdownMenu.RadioItem>
-								<DropdownMenu.RadioItem value="percent" onclick={() => setNumberFormat('percent')}>
-									Pourcentage (%)
-								</DropdownMenu.RadioItem>
-								<DropdownMenu.RadioItem
-									value="currency"
-									onclick={() => setNumberFormat('currency')}
-								>
-									Monnaie (€)
-								</DropdownMenu.RadioItem>
-							</DropdownMenu.RadioGroup>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Format nombre</Tooltip.Content>
-			</Tooltip.Root>
-		</div>
-
-		<!-- Actions -->
-		<div class="flex items-center gap-0.5">
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<Button
-						variant="ghost"
-						size="icon"
-						class="h-8 w-8"
-						onclick={clearFormat}
-						aria-label="Effacer le formatage"
-					>
-						<Eraser class="h-4 w-4" />
-					</Button>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Effacer le formatage</Tooltip.Content>
-			</Tooltip.Root>
-
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<Button
-						variant="ghost"
-						size="icon"
-						class="h-8 w-8"
-						onclick={clearContent}
-						aria-label="Effacer le contenu"
-					>
-						<Trash2 class="h-4 w-4" />
-					</Button>
-				</Tooltip.Trigger>
-				<Tooltip.Content>Effacer le contenu</Tooltip.Content>
-			</Tooltip.Root>
-		</div>
+		<Button
+			variant={isItalic ? 'secondary' : 'ghost'}
+			size="icon"
+			class="h-8 w-8"
+			onclick={toggleItalic}
+			aria-label="Italique"
+			aria-pressed={isItalic}
+			title="Italique (Ctrl+I)"
+		>
+			<Italic class="h-4 w-4" />
+		</Button>
 	</div>
-</Tooltip.Provider>
+
+	<!-- Groupe Alignement -->
+	<div class="flex items-center gap-0.5 border-r border-border pr-2">
+		<Button
+			variant={currentAlign === 'left' ? 'secondary' : 'ghost'}
+			size="icon"
+			class="h-8 w-8"
+			onclick={() => setAlignment('left')}
+			aria-label="Aligner à gauche"
+			title="Aligner à gauche"
+		>
+			<AlignLeft class="h-4 w-4" />
+		</Button>
+
+		<Button
+			variant={currentAlign === 'center' ? 'secondary' : 'ghost'}
+			size="icon"
+			class="h-8 w-8"
+			onclick={() => setAlignment('center')}
+			aria-label="Centrer"
+			title="Centrer"
+		>
+			<AlignCenter class="h-4 w-4" />
+		</Button>
+
+		<Button
+			variant={currentAlign === 'right' ? 'secondary' : 'ghost'}
+			size="icon"
+			class="h-8 w-8"
+			onclick={() => setAlignment('right')}
+			aria-label="Aligner à droite"
+			title="Aligner à droite"
+		>
+			<AlignRight class="h-4 w-4" />
+		</Button>
+	</div>
+
+	<!-- Groupe Couleurs -->
+	<div class="flex items-center gap-0.5 border-r border-border pr-2">
+		<!-- Text Color -->
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger>
+				<Button
+					variant="ghost"
+					size="icon"
+					class="relative h-8 w-8"
+					aria-label="Couleur du texte"
+					title="Couleur du texte"
+				>
+					<Paintbrush class="h-4 w-4" />
+					<div
+						class="absolute bottom-0.5 left-1/2 h-0.5 w-4 -translate-x-1/2"
+						style="background-color: {currentTextColor}"
+					></div>
+				</Button>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content class="w-48">
+				<DropdownMenu.Label>Couleur du texte</DropdownMenu.Label>
+				<DropdownMenu.Separator />
+				<div class="grid grid-cols-4 gap-1 p-2">
+					{#each TEXT_COLORS as color (color.value)}
+						<button
+							class="h-8 w-8 rounded border border-border transition-colors hover:border-foreground"
+							style="background-color: {color.value}"
+							onclick={() => setTextColor(color.value)}
+							aria-label={color.label}
+							title={color.label}
+						>
+							{#if currentTextColor === color.value}
+								<div class="flex items-center justify-center">
+									<div class="h-2 w-2 rounded-full bg-background"></div>
+								</div>
+							{/if}
+						</button>
+					{/each}
+				</div>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
+
+		<!-- Background Color -->
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger>
+				<Button
+					variant="ghost"
+					size="icon"
+					class="relative h-8 w-8"
+					aria-label="Couleur de fond"
+					title="Couleur de fond"
+				>
+					<Palette class="h-4 w-4" />
+					{#if currentBgColor}
+						<div
+							class="absolute bottom-0.5 left-1/2 h-0.5 w-4 -translate-x-1/2"
+							style="background-color: {currentBgColor}"
+						></div>
+					{/if}
+				</Button>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content class="w-48">
+				<DropdownMenu.Label>Couleur de fond</DropdownMenu.Label>
+				<DropdownMenu.Separator />
+				<div class="grid grid-cols-4 gap-1 p-2">
+					{#each BG_COLORS as color (color.label)}
+						<button
+							class="h-8 w-8 rounded border border-border transition-colors hover:border-foreground"
+							style="background-color: {color.value || 'transparent'}"
+							onclick={() => setBgColor(color.value)}
+							aria-label={color.label}
+							title={color.label}
+						>
+							{#if currentBgColor === color.value}
+								<div class="flex items-center justify-center">
+									<div
+										class="h-2 w-2 rounded-full"
+										style="background-color: {color.value ? '#000' : '#999'}"
+									></div>
+								</div>
+							{/if}
+						</button>
+					{/each}
+				</div>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
+	</div>
+
+	<!-- Groupe Format nombre -->
+	<div class="flex items-center gap-0.5 border-r border-border pr-2">
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger>
+				<Button
+					variant="ghost"
+					size="icon"
+					class="h-8 w-8"
+					aria-label="Format nombre"
+					title="Format nombre"
+				>
+					<Hash class="h-4 w-4" />
+				</Button>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content class="w-40">
+				<DropdownMenu.Label>Format nombre</DropdownMenu.Label>
+				<DropdownMenu.Separator />
+				<DropdownMenu.RadioGroup value={currentNumberFormat}>
+					<DropdownMenu.RadioItem value="number" onclick={() => setNumberFormat('number')}>
+						Nombre
+					</DropdownMenu.RadioItem>
+					<DropdownMenu.RadioItem value="percent" onclick={() => setNumberFormat('percent')}>
+						Pourcentage (%)
+					</DropdownMenu.RadioItem>
+					<DropdownMenu.RadioItem value="currency" onclick={() => setNumberFormat('currency')}>
+						Monnaie (€)
+					</DropdownMenu.RadioItem>
+				</DropdownMenu.RadioGroup>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
+	</div>
+
+	<!-- Actions -->
+	<div class="flex items-center gap-0.5">
+		<Button
+			variant="ghost"
+			size="icon"
+			class="h-8 w-8"
+			onclick={clearFormat}
+			aria-label="Effacer le formatage"
+			title="Effacer le formatage"
+		>
+			<Eraser class="h-4 w-4" />
+		</Button>
+
+		<Button
+			variant="ghost"
+			size="icon"
+			class="h-8 w-8"
+			onclick={clearContent}
+			aria-label="Effacer le contenu"
+			title="Effacer le contenu"
+		>
+			<Trash2 class="h-4 w-4" />
+		</Button>
+	</div>
+</div>
