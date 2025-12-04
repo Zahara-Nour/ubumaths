@@ -207,8 +207,8 @@
 
 <!-- Export Dropdown -->
 <DropdownMenu.Root>
-	<DropdownMenu.Trigger asChild let:builder>
-		<Button builders={[builder]} variant="ghost" size="sm" class="gap-1">
+	<DropdownMenu.Trigger>
+		<Button variant="ghost" size="sm" class="gap-1">
 			<Download class="h-4 w-4" />
 			<span class="hidden sm:inline">Exporter</span>
 		</Button>
