@@ -1136,6 +1136,245 @@ describe('Unary operators', () => {
 });
 
 // =============================================================================
+// Composition Operator (@)
+// =============================================================================
+
+describe('Composition Operator (@)', () => {
+	/**
+	 * Helper to parse with generic functions enabled
+	 */
+	function parseWithGenericFunctions(input: string, names: string[] = ['f', 'g', 'h']): MathNode {
+		return parseCustomPratt(input, {
+			genericFunctions: { names }
+		});
+	}
+
+	/**
+	 * Helper to parse safely with generic functions enabled
+	 */
+	function parseSafeWithGenericFunctions(input: string, names: string[] = ['f', 'g', 'h']) {
+		return parseCustomPrattSafe(input, {
+			genericFunctions: { names }
+		});
+	}
+
+	describe('Basic composition', () => {
+		it('f@g - basic composition of two functions', () => {
+			const ast = parseWithGenericFunctions('f@g');
+
+			expect(ast.type).toBe('composition');
+			expect(ast).toMatchObject({
+				type: 'composition',
+				outer: { type: 'function', name: 'f', args: [] },
+				inner: { type: 'function', name: 'g', args: [] }
+			});
+		});
+
+		it('f@g@h - triple composition is left-associative', () => {
+			const ast = parseWithGenericFunctions('f@g@h');
+
+			// Should parse as (f@g)@h
+			expect(ast.type).toBe('composition');
+			const outer = ast as { outer: MathNode; inner: MathNode };
+			expect(outer.inner).toMatchObject({ type: 'function', name: 'h', args: [] });
+
+			expect(outer.outer.type).toBe('composition');
+			const inner = outer.outer as { outer: MathNode; inner: MathNode };
+			expect(inner.outer).toMatchObject({ type: 'function', name: 'f', args: [] });
+			expect(inner.inner).toMatchObject({ type: 'function', name: 'g', args: [] });
+		});
+
+		it('f@g with called function (f@g)(x)', () => {
+			// Note: Currently (f@g)(x) would parse the composition f@g,
+			// then try to parse (x) which would be implicit multiplication
+			const ast = parseWithGenericFunctions('(f@g)(x)');
+
+			// The composition is inside parentheses, then multiplied by (x)
+			expect(ast.type).toBe('multiplication');
+		});
+	});
+
+	describe('Composition with derivatives', () => {
+		it("f'@g - composition with derivative", () => {
+			const ast = parseWithGenericFunctions("f'@g");
+
+			expect(ast.type).toBe('composition');
+			const comp = ast as { outer: MathNode; inner: MathNode };
+			expect(comp.outer).toMatchObject({
+				type: 'function',
+				name: 'f',
+				derivativeOrder: 1
+			});
+			expect(comp.inner).toMatchObject({
+				type: 'function',
+				name: 'g',
+				args: []
+			});
+		});
+
+		it("f@g' - composition with derivative on inner", () => {
+			const ast = parseWithGenericFunctions("f@g'");
+
+			expect(ast.type).toBe('composition');
+			const comp = ast as { outer: MathNode; inner: MathNode };
+			expect(comp.outer).toMatchObject({
+				type: 'function',
+				name: 'f',
+				args: []
+			});
+			expect(comp.inner).toMatchObject({
+				type: 'function',
+				name: 'g',
+				derivativeOrder: 1
+			});
+		});
+
+		it("f''@g - composition with second derivative", () => {
+			const ast = parseWithGenericFunctions("f''@g");
+
+			expect(ast.type).toBe('composition');
+			const comp = ast as { outer: MathNode; inner: MathNode };
+			expect(comp.outer).toMatchObject({
+				type: 'function',
+				name: 'f',
+				derivativeOrder: 2
+			});
+		});
+	});
+
+	describe('Composition with inverse', () => {
+		it('f^{-1}@g - composition with inverse', () => {
+			const ast = parseWithGenericFunctions('f^{-1}@g');
+
+			expect(ast.type).toBe('composition');
+			const comp = ast as { outer: MathNode; inner: MathNode };
+			expect(comp.outer).toMatchObject({
+				type: 'function',
+				name: 'f',
+				isInverse: true
+			});
+		});
+	});
+
+	describe('Composition precedence', () => {
+		it('f@g+h - composition has higher precedence than addition', () => {
+			const ast = parseWithGenericFunctions('f@g+h');
+
+			// @ has BP=25, + has BP=20, so f@g binds first: (f@g) + h
+			expect(ast.type).toBe('addition');
+			const add = ast as AdditionNode;
+			expect(add.left.type).toBe('composition');
+			expect(add.right).toMatchObject({ type: 'function', name: 'h', args: [] });
+		});
+
+		it('f+g@h - composition has higher precedence than addition', () => {
+			const ast = parseWithGenericFunctions('f+g@h');
+
+			// f + (g@h)
+			expect(ast.type).toBe('addition');
+			const add = ast as AdditionNode;
+			expect(add.left).toMatchObject({ type: 'function', name: 'f', args: [] });
+			expect(add.right.type).toBe('composition');
+		});
+
+		it('f@g*h - multiplication has higher precedence than composition', () => {
+			const ast = parseWithGenericFunctions('f@g*h');
+
+			// * has BP=30, @ has BP=25, so: f @ (g*h)
+			expect(ast.type).toBe('composition');
+			const comp = ast as { outer: MathNode; inner: MathNode };
+			expect(comp.outer).toMatchObject({ type: 'function', name: 'f', args: [] });
+			expect(comp.inner.type).toBe('multiplication');
+		});
+
+		it('f*g@h - multiplication has higher precedence than composition', () => {
+			const ast = parseWithGenericFunctions('f*g@h');
+
+			// (f*g) @ h
+			expect(ast.type).toBe('composition');
+			const comp = ast as { outer: MathNode; inner: MathNode };
+			expect(comp.outer.type).toBe('multiplication');
+			expect(comp.inner).toMatchObject({ type: 'function', name: 'h', args: [] });
+		});
+	});
+
+	describe('Composition vs color disambiguation', () => {
+		it('@red{x} - @ followed by color name is color, not composition', () => {
+			const ast = parse('@red{x}');
+
+			// This should be a colored variable, not composition
+			expect(ast.type).toBe('variable');
+			expect(ast.metadata?.color).toBe('red');
+		});
+
+		it('f@red{x} - without generic functions, @ is for color only', () => {
+			// Without genericFunctions, f is a variable, not a function
+			// So f@red{x} should be f (implicit mult) @red{x}
+			const ast = parse('f@red{x}');
+
+			// f is variable, @red{x} is colored x
+			// So it's implicit multiplication: f * colored_x
+			expect(ast.type).toBe('multiplication');
+		});
+
+		it('f@g - with generic functions, @ is composition', () => {
+			const ast = parseWithGenericFunctions('f@g');
+
+			expect(ast.type).toBe('composition');
+		});
+	});
+
+	describe('Composition with function calls', () => {
+		it('f(x)@g - function with args composed with naked function', () => {
+			const ast = parseWithGenericFunctions('f(x)@g');
+
+			expect(ast.type).toBe('composition');
+			const comp = ast as { outer: MathNode; inner: MathNode };
+			expect(comp.outer).toMatchObject({
+				type: 'function',
+				name: 'f',
+				args: [{ type: 'variable', name: 'x' }]
+			});
+			expect(comp.inner).toMatchObject({
+				type: 'function',
+				name: 'g',
+				args: []
+			});
+		});
+
+		it('f@g(x) - naked function composed with function with args', () => {
+			const ast = parseWithGenericFunctions('f@g(x)');
+
+			expect(ast.type).toBe('composition');
+			const comp = ast as { outer: MathNode; inner: MathNode };
+			expect(comp.outer).toMatchObject({
+				type: 'function',
+				name: 'f',
+				args: []
+			});
+			expect(comp.inner).toMatchObject({
+				type: 'function',
+				name: 'g',
+				args: [{ type: 'variable', name: 'x' }]
+			});
+		});
+	});
+
+	describe('Error cases', () => {
+		it('should not parse @x as composition without generic functions', () => {
+			// @ without following recognized pattern should fail
+			const result = parseSafe('@x');
+			expect(result.errors.length).toBeGreaterThan(0);
+		});
+
+		it('trailing @ should fail', () => {
+			const result = parseSafeWithGenericFunctions('f@');
+			expect(result.errors.length).toBeGreaterThan(0);
+		});
+	});
+});
+
+// =============================================================================
 // API Tests
 // =============================================================================
 
