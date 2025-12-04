@@ -723,7 +723,8 @@ class SpreadsheetStore {
 	 * @returns A copy of the current spreadsheet data
 	 */
 	exportData(): SpreadsheetData {
-		return structuredClone(this._data);
+		// Use $state.snapshot() to get a plain object from the reactive proxy
+		return $state.snapshot(this._data);
 	}
 
 	/**
