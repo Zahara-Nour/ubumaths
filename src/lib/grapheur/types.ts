@@ -270,6 +270,31 @@ export interface FunctionAnalysis {
 }
 
 // =============================================================================
+// Snapped Point Types
+// =============================================================================
+
+/**
+ * Type of special point that CurveHover can snap to
+ */
+export type SnappedPointType = 'root' | 'max' | 'min' | 'intersection';
+
+/**
+ * Information about a special point that CurveHover is snapped to.
+ * Used to coordinate between CurveHover and SpecialPoints/IntersectionPoints
+ * to avoid displaying duplicate markers.
+ */
+export interface SnappedPoint {
+	/** Math x coordinate */
+	readonly x: number;
+	/** Math y coordinate */
+	readonly y: number;
+	/** Type of special point */
+	readonly type: SnappedPointType;
+	/** Function ID(s) associated with this point */
+	readonly functionIds: readonly string[];
+}
+
+// =============================================================================
 // Sampling Types
 // =============================================================================
 

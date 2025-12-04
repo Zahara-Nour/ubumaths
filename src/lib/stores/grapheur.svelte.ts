@@ -18,7 +18,8 @@ import type {
 	GraphState,
 	Point,
 	ViewportMetrics,
-	ExplicitFunctionState
+	ExplicitFunctionState,
+	SnappedPoint
 } from '$lib/grapheur/types';
 import { graphStateSchema, GRAPH_STATE_VERSION } from '$lib/grapheur/types';
 
@@ -78,6 +79,9 @@ class GrapheurStore {
 
 	/** Whether the grid is visible */
 	showGrid = $state(true);
+
+	/** Currently snapped special point (set by CurveHover, used by SpecialPoints/IntersectionPoints) */
+	snappedPoint = $state<SnappedPoint | null>(null);
 
 	// ===========================================================================
 	// Private State
@@ -328,6 +332,18 @@ class GrapheurStore {
 	 */
 	setInteracting(value: boolean): void {
 		this.isInteracting = value;
+	}
+
+	/**
+	 * Set the currently snapped special point
+	 *
+	 * Called by CurveHover when it snaps to a special point.
+	 * SpecialPoints and IntersectionPoints use this to hide their markers.
+	 *
+	 * @param point - The snapped point, or null if not snapping
+	 */
+	setSnappedPoint(point: SnappedPoint | null): void {
+		this.snappedPoint = point;
 	}
 
 	/**
