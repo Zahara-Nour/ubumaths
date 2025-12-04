@@ -3,7 +3,7 @@
 Complete reference documentation for the MathAST library - an immutable Abstract Syntax Tree for mathematical expressions.
 
 **Location**: `src/lib/mathAST/`
-**Tests**: 2341 passing (644 core + 737 parser + 94 custom generator + 90 Exp + 90 CLI + 574 normalization + 112 pattern)
+**Tests**: 2500+ passing (644 core + 737 parser + 94 custom generator + 90 Exp + 90 CLI + 574 normalization + 112 pattern + 127 eval + 67 differentiation)
 **Purpose**: Pivot structure for transpilation between LaTeX and custom syntax
 
 ---
@@ -20,15 +20,17 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 8. [Flatten/Unflatten Helpers](#flattenunflatten-helpers)
 9. [Exp Fluent Wrapper](#exp-fluent-wrapper)
 10. [Normalization & Equivalence](#normalization--equivalence)
-11. [Pattern Matching](#pattern-matching)
-12. [LaTeX Generator](#latex-generator)
-13. [LaTeX Parser](#latex-parser)
-14. [Custom Syntax Generator](#custom-syntax-generator)
-15. [Physical Units](#physical-units)
-16. [Dimensional Analysis](#dimensional-analysis)
-17. [Usage Patterns](#usage-patterns)
-18. [API Summary](#api-summary)
-19. [CLI](#cli)
+11. [Evaluation System](#evaluation-system)
+12. [Generic Functions & Differentiation](#generic-functions--differentiation)
+13. [Pattern Matching](#pattern-matching)
+14. [LaTeX Generator](#latex-generator)
+15. [LaTeX Parser](#latex-parser)
+16. [Custom Syntax Generator](#custom-syntax-generator)
+17. [Physical Units](#physical-units)
+18. [Dimensional Analysis](#dimensional-analysis)
+19. [Usage Patterns](#usage-patterns)
+20. [API Summary](#api-summary)
+21. [CLI](#cli)
 
 ---
 
@@ -115,7 +117,7 @@ src/lib/mathAST/
 ### Node Type Hierarchy
 
 ```
-MathNode (union of 17 types)
+MathNode (union of 18 types)
 ├── LiteralNode (5 types)
 │   ├── NumberNode       # Numeric values: '42', '3.14'
 │   ├── VariableNode     # Identifiers: 'x', 'velocity'
@@ -138,7 +140,9 @@ MathNode (union of 17 types)
 │   ├── SubscriptNode    # x_i
 │   └── SuperscriptNode  # x^2
 │
-├── FunctionNode         # sin(x), log_2(x), f^2(x)
+├── FunctionNode         # sin(x), log_2(x), f'(x), f^{-1}(x)
+│
+├── CompositionNode      # f ∘ g (function composition)
 │
 ├── RelationNode         # x = 5, a < b, A ⊂ B
 │
@@ -436,9 +440,26 @@ interface FunctionNode {
 	readonly args: readonly MathNode[]; // Arguments
 	readonly power?: MathNode; // sin^2(x)
 	readonly base?: MathNode; // log_2(x)
+	readonly derivativeOrder?: number; // f'(x) = 1, f''(x) = 2
+	readonly isInverse?: boolean; // f^{-1}(x)
 	readonly metadata?: NodeMetadata;
 }
 ```
+
+**Generic Functions**: The `derivativeOrder` and `isInverse` fields enable representing mathematical functions with derivative notation (f'(x), f''(x)) and inverse functions (f^{-1}(x)) without expanding their definitions.
+
+### CompositionNode
+
+```typescript
+interface CompositionNode {
+	readonly type: 'composition';
+	readonly outer: string; // 'f' in f ∘ g
+	readonly inner: string; // 'g' in f ∘ g
+	readonly metadata?: NodeMetadata;
+}
+```
+
+**Function Composition**: Represents the composition of two functions (f ∘ g), which means "apply g first, then f".
 
 ### RelationNode
 
@@ -532,7 +553,7 @@ positive(operand, metadata?): PositiveNode
 
 ```typescript
 func(name, args, options?, metadata?): FunctionNode
-  // options: { power?: MathNode, base?: MathNode }
+  // options: { power?: MathNode, base?: MathNode, derivativeOrder?: number, isInverse?: boolean }
 
 // Convenience functions
 sin(arg, metadata?): FunctionNode
@@ -543,6 +564,11 @@ log(arg, base?, metadata?): FunctionNode
 exp(arg, metadata?): FunctionNode
 sqrt(arg, metadata?): FunctionNode
 abs(arg, metadata?): FunctionNode
+
+// Generic function factories
+derivativeFunc(name, args, order?, metadata?): FunctionNode  // f'(x), f''(x)
+inverseFunc(name, args, metadata?): FunctionNode             // f^{-1}(x)
+compose(outer, inner, metadata?): CompositionNode            // f ∘ g
 ```
 
 ### Structural Factories
@@ -896,6 +922,12 @@ isFunction(node): node is FunctionNode
 isDelimiter(node): node is DelimiterNode
 isSubscript(node): node is SubscriptNode
 isSuperscript(node): node is SuperscriptNode
+
+// Generic functions
+isDerivativeFunction(node): node is FunctionNode  // has derivativeOrder > 0
+isInverseFunction(node): node is FunctionNode     // has isInverse: true
+isComposition(node): node is CompositionNode      // function composition
+hasDerivativeOrder(node, order): boolean          // check specific order
 
 // Relations
 isRelation(node): node is RelationNode
@@ -2370,6 +2402,287 @@ evaluate(result).value; // { n: 65n, d: 1n }
 // Or using Exp:
 Exp.parse('x^2 + 1').evalWith({ x: '2y', y: 'z+1', z: 3 });
 // { value: { n: 65n, d: 1n }, exact: true, ... }
+```
+
+---
+
+## Generic Functions & Differentiation
+
+### Overview
+
+The generic functions system enables working with mathematical functions as first-class entities, supporting derivative notation, inverse functions, and composition. Combined with the symbolic differentiation engine, this provides powerful tools for calculus operations.
+
+**Key features:**
+
+- Generic functions: f(x), g(x), h(x) with configurable names
+- Derivative notation: f'(x), f''(x), f'''(x)
+- Inverse functions: f^{-1}(x)
+- Function composition: f ∘ g
+- Function bindings for evaluation
+- Symbolic differentiation engine
+
+**Location**: `src/lib/mathAST/eval/function-bindings.ts`, `src/lib/mathAST/differentiation/`
+**Tests**: 150+ passing
+
+---
+
+### Parsing Generic Functions
+
+Generic functions are parsed using the `genericFunctions` option in the parser:
+
+```typescript
+import { parseLatex } from '$lib/mathAST';
+
+// Configure which names are generic functions
+const options = {
+	genericFunctions: {
+		names: ['f', 'g', 'h'], // Function names to recognize
+		allowDerivatives: true, // Enable f'(x) notation
+		allowInverse: true, // Enable f^{-1}(x) notation
+		allowComposition: true // Enable f ∘ g notation
+	}
+};
+
+// Parse various notations
+const f = parseLatex('f(x)', options); // Basic generic function
+const fPrime = parseLatex("f'(x)", options); // First derivative
+const fDPrime = parseLatex("f''(x)", options); // Second derivative
+const fInv = parseLatex('f^{-1}(x)', options); // Inverse function
+const fg = parseLatex('f \\circ g', options); // Composition
+```
+
+#### GenericFunctionConfig
+
+```typescript
+interface GenericFunctionConfig {
+	readonly names: readonly string[]; // Function names (e.g., ['f', 'g', 'h'])
+	readonly allowDerivatives?: boolean; // Enable f'(x) (default: true)
+	readonly allowInverse?: boolean; // Enable f^{-1}(x) (default: true)
+	readonly allowComposition?: boolean; // Enable f ∘ g (default: true)
+}
+```
+
+---
+
+### Function Bindings
+
+Function bindings define the actual expressions for generic functions, enabling evaluation and substitution:
+
+```typescript
+import { evaluate, parseLatex, type FunctionBindings } from '$lib/mathAST';
+
+// Define function bindings
+const functions: FunctionBindings = {
+	f: {
+		expression: parseLatex('x^2'), // f(x) = x²
+		parameters: ['x'],
+		derivative: parseLatex('2x'), // f'(x) = 2x (optional)
+		inverse: parseLatex('\\sqrt{x}') // f^{-1}(x) = √x (optional)
+	},
+	g: {
+		expression: parseLatex('x + 1'),
+		parameters: ['x']
+	}
+};
+
+// Evaluate f(3) = 9
+const result = evaluate(parseLatex('f(3)', { genericFunctions: { names: ['f'] } }), {
+	functions
+});
+// result.value = { n: 9n, d: 1n }
+
+// Evaluate f'(3) = 6
+const derivResult = evaluate(
+	parseLatex("f'(3)", { genericFunctions: { names: ['f'], allowDerivatives: true } }),
+	{ functions }
+);
+// derivResult.value = { n: 6n, d: 1n }
+```
+
+#### FunctionDefinition
+
+```typescript
+interface FunctionDefinition {
+	readonly expression: MathNode; // The function body
+	readonly parameters: readonly string[]; // Parameter names (e.g., ['x'])
+	readonly derivative?: MathNode; // Pre-computed derivative (optional)
+	readonly inverse?: MathNode; // Pre-computed inverse (optional)
+}
+```
+
+#### FunctionBindings
+
+```typescript
+type FunctionBindings = Record<string, FunctionDefinition>;
+```
+
+---
+
+### Function Binding Utilities
+
+```typescript
+import {
+	applyFunction,
+	substituteFunction,
+	applyComposition,
+	getUndefinedFunctions,
+	FunctionBindingError
+} from '$lib/mathAST';
+
+// Apply a function to arguments: f(3) → 9 (as MathNode)
+const result = applyFunction('f', [number('3')], functions);
+
+// Substitute function symbolically: f(x+1) → (x+1)²
+const substituted = substituteFunction(parseLatex('f(x+1)'), functions);
+
+// Apply composition: (f ∘ g)(x) → (x+1)²
+const composed = applyComposition('f', 'g', variable('x'), functions);
+
+// Check for undefined functions
+const undefined = getUndefinedFunctions(parseLatex('f(x) + h(x)'), functions);
+// Set { 'h' } (if h is not in bindings)
+```
+
+---
+
+### Symbolic Differentiation
+
+The differentiation module computes symbolic derivatives of mathematical expressions:
+
+```typescript
+import { differentiate, differentiateN, DifferentiationError } from '$lib/mathAST';
+import { parseLatex, toLatex } from '$lib/mathAST';
+
+// Basic differentiation
+const expr = parseLatex('x^3 + 2x^2 - 5x + 1');
+const deriv = differentiate(expr, { variable: 'x' });
+toLatex(deriv); // '3 x^{2} + 4 x - 5'
+
+// Higher-order derivatives
+const second = differentiateN(expr, 2, { variable: 'x' });
+toLatex(second); // '6 x + 4'
+
+// With respect to different variable
+const multivar = parseLatex('x^2 y + y^3');
+toLatex(differentiate(multivar, { variable: 'y' })); // 'x^{2} + 3 y^{2}'
+```
+
+#### Differentiation Options
+
+```typescript
+interface DifferentiationOptions {
+	variable: string; // Variable to differentiate with respect to
+	functions?: FunctionBindings; // Bindings for generic functions
+	simplify?: boolean; // Apply simplification (default: true)
+}
+```
+
+#### Supported Rules
+
+| Rule              | Example         | Result                 |
+| ----------------- | --------------- | ---------------------- |
+| Constants         | d/dx(5)         | 0                      |
+| Variables         | d/dx(x)         | 1                      |
+| Other variables   | d/dx(y)         | 0                      |
+| Sum rule          | d/dx(f + g)     | f' + g'                |
+| Difference rule   | d/dx(f - g)     | f' - g'                |
+| Product rule      | d/dx(f · g)     | f' · g + f · g'        |
+| Quotient rule     | d/dx(f / g)     | (f' · g - f · g') / g² |
+| Power rule        | d/dx(x^n)       | n · x^(n-1)            |
+| Chain rule        | d/dx(f(g(x)))   | f'(g(x)) · g'(x)       |
+| sin               | d/dx(sin(x))    | cos(x)                 |
+| cos               | d/dx(cos(x))    | -sin(x)                |
+| tan               | d/dx(tan(x))    | 1/cos²(x)              |
+| ln                | d/dx(ln(x))     | 1/x                    |
+| exp               | d/dx(e^x)       | e^x                    |
+| sqrt              | d/dx(√x)        | 1/(2√x)                |
+| Generic functions | d/dx(f(x))      | f'(x) (uses bindings)  |
+| Inverse functions | d/dx(f^{-1}(x)) | 1/f'(f^{-1}(x))        |
+
+#### Exp Wrapper Methods
+
+```typescript
+import { Exp } from '$lib/mathAST';
+
+// Using the fluent API
+const expr = Exp.parse('x^3 + 2x^2');
+
+// First derivative
+expr.differentiate().latex; // '3 x^{2} + 4 x'
+expr.diff().latex; // Alias for differentiate()
+
+// With different variable
+Exp.parse('x y^2').differentiate('y').latex; // '2 x y'
+
+// Higher-order derivatives
+expr.nthDerivative(2).latex; // '6 x + 4'
+expr.nthDerivative(3).latex; // '6'
+```
+
+---
+
+### Examples
+
+#### Example 1: Define and evaluate a quadratic function
+
+```typescript
+import { parseLatex, evaluate, toLatex } from '$lib/mathAST';
+
+const functions = {
+	f: {
+		expression: parseLatex('x^2 - 4x + 3'),
+		parameters: ['x'],
+		derivative: parseLatex('2x - 4')
+	}
+};
+
+const options = { genericFunctions: { names: ['f'], allowDerivatives: true } };
+
+// f(5) = 25 - 20 + 3 = 8
+evaluate(parseLatex('f(5)', options), { functions });
+
+// f'(5) = 2(5) - 4 = 6
+evaluate(parseLatex("f'(5)", options), { functions });
+
+// f(x+1) symbolically
+import { substituteFunction } from '$lib/mathAST';
+toLatex(substituteFunction(parseLatex('f(x+1)', options), functions));
+// '(x + 1)^{2} - 4 (x + 1) + 3'
+```
+
+#### Example 2: Differentiate trigonometric expressions
+
+```typescript
+import { Exp } from '$lib/mathAST';
+
+// d/dx(sin(x²)) = 2x·cos(x²) (chain rule)
+Exp.parse('\\sin(x^2)').diff().latex;
+
+// d/dx(x·sin(x)) = sin(x) + x·cos(x) (product rule)
+Exp.parse('x \\sin(x)').diff().latex;
+
+// d/dx(sin(x)/x) = (x·cos(x) - sin(x))/x² (quotient rule)
+Exp.parse('\\frac{\\sin(x)}{x}').diff().latex;
+```
+
+#### Example 3: Function composition
+
+```typescript
+import { parseLatex, evaluate, compose, toLatex } from '$lib/mathAST';
+
+const functions = {
+	f: { expression: parseLatex('x^2'), parameters: ['x'] },
+	g: { expression: parseLatex('x + 1'), parameters: ['x'] }
+};
+
+// Create f ∘ g node
+const fg = compose('f', 'g');
+toLatex(fg); // 'f \\circ g'
+
+// Evaluate (f ∘ g)(3) = f(g(3)) = f(4) = 16
+import { applyComposition } from '$lib/mathAST';
+const result = applyComposition('f', 'g', parseLatex('3'), functions);
+evaluate(result); // { n: 16n, d: 1n }
 ```
 
 ---
