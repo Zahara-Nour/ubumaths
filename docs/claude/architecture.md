@@ -77,7 +77,8 @@ function myFunction() { ... }
 └── (protected)/+layout.svelte
     ├── /dashboard
     ├── /assessments
-    └── /calculatrice    # NumWorks calculator (student/teacher only)
+    ├── /calculatrice    # NumWorks calculator (student/teacher only)
+    └── /grapheur        # Graphing calculator (student/teacher only)
 ```
 
 **Important** : Les layouts héritent automatiquement. Auth check dans `(protected)/+layout.server.ts`.
@@ -86,10 +87,11 @@ function myFunction() { ... }
 
 Certaines routes protégées ont des restrictions de rôle supplémentaires :
 
-| Route              | Rôles autorisés  | Description          |
-| ------------------ | ---------------- | -------------------- |
-| `/calculatrice`    | student, teacher | Simulateur NumWorks  |
-| `/dashboard/admin` | admin            | Panel administrateur |
+| Route              | Rôles autorisés  | Description            |
+| ------------------ | ---------------- | ---------------------- |
+| `/calculatrice`    | student, teacher | Simulateur NumWorks    |
+| `/grapheur`        | student, teacher | Calculatrice graphique |
+| `/dashboard/admin` | admin            | Panel administrateur   |
 
 **Référence** : [docs/architecture/routing.md](../architecture/routing.md)
 
@@ -477,6 +479,79 @@ export async function checkRateLimit(
 ```
 
 **Référence** : `src/lib/server/rate-limit.ts`
+
+---
+
+## 📊 Key Features Architecture
+
+### Grapheur (Graphing Calculator)
+
+> 🆕 2025-12-04
+
+Interactive graphing calculator for plotting and analyzing mathematical functions.
+
+**Technical Stack**:
+
+- **Input**: MathLive for LaTeX function entry
+- **Parsing**: MathAST parser with variable substitution
+- **Rendering**: SVG with Catmull-Rom Bézier curves for smooth paths
+- **Interactions**: Drag-to-pan, scroll-to-zoom with real-time cursor tracking
+- **Persistence**: localStorage with Zod validation
+
+**Architecture**:
+
+```
+src/lib/grapheur/
+├── bezier.ts          # Catmull-Rom Bézier curve interpolation
+├── colors.ts          # Color palette management for function curves
+├── evaluator.ts       # Function evaluation with variable binding
+├── sampler.ts         # Curve sampling and discontinuity detection
+├── types.ts           # Type definitions and Zod schemas
+├── viewport.ts        # Pan/zoom viewport calculations
+└── __tests__/         # Unit tests for all modules
+
+src/lib/components/grapheur/
+├── GrapheurContainer  # Main container orchestrating the graph
+├── GraphSVG           # SVG canvas rendering
+├── FunctionInput      # LaTeX editor for functions
+├── FunctionPanel      # Function list manager
+├── FunctionCurve      # Individual curve rendering
+├── GridLines          # Coordinate grid
+├── AxisLines          # X/Y axes
+├── ViewportControls   # Pan/zoom buttons
+├── ColorPicker        # Color selection
+└── CoordinatesDisplay # Cursor coordinates
+
+src/lib/stores/grapheur.svelte.ts  # Reactive state management
+```
+
+**Supported Functions**:
+
+- Polynomials: `x^2`, `2x^3 - x + 1`
+- Trigonometric: `\sin(x)`, `\cos(x)`, `\tan(x)`
+- Logarithmic: `\log(x)`, `\ln(x)`
+- Exponential: `\exp(x)`, `2^x`
+- Roots: `\sqrt(x)`, `x^(1/3)`
+- Absolute Value: `\abs(x)`
+- Combinations: `\sin(x) + x^2`, `\sqrt{x^2 + 1}`
+
+**Key Implementation Details**:
+
+- **Curve Sampling**: Adaptive sampling (100-300 points per function)
+- **Discontinuity Detection**: Automatic path breaks for domain errors
+- **Bezier Smoothing**: Catmull-Rom curves for 60fps rendering
+- **Debouncing**: 300ms debounce on LaTeX input changes
+- **Viewport**: Default [-10, 10] on both axes, persisted in localStorage
+- **Max Functions**: 20 functions per session (performance limit)
+
+**Performance**:
+
+- ✅ Real-time LaTeX to curve (300ms latency)
+- ✅ Smooth pan/zoom (<16ms per frame)
+- ✅ Cursor tracking on hover
+- ✅ localStorage persistence (~500ms debounce)
+
+**User Guide**: [docs/features/grapheur.md](../features/grapheur.md)
 
 ---
 
