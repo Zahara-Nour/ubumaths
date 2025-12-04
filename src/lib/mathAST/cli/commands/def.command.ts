@@ -2,7 +2,8 @@
  * Def Command
  *
  * Defines a function binding by parsing a function definition
- * and storing it in the evaluation state.
+ * and storing it in the evaluation state. Automatically computes
+ * the derivative when defining the function.
  *
  * Syntax: .def f(x) = x^2 or .def g(x,y) = x + y
  */
@@ -12,7 +13,8 @@ import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../index';
 import { parse } from '../core/pipeline';
-import { createFunctionBinding, hasFunction } from '../core/eval-state';
+import { createFunctionBinding, hasFunction, setFunctionDerivative } from '../core/eval-state';
+import { differentiate, DifferentiationError } from '../../differentiation';
 
 // =============================================================================
 // Def Command
@@ -134,11 +136,37 @@ export class DefCommand extends BaseCommand {
 		// Check if function already exists (for informational message)
 		const isOverwrite = hasFunction(ctx.evalState, funcName);
 
+		// Format parameters for display
+		const paramsDisplay = params.join(', ');
+
 		// Store the function binding
 		createFunctionBinding(ctx.evalState, funcName, params, parseResult.ast);
 
+		// Auto-compute derivative (with respect to first parameter)
+		let derivativeInfo = '';
+		try {
+			const derivative = differentiate(parseResult.ast, {
+				variable: params[0],
+				simplify: true
+			});
+			setFunctionDerivative(ctx.evalState, funcName, derivative);
+			const derivStr = toCustom(derivative);
+			derivativeInfo =
+				'\n  ' +
+				chalk.dim(`${funcName}'(${paramsDisplay})`) +
+				' = ' +
+				chalk.dim(derivStr) +
+				chalk.dim(' (auto-computed)');
+		} catch (err) {
+			// Differentiation failed - show warning but continue
+			if (err instanceof DifferentiationError) {
+				derivativeInfo =
+					'\n  ' + chalk.yellow(`Warning: Could not auto-compute derivative: ${err.message}`);
+			}
+			// For other errors, silently ignore (function is still defined)
+		}
+
 		// Format output
-		const paramsDisplay = params.join(', ');
 		const valueStr = toCustom(parseResult.ast);
 		const actionWord = isOverwrite ? 'Redefined' : 'Defined';
 		const output =
@@ -146,7 +174,8 @@ export class DefCommand extends BaseCommand {
 			' ' +
 			chalk.bold(`${funcName}(${paramsDisplay})`) +
 			' = ' +
-			chalk.cyan(valueStr);
+			chalk.cyan(valueStr) +
+			derivativeInfo;
 
 		return {
 			success: true,
