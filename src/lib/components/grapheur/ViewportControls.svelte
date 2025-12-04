@@ -6,6 +6,8 @@
 	 * - Zoom in (zoom by factor 1.5)
 	 * - Zoom out (zoom by factor 0.67 ≈ 1/1.5)
 	 * - Reset to default viewport
+	 * - Toggle grid visibility
+	 * - Export graph as image
 	 *
 	 * @component
 	 */
@@ -13,6 +15,18 @@
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { ZoomIn, ZoomOut, Maximize2, Grid3x3 } from 'lucide-svelte';
+	import ExportButton from './ExportButton.svelte';
+
+	// Props
+	let {
+		svgRef,
+		svgWidth,
+		svgHeight
+	}: {
+		svgRef?: SVGSVGElement;
+		svgWidth: number;
+		svgHeight: number;
+	} = $props();
 
 	// ==========================================================================
 	// Handlers
@@ -88,6 +102,8 @@
 	>
 		<Grid3x3 class="h-4 w-4" />
 	</Button>
+
+	<ExportButton {svgRef} width={svgWidth} height={svgHeight} />
 </div>
 
 <style>
