@@ -31,6 +31,8 @@ Complete reference documentation for the MathAST library - an immutable Abstract
 19. [Usage Patterns](#usage-patterns)
 20. [API Summary](#api-summary)
 21. [CLI](#cli)
+    - [Function Commands](#function-commands)
+    - [Calculus Commands](#calculus-commands)
 
 ---
 
@@ -4235,3 +4237,301 @@ Result: 64 (exact)
 - **decimal**: Converts to decimal approximations (`0.5`, `1.414...`)
 
 **Full Documentation**: See [CLI README](../../../src/lib/mathAST/cli/README.md) for complete details on variable bindings, evaluation modes, and usage examples.
+
+---
+
+### Function Commands
+
+🆕 2025-12-04
+
+Commands for defining, listing, and managing custom functions with automatic derivative computation.
+
+#### .def - Define Function
+
+Defines a new function with auto-computed derivative.
+
+**Syntax**: `.def name(params) = expression`
+
+**Aliases**: `.fn`
+
+**Features**:
+
+- Auto-computes first derivative (or partial derivative w.r.t. first parameter for multi-variable functions)
+- Supports arbitrary expression complexity
+- Gracefully handles differentiation failures with error message
+
+**Examples**:
+
+```
+math> .def f(x) = x^2
+Defined f(x) = x^2
+Auto-computed: f'(x) = 2x
+
+math> .def g(x,y) = x*y
+Defined g(x,y) = xy
+Auto-computed: g'(x,y) = y (partial derivative w.r.t. x)
+
+math> .def h(x) = sin(x)
+Defined h(x) = sin(x)
+Auto-computed: h'(x) = cos(x)
+
+math> .def p(x) = (x+1)^3
+Defined p(x) = (x+1)^3
+Auto-computed: p'(x) = 3(x+1)^2
+```
+
+---
+
+#### .def' - Override Derivative
+
+Manually set or override a function's derivative.
+
+**Syntax**: `.def' name = expression`
+
+**Aliases**: `.fn'`
+
+**Use Cases**:
+
+- Override auto-computed derivative with manual formula
+- Define derivative when auto-computation fails
+- Set exact form for piecewise or special functions
+
+**Examples**:
+
+```
+math> .def' f = 2*x
+Derivative set for f: f'(x) = 2x
+
+math> .def' g = cos(x)
+Derivative set for g: g'(x) = cos(x)
+
+math> .def' h = 0
+Derivative set for h: h'(x) = 0 (constant function)
+```
+
+---
+
+#### .fns - List Functions
+
+Lists all defined functions with their derivatives and inverses.
+
+**Syntax**: `.fns`
+
+**Output Format**: Shows each function with its derivative (if defined) and inverse (if defined)
+
+**Examples**:
+
+```
+math> .fns
+Defined functions (3):
+  • f(x) = x^2
+    f'(x) = 2x
+  • g(x,y) = x*y
+    g'(x,y) = y
+  • h(x) = sin(x)
+    h'(x) = cos(x)
+
+math> .fns
+No functions defined.
+```
+
+---
+
+#### .undef - Remove Function
+
+Removes a function definition from state, including its derivative and inverse.
+
+**Syntax**: `.undef name`
+
+**Examples**:
+
+```
+math> .undef f
+Removed function: f
+
+math> .undef g
+Removed function: g
+
+math> .undef nonexistent
+Function not found: nonexistent
+```
+
+---
+
+#### .inv - Inverse Function
+
+Display or define inverse functions.
+
+**Syntax**:
+
+- `.inv name` - Display the inverse of a function
+- `.inv name = expr` - Define the inverse function
+- Aliases: `.inverse`
+
+**Features**:
+
+- Manual definition only (no auto-computation)
+- Useful for transcendental functions and piecewise functions
+- Stores inverse alongside function definition
+
+**Examples**:
+
+```
+math> .inv f
+Inverse not set for f
+
+math> .inv f = sqrt(x)
+Set: f^(-1)(x) = sqrt(x)
+
+math> .inv f
+f^(-1)(x) = sqrt(x)
+
+math> .inv exp = ln
+Updated: exp^(-1)(x) = ln(x)
+
+math> .inv sin = asin
+Set: sin^(-1)(x) = asin(x)
+```
+
+---
+
+### Calculus Commands
+
+🆕 2025-12-04
+
+Commands for calculus operations: differentiation and Taylor series expansion.
+
+#### .diff - Differentiate
+
+Computes the symbolic derivative of an expression with respect to a specified variable.
+
+**Syntax**: `.diff expression [variable]`
+
+**Default variable**: `x` (if omitted)
+
+**Aliases**: `.d`, `.derivative`
+
+**Features**:
+
+- Symbolic differentiation (not numerical)
+- Supports function bindings for generic functions
+- Auto-detects variables from expression if needed
+- Outputs both custom and LaTeX notation
+
+**Examples**:
+
+```
+math> .diff x^3
+Derivative: 3x^2
+LaTeX:      3 x^{2}
+
+math> .diff x^3 x
+Derivative: 3x^2
+
+math> .diff sin(x)
+Derivative: cos(x)
+
+math> .diff x*y y
+Derivative: x
+
+math> .diff exp(x) + ln(x)
+Derivative: exp(x) + 1/x
+
+math> .diff (a+b)^2 a
+Derivative: 2(a+b)
+```
+
+**Higher-order derivatives**: Chain multiple `.diff` commands
+
+```
+math> .diff x^4
+Derivative: 4x^3
+
+math> .diff 4x^3
+Derivative: 12x^2
+
+math> .diff 12x^2
+Derivative: 24x
+```
+
+---
+
+#### .taylor - Taylor Series
+
+Computes Taylor series expansion of an expression around a center point.
+
+**Syntax**: `.taylor expression terms [center]`
+
+**Parameters**:
+
+- `expression`: Expression to expand
+- `terms`: Number of terms to compute (1-20, default: 5)
+- `center`: Expansion center point (default: 0 for Maclaurin series)
+
+**Features**:
+
+- Auto-detects variable from expression
+- Supports built-in functions (sin, cos, tan, exp, ln, etc.)
+- Supports user-defined functions with derivatives
+- Handles function composition
+- Max 20 terms for performance
+
+**Examples**:
+
+```
+math> .taylor sin(x) 5 0
+Maclaurin series (5 terms):
+x - x^3/6 + x^5/120 - x^7/5040 + x^9/362880
+
+math> .taylor exp(x) 4 0
+Maclaurin series (4 terms):
+1 + x + x^2/2 + x^3/6
+
+math> .taylor cos(x) 5 0
+Maclaurin series (5 terms):
+1 - x^2/2 + x^4/24 - x^6/720 + x^8/40320
+
+math> .taylor 1/(1+x) 5 0
+Maclaurin series (5 terms):
+1 - x + x^2 - x^3 + x^4
+
+math> .taylor ln(x) 3 1
+Taylor series centered at 1 (3 terms):
+(x-1) - (x-1)^2/2 + (x-1)^3/3
+
+math> .taylor f(x) 4 0
+(where f is user-defined with derivative)
+Taylor series (4 terms):
+[computed from f and f']
+```
+
+**Typical Use Cases**:
+
+- **Calculus learning**: Visualize approximations
+- **Numerical methods**: Use truncated series for computation
+- **Analysis**: Study function behavior near a point
+- **Physics**: Approximate complex functions for engineering
+
+---
+
+## Integration Example
+
+Using function commands and calculus together:
+
+```
+math> .def f(x) = x*sin(x)
+Defined f(x) = xsin(x)
+Auto-computed: f'(x) = sin(x) + xcos(x)
+
+math> .diff x*sin(x)
+Derivative: sin(x) + xcos(x)
+
+math> .taylor x*sin(x) 4 0
+Maclaurin series (4 terms):
+x - x^3/6
+
+math> .fns
+Defined functions (1):
+  • f(x) = xsin(x)
+    f'(x) = sin(x) + xcos(x)
+```
