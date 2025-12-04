@@ -122,6 +122,8 @@ export interface GraphState {
 	readonly version: number;
 	/** Current viewport */
 	readonly viewport: Viewport;
+	/** Whether the grid is visible */
+	readonly showGrid: boolean;
 	/** List of functions to plot */
 	readonly functions: readonly ExplicitFunctionState[];
 }
@@ -253,6 +255,7 @@ export const graphStateSchema = z.object({
 		.min(1, 'Version must be at least 1')
 		.max(GRAPH_STATE_VERSION, `Unsupported version (max ${GRAPH_STATE_VERSION})`),
 	viewport: viewportSchema,
+	showGrid: z.boolean().default(true),
 	functions: z.array(explicitFunctionStateSchema).max(20, 'Too many functions (max 20)').default([])
 });
 

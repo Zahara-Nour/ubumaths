@@ -21,6 +21,7 @@ Features:
 	import FunctionPanel from './FunctionPanel.svelte';
 	import ViewportControls from './ViewportControls.svelte';
 	import CoordinatesDisplay from './CoordinatesDisplay.svelte';
+	import KeyboardHandler from './KeyboardHandler.svelte';
 
 	/**
 	 * Optional CSS class for container customization
@@ -55,6 +56,9 @@ Features:
 			</div>
 		</div>
 	</main>
+
+	<!-- Keyboard shortcuts handler -->
+	<KeyboardHandler />
 </div>
 
 <style>
