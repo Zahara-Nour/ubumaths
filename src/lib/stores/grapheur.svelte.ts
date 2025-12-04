@@ -157,7 +157,8 @@ class GrapheurStore {
 			variable: 'x',
 			color,
 			visible: true,
-			lineWidth: 2
+			lineWidth: 2,
+			lineStyle: 'solid'
 		};
 
 		this.functions = [...this.functions, func];
@@ -185,7 +186,9 @@ class GrapheurStore {
 	 */
 	updateFunction(
 		id: string,
-		updates: Partial<Pick<ExplicitFunction, 'latex' | 'color' | 'visible' | 'lineWidth'>>
+		updates: Partial<
+			Pick<ExplicitFunction, 'latex' | 'color' | 'visible' | 'lineWidth' | 'lineStyle'>
+		>
 	): void {
 		this.functions = this.functions.map((f) => {
 			if (f.id !== id) return f;
@@ -360,6 +363,7 @@ class GrapheurStore {
 					color: f.color,
 					visible: f.visible,
 					lineWidth: f.lineWidth,
+					lineStyle: f.lineStyle,
 					variable: f.variable
 				})
 			)
@@ -407,7 +411,8 @@ class GrapheurStore {
 					variable: f.variable,
 					color: f.color,
 					visible: f.visible,
-					lineWidth: f.lineWidth
+					lineWidth: f.lineWidth,
+					lineStyle: f.lineStyle ?? 'solid' // Default for backward compatibility
 				};
 			});
 		} catch (error) {

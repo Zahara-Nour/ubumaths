@@ -12,6 +12,40 @@ import { z } from 'zod';
 import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
+// Line Style Types
+// =============================================================================
+
+/**
+ * Available line styles for function curves
+ */
+export const LINE_STYLES = ['solid', 'dashed', 'dotted', 'dashdot'] as const;
+
+/**
+ * Type for line styles
+ */
+export type LineStyle = (typeof LINE_STYLES)[number];
+
+/**
+ * Available line widths for function curves
+ */
+export const LINE_WIDTHS = [1, 2, 3, 4, 5] as const;
+
+/**
+ * Type for line widths
+ */
+export type LineWidthOption = (typeof LINE_WIDTHS)[number];
+
+/**
+ * SVG stroke-dasharray values for each line style
+ */
+export const LINE_STYLE_DASHARRAY: Record<LineStyle, string> = {
+	solid: 'none',
+	dashed: '8,4',
+	dotted: '2,4',
+	dashdot: '8,4,2,4'
+};
+
+// =============================================================================
 // Plottable Types
 // =============================================================================
 
@@ -25,8 +59,10 @@ export interface PlottableBase {
 	readonly color: string;
 	/** Whether this plottable is currently visible */
 	readonly visible: boolean;
-	/** Line width in pixels (1-10) */
+	/** Line width in pixels (1-5) */
 	readonly lineWidth: number;
+	/** Line style (solid, dashed, dotted, dashdot) */
+	readonly lineStyle: LineStyle;
 }
 
 /**
@@ -141,6 +177,7 @@ export interface ExplicitFunctionState {
 	readonly color: string;
 	readonly visible: boolean;
 	readonly lineWidth: number;
+	readonly lineStyle: LineStyle;
 	readonly variable: string;
 }
 
@@ -308,6 +345,11 @@ export const viewportSchema = z
 	});
 
 /**
+ * Zod schema for line style validation
+ */
+const lineStyleSchema = z.enum(LINE_STYLES);
+
+/**
  * Zod schema for explicit function state (serializable)
  */
 const explicitFunctionStateSchema = z.object({
@@ -320,7 +362,8 @@ const explicitFunctionStateSchema = z.object({
 		.number()
 		.int('Line width must be an integer')
 		.min(1, 'Line width minimum is 1')
-		.max(10, 'Line width maximum is 10'),
+		.max(5, 'Line width maximum is 5'),
+	lineStyle: lineStyleSchema.default('solid'),
 	variable: z
 		.string()
 		.min(1, 'Variable name is required')

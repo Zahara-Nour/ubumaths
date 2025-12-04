@@ -21,10 +21,12 @@ Features:
 -->
 
 <script lang="ts">
-	import type { ExplicitFunction } from '$lib/grapheur/types';
+	import type { ExplicitFunction, LineStyle } from '$lib/grapheur/types';
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import ColorPicker from './ColorPicker.svelte';
+	import LineWidthPicker from './LineWidthPicker.svelte';
+	import LineStylePicker from './LineStylePicker.svelte';
 	import { Eye, EyeOff, Trash2 } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 
@@ -74,6 +76,20 @@ Features:
 	}
 
 	/**
+	 * Handle line width changes
+	 */
+	function handleWidthChange(lineWidth: number) {
+		grapheurStore.updateFunction(func.id, { lineWidth });
+	}
+
+	/**
+	 * Handle line style changes
+	 */
+	function handleStyleChange(lineStyle: LineStyle) {
+		grapheurStore.updateFunction(func.id, { lineStyle });
+	}
+
+	/**
 	 * Toggle visibility
 	 */
 	function toggleVisibility() {
@@ -89,9 +105,13 @@ Features:
 </script>
 
 <div class="function-input flex flex-col gap-2 rounded-md border border-border bg-card p-3">
-	<!-- Top row: Color Picker + Action Buttons -->
+	<!-- Top row: Style Pickers + Action Buttons -->
 	<div class="flex items-center justify-between">
-		<ColorPicker value={func.color} onchange={handleColorChange} />
+		<div class="flex items-center gap-1">
+			<ColorPicker value={func.color} onchange={handleColorChange} />
+			<LineWidthPicker value={func.lineWidth} onchange={handleWidthChange} />
+			<LineStylePicker value={func.lineStyle} onchange={handleStyleChange} />
+		</div>
 
 		<div class="flex gap-1">
 			<Button
