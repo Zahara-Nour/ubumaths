@@ -277,16 +277,6 @@
 	</div>
 </div>
 
-<!-- Global keyboard handler - captures when focus is elsewhere in window -->
-<svelte:window
-	onkeydown={(event) => {
-		// Only handle if the spreadsheet container has focus within
-		if (containerRef?.contains(document.activeElement) || document.activeElement === containerRef) {
-			handleKeydown(event);
-		}
-	}}
-/>
-
 <style>
 	.spreadsheet-container {
 		/* Ensure the container can receive focus for keyboard events */
