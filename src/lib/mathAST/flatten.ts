@@ -292,6 +292,20 @@ export function flattenSumDeep(node: MathNode): DeepFlatSumResult {
 				}
 				break;
 
+			case 'composition':
+				// Process outer and inner functions
+				{
+					const outerResult = flattenSumDeep(term.outer);
+					if (outerResult.terms.length > 1 || outerResult.subLists.size > 0) {
+						subLists.set(term.outer, outerResult);
+					}
+					const innerResult = flattenSumDeep(term.inner);
+					if (innerResult.terms.length > 1 || innerResult.subLists.size > 0) {
+						subLists.set(term.inner, innerResult);
+					}
+				}
+				break;
+
 			// Literals have no further processing
 			case 'number':
 			case 'variable':
@@ -445,6 +459,20 @@ export function flattenProductDeep(node: MathNode): DeepFlatProductResult {
 					const rightResult = flattenSumDeep(factor.right);
 					if (rightResult.terms.length > 1 || rightResult.subLists.size > 0) {
 						subLists.set(factor.right, rightResult);
+					}
+				}
+				break;
+
+			case 'composition':
+				// Process outer and inner functions
+				{
+					const outerResult = flattenSumDeep(factor.outer);
+					if (outerResult.terms.length > 1 || outerResult.subLists.size > 0) {
+						subLists.set(factor.outer, outerResult);
+					}
+					const innerResult = flattenSumDeep(factor.inner);
+					if (innerResult.terms.length > 1 || innerResult.subLists.size > 0) {
+						subLists.set(factor.inner, innerResult);
 					}
 				}
 				break;

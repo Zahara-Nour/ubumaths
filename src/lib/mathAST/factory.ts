@@ -7,6 +7,7 @@
 
 import type {
 	AdditionNode,
+	CompositionNode,
 	DelimiterNode,
 	DelimiterSemantic,
 	DelimiterType,
@@ -91,6 +92,14 @@ export interface RelationOptions {
  */
 export interface UnitOptions {
 	unitMetadata?: NodeMetadata;
+	metadata?: NodeMetadata;
+}
+
+/**
+ * Options for composition nodes
+ */
+export interface CompositionOptions {
+	operatorMetadata?: NodeMetadata;
 	metadata?: NodeMetadata;
 }
 
@@ -189,6 +198,26 @@ function isUnitOptions(opt: unknown): opt is UnitOptions {
 function normalizeUnitOptions(options?: UnitOptions | NodeMetadata): UnitOptions {
 	if (!options) return {};
 	if (isUnitOptions(options)) return options;
+	return { metadata: options };
+}
+
+/**
+ * Type guard to check if a value is a CompositionOptions object
+ */
+function isCompositionOptions(opt: unknown): opt is CompositionOptions {
+	return (
+		typeof opt === 'object' && opt !== null && ('operatorMetadata' in opt || 'metadata' in opt)
+	);
+}
+
+/**
+ * Normalizes composition options for backwards compatibility.
+ */
+function normalizeCompositionOptions(
+	options?: CompositionOptions | NodeMetadata
+): CompositionOptions {
+	if (!options) return {};
+	if (isCompositionOptions(options)) return options;
 	return { metadata: options };
 }
 
@@ -423,6 +452,8 @@ export function positive(operand: MathNode, options?: UnaryOpOptions | NodeMetad
 export interface FunctionOptions {
 	power?: MathNode;
 	base?: MathNode;
+	derivativeOrder?: number; // 1=f', 2=f'', 3=f'''
+	isInverse?: boolean; // true for f^{-1}
 	nameMetadata?: NodeMetadata;
 	delimiterMetadata?: NodeMetadata;
 	leftDelimiterMetadata?: NodeMetadata;
@@ -434,7 +465,7 @@ export interface FunctionOptions {
  * Creates a function application node
  * @param name - Function name (e.g., 'sin', 'log', 'f')
  * @param args - Function arguments
- * @param options - Optional power, base, and metadata options
+ * @param options - Optional power, base, derivativeOrder, isInverse, and metadata options
  */
 export function func(
 	name: string,
@@ -447,6 +478,8 @@ export function func(
 		args,
 		...(options?.power && { power: options.power }),
 		...(options?.base && { base: options.base }),
+		...(options?.derivativeOrder !== undefined && { derivativeOrder: options.derivativeOrder }),
+		...(options?.isInverse && { isInverse: options.isInverse }),
 		...(options?.nameMetadata && { nameMetadata: options.nameMetadata }),
 		...(options?.delimiterMetadata && { delimiterMetadata: options.delimiterMetadata }),
 		...(options?.leftDelimiterMetadata && { leftDelimiterMetadata: options.leftDelimiterMetadata }),
@@ -470,7 +503,9 @@ function isFunctionOptions(opt: unknown): opt is FunctionOptions {
 			'leftDelimiterMetadata' in opt ||
 			'rightDelimiterMetadata' in opt ||
 			'power' in opt ||
-			'base' in opt)
+			'base' in opt ||
+			'derivativeOrder' in opt ||
+			'isInverse' in opt)
 	);
 }
 
@@ -542,6 +577,41 @@ export function sqrt(arg: MathNode, options?: FunctionOptions | NodeMetadata): F
  */
 export function abs(arg: MathNode, options?: FunctionOptions | NodeMetadata): FunctionNode {
 	return func('abs', [arg], normalizeFunctionOptions(options));
+}
+
+/**
+ * Creates a derivative function: f'(x), f''(x), f'''(x), f^(n)(x)
+ * @param name - Function name (e.g., 'f', 'g')
+ * @param args - Function arguments
+ * @param order - Derivative order (1 for f', 2 for f'', etc.)
+ * @param options - Optional additional function options
+ */
+export function derivativeFunc(
+	name: string,
+	args: readonly MathNode[],
+	order: number = 1,
+	options?: FunctionOptions | NodeMetadata
+): FunctionNode {
+	if (!Number.isInteger(order) || order < 1) {
+		throw new Error(`derivativeOrder must be a positive integer, got ${order}`);
+	}
+	const opts = normalizeFunctionOptions(options);
+	return func(name, args, { ...opts, derivativeOrder: order });
+}
+
+/**
+ * Creates an inverse function: f^{-1}(x)
+ * @param name - Function name (e.g., 'f', 'sin')
+ * @param args - Function arguments
+ * @param options - Optional additional function options
+ */
+export function inverseFunc(
+	name: string,
+	args: readonly MathNode[],
+	options?: FunctionOptions | NodeMetadata
+): FunctionNode {
+	const opts = normalizeFunctionOptions(options);
+	return func(name, args, { ...opts, isInverse: true });
 }
 
 // =============================================================================
@@ -974,6 +1044,44 @@ export function iffChain(...operands: MathNode[]): RelationNode {
 }
 
 // =============================================================================
+// Composition Factory
+// =============================================================================
+
+/**
+ * Creates a composition node representing f composed with g (f ∘ g)
+ *
+ * The composition (f ∘ g)(x) means f(g(x)) - g is applied first, then f.
+ *
+ * @param outer - The outer function f (applied second)
+ * @param inner - The inner function g (applied first)
+ * @param options - Optional CompositionOptions or NodeMetadata for rendering hints
+ *
+ * @example
+ * // f ∘ g
+ * compose(variable('f'), variable('g'))
+ *
+ * // sin ∘ cos
+ * compose(func('sin', []), func('cos', []))
+ *
+ * // (f ∘ g) ∘ h (left associative)
+ * compose(compose(variable('f'), variable('g')), variable('h'))
+ */
+export function compose(
+	outer: MathNode,
+	inner: MathNode,
+	options?: CompositionOptions | NodeMetadata
+): CompositionNode {
+	const opts = normalizeCompositionOptions(options);
+	return {
+		type: 'composition',
+		outer,
+		inner,
+		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
+		...(opts.metadata && { metadata: opts.metadata })
+	} as const;
+}
+
+// =============================================================================
 // Unit Factories
 // =============================================================================
 
@@ -1080,6 +1188,8 @@ export const MathAST = {
 	exp,
 	sqrt,
 	abs,
+	derivativeFunc,
+	inverseFunc,
 
 	// Structural
 	delimiter,
@@ -1120,5 +1230,8 @@ export const MathAST = {
 	// Units
 	withUnit,
 	quantity,
-	quantityVar
+	quantityVar,
+
+	// Composition
+	compose
 } as const;

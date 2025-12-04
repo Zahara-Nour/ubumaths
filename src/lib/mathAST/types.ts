@@ -261,7 +261,7 @@ export type UnaryOperationNode = OppositeNode | PositiveNode;
 
 /**
  * Represents a mathematical function application
- * Examples: sin(x), log_2(8), f^2(x)
+ * Examples: sin(x), log_2(8), f^2(x), f'(x), f^{-1}(x)
  */
 export interface FunctionNode extends BaseNode {
 	readonly type: 'function';
@@ -269,6 +269,8 @@ export interface FunctionNode extends BaseNode {
 	readonly args: readonly MathNode[];
 	readonly power?: MathNode;
 	readonly base?: MathNode;
+	readonly derivativeOrder?: number; // 1=f', 2=f'', 3=f'''
+	readonly isInverse?: boolean; // true for f^{-1}
 	readonly nameMetadata?: NodeMetadata;
 	readonly delimiterMetadata?: NodeMetadata;
 	readonly leftDelimiterMetadata?: NodeMetadata;
@@ -389,6 +391,27 @@ export interface UnitNode extends BaseNode {
 }
 
 // =============================================================================
+// Function Composition Node
+// =============================================================================
+
+/**
+ * Represents function composition: outer composed with inner (outer ∘ inner)
+ *
+ * This represents the mathematical operation (f ∘ g)(x) = f(g(x))
+ *
+ * Examples:
+ * - f ∘ g: CompositionNode(f, g) - applying g first, then f
+ * - sin ∘ cos: the function that computes sin(cos(x))
+ * - (f ∘ g) ∘ h: nested composition
+ */
+export interface CompositionNode extends BaseNode {
+	readonly type: 'composition';
+	readonly outer: MathNode; // f in f ∘ g
+	readonly inner: MathNode; // g in f ∘ g
+	readonly operatorMetadata?: NodeMetadata;
+}
+
+// =============================================================================
 // Union Type for All Nodes
 // =============================================================================
 
@@ -412,7 +435,8 @@ export type MathNode =
 	| SubscriptNode
 	| SuperscriptNode
 	| RelationNode
-	| UnitNode;
+	| UnitNode
+	| CompositionNode;
 
 // =============================================================================
 // Node Type Extraction

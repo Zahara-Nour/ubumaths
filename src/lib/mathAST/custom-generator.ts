@@ -39,6 +39,7 @@ import type {
 	SuperscriptNode,
 	RelationNode,
 	UnitNode,
+	CompositionNode,
 	RelationType,
 	GreekLetter,
 	NodeMetadata
@@ -267,6 +268,7 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'superscript':
 		case 'relation':
 		case 'unit':
+		case 'composition':
 			return true;
 
 		default: {
@@ -424,6 +426,10 @@ export class CustomGenerator {
 				this.emit('?', node.metadata);
 				break;
 
+			case 'composition':
+				this.visitCompositionSpans(node);
+				break;
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -541,6 +547,7 @@ export class CustomGenerator {
 	/**
 	 * Emits spans for a function node.
 	 * Special case: abs(x) is rendered as |x|
+	 * Handles derivativeOrder (f', f'', f^{(n)}) and isInverse (f^{-1})
 	 */
 	private visitFunctionSpans(node: FunctionNode): void {
 		// Special case: abs function renders as |x|
@@ -556,8 +563,24 @@ export class CustomGenerator {
 		// Regular function: NO backslash in custom syntax
 		this.emit(node.name, node.nameMetadata ?? node.metadata);
 
-		// Emit power if present (e.g., sin^2)
-		if (node.power) {
+		// Emit derivative notation (takes priority over power)
+		if (node.derivativeOrder !== undefined && node.derivativeOrder > 0) {
+			if (node.derivativeOrder <= 3) {
+				// Use prime notation: f', f'', f'''
+				this.emit("'".repeat(node.derivativeOrder), node.metadata);
+			} else {
+				// Use parenthetical notation: f^{(n)}
+				this.emit(`^{(${node.derivativeOrder})}`, node.metadata);
+			}
+		}
+
+		// Emit inverse notation (f^{-1}) - only if no derivative
+		if (node.isInverse && !node.derivativeOrder) {
+			this.emit('^{-1}', node.metadata);
+		}
+
+		// Emit power if present (only if no derivative and no inverse)
+		if (node.power && !node.derivativeOrder && !node.isInverse) {
 			this.emit('^', node.metadata);
 			const needsBraces = needsBracesForPower(node.power);
 			if (needsBraces) this.emit('{', node.metadata);
@@ -670,6 +693,17 @@ export class CustomGenerator {
 	}
 
 	/**
+	 * Emits spans for a composition node (f composed with g).
+	 * Renders as: outer@inner (@ is the composition operator in custom syntax)
+	 */
+	private visitCompositionSpans(node: CompositionNode): void {
+		const opMeta = node.operatorMetadata ?? node.metadata;
+		this.visitWithSpans(node.outer);
+		this.emit('@', opMeta);
+		this.visitWithSpans(node.inner);
+	}
+
+	/**
 	 * Visits a node with inherited metadata.
 	 * If the node has its own metadata, uses that; otherwise uses the inherited metadata.
 	 */
@@ -765,6 +799,9 @@ export class CustomGenerator {
 				break;
 			case 'hole':
 				content = this.generateHole(node);
+				break;
+			case 'composition':
+				content = this.generateComposition(node);
 				break;
 			default: {
 				const exhaustive: never = node;
@@ -873,6 +910,7 @@ export class CustomGenerator {
 	/**
 	 * Generates custom syntax for a function node.
 	 * Special case: abs(x) is rendered as |x|
+	 * Handles derivativeOrder (f', f'', f^{(n)}) and isInverse (f^{-1})
 	 */
 	private generateFunction(node: FunctionNode): string {
 		// Special case: abs function renders as |x|
@@ -884,8 +922,25 @@ export class CustomGenerator {
 		// Regular function: NO backslash in custom syntax
 		let result = node.name;
 
-		// Add power if present (e.g., sin^2)
-		if (node.power) {
+		// Add derivative notation (takes priority over power)
+		// f' -> f', f'' -> f'', f''' -> f''', f^{(n)} -> f^{(n)}
+		if (node.derivativeOrder !== undefined && node.derivativeOrder > 0) {
+			if (node.derivativeOrder <= 3) {
+				// Use prime notation: f', f'', f'''
+				result += "'".repeat(node.derivativeOrder);
+			} else {
+				// Use parenthetical notation: f^{(n)}
+				result += `^{(${node.derivativeOrder})}`;
+			}
+		}
+
+		// Add inverse notation (f^{-1}) - only if no derivative
+		if (node.isInverse && !node.derivativeOrder) {
+			result += '^{-1}';
+		}
+
+		// Add power if present (only if no derivative and no inverse)
+		if (node.power && !node.derivativeOrder && !node.isInverse) {
 			const powerStr = this.generateNode(node.power);
 			const needsBraces = needsBracesForPower(node.power);
 			result += needsBraces ? `^{${powerStr}}` : `^${powerStr}`;
@@ -966,6 +1021,16 @@ export class CustomGenerator {
 	 */
 	private generateHole(_node: HoleNode): string {
 		return '?';
+	}
+
+	/**
+	 * Generates custom syntax for a composition node (f composed with g).
+	 * Renders as: outer@inner (@ is the composition operator in custom syntax)
+	 */
+	private generateComposition(node: CompositionNode): string {
+		const outer = this.generateNode(node.outer);
+		const inner = this.generateNode(node.inner);
+		return `${outer}@${inner}`;
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {

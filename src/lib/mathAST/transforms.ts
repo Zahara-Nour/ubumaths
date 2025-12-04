@@ -9,10 +9,12 @@ import type { MathNode, NodeMetadata } from './types';
 
 import {
 	add,
+	compose,
 	delimiter,
 	divide,
 	func,
 	greek,
+	hole,
 	multiply,
 	number,
 	opposite,
@@ -159,6 +161,7 @@ export function getChildren(node: MathNode): MathNode[] {
 		case 'variable':
 		case 'greek':
 		case 'symbol':
+		case 'hole':
 			return [];
 
 		// Binary operations
@@ -200,6 +203,10 @@ export function getChildren(node: MathNode): MathNode[] {
 		// Unit
 		case 'unit':
 			return [node.expression];
+
+		// Composition
+		case 'composition':
+			return [node.outer, node.inner];
 	}
 }
 
@@ -223,6 +230,7 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 		case 'variable':
 		case 'greek':
 		case 'symbol':
+		case 'hole':
 			transformedNode = node;
 			break;
 
@@ -288,6 +296,8 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				{
 					...(node.power && { power: mapNode(node.power, fn) }),
 					...(node.base && { base: mapNode(node.base, fn) }),
+					...(node.derivativeOrder !== undefined && { derivativeOrder: node.derivativeOrder }),
+					...(node.isInverse && { isInverse: node.isInverse }),
 					...(node.nameMetadata && { nameMetadata: node.nameMetadata }),
 					...(node.delimiterMetadata && { delimiterMetadata: node.delimiterMetadata }),
 					...(node.leftDelimiterMetadata && { leftDelimiterMetadata: node.leftDelimiterMetadata }),
@@ -340,6 +350,14 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				metadata: node.metadata
 			});
 			break;
+
+		// Composition
+		case 'composition':
+			transformedNode = compose(mapNode(node.outer, fn), mapNode(node.inner, fn), {
+				operatorMetadata: node.operatorMetadata,
+				metadata: node.metadata
+			});
+			break;
 	}
 
 	// Then apply transformation to the parent
@@ -363,6 +381,7 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 		case 'variable':
 		case 'greek':
 		case 'symbol':
+		case 'hole':
 			return transformedParent;
 
 		// Binary operations
@@ -429,6 +448,10 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				{
 					...(transformedParent.power && { power: mapNodeTopDown(transformedParent.power, fn) }),
 					...(transformedParent.base && { base: mapNodeTopDown(transformedParent.base, fn) }),
+					...(transformedParent.derivativeOrder !== undefined && {
+						derivativeOrder: transformedParent.derivativeOrder
+					}),
+					...(transformedParent.isInverse && { isInverse: transformedParent.isInverse }),
 					...(transformedParent.nameMetadata && { nameMetadata: transformedParent.nameMetadata }),
 					...(transformedParent.delimiterMetadata && {
 						delimiterMetadata: transformedParent.delimiterMetadata
@@ -489,6 +512,17 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				unitMetadata: transformedParent.unitMetadata,
 				metadata: transformedParent.metadata
 			});
+
+		// Composition
+		case 'composition':
+			return compose(
+				mapNodeTopDown(transformedParent.outer, fn),
+				mapNodeTopDown(transformedParent.inner, fn),
+				{
+					operatorMetadata: transformedParent.operatorMetadata,
+					metadata: transformedParent.metadata
+				}
+			);
 	}
 }
 
@@ -588,6 +622,9 @@ export function cloneNode<T extends MathNode>(node: T): T {
 		case 'symbol':
 			return symbol(node.symbol, node.metadata) as T;
 
+		case 'hole':
+			return hole(node.index, node.placeholder, node.metadata) as T;
+
 		// Binary operations
 		case 'addition':
 			return add(cloneNode(node.left), cloneNode(node.right), {
@@ -634,6 +671,8 @@ export function cloneNode<T extends MathNode>(node: T): T {
 				{
 					...(node.power && { power: cloneNode(node.power) }),
 					...(node.base && { base: cloneNode(node.base) }),
+					...(node.derivativeOrder !== undefined && { derivativeOrder: node.derivativeOrder }),
+					...(node.isInverse && { isInverse: node.isInverse }),
 					...(node.nameMetadata && { nameMetadata: node.nameMetadata }),
 					...(node.delimiterMetadata && { delimiterMetadata: node.delimiterMetadata }),
 					...(node.leftDelimiterMetadata && { leftDelimiterMetadata: node.leftDelimiterMetadata }),
@@ -670,6 +709,13 @@ export function cloneNode<T extends MathNode>(node: T): T {
 		case 'unit':
 			return withUnit(cloneNode(node.expression), node.unit, {
 				unitMetadata: node.unitMetadata,
+				metadata: node.metadata
+			}) as T;
+
+		// Composition
+		case 'composition':
+			return compose(cloneNode(node.outer), cloneNode(node.inner), {
+				operatorMetadata: node.operatorMetadata,
 				metadata: node.metadata
 			}) as T;
 	}

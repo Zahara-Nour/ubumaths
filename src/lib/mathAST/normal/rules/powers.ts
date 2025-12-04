@@ -102,6 +102,12 @@ function nodesStructurallyEqual(a: MathNode, b: MathNode): boolean {
 		case 'unit':
 			return nodesStructurallyEqual(a.expression, (b as typeof a).expression);
 
+		case 'composition':
+			return (
+				nodesStructurallyEqual(a.outer, (b as typeof a).outer) &&
+				nodesStructurallyEqual(a.inner, (b as typeof a).inner)
+			);
+
 		default:
 			return false;
 	}

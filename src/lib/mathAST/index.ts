@@ -117,6 +117,8 @@ export {
 	exp,
 	sqrt,
 	abs,
+	derivativeFunc,
+	inverseFunc,
 
 	// Structural
 	delimiter,
@@ -216,6 +218,8 @@ export {
 	isOpposite,
 	isPositive,
 	isFunction,
+	isDerivativeFunction,
+	isInverseFunction,
 	isDelimiter,
 	isSubscript,
 	isSuperscript,
@@ -223,6 +227,7 @@ export {
 	isUnit,
 
 	// Utility predicates
+	hasDerivativeOrder,
 	hasChildren,
 	isLeaf,
 	hasMetadata,

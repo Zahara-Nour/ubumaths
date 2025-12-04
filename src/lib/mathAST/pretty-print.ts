@@ -17,7 +17,8 @@ import type {
 	FunctionNode,
 	DelimiterNode,
 	RelationNode,
-	UnitNode
+	UnitNode,
+	CompositionNode
 } from './types';
 import { format as formatUnit } from './units/formatter';
 
@@ -303,6 +304,13 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			printUnit(node, ctx, prefix, childPrefix);
 			break;
 
+		// =========================================================================
+		// Composition
+		// =========================================================================
+		case 'composition':
+			printComposition(node, ctx, prefix, childPrefix);
+			break;
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = node;
@@ -487,6 +495,27 @@ function printUnit(node: UnitNode, ctx: PrintContext, prefix: string, childPrefi
 	addLine(ctx, prefix, header, node.metadata);
 
 	printNode(node.expression, ctx, childPrefix + TREE.last, childPrefix + TREE.space);
+}
+
+/**
+ * Print composition node
+ */
+function printComposition(
+	node: CompositionNode,
+	ctx: PrintContext,
+	prefix: string,
+	childPrefix: string
+): void {
+	let header = 'Composition';
+	header += formatExtendedMetadata('op', node.operatorMetadata);
+
+	addLine(ctx, prefix, header, node.metadata);
+
+	const children = [
+		{ label: 'outer', node: node.outer },
+		{ label: 'inner', node: node.inner }
+	];
+	printChildren(children, ctx, childPrefix);
 }
 
 /**
