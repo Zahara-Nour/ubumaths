@@ -120,7 +120,7 @@
 
 	<!-- Spreadsheets List -->
 	<div class="spreadsheets-grid">
-		{#if data.spreadsheets.length === 0}
+		{#if !data.spreadsheets || data.spreadsheets.length === 0}
 			<div class="empty-state">
 				<FileSpreadsheet class="h-12 w-12 text-muted-foreground" />
 				<p class="text-lg font-semibold">Aucun tableur</p>
