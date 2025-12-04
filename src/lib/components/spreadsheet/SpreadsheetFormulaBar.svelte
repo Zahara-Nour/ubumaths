@@ -60,6 +60,7 @@
 		if (event.key === 'Enter') {
 			event.preventDefault();
 			spreadsheetStore.commitEdit();
+			spreadsheetStore.navigate('down');
 			// Blur the input after committing
 			(event.target as HTMLInputElement).blur();
 		} else if (event.key === 'Escape') {
