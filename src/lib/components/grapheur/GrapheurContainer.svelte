@@ -31,6 +31,26 @@ Features:
 	}: {
 		class?: string;
 	} = $props();
+
+	// ==========================================================================
+	// Export Support
+	// ==========================================================================
+
+	/** Reference to SVG element for export */
+	let svgRef: SVGSVGElement | undefined = $state();
+
+	/** SVG dimensions for export */
+	let svgWidth = $state(0);
+	let svgHeight = $state(0);
+
+	/**
+	 * Callback when SVG element is ready for export
+	 */
+	function handleSvgReady(svg: SVGSVGElement, width: number, height: number): void {
+		svgRef = svg;
+		svgWidth = width;
+		svgHeight = height;
+	}
 </script>
 
 <div class="grapheur-container {className}">
@@ -43,11 +63,11 @@ Features:
 	<main class="grapheur-main">
 		<div class="graph-wrapper">
 			<!-- Interactive SVG Graph -->
-			<GraphSVG />
+			<GraphSVG onSvgReady={handleSvgReady} />
 
 			<!-- Overlay: Viewport Controls (top-right) -->
 			<div class="graph-controls">
-				<ViewportControls />
+				<ViewportControls {svgRef} {svgWidth} {svgHeight} />
 			</div>
 
 			<!-- Overlay: Coordinate Display (bottom-left) -->

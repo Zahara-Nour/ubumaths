@@ -21,12 +21,16 @@
 	import FunctionCurve from './FunctionCurve.svelte';
 	import CurveHover from './CurveHover.svelte';
 	import IntersectionPoints from './IntersectionPoints.svelte';
+	import AsymptoteLines from './AsymptoteLines.svelte';
+	import SpecialPoints from './SpecialPoints.svelte';
 
 	// Props
 	let {
-		class: className = ''
+		class: className = '',
+		onSvgReady
 	}: {
 		class?: string;
+		onSvgReady?: (svg: SVGSVGElement, width: number, height: number) => void;
 	} = $props();
 
 	// ==========================================================================
@@ -41,6 +45,9 @@
 
 	/** Current SVG height in pixels */
 	let height = $state(600);
+
+	/** Reference to the SVG element for export */
+	let svgRef: SVGSVGElement | undefined = $state();
 
 	// ==========================================================================
 	// Responsive Sizing
@@ -70,6 +77,16 @@
 		return () => {
 			observer.disconnect();
 		};
+	});
+
+	/**
+	 * Notify parent when SVG element is available for export.
+	 * Triggers when svgRef, width, or height change.
+	 */
+	$effect(() => {
+		if (svgRef && onSvgReady && width > 0 && height > 0) {
+			onSvgReady(svgRef, width, height);
+		}
 	});
 
 	// ==========================================================================
@@ -203,6 +220,7 @@
 	aria-label={graphDescription}
 >
 	<svg
+		bind:this={svgRef}
 		viewBox="0 0 {width} {height}"
 		class="graph-svg"
 		preserveAspectRatio="xMidYMid meet"
@@ -219,6 +237,9 @@
 			<GridLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
 		{/if}
 
+		<!-- Asymptote lines (behind curves) -->
+		<AsymptoteLines {transformer} {width} {height} />
+
 		<!-- Coordinate axes -->
 		<AxisLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
 
@@ -233,6 +254,9 @@
 				/>
 			{/each}
 		</g>
+
+		<!-- Special points (roots, extrema) -->
+		<SpecialPoints {transformer} />
 
 		<!-- Curve hover point -->
 		<CurveHover {transformer} {width} {height} />

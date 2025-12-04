@@ -30,3 +30,6 @@ export { default as CoordinatesDisplay } from './CoordinatesDisplay.svelte';
 export { default as KeyboardHandler } from './KeyboardHandler.svelte';
 export { default as CurveHover } from './CurveHover.svelte';
 export { default as IntersectionPoints } from './IntersectionPoints.svelte';
+export { default as ExportButton } from './ExportButton.svelte';
+export { default as AsymptoteLines } from './AsymptoteLines.svelte';
+export { default as SpecialPoints } from './SpecialPoints.svelte';

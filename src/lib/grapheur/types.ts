@@ -145,6 +145,94 @@ export interface ExplicitFunctionState {
 }
 
 // =============================================================================
+// Analysis Types
+// =============================================================================
+
+/**
+ * A root (zero) of a function where f(x) = 0
+ */
+export interface Root {
+	/** The x-coordinate where f(x) = 0 */
+	readonly x: number;
+	/** The function ID this root belongs to */
+	readonly functionId: string;
+	/** Confidence score (0-1), lower means less certain */
+	readonly confidence: number;
+}
+
+/**
+ * A local extremum (minimum or maximum) of a function
+ */
+export interface Extremum {
+	/** The x-coordinate of the extremum */
+	readonly x: number;
+	/** The y-coordinate (f(x)) of the extremum */
+	readonly y: number;
+	/** Whether this is a minimum or maximum */
+	readonly type: 'min' | 'max';
+	/** The function ID this extremum belongs to */
+	readonly functionId: string;
+	/** Confidence score (0-1), lower means less certain */
+	readonly confidence: number;
+}
+
+/**
+ * A vertical asymptote where f(x) → ±∞
+ */
+export interface VerticalAsymptote {
+	/** The x-coordinate of the asymptote */
+	readonly x: number;
+	/** The function ID this asymptote belongs to */
+	readonly functionId: string;
+	/** Behavior: 'positive' means both sides → +∞, 'negative' means both → -∞, 'both' means different */
+	readonly behavior: 'positive' | 'negative' | 'both';
+}
+
+/**
+ * A horizontal asymptote where f(x) → y as x → ±∞
+ */
+export interface HorizontalAsymptote {
+	/** The y-value of the asymptote */
+	readonly y: number;
+	/** The function ID this asymptote belongs to */
+	readonly functionId: string;
+	/** Direction: 'left' means as x → -∞, 'right' means as x → +∞, 'both' means both directions */
+	readonly direction: 'left' | 'right' | 'both';
+}
+
+/**
+ * An oblique (slant) asymptote y = mx + b as x → ±∞
+ */
+export interface ObliqueAsymptote {
+	/** The slope of the asymptote */
+	readonly m: number;
+	/** The y-intercept of the asymptote */
+	readonly b: number;
+	/** The function ID this asymptote belongs to */
+	readonly functionId: string;
+	/** Direction: 'left' means as x → -∞, 'right' means as x → +∞, 'both' means both directions */
+	readonly direction: 'left' | 'right' | 'both';
+}
+
+/**
+ * Complete analysis result for a function
+ */
+export interface FunctionAnalysis {
+	/** The function ID this analysis is for */
+	readonly functionId: string;
+	/** Roots (zeros) found in viewport */
+	readonly roots: readonly Root[];
+	/** Local extrema (min/max) found in viewport */
+	readonly extrema: readonly Extremum[];
+	/** Vertical asymptotes detected */
+	readonly verticalAsymptotes: readonly VerticalAsymptote[];
+	/** Horizontal asymptotes detected */
+	readonly horizontalAsymptotes: readonly HorizontalAsymptote[];
+	/** Oblique asymptotes detected */
+	readonly obliqueAsymptotes: readonly ObliqueAsymptote[];
+}
+
+// =============================================================================
 // Sampling Types
 // =============================================================================
 
