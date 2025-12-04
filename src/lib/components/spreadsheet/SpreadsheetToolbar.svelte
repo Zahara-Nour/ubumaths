@@ -181,9 +181,8 @@
 		<!-- Groupe Formatage texte -->
 		<div class="flex items-center gap-0.5 border-r border-border pr-2">
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
+				<Tooltip.Trigger>
 					<Button
-						builders={[builder]}
 						variant={isBold ? 'secondary' : 'ghost'}
 						size="icon"
 						class="h-8 w-8"
@@ -198,9 +197,8 @@
 			</Tooltip.Root>
 
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
+				<Tooltip.Trigger>
 					<Button
-						builders={[builder]}
 						variant={isItalic ? 'secondary' : 'ghost'}
 						size="icon"
 						class="h-8 w-8"
@@ -218,9 +216,8 @@
 		<!-- Groupe Alignement -->
 		<div class="flex items-center gap-0.5 border-r border-border pr-2">
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
+				<Tooltip.Trigger>
 					<Button
-						builders={[builder]}
 						variant={currentAlign === 'left' ? 'secondary' : 'ghost'}
 						size="icon"
 						class="h-8 w-8"
@@ -234,9 +231,8 @@
 			</Tooltip.Root>
 
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
+				<Tooltip.Trigger>
 					<Button
-						builders={[builder]}
 						variant={currentAlign === 'center' ? 'secondary' : 'ghost'}
 						size="icon"
 						class="h-8 w-8"
@@ -250,9 +246,8 @@
 			</Tooltip.Root>
 
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
+				<Tooltip.Trigger>
 					<Button
-						builders={[builder]}
 						variant={currentAlign === 'right' ? 'secondary' : 'ghost'}
 						size="icon"
 						class="h-8 w-8"
@@ -269,9 +264,9 @@
 		<!-- Groupe Couleurs -->
 		<div class="flex items-center gap-0.5 border-r border-border pr-2">
 			<!-- Text Color -->
-			<DropdownMenu.Root>
-				<Tooltip.Root>
-					<Tooltip.Trigger asChild let:builder={_builder}>
+			<Tooltip.Root>
+				<Tooltip.Trigger>
+					<DropdownMenu.Root>
 						<DropdownMenu.Trigger asChild let:builder>
 							<Button
 								builders={[builder]}
@@ -287,36 +282,36 @@
 								></div>
 							</Button>
 						</DropdownMenu.Trigger>
-					</Tooltip.Trigger>
-					<Tooltip.Content>Couleur du texte</Tooltip.Content>
-				</Tooltip.Root>
-				<DropdownMenu.Content class="w-48">
-					<DropdownMenu.Label>Couleur du texte</DropdownMenu.Label>
-					<DropdownMenu.Separator />
-					<div class="grid grid-cols-4 gap-1 p-2">
-						{#each TEXT_COLORS as color (color.value)}
-							<button
-								class="h-8 w-8 rounded border border-border transition-colors hover:border-foreground"
-								style="background-color: {color.value}"
-								onclick={() => setTextColor(color.value)}
-								aria-label={color.label}
-								title={color.label}
-							>
-								{#if currentTextColor === color.value}
-									<div class="flex items-center justify-center">
-										<div class="h-2 w-2 rounded-full bg-background"></div>
-									</div>
-								{/if}
-							</button>
-						{/each}
-					</div>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+						<DropdownMenu.Content class="w-48">
+							<DropdownMenu.Label>Couleur du texte</DropdownMenu.Label>
+							<DropdownMenu.Separator />
+							<div class="grid grid-cols-4 gap-1 p-2">
+								{#each TEXT_COLORS as color (color.value)}
+									<button
+										class="h-8 w-8 rounded border border-border transition-colors hover:border-foreground"
+										style="background-color: {color.value}"
+										onclick={() => setTextColor(color.value)}
+										aria-label={color.label}
+										title={color.label}
+									>
+										{#if currentTextColor === color.value}
+											<div class="flex items-center justify-center">
+												<div class="h-2 w-2 rounded-full bg-background"></div>
+											</div>
+										{/if}
+									</button>
+								{/each}
+							</div>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				</Tooltip.Trigger>
+				<Tooltip.Content>Couleur du texte</Tooltip.Content>
+			</Tooltip.Root>
 
 			<!-- Background Color -->
-			<DropdownMenu.Root>
-				<Tooltip.Root>
-					<Tooltip.Trigger asChild let:builder={_builder}>
+			<Tooltip.Root>
+				<Tooltip.Trigger>
+					<DropdownMenu.Root>
 						<DropdownMenu.Trigger asChild let:builder>
 							<Button
 								builders={[builder]}
@@ -334,41 +329,41 @@
 								{/if}
 							</Button>
 						</DropdownMenu.Trigger>
-					</Tooltip.Trigger>
-					<Tooltip.Content>Couleur de fond</Tooltip.Content>
-				</Tooltip.Root>
-				<DropdownMenu.Content class="w-48">
-					<DropdownMenu.Label>Couleur de fond</DropdownMenu.Label>
-					<DropdownMenu.Separator />
-					<div class="grid grid-cols-4 gap-1 p-2">
-						{#each BG_COLORS as color (color.label)}
-							<button
-								class="h-8 w-8 rounded border border-border transition-colors hover:border-foreground"
-								style="background-color: {color.value || 'transparent'}"
-								onclick={() => setBgColor(color.value)}
-								aria-label={color.label}
-								title={color.label}
-							>
-								{#if currentBgColor === color.value}
-									<div class="flex items-center justify-center">
-										<div
-											class="h-2 w-2 rounded-full"
-											style="background-color: {color.value ? '#000' : '#999'}"
-										></div>
-									</div>
-								{/if}
-							</button>
-						{/each}
-					</div>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+						<DropdownMenu.Content class="w-48">
+							<DropdownMenu.Label>Couleur de fond</DropdownMenu.Label>
+							<DropdownMenu.Separator />
+							<div class="grid grid-cols-4 gap-1 p-2">
+								{#each BG_COLORS as color (color.label)}
+									<button
+										class="h-8 w-8 rounded border border-border transition-colors hover:border-foreground"
+										style="background-color: {color.value || 'transparent'}"
+										onclick={() => setBgColor(color.value)}
+										aria-label={color.label}
+										title={color.label}
+									>
+										{#if currentBgColor === color.value}
+											<div class="flex items-center justify-center">
+												<div
+													class="h-2 w-2 rounded-full"
+													style="background-color: {color.value ? '#000' : '#999'}"
+												></div>
+											</div>
+										{/if}
+									</button>
+								{/each}
+							</div>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				</Tooltip.Trigger>
+				<Tooltip.Content>Couleur de fond</Tooltip.Content>
+			</Tooltip.Root>
 		</div>
 
 		<!-- Groupe Format nombre -->
 		<div class="flex items-center gap-0.5 border-r border-border pr-2">
-			<DropdownMenu.Root>
-				<Tooltip.Root>
-					<Tooltip.Trigger asChild let:builder={_builder}>
+			<Tooltip.Root>
+				<Tooltip.Trigger>
+					<DropdownMenu.Root>
 						<DropdownMenu.Trigger asChild let:builder>
 							<Button
 								builders={[builder]}
@@ -380,33 +375,35 @@
 								<Hash class="h-4 w-4" />
 							</Button>
 						</DropdownMenu.Trigger>
-					</Tooltip.Trigger>
-					<Tooltip.Content>Format nombre</Tooltip.Content>
-				</Tooltip.Root>
-				<DropdownMenu.Content class="w-40">
-					<DropdownMenu.Label>Format nombre</DropdownMenu.Label>
-					<DropdownMenu.Separator />
-					<DropdownMenu.RadioGroup value={currentNumberFormat}>
-						<DropdownMenu.RadioItem value="number" onclick={() => setNumberFormat('number')}>
-							Nombre
-						</DropdownMenu.RadioItem>
-						<DropdownMenu.RadioItem value="percent" onclick={() => setNumberFormat('percent')}>
-							Pourcentage (%)
-						</DropdownMenu.RadioItem>
-						<DropdownMenu.RadioItem value="currency" onclick={() => setNumberFormat('currency')}>
-							Monnaie (€)
-						</DropdownMenu.RadioItem>
-					</DropdownMenu.RadioGroup>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+						<DropdownMenu.Content class="w-40">
+							<DropdownMenu.Label>Format nombre</DropdownMenu.Label>
+							<DropdownMenu.Separator />
+							<DropdownMenu.RadioGroup value={currentNumberFormat}>
+								<DropdownMenu.RadioItem value="number" onclick={() => setNumberFormat('number')}>
+									Nombre
+								</DropdownMenu.RadioItem>
+								<DropdownMenu.RadioItem value="percent" onclick={() => setNumberFormat('percent')}>
+									Pourcentage (%)
+								</DropdownMenu.RadioItem>
+								<DropdownMenu.RadioItem
+									value="currency"
+									onclick={() => setNumberFormat('currency')}
+								>
+									Monnaie (€)
+								</DropdownMenu.RadioItem>
+							</DropdownMenu.RadioGroup>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				</Tooltip.Trigger>
+				<Tooltip.Content>Format nombre</Tooltip.Content>
+			</Tooltip.Root>
 		</div>
 
 		<!-- Actions -->
 		<div class="flex items-center gap-0.5">
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
+				<Tooltip.Trigger>
 					<Button
-						builders={[builder]}
 						variant="ghost"
 						size="icon"
 						class="h-8 w-8"
@@ -420,9 +417,8 @@
 			</Tooltip.Root>
 
 			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
+				<Tooltip.Trigger>
 					<Button
-						builders={[builder]}
 						variant="ghost"
 						size="icon"
 						class="h-8 w-8"
