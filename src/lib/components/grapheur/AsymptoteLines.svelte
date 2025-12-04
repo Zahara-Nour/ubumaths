@@ -41,13 +41,17 @@
 	/**
 	 * Analyze all visible functions for asymptotes.
 	 * Skips analysis during interaction for performance.
+	 *
+	 * Note: We access grapheurStore.functions directly (not visibleFunctions)
+	 * to ensure Svelte 5 properly tracks the dependency on the source array.
 	 */
 	const analyses = $derived.by((): FunctionAnalysis[] => {
 		// Skip during interaction for performance
 		if (grapheurStore.isInteracting) return [];
 
-		const functions = grapheurStore.visibleFunctions
-			.filter((f) => f.ast)
+		// Access functions directly and filter here for proper reactivity
+		const functions = grapheurStore.functions
+			.filter((f) => f.visible && f.ast)
 			.map((f) => ({
 				id: f.id,
 				evaluator: createEvaluator(f.ast!)
@@ -60,7 +64,7 @@
 	 * Get function color by ID
 	 */
 	function getFunctionColor(functionId: string): string {
-		const func = grapheurStore.visibleFunctions.find((f) => f.id === functionId);
+		const func = grapheurStore.functions.find((f) => f.id === functionId);
 		return func?.color ?? '#888';
 	}
 

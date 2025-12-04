@@ -44,6 +44,9 @@
 	/**
 	 * Find the nearest curve point to the cursor.
 	 * Returns null if cursor is not hovering or no curve is within threshold.
+	 *
+	 * Note: We access grapheurStore.functions directly (not visibleFunctions)
+	 * to ensure Svelte 5 properly tracks the dependency on the source array.
 	 */
 	const hoverPoint = $derived.by(() => {
 		const cursor = grapheurStore.cursor;
@@ -53,8 +56,9 @@
 		let nearestY: number | null = null;
 		let nearestDistance = Infinity;
 
-		for (const func of grapheurStore.visibleFunctions) {
-			if (!func.ast) continue;
+		// Access functions directly and filter here for proper reactivity
+		for (const func of grapheurStore.functions) {
+			if (!func.visible || !func.ast) continue;
 
 			const evaluator = createEvaluator(func.ast);
 			const y = evaluator(cursor.x);
