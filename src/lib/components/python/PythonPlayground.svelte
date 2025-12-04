@@ -2,6 +2,7 @@
 	// Imports
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import PythonToolbar from './PythonToolbar.svelte';
+	import PythonEditor from './PythonEditor.svelte';
 	import { browser } from '$app/environment';
 	import { onMount, onDestroy } from 'svelte';
 
@@ -29,16 +30,6 @@
 		pythonStore.resetCode();
 	}
 
-	function handleKeydown(event: KeyboardEvent): void {
-		// Ctrl+Enter or Cmd+Enter to execute
-		if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-			event.preventDefault();
-			if (canExecute && !isExecuting) {
-				handleExecute();
-			}
-		}
-	}
-
 	// Initialize Pyodide when component mounts
 	onMount(() => {
 		pythonStore.initPyodide();
@@ -49,8 +40,6 @@
 		pythonStore.destroy();
 	});
 </script>
-
-<svelte:window onkeydown={handleKeydown} />
 
 <div class="flex h-full flex-col rounded-lg border border-border bg-card shadow-lg">
 	<!-- Toolbar -->
@@ -70,18 +59,13 @@
 			<div class="border-b border-border bg-muted/50 px-4 py-2">
 				<span class="text-sm font-medium text-muted-foreground">Code Python</span>
 			</div>
-			<div class="relative flex-1 overflow-hidden">
-				<!-- Placeholder for CodeMirror (Phase 3) -->
-				<textarea
-					class="h-full w-full resize-none bg-background p-4 font-mono text-sm text-foreground focus:outline-none"
+			<div class="relative flex-1 overflow-hidden bg-background">
+				<PythonEditor
 					bind:value={pythonStore.code}
-					placeholder="# Écrivez votre code Python ici..."
-					spellcheck="false"
-					autocomplete="off"
-					autocorrect="off"
-					autocapitalize="off"
-					aria-label="Éditeur de code Python"
-				></textarea>
+					errorLine={pythonStore.errorLine}
+					disabled={isExecuting}
+					onExecute={handleExecute}
+				/>
 			</div>
 		</div>
 
