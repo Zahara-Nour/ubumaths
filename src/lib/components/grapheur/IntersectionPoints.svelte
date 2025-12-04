@@ -97,48 +97,73 @@
 		const formatted = n.toPrecision(4);
 		return parseFloat(formatted).toString();
 	}
+
+	// ==========================================================================
+	// Snapped Point Detection
+	// ==========================================================================
+
+	/** Tolerance for matching snapped points (in math coordinates) */
+	const SNAP_TOLERANCE = 0.001;
+
+	/**
+	 * Check if an intersection point is currently being displayed by CurveHover (snapped).
+	 * If so, we should hide this marker to avoid duplicates.
+	 */
+	function isIntersectionSnapped(x: number, y: number): boolean {
+		const snapped = grapheurStore.snappedPoint;
+		if (!snapped) return false;
+
+		return (
+			snapped.type === 'intersection' &&
+			Math.abs(snapped.x - x) < SNAP_TOLERANCE &&
+			Math.abs(snapped.y - y) < SNAP_TOLERANCE
+		);
+	}
 </script>
 
 {#if intersections.length > 0}
 	<g class="intersection-points" role="group" aria-label="Points d'intersection">
 		{#each intersections as { point }, i (i)}
-			{@const svgPoint = transformer.mathToSvg(point.x, point.y)}
-			<g
-				class="intersection-marker"
-				onpointerenter={() => (hoveredIndex = i)}
-				onpointerleave={() => (hoveredIndex = null)}
-				role="img"
-				aria-label="Intersection: ({formatCoord(point.x)}, {formatCoord(point.y)})"
-			>
-				<!-- Invisible hit area for easier hover -->
-				<circle cx={svgPoint.x} cy={svgPoint.y} r={12} fill="transparent" class="hit-area" />
+			<!-- Hide marker when CurveHover is snapped to it -->
+			{#if !isIntersectionSnapped(point.x, point.y)}
+				{@const svgPoint = transformer.mathToSvg(point.x, point.y)}
+				<g
+					class="intersection-marker"
+					onpointerenter={() => (hoveredIndex = i)}
+					onpointerleave={() => (hoveredIndex = null)}
+					role="img"
+					aria-label="Intersection: ({formatCoord(point.x)}, {formatCoord(point.y)})"
+				>
+					<!-- Invisible hit area for easier hover -->
+					<circle cx={svgPoint.x} cy={svgPoint.y} r={12} fill="transparent" class="hit-area" />
 
-				<!-- Visible marker -->
-				<circle
-					cx={svgPoint.x}
-					cy={svgPoint.y}
-					r={hoveredIndex === i ? 6 : 4}
-					class="marker"
-					class:hovered={hoveredIndex === i}
-				/>
+					<!-- Visible marker -->
+					<circle
+						cx={svgPoint.x}
+						cy={svgPoint.y}
+						r={hoveredIndex === i ? 6 : 4}
+						class="marker"
+						class:hovered={hoveredIndex === i}
+					/>
 
-				<!-- Tooltip on hover -->
-				{#if hoveredIndex === i}
-					<g class="tooltip">
-						<rect
-							x={svgPoint.x + 10}
-							y={svgPoint.y - 26}
-							width={105}
-							height={20}
-							rx={4}
-							class="tooltip-bg"
-						/>
-						<text x={svgPoint.x + 16} y={svgPoint.y - 12} class="tooltip-text">
-							({formatCoord(point.x)}, {formatCoord(point.y)})
-						</text>
-					</g>
-				{/if}
-			</g>
+					<!-- Tooltip on hover -->
+					{#if hoveredIndex === i}
+						<g class="tooltip">
+							<rect
+								x={svgPoint.x + 10}
+								y={svgPoint.y - 26}
+								width={105}
+								height={20}
+								rx={4}
+								class="tooltip-bg"
+							/>
+							<text x={svgPoint.x + 16} y={svgPoint.y - 12} class="tooltip-text">
+								({formatCoord(point.x)}, {formatCoord(point.y)})
+							</text>
+						</g>
+					{/if}
+				</g>
+			{/if}
 		{/each}
 	</g>
 {/if}

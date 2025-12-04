@@ -2,7 +2,7 @@
 
 **Statut**: Production
 **Dernière mise à jour**: 2025-12-04
-**Version**: 1.2.0
+**Version**: 1.3.0
 
 ## Table des matières
 
@@ -36,6 +36,7 @@ Le **Grapheur** est une calculatrice graphique interactive qui permet de tracer 
 - ✅ **Exploration interactive** - Déplacez et zoomez pour explorer différentes régions du graphique
 - ✅ **Scaling par axe** - Modifiez l'échelle de l'axe X ou Y indépendamment
 - ✅ **Suivi des coordonnées** - Survolez le graphique pour voir les coordonnées en temps réel
+- ✅ **Snap vers points particuliers** - Le curseur s'aimante automatiquement aux racines, extrema et intersections
 - ✅ **Multiples fonctions** - Tracez jusqu'à 20 fonctions simultanément avec des couleurs distinctes
 - ✅ **Personnalisation des courbes** - Couleurs, épaisseurs (1-5px) et styles de trait (continu, tirets, pointillé, tiret-point)
 - ✅ **Sauvegarde automatique** - Vos graphiques sont sauvegardés dans le navigateur
@@ -158,6 +159,19 @@ Survolez le graphique avec votre souris (desktop) pour voir:
 
 - Les coordonnées X, Y en temps réel
 - Les valeurs des points sur les courbes
+
+#### Snap vers les points particuliers
+
+Quand vous survolez le graphique près d'un point particulier, le curseur s'y "aimante" automatiquement :
+
+- **Racines** : le label affiche "Racine : x = ..."
+- **Maximum** : le label affiche "Max : (x, y)"
+- **Minimum** : le label affiche "Min : (x, y)"
+- **Intersections** : le label affiche "Inter : (x, y)"
+
+Le marker prend la forme appropriée (losange pour les racines, triangle pour les extrema, cercle pour les intersections).
+
+**Priorité** : Si plusieurs points sont proches, les intersections ont la priorité, puis les racines, puis les extrema, puis les points sur la courbe.
 
 ### Gestion des fonctions
 

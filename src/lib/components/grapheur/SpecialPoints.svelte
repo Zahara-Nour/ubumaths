@@ -8,13 +8,14 @@
 	 * - Local minima: Downward triangle markers
 	 *
 	 * Points are rendered above function curves with tooltips.
+	 * Points are hidden when CurveHover is snapped to them (to avoid duplicates).
 	 *
 	 * @component
 	 */
 
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import type { Root, Extremum, FunctionAnalysis } from '$lib/grapheur/types';
+	import type { Root, Extremum, FunctionAnalysis, SnappedPointType } from '$lib/grapheur/types';
 	import { analyzeAllFunctions } from '$lib/grapheur/analysis';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
 
@@ -136,38 +137,66 @@
 		const typeLabel = extremum.type === 'max' ? 'Max' : 'Min';
 		return `${typeLabel}: (${formatNumber(extremum.x)}, ${formatNumber(extremum.y)})`;
 	}
+
+	// ==========================================================================
+	// Snapped Point Detection
+	// ==========================================================================
+
+	/** Tolerance for matching snapped points (in math coordinates) */
+	const SNAP_TOLERANCE = 0.001;
+
+	/**
+	 * Check if a point is currently being displayed by CurveHover (snapped).
+	 * If so, we should hide this marker to avoid duplicates.
+	 */
+	function isPointSnapped(x: number, y: number, type: SnappedPointType): boolean {
+		const snapped = grapheurStore.snappedPoint;
+		if (!snapped) return false;
+
+		return (
+			snapped.type === type &&
+			Math.abs(snapped.x - x) < SNAP_TOLERANCE &&
+			Math.abs(snapped.y - y) < SNAP_TOLERANCE
+		);
+	}
 </script>
 
 <g class="special-points" pointer-events="none">
 	{#each analyses as analysis (analysis.functionId)}
 		{@const color = getFunctionColor(analysis.functionId)}
 
-		<!-- Roots (diamonds) -->
+		<!-- Roots (diamonds) - hidden when CurveHover is snapped to them -->
 		{#each analysis.roots as root, idx (`r-${analysis.functionId}-${idx}`)}
-			{@const pos = rootToSvg(root)}
-			<path
-				d={diamondPath(pos.x, pos.y)}
-				fill={color}
-				stroke="white"
-				stroke-width="2"
-				class="root-marker"
-			>
-				<title>{getRootLabel(root)}</title>
-			</path>
+			{#if !isPointSnapped(root.x, 0, 'root')}
+				{@const pos = rootToSvg(root)}
+				<path
+					d={diamondPath(pos.x, pos.y)}
+					fill={color}
+					stroke="white"
+					stroke-width="2"
+					class="root-marker"
+				>
+					<title>{getRootLabel(root)}</title>
+				</path>
+			{/if}
 		{/each}
 
-		<!-- Extrema (triangles) -->
+		<!-- Extrema (triangles) - hidden when CurveHover is snapped to them -->
 		{#each analysis.extrema as extremum, idx (`e-${analysis.functionId}-${idx}`)}
-			{@const pos = extremumToSvg(extremum)}
-			<path
-				d={extremum.type === 'max' ? triangleUpPath(pos.x, pos.y) : triangleDownPath(pos.x, pos.y)}
-				fill={color}
-				stroke="white"
-				stroke-width="2"
-				class="extremum-marker"
-			>
-				<title>{getExtremumLabel(extremum)}</title>
-			</path>
+			{#if !isPointSnapped(extremum.x, extremum.y, extremum.type)}
+				{@const pos = extremumToSvg(extremum)}
+				<path
+					d={extremum.type === 'max'
+						? triangleUpPath(pos.x, pos.y)
+						: triangleDownPath(pos.x, pos.y)}
+					fill={color}
+					stroke="white"
+					stroke-width="2"
+					class="extremum-marker"
+				>
+					<title>{getExtremumLabel(extremum)}</title>
+				</path>
+			{/if}
 		{/each}
 	{/each}
 </g>
