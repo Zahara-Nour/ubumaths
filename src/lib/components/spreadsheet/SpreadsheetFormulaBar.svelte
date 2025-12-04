@@ -19,15 +19,21 @@
 
 <script lang="ts">
 	import { spreadsheetStore } from '$lib/spreadsheet/store.svelte';
-	import { Input } from '$lib/components/ui/input';
+
+	// Local state for the input value
+	let inputValue = $state('');
 
 	// Derived state
 	const isFormula = $derived(spreadsheetStore.selectedCellData?.value?.startsWith('=') ?? false);
-	const displayedValue = $derived(
-		spreadsheetStore.isEditing
-			? spreadsheetStore.editValue
-			: (spreadsheetStore.selectedCellData?.value ?? '')
-	);
+
+	// Sync input value with store
+	$effect(() => {
+		if (spreadsheetStore.isEditing) {
+			inputValue = spreadsheetStore.editValue;
+		} else {
+			inputValue = spreadsheetStore.selectedCellData?.value ?? '';
+		}
+	});
 
 	/**
 	 * Handle focus on the input - start editing
@@ -43,6 +49,7 @@
 	 */
 	function handleInput(event: Event) {
 		const target = event.target as HTMLInputElement;
+		inputValue = target.value;
 		spreadsheetStore.editValue = target.value;
 	}
 
@@ -90,9 +97,10 @@
 	</div>
 
 	<!-- Formula/value input -->
-	<Input
-		value={displayedValue}
-		class="h-8 flex-1 font-mono text-sm"
+	<input
+		type="text"
+		bind:value={inputValue}
+		class="h-8 flex-1 rounded border border-border bg-background px-2 font-mono text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
 		placeholder="Entrez une valeur ou une formule (ex: =A1+B1)"
 		onfocus={handleFocus}
 		oninput={handleInput}
