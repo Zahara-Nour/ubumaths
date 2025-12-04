@@ -125,6 +125,30 @@ src/routes/api/spreadsheets/
 | dependency-graph.test.ts | 54      |
 | **Total**                | **415** |
 
+## Bug Fixes (Post-Release)
+
+### Svelte 5 Compatibility Issues
+
+1. **Tooltip/DropdownMenu patterns** - Removed `asChild let:builder` patterns incompatible with Svelte 5 snippets
+2. **structuredClone error** - Used `$state.snapshot()` instead of `structuredClone` for reactive proxies
+3. **SvelteMap reactivity** - Added version counter to trigger reactivity when computed values change
+
+### Keyboard Navigation
+
+1. **Double navigation** - Removed duplicate `svelte:window` keydown handler
+2. **Focus management** - Focus container on cell select and after edit commit/cancel
+3. **Arrow keys** - Proper focus flow between container and cell inputs
+
+### Cell Editing
+
+1. **Text selection on type** - Don't select text when editing starts with typed character (only on double-click/F2)
+2. **Input focus timing** - Use `tick()` to ensure input exists before focusing
+3. **Number parsing** - Use `Number()` instead of `parseFloat()` to avoid truncating strings like "3+4" to "3"
+
+### Cell Display
+
+1. **Missing recalculation** - Always include changed cell in recalculation order (not just formula cells)
+
 ## Deferred to V2
 
 - Charts/visualization
