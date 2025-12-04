@@ -588,6 +588,17 @@ describe('Color markers', () => {
 		expect(tokens[0].type).toBe('HASH');
 		// Following characters will be letters and numbers
 	});
+
+	it('should tokenize composition expression f@g', () => {
+		const tokens = tokenize('f@g');
+		expect(getTypes(tokens.slice(0, -1))).toEqual(['LETTER', 'AT', 'LETTER']);
+		expect(getValues(tokens.slice(0, -1))).toEqual(['f', '@', 'g']);
+	});
+
+	it('should tokenize f@g@h for triple composition', () => {
+		const tokens = tokenize('f@g@h');
+		expect(getTypes(tokens.slice(0, -1))).toEqual(['LETTER', 'AT', 'LETTER', 'AT', 'LETTER']);
+	});
 });
 
 // =============================================================================

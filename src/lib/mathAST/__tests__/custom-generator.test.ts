@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { toCustom, CustomGenerator } from '../custom-generator';
-import { MathAST } from '../index';
+import * as MathAST from '../factory';
 import type { RelationType } from '../types';
 import {
 	lessThanChain,
@@ -9,9 +9,10 @@ import {
 	impliesChain,
 	iffChain,
 	greaterThanChain,
-	lessThanOrEqualChain
+	lessThanOrEqualChain,
+	variable
 } from '../factory';
-import { parseCustom } from '../parser/custom';
+import { parseCustomPratt as parseCustom } from '../parser/custom/parser-pratt';
 import { parseOrThrow as parseUnit } from '../units/parser';
 
 describe('CustomGenerator - Literals', () => {
@@ -707,5 +708,49 @@ describe('CustomGenerator - Round-Trip Tests', () => {
 		const output = toCustom(ast);
 		expect(output).toBe('--x');
 		// Note: parseCustom('--x') throws, requires '-(-x)' instead
+	});
+});
+
+describe('CustomGenerator - Composition', () => {
+	it('generates basic composition f@g', () => {
+		const expr = MathAST.compose(MathAST.func('f', []), MathAST.func('g', []));
+		expect(toCustom(expr)).toBe('f()@g()');
+	});
+
+	it('generates composition with variables as functions', () => {
+		// When using compose with variables (generic function names)
+		const expr = MathAST.compose(MathAST.variable('f'), MathAST.variable('g'));
+		expect(toCustom(expr)).toBe('f@g');
+	});
+
+	it('generates triple composition (f@g)@h', () => {
+		const fg = MathAST.compose(MathAST.variable('f'), MathAST.variable('g'));
+		const expr = MathAST.compose(fg, MathAST.variable('h'));
+		expect(toCustom(expr)).toBe('f@g@h');
+	});
+
+	it('generates composition with function calls', () => {
+		const expr = MathAST.compose(
+			MathAST.func('f', [MathAST.variable('x')]),
+			MathAST.func('g', [MathAST.variable('y')])
+		);
+		expect(toCustom(expr)).toBe('f(x)@g(y)');
+	});
+
+	it('generates composition with derivatives', () => {
+		const expr = MathAST.compose(MathAST.derivativeFunc('f', [], 1), MathAST.func('g', []));
+		expect(toCustom(expr)).toBe("f'()@g()");
+	});
+
+	it('generates composition with inverse', () => {
+		const expr = MathAST.compose(MathAST.inverseFunc('f', []), MathAST.func('g', []));
+		expect(toCustom(expr)).toBe('f^{-1}()@g()');
+	});
+
+	it('generates composition with operatorMetadata for color', () => {
+		const expr = MathAST.compose(MathAST.variable('f'), MathAST.variable('g'), {
+			operatorMetadata: { color: 'red' }
+		});
+		expect(toCustom(expr, { renderMetadata: true })).toBe('f@red{@}g');
 	});
 });
