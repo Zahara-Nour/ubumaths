@@ -99,12 +99,21 @@ export function startRepl(): void {
 		if (input.startsWith('.')) {
 			handleReplCommand(input, rl, state);
 		} else {
+			// Check for inline function definition syntax: "f(x) = expr" or "g(x,y) = expr"
+			// Must check this BEFORE inline assignment to avoid matching "f(x) = expr" as "f(x" = "expr"
+			const inlineFuncMatch = input.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*=\s*(.+)$/);
+			if (inlineFuncMatch && !input.includes('===')) {
+				// Redirect to .def command
+				handleReplCommand(`.def ${input}`, rl, state);
+			}
 			// Check for inline assignment syntax: "x = 5" or "x=5"
-			const assignmentMatch = input.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$/);
-			if (assignmentMatch && !input.includes('===')) {
-				handleInlineAssignment(assignmentMatch[1], assignmentMatch[2], state);
-			} else {
-				state.lastAst = processExpression(input, state);
+			else {
+				const assignmentMatch = input.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$/);
+				if (assignmentMatch && !input.includes('===')) {
+					handleInlineAssignment(assignmentMatch[1], assignmentMatch[2], state);
+				} else {
+					state.lastAst = processExpression(input, state);
+				}
 			}
 		}
 
