@@ -208,6 +208,14 @@
 	function handleContainerClick() {
 		containerRef?.focus();
 	}
+
+	/**
+	 * Handle cell selection - focus the container to enable keyboard navigation
+	 */
+	function handleCellSelect(_ref: string) {
+		// Focus the container so keyboard events work
+		containerRef?.focus();
+	}
 </script>
 
 <div
@@ -232,7 +240,7 @@
 
 	<!-- Grid -->
 	<div class="flex-1 overflow-auto">
-		<SpreadsheetGrid />
+		<SpreadsheetGrid onCellSelect={handleCellSelect} />
 	</div>
 
 	<!-- Status bar -->
