@@ -22,7 +22,8 @@ export type {
 	ParseResult,
 	ParseError,
 	ParseErrorCode,
-	KnownCommand
+	KnownCommand,
+	GenericFunctionConfig
 } from './types';
 
 export {
@@ -70,7 +71,7 @@ export {
 // =============================================================================
 
 import type { MathNode } from '../types';
-import type { ParseResult, ParseError } from './types';
+import type { ParseResult, ParseError, ParserOptions, GenericFunctionConfig } from './types';
 import { parsePratt, parsePrattSafe } from './latex';
 import { parseRD, parseRDSafe } from './latex';
 
@@ -82,6 +83,8 @@ export interface LatexParserOptions {
 	mode?: 'strict' | 'tolerant';
 	/** Parser implementation: 'pratt' or 'rd' */
 	parser?: 'pratt' | 'rd';
+	/** Configuration for generic function names (f, g, h) */
+	genericFunctions?: GenericFunctionConfig;
 }
 
 /**
@@ -114,12 +117,16 @@ export interface LatexParserOptions {
 export function parseLatex(input: string, options?: LatexParserOptions): MathNode {
 	const mode = options?.mode ?? 'strict';
 	const parser = options?.parser ?? 'pratt';
+	const parserOptions: Partial<ParserOptions> = {
+		mode,
+		...(options?.genericFunctions && { genericFunctions: options.genericFunctions })
+	};
 
 	if (parser === 'rd') {
-		return parseRD(input, { mode });
+		return parseRD(input, parserOptions);
 	}
 
-	return parsePratt(input, { mode });
+	return parsePratt(input, parserOptions);
 }
 
 /**
@@ -148,12 +155,16 @@ export function parseLatex(input: string, options?: LatexParserOptions): MathNod
 export function parseLatexSafe(input: string, options?: LatexParserOptions): ParseResult {
 	const mode = options?.mode ?? 'tolerant';
 	const parser = options?.parser ?? 'pratt';
+	const parserOptions: Partial<ParserOptions> = {
+		mode,
+		...(options?.genericFunctions && { genericFunctions: options.genericFunctions })
+	};
 
 	if (parser === 'rd') {
-		return parseRDSafe(input, { mode });
+		return parseRDSafe(input, parserOptions);
 	}
 
-	return parsePrattSafe(input, { mode });
+	return parsePrattSafe(input, parserOptions);
 }
 
 /**

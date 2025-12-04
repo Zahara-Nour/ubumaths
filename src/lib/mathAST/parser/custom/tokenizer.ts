@@ -56,6 +56,7 @@ export type CustomTokenType =
 	| 'AT' // @
 	| 'HASH' // # (for hex colors)
 	| 'QUESTION' // ? (for holes/placeholders)
+	| 'PRIME' // ' (apostrophe for derivatives)
 	| 'LPAREN' // (
 	| 'RPAREN' // )
 	| 'LBRACE' // {
@@ -492,6 +493,8 @@ export class CustomTokenizer {
 				return 'HASH';
 			case '?':
 				return 'QUESTION';
+			case "'":
+				return 'PRIME';
 			case '{':
 				return 'LBRACE';
 			case '}':
@@ -692,6 +695,8 @@ export function tokenTypeToString(type: CustomTokenType): string {
 			return "'#'";
 		case 'QUESTION':
 			return "'?'";
+		case 'PRIME':
+			return "'''";
 		case 'LBRACE':
 			return "'{'";
 		case 'RBRACE':

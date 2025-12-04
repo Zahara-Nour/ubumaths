@@ -18,7 +18,7 @@ import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } fr
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
-import { MathAST } from '../../factory';
+import { MathAST, compose } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
 
@@ -37,6 +37,7 @@ const enum BP {
 	NONE = 0,
 	RELATION = 10, // =, <, >, <=, >=, !=, etc.
 	ADDITION = 20, // +, -
+	COMPOSITION = 25, // \circ (composition operator, between + and *)
 	MULTIPLY = 30, // *, implicit, \cdot, \times
 	UNARY = 40, // prefix -, +
 	POWER = 50, // ^ (right-associative)
@@ -423,6 +424,9 @@ class PrattParser {
 				if (token.value === 'times') {
 					return this.parseMultiplicationCommand(left, 'cross');
 				}
+				if (token.value === 'circ') {
+					return this.parseComposition(left);
+				}
 				// \textcolor is now handled in parseExpression() before we get here
 				// Fall through for implicit multiplication
 				break;
@@ -483,6 +487,9 @@ class PrattParser {
 				if (token.value === 'cdot' || token.value === 'times') {
 					return BP.MULTIPLY;
 				}
+				if (token.value === 'circ') {
+					return BP.COMPOSITION;
+				}
 				// \textcolor is handled specially - it's transparent
 				if (token.value === 'textcolor') {
 					// Return NONE so it doesn't interfere with expression parsing
@@ -528,11 +535,177 @@ class PrattParser {
 	}
 
 	/**
-	 * Parse a variable (single letter)
+	 * Parse a variable (single letter) or generic function if configured.
+	 *
+	 * When genericFunctions option is set and the letter matches a configured name,
+	 * we parse it as a function call with optional derivatives, inverse, and composition.
 	 */
 	private parseVariable(): MathNode {
-		const token = this.advance();
-		return this.applyColor(MathAST.variable(token.value));
+		const token = this.currentToken;
+		const letter = token.value;
+
+		// Check if this is a generic function name
+		if (this.isGenericFunctionName(letter)) {
+			return this.parseGenericFunction();
+		}
+
+		// Regular variable
+		this.advance();
+		return this.applyColor(MathAST.variable(letter));
+	}
+
+	/**
+	 * Check if a name is configured as a generic function
+	 */
+	private isGenericFunctionName(name: string): boolean {
+		const config = this.options.genericFunctions;
+		return config !== undefined && config.names.includes(name);
+	}
+
+	/**
+	 * Parse a generic function: f(x), f'(x), f''(x), f^{-1}(x), f^{(n)}(x)
+	 *
+	 * Pattern:
+	 * - Function name (single letter)
+	 * - Optional primes: ' '' '''
+	 * - Optional ^{-1} or ^{(n)} for inverse or higher derivative
+	 * - MANDATORY arguments in parentheses: (x) or (x, y)
+	 *
+	 * Special case: If no parentheses follow, return as a "naked" function
+	 * suitable for composition like f \circ g.
+	 */
+	private parseGenericFunction(): MathNode {
+		const nameToken = this.advance(); // consume function name letter
+		const name = nameToken.value;
+
+		// Count prime marks for derivatives: f', f'', f'''
+		let derivativeOrder = 0;
+		const config = this.options.genericFunctions;
+		const allowDerivatives = config?.allowDerivatives !== false; // default true
+		const allowInverse = config?.allowInverse !== false; // default true
+
+		if (allowDerivatives) {
+			while (this.check('PRIME')) {
+				this.advance();
+				derivativeOrder++;
+			}
+		}
+
+		// Check for ^{-1} (inverse) or ^{(n)} (higher derivative notation)
+		let isInverse = false;
+		if (this.check('CARET')) {
+			// Peek ahead to see what follows the ^
+			const afterCaret = this.peekNextNonWhitespace();
+			if (afterCaret.type === 'LBRACE') {
+				// Could be ^{-1} or ^{(n)}
+				// We need to look inside the brace group
+				const result = this.tryParseInverseOrHigherDerivative(allowInverse, allowDerivatives);
+				if (result.type === 'inverse') {
+					isInverse = true;
+				} else if (result.type === 'higherDerivative') {
+					derivativeOrder = result.order;
+				}
+				// If result.type === 'none', don't consume the ^ - it might be a power
+			}
+		}
+
+		// Check for arguments in parentheses
+		// For composition support, parentheses are NOT mandatory for generic functions
+		// f \circ g should parse f and g as functions without args
+		if (this.check('LPAREN')) {
+			this.advance(); // consume (
+			const args = this.parseCommaList();
+			this.expect('RPAREN', "Expected ')' after function arguments");
+
+			return this.applyColor(
+				MathAST.func(name, args, {
+					...(derivativeOrder > 0 && { derivativeOrder }),
+					...(isInverse && { isInverse })
+				})
+			);
+		}
+
+		// No parentheses - return a "naked" function (for composition)
+		return this.applyColor(
+			MathAST.func(name, [], {
+				...(derivativeOrder > 0 && { derivativeOrder }),
+				...(isInverse && { isInverse })
+			})
+		);
+	}
+
+	/**
+	 * Try to parse ^{-1} (inverse) or ^{(n)} (higher derivative notation)
+	 * Returns what was found and consumes the tokens if successful.
+	 */
+	private tryParseInverseOrHigherDerivative(
+		allowInverse: boolean,
+		allowDerivatives: boolean
+	): { type: 'inverse' } | { type: 'higherDerivative'; order: number } | { type: 'none' } {
+		// Save state in case we need to backtrack
+		// We'll peek ahead to check the pattern without committing
+
+		// Current token should be CARET
+		if (!this.check('CARET')) {
+			return { type: 'none' };
+		}
+
+		// Look at next token (should be LBRACE)
+		const braceToken = this.peekNextNonWhitespace();
+		if (braceToken.type !== 'LBRACE') {
+			return { type: 'none' };
+		}
+
+		// Consume ^ and {
+		this.advance(); // consume ^
+		this.advance(); // consume {
+
+		// Check for -1 (inverse)
+		if (allowInverse && this.check('MINUS')) {
+			this.advance(); // consume -
+			if (this.check('NUMBER') && this.currentToken.value === '1') {
+				this.advance(); // consume 1
+				this.expect('RBRACE', "Expected '}' after ^{-1}");
+				return { type: 'inverse' };
+			}
+			// Not ^{-1}, this is an error or something else
+			// For now, error out
+			this.error(
+				'Expected 1 after - in superscript',
+				this.currentToken.position,
+				this.currentToken.length,
+				'INVALID_SUPERSCRIPT'
+			);
+		}
+
+		// Check for (n) (higher derivative notation)
+		if (allowDerivatives && this.check('LPAREN')) {
+			this.advance(); // consume (
+			if (this.check('NUMBER')) {
+				const orderToken = this.advance();
+				const order = parseInt(orderToken.value, 10);
+				this.expect('RPAREN', "Expected ')' after derivative order");
+				this.expect('RBRACE', "Expected '}' after ^{(n)}");
+				return { type: 'higherDerivative', order };
+			}
+			// Not a number, error
+			this.error(
+				'Expected number for derivative order in ^{(n)}',
+				this.currentToken.position,
+				this.currentToken.length,
+				'INVALID_SUPERSCRIPT'
+			);
+		}
+
+		// Neither ^{-1} nor ^{(n)}, this is probably a regular superscript
+		// We've already consumed ^ and {, so we need to parse the content as superscript
+		// This is a bit tricky - for now, error out since we already consumed tokens
+		this.error(
+			"Expected '-1' or '(n)' in superscript for generic function",
+			this.currentToken.position,
+			this.currentToken.length,
+			'INVALID_SUPERSCRIPT'
+		);
 	}
 
 	/**
@@ -772,6 +945,21 @@ class PrattParser {
 	}
 
 	/**
+	 * Parse composition: f \circ g
+	 * Composition is left-associative: f \circ g \circ h = (f \circ g) \circ h
+	 */
+	private parseComposition(left: MathNode): MathNode {
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume \circ
+		const right = this.parseExpression(BP.COMPOSITION);
+		const node = compose(left, right);
+		if (operatorColor) {
+			return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+		}
+		return node;
+	}
+
+	/**
 	 * Parse division: left / right or left : right
 	 */
 	private parseDivision(left: MathNode, style: 'inline' | 'ratio'): MathNode {
@@ -822,6 +1010,11 @@ class PrattParser {
 
 		// Check for multiplication commands
 		if (token.type === 'COMMAND' && (token.value === 'cdot' || token.value === 'times')) {
+			return false;
+		}
+
+		// Check for composition command
+		if (token.type === 'COMMAND' && token.value === 'circ') {
 			return false;
 		}
 

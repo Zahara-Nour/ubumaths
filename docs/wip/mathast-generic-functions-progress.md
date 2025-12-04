@@ -1,6 +1,8 @@
 # MathAST Generic Functions & Symbolic Differentiation - Progress
 
-## Status: Phase 3 - Pending
+## Status: Phase 3 - Complete
+
+**Commit (Phases 1 & 2)**: `3a067ac5`
 
 **Started**: 2025-12-04
 **Plan**: `/Users/david/.claude/plans/logical-swimming-bengio.md`
@@ -65,26 +67,48 @@
 - `src/lib/mathAST/normal/rules/powers.ts`
 - `src/lib/mathAST/__tests__/composition-node.test.ts` (NEW)
 
+### Phase 3: Parser with genericFunctions ✅
+
+**Tasks Completed:**
+
+- [x] 3.1 Modify parser/types.ts - GenericFunctionConfig, PRIME token type
+- [x] 3.2 Modify LaTeX tokenizer - PRIME token recognition
+- [x] 3.3 Modify LaTeX parser-pratt.ts - parse f(x), f'(x), f^{-1}(x), f^{(n)}(x)
+- [x] 3.4 Parse composition operator \circ
+- [x] 3.5 Modify custom tokenizer - PRIME token recognition
+- [x] 3.6 Modify custom parser-pratt.ts - same logic
+- [x] 3.7 Update parser/index.ts - extend exports
+- [x] 3.8 Write parser tests (45 tests)
+- [x] 3.9 Code Review (opus) - Quality: Good
+
+**Files Modified:**
+
+- `src/lib/mathAST/parser/types.ts`
+- `src/lib/mathAST/parser/latex/tokenizer.ts`
+- `src/lib/mathAST/parser/latex/parser-pratt.ts`
+- `src/lib/mathAST/parser/custom/tokenizer.ts`
+- `src/lib/mathAST/parser/custom/parser-pratt.ts`
+- `src/lib/mathAST/parser/index.ts`
+- `src/lib/mathAST/__tests__/parser-generic-functions.test.ts` (NEW)
+
 ---
 
-## Current Phase: Phase 3 - Parser with genericFunctions
+## Current Phase: Phase 4 - FunctionBindings & Evaluation
 
 ### Tasks
 
-- [ ] 3.1 Modify parser/types.ts - GenericFunctionConfig
-- [ ] 3.2 Modify tokenizer - PRIME token
-- [ ] 3.3 Modify parser-pratt.ts - parse f(x), f'(x), f^{-1}(x)
-- [ ] 3.4 Parse composition operator \circ
-- [ ] 3.5 Modify custom parser similarly
-- [ ] 3.6 Write parser tests
-- [ ] 3.7 Code Review
-- [ ] 3.8 Commit
+- [ ] 4.1 Create eval/function-bindings.ts
+- [ ] 4.2 Modify eval/types.ts
+- [ ] 4.3 Modify eval/substitute.ts
+- [ ] 4.4 Modify eval/evaluate.ts
+- [ ] 4.5 Write evaluation tests
+- [ ] 4.6 Code Review
+- [ ] 4.7 Commit
 
 ---
 
 ## Upcoming Phases
 
-- **Phase 4**: FunctionBindings & Evaluation
 - **Phase 5**: Symbolic Differentiation module
 - **Phase 6**: Exp Wrapper & Exports
 
@@ -98,10 +122,16 @@
 - CompositionNode: separate node type for f∘g
 - LaTeX rendering: `\circ`, Custom: `@`
 - Input validation: derivativeOrder must be positive integer
+- GenericFunctionConfig with allowDerivatives/allowInverse options
+- PRIME token for apostrophe `'` character
+- Composition binding power BP=25 (between addition and multiplication)
+- Naked functions (no args) allowed for composition patterns
 
 ---
 
-## Code Review Notes (Phases 1 & 2)
+## Code Review Notes
+
+### Phases 1 & 2
 
 **Quality Score**: Good - Ready to merge
 
@@ -113,3 +143,16 @@
 
 - Missing `hole` case in flatten.ts (falls through correctly)
 - hash.ts could use `never` type exhaustiveness check
+
+### Phase 3
+
+**Quality Score**: Good - Ready to merge
+
+**Issues addressed:**
+
+- Added GenericFunctionConfig export to parser/index.ts
+
+**Design limitations noted:**
+
+- `f(x)^2` (squaring function result) not supported for generic functions - users should use `(f(x))^2`
+- Pre-existing `colorBraceDepth` reference issue in LaTeX parser (not introduced by Phase 3)
