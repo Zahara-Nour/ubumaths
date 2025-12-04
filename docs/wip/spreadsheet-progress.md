@@ -149,6 +149,18 @@ src/routes/api/spreadsheets/
 
 1. **Missing recalculation** - Always include changed cell in recalculation order (not just formula cells)
 
+### Formula Bar
+
+1. **Focus coordination** - Formula bar and cell were fighting for focus
+   - Added `data-formula-bar` attribute to identify formula bar input
+   - Cell's blur handler skips commit if focus goes to formula bar
+   - Cell's `$effect` doesn't steal focus from formula bar
+2. **Keyboard handling** - Enter/Tab/Escape now work correctly in formula bar
+   - Navigate down on Enter, right on Tab, cancel on Escape
+3. **Input pattern** - Single input with `readonly` toggle instead of conditional `{#if}` rendering
+   - Prevents input recreation and event handler loss
+   - Uses `value={displayValue}` + `oninput` handler (one-way binding to derived value)
+
 ## Deferred to V2
 
 - Charts/visualization

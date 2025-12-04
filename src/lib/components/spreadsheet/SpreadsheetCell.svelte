@@ -84,6 +84,12 @@
 			// Wait for DOM update then focus
 			tick().then(() => {
 				if (inputRef) {
+					// Don't steal focus from formula bar
+					const activeElement = document.activeElement as HTMLElement | null;
+					if (activeElement?.hasAttribute('data-formula-bar')) {
+						return;
+					}
+
 					inputRef.focus();
 					if (selectOnFocus) {
 						inputRef.select();
@@ -156,6 +162,20 @@
 	}
 
 	/**
+	 * Handle blur - commit edit unless focus is going to formula bar
+	 */
+	function handleBlur(event: FocusEvent) {
+		const relatedTarget = event.relatedTarget as HTMLElement | null;
+
+		// Don't commit if focus is going to the formula bar
+		if (relatedTarget?.hasAttribute('data-formula-bar')) {
+			return;
+		}
+
+		onCommitEdit(editValue);
+	}
+
+	/**
 	 * Build inline style from format
 	 */
 	function getInlineStyle(fmt?: CellFormat): string {
@@ -182,7 +202,7 @@
 			value={editValue}
 			oninput={handleInput}
 			onkeydown={handleInputKeydown}
-			onblur={() => onCommitEdit(editValue)}
+			onblur={handleBlur}
 			class="h-full w-full border-none bg-background px-2 py-1 font-mono text-sm outline-none"
 			aria-label={`Edition de la cellule ${ref}`}
 		/>
