@@ -48,6 +48,9 @@
 	 * Compute all intersection points.
 	 * Skips computation during interaction for performance.
 	 * Limited to 10 functions to avoid O(n²) performance issues.
+	 *
+	 * Note: We access grapheurStore.functions directly (not visibleFunctions)
+	 * to ensure Svelte 5 properly tracks the dependency on the source array.
 	 */
 	const intersections = $derived.by((): IntersectionResult[] => {
 		// Skip during interaction for performance
@@ -55,8 +58,9 @@
 			return [];
 		}
 
-		const validFuncs = grapheurStore.visibleFunctions
-			.filter((f) => f.ast !== undefined)
+		// Access functions directly and filter here for proper reactivity
+		const validFuncs = grapheurStore.functions
+			.filter((f) => f.visible && f.ast !== undefined)
 			.map((f) => ({
 				id: f.id,
 				evaluator: createEvaluator(f.ast!)

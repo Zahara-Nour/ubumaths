@@ -2,7 +2,7 @@
 
 **Statut**: Production
 **Dernière mise à jour**: 2025-12-04
-**Version**: 1.1.0
+**Version**: 1.2.0
 
 ## Table des matières
 
@@ -34,9 +34,10 @@ Le **Grapheur** est une calculatrice graphique interactive qui permet de tracer 
 - ✅ **Traçage en temps réel** - Les courbes s'affichent instantanément au fur et à mesure de la saisie
 - ✅ **Éditeur LaTeX intégré** - Écrivez les fonctions en notation mathématique naturelle
 - ✅ **Exploration interactive** - Déplacez et zoomez pour explorer différentes régions du graphique
+- ✅ **Scaling par axe** - Modifiez l'échelle de l'axe X ou Y indépendamment
 - ✅ **Suivi des coordonnées** - Survolez le graphique pour voir les coordonnées en temps réel
 - ✅ **Multiples fonctions** - Tracez jusqu'à 20 fonctions simultanément avec des couleurs distinctes
-- ✅ **Personnalisation des courbes** - Changez les couleurs et la visibilité de chaque fonction
+- ✅ **Personnalisation des courbes** - Couleurs, épaisseurs (1-5px) et styles de trait (continu, tirets, pointillé, tiret-point)
 - ✅ **Sauvegarde automatique** - Vos graphiques sont sauvegardés dans le navigateur
 - ✅ **Analyse automatique** - Détection des racines, extrema et asymptotes en temps réel
 - ✅ **Export d'images** - Exportez vos graphiques en SVG ou PNG (haute résolution)
@@ -141,6 +142,16 @@ sin(x)           → sinus
 2. Écartez-les pour zoomer avant
 3. Rapprochez-les pour dézoomer
 
+#### Modifier l'échelle d'un seul axe
+
+Pour ajuster l'échelle de l'axe X ou Y indépendamment:
+
+1. Approchez votre curseur de l'axe X (horizontal) ou Y (vertical)
+2. Le curseur change pour indiquer le mode de scaling (↔ ou ↕)
+3. Cliquez et glissez pour modifier l'échelle de cet axe uniquement
+
+**Astuce** : Cette fonctionnalité est utile pour visualiser des fonctions avec des amplitudes très différentes sur les deux axes.
+
 #### Suivre les coordonnées
 
 Survolez le graphique avec votre souris (desktop) pour voir:
@@ -159,8 +170,23 @@ Survolez le graphique avec votre souris (desktop) pour voir:
 #### Changer la couleur
 
 1. Cliquez sur le carré de couleur à côté de la fonction
-2. Sélectionnez une nouvelle couleur dans la palette
+2. Sélectionnez une nouvelle couleur dans le popup de la palette
 3. La courbe change instantanément de couleur
+
+#### Changer l'épaisseur du trait
+
+1. Cliquez sur l'icône d'épaisseur de ligne (à côté de la couleur)
+2. Sélectionnez une épaisseur parmi 5 options (1px à 5px)
+3. La courbe se met à jour instantanément
+
+#### Changer le style du trait
+
+1. Cliquez sur l'icône de style de ligne
+2. Choisissez parmi 4 styles :
+   - **Continu** : trait plein
+   - **Tirets** : - - - -
+   - **Pointillé** : . . . .
+   - **Tiret-point** : -.-.-
 
 #### Masquer/Afficher une fonction
 
