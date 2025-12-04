@@ -76,6 +76,9 @@ class SpreadsheetStore {
 	/** Current edit value (while editing) */
 	editValue = $state('');
 
+	/** Whether to select all text when focusing the input (false when typing starts edit) */
+	selectOnFocus = $state(true);
+
 	/** Selection range for multi-select (future) */
 	selectionRange = $state<{ start: string; end: string } | null>(null);
 
@@ -454,6 +457,8 @@ class SpreadsheetStore {
 	startEditing(initialValue?: string): void {
 		if (!this.selectedCell) return;
 		this.isEditing = true;
+		// If starting with a typed character, don't select - place cursor at end
+		this.selectOnFocus = initialValue === undefined;
 		this.editValue = initialValue ?? this.getCellValue(this.selectedCell);
 	}
 
