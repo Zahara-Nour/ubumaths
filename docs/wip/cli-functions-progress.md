@@ -43,6 +43,58 @@
 
 ## Completed Phases
 
+### Phase 9: CLI REPL Updates ✅
+
+**Commit**: `2a04b0f7`
+**Agent**: `backend-developer` (opus)
+**Review**: `code-reviewer` (sonnet) - Excellent
+
+**Files Created**:
+
+- `src/lib/mathAST/cli/__tests__/repl.test.ts` - 52 tests
+
+**Files Modified**:
+
+- `src/lib/mathAST/cli/repl.ts` - Added inline function definition detection
+- `src/lib/mathAST/cli/commands/help.command.ts` - Categorized help output
+
+**Features**:
+
+- Inline function definition: `f(x) = x^2` (without .def prefix)
+- Categorized help output (Core, Variable, Function, Calculus commands)
+- Inline syntax documentation section in help
+
+**Tests**: 52 new tests
+
+---
+
+### Phase 8: Web REPL Enhancement ✅
+
+**Commit**: `3933aefa`
+**Agent**: `backend-developer` (opus)
+**Review**: `code-reviewer` (sonnet) - Excellent
+
+**Files Created**:
+
+- `src/lib/mathAST/cli/web/__tests__/web-repl-functions.test.ts` - 42 tests
+
+**Files Modified**:
+
+- `src/lib/mathAST/cli/web/types.ts` - Added WebFunctionInfo interface
+- `src/lib/mathAST/cli/web/web-repl-engine.ts` - Added getFunctions() and getState()
+- `src/lib/mathAST/cli/web/output-formatter-web.ts` - Added HTML formatters
+
+**Features**:
+
+- WebFunctionInfo interface for function state exposure
+- WebReplEngine.getFunctions() to list defined functions
+- HTML formatters with CSS classes for styled function output
+- HTML escaping and CSS sanitization for security
+
+**Tests**: 42 new tests
+
+---
+
 ### Phase 7: Taylor Series (.taylor) ✅
 
 **Commit**: `d10acfe8`
@@ -243,11 +295,31 @@ The `@` composition operator was **already fully implemented** in the parser and
 
 ---
 
-## Next Phase: 9 - CLI REPL Updates
+---
+
+## Project Summary
+
+**Total New Tests**: ~511 tests across all phases
+
+| Phase | Commit     | Description                           | Tests |
+| ----- | ---------- | ------------------------------------- | ----- |
+| 1     | `ddb1fe24` | State Extension & Core Infrastructure | 58    |
+| 2     | `1b3ace5f` | Basic Commands (.def, .fns, .undef)   | 111   |
+| 3     | `e37c6d3b` | Differentiation Command (.diff)       | 50    |
+| 4     | `bec2ace7` | Auto-compute Derivatives + Override   | 37    |
+| 5     | `c4e93ee8` | Inverse Functions (.inv)              | 48    |
+| 6     | `1137eb16` | Composition Operator (@)              | 31    |
+| 7     | `d10acfe8` | Taylor Series (.taylor)               | 82    |
+| 8     | `3933aefa` | Web REPL Enhancement                  | 42    |
+| 9     | `2a04b0f7` | CLI REPL Updates                      | 52    |
+| 10    | `cf292863` | Documentation & Final Checks          | -     |
 
 ---
 
 ## Notes
 
-- Quality checks (`pnpm lint`, `pnpm check`) will be run only at the end (Phase 10)
-- Each phase requires code review before commit
+- All code reviews passed with "Excellent" ratings
+- Quality checks ran at end of Phase 10
+- Pre-existing issues in codebase (not introduced by this work):
+  - Circular import in pattern module (affects some test collection)
+  - BigInt ES target warnings in normal.command.ts
