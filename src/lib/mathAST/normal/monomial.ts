@@ -70,6 +70,8 @@ export function hashNode(node: MathNode): string {
 			return `REL(${hashNode(node.left)}${node.relation}${hashNode(node.right)})`;
 		case 'unit':
 			return `UNIT(${hashNode(node.expression)})`;
+		case 'composition':
+			return `COMP(${hashNode(node.outer)},${hashNode(node.inner)})`;
 		default:
 			// Exhaustive check
 			return `UNKNOWN`;
@@ -88,6 +90,7 @@ const BASE_TYPE_PRIORITY: Record<string, number> = {
 	greek: 0, // Constants like pi, e
 	variable: 1, // Variables like x, y, z
 	function: 2, // Functions like sin, cos, ln
+	composition: 2, // Function composition (same level as function)
 	number: 3, // Numeric constants
 	symbol: 4, // Special symbols
 	addition: 5,

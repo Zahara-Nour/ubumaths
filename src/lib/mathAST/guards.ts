@@ -24,6 +24,7 @@ import type {
 	SuperscriptNode,
 	RelationNode,
 	UnitNode,
+	CompositionNode,
 	LiteralNode,
 	BinaryOperationNode,
 	UnaryOperationNode,
@@ -163,6 +164,30 @@ export function isFunction(node: MathNode): node is FunctionNode {
 }
 
 /**
+ * Type guard for FunctionNode with derivativeOrder set
+ * Returns true for f'(x), f''(x), etc.
+ */
+export function isDerivativeFunction(node: MathNode): node is FunctionNode {
+	return node.type === 'function' && node.derivativeOrder !== undefined && node.derivativeOrder > 0;
+}
+
+/**
+ * Type guard for FunctionNode with isInverse set to true
+ * Returns true for f^{-1}(x), sin^{-1}(x), etc.
+ */
+export function isInverseFunction(node: MathNode): node is FunctionNode {
+	return node.type === 'function' && node.isInverse === true;
+}
+
+/**
+ * Checks if a node has a derivativeOrder property set
+ * Works on any MathNode, returns true only for FunctionNodes with derivativeOrder
+ */
+export function hasDerivativeOrder(node: MathNode): boolean {
+	return node.type === 'function' && node.derivativeOrder !== undefined;
+}
+
+/**
  * Type guard for DelimiterNode
  */
 export function isDelimiter(node: MathNode): node is DelimiterNode {
@@ -197,6 +222,13 @@ export function isUnit(node: MathNode): node is UnitNode {
 	return node.type === 'unit';
 }
 
+/**
+ * Type guard for CompositionNode
+ */
+export function isComposition(node: MathNode): node is CompositionNode {
+	return node.type === 'composition';
+}
+
 // =============================================================================
 // Utility Predicates
 // =============================================================================
@@ -227,6 +259,9 @@ export function hasChildren(node: MathNode): boolean {
 		return true;
 	}
 	if (isUnit(node)) {
+		return true;
+	}
+	if (isComposition(node)) {
 		return true;
 	}
 	return false;
@@ -414,6 +449,9 @@ export function hasUnitDescendant(node: MathNode): boolean {
 		case 'unit':
 			// A UnitNode itself is a unit, and check its expression for nested units
 			return true;
+
+		case 'composition':
+			return hasUnitDescendant(node.outer) || hasUnitDescendant(node.inner);
 
 		default: {
 			const _exhaustive: never = node;

@@ -1021,6 +1021,16 @@ function analyzeNode(
 			// Holes are dimensionless placeholders - they have no inherent dimension
 			return createDimensionlessUnit();
 
+		case 'composition':
+			// Composition (f composed with g) - treat as a functional composition
+			// The result unit depends on what the composed functions do
+			// Analyze both outer and inner for errors, but return null (unknown unit)
+			analyzeNode(node.outer, context, errors, warnings);
+			analyzeNode(node.inner, context, errors, warnings);
+			// Composition of functions typically produces another function,
+			// whose output unit depends on the specific functions involved
+			return null;
+
 		default: {
 			// TypeScript exhaustiveness check
 			const _exhaustive: never = node;

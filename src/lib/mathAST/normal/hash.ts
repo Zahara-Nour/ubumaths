@@ -122,6 +122,9 @@ export function hashMathNode(node: MathNode): string {
 		case 'unit':
 			return `U(${hashMathNode(node.expression)})`;
 
+		case 'composition':
+			return `C(${hashMathNode(node.outer)},${hashMathNode(node.inner)})`;
+
 		default:
 			// Exhaustive check - should never reach
 			return 'UNKNOWN';

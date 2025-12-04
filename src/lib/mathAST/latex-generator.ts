@@ -24,6 +24,7 @@ import type {
 	SuperscriptNode,
 	RelationNode,
 	UnitNode,
+	CompositionNode,
 	MathSymbol,
 	RelationType,
 	GreekLetter,
@@ -373,6 +374,10 @@ export class LatexGenerator {
 				this.emit(`\\placeholder[${node.index}]{}`, node.metadata);
 				break;
 
+			case 'composition':
+				this.visitCompositionSpans(node);
+				break;
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -458,6 +463,7 @@ export class LatexGenerator {
 	/**
 	 * Emits spans for a function node.
 	 * Special case: abs(x) is rendered as |x| using \left| \right|
+	 * Handles derivativeOrder (f', f'', f^{(n)}) and isInverse (f^{-1})
 	 */
 	private visitFunctionSpans(node: FunctionNode): void {
 		// Special case: abs function renders as |x|
@@ -476,8 +482,24 @@ export class LatexGenerator {
 		// Emit function name
 		this.emit(funcName, node.nameMetadata ?? node.metadata);
 
-		// Emit power if present (e.g., sin^2)
-		if (node.power) {
+		// Emit derivative notation (takes priority over power)
+		if (node.derivativeOrder !== undefined && node.derivativeOrder > 0) {
+			if (node.derivativeOrder <= 3) {
+				// Use prime notation: f', f'', f'''
+				this.emit("'".repeat(node.derivativeOrder), node.metadata);
+			} else {
+				// Use parenthetical notation: f^{(n)}
+				this.emit(`^{(${node.derivativeOrder})}`, node.metadata);
+			}
+		}
+
+		// Emit inverse notation (f^{-1}) - only if no derivative
+		if (node.isInverse && !node.derivativeOrder) {
+			this.emit('^{-1}', node.metadata);
+		}
+
+		// Emit power if present (only if no derivative and no inverse)
+		if (node.power && !node.derivativeOrder && !node.isInverse) {
 			this.emit('^{', node.metadata);
 			this.visitWithSpans(node.power);
 			this.emit('}', node.metadata);
@@ -555,6 +577,17 @@ export class LatexGenerator {
 
 		// Emit the unit with unitMetadata (or fallback to node metadata)
 		this.emit(`\\unit{${format(node.unit, 'original')}}`, unitMeta);
+	}
+
+	/**
+	 * Emits spans for a composition node (f composed with g).
+	 * Renders as: outer \circ inner
+	 */
+	private visitCompositionSpans(node: CompositionNode): void {
+		const opMeta = node.operatorMetadata ?? node.metadata;
+		this.visitWithSpans(node.outer);
+		this.emit(' \\circ ', opMeta);
+		this.visitWithSpans(node.inner);
 	}
 
 	/**
@@ -656,6 +689,9 @@ export class LatexGenerator {
 			case 'hole':
 				content = this.generateHole(node);
 				break;
+			case 'composition':
+				content = this.generateComposition(node);
+				break;
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -754,6 +790,7 @@ export class LatexGenerator {
 	/**
 	 * Generates LaTeX for a function node.
 	 * Special case: abs(x) is rendered as |x| using \left| \right|
+	 * Handles derivativeOrder (f', f'', f^{(n)}) and isInverse (f^{-1})
 	 */
 	private generateFunction(node: FunctionNode): string {
 		// Special case: abs function renders as |x|
@@ -765,12 +802,31 @@ export class LatexGenerator {
 		const isKnown = KNOWN_FUNCTIONS.has(node.name);
 		const funcName = isKnown ? `\\${node.name}` : node.name;
 
-		// Build the function name with optional power
-		let nameWithPower = funcName;
-		if (node.power) {
+		// Build derivative notation (takes priority over power)
+		// f' -> f', f'' -> f'', f''' -> f''', f^(4) -> f^{(4)}
+		let nameWithDerivative = funcName;
+		if (node.derivativeOrder !== undefined && node.derivativeOrder > 0) {
+			if (node.derivativeOrder <= 3) {
+				// Use prime notation: f', f'', f'''
+				nameWithDerivative = `${funcName}${"'".repeat(node.derivativeOrder)}`;
+			} else {
+				// Use parenthetical notation: f^{(n)}
+				nameWithDerivative = `${funcName}^{(${node.derivativeOrder})}`;
+			}
+		}
+
+		// Build inverse notation (f^{-1}) - only if no derivative
+		let nameWithInverse = nameWithDerivative;
+		if (node.isInverse && !node.derivativeOrder) {
+			nameWithInverse = `${funcName}^{-1}`;
+		}
+
+		// Build the function name with optional power (only if no derivative and no inverse)
+		let nameWithPower = nameWithInverse;
+		if (node.power && !node.derivativeOrder && !node.isInverse) {
 			const powerStr = this.generateNode(node.power);
 			const wrappedPower = this.needsBraces(powerStr) ? `{${powerStr}}` : powerStr;
-			nameWithPower = `${funcName}^${wrappedPower}`;
+			nameWithPower = `${nameWithInverse}^${wrappedPower}`;
 		}
 
 		// Build the base subscript if present
@@ -840,6 +896,16 @@ export class LatexGenerator {
 	 */
 	private generateHole(node: HoleNode): string {
 		return `\\placeholder[${node.index}]{}`;
+	}
+
+	/**
+	 * Generates LaTeX for a composition node (f composed with g).
+	 * Renders as: outer \circ inner
+	 */
+	private generateComposition(node: CompositionNode): string {
+		const outer = this.generateNode(node.outer);
+		const inner = this.generateNode(node.inner);
+		return `${outer} \\circ ${inner}`;
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {

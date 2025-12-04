@@ -399,6 +399,11 @@ function normalizeNode(node: MathNode): NormalForm {
 			return normalizeNode(node.expression);
 		}
 
+		case 'composition':
+			// Composition (f composed with g) is treated as an opaque symbolic factor
+			// since the composition itself represents a new function
+			return normalizeOpaqueNode(node);
+
 		default:
 			return normalizeOpaqueNode(node);
 	}

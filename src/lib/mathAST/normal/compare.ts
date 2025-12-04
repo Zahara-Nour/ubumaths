@@ -281,6 +281,7 @@ const NODE_TYPE_PRIORITY: Record<string, number> = {
 	greek: 0, // Constants like pi, e
 	variable: 1, // Variables like x, y, z
 	function: 2, // Functions like sin, cos, ln
+	composition: 2, // Function composition (same level as function)
 	number: 3, // Numeric constants
 	symbol: 4, // Special symbols
 	addition: 5,
@@ -362,6 +363,8 @@ function hashNodeForCompare(node: MathNode): string {
 			return `REL(${hashNodeForCompare(node.left)}${node.relation}${hashNodeForCompare(node.right)})`;
 		case 'unit':
 			return `UNIT(${hashNodeForCompare(node.expression)})`;
+		case 'composition':
+			return `COMP(${hashNodeForCompare(node.outer)},${hashNodeForCompare(node.inner)})`;
 		default:
 			return `UNKNOWN`;
 	}
