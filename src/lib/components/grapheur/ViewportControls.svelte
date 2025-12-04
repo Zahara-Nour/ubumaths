@@ -12,7 +12,7 @@
 
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-svelte';
+	import { ZoomIn, ZoomOut, Maximize2, Grid3x3 } from 'lucide-svelte';
 
 	// ==========================================================================
 	// Handlers
@@ -37,6 +37,13 @@
 	 */
 	function handleReset(): void {
 		grapheurStore.resetViewport();
+	}
+
+	/**
+	 * Toggle grid visibility
+	 */
+	function handleToggleGrid(): void {
+		grapheurStore.toggleGrid();
 	}
 </script>
 
@@ -69,6 +76,17 @@
 		aria-label="Réinitialiser la vue"
 	>
 		<Maximize2 class="h-4 w-4" />
+	</Button>
+
+	<Button
+		variant={grapheurStore.showGrid ? 'default' : 'outline'}
+		size="icon"
+		onclick={handleToggleGrid}
+		title={grapheurStore.showGrid ? 'Masquer la grille (G)' : 'Afficher la grille (G)'}
+		aria-label={grapheurStore.showGrid ? 'Masquer la grille' : 'Afficher la grille'}
+		aria-pressed={grapheurStore.showGrid}
+	>
+		<Grid3x3 class="h-4 w-4" />
 	</Button>
 </div>
 

@@ -238,6 +238,15 @@
 			0
 		</text>
 	{/if}
+
+	<!-- Axis name labels -->
+	<!-- X axis label at right edge -->
+	<text x={width - 12} y={xAxisY - 8} class="axis-name" text-anchor="end" aria-hidden="true">
+		x
+	</text>
+
+	<!-- Y axis label at top -->
+	<text x={yAxisX + 10} y={16} class="axis-name" text-anchor="start" aria-hidden="true"> y </text>
 </g>
 
 <style>
@@ -263,6 +272,15 @@
 		font-weight: 500;
 	}
 
+	.axis-name {
+		font-family: 'Computer Modern', Georgia, 'Times New Roman', serif;
+		font-style: italic;
+		font-size: 14px;
+		fill: var(--graph-axis-label, #6b7280);
+		user-select: none;
+		pointer-events: none;
+	}
+
 	/* Dark mode support */
 	:global(.dark) .axis-line {
 		stroke: var(--graph-axis-dark, #9ca3af);
@@ -273,6 +291,10 @@
 	}
 
 	:global(.dark) .axis-label {
+		fill: var(--graph-axis-label-dark, #9ca3af);
+	}
+
+	:global(.dark) .axis-name {
 		fill: var(--graph-axis-label-dark, #9ca3af);
 	}
 </style>

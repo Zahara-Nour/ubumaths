@@ -19,6 +19,8 @@
 	import GridLines from './GridLines.svelte';
 	import AxisLines from './AxisLines.svelte';
 	import FunctionCurve from './FunctionCurve.svelte';
+	import CurveHover from './CurveHover.svelte';
+	import IntersectionPoints from './IntersectionPoints.svelte';
 
 	// Props
 	let {
@@ -212,8 +214,10 @@
 		onwheel={handleWheel}
 		style="touch-action: none; cursor: {isPanning ? 'grabbing' : 'crosshair'}"
 	>
-		<!-- Background grid -->
-		<GridLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
+		<!-- Background grid (conditional) -->
+		{#if grapheurStore.showGrid}
+			<GridLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
+		{/if}
 
 		<!-- Coordinate axes -->
 		<AxisLines viewport={grapheurStore.viewport} {transformer} {width} {height} />
@@ -229,6 +233,12 @@
 				/>
 			{/each}
 		</g>
+
+		<!-- Curve hover point -->
+		<CurveHover {transformer} {width} {height} />
+
+		<!-- Intersection points -->
+		<IntersectionPoints {transformer} />
 	</svg>
 </div>
 

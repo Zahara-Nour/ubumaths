@@ -76,6 +76,9 @@ class GrapheurStore {
 	/** Whether user is currently interacting (pan/zoom) - affects rendering quality */
 	isInteracting = $state(false);
 
+	/** Whether the grid is visible */
+	showGrid = $state(true);
+
 	// ===========================================================================
 	// Private State
 	// ===========================================================================
@@ -324,6 +327,14 @@ class GrapheurStore {
 		this.isInteracting = value;
 	}
 
+	/**
+	 * Toggle grid visibility
+	 */
+	toggleGrid(): void {
+		this.showGrid = !this.showGrid;
+		this.scheduleSave();
+	}
+
 	// ===========================================================================
 	// Serialization
 	// ===========================================================================
@@ -340,6 +351,7 @@ class GrapheurStore {
 		return {
 			version: GRAPH_STATE_VERSION,
 			viewport: this.viewport,
+			showGrid: this.showGrid,
 			functions: this.functions.map(
 				(f): ExplicitFunctionState => ({
 					id: f.id,
@@ -379,8 +391,9 @@ class GrapheurStore {
 
 			const state = validated.data;
 
-			// Restore viewport
+			// Restore viewport and grid visibility (schema ensures showGrid exists)
 			this.viewport = state.viewport;
+			this.showGrid = state.showGrid;
 
 			// Re-parse all functions (AST is not stored)
 			this.functions = state.functions.map((f): ExplicitFunction => {
@@ -469,6 +482,7 @@ class GrapheurStore {
 	reset(): void {
 		this.functions = [];
 		this.viewport = { ...DEFAULT_VIEWPORT };
+		this.showGrid = true;
 		this.cursor = null;
 		this.isInteracting = false;
 		this.scheduleSave();
