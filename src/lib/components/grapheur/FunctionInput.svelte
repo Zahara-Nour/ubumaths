@@ -30,32 +30,37 @@ Features:
 
 	let { func }: { func: ExplicitFunction } = $props();
 
-	// Local state for latex input (debounced update to store)
+	// Local state for latex input (bound to MathField)
 	let latex = $state(func.latex);
 	let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	// Update local latex when func changes (e.g., from localStorage load)
+	// Update local latex when func changes externally (e.g., from localStorage load)
 	$effect(() => {
-		latex = func.latex;
+		if (func.latex !== latex) {
+			latex = func.latex;
+		}
 	});
 
-	/**
-	 * Handle LaTeX changes with debouncing
-	 *
-	 * Updates are delayed by 300ms to avoid excessive re-parsing
-	 * during rapid typing.
-	 */
-	function handleLatexChange(value: string) {
-		latex = value;
+	// Watch for latex changes and debounce update to store
+	$effect(() => {
+		const currentLatex = latex;
 
 		// Clear previous timeout
 		if (debounceTimeout) clearTimeout(debounceTimeout);
 
-		// Schedule update to store
-		debounceTimeout = setTimeout(() => {
-			grapheurStore.updateFunction(func.id, { latex: value });
-		}, 300);
-	}
+		// Only update if different from store value
+		if (currentLatex !== func.latex) {
+			// Schedule update to store
+			debounceTimeout = setTimeout(() => {
+				grapheurStore.updateFunction(func.id, { latex: currentLatex });
+			}, 300);
+		}
+
+		// Cleanup on effect re-run
+		return () => {
+			if (debounceTimeout) clearTimeout(debounceTimeout);
+		};
+	});
 
 	/**
 	 * Handle color changes
@@ -88,8 +93,7 @@ Features:
 	<!-- Math Field Container -->
 	<div class="min-w-0 flex-grow">
 		<MathField
-			value={latex}
-			onchange={handleLatexChange}
+			bind:value={latex}
 			placeholder="f(x) = ..."
 			virtual-keyboard-mode="manual"
 			class="w-full"
