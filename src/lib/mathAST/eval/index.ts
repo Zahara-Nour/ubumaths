@@ -34,6 +34,34 @@
  * // Check variable requirements
  * const vars = getVariables(expr);  // Set { 'x', 'y' }
  * const ready = hasAllBindings(expr, { x: 1 });  // false (missing y)
+ *
+ * // Function bindings for generic functions (f, g, h)
+ * const fExpr = parseLatex('f(3)', { genericFunctions: { names: ['f'] } });
+ * const fResult = evaluate(fExpr, {
+ *   functions: { f: { expression: parseLatex('x^2'), parameters: ['x'] } }
+ * });
+ * // fResult.value = { n: 9n, d: 1n } (equals 9 = 3^2)
+ *
+ * // Function with pre-computed derivative and inverse
+ * import { derivativeFunc, inverseFunc } from '$lib/mathAST/factory';
+ * const fWithDerivative = {
+ *   expression: parseLatex('x^2'),
+ *   parameters: ['x'],
+ *   derivative: parseLatex('2x'),        // f'(x) = 2x
+ *   inverse: parseLatex('\\sqrt{x}')     // f^{-1}(x) = sqrt(x)
+ * };
+ *
+ * // Evaluate f'(3) = 6
+ * const derivResult = evaluate(derivativeFunc('f', [number('3')], 1), {
+ *   functions: { f: fWithDerivative }
+ * });
+ * // derivResult.value = { n: 6n, d: 1n } (equals 6 = 2*3)
+ *
+ * // Evaluate f^{-1}(9) = 3
+ * const invResult = evaluate(inverseFunc('f', [number('9')]), {
+ *   functions: { f: fWithDerivative }
+ * });
+ * // invResult.value = { n: 3n, d: 1n } (equals 3 = sqrt(9))
  * ```
  */
 
@@ -53,7 +81,21 @@ export type {
 export { DEFAULT_EVAL_OPTIONS, DEFAULT_SUBSTITUTE_OPTIONS } from './types';
 
 // =============================================================================
-// Function Exports
+// Function Binding Types and Functions
+// =============================================================================
+
+export type { FunctionDefinition, FunctionBindings } from './function-bindings';
+
+export {
+	applyFunction,
+	substituteFunction,
+	applyComposition,
+	getUndefinedFunctions,
+	FunctionBindingError
+} from './function-bindings';
+
+// =============================================================================
+// Variable Substitution
 // =============================================================================
 
 export {
@@ -61,7 +103,14 @@ export {
 	getVariables,
 	hasVariable,
 	hasAllBindings,
-	getMissingBindings
+	getMissingBindings,
+	substituteAll
 } from './substitute';
+
+export type { SubstituteAllOptions } from './substitute';
+
+// =============================================================================
+// Evaluation
+// =============================================================================
 
 export { evaluate } from './evaluate';

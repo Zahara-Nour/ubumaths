@@ -27,8 +27,12 @@ import {
 	isSubscript,
 	isRelation,
 	isHole,
-	isUnit
+	isUnit,
+	isComposition,
+	isDerivativeFunction,
+	isInverseFunction
 } from '../guards';
+import { substituteFunction } from './function-bindings';
 import {
 	rational,
 	fromInteger,
@@ -528,7 +532,24 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 		const handler = SUPPORTED_FUNCTIONS[funcName];
 
 		if (!handler) {
-			throw new Error(`Unknown function: ${node.name}`);
+			// Check if this is a derivative or inverse function that wasn't substituted
+			if (isDerivativeFunction(node)) {
+				throw new Error(
+					`Cannot evaluate derivative function '${node.name}'(x) without a definition. ` +
+						'Derivative functions remain symbolic and require differentiation rules.'
+				);
+			}
+			if (isInverseFunction(node)) {
+				throw new Error(
+					`Cannot evaluate inverse function '${node.name}^{-1}(x)' without a definition. ` +
+						'Inverse functions remain symbolic.'
+				);
+			}
+			// Unknown generic function
+			throw new Error(
+				`Unknown function: ${node.name}. ` +
+					'If this is a generic function (like f, g, h), provide its definition in EvalOptions.functions'
+			);
 		}
 
 		// Evaluate all arguments
@@ -555,6 +576,14 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 	// UnitNode - evaluate the expression part (ignore the unit)
 	if (isUnit(node)) {
 		return evaluateNode(node.expression, exactMode);
+	}
+
+	// CompositionNode - cannot evaluate directly without application
+	if (isComposition(node)) {
+		throw new Error(
+			'Cannot evaluate composition expression directly. ' +
+				'Compositions must be applied to arguments first (e.g., (f o g)(x) not f o g)'
+		);
 	}
 
 	// Should never reach here with proper typing
@@ -594,7 +623,7 @@ function valueToNode(value: IntermediateValue): MathNode {
  * function first if your expression contains variables.
  *
  * @param node - The MathAST node to evaluate
- * @param options - Evaluation options (mode: 'exact' or 'decimal')
+ * @param options - Evaluation options (mode: 'exact' or 'decimal', functions: FunctionBindings)
  * @returns An EvalResult containing the value, a node representation, and exactness flag
  *
  * @throws Error if:
@@ -614,13 +643,27 @@ function valueToNode(value: IntermediateValue): MathNode {
  * const result = evaluate(parseLatex('\\sqrt{2}'), { mode: 'decimal' });
  * // result.value = 1.4142135623730951
  * // result.exact = false
+ *
+ * @example
+ * // With function bindings: f(3) where f(x) = x^2
+ * const result = evaluate(
+ *   parseLatex('f(3)', { genericFunctions: { names: ['f'] } }),
+ *   { functions: { f: { expression: parseLatex('x^2'), parameters: ['x'] } } }
+ * );
+ * // result.value = { n: 9n, d: 1n }
  */
 export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 	const opts = { ...DEFAULT_EVAL_OPTIONS, ...options };
 	const exactMode = opts.mode === 'exact';
 
+	// If function bindings are provided, substitute functions first
+	let processedNode = node;
+	if (opts.functions && Object.keys(opts.functions).length > 0) {
+		processedNode = substituteFunction(node, opts.functions);
+	}
+
 	// Check for unsubstituted variables
-	const variables = getVariables(node);
+	const variables = getVariables(processedNode);
 
 	// Filter out 'pi' as it's a known constant
 	const unsubstituted = [...variables].filter((v) => v !== 'pi');
@@ -632,7 +675,7 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 	}
 
 	// Evaluate the expression
-	const value = evaluateNode(node, exactMode);
+	const value = evaluateNode(processedNode, exactMode);
 
 	// Determine if result is exact
 	const isExact = isRational(value);
