@@ -3,12 +3,15 @@
  *
  * Converts input strings to MathAST nodes using the appropriate parser.
  * Handles format detection, parsing, and error collection.
+ * Supports state-aware parsing with generic function names from EvalState.
  */
 
 import type { PipelineResult, PipelineError, InputFormat } from '../types';
+import type { LatexParserOptions } from '../../parser';
 import { parseLatexSafe } from '../../parser';
 import { parseCustomSafe } from '../../parser/custom';
 import { detectInputFormat } from './input-detector';
+import type { EvalState } from './eval-state';
 
 // =============================================================================
 // Pipeline Options
@@ -20,6 +23,53 @@ import { detectInputFormat } from './input-detector';
 export interface PipelineOptions {
 	/** Force a specific input format instead of auto-detecting */
 	readonly forceFormat?: InputFormat;
+	/** Evaluation state for parser configuration (generic functions) */
+	readonly evalState?: EvalState;
+}
+
+// =============================================================================
+// Parser Options from State
+// =============================================================================
+
+/**
+ * Get parser options that include generic function names from EvalState.
+ *
+ * When functions are defined in the REPL (e.g., f(x) = x^2), the parser needs
+ * to know these names to correctly parse expressions like f(3) or f'(x).
+ *
+ * @param state - Optional evaluation state containing function definitions
+ * @returns LatexParserOptions configured for the state's functions
+ *
+ * @example
+ * ```typescript
+ * // With functions defined
+ * const state = createEvalState();
+ * createFunctionBinding(state, 'f', ['x'], parseLatex('x^2'));
+ *
+ * const options = getParserOptions(state);
+ * // options = {
+ * //   genericFunctions: {
+ * //     names: ['f'],
+ * //     allowDerivatives: true,
+ * //     allowInverse: true,
+ * //     allowComposition: true
+ * //   }
+ * // }
+ * ```
+ */
+export function getParserOptions(state?: EvalState): LatexParserOptions {
+	if (!state || state.functionNames.size === 0) {
+		return {};
+	}
+
+	return {
+		genericFunctions: {
+			names: [...state.functionNames],
+			allowDerivatives: true,
+			allowInverse: true,
+			allowComposition: true
+		}
+	};
 }
 
 // =============================================================================
@@ -93,7 +143,12 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 	}
 
 	// Parse as LaTeX (default)
-	const result = parseLatexSafe(trimmedInput, { mode: 'tolerant' });
+	// Get parser options from evaluation state (includes generic function names)
+	const parserOptions = getParserOptions(options?.evalState);
+	const result = parseLatexSafe(trimmedInput, {
+		mode: 'tolerant',
+		...parserOptions
+	});
 
 	// Convert parser errors to pipeline errors
 	for (const err of result.errors) {
