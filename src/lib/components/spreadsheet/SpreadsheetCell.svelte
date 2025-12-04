@@ -46,6 +46,7 @@
 		isSelected: boolean;
 		isEditing: boolean;
 		editValue: string;
+		selectOnFocus: boolean;
 		onSelect: (ref: string) => void;
 		onStartEdit: () => void;
 		onCommitEdit: (value: string) => void;
@@ -61,6 +62,7 @@
 		isSelected,
 		isEditing,
 		editValue,
+		selectOnFocus,
 		onSelect,
 		onStartEdit,
 		onCommitEdit,
@@ -83,7 +85,12 @@
 			tick().then(() => {
 				if (inputRef) {
 					inputRef.focus();
-					inputRef.select();
+					if (selectOnFocus) {
+						inputRef.select();
+					} else {
+						// Place cursor at end
+						inputRef.setSelectionRange(inputRef.value.length, inputRef.value.length);
+					}
 				}
 			});
 		}

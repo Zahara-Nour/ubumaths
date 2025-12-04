@@ -131,6 +131,7 @@
 							isSelected={spreadsheetStore.selectedCell === cellRef}
 							isEditing={spreadsheetStore.selectedCell === cellRef && spreadsheetStore.isEditing}
 							editValue={spreadsheetStore.editValue}
+							selectOnFocus={spreadsheetStore.selectOnFocus}
 							onSelect={handleCellSelect}
 							onStartEdit={handleStartEdit}
 							onCommitEdit={handleCommitEdit}
