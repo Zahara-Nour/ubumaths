@@ -3,6 +3,7 @@
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import PythonToolbar from './PythonToolbar.svelte';
 	import { browser } from '$app/environment';
+	import { onMount, onDestroy } from 'svelte';
 
 	// Derived state from store
 	let canExecute = $derived(pythonStore.isReady);
@@ -38,14 +39,14 @@
 		}
 	}
 
-	// Initialize Pyodide when component mounts (placeholder for Phase 2)
-	// Using $effect with a guard to only run once when state is 'initial'
-	$effect(() => {
-		if (pythonStore.state === 'initial') {
-			// Placeholder: Set to ready for now
-			// In Phase 2, this will initialize the Pyodide web worker
-			pythonStore.setLoadingState('ready', 100, 'Prêt');
-		}
+	// Initialize Pyodide when component mounts
+	onMount(() => {
+		pythonStore.initPyodide();
+	});
+
+	// Clean up worker when component unmounts
+	onDestroy(() => {
+		pythonStore.destroy();
 	});
 </script>
 
@@ -76,6 +77,10 @@
 					bind:value={pythonStore.code}
 					placeholder="# Écrivez votre code Python ici..."
 					spellcheck="false"
+					autocomplete="off"
+					autocorrect="off"
+					autocapitalize="off"
+					aria-label="Éditeur de code Python"
 				></textarea>
 			</div>
 		</div>
@@ -90,7 +95,12 @@
 					</span>
 				{/if}
 			</div>
-			<div class="flex-1 overflow-auto bg-muted/20 p-4">
+			<div
+				class="flex-1 overflow-auto bg-muted/20 p-4"
+				role="region"
+				aria-label="Sortie d'exécution Python"
+				aria-live="polite"
+			>
 				{#if pythonStore.isLoading}
 					<!-- Loading state -->
 					<div class="flex flex-col items-center justify-center gap-4 py-8">
