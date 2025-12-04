@@ -27,6 +27,11 @@ export { ClearCommand } from './clear.command';
 export { UnsetCommand } from './unset.command';
 export { ModeCommand } from './mode.command';
 
+// Function commands
+export { DefCommand } from './def.command';
+export { FnsCommand } from './fns.command';
+export { UndefCommand } from './undef.command';
+
 // =============================================================================
 // Default Registry Factory
 // =============================================================================
@@ -47,6 +52,9 @@ import { VarsCommand } from './vars.command';
 import { ClearCommand } from './clear.command';
 import { UnsetCommand } from './unset.command';
 import { ModeCommand } from './mode.command';
+import { DefCommand } from './def.command';
+import { FnsCommand } from './fns.command';
+import { UndefCommand } from './undef.command';
 
 /**
  * Create a command registry with all default commands registered.
@@ -98,6 +106,11 @@ export function createDefaultRegistry(): CommandRegistry {
 	registry.register(new ClearCommand());
 	registry.register(new UnsetCommand());
 	registry.register(new ModeCommand());
+
+	// Function commands
+	registry.register(new DefCommand());
+	registry.register(new FnsCommand());
+	registry.register(new UndefCommand());
 
 	// Set registry reference for help command after registration
 	helpCmd.setRegistry(registry);
