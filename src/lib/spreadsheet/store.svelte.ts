@@ -395,10 +395,10 @@ class SpreadsheetStore {
 			return evaluateFormula(value, (cellRef) => this.getComputedValue(cellRef));
 		}
 
-		// Try to parse as number
-		const num = parseFloat(value);
-		if (!isNaN(num) && isFinite(num)) {
-			return { type: 'number', value: num };
+		// Try to parse as number (must be the entire string, not just a prefix)
+		const trimmed = value.trim();
+		if (trimmed !== '' && !isNaN(Number(trimmed)) && isFinite(Number(trimmed))) {
+			return { type: 'number', value: Number(trimmed) };
 		}
 
 		// Check for boolean
