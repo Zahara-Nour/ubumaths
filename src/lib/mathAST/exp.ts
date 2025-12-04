@@ -102,6 +102,9 @@ import { normalFormsEquivalent, hashNormalForm } from './normal/hash';
 import { substitute as substituteFunc, evaluate as evaluateFunc } from './eval';
 import type { EvalBindings, EvalOptions, EvalResult } from './eval';
 
+import { differentiate as differentiateFunc, differentiateN } from './differentiation';
+import type { DifferentiationOptions } from './differentiation';
+
 import { match, applyRules } from './pattern';
 import type { Pattern, Rule } from './pattern';
 
@@ -818,5 +821,88 @@ export class Exp {
 	 */
 	substitute(bindings: EvalBindings): Exp {
 		return new Exp(substituteFunc(this.#node, bindings));
+	}
+
+	// =========================================================================
+	// Instance Methods - Differentiation
+	// =========================================================================
+
+	/**
+	 * Compute the symbolic derivative of this expression.
+	 *
+	 * Returns a new Exp representing the derivative of this expression
+	 * with respect to the specified variable (default: 'x').
+	 *
+	 * @param variable - Variable to differentiate with respect to (default: 'x')
+	 * @param options - Additional differentiation options
+	 * @returns A new Exp containing the derivative
+	 *
+	 * @example
+	 * // d/dx(x^2) = 2x
+	 * Exp.parse('x^2').differentiate().latex // '2 x'
+	 *
+	 * @example
+	 * // d/dx(sin(x)) = cos(x)
+	 * Exp.parse('\\sin(x)').differentiate().latex // '\\cos(x)'
+	 *
+	 * @example
+	 * // d/dy(x*y^2) = 2xy
+	 * Exp.parse('x y^2').differentiate('y').latex // '2 x y'
+	 *
+	 * @example
+	 * // Chain rule: d/dx(sin(x^2)) = 2x*cos(x^2)
+	 * Exp.parse('\\sin(x^2)').differentiate().latex // '2 x \\cos(x^{2})'
+	 *
+	 * @example
+	 * // With function bindings
+	 * const bindings = {
+	 *   f: { expression: parseLatex('x^2'), parameters: ['x'] }
+	 * };
+	 * Exp.parse('f(x)').differentiate('x', { functions: bindings }).latex // '2 x'
+	 */
+	differentiate(variable: string = 'x', options?: Omit<DifferentiationOptions, 'variable'>): Exp {
+		const result = differentiateFunc(this.#node, { variable, ...options });
+		return new Exp(result);
+	}
+
+	/**
+	 * Alias for `differentiate()`.
+	 *
+	 * Compute the symbolic derivative of this expression.
+	 *
+	 * @param variable - Variable to differentiate with respect to (default: 'x')
+	 * @param options - Additional differentiation options
+	 * @returns A new Exp containing the derivative
+	 *
+	 * @example
+	 * Exp.parse('x^3').diff().latex // '3 x^{2}'
+	 */
+	diff(variable: string = 'x', options?: Omit<DifferentiationOptions, 'variable'>): Exp {
+		return this.differentiate(variable, options);
+	}
+
+	/**
+	 * Compute the nth derivative of this expression.
+	 *
+	 * @param n - Order of the derivative (1, 2, 3, ...)
+	 * @param variable - Variable to differentiate with respect to (default: 'x')
+	 * @param options - Additional differentiation options
+	 * @returns A new Exp containing the nth derivative
+	 *
+	 * @example
+	 * // d²/dx²(x^3) = 6x
+	 * Exp.parse('x^3').nthDerivative(2).latex // '6 x'
+	 *
+	 * @example
+	 * // d³/dx³(x^4) = 24x
+	 * Exp.parse('x^4').nthDerivative(3).latex // '24 x'
+	 */
+	nthDerivative(
+		n: number,
+		variable: string = 'x',
+		options?: Omit<DifferentiationOptions, 'variable'>
+	): Exp {
+		const result = differentiateN(this.#node, n, { variable, ...options });
+		return new Exp(result);
 	}
 }

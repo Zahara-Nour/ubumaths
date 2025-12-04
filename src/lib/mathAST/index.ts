@@ -63,6 +63,7 @@ export type {
 	OppositeNode,
 	PositiveNode,
 	FunctionNode,
+	CompositionNode,
 	DelimiterNode,
 	SubscriptNode,
 	SuperscriptNode,
@@ -119,6 +120,7 @@ export {
 	abs,
 	derivativeFunc,
 	inverseFunc,
+	compose,
 
 	// Structural
 	delimiter,
@@ -220,6 +222,7 @@ export {
 	isFunction,
 	isDerivativeFunction,
 	isInverseFunction,
+	isComposition,
 	isDelimiter,
 	isSubscript,
 	isSuperscript,
@@ -307,7 +310,7 @@ export { LatexGenerator, toLatex } from './latex-generator';
 // LaTeX Parser
 // =============================================================================
 
-export type { LatexParserOptions } from './parser';
+export type { LatexParserOptions, GenericFunctionConfig } from './parser';
 
 export {
 	// Unified API (recommended)
@@ -361,6 +364,16 @@ export type { EvalBindings, EvalOptions, EvalResult } from './eval';
 
 // Helper utilities for variable analysis
 export { getVariables, hasVariable, hasAllBindings, getMissingBindings } from './eval';
+
+// Function bindings for generic functions (f, g, h)
+export type { FunctionDefinition, FunctionBindings } from './eval';
+export {
+	applyFunction,
+	substituteFunction,
+	applyComposition,
+	getUndefinedFunctions,
+	FunctionBindingError
+} from './eval';
 
 // =============================================================================
 // Pattern Matching
