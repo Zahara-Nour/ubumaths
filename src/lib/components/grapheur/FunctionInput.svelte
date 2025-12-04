@@ -33,30 +33,34 @@ Features:
 	// Local state for latex input (bound to MathField)
 	let latex = $state(func.latex);
 	let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
-
-	// Update local latex when func changes externally (e.g., from localStorage load)
-	$effect(() => {
-		if (func.latex !== latex) {
-			latex = func.latex;
-		}
-	});
+	let previousFuncLatex = func.latex;
 
 	// Watch for latex changes and debounce update to store
 	$effect(() => {
-		const currentLatex = latex;
+		// Check if func.latex changed externally (from localStorage or other source)
+		if (func.latex !== previousFuncLatex) {
+			latex = func.latex;
+			previousFuncLatex = func.latex;
+			return;
+		}
 
-		// Clear previous timeout
-		if (debounceTimeout) clearTimeout(debounceTimeout);
+		// Only update store if local latex changed and differs from store
+		if (latex !== func.latex) {
+			const currentLatex = latex;
 
-		// Only update if different from store value
-		if (currentLatex !== func.latex) {
+			// Clear previous timeout
+			if (debounceTimeout) clearTimeout(debounceTimeout);
+
 			// Schedule update to store
 			debounceTimeout = setTimeout(() => {
 				grapheurStore.updateFunction(func.id, { latex: currentLatex });
+				previousFuncLatex = currentLatex;
 			}, 300);
 		}
+	});
 
-		// Cleanup on effect re-run
+	// Cleanup timeout on component destroy
+	$effect(() => {
 		return () => {
 			if (debounceTimeout) clearTimeout(debounceTimeout);
 		};
@@ -84,14 +88,40 @@ Features:
 	}
 </script>
 
-<div class="function-input flex items-start gap-2 rounded-md border border-border bg-card p-3">
-	<!-- Color Picker -->
-	<div class="flex-shrink-0 pt-2">
+<div class="function-input flex flex-col gap-2 rounded-md border border-border bg-card p-3">
+	<!-- Top row: Color Picker + Action Buttons -->
+	<div class="flex items-center justify-between">
 		<ColorPicker value={func.color} onchange={handleColorChange} />
+
+		<div class="flex gap-1">
+			<Button
+				variant="ghost"
+				size="icon-sm"
+				onclick={toggleVisibility}
+				title={func.visible ? 'Masquer' : 'Afficher'}
+				aria-label={func.visible ? 'Masquer la fonction' : 'Afficher la fonction'}
+			>
+				{#if func.visible}
+					<Eye class="h-4 w-4" />
+				{:else}
+					<EyeOff class="h-4 w-4 text-muted-foreground" />
+				{/if}
+			</Button>
+
+			<Button
+				variant="ghost"
+				size="icon-sm"
+				onclick={deleteFunction}
+				title="Supprimer"
+				aria-label="Supprimer la fonction"
+			>
+				<Trash2 class="h-4 w-4 text-destructive" />
+			</Button>
+		</div>
 	</div>
 
-	<!-- Math Field Container -->
-	<div class="min-w-0 flex-grow">
+	<!-- Math Field below -->
+	<div>
 		<MathField
 			bind:value={latex}
 			placeholder="f(x) = ..."
@@ -103,33 +133,6 @@ Features:
 				{func.parseError}
 			</p>
 		{/if}
-	</div>
-
-	<!-- Action Buttons -->
-	<div class="flex flex-shrink-0 gap-1 pt-1">
-		<Button
-			variant="ghost"
-			size="icon-sm"
-			onclick={toggleVisibility}
-			title={func.visible ? 'Masquer' : 'Afficher'}
-			aria-label={func.visible ? 'Masquer la fonction' : 'Afficher la fonction'}
-		>
-			{#if func.visible}
-				<Eye class="h-4 w-4" />
-			{:else}
-				<EyeOff class="h-4 w-4 text-muted-foreground" />
-			{/if}
-		</Button>
-
-		<Button
-			variant="ghost"
-			size="icon-sm"
-			onclick={deleteFunction}
-			title="Supprimer"
-			aria-label="Supprimer la fonction"
-		>
-			<Trash2 class="h-4 w-4 text-destructive" />
-		</Button>
 	</div>
 </div>
 
