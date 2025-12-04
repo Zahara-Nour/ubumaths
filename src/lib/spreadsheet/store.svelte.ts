@@ -332,7 +332,14 @@ class SpreadsheetStore {
 	 * @param ref - Cell reference that changed
 	 */
 	private recalculateFrom(ref: string): void {
-		const cellsToRecalculate = this.graph.getRecalculationOrder([ref]);
+		const normalizedRef = ref.toUpperCase();
+		const cellsToRecalculate = this.graph.getRecalculationOrder([normalizedRef]);
+
+		// Always include the changed cell itself (it might not be in the graph if it's not a formula)
+		if (!cellsToRecalculate.includes(normalizedRef)) {
+			cellsToRecalculate.unshift(normalizedRef);
+		}
+
 		this.recalculateCells(cellsToRecalculate);
 	}
 
