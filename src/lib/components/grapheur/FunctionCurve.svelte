@@ -10,6 +10,7 @@
 	 */
 
 	import type { Plottable, Viewport, Point } from '$lib/grapheur/types';
+	import { LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
 	import { createEvaluator } from '$lib/grapheur/evaluator';
 	import { sampleFunction } from '$lib/grapheur/sampler';
@@ -95,6 +96,11 @@
 	const ariaLabel = $derived(
 		func.latex ? `Courbe de la fonction ${func.latex}` : 'Courbe de fonction'
 	);
+
+	/**
+	 * Compute stroke-dasharray for the line style.
+	 */
+	const strokeDasharray = $derived(LINE_STYLE_DASHARRAY[func.lineStyle]);
 </script>
 
 {#if func.visible && func.ast && pathData}
@@ -102,6 +108,7 @@
 		d={pathData}
 		stroke={func.color}
 		stroke-width={func.lineWidth}
+		stroke-dasharray={strokeDasharray}
 		fill="none"
 		stroke-linecap="round"
 		stroke-linejoin="round"

@@ -25,6 +25,8 @@ export { default as FunctionCurve } from './FunctionCurve.svelte';
 export { default as FunctionPanel } from './FunctionPanel.svelte';
 export { default as FunctionInput } from './FunctionInput.svelte';
 export { default as ColorPicker } from './ColorPicker.svelte';
+export { default as LineWidthPicker } from './LineWidthPicker.svelte';
+export { default as LineStylePicker } from './LineStylePicker.svelte';
 export { default as ViewportControls } from './ViewportControls.svelte';
 export { default as CoordinatesDisplay } from './CoordinatesDisplay.svelte';
 export { default as KeyboardHandler } from './KeyboardHandler.svelte';
