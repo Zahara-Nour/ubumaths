@@ -32,6 +32,9 @@ export { DefCommand } from './def.command';
 export { FnsCommand } from './fns.command';
 export { UndefCommand } from './undef.command';
 
+// Calculus commands
+export { DiffCommand } from './diff.command';
+
 // =============================================================================
 // Default Registry Factory
 // =============================================================================
@@ -55,6 +58,7 @@ import { ModeCommand } from './mode.command';
 import { DefCommand } from './def.command';
 import { FnsCommand } from './fns.command';
 import { UndefCommand } from './undef.command';
+import { DiffCommand } from './diff.command';
 
 /**
  * Create a command registry with all default commands registered.
@@ -111,6 +115,9 @@ export function createDefaultRegistry(): CommandRegistry {
 	registry.register(new DefCommand());
 	registry.register(new FnsCommand());
 	registry.register(new UndefCommand());
+
+	// Calculus commands
+	registry.register(new DiffCommand());
 
 	// Set registry reference for help command after registration
 	helpCmd.setRegistry(registry);
