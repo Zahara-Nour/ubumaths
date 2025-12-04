@@ -299,6 +299,8 @@ export class Tokenizer {
 				return 'EXCLAMATION';
 			case '&':
 				return 'AMPERSAND';
+			case "'":
+				return 'PRIME';
 			default:
 				// Unknown character - treat as a letter for now
 				// The parser will handle unknown characters appropriately
@@ -521,6 +523,8 @@ export function tokenTypeToString(type: TokenType): string {
 			return "'!'";
 		case 'AMPERSAND':
 			return "'&'";
+		case 'PRIME':
+			return "'''";
 		case 'WHITESPACE':
 			return 'whitespace';
 		case 'EOF':

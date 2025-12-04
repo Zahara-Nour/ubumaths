@@ -52,6 +52,7 @@ export type TokenType =
 	| 'SEMICOLON' // ;
 	| 'EXCLAMATION' // !
 	| 'AMPERSAND' // &
+	| 'PRIME' // ' (apostrophe for derivatives)
 	| 'WHITESPACE'
 	| 'EOF';
 
@@ -90,6 +91,25 @@ export interface Token {
 // =============================================================================
 
 /**
+ * Configuration for parsing generic function names (like f, g, h).
+ *
+ * When enabled, single letters matching the names array will be parsed as
+ * function calls rather than variable multiplication.
+ *
+ * Example:
+ * - Without genericFunctions: f(x) = f * (x)
+ * - With genericFunctions: { names: ['f'] }: f(x) = FunctionNode(f, [x])
+ */
+export interface GenericFunctionConfig {
+	/** Function names to recognize (typically single letters like 'f', 'g', 'h') */
+	readonly names: readonly string[];
+	/** Allow prime notation for derivatives: f'(x), f''(x) (default: true) */
+	readonly allowDerivatives?: boolean;
+	/** Allow inverse notation: f^{-1}(x) (default: true) */
+	readonly allowInverse?: boolean;
+}
+
+/**
  * Options for configuring parser behavior.
  *
  * - 'strict': Fails on any invalid input
@@ -98,6 +118,8 @@ export interface Token {
 export interface ParserOptions {
 	/** Parser mode: strict fails on errors, tolerant attempts recovery */
 	readonly mode: 'strict' | 'tolerant';
+	/** Configuration for generic function names (f, g, h) */
+	readonly genericFunctions?: GenericFunctionConfig;
 }
 
 /**

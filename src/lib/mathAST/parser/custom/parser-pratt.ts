@@ -25,7 +25,7 @@ import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } fr
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
-import { MathAST } from '../../factory';
+import { MathAST, compose } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
 
 // =============================================================================
@@ -45,6 +45,7 @@ const enum BP {
 	STOP_AT_PIPE = 1, // Special: stop parsing when encountering PIPE (for absolute value content)
 	RELATION = 10, // =, <, >, <=, >=, !=, <=>, =>
 	ADDITION = 20, // +, -
+	COMPOSITION = 25, // @ (composition operator, between + and *)
 	MULTIPLY = 30, // *, :/, :, implicit multiplication
 	UNARY = 40, // prefix -, +
 	POWER = 50 // ^, _ (right-associative)
@@ -384,6 +385,17 @@ class CustomPrattParser {
 				// We handle this specially to avoid the ambiguity with closing |
 				return this.parseImplicitMultiplyWithAbsoluteValue(left);
 
+			case 'AT':
+				// Check if this is the start of a color @color{...}
+				// or a composition operator f@g
+				// If followed by a letter/func/lparen, it's composition
+				// If followed by a color name + {, it's color
+				if (this.isCompositionOperator()) {
+					return this.parseComposition(left);
+				}
+				// Otherwise, fall through for implicit multiplication with color
+				break;
+
 			default:
 				break;
 		}
@@ -441,6 +453,15 @@ class CustomPrattParser {
 				// Units bind tightly to the preceding expression
 				return BP.POWER + 1;
 
+			// @ can be composition (f@g) or color (@red{...})
+			// We need to check which case it is
+			case 'AT':
+				if (this.isCompositionOperator()) {
+					return BP.COMPOSITION;
+				}
+				// Otherwise it's implicit multiplication with color
+				return BP.MULTIPLY;
+
 			// For implicit multiplication
 			// NOTE: PIPE is NOT included here - it's handled specially in led()
 			// because | is both opening and closing delimiter for absolute value
@@ -450,7 +471,6 @@ class CustomPrattParser {
 			case 'FUNC':
 			case 'SYMBOL':
 			case 'BACKSLASH':
-			case 'AT':
 			case 'QUESTION':
 				return BP.MULTIPLY;
 
@@ -555,11 +575,179 @@ class CustomPrattParser {
 	}
 
 	/**
-	 * Parse a variable (single letter)
+	 * Parse a variable (single letter) or generic function if configured.
+	 *
+	 * When genericFunctions option is set and the letter matches a configured name,
+	 * we parse it as a function call with optional derivatives, inverse, and composition.
 	 */
 	private parseVariable(): MathNode {
-		const token = this.advance();
-		return this.applyColor(MathAST.variable(token.value));
+		const token = this.currentToken;
+		const letter = token.value;
+
+		// Check if this is a generic function name
+		if (this.isGenericFunctionName(letter)) {
+			return this.parseGenericFunction();
+		}
+
+		// Regular variable
+		this.advance();
+		return this.applyColor(MathAST.variable(letter));
+	}
+
+	/**
+	 * Check if a name is configured as a generic function
+	 */
+	private isGenericFunctionName(name: string): boolean {
+		const config = this.options.genericFunctions;
+		return config !== undefined && config.names.includes(name);
+	}
+
+	/**
+	 * Parse a generic function: f(x), f'(x), f''(x), f^{-1}(x), f^{(n)}(x)
+	 *
+	 * Pattern:
+	 * - Function name (single letter)
+	 * - Optional primes: ' '' '''
+	 * - Optional ^{-1} or ^{(n)} for inverse or higher derivative
+	 * - OPTIONAL arguments in parentheses: (x) or (x, y)
+	 *   (not mandatory for composition support)
+	 */
+	private parseGenericFunction(): MathNode {
+		const nameToken = this.advance(); // consume function name letter
+		const name = nameToken.value;
+
+		// Count prime marks for derivatives: f', f'', f'''
+		let derivativeOrder = 0;
+		const config = this.options.genericFunctions;
+		const allowDerivatives = config?.allowDerivatives !== false; // default true
+		const allowInverse = config?.allowInverse !== false; // default true
+
+		if (allowDerivatives) {
+			while (this.check('PRIME')) {
+				this.advance();
+				derivativeOrder++;
+			}
+		}
+
+		// Check for ^{-1} (inverse) or ^{(n)} (higher derivative notation)
+		let isInverse = false;
+		if (this.check('CARET')) {
+			// Peek to see if we have {-1} or {(n)} pattern
+			const afterCaret = this.peekNextToken();
+			if (afterCaret.type === 'LBRACE') {
+				const result = this.tryParseInverseOrHigherDerivative(allowInverse, allowDerivatives);
+				if (result.type === 'inverse') {
+					isInverse = true;
+				} else if (result.type === 'higherDerivative') {
+					derivativeOrder = result.order;
+				}
+			}
+		}
+
+		// Check for arguments in parentheses
+		// For composition support, parentheses are NOT mandatory
+		if (this.check('LPAREN')) {
+			this.advance(); // consume (
+
+			// Parse comma-separated arguments
+			const args: MathNode[] = [];
+			if (!this.check('RPAREN')) {
+				args.push(this.parseExpression(BP.NONE));
+				while (this.check('COMMA')) {
+					this.advance();
+					args.push(this.parseExpression(BP.NONE));
+				}
+			}
+
+			this.expect('RPAREN', "Expected ')' after function arguments");
+
+			return this.applyColor(
+				MathAST.func(name, args, {
+					...(derivativeOrder > 0 && { derivativeOrder }),
+					...(isInverse && { isInverse })
+				})
+			);
+		}
+
+		// No parentheses - return a "naked" function (for composition)
+		return this.applyColor(
+			MathAST.func(name, [], {
+				...(derivativeOrder > 0 && { derivativeOrder }),
+				...(isInverse && { isInverse })
+			})
+		);
+	}
+
+	/**
+	 * Try to parse ^{-1} (inverse) or ^{(n)} (higher derivative notation)
+	 * Returns what was found and consumes the tokens if successful.
+	 */
+	private tryParseInverseOrHigherDerivative(
+		allowInverse: boolean,
+		allowDerivatives: boolean
+	): { type: 'inverse' } | { type: 'higherDerivative'; order: number } | { type: 'none' } {
+		// Current token should be CARET
+		if (!this.check('CARET')) {
+			return { type: 'none' };
+		}
+
+		// Look at next token (should be LBRACE)
+		const braceToken = this.peekNextToken();
+		if (braceToken.type !== 'LBRACE') {
+			return { type: 'none' };
+		}
+
+		// Consume ^ and {
+		this.advance(); // consume ^
+		this.advance(); // consume {
+
+		// Check for -1 (inverse)
+		if (allowInverse && this.check('MINUS')) {
+			this.advance(); // consume -
+			if (this.check('NUMBER') && this.currentToken.value === '1') {
+				this.advance(); // consume 1
+				this.expect('RBRACE', "Expected '}' after ^{-1}");
+				return { type: 'inverse' };
+			}
+			this.error(
+				'Expected 1 after - in superscript',
+				this.currentToken.position,
+				this.currentToken.length,
+				'INVALID_SUPERSCRIPT'
+			);
+		}
+
+		// Check for (n) (higher derivative notation)
+		if (allowDerivatives && this.check('LPAREN')) {
+			this.advance(); // consume (
+			if (this.check('NUMBER')) {
+				const orderToken = this.advance();
+				const order = parseInt(orderToken.value, 10);
+				this.expect('RPAREN', "Expected ')' after derivative order");
+				this.expect('RBRACE', "Expected '}' after ^{(n)}");
+				return { type: 'higherDerivative', order };
+			}
+			this.error(
+				'Expected number for derivative order in ^{(n)}',
+				this.currentToken.position,
+				this.currentToken.length,
+				'INVALID_SUPERSCRIPT'
+			);
+		}
+
+		this.error(
+			"Expected '-1' or '(n)' in superscript for generic function",
+			this.currentToken.position,
+			this.currentToken.length,
+			'INVALID_SUPERSCRIPT'
+		);
+	}
+
+	/**
+	 * Peek at the next token without consuming it
+	 */
+	private peekNextToken(): CustomToken {
+		return this.tokenizer.peekAt(0);
 	}
 
 	/**
@@ -728,6 +916,65 @@ class CustomPrattParser {
 		return this.applyColorWithOperator(MathAST.divide(left, right, style), operatorColor);
 	}
 
+	/**
+	 * Check if @ in LED position is a composition operator (f@g)
+	 * vs the start of a color expression (@red{...}).
+	 *
+	 * For composition: @ is followed directly by a function/variable name
+	 * For color: @ is followed by a color name, then {
+	 *
+	 * The key insight is that in `f@g`, we're in LED position after `f`,
+	 * and the next expression after @ should be a generic function name.
+	 */
+	private isCompositionOperator(): boolean {
+		// @ is the current token
+		if (!this.check('AT')) {
+			return false;
+		}
+
+		// Peek at what follows @
+		const nextToken = this.tokenizer.peekAt(0);
+
+		// If next is a letter that's a generic function name, it's composition
+		if (nextToken.type === 'LETTER') {
+			const letterName = nextToken.value;
+			// It's composition if it's a generic function name
+			if (this.isGenericFunctionName(letterName)) {
+				return true;
+			}
+			// Otherwise, check if it could be a color (letters followed by {)
+			// We can't easily peek further, so we assume @letter{ is color
+			// and @letter without { after function chars is composition
+			// For now, be strict: only treat as composition if it's a generic function
+		}
+
+		// If next is FUNC (sin, cos, etc.), it's composition
+		if (nextToken.type === 'FUNC') {
+			return true;
+		}
+
+		// If next is LPAREN, it could be composition with parenthesized expression
+		// But that's unusual - f@(g) - let's not support that for simplicity
+		// Color would be @red{...}, not @(...
+
+		return false;
+	}
+
+	/**
+	 * Parse composition: f@g
+	 * Composition is left-associative: f@g@h = (f@g)@h
+	 */
+	private parseComposition(left: MathNode): MathNode {
+		const operatorColor = this.colorStack.current();
+		this.advance(); // consume @
+		const right = this.parseExpression(BP.COMPOSITION);
+		const node = compose(left, right);
+		if (operatorColor) {
+			return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+		}
+		return node;
+	}
+
 	// =========================================================================
 	// Implicit Multiplication
 	// =========================================================================
@@ -760,6 +1007,12 @@ class CustomPrattParser {
 
 		// NUMBER cannot start implicit multiplication (prevents x2, (a)2)
 		if (token.type === 'NUMBER') {
+			return false;
+		}
+
+		// AT can be composition (f@g) or color (@red{...})
+		// If @ is followed by a generic function name, it's composition not implicit mult
+		if (token.type === 'AT' && this.isCompositionOperator()) {
 			return false;
 		}
 
