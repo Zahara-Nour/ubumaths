@@ -79,6 +79,33 @@ export interface ReplExecutionResult {
 }
 
 // =============================================================================
+// Function State Exposure
+// =============================================================================
+
+/**
+ * Information about a user-defined function for web display.
+ *
+ * Exposes function state from EvalState for UI components like
+ * function palettes and autocomplete.
+ */
+export interface WebFunctionInfo {
+	/** Function name (e.g., 'f', 'g') */
+	readonly name: string;
+
+	/** Parameter names in order (e.g., ['x'] or ['x', 'y']) */
+	readonly parameters: readonly string[];
+
+	/** Function body as custom syntax string (e.g., 'x^2 + 1') */
+	readonly expression: string;
+
+	/** Derivative expression as custom syntax string, if defined */
+	readonly derivative?: string;
+
+	/** Inverse expression as custom syntax string, if defined */
+	readonly inverse?: string;
+}
+
+// =============================================================================
 // History Management
 // =============================================================================
 

@@ -8,9 +8,10 @@
 import type { MathNode } from '../../types';
 import type { CommandContext, ErrorCode } from '../types';
 import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
+import { getFunctionNames, getFunction } from '../core/eval-state';
 import type { EvalState } from '../core';
 import { createDefaultRegistry } from '../commands';
-import type { ReplExecutionResult, ReplInputMode } from './types';
+import type { ReplExecutionResult, ReplInputMode, WebFunctionInfo } from './types';
 import {
 	formatErrorHtml,
 	formatInputErrorHtml,
@@ -154,6 +155,59 @@ export class WebReplEngine {
 			aliases: cmd.aliases,
 			description: cmd.description
 		}));
+	}
+
+	/**
+	 * Get all user-defined functions for display in UI components.
+	 *
+	 * Returns function information including name, parameters, expression,
+	 * and optional derivative/inverse expressions as custom syntax strings.
+	 *
+	 * @returns Array of function information objects
+	 *
+	 * @example
+	 * ```typescript
+	 * const engine = new WebReplEngine();
+	 * engine.execute('.def f(x) = x^2');
+	 * engine.execute('.def-deriv f 2*x');
+	 *
+	 * const functions = engine.getFunctions();
+	 * // [{ name: 'f', parameters: ['x'], expression: 'x^2', derivative: '2*x' }]
+	 * ```
+	 */
+	getFunctions(): WebFunctionInfo[] {
+		const functionNames = getFunctionNames(this.evalState);
+		return functionNames.map((name) => {
+			const def = getFunction(this.evalState, name);
+			if (!def) {
+				// Should not happen, but handle gracefully
+				return {
+					name,
+					parameters: [],
+					expression: ''
+				};
+			}
+
+			return {
+				name,
+				parameters: def.parameters,
+				expression: toCustom(def.expression),
+				derivative: def.derivative ? toCustom(def.derivative) : undefined,
+				inverse: def.inverse ? toCustom(def.inverse) : undefined
+			};
+		});
+	}
+
+	/**
+	 * Get the current evaluation state.
+	 *
+	 * Provides direct access to the internal state for advanced use cases.
+	 * Use getFunctions() for a safer, formatted view of function definitions.
+	 *
+	 * @returns Current evaluation state with bindings, functions, and mode
+	 */
+	getState(): EvalState {
+		return this.evalState;
 	}
 
 	// ===========================================================================
