@@ -271,6 +271,23 @@ Jeu de démineur classique avec accessibilité publique et fonctionnalités prem
 - Validation serveur des victoires et calcul sécurisé des récompenses
 - **2025-11-18** : Implémentation complète avec sécurité renforcée
 
+### 📊 Grapheur (Calculatrice Graphique)
+
+**Status** : ✅ Production | [Documentation →](features/grapheur.md) 🆕
+
+Calculatrice graphique interactive pour tracer et analyser des fonctions mathématiques.
+
+- [Guide utilisateur complet](features/grapheur.md) - Documentation détaillée en français
+- Traçage en temps réel avec éditeur LaTeX (MathLive)
+- Support complet des fonctions : polynômes, trigonométriques, exponentielles, logarithmiques
+- Interactions fluides : déplacement par glissage, zoom à la molette
+- Suivi des coordonnées en temps réel au survol
+- Gestion de jusqu'à 20 fonctions simultanées avec couleurs distinctes
+- Savegarde automatique en localStorage avec validation Zod
+- Rendu SVG avec courbes Catmull-Rom Bézier pour smoothness 60fps
+- Architecture modulaire avec tests unitaires complets
+- **2025-12-04** : Implémentation production-ready avec documentation complète
+
 ### 💬 Messagerie privée
 
 **Status** : ✅ Production | [Documentation →](features/messaging/README.md)
