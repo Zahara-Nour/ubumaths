@@ -29,6 +29,7 @@ export { ModeCommand } from './mode.command';
 
 // Function commands
 export { DefCommand } from './def.command';
+export { DefDerivCommand } from './def-deriv.command';
 export { FnsCommand } from './fns.command';
 export { UndefCommand } from './undef.command';
 
@@ -56,6 +57,7 @@ import { ClearCommand } from './clear.command';
 import { UnsetCommand } from './unset.command';
 import { ModeCommand } from './mode.command';
 import { DefCommand } from './def.command';
+import { DefDerivCommand } from './def-deriv.command';
 import { FnsCommand } from './fns.command';
 import { UndefCommand } from './undef.command';
 import { DiffCommand } from './diff.command';
@@ -113,6 +115,7 @@ export function createDefaultRegistry(): CommandRegistry {
 
 	// Function commands
 	registry.register(new DefCommand());
+	registry.register(new DefDerivCommand());
 	registry.register(new FnsCommand());
 	registry.register(new UndefCommand());
 
