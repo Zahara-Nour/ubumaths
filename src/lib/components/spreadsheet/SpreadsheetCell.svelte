@@ -32,6 +32,7 @@
 -->
 
 <script lang="ts">
+	import { tick } from 'svelte';
 	import type { ComputedValue, CellFormat } from '$lib/spreadsheet/types';
 	import { formatComputedValue } from '$lib/spreadsheet/format';
 	import { cn } from '$lib/utils';
@@ -77,9 +78,14 @@
 
 	// Focus input when editing starts
 	$effect(() => {
-		if (isEditing && inputRef) {
-			inputRef.focus();
-			inputRef.select();
+		if (isEditing) {
+			// Wait for DOM update then focus
+			tick().then(() => {
+				if (inputRef) {
+					inputRef.focus();
+					inputRef.select();
+				}
+			});
 		}
 	});
 
