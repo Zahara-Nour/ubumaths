@@ -2,7 +2,7 @@
 
 **Statut**: Production
 **Dernière mise à jour**: 2025-12-04
-**Version**: 1.0.0
+**Version**: 1.1.0
 
 ## Table des matières
 
@@ -14,6 +14,11 @@
   - [Interactions avec le graphique](#interactions-avec-le-graphique)
   - [Gestion des fonctions](#gestion-des-fonctions)
   - [Personnalisation](#personnalisation)
+- [Analyse automatique](#analyse-automatique)
+  - [Racines (zéros)](#racines-zéros)
+  - [Extrema (min/max)](#extrema-minmax)
+  - [Asymptotes](#asymptotes)
+- [Export du graphique](#export-du-graphique)
 - [Fonctions supportées](#fonctions-supportées)
 - [Conseils et bonnes pratiques](#conseils-et-bonnes-pratiques)
 - [Dépannage](#dépannage)
@@ -33,6 +38,8 @@ Le **Grapheur** est une calculatrice graphique interactive qui permet de tracer 
 - ✅ **Multiples fonctions** - Tracez jusqu'à 20 fonctions simultanément avec des couleurs distinctes
 - ✅ **Personnalisation des courbes** - Changez les couleurs et la visibilité de chaque fonction
 - ✅ **Sauvegarde automatique** - Vos graphiques sont sauvegardés dans le navigateur
+- ✅ **Analyse automatique** - Détection des racines, extrema et asymptotes en temps réel
+- ✅ **Export d'images** - Exportez vos graphiques en SVG ou PNG (haute résolution)
 
 ---
 
@@ -178,6 +185,136 @@ Un bouton **"Réinitialiser la vue"** dans les contrôles:
 #### Ajouter des fonctions
 
 Vous pouvez tracer jusqu'à **20 fonctions simultanément**. Chacune a sa propre couleur automatiquement sélectionnée.
+
+---
+
+## Analyse automatique
+
+Le Grapheur détecte et affiche automatiquement les points remarquables de vos fonctions en temps réel.
+
+### Racines (zéros)
+
+Les **racines** sont les points où la fonction coupe l'axe des x, c'est-à-dire où f(x) = 0.
+
+**Affichage** : Marqueurs en forme de **losange** (◇) sur l'axe x
+
+**Caractéristiques** :
+
+- Détection automatique par changement de signe
+- Raffinement par méthode de bisection pour une précision optimale
+- Tooltip affichant la coordonnée x exacte au survol
+
+**Exemples** :
+
+- `x^2 - 4` → racines à x = -2 et x = 2
+- `\sin(x)` → racines à x = 0, ±π, ±2π, ...
+
+### Extrema (min/max)
+
+Les **extrema** sont les points où la fonction atteint un minimum ou maximum local.
+
+**Affichage** :
+
+- **Maximum local** : Triangle pointant vers le haut (△)
+- **Minimum local** : Triangle pointant vers le bas (▽)
+
+**Caractéristiques** :
+
+- Détection par analyse de la dérivée numérique
+- Affiche les coordonnées (x, y) complètes au survol
+- Couleur correspondant à la fonction associée
+
+**Exemples** :
+
+- `x^2` → minimum à (0, 0)
+- `-x^2 + 4` → maximum à (0, 4)
+- `\sin(x)` → maxima à x = π/2 + 2nπ, minima à x = -π/2 + 2nπ
+
+### Asymptotes
+
+Les **asymptotes** sont des droites que la courbe approche à l'infini.
+
+#### Asymptotes verticales
+
+Lignes verticales où la fonction tend vers l'infini.
+
+**Affichage** : Ligne pointillée verticale `- - -`
+
+**Exemples** :
+
+- `1/x` → asymptote verticale à x = 0
+- `\tan(x)` → asymptotes verticales à x = ±π/2, ±3π/2, ...
+
+#### Asymptotes horizontales
+
+Lignes horizontales que la fonction approche quand x → ±∞.
+
+**Affichage** : Ligne pointillée horizontale `— — —`
+
+**Exemples** :
+
+- `1/x` → asymptote horizontale y = 0
+- `(2x+1)/(x+1)` → asymptote horizontale y = 2
+
+#### Asymptotes obliques
+
+Lignes diagonales (y = mx + b) que la fonction approche à l'infini.
+
+**Affichage** : Ligne pointillée diagonale `—·—·—`
+
+**Exemples** :
+
+- `x + 1/x` → asymptote oblique y = x
+- `(x^2 + 2x + 1)/x` → asymptote oblique y = x + 2
+
+**Note** : L'analyse est désactivée pendant les interactions (pan/zoom) pour maintenir des performances fluides.
+
+---
+
+## Export du graphique
+
+Exportez vos graphiques pour les utiliser dans des documents, présentations ou les partager.
+
+### Formats disponibles
+
+#### SVG (Scalable Vector Graphics)
+
+**Avantages** :
+
+- Qualité parfaite à toute échelle (vectoriel)
+- Taille de fichier légère
+- Éditable dans des logiciels comme Inkscape ou Illustrator
+- Idéal pour l'impression haute qualité
+
+**Usage recommandé** : Documents professionnels, présentations, impression
+
+#### PNG (Portable Network Graphics)
+
+**Options de résolution** :
+
+- **1x** : Résolution standard (taille du graphique à l'écran)
+- **2x** : Haute résolution (idéal pour écrans Retina et impression)
+
+**Avantages** :
+
+- Compatible partout (navigateurs, logiciels, réseaux sociaux)
+- Fond transparent
+- Bon pour le partage rapide
+
+**Usage recommandé** : Partage en ligne, intégration dans des documents Word/Google Docs
+
+### Comment exporter
+
+1. Créez votre graphique avec les fonctions souhaitées
+2. Ajustez la vue (zoom, position) pour cadrer parfaitement
+3. Cliquez sur le bouton **"Exporter"** dans les contrôles
+4. Sélectionnez le format souhaité :
+   - **Exporter en SVG** pour le vectoriel
+   - **Exporter en PNG (1x)** pour la résolution standard
+   - **Exporter en PNG (2x)** pour la haute résolution
+5. Le fichier se télécharge automatiquement
+
+**Nom du fichier** : `grapheur-export-YYYYMMDD-HHMMSS.svg` ou `.png`
 
 ---
 
