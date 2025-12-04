@@ -8,6 +8,7 @@
 
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
+import type { FunctionBindings } from './function-bindings';
 
 // =============================================================================
 // Binding Types
@@ -80,6 +81,14 @@ export type EvalMode = 'exact' | 'decimal';
  *
  * // Decimal mode with custom precision
  * const options: EvalOptions = { mode: 'decimal', precision: 10 };
+ *
+ * // With function bindings
+ * const options: EvalOptions = {
+ *   mode: 'exact',
+ *   functions: {
+ *     f: { expression: parseLatex('x^2'), parameters: ['x'] }
+ *   }
+ * };
  */
 export interface EvalOptions {
 	/** Evaluation mode: 'exact' for rational arithmetic, 'decimal' for floating-point */
@@ -87,6 +96,13 @@ export interface EvalOptions {
 
 	/** Decimal precision (significant digits). Only used when mode is 'decimal'. Default: 15 */
 	readonly precision?: number;
+
+	/**
+	 * Function bindings for generic functions (f, g, h, etc.).
+	 * When provided, function calls like f(3) will be substituted with their
+	 * definitions before evaluation.
+	 */
+	readonly functions?: FunctionBindings;
 }
 
 /**

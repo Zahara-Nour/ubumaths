@@ -8,6 +8,7 @@
 
 import type { MathNode } from '../types';
 import type { EvalBindings, BindingValue, SubstituteOptions } from './types';
+import type { FunctionBindings } from './function-bindings';
 import { DEFAULT_SUBSTITUTE_OPTIONS } from './types';
 import { mapNode } from '../transforms';
 import { isVariable, isGreek } from '../guards';
@@ -314,4 +315,85 @@ export function getMissingBindings(node: MathNode, bindings: EvalBindings): stri
 	}
 
 	return missing;
+}
+
+// =============================================================================
+// Combined Substitution
+// =============================================================================
+
+/**
+ * Options for combined variable and function substitution.
+ */
+export interface SubstituteAllOptions extends SubstituteOptions {
+	/** Function bindings for generic functions (f, g, h, etc.) */
+	readonly functions?: FunctionBindings;
+}
+
+/**
+ * Substitute both variable values and function definitions into an expression.
+ *
+ * This function performs both variable substitution and function substitution
+ * in an interleaved manner, allowing proper handling of expressions like
+ * f(x) where both f and x need to be substituted.
+ *
+ * The order of substitution is:
+ * 1. Substitute variables first
+ * 2. Then substitute functions
+ * 3. Repeat until no more substitutions can be made
+ *
+ * Note: This function requires passing the substituteFunction as a parameter
+ * to avoid circular imports. Use the version exported from the main eval index
+ * for a more convenient API.
+ *
+ * @param node - The MathAST node to substitute into
+ * @param varBindings - Map of variable names to their replacement values
+ * @param substituteFunctionFn - The substituteFunction from function-bindings module
+ * @param options - Options including function bindings and maxIterations
+ * @returns New AST with all substitutions applied
+ *
+ * @example
+ * // f(x) with f(t) = t^2 and x = 3
+ * const expr = parseLatex('f(x)');
+ * const result = substituteAll(expr, { x: 3 }, substituteFunction, {
+ *   functions: { f: { expression: parseLatex('t^2'), parameters: ['t'] } }
+ * });
+ * // result represents: 3^2
+ */
+export function substituteAll(
+	node: MathNode,
+	varBindings: EvalBindings,
+	substituteFunctionFn: (
+		node: MathNode,
+		bindings: FunctionBindings,
+		options?: SubstituteOptions
+	) => MathNode,
+	options?: SubstituteAllOptions
+): MathNode {
+	const maxIterations = options?.maxIterations ?? DEFAULT_SUBSTITUTE_OPTIONS.maxIterations;
+	const functionBindings = options?.functions;
+
+	// If no function bindings, just do variable substitution
+	if (!functionBindings || Object.keys(functionBindings).length === 0) {
+		return substitute(node, varBindings, options);
+	}
+
+	let current = node;
+
+	// Perform interleaved substitution
+	for (let i = 0; i < maxIterations; i++) {
+		// First, substitute variables
+		const afterVars = substitute(current, varBindings, { maxIterations: 1 });
+
+		// Then, substitute functions
+		const afterFuncs = substituteFunctionFn(afterVars, functionBindings, { maxIterations: 1 });
+
+		// Check if anything changed
+		if (JSON.stringify(afterFuncs) === JSON.stringify(current)) {
+			break;
+		}
+
+		current = afterFuncs;
+	}
+
+	return current;
 }
