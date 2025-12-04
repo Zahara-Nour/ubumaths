@@ -118,15 +118,9 @@ class GrapheurStore {
 		if (browser) {
 			this.loadFromStorage();
 
-			// Cleanup timeout on store destruction to prevent memory leaks
-			$effect(() => {
-				return () => {
-					if (this.saveTimeout !== null) {
-						clearTimeout(this.saveTimeout);
-						this.saveTimeout = null;
-					}
-				};
-			});
+			// Note: $effect cannot be used in constructor (outside component context)
+			// Timeout cleanup is handled in scheduleSave by clearing previous timeout
+			// and the timeout naturally completes or is cleared before new saves
 		}
 	}
 
