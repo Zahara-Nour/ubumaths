@@ -367,3 +367,10 @@ export { getVariables, hasVariable, hasAllBindings, getMissingBindings } from '.
 // =============================================================================
 
 export * from './pattern';
+
+// =============================================================================
+// Symbolic Differentiation
+// =============================================================================
+
+export { differentiate, differentiateN, DifferentiationError } from './differentiation';
+export type { DifferentiationOptions } from './differentiation';
