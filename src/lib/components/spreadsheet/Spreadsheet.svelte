@@ -216,6 +216,20 @@
 		// Focus the container so keyboard events work
 		containerRef?.focus();
 	}
+
+	/**
+	 * Handle edit commit - refocus container for keyboard navigation
+	 */
+	function handleCommitEdit() {
+		containerRef?.focus();
+	}
+
+	/**
+	 * Handle edit cancel - refocus container for keyboard navigation
+	 */
+	function handleCancelEdit() {
+		containerRef?.focus();
+	}
 </script>
 
 <div
@@ -240,7 +254,11 @@
 
 	<!-- Grid -->
 	<div class="flex-1 overflow-auto">
-		<SpreadsheetGrid onCellSelect={handleCellSelect} />
+		<SpreadsheetGrid
+			onCellSelect={handleCellSelect}
+			onCommitEdit={handleCommitEdit}
+			onCancelEdit={handleCancelEdit}
+		/>
 	</div>
 
 	<!-- Status bar -->
