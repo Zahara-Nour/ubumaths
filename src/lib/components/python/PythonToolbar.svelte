@@ -2,7 +2,17 @@
 	// Imports
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Play, Loader2, Trash2, Copy, RotateCcw, Circle } from 'lucide-svelte';
+	import {
+		Play,
+		Loader2,
+		Trash2,
+		Copy,
+		RotateCcw,
+		Circle,
+		Share2,
+		Maximize2,
+		Minimize2
+	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Props
@@ -11,17 +21,23 @@
 		onClear,
 		onCopy,
 		onReset,
+		onShare,
+		onToggleFullscreen,
 		canExecute,
 		isExecuting,
-		isModified = false
+		isModified = false,
+		isFullscreen = false
 	}: {
 		onExecute: () => void;
 		onClear: () => void;
 		onCopy: () => void;
 		onReset: () => void;
+		onShare: () => void;
+		onToggleFullscreen: () => void;
 		canExecute: boolean;
 		isExecuting: boolean;
 		isModified?: boolean;
+		isFullscreen?: boolean;
 	} = $props();
 
 	// State
@@ -89,6 +105,16 @@
 		<Button
 			variant="ghost"
 			size="icon"
+			onclick={onShare}
+			aria-label="Partager le code"
+			title="Partager le code"
+		>
+			<Share2 class="size-4" />
+		</Button>
+
+		<Button
+			variant="ghost"
+			size="icon"
 			onclick={onReset}
 			aria-label="Réinitialiser le code"
 			title="Réinitialiser le code"
@@ -114,4 +140,21 @@
 			<span class="font-medium text-destructive" title="Code modifié (non sauvegardé)">*</span>
 		{/if}
 	</div>
+
+	<Separator orientation="vertical" class="mx-2 h-6" />
+
+	<!-- Fullscreen toggle button -->
+	<Button
+		variant="ghost"
+		size="icon"
+		onclick={onToggleFullscreen}
+		aria-label={isFullscreen ? 'Quitter le plein écran' : 'Mode plein écran'}
+		title={isFullscreen ? 'Quitter le plein écran' : 'Mode plein écran'}
+	>
+		{#if isFullscreen}
+			<Minimize2 class="size-4" />
+		{:else}
+			<Maximize2 class="size-4" />
+		{/if}
+	</Button>
 </div>

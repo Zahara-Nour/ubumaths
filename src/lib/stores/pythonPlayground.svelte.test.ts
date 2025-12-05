@@ -641,6 +641,61 @@ describe('PythonPlaygroundStore', () => {
 				expect.stringContaining('"showPedagogicErrors":false')
 			);
 		});
+
+		it('should save immediately with saveCode() method', () => {
+			pythonStore.code = 'immediate save test';
+
+			const success = pythonStore.saveCode();
+
+			expect(success).toBe(true);
+			expect(localStorage.setItem).toHaveBeenCalledWith(
+				'ubumaths-python-playground',
+				expect.stringContaining('immediate save test')
+			);
+		});
+
+		it('should update isModified after saveCode()', () => {
+			pythonStore.code = 'modified code';
+			expect(pythonStore.isModified).toBe(true);
+
+			pythonStore.saveCode();
+
+			expect(pythonStore.isModified).toBe(false);
+		});
+
+		it('should clear pending debounce timeout on saveCode()', async () => {
+			vi.useFakeTimers();
+
+			pythonStore.setCode('debounced save');
+
+			// Should not save immediately
+			expect(localStorage.setItem).not.toHaveBeenCalled();
+
+			// Call saveCode before debounce finishes
+			pythonStore.saveCode();
+
+			// Should save immediately
+			expect(localStorage.setItem).toHaveBeenCalled();
+
+			// Fast-forward to ensure no duplicate save
+			const callCount = (localStorage.setItem as ReturnType<typeof vi.fn>).mock.calls.length;
+			await vi.advanceTimersByTimeAsync(1000);
+
+			// Should not have been called again
+			expect(localStorage.setItem).toHaveBeenCalledTimes(callCount);
+		});
+
+		it('should return false if saveCode fails', () => {
+			// Make localStorage throw an error
+			vi.mocked(localStorage.setItem).mockImplementationOnce(() => {
+				throw new Error('localStorage is full');
+			});
+
+			pythonStore.code = 'error test';
+			const success = pythonStore.saveCode();
+
+			expect(success).toBe(false);
+		});
 	});
 
 	// ===========================================================================
