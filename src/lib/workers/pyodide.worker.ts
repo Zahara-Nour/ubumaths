@@ -33,7 +33,6 @@ const toWorkerMessageSchema = z.discriminatedUnion('type', [
 // =============================================================================
 
 declare const self: DedicatedWorkerGlobalScope;
-declare const loadPyodide: LoadPyodideFunc;
 
 // =============================================================================
 // State
@@ -76,18 +75,19 @@ function sendLoadingStage(stageIndex: number): void {
 // =============================================================================
 
 /**
- * Load Pyodide from CDN
- * @throws Error if script loading fails
+ * Load Pyodide module from CDN using dynamic import
+ * @returns The loadPyodide function from the Pyodide module
  */
-async function loadPyodideFromCDN(): Promise<void> {
-	const pyodideUrl = `${PYODIDE_CONFIG.CDN_URL}pyodide.js`;
+async function loadPyodideModule(): Promise<LoadPyodideFunc> {
+	const pyodideUrl = `${PYODIDE_CONFIG.CDN_URL}pyodide.mjs`;
 
 	try {
-		// Import the script using importScripts
-		importScripts(pyodideUrl);
+		// Use dynamic import for ES module worker
+		const pyodideModule = await import(/* @vite-ignore */ pyodideUrl);
+		return pyodideModule.loadPyodide as LoadPyodideFunc;
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
-		throw new Error(`Échec du chargement du script Pyodide: ${message}`);
+		throw new Error(`Échec du chargement du module Pyodide: ${message}`);
 	}
 }
 
@@ -99,8 +99,8 @@ async function initializePyodide(): Promise<void> {
 		// Stage 0: Initializing
 		sendLoadingStage(LoadingStageIndex.INITIALIZING);
 
-		// Load Pyodide script
-		await loadPyodideFromCDN();
+		// Load Pyodide module
+		const loadPyodide = await loadPyodideModule();
 
 		// Stage 1: Downloading Python
 		sendLoadingStage(LoadingStageIndex.DOWNLOADING_PYTHON);
