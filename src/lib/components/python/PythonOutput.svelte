@@ -13,6 +13,7 @@
 	// Imports
 	import { Button } from '$lib/components/ui/button';
 	import { Download } from 'lucide-svelte';
+	import { browser } from '$app/environment';
 	import 'mathlive';
 
 	// Props
@@ -21,6 +22,7 @@
 		stderr = '',
 		plotData = null as string | null,
 		latexOutput = null as string | null,
+		plotlyData = null as string | null,
 		errorLine = null as number | null,
 		executionTime = 0,
 		showPedagogicErrors = true
@@ -29,6 +31,7 @@
 		stderr?: string;
 		plotData?: string | null;
 		latexOutput?: string | null;
+		plotlyData?: string | null;
 		errorLine?: number | null;
 		executionTime?: number;
 		showPedagogicErrors?: boolean;
@@ -36,8 +39,71 @@
 
 	// Derived state
 	let hasOutput = $derived(
-		stdout.length > 0 || stderr.length > 0 || plotData !== null || latexOutput !== null
+		stdout.length > 0 ||
+			stderr.length > 0 ||
+			plotData !== null ||
+			latexOutput !== null ||
+			plotlyData !== null
 	);
+
+	// Plotly state
+	let plotlyContainerRef: HTMLDivElement | null = $state(null);
+	let plotlyLoaded = $state(false);
+
+	// Lazy load Plotly from CDN when plotlyData is received
+	$effect(() => {
+		if (plotlyData && !plotlyLoaded && browser) {
+			// Check if Plotly is already loaded globally
+			if ((window as Window & { Plotly?: unknown }).Plotly) {
+				plotlyLoaded = true;
+				return;
+			}
+
+			// Load Plotly from CDN
+			const script = document.createElement('script');
+			script.src = 'https://cdn.plot.ly/plotly-2.27.0.min.js';
+			script.onload = () => {
+				plotlyLoaded = true;
+			};
+			script.onerror = () => {
+				console.error('Failed to load Plotly from CDN');
+			};
+			document.head.appendChild(script);
+		}
+	});
+
+	// Plotly interface for type safety
+	interface PlotlyInstance {
+		newPlot: (el: HTMLElement, data: unknown[], layout?: unknown, config?: unknown) => void;
+		purge: (el: HTMLElement) => void;
+	}
+
+	// Render Plotly chart when data and library are ready
+	$effect(() => {
+		if (plotlyData && plotlyLoaded && plotlyContainerRef && browser) {
+			const container = plotlyContainerRef;
+			try {
+				const spec = JSON.parse(plotlyData);
+				const Plotly = (window as Window & { Plotly?: PlotlyInstance }).Plotly;
+				if (Plotly) {
+					Plotly.newPlot(container, spec.data, spec.layout, {
+						responsive: true,
+						displayModeBar: true
+					});
+				}
+
+				// Cleanup when effect re-runs or component unmounts
+				return () => {
+					const PlotlyCleanup = (window as Window & { Plotly?: PlotlyInstance }).Plotly;
+					if (container && PlotlyCleanup) {
+						PlotlyCleanup.purge(container);
+					}
+				};
+			} catch (e) {
+				console.error('Plotly render error:', e);
+			}
+		}
+	});
 
 	// Functions
 	/**
@@ -213,6 +279,29 @@
 					alt="Graphique matplotlib"
 					class="max-w-full rounded border border-border bg-white"
 				/>
+			</div>
+		{/if}
+
+		{#if plotlyData}
+			<div>
+				<div class="mb-1 flex items-center justify-between">
+					<span class="text-xs font-medium text-muted-foreground"
+						>Graphique Plotly (interactif)</span
+					>
+				</div>
+				{#if !plotlyLoaded}
+					<div class="flex items-center gap-2 py-4">
+						<div
+							class="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+						></div>
+						<span class="text-sm text-muted-foreground">Chargement de Plotly...</span>
+					</div>
+				{/if}
+				<div
+					bind:this={plotlyContainerRef}
+					class="min-h-[300px] rounded border border-border bg-white"
+					class:hidden={!plotlyLoaded}
+				></div>
 			</div>
 		{/if}
 	</div>

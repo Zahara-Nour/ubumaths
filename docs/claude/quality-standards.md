@@ -26,10 +26,12 @@ Complete guide to maintaining code quality, efficient linting, and secure input 
 ### Security
 
 - ✅ **CSRF Protection**: Implemented in hooks.server.ts (origin validation)
+- ✅ **CSP Headers**: Content-Security-Policy with whitelist for CDNs (Pyodide, Plotly, Typst)
 - ✅ **XSS Prevention**: DOMPurify sanitization on all user-generated content
 - ✅ **Admin Authorization**: Role checks added to all admin API endpoints
 - ✅ **AI Chatbot**: Rate limited (5 req/15min) + authenticated
 - ✅ **Input Validation**: 100% of API endpoints have Zod validation (50+ endpoints validated, 0 vulnerabilities) - See [Input Validation with Zod](#🛡️-input-validation-with-zod)
+- ✅ **Security Headers**: X-Content-Type-Options, X-Frame-Options, Referrer-Policy, HSTS (prod)
 
 ### Performance
 

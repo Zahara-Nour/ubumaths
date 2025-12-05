@@ -235,12 +235,106 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 	}
 };
 
-// Combine hooks in sequence: Supabase first, then redirects, then user/profile, then CSRF protection, then error monitoring
-// Order matters: Supabase auth -> Redirects -> User/Profile loading -> CSRF validation -> Error monitoring
+/**
+ * Security Headers Handle
+ * Sets Content-Security-Policy and other security headers
+ *
+ * CSP protects against:
+ * - XSS attacks (script injection)
+ * - Data exfiltration via unauthorized scripts
+ * - Clickjacking (frame-ancestors)
+ *
+ * External resources allowed:
+ * - Supabase: *.supabase.co (backend, auth, realtime)
+ * - Google Fonts: fonts.googleapis.com, fonts.gstatic.com
+ * - CDNs: cdn.jsdelivr.net (Pyodide, Typst), cdn.plot.ly (Plotly), unpkg.com (Swagger)
+ * - Google APIs: googleapis.com (OAuth, Classroom API)
+ */
+const securityHeadersHandle: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+
+	// Build CSP directives
+	const cspDirectives = [
+		// Default: only self
+		"default-src 'self'",
+
+		// Scripts: self + CDNs + inline (required for Svelte/Vite)
+		// 'wasm-unsafe-eval' for Pyodide and Typst WebAssembly
+		[
+			"script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'",
+			'https://cdn.jsdelivr.net',
+			'https://cdn.plot.ly',
+			'https://unpkg.com'
+		].join(' '),
+
+		// Styles: self + inline (Tailwind) + Google Fonts
+		"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+
+		// Fonts: self + Google Fonts
+		"font-src 'self' https://fonts.gstatic.com",
+
+		// Images: self + data URIs (base64 matplotlib plots) + blob + Supabase storage
+		"img-src 'self' data: blob: https://*.supabase.co",
+
+		// Connect: API calls + WebSocket for realtime
+		[
+			"connect-src 'self'",
+			'https://*.supabase.co',
+			'wss://*.supabase.co',
+			'https://cdn.jsdelivr.net',
+			'https://cdn.plot.ly',
+			'https://*.googleapis.com'
+		].join(' '),
+
+		// Workers: for Pyodide Web Worker
+		"worker-src 'self' blob:",
+
+		// Child/Frame: Supabase auth popups
+		"frame-src 'self' https://*.supabase.co",
+
+		// Frame ancestors: prevent clickjacking (allow only self)
+		"frame-ancestors 'self'",
+
+		// Base URI: restrict <base> tag
+		"base-uri 'self'",
+
+		// Form actions: only submit to same origin + Supabase auth
+		"form-action 'self' https://*.supabase.co",
+
+		// Object/Embed: disable plugins
+		"object-src 'none'"
+	];
+
+	// Join directives with semicolons
+	const csp = cspDirectives.join('; ');
+
+	// Set security headers
+	response.headers.set('Content-Security-Policy', csp);
+	response.headers.set('X-Content-Type-Options', 'nosniff');
+	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+	response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+
+	// X-Frame-Options (legacy, complementary to frame-ancestors)
+	response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+
+	// HSTS only in production (HTTPS required)
+	if (!dev) {
+		response.headers.set(
+			'Strict-Transport-Security',
+			'max-age=31536000; includeSubDomains; preload'
+		);
+	}
+
+	return response;
+};
+
+// Combine hooks in sequence: Supabase first, then redirects, then user/profile, then CSRF protection, then security headers, then error monitoring
+// Order matters: Supabase auth -> Redirects -> User/Profile loading -> CSRF validation -> Security Headers -> Error monitoring
 export const handle: Handle = sequence(
 	supabaseHandle,
 	redirectHandle,
 	userProfileHandle,
 	csrfHandle,
+	securityHeadersHandle,
 	errorMonitoringHandle
 );
