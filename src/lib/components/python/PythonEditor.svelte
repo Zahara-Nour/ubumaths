@@ -124,12 +124,18 @@
 
 	/**
 	 * Load theme extension based on theme name
-	 * Returns the theme extension or null for default theme
+	 * Each theme sets its own background color
 	 */
 	async function loadThemeExtension(themeName: EditorTheme): Promise<Extension | null> {
+		const { EditorView } = await import('@codemirror/view');
+
 		switch (themeName) {
 			case 'default':
-				return null;
+				// Default light theme with white background
+				return EditorView.theme({
+					'&': { backgroundColor: '#ffffff' },
+					'.cm-gutters': { backgroundColor: '#ffffff' }
+				});
 			case 'oneDark': {
 				const { oneDark } = await import('@codemirror/theme-one-dark');
 				return oneDark;
@@ -379,12 +385,11 @@
 				// Editable state
 				EditorState.readOnly.of(disabled),
 
-				// Base theme - sets defaults, can be overridden by theme extensions
+				// Base theme - layout only, no colors (colors come from theme extension)
 				EditorView.theme({
 					'&': {
 						height: '100%',
-						fontSize: '14px',
-						backgroundColor: '#ffffff' // Default light background
+						fontSize: '14px'
 					},
 					'.cm-scroller': {
 						overflow: 'auto',
@@ -404,7 +409,7 @@
 				})
 			];
 
-			// Add theme extension if not default
+			// Add theme extension (all themes including default return an extension)
 			if (themeExtension) {
 				extensions.push(themeExtension);
 			}
