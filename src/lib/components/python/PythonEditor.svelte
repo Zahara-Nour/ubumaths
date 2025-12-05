@@ -379,11 +379,12 @@
 				// Editable state
 				EditorState.readOnly.of(disabled),
 
-				// Theme
+				// Base theme - sets defaults, can be overridden by theme extensions
 				EditorView.theme({
 					'&': {
 						height: '100%',
-						fontSize: '14px'
+						fontSize: '14px',
+						backgroundColor: '#ffffff' // Default light background
 					},
 					'.cm-scroller': {
 						overflow: 'auto',
@@ -533,7 +534,6 @@
 	/* CodeMirror container styling */
 	:global(.cm-editor) {
 		height: 100%;
-		background: transparent;
 		font-size: var(--editor-font-size, 14px) !important;
 	}
 
@@ -545,11 +545,6 @@
 	:global(.cm-editor .cm-gutterElement) {
 		padding-left: 8px;
 		padding-right: 8px;
-	}
-
-	/* Dark theme adjustments */
-	:global(.dark .cm-editor) {
-		background: transparent;
 	}
 
 	/* Active line highlighting */
