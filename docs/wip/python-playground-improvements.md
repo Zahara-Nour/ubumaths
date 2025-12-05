@@ -66,6 +66,14 @@ Implementation of 8 comprehensive improvements to the Python Playground feature.
 - ESLint: 0 new errors
 - TypeScript: 0 errors in Python Playground files
 
+### Phase 9: Error Handling Improvements
+
+- **Syntax error display**: Fixed empty output on syntax errors using `sys.last_exc` and `traceback.format_exception()`
+- **Line number extraction**: Correctly extracts user code line from traceback (filters Pyodide internal files, uses LAST match)
+- **Error line highlighting**: Red background + red gutter marker in CodeMirror using StateField/StateEffect/Decoration
+- **Concise traceback**: Shows only essential info (file/line + error message) instead of full traceback
+- Files: `pyodide.worker.ts`, `PythonEditor.svelte`
+
 ## Technical Details
 
 ### Svelte 5 Compliance
