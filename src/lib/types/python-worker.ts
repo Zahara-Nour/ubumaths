@@ -18,14 +18,12 @@ export interface LoadingStage {
 }
 
 /**
- * Predefined loading stages for Pyodide initialization
+ * Predefined loading stages for Pyodide initialization (lazy loading mode)
+ * Note: Package loading stages are now handled dynamically via packages-loading message
  */
 export const LOADING_STAGES: readonly LoadingStage[] = [
 	{ percent: 0, stage: 'Initialisation...' },
-	{ percent: 20, stage: 'Téléchargement de Python...' },
-	{ percent: 50, stage: 'Chargement de NumPy...' },
-	{ percent: 70, stage: 'Chargement de Matplotlib...' },
-	{ percent: 90, stage: 'Chargement de SymPy...' },
+	{ percent: 50, stage: 'Téléchargement de Python...' },
 	{ percent: 100, stage: 'Prêt !' }
 ] as const;
 
@@ -173,6 +171,33 @@ export interface AutocompleteResultMessage {
 }
 
 /**
+ * Packages are being loaded asynchronously (lazy loading)
+ */
+export interface PackagesLoadingMessage {
+	type: 'packages-loading';
+	packages: string[];
+	id: string;
+}
+
+/**
+ * Packages have been loaded successfully (lazy loading)
+ */
+export interface PackagesLoadedMessage {
+	type: 'packages-loaded';
+	packages: string[];
+	id: string;
+}
+
+/**
+ * Plotly visualization output as JSON specification
+ */
+export interface PlotlyMessage {
+	type: 'plotly';
+	jsonSpec: string;
+	id: string;
+}
+
+/**
  * Union type for all messages sent from the worker
  */
 export type FromWorkerMessage =
@@ -185,7 +210,10 @@ export type FromWorkerMessage =
 	| CompleteMessage
 	| TimeoutMessage
 	| LatexMessage
-	| AutocompleteResultMessage;
+	| AutocompleteResultMessage
+	| PackagesLoadingMessage
+	| PackagesLoadedMessage
+	| PlotlyMessage;
 
 // =============================================================================
 // Pyodide Types (for worker internal use)
@@ -193,11 +221,16 @@ export type FromWorkerMessage =
 
 /**
  * Pyodide interface for the worker
- * Based on Pyodide v0.25.0 API
+ * Based on Pyodide v0.26.2 API
  */
 export interface PyodideInterface {
 	loadPackage(
 		packages: string[],
+		options?: { messageCallback?: (msg: string) => void }
+	): Promise<void>;
+	/** Load packages detected from import statements in code (lazy loading) */
+	loadPackagesFromImports(
+		code: string,
 		options?: { messageCallback?: (msg: string) => void }
 	): Promise<void>;
 	runPythonAsync(code: string): Promise<unknown>;
@@ -236,15 +269,12 @@ export type LoadPyodideFunc = (options?: LoadPyodideOptions) => Promise<PyodideI
 // =============================================================================
 
 /**
- * Loading stage indices for type safety
+ * Loading stage indices for type safety (lazy loading mode)
  */
 export enum LoadingStageIndex {
 	INITIALIZING = 0,
 	DOWNLOADING_PYTHON = 1,
-	LOADING_NUMPY = 2,
-	LOADING_MATPLOTLIB = 3,
-	LOADING_SYMPY = 4,
-	READY = 5
+	READY = 2
 }
 
 /**
@@ -253,8 +283,8 @@ export enum LoadingStageIndex {
 export const PYODIDE_CONFIG = {
 	/** CDN URL for Pyodide v0.26.2 (stable, tested with this project) */
 	CDN_URL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/',
-	/** Packages to preload */
-	PACKAGES: ['numpy', 'matplotlib', 'sympy'] as const,
+	/** Initial packages to preload (empty for lazy loading) */
+	INITIAL_PACKAGES: [] as const,
 	/** Execution timeout in milliseconds (30 seconds) */
 	TIMEOUT_MS: 30000
 } as const;

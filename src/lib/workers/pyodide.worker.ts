@@ -16,6 +16,112 @@ import { PYODIDE_CONFIG, LOADING_STAGES, LoadingStageIndex } from '$lib/types/py
 import { z } from 'zod';
 
 // =============================================================================
+// Package Tracking for Lazy Loading
+// =============================================================================
+
+/**
+ * Set of packages that have been loaded via lazy loading
+ */
+const loadedPackages = new Set<string>();
+
+/**
+ * Python standard library modules that don't require external packages
+ */
+const STDLIB_MODULES = new Set([
+	'sys',
+	'os',
+	'io',
+	'math',
+	're',
+	'json',
+	'datetime',
+	'random',
+	'collections',
+	'itertools',
+	'functools',
+	'typing',
+	'abc',
+	'copy',
+	'base64',
+	'gc',
+	'warnings',
+	'ast',
+	'builtins',
+	'keyword',
+	'traceback',
+	'time',
+	'string',
+	'decimal',
+	'fractions',
+	'numbers',
+	'statistics',
+	'operator',
+	'pathlib',
+	'textwrap',
+	'difflib',
+	'struct',
+	'codecs',
+	'unicodedata',
+	'calendar',
+	'heapq',
+	'bisect',
+	'array',
+	'weakref',
+	'types',
+	'contextlib',
+	'dataclasses',
+	'enum',
+	'graphlib',
+	'pprint',
+	'reprlib',
+	'secrets',
+	'hashlib',
+	'hmac',
+	'pickle',
+	'shelve',
+	'dbm',
+	'sqlite3',
+	'csv',
+	'html',
+	'xml',
+	'urllib',
+	'http',
+	'email',
+	'logging',
+	'getpass',
+	'platform',
+	'errno',
+	'ctypes',
+	'threading',
+	'queue',
+	'asyncio',
+	'concurrent',
+	'socket',
+	'ssl',
+	'select',
+	'signal',
+	'mmap',
+	'unittest',
+	'doctest',
+	'cmath',
+	'zlib',
+	'gzip',
+	'bz2',
+	'lzma',
+	'zipfile',
+	'tarfile',
+	'tempfile',
+	'shutil',
+	'glob',
+	'fnmatch',
+	'linecache',
+	'tokenize',
+	'dis',
+	'inspect',
+	'site'
+]);
+
+// =============================================================================
 // Zod Schema for Message Validation
 // =============================================================================
 
@@ -98,7 +204,7 @@ async function loadPyodideModule(): Promise<LoadPyodideFunc> {
 }
 
 /**
- * Initialize Pyodide and load required packages
+ * Initialize Pyodide (lazy loading mode - no packages loaded at init)
  */
 async function initializePyodide(): Promise<void> {
 	try {
@@ -111,84 +217,22 @@ async function initializePyodide(): Promise<void> {
 		// Stage 1: Downloading Python
 		sendLoadingStage(LoadingStageIndex.DOWNLOADING_PYTHON);
 
-		// Initialize Pyodide
+		// Initialize Pyodide (no packages loaded - lazy loading mode)
 		pyodide = await loadPyodide({
 			indexURL: PYODIDE_CONFIG.CDN_URL
 		});
 
-		// Load all packages in parallel for better performance
-		// Stage 2: Loading packages (show NumPy as first visible package)
-		sendLoadingStage(LoadingStageIndex.LOADING_NUMPY);
-
-		// Load all packages at once - Pyodide handles dependencies automatically
-		await pyodide.loadPackage([...PYODIDE_CONFIG.PACKAGES], {
-			messageCallback: (msg: string) => {
-				console.log('[Pyodide]', msg);
-				// Update progress based on package loading messages
-				if (msg.includes('matplotlib')) {
-					sendLoadingStage(LoadingStageIndex.LOADING_MATPLOTLIB);
-				} else if (msg.includes('sympy')) {
-					sendLoadingStage(LoadingStageIndex.LOADING_SYMPY);
-				}
-			}
-		});
-
-		// Configure matplotlib for non-interactive use
+		// Define essential helper functions (no external dependencies)
 		await pyodide.runPythonAsync(`
-import matplotlib
-matplotlib.use('AGG')
-import matplotlib.pyplot as plt
-import io
-import base64
 import sys
 import gc
-import warnings
 from io import StringIO
-
-# Suppress the "cannot show figure" warning from plt.show()
-warnings.filterwarnings('ignore', message='.*Matplotlib.*using.*agg.*cannot show.*', category=UserWarning)
-
-# Helper function to get plot as base64
-def _ubumaths_get_plot_base64():
-    """Extract current matplotlib figure as base64 PNG."""
-    if len(plt.get_fignums()) == 0:
-        return None
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=100, bbox_inches='tight', facecolor='white')
-    buf.seek(0)
-    result = base64.b64encode(buf.read()).decode('utf-8')
-    plt.close('all')
-    return result
-
-# Helper function to clean up after execution
-def _ubumaths_cleanup():
-    """Clean up matplotlib figures and run garbage collection."""
-    plt.close('all')
-    gc.collect()
-
-# Helper function to check if result is a sympy expression and convert to LaTeX
-def _ubumaths_check_sympy_result(result):
-    """Check if result is a sympy expression and convert to LaTeX."""
-    if result is None:
-        return None
-    try:
-        # Check if it's a sympy Basic type (base class for all sympy expressions)
-        if hasattr(result, '__class__') and hasattr(result.__class__, '__module__'):
-            if result.__class__.__module__.startswith('sympy'):
-                import sympy
-                latex_str = sympy.latex(result)
-                # Return None if LaTeX conversion produces empty string
-                return latex_str if latex_str and latex_str.strip() else None
-    except:
-        pass
-    return None
 
 # Helper function to reformat the last exception for JavaScript
 def _ubumaths_reformat_exception():
     """Reformat the last Python exception for JavaScript consumption.
     Returns only the essential error message (last line of traceback).
     """
-    import sys
     from traceback import format_exception
 
     exc = None
@@ -228,6 +272,23 @@ def _ubumaths_reformat_exception():
 
     # Fallback to full traceback if parsing failed
     return "".join(full_tb)
+
+# Helper function to check if result is a sympy expression and convert to LaTeX
+def _ubumaths_check_sympy_result(result):
+    """Check if result is a sympy expression and convert to LaTeX."""
+    if result is None:
+        return None
+    try:
+        # Check if it's a sympy Basic type (base class for all sympy expressions)
+        if hasattr(result, '__class__') and hasattr(result.__class__, '__module__'):
+            if result.__class__.__module__.startswith('sympy'):
+                import sympy
+                latex_str = sympy.latex(result)
+                # Return None if LaTeX conversion produces empty string
+                return latex_str if latex_str and latex_str.strip() else None
+    except:
+        pass
+    return None
 
 # Helper function for Python autocompletion
 def _ubumaths_get_completions(code, cursor_pos):
@@ -319,7 +380,7 @@ def _ubumaths_get_completions(code, cursor_pos):
         return completions[:MAX_COMPLETIONS]
 `);
 
-		// Stage 5: Ready
+		// Ready (no packages to load in lazy mode)
 		sendLoadingStage(LoadingStageIndex.READY);
 		postMessage({ type: 'pyodide-ready' });
 	} catch (error) {
@@ -330,6 +391,147 @@ def _ubumaths_get_completions(code, cursor_pos):
 			id: ''
 		});
 	}
+}
+
+// =============================================================================
+// Package Setup Functions (called after lazy loading)
+// =============================================================================
+
+/**
+ * Configure matplotlib after lazy loading
+ */
+async function setupMatplotlib(): Promise<void> {
+	if (!pyodide) return;
+
+	await pyodide.runPythonAsync(`
+import matplotlib
+matplotlib.use('AGG')
+import matplotlib.pyplot as plt
+import io
+import base64
+import warnings
+
+# Suppress the "cannot show figure" warning from plt.show()
+warnings.filterwarnings('ignore', message='.*Matplotlib.*using.*agg.*cannot show.*', category=UserWarning)
+
+# Helper function to get plot as base64
+def _ubumaths_get_plot_base64():
+    """Extract current matplotlib figure as base64 PNG."""
+    if len(plt.get_fignums()) == 0:
+        return None
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', dpi=100, bbox_inches='tight', facecolor='white')
+    buf.seek(0)
+    result = base64.b64encode(buf.read()).decode('utf-8')
+    plt.close('all')
+    return result
+
+# Helper function to clean up matplotlib figures
+def _ubumaths_cleanup_matplotlib():
+    """Clean up matplotlib figures."""
+    plt.close('all')
+`);
+}
+
+/**
+ * Configure Plotly after lazy loading
+ */
+async function setupPlotly(): Promise<void> {
+	if (!pyodide) return;
+
+	await pyodide.runPythonAsync(`
+# Initialize global variable for storing plotly figure
+_ubumaths_plotly_fig = None
+
+def _ubumaths_get_plotly_json():
+    """Get current Plotly figure as JSON specification."""
+    global _ubumaths_plotly_fig
+    try:
+        import plotly.io as pio
+        if _ubumaths_plotly_fig is not None:
+            result = pio.to_json(_ubumaths_plotly_fig)
+            _ubumaths_plotly_fig = None  # Clear after export
+            return result
+    except Exception as e:
+        print(f"Plotly error: {e}")
+    return None
+
+def _ubumaths_check_plotly_result(result):
+    """Check if result is a Plotly figure and store it for export."""
+    global _ubumaths_plotly_fig
+    try:
+        from plotly.graph_objs import Figure
+        if isinstance(result, Figure):
+            _ubumaths_plotly_fig = result
+            return True
+    except ImportError:
+        pass
+    return False
+`);
+}
+
+// =============================================================================
+// Lazy Package Loading
+// =============================================================================
+
+/**
+ * Load required packages for the given code (lazy loading)
+ * Detects imports and loads only the packages that are needed
+ */
+async function loadRequiredPackages(code: string, id: string): Promise<void> {
+	if (!pyodide) return;
+
+	// Detect imports using Pyodide's API
+	const importsProxy = pyodide.runPython(`
+from pyodide.code import find_imports
+list(find_imports(${JSON.stringify(code)}))
+`);
+
+	// Convert PyProxy to JS array
+	const imports = (importsProxy as { toJs: () => string[] }).toJs();
+
+	// Clean up the PyProxy to avoid memory leaks
+	if (
+		importsProxy &&
+		typeof importsProxy === 'object' &&
+		'destroy' in importsProxy &&
+		typeof (importsProxy as { destroy: () => void }).destroy === 'function'
+	) {
+		(importsProxy as { destroy: () => void }).destroy();
+	}
+
+	// Filter out stdlib modules and already loaded packages
+	const packagesToLoad = imports.filter(
+		(pkg: string) => !STDLIB_MODULES.has(pkg) && !loadedPackages.has(pkg)
+	);
+
+	if (packagesToLoad.length === 0) return;
+
+	// Notify main thread that packages are being loaded
+	postMessage({ type: 'packages-loading', packages: packagesToLoad, id });
+
+	// Load packages from imports (Pyodide handles dependency resolution)
+	await pyodide.loadPackagesFromImports(code, {
+		messageCallback: (msg: string) => console.log('[Pyodide]', msg)
+	});
+
+	// Post-load configuration for specific packages
+	for (const pkg of packagesToLoad) {
+		loadedPackages.add(pkg);
+
+		// Set up matplotlib helpers when first loaded
+		if (pkg === 'matplotlib') {
+			await setupMatplotlib();
+		}
+
+		// Set up plotly helpers when first loaded
+		if (pkg === 'plotly') {
+			await setupPlotly();
+		}
+	}
+
+	// Notify main thread that packages are loaded
+	postMessage({ type: 'packages-loaded', packages: packagesToLoad, id });
 }
 
 // =============================================================================
@@ -419,6 +621,14 @@ async function executeCode(code: string, id: string): Promise<void> {
 	}, PYODIDE_CONFIG.TIMEOUT_MS);
 
 	try {
+		// Load required packages before execution (lazy loading)
+		await loadRequiredPackages(code, id);
+
+		// Check if execution was cancelled during package loading
+		if (currentExecutionId !== id) {
+			return;
+		}
+
 		// Set up stdout/stderr capture
 		await pyodide.runPythonAsync(`
 import sys
@@ -504,14 +714,34 @@ _stderr_value
 			postMessage({ type: 'latex', latex: latexResult, id });
 		}
 
-		// Check for plots
-		const plotData = pyodide.runPython('_ubumaths_get_plot_base64()') as string | null;
-		if (plotData) {
-			postMessage({ type: 'plot', imageData: plotData, id });
+		// Check for Plotly output (only if plotly was loaded)
+		if (loadedPackages.has('plotly')) {
+			const isPlotlyFig = pyodide.runPython(
+				'_ubumaths_check_plotly_result(_ubumaths_last_result)'
+			) as boolean;
+			if (isPlotlyFig) {
+				const plotlyJson = pyodide.runPython('_ubumaths_get_plotly_json()') as string | null;
+				if (plotlyJson) {
+					postMessage({ type: 'plotly', jsonSpec: plotlyJson, id });
+				}
+			}
 		}
 
-		// Clean up
-		pyodide.runPython('_ubumaths_cleanup()');
+		// Check for matplotlib plots (only if matplotlib was loaded)
+		if (loadedPackages.has('matplotlib')) {
+			const plotData = pyodide.runPython('_ubumaths_get_plot_base64()') as string | null;
+			if (plotData) {
+				postMessage({ type: 'plot', imageData: plotData, id });
+			}
+		}
+
+		// Clean up (only if matplotlib was loaded)
+		if (loadedPackages.has('matplotlib')) {
+			pyodide.runPython('_ubumaths_cleanup_matplotlib()');
+		}
+
+		// General garbage collection
+		pyodide.runPython('gc.collect()');
 
 		// Calculate duration and send completion
 		const duration = Math.round(performance.now() - startTime);
@@ -527,8 +757,12 @@ _stderr_value
 			pyodide.runPython(`
 sys.stdout = _ubumaths_old_stdout
 sys.stderr = _ubumaths_old_stderr
-_ubumaths_cleanup()
 `);
+			// Clean up matplotlib if loaded
+			if (loadedPackages.has('matplotlib')) {
+				pyodide.runPython('_ubumaths_cleanup_matplotlib()');
+			}
+			pyodide.runPython('gc.collect()');
 		} catch (cleanupError) {
 			// Log cleanup errors for debugging but don't fail
 			console.warn('[Pyodide Worker] Cleanup error:', cleanupError);

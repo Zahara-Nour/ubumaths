@@ -24,7 +24,11 @@ const completionItemSchema = z.object({
 });
 
 const fromWorkerMessageSchema = z.discriminatedUnion('type', [
-	z.object({ type: z.literal('loading-progress'), percent: z.number(), stage: z.string() }),
+	z.object({
+		type: z.literal('loading-progress'),
+		percent: z.number().min(0).max(100),
+		stage: z.string()
+	}),
 	z.object({ type: z.literal('pyodide-ready') }),
 	z.object({ type: z.literal('stdout'), data: z.string(), id: z.string() }),
 	z.object({ type: z.literal('stderr'), data: z.string(), id: z.string() }),
@@ -32,12 +36,31 @@ const fromWorkerMessageSchema = z.discriminatedUnion('type', [
 	z.object({
 		type: z.literal('error'),
 		message: z.string(),
-		line: z.number().optional(),
+		line: z.number().int().positive().optional(),
 		id: z.string()
 	}),
-	z.object({ type: z.literal('complete'), id: z.string(), duration: z.number() }),
+	z.object({
+		type: z.literal('complete'),
+		id: z.string(),
+		duration: z.number().nonnegative()
+	}),
 	z.object({ type: z.literal('timeout'), id: z.string() }),
 	z.object({ type: z.literal('latex'), latex: z.string(), id: z.string() }),
+	z.object({
+		type: z.literal('packages-loading'),
+		packages: z.array(z.string()),
+		id: z.string()
+	}),
+	z.object({
+		type: z.literal('packages-loaded'),
+		packages: z.array(z.string()),
+		id: z.string()
+	}),
+	z.object({
+		type: z.literal('plotly'),
+		jsonSpec: z.string(),
+		id: z.string()
+	}),
 	z.object({
 		type: z.literal('autocomplete-result'),
 		completions: z.array(completionItemSchema),
@@ -183,6 +206,15 @@ class PythonPlaygroundStore {
 	/** Editor font size in pixels */
 	fontSize = $state(DEFAULT_FONT_SIZE);
 
+	/** Packages currently being loaded (lazy loading) */
+	packagesLoading = $state<string[]>([]);
+
+	/** Packages that have been loaded during this session */
+	loadedPackages = $state<string[]>([]);
+
+	/** Plotly JSON spec for interactive charts */
+	plotlyData = $state<string | null>(null);
+
 	// ===========================================================================
 	// Private State
 	// ===========================================================================
@@ -242,8 +274,12 @@ class PythonPlaygroundStore {
 		this.stdout.length > 0 ||
 			this.stderr.length > 0 ||
 			this.plotData !== null ||
-			this.latexOutput !== null
+			this.latexOutput !== null ||
+			this.plotlyData !== null
 	);
+
+	/** Whether packages are currently being loaded */
+	isLoadingPackages = $derived(this.packagesLoading.length > 0);
 
 	/** Whether the code has been modified from last saved state */
 	isModified = $derived(this.code !== this._lastSavedCode);
@@ -375,6 +411,26 @@ class PythonPlaygroundStore {
 			case 'latex':
 				if (message.id === this.currentExecutionId) {
 					this.latexOutput = message.latex;
+				}
+				break;
+
+			case 'packages-loading':
+				if (message.id === this.currentExecutionId) {
+					this.packagesLoading = message.packages;
+					this.loadingStage = `Chargement de ${message.packages.join(', ')}...`;
+				}
+				break;
+
+			case 'packages-loaded':
+				if (message.id === this.currentExecutionId) {
+					this.packagesLoading = [];
+					this.loadedPackages = [...new Set([...this.loadedPackages, ...message.packages])];
+				}
+				break;
+
+			case 'plotly':
+				if (message.id === this.currentExecutionId) {
+					this.plotlyData = message.jsonSpec;
 				}
 				break;
 
@@ -548,6 +604,7 @@ class PythonPlaygroundStore {
 		this.stderr = '';
 		this.plotData = null;
 		this.latexOutput = null;
+		this.plotlyData = null;
 		this.executionTime = 0;
 		this.errorLine = null;
 	}

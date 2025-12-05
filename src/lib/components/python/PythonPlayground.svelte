@@ -216,10 +216,21 @@
 						stderr={pythonStore.stderr}
 						plotData={pythonStore.plotData}
 						latexOutput={pythonStore.latexOutput}
+						plotlyData={pythonStore.plotlyData}
 						errorLine={pythonStore.errorLine}
 						executionTime={pythonStore.executionTime}
 						showPedagogicErrors={pythonStore.showPedagogicErrors}
 					/>
+				{/if}
+				{#if pythonStore.isLoadingPackages}
+					<div class="mt-2 flex items-center gap-2 rounded bg-muted/50 px-3 py-2 text-sm">
+						<div
+							class="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+						></div>
+						<span class="text-muted-foreground"
+							>Chargement de {pythonStore.packagesLoading.join(', ')}...</span
+						>
+					</div>
 				{/if}
 			</div>
 		</div>
@@ -281,10 +292,21 @@
 						stderr={pythonStore.stderr}
 						plotData={pythonStore.plotData}
 						latexOutput={pythonStore.latexOutput}
+						plotlyData={pythonStore.plotlyData}
 						errorLine={pythonStore.errorLine}
 						executionTime={pythonStore.executionTime}
 						showPedagogicErrors={pythonStore.showPedagogicErrors}
 					/>
+				{/if}
+				{#if pythonStore.isLoadingPackages}
+					<div class="mt-2 flex items-center gap-2 rounded bg-muted/50 px-3 py-2 text-sm">
+						<div
+							class="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+						></div>
+						<span class="text-muted-foreground"
+							>Chargement de {pythonStore.packagesLoading.join(', ')}...</span
+						>
+					</div>
 				{/if}
 			</div>
 		</div>

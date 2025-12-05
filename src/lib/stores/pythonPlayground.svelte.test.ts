@@ -157,6 +157,22 @@ describe('PythonPlaygroundStore', () => {
 			expect(pythonStore.hasError).toBe(false);
 			expect(pythonStore.hasOutput).toBe(false);
 		});
+
+		it('should have packagesLoading initialized to empty array', () => {
+			expect(pythonStore.packagesLoading).toEqual([]);
+		});
+
+		it('should have loadedPackages initialized to empty array', () => {
+			expect(pythonStore.loadedPackages).toEqual([]);
+		});
+
+		it('should have plotlyData initialized to null', () => {
+			expect(pythonStore.plotlyData).toBe(null);
+		});
+
+		it('should have isLoadingPackages false when packagesLoading is empty', () => {
+			expect(pythonStore.isLoadingPackages).toBe(false);
+		});
 	});
 
 	// ===========================================================================
@@ -480,6 +496,216 @@ describe('PythonPlaygroundStore', () => {
 			expect(pythonStore.stderr).toContain('30 secondes');
 			expect(pythonStore.state).toBe('ready');
 		});
+
+		it('should handle packages-loading message', () => {
+			pythonStore.code = 'import pandas';
+			pythonStore.execute();
+
+			const executeMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loading',
+				packages: ['pandas', 'numpy'],
+				id: executeMessage?.id
+			});
+
+			expect(pythonStore.packagesLoading).toEqual(['pandas', 'numpy']);
+			expect(pythonStore.isLoadingPackages).toBe(true);
+			expect(pythonStore.loadingStage).toContain('pandas');
+			expect(pythonStore.loadingStage).toContain('numpy');
+		});
+
+		it('should ignore packages-loading message with wrong ID', () => {
+			pythonStore.code = 'import scipy';
+			pythonStore.execute();
+
+			// Get the correct execution ID
+			const executeMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			// Record current state before sending wrong ID message
+			const packagesBeforeWrongId = [...pythonStore.packagesLoading];
+
+			// Send packages-loading with wrong ID - should be ignored
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loading',
+				packages: ['wrong-package-1', 'wrong-package-2'],
+				id: 'wrong-id'
+			});
+
+			// State should not have changed
+			expect(pythonStore.packagesLoading).toEqual(packagesBeforeWrongId);
+			expect(pythonStore.packagesLoading).not.toContain('wrong-package-1');
+			expect(pythonStore.packagesLoading).not.toContain('wrong-package-2');
+
+			// But with correct ID it would work
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loading',
+				packages: ['scipy'],
+				id: executeMessage?.id
+			});
+
+			expect(pythonStore.packagesLoading).toEqual(['scipy']);
+		});
+
+		it('should handle packages-loaded message', () => {
+			pythonStore.code = 'import pandas';
+			pythonStore.execute();
+
+			const executeMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			// First simulate packages-loading
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loading',
+				packages: ['pandas', 'numpy'],
+				id: executeMessage?.id
+			});
+
+			expect(pythonStore.packagesLoading).toEqual(['pandas', 'numpy']);
+
+			// Then simulate packages-loaded
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loaded',
+				packages: ['pandas', 'numpy'],
+				id: executeMessage?.id
+			});
+
+			expect(pythonStore.packagesLoading).toEqual([]);
+			expect(pythonStore.isLoadingPackages).toBe(false);
+			expect(pythonStore.loadedPackages).toContain('pandas');
+			expect(pythonStore.loadedPackages).toContain('numpy');
+		});
+
+		it('should ignore packages-loaded message with wrong ID', () => {
+			pythonStore.code = 'import pandas';
+			pythonStore.execute();
+
+			const executeMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			// First simulate packages-loading with correct ID
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loading',
+				packages: ['pandas'],
+				id: executeMessage?.id
+			});
+
+			// Then simulate packages-loaded with wrong ID
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loaded',
+				packages: ['pandas'],
+				id: 'wrong-id'
+			});
+
+			// packagesLoading should not be cleared
+			expect(pythonStore.packagesLoading).toEqual(['pandas']);
+		});
+
+		it('should accumulate loadedPackages across multiple executions', () => {
+			pythonStore.code = 'import pandas';
+			pythonStore.execute();
+
+			const firstExecMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loaded',
+				packages: ['pandas'],
+				id: firstExecMessage?.id
+			});
+
+			MockWorker.instance?.simulateMessage({
+				type: 'complete',
+				id: firstExecMessage?.id,
+				duration: 100
+			});
+
+			// Second execution
+			pythonStore.code = 'import scipy';
+			pythonStore.execute();
+
+			const secondExecMessage = MockWorker.messages.filter(
+				(m) => (m as { type: string }).type === 'execute'
+			)[1] as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loaded',
+				packages: ['scipy'],
+				id: secondExecMessage?.id
+			});
+
+			// Should have both packages
+			expect(pythonStore.loadedPackages).toContain('pandas');
+			expect(pythonStore.loadedPackages).toContain('scipy');
+		});
+
+		it('should not duplicate packages in loadedPackages', () => {
+			pythonStore.code = 'import pandas';
+			pythonStore.execute();
+
+			const executeMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			// Load pandas twice
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loaded',
+				packages: ['pandas'],
+				id: executeMessage?.id
+			});
+
+			MockWorker.instance?.simulateMessage({
+				type: 'packages-loaded',
+				packages: ['pandas', 'numpy'],
+				id: executeMessage?.id
+			});
+
+			// pandas should only appear once
+			const pandasCount = pythonStore.loadedPackages.filter((p) => p === 'pandas').length;
+			expect(pandasCount).toBe(1);
+		});
+
+		it('should handle plotly message', () => {
+			pythonStore.code =
+				'import plotly.express as px; fig = px.scatter(x=[1,2], y=[3,4]); fig.show()';
+			pythonStore.execute();
+
+			const executeMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			const plotlySpec = JSON.stringify({ data: [], layout: { title: 'Test' } });
+
+			MockWorker.instance?.simulateMessage({
+				type: 'plotly',
+				jsonSpec: plotlySpec,
+				id: executeMessage?.id
+			});
+
+			expect(pythonStore.plotlyData).toBe(plotlySpec);
+		});
+
+		it('should ignore plotly message with wrong ID', () => {
+			pythonStore.code = 'import plotly';
+			pythonStore.execute();
+
+			const plotlySpec = JSON.stringify({ data: [], layout: {} });
+
+			MockWorker.instance?.simulateMessage({
+				type: 'plotly',
+				jsonSpec: plotlySpec,
+				id: 'wrong-id'
+			});
+
+			expect(pythonStore.plotlyData).toBe(null);
+		});
 	});
 
 	// ===========================================================================
@@ -552,6 +778,30 @@ describe('PythonPlaygroundStore', () => {
 			expect(pythonStore.plotData).toBe(null);
 			expect(pythonStore.executionTime).toBe(0);
 			expect(pythonStore.errorLine).toBe(null);
+		});
+
+		it('should clear plotlyData when clearOutput is called', () => {
+			pythonStore.plotlyData = JSON.stringify({ data: [], layout: {} });
+
+			pythonStore.clearOutput();
+
+			expect(pythonStore.plotlyData).toBe(null);
+		});
+
+		it('should clear all output types including plotlyData', () => {
+			pythonStore.stdout = 'output';
+			pythonStore.stderr = 'error';
+			pythonStore.plotData = 'data:image/png;base64,abc';
+			pythonStore.plotlyData = JSON.stringify({ data: [], layout: {} });
+			pythonStore.latexOutput = '\\frac{1}{2}';
+
+			pythonStore.clearOutput();
+
+			expect(pythonStore.stdout).toBe('');
+			expect(pythonStore.stderr).toBe('');
+			expect(pythonStore.plotData).toBe(null);
+			expect(pythonStore.plotlyData).toBe(null);
+			expect(pythonStore.latexOutput).toBe(null);
 		});
 	});
 
@@ -725,6 +975,24 @@ describe('PythonPlaygroundStore', () => {
 			expect(pythonStore.hasOutput).toBe(false);
 
 			pythonStore.plotData = 'data:image/png;base64,abc';
+
+			expect(pythonStore.hasOutput).toBe(true);
+		});
+
+		it('should have hasOutput true when plotlyData is set', () => {
+			pythonStore.clearOutput();
+			expect(pythonStore.hasOutput).toBe(false);
+
+			pythonStore.plotlyData = JSON.stringify({ data: [], layout: {} });
+
+			expect(pythonStore.hasOutput).toBe(true);
+		});
+
+		it('should have hasOutput true when latexOutput is set', () => {
+			pythonStore.clearOutput();
+			expect(pythonStore.hasOutput).toBe(false);
+
+			pythonStore.latexOutput = '\\frac{1}{2}';
 
 			expect(pythonStore.hasOutput).toBe(true);
 		});
