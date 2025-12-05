@@ -25,12 +25,14 @@
 		value = $bindable(''),
 		errorLine = null as number | null,
 		disabled = false,
+		fontSize = 14,
 		onExecute = () => {},
 		onSave = () => {}
 	}: {
 		value?: string;
 		errorLine?: number | null;
 		disabled?: boolean;
+		fontSize?: number;
 		onExecute?: () => void;
 		onSave?: () => void;
 	} = $props();
@@ -453,7 +455,11 @@
 	});
 </script>
 
-<div class="relative h-full w-full" bind:this={editorContainer}>
+<div
+	class="relative h-full w-full"
+	style="--editor-font-size: {fontSize}px"
+	bind:this={editorContainer}
+>
 	{#if isLoading}
 		<div class="flex h-full items-center justify-center">
 			<div class="flex flex-col items-center gap-2">
@@ -486,6 +492,7 @@
 	:global(.cm-editor) {
 		height: 100%;
 		background: transparent;
+		font-size: var(--editor-font-size, 14px) !important;
 	}
 
 	:global(.cm-editor.cm-focused) {

@@ -153,10 +153,13 @@
 		onReset={handleReset}
 		onShare={handleShare}
 		onToggleFullscreen={toggleFullscreen}
+		onIncreaseFontSize={() => pythonStore.increaseFontSize()}
+		onDecreaseFontSize={() => pythonStore.decreaseFontSize()}
 		{canExecute}
 		{isExecuting}
 		{isModified}
 		{isFullscreen}
+		fontSize={pythonStore.fontSize}
 	/>
 
 	<!-- Main content area -->
@@ -172,6 +175,7 @@
 					bind:value={pythonStore.code}
 					errorLine={pythonStore.errorLine}
 					disabled={isExecuting}
+					fontSize={pythonStore.fontSize}
 					onExecute={handleExecute}
 					onSave={handleSave}
 				/>
@@ -233,6 +237,7 @@
 					bind:value={pythonStore.code}
 					errorLine={pythonStore.errorLine}
 					disabled={isExecuting}
+					fontSize={pythonStore.fontSize}
 					onExecute={handleExecute}
 					onSave={handleSave}
 				/>
