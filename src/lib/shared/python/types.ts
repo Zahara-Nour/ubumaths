@@ -410,6 +410,10 @@ export interface PyProxy {
 	get(name: string): unknown;
 	set(name: string, value: unknown): void;
 	toJs(): unknown;
+	/** Delete a key from the Python dict/namespace */
+	delete(name: string): void;
+	/** Destroy the proxy and free memory */
+	destroy(): void;
 }
 
 /**
