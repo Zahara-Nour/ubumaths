@@ -8,6 +8,7 @@
 	import PythonSaveDialog from './PythonSaveDialog.svelte';
 	import PythonFileManager from './PythonFileManager.svelte';
 	import PythonMigrationPrompt from './PythonMigrationPrompt.svelte';
+	import PythonSettings from './PythonSettings.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
 	import { onMount, onDestroy } from 'svelte';
@@ -51,6 +52,7 @@
 	// Dialog state
 	let saveDialogOpen = $state(false);
 	let fileManagerOpen = $state(false);
+	let settingsOpen = $state(false);
 
 	// Functions
 	function handleExecute(): void {
@@ -105,6 +107,10 @@
 	function handleNewFile(): void {
 		pythonStore.newFile();
 		toaster.success('Nouveau fichier cree');
+	}
+
+	function handleOpenSettings(): void {
+		settingsOpen = true;
 	}
 
 	function toggleFullscreen(): void {
@@ -196,6 +202,7 @@
 		onSaveToCloud={handleSaveToCloud}
 		onOpenFiles={handleOpenFiles}
 		onNewFile={handleNewFile}
+		onOpenSettings={handleOpenSettings}
 		{canExecute}
 		{isExecuting}
 		{isModified}
@@ -221,6 +228,7 @@
 					errorLine={pythonStore.errorLine}
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
+					theme={pythonStore.editorTheme}
 					onExecute={handleExecute}
 					onSave={handleSave}
 				/>
@@ -294,6 +302,7 @@
 					errorLine={pythonStore.errorLine}
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
+					theme={pythonStore.editorTheme}
 					onExecute={handleExecute}
 					onSave={handleSave}
 				/>
@@ -366,3 +375,6 @@
 
 <!-- File manager dialog -->
 <PythonFileManager bind:open={fileManagerOpen} {profile} />
+
+<!-- Settings dialog -->
+<PythonSettings bind:open={settingsOpen} />

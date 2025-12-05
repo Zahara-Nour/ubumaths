@@ -12,6 +12,7 @@ The Python Playground is a browser-based Python execution environment that allow
 - **Lazy loading packages**: NumPy, Matplotlib, SymPy loaded on-demand
 - **Interactive charts**: Plotly.js support for rich visualizations
 - **CodeMirror 6 editor** with syntax highlighting and autocompletion
+- **12 editor themes**: One Dark, Dracula, GitHub, Nord, Solarized, Material, VS Code, etc.
 - **Intelligent autocompletion** via Pyodide introspection
 - **Plot rendering**: Matplotlib figures as PNG and Plotly interactive charts
 - **LaTeX rendering**: SymPy expressions via MathLive
@@ -53,7 +54,8 @@ src/
 │   │   ├── PythonSplitter.svelte       # Resizable panels
 │   │   ├── PythonSaveDialog.svelte     # Cloud save dialog
 │   │   ├── PythonFileManager.svelte    # File list/management
-│   │   └── PythonMigrationPrompt.svelte # localStorage migration
+│   │   ├── PythonMigrationPrompt.svelte # localStorage migration
+│   │   └── PythonSettings.svelte        # Settings modal (theme, font)
 │   ├── stores/
 │   │   └── pythonPlayground.svelte.ts  # Reactive store (+ cloud methods)
 │   ├── server/validation/
@@ -244,10 +246,10 @@ User types code
 
 ## localStorage Keys
 
-| Key                          | Content                                   |
-| ---------------------------- | ----------------------------------------- |
-| `ubumaths-python-playground` | `{ code, showPedagogicErrors, fontSize }` |
-| `ubumaths-python-splitter`   | Splitter position (20-80%)                |
+| Key                          | Content                                                |
+| ---------------------------- | ------------------------------------------------------ |
+| `ubumaths-python-playground` | `{ code, showPedagogicErrors, fontSize, editorTheme }` |
+| `ubumaths-python-splitter`   | Splitter position (20-80%)                             |
 
 ## Configuration
 

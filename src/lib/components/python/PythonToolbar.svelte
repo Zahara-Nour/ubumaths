@@ -17,7 +17,8 @@
 		Cloud,
 		FolderOpen,
 		FilePlus,
-		FileCode
+		FileCode,
+		Settings
 	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
@@ -34,6 +35,7 @@
 		onSaveToCloud,
 		onOpenFiles,
 		onNewFile,
+		onOpenSettings,
 		canExecute,
 		isExecuting,
 		isModified = false,
@@ -55,6 +57,7 @@
 		onSaveToCloud?: () => void;
 		onOpenFiles?: () => void;
 		onNewFile?: () => void;
+		onOpenSettings?: () => void;
 		canExecute: boolean;
 		isExecuting: boolean;
 		isModified?: boolean;
@@ -250,6 +253,17 @@
 	</div>
 
 	<Separator orientation="vertical" class="mx-2 h-6" />
+
+	<!-- Settings button -->
+	<Button
+		variant="ghost"
+		size="icon"
+		onclick={onOpenSettings}
+		aria-label="Parametres"
+		title="Parametres de l'editeur"
+	>
+		<Settings class="size-4" />
+	</Button>
 
 	<!-- Fullscreen toggle button -->
 	<Button
