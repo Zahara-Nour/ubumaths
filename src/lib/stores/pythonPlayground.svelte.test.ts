@@ -258,6 +258,7 @@ describe('PythonPlaygroundStore', () => {
 		it('should handle loading error from worker', () => {
 			pythonStore.initPyodide();
 
+			// Loading errors from worker use empty id
 			MockWorker.instance?.simulateMessage({
 				type: 'error',
 				message: 'Failed to load Pyodide',
@@ -283,16 +284,25 @@ describe('PythonPlaygroundStore', () => {
 		});
 
 		it('should not execute if not ready', () => {
-			// Manually set state back to initial
-			pythonStore.setLoadingState('initial');
+			// Destroy to reset state to initial
+			pythonStore.destroy();
+			expect(pythonStore.state).toBe('initial');
 
+			// Clear messages before test
+			MockWorker.messages = [];
+
+			// Try to execute without being ready
 			pythonStore.execute();
 
-			// Should not have sent execute message
+			// Should not have sent execute message (not ready)
 			const executeMessages = MockWorker.messages.filter(
 				(m) => (m as { type: string }).type === 'execute'
 			);
 			expect(executeMessages).toHaveLength(0);
+
+			// Re-initialize for other tests
+			pythonStore.initPyodide();
+			MockWorker.instance?.simulateMessage({ type: 'pyodide-ready' });
 		});
 
 		it('should not execute empty code', () => {
@@ -328,10 +338,28 @@ describe('PythonPlaygroundStore', () => {
 		});
 
 		it('should clear previous output before execution', () => {
-			pythonStore.stdout = 'previous output';
-			pythonStore.stderr = 'previous error';
-			pythonStore.plotData = 'data:image/png;base64,abc';
+			// First, execute and receive some output
+			pythonStore.code = 'print("First")';
+			pythonStore.execute();
 
+			const firstExecMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'stdout',
+				data: 'previous output',
+				id: firstExecMessage?.id
+			});
+			MockWorker.instance?.simulateMessage({
+				type: 'complete',
+				id: firstExecMessage?.id,
+				duration: 100
+			});
+
+			expect(pythonStore.stdout).toBe('previous output');
+
+			// Now execute again - previous output should be cleared
 			pythonStore.code = 'print("Hello")';
 			pythonStore.execute();
 
@@ -764,12 +792,36 @@ describe('PythonPlaygroundStore', () => {
 	// ===========================================================================
 
 	describe('Clear Output', () => {
+		beforeEach(() => {
+			pythonStore.initPyodide();
+			MockWorker.instance?.simulateMessage({ type: 'pyodide-ready' });
+			MockWorker.messages = [];
+		});
+
 		it('should clear all output', () => {
-			pythonStore.stdout = 'some output';
-			pythonStore.stderr = 'some error';
-			pythonStore.plotData = 'data:image/png;base64,abc';
-			pythonStore.executionTime = 100;
-			pythonStore.errorLine = 5;
+			// First generate some output via execution
+			pythonStore.code = 'print("test")';
+			pythonStore.execute();
+
+			const execMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'stdout',
+				data: 'some output',
+				id: execMessage?.id
+			});
+			MockWorker.instance?.simulateMessage({
+				type: 'error',
+				message: 'some error',
+				line: 5,
+				id: execMessage?.id
+			});
+
+			expect(pythonStore.stdout).toBe('some output');
+			expect(pythonStore.stderr).toBe('some error');
+			expect(pythonStore.errorLine).toBe(5);
 
 			pythonStore.clearOutput();
 
@@ -781,7 +833,20 @@ describe('PythonPlaygroundStore', () => {
 		});
 
 		it('should clear plotlyData when clearOutput is called', () => {
-			pythonStore.plotlyData = JSON.stringify({ data: [], layout: {} });
+			pythonStore.code = 'import plotly';
+			pythonStore.execute();
+
+			const execMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'plotly',
+				jsonSpec: JSON.stringify({ data: [], layout: {} }),
+				id: execMessage?.id
+			});
+
+			expect(pythonStore.plotlyData).not.toBe(null);
 
 			pythonStore.clearOutput();
 
@@ -789,11 +854,34 @@ describe('PythonPlaygroundStore', () => {
 		});
 
 		it('should clear all output types including plotlyData', () => {
-			pythonStore.stdout = 'output';
-			pythonStore.stderr = 'error';
-			pythonStore.plotData = 'data:image/png;base64,abc';
-			pythonStore.plotlyData = JSON.stringify({ data: [], layout: {} });
-			pythonStore.latexOutput = '\\frac{1}{2}';
+			pythonStore.code = 'test';
+			pythonStore.execute();
+
+			const execMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			// Simulate receiving all output types
+			MockWorker.instance?.simulateMessage({
+				type: 'stdout',
+				data: 'output',
+				id: execMessage?.id
+			});
+			MockWorker.instance?.simulateMessage({
+				type: 'plot',
+				imageData: 'abc',
+				id: execMessage?.id
+			});
+			MockWorker.instance?.simulateMessage({
+				type: 'plotly',
+				jsonSpec: JSON.stringify({ data: [], layout: {} }),
+				id: execMessage?.id
+			});
+			MockWorker.instance?.simulateMessage({
+				type: 'latex',
+				latex: '\\frac{1}{2}',
+				id: execMessage?.id
+			});
 
 			pythonStore.clearOutput();
 
@@ -810,6 +898,12 @@ describe('PythonPlaygroundStore', () => {
 	// ===========================================================================
 
 	describe('Reset Code', () => {
+		beforeEach(() => {
+			pythonStore.initPyodide();
+			MockWorker.instance?.simulateMessage({ type: 'pyodide-ready' });
+			MockWorker.messages = [];
+		});
+
 		it('should reset code to default', () => {
 			pythonStore.code = 'custom code';
 
@@ -819,8 +913,21 @@ describe('PythonPlaygroundStore', () => {
 		});
 
 		it('should clear output on reset', () => {
-			pythonStore.stdout = 'some output';
-			pythonStore.stderr = 'some error';
+			// Generate some output first
+			pythonStore.code = 'print("test")';
+			pythonStore.execute();
+
+			const execMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'stdout',
+				data: 'some output',
+				id: execMessage?.id
+			});
+
+			expect(pythonStore.stdout).toBe('some output');
 
 			pythonStore.resetCode();
 
@@ -953,10 +1060,27 @@ describe('PythonPlaygroundStore', () => {
 	// ===========================================================================
 
 	describe('Derived States', () => {
+		beforeEach(() => {
+			pythonStore.initPyodide();
+			MockWorker.instance?.simulateMessage({ type: 'pyodide-ready' });
+			MockWorker.messages = [];
+		});
+
 		it('should have hasOutput true when stdout is set', () => {
 			expect(pythonStore.hasOutput).toBe(false);
 
-			pythonStore.stdout = 'output';
+			pythonStore.code = 'print("test")';
+			pythonStore.execute();
+
+			const execMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'stdout',
+				data: 'output',
+				id: execMessage?.id
+			});
 
 			expect(pythonStore.hasOutput).toBe(true);
 		});
@@ -965,7 +1089,18 @@ describe('PythonPlaygroundStore', () => {
 			pythonStore.clearOutput();
 			expect(pythonStore.hasOutput).toBe(false);
 
-			pythonStore.stderr = 'error';
+			pythonStore.code = 'x';
+			pythonStore.execute();
+
+			const execMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'stderr',
+				data: 'error',
+				id: execMessage?.id
+			});
 
 			expect(pythonStore.hasOutput).toBe(true);
 		});
@@ -974,7 +1109,18 @@ describe('PythonPlaygroundStore', () => {
 			pythonStore.clearOutput();
 			expect(pythonStore.hasOutput).toBe(false);
 
-			pythonStore.plotData = 'data:image/png;base64,abc';
+			pythonStore.code = 'plt.plot()';
+			pythonStore.execute();
+
+			const execMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'plot',
+				imageData: 'abc',
+				id: execMessage?.id
+			});
 
 			expect(pythonStore.hasOutput).toBe(true);
 		});
@@ -983,7 +1129,18 @@ describe('PythonPlaygroundStore', () => {
 			pythonStore.clearOutput();
 			expect(pythonStore.hasOutput).toBe(false);
 
-			pythonStore.plotlyData = JSON.stringify({ data: [], layout: {} });
+			pythonStore.code = 'import plotly';
+			pythonStore.execute();
+
+			const execMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'plotly',
+				jsonSpec: JSON.stringify({ data: [], layout: {} }),
+				id: execMessage?.id
+			});
 
 			expect(pythonStore.hasOutput).toBe(true);
 		});
@@ -992,7 +1149,18 @@ describe('PythonPlaygroundStore', () => {
 			pythonStore.clearOutput();
 			expect(pythonStore.hasOutput).toBe(false);
 
-			pythonStore.latexOutput = '\\frac{1}{2}';
+			pythonStore.code = 'import sympy';
+			pythonStore.execute();
+
+			const execMessage = MockWorker.messages.find(
+				(m) => (m as { type: string }).type === 'execute'
+			) as { id: string } | undefined;
+
+			MockWorker.instance?.simulateMessage({
+				type: 'latex',
+				latex: '\\frac{1}{2}',
+				id: execMessage?.id
+			});
 
 			expect(pythonStore.hasOutput).toBe(true);
 		});

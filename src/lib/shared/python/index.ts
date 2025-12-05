@@ -119,6 +119,13 @@ export type {
 } from './execution/types';
 
 // =============================================================================
+// Executor Classes
+// =============================================================================
+
+export { BasePythonExecutor, type ExecutorState } from './execution/base-executor.svelte';
+export { PlaygroundExecutor } from './execution/playground-executor.svelte';
+
+// =============================================================================
 // Configuration
 // =============================================================================
 
