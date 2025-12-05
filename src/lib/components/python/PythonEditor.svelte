@@ -20,9 +20,9 @@
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import type { CompletionItem } from '$lib/types/python-worker';
 
-	// Error line highlighting module references (set during lazy load)
+	// Error line highlighting - store the effect type creator for dispatching effects
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let errorLineEffectType: { of: (value: number | null) => any } | null = null;
+	let errorLineEffectType: { of: (value: number | null) => any } | null = $state(null);
 
 	// Props
 	let {
