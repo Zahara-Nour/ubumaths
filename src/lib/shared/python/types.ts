@@ -90,6 +90,114 @@ export interface ValidationResult {
 }
 
 // =============================================================================
+// Exercise Validation Types
+// =============================================================================
+
+/**
+ * Validation strategy types
+ */
+export type ValidationStrategyType = 'output' | 'unit_test' | 'ast';
+
+/**
+ * Output test case
+ */
+export interface OutputTestCase {
+	input: string;
+	expected_output: string;
+}
+
+/**
+ * Output comparison validation config
+ */
+export interface OutputValidationConfig {
+	type: 'output';
+	test_cases: OutputTestCase[];
+	ignore_whitespace?: boolean;
+	timeout_ms?: number;
+}
+
+/**
+ * Unit test case
+ */
+export interface UnitTestCase {
+	args: unknown[];
+	expected: unknown;
+}
+
+/**
+ * Unit test validation config
+ */
+export interface UnitTestValidationConfig {
+	type: 'unit_test';
+	function_name: string;
+	test_cases: UnitTestCase[];
+	timeout_ms?: number;
+}
+
+/**
+ * AST requirement types
+ */
+export type ASTRequirementType =
+	| 'uses_loop'
+	| 'uses_recursion'
+	| 'defines_function'
+	| 'defines_class'
+	| 'uses_list_comprehension'
+	| 'no_global_variables'
+	| 'no_print'
+	| 'uses_import';
+
+/**
+ * AST requirement
+ */
+export interface ASTRequirement {
+	type: ASTRequirementType;
+	name?: string;
+	message: string;
+}
+
+/**
+ * AST validation config
+ */
+export interface ASTValidationConfig {
+	type: 'ast';
+	requirements: ASTRequirement[];
+	output_tests?: OutputTestCase[];
+	timeout_ms?: number;
+}
+
+/**
+ * Union type for exercise validation configs
+ */
+export type ExerciseValidationConfig =
+	| OutputValidationConfig
+	| UnitTestValidationConfig
+	| ASTValidationConfig;
+
+/**
+ * Test case result
+ */
+export interface TestCaseResult {
+	passed: boolean;
+	input?: string;
+	expected?: string;
+	actual?: string;
+	error?: string;
+}
+
+/**
+ * Exercise validation result
+ */
+export interface ExerciseValidationResult {
+	valid: boolean;
+	strategy: ValidationStrategyType;
+	test_results: TestCaseResult[];
+	ast_issues?: string[];
+	error?: string;
+	execution_time_ms: number;
+}
+
+// =============================================================================
 // Messages: Main Thread -> Worker (Extended)
 // =============================================================================
 
@@ -168,6 +276,16 @@ export interface ValidateMessage {
 }
 
 /**
+ * Message to validate Python exercise code with various strategies
+ */
+export interface ValidateExerciseMessage {
+	type: 'validate-exercise';
+	code: string;
+	config: ExerciseValidationConfig;
+	id: string;
+}
+
+/**
  * Union type for all messages sent to the worker
  */
 export type ToWorkerMessage =
@@ -178,7 +296,8 @@ export type ToWorkerMessage =
 	| CreateContextMessage
 	| DestroyContextMessage
 	| ResetContextMessage
-	| ValidateMessage;
+	| ValidateMessage
+	| ValidateExerciseMessage;
 
 // =============================================================================
 // Messages: Worker -> Main Thread (Extended)
@@ -355,6 +474,15 @@ export interface ValidationResultMessage {
 }
 
 /**
+ * Exercise validation result from Python code validation
+ */
+export interface ExerciseValidationResultMessage {
+	type: 'validation-exercise-result';
+	result: ExerciseValidationResult;
+	id: string;
+}
+
+/**
  * Union type for all messages sent from the worker
  */
 export type FromWorkerMessage =
@@ -374,7 +502,8 @@ export type FromWorkerMessage =
 	| ContextCreatedMessage
 	| ContextDestroyedMessage
 	| ContextResetMessage
-	| ValidationResultMessage;
+	| ValidationResultMessage
+	| ExerciseValidationResultMessage;
 
 // =============================================================================
 // Pyodide Types (for worker internal use)
