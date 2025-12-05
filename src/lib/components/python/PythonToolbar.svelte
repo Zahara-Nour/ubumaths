@@ -11,7 +11,9 @@
 		Circle,
 		Share2,
 		Maximize2,
-		Minimize2
+		Minimize2,
+		Minus,
+		Plus
 	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
@@ -23,10 +25,13 @@
 		onReset,
 		onShare,
 		onToggleFullscreen,
+		onIncreaseFontSize,
+		onDecreaseFontSize,
 		canExecute,
 		isExecuting,
 		isModified = false,
-		isFullscreen = false
+		isFullscreen = false,
+		fontSize = 14
 	}: {
 		onExecute: () => void;
 		onClear: () => void;
@@ -34,10 +39,13 @@
 		onReset: () => void;
 		onShare: () => void;
 		onToggleFullscreen: () => void;
+		onIncreaseFontSize: () => void;
+		onDecreaseFontSize: () => void;
 		canExecute: boolean;
 		isExecuting: boolean;
 		isModified?: boolean;
 		isFullscreen?: boolean;
+		fontSize?: number;
 	} = $props();
 
 	// State
@@ -121,6 +129,37 @@
 		>
 			<RotateCcw class="size-4" />
 		</Button>
+
+		<!-- Font size controls -->
+		<Separator orientation="vertical" class="mx-1 h-6" />
+		<Button
+			variant="ghost"
+			size="icon"
+			onclick={onDecreaseFontSize}
+			aria-label="Réduire la taille de police"
+			title="Réduire la taille de police"
+			class="size-8"
+		>
+			<Minus class="size-4" />
+		</Button>
+		<span class="w-6 text-center text-xs text-muted-foreground">{fontSize}</span>
+		<Button
+			variant="ghost"
+			size="icon"
+			onclick={onIncreaseFontSize}
+			aria-label="Augmenter la taille de police"
+			title="Augmenter la taille de police"
+			class="size-8"
+		>
+			<Plus class="size-4" />
+		</Button>
+
+		<!-- Modified indicator -->
+		{#if isModified}
+			<span class="ml-1 text-xl font-bold text-destructive" title="Code modifié (non sauvegardé)"
+				>*</span
+			>
+		{/if}
 	</div>
 
 	<!-- Spacer -->
@@ -136,9 +175,6 @@
 		<span class="hidden sm:inline">
 			{canExecute ? 'Prêt' : 'Chargement...'}
 		</span>
-		{#if isModified}
-			<span class="font-medium text-destructive" title="Code modifié (non sauvegardé)">*</span>
-		{/if}
 	</div>
 
 	<Separator orientation="vertical" class="mx-2 h-6" />

@@ -74,6 +74,13 @@ Implementation of 8 comprehensive improvements to the Python Playground feature.
 - **Concise traceback**: Shows only essential info (file/line + error message) instead of full traceback
 - Files: `pyodide.worker.ts`, `PythonEditor.svelte`
 
+### Phase 10: Font Size Control
+
+- **Adjustable font size**: +/- buttons in toolbar to change editor font size (10-24px range, step 2px)
+- **localStorage persistence**: Font size preference saved and restored
+- **CSS variable approach**: Uses `--editor-font-size` for instant updates without editor reinitialization
+- Files: `pythonPlayground.svelte.ts`, `PythonEditor.svelte`, `PythonToolbar.svelte`, `PythonPlayground.svelte`
+
 ## Technical Details
 
 ### Svelte 5 Compliance

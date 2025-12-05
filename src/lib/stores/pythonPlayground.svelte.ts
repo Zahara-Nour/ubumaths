@@ -105,7 +105,13 @@ export type PlaygroundState =
 interface SerializedPlaygroundState {
 	code: string;
 	showPedagogicErrors: boolean;
+	fontSize?: number;
 }
+
+/** Font size bounds */
+const MIN_FONT_SIZE = 10;
+const MAX_FONT_SIZE = 24;
+const DEFAULT_FONT_SIZE = 14;
 
 // =============================================================================
 // Python Playground Store Class
@@ -173,6 +179,9 @@ class PythonPlaygroundStore {
 
 	/** Error line number for highlighting */
 	errorLine = $state<number | null>(null);
+
+	/** Editor font size in pixels */
+	fontSize = $state(DEFAULT_FONT_SIZE);
 
 	// ===========================================================================
 	// Private State
@@ -602,6 +611,26 @@ class PythonPlaygroundStore {
 	}
 
 	/**
+	 * Increase editor font size.
+	 */
+	increaseFontSize(): void {
+		if (this.fontSize < MAX_FONT_SIZE) {
+			this.fontSize = Math.min(MAX_FONT_SIZE, this.fontSize + 2);
+			this.saveToStorage();
+		}
+	}
+
+	/**
+	 * Decrease editor font size.
+	 */
+	decreaseFontSize(): void {
+		if (this.fontSize > MIN_FONT_SIZE) {
+			this.fontSize = Math.max(MIN_FONT_SIZE, this.fontSize - 2);
+			this.saveToStorage();
+		}
+	}
+
+	/**
 	 * Set the loading state and progress.
 	 *
 	 * @param state - The new state
@@ -762,6 +791,13 @@ class PythonPlaygroundStore {
 			if (typeof parsed.showPedagogicErrors === 'boolean') {
 				this.showPedagogicErrors = parsed.showPedagogicErrors;
 			}
+			if (
+				typeof parsed.fontSize === 'number' &&
+				parsed.fontSize >= MIN_FONT_SIZE &&
+				parsed.fontSize <= MAX_FONT_SIZE
+			) {
+				this.fontSize = parsed.fontSize;
+			}
 		} catch (error) {
 			console.error('Failed to load Python playground state from localStorage:', error);
 		}
@@ -784,7 +820,8 @@ class PythonPlaygroundStore {
 			try {
 				const serialized: SerializedPlaygroundState = {
 					code: this.code,
-					showPedagogicErrors: this.showPedagogicErrors
+					showPedagogicErrors: this.showPedagogicErrors,
+					fontSize: this.fontSize
 				};
 				localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
 				this._lastSavedCode = this.code;
