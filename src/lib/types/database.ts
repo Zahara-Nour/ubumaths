@@ -6102,6 +6102,7 @@ export type Database = {
 					role: Database['public']['Enums']['user_role'];
 					school_id: string | null;
 					updated_at: string;
+					python_settings: Json | null;
 					vip_cards: Json;
 					vip_cards_history: Json;
 				};
@@ -6122,6 +6123,7 @@ export type Database = {
 					role?: Database['public']['Enums']['user_role'];
 					school_id?: string | null;
 					updated_at?: string;
+					python_settings?: Json | null;
 					vip_cards?: Json;
 					vip_cards_history?: Json;
 				};
@@ -6142,6 +6144,7 @@ export type Database = {
 					role?: Database['public']['Enums']['user_role'];
 					school_id?: string | null;
 					updated_at?: string;
+					python_settings?: Json | null;
 					vip_cards?: Json;
 					vip_cards_history?: Json;
 				};

@@ -147,6 +147,7 @@
 	// Initialize Pyodide when component mounts
 	onMount(() => {
 		pythonStore.initPyodide();
+		pythonStore.initWithProfile(profile);
 
 		// Load splitter width from localStorage
 		if (browser) {

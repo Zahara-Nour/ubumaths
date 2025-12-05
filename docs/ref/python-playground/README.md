@@ -45,6 +45,8 @@ src/
 │   │   ├── +server.ts                  # GET, PUT, DELETE
 │   │   └── assign/+server.ts           # POST (assign to class)
 │   └── students/+server.ts             # GET (teacher view)
+├── routes/api/profile/
+│   └── python-settings/+server.ts      # PUT (sync settings to DB)
 ├── lib/
 │   ├── components/python/
 │   │   ├── PythonPlayground.svelte     # Main container
@@ -59,13 +61,15 @@ src/
 │   ├── stores/
 │   │   └── pythonPlayground.svelte.ts  # Reactive store (+ cloud methods)
 │   ├── server/validation/
-│   │   └── python-files.ts             # Zod schemas for API
+│   │   ├── python-files.ts             # Zod schemas for files API
+│   │   └── python-settings.ts          # Zod schemas for settings API
 │   ├── workers/
 │   │   └── pyodide.worker.ts           # Web Worker
 │   └── types/
 │       └── python-worker.ts            # TypeScript types
 supabase/migrations/
-└── 20251205100000_create_python_files.sql  # DB tables + RLS
+├── 20251205100000_create_python_files.sql     # DB tables + RLS
+└── 20251205160000_add_python_settings.sql     # Settings column in profiles
 ```
 
 ## Technology Stack
@@ -244,12 +248,31 @@ User types code
 └─────────┘
 ```
 
-## localStorage Keys
+## Settings Persistence
+
+### Anonymous Users
+
+Settings are stored in localStorage:
 
 | Key                          | Content                                                |
 | ---------------------------- | ------------------------------------------------------ |
 | `ubumaths-python-playground` | `{ code, showPedagogicErrors, fontSize, editorTheme }` |
 | `ubumaths-python-splitter`   | Splitter position (20-80%)                             |
+
+### Authenticated Users (Students & Teachers)
+
+Settings are synced to the database via `profiles.python_settings` JSONB column:
+
+```typescript
+// API: PUT /api/profile/python-settings
+{
+	editorTheme: EditorTheme; // 'default' | 'oneDark' | 'dracula' | ...
+	fontSize: number; // 10-24
+	showPedagogicErrors: boolean;
+}
+```
+
+Settings are loaded from DB on page load and synced back on change (debounced 1s).
 
 ## Configuration
 
