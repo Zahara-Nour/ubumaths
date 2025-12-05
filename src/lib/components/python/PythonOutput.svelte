@@ -5,6 +5,7 @@
 	 * Features:
 	 * - Styled stdout/stderr output
 	 * - Matplotlib plot display
+	 * - SymPy LaTeX rendering with MathLive
 	 * - Pedagogic error messages (French explanations)
 	 * - Error line number display
 	 */
@@ -12,12 +13,14 @@
 	// Imports
 	import { Button } from '$lib/components/ui/button';
 	import { Download } from 'lucide-svelte';
+	import 'mathlive';
 
 	// Props
 	let {
 		stdout = '',
 		stderr = '',
 		plotData = null as string | null,
+		latexOutput = null as string | null,
 		errorLine = null as number | null,
 		executionTime = 0,
 		showPedagogicErrors = true
@@ -25,13 +28,16 @@
 		stdout?: string;
 		stderr?: string;
 		plotData?: string | null;
+		latexOutput?: string | null;
 		errorLine?: number | null;
 		executionTime?: number;
 		showPedagogicErrors?: boolean;
 	} = $props();
 
 	// Derived state
-	let hasOutput = $derived(stdout.length > 0 || stderr.length > 0 || plotData !== null);
+	let hasOutput = $derived(
+		stdout.length > 0 || stderr.length > 0 || plotData !== null || latexOutput !== null
+	);
 
 	// Functions
 	/**
@@ -146,6 +152,20 @@
 				</div>
 				<pre
 					class="rounded bg-background p-3 font-mono text-sm whitespace-pre-wrap text-foreground">{stdout}</pre>
+			</div>
+		{/if}
+
+		{#if latexOutput}
+			<div>
+				<div class="mb-1 flex items-center gap-2">
+					<span class="text-xs font-medium text-muted-foreground">Résultat SymPy</span>
+					{#if executionTime > 0 && !stdout}
+						<span class="text-xs text-muted-foreground">({executionTime}ms)</span>
+					{/if}
+				</div>
+				<div class="rounded bg-background p-4">
+					<math-span class="block text-lg">{latexOutput}</math-span>
+				</div>
 			</div>
 		{/if}
 

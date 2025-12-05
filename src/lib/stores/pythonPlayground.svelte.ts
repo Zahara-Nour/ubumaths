@@ -7,7 +7,8 @@
 
 import { browser } from '$app/environment';
 import { z } from 'zod';
-import type { ToWorkerMessage, FromWorkerMessage } from '$lib/types/python-worker';
+import LZString from 'lz-string';
+import type { ToWorkerMessage, FromWorkerMessage, CompletionItem } from '$lib/types/python-worker';
 import { PYODIDE_CONFIG } from '$lib/types/python-worker';
 
 // =============================================================================
@@ -17,6 +18,11 @@ import { PYODIDE_CONFIG } from '$lib/types/python-worker';
 /**
  * Schema for validating messages from the worker
  */
+const completionItemSchema = z.object({
+	label: z.string(),
+	type: z.enum(['function', 'variable', 'module', 'class', 'property', 'keyword'])
+});
+
 const fromWorkerMessageSchema = z.discriminatedUnion('type', [
 	z.object({ type: z.literal('loading-progress'), percent: z.number(), stage: z.string() }),
 	z.object({ type: z.literal('pyodide-ready') }),
@@ -30,7 +36,13 @@ const fromWorkerMessageSchema = z.discriminatedUnion('type', [
 		id: z.string()
 	}),
 	z.object({ type: z.literal('complete'), id: z.string(), duration: z.number() }),
-	z.object({ type: z.literal('timeout'), id: z.string() })
+	z.object({ type: z.literal('timeout'), id: z.string() }),
+	z.object({ type: z.literal('latex'), latex: z.string(), id: z.string() }),
+	z.object({
+		type: z.literal('autocomplete-result'),
+		completions: z.array(completionItemSchema),
+		id: z.string()
+	})
 ]);
 
 // =============================================================================
@@ -44,6 +56,12 @@ const STORAGE_SAVE_DEBOUNCE_MS = 500;
 
 /** Buffer time to ensure worker timeout fires before main thread timeout (ms) */
 const TIMEOUT_BUFFER_MS = 5000;
+
+/** Timeout for autocomplete requests (ms) */
+const AUTOCOMPLETE_TIMEOUT_MS = 500;
+
+/** Debounce delay for autocomplete requests (ms) */
+const AUTOCOMPLETE_DEBOUNCE_MS = 150;
 
 const DEFAULT_CODE = `# Python Playground - UbuMaths
 # Exécute avec Ctrl+Entrée
@@ -138,6 +156,9 @@ class PythonPlaygroundStore {
 	/** Plot output as base64 PNG data URL */
 	plotData = $state<string | null>(null);
 
+	/** LaTeX output from sympy expressions */
+	latexOutput = $state<string | null>(null);
+
 	/** Loading progress (0-100) */
 	loadingProgress = $state(0);
 
@@ -175,6 +196,22 @@ class PythonPlaygroundStore {
 	/** Last saved code for tracking modifications */
 	private _lastSavedCode = $state(DEFAULT_CODE);
 
+	/** Pending autocomplete requests */
+	private pendingCompletions = new Map<
+		string,
+		{
+			resolve: (completions: CompletionItem[]) => void;
+			reject: (error: Error) => void;
+			timeout: ReturnType<typeof setTimeout>;
+		}
+	>();
+
+	/** Debounce timeout for autocomplete */
+	private autocompleteDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	/** Last autocomplete request ID for cancellation */
+	private lastAutocompleteRequestId: string | null = null;
+
 	// ===========================================================================
 	// Derived State
 	// ===========================================================================
@@ -192,7 +229,12 @@ class PythonPlaygroundStore {
 	hasError = $derived(this.state === 'error');
 
 	/** Whether there is any output to display */
-	hasOutput = $derived(this.stdout.length > 0 || this.stderr.length > 0 || this.plotData !== null);
+	hasOutput = $derived(
+		this.stdout.length > 0 ||
+			this.stderr.length > 0 ||
+			this.plotData !== null ||
+			this.latexOutput !== null
+	);
 
 	/** Whether the code has been modified from last saved state */
 	isModified = $derived(this.code !== this._lastSavedCode);
@@ -321,6 +363,12 @@ class PythonPlaygroundStore {
 				}
 				break;
 
+			case 'latex':
+				if (message.id === this.currentExecutionId) {
+					this.latexOutput = message.latex;
+				}
+				break;
+
 			case 'error':
 				if (message.id === this.currentExecutionId || message.id === '') {
 					this.stderr = message.message;
@@ -355,6 +403,22 @@ class PythonPlaygroundStore {
 					this.currentExecutionId = null;
 				}
 				break;
+
+			case 'autocomplete-result':
+				this.handleAutocompleteResult(message.id, message.completions);
+				break;
+		}
+	}
+
+	/**
+	 * Handle autocomplete result from worker
+	 */
+	private handleAutocompleteResult(id: string, completions: CompletionItem[]): void {
+		const pending = this.pendingCompletions.get(id);
+		if (pending) {
+			clearTimeout(pending.timeout);
+			pending.resolve(completions);
+			this.pendingCompletions.delete(id);
 		}
 	}
 
@@ -391,6 +455,17 @@ class PythonPlaygroundStore {
 			clearTimeout(this.saveTimeout);
 			this.saveTimeout = null;
 		}
+		// Clean up autocomplete resources
+		if (this.autocompleteDebounceTimeout) {
+			clearTimeout(this.autocompleteDebounceTimeout);
+			this.autocompleteDebounceTimeout = null;
+		}
+		// Reject all pending autocomplete requests
+		for (const [, pending] of this.pendingCompletions) {
+			clearTimeout(pending.timeout);
+			pending.reject(new Error('Worker destroyed'));
+		}
+		this.pendingCompletions.clear();
 		this.state = 'initial';
 		this.currentExecutionId = null;
 	}
@@ -456,12 +531,13 @@ class PythonPlaygroundStore {
 	}
 
 	/**
-	 * Clear all output (stdout, stderr, plotData).
+	 * Clear all output (stdout, stderr, plotData, latexOutput).
 	 */
 	clearOutput(): void {
 		this.stdout = '';
 		this.stderr = '';
 		this.plotData = null;
+		this.latexOutput = null;
 		this.executionTime = 0;
 		this.errorLine = null;
 	}
@@ -487,6 +563,36 @@ class PythonPlaygroundStore {
 	}
 
 	/**
+	 * Immediately save the current code to localStorage.
+	 * Bypasses the debounce delay to ensure instant save.
+	 *
+	 * @returns true if saved successfully
+	 */
+	saveCode(): boolean {
+		if (!browser) return false;
+
+		try {
+			// Clear existing debounce timeout
+			if (this.saveTimeout) {
+				clearTimeout(this.saveTimeout);
+				this.saveTimeout = null;
+			}
+
+			// Save immediately
+			const serialized: SerializedPlaygroundState = {
+				code: this.code,
+				showPedagogicErrors: this.showPedagogicErrors
+			};
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
+			this._lastSavedCode = this.code;
+			return true;
+		} catch (error) {
+			console.error('Failed to save Python playground state to localStorage:', error);
+			return false;
+		}
+	}
+
+	/**
 	 * Toggle pedagogic error display.
 	 */
 	togglePedagogicErrors(): void {
@@ -509,6 +615,129 @@ class PythonPlaygroundStore {
 		if (stage !== undefined) {
 			this.loadingStage = stage;
 		}
+	}
+
+	/**
+	 * Generate a shareable URL with the current code compressed in the query parameter.
+	 *
+	 * @returns The share URL with compressed code
+	 * @throws Error if code compression results in URL longer than 2000 characters
+	 */
+	generateShareUrl(): string {
+		if (!browser) return '';
+
+		const compressed = LZString.compressToEncodedURIComponent(this.code);
+
+		// Check if compressed URL is too long (safety limit for URLs)
+		if (compressed.length > 2000) {
+			throw new Error('Le code est trop long pour être partagé via URL');
+		}
+
+		const url = new URL(window.location.href);
+		url.searchParams.set('code', compressed);
+		return url.toString();
+	}
+
+	/**
+	 * Load code from a URL query parameter.
+	 *
+	 * @param url - The URL to load code from
+	 * @returns true if code was loaded successfully, false otherwise
+	 */
+	loadFromUrl(url: URL): boolean {
+		const codeParam = url.searchParams.get('code');
+		if (!codeParam) return false;
+
+		try {
+			const decompressed = LZString.decompressFromEncodedURIComponent(codeParam);
+
+			// Validate that decompression succeeded and result is non-empty
+			if (!decompressed || typeof decompressed !== 'string' || decompressed.trim().length === 0) {
+				console.warn('Failed to decompress code from URL or result is empty');
+				return false;
+			}
+
+			// Set the code
+			this.code = decompressed;
+			this._lastSavedCode = decompressed;
+
+			return true;
+		} catch (error) {
+			console.error('Error loading code from URL:', error);
+			return false;
+		}
+	}
+
+	/**
+	 * Request Python autocompletion for code at cursor position.
+	 * Uses debouncing to avoid flooding the worker with requests.
+	 *
+	 * @param code - The full Python code
+	 * @param cursor - The cursor position (character offset)
+	 * @returns Promise resolving to an array of completion items
+	 */
+	requestCompletion(code: string, cursor: number): Promise<CompletionItem[]> {
+		return new Promise((resolve) => {
+			// Validate cursor position
+			if (cursor < 0 || cursor > code.length) {
+				resolve([]);
+				return;
+			}
+
+			// Clear previous debounce timeout
+			if (this.autocompleteDebounceTimeout) {
+				clearTimeout(this.autocompleteDebounceTimeout);
+			}
+
+			// Cancel previous pending request if it exists (prevents memory leak)
+			if (this.lastAutocompleteRequestId) {
+				const oldPending = this.pendingCompletions.get(this.lastAutocompleteRequestId);
+				if (oldPending) {
+					clearTimeout(oldPending.timeout);
+					oldPending.resolve([]); // Resolve with empty array to avoid hanging promises
+					this.pendingCompletions.delete(this.lastAutocompleteRequestId);
+				}
+			}
+
+			// Debounce the request
+			this.autocompleteDebounceTimeout = setTimeout(() => {
+				this.autocompleteDebounceTimeout = null;
+
+				// Check if Pyodide is ready
+				if (!this.isReady || !this.worker) {
+					resolve([]);
+					return;
+				}
+
+				// Generate unique request ID
+				const requestId = `ac-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+				this.lastAutocompleteRequestId = requestId;
+
+				// Set up timeout for the request
+				const timeout = setTimeout(() => {
+					const pending = this.pendingCompletions.get(requestId);
+					if (pending) {
+						this.pendingCompletions.delete(requestId);
+						if (this.lastAutocompleteRequestId === requestId) {
+							this.lastAutocompleteRequestId = null;
+						}
+						// Resolve with empty array on timeout (don't reject to avoid UI errors)
+						resolve([]);
+					}
+				}, AUTOCOMPLETE_TIMEOUT_MS);
+
+				// Store the pending request
+				this.pendingCompletions.set(requestId, { resolve, reject: () => {}, timeout });
+
+				// Send request to worker
+				this.postToWorker({
+					type: 'autocomplete',
+					code,
+					cursor,
+					id: requestId
+				});
+			}, AUTOCOMPLETE_DEBOUNCE_MS);
+		});
 	}
 
 	// ===========================================================================

@@ -25,7 +25,13 @@ import { z } from 'zod';
 const toWorkerMessageSchema = z.discriminatedUnion('type', [
 	z.object({ type: z.literal('init') }),
 	z.object({ type: z.literal('execute'), code: z.string(), id: z.string() }),
-	z.object({ type: z.literal('cancel'), id: z.string() })
+	z.object({ type: z.literal('cancel'), id: z.string() }),
+	z.object({
+		type: z.literal('autocomplete'),
+		code: z.string(),
+		cursor: z.number().int().nonnegative(),
+		id: z.string()
+	})
 ]);
 
 // =============================================================================
@@ -159,6 +165,112 @@ def _ubumaths_cleanup():
     """Clean up matplotlib figures and run garbage collection."""
     plt.close('all')
     gc.collect()
+
+# Helper function to check if result is a sympy expression and convert to LaTeX
+def _ubumaths_check_sympy_result(result):
+    """Check if result is a sympy expression and convert to LaTeX."""
+    if result is None:
+        return None
+    try:
+        # Check if it's a sympy Basic type (base class for all sympy expressions)
+        if hasattr(result, '__class__') and hasattr(result.__class__, '__module__'):
+            if result.__class__.__module__.startswith('sympy'):
+                import sympy
+                latex_str = sympy.latex(result)
+                # Return None if LaTeX conversion produces empty string
+                return latex_str if latex_str and latex_str.strip() else None
+    except:
+        pass
+    return None
+
+# Helper function for Python autocompletion
+def _ubumaths_get_completions(code, cursor_pos):
+    """Get completions for Python code at cursor position."""
+    import re
+    import builtins
+
+    MAX_COMPLETIONS = 50
+
+    # Find the word/prefix being typed at cursor position
+    code_before_cursor = code[:cursor_pos]
+
+    # Pattern: find the last identifier or dotted path
+    # e.g., "np.li" -> should complete "np.li"
+    # eslint-disable-next-line no-useless-escape
+    match = re.search(r'([a-zA-Z_][a-zA-Z0-9_]*(?:[.][a-zA-Z_][a-zA-Z0-9_]*)*)[.]?([a-zA-Z_][a-zA-Z0-9_]*)?$', code_before_cursor)
+
+    if not match:
+        return []
+
+    full_match = match.group(0)
+
+    # Helper to determine completion type
+    def get_type(obj):
+        try:
+            if isinstance(obj, type):
+                return 'class'
+            elif callable(obj):
+                return 'function'
+            elif isinstance(obj, type(re)):  # module type
+                return 'module'
+            else:
+                return 'variable'
+        except:
+            return 'property'
+
+    # Check if we're completing after a dot
+    if '.' in full_match:
+        parts = full_match.split('.')
+        obj_path = '.'.join(parts[:-1])
+        prefix = parts[-1] if len(parts) > 1 else ''
+
+        # Try to get the object
+        try:
+            obj = eval(obj_path, globals())
+            attrs = dir(obj)
+            completions = []
+            for attr in attrs:
+                if attr.startswith(prefix) and not attr.startswith('_'):
+                    try:
+                        val = getattr(obj, attr)
+                        comp_type = get_type(val)
+                    except:
+                        comp_type = 'property'
+                    completions.append({'label': attr, 'type': comp_type})
+            return completions[:MAX_COMPLETIONS]
+        except:
+            return []
+    else:
+        # Complete from global namespace
+        prefix = full_match
+        completions = []
+
+        # Check globals and builtins
+        all_names = set(globals().keys())
+
+        # Add builtins
+        builtin_names = dir(builtins)
+        all_names.update(builtin_names)
+
+        for name in all_names:
+            if name.startswith(prefix) and not name.startswith('_'):
+                try:
+                    if name in globals():
+                        val = globals()[name]
+                    else:
+                        val = getattr(builtins, name, None)
+                    comp_type = get_type(val) if val is not None else 'variable'
+                except:
+                    comp_type = 'variable'
+                completions.append({'label': name, 'type': comp_type})
+
+        # Add Python keywords
+        import keyword
+        for kw in keyword.kwlist:
+            if kw.startswith(prefix):
+                completions.append({'label': kw, 'type': 'keyword'})
+
+        return completions[:MAX_COMPLETIONS]
 `);
 
 		// Stage 5: Ready
@@ -234,8 +346,42 @@ sys.stdout = _ubumaths_stdout
 sys.stderr = _ubumaths_stderr
 `);
 
-		// Execute the user code
-		await pyodide.runPythonAsync(code);
+		// Execute the user code and capture the last expression result for sympy detection
+		// We use compile() with 'single' mode to get REPL-like behavior where
+		// the last expression value is available
+		await pyodide.runPythonAsync(`
+import ast
+
+_ubumaths_last_result = None
+_ubumaths_user_code = ${JSON.stringify(code)}
+
+# Parse the code to separate statements from the final expression
+try:
+    _ubumaths_tree = ast.parse(_ubumaths_user_code)
+
+    if _ubumaths_tree.body:
+        # Check if the last item is an expression (not assignment, etc.)
+        _ubumaths_last_node = _ubumaths_tree.body[-1]
+
+        if isinstance(_ubumaths_last_node, ast.Expr):
+            # Execute all but the last statement
+            if len(_ubumaths_tree.body) > 1:
+                _ubumaths_init_tree = ast.Module(body=_ubumaths_tree.body[:-1], type_ignores=[])
+                exec(compile(_ubumaths_init_tree, '<exec>', 'exec'))
+
+            # Evaluate the last expression and capture result
+            _ubumaths_expr_tree = ast.Expression(body=_ubumaths_last_node.value)
+            _ubumaths_last_result = eval(compile(_ubumaths_expr_tree, '<expr>', 'eval'))
+        else:
+            # No trailing expression, just execute everything
+            exec(_ubumaths_user_code)
+    else:
+        # Empty code
+        pass
+except SyntaxError:
+    # If parsing fails, just execute normally
+    exec(_ubumaths_user_code)
+`);
 
 		// Check if this execution was cancelled
 		if (currentExecutionId !== id) {
@@ -262,6 +408,14 @@ _stderr_value
 
 		if (stderr && stderr.trim()) {
 			postMessage({ type: 'stderr', data: stderr, id });
+		}
+
+		// Check for sympy LaTeX output
+		const latexResult = pyodide.runPython('_ubumaths_check_sympy_result(_ubumaths_last_result)') as
+			| string
+			| null;
+		if (latexResult) {
+			postMessage({ type: 'latex', latex: latexResult, id });
 		}
 
 		// Check for plots
@@ -327,6 +481,98 @@ function cancelExecution(id: string): void {
 }
 
 // =============================================================================
+// Autocompletion
+// =============================================================================
+
+/**
+ * Handle autocompletion request
+ */
+async function handleAutocomplete(code: string, cursor: number, id: string): Promise<void> {
+	if (!pyodide) {
+		postMessage({
+			type: 'autocomplete-result',
+			completions: [],
+			id
+		});
+		return;
+	}
+
+	try {
+		// Validate cursor position against code length
+		if (cursor < 0 || cursor > code.length) {
+			postMessage({ type: 'autocomplete-result', completions: [], id });
+			return;
+		}
+
+		// Set the code and cursor position for the Python helper
+		pyodide.globals.set('_ubumaths_autocomplete_code', code);
+		pyodide.globals.set('_ubumaths_autocomplete_cursor', cursor);
+
+		// Call the Python completion function
+		const result = await pyodide.runPythonAsync(`
+_ubumaths_get_completions(_ubumaths_autocomplete_code, _ubumaths_autocomplete_cursor)
+`);
+
+		// Convert PyProxy to JavaScript - result should be unknown
+		const jsResult = (result as { toJs(): unknown }).toJs();
+
+		// Validate that result is an array
+		if (!Array.isArray(jsResult)) {
+			console.warn('[Pyodide Worker] Autocomplete returned non-array:', jsResult);
+			postMessage({ type: 'autocomplete-result', completions: [], id });
+			return;
+		}
+
+		// Map and validate each item with runtime checks
+		const validTypes = ['function', 'variable', 'module', 'class', 'property', 'keyword'];
+		const safeCompletions: Array<{
+			label: string;
+			type: 'function' | 'variable' | 'module' | 'class' | 'property' | 'keyword';
+		}> = [];
+
+		for (const item of jsResult) {
+			// Validate item structure
+			if (
+				item &&
+				typeof item === 'object' &&
+				'label' in item &&
+				'type' in item &&
+				typeof (item as Record<string, unknown>).label === 'string' &&
+				typeof (item as Record<string, unknown>).type === 'string'
+			) {
+				const itemType = validTypes.includes((item as Record<string, unknown>).type as string)
+					? ((item as Record<string, unknown>).type as
+							| 'function'
+							| 'variable'
+							| 'module'
+							| 'class'
+							| 'property'
+							| 'keyword')
+					: 'variable'; // fallback to variable
+
+				safeCompletions.push({
+					label: (item as Record<string, unknown>).label as string,
+					type: itemType
+				});
+			}
+		}
+
+		postMessage({
+			type: 'autocomplete-result',
+			completions: safeCompletions,
+			id
+		});
+	} catch (error) {
+		console.warn('[Pyodide Worker] Autocomplete error:', error);
+		postMessage({
+			type: 'autocomplete-result',
+			completions: [],
+			id
+		});
+	}
+}
+
+// =============================================================================
 // Message Handler
 // =============================================================================
 
@@ -351,6 +597,10 @@ self.onmessage = async (event: MessageEvent<unknown>) => {
 
 		case 'cancel':
 			cancelExecution(message.id);
+			break;
+
+		case 'autocomplete':
+			await handleAutocomplete(message.code, message.cursor, message.id);
 			break;
 	}
 };

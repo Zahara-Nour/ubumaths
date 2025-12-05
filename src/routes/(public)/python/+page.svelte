@@ -1,5 +1,21 @@
 <script lang="ts">
 	import PythonPlayground from '$lib/components/python/PythonPlayground.svelte';
+	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+
+	// Load code from URL on mount
+	onMount(() => {
+		if (browser && window.location.search.includes('code=')) {
+			const url = new URL(window.location.href);
+			const loaded = pythonStore.loadFromUrl(url);
+
+			// Clear the URL parameter after loading to keep URL clean
+			if (loaded) {
+				window.history.replaceState({}, '', window.location.pathname);
+			}
+		}
+	});
 </script>
 
 <svelte:head>

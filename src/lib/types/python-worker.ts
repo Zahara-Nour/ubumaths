@@ -58,9 +58,19 @@ export interface CancelMessage {
 }
 
 /**
+ * Message to request autocompletion suggestions
+ */
+export interface AutocompleteMessage {
+	type: 'autocomplete';
+	code: string;
+	cursor: number;
+	id: string;
+}
+
+/**
  * Union type for all messages sent to the worker
  */
-export type ToWorkerMessage = InitMessage | ExecuteMessage | CancelMessage;
+export type ToWorkerMessage = InitMessage | ExecuteMessage | CancelMessage | AutocompleteMessage;
 
 // =============================================================================
 // Messages: Worker -> Main Thread
@@ -137,6 +147,32 @@ export interface TimeoutMessage {
 }
 
 /**
+ * LaTeX output from sympy expressions
+ */
+export interface LatexMessage {
+	type: 'latex';
+	latex: string;
+	id: string;
+}
+
+/**
+ * Completion item from Python autocompletion
+ */
+export interface CompletionItem {
+	label: string;
+	type: 'function' | 'variable' | 'module' | 'class' | 'property' | 'keyword';
+}
+
+/**
+ * Autocompletion result from Python
+ */
+export interface AutocompleteResultMessage {
+	type: 'autocomplete-result';
+	completions: CompletionItem[];
+	id: string;
+}
+
+/**
  * Union type for all messages sent from the worker
  */
 export type FromWorkerMessage =
@@ -147,7 +183,9 @@ export type FromWorkerMessage =
 	| PlotMessage
 	| ErrorMessage
 	| CompleteMessage
-	| TimeoutMessage;
+	| TimeoutMessage
+	| LatexMessage
+	| AutocompleteResultMessage;
 
 // =============================================================================
 // Pyodide Types (for worker internal use)

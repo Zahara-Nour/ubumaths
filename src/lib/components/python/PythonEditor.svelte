@@ -4,7 +4,7 @@
 	 *
 	 * Features:
 	 * - Python syntax highlighting
-	 * - Autocompletion
+	 * - Intelligent Python autocompletion via Pyodide
 	 * - Line numbers
 	 * - Theme switching (light/dark)
 	 * - Keyboard shortcuts
@@ -16,19 +16,91 @@
 	import { browser } from '$app/environment';
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension } from '@codemirror/state';
+	import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';
+	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
+	import type { CompletionItem } from '$lib/types/python-worker';
 
 	// Props
 	let {
 		value = $bindable(''),
 		errorLine = null as number | null,
 		disabled = false,
-		onExecute = () => {}
+		onExecute = () => {},
+		onSave = () => {}
 	}: {
 		value?: string;
 		errorLine?: number | null;
 		disabled?: boolean;
 		onExecute?: () => void;
+		onSave?: () => void;
 	} = $props();
+
+	/**
+	 * Map Python completion types to CodeMirror completion types
+	 */
+	function mapCompletionType(
+		pythonType: CompletionItem['type']
+	): 'function' | 'variable' | 'class' | 'keyword' | 'property' | 'namespace' {
+		switch (pythonType) {
+			case 'function':
+				return 'function';
+			case 'variable':
+				return 'variable';
+			case 'class':
+				return 'class';
+			case 'keyword':
+				return 'keyword';
+			case 'module':
+				return 'namespace';
+			case 'property':
+				return 'property';
+			default:
+				return 'variable';
+		}
+	}
+
+	/**
+	 * Python completion source for CodeMirror
+	 * Fetches completions from Pyodide via the store
+	 */
+	async function pythonCompletions(context: CompletionContext): Promise<CompletionResult | null> {
+		const { pos, state } = context;
+		const code = state.doc.toString();
+
+		// Find the word/identifier being typed before cursor
+		const word = context.matchBefore(/[\w.]+/);
+		if (!word || word.from === word.to) return null;
+
+		// Don't trigger in comments or strings (basic check)
+		const lineStart = state.doc.lineAt(pos).from;
+		const lineText = state.doc.sliceString(lineStart, pos);
+		if (lineText.includes('#')) {
+			// Check if cursor is after the comment marker
+			const commentIndex = lineText.indexOf('#');
+			if (pos - lineStart > commentIndex) return null;
+		}
+
+		try {
+			const completions = await pythonStore.requestCompletion(code, pos);
+
+			if (completions.length === 0) return null;
+
+			// Map to CodeMirror Completion format
+			const options: Completion[] = completions.map((c) => ({
+				label: c.label,
+				type: mapCompletionType(c.type)
+			}));
+
+			return {
+				from: word.from,
+				options,
+				validFor: /^[\w.]*$/
+			};
+		} catch (error) {
+			console.warn('[PythonEditor] Completion error:', error);
+			return null;
+		}
+	}
 
 	// State
 	let editorContainer: HTMLDivElement | null = null;
@@ -95,7 +167,11 @@
 				history(),
 				bracketMatching(),
 				closeBrackets(),
-				autocompletion(),
+				autocompletion({
+					override: [pythonCompletions],
+					activateOnTyping: true,
+					maxRenderedOptions: 30
+				}),
 				indentOnInput(),
 				python(),
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
@@ -110,6 +186,15 @@
 						mac: 'Cmd-Enter',
 						run: () => {
 							onExecute();
+							return true;
+						}
+					},
+					{
+						key: 'Ctrl-s',
+						mac: 'Cmd-s',
+						preventDefault: true,
+						run: () => {
+							onSave();
 							return true;
 						}
 					}
