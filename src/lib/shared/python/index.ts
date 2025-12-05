@@ -41,6 +41,19 @@ export type {
 	ValidationConfig,
 	ValidationResult,
 
+	// Exercise validation types
+	ValidationStrategyType,
+	OutputTestCase,
+	OutputValidationConfig,
+	UnitTestCase,
+	UnitTestValidationConfig,
+	ASTRequirementType,
+	ASTRequirement,
+	ASTValidationConfig,
+	ExerciseValidationConfig,
+	TestCaseResult,
+	ExerciseValidationResult,
+
 	// Messages to worker
 	InitMessage,
 	ExecuteMessage,
@@ -50,6 +63,7 @@ export type {
 	DestroyContextMessage,
 	ResetContextMessage,
 	ValidateMessage,
+	ValidateExerciseMessage,
 	ToWorkerMessage,
 
 	// Messages from worker
@@ -72,6 +86,7 @@ export type {
 	ContextDestroyedMessage,
 	ContextResetMessage,
 	ValidationResultMessage,
+	ExerciseValidationResultMessage,
 	FromWorkerMessage,
 
 	// Pyodide types
@@ -157,6 +172,7 @@ export {
 	destroyContextMessageSchema,
 	resetContextMessageSchema,
 	validateMessageSchema,
+	validateExerciseMessageSchema,
 	toWorkerMessageSchema,
 
 	// From worker message schemas
@@ -177,12 +193,26 @@ export {
 	contextDestroyedMessageSchema,
 	contextResetMessageSchema,
 	validationResultMessageSchema,
+	exerciseValidationResultMessageSchema,
 	fromWorkerMessageSchema,
 
 	// Validation schemas
 	validationConfigSchema as workerValidationConfigSchema,
 	validationIssueSchema as workerValidationIssueSchema,
-	validationResultSchema as workerValidationResultSchema
+	validationResultSchema as workerValidationResultSchema,
+
+	// Exercise validation schemas
+	outputTestCaseSchema,
+	outputValidationConfigSchema,
+	unitTestCaseSchema,
+	unitTestValidationConfigSchema,
+	astRequirementTypeSchema,
+	astRequirementSchema,
+	astValidationConfigSchema,
+	exerciseValidationConfigSchema,
+	testCaseResultSchema,
+	validationStrategyTypeSchema,
+	exerciseValidationResultSchema
 } from './worker/messages';
 
 // =============================================================================

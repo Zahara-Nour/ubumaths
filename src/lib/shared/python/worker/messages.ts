@@ -124,6 +124,107 @@ export const validateMessageSchema = z.object({
 	id: executionIdSchema
 });
 
+// =============================================================================
+// Exercise Validation Schemas (Output, Unit Test, AST)
+// =============================================================================
+
+/**
+ * Output test case schema
+ */
+export const outputTestCaseSchema = z.object({
+	input: z.string().max(100_000),
+	expected_output: z.string().max(100_000)
+});
+
+/**
+ * Output validation config schema
+ */
+export const outputValidationConfigSchema = z.object({
+	type: z.literal('output'),
+	test_cases: z.array(outputTestCaseSchema).min(1).max(50),
+	ignore_whitespace: z.boolean().optional().default(false),
+	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
+});
+
+/**
+ * Unit test case schema
+ */
+export const unitTestCaseSchema = z.object({
+	args: z.array(z.unknown()).max(20),
+	expected: z.unknown()
+});
+
+/**
+ * Unit test validation config schema
+ */
+export const unitTestValidationConfigSchema = z.object({
+	type: z.literal('unit_test'),
+	function_name: z
+		.string()
+		.min(1)
+		.max(100)
+		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Function name must be a valid Python identifier'),
+	test_cases: z.array(unitTestCaseSchema).min(1).max(50),
+	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
+});
+
+/**
+ * AST requirement type schema
+ */
+export const astRequirementTypeSchema = z.enum([
+	'uses_loop',
+	'uses_recursion',
+	'defines_function',
+	'defines_class',
+	'uses_list_comprehension',
+	'no_global_variables',
+	'no_print',
+	'uses_import'
+]);
+
+/**
+ * AST requirement schema
+ */
+export const astRequirementSchema = z.object({
+	type: astRequirementTypeSchema,
+	name: z
+		.string()
+		.min(1)
+		.max(100)
+		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Name must be a valid Python identifier')
+		.optional(),
+	message: z.string().min(1).max(500)
+});
+
+/**
+ * AST validation config schema
+ */
+export const astValidationConfigSchema = z.object({
+	type: z.literal('ast'),
+	requirements: z.array(astRequirementSchema).min(1).max(20),
+	output_tests: z.array(outputTestCaseSchema).max(50).optional(),
+	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
+});
+
+/**
+ * Exercise validation config - discriminated union
+ */
+export const exerciseValidationConfigSchema = z.discriminatedUnion('type', [
+	outputValidationConfigSchema,
+	unitTestValidationConfigSchema,
+	astValidationConfigSchema
+]);
+
+/**
+ * Validate exercise message schema
+ */
+export const validateExerciseMessageSchema = z.object({
+	type: z.literal('validate-exercise'),
+	code: codeSchema,
+	config: exerciseValidationConfigSchema,
+	id: executionIdSchema
+});
+
 /**
  * Union schema for all messages sent to the worker
  */
@@ -135,7 +236,8 @@ export const toWorkerMessageSchema = z.discriminatedUnion('type', [
 	createContextMessageSchema,
 	destroyContextMessageSchema,
 	resetContextMessageSchema,
-	validateMessageSchema
+	validateMessageSchema,
+	validateExerciseMessageSchema
 ]);
 
 // =============================================================================
@@ -327,6 +429,43 @@ export const validationResultMessageSchema = z.object({
 });
 
 /**
+ * Test case result schema (for exercise validation)
+ */
+export const testCaseResultSchema = z.object({
+	passed: z.boolean(),
+	input: z.string().optional(),
+	expected: z.string().optional(),
+	actual: z.string().optional(),
+	error: z.string().optional()
+});
+
+/**
+ * Validation strategy type schema
+ */
+export const validationStrategyTypeSchema = z.enum(['output', 'unit_test', 'ast']);
+
+/**
+ * Exercise validation result schema
+ */
+export const exerciseValidationResultSchema = z.object({
+	valid: z.boolean(),
+	strategy: validationStrategyTypeSchema,
+	test_results: z.array(testCaseResultSchema),
+	ast_issues: z.array(z.string()).optional(),
+	error: z.string().optional(),
+	execution_time_ms: z.number().int().min(0)
+});
+
+/**
+ * Exercise validation result message schema
+ */
+export const exerciseValidationResultMessageSchema = z.object({
+	type: z.literal('validation-exercise-result'),
+	result: exerciseValidationResultSchema,
+	id: executionIdSchema
+});
+
+/**
  * Union schema for all messages sent from the worker
  */
 export const fromWorkerMessageSchema = z.discriminatedUnion('type', [
@@ -346,7 +485,8 @@ export const fromWorkerMessageSchema = z.discriminatedUnion('type', [
 	contextCreatedMessageSchema,
 	contextDestroyedMessageSchema,
 	contextResetMessageSchema,
-	validationResultMessageSchema
+	validationResultMessageSchema,
+	exerciseValidationResultMessageSchema
 ]);
 
 // =============================================================================
@@ -361,6 +501,7 @@ export type CreateContextMessageSchema = z.infer<typeof createContextMessageSche
 export type DestroyContextMessageSchema = z.infer<typeof destroyContextMessageSchema>;
 export type ResetContextMessageSchema = z.infer<typeof resetContextMessageSchema>;
 export type ValidateMessageSchema = z.infer<typeof validateMessageSchema>;
+export type ValidateExerciseMessageSchema = z.infer<typeof validateExerciseMessageSchema>;
 export type ToWorkerMessageSchema = z.infer<typeof toWorkerMessageSchema>;
 
 export type LoadingProgressMessageSchema = z.infer<typeof loadingProgressMessageSchema>;
@@ -368,4 +509,18 @@ export type ValidationConfigSchema = z.infer<typeof validationConfigSchema>;
 export type ValidationIssueSchema = z.infer<typeof validationIssueSchema>;
 export type ValidationResultSchema = z.infer<typeof validationResultSchema>;
 export type ValidationResultMessageSchema = z.infer<typeof validationResultMessageSchema>;
+export type OutputTestCaseSchema = z.infer<typeof outputTestCaseSchema>;
+export type OutputValidationConfigSchema = z.infer<typeof outputValidationConfigSchema>;
+export type UnitTestCaseSchema = z.infer<typeof unitTestCaseSchema>;
+export type UnitTestValidationConfigSchema = z.infer<typeof unitTestValidationConfigSchema>;
+export type ASTRequirementTypeSchema = z.infer<typeof astRequirementTypeSchema>;
+export type ASTRequirementSchema = z.infer<typeof astRequirementSchema>;
+export type ASTValidationConfigSchema = z.infer<typeof astValidationConfigSchema>;
+export type ExerciseValidationConfigSchema = z.infer<typeof exerciseValidationConfigSchema>;
+export type TestCaseResultSchema = z.infer<typeof testCaseResultSchema>;
+export type ValidationStrategyTypeSchema = z.infer<typeof validationStrategyTypeSchema>;
+export type ExerciseValidationResultSchema = z.infer<typeof exerciseValidationResultSchema>;
+export type ExerciseValidationResultMessageSchema = z.infer<
+	typeof exerciseValidationResultMessageSchema
+>;
 export type FromWorkerMessageSchema = z.infer<typeof fromWorkerMessageSchema>;

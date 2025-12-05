@@ -18,7 +18,13 @@ import type {
 	PyProxy,
 	ValidationConfig,
 	ValidationResult,
-	ValidationIssue
+	ValidationIssue,
+	ExerciseValidationConfig,
+	ExerciseValidationResult,
+	TestCaseResult,
+	OutputValidationConfig,
+	UnitTestValidationConfig,
+	ASTValidationConfig
 } from '$lib/shared/python';
 import {
 	PYODIDE_CONFIG,
@@ -1275,6 +1281,459 @@ async function validateCode(code: string, config: ValidationConfig, id: string):
 }
 
 // =============================================================================
+// Exercise Validation
+// =============================================================================
+
+/**
+ * Validate Python exercise code using various strategies
+ */
+async function validateExercise(
+	code: string,
+	config: ExerciseValidationConfig,
+	id: string
+): Promise<void> {
+	if (!pyodide) {
+		postMessage({
+			type: 'error',
+			message: ERROR_MESSAGES.PYODIDE_NOT_READY,
+			id
+		});
+		return;
+	}
+
+	const startTime = performance.now();
+	const timeout = config.timeout_ms || 5000;
+
+	try {
+		// Set up timeout
+		const timeoutPromise = new Promise<never>((_, reject) => {
+			setTimeout(() => reject(new Error('Timeout')), timeout);
+		});
+
+		// Run validation based on strategy type
+		const validationPromise = (async () => {
+			switch (config.type) {
+				case 'output':
+					return await validateOutputComparison(code, config);
+				case 'unit_test':
+					return await validateUnitTests(code, config);
+				case 'ast':
+					return await validateAST(code, config);
+			}
+		})();
+
+		const result = await Promise.race([validationPromise, timeoutPromise]);
+
+		// Add execution time
+		result.execution_time_ms = Math.round(performance.now() - startTime);
+
+		postMessage({
+			type: 'validation-exercise-result',
+			result,
+			id
+		});
+	} catch (error) {
+		const executionTime = Math.round(performance.now() - startTime);
+
+		if (error instanceof Error && error.message === 'Timeout') {
+			postMessage({
+				type: 'validation-exercise-result',
+				result: {
+					valid: false,
+					strategy: config.type,
+					test_results: [],
+					error: "Délai d'exécution dépassé",
+					execution_time_ms: executionTime
+				},
+				id
+			});
+		} else {
+			postMessage({
+				type: 'validation-exercise-result',
+				result: {
+					valid: false,
+					strategy: config.type,
+					test_results: [],
+					error: error instanceof Error ? error.message : String(error),
+					execution_time_ms: executionTime
+				},
+				id
+			});
+		}
+	}
+}
+
+/**
+ * Validate using output comparison strategy
+ */
+async function validateOutputComparison(
+	code: string,
+	config: OutputValidationConfig
+): Promise<ExerciseValidationResult> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	const testResults: TestCaseResult[] = [];
+	let allPassed = true;
+
+	for (const testCase of config.test_cases) {
+		try {
+			// Set up stdin redirection with test input
+			await pyodide.runPythonAsync(`
+import sys
+from io import StringIO
+
+_ubumaths_test_stdin = StringIO(${JSON.stringify(testCase.input)})
+_ubumaths_test_stdout = StringIO()
+_ubumaths_old_stdin = sys.stdin
+_ubumaths_old_stdout = sys.stdout
+sys.stdin = _ubumaths_test_stdin
+sys.stdout = _ubumaths_test_stdout
+`);
+
+			// Execute student code
+			await pyodide.runPythonAsync(code);
+
+			// Capture output
+			const actualOutput = (await pyodide.runPythonAsync(`
+_actual = _ubumaths_test_stdout.getvalue()
+sys.stdin = _ubumaths_old_stdin
+sys.stdout = _ubumaths_old_stdout
+_actual
+`)) as string;
+
+			// Compare outputs
+			const expected = config.ignore_whitespace
+				? testCase.expected_output.trim()
+				: testCase.expected_output;
+			const actual = config.ignore_whitespace ? actualOutput.trim() : actualOutput;
+
+			const passed = expected === actual;
+			allPassed = allPassed && passed;
+
+			testResults.push({
+				passed,
+				input: testCase.input,
+				expected: testCase.expected_output,
+				actual: actualOutput
+			});
+		} catch (error) {
+			allPassed = false;
+			testResults.push({
+				passed: false,
+				input: testCase.input,
+				expected: testCase.expected_output,
+				error: error instanceof Error ? error.message : String(error)
+			});
+
+			// Clean up on error
+			try {
+				await pyodide.runPythonAsync(`
+sys.stdin = _ubumaths_old_stdin
+sys.stdout = _ubumaths_old_stdout
+`);
+			} catch {
+				// Ignore cleanup errors
+			}
+		}
+	}
+
+	return {
+		valid: allPassed,
+		strategy: 'output',
+		test_results: testResults,
+		execution_time_ms: 0 // Will be set by caller
+	};
+}
+
+/**
+ * Validate using unit test strategy
+ */
+async function validateUnitTests(
+	code: string,
+	config: UnitTestValidationConfig
+): Promise<ExerciseValidationResult> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	const testResults: TestCaseResult[] = [];
+	let allPassed = true;
+
+	try {
+		// Execute student code to define the function
+		await pyodide.runPythonAsync(code);
+
+		// Verify function exists
+		const functionExists = (await pyodide.runPythonAsync(
+			`'${config.function_name}' in dir()`
+		)) as boolean;
+
+		if (!functionExists) {
+			return {
+				valid: false,
+				strategy: 'unit_test',
+				test_results: [
+					{
+						passed: false,
+						error: `La fonction '${config.function_name}' n'est pas définie`
+					}
+				],
+				execution_time_ms: 0
+			};
+		}
+
+		// Run test cases
+		for (const testCase of config.test_cases) {
+			try {
+				// Set up test in Python
+				pyodide.globals.set('_ubumaths_test_args', testCase.args);
+				pyodide.globals.set('_ubumaths_test_expected', testCase.expected);
+
+				// Call function and compare result
+				const result = (await pyodide.runPythonAsync(`
+import json
+_args = _ubumaths_test_args
+_expected = _ubumaths_test_expected
+_actual = ${config.function_name}(*_args)
+_passed = _actual == _expected
+{
+    'passed': _passed,
+    'actual': _actual,
+    'expected': _expected
+}
+`)) as PyProxy;
+
+				const jsResult = result.toJs() as {
+					passed: boolean;
+					actual: unknown;
+					expected: unknown;
+				};
+
+				// Clean up PyProxy
+				if (typeof (result as { destroy?: () => void }).destroy === 'function') {
+					(result as { destroy: () => void }).destroy();
+				}
+
+				allPassed = allPassed && jsResult.passed;
+
+				testResults.push({
+					passed: jsResult.passed,
+					expected: JSON.stringify(jsResult.expected),
+					actual: JSON.stringify(jsResult.actual),
+					input: `${config.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`
+				});
+
+				// Clean up globals
+				pyodide.globals.delete('_ubumaths_test_args');
+				pyodide.globals.delete('_ubumaths_test_expected');
+			} catch (error) {
+				allPassed = false;
+				testResults.push({
+					passed: false,
+					input: `${config.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`,
+					expected: JSON.stringify(testCase.expected),
+					error: error instanceof Error ? error.message : String(error)
+				});
+
+				// Clean up globals on error
+				try {
+					pyodide.globals.delete('_ubumaths_test_args');
+					pyodide.globals.delete('_ubumaths_test_expected');
+				} catch {
+					// Ignore cleanup errors
+				}
+			}
+		}
+	} catch (error) {
+		return {
+			valid: false,
+			strategy: 'unit_test',
+			test_results: [
+				{
+					passed: false,
+					error: error instanceof Error ? error.message : String(error)
+				}
+			],
+			execution_time_ms: 0
+		};
+	}
+
+	return {
+		valid: allPassed,
+		strategy: 'unit_test',
+		test_results: testResults,
+		execution_time_ms: 0
+	};
+}
+
+/**
+ * Validate using AST analysis strategy
+ */
+async function validateAST(
+	code: string,
+	config: ASTValidationConfig
+): Promise<ExerciseValidationResult> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	const astIssues: string[] = [];
+
+	// Check AST requirements
+	for (const requirement of config.requirements) {
+		try {
+			pyodide.globals.set('_ubumaths_ast_code', code);
+			pyodide.globals.set('_ubumaths_ast_requirement_type', requirement.type);
+			pyodide.globals.set('_ubumaths_ast_requirement_name', requirement.name || '');
+
+			const passed = (await pyodide.runPythonAsync(`
+import ast
+
+_code = _ubumaths_ast_code
+_req_type = _ubumaths_ast_requirement_type
+_req_name = _ubumaths_ast_requirement_name
+_passed = False
+
+try:
+    _tree = ast.parse(_code)
+
+    if _req_type == 'uses_loop':
+        # Check for For or While loops
+        for node in ast.walk(_tree):
+            if isinstance(node, (ast.For, ast.While)):
+                _passed = True
+                break
+
+    elif _req_type == 'uses_recursion':
+        # Check if function calls itself
+        for node in ast.walk(_tree):
+            if isinstance(node, ast.FunctionDef):
+                func_name = node.name
+                for child in ast.walk(node):
+                    if isinstance(child, ast.Call):
+                        if isinstance(child.func, ast.Name) and child.func.id == func_name:
+                            _passed = True
+                            break
+
+    elif _req_type == 'defines_function':
+        # Check for function definition with specific name
+        for node in ast.walk(_tree):
+            if isinstance(node, ast.FunctionDef):
+                if _req_name and node.name == _req_name:
+                    _passed = True
+                    break
+                elif not _req_name:
+                    _passed = True
+                    break
+
+    elif _req_type == 'defines_class':
+        # Check for class definition with specific name
+        for node in ast.walk(_tree):
+            if isinstance(node, ast.ClassDef):
+                if _req_name and node.name == _req_name:
+                    _passed = True
+                    break
+                elif not _req_name:
+                    _passed = True
+                    break
+
+    elif _req_type == 'uses_list_comprehension':
+        # Check for list comprehension
+        for node in ast.walk(_tree):
+            if isinstance(node, ast.ListComp):
+                _passed = True
+                break
+
+    elif _req_type == 'no_global_variables':
+        # Check for assignments outside functions
+        _has_global_vars = False
+        for node in _tree.body:
+            if isinstance(node, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
+                _has_global_vars = True
+                break
+        _passed = not _has_global_vars
+
+    elif _req_type == 'no_print':
+        # Check for print() calls
+        _has_print = False
+        for node in ast.walk(_tree):
+            if isinstance(node, ast.Call):
+                if isinstance(node.func, ast.Name) and node.func.id == 'print':
+                    _has_print = True
+                    break
+        _passed = not _has_print
+
+    elif _req_type == 'uses_import':
+        # Check for import of specific module
+        for node in ast.walk(_tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if _req_name and alias.name == _req_name:
+                        _passed = True
+                        break
+                    elif not _req_name:
+                        _passed = True
+                        break
+            elif isinstance(node, ast.ImportFrom):
+                if _req_name and node.module == _req_name:
+                    _passed = True
+                    break
+                elif not _req_name:
+                    _passed = True
+                    break
+
+except SyntaxError:
+    _passed = False
+
+_passed
+`)) as boolean;
+
+			pyodide.globals.delete('_ubumaths_ast_code');
+			pyodide.globals.delete('_ubumaths_ast_requirement_type');
+			pyodide.globals.delete('_ubumaths_ast_requirement_name');
+
+			if (!passed) {
+				astIssues.push(requirement.message);
+			}
+		} catch (error) {
+			pyodide.globals.delete('_ubumaths_ast_code');
+			pyodide.globals.delete('_ubumaths_ast_requirement_type');
+			pyodide.globals.delete('_ubumaths_ast_requirement_name');
+
+			astIssues.push(
+				`${requirement.message} (erreur: ${error instanceof Error ? error.message : String(error)})`
+			);
+		}
+	}
+
+	// If AST validation passed and there are output tests, run them
+	let testResults: TestCaseResult[] = [];
+	let outputTestsPassed = true;
+
+	if (astIssues.length === 0 && config.output_tests && config.output_tests.length > 0) {
+		const outputConfig: OutputValidationConfig = {
+			type: 'output',
+			test_cases: config.output_tests,
+			timeout_ms: config.timeout_ms
+		};
+
+		const outputResult = await validateOutputComparison(code, outputConfig);
+		testResults = outputResult.test_results;
+		outputTestsPassed = outputResult.valid;
+	}
+
+	return {
+		valid: astIssues.length === 0 && outputTestsPassed,
+		strategy: 'ast',
+		test_results: testResults,
+		ast_issues: astIssues.length > 0 ? astIssues : undefined,
+		execution_time_ms: 0
+	};
+}
+
+// =============================================================================
 // Autocompletion
 // =============================================================================
 
@@ -1436,6 +1895,10 @@ self.onmessage = async (event: MessageEvent<unknown>) => {
 
 		case 'validate':
 			await validateCode(message.code, message.config, message.id);
+			break;
+
+		case 'validate-exercise':
+			await validateExercise(message.code, message.config, message.id);
 			break;
 	}
 };
