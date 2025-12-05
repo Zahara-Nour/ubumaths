@@ -13,7 +13,11 @@
 		Maximize2,
 		Minimize2,
 		Minus,
-		Plus
+		Plus,
+		Cloud,
+		FolderOpen,
+		FilePlus,
+		FileCode
 	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
@@ -27,11 +31,18 @@
 		onToggleFullscreen,
 		onIncreaseFontSize,
 		onDecreaseFontSize,
+		onSaveToCloud,
+		onOpenFiles,
+		onNewFile,
 		canExecute,
 		isExecuting,
 		isModified = false,
 		isFullscreen = false,
-		fontSize = 14
+		fontSize = 14,
+		isLoggedIn = false,
+		currentFileName = null,
+		isModifiedFromCloud = false,
+		isSaving = false
 	}: {
 		onExecute: () => void;
 		onClear: () => void;
@@ -41,11 +52,18 @@
 		onToggleFullscreen: () => void;
 		onIncreaseFontSize: () => void;
 		onDecreaseFontSize: () => void;
+		onSaveToCloud?: () => void;
+		onOpenFiles?: () => void;
+		onNewFile?: () => void;
 		canExecute: boolean;
 		isExecuting: boolean;
 		isModified?: boolean;
 		isFullscreen?: boolean;
 		fontSize?: number;
+		isLoggedIn?: boolean;
+		currentFileName?: string | null;
+		isModifiedFromCloud?: boolean;
+		isSaving?: boolean;
 	} = $props();
 
 	// State
@@ -156,11 +174,65 @@
 
 		<!-- Modified indicator -->
 		{#if isModified}
-			<span class="ml-1 text-xl font-bold text-destructive" title="Code modifié (non sauvegardé)"
+			<span class="ml-1 text-xl font-bold text-destructive" title="Code modifie (non sauvegarde)"
 				>*</span
 			>
 		{/if}
+
+		<!-- Cloud actions -->
+		<Separator orientation="vertical" class="mx-1 h-6" />
+
+		<Button
+			variant="ghost"
+			size="icon"
+			onclick={onNewFile}
+			disabled={!isLoggedIn}
+			aria-label="Nouveau fichier"
+			title={isLoggedIn ? 'Nouveau fichier' : 'Connectez-vous pour creer un fichier'}
+			class="size-8"
+		>
+			<FilePlus class="size-4" />
+		</Button>
+
+		<Button
+			variant="ghost"
+			size="icon"
+			onclick={onOpenFiles}
+			disabled={!isLoggedIn}
+			aria-label="Ouvrir un fichier"
+			title={isLoggedIn ? 'Ouvrir un fichier' : 'Connectez-vous pour ouvrir vos fichiers'}
+			class="size-8"
+		>
+			<FolderOpen class="size-4" />
+		</Button>
+
+		<Button
+			variant="ghost"
+			size="icon"
+			onclick={onSaveToCloud}
+			disabled={!isLoggedIn || isSaving}
+			aria-label="Sauvegarder dans le cloud"
+			title={isLoggedIn ? 'Sauvegarder dans le cloud' : 'Connectez-vous pour sauvegarder'}
+			class="size-8"
+		>
+			{#if isSaving}
+				<Loader2 class="size-4 animate-spin" />
+			{:else}
+				<Cloud class="size-4" />
+			{/if}
+		</Button>
 	</div>
+
+	<!-- Current file name (when a cloud file is loaded) -->
+	{#if currentFileName}
+		<div class="hidden items-center gap-2 rounded-md bg-muted px-2 py-1 md:flex">
+			<FileCode class="size-4 text-muted-foreground" />
+			<span class="max-w-32 truncate text-sm font-medium">{currentFileName}</span>
+			{#if isModifiedFromCloud}
+				<span class="text-xs text-destructive" title="Modifications non sauvegardees">*</span>
+			{/if}
+		</div>
+	{/if}
 
 	<!-- Spacer -->
 	<div class="flex-1"></div>

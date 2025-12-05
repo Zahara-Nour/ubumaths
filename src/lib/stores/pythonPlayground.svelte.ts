@@ -10,6 +10,14 @@ import { z } from 'zod';
 import LZString from 'lz-string';
 import type { ToWorkerMessage, FromWorkerMessage, CompletionItem } from '$lib/types/python-worker';
 import { PYODIDE_CONFIG } from '$lib/types/python-worker';
+import type { Database } from '$lib/types/database';
+
+// =============================================================================
+// Types from Database
+// =============================================================================
+
+/** PythonFile type from database schema */
+export type PythonFile = Database['public']['Tables']['python_files']['Row'];
 
 // =============================================================================
 // Zod Schemas for Worker Message Validation
@@ -216,6 +224,22 @@ class PythonPlaygroundStore {
 	plotlyData = $state<string | null>(null);
 
 	// ===========================================================================
+	// Cloud Save/Load State
+	// ===========================================================================
+
+	/** Currently loaded cloud file (null if working locally) */
+	currentFile = $state<PythonFile | null>(null);
+
+	/** Whether a cloud save operation is in progress */
+	isSaving = $state(false);
+
+	/** Whether cloud files are being loaded */
+	isLoadingFiles = $state(false);
+
+	/** Cloud operation error message */
+	cloudError = $state<string | null>(null);
+
+	// ===========================================================================
 	// Private State
 	// ===========================================================================
 
@@ -283,6 +307,19 @@ class PythonPlaygroundStore {
 
 	/** Whether the code has been modified from last saved state */
 	isModified = $derived(this.code !== this._lastSavedCode);
+
+	// ===========================================================================
+	// Cloud-Related Derived State
+	// ===========================================================================
+
+	/** Whether a cloud file is currently loaded */
+	hasCloudFile = $derived(this.currentFile !== null);
+
+	/** Name of the current file (or default) */
+	currentFileName = $derived(this.currentFile?.title ?? 'Sans titre');
+
+	/** Whether the code has been modified from the cloud version */
+	isModifiedFromCloud = $derived(this.currentFile !== null && this.code !== this.currentFile.code);
 
 	// ===========================================================================
 	// Initialization
@@ -825,6 +862,267 @@ class PythonPlaygroundStore {
 				});
 			}, AUTOCOMPLETE_DEBOUNCE_MS);
 		});
+	}
+
+	// ===========================================================================
+	// Cloud Save/Load Methods
+	// ===========================================================================
+
+	/**
+	 * Load a file from cloud into the editor.
+	 * Sets the current code, updates currentFile reference, and clears output.
+	 *
+	 * @param file - The PythonFile to load
+	 */
+	loadCloudFile(file: PythonFile): void {
+		this.code = file.code;
+		this.currentFile = file;
+		this._lastSavedCode = file.code;
+		this.cloudError = null;
+		this.clearOutput();
+	}
+
+	/**
+	 * Save current code to cloud (create new or update existing).
+	 * If currentFile exists, updates it. Otherwise creates a new file.
+	 *
+	 * @param title - The file title
+	 * @param description - Optional file description
+	 * @param isPublic - Whether the file should be public
+	 * @returns The saved PythonFile or null on error
+	 */
+	async saveToCloud(
+		title: string,
+		description?: string,
+		isPublic?: boolean
+	): Promise<PythonFile | null> {
+		if (!browser) return null;
+
+		this.isSaving = true;
+		this.cloudError = null;
+
+		try {
+			if (this.currentFile) {
+				// Update existing file
+				const success = await this.updateCloudFile({
+					title,
+					description,
+					code: this.code,
+					is_public: isPublic
+				});
+
+				if (success && this.currentFile) {
+					// Update local reference with new values
+					this.currentFile = {
+						...this.currentFile,
+						title,
+						description: description ?? this.currentFile.description,
+						code: this.code,
+						is_public: isPublic ?? this.currentFile.is_public,
+						updated_at: new Date().toISOString()
+					};
+					this._lastSavedCode = this.code;
+					return this.currentFile;
+				}
+				return null;
+			} else {
+				// Create new file
+				const response = await fetch('/api/python-files', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						title,
+						description: description ?? null,
+						code: this.code,
+						is_public: isPublic ?? false
+					})
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json().catch(() => ({}));
+					const errorMessage =
+						errorData.message || `Erreur lors de la sauvegarde (${response.status})`;
+					this.cloudError = errorMessage;
+					return null;
+				}
+
+				const data = await response.json();
+				const file = data.file as PythonFile;
+				this.currentFile = file;
+				this._lastSavedCode = file.code;
+				return file;
+			}
+		} catch (err) {
+			console.error('Error saving to cloud:', err);
+			this.cloudError =
+				err instanceof Error ? err.message : 'Erreur inconnue lors de la sauvegarde';
+			return null;
+		} finally {
+			this.isSaving = false;
+		}
+	}
+
+	/**
+	 * Update an existing cloud file.
+	 *
+	 * @param updates - The fields to update
+	 * @returns true if successful, false otherwise
+	 */
+	async updateCloudFile(updates: {
+		title?: string;
+		description?: string;
+		code?: string;
+		is_public?: boolean;
+	}): Promise<boolean> {
+		if (!browser || !this.currentFile) return false;
+
+		this.isSaving = true;
+		this.cloudError = null;
+
+		try {
+			const response = await fetch(`/api/python-files/${this.currentFile.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(updates)
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				const errorMessage =
+					errorData.message || `Erreur lors de la mise a jour (${response.status})`;
+				this.cloudError = errorMessage;
+				return false;
+			}
+
+			const data = await response.json();
+			this.currentFile = data.file as PythonFile;
+			this._lastSavedCode = this.currentFile.code;
+			return true;
+		} catch (err) {
+			console.error('Error updating cloud file:', err);
+			this.cloudError =
+				err instanceof Error ? err.message : 'Erreur inconnue lors de la mise a jour';
+			return false;
+		} finally {
+			this.isSaving = false;
+		}
+	}
+
+	/**
+	 * Delete a cloud file.
+	 *
+	 * @param id - The file ID to delete
+	 * @returns true if successful, false otherwise
+	 */
+	async deleteCloudFile(id: string): Promise<boolean> {
+		if (!browser) return false;
+
+		this.cloudError = null;
+
+		try {
+			const response = await fetch(`/api/python-files/${id}`, {
+				method: 'DELETE'
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				const errorMessage =
+					errorData.message || `Erreur lors de la suppression (${response.status})`;
+				this.cloudError = errorMessage;
+				return false;
+			}
+
+			// If we deleted the currently loaded file, clear the reference
+			if (this.currentFile?.id === id) {
+				this.currentFile = null;
+			}
+
+			return true;
+		} catch (err) {
+			console.error('Error deleting cloud file:', err);
+			this.cloudError =
+				err instanceof Error ? err.message : 'Erreur inconnue lors de la suppression';
+			return false;
+		}
+	}
+
+	/**
+	 * Start a new file (clear current cloud file reference).
+	 * Resets to default code and clears output.
+	 */
+	newFile(): void {
+		this.currentFile = null;
+		this.code = DEFAULT_CODE;
+		this._lastSavedCode = DEFAULT_CODE;
+		this.cloudError = null;
+		this.clearOutput();
+	}
+
+	/**
+	 * Check if localStorage has code worth migrating to cloud.
+	 * Returns true if localStorage has code that differs from DEFAULT_CODE.
+	 *
+	 * @returns true if there's local code to migrate
+	 */
+	hasLocalCodeToMigrate(): boolean {
+		if (!browser) return false;
+
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY);
+			if (!stored) return false;
+
+			const parsed = JSON.parse(stored) as SerializedPlaygroundState;
+			if (typeof parsed.code !== 'string') return false;
+
+			// Check if local code differs from default
+			return parsed.code.trim() !== DEFAULT_CODE.trim() && parsed.code.trim().length > 0;
+		} catch {
+			return false;
+		}
+	}
+
+	/**
+	 * Get local code for migration to cloud.
+	 *
+	 * @returns The code from localStorage if it exists, null otherwise
+	 */
+	getLocalCodeForMigration(): string | null {
+		if (!browser) return null;
+
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY);
+			if (!stored) return null;
+
+			const parsed = JSON.parse(stored) as SerializedPlaygroundState;
+			if (typeof parsed.code !== 'string') return null;
+
+			return parsed.code;
+		} catch {
+			return null;
+		}
+	}
+
+	/**
+	 * Clear localStorage after successful migration to cloud.
+	 * Resets the stored code to DEFAULT_CODE to prevent re-migration prompts.
+	 */
+	clearLocalStorageAfterMigration(): void {
+		if (!browser) return;
+
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY);
+			if (stored) {
+				const parsed = JSON.parse(stored) as SerializedPlaygroundState;
+				// Keep settings, just reset code
+				const updated: SerializedPlaygroundState = {
+					...parsed,
+					code: DEFAULT_CODE
+				};
+				localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+			}
+		} catch (err) {
+			console.error('Error clearing localStorage after migration:', err);
+		}
 	}
 
 	// ===========================================================================
