@@ -187,12 +187,13 @@ export const plotMessageSchema = z.object({
 
 /**
  * Error message schema
+ * Note: id can be empty string for init/loading errors
  */
 export const errorMessageSchema = z.object({
 	type: z.literal('error'),
 	message: z.string(),
 	line: z.number().int().min(1).optional(),
-	id: executionIdSchema
+	id: z.string().max(100) // Allow empty id for init errors
 });
 
 /**

@@ -18,7 +18,7 @@
 	import type { Extension } from '@codemirror/state';
 	import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';
 	import { pythonStore, type EditorTheme } from '$lib/stores/pythonPlayground.svelte';
-	import type { CompletionItem } from '$lib/types/python-worker';
+	import type { CompletionItem } from '$lib/shared/python';
 
 	// Props
 	let {
