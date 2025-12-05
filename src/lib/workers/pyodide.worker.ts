@@ -183,6 +183,20 @@ def _ubumaths_check_sympy_result(result):
         pass
     return None
 
+# Helper function to reformat the last exception for JavaScript
+def _ubumaths_reformat_exception():
+    """Reformat the last Python exception for JavaScript consumption."""
+    import sys
+    from traceback import format_exception
+    if hasattr(sys, 'last_exc') and sys.last_exc is not None:
+        # Python 3.12+ stores the exception directly
+        exc = sys.last_exc
+        return "".join(format_exception(type(exc), exc, exc.__traceback__))
+    elif hasattr(sys, 'last_type') and sys.last_type is not None:
+        # Older Python versions
+        return "".join(format_exception(sys.last_type, sys.last_value, sys.last_traceback))
+    return None
+
 # Helper function for Python autocompletion
 def _ubumaths_get_completions(code, cursor_pos):
     """Get completions for Python code at cursor position."""
@@ -300,6 +314,33 @@ function extractLineNumber(errorMessage: string): number | undefined {
 		return parseInt(lineMatch[1], 10);
 	}
 	return undefined;
+}
+
+/**
+ * Fallback error message extraction when Python traceback is not available
+ */
+function extractErrorMessageFallback(error: unknown): string {
+	if (error && typeof error === 'object') {
+		const pyError = error as Record<string, unknown>;
+
+		// Pyodide PythonError has a 'message' property that contains the full traceback
+		if ('message' in pyError && typeof pyError.message === 'string' && pyError.message) {
+			return pyError.message;
+		}
+		// Some versions use toString() which includes the traceback
+		if (typeof (error as { toString?: () => string }).toString === 'function') {
+			const str = String(error);
+			// Check if toString gave us useful info (not just "[object Object]" or "PythonError")
+			if (str && str !== '[object Object]' && str !== 'PythonError' && str.length > 15) {
+				return str;
+			}
+		}
+		return 'Erreur Python';
+	}
+	if (error instanceof Error) {
+		return error.message || String(error);
+	}
+	return String(error) || 'Erreur Python inconnue';
 }
 
 /**
@@ -448,7 +489,26 @@ _ubumaths_cleanup()
 			console.warn('[Pyodide Worker] Cleanup error:', cleanupError);
 		}
 
-		const errorMessage = error instanceof Error ? error.message : String(error);
+		// Extract error message from Pyodide PythonError
+		// Use Python's traceback module to get the actual formatted exception
+		let errorMessage: string;
+
+		try {
+			// Try to get the formatted exception from Python's sys.last_exc
+			const formattedException = pyodide.runPython('_ubumaths_reformat_exception()') as
+				| string
+				| null;
+			if (formattedException && formattedException.trim()) {
+				errorMessage = formattedException;
+			} else {
+				// Fallback to JavaScript error properties
+				errorMessage = extractErrorMessageFallback(error);
+			}
+		} catch {
+			// If Python call fails, use fallback
+			errorMessage = extractErrorMessageFallback(error);
+		}
+
 		const lineNumber = extractLineNumber(errorMessage);
 
 		postMessage({
