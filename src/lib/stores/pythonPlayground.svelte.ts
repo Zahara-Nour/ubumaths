@@ -316,6 +316,12 @@ class PythonPlaygroundStore {
 	/** Last autocomplete request ID for cancellation */
 	private lastAutocompleteRequestId: string | null = null;
 
+	/** User ID for authenticated users (enables DB sync) */
+	private userId: string | null = null;
+
+	/** Timeout for debounced database sync */
+	private dbSyncTimeout: ReturnType<typeof setTimeout> | null = null;
+
 	// ===========================================================================
 	// Derived State
 	// ===========================================================================
@@ -584,6 +590,55 @@ class PythonPlaygroundStore {
 	}
 
 	/**
+	 * Initialize the store with user profile settings.
+	 * For authenticated users, loads settings from profile.python_settings.
+	 * For anonymous users, keeps localStorage settings.
+	 *
+	 * @param profile - The user's profile (null for anonymous users)
+	 */
+	initWithProfile(profile: Database['public']['Tables']['profiles']['Row'] | null): void {
+		if (!profile) {
+			// Anonymous user: keep localStorage settings (already loaded in constructor)
+			this.userId = null;
+			return;
+		}
+
+		// Set userId to enable DB sync
+		this.userId = profile.id;
+
+		// Load settings from profile.python_settings if available
+		const settings = profile.python_settings as {
+			editorTheme?: string;
+			fontSize?: number;
+			showPedagogicErrors?: boolean;
+		} | null;
+
+		if (settings) {
+			// Validate and apply theme
+			if (
+				typeof settings.editorTheme === 'string' &&
+				EDITOR_THEMES.some((t) => t.value === settings.editorTheme)
+			) {
+				this.editorTheme = settings.editorTheme as EditorTheme;
+			}
+
+			// Validate and apply font size
+			if (
+				typeof settings.fontSize === 'number' &&
+				settings.fontSize >= MIN_FONT_SIZE &&
+				settings.fontSize <= MAX_FONT_SIZE
+			) {
+				this.fontSize = settings.fontSize;
+			}
+
+			// Apply pedagogic errors setting
+			if (typeof settings.showPedagogicErrors === 'boolean') {
+				this.showPedagogicErrors = settings.showPedagogicErrors;
+			}
+		}
+	}
+
+	/**
 	 * Terminate the worker and clean up resources.
 	 * Call this when the playground component unmounts.
 	 */
@@ -596,6 +651,11 @@ class PythonPlaygroundStore {
 		if (this.saveTimeout) {
 			clearTimeout(this.saveTimeout);
 			this.saveTimeout = null;
+		}
+		// Clean up DB sync timeout
+		if (this.dbSyncTimeout) {
+			clearTimeout(this.dbSyncTimeout);
+			this.dbSyncTimeout = null;
 		}
 		// Clean up autocomplete resources
 		if (this.autocompleteDebounceTimeout) {
@@ -1215,6 +1275,7 @@ class PythonPlaygroundStore {
 	/**
 	 * Save state to localStorage with debounce.
 	 * Debounces writes to avoid excessive localStorage operations during typing.
+	 * For authenticated users, also syncs settings to database.
 	 */
 	private saveToStorage(): void {
 		if (!browser) return;
@@ -1239,6 +1300,51 @@ class PythonPlaygroundStore {
 				console.error('Failed to save Python playground state to localStorage:', error);
 			}
 		}, STORAGE_SAVE_DEBOUNCE_MS);
+
+		// For authenticated users, also sync to database
+		if (this.userId) {
+			this.syncToDatabase();
+		}
+	}
+
+	/**
+	 * Sync settings to database for authenticated users.
+	 * Debounced to avoid excessive API calls.
+	 */
+	private syncToDatabase(): void {
+		if (!browser || !this.userId) return;
+
+		// Clear existing timeout
+		if (this.dbSyncTimeout) {
+			clearTimeout(this.dbSyncTimeout);
+		}
+
+		// Debounce before syncing (slightly longer delay than localStorage)
+		this.dbSyncTimeout = setTimeout(async () => {
+			try {
+				const settings = {
+					editorTheme: this.editorTheme,
+					fontSize: this.fontSize,
+					showPedagogicErrors: this.showPedagogicErrors
+				};
+
+				const response = await fetch('/api/profile/python-settings', {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(settings)
+				});
+
+				if (!response.ok) {
+					console.error(
+						'[Python Store] Failed to sync settings to database:',
+						response.status,
+						await response.text()
+					);
+				}
+			} catch (error) {
+				console.error('[Python Store] Error syncing settings to database:', error);
+			}
+		}, 1000); // 1 second debounce for DB sync
 	}
 }
 
