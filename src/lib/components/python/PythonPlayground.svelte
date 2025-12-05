@@ -5,9 +5,26 @@
 	import PythonEditor from './PythonEditor.svelte';
 	import PythonOutput from './PythonOutput.svelte';
 	import PythonSplitter from './PythonSplitter.svelte';
+	import PythonSaveDialog from './PythonSaveDialog.svelte';
+	import PythonFileManager from './PythonFileManager.svelte';
+	import PythonMigrationPrompt from './PythonMigrationPrompt.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
 	import { onMount, onDestroy } from 'svelte';
+	import type { Database } from '$lib/types/database';
+
+	// Types
+	type Profile = Database['public']['Tables']['profiles']['Row'];
+	type User = { id: string; email?: string };
+
+	// Props
+	let {
+		user = null,
+		profile = null
+	}: {
+		user?: User | null;
+		profile?: Profile | null;
+	} = $props();
 
 	// Constants
 	const STORAGE_KEY = 'ubumaths-python-splitter';
@@ -19,6 +36,10 @@
 	let canExecute = $derived(pythonStore.isReady);
 	let isExecuting = $derived(pythonStore.isExecuting);
 	let isModified = $derived(pythonStore.isModified);
+	let isLoggedIn = $derived(user !== null);
+	let currentFileName = $derived(pythonStore.currentFile?.title ?? null);
+	let isModifiedFromCloud = $derived(pythonStore.isModifiedFromCloud);
+	let isSaving = $derived(pythonStore.isSaving);
 
 	// Fullscreen state
 	let isFullscreen = $state(false);
@@ -26,6 +47,10 @@
 	// Splitter state
 	let leftPanelWidth = $state(DEFAULT_WIDTH);
 	let containerRef: HTMLDivElement | null = $state(null);
+
+	// Dialog state
+	let saveDialogOpen = $state(false);
+	let fileManagerOpen = $state(false);
 
 	// Functions
 	function handleExecute(): void {
@@ -58,15 +83,28 @@
 			const shareUrl = pythonStore.generateShareUrl();
 			if (browser && navigator.clipboard) {
 				navigator.clipboard.writeText(shareUrl);
-				toaster.success('Lien copié dans le presse-papiers');
+				toaster.success('Lien copie dans le presse-papiers');
 			}
 		} catch (error) {
 			if (error instanceof Error) {
 				toaster.error(error.message);
 			} else {
-				toaster.error('Erreur lors de la génération du lien de partage');
+				toaster.error('Erreur lors de la generation du lien de partage');
 			}
 		}
+	}
+
+	function handleSaveToCloud(): void {
+		saveDialogOpen = true;
+	}
+
+	function handleOpenFiles(): void {
+		fileManagerOpen = true;
+	}
+
+	function handleNewFile(): void {
+		pythonStore.newFile();
+		toaster.success('Nouveau fichier cree');
 	}
 
 	function toggleFullscreen(): void {
@@ -155,10 +193,17 @@
 		onToggleFullscreen={toggleFullscreen}
 		onIncreaseFontSize={() => pythonStore.increaseFontSize()}
 		onDecreaseFontSize={() => pythonStore.decreaseFontSize()}
+		onSaveToCloud={handleSaveToCloud}
+		onOpenFiles={handleOpenFiles}
+		onNewFile={handleNewFile}
 		{canExecute}
 		{isExecuting}
 		{isModified}
 		{isFullscreen}
+		{isLoggedIn}
+		{currentFileName}
+		{isModifiedFromCloud}
+		{isSaving}
 		fontSize={pythonStore.fontSize}
 	/>
 
@@ -312,3 +357,12 @@
 		</div>
 	</div>
 </div>
+
+<!-- Migration prompt (shown when logged in user has local code) -->
+<PythonMigrationPrompt {isLoggedIn} onSaveToCloud={handleSaveToCloud} />
+
+<!-- Save to cloud dialog -->
+<PythonSaveDialog bind:open={saveDialogOpen} />
+
+<!-- File manager dialog -->
+<PythonFileManager bind:open={fileManagerOpen} {profile} />

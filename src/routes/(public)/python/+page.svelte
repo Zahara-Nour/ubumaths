@@ -4,6 +4,9 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
+	// Props from page server
+	let { data } = $props();
+
 	// Load code from URL on mount
 	onMount(() => {
 		// Register Service Worker for CDN caching (Pyodide, packages, Plotly)
@@ -36,5 +39,5 @@
 		<h1 class="text-2xl font-bold text-foreground">Python Playground</h1>
 		<p class="text-muted-foreground">Environnement Python interactif avec NumPy et Matplotlib</p>
 	</div>
-	<PythonPlayground />
+	<PythonPlayground user={data.user} profile={data.profile} />
 </main>

@@ -17,8 +17,10 @@ The Python Playground is a browser-based Python execution environment that allow
 - **LaTeX rendering**: SymPy expressions via MathLive
 - **Pedagogic error messages**: French translations for common errors
 - **URL sharing**: LZ-String compressed code sharing
+- **Cloud storage**: Save files to database (students & teachers)
+- **File assignments**: Teachers can assign Python files to classes
 - **Responsive design**: Mobile and desktop layouts
-- **Persistent state**: localStorage for code and settings
+- **Persistent state**: localStorage + cloud storage for authenticated users
 
 ## Quick Links
 
@@ -34,20 +36,34 @@ The Python Playground is a browser-based Python execution environment that allow
 ```
 src/
 ├── routes/(public)/python/
-│   └── +page.svelte                    # Route entry point
+│   ├── +page.svelte                    # Route entry point
+│   └── +page.server.ts                 # Server load (user data)
+├── routes/api/python-files/
+│   ├── +server.ts                      # GET (list), POST (create)
+│   ├── [id]/
+│   │   ├── +server.ts                  # GET, PUT, DELETE
+│   │   └── assign/+server.ts           # POST (assign to class)
+│   └── students/+server.ts             # GET (teacher view)
 ├── lib/
 │   ├── components/python/
 │   │   ├── PythonPlayground.svelte     # Main container
 │   │   ├── PythonEditor.svelte         # CodeMirror 6 editor
 │   │   ├── PythonToolbar.svelte        # Action buttons
 │   │   ├── PythonOutput.svelte         # Results display
-│   │   └── PythonSplitter.svelte       # Resizable panels
+│   │   ├── PythonSplitter.svelte       # Resizable panels
+│   │   ├── PythonSaveDialog.svelte     # Cloud save dialog
+│   │   ├── PythonFileManager.svelte    # File list/management
+│   │   └── PythonMigrationPrompt.svelte # localStorage migration
 │   ├── stores/
-│   │   └── pythonPlayground.svelte.ts  # Reactive store
+│   │   └── pythonPlayground.svelte.ts  # Reactive store (+ cloud methods)
+│   ├── server/validation/
+│   │   └── python-files.ts             # Zod schemas for API
 │   ├── workers/
 │   │   └── pyodide.worker.ts           # Web Worker
 │   └── types/
 │       └── python-worker.ts            # TypeScript types
+supabase/migrations/
+└── 20251205100000_create_python_files.sql  # DB tables + RLS
 ```
 
 ## Technology Stack
