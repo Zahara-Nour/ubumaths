@@ -165,24 +165,25 @@ See [Hybrid Cache System](hybrid-cache-system.md) for full architecture.
 
 Extends Supabase's `auth.users` with application-specific data.
 
-| Column     | Type        | Description                                                                      |
-| ---------- | ----------- | -------------------------------------------------------------------------------- |
-| id         | UUID (PK)   | References auth.users(id)                                                        |
-| email      | TEXT        | User's email                                                                     |
-| full_name  | TEXT        | User's full name (deprecated)                                                    |
-| firstname  | TEXT        | User's first name                                                                |
-| lastname   | TEXT        | User's last name                                                                 |
-| role       | user_role   | 'student', 'teacher', or 'admin'                                                 |
-| school_id  | UUID (FK)   | References schools(id)                                                           |
-| avatar_url | TEXT        | URL to user's avatar image                                                       |
-| class_ids  | UUID[]      | Array of class IDs (automatically synced from `class_members` table via trigger) |
-| grade      | TEXT        | Student's grade level (e.g., "6ème", "5ème", "4ème", "3ème")                     |
-| gender     | TEXT        | User's gender ('boy' or 'girl') for avatar fallback purposes                     |
-| gidouilles | INTEGER     | Student currency/points for rewards system (default: 0)                          |
-| bonus      | INTEGER     | Student bonus points for special achievements (default: 0)                       |
-| vip_cards  | JSONB       | JSON object storing student VIP cards and their properties                       |
-| created_at | TIMESTAMPTZ | Account creation time                                                            |
-| updated_at | TIMESTAMPTZ | Last update time                                                                 |
+| Column          | Type        | Description                                                                      |
+| --------------- | ----------- | -------------------------------------------------------------------------------- |
+| id              | UUID (PK)   | References auth.users(id)                                                        |
+| email           | TEXT        | User's email                                                                     |
+| full_name       | TEXT        | User's full name (deprecated)                                                    |
+| firstname       | TEXT        | User's first name                                                                |
+| lastname        | TEXT        | User's last name                                                                 |
+| role            | user_role   | 'student', 'teacher', or 'admin'                                                 |
+| school_id       | UUID (FK)   | References schools(id)                                                           |
+| avatar_url      | TEXT        | URL to user's avatar image                                                       |
+| class_ids       | UUID[]      | Array of class IDs (automatically synced from `class_members` table via trigger) |
+| grade           | TEXT        | Student's grade level (e.g., "6ème", "5ème", "4ème", "3ème")                     |
+| gender          | TEXT        | User's gender ('boy' or 'girl') for avatar fallback purposes                     |
+| gidouilles      | INTEGER     | Student currency/points for rewards system (default: 0)                          |
+| bonus           | INTEGER     | Student bonus points for special achievements (default: 0)                       |
+| vip_cards       | JSONB       | JSON object storing student VIP cards and their properties                       |
+| python_settings | JSONB       | Python playground preferences (editorTheme, fontSize, showPedagogicErrors) [NEW] |
+| created_at      | TIMESTAMPTZ | Account creation time                                                            |
+| updated_at      | TIMESTAMPTZ | Last update time                                                                 |
 
 **Note on Student-Teacher Relationship**:
 Students don't have a single `teacher_id` because they have different teachers for each class. To find a student's teacher for a specific class, query: `class_members` → `classes.teacher_id`.
