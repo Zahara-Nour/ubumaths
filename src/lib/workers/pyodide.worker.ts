@@ -378,9 +378,9 @@ try:
     else:
         # Empty code
         pass
-except SyntaxError:
-    # If parsing fails, just execute normally
-    exec(_ubumaths_user_code)
+except SyntaxError as e:
+    # Re-raise SyntaxError to be caught by JavaScript
+    raise e
 `);
 
 		// Check if this execution was cancelled
