@@ -185,17 +185,49 @@ def _ubumaths_check_sympy_result(result):
 
 # Helper function to reformat the last exception for JavaScript
 def _ubumaths_reformat_exception():
-    """Reformat the last Python exception for JavaScript consumption."""
+    """Reformat the last Python exception for JavaScript consumption.
+    Returns only the essential error message (last line of traceback).
+    """
     import sys
     from traceback import format_exception
+
+    exc = None
     if hasattr(sys, 'last_exc') and sys.last_exc is not None:
         # Python 3.12+ stores the exception directly
         exc = sys.last_exc
-        return "".join(format_exception(type(exc), exc, exc.__traceback__))
     elif hasattr(sys, 'last_type') and sys.last_type is not None:
-        # Older Python versions
-        return "".join(format_exception(sys.last_type, sys.last_value, sys.last_traceback))
-    return None
+        # Older Python versions - reconstruct exception
+        exc = sys.last_value
+
+    if exc is None:
+        return None
+
+    # Get the full traceback lines
+    full_tb = format_exception(type(exc), exc, exc.__traceback__)
+
+    # Extract line number info and final error message
+    # Line info is like: '  File "<exec>", line 14'
+    # Error is like: 'SyntaxError: unterminated string literal'
+    line_info = None
+    error_msg = None
+
+    for line in full_tb:
+        line = line.rstrip()
+        if 'File "<' in line and ', line ' in line:
+            # Keep only the last occurrence (actual error location)
+            line_info = line.strip()
+        elif line and not line.startswith(' ') and not line.startswith('Traceback'):
+            # This is the final error message (e.g., "SyntaxError: ...")
+            error_msg = line
+
+    # Build concise message
+    if error_msg:
+        if line_info:
+            return line_info + chr(10) + error_msg
+        return error_msg
+
+    # Fallback to full traceback if parsing failed
+    return "".join(full_tb)
 
 # Helper function for Python autocompletion
 def _ubumaths_get_completions(code, cursor_pos):
