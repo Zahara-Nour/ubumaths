@@ -138,6 +138,9 @@ docs/wip/python-playground-progress.md            # Ce fichier
 3. `feat(python): add CodeMirror 6 editor with lazy loading` (Phase 3)
 4. `feat(python): add output component with pedagogic errors and loading UX` (Phases 4-5)
 5. `test(python): add comprehensive tests for Python Playground` (Phase 6)
+6. `docs(python): update progress documentation with completed status`
+7. `fix(python): use dynamic import for Pyodide in ES module worker`
+8. `fix(python): suppress matplotlib AGG backend warning`
 
 ## Dépendances ajoutées
 
