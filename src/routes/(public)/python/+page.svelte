@@ -6,6 +6,11 @@
 
 	// Load code from URL on mount
 	onMount(() => {
+		// Register Service Worker for CDN caching (Pyodide, packages, Plotly)
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/service-worker.js');
+		}
+
 		if (browser && window.location.search.includes('code=')) {
 			const url = new URL(window.location.href);
 			const loaded = pythonStore.loadFromUrl(url);
