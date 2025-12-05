@@ -20,10 +20,6 @@
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import type { CompletionItem } from '$lib/types/python-worker';
 
-	// Error line highlighting - store the effect type creator for dispatching effects
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let errorLineEffectType: { of: (value: number | null) => any } | null = $state(null);
-
 	// Props
 	let {
 		value = $bindable(''),
@@ -106,11 +102,15 @@
 		}
 	}
 
-	// State
+	// State - use $state.raw for external objects to avoid proxying
 	let editorContainer: HTMLDivElement | null = null;
-	let editor: EditorView | null = null;
+	let editor = $state.raw<EditorView | null>(null);
 	let isLoading = $state(true);
 	let loadError = $state<string | null>(null);
+
+	// Error line effect type - stored after CodeMirror is loaded
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let errorLineEffectType: { of: (value: number | null) => any } | null = null;
 
 	// Track theme preference
 	let isDark = $state(false);
@@ -131,6 +131,29 @@
 	function updateValue(newValue: string): void {
 		if (value !== newValue) {
 			value = newValue;
+		}
+	}
+
+	/**
+	 * Update error line highlighting in CodeMirror
+	 * This is called whenever errorLine changes
+	 */
+	function updateErrorHighlight(line: number | null): void {
+		if (!editor || !errorLineEffectType) return;
+
+		const effects = [errorLineEffectType.of(line)];
+
+		if (line !== null && line > 0 && line <= editor.state.doc.lines) {
+			// Scroll to error line and highlight it
+			const lineInfo = editor.state.doc.line(line);
+			editor.dispatch({
+				effects,
+				selection: { anchor: lineInfo.from },
+				scrollIntoView: true
+			});
+		} else {
+			// Clear error highlighting
+			editor.dispatch({ effects });
 		}
 	}
 
@@ -172,8 +195,6 @@
 
 			// Create error line highlighting system
 			const effectType = StateEffect.define<number | null>();
-			// Note: errorLineEffectType will be set AFTER editor creation to ensure
-			// the $effect has access to both editor and effectType
 
 			// Error line decoration (red background)
 			const errorLineMark = Decoration.line({ class: 'cm-errorLine' });
@@ -342,11 +363,15 @@
 				parent: editorContainer
 			});
 
-			// Set errorLineEffectType AFTER editor is created
-			// This triggers the $effect which now has access to both editor and effectType
+			// Store effect type for later use
 			errorLineEffectType = effectType;
 
 			isLoading = false;
+
+			// Apply initial error highlight if errorLine is already set
+			if (errorLine !== null) {
+				updateErrorHighlight(errorLine);
+			}
 		} catch (error) {
 			console.error('[PythonEditor] Failed to load CodeMirror:', error);
 			loadError = error instanceof Error ? error.message : "Échec du chargement de l'éditeur";
@@ -367,24 +392,14 @@
 		}
 	});
 
-	// Highlight error line with red decoration
+	// React to errorLine prop changes - this is the appropriate use of $effect
+	// for syncing external state (prop) to an imperative library (CodeMirror)
 	$effect(() => {
-		if (!editor || !errorLineEffectType) return;
-
-		// Always dispatch the effect to update error line state (including clearing it)
-		const effects = [errorLineEffectType.of(errorLine)];
-
-		if (errorLine !== null && errorLine > 0 && errorLine <= editor.state.doc.lines) {
-			// Scroll to error line
-			const lineInfo = editor.state.doc.line(errorLine);
-			editor.dispatch({
-				effects,
-				selection: { anchor: lineInfo.from },
-				scrollIntoView: true
-			});
-		} else {
-			// Clear error highlighting
-			editor.dispatch({ effects });
+		// Read errorLine to track it
+		const line = errorLine;
+		// Only update if editor is ready
+		if (editor && errorLineEffectType) {
+			updateErrorHighlight(line);
 		}
 	});
 
