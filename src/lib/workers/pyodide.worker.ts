@@ -306,13 +306,19 @@ def _ubumaths_get_completions(code, cursor_pos):
 
 /**
  * Extract line number from Python traceback
- * Prioritizes user code files (<exec>, <expr>) over Pyodide internal files
+ * Finds the LAST occurrence from user code files (<exec>, <expr>, <unknown>)
+ * which is where the actual error is in the traceback
  */
 function extractLineNumber(errorMessage: string): number | undefined {
-	// First, try to match user code files: File "<exec>", line X or File "<expr>", line X
-	const userCodeMatch = errorMessage.match(/File\s+"<(?:exec|expr)>",\s+line\s+(\d+)/i);
-	if (userCodeMatch) {
-		return parseInt(userCodeMatch[1], 10);
+	// Match user code files: File "<exec>", line X or File "<expr>", line X or File "<unknown>", line X
+	// Use matchAll to get ALL occurrences, then take the last one (actual error location)
+	const userCodeRegex = /File\s+"<(?:exec|expr|unknown)>",\s+line\s+(\d+)/gi;
+	const matches = [...errorMessage.matchAll(userCodeRegex)];
+
+	if (matches.length > 0) {
+		// Take the LAST match - this is where the actual error occurred
+		const lastMatch = matches[matches.length - 1];
+		return parseInt(lastMatch[1], 10);
 	}
 
 	// Fallback: match any "line X" pattern (less reliable)
