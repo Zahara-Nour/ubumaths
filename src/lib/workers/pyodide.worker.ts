@@ -136,7 +136,11 @@ import io
 import base64
 import sys
 import gc
+import warnings
 from io import StringIO
+
+# Suppress the "cannot show figure" warning from plt.show()
+warnings.filterwarnings('ignore', message='.*Matplotlib.*using.*agg.*cannot show.*', category=UserWarning)
 
 # Helper function to get plot as base64
 def _ubumaths_get_plot_base64():
