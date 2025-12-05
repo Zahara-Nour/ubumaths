@@ -381,6 +381,7 @@ class PythonPlaygroundStore {
 					} else {
 						// Execution error, return to ready state
 						this.state = 'ready';
+						this.currentExecutionId = null;
 					}
 					this.clearExecutionTimeout();
 				}
