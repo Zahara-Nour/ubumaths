@@ -8,7 +8,7 @@
 	 * - Line numbers
 	 * - Theme switching (light/dark)
 	 * - Keyboard shortcuts
-	 * - Error line highlighting
+	 * - Error line highlighting with red background and gutter marker
 	 * - Lazy loading of CodeMirror
 	 */
 
@@ -19,6 +19,10 @@
 	import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import type { CompletionItem } from '$lib/types/python-worker';
+
+	// Error line highlighting module references (set during lazy load)
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let errorLineEffectType: { of: (value: number | null) => any } | null = null;
 
 	// Props
 	let {
@@ -140,8 +144,17 @@
 
 			// Lazy load all CodeMirror modules
 			const [
-				{ EditorView, keymap, lineNumbers, highlightActiveLineGutter, highlightActiveLine },
-				{ EditorState },
+				{
+					EditorView,
+					keymap,
+					lineNumbers,
+					highlightActiveLineGutter,
+					highlightActiveLine,
+					Decoration,
+					gutter,
+					GutterMarker
+				},
+				{ EditorState, StateEffect, StateField, RangeSet },
 				{ python },
 				{ oneDark },
 				{ defaultHighlightStyle, syntaxHighlighting, bracketMatching, indentOnInput },
@@ -156,6 +169,77 @@
 				import('@codemirror/autocomplete'),
 				import('@codemirror/commands')
 			]);
+
+			// Create error line highlighting system
+			const effectType = StateEffect.define<number | null>();
+			errorLineEffectType = effectType;
+
+			// Error line decoration (red background)
+			const errorLineMark = Decoration.line({ class: 'cm-errorLine' });
+
+			// Error gutter marker (red dot)
+			class ErrorGutterMarker extends GutterMarker {
+				toDOM() {
+					const marker = document.createElement('div');
+					marker.className = 'cm-errorGutterMarker';
+					marker.textContent = '●';
+					return marker;
+				}
+			}
+			const errorMarker = new ErrorGutterMarker();
+
+			// State field to track error line and compute decorations
+			const errorLineFieldDef = StateField.define<{
+				line: number | null;
+				decorations: typeof RangeSet.prototype;
+			}>({
+				create() {
+					return { line: null, decorations: Decoration.none };
+				},
+				update(value, tr) {
+					for (const effect of tr.effects) {
+						if (effect.is(effectType)) {
+							const newLine = effect.value;
+							if (newLine === null || newLine < 1) {
+								return { line: null, decorations: Decoration.none };
+							}
+							// Create decoration for the error line
+							const doc = tr.state.doc;
+							if (newLine <= doc.lines) {
+								const lineInfo = doc.line(newLine);
+								return {
+									line: newLine,
+									decorations: Decoration.set([errorLineMark.range(lineInfo.from)])
+								};
+							}
+							return { line: null, decorations: Decoration.none };
+						}
+					}
+					// Handle document changes - remap decorations
+					if (tr.docChanged && value.line !== null) {
+						return { line: value.line, decorations: value.decorations.map(tr.changes) };
+					}
+					return value;
+				},
+				provide: (field) => EditorView.decorations.from(field, (value) => value.decorations)
+			});
+
+			// Error gutter extension
+			const errorGutter = gutter({
+				class: 'cm-errorGutter',
+				markers: (view) => {
+					const state = view.state.field(errorLineFieldDef);
+					if (state.line === null || state.line < 1) {
+						return RangeSet.empty;
+					}
+					const doc = view.state.doc;
+					if (state.line <= doc.lines) {
+						const lineInfo = doc.line(state.line);
+						return RangeSet.of([errorMarker.range(lineInfo.from)]);
+					}
+					return RangeSet.empty;
+				}
+			});
 
 			isDark = checkDarkMode();
 
@@ -175,6 +259,10 @@
 				indentOnInput(),
 				python(),
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+
+				// Error line highlighting
+				errorLineFieldDef,
+				errorGutter,
 
 				// Key bindings
 				keymap.of([
@@ -274,14 +362,24 @@
 		}
 	});
 
-	// Highlight error line
+	// Highlight error line with red decoration
 	$effect(() => {
-		if (editor && errorLine !== null && errorLine > 0) {
-			const lineInfo = editor.state.doc.line(Math.min(errorLine, editor.state.doc.lines));
+		if (!editor || !errorLineEffectType) return;
+
+		// Always dispatch the effect to update error line state (including clearing it)
+		const effects = [errorLineEffectType.of(errorLine)];
+
+		if (errorLine !== null && errorLine > 0 && errorLine <= editor.state.doc.lines) {
+			// Scroll to error line
+			const lineInfo = editor.state.doc.line(errorLine);
 			editor.dispatch({
+				effects,
 				selection: { anchor: lineInfo.from },
 				scrollIntoView: true
 			});
+		} else {
+			// Clear error highlighting
+			editor.dispatch({ effects });
 		}
 	});
 
@@ -385,12 +483,32 @@
 		background: transparent;
 	}
 
-	/* Error line highlighting */
+	/* Active line highlighting */
 	:global(.cm-activeLine) {
 		background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.05) !important;
 	}
 
 	:global(.dark .cm-activeLine) {
 		background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.1) !important;
+	}
+
+	/* Error line highlighting - red background */
+	:global(.cm-errorLine) {
+		background-color: rgba(239, 68, 68, 0.15) !important;
+	}
+
+	:global(.dark .cm-errorLine) {
+		background-color: rgba(239, 68, 68, 0.25) !important;
+	}
+
+	/* Error gutter marker - red dot */
+	:global(.cm-errorGutter) {
+		width: 16px;
+	}
+
+	:global(.cm-errorGutterMarker) {
+		color: #ef4444;
+		font-size: 12px;
+		line-height: 1;
 	}
 </style>
