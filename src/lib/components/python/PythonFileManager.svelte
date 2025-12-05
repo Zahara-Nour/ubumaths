@@ -84,14 +84,45 @@
 
 	async function loadAssignedFiles(): Promise<void> {
 		try {
-			const response = await fetch('/api/python-files/assigned');
+			const response = await fetch('/api/python-files?includeAssigned=true&onlyMine=true');
 
 			if (!response.ok) {
 				throw new Error('Erreur lors du chargement des fichiers assignes');
 			}
 
 			const data = await response.json();
-			assignedFiles = data.files ?? [];
+			// Transform assignedFiles to match component's expected format
+			assignedFiles = (data.assignedFiles ?? []).map(
+				(af: {
+					id: string;
+					title: string;
+					description: string | null;
+					code: string;
+					is_public: boolean | null;
+					created_at: string;
+					updated_at: string;
+					owner_id: string;
+					assignment: {
+						instructions: string | null;
+						due_date: string | null;
+						assigned_at: string;
+					};
+				}) => ({
+					file: {
+						id: af.id,
+						title: af.title,
+						description: af.description,
+						code: af.code,
+						is_public: af.is_public ?? false,
+						created_at: af.created_at,
+						updated_at: af.updated_at,
+						owner_id: af.owner_id
+					},
+					instructions: af.assignment.instructions,
+					due_date: af.assignment.due_date,
+					assigned_at: af.assignment.assigned_at
+				})
+			);
 		} catch (error) {
 			console.error('Load assigned error:', error);
 			// Silent fail for assigned files
@@ -99,22 +130,44 @@
 		}
 	}
 
-	function handleOpenFile(file: PythonFile): void {
-		pythonStore.loadCloudFile(file);
-		toaster.success(`Fichier "${file.title}" charge`);
-		open = false;
-		onFileOpened?.();
+	async function handleOpenFile(file: PythonFile): Promise<void> {
+		try {
+			// Fetch full file with code from API
+			const response = await fetch(`/api/python-files/${file.id}`);
+			if (!response.ok) {
+				throw new Error('Erreur lors du chargement du fichier');
+			}
+			const data = await response.json();
+			pythonStore.loadCloudFile(data.file);
+			toaster.success(`Fichier "${file.title}" charge`);
+			open = false;
+			onFileOpened?.();
+		} catch (error) {
+			console.error('Open file error:', error);
+			toaster.error('Erreur lors du chargement du fichier');
+		}
 	}
 
-	function handleOpenAssignedFile(assignedFile: AssignedFile): void {
-		pythonStore.loadCloudFile(assignedFile.file);
-		if (assignedFile.instructions) {
-			toaster.info(assignedFile.instructions);
-		} else {
-			toaster.success(`Fichier "${assignedFile.file.title}" charge`);
+	async function handleOpenAssignedFile(assignedFile: AssignedFile): Promise<void> {
+		try {
+			// Fetch full file with code from API
+			const response = await fetch(`/api/python-files/${assignedFile.file.id}`);
+			if (!response.ok) {
+				throw new Error('Erreur lors du chargement du fichier');
+			}
+			const data = await response.json();
+			pythonStore.loadCloudFile(data.file);
+			if (assignedFile.instructions) {
+				toaster.info(assignedFile.instructions);
+			} else {
+				toaster.success(`Fichier "${assignedFile.file.title}" charge`);
+			}
+			open = false;
+			onFileOpened?.();
+		} catch (error) {
+			console.error('Open assigned file error:', error);
+			toaster.error('Erreur lors du chargement du fichier');
 		}
-		open = false;
-		onFileOpened?.();
 	}
 
 	async function handleDeleteFile(id: string): Promise<void> {

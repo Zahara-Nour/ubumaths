@@ -4,14 +4,16 @@ Detailed documentation for all Svelte 5 components in the Python Playground.
 
 ## Component Overview
 
-| Component          | File                                                | Purpose           |
-| ------------------ | --------------------------------------------------- | ----------------- |
-| `+page.svelte`     | `src/routes/(public)/python/+page.svelte`           | Route entry point |
-| `PythonPlayground` | `src/lib/components/python/PythonPlayground.svelte` | Main container    |
-| `PythonEditor`     | `src/lib/components/python/PythonEditor.svelte`     | CodeMirror editor |
-| `PythonToolbar`    | `src/lib/components/python/PythonToolbar.svelte`    | Action buttons    |
-| `PythonOutput`     | `src/lib/components/python/PythonOutput.svelte`     | Results display   |
-| `PythonSplitter`   | `src/lib/components/python/PythonSplitter.svelte`   | Resize handle     |
+| Component           | File                                                 | Purpose              |
+| ------------------- | ---------------------------------------------------- | -------------------- |
+| `+page.svelte`      | `src/routes/(public)/python/+page.svelte`            | Route entry point    |
+| `PythonPlayground`  | `src/lib/components/python/PythonPlayground.svelte`  | Main container       |
+| `PythonEditor`      | `src/lib/components/python/PythonEditor.svelte`      | CodeMirror editor    |
+| `PythonToolbar`     | `src/lib/components/python/PythonToolbar.svelte`     | Action buttons       |
+| `PythonOutput`      | `src/lib/components/python/PythonOutput.svelte`      | Results display      |
+| `PythonSplitter`    | `src/lib/components/python/PythonSplitter.svelte`    | Resize handle        |
+| `PythonFileManager` | `src/lib/components/python/PythonFileManager.svelte` | Cloud files dialog   |
+| `PythonSaveDialog`  | `src/lib/components/python/PythonSaveDialog.svelte`  | Save to cloud dialog |
 
 ---
 
