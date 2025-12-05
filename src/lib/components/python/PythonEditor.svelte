@@ -172,7 +172,8 @@
 
 			// Create error line highlighting system
 			const effectType = StateEffect.define<number | null>();
-			errorLineEffectType = effectType;
+			// Note: errorLineEffectType will be set AFTER editor creation to ensure
+			// the $effect has access to both editor and effectType
 
 			// Error line decoration (red background)
 			const errorLineMark = Decoration.line({ class: 'cm-errorLine' });
@@ -340,6 +341,10 @@
 				}),
 				parent: editorContainer
 			});
+
+			// Set errorLineEffectType AFTER editor is created
+			// This triggers the $effect which now has access to both editor and effectType
+			errorLineEffectType = effectType;
 
 			isLoading = false;
 		} catch (error) {
