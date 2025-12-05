@@ -230,6 +230,7 @@
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
 					theme={pythonStore.editorTheme}
+					executor={pythonStore.executor}
 					onExecute={handleExecute}
 					onSave={handleSave}
 				/>
@@ -304,6 +305,7 @@
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
 					theme={pythonStore.editorTheme}
+					executor={pythonStore.executor}
 					onExecute={handleExecute}
 					onSave={handleSave}
 				/>

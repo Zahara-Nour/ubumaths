@@ -63,6 +63,7 @@ export type {
 	TimeoutMessage,
 	LatexMessage,
 	CompletionItem,
+	CompletionProvider,
 	AutocompleteResultMessage,
 	PackagesLoadingMessage,
 	PackagesLoadedMessage,
