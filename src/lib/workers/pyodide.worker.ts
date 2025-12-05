@@ -306,9 +306,16 @@ def _ubumaths_get_completions(code, cursor_pos):
 
 /**
  * Extract line number from Python traceback
+ * Prioritizes user code files (<exec>, <expr>) over Pyodide internal files
  */
 function extractLineNumber(errorMessage: string): number | undefined {
-	// Match patterns like "line 5" or "File \"<exec>\", line 3"
+	// First, try to match user code files: File "<exec>", line X or File "<expr>", line X
+	const userCodeMatch = errorMessage.match(/File\s+"<(?:exec|expr)>",\s+line\s+(\d+)/i);
+	if (userCodeMatch) {
+		return parseInt(userCodeMatch[1], 10);
+	}
+
+	// Fallback: match any "line X" pattern (less reliable)
 	const lineMatch = errorMessage.match(/line\s+(\d+)/i);
 	if (lineMatch) {
 		return parseInt(lineMatch[1], 10);
