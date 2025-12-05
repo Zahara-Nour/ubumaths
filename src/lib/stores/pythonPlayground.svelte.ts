@@ -154,6 +154,28 @@ class PythonPlaygroundStore {
 	errorLine = $state<number | null>(null);
 
 	// ===========================================================================
+	// Private State
+	// ===========================================================================
+
+	/** Web Worker instance */
+	private worker: Worker | null = null;
+
+	/** Current execution ID */
+	private currentExecutionId: string | null = null;
+
+	/** Timeout for main thread timeout tracking */
+	private executionTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	/** Timeout for debounced save */
+	private saveTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	/** Whether worker is supported in this browser */
+	private workerSupported = true;
+
+	/** Last saved code for tracking modifications */
+	private _lastSavedCode = $state(DEFAULT_CODE);
+
+	// ===========================================================================
 	// Derived State
 	// ===========================================================================
 
@@ -172,27 +194,8 @@ class PythonPlaygroundStore {
 	/** Whether there is any output to display */
 	hasOutput = $derived(this.stdout.length > 0 || this.stderr.length > 0 || this.plotData !== null);
 
-	/** Whether the code has been modified from default */
-	isModified = $derived(this.code !== DEFAULT_CODE);
-
-	// ===========================================================================
-	// Private State
-	// ===========================================================================
-
-	/** Web Worker instance */
-	private worker: Worker | null = null;
-
-	/** Current execution ID */
-	private currentExecutionId: string | null = null;
-
-	/** Timeout for main thread timeout tracking */
-	private executionTimeout: ReturnType<typeof setTimeout> | null = null;
-
-	/** Timeout for debounced save */
-	private saveTimeout: ReturnType<typeof setTimeout> | null = null;
-
-	/** Whether worker is supported in this browser */
-	private workerSupported = true;
+	/** Whether the code has been modified from last saved state */
+	isModified = $derived(this.code !== this._lastSavedCode);
 
 	// ===========================================================================
 	// Initialization
@@ -468,6 +471,7 @@ class PythonPlaygroundStore {
 	 */
 	resetCode(): void {
 		this.code = DEFAULT_CODE;
+		this._lastSavedCode = DEFAULT_CODE;
 		this.clearOutput();
 		this.saveToStorage();
 	}
@@ -523,6 +527,7 @@ class PythonPlaygroundStore {
 
 			if (typeof parsed.code === 'string') {
 				this.code = parsed.code;
+				this._lastSavedCode = parsed.code;
 			}
 			if (typeof parsed.showPedagogicErrors === 'boolean') {
 				this.showPedagogicErrors = parsed.showPedagogicErrors;
@@ -552,6 +557,7 @@ class PythonPlaygroundStore {
 					showPedagogicErrors: this.showPedagogicErrors
 				};
 				localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
+				this._lastSavedCode = this.code;
 			} catch (error) {
 				console.error('Failed to save Python playground state to localStorage:', error);
 			}
