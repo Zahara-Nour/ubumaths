@@ -4,16 +4,30 @@
  * Pyodide Web Worker
  *
  * Runs Python code in a separate thread using Pyodide.
- * Handles loading, package management, and code execution.
+ * Supports both isolated (playground) and persistent (notebook) execution contexts.
+ *
+ * Multi-context support:
+ * - Playground mode: Isolated execution, state reset between runs
+ * - Notebook mode: Persistent execution, state preserved across cells
  */
 
 import type {
 	FromWorkerMessage,
 	PyodideInterface,
-	LoadPyodideFunc
-} from '$lib/types/python-worker';
-import { PYODIDE_CONFIG, LOADING_STAGES, LoadingStageIndex } from '$lib/types/python-worker';
-import { z } from 'zod';
+	LoadPyodideFunc,
+	PyProxy,
+	ValidationConfig,
+	ValidationResult,
+	ValidationIssue
+} from '$lib/shared/python';
+import {
+	PYODIDE_CONFIG,
+	LOADING_STAGES,
+	LoadingStageIndex,
+	CONTEXT_CONFIG,
+	ERROR_MESSAGES,
+	toWorkerMessageSchema
+} from '$lib/shared/python';
 
 // =============================================================================
 // Package Tracking for Lazy Loading
@@ -122,23 +136,33 @@ const STDLIB_MODULES = new Set([
 ]);
 
 // =============================================================================
-// Zod Schema for Message Validation
+// Context Management
 // =============================================================================
 
 /**
- * Schema for validating messages from the main thread
+ * Execution context for multi-context support
  */
-const toWorkerMessageSchema = z.discriminatedUnion('type', [
-	z.object({ type: z.literal('init') }),
-	z.object({ type: z.literal('execute'), code: z.string(), id: z.string() }),
-	z.object({ type: z.literal('cancel'), id: z.string() }),
-	z.object({
-		type: z.literal('autocomplete'),
-		code: z.string(),
-		cursor: z.number().int().nonnegative(),
-		id: z.string()
-	})
-]);
+interface ExecutionContext {
+	id: string;
+	persistent: boolean;
+	namespace: PyProxy | null; // Python globals dict for persistent contexts
+	lastActivity: number;
+}
+
+/**
+ * Map of active execution contexts
+ */
+const contexts = new Map<string, ExecutionContext>();
+
+/**
+ * Default context ID for backwards-compatible playground execution
+ */
+const DEFAULT_CONTEXT_ID = CONTEXT_CONFIG.DEFAULT_PLAYGROUND_CONTEXT;
+
+/**
+ * Interval for idle context cleanup
+ */
+let idleCleanupInterval: ReturnType<typeof setInterval> | null = null;
 
 // =============================================================================
 // Worker Global Declarations
@@ -183,6 +207,177 @@ function sendLoadingStage(stageIndex: number): void {
 }
 
 // =============================================================================
+// Context Management Functions
+// =============================================================================
+
+/**
+ * Create a new execution context
+ */
+function createContext(contextId: string, persistent: boolean): void {
+	if (!pyodide) {
+		postMessage({
+			type: 'error',
+			message: ERROR_MESSAGES.PYODIDE_NOT_READY,
+			id: ''
+		});
+		return;
+	}
+
+	// Check max contexts limit
+	if (contexts.size >= CONTEXT_CONFIG.MAX_CONTEXTS) {
+		postMessage({
+			type: 'error',
+			message: ERROR_MESSAGES.MAX_CONTEXTS_REACHED,
+			id: ''
+		});
+		return;
+	}
+
+	// Check if context already exists
+	if (contexts.has(contextId)) {
+		// Context already exists, just update activity
+		const context = contexts.get(contextId)!;
+		context.lastActivity = Date.now();
+		postMessage({ type: 'context-created', contextId });
+		return;
+	}
+
+	// Create namespace for persistent context
+	let namespace: PyProxy | null = null;
+	if (persistent) {
+		// Create a new Python dict to serve as the namespace
+		namespace = pyodide.runPython(`dict()`) as PyProxy;
+	}
+
+	contexts.set(contextId, {
+		id: contextId,
+		persistent,
+		namespace,
+		lastActivity: Date.now()
+	});
+
+	postMessage({ type: 'context-created', contextId });
+}
+
+/**
+ * Destroy an execution context and clean up resources
+ */
+function destroyContext(contextId: string): void {
+	const context = contexts.get(contextId);
+	if (!context) {
+		// Context doesn't exist, but we still send success message
+		postMessage({ type: 'context-destroyed', contextId });
+		return;
+	}
+
+	// Clean up PyProxy to avoid memory leaks
+	if (context.namespace) {
+		try {
+			if (typeof (context.namespace as { destroy?: () => void }).destroy === 'function') {
+				(context.namespace as { destroy: () => void }).destroy();
+			}
+		} catch (e) {
+			console.warn('[Pyodide Worker] Error destroying context namespace:', e);
+		}
+	}
+
+	contexts.delete(contextId);
+	postMessage({ type: 'context-destroyed', contextId });
+}
+
+/**
+ * Reset a context - clear all variables but keep the context alive
+ */
+function resetContext(contextId: string): void {
+	if (!pyodide) {
+		postMessage({
+			type: 'error',
+			message: ERROR_MESSAGES.PYODIDE_NOT_READY,
+			id: ''
+		});
+		return;
+	}
+
+	const context = contexts.get(contextId);
+	if (!context) {
+		postMessage({
+			type: 'error',
+			message: ERROR_MESSAGES.CONTEXT_NOT_FOUND,
+			id: ''
+		});
+		return;
+	}
+
+	// For persistent contexts, clear and recreate the namespace
+	if (context.persistent && context.namespace) {
+		try {
+			// Destroy old namespace
+			if (typeof (context.namespace as { destroy?: () => void }).destroy === 'function') {
+				(context.namespace as { destroy: () => void }).destroy();
+			}
+			// Create new namespace
+			context.namespace = pyodide.runPython(`dict()`) as PyProxy;
+		} catch (e) {
+			console.warn('[Pyodide Worker] Error resetting context namespace:', e);
+		}
+	}
+
+	context.lastActivity = Date.now();
+	postMessage({ type: 'context-reset', contextId });
+}
+
+/**
+ * Get or create a context for execution
+ * Returns the namespace PyProxy for persistent contexts, or null for isolated execution
+ */
+function getContextNamespace(contextId: string | undefined): PyProxy | null {
+	if (!contextId) {
+		// No context ID - use isolated execution (backwards compatible)
+		return null;
+	}
+
+	const context = contexts.get(contextId);
+	if (!context) {
+		// Context not found - use isolated execution
+		return null;
+	}
+
+	context.lastActivity = Date.now();
+	return context.namespace;
+}
+
+/**
+ * Clean up idle contexts
+ */
+function cleanupIdleContexts(): void {
+	const now = Date.now();
+	const idleThreshold = CONTEXT_CONFIG.IDLE_TIMEOUT_MS;
+
+	for (const [contextId, context] of contexts) {
+		// Don't clean up the default playground context
+		if (contextId === DEFAULT_CONTEXT_ID) {
+			continue;
+		}
+
+		if (now - context.lastActivity > idleThreshold) {
+			console.log(`[Pyodide Worker] Cleaning up idle context: ${contextId}`);
+			destroyContext(contextId);
+		}
+	}
+}
+
+/**
+ * Start the idle context cleanup interval
+ */
+function startIdleCleanup(): void {
+	if (idleCleanupInterval) {
+		return;
+	}
+	// Check for idle contexts every minute
+	idleCleanupInterval = setInterval(cleanupIdleContexts, 60_000);
+}
+
+// =============================================================================
 // Pyodide Initialization
 // =============================================================================
 
@@ -199,7 +394,7 @@ async function loadPyodideModule(): Promise<LoadPyodideFunc> {
 		return pyodideModule.loadPyodide as LoadPyodideFunc;
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
-		throw new Error(`Échec du chargement du module Pyodide: ${message}`);
+		throw new Error(`Echec du chargement du module Pyodide: ${message}`);
 	}
 }
 
@@ -291,12 +486,21 @@ def _ubumaths_check_sympy_result(result):
     return None
 
 # Helper function for Python autocompletion
-def _ubumaths_get_completions(code, cursor_pos):
-    """Get completions for Python code at cursor position."""
+def _ubumaths_get_completions(code, cursor_pos, namespace=None):
+    """Get completions for Python code at cursor position.
+
+    Args:
+        code: The code being edited
+        cursor_pos: Cursor position in the code
+        namespace: Optional namespace dict for context-aware completions
+    """
     import re
     import builtins
 
     MAX_COMPLETIONS = 50
+
+    # Use provided namespace or fall back to globals
+    ns = namespace if namespace is not None else globals()
 
     # Find the word/prefix being typed at cursor position
     code_before_cursor = code[:cursor_pos]
@@ -328,12 +532,19 @@ def _ubumaths_get_completions(code, cursor_pos):
     # Check if we're completing after a dot
     if '.' in full_match:
         parts = full_match.split('.')
-        obj_path = '.'.join(parts[:-1])
         prefix = parts[-1] if len(parts) > 1 else ''
 
-        # Try to get the object
+        # SECURE: Use getattr navigation instead of eval()
+        # Start with the first part from namespace
         try:
-            obj = eval(obj_path, globals())
+            obj = ns.get(parts[0])
+            if obj is None:
+                return []
+
+            # Walk through remaining parts using getattr
+            for part in parts[1:-1]:
+                obj = getattr(obj, part)
+
             attrs = dir(obj)
             completions = []
             for attr in attrs:
@@ -348,12 +559,12 @@ def _ubumaths_get_completions(code, cursor_pos):
         except:
             return []
     else:
-        # Complete from global namespace
+        # Complete from namespace
         prefix = full_match
         completions = []
 
-        # Check globals and builtins
-        all_names = set(globals().keys())
+        # Check namespace and builtins
+        all_names = set(ns.keys())
 
         # Add builtins
         builtin_names = dir(builtins)
@@ -362,8 +573,8 @@ def _ubumaths_get_completions(code, cursor_pos):
         for name in all_names:
             if name.startswith(prefix) and not name.startswith('_'):
                 try:
-                    if name in globals():
-                        val = globals()[name]
+                    if name in ns:
+                        val = ns[name]
                     else:
                         val = getattr(builtins, name, None)
                     comp_type = get_type(val) if val is not None else 'variable'
@@ -378,7 +589,58 @@ def _ubumaths_get_completions(code, cursor_pos):
                 completions.append({'label': kw, 'type': 'keyword'})
 
         return completions[:MAX_COMPLETIONS]
+
+# Helper function to validate Python code syntax
+def _ubumaths_validate_syntax(code):
+    """Validate Python code syntax using AST.
+
+    Returns a dict with:
+    - valid: bool
+    - issues: list of issue dicts
+    - hasAst: bool (True if AST was successfully parsed)
+    """
+    import ast
+
+    try:
+        ast.parse(code)
+        return {
+            'valid': True,
+            'issues': [],
+            'hasAst': True
+        }
+    except SyntaxError as e:
+        issue = {
+            'line': e.lineno or 1,
+            'column': e.offset or 0,
+            'message': e.msg or str(e),
+            'severity': 'error',
+            'rule': 'syntax-error'
+        }
+        if e.end_lineno:
+            issue['endLine'] = e.end_lineno
+        if e.end_offset:
+            issue['endColumn'] = e.end_offset
+        return {
+            'valid': False,
+            'issues': [issue],
+            'hasAst': False
+        }
+    except Exception as e:
+        return {
+            'valid': False,
+            'issues': [{
+                'line': 1,
+                'column': 0,
+                'message': str(e),
+                'severity': 'error',
+                'rule': 'parse-error'
+            }],
+            'hasAst': False
+        }
 `);
+
+		// Start idle context cleanup
+		startIdleCleanup();
 
 		// Ready (no packages to load in lazy mode)
 		sendLoadingStage(LoadingStageIndex.READY);
@@ -387,7 +649,7 @@ def _ubumaths_get_completions(code, cursor_pos):
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		postMessage({
 			type: 'error',
-			message: `Échec du chargement de Pyodide: ${errorMessage}`,
+			message: `Echec du chargement de Pyodide: ${errorMessage}`,
 			id: ''
 		});
 	}
@@ -592,12 +854,13 @@ function extractErrorMessageFallback(error: unknown): string {
 
 /**
  * Execute Python code and capture output
+ * Supports both isolated (no contextId) and persistent (with contextId) execution
  */
-async function executeCode(code: string, id: string): Promise<void> {
+async function executeCode(code: string, id: string, contextId?: string): Promise<void> {
 	if (!pyodide) {
 		postMessage({
 			type: 'error',
-			message: 'Pyodide non initialisé',
+			message: ERROR_MESSAGES.PYODIDE_NOT_READY,
 			id
 		});
 		return;
@@ -629,6 +892,10 @@ async function executeCode(code: string, id: string): Promise<void> {
 			return;
 		}
 
+		// Get namespace for context (null for isolated execution)
+		const namespace = getContextNamespace(contextId);
+		const useNamespace = namespace !== null;
+
 		// Set up stdout/stderr capture
 		await pyodide.runPythonAsync(`
 import sys
@@ -642,10 +909,50 @@ sys.stdout = _ubumaths_stdout
 sys.stderr = _ubumaths_stderr
 `);
 
+		// Prepare the namespace for execution
+		if (useNamespace) {
+			pyodide.globals.set('_ubumaths_exec_namespace', namespace);
+		}
+
 		// Execute the user code and capture the last expression result for sympy detection
 		// We use compile() with 'single' mode to get REPL-like behavior where
 		// the last expression value is available
-		await pyodide.runPythonAsync(`
+		const execCode = useNamespace
+			? `
+import ast
+
+_ubumaths_last_result = None
+_ubumaths_user_code = ${JSON.stringify(code)}
+_ubumaths_ns = _ubumaths_exec_namespace
+
+# Parse the code to separate statements from the final expression
+try:
+    _ubumaths_tree = ast.parse(_ubumaths_user_code)
+
+    if _ubumaths_tree.body:
+        # Check if the last item is an expression (not assignment, etc.)
+        _ubumaths_last_node = _ubumaths_tree.body[-1]
+
+        if isinstance(_ubumaths_last_node, ast.Expr):
+            # Execute all but the last statement
+            if len(_ubumaths_tree.body) > 1:
+                _ubumaths_init_tree = ast.Module(body=_ubumaths_tree.body[:-1], type_ignores=[])
+                exec(compile(_ubumaths_init_tree, '<exec>', 'exec'), _ubumaths_ns, _ubumaths_ns)
+
+            # Evaluate the last expression and capture result
+            _ubumaths_expr_tree = ast.Expression(body=_ubumaths_last_node.value)
+            _ubumaths_last_result = eval(compile(_ubumaths_expr_tree, '<expr>', 'eval'), _ubumaths_ns, _ubumaths_ns)
+        else:
+            # No trailing expression, just execute everything
+            exec(_ubumaths_user_code, _ubumaths_ns, _ubumaths_ns)
+    else:
+        # Empty code
+        pass
+except SyntaxError as e:
+    # Re-raise SyntaxError to be caught by JavaScript
+    raise e
+`
+			: `
 import ast
 
 _ubumaths_last_result = None
@@ -677,7 +984,9 @@ try:
 except SyntaxError as e:
     # Re-raise SyntaxError to be caught by JavaScript
     raise e
-`);
+`;
+
+		await pyodide.runPythonAsync(execCode);
 
 		// Check if this execution was cancelled
 		if (currentExecutionId !== id) {
@@ -820,13 +1129,165 @@ function cancelExecution(id: string): void {
 }
 
 // =============================================================================
+// Code Validation
+// =============================================================================
+
+/**
+ * Validate Python code without executing
+ */
+async function validateCode(code: string, config: ValidationConfig, id: string): Promise<void> {
+	if (!pyodide) {
+		postMessage({
+			type: 'error',
+			message: ERROR_MESSAGES.PYODIDE_NOT_READY,
+			id
+		});
+		return;
+	}
+
+	const issues: ValidationIssue[] = [];
+	let hasAst = false;
+
+	try {
+		// Check code length
+		if (config.maxCodeLength && code.length > config.maxCodeLength) {
+			issues.push({
+				line: 1,
+				column: 0,
+				message: ERROR_MESSAGES.CODE_TOO_LONG,
+				severity: 'error',
+				rule: 'max-code-length'
+			});
+		}
+
+		// Check line count
+		if (config.maxLines) {
+			const lineCount = code.split('\n').length;
+			if (lineCount > config.maxLines) {
+				issues.push({
+					line: 1,
+					column: 0,
+					message: ERROR_MESSAGES.TOO_MANY_LINES,
+					severity: 'error',
+					rule: 'max-lines'
+				});
+			}
+		}
+
+		// Check forbidden patterns
+		if (config.forbiddenPatterns && config.forbiddenPatterns.length > 0) {
+			for (const pattern of config.forbiddenPatterns) {
+				try {
+					const regex = new RegExp(pattern, 'gm');
+					let match;
+					while ((match = regex.exec(code)) !== null) {
+						// Find line number
+						const beforeMatch = code.substring(0, match.index);
+						const lineNumber = beforeMatch.split('\n').length;
+						const column = match.index - beforeMatch.lastIndexOf('\n') - 1;
+
+						issues.push({
+							line: lineNumber,
+							column: Math.max(0, column),
+							message: `Forbidden pattern detected: ${pattern}`,
+							severity: 'error',
+							rule: 'forbidden-pattern'
+						});
+					}
+				} catch {
+					// Invalid regex, skip
+				}
+			}
+		}
+
+		// Check syntax using Python AST
+		if (config.checkSyntax) {
+			pyodide.globals.set('_ubumaths_validate_code', code);
+			try {
+				const result = pyodide.runPython(`_ubumaths_validate_syntax(_ubumaths_validate_code)`);
+
+				// Convert PyProxy to JS
+				const jsResult = (result as { toJs: () => Record<string, unknown> }).toJs();
+
+				hasAst = jsResult.hasAst as boolean;
+
+				if (!jsResult.valid) {
+					const pythonIssues = jsResult.issues as Array<Record<string, unknown>>;
+					for (const issue of pythonIssues) {
+						issues.push({
+							line: issue.line as number,
+							column: issue.column as number,
+							endLine: issue.endLine as number | undefined,
+							endColumn: issue.endColumn as number | undefined,
+							message: issue.message as string,
+							severity: issue.severity as 'error' | 'warning' | 'info',
+							rule: issue.rule as string
+						});
+					}
+				}
+
+				// Clean up PyProxy
+				if (
+					result &&
+					typeof result === 'object' &&
+					'destroy' in result &&
+					typeof (result as { destroy: () => void }).destroy === 'function'
+				) {
+					(result as { destroy: () => void }).destroy();
+				}
+			} finally {
+				// Clean up global variable to prevent memory leaks
+				pyodide.globals.delete('_ubumaths_validate_code');
+			}
+		}
+
+		const validationResult: ValidationResult = {
+			valid: issues.filter((i) => i.severity === 'error').length === 0,
+			issues,
+			hasAst
+		};
+
+		postMessage({
+			type: 'validation-result',
+			result: validationResult,
+			id
+		});
+	} catch (error) {
+		console.warn('[Pyodide Worker] Validation error:', error);
+		postMessage({
+			type: 'validation-result',
+			result: {
+				valid: false,
+				issues: [
+					{
+						line: 1,
+						column: 0,
+						message: error instanceof Error ? error.message : String(error),
+						severity: 'error',
+						rule: 'validation-error'
+					}
+				],
+				hasAst: false
+			},
+			id
+		});
+	}
+}
+
+// =============================================================================
 // Autocompletion
 // =============================================================================
 
 /**
  * Handle autocompletion request
+ * Supports context-aware completions for persistent contexts
  */
-async function handleAutocomplete(code: string, cursor: number, id: string): Promise<void> {
+async function handleAutocomplete(
+	code: string,
+	cursor: number,
+	id: string,
+	contextId?: string
+): Promise<void> {
 	if (!pyodide) {
 		postMessage({
 			type: 'autocomplete-result',
@@ -836,24 +1297,38 @@ async function handleAutocomplete(code: string, cursor: number, id: string): Pro
 		return;
 	}
 
+	// Validate cursor position against code length
+	if (cursor < 0 || cursor > code.length) {
+		postMessage({ type: 'autocomplete-result', completions: [], id });
+		return;
+	}
+
+	// Get namespace for context-aware completions
+	const namespace = getContextNamespace(contextId);
+
+	// Set the code, cursor position, and optional namespace for the Python helper
+	pyodide.globals.set('_ubumaths_autocomplete_code', code);
+	pyodide.globals.set('_ubumaths_autocomplete_cursor', cursor);
+	pyodide.globals.set('_ubumaths_autocomplete_namespace', namespace);
+
 	try {
-		// Validate cursor position against code length
-		if (cursor < 0 || cursor > code.length) {
-			postMessage({ type: 'autocomplete-result', completions: [], id });
-			return;
-		}
-
-		// Set the code and cursor position for the Python helper
-		pyodide.globals.set('_ubumaths_autocomplete_code', code);
-		pyodide.globals.set('_ubumaths_autocomplete_cursor', cursor);
-
-		// Call the Python completion function
+		// Call the Python completion function with namespace
 		const result = await pyodide.runPythonAsync(`
-_ubumaths_get_completions(_ubumaths_autocomplete_code, _ubumaths_autocomplete_cursor)
+_ubumaths_get_completions(_ubumaths_autocomplete_code, _ubumaths_autocomplete_cursor, _ubumaths_autocomplete_namespace)
 `);
 
 		// Convert PyProxy to JavaScript - result should be unknown
 		const jsResult = (result as { toJs(): unknown }).toJs();
+
+		// Clean up PyProxy
+		if (
+			result &&
+			typeof result === 'object' &&
+			'destroy' in result &&
+			typeof (result as { destroy: () => void }).destroy === 'function'
+		) {
+			(result as { destroy: () => void }).destroy();
+		}
 
 		// Validate that result is an array
 		if (!Array.isArray(jsResult)) {
@@ -908,6 +1383,11 @@ _ubumaths_get_completions(_ubumaths_autocomplete_code, _ubumaths_autocomplete_cu
 			completions: [],
 			id
 		});
+	} finally {
+		// Clean up global variables to prevent memory leaks
+		pyodide.globals.delete('_ubumaths_autocomplete_code');
+		pyodide.globals.delete('_ubumaths_autocomplete_cursor');
+		pyodide.globals.delete('_ubumaths_autocomplete_namespace');
 	}
 }
 
@@ -931,7 +1411,7 @@ self.onmessage = async (event: MessageEvent<unknown>) => {
 			break;
 
 		case 'execute':
-			await executeCode(message.code, message.id);
+			await executeCode(message.code, message.id, message.contextId);
 			break;
 
 		case 'cancel':
@@ -939,7 +1419,23 @@ self.onmessage = async (event: MessageEvent<unknown>) => {
 			break;
 
 		case 'autocomplete':
-			await handleAutocomplete(message.code, message.cursor, message.id);
+			await handleAutocomplete(message.code, message.cursor, message.id, message.contextId);
+			break;
+
+		case 'create-context':
+			createContext(message.contextId, message.persistent);
+			break;
+
+		case 'destroy-context':
+			destroyContext(message.contextId);
+			break;
+
+		case 'reset-context':
+			resetContext(message.contextId);
+			break;
+
+		case 'validate':
+			await validateCode(message.code, message.config, message.id);
 			break;
 	}
 };
