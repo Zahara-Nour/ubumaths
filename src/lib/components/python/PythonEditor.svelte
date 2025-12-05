@@ -17,7 +17,7 @@
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension } from '@codemirror/state';
 	import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';
-	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
+	import { pythonStore, type EditorTheme } from '$lib/stores/pythonPlayground.svelte';
 	import type { CompletionItem } from '$lib/types/python-worker';
 
 	// Props
@@ -26,6 +26,7 @@
 		errorLine = null as number | null,
 		disabled = false,
 		fontSize = 14,
+		theme = 'default' as EditorTheme,
 		onExecute = () => {},
 		onSave = () => {}
 	}: {
@@ -33,6 +34,7 @@
 		errorLine?: number | null;
 		disabled?: boolean;
 		fontSize?: number;
+		theme?: EditorTheme;
 		onExecute?: () => void;
 		onSave?: () => void;
 	} = $props();
@@ -114,19 +116,67 @@
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let errorLineEffectType: { of: (value: number | null) => any } | null = null;
 
-	// Track theme preference
-	let isDark = $state(false);
+	// Track current theme for change detection
+	let currentTheme = $state<EditorTheme>(theme);
 
 	// Prevent race conditions during theme switch
 	let isReinitializing = $state(false);
 
-	// Check for dark mode preference
-	function checkDarkMode(): boolean {
-		if (!browser) return false;
-		return (
-			document.documentElement.classList.contains('dark') ||
-			window.matchMedia('(prefers-color-scheme: dark)').matches
-		);
+	/**
+	 * Load theme extension based on theme name
+	 * Returns the theme extension or null for default theme
+	 */
+	async function loadThemeExtension(themeName: EditorTheme): Promise<Extension | null> {
+		switch (themeName) {
+			case 'default':
+				return null;
+			case 'oneDark': {
+				const { oneDark } = await import('@codemirror/theme-one-dark');
+				return oneDark;
+			}
+			case 'dracula': {
+				const { dracula } = await import('@uiw/codemirror-theme-dracula');
+				return dracula;
+			}
+			case 'github': {
+				const { githubLight } = await import('@uiw/codemirror-theme-github');
+				return githubLight;
+			}
+			case 'githubDark': {
+				const { githubDark } = await import('@uiw/codemirror-theme-github');
+				return githubDark;
+			}
+			case 'nord': {
+				const { nord } = await import('@uiw/codemirror-theme-nord');
+				return nord;
+			}
+			case 'solarizedLight': {
+				const { solarizedLight } = await import('@uiw/codemirror-theme-solarized');
+				return solarizedLight;
+			}
+			case 'solarizedDark': {
+				const { solarizedDark } = await import('@uiw/codemirror-theme-solarized');
+				return solarizedDark;
+			}
+			case 'material': {
+				const { materialLight } = await import('@uiw/codemirror-theme-material');
+				return materialLight;
+			}
+			case 'materialDark': {
+				const { materialDark } = await import('@uiw/codemirror-theme-material');
+				return materialDark;
+			}
+			case 'vscode': {
+				const { vscodeLightInit } = await import('@uiw/codemirror-theme-vscode');
+				return vscodeLightInit();
+			}
+			case 'vscodeDark': {
+				const { vscodeDark } = await import('@uiw/codemirror-theme-vscode');
+				return vscodeDark;
+			}
+			default:
+				return null;
+		}
 	}
 
 	// Update value from editor
@@ -181,7 +231,6 @@
 				},
 				{ EditorState, StateEffect, StateField, RangeSet },
 				{ python },
-				{ oneDark },
 				{ defaultHighlightStyle, syntaxHighlighting, bracketMatching, indentOnInput },
 				{ autocompletion, closeBrackets, closeBracketsKeymap },
 				{ history, defaultKeymap, historyKeymap }
@@ -189,11 +238,13 @@
 				import('@codemirror/view'),
 				import('@codemirror/state'),
 				import('@codemirror/lang-python'),
-				import('@codemirror/theme-one-dark'),
 				import('@codemirror/language'),
 				import('@codemirror/autocomplete'),
 				import('@codemirror/commands')
 			]);
+
+			// Load the selected theme extension
+			const themeExtension = await loadThemeExtension(theme);
 
 			// Create error line highlighting system
 			const effectType = StateEffect.define<number | null>();
@@ -265,7 +316,8 @@
 				}
 			});
 
-			isDark = checkDarkMode();
+			// Track the current theme
+			currentTheme = theme;
 
 			// Build extensions
 			const extensions: Extension[] = [
@@ -351,9 +403,9 @@
 				})
 			];
 
-			// Add dark theme if needed
-			if (isDark) {
-				extensions.push(oneDark);
+			// Add theme extension if not default
+			if (themeExtension) {
+				extensions.push(themeExtension);
 			}
 
 			// Create editor
@@ -405,42 +457,32 @@
 		}
 	});
 
-	// Theme change observer
+	// Theme change observer - reinitialize editor when theme prop changes
 	$effect(() => {
-		if (!browser) return;
+		// Read theme prop to track it
+		const newTheme = theme;
 
-		const observer = new MutationObserver(async () => {
-			const newIsDark = checkDarkMode();
-			if (newIsDark !== isDark && !isReinitializing) {
-				isDark = newIsDark;
-				// Reinitialize editor with new theme
-				if (editor) {
-					isReinitializing = true;
-					const currentValue = editor.state.doc.toString();
-					editor.destroy();
-					editor = null;
+		// Only reinitialize if theme actually changed and editor exists
+		if (newTheme !== currentTheme && editor && !isReinitializing) {
+			isReinitializing = true;
+			const currentValue = editor.state.doc.toString();
+			editor.destroy();
+			editor = null;
 
-					try {
-						await initEditor();
-						// Restore value after reinitialization if needed
-						if (editor && currentValue !== value) {
-							value = currentValue;
-						}
-					} catch (error) {
-						console.error('[PythonEditor] Failed to reinitialize after theme change:', error);
-					} finally {
-						isReinitializing = false;
+			initEditor()
+				.then(() => {
+					// Restore value after reinitialization if needed
+					if (editor && currentValue !== value) {
+						value = currentValue;
 					}
-				}
-			}
-		});
-
-		observer.observe(document.documentElement, {
-			attributes: true,
-			attributeFilter: ['class']
-		});
-
-		return () => observer.disconnect();
+				})
+				.catch((error) => {
+					console.error('[PythonEditor] Failed to reinitialize after theme change:', error);
+				})
+				.finally(() => {
+					isReinitializing = false;
+				});
+		}
 	});
 
 	onMount(() => {

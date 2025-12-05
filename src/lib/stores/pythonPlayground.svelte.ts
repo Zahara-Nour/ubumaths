@@ -131,12 +131,48 @@ export type PlaygroundState =
 	| 'error';
 
 /**
+ * Available editor themes.
+ */
+export type EditorTheme =
+	| 'default'
+	| 'oneDark'
+	| 'dracula'
+	| 'github'
+	| 'githubDark'
+	| 'nord'
+	| 'solarizedLight'
+	| 'solarizedDark'
+	| 'material'
+	| 'materialDark'
+	| 'vscode'
+	| 'vscodeDark';
+
+/** Theme display names for UI */
+export const EDITOR_THEMES: { value: EditorTheme; label: string; dark: boolean }[] = [
+	{ value: 'default', label: 'Par défaut (clair)', dark: false },
+	{ value: 'oneDark', label: 'One Dark', dark: true },
+	{ value: 'dracula', label: 'Dracula', dark: true },
+	{ value: 'github', label: 'GitHub (clair)', dark: false },
+	{ value: 'githubDark', label: 'GitHub (sombre)', dark: true },
+	{ value: 'nord', label: 'Nord', dark: true },
+	{ value: 'solarizedLight', label: 'Solarized (clair)', dark: false },
+	{ value: 'solarizedDark', label: 'Solarized (sombre)', dark: true },
+	{ value: 'material', label: 'Material (clair)', dark: false },
+	{ value: 'materialDark', label: 'Material (sombre)', dark: true },
+	{ value: 'vscode', label: 'VS Code (clair)', dark: false },
+	{ value: 'vscodeDark', label: 'VS Code (sombre)', dark: true }
+];
+
+const DEFAULT_THEME: EditorTheme = 'default';
+
+/**
  * Serialized state for localStorage.
  */
 interface SerializedPlaygroundState {
 	code: string;
 	showPedagogicErrors: boolean;
 	fontSize?: number;
+	editorTheme?: EditorTheme;
 }
 
 /** Font size bounds */
@@ -213,6 +249,9 @@ class PythonPlaygroundStore {
 
 	/** Editor font size in pixels */
 	fontSize = $state(DEFAULT_FONT_SIZE);
+
+	/** Editor theme */
+	editorTheme = $state<EditorTheme>(DEFAULT_THEME);
 
 	/** Packages currently being loaded (lazy loading) */
 	packagesLoading = $state<string[]>([]);
@@ -725,6 +764,15 @@ class PythonPlaygroundStore {
 	}
 
 	/**
+	 * Set editor theme.
+	 * @param theme - The theme to set
+	 */
+	setTheme(theme: EditorTheme): void {
+		this.editorTheme = theme;
+		this.saveToStorage();
+	}
+
+	/**
 	 * Set the loading state and progress.
 	 *
 	 * @param state - The new state
@@ -1153,6 +1201,12 @@ class PythonPlaygroundStore {
 			) {
 				this.fontSize = parsed.fontSize;
 			}
+			if (
+				typeof parsed.editorTheme === 'string' &&
+				EDITOR_THEMES.some((t) => t.value === parsed.editorTheme)
+			) {
+				this.editorTheme = parsed.editorTheme as EditorTheme;
+			}
 		} catch (error) {
 			console.error('Failed to load Python playground state from localStorage:', error);
 		}
@@ -1176,7 +1230,8 @@ class PythonPlaygroundStore {
 				const serialized: SerializedPlaygroundState = {
 					code: this.code,
 					showPedagogicErrors: this.showPedagogicErrors,
-					fontSize: this.fontSize
+					fontSize: this.fontSize,
+					editorTheme: this.editorTheme
 				};
 				localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
 				this._lastSavedCode = this.code;
