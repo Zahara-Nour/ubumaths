@@ -147,7 +147,7 @@ class PythonPlaygroundStore {
 	// ===========================================================================
 
 	/** The executor that handles Pyodide worker and code execution */
-	private executor = new PlaygroundExecutor();
+	private _executor = new PlaygroundExecutor();
 
 	// ===========================================================================
 	// Forwarded Execution State (read from executor)
@@ -156,92 +156,97 @@ class PythonPlaygroundStore {
 
 	/** Current execution state (forwarded from executor) */
 	get state() {
-		return this.executor.state;
+		return this._executor.state;
 	}
 
 	/** Standard output from execution (forwarded from executor) */
 	get stdout() {
-		return this.executor.stdout;
+		return this._executor.stdout;
 	}
 
 	/** Standard error from execution (forwarded from executor) */
 	get stderr() {
-		return this.executor.stderr;
+		return this._executor.stderr;
 	}
 
 	/** Plot output as base64 PNG data URL (forwarded from executor) */
 	get plotData() {
-		return this.executor.plotData;
+		return this._executor.plotData;
 	}
 
 	/** LaTeX output from sympy expressions (forwarded from executor) */
 	get latexOutput() {
-		return this.executor.latexOutput;
+		return this._executor.latexOutput;
 	}
 
 	/** Loading progress (0-100) (forwarded from executor) */
 	get loadingProgress() {
-		return this.executor.loadingProgress;
+		return this._executor.loadingProgress;
 	}
 
 	/** Current loading stage description (forwarded from executor) */
 	get loadingStage() {
-		return this.executor.loadingStage;
+		return this._executor.loadingStage;
 	}
 
 	/** Last execution time in milliseconds (forwarded from executor) */
 	get executionTime() {
-		return this.executor.executionTime;
+		return this._executor.executionTime;
 	}
 
 	/** Error line number for highlighting (forwarded from executor) */
 	get errorLine() {
-		return this.executor.errorLine;
+		return this._executor.errorLine;
 	}
 
 	/** Packages currently being loaded (forwarded from executor) */
 	get packagesLoading() {
-		return this.executor.packagesLoading;
+		return this._executor.packagesLoading;
 	}
 
 	/** Packages that have been loaded during this session (forwarded from executor) */
 	get loadedPackages() {
-		return this.executor.loadedPackages;
+		return this._executor.loadedPackages;
 	}
 
 	/** Plotly JSON spec for interactive charts (forwarded from executor) */
 	get plotlyData() {
-		return this.executor.plotlyData;
+		return this._executor.plotlyData;
+	}
+
+	/** Expose executor for completion provider access */
+	get executor() {
+		return this._executor;
 	}
 
 	/** Whether Pyodide is ready for execution (forwarded from executor) */
 	get isReady() {
-		return this.executor.isReady;
+		return this._executor.isReady;
 	}
 
 	/** Whether code is currently executing (forwarded from executor) */
 	get isExecuting() {
-		return this.executor.isExecuting;
+		return this._executor.isExecuting;
 	}
 
 	/** Whether Pyodide is currently loading (forwarded from executor) */
 	get isLoading() {
-		return this.executor.isLoading;
+		return this._executor.isLoading;
 	}
 
 	/** Whether there is an error state (forwarded from executor) */
 	get hasError() {
-		return this.executor.hasError;
+		return this._executor.hasError;
 	}
 
 	/** Whether there is any output to display (forwarded from executor) */
 	get hasOutput() {
-		return this.executor.hasOutput;
+		return this._executor.hasOutput;
 	}
 
 	/** Whether packages are currently being loaded (forwarded from executor) */
 	get isLoadingPackages() {
-		return this.executor.isLoadingPackages;
+		return this._executor.isLoadingPackages;
 	}
 
 	// ===========================================================================
@@ -331,7 +336,7 @@ class PythonPlaygroundStore {
 	 * Should be called when the playground component mounts.
 	 */
 	initPyodide(): void {
-		this.executor.initPyodide();
+		this._executor.initPyodide();
 	}
 
 	/**
@@ -340,7 +345,7 @@ class PythonPlaygroundStore {
 	 */
 	destroy(): void {
 		// Destroy the executor (terminates worker, cleans up autocomplete)
-		this.executor.destroy();
+		this._executor.destroy();
 
 		// Clean up store-specific resources
 		if (this.saveTimeout) {
@@ -357,21 +362,21 @@ class PythonPlaygroundStore {
 	 * Execute the current Python code.
 	 */
 	execute(): void {
-		this.executor.execute(this.code);
+		this._executor.execute(this.code);
 	}
 
 	/**
 	 * Cancel the current execution.
 	 */
 	cancel(): void {
-		this.executor.cancel();
+		this._executor.cancel();
 	}
 
 	/**
 	 * Clear all output (stdout, stderr, plotData, latexOutput, plotlyData).
 	 */
 	clearOutput(): void {
-		this.executor.clearOutput();
+		this._executor.clearOutput();
 	}
 
 	/**
@@ -382,7 +387,7 @@ class PythonPlaygroundStore {
 	 * @returns Promise resolving to an array of completion items
 	 */
 	requestCompletion(code: string, cursor: number): Promise<CompletionItem[]> {
-		return this.executor.requestCompletion(code, cursor);
+		return this._executor.requestCompletion(code, cursor);
 	}
 
 	/**

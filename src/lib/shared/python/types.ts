@@ -272,6 +272,20 @@ export interface CompletionItem {
 }
 
 /**
+ * Interface for objects that can provide Python autocompletion.
+ * Implemented by executors (PlaygroundExecutor, NotebookExecutor) and stores.
+ */
+export interface CompletionProvider {
+	/**
+	 * Request Python autocompletion for code at cursor position.
+	 * @param code - Full Python code
+	 * @param cursor - Cursor position (character offset)
+	 * @returns Promise resolving to completion items
+	 */
+	requestCompletion: (code: string, cursor: number) => Promise<CompletionItem[]>;
+}
+
+/**
  * Autocompletion result from Python
  */
 export interface AutocompleteResultMessage {

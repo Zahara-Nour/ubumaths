@@ -18,7 +18,7 @@
 	import type { Extension } from '@codemirror/state';
 	import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';
 	import { pythonStore, type EditorTheme } from '$lib/stores/pythonPlayground.svelte';
-	import type { CompletionItem } from '$lib/shared/python';
+	import type { CompletionItem, CompletionProvider } from '$lib/shared/python';
 
 	// Props
 	let {
@@ -27,6 +27,7 @@
 		disabled = false,
 		fontSize = 14,
 		theme = 'default' as EditorTheme,
+		executor = null as CompletionProvider | null,
 		onExecute = () => {},
 		onSave = () => {}
 	}: {
@@ -35,6 +36,7 @@
 		disabled?: boolean;
 		fontSize?: number;
 		theme?: EditorTheme;
+		executor?: CompletionProvider | null;
 		onExecute?: () => void;
 		onSave?: () => void;
 	} = $props();
@@ -65,7 +67,7 @@
 
 	/**
 	 * Python completion source for CodeMirror
-	 * Fetches completions from Pyodide via the store
+	 * Fetches completions from the provided executor or falls back to pythonStore
 	 */
 	async function pythonCompletions(context: CompletionContext): Promise<CompletionResult | null> {
 		const { pos, state } = context;
@@ -85,7 +87,9 @@
 		}
 
 		try {
-			const completions = await pythonStore.requestCompletion(code, pos);
+			// Use provided executor or fall back to pythonStore for backwards compatibility
+			const provider = executor ?? pythonStore;
+			const completions = await provider.requestCompletion(code, pos);
 
 			if (completions.length === 0) return null;
 

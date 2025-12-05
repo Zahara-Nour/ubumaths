@@ -190,7 +190,63 @@ export class NotebookExecutor extends BasePythonExecutor {
 - Playground executor: `src/lib/shared/python/execution/playground-executor.svelte.ts`
 - Store: `src/lib/stores/pythonPlayground.svelte.ts`
 - Types: `src/lib/shared/python/execution/types.ts`
+- Shared types (CompletionProvider): `src/lib/shared/python/types.ts`
 - Worker: `src/lib/workers/pyodide.worker.ts`
+- Editor component: `src/lib/components/python/PythonEditor.svelte`
+
+## Phase 1.4: PythonEditor Decoupling
+
+The PythonEditor component was refactored to accept an optional `executor` prop for autocompletion, decoupling it from the pythonStore singleton.
+
+### CompletionProvider Interface
+
+```typescript
+// src/lib/shared/python/types.ts
+export interface CompletionProvider {
+	requestCompletion: (code: string, cursor: number) => Promise<CompletionItem[]>;
+}
+```
+
+### Editor Props
+
+```typescript
+// PythonEditor.svelte
+let {
+	value = $bindable(''),
+	errorLine = null as number | null,
+	disabled = false,
+	fontSize = 14,
+	theme = 'default' as EditorTheme,
+	executor = null as CompletionProvider | null, // NEW: optional executor
+	onExecute = () => {},
+	onSave = () => {}
+} = $props();
+```
+
+### Usage with Fallback
+
+```typescript
+// Uses provided executor or falls back to pythonStore
+const provider = executor ?? pythonStore;
+const completions = await provider.requestCompletion(code, pos);
+```
+
+### Store Exposes Executor
+
+```typescript
+// pythonPlayground.svelte.ts
+get executor() {
+	return this._executor;
+}
+```
+
+### Playground Usage
+
+```svelte
+<PythonEditor bind:value={pythonStore.code} executor={pythonStore.executor} ... />
+```
+
+This enables future notebook cells to use their own executors for context-aware autocompletion.
 
 ## Design Decisions
 
