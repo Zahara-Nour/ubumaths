@@ -10,6 +10,7 @@
 	// Derived state from store
 	let canExecute = $derived(pythonStore.isReady);
 	let isExecuting = $derived(pythonStore.isExecuting);
+	let isModified = $derived(pythonStore.isModified);
 
 	// Functions
 	function handleExecute(): void {
@@ -50,6 +51,7 @@
 		onReset={handleReset}
 		{canExecute}
 		{isExecuting}
+		{isModified}
 	/>
 
 	<!-- Main content area -->

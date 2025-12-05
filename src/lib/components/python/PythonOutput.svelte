@@ -9,6 +9,10 @@
 	 * - Error line number display
 	 */
 
+	// Imports
+	import { Button } from '$lib/components/ui/button';
+	import { Download } from 'lucide-svelte';
+
 	// Props
 	let {
 		stdout = '',
@@ -28,6 +32,21 @@
 
 	// Derived state
 	let hasOutput = $derived(stdout.length > 0 || stderr.length > 0 || plotData !== null);
+
+	// Functions
+	/**
+	 * Download the plot as a PNG file
+	 */
+	function downloadPlot(): void {
+		if (!plotData) return;
+
+		const link = document.createElement('a');
+		link.href = plotData;
+		link.download = 'python-plot.png';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
 
 	// Pedagogic error translations
 	const ERROR_TRANSLATIONS: Record<string, { pattern: RegExp; message: string }> = {
@@ -156,7 +175,19 @@
 
 		{#if plotData}
 			<div>
-				<div class="mb-1 text-xs font-medium text-muted-foreground">Graphique</div>
+				<div class="mb-1 flex items-center justify-between">
+					<span class="text-xs font-medium text-muted-foreground">Graphique</span>
+					<Button
+						variant="ghost"
+						size="sm"
+						onclick={downloadPlot}
+						class="h-7 gap-1.5 px-2"
+						aria-label="Télécharger le graphique"
+					>
+						<Download class="size-3.5" />
+						<span class="text-xs">Télécharger</span>
+					</Button>
+				</div>
 				<img
 					src={plotData}
 					alt="Graphique matplotlib"

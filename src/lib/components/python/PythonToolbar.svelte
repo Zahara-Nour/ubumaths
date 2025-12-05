@@ -12,7 +12,8 @@
 		onCopy,
 		onReset,
 		canExecute,
-		isExecuting
+		isExecuting,
+		isModified = false
 	}: {
 		onExecute: () => void;
 		onClear: () => void;
@@ -20,6 +21,7 @@
 		onReset: () => void;
 		canExecute: boolean;
 		isExecuting: boolean;
+		isModified?: boolean;
 	} = $props();
 
 	// State
@@ -108,5 +110,8 @@
 		<span class="hidden sm:inline">
 			{canExecute ? 'Prêt' : 'Chargement...'}
 		</span>
+		{#if isModified}
+			<span class="font-medium text-destructive" title="Code modifié (non sauvegardé)">*</span>
+		{/if}
 	</div>
 </div>
