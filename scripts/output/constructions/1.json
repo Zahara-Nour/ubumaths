@@ -1,1345 +1,1345 @@
 {
-  "version": 1,
-  "title": "Partage d'un segment en 3 parts egales",
-  "description": "Construction geometrique avec regle et compas pour diviser un segment [AB] en trois parties egales. (Auteur: Jean-Louis Kahn)",
-  "canvas": {
-    "width": 800,
-    "height": 600,
-    "backgroundColor": "#FFFFFF"
-  },
-  "steps": [
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": 800,
-        "y": 50,
-        "duration": 100
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "c1",
-        "from": {
-          "x": 800,
-          "y": 50
-        },
-        "to": {
-          "x": 800,
-          "y": 600
-        },
-        "style": {
-          "color": "#FFFFFF",
-          "lineWidth": 2,
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "c2",
-        "from": {
-          "x": 800,
-          "y": 600
-        },
-        "to": {
-          "x": 0,
-          "y": 600
-        },
-        "style": {
-          "color": "#FFFFFF",
-          "lineWidth": 2,
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "T_50",
-        "content": " Partage d'un segment en trois parts égales. ( règle, compas )",
-        "x": 10,
-        "y": 50,
-        "fontSize": 18,
-        "style": {
-          "color": "#006400"
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 1000
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "P_12",
-        "x": 173.45,
-        "y": 457.45,
-        "style": {
-          "color": "#000000",
-          "lineWidth": 2
-        },
-        "pointStyle": "dot",
-        "radius": 4
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "label_12_label",
-        "content": "A",
-        "x": "$P_12.x + 10",
-        "y": "$P_12.y - 10",
-        "fontSize": 14,
-        "style": {
-          "color": "#000000"
-        }
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "P_13",
-        "x": 468.15,
-        "y": 424.35,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 2
-        },
-        "pointStyle": "dot",
-        "radius": 4
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "label_13_label",
-        "content": "B",
-        "x": "$P_13.x + 10",
-        "y": "$P_13.y - 10",
-        "fontSize": 14,
-        "style": {
-          "color": "#000000"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": 173.45,
-        "y": 457.45,
-        "duration": 100
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "AB",
-        "from": {
-          "x": 173.45,
-          "y": 457.45
-        },
-        "to": {
-          "x": 468.15,
-          "y": 424.35
-        },
-        "style": {
-          "color": "#000000",
-          "lineWidth": 1.5,
-          "lineStyle": "solid"
-        }
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "T_22",
-        "content": "1. On trace une demi-droite d'origine le point A.",
-        "x": 70,
-        "y": 120,
-        "fontSize": 18,
-        "style": {
-          "color": "#0000FF"
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 1000
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "T_1",
-        "content": "1. On trace une demi-droite d'origine le point A.",
-        "x": 70,
-        "y": 120,
-        "fontSize": 18,
-        "style": {
-          "color": "#0000FF"
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 1000
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "scale",
-        "target": "ruler",
-        "factor": 1.1,
-        "duration": 300
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Ruler mode: vide"
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "show",
-        "target": "ruler"
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "ruler",
-        "x": "$P_12.x",
-        "y": "$P_12.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "rotate",
-        "target": "ruler",
-        "angle": -36.02,
-        "duration": 500
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": 173.45,
-        "y": 457.45,
-        "duration": 1000
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "show",
-        "target": "pencil"
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 250
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "seg_21",
-        "from": {
-          "x": 173.45,
-          "y": 457.45
-        },
-        "to": {
-          "x": 555.5,
-          "y": 178.5
-        },
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 1.5,
-          "lineStyle": "solid"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "hide",
-        "target": "pencil"
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "hide",
-        "target": "ruler"
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "T_2",
-        "content": "2. On choisit une ouverture de compas que l'on reporte trois fois sur la demi-droite.",
-        "x": 70,
-        "y": 120,
-        "fontSize": 18,
-        "style": {
-          "color": "#0000FF"
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 1000
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "show",
-        "target": "compass"
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass flipped"
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "compass",
-        "x": 173.45,
-        "y": 457.45,
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "setCompass",
-        "radius": 116.3,
-        "duration": 300
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "rotate",
-        "target": "compass",
-        "angle": 138,
-        "duration": 500
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass raised"
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "arc",
-        "id": "arc_3",
-        "center": {
-          "x": 70,
-          "y": 120
-        },
-        "radius": 100,
-        "startAngle": 138,
-        "endAngle": 155,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 1.5
-        }
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass lowered"
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "compass",
-        "x": 266.6,
-        "y": 388.3,
-        "duration": 500
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass raised"
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "arc",
-        "id": "arc_4",
-        "center": {
-          "x": 70,
-          "y": 120
-        },
-        "radius": 100,
-        "startAngle": 155,
-        "endAngle": 122,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 1.5
-        }
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass lowered"
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "compass",
-        "x": 361,
-        "y": 319.7,
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "rotate",
-        "target": "compass",
-        "angle": 130,
-        "duration": 500
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass raised"
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "arc",
-        "id": "c3",
-        "center": {
-          "x": 70,
-          "y": 120
-        },
-        "radius": 100,
-        "startAngle": 130,
-        "endAngle": 164,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 1.5
-        }
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass lowered"
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "hide",
-        "target": "compass"
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "mark1",
-        "x": 225,
-        "y": 417,
-        "pointStyle": "cross",
-        "radius": 5,
-        "style": {
-          "color": "#008844",
-          "lineWidth": 1
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "mark2",
-        "x": 309,
-        "y": 358,
-        "pointStyle": "cross",
-        "radius": 5,
-        "style": {
-          "color": "#008844",
-          "lineWidth": 1
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "mark3",
-        "x": 408,
-        "y": 286,
-        "pointStyle": "cross",
-        "radius": 5,
-        "style": {
-          "color": "#008844",
-          "lineWidth": 1
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "I",
-        "x": 530,
-        "y": 176,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 2
-        },
-        "pointStyle": "dot",
-        "radius": 4
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "I_label",
-        "content": "I",
-        "x": "$I.x + 10",
-        "y": "$I.y - 10",
-        "fontSize": 14,
-        "style": {
-          "color": "#228B22"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "I",
-        "x": 266.6,
-        "y": 388.3,
-        "duration": 10000
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "J",
-        "x": 530,
-        "y": 176,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 2
-        },
-        "pointStyle": "dot",
-        "radius": 4
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "J_label",
-        "content": "J",
-        "x": "$J.x + 10",
-        "y": "$J.y - 10",
-        "fontSize": 14,
-        "style": {
-          "color": "#228B22"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "J",
-        "x": 361,
-        "y": 319.7,
-        "duration": 10000
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "K",
-        "x": 530,
-        "y": 176,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 2
-        },
-        "pointStyle": "dot",
-        "radius": 4
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "K_label",
-        "content": "K",
-        "x": "$K.x + 10",
-        "y": "$K.y - 10",
-        "fontSize": 14,
-        "style": {
-          "color": "#228B22"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "K",
-        "x": 454.8,
-        "y": 251.8,
-        "duration": 10000
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "T_5",
-        "content": "3. On trace les droites parallèles à la droite (KB) et passant par les points J et I. Constructions de parallélogrammes au compas.",
-        "x": 70,
-        "y": 120,
-        "fontSize": 18,
-        "style": {
-          "color": "#0000FF"
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 1000
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "show",
-        "target": "compass"
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "compass",
-        "x": "$K.x",
-        "y": "$K.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "comment",
-      "text": "Compass flipped"
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "rotate",
-        "target": "compass",
-        "angle": 144.09995035978378,
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "setCompass",
-        "radius": 115.8,
-        "duration": 300
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "compass",
-        "x": "$P_13.x",
-        "y": "$P_13.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "comment",
-      "text": "Compass raised"
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "arc",
-        "id": "arc_1",
-        "center": {
-          "x": 70,
-          "y": 120
-        },
-        "radius": 100,
-        "startAngle": 150.1,
-        "endAngle": 117.66,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 0
-        }
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass lowered"
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "compass",
-        "x": "$K.x",
-        "y": "$K.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "rotate",
-        "target": "compass",
-        "angle": 85.57590320881472,
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "setCompass",
-        "radius": 173.07,
-        "duration": 300
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "compass",
-        "x": "$J.x",
-        "y": "$J.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "comment",
-      "text": "Compass raised"
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "arc",
-        "id": "arc_2",
-        "center": {
-          "x": 70,
-          "y": 120
-        },
-        "radius": 100,
-        "startAngle": 92.56,
-        "endAngle": 78.89,
-        "style": {
-          "color": "#008844",
-          "lineWidth": 0
-        }
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass lowered"
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "compass",
-        "x": "$I.x",
-        "y": "$I.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass raised"
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "arc",
-        "id": "arc_6",
-        "center": {
-          "x": 70,
-          "y": 120
-        },
-        "radius": 100,
-        "startAngle": 88.06,
-        "endAngle": 71.09,
-        "style": {
-          "color": "#008844",
-          "lineWidth": 0
-        }
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass lowered"
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "rotate",
-        "target": "compass",
-        "angle": -36.00571419529118,
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "setCompass",
-        "radius": 116.69,
-        "duration": 300
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "P_4",
-        "x": 375,
-        "y": 491.2,
-        "style": {
-          "color": "#008844",
-          "lineWidth": 2
-        },
-        "pointStyle": "dot",
-        "radius": 4
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "compass",
-        "x": "$P_4.x",
-        "y": "$P_4.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "rotate",
-        "target": "compass",
-        "angle": 152.52,
-        "duration": 500
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "comment",
-      "text": "Compass raised"
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "arc",
-        "id": "arc_5",
-        "center": {
-          "x": 70,
-          "y": 120
-        },
-        "radius": 100,
-        "startAngle": 152.52,
-        "endAngle": 135,
-        "style": {
-          "color": "#008844",
-          "lineWidth": 0
-        }
-      }
-    },
-    {
-      "type": "comment",
-      "text": "Compass lowered"
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "hide",
-        "target": "compass"
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "P_6",
-        "x": 281,
-        "y": 561.3,
-        "style": {
-          "color": "#008844",
-          "lineWidth": 2
-        },
-        "pointStyle": "dot",
-        "radius": 4
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "show",
-        "target": "ruler"
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "ruler",
-        "x": "$K.x",
-        "y": "$K.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "rotate",
-        "target": "ruler",
-        "angle": 85.57590320881472,
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "show",
-        "target": "pencil"
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": "$K.x",
-        "y": "$K.y",
-        "duration": 200
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "seg_7b",
-        "from": {
-          "x": 454.8,
-          "y": 251.8
-        },
-        "to": "P_13",
-        "style": {
-          "color": "#008888",
-          "lineWidth": 1,
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "ruler",
-        "x": "$J.x",
-        "y": "$J.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "rotate",
-        "target": "ruler",
-        "angle": 85.33314162856101,
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": 361,
-        "y": 319.7,
-        "duration": 200
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "seg_7",
-        "from": {
-          "x": 361,
-          "y": 319.7
-        },
-        "to": "P_4",
-        "style": {
-          "color": "#006400",
-          "lineWidth": 1,
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "ruler",
-        "x": "$I.x",
-        "y": "$I.y",
-        "duration": 500
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": "$I.x",
-        "y": "$I.y",
-        "duration": 200
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "seg_8",
-        "from": {
-          "x": 266.6,
-          "y": 388.3
-        },
-        "to": "P_6",
-        "style": {
-          "color": "#006400",
-          "lineWidth": 1,
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 500
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "hide",
-        "target": "ruler"
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "hide",
-        "target": "pencil"
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "P_27",
-        "x": 530,
-        "y": 176,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 2
-        },
-        "pointStyle": "dot",
-        "radius": 4
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "label_27_label",
-        "content": "£i(A,1)",
-        "x": "$P_27.x + 10",
-        "y": "$P_27.y - 10",
-        "fontSize": 14,
-        "style": {
-          "color": "#0000FF"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "P_27",
-        "x": 272.05,
-        "y": 446.5,
-        "duration": 10000
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "P_28",
-        "x": 530,
-        "y": 176,
-        "style": {
-          "color": "#228B22",
-          "lineWidth": 2
-        },
-        "pointStyle": "dot",
-        "radius": 4
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "label_28_label",
-        "content": "£i(A,2)",
-        "x": "$P_28.x + 10",
-        "y": "$P_28.y - 10",
-        "fontSize": 14,
-        "style": {
-          "color": "#0000FF"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "P_28",
-        "x": 370.45,
-        "y": 435.55,
-        "duration": 10000
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "text",
-        "id": "T_7",
-        "content": "Les segments consécutifs [A(A,1)], [(A,1)(A,2)] et [(A,2)B] sont de même longueur.",
-        "x": 70,
-        "y": 120,
-        "fontSize": 18,
-        "style": {
-          "color": "#0000FF"
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 1000
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "show",
-        "target": "pencil"
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": 220.1,
-        "y": 461.2,
-        "duration": 200
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "seg4",
-        "from": {
-          "x": 220.1,
-          "y": 461.2
-        },
-        "to": {
-          "x": 224.85,
-          "y": 445.9
-        },
-        "style": {
-          "color": "#0000FF",
-          "lineWidth": 1.5,
-          "lineStyle": "solid"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": 317.85,
-        "y": 453.55,
-        "duration": 200
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "seg5",
-        "from": {
-          "x": 317.85,
-          "y": 453.55
-        },
-        "to": {
-          "x": 324.55,
-          "y": 436.3
-        },
-        "style": {
-          "color": "#0000FF",
-          "lineWidth": 1.5,
-          "lineStyle": "solid"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": 418.45,
-        "y": 439.2,
-        "duration": 200
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "seg6",
-        "from": {
-          "x": 418.45,
-          "y": 439.2
-        },
-        "to": {
-          "x": 425.2,
-          "y": 422.9
-        },
-        "style": {
-          "color": "#0000FF",
-          "lineWidth": 1.5,
-          "lineStyle": "solid"
-        }
-      }
-    },
-    {
-      "type": "action",
-      "action": {
-        "kind": "hide",
-        "target": "pencil"
-      }
-    }
-  ]
+	"version": 1,
+	"title": "Partage d'un segment en 3 parts egales",
+	"description": "Construction geometrique avec regle et compas pour diviser un segment [AB] en trois parties egales. (Auteur: Jean-Louis Kahn)",
+	"canvas": {
+		"width": 800,
+		"height": 600,
+		"backgroundColor": "#FFFFFF"
+	},
+	"steps": [
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 800,
+				"y": 50,
+				"duration": 100
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "c1",
+				"from": {
+					"x": 800,
+					"y": 50
+				},
+				"to": {
+					"x": 800,
+					"y": 600
+				},
+				"style": {
+					"color": "#FFFFFF",
+					"lineWidth": 2,
+					"lineStyle": "dashed"
+				}
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "c2",
+				"from": {
+					"x": 800,
+					"y": 600
+				},
+				"to": {
+					"x": 0,
+					"y": 600
+				},
+				"style": {
+					"color": "#FFFFFF",
+					"lineWidth": 2,
+					"lineStyle": "dashed"
+				}
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "T_50",
+				"content": " Partage d'un segment en trois parts égales. ( règle, compas )",
+				"x": 10,
+				"y": 50,
+				"fontSize": 18,
+				"style": {
+					"color": "#006400"
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 1000
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "P_12",
+				"x": 173.45,
+				"y": 457.45,
+				"style": {
+					"color": "#000000",
+					"lineWidth": 2
+				},
+				"pointStyle": "dot",
+				"radius": 4
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "label_12_label",
+				"content": "A",
+				"x": "$P_12.x + 10",
+				"y": "$P_12.y - 10",
+				"fontSize": 14,
+				"style": {
+					"color": "#000000"
+				}
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "P_13",
+				"x": 468.15,
+				"y": 424.35,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 2
+				},
+				"pointStyle": "dot",
+				"radius": 4
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "label_13_label",
+				"content": "B",
+				"x": "$P_13.x + 10",
+				"y": "$P_13.y - 10",
+				"fontSize": 14,
+				"style": {
+					"color": "#000000"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 173.45,
+				"y": 457.45,
+				"duration": 100
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "AB",
+				"from": {
+					"x": 173.45,
+					"y": 457.45
+				},
+				"to": {
+					"x": 468.15,
+					"y": 424.35
+				},
+				"style": {
+					"color": "#000000",
+					"lineWidth": 1.5,
+					"lineStyle": "solid"
+				}
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "T_22",
+				"content": "1. On trace une demi-droite d'origine le point A.",
+				"x": 70,
+				"y": 120,
+				"fontSize": 18,
+				"style": {
+					"color": "#0000FF"
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 1000
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "T_1",
+				"content": "1. On trace une demi-droite d'origine le point A.",
+				"x": 70,
+				"y": 120,
+				"fontSize": 18,
+				"style": {
+					"color": "#0000FF"
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 1000
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "scale",
+				"target": "ruler",
+				"factor": 1.1,
+				"duration": 300
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Ruler mode: vide"
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "show",
+				"target": "ruler"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": "$P_12.x",
+				"y": "$P_12.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": -36.02,
+				"duration": 500
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 173.45,
+				"y": 457.45,
+				"duration": 1000
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "show",
+				"target": "pencil"
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 250
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "seg_21",
+				"from": {
+					"x": 173.45,
+					"y": 457.45
+				},
+				"to": {
+					"x": 555.5,
+					"y": 178.5
+				},
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 1.5,
+					"lineStyle": "solid"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "hide",
+				"target": "pencil"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "hide",
+				"target": "ruler"
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "T_2",
+				"content": "2. On choisit une ouverture de compas que l'on reporte trois fois sur la demi-droite.",
+				"x": 70,
+				"y": 120,
+				"fontSize": 18,
+				"style": {
+					"color": "#0000FF"
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 1000
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "show",
+				"target": "compass"
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass flipped"
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 173.45,
+				"y": 457.45,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "setCompass",
+				"radius": 116.3,
+				"duration": 300
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 138,
+				"duration": 500
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass raised"
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "arc",
+				"id": "arc_3",
+				"center": {
+					"x": 173.45,
+					"y": 457.45
+				},
+				"radius": 116.3,
+				"startAngle": 138,
+				"endAngle": 155,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 1.5
+				}
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass lowered"
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 266.6,
+				"y": 388.3,
+				"duration": 500
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass raised"
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "arc",
+				"id": "arc_4",
+				"center": {
+					"x": 266.6,
+					"y": 388.3
+				},
+				"radius": 116.3,
+				"startAngle": 155,
+				"endAngle": 122,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 1.5
+				}
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass lowered"
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 361,
+				"y": 319.7,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 130,
+				"duration": 500
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass raised"
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "arc",
+				"id": "c3",
+				"center": {
+					"x": 361,
+					"y": 319.7
+				},
+				"radius": 116.3,
+				"startAngle": 130,
+				"endAngle": 164,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 1.5
+				}
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass lowered"
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "hide",
+				"target": "compass"
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "mark1",
+				"x": 225,
+				"y": 417,
+				"pointStyle": "cross",
+				"radius": 5,
+				"style": {
+					"color": "#008844",
+					"lineWidth": 1
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "mark2",
+				"x": 309,
+				"y": 358,
+				"pointStyle": "cross",
+				"radius": 5,
+				"style": {
+					"color": "#008844",
+					"lineWidth": 1
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "mark3",
+				"x": 408,
+				"y": 286,
+				"pointStyle": "cross",
+				"radius": 5,
+				"style": {
+					"color": "#008844",
+					"lineWidth": 1
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "I",
+				"x": 530,
+				"y": 176,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 2
+				},
+				"pointStyle": "dot",
+				"radius": 4
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "I_label",
+				"content": "I",
+				"x": "$I.x + 10",
+				"y": "$I.y - 10",
+				"fontSize": 14,
+				"style": {
+					"color": "#228B22"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "I",
+				"x": 266.6,
+				"y": 388.3,
+				"duration": 10000
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "J",
+				"x": 530,
+				"y": 176,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 2
+				},
+				"pointStyle": "dot",
+				"radius": 4
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "J_label",
+				"content": "J",
+				"x": "$J.x + 10",
+				"y": "$J.y - 10",
+				"fontSize": 14,
+				"style": {
+					"color": "#228B22"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "J",
+				"x": 361,
+				"y": 319.7,
+				"duration": 10000
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "K",
+				"x": 530,
+				"y": 176,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 2
+				},
+				"pointStyle": "dot",
+				"radius": 4
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "K_label",
+				"content": "K",
+				"x": "$K.x + 10",
+				"y": "$K.y - 10",
+				"fontSize": 14,
+				"style": {
+					"color": "#228B22"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "K",
+				"x": 454.8,
+				"y": 251.8,
+				"duration": 10000
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "T_5",
+				"content": "3. On trace les droites parallèles à la droite (KB) et passant par les points J et I. Constructions de parallélogrammes au compas.",
+				"x": 70,
+				"y": 120,
+				"fontSize": 18,
+				"style": {
+					"color": "#0000FF"
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 1000
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "show",
+				"target": "compass"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": "$K.x",
+				"y": "$K.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "comment",
+			"text": "Compass flipped"
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 144.09995035978378,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "setCompass",
+				"radius": 115.8,
+				"duration": 300
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": "$P_13.x",
+				"y": "$P_13.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "comment",
+			"text": "Compass raised"
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "arc",
+				"id": "arc_1",
+				"center": {
+					"x": 468.15,
+					"y": 424.35
+				},
+				"radius": 115.8,
+				"startAngle": 150.1,
+				"endAngle": 117.66,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 0
+				}
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass lowered"
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": "$K.x",
+				"y": "$K.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 85.57590320881472,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "setCompass",
+				"radius": 173.07,
+				"duration": 300
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": "$J.x",
+				"y": "$J.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "comment",
+			"text": "Compass raised"
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "arc",
+				"id": "arc_2",
+				"center": {
+					"x": 361,
+					"y": 319.7
+				},
+				"radius": 173.07,
+				"startAngle": 92.56,
+				"endAngle": 78.89,
+				"style": {
+					"color": "#008844",
+					"lineWidth": 0
+				}
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass lowered"
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": "$I.x",
+				"y": "$I.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass raised"
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "arc",
+				"id": "arc_6",
+				"center": {
+					"x": 266.6,
+					"y": 388.3
+				},
+				"radius": 173.07,
+				"startAngle": 88.06,
+				"endAngle": 71.09,
+				"style": {
+					"color": "#008844",
+					"lineWidth": 0
+				}
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass lowered"
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": -36.00571419529118,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "setCompass",
+				"radius": 116.69,
+				"duration": 300
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "P_4",
+				"x": 375,
+				"y": 491.2,
+				"style": {
+					"color": "#008844",
+					"lineWidth": 2
+				},
+				"pointStyle": "dot",
+				"radius": 4
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": "$P_4.x",
+				"y": "$P_4.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 152.52,
+				"duration": 500
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "comment",
+			"text": "Compass raised"
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "arc",
+				"id": "arc_5",
+				"center": {
+					"x": 375,
+					"y": 491.2
+				},
+				"radius": 116.69,
+				"startAngle": 152.52,
+				"endAngle": 135,
+				"style": {
+					"color": "#008844",
+					"lineWidth": 0
+				}
+			}
+		},
+		{
+			"type": "comment",
+			"text": "Compass lowered"
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "hide",
+				"target": "compass"
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "P_6",
+				"x": 281,
+				"y": 561.3,
+				"style": {
+					"color": "#008844",
+					"lineWidth": 2
+				},
+				"pointStyle": "dot",
+				"radius": 4
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "show",
+				"target": "ruler"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": "$K.x",
+				"y": "$K.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": 85.57590320881472,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "show",
+				"target": "pencil"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": "$K.x",
+				"y": "$K.y",
+				"duration": 200
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "seg_7b",
+				"from": {
+					"x": 454.8,
+					"y": 251.8
+				},
+				"to": "P_13",
+				"style": {
+					"color": "#008888",
+					"lineWidth": 1,
+					"lineStyle": "dashed"
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": "$J.x",
+				"y": "$J.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": 85.33314162856101,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 361,
+				"y": 319.7,
+				"duration": 200
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "seg_7",
+				"from": {
+					"x": 361,
+					"y": 319.7
+				},
+				"to": "P_4",
+				"style": {
+					"color": "#006400",
+					"lineWidth": 1,
+					"lineStyle": "dashed"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": "$I.x",
+				"y": "$I.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": "$I.x",
+				"y": "$I.y",
+				"duration": 200
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "seg_8",
+				"from": {
+					"x": 266.6,
+					"y": 388.3
+				},
+				"to": "P_6",
+				"style": {
+					"color": "#006400",
+					"lineWidth": 1,
+					"lineStyle": "dashed"
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "hide",
+				"target": "ruler"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "hide",
+				"target": "pencil"
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "P_27",
+				"x": 530,
+				"y": 176,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 2
+				},
+				"pointStyle": "dot",
+				"radius": 4
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "label_27_label",
+				"content": "£i(A,1)",
+				"x": "$P_27.x + 10",
+				"y": "$P_27.y - 10",
+				"fontSize": 14,
+				"style": {
+					"color": "#0000FF"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "P_27",
+				"x": 272.05,
+				"y": 446.5,
+				"duration": 10000
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "P_28",
+				"x": 530,
+				"y": 176,
+				"style": {
+					"color": "#228B22",
+					"lineWidth": 2
+				},
+				"pointStyle": "dot",
+				"radius": 4
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "label_28_label",
+				"content": "£i(A,2)",
+				"x": "$P_28.x + 10",
+				"y": "$P_28.y - 10",
+				"fontSize": 14,
+				"style": {
+					"color": "#0000FF"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "P_28",
+				"x": 370.45,
+				"y": 435.55,
+				"duration": 10000
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "text",
+				"id": "T_7",
+				"content": "Les segments consécutifs [A(A,1)], [(A,1)(A,2)] et [(A,2)B] sont de même longueur.",
+				"x": 70,
+				"y": 120,
+				"fontSize": 18,
+				"style": {
+					"color": "#0000FF"
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 1000
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "show",
+				"target": "pencil"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 220.1,
+				"y": 461.2,
+				"duration": 200
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "seg4",
+				"from": {
+					"x": 220.1,
+					"y": 461.2
+				},
+				"to": {
+					"x": 224.85,
+					"y": 445.9
+				},
+				"style": {
+					"color": "#0000FF",
+					"lineWidth": 1.5,
+					"lineStyle": "solid"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 317.85,
+				"y": 453.55,
+				"duration": 200
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "seg5",
+				"from": {
+					"x": 317.85,
+					"y": 453.55
+				},
+				"to": {
+					"x": 324.55,
+					"y": 436.3
+				},
+				"style": {
+					"color": "#0000FF",
+					"lineWidth": 1.5,
+					"lineStyle": "solid"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 418.45,
+				"y": 439.2,
+				"duration": 200
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "seg6",
+				"from": {
+					"x": 418.45,
+					"y": 439.2
+				},
+				"to": {
+					"x": 425.2,
+					"y": 422.9
+				},
+				"style": {
+					"color": "#0000FF",
+					"lineWidth": 1.5,
+					"lineStyle": "solid"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "hide",
+				"target": "pencil"
+			}
+		}
+	]
 }
