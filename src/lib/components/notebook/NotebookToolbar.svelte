@@ -15,6 +15,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Play, Square, Save, Plus, RotateCcw, PlayCircle, Code, FileText } from 'lucide-svelte';
+	import KeyboardShortcutsHelp from './KeyboardShortcutsHelp.svelte';
 
 	// Props
 	let {
@@ -129,8 +130,9 @@
 		{/if}
 	</div>
 
-	<!-- Right side: Save button -->
+	<!-- Right side: Help and Save button -->
 	<div class="flex items-center gap-2">
+		<KeyboardShortcutsHelp {isReadonly} />
 		{#if !isReadonly}
 			<Button
 				variant="outline"
