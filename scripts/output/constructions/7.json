@@ -390,6 +390,15 @@
 			}
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": -163.03385189146383,
+				"duration": 500
+			}
+		},
+		{
 			"type": "pause",
 			"duration": 500
 		},
@@ -436,6 +445,15 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": -88.10348169679072,
+				"duration": 500
+			}
 		},
 		{
 			"type": "pause",
@@ -550,6 +568,15 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": 62.15973967612109,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -557,6 +584,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": "$P2.x",
+				"y": "$P2.y",
+				"duration": 100
+			}
 		},
 		{
 			"type": "action",
@@ -575,8 +612,8 @@
 				"kind": "segment",
 				"id": "seg8",
 				"from": {
-					"x": 40,
-					"y": 540
+					"x": 281,
+					"y": 208
 				},
 				"to": "P6",
 				"style": {

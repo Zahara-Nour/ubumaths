@@ -644,6 +644,15 @@
 			"text": "Compass flipped"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 144.09995035978378,
+				"duration": 500
+			}
+		},
+		{
 			"type": "pause",
 			"duration": 500
 		},
@@ -700,6 +709,15 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 85.57590320881472,
+				"duration": 500
+			}
 		},
 		{
 			"type": "pause",
@@ -784,6 +802,15 @@
 		{
 			"type": "comment",
 			"text": "Compass lowered"
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": -36.00571419529118,
+				"duration": 500
+			}
 		},
 		{
 			"type": "pause",
@@ -903,8 +930,27 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": 85.57590320881472,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "pencil"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": "$K.x",
+				"y": "$K.y",
+				"duration": 200
 			}
 		},
 		{
@@ -913,8 +959,8 @@
 				"kind": "segment",
 				"id": "seg14",
 				"from": {
-					"x": 70,
-					"y": 120
+					"x": 454.8,
+					"y": 251.8
 				},
 				"to": "P3",
 				"style": {
@@ -935,6 +981,15 @@
 				"target": "ruler",
 				"x": "$J.x",
 				"y": "$J.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": 85.33314162856101,
 				"duration": 500
 			}
 		},
@@ -976,13 +1031,23 @@
 			}
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": "$I.x",
+				"y": "$I.y",
+				"duration": 200
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "segment",
 				"id": "seg16",
 				"from": {
-					"x": 361,
-					"y": 319.7
+					"x": 266.6,
+					"y": 388.3
 				},
 				"to": "P13",
 				"style": {

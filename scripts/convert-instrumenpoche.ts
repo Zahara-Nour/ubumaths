@@ -172,13 +172,66 @@ interface IepDocument {
 	};
 }
 
+interface Position {
+	x: number;
+	y: number;
+}
+
 interface ConversionContext {
 	objectIdCounter: number;
 	pointMap: Map<string, string>; // Maps IEP id to UbuMaths id
+	pointPositions: Map<string, Position>; // Tracks point positions by IEP id
+	instrumentPositions: Map<string, Position>; // Tracks instrument positions (ruler, compass, etc.)
 	currentPosition: { x: number; y: number };
 	createdObjects: Set<string>;
 	steps: Step[];
 	warnings: string[];
+}
+
+// =============================================================================
+// Helper Functions
+// =============================================================================
+
+/**
+ * Calculate angle in degrees from point 'from' to point 'to'
+ * Returns angle in degrees (0 = right, 90 = down in screen coordinates)
+ */
+function calculateAngleToTarget(from: Position, to: Position): number {
+	const dx = to.x - from.x;
+	const dy = to.y - from.y;
+	// atan2 returns radians, convert to degrees
+	// In InstrumenPoche, angles are typically measured with 0 = horizontal right
+	return Math.atan2(dy, dx) * (180 / Math.PI);
+}
+
+/**
+ * Get position of a point by its IEP id
+ * Returns undefined if the point position is unknown
+ */
+function getPointPosition(ctx: ConversionContext, iepId: string): Position | undefined {
+	return ctx.pointPositions.get(iepId);
+}
+
+/**
+ * Get position of an instrument (ruler, compass, etc.)
+ * Returns undefined if the instrument position is unknown
+ */
+function getInstrumentPosition(ctx: ConversionContext, instrument: string): Position | undefined {
+	return ctx.instrumentPositions.get(instrument);
+}
+
+/**
+ * Update the position of a point
+ */
+function setPointPosition(ctx: ConversionContext, iepId: string, pos: Position): void {
+	ctx.pointPositions.set(iepId, { x: pos.x, y: pos.y });
+}
+
+/**
+ * Update the position of an instrument
+ */
+function setInstrumentPosition(ctx: ConversionContext, instrument: string, pos: Position): void {
+	ctx.instrumentPositions.set(instrument, { x: pos.x, y: pos.y });
 }
 
 // =============================================================================
@@ -338,6 +391,8 @@ function convertPointAction(
 
 			if (attrs.id) {
 				ctx.pointMap.set(attrs.id, id);
+				// Track point position for rotation calculations
+				setPointPosition(ctx, attrs.id, { x, y });
 			}
 
 			const pointDef: ObjectDef = {
@@ -382,11 +437,17 @@ function convertPointAction(
 		case 'translation': {
 			const pointId = attrs.id ? ctx.pointMap.get(attrs.id) || attrs.id : undefined;
 			if (pointId && attrs.abscisse && attrs.ordonnee) {
+				const newX = parseFloat(attrs.abscisse);
+				const newY = parseFloat(attrs.ordonnee);
+				// Update tracked position for the point
+				if (attrs.id) {
+					setPointPosition(ctx, attrs.id, { x: newX, y: newY });
+				}
 				const action: ActionDef = {
 					kind: 'moveTo',
 					target: pointId,
-					x: parseFloat(attrs.abscisse),
-					y: parseFloat(attrs.ordonnee),
+					x: newX,
+					y: newY,
 					duration: attrs.vitesse ? (1000 / parseFloat(attrs.vitesse)) * 100 : 500
 				};
 				ctx.steps.push({ type: 'action', action });
@@ -506,17 +567,31 @@ function convertPencilAction(
 		case 'translation': {
 			// Move pencil position
 			if (attrs.abscisse && attrs.ordonnee) {
-				ctx.currentPosition = {
-					x: parseFloat(attrs.abscisse),
-					y: parseFloat(attrs.ordonnee)
-				};
+				const newX = parseFloat(attrs.abscisse);
+				const newY = parseFloat(attrs.ordonnee);
+				ctx.currentPosition = { x: newX, y: newY };
 
 				// Also translate the pencil instrument
 				const action: ActionDef = {
 					kind: 'moveTo',
 					target: 'pencil',
-					x: parseFloat(attrs.abscisse),
-					y: parseFloat(attrs.ordonnee),
+					x: newX,
+					y: newY,
+					duration: attrs.vitesse ? Math.max(100, (1000 / parseFloat(attrs.vitesse)) * 100) : 200
+				};
+				ctx.steps.push({ type: 'action', action });
+			} else if (attrs.cible) {
+				// Move pencil to target point
+				const targetId = ctx.pointMap.get(attrs.cible) || attrs.cible;
+				const targetPos = getPointPosition(ctx, attrs.cible);
+				if (targetPos) {
+					ctx.currentPosition = { x: targetPos.x, y: targetPos.y };
+				}
+				const action: ActionDef = {
+					kind: 'moveTo',
+					target: 'pencil',
+					x: `$${targetId}.x`,
+					y: `$${targetId}.y`,
 					duration: attrs.vitesse ? Math.max(100, (1000 / parseFloat(attrs.vitesse)) * 100) : 200
 				};
 				ctx.steps.push({ type: 'action', action });
@@ -657,16 +732,25 @@ function convertRulerAction(
 		}
 		case 'translation': {
 			if (attrs.abscisse && attrs.ordonnee) {
+				const newX = parseFloat(attrs.abscisse);
+				const newY = parseFloat(attrs.ordonnee);
+				// Track ruler position for rotation calculations
+				setInstrumentPosition(ctx, 'ruler', { x: newX, y: newY });
 				const action: ActionDef = {
 					kind: 'moveTo',
 					target: 'ruler',
-					x: parseFloat(attrs.abscisse),
-					y: parseFloat(attrs.ordonnee),
+					x: newX,
+					y: newY,
 					duration: 500
 				};
 				ctx.steps.push({ type: 'action', action });
 			} else if (attrs.cible) {
 				const targetId = ctx.pointMap.get(attrs.cible) || attrs.cible;
+				// Update ruler position to target point's position
+				const targetPos = getPointPosition(ctx, attrs.cible);
+				if (targetPos) {
+					setInstrumentPosition(ctx, 'ruler', targetPos);
+				}
 				const action: ActionDef = {
 					kind: 'moveTo',
 					target: 'ruler',
@@ -688,8 +772,28 @@ function convertRulerAction(
 				};
 				ctx.steps.push({ type: 'action', action });
 			} else if (attrs.cible) {
-				// Rotate towards a target point
-				ctx.warnings.push('Ruler rotation towards target not fully supported');
+				// Rotate towards a target point - calculate the angle
+				const rulerPos = getInstrumentPosition(ctx, 'ruler');
+				const targetPos = getPointPosition(ctx, attrs.cible);
+
+				if (rulerPos && targetPos) {
+					const angle = calculateAngleToTarget(rulerPos, targetPos);
+					const action: ActionDef = {
+						kind: 'rotate',
+						target: 'ruler',
+						angle: angle,
+						duration: 500
+					};
+					ctx.steps.push({ type: 'action', action });
+				} else {
+					// Cannot calculate angle - add warning with details
+					const missing: string[] = [];
+					if (!rulerPos) missing.push('ruler position');
+					if (!targetPos) missing.push(`target point "${attrs.cible}" position`);
+					ctx.warnings.push(
+						`Ruler rotation towards "${attrs.cible}": cannot calculate angle (unknown: ${missing.join(', ')})`
+					);
+				}
 			}
 			break;
 		}
@@ -739,16 +843,25 @@ function convertCompassAction(
 		}
 		case 'translation': {
 			if (attrs.abscisse && attrs.ordonnee) {
+				const newX = parseFloat(attrs.abscisse);
+				const newY = parseFloat(attrs.ordonnee);
+				// Track compass position for rotation calculations
+				setInstrumentPosition(ctx, 'compass', { x: newX, y: newY });
 				const action: ActionDef = {
 					kind: 'moveTo',
 					target: 'compass',
-					x: parseFloat(attrs.abscisse),
-					y: parseFloat(attrs.ordonnee),
+					x: newX,
+					y: newY,
 					duration: 500
 				};
 				ctx.steps.push({ type: 'action', action });
 			} else if (attrs.cible) {
 				const targetId = ctx.pointMap.get(attrs.cible) || attrs.cible;
+				// Update compass position to target point's position
+				const targetPos = getPointPosition(ctx, attrs.cible);
+				if (targetPos) {
+					setInstrumentPosition(ctx, 'compass', targetPos);
+				}
 				const action: ActionDef = {
 					kind: 'moveTo',
 					target: 'compass',
@@ -769,6 +882,29 @@ function convertCompassAction(
 					duration: 500
 				};
 				ctx.steps.push({ type: 'action', action });
+			} else if (attrs.cible) {
+				// Rotate towards a target point - calculate the angle
+				const compassPos = getInstrumentPosition(ctx, 'compass');
+				const targetPos = getPointPosition(ctx, attrs.cible);
+
+				if (compassPos && targetPos) {
+					const angle = calculateAngleToTarget(compassPos, targetPos);
+					const action: ActionDef = {
+						kind: 'rotate',
+						target: 'compass',
+						angle: angle,
+						duration: 500
+					};
+					ctx.steps.push({ type: 'action', action });
+				} else {
+					// Cannot calculate angle - add warning with details
+					const missing: string[] = [];
+					if (!compassPos) missing.push('compass position');
+					if (!targetPos) missing.push(`target point "${attrs.cible}" position`);
+					ctx.warnings.push(
+						`Compass rotation towards "${attrs.cible}": cannot calculate angle (unknown: ${missing.join(', ')})`
+					);
+				}
 			}
 			break;
 		}
@@ -1021,6 +1157,8 @@ function convertDocument(doc: IepDocument, filename: string): ConstructionScript
 	const ctx: ConversionContext = {
 		objectIdCounter: 0,
 		pointMap: new Map(),
+		pointPositions: new Map(),
+		instrumentPositions: new Map(),
 		currentPosition: { x: 0, y: 0 },
 		createdObjects: new Set(),
 		steps: [],
