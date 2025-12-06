@@ -45,7 +45,7 @@
 				"target": "pencil",
 				"x": 800,
 				"y": 600,
-				"duration": 550
+				"duration": 1833
 			}
 		},
 		{
@@ -75,7 +75,7 @@
 				"target": "pencil",
 				"x": 0,
 				"y": 600,
-				"duration": 800
+				"duration": 2667
 			}
 		},
 		{
@@ -191,7 +191,7 @@
 				"target": "pencil",
 				"x": 468.15,
 				"y": 424.35,
-				"duration": 297
+				"duration": 989
 			}
 		},
 		{
@@ -321,7 +321,7 @@
 				"target": "pencil",
 				"x": 555.5,
 				"y": 178.5,
-				"duration": 47305
+				"duration": 1577
 			}
 		},
 		{
@@ -1083,7 +1083,7 @@
 				"target": "pencil",
 				"x": 454.8,
 				"y": 251.8,
-				"duration": 10
+				"duration": 100
 			}
 		},
 		{
@@ -1143,7 +1143,7 @@
 				"target": "pencil",
 				"x": 361,
 				"y": 319.7,
-				"duration": 500
+				"duration": 100
 			}
 		},
 		{
@@ -1190,7 +1190,7 @@
 				"target": "pencil",
 				"x": 266.6,
 				"y": 388.3,
-				"duration": 10
+				"duration": 100
 			}
 		},
 		{
@@ -1351,7 +1351,7 @@
 				"target": "pencil",
 				"x": 224.85,
 				"y": 445.9,
-				"duration": 500
+				"duration": 100
 			}
 		},
 		{
@@ -1391,7 +1391,7 @@
 				"target": "pencil",
 				"x": 324.55,
 				"y": 436.3,
-				"duration": 500
+				"duration": 100
 			}
 		},
 		{
@@ -1431,7 +1431,7 @@
 				"target": "pencil",
 				"x": 425.2,
 				"y": 422.9,
-				"duration": 500
+				"duration": 100
 			}
 		},
 		{

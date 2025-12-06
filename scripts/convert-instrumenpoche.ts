@@ -762,16 +762,10 @@ function convertPencilAction(
 			}
 
 			// Move pencil to end position while drawing
-			// Calculate duration: if tempo is 0 or missing, use vitesse (speed) to calculate
-			let traceDuration = 500; // default
-			if (attrs.tempo && parseFloat(attrs.tempo) > 0) {
-				traceDuration = Math.round(parseFloat(attrs.tempo));
-			} else if (attrs.vitesse) {
-				// vitesse is in pixels per second, calculate based on distance
-				const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-				const speed = parseFloat(attrs.vitesse);
-				traceDuration = speed > 0 ? Math.round((distance / speed) * 1000) : 500;
-			}
+			// Use consistent drawing speed (300 pixels/second) for realistic animation
+			const PENCIL_SPEED = 300; // pixels per second
+			const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+			const traceDuration = Math.max(100, Math.round((distance / PENCIL_SPEED) * 1000));
 			const pencilMoveAction: ActionDef = {
 				kind: 'moveTo',
 				target: 'pencil',

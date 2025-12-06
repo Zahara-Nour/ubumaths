@@ -47,7 +47,7 @@
 				"target": "pencil",
 				"x": 0,
 				"y": 0,
-				"duration": 0
+				"duration": 100
 			}
 		},
 		{
@@ -281,7 +281,7 @@
 				"target": "pencil",
 				"x": 147,
 				"y": 305,
-				"duration": 583
+				"duration": 100
 			}
 		},
 		{
@@ -311,7 +311,7 @@
 				"target": "pencil",
 				"x": 144,
 				"y": 311,
-				"duration": 671
+				"duration": 100
 			}
 		},
 		{
@@ -341,7 +341,7 @@
 				"target": "pencil",
 				"x": 141,
 				"y": 318,
-				"duration": 762
+				"duration": 100
 			}
 		},
 		{
@@ -371,7 +371,7 @@
 				"target": "pencil",
 				"x": 138,
 				"y": 326,
-				"duration": 854
+				"duration": 100
 			}
 		},
 		{
@@ -401,7 +401,7 @@
 				"target": "pencil",
 				"x": 135,
 				"y": 335,
-				"duration": 949
+				"duration": 100
 			}
 		},
 		{
@@ -431,7 +431,7 @@
 				"target": "pencil",
 				"x": 132,
 				"y": 345,
-				"duration": 1044
+				"duration": 100
 			}
 		},
 		{
@@ -461,7 +461,7 @@
 				"target": "pencil",
 				"x": 131,
 				"y": 356,
-				"duration": 1105
+				"duration": 100
 			}
 		},
 		{
@@ -491,7 +491,7 @@
 				"target": "pencil",
 				"x": 132,
 				"y": 367,
-				"duration": 1105
+				"duration": 100
 			}
 		},
 		{
@@ -521,7 +521,7 @@
 				"target": "pencil",
 				"x": 135,
 				"y": 377,
-				"duration": 1044
+				"duration": 100
 			}
 		},
 		{
@@ -551,7 +551,7 @@
 				"target": "pencil",
 				"x": 138,
 				"y": 386,
-				"duration": 949
+				"duration": 100
 			}
 		},
 		{
@@ -581,7 +581,7 @@
 				"target": "pencil",
 				"x": 141,
 				"y": 394,
-				"duration": 854
+				"duration": 100
 			}
 		},
 		{
@@ -611,7 +611,7 @@
 				"target": "pencil",
 				"x": 144,
 				"y": 401,
-				"duration": 762
+				"duration": 100
 			}
 		},
 		{
@@ -641,7 +641,7 @@
 				"target": "pencil",
 				"x": 147,
 				"y": 407,
-				"duration": 671
+				"duration": 100
 			}
 		},
 		{
@@ -671,7 +671,7 @@
 				"target": "pencil",
 				"x": 150,
 				"y": 412,
-				"duration": 5
+				"duration": 100
 			}
 		},
 		{
@@ -813,7 +813,7 @@
 				"target": "pencil",
 				"x": 147,
 				"y": 425,
-				"duration": 583
+				"duration": 100
 			}
 		},
 		{
@@ -843,7 +843,7 @@
 				"target": "pencil",
 				"x": 144,
 				"y": 431,
-				"duration": 671
+				"duration": 100
 			}
 		},
 		{
@@ -873,7 +873,7 @@
 				"target": "pencil",
 				"x": 141,
 				"y": 438,
-				"duration": 762
+				"duration": 100
 			}
 		},
 		{
@@ -903,7 +903,7 @@
 				"target": "pencil",
 				"x": 138,
 				"y": 446,
-				"duration": 854
+				"duration": 100
 			}
 		},
 		{
@@ -933,7 +933,7 @@
 				"target": "pencil",
 				"x": 135,
 				"y": 455,
-				"duration": 949
+				"duration": 100
 			}
 		},
 		{
@@ -963,7 +963,7 @@
 				"target": "pencil",
 				"x": 132,
 				"y": 465,
-				"duration": 1044
+				"duration": 100
 			}
 		},
 		{
@@ -993,7 +993,7 @@
 				"target": "pencil",
 				"x": 131,
 				"y": 476,
-				"duration": 1105
+				"duration": 100
 			}
 		},
 		{
@@ -1023,7 +1023,7 @@
 				"target": "pencil",
 				"x": 132,
 				"y": 487,
-				"duration": 1105
+				"duration": 100
 			}
 		},
 		{
@@ -1053,7 +1053,7 @@
 				"target": "pencil",
 				"x": 135,
 				"y": 497,
-				"duration": 1044
+				"duration": 100
 			}
 		},
 		{
@@ -1083,7 +1083,7 @@
 				"target": "pencil",
 				"x": 138,
 				"y": 506,
-				"duration": 949
+				"duration": 100
 			}
 		},
 		{
@@ -1113,7 +1113,7 @@
 				"target": "pencil",
 				"x": 141,
 				"y": 514,
-				"duration": 854
+				"duration": 100
 			}
 		},
 		{
@@ -1143,7 +1143,7 @@
 				"target": "pencil",
 				"x": 144,
 				"y": 521,
-				"duration": 762
+				"duration": 100
 			}
 		},
 		{
@@ -1173,7 +1173,7 @@
 				"target": "pencil",
 				"x": 147,
 				"y": 527,
-				"duration": 671
+				"duration": 100
 			}
 		},
 		{
@@ -1203,7 +1203,7 @@
 				"target": "pencil",
 				"x": 150,
 				"y": 532,
-				"duration": 5
+				"duration": 100
 			}
 		},
 		{
@@ -1373,7 +1373,7 @@
 				"target": "pencil",
 				"x": 450,
 				"y": 350,
-				"duration": 5
+				"duration": 849
 			}
 		},
 		{
@@ -1419,7 +1419,7 @@
 				"target": "pencil",
 				"x": 450,
 				"y": 350,
-				"duration": 0
+				"duration": 100
 			}
 		}
 	]
