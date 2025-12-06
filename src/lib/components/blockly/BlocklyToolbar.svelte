@@ -5,7 +5,7 @@
   clearing output/workspace, and switching between JavaScript and Python.
 -->
 <script lang="ts">
-	import { Play, Trash2, RefreshCw, Loader2 } from 'lucide-svelte';
+	import { Play, Trash2, RefreshCw, Loader2, Maximize2, Minimize2 } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { ExecutionLanguage } from '$lib/shared/blockly';
 
@@ -18,6 +18,8 @@
 		language: ExecutionLanguage;
 		/** Whether code is currently executing */
 		isExecuting: boolean;
+		/** Whether in fullscreen mode */
+		isFullscreen: boolean;
 		/** Callback to run code */
 		onrun: () => void;
 		/** Callback to clear output */
@@ -26,14 +28,24 @@
 		onclearworkspace: () => void;
 		/** Callback when language changes */
 		onlanguagechange: (lang: ExecutionLanguage) => void;
+		/** Callback to toggle fullscreen */
+		ontogglefullscreen: () => void;
 	}
 
 	// =============================================================================
 	// Props
 	// =============================================================================
 
-	let { language, isExecuting, onrun, onclear, onclearworkspace, onlanguagechange }: Props =
-		$props();
+	let {
+		language,
+		isExecuting,
+		isFullscreen,
+		onrun,
+		onclear,
+		onclearworkspace,
+		onlanguagechange,
+		ontogglefullscreen
+	}: Props = $props();
 
 	// =============================================================================
 	// Event Handlers
@@ -70,30 +82,47 @@
 		</Button>
 	</div>
 
-	<!-- Right side: Language selector -->
-	<div class="flex items-center gap-2">
-		<span class="text-sm font-medium text-muted-foreground">Langage :</span>
-		<div class="flex rounded-md border border-border">
-			<button
-				type="button"
-				onclick={() => handleLanguageChange('javascript')}
-				class="px-3 py-1 text-sm font-medium transition-colors {language === 'javascript'
-					? 'bg-primary text-primary-foreground'
-					: 'bg-background text-foreground hover:bg-muted'} rounded-l-md"
-				disabled={isExecuting}
-			>
-				JavaScript
-			</button>
-			<button
-				type="button"
-				onclick={() => handleLanguageChange('python')}
-				class="px-3 py-1 text-sm font-medium transition-colors {language === 'python'
-					? 'bg-primary text-primary-foreground'
-					: 'bg-background text-foreground hover:bg-muted'} rounded-r-md border-l border-border"
-				disabled={isExecuting}
-			>
-				Python
-			</button>
+	<!-- Right side: Language selector and fullscreen -->
+	<div class="flex items-center gap-4">
+		<div class="flex items-center gap-2">
+			<span class="text-sm font-medium text-muted-foreground">Langage :</span>
+			<div class="flex rounded-md border border-border">
+				<button
+					type="button"
+					onclick={() => handleLanguageChange('javascript')}
+					class="px-3 py-1 text-sm font-medium transition-colors {language === 'javascript'
+						? 'bg-primary text-primary-foreground'
+						: 'bg-background text-foreground hover:bg-muted'} rounded-l-md"
+					disabled={isExecuting}
+				>
+					JavaScript
+				</button>
+				<button
+					type="button"
+					onclick={() => handleLanguageChange('python')}
+					class="px-3 py-1 text-sm font-medium transition-colors {language === 'python'
+						? 'bg-primary text-primary-foreground'
+						: 'bg-background text-foreground hover:bg-muted'} rounded-r-md border-l border-border"
+					disabled={isExecuting}
+				>
+					Python
+				</button>
+			</div>
 		</div>
+
+		<!-- Fullscreen toggle -->
+		<Button
+			variant="ghost"
+			size="icon"
+			onclick={ontogglefullscreen}
+			aria-label={isFullscreen ? 'Quitter le plein écran' : 'Mode plein écran'}
+			title={isFullscreen ? 'Quitter le plein écran (Échap)' : 'Mode plein écran'}
+		>
+			{#if isFullscreen}
+				<Minimize2 class="h-4 w-4" />
+			{:else}
+				<Maximize2 class="h-4 w-4" />
+			{/if}
+		</Button>
 	</div>
 </div>
