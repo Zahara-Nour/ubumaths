@@ -20,7 +20,12 @@ import type {
 	Position,
 	Step,
 	ActionDef,
-	Expr
+	Expr,
+	DrawLineActionDef,
+	DrawArcActionDef,
+	SegmentDef,
+	ArcDef,
+	PointRef
 } from '../types';
 import { isCreateStep, isActionStep } from '../types';
 import { constructionScriptSchema } from '../schemas';
@@ -37,7 +42,17 @@ import { DEFAULT_CANVAS_CONFIG, DEFAULT_COMPASS_RADIUS } from '../constants';
  */
 interface AnimationState {
 	/** Type of animation */
-	type: 'moveTo' | 'translate' | 'rotate' | 'show' | 'hide' | 'setCompass' | 'draw' | 'drawCircle';
+	type:
+		| 'moveTo'
+		| 'translate'
+		| 'rotate'
+		| 'show'
+		| 'hide'
+		| 'setCompass'
+		| 'draw'
+		| 'drawCircle'
+		| 'drawLine'
+		| 'drawArc';
 	/** Target (object ID or instrument type) */
 	target: string | InstrumentType;
 	/** Start values */
@@ -48,6 +63,17 @@ interface AnimationState {
 		opacity?: number;
 		compassRadius?: number;
 		drawProgress?: number;
+		// For drawLine
+		fromX?: number;
+		fromY?: number;
+		toX?: number;
+		toY?: number;
+		// For drawArc
+		centerX?: number;
+		centerY?: number;
+		radius?: number;
+		startAngle?: number;
+		endAngle?: number;
 	};
 	/** End values */
 	end: {
@@ -714,6 +740,121 @@ export class ConstructionEngine {
 				break;
 			}
 
+			case 'drawLine': {
+				const drawLineAction = action as DrawLineActionDef;
+				const fromPos = this.#resolvePointRef(drawLineAction.from);
+				const toPos = this.#resolvePointRef(drawLineAction.to);
+				if (!fromPos || !toPos) break;
+
+				const targetId = drawLineAction.createObject?.id ?? '';
+
+				// Create segment object if specified
+				if (drawLineAction.createObject) {
+					const segmentDef: SegmentDef = {
+						kind: 'segment',
+						id: drawLineAction.createObject.id,
+						from: { x: fromPos.x, y: fromPos.y },
+						to: { x: toPos.x, y: toPos.y },
+						visible: true,
+						style: drawLineAction.createObject.style
+					};
+					this.objects.set(drawLineAction.createObject.id, {
+						def: segmentDef,
+						visible: true,
+						drawProgress: 0
+					});
+				}
+
+				const animState: AnimationState = {
+					type: 'drawLine',
+					target: targetId,
+					start: {
+						drawProgress: 0,
+						fromX: fromPos.x,
+						fromY: fromPos.y,
+						toX: toPos.x,
+						toY: toPos.y
+					},
+					end: { drawProgress: 1 },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+
+				// Move pencil to start position and make visible
+				const pencil = this.instruments.get('pencil');
+				if (pencil) {
+					this.instruments.set('pencil', {
+						...pencil,
+						x: fromPos.x,
+						y: fromPos.y,
+						visible: true
+					});
+				}
+				break;
+			}
+
+			case 'drawArc': {
+				const drawArcAction = action as DrawArcActionDef;
+				const centerPos = this.#resolvePointRef(drawArcAction.center);
+				if (!centerPos) break;
+
+				const context = this.#createContext();
+				const radiusValue = evaluateExpr(drawArcAction.radius, context);
+				const startAngleValue = evaluateExpr(drawArcAction.startAngle, context);
+				const endAngleValue = evaluateExpr(drawArcAction.endAngle, context);
+
+				const targetId = drawArcAction.createObject?.id ?? '';
+
+				// Create arc object if specified
+				if (drawArcAction.createObject) {
+					const arcDef: ArcDef = {
+						kind: 'arc',
+						id: drawArcAction.createObject.id,
+						center: { x: centerPos.x, y: centerPos.y },
+						radius: radiusValue,
+						startAngle: startAngleValue,
+						endAngle: endAngleValue,
+						visible: true,
+						style: drawArcAction.createObject.style
+					};
+					this.objects.set(drawArcAction.createObject.id, {
+						def: arcDef,
+						visible: true,
+						drawProgress: 0
+					});
+				}
+
+				const animState: AnimationState = {
+					type: 'drawArc',
+					target: targetId,
+					start: {
+						drawProgress: 0,
+						centerX: centerPos.x,
+						centerY: centerPos.y,
+						radius: radiusValue,
+						startAngle: startAngleValue,
+						endAngle: endAngleValue
+					},
+					end: { drawProgress: 1 },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+
+				// Position compass and make visible
+				const compass = this.instruments.get('compass');
+				if (compass) {
+					this.instruments.set('compass', {
+						...compass,
+						x: centerPos.x,
+						y: centerPos.y,
+						rotation: startAngleValue - 90,
+						compassRadius: radiusValue,
+						visible: true
+					});
+				}
+				break;
+			}
+
 			case 'style': {
 				// Style changes are instant (no animation)
 				this.#applyStyle(action.target, action.style);
@@ -791,6 +932,63 @@ export class ConstructionEngine {
 					const obj = this.objects.get(anim.target as string);
 					if (obj) {
 						this.objects.set(anim.target as string, { ...obj, drawProgress });
+					}
+				}
+				break;
+			}
+
+			case 'drawLine': {
+				if (anim.start.drawProgress !== undefined && anim.end.drawProgress !== undefined) {
+					const drawProgress =
+						anim.start.drawProgress + (anim.end.drawProgress - anim.start.drawProgress) * progress;
+
+					// Update segment draw progress
+					if (anim.target) {
+						const obj = this.objects.get(anim.target as string);
+						if (obj) {
+							this.objects.set(anim.target as string, { ...obj, drawProgress });
+						}
+					}
+
+					// Update pencil position
+					if (
+						anim.start.fromX !== undefined &&
+						anim.start.fromY !== undefined &&
+						anim.start.toX !== undefined &&
+						anim.start.toY !== undefined
+					) {
+						const currentX = anim.start.fromX + (anim.start.toX - anim.start.fromX) * progress;
+						const currentY = anim.start.fromY + (anim.start.toY - anim.start.fromY) * progress;
+						const pencil = this.instruments.get('pencil');
+						if (pencil) {
+							this.instruments.set('pencil', { ...pencil, x: currentX, y: currentY });
+						}
+					}
+				}
+				break;
+			}
+
+			case 'drawArc': {
+				if (anim.start.drawProgress !== undefined && anim.end.drawProgress !== undefined) {
+					const drawProgress =
+						anim.start.drawProgress + (anim.end.drawProgress - anim.start.drawProgress) * progress;
+
+					// Update arc object
+					if (anim.target) {
+						const obj = this.objects.get(anim.target as string);
+						if (obj) {
+							this.objects.set(anim.target as string, { ...obj, drawProgress });
+						}
+					}
+
+					// Update compass rotation
+					if (anim.start.startAngle !== undefined && anim.start.endAngle !== undefined) {
+						const currentAngle =
+							anim.start.startAngle + (anim.start.endAngle - anim.start.startAngle) * progress;
+						const compass = this.instruments.get('compass');
+						if (compass) {
+							this.instruments.set('compass', { ...compass, rotation: currentAngle - 90 });
+						}
 					}
 				}
 				break;
@@ -1101,6 +1299,14 @@ export class ConstructionEngine {
 				this.#applySetCompass(action.radius);
 				break;
 
+			case 'drawLine':
+				this.#applyDrawLine(action as DrawLineActionDef);
+				break;
+
+			case 'drawArc':
+				this.#applyDrawArc(action as DrawArcActionDef);
+				break;
+
 			case 'scale':
 				// Scale actions would need additional implementation
 				break;
@@ -1297,6 +1503,92 @@ export class ConstructionEngine {
 		const compass = this.instruments.get('compass');
 		if (compass) {
 			this.instruments.set('compass', { ...compass, compassRadius });
+		}
+	}
+
+	/**
+	 * Resolve a point reference to coordinates
+	 */
+	#resolvePointRef(ref: PointRef): Position | undefined {
+		if (typeof ref === 'string') {
+			const obj = this.objects.get(ref);
+			return obj?.position;
+		}
+		return { x: ref.x, y: ref.y };
+	}
+
+	/**
+	 * Apply drawLine action instantly
+	 */
+	#applyDrawLine(action: DrawLineActionDef): void {
+		const fromPos = this.#resolvePointRef(action.from);
+		const toPos = this.#resolvePointRef(action.to);
+		if (!fromPos || !toPos) return;
+
+		if (action.createObject) {
+			const segmentDef: SegmentDef = {
+				kind: 'segment',
+				id: action.createObject.id,
+				from: { x: fromPos.x, y: fromPos.y },
+				to: { x: toPos.x, y: toPos.y },
+				visible: true,
+				style: action.createObject.style
+			};
+			this.objects.set(action.createObject.id, {
+				def: segmentDef,
+				visible: true,
+				drawProgress: 1
+			});
+		}
+
+		// Move pencil to end position
+		const pencil = this.instruments.get('pencil');
+		if (pencil) {
+			this.instruments.set('pencil', { ...pencil, x: toPos.x, y: toPos.y, visible: true });
+		}
+	}
+
+	/**
+	 * Apply drawArc action instantly
+	 */
+	#applyDrawArc(action: DrawArcActionDef): void {
+		const centerPos = this.#resolvePointRef(action.center);
+		if (!centerPos) return;
+
+		const context = this.#createContext();
+		const radiusValue = evaluateExpr(action.radius, context);
+		const startAngleValue = evaluateExpr(action.startAngle, context);
+		const endAngleValue = evaluateExpr(action.endAngle, context);
+
+		if (action.createObject) {
+			const arcDef: ArcDef = {
+				kind: 'arc',
+				id: action.createObject.id,
+				center: { x: centerPos.x, y: centerPos.y },
+				radius: radiusValue,
+				startAngle: startAngleValue,
+				endAngle: endAngleValue,
+				visible: true,
+				style: action.createObject.style
+			};
+			this.objects.set(action.createObject.id, {
+				def: arcDef,
+				visible: true,
+				drawProgress: 1
+			});
+		}
+
+		// Position compass at end
+		const compass = this.instruments.get('compass');
+		if (compass) {
+			this.instruments.set('compass', {
+				...compass,
+				x: centerPos.x,
+				y: centerPos.y,
+				rotation: endAngleValue - 90,
+				compassRadius: radiusValue,
+				visible: true
+			});
 		}
 	}
 

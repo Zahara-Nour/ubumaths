@@ -19,10 +19,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_1",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 30,
 					"y": 300
@@ -31,21 +30,15 @@
 					"x": 180,
 					"y": 270
 				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 510,
+				"createObject": {
+					"id": "seg_1",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 180,
-				"y": 270,
-				"duration": 510
 			}
 		},
 		{

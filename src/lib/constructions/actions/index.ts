@@ -9,19 +9,9 @@
 
 import type { ActionDef } from '../types';
 import type { ActionExecutor, ActionContext, InterpolationState } from './base';
-import {
-	TranslateActionExecutor,
-	MoveToActionExecutor,
-	createTranslateExecutor,
-	createMoveToExecutor
-} from './translate';
-import { RotateActionExecutor, createRotateExecutor } from './rotate';
-import {
-	ShowActionExecutor,
-	HideActionExecutor,
-	createShowExecutor,
-	createHideExecutor
-} from './show-hide';
+import { createTranslateExecutor, createMoveToExecutor } from './translate';
+import { createRotateExecutor } from './rotate';
+import { createShowExecutor, createHideExecutor } from './show-hide';
 import { CreateActionExecutor, createCreateExecutor, type CreateActionDef } from './create';
 import { PauseActionExecutor, createPauseExecutor, type PauseActionDef } from './pause';
 import {
@@ -233,6 +223,10 @@ export function createDefaultRegistry(): ActionRegistry {
 	// Register show/hide actions
 	registry.register(createShowExecutor());
 	registry.register(createHideExecutor());
+
+	// Register draw actions (synchronized instrument + object animation)
+	registry.register(createDrawLineExecutor());
+	registry.register(createDrawArcExecutor());
 
 	return registry;
 }

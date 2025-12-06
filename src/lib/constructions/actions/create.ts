@@ -170,7 +170,7 @@ function createArcState(def: ArcDef, _context: ActionContext): ObjectState {
 		def,
 		visible: def.visible !== false,
 		style: def.style,
-		drawProgress: 1
+		drawProgress: def.drawProgress ?? 1
 	};
 }
 

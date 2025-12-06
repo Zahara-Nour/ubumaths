@@ -133,6 +133,8 @@ interface ObjectDefBase {
 	readonly visible?: boolean;
 	/** Style properties */
 	readonly style?: StyleProps;
+	/** Initial draw progress (0-1). Defaults to 1 (fully drawn). Set to 0 for animated drawing. */
+	readonly drawProgress?: number;
 }
 
 /**
@@ -472,6 +474,45 @@ export interface MeasureActionDef extends ActionDefBase {
 	readonly to: string | { x: Expr; y: Expr };
 }
 
+/** Point reference - either an ID string or inline coordinates */
+export type PointRef = string | { readonly x: number; readonly y: number };
+
+/**
+ * Draw a line with the pencil, optionally creating a segment
+ */
+export interface DrawLineActionDef extends ActionDefBase {
+	readonly kind: 'drawLine';
+	/** Starting point - ID or inline coordinates */
+	readonly from: PointRef;
+	/** Ending point - ID or inline coordinates */
+	readonly to: PointRef;
+	/** Optional: create a segment object during drawing */
+	readonly createObject?: {
+		readonly id: string;
+		readonly style?: StyleProps;
+	};
+}
+
+/**
+ * Draw an arc with the compass, optionally creating an arc object
+ */
+export interface DrawArcActionDef extends ActionDefBase {
+	readonly kind: 'drawArc';
+	/** Center point - ID or inline coordinates */
+	readonly center: PointRef;
+	/** Radius of the arc */
+	readonly radius: Expr;
+	/** Start angle in degrees */
+	readonly startAngle: Expr;
+	/** End angle in degrees */
+	readonly endAngle: Expr;
+	/** Optional: create an arc object during drawing */
+	readonly createObject?: {
+		readonly id: string;
+		readonly style?: StyleProps;
+	};
+}
+
 /**
  * Union type for all action definitions (discriminated by 'kind')
  */
@@ -486,7 +527,9 @@ export type ActionDef =
 	| DrawActionDef
 	| DrawCircleActionDef
 	| SetCompassActionDef
-	| MeasureActionDef;
+	| MeasureActionDef
+	| DrawLineActionDef
+	| DrawArcActionDef;
 
 /**
  * Type guard for TranslateActionDef

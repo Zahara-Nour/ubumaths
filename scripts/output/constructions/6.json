@@ -19,10 +19,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c1",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 800,
 					"y": 50
@@ -31,28 +30,21 @@
 					"x": 800,
 					"y": 600
 				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
+				"duration": 1833,
+				"createObject": {
+					"id": "c1",
+					"style": {
+						"color": "#FFFFFF",
+						"lineWidth": 2,
+						"lineStyle": "dashed"
+					}
 				}
 			}
 		},
 		{
 			"type": "action",
 			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 800,
-				"y": 600,
-				"duration": 1833
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c2",
+				"kind": "drawLine",
 				"from": {
 					"x": 800,
 					"y": 600
@@ -61,21 +53,15 @@
 					"x": 0,
 					"y": 600
 				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
+				"duration": 2667,
+				"createObject": {
+					"id": "c2",
+					"style": {
+						"color": "#FFFFFF",
+						"lineWidth": 2,
+						"lineStyle": "dashed"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 0,
-				"y": 600,
-				"duration": 2667
 			}
 		},
 		{
@@ -251,16 +237,6 @@
 			}
 		},
 		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 45,
-				"y": 500,
-				"duration": 100
-			}
-		},
-		{
 			"type": "create",
 			"object": {
 				"kind": "segment",
@@ -278,16 +254,6 @@
 					"lineWidth": 2,
 					"lineStyle": "solid"
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 45,
-				"y": 500,
-				"duration": 100
 			}
 		},
 		{
@@ -311,16 +277,6 @@
 			}
 		},
 		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 45,
-				"y": 500,
-				"duration": 100
-			}
-		},
-		{
 			"type": "create",
 			"object": {
 				"kind": "segment",
@@ -338,16 +294,6 @@
 					"lineWidth": 2,
 					"lineStyle": "solid"
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 45,
-				"y": 500,
-				"duration": 100
 			}
 		},
 		{
@@ -461,16 +407,6 @@
 			"action": {
 				"kind": "moveTo",
 				"target": "pencil",
-				"x": 45,
-				"y": 501,
-				"duration": 100
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
 				"x": 105,
 				"y": 410,
 				"duration": 200
@@ -501,26 +437,15 @@
 			"action": {
 				"kind": "moveTo",
 				"target": "pencil",
-				"x": 105,
-				"y": 410,
-				"duration": 100
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
 				"x": 92,
 				"y": 486,
 				"duration": 200
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_4z",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 92,
 					"y": 486
@@ -529,21 +454,15 @@
 					"x": 99,
 					"y": 497
 				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_4z",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 99,
-				"y": 497,
-				"duration": 100
 			}
 		},
 		{
@@ -557,10 +476,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_5z",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 176,
 					"y": 473
@@ -569,21 +487,15 @@
 					"x": 182,
 					"y": 485
 				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_5z",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 182,
-				"y": 485,
-				"duration": 100
 			}
 		},
 		{
@@ -597,10 +509,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_6z",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 114,
 					"y": 461
@@ -609,21 +520,15 @@
 					"x": 123,
 					"y": 451
 				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_6z",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 123,
-				"y": 451,
-				"duration": 100
 			}
 		},
 		{
@@ -637,10 +542,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_7z",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 119,
 					"y": 465
@@ -649,21 +553,15 @@
 					"x": 127,
 					"y": 456
 				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_7z",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 127,
-				"y": 456,
-				"duration": 100
 			}
 		},
 		{
@@ -677,10 +575,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_8z",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 146,
 					"y": 524
@@ -689,21 +586,15 @@
 					"x": 155,
 					"y": 512
 				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_8z",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 155,
-				"y": 512,
-				"duration": 100
 			}
 		},
 		{
@@ -717,10 +608,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_9z",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 149,
 					"y": 530
@@ -729,21 +619,15 @@
 					"x": 158,
 					"y": 519
 				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_9z",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 158,
-				"y": 519,
-				"duration": 100
 			}
 		},
 		{
@@ -879,10 +763,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_4",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 510,
 					"y": 376
@@ -891,21 +774,15 @@
 					"x": 595,
 					"y": 268
 				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 458,
+				"createObject": {
+					"id": "seg_4",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 595,
-				"y": 268,
-				"duration": 458
 			}
 		},
 		{
@@ -966,10 +843,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_5",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 596,
 					"y": 266
@@ -978,21 +854,15 @@
 					"x": 759,
 					"y": 345
 				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 604,
+				"createObject": {
+					"id": "seg_5",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 759,
-				"y": 345,
-				"duration": 604
 			}
 		},
 		{
@@ -1062,10 +932,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_6",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 759,
 					"y": 345
@@ -1074,21 +943,15 @@
 					"x": 509,
 					"y": 376
 				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 840,
+				"createObject": {
+					"id": "seg_6",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 509,
-				"y": 376,
-				"duration": 840
 			}
 		},
 		{
@@ -1443,16 +1306,6 @@
 				"target": "pencil",
 				"x": 682,
 				"y": 470,
-				"duration": 734
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 682,
-				"y": 470,
 				"duration": 200
 			}
 		},
@@ -1585,10 +1438,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc_12",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 635,
 					"y": 360
@@ -1596,19 +1448,14 @@
 				"radius": 101.77,
 				"startAngle": 79.93,
 				"endAngle": 58.47,
-				"style": {
-					"color": "#008844",
-					"lineWidth": 1
+				"duration": 500,
+				"createObject": {
+					"id": "arc_12",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 1
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -21.460000000000008,
-				"duration": 500
 			}
 		},
 		{
@@ -1863,10 +1710,9 @@
 			"duration": 100
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_15",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 757,
 					"y": 345
@@ -1875,21 +1721,15 @@
 					"x": 675,
 					"y": 453
 				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 452,
+				"createObject": {
+					"id": "seg_15",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 675,
-				"y": 453,
-				"duration": 452
 			}
 		},
 		{
@@ -1924,30 +1764,23 @@
 			"duration": 100
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_16",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 674,
 					"y": 454
 				},
 				"to": "P_1",
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_16",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 2,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 674,
-				"y": 454,
-				"duration": 100
 			}
 		},
 		{

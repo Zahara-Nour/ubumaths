@@ -19,10 +19,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c1",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 800,
 					"y": 50
@@ -31,28 +30,21 @@
 					"x": 800,
 					"y": 600
 				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
+				"duration": 1833,
+				"createObject": {
+					"id": "c1",
+					"style": {
+						"color": "#FFFFFF",
+						"lineWidth": 2,
+						"lineStyle": "dashed"
+					}
 				}
 			}
 		},
 		{
 			"type": "action",
 			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 800,
-				"y": 600,
-				"duration": 1833
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c2",
+				"kind": "drawLine",
 				"from": {
 					"x": 800,
 					"y": 600
@@ -61,21 +53,15 @@
 					"x": 0,
 					"y": 600
 				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
+				"duration": 2667,
+				"createObject": {
+					"id": "c2",
+					"style": {
+						"color": "#FFFFFF",
+						"lineWidth": 2,
+						"lineStyle": "dashed"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 0,
-				"y": 600,
-				"duration": 2667
 			}
 		},
 		{
@@ -148,10 +134,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_1",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 199,
 					"y": 399
@@ -160,21 +145,15 @@
 					"x": 597,
 					"y": 188
 				},
-				"style": {
-					"color": "#000000",
-					"lineWidth": 0,
-					"lineStyle": "solid"
+				"duration": 1502,
+				"createObject": {
+					"id": "seg_1",
+					"style": {
+						"color": "#000000",
+						"lineWidth": 0,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 597,
-				"y": 188,
-				"duration": 1502
 			}
 		},
 		{
@@ -445,10 +424,9 @@
 			"text": "Compass raised"
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc_2",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 458,
 					"y": 262
@@ -456,19 +434,14 @@
 				"radius": 185.05,
 				"startAngle": -163.03,
 				"endAngle": -285.17,
-				"style": {
-					"color": "#008800",
-					"lineWidth": 1
+				"duration": 679,
+				"createObject": {
+					"id": "arc_2",
+					"style": {
+						"color": "#008800",
+						"lineWidth": 1
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -122.14000000000001,
-				"duration": 679
 			}
 		},
 		{
@@ -498,7 +471,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 197.0665183032093,
+				"angle": -162.9334816967907,
 				"duration": 500
 			}
 		},
@@ -523,15 +496,14 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -0.6465183032092767,
+				"angle": -0.6465183032092909,
 				"duration": 300
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc_5",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 276,
 					"y": 359
@@ -539,19 +511,14 @@
 				"radius": 151.08,
 				"startAngle": -88.75,
 				"endAngle": 41.91,
-				"style": {
-					"color": "#008800",
-					"lineWidth": 1
+				"duration": 726,
+				"createObject": {
+					"id": "arc_5",
+					"style": {
+						"color": "#008800",
+						"lineWidth": 1
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": 130.66,
-				"duration": 726
 			}
 		},
 		{
@@ -680,30 +647,23 @@
 			"duration": 500
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_7",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 281,
 					"y": 208
 				},
 				"to": "P_6",
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 0,
-					"lineStyle": "dashed"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_7",
+					"style": {
+						"color": "#FF0000",
+						"lineWidth": 0,
+						"lineStyle": "dashed"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 281,
-				"y": 208,
-				"duration": 100
 			}
 		},
 		{
