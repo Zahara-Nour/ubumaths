@@ -66,7 +66,8 @@ export const DEFAULT_WORKSPACE_OPTIONS = {
 	},
 	trashcan: true,
 	maxBlocks: BLOCKLY_CONFIG.MAX_BLOCKS,
-	sounds: true,
+	// Disable sounds to avoid CSP issues (Blockly loads from external CDN)
+	sounds: false,
 	move: {
 		scrollbars: true,
 		drag: true,

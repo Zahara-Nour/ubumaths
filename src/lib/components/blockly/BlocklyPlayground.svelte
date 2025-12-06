@@ -3,17 +3,19 @@
 
   Main orchestrating component for the Blockly visual programming playground.
   Combines workspace, toolbar, code preview, and output components.
+  Uses BlocklyExecutor for secure code execution (JS via Worker, Python via Pyodide).
 -->
 <script lang="ts">
 	import type * as Blockly from 'blockly';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import BlocklyWorkspace from './BlocklyWorkspace.svelte';
 	import BlocklyToolbar from './BlocklyToolbar.svelte';
 	import BlocklyCodePreview from './BlocklyCodePreview.svelte';
 	import BlocklyOutput from './BlocklyOutput.svelte';
-	import type { ExecutionLanguage, OutputLine } from '$lib/shared/blockly';
+	import type { ExecutionLanguage } from '$lib/shared/blockly';
 	import { generateCode } from '$lib/shared/blockly/generators';
-	import { BLOCKLY_CONFIG, ERROR_MESSAGES } from '$lib/shared/blockly/config';
+	import { BLOCKLY_CONFIG } from '$lib/shared/blockly/config';
+	import { BlocklyExecutor } from '$lib/shared/blockly/execution';
 
 	// =============================================================================
 	// State
@@ -25,29 +27,61 @@
 	/** Current execution language */
 	let language = $state<ExecutionLanguage>('javascript');
 
-	/** Whether code is currently executing */
-	let isExecuting = $state(false);
-
 	/** Generated JavaScript code */
 	let jsCode = $state('');
 
 	/** Generated Python code */
 	let pythonCode = $state('');
 
-	/** Output lines from code execution */
-	let outputLines = $state<OutputLine[]>([]);
-
 	/** Debounce timer for code generation */
 	let codeGenTimer: ReturnType<typeof setTimeout> | null = null;
+
+	/** Blockly code executor */
+	const executor = new BlocklyExecutor();
+
+	// =============================================================================
+	// Derived State
+	// =============================================================================
+
+	/** Current code based on selected language */
+	const currentCode = $derived(language === 'javascript' ? jsCode : pythonCode);
+
+	/** Whether code is currently executing */
+	const isExecuting = $derived(executor.isExecuting);
+
+	/** Output lines from execution */
+	const outputLines = $derived(executor.output);
+
+	/** Whether executor is loading */
+	const isLoading = $derived(executor.isLoading);
+
+	/** Loading progress */
+	const loadingProgress = $derived(executor.loadingProgress);
+
+	/** Loading stage */
+	const loadingStage = $derived(executor.loadingStage);
 
 	// =============================================================================
 	// Lifecycle
 	// =============================================================================
 
 	onMount(() => {
+		// Initialize the executor
+		executor.init();
+
 		// Initial code generation when workspace is ready
 		if (workspace) {
 			generateBothCodes();
+		}
+	});
+
+	onDestroy(() => {
+		// Clean up executor
+		executor.destroy();
+
+		// Clear debounce timer
+		if (codeGenTimer !== null) {
+			clearTimeout(codeGenTimer);
 		}
 	});
 
@@ -75,7 +109,7 @@
 
 		// Show warnings if any
 		if (jsResult.warnings && jsResult.warnings.length > 0) {
-			addOutputLine('info', jsResult.warnings.join('\n'));
+			executor.addOutput('info', jsResult.warnings.join('\n'));
 		}
 	}
 
@@ -107,87 +141,20 @@
 			return;
 		}
 
-		// Clear previous output
-		outputLines = [];
-
 		// Regenerate code to ensure it's up to date
 		generateBothCodes();
 
-		const code = language === 'javascript' ? jsCode : pythonCode;
-
 		// Check if there's code to execute
-		if (!code || code.trim().length === 0) {
-			addOutputLine('info', "Aucun code à exécuter. Ajoutez des blocs dans l'espace de travail.");
+		if (!currentCode || currentCode.trim().length === 0) {
+			executor.addOutput(
+				'info',
+				"Aucun code a executer. Ajoutez des blocs dans l'espace de travail."
+			);
 			return;
 		}
 
-		isExecuting = true;
-		addOutputLine(
-			'info',
-			`Exécution du code ${language === 'javascript' ? 'JavaScript' : 'Python'}...`
-		);
-
-		try {
-			if (language === 'javascript') {
-				await executeJavaScript(code);
-			} else {
-				await executePython(code);
-			}
-		} catch (error) {
-			addOutputLine('stderr', `Erreur: ${error instanceof Error ? error.message : String(error)}`);
-		} finally {
-			isExecuting = false;
-		}
-	}
-
-	/**
-	 * Execute JavaScript code
-	 * @param code - JavaScript code to execute
-	 */
-	async function executeJavaScript(code: string): Promise<void> {
-		try {
-			// Create a safe execution context
-			const safeConsoleLog = (...args: unknown[]) => {
-				addOutputLine('stdout', args.map(String).join(' '));
-			};
-
-			// Execute code with timeout
-			const timeoutPromise = new Promise<never>((_, reject) => {
-				setTimeout(
-					() => reject(new Error(ERROR_MESSAGES.TIMEOUT_JS)),
-					BLOCKLY_CONFIG.JS_TIMEOUT_MS
-				);
-			});
-
-			const executionPromise = new Promise<void>((resolve, reject) => {
-				try {
-					// Create function with custom console.log
-					const fn = new Function('console', code);
-					fn({ log: safeConsoleLog });
-					resolve();
-				} catch (error) {
-					reject(error);
-				}
-			});
-
-			await Promise.race([executionPromise, timeoutPromise]);
-			addOutputLine('info', 'Exécution terminée avec succès.');
-		} catch (error) {
-			addOutputLine(
-				'stderr',
-				`Erreur JavaScript: ${error instanceof Error ? error.message : String(error)}`
-			);
-		}
-	}
-
-	/**
-	 * Execute Python code (placeholder - requires Pyodide integration)
-	 * @param _code - Python code to execute (unused, for future implementation)
-	 */
-	async function executePython(_code: string): Promise<void> {
-		// TODO: Implement Pyodide integration
-		addOutputLine('stderr', "L'exécution Python n'est pas encore implémentée.");
-		addOutputLine('info', "Utilisez JavaScript pour l'instant.");
+		// Execute code via executor
+		await executor.execute(currentCode, language);
 	}
 
 	// =============================================================================
@@ -195,31 +162,10 @@
 	// =============================================================================
 
 	/**
-	 * Add a line to the output
-	 * @param type - Output line type
-	 * @param text - Output text
-	 */
-	function addOutputLine(type: OutputLine['type'], text: string): void {
-		outputLines = [
-			...outputLines,
-			{
-				type,
-				text,
-				timestamp: Date.now()
-			}
-		];
-
-		// Limit output lines
-		if (outputLines.length > BLOCKLY_CONFIG.MAX_OUTPUT_LINES) {
-			outputLines = outputLines.slice(-BLOCKLY_CONFIG.MAX_OUTPUT_LINES);
-		}
-	}
-
-	/**
 	 * Clear all output lines
 	 */
 	function handleClearOutput(): void {
-		outputLines = [];
+		executor.clearOutput();
 	}
 
 	/**
@@ -229,7 +175,7 @@
 		if (workspace) {
 			workspace.clear();
 			generateBothCodes();
-			outputLines = [];
+			executor.clearOutput();
 		}
 	}
 
@@ -237,12 +183,37 @@
 	 * Handle language change
 	 * @param newLanguage - New execution language
 	 */
-	function handleLanguageChange(newLanguage: ExecutionLanguage): void {
+	async function handleLanguageChange(newLanguage: ExecutionLanguage): Promise<void> {
 		language = newLanguage;
+		await executor.setLanguage(newLanguage);
 	}
 </script>
 
 <div class="flex h-full flex-col">
+	<!-- Loading overlay -->
+	{#if isLoading}
+		<div
+			class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm"
+		>
+			<div class="flex flex-col items-center gap-4">
+				<div
+					class="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"
+				></div>
+				<div class="text-sm text-muted-foreground">
+					{loadingStage}
+				</div>
+				{#if loadingProgress > 0}
+					<div class="h-2 w-48 overflow-hidden rounded-full bg-muted">
+						<div
+							class="h-full bg-primary transition-all duration-300"
+							style="width: {loadingProgress}%"
+						></div>
+					</div>
+				{/if}
+			</div>
+		</div>
+	{/if}
+
 	<!-- Toolbar -->
 	<BlocklyToolbar
 		{language}
