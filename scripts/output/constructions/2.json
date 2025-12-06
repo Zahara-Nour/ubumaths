@@ -12,7 +12,7 @@
       "type": "create",
       "object": {
         "kind": "polygon",
-        "id": "seg1",
+        "id": "seg_854",
         "vertices": [
           {
             "x": 0,
@@ -44,7 +44,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "2",
+        "id": "T_2",
         "content": "Calcul Mental : Soustraire 99 ",
         "x": 250,
         "y": 69,
@@ -62,7 +62,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "3",
+        "id": "T_3",
         "content": " Soustraire 99 à un nombre n'est pas une opération simple,",
         "x": 60,
         "y": 129,
@@ -80,7 +80,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "4",
+        "id": "T_4",
         "content": "mais on peut transformer ce calcul en 2 opérations simples.",
         "x": 60,
         "y": 159,
@@ -98,21 +98,21 @@
       "type": "action",
       "action": {
         "kind": "hide",
-        "target": "3"
+        "target": "T_3"
       }
     },
     {
       "type": "action",
       "action": {
         "kind": "hide",
-        "target": "4"
+        "target": "T_4"
       }
     },
     {
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "5",
+        "id": "T_5",
         "content": " On sait que 99 = 100 - 1 donc pour soustraire 99, ",
         "x": 60,
         "y": 129,
@@ -130,7 +130,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "9",
+        "id": "T_9",
         "content": " il suffit de soustraire 100 et d'ajouter 1 : ",
         "x": 60,
         "y": 159,
@@ -148,7 +148,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "6",
+        "id": "T_6",
         "content": "  soit                           et   ",
         "x": 60,
         "y": 189,
@@ -166,7 +166,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "7",
+        "id": "T_7",
         "content": "- 1 centaine ",
         "x": 130,
         "y": 189,
@@ -184,7 +184,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "8",
+        "id": "T_8",
         "content": " + 1 unité",
         "x": 320,
         "y": 189,
@@ -202,7 +202,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "11",
+        "id": "T_11",
         "content": "Voici un exemple :",
         "x": 60,
         "y": 219,
@@ -220,7 +220,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "12",
+        "id": "T_12",
         "content": "291 - 99 =",
         "x": 170,
         "y": 270,
@@ -248,7 +248,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg2",
+        "id": "seg_13",
         "from": {
           "x": 150,
           "y": 300
@@ -268,7 +268,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg3",
+        "id": "seg_14",
         "from": {
           "x": 147,
           "y": 305
@@ -288,7 +288,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg4",
+        "id": "seg_15",
         "from": {
           "x": 144,
           "y": 311
@@ -308,7 +308,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg5",
+        "id": "seg_16",
         "from": {
           "x": 141,
           "y": 318
@@ -328,7 +328,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg6",
+        "id": "seg_17",
         "from": {
           "x": 138,
           "y": 326
@@ -348,7 +348,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg7",
+        "id": "seg_18",
         "from": {
           "x": 135,
           "y": 335
@@ -368,7 +368,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg8",
+        "id": "seg_19",
         "from": {
           "x": 132,
           "y": 345
@@ -388,7 +388,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg9",
+        "id": "seg_20",
         "from": {
           "x": 131,
           "y": 356
@@ -408,7 +408,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg10",
+        "id": "seg_21",
         "from": {
           "x": 132,
           "y": 367
@@ -428,7 +428,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg11",
+        "id": "seg_22",
         "from": {
           "x": 135,
           "y": 377
@@ -448,7 +448,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg12",
+        "id": "seg_23",
         "from": {
           "x": 138,
           "y": 386
@@ -468,7 +468,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg13",
+        "id": "seg_24",
         "from": {
           "x": 141,
           "y": 394
@@ -488,7 +488,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg14",
+        "id": "seg_25",
         "from": {
           "x": 144,
           "y": 401
@@ -508,7 +508,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg15",
+        "id": "seg_26",
         "from": {
           "x": 147,
           "y": 407
@@ -532,7 +532,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "27",
+        "id": "T_27",
         "content": " - 1 c. ",
         "x": 20,
         "y": 330,
@@ -550,7 +550,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "200",
+        "id": "T_200",
         "content": "291",
         "x": 170,
         "y": 270,
@@ -564,7 +564,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "200",
+        "target": "T_200",
         "x": 170,
         "y": 330,
         "duration": 500
@@ -574,7 +574,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "300",
+        "id": "T_300",
         "content": "     ",
         "x": 170,
         "y": 330,
@@ -588,14 +588,14 @@
       "type": "action",
       "action": {
         "kind": "hide",
-        "target": "200"
+        "target": "T_200"
       }
     },
     {
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "201",
+        "id": "T_201",
         "content": "191",
         "x": 170,
         "y": 330,
@@ -609,14 +609,14 @@
       "type": "action",
       "action": {
         "kind": "hide",
-        "target": "300"
+        "target": "T_300"
       }
     },
     {
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "201",
+        "target": "T_201",
         "x": 170,
         "y": 380,
         "duration": 500
@@ -640,7 +640,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg16",
+        "id": "seg_28",
         "from": {
           "x": 150,
           "y": 420
@@ -660,7 +660,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg17",
+        "id": "seg_29",
         "from": {
           "x": 147,
           "y": 425
@@ -680,7 +680,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg18",
+        "id": "seg_30",
         "from": {
           "x": 144,
           "y": 431
@@ -700,7 +700,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg19",
+        "id": "seg_31",
         "from": {
           "x": 141,
           "y": 438
@@ -720,7 +720,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg20",
+        "id": "seg_32",
         "from": {
           "x": 138,
           "y": 446
@@ -740,7 +740,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg21",
+        "id": "seg_33",
         "from": {
           "x": 135,
           "y": 455
@@ -760,7 +760,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg22",
+        "id": "seg_34",
         "from": {
           "x": 132,
           "y": 465
@@ -780,7 +780,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg23",
+        "id": "seg_35",
         "from": {
           "x": 131,
           "y": 476
@@ -800,7 +800,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg24",
+        "id": "seg_36",
         "from": {
           "x": 132,
           "y": 487
@@ -820,7 +820,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg25",
+        "id": "seg_37",
         "from": {
           "x": 135,
           "y": 497
@@ -840,7 +840,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg26",
+        "id": "seg_38",
         "from": {
           "x": 138,
           "y": 506
@@ -860,7 +860,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg27",
+        "id": "seg_39",
         "from": {
           "x": 141,
           "y": 514
@@ -880,7 +880,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg28",
+        "id": "seg_40",
         "from": {
           "x": 144,
           "y": 521
@@ -900,7 +900,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg29",
+        "id": "seg_41",
         "from": {
           "x": 147,
           "y": 527
@@ -924,7 +924,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "42",
+        "id": "T_42",
         "content": " + 1 u. ",
         "x": 20,
         "y": 450,
@@ -942,7 +942,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "202",
+        "id": "T_202",
         "content": "192",
         "x": 170,
         "y": 380,
@@ -956,7 +956,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "202",
+        "target": "T_202",
         "x": 170,
         "y": 440,
         "duration": 500
@@ -966,7 +966,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "301",
+        "id": "T_301",
         "content": "     ",
         "x": 170,
         "y": 440,
@@ -980,14 +980,14 @@
       "type": "action",
       "action": {
         "kind": "hide",
-        "target": "202"
+        "target": "T_202"
       }
     },
     {
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "203",
+        "id": "T_203",
         "content": "192",
         "x": 170,
         "y": 440,
@@ -1001,7 +1001,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "202",
+        "target": "T_202",
         "x": 170,
         "y": 440,
         "duration": 500
@@ -1011,14 +1011,14 @@
       "type": "action",
       "action": {
         "kind": "hide",
-        "target": "300"
+        "target": "T_300"
       }
     },
     {
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "203",
+        "target": "T_203",
         "x": 170,
         "y": 500,
         "duration": 500
@@ -1042,7 +1042,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg30",
+        "id": "seg_42",
         "from": {
           "x": 270,
           "y": 530
@@ -1066,7 +1066,7 @@
       "type": "create",
       "object": {
         "kind": "polygon",
-        "id": "seg31",
+        "id": "seg_855",
         "vertices": [
           {
             "x": 160,

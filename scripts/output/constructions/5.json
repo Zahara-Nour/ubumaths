@@ -26,7 +26,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg1",
+        "id": "seg_2",
         "from": {
           "x": 133.05,
           "y": 91.15
@@ -56,7 +56,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P2",
+        "id": "P_3",
         "x": 67,
         "y": 523,
         "style": {
@@ -85,7 +85,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg3",
+        "id": "seg_4",
         "from": {
           "x": 213.65,
           "y": 92.95
@@ -115,7 +115,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P4",
+        "id": "P_5",
         "x": 156.85,
         "y": 339,
         "style": {
@@ -144,7 +144,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg5",
+        "id": "seg_6",
         "from": {
           "x": 301.5,
           "y": 93.5
@@ -174,7 +174,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P6",
+        "id": "P_7",
         "x": 225,
         "y": 546,
         "style": {
@@ -203,7 +203,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg7",
+        "id": "seg_8",
         "from": {
           "x": 404.4,
           "y": 177.65
@@ -233,7 +233,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P8",
+        "id": "P_9",
         "x": 338,
         "y": 385,
         "style": {
@@ -256,8 +256,8 @@
       "action": {
         "kind": "moveTo",
         "target": "pencil",
-        "x": "$P2.x",
-        "y": "$P2.y",
+        "x": "$P_3.x",
+        "y": "$P_3.y",
         "duration": 200
       }
     },
@@ -265,12 +265,12 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg9",
+        "id": "seg_10",
         "from": {
           "x": 67,
           "y": 523
         },
-        "to": "P4",
+        "to": "P_5",
         "style": {
           "color": "#0000FF",
           "lineWidth": 3,
@@ -282,12 +282,12 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg10",
+        "id": "seg_11",
         "from": {
           "x": 67,
           "y": 523
         },
-        "to": "P6",
+        "to": "P_7",
         "style": {
           "color": "#0000FF",
           "lineWidth": 3,
@@ -299,12 +299,12 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg11",
+        "id": "seg_12",
         "from": {
           "x": 67,
           "y": 523
         },
-        "to": "P8",
+        "to": "P_9",
         "style": {
           "color": "#0000FF",
           "lineWidth": 3,

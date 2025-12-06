@@ -62,7 +62,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "50",
+        "id": "T_50",
         "content": " Partage d'un segment en trois parts égales. ( règle, compas )",
         "x": 10,
         "y": 50,
@@ -80,7 +80,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P1",
+        "id": "P_12",
         "x": 173.45,
         "y": 457.45,
         "style": {
@@ -95,10 +95,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label2",
+        "id": "label_12_label",
         "content": "A",
-        "x": "$P1.x + 10",
-        "y": "$P1.y - 10",
+        "x": "$P_12.x + 10",
+        "y": "$P_12.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#000000"
@@ -109,7 +109,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P3",
+        "id": "P_13",
         "x": 468.15,
         "y": 424.35,
         "style": {
@@ -124,10 +124,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label4",
+        "id": "label_13_label",
         "content": "B",
-        "x": "$P3.x + 10",
-        "y": "$P3.y - 10",
+        "x": "$P_13.x + 10",
+        "y": "$P_13.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#000000"
@@ -168,7 +168,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "22",
+        "id": "T_22",
         "content": "1. On trace une demi-droite d'origine le point A.",
         "x": 70,
         "y": 120,
@@ -181,6 +181,20 @@
     {
       "type": "pause",
       "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_1",
+        "content": "1. On trace une demi-droite d'origine le point A.",
+        "x": 70,
+        "y": 120,
+        "fontSize": 18,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
     },
     {
       "type": "pause",
@@ -211,8 +225,8 @@
       "action": {
         "kind": "moveTo",
         "target": "ruler",
-        "x": "$P1.x",
-        "y": "$P1.y",
+        "x": "$P_12.x",
+        "y": "$P_12.y",
         "duration": 500
       }
     },
@@ -254,7 +268,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg5",
+        "id": "seg_21",
         "from": {
           "x": 173.45,
           "y": 457.45
@@ -282,6 +296,20 @@
       "action": {
         "kind": "hide",
         "target": "ruler"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_2",
+        "content": "2. On choisit une ouverture de compas que l'on reporte trois fois sur la demi-droite.",
+        "x": 70,
+        "y": 120,
+        "fontSize": 18,
+        "style": {
+          "color": "#0000FF"
+        }
       }
     },
     {
@@ -334,7 +362,7 @@
       "type": "create",
       "object": {
         "kind": "arc",
-        "id": "arc6",
+        "id": "arc_3",
         "center": {
           "x": 70,
           "y": 120
@@ -370,7 +398,7 @@
       "type": "create",
       "object": {
         "kind": "arc",
-        "id": "arc7",
+        "id": "arc_4",
         "center": {
           "x": 70,
           "y": 120
@@ -615,6 +643,20 @@
       }
     },
     {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_5",
+        "content": "3. On trace les droites parallèles à la droite (KB) et passant par les points J et I. Constructions de parallélogrammes au compas.",
+        "x": 70,
+        "y": 120,
+        "fontSize": 18,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
       "type": "pause",
       "duration": 1000
     },
@@ -669,8 +711,8 @@
       "action": {
         "kind": "moveTo",
         "target": "compass",
-        "x": "$P3.x",
-        "y": "$P3.y",
+        "x": "$P_13.x",
+        "y": "$P_13.y",
         "duration": 500
       }
     },
@@ -686,7 +728,7 @@
       "type": "create",
       "object": {
         "kind": "arc",
-        "id": "arc8",
+        "id": "arc_1",
         "center": {
           "x": 70,
           "y": 120
@@ -761,7 +803,7 @@
       "type": "create",
       "object": {
         "kind": "arc",
-        "id": "arc9",
+        "id": "arc_2",
         "center": {
           "x": 70,
           "y": 120
@@ -801,7 +843,7 @@
       "type": "create",
       "object": {
         "kind": "arc",
-        "id": "arc10",
+        "id": "arc_6",
         "center": {
           "x": 70,
           "y": 120
@@ -844,7 +886,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P11",
+        "id": "P_4",
         "x": 375,
         "y": 491.2,
         "style": {
@@ -860,8 +902,8 @@
       "action": {
         "kind": "moveTo",
         "target": "compass",
-        "x": "$P11.x",
-        "y": "$P11.y",
+        "x": "$P_4.x",
+        "y": "$P_4.y",
         "duration": 500
       }
     },
@@ -890,7 +932,7 @@
       "type": "create",
       "object": {
         "kind": "arc",
-        "id": "arc12",
+        "id": "arc_5",
         "center": {
           "x": 70,
           "y": 120
@@ -923,7 +965,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P13",
+        "id": "P_6",
         "x": 281,
         "y": 561.3,
         "style": {
@@ -981,12 +1023,12 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg14",
+        "id": "seg_7b",
         "from": {
           "x": 454.8,
           "y": 251.8
         },
-        "to": "P3",
+        "to": "P_13",
         "style": {
           "color": "#008888",
           "lineWidth": 1,
@@ -1031,12 +1073,12 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg15",
+        "id": "seg_7",
         "from": {
           "x": 361,
           "y": 319.7
         },
-        "to": "P11",
+        "to": "P_4",
         "style": {
           "color": "#006400",
           "lineWidth": 1,
@@ -1068,12 +1110,12 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg16",
+        "id": "seg_8",
         "from": {
           "x": 266.6,
           "y": 388.3
         },
-        "to": "P13",
+        "to": "P_6",
         "style": {
           "color": "#006400",
           "lineWidth": 1,
@@ -1103,7 +1145,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P17",
+        "id": "P_27",
         "x": 530,
         "y": 176,
         "style": {
@@ -1118,10 +1160,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label18",
+        "id": "label_27_label",
         "content": "£i(A,1)",
-        "x": "$P17.x + 10",
-        "y": "$P17.y - 10",
+        "x": "$P_27.x + 10",
+        "y": "$P_27.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#0000FF"
@@ -1132,7 +1174,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "P17",
+        "target": "P_27",
         "x": 272.05,
         "y": 446.5,
         "duration": 10000
@@ -1142,7 +1184,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P19",
+        "id": "P_28",
         "x": 530,
         "y": 176,
         "style": {
@@ -1157,10 +1199,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label20",
+        "id": "label_28_label",
         "content": "£i(A,2)",
-        "x": "$P19.x + 10",
-        "y": "$P19.y - 10",
+        "x": "$P_28.x + 10",
+        "y": "$P_28.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#0000FF"
@@ -1171,10 +1213,24 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "P19",
+        "target": "P_28",
         "x": 370.45,
         "y": 435.55,
         "duration": 10000
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_7",
+        "content": "Les segments consécutifs [A(A,1)], [(A,1)(A,2)] et [(A,2)B] sont de même longueur.",
+        "x": 70,
+        "y": 120,
+        "fontSize": 18,
+        "style": {
+          "color": "#0000FF"
+        }
       }
     },
     {
@@ -1232,7 +1288,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg21",
+        "id": "seg5",
         "from": {
           "x": 317.85,
           "y": 453.55

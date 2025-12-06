@@ -62,7 +62,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "50",
+        "id": "T_50",
         "content": " Construction du symétrique d'un point par rapport à une droite au compas (2).",
         "x": 10,
         "y": 50,
@@ -80,7 +80,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "1a",
+        "id": "T_1a",
         "content": "On considère un point M et un axe de symétrie (d).",
         "x": 15,
         "y": 78,
@@ -131,7 +131,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg1",
+        "id": "seg_1",
         "from": {
           "x": 199,
           "y": 399
@@ -141,7 +141,7 @@
           "y": 188
         },
         "style": {
-          "color": "0",
+          "color": "#000000",
           "lineWidth": 0,
           "lineStyle": "solid"
         }
@@ -175,7 +175,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "4",
+        "id": "T_4",
         "content": "(d)",
         "x": 592,
         "y": 205,
@@ -189,7 +189,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P2",
+        "id": "P_3",
         "x": 281,
         "y": 208,
         "style": {
@@ -204,10 +204,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label3",
+        "id": "label_3_label",
         "content": "M",
-        "x": "$P2.x + 10",
-        "y": "$P2.y - 10",
+        "x": "$P_3.x + 10",
+        "y": "$P_3.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#000000"
@@ -418,7 +418,7 @@
       "type": "create",
       "object": {
         "kind": "arc",
-        "id": "arc4",
+        "id": "arc_2",
         "center": {
           "x": 40,
           "y": 480
@@ -483,7 +483,7 @@
       "type": "create",
       "object": {
         "kind": "arc",
-        "id": "arc5",
+        "id": "arc_5",
         "center": {
           "x": 40,
           "y": 480
@@ -538,7 +538,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P6",
+        "id": "P_6",
         "x": 403,
         "y": 439,
         "style": {
@@ -553,10 +553,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label7",
+        "id": "label_6_label",
         "content": "M'",
-        "x": "$P6.x + 10",
-        "y": "$P6.y - 10",
+        "x": "$P_6.x + 10",
+        "y": "$P_6.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#0000FF"
@@ -576,8 +576,8 @@
       "action": {
         "kind": "moveTo",
         "target": "ruler",
-        "x": "$P2.x",
-        "y": "$P2.y",
+        "x": "$P_3.x",
+        "y": "$P_3.y",
         "duration": 500
       }
     },
@@ -606,8 +606,8 @@
       "action": {
         "kind": "moveTo",
         "target": "pencil",
-        "x": "$P2.x",
-        "y": "$P2.y",
+        "x": "$P_3.x",
+        "y": "$P_3.y",
         "duration": 100
       }
     },
@@ -626,12 +626,12 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg8",
+        "id": "seg_7",
         "from": {
           "x": 281,
           "y": 208
         },
-        "to": "P6",
+        "to": "P_6",
         "style": {
           "color": "#FF0000",
           "lineWidth": 0,
@@ -661,7 +661,7 @@
       "type": "create",
       "object": {
         "kind": "angleMark",
-        "id": "rightAngle9",
+        "id": "rightAngle_8",
         "vertex": {
           "x": 347,
           "y": 305
@@ -685,7 +685,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "mark10",
+        "id": "mark_9",
         "x": 319,
         "y": 277,
         "pointStyle": "cross",
@@ -700,7 +700,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "mark11",
+        "id": "mark_10",
         "x": 370,
         "y": 374,
         "pointStyle": "cross",
