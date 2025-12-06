@@ -288,6 +288,20 @@ Calculatrice graphique interactive pour tracer et analyser des fonctions mathém
 - Architecture modulaire avec tests unitaires complets
 - **2025-12-04** : Implémentation production-ready avec documentation complète
 
+### 📐 Constructions Géométriques
+
+**Status** : ✅ Production | [Documentation technique →](claude/instrumenpoche-conversion.md) 🆕
+
+Système d'animation de constructions géométriques inspiré d'InstrumenPoche (Sésamath).
+
+- Player d'animations avec timeline et contrôles (play, pause, seek)
+- Instruments virtuels : règle, compas, équerre, rapporteur, crayon
+- Format JSON typé avec actions discriminées
+- 9 exemples importés de la bibliothèque InstrumenPoche
+- Éditeur de constructions pour enseignants
+- [Guide de conversion InstrumenPoche](claude/instrumenpoche-conversion.md) - Mapping XML → JSON
+- **2025-12-06** : Import des exemples InstrumenPoche
+
 ### 💬 Messagerie privée
 
 **Status** : ✅ Production | [Documentation →](features/messaging/README.md)
