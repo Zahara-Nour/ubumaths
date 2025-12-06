@@ -183,6 +183,7 @@ interface ConversionContext {
 	pointPositions: Map<string, Position>; // Tracks point positions by IEP id
 	instrumentPositions: Map<string, Position>; // Tracks instrument positions (ruler, compass, etc.)
 	currentPosition: { x: number; y: number };
+	compassRadius: number; // Current compass opening radius
 	createdObjects: Set<string>;
 	steps: Step[];
 	warnings: string[];
@@ -458,7 +459,9 @@ function convertPointAction(
 		}
 		case 'nommer': {
 			// Point naming - we can update the label
-			const pointId = attrs.id ? ctx.pointMap.get(attrs.id) || attrs.id : undefined;
+			const pointId = attrs.id
+				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'P', attrs.id)
+				: undefined;
 			if (pointId && attrs.nom) {
 				// Create a text label near the point
 				const labelId = generateObjectId(ctx, 'label', `${attrs.id}_label`);
@@ -479,7 +482,9 @@ function convertPointAction(
 			break;
 		}
 		case 'translation': {
-			const pointId = attrs.id ? ctx.pointMap.get(attrs.id) || attrs.id : undefined;
+			const pointId = attrs.id
+				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'P', attrs.id)
+				: undefined;
 			if (pointId && attrs.abscisse && attrs.ordonnee) {
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
@@ -499,7 +504,9 @@ function convertPointAction(
 			break;
 		}
 		case 'masquer': {
-			const pointId = attrs.id ? ctx.pointMap.get(attrs.id) || attrs.id : undefined;
+			const pointId = attrs.id
+				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'P', attrs.id)
+				: undefined;
 			if (pointId) {
 				const action: ActionDef = {
 					kind: 'hide',
@@ -510,7 +517,9 @@ function convertPointAction(
 			break;
 		}
 		case 'montrer': {
-			const pointId = attrs.id ? ctx.pointMap.get(attrs.id) || attrs.id : undefined;
+			const pointId = attrs.id
+				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'P', attrs.id)
+				: undefined;
 			if (pointId) {
 				const action: ActionDef = {
 					kind: 'show',
@@ -578,7 +587,9 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 			break;
 		}
 		case 'masquer': {
-			const id = attrs.id ? ctx.pointMap.get(attrs.id) || attrs.id : undefined;
+			const id = attrs.id
+				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'T', attrs.id)
+				: undefined;
 			if (id) {
 				const action: ActionDef = { kind: 'hide', target: id };
 				ctx.steps.push({ type: 'action', action });
@@ -586,7 +597,9 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 			break;
 		}
 		case 'translation': {
-			const id = attrs.id ? ctx.pointMap.get(attrs.id) || attrs.id : undefined;
+			const id = attrs.id
+				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'T', attrs.id)
+				: undefined;
 			if (id && attrs.abscisse && attrs.ordonnee) {
 				const action: ActionDef = {
 					kind: 'moveTo',
@@ -629,7 +642,7 @@ function convertPencilAction(
 				ctx.steps.push({ type: 'action', action });
 			} else if (attrs.cible) {
 				// Move pencil to target point
-				const targetId = ctx.pointMap.get(attrs.cible) || attrs.cible;
+				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				const targetPos = getPointPosition(ctx, attrs.cible);
 				if (targetPos) {
 					ctx.currentPosition = { x: targetPos.x, y: targetPos.y };
@@ -648,6 +661,10 @@ function convertPencilAction(
 		case 'tracer': {
 			// Draw a line from current position to target
 			const id = generateObjectId(ctx, 'seg', attrs.id);
+			// Register mapping so hide/show actions can find this object later
+			if (attrs.id) {
+				ctx.pointMap.set(attrs.id, id);
+			}
 			const startX = ctx.currentPosition.x;
 			const startY = ctx.currentPosition.y;
 			const endX = attrs.abscisse ? parseFloat(attrs.abscisse) : startX;
@@ -710,7 +727,7 @@ function convertPencilAction(
 				ctx.steps.push({ type: 'create', object: rayDef });
 			} else if (attrs.cible) {
 				// Draw to a target point
-				const targetId = ctx.pointMap.get(attrs.cible) || attrs.cible;
+				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				const segmentDef: ObjectDef = {
 					kind: 'segment',
 					id,
@@ -746,6 +763,13 @@ function convertPencilAction(
 			break;
 		}
 		case 'montrer': {
+			// CRITICAL: Update position if provided - this sets the starting point for tracer
+			if (attrs.abscisse !== undefined && attrs.ordonnee !== undefined) {
+				const newX = parseFloat(attrs.abscisse);
+				const newY = parseFloat(attrs.ordonnee);
+				ctx.currentPosition = { x: newX, y: newY };
+				setInstrumentPosition(ctx, 'pencil', { x: newX, y: newY });
+			}
 			const action: ActionDef = { kind: 'show', target: 'pencil' };
 			ctx.steps.push({ type: 'action', action });
 			break;
@@ -768,6 +792,12 @@ function convertRulerAction(
 ): void {
 	switch (mouvement) {
 		case 'montrer': {
+			// CRITICAL: Update position if provided
+			if (attrs.abscisse !== undefined && attrs.ordonnee !== undefined) {
+				const newX = parseFloat(attrs.abscisse);
+				const newY = parseFloat(attrs.ordonnee);
+				setInstrumentPosition(ctx, 'ruler', { x: newX, y: newY });
+			}
 			const action: ActionDef = { kind: 'show', target: 'ruler' };
 			ctx.steps.push({ type: 'action', action });
 			break;
@@ -792,7 +822,7 @@ function convertRulerAction(
 				};
 				ctx.steps.push({ type: 'action', action });
 			} else if (attrs.cible) {
-				const targetId = ctx.pointMap.get(attrs.cible) || attrs.cible;
+				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				// Update ruler position to target point's position
 				const targetPos = getPointPosition(ctx, attrs.cible);
 				if (targetPos) {
@@ -879,6 +909,12 @@ function convertCompassAction(
 ): void {
 	switch (mouvement) {
 		case 'montrer': {
+			// CRITICAL: Update position if provided
+			if (attrs.abscisse !== undefined && attrs.ordonnee !== undefined) {
+				const newX = parseFloat(attrs.abscisse);
+				const newY = parseFloat(attrs.ordonnee);
+				setInstrumentPosition(ctx, 'compass', { x: newX, y: newY });
+			}
 			const action: ActionDef = { kind: 'show', target: 'compass' };
 			ctx.steps.push({ type: 'action', action });
 			break;
@@ -903,7 +939,7 @@ function convertCompassAction(
 				};
 				ctx.steps.push({ type: 'action', action });
 			} else if (attrs.cible) {
-				const targetId = ctx.pointMap.get(attrs.cible) || attrs.cible;
+				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				// Update compass position to target point's position
 				const targetPos = getPointPosition(ctx, attrs.cible);
 				if (targetPos) {
@@ -958,9 +994,11 @@ function convertCompassAction(
 		case 'ecarter': {
 			// Set compass opening
 			if (attrs.ecart) {
+				const radius = parseFloat(attrs.ecart);
+				ctx.compassRadius = radius; // Store for arc creation
 				const action: ActionDef = {
 					kind: 'setCompass',
-					radius: parseFloat(attrs.ecart),
+					radius: radius,
 					duration: 300
 				};
 				ctx.steps.push({ type: 'action', action });
@@ -974,9 +1012,11 @@ function convertCompassAction(
 					const distance = Math.sqrt(
 						(targetPos.x - compassPos.x) ** 2 + (targetPos.y - compassPos.y) ** 2
 					);
+					const radius = Math.round(distance * 100) / 100; // Round to 2 decimals
+					ctx.compassRadius = radius; // Store for arc creation
 					const action: ActionDef = {
 						kind: 'setCompass',
-						radius: Math.round(distance * 100) / 100, // Round to 2 decimals
+						radius: radius,
 						duration: 300
 					};
 					ctx.steps.push({ type: 'action', action });
@@ -1004,16 +1044,23 @@ function convertCompassAction(
 		case 'tracer': {
 			// Draw arc with compass
 			const id = generateObjectId(ctx, 'arc', attrs.id);
+			// Register mapping so hide/show actions can find this object later
+			if (attrs.id) {
+				ctx.pointMap.set(attrs.id, id);
+			}
 			const startAngle = attrs.debut ? parseFloat(attrs.debut) : 0;
 			const endAngle = attrs.fin ? parseFloat(attrs.fin) : 360;
 
-			// We need to know compass position and radius from context
-			// For now, create a placeholder arc
+			// CRITICAL: Use compass position, NOT ctx.currentPosition (which holds text positions)
+			const compassPos = getInstrumentPosition(ctx, 'compass');
+			const centerX = compassPos?.x ?? ctx.currentPosition.x;
+			const centerY = compassPos?.y ?? ctx.currentPosition.y;
+
 			const arcDef: ObjectDef = {
 				kind: 'arc',
 				id,
-				center: { x: ctx.currentPosition.x, y: ctx.currentPosition.y },
-				radius: 100, // Default, should come from compass state
+				center: { x: centerX, y: centerY },
+				radius: ctx.compassRadius, // Use tracked compass radius
 				startAngle,
 				endAngle,
 				style: {
@@ -1083,6 +1130,10 @@ function convertLengthMarkAction(
 		// Length marks are small tick marks on segments
 		// Convert to a small segment or text
 		const id = generateObjectId(ctx, 'mark', attrs.id);
+		// Register mapping so hide/show actions can find this object later
+		if (attrs.id) {
+			ctx.pointMap.set(attrs.id, id);
+		}
 		const x = attrs.abscisse ? parseFloat(attrs.abscisse) : 0;
 		const y = attrs.ordonnee ? parseFloat(attrs.ordonnee) : 0;
 
@@ -1114,6 +1165,10 @@ function convertRightAngleAction(
 ): void {
 	if (mouvement === 'creer') {
 		const id = generateObjectId(ctx, 'rightAngle', attrs.id);
+		// Register mapping so hide/show actions can find this object later
+		if (attrs.id) {
+			ctx.pointMap.set(attrs.id, id);
+		}
 
 		// Create an angle mark
 		const angleDef: ObjectDef = {
@@ -1151,7 +1206,14 @@ function convertTraitAction(
 	ctx: ConversionContext
 ): void {
 	if (mouvement === 'masquer' && attrs.id) {
-		const action: ActionDef = { kind: 'hide', target: attrs.id };
+		// Use the mapped ID if available, otherwise use the original ID with a prefix
+		const targetId = ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'obj', attrs.id);
+		const action: ActionDef = { kind: 'hide', target: targetId };
+		ctx.steps.push({ type: 'action', action });
+	} else if (mouvement === 'montrer' && attrs.id) {
+		// Use the mapped ID if available, otherwise use the original ID with a prefix
+		const targetId = ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'obj', attrs.id);
+		const action: ActionDef = { kind: 'show', target: targetId };
 		ctx.steps.push({ type: 'action', action });
 	}
 }
@@ -1181,6 +1243,10 @@ function convertImageAction(
 function convertMarkAction(attrs: IepAction['$'], mouvement: string, ctx: ConversionContext): void {
 	if (mouvement === 'creer') {
 		const id = generateObjectId(ctx, 'mark', attrs.id);
+		// Register mapping so hide/show actions can find this object later
+		if (attrs.id) {
+			ctx.pointMap.set(attrs.id, id);
+		}
 		const x = attrs.abscisse ? parseFloat(attrs.abscisse) : 0;
 		const y = attrs.ordonnee ? parseFloat(attrs.ordonnee) : 0;
 
@@ -1228,6 +1294,7 @@ function convertDocument(doc: IepDocument, filename: string): ConstructionScript
 		pointPositions: new Map(),
 		instrumentPositions: new Map(),
 		currentPosition: { x: 0, y: 0 },
+		compassRadius: 100, // Default compass radius
 		createdObjects: new Set(),
 		steps: [],
 		warnings: []
@@ -1365,6 +1432,10 @@ async function main() {
 		const timestamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
 		const migrationPath = path.join(MIGRATION_DIR, `${timestamp}_seed_instrumenpoche_examples.sql`);
 
+		// Collect all titles for DELETE statement
+		const titles = constructions.map((c) => c.title?.replace(/'/g, "''") || '').filter(Boolean);
+		const titlesForDelete = titles.map((t) => `'${t}'`).join(',\n  ');
+
 		const sqlStatements = [
 			'-- Migration: Seed InstrumenPoche construction examples',
 			'-- Auto-generated by convert-instrumenpoche.ts',
@@ -1372,6 +1443,11 @@ async function main() {
 			'',
 			'-- These are example constructions converted from InstrumenPoche XML format',
 			'-- They demonstrate various geometric construction techniques',
+			'',
+			'-- First, delete any existing InstrumenPoche examples (idempotent migration)',
+			'DELETE FROM constructions WHERE title IN (',
+			`  ${titlesForDelete}`,
+			');',
 			''
 		];
 

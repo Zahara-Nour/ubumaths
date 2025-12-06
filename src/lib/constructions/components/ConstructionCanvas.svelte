@@ -4,6 +4,8 @@
 	 *
 	 * Renders geometric objects and instruments from the construction engine
 	 * onto an SVG canvas with optional grid display.
+	 *
+	 * Uses detailed instrument components ported from InstrumenPoche.
 	 */
 
 	import type { ConstructionEngine } from '../core/engine.svelte';
@@ -23,6 +25,9 @@
 		DEFAULT_LINE_WIDTH,
 		DEFAULT_ANGLE_MARK_RADIUS
 	} from '../constants';
+
+	// Detailed instrument components ported from InstrumenPoche
+	import { Compass, Ruler, SetSquare, Protractor, Pencil } from './instruments';
 
 	// Types
 	interface Props {
@@ -232,10 +237,13 @@
 	{width}
 	{height}
 	viewBox="0 0 {width} {height}"
-	class="construction-canvas rounded-lg border border-border bg-background"
+	class="construction-canvas rounded-lg border border-border"
 	role="img"
 	aria-label="Construction geometrique"
 >
+	<!-- White background -->
+	<rect x="0" y="0" {width} {height} fill="white" />
+
 	<!-- Grid layer -->
 	{#if showGrid}
 		<g class="grid-layer" aria-hidden="true">
@@ -373,127 +381,54 @@
 		{/each}
 	</g>
 
-	<!-- Instruments layer -->
+	<!-- Instruments layer - Using detailed components ported from InstrumenPoche -->
 	<g class="instruments-layer">
 		{#each visibleInstruments as instrument (instrument.type)}
-			<!-- Ruler -->
-			{#if instrument.type === 'ruler'}
-				<g
-					transform="translate({instrument.x}, {instrument.y}) rotate({instrument.rotation})"
-					opacity="0.8"
-				>
-					<rect
-						x="0"
-						y="-20"
-						width="500"
-						height="40"
-						fill="rgba(200, 200, 200, 0.8)"
-						stroke={DEFAULT_COLORS.instrument}
-						stroke-width="1"
-						rx="2"
+			{@const opacity = instrument.opacity ?? 1}
+			<g style:opacity>
+				{#if instrument.type === 'ruler'}
+					<Ruler
+						x={instrument.x}
+						y={instrument.y}
+						rotation={instrument.rotation}
+						scale={instrument.scale}
+						visible={instrument.visible}
 					/>
-					<!-- Ruler markings -->
-					{#each Array(51) as _, i (i)}
-						<line
-							x1={i * 10}
-							y1="-20"
-							x2={i * 10}
-							y2={i % 5 === 0 ? -10 : -15}
-							stroke={DEFAULT_COLORS.text}
-							stroke-width="1"
-						/>
-						{#if i % 5 === 0}
-							<text
-								x={i * 10}
-								y="-2"
-								fill={DEFAULT_COLORS.text}
-								font-size="10"
-								text-anchor="middle"
-							>
-								{i}
-							</text>
-						{/if}
-					{/each}
-				</g>
-			{/if}
-
-			<!-- Compass -->
-			{#if instrument.type === 'compass'}
-				<g
-					transform="translate({instrument.x}, {instrument.y}) rotate({instrument.rotation})"
-					opacity="0.9"
-				>
-					<!-- Compass arms -->
-					<line
-						x1="0"
-						y1="0"
-						x2={-(instrument.compassRadius ?? 100) * 0.4}
-						y2={(instrument.compassRadius ?? 100) * 0.8}
-						stroke={DEFAULT_COLORS.instrument}
-						stroke-width="3"
-						stroke-linecap="round"
+				{:else if instrument.type === 'compass'}
+					<Compass
+						x={instrument.x}
+						y={instrument.y}
+						rotation={instrument.rotation}
+						opening={instrument.compassRadius ?? 0}
+						scale={instrument.scale}
+						visible={instrument.visible}
 					/>
-					<line
-						x1="0"
-						y1="0"
-						x2={(instrument.compassRadius ?? 100) * 0.4}
-						y2={(instrument.compassRadius ?? 100) * 0.8}
-						stroke={DEFAULT_COLORS.instrument}
-						stroke-width="3"
-						stroke-linecap="round"
+				{:else if instrument.type === 'protractor'}
+					<Protractor
+						x={instrument.x}
+						y={instrument.y}
+						rotation={instrument.rotation}
+						scale={instrument.scale}
+						visible={instrument.visible}
 					/>
-					<!-- Compass point -->
-					<circle
-						cx={-(instrument.compassRadius ?? 100) * 0.4}
-						cy={(instrument.compassRadius ?? 100) * 0.8}
-						r="3"
-						fill={DEFAULT_COLORS.instrument}
+				{:else if instrument.type === 'setSquare'}
+					<SetSquare
+						x={instrument.x}
+						y={instrument.y}
+						rotation={instrument.rotation}
+						scale={instrument.scale}
+						visible={instrument.visible}
 					/>
-					<!-- Compass pencil -->
-					<circle
-						cx={(instrument.compassRadius ?? 100) * 0.4}
-						cy={(instrument.compassRadius ?? 100) * 0.8}
-						r="4"
-						fill={DEFAULT_COLORS.primary}
+				{:else if instrument.type === 'pencil'}
+					<Pencil
+						x={instrument.x}
+						y={instrument.y}
+						rotation={instrument.rotation}
+						scale={instrument.scale}
+						visible={instrument.visible}
 					/>
-					<!-- Compass hinge -->
-					<circle cx="0" cy="0" r="6" fill={DEFAULT_COLORS.instrument} />
-				</g>
-			{/if}
-
-			<!-- Protractor -->
-			{#if instrument.type === 'protractor'}
-				<g
-					transform="translate({instrument.x}, {instrument.y}) rotate({instrument.rotation})"
-					opacity="0.8"
-				>
-					<!-- Semicircle -->
-					<path
-						d="M -150 0 A 150 150 0 0 1 150 0 L -150 0"
-						fill="rgba(200, 200, 200, 0.6)"
-						stroke={DEFAULT_COLORS.instrument}
-						stroke-width="1"
-					/>
-					<!-- Center point -->
-					<circle cx="0" cy="0" r="3" fill={DEFAULT_COLORS.instrument} />
-					<!-- Angle markings would go here -->
-				</g>
-			{/if}
-
-			<!-- Set Square -->
-			{#if instrument.type === 'setSquare'}
-				<g
-					transform="translate({instrument.x}, {instrument.y}) rotate({instrument.rotation})"
-					opacity="0.8"
-				>
-					<path
-						d="M 0 0 L 200 0 L 0 -200 Z"
-						fill="rgba(200, 200, 200, 0.6)"
-						stroke={DEFAULT_COLORS.instrument}
-						stroke-width="1"
-					/>
-				</g>
-			{/if}
+				{/if}
+			</g>
 		{/each}
 	</g>
 </svg>

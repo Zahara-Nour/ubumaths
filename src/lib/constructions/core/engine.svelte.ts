@@ -20,14 +20,57 @@ import type {
 	Position,
 	Step,
 	ActionDef,
-	Expr,
-	PointDef
+	Expr
 } from '../types';
-import { isCreateStep, isActionStep, isPauseStep } from '../types';
+import { isCreateStep, isActionStep } from '../types';
 import { constructionScriptSchema } from '../schemas';
 import { evaluateExpr, createContext, type EvaluationContext } from './evaluator';
 import { Timeline, type TimelineOptions } from './timeline.svelte';
-import { DEFAULT_CANVAS_CONFIG, DEFAULT_COMPASS_RADIUS, DEFAULT_POINT_RADIUS } from '../constants';
+import { DEFAULT_CANVAS_CONFIG, DEFAULT_COMPASS_RADIUS } from '../constants';
+
+// =============================================================================
+// Animation State Types
+// =============================================================================
+
+/**
+ * Animation state for interpolating between start and end values
+ */
+interface AnimationState {
+	/** Type of animation */
+	type: 'moveTo' | 'translate' | 'rotate' | 'show' | 'hide' | 'setCompass' | 'draw' | 'drawCircle';
+	/** Target (object ID or instrument type) */
+	target: string | InstrumentType;
+	/** Start values */
+	start: {
+		x?: number;
+		y?: number;
+		rotation?: number;
+		opacity?: number;
+		compassRadius?: number;
+		drawProgress?: number;
+	};
+	/** End values */
+	end: {
+		x?: number;
+		y?: number;
+		rotation?: number;
+		opacity?: number;
+		compassRadius?: number;
+		drawProgress?: number;
+	};
+	/** Easing function */
+	easing: 'linear' | 'easeIn' | 'easeOut' | 'easeInOut';
+}
+
+/**
+ * Easing functions for smooth animations
+ */
+const easingFunctions = {
+	linear: (t: number) => t,
+	easeIn: (t: number) => t * t,
+	easeOut: (t: number) => t * (2 - t),
+	easeInOut: (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t)
+};
 
 // =============================================================================
 // Types
@@ -236,6 +279,12 @@ export class ConstructionEngine {
 	#callbacks: EngineCallbacks;
 	#initialParameters?: ParameterValues;
 
+	/** Active animations for the current step */
+	#activeAnimations: AnimationState[] = [];
+
+	/** Current step index being animated */
+	#currentAnimatingStep = -1;
+
 	// =========================================================================
 	// Constructor
 	// =========================================================================
@@ -252,9 +301,14 @@ export class ConstructionEngine {
 		// Create timeline with callbacks
 		const timelineOptions: TimelineOptions = {
 			onStepChange: (index, step) => {
-				this.#applyStepsUpTo(index);
+				this.#onStepChange(index, step);
+			},
+			onTimeUpdate: (_time, _progress) => {
+				this.#onTimeUpdate();
 			},
 			onComplete: () => {
+				// Ensure all animations reach their final state
+				this.#finalizeActiveAnimations();
 				this.#callbacks.onComplete?.();
 			}
 		};
@@ -340,7 +394,13 @@ export class ConstructionEngine {
 	 * Initialize instrument states
 	 */
 	#initializeInstruments(): void {
-		const instrumentTypes: InstrumentType[] = ['ruler', 'compass', 'protractor', 'setSquare'];
+		const instrumentTypes: InstrumentType[] = [
+			'ruler',
+			'compass',
+			'protractor',
+			'setSquare',
+			'pencil'
+		];
 		this.instruments.clear();
 
 		for (const type of instrumentTypes) {
@@ -450,15 +510,414 @@ export class ConstructionEngine {
 	}
 
 	// =========================================================================
-	// Step Application
+	// Animation Handling
 	// =========================================================================
 
 	/**
-	 * Apply all steps up to and including the given index
+	 * Handle step change from timeline
+	 * Sets up animations for the new step
+	 */
+	#onStepChange(index: number, step: Step): void {
+		// First, finalize any previous animations
+		if (this.#currentAnimatingStep >= 0 && this.#currentAnimatingStep < index) {
+			this.#finalizeActiveAnimations();
+		}
+
+		// Apply all previous steps that weren't applied yet (for seeking forward)
+		this.#applyPreviousSteps(index);
+
+		// Set up animations for the current step
+		this.#currentAnimatingStep = index;
+		this.#setupStepAnimations(step);
+	}
+
+	/**
+	 * Handle time update - interpolate active animations
+	 */
+	#onTimeUpdate(): void {
+		const progress = this.timeline.stepProgress;
+		this.#interpolateAnimations(progress);
+	}
+
+	/**
+	 * Apply all steps before the target that haven't been applied
+	 */
+	#applyPreviousSteps(targetIndex: number): void {
+		if (!this.script) return;
+
+		for (let i = 0; i < targetIndex; i++) {
+			if (!this.#appliedSteps.has(i)) {
+				this.applyStepInstantly(i);
+			}
+		}
+	}
+
+	/**
+	 * Set up animations for a step
+	 */
+	#setupStepAnimations(step: Step): void {
+		this.#activeAnimations = [];
+
+		if (isCreateStep(step)) {
+			// Create steps are instant
+			this.#applyCreateStep(step.object);
+			this.#appliedSteps.add(this.#currentAnimatingStep);
+		} else if (isActionStep(step)) {
+			this.#setupActionAnimation(step.action);
+		} else if (step.type === 'parallel') {
+			// Set up all parallel animations
+			for (const action of step.actions) {
+				this.#setupActionAnimation(action);
+			}
+		}
+		// Pause and comment steps don't need animations
+	}
+
+	/**
+	 * Set up animation state for an action
+	 */
+	#setupActionAnimation(action: ActionDef): void {
+		const context = this.#createContext();
+		const easing = action.easing ?? 'easeInOut';
+
+		switch (action.kind) {
+			case 'show': {
+				// Show animation: fade in
+				const animState: AnimationState = {
+					type: 'show',
+					target: action.target,
+					start: { opacity: 0 },
+					end: { opacity: 1 },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+				// Make visible immediately but with opacity 0
+				this.#setTargetVisibility(action.target, true);
+				this.#setTargetOpacity(action.target, 0);
+				break;
+			}
+
+			case 'hide': {
+				// Hide animation: fade out
+				const animState: AnimationState = {
+					type: 'hide',
+					target: action.target,
+					start: { opacity: 1 },
+					end: { opacity: 0 },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+				break;
+			}
+
+			case 'moveTo': {
+				const endX = evaluateExpr(action.x, context);
+				const endY = evaluateExpr(action.y, context);
+				const { x: startX, y: startY } = this.#getTargetPosition(action.target);
+
+				const animState: AnimationState = {
+					type: 'moveTo',
+					target: action.target,
+					start: { x: startX, y: startY },
+					end: { x: endX, y: endY },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+				break;
+			}
+
+			case 'translate': {
+				const dx = evaluateExpr(action.dx, context);
+				const dy = evaluateExpr(action.dy, context);
+				const { x: startX, y: startY } = this.#getTargetPosition(action.target);
+
+				const animState: AnimationState = {
+					type: 'translate',
+					target: action.target,
+					start: { x: startX, y: startY },
+					end: { x: startX + dx, y: startY + dy },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+				break;
+			}
+
+			case 'rotate': {
+				const angle = evaluateExpr(action.angle, context);
+				const startRotation = this.#getTargetRotation(action.target);
+
+				const animState: AnimationState = {
+					type: 'rotate',
+					target: action.target,
+					start: { rotation: startRotation },
+					end: { rotation: startRotation + angle },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+				break;
+			}
+
+			case 'setCompass': {
+				const endRadius = evaluateExpr(action.radius, context);
+				const compass = this.instruments.get('compass');
+				const startRadius = compass?.compassRadius ?? DEFAULT_COMPASS_RADIUS;
+
+				const animState: AnimationState = {
+					type: 'setCompass',
+					target: 'compass',
+					start: { compassRadius: startRadius },
+					end: { compassRadius: endRadius },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+				break;
+			}
+
+			case 'draw': {
+				const startProgress = action.direction === 'reverse' ? 1 : 0;
+				const endProgress = action.direction === 'reverse' ? 0 : 1;
+
+				const animState: AnimationState = {
+					type: 'draw',
+					target: action.target,
+					start: { drawProgress: startProgress },
+					end: { drawProgress: endProgress },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+				break;
+			}
+
+			case 'drawCircle': {
+				const animState: AnimationState = {
+					type: 'drawCircle',
+					target: action.target,
+					start: { drawProgress: 0 },
+					end: { drawProgress: 1 },
+					easing
+				};
+				this.#activeAnimations.push(animState);
+				break;
+			}
+
+			case 'style': {
+				// Style changes are instant (no animation)
+				this.#applyStyle(action.target, action.style);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Interpolate all active animations based on progress (0-1)
+	 */
+	#interpolateAnimations(progress: number): void {
+		for (const anim of this.#activeAnimations) {
+			const easedProgress = easingFunctions[anim.easing](progress);
+			this.#applyInterpolatedState(anim, easedProgress);
+		}
+	}
+
+	/**
+	 * Apply interpolated state for an animation
+	 */
+	#applyInterpolatedState(anim: AnimationState, progress: number): void {
+		switch (anim.type) {
+			case 'moveTo':
+			case 'translate': {
+				if (
+					anim.start.x !== undefined &&
+					anim.start.y !== undefined &&
+					anim.end.x !== undefined &&
+					anim.end.y !== undefined
+				) {
+					const x = anim.start.x + (anim.end.x - anim.start.x) * progress;
+					const y = anim.start.y + (anim.end.y - anim.start.y) * progress;
+					this.#setTargetPosition(anim.target, x, y);
+				}
+				break;
+			}
+
+			case 'rotate': {
+				if (anim.start.rotation !== undefined && anim.end.rotation !== undefined) {
+					const rotation =
+						anim.start.rotation + (anim.end.rotation - anim.start.rotation) * progress;
+					this.#setTargetRotation(anim.target, rotation);
+				}
+				break;
+			}
+
+			case 'show':
+			case 'hide': {
+				if (anim.start.opacity !== undefined && anim.end.opacity !== undefined) {
+					const opacity = anim.start.opacity + (anim.end.opacity - anim.start.opacity) * progress;
+					this.#setTargetOpacity(anim.target, opacity);
+				}
+				break;
+			}
+
+			case 'setCompass': {
+				if (anim.start.compassRadius !== undefined && anim.end.compassRadius !== undefined) {
+					const radius =
+						anim.start.compassRadius +
+						(anim.end.compassRadius - anim.start.compassRadius) * progress;
+					const compass = this.instruments.get('compass');
+					if (compass) {
+						this.instruments.set('compass', { ...compass, compassRadius: radius });
+					}
+				}
+				break;
+			}
+
+			case 'draw':
+			case 'drawCircle': {
+				if (anim.start.drawProgress !== undefined && anim.end.drawProgress !== undefined) {
+					const drawProgress =
+						anim.start.drawProgress + (anim.end.drawProgress - anim.start.drawProgress) * progress;
+					const obj = this.objects.get(anim.target as string);
+					if (obj) {
+						this.objects.set(anim.target as string, { ...obj, drawProgress });
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Finalize all active animations to their end state
+	 */
+	#finalizeActiveAnimations(): void {
+		for (const anim of this.#activeAnimations) {
+			this.#applyInterpolatedState(anim, 1);
+
+			// For hide animations, set visibility to false at the end
+			if (anim.type === 'hide') {
+				this.#setTargetVisibility(anim.target, false);
+				this.#setTargetOpacity(anim.target, 1); // Reset opacity
+			}
+		}
+
+		// Mark the step as applied
+		if (this.#currentAnimatingStep >= 0) {
+			this.#appliedSteps.add(this.#currentAnimatingStep);
+			if (this.script) {
+				const step = this.script.steps[this.#currentAnimatingStep];
+				if (step) {
+					this.#callbacks.onStepApplied?.(this.#currentAnimatingStep, step);
+				}
+			}
+		}
+
+		this.#activeAnimations = [];
+	}
+
+	// =========================================================================
+	// Target State Helpers
+	// =========================================================================
+
+	/**
+	 * Get current position of a target
+	 */
+	#getTargetPosition(target: string | InstrumentType): { x: number; y: number } {
+		if (this.#isInstrumentType(target)) {
+			const instrument = this.instruments.get(target);
+			return { x: instrument?.x ?? 0, y: instrument?.y ?? 0 };
+		}
+
+		const obj = this.objects.get(target);
+		return { x: obj?.position?.x ?? 0, y: obj?.position?.y ?? 0 };
+	}
+
+	/**
+	 * Set position of a target
+	 */
+	#setTargetPosition(target: string | InstrumentType, x: number, y: number): void {
+		if (this.#isInstrumentType(target)) {
+			const instrument = this.instruments.get(target);
+			if (instrument) {
+				this.instruments.set(target, { ...instrument, x, y });
+			}
+			return;
+		}
+
+		const obj = this.objects.get(target);
+		if (obj) {
+			this.objects.set(target, { ...obj, position: { x, y } });
+		}
+	}
+
+	/**
+	 * Get current rotation of a target
+	 */
+	#getTargetRotation(target: string | InstrumentType): number {
+		if (this.#isInstrumentType(target)) {
+			const instrument = this.instruments.get(target);
+			return instrument?.rotation ?? 0;
+		}
+		return 0; // Objects don't have rotation state in the current implementation
+	}
+
+	/**
+	 * Set rotation of a target
+	 */
+	#setTargetRotation(target: string | InstrumentType, rotation: number): void {
+		if (this.#isInstrumentType(target)) {
+			const instrument = this.instruments.get(target);
+			if (instrument) {
+				this.instruments.set(target, { ...instrument, rotation });
+			}
+		}
+		// For objects with center rotation, this would need geometric calculations
+	}
+
+	/**
+	 * Set visibility of a target
+	 */
+	#setTargetVisibility(target: string | InstrumentType, visible: boolean): void {
+		if (this.#isInstrumentType(target)) {
+			const instrument = this.instruments.get(target);
+			if (instrument) {
+				this.instruments.set(target, { ...instrument, visible });
+			}
+			return;
+		}
+
+		const obj = this.objects.get(target);
+		if (obj) {
+			this.objects.set(target, { ...obj, visible });
+		}
+	}
+
+	/**
+	 * Set opacity of a target
+	 */
+	#setTargetOpacity(target: string | InstrumentType, opacity: number): void {
+		if (this.#isInstrumentType(target)) {
+			const instrument = this.instruments.get(target);
+			if (instrument) {
+				this.instruments.set(target, { ...instrument, opacity });
+			}
+			return;
+		}
+
+		const obj = this.objects.get(target);
+		if (obj) {
+			const currentStyle = obj.style ?? {};
+			this.objects.set(target, { ...obj, style: { ...currentStyle, opacity } });
+		}
+	}
+
+	// =========================================================================
+	// Step Application (Instant)
+	// =========================================================================
+
+	/**
+	 * Apply all steps up to and including the given index (used for seeking)
 	 *
 	 * @param targetIndex - Target step index
 	 */
-	#applyStepsUpTo(targetIndex: number): void {
+	_applyStepsUpTo(targetIndex: number): void {
 		if (!this.script) return;
 
 		const steps = this.script.steps;
@@ -466,19 +925,19 @@ export class ConstructionEngine {
 		// Apply all steps from 0 to targetIndex that haven't been applied yet
 		for (let i = 0; i <= targetIndex && i < steps.length; i++) {
 			if (!this.#appliedSteps.has(i)) {
-				this.applyStep(i);
+				this.applyStepInstantly(i);
 			}
 		}
 	}
 
 	/**
-	 * Apply a specific step
+	 * Apply a specific step instantly (no animation)
 	 *
-	 * This is the main method for executing construction steps.
+	 * This is used for seeking or when animations are disabled.
 	 *
 	 * @param stepIndex - Index of the step to apply
 	 */
-	applyStep(stepIndex: number): void {
+	applyStepInstantly(stepIndex: number): void {
 		if (!this.script) return;
 
 		const step = this.script.steps[stepIndex];
@@ -491,11 +950,11 @@ export class ConstructionEngine {
 			if (isCreateStep(step)) {
 				this.#applyCreateStep(step.object);
 			} else if (isActionStep(step)) {
-				this.#applyAction(step.action);
+				this.#applyActionInstantly(step.action);
 			} else if (step.type === 'parallel') {
 				// Apply all actions in parallel step
 				for (const action of step.actions) {
-					this.#applyAction(action);
+					this.#applyActionInstantly(action);
 				}
 			}
 			// Pause and comment steps don't need state changes
@@ -510,6 +969,15 @@ export class ConstructionEngine {
 			this.error = message;
 			this.#callbacks.onError?.(message);
 		}
+	}
+
+	/**
+	 * Apply a specific step (for backward compatibility)
+	 *
+	 * @deprecated Use applyStepInstantly for instant application
+	 */
+	applyStep(stepIndex: number): void {
+		this.applyStepInstantly(stepIndex);
 	}
 
 	/**
@@ -556,11 +1024,11 @@ export class ConstructionEngine {
 	}
 
 	/**
-	 * Apply an action to an existing object or instrument
+	 * Apply an action instantly to an existing object or instrument (no animation)
 	 *
 	 * @param action - Action to apply
 	 */
-	#applyAction(action: ActionDef): void {
+	#applyActionInstantly(action: ActionDef): void {
 		switch (action.kind) {
 			case 'show':
 				this.#applyShowHide(action.target, true);
@@ -772,7 +1240,7 @@ export class ConstructionEngine {
 	/**
 	 * Apply drawCircle action
 	 */
-	#applyDrawCircle(target: string, startAngle?: Expr, endAngle?: Expr): void {
+	#applyDrawCircle(target: string, _startAngle?: Expr, _endAngle?: Expr): void {
 		const obj = this.objects.get(target);
 		if (obj) {
 			const newState = {
@@ -801,7 +1269,7 @@ export class ConstructionEngine {
 	 * Check if a target is an instrument type
 	 */
 	#isInstrumentType(target: string | InstrumentType): target is InstrumentType {
-		return ['ruler', 'compass', 'protractor', 'setSquare'].includes(target);
+		return ['ruler', 'compass', 'protractor', 'setSquare', 'pencil'].includes(target);
 	}
 
 	// =========================================================================
