@@ -315,7 +315,13 @@ export function isTextDef(obj: ObjectDef): obj is TextDef {
 /**
  * Types of instruments available in the construction
  */
-export type InstrumentType = 'ruler' | 'compass' | 'protractor' | 'setSquare' | 'pencil';
+export type InstrumentType =
+	| 'ruler'
+	| 'compass'
+	| 'compassRaised'
+	| 'protractor'
+	| 'setSquare'
+	| 'pencil';
 
 /**
  * Instrument state in the construction
