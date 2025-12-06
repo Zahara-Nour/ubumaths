@@ -27,6 +27,7 @@ export interface DisplayOutput {
 		'text/plain'?: string;
 		'text/html'?: string;
 		'image/png'?: string;
+		'image/jpeg'?: string;
 		'application/json'?: string;
 	};
 	execution_count?: number;
@@ -45,6 +46,7 @@ export interface NotebookCell {
 	metadata?: {
 		collapsed?: boolean;
 		tags?: string[];
+		[key: string]: unknown; // Allow additional metadata fields (e.g., Colab-specific)
 	};
 }
 
