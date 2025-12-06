@@ -8,6 +8,7 @@
 <script lang="ts">
 	import type * as Blockly from 'blockly';
 	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import BlocklyWorkspace from './BlocklyWorkspace.svelte';
 	import BlocklyToolbar from './BlocklyToolbar.svelte';
 	import BlocklyCodePreview from './BlocklyCodePreview.svelte';
@@ -32,6 +33,9 @@
 
 	/** Generated Python code */
 	let pythonCode = $state('');
+
+	/** Fullscreen mode */
+	let isFullscreen = $state(false);
 
 	/** Debounce timer for code generation */
 	let codeGenTimer: ReturnType<typeof setTimeout> | null = null;
@@ -187,9 +191,49 @@
 		language = newLanguage;
 		await executor.setLanguage(newLanguage);
 	}
+
+	// =============================================================================
+	// Fullscreen
+	// =============================================================================
+
+	/**
+	 * Toggle fullscreen mode
+	 */
+	function toggleFullscreen(): void {
+		isFullscreen = !isFullscreen;
+	}
+
+	/**
+	 * Handle Escape key to exit fullscreen
+	 */
+	function handleKeydown(event: KeyboardEvent): void {
+		if (event.key === 'Escape' && isFullscreen) {
+			isFullscreen = false;
+		}
+	}
+
+	// Handle body scroll when fullscreen
+	$effect(() => {
+		if (!browser) return;
+
+		if (isFullscreen) {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = '';
+		}
+
+		// Cleanup on unmount
+		return () => {
+			document.body.style.overflow = '';
+		};
+	});
 </script>
 
-<div class="flex h-full flex-col">
+<svelte:window onkeydown={handleKeydown} />
+
+<div
+	class={isFullscreen ? 'fixed inset-0 z-50 flex flex-col bg-background' : 'flex h-full flex-col'}
+>
 	<!-- Loading overlay -->
 	{#if isLoading}
 		<div
@@ -218,10 +262,12 @@
 	<BlocklyToolbar
 		{language}
 		{isExecuting}
+		{isFullscreen}
 		onrun={handleRun}
 		onclear={handleClearOutput}
 		onclearworkspace={handleClearWorkspace}
 		onlanguagechange={handleLanguageChange}
+		ontogglefullscreen={toggleFullscreen}
 	/>
 
 	<!-- Main content area -->
