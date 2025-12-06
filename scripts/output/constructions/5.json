@@ -252,13 +252,23 @@
 			}
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": "$P2.x",
+				"y": "$P2.y",
+				"duration": 200
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "segment",
 				"id": "seg9",
 				"from": {
-					"x": 403.6,
-					"y": 95.3
+					"x": 67,
+					"y": 523
 				},
 				"to": "P4",
 				"style": {
@@ -274,8 +284,8 @@
 				"kind": "segment",
 				"id": "seg10",
 				"from": {
-					"x": 403.6,
-					"y": 95.3
+					"x": 67,
+					"y": 523
 				},
 				"to": "P6",
 				"style": {
@@ -291,8 +301,8 @@
 				"kind": "segment",
 				"id": "seg11",
 				"from": {
-					"x": 403.6,
-					"y": 95.3
+					"x": 67,
+					"y": 523
 				},
 				"to": "P8",
 				"style": {

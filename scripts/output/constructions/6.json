@@ -702,6 +702,15 @@
 			}
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": -51.9810574068298,
+				"duration": 500
+			}
+		},
+		{
 			"type": "comment",
 			"text": "Ruler mode: vide"
 		},
@@ -773,6 +782,15 @@
 				"target": "ruler",
 				"x": "$P3.x",
 				"y": "$P3.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": 25.57240185048959,
 				"duration": 500
 			}
 		},
@@ -850,6 +868,15 @@
 				"target": "ruler",
 				"x": "$P5.x",
 				"y": "$P5.y",
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": 172.6768271009464,
 				"duration": 500
 			}
 		},
@@ -974,6 +1001,15 @@
 				"target": "P5",
 				"x": 759,
 				"y": 344,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": -7.3231728990536045,
 				"duration": 500
 			}
 		},
@@ -1280,6 +1316,15 @@
 			}
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": -112.53325007900428,
+				"duration": 500
+			}
+		},
+		{
 			"type": "pause",
 			"duration": 500
 		},
@@ -1497,6 +1542,15 @@
 			}
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": -52.38063635884083,
+				"duration": 500
+			}
+		},
+		{
 			"type": "comment",
 			"text": "Ruler mode: vide"
 		},
@@ -1569,6 +1623,15 @@
 		{
 			"type": "pause",
 			"duration": 100
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "ruler",
+				"angle": -154.9831065219,
+				"duration": 500
+			}
 		},
 		{
 			"type": "pause",
