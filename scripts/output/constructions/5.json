@@ -1,316 +1,316 @@
 {
-	"version": 1,
-	"title": "Exercice de reperage de points",
-	"description": "Exercice interactif pour relier des points dans un repere.",
-	"canvas": {
-		"width": 487,
-		"height": 827,
-		"backgroundColor": "#FFFFFF"
-	},
-	"steps": [
-		{
-			"type": "comment",
-			"text": "Image: https://zoneur.sesamath.net/imgs_produites/vign/cslp2_2014/66102-1.gif"
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 133.05,
-				"y": 91.15,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg1",
-				"from": {
-					"x": 133.05,
-					"y": 91.15
-				},
-				"to": {
-					"x": 133.7,
-					"y": 185.1
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 20,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 133.7,
-				"y": 185.1,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P2",
-				"x": 67,
-				"y": 523,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 750
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 213.65,
-				"y": 92.95,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg3",
-				"from": {
-					"x": 213.65,
-					"y": 92.95
-				},
-				"to": {
-					"x": 215.2,
-					"y": 163.3
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 20,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 215.2,
-				"y": 163.3,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P4",
-				"x": 156.85,
-				"y": 339,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 750
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 301.5,
-				"y": 93.5,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg5",
-				"from": {
-					"x": 301.5,
-					"y": 93.5
-				},
-				"to": {
-					"x": 302.25,
-					"y": 180
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 20,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 302.25,
-				"y": 180,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P6",
-				"x": 225,
-				"y": 546,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 750
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 404.4,
-				"y": 177.65,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg7",
-				"from": {
-					"x": 404.4,
-					"y": 177.65
-				},
-				"to": {
-					"x": 403.6,
-					"y": 95.3
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 20,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 403.6,
-				"y": 95.3,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P8",
-				"x": 338,
-				"y": 385,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": "$P2.x",
-				"y": "$P2.y",
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg9",
-				"from": {
-					"x": 67,
-					"y": 523
-				},
-				"to": "P4",
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg10",
-				"from": {
-					"x": 67,
-					"y": 523
-				},
-				"to": "P6",
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg11",
-				"from": {
-					"x": 67,
-					"y": 523
-				},
-				"to": "P8",
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		}
-	]
+  "version": 1,
+  "title": "Exercice de reperage de points",
+  "description": "Exercice interactif pour relier des points dans un repere.",
+  "canvas": {
+    "width": 487,
+    "height": 827,
+    "backgroundColor": "#FFFFFF"
+  },
+  "steps": [
+    {
+      "type": "comment",
+      "text": "Image: https://zoneur.sesamath.net/imgs_produites/vign/cslp2_2014/66102-1.gif"
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 133.05,
+        "y": 91.15,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg1",
+        "from": {
+          "x": 133.05,
+          "y": 91.15
+        },
+        "to": {
+          "x": 133.7,
+          "y": 185.1
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 20,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 133.7,
+        "y": 185.1,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P2",
+        "x": 67,
+        "y": 523,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 750
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 213.65,
+        "y": 92.95,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg3",
+        "from": {
+          "x": 213.65,
+          "y": 92.95
+        },
+        "to": {
+          "x": 215.2,
+          "y": 163.3
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 20,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 215.2,
+        "y": 163.3,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P4",
+        "x": 156.85,
+        "y": 339,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 750
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 301.5,
+        "y": 93.5,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg5",
+        "from": {
+          "x": 301.5,
+          "y": 93.5
+        },
+        "to": {
+          "x": 302.25,
+          "y": 180
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 20,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 302.25,
+        "y": 180,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P6",
+        "x": 225,
+        "y": 546,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 750
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 404.4,
+        "y": 177.65,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg7",
+        "from": {
+          "x": 404.4,
+          "y": 177.65
+        },
+        "to": {
+          "x": 403.6,
+          "y": 95.3
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 20,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 403.6,
+        "y": 95.3,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P8",
+        "x": 338,
+        "y": 385,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": "$P2.x",
+        "y": "$P2.y",
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg9",
+        "from": {
+          "x": 67,
+          "y": 523
+        },
+        "to": "P4",
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg10",
+        "from": {
+          "x": 67,
+          "y": 523
+        },
+        "to": "P6",
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg11",
+        "from": {
+          "x": 67,
+          "y": 523
+        },
+        "to": "P8",
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    }
+  ]
 }

@@ -1,1690 +1,1698 @@
 {
-	"version": 1,
-	"title": "Construction d'un parallelogramme",
-	"description": "Construction d'un parallelogramme a partir de ses diagonales avec regle et compas. (Auteur: Francoise Chomat)",
-	"canvas": {
-		"width": 800,
-		"height": 600,
-		"backgroundColor": "#FFFFFF"
-	},
-	"steps": [
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 800,
-				"y": 50,
-				"duration": 100
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c1",
-				"from": {
-					"x": 800,
-					"y": 50
-				},
-				"to": {
-					"x": 800,
-					"y": 600
-				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c2",
-				"from": {
-					"x": 800,
-					"y": 600
-				},
-				"to": {
-					"x": 0,
-					"y": 600
-				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "50",
-				"content": " Construire un parallélogramme en traçant ses diagonales.",
-				"x": 10,
-				"y": 50,
-				"fontSize": 18,
-				"style": {
-					"color": "#006400"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "20",
-				"content": "Ici on construit un parallélogramme ABCD à partir de trois points A, B et C. ",
-				"x": 10,
-				"y": 80,
-				"fontSize": 16,
-				"style": {
-					"color": "#FF0000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P1",
-				"x": 510,
-				"y": 376,
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "label2",
-				"content": "A",
-				"x": "$P1.x + 10",
-				"y": "$P1.y - 10",
-				"fontSize": 14,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P3",
-				"x": 596,
-				"y": 266,
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "label4",
-				"content": "B",
-				"x": "$P3.x + 10",
-				"y": "$P3.y - 10",
-				"fontSize": 14,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P5",
-				"x": 759,
-				"y": 344,
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "label6",
-				"content": "C",
-				"x": "$P5.x + 10",
-				"y": "$P5.y - 10",
-				"fontSize": 14,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 45,
-				"y": 500,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg7",
-				"from": {
-					"x": 50,
-					"y": 493
-				},
-				"to": {
-					"x": 105,
-					"y": 409
-				},
-				"style": {
-					"color": "#008888",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg8",
-				"from": {
-					"x": 111,
-					"y": 411
-				},
-				"to": {
-					"x": 237,
-					"y": 458
-				},
-				"style": {
-					"color": "#008888",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg9",
-				"from": {
-					"x": 235,
-					"y": 462
-				},
-				"to": {
-					"x": 163,
-					"y": 555
-				},
-				"style": {
-					"color": "#008888",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg10",
-				"from": {
-					"x": 149,
-					"y": 548
-				},
-				"to": {
-					"x": 44,
-					"y": 500
-				},
-				"style": {
-					"color": "#008888",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "7x",
-				"content": "A",
-				"x": 20,
-				"y": 479,
-				"fontSize": 16,
-				"style": {
-					"color": "#008888"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "8x",
-				"content": "B",
-				"x": 84,
-				"y": 389,
-				"fontSize": 16,
-				"style": {
-					"color": "#008888"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "9x",
-				"content": "C",
-				"x": 242,
-				"y": 437,
-				"fontSize": 16,
-				"style": {
-					"color": "#008888"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "1x",
-				"content": "D",
-				"x": 164,
-				"y": 555,
-				"fontSize": 16,
-				"style": {
-					"color": "#008888"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 45,
-				"y": 501,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg11",
-				"from": {
-					"x": 48,
-					"y": 499
-				},
-				"to": {
-					"x": 236,
-					"y": 460
-				},
-				"style": {
-					"color": "#008888",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 105,
-				"y": 410,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg12",
-				"from": {
-					"x": 108,
-					"y": 414
-				},
-				"to": {
-					"x": 164,
-					"y": 553
-				},
-				"style": {
-					"color": "#008888",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 92,
-				"y": 486,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg13",
-				"from": {
-					"x": 92,
-					"y": 486
-				},
-				"to": {
-					"x": 99,
-					"y": 497
-				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 176,
-				"y": 473,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg14",
-				"from": {
-					"x": 176,
-					"y": 473
-				},
-				"to": {
-					"x": 182,
-					"y": 485
-				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 114,
-				"y": 461,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg15",
-				"from": {
-					"x": 114,
-					"y": 461
-				},
-				"to": {
-					"x": 123,
-					"y": 451
-				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 119,
-				"y": 465,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg16",
-				"from": {
-					"x": 119,
-					"y": 465
-				},
-				"to": {
-					"x": 127,
-					"y": 456
-				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 146,
-				"y": 524,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg17",
-				"from": {
-					"x": 146,
-					"y": 524
-				},
-				"to": {
-					"x": 155,
-					"y": 512
-				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 149,
-				"y": 530,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg18",
-				"from": {
-					"x": 149,
-					"y": 530
-				},
-				"to": {
-					"x": 158,
-					"y": 519
-				},
-				"style": {
-					"color": "#008844",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 165,
-				"y": 516,
-				"duration": 200
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "10z",
-				"content": "O",
-				"x": 130,
-				"y": 461,
-				"fontSize": 16,
-				"style": {
-					"color": "#008844"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "rem",
-				"content": "Les diagonales d'un parallélogramme se coupent en leur milieu.",
-				"x": 33,
-				"y": 336,
-				"fontSize": 18,
-				"style": {
-					"color": "#008844"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "21",
-				"content": "1.On trace les 3 segments [AB], [BC] et [AC] à partir des points A, B et C. ",
-				"x": 33,
-				"y": 336,
-				"fontSize": 16,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "ruler",
-				"x": "$P1.x",
-				"y": "$P1.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "P3",
-				"x": 596,
-				"y": 266,
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": -51.9810574068298,
-				"duration": 500
-			}
-		},
-		{
-			"type": "comment",
-			"text": "Ruler mode: vide"
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 510,
-				"y": 376,
-				"duration": 200
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg19",
-				"from": {
-					"x": 510,
-					"y": 376
-				},
-				"to": {
-					"x": 595,
-					"y": 268
-				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 596,
-				"y": 266,
-				"duration": 200
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "ruler",
-				"x": "$P3.x",
-				"y": "$P3.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": 25.57240185048959,
-				"duration": 500
-			}
-		},
-		{
-			"type": "comment",
-			"text": "Ruler mode: vide"
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 596,
-				"y": 266,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg20",
-				"from": {
-					"x": 596,
-					"y": 266
-				},
-				"to": {
-					"x": 759,
-					"y": 345
-				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": 52.57,
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "P5",
-				"x": 759,
-				"y": 344,
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "ruler",
-				"x": "$P5.x",
-				"y": "$P5.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": 172.6768271009464,
-				"duration": 500
-			}
-		},
-		{
-			"type": "comment",
-			"text": "Ruler mode: vide"
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 759,
-				"y": 345,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg21",
-				"from": {
-					"x": 759,
-					"y": 345
-				},
-				"to": {
-					"x": 509,
-					"y": 376
-				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 510,
-				"y": 376,
-				"duration": 200
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "22",
-				"content": "2.En utilisant les graduations de la règle on place le milieu O du segment [AC]. ",
-				"x": 10,
-				"y": 140,
-				"fontSize": 16,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "ruler",
-				"x": 759,
-				"y": 344,
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "ruler",
-				"x": "$P1.x",
-				"y": "$P1.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "P5",
-				"x": 759,
-				"y": 344,
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": -7.3231728990536045,
-				"duration": 500
-			}
-		},
-		{
-			"type": "comment",
-			"text": "Ruler mode: graduations"
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P22",
-				"x": 635,
-				"y": 360,
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "label23",
-				"content": "O",
-				"x": "$P22.x + 10",
-				"y": "$P22.y - 10",
-				"fontSize": 14,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "7",
-				"x": 635,
-				"y": 360,
-				"duration": 500
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "mark24",
-				"x": 566,
-				"y": 369,
-				"pointStyle": "cross",
-				"radius": 5,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 2
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "mark25",
-				"x": 686,
-				"y": 354,
-				"pointStyle": "cross",
-				"radius": 5,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 2
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "23",
-				"content": "3.On trace la demi-droite [BO). ",
-				"x": 10,
-				"y": 170,
-				"fontSize": 16,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "ruler",
-				"x": "$P3.x",
-				"y": "$P3.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "P3",
-				"x": 596,
-				"y": 266,
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": 67.47,
-				"duration": 500
-			}
-		},
-		{
-			"type": "comment",
-			"text": "Ruler mode: vide"
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 597,
-				"y": 267,
-				"duration": 200
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "ray",
-				"id": "seg26",
-				"from": {
-					"x": 597,
-					"y": 267
-				},
-				"through": {
-					"x": 682,
-					"y": 470
-				},
-				"style": {
-					"color": "#228B22",
-					"lineWidth": 1,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 682,
-				"y": 470,
-				"duration": 200
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "24",
-				"content": "4.En utilisant le compas on place le point D ",
-				"x": 10,
-				"y": 200,
-				"fontSize": 16,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "28",
-				"content": " sur la demi-droite [BO) tel que O soit le milieu de [BD]. ",
-				"x": 10,
-				"y": 230,
-				"fontSize": 16,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "compass",
-				"x": "$P22.x",
-				"y": "$P22.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "compass"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -112.53325007900428,
-				"duration": 500
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": 79.93,
-				"duration": 500
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "comment",
-			"text": "Compass raised"
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc27",
-				"center": {
-					"x": 10,
-					"y": 230
-				},
-				"radius": 100,
-				"startAngle": 79.93,
-				"endAngle": 58.47,
-				"style": {
-					"color": "#008844",
-					"lineWidth": 1
-				}
-			}
-		},
-		{
-			"type": "comment",
-			"text": "Compass lowered"
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "compass"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 674,
-				"y": 453,
-				"duration": 100
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P28",
-				"x": 675,
-				"y": 453,
-				"style": {
-					"color": "#228B22",
-					"lineWidth": 2
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "label29",
-				"content": "D",
-				"x": "$P28.x + 10",
-				"y": "$P28.y - 10",
-				"fontSize": 14,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "P28",
-				"x": 675,
-				"y": 453,
-				"duration": 500
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "mark30",
-				"x": 617,
-				"y": 315,
-				"pointStyle": "cross",
-				"radius": 5,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 2
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "mark31",
-				"x": 656,
-				"y": 406,
-				"pointStyle": "cross",
-				"radius": 5,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 2
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "28b",
-				"content": "Remarque : D est le symétrique de B par rapport à O.",
-				"x": 10,
-				"y": 260,
-				"fontSize": 18,
-				"style": {
-					"color": "#808080"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "26",
-				"content": "5.On trace les deux segments [DC] et [DA]. ",
-				"x": 10,
-				"y": 300,
-				"fontSize": 16,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "ruler",
-				"x": "$P28.x",
-				"y": "$P28.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": -52.38063635884083,
-				"duration": 500
-			}
-		},
-		{
-			"type": "comment",
-			"text": "Ruler mode: vide"
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 757,
-				"y": 345,
-				"duration": 200
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg32",
-				"from": {
-					"x": 757,
-					"y": 345
-				},
-				"to": {
-					"x": 675,
-					"y": 453
-				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 674,
-				"y": 454,
-				"duration": 200
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": -154.9831065219,
-				"duration": 500
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg33",
-				"from": {
-					"x": 674,
-					"y": 454
-				},
-				"to": "P1",
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "28",
-				"x": 10,
-				"y": 229,
-				"duration": 500
-			}
-		}
-	]
+  "version": 1,
+  "title": "Construction d'un parallelogramme",
+  "description": "Construction d'un parallelogramme a partir de ses diagonales avec regle et compas. (Auteur: Francoise Chomat)",
+  "canvas": {
+    "width": 800,
+    "height": 600,
+    "backgroundColor": "#FFFFFF"
+  },
+  "steps": [
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 800,
+        "y": 50,
+        "duration": 100
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "c1",
+        "from": {
+          "x": 800,
+          "y": 50
+        },
+        "to": {
+          "x": 800,
+          "y": 600
+        },
+        "style": {
+          "color": "#FFFFFF",
+          "lineWidth": 2,
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "c2",
+        "from": {
+          "x": 800,
+          "y": 600
+        },
+        "to": {
+          "x": 0,
+          "y": 600
+        },
+        "style": {
+          "color": "#FFFFFF",
+          "lineWidth": 2,
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "50",
+        "content": " Construire un parallélogramme en traçant ses diagonales.",
+        "x": 10,
+        "y": 50,
+        "fontSize": 18,
+        "style": {
+          "color": "#006400"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "20",
+        "content": "Ici on construit un parallélogramme ABCD à partir de trois points A, B et C. ",
+        "x": 10,
+        "y": 80,
+        "fontSize": 16,
+        "style": {
+          "color": "#FF0000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P1",
+        "x": 510,
+        "y": 376,
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "label2",
+        "content": "A",
+        "x": "$P1.x + 10",
+        "y": "$P1.y - 10",
+        "fontSize": 14,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P3",
+        "x": 596,
+        "y": 266,
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "label4",
+        "content": "B",
+        "x": "$P3.x + 10",
+        "y": "$P3.y - 10",
+        "fontSize": 14,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P5",
+        "x": 759,
+        "y": 344,
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "label6",
+        "content": "C",
+        "x": "$P5.x + 10",
+        "y": "$P5.y - 10",
+        "fontSize": 14,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 45,
+        "y": 500,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg7",
+        "from": {
+          "x": 50,
+          "y": 493
+        },
+        "to": {
+          "x": 105,
+          "y": 409
+        },
+        "style": {
+          "color": "#008888",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg8",
+        "from": {
+          "x": 111,
+          "y": 411
+        },
+        "to": {
+          "x": 237,
+          "y": 458
+        },
+        "style": {
+          "color": "#008888",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg9",
+        "from": {
+          "x": 235,
+          "y": 462
+        },
+        "to": {
+          "x": 163,
+          "y": 555
+        },
+        "style": {
+          "color": "#008888",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg10",
+        "from": {
+          "x": 149,
+          "y": 548
+        },
+        "to": {
+          "x": 44,
+          "y": 500
+        },
+        "style": {
+          "color": "#008888",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "7x",
+        "content": "A",
+        "x": 20,
+        "y": 479,
+        "fontSize": 16,
+        "style": {
+          "color": "#008888"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "8x",
+        "content": "B",
+        "x": 84,
+        "y": 389,
+        "fontSize": 16,
+        "style": {
+          "color": "#008888"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "9x",
+        "content": "C",
+        "x": 242,
+        "y": 437,
+        "fontSize": 16,
+        "style": {
+          "color": "#008888"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "1x",
+        "content": "D",
+        "x": 164,
+        "y": 555,
+        "fontSize": 16,
+        "style": {
+          "color": "#008888"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 45,
+        "y": 501,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg11",
+        "from": {
+          "x": 48,
+          "y": 499
+        },
+        "to": {
+          "x": 236,
+          "y": 460
+        },
+        "style": {
+          "color": "#008888",
+          "lineWidth": 2,
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 105,
+        "y": 410,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg12",
+        "from": {
+          "x": 108,
+          "y": 414
+        },
+        "to": {
+          "x": 164,
+          "y": 553
+        },
+        "style": {
+          "color": "#008888",
+          "lineWidth": 2,
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 92,
+        "y": 486,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg13",
+        "from": {
+          "x": 92,
+          "y": 486
+        },
+        "to": {
+          "x": 99,
+          "y": 497
+        },
+        "style": {
+          "color": "#008844",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 176,
+        "y": 473,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg14",
+        "from": {
+          "x": 176,
+          "y": 473
+        },
+        "to": {
+          "x": 182,
+          "y": 485
+        },
+        "style": {
+          "color": "#008844",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 114,
+        "y": 461,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg15",
+        "from": {
+          "x": 114,
+          "y": 461
+        },
+        "to": {
+          "x": 123,
+          "y": 451
+        },
+        "style": {
+          "color": "#008844",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 119,
+        "y": 465,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg16",
+        "from": {
+          "x": 119,
+          "y": 465
+        },
+        "to": {
+          "x": 127,
+          "y": 456
+        },
+        "style": {
+          "color": "#008844",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 146,
+        "y": 524,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg17",
+        "from": {
+          "x": 146,
+          "y": 524
+        },
+        "to": {
+          "x": 155,
+          "y": 512
+        },
+        "style": {
+          "color": "#008844",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 149,
+        "y": 530,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg18",
+        "from": {
+          "x": 149,
+          "y": 530
+        },
+        "to": {
+          "x": 158,
+          "y": 519
+        },
+        "style": {
+          "color": "#008844",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 165,
+        "y": 516,
+        "duration": 200
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "10z",
+        "content": "O",
+        "x": 130,
+        "y": 461,
+        "fontSize": 16,
+        "style": {
+          "color": "#008844"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "rem",
+        "content": "Les diagonales d'un parallélogramme se coupent en leur milieu.",
+        "x": 33,
+        "y": 336,
+        "fontSize": 18,
+        "style": {
+          "color": "#008844"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "21",
+        "content": "1.On trace les 3 segments [AB], [BC] et [AC] à partir des points A, B et C. ",
+        "x": 33,
+        "y": 336,
+        "fontSize": 16,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "ruler",
+        "x": "$P1.x",
+        "y": "$P1.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "P3",
+        "x": 596,
+        "y": 266,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": -51.9810574068298,
+        "duration": 500
+      }
+    },
+    {
+      "type": "comment",
+      "text": "Ruler mode: vide"
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 510,
+        "y": 376,
+        "duration": 200
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg19",
+        "from": {
+          "x": 510,
+          "y": 376
+        },
+        "to": {
+          "x": 595,
+          "y": 268
+        },
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 596,
+        "y": 266,
+        "duration": 200
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "ruler",
+        "x": "$P3.x",
+        "y": "$P3.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": 25.57240185048959,
+        "duration": 500
+      }
+    },
+    {
+      "type": "comment",
+      "text": "Ruler mode: vide"
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 596,
+        "y": 266,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg20",
+        "from": {
+          "x": 596,
+          "y": 266
+        },
+        "to": {
+          "x": 759,
+          "y": 345
+        },
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": 52.57,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "P5",
+        "x": 759,
+        "y": 344,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "ruler",
+        "x": "$P5.x",
+        "y": "$P5.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": 172.6768271009464,
+        "duration": 500
+      }
+    },
+    {
+      "type": "comment",
+      "text": "Ruler mode: vide"
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 759,
+        "y": 345,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg21",
+        "from": {
+          "x": 759,
+          "y": 345
+        },
+        "to": {
+          "x": 509,
+          "y": 376
+        },
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 510,
+        "y": 376,
+        "duration": 200
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "22",
+        "content": "2.En utilisant les graduations de la règle on place le milieu O du segment [AC]. ",
+        "x": 10,
+        "y": 140,
+        "fontSize": 16,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "ruler",
+        "x": 759,
+        "y": 344,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "ruler",
+        "x": "$P1.x",
+        "y": "$P1.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "P5",
+        "x": 759,
+        "y": 344,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": -7.3231728990536045,
+        "duration": 500
+      }
+    },
+    {
+      "type": "comment",
+      "text": "Ruler mode: graduations"
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P22",
+        "x": 635,
+        "y": 360,
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "label23",
+        "content": "O",
+        "x": "$P22.x + 10",
+        "y": "$P22.y - 10",
+        "fontSize": 14,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "7",
+        "x": 635,
+        "y": 360,
+        "duration": 500
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "mark24",
+        "x": 566,
+        "y": 369,
+        "pointStyle": "cross",
+        "radius": 5,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 2
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "mark25",
+        "x": 686,
+        "y": 354,
+        "pointStyle": "cross",
+        "radius": 5,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 2
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "23",
+        "content": "3.On trace la demi-droite [BO). ",
+        "x": 10,
+        "y": 170,
+        "fontSize": 16,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "ruler",
+        "x": "$P3.x",
+        "y": "$P3.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "P3",
+        "x": 596,
+        "y": 266,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": 67.47,
+        "duration": 500
+      }
+    },
+    {
+      "type": "comment",
+      "text": "Ruler mode: vide"
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 597,
+        "y": 267,
+        "duration": 200
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "ray",
+        "id": "seg26",
+        "from": {
+          "x": 597,
+          "y": 267
+        },
+        "through": {
+          "x": 682,
+          "y": 470
+        },
+        "style": {
+          "color": "#228B22",
+          "lineWidth": 1,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 682,
+        "y": 470,
+        "duration": 200
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "24",
+        "content": "4.En utilisant le compas on place le point D ",
+        "x": 10,
+        "y": 200,
+        "fontSize": 16,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "28",
+        "content": " sur la demi-droite [BO) tel que O soit le milieu de [BD]. ",
+        "x": 10,
+        "y": 230,
+        "fontSize": 16,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "compass",
+        "x": "$P22.x",
+        "y": "$P22.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "compass"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "compass",
+        "angle": -112.53325007900428,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "setCompass",
+        "radius": 101.77,
+        "duration": 300
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "compass",
+        "angle": 79.93,
+        "duration": 500
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "comment",
+      "text": "Compass raised"
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "arc",
+        "id": "arc27",
+        "center": {
+          "x": 10,
+          "y": 230
+        },
+        "radius": 100,
+        "startAngle": 79.93,
+        "endAngle": 58.47,
+        "style": {
+          "color": "#008844",
+          "lineWidth": 1
+        }
+      }
+    },
+    {
+      "type": "comment",
+      "text": "Compass lowered"
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "compass"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 674,
+        "y": 453,
+        "duration": 100
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P28",
+        "x": 675,
+        "y": 453,
+        "style": {
+          "color": "#228B22",
+          "lineWidth": 2
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "label29",
+        "content": "D",
+        "x": "$P28.x + 10",
+        "y": "$P28.y - 10",
+        "fontSize": 14,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "P28",
+        "x": 675,
+        "y": 453,
+        "duration": 500
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "mark30",
+        "x": 617,
+        "y": 315,
+        "pointStyle": "cross",
+        "radius": 5,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 2
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "mark31",
+        "x": 656,
+        "y": 406,
+        "pointStyle": "cross",
+        "radius": 5,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 2
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "28b",
+        "content": "Remarque : D est le symétrique de B par rapport à O.",
+        "x": 10,
+        "y": 260,
+        "fontSize": 18,
+        "style": {
+          "color": "#808080"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "26",
+        "content": "5.On trace les deux segments [DC] et [DA]. ",
+        "x": 10,
+        "y": 300,
+        "fontSize": 16,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "ruler",
+        "x": "$P28.x",
+        "y": "$P28.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": -52.38063635884083,
+        "duration": 500
+      }
+    },
+    {
+      "type": "comment",
+      "text": "Ruler mode: vide"
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 757,
+        "y": 345,
+        "duration": 200
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg32",
+        "from": {
+          "x": 757,
+          "y": 345
+        },
+        "to": {
+          "x": 675,
+          "y": 453
+        },
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 674,
+        "y": 454,
+        "duration": 200
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": -154.9831065219,
+        "duration": 500
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg33",
+        "from": {
+          "x": 674,
+          "y": 454
+        },
+        "to": "P1",
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "28",
+        "x": 10,
+        "y": 229,
+        "duration": 500
+      }
+    }
+  ]
 }

@@ -67,6 +67,26 @@
 		}
 	}
 
+	// Track cell content for autosave detection
+	let previousCellsHash = $state('');
+
+	// Setup autosave effect - watches for cell changes and schedules debounced save
+	$effect(() => {
+		// Create a snapshot of current cell content
+		const cellsHash = notebook.cells.map((c) => `${c.id}:${c.source}`).join('|');
+
+		// Detect if cells have changed
+		if (cellsHash !== previousCellsHash) {
+			previousCellsHash = cellsHash;
+
+			// Mark as modified and schedule autosave only if not readonly
+			if (!isReadonly) {
+				notebook.markModified();
+				notebook.scheduleAutoSave();
+			}
+		}
+	});
+
 	function handleAddCodeCell(): void {
 		const activeIndex = notebook.activeCell
 			? notebook.getCellIndex(notebook.activeCell)
@@ -111,14 +131,8 @@
 	}
 
 	function handleResetKernel(): void {
-		if (
-			confirm(
-				'Êtes-vous sûr de vouloir réinitialiser le noyau ? Toutes les variables seront perdues.'
-			)
-		) {
-			notebook.resetKernel();
-			toaster.info('Noyau réinitialisé');
-		}
+		notebook.resetKernel();
+		toaster.info('Noyau réinitialisé');
 	}
 
 	// Cell actions
@@ -147,23 +161,69 @@
 
 	// Keyboard shortcuts
 	function handleKeydown(e: KeyboardEvent): void {
-		// Disable all shortcuts in readonly mode
-		if (isReadonly) return;
-
-		// Ctrl+S / Cmd+S: Save
+		// Ctrl+S / Cmd+S: Save (always available, even in readonly mode)
 		if ((e.ctrlKey || e.metaKey) && e.key === 's') {
 			e.preventDefault();
 			handleSave();
 			return;
 		}
 
+		// Disable all other shortcuts in readonly mode
+		if (isReadonly) return;
+
 		// Only handle cell execution shortcuts if there's an active cell
-		if (!notebook.activeCell) return;
+		if (!notebook.activeCell) {
+			// Handle Arrow Up/Down for navigation even without active cell
+			if (e.key === 'ArrowUp' && notebook.cells.length > 0) {
+				e.preventDefault();
+				notebook.setActiveCell(notebook.cells[0].id);
+			} else if (e.key === 'ArrowDown' && notebook.cells.length > 0) {
+				e.preventDefault();
+				notebook.setActiveCell(notebook.cells[0].id);
+			}
+			return;
+		}
+
+		const currentIndex = notebook.getCellIndex(notebook.activeCell);
+
+		// Arrow Up: Navigate to previous cell
+		if (e.key === 'ArrowUp' && currentIndex > 0) {
+			// Only navigate if not in edit mode (check if event target is editor)
+			const target = e.target as HTMLElement;
+			const isInEditor = target.closest('[data-editor="true"]');
+
+			if (!isInEditor) {
+				e.preventDefault();
+				notebook.setActiveCell(notebook.cells[currentIndex - 1].id);
+			}
+			return;
+		}
+
+		// Arrow Down: Navigate to next cell
+		if (e.key === 'ArrowDown' && currentIndex < notebook.cells.length - 1) {
+			// Only navigate if not in edit mode
+			const target = e.target as HTMLElement;
+			const isInEditor = target.closest('[data-editor="true"]');
+
+			if (!isInEditor) {
+				e.preventDefault();
+				notebook.setActiveCell(notebook.cells[currentIndex + 1].id);
+			}
+			return;
+		}
+
+		// Escape: Exit edit mode / deselect (dispatch custom event to cells)
+		if (e.key === 'Escape') {
+			e.preventDefault();
+			// Dispatch custom event for cells to exit edit mode
+			const event = new CustomEvent('notebook:escape', { bubbles: true });
+			containerRef?.dispatchEvent(event);
+			return;
+		}
 
 		// Shift+Enter: Run cell and move to next
 		if (e.shiftKey && e.key === 'Enter') {
 			e.preventDefault();
-			const currentIndex = notebook.getCellIndex(notebook.activeCell);
 			handleExecuteCell(notebook.activeCell).then(() => {
 				// Move to next cell or create new one
 				if (currentIndex < notebook.cells.length - 1) {
@@ -189,6 +249,19 @@
 				handleAddCodeCell();
 			});
 			return;
+		}
+
+		// Enter on selected cell: Enter edit mode (dispatch custom event)
+		if (e.key === 'Enter') {
+			const target = e.target as HTMLElement;
+			const isInEditor = target.closest('[data-editor="true"]');
+
+			if (!isInEditor) {
+				e.preventDefault();
+				// Dispatch custom event for cell to enter edit mode
+				const event = new CustomEvent('notebook:enter-edit', { bubbles: true });
+				containerRef?.dispatchEvent(event);
+			}
 		}
 	}
 

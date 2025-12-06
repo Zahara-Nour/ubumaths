@@ -918,9 +918,30 @@ function convertCompassAction(
 				};
 				ctx.steps.push({ type: 'action', action });
 			} else if (attrs.cible) {
-				// Open to match distance to target
-				const targetId = ctx.pointMap.get(attrs.cible) || attrs.cible;
-				ctx.warnings.push(`Compass opening to target ${targetId} - using expression`);
+				// Open to match distance to target point
+				const compassPos = getInstrumentPosition(ctx, 'compass');
+				const targetPos = getPointPosition(ctx, attrs.cible);
+
+				if (compassPos && targetPos) {
+					// Calculate Euclidean distance from compass center to target
+					const distance = Math.sqrt(
+						(targetPos.x - compassPos.x) ** 2 + (targetPos.y - compassPos.y) ** 2
+					);
+					const action: ActionDef = {
+						kind: 'setCompass',
+						radius: Math.round(distance * 100) / 100, // Round to 2 decimals
+						duration: 300
+					};
+					ctx.steps.push({ type: 'action', action });
+				} else {
+					// Cannot calculate distance - add detailed warning
+					const missing: string[] = [];
+					if (!compassPos) missing.push('compass position');
+					if (!targetPos) missing.push(`target point "${attrs.cible}" position`);
+					ctx.warnings.push(
+						`Compass opening to "${attrs.cible}": cannot calculate radius (unknown: ${missing.join(', ')})`
+					);
+				}
 			}
 			break;
 		}

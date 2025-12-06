@@ -2,12 +2,14 @@
 	/**
 	 * NotebookStatusBar Component
 	 *
-	 * Displays notebook status information
+	 * Displays notebook status information with autosave indicators
 	 * Features:
 	 * - Kernel status (initializing/ready/busy/error)
-	 * - Last saved time
+	 * - Save status (autosaving, saving, unsaved, saved confirmation)
+	 * - Last saved time (with relative formatting)
 	 * - Cell count
 	 * - Execution queue status
+	 * - Visual indicators: pulsing dot for autosave, checkmark for saved confirmation
 	 */
 
 	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
@@ -82,24 +84,52 @@
 	let cellCount = $derived(notebook?.cells.length ?? 0);
 	let queuedCellsCount = $derived(notebook?.executionQueue.length ?? 0);
 	let isSaving = $derived(notebook?.isSaving ?? false);
+	let isAutoSaving = $derived(notebook?.isAutoSaving ?? false);
 	let isModified = $derived(notebook?.isModified ?? false);
+	let lastSavedTime = $derived(notebook?.lastSavedTime ?? null);
 
-	// Format last saved time
+	// State for "Saved" confirmation display
+	let showSavedConfirmation = $state(false);
+	let savedConfirmationTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	// Watch for successful autosave completion
+	$effect(() => {
+		// When autosave completes (isAutoSaving becomes false) and not modified anymore
+		if (!isAutoSaving && !isSaving && !isModified && lastSavedTime) {
+			// Show brief "Saved" confirmation (500ms)
+			showSavedConfirmation = true;
+
+			// Clear any previous timeout
+			if (savedConfirmationTimeout) {
+				clearTimeout(savedConfirmationTimeout);
+			}
+
+			// Hide confirmation after 500ms
+			savedConfirmationTimeout = setTimeout(() => {
+				showSavedConfirmation = false;
+				savedConfirmationTimeout = null;
+			}, 500);
+		}
+	});
+
+	// Format last saved time with save status
 	let lastSavedText = $derived.by(() => {
 		if (!notebook?.notebook) return '';
-		if (isModified) return 'Non enregistré';
+		if (isAutoSaving) return 'Sauvegarde automatique...';
 		if (isSaving) return 'Enregistrement...';
+		if (showSavedConfirmation) return 'Enregistré';
+		if (isModified) return 'Non enregistré';
+		if (!lastSavedTime) return '';
 
-		const updatedAt = new Date(notebook.notebook.updated_at);
 		const now = new Date();
-		const diffMs = now.getTime() - updatedAt.getTime();
+		const diffMs = now.getTime() - lastSavedTime.getTime();
 		const diffMins = Math.floor(diffMs / 60000);
 
 		if (diffMins < 1) return "Enregistré à l'instant";
 		if (diffMins < 60) return `Enregistré il y a ${diffMins} min`;
 		const diffHours = Math.floor(diffMins / 60);
 		if (diffHours < 24) return `Enregistré il y a ${diffHours} h`;
-		return `Enregistré le ${updatedAt.toLocaleDateString()}`;
+		return `Enregistré le ${lastSavedTime.toLocaleDateString()}`;
 	});
 </script>
 
@@ -148,7 +178,20 @@
 		</div>
 
 		<!-- Save status -->
-		<div class={isModified ? 'text-amber-600 dark:text-amber-400' : ''}>
+		<div
+			class={isAutoSaving
+				? 'flex items-center gap-1 text-primary'
+				: showSavedConfirmation
+					? 'flex items-center gap-1 text-green-600 dark:text-green-400'
+					: isModified
+						? 'text-amber-600 dark:text-amber-400'
+						: ''}
+		>
+			{#if isAutoSaving}
+				<div class="size-2 animate-pulse rounded-full bg-primary"></div>
+			{:else if showSavedConfirmation}
+				<CheckCircle2 class="size-3" />
+			{/if}
 			{lastSavedText}
 		</div>
 	</div>

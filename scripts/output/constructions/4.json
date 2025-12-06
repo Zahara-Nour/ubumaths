@@ -1,40 +1,40 @@
 {
-	"version": 1,
-	"title": "Exemple MathJax/LaTeX",
-	"description": "Demonstration de l'affichage de formules mathematiques avec MathJax. (Auteur: Florence Decool)",
-	"canvas": {
-		"width": 800,
-		"height": 600,
-		"backgroundColor": "#FFFFFF"
-	},
-	"steps": [
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "titre",
-				"content": "$\\begin{array}{l}\r\n\\text{Un théor} \\grave{e} \\text{me et une racine}\\sqrt{42}\r\n\\end{array}$",
-				"x": 10,
-				"y": 50,
-				"fontSize": 18,
-				"style": {
-					"color": "#006400"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "titre2",
-				"content": "$\\begin{array}{l}\r\n\\textbf{ Représentation graphique de la fonction affine }\\textit{ f }\\text{}\\textbf{, définie par :}~\\text{}\\textit{ f(x) }\\text{= }\\displaystyle{\\frac{3}{2}}~\\text{}\\textit{x}~~\\text{-  5}\r\n\\textbf{ avec un prix en pound : £42}\r\n\\end{array}$",
-				"x": 10,
-				"y": 100,
-				"fontSize": 18,
-				"style": {
-					"color": "#006400"
-				}
-			}
-		}
-	]
+  "version": 1,
+  "title": "Exemple MathJax/LaTeX",
+  "description": "Demonstration de l'affichage de formules mathematiques avec MathJax. (Auteur: Florence Decool)",
+  "canvas": {
+    "width": 800,
+    "height": 600,
+    "backgroundColor": "#FFFFFF"
+  },
+  "steps": [
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "titre",
+        "content": "$\\begin{array}{l}\r\n\\text{Un théor} \\grave{e} \\text{me et une racine}\\sqrt{42}\r\n\\end{array}$",
+        "x": 10,
+        "y": 50,
+        "fontSize": 18,
+        "style": {
+          "color": "#006400"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "titre2",
+        "content": "$\\begin{array}{l}\r\n\\textbf{ Représentation graphique de la fonction affine }\\textit{ f }\\text{}\\textbf{, définie par :}~\\text{}\\textit{ f(x) }\\text{= }\\displaystyle{\\frac{3}{2}}~\\text{}\\textit{x}~~\\text{-  5}\r\n\\textbf{ avec un prix en pound : £42}\r\n\\end{array}$",
+        "x": 10,
+        "y": 100,
+        "fontSize": 18,
+        "style": {
+          "color": "#006400"
+        }
+      }
+    }
+  ]
 }

@@ -1,707 +1,723 @@
 {
-	"version": 1,
-	"title": "Symetrie centrale au compas",
-	"description": "Construction du symetrique d'un point par rapport a un centre avec la methode des deux arcs. (Auteur: Jean-Louis Kahn)",
-	"canvas": {
-		"width": 800,
-		"height": 600,
-		"backgroundColor": "#FFFFFF"
-	},
-	"steps": [
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 800,
-				"y": 50,
-				"duration": 100
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c1",
-				"from": {
-					"x": 800,
-					"y": 50
-				},
-				"to": {
-					"x": 800,
-					"y": 600
-				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c2",
-				"from": {
-					"x": 800,
-					"y": 600
-				},
-				"to": {
-					"x": 0,
-					"y": 600
-				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "50",
-				"content": " Construction du symétrique d'un point par rapport à une droite au compas (2).",
-				"x": 10,
-				"y": 50,
-				"fontSize": 18,
-				"style": {
-					"color": "#006400"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "1a",
-				"content": "On considère un point M et un axe de symétrie (d).",
-				"x": 15,
-				"y": 78,
-				"fontSize": 16,
-				"style": {
-					"color": "#FF0000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": -27.87,
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 199,
-				"y": 399,
-				"duration": 100
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg1",
-				"from": {
-					"x": 199,
-					"y": 399
-				},
-				"to": {
-					"x": 597,
-					"y": 188
-				},
-				"style": {
-					"color": "0",
-					"lineWidth": 0,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 597,
-				"y": 188,
-				"duration": 200
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "4",
-				"content": "(d)",
-				"x": 592,
-				"y": 205,
-				"fontSize": 16,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P2",
-				"x": 281,
-				"y": 208,
-				"style": {
-					"color": "#000000",
-					"lineWidth": 2
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "label3",
-				"content": "M",
-				"x": "$P2.x + 10",
-				"y": "$P2.y - 10",
-				"fontSize": 14,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "texte",
-				"content": "1. On place deux points N et P sur l'axe (d).",
-				"x": 40,
-				"y": 110,
-				"fontSize": 16,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 479,
-				"y": 220,
-				"duration": 100
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 458,
-				"y": 260,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "N",
-				"x": 458,
-				"y": 262,
-				"style": {
-					"color": "#000000",
-					"lineWidth": 1
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "N_label",
-				"content": "N",
-				"x": "$N.x + 10",
-				"y": "$N.y - 10",
-				"fontSize": 14,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 278,
-				"y": 357,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P",
-				"x": 276,
-				"y": 359,
-				"style": {
-					"color": "#000000",
-					"lineWidth": 1
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "P_label",
-				"content": "P",
-				"x": "$P.x + 10",
-				"y": "$P.y - 10",
-				"fontSize": 14,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "texte2",
-				"content": "2. Avec le compas, on trace deux arcs de cercle passant par M et de centres N puis P. ",
-				"x": 40,
-				"y": 480,
-				"fontSize": 16,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "compass"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "compass",
-				"x": "$N.x",
-				"y": "$N.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -163.03385189146383,
-				"duration": 500
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "comment",
-			"text": "Compass raised"
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc4",
-				"center": {
-					"x": 40,
-					"y": 480
-				},
-				"radius": 100,
-				"startAngle": -163.03,
-				"endAngle": -285.17,
-				"style": {
-					"color": "#008800",
-					"lineWidth": 1
-				}
-			}
-		},
-		{
-			"type": "comment",
-			"text": "Compass lowered"
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "compass",
-				"x": "$P.x",
-				"y": "$P.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -88.10348169679072,
-				"duration": 500
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "comment",
-			"text": "Compass raised"
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc5",
-				"center": {
-					"x": 40,
-					"y": 480
-				},
-				"radius": 100,
-				"startAngle": -88.75,
-				"endAngle": 41.91,
-				"style": {
-					"color": "#008800",
-					"lineWidth": 1
-				}
-			}
-		},
-		{
-			"type": "comment",
-			"text": "Compass lowered"
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "compass"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "texte3",
-				"content": "3. Le point d'intersection de ces deux arcs de cercle est le symétrique M' du point M par rapport à (d). ",
-				"x": 40,
-				"y": 540,
-				"fontSize": 16,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "P6",
-				"x": 403,
-				"y": 439,
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 2
-				},
-				"pointStyle": "dot",
-				"radius": 4
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "label7",
-				"content": "M'",
-				"x": "$P6.x + 10",
-				"y": "$P6.y - 10",
-				"fontSize": 14,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "comment",
-			"text": "Ruler mode: vide"
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "ruler",
-				"x": "$P2.x",
-				"y": "$P2.y",
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "ruler",
-				"angle": 62.15973967612109,
-				"duration": 500
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": "$P2.x",
-				"y": "$P2.y",
-				"duration": 100
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "show",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg8",
-				"from": {
-					"x": 281,
-					"y": 208
-				},
-				"to": "P6",
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 0,
-					"lineStyle": "dashed"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "pencil"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "ruler"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "angleMark",
-				"id": "rightAngle9",
-				"vertex": {
-					"x": 347,
-					"y": 305
-				},
-				"point1": {
-					"x": 341,
-					"y": 324
-				},
-				"point2": {
-					"x": 361,
-					"y": 324
-				},
-				"rightAngle": true,
-				"radius": 15,
-				"style": {
-					"color": "#FF0000"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "mark10",
-				"x": 319,
-				"y": 277,
-				"pointStyle": "cross",
-				"radius": 5,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 0
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "point",
-				"id": "mark11",
-				"x": 370,
-				"y": 374,
-				"pointStyle": "cross",
-				"radius": 5,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 0
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 500
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		}
-	]
+  "version": 1,
+  "title": "Symetrie centrale au compas",
+  "description": "Construction du symetrique d'un point par rapport a un centre avec la methode des deux arcs. (Auteur: Jean-Louis Kahn)",
+  "canvas": {
+    "width": 800,
+    "height": 600,
+    "backgroundColor": "#FFFFFF"
+  },
+  "steps": [
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 800,
+        "y": 50,
+        "duration": 100
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "c1",
+        "from": {
+          "x": 800,
+          "y": 50
+        },
+        "to": {
+          "x": 800,
+          "y": 600
+        },
+        "style": {
+          "color": "#FFFFFF",
+          "lineWidth": 2,
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "c2",
+        "from": {
+          "x": 800,
+          "y": 600
+        },
+        "to": {
+          "x": 0,
+          "y": 600
+        },
+        "style": {
+          "color": "#FFFFFF",
+          "lineWidth": 2,
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "50",
+        "content": " Construction du symétrique d'un point par rapport à une droite au compas (2).",
+        "x": 10,
+        "y": 50,
+        "fontSize": 18,
+        "style": {
+          "color": "#006400"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "1a",
+        "content": "On considère un point M et un axe de symétrie (d).",
+        "x": 15,
+        "y": 78,
+        "fontSize": 16,
+        "style": {
+          "color": "#FF0000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": -27.87,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 199,
+        "y": 399,
+        "duration": 100
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg1",
+        "from": {
+          "x": 199,
+          "y": 399
+        },
+        "to": {
+          "x": 597,
+          "y": 188
+        },
+        "style": {
+          "color": "0",
+          "lineWidth": 0,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 597,
+        "y": 188,
+        "duration": 200
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "4",
+        "content": "(d)",
+        "x": 592,
+        "y": 205,
+        "fontSize": 16,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P2",
+        "x": 281,
+        "y": 208,
+        "style": {
+          "color": "#000000",
+          "lineWidth": 2
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "label3",
+        "content": "M",
+        "x": "$P2.x + 10",
+        "y": "$P2.y - 10",
+        "fontSize": 14,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "texte",
+        "content": "1. On place deux points N et P sur l'axe (d).",
+        "x": 40,
+        "y": 110,
+        "fontSize": 16,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 479,
+        "y": 220,
+        "duration": 100
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 458,
+        "y": 260,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "N",
+        "x": 458,
+        "y": 262,
+        "style": {
+          "color": "#000000",
+          "lineWidth": 1
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "N_label",
+        "content": "N",
+        "x": "$N.x + 10",
+        "y": "$N.y - 10",
+        "fontSize": 14,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 278,
+        "y": 357,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P",
+        "x": 276,
+        "y": 359,
+        "style": {
+          "color": "#000000",
+          "lineWidth": 1
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "P_label",
+        "content": "P",
+        "x": "$P.x + 10",
+        "y": "$P.y - 10",
+        "fontSize": 14,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "texte2",
+        "content": "2. Avec le compas, on trace deux arcs de cercle passant par M et de centres N puis P. ",
+        "x": 40,
+        "y": 480,
+        "fontSize": 16,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "compass"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "compass",
+        "x": "$N.x",
+        "y": "$N.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "compass",
+        "angle": -163.03385189146383,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "setCompass",
+        "radius": 185.05,
+        "duration": 300
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "comment",
+      "text": "Compass raised"
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "arc",
+        "id": "arc4",
+        "center": {
+          "x": 40,
+          "y": 480
+        },
+        "radius": 100,
+        "startAngle": -163.03,
+        "endAngle": -285.17,
+        "style": {
+          "color": "#008800",
+          "lineWidth": 1
+        }
+      }
+    },
+    {
+      "type": "comment",
+      "text": "Compass lowered"
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "compass",
+        "x": "$P.x",
+        "y": "$P.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "compass",
+        "angle": -88.10348169679072,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "setCompass",
+        "radius": 151.08,
+        "duration": 300
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "comment",
+      "text": "Compass raised"
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "arc",
+        "id": "arc5",
+        "center": {
+          "x": 40,
+          "y": 480
+        },
+        "radius": 100,
+        "startAngle": -88.75,
+        "endAngle": 41.91,
+        "style": {
+          "color": "#008800",
+          "lineWidth": 1
+        }
+      }
+    },
+    {
+      "type": "comment",
+      "text": "Compass lowered"
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "compass"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "texte3",
+        "content": "3. Le point d'intersection de ces deux arcs de cercle est le symétrique M' du point M par rapport à (d). ",
+        "x": 40,
+        "y": 540,
+        "fontSize": 16,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "P6",
+        "x": 403,
+        "y": 439,
+        "style": {
+          "color": "#0000FF",
+          "lineWidth": 2
+        },
+        "pointStyle": "dot",
+        "radius": 4
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "label7",
+        "content": "M'",
+        "x": "$P6.x + 10",
+        "y": "$P6.y - 10",
+        "fontSize": 14,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "comment",
+      "text": "Ruler mode: vide"
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "ruler",
+        "x": "$P2.x",
+        "y": "$P2.y",
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "rotate",
+        "target": "ruler",
+        "angle": 62.15973967612109,
+        "duration": 500
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": "$P2.x",
+        "y": "$P2.y",
+        "duration": 100
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg8",
+        "from": {
+          "x": 281,
+          "y": 208
+        },
+        "to": "P6",
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 0,
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "pencil"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "ruler"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "angleMark",
+        "id": "rightAngle9",
+        "vertex": {
+          "x": 347,
+          "y": 305
+        },
+        "point1": {
+          "x": 341,
+          "y": 324
+        },
+        "point2": {
+          "x": 361,
+          "y": 324
+        },
+        "rightAngle": true,
+        "radius": 15,
+        "style": {
+          "color": "#FF0000"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "mark10",
+        "x": 319,
+        "y": 277,
+        "pointStyle": "cross",
+        "radius": 5,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 0
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "mark11",
+        "x": 370,
+        "y": 374,
+        "pointStyle": "cross",
+        "radius": 5,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 0
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 500
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    }
+  ]
 }
