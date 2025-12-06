@@ -7,8 +7,8 @@ import { downloadIpynb } from './notebook-export';
 import type { NotebookContent } from '$lib/types/notebook';
 
 describe('downloadIpynb', () => {
-	let createElementSpy: ReturnType<typeof vi.spyOn<Document, 'createElement'>>;
-	let revokeObjectURLSpy: ReturnType<typeof vi.spyOn<typeof URL, 'revokeObjectURL'>>;
+	let createElementSpy: ReturnType<typeof vi.spyOn>;
+	let revokeObjectURLSpy: ReturnType<typeof vi.spyOn>;
 
 	beforeEach(() => {
 		// Mock DOM elements
