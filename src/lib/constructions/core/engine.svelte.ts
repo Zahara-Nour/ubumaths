@@ -695,6 +695,8 @@ export class ConstructionEngine {
 					easing
 				};
 				this.#activeAnimations.push(animState);
+				// Set initial draw progress immediately (like show sets opacity to 0)
+				this.#setTargetDrawProgress(action.target, startProgress);
 				break;
 			}
 
@@ -707,6 +709,8 @@ export class ConstructionEngine {
 					easing
 				};
 				this.#activeAnimations.push(animState);
+				// Set initial draw progress to 0 immediately (like show sets opacity to 0)
+				this.#setTargetDrawProgress(action.target, 0);
 				break;
 			}
 
@@ -915,6 +919,17 @@ export class ConstructionEngine {
 		if (obj) {
 			const currentStyle = obj.style ?? {};
 			this.objects.set(target, { ...obj, style: { ...currentStyle, opacity } });
+		}
+	}
+
+	/**
+	 * Set draw progress of a target object
+	 * Used to initialize draw progress before animation starts
+	 */
+	#setTargetDrawProgress(target: string, drawProgress: number): void {
+		const obj = this.objects.get(target);
+		if (obj) {
+			this.objects.set(target, { ...obj, drawProgress });
 		}
 	}
 
