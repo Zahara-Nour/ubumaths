@@ -160,6 +160,7 @@
 		"@uiw/codemirror-theme-vscode": "^4.25.3",
 		"@uiw/codemirror-themes": "^4.25.3",
 		"bad-words": "^4.0.0",
+		"blockly": "^12.3.1",
 		"canvas-confetti": "^1.9.3",
 		"codemirror": "^6.0.2",
 		"date-fns": "^4.1.0",
