@@ -847,7 +847,7 @@ export class ConstructionEngine {
 						...compass,
 						x: centerPos.x,
 						y: centerPos.y,
-						rotation: startAngleValue - 90,
+						rotation: startAngleValue,
 						compassRadius: radiusValue,
 						visible: true
 					});
@@ -987,7 +987,7 @@ export class ConstructionEngine {
 							anim.start.startAngle + (anim.start.endAngle - anim.start.startAngle) * progress;
 						const compass = this.instruments.get('compass');
 						if (compass) {
-							this.instruments.set('compass', { ...compass, rotation: currentAngle - 90 });
+							this.instruments.set('compass', { ...compass, rotation: currentAngle });
 						}
 					}
 				}
@@ -1585,7 +1585,7 @@ export class ConstructionEngine {
 				...compass,
 				x: centerPos.x,
 				y: centerPos.y,
-				rotation: endAngleValue - 90,
+				rotation: endAngleValue,
 				compassRadius: radiusValue,
 				visible: true
 			});
