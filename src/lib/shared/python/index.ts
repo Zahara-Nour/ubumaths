@@ -140,6 +140,7 @@ export type {
 
 export { BasePythonExecutor, type ExecutorState } from './execution/base-executor.svelte';
 export { PlaygroundExecutor } from './execution/playground-executor.svelte';
+export { NotebookExecutor } from './execution/notebook-executor.svelte';
 
 // =============================================================================
 // Configuration

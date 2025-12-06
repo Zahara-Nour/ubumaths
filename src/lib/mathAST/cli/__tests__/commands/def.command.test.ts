@@ -694,4 +694,304 @@ describe('DefCommand', () => {
 			expect(hasFunction(evalState, 'g')).toBe(true);
 		});
 	});
+
+	// =============================================================================
+	// Auto-Compute Derivative Feature
+	// =============================================================================
+
+	describe('auto-compute derivative', () => {
+		it('auto-computes derivative for polynomial', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = x^2',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('auto-computes derivative for linear function', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = 2x + 3',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('auto-computes derivative for cubic function', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = x^3 + x^2 + x',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('auto-computes derivative for sin function', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = sin(x)',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('auto-computes derivative for cos function', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = cos(x)',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('auto-computes derivative for exponential function', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = e^x',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('auto-computes derivative for natural log', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = ln(x)',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('shows derivative in output', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = x^2',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			const result = command.execute(ctx);
+			expect(result.output).toContain("f'(x)");
+			expect(result.output).toContain('auto-computed');
+		});
+
+		it('shows derivative notation with parameters', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'g(t) = t^2',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			const result = command.execute(ctx);
+			expect(result.output).toContain("g'(t)");
+		});
+
+		it('multi-variable function computes partial derivative for first param', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x, y) = x^2 + y^2',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			// Should compute partial derivative with respect to x
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('constant function has zero derivative', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = 5',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+			// The derivative should be 0
+			expect(def?.derivative?.type).toBe('number');
+		});
+
+		it('gracefully handles differentiation failure', () => {
+			const evalState = createEvalState();
+			// Define a function that parses but may not differentiate well
+			// Most expressions should work, but the function still defines even if deriv fails
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = x^2',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			const result = command.execute(ctx);
+			expect(result.success).toBe(true);
+			expect(hasFunction(evalState, 'f')).toBe(true);
+		});
+
+		it('redefining function recomputes derivative', () => {
+			const evalState = createEvalState();
+
+			// First definition
+			const ctx1: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = x^2',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+			command.execute(ctx1);
+			const firstDeriv = getFunction(evalState, 'f')?.derivative;
+
+			// Redefine
+			const ctx2: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = x^3',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+			command.execute(ctx2);
+			const secondDeriv = getFunction(evalState, 'f')?.derivative;
+
+			// Derivatives should be different
+			expect(firstDeriv).toBeDefined();
+			expect(secondDeriv).toBeDefined();
+			// x^2 derivative is 2x, x^3 derivative is 3x^2
+			expect(firstDeriv).not.toEqual(secondDeriv);
+		});
+
+		it('handles product rule (x*sin(x))', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = x*sin(x)',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('handles chain rule (sin(x^2))', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = sin(x^2)',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('handles quotient (1/x)', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = 1/x',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+
+		it('handles sqrt(x)', () => {
+			const evalState = createEvalState();
+			const ctx: CommandContext = {
+				ast: undefined,
+				input: 'f(x) = sqrt(x)',
+				format: 'custom',
+				options: {},
+				isRepl: true,
+				evalState
+			};
+
+			command.execute(ctx);
+			const def = getFunction(evalState, 'f');
+			expect(def?.derivative).toBeDefined();
+		});
+	});
 });

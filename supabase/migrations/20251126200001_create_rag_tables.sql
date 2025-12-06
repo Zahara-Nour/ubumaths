@@ -225,8 +225,9 @@ CREATE POLICY "Students can read system and class documents"
     teacher_id IS NULL -- System documents
     OR
     teacher_id IN ( -- Documents from teachers in student's classes
-      SELECT DISTINCT cm.teacher_id
+      SELECT DISTINCT c.teacher_id
       FROM class_members cm
+      INNER JOIN classes c ON c.id = cm.class_id
       WHERE cm.student_id = auth.uid()
     )
   );
@@ -291,8 +292,9 @@ CREATE POLICY "Students can read chunks from accessible documents"
         d.teacher_id IS NULL -- System documents
         OR
         d.teacher_id IN ( -- Documents from teachers in student's classes
-          SELECT DISTINCT cm.teacher_id
+          SELECT DISTINCT c.teacher_id
           FROM class_members cm
+          INNER JOIN classes c ON c.id = cm.class_id
           WHERE cm.student_id = auth.uid()
         )
       )

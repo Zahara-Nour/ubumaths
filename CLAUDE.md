@@ -11,7 +11,7 @@ Guide essentiel pour Claude Code - UbuMaths.
 Application educative de mathematiques pour eleves francophones.
 
 - **Langue** : UI en francais, code/comments en anglais
-- **Stack** : Svelte 5 (runes) | TypeScript (strict) | Tailwind CSS 4 | Shadcn-svelte | MathLive | Supabase (free tier) | Vercel | pnpm
+- **Stack** : Svelte 5 (runes) | TypeScript (strict) | Tailwind CSS 4 | Shadcn-svelte | MathLive | Supabase (free tier) | Vercel (Free tier) | pnpm
 
 ---
 
@@ -99,6 +99,8 @@ let { title } = $props();           // NOT: export let title
 $effect(() => { /* ... */ });       // NOT: $: { /* ... */ }
 ```
 
+**Réactivité** La réactivité doit être gérée de cette manière : UI event -> handler -> update reactive state -> trigger update DOM. $effect ne doit être utilisé que dans des cas particuliers(side, effects,...)
+
 **Details** : [best-practices.md#svelte-5-runes](docs/claude/best-practices.md#svelte-5-runes)
 
 ### 4. Never Use `any` Type
@@ -145,14 +147,13 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 
 ### Chaque plan doit inclure
 
-1. **Agents et modèles specifiés** pour chaque tâche
-2.
-3. **Code Review** (`code-reviewer`) a la fin de chaque phase
-4. **Commit** apres validation du code reviewer (direct ou agent selon complexite)
-5. **Security Audit** si auth/API sensible
-6. **Performance Audit** si requetes DB lourdes
-7. **Quality Checks** (`pnpm lint`, `pnpm check`) a la FIN du plan uniquement
-8. **Documentation de progression** tout au long de l'implementation pour crash recovery
+1. **Agents ET modèles specifiés** pour chaque tâche. ne pas hésiter à utiliser Opus
+2. **Code Review** (`code-reviewer`) a la fin de chaque phase
+3. **Commit** apres validation du code reviewer (direct ou agent selon complexite)
+4. **Security Audit** si auth/API sensible
+5. **Performance Audit** si requetes DB lourdes
+6. **Quality Checks** (`pnpm lint`, `pnpm check`) a la FIN du plan UNIQUEMENT
+7. **Documentation de progression** tout au long de l'implementation pour crash recovery
 
 **IMPORTANT** : Les agents ne doivent PAS executer de commandes build/lint/format/check. Ces verifications sont faites une seule fois a la fin du plan.
 
@@ -171,14 +172,14 @@ Format suggere : `docs/wip/<feature>-progress.md`
 
 - NE JAMAIS s'arreter au premier echec
 - Analyser et corriger automatiquement
-- Utiliser `debugger` agent si erreur persistante (>2 tentatives)
+- Utiliser `debugger` agent avec Opus si erreur persistante (>2 tentatives)
 - Continuer jusqu'a completion totale
 
 ### Checklist de validation (avant de terminer une phase)
 
 - [ ] Code fonctionnel
 - [ ] Tests passent
-- [ ] Code review effectué
+- [ ] Code review effectué (PAS de lint)
 - [ ] Security/Performance audit si applicable
 - [ ] Documentation de progression écrite
 - [ ] Commit créé
@@ -245,7 +246,7 @@ Verifier mentalement avant chaque commit (NE PAS executer de commandes lint/form
 - [ ] Svelte 5 runes only
 - [ ] Tests exist for new code
 
-Note: `pnpm lint` et `pnpm check` sont executes a la fin du plan uniquement.
+Note: `pnpm lint` et `pnpm check` sont executes a la fin du plan UNIQUEMENT.
 
 ---
 

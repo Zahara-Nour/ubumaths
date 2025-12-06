@@ -8,9 +8,8 @@
  * - 'answer' = student's submitted response (used elsewhere)
  *
  * Affects:
- * - question_templates.answer column -> question_templates.solution
+ * - question_templates.answer column -> question_templates.solution (if exists)
  * - JSONB 'answer' key in variations -> 'solution'
- * - JSONB 'answer' key in shared defaults -> 'solution'
  */
 
 -- ============================================================================
@@ -53,17 +52,7 @@ WHERE variations IS NOT NULL
   );
 
 -- ============================================================================
--- STEP 3: Update JSONB keys in shared defaults
--- ============================================================================
-
--- Rename 'answer' to 'solution' in shared object
-UPDATE question_templates
-SET shared = (shared - 'answer') || jsonb_build_object('solution', shared->'answer')
-WHERE shared IS NOT NULL
-  AND shared ? 'answer';
-
--- ============================================================================
--- STEP 4: Update comments
+-- STEP 3: Update comments
 -- ============================================================================
 
 -- Update comment if the column exists
@@ -87,7 +76,6 @@ DO $$
 DECLARE
     variations_with_answer INTEGER;
     variations_with_solution INTEGER;
-    shared_with_answer INTEGER;
 BEGIN
     -- Count remaining 'answer' keys (should be 0)
     SELECT COUNT(*) INTO variations_with_answer
@@ -99,10 +87,6 @@ BEGIN
     FROM question_templates, jsonb_array_elements(variations) AS v
     WHERE v ? 'solution';
 
-    SELECT COUNT(*) INTO shared_with_answer
-    FROM question_templates
-    WHERE shared ? 'answer';
-
-    RAISE NOTICE 'Migration complete: % variations with answer (should be 0), % variations with solution, % shared with answer (should be 0)',
-        variations_with_answer, variations_with_solution, shared_with_answer;
+    RAISE NOTICE 'Migration complete: % variations with answer (should be 0), % variations with solution',
+        variations_with_answer, variations_with_solution;
 END $$;
