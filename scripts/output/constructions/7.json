@@ -445,6 +445,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": -163.03,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -460,6 +469,15 @@
 					"color": "#008800",
 					"lineWidth": 1
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": -285.17,
+				"duration": 679
 			}
 		},
 		{
@@ -510,6 +528,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": -88.75,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -525,6 +552,15 @@
 					"color": "#008800",
 					"lineWidth": 1
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 41.91,
+				"duration": 726
 			}
 		},
 		{

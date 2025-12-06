@@ -399,6 +399,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 138,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -414,6 +423,15 @@
 					"color": "#228B22",
 					"lineWidth": 1.5
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 155,
+				"duration": 500
 			}
 		},
 		{
@@ -435,6 +453,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 155,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -450,6 +477,15 @@
 					"color": "#228B22",
 					"lineWidth": 1.5
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 122,
+				"duration": 500
 			}
 		},
 		{
@@ -480,6 +516,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 130,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -495,6 +540,15 @@
 					"color": "#228B22",
 					"lineWidth": 1.5
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 164,
+				"duration": 500
 			}
 		},
 		{
@@ -765,6 +819,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 150.1,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -780,6 +843,15 @@
 					"color": "#228B22",
 					"lineWidth": 0
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 117.66,
+				"duration": 500
 			}
 		},
 		{
@@ -840,6 +912,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 92.56,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -855,6 +936,15 @@
 					"color": "#008844",
 					"lineWidth": 0
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 78.89,
+				"duration": 500
 			}
 		},
 		{
@@ -880,6 +970,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 88.06,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -895,6 +994,15 @@
 					"color": "#008844",
 					"lineWidth": 0
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 71.09,
+				"duration": 500
 			}
 		},
 		{
@@ -969,6 +1077,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 152.52,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -984,6 +1101,15 @@
 					"color": "#008844",
 					"lineWidth": 0
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 135,
+				"duration": 500
 			}
 		},
 		{

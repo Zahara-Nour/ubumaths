@@ -1576,6 +1576,15 @@
 			"text": "Compass raised"
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 79.93,
+				"duration": 300
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -1591,6 +1600,15 @@
 					"color": "#008844",
 					"lineWidth": 1
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "rotate",
+				"target": "compass",
+				"angle": 58.47,
+				"duration": 500
 			}
 		},
 		{

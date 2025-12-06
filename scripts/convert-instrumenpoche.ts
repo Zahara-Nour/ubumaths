@@ -1101,6 +1101,20 @@ function convertCompassAction(
 			const centerX = compassPos?.x ?? ctx.currentPosition.x;
 			const centerY = compassPos?.y ?? ctx.currentPosition.y;
 
+			// Calculate arc sweep and duration for compass rotation
+			const arcSweep = Math.abs(endAngle - startAngle);
+			const arcDuration = Math.max(500, Math.round((arcSweep / 360) * 2000)); // 2 seconds for full circle
+
+			// First, rotate compass to start angle
+			const rotateToStartAction: ActionDef = {
+				kind: 'rotate',
+				target: 'compass',
+				angle: startAngle,
+				duration: 300
+			};
+			ctx.steps.push({ type: 'action', action: rotateToStartAction });
+
+			// Create arc and rotate compass simultaneously
 			const arcDef: ObjectDef = {
 				kind: 'arc',
 				id,
@@ -1115,6 +1129,15 @@ function convertCompassAction(
 			};
 			ctx.createdObjects.add(id);
 			ctx.steps.push({ type: 'create', object: arcDef });
+
+			// Rotate compass from start to end angle while arc is drawn
+			const rotateAction: ActionDef = {
+				kind: 'rotate',
+				target: 'compass',
+				angle: endAngle,
+				duration: arcDuration
+			};
+			ctx.steps.push({ type: 'action', action: rotateAction });
 			break;
 		}
 		case 'retourner': {
