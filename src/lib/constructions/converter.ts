@@ -31,120 +31,31 @@ import type { ConstructionScript, Step, ObjectDef, ActionDef, LineStyle } from '
 // =============================================================================
 
 /**
- * Get DOMParser that works in both browser and Node.js environments
+ * Check if we're in a Node.js environment
  */
-async function getDOMParser(): Promise<{ new (): DOMParser }> {
-	if (typeof DOMParser !== 'undefined') {
-		// Browser environment
-		return DOMParser;
-	}
-	// Node.js environment - use linkedom (lighter than jsdom)
-	try {
-		const { parseHTML } = await import('linkedom');
-		// Create a DOMParser-like class using linkedom
-		return class NodeDOMParser {
-			parseFromString(content: string, _mimeType: string): Document {
-				// linkedom's parseHTML creates a full document, we need to extract the parsed content
-				const { document } = parseHTML(`<!DOCTYPE html><html><body>${content}</body></html>`);
-				// Create a minimal document-like object with querySelector methods
-				const body = document.body;
-				return {
-					querySelector: (selector: string) => body.querySelector(selector),
-					querySelectorAll: (selector: string) => body.querySelectorAll(selector)
-				} as unknown as Document;
-			}
-		} as unknown as { new (): DOMParser };
-	} catch {
-		// Fallback: use regex-based parser for simple InstrumenPoche XML
-		return class FallbackDOMParser {
-			parseFromString(content: string, _mimeType: string): Document {
-				return createFallbackDocument(content);
-			}
-		} as unknown as { new (): DOMParser };
-	}
+function isNodeEnvironment(): boolean {
+	return (
+		typeof window === 'undefined' && typeof process !== 'undefined' && !!process.versions?.node
+	);
 }
 
 /**
- * Fallback regex-based XML parser for environments without DOM support
+ * Parse XML using xml2js (Node.js environment)
  */
-function createFallbackDocument(xmlContent: string): Document {
-	// Basic XML syntax validation - check for unbalanced tags
-	// Look for patterns like `<tag ` without closing `>` before next `<`
-	const unclosedTagMatch = xmlContent.match(/<[a-zA-Z][^>]*<[a-zA-Z]/);
-	if (unclosedTagMatch) {
-		throw new Error('XML parsing failed: Malformed tag - missing closing bracket');
-	}
-
-	const elements: Map<string, Element[]> = new Map();
-
-	// Parse INSTRUMENPOCHE root
-	const rootMatch = xmlContent.match(/<INSTRUMENPOCHE([^>]*)>/i);
-	if (rootMatch) {
-		const rootAttrs = parseAttributes(rootMatch[1]);
-		const rootEl = createMockElement('INSTRUMENPOCHE', rootAttrs);
-		elements.set('INSTRUMENPOCHE', [rootEl]);
-		elements.set('instrumenpoche', [rootEl]);
-	}
-
-	// Parse viewBox elements
-	const viewBoxRegex = /<viewBox([^>]*)\/?>/gi;
-	const viewBoxes: Element[] = [];
-	let match;
-	while ((match = viewBoxRegex.exec(xmlContent)) !== null) {
-		viewBoxes.push(createMockElement('viewBox', parseAttributes(match[1])));
-	}
-	if (viewBoxes.length) elements.set('viewBox', viewBoxes);
-
-	// Parse action elements
-	const actionRegex = /<action([^>]*)\/?>/gi;
-	const actions: Element[] = [];
-	while ((match = actionRegex.exec(xmlContent)) !== null) {
-		actions.push(createMockElement('action', parseAttributes(match[1])));
-	}
-	if (actions.length) elements.set('action', actions);
-
-	return {
-		querySelector: (selector: string) => elements.get(selector)?.[0] ?? null,
-		querySelectorAll: (selector: string) => elements.get(selector) ?? []
-	} as unknown as Document;
+async function parseWithXml2js(xmlContent: string): Promise<IepDocument | null> {
+	const { parseStringPromise } = await import('xml2js');
+	const doc = (await parseStringPromise(xmlContent)) as IepDocument;
+	return doc.INSTRUMENPOCHE ? doc : null;
 }
 
 /**
- * Parse XML attributes from a string like ' attr1="value1" attr2="value2"'
+ * Parse XML using native DOMParser (browser environment)
  */
-function parseAttributes(attrString: string): Record<string, string> {
-	const attrs: Record<string, string> = {};
-	const attrRegex = /(\w+)=["']([^"']*)["']/g;
-	let match;
-	while ((match = attrRegex.exec(attrString)) !== null) {
-		attrs[match[1]] = match[2];
-	}
-	return attrs;
-}
-
-/**
- * Create a mock Element with getAttribute and attributes
- */
-function createMockElement(tagName: string, attrs: Record<string, string>): Element {
-	const attrArray = Object.entries(attrs).map(([name, value]) => ({ name, value }));
-	return {
-		tagName,
-		getAttribute: (name: string) => attrs[name] ?? null,
-		attributes: attrArray,
-		textContent: ''
-	} as unknown as Element;
-}
-
-/**
- * Parse XML string to IepDocument structure
- * Works in both browser (native DOMParser) and Node.js (fallback parser)
- */
-async function parseXmlToIepDocument(xmlContent: string): Promise<IepDocument | null> {
-	const DOMParserClass = await getDOMParser();
-	const parser = new DOMParserClass();
+function parseWithDOMParser(xmlContent: string): IepDocument | null {
+	const parser = new DOMParser();
 	const doc = parser.parseFromString(xmlContent, 'text/xml');
 
-	// Check for parsing errors (browser only)
+	// Check for parsing errors
 	const parseError = doc.querySelector('parsererror');
 	if (parseError) {
 		throw new Error(`XML parsing failed: ${parseError.textContent}`);
@@ -194,6 +105,21 @@ async function parseXmlToIepDocument(xmlContent: string): Promise<IepDocument | 
 			action: actions.length > 0 ? actions : undefined
 		}
 	};
+}
+
+/**
+ * Parse XML string to IepDocument structure
+ * - Node.js: Uses xml2js (robust, well-tested)
+ * - Browser: Uses native DOMParser (no dependencies)
+ */
+async function parseXmlToIepDocument(xmlContent: string): Promise<IepDocument | null> {
+	if (isNodeEnvironment()) {
+		// Node.js: use xml2js for robust XML parsing
+		return parseWithXml2js(xmlContent);
+	} else {
+		// Browser: use native DOMParser
+		return parseWithDOMParser(xmlContent);
+	}
 }
 
 // =============================================================================
