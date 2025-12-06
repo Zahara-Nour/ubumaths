@@ -39,6 +39,16 @@
 			}
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 800,
+				"y": 600,
+				"duration": 550
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "segment",
@@ -56,6 +66,16 @@
 					"lineWidth": 2,
 					"lineStyle": "dashed"
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 0,
+				"y": 600,
+				"duration": 800
 			}
 		},
 		{
@@ -145,6 +165,16 @@
 					"lineWidth": 0,
 					"lineStyle": "solid"
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 597,
+				"y": 188,
+				"duration": 45047.19747109691
 			}
 		},
 		{
@@ -637,6 +667,16 @@
 					"lineWidth": 0,
 					"lineStyle": "dashed"
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 281,
+				"y": 208,
+				"duration": 10
 			}
 		},
 		{

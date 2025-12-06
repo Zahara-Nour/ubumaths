@@ -1,61 +1,71 @@
 {
-  "version": 1,
-  "title": "Segment avec marque",
-  "description": "Construction simple d'un segment avec une marque de codage. (Auteur: Julien Crémoux)",
-  "canvas": {
-    "width": 800,
-    "height": 600,
-    "backgroundColor": "#FFFFFF"
-  },
-  "steps": [
-    {
-      "type": "action",
-      "action": {
-        "kind": "moveTo",
-        "target": "pencil",
-        "x": 30,
-        "y": 300,
-        "duration": 100
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "segment",
-        "id": "seg_1",
-        "from": {
-          "x": 30,
-          "y": 300
-        },
-        "to": {
-          "x": 180,
-          "y": 270
-        },
-        "style": {
-          "color": "#0000FF",
-          "lineWidth": 2,
-          "lineStyle": "solid"
-        }
-      }
-    },
-    {
-      "type": "create",
-      "object": {
-        "kind": "point",
-        "id": "mark_2",
-        "x": 105,
-        "y": 285,
-        "pointStyle": "cross",
-        "radius": 10,
-        "style": {
-          "color": "#f15929",
-          "lineWidth": 2
-        }
-      }
-    },
-    {
-      "type": "pause",
-      "duration": 250
-    }
-  ]
+	"version": 1,
+	"title": "Segment avec marque",
+	"description": "Construction simple d'un segment avec une marque de codage. (Auteur: Julien Crémoux)",
+	"canvas": {
+		"width": 800,
+		"height": 600,
+		"backgroundColor": "#FFFFFF"
+	},
+	"steps": [
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 30,
+				"y": 300,
+				"duration": 100
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "segment",
+				"id": "seg_1",
+				"from": {
+					"x": 30,
+					"y": 300
+				},
+				"to": {
+					"x": 180,
+					"y": 270
+				},
+				"style": {
+					"color": "#0000FF",
+					"lineWidth": 2,
+					"lineStyle": "solid"
+				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 180,
+				"y": 270,
+				"duration": 15.297058540778355
+			}
+		},
+		{
+			"type": "create",
+			"object": {
+				"kind": "point",
+				"id": "mark_2",
+				"x": 105,
+				"y": 285,
+				"pointStyle": "cross",
+				"radius": 10,
+				"style": {
+					"color": "#f15929",
+					"lineWidth": 2
+				}
+			}
+		},
+		{
+			"type": "pause",
+			"duration": 250
+		}
+	]
 }
