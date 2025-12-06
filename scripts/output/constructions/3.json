@@ -11,8 +11,28 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 200,
+				"y": 300,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 200,
+				"y": 300,
+				"duration": 0
 			}
 		},
 		{
@@ -133,6 +153,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 425,
+				"y": 80,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -146,6 +176,16 @@
 			"action": {
 				"kind": "hide",
 				"target": "setSquare"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 80,
+				"duration": 0
 			}
 		},
 		{
@@ -255,7 +295,7 @@
 				"id": "label_8_label",
 				"content": "O",
 				"x": "$P_8.x + 10",
-				"y": "$P_8.y - 10",
+				"y": "$P_8.y + -10",
 				"fontSize": 14,
 				"style": {
 					"color": "#000000"
@@ -470,6 +510,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -481,6 +531,16 @@
 				"target": "ruler",
 				"angle": -45,
 				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 300,
+				"duration": 0
 			}
 		},
 		{
@@ -527,6 +587,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -705,6 +775,16 @@
 				"target": "ruler",
 				"angle": -135,
 				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 300,
+				"duration": 0
 			}
 		},
 		{
@@ -931,6 +1011,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "pencil"
 			}
@@ -1094,6 +1184,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "pencil"
 			}
@@ -1227,6 +1327,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 100,
+				"y": 500,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -1238,6 +1348,16 @@
 				"target": "ruler",
 				"angle": 0,
 				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 100,
+				"y": 500,
+				"duration": 0
 			}
 		},
 		{
@@ -1469,8 +1589,8 @@
 				"kind": "text",
 				"id": "label_29_label",
 				"content": "A",
-				"x": "$P_29.x + 10",
-				"y": "$P_29.y - 10",
+				"x": "$P_29.x + -10",
+				"y": "$P_29.y + -29",
 				"fontSize": 14,
 				"style": {
 					"color": "#000000"
@@ -1502,8 +1622,8 @@
 				"kind": "text",
 				"id": "label_30_label",
 				"content": "B",
-				"x": "$P_30.x + 10",
-				"y": "$P_30.y - 10",
+				"x": "$P_30.x + -8",
+				"y": "$P_30.y + -28",
 				"fontSize": 14,
 				"style": {
 					"color": "#000000"
@@ -1535,8 +1655,8 @@
 				"kind": "text",
 				"id": "label_31_label",
 				"content": "C",
-				"x": "$P_31.x + 10",
-				"y": "$P_31.y - 10",
+				"x": "$P_31.x + -9",
+				"y": "$P_31.y + 4",
 				"fontSize": 14,
 				"style": {
 					"color": "#000000"
@@ -1568,8 +1688,8 @@
 				"kind": "text",
 				"id": "label_32_label",
 				"content": "D",
-				"x": "$P_32.x + 10",
-				"y": "$P_32.y - 10",
+				"x": "$P_32.x + -8",
+				"y": "$P_32.y + 3",
 				"fontSize": 14,
 				"style": {
 					"color": "#000000"
@@ -1583,8 +1703,28 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 200,
+				"y": 87.87,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 212.87,
+				"y": 87.87,
+				"duration": 0
 			}
 		},
 		{
@@ -1621,6 +1761,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 200,
+				"y": 512.13,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -1628,6 +1778,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 212.87,
+				"y": 512.13,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -1676,6 +1836,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 212.87,
+				"y": 80,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -1683,6 +1853,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 212.87,
+				"y": 87.87,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -1718,6 +1898,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 637.13,
+				"y": 80,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -1725,6 +1915,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 637.13,
+				"y": 87.87,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -2009,6 +2209,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 212.87,
+				"y": 87.87,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -2025,6 +2235,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 212.87,
+				"y": 87.87,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -2070,6 +2290,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 212.87,
+				"y": 87.87,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -2244,6 +2474,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 212.87,
+				"y": 87.87,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "pencil"
 			}
@@ -2285,6 +2525,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 300.74,
+				"y": 300,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -2394,6 +2644,16 @@
 			"action": {
 				"kind": "hide",
 				"target": "arc_43"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 637.13,
+				"y": 512.13,
+				"duration": 0
 			}
 		},
 		{
@@ -2601,6 +2861,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 637.13,
+				"y": 512.13,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -2617,6 +2887,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 637.13,
+				"y": 512.13,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -2662,6 +2942,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 637.13,
+				"y": 512.13,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -2829,6 +3119,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 637.13,
+				"y": 512.13,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -2845,6 +3145,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 637.13,
+				"y": 512.13,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -2894,6 +3204,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 425,
+				"y": 424.26,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -2910,6 +3230,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 424.26,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -3003,6 +3333,16 @@
 			"action": {
 				"kind": "hide",
 				"target": "arc_53"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 425,
+				"y": 300,
+				"duration": 0
 			}
 		},
 		{
@@ -3201,6 +3541,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -3217,6 +3567,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -3262,6 +3622,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -3429,6 +3799,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -3445,6 +3825,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -3494,6 +3884,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 212.17,
+				"y": 387.87,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -3510,6 +3910,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 212.17,
+				"y": 387.87,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -3603,6 +4013,16 @@
 			"action": {
 				"kind": "hide",
 				"target": "arc_63"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 425,
+				"y": 300,
+				"duration": 0
 			}
 		},
 		{
@@ -3810,8 +4230,28 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 425,
+				"y": 300,
+				"duration": 0
 			}
 		},
 		{
@@ -3833,6 +4273,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -3878,6 +4328,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "compass",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -4045,6 +4505,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -4061,6 +4531,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425,
+				"y": 300,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",
@@ -4110,6 +4590,16 @@
 		{
 			"type": "action",
 			"action": {
+				"kind": "moveTo",
+				"target": "ruler",
+				"x": 512.87,
+				"y": 87.87,
+				"duration": 0
+			}
+		},
+		{
+			"type": "action",
+			"action": {
 				"kind": "show",
 				"target": "ruler"
 			}
@@ -4126,6 +4616,16 @@
 		{
 			"type": "pause",
 			"duration": 500
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 512.87,
+				"y": 87.87,
+				"duration": 0
+			}
 		},
 		{
 			"type": "action",

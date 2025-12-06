@@ -359,24 +359,25 @@
 		{#each visibleObjects.filter((o) => o.def.kind === 'text') as obj (obj.def.id)}
 			{@const def = obj.def}
 			{#if def.kind === 'text'}
-				{@const x = typeof def.x === 'number' ? def.x : 0}
-				{@const y = typeof def.y === 'number' ? def.y : 0}
-				<text
-					{x}
-					{y}
-					fill={obj.style?.color ?? def.style?.color ?? DEFAULT_COLORS.text}
-					font-size={def.fontSize ?? 14}
-					font-family="system-ui, -apple-system, sans-serif"
-					text-anchor={def.anchor ?? 'start'}
-					dominant-baseline={def.baseline === 'top'
-						? 'hanging'
-						: def.baseline === 'bottom'
-							? 'alphabetic'
-							: 'middle'}
-					opacity={obj.style?.opacity ?? def.style?.opacity ?? 1}
-				>
-					{def.content}
-				</text>
+				{@const pos = obj.position}
+				{#if pos}
+					<text
+						x={pos.x}
+						y={pos.y}
+						fill={obj.style?.color ?? def.style?.color ?? DEFAULT_COLORS.text}
+						font-size={def.fontSize ?? 14}
+						font-family="system-ui, -apple-system, sans-serif"
+						text-anchor={def.anchor ?? 'start'}
+						dominant-baseline={def.baseline === 'top'
+							? 'hanging'
+							: def.baseline === 'bottom'
+								? 'alphabetic'
+								: 'middle'}
+						opacity={obj.style?.opacity ?? def.style?.opacity ?? 1}
+					>
+						{def.content}
+					</text>
+				{/if}
 			{/if}
 		{/each}
 	</g>

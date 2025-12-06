@@ -116,7 +116,7 @@
 				"id": "label_1_label",
 				"content": "A",
 				"x": "$P_1.x + 10",
-				"y": "$P_1.y - 10",
+				"y": "$P_1.y + -10",
 				"fontSize": 14,
 				"style": {
 					"color": "#0000FF"
@@ -148,8 +148,8 @@
 				"kind": "text",
 				"id": "label_2_label",
 				"content": "B",
-				"x": "$P_2.x + 10",
-				"y": "$P_2.y - 10",
+				"x": "$P_2.x + -1",
+				"y": "$P_2.y + -33",
 				"fontSize": 14,
 				"style": {
 					"color": "#0000FF"
@@ -182,7 +182,7 @@
 				"id": "label_3_label",
 				"content": "C",
 				"x": "$P_3.x + 10",
-				"y": "$P_3.y - 10",
+				"y": "$P_3.y + -10",
 				"fontSize": 14,
 				"style": {
 					"color": "#0000FF"
@@ -1079,7 +1079,7 @@
 				"id": "label_47_label",
 				"content": "O",
 				"x": "$P_47.x + 10",
-				"y": "$P_47.y - 10",
+				"y": "$P_47.y + -10",
 				"fontSize": 14,
 				"style": {
 					"color": "#0000FF"
@@ -1481,8 +1481,8 @@
 				"kind": "text",
 				"id": "label_12_label",
 				"content": "D",
-				"x": "$P_12.x + 10",
-				"y": "$P_12.y - 10",
+				"x": "$P_12.x + -19",
+				"y": "$P_12.y + 11",
 				"fontSize": 14,
 				"style": {
 					"color": "#0000FF"

@@ -98,7 +98,7 @@
 				"id": "label_12_label",
 				"content": "A",
 				"x": "$P_12.x + 10",
-				"y": "$P_12.y - 10",
+				"y": "$P_12.y + -10",
 				"fontSize": 14,
 				"style": {
 					"color": "#000000"
@@ -127,7 +127,7 @@
 				"id": "label_13_label",
 				"content": "B",
 				"x": "$P_13.x + 10",
-				"y": "$P_13.y - 10",
+				"y": "$P_13.y + -10",
 				"fontSize": 14,
 				"style": {
 					"color": "#000000"
@@ -547,7 +547,7 @@
 				"id": "I_label",
 				"content": "I",
 				"x": "$I.x + 10",
-				"y": "$I.y - 10",
+				"y": "$I.y + -30",
 				"fontSize": 14,
 				"style": {
 					"color": "#228B22"
@@ -586,7 +586,7 @@
 				"id": "J_label",
 				"content": "J",
 				"x": "$J.x + 10",
-				"y": "$J.y - 10",
+				"y": "$J.y + -30",
 				"fontSize": 14,
 				"style": {
 					"color": "#228B22"
@@ -625,7 +625,7 @@
 				"id": "K_label",
 				"content": "K",
 				"x": "$K.x + 10",
-				"y": "$K.y - 10",
+				"y": "$K.y + -30",
 				"fontSize": 14,
 				"style": {
 					"color": "#228B22"
@@ -1163,7 +1163,7 @@
 				"id": "label_27_label",
 				"content": "£i(A,1)",
 				"x": "$P_27.x + 10",
-				"y": "$P_27.y - 10",
+				"y": "$P_27.y + -10",
 				"fontSize": 14,
 				"style": {
 					"color": "#0000FF"
@@ -1202,7 +1202,7 @@
 				"id": "label_28_label",
 				"content": "£i(A,2)",
 				"x": "$P_28.x + 10",
-				"y": "$P_28.y - 10",
+				"y": "$P_28.y + -10",
 				"fontSize": 14,
 				"style": {
 					"color": "#0000FF"
