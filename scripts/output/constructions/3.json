@@ -395,7 +395,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 10,
+				"angle": 20,
 				"duration": 500
 			}
 		},
@@ -425,15 +425,6 @@
 			"text": "Compass raised"
 		},
 		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -80,
-				"duration": 300
-			}
-		},
-		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -456,7 +447,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -100,
+				"angle": -20,
 				"duration": 500
 			}
 		},
@@ -487,15 +478,6 @@
 			"text": "Compass raised"
 		},
 		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -100,
-				"duration": 300
-			}
-		},
-		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -518,7 +500,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -80,
+				"angle": 20,
 				"duration": 500
 			}
 		},
@@ -553,7 +535,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 5,
+				"angle": 85,
 				"duration": 300
 			}
 		},
@@ -580,7 +562,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -5,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -729,7 +711,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -170,
+				"angle": 5,
 				"duration": 300
 			}
 		},
@@ -756,7 +738,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -190,
+				"angle": -20,
 				"duration": 500
 			}
 		},
@@ -800,7 +782,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -100,
+				"angle": 180,
 				"duration": 300
 			}
 		},
@@ -827,7 +809,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -80,
+				"angle": 20,
 				"duration": 500
 			}
 		},
@@ -871,7 +853,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -185,
+				"angle": 70,
 				"duration": 300
 			}
 		},
@@ -898,7 +880,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -175,
+				"angle": 10,
 				"duration": 500
 			}
 		},
@@ -1037,7 +1019,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 80,
+				"angle": 165,
 				"duration": 300
 			}
 		},
@@ -1064,7 +1046,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 100,
+				"angle": 20,
 				"duration": 500
 			}
 		},
@@ -1095,7 +1077,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 80,
+				"angle": -20,
 				"duration": 300
 			}
 		},
@@ -1122,7 +1104,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 100,
+				"angle": 20,
 				"duration": 500
 			}
 		},
@@ -1162,7 +1144,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -190,
+				"angle": -470,
 				"duration": 300
 			}
 		},
@@ -1189,7 +1171,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -170,
+				"angle": 20,
 				"duration": 500
 			}
 		},
@@ -1318,7 +1300,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 5,
+				"angle": 175,
 				"duration": 300
 			}
 		},
@@ -1345,7 +1327,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -5,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -1381,15 +1363,6 @@
 			"text": "Compass raised"
 		},
 		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": 85,
-				"duration": 300
-			}
-		},
-		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -1412,7 +1385,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 95,
+				"angle": 10,
 				"duration": 500
 			}
 		},
@@ -1699,7 +1672,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -42,
+				"angle": -92,
 				"duration": 300
 			}
 		},
@@ -1726,7 +1699,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -48,
+				"angle": -6,
 				"duration": 500
 			}
 		},
@@ -1756,7 +1729,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -138,
+				"angle": 45,
 				"duration": 300
 			}
 		},
@@ -1783,7 +1756,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -132,
+				"angle": 6,
 				"duration": 500
 			}
 		},
@@ -1813,7 +1786,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 138,
+				"angle": 135,
 				"duration": 300
 			}
 		},
@@ -1840,7 +1813,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 132,
+				"angle": -6,
 				"duration": 500
 			}
 		},
@@ -1870,7 +1843,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 48,
+				"angle": -129,
 				"duration": 300
 			}
 		},
@@ -1897,7 +1870,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 42,
+				"angle": -6,
 				"duration": 500
 			}
 		},
@@ -2425,7 +2398,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 40,
+				"angle": -2,
 				"duration": 300
 			}
 		},
@@ -2452,7 +2425,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 50,
+				"angle": 10,
 				"duration": 500
 			}
 		},
@@ -2478,7 +2451,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 95,
+				"angle": -45,
 				"duration": 300
 			}
 		},
@@ -2505,7 +2478,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 85,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -2549,7 +2522,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 50,
+				"angle": -78.86000000000001,
 				"duration": 300
 			}
 		},
@@ -2576,7 +2549,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 40,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -2620,7 +2593,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 95.08,
+				"angle": -39.999999999999986,
 				"duration": 300
 			}
 		},
@@ -2647,7 +2620,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 77.11,
+				"angle": -17.97,
 				"duration": 500
 			}
 		},
@@ -2796,7 +2769,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -5,
+				"angle": -89.1,
 				"duration": 300
 			}
 		},
@@ -2823,7 +2796,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 5,
+				"angle": 10,
 				"duration": 500
 			}
 		},
@@ -2858,7 +2831,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -2.74,
+				"angle": -7.74,
 				"duration": 300
 			}
 		},
@@ -2885,7 +2858,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 8,
+				"angle": 10.74,
 				"duration": 500
 			}
 		},
@@ -2929,7 +2902,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 50,
+				"angle": -8,
 				"duration": 300
 			}
 		},
@@ -2956,7 +2929,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 38.13,
+				"angle": -11.869999999999997,
 				"duration": 500
 			}
 		},
@@ -3229,7 +3202,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -175,
+				"angle": -38.129999999999995,
 				"duration": 300
 			}
 		},
@@ -3256,7 +3229,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -185,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -3286,7 +3259,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -130,
+				"angle": 185,
 				"duration": 300
 			}
 		},
@@ -3313,7 +3286,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -140,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -3357,7 +3330,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -130,
+				"angle": 140,
 				"duration": 300
 			}
 		},
@@ -3384,7 +3357,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -140,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -3428,7 +3401,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -175,
+				"angle": 140,
 				"duration": 300
 			}
 		},
@@ -3455,7 +3428,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -185,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -3608,7 +3581,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -85,
+				"angle": 185,
 				"duration": 300
 			}
 		},
@@ -3635,7 +3608,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -95,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -3679,7 +3652,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -130,
+				"angle": 95,
 				"duration": 300
 			}
 		},
@@ -3706,7 +3679,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -140,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -3750,7 +3723,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -85,
+				"angle": 140,
 				"duration": 300
 			}
 		},
@@ -3777,7 +3750,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -95,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -4074,7 +4047,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -175,
+				"angle": 95,
 				"duration": 300
 			}
 		},
@@ -4101,7 +4074,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -185,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -4131,7 +4104,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -220,
+				"angle": 185,
 				"duration": 300
 			}
 		},
@@ -4158,7 +4131,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -230,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -4193,7 +4166,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 130,
+				"angle": 360,
 				"duration": 300
 			}
 		},
@@ -4220,7 +4193,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 140,
+				"angle": 10,
 				"duration": 500
 			}
 		},
@@ -4264,7 +4237,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -175,
+				"angle": -140,
 				"duration": 300
 			}
 		},
@@ -4291,7 +4264,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -185,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -4444,7 +4417,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 95,
+				"angle": 185,
 				"duration": 300
 			}
 		},
@@ -4471,7 +4444,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 85,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -4515,7 +4488,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 140,
+				"angle": -85,
 				"duration": 300
 			}
 		},
@@ -4542,7 +4515,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 130,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -4586,7 +4559,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 95,
+				"angle": -130,
 				"duration": 300
 			}
 		},
@@ -4613,7 +4586,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 85,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -4937,7 +4910,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -95,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -4967,7 +4940,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -40,
+				"angle": 95,
 				"duration": 300
 			}
 		},
@@ -4994,7 +4967,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -50,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -5038,7 +5011,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -40,
+				"angle": 50,
 				"duration": 300
 			}
 		},
@@ -5065,7 +5038,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -50,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -5109,7 +5082,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -85,
+				"angle": 50,
 				"duration": 300
 			}
 		},
@@ -5136,7 +5109,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -95,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -5306,7 +5279,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 5,
+				"angle": 95,
 				"duration": 300
 			}
 		},
@@ -5333,7 +5306,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -5,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -5377,7 +5350,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -40,
+				"angle": 5,
 				"duration": 300
 			}
 		},
@@ -5404,7 +5377,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -50,
+				"angle": -10,
 				"duration": 500
 			}
 		},
@@ -5448,7 +5421,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 5,
+				"angle": 50,
 				"duration": 300
 			}
 		},
@@ -5475,7 +5448,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -5,
+				"angle": -10,
 				"duration": 500
 			}
 		},

@@ -1580,7 +1580,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 79.93,
+				"angle": 112.53325007900428,
 				"duration": 300
 			}
 		},
@@ -1607,7 +1607,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 58.47,
+				"angle": -21.460000000000008,
 				"duration": 500
 			}
 		},

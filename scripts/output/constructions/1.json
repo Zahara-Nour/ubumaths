@@ -399,15 +399,6 @@
 			"text": "Compass raised"
 		},
 		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": 138,
-				"duration": 300
-			}
-		},
-		{
 			"type": "create",
 			"object": {
 				"kind": "arc",
@@ -430,7 +421,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 155,
+				"angle": 17,
 				"duration": 500
 			}
 		},
@@ -451,15 +442,6 @@
 		{
 			"type": "comment",
 			"text": "Compass raised"
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": 155,
-				"duration": 300
-			}
 		},
 		{
 			"type": "create",
@@ -484,7 +466,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 122,
+				"angle": -33,
 				"duration": 500
 			}
 		},
@@ -520,7 +502,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 130,
+				"angle": -122,
 				"duration": 300
 			}
 		},
@@ -547,7 +529,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 164,
+				"angle": 34,
 				"duration": 500
 			}
 		},
@@ -784,7 +766,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 144.09995035978378,
+				"angle": -19.900049640216224,
 				"duration": 500
 			}
 		},
@@ -823,7 +805,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 150.1,
+				"angle": 6.0000496402162184,
 				"duration": 300
 			}
 		},
@@ -850,7 +832,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 117.66,
+				"angle": -32.44,
 				"duration": 500
 			}
 		},
@@ -877,7 +859,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 85.57590320881472,
+				"angle": -32.084096791185274,
 				"duration": 500
 			}
 		},
@@ -916,7 +898,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 92.56,
+				"angle": 6.98409679118528,
 				"duration": 300
 			}
 		},
@@ -943,7 +925,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 78.89,
+				"angle": -13.670000000000002,
 				"duration": 500
 			}
 		},
@@ -974,7 +956,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 88.06,
+				"angle": 9.170000000000002,
 				"duration": 300
 			}
 		},
@@ -1001,7 +983,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 71.09,
+				"angle": -16.97,
 				"duration": 500
 			}
 		},
@@ -1014,7 +996,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": -36.00571419529118,
+				"angle": -107.09571419529118,
 				"duration": 500
 			}
 		},
@@ -1081,7 +1063,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 152.52,
+				"angle": 36.005714195291176,
 				"duration": 300
 			}
 		},
@@ -1108,7 +1090,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "compass",
-				"angle": 135,
+				"angle": -17.52000000000001,
 				"duration": 500
 			}
 		},

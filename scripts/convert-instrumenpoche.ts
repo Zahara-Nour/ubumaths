@@ -182,6 +182,7 @@ interface ConversionContext {
 	pointMap: Map<string, string>; // Maps IEP id to UbuMaths id
 	pointPositions: Map<string, Position>; // Tracks point positions by IEP id
 	instrumentPositions: Map<string, Position>; // Tracks instrument positions (ruler, compass, etc.)
+	instrumentRotations: Map<string, number>; // Tracks instrument rotations (compass, ruler, etc.)
 	currentPosition: { x: number; y: number };
 	compassRadius: number; // Current compass opening radius
 	createdObjects: Set<string>;
@@ -233,6 +234,21 @@ function setPointPosition(ctx: ConversionContext, iepId: string, pos: Position):
  */
 function setInstrumentPosition(ctx: ConversionContext, instrument: string, pos: Position): void {
 	ctx.instrumentPositions.set(instrument, { x: pos.x, y: pos.y });
+}
+
+/**
+ * Get rotation of an instrument (compass, ruler, etc.)
+ * Returns 0 if the instrument rotation is unknown
+ */
+function getInstrumentRotation(ctx: ConversionContext, instrument: string): number {
+	return ctx.instrumentRotations.get(instrument) ?? 0;
+}
+
+/**
+ * Update the rotation of an instrument
+ */
+function setInstrumentRotation(ctx: ConversionContext, instrument: string, angle: number): void {
+	ctx.instrumentRotations.set(instrument, angle);
 }
 
 // =============================================================================
@@ -1003,27 +1019,35 @@ function convertCompassAction(
 		}
 		case 'rotation': {
 			if (attrs.angle) {
+				// attrs.angle is a delta rotation in InstrumenPoche
+				const deltaAngle = parseFloat(attrs.angle);
 				const action: ActionDef = {
 					kind: 'rotate',
 					target: 'compass',
-					angle: parseFloat(attrs.angle),
+					angle: deltaAngle,
 					duration: 500
 				};
 				ctx.steps.push({ type: 'action', action });
+				// Track the new rotation
+				const currentRotation = getInstrumentRotation(ctx, 'compass');
+				setInstrumentRotation(ctx, 'compass', currentRotation + deltaAngle);
 			} else if (attrs.cible) {
-				// Rotate towards a target point - calculate the angle
+				// Rotate towards a target point - calculate the absolute angle then delta
 				const compassPos = getInstrumentPosition(ctx, 'compass');
 				const targetPos = getPointPosition(ctx, attrs.cible);
 
 				if (compassPos && targetPos) {
-					const angle = calculateAngleToTarget(compassPos, targetPos);
+					const targetAngle = calculateAngleToTarget(compassPos, targetPos);
+					const currentRotation = getInstrumentRotation(ctx, 'compass');
+					const deltaAngle = targetAngle - currentRotation;
 					const action: ActionDef = {
 						kind: 'rotate',
 						target: 'compass',
-						angle: angle,
+						angle: deltaAngle,
 						duration: 500
 					};
 					ctx.steps.push({ type: 'action', action });
+					setInstrumentRotation(ctx, 'compass', targetAngle);
 				} else {
 					// Cannot calculate angle - add warning with details
 					const missing: string[] = [];
@@ -1101,20 +1125,29 @@ function convertCompassAction(
 			const centerX = compassPos?.x ?? ctx.currentPosition.x;
 			const centerY = compassPos?.y ?? ctx.currentPosition.y;
 
+			// Get current compass rotation and calculate DELTA angles
+			// UbuMaths engine interprets rotation as delta, not absolute
+			const currentRotation = getInstrumentRotation(ctx, 'compass');
+			const deltaToStart = startAngle - currentRotation;
+			const deltaToEnd = endAngle - startAngle;
+
 			// Calculate arc sweep and duration for compass rotation
 			const arcSweep = Math.abs(endAngle - startAngle);
 			const arcDuration = Math.max(500, Math.round((arcSweep / 360) * 2000)); // 2 seconds for full circle
 
-			// First, rotate compass to start angle
-			const rotateToStartAction: ActionDef = {
-				kind: 'rotate',
-				target: 'compass',
-				angle: startAngle,
-				duration: 300
-			};
-			ctx.steps.push({ type: 'action', action: rotateToStartAction });
+			// First, rotate compass to start angle (using delta)
+			if (Math.abs(deltaToStart) > 0.1) {
+				const rotateToStartAction: ActionDef = {
+					kind: 'rotate',
+					target: 'compass',
+					angle: deltaToStart,
+					duration: 300
+				};
+				ctx.steps.push({ type: 'action', action: rotateToStartAction });
+				setInstrumentRotation(ctx, 'compass', startAngle);
+			}
 
-			// Create arc and rotate compass simultaneously
+			// Create arc
 			const arcDef: ObjectDef = {
 				kind: 'arc',
 				id,
@@ -1130,14 +1163,15 @@ function convertCompassAction(
 			ctx.createdObjects.add(id);
 			ctx.steps.push({ type: 'create', object: arcDef });
 
-			// Rotate compass from start to end angle while arc is drawn
+			// Rotate compass from start to end angle while arc is drawn (using delta)
 			const rotateAction: ActionDef = {
 				kind: 'rotate',
 				target: 'compass',
-				angle: endAngle,
+				angle: deltaToEnd,
 				duration: arcDuration
 			};
 			ctx.steps.push({ type: 'action', action: rotateAction });
+			setInstrumentRotation(ctx, 'compass', endAngle);
 			break;
 		}
 		case 'retourner': {
@@ -1361,6 +1395,7 @@ function convertDocument(doc: IepDocument, filename: string): ConstructionScript
 		pointMap: new Map(),
 		pointPositions: new Map(),
 		instrumentPositions: new Map(),
+		instrumentRotations: new Map(),
 		currentPosition: { x: 0, y: 0 },
 		compassRadius: 100, // Default compass radius
 		createdObjects: new Set(),
