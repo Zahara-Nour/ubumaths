@@ -39,6 +39,16 @@
 			}
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 800,
+				"y": 600,
+				"duration": 550
+			}
+		},
+		{
 			"type": "create",
 			"object": {
 				"kind": "segment",
@@ -56,6 +66,16 @@
 					"lineWidth": 2,
 					"lineStyle": "dashed"
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 0,
+				"y": 600,
+				"duration": 800
 			}
 		},
 		{
@@ -162,6 +182,16 @@
 					"lineWidth": 1.5,
 					"lineStyle": "solid"
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 468.15,
+				"y": 424.35,
+				"duration": 296.55303067073856
 			}
 		},
 		{
@@ -282,6 +312,16 @@
 					"lineWidth": 1.5,
 					"lineStyle": "solid"
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 555.5,
+				"y": 178.5,
+				"duration": 47304.894567052994
 			}
 		},
 		{
@@ -1037,6 +1077,16 @@
 			}
 		},
 		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 454.8,
+				"y": 251.8,
+				"duration": 10
+			}
+		},
+		{
 			"type": "pause",
 			"duration": 500
 		},
@@ -1090,6 +1140,16 @@
 			"type": "action",
 			"action": {
 				"kind": "moveTo",
+				"target": "pencil",
+				"x": 361,
+				"y": 319.7,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
 				"target": "ruler",
 				"x": "$I.x",
 				"y": "$I.y",
@@ -1121,6 +1181,16 @@
 					"lineWidth": 1,
 					"lineStyle": "dashed"
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 266.6,
+				"y": 388.3,
+				"duration": 10
 			}
 		},
 		{
@@ -1279,6 +1349,16 @@
 			"action": {
 				"kind": "moveTo",
 				"target": "pencil",
+				"x": 224.85,
+				"y": 445.9,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
 				"x": 317.85,
 				"y": 453.55,
 				"duration": 200
@@ -1309,6 +1389,16 @@
 			"action": {
 				"kind": "moveTo",
 				"target": "pencil",
+				"x": 324.55,
+				"y": 436.3,
+				"duration": 500
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
 				"x": 418.45,
 				"y": 439.2,
 				"duration": 200
@@ -1332,6 +1422,16 @@
 					"lineWidth": 1.5,
 					"lineStyle": "solid"
 				}
+			}
+		},
+		{
+			"type": "action",
+			"action": {
+				"kind": "moveTo",
+				"target": "pencil",
+				"x": 425.2,
+				"y": 422.9,
+				"duration": 500
 			}
 		},
 		{
