@@ -387,7 +387,7 @@
 	</g>
 
 	<!-- Instruments layer - Using detailed components ported from InstrumenPoche -->
-	<g class="instruments-layer">
+	<g class="instruments-layer" style="perspective: 800px;">
 		{#each visibleInstruments as instrument (instrument.type)}
 			{@const opacity = instrument.opacity ?? 1}
 			<g style:opacity>
@@ -400,14 +400,21 @@
 						visible={instrument.visible}
 					/>
 				{:else if instrument.type === 'compass'}
-					<Compass
-						x={instrument.x}
-						y={instrument.y}
-						rotation={instrument.rotation}
-						opening={instrument.compassRadius ?? 0}
-						scale={instrument.scale}
-						visible={instrument.visible}
-					/>
+					<!-- 3D wrapper for raise/lower animation -->
+					<g
+						style:transform="rotateX({instrument.rotateX ?? 0}deg)"
+						style:transform-origin="{instrument.x}px {instrument.y}px"
+						style:transform-style="preserve-3d"
+					>
+						<Compass
+							x={instrument.x}
+							y={instrument.y}
+							rotation={instrument.rotation}
+							opening={instrument.compassRadius ?? 0}
+							scale={instrument.scale}
+							visible={instrument.visible}
+						/>
+					</g>
 				{:else if instrument.type === 'compassRaised'}
 					<CompassRaised
 						x={instrument.x}

@@ -34,6 +34,16 @@ import { Timeline, type TimelineOptions } from './timeline.svelte';
 import { DEFAULT_CANVAS_CONFIG, DEFAULT_COMPASS_RADIUS } from '../constants';
 
 // =============================================================================
+// Compass Raise/Lower Animation Constants
+// =============================================================================
+
+/** Phase timing for compass raise/lower animation during drawArc */
+const COMPASS_RAISE_END = 0.12; // 12% of animation duration for raising
+const COMPASS_LOWER_START = 0.88; // Last 12% of animation duration for lowering
+const COMPASS_MAX_TILT = -75; // Maximum rotateX angle in degrees
+const COMPASS_FADE_PORTION = 0.3; // Fade happens in last/first 30% of raise/lower phase
+
+// =============================================================================
 // Animation State Types
 // =============================================================================
 
@@ -857,11 +867,22 @@ export class ConstructionEngine {
 				};
 				this.#activeAnimations.push(animState);
 
-				// Hide regular compass and show raised compass for arc drawing
+				// Setup for 3D raise/lower animation:
+				// Keep compass visible at arc center, will animate rotateX during raise phase
 				const compass = this.instruments.get('compass');
 				if (compass) {
-					this.instruments.set('compass', { ...compass, visible: false });
+					this.instruments.set('compass', {
+						...compass,
+						x: centerPos.x,
+						y: centerPos.y,
+						rotation: startAngleValue,
+						compassRadius: radiusValue,
+						visible: true,
+						opacity: 1,
+						rotateX: 0
+					});
 				}
+				// Initialize compassRaised hidden (will fade in during raise phase)
 				const compassRaised = this.instruments.get('compassRaised');
 				if (compassRaised) {
 					this.instruments.set('compassRaised', {
@@ -870,7 +891,8 @@ export class ConstructionEngine {
 						y: centerPos.y,
 						rotation: startAngleValue,
 						compassRadius: radiusValue,
-						visible: true
+						visible: true,
+						opacity: 0
 					});
 				}
 				break;
@@ -990,25 +1012,119 @@ export class ConstructionEngine {
 			}
 
 			case 'drawArc': {
-				if (anim.start.drawProgress !== undefined && anim.end.drawProgress !== undefined) {
-					const drawProgress =
-						anim.start.drawProgress + (anim.end.drawProgress - anim.start.drawProgress) * progress;
+				// 3-phase animation: raise -> draw -> lower
+				const compass = this.instruments.get('compass');
+				const compassRaised = this.instruments.get('compassRaised');
 
-					// Update arc object
+				if (progress <= COMPASS_RAISE_END) {
+					// Phase 1: Raising - compass tilts and fades, compassRaised fades in
+					const raiseProgress = progress / COMPASS_RAISE_END;
+
+					// Tilt compass (rotateX: 0 -> COMPASS_MAX_TILT)
+					const tilt = raiseProgress * COMPASS_MAX_TILT;
+
+					// Cross-fade only in last COMPASS_FADE_PORTION of raise phase
+					const fadeThreshold = 1 - COMPASS_FADE_PORTION;
+					let compassOpacity = 1;
+					let compassRaisedOpacity = 0;
+					if (raiseProgress >= fadeThreshold) {
+						const fadeProgress = (raiseProgress - fadeThreshold) / COMPASS_FADE_PORTION;
+						compassOpacity = 1 - fadeProgress;
+						compassRaisedOpacity = fadeProgress;
+					}
+
+					if (compass) {
+						this.instruments.set('compass', {
+							...compass,
+							rotateX: tilt,
+							opacity: compassOpacity
+						});
+					}
+					if (compassRaised) {
+						this.instruments.set('compassRaised', {
+							...compassRaised,
+							opacity: compassRaisedOpacity
+						});
+					}
+
+					// No arc drawing during raise phase
+				} else if (progress >= COMPASS_LOWER_START) {
+					// Phase 3: Lowering - compassRaised fades out, compass tilts back and fades in
+					const lowerProgress = (progress - COMPASS_LOWER_START) / (1 - COMPASS_LOWER_START);
+
+					// Tilt compass back (rotateX: COMPASS_MAX_TILT -> 0)
+					const tilt = COMPASS_MAX_TILT * (1 - lowerProgress);
+
+					// Cross-fade only in first COMPASS_FADE_PORTION of lower phase
+					let compassOpacity = 1;
+					let compassRaisedOpacity = 0;
+					if (lowerProgress <= COMPASS_FADE_PORTION) {
+						const fadeProgress = lowerProgress / COMPASS_FADE_PORTION;
+						compassOpacity = fadeProgress;
+						compassRaisedOpacity = 1 - fadeProgress;
+					}
+
+					if (compass) {
+						this.instruments.set('compass', {
+							...compass,
+							rotateX: tilt,
+							opacity: compassOpacity,
+							rotation: anim.start.endAngle ?? 0
+						});
+					}
+					if (compassRaised) {
+						this.instruments.set('compassRaised', {
+							...compassRaised,
+							opacity: compassRaisedOpacity,
+							rotation: anim.start.endAngle ?? 0
+						});
+					}
+
+					// Arc is fully drawn during lower phase
 					if (anim.target) {
 						const obj = this.objects.get(anim.target as string);
 						if (obj) {
-							this.objects.set(anim.target as string, { ...obj, drawProgress });
+							this.objects.set(anim.target as string, { ...obj, drawProgress: 1 });
 						}
 					}
+				} else {
+					// Phase 2: Drawing - compass hidden, compassRaised visible and rotating
+					const drawPhaseProgress =
+						(progress - COMPASS_RAISE_END) / (COMPASS_LOWER_START - COMPASS_RAISE_END);
 
-					// Update raised compass rotation
-					if (anim.start.startAngle !== undefined && anim.start.endAngle !== undefined) {
+					// Hide compass, show compassRaised
+					if (compass) {
+						this.instruments.set('compass', {
+							...compass,
+							opacity: 0,
+							rotateX: COMPASS_MAX_TILT
+						});
+					}
+
+					// Interpolate compassRaised rotation
+					if (
+						anim.start.startAngle !== undefined &&
+						anim.start.endAngle !== undefined &&
+						compassRaised
+					) {
 						const currentAngle =
-							anim.start.startAngle + (anim.start.endAngle - anim.start.startAngle) * progress;
-						const compassRaised = this.instruments.get('compassRaised');
-						if (compassRaised) {
-							this.instruments.set('compassRaised', { ...compassRaised, rotation: currentAngle });
+							anim.start.startAngle +
+							(anim.start.endAngle - anim.start.startAngle) * drawPhaseProgress;
+						this.instruments.set('compassRaised', {
+							...compassRaised,
+							opacity: 1,
+							rotation: currentAngle
+						});
+					}
+
+					// Interpolate arc drawing
+					if (anim.target) {
+						const obj = this.objects.get(anim.target as string);
+						if (obj) {
+							this.objects.set(anim.target as string, {
+								...obj,
+								drawProgress: drawPhaseProgress
+							});
 						}
 					}
 				}
@@ -1030,11 +1146,15 @@ export class ConstructionEngine {
 				this.#setTargetOpacity(anim.target, 1); // Reset opacity
 			}
 
-			// After drawArc, lower the compass (hide raised, show normal)
+			// After drawArc, ensure compass is fully reset (rotateX=0, opacity=1) and compassRaised hidden
 			if (anim.type === 'drawArc') {
 				const compassRaised = this.instruments.get('compassRaised');
 				if (compassRaised) {
-					this.instruments.set('compassRaised', { ...compassRaised, visible: false });
+					this.instruments.set('compassRaised', {
+						...compassRaised,
+						visible: false,
+						opacity: 0
+					});
 				}
 				const compass = this.instruments.get('compass');
 				if (compass && anim.start.centerX !== undefined && anim.start.centerY !== undefined) {
@@ -1044,7 +1164,9 @@ export class ConstructionEngine {
 						y: anim.start.centerY,
 						rotation: anim.start.endAngle ?? 0,
 						compassRadius: anim.start.radius ?? compass.compassRadius,
-						visible: true
+						visible: true,
+						opacity: 1,
+						rotateX: 0
 					});
 				}
 			}

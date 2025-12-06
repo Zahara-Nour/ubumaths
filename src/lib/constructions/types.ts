@@ -747,6 +747,8 @@ export interface InstrumentRuntimeState {
 	scale: number;
 	/** Opacity for animations (0-1) */
 	opacity?: number;
+	/** 3D rotation around X-axis (degrees) for raise/lower animation */
+	rotateX?: number;
 	/** Compass-specific: current opening radius */
 	compassRadius?: number;
 }
