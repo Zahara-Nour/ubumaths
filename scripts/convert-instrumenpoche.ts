@@ -464,13 +464,16 @@ function convertPointAction(
 				: undefined;
 			if (pointId && attrs.nom) {
 				// Create a text label near the point
+				// Use XML offset attributes if provided, otherwise default offset
+				const offsetX = attrs.abscisse ? parseFloat(attrs.abscisse) : 10;
+				const offsetY = attrs.ordonnee ? parseFloat(attrs.ordonnee) : -10;
 				const labelId = generateObjectId(ctx, 'label', `${attrs.id}_label`);
 				const textDef: ObjectDef = {
 					kind: 'text',
 					id: labelId,
 					content: attrs.nom,
-					x: `$${pointId}.x + 10`,
-					y: `$${pointId}.y - 10`,
+					x: `$${pointId}.x + ${offsetX}`,
+					y: `$${pointId}.y + ${offsetY}`,
 					fontSize: 14,
 					style: {
 						color: convertColor(attrs.couleur)
@@ -769,6 +772,15 @@ function convertPencilAction(
 				const newY = parseFloat(attrs.ordonnee);
 				ctx.currentPosition = { x: newX, y: newY };
 				setInstrumentPosition(ctx, 'pencil', { x: newX, y: newY });
+				// Generate moveTo action to position the pencil
+				const moveAction: ActionDef = {
+					kind: 'moveTo',
+					target: 'pencil',
+					x: newX,
+					y: newY,
+					duration: 0 // Instant positioning
+				};
+				ctx.steps.push({ type: 'action', action: moveAction });
 			}
 			const action: ActionDef = { kind: 'show', target: 'pencil' };
 			ctx.steps.push({ type: 'action', action });
@@ -797,6 +809,15 @@ function convertRulerAction(
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
 				setInstrumentPosition(ctx, 'ruler', { x: newX, y: newY });
+				// Generate moveTo action to position the ruler
+				const moveAction: ActionDef = {
+					kind: 'moveTo',
+					target: 'ruler',
+					x: newX,
+					y: newY,
+					duration: 0 // Instant positioning
+				};
+				ctx.steps.push({ type: 'action', action: moveAction });
 			}
 			const action: ActionDef = { kind: 'show', target: 'ruler' };
 			ctx.steps.push({ type: 'action', action });
@@ -914,6 +935,15 @@ function convertCompassAction(
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
 				setInstrumentPosition(ctx, 'compass', { x: newX, y: newY });
+				// Generate moveTo action to position the compass
+				const moveAction: ActionDef = {
+					kind: 'moveTo',
+					target: 'compass',
+					x: newX,
+					y: newY,
+					duration: 0 // Instant positioning
+				};
+				ctx.steps.push({ type: 'action', action: moveAction });
 			}
 			const action: ActionDef = { kind: 'show', target: 'compass' };
 			ctx.steps.push({ type: 'action', action });

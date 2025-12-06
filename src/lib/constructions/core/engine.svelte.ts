@@ -504,6 +504,16 @@ export class ConstructionEngine {
 			};
 		}
 
+		// Text objects may reference point positions via expressions
+		if (def.kind === 'text') {
+			const x = evaluateExpr(def.x, context);
+			const y = evaluateExpr(def.y, context);
+			return {
+				...state,
+				position: { x, y }
+			};
+		}
+
 		// For other object types, recalculate as needed
 		// (segments, circles, etc. derive from point positions)
 		return state;
@@ -1012,6 +1022,16 @@ export class ConstructionEngine {
 
 		// Calculate position for point objects
 		if (def.kind === 'point') {
+			const x = evaluateExpr(def.x, context);
+			const y = evaluateExpr(def.y, context);
+			return {
+				...baseState,
+				position: { x, y }
+			};
+		}
+
+		// Calculate position for text objects (may use expressions like "$P_29.x + 10")
+		if (def.kind === 'text') {
 			const x = evaluateExpr(def.x, context);
 			const y = evaluateExpr(def.y, context);
 			return {

@@ -227,12 +227,32 @@
 			document.body.style.overflow = '';
 		};
 	});
+
+	// Resize Blockly workspace when fullscreen changes
+	$effect(() => {
+		// Track isFullscreen to trigger on change
+		const _fullscreen = isFullscreen;
+
+		if (!browser || !workspace) return;
+
+		// Small delay to let CSS transition complete
+		const timer = setTimeout(() => {
+			if (workspace) {
+				// Trigger a resize event for Blockly to recalculate
+				window.dispatchEvent(new Event('resize'));
+			}
+		}, 100);
+
+		return () => clearTimeout(timer);
+	});
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
 <div
-	class={isFullscreen ? 'fixed inset-0 z-50 flex flex-col bg-background' : 'flex h-full flex-col'}
+	class={isFullscreen
+		? 'fixed inset-0 z-[100] flex flex-col bg-background'
+		: 'flex h-full flex-col'}
 >
 	<!-- Loading overlay -->
 	{#if isLoading}
