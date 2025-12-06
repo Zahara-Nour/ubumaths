@@ -80,6 +80,7 @@
 		"@types/pg": "^8.15.5",
 		"@types/proper-lockfile": "^4.1.4",
 		"@types/ws": "^8.18.1",
+		"@types/xml2js": "^0.4.14",
 		"@vitest/browser": "^3.2.4",
 		"bits-ui": "^2.11.5",
 		"chalk": "^5.6.2",
@@ -112,7 +113,8 @@
 		"typescript-eslint": "^8.44.1",
 		"vite": "^7.1.7",
 		"vitest": "^3.2.4",
-		"vitest-browser-svelte": "^1.1.0"
+		"vitest-browser-svelte": "^1.1.0",
+		"xml2js": "^0.6.2"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
