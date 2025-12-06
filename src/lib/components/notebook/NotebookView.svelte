@@ -11,7 +11,6 @@
 	 * - Toolbar and status bar
 	 */
 
-	import { onMount, onDestroy } from 'svelte';
 	import { NotebookStore } from '$lib/stores/notebookStore.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import NotebookToolbar from './NotebookToolbar.svelte';
@@ -193,24 +192,27 @@
 		}
 	}
 
-	// Lifecycle
-	onMount(() => {
+	// Lifecycle - Load notebook on mount
+	$effect(() => {
 		loadNotebook();
+	});
 
-		// Add keyboard listener
+	// Lifecycle - Keyboard listener with cleanup
+	$effect(() => {
 		if (containerRef) {
 			containerRef.addEventListener('keydown', handleKeydown);
+
+			return () => {
+				containerRef.removeEventListener('keydown', handleKeydown);
+			};
 		}
 	});
 
-	onDestroy(() => {
-		// Clean up keyboard listener
-		if (containerRef) {
-			containerRef.removeEventListener('keydown', handleKeydown);
-		}
-
-		// Clean up notebook
-		notebook.destroy();
+	// Lifecycle - Notebook cleanup
+	$effect(() => {
+		return () => {
+			notebook.destroy();
+		};
 	});
 </script>
 

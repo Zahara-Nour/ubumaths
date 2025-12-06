@@ -17,9 +17,12 @@
  * ```
  */
 
-import { browser } from '$app/environment';
 import type { ToWorkerMessage, FromWorkerMessage, CompletionItem } from '$lib/shared/python';
 import { PYODIDE_CONFIG, fromWorkerMessageSchema } from '$lib/shared/python';
+
+// Use a simple browser check instead of $app/environment
+// This avoids issues with SvelteKit runtime modules in worker-related contexts
+const isBrowser = typeof window !== 'undefined';
 
 // =============================================================================
 // Types
@@ -203,7 +206,7 @@ export abstract class BasePythonExecutor {
 	// ===========================================================================
 
 	constructor() {
-		if (browser) {
+		if (isBrowser) {
 			this.checkWorkerSupport();
 		}
 	}
@@ -227,7 +230,7 @@ export abstract class BasePythonExecutor {
 	 * Should be called when the component mounts.
 	 */
 	initPyodide(): void {
-		if (!browser) return;
+		if (!isBrowser) return;
 
 		if (!this.workerSupported) {
 			this.state = 'error';
