@@ -48,3 +48,35 @@ export {
 	PYTHON_IMPORTS,
 	PYTHON_MATH_HELPERS
 } from './generators/index';
+
+// Export worker message schemas and types
+export {
+	// Schemas
+	toWorkerMessageSchema as jsSandboxToWorkerMessageSchema,
+	fromWorkerMessageSchema as jsSandboxFromWorkerMessageSchema,
+	executeMessageSchema as jsSandboxExecuteMessageSchema,
+	cancelMessageSchema as jsSandboxCancelMessageSchema,
+	// Types
+	type ToWorkerMessage as JsSandboxToWorkerMessage,
+	type FromWorkerMessage as JsSandboxFromWorkerMessage,
+	type ExecuteMessage as JsSandboxExecuteMessage,
+	type CancelMessage as JsSandboxCancelMessage,
+	type ReadyMessage as JsSandboxReadyMessage,
+	type StdoutMessage as JsSandboxStdoutMessage,
+	type StderrMessage as JsSandboxStderrMessage,
+	type ErrorMessage as JsSandboxErrorMessage,
+	type CompleteMessage as JsSandboxCompleteMessage,
+	type TimeoutMessage as JsSandboxTimeoutMessage
+} from './worker/messages';
+
+// Export execution module
+export {
+	JsExecutor,
+	BlocklyExecutor,
+	type BlocklyExecutorState,
+	type JsExecutorState,
+	type ToJsWorkerMessage,
+	type FromJsWorkerMessage,
+	type JsExecutionContext,
+	DEFAULT_JS_EXECUTION_CONTEXT
+} from './execution';
