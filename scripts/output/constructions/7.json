@@ -45,7 +45,7 @@
 				"target": "pencil",
 				"x": 800,
 				"y": 600,
-				"duration": 550
+				"duration": 1833
 			}
 		},
 		{
@@ -75,7 +75,7 @@
 				"target": "pencil",
 				"x": 0,
 				"y": 600,
-				"duration": 800
+				"duration": 2667
 			}
 		},
 		{
@@ -174,7 +174,7 @@
 				"target": "pencil",
 				"x": 597,
 				"y": 188,
-				"duration": 45047
+				"duration": 1502
 			}
 		},
 		{
@@ -676,7 +676,7 @@
 				"target": "pencil",
 				"x": 281,
 				"y": 208,
-				"duration": 10
+				"duration": 100
 			}
 		},
 		{

@@ -69,7 +69,7 @@
 				"target": "pencil",
 				"x": 650,
 				"y": 300,
-				"duration": 10
+				"duration": 1500
 			}
 		},
 		{
@@ -236,7 +236,7 @@
 				"target": "pencil",
 				"x": 425,
 				"y": 530,
-				"duration": 30000
+				"duration": 1500
 			}
 		},
 		{
@@ -597,7 +597,7 @@
 				"target": "pencil",
 				"x": 650,
 				"y": 75,
-				"duration": 21213
+				"duration": 1061
 			}
 		},
 		{
@@ -851,7 +851,7 @@
 				"target": "pencil",
 				"x": 187,
 				"y": 62,
-				"duration": 22439
+				"duration": 1122
 			}
 		},
 		{
@@ -1092,7 +1092,7 @@
 				"target": "pencil",
 				"x": 200,
 				"y": 525,
-				"duration": 21213
+				"duration": 1061
 			}
 		},
 		{
@@ -1275,7 +1275,7 @@
 				"target": "pencil",
 				"x": 650,
 				"y": 525,
-				"duration": 21213
+				"duration": 1061
 			}
 		},
 		{
@@ -1821,7 +1821,7 @@
 				"target": "pencil",
 				"x": 637.13,
 				"y": 87.87,
-				"duration": 10
+				"duration": 1414
 			}
 		},
 		{
@@ -1897,7 +1897,7 @@
 				"target": "pencil",
 				"x": 637.13,
 				"y": 512.13,
-				"duration": 10
+				"duration": 1414
 			}
 		},
 		{
@@ -1982,7 +1982,7 @@
 				"target": "pencil",
 				"x": 212.87,
 				"y": 512.13,
-				"duration": 28284
+				"duration": 1414
 			}
 		},
 		{
@@ -2054,7 +2054,7 @@
 				"target": "pencil",
 				"x": 637.13,
 				"y": 512.13,
-				"duration": 28284
+				"duration": 1414
 			}
 		},
 		{
@@ -2380,7 +2380,7 @@
 				"target": "pencil",
 				"x": 300.74,
 				"y": 300,
-				"duration": 15307
+				"duration": 765
 			}
 		},
 		{
@@ -2625,7 +2625,7 @@
 				"target": "pencil",
 				"x": 425,
 				"y": 175.75,
-				"duration": 15308
+				"duration": 765
 			}
 		},
 		{
@@ -2706,7 +2706,7 @@
 				"target": "pencil",
 				"x": 300.74,
 				"y": 300,
-				"duration": 11715
+				"duration": 586
 			}
 		},
 		{
@@ -3062,7 +3062,7 @@
 				"target": "pencil",
 				"x": 425,
 				"y": 424.26,
-				"duration": 15307
+				"duration": 765
 			}
 		},
 		{
@@ -3330,7 +3330,7 @@
 				"target": "pencil",
 				"x": 549.26,
 				"y": 300,
-				"duration": 15307
+				"duration": 765
 			}
 		},
 		{
@@ -3425,7 +3425,7 @@
 				"target": "pencil",
 				"x": 549.26,
 				"y": 300,
-				"duration": 11715
+				"duration": 586
 			}
 		},
 		{
@@ -3772,7 +3772,7 @@
 				"target": "pencil",
 				"x": 212.87,
 				"y": 387.87,
-				"duration": 15307
+				"duration": 765
 			}
 		},
 		{
@@ -4040,7 +4040,7 @@
 				"target": "pencil",
 				"x": 337.13,
 				"y": 512.13,
-				"duration": 15307
+				"duration": 765
 			}
 		},
 		{
@@ -4135,7 +4135,7 @@
 				"target": "pencil",
 				"x": 337.13,
 				"y": 512.13,
-				"duration": 11748
+				"duration": 587
 			}
 		},
 		{
@@ -4508,7 +4508,7 @@
 				"target": "pencil",
 				"x": 512.87,
 				"y": 87.87,
-				"duration": 15307
+				"duration": 765
 			}
 		},
 		{
@@ -4776,7 +4776,7 @@
 				"target": "pencil",
 				"x": 637.13,
 				"y": 212.13,
-				"duration": 15307
+				"duration": 765
 			}
 		},
 		{
@@ -4871,7 +4871,7 @@
 				"target": "pencil",
 				"x": 637.13,
 				"y": 212.13,
-				"duration": 11715
+				"duration": 586
 			}
 		},
 		{
