@@ -215,11 +215,20 @@ export class NotebookStore {
 	/** Whether a save operation is in progress */
 	isSaving = $state(false);
 
+	/** Whether an autosave operation is in progress */
+	isAutoSaving = $state(false);
+
 	/** Whether a load operation is in progress */
 	isLoading = $state(false);
 
 	/** Cloud operation error message */
 	cloudError = $state<string | null>(null);
+
+	/** Last saved timestamp */
+	lastSavedTime = $state<Date | null>(null);
+
+	/** Timeout ID for debounced autosave */
+	private autoSaveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// ===========================================================================
 	// Derived State
@@ -288,6 +297,7 @@ export class NotebookStore {
 			this._executor = null;
 		}
 		this.executionQueue = [];
+		this.cancelAutoSave();
 	}
 
 	// ===========================================================================
@@ -336,6 +346,7 @@ export class NotebookStore {
 			this.notebook = notebook;
 			this.isModified = false;
 			this.executionCounter = 0;
+			this.lastSavedTime = new Date(notebook.updated_at);
 
 			// Create executor for this notebook
 			this._executor = new NotebookExecutor(notebook.id);
@@ -378,6 +389,7 @@ export class NotebookStore {
 			this.notebook = notebook;
 			this.isModified = false;
 			this.executionCounter = this.getMaxExecutionCount();
+			this.lastSavedTime = new Date(notebook.updated_at);
 
 			// Destroy old executor if exists
 			if (this._executor) {
@@ -426,6 +438,8 @@ export class NotebookStore {
 			const data = await response.json();
 			this.notebook = data.notebook as PythonNotebook;
 			this.isModified = false;
+			this.lastSavedTime = new Date(this.notebook.updated_at);
+			this.cancelAutoSave();
 			return true;
 		} catch (err) {
 			console.error('[NotebookStore] Error saving notebook:', err);
@@ -784,5 +798,55 @@ export class NotebookStore {
 	 */
 	setActiveCell(cellId: string | null): void {
 		this.activeCell = cellId;
+	}
+
+	// ===========================================================================
+	// Autosave
+	// ===========================================================================
+
+	/**
+	 * Cancel any pending autosave.
+	 * Clears the autosave timeout.
+	 */
+	cancelAutoSave(): void {
+		if (this.autoSaveTimeout !== null) {
+			clearTimeout(this.autoSaveTimeout);
+			this.autoSaveTimeout = null;
+		}
+	}
+
+	/**
+	 * Mark the notebook as modified.
+	 * Called when cells or notebook structure changes.
+	 */
+	markModified(): void {
+		this.isModified = true;
+	}
+
+	/**
+	 * Schedule an autosave with debouncing (2 seconds).
+	 * Only saves if the notebook is modified.
+	 *
+	 * Debouncing: Cancels any previous autosave and schedules a new one,
+	 * ensuring we only save 2 seconds after the last change.
+	 */
+	scheduleAutoSave(): void {
+		// Cancel any existing timeout to reset the debounce timer
+		this.cancelAutoSave();
+
+		// Schedule a new autosave 2 seconds after the last change
+		this.autoSaveTimeout = setTimeout(async () => {
+			if (this.isModified && !this.isAutoSaving && !this.isSaving) {
+				this.isAutoSaving = true;
+				try {
+					await this.saveNotebook();
+				} catch (err) {
+					console.error('[NotebookStore] Autosave failed:', err);
+				} finally {
+					this.isAutoSaving = false;
+				}
+			}
+			this.autoSaveTimeout = null;
+		}, 2000);
 	}
 }

@@ -1,1116 +1,1116 @@
 {
-	"version": 1,
-	"title": "Calcul mental : Ajouter 19",
-	"description": "Animation explicative pour le calcul mental. Technique: ajouter 20 puis soustraire 1. (Auteur: Julien Crémoux)",
-	"canvas": {
-		"width": 800,
-		"height": 600,
-		"backgroundColor": "#FFFFFF"
-	},
-	"steps": [
-		{
-			"type": "create",
-			"object": {
-				"kind": "polygon",
-				"id": "seg1",
-				"vertices": [
-					{
-						"x": 0,
-						"y": 0
-					},
-					{
-						"x": 1200,
-						"y": 0
-					},
-					{
-						"x": 1200,
-						"y": 1200
-					},
-					{
-						"x": 0,
-						"y": 1200
-					}
-				],
-				"filled": false,
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 0,
-					"lineStyle": "solid",
-					"opacity": 0
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "2",
-				"content": "Calcul Mental : Ajouter 19 ",
-				"x": 250,
-				"y": 69,
-				"fontSize": 30,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 750
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "3",
-				"content": " Ajouter 19 à un nombre n'est pas une opération simple,",
-				"x": 60,
-				"y": 129,
-				"fontSize": 24,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1000
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "4",
-				"content": "mais on peut transformer ce calcul en 2 opérations simples.",
-				"x": 60,
-				"y": 159,
-				"fontSize": 24,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 2000
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "3"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "4"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "5",
-				"content": " On sait que 19 = 20 - 1 donc pour ajouter 19, ",
-				"x": 60,
-				"y": 129,
-				"fontSize": 24,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 750
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "9",
-				"content": " il suffit d'ajouter 20 et d'ôter 1 : ",
-				"x": 60,
-				"y": 159,
-				"fontSize": 24,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "6",
-				"content": "  soit                          et",
-				"x": 60,
-				"y": 189,
-				"fontSize": 24,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "7",
-				"content": "+ 2 dizaines ",
-				"x": 130,
-				"y": 189,
-				"fontSize": 24,
-				"style": {
-					"color": "#008800"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "8",
-				"content": "   - 1 unité",
-				"x": 280,
-				"y": 189,
-				"fontSize": 24,
-				"style": {
-					"color": "#DAA520"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "11",
-				"content": "Voici un exemple :",
-				"x": 60,
-				"y": 219,
-				"fontSize": 24,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 750
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "12",
-				"content": "83 + 19 =",
-				"x": 200,
-				"y": 270,
-				"fontSize": 60,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 100
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 150,
-				"y": 300,
-				"duration": 100
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg2",
-				"from": {
-					"x": 150,
-					"y": 300
-				},
-				"to": {
-					"x": 147,
-					"y": 305
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg3",
-				"from": {
-					"x": 147,
-					"y": 305
-				},
-				"to": {
-					"x": 144,
-					"y": 311
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg4",
-				"from": {
-					"x": 144,
-					"y": 311
-				},
-				"to": {
-					"x": 141,
-					"y": 318
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg5",
-				"from": {
-					"x": 141,
-					"y": 318
-				},
-				"to": {
-					"x": 138,
-					"y": 326
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg6",
-				"from": {
-					"x": 138,
-					"y": 326
-				},
-				"to": {
-					"x": 135,
-					"y": 335
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg7",
-				"from": {
-					"x": 135,
-					"y": 335
-				},
-				"to": {
-					"x": 132,
-					"y": 345
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg8",
-				"from": {
-					"x": 132,
-					"y": 345
-				},
-				"to": {
-					"x": 131,
-					"y": 356
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg9",
-				"from": {
-					"x": 131,
-					"y": 356
-				},
-				"to": {
-					"x": 132,
-					"y": 367
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg10",
-				"from": {
-					"x": 132,
-					"y": 367
-				},
-				"to": {
-					"x": 135,
-					"y": 377
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg11",
-				"from": {
-					"x": 135,
-					"y": 377
-				},
-				"to": {
-					"x": 138,
-					"y": 386
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg12",
-				"from": {
-					"x": 138,
-					"y": 386
-				},
-				"to": {
-					"x": 141,
-					"y": 394
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg13",
-				"from": {
-					"x": 141,
-					"y": 394
-				},
-				"to": {
-					"x": 144,
-					"y": 401
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg14",
-				"from": {
-					"x": 144,
-					"y": 401
-				},
-				"to": {
-					"x": 147,
-					"y": 407
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg15",
-				"from": {
-					"x": 147,
-					"y": 407
-				},
-				"to": {
-					"x": 150,
-					"y": 412
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "27",
-				"content": " + 2 d. ",
-				"x": 20,
-				"y": 330,
-				"fontSize": 40,
-				"style": {
-					"color": "#008800"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "200",
-				"content": "83",
-				"x": 200,
-				"y": 270,
-				"fontSize": 60,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "200",
-				"x": 200,
-				"y": 330,
-				"duration": 500
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "300",
-				"content": "     ",
-				"x": 180,
-				"y": 330,
-				"fontSize": 60,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "200"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "201",
-				"content": "283",
-				"x": 170,
-				"y": 330,
-				"fontSize": 60,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "300"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "201",
-				"x": 170,
-				"y": 380,
-				"duration": 500
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1250
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 150,
-				"y": 420,
-				"duration": 100
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg16",
-				"from": {
-					"x": 150,
-					"y": 420
-				},
-				"to": {
-					"x": 147,
-					"y": 425
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg17",
-				"from": {
-					"x": 147,
-					"y": 425
-				},
-				"to": {
-					"x": 144,
-					"y": 431
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg18",
-				"from": {
-					"x": 144,
-					"y": 431
-				},
-				"to": {
-					"x": 141,
-					"y": 438
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg19",
-				"from": {
-					"x": 141,
-					"y": 438
-				},
-				"to": {
-					"x": 138,
-					"y": 446
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg20",
-				"from": {
-					"x": 138,
-					"y": 446
-				},
-				"to": {
-					"x": 135,
-					"y": 455
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg21",
-				"from": {
-					"x": 135,
-					"y": 455
-				},
-				"to": {
-					"x": 132,
-					"y": 465
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg22",
-				"from": {
-					"x": 132,
-					"y": 465
-				},
-				"to": {
-					"x": 131,
-					"y": 476
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg23",
-				"from": {
-					"x": 131,
-					"y": 476
-				},
-				"to": {
-					"x": 132,
-					"y": 487
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg24",
-				"from": {
-					"x": 132,
-					"y": 487
-				},
-				"to": {
-					"x": 135,
-					"y": 497
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg25",
-				"from": {
-					"x": 135,
-					"y": 497
-				},
-				"to": {
-					"x": 138,
-					"y": 506
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg26",
-				"from": {
-					"x": 138,
-					"y": 506
-				},
-				"to": {
-					"x": 141,
-					"y": 514
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg27",
-				"from": {
-					"x": 141,
-					"y": 514
-				},
-				"to": {
-					"x": 144,
-					"y": 521
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg28",
-				"from": {
-					"x": 144,
-					"y": 521
-				},
-				"to": {
-					"x": 147,
-					"y": 527
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg29",
-				"from": {
-					"x": 147,
-					"y": 527
-				},
-				"to": {
-					"x": 150,
-					"y": 532
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "42",
-				"content": " - 1 u. ",
-				"x": 20,
-				"y": 450,
-				"fontSize": 40,
-				"style": {
-					"color": "#DAA520"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "202",
-				"content": "283",
-				"x": 170,
-				"y": 380,
-				"fontSize": 60,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "202",
-				"x": 170,
-				"y": 440,
-				"duration": 500
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "301",
-				"content": "     ",
-				"x": 180,
-				"y": 440,
-				"fontSize": 60,
-				"style": {
-					"color": "#0000FF"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "202"
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "203",
-				"content": "272",
-				"x": 170,
-				"y": 440,
-				"fontSize": 60,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "hide",
-				"target": "300"
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "203",
-				"x": 170,
-				"y": 500,
-				"duration": 500
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 1250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "text",
-				"id": "204",
-				"content": "272",
-				"x": 170,
-				"y": 500,
-				"fontSize": 60,
-				"style": {
-					"color": "#000000"
-				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "204",
-				"x": 450,
-				"y": 270,
-				"duration": 2000
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 250
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 270,
-				"y": 530,
-				"duration": 200
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg30",
-				"from": {
-					"x": 270,
-					"y": 530
-				},
-				"to": {
-					"x": 450,
-					"y": 350
-				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid"
-				}
-			}
-		},
-		{
-			"type": "pause",
-			"duration": 250
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "polygon",
-				"id": "seg31",
-				"vertices": [
-					{
-						"x": 180,
-						"y": 275
-					},
-					{
-						"x": 600,
-						"y": 275
-					},
-					{
-						"x": 600,
-						"y": 335
-					},
-					{
-						"x": 180,
-						"y": 335
-					}
-				],
-				"filled": true,
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 3,
-					"lineStyle": "solid",
-					"opacity": 0.1
-				}
-			}
-		}
-	]
+  "version": 1,
+  "title": "Calcul mental : Ajouter 19",
+  "description": "Animation explicative pour le calcul mental. Technique: ajouter 20 puis soustraire 1. (Auteur: Julien Crémoux)",
+  "canvas": {
+    "width": 800,
+    "height": 600,
+    "backgroundColor": "#FFFFFF"
+  },
+  "steps": [
+    {
+      "type": "create",
+      "object": {
+        "kind": "polygon",
+        "id": "seg1",
+        "vertices": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1200,
+            "y": 0
+          },
+          {
+            "x": 1200,
+            "y": 1200
+          },
+          {
+            "x": 0,
+            "y": 1200
+          }
+        ],
+        "filled": false,
+        "style": {
+          "color": "#FFFFFF",
+          "lineWidth": 0,
+          "lineStyle": "solid",
+          "opacity": 0
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "2",
+        "content": "Calcul Mental : Ajouter 19 ",
+        "x": 250,
+        "y": 69,
+        "fontSize": 30,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 750
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "3",
+        "content": " Ajouter 19 à un nombre n'est pas une opération simple,",
+        "x": 60,
+        "y": 129,
+        "fontSize": 24,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1000
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "4",
+        "content": "mais on peut transformer ce calcul en 2 opérations simples.",
+        "x": 60,
+        "y": 159,
+        "fontSize": 24,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 2000
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "3"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "4"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "5",
+        "content": " On sait que 19 = 20 - 1 donc pour ajouter 19, ",
+        "x": 60,
+        "y": 129,
+        "fontSize": 24,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 750
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "9",
+        "content": " il suffit d'ajouter 20 et d'ôter 1 : ",
+        "x": 60,
+        "y": 159,
+        "fontSize": 24,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "6",
+        "content": "  soit                          et",
+        "x": 60,
+        "y": 189,
+        "fontSize": 24,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "7",
+        "content": "+ 2 dizaines ",
+        "x": 130,
+        "y": 189,
+        "fontSize": 24,
+        "style": {
+          "color": "#008800"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "8",
+        "content": "   - 1 unité",
+        "x": 280,
+        "y": 189,
+        "fontSize": 24,
+        "style": {
+          "color": "#DAA520"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "11",
+        "content": "Voici un exemple :",
+        "x": 60,
+        "y": 219,
+        "fontSize": 24,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 750
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "12",
+        "content": "83 + 19 =",
+        "x": 200,
+        "y": 270,
+        "fontSize": 60,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 100
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 150,
+        "y": 300,
+        "duration": 100
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg2",
+        "from": {
+          "x": 150,
+          "y": 300
+        },
+        "to": {
+          "x": 147,
+          "y": 305
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg3",
+        "from": {
+          "x": 147,
+          "y": 305
+        },
+        "to": {
+          "x": 144,
+          "y": 311
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg4",
+        "from": {
+          "x": 144,
+          "y": 311
+        },
+        "to": {
+          "x": 141,
+          "y": 318
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg5",
+        "from": {
+          "x": 141,
+          "y": 318
+        },
+        "to": {
+          "x": 138,
+          "y": 326
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg6",
+        "from": {
+          "x": 138,
+          "y": 326
+        },
+        "to": {
+          "x": 135,
+          "y": 335
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg7",
+        "from": {
+          "x": 135,
+          "y": 335
+        },
+        "to": {
+          "x": 132,
+          "y": 345
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg8",
+        "from": {
+          "x": 132,
+          "y": 345
+        },
+        "to": {
+          "x": 131,
+          "y": 356
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg9",
+        "from": {
+          "x": 131,
+          "y": 356
+        },
+        "to": {
+          "x": 132,
+          "y": 367
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg10",
+        "from": {
+          "x": 132,
+          "y": 367
+        },
+        "to": {
+          "x": 135,
+          "y": 377
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg11",
+        "from": {
+          "x": 135,
+          "y": 377
+        },
+        "to": {
+          "x": 138,
+          "y": 386
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg12",
+        "from": {
+          "x": 138,
+          "y": 386
+        },
+        "to": {
+          "x": 141,
+          "y": 394
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg13",
+        "from": {
+          "x": 141,
+          "y": 394
+        },
+        "to": {
+          "x": 144,
+          "y": 401
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg14",
+        "from": {
+          "x": 144,
+          "y": 401
+        },
+        "to": {
+          "x": 147,
+          "y": 407
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg15",
+        "from": {
+          "x": 147,
+          "y": 407
+        },
+        "to": {
+          "x": 150,
+          "y": 412
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "27",
+        "content": " + 2 d. ",
+        "x": 20,
+        "y": 330,
+        "fontSize": 40,
+        "style": {
+          "color": "#008800"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "200",
+        "content": "83",
+        "x": 200,
+        "y": 270,
+        "fontSize": 60,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "200",
+        "x": 200,
+        "y": 330,
+        "duration": 500
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "300",
+        "content": "     ",
+        "x": 180,
+        "y": 330,
+        "fontSize": 60,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "200"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "201",
+        "content": "283",
+        "x": 170,
+        "y": 330,
+        "fontSize": 60,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "300"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "201",
+        "x": 170,
+        "y": 380,
+        "duration": 500
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1250
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 150,
+        "y": 420,
+        "duration": 100
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg16",
+        "from": {
+          "x": 150,
+          "y": 420
+        },
+        "to": {
+          "x": 147,
+          "y": 425
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg17",
+        "from": {
+          "x": 147,
+          "y": 425
+        },
+        "to": {
+          "x": 144,
+          "y": 431
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg18",
+        "from": {
+          "x": 144,
+          "y": 431
+        },
+        "to": {
+          "x": 141,
+          "y": 438
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg19",
+        "from": {
+          "x": 141,
+          "y": 438
+        },
+        "to": {
+          "x": 138,
+          "y": 446
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg20",
+        "from": {
+          "x": 138,
+          "y": 446
+        },
+        "to": {
+          "x": 135,
+          "y": 455
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg21",
+        "from": {
+          "x": 135,
+          "y": 455
+        },
+        "to": {
+          "x": 132,
+          "y": 465
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg22",
+        "from": {
+          "x": 132,
+          "y": 465
+        },
+        "to": {
+          "x": 131,
+          "y": 476
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg23",
+        "from": {
+          "x": 131,
+          "y": 476
+        },
+        "to": {
+          "x": 132,
+          "y": 487
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg24",
+        "from": {
+          "x": 132,
+          "y": 487
+        },
+        "to": {
+          "x": 135,
+          "y": 497
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg25",
+        "from": {
+          "x": 135,
+          "y": 497
+        },
+        "to": {
+          "x": 138,
+          "y": 506
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg26",
+        "from": {
+          "x": 138,
+          "y": 506
+        },
+        "to": {
+          "x": 141,
+          "y": 514
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg27",
+        "from": {
+          "x": 141,
+          "y": 514
+        },
+        "to": {
+          "x": 144,
+          "y": 521
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg28",
+        "from": {
+          "x": 144,
+          "y": 521
+        },
+        "to": {
+          "x": 147,
+          "y": 527
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg29",
+        "from": {
+          "x": 147,
+          "y": 527
+        },
+        "to": {
+          "x": 150,
+          "y": 532
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "42",
+        "content": " - 1 u. ",
+        "x": 20,
+        "y": 450,
+        "fontSize": 40,
+        "style": {
+          "color": "#DAA520"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "202",
+        "content": "283",
+        "x": 170,
+        "y": 380,
+        "fontSize": 60,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "202",
+        "x": 170,
+        "y": 440,
+        "duration": 500
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "301",
+        "content": "     ",
+        "x": 180,
+        "y": 440,
+        "fontSize": 60,
+        "style": {
+          "color": "#0000FF"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "202"
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "203",
+        "content": "272",
+        "x": 170,
+        "y": 440,
+        "fontSize": 60,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "hide",
+        "target": "300"
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "203",
+        "x": 170,
+        "y": 500,
+        "duration": 500
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 1250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "204",
+        "content": "272",
+        "x": 170,
+        "y": 500,
+        "fontSize": 60,
+        "style": {
+          "color": "#000000"
+        }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "204",
+        "x": 450,
+        "y": 270,
+        "duration": 2000
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 250
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "moveTo",
+        "target": "pencil",
+        "x": 270,
+        "y": 530,
+        "duration": 200
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "segment",
+        "id": "seg30",
+        "from": {
+          "x": 270,
+          "y": 530
+        },
+        "to": {
+          "x": 450,
+          "y": 350
+        },
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "type": "pause",
+      "duration": 250
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "polygon",
+        "id": "seg31",
+        "vertices": [
+          {
+            "x": 180,
+            "y": 275
+          },
+          {
+            "x": 600,
+            "y": 275
+          },
+          {
+            "x": 600,
+            "y": 335
+          },
+          {
+            "x": 180,
+            "y": 335
+          }
+        ],
+        "filled": true,
+        "style": {
+          "color": "#FF0000",
+          "lineWidth": 3,
+          "lineStyle": "solid",
+          "opacity": 0.1
+        }
+      }
+    }
+  ]
 }
