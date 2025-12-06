@@ -1,19 +1,20 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import NotebookView from '$lib/components/notebook/NotebookView.svelte';
+	import ShareNotebookDialog from '$lib/components/notebook/ShareNotebookDialog.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowLeft, Share2 } from 'lucide-svelte';
-	import { toaster } from '$lib/stores/toaster.svelte';
 
 	let { data } = $props();
+
+	let shareDialogOpen = $state(false);
 
 	function handleBack() {
 		goto('/python-notebook');
 	}
 
 	function handleShare() {
-		// TODO: Implement share dialog
-		toaster.info('Fonctionnalité de partage à venir');
+		shareDialogOpen = true;
 	}
 </script>
 
@@ -42,3 +43,12 @@
 	<!-- Notebook -->
 	<NotebookView notebookId={data.notebook.id} readonly={data.readonly} />
 </div>
+
+<!-- Share Dialog -->
+{#if data.isOwner && data.userRole === 'teacher'}
+	<ShareNotebookDialog
+		bind:open={shareDialogOpen}
+		notebookId={data.notebook.id}
+		notebookTitle={data.notebook.title}
+	/>
+{/if}
