@@ -305,7 +305,7 @@ export class DrawArcActionExecutor extends BaseActionExecutor<DrawArcActionDef> 
 				type: 'compass',
 				x: centerPos.x,
 				y: centerPos.y,
-				rotation: currentAngle - 90, // Adjust for compass orientation
+				rotation: currentAngle,
 				visible: true,
 				scale: 1,
 				compassRadius: radiusValue

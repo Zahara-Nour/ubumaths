@@ -1076,7 +1076,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 85.57590320881472,
+				"angle": 121.59590320881472,
 				"duration": 500
 			}
 		},
@@ -1136,7 +1136,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 85.33314162856101,
+				"angle": -0.2427615802537133,
 				"duration": 500
 			}
 		},

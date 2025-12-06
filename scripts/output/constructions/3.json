@@ -565,7 +565,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -45,
+				"angle": -135,
 				"duration": 500
 			}
 		},
@@ -848,7 +848,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -135,
+				"angle": -90,
 				"duration": 500
 			}
 		},
@@ -1114,7 +1114,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 135,
+				"angle": -90,
 				"duration": 500
 			}
 		},
@@ -1309,7 +1309,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 45,
+				"angle": -90,
 				"duration": 500
 			}
 		},
@@ -1481,7 +1481,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 0,
+				"angle": -45,
 				"duration": 500
 			}
 		},
@@ -2471,7 +2471,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 67.5,
+				"angle": -22.5,
 				"duration": 500
 			}
 		},
@@ -2745,7 +2745,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 22.5,
+				"angle": -45,
 				"duration": 500
 			}
 		},
@@ -2833,7 +2833,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -45,
+				"angle": -67.5,
 				"duration": 500
 			}
 		},
@@ -3216,7 +3216,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -157.5,
+				"angle": -112.5,
 				"duration": 500
 			}
 		},
@@ -3513,7 +3513,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -112.5,
+				"angle": 45,
 				"duration": 500
 			}
 		},
@@ -3601,7 +3601,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -45,
+				"angle": 67.5,
 				"duration": 500
 			}
 		},
@@ -3980,7 +3980,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 157.5,
+				"angle": -157.5,
 				"duration": 500
 			}
 		},
@@ -4277,7 +4277,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 112.5,
+				"angle": -45,
 				"duration": 500
 			}
 		},
@@ -4365,7 +4365,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 45,
+				"angle": -67.5,
 				"duration": 500
 			}
 		},
@@ -4779,7 +4779,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -67.5,
+				"angle": -112.5,
 				"duration": 500
 			}
 		},
@@ -5076,7 +5076,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -22.5,
+				"angle": 45,
 				"duration": 500
 			}
 		},
@@ -5164,7 +5164,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 45,
+				"angle": 67.5,
 				"duration": 500
 			}
 		},

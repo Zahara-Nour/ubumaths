@@ -817,7 +817,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 25.57240185048959,
+				"angle": 77.55345925731939,
 				"duration": 500
 			}
 		},
@@ -877,7 +877,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 52.57,
+				"angle": 26.99759814951041,
 				"duration": 500
 			}
 		},
@@ -906,7 +906,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 172.6768271009464,
+				"angle": 120.10682710094642,
 				"duration": 500
 			}
 		},
@@ -1056,7 +1056,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -7.3231728990536045,
+				"angle": 179.99999999999997,
 				"duration": 500
 			}
 		},
@@ -1243,7 +1243,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": 67.47,
+				"angle": 74.7931728990536,
 				"duration": 500
 			}
 		},
@@ -1669,7 +1669,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -52.38063635884083,
+				"angle": -119.85063635884083,
 				"duration": 500
 			}
 		},
@@ -1755,7 +1755,7 @@
 			"action": {
 				"kind": "rotate",
 				"target": "ruler",
-				"angle": -154.9831065219,
+				"angle": -102.60247016305917,
 				"duration": 500
 			}
 		},

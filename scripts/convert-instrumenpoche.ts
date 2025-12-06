@@ -908,27 +908,38 @@ function convertRulerAction(
 		}
 		case 'rotation': {
 			if (attrs.angle) {
+				// attrs.angle is an ABSOLUTE angle in InstrumenPoche, not a delta
+				// We need to convert it to a delta for our engine
+				const targetAngle = parseFloat(attrs.angle);
+				const currentRotation = getInstrumentRotation(ctx, 'ruler');
+				const deltaAngle = normalizeAngleDelta(targetAngle - currentRotation);
 				const action: ActionDef = {
 					kind: 'rotate',
 					target: 'ruler',
-					angle: parseFloat(attrs.angle),
+					angle: deltaAngle,
 					duration: 500
 				};
 				ctx.steps.push({ type: 'action', action });
+				// Track the new rotation
+				setInstrumentRotation(ctx, 'ruler', targetAngle);
 			} else if (attrs.cible) {
-				// Rotate towards a target point - calculate the angle
+				// Rotate towards a target point - calculate the absolute angle then delta
 				const rulerPos = getInstrumentPosition(ctx, 'ruler');
 				const targetPos = getPointPosition(ctx, attrs.cible);
 
 				if (rulerPos && targetPos) {
-					const angle = calculateAngleToTarget(rulerPos, targetPos);
+					const targetAngle = calculateAngleToTarget(rulerPos, targetPos);
+					const currentRotation = getInstrumentRotation(ctx, 'ruler');
+					const deltaAngle = normalizeAngleDelta(targetAngle - currentRotation);
 					const action: ActionDef = {
 						kind: 'rotate',
 						target: 'ruler',
-						angle: angle,
+						angle: deltaAngle,
 						duration: 500
 					};
 					ctx.steps.push({ type: 'action', action });
+					// Track the new rotation
+					setInstrumentRotation(ctx, 'ruler', targetAngle);
 				} else {
 					// Cannot calculate angle - add warning with details
 					const missing: string[] = [];
