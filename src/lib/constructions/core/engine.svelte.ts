@@ -38,8 +38,8 @@ import { DEFAULT_CANVAS_CONFIG, DEFAULT_COMPASS_RADIUS } from '../constants';
 // =============================================================================
 
 /** Phase timing for compass raise/lower animation during drawArc */
-const COMPASS_RAISE_END = 0.12; // 12% of animation duration for raising
-const COMPASS_LOWER_START = 0.88; // Last 12% of animation duration for lowering
+const COMPASS_RAISE_END = 0.2; // 20% of animation duration for raising
+const COMPASS_LOWER_START = 0.8; // Last 20% of animation duration for lowering
 const COMPASS_MAX_TILT = -75; // Maximum rotateX angle in degrees
 const COMPASS_FADE_PORTION = 0.3; // Fade happens in last/first 30% of raise/lower phase
 

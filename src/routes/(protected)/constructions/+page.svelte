@@ -22,7 +22,8 @@
 		Globe,
 		Lock,
 		Compass,
-		User
+		User,
+		FileUp
 	} from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -103,10 +104,16 @@
 				Visualisez des constructions geometriques animees etape par etape
 			</p>
 		</div>
-		<Button href="/constructions/new">
-			<Plus class="mr-2 h-4 w-4" />
-			Nouvelle construction
-		</Button>
+		<div class="flex flex-col gap-2 sm:flex-row">
+			<Button variant="outline" href="/constructions/conversion">
+				<FileUp class="mr-2 h-4 w-4" />
+				Importer XML
+			</Button>
+			<Button href="/constructions/new">
+				<Plus class="mr-2 h-4 w-4" />
+				Nouvelle construction
+			</Button>
+		</div>
 	</div>
 
 	<!-- Stats Cards -->

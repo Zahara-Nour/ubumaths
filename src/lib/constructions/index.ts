@@ -401,3 +401,11 @@ export {
 	getRegisteredInstruments,
 	rulerRenderer
 } from './instruments';
+
+// =============================================================================
+// Converter Exports
+// =============================================================================
+
+export type { ConversionResult, ConversionOptions } from './converter';
+
+export { convertInstrumenPoche, validateInstrumenPocheXml } from './converter';

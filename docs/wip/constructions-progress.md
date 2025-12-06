@@ -46,12 +46,28 @@ Complete rewrite of InstrumenPoche (geometry animation player) into Svelte 5 + T
 ### Phase 5: Supabase Integration + Routes
 
 - `supabase/migrations/20251204100000_create_constructions_table.sql` - Database table with RLS
+- `supabase/migrations/20251206184559_add_tags_to_constructions.sql` - Add tags column for categorization
 - `src/routes/api/constructions/+server.ts` - API CRUD (GET/POST)
 - `src/routes/api/constructions/[id]/+server.ts` - API individual (GET/PUT/DELETE)
 - `src/routes/(protected)/constructions/+page.svelte` - List page
 - `src/routes/(protected)/constructions/+page.server.ts` - List page server
 - `src/routes/(protected)/constructions/[id]/+page.svelte` - Player page
 - `src/routes/(protected)/constructions/[id]/+page.server.ts` - Player page server
+
+### Phase 6: InstrumenPoche Conversion
+
+- `src/lib/constructions/converter.ts` - Browser-compatible XML to JSON converter
+- `src/lib/constructions/converter.test.ts` - 34 unit tests for converter
+- `src/lib/constructions/components/JsonEditor.svelte` - CodeMirror-based JSON editor
+- `src/routes/(protected)/constructions/conversion/+page.svelte` - Conversion UI (teachers/admins)
+- `src/routes/(protected)/constructions/conversion/+page.server.ts` - Conversion page server
+- `src/routes/api/constructions/convert/+server.ts` - Conversion API endpoint
+- **Security Features**:
+  - Step count limit (1000 max)
+  - Array bounds validation (1000 items max)
+  - XML parsing timeout (10s)
+  - Input size limit (5MB)
+  - Role-based access (teachers/admins only)
 
 ## Architecture Decisions
 
@@ -63,10 +79,11 @@ Complete rewrite of InstrumenPoche (geometry animation player) into Svelte 5 + T
 
 ## Next Steps
 
-1. Run migration: `pnpm db:migrate`
-2. Regenerate types: `pnpm supabase gen types typescript --local > src/lib/types/database.ts`
-3. Create sample constructions for testing
-4. Consider future visual editor
+1. ~~Run migration: `pnpm db:migrate`~~ ✓
+2. ~~Regenerate types: `pnpm supabase gen types typescript --local > src/lib/types/database.ts`~~ ✓
+3. ~~Create sample constructions for testing~~ ✓ (8 InstrumenPoche examples converted)
+4. ~~Add conversion UI for teachers/admins~~ ✓
+5. Consider future visual editor (Phase 7)
 
 ## Files Modified/Created
 

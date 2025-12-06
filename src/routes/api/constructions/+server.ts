@@ -39,7 +39,8 @@ const createConstructionSchema = z.object({
 		.max(2000, 'La description ne doit pas depasser 2000 caracteres')
 		.optional(),
 	script: constructionScriptSchema,
-	is_public: z.boolean().default(false)
+	is_public: z.boolean().default(false),
+	tags: z.array(z.string().min(1).max(50)).max(10, 'Maximum 10 tags autorises').optional()
 });
 
 // =============================================================================
@@ -144,7 +145,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(400, `Validation echouee: ${errorMsg}`);
 	}
 
-	const { title, description, script, is_public } = validation.data;
+	const { title, description, script, is_public, tags } = validation.data;
 
 	// Insert construction
 	const { data, error: insertError } = await locals.supabase
@@ -154,6 +155,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			description,
 			script,
 			is_public,
+			tags: tags ?? null,
 			author_id: user.id
 		})
 		.select()

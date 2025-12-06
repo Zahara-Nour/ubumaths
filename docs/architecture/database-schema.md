@@ -5411,3 +5411,187 @@ const { error: insertError } = await supabase.from('shared_materials').insert(sh
 - **Setup Guide**: [docs/guides/google-classroom-setup.md](../guides/google-classroom-setup.md)
 - **Schema Detailed**: [docs/architecture/google-classroom-schema.md](./google-classroom-schema.md)
 - **Denormalization Decision**: [docs/architecture/DECISION-rls-denormalization.md](./DECISION-rls-denormalization.md)
+
+---
+
+## Geometric Constructions System
+
+🆕 **Added**: 2025-12-04
+**Status**: ✅ Production
+**Purpose**: Animated geometry construction player for educational demonstrations (InstrumenPoche-style).
+
+### Overview
+
+The Constructions system provides interactive, parameterizable geometry construction animations for teaching geometry concepts. It includes a JSON-based scripting format, a powerful animation engine, and conversion tools for importing legacy InstrumenPoche XML files.
+
+**Key Features**:
+
+- JSON-based ConstructionScript format (parameterizable with expressions)
+- Interactive animation player with timeline scrubbing
+- Geometric objects (points, lines, circles, polygons, etc.)
+- Virtual instruments (ruler, compass, set square, protractor)
+- InstrumenPoche XML conversion (34 unit tests, security hardened)
+
+### Tables
+
+#### `constructions`
+
+Stores geometric construction animation scripts.
+
+| Column        | Type                      | Description                                        |
+| ------------- | ------------------------- | -------------------------------------------------- |
+| `id`          | UUID (PK)                 | Unique identifier                                  |
+| `title`       | TEXT NOT NULL             | Title of the construction (French)                 |
+| `description` | TEXT                      | Optional description                               |
+| `script`      | JSONB NOT NULL            | ConstructionScript JSON (steps, objects, actions)  |
+| `author_id`   | UUID (FK → profiles)      | User who created this construction                 |
+| `is_public`   | BOOLEAN DEFAULT false     | Whether visible to all authenticated users         |
+| `tags`        | TEXT[] DEFAULT '{}'       | Tags for categorization (e.g., ["circle", "3eme"]) |
+| `created_at`  | TIMESTAMPTZ DEFAULT now() | Creation timestamp                                 |
+| `updated_at`  | TIMESTAMPTZ DEFAULT now() | Last update timestamp                              |
+
+**Indexes**:
+
+- `idx_constructions_author_id` (author_id)
+- `idx_constructions_is_public` (is_public) WHERE is_public = true
+- `idx_constructions_tags` GIN(tags) - for efficient tag filtering
+
+**Tag Examples**:
+
+```sql
+-- Filter by single tag
+WHERE tags @> ARRAY['circle']
+
+-- Filter by multiple tags (any match)
+WHERE tags && ARRAY['circle', 'triangle']
+
+-- Filter by level
+WHERE tags @> ARRAY['6eme']
+```
+
+### ConstructionScript Format
+
+The `script` JSONB column contains:
+
+```typescript
+{
+  "version": 1,
+  "title": "Construction Title",
+  "description": "Description text",
+  "canvas": {
+    "width": 800,
+    "height": 600,
+    "backgroundColor": "#FFFFFF"
+  },
+  "parameters": {
+    "radius": 100,
+    "angleStep": 30
+  },
+  "steps": [
+    {
+      "type": "create",
+      "object": {
+        "kind": "point",
+        "id": "A",
+        "x": 100,
+        "y": 200,
+        "style": { "color": "#FF0000", "size": 5 }
+      }
+    },
+    {
+      "type": "action",
+      "action": {
+        "kind": "show",
+        "target": "ruler",
+        "duration": 500
+      }
+    }
+  ]
+}
+```
+
+**Supported Objects**: point, segment, line, ray, circle, arc, polygon, text, angleMark
+**Supported Instruments**: ruler, compass, setSquare, protractor, pencil
+**Supported Actions**: create, show, hide, moveTo, rotate, scale, draw, setCompass, pause
+
+### RLS Policies
+
+**SELECT**:
+
+- Own constructions (author_id = auth.uid())
+- Public constructions (is_public = true)
+
+**INSERT**:
+
+- Authenticated users can create constructions
+
+**UPDATE**:
+
+- Own constructions only (author_id = auth.uid())
+
+**DELETE**:
+
+- Own constructions only (author_id = auth.uid())
+
+### InstrumenPoche Conversion
+
+**Converter Module**: `src/lib/constructions/converter.ts`
+**Conversion Page**: `/constructions/conversion` (Teachers/Admins only)
+**API Endpoint**: `POST /api/constructions/convert`
+
+**Security Features**:
+
+- Step count limit: 1000 steps max (prevents DoS)
+- Array bounds: 1000 items max per array
+- XML parsing timeout: 10 seconds
+- Input size limit: 5MB
+- Role-based access: Teachers and Admins only
+
+**Testing**: 34 unit tests covering all conversion scenarios
+
+**Example Conversion**:
+
+```typescript
+import { convertInstrumenPoche } from '$lib/constructions/converter';
+
+const result = await convertInstrumenPoche(xmlContent, {
+	title: 'My Construction',
+	description: 'Description'
+});
+
+if (result.success) {
+	// Save to database
+	await supabase.from('constructions').insert({
+		title: result.script.title,
+		script: result.script,
+		tags: ['imported', 'instrumenpoche']
+	});
+}
+```
+
+### Routes
+
+| Route                             | Access          | Purpose                          |
+| --------------------------------- | --------------- | -------------------------------- |
+| `/constructions`                  | Authenticated   | List all available constructions |
+| `/constructions/[id]`             | Authenticated   | Play construction animation      |
+| `/constructions/conversion`       | Teachers/Admins | Convert InstrumenPoche XML       |
+| `POST /api/constructions`         | Authenticated   | Create new construction          |
+| `GET /api/constructions/[id]`     | Authenticated   | Fetch construction by ID         |
+| `PUT /api/constructions/[id]`     | Owner           | Update construction              |
+| `DELETE /api/constructions/[id]`  | Owner           | Delete construction              |
+| `POST /api/constructions/convert` | Teachers/Admins | Convert XML to JSON              |
+
+### Migration Files
+
+| Date       | File                                            | Changes                           |
+| ---------- | ----------------------------------------------- | --------------------------------- |
+| 2025-12-04 | `20251204100000_create_constructions_table.sql` | constructions table, RLS policies |
+| 2025-12-06 | `20251206184559_add_tags_to_constructions.sql`  | tags column, GIN index            |
+
+### Related Documentation
+
+- **Conversion Guide**: [docs/claude/instrumenpoche-conversion.md](../claude/instrumenpoche-conversion.md)
+- **Progress Tracker**: [docs/wip/constructions-progress.md](../wip/constructions-progress.md)
+- **Type Definitions**: [src/lib/constructions/types.ts](../../src/lib/constructions/types.ts)
+- **Zod Schemas**: [src/lib/constructions/schemas.ts](../../src/lib/constructions/schemas.ts)
