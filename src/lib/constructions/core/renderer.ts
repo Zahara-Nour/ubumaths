@@ -357,10 +357,9 @@ export function arcToSvgPath(
 	startAngle: number,
 	endAngle: number
 ): string {
-	// Convert angles to radians
-	// Note: SVG y-axis is inverted, so we negate angles
-	const startRad = -startAngle * DEG_TO_RAD;
-	const endRad = -endAngle * DEG_TO_RAD;
+	// Convert angles to radians (no negation - match InstrumenPoche behavior)
+	const startRad = startAngle * DEG_TO_RAD;
+	const endRad = endAngle * DEG_TO_RAD;
 
 	// Calculate start and end points
 	const x1 = cx + r * Math.cos(startRad);
@@ -368,16 +367,14 @@ export function arcToSvgPath(
 	const x2 = cx + r * Math.cos(endRad);
 	const y2 = cy + r * Math.sin(endRad);
 
-	// Determine arc direction and size
-	let angleDiff = endAngle - startAngle;
-	// Normalize angle difference
-	while (angleDiff < 0) angleDiff += 360;
-	while (angleDiff >= 360) angleDiff -= 360;
+	// Determine arc sweep
+	const ecart = Math.abs(endAngle - startAngle);
 
 	// Large arc flag: 1 if arc > 180 degrees
-	const largeArcFlag = angleDiff > 180 ? 1 : 0;
-	// Sweep flag: 0 for counterclockwise (in SVG inverted space)
-	const sweepFlag = 0;
+	const largeArcFlag = ecart > 180 ? 1 : 0;
+	// Sweep flag: 1 if startAngle < endAngle (clockwise in SVG), 0 otherwise
+	// This matches InstrumenPoche: sens = (deb < fin) ? '1' : '0'
+	const sweepFlag = startAngle < endAngle ? 1 : 0;
 
 	return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArcFlag} ${sweepFlag} ${x2} ${y2}`;
 }
