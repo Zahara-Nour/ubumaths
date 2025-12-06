@@ -6,7 +6,89 @@ This document describes the mapping between InstrumenPoche XML format and UbuMat
 
 InstrumenPoche is a JavaScript/SVG-based educational geometry animation player developed by Sesamath. UbuMaths uses a JSON-based ConstructionScript format for defining geometric construction animations.
 
-The conversion script is located at: `scripts/convert-instrumenpoche.ts`
+## Conversion Tools
+
+### Browser-Compatible Converter Module
+
+**Location**: `src/lib/constructions/converter.ts`
+
+The converter module is fully browser-compatible (no Node.js-specific APIs) and can be used in:
+
+- Web UI conversion page
+- API endpoints
+- Build-time scripts
+
+**Key Features**:
+
+- **Security Protections**:
+  - Step count limit (max 1000 steps to prevent DoS)
+  - Array bounds validation (max 1000 items per array)
+  - XML parsing timeout (10 seconds)
+  - Input size limit (5MB max)
+- **Comprehensive Testing**: 34 unit tests covering all conversion scenarios
+- **Browser/Server Compatible**: Uses platform-agnostic APIs only
+
+### Conversion Page
+
+**Route**: `/constructions/conversion` (Teachers and Admins only)
+
+Interactive web interface for converting InstrumenPoche XML files:
+
+- Upload XML files or paste XML content
+- Live preview of conversion results
+- JSON editor with syntax highlighting (CodeMirror)
+- Preview construction playback before saving
+- Add tags for categorization
+- Save directly to database
+
+### API Endpoint
+
+**Route**: `POST /api/constructions/convert`
+
+Server endpoint for programmatic conversion:
+
+```typescript
+// Request
+{
+  "xml": "<INSTRUMENPOCHE>...</INSTRUMENPOCHE>",
+  "title": "Optional title override",
+  "description": "Optional description override"
+}
+
+// Response (success)
+{
+  "success": true,
+  "script": { /* ConstructionScript JSON */ },
+  "warnings": ["Warning 1", "Warning 2"],
+  "errors": []
+}
+
+// Response (failure)
+{
+  "success": false,
+  "warnings": ["Warning 1"],
+  "errors": ["Critical error"]
+}
+```
+
+**Access**: Teachers and Admins only (role-based authentication)
+
+### CLI Script
+
+**Location**: `scripts/convert-instrumenpoche.ts`
+
+Build-time script for batch conversion (uses same converter module):
+
+```bash
+# Convert to both JSON and SQL
+npx tsx scripts/convert-instrumenpoche.ts --output both
+
+# Convert to JSON only
+npx tsx scripts/convert-instrumenpoche.ts --output json
+
+# Convert to SQL migration only
+npx tsx scripts/convert-instrumenpoche.ts --output sql
+```
 
 ## Format Comparison
 
@@ -156,25 +238,17 @@ The following examples were converted from `extern/instrumenpoche-main/devServer
 | 7.xml | Symetrie centrale au compas                 | 72    | Compass construction   |
 | 8.xml | Segment avec marque                         | 4     | Simple segment         |
 
-## Usage
+## Output Files
 
-### Running the Converter
-
-```bash
-# Convert to both JSON and SQL
-npx tsx scripts/convert-instrumenpoche.ts --output both
-
-# Convert to JSON only
-npx tsx scripts/convert-instrumenpoche.ts --output json
-
-# Convert to SQL migration only
-npx tsx scripts/convert-instrumenpoche.ts --output sql
-```
-
-### Output Files
+**CLI Script Output**:
 
 - **JSON files**: `scripts/output/constructions/*.json`
 - **Migration**: `supabase/migrations/YYYYMMDDHHMMSS_seed_instrumenpoche_examples.sql`
+
+**Web UI Output**:
+
+- Saved directly to `constructions` table via API
+- Includes `tags` array for categorization and filtering
 
 ## See Also
 

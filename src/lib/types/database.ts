@@ -876,6 +876,7 @@ export type Database = {
 					id: string;
 					is_public: boolean | null;
 					script: Json;
+					tags: string[] | null;
 					title: string;
 					updated_at: string | null;
 				};
@@ -886,6 +887,7 @@ export type Database = {
 					id?: string;
 					is_public?: boolean | null;
 					script: Json;
+					tags?: string[] | null;
 					title: string;
 					updated_at?: string | null;
 				};
@@ -896,6 +898,7 @@ export type Database = {
 					id?: string;
 					is_public?: boolean | null;
 					script?: Json;
+					tags?: string[] | null;
 					title?: string;
 					updated_at?: string | null;
 				};
@@ -6099,10 +6102,10 @@ export type Database = {
 					id: string;
 					is_test: boolean;
 					lastname: string | null;
+					python_settings: Json | null;
 					role: Database['public']['Enums']['user_role'];
 					school_id: string | null;
 					updated_at: string;
-					python_settings: Json | null;
 					vip_cards: Json;
 					vip_cards_history: Json;
 				};
@@ -6120,10 +6123,10 @@ export type Database = {
 					id: string;
 					is_test?: boolean;
 					lastname?: string | null;
+					python_settings?: Json | null;
 					role?: Database['public']['Enums']['user_role'];
 					school_id?: string | null;
 					updated_at?: string;
-					python_settings?: Json | null;
 					vip_cards?: Json;
 					vip_cards_history?: Json;
 				};
@@ -6141,10 +6144,10 @@ export type Database = {
 					id?: string;
 					is_test?: boolean;
 					lastname?: string | null;
+					python_settings?: Json | null;
 					role?: Database['public']['Enums']['user_role'];
 					school_id?: string | null;
 					updated_at?: string;
-					python_settings?: Json | null;
 					vip_cards?: Json;
 					vip_cards_history?: Json;
 				};
@@ -6155,6 +6158,269 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: 'schools';
 						referencedColumns: ['id'];
+					}
+				];
+			};
+			python_exercise_assignments: {
+				Row: {
+					assigned_by: string;
+					class_id: string | null;
+					created_at: string;
+					due_date: string | null;
+					exercise_id: string;
+					id: string;
+					max_attempts: number | null;
+					student_id: string | null;
+				};
+				Insert: {
+					assigned_by: string;
+					class_id?: string | null;
+					created_at?: string;
+					due_date?: string | null;
+					exercise_id: string;
+					id?: string;
+					max_attempts?: number | null;
+					student_id?: string | null;
+				};
+				Update: {
+					assigned_by?: string;
+					class_id?: string | null;
+					created_at?: string;
+					due_date?: string | null;
+					exercise_id?: string;
+					id?: string;
+					max_attempts?: number | null;
+					student_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'python_exercise_assignments_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_assignments_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_assignments_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_assignments_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_assignments_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_assignments_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'python_exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_assignments_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_assignments_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_assignments_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_assignments_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			python_exercise_submissions: {
+				Row: {
+					assignment_id: string | null;
+					attempt_number: number;
+					code: string;
+					created_at: string;
+					execution_time_ms: number | null;
+					exercise_id: string;
+					id: string;
+					is_correct: boolean;
+					student_id: string;
+					validation_result: Json;
+				};
+				Insert: {
+					assignment_id?: string | null;
+					attempt_number: number;
+					code: string;
+					created_at?: string;
+					execution_time_ms?: number | null;
+					exercise_id: string;
+					id?: string;
+					is_correct: boolean;
+					student_id: string;
+					validation_result: Json;
+				};
+				Update: {
+					assignment_id?: string | null;
+					attempt_number?: number;
+					code?: string;
+					created_at?: string;
+					execution_time_ms?: number | null;
+					exercise_id?: string;
+					id?: string;
+					is_correct?: boolean;
+					student_id?: string;
+					validation_result?: Json;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'python_exercise_submissions_assignment_id_fkey';
+						columns: ['assignment_id'];
+						isOneToOne: false;
+						referencedRelation: 'python_exercise_assignments';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_submissions_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'python_exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_submissions_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_submissions_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_submissions_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_submissions_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			python_exercises: {
+				Row: {
+					author_id: string;
+					created_at: string;
+					description: string | null;
+					difficulty: string;
+					id: string;
+					instructions: string | null;
+					is_public: boolean | null;
+					solution_code: string;
+					starter_code: string | null;
+					tags: string[] | null;
+					title: string;
+					updated_at: string;
+					validation_config: Json;
+				};
+				Insert: {
+					author_id: string;
+					created_at?: string;
+					description?: string | null;
+					difficulty: string;
+					id?: string;
+					instructions?: string | null;
+					is_public?: boolean | null;
+					solution_code: string;
+					starter_code?: string | null;
+					tags?: string[] | null;
+					title: string;
+					updated_at?: string;
+					validation_config: Json;
+				};
+				Update: {
+					author_id?: string;
+					created_at?: string;
+					description?: string | null;
+					difficulty?: string;
+					id?: string;
+					instructions?: string | null;
+					is_public?: boolean | null;
+					solution_code?: string;
+					starter_code?: string | null;
+					tags?: string[] | null;
+					title?: string;
+					updated_at?: string;
+					validation_config?: Json;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'python_exercises_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_exercises_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_exercises_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercises_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
 					}
 				];
 			};
@@ -6191,8 +6457,29 @@ export type Database = {
 						foreignKeyName: 'python_file_assignments_assigned_by_fkey';
 						columns: ['assigned_by'];
 						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_file_assignments_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_file_assignments_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
 						referencedRelation: 'profiles';
 						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_file_assignments_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
 					},
 					{
 						foreignKeyName: 'python_file_assignments_class_id_fkey';
@@ -6246,8 +6533,161 @@ export type Database = {
 						foreignKeyName: 'python_files_owner_id_fkey';
 						columns: ['owner_id'];
 						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_files_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_files_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
 						referencedRelation: 'profiles';
 						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_files_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			python_notebook_assignments: {
+				Row: {
+					class_id: string;
+					created_at: string;
+					id: string;
+					notebook_id: string;
+					readonly: boolean | null;
+					shared_by: string;
+				};
+				Insert: {
+					class_id: string;
+					created_at?: string;
+					id?: string;
+					notebook_id: string;
+					readonly?: boolean | null;
+					shared_by: string;
+				};
+				Update: {
+					class_id?: string;
+					created_at?: string;
+					id?: string;
+					notebook_id?: string;
+					readonly?: boolean | null;
+					shared_by?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'python_notebook_assignments_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_notebook_assignments_notebook_id_fkey';
+						columns: ['notebook_id'];
+						isOneToOne: false;
+						referencedRelation: 'python_notebooks';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_notebook_assignments_shared_by_fkey';
+						columns: ['shared_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_notebook_assignments_shared_by_fkey';
+						columns: ['shared_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_notebook_assignments_shared_by_fkey';
+						columns: ['shared_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_notebook_assignments_shared_by_fkey';
+						columns: ['shared_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			python_notebooks: {
+				Row: {
+					author_id: string;
+					content: Json;
+					created_at: string;
+					description: string | null;
+					id: string;
+					is_public: boolean | null;
+					title: string;
+					updated_at: string;
+				};
+				Insert: {
+					author_id: string;
+					content: Json;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					is_public?: boolean | null;
+					title: string;
+					updated_at?: string;
+				};
+				Update: {
+					author_id?: string;
+					content?: Json;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					is_public?: boolean | null;
+					title?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'python_notebooks_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_notebooks_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_notebooks_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_notebooks_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
 					}
 				];
 			};
@@ -10873,6 +11313,8 @@ export type Database = {
 				};
 				Returns: string;
 			};
+			count_user_notebooks: { Args: { p_user_id: string }; Returns: number };
+			count_user_python_files: { Args: { p_user_id: string }; Returns: number };
 			create_1on1_chat: {
 				Args: { p_user1_id: string; p_user2_id: string };
 				Returns: string;
@@ -11430,14 +11872,28 @@ export type Database = {
 				Args: { exercise_id: string };
 				Returns: boolean;
 			};
+			is_file_assigned_to_student: {
+				Args: { p_file_id: string };
+				Returns: boolean;
+			};
+			is_notebook_assigned_to_student: {
+				Args: { p_notebook_id: string };
+				Returns: boolean;
+			};
 			is_riddle_assigned_to_student: {
 				Args: { p_riddle_id: string; p_student_id: string };
 				Returns: boolean;
 			};
 			is_riddle_of_the_day: { Args: { p_riddle_id: string }; Returns: boolean };
 			is_student: { Args: never; Returns: boolean };
+			is_student_in_class: { Args: { p_class_id: string }; Returns: boolean };
 			is_teacher_for_shared_coursework: {
 				Args: { p_shared_coursework_id: string };
+				Returns: boolean;
+			};
+			is_teacher_of_class: { Args: { p_class_id: string }; Returns: boolean };
+			is_teacher_of_student: {
+				Args: { p_student_id: string };
 				Returns: boolean;
 			};
 			is_teacher_or_admin: { Args: never; Returns: boolean };

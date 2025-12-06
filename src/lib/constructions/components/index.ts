@@ -13,3 +13,4 @@ export { default as PlayerControls } from './PlayerControls.svelte';
 export { default as ParameterControls } from './ParameterControls.svelte';
 export { default as TimelineSlider } from './TimelineSlider.svelte';
 export { default as SpeedControl } from './SpeedControl.svelte';
+export { default as JsonEditor } from './JsonEditor.svelte';
