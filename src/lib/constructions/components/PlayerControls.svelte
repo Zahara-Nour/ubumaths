@@ -7,6 +7,7 @@
 	 */
 
 	import type { Timeline } from '../core/timeline.svelte';
+	import type { ConstructionEngine } from '../core/engine.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import Play from 'lucide-svelte/icons/play';
 	import Pause from 'lucide-svelte/icons/pause';
@@ -17,11 +18,12 @@
 	// Types
 	interface Props {
 		timeline: Timeline;
+		engine?: ConstructionEngine;
 		class?: string;
 	}
 
 	// Props
-	let { timeline, class: className = '' }: Props = $props();
+	let { timeline, engine, class: className = '' }: Props = $props();
 
 	// Derived state from timeline
 	let isPlaying = $derived(timeline.isPlaying);
@@ -30,7 +32,12 @@
 
 	// Handlers
 	function handleReset() {
-		timeline.reset();
+		// Use engine.reset() to clear objects, or fall back to timeline.reset()
+		if (engine) {
+			engine.reset();
+		} else {
+			timeline.reset();
+		}
 	}
 
 	function handleStepBackward() {
