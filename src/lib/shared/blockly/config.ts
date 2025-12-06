@@ -4,6 +4,7 @@
  * Timeouts, limits, and constants for Blockly visual programming.
  */
 
+import * as Blockly from 'blockly';
 import type { LoadingStage } from './types';
 
 // =============================================================================
@@ -68,12 +69,33 @@ export const DEFAULT_WORKSPACE_OPTIONS = {
 	maxBlocks: BLOCKLY_CONFIG.MAX_BLOCKS,
 	// Disable sounds to avoid CSP issues (Blockly loads from external CDN)
 	sounds: false,
+	// Use unpkg CDN for Blockly media files (trashcan, sprites, etc.)
+	media: 'https://unpkg.com/blockly/media/',
 	move: {
 		scrollbars: true,
 		drag: true,
 		wheel: true
 	}
 } as const;
+
+// =============================================================================
+// Custom Theme
+// =============================================================================
+
+/**
+ * Custom Blockly theme with dark category text for better contrast
+ */
+export const UBUMATHS_THEME = Blockly.Theme.defineTheme('ubumaths', {
+	name: 'ubumaths',
+	base: Blockly.Themes.Classic,
+	componentStyles: {
+		// Toolbox category text color - black for better contrast on colored backgrounds
+		// Uses British spelling as per Blockly API
+		toolboxForegroundColour: '#000000',
+		// Keep workspace background light
+		workspaceBackgroundColour: '#ffffff'
+	}
+});
 
 // =============================================================================
 // Error Messages (French)

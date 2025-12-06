@@ -217,11 +217,16 @@ src/lib/
 
 ## Bugs corriges post-commit
 
-| Bug                     | Cause                                                 | Correction                              |
-| ----------------------- | ----------------------------------------------------- | --------------------------------------- |
-| CSP bloque sons Blockly | Blockly charge sons depuis `blockly-demo.appspot.com` | `sounds: false` dans config             |
-| Worker URL incorrecte   | 4 niveaux `../../../../` au lieu de 3                 | `../../../workers/js-sandbox.worker.ts` |
-| Imports Worker          | Chemins relatifs non resolus                          | Alias `$lib/shared/...`                 |
+| Bug                       | Cause                                                 | Correction                                         |
+| ------------------------- | ----------------------------------------------------- | -------------------------------------------------- |
+| CSP bloque sons Blockly   | Blockly charge sons depuis `blockly-demo.appspot.com` | `sounds: false` dans config                        |
+| Worker URL incorrecte     | 4 niveaux `../../../../` au lieu de 3                 | `../../../workers/js-sandbox.worker.ts`            |
+| Imports Worker            | Chemins relatifs non resolus                          | Alias `$lib/shared/...`                            |
+| Images trashcan cassees   | CSP bloque unpkg.com pour images                      | Ajoute `unpkg.com` a `img-src` dans CSP            |
+| Flyout scrollbar persiste | Scrollbar visible apres fermeture du menu             | CSS `.blocklyFlyoutScrollbar { display: none }`    |
+| Texte categories blanc    | Heritage couleur body en dark mode                    | Theme Blockly `toolboxForegroundColour: '#000000'` |
+| Texte selectionne noir    | CSS specificity issue                                 | `:not(.blocklyTreeSelected)` + regles separees     |
+| Python code trop long     | Helpers inclus meme si non utilises                   | Detection smart des helpers requis                 |
 
 ---
 

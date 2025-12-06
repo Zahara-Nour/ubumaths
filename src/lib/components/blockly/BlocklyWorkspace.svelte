@@ -31,6 +31,7 @@
 		STANDARD_TOOLBOX,
 		DEFAULT_WORKSPACE_OPTIONS,
 		ERROR_MESSAGES,
+		UBUMATHS_THEME,
 		type ToolboxDefinition
 	} from '$lib/shared/blockly';
 
@@ -112,16 +113,16 @@
 			const options: Blockly.BlocklyOptions = {
 				...DEFAULT_WORKSPACE_OPTIONS,
 				toolbox: toolbox as Blockly.utils.toolbox.ToolboxDefinition,
-				readOnly: readonly
+				readOnly: readonly,
+				// Use custom theme with black category text, or provided theme
+				theme: theme ?? UBUMATHS_THEME
 			};
-
-			// Add theme if provided
-			if (theme) {
-				options.theme = theme;
-			}
 
 			// Inject Blockly into the container
 			workspace = Blockly.inject(containerRef, options);
+
+			// Fix toolbox text color (dark mode inheritance issue)
+			fixToolboxTextColor();
 
 			// Setup change listener
 			if (onchange) {
@@ -157,6 +158,20 @@
 		}
 
 		onchange?.(event);
+	}
+
+	// =============================================================================
+	// Toolbox Styling
+	// =============================================================================
+
+	/**
+	 * Fix toolbox text color for dark mode
+	 * Blockly inherits body text color which is light in dark mode
+	 * Note: CSS handles the styling now, this function is kept for edge cases
+	 */
+	function fixToolboxTextColor(): void {
+		// CSS now handles the styling via :not(.blocklyTreeSelected) selectors
+		// This function is kept as a fallback but does nothing
 	}
 
 	// =============================================================================

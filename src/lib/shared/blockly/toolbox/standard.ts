@@ -24,7 +24,7 @@ export const STANDARD_TOOLBOX = {
 		{
 			kind: 'category',
 			name: 'Logique',
-			colour: '#5C81A6',
+			colour: '#3D5570',
 			contents: [
 				{
 					kind: 'block',
@@ -61,7 +61,7 @@ export const STANDARD_TOOLBOX = {
 		{
 			kind: 'category',
 			name: 'Boucles',
-			colour: '#5CA65C',
+			colour: '#3D703D',
 			contents: [
 				{
 					kind: 'block',
@@ -126,7 +126,7 @@ export const STANDARD_TOOLBOX = {
 		{
 			kind: 'category',
 			name: 'Math',
-			colour: '#5C68A6',
+			colour: '#3D4570',
 			contents: [
 				{
 					kind: 'block',
@@ -306,7 +306,7 @@ export const STANDARD_TOOLBOX = {
 		{
 			kind: 'category',
 			name: 'Texte',
-			colour: '#5CA68D',
+			colour: '#3D705E',
 			contents: [
 				{
 					kind: 'block',
@@ -460,7 +460,7 @@ export const STANDARD_TOOLBOX = {
 		{
 			kind: 'category',
 			name: 'Listes',
-			colour: '#745CA6',
+			colour: '#4E3D70',
 			contents: [
 				{
 					kind: 'block',
@@ -533,7 +533,7 @@ export const STANDARD_TOOLBOX = {
 		{
 			kind: 'category',
 			name: 'Variables',
-			colour: '#A65C81',
+			colour: '#703D55',
 			custom: 'VARIABLE'
 		},
 
@@ -541,7 +541,7 @@ export const STANDARD_TOOLBOX = {
 		{
 			kind: 'category',
 			name: 'Fonctions',
-			colour: '#9A5CA6',
+			colour: '#663D70',
 			custom: 'PROCEDURE'
 		}
 	]
