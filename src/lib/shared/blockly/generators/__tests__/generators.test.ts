@@ -16,9 +16,7 @@ import {
 	detectPyInfiniteLoops,
 	validateJsCodeLength,
 	validatePyCodeLength,
-	JS_MATH_HELPERS,
-	PYTHON_IMPORTS,
-	PYTHON_MATH_HELPERS
+	JS_MATH_HELPERS
 } from '../index';
 
 // =============================================================================
@@ -131,22 +129,20 @@ console.log(x + y);
 
 describe('Python Code Wrapping', () => {
 	describe('wrapPythonCode', () => {
-		it('should include required imports', () => {
+		it('should not include imports for simple code', () => {
 			const code = 'print("test")';
 			const wrapped = wrapPythonCode(code);
 
-			expect(wrapped).toContain('import math');
-			expect(wrapped).toContain('import sys');
-			expect(wrapped).toContain('from io import StringIO');
+			// Simple print doesn't need any imports or helpers
+			expect(wrapped).not.toContain('import math');
+			expect(wrapped).not.toContain('def gcd');
 		});
 
-		it('should include math helper functions', () => {
-			const code = 'x = 5';
+		it('should include math import when math module is used', () => {
+			const code = 'x = math.sqrt(5)';
 			const wrapped = wrapPythonCode(code);
 
-			expect(wrapped).toContain('def gcd(a, b):');
-			expect(wrapped).toContain('def lcm(a, b):');
-			expect(wrapped).toContain('def is_prime(n):');
+			expect(wrapped).toContain('import math');
 		});
 
 		it('should preserve user code', () => {
@@ -161,8 +157,8 @@ describe('Python Code Wrapping', () => {
 			const code = '';
 			const wrapped = wrapPythonCode(code);
 
-			expect(wrapped).toContain('import math');
-			expect(wrapped).toContain('def gcd');
+			// Empty code should just return empty string
+			expect(wrapped).toBe('');
 		});
 
 		it('should handle multiline code with proper indentation', () => {
@@ -177,39 +173,49 @@ for i in range(10):
 		});
 	});
 
-	describe('PYTHON_IMPORTS', () => {
-		it('should include math module', () => {
-			expect(PYTHON_IMPORTS).toContain('import math');
+	describe('wrapPythonCode - smart helper detection', () => {
+		it('should not include helpers for simple print', () => {
+			const code = "print('hello')";
+			const wrapped = wrapPythonCode(code);
+
+			expect(wrapped).not.toContain('def gcd');
+			expect(wrapped).not.toContain('def lcm');
+			expect(wrapped).not.toContain('def is_prime');
+			expect(wrapped).not.toContain('import math');
 		});
 
-		it('should include sys module', () => {
-			expect(PYTHON_IMPORTS).toContain('import sys');
+		it('should include gcd when used', () => {
+			const code = 'result = gcd(12, 8)';
+			const wrapped = wrapPythonCode(code);
+
+			expect(wrapped).toContain('def gcd(a, b):');
+			expect(wrapped).not.toContain('def lcm');
+			expect(wrapped).not.toContain('def is_prime');
 		});
 
-		it('should include StringIO', () => {
-			expect(PYTHON_IMPORTS).toContain('from io import StringIO');
-		});
-	});
+		it('should include both gcd and lcm when lcm is used', () => {
+			const code = 'result = lcm(12, 8)';
+			const wrapped = wrapPythonCode(code);
 
-	describe('PYTHON_MATH_HELPERS', () => {
-		it('should export GCD function', () => {
-			expect(PYTHON_MATH_HELPERS).toContain('def gcd(a, b):');
-			expect(PYTHON_MATH_HELPERS).toContain('abs(int(a))');
+			// lcm depends on gcd, so both should be included
+			expect(wrapped).toContain('def gcd(a, b):');
+			expect(wrapped).toContain('def lcm(a, b):');
 		});
 
-		it('should export LCM function', () => {
-			expect(PYTHON_MATH_HELPERS).toContain('def lcm(a, b):');
-			expect(PYTHON_MATH_HELPERS).toContain('gcd(a, b)');
+		it('should include is_prime when used', () => {
+			const code = 'print(is_prime(17))';
+			const wrapped = wrapPythonCode(code);
+
+			expect(wrapped).toContain('def is_prime(n):');
+			expect(wrapped).not.toContain('def gcd');
+			expect(wrapped).not.toContain('def lcm');
 		});
 
-		it('should export is_prime function', () => {
-			expect(PYTHON_MATH_HELPERS).toContain('def is_prime(n):');
-			expect(PYTHON_MATH_HELPERS).toContain('if n <= 1:');
-		});
+		it('should include math import when math module is used', () => {
+			const code = 'result = math.sqrt(16)';
+			const wrapped = wrapPythonCode(code);
 
-		it('should include docstrings', () => {
-			expect(PYTHON_MATH_HELPERS).toContain('"""');
-			expect(PYTHON_MATH_HELPERS).toContain('Greatest Common Divisor');
+			expect(wrapped).toContain('import math');
 		});
 	});
 });
@@ -428,15 +434,25 @@ describe('Code Wrapping Integration', () => {
 		expect(wrapped).toContain(code);
 	});
 
-	it('should include all components in Python wrapper', () => {
-		const code = 'print("test")';
+	it('should include all components in Python wrapper when needed', () => {
+		// Code that uses all helpers
+		const code = 'print(gcd(12, 8), lcm(4, 6), is_prime(17), math.sqrt(16))';
 		const wrapped = wrapPythonCode(code);
 
 		expect(wrapped).toContain('import math');
-		expect(wrapped).toContain('import sys');
 		expect(wrapped).toContain('def gcd');
 		expect(wrapped).toContain('def lcm');
 		expect(wrapped).toContain('def is_prime');
+		expect(wrapped).toContain(code);
+	});
+
+	it('should minimize Python wrapper for simple code', () => {
+		const code = 'print("test")';
+		const wrapped = wrapPythonCode(code);
+
+		// Simple code should not include unnecessary imports/helpers
+		expect(wrapped).not.toContain('import math');
+		expect(wrapped).not.toContain('def gcd');
 		expect(wrapped).toContain(code);
 	});
 

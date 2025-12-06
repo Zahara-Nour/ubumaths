@@ -9,53 +9,52 @@
 // Python Imports
 // =============================================================================
 
+// =============================================================================
+// Math Helper Functions (added only when needed)
+// =============================================================================
+
 /**
- * Standard Python imports for mathematical operations.
- * These imports are added to every generated Python program.
+ * GCD helper function for Python
  */
-export const PYTHON_IMPORTS = `
-import math
-import sys
-from io import StringIO
+const GCD_HELPER = `
+def gcd(a, b):
+    """Calculate the Greatest Common Divisor (GCD) of two numbers"""
+    a, b = abs(int(a)), abs(int(b))
+    while b != 0:
+        a, b = b, a % b
+    return a
 `.trim();
 
-// =============================================================================
-// Math Helper Functions
-// =============================================================================
+/**
+ * LCM helper function for Python (depends on gcd)
+ */
+const LCM_HELPER = `
+def lcm(a, b):
+    """Calculate the Least Common Multiple (LCM) of two numbers"""
+    if a == 0 or b == 0:
+        return 0
+    return abs((a * b) // gcd(a, b))
+`.trim();
 
 /**
- * Math helper functions for Python code.
- * Provides GCD, LCM, and prime checking functions.
+ * Prime check helper function for Python
  */
-export const PYTHON_MATH_HELPERS = `
-def gcd(a, b):
-	"""Calculate the Greatest Common Divisor (GCD) of two numbers"""
-	a, b = abs(int(a)), abs(int(b))
-	while b != 0:
-		a, b = b, a % b
-	return a
-
-def lcm(a, b):
-	"""Calculate the Least Common Multiple (LCM) of two numbers"""
-	if a == 0 or b == 0:
-		return 0
-	return abs((a * b) // gcd(a, b))
-
+const IS_PRIME_HELPER = `
 def is_prime(n):
-	"""Check if a number is prime"""
-	n = int(n)
-	if n <= 1:
-		return False
-	if n <= 3:
-		return True
-	if n % 2 == 0 or n % 3 == 0:
-		return False
-	i = 5
-	while i * i <= n:
-		if n % i == 0 or n % (i + 2) == 0:
-			return False
-		i += 6
-	return True
+    """Check if a number is prime"""
+    n = int(n)
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
 `.trim();
 
 // =============================================================================
@@ -63,21 +62,54 @@ def is_prime(n):
 // =============================================================================
 
 /**
+ * Detect which helpers are needed in the generated code
+ */
+function detectRequiredHelpers(code: string): {
+	needsGcd: boolean;
+	needsLcm: boolean;
+	needsIsPrime: boolean;
+	needsMath: boolean;
+} {
+	return {
+		needsGcd: /\bgcd\s*\(/.test(code),
+		needsLcm: /\blcm\s*\(/.test(code),
+		needsIsPrime: /\bis_prime\s*\(/.test(code),
+		needsMath: /\bmath\./.test(code)
+	};
+}
+
+/**
  * Wrap generated Python code for Pyodide execution.
- * Adds necessary imports and helper functions.
+ * Only adds imports and helper functions that are actually used.
  *
  * @param code - Generated Python code from Blockly
  * @returns Wrapped code ready for execution
  */
 export function wrapPythonCode(code: string): string {
-	return `
-${PYTHON_IMPORTS}
+	const helpers = detectRequiredHelpers(code);
+	const parts: string[] = [];
 
-${PYTHON_MATH_HELPERS}
+	// Add imports only if needed
+	if (helpers.needsMath) {
+		parts.push('import math');
+	}
 
-# Generated code
-${code}
-`.trim();
+	// Add helper functions only if used
+	// Note: lcm depends on gcd, so add gcd if lcm is needed
+	if (helpers.needsGcd || helpers.needsLcm) {
+		parts.push(GCD_HELPER);
+	}
+	if (helpers.needsLcm) {
+		parts.push(LCM_HELPER);
+	}
+	if (helpers.needsIsPrime) {
+		parts.push(IS_PRIME_HELPER);
+	}
+
+	// Add the generated code
+	parts.push(code);
+
+	return parts.join('\n\n');
 }
 
 // =============================================================================
