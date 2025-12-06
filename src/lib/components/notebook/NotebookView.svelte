@@ -17,6 +17,8 @@
 	import NotebookToolbar from './NotebookToolbar.svelte';
 	import NotebookStatusBar from './NotebookStatusBar.svelte';
 	import NotebookCell from './NotebookCell.svelte';
+	import { Alert } from '$lib/components/ui/alert';
+	import { Eye } from 'lucide-svelte';
 
 	// Props
 	let {
@@ -146,6 +148,9 @@
 
 	// Keyboard shortcuts
 	function handleKeydown(e: KeyboardEvent): void {
+		// Disable all shortcuts in readonly mode
+		if (isReadonly) return;
+
 		// Ctrl+S / Cmd+S: Save
 		if ((e.ctrlKey || e.metaKey) && e.key === 's') {
 			e.preventDefault();
@@ -228,6 +233,21 @@
 			onResetKernel={handleResetKernel}
 		/>
 
+		<!-- Readonly mode banner -->
+		{#if isReadonly}
+			<div class="border-b border-border bg-muted/50 px-4 py-3">
+				<Alert class="border-primary/50 bg-primary/10">
+					<Eye class="size-4 text-primary" />
+					<div class="ml-2">
+						<p class="text-sm font-medium text-foreground">Mode lecture seule</p>
+						<p class="text-xs text-muted-foreground">
+							Vous consultez ce notebook. Vous ne pouvez pas modifier ou exécuter les cellules.
+						</p>
+					</div>
+				</Alert>
+			</div>
+		{/if}
+
 		<!-- Cells container -->
 		<div class="flex-1 overflow-y-auto">
 			{#if notebook.cells.length === 0}
@@ -241,19 +261,19 @@
 			{:else}
 				<!-- Render cells -->
 				<div class="mx-auto max-w-6xl py-4">
-					{#each notebook.cells as cell, index (cell.id)}
+					{#each notebook.cells as _, index (notebook.cells[index].id)}
 						<NotebookCell
-							bind:cell
-							isActive={notebook.activeCell === cell.id}
+							bind:cell={notebook.cells[index]}
+							isActive={notebook.activeCell === notebook.cells[index].id}
 							{isReadonly}
 							isFirst={index === 0}
 							isLast={index === notebook.cells.length - 1}
 							{notebook}
-							onSelect={() => handleSelectCell(cell.id)}
-							onDelete={() => handleDeleteCell(cell.id)}
-							onMoveUp={() => handleMoveUp(cell.id)}
-							onMoveDown={() => handleMoveDown(cell.id)}
-							onExecute={() => handleExecuteCell(cell.id)}
+							onSelect={() => handleSelectCell(notebook.cells[index].id)}
+							onDelete={() => handleDeleteCell(notebook.cells[index].id)}
+							onMoveUp={() => handleMoveUp(notebook.cells[index].id)}
+							onMoveDown={() => handleMoveDown(notebook.cells[index].id)}
+							onExecute={() => handleExecuteCell(notebook.cells[index].id)}
 						/>
 					{/each}
 				</div>
