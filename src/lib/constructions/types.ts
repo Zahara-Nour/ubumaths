@@ -163,6 +163,8 @@ export interface SegmentDef extends ObjectDefBase {
 	readonly from: string | { x: Expr; y: Expr };
 	/** End point ID or inline coordinates */
 	readonly to: string | { x: Expr; y: Expr };
+	/** Optional arrowhead at one or both ends (for vector/arrow representation) */
+	readonly arrowHead?: 'start' | 'end' | 'both';
 }
 
 /**
@@ -496,6 +498,8 @@ export interface DrawLineActionDef extends ActionDefBase {
 	readonly createObject?: {
 		readonly id: string;
 		readonly style?: StyleProps;
+		/** Optional arrowhead at one or both ends (for vector/arrow representation) */
+		readonly arrowHead?: 'start' | 'end' | 'both';
 	};
 }
 

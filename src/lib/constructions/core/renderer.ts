@@ -450,6 +450,60 @@ export function rightAngleMarkerPath(
 }
 
 // =============================================================================
+// Arrowhead Generation
+// =============================================================================
+
+/**
+ * Default arrowhead size in pixels
+ */
+const DEFAULT_ARROWHEAD_SIZE = 10;
+
+/**
+ * Arrowhead angle from the line (in radians)
+ */
+const ARROWHEAD_ANGLE = Math.PI / 6; // 30 degrees
+
+/**
+ * Generate SVG path data for an arrowhead at a given point
+ *
+ * @param x - X coordinate of the arrow tip
+ * @param y - Y coordinate of the arrow tip
+ * @param angle - Direction angle in radians (pointing towards the tip)
+ * @param size - Size of the arrowhead in pixels
+ * @returns SVG path data string for the arrowhead
+ */
+export function arrowheadPath(
+	x: number,
+	y: number,
+	angle: number,
+	size: number = DEFAULT_ARROWHEAD_SIZE
+): string {
+	// Calculate the two back points of the arrowhead
+	const leftAngle = angle + Math.PI - ARROWHEAD_ANGLE;
+	const rightAngle = angle + Math.PI + ARROWHEAD_ANGLE;
+
+	const leftX = x + size * Math.cos(leftAngle);
+	const leftY = y + size * Math.sin(leftAngle);
+	const rightX = x + size * Math.cos(rightAngle);
+	const rightY = y + size * Math.sin(rightAngle);
+
+	return `M ${x} ${y} L ${leftX} ${leftY} M ${x} ${y} L ${rightX} ${rightY}`;
+}
+
+/**
+ * Calculate the direction angle from point 1 to point 2
+ *
+ * @param x1 - Start X coordinate
+ * @param y1 - Start Y coordinate
+ * @param x2 - End X coordinate
+ * @param y2 - End Y coordinate
+ * @returns Angle in radians
+ */
+export function calculateAngle(x1: number, y1: number, x2: number, y2: number): number {
+	return Math.atan2(y2 - y1, x2 - x1);
+}
+
+// =============================================================================
 // Partial Path Generation (for animations)
 // =============================================================================
 

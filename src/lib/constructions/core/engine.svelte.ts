@@ -783,7 +783,8 @@ export class ConstructionEngine {
 						from: { x: fromPos.x, y: fromPos.y },
 						to: { x: toPos.x, y: toPos.y },
 						visible: true,
-						style: drawLineAction.createObject.style
+						style: drawLineAction.createObject.style,
+						arrowHead: drawLineAction.createObject.arrowHead
 					};
 					this.objects.set(drawLineAction.createObject.id, {
 						def: segmentDef,
@@ -1704,7 +1705,8 @@ export class ConstructionEngine {
 				from: { x: fromPos.x, y: fromPos.y },
 				to: { x: toPos.x, y: toPos.y },
 				visible: true,
-				style: action.createObject.style
+				style: action.createObject.style,
+				arrowHead: action.createObject.arrowHead
 			};
 			this.objects.set(action.createObject.id, {
 				def: segmentDef,

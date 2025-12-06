@@ -257,7 +257,8 @@ export const pointDefSchema = objectDefBaseSchema.extend({
 export const segmentDefSchema = objectDefBaseSchema.extend({
 	kind: z.literal('segment'),
 	from: pointRefSchema,
-	to: pointRefSchema
+	to: pointRefSchema,
+	arrowHead: z.enum(['start', 'end', 'both']).optional()
 });
 
 /**
@@ -490,7 +491,8 @@ export const drawLineActionDefSchema = actionDefBaseSchema.extend({
 	createObject: z
 		.object({
 			id: objectIdSchema,
-			style: stylePropsSchema.optional()
+			style: stylePropsSchema.optional(),
+			arrowHead: z.enum(['start', 'end', 'both']).optional()
 		})
 		.optional()
 });

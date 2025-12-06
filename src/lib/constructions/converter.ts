@@ -836,6 +836,9 @@ function convertPencilAction(
 				const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
 				const traceDuration = Math.max(100, Math.round((distance / PENCIL_SPEED) * 1000));
 
+				// Check if this is a vector/arrow (style="vecteur")
+				const isVector = attrs.style === 'vecteur';
+
 				const drawLineAction: ActionDef = {
 					kind: 'drawLine',
 					from: { x: startX, y: startY },
@@ -847,7 +850,8 @@ function convertPencilAction(
 							color: convertColor(attrs.couleur),
 							lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
 							lineStyle: convertLineStyle(attrs.pointille)
-						}
+						},
+						...(isVector && { arrowHead: 'end' as const })
 					}
 				};
 				ctx.createdObjects.add(id);
@@ -857,6 +861,9 @@ function convertPencilAction(
 				const PENCIL_SPEED = 300; // pixels per second
 				const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
 				const traceDuration = Math.max(100, Math.round((distance / PENCIL_SPEED) * 1000));
+
+				// Check if this is a vector/arrow (style="vecteur")
+				const isVector = attrs.style === 'vecteur';
 
 				const drawLineAction: ActionDef = {
 					kind: 'drawLine',
@@ -869,7 +876,8 @@ function convertPencilAction(
 							color: convertColor(attrs.couleur),
 							lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
 							lineStyle: convertLineStyle(attrs.pointille)
-						}
+						},
+						...(isVector && { arrowHead: 'end' as const })
 					}
 				};
 				ctx.createdObjects.add(id);
