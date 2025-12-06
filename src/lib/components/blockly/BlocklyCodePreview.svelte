@@ -56,7 +56,7 @@
 		</Tabs.List>
 
 		<!-- JavaScript code -->
-		<Tabs.Content value="javascript" class="flex-1 overflow-auto p-0">
+		<Tabs.Content value="javascript" class="min-h-0 flex-1 overflow-hidden p-0">
 			{#if isEmpty}
 				<div class="flex h-full items-center justify-center text-muted-foreground">
 					<p class="text-sm">Aucun code généré</p>
@@ -67,7 +67,7 @@
 		</Tabs.Content>
 
 		<!-- Python code -->
-		<Tabs.Content value="python" class="flex-1 overflow-auto p-0">
+		<Tabs.Content value="python" class="min-h-0 flex-1 overflow-hidden p-0">
 			{#if isEmpty}
 				<div class="flex h-full items-center justify-center text-muted-foreground">
 					<p class="text-sm">Aucun code généré</p>

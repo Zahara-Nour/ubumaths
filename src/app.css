@@ -387,3 +387,41 @@ math-field:focus {
 	/* GPU acceleration for smooth animation */
 	will-change: transform;
 }
+
+/*
+ * Blockly Visual Programming Styles
+ * ==================================
+ *
+ * Custom styles for Blockly workspace and components.
+ * Fixes scrollbar visibility issues with the flyout panel.
+ */
+
+/* Hide the flyout scrollbar - it persists after flyout closes */
+.blocklyFlyoutScrollbar {
+	display: none !important;
+}
+
+/* Toolbox category text - use black for better contrast */
+/* Must override body color inheritance in dark mode */
+/* Exclude selected categories which need white text */
+.blocklyToolboxDiv .blocklyTreeRow:not(.blocklyTreeSelected) *,
+.blocklyToolboxDiv .blocklyTreeRow:not(.blocklyTreeSelected) .blocklyTreeLabel {
+	color: #000000 !important;
+}
+
+/* Selected category - use white text for contrast on colored background */
+.blocklyToolboxDiv .blocklyTreeSelected,
+.blocklyToolboxDiv .blocklyTreeSelected *,
+.blocklyToolboxDiv .blocklyTreeSelected .blocklyTreeLabel {
+	color: #ffffff !important;
+}
+
+/* Keep main workspace scrollbars visible but subtle */
+.blocklyMainWorkspaceScrollbar {
+	opacity: 0.5;
+	transition: opacity 0.2s;
+}
+
+.blocklyMainWorkspaceScrollbar:hover {
+	opacity: 1;
+}

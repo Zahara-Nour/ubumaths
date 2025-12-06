@@ -26,7 +26,8 @@ export {
 	DEFAULT_WORKSPACE_OPTIONS,
 	ERROR_MESSAGES,
 	CODE_TEMPLATES,
-	DISPLAY_CONFIG
+	DISPLAY_CONFIG,
+	UBUMATHS_THEME
 } from './config';
 
 // Export toolbox definitions
