@@ -24,8 +24,177 @@
  * ```
  */
 
-import { parseStringPromise } from 'xml2js';
 import type { ConstructionScript, Step, ObjectDef, ActionDef, LineStyle } from './types';
+
+// =============================================================================
+// Cross-environment XML Parser (Browser + Node.js)
+// =============================================================================
+
+/**
+ * Get DOMParser that works in both browser and Node.js environments
+ */
+async function getDOMParser(): Promise<{ new (): DOMParser }> {
+	if (typeof DOMParser !== 'undefined') {
+		// Browser environment
+		return DOMParser;
+	}
+	// Node.js environment - use linkedom (lighter than jsdom)
+	try {
+		const { parseHTML } = await import('linkedom');
+		// Create a DOMParser-like class using linkedom
+		return class NodeDOMParser {
+			parseFromString(content: string, _mimeType: string): Document {
+				// linkedom's parseHTML creates a full document, we need to extract the parsed content
+				const { document } = parseHTML(`<!DOCTYPE html><html><body>${content}</body></html>`);
+				// Create a minimal document-like object with querySelector methods
+				const body = document.body;
+				return {
+					querySelector: (selector: string) => body.querySelector(selector),
+					querySelectorAll: (selector: string) => body.querySelectorAll(selector)
+				} as unknown as Document;
+			}
+		} as unknown as { new (): DOMParser };
+	} catch {
+		// Fallback: use regex-based parser for simple InstrumenPoche XML
+		return class FallbackDOMParser {
+			parseFromString(content: string, _mimeType: string): Document {
+				return createFallbackDocument(content);
+			}
+		} as unknown as { new (): DOMParser };
+	}
+}
+
+/**
+ * Fallback regex-based XML parser for environments without DOM support
+ */
+function createFallbackDocument(xmlContent: string): Document {
+	// Basic XML syntax validation - check for unbalanced tags
+	// Look for patterns like `<tag ` without closing `>` before next `<`
+	const unclosedTagMatch = xmlContent.match(/<[a-zA-Z][^>]*<[a-zA-Z]/);
+	if (unclosedTagMatch) {
+		throw new Error('XML parsing failed: Malformed tag - missing closing bracket');
+	}
+
+	const elements: Map<string, Element[]> = new Map();
+
+	// Parse INSTRUMENPOCHE root
+	const rootMatch = xmlContent.match(/<INSTRUMENPOCHE([^>]*)>/i);
+	if (rootMatch) {
+		const rootAttrs = parseAttributes(rootMatch[1]);
+		const rootEl = createMockElement('INSTRUMENPOCHE', rootAttrs);
+		elements.set('INSTRUMENPOCHE', [rootEl]);
+		elements.set('instrumenpoche', [rootEl]);
+	}
+
+	// Parse viewBox elements
+	const viewBoxRegex = /<viewBox([^>]*)\/?>/gi;
+	const viewBoxes: Element[] = [];
+	let match;
+	while ((match = viewBoxRegex.exec(xmlContent)) !== null) {
+		viewBoxes.push(createMockElement('viewBox', parseAttributes(match[1])));
+	}
+	if (viewBoxes.length) elements.set('viewBox', viewBoxes);
+
+	// Parse action elements
+	const actionRegex = /<action([^>]*)\/?>/gi;
+	const actions: Element[] = [];
+	while ((match = actionRegex.exec(xmlContent)) !== null) {
+		actions.push(createMockElement('action', parseAttributes(match[1])));
+	}
+	if (actions.length) elements.set('action', actions);
+
+	return {
+		querySelector: (selector: string) => elements.get(selector)?.[0] ?? null,
+		querySelectorAll: (selector: string) => elements.get(selector) ?? []
+	} as unknown as Document;
+}
+
+/**
+ * Parse XML attributes from a string like ' attr1="value1" attr2="value2"'
+ */
+function parseAttributes(attrString: string): Record<string, string> {
+	const attrs: Record<string, string> = {};
+	const attrRegex = /(\w+)=["']([^"']*)["']/g;
+	let match;
+	while ((match = attrRegex.exec(attrString)) !== null) {
+		attrs[match[1]] = match[2];
+	}
+	return attrs;
+}
+
+/**
+ * Create a mock Element with getAttribute and attributes
+ */
+function createMockElement(tagName: string, attrs: Record<string, string>): Element {
+	const attrArray = Object.entries(attrs).map(([name, value]) => ({ name, value }));
+	return {
+		tagName,
+		getAttribute: (name: string) => attrs[name] ?? null,
+		attributes: attrArray,
+		textContent: ''
+	} as unknown as Element;
+}
+
+/**
+ * Parse XML string to IepDocument structure
+ * Works in both browser (native DOMParser) and Node.js (fallback parser)
+ */
+async function parseXmlToIepDocument(xmlContent: string): Promise<IepDocument | null> {
+	const DOMParserClass = await getDOMParser();
+	const parser = new DOMParserClass();
+	const doc = parser.parseFromString(xmlContent, 'text/xml');
+
+	// Check for parsing errors (browser only)
+	const parseError = doc.querySelector('parsererror');
+	if (parseError) {
+		throw new Error(`XML parsing failed: ${parseError.textContent}`);
+	}
+
+	const root = doc.querySelector('INSTRUMENPOCHE') || doc.querySelector('instrumenpoche');
+	if (!root) {
+		return null;
+	}
+
+	// Extract root attributes
+	const rootAttrs: IepDocument['INSTRUMENPOCHE']['$'] = {
+		version: root.getAttribute('version') ?? undefined,
+		auteur: root.getAttribute('auteur') ?? undefined,
+		licence: root.getAttribute('licence') ?? undefined
+	};
+
+	// Extract viewBox
+	const viewBoxElements = doc.querySelectorAll('viewBox');
+	const viewBox: IepDocument['INSTRUMENPOCHE']['viewBox'] = [];
+	viewBoxElements.forEach((vb: Element) => {
+		viewBox.push({
+			$: {
+				width: vb.getAttribute('width') ?? undefined,
+				height: vb.getAttribute('height') ?? undefined,
+				commentaire: vb.getAttribute('commentaire') ?? undefined
+			}
+		});
+	});
+
+	// Extract actions
+	const actionElements = doc.querySelectorAll('action');
+	const actions: IepAction[] = [];
+	actionElements.forEach((action: Element) => {
+		const attrs: IepAction['$'] = {};
+		// Copy all attributes
+		for (const attr of action.attributes) {
+			(attrs as Record<string, string>)[attr.name] = attr.value;
+		}
+		actions.push({ $: attrs });
+	});
+
+	return {
+		INSTRUMENPOCHE: {
+			$: rootAttrs,
+			viewBox: viewBox.length > 0 ? viewBox : undefined,
+			action: actions.length > 0 ? actions : undefined
+		}
+	};
+}
 
 // =============================================================================
 // Public API Types
@@ -1492,17 +1661,11 @@ export async function convertInstrumenPoche(
 	}
 
 	try {
-		// SECURITY: Parse XML with timeout to prevent DoS from deeply nested structures
-		const PARSE_TIMEOUT_MS = 10000; // 10 seconds
-		const parsePromise = parseStringPromise(xmlContent);
-		const timeoutPromise = new Promise<never>((_, reject) =>
-			setTimeout(() => reject(new Error('XML parsing timeout exceeded')), PARSE_TIMEOUT_MS)
-		);
-
-		const doc = (await Promise.race([parsePromise, timeoutPromise])) as IepDocument;
+		// Parse XML using cross-environment parser
+		const doc = await parseXmlToIepDocument(xmlContent);
 
 		// Validate document structure
-		if (!doc.INSTRUMENPOCHE) {
+		if (!doc || !doc.INSTRUMENPOCHE) {
 			return {
 				success: false,
 				warnings: [],
