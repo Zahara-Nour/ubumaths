@@ -423,6 +423,7 @@ export class ConstructionEngine {
 		const instrumentTypes: InstrumentType[] = [
 			'ruler',
 			'compass',
+			'compassRaised',
 			'protractor',
 			'setSquare',
 			'pencil'
@@ -630,6 +631,14 @@ export class ConstructionEngine {
 				// Make visible immediately but with opacity 0
 				this.#setTargetVisibility(action.target, true);
 				this.#setTargetOpacity(action.target, 0);
+
+				// When showing compass, ensure compassRaised is hidden
+				if (action.target === 'compass') {
+					const compassRaised = this.instruments.get('compassRaised');
+					if (compassRaised) {
+						this.instruments.set('compassRaised', { ...compassRaised, visible: false });
+					}
+				}
 				break;
 			}
 
@@ -643,6 +652,14 @@ export class ConstructionEngine {
 					easing
 				};
 				this.#activeAnimations.push(animState);
+
+				// When hiding compass, also hide compassRaised
+				if (action.target === 'compass') {
+					const compassRaised = this.instruments.get('compassRaised');
+					if (compassRaised) {
+						this.instruments.set('compassRaised', { ...compassRaised, visible: false });
+					}
+				}
 				break;
 			}
 
@@ -840,11 +857,15 @@ export class ConstructionEngine {
 				};
 				this.#activeAnimations.push(animState);
 
-				// Position compass and make visible
+				// Hide regular compass and show raised compass for arc drawing
 				const compass = this.instruments.get('compass');
 				if (compass) {
-					this.instruments.set('compass', {
-						...compass,
+					this.instruments.set('compass', { ...compass, visible: false });
+				}
+				const compassRaised = this.instruments.get('compassRaised');
+				if (compassRaised) {
+					this.instruments.set('compassRaised', {
+						...compassRaised,
 						x: centerPos.x,
 						y: centerPos.y,
 						rotation: startAngleValue,
@@ -981,13 +1002,13 @@ export class ConstructionEngine {
 						}
 					}
 
-					// Update compass rotation
+					// Update raised compass rotation
 					if (anim.start.startAngle !== undefined && anim.start.endAngle !== undefined) {
 						const currentAngle =
 							anim.start.startAngle + (anim.start.endAngle - anim.start.startAngle) * progress;
-						const compass = this.instruments.get('compass');
-						if (compass) {
-							this.instruments.set('compass', { ...compass, rotation: currentAngle });
+						const compassRaised = this.instruments.get('compassRaised');
+						if (compassRaised) {
+							this.instruments.set('compassRaised', { ...compassRaised, rotation: currentAngle });
 						}
 					}
 				}
@@ -1007,6 +1028,25 @@ export class ConstructionEngine {
 			if (anim.type === 'hide') {
 				this.#setTargetVisibility(anim.target, false);
 				this.#setTargetOpacity(anim.target, 1); // Reset opacity
+			}
+
+			// After drawArc, lower the compass (hide raised, show normal)
+			if (anim.type === 'drawArc') {
+				const compassRaised = this.instruments.get('compassRaised');
+				if (compassRaised) {
+					this.instruments.set('compassRaised', { ...compassRaised, visible: false });
+				}
+				const compass = this.instruments.get('compass');
+				if (compass && anim.start.centerX !== undefined && anim.start.centerY !== undefined) {
+					this.instruments.set('compass', {
+						...compass,
+						x: anim.start.centerX,
+						y: anim.start.centerY,
+						rotation: anim.start.endAngle ?? 0,
+						compassRadius: anim.start.radius ?? compass.compassRadius,
+						visible: true
+					});
+				}
 			}
 		}
 
@@ -1327,6 +1367,16 @@ export class ConstructionEngine {
 			if (instrument) {
 				this.instruments.set(target, { ...instrument, visible });
 			}
+
+			// When showing/hiding compass, synchronize compassRaised
+			if (target === 'compass') {
+				const compassRaised = this.instruments.get('compassRaised');
+				if (compassRaised) {
+					// When showing compass, hide compassRaised
+					// When hiding compass, also hide compassRaised
+					this.instruments.set('compassRaised', { ...compassRaised, visible: false });
+				}
+			}
 			return;
 		}
 
@@ -1578,11 +1628,15 @@ export class ConstructionEngine {
 			});
 		}
 
-		// Position compass at end
+		// Hide regular compass and position raised compass at end
 		const compass = this.instruments.get('compass');
 		if (compass) {
-			this.instruments.set('compass', {
-				...compass,
+			this.instruments.set('compass', { ...compass, visible: false });
+		}
+		const compassRaised = this.instruments.get('compassRaised');
+		if (compassRaised) {
+			this.instruments.set('compassRaised', {
+				...compassRaised,
 				x: centerPos.x,
 				y: centerPos.y,
 				rotation: endAngleValue,
@@ -1596,7 +1650,9 @@ export class ConstructionEngine {
 	 * Check if a target is an instrument type
 	 */
 	#isInstrumentType(target: string | InstrumentType): target is InstrumentType {
-		return ['ruler', 'compass', 'protractor', 'setSquare', 'pencil'].includes(target);
+		return ['ruler', 'compass', 'compassRaised', 'protractor', 'setSquare', 'pencil'].includes(
+			target
+		);
 	}
 
 	// =========================================================================

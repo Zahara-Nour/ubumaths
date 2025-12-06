@@ -27,7 +27,7 @@
 	} from '../constants';
 
 	// Detailed instrument components ported from InstrumenPoche
-	import { Compass, Ruler, SetSquare, Protractor, Pencil } from './instruments';
+	import { Compass, CompassRaised, Ruler, SetSquare, Protractor, Pencil } from './instruments';
 
 	// Types
 	interface Props {
@@ -401,6 +401,15 @@
 					/>
 				{:else if instrument.type === 'compass'}
 					<Compass
+						x={instrument.x}
+						y={instrument.y}
+						rotation={instrument.rotation}
+						opening={instrument.compassRadius ?? 0}
+						scale={instrument.scale}
+						visible={instrument.visible}
+					/>
+				{:else if instrument.type === 'compassRaised'}
+					<CompassRaised
 						x={instrument.x}
 						y={instrument.y}
 						rotation={instrument.rotation}
