@@ -19,10 +19,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c1",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 800,
 					"y": 50
@@ -31,28 +30,21 @@
 					"x": 800,
 					"y": 600
 				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
+				"duration": 1833,
+				"createObject": {
+					"id": "c1",
+					"style": {
+						"color": "#FFFFFF",
+						"lineWidth": 2,
+						"lineStyle": "dashed"
+					}
 				}
 			}
 		},
 		{
 			"type": "action",
 			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 800,
-				"y": 600,
-				"duration": 1833
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "c2",
+				"kind": "drawLine",
 				"from": {
 					"x": 800,
 					"y": 600
@@ -61,21 +53,15 @@
 					"x": 0,
 					"y": 600
 				},
-				"style": {
-					"color": "#FFFFFF",
-					"lineWidth": 2,
-					"lineStyle": "dashed"
+				"duration": 2667,
+				"createObject": {
+					"id": "c2",
+					"style": {
+						"color": "#FFFFFF",
+						"lineWidth": 2,
+						"lineStyle": "dashed"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 0,
-				"y": 600,
-				"duration": 2667
 			}
 		},
 		{
@@ -165,10 +151,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "AB",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 173.45,
 					"y": 457.45
@@ -177,21 +162,15 @@
 					"x": 468.15,
 					"y": 424.35
 				},
-				"style": {
-					"color": "#000000",
-					"lineWidth": 1.5,
-					"lineStyle": "solid"
+				"duration": 989,
+				"createObject": {
+					"id": "AB",
+					"style": {
+						"color": "#000000",
+						"lineWidth": 1.5,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 468.15,
-				"y": 424.35,
-				"duration": 989
 			}
 		},
 		{
@@ -295,10 +274,9 @@
 			"duration": 250
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_21",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 173.45,
 					"y": 457.45
@@ -307,21 +285,15 @@
 					"x": 555.5,
 					"y": 178.5
 				},
-				"style": {
-					"color": "#228B22",
-					"lineWidth": 1.5,
-					"lineStyle": "solid"
+				"duration": 1577,
+				"createObject": {
+					"id": "seg_21",
+					"style": {
+						"color": "#228B22",
+						"lineWidth": 1.5,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 555.5,
-				"y": 178.5,
-				"duration": 1577
 			}
 		},
 		{
@@ -399,10 +371,9 @@
 			"text": "Compass raised"
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc_3",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 173.45,
 					"y": 457.45
@@ -410,19 +381,14 @@
 				"radius": 116.3,
 				"startAngle": 138,
 				"endAngle": 155,
-				"style": {
-					"color": "#228B22",
-					"lineWidth": 1.5
+				"duration": 500,
+				"createObject": {
+					"id": "arc_3",
+					"style": {
+						"color": "#228B22",
+						"lineWidth": 1.5
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": 17,
-				"duration": 500
 			}
 		},
 		{
@@ -444,10 +410,9 @@
 			"text": "Compass raised"
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc_4",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 266.6,
 					"y": 388.3
@@ -455,19 +420,14 @@
 				"radius": 116.3,
 				"startAngle": 155,
 				"endAngle": 122,
-				"style": {
-					"color": "#228B22",
-					"lineWidth": 1.5
+				"duration": 500,
+				"createObject": {
+					"id": "arc_4",
+					"style": {
+						"color": "#228B22",
+						"lineWidth": 1.5
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -33,
-				"duration": 500
 			}
 		},
 		{
@@ -507,10 +467,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "c3",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 361,
 					"y": 319.7
@@ -518,19 +477,14 @@
 				"radius": 116.3,
 				"startAngle": 130,
 				"endAngle": 164,
-				"style": {
-					"color": "#228B22",
-					"lineWidth": 1.5
+				"duration": 500,
+				"createObject": {
+					"id": "c3",
+					"style": {
+						"color": "#228B22",
+						"lineWidth": 1.5
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": 34,
-				"duration": 500
 			}
 		},
 		{
@@ -810,10 +764,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc_1",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 468.15,
 					"y": 424.35
@@ -821,19 +774,14 @@
 				"radius": 115.8,
 				"startAngle": 150.1,
 				"endAngle": 117.66,
-				"style": {
-					"color": "#228B22",
-					"lineWidth": 0
+				"duration": 500,
+				"createObject": {
+					"id": "arc_1",
+					"style": {
+						"color": "#228B22",
+						"lineWidth": 0
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -32.44,
-				"duration": 500
 			}
 		},
 		{
@@ -903,10 +851,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc_2",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 361,
 					"y": 319.7
@@ -914,19 +861,14 @@
 				"radius": 173.07,
 				"startAngle": 92.56,
 				"endAngle": 78.89,
-				"style": {
-					"color": "#008844",
-					"lineWidth": 0
+				"duration": 500,
+				"createObject": {
+					"id": "arc_2",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 0
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -13.670000000000002,
-				"duration": 500
 			}
 		},
 		{
@@ -961,10 +903,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc_6",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 266.6,
 					"y": 388.3
@@ -972,19 +913,14 @@
 				"radius": 173.07,
 				"startAngle": 88.06,
 				"endAngle": 71.09,
-				"style": {
-					"color": "#008844",
-					"lineWidth": 0
+				"duration": 500,
+				"createObject": {
+					"id": "arc_6",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 0
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -16.97,
-				"duration": 500
 			}
 		},
 		{
@@ -1068,10 +1004,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "arc",
-				"id": "arc_5",
+			"type": "action",
+			"action": {
+				"kind": "drawArc",
 				"center": {
 					"x": 375,
 					"y": 491.2
@@ -1079,19 +1014,14 @@
 				"radius": 116.69,
 				"startAngle": 152.52,
 				"endAngle": 135,
-				"style": {
-					"color": "#008844",
-					"lineWidth": 0
+				"duration": 500,
+				"createObject": {
+					"id": "arc_5",
+					"style": {
+						"color": "#008844",
+						"lineWidth": 0
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "rotate",
-				"target": "compass",
-				"angle": -17.52000000000001,
-				"duration": 500
 			}
 		},
 		{
@@ -1168,30 +1098,23 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_7b",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 454.8,
 					"y": 251.8
 				},
 				"to": "P_13",
-				"style": {
-					"color": "#008888",
-					"lineWidth": 1,
-					"lineStyle": "dashed"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_7b",
+					"style": {
+						"color": "#008888",
+						"lineWidth": 1,
+						"lineStyle": "dashed"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 454.8,
-				"y": 251.8,
-				"duration": 100
 			}
 		},
 		{
@@ -1228,30 +1151,23 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_7",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 361,
 					"y": 319.7
 				},
 				"to": "P_4",
-				"style": {
-					"color": "#006400",
-					"lineWidth": 1,
-					"lineStyle": "dashed"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_7",
+					"style": {
+						"color": "#006400",
+						"lineWidth": 1,
+						"lineStyle": "dashed"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 361,
-				"y": 319.7,
-				"duration": 100
 			}
 		},
 		{
@@ -1275,30 +1191,23 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_8",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 266.6,
 					"y": 388.3
 				},
 				"to": "P_6",
-				"style": {
-					"color": "#006400",
-					"lineWidth": 1,
-					"lineStyle": "dashed"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_8",
+					"style": {
+						"color": "#006400",
+						"lineWidth": 1,
+						"lineStyle": "dashed"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 266.6,
-				"y": 388.3,
-				"duration": 100
 			}
 		},
 		{
@@ -1433,10 +1342,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg4",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 220.1,
 					"y": 461.2
@@ -1445,21 +1353,15 @@
 					"x": 224.85,
 					"y": 445.9
 				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 1.5,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg4",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 1.5,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 224.85,
-				"y": 445.9,
-				"duration": 100
 			}
 		},
 		{
@@ -1473,10 +1375,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg5",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 317.85,
 					"y": 453.55
@@ -1485,21 +1386,15 @@
 					"x": 324.55,
 					"y": 436.3
 				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 1.5,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg5",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 1.5,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 324.55,
-				"y": 436.3,
-				"duration": 100
 			}
 		},
 		{
@@ -1513,10 +1408,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg6",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 418.45,
 					"y": 439.2
@@ -1525,21 +1419,15 @@
 					"x": 425.2,
 					"y": 422.9
 				},
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 1.5,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg6",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 1.5,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 425.2,
-				"y": 422.9,
-				"duration": 100
 			}
 		},
 		{

@@ -251,6 +251,19 @@ function setInstrumentRotation(ctx: ConversionContext, instrument: string, angle
 	ctx.instrumentRotations.set(instrument, angle);
 }
 
+/**
+ * Normalize angle delta to the shortest path [-180, 180]
+ * This ensures rotations take the most direct route
+ */
+function normalizeAngleDelta(delta: number): number {
+	// Normalize to [-360, 360] first
+	let normalized = delta % 360;
+	// Then adjust to [-180, 180]
+	if (normalized > 180) normalized -= 360;
+	if (normalized < -180) normalized += 360;
+	return normalized;
+}
+
 // =============================================================================
 // Color Conversion
 // =============================================================================
@@ -745,51 +758,53 @@ function convertPencilAction(
 				ctx.createdObjects.add(id);
 				ctx.steps.push({ type: 'create', object: rayDef });
 			} else if (attrs.cible) {
-				// Draw to a target point
+				// Draw to a target point - use drawLine for synchronized animation
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
-				const segmentDef: ObjectDef = {
-					kind: 'segment',
-					id,
+				// For target points, we need the target position for duration calculation
+				// Use a default duration since we don't have the target coords yet
+				const PENCIL_SPEED = 300;
+				const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+				const traceDuration = Math.max(100, Math.round((distance / PENCIL_SPEED) * 1000));
+
+				const drawLineAction: ActionDef = {
+					kind: 'drawLine',
 					from: { x: startX, y: startY },
 					to: targetId,
-					style: {
-						color: convertColor(attrs.couleur),
-						lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
-						lineStyle: convertLineStyle(attrs.pointille)
+					duration: traceDuration,
+					createObject: {
+						id,
+						style: {
+							color: convertColor(attrs.couleur),
+							lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
+							lineStyle: convertLineStyle(attrs.pointille)
+						}
 					}
 				};
 				ctx.createdObjects.add(id);
-				ctx.steps.push({ type: 'create', object: segmentDef });
+				ctx.steps.push({ type: 'action', action: drawLineAction });
 			} else {
-				// Simple segment
-				const segmentDef: ObjectDef = {
-					kind: 'segment',
-					id,
+				// Simple segment - use drawLine for synchronized pencil + segment animation
+				const PENCIL_SPEED = 300; // pixels per second
+				const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+				const traceDuration = Math.max(100, Math.round((distance / PENCIL_SPEED) * 1000));
+
+				const drawLineAction: ActionDef = {
+					kind: 'drawLine',
 					from: { x: startX, y: startY },
 					to: { x: endX, y: endY },
-					style: {
-						color: convertColor(attrs.couleur),
-						lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
-						lineStyle: convertLineStyle(attrs.pointille)
+					duration: traceDuration,
+					createObject: {
+						id,
+						style: {
+							color: convertColor(attrs.couleur),
+							lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
+							lineStyle: convertLineStyle(attrs.pointille)
+						}
 					}
 				};
 				ctx.createdObjects.add(id);
-				ctx.steps.push({ type: 'create', object: segmentDef });
+				ctx.steps.push({ type: 'action', action: drawLineAction });
 			}
-
-			// Move pencil to end position while drawing
-			// Use consistent drawing speed (300 pixels/second) for realistic animation
-			const PENCIL_SPEED = 300; // pixels per second
-			const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-			const traceDuration = Math.max(100, Math.round((distance / PENCIL_SPEED) * 1000));
-			const pencilMoveAction: ActionDef = {
-				kind: 'moveTo',
-				target: 'pencil',
-				x: endX,
-				y: endY,
-				duration: traceDuration
-			};
-			ctx.steps.push({ type: 'action', action: pencilMoveAction });
 
 			// Update current position and pencil tracking
 			ctx.currentPosition = { x: endX, y: endY };
@@ -1020,7 +1035,8 @@ function convertCompassAction(
 		case 'rotation': {
 			if (attrs.angle) {
 				// attrs.angle is a delta rotation in InstrumenPoche
-				const deltaAngle = parseFloat(attrs.angle);
+				// Normalize to shortest path
+				const deltaAngle = normalizeAngleDelta(parseFloat(attrs.angle));
 				const action: ActionDef = {
 					kind: 'rotate',
 					target: 'compass',
@@ -1028,9 +1044,9 @@ function convertCompassAction(
 					duration: 500
 				};
 				ctx.steps.push({ type: 'action', action });
-				// Track the new rotation
+				// Track the new rotation (use unnormalized to maintain accurate absolute position)
 				const currentRotation = getInstrumentRotation(ctx, 'compass');
-				setInstrumentRotation(ctx, 'compass', currentRotation + deltaAngle);
+				setInstrumentRotation(ctx, 'compass', currentRotation + parseFloat(attrs.angle));
 			} else if (attrs.cible) {
 				// Rotate towards a target point - calculate the absolute angle then delta
 				const compassPos = getInstrumentPosition(ctx, 'compass');
@@ -1039,7 +1055,8 @@ function convertCompassAction(
 				if (compassPos && targetPos) {
 					const targetAngle = calculateAngleToTarget(compassPos, targetPos);
 					const currentRotation = getInstrumentRotation(ctx, 'compass');
-					const deltaAngle = targetAngle - currentRotation;
+					// Normalize delta to take the shortest path
+					const deltaAngle = normalizeAngleDelta(targetAngle - currentRotation);
 					const action: ActionDef = {
 						kind: 'rotate',
 						target: 'compass',
@@ -1047,7 +1064,8 @@ function convertCompassAction(
 						duration: 500
 					};
 					ctx.steps.push({ type: 'action', action });
-					setInstrumentRotation(ctx, 'compass', targetAngle);
+					// Track the new rotation (update to actual target angle)
+					setInstrumentRotation(ctx, 'compass', currentRotation + deltaAngle);
 				} else {
 					// Cannot calculate angle - add warning with details
 					const missing: string[] = [];
@@ -1128,14 +1146,16 @@ function convertCompassAction(
 			// Get current compass rotation and calculate DELTA angles
 			// UbuMaths engine interprets rotation as delta, not absolute
 			const currentRotation = getInstrumentRotation(ctx, 'compass');
-			const deltaToStart = startAngle - currentRotation;
+			// Normalize delta to start to take shortest path
+			const deltaToStart = normalizeAngleDelta(startAngle - currentRotation);
+			// Arc sweep delta - this should NOT be normalized as it defines the arc direction
 			const deltaToEnd = endAngle - startAngle;
 
 			// Calculate arc sweep and duration for compass rotation
 			const arcSweep = Math.abs(endAngle - startAngle);
 			const arcDuration = Math.max(500, Math.round((arcSweep / 360) * 2000)); // 2 seconds for full circle
 
-			// First, rotate compass to start angle (using delta)
+			// First, rotate compass to start angle (using normalized delta for shortest path)
 			if (Math.abs(deltaToStart) > 0.1) {
 				const rotateToStartAction: ActionDef = {
 					kind: 'rotate',
@@ -1144,34 +1164,28 @@ function convertCompassAction(
 					duration: 300
 				};
 				ctx.steps.push({ type: 'action', action: rotateToStartAction });
-				setInstrumentRotation(ctx, 'compass', startAngle);
+				setInstrumentRotation(ctx, 'compass', currentRotation + deltaToStart);
 			}
 
-			// Create arc
-			const arcDef: ObjectDef = {
-				kind: 'arc',
-				id,
+			// Use drawArc action for synchronized compass + arc animation
+			const drawArcAction: ActionDef = {
+				kind: 'drawArc',
 				center: { x: centerX, y: centerY },
-				radius: ctx.compassRadius, // Use tracked compass radius
+				radius: ctx.compassRadius,
 				startAngle,
 				endAngle,
-				style: {
-					color: convertColor(attrs.couleur),
-					lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1
+				duration: arcDuration,
+				createObject: {
+					id,
+					style: {
+						color: convertColor(attrs.couleur),
+						lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1
+					}
 				}
 			};
 			ctx.createdObjects.add(id);
-			ctx.steps.push({ type: 'create', object: arcDef });
-
-			// Rotate compass from start to end angle while arc is drawn (using delta)
-			const rotateAction: ActionDef = {
-				kind: 'rotate',
-				target: 'compass',
-				angle: deltaToEnd,
-				duration: arcDuration
-			};
-			ctx.steps.push({ type: 'action', action: rotateAction });
-			setInstrumentRotation(ctx, 'compass', endAngle);
+			ctx.steps.push({ type: 'action', action: drawArcAction });
+			setInstrumentRotation(ctx, 'compass', currentRotation + deltaToStart + deltaToEnd);
 			break;
 		}
 		case 'retourner': {

@@ -23,10 +23,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_2",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 133.05,
 					"y": 91.15
@@ -35,21 +34,15 @@
 					"x": 133.7,
 					"y": 185.1
 				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 20,
-					"lineStyle": "solid"
+				"duration": 313,
+				"createObject": {
+					"id": "seg_2",
+					"style": {
+						"color": "#FF0000",
+						"lineWidth": 20,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 133.7,
-				"y": 185.1,
-				"duration": 313
 			}
 		},
 		{
@@ -92,10 +85,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_4",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 213.65,
 					"y": 92.95
@@ -104,21 +96,15 @@
 					"x": 215.2,
 					"y": 163.3
 				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 20,
-					"lineStyle": "solid"
+				"duration": 235,
+				"createObject": {
+					"id": "seg_4",
+					"style": {
+						"color": "#FF0000",
+						"lineWidth": 20,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 215.2,
-				"y": 163.3,
-				"duration": 235
 			}
 		},
 		{
@@ -161,10 +147,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_6",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 301.5,
 					"y": 93.5
@@ -173,21 +158,15 @@
 					"x": 302.25,
 					"y": 180
 				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 20,
-					"lineStyle": "solid"
+				"duration": 288,
+				"createObject": {
+					"id": "seg_6",
+					"style": {
+						"color": "#FF0000",
+						"lineWidth": 20,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 302.25,
-				"y": 180,
-				"duration": 288
 			}
 		},
 		{
@@ -230,10 +209,9 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_8",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 404.4,
 					"y": 177.65
@@ -242,21 +220,15 @@
 					"x": 403.6,
 					"y": 95.3
 				},
-				"style": {
-					"color": "#FF0000",
-					"lineWidth": 20,
-					"lineStyle": "solid"
+				"duration": 275,
+				"createObject": {
+					"id": "seg_8",
+					"style": {
+						"color": "#FF0000",
+						"lineWidth": 20,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 403.6,
-				"y": 95.3,
-				"duration": 275
 			}
 		},
 		{
@@ -302,84 +274,63 @@
 			}
 		},
 		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_10",
+			"type": "action",
+			"action": {
+				"kind": "drawLine",
 				"from": {
 					"x": 67,
 					"y": 523
 				},
 				"to": "P_5",
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 3,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_10",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 3,
+						"lineStyle": "solid"
+					}
 				}
 			}
 		},
 		{
 			"type": "action",
 			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 67,
-				"y": 523,
-				"duration": 100
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_11",
+				"kind": "drawLine",
 				"from": {
 					"x": 67,
 					"y": 523
 				},
 				"to": "P_7",
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 3,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_11",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 3,
+						"lineStyle": "solid"
+					}
 				}
 			}
 		},
 		{
 			"type": "action",
 			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 67,
-				"y": 523,
-				"duration": 100
-			}
-		},
-		{
-			"type": "create",
-			"object": {
-				"kind": "segment",
-				"id": "seg_12",
+				"kind": "drawLine",
 				"from": {
 					"x": 67,
 					"y": 523
 				},
 				"to": "P_9",
-				"style": {
-					"color": "#0000FF",
-					"lineWidth": 3,
-					"lineStyle": "solid"
+				"duration": 100,
+				"createObject": {
+					"id": "seg_12",
+					"style": {
+						"color": "#0000FF",
+						"lineWidth": 3,
+						"lineStyle": "solid"
+					}
 				}
-			}
-		},
-		{
-			"type": "action",
-			"action": {
-				"kind": "moveTo",
-				"target": "pencil",
-				"x": 67,
-				"y": 523,
-				"duration": 100
 			}
 		}
 	]

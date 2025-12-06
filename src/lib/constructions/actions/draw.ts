@@ -41,10 +41,13 @@ import {
  * Draws an arc using the compass instrument. The compass is positioned
  * at the center point and rotates to trace the arc.
  */
+/** Point reference - either an ID string or inline coordinates */
+type PointRef = string | { readonly x: number; readonly y: number };
+
 export interface DrawArcActionDef {
 	readonly kind: 'drawArc';
-	/** ID of the point to use as center (where the fixed point goes) */
-	readonly center: string;
+	/** Center point - ID or inline coordinates */
+	readonly center: PointRef;
 	/** Radius of the arc (expression) */
 	readonly radius: Expr;
 	/** Start angle in degrees (0 = right, 90 = up) */
@@ -70,10 +73,10 @@ export interface DrawArcActionDef {
  */
 export interface DrawLineActionDef {
 	readonly kind: 'drawLine';
-	/** ID of the starting point */
-	readonly from: string;
-	/** ID of the ending point */
-	readonly to: string;
+	/** Starting point - ID or inline coordinates */
+	readonly from: PointRef;
+	/** Ending point - ID or inline coordinates */
+	readonly to: PointRef;
 	/** Animation duration in milliseconds */
 	readonly duration?: number;
 	/** Easing function name */
@@ -113,9 +116,13 @@ interface DrawLineStartState {
  * @param context - Action context
  * @returns Position or undefined if not found
  */
-function getPointPosition(pointId: string, context: ActionContext): Position | undefined {
-	const obj = context.getObject(pointId);
-	return obj?.position;
+function getPointPosition(pointRef: PointRef, context: ActionContext): Position | undefined {
+	if (typeof pointRef === 'string') {
+		const obj = context.getObject(pointRef);
+		return obj?.position;
+	}
+	// Inline coordinates
+	return { x: pointRef.x, y: pointRef.y };
 }
 
 /**
@@ -129,6 +136,13 @@ function calculateAngle(from: Position, to: Position): number {
 	const dx = to.x - from.x;
 	const dy = to.y - from.y;
 	return Math.atan2(-dy, dx) * (180 / Math.PI); // Negative dy because SVG y is inverted
+}
+
+/**
+ * Convert a PointRef to a string key for caching
+ */
+function pointRefToKey(ref: PointRef): string {
+	return typeof ref === 'string' ? ref : `${ref.x},${ref.y}`;
 }
 
 /**
@@ -264,7 +278,8 @@ export class DrawArcActionExecutor extends BaseActionExecutor<DrawArcActionDef> 
 			const endAngleValue = evaluateExpr(endAngle, context.evalContext);
 
 			// Get or capture start state
-			let startState = this.startStates.get(center);
+			const centerKey = pointRefToKey(center);
+			let startState = this.startStates.get(centerKey);
 			if (!startState) {
 				const compassState = context.getInstrument('compass');
 				startState = {
@@ -279,7 +294,7 @@ export class DrawArcActionExecutor extends BaseActionExecutor<DrawArcActionDef> 
 					},
 					centerPosition: centerPos
 				};
-				this.startStates.set(center, startState);
+				this.startStates.set(centerKey, startState);
 			}
 
 			// Calculate current angle based on progress
@@ -313,7 +328,7 @@ export class DrawArcActionExecutor extends BaseActionExecutor<DrawArcActionDef> 
 
 			// Clear cached start state when animation completes
 			if (progress >= 1) {
-				this.startStates.delete(center);
+				this.startStates.delete(centerKey);
 			}
 
 			return successResult();
@@ -344,7 +359,7 @@ export class DrawArcActionExecutor extends BaseActionExecutor<DrawArcActionDef> 
 			centerPosition: centerPos
 		};
 
-		this.startStates.set(action.center, startState);
+		this.startStates.set(pointRefToKey(action.center), startState);
 		return startState;
 	}
 
@@ -365,7 +380,7 @@ export class DrawArcActionExecutor extends BaseActionExecutor<DrawArcActionDef> 
 			}
 		}
 
-		this.startStates.delete(action.center);
+		this.startStates.delete(pointRefToKey(action.center));
 	}
 
 	/**
@@ -416,7 +431,9 @@ export class DrawLineActionExecutor extends BaseActionExecutor<DrawLineActionDef
 
 	execute(action: DrawLineActionDef, progress: number, context: ActionContext): InterpolationState {
 		const { from, to, easing, createObject } = action;
-		const stateKey = `${from}-${to}`;
+		const fromKey = pointRefToKey(from);
+		const toKey = pointRefToKey(to);
+		const stateKey = `${fromKey}-${toKey}`;
 
 		try {
 			// Get point positions
@@ -424,10 +441,10 @@ export class DrawLineActionExecutor extends BaseActionExecutor<DrawLineActionDef
 			const toPos = getPointPosition(to, context);
 
 			if (!fromPos) {
-				return notFoundResult(`from point: ${from}`);
+				return notFoundResult(`from point: ${fromKey}`);
 			}
 			if (!toPos) {
-				return notFoundResult(`to point: ${to}`);
+				return notFoundResult(`to point: ${toKey}`);
 			}
 
 			// Get or capture start state
@@ -495,7 +512,7 @@ export class DrawLineActionExecutor extends BaseActionExecutor<DrawLineActionDef
 
 		if (!fromPos || !toPos) return undefined;
 
-		const stateKey = `${action.from}-${action.to}`;
+		const stateKey = `${pointRefToKey(action.from)}-${pointRefToKey(action.to)}`;
 		const pencilState = context.getInstrument('pencil');
 
 		const startState: DrawLineStartState = {
@@ -525,7 +542,7 @@ export class DrawLineActionExecutor extends BaseActionExecutor<DrawLineActionDef
 			}
 		}
 
-		const stateKey = `${action.from}-${action.to}`;
+		const stateKey = `${pointRefToKey(action.from)}-${pointRefToKey(action.to)}`;
 		this.startStates.delete(stateKey);
 	}
 

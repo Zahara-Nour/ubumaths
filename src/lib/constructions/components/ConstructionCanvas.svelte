@@ -112,6 +112,10 @@
 				const radius = typeof def.radius === 'number' ? def.radius : 100;
 				const startAngle = typeof def.startAngle === 'number' ? def.startAngle : 0;
 				const endAngle = typeof def.endAngle === 'number' ? def.endAngle : 90;
+
+				if (progress < 1) {
+					return partialArcPath(center.x, center.y, radius, startAngle, endAngle, progress);
+				}
 				return arcToSvgPath(center.x, center.y, radius, startAngle, endAngle);
 			}
 

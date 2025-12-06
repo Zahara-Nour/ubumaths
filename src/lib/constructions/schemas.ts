@@ -481,6 +481,38 @@ export const measureActionDefSchema = actionDefBaseSchema.extend({
 });
 
 /**
+ * Draw line action (pencil animation with synchronized segment creation)
+ */
+export const drawLineActionDefSchema = actionDefBaseSchema.extend({
+	kind: z.literal('drawLine'),
+	from: pointRefSchema,
+	to: pointRefSchema,
+	createObject: z
+		.object({
+			id: objectIdSchema,
+			style: stylePropsSchema.optional()
+		})
+		.optional()
+});
+
+/**
+ * Draw arc action (compass animation with synchronized arc creation)
+ */
+export const drawArcActionDefSchema = actionDefBaseSchema.extend({
+	kind: z.literal('drawArc'),
+	center: pointRefSchema,
+	radius: exprSchema,
+	startAngle: exprSchema,
+	endAngle: exprSchema,
+	createObject: z
+		.object({
+			id: objectIdSchema,
+			style: stylePropsSchema.optional()
+		})
+		.optional()
+});
+
+/**
  * Union of all action definitions
  */
 export const actionDefSchema = z.discriminatedUnion('kind', [
@@ -494,7 +526,9 @@ export const actionDefSchema = z.discriminatedUnion('kind', [
 	drawActionDefSchema,
 	drawCircleActionDefSchema,
 	setCompassActionDefSchema,
-	measureActionDefSchema
+	measureActionDefSchema,
+	drawLineActionDefSchema,
+	drawArcActionDefSchema
 ]);
 
 // =============================================================================
