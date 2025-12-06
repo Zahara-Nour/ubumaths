@@ -117,7 +117,7 @@
 		<!-- Controls bar -->
 		{#if showControls}
 			<div class="controls-bar flex items-center justify-between rounded-lg bg-muted px-4 py-2">
-				<PlayerControls timeline={engine.timeline} />
+				<PlayerControls timeline={engine.timeline} {engine} />
 
 				<div class="progress text-sm text-muted-foreground">
 					Etape {currentStepDisplay} / {totalSteps}
