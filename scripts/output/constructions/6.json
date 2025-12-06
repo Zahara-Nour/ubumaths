@@ -62,7 +62,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "50",
+        "id": "T_50",
         "content": " Construire un parallélogramme en traçant ses diagonales.",
         "x": 10,
         "y": 50,
@@ -80,7 +80,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "20",
+        "id": "T_20",
         "content": "Ici on construit un parallélogramme ABCD à partir de trois points A, B et C. ",
         "x": 10,
         "y": 80,
@@ -98,7 +98,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P1",
+        "id": "P_1",
         "x": 510,
         "y": 376,
         "style": {
@@ -113,10 +113,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label2",
+        "id": "label_1_label",
         "content": "A",
-        "x": "$P1.x + 10",
-        "y": "$P1.y - 10",
+        "x": "$P_1.x + 10",
+        "y": "$P_1.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#0000FF"
@@ -131,7 +131,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P3",
+        "id": "P_2",
         "x": 596,
         "y": 266,
         "style": {
@@ -146,10 +146,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label4",
+        "id": "label_2_label",
         "content": "B",
-        "x": "$P3.x + 10",
-        "y": "$P3.y - 10",
+        "x": "$P_2.x + 10",
+        "y": "$P_2.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#0000FF"
@@ -164,7 +164,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P5",
+        "id": "P_3",
         "x": 759,
         "y": 344,
         "style": {
@@ -179,10 +179,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label6",
+        "id": "label_3_label",
         "content": "C",
-        "x": "$P5.x + 10",
-        "y": "$P5.y - 10",
+        "x": "$P_3.x + 10",
+        "y": "$P_3.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#0000FF"
@@ -214,7 +214,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg7",
+        "id": "seg_4X",
         "from": {
           "x": 50,
           "y": 493
@@ -234,7 +234,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg8",
+        "id": "seg_5X",
         "from": {
           "x": 111,
           "y": 411
@@ -254,7 +254,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg9",
+        "id": "seg_6X",
         "from": {
           "x": 235,
           "y": 462
@@ -274,7 +274,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg10",
+        "id": "seg_7X",
         "from": {
           "x": 149,
           "y": 548
@@ -298,7 +298,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "7x",
+        "id": "T_7x",
         "content": "A",
         "x": 20,
         "y": 479,
@@ -316,7 +316,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "8x",
+        "id": "T_8x",
         "content": "B",
         "x": 84,
         "y": 389,
@@ -334,7 +334,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "9x",
+        "id": "T_9x",
         "content": "C",
         "x": 242,
         "y": 437,
@@ -352,7 +352,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "1x",
+        "id": "T_1x",
         "content": "D",
         "x": 164,
         "y": 555,
@@ -380,7 +380,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg11",
+        "id": "seg_5y",
         "from": {
           "x": 48,
           "y": 499
@@ -410,7 +410,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg12",
+        "id": "seg_6y",
         "from": {
           "x": 108,
           "y": 414
@@ -440,7 +440,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg13",
+        "id": "seg_4z",
         "from": {
           "x": 92,
           "y": 486
@@ -470,7 +470,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg14",
+        "id": "seg_5z",
         "from": {
           "x": 176,
           "y": 473
@@ -500,7 +500,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg15",
+        "id": "seg_6z",
         "from": {
           "x": 114,
           "y": 461
@@ -530,7 +530,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg16",
+        "id": "seg_7z",
         "from": {
           "x": 119,
           "y": 465
@@ -560,7 +560,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg17",
+        "id": "seg_8z",
         "from": {
           "x": 146,
           "y": 524
@@ -590,7 +590,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg18",
+        "id": "seg_9z",
         "from": {
           "x": 149,
           "y": 530
@@ -631,7 +631,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "10z",
+        "id": "T_10z",
         "content": "O",
         "x": 130,
         "y": 461,
@@ -667,7 +667,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "21",
+        "id": "T_21",
         "content": "1.On trace les 3 segments [AB], [BC] et [AC] à partir des points A, B et C. ",
         "x": 33,
         "y": 336,
@@ -686,8 +686,8 @@
       "action": {
         "kind": "moveTo",
         "target": "ruler",
-        "x": "$P1.x",
-        "y": "$P1.y",
+        "x": "$P_1.x",
+        "y": "$P_1.y",
         "duration": 500
       }
     },
@@ -695,7 +695,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "P3",
+        "target": "P_2",
         "x": 596,
         "y": 266,
         "duration": 500
@@ -742,7 +742,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg19",
+        "id": "seg_4",
         "from": {
           "x": 510,
           "y": 376
@@ -780,8 +780,8 @@
       "action": {
         "kind": "moveTo",
         "target": "ruler",
-        "x": "$P3.x",
-        "y": "$P3.y",
+        "x": "$P_2.x",
+        "y": "$P_2.y",
         "duration": 500
       }
     },
@@ -819,7 +819,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg20",
+        "id": "seg_5",
         "from": {
           "x": 596,
           "y": 266
@@ -855,7 +855,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "P5",
+        "target": "P_3",
         "x": 759,
         "y": 344,
         "duration": 500
@@ -866,8 +866,8 @@
       "action": {
         "kind": "moveTo",
         "target": "ruler",
-        "x": "$P5.x",
-        "y": "$P5.y",
+        "x": "$P_3.x",
+        "y": "$P_3.y",
         "duration": 500
       }
     },
@@ -905,7 +905,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg21",
+        "id": "seg_6",
         "from": {
           "x": 759,
           "y": 345
@@ -946,6 +946,20 @@
       }
     },
     {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_1",
+        "content": "1.On trace les 3 segments [AB], [BC] et [AC] à partir des points A, B et C. ",
+        "x": 10,
+        "y": 110,
+        "fontSize": 16,
+        "style": {
+          "color": "#88ccccc"
+        }
+      }
+    },
+    {
       "type": "pause",
       "duration": 1000
     },
@@ -953,7 +967,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "22",
+        "id": "T_22",
         "content": "2.En utilisant les graduations de la règle on place le milieu O du segment [AC]. ",
         "x": 10,
         "y": 140,
@@ -989,8 +1003,8 @@
       "action": {
         "kind": "moveTo",
         "target": "ruler",
-        "x": "$P1.x",
-        "y": "$P1.y",
+        "x": "$P_1.x",
+        "y": "$P_1.y",
         "duration": 500
       }
     },
@@ -998,7 +1012,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "P5",
+        "target": "P_3",
         "x": 759,
         "y": 344,
         "duration": 500
@@ -1032,7 +1046,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P22",
+        "id": "P_47",
         "x": 635,
         "y": 360,
         "style": {
@@ -1062,10 +1076,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label23",
+        "id": "label_47_label",
         "content": "O",
-        "x": "$P22.x + 10",
-        "y": "$P22.y - 10",
+        "x": "$P_47.x + 10",
+        "y": "$P_47.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#0000FF"
@@ -1094,7 +1108,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "mark24",
+        "id": "mark_9",
         "x": 566,
         "y": 369,
         "pointStyle": "cross",
@@ -1113,7 +1127,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "mark25",
+        "id": "mark_10",
         "x": 686,
         "y": 354,
         "pointStyle": "cross",
@@ -1129,6 +1143,20 @@
       "duration": 1000
     },
     {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_2",
+        "content": "2.En utilisant les graduations de la règle on place le milieu O du segment [AC]. ",
+        "x": 10,
+        "y": 140,
+        "fontSize": 16,
+        "style": {
+          "color": "#88ccccc"
+        }
+      }
+    },
+    {
       "type": "pause",
       "duration": 1000
     },
@@ -1136,7 +1164,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "23",
+        "id": "T_23",
         "content": "3.On trace la demi-droite [BO). ",
         "x": 10,
         "y": 170,
@@ -1162,8 +1190,8 @@
       "action": {
         "kind": "moveTo",
         "target": "ruler",
-        "x": "$P3.x",
-        "y": "$P3.y",
+        "x": "$P_2.x",
+        "y": "$P_2.y",
         "duration": 500
       }
     },
@@ -1171,7 +1199,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "P3",
+        "target": "P_2",
         "x": 596,
         "y": 266,
         "duration": 500
@@ -1222,7 +1250,7 @@
       "type": "create",
       "object": {
         "kind": "ray",
-        "id": "seg26",
+        "id": "seg_11",
         "from": {
           "x": 597,
           "y": 267
@@ -1263,6 +1291,20 @@
       }
     },
     {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_3",
+        "content": "3.On trace la demi-droite [BO). ",
+        "x": 10,
+        "y": 170,
+        "fontSize": 16,
+        "style": {
+          "color": "#88ccccc"
+        }
+      }
+    },
+    {
       "type": "pause",
       "duration": 1000
     },
@@ -1270,7 +1312,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "24",
+        "id": "T_24",
         "content": "4.En utilisant le compas on place le point D ",
         "x": 10,
         "y": 200,
@@ -1284,7 +1326,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "28",
+        "id": "T_28",
         "content": " sur la demi-droite [BO) tel que O soit le milieu de [BD]. ",
         "x": 10,
         "y": 230,
@@ -1303,8 +1345,8 @@
       "action": {
         "kind": "moveTo",
         "target": "compass",
-        "x": "$P22.x",
-        "y": "$P22.y",
+        "x": "$P_47.x",
+        "y": "$P_47.y",
         "duration": 500
       }
     },
@@ -1357,7 +1399,7 @@
       "type": "create",
       "object": {
         "kind": "arc",
-        "id": "arc27",
+        "id": "arc_12",
         "center": {
           "x": 10,
           "y": 230
@@ -1411,7 +1453,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "P28",
+        "id": "P_12",
         "x": 675,
         "y": 453,
         "style": {
@@ -1437,10 +1479,10 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "label29",
+        "id": "label_12_label",
         "content": "D",
-        "x": "$P28.x + 10",
-        "y": "$P28.y - 10",
+        "x": "$P_12.x + 10",
+        "y": "$P_12.y - 10",
         "fontSize": 14,
         "style": {
           "color": "#0000FF"
@@ -1455,7 +1497,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "P28",
+        "target": "P_12",
         "x": 675,
         "y": 453,
         "duration": 500
@@ -1465,7 +1507,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "mark30",
+        "id": "mark_13",
         "x": 617,
         "y": 315,
         "pointStyle": "cross",
@@ -1484,7 +1526,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "mark31",
+        "id": "mark_14",
         "x": 656,
         "y": 406,
         "pointStyle": "cross",
@@ -1500,6 +1542,34 @@
       "duration": 100
     },
     {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_4",
+        "content": "4.En utilisant le compas de la règle on place le point D ",
+        "x": 10,
+        "y": 200,
+        "fontSize": 16,
+        "style": {
+          "color": "#88ccccc"
+        }
+      }
+    },
+    {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_5",
+        "content": " sur la demi-droite [BO) tel que O soit le milieu de [BD]. ",
+        "x": 10,
+        "y": 230,
+        "fontSize": 16,
+        "style": {
+          "color": "#88ccccc"
+        }
+      }
+    },
+    {
       "type": "pause",
       "duration": 1000
     },
@@ -1507,7 +1577,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "28b",
+        "id": "T_28b",
         "content": "Remarque : D est le symétrique de B par rapport à O.",
         "x": 10,
         "y": 260,
@@ -1525,7 +1595,7 @@
       "type": "create",
       "object": {
         "kind": "text",
-        "id": "26",
+        "id": "T_26",
         "content": "5.On trace les deux segments [DC] et [DA]. ",
         "x": 10,
         "y": 300,
@@ -1544,8 +1614,8 @@
       "action": {
         "kind": "moveTo",
         "target": "ruler",
-        "x": "$P28.x",
-        "y": "$P28.y",
+        "x": "$P_12.x",
+        "y": "$P_12.y",
         "duration": 500
       }
     },
@@ -1598,7 +1668,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg32",
+        "id": "seg_15",
         "from": {
           "x": 757,
           "y": 345
@@ -1649,12 +1719,12 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg33",
+        "id": "seg_16",
         "from": {
           "x": 674,
           "y": 454
         },
-        "to": "P1",
+        "to": "P_1",
         "style": {
           "color": "#0000FF",
           "lineWidth": 2,
@@ -1681,6 +1751,20 @@
       }
     },
     {
+      "type": "create",
+      "object": {
+        "kind": "text",
+        "id": "T_6",
+        "content": "5.On trace les deux segments [DC] et [DA]. ",
+        "x": 10,
+        "y": 300,
+        "fontSize": 16,
+        "style": {
+          "color": "#88ccccc"
+        }
+      }
+    },
+    {
       "type": "pause",
       "duration": 1000
     },
@@ -1688,7 +1772,7 @@
       "type": "action",
       "action": {
         "kind": "moveTo",
-        "target": "28",
+        "target": "T_5",
         "x": 10,
         "y": 229,
         "duration": 500

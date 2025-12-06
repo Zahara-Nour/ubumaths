@@ -22,7 +22,7 @@
       "type": "create",
       "object": {
         "kind": "segment",
-        "id": "seg1",
+        "id": "seg_1",
         "from": {
           "x": 30,
           "y": 300
@@ -42,7 +42,7 @@
       "type": "create",
       "object": {
         "kind": "point",
-        "id": "mark2",
+        "id": "mark_2",
         "x": 105,
         "y": 285,
         "pointStyle": "cross",

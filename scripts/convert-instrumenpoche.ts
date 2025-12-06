@@ -244,42 +244,79 @@ function setInstrumentPosition(ctx: ConversionContext, instrument: string, pos: 
 function convertColor(iepColor: string | undefined): string {
 	if (!iepColor) return '#000000';
 
+	// Handle numeric "0" which means black in InstrumenPoche
+	if (iepColor === '0') return '#000000';
+
 	// Handle hex colors with 0x prefix
 	if (iepColor.startsWith('0x')) {
 		const hex = iepColor.slice(2).padStart(6, '0');
 		return `#${hex}`;
 	}
 
-	// Handle named colors
+	// If it looks like a hex color already
+	if (iepColor.startsWith('#')) return iepColor;
+
+	// Handle named colors (French + English CSS colors)
 	const colorMap: Record<string, string> = {
+		// French colors
 		noir: '#000000',
 		blanc: '#FFFFFF',
 		rouge: '#FF0000',
 		bleu: '#0000FF',
-		blue: '#0000FF',
 		vert: '#00FF00',
-		green: '#008000',
 		jaune: '#FFFF00',
 		orange: '#FFA500',
 		violet: '#8B00FF',
 		rose: '#FF69B4',
 		gris: '#808080',
-		grey: '#808080',
 		marron: '#8B4513',
+		// CSS named colors
+		black: '#000000',
+		white: '#FFFFFF',
+		red: '#FF0000',
+		blue: '#0000FF',
+		green: '#008000',
+		yellow: '#FFFF00',
+		grey: '#808080',
+		gray: '#808080',
+		purple: '#800080',
+		pink: '#FFC0CB',
+		brown: '#A52A2A',
+		cyan: '#00FFFF',
+		magenta: '#FF00FF',
+		lime: '#00FF00',
+		navy: '#000080',
+		teal: '#008080',
+		aqua: '#00FFFF',
+		silver: '#C0C0C0',
+		gold: '#FFD700',
+		// Extended CSS colors commonly used
 		forestgreen: '#228B22',
 		darkgreen: '#006400',
+		lightgreen: '#90EE90',
 		darkred: '#8B0000',
-		goldenrod: '#DAA520'
+		darkblue: '#00008B',
+		lightblue: '#ADD8E6',
+		goldenrod: '#DAA520',
+		coral: '#FF7F50',
+		crimson: '#DC143C',
+		indigo: '#4B0082',
+		khaki: '#F0E68C',
+		lavender: '#E6E6FA',
+		olive: '#808000',
+		salmon: '#FA8072',
+		sienna: '#A0522D',
+		tan: '#D2B48C',
+		turquoise: '#40E0D0',
+		wheat: '#F5DEB3'
 	};
 
 	const lowerColor = iepColor.toLowerCase();
 	if (colorMap[lowerColor]) return colorMap[lowerColor];
 
-	// If it looks like a hex color already
-	if (iepColor.startsWith('#')) return iepColor;
-
-	// Try CSS named color as-is
-	return iepColor;
+	// Unknown color - return black as fallback (safer than invalid color)
+	console.warn(`Unknown color "${iepColor}", using black`);
+	return '#000000';
 }
 
 /**
@@ -298,17 +335,24 @@ function convertLineStyle(pointille: string | undefined): 'solid' | 'dashed' | '
 
 /**
  * Generate a valid UbuMaths object ID
+ * IDs must start with a letter and contain only alphanumeric characters and underscores
  */
 function generateObjectId(ctx: ConversionContext, prefix: string, iepId?: string): string {
 	if (iepId) {
 		// Clean up IEP id to be valid for UbuMaths
-		const cleanId = iepId.replace(/[^a-zA-Z0-9_]/g, '_');
+		let cleanId = iepId.replace(/[^a-zA-Z0-9_]/g, '_');
+
+		// If ID starts with a number, prepend the prefix
+		if (/^[0-9]/.test(cleanId)) {
+			cleanId = `${prefix}_${cleanId}`;
+		}
+
 		if (/^[a-zA-Z]/.test(cleanId) && !ctx.createdObjects.has(cleanId)) {
 			return cleanId;
 		}
 	}
 	ctx.objectIdCounter++;
-	return `${prefix}${ctx.objectIdCounter}`;
+	return `${prefix}_${ctx.objectIdCounter}`;
 }
 
 // =============================================================================
@@ -486,7 +530,7 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 	switch (mouvement) {
 		case 'creer': {
 			// Text creation - just registers the position, actual text comes with 'ecrire'
-			const id = attrs.id || generateObjectId(ctx, 'T');
+			const id = generateObjectId(ctx, 'T', attrs.id);
 			if (attrs.id) {
 				ctx.pointMap.set(attrs.id, id);
 			}
@@ -500,7 +544,10 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 			break;
 		}
 		case 'ecrire': {
-			const id = attrs.id ? ctx.pointMap.get(attrs.id) || attrs.id : generateObjectId(ctx, 'T');
+			// Use mapped ID if exists, otherwise generate a valid one
+			const id = attrs.id
+				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'T', attrs.id)
+				: generateObjectId(ctx, 'T');
 
 			// Clean up IEP text encoding
 			let text = attrs.texte || '';
