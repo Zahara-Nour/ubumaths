@@ -95,9 +95,6 @@ const MAX_ROTATE_DURATION = 1500;
 /** Default duration for instant steps (object creation, style) */
 const INSTANT_STEP_DURATION = 100;
 
-/** Default duration for drawing steps (line, arc) */
-const DEFAULT_DRAW_DURATION = 500;
-
 /** Default duration for spread (compass opening) */
 const DEFAULT_SPREAD_DURATION = 300;
 
@@ -565,9 +562,10 @@ export class ConstructionEngine {
 
 		const durations: number[] = [];
 
-		// Simulated instrument positions and rotations
+		// Simulated instrument positions, rotations, and compass radius
 		const positions = new Map<string, Position>();
 		const rotations = new Map<string, number>();
+		const radii = new Map<string, number>();
 		const objectPositions = new Map<string, Position>();
 
 		// Initialize instrument positions
@@ -578,6 +576,7 @@ export class ConstructionEngine {
 		positions.set('protractor', { x: 0, y: 0 });
 		rotations.set('compass', 0);
 		rotations.set('ruler', 0);
+		radii.set('compass', DEFAULT_COMPASS_RADIUS);
 
 		// Create evaluation context for expressions
 		const context = createContext(this.parameters, objectPositions);
@@ -587,6 +586,7 @@ export class ConstructionEngine {
 				step,
 				positions,
 				rotations,
+				radii,
 				objectPositions,
 				context
 			);
@@ -603,6 +603,7 @@ export class ConstructionEngine {
 		step: Step,
 		positions: Map<string, Position>,
 		rotations: Map<string, number>,
+		radii: Map<string, number>,
 		objectPositions: Map<string, Position>,
 		context: EvaluationContext
 	): number {
@@ -614,6 +615,7 @@ export class ConstructionEngine {
 					subStep,
 					positions,
 					rotations,
+					radii,
 					objectPositions,
 					context
 				);
@@ -626,6 +628,7 @@ export class ConstructionEngine {
 			step,
 			positions,
 			rotations,
+			radii,
 			objectPositions,
 			context
 		);
@@ -638,6 +641,7 @@ export class ConstructionEngine {
 		step: NonParallelStep,
 		positions: Map<string, Position>,
 		rotations: Map<string, number>,
+		radii: Map<string, number>,
 		objectPositions: Map<string, Position>,
 		context: EvaluationContext
 	): number {
@@ -697,9 +701,10 @@ export class ConstructionEngine {
 			return step.duration ?? INSTANT_STEP_DURATION;
 		}
 
-		// Drawing steps (line, arc) - use duration if provided, else default
+		// Drawing steps (line, arc) - calculate duration based on distance/arc length
 		if (isLineStep(step)) {
-			// Update pencil position to line end
+			// Get pencil start position and line end position
+			const fromPos = positions.get('pencil') ?? { x: 0, y: 0 };
 			let endPos: Position;
 			if (typeof step.to === 'string') {
 				endPos = objectPositions.get(step.to) ?? { x: 0, y: 0 };
@@ -710,14 +715,26 @@ export class ConstructionEngine {
 				};
 			}
 			positions.set('pencil', endPos);
-			return DEFAULT_DRAW_DURATION;
+
+			// Calculate duration based on line length
+			const dx = endPos.x - fromPos.x;
+			const dy = endPos.y - fromPos.y;
+			const lineLength = Math.sqrt(dx * dx + dy * dy);
+			const duration = Math.round(lineLength * MS_PER_PIXEL);
+			return Math.max(MIN_MOVE_DURATION, Math.min(MAX_MOVE_DURATION, duration));
 		}
 		if (isArcStep(step)) {
 			// Update compass rotation
 			const currentRotation = rotations.get('compass') ?? 0;
 			const sweepAngle = evaluateExpr(step.sweep, context);
 			rotations.set('compass', currentRotation + sweepAngle);
-			return DEFAULT_DRAW_DURATION;
+
+			// Calculate duration based on arc length = radius × |sweep| (in radians)
+			const radius = radii.get('compass') ?? DEFAULT_COMPASS_RADIUS;
+			const sweepRadians = Math.abs(sweepAngle) * (Math.PI / 180);
+			const arcLength = radius * sweepRadians;
+			const duration = Math.round(arcLength * MS_PER_PIXEL);
+			return Math.max(MIN_MOVE_DURATION, Math.min(MAX_MOVE_DURATION, duration));
 		}
 
 		// Move step - calculate based on distance
@@ -796,8 +813,19 @@ export class ConstructionEngine {
 			return Math.max(MIN_ROTATE_DURATION, Math.min(MAX_ROTATE_DURATION, duration));
 		}
 
-		// Spread step (compass opening)
+		// Spread step (compass opening) - track the new radius
 		if (isSpreadStep(step)) {
+			if (step.radius !== undefined) {
+				radii.set('compass', evaluateExpr(step.radius, context));
+			} else if (step.to !== undefined) {
+				// Calculate distance from compass position to target
+				const compassPos = positions.get('compass') ?? { x: 0, y: 0 };
+				const targetPos = objectPositions.get(step.to) ?? { x: 0, y: 0 };
+				const dx = targetPos.x - compassPos.x;
+				const dy = targetPos.y - compassPos.y;
+				const newRadius = Math.sqrt(dx * dx + dy * dy);
+				radii.set('compass', newRadius);
+			}
 			return step.duration ?? DEFAULT_SPREAD_DURATION;
 		}
 

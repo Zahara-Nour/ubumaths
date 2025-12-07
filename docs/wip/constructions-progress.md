@@ -90,6 +90,17 @@ Complete rewrite of InstrumenPoche (geometry animation player) into Svelte 5 + T
   - Or via player prop: `<ConstructionPlayer defaultColor="#0000FF" />`
   - Priority: object color > canvas defaultColor > player prop > constants
 
+### Phase 8: Reactive Player and Drawing Speed
+
+- **Reactive script loading**: ConstructionPlayer reloads automatically when script changes
+  - Uses JSON string comparison to detect changes (avoids $state proxy issues)
+  - Enables live preview updates when editing JSON in conversion page
+- **Distance-based drawing duration**: Lines and arcs use proportional animation speed
+  - Lines: `lineLength × 1.5ms/pixel` (min 300ms, max 2000ms)
+  - Arcs: `arcLength × 1.5ms/pixel` where arcLength = radius × |sweep| in radians
+  - Compass radius tracked during duration calculation for accurate arc timing
+  - Example: 360° arc with 100px radius ≈ 942ms (vs previous fixed 500ms)
+
 ## Architecture Decisions
 
 1. **JSON Format Only** - No XML compatibility (cleaner, parameterizable)

@@ -11,7 +11,7 @@
 	import ConstructionCanvas from './ConstructionCanvas.svelte';
 	import PlayerControls from './PlayerControls.svelte';
 	import ParameterControls from './ParameterControls.svelte';
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy } from 'svelte';
 
 	// Types
 	interface Props {
@@ -57,21 +57,37 @@
 	let error = $derived(engine.error);
 	let isLoaded = $derived(engine.isLoaded);
 
-	// Load script on mount
-	onMount(() => {
-		try {
-			if (script) {
-				engine.load(script);
-			} else if (scriptJson) {
-				engine.loadFromJson(scriptJson);
-			}
+	// Track the loaded script by JSON string to detect changes
+	// (avoids $state proxy comparison issues)
+	let loadedScriptHash = $state<string>('');
 
-			if (autoPlay && engine.isLoaded) {
-				engine.timeline.play();
+	// Load script reactively when it changes
+	$effect(() => {
+		// Compute a hash of the current script
+		let currentHash = '';
+		if (script) {
+			currentHash = JSON.stringify(script);
+		} else if (scriptJson) {
+			currentHash = scriptJson;
+		}
+
+		// Only reload if hash changed
+		if (currentHash && currentHash !== loadedScriptHash) {
+			try {
+				if (script) {
+					engine.load(script);
+				} else if (scriptJson) {
+					engine.loadFromJson(scriptJson);
+				}
+				loadedScriptHash = currentHash;
+
+				if (autoPlay && engine.isLoaded) {
+					engine.timeline.play();
+				}
+			} catch (err) {
+				// Error is already captured in engine.error
+				console.error('Failed to load construction:', err);
 			}
-		} catch (err) {
-			// Error is already captured in engine.error
-			console.error('Failed to load construction:', err);
 		}
 	});
 
