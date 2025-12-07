@@ -17,9 +17,8 @@ import type {
 	WorksheetType,
 	WorksheetTemplateRow
 } from '$lib/types/worksheets';
-import { transpileToTypst } from '$lib/exercises/transpilers/typst-transpiler';
-import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
-import { escapeTypst } from '$lib/exercises/transpilers/typst-transpiler';
+import { transpileToTypst, escapeTypst } from '$lib/exercises/transpilers/typst-transpiler';
+import { parseMarkdown } from '$lib/custom-markdown';
 import { getDefaultTemplate, renderTemplate } from './default-templates';
 
 // ============================================================================

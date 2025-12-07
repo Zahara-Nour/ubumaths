@@ -14,7 +14,7 @@
  */
 
 // ============================================================================
-// RE-EXPORTS FROM EXERCISES TYPES
+// RE-EXPORTS FROM CUSTOM-MARKDOWN
 // ============================================================================
 
 // AST Node Types
@@ -38,17 +38,17 @@ export type {
 	BlockNode,
 	ASTNode,
 	DocumentNode
-} from '$lib/exercises/types';
+} from '$lib/custom-markdown';
 
 // Image Types
-export type { ImageSizeClass, ImageAlignment, ImageSizeMapping } from '$lib/exercises/types';
-export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/exercises/types';
+export type { ImageSizeClass, ImageAlignment, ImageSizeMapping } from '$lib/custom-markdown';
+export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/custom-markdown';
 
 // Parser and Render Options
-export type { ParseOptions, RenderOptions } from '$lib/exercises/types';
+export type { ParseOptions, RenderOptions } from '$lib/custom-markdown';
 
 // Utility Types
-export type { ParseResult, MathPlaceholder } from '$lib/exercises/types';
+export type { ParseResult, MathPlaceholder } from '$lib/custom-markdown';
 
 // ============================================================================
 // DISPLAY MODE TYPES
@@ -137,13 +137,13 @@ export interface MarkdownRendererOptions {
 	 * Options de parsing (passees au parser)
 	 * Controls how markdown is parsed into AST
 	 */
-	parseOptions?: import('$lib/exercises/types').ParseOptions;
+	parseOptions?: import('$lib/custom-markdown').ParseOptions;
 
 	/**
 	 * Options de rendu
 	 * Controls how AST is rendered to HTML
 	 */
-	renderOptions?: import('$lib/exercises/types').RenderOptions;
+	renderOptions?: import('$lib/custom-markdown').RenderOptions;
 
 	/**
 	 * Callback quand un {{blank:N}} est trouve

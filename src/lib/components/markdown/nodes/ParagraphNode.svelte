@@ -21,7 +21,7 @@
 	@see BlankInput.svelte for blank input rendering
 -->
 <script lang="ts">
-	import type { InlineNode, InputState } from '$lib/exercises/types';
+	import type { InlineNode, InputState } from '$lib/custom-markdown';
 	import MathInline from './MathInline.svelte';
 	import MathPrompt from './MathPrompt.svelte';
 	import TextNode from './TextNode.svelte';

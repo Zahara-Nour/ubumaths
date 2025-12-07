@@ -40,7 +40,7 @@
 	import VariableEditor from './VariableEditor.svelte';
 	import { MarkdownEditor } from '$lib/components/markdown';
 	import AnswerEditor from './AnswerEditor.svelte';
-	import { templateMarkdown } from '$lib/shared/markdown';
+	import { templateMarkdown } from '$lib/custom-markdown';
 	import CategorySelector from './CategorySelector.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Collapsible from '$lib/components/ui/collapsible';

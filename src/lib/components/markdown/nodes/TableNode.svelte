@@ -12,7 +12,7 @@
 	@see ExerciseDisplay.svelte for original renderTable() implementation
 -->
 <script lang="ts">
-	import type { TableCellNode } from '$lib/exercises/types';
+	import type { TableCellNode } from '$lib/custom-markdown';
 	import { escapeHtml } from '../utils';
 
 	interface Props {

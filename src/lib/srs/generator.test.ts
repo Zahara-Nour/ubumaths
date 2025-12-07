@@ -12,7 +12,7 @@ import {
 	validateTemplateForSRS
 } from './generator';
 import type { QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/shared/markdown';
+import { templateMarkdown } from '$lib/custom-markdown';
 
 // Mock the instance generator
 vi.mock('$lib/questions/generator/instance-generator', () => ({

@@ -70,9 +70,9 @@ import type {
 import {
 	resolveVariables,
 	resolveText,
-	detectCircularDependencies
-} from '$lib/shared/parameterization';
-import { parseMarkdown } from '../parser/markdown-parser';
+	detectCircularDependencies,
+	parseMarkdown
+} from '$lib/custom-markdown';
 
 // ============================================================================
 // MAIN GENERATOR

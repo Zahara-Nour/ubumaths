@@ -16,7 +16,7 @@
 	@see image-dimensions.ts for dimension calculations
 -->
 <script lang="ts">
-	import type { ImageSizeClass, ImageAlignment } from '$lib/exercises/types';
+	import type { ImageSizeClass, ImageAlignment } from '$lib/custom-markdown';
 	import {
 		getDimensionsForFormat,
 		shouldUseFigureEnvironment

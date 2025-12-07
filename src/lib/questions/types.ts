@@ -26,19 +26,15 @@ import type {
 	RandomSpec as SharedRandomSpec,
 	NumberOrVariable as SharedNumberOrVariable,
 	Exclusion as SharedExclusion,
-	DisplayOptions
-} from '$lib/shared/parameterization';
+	DisplayOptions,
+	TemplateMarkdown,
+	ResolvedMarkdown
+} from '$lib/custom-markdown';
 
 // Re-export shared types for convenience
 export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
-export type { DisplayOptions } from '$lib/shared/parameterization';
-
-// ============================================================================
-// BRANDED MARKDOWN TYPES
-// ============================================================================
-
-import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/shared/markdown';
+export type { DisplayOptions } from '$lib/custom-markdown';
 
 // ============================================================================
 // GRADE LEVELS (re-exported from unified system)

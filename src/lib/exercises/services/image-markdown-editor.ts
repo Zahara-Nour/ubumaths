@@ -9,7 +9,7 @@
  * @see src/lib/components/exercises/ExerciseMarkdownEditor.svelte
  */
 
-import type { ImageSizeClass, ImageAlignment } from '$lib/exercises/types';
+import type { ImageSizeClass, ImageAlignment } from '$lib/custom-markdown';
 
 /**
  * Extracted image data from markdown syntax

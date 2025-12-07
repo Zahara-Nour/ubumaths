@@ -16,7 +16,7 @@
 // IMPORTS
 // ============================================================================
 
-import type { Variable, ResolvedVariable } from '$lib/shared/parameterization';
+import type { Variable, ResolvedVariable } from '$lib/custom-markdown';
 
 // ============================================================================
 // PARAMETERIZATION TYPES

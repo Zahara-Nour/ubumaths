@@ -24,7 +24,7 @@
 	import { Save, Plus, Trash2, ArrowLeft, BookOpen } from 'lucide-svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
 	import type { CreateDeckRequest, CreateCardRequest } from '$lib/srs/types';
-	import type { TemplateMarkdown } from '$lib/shared/markdown';
+	import type { TemplateMarkdown } from '$lib/custom-markdown';
 
 	// State
 	let deckName = $state('');

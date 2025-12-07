@@ -18,7 +18,7 @@ import {
 } from './question-transformer';
 import type { QuestionBase } from './old-question-types';
 import type { QuestionTemplate } from '$lib/questions/types';
-import { templateMarkdown } from '$lib/shared/markdown';
+import { templateMarkdown } from '$lib/custom-markdown';
 
 describe('Question Transformer', () => {
 	describe('transformQuestion', () => {

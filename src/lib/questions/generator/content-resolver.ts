@@ -11,8 +11,8 @@
  */
 
 import type { ResolvedVariable } from '../types';
-import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/shared/markdown';
-import { resolvedMarkdown } from '$lib/shared/markdown';
+import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/custom-markdown';
+import { resolvedMarkdown } from '$lib/custom-markdown';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 

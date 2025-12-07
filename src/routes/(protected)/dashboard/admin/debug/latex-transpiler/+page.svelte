@@ -6,18 +6,18 @@
 		type SplitResult
 	} from '$lib/exercises/transpilers/latex-to-markdown';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
+	import { parseMarkdown } from '$lib/custom-markdown';
 	import type {
-		Exercise,
 		DocumentNode,
 		BlockNode,
 		InlineNode,
 		ListNode,
 		TableNode
-	} from '$lib/exercises/types';
+	} from '$lib/custom-markdown';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
+	import type { Exercise } from '$lib/exercises/types';
 
 	// ============================================================================
 	// STATE

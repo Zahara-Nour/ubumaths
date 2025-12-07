@@ -13,7 +13,7 @@
 	@see ExerciseDisplay.svelte for original renderList() implementation
 -->
 <script lang="ts">
-	import type { ListItemNode, ASTNode, InlineNode } from '$lib/exercises/types';
+	import type { ListItemNode, ASTNode, InlineNode } from '$lib/custom-markdown';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';

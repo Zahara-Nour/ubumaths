@@ -14,8 +14,8 @@ import type {
 	InstanceData,
 	WorksheetExerciseWithExercise
 } from '$lib/types/worksheets';
-import type { Variable } from '$lib/shared/parameterization/types';
-import { resolveVariables, resolveText } from '$lib/shared/parameterization';
+import type { Variable } from '$lib/custom-markdown';
+import { resolveVariables, resolveText } from '$lib/custom-markdown';
 
 /**
  * Parameters for generating a worksheet instance

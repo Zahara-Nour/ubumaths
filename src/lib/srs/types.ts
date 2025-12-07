@@ -17,7 +17,7 @@
  */
 
 import type { QuestionInstance } from '$lib/questions/types';
-import type { TemplateMarkdown } from '$lib/shared/markdown';
+import type { TemplateMarkdown } from '$lib/custom-markdown';
 
 // ============================================================================
 // DECK TYPES

@@ -46,7 +46,7 @@
 	} from 'lucide-svelte';
 	import MarkdownRenderer from './MarkdownRenderer.svelte';
 	import type { ImageUploadConfig } from './types';
-	import type { Variable } from '$lib/shared/parameterization';
+	import type { Variable } from '$lib/custom-markdown';
 
 	// Props
 	interface Props {

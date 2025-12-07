@@ -22,7 +22,7 @@ import type { QuestionVariable, ResolvedVariable } from '../types';
 import {
 	resolveVariables as sharedResolveVariables,
 	resolveExpression as sharedResolveExpression
-} from '$lib/shared/parameterization';
+} from '$lib/custom-markdown';
 
 /**
  * Resolve a single variable expression
