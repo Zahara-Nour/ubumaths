@@ -57,45 +57,36 @@ export type {
 	// Style types
 	LineStyle,
 	PointStyle,
+	ArrowPosition,
 	StyleProps,
 
-	// Object definitions
-	ObjectDef,
-	PointDef,
-	SegmentDef,
-	LineDef,
-	RayDef,
-	CircleDef,
-	ArcDef,
-	PolygonDef,
-	TextDef,
-	AngleMarkDef,
-
-	// Action definitions
-	ActionDef,
-	ShowActionDef,
-	HideActionDef,
-	TranslateActionDef,
-	MoveToActionDef,
-	RotateActionDef,
-	ScaleActionDef,
-	StyleActionDef,
-	DrawActionDef,
-	DrawCircleActionDef,
-	SetCompassActionDef,
-	MeasureActionDef,
-
-	// Step definitions
+	// Step types (new flat format)
 	Step,
-	CreateStep,
-	ActionStep,
+	NonParallelStep,
+	PointStep,
+	LineStep,
+	ArcStep,
+	CircleStep,
+	TextStep,
+	MarkStep,
+	MoveStep,
+	ShowStep,
+	HideStep,
+	RotateStep,
+	SpreadStep,
+	RaiseStep,
+	LowerStep,
+	StyleStep,
 	PauseStep,
 	ParallelStep,
-	CommentStep,
+
+	// Coordinate and reference types
+	Coord,
+	Target,
+	Label,
 
 	// Instrument types
 	InstrumentType,
-	InstrumentState,
 
 	// Canvas and script
 	CanvasConfig,
@@ -104,7 +95,7 @@ export type {
 	// Runtime types
 	ParameterValues,
 	Position,
-	ObjectState,
+	DrawnObjectState,
 	InstrumentRuntimeState,
 	ConstructionState
 } from './types';
@@ -114,21 +105,23 @@ export type {
 // =============================================================================
 
 export {
-	// Object type guards
-	isPointDef,
-	isSegmentDef,
-	isCircleDef,
-	isTextDef,
-
-	// Action type guards
-	isTranslateAction,
-	isShowAction,
-	isHideAction,
-
-	// Step type guards
-	isCreateStep,
-	isActionStep,
-	isPauseStep
+	// Step type guards (new flat format)
+	isPointStep,
+	isLineStep,
+	isArcStep,
+	isCircleStep,
+	isTextStep,
+	isMarkStep,
+	isMoveStep,
+	isShowStep,
+	isHideStep,
+	isRotateStep,
+	isSpreadStep,
+	isRaiseStep,
+	isLowerStep,
+	isStyleStep,
+	isPauseStep,
+	isParallelStep
 } from './types';
 
 // =============================================================================
@@ -144,11 +137,15 @@ export {
 	colorSchema,
 	objectIdSchema,
 	parameterNameSchema,
+	coordPairSchema,
+	targetRefSchema,
+	labelSchema,
 
 	// Style schemas
 	lineStyleSchema,
 	pointStyleSchema,
-	stylePropsSchema,
+	arrowSchema,
+	inlineStyleSchema,
 
 	// Parameter schemas
 	numberParameterDefSchema,
@@ -157,58 +154,69 @@ export {
 	parameterDefSchema,
 	parameterDefMapSchema,
 
-	// Object schemas
-	inlineCoordsSchema,
-	pointRefSchema,
-	pointDefSchema,
-	segmentDefSchema,
-	lineDefSchema,
-	rayDefSchema,
-	circleDefSchema,
-	arcDefSchema,
-	polygonDefSchema,
-	textDefSchema,
-	angleMarkDefSchema,
-	objectDefSchema,
-
 	// Instrument schemas
-	instrumentTypeSchema,
-	actionTargetSchema,
+	instrumentSchema,
+	drawingTargetSchema,
 
-	// Action schemas
-	showActionDefSchema,
-	hideActionDefSchema,
-	translateActionDefSchema,
-	moveToActionDefSchema,
-	rotateActionDefSchema,
-	scaleActionDefSchema,
-	styleActionDefSchema,
-	drawActionDefSchema,
-	drawCircleActionDefSchema,
-	setCompassActionDefSchema,
-	measureActionDefSchema,
-	actionDefSchema,
+	// Object step schemas
+	pointStepSchema,
+	lineStepSchema,
+	arcStepSchema,
+	circleStepSchema,
+	textStepSchema,
+	markStepSchema,
 
-	// Step schemas
-	createStepSchema,
-	actionStepSchema,
+	// Instrument action schemas
+	moveStepSchema,
+	showStepSchema,
+	hideStepSchema,
+	rotateStepSchema,
+	spreadStepSchema,
+	raiseStepSchema,
+	lowerStepSchema,
+
+	// Modification schemas
+	styleStepSchema,
+
+	// Control schemas
 	pauseStepSchema,
 	parallelStepSchema,
-	commentStepSchema,
+	nonParallelStepSchema,
+
+	// Step schema (union of all)
 	stepSchema,
 
 	// Canvas and script schemas
 	canvasConfigSchema,
 	constructionScriptSchema,
 
-	// Schema types
+	// Schema types (inferred from Zod)
 	type ConstructionScriptInput,
-	type ObjectDefInput,
-	type ActionDefInput,
 	type StepInput,
+	type NonParallelStepInput,
+	type PointStepInput,
+	type LineStepInput,
+	type ArcStepInput,
+	type CircleStepInput,
+	type TextStepInput,
+	type MarkStepInput,
+	type MoveStepInput,
+	type ShowStepInput,
+	type HideStepInput,
+	type RotateStepInput,
+	type SpreadStepInput,
+	type RaiseStepInput,
+	type LowerStepInput,
+	type StyleStepInput,
+	type PauseStepInput,
+	type ParallelStepInput,
+	type CoordPair,
+	type TargetRef,
+	type LabelInput,
 
 	// Validation helpers
 	validateConstructionScript,
+	validateStep,
 	extractParameterRefs,
 	validateParameterReferences
 } from './schemas';

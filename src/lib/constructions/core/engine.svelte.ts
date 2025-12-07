@@ -13,21 +13,47 @@ import type {
 	ConstructionScript,
 	ParameterValues,
 	ParameterDefMap,
-	ObjectState,
-	ObjectDef,
 	InstrumentRuntimeState,
 	InstrumentType,
 	Position,
 	Step,
-	ActionDef,
-	Expr,
-	DrawLineActionDef,
-	DrawArcActionDef,
-	SegmentDef,
-	ArcDef,
-	PointRef
+	NonParallelStep,
+	PointStep,
+	LineStep,
+	ArcStep,
+	CircleStep,
+	TextStep,
+	MarkStep,
+	MoveStep,
+	ShowStep,
+	HideStep,
+	RotateStep,
+	SpreadStep,
+	RaiseStep,
+	LowerStep,
+	StyleStep,
+	Target,
+	ObjectState,
+	ObjectType
 } from '../types';
-import { isCreateStep, isActionStep } from '../types';
+import {
+	isPointStep,
+	isLineStep,
+	isArcStep,
+	isCircleStep,
+	isTextStep,
+	isMarkStep,
+	isMoveStep,
+	isShowStep,
+	isHideStep,
+	isRotateStep,
+	isSpreadStep,
+	isRaiseStep,
+	isLowerStep,
+	isStyleStep,
+	isPauseStep,
+	isParallelStep
+} from '../types';
 import { constructionScriptSchema } from '../schemas';
 import { evaluateExpr, createContext, type EvaluationContext } from './evaluator';
 import { Timeline, type TimelineOptions } from './timeline.svelte';
@@ -112,6 +138,9 @@ const easingFunctions = {
 // Types
 // =============================================================================
 
+// Re-export ObjectState and ObjectType for convenience
+export type { ObjectState, ObjectType };
+
 /**
  * Engine event callbacks
  */
@@ -178,34 +207,38 @@ function extractDefaultParameters(params?: ParameterDefMap): ParameterValues {
 }
 
 /**
- * Resolve a point reference to coordinates
+ * Resolve a target reference to coordinates
  *
- * @param ref - Point reference (object ID or inline coordinates)
+ * Target can be:
+ * - A string (object ID): "A"
+ * - A coordinate pair: [100, 200] or ["$param", "$A.y"]
+ *
+ * @param target - Target reference (object ID or coordinate pair)
  * @param objects - Object states map
  * @param context - Evaluation context
  * @returns Position coordinates
  */
-function resolvePointRef(
-	ref: string | { x: Expr; y: Expr },
+function resolveTarget(
+	target: Target,
 	objects: Map<string, ObjectState>,
 	context: EvaluationContext
 ): Position {
-	if (typeof ref === 'string') {
+	if (typeof target === 'string') {
 		// Object ID reference
-		const obj = objects.get(ref);
+		const obj = objects.get(target);
 		if (!obj) {
-			throw new Error(`Object not found: ${ref}`);
+			throw new Error(`Object not found: ${target}`);
 		}
 		if (!obj.position) {
-			throw new Error(`Object ${ref} has no position`);
+			throw new Error(`Object ${target} has no position`);
 		}
 		return obj.position;
 	}
 
-	// Inline coordinates
+	// Coordinate pair [x, y]
 	return {
-		x: evaluateExpr(ref.x, context),
-		y: evaluateExpr(ref.y, context)
+		x: evaluateExpr(target[0], context),
+		y: evaluateExpr(target[1], context)
 	};
 }
 
@@ -530,29 +563,67 @@ export class ConstructionEngine {
 	 * @returns Updated object state
 	 */
 	#recalculateObject(state: ObjectState, context: EvaluationContext): ObjectState {
-		const def = state.def;
-
-		if (def.kind === 'point') {
-			const x = evaluateExpr(def.x, context);
-			const y = evaluateExpr(def.y, context);
+		// Recalculate position for point objects
+		if (state.type === 'point' && isPointStep(state.step)) {
+			const x = evaluateExpr(state.step.at[0], context);
+			const y = evaluateExpr(state.step.at[1], context);
 			return {
 				...state,
 				position: { x, y }
 			};
 		}
 
-		// Text objects may reference point positions via expressions
-		if (def.kind === 'text') {
-			const x = evaluateExpr(def.x, context);
-			const y = evaluateExpr(def.y, context);
+		// Recalculate position for text objects (may use expressions like "$P_29.x + 10")
+		if (state.type === 'text' && isTextStep(state.step)) {
+			const x = evaluateExpr(state.step.at[0], context);
+			const y = evaluateExpr(state.step.at[1], context);
 			return {
 				...state,
 				position: { x, y }
 			};
 		}
 
-		// For other object types, recalculate as needed
-		// (segments, circles, etc. derive from point positions)
+		// Recalculate position for mark objects
+		if (state.type === 'mark' && isMarkStep(state.step)) {
+			const x = evaluateExpr(state.step.at[0], context);
+			const y = evaluateExpr(state.step.at[1], context);
+			return {
+				...state,
+				position: { x, y }
+			};
+		}
+
+		// Recalculate circle geometry
+		if (state.type === 'circle' && isCircleStep(state.step)) {
+			const centerPos = resolveTarget(state.step.center, this.objects, context);
+			let radius: number;
+			if (state.step.radius !== undefined) {
+				radius = evaluateExpr(state.step.radius, context);
+			} else if (state.step.through) {
+				const throughPos = this.objects.get(state.step.through)?.position;
+				if (throughPos) {
+					radius = Math.sqrt(
+						Math.pow(throughPos.x - centerPos.x, 2) + Math.pow(throughPos.y - centerPos.y, 2)
+					);
+				} else {
+					radius = state.computed?.radius ?? 100;
+				}
+			} else {
+				radius = state.computed?.radius ?? 100;
+			}
+			return {
+				...state,
+				computed: {
+					...state.computed,
+					centerX: centerPos.x,
+					centerY: centerPos.y,
+					radius
+				}
+			};
+		}
+
+		// For other object types (lines, arcs), geometry is based on instrument state at creation time
+		// and doesn't need recalculation based on parameters
 		return state;
 	}
 
@@ -605,305 +676,552 @@ export class ConstructionEngine {
 	#setupStepAnimations(step: Step): void {
 		this.#activeAnimations = [];
 
-		if (isCreateStep(step)) {
-			// Create steps are instant
-			this.#applyCreateStep(step.object);
+		// Object creation steps - instant but with visual feedback
+		if (isPointStep(step) || isCircleStep(step) || isTextStep(step) || isMarkStep(step)) {
+			this.#applyObjectCreationStep(step);
 			this.#appliedSteps.add(this.#currentAnimatingStep);
-		} else if (isActionStep(step)) {
-			this.#setupActionAnimation(step.action);
-		} else if (step.type === 'parallel') {
-			// Set up all parallel animations
-			for (const action of step.actions) {
-				this.#setupActionAnimation(action);
-			}
+			return;
 		}
-		// Pause and comment steps don't need animations
+
+		// Line drawing step - animated
+		if (isLineStep(step)) {
+			this.#setupLineAnimation(step);
+			return;
+		}
+
+		// Arc drawing step - animated with 3D compass effect
+		if (isArcStep(step)) {
+			this.#setupArcAnimation(step);
+			return;
+		}
+
+		// Instrument actions - animated
+		if (isMoveStep(step)) {
+			this.#setupMoveAnimation(step);
+			return;
+		}
+		if (isShowStep(step)) {
+			this.#setupShowAnimation(step);
+			return;
+		}
+		if (isHideStep(step)) {
+			this.#setupHideAnimation(step);
+			return;
+		}
+		if (isRotateStep(step)) {
+			this.#setupRotateAnimation(step);
+			return;
+		}
+		if (isSpreadStep(step)) {
+			this.#setupSpreadAnimation(step);
+			return;
+		}
+		if (isRaiseStep(step)) {
+			this.#setupRaiseAnimation(step);
+			return;
+		}
+		if (isLowerStep(step)) {
+			this.#setupLowerAnimation(step);
+			return;
+		}
+
+		// Style modification - instant
+		if (isStyleStep(step)) {
+			this.#applyStyleStep(step);
+			this.#appliedSteps.add(this.#currentAnimatingStep);
+			return;
+		}
+
+		// Parallel steps
+		if (isParallelStep(step)) {
+			for (const subStep of step.parallel) {
+				this.#setupSubStepAnimation(subStep);
+			}
+			return;
+		}
+
+		// Pause steps don't need any setup
+		if (isPauseStep(step)) {
+			this.#appliedSteps.add(this.#currentAnimatingStep);
+			return;
+		}
 	}
 
 	/**
-	 * Set up animation state for an action
+	 * Set up animation for a sub-step (within parallel)
 	 */
-	#setupActionAnimation(action: ActionDef): void {
+	#setupSubStepAnimation(step: NonParallelStep): void {
+		// Reuse the main step setup logic for each sub-step type
+		if (isPointStep(step) || isCircleStep(step) || isTextStep(step) || isMarkStep(step)) {
+			this.#applyObjectCreationStep(step);
+			return;
+		}
+		if (isLineStep(step)) {
+			this.#setupLineAnimation(step);
+			return;
+		}
+		if (isArcStep(step)) {
+			this.#setupArcAnimation(step);
+			return;
+		}
+		if (isMoveStep(step)) {
+			this.#setupMoveAnimation(step);
+			return;
+		}
+		if (isShowStep(step)) {
+			this.#setupShowAnimation(step);
+			return;
+		}
+		if (isHideStep(step)) {
+			this.#setupHideAnimation(step);
+			return;
+		}
+		if (isRotateStep(step)) {
+			this.#setupRotateAnimation(step);
+			return;
+		}
+		if (isSpreadStep(step)) {
+			this.#setupSpreadAnimation(step);
+			return;
+		}
+		if (isRaiseStep(step)) {
+			this.#setupRaiseAnimation(step);
+			return;
+		}
+		if (isLowerStep(step)) {
+			this.#setupLowerAnimation(step);
+			return;
+		}
+		if (isStyleStep(step)) {
+			this.#applyStyleStep(step);
+			return;
+		}
+	}
+
+	/**
+	 * Apply an object creation step (point, circle, text, mark)
+	 */
+	#applyObjectCreationStep(step: PointStep | CircleStep | TextStep | MarkStep): void {
 		const context = this.#createContext();
-		const easing = action.easing ?? 'easeInOut';
 
-		switch (action.kind) {
-			case 'show': {
-				// Show animation: fade in
-				const animState: AnimationState = {
-					type: 'show',
-					target: action.target,
-					start: { opacity: 0 },
-					end: { opacity: 1 },
-					easing
-				};
-				this.#activeAnimations.push(animState);
-				// Make visible immediately but with opacity 0
-				this.#setTargetVisibility(action.target, true);
-				this.#setTargetOpacity(action.target, 0);
+		if (isPointStep(step)) {
+			const x = evaluateExpr(step.at[0], context);
+			const y = evaluateExpr(step.at[1], context);
+			const label = typeof step.label === 'string' ? step.label : step.label?.text;
 
-				// When showing compass, ensure compassRaised is hidden
-				if (action.target === 'compass') {
-					const compassRaised = this.instruments.get('compassRaised');
-					if (compassRaised) {
-						this.instruments.set('compassRaised', { ...compassRaised, visible: false });
-					}
+			const state: ObjectState = {
+				id: step.point,
+				type: 'point',
+				step,
+				visible: step.visible !== false,
+				position: { x, y },
+				label,
+				style: {
+					color: step.color,
+					opacity: 1
 				}
-				break;
+			};
+			this.objects.set(step.point, state);
+			this.#callbacks.onObjectCreated?.(step.point, state);
+			return;
+		}
+
+		if (isCircleStep(step)) {
+			const centerPos = resolveTarget(step.center, this.objects, context);
+			let radius: number;
+			if (step.radius !== undefined) {
+				radius = evaluateExpr(step.radius, context);
+			} else if (step.through) {
+				const throughPos = this.objects.get(step.through)?.position;
+				if (!throughPos) throw new Error(`Through point not found: ${step.through}`);
+				radius = Math.sqrt(
+					Math.pow(throughPos.x - centerPos.x, 2) + Math.pow(throughPos.y - centerPos.y, 2)
+				);
+			} else {
+				throw new Error('Circle must have radius or through point');
 			}
 
-			case 'hide': {
-				// Hide animation: fade out
-				const animState: AnimationState = {
-					type: 'hide',
-					target: action.target,
-					start: { opacity: 1 },
-					end: { opacity: 0 },
-					easing
-				};
-				this.#activeAnimations.push(animState);
-
-				// When hiding compass, also hide compassRaised
-				if (action.target === 'compass') {
-					const compassRaised = this.instruments.get('compassRaised');
-					if (compassRaised) {
-						this.instruments.set('compassRaised', { ...compassRaised, visible: false });
-					}
+			const state: ObjectState = {
+				id: step.circle,
+				type: 'circle',
+				step,
+				visible: step.visible !== false,
+				drawProgress: 1,
+				computed: {
+					centerX: centerPos.x,
+					centerY: centerPos.y,
+					radius,
+					startAngle: 0,
+					endAngle: 360
+				},
+				style: {
+					color: step.color,
+					lineWidth: step.width,
+					lineStyle: step.style,
+					opacity: 1
 				}
-				break;
-			}
+			};
+			this.objects.set(step.circle, state);
+			this.#callbacks.onObjectCreated?.(step.circle, state);
+			return;
+		}
 
-			case 'moveTo': {
-				const endX = evaluateExpr(action.x, context);
-				const endY = evaluateExpr(action.y, context);
-				const { x: startX, y: startY } = this.#getTargetPosition(action.target);
+		if (isTextStep(step)) {
+			const x = evaluateExpr(step.at[0], context);
+			const y = evaluateExpr(step.at[1], context);
 
-				const animState: AnimationState = {
-					type: 'moveTo',
-					target: action.target,
-					start: { x: startX, y: startY },
-					end: { x: endX, y: endY },
-					easing
-				};
-				this.#activeAnimations.push(animState);
-				break;
-			}
-
-			case 'translate': {
-				const dx = evaluateExpr(action.dx, context);
-				const dy = evaluateExpr(action.dy, context);
-				const { x: startX, y: startY } = this.#getTargetPosition(action.target);
-
-				const animState: AnimationState = {
-					type: 'translate',
-					target: action.target,
-					start: { x: startX, y: startY },
-					end: { x: startX + dx, y: startY + dy },
-					easing
-				};
-				this.#activeAnimations.push(animState);
-				break;
-			}
-
-			case 'rotate': {
-				const angle = evaluateExpr(action.angle, context);
-				const startRotation = this.#getTargetRotation(action.target);
-
-				const animState: AnimationState = {
-					type: 'rotate',
-					target: action.target,
-					start: { rotation: startRotation },
-					end: { rotation: startRotation + angle },
-					easing
-				};
-				this.#activeAnimations.push(animState);
-				break;
-			}
-
-			case 'setCompass': {
-				const endRadius = evaluateExpr(action.radius, context);
-				const compass = this.instruments.get('compass');
-				const startRadius = compass?.compassRadius ?? DEFAULT_COMPASS_RADIUS;
-
-				const animState: AnimationState = {
-					type: 'setCompass',
-					target: 'compass',
-					start: { compassRadius: startRadius },
-					end: { compassRadius: endRadius },
-					easing
-				};
-				this.#activeAnimations.push(animState);
-				break;
-			}
-
-			case 'draw': {
-				const startProgress = action.direction === 'reverse' ? 1 : 0;
-				const endProgress = action.direction === 'reverse' ? 0 : 1;
-
-				const animState: AnimationState = {
-					type: 'draw',
-					target: action.target,
-					start: { drawProgress: startProgress },
-					end: { drawProgress: endProgress },
-					easing
-				};
-				this.#activeAnimations.push(animState);
-				// Set initial draw progress immediately (like show sets opacity to 0)
-				this.#setTargetDrawProgress(action.target, startProgress);
-				break;
-			}
-
-			case 'drawCircle': {
-				const animState: AnimationState = {
-					type: 'drawCircle',
-					target: action.target,
-					start: { drawProgress: 0 },
-					end: { drawProgress: 1 },
-					easing
-				};
-				this.#activeAnimations.push(animState);
-				// Set initial draw progress to 0 immediately (like show sets opacity to 0)
-				this.#setTargetDrawProgress(action.target, 0);
-				break;
-			}
-
-			case 'drawLine': {
-				const drawLineAction = action as DrawLineActionDef;
-				const fromPos = this.#resolvePointRef(drawLineAction.from);
-				const toPos = this.#resolvePointRef(drawLineAction.to);
-				if (!fromPos || !toPos) break;
-
-				const targetId = drawLineAction.createObject?.id ?? '';
-
-				// Create segment object if specified
-				if (drawLineAction.createObject) {
-					const segmentDef: SegmentDef = {
-						kind: 'segment',
-						id: drawLineAction.createObject.id,
-						from: { x: fromPos.x, y: fromPos.y },
-						to: { x: toPos.x, y: toPos.y },
-						visible: true,
-						style: drawLineAction.createObject.style,
-						arrowHead: drawLineAction.createObject.arrowHead
-					};
-					this.objects.set(drawLineAction.createObject.id, {
-						def: segmentDef,
-						visible: true,
-						drawProgress: 0
-					});
+			const state: ObjectState = {
+				id: step.text,
+				type: 'text',
+				step,
+				visible: step.visible !== false,
+				position: { x, y },
+				style: {
+					color: step.color,
+					opacity: 1
 				}
+			};
+			this.objects.set(step.text, state);
+			this.#callbacks.onObjectCreated?.(step.text, state);
+			return;
+		}
 
-				const animState: AnimationState = {
-					type: 'drawLine',
-					target: targetId,
-					start: {
-						drawProgress: 0,
-						fromX: fromPos.x,
-						fromY: fromPos.y,
-						toX: toPos.x,
-						toY: toPos.y
-					},
-					end: { drawProgress: 1 },
-					easing
-				};
-				this.#activeAnimations.push(animState);
+		if (isMarkStep(step)) {
+			const x = evaluateExpr(step.at[0], context);
+			const y = evaluateExpr(step.at[1], context);
 
-				// Move pencil to start position and make visible
-				const pencil = this.instruments.get('pencil');
-				if (pencil) {
-					this.instruments.set('pencil', {
-						...pencil,
-						x: fromPos.x,
-						y: fromPos.y,
-						visible: true
-					});
+			const state: ObjectState = {
+				id: step.mark,
+				type: 'mark',
+				step,
+				visible: step.visible !== false,
+				position: { x, y },
+				style: {
+					color: step.color,
+					lineWidth: step.width,
+					opacity: 1
 				}
-				break;
+			};
+			this.objects.set(step.mark, state);
+			this.#callbacks.onObjectCreated?.(step.mark, state);
+			return;
+		}
+	}
+
+	/**
+	 * Set up line drawing animation
+	 * Line draws from current pencil position to target
+	 */
+	#setupLineAnimation(step: LineStep): void {
+		const context = this.#createContext();
+		const easing = 'easeInOut';
+
+		// Get current pencil position as the starting point
+		const pencil = this.instruments.get('pencil');
+		const fromX = pencil?.x ?? 0;
+		const fromY = pencil?.y ?? 0;
+
+		// Resolve the target position
+		const toPos = resolveTarget(step.to, this.objects, context);
+
+		// Create the line object
+		const state: ObjectState = {
+			id: step.line,
+			type: 'line',
+			step,
+			visible: step.visible !== false,
+			drawProgress: 0,
+			computed: {
+				fromX,
+				fromY,
+				toX: toPos.x,
+				toY: toPos.y
+			},
+			style: {
+				color: step.color,
+				lineWidth: step.width,
+				lineStyle: step.style,
+				opacity: 1
 			}
+		};
+		this.objects.set(step.line, state);
 
-			case 'drawArc': {
-				const drawArcAction = action as DrawArcActionDef;
-				const centerPos = this.#resolvePointRef(drawArcAction.center);
-				if (!centerPos) break;
+		// Set up animation
+		const animState: AnimationState = {
+			type: 'drawLine',
+			target: step.line,
+			start: {
+				drawProgress: 0,
+				fromX,
+				fromY,
+				toX: toPos.x,
+				toY: toPos.y
+			},
+			end: { drawProgress: 1 },
+			easing
+		};
+		this.#activeAnimations.push(animState);
+	}
 
-				const context = this.#createContext();
-				const radiusValue = evaluateExpr(drawArcAction.radius, context);
-				const startAngleValue = evaluateExpr(drawArcAction.startAngle, context);
-				const endAngleValue = evaluateExpr(drawArcAction.endAngle, context);
+	/**
+	 * Set up arc drawing animation
+	 * Arc draws from current compass position with current radius
+	 */
+	#setupArcAnimation(step: ArcStep): void {
+		const context = this.#createContext();
+		const easing = 'easeInOut';
 
-				const targetId = drawArcAction.createObject?.id ?? '';
+		// Get current compass state
+		const compass = this.instruments.get('compass');
+		const centerX = compass?.x ?? 0;
+		const centerY = compass?.y ?? 0;
+		const radius = compass?.compassRadius ?? DEFAULT_COMPASS_RADIUS;
+		const startAngle = compass?.rotation ?? 0;
 
-				// Create arc object if specified
-				if (drawArcAction.createObject) {
-					const arcDef: ArcDef = {
-						kind: 'arc',
-						id: drawArcAction.createObject.id,
-						center: { x: centerPos.x, y: centerPos.y },
-						radius: radiusValue,
-						startAngle: startAngleValue,
-						endAngle: endAngleValue,
-						visible: true,
-						style: drawArcAction.createObject.style
-					};
-					this.objects.set(drawArcAction.createObject.id, {
-						def: arcDef,
-						visible: true,
-						drawProgress: 0
-					});
-				}
+		// Calculate sweep angle
+		const sweepAngle = evaluateExpr(step.sweep, context);
+		const endAngle = startAngle + sweepAngle;
 
-				const animState: AnimationState = {
-					type: 'drawArc',
-					target: targetId,
-					start: {
-						drawProgress: 0,
-						centerX: centerPos.x,
-						centerY: centerPos.y,
-						radius: radiusValue,
-						startAngle: startAngleValue,
-						endAngle: endAngleValue
-					},
-					end: { drawProgress: 1 },
-					easing
-				};
-				this.#activeAnimations.push(animState);
-
-				// Setup for 3D raise/lower animation:
-				// Keep compass visible at arc center, will animate rotateX during raise phase
-				const compass = this.instruments.get('compass');
-				if (compass) {
-					this.instruments.set('compass', {
-						...compass,
-						x: centerPos.x,
-						y: centerPos.y,
-						rotation: startAngleValue,
-						compassRadius: radiusValue,
-						visible: true,
-						opacity: 1,
-						rotateX: 0
-					});
-				}
-				// Initialize compassRaised hidden (will fade in during raise phase)
-				const compassRaised = this.instruments.get('compassRaised');
-				if (compassRaised) {
-					this.instruments.set('compassRaised', {
-						...compassRaised,
-						x: centerPos.x,
-						y: centerPos.y,
-						rotation: startAngleValue,
-						compassRadius: radiusValue,
-						visible: true,
-						opacity: 0
-					});
-				}
-				break;
+		// Create the arc object
+		const state: ObjectState = {
+			id: step.arc,
+			type: 'arc',
+			step,
+			visible: step.visible !== false,
+			drawProgress: 0,
+			computed: {
+				centerX,
+				centerY,
+				radius,
+				startAngle,
+				endAngle
+			},
+			style: {
+				color: step.color,
+				lineWidth: step.width,
+				lineStyle: step.style,
+				opacity: 1
 			}
+		};
+		this.objects.set(step.arc, state);
 
-			case 'style': {
-				// Style changes are instant (no animation)
-				this.#applyStyle(action.target, action.style);
-				break;
+		// Set up animation
+		const animState: AnimationState = {
+			type: 'drawArc',
+			target: step.arc,
+			start: {
+				drawProgress: 0,
+				centerX,
+				centerY,
+				radius,
+				startAngle,
+				endAngle
+			},
+			end: { drawProgress: 1 },
+			easing
+		};
+		this.#activeAnimations.push(animState);
+
+		// Setup for 3D raise/lower animation
+		if (compass) {
+			this.instruments.set('compass', {
+				...compass,
+				visible: true,
+				opacity: 1,
+				rotateX: 0
+			});
+		}
+		const compassRaised = this.instruments.get('compassRaised');
+		if (compassRaised) {
+			this.instruments.set('compassRaised', {
+				...compassRaised,
+				x: centerX,
+				y: centerY,
+				rotation: startAngle,
+				compassRadius: radius,
+				visible: true,
+				opacity: 0
+			});
+		}
+	}
+
+	/**
+	 * Set up move animation
+	 */
+	#setupMoveAnimation(step: MoveStep): void {
+		const context = this.#createContext();
+		const easing = step.easing ?? 'easeInOut';
+
+		const { x: startX, y: startY } = this.#getTargetPosition(step.move);
+		const endPos = resolveTarget(step.to, this.objects, context);
+
+		const animState: AnimationState = {
+			type: 'moveTo',
+			target: step.move,
+			start: { x: startX, y: startY },
+			end: { x: endPos.x, y: endPos.y },
+			easing
+		};
+		this.#activeAnimations.push(animState);
+	}
+
+	/**
+	 * Set up show animation
+	 */
+	#setupShowAnimation(step: ShowStep): void {
+		const easing = 'easeInOut';
+
+		const animState: AnimationState = {
+			type: 'show',
+			target: step.show,
+			start: { opacity: 0 },
+			end: { opacity: 1 },
+			easing
+		};
+		this.#activeAnimations.push(animState);
+
+		// Make visible immediately but with opacity 0
+		this.#setTargetVisibility(step.show, true);
+		this.#setTargetOpacity(step.show, 0);
+
+		// When showing compass, ensure compassRaised is hidden
+		if (step.show === 'compass') {
+			const compassRaised = this.instruments.get('compassRaised');
+			if (compassRaised) {
+				this.instruments.set('compassRaised', { ...compassRaised, visible: false });
 			}
+		}
+	}
+
+	/**
+	 * Set up hide animation
+	 */
+	#setupHideAnimation(step: HideStep): void {
+		const easing = 'easeInOut';
+
+		const animState: AnimationState = {
+			type: 'hide',
+			target: step.hide,
+			start: { opacity: 1 },
+			end: { opacity: 0 },
+			easing
+		};
+		this.#activeAnimations.push(animState);
+
+		// When hiding compass, also hide compassRaised
+		if (step.hide === 'compass') {
+			const compassRaised = this.instruments.get('compassRaised');
+			if (compassRaised) {
+				this.instruments.set('compassRaised', { ...compassRaised, visible: false });
+			}
+		}
+	}
+
+	/**
+	 * Set up rotate animation
+	 */
+	#setupRotateAnimation(step: RotateStep): void {
+		const context = this.#createContext();
+		const easing = step.easing ?? 'easeInOut';
+
+		const startRotation = this.#getTargetRotation(step.rotate);
+		let endRotation: number;
+
+		if (step.to !== undefined) {
+			// Absolute angle
+			endRotation = evaluateExpr(step.to, context);
+		} else if (step.toward) {
+			// Rotate toward a point
+			const { x: targetX, y: targetY } = this.#getTargetPosition(step.rotate);
+			const towardPos = this.objects.get(step.toward)?.position;
+			if (!towardPos) throw new Error(`Target point not found: ${step.toward}`);
+			endRotation = Math.atan2(towardPos.y - targetY, towardPos.x - targetX) * (180 / Math.PI);
+		} else {
+			throw new Error('Rotate must have either to or toward');
+		}
+
+		const animState: AnimationState = {
+			type: 'rotate',
+			target: step.rotate,
+			start: { rotation: startRotation },
+			end: { rotation: endRotation },
+			easing
+		};
+		this.#activeAnimations.push(animState);
+	}
+
+	/**
+	 * Set up spread (compass opening) animation
+	 */
+	#setupSpreadAnimation(step: SpreadStep): void {
+		const context = this.#createContext();
+		const easing = step.easing ?? 'easeInOut';
+
+		const compass = this.instruments.get('compass');
+		const startRadius = compass?.compassRadius ?? DEFAULT_COMPASS_RADIUS;
+		let endRadius: number;
+
+		if (step.radius !== undefined) {
+			// Direct radius value
+			endRadius = evaluateExpr(step.radius, context);
+		} else if (step.to) {
+			// Spread to reach a point
+			const compassX = compass?.x ?? 0;
+			const compassY = compass?.y ?? 0;
+			const toPos = this.objects.get(step.to)?.position;
+			if (!toPos) throw new Error(`Target point not found: ${step.to}`);
+			endRadius = Math.sqrt(Math.pow(toPos.x - compassX, 2) + Math.pow(toPos.y - compassY, 2));
+		} else {
+			throw new Error('Spread must have either to or radius');
+		}
+
+		const animState: AnimationState = {
+			type: 'setCompass',
+			target: 'compass',
+			start: { compassRadius: startRadius },
+			end: { compassRadius: endRadius },
+			easing
+		};
+		this.#activeAnimations.push(animState);
+	}
+
+	/**
+	 * Set up raise animation (3D compass lift)
+	 */
+	#setupRaiseAnimation(_step: RaiseStep): void {
+		// For now, raise is handled within drawArc animation
+		// This could be expanded for standalone raise animation
+		this.#appliedSteps.add(this.#currentAnimatingStep);
+	}
+
+	/**
+	 * Set up lower animation (3D compass lower)
+	 */
+	#setupLowerAnimation(_step: LowerStep): void {
+		// For now, lower is handled within drawArc animation
+		// This could be expanded for standalone lower animation
+		this.#appliedSteps.add(this.#currentAnimatingStep);
+	}
+
+	/**
+	 * Apply style modification step
+	 */
+	#applyStyleStep(step: StyleStep): void {
+		const obj = this.objects.get(step.style);
+		if (obj) {
+			const newState = {
+				...obj,
+				style: {
+					...obj.style,
+					color: step.color ?? obj.style?.color,
+					lineWidth: step.width ?? obj.style?.lineWidth,
+					lineStyle: step.lineStyle ?? obj.style?.lineStyle,
+					opacity: step.opacity ?? obj.style?.opacity
+				},
+				visible: step.visible ?? obj.visible
+			};
+			this.objects.set(step.style, newState);
+			this.#callbacks.onObjectUpdated?.(step.style, newState);
 		}
 	}
 
@@ -1283,17 +1601,6 @@ export class ConstructionEngine {
 		}
 	}
 
-	/**
-	 * Set draw progress of a target object
-	 * Used to initialize draw progress before animation starts
-	 */
-	#setTargetDrawProgress(target: string, drawProgress: number): void {
-		const obj = this.objects.get(target);
-		if (obj) {
-			this.objects.set(target, { ...obj, drawProgress });
-		}
-	}
-
 	// =========================================================================
 	// Step Application (Instant)
 	// =========================================================================
@@ -1333,17 +1640,7 @@ export class ConstructionEngine {
 		}
 
 		try {
-			if (isCreateStep(step)) {
-				this.#applyCreateStep(step.object);
-			} else if (isActionStep(step)) {
-				this.#applyActionInstantly(step.action);
-			} else if (step.type === 'parallel') {
-				// Apply all actions in parallel step
-				for (const action of step.actions) {
-					this.#applyActionInstantly(action);
-				}
-			}
-			// Pause and comment steps don't need state changes
+			this.#applyStepInstantlyImpl(step);
 
 			// Mark step as applied
 			this.#appliedSteps.add(stepIndex);
@@ -1367,116 +1664,232 @@ export class ConstructionEngine {
 	}
 
 	/**
-	 * Apply a create step to add a new object
-	 *
-	 * @param objectDef - Object definition to create
+	 * Apply a step instantly (implementation)
 	 */
-	#applyCreateStep(objectDef: ObjectDef): void {
+	#applyStepInstantlyImpl(step: Step): void {
+		// Object creation steps
+		if (isPointStep(step) || isCircleStep(step) || isTextStep(step) || isMarkStep(step)) {
+			this.#applyObjectCreationStep(step);
+			return;
+		}
+
+		// Line step
+		if (isLineStep(step)) {
+			this.#applyLineStepInstantly(step);
+			return;
+		}
+
+		// Arc step
+		if (isArcStep(step)) {
+			this.#applyArcStepInstantly(step);
+			return;
+		}
+
+		// Move step
+		if (isMoveStep(step)) {
+			this.#applyMoveStepInstantly(step);
+			return;
+		}
+
+		// Show step
+		if (isShowStep(step)) {
+			this.#applyShowHide(step.show, true);
+			return;
+		}
+
+		// Hide step
+		if (isHideStep(step)) {
+			this.#applyShowHide(step.hide, false);
+			return;
+		}
+
+		// Rotate step
+		if (isRotateStep(step)) {
+			this.#applyRotateStepInstantly(step);
+			return;
+		}
+
+		// Spread step
+		if (isSpreadStep(step)) {
+			this.#applySpreadStepInstantly(step);
+			return;
+		}
+
+		// Style step
+		if (isStyleStep(step)) {
+			this.#applyStyleStep(step);
+			return;
+		}
+
+		// Parallel step
+		if (isParallelStep(step)) {
+			for (const subStep of step.parallel) {
+				this.#applyStepInstantlyImpl(subStep);
+			}
+			return;
+		}
+
+		// Pause and raise/lower steps don't need state changes
+	}
+
+	/**
+	 * Apply line step instantly
+	 */
+	#applyLineStepInstantly(step: LineStep): void {
 		const context = this.#createContext();
-		const state = this.#createObjectState(objectDef, context);
 
-		// Add to objects map
-		this.objects.set(objectDef.id, state);
+		// Get current pencil position as the starting point
+		const pencil = this.instruments.get('pencil');
+		const fromX = pencil?.x ?? 0;
+		const fromY = pencil?.y ?? 0;
 
-		// Notify
-		this.#callbacks.onObjectCreated?.(objectDef.id, state);
-	}
+		// Resolve the target position
+		const toPos = resolveTarget(step.to, this.objects, context);
 
-	/**
-	 * Create initial state for an object
-	 *
-	 * @param def - Object definition
-	 * @param context - Evaluation context
-	 * @returns Initial object state
-	 */
-	#createObjectState(def: ObjectDef, context: EvaluationContext): ObjectState {
-		const baseState: ObjectState = {
-			def,
-			visible: def.visible !== false, // Default to visible
-			style: def.style
+		// Create the line object with drawProgress = 1
+		const state: ObjectState = {
+			id: step.line,
+			type: 'line',
+			step,
+			visible: step.visible !== false,
+			drawProgress: 1,
+			computed: {
+				fromX,
+				fromY,
+				toX: toPos.x,
+				toY: toPos.y
+			},
+			style: {
+				color: step.color,
+				lineWidth: step.width,
+				lineStyle: step.style,
+				opacity: 1
+			}
 		};
+		this.objects.set(step.line, state);
 
-		// Calculate position for point objects
-		if (def.kind === 'point') {
-			const x = evaluateExpr(def.x, context);
-			const y = evaluateExpr(def.y, context);
-			return {
-				...baseState,
-				position: { x, y }
-			};
+		// Move pencil to end position
+		if (pencil) {
+			this.instruments.set('pencil', { ...pencil, x: toPos.x, y: toPos.y });
 		}
-
-		// Calculate position for text objects (may use expressions like "$P_29.x + 10")
-		if (def.kind === 'text') {
-			const x = evaluateExpr(def.x, context);
-			const y = evaluateExpr(def.y, context);
-			return {
-				...baseState,
-				position: { x, y }
-			};
-		}
-
-		return baseState;
 	}
 
 	/**
-	 * Apply an action instantly to an existing object or instrument (no animation)
-	 *
-	 * @param action - Action to apply
+	 * Apply arc step instantly
 	 */
-	#applyActionInstantly(action: ActionDef): void {
-		switch (action.kind) {
-			case 'show':
-				this.#applyShowHide(action.target, true);
-				break;
+	#applyArcStepInstantly(step: ArcStep): void {
+		const context = this.#createContext();
 
-			case 'hide':
-				this.#applyShowHide(action.target, false);
-				break;
+		// Get current compass state
+		const compass = this.instruments.get('compass');
+		const centerX = compass?.x ?? 0;
+		const centerY = compass?.y ?? 0;
+		const radius = compass?.compassRadius ?? DEFAULT_COMPASS_RADIUS;
+		const startAngle = compass?.rotation ?? 0;
 
-			case 'translate':
-				this.#applyTranslate(action.target, action.dx, action.dy);
-				break;
+		// Calculate sweep angle
+		const sweepAngle = evaluateExpr(step.sweep, context);
+		const endAngle = startAngle + sweepAngle;
 
-			case 'moveTo':
-				this.#applyMoveTo(action.target, action.x, action.y);
-				break;
+		// Create the arc object with drawProgress = 1
+		const state: ObjectState = {
+			id: step.arc,
+			type: 'arc',
+			step,
+			visible: step.visible !== false,
+			drawProgress: 1,
+			computed: {
+				centerX,
+				centerY,
+				radius,
+				startAngle,
+				endAngle
+			},
+			style: {
+				color: step.color,
+				lineWidth: step.width,
+				lineStyle: step.style,
+				opacity: 1
+			}
+		};
+		this.objects.set(step.arc, state);
 
-			case 'rotate':
-				this.#applyRotate(action.target, action.angle, action.center);
-				break;
+		// Update compass rotation to end angle
+		if (compass) {
+			this.instruments.set('compass', { ...compass, rotation: endAngle });
+		}
+	}
 
-			case 'style':
-				this.#applyStyle(action.target, action.style);
-				break;
+	/**
+	 * Apply move step instantly
+	 */
+	#applyMoveStepInstantly(step: MoveStep): void {
+		const context = this.#createContext();
+		const targetPos = resolveTarget(step.to, this.objects, context);
 
-			case 'draw':
-				this.#applyDraw(action.target, action.direction ?? 'forward');
-				break;
+		if (this.#isInstrumentType(step.move)) {
+			const instrument = this.instruments.get(step.move);
+			if (instrument) {
+				this.instruments.set(step.move, { ...instrument, x: targetPos.x, y: targetPos.y });
+			}
+		} else {
+			const obj = this.objects.get(step.move);
+			if (obj) {
+				const newState = { ...obj, position: targetPos };
+				this.objects.set(step.move, newState);
+				this.#callbacks.onObjectUpdated?.(step.move, newState);
+			}
+		}
+	}
 
-			case 'drawCircle':
-				this.#applyDrawCircle(action.target, action.startAngle, action.endAngle);
-				break;
+	/**
+	 * Apply rotate step instantly
+	 */
+	#applyRotateStepInstantly(step: RotateStep): void {
+		const context = this.#createContext();
 
-			case 'setCompass':
-				this.#applySetCompass(action.radius);
-				break;
+		let endRotation: number;
+		if (step.to !== undefined) {
+			endRotation = evaluateExpr(step.to, context);
+		} else if (step.toward) {
+			const { x: targetX, y: targetY } = this.#getTargetPosition(step.rotate);
+			const towardPos = this.objects.get(step.toward)?.position;
+			if (!towardPos) throw new Error(`Target point not found: ${step.toward}`);
+			endRotation = Math.atan2(towardPos.y - targetY, towardPos.x - targetX) * (180 / Math.PI);
+		} else {
+			throw new Error('Rotate must have either to or toward');
+		}
 
-			case 'drawLine':
-				this.#applyDrawLine(action as DrawLineActionDef);
-				break;
+		if (this.#isInstrumentType(step.rotate)) {
+			const instrument = this.instruments.get(step.rotate);
+			if (instrument) {
+				this.instruments.set(step.rotate, { ...instrument, rotation: endRotation });
+			}
+		}
+	}
 
-			case 'drawArc':
-				this.#applyDrawArc(action as DrawArcActionDef);
-				break;
+	/**
+	 * Apply spread step instantly
+	 */
+	#applySpreadStepInstantly(step: SpreadStep): void {
+		const context = this.#createContext();
+		const compass = this.instruments.get('compass');
 
-			case 'scale':
-				// Scale actions would need additional implementation
-				break;
+		let endRadius: number;
+		if (step.radius !== undefined) {
+			endRadius = evaluateExpr(step.radius, context);
+		} else if (step.to) {
+			const compassX = compass?.x ?? 0;
+			const compassY = compass?.y ?? 0;
+			const toPos = this.objects.get(step.to)?.position;
+			if (!toPos) throw new Error(`Target point not found: ${step.to}`);
+			endRadius = Math.sqrt(Math.pow(toPos.x - compassX, 2) + Math.pow(toPos.y - compassY, 2));
+		} else {
+			throw new Error('Spread must have either to or radius');
+		}
 
-			case 'measure':
-				// Measure actions would need additional implementation
-				break;
+		if (compass) {
+			this.instruments.set('compass', { ...compass, compassRadius: endRadius });
 		}
 	}
 
@@ -1495,8 +1908,6 @@ export class ConstructionEngine {
 			if (target === 'compass') {
 				const compassRaised = this.instruments.get('compassRaised');
 				if (compassRaised) {
-					// When showing compass, hide compassRaised
-					// When hiding compass, also hide compassRaised
 					this.instruments.set('compassRaised', { ...compassRaised, visible: false });
 				}
 			}
@@ -1509,264 +1920,6 @@ export class ConstructionEngine {
 			const newState = { ...obj, visible };
 			this.objects.set(target, newState);
 			this.#callbacks.onObjectUpdated?.(target, newState);
-		}
-	}
-
-	/**
-	 * Apply translate action
-	 */
-	#applyTranslate(target: string | InstrumentType, dx: Expr, dy: Expr): void {
-		const context = this.#createContext();
-		const deltaX = evaluateExpr(dx, context);
-		const deltaY = evaluateExpr(dy, context);
-
-		if (this.#isInstrumentType(target)) {
-			const instrument = this.instruments.get(target);
-			if (instrument) {
-				this.instruments.set(target, {
-					...instrument,
-					x: instrument.x + deltaX,
-					y: instrument.y + deltaY
-				});
-			}
-			return;
-		}
-
-		const obj = this.objects.get(target);
-		if (obj?.position) {
-			const newState = {
-				...obj,
-				position: {
-					x: obj.position.x + deltaX,
-					y: obj.position.y + deltaY
-				}
-			};
-			this.objects.set(target, newState);
-			this.#callbacks.onObjectUpdated?.(target, newState);
-		}
-	}
-
-	/**
-	 * Apply moveTo action
-	 */
-	#applyMoveTo(target: string | InstrumentType, x: Expr, y: Expr): void {
-		const context = this.#createContext();
-		const newX = evaluateExpr(x, context);
-		const newY = evaluateExpr(y, context);
-
-		if (this.#isInstrumentType(target)) {
-			const instrument = this.instruments.get(target);
-			if (instrument) {
-				this.instruments.set(target, { ...instrument, x: newX, y: newY });
-			}
-			return;
-		}
-
-		const obj = this.objects.get(target);
-		if (obj) {
-			const newState = {
-				...obj,
-				position: { x: newX, y: newY }
-			};
-			this.objects.set(target, newState);
-			this.#callbacks.onObjectUpdated?.(target, newState);
-		}
-	}
-
-	/**
-	 * Apply rotate action
-	 */
-	#applyRotate(
-		target: string | InstrumentType,
-		angle: Expr,
-		center?: string | { x: Expr; y: Expr }
-	): void {
-		const context = this.#createContext();
-		const rotationAngle = evaluateExpr(angle, context);
-
-		if (this.#isInstrumentType(target)) {
-			const instrument = this.instruments.get(target);
-			if (instrument) {
-				this.instruments.set(target, {
-					...instrument,
-					rotation: instrument.rotation + rotationAngle
-				});
-			}
-			return;
-		}
-
-		// For objects, rotation around a center requires geometric calculation
-		const obj = this.objects.get(target);
-		if (obj?.position && center) {
-			const centerPos = resolvePointRef(center, this.objects, context);
-			const { x, y } = obj.position;
-
-			// Rotate point around center
-			const rad = (rotationAngle * Math.PI) / 180;
-			const cos = Math.cos(rad);
-			const sin = Math.sin(rad);
-			const dx = x - centerPos.x;
-			const dy = y - centerPos.y;
-
-			const newState = {
-				...obj,
-				position: {
-					x: centerPos.x + dx * cos - dy * sin,
-					y: centerPos.y + dx * sin + dy * cos
-				}
-			};
-
-			this.objects.set(target, newState);
-			this.#callbacks.onObjectUpdated?.(target, newState);
-		}
-	}
-
-	/**
-	 * Apply style action
-	 */
-	#applyStyle(target: string, style: Partial<import('../types').StyleProps>): void {
-		const obj = this.objects.get(target);
-		if (obj) {
-			const newState = {
-				...obj,
-				style: { ...obj.style, ...style }
-			};
-			this.objects.set(target, newState);
-			this.#callbacks.onObjectUpdated?.(target, newState);
-		}
-	}
-
-	/**
-	 * Apply draw action (set drawing progress)
-	 */
-	#applyDraw(target: string, direction: 'forward' | 'reverse'): void {
-		const obj = this.objects.get(target);
-		if (obj) {
-			const newState = {
-				...obj,
-				drawProgress: direction === 'forward' ? 1 : 0
-			};
-			this.objects.set(target, newState);
-			this.#callbacks.onObjectUpdated?.(target, newState);
-		}
-	}
-
-	/**
-	 * Apply drawCircle action
-	 */
-	#applyDrawCircle(target: string, _startAngle?: Expr, _endAngle?: Expr): void {
-		const obj = this.objects.get(target);
-		if (obj) {
-			const newState = {
-				...obj,
-				drawProgress: 1
-			};
-			this.objects.set(target, newState);
-			this.#callbacks.onObjectUpdated?.(target, newState);
-		}
-	}
-
-	/**
-	 * Apply setCompass action
-	 */
-	#applySetCompass(radius: Expr): void {
-		const context = this.#createContext();
-		const compassRadius = evaluateExpr(radius, context);
-
-		const compass = this.instruments.get('compass');
-		if (compass) {
-			this.instruments.set('compass', { ...compass, compassRadius });
-		}
-	}
-
-	/**
-	 * Resolve a point reference to coordinates
-	 */
-	#resolvePointRef(ref: PointRef): Position | undefined {
-		if (typeof ref === 'string') {
-			const obj = this.objects.get(ref);
-			return obj?.position;
-		}
-		return { x: ref.x, y: ref.y };
-	}
-
-	/**
-	 * Apply drawLine action instantly
-	 */
-	#applyDrawLine(action: DrawLineActionDef): void {
-		const fromPos = this.#resolvePointRef(action.from);
-		const toPos = this.#resolvePointRef(action.to);
-		if (!fromPos || !toPos) return;
-
-		if (action.createObject) {
-			const segmentDef: SegmentDef = {
-				kind: 'segment',
-				id: action.createObject.id,
-				from: { x: fromPos.x, y: fromPos.y },
-				to: { x: toPos.x, y: toPos.y },
-				visible: true,
-				style: action.createObject.style,
-				arrowHead: action.createObject.arrowHead
-			};
-			this.objects.set(action.createObject.id, {
-				def: segmentDef,
-				visible: true,
-				drawProgress: 1
-			});
-		}
-
-		// Move pencil to end position
-		const pencil = this.instruments.get('pencil');
-		if (pencil) {
-			this.instruments.set('pencil', { ...pencil, x: toPos.x, y: toPos.y, visible: true });
-		}
-	}
-
-	/**
-	 * Apply drawArc action instantly
-	 */
-	#applyDrawArc(action: DrawArcActionDef): void {
-		const centerPos = this.#resolvePointRef(action.center);
-		if (!centerPos) return;
-
-		const context = this.#createContext();
-		const radiusValue = evaluateExpr(action.radius, context);
-		const startAngleValue = evaluateExpr(action.startAngle, context);
-		const endAngleValue = evaluateExpr(action.endAngle, context);
-
-		if (action.createObject) {
-			const arcDef: ArcDef = {
-				kind: 'arc',
-				id: action.createObject.id,
-				center: { x: centerPos.x, y: centerPos.y },
-				radius: radiusValue,
-				startAngle: startAngleValue,
-				endAngle: endAngleValue,
-				visible: true,
-				style: action.createObject.style
-			};
-			this.objects.set(action.createObject.id, {
-				def: arcDef,
-				visible: true,
-				drawProgress: 1
-			});
-		}
-
-		// Hide regular compass and position raised compass at end
-		const compass = this.instruments.get('compass');
-		if (compass) {
-			this.instruments.set('compass', { ...compass, visible: false });
-		}
-		const compassRaised = this.instruments.get('compassRaised');
-		if (compassRaised) {
-			this.instruments.set('compassRaised', {
-				...compassRaised,
-				x: centerPos.x,
-				y: centerPos.y,
-				rotation: endAngleValue,
-				compassRadius: radiusValue,
-				visible: true
-			});
 		}
 	}
 

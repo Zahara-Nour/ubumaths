@@ -357,26 +357,52 @@ export function arcToSvgPath(
 	startAngle: number,
 	endAngle: number
 ): string {
-	// Convert angles to radians (no negation - match InstrumenPoche behavior)
+	// Determine arc sweep direction and magnitude
+	const sweep = endAngle - startAngle;
+	const absSweep = Math.abs(sweep);
+	const sweepFlag = sweep >= 0 ? 1 : 0;
+
+	// For arcs >= 360 degrees, draw a full circle using two semicircles
+	if (absSweep >= 360) {
+		const startRad = startAngle * DEG_TO_RAD;
+		const x1 = cx + r * Math.cos(startRad);
+		const y1 = cy + r * Math.sin(startRad);
+		// Opposite point on the circle
+		const x2 = cx - r * Math.cos(startRad);
+		const y2 = cy - r * Math.sin(startRad);
+		// Two arcs to make a full circle
+		return `M ${x1} ${y1} A ${r} ${r} 0 1 ${sweepFlag} ${x2} ${y2} A ${r} ${r} 0 1 ${sweepFlag} ${x1} ${y1}`;
+	}
+
+	// For arcs > 180 degrees, split into two arcs to avoid SVG arc ambiguity
+	// This prevents visual jumps when largeArcFlag would change during animation
+	if (absSweep > 180) {
+		const midAngle = startAngle + sweep / 2;
+		const startRad = startAngle * DEG_TO_RAD;
+		const midRad = midAngle * DEG_TO_RAD;
+		const endRad = endAngle * DEG_TO_RAD;
+
+		const x1 = cx + r * Math.cos(startRad);
+		const y1 = cy + r * Math.sin(startRad);
+		const xMid = cx + r * Math.cos(midRad);
+		const yMid = cy + r * Math.sin(midRad);
+		const x2 = cx + r * Math.cos(endRad);
+		const y2 = cy + r * Math.sin(endRad);
+
+		// Two arcs, each <= 180 degrees, so largeArcFlag is always 0
+		return `M ${x1} ${y1} A ${r} ${r} 0 0 ${sweepFlag} ${xMid} ${yMid} A ${r} ${r} 0 0 ${sweepFlag} ${x2} ${y2}`;
+	}
+
+	// For arcs <= 180 degrees, use a single arc
 	const startRad = startAngle * DEG_TO_RAD;
 	const endRad = endAngle * DEG_TO_RAD;
 
-	// Calculate start and end points
 	const x1 = cx + r * Math.cos(startRad);
 	const y1 = cy + r * Math.sin(startRad);
 	const x2 = cx + r * Math.cos(endRad);
 	const y2 = cy + r * Math.sin(endRad);
 
-	// Determine arc sweep
-	const ecart = Math.abs(endAngle - startAngle);
-
-	// Large arc flag: 1 if arc > 180 degrees
-	const largeArcFlag = ecart > 180 ? 1 : 0;
-	// Sweep flag: 1 if startAngle < endAngle (clockwise in SVG), 0 otherwise
-	// This matches InstrumenPoche: sens = (deb < fin) ? '1' : '0'
-	const sweepFlag = startAngle < endAngle ? 1 : 0;
-
-	return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArcFlag} ${sweepFlag} ${x2} ${y2}`;
+	return `M ${x1} ${y1} A ${r} ${r} 0 0 ${sweepFlag} ${x2} ${y2}`;
 }
 
 /**

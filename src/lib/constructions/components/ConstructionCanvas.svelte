@@ -9,14 +9,16 @@
 	 */
 
 	import type { ConstructionEngine } from '../core/engine.svelte';
-	import type { ObjectState, PointDef } from '../types';
+	import type { ObjectState, PointDef, SegmentDef } from '../types';
 	import {
 		segmentToSvgLine,
 		circleToSvgPath,
 		arcToSvgPath,
 		polygonToSvgPath,
 		partialSegmentPath,
-		partialArcPath
+		partialArcPath,
+		arrowheadPath,
+		calculateAngle
 	} from '../core/renderer';
 	import {
 		DEFAULT_GRID_SPACING,
@@ -113,10 +115,8 @@
 				const startAngle = typeof def.startAngle === 'number' ? def.startAngle : 0;
 				const endAngle = typeof def.endAngle === 'number' ? def.endAngle : 90;
 
-				if (progress < 1) {
-					return partialArcPath(center.x, center.y, radius, startAngle, endAngle, progress);
-				}
-				return arcToSvgPath(center.x, center.y, radius, startAngle, endAngle);
+				// Always use partialArcPath for consistency (handles progress=1 correctly)
+				return partialArcPath(center.x, center.y, radius, startAngle, endAngle, progress);
 			}
 
 			case 'polygon': {
@@ -209,6 +209,48 @@
 	}
 
 	/**
+	 * Check if object is a segment with arrowhead
+	 */
+	function isSegmentWithArrowhead(obj: ObjectState): boolean {
+		return obj.def.kind === 'segment' && !!(obj.def as SegmentDef).arrowHead;
+	}
+
+	/**
+	 * Get arrowhead paths for a segment
+	 */
+	function getArrowheadPaths(obj: ObjectState): { endArrow?: string; startArrow?: string } {
+		const def = obj.def as SegmentDef;
+		if (def.kind !== 'segment' || !def.arrowHead) return {};
+
+		const from = resolvePoint(def.from);
+		const to = resolvePoint(def.to);
+		if (!from || !to) return {};
+
+		const progress = obj.drawProgress ?? 1;
+		if (progress <= 0) return {};
+
+		const angle = calculateAngle(from.x, from.y, to.x, to.y);
+		const lineWidth = obj.style?.lineWidth ?? obj.def.style?.lineWidth ?? DEFAULT_LINE_WIDTH;
+		const arrowSize = lineWidth * 5 + 5;
+
+		const result: { endArrow?: string; startArrow?: string } = {};
+
+		// End arrowhead (at current progress position)
+		if (def.arrowHead === 'end' || def.arrowHead === 'both') {
+			const currentX = from.x + (to.x - from.x) * progress;
+			const currentY = from.y + (to.y - from.y) * progress;
+			result.endArrow = arrowheadPath(currentX, currentY, angle, arrowSize);
+		}
+
+		// Start arrowhead (at from position, pointing backward)
+		if (def.arrowHead === 'start' || def.arrowHead === 'both') {
+			result.startArrow = arrowheadPath(from.x, from.y, angle + Math.PI, arrowSize);
+		}
+
+		return result;
+	}
+
+	/**
 	 * Check if object is a filled shape
 	 */
 	function isFilledObject(obj: ObjectState): boolean {
@@ -290,7 +332,9 @@
 	<g class="objects-layer-strokes">
 		{#each visibleObjects.filter((o) => !isPointObject(o) && !isFilledObject(o)) as obj (obj.def.id)}
 			{@const path = getObjectPath(obj)}
+			{@const arrows = isSegmentWithArrowhead(obj) ? getArrowheadPaths(obj) : {}}
 			{#if path}
+				<!-- Main path -->
 				<path
 					d={path}
 					fill="none"
@@ -299,6 +343,26 @@
 					stroke-dasharray={getStrokeDashArray(obj)}
 					opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
 				/>
+				<!-- End arrowhead -->
+				{#if arrows.endArrow}
+					<path
+						d={arrows.endArrow}
+						fill="none"
+						stroke={getObjectColor(obj)}
+						stroke-width={getObjectLineWidth(obj)}
+						opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
+					/>
+				{/if}
+				<!-- Start arrowhead -->
+				{#if arrows.startArrow}
+					<path
+						d={arrows.startArrow}
+						fill="none"
+						stroke={getObjectColor(obj)}
+						stroke-width={getObjectLineWidth(obj)}
+						opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
+					/>
+				{/if}
 			{/if}
 		{/each}
 	</g>

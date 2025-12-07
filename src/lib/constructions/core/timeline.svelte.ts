@@ -8,13 +8,26 @@
  * @module constructions/core/timeline
  */
 
-import type { Step, ConstructionScript, ActionDef } from '../types';
+import type { Step, ConstructionScript, NonParallelStep } from '../types';
 import {
-	DEFAULT_ANIMATION_DURATION,
-	DEFAULT_PAUSE_DURATION,
-	MIN_ANIMATION_DURATION,
-	MAX_ANIMATION_DURATION
-} from '../constants';
+	isPointStep,
+	isLineStep,
+	isArcStep,
+	isCircleStep,
+	isTextStep,
+	isMarkStep,
+	isMoveStep,
+	isShowStep,
+	isHideStep,
+	isRotateStep,
+	isSpreadStep,
+	isRaiseStep,
+	isLowerStep,
+	isStyleStep,
+	isPauseStep,
+	isParallelStep
+} from '../types';
+import { DEFAULT_ANIMATION_DURATION, DEFAULT_PAUSE_DURATION } from '../constants';
 
 // =============================================================================
 // Types
@@ -66,13 +79,56 @@ interface StepTiming {
 // =============================================================================
 
 /**
- * Calculate the duration of an action
- *
- * @param action - Action definition
- * @returns Duration in milliseconds
+ * Check if a step is an object creation step (instant)
  */
-function getActionDuration(action: ActionDef): number {
-	return action.duration ?? DEFAULT_ANIMATION_DURATION;
+function isObjectCreationStep(step: Step | NonParallelStep): boolean {
+	return isPointStep(step) || isCircleStep(step) || isTextStep(step) || isMarkStep(step);
+}
+
+/**
+ * Check if a step is an animated drawing step (line or arc)
+ */
+function isDrawingStep(step: Step | NonParallelStep): boolean {
+	return isLineStep(step) || isArcStep(step);
+}
+
+/**
+ * Check if a step is an instrument action (animated)
+ */
+function _isInstrumentActionStep(step: Step | NonParallelStep): boolean {
+	return (
+		isMoveStep(step) ||
+		isShowStep(step) ||
+		isHideStep(step) ||
+		isRotateStep(step) ||
+		isSpreadStep(step) ||
+		isRaiseStep(step) ||
+		isLowerStep(step)
+	);
+}
+
+/**
+ * Get the duration from a step that has an optional duration property
+ */
+function getStepDurationValue(step: NonParallelStep): number {
+	// Steps with duration property
+	if (isMoveStep(step)) return step.duration ?? DEFAULT_ANIMATION_DURATION;
+	if (isShowStep(step)) return step.duration ?? DEFAULT_ANIMATION_DURATION;
+	if (isHideStep(step)) return step.duration ?? DEFAULT_ANIMATION_DURATION;
+	if (isRotateStep(step)) return step.duration ?? DEFAULT_ANIMATION_DURATION;
+	if (isSpreadStep(step)) return step.duration ?? DEFAULT_ANIMATION_DURATION;
+	if (isRaiseStep(step)) return step.duration ?? DEFAULT_ANIMATION_DURATION;
+	if (isLowerStep(step)) return step.duration ?? DEFAULT_ANIMATION_DURATION;
+	if (isStyleStep(step)) return step.duration ?? 100; // Style changes are quick
+	if (isPauseStep(step)) return step.pause;
+
+	// Object creation steps are instant
+	if (isObjectCreationStep(step)) return 100;
+
+	// Drawing steps (line, arc) have animation
+	if (isDrawingStep(step)) return DEFAULT_ANIMATION_DURATION;
+
+	return DEFAULT_ANIMATION_DURATION;
 }
 
 /**
@@ -82,36 +138,25 @@ function getActionDuration(action: ActionDef): number {
  * @returns Duration in milliseconds
  */
 function getStepDuration(step: Step): number {
-	switch (step.type) {
-		case 'create':
-			// Object creation is instant but might have a short delay for visual feedback
-			return 100;
-
-		case 'pause':
-			return step.duration;
-
-		case 'action':
-			return getActionDuration(step.action);
-
-		case 'parallel': {
-			// Parallel actions take as long as the longest action
-			let maxDuration = 0;
-			for (const action of step.actions) {
-				const duration = getActionDuration(action);
-				if (duration > maxDuration) {
-					maxDuration = duration;
-				}
-			}
-			return maxDuration || DEFAULT_ANIMATION_DURATION;
-		}
-
-		case 'comment':
-			// Comments are instant (no visual duration)
-			return 0;
-
-		default:
-			return DEFAULT_ANIMATION_DURATION;
+	// Pause step
+	if (isPauseStep(step)) {
+		return step.pause;
 	}
+
+	// Parallel step - take the longest duration
+	if (isParallelStep(step)) {
+		let maxDuration = 0;
+		for (const subStep of step.parallel) {
+			const duration = getStepDurationValue(subStep);
+			if (duration > maxDuration) {
+				maxDuration = duration;
+			}
+		}
+		return maxDuration || DEFAULT_ANIMATION_DURATION;
+	}
+
+	// All other steps
+	return getStepDurationValue(step);
 }
 
 /**
@@ -286,10 +331,7 @@ export class Timeline {
 			currentTime += duration;
 
 			// Add a small gap between steps for visual clarity
-			// (except after comments which are instant)
-			if (step.type !== 'comment') {
-				currentTime += DEFAULT_PAUSE_DURATION / 4;
-			}
+			currentTime += DEFAULT_PAUSE_DURATION / 4;
 		}
 
 		this.totalDuration = currentTime;

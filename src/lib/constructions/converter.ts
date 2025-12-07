@@ -1,8 +1,16 @@
 /**
  * InstrumenPoche XML to UbuMaths JSON Converter
  *
- * Converts InstrumenPoche XML construction scripts to UbuMaths ConstructionScript format.
+ * Converts InstrumenPoche XML construction scripts to UbuMaths flat JSON format.
  * This module is browser/server compatible - no Node.js-specific APIs.
+ *
+ * New format examples:
+ * - { "point": "A", "at": [100, 200], "label": "A" }
+ * - { "move": "pencil", "to": [100, 200] }
+ * - { "line": "seg1", "to": "B" }
+ * - { "arc": "c1", "sweep": 360 }
+ * - { "show": "ruler" }
+ * - { "pause": 1000 }
  *
  * @module constructions/converter
  *
@@ -24,7 +32,13 @@
  * ```
  */
 
-import type { ConstructionScript, Step, ObjectDef, ActionDef, LineStyle } from './types';
+import {
+	constructionScriptSchema,
+	type ConstructionScriptInput,
+	type StepInput,
+	type CoordPair,
+	type LabelInput
+} from './schemas';
 
 // =============================================================================
 // Cross-environment XML Parser (Browser + Node.js)
@@ -133,7 +147,7 @@ export interface ConversionResult {
 	/** Whether the conversion was successful */
 	success: boolean;
 	/** The converted script (only present if success is true) */
-	script?: ConstructionScript;
+	script?: ConstructionScriptInput;
 	/** Non-critical warnings that occurred during conversion */
 	warnings: string[];
 	/** Critical errors that caused conversion to fail */
@@ -238,6 +252,15 @@ interface Position {
 	y: number;
 }
 
+/** Line style type for internal conversion */
+type LineStyle = 'solid' | 'dashed' | 'dotted';
+
+/** Pending label to be integrated into the next point creation */
+interface PendingLabel {
+	pointIepId: string;
+	label: LabelInput;
+}
+
 interface ConversionContext {
 	objectIdCounter: number;
 	pointMap: Map<string, string>; // Maps IEP id to UbuMaths id
@@ -247,13 +270,21 @@ interface ConversionContext {
 	currentPosition: { x: number; y: number };
 	compassRadius: number; // Current compass opening radius
 	createdObjects: Set<string>;
-	steps: Step[];
+	steps: StepInput[];
 	warnings: string[];
+	pendingLabels: Map<string, PendingLabel>; // Labels to be applied to points
 }
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
+
+/**
+ * Create a coordinate pair tuple [x, y]
+ */
+function coordPair(x: number, y: number): CoordPair {
+	return [x, y];
+}
 
 /**
  * Calculate angle in degrees from point 'from' to point 'to'
@@ -316,7 +347,7 @@ function setInstrumentRotation(ctx: ConversionContext, instrument: string, angle
  * Normalize angle delta to the shortest path [-180, 180]
  * This ensures rotations take the most direct route
  */
-function normalizeAngleDelta(delta: number): number {
+function _normalizeAngleDelta(delta: number): number {
 	// Normalize to [-360, 360] first
 	let normalized = delta % 360;
 	// Then adjust to [-180, 180]
@@ -326,8 +357,22 @@ function normalizeAngleDelta(delta: number): number {
 }
 
 // =============================================================================
-// Color Conversion
+// Style Conversion
 // =============================================================================
+
+/** Minimum line width (Zod schema requires >= 0.1) */
+const MIN_LINE_WIDTH = 0.1;
+
+/**
+ * Parse line width from InstrumenPoche epaisseur attribute
+ * Returns at least MIN_LINE_WIDTH to satisfy schema validation
+ */
+function parseLineWidth(epaisseur: string | undefined, defaultWidth: number = 1): number {
+	if (!epaisseur) return defaultWidth;
+	const parsed = parseFloat(epaisseur);
+	if (isNaN(parsed) || parsed < MIN_LINE_WIDTH) return defaultWidth;
+	return parsed;
+}
 
 /**
  * Convert InstrumenPoche color to CSS color
@@ -497,20 +542,18 @@ function convertAction(action: IepAction, ctx: ConversionContext): void {
 			ctx.warnings.push(`Unknown object type: ${objet}`);
 	}
 
-	// Handle tempo as pause
+	// Handle tempo as pause (new format: { pause: duration })
 	if (attrs.tempo && parseInt(attrs.tempo) > 0) {
 		const pauseDuration = parseInt(attrs.tempo) * 50; // IEP tempo units to ms
 		if (pauseDuration > 0 && pauseDuration < 30000) {
-			ctx.steps.push({
-				type: 'pause',
-				duration: pauseDuration
-			});
+			ctx.steps.push({ pause: pauseDuration });
 		}
 	}
 }
 
 /**
  * Convert point-related actions
+ * New format: { point: "A", at: [100, 200], label: "A" }
  */
 function convertPointAction(
 	attrs: IepAction['$'],
@@ -529,47 +572,74 @@ function convertPointAction(
 				setPointPosition(ctx, attrs.id, { x, y });
 			}
 
-			const pointDef: ObjectDef = {
-				kind: 'point',
-				id,
-				x,
-				y,
-				style: {
-					color: convertColor(attrs.couleur),
-					lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 2
-				},
-				pointStyle: 'dot',
-				radius: 4
+			// Check if there's a pending label for this point
+			const pendingLabel = attrs.id ? ctx.pendingLabels.get(attrs.id) : undefined;
+			if (pendingLabel) {
+				ctx.pendingLabels.delete(attrs.id!);
+			}
+
+			// New format: { point: id, at: [x, y], label?: ..., style?: ..., color?: ... }
+			const pointStep: StepInput = {
+				point: id,
+				at: coordPair(x, y),
+				...(pendingLabel && { label: pendingLabel.label }),
+				style: 'dot',
+				radius: 4,
+				color: convertColor(attrs.couleur)
 			};
 
 			ctx.createdObjects.add(id);
-			ctx.steps.push({ type: 'create', object: pointDef });
+			ctx.steps.push(pointStep);
 			break;
 		}
 		case 'nommer': {
-			// Point naming - we can update the label
-			const pointId = attrs.id
-				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'P', attrs.id)
-				: undefined;
-			if (pointId && attrs.nom) {
-				// Create a text label near the point
-				// Use XML offset attributes if provided, otherwise default offset
-				const offsetX = attrs.abscisse ? parseFloat(attrs.abscisse) : 10;
-				const offsetY = attrs.ordonnee ? parseFloat(attrs.ordonnee) : -10;
-				const labelId = generateObjectId(ctx, 'label', `${attrs.id}_label`);
-				const textDef: ObjectDef = {
-					kind: 'text',
-					id: labelId,
-					content: attrs.nom,
-					x: `$${pointId}.x + ${offsetX}`,
-					y: `$${pointId}.y + ${offsetY}`,
-					fontSize: 14,
-					style: {
-						color: convertColor(attrs.couleur)
+			// Point naming - in new format, labels are integrated with points
+			// If the point already exists, we need to create a separate text object
+			// If the point doesn't exist yet, store the label for later
+			if (!attrs.id || !attrs.nom) break;
+
+			const pointId = ctx.pointMap.get(attrs.id);
+			const offsetX = attrs.abscisse ? parseFloat(attrs.abscisse) : 10;
+			const offsetY = attrs.ordonnee ? parseFloat(attrs.ordonnee) : -10;
+
+			if (pointId && ctx.createdObjects.has(pointId)) {
+				// Point already exists - create a separate text object
+				const labelId = `label_${attrs.id}`;
+
+				if (ctx.createdObjects.has(labelId)) {
+					// Label already exists - move it to new position
+					const pointPos = getPointPosition(ctx, attrs.id);
+					if (pointPos) {
+						ctx.steps.push({
+							move: labelId,
+							to: coordPair(pointPos.x + offsetX, pointPos.y + offsetY)
+						});
 					}
-				};
-				ctx.createdObjects.add(labelId);
-				ctx.steps.push({ type: 'create', object: textDef });
+				} else {
+					// Create new text label
+					const pointPos = getPointPosition(ctx, attrs.id);
+					if (pointPos) {
+						ctx.steps.push({
+							text: labelId,
+							at: coordPair(pointPos.x + offsetX, pointPos.y + offsetY),
+							content: attrs.nom,
+							size: 14,
+							color: convertColor(attrs.couleur)
+						});
+						ctx.createdObjects.add(labelId);
+					}
+				}
+			} else {
+				// Point doesn't exist yet - store label for later integration
+				const label: LabelInput =
+					offsetX !== 10 || offsetY !== -10
+						? { text: attrs.nom, offset: [offsetX, offsetY] }
+						: attrs.nom;
+
+				ctx.pendingLabels.set(attrs.id, {
+					pointIepId: attrs.id,
+					label
+				});
 			}
 			break;
 		}
@@ -584,14 +654,12 @@ function convertPointAction(
 				if (attrs.id) {
 					setPointPosition(ctx, attrs.id, { x: newX, y: newY });
 				}
-				const action: ActionDef = {
-					kind: 'moveTo',
-					target: pointId,
-					x: newX,
-					y: newY,
-					duration: attrs.vitesse ? (1000 / parseFloat(attrs.vitesse)) * 100 : 500
-				};
-				ctx.steps.push({ type: 'action', action });
+				// New format: { move: id, to: [x, y], duration?: ... }
+				ctx.steps.push({
+					move: pointId,
+					to: coordPair(newX, newY),
+					duration: attrs.vitesse ? Math.round((1000 / parseFloat(attrs.vitesse)) * 100) : 500
+				});
 			}
 			break;
 		}
@@ -600,11 +668,8 @@ function convertPointAction(
 				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'P', attrs.id)
 				: undefined;
 			if (pointId) {
-				const action: ActionDef = {
-					kind: 'hide',
-					target: pointId
-				};
-				ctx.steps.push({ type: 'action', action });
+				// New format: { hide: id }
+				ctx.steps.push({ hide: pointId });
 			}
 			break;
 		}
@@ -613,11 +678,8 @@ function convertPointAction(
 				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'P', attrs.id)
 				: undefined;
 			if (pointId) {
-				const action: ActionDef = {
-					kind: 'show',
-					target: pointId
-				};
-				ctx.steps.push({ type: 'action', action });
+				// New format: { show: id }
+				ctx.steps.push({ show: pointId });
 			}
 			break;
 		}
@@ -626,6 +688,7 @@ function convertPointAction(
 
 /**
  * Convert text-related actions
+ * New format: { text: "t1", at: [x, y], content: "Hello", color?: ..., size?: ... }
  */
 function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: ConversionContext): void {
 	switch (mouvement) {
@@ -651,30 +714,33 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 				: generateObjectId(ctx, 'T');
 
 			// Clean up IEP text encoding
+			// Note: We decode IEP special sequences but DON'T strip HTML tags
+			// since that would remove intentional <> characters
 			let text = attrs.texte || '';
 			text = text
+				.replace(/<br£gt£/g, '\n') // Handle line breaks first
 				.replace(/£lt£/g, '<')
 				.replace(/£gt£/g, '>')
 				.replace(/£guillemet£/g, '"')
 				.replace(/£i\(/g, '(')
-				.replace(/\)/g, ')')
-				.replace(/<br£gt£/g, '\n')
-				.replace(/<[^>]+>/g, ''); // Remove HTML tags for simplicity
+				.replace(/\)/g, ')');
+			// Note: Not stripping HTML tags as it would remove intentional < > chars
+
+			// Skip empty text content
+			if (!text.trim()) {
+				break;
+			}
 
 			if (!ctx.createdObjects.has(id)) {
-				const textDef: ObjectDef = {
-					kind: 'text',
-					id,
+				// New format: { text: id, at: [x, y], content: ..., size?: ..., color?: ... }
+				ctx.steps.push({
+					text: id,
+					at: coordPair(ctx.currentPosition.x, ctx.currentPosition.y),
 					content: text,
-					x: ctx.currentPosition.x,
-					y: ctx.currentPosition.y,
-					fontSize: attrs.taille ? parseInt(attrs.taille) : 16,
-					style: {
-						color: convertColor(attrs.couleur)
-					}
-				};
+					size: attrs.taille ? parseInt(attrs.taille) : 16,
+					color: convertColor(attrs.couleur)
+				});
 				ctx.createdObjects.add(id);
-				ctx.steps.push({ type: 'create', object: textDef });
 			}
 			break;
 		}
@@ -683,8 +749,8 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'T', attrs.id)
 				: undefined;
 			if (id) {
-				const action: ActionDef = { kind: 'hide', target: id };
-				ctx.steps.push({ type: 'action', action });
+				// New format: { hide: id }
+				ctx.steps.push({ hide: id });
 			}
 			break;
 		}
@@ -693,14 +759,12 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 				? ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'T', attrs.id)
 				: undefined;
 			if (id && attrs.abscisse && attrs.ordonnee) {
-				const action: ActionDef = {
-					kind: 'moveTo',
-					target: id,
-					x: parseFloat(attrs.abscisse),
-					y: parseFloat(attrs.ordonnee),
-					duration: attrs.vitesse ? (1000 / parseFloat(attrs.vitesse)) * 100 : 500
-				};
-				ctx.steps.push({ type: 'action', action });
+				// New format: { move: id, to: [x, y], duration?: ... }
+				ctx.steps.push({
+					move: id,
+					to: coordPair(parseFloat(attrs.abscisse), parseFloat(attrs.ordonnee)),
+					duration: attrs.vitesse ? Math.round((1000 / parseFloat(attrs.vitesse)) * 100) : 500
+				});
 			}
 			break;
 		}
@@ -709,6 +773,10 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 
 /**
  * Convert pencil/crayon actions
+ * New format:
+ * - { move: "pencil", to: [x, y] }
+ * - { line: "seg1", to: [x, y] } (from is implicit - current pencil position)
+ * - { show: "pencil" }, { hide: "pencil" }
  */
 function convertPencilAction(
 	attrs: IepAction['$'],
@@ -722,171 +790,100 @@ function convertPencilAction(
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
 				ctx.currentPosition = { x: newX, y: newY };
+				setInstrumentPosition(ctx, 'pencil', { x: newX, y: newY });
 
-				// Also translate the pencil instrument
-				const action: ActionDef = {
-					kind: 'moveTo',
-					target: 'pencil',
-					x: newX,
-					y: newY,
-					duration: attrs.vitesse ? Math.max(100, (1000 / parseFloat(attrs.vitesse)) * 100) : 200
-				};
-				ctx.steps.push({ type: 'action', action });
+				// New format: { move: "pencil", to: [x, y], duration?: ... }
+				ctx.steps.push({
+					move: 'pencil',
+					to: coordPair(newX, newY),
+					duration: attrs.vitesse
+						? Math.max(100, Math.round((1000 / parseFloat(attrs.vitesse)) * 100))
+						: 200
+				});
 			} else if (attrs.cible) {
 				// Move pencil to target point
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				const targetPos = getPointPosition(ctx, attrs.cible);
 				if (targetPos) {
 					ctx.currentPosition = { x: targetPos.x, y: targetPos.y };
+					setInstrumentPosition(ctx, 'pencil', targetPos);
 				}
-				const action: ActionDef = {
-					kind: 'moveTo',
-					target: 'pencil',
-					x: `$${targetId}.x`,
-					y: `$${targetId}.y`,
-					duration: attrs.vitesse ? Math.max(100, (1000 / parseFloat(attrs.vitesse)) * 100) : 200
-				};
-				ctx.steps.push({ type: 'action', action });
+				// New format: { move: "pencil", to: "A" } (target point ID)
+				ctx.steps.push({
+					move: 'pencil',
+					to: targetId,
+					duration: attrs.vitesse
+						? Math.max(100, Math.round((1000 / parseFloat(attrs.vitesse)) * 100))
+						: 200
+				});
 			}
 			break;
 		}
 		case 'tracer': {
 			// Draw a line from current position to target
+			// New format: { line: "seg1", to: [x, y] } - no 'from' needed, pencil is already positioned
 			const id = generateObjectId(ctx, 'seg', attrs.id);
 			// Register mapping so hide/show actions can find this object later
 			if (attrs.id) {
 				ctx.pointMap.set(attrs.id, id);
 			}
-			const startX = ctx.currentPosition.x;
-			const startY = ctx.currentPosition.y;
-			const endX = attrs.abscisse ? parseFloat(attrs.abscisse) : startX;
-			const endY = attrs.ordonnee ? parseFloat(attrs.ordonnee) : startY;
+			const endX = attrs.abscisse ? parseFloat(attrs.abscisse) : ctx.currentPosition.x;
+			const endY = attrs.ordonnee ? parseFloat(attrs.ordonnee) : ctx.currentPosition.y;
 
-			// Handle polygon shapes
+			// Handle polygon shapes - these need special treatment
+			// For now, emit a warning as polygons aren't directly supported in new format
 			if (attrs.forme === 'polygone' && attrs.abscisses && attrs.ordonnees) {
-				let xCoords = attrs.abscisses.split(',').map((n) => parseFloat(n));
-				let yCoords = attrs.ordonnees.split(',').map((n) => parseFloat(n));
-
-				// SECURITY: Limit array size to prevent DoS
-				const MAX_VERTICES = 100;
-				if (xCoords.length > MAX_VERTICES) {
-					ctx.warnings.push(
-						`Polygon ${id} has too many vertices (${xCoords.length}), truncating to ${MAX_VERTICES}`
-					);
-					xCoords = xCoords.slice(0, MAX_VERTICES);
-					yCoords = yCoords.slice(0, MAX_VERTICES);
-				}
-
-				const polygonDef: ObjectDef = {
-					kind: 'polygon',
-					id,
-					vertices: xCoords.map((x, i) => ({ x, y: yCoords[i] })),
-					filled: attrs.opacite ? parseFloat(attrs.opacite) > 0 : false,
-					style: {
-						color: convertColor(attrs.couleur),
-						lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
-						lineStyle: convertLineStyle(attrs.pointille),
-						opacity: attrs.opacite ? parseFloat(attrs.opacite) / 100 : 1
-					}
-				};
-				ctx.createdObjects.add(id);
-				ctx.steps.push({ type: 'create', object: polygonDef });
+				ctx.warnings.push(`Polygon ${id}: polygons are not yet supported in new format`);
+				// Skip polygon handling for now
 			} else if (attrs.forme === 'libre' && attrs.abscisses && attrs.ordonnees) {
-				// Free-form drawing - convert to polygon (simplified)
-				const xCoords = attrs.abscisses.split(',').map((n) => parseFloat(n));
-				const yCoords = attrs.ordonnees.split(',').map((n) => parseFloat(n));
-
-				// Create as a series of segments or simplify to first and last
-				if (xCoords.length >= 2) {
-					const segmentDef: ObjectDef = {
-						kind: 'segment',
-						id,
-						from: { x: xCoords[0], y: yCoords[0] },
-						to: { x: xCoords[xCoords.length - 1], y: yCoords[yCoords.length - 1] },
-						style: {
-							color: convertColor(attrs.couleur),
-							lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
-							lineStyle: convertLineStyle(attrs.pointille)
-						}
-					};
-					ctx.createdObjects.add(id);
-					ctx.steps.push({ type: 'create', object: segmentDef });
-				}
+				// Free-form drawing - emit warning
+				ctx.warnings.push(`Free-form drawing ${id}: not yet supported in new format`);
 			} else if (attrs.forme === 'demidroite') {
-				// Half-line (ray)
-				const rayDef: ObjectDef = {
-					kind: 'ray',
-					id,
-					from: { x: startX, y: startY },
-					through: { x: endX, y: endY },
-					style: {
-						color: convertColor(attrs.couleur),
-						lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
-						lineStyle: convertLineStyle(attrs.pointille)
-					}
-				};
-				ctx.createdObjects.add(id);
-				ctx.steps.push({ type: 'create', object: rayDef });
+				// Half-line (ray) - emit warning
+				ctx.warnings.push(`Ray ${id}: rays are not yet supported in new format`);
 			} else if (attrs.cible) {
-				// Draw to a target point - use drawLine for synchronized animation
+				// Draw to a target point
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
-				// For target points, we need the target position for duration calculation
-				// Use a default duration since we don't have the target coords yet
-				const PENCIL_SPEED = 300;
-				const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-				const traceDuration = Math.max(100, Math.round((distance / PENCIL_SPEED) * 1000));
-
-				// Check if this is a vector/arrow (style="vecteur")
 				const isVector = attrs.style === 'vecteur';
 
-				const drawLineAction: ActionDef = {
-					kind: 'drawLine',
-					from: { x: startX, y: startY },
+				// New format: { line: id, to: targetId, arrow?: ..., color?: ..., width?: ..., style?: ... }
+				const lineStep: StepInput = {
+					line: id,
 					to: targetId,
-					duration: traceDuration,
-					createObject: {
-						id,
-						style: {
-							color: convertColor(attrs.couleur),
-							lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
-							lineStyle: convertLineStyle(attrs.pointille)
-						},
-						...(isVector && { arrowHead: 'end' as const })
-					}
+					...(isVector && { arrow: 'end' as const }),
+					color: convertColor(attrs.couleur),
+					width: parseLineWidth(attrs.epaisseur, 1),
+					style: convertLineStyle(attrs.pointille)
 				};
 				ctx.createdObjects.add(id);
-				ctx.steps.push({ type: 'action', action: drawLineAction });
-			} else {
-				// Simple segment - use drawLine for synchronized pencil + segment animation
-				const PENCIL_SPEED = 300; // pixels per second
-				const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-				const traceDuration = Math.max(100, Math.round((distance / PENCIL_SPEED) * 1000));
+				ctx.steps.push(lineStep);
 
-				// Check if this is a vector/arrow (style="vecteur")
+				// Update position to target
+				const targetPos = getPointPosition(ctx, attrs.cible);
+				if (targetPos) {
+					ctx.currentPosition = { x: targetPos.x, y: targetPos.y };
+					setInstrumentPosition(ctx, 'pencil', targetPos);
+				}
+			} else {
+				// Simple segment to coordinates
 				const isVector = attrs.style === 'vecteur';
 
-				const drawLineAction: ActionDef = {
-					kind: 'drawLine',
-					from: { x: startX, y: startY },
-					to: { x: endX, y: endY },
-					duration: traceDuration,
-					createObject: {
-						id,
-						style: {
-							color: convertColor(attrs.couleur),
-							lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1,
-							lineStyle: convertLineStyle(attrs.pointille)
-						},
-						...(isVector && { arrowHead: 'end' as const })
-					}
+				// New format: { line: id, to: [x, y], arrow?: ..., color?: ..., width?: ..., style?: ... }
+				const lineStep: StepInput = {
+					line: id,
+					to: coordPair(endX, endY),
+					...(isVector && { arrow: 'end' as const }),
+					color: convertColor(attrs.couleur),
+					width: parseLineWidth(attrs.epaisseur, 1),
+					style: convertLineStyle(attrs.pointille)
 				};
 				ctx.createdObjects.add(id);
-				ctx.steps.push({ type: 'action', action: drawLineAction });
-			}
+				ctx.steps.push(lineStep);
 
-			// Update current position and pencil tracking
-			ctx.currentPosition = { x: endX, y: endY };
-			setInstrumentPosition(ctx, 'pencil', { x: endX, y: endY });
+				// Update current position and pencil tracking
+				ctx.currentPosition = { x: endX, y: endY };
+				setInstrumentPosition(ctx, 'pencil', { x: endX, y: endY });
+			}
 			break;
 		}
 		case 'montrer': {
@@ -896,23 +893,20 @@ function convertPencilAction(
 				const newY = parseFloat(attrs.ordonnee);
 				ctx.currentPosition = { x: newX, y: newY };
 				setInstrumentPosition(ctx, 'pencil', { x: newX, y: newY });
-				// Generate moveTo action to position the pencil
-				const moveAction: ActionDef = {
-					kind: 'moveTo',
-					target: 'pencil',
-					x: newX,
-					y: newY,
-					duration: 0 // Instant positioning
-				};
-				ctx.steps.push({ type: 'action', action: moveAction });
+				// Move pencil to position first (duration 0 = instant)
+				ctx.steps.push({
+					move: 'pencil',
+					to: coordPair(newX, newY),
+					duration: 0
+				});
 			}
-			const action: ActionDef = { kind: 'show', target: 'pencil' };
-			ctx.steps.push({ type: 'action', action });
+			// New format: { show: "pencil" }
+			ctx.steps.push({ show: 'pencil' });
 			break;
 		}
 		case 'masquer': {
-			const action: ActionDef = { kind: 'hide', target: 'pencil' };
-			ctx.steps.push({ type: 'action', action });
+			// New format: { hide: "pencil" }
+			ctx.steps.push({ hide: 'pencil' });
 			break;
 		}
 	}
@@ -920,6 +914,10 @@ function convertPencilAction(
 
 /**
  * Convert ruler actions
+ * New format:
+ * - { move: "ruler", to: [x, y] }
+ * - { rotate: "ruler", to: angle } or { rotate: "ruler", toward: "A" }
+ * - { show: "ruler" }, { hide: "ruler" }
  */
 function convertRulerAction(
 	attrs: IepAction['$'],
@@ -933,23 +931,20 @@ function convertRulerAction(
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
 				setInstrumentPosition(ctx, 'ruler', { x: newX, y: newY });
-				// Generate moveTo action to position the ruler
-				const moveAction: ActionDef = {
-					kind: 'moveTo',
-					target: 'ruler',
-					x: newX,
-					y: newY,
-					duration: 0 // Instant positioning
-				};
-				ctx.steps.push({ type: 'action', action: moveAction });
+				// Move ruler to position first (duration 0 = instant)
+				ctx.steps.push({
+					move: 'ruler',
+					to: coordPair(newX, newY),
+					duration: 0
+				});
 			}
-			const action: ActionDef = { kind: 'show', target: 'ruler' };
-			ctx.steps.push({ type: 'action', action });
+			// New format: { show: "ruler" }
+			ctx.steps.push({ show: 'ruler' });
 			break;
 		}
 		case 'masquer': {
-			const action: ActionDef = { kind: 'hide', target: 'ruler' };
-			ctx.steps.push({ type: 'action', action });
+			// New format: { hide: "ruler" }
+			ctx.steps.push({ hide: 'ruler' });
 			break;
 		}
 		case 'translation': {
@@ -958,14 +953,12 @@ function convertRulerAction(
 				const newY = parseFloat(attrs.ordonnee);
 				// Track ruler position for rotation calculations
 				setInstrumentPosition(ctx, 'ruler', { x: newX, y: newY });
-				const action: ActionDef = {
-					kind: 'moveTo',
-					target: 'ruler',
-					x: newX,
-					y: newY,
+				// New format: { move: "ruler", to: [x, y], duration?: ... }
+				ctx.steps.push({
+					move: 'ruler',
+					to: coordPair(newX, newY),
 					duration: 500
-				};
-				ctx.steps.push({ type: 'action', action });
+				});
 			} else if (attrs.cible) {
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				// Update ruler position to target point's position
@@ -973,83 +966,58 @@ function convertRulerAction(
 				if (targetPos) {
 					setInstrumentPosition(ctx, 'ruler', targetPos);
 				}
-				const action: ActionDef = {
-					kind: 'moveTo',
-					target: 'ruler',
-					x: `$${targetId}.x`,
-					y: `$${targetId}.y`,
+				// New format: { move: "ruler", to: "A" }
+				ctx.steps.push({
+					move: 'ruler',
+					to: targetId,
 					duration: 500
-				};
-				ctx.steps.push({ type: 'action', action });
+				});
 			}
 			break;
 		}
 		case 'rotation': {
 			if (attrs.angle) {
-				// attrs.angle is an ABSOLUTE angle in InstrumenPoche, not a delta
-				// We need to convert it to a delta for our engine
+				// attrs.angle is an ABSOLUTE angle in InstrumenPoche
+				// New format uses absolute angles: { rotate: "ruler", to: angle }
 				const targetAngle = parseFloat(attrs.angle);
-				const currentRotation = getInstrumentRotation(ctx, 'ruler');
-				const deltaAngle = normalizeAngleDelta(targetAngle - currentRotation);
-				const action: ActionDef = {
-					kind: 'rotate',
-					target: 'ruler',
-					angle: deltaAngle,
-					duration: 500
-				};
-				ctx.steps.push({ type: 'action', action });
-				// Track the new rotation
 				setInstrumentRotation(ctx, 'ruler', targetAngle);
+				ctx.steps.push({
+					rotate: 'ruler',
+					to: targetAngle,
+					duration: 500
+				});
 			} else if (attrs.cible) {
-				// Rotate towards a target point - calculate the absolute angle then delta
+				// Rotate towards a target point
+				// New format: { rotate: "ruler", toward: "A" }
+				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				const rulerPos = getInstrumentPosition(ctx, 'ruler');
 				const targetPos = getPointPosition(ctx, attrs.cible);
 
 				if (rulerPos && targetPos) {
 					const targetAngle = calculateAngleToTarget(rulerPos, targetPos);
-					const currentRotation = getInstrumentRotation(ctx, 'ruler');
-					const deltaAngle = normalizeAngleDelta(targetAngle - currentRotation);
-					const action: ActionDef = {
-						kind: 'rotate',
-						target: 'ruler',
-						angle: deltaAngle,
-						duration: 500
-					};
-					ctx.steps.push({ type: 'action', action });
-					// Track the new rotation
 					setInstrumentRotation(ctx, 'ruler', targetAngle);
-				} else {
-					// Cannot calculate angle - add warning with details
-					const missing: string[] = [];
-					if (!rulerPos) missing.push('ruler position');
-					if (!targetPos) missing.push(`target point "${attrs.cible}" position`);
-					ctx.warnings.push(
-						`Ruler rotation towards "${attrs.cible}": cannot calculate angle (unknown: ${missing.join(', ')})`
-					);
 				}
+
+				ctx.steps.push({
+					rotate: 'ruler',
+					toward: targetId,
+					duration: 500
+				});
 			}
 			break;
 		}
 		case 'zoom': {
-			// Scale the ruler
+			// Scale the ruler - not directly supported in new format
+			// Emit a warning
 			if (attrs.echelle) {
-				const action: ActionDef = {
-					kind: 'scale',
-					target: 'ruler',
-					factor: parseFloat(attrs.echelle) / 100,
-					duration: 300
-				};
-				ctx.steps.push({ type: 'action', action });
+				ctx.warnings.push(`Ruler zoom/scale not supported in new format (scale: ${attrs.echelle})`);
 			}
 			break;
 		}
 		case 'vide':
 		case 'graduations': {
-			// These are ruler display modes - note for documentation
-			ctx.steps.push({
-				type: 'comment',
-				text: `Ruler mode: ${mouvement}`
-			});
+			// These are ruler display modes - skip (no comment in new format)
+			// Just track for warnings if needed
 			break;
 		}
 	}
@@ -1057,6 +1025,13 @@ function convertRulerAction(
 
 /**
  * Convert compass actions
+ * New format:
+ * - { move: "compass", to: [x, y] }
+ * - { rotate: "compass", to: angle } or { rotate: "compass", toward: "A" }
+ * - { spread: "compass", radius: 100 } or { spread: "compass", to: "A" }
+ * - { arc: "c1", sweep: 360 }
+ * - { raise: "compass" }, { lower: "compass" }
+ * - { show: "compass" }, { hide: "compass" }
  */
 function convertCompassAction(
 	attrs: IepAction['$'],
@@ -1070,23 +1045,20 @@ function convertCompassAction(
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
 				setInstrumentPosition(ctx, 'compass', { x: newX, y: newY });
-				// Generate moveTo action to position the compass
-				const moveAction: ActionDef = {
-					kind: 'moveTo',
-					target: 'compass',
-					x: newX,
-					y: newY,
-					duration: 0 // Instant positioning
-				};
-				ctx.steps.push({ type: 'action', action: moveAction });
+				// Move compass to position first (duration 0 = instant)
+				ctx.steps.push({
+					move: 'compass',
+					to: coordPair(newX, newY),
+					duration: 0
+				});
 			}
-			const action: ActionDef = { kind: 'show', target: 'compass' };
-			ctx.steps.push({ type: 'action', action });
+			// New format: { show: "compass" }
+			ctx.steps.push({ show: 'compass' });
 			break;
 		}
 		case 'masquer': {
-			const action: ActionDef = { kind: 'hide', target: 'compass' };
-			ctx.steps.push({ type: 'action', action });
+			// New format: { hide: "compass" }
+			ctx.steps.push({ hide: 'compass' });
 			break;
 		}
 		case 'translation': {
@@ -1095,14 +1067,12 @@ function convertCompassAction(
 				const newY = parseFloat(attrs.ordonnee);
 				// Track compass position for rotation calculations
 				setInstrumentPosition(ctx, 'compass', { x: newX, y: newY });
-				const action: ActionDef = {
-					kind: 'moveTo',
-					target: 'compass',
-					x: newX,
-					y: newY,
+				// New format: { move: "compass", to: [x, y], duration?: ... }
+				ctx.steps.push({
+					move: 'compass',
+					to: coordPair(newX, newY),
 					duration: 500
-				};
-				ctx.steps.push({ type: 'action', action });
+				});
 			} else if (attrs.cible) {
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				// Update compass position to target point's position
@@ -1110,76 +1080,60 @@ function convertCompassAction(
 				if (targetPos) {
 					setInstrumentPosition(ctx, 'compass', targetPos);
 				}
-				const action: ActionDef = {
-					kind: 'moveTo',
-					target: 'compass',
-					x: `$${targetId}.x`,
-					y: `$${targetId}.y`,
+				// New format: { move: "compass", to: "A" }
+				ctx.steps.push({
+					move: 'compass',
+					to: targetId,
 					duration: 500
-				};
-				ctx.steps.push({ type: 'action', action });
+				});
 			}
 			break;
 		}
 		case 'rotation': {
 			if (attrs.angle) {
-				// attrs.angle is a delta rotation in InstrumenPoche
-				// Normalize to shortest path
-				const deltaAngle = normalizeAngleDelta(parseFloat(attrs.angle));
-				const action: ActionDef = {
-					kind: 'rotate',
-					target: 'compass',
-					angle: deltaAngle,
+				// attrs.angle is an ABSOLUTE angle in InstrumenPoche
+				// New format uses absolute angles: { rotate: "compass", to: angle }
+				const targetAngle = parseFloat(attrs.angle);
+				setInstrumentRotation(ctx, 'compass', targetAngle);
+				ctx.steps.push({
+					rotate: 'compass',
+					to: targetAngle,
 					duration: 500
-				};
-				ctx.steps.push({ type: 'action', action });
-				// Track the new rotation (use unnormalized to maintain accurate absolute position)
-				const currentRotation = getInstrumentRotation(ctx, 'compass');
-				setInstrumentRotation(ctx, 'compass', currentRotation + parseFloat(attrs.angle));
+				});
 			} else if (attrs.cible) {
-				// Rotate towards a target point - calculate the absolute angle then delta
+				// Rotate towards a target point
+				// New format: { rotate: "compass", toward: "A" }
+				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				const compassPos = getInstrumentPosition(ctx, 'compass');
 				const targetPos = getPointPosition(ctx, attrs.cible);
 
 				if (compassPos && targetPos) {
 					const targetAngle = calculateAngleToTarget(compassPos, targetPos);
-					const currentRotation = getInstrumentRotation(ctx, 'compass');
-					// Normalize delta to take the shortest path
-					const deltaAngle = normalizeAngleDelta(targetAngle - currentRotation);
-					const action: ActionDef = {
-						kind: 'rotate',
-						target: 'compass',
-						angle: deltaAngle,
-						duration: 500
-					};
-					ctx.steps.push({ type: 'action', action });
-					// Track the new rotation (update to actual target angle)
-					setInstrumentRotation(ctx, 'compass', currentRotation + deltaAngle);
-				} else {
-					// Cannot calculate angle - add warning with details
-					const missing: string[] = [];
-					if (!compassPos) missing.push('compass position');
-					if (!targetPos) missing.push(`target point "${attrs.cible}" position`);
-					ctx.warnings.push(
-						`Compass rotation towards "${attrs.cible}": cannot calculate angle (unknown: ${missing.join(', ')})`
-					);
+					setInstrumentRotation(ctx, 'compass', targetAngle);
 				}
+
+				ctx.steps.push({
+					rotate: 'compass',
+					toward: targetId,
+					duration: 500
+				});
 			}
 			break;
 		}
 		case 'ecarter': {
 			// Set compass opening
+			// New format: { spread: "compass", radius: ... } or { spread: "compass", to: "A" }
 			if (attrs.ecart) {
 				const radius = parseFloat(attrs.ecart);
 				ctx.compassRadius = radius; // Store for arc creation
-				const action: ActionDef = {
-					kind: 'setCompass',
+				ctx.steps.push({
+					spread: 'compass',
 					radius: radius,
 					duration: 300
-				};
-				ctx.steps.push({ type: 'action', action });
+				});
 			} else if (attrs.cible) {
 				// Open to match distance to target point
+				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				const compassPos = getInstrumentPosition(ctx, 'compass');
 				const targetPos = getPointPosition(ctx, attrs.cible);
 
@@ -1188,101 +1142,73 @@ function convertCompassAction(
 					const distance = Math.sqrt(
 						(targetPos.x - compassPos.x) ** 2 + (targetPos.y - compassPos.y) ** 2
 					);
-					const radius = Math.round(distance * 100) / 100; // Round to 2 decimals
-					ctx.compassRadius = radius; // Store for arc creation
-					const action: ActionDef = {
-						kind: 'setCompass',
-						radius: radius,
-						duration: 300
-					};
-					ctx.steps.push({ type: 'action', action });
-				} else {
-					// Cannot calculate distance - add detailed warning
-					const missing: string[] = [];
-					if (!compassPos) missing.push('compass position');
-					if (!targetPos) missing.push(`target point "${attrs.cible}" position`);
-					ctx.warnings.push(
-						`Compass opening to "${attrs.cible}": cannot calculate radius (unknown: ${missing.join(', ')})`
-					);
+					ctx.compassRadius = Math.round(distance * 100) / 100; // Round to 2 decimals
 				}
+
+				// New format: { spread: "compass", to: "A" }
+				ctx.steps.push({
+					spread: 'compass',
+					to: targetId,
+					duration: 300
+				});
 			}
 			break;
 		}
-		case 'lever':
+		case 'lever': {
+			// Compass raised - New format: { raise: "compass" }
+			ctx.steps.push({ raise: 'compass' });
+			break;
+		}
 		case 'coucher': {
-			// Compass up/down - these are animation states
-			ctx.steps.push({
-				type: 'comment',
-				text: `Compass ${mouvement === 'lever' ? 'raised' : 'lowered'}`
-			});
+			// Compass lowered - New format: { lower: "compass" }
+			ctx.steps.push({ lower: 'compass' });
 			break;
 		}
 		case 'tracer': {
 			// Draw arc with compass
+			// New format: { arc: id, sweep: degrees, color?: ..., width?: ... }
 			const id = generateObjectId(ctx, 'arc', attrs.id);
 			// Register mapping so hide/show actions can find this object later
 			if (attrs.id) {
 				ctx.pointMap.set(attrs.id, id);
 			}
-			const startAngle = attrs.debut ? parseFloat(attrs.debut) : 0;
-			const endAngle = attrs.fin ? parseFloat(attrs.fin) : 360;
+			const rawStartAngle = attrs.debut ? parseFloat(attrs.debut) : 0;
+			const rawEndAngle = attrs.fin ? parseFloat(attrs.fin) : 360;
 
-			// CRITICAL: Use compass position, NOT ctx.currentPosition (which holds text positions)
-			const compassPos = getInstrumentPosition(ctx, 'compass');
-			const centerX = compassPos?.x ?? ctx.currentPosition.x;
-			const centerY = compassPos?.y ?? ctx.currentPosition.y;
+			// Calculate the arc sweep (preserves direction: positive = counter-clockwise, negative = clockwise)
+			const arcSweep = rawEndAngle - rawStartAngle;
 
-			// Get current compass rotation and calculate DELTA angles
-			// UbuMaths engine interprets rotation as delta, not absolute
+			// Normalize start angle to [0, 360) range
+			let normalizedStart = rawStartAngle % 360;
+			if (normalizedStart < 0) normalizedStart += 360;
+
+			// Get current compass rotation
 			const currentRotation = getInstrumentRotation(ctx, 'compass');
-			// Normalize delta to start to take shortest path
-			const deltaToStart = normalizeAngleDelta(startAngle - currentRotation);
-			// Arc sweep delta - this should NOT be normalized as it defines the arc direction
-			const deltaToEnd = endAngle - startAngle;
 
-			// Calculate arc sweep and duration for compass rotation
-			const arcSweep = Math.abs(endAngle - startAngle);
-			const arcDuration = Math.max(500, Math.round((arcSweep / 360) * 2000)); // 2 seconds for full circle
-
-			// First, rotate compass to start angle (using normalized delta for shortest path)
-			if (Math.abs(deltaToStart) > 0.1) {
-				const rotateToStartAction: ActionDef = {
-					kind: 'rotate',
-					target: 'compass',
-					angle: deltaToStart,
+			// First, rotate compass to start angle if needed
+			if (Math.abs(normalizedStart - currentRotation) > 0.1) {
+				ctx.steps.push({
+					rotate: 'compass',
+					to: normalizedStart,
 					duration: 300
-				};
-				ctx.steps.push({ type: 'action', action: rotateToStartAction });
-				setInstrumentRotation(ctx, 'compass', currentRotation + deltaToStart);
+				});
+				setInstrumentRotation(ctx, 'compass', normalizedStart);
 			}
 
-			// Use drawArc action for synchronized compass + arc animation
-			const drawArcAction: ActionDef = {
-				kind: 'drawArc',
-				center: { x: centerX, y: centerY },
-				radius: ctx.compassRadius,
-				startAngle,
-				endAngle,
-				duration: arcDuration,
-				createObject: {
-					id,
-					style: {
-						color: convertColor(attrs.couleur),
-						lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1
-					}
-				}
-			};
+			// Create the arc step with sweep angle
+			// New format: { arc: id, sweep: degrees }
+			ctx.steps.push({
+				arc: id,
+				sweep: arcSweep,
+				color: convertColor(attrs.couleur),
+				width: parseLineWidth(attrs.epaisseur, 1)
+			});
 			ctx.createdObjects.add(id);
-			ctx.steps.push({ type: 'action', action: drawArcAction });
-			setInstrumentRotation(ctx, 'compass', currentRotation + deltaToStart + deltaToEnd);
+			setInstrumentRotation(ctx, 'compass', normalizedStart + arcSweep);
 			break;
 		}
 		case 'retourner': {
-			// Flip compass
-			ctx.steps.push({
-				type: 'comment',
-				text: 'Compass flipped'
-			});
+			// Flip compass - not supported in new format, skip silently
 			break;
 		}
 	}
@@ -1290,6 +1216,9 @@ function convertCompassAction(
 
 /**
  * Convert set square (equerre) actions
+ * New format:
+ * - { move: "setSquare", to: [x, y] }
+ * - { show: "setSquare" }, { hide: "setSquare" }
  */
 function convertSetSquareAction(
 	attrs: IepAction['$'],
@@ -1298,25 +1227,23 @@ function convertSetSquareAction(
 ): void {
 	switch (mouvement) {
 		case 'montrer': {
-			const action: ActionDef = { kind: 'show', target: 'setSquare' };
-			ctx.steps.push({ type: 'action', action });
+			// New format: { show: "setSquare" }
+			ctx.steps.push({ show: 'setSquare' });
 			break;
 		}
 		case 'masquer': {
-			const action: ActionDef = { kind: 'hide', target: 'setSquare' };
-			ctx.steps.push({ type: 'action', action });
+			// New format: { hide: "setSquare" }
+			ctx.steps.push({ hide: 'setSquare' });
 			break;
 		}
 		case 'translation': {
 			if (attrs.abscisse && attrs.ordonnee) {
-				const action: ActionDef = {
-					kind: 'moveTo',
-					target: 'setSquare',
-					x: parseFloat(attrs.abscisse),
-					y: parseFloat(attrs.ordonnee),
+				// New format: { move: "setSquare", to: [x, y] }
+				ctx.steps.push({
+					move: 'setSquare',
+					to: coordPair(parseFloat(attrs.abscisse), parseFloat(attrs.ordonnee)),
 					duration: 500
-				};
-				ctx.steps.push({ type: 'action', action });
+				});
 			}
 			break;
 		}
@@ -1325,6 +1252,7 @@ function convertSetSquareAction(
 
 /**
  * Convert length mark actions
+ * New format: { mark: "m1", at: [x, y], angle: 0 }
  */
 function convertLengthMarkAction(
 	attrs: IepAction['$'],
@@ -1333,7 +1261,6 @@ function convertLengthMarkAction(
 ): void {
 	if (mouvement === 'creer') {
 		// Length marks are small tick marks on segments
-		// Convert to a small segment or text
 		const id = generateObjectId(ctx, 'mark', attrs.id);
 		// Register mapping so hide/show actions can find this object later
 		if (attrs.id) {
@@ -1341,27 +1268,23 @@ function convertLengthMarkAction(
 		}
 		const x = attrs.abscisse ? parseFloat(attrs.abscisse) : 0;
 		const y = attrs.ordonnee ? parseFloat(attrs.ordonnee) : 0;
+		const angle = attrs.angle ? parseFloat(attrs.angle) : 0;
 
-		// Create a small cross mark
-		const markDef: ObjectDef = {
-			kind: 'point',
-			id,
-			x,
-			y,
-			pointStyle: 'cross',
-			radius: 5,
-			style: {
-				color: convertColor(attrs.couleur),
-				lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 1
-			}
-		};
+		// New format: { mark: id, at: [x, y], angle: degrees }
+		ctx.steps.push({
+			mark: id,
+			at: coordPair(x, y),
+			angle: angle,
+			color: convertColor(attrs.couleur),
+			width: parseLineWidth(attrs.epaisseur, 1)
+		});
 		ctx.createdObjects.add(id);
-		ctx.steps.push({ type: 'create', object: markDef });
 	}
 }
 
 /**
  * Convert right angle mark actions
+ * Right angle marks are not directly supported in new format - emit as mark
  */
 function convertRightAngleAction(
 	attrs: IepAction['$'],
@@ -1375,35 +1298,26 @@ function convertRightAngleAction(
 			ctx.pointMap.set(attrs.id, id);
 		}
 
-		// Create an angle mark
-		const angleDef: ObjectDef = {
-			kind: 'angleMark',
-			id,
-			vertex: {
-				x: attrs.abscisse_sommet ? parseFloat(attrs.abscisse_sommet) : 0,
-				y: attrs.ordonnee_sommet ? parseFloat(attrs.ordonnee_sommet) : 0
-			},
-			point1: {
-				x: attrs.abscisse_inter ? parseFloat(attrs.abscisse_inter) : 0,
-				y: attrs.ordonnee_inter ? parseFloat(attrs.ordonnee_inter) : 0
-			},
-			point2: {
-				x: attrs.abscisse_inter ? parseFloat(attrs.abscisse_inter) + 20 : 20,
-				y: attrs.ordonnee_inter ? parseFloat(attrs.ordonnee_inter) : 0
-			},
-			rightAngle: true,
-			radius: 15,
-			style: {
-				color: convertColor(attrs.couleur)
-			}
-		};
+		// Right angle marks are not directly supported - use mark as approximation
+		const vertexX = attrs.abscisse_sommet ? parseFloat(attrs.abscisse_sommet) : 0;
+		const vertexY = attrs.ordonnee_sommet ? parseFloat(attrs.ordonnee_sommet) : 0;
+
+		ctx.warnings.push(`Right angle mark ${id}: using mark approximation`);
+
+		// New format: { mark: id, at: [x, y], angle: 0 }
+		ctx.steps.push({
+			mark: id,
+			at: coordPair(vertexX, vertexY),
+			angle: 0,
+			color: convertColor(attrs.couleur)
+		});
 		ctx.createdObjects.add(id);
-		ctx.steps.push({ type: 'create', object: angleDef });
 	}
 }
 
 /**
  * Convert trait (line/segment) actions
+ * New format: { show: id }, { hide: id }
  */
 function convertTraitAction(
 	attrs: IepAction['$'],
@@ -1413,37 +1327,34 @@ function convertTraitAction(
 	if (mouvement === 'masquer' && attrs.id) {
 		// Use the mapped ID if available, otherwise use the original ID with a prefix
 		const targetId = ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'obj', attrs.id);
-		const action: ActionDef = { kind: 'hide', target: targetId };
-		ctx.steps.push({ type: 'action', action });
+		// New format: { hide: id }
+		ctx.steps.push({ hide: targetId });
 	} else if (mouvement === 'montrer' && attrs.id) {
 		// Use the mapped ID if available, otherwise use the original ID with a prefix
 		const targetId = ctx.pointMap.get(attrs.id) || generateObjectId(ctx, 'obj', attrs.id);
-		const action: ActionDef = { kind: 'show', target: targetId };
-		ctx.steps.push({ type: 'action', action });
+		// New format: { show: id }
+		ctx.steps.push({ show: targetId });
 	}
 }
 
 /**
  * Convert image actions
+ * Images are not supported in new format - emit warning
  */
 function convertImageAction(
 	attrs: IepAction['$'],
 	mouvement: string,
 	ctx: ConversionContext
 ): void {
-	// Images are not directly supported in UbuMaths constructions
-	// Add as a comment for reference
+	// Images are not supported in new format
 	if (mouvement === 'chargement' && attrs.url) {
-		ctx.steps.push({
-			type: 'comment',
-			text: `Image: ${attrs.url}`
-		});
 		ctx.warnings.push(`Image loading not supported: ${attrs.url}`);
 	}
 }
 
 /**
  * Convert mark actions (segment marks)
+ * New format: { mark: id, at: [x, y], angle: degrees }
  */
 function convertMarkAction(attrs: IepAction['$'], mouvement: string, ctx: ConversionContext): void {
 	if (mouvement === 'creer') {
@@ -1454,21 +1365,18 @@ function convertMarkAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 		}
 		const x = attrs.abscisse ? parseFloat(attrs.abscisse) : 0;
 		const y = attrs.ordonnee ? parseFloat(attrs.ordonnee) : 0;
+		const angle = attrs.angle ? parseFloat(attrs.angle) : 0;
 
-		const markDef: ObjectDef = {
-			kind: 'point',
-			id,
-			x,
-			y,
-			pointStyle: 'cross',
-			radius: attrs.rayon ? parseFloat(attrs.rayon) : 5,
-			style: {
-				color: convertColor(attrs.couleur),
-				lineWidth: attrs.epaisseur ? parseFloat(attrs.epaisseur) : 2
-			}
-		};
+		// New format: { mark: id, at: [x, y], angle: degrees }
+		ctx.steps.push({
+			mark: id,
+			at: coordPair(x, y),
+			angle: angle,
+			length: attrs.rayon ? parseFloat(attrs.rayon) : 5,
+			color: convertColor(attrs.couleur),
+			width: parseLineWidth(attrs.epaisseur, 2)
+		});
 		ctx.createdObjects.add(id);
-		ctx.steps.push({ type: 'create', object: markDef });
 	}
 }
 
@@ -1477,12 +1385,12 @@ function convertMarkAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 // =============================================================================
 
 /**
- * Convert a parsed InstrumenPoche XML document to UbuMaths format
+ * Convert a parsed InstrumenPoche XML document to UbuMaths flat format
  */
 function convertDocument(
 	doc: IepDocument,
 	options?: ConversionOptions
-): { script: ConstructionScript; warnings: string[] } {
+): { script?: ConstructionScriptInput; warnings: string[]; validationError?: string } {
 	const iep = doc.INSTRUMENPOCHE;
 	const actions = iep.action || [];
 
@@ -1505,7 +1413,8 @@ function convertDocument(
 		compassRadius: 100, // Default compass radius
 		createdObjects: new Set(),
 		steps: [],
-		warnings: []
+		warnings: [],
+		pendingLabels: new Map()
 	};
 
 	// Use provided options or extract from XML
@@ -1525,7 +1434,8 @@ function convertDocument(
 		convertAction(action, ctx);
 	}
 
-	const script: ConstructionScript = {
+	// New format: ConstructionScriptInput
+	const scriptData = {
 		version: 1,
 		title,
 		description: description || undefined,
@@ -1537,7 +1447,20 @@ function convertDocument(
 		steps: ctx.steps
 	};
 
-	return { script, warnings: ctx.warnings };
+	// CRITICAL: Validate the generated script before returning
+	const validation = constructionScriptSchema.safeParse(scriptData);
+	if (!validation.success) {
+		const errorMessages = validation.error.issues
+			.map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+			.join('; ');
+		return {
+			script: undefined,
+			warnings: ctx.warnings,
+			validationError: `Generated script validation failed: ${errorMessages}`
+		};
+	}
+
+	return { script: validation.data, warnings: ctx.warnings };
 }
 
 // =============================================================================
@@ -1611,7 +1534,25 @@ export async function convertInstrumenPoche(
 		const result = convertDocument(doc, options);
 		warnings.push(...result.warnings);
 
-		// Validate result
+		// Check for validation errors from Zod validation
+		if (result.validationError) {
+			return {
+				success: false,
+				warnings,
+				errors: [result.validationError]
+			};
+		}
+
+		// Check for script presence (should always be present if no validation error)
+		if (!result.script) {
+			return {
+				success: false,
+				warnings,
+				errors: ['Internal error: Script was not generated']
+			};
+		}
+
+		// Validate result has steps
 		if (!result.script.steps || result.script.steps.length === 0) {
 			warnings.push('Warning: Converted script has no steps');
 		}

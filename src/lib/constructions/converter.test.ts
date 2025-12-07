@@ -3,10 +3,26 @@
  *
  * Tests the conversion of InstrumenPoche XML construction scripts to UbuMaths format.
  * Covers main conversion paths, validation, error handling, and options.
+ *
+ * New flat format:
+ * - Objects: { point: "A", at: [100, 200] }
+ * - Instruments: { move: "pencil", to: [100, 200] }
+ * - Control: { pause: 1000 }
  */
 
 import { describe, it, expect } from 'vitest';
 import { convertInstrumenPoche, validateInstrumenPocheXml } from './converter';
+import {
+	isPointStep,
+	isTextStep,
+	isShowStep,
+	isMoveStep,
+	isSpreadStep,
+	isRotateStep,
+	isLineStep,
+	isArcStep,
+	type StepInput
+} from './schemas';
 
 // =============================================================================
 // Test Data
@@ -66,6 +82,14 @@ const xmlWithUnbalancedTags = `<?xml version="1.0"?>
 `;
 
 // =============================================================================
+// Helper functions
+// =============================================================================
+
+function countStepsByType(steps: StepInput[], predicate: (step: StepInput) => boolean): number {
+	return steps.filter(predicate).length;
+}
+
+// =============================================================================
 // Basic Conversion Tests
 // =============================================================================
 
@@ -112,18 +136,17 @@ describe('convertInstrumenPoche - Basic Conversion', () => {
 		expect(result.script?.canvas.height).toBe(600);
 	});
 
-	it('should convert point action to create step', async () => {
+	it('should convert point action to point step with new format', async () => {
 		const result = await convertInstrumenPoche(validXmlWithPoint);
 
-		expect(result.script?.steps).toHaveLength(1);
-		expect(result.script?.steps[0]).toMatchObject({
-			type: 'create',
-			object: {
-				kind: 'point',
-				x: 100,
-				y: 200
-			}
-		});
+		expect(result.script?.steps).toBeDefined();
+		// Find the point step (may have instrument steps before it)
+		const pointSteps = result.script!.steps.filter(isPointStep);
+		expect(pointSteps.length).toBeGreaterThanOrEqual(1);
+
+		const pointStep = pointSteps[0];
+		expect(pointStep.point).toBe('A');
+		expect(pointStep.at).toEqual([100, 200]);
 	});
 
 	it('should handle multiple actions correctly', async () => {
@@ -131,8 +154,10 @@ describe('convertInstrumenPoche - Basic Conversion', () => {
 
 		expect(result.script?.steps.length).toBeGreaterThan(1);
 		// Should have at least 2 point creations and 1 text creation
-		const createSteps = result.script?.steps.filter((s) => s.type === 'create');
-		expect(createSteps?.length).toBeGreaterThanOrEqual(3);
+		const pointCount = countStepsByType(result.script!.steps, isPointStep);
+		const textCount = countStepsByType(result.script!.steps, isTextStep);
+		expect(pointCount).toBeGreaterThanOrEqual(2);
+		expect(textCount).toBeGreaterThanOrEqual(1);
 	});
 });
 
@@ -198,8 +223,8 @@ describe('convertInstrumenPoche - Unsupported Features', () => {
 
 		expect(result.script?.steps).toBeDefined();
 		// Should have point creation step
-		const createSteps = result.script?.steps.filter((s) => s.type === 'create');
-		expect(createSteps?.length).toBeGreaterThanOrEqual(1);
+		const pointCount = countStepsByType(result.script!.steps, isPointStep);
+		expect(pointCount).toBeGreaterThanOrEqual(1);
 	});
 
 	it('should add warning for empty script steps', async () => {
@@ -351,18 +376,35 @@ describe('convertInstrumenPoche - Edge Cases', () => {
 		expect(result.script?.canvas).toBeDefined();
 	});
 
-	it('should handle very large canvas dimensions', async () => {
+	it('should handle large canvas dimensions (up to 4000)', async () => {
+		// Canvas max is 4000 as per schema validation
 		const xmlWithLargeCanvas = `<?xml version="1.0"?>
 <INSTRUMENPOCHE version="2">
-  <viewBox width="10000" height="10000"/>
-  <action objet="point" mouvement="creer" id="A" abscisse="5000" ordonnee="5000"/>
+  <viewBox width="4000" height="4000"/>
+  <action objet="point" mouvement="creer" id="A" abscisse="2000" ordonnee="2000"/>
 </INSTRUMENPOCHE>`;
 
 		const result = await convertInstrumenPoche(xmlWithLargeCanvas);
 
 		expect(result.success).toBe(true);
-		expect(result.script?.canvas.width).toBe(10000);
-		expect(result.script?.canvas.height).toBe(10000);
+		expect(result.script?.canvas.width).toBe(4000);
+		expect(result.script?.canvas.height).toBe(4000);
+	});
+
+	it('should reject canvas dimensions exceeding max', async () => {
+		// Canvas max is 4000 as per schema validation
+		const xmlWithTooLargeCanvas = `<?xml version="1.0"?>
+<INSTRUMENPOCHE version="2">
+  <viewBox width="10000" height="10000"/>
+  <action objet="point" mouvement="creer" id="A" abscisse="5000" ordonnee="5000"/>
+</INSTRUMENPOCHE>`;
+
+		const result = await convertInstrumenPoche(xmlWithTooLargeCanvas);
+
+		// Now properly rejected by Zod validation
+		expect(result.success).toBe(false);
+		expect(result.errors.length).toBeGreaterThan(0);
+		expect(result.errors[0]).toContain('Width too large');
 	});
 
 	it('should handle point with color attribute', async () => {
@@ -375,11 +417,10 @@ describe('convertInstrumenPoche - Edge Cases', () => {
 		const result = await convertInstrumenPoche(xmlWithColor);
 
 		expect(result.success).toBe(true);
-		const createStep = result.script?.steps[0];
-		expect(createStep?.type).toBe('create');
-		if (createStep?.type === 'create') {
-			expect(createStep.object.style?.color).toBeDefined();
-		}
+		const pointSteps = result.script!.steps.filter(isPointStep);
+		expect(pointSteps.length).toBeGreaterThanOrEqual(1);
+		// Check that color property exists on the point step
+		expect(pointSteps[0].color).toBeDefined();
 	});
 
 	it('should handle pencil drawing actions', async () => {
@@ -394,6 +435,11 @@ describe('convertInstrumenPoche - Edge Cases', () => {
 
 		expect(result.success).toBe(true);
 		expect(result.script?.steps.length).toBeGreaterThan(0);
+		// Should have show step and line step
+		const showSteps = countStepsByType(result.script!.steps, isShowStep);
+		const lineSteps = countStepsByType(result.script!.steps, isLineStep);
+		expect(showSteps).toBeGreaterThanOrEqual(1);
+		expect(lineSteps).toBeGreaterThanOrEqual(1);
 	});
 
 	it('should handle compass actions', async () => {
@@ -408,6 +454,11 @@ describe('convertInstrumenPoche - Edge Cases', () => {
 
 		expect(result.success).toBe(true);
 		expect(result.script?.steps.length).toBeGreaterThan(0);
+		// Should have show step and spread step
+		const showSteps = countStepsByType(result.script!.steps, isShowStep);
+		const spreadSteps = countStepsByType(result.script!.steps, isSpreadStep);
+		expect(showSteps).toBeGreaterThanOrEqual(1);
+		expect(spreadSteps).toBeGreaterThanOrEqual(1);
 	});
 
 	it('should handle ruler actions', async () => {
@@ -422,5 +473,157 @@ describe('convertInstrumenPoche - Edge Cases', () => {
 
 		expect(result.success).toBe(true);
 		expect(result.script?.steps.length).toBeGreaterThan(0);
+		// Should have show step and move step
+		const showSteps = countStepsByType(result.script!.steps, isShowStep);
+		const moveSteps = countStepsByType(result.script!.steps, isMoveStep);
+		expect(showSteps).toBeGreaterThanOrEqual(1);
+		expect(moveSteps).toBeGreaterThanOrEqual(1);
+	});
+});
+
+// =============================================================================
+// New Format Specific Tests
+// =============================================================================
+
+describe('convertInstrumenPoche - New Format Structure', () => {
+	it('should generate point steps with "point" key and "at" coordinates', async () => {
+		const result = await convertInstrumenPoche(validXmlWithPoint);
+		const pointStep = result.script!.steps.find(isPointStep);
+
+		expect(pointStep).toBeDefined();
+		expect(pointStep!.point).toBe('A');
+		expect(pointStep!.at).toEqual([100, 200]);
+	});
+
+	it('should generate line steps without "from" property (implicit)', async () => {
+		const xmlWithLine = `<?xml version="1.0"?>
+<INSTRUMENPOCHE version="2">
+  <viewBox width="800" height="600"/>
+  <action objet="crayon" mouvement="montrer" abscisse="100" ordonnee="100"/>
+  <action objet="crayon" mouvement="tracer" abscisse="200" ordonnee="200"/>
+</INSTRUMENPOCHE>`;
+
+		const result = await convertInstrumenPoche(xmlWithLine);
+		const lineStep = result.script!.steps.find(isLineStep);
+
+		expect(lineStep).toBeDefined();
+		expect(lineStep!.to).toBeDefined();
+		// In new format, "from" is not present - it uses current pencil position
+		expect('from' in lineStep!).toBe(false);
+	});
+
+	it('should generate arc steps with "sweep" property', async () => {
+		const xmlWithArc = `<?xml version="1.0"?>
+<INSTRUMENPOCHE version="2">
+  <viewBox width="800" height="600"/>
+  <action objet="compas" mouvement="montrer" abscisse="400" ordonnee="300"/>
+  <action objet="compas" mouvement="ecarter" ecart="100"/>
+  <action objet="compas" mouvement="tracer" sens="1" amp="90"/>
+</INSTRUMENPOCHE>`;
+
+		const result = await convertInstrumenPoche(xmlWithArc);
+		const arcStep = result.script!.steps.find(isArcStep);
+
+		expect(arcStep).toBeDefined();
+		expect(arcStep!.sweep).toBeDefined();
+		// In new format, center is not present - it uses current compass position
+		expect('center' in arcStep!).toBe(false);
+	});
+
+	it('should generate show/hide steps with instrument name as value', async () => {
+		const xmlWithInstruments = `<?xml version="1.0"?>
+<INSTRUMENPOCHE version="2">
+  <viewBox width="800" height="600"/>
+  <action objet="regle" mouvement="montrer" abscisse="200" ordonnee="200"/>
+</INSTRUMENPOCHE>`;
+
+		const result = await convertInstrumenPoche(xmlWithInstruments);
+		const showStep = result.script!.steps.find(isShowStep);
+
+		expect(showStep).toBeDefined();
+		expect(showStep!.show).toBe('ruler');
+	});
+
+	it('should generate move steps with target in "to" property', async () => {
+		// Test pencil move via montrer (showing pencil at a position generates a move step)
+		const xmlWithMove = `<?xml version="1.0"?>
+<INSTRUMENPOCHE version="2">
+  <viewBox width="800" height="600"/>
+  <action objet="crayon" mouvement="montrer" abscisse="100" ordonnee="100"/>
+</INSTRUMENPOCHE>`;
+
+		const result = await convertInstrumenPoche(xmlWithMove);
+		const moveSteps = result.script!.steps.filter(isMoveStep);
+
+		// The montrer with coordinates generates a move step before showing
+		expect(moveSteps.length).toBeGreaterThanOrEqual(1);
+		const moveStep = moveSteps[0];
+		expect(moveStep.move).toBe('pencil');
+		expect(moveStep.to).toEqual([100, 100]);
+	});
+
+	it('should generate spread steps for compass opening', async () => {
+		const xmlWithSpread = `<?xml version="1.0"?>
+<INSTRUMENPOCHE version="2">
+  <viewBox width="800" height="600"/>
+  <action objet="compas" mouvement="montrer" abscisse="400" ordonnee="300"/>
+  <action objet="compas" mouvement="ecarter" ecart="150"/>
+</INSTRUMENPOCHE>`;
+
+		const result = await convertInstrumenPoche(xmlWithSpread);
+		const spreadStep = result.script!.steps.find(isSpreadStep);
+
+		expect(spreadStep).toBeDefined();
+		expect(spreadStep!.spread).toBe('compass');
+		expect(spreadStep!.radius).toBe(150);
+	});
+
+	it('should generate rotate steps for instrument rotation', async () => {
+		const xmlWithRotate = `<?xml version="1.0"?>
+<INSTRUMENPOCHE version="2">
+  <viewBox width="800" height="600"/>
+  <action objet="compas" mouvement="montrer" abscisse="400" ordonnee="300"/>
+  <action objet="compas" mouvement="rotation" angle="45"/>
+</INSTRUMENPOCHE>`;
+
+		const result = await convertInstrumenPoche(xmlWithRotate);
+		const rotateStep = result.script!.steps.find(isRotateStep);
+
+		expect(rotateStep).toBeDefined();
+		expect(rotateStep!.rotate).toBe('compass');
+		expect(rotateStep!.to).toBe(45);
+	});
+
+	it('should integrate labels into point steps when nommer comes BEFORE creer', async () => {
+		// In InstrumenPoche, if nommer comes before creer, we can integrate the label
+		const xmlWithLabelBefore = `<?xml version="1.0"?>
+<INSTRUMENPOCHE version="2">
+  <viewBox width="800" height="600"/>
+  <action objet="point" mouvement="nommer" id="A" nom="Point A"/>
+  <action objet="point" mouvement="creer" id="A" abscisse="100" ordonnee="200"/>
+</INSTRUMENPOCHE>`;
+
+		const result = await convertInstrumenPoche(xmlWithLabelBefore);
+		const pointStep = result.script!.steps.find(isPointStep);
+
+		expect(pointStep).toBeDefined();
+		expect(pointStep!.label).toBe('Point A');
+	});
+
+	it('should create text label when nommer comes AFTER creer', async () => {
+		// When nommer comes after creer, we can't modify the existing point
+		// So a separate text label is created
+		const xmlWithLabelAfter = `<?xml version="1.0"?>
+<INSTRUMENPOCHE version="2">
+  <viewBox width="800" height="600"/>
+  <action objet="point" mouvement="creer" id="A" abscisse="100" ordonnee="200"/>
+  <action objet="point" mouvement="nommer" id="A" nom="Point A"/>
+</INSTRUMENPOCHE>`;
+
+		const result = await convertInstrumenPoche(xmlWithLabelAfter);
+		const textStep = result.script!.steps.find(isTextStep);
+
+		expect(textStep).toBeDefined();
+		expect(textStep!.content).toBe('Point A');
 	});
 });

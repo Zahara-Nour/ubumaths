@@ -18,10 +18,11 @@ export interface ConstructionListItem {
 	created_at: string;
 	updated_at: string;
 	author_id: string | null;
+	// Supabase returns array for joins, we pick first element in the client
 	profiles: {
 		firstname: string | null;
 		lastname: string | null;
-	} | null;
+	}[];
 }
 
 /**
