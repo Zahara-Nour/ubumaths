@@ -349,3 +349,190 @@ describe('extractMath with placeholders', () => {
 		expect(placeholders[1].promptIndices).toEqual([1]);
 	});
 });
+
+describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
+	describe('Inline custom syntax ~...~', () => {
+		it('should extract inline custom math expressions', () => {
+			const markdown = 'Calculate ~2x+3~ and ~y^2~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(2);
+			expect(result.placeholders[0].syntax).toBe('custom');
+			expect(result.placeholders[0].isBlock).toBe(false);
+			expect(result.placeholders[0].latex).toContain('2');
+			expect(result.placeholders[0].latex).toContain('x');
+			expect(result.placeholders[1].syntax).toBe('custom');
+			expect(result.placeholders[1].isBlock).toBe(false);
+		});
+
+		it('should convert custom syntax to valid LaTeX', () => {
+			const markdown = '~x^2+3x+1~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			// LaTeX generator may use x^2 or x^{2} depending on optimization
+			expect(result.placeholders[0].latex).toMatch(/x\^(\{?2\}?) \+ 3 x \+ 1/);
+			expect(result.placeholders[0].syntax).toBe('custom');
+		});
+
+		it('should handle custom syntax with functions', () => {
+			const markdown = '~sin(x)+cos(y)~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].latex).toContain('\\sin');
+			expect(result.placeholders[0].latex).toContain('\\cos');
+		});
+
+		it('should handle custom syntax with fractions', () => {
+			const markdown = '~a/b~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].latex).toContain('\\frac');
+		});
+	});
+
+	describe('Block custom syntax ~~...~~', () => {
+		it('should extract block custom math expressions', () => {
+			const markdown = 'Formula:\n~~x^2=4~~\nEnd';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].syntax).toBe('custom');
+			expect(result.placeholders[0].isBlock).toBe(true);
+			expect(result.placeholders[0].latex).toContain('x');
+		});
+
+		it('should handle multiline block custom syntax', () => {
+			const markdown = '~~x^2+\ny^2=\n1~~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].isBlock).toBe(true);
+			expect(result.placeholders[0].latex).toContain('x');
+			expect(result.placeholders[0].latex).toContain('y');
+		});
+	});
+
+	describe('Mixed LaTeX and custom syntax', () => {
+		it('should handle both LaTeX and custom inline syntax', () => {
+			const markdown = 'LaTeX $x^2$ and custom ~2x+3~ together';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(2);
+			expect(result.placeholders[0].syntax).toBe('latex');
+			expect(result.placeholders[0].latex).toBe('x^2');
+			expect(result.placeholders[1].syntax).toBe('custom');
+			expect(result.placeholders[1].latex).toContain('2');
+		});
+
+		it('should handle both LaTeX and custom block syntax', () => {
+			const markdown = 'LaTeX $$x^2$$ and custom ~~y=2x~~ together';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(2);
+			expect(result.placeholders[0].syntax).toBe('latex');
+			expect(result.placeholders[0].isBlock).toBe(true);
+			expect(result.placeholders[1].syntax).toBe('custom');
+			expect(result.placeholders[1].isBlock).toBe(true);
+		});
+
+		it('should extract in correct order: blocks before inline', () => {
+			const markdown = 'Inline ~a~ block ~~b~~ inline $c$ block $$d$$';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(4);
+			// Extraction order: LaTeX blocks, custom blocks, LaTeX inline, custom inline
+			// Blocks first: $$d$$ then ~~b~~
+			expect(result.placeholders[0].isBlock).toBe(true);
+			expect(result.placeholders[0].syntax).toBe('latex');
+			expect(result.placeholders[0].latex).toBe('d');
+			expect(result.placeholders[1].isBlock).toBe(true);
+			expect(result.placeholders[1].syntax).toBe('custom');
+			expect(result.placeholders[1].latex).toBe('b');
+			// Then inline: $c$ then ~a~
+			expect(result.placeholders[2].isBlock).toBe(false);
+			expect(result.placeholders[2].syntax).toBe('latex');
+			expect(result.placeholders[2].latex).toBe('c');
+			expect(result.placeholders[3].isBlock).toBe(false);
+			expect(result.placeholders[3].syntax).toBe('custom');
+			expect(result.placeholders[3].latex).toBe('a');
+		});
+	});
+
+	describe('Escaped tildes', () => {
+		it('should preserve escaped tildes \\~', () => {
+			const markdown = 'Use \\~ for tilde, not ~2x~ for math';
+			const result = extractMath(markdown);
+
+			expect(result.text).toContain('~');
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].syntax).toBe('custom');
+		});
+
+		it('should handle mixed escaped characters', () => {
+			const markdown = 'Price \\$10 and tilde \\~ with ~x+1~ and $y^2$';
+			const result = extractMath(markdown);
+
+			expect(result.text).toContain('$10');
+			expect(result.text).toContain('~');
+			expect(result.placeholders).toHaveLength(2);
+		});
+	});
+
+	describe('Parse errors in custom syntax', () => {
+		it('should handle parse errors gracefully', () => {
+			const markdown = '~2+*3~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].latex).toContain('\\textcolor{red}');
+			expect(result.placeholders[0].latex).toContain('\\text');
+		});
+
+		it('should show error message for invalid syntax', () => {
+			const markdown = '~++~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].latex).toMatch(/textcolor.*red/);
+		});
+	});
+
+	describe('Edge cases', () => {
+		it('should distinguish ~~ from two ~', () => {
+			const markdown = '~~x^2~~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].isBlock).toBe(true);
+		});
+
+		it('should not match single ~ at end', () => {
+			const markdown = 'Start ~x^2~ end~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.text).toContain('end~');
+		});
+
+		it('should handle empty custom expressions', () => {
+			const markdown = '~~  ~~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			// Empty input should produce an error
+			expect(result.placeholders[0].latex).toContain('\\textcolor{red}');
+		});
+
+		it('should handle custom syntax with equals (relations)', () => {
+			const markdown = '~x=5~';
+			const result = extractMath(markdown);
+
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].latex).toContain('=');
+			expect(result.placeholders[0].syntax).toBe('custom');
+		});
+	});
+});

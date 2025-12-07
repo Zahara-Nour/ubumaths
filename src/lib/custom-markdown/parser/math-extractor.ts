@@ -2,17 +2,22 @@
  * Math Extractor - Extract and Replace Math Expressions
  * ======================================================
  *
- * This module extracts LaTeX math expressions from markdown text and replaces
- * them with unique placeholders. This allows the main parser to process the
- * markdown without worrying about math syntax interfering with markdown syntax.
+ * This module extracts math expressions (both LaTeX and custom syntax) from
+ * markdown text and replaces them with unique placeholders. This allows the
+ * main parser to process the markdown without worrying about math syntax
+ * interfering with markdown syntax.
  *
  * Supported patterns:
- * - Inline math: $...$
- * - Block math: $$...$$
- * - Escaped delimiters: \$ (literal dollar sign)
+ * - Inline LaTeX: $...$
+ * - Block LaTeX: $$...$$
+ * - Inline custom: ~...~
+ * - Block custom: ~~...~~
+ * - Escaped delimiters: \$ and \~ (literal characters)
  *
  * Process:
  * 1. Extract: Find all math expressions and replace with placeholders
+ *    - Custom syntax is converted to LaTeX via MathAST parser
+ *    - Parse errors in custom syntax are rendered in red
  * 2. Parse: Parse the remaining markdown normally
  * 3. Restore: Replace placeholders back with math nodes in the AST
  *
@@ -20,6 +25,8 @@
  */
 
 import type { MathPlaceholder } from '../types';
+import { parseCustomSafe } from '$lib/mathAST/parser/custom';
+import { toLatex } from '$lib/mathAST';
 
 // ============================================================================
 // CONSTANTS
@@ -67,6 +74,31 @@ const ESCAPED_DOLLAR_REGEX = /\\\$/g;
 const ESCAPED_DOLLAR_PLACEHOLDER = '___ESCAPED_DOLLAR___';
 
 /**
+ * Regex for inline custom math ~...~
+ * - (?<!\\) - Not escaped
+ * - ~ - Opening tilde
+ * - ([^~\n]+) - Content (no tildes or newlines)
+ * - ~ - Closing tilde
+ * - (?!~) - Not followed by another tilde (avoid matching ~~)
+ */
+const INLINE_CUSTOM_REGEX = /(?<!\\)~([^~\n]+)~(?!~)/g;
+
+/**
+ * Regex for block custom math ~~...~~
+ */
+const BLOCK_CUSTOM_REGEX = /(?<!\\)~~([\s\S]+?)~~/g;
+
+/**
+ * Regex for matching escaped tildes \~
+ */
+const ESCAPED_TILDE_REGEX = /\\~/g;
+
+/**
+ * Temporary placeholder for escaped tildes (will be replaced back to ~ after extraction)
+ */
+const ESCAPED_TILDE_PLACEHOLDER = '___ESCAPED_TILDE___';
+
+/**
  * Regex for detecting \placeholder[N]{...} commands in LaTeX
  *
  * Pattern breakdown:
@@ -75,6 +107,49 @@ const ESCAPED_DOLLAR_PLACEHOLDER = '___ESCAPED_DOLLAR___';
  * - \{[^}]*\} - Content in braces (can be empty)
  */
 const PLACEHOLDER_COMMAND_REGEX = /\\placeholder\[(\d+)\]\{[^}]*\}/g;
+
+// ============================================================================
+// CONVERSION FUNCTIONS
+// ============================================================================
+
+/**
+ * Convert custom math expression to LaTeX via MathAST
+ *
+ * @param expression - Custom syntax math expression
+ * @returns Object with LaTeX string and error flag
+ *
+ * @example Success
+ * ```typescript
+ * customToLatex('2x^2+3x+1')
+ * // { latex: '2x^{2}+3x+1', hasError: false }
+ * ```
+ *
+ * @example Error
+ * ```typescript
+ * customToLatex('2++3')
+ * // { latex: '\\textcolor{red}{\\text{Unexpected token}}', hasError: true }
+ * ```
+ */
+function customToLatex(expression: string): { latex: string; hasError: boolean } {
+	const result = parseCustomSafe(expression.trim());
+
+	if (result.ast) {
+		return { latex: toLatex(result.ast), hasError: false };
+	}
+
+	// Error: show in red with escaped message
+	const errorMsg = result.errors?.[0]?.message ?? 'Parse error';
+	// Escape LaTeX special characters
+	const escapedMsg = errorMsg.replace(/[\\{}#$%&_^~]/g, '\\$&');
+	return {
+		latex: `\\textcolor{red}{\\text{${escapedMsg}}}`,
+		hasError: true
+	};
+}
+
+// ============================================================================
+// PROMPT EXTRACTION
+// ============================================================================
 
 /**
  * Extract prompt indices from LaTeX containing \placeholder[N]{} commands
@@ -121,18 +196,37 @@ export function extractPromptInfo(latex: string): {
  * Extract math expressions from markdown and replace with placeholders
  *
  * This is step 1 of the parse process. It extracts all math expressions
- * and returns the cleaned text along with a map of placeholders.
+ * (both LaTeX and custom syntax) and returns the cleaned text along with
+ * a map of placeholders.
  *
- * @param markdown - Original markdown text with $...$ and $$...$$ math
+ * Supported formats:
+ * - LaTeX inline: $...$
+ * - LaTeX block: $$...$$
+ * - Custom inline: ~...~
+ * - Custom block: ~~...~~
+ *
+ * @param markdown - Original markdown text with math expressions
  * @returns Object with cleaned text and array of math placeholders
  *
- * @example
+ * @example LaTeX syntax
+ * ```typescript
  * const result = extractMath("Calculate $x^2$ and $$\\int x dx$$");
  * // result.text = "Calculate __MATH_0__ and __MATH_1__"
  * // result.placeholders = [
- * //   { placeholder: '__MATH_0__', latex: 'x^2', isBlock: false, ... },
- * //   { placeholder: '__MATH_1__', latex: '\\int x dx', isBlock: true, ... }
+ * //   { placeholder: '__MATH_0__', latex: 'x^2', syntax: 'latex', isBlock: false, ... },
+ * //   { placeholder: '__MATH_1__', latex: '\\int x dx', syntax: 'latex', isBlock: true, ... }
  * // ]
+ * ```
+ *
+ * @example Custom syntax
+ * ```typescript
+ * const result = extractMath("Calculate ~2x^2+3~ and ~~f(x)=x^2~~");
+ * // result.text = "Calculate __MATH_0__ and __MATH_1__"
+ * // result.placeholders = [
+ * //   { placeholder: '__MATH_0__', latex: '2x^{2}+3', syntax: 'custom', isBlock: false, ... },
+ * //   { placeholder: '__MATH_1__', latex: 'f(x)=x^{2}', syntax: 'custom', isBlock: true, ... }
+ * // ]
+ * ```
  */
 export function extractMath(markdown: string): {
 	text: string;
@@ -142,9 +236,10 @@ export function extractMath(markdown: string): {
 	let text = markdown;
 	let placeholderIndex = 0;
 
-	// Step 1: Temporarily replace escaped dollars \$ with a placeholder
+	// Step 1: Temporarily replace escaped characters with placeholders
 	// This prevents them from being matched as math delimiters
 	text = text.replace(ESCAPED_DOLLAR_REGEX, ESCAPED_DOLLAR_PLACEHOLDER);
+	text = text.replace(ESCAPED_TILDE_REGEX, ESCAPED_TILDE_PLACEHOLDER);
 
 	// Step 2: Extract block math $$...$$ first (before inline)
 	// This is important because $$ could be misinterpreted as two inline $ delimiters
@@ -155,7 +250,8 @@ export function extractMath(markdown: string): {
 
 		placeholders.push({
 			placeholder,
-			latex: trimmedLatex, // Remove leading/trailing whitespace from LaTeX
+			latex: trimmedLatex,
+			syntax: 'latex',
 			isBlock: true,
 			startIndex: offset,
 			endIndex: offset + match.length,
@@ -167,7 +263,28 @@ export function extractMath(markdown: string): {
 		return placeholder;
 	});
 
-	// Step 3: Extract inline math $...$
+	// Step 3: Extract block custom math ~~...~~
+	text = text.replace(BLOCK_CUSTOM_REGEX, (match, expression, offset) => {
+		const placeholder = `${PLACEHOLDER_PREFIX}${placeholderIndex}${PLACEHOLDER_SUFFIX}`;
+		const { latex, hasError: _hasError } = customToLatex(expression);
+		const promptInfo = extractPromptInfo(latex);
+
+		placeholders.push({
+			placeholder,
+			latex,
+			syntax: 'custom',
+			isBlock: true,
+			startIndex: offset,
+			endIndex: offset + match.length,
+			hasPrompts: promptInfo.hasPrompts,
+			promptIndices: promptInfo.promptIndices
+		});
+
+		placeholderIndex++;
+		return placeholder;
+	});
+
+	// Step 4: Extract inline math $...$
 	text = text.replace(INLINE_MATH_REGEX, (match, latex, offset) => {
 		const placeholder = `${PLACEHOLDER_PREFIX}${placeholderIndex}${PLACEHOLDER_SUFFIX}`;
 		const trimmedLatex = latex.trim();
@@ -176,6 +293,7 @@ export function extractMath(markdown: string): {
 		placeholders.push({
 			placeholder,
 			latex: trimmedLatex,
+			syntax: 'latex',
 			isBlock: false,
 			startIndex: offset,
 			endIndex: offset + match.length,
@@ -187,8 +305,30 @@ export function extractMath(markdown: string): {
 		return placeholder;
 	});
 
-	// Step 4: Restore escaped dollars back to literal $
+	// Step 5: Extract inline custom math ~...~
+	text = text.replace(INLINE_CUSTOM_REGEX, (match, expression, offset) => {
+		const placeholder = `${PLACEHOLDER_PREFIX}${placeholderIndex}${PLACEHOLDER_SUFFIX}`;
+		const { latex, hasError: _hasError } = customToLatex(expression);
+		const promptInfo = extractPromptInfo(latex);
+
+		placeholders.push({
+			placeholder,
+			latex,
+			syntax: 'custom',
+			isBlock: false,
+			startIndex: offset,
+			endIndex: offset + match.length,
+			hasPrompts: promptInfo.hasPrompts,
+			promptIndices: promptInfo.promptIndices
+		});
+
+		placeholderIndex++;
+		return placeholder;
+	});
+
+	// Step 6: Restore escaped characters back to literals
 	text = text.replace(new RegExp(ESCAPED_DOLLAR_PLACEHOLDER, 'g'), '$');
+	text = text.replace(new RegExp(ESCAPED_TILDE_PLACEHOLDER, 'g'), '~');
 
 	return {
 		text,
