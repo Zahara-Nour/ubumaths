@@ -13,11 +13,12 @@ Ce document decrit la syntaxe complete du markdown custom et du systeme de templ
    - [References internes](#14-references-internes-)
 2. [Markdown pour Questions et Exercices](#2-markdown-pour-questions-et-exercices)
    - [Expressions mathematiques LaTeX](#21-expressions-mathematiques-latex)
-   - [Champs blancs (fill-in-the-blank)](#22-champs-blanks-fill-in-the-blank)
-   - [Champs math editables](#23-champs-math-editables)
-   - [Images avec attributs](#24-images-avec-attributs)
-   - [Formatage inline](#25-formatage-inline)
-   - [Structures de bloc](#26-structures-de-bloc)
+   - [Expressions mathematiques custom MathAST](#22-expressions-mathematiques-syntaxe-custom-mathas)
+   - [Champs blancs (fill-in-the-blank)](#23-champs-blanks-fill-in-the-blank)
+   - [Champs math editables](#24-champs-math-editables)
+   - [Images avec attributs](#25-images-avec-attributs)
+   - [Formatage inline](#26-formatage-inline)
+   - [Structures de bloc](#27-structures-de-bloc)
 3. [Types AST](#3-types-ast)
 4. [Exemples complets](#4-exemples-complets)
 5. [Fichiers sources](#5-fichiers-sources)
@@ -350,7 +351,87 @@ Resultat: ${{a}} + {{b}} = {{eval:a+b}}$
 
 ---
 
-### 2.2 Champs blancs (fill-in-the-blank)
+### 2.2 Expressions mathematiques (syntaxe custom MathAST)
+
+En plus de la syntaxe LaTeX standard, le systeme supporte une syntaxe custom basee sur MathAST, plus intuitive pour les auteurs de contenu et les eleves.
+
+#### 2.2.1 Math inline custom
+
+Syntaxe : `~expression~`
+
+```markdown
+Resoudre: ~2x + 3 = 7~
+La fraction ~3/4~ est egale a $\frac{3}{4}$
+```
+
+**Conversion** : L'expression est parsee par MathAST puis convertie en LaTeX pour le rendu.
+
+| Custom syntax | LaTeX genere    |
+| ------------- | --------------- |
+| `~2x + 3~`    | `$2x + 3$`      |
+| `~3/4~`       | `$\frac{3}{4}$` |
+| `~x^2 + 1~`   | `$x^{2} + 1$`   |
+| `~sqrt(x)~`   | `$\sqrt{x}$`    |
+
+#### 2.2.2 Math en bloc custom
+
+Syntaxe : `~~expression~~`
+
+```markdown
+La formule est:
+
+~~
+(a + b)^2 = a^2 + 2ab + b^2
+~~
+
+Ou en notation fractionnaire:
+
+~~(x+1)/(x-1)~~
+```
+
+#### 2.2.3 Coexistence des syntaxes
+
+Les deux syntaxes (LaTeX et custom) peuvent coexister dans le meme document :
+
+```markdown
+Comparer ~2/3~ et $\frac{2}{3}$ (meme rendu)
+
+Formule LaTeX: $$\int_0^\pi \sin(x) dx$$
+Formule custom: ~~sin(x)~~
+```
+
+#### 2.2.4 Echappement
+
+Pour afficher un tilde litteral, utilisez `\~` :
+
+```markdown
+Le signe \~ n'est pas interprete comme debut de math
+```
+
+#### 2.2.5 Gestion des erreurs
+
+Les erreurs de parsing MathAST sont affichees visuellement en rouge :
+
+```markdown
+~expression invalide ???~
+```
+
+Rendu : Affiche le message d'erreur en rouge dans l'expression mathematique.
+
+#### 2.2.6 Combinaison avec templates
+
+```markdown
+Calcule: ~{{a}} + {{b}}~
+Resultat: ~{{eval:a+b}}~
+```
+
+**Note** : Les variables templates `{{}}` sont resolues AVANT le parsing MathAST.
+
+**Source** : `src/lib/custom-markdown/parser/math-extractor.ts`
+
+---
+
+### 2.3 Champs blancs (fill-in-the-blank)
 
 Syntaxe : `{{blank:N}}` ou N est un entier 1-based
 
@@ -370,13 +451,13 @@ Donne les deux solutions: x = {{blank:1}} et x = {{blank:2}}
 
 ---
 
-### 2.3 Champs math editables (math prompts)
+### 2.4 Champs math editables (math prompts)
 
 Syntaxe MathLive : `\placeholder[N]{}` dans `$...$` ou `$$...$$`
 
 Permet de creer des champs de saisie editables directement dans une expression mathematique. Le contenu reste en mode lecture seule, sauf pour les zones `\placeholder` qui deviennent des champs de saisie interactifs.
 
-#### 2.3.1 Syntaxe de base
+#### 2.4.1 Syntaxe de base
 
 ```markdown
 Trouve x: $x = \placeholder[1]{}$
@@ -390,7 +471,7 @@ Simplifie: $\frac{\placeholder[1]{}}{\placeholder[2]{}} = \placeholder[3]{}$
 - Le contenu entre `{}` peut contenir une valeur initiale (ex: `\placeholder[1]{?}`)
 - Fonctionne en mode inline (`$...$`) et en mode bloc (`$$...$$`)
 
-#### 2.3.2 Exemples d'utilisation
+#### 2.4.2 Exemples d'utilisation
 
 **Equation simple** :
 
@@ -418,7 +499,7 @@ $$\begin{pmatrix} \placeholder[1]{} & 2 \\ 3 & \placeholder[2]{} \end{pmatrix}$$
 Remplace le ? par la bonne valeur: $x^2 = \placeholder[1]{?}$
 ```
 
-#### 2.3.3 Combinaison avec champs texte
+#### 2.4.3 Combinaison avec champs texte
 
 Les champs math (`\placeholder[N]{}`) et les champs texte (`{{blank:N}}`) utilisent le meme systeme d'indexation mais sont de types differents. Il est possible de les combiner dans un meme document.
 
@@ -430,7 +511,7 @@ Explique ta methode: {{blank:2}}
 
 **Note** : Le type d'input (text vs math) est determine automatiquement par la syntaxe utilisee.
 
-#### 2.3.4 API unifiee InputState
+#### 2.4.4 API unifiee InputState
 
 Les deux types de champs (texte et math) sont geres par une API unifiee :
 
@@ -447,23 +528,23 @@ interface InputState {
 
 ---
 
-### 2.4 Images avec attributs
+### 2.5 Images avec attributs
 
-#### 2.4.1 Syntaxe standard
+#### 2.5.1 Syntaxe standard
 
 ```markdown
 ![texte alternatif](url.png)
 ![texte alternatif](url.png 'titre')
 ```
 
-#### 2.4.2 Syntaxe etendue avec attributs
+#### 2.5.2 Syntaxe etendue avec attributs
 
 ```markdown
 ![alt](url.png){attributs}
 ![alt](url.png 'titre'){attributs}
 ```
 
-#### 2.4.3 Attributs disponibles
+#### 2.5.3 Attributs disponibles
 
 | Attribut  | Valeurs                                      | Description            |
 | --------- | -------------------------------------------- | ---------------------- |
@@ -496,7 +577,7 @@ interface InputState {
 
 ---
 
-### 2.5 Formatage inline
+### 2.6 Formatage inline
 
 | Format   | Syntaxe                    | Rendu     |
 | -------- | -------------------------- | --------- |
@@ -513,9 +594,9 @@ La fonction `sqrt()` calcule la racine carree.
 
 ---
 
-### 2.6 Structures de bloc
+### 2.7 Structures de bloc
 
-#### 2.6.1 Titres
+#### 2.7.1 Titres
 
 ```markdown
 # Titre niveau 1
@@ -531,7 +612,7 @@ La fonction `sqrt()` calcule la racine carree.
 ###### Titre niveau 6
 ```
 
-#### 2.6.2 Listes non ordonnees
+#### 2.7.2 Listes non ordonnees
 
 ```markdown
 - Item 1
@@ -543,7 +624,7 @@ La fonction `sqrt()` calcule la racine carree.
 * Bullet alternative
 ```
 
-#### 2.6.3 Listes ordonnees
+#### 2.7.3 Listes ordonnees
 
 ```markdown
 1. Premier element
@@ -553,7 +634,7 @@ La fonction `sqrt()` calcule la racine carree.
 3. Troisieme element
 ```
 
-#### 2.6.4 Tables GFM
+#### 2.7.4 Tables GFM
 
 ```markdown
 | En-tete 1 | En-tete 2 | En-tete 3 |
@@ -568,7 +649,7 @@ Alignements :
 - `:---:` : centre
 - `---:` : droite
 
-#### 2.6.5 Citations (Blockquotes)
+#### 2.7.5 Citations (Blockquotes)
 
 ```markdown
 > Ceci est une citation.
@@ -577,7 +658,7 @@ Alignements :
 > > Citations imbriquees possibles.
 ```
 
-#### 2.6.6 Blocs de code
+#### 2.7.6 Blocs de code
 
 ````markdown
 ```python
@@ -594,7 +675,7 @@ function add(a, b) {
 
 **Note** : Le contenu des blocs de code n'est **pas** traite pour les templates ou le LaTeX. Les expressions `$...$` restent litterales.
 
-#### 2.6.7 Ligne horizontale
+#### 2.7.7 Ligne horizontale
 
 ```markdown
 ---
@@ -613,27 +694,27 @@ L'AST (Abstract Syntax Tree) represente la structure parsee du markdown.
 
 ### 3.1 Noeuds de bloc
 
-| Type              | Description        | Proprietes principales                            |
-| ----------------- | ------------------ | ------------------------------------------------- |
-| `document`        | Racine du document | `children: BlockNode[]`                           |
-| `paragraph`       | Paragraphe         | `children: InlineNode[]`                          |
-| `heading`         | Titre              | `level: 1-6`, `children: InlineNode[]`            |
-| `list`            | Liste              | `ordered: boolean`, `items: ListItemNode[]`       |
-| `table`           | Table              | `header`, `rows`, `alignments`                    |
-| `code-block`      | Bloc de code       | `code: string`, `language?: string`               |
-| `blockquote`      | Citation           | `children: BlockNode[]`                           |
-| `math-block`      | Math en bloc       | `latex`, `hasPrompts?`, `promptIndices?`          |
-| `image`           | Image              | `src`, `alt`, `sizeClass`, `alignment`, `caption` |
-| `horizontal-rule` | Ligne horizontale  | -                                                 |
+| Type              | Description        | Proprietes principales                              |
+| ----------------- | ------------------ | --------------------------------------------------- |
+| `document`        | Racine du document | `children: BlockNode[]`                             |
+| `paragraph`       | Paragraphe         | `children: InlineNode[]`                            |
+| `heading`         | Titre              | `level: 1-6`, `children: InlineNode[]`              |
+| `list`            | Liste              | `ordered: boolean`, `items: ListItemNode[]`         |
+| `table`           | Table              | `header`, `rows`, `alignments`                      |
+| `code-block`      | Bloc de code       | `code: string`, `language?: string`                 |
+| `blockquote`      | Citation           | `children: BlockNode[]`                             |
+| `math-block`      | Math en bloc       | `latex`, `syntax?`, `hasPrompts?`, `promptIndices?` |
+| `image`           | Image              | `src`, `alt`, `sizeClass`, `alignment`, `caption`   |
+| `horizontal-rule` | Ligne horizontale  | -                                                   |
 
 ### 3.2 Noeuds inline
 
-| Type          | Description   | Proprietes principales                   |
-| ------------- | ------------- | ---------------------------------------- |
-| `text`        | Texte         | `content`, `bold?`, `italic?`, `code?`   |
-| `math-inline` | Math inline   | `latex`, `hasPrompts?`, `promptIndices?` |
-| `blank`       | Champ blanc   | `index: number`                          |
-| `line-break`  | Saut de ligne | `hard?: boolean`                         |
+| Type          | Description   | Proprietes principales                              |
+| ------------- | ------------- | --------------------------------------------------- |
+| `text`        | Texte         | `content`, `bold?`, `italic?`, `code?`              |
+| `math-inline` | Math inline   | `latex`, `syntax?`, `hasPrompts?`, `promptIndices?` |
+| `blank`       | Champ blanc   | `index: number`                                     |
+| `line-break`  | Saut de ligne | `hard?: boolean`                                    |
 
 **Source** : `src/lib/custom-markdown/types/ast.ts`
 
@@ -819,8 +900,10 @@ TEMPLATES:
   {{eval:sqrt(x);d}}           Avec modifier decimal
 
 MARKDOWN:
-  $x^2$                        Math inline
-  $$\int x dx$$                Math bloc
+  $x^2$                        Math inline (LaTeX)
+  $$\int x dx$$                Math bloc (LaTeX)
+  ~2x+3~                       Math inline (custom MathAST)
+  ~~(a+b)/c~~                  Math bloc (custom MathAST)
   {{blank:1}}                  Champ blanc (texte)
   $\placeholder[1]{}$          Champ editable (math)
   ![alt](url){size=medium}     Image avec attributs
@@ -837,5 +920,5 @@ MARKDOWN:
 
 ---
 
-*Document genere pour UbuMaths - Derniere mise a jour: Novembre 2025*
+*Document genere pour UbuMaths - Derniere mise a jour: Decembre 2025*
 ```
