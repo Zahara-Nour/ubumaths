@@ -17,6 +17,7 @@
 <script lang="ts">
 	import 'mathlive';
 	import type { InputState } from '$lib/custom-markdown';
+	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 
 	/**
 	 * MathLive math-field element interface
@@ -31,12 +32,12 @@
 	}
 
 	interface Props {
-		/** LaTeX content with \placeholder[N]{} commands */
-		latex: string;
+		/** Math expression (custom or LaTeX syntax) */
+		expression: string;
+		/** Syntax type of the expression */
+		syntax: 'latex' | 'custom';
 		/** Display mode: inline blends with text, block is centered */
 		display?: 'inline' | 'block';
-		/** List of prompt indices from \placeholder[N]{} */
-		promptIndices: number[];
 		/** Input states for validation display */
 		inputs?: InputState[];
 		/** Callback when a prompt value changes */
@@ -46,13 +47,19 @@
 	}
 
 	let {
-		latex,
+		expression,
+		syntax,
 		display = 'inline',
-		promptIndices,
 		inputs = [],
 		onPromptChange,
 		class: className = ''
 	}: Props = $props();
+
+	// Convert to LaTeX for rendering
+	let latex = $derived(expressionToLatex(expression, syntax));
+
+	// Extract prompt indices from the expression
+	let promptIndices = $derived(extractPromptIndices(expression, syntax));
 
 	let mathField: HTMLElement | undefined = $state();
 

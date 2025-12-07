@@ -130,7 +130,7 @@ For more information, see our [full documentation](https://docs.example.com).`;
 		const hasMathParagraph = ast.children.some((node) => {
 			if (node.type === 'paragraph') {
 				return node.children.some(
-					(child) => child.type === 'math-inline' && child.latex.includes('\\frac{1000}{t}')
+					(child) => child.type === 'math-inline' && child.expression.includes('\\frac{1000}{t}')
 				);
 			}
 			return false;
@@ -189,7 +189,7 @@ For more information, see our [full documentation](https://docs.example.com).`;
 
 		// Check the math block
 		const mathBlock = blockquote.children.find((n) => n.type === 'math-block');
-		expect(mathBlock?.latex).toContain('\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}');
+		expect(mathBlock?.expression).toContain('\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}');
 
 		// Check the code block
 		const codeBlock = blockquote.children.find((n) => n.type === 'code-block') as CodeBlockNode;
@@ -201,8 +201,8 @@ For more information, see our [full documentation](https://docs.example.com).`;
 		const lastParagraph = blockquote.children[blockquote.children.length - 1] as ParagraphNode;
 		const inlineMaths = lastParagraph.children.filter((n) => n.type === 'math-inline');
 		expect(inlineMaths).toHaveLength(2);
-		expect(inlineMaths[0].latex).toBe('ax^2 + bx + c = 0');
-		expect(inlineMaths[1].latex).toBe('a \\neq 0');
+		expect(inlineMaths[0].expression).toBe('ax^2 + bx + c = 0');
+		expect(inlineMaths[1].expression).toBe('a \\neq 0');
 	});
 
 	it('should preserve special characters in code blocks', () => {
@@ -291,7 +291,7 @@ For more information, see our [full documentation](https://docs.example.com).`;
 		// Third item should have inline math
 		const thirdItemPara = list.items[2].children[0] as ParagraphNode;
 		const hasMath = thirdItemPara.children.some(
-			(c) => c.type === 'math-inline' && c.latex === 'x = y'
+			(c) => c.type === 'math-inline' && c.expression === 'x = y'
 		);
 		expect(hasMath).toBe(true);
 	});

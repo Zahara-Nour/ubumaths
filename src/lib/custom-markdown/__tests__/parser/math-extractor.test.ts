@@ -12,8 +12,7 @@ import {
 	getPlaceholderIndex,
 	findPlaceholder,
 	splitTextWithPlaceholders,
-	getMathStats,
-	extractPromptInfo
+	getMathStats
 } from '../../parser/math-extractor';
 
 describe('extractMath', () => {
@@ -22,9 +21,11 @@ describe('extractMath', () => {
 		const result = extractMath(markdown);
 
 		expect(result.placeholders).toHaveLength(2);
-		expect(result.placeholders[0].latex).toBe('x^2');
+		expect(result.placeholders[0].expression).toBe('x^2');
+		expect(result.placeholders[0].syntax).toBe('latex');
 		expect(result.placeholders[0].isBlock).toBe(false);
-		expect(result.placeholders[1].latex).toBe('y^3');
+		expect(result.placeholders[1].expression).toBe('y^3');
+		expect(result.placeholders[1].syntax).toBe('latex');
 		expect(result.placeholders[1].isBlock).toBe(false);
 		expect(result.text).toContain('__MATH_0__');
 		expect(result.text).toContain('__MATH_1__');
@@ -35,7 +36,8 @@ describe('extractMath', () => {
 		const result = extractMath(markdown);
 
 		expect(result.placeholders).toHaveLength(1);
-		expect(result.placeholders[0].latex).toBe('\\int_0^\\pi \\sin(x) dx');
+		expect(result.placeholders[0].expression).toBe('\\int_0^\\pi \\sin(x) dx');
+		expect(result.placeholders[0].syntax).toBe('latex');
 		expect(result.placeholders[0].isBlock).toBe(true);
 		expect(result.text).toContain('__MATH_0__');
 	});
@@ -45,9 +47,11 @@ describe('extractMath', () => {
 		const result = extractMath(markdown);
 
 		expect(result.placeholders).toHaveLength(2);
-		expect(result.placeholders[0].latex).toBe('c+d'); // Block first
+		expect(result.placeholders[0].expression).toBe('c+d'); // Block first
+		expect(result.placeholders[0].syntax).toBe('latex');
 		expect(result.placeholders[0].isBlock).toBe(true);
-		expect(result.placeholders[1].latex).toBe('a+b');
+		expect(result.placeholders[1].expression).toBe('a+b');
+		expect(result.placeholders[1].syntax).toBe('latex');
 		expect(result.placeholders[1].isBlock).toBe(false);
 	});
 
@@ -57,7 +61,7 @@ describe('extractMath', () => {
 
 		expect(result.text).toContain('$10');
 		expect(result.placeholders).toHaveLength(1);
-		expect(result.placeholders[0].latex).toBe('x^2');
+		expect(result.placeholders[0].expression).toBe('x^2');
 	});
 
 	it('should handle empty math expressions', () => {
@@ -65,16 +69,16 @@ describe('extractMath', () => {
 		const result = extractMath(markdown);
 
 		expect(result.placeholders).toHaveLength(2);
-		expect(result.placeholders[0].latex).toBe('');
-		expect(result.placeholders[1].latex).toBe('');
+		expect(result.placeholders[0].expression).toBe('');
+		expect(result.placeholders[1].expression).toBe('');
 	});
 
 	it('should trim whitespace from latex content', () => {
 		const markdown = '$  x^2  $ and $$  \\int x  $$';
 		const result = extractMath(markdown);
 
-		expect(result.placeholders[0].latex).toBe('\\int x');
-		expect(result.placeholders[1].latex).toBe('x^2');
+		expect(result.placeholders[0].expression).toBe('\\int x');
+		expect(result.placeholders[1].expression).toBe('x^2');
 	});
 
 	it('should handle text with no math expressions', () => {
@@ -130,7 +134,7 @@ describe('findPlaceholder', () => {
 
 		const found = findPlaceholder(placeholders, '__MATH_0__');
 		expect(found).toBeDefined();
-		expect(found?.latex).toBe('x^2');
+		expect(found?.expression).toBe('x^2');
 	});
 
 	it('should return undefined for non-existent placeholder', () => {
@@ -242,8 +246,8 @@ describe('Edge Cases', () => {
 
 		expect(result.placeholders).toHaveLength(1);
 		expect(result.placeholders[0].isBlock).toBe(true);
-		expect(result.placeholders[0].latex).toContain('x^2');
-		expect(result.placeholders[0].latex).toContain('y^2');
+		expect(result.placeholders[0].expression).toContain('x^2');
+		expect(result.placeholders[0].expression).toContain('y^2');
 	});
 
 	it('should handle math at start and end', () => {
@@ -251,8 +255,8 @@ describe('Edge Cases', () => {
 		const result = extractMath(markdown);
 
 		expect(result.placeholders).toHaveLength(2);
-		expect(result.placeholders[0].latex).toBe('start');
-		expect(result.placeholders[1].latex).toBe('end');
+		expect(result.placeholders[0].expression).toBe('start');
+		expect(result.placeholders[1].expression).toBe('end');
 	});
 
 	it('should handle complex latex expressions', () => {
@@ -260,93 +264,8 @@ describe('Edge Cases', () => {
 		const result = extractMath(markdown);
 
 		expect(result.placeholders).toHaveLength(2);
-		expect(result.placeholders[0].latex).toContain('\\int');
-		expect(result.placeholders[1].latex).toContain('\\frac');
-	});
-});
-
-describe('extractPromptInfo', () => {
-	it('returns no prompts for regular LaTeX', () => {
-		const result = extractPromptInfo('x^2 + 2x + 1');
-		expect(result.hasPrompts).toBe(false);
-		expect(result.promptIndices).toEqual([]);
-	});
-
-	it('detects single placeholder', () => {
-		const result = extractPromptInfo('x = \\placeholder[1]{}');
-		expect(result.hasPrompts).toBe(true);
-		expect(result.promptIndices).toEqual([1]);
-	});
-
-	it('detects multiple placeholders', () => {
-		const result = extractPromptInfo('\\frac{\\placeholder[1]{}}{\\placeholder[2]{}}');
-		expect(result.hasPrompts).toBe(true);
-		expect(result.promptIndices).toEqual([1, 2]);
-	});
-
-	it('handles placeholders with initial content', () => {
-		const result = extractPromptInfo('\\placeholder[3]{x^2}');
-		expect(result.hasPrompts).toBe(true);
-		expect(result.promptIndices).toEqual([3]);
-	});
-
-	it('deduplicates repeated indices', () => {
-		const result = extractPromptInfo('\\placeholder[1]{} + \\placeholder[1]{}');
-		expect(result.hasPrompts).toBe(true);
-		expect(result.promptIndices).toEqual([1]);
-	});
-
-	it('sorts indices in ascending order', () => {
-		const result = extractPromptInfo(
-			'\\placeholder[5]{} + \\placeholder[2]{} + \\placeholder[8]{}'
-		);
-		expect(result.hasPrompts).toBe(true);
-		expect(result.promptIndices).toEqual([2, 5, 8]);
-	});
-
-	it('handles complex nested LaTeX with placeholders', () => {
-		const result = extractPromptInfo('\\frac{\\sqrt{\\placeholder[1]{}}}{\\placeholder[2]{} + 3}');
-		expect(result.hasPrompts).toBe(true);
-		expect(result.promptIndices).toEqual([1, 2]);
-	});
-});
-
-describe('extractMath with placeholders', () => {
-	it('marks inline math without placeholders as hasPrompts: false', () => {
-		const { placeholders } = extractMath('Calculate $x^2 + 1$');
-		expect(placeholders).toHaveLength(1);
-		expect(placeholders[0].hasPrompts).toBe(false);
-		expect(placeholders[0].promptIndices).toEqual([]);
-	});
-
-	it('marks inline math with placeholder as hasPrompts: true', () => {
-		const { placeholders } = extractMath('Solve: $x = \\placeholder[1]{}$');
-		expect(placeholders).toHaveLength(1);
-		expect(placeholders[0].hasPrompts).toBe(true);
-		expect(placeholders[0].promptIndices).toEqual([1]);
-	});
-
-	it('marks block math without placeholders as hasPrompts: false', () => {
-		const { placeholders } = extractMath('$$\\int_0^1 x dx$$');
-		expect(placeholders).toHaveLength(1);
-		expect(placeholders[0].isBlock).toBe(true);
-		expect(placeholders[0].hasPrompts).toBe(false);
-	});
-
-	it('marks block math with placeholders as hasPrompts: true', () => {
-		const { placeholders } = extractMath('$$\\frac{\\placeholder[1]{}}{\\placeholder[2]{}}$$');
-		expect(placeholders).toHaveLength(1);
-		expect(placeholders[0].isBlock).toBe(true);
-		expect(placeholders[0].hasPrompts).toBe(true);
-		expect(placeholders[0].promptIndices).toEqual([1, 2]);
-	});
-
-	it('handles mixed math with and without placeholders', () => {
-		const { placeholders } = extractMath('Given $a = 5$, find $x = \\placeholder[1]{}$');
-		expect(placeholders).toHaveLength(2);
-		expect(placeholders[0].hasPrompts).toBe(false);
-		expect(placeholders[1].hasPrompts).toBe(true);
-		expect(placeholders[1].promptIndices).toEqual([1]);
+		expect(result.placeholders[0].expression).toContain('\\int');
+		expect(result.placeholders[1].expression).toContain('\\frac');
 	});
 });
 
@@ -359,37 +278,37 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 			expect(result.placeholders).toHaveLength(2);
 			expect(result.placeholders[0].syntax).toBe('custom');
 			expect(result.placeholders[0].isBlock).toBe(false);
-			expect(result.placeholders[0].latex).toContain('2');
-			expect(result.placeholders[0].latex).toContain('x');
+			expect(result.placeholders[0].expression).toBe('2x+3');
 			expect(result.placeholders[1].syntax).toBe('custom');
 			expect(result.placeholders[1].isBlock).toBe(false);
+			expect(result.placeholders[1].expression).toBe('y^2');
 		});
 
-		it('should convert custom syntax to valid LaTeX', () => {
+		it('should store custom syntax as-is in expression field', () => {
 			const markdown = '~x^2+3x+1~';
 			const result = extractMath(markdown);
 
 			expect(result.placeholders).toHaveLength(1);
-			// LaTeX generator may use x^2 or x^{2} depending on optimization
-			expect(result.placeholders[0].latex).toMatch(/x\^(\{?2\}?) \+ 3 x \+ 1/);
+			expect(result.placeholders[0].expression).toBe('x^2+3x+1');
 			expect(result.placeholders[0].syntax).toBe('custom');
 		});
 
-		it('should handle custom syntax with functions', () => {
+		it('should preserve custom syntax for functions', () => {
 			const markdown = '~sin(x)+cos(y)~';
 			const result = extractMath(markdown);
 
 			expect(result.placeholders).toHaveLength(1);
-			expect(result.placeholders[0].latex).toContain('\\sin');
-			expect(result.placeholders[0].latex).toContain('\\cos');
+			expect(result.placeholders[0].expression).toBe('sin(x)+cos(y)');
+			expect(result.placeholders[0].syntax).toBe('custom');
 		});
 
-		it('should handle custom syntax with fractions', () => {
+		it('should preserve custom syntax for fractions', () => {
 			const markdown = '~a/b~';
 			const result = extractMath(markdown);
 
 			expect(result.placeholders).toHaveLength(1);
-			expect(result.placeholders[0].latex).toContain('\\frac');
+			expect(result.placeholders[0].expression).toBe('a/b');
+			expect(result.placeholders[0].syntax).toBe('custom');
 		});
 	});
 
@@ -401,7 +320,7 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 			expect(result.placeholders).toHaveLength(1);
 			expect(result.placeholders[0].syntax).toBe('custom');
 			expect(result.placeholders[0].isBlock).toBe(true);
-			expect(result.placeholders[0].latex).toContain('x');
+			expect(result.placeholders[0].expression).toBe('x^2=4');
 		});
 
 		it('should handle multiline block custom syntax', () => {
@@ -410,8 +329,8 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 
 			expect(result.placeholders).toHaveLength(1);
 			expect(result.placeholders[0].isBlock).toBe(true);
-			expect(result.placeholders[0].latex).toContain('x');
-			expect(result.placeholders[0].latex).toContain('y');
+			expect(result.placeholders[0].syntax).toBe('custom');
+			expect(result.placeholders[0].expression).toBe('x^2+\ny^2=\n1');
 		});
 	});
 
@@ -422,9 +341,9 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 
 			expect(result.placeholders).toHaveLength(2);
 			expect(result.placeholders[0].syntax).toBe('latex');
-			expect(result.placeholders[0].latex).toBe('x^2');
+			expect(result.placeholders[0].expression).toBe('x^2');
 			expect(result.placeholders[1].syntax).toBe('custom');
-			expect(result.placeholders[1].latex).toContain('2');
+			expect(result.placeholders[1].expression).toBe('2x+3');
 		});
 
 		it('should handle both LaTeX and custom block syntax', () => {
@@ -447,17 +366,17 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 			// Blocks first: $$d$$ then ~~b~~
 			expect(result.placeholders[0].isBlock).toBe(true);
 			expect(result.placeholders[0].syntax).toBe('latex');
-			expect(result.placeholders[0].latex).toBe('d');
+			expect(result.placeholders[0].expression).toBe('d');
 			expect(result.placeholders[1].isBlock).toBe(true);
 			expect(result.placeholders[1].syntax).toBe('custom');
-			expect(result.placeholders[1].latex).toBe('b');
+			expect(result.placeholders[1].expression).toBe('b');
 			// Then inline: $c$ then ~a~
 			expect(result.placeholders[2].isBlock).toBe(false);
 			expect(result.placeholders[2].syntax).toBe('latex');
-			expect(result.placeholders[2].latex).toBe('c');
+			expect(result.placeholders[2].expression).toBe('c');
 			expect(result.placeholders[3].isBlock).toBe(false);
 			expect(result.placeholders[3].syntax).toBe('custom');
-			expect(result.placeholders[3].latex).toBe('a');
+			expect(result.placeholders[3].expression).toBe('a');
 		});
 	});
 
@@ -482,21 +401,22 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 	});
 
 	describe('Parse errors in custom syntax', () => {
-		it('should handle parse errors gracefully', () => {
+		it('should extract invalid custom syntax as-is', () => {
 			const markdown = '~2+*3~';
 			const result = extractMath(markdown);
 
 			expect(result.placeholders).toHaveLength(1);
-			expect(result.placeholders[0].latex).toContain('\\textcolor{red}');
-			expect(result.placeholders[0].latex).toContain('\\text');
+			expect(result.placeholders[0].syntax).toBe('custom');
+			expect(result.placeholders[0].expression).toBe('2+*3');
 		});
 
-		it('should show error message for invalid syntax', () => {
+		it('should extract invalid operators as-is', () => {
 			const markdown = '~++~';
 			const result = extractMath(markdown);
 
 			expect(result.placeholders).toHaveLength(1);
-			expect(result.placeholders[0].latex).toMatch(/textcolor.*red/);
+			expect(result.placeholders[0].syntax).toBe('custom');
+			expect(result.placeholders[0].expression).toBe('++');
 		});
 	});
 
@@ -522,8 +442,8 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 			const result = extractMath(markdown);
 
 			expect(result.placeholders).toHaveLength(1);
-			// Empty input should produce an error
-			expect(result.placeholders[0].latex).toContain('\\textcolor{red}');
+			expect(result.placeholders[0].syntax).toBe('custom');
+			expect(result.placeholders[0].isBlock).toBe(true);
 		});
 
 		it('should handle custom syntax with equals (relations)', () => {
@@ -531,7 +451,7 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 			const result = extractMath(markdown);
 
 			expect(result.placeholders).toHaveLength(1);
-			expect(result.placeholders[0].latex).toContain('=');
+			expect(result.placeholders[0].expression).toBe('x=5');
 			expect(result.placeholders[0].syntax).toBe('custom');
 		});
 	});

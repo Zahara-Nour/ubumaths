@@ -19,13 +19,18 @@
 -->
 <script lang="ts">
 	import 'mathlive';
+	import { expressionToLatex } from '../utils/math-utils';
 
 	interface Props {
-		latex: string;
+		expression: string;
+		syntax: 'latex' | 'custom';
 		class?: string;
 	}
 
-	let { latex, class: className = '' }: Props = $props();
+	let { expression, syntax, class: className = '' }: Props = $props();
+
+	// Convert to LaTeX for rendering
+	let latex = $derived(expressionToLatex(expression, syntax));
 </script>
 
 <div class="math-block-container my-6 flex justify-center {className}">

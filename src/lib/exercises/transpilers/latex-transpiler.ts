@@ -33,6 +33,7 @@ import type {
 	LatexTranspilerOptions
 } from '../types';
 import { getDimensionsForFormat, getAlignmentStyles } from '../services/image-dimensions';
+import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 
 // ============================================================================
 // DEFAULT OPTIONS
@@ -239,8 +240,11 @@ function transpileInline(node: InlineNode, _options: Required<LatexTranspilerOpt
 			return text;
 		}
 
-		case 'math-inline':
-			return `$${node.latex}$`;
+		case 'math-inline': {
+			const latex =
+				node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
+			return `$${latex}$`;
+		}
 
 		case 'line-break':
 			return node.hard ? ' \\\\' : '\n';
@@ -374,7 +378,9 @@ ${rows} \\\\
  * @returns LaTeX math environment
  */
 function transpileMathBlock(node: MathBlockNode): string {
-	return `\\[${node.latex}\\]`;
+	const latex =
+		node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
+	return `\\[${latex}\\]`;
 }
 
 // ============================================================================

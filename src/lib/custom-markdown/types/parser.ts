@@ -73,16 +73,13 @@ export type ParseResult<T> =
  */
 export interface MathPlaceholder {
 	placeholder: string; // Unique placeholder string (e.g., "__MATH_0__")
-	latex: string; // Original LaTeX content
+	/** Math expression in its original syntax (LaTeX or custom) */
+	expression: string;
 	isBlock: boolean; // true for $$...$$ (block), false for $...$ (inline)
-	/** Original syntax: 'latex' for $/$$ or 'custom' for ~/~~ */
-	syntax?: 'latex' | 'custom';
+	/** Syntax used: 'latex' for $/$$ or 'custom' for ~/~~ */
+	syntax: 'latex' | 'custom';
 	startIndex: number; // Original position in source text
 	endIndex: number; // Original end position in source text
-	/** Whether this math expression contains \placeholder commands */
-	hasPrompts?: boolean;
-	/** Extracted prompt indices from \placeholder[N]{} commands */
-	promptIndices?: number[];
 }
 
 // ============================================================================

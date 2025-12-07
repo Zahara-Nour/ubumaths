@@ -33,7 +33,7 @@ describe('parseMarkdown', () => {
 			expect(paragraph.children[2].type).toBe('text');
 
 			if (paragraph.children[1].type === 'math-inline') {
-				expect(paragraph.children[1].latex).toBe('x^2');
+				expect(paragraph.children[1].expression).toBe('x^2');
 			}
 		}
 	});
@@ -46,7 +46,7 @@ describe('parseMarkdown', () => {
 		expect(ast.children[0].type).toBe('math-block');
 
 		if (ast.children[0].type === 'math-block') {
-			expect(ast.children[0].latex).toBe('\\int_0^\\pi \\sin(x) dx');
+			expect(ast.children[0].expression).toBe('\\int_0^\\pi \\sin(x) dx');
 		}
 	});
 
@@ -76,7 +76,7 @@ describe('parseMarkdown', () => {
 				expect(paragraph.children[0].type).toBe('math-inline');
 
 				if (paragraph.children[0].type === 'math-inline') {
-					expect(paragraph.children[0].latex).toBe('2x + 3 = 7');
+					expect(paragraph.children[0].expression).toBe('2x + 3 = 7');
 				}
 			}
 
@@ -87,7 +87,7 @@ describe('parseMarkdown', () => {
 				expect(paragraph.children[0].type).toBe('math-inline');
 
 				if (paragraph.children[0].type === 'math-inline') {
-					expect(paragraph.children[0].latex).toBe('(x + 2)(x - 3) = 0');
+					expect(paragraph.children[0].expression).toBe('(x + 2)(x - 3) = 0');
 				}
 			}
 
@@ -98,7 +98,7 @@ describe('parseMarkdown', () => {
 				expect(paragraph.children[0].type).toBe('math-inline');
 
 				if (paragraph.children[0].type === 'math-inline') {
-					expect(paragraph.children[0].latex).toBe('\\frac{x}{2} + \\frac{x}{3} = 5');
+					expect(paragraph.children[0].expression).toBe('\\frac{x}{2} + \\frac{x}{3} = 5');
 				}
 			}
 		}
@@ -475,7 +475,7 @@ describe('parseMarkdown - blank support', () => {
 			// First: math inline
 			expect(paragraph.children[0].type).toBe('math-inline');
 			if (paragraph.children[0].type === 'math-inline') {
-				expect(paragraph.children[0].latex).toBe('x');
+				expect(paragraph.children[0].expression).toBe('x');
 			}
 
 			// Second: text " = "

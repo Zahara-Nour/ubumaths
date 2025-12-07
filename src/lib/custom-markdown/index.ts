@@ -167,8 +167,7 @@ export {
 	findPlaceholder,
 	splitTextWithPlaceholders,
 	// Utilities
-	getMathStats,
-	extractPromptInfo
+	getMathStats
 } from './parser';
 
 // Sub-parsers (advanced usage)
