@@ -26,6 +26,7 @@
 	import MathPrompt from './MathPrompt.svelte';
 	import TextNode from './TextNode.svelte';
 	import BlankInput from './BlankInput.svelte';
+	import { hasPrompts } from '../utils/math-utils';
 
 	interface Props {
 		children: InlineNode[];
@@ -105,16 +106,16 @@
 				code={child.code}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
-			{#if child.hasPrompts && child.promptIndices}
+			{#if hasPrompts(child.expression, child.syntax)}
 				<MathPrompt
-					latex={child.latex}
+					expression={child.expression}
+					syntax={child.syntax}
 					display="inline"
-					promptIndices={child.promptIndices}
 					inputs={inputs.filter((i) => i.type === 'math')}
 					onPromptChange={onInputChange}
 				/>
 			{:else}
-				<MathInline latex={child.latex} />
+				<MathInline expression={child.expression} syntax={child.syntax} />
 			{/if}
 		{:else if child.type === 'blank'}
 			{@const state = getInputState(child.index)}

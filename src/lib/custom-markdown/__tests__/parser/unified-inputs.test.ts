@@ -14,7 +14,6 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseMarkdown } from '../../parser/markdown-parser';
-import { extractPromptInfo } from '../../parser/math-extractor';
 import type { InputState } from '../../types';
 
 // ============================================================================
@@ -68,12 +67,14 @@ function findTextBlanks(ast: ReturnType<typeof parseMarkdown>): number[] {
 }
 
 /**
- * Helper to find all math prompts in AST
+ * Helper to find all math expressions with placeholders in AST
+ *
+ * Note: Placeholder detection is done by checking if the expression contains \placeholder
  */
 function findMathPrompts(
 	ast: ReturnType<typeof parseMarkdown>
-): { isBlock: boolean; promptIndices: number[] }[] {
-	const prompts: { isBlock: boolean; promptIndices: number[] }[] = [];
+): { isBlock: boolean; expression: string }[] {
+	const prompts: { isBlock: boolean; expression: string }[] = [];
 
 	function traverse(children: unknown[]) {
 		for (const node of children) {
@@ -82,12 +83,12 @@ function findMathPrompts(
 			const n = node as Record<string, unknown>;
 			if (
 				(n.type === 'math-inline' || n.type === 'math-block') &&
-				n.hasPrompts === true &&
-				Array.isArray(n.promptIndices)
+				typeof n.expression === 'string' &&
+				n.expression.includes('\\placeholder')
 			) {
 				prompts.push({
 					isBlock: n.type === 'math-block',
-					promptIndices: n.promptIndices as number[]
+					expression: n.expression as string
 				});
 			}
 			if (n.type === 'paragraph' && Array.isArray(n.children)) {
@@ -167,7 +168,7 @@ describe('Unified Inputs - Math Prompts Parsing', () => {
 		const prompts = findMathPrompts(ast);
 		expect(prompts).toHaveLength(1);
 		expect(prompts[0].isBlock).toBe(false);
-		expect(prompts[0].promptIndices).toEqual([1]);
+		expect(prompts[0].expression).toContain('\\placeholder[1]{}');
 	});
 
 	it('should detect placeholder in block math', () => {
@@ -177,7 +178,7 @@ describe('Unified Inputs - Math Prompts Parsing', () => {
 		const prompts = findMathPrompts(ast);
 		expect(prompts).toHaveLength(1);
 		expect(prompts[0].isBlock).toBe(true);
-		expect(prompts[0].promptIndices).toEqual([1]);
+		expect(prompts[0].expression).toContain('\\placeholder[1]{}');
 	});
 
 	it('should detect multiple placeholders in same expression', () => {
@@ -186,7 +187,9 @@ describe('Unified Inputs - Math Prompts Parsing', () => {
 
 		const prompts = findMathPrompts(ast);
 		expect(prompts).toHaveLength(1);
-		expect(prompts[0].promptIndices).toEqual([1, 2, 3]);
+		expect(prompts[0].expression).toContain('\\placeholder[1]{}');
+		expect(prompts[0].expression).toContain('\\placeholder[2]{}');
+		expect(prompts[0].expression).toContain('\\placeholder[3]{}');
 	});
 
 	it('should handle multiple math expressions with prompts', () => {
@@ -195,8 +198,8 @@ describe('Unified Inputs - Math Prompts Parsing', () => {
 
 		const prompts = findMathPrompts(ast);
 		expect(prompts).toHaveLength(2);
-		expect(prompts[0].promptIndices).toEqual([1]);
-		expect(prompts[1].promptIndices).toEqual([2]);
+		expect(prompts[0].expression).toContain('\\placeholder[1]{}');
+		expect(prompts[1].expression).toContain('\\placeholder[2]{}');
 	});
 
 	it('should not mark regular math as having prompts', () => {
@@ -211,8 +214,7 @@ describe('Unified Inputs - Math Prompts Parsing', () => {
 			const mathNode = ast.children[0].children.find((n) => n.type === 'math-inline');
 			expect(mathNode).toBeDefined();
 			if (mathNode && mathNode.type === 'math-inline') {
-				expect(mathNode.hasPrompts).toBe(false);
-				expect(mathNode.promptIndices).toEqual([]);
+				expect(mathNode.expression).toBe('x^2 + 2x + 1');
 			}
 		}
 	});
@@ -237,7 +239,7 @@ Reponse en texte: {{blank:2}}`;
 
 		expect(blanks).toEqual([2]);
 		expect(prompts).toHaveLength(1);
-		expect(prompts[0].promptIndices).toEqual([1]);
+		expect(prompts[0].expression).toContain('\\placeholder[1]{}');
 	});
 
 	it('should maintain separate indexing for blanks and prompts', () => {
@@ -251,7 +253,7 @@ Reponse en texte: {{blank:2}}`;
 		// Both should find index 1
 		expect(blanks).toEqual([1]);
 		expect(prompts).toHaveLength(1);
-		expect(prompts[0].promptIndices).toEqual([1]);
+		expect(prompts[0].expression).toContain('\\placeholder[1]{}');
 	});
 
 	it('should handle complex exercise with multiple input types', () => {
@@ -272,7 +274,9 @@ $$\\frac{\\placeholder[1]{}}{\\placeholder[2]{}} = \\placeholder[3]{}$$
 
 		expect(blanks).toEqual([1, 2, 3]);
 		expect(prompts).toHaveLength(1);
-		expect(prompts[0].promptIndices).toEqual([1, 2, 3]);
+		expect(prompts[0].expression).toContain('\\placeholder[1]{}');
+		expect(prompts[0].expression).toContain('\\placeholder[2]{}');
+		expect(prompts[0].expression).toContain('\\placeholder[3]{}');
 		expect(prompts[0].isBlock).toBe(true);
 	});
 });
@@ -325,45 +329,6 @@ describe('Unified Inputs - InputState Type', () => {
 });
 
 // ============================================================================
-// extractPromptInfo INTEGRATION TESTS
-// ============================================================================
-
-describe('extractPromptInfo - Integration', () => {
-	it('should extract prompt info from complex LaTeX', () => {
-		const latex = '\\frac{\\sqrt{\\placeholder[1]{}}}{\\placeholder[2]{} + 3}';
-		const info = extractPromptInfo(latex);
-
-		expect(info.hasPrompts).toBe(true);
-		expect(info.promptIndices).toEqual([1, 2]);
-	});
-
-	it('should handle nested placeholder in matrix', () => {
-		const latex =
-			'\\begin{pmatrix} \\placeholder[1]{} & \\placeholder[2]{} \\\\ 3 & 4 \\end{pmatrix}';
-		const info = extractPromptInfo(latex);
-
-		expect(info.hasPrompts).toBe(true);
-		expect(info.promptIndices).toEqual([1, 2]);
-	});
-
-	it('should handle placeholder with initial content', () => {
-		const latex = '\\placeholder[1]{?}';
-		const info = extractPromptInfo(latex);
-
-		expect(info.hasPrompts).toBe(true);
-		expect(info.promptIndices).toEqual([1]);
-	});
-
-	it('should return empty for regular LaTeX', () => {
-		const latex = 'x^2 + 2x + 1 = 0';
-		const info = extractPromptInfo(latex);
-
-		expect(info.hasPrompts).toBe(false);
-		expect(info.promptIndices).toEqual([]);
-	});
-});
-
-// ============================================================================
 // EDGE CASES
 // ============================================================================
 
@@ -389,15 +354,6 @@ describe('Unified Inputs - Edge Cases', () => {
 		expect(prompts).toEqual([]);
 	});
 
-	it('should handle escaped placeholder syntax', () => {
-		// This should NOT be parsed as a placeholder
-		const latex = 'x = \\text{\\placeholder}';
-		const info = extractPromptInfo(latex);
-
-		// Should still detect placeholder pattern
-		expect(info.hasPrompts).toBe(false);
-	});
-
 	it('should handle high index numbers', () => {
 		const markdown = '{{blank:999}} and $\\placeholder[1000]{}$';
 		const ast = parseMarkdown(markdown);
@@ -407,15 +363,16 @@ describe('Unified Inputs - Edge Cases', () => {
 
 		expect(blanks).toEqual([999]);
 		expect(prompts).toHaveLength(1);
-		expect(prompts[0].promptIndices).toEqual([1000]);
+		expect(prompts[0].expression).toContain('\\placeholder[1000]{}');
 	});
 
-	it('should handle duplicate indices in same expression', () => {
-		const latex = '\\placeholder[1]{} = \\placeholder[1]{}';
-		const info = extractPromptInfo(latex);
+	it('should handle duplicate placeholders in same expression', () => {
+		const markdown = '$\\placeholder[1]{} = \\placeholder[1]{}$';
+		const ast = parseMarkdown(markdown);
 
-		// Should deduplicate
-		expect(info.hasPrompts).toBe(true);
-		expect(info.promptIndices).toEqual([1]);
+		const prompts = findMathPrompts(ast);
+
+		expect(prompts).toHaveLength(1);
+		expect(prompts[0].expression).toContain('\\placeholder[1]{}');
 	});
 });

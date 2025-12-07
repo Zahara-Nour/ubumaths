@@ -40,8 +40,7 @@ export {
 	findPlaceholder,
 	splitTextWithPlaceholders,
 	// Utilities
-	getMathStats,
-	extractPromptInfo
+	getMathStats
 } from './math-extractor';
 
 // ============================================================================

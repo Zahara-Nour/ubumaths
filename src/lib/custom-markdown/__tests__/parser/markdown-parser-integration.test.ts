@@ -66,7 +66,7 @@ result = x**2 + y**2
 			// Second paragraph with math
 			const para2 = blockquote.children[1] as ParagraphNode;
 			const hasMath = para2.children.some(
-				(child) => child.type === 'math-inline' && child.latex === 'x^2'
+				(child) => child.type === 'math-inline' && child.expression === 'x^2'
 			);
 			expect(hasMath).toBe(true);
 		});
@@ -166,7 +166,7 @@ Final paragraph with more text.
 			const hasEmc2 = blockquote.children.some((child) => {
 				if (child.type === 'paragraph') {
 					return child.children.some((inline) => {
-						return inline.type === 'math-inline' && inline.latex === 'E = mc^2';
+						return inline.type === 'math-inline' && inline.expression === 'E = mc^2';
 					});
 				}
 				return false;

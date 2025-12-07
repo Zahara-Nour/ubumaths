@@ -1,93 +1,108 @@
 # Custom Math Syntax Implementation - COMPLETE
 
-## Final State: All 5 Phases Complete
+## Final State: Refactoring Complete
 
 ### Summary
 
-Added support for custom MathAST syntax in the markdown parser:
+Refactored math node structure in custom-markdown:
 
-- `~expression~` for inline math
-- `~~expression~~` for block math
-
-Expressions are converted to LaTeX via MathAST before rendering.
-
----
-
-## Commits
-
-| Phase | Commit     | Description                                |
-| ----- | ---------- | ------------------------------------------ |
-| 1     | (first)    | feat: add syntax field to math AST nodes   |
-| 2     | `54df3621` | feat: add ~custom~ math syntax extraction  |
-| 4     | `1c00d3db` | docs: add custom math syntax documentation |
+1. **`latex` → `expression`**: Le champ contient maintenant l'expression dans sa syntaxe originale
+2. **`syntax` obligatoire**: `'latex' | 'custom'` indique comment interpréter l'expression
+3. **`hasPrompts` / `promptIndices` supprimés**: Calculés à la demande dans le renderer
 
 ---
 
-## Files Modified
+## Architecture finale
+
+```
+Markdown AST                          Renderer
+─────────────────                     ─────────────────
+MathInlineNode {                      expressionToLatex(expression, syntax)
+  expression: "2x+3"     ──────────►    ├─ syntax === 'latex' → return expression
+  syntax: "custom"                      └─ syntax === 'custom' → parseCustomSafe() + toLatex()
+}
+```
+
+---
+
+## Fichiers modifiés
 
 ### Types
 
-- `src/lib/custom-markdown/types/ast.ts` - Added `syntax?: 'latex' | 'custom'` to MathInlineNode and MathBlockNode
-- `src/lib/custom-markdown/types/parser.ts` - Added `syntax?: 'latex' | 'custom'` to MathPlaceholder
+- `src/lib/custom-markdown/types/ast.ts`
+- `src/lib/custom-markdown/types/parser.ts`
 
 ### Parser
 
-- `src/lib/custom-markdown/parser/math-extractor.ts`:
-  - Added `INLINE_CUSTOM_REGEX` and `BLOCK_CUSTOM_REGEX`
-  - Added `customToLatex()` function using mathAST parser
-  - Modified `extractMath()` to handle both syntaxes
-  - Handle escaped tildes (`\~`)
-- `src/lib/custom-markdown/parser/markdown-parser.ts`:
-  - Propagated `syntax` field to AST nodes
+- `src/lib/custom-markdown/parser/math-extractor.ts`
+- `src/lib/custom-markdown/parser/markdown-parser.ts`
+
+### Composants
+
+- `src/lib/components/markdown/utils/math-utils.ts` (nouveau)
+- `src/lib/components/markdown/nodes/MathBlock.svelte`
+- `src/lib/components/markdown/nodes/MathInline.svelte`
+- `src/lib/components/markdown/nodes/MathPrompt.svelte`
+- `src/lib/components/markdown/nodes/ParagraphNode.svelte`
+- `src/lib/components/markdown/MarkdownRenderer.svelte`
+
+### Transpilers
+
+- `src/lib/exercises/transpilers/latex-transpiler.ts`
+- `src/lib/exercises/transpilers/typst-transpiler.ts`
 
 ### Tests
 
-- `src/lib/custom-markdown/__tests__/parser/math-extractor.test.ts` - 55 tests added
-
-### Documentation
-
-- `docs/ref/markdown.md` - Added section 2.2 for custom math syntax
-
----
-
-## Verification Results
-
-| Check                    | Result                 |
-| ------------------------ | ---------------------- |
-| Custom-markdown tests    | ✅ 830 passed          |
-| TypeScript check         | ⚠️ Pre-existing errors |
-| ESLint (custom-markdown) | ✅ No errors           |
+- `src/lib/custom-markdown/__tests__/parser/math-extractor.test.ts`
+- `src/lib/custom-markdown/__tests__/parser/markdown-parser.test.ts`
+- `src/lib/custom-markdown/__tests__/parser/markdown-parser-integration.test.ts`
+- `src/lib/custom-markdown/__tests__/parser/complete-integration.test.ts`
+- `src/lib/custom-markdown/__tests__/parser/unified-inputs.test.ts`
+- `src/lib/exercises/transpilers/latex-transpiler.test.ts`
+- `src/lib/exercises/transpilers/typst-transpiler.test.ts`
 
 ---
 
-## Specifications
+## Utilitaires créés
 
-| Aspect      | Decision                                      |
-| ----------- | --------------------------------------------- |
-| Rendu       | `~custom~` → MathAST → LaTeX → MathLive       |
-| Coexistence | `$latex$` et `~custom~` dans le même document |
-| Variables   | Résolues AVANT le parsing mathAST             |
-| Erreurs     | Affichage visuel en rouge                     |
+### `src/lib/components/markdown/utils/math-utils.ts`
+
+```typescript
+// Conversion expression → LaTeX pour rendu
+expressionToLatex(expression: string, syntax: 'latex' | 'custom'): string
+
+// Extraction des indices de prompts via parcours de l'AST mathAST
+extractPromptIndices(expression: string, syntax: 'latex' | 'custom'): number[]
+
+// Vérification présence de prompts
+hasPrompts(expression: string, syntax: 'latex' | 'custom'): boolean
+```
 
 ---
 
-## Usage Examples
+## Résultats des tests
 
-```markdown
-# Inline
+| Check                 | Result        |
+| --------------------- | ------------- |
+| Custom-markdown tests | ✅ 813 passed |
+| Transpiler tests      | ✅ Passed     |
 
-Calculer ~2x + 3~ quand $x = 5$.
+---
 
-# Block
+## Usage
 
-La formule est :
+```typescript
+// Noeud avec syntaxe LaTeX
+{
+  type: 'math-inline',
+  expression: '\\frac{a}{b}',
+  syntax: 'latex'
+}
 
-~~
-(a + b)^2 = a^2 + 2ab + b^2
-~~
-
-# Mixed syntax
-
-Formule LaTeX : $$\frac{a}{b}$$
-Formule custom : ~~a/b~~
+// Noeud avec syntaxe custom
+{
+  type: 'math-inline',
+  expression: 'a/b',
+  syntax: 'custom'
+}
 ```

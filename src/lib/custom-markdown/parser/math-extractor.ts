@@ -16,17 +16,18 @@
  *
  * Process:
  * 1. Extract: Find all math expressions and replace with placeholders
- *    - Custom syntax is converted to LaTeX via MathAST parser
- *    - Parse errors in custom syntax are rendered in red
+ *    - Expressions are stored as-is (no conversion at this stage)
+ *    - Syntax type is recorded ('latex' or 'custom')
  * 2. Parse: Parse the remaining markdown normally
  * 3. Restore: Replace placeholders back with math nodes in the AST
+ *
+ * Note: Conversion from custom syntax to LaTeX happens during rendering,
+ * not during extraction.
  *
  * @module custom-markdown/parser/math-extractor
  */
 
 import type { MathPlaceholder } from '../types';
-import { parseCustomSafe } from '$lib/mathAST/parser/custom';
-import { toLatex } from '$lib/mathAST';
 
 // ============================================================================
 // CONSTANTS
@@ -98,96 +99,6 @@ const ESCAPED_TILDE_REGEX = /\\~/g;
  */
 const ESCAPED_TILDE_PLACEHOLDER = '___ESCAPED_TILDE___';
 
-/**
- * Regex for detecting \placeholder[N]{...} commands in LaTeX
- *
- * Pattern breakdown:
- * - \\placeholder - Literal \placeholder command
- * - \[(\d+)\] - Capture group: numeric index in brackets
- * - \{[^}]*\} - Content in braces (can be empty)
- */
-const PLACEHOLDER_COMMAND_REGEX = /\\placeholder\[(\d+)\]\{[^}]*\}/g;
-
-// ============================================================================
-// CONVERSION FUNCTIONS
-// ============================================================================
-
-/**
- * Convert custom math expression to LaTeX via MathAST
- *
- * @param expression - Custom syntax math expression
- * @returns Object with LaTeX string and error flag
- *
- * @example Success
- * ```typescript
- * customToLatex('2x^2+3x+1')
- * // { latex: '2x^{2}+3x+1', hasError: false }
- * ```
- *
- * @example Error
- * ```typescript
- * customToLatex('2++3')
- * // { latex: '\\textcolor{red}{\\text{Unexpected token}}', hasError: true }
- * ```
- */
-function customToLatex(expression: string): { latex: string; hasError: boolean } {
-	const result = parseCustomSafe(expression.trim());
-
-	if (result.ast) {
-		return { latex: toLatex(result.ast), hasError: false };
-	}
-
-	// Error: show in red with escaped message
-	const errorMsg = result.errors?.[0]?.message ?? 'Parse error';
-	// Escape LaTeX special characters
-	const escapedMsg = errorMsg.replace(/[\\{}#$%&_^~]/g, '\\$&');
-	return {
-		latex: `\\textcolor{red}{\\text{${escapedMsg}}}`,
-		hasError: true
-	};
-}
-
-// ============================================================================
-// PROMPT EXTRACTION
-// ============================================================================
-
-/**
- * Extract prompt indices from LaTeX containing \placeholder[N]{} commands
- *
- * @param latex - LaTeX string to analyze
- * @returns Object with hasPrompts flag and array of indices
- *
- * @example
- * extractPromptInfo('\\frac{\\placeholder[1]{}}{\\placeholder[2]{}}')
- * // { hasPrompts: true, promptIndices: [1, 2] }
- *
- * @example
- * extractPromptInfo('x^2 + 1')
- * // { hasPrompts: false, promptIndices: [] }
- */
-export function extractPromptInfo(latex: string): {
-	hasPrompts: boolean;
-	promptIndices: number[];
-} {
-	const indices: number[] = [];
-	let match: RegExpExecArray | null;
-
-	// Reset regex state
-	PLACEHOLDER_COMMAND_REGEX.lastIndex = 0;
-
-	while ((match = PLACEHOLDER_COMMAND_REGEX.exec(latex)) !== null) {
-		const index = parseInt(match[1], 10);
-		if (!indices.includes(index)) {
-			indices.push(index);
-		}
-	}
-
-	return {
-		hasPrompts: indices.length > 0,
-		promptIndices: indices.sort((a, b) => a - b)
-	};
-}
-
 // ============================================================================
 // EXTRACTION
 // ============================================================================
@@ -213,18 +124,18 @@ export function extractPromptInfo(latex: string): {
  * const result = extractMath("Calculate $x^2$ and $$\\int x dx$$");
  * // result.text = "Calculate __MATH_0__ and __MATH_1__"
  * // result.placeholders = [
- * //   { placeholder: '__MATH_0__', latex: 'x^2', syntax: 'latex', isBlock: false, ... },
- * //   { placeholder: '__MATH_1__', latex: '\\int x dx', syntax: 'latex', isBlock: true, ... }
+ * //   { placeholder: '__MATH_0__', expression: 'x^2', syntax: 'latex', isBlock: false, ... },
+ * //   { placeholder: '__MATH_1__', expression: '\\int x dx', syntax: 'latex', isBlock: true, ... }
  * // ]
  * ```
  *
- * @example Custom syntax
+ * @example Custom syntax (expressions stored as-is)
  * ```typescript
  * const result = extractMath("Calculate ~2x^2+3~ and ~~f(x)=x^2~~");
  * // result.text = "Calculate __MATH_0__ and __MATH_1__"
  * // result.placeholders = [
- * //   { placeholder: '__MATH_0__', latex: '2x^{2}+3', syntax: 'custom', isBlock: false, ... },
- * //   { placeholder: '__MATH_1__', latex: 'f(x)=x^{2}', syntax: 'custom', isBlock: true, ... }
+ * //   { placeholder: '__MATH_0__', expression: '2x^2+3', syntax: 'custom', isBlock: false, ... },
+ * //   { placeholder: '__MATH_1__', expression: 'f(x)=x^2', syntax: 'custom', isBlock: true, ... }
  * // ]
  * ```
  */
@@ -243,20 +154,16 @@ export function extractMath(markdown: string): {
 
 	// Step 2: Extract block math $$...$$ first (before inline)
 	// This is important because $$ could be misinterpreted as two inline $ delimiters
-	text = text.replace(BLOCK_MATH_REGEX, (match, latex, offset) => {
+	text = text.replace(BLOCK_MATH_REGEX, (match, expression, offset) => {
 		const placeholder = `${PLACEHOLDER_PREFIX}${placeholderIndex}${PLACEHOLDER_SUFFIX}`;
-		const trimmedLatex = latex.trim();
-		const promptInfo = extractPromptInfo(trimmedLatex);
 
 		placeholders.push({
 			placeholder,
-			latex: trimmedLatex,
+			expression: expression.trim(),
 			syntax: 'latex',
 			isBlock: true,
 			startIndex: offset,
-			endIndex: offset + match.length,
-			hasPrompts: promptInfo.hasPrompts,
-			promptIndices: promptInfo.promptIndices
+			endIndex: offset + match.length
 		});
 
 		placeholderIndex++;
@@ -266,18 +173,14 @@ export function extractMath(markdown: string): {
 	// Step 3: Extract block custom math ~~...~~
 	text = text.replace(BLOCK_CUSTOM_REGEX, (match, expression, offset) => {
 		const placeholder = `${PLACEHOLDER_PREFIX}${placeholderIndex}${PLACEHOLDER_SUFFIX}`;
-		const { latex, hasError: _hasError } = customToLatex(expression);
-		const promptInfo = extractPromptInfo(latex);
 
 		placeholders.push({
 			placeholder,
-			latex,
+			expression: expression.trim(),
 			syntax: 'custom',
 			isBlock: true,
 			startIndex: offset,
-			endIndex: offset + match.length,
-			hasPrompts: promptInfo.hasPrompts,
-			promptIndices: promptInfo.promptIndices
+			endIndex: offset + match.length
 		});
 
 		placeholderIndex++;
@@ -285,20 +188,16 @@ export function extractMath(markdown: string): {
 	});
 
 	// Step 4: Extract inline math $...$
-	text = text.replace(INLINE_MATH_REGEX, (match, latex, offset) => {
+	text = text.replace(INLINE_MATH_REGEX, (match, expression, offset) => {
 		const placeholder = `${PLACEHOLDER_PREFIX}${placeholderIndex}${PLACEHOLDER_SUFFIX}`;
-		const trimmedLatex = latex.trim();
-		const promptInfo = extractPromptInfo(trimmedLatex);
 
 		placeholders.push({
 			placeholder,
-			latex: trimmedLatex,
+			expression: expression.trim(),
 			syntax: 'latex',
 			isBlock: false,
 			startIndex: offset,
-			endIndex: offset + match.length,
-			hasPrompts: promptInfo.hasPrompts,
-			promptIndices: promptInfo.promptIndices
+			endIndex: offset + match.length
 		});
 
 		placeholderIndex++;
@@ -308,18 +207,14 @@ export function extractMath(markdown: string): {
 	// Step 5: Extract inline custom math ~...~
 	text = text.replace(INLINE_CUSTOM_REGEX, (match, expression, offset) => {
 		const placeholder = `${PLACEHOLDER_PREFIX}${placeholderIndex}${PLACEHOLDER_SUFFIX}`;
-		const { latex, hasError: _hasError } = customToLatex(expression);
-		const promptInfo = extractPromptInfo(latex);
 
 		placeholders.push({
 			placeholder,
-			latex,
+			expression: expression.trim(),
 			syntax: 'custom',
 			isBlock: false,
 			startIndex: offset,
-			endIndex: offset + match.length,
-			hasPrompts: promptInfo.hasPrompts,
-			promptIndices: promptInfo.promptIndices
+			endIndex: offset + match.length
 		});
 
 		placeholderIndex++;

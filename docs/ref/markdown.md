@@ -694,27 +694,27 @@ L'AST (Abstract Syntax Tree) represente la structure parsee du markdown.
 
 ### 3.1 Noeuds de bloc
 
-| Type              | Description        | Proprietes principales                              |
-| ----------------- | ------------------ | --------------------------------------------------- |
-| `document`        | Racine du document | `children: BlockNode[]`                             |
-| `paragraph`       | Paragraphe         | `children: InlineNode[]`                            |
-| `heading`         | Titre              | `level: 1-6`, `children: InlineNode[]`              |
-| `list`            | Liste              | `ordered: boolean`, `items: ListItemNode[]`         |
-| `table`           | Table              | `header`, `rows`, `alignments`                      |
-| `code-block`      | Bloc de code       | `code: string`, `language?: string`                 |
-| `blockquote`      | Citation           | `children: BlockNode[]`                             |
-| `math-block`      | Math en bloc       | `latex`, `syntax?`, `hasPrompts?`, `promptIndices?` |
-| `image`           | Image              | `src`, `alt`, `sizeClass`, `alignment`, `caption`   |
-| `horizontal-rule` | Ligne horizontale  | -                                                   |
+| Type              | Description        | Proprietes principales                            |
+| ----------------- | ------------------ | ------------------------------------------------- |
+| `document`        | Racine du document | `children: BlockNode[]`                           |
+| `paragraph`       | Paragraphe         | `children: InlineNode[]`                          |
+| `heading`         | Titre              | `level: 1-6`, `children: InlineNode[]`            |
+| `list`            | Liste              | `ordered: boolean`, `items: ListItemNode[]`       |
+| `table`           | Table              | `header`, `rows`, `alignments`                    |
+| `code-block`      | Bloc de code       | `code: string`, `language?: string`               |
+| `blockquote`      | Citation           | `children: BlockNode[]`                           |
+| `math-block`      | Math en bloc       | `expression`, `syntax`                            |
+| `image`           | Image              | `src`, `alt`, `sizeClass`, `alignment`, `caption` |
+| `horizontal-rule` | Ligne horizontale  | -                                                 |
 
 ### 3.2 Noeuds inline
 
-| Type          | Description   | Proprietes principales                              |
-| ------------- | ------------- | --------------------------------------------------- |
-| `text`        | Texte         | `content`, `bold?`, `italic?`, `code?`              |
-| `math-inline` | Math inline   | `latex`, `syntax?`, `hasPrompts?`, `promptIndices?` |
-| `blank`       | Champ blanc   | `index: number`                                     |
-| `line-break`  | Saut de ligne | `hard?: boolean`                                    |
+| Type          | Description   | Proprietes principales                 |
+| ------------- | ------------- | -------------------------------------- |
+| `text`        | Texte         | `content`, `bold?`, `italic?`, `code?` |
+| `math-inline` | Math inline   | `expression`, `syntax`                 |
+| `blank`       | Champ blanc   | `index: number`                        |
+| `line-break`  | Saut de ligne | `hard?: boolean`                       |
 
 **Source** : `src/lib/custom-markdown/types/ast.ts`
 

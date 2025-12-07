@@ -25,6 +25,7 @@
 	import type { DocumentNode, ParseOptions, InputState } from '$lib/custom-markdown';
 	import type { MarkdownDisplayMode } from './types';
 	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
+	import { hasPrompts } from './utils/math-utils';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -126,16 +127,16 @@
 				{:else if node.type === 'heading'}
 					<HeadingNode level={node.level} children={node.children} />
 				{:else if node.type === 'math-block'}
-					{#if node.hasPrompts && node.promptIndices}
+					{#if hasPrompts(node.expression, node.syntax)}
 						<MathPrompt
-							latex={node.latex}
+							expression={node.expression}
+							syntax={node.syntax}
 							display="block"
-							promptIndices={node.promptIndices}
 							inputs={inputs.filter((i) => i.type === 'math')}
 							onPromptChange={onInputChange}
 						/>
 					{:else}
-						<MathBlock latex={node.latex} />
+						<MathBlock expression={node.expression} syntax={node.syntax} />
 					{/if}
 				{:else if node.type === 'horizontal-rule'}
 					<HorizontalRule />

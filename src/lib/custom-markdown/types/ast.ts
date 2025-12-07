@@ -44,13 +44,10 @@ export interface TextNode extends BaseNode {
  */
 export interface MathInlineNode extends BaseNode {
 	type: 'math-inline';
-	latex: string; // LaTeX without $ delimiters
-	/** Original syntax: 'latex' for $...$ or 'custom' for ~...~ */
-	syntax?: 'latex' | 'custom';
-	/** Whether this expression contains \placeholder commands */
-	hasPrompts?: boolean;
-	/** Extracted prompt indices from \placeholder[N]{} commands */
-	promptIndices?: number[];
+	/** Math expression in its original syntax (LaTeX or custom) */
+	expression: string;
+	/** Syntax used: 'latex' for $...$ or 'custom' for ~...~ */
+	syntax: 'latex' | 'custom';
 }
 
 /**
@@ -144,13 +141,10 @@ export interface TableNode extends BaseNode {
  */
 export interface MathBlockNode extends BaseNode {
 	type: 'math-block';
-	latex: string; // LaTeX without $$ delimiters
-	/** Original syntax: 'latex' for $$...$$ or 'custom' for ~~...~~ */
-	syntax?: 'latex' | 'custom';
-	/** Whether this expression contains \placeholder commands */
-	hasPrompts?: boolean;
-	/** Extracted prompt indices from \placeholder[N]{} commands */
-	promptIndices?: number[];
+	/** Math expression in its original syntax (LaTeX or custom) */
+	expression: string;
+	/** Syntax used: 'latex' for $$...$$ or 'custom' for ~~...~~ */
+	syntax: 'latex' | 'custom';
 }
 
 // ============================================================================

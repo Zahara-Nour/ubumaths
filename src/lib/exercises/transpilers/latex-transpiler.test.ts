@@ -140,7 +140,7 @@ describe('transpileToLatex', () => {
 					type: 'paragraph',
 					children: [
 						{ type: 'text', content: 'Calculate ' },
-						{ type: 'math-inline', latex: 'x^2' },
+						{ type: 'math-inline', expression: 'x^2', syntax: 'latex' },
 						{ type: 'text', content: ' please' }
 					]
 				}
@@ -160,7 +160,8 @@ describe('transpileToLatex', () => {
 			children: [
 				{
 					type: 'math-block',
-					latex: '\\int_0^\\pi \\sin(x) dx'
+					expression: '\\int_0^\\pi \\sin(x) dx',
+					syntax: 'latex'
 				}
 			]
 		};
