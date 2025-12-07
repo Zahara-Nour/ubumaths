@@ -74,6 +74,18 @@ interface StepTiming {
 	readonly duration: number;
 }
 
+/**
+ * Options for loading a script
+ */
+export interface LoadOptions {
+	/**
+	 * Pre-calculated durations for each step (in milliseconds).
+	 * If provided, these durations are used instead of extracting from step properties.
+	 * This allows the Engine to calculate durations based on instrument positions.
+	 */
+	stepDurations?: number[];
+}
+
 // =============================================================================
 // Helper Functions
 // =============================================================================
@@ -217,6 +229,9 @@ export class Timeline {
 	/** Callback when playback completes */
 	#onComplete?: () => void;
 
+	/** Pre-calculated step durations (set at load time) */
+	#preCalculatedDurations?: number[];
+
 	// =========================================================================
 	// Reactive State (Svelte 5 runes)
 	// =========================================================================
@@ -297,11 +312,13 @@ export class Timeline {
 	 * Calculates step timings and resets playback state.
 	 *
 	 * @param script - Construction script to load
+	 * @param options - Optional load options (e.g., pre-calculated durations)
 	 */
-	load(script: ConstructionScript): void {
+	load(script: ConstructionScript, options?: LoadOptions): void {
 		this.reset();
 
 		this.#steps = [...script.steps];
+		this.#preCalculatedDurations = options?.stepDurations;
 		this.#calculateStepTimings();
 
 		// Notify initial step
@@ -312,6 +329,9 @@ export class Timeline {
 
 	/**
 	 * Calculate timing information for all steps
+	 *
+	 * Uses pre-calculated durations if provided via load options,
+	 * otherwise extracts durations from step properties.
 	 */
 	#calculateStepTimings(): void {
 		this.#stepTimings = [];
@@ -319,7 +339,8 @@ export class Timeline {
 
 		for (let i = 0; i < this.#steps.length; i++) {
 			const step = this.#steps[i];
-			const duration = getStepDuration(step);
+			// Use pre-calculated duration if available, otherwise get from step
+			const duration = this.#preCalculatedDurations?.[i] ?? getStepDuration(step);
 
 			this.#stepTimings.push({
 				index: i,

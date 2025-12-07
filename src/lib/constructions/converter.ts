@@ -264,11 +264,8 @@ interface PendingLabel {
 interface ConversionContext {
 	objectIdCounter: number;
 	pointMap: Map<string, string>; // Maps IEP id to UbuMaths id
-	pointPositions: Map<string, Position>; // Tracks point positions by IEP id
-	instrumentPositions: Map<string, Position>; // Tracks instrument positions (ruler, compass, etc.)
-	instrumentRotations: Map<string, number>; // Tracks instrument rotations (compass, ruler, etc.)
-	currentPosition: { x: number; y: number };
-	compassRadius: number; // Current compass opening radius
+	pointPositions: Map<string, Position>; // Tracks point positions by IEP id (for labels)
+	currentPosition: { x: number; y: number }; // Current pencil position (for tracer without target)
 	createdObjects: Set<string>;
 	steps: StepInput[];
 	warnings: string[];
@@ -287,18 +284,6 @@ function coordPair(x: number, y: number): CoordPair {
 }
 
 /**
- * Calculate angle in degrees from point 'from' to point 'to'
- * Returns angle in degrees (0 = right, 90 = down in screen coordinates)
- */
-function calculateAngleToTarget(from: Position, to: Position): number {
-	const dx = to.x - from.x;
-	const dy = to.y - from.y;
-	// atan2 returns radians, convert to degrees
-	// In InstrumenPoche, angles are typically measured with 0 = horizontal right
-	return Math.atan2(dy, dx) * (180 / Math.PI);
-}
-
-/**
  * Get position of a point by its IEP id
  * Returns undefined if the point position is unknown
  */
@@ -307,100 +292,10 @@ function getPointPosition(ctx: ConversionContext, iepId: string): Position | und
 }
 
 /**
- * Get position of an instrument (ruler, compass, etc.)
- * Returns undefined if the instrument position is unknown
- */
-function getInstrumentPosition(ctx: ConversionContext, instrument: string): Position | undefined {
-	return ctx.instrumentPositions.get(instrument);
-}
-
-/**
  * Update the position of a point
  */
 function setPointPosition(ctx: ConversionContext, iepId: string, pos: Position): void {
 	ctx.pointPositions.set(iepId, { x: pos.x, y: pos.y });
-}
-
-/**
- * Update the position of an instrument
- */
-function setInstrumentPosition(ctx: ConversionContext, instrument: string, pos: Position): void {
-	ctx.instrumentPositions.set(instrument, { x: pos.x, y: pos.y });
-}
-
-/**
- * Get rotation of an instrument (compass, ruler, etc.)
- * Returns 0 if the instrument rotation is unknown
- */
-function getInstrumentRotation(ctx: ConversionContext, instrument: string): number {
-	return ctx.instrumentRotations.get(instrument) ?? 0;
-}
-
-/**
- * Update the rotation of an instrument
- */
-function setInstrumentRotation(ctx: ConversionContext, instrument: string, angle: number): void {
-	ctx.instrumentRotations.set(instrument, angle);
-}
-
-/**
- * Normalize angle delta to the shortest path [-180, 180]
- * This ensures rotations take the most direct route
- */
-function _normalizeAngleDelta(delta: number): number {
-	// Normalize to [-360, 360] first
-	let normalized = delta % 360;
-	// Then adjust to [-180, 180]
-	if (normalized > 180) normalized -= 360;
-	if (normalized < -180) normalized += 360;
-	return normalized;
-}
-
-// =============================================================================
-// Duration Calculation (Distance-based)
-// =============================================================================
-
-/** Animation speed: milliseconds per pixel traveled */
-const MS_PER_PIXEL = 1.5;
-
-/** Minimum animation duration to avoid jarring movements */
-const MIN_MOVE_DURATION = 300;
-
-/** Maximum animation duration cap */
-const MAX_MOVE_DURATION = 2000;
-
-/** Duration for rotation (ms per degree) */
-const MS_PER_DEGREE = 5;
-
-/** Minimum rotation duration */
-const MIN_ROTATE_DURATION = 200;
-
-/** Maximum rotation duration */
-const MAX_ROTATE_DURATION = 1500;
-
-/**
- * Calculate animation duration based on distance
- * Uses ~1.5ms per pixel with min 300ms and max 2000ms
- */
-function calculateMoveDuration(from: Position | undefined, to: Position): number {
-	if (!from) return MIN_MOVE_DURATION;
-
-	const dx = to.x - from.x;
-	const dy = to.y - from.y;
-	const distance = Math.sqrt(dx * dx + dy * dy);
-
-	const duration = Math.round(distance * MS_PER_PIXEL);
-	return Math.max(MIN_MOVE_DURATION, Math.min(MAX_MOVE_DURATION, duration));
-}
-
-/**
- * Calculate rotation duration based on angle delta
- * Uses ~5ms per degree with min 200ms and max 1500ms
- */
-function calculateRotateDuration(angleDelta: number): number {
-	const absAngle = Math.abs(angleDelta);
-	const duration = Math.round(absAngle * MS_PER_DEGREE);
-	return Math.max(MIN_ROTATE_DURATION, Math.min(MAX_ROTATE_DURATION, duration));
 }
 
 // =============================================================================
@@ -698,22 +593,21 @@ function convertPointAction(
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
 				const toPos = { x: newX, y: newY };
-				// Get current position for distance calculation
-				const fromPos = attrs.id ? getPointPosition(ctx, attrs.id) : undefined;
 				// Update tracked position for the point
 				if (attrs.id) {
 					setPointPosition(ctx, attrs.id, toPos);
 				}
-				// Use XML vitesse if specified, otherwise calculate from distance
-				const duration = attrs.vitesse
-					? Math.round((1000 / parseFloat(attrs.vitesse)) * 100)
-					: calculateMoveDuration(fromPos, toPos);
-
-				ctx.steps.push({
+				// Only emit duration if XML specifies vitesse, otherwise Engine calculates
+				const step: StepInput = {
 					move: pointId,
-					to: coordPair(newX, newY),
-					duration
-				});
+					to: coordPair(newX, newY)
+				};
+				if (attrs.vitesse) {
+					(step as { duration?: number }).duration = Math.round(
+						(1000 / parseFloat(attrs.vitesse)) * 100
+					);
+				}
+				ctx.steps.push(step);
 			}
 			break;
 		}
@@ -814,16 +708,17 @@ function convertTextAction(attrs: IepAction['$'], mouvement: string, ctx: Conver
 				: undefined;
 			if (id && attrs.abscisse && attrs.ordonnee) {
 				const toPos = { x: parseFloat(attrs.abscisse), y: parseFloat(attrs.ordonnee) };
-				// Text objects don't track position, so we use a reasonable default
-				const duration = attrs.vitesse
-					? Math.round((1000 / parseFloat(attrs.vitesse)) * 100)
-					: calculateMoveDuration(undefined, toPos);
-
-				ctx.steps.push({
+				// Only emit duration if XML specifies vitesse, otherwise Engine calculates
+				const step: StepInput = {
 					move: id,
-					to: coordPair(toPos.x, toPos.y),
-					duration
-				});
+					to: coordPair(toPos.x, toPos.y)
+				};
+				if (attrs.vitesse) {
+					(step as { duration?: number }).duration = Math.round(
+						(1000 / parseFloat(attrs.vitesse)) * 100
+					);
+				}
+				ctx.steps.push(step);
 			}
 			break;
 		}
@@ -845,44 +740,43 @@ function convertPencilAction(
 	switch (mouvement) {
 		case 'translation': {
 			// Move pencil position
-			const fromPos = getInstrumentPosition(ctx, 'pencil') ?? ctx.currentPosition;
-
 			if (attrs.abscisse && attrs.ordonnee) {
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
-				const toPos = { x: newX, y: newY };
-				ctx.currentPosition = toPos;
-				setInstrumentPosition(ctx, 'pencil', toPos);
+				ctx.currentPosition = { x: newX, y: newY };
 
-				// Use XML vitesse if specified, otherwise calculate from distance
-				const duration = attrs.vitesse
-					? Math.max(100, Math.round((1000 / parseFloat(attrs.vitesse)) * 100))
-					: calculateMoveDuration(fromPos, toPos);
-
-				ctx.steps.push({
+				// Only emit duration if XML specifies vitesse, otherwise Engine calculates
+				const step: StepInput = {
 					move: 'pencil',
-					to: coordPair(newX, newY),
-					duration
-				});
+					to: coordPair(newX, newY)
+				};
+				if (attrs.vitesse) {
+					(step as { duration?: number }).duration = Math.max(
+						100,
+						Math.round((1000 / parseFloat(attrs.vitesse)) * 100)
+					);
+				}
+				ctx.steps.push(step);
 			} else if (attrs.cible) {
 				// Move pencil to target point
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 				const targetPos = getPointPosition(ctx, attrs.cible);
 				if (targetPos) {
 					ctx.currentPosition = { x: targetPos.x, y: targetPos.y };
-					setInstrumentPosition(ctx, 'pencil', targetPos);
 				}
 
-				// Use XML vitesse if specified, otherwise calculate from distance
-				const duration = attrs.vitesse
-					? Math.max(100, Math.round((1000 / parseFloat(attrs.vitesse)) * 100))
-					: calculateMoveDuration(fromPos, targetPos ?? { x: 0, y: 0 });
-
-				ctx.steps.push({
+				// Only emit duration if XML specifies vitesse, otherwise Engine calculates
+				const step: StepInput = {
 					move: 'pencil',
-					to: targetId,
-					duration
-				});
+					to: targetId
+				};
+				if (attrs.vitesse) {
+					(step as { duration?: number }).duration = Math.max(
+						100,
+						Math.round((1000 / parseFloat(attrs.vitesse)) * 100)
+					);
+				}
+				ctx.steps.push(step);
 			}
 			break;
 		}
@@ -925,11 +819,10 @@ function convertPencilAction(
 				ctx.createdObjects.add(id);
 				ctx.steps.push(lineStep);
 
-				// Update position to target
+				// Update current position for tracer without target
 				const targetPos = getPointPosition(ctx, attrs.cible);
 				if (targetPos) {
 					ctx.currentPosition = { x: targetPos.x, y: targetPos.y };
-					setInstrumentPosition(ctx, 'pencil', targetPos);
 				}
 			} else {
 				// Simple segment to coordinates
@@ -947,9 +840,8 @@ function convertPencilAction(
 				ctx.createdObjects.add(id);
 				ctx.steps.push(lineStep);
 
-				// Update current position and pencil tracking
+				// Update current position
 				ctx.currentPosition = { x: endX, y: endY };
-				setInstrumentPosition(ctx, 'pencil', { x: endX, y: endY });
 			}
 			break;
 		}
@@ -959,7 +851,6 @@ function convertPencilAction(
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
 				ctx.currentPosition = { x: newX, y: newY };
-				setInstrumentPosition(ctx, 'pencil', { x: newX, y: newY });
 				// Move pencil to position first (duration 0 = instant)
 				ctx.steps.push({
 					move: 'pencil',
@@ -997,7 +888,6 @@ function convertRulerAction(
 			if (attrs.abscisse !== undefined && attrs.ordonnee !== undefined) {
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
-				setInstrumentPosition(ctx, 'ruler', { x: newX, y: newY });
 				// Move ruler to position first (duration 0 = instant)
 				ctx.steps.push({
 					move: 'ruler',
@@ -1015,68 +905,43 @@ function convertRulerAction(
 			break;
 		}
 		case 'translation': {
-			const fromPos = getInstrumentPosition(ctx, 'ruler');
-
 			if (attrs.abscisse && attrs.ordonnee) {
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
-				const toPos = { x: newX, y: newY };
-				// Track ruler position for rotation calculations
-				setInstrumentPosition(ctx, 'ruler', toPos);
-				// New format: { move: "ruler", to: [x, y], duration: calculated }
+				// Engine calculates duration based on position tracking
 				ctx.steps.push({
 					move: 'ruler',
-					to: coordPair(newX, newY),
-					duration: calculateMoveDuration(fromPos, toPos)
+					to: coordPair(newX, newY)
 				});
 			} else if (attrs.cible) {
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
-				// Update ruler position to target point's position
-				const targetPos = getPointPosition(ctx, attrs.cible);
-				if (targetPos) {
-					setInstrumentPosition(ctx, 'ruler', targetPos);
-				}
-				// New format: { move: "ruler", to: "A", duration: calculated }
+				// Engine calculates duration based on position tracking
 				ctx.steps.push({
 					move: 'ruler',
-					to: targetId,
-					duration: calculateMoveDuration(fromPos, targetPos ?? { x: 0, y: 0 })
+					to: targetId
 				});
 			}
 			break;
 		}
 		case 'rotation': {
-			const currentRotation = getInstrumentRotation(ctx, 'ruler');
-
 			if (attrs.angle) {
 				// attrs.angle is an ABSOLUTE angle in InstrumenPoche
 				// New format uses absolute angles: { rotate: "ruler", to: angle }
 				const targetAngle = parseFloat(attrs.angle);
-				const angleDelta = targetAngle - currentRotation;
-				setInstrumentRotation(ctx, 'ruler', targetAngle);
+				// Engine calculates duration based on angle tracking
 				ctx.steps.push({
 					rotate: 'ruler',
-					to: targetAngle,
-					duration: calculateRotateDuration(angleDelta)
+					to: targetAngle
 				});
 			} else if (attrs.cible) {
 				// Rotate towards a target point
 				// New format: { rotate: "ruler", toward: "A" }
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
-				const rulerPos = getInstrumentPosition(ctx, 'ruler');
-				const targetPos = getPointPosition(ctx, attrs.cible);
 
-				let angleDelta = 45; // Default if we can't calculate
-				if (rulerPos && targetPos) {
-					const targetAngle = calculateAngleToTarget(rulerPos, targetPos);
-					angleDelta = targetAngle - currentRotation;
-					setInstrumentRotation(ctx, 'ruler', targetAngle);
-				}
-
+				// Engine calculates duration based on angle tracking
 				ctx.steps.push({
 					rotate: 'ruler',
-					toward: targetId,
-					duration: calculateRotateDuration(angleDelta)
+					toward: targetId
 				});
 			}
 			break;
@@ -1119,7 +984,6 @@ function convertCompassAction(
 			if (attrs.abscisse !== undefined && attrs.ordonnee !== undefined) {
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
-				setInstrumentPosition(ctx, 'compass', { x: newX, y: newY });
 				// Move compass to position first (duration 0 = instant)
 				ctx.steps.push({
 					move: 'compass',
@@ -1137,68 +1001,43 @@ function convertCompassAction(
 			break;
 		}
 		case 'translation': {
-			const fromPos = getInstrumentPosition(ctx, 'compass');
-
 			if (attrs.abscisse && attrs.ordonnee) {
 				const newX = parseFloat(attrs.abscisse);
 				const newY = parseFloat(attrs.ordonnee);
-				const toPos = { x: newX, y: newY };
-				// Track compass position for rotation calculations
-				setInstrumentPosition(ctx, 'compass', toPos);
-				// New format: { move: "compass", to: [x, y], duration: calculated }
+				// Engine calculates duration based on position tracking
 				ctx.steps.push({
 					move: 'compass',
-					to: coordPair(newX, newY),
-					duration: calculateMoveDuration(fromPos, toPos)
+					to: coordPair(newX, newY)
 				});
 			} else if (attrs.cible) {
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
-				// Update compass position to target point's position
-				const targetPos = getPointPosition(ctx, attrs.cible);
-				if (targetPos) {
-					setInstrumentPosition(ctx, 'compass', targetPos);
-				}
-				// New format: { move: "compass", to: "A", duration: calculated }
+				// Engine calculates duration based on position tracking
 				ctx.steps.push({
 					move: 'compass',
-					to: targetId,
-					duration: calculateMoveDuration(fromPos, targetPos ?? { x: 0, y: 0 })
+					to: targetId
 				});
 			}
 			break;
 		}
 		case 'rotation': {
-			const currentRotation = getInstrumentRotation(ctx, 'compass');
-
 			if (attrs.angle) {
 				// attrs.angle is an ABSOLUTE angle in InstrumenPoche
 				// New format uses absolute angles: { rotate: "compass", to: angle }
 				const targetAngle = parseFloat(attrs.angle);
-				const angleDelta = targetAngle - currentRotation;
-				setInstrumentRotation(ctx, 'compass', targetAngle);
+				// Engine calculates duration based on angle tracking
 				ctx.steps.push({
 					rotate: 'compass',
-					to: targetAngle,
-					duration: calculateRotateDuration(angleDelta)
+					to: targetAngle
 				});
 			} else if (attrs.cible) {
 				// Rotate towards a target point
 				// New format: { rotate: "compass", toward: "A" }
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
-				const compassPos = getInstrumentPosition(ctx, 'compass');
-				const targetPos = getPointPosition(ctx, attrs.cible);
 
-				let angleDelta = 90; // Default if we can't calculate
-				if (compassPos && targetPos) {
-					const targetAngle = calculateAngleToTarget(compassPos, targetPos);
-					angleDelta = targetAngle - currentRotation;
-					setInstrumentRotation(ctx, 'compass', targetAngle);
-				}
-
+				// Engine calculates duration based on angle tracking
 				ctx.steps.push({
 					rotate: 'compass',
-					toward: targetId,
-					duration: calculateRotateDuration(angleDelta)
+					toward: targetId
 				});
 			}
 			break;
@@ -1206,33 +1045,21 @@ function convertCompassAction(
 		case 'ecarter': {
 			// Set compass opening
 			// New format: { spread: "compass", radius: ... } or { spread: "compass", to: "A" }
+			// Engine calculates duration
 			if (attrs.ecart) {
 				const radius = parseFloat(attrs.ecart);
-				ctx.compassRadius = radius; // Store for arc creation
 				ctx.steps.push({
 					spread: 'compass',
-					radius: radius,
-					duration: 300
+					radius: radius
 				});
 			} else if (attrs.cible) {
 				// Open to match distance to target point
 				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
-				const compassPos = getInstrumentPosition(ctx, 'compass');
-				const targetPos = getPointPosition(ctx, attrs.cible);
-
-				if (compassPos && targetPos) {
-					// Calculate Euclidean distance from compass center to target
-					const distance = Math.sqrt(
-						(targetPos.x - compassPos.x) ** 2 + (targetPos.y - compassPos.y) ** 2
-					);
-					ctx.compassRadius = Math.round(distance * 100) / 100; // Round to 2 decimals
-				}
 
 				// New format: { spread: "compass", to: "A" }
 				ctx.steps.push({
 					spread: 'compass',
-					to: targetId,
-					duration: 300
+					to: targetId
 				});
 			}
 			break;
@@ -1265,18 +1092,11 @@ function convertCompassAction(
 			let normalizedStart = rawStartAngle % 360;
 			if (normalizedStart < 0) normalizedStart += 360;
 
-			// Get current compass rotation
-			const currentRotation = getInstrumentRotation(ctx, 'compass');
-
-			// First, rotate compass to start angle if needed
-			if (Math.abs(normalizedStart - currentRotation) > 0.1) {
-				ctx.steps.push({
-					rotate: 'compass',
-					to: normalizedStart,
-					duration: 300
-				});
-				setInstrumentRotation(ctx, 'compass', normalizedStart);
-			}
+			// Always rotate compass to start angle first (Engine handles if already there)
+			ctx.steps.push({
+				rotate: 'compass',
+				to: normalizedStart
+			});
 
 			// Create the arc step with sweep angle
 			// New format: { arc: id, sweep: degrees }
@@ -1287,7 +1107,6 @@ function convertCompassAction(
 				width: parseLineWidth(attrs.epaisseur, 1)
 			});
 			ctx.createdObjects.add(id);
-			setInstrumentRotation(ctx, 'compass', normalizedStart + arcSweep);
 			break;
 		}
 		case 'retourner': {
@@ -1321,14 +1140,12 @@ function convertSetSquareAction(
 		}
 		case 'translation': {
 			if (attrs.abscisse && attrs.ordonnee) {
-				const fromPos = getInstrumentPosition(ctx, 'setSquare');
-				const toPos = { x: parseFloat(attrs.abscisse), y: parseFloat(attrs.ordonnee) };
-				setInstrumentPosition(ctx, 'setSquare', toPos);
-				// New format: { move: "setSquare", to: [x, y], duration: calculated }
+				const x = parseFloat(attrs.abscisse);
+				const y = parseFloat(attrs.ordonnee);
+				// Engine calculates duration based on position tracking
 				ctx.steps.push({
 					move: 'setSquare',
-					to: coordPair(toPos.x, toPos.y),
-					duration: calculateMoveDuration(fromPos, toPos)
+					to: coordPair(x, y)
 				});
 			}
 			break;
@@ -1493,10 +1310,7 @@ function convertDocument(
 		objectIdCounter: 0,
 		pointMap: new Map(),
 		pointPositions: new Map(),
-		instrumentPositions: new Map(),
-		instrumentRotations: new Map(),
 		currentPosition: { x: 0, y: 0 },
-		compassRadius: 100, // Default compass radius
 		createdObjects: new Set(),
 		steps: [],
 		warnings: [],
