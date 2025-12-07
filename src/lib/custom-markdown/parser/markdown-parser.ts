@@ -247,6 +247,7 @@ function parseBlocks(
 				blocks.push({
 					type: 'math-block',
 					latex: placeholder.latex,
+					syntax: placeholder.syntax,
 					hasPrompts: placeholder.hasPrompts ?? false,
 					promptIndices: placeholder.promptIndices ?? []
 				});
@@ -376,6 +377,7 @@ function parseInlineContent(
 			nodes.push({
 				type: 'math-inline',
 				latex: segment.latex,
+				syntax: segment.syntax,
 				hasPrompts: segment.hasPrompts ?? false,
 				promptIndices: segment.promptIndices ?? []
 			});
