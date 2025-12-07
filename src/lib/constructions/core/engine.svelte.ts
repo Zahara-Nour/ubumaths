@@ -19,12 +19,15 @@ import type {
 	Step,
 	NonParallelStep,
 	PointStep,
+	MidpointStep,
 	LineStep,
 	ArcStep,
 	CircleStep,
 	TextStep,
+	LabelStep,
 	MarkStep,
 	MoveStep,
+	PlaceStep,
 	ShowStep,
 	HideStep,
 	RotateStep,
@@ -38,12 +41,15 @@ import type {
 } from '../types';
 import {
 	isPointStep,
+	isMidpointStep,
 	isLineStep,
 	isArcStep,
 	isCircleStep,
 	isTextStep,
+	isLabelStep,
 	isMarkStep,
 	isMoveStep,
+	isPlaceStep,
 	isShowStep,
 	isHideStep,
 	isRotateStep,
@@ -54,7 +60,7 @@ import {
 	isPauseStep,
 	isParallelStep
 } from '../types';
-import { constructionScriptSchema } from '../schemas';
+import { constructionScriptSchema, parseMarkId, parseMidpointId } from '../schemas';
 import { evaluateExpr, createContext, type EvaluationContext } from './evaluator';
 import { Timeline, type TimelineOptions, type LoadOptions } from './timeline.svelte';
 import { DEFAULT_CANVAS_CONFIG, DEFAULT_COMPASS_RADIUS } from '../constants';
@@ -255,6 +261,29 @@ function resolveTarget(
 	context: EvaluationContext
 ): Position {
 	if (typeof target === 'string') {
+		// Check if it's a midpoint reference
+		if (target.startsWith('midpoint_')) {
+			const pointIds = parseMidpointId(target);
+			if (!pointIds) {
+				throw new Error(`Invalid midpoint reference: ${target}`);
+			}
+
+			const point1 = objects.get(pointIds.point1);
+			const point2 = objects.get(pointIds.point2);
+
+			if (!point1?.position) {
+				throw new Error(`Point ${pointIds.point1} not found for midpoint ${target}`);
+			}
+			if (!point2?.position) {
+				throw new Error(`Point ${pointIds.point2} not found for midpoint ${target}`);
+			}
+
+			return {
+				x: (point1.position.x + point2.position.x) / 2,
+				y: (point1.position.y + point2.position.y) / 2
+			};
+		}
+
 		// Object ID reference
 		const obj = objects.get(target);
 		if (!obj) {
@@ -620,6 +649,20 @@ export class ConstructionEngine {
 			objectPositions.set(step.point, { x, y });
 			return INSTANT_STEP_DURATION;
 		}
+		if (isMidpointStep(step)) {
+			// Calculate midpoint from two referenced points
+			const pointIds = parseMidpointId(step.midpoint);
+			if (pointIds) {
+				const p1 = objectPositions.get(pointIds.point1);
+				const p2 = objectPositions.get(pointIds.point2);
+				if (p1 && p2) {
+					const midX = (p1.x + p2.x) / 2;
+					const midY = (p1.y + p2.y) / 2;
+					objectPositions.set(step.midpoint, { x: midX, y: midY });
+				}
+			}
+			return INSTANT_STEP_DURATION;
+		}
 		if (isCircleStep(step)) {
 			return INSTANT_STEP_DURATION;
 		}
@@ -627,6 +670,17 @@ export class ConstructionEngine {
 			const x = evaluateExpr(step.at[0], context);
 			const y = evaluateExpr(step.at[1], context);
 			objectPositions.set(step.text, { x, y });
+			return INSTANT_STEP_DURATION;
+		}
+		if (isLabelStep(step)) {
+			// Position calculated from parent point + offset
+			const pointId = step.label.replace(/^label_/, '');
+			const parentPos = objectPositions.get(pointId);
+			if (parentPos) {
+				const x = parentPos.x + (step.offset?.[0] ?? 10);
+				const y = parentPos.y + (step.offset?.[1] ?? -10);
+				objectPositions.set(step.label, { x, y });
+			}
 			return INSTANT_STEP_DURATION;
 		}
 		if (isMarkStep(step)) {
@@ -687,6 +741,22 @@ export class ConstructionEngine {
 			const distance = Math.sqrt(dx * dx + dy * dy);
 			const duration = Math.round(distance * MS_PER_PIXEL);
 			return Math.max(MIN_MOVE_DURATION, Math.min(MAX_MOVE_DURATION, duration));
+		}
+
+		// Place step - instant (no animation)
+		if (isPlaceStep(step)) {
+			// Update position tracking
+			let toPos: Position;
+			if (typeof step.at === 'string') {
+				toPos = objectPositions.get(step.at) ?? { x: 0, y: 0 };
+			} else {
+				toPos = {
+					x: evaluateExpr(step.at[0], context),
+					y: evaluateExpr(step.at[1], context)
+				};
+			}
+			positions.set(step.place, toPos);
+			return INSTANT_STEP_DURATION;
 		}
 
 		// Rotate step - calculate based on angle delta
@@ -841,6 +911,25 @@ export class ConstructionEngine {
 			};
 		}
 
+		// Recalculate position for midpoint objects (from two referenced points)
+		if (state.type === 'point' && isMidpointStep(state.step)) {
+			const pointIds = parseMidpointId(state.step.midpoint);
+			if (!pointIds) return state;
+
+			const point1State = this.objects.get(pointIds.point1);
+			const point2State = this.objects.get(pointIds.point2);
+
+			if (!point1State?.position || !point2State?.position) return state;
+
+			const p1 = point1State.position;
+			const p2 = point2State.position;
+
+			return {
+				...state,
+				position: { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 }
+			};
+		}
+
 		// Recalculate position for text objects (may use expressions like "$P_29.x + 10")
 		if (state.type === 'text' && isTextStep(state.step)) {
 			const x = evaluateExpr(state.step.at[0], context);
@@ -851,13 +940,46 @@ export class ConstructionEngine {
 			};
 		}
 
-		// Recalculate position for mark objects
+		// Recalculate position for label objects (follows parent point)
+		if (state.type === 'label' && state.parentId && isLabelStep(state.step)) {
+			const parentState = this.objects.get(state.parentId);
+			if (parentState?.position) {
+				const x = parentState.position.x + (state.step.offset?.[0] ?? 10);
+				const y = parentState.position.y + (state.step.offset?.[1] ?? -10);
+				return {
+					...state,
+					position: { x, y }
+				};
+			}
+		}
+
+		// Recalculate position for mark objects (from segment midpoint)
 		if (state.type === 'mark' && isMarkStep(state.step)) {
-			const x = evaluateExpr(state.step.at[0], context);
-			const y = evaluateExpr(state.step.at[1], context);
+			const pointIds = parseMarkId(state.step.mark);
+			if (!pointIds) return state;
+
+			const point1State = this.objects.get(pointIds.point1);
+			const point2State = this.objects.get(pointIds.point2);
+
+			if (!point1State?.position || !point2State?.position) return state;
+
+			const p1 = point1State.position;
+			const p2 = point2State.position;
+
+			// Calculate midpoint
+			const midX = (p1.x + p2.x) / 2;
+			const midY = (p1.y + p2.y) / 2;
+
 			return {
 				...state,
-				position: { x, y }
+				position: { x: midX, y: midY },
+				computed: {
+					...state.computed,
+					fromX: p1.x,
+					fromY: p1.y,
+					toX: p2.x,
+					toY: p2.y
+				}
 			};
 		}
 
@@ -945,7 +1067,14 @@ export class ConstructionEngine {
 		this.#activeAnimations = [];
 
 		// Object creation steps - instant but with visual feedback
-		if (isPointStep(step) || isCircleStep(step) || isTextStep(step) || isMarkStep(step)) {
+		if (
+			isPointStep(step) ||
+			isMidpointStep(step) ||
+			isCircleStep(step) ||
+			isTextStep(step) ||
+			isLabelStep(step) ||
+			isMarkStep(step)
+		) {
 			this.#applyObjectCreationStep(step);
 			this.#appliedSteps.add(this.#currentAnimatingStep);
 			return;
@@ -966,6 +1095,11 @@ export class ConstructionEngine {
 		// Instrument actions - animated
 		if (isMoveStep(step)) {
 			this.#setupMoveAnimation(step);
+			return;
+		}
+		// Place step - instant positioning (no animation)
+		if (isPlaceStep(step)) {
+			this.#applyPlaceStepInstantly(step);
 			return;
 		}
 		if (isShowStep(step)) {
@@ -1020,7 +1154,14 @@ export class ConstructionEngine {
 	 */
 	#setupSubStepAnimation(step: NonParallelStep): void {
 		// Reuse the main step setup logic for each sub-step type
-		if (isPointStep(step) || isCircleStep(step) || isTextStep(step) || isMarkStep(step)) {
+		if (
+			isPointStep(step) ||
+			isMidpointStep(step) ||
+			isCircleStep(step) ||
+			isTextStep(step) ||
+			isLabelStep(step) ||
+			isMarkStep(step)
+		) {
 			this.#applyObjectCreationStep(step);
 			return;
 		}
@@ -1034,6 +1175,10 @@ export class ConstructionEngine {
 		}
 		if (isMoveStep(step)) {
 			this.#setupMoveAnimation(step);
+			return;
+		}
+		if (isPlaceStep(step)) {
+			this.#applyPlaceStepInstantly(step);
 			return;
 		}
 		if (isShowStep(step)) {
@@ -1067,9 +1212,11 @@ export class ConstructionEngine {
 	}
 
 	/**
-	 * Apply an object creation step (point, circle, text, mark)
+	 * Apply an object creation step (point, circle, text, label, mark)
 	 */
-	#applyObjectCreationStep(step: PointStep | CircleStep | TextStep | MarkStep): void {
+	#applyObjectCreationStep(
+		step: PointStep | MidpointStep | CircleStep | TextStep | LabelStep | MarkStep
+	): void {
 		const context = this.#createContext();
 
 		if (isPointStep(step)) {
@@ -1091,6 +1238,50 @@ export class ConstructionEngine {
 			};
 			this.objects.set(step.point, state);
 			this.#callbacks.onObjectCreated?.(step.point, state);
+			return;
+		}
+
+		if (isMidpointStep(step)) {
+			// Parse midpoint ID to get point IDs (midpoint_AB -> A, B)
+			const pointIds = parseMidpointId(step.midpoint);
+			if (!pointIds) {
+				console.warn(`Midpoint ${step.midpoint}: invalid midpoint ID format`);
+				return;
+			}
+
+			// Get positions of both points
+			const point1State = this.objects.get(pointIds.point1);
+			const point2State = this.objects.get(pointIds.point2);
+
+			if (!point1State?.position || !point2State?.position) {
+				console.warn(
+					`Midpoint ${step.midpoint}: points ${pointIds.point1} or ${pointIds.point2} not found`
+				);
+				return;
+			}
+
+			const p1 = point1State.position;
+			const p2 = point2State.position;
+
+			// Calculate midpoint
+			const midX = (p1.x + p2.x) / 2;
+			const midY = (p1.y + p2.y) / 2;
+			const label = typeof step.label === 'string' ? step.label : step.label?.text;
+
+			const state: ObjectState = {
+				id: step.midpoint,
+				type: 'point', // Midpoint is rendered as a point
+				step,
+				visible: step.visible !== false,
+				position: { x: midX, y: midY },
+				label,
+				style: {
+					color: step.color,
+					opacity: 1
+				}
+			};
+			this.objects.set(step.midpoint, state);
+			this.#callbacks.onObjectCreated?.(step.midpoint, state);
 			return;
 		}
 
@@ -1154,20 +1345,79 @@ export class ConstructionEngine {
 			return;
 		}
 
+		if (isLabelStep(step)) {
+			// Extract point ID from label ID (label_X -> X)
+			const pointId = step.label.replace(/^label_/, '');
+			const parentState = this.objects.get(pointId);
+
+			if (!parentState?.position) {
+				console.warn(`Label ${step.label}: parent point ${pointId} not found`);
+				return;
+			}
+
+			const x = parentState.position.x + (step.offset?.[0] ?? 10);
+			const y = parentState.position.y + (step.offset?.[1] ?? -10);
+
+			const state: ObjectState = {
+				id: step.label,
+				type: 'label',
+				step,
+				visible: true,
+				position: { x, y },
+				parentId: pointId,
+				style: {
+					color: step.color,
+					opacity: 1
+				}
+			};
+			this.objects.set(step.label, state);
+			this.#callbacks.onObjectCreated?.(step.label, state);
+			return;
+		}
+
 		if (isMarkStep(step)) {
-			const x = evaluateExpr(step.at[0], context);
-			const y = evaluateExpr(step.at[1], context);
+			// Parse mark ID to get point IDs (mark_AB -> A, B)
+			const pointIds = parseMarkId(step.mark);
+			if (!pointIds) {
+				console.warn(`Mark ${step.mark}: invalid mark ID format`);
+				return;
+			}
+
+			// Get positions of both points
+			const point1State = this.objects.get(pointIds.point1);
+			const point2State = this.objects.get(pointIds.point2);
+
+			if (!point1State?.position || !point2State?.position) {
+				console.warn(
+					`Mark ${step.mark}: points ${pointIds.point1} or ${pointIds.point2} not found`
+				);
+				return;
+			}
+
+			const p1 = point1State.position;
+			const p2 = point2State.position;
+
+			// Calculate midpoint for mark position
+			const midX = (p1.x + p2.x) / 2;
+			const midY = (p1.y + p2.y) / 2;
 
 			const state: ObjectState = {
 				id: step.mark,
 				type: 'mark',
 				step,
 				visible: step.visible !== false,
-				position: { x, y },
+				position: { x: midX, y: midY },
 				style: {
 					color: step.color,
 					lineWidth: step.width,
 					opacity: 1
+				},
+				// Store segment endpoints for angle calculation in renderer
+				computed: {
+					fromX: p1.x,
+					fromY: p1.y,
+					toX: p2.x,
+					toY: p2.y
 				}
 			};
 			this.objects.set(step.mark, state);
@@ -1936,7 +2186,14 @@ export class ConstructionEngine {
 	 */
 	#applyStepInstantlyImpl(step: Step): void {
 		// Object creation steps
-		if (isPointStep(step) || isCircleStep(step) || isTextStep(step) || isMarkStep(step)) {
+		if (
+			isPointStep(step) ||
+			isMidpointStep(step) ||
+			isCircleStep(step) ||
+			isTextStep(step) ||
+			isLabelStep(step) ||
+			isMarkStep(step)
+		) {
 			this.#applyObjectCreationStep(step);
 			return;
 		}
@@ -1956,6 +2213,12 @@ export class ConstructionEngine {
 		// Move step
 		if (isMoveStep(step)) {
 			this.#applyMoveStepInstantly(step);
+			return;
+		}
+
+		// Place step (instant positioning)
+		if (isPlaceStep(step)) {
+			this.#applyPlaceStepInstantly(step);
 			return;
 		}
 
@@ -2106,6 +2369,28 @@ export class ConstructionEngine {
 				const newState = { ...obj, position: targetPos };
 				this.objects.set(step.move, newState);
 				this.#callbacks.onObjectUpdated?.(step.move, newState);
+			}
+		}
+	}
+
+	/**
+	 * Apply place step instantly (teleport without animation)
+	 */
+	#applyPlaceStepInstantly(step: PlaceStep): void {
+		const context = this.#createContext();
+		const targetPos = resolveTarget(step.at, this.objects, context);
+
+		if (this.#isInstrumentType(step.place)) {
+			const instrument = this.instruments.get(step.place);
+			if (instrument) {
+				this.instruments.set(step.place, { ...instrument, x: targetPos.x, y: targetPos.y });
+			}
+		} else {
+			const obj = this.objects.get(step.place);
+			if (obj) {
+				const newState = { ...obj, position: targetPos };
+				this.objects.set(step.place, newState);
+				this.#callbacks.onObjectUpdated?.(step.place, newState);
 			}
 		}
 	}

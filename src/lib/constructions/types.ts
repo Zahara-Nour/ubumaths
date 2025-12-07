@@ -20,12 +20,16 @@ import {
 	type StepInput,
 	type NonParallelStepInput,
 	type PointStepInput,
+	type MidpointStepInput,
 	type LineStepInput,
 	type ArcStepInput,
 	type CircleStepInput,
 	type TextStepInput,
+	type LabelStepInput,
 	type MarkStepInput,
+	type MarkShape as MarkShapeInput,
 	type MoveStepInput,
+	type PlaceStepInput,
 	type ShowStepInput,
 	type HideStepInput,
 	type RotateStepInput,
@@ -45,12 +49,15 @@ import {
 	pointStyleSchema,
 	arrowSchema,
 	isPointStep,
+	isMidpointStep,
 	isLineStep,
 	isArcStep,
 	isCircleStep,
 	isTextStep,
+	isLabelStep,
 	isMarkStep,
 	isMoveStep,
+	isPlaceStep,
 	isShowStep,
 	isHideStep,
 	isRotateStep,
@@ -88,12 +95,15 @@ export type NonParallelStep = NonParallelStepInput;
  * Individual step types (validated input format)
  */
 export type PointStep = PointStepInput;
+export type MidpointStep = MidpointStepInput;
 export type LineStep = LineStepInput;
 export type ArcStep = ArcStepInput;
 export type CircleStep = CircleStepInput;
 export type TextStep = TextStepInput;
+export type LabelStep = LabelStepInput;
 export type MarkStep = MarkStepInput;
 export type MoveStep = MoveStepInput;
+export type PlaceStep = PlaceStepInput;
 export type ShowStep = ShowStepInput;
 export type HideStep = HideStepInput;
 export type RotateStep = RotateStepInput;
@@ -171,6 +181,11 @@ export type PointStyle = z.infer<typeof pointStyleSchema>;
  */
 export type ArrowPosition = z.infer<typeof arrowSchema>;
 
+/**
+ * Mark shape (tick, cross, circle)
+ */
+export type MarkShape = MarkShapeInput;
+
 // =============================================================================
 // Expression Types
 // =============================================================================
@@ -238,10 +253,10 @@ export interface Position {
 /**
  * Object type discriminator
  */
-export type ObjectType = 'point' | 'line' | 'arc' | 'circle' | 'text' | 'mark';
+export type ObjectType = 'point' | 'line' | 'arc' | 'circle' | 'text' | 'label' | 'mark';
 
 /**
- * Runtime state of a drawn object (point, line, arc, circle, text, mark)
+ * Runtime state of a drawn object (point, line, arc, circle, text, label, mark)
  * Tracks the current state of objects created by steps
  */
 export interface ObjectState {
@@ -250,10 +265,18 @@ export interface ObjectState {
 	/** Object type (from step type) */
 	readonly type: ObjectType;
 	/** Original step that created this object */
-	readonly step: PointStep | LineStep | ArcStep | CircleStep | TextStep | MarkStep;
+	readonly step:
+		| PointStep
+		| MidpointStep
+		| LineStep
+		| ArcStep
+		| CircleStep
+		| TextStep
+		| LabelStep
+		| MarkStep;
 	/** Current visibility */
 	visible: boolean;
-	/** Current position (for movable objects like points, text, marks) */
+	/** Current position (for movable objects like points, text, labels, marks) */
 	position?: Position;
 	/** Current style overrides */
 	style?: StyleProps;
@@ -261,6 +284,8 @@ export interface ObjectState {
 	drawProgress?: number;
 	/** Label (for points) */
 	label?: string;
+	/** Parent object ID (for labels attached to points) */
+	parentId?: string;
 	/** Computed geometry values */
 	computed?: {
 		// For lines
@@ -329,12 +354,15 @@ export interface ConstructionState {
  */
 export {
 	isPointStep,
+	isMidpointStep,
 	isLineStep,
 	isArcStep,
 	isCircleStep,
 	isTextStep,
+	isLabelStep,
 	isMarkStep,
 	isMoveStep,
+	isPlaceStep,
 	isShowStep,
 	isHideStep,
 	isRotateStep,

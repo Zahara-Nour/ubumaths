@@ -9,7 +9,15 @@
 	 */
 
 	import type { ConstructionEngine } from '../core/engine.svelte';
-	import type { ObjectState, PointStep, LineStep, TextStep, CircleStep } from '../types';
+	import type {
+		ObjectState,
+		PointStep,
+		LineStep,
+		TextStep,
+		LabelStep,
+		MarkStep,
+		CircleStep
+	} from '../types';
 	import {
 		segmentToSvgLine,
 		circleToSvgPath,
@@ -134,6 +142,88 @@
 			}
 
 			case 'mark': {
+				// Check if this is a length mark (has position) or angle mark (has computed center)
+				if (obj.position) {
+					const markStep = obj.step as MarkStep;
+					const cx = obj.position.x;
+					const cy = obj.position.y;
+					// Calculate segment angle from computed segment endpoints
+					let segmentAngle = 0;
+					const computed = obj.computed;
+					if (
+						computed?.fromX !== undefined &&
+						computed?.fromY !== undefined &&
+						computed?.toX !== undefined &&
+						computed?.toY !== undefined
+					) {
+						segmentAngle =
+							(Math.atan2(computed.toY - computed.fromY, computed.toX - computed.fromX) * 180) /
+							Math.PI;
+					}
+					const markSize = markStep.length ?? 10;
+					const shape = markStep.shape ?? '/';
+
+					// Get tick count from shape
+					const getTickCount = (s: string): number => {
+						if (s === '/') return 1;
+						if (s === '//') return 2;
+						if (s === '///') return 3;
+						return 0;
+					};
+
+					switch (shape) {
+						case '/':
+						case '//':
+						case '///': {
+							// Tick marks at 45° to segment
+							const count = getTickCount(shape);
+							const spacing = 4;
+							// Tick at 45° to segment
+							const tickAngle = segmentAngle + 45;
+							const tickRad = (tickAngle * Math.PI) / 180;
+							const dx = Math.cos(tickRad) * (markSize / 2);
+							const dy = Math.sin(tickRad) * (markSize / 2);
+
+							let path = '';
+							// Offset direction is along the segment
+							const segmentRad = (segmentAngle * Math.PI) / 180;
+							for (let i = 0; i < count; i++) {
+								const offset = (i - (count - 1) / 2) * spacing;
+								const ox = Math.cos(segmentRad) * offset;
+								const oy = Math.sin(segmentRad) * offset;
+								path += `M${cx + ox - dx},${cy + oy - dy}L${cx + ox + dx},${cy + oy + dy}`;
+							}
+							return path;
+						}
+
+						case 'X': {
+							// Cross mark: X on segment
+							const halfSize = markSize / 2;
+							// Two diagonal lines forming X (rotated by segment angle)
+							const angle1 = segmentAngle + 45;
+							const angle2 = segmentAngle - 45;
+							const rad1 = (angle1 * Math.PI) / 180;
+							const rad2 = (angle2 * Math.PI) / 180;
+
+							const dx1 = Math.cos(rad1) * halfSize;
+							const dy1 = Math.sin(rad1) * halfSize;
+							const dx2 = Math.cos(rad2) * halfSize;
+							const dy2 = Math.sin(rad2) * halfSize;
+
+							return `M${cx - dx1},${cy - dy1}L${cx + dx1},${cy + dy1}M${cx - dx2},${cy - dy2}L${cx + dx2},${cy + dy2}`;
+						}
+
+						case 'o': {
+							// Circle mark: small circle on segment
+							const radius = markSize / 3;
+							return `M${cx + radius},${cy}A${radius},${radius} 0 1,1 ${cx - radius},${cy}A${radius},${radius} 0 1,1 ${cx + radius},${cy}`;
+						}
+
+						default:
+							return '';
+					}
+				}
+
 				// Angle marks are rendered as arcs
 				const computed = obj.computed;
 				if (!computed?.centerX || !computed?.centerY) return '';
@@ -259,6 +349,13 @@
 	function isTextObject(obj: ObjectState): boolean {
 		return obj.type === 'text';
 	}
+
+	/**
+	 * Check if object is label
+	 */
+	function isLabelObject(obj: ObjectState): boolean {
+		return obj.type === 'label';
+	}
 </script>
 
 <svg
@@ -312,7 +409,7 @@
 
 	<!-- Objects layer - strokes -->
 	<g class="objects-layer-strokes">
-		{#each visibleObjects.filter((o) => !isPointObject(o) && !isFilledObject(o) && !isTextObject(o)) as obj (obj.id)}
+		{#each visibleObjects.filter((o) => !isPointObject(o) && !isFilledObject(o) && !isTextObject(o) && !isLabelObject(o)) as obj (obj.id)}
 			{@const path = getObjectPath(obj)}
 			{@const arrows = isLineWithArrowhead(obj) ? getArrowheadPaths(obj) : {}}
 			{#if path}
@@ -419,6 +516,29 @@
 					opacity={obj.style?.opacity ?? 1}
 				>
 					{textStep.content}
+				</text>
+			{/if}
+		{/each}
+	</g>
+
+	<!-- Label objects layer (attached to points) -->
+	<g class="objects-layer-labels">
+		{#each visibleObjects.filter(isLabelObject) as obj (obj.id)}
+			{@const labelStep = obj.step as LabelStep}
+			{@const pos = obj.position}
+			{@const content = obj.id.replace(/^label_/, '')}
+			{#if pos}
+				<text
+					x={pos.x}
+					y={pos.y}
+					fill={obj.style?.color ?? DEFAULT_COLORS.text}
+					font-size={labelStep.size ?? 14}
+					font-family="system-ui, -apple-system, sans-serif"
+					text-anchor="start"
+					dominant-baseline="middle"
+					opacity={obj.style?.opacity ?? 1}
+				>
+					{content}
 				</text>
 			{/if}
 		{/each}

@@ -136,9 +136,22 @@ export const parameterNameSchema = z
 export const coordPairSchema = z.tuple([coordExprSchema, coordExprSchema]);
 
 /**
- * Target reference: either a point ID (string) or coordinates [x, y]
+ * Midpoint ID schema: midpoint_<point1><point2>
+ * Point IDs follow pattern: letter, optional digit, optional apostrophe
+ * Examples: midpoint_AB, midpoint_A1B1, midpoint_A'B'
+ * Note: Defined early to be used in targetRefSchema
  */
-export const targetRefSchema = z.union([objectIdSchema, coordPairSchema]);
+export const midpointIdSchema = z
+	.string()
+	.regex(
+		/^midpoint_[A-Z][0-9]?'?[A-Z][0-9]?'?$/,
+		'Midpoint ID must be midpoint_<point1><point2> (e.g., midpoint_AB, midpoint_A1B1)'
+	);
+
+/**
+ * Target reference: point ID, coordinates [x, y], or midpoint reference (midpoint_XY)
+ */
+export const targetRefSchema = z.union([objectIdSchema, coordPairSchema, midpointIdSchema]);
 
 /**
  * Instrument types (including compassRaised for 3D raised compass view)
@@ -292,6 +305,20 @@ export const pointStepSchema = z.object({
 });
 
 /**
+ * Midpoint step: { "midpoint": "midpoint_A1B1" }
+ * Creates a point at the midpoint of two existing points.
+ * Position is calculated by the engine from the two referenced points.
+ */
+export const midpointStepSchema = z.object({
+	midpoint: midpointIdSchema,
+	label: labelSchema.optional(),
+	style: pointStyleSchema.optional(),
+	radius: z.number().min(1).max(50).optional(),
+	color: colorSchema.optional(),
+	visible: z.boolean().optional()
+});
+
+/**
  * Line step: { "line": "seg1", "to": "B" } or { "line": "seg1", "to": [300, 400] }
  * Draws from current pencil position to target
  */
@@ -357,15 +384,52 @@ export const textStepSchema = z.object({
 });
 
 /**
- * Mark step: { "mark": "m1", "at": [352, 285], "angle": 45 }
- * Tick mark on a line segment
+ * Label step: { "label": "label_T", "offset": [10, -10] }
+ * Creates a text label attached to a point with relative offset.
+ * The point name is extracted from the label id (label_X → point X, content "X").
+ * The label follows the point if it moves.
+ */
+export const labelStepSchema = z.object({
+	// Label ID follows label_X convention where X is the point name
+	// Point names can include letters, numbers, underscores, and apostrophes (for A', B'', etc.)
+	label: z.string().regex(/^label_[a-zA-Z][a-zA-Z0-9_']*$/, 'Label must follow label_X convention'),
+	offset: z.tuple([z.number(), z.number()]).default([10, -10]),
+	color: colorSchema.optional(),
+	size: z.number().min(MIN_FONT_SIZE).max(MAX_FONT_SIZE).optional()
+});
+
+/**
+ * Mark shape types for segment marking
+ * - /: single tick mark at 45°
+ * - //: double tick marks at 45°
+ * - ///: triple tick marks at 45°
+ * - X: cross mark
+ * - o: circle mark
+ */
+export const markShapeSchema = z.enum(['/', '//', '///', 'X', 'o']);
+
+/**
+ * Mark ID schema: mark_<point1><point2>
+ * Point IDs follow pattern: letter, optional digit, optional apostrophe
+ * Examples: mark_AB, mark_A1B1, mark_A'B', mark_A1'B2'
+ */
+export const markIdSchema = z
+	.string()
+	.regex(
+		/^mark_[A-Z][0-9]?'?[A-Z][0-9]?'?$/,
+		"Mark ID must be mark_<point1><point2> (e.g., mark_AB, mark_A1B1, mark_A'B')"
+	);
+
+/**
+ * Mark step: { "mark": "mark_A1B1", "shape": "//" }
+ * Mark on a line segment (tick marks, cross, or circle)
+ * Position is calculated by the engine at the segment midpoint.
+ * Segment angle is calculated from the two referenced points.
  */
 export const markStepSchema = z.object({
-	mark: objectIdSchema,
-	at: coordPairSchema,
-	angle: exprSchema, // Rotation angle in degrees
-	count: z.number().int().min(1).max(5).optional(), // Number of tick marks (default 1)
-	length: z.number().min(1).max(50).optional(), // Length of tick mark
+	mark: markIdSchema,
+	shape: markShapeSchema.optional(), // Mark shape (default: /)
+	length: z.number().min(1).max(50).optional(), // Size of mark
 	color: colorSchema.optional(),
 	width: z.number().min(0).max(MAX_LINE_WIDTH).optional(),
 	visible: z.boolean().optional()
@@ -377,12 +441,22 @@ export const markStepSchema = z.object({
 
 /**
  * Move step: { "move": "pencil", "to": [100, 200] } or { "move": "ruler", "to": "A" }
+ * Animated translation from current position to target.
  */
 export const moveStepSchema = z.object({
 	move: drawingTargetSchema,
 	to: targetRefSchema,
 	duration: durationSchema.optional(),
 	easing: z.enum(['linear', 'easeIn', 'easeOut', 'easeInOut']).optional()
+});
+
+/**
+ * Place step: { "place": "ruler", "at": [100, 200] } or { "place": "compass", "at": "A" }
+ * Instant positioning without animation (teleport).
+ */
+export const placeStepSchema = z.object({
+	place: drawingTargetSchema,
+	at: targetRefSchema
 });
 
 /**
@@ -489,12 +563,15 @@ export const pauseStepSchema = z.object({
  */
 export const nonParallelStepSchema = z.union([
 	pointStepSchema,
+	midpointStepSchema,
 	lineStepSchema,
 	arcStepSchema,
 	circleStepSchema,
 	textStepSchema,
+	labelStepSchema,
 	markStepSchema,
 	moveStepSchema,
+	placeStepSchema,
 	showStepSchema,
 	hideStepSchema,
 	rotateStepSchema,
@@ -523,13 +600,16 @@ export const parallelStepSchema = z.object({
 export const stepSchema = z.union([
 	// Objects (first key is type, value is id)
 	pointStepSchema,
+	midpointStepSchema,
 	lineStepSchema,
 	arcStepSchema,
 	circleStepSchema,
 	textStepSchema,
+	labelStepSchema,
 	markStepSchema,
 	// Instruments (first key is action, value is instrument)
 	moveStepSchema,
+	placeStepSchema,
 	showStepSchema,
 	hideStepSchema,
 	rotateStepSchema,
@@ -590,12 +670,15 @@ export type NonParallelStepInput = z.infer<typeof nonParallelStepSchema>;
 
 /** Individual step types */
 export type PointStepInput = z.infer<typeof pointStepSchema>;
+export type MidpointStepInput = z.infer<typeof midpointStepSchema>;
 export type LineStepInput = z.infer<typeof lineStepSchema>;
 export type ArcStepInput = z.infer<typeof arcStepSchema>;
 export type CircleStepInput = z.infer<typeof circleStepSchema>;
 export type TextStepInput = z.infer<typeof textStepSchema>;
+export type LabelStepInput = z.infer<typeof labelStepSchema>;
 export type MarkStepInput = z.infer<typeof markStepSchema>;
 export type MoveStepInput = z.infer<typeof moveStepSchema>;
+export type PlaceStepInput = z.infer<typeof placeStepSchema>;
 export type ShowStepInput = z.infer<typeof showStepSchema>;
 export type HideStepInput = z.infer<typeof hideStepSchema>;
 export type RotateStepInput = z.infer<typeof rotateStepSchema>;
@@ -605,6 +688,9 @@ export type LowerStepInput = z.infer<typeof lowerStepSchema>;
 export type StyleStepInput = z.infer<typeof styleStepSchema>;
 export type PauseStepInput = z.infer<typeof pauseStepSchema>;
 export type ParallelStepInput = z.infer<typeof parallelStepSchema>;
+
+/** Mark shape type */
+export type MarkShape = z.infer<typeof markShapeSchema>;
 
 /** Coordinate pair type */
 export type CoordPair = z.infer<typeof coordPairSchema>;
@@ -623,6 +709,10 @@ export function isPointStep(step: StepInput): step is PointStepInput {
 	return 'point' in step;
 }
 
+export function isMidpointStep(step: StepInput): step is MidpointStepInput {
+	return 'midpoint' in step;
+}
+
 export function isLineStep(step: StepInput): step is LineStepInput {
 	return 'line' in step;
 }
@@ -639,12 +729,20 @@ export function isTextStep(step: StepInput): step is TextStepInput {
 	return 'text' in step;
 }
 
+export function isLabelStep(step: StepInput): step is LabelStepInput {
+	return 'label' in step;
+}
+
 export function isMarkStep(step: StepInput): step is MarkStepInput {
 	return 'mark' in step;
 }
 
 export function isMoveStep(step: StepInput): step is MoveStepInput {
 	return 'move' in step;
+}
+
+export function isPlaceStep(step: StepInput): step is PlaceStepInput {
+	return 'place' in step;
 }
 
 export function isShowStep(step: StepInput): step is ShowStepInput {
@@ -681,6 +779,69 @@ export function isPauseStep(step: StepInput): step is PauseStepInput {
 
 export function isParallelStep(step: StepInput): step is ParallelStepInput {
 	return 'parallel' in step;
+}
+
+// =============================================================================
+// Mark ID Parsing
+// =============================================================================
+
+/**
+ * Parse a mark ID to extract the two point IDs
+ * Mark ID format: mark_<point1><point2>
+ * Point ID format: [A-Z][0-9]?'?
+ *
+ * @param markId - The mark ID (e.g., "mark_A1B1", "mark_AB", "mark_A'B'")
+ * @returns Object with point1 and point2 IDs, or null if invalid
+ *
+ * @example
+ * parseMarkId("mark_A1B1") // { point1: "A1", point2: "B1" }
+ * parseMarkId("mark_AB") // { point1: "A", point2: "B" }
+ * parseMarkId("mark_A'B'") // { point1: "A'", point2: "B'" }
+ */
+export function parseMarkId(markId: string): { point1: string; point2: string } | null {
+	// Remove "mark_" prefix
+	if (!markId.startsWith('mark_')) return null;
+	const pointsPart = markId.slice(5); // Remove "mark_"
+
+	// Match two point IDs: each is [A-Z][0-9]?'?
+	const pointPattern = /^([A-Z][0-9]?'?)([A-Z][0-9]?'?)$/;
+	const match = pointsPart.match(pointPattern);
+
+	if (!match) return null;
+
+	return {
+		point1: match[1],
+		point2: match[2]
+	};
+}
+
+/**
+ * Parse a midpoint ID to extract the two point IDs
+ * Midpoint ID format: midpoint_<point1><point2>
+ * Point ID format: [A-Z][0-9]?'?
+ *
+ * @param midpointId - The midpoint ID (e.g., "midpoint_A1B1", "midpoint_AB")
+ * @returns Object with point1 and point2 IDs, or null if invalid
+ *
+ * @example
+ * parseMidpointId("midpoint_A1B1") // { point1: "A1", point2: "B1" }
+ * parseMidpointId("midpoint_AB") // { point1: "A", point2: "B" }
+ */
+export function parseMidpointId(midpointId: string): { point1: string; point2: string } | null {
+	// Remove "midpoint_" prefix
+	if (!midpointId.startsWith('midpoint_')) return null;
+	const pointsPart = midpointId.slice(9); // Remove "midpoint_"
+
+	// Match two point IDs: each is [A-Z][0-9]?'?
+	const pointPattern = /^([A-Z][0-9]?'?)([A-Z][0-9]?'?)$/;
+	const match = pointsPart.match(pointPattern);
+
+	if (!match) return null;
+
+	return {
+		point1: match[1],
+		point2: match[2]
+	};
 }
 
 // =============================================================================
@@ -795,8 +956,19 @@ function checkTargetRef(
 	if (Array.isArray(ref)) {
 		checkExpr(ref[0], definedParams, createdObjects, undefinedRefs);
 		checkExpr(ref[1], definedParams, createdObjects, undefinedRefs);
+	} else if (typeof ref === 'string' && ref.startsWith('midpoint_')) {
+		// Validate that both points in the midpoint reference exist
+		const pointIds = parseMidpointId(ref);
+		if (pointIds) {
+			if (!createdObjects.has(pointIds.point1) && !undefinedRefs.includes(pointIds.point1)) {
+				undefinedRefs.push(pointIds.point1);
+			}
+			if (!createdObjects.has(pointIds.point2) && !undefinedRefs.includes(pointIds.point2)) {
+				undefinedRefs.push(pointIds.point2);
+			}
+		}
 	}
-	// String refs are object IDs, validated separately
+	// Other string refs are object IDs, validated separately
 }
 
 /**
@@ -833,10 +1005,8 @@ export function validateParameterReferences(script: ConstructionScriptInput): st
 			checkExpr(step.at[0], definedParams, createdObjects, undefinedRefs);
 			checkExpr(step.at[1], definedParams, createdObjects, undefinedRefs);
 		} else if (isMarkStep(step)) {
+			// Mark ID encodes the segment endpoints (mark_AB), no expressions to check
 			createdObjects.add(step.mark);
-			checkExpr(step.at[0], definedParams, createdObjects, undefinedRefs);
-			checkExpr(step.at[1], definedParams, createdObjects, undefinedRefs);
-			checkExpr(step.angle, definedParams, createdObjects, undefinedRefs);
 		} else if (isMoveStep(step)) {
 			checkTargetRef(step.to, definedParams, createdObjects, undefinedRefs);
 		} else if (isRotateStep(step)) {

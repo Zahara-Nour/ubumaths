@@ -15,6 +15,7 @@ import { convertInstrumenPoche, validateInstrumenPocheXml } from './converter';
 import {
 	isPointStep,
 	isTextStep,
+	isLabelStep,
 	isShowStep,
 	isMoveStep,
 	isSpreadStep,
@@ -594,36 +595,42 @@ describe('convertInstrumenPoche - New Format Structure', () => {
 		expect(rotateStep!.to).toBe(45);
 	});
 
-	it('should integrate labels into point steps when nommer comes BEFORE creer', async () => {
-		// In InstrumenPoche, if nommer comes before creer, we can integrate the label
-		const xmlWithLabelBefore = `<?xml version="1.0"?>
+	it('should create separate label step for nommer (regardless of order)', async () => {
+		// Labels are now separate steps that reference points via label_X convention
+		const xmlWithLabel = `<?xml version="1.0"?>
 <INSTRUMENPOCHE version="2">
   <viewBox width="800" height="600"/>
-  <action objet="point" mouvement="nommer" id="A" nom="Point A"/>
   <action objet="point" mouvement="creer" id="A" abscisse="100" ordonnee="200"/>
+  <action objet="point" mouvement="nommer" id="A" nom="Point A" abscisse="10" ordonnee="-10"/>
 </INSTRUMENPOCHE>`;
 
-		const result = await convertInstrumenPoche(xmlWithLabelBefore);
+		const result = await convertInstrumenPoche(xmlWithLabel);
+		expect(result.success).toBe(true);
+
 		const pointStep = result.script!.steps.find(isPointStep);
+		const labelStep = result.script!.steps.find(isLabelStep);
 
 		expect(pointStep).toBeDefined();
-		expect(pointStep!.label).toBe('Point A');
+		expect(labelStep).toBeDefined();
+		expect(labelStep!.label).toBe('label_A');
+		expect(labelStep!.offset).toEqual([10, -10]);
 	});
 
-	it('should create text label when nommer comes AFTER creer', async () => {
-		// When nommer comes after creer, we can't modify the existing point
-		// So a separate text label is created
-		const xmlWithLabelAfter = `<?xml version="1.0"?>
+	it('should use default offset for label when not specified', async () => {
+		const xmlWithLabelNoOffset = `<?xml version="1.0"?>
 <INSTRUMENPOCHE version="2">
   <viewBox width="800" height="600"/>
-  <action objet="point" mouvement="creer" id="A" abscisse="100" ordonnee="200"/>
-  <action objet="point" mouvement="nommer" id="A" nom="Point A"/>
+  <action objet="point" mouvement="creer" id="B" abscisse="200" ordonnee="300"/>
+  <action objet="point" mouvement="nommer" id="B" nom="Point B"/>
 </INSTRUMENPOCHE>`;
 
-		const result = await convertInstrumenPoche(xmlWithLabelAfter);
-		const textStep = result.script!.steps.find(isTextStep);
+		const result = await convertInstrumenPoche(xmlWithLabelNoOffset);
+		expect(result.success).toBe(true);
 
-		expect(textStep).toBeDefined();
-		expect(textStep!.content).toBe('Point A');
+		const labelStep = result.script!.steps.find(isLabelStep);
+
+		expect(labelStep).toBeDefined();
+		expect(labelStep!.label).toBe('label_B');
+		expect(labelStep!.offset).toEqual([10, -10]); // Default offset
 	});
 });

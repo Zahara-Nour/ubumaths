@@ -31,8 +31,16 @@
 		ChevronDown,
 		ArrowLeft,
 		Loader2,
-		X
+		X,
+		Code2
 	} from 'lucide-svelte';
+
+	// Types for XML/JSON comparison
+	interface XmlJsonPair {
+		xml: string;
+		json: string;
+		stepStartIndex: number; // Index of first step in this pair
+	}
 
 	// Props
 	let { data }: { data: PageData } = $props();
@@ -84,6 +92,111 @@
 	});
 
 	let hasContent = $derived(xmlInput.trim().length > 0 || selectedFile !== null);
+
+	// Parse XML and extract action elements with their JSON equivalents
+	let xmlJsonPairs = $derived.by((): XmlJsonPair[] => {
+		if (!xmlInput.trim() || !parsedScript?.steps) return [];
+
+		const pairs: XmlJsonPair[] = [];
+
+		// Extract action elements from XML
+		const actionRegex = /<action\s+([^>]+)\s*\/>/g;
+		const actions: { xml: string; attrs: string }[] = [];
+		let match;
+
+		while ((match = actionRegex.exec(xmlInput)) !== null) {
+			actions.push({ xml: match[0], attrs: match[1] });
+		}
+
+		let stepIndex = 0;
+		let actionIndex = 0;
+
+		while (actionIndex < actions.length && stepIndex < parsedScript.steps.length) {
+			const action = actions[actionIndex];
+			const attrs = action.attrs;
+			const pairStartIndex = stepIndex; // Track start index for this pair
+
+			// Check if this is a text "creer" action (followed by "ecrire" which produces the step)
+			if (attrs.includes('objet="texte"') && attrs.includes('mouvement="creer"')) {
+				// Look for the next "ecrire" action
+				if (actionIndex + 1 < actions.length) {
+					const nextAction = actions[actionIndex + 1];
+					if (
+						nextAction.attrs.includes('objet="texte"') &&
+						nextAction.attrs.includes('mouvement="ecrire"')
+					) {
+						// Group both XML actions with JSON steps (text + optional pause if tempo)
+						const step = parsedScript.steps[stepIndex];
+						let jsonLines = JSON.stringify(step);
+						stepIndex++;
+
+						// If ecrire has tempo, there's also a pause step
+						if (nextAction.attrs.includes('tempo=') && stepIndex < parsedScript.steps.length) {
+							const pauseStep = parsedScript.steps[stepIndex];
+							if ('pause' in pauseStep) {
+								jsonLines += '\n' + JSON.stringify(pauseStep);
+								stepIndex++;
+							}
+						}
+
+						pairs.push({
+							xml: action.xml + '\n' + nextAction.xml,
+							json: jsonLines,
+							stepStartIndex: pairStartIndex
+						});
+						actionIndex += 2;
+						continue;
+					}
+				}
+				// "creer" without "ecrire" - skip (no JSON output)
+				actionIndex++;
+				continue;
+			}
+
+			// Check if this action produces no JSON output (e.g., some show/hide that don't match)
+			// or produces multiple JSON steps
+
+			const step = parsedScript.steps[stepIndex];
+			let jsonLines = JSON.stringify(step);
+
+			// Check if compass tracer produces rotate + arc steps
+			if (attrs.includes('objet="compas"') && attrs.includes('mouvement="tracer"')) {
+				stepIndex++;
+				if (stepIndex < parsedScript.steps.length) {
+					const arcStep = parsedScript.steps[stepIndex];
+					jsonLines += '\n' + JSON.stringify(arcStep);
+				}
+			}
+
+			// Check if show/montrer with position produces move + show steps
+			if (
+				attrs.includes('mouvement="montrer"') &&
+				(attrs.includes('abscisse=') || attrs.includes('ordonnee='))
+			) {
+				stepIndex++;
+				if (stepIndex < parsedScript.steps.length) {
+					const showStep = parsedScript.steps[stepIndex];
+					jsonLines += '\n' + JSON.stringify(showStep);
+				}
+			}
+
+			stepIndex++;
+
+			// Generic tempo handling: any action with tempo produces a pause step after
+			if (attrs.includes('tempo=') && stepIndex < parsedScript.steps.length) {
+				const nextStep = parsedScript.steps[stepIndex];
+				if (nextStep && typeof nextStep === 'object' && 'pause' in nextStep) {
+					jsonLines += '\n' + JSON.stringify(nextStep);
+					stepIndex++;
+				}
+			}
+
+			pairs.push({ xml: action.xml, json: jsonLines, stepStartIndex: pairStartIndex });
+			actionIndex++;
+		}
+
+		return pairs;
+	});
 
 	// File handling
 	function handleDragOver(event: DragEvent) {
@@ -484,5 +597,50 @@
 				{/if}
 			</Button>
 		</Card.Footer>
+	</Card.Root>
+
+	<!-- XML/JSON Comparison Card -->
+	<Card.Root class="mt-6">
+		<Card.Header>
+			<Card.Title class="flex items-center gap-2">
+				<Code2 class="h-5 w-5" />
+				Comparaison XML / JSON
+			</Card.Title>
+			<Card.Description>
+				Correspondance entre les instructions XML InstrumenPoche et le format JSON UbuMaths
+			</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			{#if xmlJsonPairs.length > 0}
+				<div
+					class="max-h-[500px] space-y-4 overflow-y-auto rounded-lg border border-border bg-muted/30 p-4"
+				>
+					{#each xmlJsonPairs as pair, i (i)}
+						<div class="space-y-1">
+							<!-- XML instruction (blue) -->
+							<pre
+								class="overflow-x-auto rounded bg-blue-50 p-2 font-mono text-xs break-all whitespace-pre-wrap text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">{pair.xml}</pre>
+							<!-- JSON translation (green) with step numbers -->
+							{#each pair.json.split('\n') as jsonLine, lineIndex (lineIndex)}
+								<pre
+									class="overflow-x-auto rounded bg-green-50 p-2 font-mono text-xs break-all whitespace-pre-wrap text-green-700 dark:bg-green-950/50 dark:text-green-300"><span
+										class="mr-2 inline-block min-w-[2rem] text-right font-bold text-green-500"
+										>[{pair.stepStartIndex + lineIndex}]</span
+									>{jsonLine}</pre>
+							{/each}
+						</div>
+					{/each}
+				</div>
+			{:else}
+				<div
+					class="flex flex-col items-center justify-center rounded-lg border border-dashed border-muted-foreground/25 py-12 text-center"
+				>
+					<Code2 class="h-12 w-12 text-muted-foreground/50" />
+					<p class="mt-2 text-sm text-muted-foreground">
+						Importez et convertissez un fichier XML pour voir la correspondance des instructions
+					</p>
+				</div>
+			{/if}
+		</Card.Content>
 	</Card.Root>
 </div>
