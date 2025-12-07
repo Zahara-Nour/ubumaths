@@ -129,8 +129,8 @@ function parseRandomContent(content: string): RandomSpec {
 		// Split modifier part at ! to get modifier and exclusions
 		const [modifier, exclusionsAfterModifier] = splitAtTopLevel(modifierAndExclusionsPart, '!');
 
-		// Check if modifier is +- or +-
-		if (modifier === '+-' || modifier === '+-') {
+		// Check if modifier is +- or ±
+		if (modifier === '+-' || modifier === '±') {
 			isRelative = true;
 			exclusionSpec = exclusionsAfterModifier;
 		} else {

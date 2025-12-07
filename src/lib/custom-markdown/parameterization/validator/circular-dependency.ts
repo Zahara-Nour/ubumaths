@@ -122,7 +122,7 @@ export function detectCircularDependencies(variables: Variable[]): ValidationRes
 			if (cycle) {
 				errors.push({
 					type: 'circular-dependency',
-					message: `Circular dependency detected: ${cycle.join(' -> ')}`,
+					message: `Circular dependency detected: ${cycle.join(' → ')}`,
 					variable: variable.name,
 					path: cycle
 				});
