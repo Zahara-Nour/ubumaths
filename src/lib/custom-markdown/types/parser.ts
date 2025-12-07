@@ -75,6 +75,8 @@ export interface MathPlaceholder {
 	placeholder: string; // Unique placeholder string (e.g., "__MATH_0__")
 	latex: string; // Original LaTeX content
 	isBlock: boolean; // true for $$...$$ (block), false for $...$ (inline)
+	/** Original syntax: 'latex' for $/$$ or 'custom' for ~/~~ */
+	syntax?: 'latex' | 'custom';
 	startIndex: number; // Original position in source text
 	endIndex: number; // Original end position in source text
 	/** Whether this math expression contains \placeholder commands */
