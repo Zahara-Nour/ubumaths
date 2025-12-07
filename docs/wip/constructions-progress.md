@@ -1,7 +1,7 @@
 # Constructions Module - Implementation Progress
 
-**Status**: COMPLETE
-**Date**: 2025-12-04
+**Status**: ACTIVE
+**Date**: 2025-12-07
 
 ## Summary
 
@@ -68,6 +68,21 @@ Complete rewrite of InstrumenPoche (geometry animation player) into Svelte 5 + T
   - XML parsing timeout (10s)
   - Input size limit (5MB)
   - Role-based access (teachers/admins only)
+
+### Phase 7: Midpoints and Marks
+
+- **Midpoint step**: `{"midpoint": "midpoint_AB"}` - Creates point at midpoint of A and B
+  - Position auto-calculated from parent points
+  - Recalculates when parent points move
+  - Supports label, style, radius, color options
+- **Midpoint as target**: `{"move": "pencil", "to": "midpoint_AB"}` - Move to calculated midpoint
+  - Works for any target reference (move, place, line, circle center)
+- **Mark step refactored**: `{"mark": "mark_AB"}` - Segment length mark
+  - ID encodes endpoints (e.g., `mark_A1B1`, `mark_A'B'`)
+  - Position calculated from segment midpoint
+  - Angle calculated from segment direction
+- **Point ID pattern**: `[A-Z][0-9]?'?` (letter, optional digit, optional apostrophe)
+  - Examples: A, A1, A', A1'
 
 ## Architecture Decisions
 

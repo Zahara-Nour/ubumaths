@@ -36,8 +36,7 @@ import {
 	constructionScriptSchema,
 	type ConstructionScriptInput,
 	type StepInput,
-	type CoordPair,
-	type LabelInput
+	type CoordPair
 } from './schemas';
 
 // =============================================================================
@@ -255,21 +254,16 @@ interface Position {
 /** Line style type for internal conversion */
 type LineStyle = 'solid' | 'dashed' | 'dotted';
 
-/** Pending label to be integrated into the next point creation */
-interface PendingLabel {
-	pointIepId: string;
-	label: LabelInput;
-}
-
 interface ConversionContext {
 	objectIdCounter: number;
 	pointMap: Map<string, string>; // Maps IEP id to UbuMaths id
-	pointPositions: Map<string, Position>; // Tracks point positions by IEP id (for labels)
+	pointPositions: Map<string, Position>; // Tracks point positions by IEP id
 	currentPosition: { x: number; y: number }; // Current pencil position (for tracer without target)
+	currentPointId?: string; // Current point ID the pencil is at (IEP id, e.g., "A", "B1")
+	lastSegmentPoints?: { from: string; to: string }; // Last drawn segment point IDs (for mark ID)
 	createdObjects: Set<string>;
 	steps: StepInput[];
 	warnings: string[];
-	pendingLabels: Map<string, PendingLabel>; // Labels to be applied to points
 }
 
 // =============================================================================
@@ -514,17 +508,11 @@ function convertPointAction(
 				setPointPosition(ctx, attrs.id, { x, y });
 			}
 
-			// Check if there's a pending label for this point
-			const pendingLabel = attrs.id ? ctx.pendingLabels.get(attrs.id) : undefined;
-			if (pendingLabel) {
-				ctx.pendingLabels.delete(attrs.id!);
-			}
-
-			// New format: { point: id, at: [x, y], label?: ..., style?: ..., color?: ... }
+			// New format: { point: id, at: [x, y], style?: ..., color?: ... }
+			// Labels are now separate steps (see 'nommer' case)
 			const pointStep: StepInput = {
 				point: id,
 				at: coordPair(x, y),
-				...(pendingLabel && { label: pendingLabel.label }),
 				style: 'dot',
 				radius: 4,
 				color: convertColor(attrs.couleur)
@@ -535,54 +523,22 @@ function convertPointAction(
 			break;
 		}
 		case 'nommer': {
-			// Point naming - in new format, labels are integrated with points
-			// If the point already exists, we need to create a separate text object
-			// If the point doesn't exist yet, store the label for later
+			// Point naming - create a label step attached to the point
 			if (!attrs.id || !attrs.nom) break;
 
-			const pointId = ctx.pointMap.get(attrs.id);
 			const offsetX = attrs.abscisse ? parseFloat(attrs.abscisse) : 10;
 			const offsetY = attrs.ordonnee ? parseFloat(attrs.ordonnee) : -10;
+			const labelId = `label_${attrs.id}`;
 
-			if (pointId && ctx.createdObjects.has(pointId)) {
-				// Point already exists - create a separate text object
-				const labelId = `label_${attrs.id}`;
-
-				if (ctx.createdObjects.has(labelId)) {
-					// Label already exists - move it to new position
-					const pointPos = getPointPosition(ctx, attrs.id);
-					if (pointPos) {
-						ctx.steps.push({
-							move: labelId,
-							to: coordPair(pointPos.x + offsetX, pointPos.y + offsetY)
-						});
-					}
-				} else {
-					// Create new text label
-					const pointPos = getPointPosition(ctx, attrs.id);
-					if (pointPos) {
-						ctx.steps.push({
-							text: labelId,
-							at: coordPair(pointPos.x + offsetX, pointPos.y + offsetY),
-							content: attrs.nom,
-							size: 14,
-							color: convertColor(attrs.couleur)
-						});
-						ctx.createdObjects.add(labelId);
-					}
-				}
-			} else {
-				// Point doesn't exist yet - store label for later integration
-				const label: LabelInput =
-					offsetX !== 10 || offsetY !== -10
-						? { text: attrs.nom, offset: [offsetX, offsetY] }
-						: attrs.nom;
-
-				ctx.pendingLabels.set(attrs.id, {
-					pointIepId: attrs.id,
-					label
-				});
-			}
+			// Emit a label step (attached to point, follows it if moved)
+			// Note: offset uses numeric tuple [number, number], not CoordPair which allows expressions
+			ctx.steps.push({
+				label: labelId,
+				offset: [offsetX, offsetY] as [number, number],
+				color: convertColor(attrs.couleur),
+				size: attrs.taille ? parseInt(attrs.taille) : 14
+			});
+			ctx.createdObjects.add(labelId);
 			break;
 		}
 		case 'translation': {
@@ -740,15 +696,29 @@ function convertPencilAction(
 	switch (mouvement) {
 		case 'translation': {
 			// Move pencil position
-			if (attrs.abscisse && attrs.ordonnee) {
-				const newX = parseFloat(attrs.abscisse);
-				const newY = parseFloat(attrs.ordonnee);
-				ctx.currentPosition = { x: newX, y: newY };
+			// Priority: cible (declarative) > coordinates (absolute)
+			// When cible is present, emit declarative reference - engine resolves position
+			if (attrs.cible) {
+				// Move pencil to target point (declarative)
+				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
 
-				// Only emit duration if XML specifies vitesse, otherwise Engine calculates
+				// Update internal position tracking from coordinates if available
+				if (attrs.abscisse && attrs.ordonnee) {
+					ctx.currentPosition = { x: parseFloat(attrs.abscisse), y: parseFloat(attrs.ordonnee) };
+				} else {
+					const targetPos = getPointPosition(ctx, attrs.cible);
+					if (targetPos) {
+						ctx.currentPosition = { x: targetPos.x, y: targetPos.y };
+					}
+				}
+
+				// Track current point ID for segment marks
+				ctx.currentPointId = attrs.cible;
+
+				// Emit declarative step - engine calculates actual position
 				const step: StepInput = {
 					move: 'pencil',
-					to: coordPair(newX, newY)
+					to: targetId
 				};
 				if (attrs.vitesse) {
 					(step as { duration?: number }).duration = Math.max(
@@ -757,18 +727,17 @@ function convertPencilAction(
 					);
 				}
 				ctx.steps.push(step);
-			} else if (attrs.cible) {
-				// Move pencil to target point
-				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
-				const targetPos = getPointPosition(ctx, attrs.cible);
-				if (targetPos) {
-					ctx.currentPosition = { x: targetPos.x, y: targetPos.y };
-				}
+			} else if (attrs.abscisse && attrs.ordonnee) {
+				// Fallback: absolute coordinates when no target point
+				const newX = parseFloat(attrs.abscisse);
+				const newY = parseFloat(attrs.ordonnee);
+				ctx.currentPosition = { x: newX, y: newY };
+				// Clear current point ID - we're at coordinates, not a named point
+				ctx.currentPointId = undefined;
 
-				// Only emit duration if XML specifies vitesse, otherwise Engine calculates
 				const step: StepInput = {
 					move: 'pencil',
-					to: targetId
+					to: coordPair(newX, newY)
 				};
 				if (attrs.vitesse) {
 					(step as { duration?: number }).duration = Math.max(
@@ -819,14 +788,29 @@ function convertPencilAction(
 				ctx.createdObjects.add(id);
 				ctx.steps.push(lineStep);
 
-				// Update current position for tracer without target
+				// Track segment point IDs for mark ID generation
+				if (ctx.currentPointId) {
+					ctx.lastSegmentPoints = {
+						from: ctx.currentPointId,
+						to: attrs.cible
+					};
+				} else {
+					// No source point ID - can't generate mark ID
+					ctx.lastSegmentPoints = undefined;
+				}
+
+				// Update current position and point ID
 				const targetPos = getPointPosition(ctx, attrs.cible);
 				if (targetPos) {
 					ctx.currentPosition = { x: targetPos.x, y: targetPos.y };
 				}
+				ctx.currentPointId = attrs.cible;
 			} else {
 				// Simple segment to coordinates
 				const isVector = attrs.style === 'vecteur';
+
+				// No point IDs for coordinate-based segments - can't generate mark ID
+				ctx.lastSegmentPoints = undefined;
 
 				// New format: { line: id, to: [x, y], arrow?: ..., color?: ..., width?: ..., style?: ... }
 				const lineStep: StepInput = {
@@ -840,8 +824,9 @@ function convertPencilAction(
 				ctx.createdObjects.add(id);
 				ctx.steps.push(lineStep);
 
-				// Update current position
+				// Update current position, clear point ID
 				ctx.currentPosition = { x: endX, y: endY };
+				ctx.currentPointId = undefined;
 			}
 			break;
 		}
@@ -865,6 +850,23 @@ function convertPencilAction(
 		case 'masquer': {
 			// New format: { hide: "pencil" }
 			ctx.steps.push({ hide: 'pencil' });
+			break;
+		}
+		case 'rotation': {
+			// Pencil rotation
+			if (attrs.angle) {
+				const targetAngle = parseFloat(attrs.angle);
+				ctx.steps.push({
+					rotate: 'pencil',
+					to: targetAngle
+				});
+			} else if (attrs.cible) {
+				const targetId = ctx.pointMap.get(attrs.cible) || generateObjectId(ctx, 'P', attrs.cible);
+				ctx.steps.push({
+					rotate: 'pencil',
+					toward: targetId
+				});
+			}
 			break;
 		}
 	}
@@ -1155,7 +1157,47 @@ function convertSetSquareAction(
 
 /**
  * Convert length mark actions
- * New format: { mark: "m1", at: [x, y], angle: 0 }
+ * New format: { mark: "m1", at: [x, y], shape: "//" }
+ */
+/**
+ * Parse forme attribute to determine mark shape
+ * InstrumenPoche uses:
+ * - Backslashes/Slashes/Pipes: \, \\, \\\, /, //, ///, |, ||, ||| → /, //, ///
+ * - X or x = X (cross)
+ * - O or o = o (circle)
+ */
+function parseFormeToShape(forme: string | undefined): '/' | '//' | '///' | 'X' | 'o' | undefined {
+	if (!forme) return undefined;
+
+	const trimmed = forme.trim();
+
+	// Check for cross (X)
+	if (trimmed.toLowerCase() === 'x') {
+		return 'X';
+	}
+
+	// Check for circle (O)
+	if (trimmed.toLowerCase() === 'o') {
+		return 'o';
+	}
+
+	// Count tick-like symbols (backslashes, slashes, or pipes)
+	const backslashCount = (trimmed.match(/\\/g) || []).length;
+	const slashCount = (trimmed.match(/\//g) || []).length;
+	const pipeCount = (trimmed.match(/\|/g) || []).length;
+	const tickCount = Math.max(backslashCount, slashCount, pipeCount);
+
+	if (tickCount >= 3) return '///';
+	if (tickCount === 2) return '//';
+	if (tickCount === 1) return '/';
+
+	return undefined;
+}
+
+/**
+ * Convert length mark actions (segment tick marks)
+ * New format: { mark: "mark_AB", shape: "//" }
+ * Mark ID encodes the segment endpoints for position/angle calculation by engine.
  */
 function convertLengthMarkAction(
 	attrs: IepAction['$'],
@@ -1163,31 +1205,41 @@ function convertLengthMarkAction(
 	ctx: ConversionContext
 ): void {
 	if (mouvement === 'creer') {
-		// Length marks are small tick marks on segments
-		const id = generateObjectId(ctx, 'mark', attrs.id);
+		// Check if we have segment point IDs
+		if (!ctx.lastSegmentPoints) {
+			ctx.warnings.push(
+				`Length mark: no segment point IDs available. Draw a segment between named points first.`
+			);
+			return;
+		}
+
+		// Generate mark ID from segment point IDs: mark_<from><to>
+		const markId = `mark_${ctx.lastSegmentPoints.from}${ctx.lastSegmentPoints.to}`;
+
 		// Register mapping so hide/show actions can find this object later
 		if (attrs.id) {
-			ctx.pointMap.set(attrs.id, id);
+			ctx.pointMap.set(attrs.id, markId);
 		}
-		const x = attrs.abscisse ? parseFloat(attrs.abscisse) : 0;
-		const y = attrs.ordonnee ? parseFloat(attrs.ordonnee) : 0;
-		const angle = attrs.angle ? parseFloat(attrs.angle) : 0;
 
-		// New format: { mark: id, at: [x, y], angle: degrees }
+		// Parse forme to get shape (/, //, ///, X, o)
+		const shape = parseFormeToShape(attrs.forme);
+
+		// New format: { mark: "mark_AB", shape: "//" }
+		// Position and angle are calculated by engine from point IDs
 		ctx.steps.push({
-			mark: id,
-			at: coordPair(x, y),
-			angle: angle,
+			mark: markId,
+			// Only add shape if not default (/)
+			...(shape && shape !== '/' ? { shape } : {}),
 			color: convertColor(attrs.couleur),
 			width: parseLineWidth(attrs.epaisseur, 1)
 		});
-		ctx.createdObjects.add(id);
+		ctx.createdObjects.add(markId);
 	}
 }
 
 /**
  * Convert right angle mark actions
- * Right angle marks are not directly supported in new format - emit as mark
+ * Right angle marks are not directly supported in new format - emit warning
  */
 function convertRightAngleAction(
 	attrs: IepAction['$'],
@@ -1195,26 +1247,11 @@ function convertRightAngleAction(
 	ctx: ConversionContext
 ): void {
 	if (mouvement === 'creer') {
-		const id = generateObjectId(ctx, 'rightAngle', attrs.id);
-		// Register mapping so hide/show actions can find this object later
-		if (attrs.id) {
-			ctx.pointMap.set(attrs.id, id);
-		}
-
-		// Right angle marks are not directly supported - use mark as approximation
-		const vertexX = attrs.abscisse_sommet ? parseFloat(attrs.abscisse_sommet) : 0;
-		const vertexY = attrs.ordonnee_sommet ? parseFloat(attrs.ordonnee_sommet) : 0;
-
-		ctx.warnings.push(`Right angle mark ${id}: using mark approximation`);
-
-		// New format: { mark: id, at: [x, y], angle: 0 }
-		ctx.steps.push({
-			mark: id,
-			at: coordPair(vertexX, vertexY),
-			angle: 0,
-			color: convertColor(attrs.couleur)
-		});
-		ctx.createdObjects.add(id);
+		// Right angle marks require a vertex point and two adjacent segments
+		// This is not yet supported in the new format
+		ctx.warnings.push(
+			`Right angle mark: not yet supported in new format. Vertex at (${attrs.abscisse_sommet ?? 0}, ${attrs.ordonnee_sommet ?? 0})`
+		);
 	}
 }
 
@@ -1257,29 +1294,36 @@ function convertImageAction(
 
 /**
  * Convert mark actions (segment marks)
- * New format: { mark: id, at: [x, y], angle: degrees }
+ * New format: { mark: "mark_AB", shape: "/" }
+ * Mark ID encodes the segment endpoints for position/angle calculation by engine.
  */
 function convertMarkAction(attrs: IepAction['$'], mouvement: string, ctx: ConversionContext): void {
 	if (mouvement === 'creer') {
-		const id = generateObjectId(ctx, 'mark', attrs.id);
+		// Check if we have segment point IDs
+		if (!ctx.lastSegmentPoints) {
+			ctx.warnings.push(
+				`Mark: no segment point IDs available. Draw a segment between named points first.`
+			);
+			return;
+		}
+
+		// Generate mark ID from segment point IDs: mark_<from><to>
+		const markId = `mark_${ctx.lastSegmentPoints.from}${ctx.lastSegmentPoints.to}`;
+
 		// Register mapping so hide/show actions can find this object later
 		if (attrs.id) {
-			ctx.pointMap.set(attrs.id, id);
+			ctx.pointMap.set(attrs.id, markId);
 		}
-		const x = attrs.abscisse ? parseFloat(attrs.abscisse) : 0;
-		const y = attrs.ordonnee ? parseFloat(attrs.ordonnee) : 0;
-		const angle = attrs.angle ? parseFloat(attrs.angle) : 0;
 
-		// New format: { mark: id, at: [x, y], angle: degrees }
+		// New format: { mark: "mark_AB" }
+		// Position and angle are calculated by engine from point IDs
 		ctx.steps.push({
-			mark: id,
-			at: coordPair(x, y),
-			angle: angle,
+			mark: markId,
 			length: attrs.rayon ? parseFloat(attrs.rayon) : 5,
 			color: convertColor(attrs.couleur),
 			width: parseLineWidth(attrs.epaisseur, 2)
 		});
-		ctx.createdObjects.add(id);
+		ctx.createdObjects.add(markId);
 	}
 }
 
@@ -1313,8 +1357,7 @@ function convertDocument(
 		currentPosition: { x: 0, y: 0 },
 		createdObjects: new Set(),
 		steps: [],
-		warnings: [],
-		pendingLabels: new Map()
+		warnings: []
 	};
 
 	// Use provided options or extract from XML
@@ -1351,7 +1394,25 @@ function convertDocument(
 	const validation = constructionScriptSchema.safeParse(scriptData);
 	if (!validation.success) {
 		const errorMessages = validation.error.issues
-			.map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+			.map((issue) => {
+				const path = issue.path.join('.');
+				// Try to extract the problematic value for better debugging
+				let value = '';
+				try {
+					// Navigate to the problematic value using the path
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					let current: any = scriptData;
+					for (const key of issue.path) {
+						current = current[key];
+					}
+					if (current !== undefined) {
+						value = ` (value: ${JSON.stringify(current)})`;
+					}
+				} catch {
+					// Ignore navigation errors
+				}
+				return `${path}: ${issue.message}${value}`;
+			})
 			.join('; ');
 		return {
 			script: undefined,
