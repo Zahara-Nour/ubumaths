@@ -27,6 +27,8 @@
 		showParameters?: boolean;
 		/** Show player controls */
 		showControls?: boolean;
+		/** Default color for objects (used if not set in script's canvas config) */
+		defaultColor?: string;
 		/** Custom class for the container */
 		class?: string;
 	}
@@ -39,6 +41,7 @@
 		showGrid = true,
 		showParameters = true,
 		showControls = true,
+		defaultColor,
 		class: className = ''
 	}: Props = $props();
 
@@ -112,7 +115,13 @@
 		</div>
 	{:else if isLoaded}
 		<!-- Canvas -->
-		<ConstructionCanvas {engine} width={canvasWidth} height={canvasHeight} {showGrid} />
+		<ConstructionCanvas
+			{engine}
+			width={canvasWidth}
+			height={canvasHeight}
+			{showGrid}
+			{defaultColor}
+		/>
 
 		<!-- Controls bar -->
 		{#if showControls}
