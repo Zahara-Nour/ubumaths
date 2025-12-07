@@ -2,8 +2,12 @@
  * Construction Schemas - Zod validation schemas for construction scripts
  *
  * This module provides comprehensive Zod schemas for validating construction
- * script JSON data. All schemas include sensible bounds and descriptive
- * error messages in English (for developer debugging).
+ * script JSON data using a simplified flat format.
+ *
+ * New format examples:
+ * - Objects: { "point": "A", "at": [100, 200] }
+ * - Instruments: { "move": "pencil", "to": [100, 200] }
+ * - Control: { "pause": 1000 }, { "parallel": [...] }
  *
  * @module constructions/schemas
  */
@@ -26,14 +30,20 @@ const MAX_DURATION = 30000;
 /** Maximum number of steps in a construction */
 const MAX_STEPS = 1000;
 
-/** Maximum number of vertices in a polygon */
-const MAX_POLYGON_VERTICES = 100;
-
 /** Maximum number of parameters */
 const MAX_PARAMETERS = 50;
 
 /** Maximum string length for labels and content */
 const MAX_STRING_LENGTH = 500;
+
+/** Maximum line width */
+const MAX_LINE_WIDTH = 20;
+
+/** Maximum font size */
+const MAX_FONT_SIZE = 100;
+
+/** Minimum font size */
+const MIN_FONT_SIZE = 6;
 
 // =============================================================================
 // Base Schemas
@@ -120,6 +130,33 @@ export const parameterNameSchema = z
 		'Parameter name must start with letter, contain only alphanumeric and underscore'
 	);
 
+/**
+ * Coordinate pair as tuple [x, y]
+ */
+export const coordPairSchema = z.tuple([coordExprSchema, coordExprSchema]);
+
+/**
+ * Target reference: either a point ID (string) or coordinates [x, y]
+ */
+export const targetRefSchema = z.union([objectIdSchema, coordPairSchema]);
+
+/**
+ * Instrument types (including compassRaised for 3D raised compass view)
+ */
+export const instrumentSchema = z.enum([
+	'ruler',
+	'compass',
+	'compassRaised',
+	'protractor',
+	'setSquare',
+	'pencil'
+]);
+
+/**
+ * Drawing instrument (for move, rotate)
+ */
+export const drawingTargetSchema = z.union([instrumentSchema, objectIdSchema]);
+
 // =============================================================================
 // Style Schemas
 // =============================================================================
@@ -135,17 +172,18 @@ export const lineStyleSchema = z.enum(['solid', 'dashed', 'dotted']);
 export const pointStyleSchema = z.enum(['dot', 'cross', 'circle', 'none']);
 
 /**
- * Common style properties
+ * Arrow position enum
  */
-export const stylePropsSchema = z.object({
+export const arrowSchema = z.enum(['start', 'end', 'both']);
+
+/**
+ * Common style properties for inline use
+ */
+export const inlineStyleSchema = z.object({
 	color: colorSchema.optional(),
-	lineWidth: z.number().min(0.1, 'Line width too small').max(20, 'Line width too large').optional(),
-	lineStyle: lineStyleSchema.optional(),
-	opacity: z
-		.number()
-		.min(0, 'Opacity must be at least 0')
-		.max(1, 'Opacity must be at most 1')
-		.optional()
+	width: z.number().min(0).max(MAX_LINE_WIDTH).optional(),
+	style: lineStyleSchema.optional(),
+	opacity: z.number().min(0).max(1).optional()
 });
 
 // =============================================================================
@@ -204,391 +242,305 @@ export const parameterDefSchema = z.discriminatedUnion('type', [
  * Map of parameter definitions
  */
 export const parameterDefMapSchema = z
-	.record(parameterNameSchema, parameterDefSchema)
+	.record(z.string(), parameterDefSchema)
 	.refine((data) => Object.keys(data).length <= MAX_PARAMETERS, {
 		message: `Too many parameters (max ${MAX_PARAMETERS})`
-	});
+	})
+	.refine(
+		(data) => {
+			const invalidKeys = Object.keys(data).filter(
+				(key) => !parameterNameSchema.safeParse(key).success
+			);
+			return invalidKeys.length === 0;
+		},
+		{
+			message:
+				'All parameter names must start with a letter and contain only alphanumeric characters and underscores'
+		}
+	);
 
 // =============================================================================
-// Inline Coordinates Schema
-// =============================================================================
-
-/**
- * Inline coordinates object
- */
-export const inlineCoordsSchema = z.object({
-	x: coordExprSchema,
-	y: coordExprSchema
-});
-
-/**
- * Point reference: either object ID or inline coordinates
- */
-export const pointRefSchema = z.union([objectIdSchema, inlineCoordsSchema]);
-
-// =============================================================================
-// Object Definition Schemas
+// Label Schema
 // =============================================================================
 
 /**
- * Base object properties
+ * Label can be a simple string or an object with text and offset
  */
-const objectDefBaseSchema = z.object({
-	id: objectIdSchema,
-	visible: z.boolean().optional(),
-	style: stylePropsSchema.optional()
-});
-
-/**
- * Point object definition
- */
-export const pointDefSchema = objectDefBaseSchema.extend({
-	kind: z.literal('point'),
-	x: coordExprSchema,
-	y: coordExprSchema,
-	pointStyle: pointStyleSchema.optional(),
-	radius: z.number().min(1).max(50).optional(),
-	label: z.string().max(20).optional()
-});
-
-/**
- * Segment object definition
- */
-export const segmentDefSchema = objectDefBaseSchema.extend({
-	kind: z.literal('segment'),
-	from: pointRefSchema,
-	to: pointRefSchema,
-	arrowHead: z.enum(['start', 'end', 'both']).optional()
-});
-
-/**
- * Line object definition
- */
-export const lineDefSchema = objectDefBaseSchema.extend({
-	kind: z.literal('line'),
-	through1: pointRefSchema,
-	through2: pointRefSchema
-});
-
-/**
- * Ray object definition
- */
-export const rayDefSchema = objectDefBaseSchema.extend({
-	kind: z.literal('ray'),
-	from: pointRefSchema,
-	through: pointRefSchema
-});
-
-/**
- * Circle object definition
- */
-export const circleDefSchema = objectDefBaseSchema.extend({
-	kind: z.literal('circle'),
-	center: pointRefSchema,
-	radius: exprSchema,
-	filled: z.boolean().optional(),
-	fillColor: colorSchema.optional()
-});
-
-/**
- * Arc object definition
- */
-export const arcDefSchema = objectDefBaseSchema.extend({
-	kind: z.literal('arc'),
-	center: pointRefSchema,
-	radius: exprSchema,
-	startAngle: exprSchema,
-	endAngle: exprSchema
-});
-
-/**
- * Polygon object definition
- */
-export const polygonDefSchema = objectDefBaseSchema.extend({
-	kind: z.literal('polygon'),
-	vertices: z
-		.array(pointRefSchema)
-		.min(3, 'Polygon must have at least 3 vertices')
-		.max(MAX_POLYGON_VERTICES, `Too many vertices (max ${MAX_POLYGON_VERTICES})`),
-	filled: z.boolean().optional(),
-	fillColor: colorSchema.optional()
-});
-
-/**
- * Text object definition
- */
-export const textDefSchema = objectDefBaseSchema.extend({
-	kind: z.literal('text'),
-	content: z.string().min(1).max(MAX_STRING_LENGTH),
-	x: coordExprSchema,
-	y: coordExprSchema,
-	fontSize: z.number().min(6).max(100).optional(),
-	anchor: z.enum(['start', 'middle', 'end']).optional(),
-	baseline: z.enum(['top', 'middle', 'bottom']).optional()
-});
-
-/**
- * Angle mark object definition
- */
-export const angleMarkDefSchema = objectDefBaseSchema.extend({
-	kind: z.literal('angleMark'),
-	point1: pointRefSchema,
-	vertex: pointRefSchema,
-	point2: pointRefSchema,
-	radius: z.number().min(5).max(100).optional(),
-	rightAngle: z.boolean().optional()
-});
-
-/**
- * Union of all object definitions
- */
-export const objectDefSchema = z.discriminatedUnion('kind', [
-	pointDefSchema,
-	segmentDefSchema,
-	lineDefSchema,
-	rayDefSchema,
-	circleDefSchema,
-	arcDefSchema,
-	polygonDefSchema,
-	textDefSchema,
-	angleMarkDefSchema
+export const labelSchema = z.union([
+	z.string().max(20, 'Label text too long'),
+	z.object({
+		text: z.string().max(20, 'Label text too long'),
+		offset: z.tuple([z.number(), z.number()]).optional()
+	})
 ]);
 
 // =============================================================================
-// Instrument Schemas
+// Object Step Schemas (first key = type, value = id)
 // =============================================================================
 
 /**
- * Instrument type enum
+ * Point step: { "point": "A", "at": [100, 200], "label": "A" }
  */
-export const instrumentTypeSchema = z.enum(['ruler', 'compass', 'protractor', 'setSquare']);
+export const pointStepSchema = z.object({
+	point: objectIdSchema,
+	at: coordPairSchema,
+	label: labelSchema.optional(),
+	style: pointStyleSchema.optional(),
+	radius: z.number().min(1).max(50).optional(),
+	color: colorSchema.optional(),
+	visible: z.boolean().optional()
+});
 
 /**
- * Action target: object ID or instrument type
+ * Line step: { "line": "seg1", "to": "B" } or { "line": "seg1", "to": [300, 400] }
+ * Draws from current pencil position to target
  */
-export const actionTargetSchema = z.union([objectIdSchema, instrumentTypeSchema]);
+export const lineStepSchema = z.object({
+	line: objectIdSchema,
+	to: targetRefSchema,
+	arrow: arrowSchema.optional(),
+	color: colorSchema.optional(),
+	width: z.number().min(0).max(MAX_LINE_WIDTH).optional(),
+	style: lineStyleSchema.optional(),
+	visible: z.boolean().optional()
+});
+
+/**
+ * Arc step: { "arc": "c1", "sweep": 360 }
+ * Draws arc from current compass position
+ */
+export const arcStepSchema = z.object({
+	arc: objectIdSchema,
+	sweep: exprSchema, // Angle in degrees (positive = counterclockwise, negative = clockwise)
+	color: colorSchema.optional(),
+	width: z.number().min(0).max(MAX_LINE_WIDTH).optional(),
+	style: lineStyleSchema.optional(),
+	visible: z.boolean().optional()
+});
+
+/**
+ * Circle step: { "circle": "c1", "center": "O", "radius": 100 }
+ * or: { "circle": "c1", "center": "O", "through": "A" }
+ */
+export const circleStepSchema = z
+	.object({
+		circle: objectIdSchema,
+		center: targetRefSchema,
+		radius: exprSchema.optional(),
+		through: objectIdSchema.optional(),
+		color: colorSchema.optional(),
+		width: z.number().min(0).max(MAX_LINE_WIDTH).optional(),
+		style: lineStyleSchema.optional(),
+		filled: z.boolean().optional(),
+		fillColor: colorSchema.optional(),
+		visible: z.boolean().optional()
+	})
+	.refine((data) => data.radius !== undefined || data.through !== undefined, {
+		message: 'Circle must have either radius or through point'
+	})
+	.refine((data) => !(data.radius !== undefined && data.through !== undefined), {
+		message: 'Circle cannot have both radius and through point'
+	});
+
+/**
+ * Text step: { "text": "t1", "at": [480, 146], "content": "Hello" }
+ */
+export const textStepSchema = z.object({
+	text: objectIdSchema,
+	at: coordPairSchema,
+	content: z.string().min(1).max(MAX_STRING_LENGTH),
+	color: colorSchema.optional(),
+	size: z.number().min(MIN_FONT_SIZE).max(MAX_FONT_SIZE).optional(),
+	anchor: z.enum(['start', 'middle', 'end']).optional(),
+	baseline: z.enum(['top', 'middle', 'bottom']).optional(),
+	visible: z.boolean().optional()
+});
+
+/**
+ * Mark step: { "mark": "m1", "at": [352, 285], "angle": 45 }
+ * Tick mark on a line segment
+ */
+export const markStepSchema = z.object({
+	mark: objectIdSchema,
+	at: coordPairSchema,
+	angle: exprSchema, // Rotation angle in degrees
+	count: z.number().int().min(1).max(5).optional(), // Number of tick marks (default 1)
+	length: z.number().min(1).max(50).optional(), // Length of tick mark
+	color: colorSchema.optional(),
+	width: z.number().min(0).max(MAX_LINE_WIDTH).optional(),
+	visible: z.boolean().optional()
+});
 
 // =============================================================================
-// Action Definition Schemas
+// Instrument Action Schemas (first key = action, value = instrument/target)
 // =============================================================================
 
 /**
- * Base action properties
+ * Move step: { "move": "pencil", "to": [100, 200] } or { "move": "ruler", "to": "A" }
  */
-const actionDefBaseSchema = z.object({
+export const moveStepSchema = z.object({
+	move: drawingTargetSchema,
+	to: targetRefSchema,
 	duration: durationSchema.optional(),
 	easing: z.enum(['linear', 'easeIn', 'easeOut', 'easeInOut']).optional()
 });
 
 /**
- * Show action
+ * Show step: { "show": "ruler" }
  */
-export const showActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('show'),
-	target: actionTargetSchema
+export const showStepSchema = z.object({
+	show: drawingTargetSchema,
+	duration: durationSchema.optional()
 });
 
 /**
- * Hide action
+ * Hide step: { "hide": "compass" }
  */
-export const hideActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('hide'),
-	target: actionTargetSchema
+export const hideStepSchema = z.object({
+	hide: drawingTargetSchema,
+	duration: durationSchema.optional()
 });
 
 /**
- * Translate action
+ * Rotate step: { "rotate": "ruler", "toward": "B" } or { "rotate": "compass", "to": 155 }
  */
-export const translateActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('translate'),
-	target: actionTargetSchema,
-	dx: exprSchema,
-	dy: exprSchema
+export const rotateStepSchema = z
+	.object({
+		rotate: drawingTargetSchema,
+		toward: objectIdSchema.optional(), // Rotate to point toward this object
+		to: exprSchema.optional(), // Rotate to this absolute angle (degrees)
+		duration: durationSchema.optional(),
+		easing: z.enum(['linear', 'easeIn', 'easeOut', 'easeInOut']).optional()
+	})
+	.refine((data) => data.toward !== undefined || data.to !== undefined, {
+		message: 'Rotate must have either toward or to'
+	})
+	.refine((data) => !(data.toward !== undefined && data.to !== undefined), {
+		message: 'Rotate cannot have both toward and to'
+	});
+
+/**
+ * Spread step: { "spread": "compass", "to": "T" } or { "spread": "compass", "radius": 100 }
+ * Sets the compass opening
+ */
+export const spreadStepSchema = z
+	.object({
+		spread: z.literal('compass'),
+		to: objectIdSchema.optional(), // Spread to reach this point from current position
+		radius: exprSchema.optional(), // Set to this radius directly
+		duration: durationSchema.optional(),
+		easing: z.enum(['linear', 'easeIn', 'easeOut', 'easeInOut']).optional()
+	})
+	.refine((data) => data.to !== undefined || data.radius !== undefined, {
+		message: 'Spread must have either to or radius'
+	})
+	.refine((data) => !(data.to !== undefined && data.radius !== undefined), {
+		message: 'Spread cannot have both to and radius'
+	});
+
+/**
+ * Raise step: { "raise": "compass" }
+ * Lifts the compass (3D animation)
+ */
+export const raiseStepSchema = z.object({
+	raise: z.literal('compass'),
+	duration: durationSchema.optional()
 });
 
 /**
- * Move to action
+ * Lower step: { "lower": "compass" }
+ * Lowers the compass (3D animation)
  */
-export const moveToActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('moveTo'),
-	target: actionTargetSchema,
-	x: coordExprSchema,
-	y: coordExprSchema
+export const lowerStepSchema = z.object({
+	lower: z.literal('compass'),
+	duration: durationSchema.optional()
 });
-
-/**
- * Rotate action
- */
-export const rotateActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('rotate'),
-	target: actionTargetSchema,
-	angle: exprSchema,
-	center: pointRefSchema.optional()
-});
-
-/**
- * Scale action
- */
-export const scaleActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('scale'),
-	target: objectIdSchema,
-	factor: exprSchema,
-	center: pointRefSchema.optional()
-});
-
-/**
- * Style action
- */
-export const styleActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('style'),
-	target: objectIdSchema,
-	style: stylePropsSchema.partial()
-});
-
-/**
- * Draw action (progressive segment drawing)
- */
-export const drawActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('draw'),
-	target: objectIdSchema,
-	direction: z.enum(['forward', 'reverse']).optional()
-});
-
-/**
- * Draw circle action (compass animation)
- */
-export const drawCircleActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('drawCircle'),
-	target: objectIdSchema,
-	startAngle: exprSchema.optional(),
-	endAngle: exprSchema.optional()
-});
-
-/**
- * Set compass action
- */
-export const setCompassActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('setCompass'),
-	radius: exprSchema
-});
-
-/**
- * Measure action
- */
-export const measureActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('measure'),
-	from: pointRefSchema,
-	to: pointRefSchema
-});
-
-/**
- * Draw line action (pencil animation with synchronized segment creation)
- */
-export const drawLineActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('drawLine'),
-	from: pointRefSchema,
-	to: pointRefSchema,
-	createObject: z
-		.object({
-			id: objectIdSchema,
-			style: stylePropsSchema.optional(),
-			arrowHead: z.enum(['start', 'end', 'both']).optional()
-		})
-		.optional()
-});
-
-/**
- * Draw arc action (compass animation with synchronized arc creation)
- */
-export const drawArcActionDefSchema = actionDefBaseSchema.extend({
-	kind: z.literal('drawArc'),
-	center: pointRefSchema,
-	radius: exprSchema,
-	startAngle: exprSchema,
-	endAngle: exprSchema,
-	createObject: z
-		.object({
-			id: objectIdSchema,
-			style: stylePropsSchema.optional()
-		})
-		.optional()
-});
-
-/**
- * Union of all action definitions
- */
-export const actionDefSchema = z.discriminatedUnion('kind', [
-	showActionDefSchema,
-	hideActionDefSchema,
-	translateActionDefSchema,
-	moveToActionDefSchema,
-	rotateActionDefSchema,
-	scaleActionDefSchema,
-	styleActionDefSchema,
-	drawActionDefSchema,
-	drawCircleActionDefSchema,
-	setCompassActionDefSchema,
-	measureActionDefSchema,
-	drawLineActionDefSchema,
-	drawArcActionDefSchema
-]);
 
 // =============================================================================
-// Step Schemas
+// Modification Schemas
 // =============================================================================
 
 /**
- * Create step
+ * Style modification step: { "style": "t1", "color": "gray" }
  */
-export const createStepSchema = z.object({
-	type: z.literal('create'),
-	object: objectDefSchema
+export const styleStepSchema = z.object({
+	style: objectIdSchema,
+	color: colorSchema.optional(),
+	width: z.number().min(0).max(MAX_LINE_WIDTH).optional(),
+	lineStyle: lineStyleSchema.optional(),
+	opacity: z.number().min(0).max(1).optional(),
+	visible: z.boolean().optional(),
+	duration: durationSchema.optional()
 });
 
-/**
- * Action step
- */
-export const actionStepSchema = z.object({
-	type: z.literal('action'),
-	action: actionDefSchema
-});
+// =============================================================================
+// Control Schemas
+// =============================================================================
 
 /**
- * Pause step
+ * Pause step: { "pause": 1000 }
  */
 export const pauseStepSchema = z.object({
-	type: z.literal('pause'),
-	duration: durationSchema
+	pause: durationSchema
 });
 
 /**
- * Parallel step (multiple simultaneous actions)
+ * Non-parallel step union (for use in parallel arrays)
+ */
+export const nonParallelStepSchema = z.union([
+	pointStepSchema,
+	lineStepSchema,
+	arcStepSchema,
+	circleStepSchema,
+	textStepSchema,
+	markStepSchema,
+	moveStepSchema,
+	showStepSchema,
+	hideStepSchema,
+	rotateStepSchema,
+	spreadStepSchema,
+	raiseStepSchema,
+	lowerStepSchema,
+	styleStepSchema,
+	pauseStepSchema
+]);
+
+/**
+ * Parallel step: { "parallel": [...] }
+ * Executes multiple steps simultaneously
  */
 export const parallelStepSchema = z.object({
-	type: z.literal('parallel'),
-	actions: z
-		.array(actionDefSchema)
+	parallel: z
+		.array(nonParallelStepSchema)
 		.min(1, 'Parallel step must have at least one action')
 		.max(50, 'Too many parallel actions')
 });
 
 /**
- * Comment step
- */
-export const commentStepSchema = z.object({
-	type: z.literal('comment'),
-	text: z.string().max(1000)
-});
-
-/**
  * Union of all step types
+ * The discriminator is implicit based on which key is present
  */
-export const stepSchema = z.discriminatedUnion('type', [
-	createStepSchema,
-	actionStepSchema,
+export const stepSchema = z.union([
+	// Objects (first key is type, value is id)
+	pointStepSchema,
+	lineStepSchema,
+	arcStepSchema,
+	circleStepSchema,
+	textStepSchema,
+	markStepSchema,
+	// Instruments (first key is action, value is instrument)
+	moveStepSchema,
+	showStepSchema,
+	hideStepSchema,
+	rotateStepSchema,
+	spreadStepSchema,
+	raiseStepSchema,
+	lowerStepSchema,
+	// Modifications
+	styleStepSchema,
+	// Control
 	pauseStepSchema,
-	parallelStepSchema,
-	commentStepSchema
+	parallelStepSchema
 ]);
 
 // =============================================================================
@@ -630,14 +582,106 @@ export const constructionScriptSchema = z.object({
 /** Inferred type from constructionScriptSchema */
 export type ConstructionScriptInput = z.infer<typeof constructionScriptSchema>;
 
-/** Inferred type from objectDefSchema */
-export type ObjectDefInput = z.infer<typeof objectDefSchema>;
-
-/** Inferred type from actionDefSchema */
-export type ActionDefInput = z.infer<typeof actionDefSchema>;
-
 /** Inferred type from stepSchema */
 export type StepInput = z.infer<typeof stepSchema>;
+
+/** Inferred type for non-parallel steps */
+export type NonParallelStepInput = z.infer<typeof nonParallelStepSchema>;
+
+/** Individual step types */
+export type PointStepInput = z.infer<typeof pointStepSchema>;
+export type LineStepInput = z.infer<typeof lineStepSchema>;
+export type ArcStepInput = z.infer<typeof arcStepSchema>;
+export type CircleStepInput = z.infer<typeof circleStepSchema>;
+export type TextStepInput = z.infer<typeof textStepSchema>;
+export type MarkStepInput = z.infer<typeof markStepSchema>;
+export type MoveStepInput = z.infer<typeof moveStepSchema>;
+export type ShowStepInput = z.infer<typeof showStepSchema>;
+export type HideStepInput = z.infer<typeof hideStepSchema>;
+export type RotateStepInput = z.infer<typeof rotateStepSchema>;
+export type SpreadStepInput = z.infer<typeof spreadStepSchema>;
+export type RaiseStepInput = z.infer<typeof raiseStepSchema>;
+export type LowerStepInput = z.infer<typeof lowerStepSchema>;
+export type StyleStepInput = z.infer<typeof styleStepSchema>;
+export type PauseStepInput = z.infer<typeof pauseStepSchema>;
+export type ParallelStepInput = z.infer<typeof parallelStepSchema>;
+
+/** Coordinate pair type */
+export type CoordPair = z.infer<typeof coordPairSchema>;
+
+/** Target reference type (point ID or coordinates) */
+export type TargetRef = z.infer<typeof targetRefSchema>;
+
+/** Label type */
+export type LabelInput = z.infer<typeof labelSchema>;
+
+// =============================================================================
+// Type Guards for Step Types
+// =============================================================================
+
+export function isPointStep(step: StepInput): step is PointStepInput {
+	return 'point' in step;
+}
+
+export function isLineStep(step: StepInput): step is LineStepInput {
+	return 'line' in step;
+}
+
+export function isArcStep(step: StepInput): step is ArcStepInput {
+	return 'arc' in step;
+}
+
+export function isCircleStep(step: StepInput): step is CircleStepInput {
+	return 'circle' in step;
+}
+
+export function isTextStep(step: StepInput): step is TextStepInput {
+	return 'text' in step;
+}
+
+export function isMarkStep(step: StepInput): step is MarkStepInput {
+	return 'mark' in step;
+}
+
+export function isMoveStep(step: StepInput): step is MoveStepInput {
+	return 'move' in step;
+}
+
+export function isShowStep(step: StepInput): step is ShowStepInput {
+	return 'show' in step;
+}
+
+export function isHideStep(step: StepInput): step is HideStepInput {
+	return 'hide' in step;
+}
+
+export function isRotateStep(step: StepInput): step is RotateStepInput {
+	return 'rotate' in step;
+}
+
+export function isSpreadStep(step: StepInput): step is SpreadStepInput {
+	return 'spread' in step;
+}
+
+export function isRaiseStep(step: StepInput): step is RaiseStepInput {
+	return 'raise' in step;
+}
+
+export function isLowerStep(step: StepInput): step is LowerStepInput {
+	return 'lower' in step;
+}
+
+export function isStyleStep(step: StepInput): step is StyleStepInput {
+	return 'style' in step;
+}
+
+export function isPauseStep(step: StepInput): step is PauseStepInput {
+	return 'pause' in step;
+}
+
+export function isParallelStep(step: StepInput): step is ParallelStepInput {
+	return 'parallel' in step;
+}
 
 // =============================================================================
 // Validation Helpers
@@ -664,6 +708,25 @@ export function validateConstructionScript(
 	data: unknown
 ): { success: true; data: ConstructionScriptInput } | { success: false; error: string } {
 	const result = constructionScriptSchema.safeParse(data);
+	if (result.success) {
+		return { success: true, data: result.data };
+	}
+	const errorMessages = result.error.issues
+		.map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+		.join('; ');
+	return { success: false, error: errorMessages };
+}
+
+/**
+ * Validate a single step
+ *
+ * @param data - Raw step data to validate
+ * @returns Validation result with typed data or errors
+ */
+export function validateStep(
+	data: unknown
+): { success: true; data: StepInput } | { success: false; error: string } {
+	const result = stepSchema.safeParse(data);
 	if (result.success) {
 		return { success: true, data: result.data };
 	}
@@ -701,6 +764,42 @@ export function extractParameterRefs(expr: string): string[] {
 }
 
 /**
+ * Helper to check expressions in validation
+ */
+function checkExpr(
+	expr: string | number,
+	definedParams: Set<string>,
+	createdObjects: Set<string>,
+	undefinedRefs: string[]
+): void {
+	if (typeof expr !== 'string') return;
+	const refs = extractParameterRefs(expr);
+	for (const ref of refs) {
+		if (!definedParams.has(ref) && !createdObjects.has(ref)) {
+			if (!undefinedRefs.includes(ref)) {
+				undefinedRefs.push(ref);
+			}
+		}
+	}
+}
+
+/**
+ * Helper to check target references
+ */
+function checkTargetRef(
+	ref: TargetRef,
+	definedParams: Set<string>,
+	createdObjects: Set<string>,
+	undefinedRefs: string[]
+): void {
+	if (Array.isArray(ref)) {
+		checkExpr(ref[0], definedParams, createdObjects, undefinedRefs);
+		checkExpr(ref[1], definedParams, createdObjects, undefinedRefs);
+	}
+	// String refs are object IDs, validated separately
+}
+
+/**
  * Validate that all parameter references in a script are defined
  *
  * @param script - The construction script to validate
@@ -711,107 +810,59 @@ export function validateParameterReferences(script: ConstructionScriptInput): st
 	const createdObjects = new Set<string>();
 	const undefinedRefs: string[] = [];
 
-	function checkExpr(expr: string | number) {
-		if (typeof expr !== 'string') return;
-		const refs = extractParameterRefs(expr);
-		for (const ref of refs) {
-			// Check if it's a parameter or an object reference (e.g., $A.x)
-			if (!definedParams.has(ref) && !createdObjects.has(ref)) {
-				if (!undefinedRefs.includes(ref)) {
-					undefinedRefs.push(ref);
-				}
-			}
-		}
-	}
-
-	function checkPointRef(ref: string | { x: string | number; y: string | number }) {
-		if (typeof ref === 'string') {
-			// Object reference - will be validated separately
-		} else {
-			checkExpr(ref.x);
-			checkExpr(ref.y);
-		}
-	}
-
 	for (const step of script.steps) {
-		if (step.type === 'create') {
-			const obj = step.object;
-			createdObjects.add(obj.id);
-
-			switch (obj.kind) {
-				case 'point':
-					checkExpr(obj.x);
-					checkExpr(obj.y);
-					break;
-				case 'segment':
-					checkPointRef(obj.from);
-					checkPointRef(obj.to);
-					break;
-				case 'circle':
-					checkPointRef(obj.center);
-					checkExpr(obj.radius);
-					break;
-				case 'arc':
-					checkPointRef(obj.center);
-					checkExpr(obj.radius);
-					checkExpr(obj.startAngle);
-					checkExpr(obj.endAngle);
-					break;
-				case 'text':
-					checkExpr(obj.x);
-					checkExpr(obj.y);
-					break;
-				case 'polygon':
-					for (const vertex of obj.vertices) {
-						checkPointRef(vertex);
-					}
-					break;
-				case 'line':
-					checkPointRef(obj.through1);
-					checkPointRef(obj.through2);
-					break;
-				case 'ray':
-					checkPointRef(obj.from);
-					checkPointRef(obj.through);
-					break;
-				case 'angleMark':
-					checkPointRef(obj.point1);
-					checkPointRef(obj.vertex);
-					checkPointRef(obj.point2);
-					break;
+		// Track created objects
+		if (isPointStep(step)) {
+			createdObjects.add(step.point);
+			checkExpr(step.at[0], definedParams, createdObjects, undefinedRefs);
+			checkExpr(step.at[1], definedParams, createdObjects, undefinedRefs);
+		} else if (isLineStep(step)) {
+			createdObjects.add(step.line);
+			checkTargetRef(step.to, definedParams, createdObjects, undefinedRefs);
+		} else if (isArcStep(step)) {
+			createdObjects.add(step.arc);
+			checkExpr(step.sweep, definedParams, createdObjects, undefinedRefs);
+		} else if (isCircleStep(step)) {
+			createdObjects.add(step.circle);
+			checkTargetRef(step.center, definedParams, createdObjects, undefinedRefs);
+			if (step.radius !== undefined) {
+				checkExpr(step.radius, definedParams, createdObjects, undefinedRefs);
 			}
-		} else if (step.type === 'action') {
-			const action = step.action;
-			switch (action.kind) {
-				case 'translate':
-					checkExpr(action.dx);
-					checkExpr(action.dy);
-					break;
-				case 'moveTo':
-					checkExpr(action.x);
-					checkExpr(action.y);
-					break;
-				case 'rotate':
-					checkExpr(action.angle);
-					if (action.center && typeof action.center !== 'string') {
-						checkExpr(action.center.x);
-						checkExpr(action.center.y);
-					}
-					break;
-				case 'scale':
-					checkExpr(action.factor);
-					break;
-				case 'setCompass':
-					checkExpr(action.radius);
-					break;
-				case 'drawCircle':
-					if (action.startAngle !== undefined) checkExpr(action.startAngle);
-					if (action.endAngle !== undefined) checkExpr(action.endAngle);
-					break;
-				case 'measure':
-					checkPointRef(action.from);
-					checkPointRef(action.to);
-					break;
+		} else if (isTextStep(step)) {
+			createdObjects.add(step.text);
+			checkExpr(step.at[0], definedParams, createdObjects, undefinedRefs);
+			checkExpr(step.at[1], definedParams, createdObjects, undefinedRefs);
+		} else if (isMarkStep(step)) {
+			createdObjects.add(step.mark);
+			checkExpr(step.at[0], definedParams, createdObjects, undefinedRefs);
+			checkExpr(step.at[1], definedParams, createdObjects, undefinedRefs);
+			checkExpr(step.angle, definedParams, createdObjects, undefinedRefs);
+		} else if (isMoveStep(step)) {
+			checkTargetRef(step.to, definedParams, createdObjects, undefinedRefs);
+		} else if (isRotateStep(step)) {
+			if (step.to !== undefined) {
+				checkExpr(step.to, definedParams, createdObjects, undefinedRefs);
+			}
+		} else if (isSpreadStep(step)) {
+			if (step.radius !== undefined) {
+				checkExpr(step.radius, definedParams, createdObjects, undefinedRefs);
+			}
+		} else if (isParallelStep(step)) {
+			// Recursively check parallel steps (simplified - doesn't track object creation order)
+			for (const parallelStep of step.parallel) {
+				if (isPointStep(parallelStep)) {
+					createdObjects.add(parallelStep.point);
+				} else if (isLineStep(parallelStep)) {
+					createdObjects.add(parallelStep.line);
+				} else if (isArcStep(parallelStep)) {
+					createdObjects.add(parallelStep.arc);
+				} else if (isCircleStep(parallelStep)) {
+					createdObjects.add(parallelStep.circle);
+				} else if (isTextStep(parallelStep)) {
+					createdObjects.add(parallelStep.text);
+				} else if (isMarkStep(parallelStep)) {
+					createdObjects.add(parallelStep.mark);
+				}
 			}
 		}
 	}
