@@ -22,10 +22,9 @@ import type {
 	SharedVariationDefaults,
 	ResolvedCorrection
 } from '../types';
-import type { ResolvedMarkdown } from '$lib/shared/markdown';
-import { templateMarkdown } from '$lib/shared/markdown';
+import type { ResolvedMarkdown } from '$lib/custom-markdown';
+import { templateMarkdown, detectCircularDependencies } from '$lib/custom-markdown';
 import { validateTemplate } from '../validators/template-validator';
-import { detectCircularDependencies } from '$lib/shared/parameterization/validator/circular-dependency';
 import { resolveVariables } from './variable-resolver';
 import { resolveMarkdownContent, resolveSolution, resolveExpression } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';

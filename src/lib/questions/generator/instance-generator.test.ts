@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from './instance-generator';
 import type { QuestionTemplate, ResolvedVariable } from '../types';
-import { templateMarkdown } from '$lib/shared/markdown';
+import { templateMarkdown } from '$lib/custom-markdown';
 
 /**
  * Helper function to get numeric value from resolved variables array

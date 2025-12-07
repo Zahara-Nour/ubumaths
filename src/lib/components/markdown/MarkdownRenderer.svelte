@@ -21,8 +21,8 @@
 	@module components/markdown/MarkdownRenderer
 -->
 <script lang="ts">
-	import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
-	import type { DocumentNode, ParseOptions, InputState } from '$lib/exercises/types';
+	import { parseMarkdown } from '$lib/custom-markdown';
+	import type { DocumentNode, ParseOptions, InputState } from '$lib/custom-markdown';
 	import type { MarkdownDisplayMode } from './types';
 	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
 

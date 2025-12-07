@@ -24,7 +24,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Copy, Check, Image as ImageIcon, Settings } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { ImageSizeClass, ImageAlignment } from '$lib/exercises/types';
+	import type { ImageSizeClass, ImageAlignment } from '$lib/custom-markdown';
 	import { autoDetectSizeClass } from '$lib/exercises/services/image-dimensions';
 
 	import ImageUploader from './ImageUploader.svelte';

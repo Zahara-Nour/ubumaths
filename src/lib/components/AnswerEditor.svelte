@@ -24,8 +24,8 @@
 
 <script lang="ts">
 	import type { QuestionType, PrecisionType } from '$lib/questions/types';
-	import type { TemplateMarkdown } from '$lib/shared/markdown';
-	import { templateMarkdown } from '$lib/shared/markdown';
+	import type { TemplateMarkdown } from '$lib/custom-markdown';
+	import { templateMarkdown } from '$lib/custom-markdown';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';

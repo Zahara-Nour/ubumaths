@@ -31,7 +31,7 @@ import type {
 	PredicateRule,
 	CustomExpressionRule
 } from '../types';
-import { templateMarkdown } from '$lib/shared/markdown';
+import { templateMarkdown } from '$lib/custom-markdown';
 
 // ============================================================================
 // TYPE INTERFACE TESTS

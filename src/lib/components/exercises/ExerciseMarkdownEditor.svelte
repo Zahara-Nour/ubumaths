@@ -35,8 +35,8 @@
 	} from '$lib/exercises/services/image-markdown-editor';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { Variable } from '$lib/shared/parameterization';
-	import type { DistributionMode, ImageSizeClass, ImageAlignment } from '$lib/exercises/types';
+	import type { Variable, ImageSizeClass, ImageAlignment } from '$lib/custom-markdown';
+	import type { DistributionMode } from '$lib/exercises/types';
 
 	// Props
 	interface Props {

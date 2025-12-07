@@ -5,7 +5,7 @@
  * @module utils/markdown-cache
  */
 
-import type { DocumentNode, ParseOptions } from '$lib/exercises/types';
+import type { DocumentNode, ParseOptions } from '$lib/custom-markdown';
 
 interface CacheEntry {
 	ast: DocumentNode;

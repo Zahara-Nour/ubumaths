@@ -42,10 +42,8 @@ import type {
 	ConstraintOptions
 } from '$lib/questions/types';
 
-import type { DisplayOptions } from '$lib/shared/parameterization/display-options';
-
-import type { TemplateMarkdown } from '$lib/shared/markdown';
-import { templateMarkdown } from '$lib/shared/markdown';
+import type { DisplayOptions, TemplateMarkdown } from '$lib/custom-markdown';
+import { templateMarkdown } from '$lib/custom-markdown';
 
 import {
 	hasChoices,

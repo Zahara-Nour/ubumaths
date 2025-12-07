@@ -16,7 +16,7 @@
 -->
 <script lang="ts">
 	import 'mathlive';
-	import type { InputState } from '$lib/exercises/types';
+	import type { InputState } from '$lib/custom-markdown';
 
 	/**
 	 * MathLive math-field element interface
