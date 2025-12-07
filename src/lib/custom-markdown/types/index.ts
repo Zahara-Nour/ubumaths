@@ -93,5 +93,7 @@ export type {
 	// Resolution
 	ResolutionContext,
 	ValidationResult,
-	ValidationError
+	ValidationError,
+	// Display
+	DisplayOptions
 } from './parameterization';
