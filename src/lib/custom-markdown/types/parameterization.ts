@@ -17,7 +17,7 @@
  * @module custom-markdown/types/parameterization
  */
 
-import type { DisplayOptions } from '$lib/shared/parameterization/display-options';
+import type { DisplayOptions } from '../parameterization/display-options';
 
 // ============================================================================
 // TOKENS
@@ -306,3 +306,6 @@ export interface ValidationError {
 	/** Dependency path for circular dependencies */
 	path?: string[];
 }
+
+// Re-export DisplayOptions from its source
+export type { DisplayOptions } from '../parameterization/display-options';
