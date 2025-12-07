@@ -71,10 +71,12 @@ Complete rewrite of InstrumenPoche (geometry animation player) into Svelte 5 + T
 
 ### Phase 7: Midpoints, Marks, and Default Color
 
-- **Midpoint step**: `{"midpoint": "midpoint_AB"}` - Creates point at midpoint of A and B
+- **Midpoint step**: `{"midpoint": "O", "points": "AB"}` - Creates point O at midpoint of A and B
+  - `midpoint`: ID for the new point (e.g., "O", "M")
+  - `points`: two point IDs concatenated (e.g., "AB", "A1B1", "A'B'")
   - Position auto-calculated from parent points
   - Recalculates when parent points move
-  - Supports label, style, radius, color options
+  - Supports label, style, radius, color options (same as regular points)
 - **Midpoint as target**: `{"move": "pencil", "to": "midpoint_AB"}` - Move to calculated midpoint
   - Works for any target reference (move, place, line, circle center)
 - **Mark step refactored**: `{"mark": "mark_AB"}` - Segment length mark

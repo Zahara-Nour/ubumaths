@@ -305,12 +305,24 @@ export const pointStepSchema = z.object({
 });
 
 /**
- * Midpoint step: { "midpoint": "midpoint_A1B1" }
+ * Points pair schema: two point IDs concatenated (e.g., "AB", "A1B1", "A'B'")
+ * Each point ID follows pattern: letter, optional digit, optional apostrophe
+ */
+export const pointsPairSchema = z
+	.string()
+	.regex(
+		/^[A-Z][0-9]?'?[A-Z][0-9]?'?$/,
+		'Points must be two point IDs (e.g., "AB", "A1B1", "A\'B\'")'
+	);
+
+/**
+ * Midpoint step: { "midpoint": "O", "points": "A1B1" }
  * Creates a point at the midpoint of two existing points.
  * Position is calculated by the engine from the two referenced points.
  */
 export const midpointStepSchema = z.object({
-	midpoint: midpointIdSchema,
+	midpoint: objectIdSchema,
+	points: pointsPairSchema,
 	label: labelSchema.optional(),
 	style: pointStyleSchema.optional(),
 	radius: z.number().min(1).max(50).optional(),
@@ -837,6 +849,31 @@ export function parseMidpointId(midpointId: string): { point1: string; point2: s
 	// Match two point IDs: each is [A-Z][0-9]?'?
 	const pointPattern = /^([A-Z][0-9]?'?)([A-Z][0-9]?'?)$/;
 	const match = pointsPart.match(pointPattern);
+
+	if (!match) return null;
+
+	return {
+		point1: match[1],
+		point2: match[2]
+	};
+}
+
+/**
+ * Parse a points pair string to extract the two point IDs
+ * Points pair format: <point1><point2> (e.g., "AB", "A1B1", "A'B'")
+ * Point ID format: [A-Z][0-9]?'?
+ *
+ * @param pointsPair - The points pair string (e.g., "A1B1", "AB")
+ * @returns Object with point1 and point2 IDs, or null if invalid
+ *
+ * @example
+ * parsePointsPair("A1B1") // { point1: "A1", point2: "B1" }
+ * parsePointsPair("AB") // { point1: "A", point2: "B" }
+ */
+export function parsePointsPair(pointsPair: string): { point1: string; point2: string } | null {
+	// Match two point IDs: each is [A-Z][0-9]?'?
+	const pointPattern = /^([A-Z][0-9]?'?)([A-Z][0-9]?'?)$/;
+	const match = pointsPair.match(pointPattern);
 
 	if (!match) return null;
 

@@ -60,7 +60,12 @@ import {
 	isPauseStep,
 	isParallelStep
 } from '../types';
-import { constructionScriptSchema, parseMarkId, parseMidpointId } from '../schemas';
+import {
+	constructionScriptSchema,
+	parseMarkId,
+	parseMidpointId,
+	parsePointsPair
+} from '../schemas';
 import { evaluateExpr, createContext, type EvaluationContext } from './evaluator';
 import { Timeline, type TimelineOptions, type LoadOptions } from './timeline.svelte';
 import { DEFAULT_CANVAS_CONFIG, DEFAULT_COMPASS_RADIUS } from '../constants';
@@ -651,7 +656,7 @@ export class ConstructionEngine {
 		}
 		if (isMidpointStep(step)) {
 			// Calculate midpoint from two referenced points
-			const pointIds = parseMidpointId(step.midpoint);
+			const pointIds = parsePointsPair(step.points);
 			if (pointIds) {
 				const p1 = objectPositions.get(pointIds.point1);
 				const p2 = objectPositions.get(pointIds.point2);
@@ -913,7 +918,7 @@ export class ConstructionEngine {
 
 		// Recalculate position for midpoint objects (from two referenced points)
 		if (state.type === 'point' && isMidpointStep(state.step)) {
-			const pointIds = parseMidpointId(state.step.midpoint);
+			const pointIds = parsePointsPair(state.step.points);
 			if (!pointIds) return state;
 
 			const point1State = this.objects.get(pointIds.point1);
@@ -1242,10 +1247,10 @@ export class ConstructionEngine {
 		}
 
 		if (isMidpointStep(step)) {
-			// Parse midpoint ID to get point IDs (midpoint_AB -> A, B)
-			const pointIds = parseMidpointId(step.midpoint);
+			// Parse points field to get point IDs (e.g., "AB" -> A, B)
+			const pointIds = parsePointsPair(step.points);
 			if (!pointIds) {
-				console.warn(`Midpoint ${step.midpoint}: invalid midpoint ID format`);
+				console.warn(`Midpoint ${step.midpoint}: invalid points format "${step.points}"`);
 				return;
 			}
 
