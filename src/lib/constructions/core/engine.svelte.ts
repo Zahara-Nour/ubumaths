@@ -56,8 +56,39 @@ import {
 } from '../types';
 import { constructionScriptSchema } from '../schemas';
 import { evaluateExpr, createContext, type EvaluationContext } from './evaluator';
-import { Timeline, type TimelineOptions } from './timeline.svelte';
+import { Timeline, type TimelineOptions, type LoadOptions } from './timeline.svelte';
 import { DEFAULT_CANVAS_CONFIG, DEFAULT_COMPASS_RADIUS } from '../constants';
+
+// =============================================================================
+// Duration Calculation Constants
+// =============================================================================
+
+/** Animation speed: milliseconds per pixel traveled */
+const MS_PER_PIXEL = 1.5;
+
+/** Minimum animation duration to avoid jarring movements */
+const MIN_MOVE_DURATION = 300;
+
+/** Maximum animation duration cap */
+const MAX_MOVE_DURATION = 2000;
+
+/** Duration for rotation (ms per degree) */
+const MS_PER_DEGREE = 5;
+
+/** Minimum rotation duration */
+const MIN_ROTATE_DURATION = 200;
+
+/** Maximum rotation duration */
+const MAX_ROTATE_DURATION = 1500;
+
+/** Default duration for instant steps (object creation, style) */
+const INSTANT_STEP_DURATION = 100;
+
+/** Default duration for drawing steps (line, arc) */
+const DEFAULT_DRAW_DURATION = 500;
+
+/** Default duration for spread (compass opening) */
+const DEFAULT_SPREAD_DURATION = 300;
 
 // =============================================================================
 // Compass Raise/Lower Animation Constants
@@ -425,8 +456,12 @@ export class ConstructionEngine {
 			// Initialize instruments
 			this.#initializeInstruments();
 
-			// Load script into timeline
-			this.timeline.load(script);
+			// Calculate step durations based on simulated positions
+			const stepDurations = this.#calculateStepDurations();
+
+			// Load script into timeline with calculated durations
+			const loadOptions: LoadOptions = { stepDurations };
+			this.timeline.load(script, loadOptions);
 
 			// Apply initial state (step 0 objects if any)
 			// The timeline will call onStepChange which triggers applyStepsUpTo
@@ -476,6 +511,239 @@ export class ConstructionEngine {
 		for (const type of instrumentTypes) {
 			this.instruments.set(type, createInstrumentState(type));
 		}
+	}
+
+	// =========================================================================
+	// Duration Calculation (simulates positions to calculate animation durations)
+	// =========================================================================
+
+	/**
+	 * Calculate durations for all steps by simulating positions.
+	 *
+	 * This method simulates the execution of all steps to track instrument
+	 * positions, then calculates appropriate animation durations based on
+	 * distances traveled and angles rotated.
+	 *
+	 * @returns Array of durations in milliseconds, one per step
+	 */
+	#calculateStepDurations(): number[] {
+		if (!this.script) return [];
+
+		const durations: number[] = [];
+
+		// Simulated instrument positions and rotations
+		const positions = new Map<string, Position>();
+		const rotations = new Map<string, number>();
+		const objectPositions = new Map<string, Position>();
+
+		// Initialize instrument positions
+		positions.set('pencil', { x: 0, y: 0 });
+		positions.set('ruler', { x: 0, y: 0 });
+		positions.set('compass', { x: 0, y: 0 });
+		positions.set('setSquare', { x: 0, y: 0 });
+		positions.set('protractor', { x: 0, y: 0 });
+		rotations.set('compass', 0);
+		rotations.set('ruler', 0);
+
+		// Create evaluation context for expressions
+		const context = createContext(this.parameters, objectPositions);
+
+		for (const step of this.script.steps) {
+			const duration = this.#calculateSingleStepDuration(
+				step,
+				positions,
+				rotations,
+				objectPositions,
+				context
+			);
+			durations.push(duration);
+		}
+
+		return durations;
+	}
+
+	/**
+	 * Calculate duration for a single step
+	 */
+	#calculateSingleStepDuration(
+		step: Step,
+		positions: Map<string, Position>,
+		rotations: Map<string, number>,
+		objectPositions: Map<string, Position>,
+		context: EvaluationContext
+	): number {
+		// Handle parallel steps - return max duration of all sub-steps
+		if (isParallelStep(step)) {
+			let maxDuration = 0;
+			for (const subStep of step.parallel) {
+				const d = this.#calculateNonParallelStepDuration(
+					subStep,
+					positions,
+					rotations,
+					objectPositions,
+					context
+				);
+				if (d > maxDuration) maxDuration = d;
+			}
+			return maxDuration || INSTANT_STEP_DURATION;
+		}
+
+		return this.#calculateNonParallelStepDuration(
+			step,
+			positions,
+			rotations,
+			objectPositions,
+			context
+		);
+	}
+
+	/**
+	 * Calculate duration for a non-parallel step
+	 */
+	#calculateNonParallelStepDuration(
+		step: NonParallelStep,
+		positions: Map<string, Position>,
+		rotations: Map<string, number>,
+		objectPositions: Map<string, Position>,
+		context: EvaluationContext
+	): number {
+		// Pause step - use the pause value directly
+		if (isPauseStep(step)) {
+			return step.pause;
+		}
+
+		// Object creation steps are instant
+		if (isPointStep(step)) {
+			// Track point position for later reference
+			const x = evaluateExpr(step.at[0], context);
+			const y = evaluateExpr(step.at[1], context);
+			objectPositions.set(step.point, { x, y });
+			return INSTANT_STEP_DURATION;
+		}
+		if (isCircleStep(step)) {
+			return INSTANT_STEP_DURATION;
+		}
+		if (isTextStep(step)) {
+			const x = evaluateExpr(step.at[0], context);
+			const y = evaluateExpr(step.at[1], context);
+			objectPositions.set(step.text, { x, y });
+			return INSTANT_STEP_DURATION;
+		}
+		if (isMarkStep(step)) {
+			return INSTANT_STEP_DURATION;
+		}
+
+		// Style changes are quick
+		if (isStyleStep(step)) {
+			return step.duration ?? INSTANT_STEP_DURATION;
+		}
+
+		// Drawing steps (line, arc) - use duration if provided, else default
+		if (isLineStep(step)) {
+			// Update pencil position to line end
+			let endPos: Position;
+			if (typeof step.to === 'string') {
+				endPos = objectPositions.get(step.to) ?? { x: 0, y: 0 };
+			} else {
+				endPos = {
+					x: evaluateExpr(step.to[0], context),
+					y: evaluateExpr(step.to[1], context)
+				};
+			}
+			positions.set('pencil', endPos);
+			return DEFAULT_DRAW_DURATION;
+		}
+		if (isArcStep(step)) {
+			// Update compass rotation
+			const currentRotation = rotations.get('compass') ?? 0;
+			const sweepAngle = evaluateExpr(step.sweep, context);
+			rotations.set('compass', currentRotation + sweepAngle);
+			return DEFAULT_DRAW_DURATION;
+		}
+
+		// Move step - calculate based on distance
+		if (isMoveStep(step)) {
+			// If step has explicit duration, use it
+			if (step.duration !== undefined) {
+				return step.duration;
+			}
+
+			const fromPos = positions.get(step.move) ?? { x: 0, y: 0 };
+			let toPos: Position;
+			if (typeof step.to === 'string') {
+				toPos = objectPositions.get(step.to) ?? { x: 0, y: 0 };
+			} else {
+				toPos = {
+					x: evaluateExpr(step.to[0], context),
+					y: evaluateExpr(step.to[1], context)
+				};
+			}
+			// Update position
+			positions.set(step.move, toPos);
+
+			// Calculate duration based on distance
+			const dx = toPos.x - fromPos.x;
+			const dy = toPos.y - fromPos.y;
+			const distance = Math.sqrt(dx * dx + dy * dy);
+			const duration = Math.round(distance * MS_PER_PIXEL);
+			return Math.max(MIN_MOVE_DURATION, Math.min(MAX_MOVE_DURATION, duration));
+		}
+
+		// Rotate step - calculate based on angle delta
+		if (isRotateStep(step)) {
+			// If step has explicit duration, use it
+			if (step.duration !== undefined) {
+				return step.duration;
+			}
+
+			const currentRotation = rotations.get(step.rotate) ?? 0;
+			let targetRotation: number;
+
+			if (step.to !== undefined) {
+				targetRotation = evaluateExpr(step.to, context);
+			} else if (step.toward) {
+				const instrumentPos = positions.get(step.rotate) ?? { x: 0, y: 0 };
+				const towardPos = objectPositions.get(step.toward);
+				if (towardPos) {
+					const dx = towardPos.x - instrumentPos.x;
+					const dy = towardPos.y - instrumentPos.y;
+					targetRotation = Math.atan2(dy, dx) * (180 / Math.PI);
+				} else {
+					targetRotation = currentRotation;
+				}
+			} else {
+				targetRotation = currentRotation;
+			}
+
+			rotations.set(step.rotate, targetRotation);
+			const angleDelta = Math.abs(targetRotation - currentRotation);
+			const duration = Math.round(angleDelta * MS_PER_DEGREE);
+			return Math.max(MIN_ROTATE_DURATION, Math.min(MAX_ROTATE_DURATION, duration));
+		}
+
+		// Spread step (compass opening)
+		if (isSpreadStep(step)) {
+			return step.duration ?? DEFAULT_SPREAD_DURATION;
+		}
+
+		// Show/hide steps
+		if (isShowStep(step)) {
+			return step.duration ?? MIN_MOVE_DURATION;
+		}
+		if (isHideStep(step)) {
+			return step.duration ?? MIN_MOVE_DURATION;
+		}
+
+		// Raise/lower steps
+		if (isRaiseStep(step)) {
+			return step.duration ?? MIN_MOVE_DURATION;
+		}
+		if (isLowerStep(step)) {
+			return step.duration ?? MIN_MOVE_DURATION;
+		}
+
+		// Default fallback
+		return INSTANT_STEP_DURATION;
 	}
 
 	// =========================================================================

@@ -80,8 +80,95 @@ Simplify the JSON format for geometric constructions by eliminating redundancies
 4. **Coordinate tuples** - `[x, y]` instead of `{x, y}` for compactness
 5. **Zod validation on output** - Converter validates generated scripts
 
+## Duration Calculation Architecture (2025-12-07)
+
+### Problem
+
+Animation durations were being calculated in the converter and emitted in JSON. This meant:
+
+- JSON was verbose with `duration` fields everywhere
+- Users creating constructions manually had to calculate speeds themselves
+- The converter needed to track positions (duplicating engine logic)
+
+### Solution
+
+Moved duration calculation to the Engine:
+
+1. **Timeline** (`timeline.svelte.ts`):
+   - Added `LoadOptions` interface with optional `stepDurations: number[]`
+   - `load()` method accepts options parameter
+   - `#calculateStepTimings()` uses pre-calculated durations when provided
+
+2. **Engine** (`engine.svelte.ts`):
+   - Added `#calculateStepDurations()` method that simulates step execution
+   - Tracks instrument positions and rotations during simulation
+   - Calculates durations based on distances (1.5ms/pixel) and angles (5ms/degree)
+   - Passes calculated durations to Timeline via `LoadOptions`
+
+3. **Converter** (`converter.ts`):
+   - Removed duration calculation functions
+   - Only emits `duration` when XML specifies `vitesse` attribute
+   - Most steps have no `duration` field - Engine calculates at runtime
+
+### Duration Formulas
+
+| Movement Type       | Formula             | Min   | Max    |
+| ------------------- | ------------------- | ----- | ------ |
+| Translation         | 1.5 × distance (px) | 300ms | 2000ms |
+| Rotation            | 5 × angle (degrees) | 200ms | 1500ms |
+| Object creation     | 100ms (instant)     | -     | -      |
+| Drawing (line, arc) | 500ms               | -     | -      |
+| Spread (compass)    | 300ms               | -     | -      |
+
+### Benefits
+
+- JSON is cleaner without `duration` everywhere
+- Users can write constructions without calculating speeds
+- Duration calculation is centralized in Engine
+- XML `vitesse` attribute still respected when specified
+
+## Converter Cleanup (2025-12-07)
+
+### Problem
+
+After moving duration calculation to Engine, the Converter still tracked instrument positions and rotations internally - this was now dead code.
+
+### Cleanup
+
+Removed the following from `converter.ts`:
+
+**Context fields removed:**
+
+- `instrumentPositions: Map<string, Position>` - tracked instrument positions
+- `instrumentRotations: Map<string, number>` - tracked instrument angles
+- `compassRadius: number` - tracked compass opening
+
+**Helper functions removed:**
+
+- `calculateAngleToTarget()` - calculated angle from one position to another
+- `getInstrumentPosition()` / `setInstrumentPosition()` - position getters/setters
+- `getInstrumentRotation()` / `setInstrumentRotation()` - rotation getters/setters
+- `_normalizeAngleDelta()` - angle normalization helper
+
+**Action handlers cleaned:**
+
+- `convertPencilAction`: removed `setInstrumentPosition` calls
+- `convertRulerAction`: removed all position/rotation tracking
+- `convertCompassAction`: removed all position/rotation/radius tracking
+- `convertSetSquareAction`: removed `setInstrumentPosition` call
+
+### Result
+
+The Converter now emits purely declarative JSON:
+
+- `{ "move": "pencil", "to": "T" }` - reference to point T (Engine resolves position)
+- `{ "rotate": "compass", "toward": "A" }` - reference to point A (Engine calculates angle)
+- `{ "spread": "compass", "to": "B" }` - reference to point B (Engine calculates distance)
+
+No more absolute positions computed during conversion - all resolution happens at runtime in the Engine.
+
 ## Validation
 
 - TypeScript: 0 errors in constructions module
 - Lint: 0 errors (warnings are pre-existing, not in constructions)
-- Tests: 44/44 passing
+- Tests: 87/87 passing (44 converter + 43 evaluator)
