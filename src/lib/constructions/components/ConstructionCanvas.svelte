@@ -9,12 +9,10 @@
 	 */
 
 	import type { ConstructionEngine } from '../core/engine.svelte';
-	import type { ObjectState, PointDef, SegmentDef } from '../types';
+	import type { ObjectState, PointStep, LineStep, TextStep, CircleStep } from '../types';
 	import {
 		segmentToSvgLine,
 		circleToSvgPath,
-		arcToSvgPath,
-		polygonToSvgPath,
 		partialSegmentPath,
 		partialArcPath,
 		arrowheadPath,
@@ -76,121 +74,102 @@
 	 * Get SVG path data for an object
 	 */
 	function getObjectPath(obj: ObjectState): string {
-		const def = obj.def;
 		const progress = obj.drawProgress ?? 1;
 
-		switch (def.kind) {
+		switch (obj.type) {
 			case 'point': {
 				// Points are rendered as circles/markers, not paths
 				return '';
 			}
 
-			case 'segment': {
-				const from = resolvePoint(def.from);
-				const to = resolvePoint(def.to);
-				if (!from || !to) return '';
+			case 'line': {
+				const computed = obj.computed;
+				if (!computed?.fromX || !computed?.fromY || !computed?.toX || !computed?.toY) return '';
 
 				if (progress < 1) {
-					return partialSegmentPath(from.x, from.y, to.x, to.y, progress);
+					return partialSegmentPath(
+						computed.fromX,
+						computed.fromY,
+						computed.toX,
+						computed.toY,
+						progress
+					);
 				}
-				return segmentToSvgLine(from.x, from.y, to.x, to.y);
+				return segmentToSvgLine(computed.fromX, computed.fromY, computed.toX, computed.toY);
 			}
 
 			case 'circle': {
-				const center = resolvePoint(def.center);
-				if (!center) return '';
+				const computed = obj.computed;
+				if (!computed?.centerX || !computed?.centerY || !computed?.radius) return '';
 
-				const radius = typeof def.radius === 'number' ? def.radius : 100;
 				if (progress < 1) {
-					return partialArcPath(center.x, center.y, radius, 0, 360 * progress, 1);
+					return partialArcPath(
+						computed.centerX,
+						computed.centerY,
+						computed.radius,
+						0,
+						360 * progress,
+						1
+					);
 				}
-				return circleToSvgPath(center.x, center.y, radius);
+				return circleToSvgPath(computed.centerX, computed.centerY, computed.radius);
 			}
 
 			case 'arc': {
-				const center = resolvePoint(def.center);
-				if (!center) return '';
+				const computed = obj.computed;
+				if (!computed?.centerX || !computed?.centerY || !computed?.radius) return '';
 
-				const radius = typeof def.radius === 'number' ? def.radius : 100;
-				const startAngle = typeof def.startAngle === 'number' ? def.startAngle : 0;
-				const endAngle = typeof def.endAngle === 'number' ? def.endAngle : 90;
+				const startAngle = computed.startAngle ?? 0;
+				const endAngle = computed.endAngle ?? 90;
 
 				// Always use partialArcPath for consistency (handles progress=1 correctly)
-				return partialArcPath(center.x, center.y, radius, startAngle, endAngle, progress);
+				return partialArcPath(
+					computed.centerX,
+					computed.centerY,
+					computed.radius,
+					startAngle,
+					endAngle,
+					progress
+				);
 			}
 
-			case 'polygon': {
-				const points = def.vertices.map(resolvePoint).filter(Boolean) as { x: number; y: number }[];
-				if (points.length < 2) return '';
-				return polygonToSvgPath(points, true);
+			case 'mark': {
+				// Angle marks are rendered as arcs
+				const computed = obj.computed;
+				if (!computed?.centerX || !computed?.centerY) return '';
+
+				const radius = computed.radius ?? DEFAULT_ANGLE_MARK_RADIUS;
+				const startAngle = computed.startAngle ?? 0;
+				const endAngle = computed.endAngle ?? 90;
+
+				return partialArcPath(computed.centerX, computed.centerY, radius, startAngle, endAngle, 1);
 			}
 
-			case 'line':
-			case 'ray': {
-				// For infinite lines and rays, we need to extend to canvas boundaries
-				// This is a simplified implementation
-				return '';
-			}
-
-			case 'angleMark': {
-				const vertex = resolvePoint(def.vertex);
-				const p1 = resolvePoint(def.point1);
-				const p2 = resolvePoint(def.point2);
-				if (!vertex || !p1 || !p2) return '';
-
-				const radius = def.radius ?? DEFAULT_ANGLE_MARK_RADIUS;
-
-				// Calculate angles
-				const angle1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x) * (180 / Math.PI);
-				const angle2 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x) * (180 / Math.PI);
-
-				return arcToSvgPath(vertex.x, vertex.y, radius, angle1, angle2);
-			}
-
+			case 'text':
 			default:
 				return '';
 		}
 	}
 
 	/**
-	 * Resolve a point reference to coordinates
-	 */
-	function resolvePoint(
-		ref: string | { x: number | string; y: number | string } | undefined
-	): { x: number; y: number } | null {
-		if (!ref) return null;
-
-		if (typeof ref === 'string') {
-			const objState = engine.getObject(ref);
-			if (!objState?.position) return null;
-			return objState.position;
-		}
-
-		// Inline coordinates - need to handle expression evaluation
-		const x = typeof ref.x === 'number' ? ref.x : 0;
-		const y = typeof ref.y === 'number' ? ref.y : 0;
-		return { x, y };
-	}
-
-	/**
 	 * Get stroke color for an object
 	 */
 	function getObjectColor(obj: ObjectState): string {
-		return obj.style?.color ?? obj.def.style?.color ?? DEFAULT_COLORS.primary;
+		return obj.style?.color ?? DEFAULT_COLORS.primary;
 	}
 
 	/**
 	 * Get line width for an object
 	 */
 	function getObjectLineWidth(obj: ObjectState): number {
-		return obj.style?.lineWidth ?? obj.def.style?.lineWidth ?? DEFAULT_LINE_WIDTH;
+		return obj.style?.lineWidth ?? DEFAULT_LINE_WIDTH;
 	}
 
 	/**
 	 * Get stroke dash array for line style
 	 */
 	function getStrokeDashArray(obj: ObjectState): string | undefined {
-		const lineStyle = obj.style?.lineStyle ?? obj.def.style?.lineStyle ?? 'solid';
+		const lineStyle = obj.style?.lineStyle ?? 'solid';
 		switch (lineStyle) {
 			case 'dashed':
 				return '8,4';
@@ -205,46 +184,48 @@
 	 * Check if object is a point
 	 */
 	function isPointObject(obj: ObjectState): boolean {
-		return obj.def.kind === 'point';
+		return obj.type === 'point';
 	}
 
 	/**
-	 * Check if object is a segment with arrowhead
+	 * Check if object is a line with arrowhead
 	 */
-	function isSegmentWithArrowhead(obj: ObjectState): boolean {
-		return obj.def.kind === 'segment' && !!(obj.def as SegmentDef).arrowHead;
+	function isLineWithArrowhead(obj: ObjectState): boolean {
+		if (obj.type !== 'line') return false;
+		const step = obj.step as LineStep;
+		return !!step.arrow;
 	}
 
 	/**
-	 * Get arrowhead paths for a segment
+	 * Get arrowhead paths for a line
 	 */
 	function getArrowheadPaths(obj: ObjectState): { endArrow?: string; startArrow?: string } {
-		const def = obj.def as SegmentDef;
-		if (def.kind !== 'segment' || !def.arrowHead) return {};
+		if (obj.type !== 'line') return {};
+		const step = obj.step as LineStep;
+		if (!step.arrow) return {};
 
-		const from = resolvePoint(def.from);
-		const to = resolvePoint(def.to);
-		if (!from || !to) return {};
+		const computed = obj.computed;
+		if (!computed?.fromX || !computed?.fromY || !computed?.toX || !computed?.toY) return {};
 
 		const progress = obj.drawProgress ?? 1;
 		if (progress <= 0) return {};
 
-		const angle = calculateAngle(from.x, from.y, to.x, to.y);
-		const lineWidth = obj.style?.lineWidth ?? obj.def.style?.lineWidth ?? DEFAULT_LINE_WIDTH;
+		const angle = calculateAngle(computed.fromX, computed.fromY, computed.toX, computed.toY);
+		const lineWidth = obj.style?.lineWidth ?? DEFAULT_LINE_WIDTH;
 		const arrowSize = lineWidth * 5 + 5;
 
 		const result: { endArrow?: string; startArrow?: string } = {};
 
 		// End arrowhead (at current progress position)
-		if (def.arrowHead === 'end' || def.arrowHead === 'both') {
-			const currentX = from.x + (to.x - from.x) * progress;
-			const currentY = from.y + (to.y - from.y) * progress;
+		if (step.arrow === 'end' || step.arrow === 'both') {
+			const currentX = computed.fromX + (computed.toX - computed.fromX) * progress;
+			const currentY = computed.fromY + (computed.toY - computed.fromY) * progress;
 			result.endArrow = arrowheadPath(currentX, currentY, angle, arrowSize);
 		}
 
 		// Start arrowhead (at from position, pointing backward)
-		if (def.arrowHead === 'start' || def.arrowHead === 'both') {
-			result.startArrow = arrowheadPath(from.x, from.y, angle + Math.PI, arrowSize);
+		if (step.arrow === 'start' || step.arrow === 'both') {
+			result.startArrow = arrowheadPath(computed.fromX, computed.fromY, angle + Math.PI, arrowSize);
 		}
 
 		return result;
@@ -254,12 +235,9 @@
 	 * Check if object is a filled shape
 	 */
 	function isFilledObject(obj: ObjectState): boolean {
-		const def = obj.def;
-		if (def.kind === 'polygon' && 'filled' in def) {
-			return def.filled ?? false;
-		}
-		if (def.kind === 'circle' && 'filled' in def) {
-			return def.filled ?? false;
+		if (obj.type === 'circle') {
+			const step = obj.step as CircleStep;
+			return step.filled ?? false;
 		}
 		return false;
 	}
@@ -268,14 +246,18 @@
 	 * Get fill color for a filled object
 	 */
 	function getFillColor(obj: ObjectState): string | undefined {
-		const def = obj.def;
-		if (def.kind === 'polygon' && 'fillColor' in def) {
-			return def.fillColor;
-		}
-		if (def.kind === 'circle' && 'fillColor' in def) {
-			return def.fillColor;
+		if (obj.type === 'circle') {
+			const step = obj.step as CircleStep;
+			return step.fillColor;
 		}
 		return undefined;
+	}
+
+	/**
+	 * Check if object is text
+	 */
+	function isTextObject(obj: ObjectState): boolean {
+		return obj.type === 'text';
 	}
 </script>
 
@@ -312,7 +294,7 @@
 
 	<!-- Objects layer - filled shapes first -->
 	<g class="objects-layer-fills">
-		{#each visibleObjects.filter(isFilledObject) as obj (obj.def.id)}
+		{#each visibleObjects.filter(isFilledObject) as obj (obj.id)}
 			{@const path = getObjectPath(obj)}
 			{#if path}
 				<path
@@ -322,7 +304,7 @@
 					stroke={getObjectColor(obj)}
 					stroke-width={getObjectLineWidth(obj)}
 					stroke-dasharray={getStrokeDashArray(obj)}
-					opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
+					opacity={obj.style?.opacity ?? 1}
 				/>
 			{/if}
 		{/each}
@@ -330,9 +312,9 @@
 
 	<!-- Objects layer - strokes -->
 	<g class="objects-layer-strokes">
-		{#each visibleObjects.filter((o) => !isPointObject(o) && !isFilledObject(o)) as obj (obj.def.id)}
+		{#each visibleObjects.filter((o) => !isPointObject(o) && !isFilledObject(o) && !isTextObject(o)) as obj (obj.id)}
 			{@const path = getObjectPath(obj)}
-			{@const arrows = isSegmentWithArrowhead(obj) ? getArrowheadPaths(obj) : {}}
+			{@const arrows = isLineWithArrowhead(obj) ? getArrowheadPaths(obj) : {}}
 			{#if path}
 				<!-- Main path -->
 				<path
@@ -341,7 +323,7 @@
 					stroke={getObjectColor(obj)}
 					stroke-width={getObjectLineWidth(obj)}
 					stroke-dasharray={getStrokeDashArray(obj)}
-					opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
+					opacity={obj.style?.opacity ?? 1}
 				/>
 				<!-- End arrowhead -->
 				{#if arrows.endArrow}
@@ -350,7 +332,7 @@
 						fill="none"
 						stroke={getObjectColor(obj)}
 						stroke-width={getObjectLineWidth(obj)}
-						opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
+						opacity={obj.style?.opacity ?? 1}
 					/>
 				{/if}
 				<!-- Start arrowhead -->
@@ -360,7 +342,7 @@
 						fill="none"
 						stroke={getObjectColor(obj)}
 						stroke-width={getObjectLineWidth(obj)}
-						opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
+						opacity={obj.style?.opacity ?? 1}
 					/>
 				{/if}
 			{/if}
@@ -369,22 +351,16 @@
 
 	<!-- Objects layer - points -->
 	<g class="objects-layer-points">
-		{#each visibleObjects.filter(isPointObject) as obj (obj.def.id)}
+		{#each visibleObjects.filter(isPointObject) as obj (obj.id)}
 			{@const pos = obj.position}
-			{@const pointDef = obj.def as PointDef}
+			{@const pointStep = obj.step as PointStep}
 			{#if pos}
-				{@const pointStyle = pointDef.pointStyle ?? 'dot'}
-				{@const radius = pointDef.radius ?? DEFAULT_POINT_RADIUS}
+				{@const pointStyle = pointStep.style ?? 'dot'}
+				{@const radius = pointStep.radius ?? DEFAULT_POINT_RADIUS}
 				{@const color = getObjectColor(obj)}
 
 				{#if pointStyle === 'dot'}
-					<circle
-						cx={pos.x}
-						cy={pos.y}
-						r={radius}
-						fill={color}
-						opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
-					/>
+					<circle cx={pos.x} cy={pos.y} r={radius} fill={color} opacity={obj.style?.opacity ?? 1} />
 				{:else if pointStyle === 'circle'}
 					<circle
 						cx={pos.x}
@@ -393,7 +369,7 @@
 						fill="none"
 						stroke={color}
 						stroke-width="2"
-						opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
+						opacity={obj.style?.opacity ?? 1}
 					/>
 				{:else if pointStyle === 'cross'}
 					<path
@@ -402,12 +378,12 @@
 						fill="none"
 						stroke={color}
 						stroke-width="2"
-						opacity={obj.style?.opacity ?? obj.def.style?.opacity ?? 1}
+						opacity={obj.style?.opacity ?? 1}
 					/>
 				{/if}
 
 				<!-- Point label -->
-				{#if pointDef.label}
+				{#if obj.label}
 					<text
 						x={pos.x + radius + 4}
 						y={pos.y - radius - 4}
@@ -415,7 +391,7 @@
 						font-size="14"
 						font-family="system-ui, -apple-system, sans-serif"
 					>
-						{pointDef.label}
+						{obj.label}
 					</text>
 				{/if}
 			{/if}
@@ -424,28 +400,26 @@
 
 	<!-- Text objects layer -->
 	<g class="objects-layer-text">
-		{#each visibleObjects.filter((o) => o.def.kind === 'text') as obj (obj.def.id)}
-			{@const def = obj.def}
-			{#if def.kind === 'text'}
-				{@const pos = obj.position}
-				{#if pos}
-					<text
-						x={pos.x}
-						y={pos.y}
-						fill={obj.style?.color ?? def.style?.color ?? DEFAULT_COLORS.text}
-						font-size={def.fontSize ?? 14}
-						font-family="system-ui, -apple-system, sans-serif"
-						text-anchor={def.anchor ?? 'start'}
-						dominant-baseline={def.baseline === 'top'
-							? 'hanging'
-							: def.baseline === 'bottom'
-								? 'alphabetic'
-								: 'middle'}
-						opacity={obj.style?.opacity ?? def.style?.opacity ?? 1}
-					>
-						{def.content}
-					</text>
-				{/if}
+		{#each visibleObjects.filter(isTextObject) as obj (obj.id)}
+			{@const textStep = obj.step as TextStep}
+			{@const pos = obj.position}
+			{#if pos}
+				<text
+					x={pos.x}
+					y={pos.y}
+					fill={obj.style?.color ?? DEFAULT_COLORS.text}
+					font-size={textStep.size ?? 14}
+					font-family="system-ui, -apple-system, sans-serif"
+					text-anchor={textStep.anchor ?? 'start'}
+					dominant-baseline={textStep.baseline === 'top'
+						? 'hanging'
+						: textStep.baseline === 'bottom'
+							? 'alphabetic'
+							: 'middle'}
+					opacity={obj.style?.opacity ?? 1}
+				>
+					{textStep.content}
+				</text>
 			{/if}
 		{/each}
 	</g>
