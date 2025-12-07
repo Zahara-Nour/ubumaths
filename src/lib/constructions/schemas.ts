@@ -634,6 +634,8 @@ export const canvasConfigSchema = z.object({
 	width: z.number().int().min(100, 'Width too small').max(4000, 'Width too large'),
 	height: z.number().int().min(100, 'Height too small').max(4000, 'Height too large'),
 	backgroundColor: colorSchema.optional(),
+	/** Default color for objects without explicit color */
+	defaultColor: colorSchema.optional(),
 	showGrid: z.boolean().optional(),
 	gridSpacing: z.number().min(5).max(200).optional(),
 	gridColor: colorSchema.optional()

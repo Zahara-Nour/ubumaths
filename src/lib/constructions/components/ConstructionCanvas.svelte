@@ -45,6 +45,7 @@
 		showGrid?: boolean;
 		gridSpacing?: number;
 		gridColor?: string;
+		defaultColor?: string;
 	}
 
 	// Props
@@ -54,8 +55,14 @@
 		height = 600,
 		showGrid = true,
 		gridSpacing = DEFAULT_GRID_SPACING,
-		gridColor = DEFAULT_COLORS.grid
+		gridColor = DEFAULT_COLORS.grid,
+		defaultColor
 	}: Props = $props();
+
+	// Effective default color: prop > script config > constants
+	let effectiveDefaultColor = $derived(
+		defaultColor ?? engine.canvasConfig.defaultColor ?? DEFAULT_COLORS.primary
+	);
 
 	// Derived state from engine
 	let visibleObjects = $derived(engine.visibleObjects);
@@ -242,10 +249,10 @@
 	}
 
 	/**
-	 * Get stroke color for an object
+	 * Get stroke color for an object (uses script's defaultColor if no explicit color)
 	 */
 	function getObjectColor(obj: ObjectState): string {
-		return obj.style?.color ?? DEFAULT_COLORS.primary;
+		return obj.style?.color ?? effectiveDefaultColor;
 	}
 
 	/**
@@ -484,7 +491,7 @@
 					<text
 						x={pos.x + radius + 4}
 						y={pos.y - radius - 4}
-						fill={DEFAULT_COLORS.text}
+						fill={obj.style?.color ?? effectiveDefaultColor}
 						font-size="14"
 						font-family="system-ui, -apple-system, sans-serif"
 					>
@@ -504,7 +511,7 @@
 				<text
 					x={pos.x}
 					y={pos.y}
-					fill={obj.style?.color ?? DEFAULT_COLORS.text}
+					fill={obj.style?.color ?? effectiveDefaultColor}
 					font-size={textStep.size ?? 14}
 					font-family="system-ui, -apple-system, sans-serif"
 					text-anchor={textStep.anchor ?? 'start'}
@@ -531,7 +538,7 @@
 				<text
 					x={pos.x}
 					y={pos.y}
-					fill={obj.style?.color ?? DEFAULT_COLORS.text}
+					fill={obj.style?.color ?? effectiveDefaultColor}
 					font-size={labelStep.size ?? 14}
 					font-family="system-ui, -apple-system, sans-serif"
 					text-anchor="start"
