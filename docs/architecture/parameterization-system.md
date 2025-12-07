@@ -141,9 +141,8 @@ The library is used by:
 ### Module Structure
 
 ```
-src/lib/shared/parameterization/
+src/lib/custom-markdown/parameterization/
 ├── index.ts                      # Public API exports
-├── types.ts                      # Type definitions
 │
 ├── parser/                       # Parser Layer
 │   ├── tokenizer.ts             # Extract tokens from text
@@ -160,6 +159,8 @@ src/lib/shared/parameterization/
     ├── circular-dependency.ts   # DFS cycle detection
     └── variable-validator.ts    # Comprehensive validation
 ```
+
+**Note**: Types are defined in `src/lib/custom-markdown/types/parameterization.ts`
 
 ---
 
@@ -975,7 +976,7 @@ findCycle('a', graph, {}, {}, [])
 ```typescript
 // src/lib/questions/generator/instance-generator.ts
 
-import { resolveVariables, resolveText } from '$lib/shared/parameterization';
+import { resolveVariables, resolveText } from '$lib/custom-markdown';
 
 export function generateInstance(template: QuestionTemplate, seed?: number): QuestionInstance {
 	// Map QuestionVariable[] to Variable[]
@@ -1010,7 +1011,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Que
 ```typescript
 // src/lib/exercises/generator.ts
 
-import { resolveVariables, resolveText } from '$lib/shared/parameterization';
+import { resolveVariables, resolveText } from '$lib/custom-markdown';
 
 export function generateExerciseInstance(exercise: Exercise, seed?: number): ExerciseInstance {
 	// Map exercise variables to shared Variable type
@@ -1251,8 +1252,8 @@ When adding new features:
 
 ## Resources
 
-- **Shared Library README:** [`/src/lib/shared/parameterization/README.md`](/src/lib/shared/parameterization/README.md)
-- **Type Definitions:** [`/src/lib/shared/parameterization/types.ts`](/src/lib/shared/parameterization/types.ts)
+- **Custom Markdown Module:** [`/src/lib/custom-markdown/`](/src/lib/custom-markdown/)
+- **Parameterization Types:** [`/src/lib/custom-markdown/types/parameterization.ts`](/src/lib/custom-markdown/types/parameterization.ts)
 - **Questions Documentation:** [`/docs/features/questions/`](/docs/features/questions/)
 - **Exercises Documentation:** [`/docs/features/exercises/`](/docs/features/exercises/)
 - **MathLive Compute Engine:** https://cortexjs.io/compute-engine/
