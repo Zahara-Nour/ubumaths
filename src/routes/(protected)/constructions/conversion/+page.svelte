@@ -93,6 +93,14 @@
 
 	let hasContent = $derived(xmlInput.trim().length > 0 || selectedFile !== null);
 
+	// Calculate editor height based on JSON line count (min 400px, 20px per line)
+	let jsonEditorHeight = $derived.by(() => {
+		if (!jsonOutput) return '400px';
+		const lineCount = jsonOutput.split('\n').length;
+		const calculatedHeight = Math.max(400, lineCount * 20 + 50); // 20px per line + padding
+		return `${calculatedHeight}px`;
+	});
+
 	// Parse XML and extract action elements with their JSON equivalents
 	let xmlJsonPairs = $derived.by((): XmlJsonPair[] => {
 		if (!xmlInput.trim() || !parsedScript?.steps) return [];
@@ -479,9 +487,13 @@
 				<Card.Description>Resultat de la conversion (modifiable)</Card.Description>
 			</Card.Header>
 			<Card.Content class="space-y-4">
-				<!-- JSON Editor -->
+				<!-- JSON Editor - height auto-adjusts to show full script -->
 				<div class="overflow-hidden rounded-lg border border-border">
-					<JsonEditor bind:value={jsonOutput} height="300px" onValidate={handleJsonValidate} />
+					<JsonEditor
+						bind:value={jsonOutput}
+						height={jsonEditorHeight}
+						onValidate={handleJsonValidate}
+					/>
 				</div>
 
 				<!-- Warnings collapsible -->
