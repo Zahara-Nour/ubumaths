@@ -69,7 +69,7 @@ Complete rewrite of InstrumenPoche (geometry animation player) into Svelte 5 + T
   - Input size limit (5MB)
   - Role-based access (teachers/admins only)
 
-### Phase 7: Midpoints and Marks
+### Phase 7: Midpoints, Marks, and Default Color
 
 - **Midpoint step**: `{"midpoint": "midpoint_AB"}` - Creates point at midpoint of A and B
   - Position auto-calculated from parent points
@@ -83,6 +83,10 @@ Complete rewrite of InstrumenPoche (geometry animation player) into Svelte 5 + T
   - Angle calculated from segment direction
 - **Point ID pattern**: `[A-Z][0-9]?'?` (letter, optional digit, optional apostrophe)
   - Examples: A, A1, A', A1'
+- **Default color**: Objects without explicit color use a configurable default
+  - Set in canvas config: `"canvas": {"defaultColor": "#0000FF"}`
+  - Or via player prop: `<ConstructionPlayer defaultColor="#0000FF" />`
+  - Priority: object color > canvas defaultColor > player prop > constants
 
 ## Architecture Decisions
 
