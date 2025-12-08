@@ -22,6 +22,7 @@
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { Upload, Save, RotateCcw, Loader2 } from 'lucide-svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import { Switch } from '$lib/components/ui/switch';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
@@ -40,11 +41,11 @@
 	let classResults = $state<ExtendedProfile[]>([]); // Results from class filter
 	let isSearching = $state(false); // Loading state for text search
 	let isSearchingClass = $state(false); // Loading state for class filter
-	let selectedClassFilter = $state<string>(''); // Currently selected class ID for filtering
+	let selectedClassFilter = $state<string>('none'); // Currently selected class ID for filtering ('none' = no class selected)
 	let searchTimeout: NodeJS.Timeout | null = null; // Debounce timer for search
 
 	// Test filter state
-	let testFilter = $state<'all' | 'real' | 'test'>('all'); // Filter for test vs real users
+	let showTestUsers = $state(false); // Show test users (false = real users only)
 
 	// User selection and editing state
 	let selectedUser = $state<ExtendedProfile | null>(null); // Currently viewed user
@@ -178,10 +179,8 @@
 	 * Apply test filter to a list of users
 	 */
 	function applyTestFilter(users: ExtendedProfile[]): ExtendedProfile[] {
-		if (testFilter === 'all') return users;
-		if (testFilter === 'test') return users.filter((u) => u.is_test === true);
-		if (testFilter === 'real') return users.filter((u) => u.is_test === false);
-		return users;
+		if (showTestUsers) return users;
+		return users.filter((u) => u.is_test === false);
 	}
 
 	/**
@@ -218,13 +217,15 @@
 		isSearching = true;
 		searchTimeout = setTimeout(async () => {
 			try {
-				const response = await fetch(`/api/admin/search-users?q=${encodeURIComponent(searchTerm)}`);
+				const response = await fetch(
+					`/api/admin/search-users?q=${encodeURIComponent(searchTerm)}&limit=50`
+				);
 				const result = (await response.json()) as { users?: ExtendedProfile[] };
 
 				if (result.users) {
 					searchResults = result.users;
 					classResults = []; // Clear class results when searching
-					selectedClassFilter = ''; // Clear class filter
+					selectedClassFilter = 'none'; // Clear class filter
 				} else {
 					searchResults = [];
 				}
@@ -241,7 +242,7 @@
 	 * Clears text search when filtering by class
 	 */
 	async function handleClassFilter(classId: string) {
-		if (!classId) {
+		if (!classId || classId === 'none') {
 			classResults = [];
 			return;
 		}
@@ -582,69 +583,70 @@
 	</div>
 
 	<!-- CARD LAYOUT -->
-	<div class="mt-6">
+	<div class="mt-6 space-y-6">
+		<!-- Filters Card (full width, horizontal) -->
+		<Card.Root>
+			<Card.Content class="pt-6">
+				<div class="flex flex-wrap items-end gap-6">
+					<!-- Search -->
+					<div class="flex-1">
+						<Label for="search-input" class="mb-2 block">Rechercher (email, prénom, nom)</Label>
+						<div class="relative">
+							<Input
+								id="search-input"
+								type="text"
+								placeholder="Min 3 caractères..."
+								bind:value={searchTerm}
+								oninput={handleSearchInput}
+							/>
+							{#if isSearching}
+								<Loader2
+									class="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground"
+								/>
+							{/if}
+						</div>
+					</div>
+
+					<!-- Browse by Class -->
+					<div class="flex-1">
+						<Label class="mb-2 block">Parcourir par classe</Label>
+						<div class="relative">
+							<MySelect
+								type="single"
+								bind:value={selectedClassFilter}
+								items={[
+									{ value: 'none', label: 'Aucune classe' },
+									...data.classes
+										.filter((c) => c.is_active)
+										.map((c) => ({ value: c.id, label: c.name }))
+								]}
+								onValueChange={(newValue) => handleClassFilter(newValue ?? 'none')}
+								placeholder="Sélectionner..."
+								triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+							/>
+							{#if isSearchingClass}
+								<Loader2
+									class="absolute top-1/2 right-8 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground"
+								/>
+							{/if}
+						</div>
+					</div>
+
+					<!-- Test Filter -->
+					<div class="flex items-center gap-2 pb-1">
+						<Switch bind:checked={showTestUsers} id="test-filter" />
+						<label for="test-filter" class="cursor-pointer text-sm font-medium text-foreground">
+							Afficher élèves tests
+						</label>
+					</div>
+				</div>
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Results and Profile (side by side) -->
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-			<!-- Left Panel: Search & Browse -->
+			<!-- Left Panel: Search Results List -->
 			<div class="space-y-4 lg:col-span-1">
-				<!-- Search -->
-				<Card.Root>
-					<Card.Header>
-						<Card.Title>Rechercher un utilisateur</Card.Title>
-					</Card.Header>
-					<Card.Content>
-						<Label for="search-input">Email, Prénom ou Nom (min 3 caractères)</Label>
-						<Input
-							id="search-input"
-							type="text"
-							placeholder="Rechercher..."
-							bind:value={searchTerm}
-							oninput={handleSearchInput}
-						/>
-						{#if isSearching}
-							<p class="mt-2 text-sm text-muted-foreground">Recherche en cours...</p>
-						{/if}
-					</Card.Content>
-				</Card.Root>
-
-				<!-- Browse by Class -->
-				<Card.Root>
-					<Card.Header>
-						<Card.Title>Parcourir par classe</Card.Title>
-					</Card.Header>
-					<Card.Content>
-						<MySelect
-							type="single"
-							bind:value={selectedClassFilter}
-							items={[
-								// { value: '', label: 'Classe...' },
-								...data.classes.map((c) => ({ value: c.id, label: c.name }))
-							]}
-							onValueChange={() => handleClassFilter(selectedClassFilter)}
-						/>
-						{#if isSearchingClass}
-							<p class="mt-2 text-sm text-muted-foreground">Chargement...</p>
-						{/if}
-					</Card.Content>
-				</Card.Root>
-
-				<!-- Test Filter -->
-				<Card.Root>
-					<Card.Header>
-						<Card.Title>Filtrer par type</Card.Title>
-					</Card.Header>
-					<Card.Content>
-						<MySelect
-							type="single"
-							bind:value={testFilter}
-							items={[
-								{ value: 'all', label: 'Tous les utilisateurs' },
-								{ value: 'real', label: 'Réels uniquement' },
-								{ value: 'test', label: 'Test uniquement' }
-							]}
-						/>
-					</Card.Content>
-				</Card.Root>
-
 				<!-- Search Results List -->
 				{#if filteredSearchResults.length > 0 || filteredClassResults.length > 0}
 					<Card.Root>

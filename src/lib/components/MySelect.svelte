@@ -21,7 +21,9 @@
 	}: Props = $props();
 
 	const selectedLabel = $derived(
-		value ? items.find((item) => item.value === value)?.label : placeholder || 'Select...'
+		value !== undefined && value !== null
+			? (items.find((item) => item.value === value)?.label ?? placeholder ?? 'Select...')
+			: (placeholder ?? 'Select...')
 	);
 
 	// Compute trigger class based on variant (if not explicitly provided)
