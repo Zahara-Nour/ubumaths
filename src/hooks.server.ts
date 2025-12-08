@@ -59,9 +59,45 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 	if (user) {
 		try {
 			event.locals.profile = await getUserProfile(event.locals.supabase, user.id);
+
+			// If profile fetch succeeded but returned null (profile doesn't exist)
+			// Sign out and redirect - this prevents "Unexpected token '<'" errors
+			// during client-side navigation when pages try to redirect with HTML response
+			if (!event.locals.profile) {
+				console.error(
+					'[userProfileHandle] Profile not found for authenticated user:',
+					user.id,
+					user.email
+				);
+
+				// Log to error_logs table for admin visibility
+				try {
+					await logError(event.locals.supabase, {
+						error_type: 'server_load',
+						severity: 'error',
+						message: `[profile_not_found] Profile not found for authenticated user`,
+						url: event.url.pathname,
+						user_agent: event.request.headers.get('user-agent') ?? undefined,
+						user_id: user.id,
+						context: {
+							user_email: user.email
+						}
+					});
+				} catch (logErr) {
+					console.error('[userProfileHandle] Failed to log error:', logErr);
+				}
+
+				// Sign out and redirect to login
+				await event.locals.supabase.auth.signOut();
+				throw redirect(303, '/auth/login?error=' + encodeURIComponent('Profil non trouvé'));
+			}
 		} catch (err) {
-			// Log the error but don't crash - let the layout handle missing profile
-			// This prevents "Unexpected token '<'" errors when __data.json requests fail
+			// Re-throw redirects (from the profile null check above)
+			if (err && typeof err === 'object' && 'status' in err && 'location' in err) {
+				throw err;
+			}
+
+			// Log the error
 			const errorMessage = err instanceof Error ? err.message : String(err);
 			console.error('[userProfileHandle] Failed to fetch profile for user:', user.id, errorMessage);
 
@@ -80,13 +116,16 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 					}
 				});
 			} catch (logErr) {
-				// Don't fail if logging fails
 				console.error('[userProfileHandle] Failed to log error:', logErr);
 			}
 
-			// Set profile to null - the layout will handle this gracefully
-			// (either redirect to login or show an error page)
-			event.locals.profile = null;
+			// Sign out and redirect to login - this prevents "Unexpected token '<'" errors
+			// during client-side navigation when downstream pages would redirect with HTML
+			await event.locals.supabase.auth.signOut();
+			throw redirect(
+				303,
+				'/auth/login?error=' + encodeURIComponent('Erreur de chargement du profil')
+			);
 		}
 	} else {
 		event.locals.profile = null;
