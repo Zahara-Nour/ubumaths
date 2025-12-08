@@ -79,7 +79,7 @@ supabase/migrations/
 | Pyodide    | v0.26.2  | Python in WebAssembly |
 | CodeMirror | v6.x     | Code editor           |
 | LZ-String  | v1.5.0   | URL compression       |
-| MathLive   | v0.107.1 | LaTeX rendering       |
+| MathLive   | v0.108.2 | LaTeX rendering       |
 
 ### Python Packages
 

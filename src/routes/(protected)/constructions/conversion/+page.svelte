@@ -541,6 +541,7 @@
 									showControls={true}
 									showParameters={false}
 									showGrid={true}
+									showReload={true}
 								/>
 							</div>
 						</Collapsible.Content>

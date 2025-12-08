@@ -1,0 +1,2134 @@
+
+ ▐▛███▜▌   Claude Code v2.0.59
+▝▜█████▛▘  Opus 4.5 · Claude Max
+  ▘▘ ▝▝    ~/Coding/js/ubumaths
+
+> read extern/dgpad/DGPAD.md. Je veux adapter et incorporer ce projet a 
+ubumaths sachant que l'on peut peut etre des parties ubumaths pour :
+11. Expression & Symbolic Computation - Expression objects, derivatives, 
+symbolic differentiation -> mathAST ?
+13. Blockly Integration - Visual programming, custom blocks, turtle graphics
+ -> /blockly ?
+Je ne veux pas de DocEval 
+  ⎿  Interrupted · What should Claude do instead?
+
+> read extern/dgpad/DGPAD.md. Je veux adapter et incorporer ce projet a 
+ubumaths sachant que l'on peut peut etre des parties ubumaths pour :
+11. Expression & Symbolic Computation - Expression objects, derivatives, 
+symbolic differentiation -> mathAST ?
+13. Blockly Integration - Visual programming, custom blocks, turtle graphics
+ -> /blockly ?
+Je ne veux pas de DocEval
+ultrathink with opus. Ask me for clarification
+
+⏺ Let me first read the DGPAD.md file to understand the project structure
+  and requirements.
+
+⏺ Read(extern/dgpad/DGPAD.md)
+  ⎿  Read 1432 lines
+
+⏺ I've read the DGPad documentation. This is a substantial dynamic geometry
+  software (~38,000 LOC, 450 files) with:
+
+  - Core: Canvas controller, construction model, coordinate transformations
+  - 36 geometric objects: Points, lines, circles, polygons, angles, arcs,
+  locus, etc.
+  - Expression system: Math expressions with symbolic differentiation
+  - Blockly integration: Visual programming with turtle graphics
+  - Macro system: Reusable custom tools
+
+  Let me now explore the relevant ubumaths modules to understand potential
+  synergies:
+
+⏺ 3 Explore agents finished (ctrl+o to expand)
+   ├─ Explore ubumaths mathAST · 22 tool uses · 93.6k tokens
+   │  ⎿ Done
+   ├─ Explore ubumaths blockly · 29 tool uses · 91.9k tokens
+   │  ⎿ Done
+   └─ Explore DGPad source code · 19 tool uses · 96.6k tokens
+      ⎿ Done
+
+⏺ Excellent! I now have a comprehensive understanding of all three systems.
+  Here's what I found:
+
+  Summary of Exploration
+
+  MathAST (ubumaths) - 190 TypeScript files
+
+  - Full symbolic computation: differentiation with chain rule, pattern
+  matching, normalization, equivalence checking
+  - Can fully replace DGPad's Expression.js + SymbolicCompute.js with much
+  more capability
+  - Supports LaTeX ↔ Custom syntax transpilation
+
+  Blockly (ubumaths) - Modern implementation
+
+  - TypeScript + Svelte 5 + sandbox execution
+  - Standard toolbox (logic, loops, math, text, lists)
+  - Can be extended with DGPad-style geometry/turtle blocks
+
+  DGPad - 38,000 LOC JavaScript (ES5)
+
+  - Tightly coupled with global state ($U, $L, $P)
+  - 36 geometric object types, macro system, multi-touch
+  - Blockly integration with geometry + turtle blocks
+  - Main challenges: interpreter dependency, canvas-centric, no types
+
+  Before I design a detailed plan, I need clarification on several points:
+                                                                           
+⏺ User answered Claude's questions:
+  ⎿  · What is the primary goal: full DGPad port to Svelte/TypeScript, or 
+     selective feature integration into ubumaths? → Selective integration
+     · Which geometry rendering approach do you prefer for the new 
+     implementation? → compare les 2 approches. donne moi ton avis
+     · Which DGPad features are highest priority for the initial 
+     implementation? → Core geometry, Macro system
+     · Should the geometry construction be usable standalone or tightly 
+     integrated with questions/exercises? → Both modes
+
+⏺ Let me give you my analysis on Canvas 2D vs SVG for geometry rendering:
+
+  Canvas 2D vs SVG Comparison
+
+  | Aspect             | Canvas 2D                               | SVG
+                                         |
+  |--------------------|-----------------------------------------|----------
+  ---------------------------------------|
+  | Performance        | Excellent for >1000 objects, animations | Good for
+  <500 objects, degrades with complexity |
+  | Events             | Manual hit-testing required             | Native
+  DOM events per element                   |
+  | Accessibility      | None (opaque bitmap)                    | Screen
+  reader support possible                  |
+  | Styling            | Programmatic only                       | CSS
+  classes, :hover, transitions                |
+  | Export             | Needs svgcanvas.js shim                 | Native
+  (it IS vector)                           |
+  | Debugging          | Difficult (no inspection)               | DevTools
+  element inspection                     |
+  | Memory             | Lower per object                        | Higher
+  (DOM nodes)                              |
+  | Svelte integration | Canvas ref, imperative                  | Reactive
+  bindings, each blocks                  |
+
+  My Recommendation: SVG (with Canvas option for animations)
+
+  Reasons for SVG in educational geometry:
+  1. Accessibility - Important for education (screen readers, keyboard nav)
+  2. Constructions are typically <200 objects - performance is fine
+  3. Svelte synergy - Reactive updates, {#each} loops, transitions
+  4. Native export - No svgcanvas.js hack needed
+  5. CSS styling - Easy theming, dark mode, hover states
+  6. Debugging - Inspect elements in DevTools
+
+  Hybrid approach: Use SVG for geometry objects, Canvas overlay for:
+  - Animation trails (locus)
+  - Turtle graphics (many small segments)
+  - Real-time previews during construction
+
+  Now let me design a detailed implementation plan:
+
+⏺ Plan(Design DGPad integration plan)
+  ⎿  Done (16 tool uses · 119.3k tokens · 2m 7s)                           
+
+⏺ I have a comprehensive implementation plan. Let me write it to the plan
+  file:
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ The plan is ready. Here's a summary of the key points:
+
+  Plan Summary
+
+  Recommendation: SVG rendering with optional Canvas overlay for
+  animations/locus - better for education (accessibility, CSS, debugging)
+  and Svelte integration.
+
+  7 Phases over ~12 weeks:
+  1. Core types + dependency graph
+  2. Geometry engine with Svelte 5 runes
+  3. Tool system + constructors
+  4. SVG rendering
+  5. Macro system
+  6. UI components
+  7. Exercise integration
+
+  Key synergies:
+  - mathAST fully replaces DGPad's Expression.js + SymbolicCompute.js
+  - Existing constructions patterns (src/lib/constructions/) provide
+  engine/renderer templates
+  - Blockly geometry blocks can be added later (Phase 2 of the project)
+
+  New module location: src/lib/geometry/ (separate from existing
+  constructions)
+
+  Do you have any questions or modifications before I finalize the plan?
+  ⎿ Tool use rejected with user message: can this project and /contructions 
+    share some code ?
+
+⏺ Excellent question! Let me analyze what could be shared between the two
+  modules:
+
+⏺ Explore(Analyze constructions sharing)
+  ⎿  Done (13 tool uses · 93.6k tokens · 1m 24s)                           
+
+⏺ Excellent analysis! Yes, they can share significant code. Here's the
+  breakdown:
+
+  Shareable Components (A - Use as-is)
+
+  | Component                  | Location          | Notes
+                      |
+  |----------------------------|-------------------|------------------------
+  --------------------|
+  | evaluator.ts               | core/evaluator.ts | Expression evaluation
+  with $param syntax   |
+  | renderer.ts                | core/renderer.ts  | CoordinateTransformer,
+  SVG path generators |
+  | Position, Expr, StyleProps | types.ts          | Base geometric types
+                      |
+  | Colors, defaults           | constants.ts      | Style constants
+                      |
+
+  Recommended Architecture
+
+  src/lib/
+  ├── geometry-core/          # NEW: Shared foundation
+  │   ├── types.ts            # Position, Expr, StyleProps, base object defs
+  │   ├── evaluator.ts        # Expression evaluation (from constructions)
+  │   ├── renderer.ts         # SVG utilities (from constructions)
+  │   └── constants.ts        # Shared colors, defaults
+  │
+  ├── constructions/          # REFACTOR: Import from geometry-core
+  │   ├── types.ts            # Animation-specific (Step, ActionDef,
+  instruments)
+  │   ├── core/engine.svelte.ts  # Timeline-driven playback
+  │   └── ...                 # Instruments, actions
+  │
+  └── geometry/               # NEW: Interactive dynamic geometry
+      ├── types.ts            # Constraints, dependencies, interactive state
+      ├── core/engine.svelte.ts  # Drag/select, no timeline
+      └── ...                 # Tools, macros
+
+  Key Difference
+
+  | Aspect    | constructions         | geometry                 |
+  |-----------|-----------------------|--------------------------|
+  | User role | Viewer (watch)        | Participant (manipulate) |
+  | Updates   | Timeline-driven       | Direct drag              |
+  | State     | drawProgress, visible | selected, dragging       |
+
+  Let me update the plan with this shared architecture:
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Now let me add a new Phase 0 to extract the shared foundation:
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Now let me update the critical files section:
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ The plan now includes a shared foundation layer. Here's the updated
+  architecture:
+
+  src/lib/
+  ├── geometry-core/      # NEW: Shared (evaluator, renderer, base types)
+  ├── constructions/      # REFACTOR: Imports from geometry-core
+  └── geometry/           # NEW: Interactive dynamic geometry
+
+  Benefits of this approach:
+  1. No code duplication - evaluator and renderer shared
+  2. constructions keeps working - just import path changes
+  3. Consistent coordinate transforms - same CoordinateTransformer
+  everywhere
+  4. Unified expression syntax - $param and $object.x work in both
+
+  Do you have any other questions about the plan, or shall I finalize it?
+  ⎿  Tool use rejected with user message: quit the plan . i have to think
+  ⎿  User rejected Claude's plan:
+     ╭─────────────────────────────────────────────────────────────────────────╮
+     │ DGPad Integration Plan for Ubumaths                                     │
+     │                                                                         │
+     │ Objective                                                               │
+     │                                                                         │
+     │ Selective integration of DGPad's dynamic geometry features into         │
+     │ ubumaths, leveraging existing mathAST, Blockly, and constructions       │
+     │ infrastructure.                                                         │
+     │                                                                         │
+     │ Key Decisions                                                           │
+     │                                                                         │
+     │ - Rendering: SVG (with Canvas overlay for animations/locus)             │
+     │ - Priority: Core geometry + Macro system                                │
+     │ - Integration: Standalone module with exercise hooks                    │
+     │ - No DocEval                                                            │
+     │ - Code sharing: Extract shared foundation from constructions/           │
+     │                                                                         │
+     │ Architecture Overview                                                   │
+     │                                                                         │
+     │ src/lib/                                                                │
+     │ ├── geometry-core/              # NEW: Shared foundation                │
+     │ │   ├── types.ts                # Position, Expr, StyleProps, base defs │
+     │ │   ├── evaluator.ts            # Expression evaluation (from           │
+     │ constructions)                                                          │
+     │ │   ├── renderer.ts             # SVG path utils, CoordinateTransformer │
+     │ │   └── constants.ts            # Colors, style defaults                │
+     │ │                                                                       │
+     │ ├── constructions/              # REFACTOR: Import from geometry-core   │
+     │ │   ├── types.ts                # Animation-specific (Step, ActionDef,  │
+     │ etc.)                                                                   │
+     │ │   ├── core/engine.svelte.ts   # Timeline playback (unchanged logic)   │
+     │ │   └── ...                     # Instruments, actions                  │
+     │ │                                                                       │
+     │ └── geometry/                   # NEW: Interactive dynamic geometry     │
+     │     ├── types.ts                # Constraints, dependencies, interactive│
+     │  state                                                                  │
+     │     ├── core/                                                           │
+     │     │   ├── engine.svelte.ts    # Drag/select, no timeline              │
+     │     │   └── dependency-graph.ts # Object relationships                  │
+     │     ├── constructors/           # Object creation tools                 │
+     │     ├── tools/                  # Tool manager, snapping                │
+     │     ├── macros/                 # Custom tool system                    │
+     │     ├── components/             # Svelte UI                             │
+     │     ├── exercise/               # Exercise integration                  │
+     │     └── io/                     # Serialization                         │
+     │                                                                         │
+     │ Leverage Existing Code                                                  │
+     │                                                                         │
+     │ - mathAST (src/lib/mathAST/) replaces DGPad Expression.js +             │
+     │ SymbolicCompute.js                                                      │
+     │ - constructions (src/lib/constructions/) - extract shared evaluator,    │
+     │ renderer, types                                                         │
+     │ - Blockly can be extended later for geometry blocks                     │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 0: Extract Shared Foundation (Week 1)                             │
+     │                                                                         │
+     │ 0.1 Create src/lib/geometry-core/types.ts                               │
+     │                                                                         │
+     │ Extract from src/lib/constructions/types.ts:                            │
+     │ - Expr (number | string)                                                │
+     │ - Position ({ x, y })                                                   │
+     │ - StyleProps, LineStyle, PointStyle, TextStyle                          │
+     │ - Base object definitions WITHOUT animation fields (drawProgress,       │
+     │ visible)                                                                │
+     │                                                                         │
+     │ 0.2 Create src/lib/geometry-core/evaluator.ts                           │
+     │                                                                         │
+     │ Copy from src/lib/constructions/core/evaluator.ts (use as-is):          │
+     │ - EvaluationContext interface                                           │
+     │ - evaluateExpr() function                                               │
+     │ - preprocessExpression() - handles $param and $object.x syntax          │
+     │ - extractReferences() - for dependency tracking                         │
+     │ - createContext() factory                                               │
+     │                                                                         │
+     │ 0.3 Create src/lib/geometry-core/renderer.ts                            │
+     │                                                                         │
+     │ Copy from src/lib/constructions/core/renderer.ts (use as-is):           │
+     │ - CoordinateTransformer class                                           │
+     │ - createTransformer(), createIdentityTransformer()                      │
+     │ - SVG path generators: segmentToSvgLine(), circleToSvgPath(),           │
+     │ arcToSvgPath()                                                          │
+     │ - Style helpers: applyLineStyle(), applyTextStyle()                     │
+     │ - Grid generation                                                       │
+     │                                                                         │
+     │ 0.4 Create src/lib/geometry-core/constants.ts                           │
+     │                                                                         │
+     │ Extract from src/lib/constructions/constants.ts:                        │
+     │ - Colors, style defaults                                                │
+     │ - Geometry constants (snap threshold, etc.)                             │
+     │                                                                         │
+     │ 0.5 Refactor constructions/ to import from geometry-core/               │
+     │                                                                         │
+     │ - Update imports in constructions/types.ts                              │
+     │ - Update imports in constructions/core/engine.svelte.ts                 │
+     │ - Verify tests still pass                                               │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 1: Core Type System (Week 2)                                      │
+     │                                                                         │
+     │ 1.1 Create src/lib/geometry/types.ts                                    │
+     │                                                                         │
+     │ - 20+ geometric object types with discriminated unions                  │
+     │ - GeoObjectBase interface with id, kind, parents, style, layer          │
+     │ - Point variants: FreePoint, DependentPoint (on-object, intersection,   │
+     │ midpoint, expression)                                                   │
+     │ - Line, Circle, Polygon, Angle types                                    │
+     │ - GeoStyle for stroke, fill, dash, point style                          │
+     │                                                                         │
+     │ 1.2 Create src/lib/geometry/core/dependency-graph.ts                    │
+     │                                                                         │
+     │ - Track parent-child relationships                                      │
+     │ - Topological sort for recalculation order                              │
+     │ - Cycle detection                                                       │
+     │ - getDescendants(), getAncestors()                                      │
+     │                                                                         │
+     │ 1.3 Create src/lib/geometry/core/transform.ts                           │
+     │                                                                         │
+     │ - Coordinate system: math <-> canvas                                    │
+     │ - Viewport management (xMin, xMax, yMin, yMax)                          │
+     │ - Zoom/pan with smooth transitions                                      │
+     │                                                                         │
+     │ 1.4 Create src/lib/geometry/core/expression-bridge.ts                   │
+     │                                                                         │
+     │ - Bridge to mathAST for expression evaluation                           │
+     │ - Geometric context (object references, parameters)                     │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 2: Geometry Engine (Week 3-4)                                     │
+     │                                                                         │
+     │ 2.1 Create src/lib/geometry/core/engine.svelte.ts                       │
+     │                                                                         │
+     │ export class GeometryEngine {                                           │
+     │   objects = $state(new SvelteMap<string, GeoObject>());                 │
+     │   selectedIds = $state(new SvelteSet<string>());                        │
+     │   coordinateSystem = $state<CoordinateSystem>(...);                     │
+     │                                                                         │
+     │   // Core operations                                                    │
+     │   addObject(obj: GeoObject): void;                                      │
+     │   removeObject(id: string): void;  // + dependents                      │
+     │   updateObject(id: string, changes: Partial<GeoObject>): void;          │
+     │   dragPoint(id: string, x: number, y: number): void;                    │
+     │   recalculateFromPoint(id: string): void;                               │
+     │                                                                         │
+     │   // Undo/Redo                                                          │
+     │   undo(): void;                                                         │
+     │   redo(): void;                                                         │
+     │ }                                                                       │
+     │                                                                         │
+     │ 2.2 Create src/lib/geometry/core/calculator.ts                          │
+     │                                                                         │
+     │ - calculatePoint() - evaluate point definitions                         │
+     │ - calculateLineIntersection()                                           │
+     │ - calculateCircleIntersection()                                         │
+     │ - calculateLineCircleIntersection()                                     │
+     │ - calculateProjection() - point on line/circle                          │
+     │ - calculateMidpoint(), calculateDistance(), calculateAngle()            │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 3: Tool System (Week 5-6)                                         │
+     │                                                                         │
+     │ 3.1 Create src/lib/geometry/constructors/base.ts                        │
+     │                                                                         │
+     │ export interface Constructor<T extends GeoObject> {                     │
+     │   name: string;                                                         │
+     │   inputs: ConstructorInput[];  // What to collect                       │
+     │   icon: string;                                                         │
+     │   validate(inputs: unknown[]): ValidationResult;                        │
+     │   construct(inputs: unknown[], engine: GeometryEngine): T;              │
+     │   preview?(partialInputs: unknown[], cursor: Point): SVGElement | null; │
+     │ }                                                                       │
+     │                                                                         │
+     │ 3.2 Create constructors:                                                │
+     │                                                                         │
+     │ - src/lib/geometry/constructors/points.ts - free, on-object,            │
+     │ intersection, midpoint                                                  │
+     │ - src/lib/geometry/constructors/lines.ts - line, segment, ray,          │
+     │ perpendicular, parallel                                                 │
+     │ - src/lib/geometry/constructors/circles.ts - center-point,              │
+     │ center-radius, 3-points                                                 │
+     │ - src/lib/geometry/constructors/polygons.ts - triangle, polygon, regular│
+     │  polygon                                                                │
+     │ - src/lib/geometry/constructors/measurements.ts - distance, angle, area │
+     │                                                                         │
+     │ 3.3 Create src/lib/geometry/tools/tool-manager.svelte.ts                │
+     │                                                                         │
+     │ - activeTool, toolState, collectedInputs with $state                    │
+     │ - Ghost preview during construction                                     │
+     │ - Input collection workflow                                             │
+     │                                                                         │
+     │ 3.4 Create src/lib/geometry/tools/snapping.ts                           │
+     │                                                                         │
+     │ - Snap to points, lines, intersections, grid                            │
+     │ - Priority-based target selection                                       │
+     │ - Configurable threshold                                                │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 4: Rendering (Week 7-8)                                           │
+     │                                                                         │
+     │ 4.1 Create src/lib/geometry/components/GeometryCanvas.svelte            │
+     │                                                                         │
+     │ <svg viewBox="..." onpointerdown={...} onpointermove={...}              │
+     │ onwheel={...}>                                                          │
+     │   <GridLayer {coordinateSystem} />                                      │
+     │   {#each visibleObjects as obj (obj.id)}                                │
+     │     <ObjectRenderer {obj} {selected} />                                 │
+     │   {/each}                                                               │
+     │   <SelectionLayer {selectedIds} />                                      │
+     │   <ToolPreviewLayer {ghostElement} />                                   │
+     │ </svg>                                                                  │
+     │                                                                         │
+     │ 4.2 Create renderers:                                                   │
+     │                                                                         │
+     │ - src/lib/geometry/renderers/point.ts                                   │
+     │ - src/lib/geometry/renderers/line.ts                                    │
+     │ - src/lib/geometry/renderers/circle.ts                                  │
+     │ - src/lib/geometry/renderers/polygon.ts                                 │
+     │ - src/lib/geometry/renderers/text.ts                                    │
+     │                                                                         │
+     │ Each renderer: render(), getBoundingBox(), hitTest()                    │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 5: Macro System (Week 9-10)                                       │
+     │                                                                         │
+     │ 5.1 Create src/lib/geometry/macros/types.ts                             │
+     │                                                                         │
+     │ export interface MacroDefinition {                                      │
+     │   id: string;                                                           │
+     │   name: string;                                                         │
+     │   inputs: MacroInput[];      // What user provides                      │
+     │   outputs: MacroOutput[];    // What gets created                       │
+     │   construction: MacroStep[]; // Steps to execute                        │
+     │ }                                                                       │
+     │                                                                         │
+     │ 5.2 Create src/lib/geometry/macros/executor.ts                          │
+     │                                                                         │
+     │ - Execute macro with given inputs                                       │
+     │ - Create all intermediate and final objects                             │
+     │ - Handle visibility (hide intermediates)                                │
+     │                                                                         │
+     │ 5.3 Create src/lib/geometry/macros/recorder.ts                          │
+     │                                                                         │
+     │ - Record construction steps into macro                                  │
+     │ - Identify inputs (initial objects)                                     │
+     │ - Identify outputs (final objects)                                      │
+     │                                                                         │
+     │ 5.4 Create src/lib/geometry/components/MacroEditor.svelte               │
+     │                                                                         │
+     │ - UI for recording, naming, and editing macros                          │
+     │ - Test execution with sample inputs                                     │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 6: UI Components (Week 11)                                        │
+     │                                                                         │
+     │ 6.1 Create src/lib/geometry/components/Toolbar.svelte                   │
+     │                                                                         │
+     │ - Tool selection buttons with icons                                     │
+     │ - Category grouping (points, lines, circles, etc.)                      │
+     │ - Active tool indicator                                                 │
+     │                                                                         │
+     │ 6.2 Create src/lib/geometry/components/PropertyPanel.svelte             │
+     │                                                                         │
+     │ - Edit selected object properties                                       │
+     │ - Style controls (color, size, visibility)                              │
+     │ - Object-specific fields                                                │
+     │                                                                         │
+     │ 6.3 Create src/lib/geometry/components/GeometryPlayground.svelte        │
+     │                                                                         │
+     │ - Full standalone editor                                                │
+     │ - Toolbar + Canvas + Property panel layout                              │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 7: Exercise Integration (Week 12)                                 │
+     │                                                                         │
+     │ 7.1 Create src/lib/geometry/exercise/types.ts                           │
+     │                                                                         │
+     │ export interface GeometryExerciseConfig {                               │
+     │   initialFigure: GeometryDocument;                                      │
+     │   objectives: GeometryObjective[];                                      │
+     │   allowedTools: string[];                                               │
+     │   validation: ValidationConfig;                                         │
+     │ }                                                                       │
+     │                                                                         │
+     │ 7.2 Create src/lib/geometry/exercise/validator.ts                       │
+     │                                                                         │
+     │ - Check if construction meets objectives                                │
+     │ - Structural validation (correct object types)                          │
+     │ - Numerical validation (correct measurements)                           │
+     │                                                                         │
+     │ 7.3 Create src/lib/geometry/io/schemas.ts                               │
+     │                                                                         │
+     │ - Zod schemas for all types                                             │
+     │ - Document format with version                                          │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Critical Files                                                          │
+     │                                                                         │
+     │ To Extract (Phase 0)                                                    │
+     │                                                                         │
+     │ | Source                                  | Destination                |│
+     │  Action             |                                                   │
+     │ |-----------------------------------------|----------------------------|│
+     │ --------------------|                                                   │
+     │ | src/lib/constructions/types.ts          | geometry-core/types.ts     |│
+     │  Extract base types |                                                   │
+     │ | src/lib/constructions/core/evaluator.ts | geometry-core/evaluator.ts |│
+     │  Copy as-is         |                                                   │
+     │ | src/lib/constructions/core/renderer.ts  | geometry-core/renderer.ts  |│
+     │  Copy as-is         |                                                   │
+     │ | src/lib/constructions/constants.ts      | geometry-core/constants.ts |│
+     │  Extract shared     |                                                   │
+     │                                                                         │
+     │ To Reference                                                            │
+     │                                                                         │
+     │ | File                                                       | Purpose  │
+     │                            |                                            │
+     │ |------------------------------------------------------------|----------│
+     │ ---------------------------|                                            │
+     │ | src/lib/constructions/core/engine.svelte.ts                | Svelte 5 │
+     │ reactive engine pattern    |                                            │
+     │ | src/lib/constructions/components/ConstructionCanvas.svelte | SVG layer│
+     │  pattern                   |                                            │
+     │ | src/lib/mathAST/differentiation/                           | Symbolic │
+     │ differentiation            |                                            │
+     │ | extern/dgpad/scripts/Objects/                              | Algorithm│
+     │  reference (intersections) |                                            │
+     │ | extern/dgpad/scripts/Macros/                               | Macro    │
+     │ system reference              |                                         │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Testing Strategy                                                        │
+     │                                                                         │
+     │ 1. Unit tests for calculator functions (intersections, projections)     │
+     │ 2. Component tests for renderers with Vitest                            │
+     │ 3. Integration tests for engine operations                              │
+     │ 4. Visual tests for rendering consistency                               │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Notes                                                                   │
+     │                                                                         │
+     │ - No code from DGPad is copied - algorithms only referenced             │
+     │ - mathAST fully replaces DGPad's Expression.js + SymbolicCompute.js     │
+     │ - Blockly geometry blocks can be added in a future phase                │
+     │ - Follow existing patterns from src/lib/constructions/                  │
+     │                                                                         │
+     │                                                                         │
+     │                                                                         │
+     ╰─────────────────────────────────────────────────────────────────────────╯
+
+> ultrathink with Opus : continue a étudier la question du partage de code 
+entre le module constructions et le nouveau module géométire. est-ce qu'on
+ne peut pas encore factoriser ? est-ce que les 2 engine sont basés sur du
+svg ? est-ce qu'il peuvent partager les meme systemes de coordonnées , les
+memes objets géométriques de base ? Est-ce que la "feuille ou on dessine"
+pourrait en meme temps gérer une animation de construction comme dans le
+module constructions et une figure de géométrie dynamique comme dgpad ? Ask
+me for clarification
+
+⏺ Excellente question! Explorons en profondeur la possibilité d'une
+  unification plus poussée:
+
+⏺ 2 Explore agents finished (ctrl+o to expand)
+   ├─ Compare constructions vs geometry engines · 13 tool uses · 77.2k tokens
+   │  ⎿ Done
+   └─ Analyze DGPad object model · 23 tool uses · 110.3k tokens
+      ⎿ Done
+
+⏺ Excellent analyses! Voici les conclusions clés:
+
+  Réponses aux questions
+
+  1. Les deux engines sont-ils SVG-based?
+
+  - Constructions: Oui, déjà 100% SVG avec des layers organisés
+  - DGPad: Non, Canvas 2D
+  - Verdict: On peut unifier sur SVG (meilleur pour Svelte, accessibilité,
+  CSS)
+
+  2. Peuvent-ils partager le système de coordonnées?
+
+  OUI! Le CoordinateTransformer de constructions est déjà bien conçu:
+  interface CoordinateTransformer {
+    mathToSvg(x: number, y: number): { x: number; y: number };
+    svgToMath(x: number, y: number): { x: number; y: number };
+    viewport: { xMin, xMax, yMin, yMax };
+  }
+  Il manque juste: viewport réactif pour pan/zoom.
+
+  3. Peuvent-ils partager les mêmes objets géométriques?
+
+  OUI, avec un modèle en couches:
+
+  interface GeoObject {
+    // === COUCHE CORE (toujours présente) ===
+    id: string;
+    kind: 'point' | 'segment' | 'circle' | ...;
+    definition: PointGeom | SegmentGeom | ...;
+    style: GeoStyle;
+    visible: boolean;
+    layer: number;
+
+    // === COUCHE ANIMATION (opt-in, pour constructions) ===
+    animation?: {
+      drawProgress: number;      // 0-1 pour dessin progressif
+      animationId?: string;
+    };
+
+    // === COUCHE INTERACTION (opt-in, pour geometry) ===
+    interaction?: {
+      selected: boolean;
+      indicated: boolean;        // Hover
+      dragging: boolean;
+      draggable: boolean;
+    };
+
+    // === COUCHE DEPENDANCES (opt-in, pour geometry) ===
+    dependencies?: {
+      parents: string[];         // IDs des parents
+      children: string[];        // IDs des enfants
+      constraint?: Constraint;   // Comment la position est calculée
+    };
+  }
+
+  4. Une seule "feuille" pour les deux modes?
+
+  OUI, c'est architecturalement faisable!
+
+  ┌────────────────────────────────────────────────────────────┐
+  │                    UnifiedCanvas.svelte                     │
+  │                                                             │
+  │  Mode: playback          →    Mode: interactive             │
+  │  ┌─────────────────┐         ┌─────────────────┐           │
+  │  │ Timeline active │   →     │ Drag enabled    │           │
+  │  │ drawProgress    │         │ Hit testing     │           │
+  │  │ Instruments     │         │ Selection       │           │
+  │  └─────────────────┘         └─────────────────┘           │
+  │                                                             │
+  │  Transition: timeline.onComplete() → enableInteraction()   │
+  └────────────────────────────────────────────────────────────┘
+
+  Scénario unifié:
+  1. User ouvre une construction → animation joue
+  2. Animation termine → les points libres deviennent draggables
+  3. User drag un point → le graphe de dépendances recalcule les objets
+  enfants
+  4. User peut aussi rejouer l'animation
+
+  Ce qui manque actuellement
+
+  | Composant             | État actuel            | Effort             |
+  |-----------------------|------------------------|--------------------|
+  | SVG rendering         | Existe (constructions) | Aucun              |
+  | CoordinateTransformer | Existe                 | Ajouter réactivité |
+  | Event handlers        | MANQUANT               | Moyen              |
+  | Hit testing           | MANQUANT               | Moyen              |
+  | Dependency graph      | MANQUANT               | Élevé              |
+  | Constraint solver     | MANQUANT               | Élevé              |
+  | Mode switching        | MANQUANT               | Faible             |
+                                                                           
+⏺ User answered Claude's questions:
+  ⎿  · Voulez-vous vraiment unifier les deux modules en un seul, ou 
+     préférez-vous garder deux modules séparés avec une base partagée? → je 
+     veux pouvoir créer des exercices de geometrie aussi. que penses-tu de 
+     tout ça ? donne moi ton avis avant que prenne une décision. ultrathink 
+     avec Opus
+
+
+     · Quel est le cas d'usage principal pour le mode interactif après 
+     animation? → Les deux
+
+⏺ Voici mon analyse approfondie et ma recommandation:
+
+  Les 3 cas d'usage que tu veux couvrir
+
+  | Cas                    | Description
+   | Complexité |
+  |------------------------|------------------------------------------------
+  -|------------|
+  | 1. Animation           | Regarder une construction InstrumenPoche
+   | ✅ Existe   |
+  | 2. Exploration         | Après animation, drag les points pour explorer
+   | Moyenne    |
+  | 3. Exercices géométrie | L'élève construit lui-même (outils, évaluation)
+   | Élevée     |
+
+  Question clé: Cas 2 et 3 sont-ils identiques?
+
+  Non! Ils ont des besoins très différents:
+
+  Cas 2: Exploration post-animation
+
+  - Drag des points libres uniquement
+  - Pas de création d'objets
+  - Satisfaction de contraintes
+  - Extension du module constructions existant
+
+  Cas 3: Exercices de géométrie
+
+  - Toolbox complet (point, droite, cercle, perpendiculaire, etc.)
+  - Système d'évaluation ("l'élève a-t-il bien construit la médiatrice?")
+  - Macros pour constructions complexes
+  - Nouveau module plus complexe
+
+  Mon avis: Unification Progressive (pas totale)
+
+  Je recommande une approche en 3 couches:
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │                     COUCHE 3: geometry-tools                     │
+  │         (Exercices: outils, évaluation, macros)                  │
+  │         src/lib/geometry/                                        │
+  ├─────────────────────────────────────────────────────────────────┤
+  │                 COUCHE 2: constructions-interactive              │
+  │         (Animation + Exploration: drag, dépendances)             │
+  │         src/lib/constructions/ (étendu)                          │
+  ├─────────────────────────────────────────────────────────────────┤
+  │                     COUCHE 1: geometry-core                      │
+  │         (Shared: types, evaluator, renderer, transformer)        │
+  │         src/lib/geometry-core/                                   │
+  └─────────────────────────────────────────────────────────────────┘
+
+  Pourquoi PAS d'unification totale?
+
+  | Argument      | Pour unification        | Contre unification
+              |
+  |---------------|-------------------------|-------------------------------
+  ------------|
+  | Complexité    | Code unifié             | Risque "god object", hard to
+  reason       |
+  | Développement | Tout fait d'un coup     | Peut livrer par phases
+              |
+  | Maintenance   | 1 module                | Constructions stable, geometry
+   évolue     |
+  | Testing       | Tests unifiés           | Tests plus complexes
+              |
+  | Performance   | Optimisations partagées | Charge inutile si on veut
+  juste animation |
+
+  Pourquoi unification progressive?
+
+  Phase 1: geometry-core (2 semaines)
+
+  - Extraire les composants partagés
+  - Constructions continue de marcher
+  - Base solide pour la suite
+
+  Phase 2: Étendre constructions avec exploration (3 semaines)
+
+  - Ajouter event handlers au canvas
+  - Ajouter dependency graph
+  - Permettre drag après animation
+  - Livrable utilisable rapidement
+
+  Phase 3: geometry-tools pour exercices (6+ semaines)
+
+  - Toolbox avec constructeurs
+  - Système d'évaluation
+  - Macros
+  - UI complète
+
+  Avantages de cette approche
+
+  1. Livraison incrémentale - Phase 2 livre de la valeur sans attendre Phase
+   3
+  2. Risque réduit - Si Phase 3 est complexe, Phase 2 fonctionne déjà
+  3. Code partagé - geometry-core évite la duplication
+  4. Flexibilité - Chaque couche peut évoluer indépendamment
+  5. Backward compatible - Les constructions existantes continuent de
+  marcher
+
+  Le scénario concret
+
+  Professeur crée un exercice:
+  1. Animation InstrumenPoche montre comment construire un triangle
+  équilatéral
+  2. À la fin, l'élève peut drag les sommets pour explorer
+  3. OU: L'élève doit construire lui-même un triangle équilatéral
+  4. Le système évalue si c'est correct
+
+  → Cas 1+2 = constructions-interactive
+  → Cas 3+4 = geometry-tools
+  → Les deux utilisent geometry-core
+
+  Ma recommandation finale
+
+  Unification progressive avec base partagée:
+
+  1. Ne PAS fusionner constructions et geometry en un seul module
+  2. Créer geometry-core pour le code partagé
+  3. Étendre constructions pour l'exploration (Phase 2)
+  4. Créer geometry-tools pour les exercices (Phase 3)
+
+  Cela te permet de:
+  - Livrer l'exploration rapidement (utile pour tes utilisateurs actuels)
+  - Prendre le temps pour les exercices géométrie (plus complexe)
+  - Garder une architecture propre et maintenable
+
+  Qu'en penses-tu? Est-ce que cette approche progressive correspond à tes
+  priorités?
+
+> qu'est-ce que tu gardes de dgpad ? 
+
+⏺ Excellente question! Voici ce que je propose de garder de DGPad:
+
+  Ce qu'on garde de DGPad
+
+  1. Algorithmes géométriques (référence, pas copie)
+
+  | Algorithme                 | Fichier DGPad                    | Usage
+                  |
+  |----------------------------|----------------------------------|---------
+  ----------------|
+  | Intersection ligne/ligne   | Objects/PrimitiveLineObject.js   | Calculer
+   intersections  |
+  | Intersection ligne/cercle  | Objects/PrimitiveCircleObject.js | Points
+  sur cercle       |
+  | Intersection cercle/cercle | Objects/PrimitiveCircleObject.js | 2 points
+   d'intersection |
+  | Projection sur ligne       | Objects/PrimitiveLineObject.js   | Point
+  sur droite        |
+  | Projection sur cercle      | Objects/PrimitiveCircleObject.js | Point
+  sur cercle        |
+  | Calcul d'angle             | Utils.js                         | Mesures
+  d'angles        |
+
+  → On réécrit en TypeScript, on ne copie pas le code ES5.
+
+  2. Concepts architecturaux
+
+  | Concept           | Description
+         | Adaptation                          |
+  |-------------------|-----------------------------------------------------
+  -------|-------------------------------------|
+  | Dependency graph  | parentList[] / childList[]
+         | Graphe de dépendances pour recalcul |
+  | Contraintes alpha | Position paramétrique (0-1) sur segment, (0-2π) sur
+  cercle | Pour "point sur objet"              |
+  | Types de points   | Free / OnObject / Intersection / Dependent
+         | Discriminated union TypeScript      |
+  | Macro system      | Initial → Intermediate → Final
+         | Définition de macros réutilisables  |
+
+  3. Liste des objets géométriques (inspiré, pas copié)
+
+  // Types à implémenter (inspirés de DGPad)
+  type GeoKind =
+    | 'point'           // Point libre ou contraint
+    | 'segment'         // Segment [AB]
+    | 'line'            // Droite (AB)
+    | 'ray'             // Demi-droite [AB)
+    | 'circle'          // Cercle (centre + point ou rayon)
+    | 'arc'             // Arc de cercle
+    | 'polygon'         // Polygone
+    | 'angle'           // Angle avec marque
+    | 'perpendicular'   // Droite perpendiculaire
+    | 'parallel'        // Droite parallèle
+    | 'bisector'        // Bissectrice
+    | 'midpoint'        // Milieu
+    | 'reflection'      // Symétrie axiale
+    | 'rotation'        // Rotation
+    | 'translation';    // Translation
+
+  4. Système de macros (concept)
+
+  // Inspiré de DGPad MacroDefinition
+  interface MacroDefinition {
+    name: string;
+    inputs: MacroInput[];      // Ce que l'utilisateur fournit
+    outputs: MacroOutput[];    // Ce qui est créé
+    steps: MacroStep[];        // Construction intermédiaire
+    hideIntermediates: boolean;
+  }
+
+  Ce qu'on NE garde PAS de DGPad
+
+  | Élément                            | Raison
+     |
+  |------------------------------------|------------------------------------
+  ---|
+  | Rendering Canvas 2D                | On utilise SVG (meilleur pour
+  Svelte) |
+  | Expression.js / SymbolicCompute.js | mathAST est plus complet
+     |
+  | Code ES5 / globals                 | On réécrit en TypeScript moderne
+     |
+  | Blockly integration                | On a déjà un module Blockly moderne
+     |
+  | DocEval                            | Pas voulu
+     |
+  | UI (panels, dialogs)               | On utilise Shadcn-svelte
+     |
+  | Système d'instruments              | Spécifique à constructions
+     |
+  | Turtle graphics                    | Peut-être plus tard
+     |
+  | 3D support                         | Pas prioritaire
+     |
+  | LocalStorage cache                 | On a Supabase
+     |
+
+  Résumé
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │                    CE QU'ON PREND                           │
+  ├─────────────────────────────────────────────────────────────┤
+  │ ✅ Algorithmes géométriques (intersections, projections)   │
+  │ ✅ Concept de dependency graph                              │
+  │ ✅ Contraintes alpha (point sur objet)                      │
+  │ ✅ Types d'objets (point, segment, cercle, etc.)            │
+  │ ✅ Concept de macros                                        │
+  │ ✅ Classification des points (free/on/intersection)         │
+  └─────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │                    CE QU'ON JETTE                           │
+  ├─────────────────────────────────────────────────────────────┤
+  │ ❌ Tout le code JavaScript (on réécrit en TypeScript)       │
+  │ ❌ Canvas 2D → SVG                                          │
+  │ ❌ Expression engine → mathAST                               │
+  │ ❌ UI → Shadcn-svelte                                       │
+  │ ❌ DocEval, Turtle, 3D                                      │
+  └─────────────────────────────────────────────────────────────┘
+
+  En résumé: DGPad est une référence architecturale et algorithmique, pas du
+   code à intégrer. On s'inspire des concepts prouvés, on réécrit tout en
+  TypeScript/Svelte moderne.
+
+  Est-ce que tu veux que je détaille certains algorithmes spécifiques ou la
+  structure des macros?
+
+> ok fais le plan en respectant les rules de CLAUDE.md 
+
+⏺ Read(CLAUDE.md)
+  ⎿  Read 273 lines
+
+⏺ 1. Agents ET modèles spécifiés pour chaque tâche
+  2. Code Review (code-reviewer) à la fin de chaque phase
+  3. Commit après validation du code reviewer
+  4. Security Audit si auth/API sensible
+  5. Performance Audit si requêtes DB lourdes
+  6. Quality Checks (pnpm lint, pnpm check) à la FIN du plan UNIQUEMENT
+  7. Documentation de progression tout au long
+
+  Also need to respect:
+  - Svelte 5 runes only
+  - Zod validation
+  - No any types
+  - MySelect/MyCheckbox components
+  - TypeScript strict
+
+  Let me rewrite the plan file properly.
+
+
+  Je vais réécrire le plan en respectant toutes les règles de CLAUDE.md:
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Le plan est maintenant complet et respecte les règles de CLAUDE.md:
+
+  Résumé du plan
+
+  | Phase | Description                                    | Agents
+
+           |
+  |-------|------------------------------------------------|----------------
+  --------------------------------------------------------------------------
+  ---------|
+  | 1     | Fondation partagée (geometry-core)             |
+  typescript-expert, backend-developer, code-reviewer
+                          |
+  | 2     | Exploration interactive (constructions étendu) |
+  typescript-expert, frontend-developer, code-reviewer
+                          |
+  | 3     | Module geometry (exercices)                    |
+  typescript-expert, frontend-developer, backend-developer,
+  security-auditor, performance-optimizer |
+  | 4     | Routes et intégration                          |
+  fullstack-developer, accessibility-tester
+                          |
+  | 5     | Finalisation                                   |
+  documentation-writer, quality checks
+                          |
+
+  Points clés respectés (CLAUDE.md)
+
+  - Agents ET modèles spécifiés (Opus) pour chaque tâche
+  - Code Review après chaque phase
+  - Commit après validation
+  - Security/Performance audits où applicable
+  - Quality checks à la FIN uniquement
+  - Documentation de progression dans docs/wip/
+  - Svelte 5 runes, Zod validation, no any, MySelect/MyCheckbox
+
+  Le plan est-il prêt pour validation?
+  ⎿ Tool use rejected with user message: pourquoi le graphe de dépendance n'est 
+    pas partagé entre constructions et géométrie ?
+
+
+⏺ - constructions needs it for exploration mode (after animation, when user
+  drags points)
+  - geometry needs it for dynamic geometry (when user drags points during
+  construction)
+
+  Let me update the plan to move the dependency graph to geometry-core.
+
+
+  Excellente remarque! Tu as raison, le graphe de dépendances devrait être
+  dans geometry-core car les deux modules en ont besoin:
+
+  - constructions: pour recalculer les objets quand on drag un point (mode
+  exploration)
+  - geometry: pour recalculer les objets quand on drag un point (mode
+  interactif)
+
+  Laisse-moi corriger le plan:
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Maintenant mettons à jour la Phase 2 pour simplifier (car le gros du
+  travail est dans Phase 1):
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Maintenant simplifions la Phase 3 puisque calculator est déjà dans
+  geometry-core:
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Maintenant renumerons les étapes de la Phase 3 et mettons à jour les
+  fichiers critiques:
+
+⏺ Updated plan
+  ⎿  Error editing file
+
+⏺ Reading Plan(~/.claude/plans/frolicking-spinning-hippo.md)
+  ⎿  Read 100 lines
+
+⏺ Je vois que la numérotation est déjà correcte (3.4 pour constructeurs, 3.5
+   pour macros). Mettons à jour la section des fichiers critiques:
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Le plan est maintenant mis à jour avec le code partagé dans geometry-core.
+   Voici le résumé de l'architecture partagée:
+
+  Architecture finale avec partage maximal
+
+  src/lib/
+  ├── geometry-core/                    # PARTAGÉ (Phase 1)
+  │   ├── types.ts                      # Position, Expr, StyleProps,
+  GeoObject
+  │   ├── evaluator.ts                  # Expression evaluation
+  │   ├── renderer.ts                   # SVG, CoordinateTransformer
+  │   ├── dependency-graph.ts           # Graphe parent/enfant
+  │   ├── calculator.ts                 # Intersections, projections
+  │   ├── interaction.svelte.ts         # Drag, selection, hit-testing
+  │   └── schemas.ts                    # Zod validation
+  │
+  ├── constructions/                    # Animation + Exploration
+  │   └── (importe geometry-core)
+  │
+  └── geometry/                         # Exercices interactifs
+      └── (importe geometry-core)
+
+  Les deux modules partagent:
+  - Types de base
+  - Evaluator d'expressions
+  - Renderer SVG
+  - Dependency graph pour recalcul
+  - Calculator pour algorithmes géométriques
+  - Interaction handler pour drag/selection
+
+  D'autres questions avant de finaliser?
+  ⎿ Tool use rejected with user message: puisqu'une animation peut entrer dans 
+    un mode interactif, pourquoi le module construction ne s'appuierait-il pas 
+    sur le module géométrie ? et ainsi utiliser les memes objets. une 
+    construction pourrait être une macro animée. qu'en penses -tu ? ultrathink 
+    with opus.
+
+⏺ This is a profound architectural insight. Let me think about this:
+
+  Current thinking:
+  - geometry-core: shared foundation
+  - constructions: animation module (imports geometry-core)
+  - geometry: interactive module (imports geometry-core)
+
+  User's proposal:
+  - geometry-core: shared foundation
+  - geometry: full interactive geometry engine
+  - constructions: uses geometry module + adds animation layer
+  (constructions = geometry + timeline)
+
+  This makes sense because:
+  1. A construction IS a geometry figure
+  2. The animation is just a layer that shows HOW the figure was constructed
+  3. After animation, the figure becomes fully interactive
+  4. A "construction" could be seen as a "macro with animation timeline"
+
+  Let me analyze this more deeply.
+
+
+  C'est une idée brillante! Laisse-moi analyser en profondeur cette
+  proposition:
+
+  L'insight clé
+
+  Une construction InstrumenPoche EST une figure géométrique + une timeline 
+  d'animation
+
+  Construction = Geometry + Animation Timeline
+              = Macro animée
+
+  Architecture proposée
+
+  src/lib/
+  ├── geometry-core/              # Fondation partagée
+  │   └── ...
+  │
+  ├── geometry/                   # Module géométrie COMPLET
+  │   ├── types.ts                # Tous les objets géométriques
+  │   ├── core/engine.svelte.ts   # Engine interactif
+  │   ├── constructors/           # Outils de construction
+  │   ├── macros/                 # Système de macros
+  │   └── ...
+  │
+  └── constructions/              # S'APPUIE sur geometry
+      ├── types.ts                # AnimatedMacro, Step, Timeline
+      ├── core/
+      │   ├── timeline.svelte.ts  # Contrôle timeline
+      │   └── animator.ts         # Animations (drawProgress, instruments)
+      ├── instruments/            # Règle, compas, équerre (visuels)
+      └── components/
+          └── ConstructionPlayer.svelte  # Utilise GeometryCanvas + overlay
+
+  Avantages de cette approche
+
+  | Aspect                          | Avant (séparés)              | Après
+  (constructions sur geometry)         |
+  |---------------------------------|------------------------------|--------
+  ------------------------------------|
+  | Objets                          | Deux définitions différentes | Une
+  seule source de vérité                 |
+  | Transition animation→interactif | Conversion d'objets          | Même
+  objets, juste mode change             |
+  | Code dupliqué                   | Beaucoup                     | Minimal
+                                      |
+  | Maintenance                     | Deux modules à maintenir     |
+  geometry = core, constructions = extension |
+  | Construction = Macro            | Non évident                  | Naturel
+                                      |
+
+  Comment ça fonctionnerait
+
+  1. Une Construction est une Macro Animée
+
+  // Dans geometry/macros/types.ts
+  interface MacroDefinition {
+    inputs: MacroInput[];
+    steps: MacroStep[];      // Ce qui est construit
+    outputs: string[];
+  }
+
+  // Dans constructions/types.ts
+  interface AnimatedMacro extends MacroDefinition {
+    timeline: TimelineStep[];  // QUAND et COMMENT montrer chaque step
+    instruments: InstrumentAnimation[];  // Règle, compas animés
+  }
+
+  2. ConstructionPlayer utilise GeometryCanvas
+
+  <!-- constructions/components/ConstructionPlayer.svelte -->
+  <script>
+    import { GeometryCanvas } from '$lib/geometry/components';
+    import { GeometryEngine } from '$lib/geometry/core';
+
+    // L'engine geometry gère les objets
+    const engine = new GeometryEngine();
+
+    // Le timeline contrôle l'animation
+    const timeline = new Timeline(animatedMacro, engine);
+  </script>
+
+  <div class="construction-player">
+    <!-- Canvas geometry avec objets -->
+    <GeometryCanvas {engine} interactive={!timeline.isPlaying} />
+
+    <!-- Overlay pour instruments animés -->
+    {#if timeline.isPlaying}
+      <InstrumentOverlay {timeline} />
+    {/if}
+
+    <!-- Contrôles timeline -->
+    <TimelineControls {timeline} />
+  </div>
+
+  3. Transition naturelle
+
+  Timeline playing → objets apparaissent progressivement (drawProgress)
+  Timeline finished → engine.setInteractive(true) → user peut drag
+
+  Points à considérer
+
+  Pour cette approche:
+
+  1. Single source of truth pour les objets géométriques
+  2. Réutilisation maximale du code
+  3. Conceptuellement élégant: construction = macro animée
+  4. Transition seamless entre animation et interactif
+
+  Contre cette approche:
+
+  1. Phase 3 (geometry) doit être fait AVANT Phase 2 (constructions enrichi)
+  2. Risque: si geometry n'est pas stable, constructions en souffre
+  3. Refactoring plus important du module constructions existant
+
+  Ma recommandation
+
+  OUI, cette approche est meilleure!
+
+  Mais avec un changement dans l'ordre des phases:
+
+  Phase 1: geometry-core (fondation)
+  Phase 2: geometry (module complet)        ← Avant constructions!
+  Phase 3: constructions (utilise geometry)  ← Refactoring
+  Phase 4: Routes et intégration
+
+  Pourquoi c'est mieux:
+
+  1. geometry devient le module principal - pas juste un add-on
+  2. constructions devient plus simple - juste timeline + instruments
+  overlay
+  3. Moins de code à maintenir à long terme
+  4. Modèle conceptuel clair: "Une construction montre comment construire
+  une figure géométrique"
+
+  Veux-tu que je réécrive le plan avec cette nouvelle architecture?
+
+> oui respecte bien les rules de CLAUDE.md 
+
+⏺ Updated plan
+  ⎿  /plan to preview · ~/.claude/plans/frolicking-spinning-hippo.md
+
+⏺ Le plan est maintenant réécrit avec la nouvelle architecture où
+  constructions s'appuie sur geometry.
+
+  Résumé de l'architecture finale
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │                    constructions                             │
+  │     AnimatedMacro = MacroDefinition + Timeline               │
+  │     ConstructionPlayer utilise GeometryCanvas                │
+  ├─────────────────────────────────────────────────────────────┤
+  │                       geometry                               │
+  │     Engine, Constructors, Macros, Assessment, Canvas         │
+  ├─────────────────────────────────────────────────────────────┤
+  │                     geometry-core                            │
+  │     Types, Calculator, DependencyGraph, Interaction          │
+  └─────────────────────────────────────────────────────────────┘
+
+  Concept clé
+
+  // Une construction EST une macro avec animation
+  interface AnimatedMacro extends MacroDefinition {
+    timeline: TimelineStep[];
+    instruments: InstrumentConfig[];
+  }
+
+  Le plan respecte toutes les règles de CLAUDE.md. Prêt pour validation?
+  ⎿  User rejected Claude's plan:
+     ╭─────────────────────────────────────────────────────────────────────────╮
+     │ Plan: Intégration DGPad dans UbuMaths                                   │
+     │                                                                         │
+     │ Objectif                                                                │
+     │                                                                         │
+     │ Intégration des fonctionnalités de géométrie dynamique de DGPad avec    │
+     │ unification des modules.                                                │
+     │                                                                         │
+     │ Décisions clés                                                          │
+     │                                                                         │
+     │ - Architecture: constructions s'appuie sur geometry (pas l'inverse)     │
+     │ - Concept: Une construction = une macro animée                          │
+     │ - Rendering: SVG unifié                                                 │
+     │ - Expressions: mathAST (remplace DGPad Expression.js)                   │
+     │                                                                         │
+     │ Architecture cible                                                      │
+     │                                                                         │
+     │ src/lib/                                                                │
+     │ ├── geometry-core/              # PHASE 1: Fondation partagée           │
+     │ │   ├── types.ts                # Position, Expr, StyleProps            │
+     │ │   ├── evaluator.ts            # Expression evaluation                 │
+     │ │   ├── renderer.ts             # SVG utilities, CoordinateTransformer  │
+     │ │   ├── dependency-graph.ts     # Graphe de dépendances                 │
+     │ │   ├── calculator.ts           # Algorithmes géométriques              │
+     │ │   ├── interaction.svelte.ts   # Drag, selection, hit-testing          │
+     │ │   ├── schemas.ts              # Zod validation                        │
+     │ │   └── index.ts                                                        │
+     │ │                                                                       │
+     │ ├── geometry/                   # PHASE 2: Module géométrie COMPLET     │
+     │ │   ├── types.ts                # GeoObject, Constraints, Tools         │
+     │ │   ├── core/                                                           │
+     │ │   │   ├── engine.svelte.ts    # Engine interactif principal           │
+     │ │   │   └── constraint-solver.ts                                        │
+     │ │   ├── constructors/           # Point, Line, Circle, etc.             │
+     │ │   ├── macros/                 # Système de macros réutilisables       │
+     │ │   ├── assessment/             # Évaluation exercices                  │
+     │ │   ├── components/                                                     │
+     │ │   │   ├── GeometryCanvas.svelte   # Canvas principal                  │
+     │ │   │   ├── Toolbar.svelte                                              │
+     │ │   │   └── PropertyPanel.svelte                                        │
+     │ │   └── io/schemas.ts                                                   │
+     │ │                                                                       │
+     │ └── constructions/              # PHASE 3: S'APPUIE sur geometry        │
+     │     ├── types.ts                # AnimatedMacro, TimelineStep           │
+     │     ├── core/                                                           │
+     │     │   ├── timeline.svelte.ts  # Contrôle animation                    │
+     │     │   └── animator.ts         # drawProgress, interpolations          │
+     │     ├── instruments/            # Règle, compas, équerre (overlay)      │
+     │     └── components/                                                     │
+     │         └── ConstructionPlayer.svelte  # GeometryCanvas + timeline      │
+     │                                                                         │
+     │ Concept clé: Construction = Macro Animée                                │
+     │                                                                         │
+     │ // geometry/macros/types.ts                                             │
+     │ interface MacroDefinition {                                             │
+     │   inputs: MacroInput[];                                                 │
+     │   steps: MacroStep[];                                                   │
+     │   outputs: string[];                                                    │
+     │ }                                                                       │
+     │                                                                         │
+     │ // constructions/types.ts                                               │
+     │ interface AnimatedMacro extends MacroDefinition {                       │
+     │   timeline: TimelineStep[];      // Quand montrer chaque step           │
+     │   instruments: InstrumentAnim[]; // Animations règle/compas             │
+     │ }                                                                       │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 1: Fondation partagée (geometry-core)                             │
+     │                                                                         │
+     │ 1.1 Créer types de base                                                 │
+     │                                                                         │
+     │ Agent: typescript-expert (Opus)                                         │
+     │ Fichier: src/lib/geometry-core/types.ts                                 │
+     │                                                                         │
+     │ export type Expr = number | string;                                     │
+     │ export interface Position { readonly x: number; readonly y: number }    │
+     │                                                                         │
+     │ export interface GeoStyle {                                             │
+     │   stroke: string;                                                       │
+     │   strokeWidth: number;                                                  │
+     │   fill?: string;                                                        │
+     │   fillOpacity?: number;                                                 │
+     │   dash?: number[];                                                      │
+     │ }                                                                       │
+     │                                                                         │
+     │ export type GeoKind =                                                   │
+     │   | 'point' | 'segment' | 'line' | 'ray'                                │
+     │   | 'circle' | 'arc' | 'polygon' | 'angle'                              │
+     │   | 'perpendicular' | 'parallel' | 'bisector' | 'midpoint';             │
+     │                                                                         │
+     │ export interface GeoObjectBase {                                        │
+     │   readonly id: string;                                                  │
+     │   readonly kind: GeoKind;                                               │
+     │   readonly parents: readonly string[];                                  │
+     │   style: GeoStyle;                                                      │
+     │   visible: boolean;                                                     │
+     │   layer: number;                                                        │
+     │ }                                                                       │
+     │                                                                         │
+     │ 1.2 Créer schemas Zod                                                   │
+     │                                                                         │
+     │ Agent: typescript-expert (Opus)                                         │
+     │ Fichier: src/lib/geometry-core/schemas.ts                               │
+     │                                                                         │
+     │ import { z } from 'zod';                                                │
+     │                                                                         │
+     │ export const positionSchema = z.object({                                │
+     │   x: z.number().finite(),                                               │
+     │   y: z.number().finite()                                                │
+     │ });                                                                     │
+     │                                                                         │
+     │ export const geoStyleSchema = z.object({                                │
+     │   stroke: z.string(),                                                   │
+     │   strokeWidth: z.number().positive().max(20),                           │
+     │   fill: z.string().optional(),                                          │
+     │   fillOpacity: z.number().min(0).max(1).optional(),                     │
+     │   dash: z.array(z.number().nonnegative()).max(10).optional()            │
+     │ });                                                                     │
+     │                                                                         │
+     │ export const geoKindSchema = z.enum([                                   │
+     │   'point', 'segment', 'line', 'ray',                                    │
+     │   'circle', 'arc', 'polygon', 'angle',                                  │
+     │   'perpendicular', 'parallel', 'bisector', 'midpoint'                   │
+     │ ]);                                                                     │
+     │                                                                         │
+     │ 1.3 Extraire evaluator et renderer                                      │
+     │                                                                         │
+     │ Agent: backend-developer (Opus)                                         │
+     │ Fichiers:                                                               │
+     │ - src/lib/geometry-core/evaluator.ts ← copie de                         │
+     │ constructions/core/evaluator.ts                                         │
+     │ - src/lib/geometry-core/renderer.ts ← copie de                          │
+     │ constructions/core/renderer.ts                                          │
+     │                                                                         │
+     │ 1.4 Créer dependency graph                                              │
+     │                                                                         │
+     │ Agent: typescript-expert (Opus)                                         │
+     │ Fichier: src/lib/geometry-core/dependency-graph.ts                      │
+     │                                                                         │
+     │ export interface DependencyNode {                                       │
+     │   readonly id: string;                                                  │
+     │   readonly parents: ReadonlySet<string>;                                │
+     │   readonly children: ReadonlySet<string>;                               │
+     │ }                                                                       │
+     │                                                                         │
+     │ export class DependencyGraph {                                          │
+     │   #nodes = new Map<string, DependencyNode>();                           │
+     │                                                                         │
+     │   addObject(id: string, parents: string[]): void;                       │
+     │   removeObject(id: string): void;                                       │
+     │   getDescendants(id: string): Set<string>;                              │
+     │   getAncestors(id: string): Set<string>;                                │
+     │   topologicalSort(): string[];                                          │
+     │   detectCycle(from: string, to: string): boolean;                       │
+     │ }                                                                       │
+     │                                                                         │
+     │ 1.5 Créer calculateur géométrique                                       │
+     │                                                                         │
+     │ Agent: backend-developer (Opus)                                         │
+     │ Fichier: src/lib/geometry-core/calculator.ts                            │
+     │                                                                         │
+     │ Algorithmes (inspirés DGPad PrimitiveLineObject.js,                     │
+     │ PrimitiveCircleObject.js):                                              │
+     │ export function lineLineIntersection(l1: Line, l2: Line): Position |    │
+     │ null;                                                                   │
+     │ export function lineCircleIntersection(l: Line, c: Circle): [Position,  │
+     │ Position] | null;                                                       │
+     │ export function circleCircleIntersection(c1: Circle, c2: Circle):       │
+     │ [Position, Position] | null;                                            │
+     │ export function projectPointOnLine(p: Position, l: Line): Position;     │
+     │ export function projectPointOnCircle(p: Position, c: Circle): Position; │
+     │ export function calculateDistance(p1: Position, p2: Position): number;  │
+     │ export function calculateAngle(p1: Position, vertex: Position, p2:      │
+     │ Position): number;                                                      │
+     │                                                                         │
+     │ 1.6 Créer interaction handler                                           │
+     │                                                                         │
+     │ Agent: frontend-developer (Opus)                                        │
+     │ Fichier: src/lib/geometry-core/interaction.svelte.ts                    │
+     │                                                                         │
+     │ export class InteractionHandler {                                       │
+     │   // Svelte 5 runes                                                     │
+     │   selectedIds = $state(new SvelteSet<string>());                        │
+     │   hoveredId = $state<string | null>(null);                              │
+     │   isDragging = $state(false);                                           │
+     │   dragStartPos = $state<Position | null>(null);                         │
+     │                                                                         │
+     │   findObjectAt(pos: Position, objects: GeoObject[], threshold: number): │
+     │ string | null;                                                          │
+     │   handlePointerDown(e: PointerEvent, objectId: string | null): void;    │
+     │   handlePointerMove(e: PointerEvent): void;                             │
+     │   handlePointerUp(e: PointerEvent): void;                               │
+     │ }                                                                       │
+     │                                                                         │
+     │ 1.7 Créer index.ts                                                      │
+     │                                                                         │
+     │ Agent: typescript-expert (Opus)                                         │
+     │ Fichier: src/lib/geometry-core/index.ts                                 │
+     │                                                                         │
+     │ Export public API.                                                      │
+     │                                                                         │
+     │ 1.8 Validation Phase 1                                                  │
+     │                                                                         │
+     │ - Code Review: code-reviewer (Opus)                                     │
+     │ - Tests: test-automator (Opus) - tests unitaires calculator,            │
+     │ dependency-graph                                                        │
+     │ - Commit: commit-manager (Opus)                                         │
+     │ - Doc progression: docs/wip/geometry-phase1-progress.md                 │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 2: Module geometry complet                                        │
+     │                                                                         │
+     │ 2.1 Créer types géométrie                                               │
+     │                                                                         │
+     │ Agent: typescript-expert (Opus)                                         │
+     │ Fichier: src/lib/geometry/types.ts                                      │
+     │                                                                         │
+     │ import type { GeoObjectBase, Position } from '$lib/geometry-core';      │
+     │                                                                         │
+     │ // Contraintes de points (inspiré DGPad)                                │
+     │ export type PointConstraint =                                           │
+     │   | { type: 'free' }                                                    │
+     │   | { type: 'onSegment'; segment: string; alpha: number }               │
+     │   | { type: 'onCircle'; circle: string; angle: number }                 │
+     │   | { type: 'onLine'; line: string; alpha: number }                     │
+     │   | { type: 'intersection'; obj1: string; obj2: string; index: 0 | 1 }  │
+     │   | { type: 'midpoint'; p1: string; p2: string }                        │
+     │   | { type: 'projection'; point: string; onto: string }                 │
+     │   | { type: 'expression'; x: string; y: string };                       │
+     │                                                                         │
+     │ export interface GeoPoint extends GeoObjectBase {                       │
+     │   readonly kind: 'point';                                               │
+     │   constraint: PointConstraint;                                          │
+     │   position: Position;  // Computed from constraint                      │
+     │   draggable: boolean;  // true if constraint.type === 'free'            │
+     │ }                                                                       │
+     │                                                                         │
+     │ export interface GeoSegment extends GeoObjectBase {                     │
+     │   readonly kind: 'segment';                                             │
+     │   readonly from: string;  // Point ID                                   │
+     │   readonly to: string;    // Point ID                                   │
+     │ }                                                                       │
+     │                                                                         │
+     │ // ... autres types                                                     │
+     │                                                                         │
+     │ 2.2 Créer engine interactif                                             │
+     │                                                                         │
+     │ Agent: frontend-developer (Opus)                                        │
+     │ Fichier: src/lib/geometry/core/engine.svelte.ts                         │
+     │                                                                         │
+     │ import { SvelteMap, SvelteSet } from 'svelte/reactivity';               │
+     │ import { DependencyGraph, InteractionHandler } from                     │
+     │ '$lib/geometry-core';                                                   │
+     │                                                                         │
+     │ export class GeometryEngine {                                           │
+     │   // State (Svelte 5 runes)                                             │
+     │   objects = $state(new SvelteMap<string, GeoObject>());                 │
+     │   #dependencyGraph = new DependencyGraph();                             │
+     │   interaction = new InteractionHandler();                               │
+     │   activeTool = $state<Tool | null>(null);                               │
+     │                                                                         │
+     │   // Derived                                                            │
+     │   visibleObjects = $derived([...this.objects.values()].filter(o =>      │
+     │ o.visible));                                                            │
+     │   selectedObjects = $derived(                                           │
+     │     [...this.objects.values()].filter(o =>                              │
+     │ this.interaction.selectedIds.has(o.id))                                 │
+     │   );                                                                    │
+     │                                                                         │
+     │   // Operations                                                         │
+     │   addObject(obj: GeoObject): void;                                      │
+     │   removeObject(id: string): void;                                       │
+     │   updateObject(id: string, updates: Partial<GeoObject>): void;          │
+     │                                                                         │
+     │   // Drag                                                               │
+     │   dragPoint(id: string, newPos: Position): void;                        │
+     │   recalculateDependents(id: string): void;                              │
+     │                                                                         │
+     │   // Serialization                                                      │
+     │   toDocument(): GeoDocument;                                            │
+     │   fromDocument(doc: GeoDocument): void;                                 │
+     │ }                                                                       │
+     │                                                                         │
+     │ 2.3 Créer constraint solver                                             │
+     │                                                                         │
+     │ Agent: typescript-expert (Opus)                                         │
+     │ Fichier: src/lib/geometry/core/constraint-solver.ts                     │
+     │                                                                         │
+     │ import * as calc from '$lib/geometry-core/calculator';                  │
+     │                                                                         │
+     │ export function solveConstraint(                                        │
+     │   constraint: PointConstraint,                                          │
+     │   objects: Map<string, GeoObject>                                       │
+     │ ): Position;                                                            │
+     │                                                                         │
+     │ export function updatePointPosition(                                    │
+     │   point: GeoPoint,                                                      │
+     │   newPos: Position,                                                     │
+     │   objects: Map<string, GeoObject>                                       │
+     │ ): GeoPoint;                                                            │
+     │                                                                         │
+     │ 2.4 Créer constructeurs                                                 │
+     │                                                                         │
+     │ Agent: frontend-developer (Opus)                                        │
+     │ Fichiers: src/lib/geometry/constructors/*.ts                            │
+     │                                                                         │
+     │ // Base interface                                                       │
+     │ export interface Constructor<T extends GeoObject> {                     │
+     │   readonly name: string;                                                │
+     │   readonly icon: string;                                                │
+     │   readonly inputs: ConstructorInput[];                                  │
+     │   validate(inputs: unknown[]): z.SafeParseReturnType<unknown, unknown>; │
+     │   construct(inputs: GeoObject[], engine: GeometryEngine): T;            │
+     │   preview?(partialInputs: GeoObject[], cursor: Position): SVGElement |  │
+     │ null;                                                                   │
+     │ }                                                                       │
+     │                                                                         │
+     │ Fichiers:                                                               │
+     │ - point.ts - FreePoint, PointOnObject, IntersectionPoint                │
+     │ - line.ts - Line, Segment, Ray                                          │
+     │ - circle.ts - CircleCenterPoint, CircleCenterRadius                     │
+     │ - perpendicular.ts                                                      │
+     │ - parallel.ts                                                           │
+     │ - midpoint.ts                                                           │
+     │ - bisector.ts                                                           │
+     │ - registry.ts - ConstructorRegistry                                     │
+     │                                                                         │
+     │ 2.5 Créer système de macros                                             │
+     │                                                                         │
+     │ Agent: typescript-expert (Opus)                                         │
+     │ Fichiers: src/lib/geometry/macros/*.ts                                  │
+     │                                                                         │
+     │ // types.ts                                                             │
+     │ export interface MacroInput {                                           │
+     │   name: string;                                                         │
+     │   type: 'point' | 'line' | 'circle';                                    │
+     │   description?: string;                                                 │
+     │ }                                                                       │
+     │                                                                         │
+     │ export interface MacroStep {                                            │
+     │   constructorName: string;                                              │
+     │   inputRefs: (string | number)[];  // Ref to input or previous step     │
+     │   outputId: string;                                                     │
+     │   hidden?: boolean;                                                     │
+     │ }                                                                       │
+     │                                                                         │
+     │ export interface MacroDefinition {                                      │
+     │   id: string;                                                           │
+     │   name: string;                                                         │
+     │   description?: string;                                                 │
+     │   icon?: string;                                                        │
+     │   inputs: MacroInput[];                                                 │
+     │   steps: MacroStep[];                                                   │
+     │   outputs: string[];                                                    │
+     │ }                                                                       │
+     │                                                                         │
+     │ // executor.ts                                                          │
+     │ export class MacroExecutor {                                            │
+     │   execute(                                                              │
+     │     macro: MacroDefinition,                                             │
+     │     inputs: GeoObject[],                                                │
+     │     engine: GeometryEngine                                              │
+     │   ): GeoObject[];                                                       │
+     │ }                                                                       │
+     │                                                                         │
+     │ // recorder.ts                                                          │
+     │ export class MacroRecorder {                                            │
+     │   startRecording(): void;                                               │
+     │   stopRecording(): MacroDefinition;                                     │
+     │   markAsInput(id: string): void;                                        │
+     │   markAsOutput(id: string): void;                                       │
+     │ }                                                                       │
+     │                                                                         │
+     │ 2.6 Créer GeometryCanvas                                                │
+     │                                                                         │
+     │ Agent: frontend-developer (Opus)                                        │
+     │ Fichier: src/lib/geometry/components/GeometryCanvas.svelte              │
+     │                                                                         │
+     │ <script lang="ts">                                                      │
+     │   import type { GeometryEngine } from '../core/engine.svelte';          │
+     │   import { createTransformer } from '$lib/geometry-core';               │
+     │                                                                         │
+     │   interface Props {                                                     │
+     │     engine: GeometryEngine;                                             │
+     │     width?: number;                                                     │
+     │     height?: number;                                                    │
+     │     interactive?: boolean;                                              │
+     │     showGrid?: boolean;                                                 │
+     │   }                                                                     │
+     │                                                                         │
+     │   let { engine, width = 800, height = 600, interactive = true, showGrid │
+     │ = true }: Props = $props();                                             │
+     │                                                                         │
+     │   let svgElement: SVGSVGElement;                                        │
+     │   const transformer = $derived(createTransformer(width, height,         │
+     │ engine.viewport));                                                      │
+     │                                                                         │
+     │   function handlePointerDown(e: PointerEvent) {                         │
+     │     if (!interactive) return;                                           │
+     │     const pos = transformer.svgToMath(e.offsetX, e.offsetY);            │
+     │     const objectId = engine.interaction.findObjectAt(pos,               │
+     │ engine.visibleObjects, 10);                                             │
+     │     engine.interaction.handlePointerDown(e, objectId);                  │
+     │   }                                                                     │
+     │                                                                         │
+     │   // ... autres handlers                                                │
+     │ </script>                                                               │
+     │                                                                         │
+     │ <svg                                                                    │
+     │   bind:this={svgElement}                                                │
+     │   {width}                                                               │
+     │   {height}                                                              │
+     │   viewBox="0 0 {width} {height}"                                        │
+     │   onpointerdown={handlePointerDown}                                     │
+     │   onpointermove={handlePointerMove}                                     │
+     │   onpointerup={handlePointerUp}                                         │
+     │   onwheel={handleWheel}                                                 │
+     │ >                                                                       │
+     │   {#if showGrid}                                                        │
+     │     <GridLayer {transformer} />                                         │
+     │   {/if}                                                                 │
+     │                                                                         │
+     │   {#each engine.visibleObjects as obj (obj.id)}                         │
+     │     <ObjectRenderer                                                     │
+     │       {obj}                                                             │
+     │       {transformer}                                                     │
+     │       selected={engine.interaction.selectedIds.has(obj.id)}             │
+     │       hovered={engine.interaction.hoveredId === obj.id}                 │
+     │     />                                                                  │
+     │   {/each}                                                               │
+     │                                                                         │
+     │   {#if engine.activeTool}                                               │
+     │     <ToolPreview tool={engine.activeTool} {transformer} />              │
+     │   {/if}                                                                 │
+     │ </svg>                                                                  │
+     │                                                                         │
+     │ 2.7 Créer Toolbar et PropertyPanel                                      │
+     │                                                                         │
+     │ Agent: frontend-developer (Opus)                                        │
+     │ Fichiers:                                                               │
+     │ - src/lib/geometry/components/Toolbar.svelte                            │
+     │ - src/lib/geometry/components/PropertyPanel.svelte                      │
+     │                                                                         │
+     │ Utiliser: MySelect, MyCheckbox, Shadcn-svelte Button/Input, Tailwind CSS│
+     │                                                                         │
+     │ 2.8 Créer système d'évaluation                                          │
+     │                                                                         │
+     │ Agent: backend-developer (Opus)                                         │
+     │ Fichiers: src/lib/geometry/assessment/*.ts                              │
+     │                                                                         │
+     │ // types.ts                                                             │
+     │ export interface GeometryExercise {                                     │
+     │   id: string;                                                           │
+     │   instructions: string;                                                 │
+     │   initialFigure?: GeoDocument;                                          │
+     │   objectives: ExerciseObjective[];                                      │
+     │   allowedTools: string[];                                               │
+     │   hints?: string[];                                                     │
+     │ }                                                                       │
+     │                                                                         │
+     │ export type ExerciseObjective =                                         │
+     │   | { type: 'construct'; objectKind: GeoKind; constraints:              │
+     │ ObjectiveConstraint[] }                                                 │
+     │   | { type: 'measure'; property: 'distance' | 'angle'; expected: number;│
+     │  tolerance: number }                                                    │
+     │   | { type: 'identify'; description: string; validator: string };       │
+     │                                                                         │
+     │ // validator.ts                                                         │
+     │ export function validateConstruction(                                   │
+     │   exercise: GeometryExercise,                                           │
+     │   submission: GeoDocument                                               │
+     │ ): ValidationResult;                                                    │
+     │                                                                         │
+     │ 2.9 Créer schemas IO                                                    │
+     │                                                                         │
+     │ Agent: typescript-expert (Opus)                                         │
+     │ Fichier: src/lib/geometry/io/schemas.ts                                 │
+     │                                                                         │
+     │ Zod schemas pour save/load avec validation bounds.                      │
+     │                                                                         │
+     │ 2.10 Validation Phase 2                                                 │
+     │                                                                         │
+     │ - Code Review: code-reviewer (Opus)                                     │
+     │ - Tests: test-automator (Opus) - tests engine, constructors, macros     │
+     │ - Performance Audit: performance-optimizer (Opus) - recalcul dépendances│
+     │ - Commit: commit-manager (Opus)                                         │
+     │ - Doc progression: docs/wip/geometry-phase2-progress.md                 │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 3: Refactoring constructions (utilise geometry)                   │
+     │                                                                         │
+     │ 3.1 Créer types AnimatedMacro                                           │
+     │                                                                         │
+     │ Agent: typescript-expert (Opus)                                         │
+     │ Fichier: src/lib/constructions/types.ts                                 │
+     │                                                                         │
+     │ import type { MacroDefinition, MacroStep } from '$lib/geometry/macros'; │
+     │                                                                         │
+     │ export interface TimelineStep {                                         │
+     │   stepIndex: number;           // Référence à MacroStep                 │
+     │   startTime: number;           // ms                                    │
+     │   duration: number;            // ms                                    │
+     │   animation: StepAnimation;                                             │
+     │ }                                                                       │
+     │                                                                         │
+     │ export type StepAnimation =                                             │
+     │   | { type: 'instant' }                                                 │
+     │   | { type: 'draw'; easing: EasingFunction }                            │
+     │   | { type: 'instrument'; instrument: InstrumentType; path:             │
+     │ InstrumentPath };                                                       │
+     │                                                                         │
+     │ export interface AnimatedMacro extends MacroDefinition {                │
+     │   timeline: TimelineStep[];                                             │
+     │   totalDuration: number;                                                │
+     │   instruments: InstrumentConfig[];                                      │
+     │ }                                                                       │
+     │                                                                         │
+     │ export type InstrumentType = 'ruler' | 'compass' | 'protractor' |       │
+     │ 'setSquare';                                                            │
+     │                                                                         │
+     │ 3.2 Créer timeline controller                                           │
+     │                                                                         │
+     │ Agent: frontend-developer (Opus)                                        │
+     │ Fichier: src/lib/constructions/core/timeline.svelte.ts                  │
+     │                                                                         │
+     │ import { GeometryEngine } from '$lib/geometry/core';                    │
+     │                                                                         │
+     │ export class TimelineController {                                       │
+     │   // State (Svelte 5 runes)                                             │
+     │   currentTime = $state(0);                                              │
+     │   isPlaying = $state(false);                                            │
+     │   playbackSpeed = $state(1);                                            │
+     │                                                                         │
+     │   // Derived                                                            │
+     │   progress = $derived(this.currentTime / this.macro.totalDuration);     │
+     │   currentStep = $derived(this.findCurrentStep());                       │
+     │   isComplete = $derived(this.currentTime >= this.macro.totalDuration);  │
+     │                                                                         │
+     │   constructor(                                                          │
+     │     private macro: AnimatedMacro,                                       │
+     │     private engine: GeometryEngine                                      │
+     │   ) {}                                                                  │
+     │                                                                         │
+     │   play(): void;                                                         │
+     │   pause(): void;                                                        │
+     │   seek(time: number): void;                                             │
+     │   reset(): void;                                                        │
+     │                                                                         │
+     │   // Appelé chaque frame                                                │
+     │   tick(deltaTime: number): void;                                        │
+     │ }                                                                       │
+     │                                                                         │
+     │ 3.3 Créer animator                                                      │
+     │                                                                         │
+     │ Agent: frontend-developer (Opus)                                        │
+     │ Fichier: src/lib/constructions/core/animator.ts                         │
+     │                                                                         │
+     │ export interface AnimationState {                                       │
+     │   objectId: string;                                                     │
+     │   property: 'drawProgress' | 'opacity' | 'position';                    │
+     │   startValue: number;                                                   │
+     │   endValue: number;                                                     │
+     │   startTime: number;                                                    │
+     │   duration: number;                                                     │
+     │   easing: EasingFunction;                                               │
+     │ }                                                                       │
+     │                                                                         │
+     │ export class Animator {                                                 │
+     │   #activeAnimations: AnimationState[] = [];                             │
+     │                                                                         │
+     │   startAnimation(state: AnimationState): void;                          │
+     │   update(currentTime: number): Map<string, Partial<GeoObject>>;         │
+     │   isAnimating(objectId: string): boolean;                               │
+     │ }                                                                       │
+     │                                                                         │
+     │ 3.4 Refactorer instruments (overlay seulement)                          │
+     │                                                                         │
+     │ Agent: frontend-developer (Opus)                                        │
+     │ Fichiers: src/lib/constructions/instruments/*.svelte                    │
+     │                                                                         │
+     │ Les instruments deviennent des overlays visuels, pas des créateurs      │
+     │ d'objets:                                                               │
+     │ - RulerOverlay.svelte                                                   │
+     │ - CompassOverlay.svelte                                                 │
+     │ - ProtractorOverlay.svelte                                              │
+     │ - SetSquareOverlay.svelte                                               │
+     │                                                                         │
+     │ 3.5 Créer ConstructionPlayer (utilise GeometryCanvas)                   │
+     │                                                                         │
+     │ Agent: frontend-developer (Opus)                                        │
+     │ Fichier: src/lib/constructions/components/ConstructionPlayer.svelte     │
+     │                                                                         │
+     │ <script lang="ts">                                                      │
+     │   import { GeometryCanvas } from '$lib/geometry/components';            │
+     │   import { GeometryEngine } from '$lib/geometry/core';                  │
+     │   import { TimelineController } from '../core/timeline.svelte';         │
+     │   import { MacroExecutor } from '$lib/geometry/macros';                 │
+     │                                                                         │
+     │   interface Props {                                                     │
+     │     animatedMacro: AnimatedMacro;                                       │
+     │     width?: number;                                                     │
+     │     height?: number;                                                    │
+     │     autoPlay?: boolean;                                                 │
+     │     allowExploration?: boolean;                                         │
+     │   }                                                                     │
+     │                                                                         │
+     │   let { animatedMacro, width = 800, height = 600, autoPlay = false,     │
+     │ allowExploration = true }: Props = $props();                            │
+     │                                                                         │
+     │   // Engine geometry sous-jacent                                        │
+     │   const engine = new GeometryEngine();                                  │
+     │                                                                         │
+     │   // Timeline contrôle l'animation                                      │
+     │   const timeline = new TimelineController(animatedMacro, engine);       │
+     │                                                                         │
+     │   // Mode interactif après animation                                    │
+     │   let interactiveMode = $derived(timeline.isComplete &&                 │
+     │ allowExploration);                                                      │
+     │                                                                         │
+     │   $effect(() => {                                                       │
+     │     if (autoPlay) timeline.play();                                      │
+     │   });                                                                   │
+     │ </script>                                                               │
+     │                                                                         │
+     │ <div class="construction-player">                                       │
+     │   <!-- Canvas geometry -->                                              │
+     │   <GeometryCanvas                                                       │
+     │     {engine}                                                            │
+     │     {width}                                                             │
+     │     {height}                                                            │
+     │     interactive={interactiveMode}                                       │
+     │   />                                                                    │
+     │                                                                         │
+     │   <!-- Overlay instruments pendant animation -->                        │
+     │   {#if timeline.isPlaying && timeline.currentInstrument}                │
+     │     <InstrumentOverlay                                                  │
+     │       type={timeline.currentInstrument.type}                            │
+     │       state={timeline.currentInstrument.state}                          │
+     │     />                                                                  │
+     │   {/if}                                                                 │
+     │                                                                         │
+     │   <!-- Contrôles -->                                                    │
+     │   <TimelineControls {timeline} />                                       │
+     │                                                                         │
+     │   <!-- Toggle exploration -->                                           │
+     │   {#if timeline.isComplete && allowExploration}                         │
+     │     <div class="exploration-hint">                                      │
+     │       Déplacez les points pour explorer la figure                       │
+     │     </div>                                                              │
+     │   {/if}                                                                 │
+     │ </div>                                                                  │
+     │                                                                         │
+     │ 3.6 Migrer constructions existantes                                     │
+     │                                                                         │
+     │ Agent: backend-developer (Opus)                                         │
+     │ Fichier: src/lib/constructions/migration/convert.ts                     │
+     │                                                                         │
+     │ Convertir ancien format → AnimatedMacro.                                │
+     │                                                                         │
+     │ 3.7 Validation Phase 3                                                  │
+     │                                                                         │
+     │ - Code Review: code-reviewer (Opus)                                     │
+     │ - Tests: test-automator (Opus) - tests timeline, animations, migration  │
+     │ - Commit: commit-manager (Opus)                                         │
+     │ - Doc progression: docs/wip/geometry-phase3-progress.md                 │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 4: Routes et intégration                                          │
+     │                                                                         │
+     │ 4.1 Créer route playground géométrie                                    │
+     │                                                                         │
+     │ Agent: fullstack-developer (Opus)                                       │
+     │ Fichiers:                                                               │
+     │ - src/routes/(public)/geometry/playground/+page.svelte                  │
+     │ - src/routes/(public)/geometry/playground/+page.server.ts               │
+     │                                                                         │
+     │ 4.2 Créer route exercices géométrie                                     │
+     │                                                                         │
+     │ Agent: fullstack-developer (Opus)                                       │
+     │ Fichiers:                                                               │
+     │ - src/routes/(protected)/geometry/exercise/[id]/+page.svelte            │
+     │ - src/routes/(protected)/geometry/exercise/[id]/+page.server.ts         │
+     │                                                                         │
+     │ 4.3 Mettre à jour routes constructions existantes                       │
+     │                                                                         │
+     │ Agent: fullstack-developer (Opus)                                       │
+     │                                                                         │
+     │ Adapter pour utiliser nouveau ConstructionPlayer.                       │
+     │                                                                         │
+     │ 4.4 Validation Phase 4                                                  │
+     │                                                                         │
+     │ - Code Review: code-reviewer (Opus)                                     │
+     │ - Tests: test-automator (Opus) - tests E2E                              │
+     │ - Accessibility: accessibility-tester (Opus)                            │
+     │ - Commit: commit-manager (Opus)                                         │
+     │ - Doc progression: docs/wip/geometry-phase4-progress.md                 │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Phase 5: Finalisation                                                   │
+     │                                                                         │
+     │ 5.1 Quality Checks (FIN DU PLAN UNIQUEMENT)                             │
+     │                                                                         │
+     │ pnpm lint                                                               │
+     │ pnpm check                                                              │
+     │ pnpm test:unit -- --run                                                 │
+     │ pnpm build                                                              │
+     │                                                                         │
+     │ 5.2 Documentation finale                                                │
+     │                                                                         │
+     │ Agent: documentation-writer (Opus)                                      │
+     │ Fichiers:                                                               │
+     │ - docs/claude/geometry.md                                               │
+     │ - src/lib/geometry/README.md                                            │
+     │ - src/lib/constructions/README.md (mise à jour)                         │
+     │                                                                         │
+     │ 5.3 Commit final                                                        │
+     │                                                                         │
+     │ Agent: commit-manager (Opus)                                            │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Fichiers critiques                                                      │
+     │                                                                         │
+     │ geometry-core (Phase 1)                                                 │
+     │                                                                         │
+     │ | Fichier                             | Description              |      │
+     │ |-------------------------------------|--------------------------|      │
+     │ | geometry-core/types.ts              | Types de base partagés   |      │
+     │ | geometry-core/dependency-graph.ts   | Graphe parent/enfant     |      │
+     │ | geometry-core/calculator.ts         | Algorithmes géométriques |      │
+     │ | geometry-core/interaction.svelte.ts | Drag, selection          |      │
+     │                                                                         │
+     │ geometry (Phase 2)                                                      │
+     │                                                                         │
+     │ | Fichier                                   | Description         |     │
+     │ |-------------------------------------------|---------------------|     │
+     │ | geometry/core/engine.svelte.ts            | Engine principal    |     │
+     │ | geometry/macros/types.ts                  | MacroDefinition     |     │
+     │ | geometry/components/GeometryCanvas.svelte | Canvas réutilisable |     │
+     │                                                                         │
+     │ constructions (Phase 3)                                                 │
+     │                                                                         │
+     │ | Fichier                                            | Description      │
+     │                      |                                                  │
+     │ |----------------------------------------------------|------------------│
+     │ ---------------------|                                                  │
+     │ | constructions/types.ts                             | AnimatedMacro    │
+     │ extends MacroDefinition |                                               │
+     │ | constructions/core/timeline.svelte.ts              | Contrôle         │
+     │ animation                    |                                          │
+     │ | constructions/components/ConstructionPlayer.svelte | Utilise          │
+     │ GeometryCanvas                |                                         │
+     │                                                                         │
+     │ Référence DGPad (algorithmes)                                           │
+     │                                                                         │
+     │ | Fichier                                               | Usage         │
+     │        |                                                                │
+     │ |-------------------------------------------------------|---------------│
+     │ -------|                                                                │
+     │ | extern/dgpad/scripts/Objects/PrimitiveLineObject.js   | Intersections │
+     │ ligne  |                                                                │
+     │ | extern/dgpad/scripts/Objects/PrimitiveCircleObject.js | Intersections │
+     │ cercle |                                                                │
+     │ | extern/dgpad/scripts/Macros/                          | Système macros│
+     │        |                                                                │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Règles CLAUDE.md                                                        │
+     │                                                                         │
+     │ - Svelte 5 runes ($state, $derived, $effect, $props)                    │
+     │ - Zod validation sur tous les inputs (avec bounds)                      │
+     │ - No any types                                                          │
+     │ - MySelect/MyCheckbox (pas Shadcn/native)                               │
+     │ - Tests pour tout nouveau code                                          │
+     │ - Code review après chaque phase                                        │
+     │ - Documentation progression dans docs/wip/                              │
+     │ - Quality checks à la fin uniquement                                    │
+     │ - Agents spécialisés avec Opus                                          │
+     │                                                                         │
+     │ ---                                                                     │
+     │ Documents de progression                                                │
+     │                                                                         │
+     │ | Phase | Document                             |                        │
+     │ |-------|--------------------------------------|                        │
+     │ | 1     | docs/wip/geometry-phase1-progress.md |                        │
+     │ | 2     | docs/wip/geometry-phase2-progress.md |                        │
+     │ | 3     | docs/wip/geometry-phase3-progress.md |                        │
+     │ | 4     | docs/wip/geometry-phase4-progress.md |                        │
+     │ | Final | docs/claude/geometry.md              |                        │
+     │                                                                         │
+     │                                                                         │
+     │                                                                         │
+     │                                                                         │
+     │                                                                         │
+     │                                                                         │
+     │                                                                         │
+     │                                                                         │
+     ╰─────────────────────────────────────────────────────────────────────────╯
+
+
+

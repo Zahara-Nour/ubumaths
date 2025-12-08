@@ -11,7 +11,11 @@
 	import ConstructionCanvas from './ConstructionCanvas.svelte';
 	import PlayerControls from './PlayerControls.svelte';
 	import ParameterControls from './ParameterControls.svelte';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { RefreshCw } from 'lucide-svelte';
 	import { onDestroy } from 'svelte';
+	import 'mathlive'; // Required for math rendering in instructions
 
 	// Types
 	interface Props {
@@ -27,6 +31,8 @@
 		showParameters?: boolean;
 		/** Show player controls */
 		showControls?: boolean;
+		/** Show reload button */
+		showReload?: boolean;
 		/** Default color for objects (used if not set in script's canvas config) */
 		defaultColor?: string;
 		/** Custom class for the container */
@@ -41,6 +47,7 @@
 		showGrid = true,
 		showParameters = true,
 		showControls = true,
+		showReload = false,
 		defaultColor,
 		class: className = ''
 	}: Props = $props();
@@ -57,39 +64,49 @@
 	let error = $derived(engine.error);
 	let isLoaded = $derived(engine.isLoaded);
 
-	// Track the loaded script by JSON string to detect changes
-	// (avoids $state proxy comparison issues)
-	let loadedScriptHash = $state<string>('');
+	// Cross-fade state for instructions
+	let displayedInstruction = $state<string | null>(null);
+	let fadingOutInstruction = $state<string | null>(null);
 
-	// Load script reactively when it changes
+	// React to instruction changes for cross-fade animation
 	$effect(() => {
-		// Compute a hash of the current script
-		let currentHash = '';
-		if (script) {
-			currentHash = JSON.stringify(script);
-		} else if (scriptJson) {
-			currentHash = scriptJson;
-		}
+		const newInstruction = engine.currentInstruction?.text ?? null;
+		if (newInstruction !== displayedInstruction) {
+			// Start cross-fade
+			fadingOutInstruction = displayedInstruction;
+			displayedInstruction = newInstruction;
 
-		// Only reload if hash changed
-		if (currentHash && currentHash !== loadedScriptHash) {
-			try {
-				if (script) {
-					engine.load(script);
-				} else if (scriptJson) {
-					engine.loadFromJson(scriptJson);
-				}
-				loadedScriptHash = currentHash;
+			// Clear fading out after animation completes
+			if (fadingOutInstruction) {
+				const timeoutId = setTimeout(() => {
+					fadingOutInstruction = null;
+				}, 300); // Match CSS transition duration
 
-				if (autoPlay && engine.isLoaded) {
-					engine.timeline.play();
-				}
-			} catch (err) {
-				// Error is already captured in engine.error
-				console.error('Failed to load construction:', err);
+				// Cleanup: clear timeout if effect re-runs or component unmounts
+				return () => clearTimeout(timeoutId);
 			}
 		}
 	});
+
+	/**
+	 * Load or reload the construction script
+	 */
+	function reload(): void {
+		try {
+			if (script) {
+				engine.load(script);
+			} else if (scriptJson) {
+				engine.loadFromJson(scriptJson);
+			}
+
+			if (autoPlay && engine.isLoaded) {
+				engine.timeline.play();
+			}
+		} catch (err) {
+			// Error is already captured in engine.error
+			console.error('Failed to load construction:', err);
+		}
+	}
 
 	// Cleanup on destroy
 	onDestroy(() => {
@@ -130,19 +147,44 @@
 			</div>
 		</div>
 	{:else if isLoaded}
-		<!-- Canvas -->
-		<ConstructionCanvas
-			{engine}
-			width={canvasWidth}
-			height={canvasHeight}
-			{showGrid}
-			{defaultColor}
-		/>
+		<!-- Canvas container with instruction overlay -->
+		<div class="canvas-container">
+			<ConstructionCanvas
+				{engine}
+				width={canvasWidth}
+				height={canvasHeight}
+				{showGrid}
+				{defaultColor}
+			/>
+
+			<!-- Instruction Overlay -->
+			{#if displayedInstruction || fadingOutInstruction}
+				<div class="instruction-overlay">
+					{#if fadingOutInstruction && fadingOutInstruction !== displayedInstruction}
+						<div class="instruction-content fading-out">
+							<MarkdownRenderer content={fadingOutInstruction} />
+						</div>
+					{/if}
+					{#if displayedInstruction}
+						<div class="instruction-content fading-in">
+							<MarkdownRenderer content={displayedInstruction} />
+						</div>
+					{/if}
+				</div>
+			{/if}
+		</div>
 
 		<!-- Controls bar -->
 		{#if showControls}
 			<div class="controls-bar flex items-center justify-between rounded-lg bg-muted px-4 py-2">
-				<PlayerControls timeline={engine.timeline} {engine} />
+				<div class="flex items-center gap-2">
+					<PlayerControls timeline={engine.timeline} {engine} />
+					{#if showReload}
+						<Button variant="ghost" size="icon" onclick={reload} title="Recharger">
+							<RefreshCw class="h-4 w-4" />
+						</Button>
+					{/if}
+				</div>
 
 				<div class="progress text-sm text-muted-foreground">
 					Etape {currentStepDisplay} / {totalSteps}
@@ -155,10 +197,17 @@
 			<ParameterControls {engine} />
 		{/if}
 	{:else}
+		<!-- No construction loaded - show reload button -->
 		<div
-			class="flex items-center justify-center rounded-lg border border-dashed border-border bg-muted/50 p-8"
+			class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border bg-muted/50 p-8"
 		>
 			<p class="text-muted-foreground">Aucune construction chargee</p>
+			{#if script || scriptJson}
+				<Button variant="outline" onclick={reload}>
+					<RefreshCw class="mr-2 h-4 w-4" />
+					Charger la construction
+				</Button>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -166,5 +215,55 @@
 <style>
 	.construction-player {
 		max-width: fit-content;
+	}
+
+	.canvas-container {
+		position: relative;
+	}
+
+	.instruction-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		padding: 0.75rem 1rem;
+		background: rgba(255, 255, 255, 0.95);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+		z-index: 10;
+	}
+
+	.instruction-content {
+		transition: opacity 300ms ease-in-out;
+	}
+
+	.instruction-content.fading-in {
+		animation: fadeIn 300ms ease-in-out;
+	}
+
+	.instruction-content.fading-out {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		padding: 0.75rem 1rem;
+		animation: fadeOut 300ms ease-in-out forwards;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes fadeOut {
+		from {
+			opacity: 1;
+		}
+		to {
+			opacity: 0;
+		}
 	}
 </style>

@@ -58,6 +58,7 @@ import {
 	isLowerStep,
 	isStyleStep,
 	isPauseStep,
+	isInstructionStep,
 	isParallelStep
 } from '../types';
 import {
@@ -364,6 +365,9 @@ export class ConstructionEngine {
 
 	/** Current error message (null if no error) */
 	error = $state<string | null>(null);
+
+	/** Current instruction text to display (null if none) */
+	currentInstruction = $state<{ id: string; text: string } | null>(null);
 
 	/** Set of step indices that have been applied */
 	#appliedSteps = $state(new SvelteSet<number>());
@@ -699,6 +703,11 @@ export class ConstructionEngine {
 		// Style changes are quick
 		if (isStyleStep(step)) {
 			return step.duration ?? INSTANT_STEP_DURATION;
+		}
+
+		// Instruction steps are instant
+		if (isInstructionStep(step)) {
+			return INSTANT_STEP_DURATION;
 		}
 
 		// Drawing steps (line, arc) - calculate duration based on distance/arc length
@@ -1177,6 +1186,16 @@ export class ConstructionEngine {
 
 		// Pause steps don't need any setup
 		if (isPauseStep(step)) {
+			this.#appliedSteps.add(this.#currentAnimatingStep);
+			return;
+		}
+
+		// Instruction steps update the current instruction
+		if (isInstructionStep(step)) {
+			this.currentInstruction = {
+				id: step.instruction,
+				text: step.content
+			};
 			this.#appliedSteps.add(this.#currentAnimatingStep);
 			return;
 		}
@@ -2293,6 +2312,15 @@ export class ConstructionEngine {
 			return;
 		}
 
+		// Instruction step
+		if (isInstructionStep(step)) {
+			this.currentInstruction = {
+				id: step.instruction,
+				text: step.content
+			};
+			return;
+		}
+
 		// Pause and raise/lower steps don't need state changes
 	}
 
@@ -2551,6 +2579,7 @@ export class ConstructionEngine {
 		this.instruments.clear();
 		this.#appliedSteps.clear();
 		this.error = null;
+		this.currentInstruction = null;
 	}
 
 	/**
