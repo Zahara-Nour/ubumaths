@@ -19,9 +19,9 @@
 		disabled?: boolean;
 	} = $props();
 
-	// Grid template columns based on difficulty
+	// Grid template columns - let cells define their own size with auto
 	const gridCols = $derived.by(() => {
-		return `repeat(${gameState.cols}, minmax(0, 1fr))`;
+		return `repeat(${gameState.cols}, auto)`;
 	});
 
 	// Container class for horizontal scrolling on expert mode mobile
@@ -58,6 +58,7 @@
 					onFlag={onCellFlag}
 					onChord={onCellChord}
 					{disabled}
+					{difficulty}
 				/>
 			{/each}
 		{/each}

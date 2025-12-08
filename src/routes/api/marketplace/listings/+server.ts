@@ -91,7 +91,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       *,
       creator:creator_id(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       )
     `,
@@ -295,9 +296,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select(
 			`
       *,
-      creator:profiles!marketplace_listings_creator_id_fkey(
+      creator:creator_id(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       )
     `

@@ -66,12 +66,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       *,
       initiator:initiator_id(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       ),
       partner:partner_id(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       ),
       latest_offer:marketplace_trade_offers(
@@ -278,12 +280,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       *,
       initiator:initiator_id(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       ),
       partner:partner_id(
         id,
-        username,
+        firstname,
+        lastname,
         avatar_url
       )
     `
