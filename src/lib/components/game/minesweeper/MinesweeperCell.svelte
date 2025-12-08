@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
+	import type { Difficulty } from '$lib/types/minesweeper';
 
 	// Props
 	let {
@@ -13,7 +14,8 @@
 		onReveal,
 		onFlag,
 		onChord,
-		disabled = false
+		disabled = false,
+		difficulty = 'beginner'
 	}: {
 		row: number;
 		col: number;
@@ -26,7 +28,27 @@
 		onFlag: (row: number, col: number) => void;
 		onChord?: (row: number, col: number) => void;
 		disabled?: boolean;
+		difficulty?: Difficulty;
 	} = $props();
+
+	// Cell size classes based on difficulty
+	// Using aspect-square to ensure cells stay square
+	const sizeClasses = $derived.by(() => {
+		if (difficulty === 'expert') {
+			// Smaller cells for expert mode (30 columns)
+			return 'aspect-square w-6 sm:w-7 md:w-8';
+		}
+		// Normal size for beginner/intermediate
+		return 'aspect-square w-8 sm:w-10 lg:w-12';
+	});
+
+	// Text size classes based on difficulty
+	const textSizeClasses = $derived.by(() => {
+		if (difficulty === 'expert') {
+			return 'text-xs sm:text-sm md:text-base';
+		}
+		return 'text-sm sm:text-base lg:text-lg';
+	});
 
 	// Number color mapping (classic minesweeper colors)
 	const numberColors: Record<number, string> = {
@@ -116,7 +138,7 @@
 	type="button"
 	class={cn(
 		'flex items-center justify-center font-bold transition-all',
-		'h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12',
+		sizeClasses,
 		'border border-border',
 		'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
 		!isRevealed && !isFlagged && 'bg-muted hover:bg-muted/80 active:scale-95',
@@ -144,7 +166,8 @@
 >
 	<span
 		class={cn(
-			'text-sm font-bold select-none sm:text-base lg:text-lg',
+			'font-bold select-none',
+			textSizeClasses,
 			isRevealed && adjacentMines > 0 && numberColors[adjacentMines]
 		)}
 	>

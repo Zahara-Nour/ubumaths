@@ -144,7 +144,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			status,
 			offered_gidouilles,
 			wanted_gidouilles,
-			creator:creator_id(username)
+			creator:creator_id(firstname, lastname)
 		`
 		)
 		.in('creator_id', studentIds)
@@ -152,14 +152,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.limit(limit);
 
 	for (const listing of recentListings || []) {
+		const creator = (listing as { creator?: { firstname?: string; lastname?: string } | null })
+			.creator;
 		activities.push({
 			id: listing.id,
 			type: 'listing',
 			timestamp: listing.created_at,
 			student_id: listing.creator_id,
-			student_name:
-				(listing as { creator?: { username?: string } | null }).creator?.username ||
-				'Élève inconnu',
+			student_name: creator
+				? `${creator.firstname || ''} ${creator.lastname || ''}`.trim() || 'Élève inconnu'
+				: 'Élève inconnu',
 			details: {
 				title: listing.title,
 				listing_type: listing.listing_type,
@@ -180,7 +182,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			proposer_id,
 			status,
 			offered_gidouilles,
-			proposer:proposer_id(username),
+			proposer:proposer_id(firstname, lastname),
 			listing:listing_id(title, creator_id)
 		`
 		)
@@ -189,14 +191,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.limit(limit);
 
 	for (const proposal of recentProposals || []) {
+		const proposer = (proposal as { proposer?: { firstname?: string; lastname?: string } | null })
+			.proposer;
 		activities.push({
 			id: proposal.id,
 			type: 'proposal',
 			timestamp: proposal.created_at,
 			student_id: proposal.proposer_id,
-			student_name:
-				(proposal as { proposer?: { username?: string } | null }).proposer?.username ||
-				'Élève inconnu',
+			student_name: proposer
+				? `${proposer.firstname || ''} ${proposer.lastname || ''}`.trim() || 'Élève inconnu'
+				: 'Élève inconnu',
 			details: {
 				status: proposal.status,
 				listing_title:
@@ -221,29 +225,32 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			partner_id,
 			status,
 			final_trade,
-			initiator:initiator_id(username),
-			partner:partner_id(username)
+			initiator:initiator_id(firstname, lastname),
+			partner:partner_id(firstname, lastname)
 		`
 		)
 		.or(`initiator_id.in.(${studentIds.join(',')}),partner_id.in.(${studentIds.join(',')})`)
 		.order('updated_at', { ascending: false })
 		.limit(limit);
 
+	type ProfileName = { firstname?: string; lastname?: string } | null;
+	const formatName = (p: ProfileName) =>
+		p ? `${p.firstname || ''} ${p.lastname || ''}`.trim() || 'Élève inconnu' : 'Élève inconnu';
+
 	for (const trade of recentTrades || []) {
+		const initiator = (trade as { initiator?: ProfileName }).initiator;
+		const partner = (trade as { partner?: ProfileName }).partner;
+
 		// Add trade creation
 		activities.push({
 			id: trade.id,
 			type: 'trade',
 			timestamp: trade.created_at,
 			student_id: trade.initiator_id,
-			student_name:
-				(trade as { initiator?: { username?: string } | null }).initiator?.username ||
-				'Élève inconnu',
+			student_name: formatName(initiator),
 			details: {
 				partner_id: trade.partner_id,
-				partner_name:
-					(trade as { partner?: { username?: string } | null }).partner?.username ||
-					'Élève inconnu',
+				partner_name: formatName(partner),
 				status: trade.status
 			}
 		});
@@ -262,14 +269,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				type: 'trade_completed',
 				timestamp: trade.updated_at,
 				student_id: trade.initiator_id,
-				student_name:
-					(trade as { initiator?: { username?: string } | null }).initiator?.username ||
-					'Élève inconnu',
+				student_name: formatName(initiator),
 				details: {
 					partner_id: trade.partner_id,
-					partner_name:
-						(trade as { partner?: { username?: string } | null }).partner?.username ||
-						'Élève inconnu',
+					partner_name: formatName(partner),
 					initiator_gidouilles: finalTrade.initiator_gidouilles || 0,
 					partner_gidouilles: finalTrade.partner_gidouilles || 0,
 					initiator_cards_count: finalTrade.initiator_cards?.length || 0,
