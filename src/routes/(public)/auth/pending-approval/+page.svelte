@@ -65,10 +65,6 @@
 					Vous recevrez une notification lorsque votre compte sera approuvé.
 				</p>
 
-				<p class="text-xs text-muted-foreground italic">
-					Cliquez en dehors de cette fenêtre ou appuyez sur Échap pour vous déconnecter.
-				</p>
-
 				<Button onclick={handleLogout} variant="outline" class="w-full" disabled={isLoggingOut}>
 					{isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
 				</Button>
