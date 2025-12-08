@@ -13,6 +13,8 @@ node_modules
 extern
 externe
 
+data
+
 # OS
 .DS_Store
 Thumbs.db
