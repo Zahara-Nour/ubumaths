@@ -83,14 +83,24 @@ export async function getUserProfile(
 		const { data, error: err } = await Promise.race([profilePromise, timeoutPromise]);
 
 		if (err) {
-			logger.error('Error fetching user profile:', err);
+			// Log detailed error info for debugging
+			logger.error('Error fetching user profile:', {
+				userId,
+				errorCode: err.code,
+				errorMessage: err.message,
+				errorDetails: err.details,
+				errorHint: err.hint
+			});
 			return null;
 		}
 
 		// Return the profile with role information
 		return data;
 	} catch (error) {
-		logger.error('Timeout or error fetching user profile:', error);
+		logger.error('Timeout or error fetching user profile:', {
+			userId,
+			error: error instanceof Error ? error.message : String(error)
+		});
 		return null;
 	}
 }
