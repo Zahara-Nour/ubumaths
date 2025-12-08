@@ -22,7 +22,7 @@ import { z } from 'zod';
 
 // Query schema
 const tradesQuerySchema = z.object({
-	status: z.enum(['negotiating', 'completed', 'cancelled']).optional(),
+	status: z.enum(['negotiating', 'completed', 'cancelled']).nullish(),
 	page: z.coerce.number().int().min(1).default(1),
 	limit: z.coerce.number().int().min(1).max(50).default(20)
 });

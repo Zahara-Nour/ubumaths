@@ -121,8 +121,8 @@ export const listingsQuerySchema = z.object({
 		.max(50, 'La limite ne peut pas dépasser 50')
 		.finite('La valeur doit être un nombre fini')
 		.default(20),
-	type: z.enum(['sell', 'buy']).optional(),
-	card_template_id: z.string().uuid('ID de modèle de carte invalide').optional()
+	type: z.enum(['sell', 'buy']).nullish(),
+	card_template_id: z.string().uuid('ID de modèle de carte invalide').nullish()
 });
 
 // ============================================================================
@@ -315,6 +315,6 @@ export const adminTradesQuerySchema = z.object({
  * Schema for admin statistics query
  */
 export const adminStatsQuerySchema = z.object({
-	class_id: z.string().uuid('ID de classe invalide').optional(),
-	period: z.enum(['day', 'week', 'month']).default('week')
+	class_id: z.string().uuid('ID de classe invalide').nullish(),
+	period: z.enum(['day', 'week', 'month']).nullish().default('week')
 });
