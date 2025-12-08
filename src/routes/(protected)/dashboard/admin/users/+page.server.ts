@@ -3,13 +3,19 @@
  *
  * This server file provides:
  * - Loading classes and schools data for selectors
+ * - Count of pending user approvals
  * - Profile update action (name, email, role, school, gender, avatar)
+ *
+ * ACCESS: Admin and Teacher roles
+ * - Teachers can only see pending users (due to RLS policies)
+ * - Admins have full access to all users
  *
  * NOTE: User search and class filtering are handled by API routes:
  * - /api/admin/search-users (text search by email/name)
  * - /api/admin/class-students (filter by class)
  * - /api/admin/add-to-class (add student to class via class_members table)
  * - /api/admin/remove-from-class (remove student from class via class_members table)
+ * - /api/admin/users/[id]/status (approve/reject pending users)
  *
  * IMPORTANT: All class membership operations use the class_members table,
  * which is the source of truth. The profiles.class_ids array is kept in sync
@@ -27,8 +33,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(401, 'Unauthorized');
 	}
 
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
+	// Allow admin and teacher roles (teachers will only see pending users due to RLS)
+	if (!profile || (profile.role !== 'admin' && profile.role !== 'teacher')) {
+		throw error(403, 'Accès réservé aux administrateurs et enseignants');
 	}
 
 	// Fetch all classes for the selectors
@@ -53,9 +60,21 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(500, 'Failed to load schools');
 	}
 
+	// Count pending users awaiting approval
+	const { count: pendingCount, error: countError } = await supabase
+		.from('profiles')
+		.select('*', { count: 'exact', head: true })
+		.eq('status', 'pending');
+
+	if (countError) {
+		console.error('Error counting pending users:', countError);
+		// Don't throw - just log and continue with 0
+	}
+
 	return {
 		classes: classes || [],
-		schools: schools || []
+		schools: schools || [],
+		pendingCount: pendingCount ?? 0
 	};
 };
 

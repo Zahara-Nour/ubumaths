@@ -6,6 +6,7 @@
 	 * Features include:
 	 * - Text search by email, firstname, or lastname
 	 * - Browse users by class membership
+	 * - Filter and approve/reject pending users
 	 * - View and edit user profiles (name, email, role, school, classes)
 	 * - Add/remove users from classes with reactive UI updates
 	 */
@@ -15,12 +16,14 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Card from '$lib/components/ui/card';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
+	import { Textarea } from '$lib/components/ui/textarea';
 	import type { Database } from '$lib/types/database';
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
-	import { Upload, Save, RotateCcw, Loader2 } from 'lucide-svelte';
+	import { Upload, Save, RotateCcw, Loader2, Clock, Check, X } from 'lucide-svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Switch } from '$lib/components/ui/switch';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
@@ -39,13 +42,25 @@
 	let searchTerm = $state(''); // Current text search input
 	let searchResults = $state<ExtendedProfile[]>([]); // Results from text search
 	let classResults = $state<ExtendedProfile[]>([]); // Results from class filter
+	let pendingResults = $state<ExtendedProfile[]>([]); // Results from pending filter
 	let isSearching = $state(false); // Loading state for text search
 	let isSearchingClass = $state(false); // Loading state for class filter
+	let isSearchingPending = $state(false); // Loading state for pending filter
 	let selectedClassFilter = $state<string>('none'); // Currently selected class ID for filtering ('none' = no class selected)
+	let showPendingOnly = $state(false); // Show only pending users awaiting approval
 	let searchTimeout: NodeJS.Timeout | null = null; // Debounce timer for search
+
+	// Pending count from server
+	let pendingCount = $state(data.pendingCount);
 
 	// Test filter state
 	let showTestUsers = $state(false); // Show test users (false = real users only)
+
+	// Approval/rejection state
+	let isApproving = $state(false);
+	let isRejecting = $state(false);
+	let showRejectionDialog = $state(false);
+	let rejectionReason = $state('');
 
 	// User selection and editing state
 	let selectedUser = $state<ExtendedProfile | null>(null); // Currently viewed user
@@ -93,24 +108,20 @@
 		return fields;
 	});
 
-	// Debug: Log school changes
-	$effect(() => {
-		if (selectedUser) {
-			const schoolChanged = (tempSchoolId || null) !== selectedUser.school_id;
-			if (schoolChanged) {
-				console.log('🏫 School change detected:', {
-					tempSchoolId,
-					convertedTempSchoolId: tempSchoolId || null,
-					selectedUserSchoolId: selectedUser.school_id,
-					hasChanges
-				});
-			}
-		}
-	});
-
 	/**
 	 * Utility Functions
 	 */
+
+	/**
+	 * Users to display in the list (pending, search results, or class filter)
+	 */
+	let displayUsers = $derived(
+		showPendingOnly && filteredPendingResults.length > 0
+			? filteredPendingResults
+			: filteredSearchResults.length > 0
+				? filteredSearchResults
+				: filteredClassResults
+	);
 
 	/**
 	 * Get user's full display name
@@ -163,6 +174,39 @@
 	}
 
 	/**
+	 * Get Tailwind classes for status badge styling
+	 */
+	function getStatusBadgeClass(status: string): string {
+		switch (status) {
+			case 'pending':
+				return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
+			case 'approved':
+				return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+			case 'rejected':
+				return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+			default:
+				return 'bg-muted text-muted-foreground';
+		}
+	}
+
+	/**
+	 * Get French label for status
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	function getStatusLabel(status: string): string {
+		switch (status) {
+			case 'pending':
+				return 'En attente';
+			case 'approved':
+				return 'Approuvé';
+			case 'rejected':
+				return 'Refusé';
+			default:
+				return status;
+		}
+	}
+
+	/**
 	 * Convert array of class IDs to array of class names
 	 * Filters out any IDs that don't match existing classes
 	 */
@@ -192,6 +236,11 @@
 	 * Get filtered class results based on test filter
 	 */
 	let filteredClassResults = $derived(applyTestFilter(classResults));
+
+	/**
+	 * Get filtered pending results based on test filter
+	 */
+	let filteredPendingResults = $derived(applyTestFilter(pendingResults));
 
 	/**
 	 * Search Handlers
@@ -268,6 +317,145 @@
 		}
 
 		isSearchingClass = false;
+	}
+
+	/**
+	 * Toggle pending users filter
+	 * When enabled, shows only users with status='pending'
+	 */
+	async function togglePendingFilter() {
+		showPendingOnly = !showPendingOnly;
+
+		if (showPendingOnly) {
+			isSearchingPending = true;
+			// Clear other filters
+			searchTerm = '';
+			searchResults = [];
+			selectedClassFilter = 'none';
+			classResults = [];
+
+			try {
+				// Fetch pending users via search API with status filter
+				const response = await fetch('/api/admin/search-users/pending');
+				const result = (await response.json()) as { users?: ExtendedProfile[] };
+
+				if (result.users) {
+					pendingResults = result.users;
+				} else {
+					pendingResults = [];
+				}
+			} catch (err) {
+				console.error('Pending filter error:', err);
+				pendingResults = [];
+			}
+
+			isSearchingPending = false;
+		} else {
+			pendingResults = [];
+		}
+	}
+
+	/**
+	 * Approve a pending user
+	 */
+	async function approveUser() {
+		if (!selectedUser || selectedUser.status !== 'pending') return;
+
+		isApproving = true;
+
+		try {
+			const response = await fetch(`/api/admin/users/${selectedUser.id}/status`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ status: 'approved' })
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || "Erreur lors de l'approbation");
+			}
+
+			const result: { success: boolean; profile: ExtendedProfile } = await response.json();
+
+			if (result.success && result.profile) {
+				// Update selected user
+				selectedUser = { ...result.profile, class_ids: result.profile.class_ids || [] };
+
+				// Remove from pending results if showing pending
+				if (showPendingOnly) {
+					pendingResults = pendingResults.filter((u) => u.id !== result.profile.id);
+				}
+
+				// Update pending count
+				pendingCount = Math.max(0, pendingCount - 1);
+
+				toaster.success('Utilisateur approuvé avec succès');
+			}
+		} catch (err) {
+			console.error('Error approving user:', err);
+			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'approbation");
+		} finally {
+			isApproving = false;
+		}
+	}
+
+	/**
+	 * Open rejection dialog
+	 */
+	function openRejectionDialog() {
+		rejectionReason = '';
+		showRejectionDialog = true;
+	}
+
+	/**
+	 * Reject a pending user
+	 */
+	async function rejectUser() {
+		if (!selectedUser || selectedUser.status !== 'pending') return;
+
+		isRejecting = true;
+
+		try {
+			const response = await fetch(`/api/admin/users/${selectedUser.id}/status`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					status: 'rejected',
+					rejection_reason: rejectionReason.trim() || null
+				})
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.error || 'Erreur lors du refus');
+			}
+
+			const result: { success: boolean; profile: ExtendedProfile } = await response.json();
+
+			if (result.success && result.profile) {
+				// Update selected user
+				selectedUser = { ...result.profile, class_ids: result.profile.class_ids || [] };
+
+				// Remove from pending results if showing pending
+				if (showPendingOnly) {
+					pendingResults = pendingResults.filter((u) => u.id !== result.profile.id);
+				}
+
+				// Update pending count
+				pendingCount = Math.max(0, pendingCount - 1);
+
+				// Close dialog
+				showRejectionDialog = false;
+				rejectionReason = '';
+
+				toaster.success('Utilisateur refusé');
+			}
+		} catch (err) {
+			console.error('Error rejecting user:', err);
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors du refus');
+		} finally {
+			isRejecting = false;
+		}
 	}
 
 	/**
@@ -387,13 +575,6 @@
 				is_test: tempIsTest
 			};
 
-			console.log('💾 Saving user updates:', {
-				userId: selectedUser.id,
-				tempSchoolId,
-				convertedSchoolId: tempSchoolId || null,
-				updates
-			});
-
 			const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
@@ -407,23 +588,12 @@
 
 			const result: { success: boolean; profile: ExtendedProfile } = await response.json();
 
-			console.log('✅ Server response:', {
-				success: result.success,
-				returnedSchoolId: result.profile?.school_id,
-				returnedProfile: result.profile
-			});
-
 			if (result.success && result.profile) {
 				// Update selected user
 				selectedUser = { ...result.profile, class_ids: result.profile.class_ids || [] };
 
 				// Reinit temp values from saved data
 				initTempValues(result.profile);
-
-				console.log('🔄 After reinit:', {
-					tempSchoolId,
-					selectedUserSchoolId: selectedUser.school_id
-				});
 
 				// Update search results
 				if (searchResults.length > 0) {
@@ -632,6 +802,27 @@
 						</div>
 					</div>
 
+					<!-- Pending Filter -->
+					<div class="flex items-center gap-2 pb-1">
+						<Button
+							variant={showPendingOnly ? 'default' : 'outline'}
+							size="sm"
+							onclick={togglePendingFilter}
+							disabled={isSearchingPending}
+							class="gap-2"
+						>
+							{#if isSearchingPending}
+								<Loader2 class="h-4 w-4 animate-spin" />
+							{:else}
+								<Clock class="h-4 w-4" />
+							{/if}
+							En attente
+							{#if pendingCount > 0}
+								<Badge class="bg-amber-500 text-white">{pendingCount}</Badge>
+							{/if}
+						</Button>
+					</div>
+
 					<!-- Test Filter -->
 					<div class="flex items-center gap-2 pb-1">
 						<Switch bind:checked={showTestUsers} id="test-filter" />
@@ -648,11 +839,13 @@
 			<!-- Left Panel: Search Results List -->
 			<div class="space-y-4 lg:col-span-1">
 				<!-- Search Results List -->
-				{#if filteredSearchResults.length > 0 || filteredClassResults.length > 0}
+				{#if filteredSearchResults.length > 0 || filteredClassResults.length > 0 || filteredPendingResults.length > 0}
 					<Card.Root>
 						<Card.Header>
 							<Card.Title>
-								{#if filteredSearchResults.length > 0}
+								{#if showPendingOnly && filteredPendingResults.length > 0}
+									Utilisateurs en attente ({filteredPendingResults.length})
+								{:else if filteredSearchResults.length > 0}
 									Résultats de recherche ({filteredSearchResults.length})
 								{:else if filteredClassResults.length > 0}
 									{@const className =
@@ -663,7 +856,7 @@
 						</Card.Header>
 						<Card.Content>
 							<div class="max-h-96 space-y-2 overflow-y-auto">
-								{#each filteredSearchResults.length > 0 ? filteredSearchResults : filteredClassResults as user (user.id)}
+								{#each displayUsers as user (user.id)}
 									<button
 										type="button"
 										onclick={() => selectUser(user)}
@@ -692,8 +885,11 @@
 												</p>
 												<p class="truncate text-xs text-muted-foreground">{user.email}</p>
 											</div>
-											<div class="flex gap-1">
+											<div class="flex flex-wrap gap-1">
 												<Badge class={getRoleBadgeClass(user.role)}>{user.role}</Badge>
+												{#if user.status === 'pending'}
+													<Badge class={getStatusBadgeClass('pending')}>En attente</Badge>
+												{/if}
 												{#if user.is_test}
 													<Badge class={getTestBadgeClass()}>TEST</Badge>
 												{/if}
@@ -702,6 +898,14 @@
 									</button>
 								{/each}
 							</div>
+						</Card.Content>
+					</Card.Root>
+				{:else if showPendingOnly && !isSearchingPending}
+					<Card.Root>
+						<Card.Content class="py-6 text-center">
+							<p class="text-sm text-muted-foreground">
+								Aucun utilisateur en attente d'approbation
+							</p>
 						</Card.Content>
 					</Card.Root>
 				{:else if searchTerm.length >= 3 && !isSearching}
@@ -758,6 +962,72 @@
 							{/if}
 
 							<Separator />
+
+							<!-- Approval Status Section (for pending users) -->
+							{#if selectedUser.status === 'pending'}
+								<div
+									class="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950"
+								>
+									<div class="flex items-center justify-between">
+										<div class="flex items-center gap-3">
+											<Clock class="h-5 w-5 text-amber-600 dark:text-amber-400" />
+											<div>
+												<p class="font-medium text-amber-800 dark:text-amber-200">
+													En attente d'approbation
+												</p>
+												<p class="text-sm text-amber-600 dark:text-amber-400">
+													Cet utilisateur attend que son inscription soit validée.
+												</p>
+											</div>
+										</div>
+										<div class="flex gap-2">
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={openRejectionDialog}
+												disabled={isApproving || isRejecting}
+												class="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950"
+											>
+												{#if isRejecting}
+													<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+												{:else}
+													<X class="mr-2 h-4 w-4" />
+												{/if}
+												Refuser
+											</Button>
+											<Button
+												size="sm"
+												onclick={approveUser}
+												disabled={isApproving || isRejecting}
+												class="bg-green-600 hover:bg-green-700"
+											>
+												{#if isApproving}
+													<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+												{:else}
+													<Check class="mr-2 h-4 w-4" />
+												{/if}
+												Approuver
+											</Button>
+										</div>
+									</div>
+								</div>
+							{:else if selectedUser.status === 'rejected'}
+								<div
+									class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950"
+								>
+									<div class="flex items-center gap-3">
+										<X class="h-5 w-5 text-red-600 dark:text-red-400" />
+										<div>
+											<p class="font-medium text-red-800 dark:text-red-200">Inscription refusée</p>
+											{#if selectedUser.rejection_reason}
+												<p class="text-sm text-red-600 dark:text-red-400">
+													Raison : {selectedUser.rejection_reason}
+												</p>
+											{/if}
+										</div>
+									</div>
+								</div>
+							{/if}
 
 							<!-- Profile Fields (Inline Editing) -->
 							<div class="space-y-4">
@@ -991,3 +1261,65 @@
 		</div>
 	</div>
 </div>
+
+<!-- Rejection Dialog -->
+<Dialog.Root bind:open={showRejectionDialog}>
+	<Dialog.Content class="max-w-md">
+		<Dialog.Header>
+			<Dialog.Title>Refuser l'inscription</Dialog.Title>
+			<Dialog.Description>
+				{#if selectedUser}
+					Vous allez refuser l'inscription de {getFullName(selectedUser)}. Cette action est
+					irréversible.
+				{/if}
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<div class="space-y-4 py-4">
+			<div class="space-y-2">
+				<Label for="rejection-reason">Raison du refus (optionnel)</Label>
+				<Textarea
+					id="rejection-reason"
+					bind:value={rejectionReason}
+					placeholder="Indiquez la raison du refus..."
+					rows={4}
+					disabled={isRejecting}
+					class="resize-none"
+				/>
+				<p
+					class="text-sm {rejectionReason.length > 500
+						? 'font-medium text-red-600 dark:text-red-400'
+						: 'text-muted-foreground'}"
+				>
+					{rejectionReason.length} / 500 caractères
+					{#if rejectionReason.length > 500}
+						- Limite dépassée
+					{/if}
+				</p>
+			</div>
+		</div>
+
+		<Dialog.Footer>
+			<Button
+				variant="outline"
+				onclick={() => {
+					showRejectionDialog = false;
+					rejectionReason = '';
+				}}
+				disabled={isRejecting}
+			>
+				Annuler
+			</Button>
+			<Button
+				onclick={rejectUser}
+				disabled={isRejecting || rejectionReason.length > 500}
+				class="bg-red-600 hover:bg-red-700"
+			>
+				{#if isRejecting}
+					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+				{/if}
+				Confirmer le refus
+			</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

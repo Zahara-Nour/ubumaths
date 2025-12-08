@@ -151,3 +151,23 @@ export const updateUserFieldsSchema = z
 export const classStudentsQuerySchema = z.object({
 	class_id: z.string().uuid('ID de classe invalide').optional()
 });
+
+// ============================================================================
+// USER STATUS MANAGEMENT SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for updating user approval status (PATCH /api/admin/users/[id]/status)
+ * Admin-only: Approve or reject pending users
+ */
+export const updateUserStatusSchema = z.object({
+	status: z.enum(['approved', 'rejected'], {
+		required_error: 'Le statut est requis',
+		invalid_type_error: 'Statut invalide'
+	}),
+	rejection_reason: z
+		.string()
+		.max(500, 'Raison trop longue (max 500 caractères)')
+		.nullable()
+		.optional()
+});

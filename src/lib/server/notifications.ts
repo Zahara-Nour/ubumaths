@@ -609,6 +609,37 @@ export async function getCreatedNotifications(
 }
 
 /**
+ * Notify admins when a new user is pending approval
+ *
+ * Creates a system notification targeting admins only with type 'pending_user'
+ *
+ * @param supabase - Supabase client
+ * @param email - Email of the pending user
+ * @param fullName - Full name of the pending user (optional)
+ * @returns { success: boolean, error?: string }
+ */
+export async function notifyAdminsOfPendingUser(
+	supabase: SupabaseClientType,
+	email: string,
+	fullName: string | null
+): Promise<{ success: boolean; error?: string }> {
+	const displayName = fullName || email;
+	const message = `Un nouvel utilisateur attend une approbation: <strong>${displayName}</strong>`;
+
+	return createSystemNotification(supabase, {
+		title: 'Nouvel utilisateur en attente',
+		message,
+		type: 'alert',
+		priority: 'important',
+		system_event_type: 'pending_user',
+		target_type: 'role',
+		target_roles: ['admin'],
+		action_label: 'Voir les utilisateurs',
+		action_url: '/dashboard/admin/users?status=pending'
+	});
+}
+
+/**
  * Hard delete expired notifications (cleanup job)
  */
 export async function cleanupExpiredNotifications(
