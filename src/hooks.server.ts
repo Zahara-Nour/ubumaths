@@ -57,7 +57,35 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 
 	// Fetch profile for authenticated users
 	if (user) {
-		event.locals.profile = await getUserProfile(event.locals.supabase, user.id);
+		try {
+			event.locals.profile = await getUserProfile(event.locals.supabase, user.id);
+		} catch (err) {
+			// Log the error before it propagates
+			const errorMessage = err instanceof Error ? err.message : String(err);
+			console.error('[userProfileHandle] Failed to fetch profile for user:', user.id, errorMessage);
+
+			// Log to error_logs table for admin visibility
+			try {
+				await logError(event.locals.supabase, {
+					error_type: 'server_load',
+					severity: 'error',
+					message: `[profile_fetch_error] Failed to fetch profile: ${errorMessage}`,
+					url: event.url.pathname,
+					user_agent: event.request.headers.get('user-agent') ?? undefined,
+					user_id: user.id,
+					stack_trace: err instanceof Error ? err.stack : undefined,
+					context: {
+						user_email: user.email
+					}
+				});
+			} catch (logErr) {
+				// Don't fail if logging fails
+				console.error('[userProfileHandle] Failed to log error:', logErr);
+			}
+
+			// Re-throw to trigger error page
+			throw err;
+		}
 	} else {
 		event.locals.profile = null;
 	}

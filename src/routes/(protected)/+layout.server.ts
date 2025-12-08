@@ -50,6 +50,7 @@ import type { LayoutServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/auth';
 import { createLogger } from '$lib/utils/logger';
+import { logError } from '$lib/server/errorMonitoring';
 
 const logger = createLogger('(protected)/+layout.server.ts');
 
@@ -71,6 +72,28 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		logger.error('  1. User signed up but profile was not created');
 		logger.error('  2. Database trigger is missing');
 		logger.error('  3. Profile was deleted manually');
+
+		// Log to error_logs table for admin visibility
+		try {
+			await logError(locals.supabase, {
+				error_type: 'server_load',
+				severity: 'error',
+				message: '[profile_missing] Profile not found for authenticated user',
+				url: '(protected) layout',
+				user_id: user!.id,
+				context: {
+					user_email: user!.email,
+					possible_causes: [
+						'User signed up but profile was not created',
+						'Database trigger is missing',
+						'Profile was deleted manually'
+					]
+				}
+			});
+		} catch (logErr) {
+			console.error('[protected layout] Failed to log error:', logErr);
+		}
+
 		throw error(
 			500,
 			'Your account is not fully set up. Please contact an administrator to complete your profile setup.'
