@@ -25,6 +25,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -328,16 +329,13 @@
 			<!-- School Selection -->
 			<div class="space-y-2">
 				<Label for="school">École *</Label>
-				<select
-					id="school"
+				<MySelect
+					type="single"
 					bind:value={selectedSchoolId}
-					class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-				>
-					<option value="">Sélectionner une école</option>
-					{#each data.schools as school (school.id)}
-						<option value={school.id}>{school.name}</option>
-					{/each}
-				</select>
+					items={data.schools.map((s) => ({ value: s.id, label: s.name }))}
+					placeholder="Sélectionner une école"
+					triggerClass="h-10 w-72 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+				/>
 			</div>
 
 			{#if !selectedSchoolId}

@@ -7,11 +7,12 @@
 	FEATURES:
 	---------
 	- Displays students sorted alphabetically by firstname
-	- Shows: Name | Gidouilles | VIP Cards | Warnings Score | Actions
-	- Quick action buttons:
-		- Warning button (⚠️): 3-step logic (remove gidouille → remove VIP card → add warning)
-		- Add gidouille button (+1): Instant optimistic UI update
-		- View VIP cards button (🎴): Opens modal with all cards
+	- Shows: Name | Gidouilles | VIP Cards | Bonus | Warnings Score
+	- All columns are clickable:
+		- Click on gidouilles count: Add 1 gidouille (instant optimistic UI update)
+		- Click on VIP cards count: Opens modal with all cards
+		- Click on bonus count: Add 1 bonus (instant optimistic UI update)
+		- Click on warnings score: 3-step logic (remove gidouille → remove VIP card → add warning)
 	- Color-coded warning scores: green (≥15), orange (10-14), red (<10)
 	- Optimistic UI for all actions (gidouilles, VIP cards, warnings)
 	- Debounced API calls: Rapid clicks batched into single request (500ms)
@@ -80,12 +81,12 @@
 	import * as Table from '$lib/components/ui/table';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { openVipCardsModal } from '$lib/utils/vip-card-modals';
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
-	import { AlertTriangle, Plus, Eye } from 'lucide-svelte';
+	import { Star } from 'lucide-svelte';
+	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
@@ -112,6 +113,7 @@
 		role?: string | null;
 		gender?: string | null;
 		gidouilles: number;
+		bonus: number;
 		vipCards: StudentVipCards;
 		warnings: StudentWarningCounts;
 	}
@@ -128,6 +130,12 @@
 	// Used to calculate accumulated delta correctly across multiple rapid clicks
 	let baseGidouilles = $state<Record<string, number>>({});
 
+	// Debounce timers for batching bonus updates (separate from gidouilles)
+	let bonusDebounceTimers = $state<Record<string, ReturnType<typeof setTimeout>>>({});
+
+	// Base bonus values (captured at first click, before optimistic updates)
+	let baseBonus = $state<Record<string, number>>({});
+
 	// ============================================================================
 	// CACHE DATA ACCESS (Reactive via $derived)
 	// ============================================================================
@@ -141,23 +149,26 @@
 	// Get warnings from cache (reactively updates when cache changes)
 	let warningsMap = $derived(teacherCache.getWarningsSync(classId, periodId));
 
-	// Merge data from cache into StudentData array (reactive)
+	// Merge data from cache into StudentData array (reactive), sorted by firstname A→Z
 	let studentsData = $derived(
-		students.map((student) => {
-			const rewards = rewardsMap?.get(student.id);
-			const warnings = warningsMap?.get(student.id);
-			return {
-				id: student.id,
-				firstname: student.firstname,
-				lastname: student.lastname,
-				avatar_url: student.avatar_url,
-				role: student.role,
-				gender: student.gender,
-				gidouilles: rewards?.gidouilles ?? 0,
-				vipCards: rewards?.vip_cards ?? {},
-				warnings: warnings ?? { C: 0, M: 0, R: 0, T: 0 }
-			};
-		})
+		students
+			.map((student) => {
+				const rewards = rewardsMap?.get(student.id);
+				const warnings = warningsMap?.get(student.id);
+				return {
+					id: student.id,
+					firstname: student.firstname,
+					lastname: student.lastname,
+					avatar_url: student.avatar_url,
+					role: student.role,
+					gender: student.gender,
+					gidouilles: rewards?.gidouilles ?? 0,
+					bonus: rewards?.bonus ?? 0,
+					vipCards: rewards?.vip_cards ?? {},
+					warnings: warnings ?? { C: 0, M: 0, R: 0, T: 0 }
+				};
+			})
+			.sort((a, b) => a.firstname.localeCompare(b.firstname, 'fr'))
 	);
 
 	/**
@@ -411,6 +422,7 @@
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						studentId,
+						classId,
 						amount: actualChange
 					})
 				});
@@ -438,6 +450,74 @@
 			const newBase = { ...baseGidouilles };
 			delete newBase[studentId];
 			baseGidouilles = newBase;
+		}, 500);
+	}
+
+	/**
+	 * Handle add bonus click (optimistic UI + debounced API call)
+	 * Batches rapid clicks into single API call after 500ms of inactivity
+	 */
+	async function handleAddBonus(student: StudentData) {
+		const studentId = student.id;
+		const bonus = student.bonus;
+
+		// Save base value on first click (before any optimistic updates)
+		if (!bonusDebounceTimers[studentId]) {
+			baseBonus[studentId] = bonus;
+		}
+
+		// 1. Instant optimistic update via cache
+		teacherCache.updateBonusOptimistic(classId, studentId, +1);
+
+		// 2. Clear existing timer for this student
+		if (bonusDebounceTimers[studentId]) {
+			clearTimeout(bonusDebounceTimers[studentId]);
+		}
+
+		// 3. Set new debounced timer (500ms)
+		bonusDebounceTimers[studentId] = setTimeout(async () => {
+			// Get current optimistic value from cache
+			const currentOptimistic =
+				teacherCache.getRewardsSync(classId)?.get(studentId)?.bonus ?? bonus;
+			// Use saved base value (from first click) instead of current value
+			const baseValue = baseBonus[studentId] ?? bonus;
+			const actualChange = currentOptimistic - baseValue;
+
+			if (actualChange === 0) return;
+
+			try {
+				const response = await fetch('/api/teacher/rewards/update-student-bonus', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						studentId,
+						classId,
+						delta: actualChange
+					})
+				});
+
+				if (response.ok) {
+					// Success: Cache already has correct optimistic value
+					// Show toast with accumulated amount
+					const amountStr = actualChange > 0 ? `+${actualChange}` : `${actualChange}`;
+					toaster.success(`${amountStr} bonus (${student.firstname})`);
+				} else {
+					throw new Error('Failed');
+				}
+			} catch (_error) {
+				// Rollback optimistic update by reversing delta
+				teacherCache.updateBonusOptimistic(classId, studentId, -actualChange);
+				toaster.error("Erreur lors de l'ajout du bonus");
+			}
+
+			// Clean up timer AND base value
+			const newTimers = { ...bonusDebounceTimers };
+			delete newTimers[studentId];
+			bonusDebounceTimers = newTimers;
+
+			const newBase = { ...baseBonus };
+			delete newBase[studentId];
+			baseBonus = newBase;
 		}, 500);
 	}
 
@@ -470,16 +550,40 @@
 		<Table.Root>
 			<Table.Header>
 				<Table.Row>
-					<Table.Head class="w-[200px]">Prénom</Table.Head>
-					<Table.Head class="w-[80px] text-center">🪙</Table.Head>
-					<Table.Head class="w-[80px] text-center">🎴</Table.Head>
-					<Table.Head class="w-[80px] text-center">⚠️</Table.Head>
-					<Table.Head class="w-[200px] text-right">Actions</Table.Head>
+					<Table.Head class="w-[200px]">Élève</Table.Head>
+					<Table.Head class="w-[80px] text-center">
+						<img src={gidouilleImg} alt="Gidouilles" class="mx-auto h-5 w-5" />
+					</Table.Head>
+					<Table.Head class="w-[80px] text-center">
+						<!-- VIP Card Back Miniature -->
+						<div
+							class="mx-auto h-7 w-5 overflow-hidden rounded-sm border border-amber-400 bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 shadow-sm"
+						>
+							<div class="flex h-full items-center justify-center">
+								<span
+									class="text-[8px] font-black tracking-tight text-white"
+									style="text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.3);">VIP</span
+								>
+							</div>
+						</div>
+					</Table.Head>
+					<Table.Head class="w-[80px] text-center">
+						<Star class="mx-auto h-5 w-5 fill-amber-400 text-amber-400" />
+					</Table.Head>
+					<Table.Head class="w-[80px] text-center">
+						<!-- Danger Icon -->
+						<div
+							class="mx-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow-sm"
+						>
+							<span class="text-xs leading-none font-bold">!</span>
+						</div>
+					</Table.Head>
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
 				{#each studentsData as student (student.id)}
 					{@const gidouilles = student.gidouilles}
+					{@const bonus = student.bonus}
 					{@const vipCards = student.vipCards}
 					{@const warnings = student.warnings}
 					{@const vipCardCount = Object.keys(vipCards).length}
@@ -502,65 +606,71 @@
 										{getAvatarInitials(student.firstname, student.lastname)}
 									</Avatar.Fallback>
 								</Avatar.Root>
-								<span>{student.firstname}</span>
+								<span>
+									{student.firstname}
+									{#if student.lastname}
+										<span class="text-muted-foreground">{student.lastname}</span>
+									{/if}
+								</span>
 							</div>
 						</Table.Cell>
 
-						<!-- Gidouilles -->
+						<!-- Gidouilles (cliquable pour ajouter) -->
 						<Table.Cell class="text-center">
-							<Badge variant="secondary">{gidouilles}</Badge>
+							<button
+								type="button"
+								onclick={() => handleAddGidouille(student)}
+								title="Cliquer pour ajouter 1 gidouille"
+								class="cursor-pointer transition-transform hover:scale-110 active:scale-95"
+							>
+								<Badge variant="secondary">{gidouilles}</Badge>
+							</button>
 						</Table.Cell>
 
-						<!-- VIP Cards -->
+						<!-- VIP Cards (cliquable pour voir les cartes) -->
 						<Table.Cell class="text-center">
 							{#if vipCardCount > 0}
-								<Badge variant="default">{vipCardCount}</Badge>
+								<button
+									type="button"
+									onclick={() => handleShowVipCards(student)}
+									title="Cliquer pour voir les cartes VIP"
+									class="cursor-pointer transition-transform hover:scale-110 active:scale-95"
+								>
+									<Badge variant="default">{vipCardCount}</Badge>
+								</button>
 							{:else}
 								<span class="text-muted-foreground">-</span>
 							{/if}
 						</Table.Cell>
 
-						<!-- Warnings Score -->
+						<!-- Bonus (cliquable pour ajouter) -->
 						<Table.Cell class="text-center">
-							<Badge variant={getScoreBadgeVariant(getScore(warnings))}>
-								{getScore(warnings)}/20
-							</Badge>
+							<button
+								type="button"
+								onclick={() => handleAddBonus(student)}
+								title="Cliquer pour ajouter 1 bonus"
+								class="cursor-pointer transition-transform hover:scale-110 active:scale-95"
+							>
+								{#if bonus > 0}
+									<Badge variant="secondary" class="bg-amber-100 text-amber-700">{bonus}</Badge>
+								{:else}
+									<Badge variant="outline" class="text-muted-foreground">0</Badge>
+								{/if}
+							</button>
 						</Table.Cell>
 
-						<!-- Actions -->
-						<Table.Cell class="text-right">
-							<div class="flex items-center justify-end gap-1">
-								<!-- Warning Button -->
-								<Button
-									size="sm"
-									variant="outline"
-									onclick={() => handleWarningAction(student)}
-									title="Avertissement (retire gidouille → carte → ajoute avertissement)"
-								>
-									<AlertTriangle class="h-4 w-4 text-orange-500" />
-								</Button>
-
-								<!-- Add Gidouille Button -->
-								<Button
-									size="sm"
-									variant="outline"
-									onclick={() => handleAddGidouille(student)}
-									title="Ajouter 1 gidouille"
-								>
-									<Plus class="h-4 w-4 text-green-500" />
-								</Button>
-
-								<!-- View VIP Cards Button -->
-								<Button
-									size="sm"
-									variant="outline"
-									onclick={() => handleShowVipCards(student)}
-									title="Voir les cartes VIP"
-									disabled={vipCardCount === 0}
-								>
-									<Eye class="h-4 w-4 text-purple-500" />
-								</Button>
-							</div>
+						<!-- Warnings Score (cliquable pour ajouter un avertissement) -->
+						<Table.Cell class="text-center">
+							<button
+								type="button"
+								onclick={() => handleWarningAction(student)}
+								title="Cliquer pour ajouter un avertissement (retire gidouille → carte → ajoute avertissement)"
+								class="cursor-pointer transition-transform hover:scale-110 active:scale-95"
+							>
+								<Badge variant={getScoreBadgeVariant(getScore(warnings))}>
+									{getScore(warnings)}/20
+								</Badge>
+							</button>
 						</Table.Cell>
 					</Table.Row>
 				{/each}

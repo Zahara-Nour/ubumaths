@@ -56,7 +56,7 @@
 		{ value: '', label: 'Toutes les classes' },
 		...data.teacherClasses.map((c) => ({
 			value: c.id,
-			label: `${c.name} (${c.level})`
+			label: c.name
 		}))
 	]);
 
