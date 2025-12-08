@@ -60,7 +60,8 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 		try {
 			event.locals.profile = await getUserProfile(event.locals.supabase, user.id);
 		} catch (err) {
-			// Log the error before it propagates
+			// Log the error but don't crash - let the layout handle missing profile
+			// This prevents "Unexpected token '<'" errors when __data.json requests fail
 			const errorMessage = err instanceof Error ? err.message : String(err);
 			console.error('[userProfileHandle] Failed to fetch profile for user:', user.id, errorMessage);
 
@@ -83,8 +84,9 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 				console.error('[userProfileHandle] Failed to log error:', logErr);
 			}
 
-			// Re-throw to trigger error page
-			throw err;
+			// Set profile to null - the layout will handle this gracefully
+			// (either redirect to login or show an error page)
+			event.locals.profile = null;
 		}
 	} else {
 		event.locals.profile = null;
