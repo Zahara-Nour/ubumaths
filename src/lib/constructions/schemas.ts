@@ -571,6 +571,15 @@ export const pauseStepSchema = z.object({
 });
 
 /**
+ * Instruction step: { "instruction": "step1", "content": "On place un point" }
+ * Displays instruction text in overlay with fade animation
+ */
+export const instructionStepSchema = z.object({
+	instruction: objectIdSchema,
+	content: z.string().min(1).max(2000)
+});
+
+/**
  * Non-parallel step union (for use in parallel arrays)
  */
 export const nonParallelStepSchema = z.union([
@@ -591,7 +600,8 @@ export const nonParallelStepSchema = z.union([
 	raiseStepSchema,
 	lowerStepSchema,
 	styleStepSchema,
-	pauseStepSchema
+	pauseStepSchema,
+	instructionStepSchema
 ]);
 
 /**
@@ -632,6 +642,7 @@ export const stepSchema = z.union([
 	styleStepSchema,
 	// Control
 	pauseStepSchema,
+	instructionStepSchema,
 	parallelStepSchema
 ]);
 
@@ -701,6 +712,7 @@ export type RaiseStepInput = z.infer<typeof raiseStepSchema>;
 export type LowerStepInput = z.infer<typeof lowerStepSchema>;
 export type StyleStepInput = z.infer<typeof styleStepSchema>;
 export type PauseStepInput = z.infer<typeof pauseStepSchema>;
+export type InstructionStepInput = z.infer<typeof instructionStepSchema>;
 export type ParallelStepInput = z.infer<typeof parallelStepSchema>;
 
 /** Mark shape type */
@@ -789,6 +801,10 @@ export function isStyleStep(step: StepInput): step is StyleStepInput {
 
 export function isPauseStep(step: StepInput): step is PauseStepInput {
 	return 'pause' in step;
+}
+
+export function isInstructionStep(step: StepInput): step is InstructionStepInput {
+	return 'instruction' in step;
 }
 
 export function isParallelStep(step: StepInput): step is ParallelStepInput {

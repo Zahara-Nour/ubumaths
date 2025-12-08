@@ -1,7 +1,7 @@
 # Constructions Module - Implementation Progress
 
 **Status**: ACTIVE
-**Date**: 2025-12-07
+**Date**: 2025-12-08
 
 ## Summary
 
@@ -100,6 +100,25 @@ Complete rewrite of InstrumenPoche (geometry animation player) into Svelte 5 + T
   - Arcs: `arcLength × 1.5ms/pixel` where arcLength = radius × |sweep| in radians
   - Compass radius tracked during duration calculation for accurate arc timing
   - Example: 360° arc with 100px radius ≈ 942ms (vs previous fixed 500ms)
+
+### Phase 9: Instruction Step with Markdown Overlay
+
+- **Instruction step**: `{"instruction": "step1", "text": "On place un point ~A~."}`
+  - `instruction`: unique ID for the step (e.g., "step1", "instruction_1")
+  - `text`: markdown content (1-2000 chars), rendered via MarkdownRenderer
+  - Supports custom math syntax (~...~ for inline math)
+- **Overlay display**: Instructions appear in overlay at top of canvas
+  - Semi-transparent white background with subtle border
+  - Positioned absolutely over the canvas SVG
+  - z-index 10 to stay above canvas content
+- **Cross-fade animation**: Smooth transitions between instructions
+  - New instruction fades in (300ms) while old instruction fades out
+  - Only one instruction visible at a time
+  - Instructions persist until replaced by new instruction or reset
+- **Engine integration**:
+  - `currentInstruction` reactive state in engine
+  - Instant step duration (no animation delay)
+  - Properly reset on construction reset
 
 ## Architecture Decisions
 

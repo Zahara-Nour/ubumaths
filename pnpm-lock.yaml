@@ -156,8 +156,8 @@ importers:
         specifier: ^15.0.0
         version: 15.0.0
       mathlive:
-        specifier: ^0.107.1
-        version: 0.107.1
+        specifier: ^0.108.2
+        version: 0.108.2
       mode-watcher:
         specifier: ^1.1.0
         version: 1.1.0(svelte@5.39.9)
@@ -481,10 +481,6 @@ packages:
   '@commitlint/types@20.0.0':
     resolution: {integrity: sha512-bVUNBqG6aznYcYjTjnc3+Cat/iBgbgpflxbIBTnsHTX0YVpnmINPEkSRWymT2Q8aSH3Y7aKnEbunilkYe8TybA==}
     engines: {node: '>=v18'}
-
-  '@cortex-js/compute-engine@0.29.1':
-    resolution: {integrity: sha512-bCpaGW+Th+6lrTEDom3mNInfu3hu2N79FpUuqdVyvhE1Np4O447O/1gsgqLAFqVjg58cGN0FCAxf8gXkQNF4CQ==}
-    engines: {node: '>=21.7.3', npm: '>=10.5.0'}
 
   '@cortex-js/compute-engine@0.30.2':
     resolution: {integrity: sha512-Zx+iisk9WWdbxjm8EYsneIBszvjfUs7BHNwf1jBtSINIgfWGpHrTTq9vW0J59iGCFt6bOFxbmWyxNMRSmksHMA==}
@@ -2959,8 +2955,8 @@ packages:
     engines: {node: '>= 18'}
     hasBin: true
 
-  mathlive@0.107.1:
-    resolution: {integrity: sha512-CaE2eTwXLGXyOu1d+dIv10Vx98qNfHv9g4pBmqOtDJRPyELxbk9RZ2pT69cTRmOk7Yai/mpSBXQT2HwD/S32uQ==}
+  mathlive@0.108.2:
+    resolution: {integrity: sha512-GIZkfprGTxrbHckOvwo92ZmOOxdD018BHDzlrEwYUU+pzR5KabhqI1s43lxe/vqXdF5RLiQKgDcuk5jxEjhkYg==}
 
   mdn-data@2.12.2:
     resolution: {integrity: sha512-IEn+pegP1aManZuckezWCO+XZQDplx1366JoVhTpMpBB1sPey/SbveZQUosKiKiGYjg1wH4pMlNgXbCiYgihQA==}
@@ -4491,11 +4487,6 @@ snapshots:
     dependencies:
       '@types/conventional-commits-parser': 5.0.1
       chalk: 5.6.2
-
-  '@cortex-js/compute-engine@0.29.1':
-    dependencies:
-      complex-esm: 2.1.1-esm1
-      decimal.js: 10.6.0
 
   '@cortex-js/compute-engine@0.30.2':
     dependencies:
@@ -6949,9 +6940,9 @@ snapshots:
       tiny-emitter: 2.1.0
       typed-function: 4.2.1
 
-  mathlive@0.107.1:
+  mathlive@0.108.2:
     dependencies:
-      '@cortex-js/compute-engine': 0.29.1
+      '@cortex-js/compute-engine': 0.30.2
 
   mdn-data@2.12.2: {}
 

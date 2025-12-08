@@ -38,6 +38,7 @@ import {
 	type LowerStepInput,
 	type StyleStepInput,
 	type PauseStepInput,
+	type InstructionStepInput,
 	type ParallelStepInput,
 	type CoordPair,
 	type TargetRef,
@@ -66,6 +67,7 @@ import {
 	isLowerStep,
 	isStyleStep,
 	isPauseStep,
+	isInstructionStep,
 	isParallelStep
 } from './schemas.js';
 
@@ -112,6 +114,7 @@ export type RaiseStep = RaiseStepInput;
 export type LowerStep = LowerStepInput;
 export type StyleStep = StyleStepInput;
 export type PauseStep = PauseStepInput;
+export type InstructionStep = InstructionStepInput;
 export type ParallelStep = ParallelStepInput;
 
 /**
@@ -371,5 +374,6 @@ export {
 	isLowerStep,
 	isStyleStep,
 	isPauseStep,
+	isInstructionStep,
 	isParallelStep
 };
