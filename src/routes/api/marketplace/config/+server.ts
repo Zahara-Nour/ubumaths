@@ -6,8 +6,8 @@ import { z } from 'zod';
 
 // Query schema
 const configQuerySchema = z.object({
-	class_id: z.string().uuid('ID de classe invalide').optional(),
-	school_id: z.string().uuid("ID d'école invalide").optional()
+	class_id: z.string().uuid('ID de classe invalide').nullish(),
+	school_id: z.string().uuid("ID d'école invalide").nullish()
 });
 
 /**
