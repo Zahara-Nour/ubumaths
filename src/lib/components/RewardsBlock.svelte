@@ -2,17 +2,16 @@
 	Rewards Block Component
 	========================
 
-	Displays a summary of student rewards with 4 tiles:
+	Displays a summary of student rewards with 3 tiles:
 	1. Gidouilles - Total count with treasure chest image
-	2. Bonus - Bonus points count with coup-double image
+	2. Bonus - Bonus points count (opens history modal on click)
 	3. VIP Cards - Total owned cards count (opens modal on click)
-	4. Riddles - Total solved riddles count
 
 	Used in: StudentDashboard.svelte
 
 	CACHE USAGE:
 	- Derives gidouilles, bonus, and vipCards from studentCache
-	- riddlesSolved and studentId still passed as props (not in cache)
+	- studentId passed as prop for modal context
 	- Reactive to cache updates via $derived
 -->
 
@@ -20,20 +19,20 @@
 	import coffreGidouilles from '$lib/assets/images/coffre-gidouilles-transparent2.png';
 	import coupDoubleImage from '$lib/assets/images/coup-double.png';
 	import vipMemberImage from '$lib/assets/images/VIP-member.png';
-	import enigmeImage from '$lib/assets/images/enigme.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { getStudentCardCounts } from '$lib/utils/vip-cards';
 	import { resolve } from '$app/paths';
 	import StudentVipCardsModal from '$lib/components/StudentVipCardsModal.svelte';
+	import BonusHistoryModal from '$lib/components/BonusHistoryModal.svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 
 	interface Props {
-		riddlesSolved: number; // Not in cache, passed as prop
+		riddlesSolved: number; // Not in cache, passed as prop (unused - Riddles tile removed)
 		studentId: string; // Needed for modal
 	}
 
-	let { riddlesSolved, studentId }: Props = $props();
+	let { riddlesSolved: _riddlesSolved, studentId }: Props = $props();
 
 	// Derive rewards from cache (reactive to cache updates)
 	const rewards = $derived(studentCache.getRewardsSync());
@@ -57,6 +56,15 @@
 			canDismiss: true
 		});
 	}
+
+	// Open bonus history modal
+	function openBonusHistoryModal() {
+		modalStack.push({
+			component: BonusHistoryModal,
+			props: {},
+			canDismiss: true
+		});
+	}
 </script>
 
 <div class="rounded-lg border border-border bg-card p-6 shadow">
@@ -71,7 +79,7 @@
 		<!-- Gidouilles Tile -->
 		<a
 			href={resolve('/dashboard')}
-			class="group relative flex items-center gap-4 overflow-hidden rounded-lg border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-100 p-6 transition-all hover:shadow-lg dark:border-amber-800 dark:from-amber-950 dark:to-orange-950"
+			class="group relative flex items-center gap-4 overflow-hidden p-6 transition-all hover:shadow-lg dark:border-amber-800 dark:from-amber-950 dark:to-orange-950"
 		>
 			<!-- Image -->
 			<div class="flex-shrink-0">
@@ -90,9 +98,10 @@
 		</a>
 
 		<!-- Bonus Tile -->
-		<a
-			href={resolve('/dashboard')}
-			class="group relative flex items-center gap-4 overflow-hidden rounded-lg border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-100 p-6 transition-all hover:shadow-lg dark:border-emerald-800 dark:from-emerald-950 dark:to-teal-950"
+		<button
+			type="button"
+			onclick={openBonusHistoryModal}
+			class="group relative flex w-full cursor-pointer items-center gap-4 overflow-hidden p-6 text-left transition-all hover:shadow-lg"
 		>
 			<!-- Image -->
 			<div class="flex-shrink-0">
@@ -105,16 +114,16 @@
 
 			<!-- Stats -->
 			<div class="flex-1">
-				<p class="text-sm font-medium text-emerald-800 dark:text-emerald-200">Bonus</p>
-				<p class="mt-1 text-3xl font-bold text-emerald-600 dark:text-emerald-400">{bonus}</p>
+				<p class="text-sm font-medium text-amber-800 dark:text-amber-200">Bonus</p>
+				<p class="mt-1 text-3xl font-bold text-amber-600 dark:text-amber-400">{bonus}</p>
 			</div>
-		</a>
+		</button>
 
 		<!-- VIP Cards Tile -->
 		<button
 			type="button"
 			onclick={openVipCardsModal}
-			class="group relative flex w-full cursor-pointer items-center gap-4 overflow-hidden rounded-lg border border-purple-200 bg-gradient-to-br from-purple-50 to-pink-100 p-6 text-left transition-all hover:shadow-lg dark:border-purple-800 dark:from-purple-950 dark:to-pink-950"
+			class="group relative flex w-full cursor-pointer items-center gap-4 overflow-hidden p-6 text-center transition-all hover:shadow-lg"
 		>
 			<!-- Image -->
 			<div class="flex-shrink-0">
@@ -127,32 +136,11 @@
 
 			<!-- Stats -->
 			<div class="flex-1">
-				<p class="text-sm font-medium text-purple-800 dark:text-purple-200">Cartes VIP</p>
-				<p class="mt-1 text-3xl font-bold text-purple-600 dark:text-purple-400">
+				<p class="text-sm font-medium text-amber-800 dark:text-amber-200">Cartes VIP</p>
+				<p class="mt-1 text-3xl font-bold text-amber-600 dark:text-amber-400">
 					{totalCardsOwned}
 				</p>
 			</div>
 		</button>
-
-		<!-- Riddles Tile -->
-		<a
-			href={resolve('/dashboard/student/riddles')}
-			class="group relative flex items-center gap-4 overflow-hidden rounded-lg border border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-100 p-6 transition-all hover:shadow-lg dark:border-blue-800 dark:from-blue-950 dark:to-cyan-950"
-		>
-			<!-- Image -->
-			<div class="flex-shrink-0">
-				<img
-					src={enigmeImage}
-					alt="Énigmes"
-					class="h-20 w-20 transition-transform group-hover:scale-110"
-				/>
-			</div>
-
-			<!-- Stats -->
-			<div class="flex-1">
-				<p class="text-sm font-medium text-blue-800 dark:text-blue-200">Énigmes Résolues</p>
-				<p class="mt-1 text-3xl font-bold text-blue-600 dark:text-blue-400">{riddlesSolved}</p>
-			</div>
-		</a>
 	</div>
 </div>
