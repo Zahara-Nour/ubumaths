@@ -31,5 +31,6 @@ export const awardBonusSchema = z.object({
 		.int('Delta must be an integer')
 		.min(-1000, 'Cannot remove more than 1000 bonus at once')
 		.max(1000, 'Cannot award more than 1000 bonus at once')
-		.finite('Delta must be a finite number')
+		.finite('Delta must be a finite number'),
+	reason: z.string().max(100, 'Reason too long').optional()
 });
