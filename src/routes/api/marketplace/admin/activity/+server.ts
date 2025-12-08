@@ -144,7 +144,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			status,
 			offered_gidouilles,
 			wanted_gidouilles,
-			creator:profiles!marketplace_listings_creator_id_fkey(username)
+			creator:creator_id(username)
 		`
 		)
 		.in('creator_id', studentIds)
@@ -180,8 +180,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			proposer_id,
 			status,
 			offered_gidouilles,
-			proposer:profiles!marketplace_proposals_proposer_id_fkey(username),
-			listing:marketplace_listings!marketplace_proposals_listing_id_fkey(title, creator_id)
+			proposer:proposer_id(username),
+			listing:listing_id(title, creator_id)
 		`
 		)
 		.in('proposer_id', studentIds)
@@ -221,8 +221,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			partner_id,
 			status,
 			final_trade,
-			initiator:profiles!marketplace_trades_initiator_id_fkey(username),
-			partner:profiles!marketplace_trades_partner_id_fkey(username)
+			initiator:initiator_id(username),
+			partner:partner_id(username)
 		`
 		)
 		.or(`initiator_id.in.(${studentIds.join(',')}),partner_id.in.(${studentIds.join(',')})`)

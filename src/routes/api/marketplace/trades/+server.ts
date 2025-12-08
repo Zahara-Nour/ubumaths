@@ -58,18 +58,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(403, "Le marketplace n'est pas activé pour votre classe");
 	}
 
-	// Build query
+	// Build query - use column hints instead of FK names for compatibility
 	let query = supabase
 		.from('marketplace_trades')
 		.select(
 			`
       *,
-      initiator:profiles!marketplace_trades_initiator_id_fkey(
+      initiator:initiator_id(
         id,
         username,
         avatar_url
       ),
-      partner:profiles!marketplace_trades_partner_id_fkey(
+      partner:partner_id(
         id,
         username,
         avatar_url
@@ -276,12 +276,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select(
 			`
       *,
-      initiator:profiles!marketplace_trades_initiator_id_fkey(
+      initiator:initiator_id(
         id,
         username,
         avatar_url
       ),
-      partner:profiles!marketplace_trades_partner_id_fkey(
+      partner:partner_id(
         id,
         username,
         avatar_url
