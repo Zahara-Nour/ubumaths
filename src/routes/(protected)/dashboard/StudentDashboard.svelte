@@ -35,10 +35,10 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import RewardsBlock from '$lib/components/RewardsBlock.svelte';
-	import AchievementsWidget from '$lib/components/game/minesweeper/AchievementsWidget.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '$lib/utils/dates';
-	import { BookOpen, FileText, Calendar, CheckCircle } from 'lucide-svelte';
+	// import AchievementsWidget from '$lib/components/game/minesweeper/AchievementsWidget.svelte';
+	// import { Button } from '$lib/components/ui/button';
+	// import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '$lib/utils/dates';
+	// import { BookOpen, FileText, Calendar, CheckCircle } from 'lucide-svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 
 	// Receive data from parent (+page.svelte)
@@ -69,7 +69,7 @@
 
 	<!-- SRS REVISIONS SECTION -->
 	<!-- Quick access to spaced repetition system -->
-	<div class="rounded-lg bg-card shadow">
+	<!-- <div class="rounded-lg bg-card shadow">
 		<div class="border-b border-border px-6 py-4">
 			<div class="flex items-center justify-between">
 				<h3 class="text-lg font-semibold text-foreground">Révisions Espacées (SRS)</h3>
@@ -100,11 +100,11 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
 
 	<!-- EXERCISES SECTION -->
 	<!-- Recent assigned exercises -->
-	<div class="rounded-lg bg-card shadow">
+	<!-- <div class="rounded-lg bg-card shadow">
 		<div class="border-b border-border px-6 py-4">
 			<div class="flex items-center justify-between">
 				<h3 class="text-lg font-semibold text-foreground">Mes exercices</h3>
@@ -136,7 +136,6 @@
 										{exercise.title || 'Sans titre'}
 									</h4>
 
-									<!-- Tags -->
 									{#if exercise.tags && exercise.tags.length > 0}
 										<div class="mt-1 flex flex-wrap gap-1">
 											{#each exercise.tags.slice(0, 2) as tag, idx (idx)}
@@ -147,7 +146,6 @@
 										</div>
 									{/if}
 
-									<!-- Teacher notes (if any) -->
 									{#if assignment?.notes}
 										<p class="mt-2 truncate text-xs text-muted-foreground italic">
 											"{assignment.notes}"
@@ -156,7 +154,6 @@
 								</div>
 
 								<div class="flex flex-shrink-0 flex-col items-end gap-1">
-									<!-- Completion status -->
 									{#if isCompleted}
 										<span
 											class="flex items-center gap-1 rounded bg-green-100 px-2 py-1 text-xs text-green-800"
@@ -170,7 +167,6 @@
 										</span>
 									{/if}
 
-									<!-- Deadline -->
 									{#if deadline}
 										<span
 											class="flex items-center gap-1 rounded px-2 py-1 text-xs"
@@ -194,11 +190,10 @@
 				<p class="py-8 text-center text-muted-foreground">Aucun exercice assigné pour le moment</p>
 			{/if}
 		</div>
-	</div>
-
+	</div> -->
 	<!-- MINESWEEPER ACHIEVEMENTS SECTION -->
 	<!-- Display student's Minesweeper achievements progress -->
-	{#if data.minesweeperAchievements && data.achievementStats}
+	<!-- {#if data.minesweeperAchievements && data.achievementStats}
 		<AchievementsWidget achievements={data.minesweeperAchievements} stats={data.achievementStats} />
-	{/if}
+	{/if} -->
 </div>
