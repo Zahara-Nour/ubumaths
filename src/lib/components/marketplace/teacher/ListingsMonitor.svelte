@@ -77,21 +77,27 @@
 			let studentIds: string[] = [];
 
 			if (classId) {
-				const membersResponse = await fetch(`/api/classes/${classId}/members`);
-				if (membersResponse.ok) {
-					const members = (await membersResponse.json()) as Array<{ student_id: string }>;
-					studentIds = members.map((m) => m.student_id);
+				const studentsResponse = await fetch(`/api/classes/${classId}/students`);
+				if (studentsResponse.ok) {
+					const { students } = (await studentsResponse.json()) as {
+						students: Array<{ id: string }>;
+					};
+					studentIds = students.map((s) => s.id);
 				}
 			} else {
 				// Get all teacher's students
 				const classesResponse = await fetch('/api/teacher/classes');
 				if (classesResponse.ok) {
-					const classes = (await classesResponse.json()) as Array<{ id: string }>;
+					const { classes } = (await classesResponse.json()) as {
+						classes: Array<{ id: string }>;
+					};
 					for (const cls of classes) {
-						const membersResponse = await fetch(`/api/classes/${cls.id}/members`);
-						if (membersResponse.ok) {
-							const members = (await membersResponse.json()) as Array<{ student_id: string }>;
-							studentIds.push(...members.map((m) => m.student_id));
+						const studentsResponse = await fetch(`/api/classes/${cls.id}/students`);
+						if (studentsResponse.ok) {
+							const { students } = (await studentsResponse.json()) as {
+								students: Array<{ id: string }>;
+							};
+							studentIds.push(...students.map((s) => s.id));
 						}
 					}
 				}

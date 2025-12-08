@@ -10,7 +10,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Progress } from '$lib/components/ui/progress';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { TrendingUp, BarChart3, Award } from 'lucide-svelte';
+	import { TrendingUp, BarChart3, Award, Coins } from 'lucide-svelte';
 
 	interface Analytics {
 		engagement: {

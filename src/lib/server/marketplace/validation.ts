@@ -291,11 +291,11 @@ export const chatMessageSchema = z.object({
  * Schema for admin trade history query
  */
 export const adminTradesQuerySchema = z.object({
-	class_id: z.string().uuid('ID de classe invalide').optional(),
-	student_id: z.string().uuid("ID d'élève invalide").optional(),
-	status: z.enum(['negotiating', 'completed', 'cancelled']).optional(),
-	date_from: z.string().datetime().optional(),
-	date_to: z.string().datetime().optional(),
+	class_id: z.string().uuid('ID de classe invalide').nullish(),
+	student_id: z.string().uuid("ID d'élève invalide").nullish(),
+	status: z.enum(['negotiating', 'completed', 'cancelled']).nullish(),
+	date_from: z.string().datetime('Format de date invalide').nullish(),
+	date_to: z.string().datetime('Format de date invalide').nullish(),
 	page: z.coerce
 		.number()
 		.int('Le numéro de page doit être un entier')
