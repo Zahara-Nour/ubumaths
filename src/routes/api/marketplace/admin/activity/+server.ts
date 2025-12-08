@@ -6,7 +6,7 @@ import { z } from 'zod';
  * Query schema for marketplace activity feed
  */
 const activityQuerySchema = z.object({
-	class_id: z.string().uuid('ID de classe invalide').optional(),
+	class_id: z.string().uuid('ID de classe invalide').nullish(),
 	limit: z.coerce
 		.number()
 		.int('La limite doit être un entier')

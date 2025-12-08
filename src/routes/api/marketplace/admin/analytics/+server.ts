@@ -6,9 +6,9 @@ import { z } from 'zod';
  * Query schema for marketplace analytics
  */
 const analyticsQuerySchema = z.object({
-	class_id: z.string().uuid('ID de classe invalide').optional(),
-	date_from: z.string().datetime().optional(),
-	date_to: z.string().datetime().optional()
+	class_id: z.string().uuid('ID de classe invalide').nullish(),
+	date_from: z.string().datetime('Format de date invalide').nullish(),
+	date_to: z.string().datetime('Format de date invalide').nullish()
 });
 
 /**
