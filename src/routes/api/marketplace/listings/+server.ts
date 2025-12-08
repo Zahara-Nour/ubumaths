@@ -25,6 +25,7 @@ import {
 /**
  * GET /api/marketplace/listings
  * Fetch listings with pagination and filters
+ * Supports students (sees their school's listings) and teachers/admins (monitoring)
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
@@ -48,25 +49,47 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const { page, limit, type, card_template_id } = queryValidation.data;
 
-	// Check if marketplace is enabled for this user
-	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
-	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+	// Get user profile to check role
+	const { data: profile, error: profileError } = await supabase
+		.from('profiles')
+		.select('role, school_id')
+		.eq('id', userId)
+		.single();
+
+	if (profileError || !profile) {
+		throw error(404, 'Profil non trouvé');
 	}
 
-	// Get user's school ID for filtering
-	const schoolId = await getStudentSchoolId(supabase, userId);
-	if (!schoolId) {
-		throw error(404, 'École non trouvée');
+	let schoolId: string;
+
+	// Teachers and admins can view listings for monitoring purposes
+	if (profile.role === 'teacher' || profile.role === 'admin') {
+		if (!profile.school_id) {
+			throw error(404, 'École non trouvée');
+		}
+		schoolId = profile.school_id;
+	} else {
+		// For students, check if marketplace is enabled
+		const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
+		if (!marketplaceEnabled) {
+			throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		}
+
+		// Get student's school ID
+		const studentSchoolId = await getStudentSchoolId(supabase, userId);
+		if (!studentSchoolId) {
+			throw error(404, 'École non trouvée');
+		}
+		schoolId = studentSchoolId;
 	}
 
-	// Build query
+	// Build query - use column hint instead of FK name for better compatibility
 	let query = supabase
 		.from('marketplace_listings')
 		.select(
 			`
       *,
-      creator:profiles!marketplace_listings_creator_id_fkey(
+      creator:creator_id(
         id,
         username,
         avatar_url

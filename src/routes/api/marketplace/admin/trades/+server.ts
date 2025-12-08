@@ -46,18 +46,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const { class_id, student_id, status, date_from, date_to, page, limit } = queryValidation.data;
 
-	// Build base query
+	// Build base query - use column hints instead of FK names for better compatibility
 	let query = supabase
 		.from('marketplace_trades')
 		.select(
 			`
       *,
-      initiator:profiles!marketplace_trades_initiator_id_fkey(
+      initiator:initiator_id(
         id,
         username,
         avatar_url
       ),
-      partner:profiles!marketplace_trades_partner_id_fkey(
+      partner:partner_id(
         id,
         username,
         avatar_url
