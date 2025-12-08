@@ -84,6 +84,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { openVipCardsModal } from '$lib/utils/vip-card-modals';
+	import { openBonusReasonModal } from '$lib/utils/bonus-modals';
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { Star } from 'lucide-svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
@@ -129,12 +130,6 @@
 	// Base gidouilles values (captured at first click, before optimistic updates)
 	// Used to calculate accumulated delta correctly across multiple rapid clicks
 	let baseGidouilles = $state<Record<string, number>>({});
-
-	// Debounce timers for batching bonus updates (separate from gidouilles)
-	let bonusDebounceTimers = $state<Record<string, ReturnType<typeof setTimeout>>>({});
-
-	// Base bonus values (captured at first click, before optimistic updates)
-	let baseBonus = $state<Record<string, number>>({});
 
 	// ============================================================================
 	// CACHE DATA ACCESS (Reactive via $derived)
@@ -454,71 +449,43 @@
 	}
 
 	/**
-	 * Handle add bonus click (optimistic UI + debounced API call)
-	 * Batches rapid clicks into single API call after 500ms of inactivity
+	 * Handle add bonus click - opens modal to select reason
+	 * Each click = 1 modal = +1 bonus (no debouncing)
 	 */
-	async function handleAddBonus(student: StudentData) {
-		const studentId = student.id;
-		const bonus = student.bonus;
+	function handleAddBonus(student: StudentData) {
+		openBonusReasonModal({
+			studentName: student.firstname,
+			onConfirm: async (reason: string) => {
+				const studentId = student.id;
 
-		// Save base value on first click (before any optimistic updates)
-		if (!bonusDebounceTimers[studentId]) {
-			baseBonus[studentId] = bonus;
-		}
+				// 1. Instant optimistic update via cache
+				teacherCache.updateBonusOptimistic(classId, studentId, +1);
 
-		// 1. Instant optimistic update via cache
-		teacherCache.updateBonusOptimistic(classId, studentId, +1);
+				// 2. Immediate API call with reason
+				try {
+					const response = await fetch('/api/teacher/rewards/update-student-bonus', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							studentId,
+							classId,
+							delta: 1,
+							reason
+						})
+					});
 
-		// 2. Clear existing timer for this student
-		if (bonusDebounceTimers[studentId]) {
-			clearTimeout(bonusDebounceTimers[studentId]);
-		}
-
-		// 3. Set new debounced timer (500ms)
-		bonusDebounceTimers[studentId] = setTimeout(async () => {
-			// Get current optimistic value from cache
-			const currentOptimistic =
-				teacherCache.getRewardsSync(classId)?.get(studentId)?.bonus ?? bonus;
-			// Use saved base value (from first click) instead of current value
-			const baseValue = baseBonus[studentId] ?? bonus;
-			const actualChange = currentOptimistic - baseValue;
-
-			if (actualChange === 0) return;
-
-			try {
-				const response = await fetch('/api/teacher/rewards/update-student-bonus', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						studentId,
-						classId,
-						delta: actualChange
-					})
-				});
-
-				if (response.ok) {
-					// Success: Cache already has correct optimistic value
-					// Show toast with accumulated amount
-					const amountStr = actualChange > 0 ? `+${actualChange}` : `${actualChange}`;
-					toaster.success(`${amountStr} bonus (${student.firstname})`);
-				} else {
-					throw new Error('Failed');
+					if (response.ok) {
+						toaster.success(`+1 bonus (${student.firstname})`);
+					} else {
+						throw new Error('Failed');
+					}
+				} catch (_error) {
+					// Rollback optimistic update
+					teacherCache.updateBonusOptimistic(classId, studentId, -1);
+					toaster.error("Erreur lors de l'ajout du bonus");
 				}
-			} catch (_error) {
-				// Rollback optimistic update by reversing delta
-				teacherCache.updateBonusOptimistic(classId, studentId, -actualChange);
-				toaster.error("Erreur lors de l'ajout du bonus");
 			}
-
-			// Clean up timer AND base value
-			const newTimers = { ...bonusDebounceTimers };
-			delete newTimers[studentId];
-			bonusDebounceTimers = newTimers;
-
-			const newBase = { ...baseBonus };
-			delete newBase[studentId];
-			baseBonus = newBase;
-		}, 500);
+		});
 	}
 
 	/**

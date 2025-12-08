@@ -23,14 +23,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { studentId, classId, delta } = validation.data;
+	const { studentId, classId, delta, reason } = validation.data;
 	const supabase = locals.supabase;
 
 	// Call RPC to update student bonus
 	const { data: newValue, error: rpcError } = await supabase.rpc('update_student_bonus', {
 		p_student_id: studentId,
 		p_class_id: classId,
-		p_delta: delta
+		p_delta: delta,
+		p_reason: reason ?? null
 	});
 
 	if (rpcError) {
