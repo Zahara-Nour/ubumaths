@@ -134,10 +134,12 @@
 		submitting = true;
 		try {
 			// Build request body with current filters
+			// Always include resolved: 'false' to only resolve unresolved errors
+			// This also satisfies the Zod validation requiring at least one filter
 			const requestBody = {
 				error_type: typeFilter !== 'all' ? typeFilter : undefined,
 				severity: severityFilter !== 'all' ? severityFilter : undefined,
-				resolved: resolvedFilter !== 'all' ? resolvedFilter : undefined,
+				resolved: resolvedFilter !== 'all' ? resolvedFilter : 'false',
 				search: searchInput || undefined,
 				notes: bulkResolveNotes || undefined
 			};
