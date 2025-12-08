@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { Sword, Lock, Target } from 'lucide-svelte';
+	import {
+		// Sword,
+		Lock
+		// Target
+	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -11,40 +15,49 @@
 	const games: Array<{
 		title: string;
 		description: string;
-		icon: typeof Target | typeof Sword;
+		// icon: typeof Target | typeof Sword;
 		href: string;
 		color: string;
-		emoji: string;
+		// emoji: string;
 		public: boolean;
 		image?: string;
 	}> = [
 		{
 			title: 'Trio',
-			description: "Les trois bons chiffres et c'est gagné !",
-			icon: Target,
+			description: '',
+			// icon: Target,
 			href: '/games/trio',
 			color: 'from-green-500 to-blue-600',
-			emoji: '🎯',
+			// emoji: '🎯',
 			public: true
 		},
 		{
 			title: 'Mathémo',
-			description: 'Montre que tu as du vocabulaire !',
-			icon: Target,
+			description: '',
+			// icon: Target,
 			href: '/games/mathemo',
 			color: 'from-cyan-500 to-blue-600',
-			emoji: '🔤',
+			// emoji: '🔤',
 			public: true
 		},
 		{
-			title: 'Navadra',
-			description: 'Une aventure épique !',
-			icon: Sword,
-			href: '/dashboard/navadra',
-			color: 'from-red-500 to-orange-600',
-			emoji: '⚔️',
-			public: false
+			title: 'Démineur',
+			description: '',
+			// icon: Target,
+			href: '/games/minesweeper',
+			color: 'from-cyan-500 to-blue-600',
+			// emoji: '🔤',
+			public: true
 		}
+		// {
+		// 	title: 'Navadra',
+		// 	description: '',
+		// 	icon: Sword,
+		// 	href: '/dashboard/navadra',
+		// 	color: 'from-red-500 to-orange-600',
+		// 	emoji: '⚔️',
+		// 	public: false
+		// }
 	];
 </script>
 
@@ -63,7 +76,7 @@
 			<div
 				class="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-600 text-4xl shadow-lg"
 			>
-				🎮
+				<!-- 🎮 -->
 			</div>
 		</div>
 		<h1 class="mb-4 text-4xl font-bold text-foreground md:text-5xl">Jeux</h1>
@@ -96,7 +109,7 @@
 								<div
 									class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br {game.color} text-3xl shadow-md"
 								>
-									{game.emoji}
+									<!-- {game.emoji} -->
 								</div>
 							{/if}
 							<div>

@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Home, Gamepad2, Calculator, Terminal, CalculatorIcon, LineChart } from 'lucide-svelte';
+	import {
+		Home,
+		Gamepad2
+		// Calculator,
+		// Terminal,
+		// CalculatorIcon,
+		// LineChart
+	} from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
 	import type { Tables } from '$lib/types/database';
 
@@ -11,21 +18,21 @@
 		profile = null,
 		items = [
 			{ label: 'Accueil', href: '/', icon: Home },
-			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
-			{ label: 'Automaths', href: '/automaths', icon: Calculator },
-			{ label: 'CAS', href: '/cas', icon: Terminal },
-			{
-				label: 'Calculatrice',
-				href: '/calculatrice',
-				icon: CalculatorIcon,
-				roles: ['student', 'teacher']
-			},
-			{
-				label: 'Grapheur',
-				href: '/grapheur',
-				icon: LineChart,
-				roles: ['student', 'teacher']
-			}
+			{ label: 'Jeux', href: '/games', icon: Gamepad2 }
+			// { label: 'Automaths', href: '/automaths', icon: Calculator },
+			// { label: 'CAS', href: '/cas', icon: Terminal },
+			// {
+			// 	label: 'Calculatrice',
+			// 	href: '/calculatrice',
+			// 	icon: CalculatorIcon,
+			// 	roles: ['student', 'teacher']
+			// },
+			// {
+			// 	label: 'Grapheur',
+			// 	href: '/grapheur',
+			// 	icon: LineChart,
+			// 	roles: ['student', 'teacher']
+			// }
 		]
 	}: {
 		profile?: Tables<'profiles'> | null;
