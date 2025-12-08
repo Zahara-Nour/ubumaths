@@ -47,12 +47,16 @@
 	async function handleAction() {
 		if (!currentNotification?.action_url) return;
 
+		// Capture values before async operation (derived value may change after await)
+		const notificationId = currentNotification.id;
+		const actionUrl = currentNotification.action_url;
+
 		// Mark as read
-		await notificationStore.markAsRead(currentNotification.id);
+		await notificationStore.markAsRead(notificationId);
 
 		// Navigate to action URL (using then to handle promise)
 		// Type assertion: action_url comes from database, assumed to be valid route
-		goto(currentNotification.action_url as Parameters<typeof goto>[0]).then(() => {});
+		goto(actionUrl as Parameters<typeof goto>[0]).then(() => {});
 	}
 
 	// Get priority colors
