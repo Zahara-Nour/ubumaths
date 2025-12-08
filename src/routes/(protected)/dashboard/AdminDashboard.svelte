@@ -463,7 +463,7 @@
 							<div class="space-y-2">
 								<h3 class="text-sm font-medium text-gray-700">Tâches Récentes</h3>
 								<div class="space-y-2">
-									{#each stats.jobs.recentJobs as job (job.name)}
+									{#each stats.jobs.recentJobs as job, i (`${job.name}-${i}`)}
 										<div
 											class="flex items-center justify-between rounded-lg border border-gray-200 p-3"
 										>
