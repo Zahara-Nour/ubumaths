@@ -5,17 +5,25 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Copy, Check } from 'lucide-svelte';
+	import { Copy, Check, Loader2, Pencil, PowerOff, Power } from 'lucide-svelte';
+	import { Switch } from '$lib/components/ui/switch';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
 
 	let { data }: { data: PageData } = $props();
 
 	// State
 	let selectedSchool = $state('');
+	let showActiveOnly = $state(true);
 	let showModal = $state(false);
 	let editingClass = $state<(typeof data.classes)[number] | null>(null);
 	let copiedCode = $state<string | null>(null);
 	let autoGenerateCode = $state(true);
+	let deactivatingClassId = $state<string | null>(null);
+	let deactivateDialogOpen = $state(false);
+	let classToDeactivate = $state<(typeof data.classes)[number] | null>(null);
+	let activatingClassId = $state<string | null>(null);
 
 	let formData = $state({
 		name: '',
@@ -26,9 +34,11 @@
 		is_active: true
 	});
 
-	// Derived state - filter classes by selected school
+	// Derived state - filter classes by selected school and active status
 	let filteredClasses = $derived(
-		selectedSchool ? data.classes.filter((c) => c.school_id === selectedSchool) : data.classes
+		data.classes
+			.filter((c) => !selectedSchool || c.school_id === selectedSchool)
+			.filter((c) => !showActiveOnly || c.is_active)
 	);
 
 	// Get teacher display name
@@ -49,6 +59,25 @@
 			? data.teachers.filter((t) => t.school_id === formData.school_id)
 			: data.teachers
 	);
+
+	// Items for MySelect components
+	let schoolFilterItems = $derived([
+		{ value: '', label: 'Toutes les écoles' },
+		...data.schools.map((s) => ({ value: s.id, label: s.name }))
+	]);
+
+	let schoolItems = $derived([
+		{ value: '', label: 'Aucune école' },
+		...data.schools.map((s) => ({ value: s.id, label: s.name }))
+	]);
+
+	let teacherItems = $derived([
+		{ value: '', label: 'Sélectionner un enseignant' },
+		...availableTeachers.map((t) => ({
+			value: t.id,
+			label: t.firstname && t.lastname ? `${t.firstname} ${t.lastname}` : t.email || ''
+		}))
+	]);
 
 	// Open create modal
 	function openCreateModal() {
@@ -109,6 +138,24 @@
 			formData.join_code = '';
 		}
 	}
+
+	// Open deactivate confirmation dialog
+	function openDeactivateDialog(classItem: (typeof data.classes)[number]) {
+		classToDeactivate = classItem;
+		deactivateDialogOpen = true;
+	}
+
+	// Handle deactivate confirmation - submit the hidden form
+	function handleDeactivateConfirm() {
+		if (!classToDeactivate) return;
+		const form = document.getElementById(
+			`deactivate-form-${classToDeactivate.id}`
+		) as HTMLFormElement;
+		if (form) {
+			form.requestSubmit();
+		}
+		deactivateDialogOpen = false;
+	}
 </script>
 
 <div class="space-y-6">
@@ -121,21 +168,29 @@
 		<Button onclick={openCreateModal}>+ Ajouter une Classe</Button>
 	</div>
 
-	<!-- School Filter -->
+	<!-- Filters -->
 	<div class="rounded-lg border border-border bg-card p-4 shadow">
-		<label for="school-filter" class="mb-2 block text-sm font-medium text-foreground">
-			Filtrer par école
-		</label>
-		<select
-			id="school-filter"
-			bind:value={selectedSchool}
-			class="w-full max-w-md rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
-		>
-			<option value="">Toutes les écoles</option>
-			{#each data.schools as school (school.id)}
-				<option value={school.id}>{school.name}</option>
-			{/each}
-		</select>
+		<div class="flex flex-wrap items-end gap-6">
+			<!-- School Filter -->
+			<div>
+				<label class="mb-2 block text-sm font-medium text-foreground"> Filtrer par école </label>
+				<MySelect
+					type="single"
+					bind:value={selectedSchool}
+					items={schoolFilterItems}
+					placeholder="Toutes les écoles"
+					triggerClass="h-9 w-64 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+				/>
+			</div>
+
+			<!-- Active Only Toggle -->
+			<div class="flex items-center gap-2">
+				<Switch bind:checked={showActiveOnly} id="active-filter" />
+				<label for="active-filter" class="cursor-pointer text-sm font-medium text-foreground">
+					Classes actives uniquement
+				</label>
+			</div>
+		</div>
 	</div>
 
 	<!-- Classes Table -->
@@ -225,17 +280,27 @@
 									</Badge>
 								{/if}
 							</td>
-							<td class="space-x-2 px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
-								<Button variant="ghost" size="sm" onclick={() => openEditModal(classItem)}>
-									Modifier
+							<td class="space-x-1 px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
+								<Button
+									variant="ghost"
+									size="icon"
+									onclick={() => openEditModal(classItem)}
+									title="Modifier"
+								>
+									<Pencil class="h-4 w-4" />
 								</Button>
 								{#if classItem.is_active}
+									<!-- Hidden form for deactivation -->
 									<form
+										id={`deactivate-form-${classItem.id}`}
 										method="POST"
 										action="?/deactivate"
 										use:enhance={() => {
+											deactivatingClassId = classItem.id;
 											return async ({ result, update }) => {
 												await update();
+												deactivatingClassId = null;
+												classToDeactivate = null;
 												if (result.type === 'success') {
 													toaster.success('Classe désactivée avec succès');
 												} else if (result.type === 'failure') {
@@ -246,25 +311,60 @@
 												}
 											};
 										}}
+										class="hidden"
+									>
+										<input type="hidden" name="id" value={classItem.id} />
+									</form>
+									<Button
+										variant="ghost"
+										size="icon"
+										class="text-destructive hover:text-destructive"
+										disabled={deactivatingClassId === classItem.id}
+										onclick={() => openDeactivateDialog(classItem)}
+										title="Désactiver"
+									>
+										{#if deactivatingClassId === classItem.id}
+											<Loader2 class="h-4 w-4 animate-spin" />
+										{:else}
+											<PowerOff class="h-4 w-4" />
+										{/if}
+									</Button>
+								{:else}
+									<!-- Form for activation -->
+									<form
+										method="POST"
+										action="?/activate"
+										use:enhance={() => {
+											activatingClassId = classItem.id;
+											return async ({ result, update }) => {
+												await update();
+												activatingClassId = null;
+												if (result.type === 'success') {
+													toaster.success('Classe activée avec succès');
+												} else if (result.type === 'failure') {
+													const message =
+														(result.data as unknown as { message?: string })?.message ||
+														"Erreur lors de l'activation";
+													toaster.error(message);
+												}
+											};
+										}}
 										class="inline"
 									>
 										<input type="hidden" name="id" value={classItem.id} />
 										<Button
 											type="submit"
 											variant="ghost"
-											size="sm"
-											class="text-destructive hover:text-destructive"
-											onclick={(e) => {
-												if (
-													!confirm(
-														'Êtes-vous sûr de vouloir désactiver cette classe ? Les étudiants ne pourront plus y accéder.'
-													)
-												) {
-													e.preventDefault();
-												}
-											}}
+											size="icon"
+											class="text-green-600 hover:text-green-600"
+											disabled={activatingClassId === classItem.id}
+											title="Activer"
 										>
-											Désactiver
+											{#if activatingClassId === classItem.id}
+												<Loader2 class="h-4 w-4 animate-spin" />
+											{:else}
+												<Power class="h-4 w-4" />
+											{/if}
 										</Button>
 									</form>
 								{/if}
@@ -375,46 +475,28 @@
 
 							<!-- School -->
 							<div>
-								<label for="school_id" class="mb-1 block text-sm font-medium text-foreground">
-									École
-								</label>
-								<select
-									id="school_id"
-									name="school_id"
+								<label class="mb-1 block text-sm font-medium text-foreground"> École </label>
+								<input type="hidden" name="school_id" value={formData.school_id} />
+								<MySelect
+									type="single"
 									bind:value={formData.school_id}
-									class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
-								>
-									<option value="">Aucune école</option>
-									{#each data.schools as school (school.id)}
-										<option value={school.id}>{school.name}</option>
-									{/each}
-								</select>
+									items={schoolItems}
+									placeholder="Aucune école"
+									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+								/>
 							</div>
 
 							<!-- Teacher -->
 							<div>
-								<label for="teacher_id" class="mb-1 block text-sm font-medium text-foreground">
-									Enseignant *
-								</label>
-								<select
-									id="teacher_id"
-									name="teacher_id"
+								<label class="mb-1 block text-sm font-medium text-foreground"> Enseignant * </label>
+								<input type="hidden" name="teacher_id" value={formData.teacher_id} />
+								<MySelect
+									type="single"
 									bind:value={formData.teacher_id}
-									required
-									class="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
-								>
-									<option value="">Sélectionner un enseignant</option>
-									{#each availableTeachers as teacher (teacher.id)}
-										<option value={teacher.id}>
-											{#if teacher.firstname && teacher.lastname}
-												{teacher.firstname}
-												{teacher.lastname}
-											{:else}
-												{teacher.email}
-											{/if}
-										</option>
-									{/each}
-								</select>
+									items={teacherItems}
+									placeholder="Sélectionner un enseignant"
+									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+								/>
 								{#if formData.school_id && availableTeachers.length === 0}
 									<p class="mt-1 text-xs text-muted-foreground">
 										Aucun enseignant disponible pour cette école. Veuillez d'abord assigner des
@@ -497,3 +579,13 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Deactivate Confirmation Dialog -->
+<ConfirmDialog
+	bind:open={deactivateDialogOpen}
+	title="Désactiver cette classe ?"
+	description={`Vous allez désactiver la classe "${classToDeactivate?.name || ''}". Les étudiants ne pourront plus y accéder.`}
+	confirmLabel="Désactiver"
+	variant="destructive"
+	onConfirm={handleDeactivateConfirm}
+/>

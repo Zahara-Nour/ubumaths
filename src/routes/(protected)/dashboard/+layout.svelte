@@ -442,7 +442,7 @@
 		<!-- This is where child routes are rendered -->
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
-		<main class="flex-1 overflow-y-auto bg-background">
+		<main class="dashboard-content flex-1 overflow-y-auto bg-background">
 			<!-- Notification Banner (sticky at top) -->
 			<NotificationBanner />
 

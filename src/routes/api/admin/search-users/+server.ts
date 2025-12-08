@@ -9,11 +9,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// ✅ SECURITY: Validate query parameters with Zod
 	const validation = searchUsersSchema.safeParse({
 		query: url.searchParams.get('q') || '',
-		role: url.searchParams.get('role'),
-		limit: url.searchParams.get('limit')
+		role: url.searchParams.get('role') || undefined,
+		limit: url.searchParams.get('limit') || undefined
 	});
 
 	if (!validation.success) {
+		console.error('Search validation error:', validation.error.issues);
 		throw error(400, validation.error.issues[0].message);
 	}
 
@@ -24,27 +25,38 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return json({ users: [] });
 	}
 
-	// Case-insensitive partial match across email, firstname, lastname (OR logic)
-	const { data: users, error: searchError } = await locals.supabase
-		.from('profiles')
-		.select('*, schools(name), class_members(class_id)')
-		.or(
-			`email.ilike.%${searchTerm}%,firstname.ilike.%${searchTerm}%,lastname.ilike.%${searchTerm}%`
-		)
-		.order('lastname', { ascending: true })
-		.order('firstname', { ascending: true })
-		.limit(limit);
+	// Use RPC function for accent-insensitive search (e.g., "zoe" finds "Zoé")
+	const { data: users, error: searchError } = await locals.supabase.rpc('search_users_unaccent', {
+		search_term: searchTerm,
+		result_limit: limit
+	});
 
 	if (searchError) {
 		console.error('Search error:', searchError);
 		return json({ error: searchError.message, users: [] });
 	}
 
-	// Transform class_members array to class_ids array for easier use
-	const usersWithClasses = users?.map((user) => ({
-		...user,
-		class_ids: user.class_members?.map((cm: { class_id: string }) => cm.class_id) || []
-	}));
+	// Transform the result to match expected format
+	// RPC returns school_name directly, map it to schools object for consistency
+	const usersWithSchools = users?.map(
+		(user: {
+			id: string;
+			email: string;
+			firstname: string;
+			lastname: string;
+			role: string;
+			school_id: string;
+			grade: string;
+			is_test: boolean;
+			created_at: string;
+			updated_at: string;
+			school_name: string | null;
+			class_ids: string[];
+		}) => ({
+			...user,
+			schools: user.school_name ? { name: user.school_name } : null
+		})
+	);
 
-	return json({ users: usersWithClasses || [] });
+	return json({ users: usersWithSchools || [] });
 };

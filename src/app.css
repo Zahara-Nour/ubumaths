@@ -237,6 +237,48 @@ main math-field {
 	line-height: calc(1.5rem * var(--font-scale)) !important;
 }
 
+/* Apply scaling to table and other elements in dashboard content only */
+.dashboard-content td,
+.dashboard-content th {
+	font-size: calc(0.875rem * var(--font-scale)) !important;
+	line-height: calc(1.25rem * var(--font-scale)) !important;
+}
+
+.dashboard-content label {
+	font-size: calc(0.875rem * var(--font-scale)) !important;
+	line-height: calc(1.25rem * var(--font-scale)) !important;
+}
+
+/* Scale text-sm elements in dashboard */
+.dashboard-content .text-sm {
+	font-size: calc(0.875rem * var(--font-scale)) !important;
+	line-height: calc(1.25rem * var(--font-scale)) !important;
+}
+
+/* Scale text-xs elements in dashboard */
+.dashboard-content .text-xs {
+	font-size: calc(0.75rem * var(--font-scale)) !important;
+	line-height: calc(1rem * var(--font-scale)) !important;
+}
+
+/* Scale text-base elements in dashboard */
+.dashboard-content .text-base {
+	font-size: calc(1rem * var(--font-scale)) !important;
+	line-height: calc(1.5rem * var(--font-scale)) !important;
+}
+
+/* Scale text-lg elements in dashboard */
+.dashboard-content .text-lg {
+	font-size: calc(1.125rem * var(--font-scale)) !important;
+	line-height: calc(1.75rem * var(--font-scale)) !important;
+}
+
+/* Scale text-xl elements in dashboard */
+.dashboard-content .text-xl {
+	font-size: calc(1.25rem * var(--font-scale)) !important;
+	line-height: calc(1.75rem * var(--font-scale)) !important;
+}
+
 /*
  * Toast Notification Spacing Fix
  * ===============================

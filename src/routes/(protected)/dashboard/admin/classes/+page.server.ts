@@ -247,5 +247,32 @@ export const actions: Actions = {
 		}
 
 		return { success: true };
+	},
+
+	activate: async ({ request, locals: { safeGetSession, supabase } }) => {
+		const { user } = await safeGetSession();
+
+		if (!user) {
+			return fail(401, { message: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const id = formData.get('id') as string;
+
+		if (!id) {
+			return fail(400, { message: 'Class ID is required' });
+		}
+
+		const { error: updateError } = await supabase
+			.from('classes')
+			.update({ is_active: true })
+			.eq('id', id);
+
+		if (updateError) {
+			console.error('Error activating class:', updateError);
+			return fail(400, { message: updateError.message });
+		}
+
+		return { success: true };
 	}
 };
