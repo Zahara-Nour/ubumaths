@@ -5,10 +5,25 @@
   Provides clear feedback about their account status and a logout option.
 -->
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Clock } from 'lucide-svelte';
+
+	let isLoggingOut = $state(false);
+
+	async function handleLogout() {
+		isLoggingOut = true;
+		try {
+			await fetch('/auth/logout', { method: 'POST' });
+			await invalidateAll();
+			await goto('/');
+		} catch (error) {
+			console.error('Logout failed:', error);
+			// Fallback: reload the page to force logout
+			window.location.href = '/';
+		}
+	}
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-background px-4">
@@ -32,9 +47,9 @@
 				Vous recevrez une notification lorsque votre compte sera approuvé.
 			</p>
 
-			<form method="POST" action="/auth/logout" use:enhance>
-				<Button type="submit" variant="outline" class="w-full">Se déconnecter</Button>
-			</form>
+			<Button onclick={handleLogout} variant="outline" class="w-full" disabled={isLoggingOut}>
+				{isLoggingOut ? 'Déconnexion...' : 'Se déconnecter'}
+			</Button>
 		</Card.Content>
 	</Card.Root>
 </div>
