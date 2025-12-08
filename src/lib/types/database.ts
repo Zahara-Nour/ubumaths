@@ -6103,8 +6103,12 @@ export type Database = {
 					is_test: boolean;
 					lastname: string | null;
 					python_settings: Json | null;
+					rejection_reason: string | null;
 					role: Database['public']['Enums']['user_role'];
 					school_id: string | null;
+					status: Database['public']['Enums']['user_status'];
+					status_changed_at: string | null;
+					status_changed_by: string | null;
 					updated_at: string;
 					vip_cards: Json;
 					vip_cards_history: Json;
@@ -6124,8 +6128,12 @@ export type Database = {
 					is_test?: boolean;
 					lastname?: string | null;
 					python_settings?: Json | null;
+					rejection_reason?: string | null;
 					role?: Database['public']['Enums']['user_role'];
 					school_id?: string | null;
+					status?: Database['public']['Enums']['user_status'];
+					status_changed_at?: string | null;
+					status_changed_by?: string | null;
 					updated_at?: string;
 					vip_cards?: Json;
 					vip_cards_history?: Json;
@@ -6145,8 +6153,12 @@ export type Database = {
 					is_test?: boolean;
 					lastname?: string | null;
 					python_settings?: Json | null;
+					rejection_reason?: string | null;
 					role?: Database['public']['Enums']['user_role'];
 					school_id?: string | null;
+					status?: Database['public']['Enums']['user_status'];
+					status_changed_at?: string | null;
+					status_changed_by?: string | null;
 					updated_at?: string;
 					vip_cards?: Json;
 					vip_cards_history?: Json;
@@ -6158,6 +6170,34 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: 'schools';
 						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'profiles_status_changed_by_fkey';
+						columns: ['status_changed_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'profiles_status_changed_by_fkey';
+						columns: ['status_changed_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'profiles_status_changed_by_fkey';
+						columns: ['status_changed_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'profiles_status_changed_by_fkey';
+						columns: ['status_changed_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
 					}
 				];
 			};
@@ -11858,6 +11898,10 @@ export type Database = {
 					subject: string;
 				}[];
 			};
+			get_user_status: {
+				Args: { user_id: string };
+				Returns: Database['public']['Enums']['user_status'];
+			};
 			grant_specific_vip_card: {
 				Args: { p_card_id: string; p_count?: number; p_student_id: string };
 				Returns: Json;
@@ -12116,6 +12160,23 @@ export type Database = {
 					subject: string;
 				}[];
 			};
+			search_users_unaccent: {
+				Args: { result_limit?: number; search_term: string };
+				Returns: {
+					class_ids: string[];
+					created_at: string;
+					email: string;
+					firstname: string;
+					grade: string;
+					id: string;
+					is_test: boolean;
+					lastname: string;
+					role: Database['public']['Enums']['user_role'];
+					school_id: string;
+					school_name: string;
+					updated_at: string;
+				}[];
+			};
 			send_private_message: {
 				Args: {
 					p_class_id?: string;
@@ -12180,6 +12241,7 @@ export type Database = {
 				Args: { p_student_id: string };
 				Returns: string;
 			};
+			unaccent: { Args: { '': string }; Returns: string };
 			unlock_cards: { Args: { p_entity_id: string }; Returns: number };
 			unlock_items: {
 				Args: { p_entity_id: string; p_entity_type: string };
@@ -12314,6 +12376,7 @@ export type Database = {
 				| 'removed';
 			reward_type: 'gidouilles' | 'bonus' | 'vip_card' | 'achievement' | 'item';
 			user_role: 'student' | 'teacher' | 'admin';
+			user_status: 'pending' | 'approved' | 'rejected';
 		};
 		CompositeTypes: {
 			[_ in never]: never;
@@ -12453,7 +12516,8 @@ export const Constants = {
 				'removed'
 			],
 			reward_type: ['gidouilles', 'bonus', 'vip_card', 'achievement', 'item'],
-			user_role: ['student', 'teacher', 'admin']
+			user_role: ['student', 'teacher', 'admin'],
+			user_status: ['pending', 'approved', 'rejected']
 		}
 	}
 } as const;

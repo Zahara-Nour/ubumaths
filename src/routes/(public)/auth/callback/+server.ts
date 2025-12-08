@@ -20,6 +20,7 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createLogger } from '$lib/utils/logger';
+import { notifyAdminsOfPendingUser } from '$lib/server/notifications';
 
 const logger = createLogger('auth/callback');
 
@@ -96,27 +97,54 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 				full_name: user.user_metadata?.full_name || null,
 				avatar_url: user.user_metadata?.picture || user.user_metadata?.avatar_url || null,
 				role: 'student', // Default role for new users
-				school_id: null
+				school_id: null,
+				status: 'pending' // New users must be approved by admin
 			});
 
 			if (insertError) {
 				logger.error('Failed to create profile:', insertError);
 				// Don't fail the auth flow, just log the error
 				// The profile creation trigger might handle this
+			} else {
+				// Notify admins of the new pending user
+				const fullName = user.user_metadata?.full_name || null;
+				await notifyAdminsOfPendingUser(supabase, user.email!, fullName);
+				logger.info('New user pending approval:', user.email);
 			}
-		} else {
-			// Always sync avatar from Google on each login
-			// Google OAuth stores avatar in 'picture' field (standard), check 'avatar_url' as fallback
-			const googleAvatar = user.user_metadata?.picture || user.user_metadata?.avatar_url;
-			if (googleAvatar) {
-				const { error: updateError } = await supabase
-					.from('profiles')
-					.update({ avatar_url: googleAvatar })
-					.eq('id', user.id);
 
-				if (updateError) {
-					logger.error('Failed to update avatar:', updateError);
-				}
+			// Redirect new users to pending approval page
+			throw redirect(303, '/auth/pending-approval');
+		}
+
+		// Handle existing users based on their status
+		if (existingProfile.status === 'pending') {
+			logger.info('User pending approval, redirecting:', user.email);
+			throw redirect(303, '/auth/pending-approval');
+		}
+
+		if (existingProfile.status === 'rejected') {
+			logger.warn('Rejected user attempted login:', user.email);
+			// Sign out the rejected user
+			await supabase.auth.signOut();
+			// Build error message with rejection reason if available
+			const errorMessage = existingProfile.rejection_reason
+				? `Votre accès a été refusé: ${existingProfile.rejection_reason}`
+				: "Votre accès a été refusé. Contactez un administrateur pour plus d'informations.";
+			throw redirect(303, `/login?error=${encodeURIComponent(errorMessage)}`);
+		}
+
+		// User is approved - sync avatar and proceed
+		// Always sync avatar from Google on each login
+		// Google OAuth stores avatar in 'picture' field (standard), check 'avatar_url' as fallback
+		const googleAvatar = user.user_metadata?.picture || user.user_metadata?.avatar_url;
+		if (googleAvatar) {
+			const { error: updateError } = await supabase
+				.from('profiles')
+				.update({ avatar_url: googleAvatar })
+				.eq('id', user.id);
+
+			if (updateError) {
+				logger.error('Failed to update avatar:', updateError);
 			}
 		}
 

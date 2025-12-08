@@ -47,7 +47,7 @@
  */
 
 import type { LayoutServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/auth';
 import { createLogger } from '$lib/utils/logger';
 
@@ -75,6 +75,19 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			500,
 			'Your account is not fully set up. Please contact an administrator to complete your profile setup.'
 		);
+	}
+
+	// Check user approval status
+	if (profile.status === 'pending') {
+		logger.info('User pending approval, redirecting:', user!.email);
+		throw redirect(303, '/auth/pending-approval');
+	}
+
+	if (profile.status === 'rejected') {
+		logger.warn('Rejected user attempting to access protected route:', user!.email);
+		// Sign out the rejected user
+		await locals.supabase.auth.signOut();
+		throw redirect(303, '/login?error=' + encodeURIComponent('Accès refusé.'));
 	}
 
 	// Return user and profile to child routes
