@@ -47,7 +47,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
-	import { History, AlertCircle } from 'lucide-svelte';
+	import { History, AlertCircle, Plus } from 'lucide-svelte';
 	import { openRemoveWarningsModal } from '$lib/utils/vip-card-modals';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
@@ -536,7 +536,10 @@
 										<DropdownMenu.Root>
 											<DropdownMenu.Trigger>
 												{#snippet child({ props })}
-													<Button {...props} variant="outline" size="sm">Ajouter</Button>
+													<Button {...props} variant="outline" size="icon" class="h-8 w-8">
+														<Plus class="h-4 w-4" />
+														<span class="sr-only">Ajouter un avertissement</span>
+													</Button>
 												{/snippet}
 											</DropdownMenu.Trigger>
 											<DropdownMenu.Content>
