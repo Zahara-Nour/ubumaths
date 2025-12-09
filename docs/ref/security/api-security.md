@@ -170,81 +170,111 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 ### Current Implementation
 
-Rate limiting is implemented for the AI tutor:
+Two rate limiters exist:
 
-```typescript
-// src/lib/server/tutor/tutor-rate-limiter.ts
-import { env } from '$lib/server/env';
-
-const WINDOW_MS = env.RATE_LIMIT_WINDOW_MS;
-const MAX_REQUESTS = env.RATE_LIMIT_MAX_REQUESTS;
-
-const requestCounts = new Map<string, { count: number; resetTime: number }>();
-
-export function checkRateLimit(userId: string): boolean {
-	const now = Date.now();
-	const record = requestCounts.get(userId);
-
-	if (!record || now > record.resetTime) {
-		requestCounts.set(userId, { count: 1, resetTime: now + WINDOW_MS });
-		return true;
-	}
-
-	if (record.count >= MAX_REQUESTS) {
-		return false;
-	}
-
-	record.count++;
-	return true;
-}
-```
-
-### Recommended Pattern
+1. **General middleware** (`src/lib/server/middleware/rateLimit.ts`) - Reusable
+2. **AI Tutor specific** (`src/lib/server/tutor/tutor-rate-limiter.ts`)
 
 ```typescript
 // src/lib/server/middleware/rateLimit.ts
-import { error } from '@sveltejs/kit';
+import { rateLimit } from '$lib/server/middleware/rateLimit';
 
-interface RateLimitRecord {
-	count: number;
-	resetTime: number;
-}
-
-const requestCounts = new Map<string, RateLimitRecord>();
-
-export function rateLimit(key: string, maxRequests: number = 100, windowMs: number = 60000): void {
-	const now = Date.now();
-	const record = requestCounts.get(key);
-
-	if (!record || now > record.resetTime) {
-		requestCounts.set(key, { count: 1, resetTime: now + windowMs });
-		return;
-	}
-
-	if (record.count >= maxRequests) {
-		throw error(429, 'Trop de requetes. Reessayez plus tard.');
-	}
-
-	record.count++;
-}
-
-// Usage
-export const POST: RequestHandler = async ({ locals, getClientAddress }) => {
-	const { user } = await requireAuth(locals);
-	rateLimit(`message:${user.id}`, 30, 60000); // 30 messages/minute
-	// ...
-};
+// Usage - throws 429 if exceeded
+rateLimit(`error-log:${clientIp}`, 20, 60000); // 20/min by IP
+rateLimit(`messages:${user.id}`, 30, 60000); // 30/min by user
 ```
 
-### Endpoints Needing Rate Limiting
+### Currently Protected Endpoints
 
-| Endpoint                   | Recommended Limit | Reason                 |
-| -------------------------- | ----------------- | ---------------------- |
-| `/api/messages/send`       | 30/min            | Spam prevention        |
-| `/api/riddles/[id]/submit` | 10/min            | Brute force prevention |
-| `/api/errors/log`          | 20/min/IP         | DoS prevention         |
-| `/api/tutor/*`             | 20/min            | AI cost control        |
-| `/api/exercises/submit`    | 60/min            | Fair usage             |
+| Endpoint          | Limit     | Key        | Status |
+| ----------------- | --------- | ---------- | ------ |
+| `/api/errors/log` | 20/min    | IP address | ✅     |
+| `/api/tutor/*`    | env-based | User ID    | ✅     |
+
+### Endpoints Needing Rate Limiting (Future)
+
+| Endpoint                   | Recommended Limit | Reason                 | Priority |
+| -------------------------- | ----------------- | ---------------------- | -------- |
+| `/api/messages/send`       | 30/min            | Spam prevention        | Medium   |
+| `/api/riddles/[id]/submit` | 20/min            | Brute force prevention | High     |
+| `/api/exercises/submit`    | 60/min            | Fair usage             | Low      |
+| `/api/auth/*`              | 5/min             | Login brute force      | High     |
+
+---
+
+## Rate Limiting Strategy (Future Implementation)
+
+### Architecture Decision
+
+**Current: In-Memory (acceptable for educational app)**
+
+```
+┌─────────────────┐     ┌─────────────────┐
+│   Instance A    │     │   Instance B    │
+│  Map<key,count> │     │  Map<key,count> │
+│   (isolated)    │     │   (isolated)    │
+└─────────────────┘     └─────────────────┘
+```
+
+- **Pro**: No cost, simple, sufficient for moderate traffic
+- **Con**: Each Vercel instance has separate counters (leakage between instances)
+- **Impact**: User could get `limit × number_of_instances` requests in worst case
+
+**Future: Redis (if needed)**
+
+```
+┌─────────────────┐     ┌─────────────────┐
+│   Instance A    │     │   Instance B    │
+└────────┬────────┘     └────────┬────────┘
+         └───────────┬───────────┘
+              ┌──────▼──────┐
+              │    Redis    │
+              │  (shared)   │
+              └─────────────┘
+```
+
+- **Pro**: Accurate global counting
+- **Con**: Cost (~$10-25/month for Upstash/Redis Cloud)
+- **When**: If abuse becomes a real problem
+
+### Implementation Recommendations
+
+1. **Use conservative limits** to avoid false positives:
+
+   ```typescript
+   // Generous limits for educational context
+   rateLimit(`riddle:${user.id}`, 20, 60000); // 20/min not 10
+   ```
+
+2. **Consider school NAT**: Multiple students behind same IP
+
+   ```typescript
+   // Prefer user ID over IP when authenticated
+   const key = user?.id ? `submit:${user.id}` : `submit:${clientIp}`;
+   ```
+
+3. **Add warning logs** before blocking:
+
+   ```typescript
+   if (record.count === maxRequests - 5) {
+   	console.warn(`[RATE_LIMIT] ${key} approaching limit`);
+   }
+   ```
+
+4. **Priority order** for implementation:
+   - `/api/riddles/[id]/submit` - Anti-cheat
+   - `/api/auth/*` - Security critical
+   - `/api/messages/send` - Spam prevention
+   - Others as needed
+
+### Decision Matrix
+
+| Scenario                  | Action              |
+| ------------------------- | ------------------- |
+| Educational app, low risk | In-memory (current) |
+| Abuse detected            | Add more endpoints  |
+| Persistent abuse          | Consider Redis      |
+| High-value transactions   | Redis + stricter    |
 
 ---
 
