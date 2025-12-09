@@ -145,15 +145,46 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 
 ## Planning & Execution Policy
 
+### TDD Collaboratif (OBLIGATOIRE)
+
+**Avant d'ecrire du code**, suivre le workflow TDD :
+
+| Etape | Action                                 | Qui         |
+| ----- | -------------------------------------- | ----------- |
+| 1     | Proposer les comportements en francais | Claude      |
+| 2     | Valider / corriger / completer         | Utilisateur |
+| 3     | Ecrire les tests (doivent echouer)     | Claude      |
+| 4     | Implementer le code                    | Claude      |
+| 5     | Verifier que les tests passent         | Claude      |
+
+**Format de proposition** :
+
+```markdown
+## Fonctionnalite : [Nom]
+
+### Comportements proposes :
+
+1. [Cas nominal]
+2. [Cas limite]
+3. [Cas erreur]
+
+### Questions :
+
+- [Clarification necessaire ?]
+```
+
+**Details** : [docs/ref/tests/tdd.md](docs/ref/tests/tdd.md)
+
 ### Chaque plan doit inclure
 
-1. **Agents ET modèles specifiés** pour chaque tâche. ne pas hésiter à utiliser Opus
-2. **Code Review** (`code-reviewer`) a la fin de chaque phase
-3. **Commit** apres validation du code reviewer (direct ou agent selon complexite)
-4. **Security Audit** si auth/API sensible
-5. **Performance Audit** si requetes DB lourdes
-6. **Quality Checks** (`pnpm lint`, `pnpm check`) a la FIN du plan UNIQUEMENT
-7. **Documentation de progression** tout au long de l'implementation pour crash recovery
+1. **Phase 0 : Specification TDD** - Proposer comportements, attendre validation utilisateur
+2. **Agents ET modèles specifiés** pour chaque tâche. ne pas hésiter à utiliser Opus
+3. **Code Review** (`code-reviewer`) a la fin de chaque phase
+4. **Commit** apres validation du code reviewer (direct ou agent selon complexite)
+5. **Security Audit** si auth/API sensible
+6. **Performance Audit** si requetes DB lourdes
+7. **Quality Checks** (`pnpm lint`, `pnpm check`) a la FIN du plan UNIQUEMENT
+8. **Documentation de progression** tout au long de l'implementation pour crash recovery
 
 **IMPORTANT** : Les agents ne doivent PAS executer de commandes build/lint/format/check. Ces verifications sont faites une seule fois a la fin du plan.
 
@@ -262,6 +293,7 @@ Note: `pnpm lint` et `pnpm check` sont executes a la fin du plan UNIQUEMENT.
 | [database.md](docs/claude/database.md)                   | Supabase, migrations              |
 | [quality-standards.md](docs/claude/quality-standards.md) | Tests, linting, Zod               |
 | [realtime.md](docs/claude/realtime.md)                   | Supabase Realtime, chat, presence |
+| [docs/ref/tests/tdd.md](docs/ref/tests/tdd.md)           | TDD collaboratif (OBLIGATOIRE)    |
 
 ### For Users
 

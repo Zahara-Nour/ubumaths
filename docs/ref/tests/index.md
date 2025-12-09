@@ -105,6 +105,7 @@ e2e/
 
 ## Related Documentation
 
+- [TDD](./tdd.md) - **TDD collaboratif (OBLIGATOIRE pour tout nouveau code)**
 - [Configuration](./configuration.md) - Detailed Vitest/Playwright configuration
 - [Mocking](./mocking.md) - Mock strategies and Supabase mocking
 - [Patterns](./patterns.md) - Testing patterns and best practices
