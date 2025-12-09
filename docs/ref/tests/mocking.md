@@ -17,7 +17,7 @@ const { data, error } = await supabase.from('profiles').select('*').eq('id', use
 
 ### Core Mock Implementation
 
-**Location**: `tests/helpers/supabase-helpers.ts`
+**Location**: `$tests/helpers` (barrel export from `tests/helpers/supabase/`)
 
 ```typescript
 import { vi } from 'vitest';
@@ -68,7 +68,7 @@ export function createMockSupabase() {
 #### Success Response
 
 ```typescript
-import { createMockSupabase, mockSuccess } from 'tests/helpers/supabase-helpers';
+import { createMockSupabase, mockSuccess } from '$tests/helpers';
 
 const supabase = createMockSupabase();
 
@@ -85,7 +85,7 @@ mockSuccess(supabase, { id: '123' }, 'maybeSingle');
 #### Error Response
 
 ```typescript
-import { createMockSupabase, mockError } from 'tests/helpers/supabase-helpers';
+import { createMockSupabase, mockError } from '$tests/helpers';
 
 const supabase = createMockSupabase();
 
@@ -99,7 +99,7 @@ mockError(supabase, 'Not found', 'then');
 #### Sequential Responses
 
 ```typescript
-import { createMockSupabase, mockSequence } from 'tests/helpers/supabase-helpers';
+import { createMockSupabase, mockSequence } from '$tests/helpers';
 
 const supabase = createMockSupabase();
 
@@ -136,7 +136,7 @@ supabase._mockChain.then.mockResolvedValueOnce({ data: {...}, error: null });
 ### Mock Request & Locals
 
 ```typescript
-import { createMockRequest, createMockLocals, createMockURL } from 'tests/helpers/supabase-helpers';
+import { createMockRequest, createMockLocals, createMockURL } from '$tests/helpers';
 
 // Mock request with JSON body
 const request = createMockRequest({ name: 'Test' }, 'POST');
@@ -162,7 +162,7 @@ import {
 	createMockLocals,
 	mockSuccess,
 	mockError
-} from 'tests/helpers/supabase-helpers';
+} from '$tests/helpers';
 
 describe('POST /api/endpoint', () => {
 	let supabase: ReturnType<typeof createMockSupabase>;
@@ -477,7 +477,7 @@ describe('Random-dependent tests', () => {
 ## Common Mock Data
 
 ```typescript
-// tests/helpers/supabase-helpers.ts
+// tests/helpers/supabase/mock-client.ts (exported via $tests/helpers)
 export const mockIds = {
 	teacher: 'teacher-123',
 	student: 'student-456',
