@@ -136,7 +136,8 @@ export default defineConfig(({ mode }) => {
 							'src/**/*.svelte.{test,spec}.{js,ts}',
 							'tests/database/**/*.{test,spec}.{js,ts}', // Exclude database trigger tests (require Supabase)
 							'tests/integration/**/*.{test,spec}.{js,ts}' // Exclude integration tests (require Supabase)
-						]
+						],
+						setupFiles: ['./vitest-setup-server.ts']
 					}
 				}
 			]

@@ -26,12 +26,12 @@ import {
 	createMockLocals,
 	createMockRequest,
 	createMockURL
-} from '../../../../tests/helpers/supabase-helpers';
+} from '$tests/helpers';
 
 // ============================================================================
 // MOCK SETUP
 // ============================================================================
-// Using shared helpers from tests/helpers/supabase-helpers.ts
+// Using shared helpers from $tests/helpers barrel export
 
 /**
  * Mock request event for SvelteKit API route handlers

@@ -33,7 +33,7 @@ import {
 	createMockRequest,
 	mockSuccess,
 	mockSequence
-} from '../../../../../tests/helpers/supabase-helpers';
+} from '$tests/helpers';
 
 // ============================================================================
 // TEST DATA
