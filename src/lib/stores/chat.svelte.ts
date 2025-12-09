@@ -4,8 +4,64 @@ import type { Database } from '$lib/types/database';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
 import { createLogger } from '$lib/utils/logger';
 import { friendsManager } from './friends.svelte';
+import { z } from 'zod';
 
 const logger = createLogger('chat.svelte.ts');
+
+// =============================================================================
+// ZOD VALIDATION SCHEMAS FOR BROADCAST PAYLOADS
+// =============================================================================
+
+/**
+ * Schema for broadcast message payload
+ * Validates incoming messages from other users via broadcast channel
+ */
+const broadcastMessagePayloadSchema = z.object({
+	type: z.literal('new_message'),
+	message: z.object({
+		id: z.string().uuid(),
+		conversation_id: z.string().uuid(),
+		sender_id: z.string().uuid(),
+		content: z.unknown(),
+		plain_text: z.string().nullable(),
+		created_at: z.string(),
+		sender: z.object({
+			id: z.string(),
+			full_name: z.string().nullable(),
+			avatar_url: z.string().nullable()
+		})
+	})
+});
+
+/**
+ * Schema for typing indicator payload
+ */
+const broadcastTypingPayloadSchema = z.object({
+	type: z.literal('typing_indicator'),
+	userId: z.string().uuid(),
+	isTyping: z.boolean()
+});
+
+/**
+ * Schema for reaction payload
+ */
+const broadcastReactionPayloadSchema = z.object({
+	type: z.literal('message_reaction'),
+	messageId: z.string().uuid(),
+	userId: z.string().uuid(),
+	emoji: z.string().min(1).max(10),
+	action: z.enum(['add', 'remove'])
+});
+
+/**
+ * Schema for read receipt payload
+ */
+const broadcastReadReceiptPayloadSchema = z.object({
+	type: z.literal('message_read'),
+	userId: z.string().uuid(),
+	messageId: z.string().uuid(),
+	conversationId: z.string().uuid()
+});
 
 /**
  * Conversation type representing a chat conversation with metadata
@@ -201,6 +257,35 @@ class ChatStore {
 		avatar_url: string | null;
 	} | null = null;
 
+	// =========================================================================
+	// RECONNECTION STATE (copied from presence.svelte.ts pattern)
+	// =========================================================================
+
+	/**
+	 * Track reconnection attempts per conversation
+	 */
+	private reconnectAttempts = new Map<string, number>();
+
+	/**
+	 * Maximum reconnection attempts before giving up
+	 */
+	private readonly MAX_RECONNECT_ATTEMPTS = 5;
+
+	/**
+	 * Base delay for exponential backoff (5 seconds)
+	 */
+	private readonly RECONNECT_DELAY_MS = 5000;
+
+	/**
+	 * Reconnection timers per conversation
+	 */
+	private reconnectTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+	/**
+	 * Flag to prevent concurrent reconnection attempts per conversation
+	 */
+	private isReconnecting = new Map<string, boolean>();
+
 	/**
 	 * Messages organized by conversation ID
 	 */
@@ -349,20 +434,42 @@ class ChatStore {
 			const channel = supabaseRealtimeManager.createChannel(channelName);
 
 			// Subscribe to Broadcast events (FREE, ephemeral, fast)
+			// All payloads are validated with Zod before processing
 			channel.on('broadcast', { event: 'new_message' }, ({ payload }) => {
-				this.handleBroadcastMessage(payload as BroadcastMessagePayload);
+				const validation = broadcastMessagePayloadSchema.safeParse(payload);
+				if (!validation.success) {
+					logger.warn('Invalid broadcast message payload:', validation.error.issues);
+					return;
+				}
+				// Cast after Zod validation - content is validated as unknown but we trust the structure
+				this.handleBroadcastMessage(validation.data as BroadcastMessagePayload);
 			});
 
 			channel.on('broadcast', { event: 'typing_indicator' }, ({ payload }) => {
-				this.handleTypingIndicator(payload as BroadcastTypingPayload);
+				const validation = broadcastTypingPayloadSchema.safeParse(payload);
+				if (!validation.success) {
+					logger.warn('Invalid typing indicator payload:', validation.error.issues);
+					return;
+				}
+				this.handleTypingIndicator(validation.data, conversationId);
 			});
 
 			channel.on('broadcast', { event: 'message_reaction' }, ({ payload }) => {
-				this.handleReaction(payload as BroadcastReactionPayload);
+				const validation = broadcastReactionPayloadSchema.safeParse(payload);
+				if (!validation.success) {
+					logger.warn('Invalid reaction payload:', validation.error.issues);
+					return;
+				}
+				this.handleReaction(validation.data);
 			});
 
 			channel.on('broadcast', { event: 'message_read' }, ({ payload }) => {
-				this.handleReadReceipt(payload as BroadcastReadReceiptPayload);
+				const validation = broadcastReadReceiptPayloadSchema.safeParse(payload);
+				if (!validation.success) {
+					logger.warn('Invalid read receipt payload:', validation.error.issues);
+					return;
+				}
+				this.handleReadReceipt(validation.data);
 			});
 
 			// Subscribe to postgres_changes (COUNTS toward quota, has JOINs)
@@ -381,8 +488,17 @@ class ChatStore {
 				}
 			);
 
+			// Handle system errors for reconnection (same pattern as presence.svelte.ts)
+			channel.on('system', { event: 'error' } as never, () => {
+				this.handleSystemError(conversationId);
+			});
+
 			// Subscribe to the channel
 			await supabaseRealtimeManager.subscribeChannel(channelName);
+
+			// Reset reconnection state on successful subscription
+			this.reconnectAttempts.set(conversationId, 0);
+			this.isReconnecting.set(conversationId, false);
 
 			logger.info(`Subscribed to conversation: ${conversationId}`);
 		} catch (error) {
@@ -419,6 +535,15 @@ class ChatStore {
 				}
 				this.typingTimers.delete(conversationId);
 			}
+
+			// Clear reconnection state for this conversation
+			const reconnectTimer = this.reconnectTimers.get(conversationId);
+			if (reconnectTimer) {
+				clearTimeout(reconnectTimer);
+				this.reconnectTimers.delete(conversationId);
+			}
+			this.reconnectAttempts.delete(conversationId);
+			this.isReconnecting.delete(conversationId);
 
 			logger.info(`Unsubscribed from conversation: ${conversationId}`);
 		} catch (error) {
@@ -946,19 +1071,20 @@ class ChatStore {
 	/**
 	 * Handle incoming typing indicator
 	 *
-	 * @param payload - Typing indicator payload
+	 * @param payload - Typing indicator payload (validated by Zod)
+	 * @param conversationId - The conversation ID from the channel context (fixes race condition)
 	 */
-	private handleTypingIndicator(payload: BroadcastTypingPayload): void {
+	private handleTypingIndicator(
+		payload: z.infer<typeof broadcastTypingPayloadSchema>,
+		conversationId: string
+	): void {
 		// Ignore self
 		if (payload.userId === this.userId) {
 			return;
 		}
 
-		// Get or create typing users set for this conversation
-		const conversationId = this.activeConversationId;
-		if (!conversationId) {
-			return;
-		}
+		// conversationId is now passed from channel context, not derived from activeConversationId
+		// This fixes the race condition where typing indicators could be applied to the wrong conversation
 
 		let typingSet = this.typingUsers.get(conversationId);
 		if (!typingSet) {
@@ -1439,6 +1565,152 @@ class ChatStore {
 			return this.loadMoreMessages(conversationId, limit);
 		}
 		return this.loadConversationHistory(conversationId, limit);
+	}
+
+	// =========================================================================
+	// RECONNECTION LOGIC (copied from presence.svelte.ts pattern)
+	// =========================================================================
+
+	/**
+	 * Handle system errors from the Realtime channel.
+	 * Triggers reconnection logic with exponential backoff.
+	 *
+	 * @param conversationId - The conversation that experienced the error
+	 */
+	private handleSystemError(conversationId: string): void {
+		if (!browser) return;
+
+		logger.warn('Chat channel system error detected', { conversationId });
+
+		// Prevent concurrent reconnection attempts for this conversation
+		if (this.isReconnecting.get(conversationId)) {
+			logger.trace('Reconnection already in progress, ignoring additional error event', {
+				conversationId
+			});
+			return;
+		}
+
+		// Clear existing reconnect timer if any
+		const existingTimer = this.reconnectTimers.get(conversationId);
+		if (existingTimer) {
+			clearTimeout(existingTimer);
+			this.reconnectTimers.delete(conversationId);
+		}
+
+		// Check if we've exceeded max attempts
+		const attempts = this.reconnectAttempts.get(conversationId) ?? 0;
+		if (attempts >= this.MAX_RECONNECT_ATTEMPTS) {
+			logger.error('Max reconnection attempts reached for chat', {
+				conversationId,
+				attempts
+			});
+			return;
+		}
+
+		// Calculate delay with exponential backoff
+		const delay = this.RECONNECT_DELAY_MS * Math.pow(2, attempts);
+		this.reconnectAttempts.set(conversationId, attempts + 1);
+
+		logger.info('Scheduling chat reconnection', {
+			conversationId,
+			attempt: attempts + 1,
+			delayMs: delay
+		});
+
+		this.isReconnecting.set(conversationId, true);
+
+		const timer = setTimeout(() => {
+			void this.reconnectConversation(conversationId);
+		}, delay);
+
+		this.reconnectTimers.set(conversationId, timer);
+	}
+
+	/**
+	 * Reconnect to a conversation's Realtime channel.
+	 * Unsubscribes from current channel and re-subscribes with fresh state.
+	 *
+	 * @param conversationId - The conversation to reconnect
+	 */
+	private async reconnectConversation(conversationId: string): Promise<void> {
+		if (!browser || !this.supabase || !this.userId) {
+			this.isReconnecting.set(conversationId, false);
+			return;
+		}
+
+		const attempts = this.reconnectAttempts.get(conversationId) ?? 0;
+		logger.info('Attempting chat reconnection', {
+			conversationId,
+			attempt: attempts
+		});
+
+		try {
+			// Unsubscribe from current channel (don't clear messages)
+			const channelName = `chat-${conversationId}`;
+			await supabaseRealtimeManager.unsubscribeChannel(channelName);
+
+			// Small delay before reconnecting
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			// Re-subscribe to the conversation
+			await this.subscribeToConversation(conversationId);
+
+			// Reset reconnection state on success
+			this.reconnectAttempts.set(conversationId, 0);
+			this.isReconnecting.set(conversationId, false);
+
+			logger.info('Chat reconnection successful', { conversationId });
+		} catch (error) {
+			logger.error('Chat reconnection failed', { conversationId, error });
+
+			// Reset reconnecting flag before triggering another attempt
+			this.isReconnecting.set(conversationId, false);
+
+			// Trigger another reconnection attempt
+			this.handleSystemError(conversationId);
+		}
+	}
+
+	/**
+	 * Full cleanup - call on logout or when chat is no longer needed
+	 * Clears all state, subscriptions, and timers
+	 */
+	async cleanup(): Promise<void> {
+		if (!browser) return;
+
+		logger.info('Chat store cleanup starting');
+
+		// Unsubscribe from all active conversations
+		for (const conversationId of this.messages.keys()) {
+			try {
+				await this.unsubscribeFromConversation(conversationId);
+			} catch (error) {
+				logger.error('Error unsubscribing during cleanup', { conversationId, error });
+			}
+		}
+
+		// Clear all state
+		this.messages.clear();
+		this.conversationsMap.clear();
+		this.typingUsers.clear();
+		this.typingUsersMap.clear();
+		this.hasMore.clear();
+		this.activeConversationId = null;
+
+		// Clear all reconnection state
+		for (const timer of this.reconnectTimers.values()) {
+			clearTimeout(timer);
+		}
+		this.reconnectTimers.clear();
+		this.reconnectAttempts.clear();
+		this.isReconnecting.clear();
+
+		// Clear client references
+		this.supabase = null;
+		this.userId = null;
+		this.currentUser = null;
+
+		logger.info('Chat store cleanup complete');
 	}
 }
 
