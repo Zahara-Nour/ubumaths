@@ -1,151 +1,215 @@
-# Realtime Communication System - Technical Reference
+# Supabase Realtime - Complete Reference Guide
 
-Complete technical reference for UbuMaths' real-time communication infrastructure using Supabase Realtime.
+Comprehensive documentation for UbuMaths' realtime communication system built on Supabase Realtime.
 
-**Last Updated**: December 2025
-**Migration Date**: November 2025 (from custom WebSocket)
-
----
-
-## Quick Navigation
-
-| Document                                 | Description                                       |
-| ---------------------------------------- | ------------------------------------------------- |
-| [Architecture](./architecture.md)        | System design, data flow, component relationships |
-| [Store API Reference](./stores.md)       | Complete API for all realtime stores              |
-| [Database Layer](./database.md)          | Schemas, functions, RLS policies, indexes         |
-| [Implementation Patterns](./patterns.md) | Hybrid messaging, deduplication, optimistic UI    |
-| [Quota & Billing](./quota.md)            | Free tier management, calculations, optimization  |
-| [Troubleshooting](./troubleshooting.md)  | Debugging, common issues, solutions               |
+> **Migration Note**: Migrated from custom WebSocket to Supabase Realtime (November 2025)
 
 ---
 
-## Executive Summary
+## Table of Contents
 
-UbuMaths implements a **hybrid real-time architecture** using Supabase Realtime:
-
-| Method               | Latency | Quota Impact | Use Case                                    |
-| -------------------- | ------- | ------------ | ------------------------------------------- |
-| **Broadcast API**    | ~50ms   | FREE         | Typing indicators, reactions, read receipts |
-| **postgres_changes** | ~300ms  | COUNTS       | Messages, notifications, presence           |
-| **Hybrid**           | 50ms UX | Optimized    | Chat messages (instant + reliable)          |
-
-### Key Metrics
-
-| Metric                  | Value        | Notes                            |
-| ----------------------- | ------------ | -------------------------------- |
-| Heartbeat Interval      | 180 seconds  | BILLING CRITICAL - do not change |
-| Stale Timeout           | 270 seconds  | 180s + 90s buffer                |
-| Estimated Monthly Usage | ~1M messages | 50% of 2M free tier              |
-| Test Coverage           | 3,830 lines  | 99% pass rate                    |
+1. [Quick Start](#quick-start)
+2. [Architecture Overview](#architecture-overview)
+3. [Available Stores](#available-stores)
+4. [Communication Methods](#communication-methods)
+5. [Related Documentation](#related-documentation)
 
 ---
 
-## System Overview
+## Quick Start
 
-```
-Application Layer
-├── presenceManager         → Friend online/offline status
-├── notificationsRealtimeManager → New notification alerts
-├── achievementsRealtimeManager  → Achievement unlock alerts
-└── chatStore               → Hybrid chat system
-         ↓
-    supabaseRealtimeManager (Central Infrastructure)
-         ↓
-    Supabase Realtime Server (WebSocket)
-         ↓
-    PostgreSQL Database (RLS enforced)
-```
-
----
-
-## Migration Benefits (vs Custom WebSocket)
-
-| Aspect         | Before                     | After            | Improvement   |
-| -------------- | -------------------------- | ---------------- | ------------- |
-| Infrastructure | 591 lines custom code      | Zero servers     | Serverless    |
-| Quota          | 2.9M msgs/month (exceeded) | ~1M msgs/month   | 66% reduction |
-| Security       | No RLS enforcement         | RLS automatic    | Full security |
-| Deployment     | Vercel incompatible        | Fully compatible | Simplified    |
-| Reconnection   | Manual logic               | Automatic        | Reliable      |
-
----
-
-## Import Paths
+### Initialize the Realtime System
 
 ```typescript
-// Central infrastructure
 import { supabaseRealtimeManager } from '$lib/stores/supabaseRealtime.svelte';
-
-// Specialized stores
-import { presenceManager, HEARTBEAT_INTERVAL } from '$lib/stores/presence.svelte';
-import { notificationsRealtimeManager } from '$lib/stores/notificationsRealtime.svelte';
-import { achievementsRealtimeManager } from '$lib/stores/achievementsRealtime.svelte';
+import { presenceManager } from '$lib/stores/presence.svelte';
 import { chatStore } from '$lib/stores/chat.svelte';
+
+// Initialize central manager (once per app)
+supabaseRealtimeManager.init(supabase, userId);
+
+// Initialize specialized stores as needed
+presenceManager.init(supabase, userId);
+chatStore.init(supabase, userId, { full_name, avatar_url });
 ```
 
----
-
-## Channel Names
-
-| Feature       | Channel Name            | Method           |
-| ------------- | ----------------------- | ---------------- |
-| Presence      | `user-presence-updates` | postgres_changes |
-| Notifications | `user-notifications`    | postgres_changes |
-| Achievements  | `achievements-realtime` | postgres_changes |
-| Chat          | `chat-{conversationId}` | Hybrid           |
-
----
-
-## Critical Constants
+### Subscribe to Events
 
 ```typescript
-// BILLING CRITICAL - DO NOT CHANGE without recalculating quota
-export const HEARTBEAT_INTERVAL = 180000; // 180 seconds (3 minutes)
+// Create a channel
+const channel = supabaseRealtimeManager.createChannel('my-channel');
 
-// Database cleanup timeout (must be > HEARTBEAT_INTERVAL)
-const STALE_TIMEOUT = 270; // 270 seconds
+// Listen for database changes
+channel.on(
+	'postgres_changes',
+	{ event: 'INSERT', schema: 'public', table: 'messages' },
+	(payload) => handleNewMessage(payload.new)
+);
 
-// Typing indicator auto-clear
-const TYPING_TIMEOUT = 3000; // 3 seconds
+// Listen for broadcasts (ephemeral)
+channel.on('broadcast', { event: 'typing' }, (payload) => handleTyping(payload));
 
-// Free tier limit
-const MAX_MESSAGES_PER_MONTH = 2_000_000;
+// Subscribe
+await supabaseRealtimeManager.subscribeChannel('my-channel');
+```
+
+### Cleanup (Critical)
+
+```svelte
+<script lang="ts">
+	// Svelte 5: Use $effect with cleanup return
+	$effect(() => {
+		// Initialize realtime subscriptions
+		presenceManager.startPresenceTracking(friendIds);
+		chatStore.subscribeToConversation(conversationId);
+
+		// Cleanup on unmount (return function)
+		return () => {
+			presenceManager.stopPresenceTracking();
+			chatStore.unsubscribeFromConversation(conversationId);
+			supabaseRealtimeManager.unsubscribeChannel('my-channel');
+		};
+	});
+</script>
 ```
 
 ---
 
-## File Reference
+## Architecture Overview
 
-### Core Stores
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         UbuMaths Realtime Architecture                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────┐                                                        │
+│  │   Components    │                                                        │
+│  │                 │                                                        │
+│  │  ┌───────────┐  │     ┌─────────────────┐                                │
+│  │  │ Friends   │──┼────▶│ presenceManager │──────┐                         │
+│  │  │ Page      │  │     └─────────────────┘      │                         │
+│  │  └───────────┘  │                              │                         │
+│  │                 │     ┌─────────────────────┐  │                         │
+│  │  ┌───────────┐  │     │ notificationsReal- │  │                         │
+│  │  │ Dashboard │──┼────▶│ timeManager       │──┼──┐                       │
+│  │  │ Layout    │  │     └─────────────────────┘  │  │                      │
+│  │  └───────────┘  │                              │  │                      │
+│  │                 │     ┌─────────────────────┐  │  │  ┌────────────────┐  │
+│  │  ┌───────────┐  │     │ achievementsReal-  │  │  │  │ supabaseReal-  │  │
+│  │  │Achievement│──┼────▶│ timeManager       │──┼──┼─▶│ timeManager    │  │
+│  │  │Notif.     │  │     └─────────────────────┘  │  │  │ (Central Hub)  │  │
+│  │  └───────────┘  │                              │  │  └────────────────┘  │
+│  │                 │     ┌─────────────────┐      │  │          │           │
+│  │  ┌───────────┐  │     │   chatStore     │──────┘  │          │           │
+│  │  │ ChatWindow│──┼────▶│ (Hybrid Mode)   │         │          │           │
+│  │  └───────────┘  │     └─────────────────┘         │          │           │
+│  │                 │                                 │          ▼           │
+│  │  ┌───────────┐  │     ┌─────────────────┐         │  ┌───────────────┐   │
+│  │  │Multiplayer│──┼────▶│multiplayerStore │─────────┘  │   Supabase    │   │
+│  │  │Minesweeper│  │     │ (Direct Channel)│            │   Realtime    │   │
+│  │  └───────────┘  │     └─────────────────┘            │   Server      │   │
+│  │                 │                                    └───────────────┘   │
+│  └─────────────────┘                                                        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
-| File                                             | Lines | Purpose                    |
-| ------------------------------------------------ | ----- | -------------------------- |
-| `src/lib/stores/supabaseRealtime.svelte.ts`      | 239   | Central channel management |
-| `src/lib/stores/presence.svelte.ts`              | 377   | Friend presence tracking   |
-| `src/lib/stores/notificationsRealtime.svelte.ts` | 200   | Notification alerts        |
-| `src/lib/stores/achievementsRealtime.svelte.ts`  | 265   | Achievement alerts         |
-| `src/lib/stores/chat.svelte.ts`                  | 1,437 | Hybrid chat system         |
+### Data Flow
 
-### Test Files
+```
+                     REALTIME MESSAGE FLOW
+                     ═══════════════════════
 
-| File                                             | Lines | Coverage                 |
-| ------------------------------------------------ | ----- | ------------------------ |
-| `src/lib/stores/supabaseRealtime.svelte.test.ts` | 664   | Channel lifecycle        |
-| `src/lib/stores/presence.svelte.test.ts`         | 816   | Heartbeat, tracking      |
-| `src/lib/stores/chat.svelte.test.ts`             | 2,350 | Deduplication, messaging |
+┌─────────┐   1. Optimistic    ┌──────────┐   2. Broadcast    ┌───────────────┐
+│  User   │ ─────────────────▶ │ UI State │ ─────────────────▶│ Other Clients │
+│ Action  │   (immediate)      │  (~0ms)  │    (~50ms, FREE)  │   (instant)   │
+└─────────┘                    └──────────┘                   └───────────────┘
+     │                              │
+     │                              │
+     ▼                              │
+┌─────────────┐                     │
+│  Database   │ ◀───────────────────┘
+│   Insert    │   3. Persist (~200ms)
+└─────────────┘
+     │
+     │ 4. postgres_changes (~300ms)
+     ▼
+┌───────────────┐
+│  Source of    │  Replaces broadcast message with
+│  Truth + JOINs│  full data (sender profile, etc.)
+└───────────────┘
+```
 
-### Database Migrations
+---
 
-- `supabase/migrations/035_create_user_presence_table.sql`
-- `supabase/migrations/037_create_conversation_participants_table.sql`
-- `supabase/migrations/038_create_messages_table.sql`
-- `supabase/migrations/042_add_chat_constraints_and_indexes.sql`
+## Available Stores
+
+| Store                          | File                              | Method             | Purpose                      |
+| ------------------------------ | --------------------------------- | ------------------ | ---------------------------- |
+| `supabaseRealtimeManager`      | `supabaseRealtime.svelte.ts`      | Central Hub        | Channel lifecycle management |
+| `presenceManager`              | `presence.svelte.ts`              | `postgres_changes` | Friend online/offline status |
+| `chatStore`                    | `chat.svelte.ts`                  | Hybrid             | Chat with deduplication      |
+| `notificationsRealtimeManager` | `notificationsRealtime.svelte.ts` | `postgres_changes` | Notification alerts          |
+| `achievementsRealtimeManager`  | `achievementsRealtime.svelte.ts`  | `postgres_changes` | Achievement unlocks          |
+| `multiplayerStore`             | `multiplayer.svelte.ts`           | Direct Channel     | Game-specific sync           |
+
+---
+
+## Communication Methods
+
+### Method Comparison
+
+| Method             | Latency        | Quota Cost | Persistence | JOINs | Use Case                |
+| ------------------ | -------------- | ---------- | ----------- | ----- | ----------------------- |
+| `postgres_changes` | ~300ms         | COUNTS     | Yes         | Yes   | Presence, notifications |
+| Broadcast          | ~50ms          | FREE       | No          | No    | Typing, cursors         |
+| Hybrid             | ~50ms + ~300ms | Partial    | Yes         | Yes   | Chat messages           |
+
+### When to Use Each
+
+**postgres_changes** - When you need:
+
+- Data persistence
+- JOINed/enriched data
+- Row Level Security (RLS)
+- Source of truth
+
+**Broadcast** - When you need:
+
+- Ultra-fast feedback (<100ms)
+- No persistence required
+- High-frequency updates
+- Free quota usage
+
+**Hybrid** - When you need:
+
+- Best UX (instant feedback)
+- Data reliability
+- Proper deduplication
 
 ---
 
 ## Related Documentation
 
-- [Claude Quick Reference](../../claude/realtime.md) - Simplified usage guide
-- [Supabase Realtime Architecture](../../architecture/supabase-realtime.md) - Historical migration docs
-- [Migration Guide](../../guides/websocket-to-realtime-migration.md) - Step-by-step migration
+| Document                                  | Description                     |
+| ----------------------------------------- | ------------------------------- |
+| [Architecture](./architecture.md)         | Detailed system architecture    |
+| [Stores Reference](./stores-reference.md) | Complete API reference          |
+| [Chat System](./chat-system.md)           | Chat-specific documentation     |
+| [Presence System](./presence-system.md)   | Presence tracking guide         |
+| [Testing Guide](./testing.md)             | Testing patterns and mocks      |
+| [Best Practices](./best-practices.md)     | Performance, security, patterns |
+
+---
+
+## Critical Configuration
+
+```typescript
+// BILLING CRITICAL - DO NOT CHANGE without recalculating quota
+export const HEARTBEAT_INTERVAL = 180000; // 180 seconds (3 minutes)
+
+// Quota calculation:
+// 200 users × 8h × 20 days = ~640K messages/month (32% of 2M free tier)
+```
+
+**Warning**: Modifying heartbeat interval impacts billing. See [Best Practices](./best-practices.md#quota-management) for details.
