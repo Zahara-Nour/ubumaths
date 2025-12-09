@@ -108,6 +108,15 @@ class PresenceManager {
 	private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
 
 	/**
+	 * Reconnection state tracking.
+	 */
+	private reconnectAttempts = 0;
+	private readonly MAX_RECONNECT_ATTEMPTS = 5;
+	private readonly RECONNECT_DELAY_MS = 5000;
+	private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+	private isReconnecting = false;
+
+	/**
 	 * Initialize the presence manager.
 	 *
 	 * @param supabase - Supabase client instance
@@ -174,6 +183,11 @@ class PresenceManager {
 				this.handlePresenceUpdate(payload as unknown as PresencePayload);
 			}
 		);
+
+		// Handle system events for reconnection
+		channel.on('system', { event: 'error' } as never, () => {
+			this.handleSystemError();
+		});
 
 		await supabaseRealtimeManager.subscribeChannel(CHANNEL_NAME);
 
@@ -314,6 +328,14 @@ class PresenceManager {
 			this.heartbeatInterval = null;
 		}
 
+		// Clear reconnect timer and state
+		if (this.reconnectTimer) {
+			clearTimeout(this.reconnectTimer);
+			this.reconnectTimer = null;
+		}
+		this.reconnectAttempts = 0;
+		this.isReconnecting = false;
+
 		// Mark self as offline
 		if (this.supabase && this.userId) {
 			try {
@@ -334,6 +356,118 @@ class PresenceManager {
 		this.friendsPresence.clear();
 
 		logger.info('Presence tracking stopped');
+	}
+
+	/**
+	 * Handle system errors from the Realtime channel.
+	 *
+	 * Triggers reconnection logic with exponential backoff.
+	 */
+	private handleSystemError(): void {
+		if (!browser) return;
+
+		logger.warn('Presence channel system error detected');
+
+		// Prevent concurrent reconnection attempts
+		if (this.isReconnecting) {
+			logger.trace('Reconnection already in progress, ignoring additional error event');
+			return;
+		}
+
+		// Clear existing reconnect timer if any
+		if (this.reconnectTimer) {
+			clearTimeout(this.reconnectTimer);
+			this.reconnectTimer = null;
+		}
+
+		// Check if we've exceeded max attempts
+		if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
+			logger.error('Max reconnection attempts reached for presence tracking', {
+				attempts: this.reconnectAttempts
+			});
+			return;
+		}
+
+		// Calculate delay with exponential backoff
+		const delay = this.RECONNECT_DELAY_MS * Math.pow(2, this.reconnectAttempts);
+		this.reconnectAttempts++;
+
+		logger.info('Scheduling presence reconnection', {
+			attempt: this.reconnectAttempts,
+			delayMs: delay
+		});
+
+		this.isReconnecting = true;
+
+		this.reconnectTimer = setTimeout(() => {
+			void this.reconnectRealtime();
+		}, delay);
+	}
+
+	/**
+	 * Reconnect to the Realtime channel.
+	 *
+	 * Unsubscribes from current channel and re-subscribes with fresh state.
+	 */
+	private async reconnectRealtime(): Promise<void> {
+		if (!browser || !this.supabase || !this.userId) {
+			this.isReconnecting = false;
+			return;
+		}
+
+		logger.info('Attempting presence reconnection', {
+			attempt: this.reconnectAttempts
+		});
+
+		try {
+			// Unsubscribe from current channel (keeps heartbeat running)
+			await supabaseRealtimeManager.unsubscribeChannel(CHANNEL_NAME);
+
+			// Small delay before reconnecting
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			// Re-subscribe with stored friend IDs
+			if (this.friendIds.length > 0) {
+				const filter = `user_id=in.(${this.friendIds.join(',')})`;
+				const channel = supabaseRealtimeManager.createChannel(CHANNEL_NAME);
+
+				channel.on(
+					'postgres_changes',
+					{
+						event: '*',
+						schema: 'public',
+						table: 'user_presence',
+						filter
+					},
+					(payload) => {
+						this.handlePresenceUpdate(payload as unknown as PresencePayload);
+					}
+				);
+
+				channel.on('system', { event: 'error' } as never, () => {
+					this.handleSystemError();
+				});
+
+				await supabaseRealtimeManager.subscribeChannel(CHANNEL_NAME);
+			}
+
+			// Refresh initial presence state
+			await this.fetchInitialPresence();
+
+			// Reset reconnection state on success
+			this.reconnectAttempts = 0;
+			this.isReconnecting = false;
+
+			logger.info('Presence reconnection successful');
+		} catch (error) {
+			logger.error('Presence reconnection failed', { error });
+
+			// Reset reconnecting flag before triggering another attempt
+			this.isReconnecting = false;
+
+			// Trigger another reconnection attempt
+			this.handleSystemError();
+		}
 	}
 
 	/**

@@ -409,7 +409,16 @@ class ChatStore {
 
 			// Clear typing indicators for this conversation
 			this.typingUsers.delete(conversationId);
-			this.typingTimers.delete(conversationId);
+			this.typingUsersMap.delete(conversationId);
+
+			// Clear all typing timers for this conversation (prevents memory leak)
+			const timerMap = this.typingTimers.get(conversationId);
+			if (timerMap) {
+				for (const timer of timerMap.values()) {
+					clearTimeout(timer);
+				}
+				this.typingTimers.delete(conversationId);
+			}
 
 			logger.info(`Unsubscribed from conversation: ${conversationId}`);
 		} catch (error) {
