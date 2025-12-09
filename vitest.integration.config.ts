@@ -1,5 +1,7 @@
 import { defineConfig } from 'vitest/config';
+import { loadEnv } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { dbTestConfig } from './vitest.base.config';
 
 /**
  * Vitest Configuration for Integration Tests
@@ -12,19 +14,17 @@ import { sveltekit } from '@sveltejs/kit/vite';
  * Integration tests verify race conditions and cross-component interactions
  * using real database connections.
  */
-export default defineConfig({
-	plugins: [sveltekit()], // Enable $lib alias resolution
-	test: {
-		name: 'integration',
-		environment: 'node',
-		include: ['tests/integration/**/*.{test,spec}.{js,ts}'],
-		testTimeout: 30000, // 30s timeout for database operations
-		hookTimeout: 30000,
-		pool: 'forks', // Use forked processes for better isolation
-		poolOptions: {
-			forks: {
-				singleFork: true // Run tests sequentially to avoid race conditions
-			}
+export default defineConfig(({ mode }) => {
+	// Load environment variables for Supabase connection
+	const env = loadEnv(mode, process.cwd(), '');
+	Object.assign(process.env, env);
+
+	return {
+		plugins: [sveltekit()], // Enable $lib alias resolution
+		test: {
+			...dbTestConfig,
+			name: 'integration',
+			include: ['tests/integration/**/*.{test,spec}.{js,ts}']
 		}
-	}
+	};
 });

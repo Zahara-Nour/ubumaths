@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config';
 import { loadEnv } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { readFileSync } from 'fs';
+import { baseTestConfig } from './vitest.base.config';
 
 // Read version from package.json at build time
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
@@ -93,7 +94,22 @@ export default defineConfig(({ mode }) => {
 		},
 
 		test: {
-			expect: { requireAssertions: true },
+			...baseTestConfig,
+			coverage: {
+				provider: 'v8',
+				reporter: ['text', 'html', 'lcov'],
+				reportsDirectory: './coverage',
+				include: ['src/**/*.{ts,svelte}'],
+				exclude: [
+					'src/**/*.test.ts',
+					'src/**/*.spec.ts',
+					'src/**/*.svelte.test.ts',
+					'src/**/*.svelte.spec.ts',
+					'src/lib/types/**',
+					'src/app.d.ts',
+					'src/hooks.server.ts'
+				]
+			},
 			projects: [
 				{
 					extends: './vite.config.ts',
