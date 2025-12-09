@@ -5,6 +5,7 @@ import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
 import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
 import { riddleAnswerSchema } from '$lib/server/validation/riddles';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Submit riddle attempt
@@ -12,6 +13,7 @@ import { requireAuth } from '$lib/server/middleware/auth';
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const { user } = await requireAuth(locals);
+	const riddleId = validateUuidParam(params.id, 'riddleId');
 
 	// ✅ SECURITY: Validate input with Zod
 	const body = await request.json();
@@ -27,7 +29,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const { data: riddle, error: riddleError } = await locals.supabase
 		.from('riddles')
 		.select('*')
-		.eq('id', params.id)
+		.eq('id', riddleId)
 		.single();
 
 	if (riddleError || !riddle) {
@@ -51,7 +53,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const { data: attemptId, error: submitError } = await locals.supabase.rpc(
 		'submit_riddle_attempt',
 		{
-			p_riddle_id: params.id,
+			p_riddle_id: riddleId,
 			p_student_id: user.id,
 			p_submitted_answer: { value: answer }, // Store as JSONB
 			p_is_correct: isCorrect
@@ -84,7 +86,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		// Get teacher ID
-		const teacherId = await getRiddleTeacherId(locals.supabase, params.id);
+		const teacherId = await getRiddleTeacherId(locals.supabase, riddleId);
 
 		if (teacherId && student) {
 			const studentName = `${student.firstname || ''} ${student.lastname || ''}`.trim();
@@ -92,7 +94,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			// Create validation message
 			await createRiddleValidationMessage(locals.supabase, {
 				attemptId,
-				riddleId: params.id,
+				riddleId,
 				riddleNumber: riddle.riddle_number,
 				riddleTitle: riddle.title,
 				studentId: user.id,

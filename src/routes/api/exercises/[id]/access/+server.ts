@@ -8,6 +8,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { studentHasAccess } from '$lib/server/exercise-assignments';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * GET /api/exercises/[id]/access
@@ -23,7 +24,7 @@ import { requireAuth } from '$lib/server/middleware/auth';
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireAuth(locals);
 
-	const exerciseId = params.id;
+	const exerciseId = validateUuidParam(params.id, 'exerciseId');
 
 	// Check access
 	const hasAccess = await studentHasAccess(locals.supabase, exerciseId, user.id);
