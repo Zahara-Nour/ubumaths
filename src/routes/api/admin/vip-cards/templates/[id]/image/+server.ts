@@ -11,6 +11,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { UploadImageResponse } from '$lib/types/vip-card-admin';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * POST /api/admin/vip-cards/templates/[id]/image
@@ -40,7 +41,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 	}
 
 	const supabase = locals.supabase;
-	const templateId = params.id;
+	const templateId = validateUuidParam(params.id, 'templateId');
 
 	try {
 		// 3. Check if template exists
