@@ -465,6 +465,70 @@ pnpm test:server src/lib/utils/gidouilles.test.ts
 
 ---
 
+## Audit TDD
+
+### Objectif
+
+L'audit TDD permet de verifier que les tests existants correspondent aux regles metier attendues. Les tests ecrits **apres** le code peuvent tester ce que le code fait, mais pas necessairement ce qu'il **devrait** faire.
+
+### Processus d'audit
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    AUDIT D'UN DOMAINE                       │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  1. Claude presente les comportements actuellement testes   │
+│     Format : liste en francais des "regles" testees         │
+│                                                             │
+│  2. Utilisateur valide / corrige / complete                 │
+│     "V" = Valide                                            │
+│     "I : [raison]" = Invalide (a corriger)                  │
+│     "D : [question]" = Demande de details                   │
+│                                                             │
+│  3. Claude identifie les tests a modifier/ajouter           │
+│     Liste des changements necessaires                       │
+│                                                             │
+│  4. Implementation des corrections                          │
+│     Modifier tests existants + ajouter nouveaux             │
+│                                                             │
+│  5. Validation finale                                       │
+│     Tous les tests passent avec les bonnes regles           │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Fichiers de suivi
+
+| Fichier                                 | Contenu                                    |
+| --------------------------------------- | ------------------------------------------ |
+| `docs/wip/tdd-audit-tracker.md`         | Liste des domaines a auditer, statistiques |
+| `docs/wip/audit-<domaine>-behaviors.md` | Detail des comportements par domaine       |
+
+### Domaines audites
+
+| #   | Domaine          | Status    | Comportements                 |
+| --- | ---------------- | --------- | ----------------------------- |
+| 24  | Authentification | ✅ Valide | 62/62 (60 valides, 2 etendus) |
+
+### Lancer un audit
+
+Pour lancer un audit, utiliser :
+
+```
+"On commence l'audit TDD du domaine [X]"
+```
+
+Claude :
+
+1. Lit les fichiers de test du domaine
+2. Extrait les comportements testes
+3. Presente la liste en francais avec descriptions detaillees
+4. Attend la validation (V/I/D) pour chaque comportement
+5. Implemente les corrections necessaires
+
+---
+
 ## Voir aussi
 
 - [patterns.md](./patterns.md) - Patterns de tests
