@@ -12,6 +12,7 @@ declare global {
 			safeGetSession: () => Promise<{ user: User | null }>;
 			user: User | null;
 			profile: Profile | null;
+			requestId: string;
 		}
 		interface PageData {
 			user: User | null;

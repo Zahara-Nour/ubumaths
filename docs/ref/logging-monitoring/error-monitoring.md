@@ -108,13 +108,14 @@ interface BrowserContext {
 
 ### Public API
 
-| Function                   | Purpose                  |
-| -------------------------- | ------------------------ |
-| `initErrorMonitoring()`    | Install global handlers  |
-| `captureError()`           | Manual error capture     |
-| `captureValidationError()` | Zod validation failures  |
-| `capturePerformance()`     | Performance warnings     |
-| `flushErrors()`            | Force-send queued errors |
+| Function                   | Purpose                     |
+| -------------------------- | --------------------------- |
+| `initErrorMonitoring()`    | Install global handlers     |
+| `initWebVitals()`          | Start Web Vitals collection |
+| `captureError()`           | Manual error capture        |
+| `captureValidationError()` | Zod validation failures     |
+| `capturePerformance()`     | Performance warnings        |
+| `flushErrors()`            | Force-send queued errors    |
 
 ---
 
@@ -500,6 +501,98 @@ Request Handler
 │ occurrences     │
 │ (deduplicated)  │
 └─────────────────┘
+```
+
+---
+
+## Request ID Tracing
+
+Every server request is assigned a unique 8-character request ID for tracing.
+
+### How It Works
+
+1. **Generated early**: `requestIdHandle` runs first in the hooks sequence
+2. **Available in locals**: Access via `event.locals.requestId`
+3. **Included in logs**: Automatically added to all `logError()` calls
+4. **Response header**: `X-Request-ID` header sent to client
+
+### Usage
+
+```typescript
+// In any server code
+export const POST: RequestHandler = async ({ locals }) => {
+	console.log(`[${locals.requestId}] Processing request...`);
+
+	// Error logs automatically include requestId
+	await logError(locals.supabase, {
+		error_type: 'server_api',
+		message: 'Something failed',
+		context: { request_id: locals.requestId }
+	});
+};
+```
+
+### Client Correlation
+
+```typescript
+// Get request ID from response headers
+const response = await fetch('/api/endpoint');
+const requestId = response.headers.get('X-Request-ID');
+console.log('Server request ID:', requestId);
+```
+
+---
+
+## Web Vitals Collection
+
+Automatically collects Core Web Vitals from real users using native PerformanceObserver.
+
+### Metrics Collected
+
+| Metric | Name                      | Good   | Needs Improvement |
+| ------ | ------------------------- | ------ | ----------------- |
+| LCP    | Largest Contentful Paint  | <2.5s  | <4s               |
+| FID    | First Input Delay         | <100ms | <300ms            |
+| CLS    | Cumulative Layout Shift   | <0.1   | <0.25             |
+| FCP    | First Contentful Paint    | <1.8s  | <3s               |
+| TTFB   | Time to First Byte        | <800ms | <1.8s             |
+| INP    | Interaction to Next Paint | <200ms | <500ms            |
+
+### Initialization
+
+Web Vitals are initialized in `hooks.client.ts`:
+
+```typescript
+import { initErrorMonitoring, initWebVitals } from '$lib/utils/errorMonitoring';
+
+if (browser) {
+	initErrorMonitoring();
+	initWebVitals();
+}
+```
+
+### Reporting Behavior
+
+- **Good metrics are not logged** (to reduce noise)
+- **Warning**: Metrics between "good" and "needs improvement" thresholds
+- **Error**: Metrics above "needs improvement" threshold
+- **CLS and INP**: Reported on page hide (when user leaves)
+
+### Querying Web Vitals
+
+```sql
+-- Web Vitals summary (last 7 days)
+SELECT
+  context->>'metric' as metric,
+  severity,
+  count(*) as count,
+  avg((context->>'value')::numeric) as avg_value
+FROM error_logs
+WHERE error_type = 'performance'
+  AND tags @> '["web_vitals"]'
+  AND created_at > now() - interval '7 days'
+GROUP BY context->>'metric', severity
+ORDER BY metric, severity;
 ```
 
 ---
