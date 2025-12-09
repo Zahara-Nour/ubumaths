@@ -21,6 +21,31 @@ try {
 }
 
 /**
+ * Request ID Handle
+ * Generates a unique short request ID for tracing requests through logs
+ *
+ * The request ID is:
+ * - 8 characters (first 8 chars of UUID)
+ * - Attached to locals for server-side access
+ * - Added to X-Request-ID response header for client correlation
+ *
+ * Use case: When debugging errors, search logs by requestId to see
+ * all related log entries for a single request.
+ */
+const requestIdHandle: Handle = async ({ event, resolve }) => {
+	// Generate short request ID (first 8 chars of UUID)
+	const requestId = crypto.randomUUID().slice(0, 8);
+	event.locals.requestId = requestId;
+
+	const response = await resolve(event);
+
+	// Add request ID to response headers for client correlation
+	response.headers.set('X-Request-ID', requestId);
+
+	return response;
+};
+
+/**
  * URL Redirect Handle
  * Handles deprecated route redirects to maintain backwards compatibility
  * Currently redirects /edit pages to their parent pages
@@ -80,7 +105,8 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 						user_agent: event.request.headers.get('user-agent') ?? undefined,
 						user_id: user.id,
 						context: {
-							user_email: user.email
+							user_email: user.email,
+							request_id: event.locals.requestId || 'unknown'
 						}
 					});
 				} catch (logErr) {
@@ -112,7 +138,8 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 					user_id: user.id,
 					stack_trace: err instanceof Error ? err.stack : undefined,
 					context: {
-						user_email: user.email
+						user_email: user.email,
+						request_id: event.locals.requestId || 'unknown'
 					}
 				});
 			} catch (logErr) {
@@ -245,6 +272,7 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 						response_time: responseTime,
 						status_code: response.status,
 						...(userContext as Record<string, unknown>),
+						context: { request_id: event.locals.requestId || 'unknown' },
 						tags: ['slow_request']
 					});
 				} catch (error) {
@@ -286,7 +314,8 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 			response_time: Date.now() - startTime,
 			...userContext,
 			context: {
-				search_params: Object.fromEntries(event.url.searchParams)
+				search_params: Object.fromEntries(event.url.searchParams),
+				request_id: event.locals.requestId || 'unknown'
 			}
 		});
 
@@ -397,9 +426,10 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
-// Combine hooks in sequence: Supabase first, then redirects, then user/profile, then CSRF protection, then security headers, then error monitoring
-// Order matters: Supabase auth -> Redirects -> User/Profile loading -> CSRF validation -> Security Headers -> Error monitoring
+// Combine hooks in sequence: Request ID first (for tracing), then Supabase, then others
+// Order matters: Request ID -> Supabase auth -> Redirects -> User/Profile loading -> CSRF validation -> Security Headers -> Error monitoring
 export const handle: Handle = sequence(
+	requestIdHandle,
 	supabaseHandle,
 	redirectHandle,
 	userProfileHandle,

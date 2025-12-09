@@ -6,15 +6,43 @@ import { z } from 'zod';
 
 /**
  * Schema for logging errors (POST /api/errors/log)
+ * Matches ErrorType and ErrorSeverity from errorMonitoring.ts
  */
 export const logErrorSchema = z.object({
-	error_type: z.enum(['frontend', 'backend', 'api', 'database', 'unknown']),
-	message: z.string().max(1000),
-	url: z.string().url().max(500),
+	// Classification - matches ErrorType
+	error_type: z.enum([
+		'client_js',
+		'server_api',
+		'server_load',
+		'server_action',
+		'validation',
+		'performance',
+		'database'
+	]),
+	// Matches ErrorSeverity
+	severity: z.enum(['info', 'warning', 'error', 'critical']).optional().default('error'),
+	message: z.string().min(1).max(1000),
+	url: z.string().min(1).max(500), // Removed .url() to allow relative paths
+
+	// Error details
 	stack_trace: z.string().max(5000).optional(),
+	error_name: z.string().max(200).optional(),
+	file_path: z.string().max(500).optional(),
+	line_number: z.number().int().nonnegative().optional(),
+	column_number: z.number().int().nonnegative().optional(),
+
+	// Browser context
 	user_agent: z.string().max(500).optional(),
-	severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
-	metadata: z.record(z.string(), z.any()).optional()
+	browser_name: z.string().max(100).optional(),
+	browser_version: z.string().max(50).optional(),
+	os_name: z.string().max(100).optional(),
+	device_type: z.enum(['mobile', 'tablet', 'desktop']).optional(),
+	viewport_width: z.number().int().positive().max(10000).optional(),
+	viewport_height: z.number().int().positive().max(10000).optional(),
+
+	// Additional context
+	context: z.record(z.string(), z.unknown()).optional(),
+	tags: z.array(z.string().max(100)).max(20).optional()
 });
 
 /**
@@ -22,8 +50,18 @@ export const logErrorSchema = z.object({
  * Admin only - all fields are optional filters
  */
 export const listErrorsQuerySchema = z.object({
-	error_type: z.enum(['frontend', 'backend', 'api', 'database', 'unknown']).optional(),
-	severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+	error_type: z
+		.enum([
+			'client_js',
+			'server_api',
+			'server_load',
+			'server_action',
+			'validation',
+			'performance',
+			'database'
+		])
+		.optional(),
+	severity: z.enum(['info', 'warning', 'error', 'critical']).optional(),
 	resolved: z
 		.string()
 		.optional()

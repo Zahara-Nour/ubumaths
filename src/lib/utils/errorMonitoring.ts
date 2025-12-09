@@ -515,3 +515,241 @@ export function flushErrors(): Promise<void> {
 	if (!CONFIG.ENABLED) return Promise.resolve();
 	return sendErrorBatch();
 }
+
+// =====================================================
+// WEB VITALS COLLECTION
+// =====================================================
+
+/**
+ * Web Vitals thresholds (based on Google's recommendations)
+ * @see https://web.dev/vitals/
+ */
+const WEB_VITALS_THRESHOLDS = {
+	LCP: { good: 2500, needsImprovement: 4000 }, // Largest Contentful Paint (ms)
+	FID: { good: 100, needsImprovement: 300 }, // First Input Delay (ms)
+	CLS: { good: 0.1, needsImprovement: 0.25 }, // Cumulative Layout Shift (score)
+	FCP: { good: 1800, needsImprovement: 3000 }, // First Contentful Paint (ms)
+	TTFB: { good: 800, needsImprovement: 1800 }, // Time to First Byte (ms)
+	INP: { good: 200, needsImprovement: 500 } // Interaction to Next Paint (ms)
+};
+
+type WebVitalMetric = keyof typeof WEB_VITALS_THRESHOLDS;
+
+// Module-level state for Web Vitals
+let webVitalsInitialized = false;
+const webVitalsObservers: PerformanceObserver[] = [];
+
+/**
+ * Sanitize URL by removing sensitive query parameters
+ */
+function sanitizeUrl(url: string): string {
+	try {
+		const urlObj = new URL(url);
+		const sensitiveParams = ['token', 'key', 'secret', 'password', 'auth', 'session', 'code'];
+
+		sensitiveParams.forEach((param) => {
+			if (urlObj.searchParams.has(param)) {
+				urlObj.searchParams.set(param, '[REDACTED]');
+			}
+		});
+
+		return urlObj.toString();
+	} catch {
+		// If URL parsing fails, return pathname only
+		return window.location.pathname;
+	}
+}
+
+/**
+ * Get severity based on Web Vital value
+ */
+function getWebVitalSeverity(metric: WebVitalMetric, value: number): 'info' | 'warning' | 'error' {
+	const threshold = WEB_VITALS_THRESHOLDS[metric];
+	if (value <= threshold.good) return 'info';
+	if (value <= threshold.needsImprovement) return 'warning';
+	return 'error';
+}
+
+/**
+ * Report a Web Vital metric
+ */
+function reportWebVital(
+	metric: WebVitalMetric,
+	value: number,
+	context?: Record<string, unknown>
+): void {
+	const severity = getWebVitalSeverity(metric, value);
+	const threshold = WEB_VITALS_THRESHOLDS[metric];
+
+	// Only report metrics that need improvement or are poor
+	// Good metrics are not worth logging to reduce noise
+	if (severity === 'info') return;
+
+	const errorData: ClientErrorData = {
+		error_type: 'performance',
+		severity,
+		message: `Web Vital ${metric}: ${metric === 'CLS' ? value.toFixed(3) : Math.round(value)}${metric === 'CLS' ? '' : 'ms'} (threshold: ${threshold.good}${metric === 'CLS' ? '' : 'ms'})`,
+		url: sanitizeUrl(window.location.href),
+		...getBrowserContext(),
+		context: {
+			metric,
+			value: metric === 'CLS' ? parseFloat(value.toFixed(3)) : Math.round(value),
+			threshold_good: threshold.good,
+			threshold_needs_improvement: threshold.needsImprovement,
+			...context
+		},
+		tags: ['web_vitals', metric.toLowerCase()]
+	};
+
+	queueError(errorData);
+}
+
+/**
+ * Initialize Web Vitals collection using PerformanceObserver
+ * Captures LCP, FID, CLS, FCP, TTFB, INP metrics
+ *
+ * @see https://web.dev/vitals/
+ */
+export function initWebVitals(): void {
+	if (!CONFIG.ENABLED || typeof PerformanceObserver === 'undefined') return;
+	if (webVitalsInitialized) return; // Prevent duplicate initialization
+
+	// Track CLS across page lifecycle
+	let clsValue = 0;
+	let clsShiftCount = 0;
+
+	// Track INP across session
+	let inpValue = 0;
+
+	// LCP (Largest Contentful Paint)
+	try {
+		const lcpObserver = new PerformanceObserver((entryList) => {
+			const entries = entryList.getEntries();
+			const lastEntry = entries[entries.length - 1] as PerformanceEntry & { startTime: number };
+			if (lastEntry) {
+				reportWebVital('LCP', lastEntry.startTime);
+			}
+		});
+		lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+		webVitalsObservers.push(lcpObserver);
+	} catch {
+		// LCP not supported
+	}
+
+	// FID (First Input Delay)
+	try {
+		const fidObserver = new PerformanceObserver((entryList) => {
+			const entries = entryList.getEntries();
+			const firstEntry = entries[0] as PerformanceEventTiming;
+			if (firstEntry) {
+				reportWebVital('FID', firstEntry.processingStart - firstEntry.startTime);
+			}
+		});
+		fidObserver.observe({ type: 'first-input', buffered: true });
+		webVitalsObservers.push(fidObserver);
+	} catch {
+		// FID not supported
+	}
+
+	// CLS (Cumulative Layout Shift)
+	try {
+		const clsObserver = new PerformanceObserver((entryList) => {
+			for (const entry of entryList.getEntries()) {
+				const layoutShift = entry as PerformanceEntry & {
+					hadRecentInput: boolean;
+					value: number;
+				};
+				// Only count layout shifts without recent user input
+				if (!layoutShift.hadRecentInput) {
+					clsValue += layoutShift.value;
+					clsShiftCount++;
+				}
+			}
+		});
+		clsObserver.observe({ type: 'layout-shift', buffered: true });
+		webVitalsObservers.push(clsObserver);
+	} catch {
+		// CLS not supported
+	}
+
+	// FCP (First Contentful Paint)
+	try {
+		const fcpObserver = new PerformanceObserver((entryList) => {
+			const entries = entryList.getEntries();
+			const fcpEntry = entries.find((e) => e.name === 'first-contentful-paint');
+			if (fcpEntry) {
+				reportWebVital('FCP', fcpEntry.startTime);
+			}
+		});
+		fcpObserver.observe({ type: 'paint', buffered: true });
+		webVitalsObservers.push(fcpObserver);
+	} catch {
+		// FCP not supported
+	}
+
+	// TTFB (Time to First Byte) from Navigation Timing
+	try {
+		const navObserver = new PerformanceObserver((entryList) => {
+			const entries = entryList.getEntries();
+			const navEntry = entries[0] as PerformanceNavigationTiming;
+			if (navEntry && navEntry.responseStart > 0) {
+				const ttfb = navEntry.responseStart - navEntry.requestStart;
+				reportWebVital('TTFB', ttfb);
+			}
+		});
+		navObserver.observe({ type: 'navigation', buffered: true });
+		webVitalsObservers.push(navObserver);
+	} catch {
+		// Navigation timing not supported
+	}
+
+	// INP (Interaction to Next Paint) - aggregated across session
+	try {
+		const inpObserver = new PerformanceObserver((entryList) => {
+			for (const entry of entryList.getEntries()) {
+				const eventTiming = entry as PerformanceEventTiming;
+				const duration = eventTiming.duration;
+				// Track the worst interaction
+				if (duration > inpValue) {
+					inpValue = duration;
+				}
+			}
+		});
+		// durationThreshold is a valid option for event entries but not in TS types
+		inpObserver.observe({
+			type: 'event',
+			buffered: true,
+			durationThreshold: 16
+		} as PerformanceObserverInit);
+		webVitalsObservers.push(inpObserver);
+	} catch {
+		// INP not supported
+	}
+
+	// Single consolidated visibilitychange listener for CLS and INP
+	// Report on page hide (when user leaves or switches tabs)
+	document.addEventListener('visibilitychange', () => {
+		if (document.visibilityState === 'hidden') {
+			// Report CLS if any shifts occurred
+			if (clsValue > 0) {
+				reportWebVital('CLS', clsValue, { shift_count: clsShiftCount });
+			}
+
+			// Report INP if any interactions occurred
+			if (inpValue > 0) {
+				reportWebVital('INP', inpValue);
+			}
+
+			// Note: We don't reset values - cumulative metrics continue across tab switches
+		}
+	});
+
+	// Cleanup observers on page unload
+	window.addEventListener('beforeunload', () => {
+		webVitalsObservers.forEach((observer) => observer.disconnect());
+		webVitalsObservers.length = 0;
+		webVitalsInitialized = false;
+	});
+
+	webVitalsInitialized = true;
+}

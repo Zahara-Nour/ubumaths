@@ -221,6 +221,38 @@ curl https://ubumaths.fr/api/health
 curl -H "Authorization: Bearer ..." https://ubumaths.fr/api/admin/health-stats
 ```
 
+### Request ID Tracing
+
+```typescript
+// Access request ID in server code
+export const POST: RequestHandler = async ({ locals }) => {
+	console.log(`[${locals.requestId}] Processing...`);
+
+	// Included automatically in logError() calls
+	await logError(locals.supabase, {
+		error_type: 'server_api',
+		message: 'Something failed',
+		context: { request_id: locals.requestId }
+	});
+};
+
+// Client correlation via response header
+const response = await fetch('/api/endpoint');
+const requestId = response.headers.get('X-Request-ID');
+```
+
+### Web Vitals (Automatic)
+
+```typescript
+// Initialized automatically in hooks.client.ts
+import { initErrorMonitoring, initWebVitals } from '$lib/utils/errorMonitoring';
+
+if (browser) {
+	initErrorMonitoring();
+	initWebVitals(); // Collects LCP, FID, CLS, FCP, TTFB, INP
+}
+```
+
 ---
 
 ## System Features
@@ -236,16 +268,16 @@ curl -H "Authorization: Bearer ..." https://ubumaths.fr/api/admin/health-stats
 | **Admin Dashboard**        | Full error management UI                        |
 | **Auto Cleanup**           | Scheduled deletion of old resolved errors       |
 | **Batched Client Errors**  | Reduces API calls, respects rate limits         |
+| **Request ID Tracing**     | 8-char ID for correlating logs across a request |
+| **Web Vitals Collection**  | LCP, FID, CLS, FCP, TTFB, INP from real users   |
 
 ### Limitations
 
-| Area                | Current State            | Impact                      |
-| ------------------- | ------------------------ | --------------------------- |
-| External APM        | None (no Sentry/DataDog) | Less sophisticated grouping |
-| Structured Logging  | Plain console output     | Harder log parsing          |
-| Log Aggregation     | Console + database only  | No cross-deploy search      |
-| Distributed Tracing | No request IDs           | Hard to follow flow         |
-| Web Vitals          | Not collected            | Missing perf metrics        |
+| Area               | Current State            | Impact                      |
+| ------------------ | ------------------------ | --------------------------- |
+| External APM       | None (no Sentry/DataDog) | Less sophisticated grouping |
+| Structured Logging | Plain console output     | Harder log parsing          |
+| Log Aggregation    | Console + database only  | No cross-deploy search      |
 
 ---
 
