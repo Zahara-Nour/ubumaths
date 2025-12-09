@@ -1,9 +1,12 @@
 # Test Infrastructure Refactoring - Progress
 
-## Status: Phase 1 Complete
+## Status: Phase 2 Complete
 
 **Last Updated**: 2025-12-09
-**Commit**: `2bad9d1d` - refactor(tests): consolidate test helpers into unified structure
+**Commits**:
+
+- `2bad9d1d` - refactor(tests): consolidate test helpers into unified structure
+- `7dbd88eb` - refactor(tests): standardize naming conventions
 
 ---
 
@@ -62,14 +65,14 @@ tests/helpers/
 
 ### Phase 2: Standardisation Conventions
 
-**Status**: Pending
+**Status**: Done (Commit `7dbd88eb`)
 
 **Tasks**:
 
-1. Rename `e2e/demo.test.ts` -> `e2e/demo.spec.ts`
-2. Rename `src/routes/(public)/page.svelte.spec.ts` -> `page.svelte.test.ts`
-3. Move `src/tests/` -> `tests/unit/`
-4. Code review + commit
+1. ~~Rename `e2e/demo.test.ts` -> `e2e/demo.spec.ts`~~ Done
+2. ~~Rename `src/routes/(public)/page.svelte.spec.ts` -> `page.svelte.test.ts`~~ Done
+3. ~~Move `src/tests/` -> `tests/unit/`~~ Done
+4. ~~Code review + commit~~ Done
 
 ### Phase 3: Configuration
 
@@ -110,15 +113,14 @@ tests/helpers/
 
 ## Next Action
 
-Start **Phase 2** - Standardisation des conventions de nommage.
+Start **Phase 3** - Configuration (vitest.base.config.ts, coverage, etc.)
 
 Commands to resume:
 
 ```bash
-# Check files to rename
-ls e2e/demo.test.ts
-ls src/routes/\(public\)/page.svelte.spec.ts
+# Check current vitest configs
+ls vitest*.config.ts
 
-# Check src/tests to move
-ls src/tests/
+# Check vite.config.ts for coverage
+cat vite.config.ts | head -50
 ```

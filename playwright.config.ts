@@ -82,7 +82,7 @@ export default defineConfig({
 
 	// Web server configuration
 	webServer: {
-		command: 'npm run build && npm run preview',
+		command: 'pnpm build && pnpm preview',
 		port: 4173,
 		reuseExistingServer: !process.env.CI,
 		timeout: 120 * 1000 // 2 minutes for build
