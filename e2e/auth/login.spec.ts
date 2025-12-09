@@ -327,14 +327,24 @@ test.describe('UI Interactions', () => {
 		expect(href).toContain('/auth/reset-password');
 	});
 
-	test('displays sign up link', async ({ page }) => {
-		// Verify "S'inscrire" link exists
+	test('does NOT display sign up link (controlled registration only)', async ({ page }) => {
+		/**
+		 * SECURITY: No public registration
+		 *
+		 * Students without Google (@voltairedoha.com) accounts must be created
+		 * by teachers. This prevents unauthorized signups.
+		 *
+		 * Flow for non-Google students:
+		 * 1. Teacher creates student account manually
+		 * 2. Teacher gives credentials to student
+		 * 3. Student logs in with provided credentials
+		 */
 		const signupLink = page.locator('a:has-text("S\'inscrire")');
-		await expect(signupLink).toBeVisible();
+		await expect(signupLink).not.toBeVisible();
 
-		// Verify link points to signup page
-		const href = await signupLink.getAttribute('href');
-		expect(href).toContain('/signup');
+		// Also verify no other signup/register links exist
+		const registerLink = page.locator('a[href*="/signup"], a[href*="/register"]');
+		await expect(registerLink).toHaveCount(0);
 	});
 
 	test('can switch between Google and Email/Password tabs', async ({ page }) => {
@@ -454,6 +464,67 @@ test.describe('Security', () => {
 		expect(csrfExists || formExists).toBe(true);
 	});
 
+	/**
+	 * SECURITY TEST: Account Enumeration Prevention
+	 *
+	 * This test verifies that error messages are IDENTICAL for:
+	 * - Non-existent email + any password
+	 * - Existing email + wrong password
+	 *
+	 * WHY THIS MATTERS:
+	 * If messages differ, an attacker can discover valid emails:
+	 * - "Email not found" → attacker knows email doesn't exist
+	 * - "Wrong password" → attacker knows email EXISTS, can target it
+	 *
+	 * EXPECTED BEHAVIOR:
+	 * Both cases should return the same generic message like:
+	 * "Invalid login credentials" or "Email ou mot de passe incorrect"
+	 */
+	test('error messages are identical for non-existent email and wrong password (enumeration protection)', async ({
+		page
+	}) => {
+		const testUsers = getTestUsers();
+
+		// Test 1: Non-existent email
+		await page.fill('input[type="email"]', 'nonexistent-user-xyz@voltairedoha.com');
+		await page.fill('input[type="password"]', 'some-password-123');
+		await page.click('button[type="submit"]');
+
+		// Wait for error message
+		await page.waitForSelector('[role="alert"], .alert, [data-testid="error"]', {
+			state: 'visible',
+			timeout: 5000
+		});
+
+		const errorElementNonExistent = page
+			.locator('[role="alert"], .alert, [data-testid="error"]')
+			.first();
+		const messageNonExistent = await errorElementNonExistent.textContent();
+
+		// Clear form for next test
+		await page.reload();
+		await page.waitForSelector('input[type="email"]', { state: 'visible' });
+
+		// Test 2: Existing email with wrong password
+		await page.fill('input[type="email"]', testUsers.teacher.email);
+		await page.fill('input[type="password"]', 'definitely-wrong-password-xyz');
+		await page.click('button[type="submit"]');
+
+		// Wait for error message
+		await page.waitForSelector('[role="alert"], .alert, [data-testid="error"]', {
+			state: 'visible',
+			timeout: 5000
+		});
+
+		const errorElementWrongPassword = page
+			.locator('[role="alert"], .alert, [data-testid="error"]')
+			.first();
+		const messageWrongPassword = await errorElementWrongPassword.textContent();
+
+		// CRITICAL: Both messages MUST be identical
+		expect(messageNonExistent?.trim()).toBe(messageWrongPassword?.trim());
+	});
+
 	test('rate limiting prevents brute force attacks', async ({ page }) => {
 		const testEmail = 'test@voltairedoha.com';
 
@@ -488,5 +559,34 @@ test.describe('Security', () => {
 		if (hasRateLimitError) {
 			expect(hasRateLimitError).toBe(true);
 		}
+	});
+
+	/**
+	 * SECURITY: Signup route must not be accessible
+	 *
+	 * The /signup route should return 404 or redirect to login
+	 * to prevent unauthorized account creation.
+	 *
+	 * Only teachers can create student accounts through the admin interface.
+	 */
+	test('signup route is not accessible (returns 404 or redirects)', async ({ page }) => {
+		// Try to navigate directly to signup page
+		const response = await page.goto('/signup');
+
+		// Should either:
+		// 1. Return 404 (route deleted)
+		// 2. Redirect to login page (route protected)
+		// 3. Show "not found" message
+
+		const url = page.url();
+		const status = response?.status();
+
+		// Check if redirected to login or returned 404
+		const isRedirectedToLogin = url.includes('/auth/login');
+		const is404 = status === 404;
+		const hasNotFoundMessage =
+			(await page.locator('text=/not found|introuvable|404/i').count()) > 0;
+
+		expect(isRedirectedToLogin || is404 || hasNotFoundMessage).toBe(true);
 	});
 });
