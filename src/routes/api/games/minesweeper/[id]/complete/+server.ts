@@ -3,6 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { completeGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Type for the complete_minesweeper_game RPC response
@@ -70,6 +71,7 @@ interface CompleteMinesweeperGameResponse {
  * ```
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
+	const id = validateUuidParam(params.id);
 	// ✅ SECURITY: Require student authentication
 	const { user } = await requireRole(locals, 'student');
 
@@ -88,7 +90,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		const { data: game, error: fetchError } = await locals.supabase
 			.from('minesweeper_games')
 			.select('id, difficulty, status')
-			.eq('id', params.id)
+			.eq('id', id)
 			.eq('student_id', user.id)
 			.single();
 
@@ -111,7 +113,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		// The function verifies ownership, calculates rewards, and updates atomically
 		const { data, error: rpcError } = await locals.supabase
 			.rpc('complete_minesweeper_game', {
-				p_game_id: params.id,
+				p_game_id: id,
 				p_grid_state: gridValidation.data
 			})
 			.single();

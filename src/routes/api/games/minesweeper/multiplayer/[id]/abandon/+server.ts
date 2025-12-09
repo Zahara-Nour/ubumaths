@@ -11,6 +11,7 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { abandonMatchSchema } from '$lib/server/validation/minesweeper-multiplayer';
 import { sanitizeRPCError } from '$lib/server/utils/error-handler';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Abandon a multiplayer match (forfeit/disconnect/timeout)
@@ -21,12 +22,8 @@ import { sanitizeRPCError } from '$lib/server/utils/error-handler';
  * @security ELO penalties applied (ranked matches)
  */
 export const POST: RequestHandler = async ({ request, params, locals }) => {
+	const id = validateUuidParam(params.id);
 	await requireRole(locals, 'student');
-
-	// Validate match ID format
-	if (!params.id || !/^[0-9a-f-]{36}$/i.test(params.id)) {
-		throw error(400, 'ID de match invalide');
-	}
 
 	// Validate request body (reason is optional with default)
 	const validation = abandonMatchSchema.safeParse(await request.json());
@@ -38,7 +35,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 
 	// Call database function for abandonment handling
 	const { data, error: rpcError } = await locals.supabase.rpc('abandon_multiplayer_match', {
-		p_match_id: params.id,
+		p_match_id: id,
 		p_reason: reason
 	});
 

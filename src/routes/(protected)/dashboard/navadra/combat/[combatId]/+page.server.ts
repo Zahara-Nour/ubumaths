@@ -12,12 +12,13 @@ import {
 	calculatePyrsReward
 } from '$lib/utils/game/combat';
 import { selectSpellSchema, submitAnswerSchema } from '$lib/server/validation/navadra';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 export const load: PageServerLoad = async ({ params, locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
 	if (!user) throw error(401, 'Unauthorized');
 
-	const combatId = params.combatId;
+	const combatId = validateUuidParam(params.combatId, 'combatId');
 
 	// Fetch combat with monster data
 	const { data: combat, error: combatError } = await supabase
@@ -89,6 +90,7 @@ export const actions: Actions = {
 		const { user } = await safeGetSession();
 		if (!user) throw error(401, 'Unauthorized');
 
+		const combatId = validateUuidParam(params.combatId, 'combatId');
 		const formData = await request.formData();
 
 		// Validate input using Zod schema
@@ -108,7 +110,7 @@ export const actions: Actions = {
 		const { data: combat } = await supabase
 			.from('game_combats')
 			.select('*')
-			.eq('id', params.combatId)
+			.eq('id', combatId)
 			.single();
 
 		if (!combat || combat.status !== 'active') {
@@ -153,6 +155,7 @@ export const actions: Actions = {
 		const { user } = await safeGetSession();
 		if (!user) throw error(401, 'Unauthorized');
 
+		const combatId = validateUuidParam(params.combatId, 'combatId');
 		const formData = await request.formData();
 
 		// Validate input using Zod schema
@@ -184,7 +187,7 @@ export const actions: Actions = {
 		const { data: combat } = await supabase
 			.from('game_combats')
 			.select('*, monster:game_monsters(*)')
-			.eq('id', params.combatId)
+			.eq('id', combatId)
 			.single();
 
 		if (!combat || combat.status !== 'active') {
@@ -215,7 +218,7 @@ export const actions: Actions = {
 		await supabase.from('game_challenge_attempts').insert({
 			user_id: user.id,
 			challenge_id,
-			combat_id: params.combatId,
+			combat_id: combatId,
 			success,
 			time_taken,
 			answer_given: answer,
@@ -298,7 +301,7 @@ export const actions: Actions = {
 					prestige_gained: prestigeGained,
 					pyrs_gained: { [combat.monster.element]: pyrsGained }
 				})
-				.eq('id', params.combatId);
+				.eq('id', combatId);
 
 			return {
 				success: true,
@@ -321,7 +324,7 @@ export const actions: Actions = {
 					monster_endurance_remaining: newMonsterHP,
 					current_turn: combat.current_turn + 1
 				})
-				.eq('id', params.combatId);
+				.eq('id', combatId);
 
 			return {
 				success: true,

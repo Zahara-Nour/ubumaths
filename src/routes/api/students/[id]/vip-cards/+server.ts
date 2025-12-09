@@ -20,17 +20,17 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import type { StudentVipCards } from '$lib/types/vip-card';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 // ============================================================================
 // GET HANDLER
 // ============================================================================
 
 export const GET: RequestHandler = async ({ params, locals }) => {
+	const studentId = validateUuidParam(params.id);
 	// Require authentication
 	const { user, profile } = await requireAuth(locals);
 	const supabase = locals.supabase;
-
-	const studentId = params.id;
 
 	// Authorization: student can access their own cards, teachers can access their students' cards
 	const isStudent = user.id === studentId;

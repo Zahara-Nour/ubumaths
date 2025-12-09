@@ -23,6 +23,7 @@ import {
 	validateAssignmentQuery
 } from '$lib/server/validation';
 import { requireRole } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -37,9 +38,9 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * @returns Created assignment(s) with count
  */
 export const POST: RequestHandler = async ({ request, params, locals }) => {
+	const exerciseId = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
 
-	const exerciseId = params.id;
 	const body = await request.json();
 
 	// Check if bulk assignment (has students[] or classes[] or make_public)
@@ -125,9 +126,8 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
  * @returns Array of assignments with details
  */
 export const GET: RequestHandler = async ({ params, url, locals }) => {
+	const exerciseId = validateUuidParam(params.id);
 	await requireRole(locals, 'teacher');
-
-	const exerciseId = params.id;
 
 	// Validate and parse query params for filters
 	const queryValidation = validateAssignmentQuery(url.searchParams);

@@ -5,10 +5,11 @@
  * POST: Transition match from 'countdown' to 'in_progress'
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { sanitizeRPCError } from '$lib/server/utils/error-handler';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * POST /api/games/minesweeper/multiplayer/[id]/start
@@ -30,14 +31,9 @@ import { sanitizeRPCError } from '$lib/server/utils/error-handler';
  * - started_at: timestamp
  */
 export const POST: RequestHandler = async ({ params, locals }) => {
+	const matchId = validateUuidParam(params.id);
 	// ✅ SECURITY: Require student authentication
 	await requireRole(locals, 'student');
-
-	// Validate match ID parameter
-	const matchId = params.id;
-	if (!matchId) {
-		throw error(400, 'Match ID requis');
-	}
 
 	// Call RPC function to start match
 	const { data, error: rpcError } = await locals.supabase.rpc('start_match', {

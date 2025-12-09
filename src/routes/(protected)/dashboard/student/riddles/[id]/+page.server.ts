@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
 import { error, redirect } from '@sveltejs/kit';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Load riddle detail for student to attempt
@@ -11,11 +12,13 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		throw redirect(303, '/login');
 	}
 
+	const id = validateUuidParam(params.id);
+
 	// Fetch riddle
 	const { data: riddle, error: riddleError } = await supabase
 		.from('riddles')
 		.select('*')
-		.eq('id', params.id)
+		.eq('id', id)
 		.eq('status', 'published')
 		.single();
 
@@ -28,7 +31,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	const { data: attempts } = await supabase
 		.from('riddle_attempts')
 		.select('*')
-		.eq('riddle_id', params.id)
+		.eq('riddle_id', id)
 		.eq('student_id', user.id)
 		.order('attempt_number', { ascending: false })
 		.limit(1);

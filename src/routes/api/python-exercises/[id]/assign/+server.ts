@@ -6,10 +6,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
-	exerciseIdParamSchema,
 	assignExerciseSchema,
 	type AssignExerciseInput
 } from '$lib/server/validation/python-exercises';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -23,19 +23,12 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * @returns Created assignment
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
+	const exerciseId = validateUuidParam(params.id);
 	const { user, supabase } = locals;
 
 	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
-
-	// Validate ID parameter
-	const idValidation = exerciseIdParamSchema.safeParse({ id: params.id });
-	if (!idValidation.success) {
-		throw error(400, "ID d'exercice invalide");
-	}
-
-	const exerciseId = params.id;
 
 	// Verify teacher role
 	const { data: profile, error: profileError } = await supabase

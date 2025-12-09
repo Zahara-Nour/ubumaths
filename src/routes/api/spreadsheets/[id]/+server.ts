@@ -9,6 +9,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { updateSpreadsheetSchema } from '$lib/server/validation/spreadsheet';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * GET /api/spreadsheets/:id
@@ -16,13 +17,14 @@ import { updateSpreadsheetSchema } from '$lib/server/validation/spreadsheet';
  * Users can only access their own spreadsheets
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'student');
 
 	// Fetch spreadsheet with explicit user_id check (in addition to RLS)
 	const { data, error: dbError } = await locals.supabase
 		.from('spreadsheets')
 		.select('*')
-		.eq('id', params.id)
+		.eq('id', id)
 		.eq('user_id', user.id) // Explicit ownership check
 		.single();
 
@@ -39,6 +41,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  * Users can only update their own spreadsheets
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'student');
 
 	// Parse and validate request body
@@ -64,7 +67,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const { data, error: dbError } = await locals.supabase
 		.from('spreadsheets')
 		.update(updates)
-		.eq('id', params.id)
+		.eq('id', id)
 		.eq('user_id', user.id) // Explicit ownership check
 		.select()
 		.single();
@@ -82,13 +85,14 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Users can only delete their own spreadsheets
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'student');
 
 	// Delete spreadsheet
 	const { error: dbError } = await locals.supabase
 		.from('spreadsheets')
 		.delete()
-		.eq('id', params.id)
+		.eq('id', id)
 		.eq('user_id', user.id); // Explicit ownership check
 
 	if (dbError) {

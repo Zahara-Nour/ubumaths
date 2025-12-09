@@ -73,34 +73,31 @@ pnpm update @sveltejs/adapter-vercel
 ### H2: Missing UUID Validation on Route Parameters
 
 **Severity**: HIGH
-**Status**: ✅ PARTIALLY FIXED (2025-12-09)
+**Status**: ✅ FIXED (2025-12-09)
 **Files**: Various API endpoints using `params.id`
 
-**Description**: Some route parameters were used directly without UUID format validation.
+**Description**: Route parameters were used directly without UUID format validation.
 
-**Fix Applied**: Created reusable validation helper at `src/lib/server/validation/params.ts`:
+**Fix Applied**: Added `validateUuidParam` from `src/lib/server/validation/params.ts` to all endpoints:
 
 ```typescript
 import { validateUuidParam } from '$lib/server/validation/params';
 
-const exerciseId = validateUuidParam(params.id, 'exerciseId');
-// Throws 400 "Format exerciseId invalide" if invalid
+const id = validateUuidParam(params.id);
+// Throws 400 "Format id invalide" if invalid
 ```
 
-**Helpers provided**:
+**Helpers available**:
 
 - `validateUuidParam(id, paramName)` - Single UUID
 - `validateUuidParams(params, names)` - Multiple UUIDs
 - `validateIntParam(value, name, options)` - Integer validation
 - `validateEnumParam(value, allowed, name)` - Enum validation
 
-**Endpoints updated**:
+**Endpoints updated (30 files)**:
 
-- ✅ `/api/exercises/[id]/access`
-- ✅ `/api/riddles/[id]/submit`
-- ✅ `/api/messages/[id]` (GET, PATCH, DELETE)
-
-**Remaining**: ~60 endpoints can be updated incrementally using the new helper.
+- ✅ API endpoints: exercises, games/minesweeper, marketplace, messages, python-exercises, python-files, questions, spreadsheets, students
+- ✅ Page servers: assessments, constructions, exercises, navadra/combat, riddles, spreadsheet, teacher dashboards
 
 ---
 

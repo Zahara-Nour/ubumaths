@@ -9,12 +9,14 @@ import {
 	getStudentGidouilles
 } from '$lib/server/marketplace/helpers';
 import { notifyNewTradeOffer } from '$lib/server/marketplace/notifications';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * POST /api/marketplace/trades/[id]/offers
  * Submit a counter-offer in a trade
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
+	const tradeId = validateUuidParam(params.id);
 	const supabase = locals.supabase;
 	const userId = locals.user?.id;
 
@@ -26,7 +28,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const body = await request.json().catch(() => ({}));
 
 	// Override trade_id from params to ensure consistency
-	const offerData = { ...body, trade_id: params.id };
+	const offerData = { ...body, trade_id: tradeId };
 	const validation = createOfferSchema.safeParse(offerData);
 
 	if (!validation.success) {

@@ -10,6 +10,7 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { completeMatchSchema } from '$lib/server/validation/minesweeper-multiplayer';
 import { sanitizeRPCError } from '$lib/server/utils/error-handler';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Complete a multiplayer match with server-side win validation
@@ -20,12 +21,8 @@ import { sanitizeRPCError } from '$lib/server/utils/error-handler';
  * @security Calculates rewards and ELO server-side only
  */
 export const POST: RequestHandler = async ({ request, params, locals }) => {
+	const id = validateUuidParam(params.id);
 	await requireRole(locals, 'student');
-
-	// Validate match ID format
-	if (!params.id || !/^[0-9a-f-]{36}$/i.test(params.id)) {
-		throw error(400, 'ID de match invalide');
-	}
 
 	// Validate request body
 	const validation = completeMatchSchema.safeParse(await request.json());
@@ -37,7 +34,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 
 	// Call database function for server-side validation and completion
 	const { data, error: rpcError } = await locals.supabase.rpc('complete_multiplayer_match', {
-		p_match_id: params.id,
+		p_match_id: id,
 		p_time_seconds: time_seconds,
 		p_grid_state: grid_state
 	});

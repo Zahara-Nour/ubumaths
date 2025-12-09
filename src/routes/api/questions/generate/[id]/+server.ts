@@ -12,6 +12,7 @@ import { generateQuestionSchema } from '$lib/server/validation/questions';
 import type { QuestionTemplate } from '$lib/questions/types';
 import type { Database } from '$lib/types/database';
 import { requireRole } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 type DbQuestionTemplate = Database['public']['Tables']['question_templates']['Row'];
 
@@ -57,6 +58,7 @@ function dbRowToQuestionTemplate(row: DbQuestionTemplate): QuestionTemplate {
  * Returns: GenerationResult { success, instance? | errors? }
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
+	const id = validateUuidParam(params.id);
 	await requireRole(locals, 'teacher');
 	const supabase = locals.supabase;
 
@@ -65,7 +67,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		const { data: template, error: queryError } = await supabase
 			.from('question_templates')
 			.select('*')
-			.eq('id', params.id)
+			.eq('id', id)
 			.single();
 
 		if (queryError || !template) {
