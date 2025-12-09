@@ -7,9 +7,14 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { logError, getUserContext, type LogErrorData } from '$lib/server/errorMonitoring';
 import { logErrorSchema } from '$lib/server/validation/errors';
+import { rateLimit } from '$lib/server/middleware/rateLimit';
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
 	try {
+		// ✅ SECURITY: Rate limit by IP to prevent DoS
+		const clientIp = getClientAddress();
+		rateLimit(`error-log:${clientIp}`, 20, 60000); // 20 errors per minute per IP
+
 		// ✅ SECURITY: Validate input with Zod
 		const bodyRaw = await request.json();
 		const validation = logErrorSchema.safeParse(bodyRaw);

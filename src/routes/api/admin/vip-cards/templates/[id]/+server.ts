@@ -14,6 +14,7 @@ import type { RequestHandler } from './$types';
 import { updateTemplateSchema } from '$lib/server/validation/vip-card-admin';
 import type { VipCardTemplate } from '$lib/types/vip-card-admin';
 import { templateToResponse } from '$lib/types/vip-card-admin';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * PATCH /api/admin/vip-cards/templates/[id]
@@ -43,7 +44,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 	}
 
 	const supabase = locals.supabase;
-	const templateId = params.id;
+	const templateId = validateUuidParam(params.id, 'templateId');
 
 	try {
 		// 3. Input validation
@@ -138,7 +139,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	}
 
 	const supabase = locals.supabase;
-	const templateId = params.id;
+	const templateId = validateUuidParam(params.id, 'templateId');
 
 	try {
 		// 3. Check if template exists
