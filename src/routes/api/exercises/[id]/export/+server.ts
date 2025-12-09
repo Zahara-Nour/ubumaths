@@ -18,12 +18,14 @@ import {
 } from '$lib/server/exercise-import-export';
 import { validateExportSingleExerciseQuery } from '$lib/server/validation';
 import { requireRole } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
 
 	// Get exercise
-	const result = await getExercise(locals.supabase, params.id);
+	const result = await getExercise(locals.supabase, id);
 	if (result.error || !result.data) {
 		throw error(404, 'Exercise not found');
 	}

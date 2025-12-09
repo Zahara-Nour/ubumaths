@@ -8,6 +8,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getExerciseCompletionStats } from '$lib/server/exercise-assignments';
 import { requireRole } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * GET /api/exercises/[id]/stats
@@ -19,9 +20,8 @@ import { requireRole } from '$lib/server/middleware/auth';
  * @returns ExerciseCompletionStats object
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
+	const exerciseId = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
-
-	const exerciseId = params.id;
 
 	// Verify teacher owns the exercise
 	const { data: exercise } = await locals.supabase

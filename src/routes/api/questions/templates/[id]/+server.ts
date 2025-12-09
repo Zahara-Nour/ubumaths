@@ -14,6 +14,7 @@ import { validateTemplate, detectCircularDependencies } from '$lib/questions';
 import { checkCategoryUniqueness } from '$lib/questions/category-validation';
 import { updateQuestionTemplateSchema, validateRequest } from '$lib/server/validation';
 import { requireRoles, requireRole } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * GET /api/questions/templates/[id]
@@ -21,13 +22,14 @@ import { requireRoles, requireRole } from '$lib/server/middleware/auth';
  * Retrieve a single template by ID
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
+	const id = validateUuidParam(params.id);
 	await requireRoles(locals, ['teacher', 'admin']);
 
 	try {
 		const { data: template, error: queryError } = await locals.supabase
 			.from('question_templates')
 			.select('*')
-			.eq('id', params.id)
+			.eq('id', id)
 			.single();
 
 		if (queryError || !template) {
@@ -52,6 +54,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  * Update an existing template
  */
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
+	const id = validateUuidParam(params.id);
 	await requireRole(locals, 'admin');
 
 	try {
@@ -121,7 +124,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 					subdomain: templateData.subdomain,
 					level: templateData.level!
 				},
-				params.id // Exclude current template from check
+				id // Exclude current template from check
 			);
 
 			if (!categoryCheck.isUnique) {
@@ -164,7 +167,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 				transform_type: templateData.transformType || null,
 				multiple_answers: templateData.multipleAnswers ?? null
 			})
-			.eq('id', params.id)
+			.eq('id', id)
 			.select()
 			.single();
 
@@ -203,6 +206,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
  * Delete a template
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
+	const id = validateUuidParam(params.id);
 	await requireRole(locals, 'admin');
 
 	try {
@@ -210,7 +214,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		const { data: existing } = await locals.supabase
 			.from('question_templates')
 			.select('id')
-			.eq('id', params.id)
+			.eq('id', id)
 			.single();
 
 		if (!existing) {
@@ -221,7 +225,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		const { error: deleteError } = await locals.supabase
 			.from('question_templates')
 			.delete()
-			.eq('id', params.id);
+			.eq('id', id);
 
 		if (deleteError) {
 			console.error('Error deleting template:', deleteError);

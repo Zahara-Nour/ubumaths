@@ -7,12 +7,12 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
-	exerciseIdParamSchema,
 	submitExerciseSchema,
 	validationResultSchema,
 	type SubmitExerciseInput
 } from '$lib/server/validation/python-exercises';
 import type { Database } from '$lib/types/database';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -30,19 +30,12 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * The validation_result is passed from the client
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
+	const exerciseId = validateUuidParam(params.id);
 	const { user, supabase } = locals;
 
 	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
-
-	// Validate ID parameter
-	const idValidation = exerciseIdParamSchema.safeParse({ id: params.id });
-	if (!idValidation.success) {
-		throw error(400, "ID d'exercice invalide");
-	}
-
-	const exerciseId = params.id;
 
 	// Verify student role
 	const { data: profile, error: profileError } = await supabase

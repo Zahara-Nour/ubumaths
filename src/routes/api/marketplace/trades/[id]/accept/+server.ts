@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { acceptTradeSchema } from '$lib/server/marketplace/validation';
 import { notifyTradeCompleted } from '$lib/server/marketplace/notifications';
+import { validateUuidParam } from '$lib/server/validation/params';
 // TODO: Implement cache invalidation
 // import {
 //   invalidateMarketplaceCaches,
@@ -14,6 +15,7 @@ import { notifyTradeCompleted } from '$lib/server/marketplace/notifications';
  * Accept the current offer in a trade
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
+	const tradeId = validateUuidParam(params.id);
 	const supabase = locals.supabase;
 	const userId = locals.user?.id;
 
@@ -25,7 +27,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	await request.json().catch(() => ({}));
 
 	// Override trade_id from params to ensure consistency
-	const acceptData = { trade_id: params.id };
+	const acceptData = { trade_id: tradeId };
 	const validation = acceptTradeSchema.safeParse(acceptData);
 
 	if (!validation.success) {

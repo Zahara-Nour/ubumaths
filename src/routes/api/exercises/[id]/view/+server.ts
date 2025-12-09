@@ -9,6 +9,7 @@ import type { RequestHandler } from './$types';
 import { markExerciseAsViewed } from '$lib/server/exercise-assignments';
 import { validateViewExercise } from '$lib/server/validation';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -23,9 +24,8 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * @returns Completion record with updated view data
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
+	const exerciseId = validateUuidParam(params.id);
 	const { user } = await requireAuth(locals);
-
-	const exerciseId = params.id;
 
 	// Parse and validate optional assignment_id from body
 	const body = await request.json().catch(() => ({}));

@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const { user } = await locals.safeGetSession();
@@ -8,7 +9,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		throw error(401, 'Unauthorized');
 	}
 
-	const exerciseId = params.id;
+	const exerciseId = validateUuidParam(params.id);
 
 	// Check access
 	const accessResponse = await fetch(`/api/exercises/${exerciseId}/access`);

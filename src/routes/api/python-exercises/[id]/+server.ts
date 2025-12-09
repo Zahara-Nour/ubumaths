@@ -9,12 +9,12 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
-	exerciseIdParamSchema,
 	updateExerciseSchema,
 	type UpdateExerciseInput
 } from '$lib/server/validation/python-exercises';
 import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
 import type { Database } from '$lib/types/database';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -29,19 +29,12 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * @returns Exercise data
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
+	const exerciseId = validateUuidParam(params.id);
 	const { user, supabase } = locals;
 
 	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
-
-	// Validate ID parameter
-	const idValidation = exerciseIdParamSchema.safeParse({ id: params.id });
-	if (!idValidation.success) {
-		throw error(400, "ID d'exercice invalide");
-	}
-
-	const exerciseId = params.id;
 
 	// Get user role
 	const { data: profile, error: profileError } = await supabase
@@ -106,19 +99,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  * @returns Updated exercise
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
+	const exerciseId = validateUuidParam(params.id);
 	const { user, supabase } = locals;
 
 	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
-
-	// Validate ID parameter
-	const idValidation = exerciseIdParamSchema.safeParse({ id: params.id });
-	if (!idValidation.success) {
-		throw error(400, "ID d'exercice invalide");
-	}
-
-	const exerciseId = params.id;
 
 	// Verify teacher role
 	const { data: profile, error: profileError } = await supabase
@@ -184,19 +170,12 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * @returns Success confirmation
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
+	const exerciseId = validateUuidParam(params.id);
 	const { user, supabase } = locals;
 
 	if (!user) {
 		throw error(401, 'Non authentifié');
 	}
-
-	// Validate ID parameter
-	const idValidation = exerciseIdParamSchema.safeParse({ id: params.id });
-	if (!idValidation.success) {
-		throw error(400, "ID d'exercice invalide");
-	}
-
-	const exerciseId = params.id;
 
 	// Verify teacher role
 	const { data: profile, error: profileError } = await supabase

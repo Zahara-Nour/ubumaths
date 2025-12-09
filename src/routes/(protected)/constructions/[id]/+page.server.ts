@@ -7,6 +7,7 @@
 import type { PageServerLoad } from './$types';
 import type { ConstructionScript } from '$lib/constructions';
 import { error, redirect } from '@sveltejs/kit';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Construction with author info and script
@@ -35,11 +36,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		throw redirect(303, '/login');
 	}
 
-	// Validate UUID format
-	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-	if (!uuidRegex.test(params.id)) {
-		throw error(400, 'ID de construction invalide');
-	}
+	const id = validateUuidParam(params.id);
 
 	// Fetch construction with author info
 	const { data: construction, error: constructionError } = await supabase
@@ -60,7 +57,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			)
 		`
 		)
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (constructionError || !construction) {

@@ -7,7 +7,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import { assignPythonFileSchema, uuidParamSchema } from '$lib/server/validation/python-files';
+import { assignPythonFileSchema } from '$lib/server/validation/python-files';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 // =============================================================================
 // HANDLERS
@@ -19,13 +20,8 @@ import { assignPythonFileSchema, uuidParamSchema } from '$lib/server/validation/
  * Teacher only - must own the file
  */
 export const POST: RequestHandler = async ({ locals, params, request }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
-
-	// Validate file UUID
-	const idValidation = uuidParamSchema.safeParse(params.id);
-	if (!idValidation.success) {
-		throw error(400, 'ID de fichier Python invalide');
-	}
 
 	// Parse and validate request body
 	let body: unknown;
@@ -50,7 +46,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { data: file, error: fileError } = await locals.supabase
 		.from('python_files')
 		.select('owner_id')
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (fileError || !file) {
@@ -88,7 +84,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	// Create assignments (upsert to handle duplicates)
 	const assignments = class_ids.map((class_id) => ({
-		file_id: params.id,
+		file_id: id,
 		class_id,
 		assigned_by: user.id,
 		instructions: instructions ?? null,
@@ -124,19 +120,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
  * Teacher only - must own the file
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
-
-	// Validate file UUID
-	const idValidation = uuidParamSchema.safeParse(params.id);
-	if (!idValidation.success) {
-		throw error(400, 'ID de fichier Python invalide');
-	}
 
 	// Verify user owns the file
 	const { data: file, error: fileError } = await locals.supabase
 		.from('python_files')
 		.select('owner_id')
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (fileError || !file) {
@@ -155,7 +146,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { error: deleteError } = await locals.supabase
 		.from('python_file_assignments')
 		.delete()
-		.eq('file_id', params.id)
+		.eq('file_id', id)
 		.eq('assigned_by', user.id);
 
 	if (deleteError) {
@@ -172,19 +163,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
  * Teacher only - must own the file
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
-
-	// Validate file UUID
-	const idValidation = uuidParamSchema.safeParse(params.id);
-	if (!idValidation.success) {
-		throw error(400, 'ID de fichier Python invalide');
-	}
 
 	// Verify user owns the file
 	const { data: file, error: fileError } = await locals.supabase
 		.from('python_files')
 		.select('owner_id')
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (fileError || !file) {
@@ -216,7 +202,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			)
 		`
 		)
-		.eq('file_id', params.id)
+		.eq('file_id', id)
 		.eq('assigned_by', user.id)
 		.order('assigned_at', { ascending: false });
 

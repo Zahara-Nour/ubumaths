@@ -1,12 +1,14 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * GET /api/messages/drafts/[id]
  * Get a specific draft
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
@@ -14,7 +16,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		const { data: draft, error: fetchError } = await supabase
 			.from('message_drafts')
 			.select('*')
-			.eq('id', params.id)
+			.eq('id', id)
 			.eq('author_id', user.id)
 			.single();
 
@@ -38,6 +40,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  * Delete a draft
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
@@ -45,7 +48,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		const { error: deleteError } = await supabase
 			.from('message_drafts')
 			.delete()
-			.eq('id', params.id)
+			.eq('id', id)
 			.eq('author_id', user.id);
 
 		if (deleteError) {

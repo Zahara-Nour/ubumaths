@@ -1,11 +1,14 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw redirect(303, '/auth/signin');
 	}
+
+	const id = validateUuidParam(params.id);
 
 	// Verify user is a student
 	const { data: profile } = await locals.supabase
@@ -27,7 +30,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			assessment:assessments(*)
 		`
 		)
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (assignmentError || !assignment) {
@@ -58,7 +61,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: attempts, error: attemptsError } = await locals.supabase
 		.from('test_sessions')
 		.select('*')
-		.eq('assignment_id', params.id)
+		.eq('assignment_id', id)
 		.eq('user_id', user.id)
 		.order('created_at', { ascending: false });
 

@@ -11,6 +11,7 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { realtimeStateUpdateSchema } from '$lib/server/validation/minesweeper-multiplayer';
 import { sanitizeRPCError } from '$lib/server/utils/error-handler';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * GET /api/games/minesweeper/multiplayer/[id]/state
@@ -23,14 +24,9 @@ import { sanitizeRPCError } from '$lib/server/utils/error-handler';
  * - Your player number (1 or 2)
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
+	const matchId = validateUuidParam(params.id);
 	// ✅ SECURITY: Require student authentication
 	await requireRole(locals, 'student');
-
-	// Validate match ID parameter
-	const matchId = params.id;
-	if (!matchId) {
-		throw error(400, 'Match ID requis');
-	}
 
 	// Call RPC function to get match state
 	const { data, error: rpcError } = await locals.supabase.rpc('get_match_state', {
@@ -60,14 +56,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  * - Checks match is in valid status (countdown/in_progress)
  */
 export const PATCH: RequestHandler = async ({ request, params, locals }) => {
+	const matchId = validateUuidParam(params.id);
 	// ✅ SECURITY: Require student authentication
 	await requireRole(locals, 'student');
-
-	// Validate match ID parameter
-	const matchId = params.id;
-	if (!matchId) {
-		throw error(400, 'Match ID requis');
-	}
 
 	// ✅ SECURITY: Parse and validate request body with Zod
 	const body = await request.json();

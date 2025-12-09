@@ -3,6 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { saveGameSchema, validateGridState } from '$lib/server/validation/minesweeper';
 import { sanitizePostgresError } from '$lib/server/utils/error-handler';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Save Minesweeper game progress
@@ -39,6 +40,7 @@ import { sanitizePostgresError } from '$lib/server/utils/error-handler';
  * ```
  */
 export const PUT: RequestHandler = async ({ params, request, locals }) => {
+	const id = validateUuidParam(params.id);
 	// ✅ SECURITY: Require student authentication
 	const { user } = await requireRole(locals, 'student');
 
@@ -59,7 +61,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		const { data: existingGame, error: fetchError } = await locals.supabase
 			.from('minesweeper_games')
 			.select('id, difficulty, status')
-			.eq('id', params.id)
+			.eq('id', id)
 			.eq('student_id', user.id) // Explicit ownership check
 			.eq('status', 'in_progress') // Only fetch in-progress games
 			.single();
@@ -87,7 +89,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 				flags_used,
 				cells_revealed
 			})
-			.eq('id', params.id)
+			.eq('id', id)
 			.eq('student_id', user.id)
 			.eq('status', 'in_progress');
 

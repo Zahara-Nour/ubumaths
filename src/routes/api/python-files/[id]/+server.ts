@@ -8,7 +8,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
-import { updatePythonFileSchema, uuidParamSchema } from '$lib/server/validation/python-files';
+import { updatePythonFileSchema } from '$lib/server/validation/python-files';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 // =============================================================================
 // HANDLERS
@@ -20,13 +21,8 @@ import { updatePythonFileSchema, uuidParamSchema } from '$lib/server/validation/
  * Access: owner OR teacher of student owner OR public OR assigned to student's class
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
+	const id = validateUuidParam(params.id);
 	const { user, profile } = await requireAuth(locals);
-
-	// Validate UUID
-	const idValidation = uuidParamSchema.safeParse(params.id);
-	if (!idValidation.success) {
-		throw error(400, 'ID de fichier Python invalide');
-	}
 
 	// Fetch file with owner info
 	const { data, error: queryError } = await locals.supabase
@@ -40,7 +36,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			)
 		`
 		)
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (queryError || !data) {
@@ -68,7 +64,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				const { data: assignment } = await locals.supabase
 					.from('python_file_assignments')
 					.select('id')
-					.eq('file_id', params.id)
+					.eq('file_id', id)
 					.eq('assigned_by', user.id)
 					.limit(1)
 					.maybeSingle();
@@ -80,7 +76,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		} else if (profile.role === 'student') {
 			// Check if file is assigned to student's class
 			const { data: isAssigned } = await locals.supabase.rpc('is_file_assigned_to_student', {
-				p_file_id: params.id
+				p_file_id: id
 			});
 
 			if (!isAssigned) {
@@ -108,7 +104,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				)
 			`
 			)
-			.eq('file_id', params.id)
+			.eq('file_id', id)
 			.limit(1)
 			.maybeSingle();
 
@@ -137,13 +133,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
  * Only the owner can update
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireAuth(locals);
-
-	// Validate UUID
-	const idValidation = uuidParamSchema.safeParse(params.id);
-	if (!idValidation.success) {
-		throw error(400, 'ID de fichier Python invalide');
-	}
 
 	// Parse and validate request body
 	let body: unknown;
@@ -173,7 +164,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const { data: existing, error: fetchError } = await locals.supabase
 		.from('python_files')
 		.select('owner_id')
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (fetchError || !existing) {
@@ -192,7 +183,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const { data, error: updateError } = await locals.supabase
 		.from('python_files')
 		.update(updateData)
-		.eq('id', params.id)
+		.eq('id', id)
 		.select()
 		.single();
 
@@ -210,19 +201,14 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Only the owner can delete
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireAuth(locals);
-
-	// Validate UUID
-	const idValidation = uuidParamSchema.safeParse(params.id);
-	if (!idValidation.success) {
-		throw error(400, 'ID de fichier Python invalide');
-	}
 
 	// First check if user owns this file
 	const { data: existing, error: fetchError } = await locals.supabase
 		.from('python_files')
 		.select('owner_id')
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (fetchError || !existing) {
@@ -238,10 +224,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Delete file (assignments will be cascade deleted)
-	const { error: deleteError } = await locals.supabase
-		.from('python_files')
-		.delete()
-		.eq('id', params.id);
+	const { error: deleteError } = await locals.supabase.from('python_files').delete().eq('id', id);
 
 	if (deleteError) {
 		console.error('Error deleting python file:', deleteError);
