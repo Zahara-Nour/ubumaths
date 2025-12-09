@@ -13,6 +13,9 @@ const config = {
 		// Add trusted origins here if you need to allow specific cross-origin requests
 		csrf: {
 			// trustedOrigins: ['https://mobile-app.ubumaths.com']
+		},
+		alias: {
+			$tests: './tests'
 		}
 	}
 };
