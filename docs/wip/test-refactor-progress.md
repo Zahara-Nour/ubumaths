@@ -148,5 +148,48 @@ import { createMockSupabase, createMockLocals, mockSuccess } from '$tests/helper
 
 ### Notes
 
-- `$lib/test-utils/game-fixtures.ts` and `marketplace.ts` kept (not part of this migration)
 - Pre-existing lint/test errors exist in other files (not from this refactoring)
+
+---
+
+## Phase 5: Migration Fixtures Domain-Specific
+
+**Status**: Done
+
+**Tasks**:
+
+1. ~~Migrate `game-fixtures.ts` to `tests/helpers/fixtures/game.ts`~~ Done
+2. ~~Migrate `marketplace.ts` to `tests/helpers/fixtures/marketplace.ts`~~ Done
+   - **Discovered 7th duplicate `createMockSupabase`!** Removed and refactored to use unified mock
+3. ~~Update imports in test files~~ Done (5 files)
+4. ~~Delete `src/lib/test-utils/` directory~~ Done
+5. ~~Update barrel export `tests/helpers/fixtures/index.ts`~~ Done
+
+**Files Created**:
+
+- `tests/helpers/fixtures/game.ts`
+- `tests/helpers/fixtures/marketplace.ts` (refactored to use `MockSupabaseClient` from unified mock)
+
+**Files Deleted**:
+
+- `src/lib/test-utils/game-fixtures.ts`
+- `src/lib/test-utils/marketplace.ts`
+- `src/lib/test-utils/` directory
+
+**Files Modified** (imports updated):
+
+- `tests/unit/api/marketplace/proposals.test.ts`
+- `tests/unit/api/marketplace/listings.test.ts`
+- `src/lib/utils/game/combat.test.ts`
+- `src/lib/utils/game/challenge-variables.test.ts`
+- `src/lib/server/marketplace/security.test.ts`
+
+### Final Structure
+
+```
+tests/helpers/fixtures/
+├── index.ts           # Barrel export
+├── profiles.ts        # Mock profiles factories
+├── game.ts            # Game fixtures (player, monster, spell, combat)
+└── marketplace.ts     # Marketplace fixtures (user, class, card, listing)
+```
