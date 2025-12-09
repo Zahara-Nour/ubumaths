@@ -1,6 +1,6 @@
 # Test Infrastructure Refactoring - Progress
 
-## Status: Phase 3 Complete
+## Status: COMPLETE
 
 **Last Updated**: 2025-12-09
 **Commits**:
@@ -8,6 +8,7 @@
 - `2bad9d1d` - refactor(tests): consolidate test helpers into unified structure
 - `7dbd88eb` - refactor(tests): standardize naming conventions
 - `0e25b341` - refactor(tests): improve configuration with shared base and coverage
+- `bb1e38dd` - refactor(tests): migrate imports to $tests alias and cleanup legacy helpers
 
 ---
 
@@ -89,16 +90,16 @@ tests/helpers/
 
 ### Phase 4: Migration Imports & CI
 
-**Status**: Pending
+**Status**: Done (Commit `bb1e38dd`)
 
 **Tasks**:
 
-1. Migrate test imports to `$tests/helpers`
-2. Remove legacy helpers (`src/lib/testing/`, `src/lib/test-utils/`)
-3. Add coverage to CI workflow
-4. Create `vitest-setup-server.ts`
-5. Code review + commit
-6. Update documentation
+1. ~~Migrate test imports to `$tests/helpers`~~ Done (8 files)
+2. ~~Remove legacy helpers~~ Done (mock-supabase.ts, supabase-mock.ts)
+3. ~~Add coverage to CI workflow~~ Done
+4. ~~Create `vitest-setup-server.ts`~~ Done
+5. ~~Code review + commit~~ Done
+6. Documentation: This file
 
 ---
 
@@ -112,17 +113,40 @@ tests/helpers/
 
 ---
 
-## Next Action
+## Refactoring Complete
 
-Start **Phase 4** - Migration des imports et CI
+All 4 phases completed successfully:
 
-Commands to resume:
+1. **Phase 1**: Consolidated 6 `createMockSupabase` implementations into unified `tests/helpers/`
+2. **Phase 2**: Standardized naming conventions (.test.ts for unit, .spec.ts for E2E)
+3. **Phase 3**: Added shared config, coverage reporting, fixed DB configs
+4. **Phase 4**: Migrated imports to `$tests/helpers`, cleaned up legacy files
 
-```bash
-# Find files using old helpers
-grep -r "from.*supabase-helpers" src/ --include="*.ts"
-grep -r "from.*mock-supabase" src/ --include="*.ts"
+### Final Structure
 
-# Check legacy helpers to remove
-ls src/lib/testing/ src/lib/test-utils/
 ```
+tests/
+├── helpers/
+│   ├── index.ts              # Main barrel export
+│   ├── supabase/             # Supabase mocks
+│   │   ├── mock-client.ts    # createMockSupabase (unified)
+│   │   ├── mock-locals.ts    # createMockLocals
+│   │   ├── mock-request.ts   # createMockRequest
+│   │   └── mock-helpers.ts   # mockSuccess, mockError, etc.
+│   └── fixtures/             # Test data
+│       └── profiles.ts       # mockIds, mockProfiles, factories
+├── unit/                     # Unit tests (moved from src/tests/)
+├── database/                 # Database tests (require Supabase)
+└── integration/              # Integration tests
+```
+
+### Usage
+
+```typescript
+import { createMockSupabase, createMockLocals, mockSuccess } from '$tests/helpers';
+```
+
+### Notes
+
+- `$lib/test-utils/game-fixtures.ts` and `marketplace.ts` kept (not part of this migration)
+- Pre-existing lint/test errors exist in other files (not from this refactoring)
