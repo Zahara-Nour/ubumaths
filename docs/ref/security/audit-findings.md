@@ -27,13 +27,13 @@ This SvelteKit + Supabase educational platform demonstrates a mature security ar
 
 ## Findings Summary
 
-| Severity | Count | Status                             |
-| -------- | ----- | ---------------------------------- |
-| Critical | 0     | -                                  |
-| High     | 3     | 1 partially fixed, 1 fixed, 1 open |
-| Medium   | 4     | 2 fixed, 2 open                    |
-| Low      | 2     | Optional                           |
-| Info     | 1     | Solution available                 |
+| Severity | Count | Status             |
+| -------- | ----- | ------------------ |
+| Critical | 0     | -                  |
+| High     | 3     | 2 fixed, 1 open    |
+| Medium   | 4     | 2 fixed, 2 open    |
+| Low      | 2     | Optional           |
+| Info     | 1     | Solution available |
 
 ---
 
@@ -342,10 +342,10 @@ The following are well-implemented and should be maintained:
 
 ### Short-term (2 Weeks)
 
-| Finding | Task                                    | Effort  | Status                            |
-| ------- | --------------------------------------- | ------- | --------------------------------- |
-| H2      | Add UUID validation to route params     | 4 hours | ✅ Partial (helper + 4 endpoints) |
-| M3      | Add rate limiting to error log endpoint | 2 hours | ✅ Done                           |
+| Finding | Task                                    | Effort  | Status             |
+| ------- | --------------------------------------- | ------- | ------------------ |
+| H2      | Add UUID validation to route params     | 4 hours | ✅ Done (30 files) |
+| M3      | Add rate limiting to error log endpoint | 2 hours | ✅ Done            |
 
 ### Medium-term (1 Month)
 
