@@ -813,3 +813,170 @@ describe('Integration with supabaseRealtimeManager', () => {
 		expect(unsubscribeSpy).toHaveBeenCalledWith('user-presence-updates');
 	});
 });
+
+// ============================================================================
+// 7. Reconnection Logic
+// ============================================================================
+
+describe('Reconnection Logic', () => {
+	let supabase: SupabaseClient<Database>;
+	const userId = 'user-123';
+
+	beforeEach(() => {
+		supabase = createMockSupabaseClient();
+		vi.useFakeTimers();
+		presenceManager.init(supabase, userId);
+	});
+
+	afterEach(async () => {
+		// Clean up presence manager state
+		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
+		await presenceManager.stopPresenceTracking();
+		vi.useRealTimers();
+		vi.clearAllMocks();
+	});
+
+	it('should schedule reconnection with exponential backoff on system error', async () => {
+		const mockChannel = createMockChannel('user-presence-updates');
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+		const unsubscribeSpy = vi
+			.spyOn(supabaseRealtimeManager, 'unsubscribeChannel')
+			.mockResolvedValue(undefined);
+
+		await presenceManager.startPresenceTracking(['friend-1']);
+
+		// Simulate system error using the mock's event simulation
+		mockChannel.simulateEvent('system', { event: 'error' }, { message: 'Connection error' });
+
+		// Should have scheduled reconnection timer (in addition to heartbeat)
+		const timerCount = vi.getTimerCount();
+		expect(timerCount).toBeGreaterThan(1);
+
+		// First reconnection delay should be 5000ms (RECONNECT_DELAY_MS)
+		// Plus 1000ms for the internal reconnect delay
+		await vi.advanceTimersByTimeAsync(6500);
+
+		// Should have attempted reconnection
+		expect(unsubscribeSpy).toHaveBeenCalledWith('user-presence-updates');
+	});
+
+	it('should clear reconnect timer on stopPresenceTracking', async () => {
+		const mockChannel = createMockChannel('user-presence-updates');
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
+
+		await presenceManager.startPresenceTracking(['friend-1']);
+
+		// Trigger error to schedule reconnection
+		mockChannel.simulateEvent('system', { event: 'error' }, {});
+
+		// Should have timers (heartbeat + reconnection)
+		expect(vi.getTimerCount()).toBeGreaterThan(1);
+
+		await presenceManager.stopPresenceTracking();
+
+		// All timers should be cleared
+		expect(vi.getTimerCount()).toBe(0);
+	});
+
+	it('should prevent concurrent reconnection attempts (isReconnecting flag)', async () => {
+		const mockChannel = createMockChannel('user-presence-updates');
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
+
+		await presenceManager.startPresenceTracking(['friend-1']);
+
+		// Access private isReconnecting flag for testing
+		expect(presenceManager['isReconnecting']).toBe(false);
+
+		// Trigger first error
+		mockChannel.simulateEvent('system', { event: 'error' }, {});
+
+		// isReconnecting should now be true
+		expect(presenceManager['isReconnecting']).toBe(true);
+
+		// Second error should be ignored because isReconnecting is true
+		const reconnectAttemptsBefore = presenceManager['reconnectAttempts'];
+		mockChannel.simulateEvent('system', { event: 'error' }, {});
+
+		// Reconnect attempts should NOT have increased
+		expect(presenceManager['reconnectAttempts']).toBe(reconnectAttemptsBefore);
+	});
+
+	it('should reset reconnection state after successful reconnection', async () => {
+		const mockChannel = createMockChannel('user-presence-updates');
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
+
+		await presenceManager.startPresenceTracking(['friend-1']);
+
+		// Trigger error
+		mockChannel.simulateEvent('system', { event: 'error' }, {});
+
+		// Should be reconnecting
+		expect(presenceManager['isReconnecting']).toBe(true);
+		expect(presenceManager['reconnectAttempts']).toBe(1);
+
+		// Advance past reconnection delay + internal delay
+		await vi.advanceTimersByTimeAsync(6500);
+
+		// After successful reconnection, state should be reset
+		expect(presenceManager['isReconnecting']).toBe(false);
+		expect(presenceManager['reconnectAttempts']).toBe(0);
+	});
+
+	it('should stop reconnecting after MAX_RECONNECT_ATTEMPTS (5)', async () => {
+		const mockChannel = createMockChannel('user-presence-updates');
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+		// Make unsubscribe fail to trigger error path
+		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockRejectedValue(new Error('Failed'));
+
+		await presenceManager.startPresenceTracking(['friend-1']);
+
+		// Simulate 5 reconnection attempts
+		for (let i = 0; i < 5; i++) {
+			// Trigger error (will be ignored if isReconnecting is true, so we need to wait)
+			mockChannel.simulateEvent('system', { event: 'error' }, {});
+
+			// Wait for reconnection attempt to complete (and fail)
+			const delay = 5000 * Math.pow(2, i);
+			await vi.advanceTimersByTimeAsync(delay + 2000);
+		}
+
+		// After 5 attempts, should have given up
+		expect(presenceManager['reconnectAttempts']).toBe(5);
+
+		// Trigger another error - should be ignored due to max attempts
+		mockChannel.simulateEvent('system', { event: 'error' }, {});
+
+		// Still at 5 attempts (not 6)
+		expect(presenceManager['reconnectAttempts']).toBe(5);
+	});
+
+	it('should use exponential backoff for reconnection delays', async () => {
+		const mockChannel = createMockChannel('user-presence-updates');
+		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
+		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
+		const unsubscribeSpy = vi
+			.spyOn(supabaseRealtimeManager, 'unsubscribeChannel')
+			.mockResolvedValue(undefined);
+
+		await presenceManager.startPresenceTracking(['friend-1']);
+
+		// Trigger error
+		mockChannel.simulateEvent('system', { event: 'error' }, {});
+
+		// Before 5000ms - should NOT have called unsubscribe
+		await vi.advanceTimersByTimeAsync(4900);
+		expect(unsubscribeSpy).not.toHaveBeenCalled();
+
+		// After 5000ms - should call unsubscribe
+		await vi.advanceTimersByTimeAsync(200);
+		expect(unsubscribeSpy).toHaveBeenCalledTimes(1);
+	});
+});

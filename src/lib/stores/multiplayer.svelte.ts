@@ -1,6 +1,16 @@
 /**
  * Multiplayer Minesweeper Store
  * Manages multiplayer match flow, queue, and real-time synchronization
+ *
+ * NOTE: This store uses direct supabase.channel() instead of supabaseRealtimeManager.
+ * This is intentional due to game-specific requirements:
+ * - Dynamic channel names per match (`match:${matchId}`)
+ * - Custom connection monitoring with 30s grace period before auto-abandonment
+ * - Tight integration with match lifecycle (create on match found, destroy on complete)
+ * - Game-critical reconnection logic that differs from other stores
+ *
+ * The current implementation has proper cleanup (no memory leaks) and robust
+ * error handling. See docs/refs/realtime/stores.md for architecture details.
  */
 
 import { toaster } from '$lib/stores/toaster.svelte';
