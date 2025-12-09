@@ -1,12 +1,13 @@
 # Test Infrastructure Refactoring - Progress
 
-## Status: Phase 2 Complete
+## Status: Phase 3 Complete
 
 **Last Updated**: 2025-12-09
 **Commits**:
 
 - `2bad9d1d` - refactor(tests): consolidate test helpers into unified structure
 - `7dbd88eb` - refactor(tests): standardize naming conventions
+- `0e25b341` - refactor(tests): improve configuration with shared base and coverage
 
 ---
 
@@ -76,15 +77,15 @@ tests/helpers/
 
 ### Phase 3: Configuration
 
-**Status**: Pending
+**Status**: Done (Commit `0e25b341`)
 
 **Tasks**:
 
-1. Create `vitest.base.config.ts` with shared config
-2. Add coverage reporting to `vite.config.ts`
-3. Fix DB configs (`loadEnv`, `requireAssertions`)
-4. Fix Playwright config (`npm` -> `pnpm`)
-5. Code review + commit
+1. ~~Create `vitest.base.config.ts` with shared config~~ Done
+2. ~~Add coverage reporting to `vite.config.ts`~~ Done
+3. ~~Fix DB configs (`loadEnv`, `requireAssertions`)~~ Done
+4. ~~Fix Playwright config (`npm` -> `pnpm`)~~ Done
+5. ~~Code review + commit~~ Done
 
 ### Phase 4: Migration Imports & CI
 
@@ -113,14 +114,15 @@ tests/helpers/
 
 ## Next Action
 
-Start **Phase 3** - Configuration (vitest.base.config.ts, coverage, etc.)
+Start **Phase 4** - Migration des imports et CI
 
 Commands to resume:
 
 ```bash
-# Check current vitest configs
-ls vitest*.config.ts
+# Find files using old helpers
+grep -r "from.*supabase-helpers" src/ --include="*.ts"
+grep -r "from.*mock-supabase" src/ --include="*.ts"
 
-# Check vite.config.ts for coverage
-cat vite.config.ts | head -50
+# Check legacy helpers to remove
+ls src/lib/testing/ src/lib/test-utils/
 ```

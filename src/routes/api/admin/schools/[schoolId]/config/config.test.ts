@@ -12,7 +12,7 @@ import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
 import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { createMockSupabase } from '$lib/testing/mock-supabase';
+import { createMockSupabase } from '$tests/helpers';
 
 // Helper to create request context - simplified to match actual RequestEvent structure
 type RouteParams = { schoolId: string };

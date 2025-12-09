@@ -17,11 +17,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-	createMockSupabase,
-	createMockLocals,
-	createMockRequest
-} from '../../../../../tests/helpers/supabase-helpers';
+import { createMockSupabase, createMockLocals, createMockRequest } from '$tests/helpers';
 
 // ============================================================================
 // TEST DATA

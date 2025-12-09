@@ -3,7 +3,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { GET } from '../../../src/routes/api/google/topics/+server';
 import * as authModule from '$lib/server/middleware/auth';
 import type { GoogleTopic } from '$lib/types/google';
-import { createMockSupabase } from '$lib/testing/mock-supabase';
+import { createMockSupabase } from '$tests/helpers';
 
 /**
  * API Endpoint Tests: GET /api/google/topics
