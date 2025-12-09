@@ -133,13 +133,9 @@
 							<Button type="submit" variant="destructive" class=" gap-3">Se connecter</Button>
 						</div>
 
-						<!-- Sign up link -->
-						<p class="text-center text-sm text-muted-foreground">
-							Vous n'avez pas de compte ?
-							<a href={resolve('/signup')} class="font-medium text-primary hover:underline"
-								>S'inscrire</a
-							>
-						</p>
+						<!-- Note: No signup link - registration is controlled -->
+						<!-- Students: created by teachers or imported via Google Classroom -->
+						<!-- Teachers: invitation/admin approval required -->
 					</form>
 				</Tabs.Content>
 			</Tabs.Root>

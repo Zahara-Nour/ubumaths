@@ -59,17 +59,10 @@
 
 				<Button type="submit" class="w-full">Send reset link</Button>
 
-				<div class="space-y-2 text-center text-sm">
-					<div>
-						<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
-							>Back to login</a
-						>
-					</div>
-					<div class="text-muted-foreground">
-						Don't have an account?
-						<a href={resolve('/signup')} class="font-medium text-primary hover:underline">Sign up</a
-						>
-					</div>
+				<div class="text-center text-sm">
+					<a href={resolve('/auth/login')} class="font-medium text-primary hover:underline"
+						>Retour à la connexion</a
+					>
 				</div>
 			</form>
 		</Card.Content>
