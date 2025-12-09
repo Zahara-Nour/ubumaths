@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
-	import type { Difficulty } from '$lib/types/minesweeper';
 
 	// Props
 	let {
@@ -15,7 +14,7 @@
 		onFlag,
 		onChord,
 		disabled = false,
-		difficulty = 'beginner'
+		cellSize = 32
 	}: {
 		row: number;
 		col: number;
@@ -28,26 +27,14 @@
 		onFlag: (row: number, col: number) => void;
 		onChord?: (row: number, col: number) => void;
 		disabled?: boolean;
-		difficulty?: Difficulty;
+		cellSize?: number;
 	} = $props();
 
-	// Cell size classes based on difficulty
-	// Using aspect-square to ensure cells stay square
-	const sizeClasses = $derived.by(() => {
-		if (difficulty === 'expert') {
-			// Smaller cells for expert mode (30 columns)
-			return 'aspect-square w-6 sm:w-7 md:w-8';
-		}
-		// Normal size for beginner/intermediate
-		return 'aspect-square w-8 sm:w-10 lg:w-12';
-	});
-
-	// Text size classes based on difficulty
+	// Text size based on cell size
 	const textSizeClasses = $derived.by(() => {
-		if (difficulty === 'expert') {
-			return 'text-xs sm:text-sm md:text-base';
-		}
-		return 'text-sm sm:text-base lg:text-lg';
+		if (cellSize <= 24) return 'text-xs';
+		if (cellSize <= 32) return 'text-sm';
+		return 'text-base';
 	});
 
 	// Number color mapping (classic minesweeper colors)
@@ -138,7 +125,6 @@
 	type="button"
 	class={cn(
 		'flex items-center justify-center font-bold transition-all',
-		sizeClasses,
 		'border border-border',
 		'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
 		!isRevealed && !isFlagged && 'bg-muted hover:bg-muted/80 active:scale-95',
@@ -152,6 +138,7 @@
 		isExploded && 'animate-pulse bg-destructive',
 		disabled && 'cursor-not-allowed opacity-60'
 	)}
+	style="width: {cellSize}px; height: {cellSize}px;"
 	onclick={handleClick}
 	onmousedown={handleMouseDown}
 	oncontextmenu={handleRightClick}

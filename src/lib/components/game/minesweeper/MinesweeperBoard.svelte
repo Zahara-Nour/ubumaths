@@ -19,21 +19,60 @@
 		disabled?: boolean;
 	} = $props();
 
-	// Grid template columns - let cells define their own size with auto
-	const gridCols = $derived.by(() => {
-		return `repeat(${gameState.cols}, auto)`;
+	// Container ref for measuring available width
+	let containerRef: HTMLDivElement | null = $state(null);
+	let containerWidth = $state(0);
+
+	// Constants for sizing
+	const PADDING = 8; // p-2 = 8px
+	const GAP = 2; // gap-0.5 = 2px
+	const MIN_CELL_SIZE = 20; // Minimum cell size for playability
+
+	// Default cell sizes by difficulty (used as fallback/max)
+	const defaultCellSizes: Record<string, number> = {
+		beginner: 48,
+		intermediate: 40,
+		expert: 32
+	};
+
+	// Calculate adaptive cell size based on container width
+	const cellSize = $derived.by(() => {
+		if (!containerWidth || containerWidth === 0) {
+			return defaultCellSizes[difficulty];
+		}
+
+		const cols = gameState.cols;
+		const availableWidth = containerWidth - PADDING * 2;
+		const totalGapWidth = (cols - 1) * GAP;
+		const calculatedSize = Math.floor((availableWidth - totalGapWidth) / cols);
+
+		// Clamp between min and max
+		const maxSize = defaultCellSizes[difficulty];
+		return Math.max(MIN_CELL_SIZE, Math.min(calculatedSize, maxSize));
 	});
 
-	// Container class for horizontal scrolling on expert mode mobile
-	const containerClass = $derived.by(() => {
-		if (difficulty === 'expert') {
-			return 'overflow-x-auto md:overflow-x-visible';
-		}
-		return '';
+	// Grid template columns using calculated cell size
+	const gridCols = $derived(`repeat(${gameState.cols}, ${cellSize}px)`);
+
+	// Observe container size changes
+	$effect(() => {
+		if (!containerRef) return;
+
+		const resizeObserver = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				containerWidth = entry.contentRect.width;
+			}
+		});
+
+		resizeObserver.observe(containerRef);
+
+		return () => {
+			resizeObserver.disconnect();
+		};
 	});
 </script>
 
-<div class={containerClass}>
+<div bind:this={containerRef} class="w-full">
 	<div
 		class="inline-grid gap-0.5 rounded-lg border border-border bg-background p-2"
 		style="grid-template-columns: {gridCols};"
@@ -58,15 +97,9 @@
 					onFlag={onCellFlag}
 					onChord={onCellChord}
 					{disabled}
-					{difficulty}
+					{cellSize}
 				/>
 			{/each}
 		{/each}
 	</div>
 </div>
-
-{#if difficulty === 'expert'}
-	<p class="mt-2 text-center text-xs text-muted-foreground md:hidden">
-		Faites défiler horizontalement pour voir toute la grille
-	</p>
-{/if}
