@@ -217,21 +217,39 @@ Student selects specific cards to receive.
 
 ### State Flow
 
-```
-1. OWNED (not requested)
-   └── activationRequestedAt = null
-       usedAt = null
+```mermaid
+stateDiagram-v2
+    direction TB
+    [*] --> OWNED: Draw/Award
 
-2. PENDING APPROVAL (requested)
-   └── activationRequestedAt != null
-       activationApprovedAt = null
+    state OWNED {
+        [*] --> owned_state
+        owned_state: activationRequestedAt = null
+        owned_state: usedAt = null
+    }
 
-3. APPROVED (ready to activate)
-   └── activationApprovedAt != null
-       usedAt = null
+    state PENDING {
+        [*] --> pending_state
+        pending_state: activationRequestedAt ≠ null
+        pending_state: activationApprovedAt = null
+    }
 
-4. ACTIVATED (used)
-   └── usedAt != null
+    state APPROVED {
+        [*] --> approved_state
+        approved_state: activationApprovedAt ≠ null
+        approved_state: usedAt = null
+    }
+
+    state USED {
+        [*] --> used_state
+        used_state: usedAt ≠ null
+    }
+
+    OWNED --> PENDING: Request activation
+    PENDING --> APPROVED: Teacher approves
+    PENDING --> OWNED: Teacher rejects
+    APPROVED --> USED: Execute action
+    USED --> [*]: Card consumed
 ```
 
 ### Instance Structure
@@ -256,30 +274,34 @@ type StudentVipCards = Record<string, VipCardInstance>;
 
 ### Activation Flow
 
-```
-Student owns card
-       │
-       ▼
-Student clicks "Use Card"
-       │
-       ▼
-POST /api/vip-cards/request-activation
-       │
-       ▼
-Teacher sees pending request in dashboard
-       │
-       ├──► Approve: POST /api/vip-cards/use-card
-       │         │
-       │         ▼
-       │    Student can now activate
-       │         │
-       │         ▼
-       │    Card action executes (if any)
-       │
-       └──► Reject: POST /api/vip-cards/reject-activation
-                 │
-                 ▼
-            Request cleared, card remains owned
+```mermaid
+sequenceDiagram
+    participant S as Student
+    participant API as API Server
+    participant DB as Database
+    participant T as Teacher
+
+    S->>API: POST /api/vip-cards/request-activation
+    API->>DB: Set activationRequestedAt
+    DB-->>API: Success
+    API-->>S: Card pending approval
+
+    Note over T: Teacher sees pending in dashboard
+
+    alt Teacher Approves
+        T->>API: POST /api/vip-cards/use-card
+        API->>DB: Set activationApprovedAt
+        API->>DB: Execute card action
+        DB-->>API: Action result
+        API-->>T: Card activated
+        API-->>S: Notification: card approved
+    else Teacher Rejects
+        T->>API: POST /api/vip-cards/reject-activation
+        API->>DB: Clear request fields
+        DB-->>API: Success
+        API-->>T: Request rejected
+        API-->>S: Notification: card rejected
+    end
 ```
 
 ---

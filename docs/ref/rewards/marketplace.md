@@ -41,28 +41,58 @@ Students can create public listings visible to their school:
 
 Direct negotiations between students with counter-offers:
 
-```
-Student A                 Student B
-    │                         │
-    ├──► Initial Offer ──────►│
-    │                         │
-    │◄── Counter Offer ◄──────┤
-    │                         │
-    ├──► Accept ─────────────►│
-    │                         │
-    └── Trade Executes ───────┘
+```mermaid
+sequenceDiagram
+    participant A as Student A
+    participant API as API Server
+    participant B as Student B
+
+    A->>API: POST /trades (initial offer)
+    API->>B: Notification: new trade request
+
+    alt Accept directly
+        B->>API: POST /trades/{id}/accept
+        API->>API: Execute trade
+        API-->>A: Trade completed
+        API-->>B: Trade completed
+    else Counter-offer
+        B->>API: POST /trades/{id}/counter
+        API-->>A: Counter-offer received
+        A->>API: POST /trades/{id}/accept
+        API->>API: Execute trade
+        API-->>A: Trade completed
+        API-->>B: Trade completed
+    else Cancel
+        A->>API: POST /trades/{id}/cancel
+        API-->>B: Trade cancelled
+    end
 ```
 
 ### 3. Hybrid (Listing + Negotiation)
 
 Accept a proposal with modifications:
 
-```
-Listing Owner ◄────── Proposal
-       │
-       ├──► Counter Offer ──► Proposer
-       │                         │
-       └────◄── Accept ─────────┘
+```mermaid
+sequenceDiagram
+    participant O as Listing Owner
+    participant API as API Server
+    participant P as Proposer
+
+    P->>API: Submit proposal
+    API-->>O: New proposal notification
+
+    alt Accept as-is
+        O->>API: Accept proposal
+        API->>API: Execute trade
+    else Counter-offer
+        O->>API: Counter-offer
+        API-->>P: Counter received
+        P->>API: Accept counter
+        API->>API: Execute trade
+    else Reject
+        O->>API: Reject proposal
+        API-->>P: Proposal rejected
+    end
 ```
 
 ---
@@ -296,15 +326,14 @@ CREATE TABLE marketplace_locked_cards (
 
 ### Lock Lifecycle
 
-```
-Create Listing/Trade
-        │
-        ▼
-   Lock Cards
-        │
-        ├──► Trade Completes: Transfer & Unlock
-        │
-        └──► Trade Cancels: Unlock (owner keeps)
+```mermaid
+flowchart TD
+    A[Create Listing/Trade] --> B[Lock Cards]
+    B --> C{Trade outcome?}
+    C -->|Completes| D[Transfer ownership]
+    D --> E[Unlock for new owner]
+    C -->|Cancels| F[Unlock for original owner]
+    C -->|Expires| F
 ```
 
 ---
