@@ -27,6 +27,8 @@ The system consists of two interconnected subsystems:
 | [State Management](./state-management.md) | Stores, realtime subscriptions, patterns       |
 | [Security](./security.md)                 | RLS, validation, authorization patterns        |
 | [Business Logic](./business-logic.md)     | Rules, limits, currency system                 |
+| [Developer Guide](./developer-guide.md)   | How to extend and modify the marketplace       |
+| [Troubleshooting](./troubleshooting.md)   | Common issues and solutions                    |
 
 ## Quick Reference
 
@@ -88,6 +90,17 @@ src/
 | `/api/shop/items`                          | GET              | List shop items         |
 | `/api/shop/purchase`                       | POST             | Purchase item           |
 | `/api/shop/purchase-history`               | GET              | View purchase history   |
+
+## Key File References
+
+| Component         | File                                             | Key Lines                             |
+| ----------------- | ------------------------------------------------ | ------------------------------------- |
+| Marketplace Store | `src/lib/stores/marketplace.svelte.ts`           | Class:30, init:130, createListing:666 |
+| Shop Store        | `src/lib/stores/shop.svelte.ts`                  | Class:20, purchaseItem:206            |
+| Listing Schema    | `src/lib/validation/marketplace.ts`              | createListingSchema:10-62             |
+| Purchase Schema   | `src/lib/validation/shop.ts`                     | purchaseRequestSchema:90-99           |
+| Listings API      | `src/routes/api/marketplace/listings/+server.ts` | GET:1-100                             |
+| Purchase API      | `src/routes/api/shop/purchase/+server.ts`        | POST:43-145                           |
 
 ## Related Documentation
 
