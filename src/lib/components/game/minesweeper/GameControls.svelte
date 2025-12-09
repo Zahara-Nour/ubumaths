@@ -63,22 +63,22 @@
 
 <div class="flex flex-col gap-3 rounded-lg border border-border bg-card p-4">
 	<!-- Top row: Mines, Difficulty, Timer -->
-	<div class="flex items-center justify-between gap-4 text-sm sm:text-base">
-		<div class="flex items-center gap-2 font-mono" aria-label="Mines restantes">
-			<span class="text-lg" aria-hidden="true">🚩</span>
+	<div class="flex flex-wrap items-center justify-center gap-2 text-sm sm:text-base">
+		<div class="flex items-center gap-1 font-mono sm:gap-2" aria-label="Mines restantes">
+			<span class="text-base sm:text-lg" aria-hidden="true">🚩</span>
 			<span class="font-bold tabular-nums">{minesRemaining}</span>
 		</div>
 
 		<div
-			class="flex items-center gap-2 rounded-md bg-muted px-3 py-1 font-semibold"
+			class="flex items-center gap-1 rounded-md bg-muted px-2 py-1 font-semibold sm:gap-2 sm:px-3"
 			aria-label="Difficulté"
 		>
-			<span class="text-lg" aria-hidden="true">🎮</span>
+			<span class="text-base sm:text-lg" aria-hidden="true">🎮</span>
 			<span>{difficultyLabel}</span>
 		</div>
 
-		<div class="flex items-center gap-2 font-mono" aria-label="Temps écoulé">
-			<span class="text-lg" aria-hidden="true">⏱️</span>
+		<div class="flex items-center gap-1 font-mono sm:gap-2" aria-label="Temps écoulé">
+			<span class="text-base sm:text-lg" aria-hidden="true">⏱️</span>
 			<span class="font-bold tabular-nums">{formattedTime}</span>
 		</div>
 	</div>
