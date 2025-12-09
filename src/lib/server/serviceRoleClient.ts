@@ -17,9 +17,78 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
+import { dev } from '$app/environment';
 
-const logger = createLogger('server/serviceRoleClient');
+const logger = createServerLogger('server/serviceRoleClient');
+
+/**
+ * Allowed paths for service role client usage.
+ * Add new paths here when legitimate use cases are identified.
+ */
+const ALLOWED_SERVICE_ROLE_PATHS = [
+	// Cron jobs
+	'/api/cron/',
+	'/riddles/auto-select',
+	// Server utilities that need RLS bypass
+	'rateLimiter.ts',
+	'errorMonitoring.ts',
+	'serviceRoleClient.ts',
+	// SRS operations
+	'srs/',
+	// Test files
+	'.test.ts',
+	// Cleanup endpoints
+	'/api/cleanup/',
+	'/api/errors/cleanup'
+] as const;
+
+/**
+ * Check if caller path is in the allowed list for service role usage.
+ * Warns in development mode when used from unexpected locations.
+ *
+ * Note: This is dev-only by design. Production monitoring should be handled
+ * by observability tools (Sentry, Datadog, etc.) not console warnings.
+ */
+function auditServiceRoleUsage(): void {
+	if (!dev) return; // Only audit in development
+
+	const stack = new Error().stack;
+	if (!stack) return;
+
+	// Parse stack trace to find the first caller outside this file
+	// This is more robust than using a fixed index which varies by environment
+	const stackLines = stack.split('\n');
+	let callerLine: string | undefined;
+
+	for (let i = 1; i < stackLines.length; i++) {
+		const line = stackLines[i];
+		if (line && !line.includes('serviceRoleClient.ts')) {
+			callerLine = line.trim();
+			break;
+		}
+	}
+
+	if (!callerLine) {
+		console.warn(
+			'\x1b[33m%s\x1b[0m',
+			'[SECURITY WARNING] Could not determine service role client caller from stack trace'
+		);
+		return;
+	}
+
+	// Check if caller is in allowed paths
+	const isAllowed = ALLOWED_SERVICE_ROLE_PATHS.some((path) => callerLine!.includes(path));
+
+	if (!isAllowed) {
+		console.warn(
+			'\x1b[33m%s\x1b[0m', // Yellow color
+			`[SECURITY WARNING] Service role client used from unexpected location:\n  ${callerLine}\n` +
+				`  Allowed paths: ${ALLOWED_SERVICE_ROLE_PATHS.join(', ')}\n` +
+				`  If this is a legitimate use case, add the path to ALLOWED_SERVICE_ROLE_PATHS in serviceRoleClient.ts`
+		);
+	}
+}
 
 /**
  * Singleton service role client
@@ -85,6 +154,9 @@ let serviceRoleClientInstance: SupabaseClient<Database> | null =
  * ```
  */
 export function createServiceRoleClient(): SupabaseClient<Database> {
+	// Audit usage in development mode
+	auditServiceRoleUsage();
+
 	// Return existing instance if already created
 	if (serviceRoleClientInstance) {
 		return serviceRoleClientInstance;
