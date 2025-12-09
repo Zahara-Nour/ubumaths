@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { updateMessageSchema } from '$lib/server/validation/messages';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * GET /api/messages/[id]
@@ -10,10 +11,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
+	const messageId = validateUuidParam(params.id, 'messageId');
 
 	try {
-		const messageId = params.id;
-
 		// Get message details
 		const { data: messages, error: fetchError } = await supabase.rpc('get_message_details', {
 			p_message_id: messageId,
@@ -58,10 +58,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
+	const messageId = validateUuidParam(params.id, 'messageId');
 
 	try {
-		const messageId = params.id;
-
 		// SECURITY: Validate request body with Zod schema
 		const body = await request.json();
 		const validation = updateMessageSchema.safeParse(body);
@@ -160,10 +159,9 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
+	const messageId = validateUuidParam(params.id, 'messageId');
 
 	try {
-		const messageId = params.id;
-
 		// Check if user is sender (can mark as deleted_by_sender)
 		const { data: message, error: checkError } = await supabase
 			.from('private_messages')

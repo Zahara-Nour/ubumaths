@@ -58,11 +58,44 @@ import { createLogger } from '$lib/utils/logger';
 
 const logger = createLogger('auth/confirm/+server.ts');
 
+/**
+ * Validates redirect URLs to prevent open redirect attacks.
+ * Only allows:
+ * - Relative paths starting with / (but not //)
+ * - Same-origin absolute URLs
+ *
+ * @param url - The URL to validate
+ * @param origin - The origin of the current request
+ * @returns Safe URL or '/' if invalid
+ */
+function validateRedirectUrl(url: string, origin: string): string {
+	// Allow relative URLs (but not protocol-relative like //)
+	if (url.startsWith('/') && !url.startsWith('//')) {
+		return url;
+	}
+
+	// Check if it's a same-origin absolute URL
+	try {
+		const parsed = new URL(url);
+		const originUrl = new URL(origin);
+		if (parsed.origin === originUrl.origin) {
+			return url;
+		}
+	} catch {
+		// Invalid URL, fall through to default
+	}
+
+	// Default to home for any invalid/external URLs
+	return '/';
+}
+
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	// Extract token parameters from the URL
 	const token_hash = url.searchParams.get('token_hash');
 	const type = url.searchParams.get('type');
-	const next = url.searchParams.get('next') ?? '/'; // Default redirect to home
+	const rawNext = url.searchParams.get('next') ?? '/';
+	// Validate redirect URL to prevent open redirect attacks
+	const next = validateRedirectUrl(rawNext, url.origin);
 
 	logger.info('Auth confirmation request:', { type, has_token: !!token_hash });
 
