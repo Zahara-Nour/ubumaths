@@ -15,47 +15,43 @@ The UbuMaths rewards system is a comprehensive gamification framework designed t
 
 ## Architecture Diagram
 
-```
-+------------------------------------------------------------------+
-|                         Teacher Controls                          |
-|  +------------+  +------------+  +------------+  +-------------+  |
-|  | Award      |  | Draw VIP   |  | Approve    |  | Grant       |  |
-|  | Gidouilles |  | Cards      |  | Card Use   |  | Specific    |  |
-|  +-----+------+  +-----+------+  +-----+------+  +------+------+  |
-+--------|--------------|--------------|-----------------|-----------+
-         |              |              |                 |
-         v              v              v                 v
-+------------------------------------------------------------------+
-|                     Core Reward Tables                            |
-|  +-----------------+  +-----------------+  +-----------------+    |
-|  | profiles        |  | vip_card_       |  | shop_item_      |    |
-|  | .gidouilles    |  | templates       |  | templates       |    |
-|  | .bonus         |  +-----------------+  +-----------------+    |
-|  | .vip_cards     |                                               |
-|  +-----------------+                                               |
-+------------------------------------------------------------------+
-         |                      |                      |
-         v                      v                      v
-+------------------------------------------------------------------+
-|                      Audit Trail Tables                           |
-|  +-----------------+  +-----------------+  +-----------------+    |
-|  | gidouilles_     |  | vip_cards_      |  | shop_purchase_  |    |
-|  | history         |  | activity        |  | history         |    |
-|  +-----------------+  +-----------------+  +-----------------+    |
-+------------------------------------------------------------------+
-         |                      |                      |
-         +----------------------+----------------------+
-                               |
-                    AFTER INSERT TRIGGERS
-                               |
-                               v
-+------------------------------------------------------------------+
-|                    reward_events (Unified)                        |
-|  Single table aggregating all reward movements for:               |
-|  - Student journal display                                        |
-|  - Teacher activity view                                          |
-|  - Analytics and reporting                                        |
-+------------------------------------------------------------------+
+```mermaid
+flowchart TB
+    subgraph Teacher["Teacher Controls"]
+        TC1[Award Gidouilles]
+        TC2[Draw VIP Cards]
+        TC3[Approve Card Use]
+        TC4[Grant Specific Card]
+    end
+
+    subgraph Core["Core Reward Tables"]
+        P[profiles<br/>.gidouilles<br/>.bonus<br/>.vip_cards]
+        VT[vip_card_templates]
+        ST[shop_item_templates]
+    end
+
+    subgraph Audit["Audit Trail Tables"]
+        GH[gidouilles_history]
+        VA[vip_cards_activity]
+        PH[shop_purchase_history]
+    end
+
+    subgraph Unified["Unified Events"]
+        RE[reward_events<br/>• Student journal<br/>• Teacher activity<br/>• Analytics]
+    end
+
+    TC1 --> P
+    TC2 --> P
+    TC3 --> P
+    TC4 --> P
+
+    P --> GH
+    VT --> VA
+    ST --> PH
+
+    GH -->|AFTER INSERT| RE
+    VA -->|AFTER INSERT| RE
+    PH -->|AFTER INSERT| RE
 ```
 
 ## Key Features
@@ -99,6 +95,8 @@ The UbuMaths rewards system is a comprehensive gamification framework designed t
 | [Frontend Integration](./frontend-integration.md) | Svelte components, stores, and UI patterns       |
 | [Business Logic](./business-logic.md)             | Algorithms, earning rules, and spending policies |
 | [Security Model](./security-model.md)             | RLS policies and access control                  |
+| [Troubleshooting](./troubleshooting.md)           | Common issues, error codes, and debugging tips   |
+| [Testing Guide](./testing.md)                     | How to test rewards system components            |
 
 ## Quick Reference
 

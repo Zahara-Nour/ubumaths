@@ -235,26 +235,34 @@ interface ChooseCardAction {
 
 ### State Machine
 
-```
-OWNED (unused)
-    │
-    │ Student clicks "Use"
-    ▼
-PENDING (activationRequestedAt set)
-    │
-    ├──► Teacher Approves
-    │         │
-    │         ▼
-    │    APPROVED (activationApprovedAt set)
-    │         │
-    │         │ Student activates
-    │         ▼
-    │    USED (usedAt set, card consumed)
-    │
-    └──► Teacher Rejects
-              │
-              ▼
-         OWNED (request cleared)
+```mermaid
+stateDiagram-v2
+    [*] --> OWNED: Card acquired
+    OWNED --> PENDING: Student clicks "Use"
+    PENDING --> APPROVED: Teacher approves
+    PENDING --> OWNED: Teacher rejects
+    APPROVED --> USED: Student activates
+    USED --> [*]: Card consumed
+
+    note right of OWNED
+        activationRequestedAt = null
+        usedAt = null
+    end note
+
+    note right of PENDING
+        activationRequestedAt set
+        activationApprovedAt = null
+    end note
+
+    note right of APPROVED
+        activationApprovedAt set
+        usedAt = null
+    end note
+
+    note right of USED
+        usedAt set
+        Card consumed
+    end note
 ```
 
 ### Approval Requirements
