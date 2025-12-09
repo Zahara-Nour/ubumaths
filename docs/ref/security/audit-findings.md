@@ -27,13 +27,13 @@ This SvelteKit + Supabase educational platform demonstrates a mature security ar
 
 ## Findings Summary
 
-| Severity | Count | Status                    |
-| -------- | ----- | ------------------------- |
-| Critical | 0     | -                         |
-| High     | 3     | 1 partially fixed, 2 open |
-| Medium   | 4     | 2 fixed, 2 open           |
-| Low      | 2     | Optional                  |
-| Info     | 1     | Informational             |
+| Severity | Count | Status                             |
+| -------- | ----- | ---------------------------------- |
+| Critical | 0     | -                                  |
+| High     | 3     | 1 partially fixed, 1 fixed, 1 open |
+| Medium   | 4     | 2 fixed, 2 open                    |
+| Low      | 2     | Optional                           |
+| Info     | 1     | Solution available                 |
 
 ---
 
@@ -107,7 +107,7 @@ const exerciseId = validateUuidParam(params.id, 'exerciseId');
 ### H3: Service Role Client Security
 
 **Severity**: HIGH
-**Status**: Open
+**Status**: ✅ FIXED (2025-12-09)
 **File**: `src/lib/server/serviceRoleClient.ts`
 
 **Description**: No guardrails prevent developers from using service role client for user operations.
@@ -120,22 +120,27 @@ const exerciseId = validateUuidParam(params.id, 'exerciseId');
 
 **Risk**: Accidental use in user-facing endpoints would bypass all RLS policies.
 
-**Remediation**: Add usage tracking in development:
+**Fix Applied**: Added `auditServiceRoleUsage()` function that:
+
+- Checks caller stack trace in development mode
+- Warns with yellow console output when used from unexpected paths
+- Provides clear guidance on adding new allowed paths
+
+**Allowed paths** (configurable in `ALLOWED_SERVICE_ROLE_PATHS`):
+
+- `/api/cron/` - Cron jobs
+- `/riddles/auto-select` - Auto riddle selection
+- `rateLimiter.ts`, `errorMonitoring.ts` - Server utilities
+- `srs/` - SRS operations
+- `.test.ts` - Test files
+- `/api/cleanup/`, `/api/errors/cleanup` - Cleanup endpoints
 
 ```typescript
-export function createServiceRoleClient(): SupabaseClient<Database> {
-	if (process.env.NODE_ENV === 'development') {
-		const stack = new Error().stack;
-		const caller = stack?.split('\n')[2]?.trim();
-		if (!caller?.includes('/api/cron/') && !caller?.includes('/riddles/auto-select')) {
-			console.warn('[SECURITY] Service role client used from:', caller);
-		}
-	}
-	// ... existing code
-}
+// Example warning output:
+// [SECURITY WARNING] Service role client used from unexpected location:
+//   at someFunction (/src/routes/api/users/+server.ts:42:15)
+//   Allowed paths: /api/cron/, /riddles/auto-select, ...
 ```
-
-**Effort**: 4 hours
 
 ---
 
@@ -255,21 +260,35 @@ rateLimit(`error-log:${clientIp}`, 20, 60000);
 ### I1: Sensitive Data in Console Logs
 
 **Severity**: INFO
-**Status**: Informational
+**Status**: ✅ SOLUTION AVAILABLE (2025-12-09)
 **Files**: Various files with `console.log`
 
 **Description**: Some error logging includes potentially sensitive information.
 
-**Example**:
+**Solution**: Created `createServerLogger()` in `src/lib/utils/logger.ts`:
+
+- Automatic PII redaction (emails, IPs, tokens, passwords, UUIDs, phone numbers)
+- Works in both development and production
+- Color-coded output with timestamps
+
+**Usage**:
 
 ```typescript
-console.log('  [API] Updating user:', {
-	userId,
-	receivedData: data // Could contain PII
-});
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/users/+server.ts');
+
+// PII is automatically redacted
+logger.info('User login', { email: 'user@example.com', ip: '192.168.1.1' });
+// Output: User login { email: '[email@redacted]', ip: '192.xxx.xxx.xxx' }
+
+logger.error('Auth failed', { password: 'secret123' });
+// Output: Auth failed { password: '[REDACTED]' }
 ```
 
-**Recommendation**: Use structured logging with PII redaction.
+**Also available**: `redactPII()` function for manual redaction when needed.
+
+**Migration**: Replace `console.log` with `createServerLogger()` in server-side code incrementally.
 
 ---
 
@@ -333,17 +352,17 @@ The following are well-implemented and should be maintained:
 
 ### Medium-term (1 Month)
 
-| Finding | Task                                          | Effort  |
-| ------- | --------------------------------------------- | ------- |
-| H3      | Add service role client usage auditing        | 4 hours |
-| M1      | Implement consistent rate limiting middleware | 8 hours |
+| Finding | Task                                          | Effort  | Status  |
+| ------- | --------------------------------------------- | ------- | ------- |
+| H3      | Add service role client usage auditing        | 4 hours | ✅ Done |
+| M1      | Implement consistent rate limiting middleware | 8 hours | Open    |
 
 ### Long-term (Quarter)
 
-| Finding | Task                         | Effort  |
-| ------- | ---------------------------- | ------- |
-| L2      | Migrate to nonce-based CSP   | TBD     |
-| I1      | Implement structured logging | 8 hours |
+| Finding | Task                         | Effort  | Status            |
+| ------- | ---------------------------- | ------- | ----------------- |
+| L2      | Migrate to nonce-based CSP   | TBD     | Future            |
+| I1      | Implement structured logging | 8 hours | ✅ Solution Ready |
 
 ---
 
