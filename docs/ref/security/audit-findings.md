@@ -31,7 +31,7 @@ This SvelteKit + Supabase educational platform demonstrates a mature security ar
 | -------- | ----- | ------------------------- |
 | Critical | 0     | -                         |
 | High     | 3     | 1 partially fixed, 2 open |
-| Medium   | 4     | 1 fixed, 3 open           |
+| Medium   | 4     | 2 fixed, 2 open           |
 | Low      | 2     | Optional                  |
 | Info     | 1     | Informational             |
 
@@ -185,28 +185,23 @@ const next = validateRedirectUrl(rawNext, url.origin);
 ### M3: Error Log Endpoint Lacks Server-Side Rate Limiting
 
 **Severity**: MEDIUM
-**Status**: Open
+**Status**: ✅ FIXED (2025-12-09)
 **File**: `src/routes/api/errors/log/+server.ts`
 
-**Description**: Accepts unauthenticated requests without server-side rate limiting.
+**Description**: Accepted unauthenticated requests without server-side rate limiting.
 
-**Risk**: Attackers could flood error_logs table, causing storage/performance issues.
+**Fix Applied**:
 
-**Note**: Client-side rate limiting exists (10 errors/minute) but can be bypassed.
-
-**Remediation**:
+- Created reusable rate limit middleware (`src/lib/server/middleware/rateLimit.ts`)
+- Applied IP-based rate limiting: 20 errors per minute per IP
+- Includes automatic cleanup of expired records
 
 ```typescript
 import { rateLimit } from '$lib/server/middleware/rateLimit';
 
-export const POST: RequestHandler = async ({ request, getClientAddress }) => {
-	const clientIp = getClientAddress();
-	rateLimit(`error-log:${clientIp}`, 20, 60000);
-	// ... existing code
-};
+const clientIp = getClientAddress();
+rateLimit(`error-log:${clientIp}`, 20, 60000);
 ```
-
-**Effort**: 2 hours
 
 ---
 
@@ -334,7 +329,7 @@ The following are well-implemented and should be maintained:
 | Finding | Task                                    | Effort  | Status                            |
 | ------- | --------------------------------------- | ------- | --------------------------------- |
 | H2      | Add UUID validation to route params     | 4 hours | ✅ Partial (helper + 4 endpoints) |
-| M3      | Add rate limiting to error log endpoint | 2 hours | Open                              |
+| M3      | Add rate limiting to error log endpoint | 2 hours | ✅ Done                           |
 
 ### Medium-term (1 Month)
 
