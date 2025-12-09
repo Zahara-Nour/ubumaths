@@ -8,14 +8,14 @@
 
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
 import { POST } from '../../../routes/api/marketplace/listings/[id]/proposals/+server';
+import { createMockSupabase } from '$tests/helpers';
 import {
-	createMockSupabase,
 	createTestUser,
 	createTestListing,
 	createTestCard,
 	mockRPCFunctions,
 	simulateConcurrentOperations
-} from '$lib/test-utils/marketplace';
+} from '$tests/helpers/fixtures';
 
 // Type definitions for test request/response handling
 interface _ProposalsRequestLocals {

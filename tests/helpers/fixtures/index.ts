@@ -53,3 +53,62 @@ export {
 	type ProfileRole,
 	type Profile
 } from './profiles';
+
+// ============================================================================
+// GAME
+// ============================================================================
+
+export {
+	// Factories
+	createTestPlayer,
+	createTestSpell,
+	createTestMonster,
+	createTestCombat,
+	createTestChallenge,
+
+	// Mock client
+	createMockSupabaseClient,
+
+	// Random seeding
+	seedRandom,
+	resetRandom,
+
+	// Collections
+	TEST_MONSTERS,
+	TEST_CHALLENGES,
+	TEST_SPELLS
+} from './game';
+
+// ============================================================================
+// MARKETPLACE
+// ============================================================================
+
+export {
+	// Factories
+	createTestUser,
+	createTestClass,
+	createTestCard,
+	createTestListing,
+
+	// Mock helpers
+	addStudentToClass,
+	giveGidouilles,
+	mockRPCFunctions,
+
+	// Concurrent testing
+	simulateConcurrentOperations,
+	testRaceCondition,
+
+	// Assertions
+	assertError,
+	assertSuccess,
+
+	// Cleanup
+	resetMarketplaceCounters,
+
+	// Types
+	type TestUser,
+	type TestClass,
+	type TestCard,
+	type TestListing
+} from './marketplace';

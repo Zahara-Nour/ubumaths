@@ -1,56 +1,25 @@
 /**
- * Marketplace Test Utilities
- * ==========================
+ * Marketplace Test Fixtures
+ * =========================
  *
- * Shared test utilities for marketplace feature testing.
- * Provides helpers for creating test data, mocking Supabase,
- * and simulating concurrent operations.
+ * Test data factories for marketplace feature testing.
+ * Provides helpers for creating test users, classes, cards, and listings.
+ *
+ * @example
+ * ```typescript
+ * import { createTestUser, createTestListing } from '$tests/helpers';
+ *
+ * const seller = createTestUser('student');
+ * const listing = createTestListing(seller.id, 'school-1');
+ * ```
  */
 
 import { vi, expect } from 'vitest';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { MockSupabaseClient } from '../supabase/mock-client';
 
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
-
-type MockChainMethod = ReturnType<typeof vi.fn>;
-
-type MockChain = {
-	select: MockChainMethod;
-	insert: MockChainMethod;
-	update: MockChainMethod;
-	delete: MockChainMethod;
-	upsert: MockChainMethod;
-	eq: MockChainMethod;
-	neq: MockChainMethod;
-	gt: MockChainMethod;
-	gte: MockChainMethod;
-	lt: MockChainMethod;
-	lte: MockChainMethod;
-	in: MockChainMethod;
-	contains: MockChainMethod;
-	containedBy: MockChainMethod;
-	is: MockChainMethod;
-	filter: MockChainMethod;
-	or: MockChainMethod;
-	and: MockChainMethod;
-	order: MockChainMethod;
-	limit: MockChainMethod;
-	range: MockChainMethod;
-	single: MockChainMethod;
-	maybeSingle: MockChainMethod;
-	match: MockChainMethod;
-	throwOnError: MockChainMethod;
-	then: MockChainMethod;
-};
-
-export type MockSupabaseClient = Omit<SupabaseClient<Database>, 'rpc'> & {
-	_mockChain: MockChain;
-	_rpcMocks: Map<string, MockChainMethod | ((params: unknown) => unknown)>;
-	rpc: (name: string, params?: unknown) => Promise<{ data: unknown; error: null }>;
-};
 
 export type TestUser = {
 	id: string;
@@ -102,69 +71,6 @@ export type TestListing = {
 	created_at: string;
 	expires_at: string;
 };
-
-// ============================================================================
-// MOCK SUPABASE CLIENT FACTORY
-// ============================================================================
-
-/**
- * Creates a mock Supabase client with chainable query builder
- * and RPC mocking support
- */
-export function createMockSupabase(): MockSupabaseClient {
-	const rpcMocks = new Map();
-
-	const mockChain = {
-		select: vi.fn().mockReturnThis(),
-		insert: vi.fn().mockReturnThis(),
-		update: vi.fn().mockReturnThis(),
-		delete: vi.fn().mockReturnThis(),
-		upsert: vi.fn().mockReturnThis(),
-		eq: vi.fn().mockReturnThis(),
-		neq: vi.fn().mockReturnThis(),
-		gt: vi.fn().mockReturnThis(),
-		gte: vi.fn().mockReturnThis(),
-		lt: vi.fn().mockReturnThis(),
-		lte: vi.fn().mockReturnThis(),
-		in: vi.fn().mockReturnThis(),
-		contains: vi.fn().mockReturnThis(),
-		containedBy: vi.fn().mockReturnThis(),
-		is: vi.fn().mockReturnThis(),
-		filter: vi.fn().mockReturnThis(),
-		or: vi.fn().mockReturnThis(),
-		and: vi.fn().mockReturnThis(),
-		order: vi.fn().mockReturnThis(),
-		limit: vi.fn().mockReturnThis(),
-		range: vi.fn().mockReturnThis(),
-		single: vi.fn().mockReturnThis(),
-		maybeSingle: vi.fn().mockReturnThis(),
-		match: vi.fn().mockReturnThis(),
-		throwOnError: vi.fn().mockReturnThis(),
-		then: vi.fn((callback) => callback({ data: null, error: null }))
-	};
-
-	const client = {
-		from: vi.fn(() => mockChain),
-		rpc: vi.fn(async (name, params) => {
-			if (rpcMocks.has(name)) {
-				const mock = rpcMocks.get(name);
-				if (typeof mock === 'function') {
-					return { data: await mock(params), error: null };
-				}
-				return { data: mock, error: null };
-			}
-			return { data: null, error: null };
-		}),
-		auth: {
-			getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
-			getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null })
-		},
-		_mockChain: mockChain,
-		_rpcMocks: rpcMocks
-	} as unknown as MockSupabaseClient;
-
-	return client;
-}
 
 // ============================================================================
 // TEST DATA FACTORIES
@@ -262,7 +168,7 @@ export function createTestListing(
 }
 
 /**
- * Adds a student to a class
+ * Adds a student to a class (mocks the query response)
  */
 export function addStudentToClass(
 	supabase: MockSupabaseClient,
@@ -276,7 +182,6 @@ export function addStudentToClass(
 		joined_at: new Date().toISOString()
 	};
 
-	// Mock the query response
 	supabase._mockChain.select.mockImplementation(() => {
 		supabase._mockChain.then = vi.fn((callback) => callback({ data: [membership], error: null }));
 		return supabase._mockChain;
@@ -286,9 +191,9 @@ export function addStudentToClass(
 }
 
 /**
- * Gives gidouilles to a user
+ * Gives gidouilles to a user (mocks the update response)
  */
-export function giveGidouilles(supabase: MockSupabaseClient, userId: string, amount: number) {
+export function giveGidouilles(supabase: MockSupabaseClient, _userId: string, amount: number) {
 	supabase._mockChain.update.mockImplementation(() => {
 		supabase._mockChain.then = vi.fn((callback) =>
 			callback({ data: { gidouilles: amount }, error: null })
@@ -308,7 +213,6 @@ export async function simulateConcurrentOperations<T>(
 	operations: (() => Promise<T>)[],
 	delayMs: number = 0
 ): Promise<PromiseSettledResult<T>[]> {
-	// Add random delays to increase chance of race conditions
 	const promises = operations.map(
 		(op, _index) =>
 			new Promise<T>((resolve, reject) => {
@@ -340,7 +244,6 @@ export async function testRaceCondition(
 		try {
 			await testFn();
 		} catch (error: unknown) {
-			// Check for common race condition indicators
 			const errorMessage = (error as Error)?.message || '';
 			if (
 				errorMessage.includes('409') ||
@@ -365,20 +268,16 @@ export async function testRaceCondition(
  * Mock RPC functions for testing atomic operations
  */
 export function mockRPCFunctions(supabase: MockSupabaseClient) {
-	// Mock accept_proposal_atomic
 	supabase._rpcMocks.set('accept_proposal_atomic', async (params: unknown) => {
 		const p = params as { simulate_conflict?: boolean; p_proposal_id?: string };
-		// Simulate atomic operation with possibility of failure
 		if (p.simulate_conflict) {
 			throw new Error('409: Conflict - Another proposal was already accepted');
 		}
 		return { success: true, proposal_id: p.p_proposal_id };
 	});
 
-	// Mock record_listing_view
 	supabase._rpcMocks.set('record_listing_view', async (params: unknown) => {
 		const p = params as { p_listing_id?: string; p_user_id?: string };
-		// Simulate unique view tracking
 		const viewKey = `${p.p_listing_id}-${p.p_user_id}`;
 		const viewedSet = new Set<string>();
 
@@ -390,21 +289,17 @@ export function mockRPCFunctions(supabase: MockSupabaseClient) {
 		return { view_recorded: true, new_count: viewedSet.size };
 	});
 
-	// Mock check_daily_trade_limit
 	supabase._rpcMocks.set('check_daily_trade_limit', async (params: unknown) => {
 		const p = params as { force_limit_exceeded?: boolean };
-		// Simulate trade limit checking
 		return p.force_limit_exceeded ? false : true;
 	});
 
-	// Mock execute_trade
 	supabase._rpcMocks.set('execute_trade', async (params: unknown) => {
 		const p = params as {
 			simulate_insufficient_balance?: boolean;
 			simulate_card_not_found?: boolean;
 			p_trade_id?: string;
 		};
-		// Simulate trade execution with possible failures
 		if (p.simulate_insufficient_balance) {
 			throw new Error('Insufficient gidouilles balance');
 		}
@@ -414,10 +309,8 @@ export function mockRPCFunctions(supabase: MockSupabaseClient) {
 		return { success: true, trade_id: p.p_trade_id };
 	});
 
-	// Mock unlock_specific_cards
 	supabase._rpcMocks.set('unlock_specific_cards', async (params: unknown) => {
 		const p = params as { simulate_unlock_failure?: boolean; p_card_ids?: string[] };
-		// Simulate card unlocking
 		if (p.simulate_unlock_failure) {
 			throw new Error('Failed to unlock cards');
 		}
@@ -461,18 +354,9 @@ export function assertSuccess(
 /**
  * Reset all test counters
  */
-export function resetTestCounters() {
+export function resetMarketplaceCounters() {
 	userIdCounter = 1;
 	classIdCounter = 1;
 	cardIdCounter = 1;
 	listingIdCounter = 1;
-}
-
-/**
- * Clean up all test data (for integration tests)
- */
-export async function cleanupTestData(_supabase: SupabaseClient<Database>) {
-	// This would be used in integration tests with real database
-	// For unit tests, we just reset mocks
-	resetTestCounters();
 }

@@ -10,7 +10,7 @@ import {
 	validateAnswer,
 	formatAnswer
 } from './challenge-variables';
-import { seedRandom, resetRandom, createTestChallenge } from '$lib/test-utils/game-fixtures';
+import { seedRandom, resetRandom, createTestChallenge } from '$tests/helpers/fixtures';
 
 import type { GameChallenge, ChallengeAnswer } from '$lib/types/game'; // For future tests
 

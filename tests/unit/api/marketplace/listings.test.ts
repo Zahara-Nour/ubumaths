@@ -9,13 +9,13 @@
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
 import type { RequestEvent as _RequestEvent } from '@sveltejs/kit';
 import { GET, POST } from '../../../routes/api/marketplace/listings/+server.js';
+import { createMockSupabase } from '$tests/helpers';
 import {
-	createMockSupabase,
 	createTestUser,
 	createTestClass,
 	createTestListing,
 	mockRPCFunctions
-} from '$lib/test-utils/marketplace';
+} from '$tests/helpers/fixtures';
 
 // Type definitions for test request/response handling
 interface ListingsQueryLocals {
