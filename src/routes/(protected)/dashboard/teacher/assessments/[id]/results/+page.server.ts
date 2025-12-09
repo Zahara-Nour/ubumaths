@@ -7,12 +7,15 @@ import {
 } from '$lib/server/assessments';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 import { getUserProfile } from '$lib/server/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw redirect(303, '/auth/signin');
 	}
+
+	const id = validateUuidParam(params.id);
 
 	// ✅ STANDARDIZED: Use getUserProfile helper for consistent profile fetching
 	const profile = await getUserProfile(locals.supabase, user.id);
@@ -26,10 +29,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Fetch assessment
-	const { data: assessment, error: assessmentError } = await getAssessment(
-		locals.supabase,
-		params.id
-	);
+	const { data: assessment, error: assessmentError } = await getAssessment(locals.supabase, id);
 
 	if (assessmentError || !assessment) {
 		throw error(404, 'Évaluation introuvable');
@@ -46,7 +46,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Fetch assessment results (direct DB query, no cache)
 	const { data: results, error: resultsError } = await getAssessmentResults(
 		locals.supabase,
-		params.id,
+		id,
 		isTestMode
 	);
 
@@ -60,11 +60,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Fetch assessment statistics (direct DB query, no cache)
-	const { data: statistics } = await getAssessmentStatistics(
-		locals.supabase,
-		params.id,
-		isTestMode
-	);
+	const { data: statistics } = await getAssessmentStatistics(locals.supabase, id, isTestMode);
 
 	return {
 		assessment,

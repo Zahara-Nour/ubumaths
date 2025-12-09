@@ -2,6 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { SchoolTimetable } from '$lib/types/database';
 import { validateTimetable } from '$lib/utils/timetable';
+import { validateUuidParam } from '$lib/server/validation/params';
 import {
 	createSchoolYearSchema,
 	updateSchoolYearSchema,
@@ -26,6 +27,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		throw redirect(303, '/login');
 	}
 
+	const schoolId = validateUuidParam(params.schoolId, 'schoolId');
+
 	// Get user profile to check if admin
 	const { data: profile } = await supabase
 		.from('profiles')
@@ -41,7 +44,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	const { data: school, error: schoolError } = await supabase
 		.from('schools')
 		.select('*')
-		.eq('id', params.schoolId)
+		.eq('id', schoolId)
 		.single();
 
 	if (schoolError || !school) {
@@ -52,7 +55,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	const { data: schoolYears, error: yearsError } = await supabase
 		.from('school_years')
 		.select('*')
-		.eq('school_id', params.schoolId)
+		.eq('school_id', schoolId)
 		.order('start_date', { ascending: false });
 
 	if (yearsError) {

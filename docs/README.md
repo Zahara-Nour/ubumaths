@@ -386,6 +386,7 @@ Intégration complète avec Google Classroom pour synchroniser et partager du ma
 | [Vue d'ensemble](architecture/README.md)                                 | Architecture générale du projet          |
 | [Structure du projet](architecture/project-structure.md)                 | Organisation des dossiers et fichiers    |
 | [Schéma base de données](architecture/database-schema.md)                | Tables, relations, RLS policies          |
+| [Audit Trail System](ref/audit-trail/README.md) 🆕                       | Technical reference for audit logging    |
 | [Marketplace Architecture](architecture/marketplace.md) 🆕 ⭐            | Architecture complète du marketplace     |
 | [Component Architecture](architecture/components.md) ⭐                  | MySelect, standardisation dropdowns      |
 | [Routing](architecture/routing.md)                                       | Routes SvelteKit et organisation         |
@@ -524,8 +525,8 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - 28 RLS policies pour sécurité granulaire
   - 4 triggers pour dénormalisation automatique (course_name, teacher_name)
   - Chiffrement AES-256-GCM des tokens OAuth
-- **Lignes de documentation** : ~104,000+ 🆕 (added reward journal documentation)
-- **Dernière mise à jour** : 2025-11-21
+- **Lignes de documentation** : ~107,000+ 🆕 (added audit trail technical reference)
+- **Dernière mise à jour** : 2025-12-09
 
 ---
 

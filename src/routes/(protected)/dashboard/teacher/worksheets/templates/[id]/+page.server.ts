@@ -7,6 +7,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 import { z } from 'zod';
 
 // Validation schema for updating template
@@ -33,17 +34,13 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		};
 	}
 
-	// Validate UUID format
-	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-	if (!uuidRegex.test(params.id)) {
-		throw error(400, 'Invalid template ID');
-	}
+	const id = validateUuidParam(params.id);
 
 	// Fetch template
 	const { data: template, error: dbError } = await locals.supabase
 		.from('worksheet_templates')
 		.select('*')
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (dbError) {

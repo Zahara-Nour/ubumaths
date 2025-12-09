@@ -8,6 +8,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getAssignmentTargets } from '$lib/server/students';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const supabase = locals.supabase;
@@ -17,7 +18,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		throw error(401, 'Unauthorized');
 	}
 
-	const exerciseId = params.id;
+	const exerciseId = validateUuidParam(params.id);
 
 	// Fetch exercise details
 	const { data: exercise, error: exerciseError } = await supabase
