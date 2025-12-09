@@ -203,6 +203,10 @@ describe('CRITICAL: Message Deduplication', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
@@ -221,33 +225,93 @@ describe('CRITICAL: Message Deduplication', () => {
 		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
 		vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
 
+		// Mock DB insert to return same ID as optimistic
+		let optimisticId = '';
+		const fromMock = vi.fn(() => ({
+			insert: vi.fn(() => ({
+				select: vi.fn(() => ({
+					single: vi.fn(() => {
+						// Return the optimistic ID that was used
+						const currentMessages = chatStore.getMessages(conversationId);
+						optimisticId = currentMessages[0]?.id || '';
+						return Promise.resolve({
+							data: {
+								id: optimisticId,
+								conversation_id: conversationId,
+								sender_id: userId,
+								content: { text: 'Hello world' },
+								plain_text: 'Hello world',
+								created_at: new Date().toISOString(),
+								edited_at: null,
+								deleted_at: null,
+								is_flagged: false,
+								flag_reason: null,
+								sender: {
+									id: userId,
+									full_name: 'Test User',
+									avatar_url: null
+								}
+							},
+							error: null
+						});
+					})
+				}))
+			})),
+			select: vi.fn(() => ({
+				eq: vi.fn(() => ({
+					single: vi.fn(() =>
+						Promise.resolve({
+							data: {
+								id: optimisticId,
+								conversation_id: conversationId,
+								sender_id: userId,
+								content: { text: 'Hello world' },
+								plain_text: 'Hello world',
+								created_at: new Date().toISOString(),
+								edited_at: null,
+								deleted_at: null,
+								is_flagged: false,
+								flag_reason: null,
+								sender: {
+									id: userId,
+									full_name: 'Test User',
+									avatar_url: null
+								}
+							},
+							error: null
+						})
+					)
+				}))
+			}))
+		}));
+		supabase.from = fromMock as unknown as typeof supabase.from;
+
 		await chatStore.subscribeToConversation(conversationId);
 
 		// Send message (creates optimistic UI)
 		const sendPromise = chatStore.sendMessage(conversationId, 'Hello world');
 
-		// Step 1: Check optimistic message exists (should have temp ID)
+		// Step 1: Check optimistic message exists (should have UUID format)
 		let messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
-		expect(messages[0].id).toMatch(/^temp-/);
+		expect(messages[0].id).toMatch(/^[0-9a-f-]{36}$/); // UUID format
 		expect(messages[0].is_optimistic).toBe(true);
 
 		const createdAt = messages[0].created_at;
+		optimisticId = messages[0].id;
 
 		await sendPromise;
 
-		// Step 2: After DB insert, optimistic should be updated with DB ID
+		// Step 2: After DB insert, optimistic should be updated with DB version
 		messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
-		expect(messages[0].id).toBe('db-msg-123'); // DB ID
+		expect(messages[0].id).toBe(optimisticId); // Same ID (UUID)
 		expect(messages[0].is_optimistic).toBe(false);
 
 		// Step 3: Simulate postgres_changes event (source of truth with JOINs)
-		// The handler will find the message by created_at timestamp since the optimistic
-		// message was already replaced with DB ID
 		mockChannel.simulatePostgresChanges({
 			new: {
-				id: 'db-msg-123',
+				id: optimisticId,
 				conversation_id: conversationId,
 				sender_id: userId,
 				content: { text: 'Hello world' },
@@ -269,7 +333,7 @@ describe('CRITICAL: Message Deduplication', () => {
 		// Final verification
 		messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
-		expect(messages[0].id).toBe('db-msg-123');
+		expect(messages[0].id).toBe(optimisticId);
 		// After postgres_changes replaces with full JOINed data, these flags should be gone
 		expect(messages[0].sender).toBeDefined();
 	});
@@ -281,16 +345,18 @@ describe('CRITICAL: Message Deduplication', () => {
 
 		await chatStore.subscribeToConversation(conversationId);
 
+		const broadcastCreatedAt = new Date().toISOString();
+
 		// Simulate receiving broadcast from another user
 		const broadcastPayload = {
 			type: 'new_message' as const,
 			message: {
-				id: 'temp-remote-123',
+				id: 'broadcast-remote-123',
 				conversation_id: conversationId,
 				sender_id: 'user-2',
 				content: { text: 'Remote message' },
 				plain_text: 'Remote message',
-				created_at: new Date().toISOString(),
+				created_at: broadcastCreatedAt,
 				sender: {
 					id: 'user-2',
 					full_name: 'Remote User',
@@ -304,7 +370,7 @@ describe('CRITICAL: Message Deduplication', () => {
 		// Step 1: Broadcast message should appear
 		let messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
-		expect(messages[0].id).toBe('temp-remote-123');
+		expect(messages[0].id).toBe('broadcast-remote-123');
 		expect(messages[0].is_broadcast).toBe(true);
 
 		// Mock the DB SELECT query that handlePostgresMessage will make
@@ -319,7 +385,7 @@ describe('CRITICAL: Message Deduplication', () => {
 								sender_id: 'user-2',
 								content: { text: 'Remote message' },
 								plain_text: 'Remote message',
-								created_at: broadcastPayload.message.created_at,
+								created_at: broadcastCreatedAt, // Same timestamp for deduplication
 								edited_at: null,
 								deleted_at: null,
 								is_flagged: false,
@@ -339,6 +405,7 @@ describe('CRITICAL: Message Deduplication', () => {
 		supabase.from = fromMock as unknown as typeof supabase.from;
 
 		// Step 2: Simulate postgres_changes with same message (now with DB ID)
+		// Deduplication happens via created_at timestamp match
 		mockChannel.simulatePostgresChanges({
 			new: {
 				id: 'db-msg-456',
@@ -346,7 +413,7 @@ describe('CRITICAL: Message Deduplication', () => {
 				sender_id: 'user-2',
 				content: { text: 'Remote message' },
 				plain_text: 'Remote message',
-				created_at: broadcastPayload.message.created_at
+				created_at: broadcastCreatedAt
 			}
 		});
 
@@ -556,6 +623,10 @@ describe('Optimistic UI Updates', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
@@ -579,7 +650,7 @@ describe('Optimistic UI Updates', () => {
 		const messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
 		expect(messages[0].is_optimistic).toBe(true);
-		expect(messages[0].id).toMatch(/^temp-/);
+		expect(messages[0].id).toMatch(/^[0-9a-f-]{36}$/); // UUID format
 		expect(messages[0].plain_text).toBe('Test message');
 
 		await sendPromise;
@@ -626,10 +697,11 @@ describe('Optimistic UI Updates', () => {
 		let messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
 
-		// Should throw error and rollback
-		await expect(sendPromise).rejects.toThrow();
+		// Should return null on error and rollback
+		const result = await sendPromise;
+		expect(result).toBe(null);
 
-		// Should be removed
+		// Should be removed (rolled back)
 		messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(0);
 	});
@@ -650,13 +722,20 @@ describe('Optimistic UI Updates', () => {
 
 		const sendPromise = chatStore.sendMessage(conversationId, 'Test');
 
-		await expect(sendPromise).rejects.toThrow('Network error');
+		// Should appear optimistically first
+		let messages = chatStore.getMessages(conversationId);
+		expect(messages).toHaveLength(1);
 
-		const messages = chatStore.getMessages(conversationId);
+		// Should return null on network error
+		const result = await sendPromise;
+		expect(result).toBe(null);
+
+		// Should be removed (rolled back)
+		messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(0);
 	});
 
-	it('should generate unique temp IDs for multiple optimistic messages', async () => {
+	it('should generate unique IDs for multiple optimistic messages', async () => {
 		const mockChannel = createMockChannel(`chat-${conversationId}`);
 		vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
 
@@ -665,9 +744,9 @@ describe('Optimistic UI Updates', () => {
 
 		const messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(2);
-		expect(messages[0].id).toMatch(/^temp-/);
-		expect(messages[1].id).toMatch(/^temp-/);
-		expect(messages[0].id).not.toBe(messages[1].id); // Different temp IDs
+		expect(messages[0].id).toMatch(/^[0-9a-f-]{36}$/); // UUID format
+		expect(messages[1].id).toMatch(/^[0-9a-f-]{36}$/); // UUID format
+		expect(messages[0].id).not.toBe(messages[1].id); // Different UUIDs
 
 		await Promise.all([promise1, promise2]);
 	});
@@ -686,6 +765,10 @@ describe('Broadcast Channel Integration', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
@@ -751,15 +834,21 @@ describe('Broadcast Channel Integration', () => {
 		expect(messages[0].is_broadcast).toBe(true);
 	});
 
-	it('should not add message if broadcast send fails', async () => {
+	it('should still complete message send even if broadcast fails', async () => {
 		const mockChannel = createMockChannel(`chat-${conversationId}`);
 		vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
 
-		// Mock send failure
+		// Mock broadcast send failure (but DB insert succeeds)
 		mockChannel.send = vi.fn(() => Promise.reject(new Error('Broadcast failed')));
 
-		// Should not throw, broadcast is best-effort
-		await expect(chatStore.sendMessage(conversationId, 'Test')).rejects.toThrow();
+		// Broadcast failure doesn't prevent message send - broadcast is best-effort
+		// The message should still be sent to DB and return success
+		const result = await chatStore.sendMessage(conversationId, 'Test');
+
+		// Should still complete successfully (DB insert worked)
+		expect(result).not.toBe(null);
+		const messages = chatStore.getMessages(conversationId);
+		expect(messages).toHaveLength(1);
 	});
 });
 
@@ -776,6 +865,10 @@ describe('postgres_changes Integration', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
@@ -918,6 +1011,10 @@ describe('Conversation Management', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
@@ -943,7 +1040,8 @@ describe('Conversation Management', () => {
 						created_at: new Date().toISOString(),
 						edited_at: null,
 						is_flagged: false,
-						sender_full_name: 'User 1',
+						sender_firstname: 'User',
+						sender_lastname: '1',
 						sender_avatar_url: null
 					}
 				],
@@ -989,7 +1087,8 @@ describe('Conversation Management', () => {
 				created_at: '2025-01-01T12:00:00Z',
 				edited_at: null,
 				is_flagged: false,
-				sender_full_name: 'User 1',
+				sender_firstname: 'User',
+				sender_lastname: '1',
 				sender_avatar_url: null
 			}
 		];
@@ -1014,7 +1113,8 @@ describe('Conversation Management', () => {
 				created_at: '2025-01-01T11:00:00Z',
 				edited_at: null,
 				is_flagged: false,
-				sender_full_name: 'User 1',
+				sender_firstname: 'User',
+				sender_lastname: '1',
 				sender_avatar_url: null
 			}
 		];
@@ -1060,6 +1160,10 @@ describe('Typing Indicators', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		chatStore.activeConversationId = conversationId;
 		// Clear all messages from previous tests
@@ -1203,6 +1307,10 @@ describe('Phase 1: Initialization & Active Conversation', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 	});
 
 	afterEach(() => {
@@ -1497,6 +1605,10 @@ describe('Phase 1: Reactive Getters', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		chatStore['conversationsMap'].clear();
 		chatStore['messages'].clear();
@@ -1718,6 +1830,10 @@ describe('Phase 2: Conversation Management', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		chatStore['conversationsMap'].clear();
 	});
@@ -2085,6 +2201,10 @@ describe('Phase 3: Reactions & Reporting', () => {
 	beforeEach(() => {
 		supabase = createMockSupabaseClient();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		chatStore['messages'].clear();
 	});
@@ -2362,6 +2482,10 @@ describe('Typing Timer Memory Leak Prevention', () => {
 		supabase = createMockSupabaseClient();
 		vi.useFakeTimers();
 		mockBrowser(true);
+		// Reset chatStore internal state to allow re-initialization with new mock
+		chatStore['supabase'] = null;
+		chatStore['userId'] = null;
+		chatStore['currentUser'] = null;
 		chatStore.init(supabase, userId, currentUser);
 		chatStore['messages'].clear();
 		chatStore['typingUsers'].clear();
