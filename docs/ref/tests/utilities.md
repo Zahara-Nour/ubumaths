@@ -5,33 +5,50 @@ Complete reference for test helper functions and utilities.
 ## Directory Overview
 
 ```
-tests/
-├── helpers/
-│   ├── supabase-helpers.ts    # Mock Supabase client
-│   ├── message-helpers.ts     # Message testing utilities
-│   └── exercise-helpers.ts    # Exercise testing utilities
-├── database/helpers/
-│   ├── postgres-client.ts     # Direct PostgreSQL access
-│   ├── supabase-client.ts     # Supabase client factory
-│   ├── test-data-factory.ts   # Builder pattern for test data
-│   └── trigger-test-helpers.ts # Core DB utilities
-├── fixtures/
-│   └── game-fixtures.ts       # Game test factories
-└── e2e/helpers/
-    ├── auth-helpers.ts        # E2E authentication
-    └── image-helpers.ts       # Image testing
+tests/helpers/                     # Main helpers (import via $tests/helpers)
+├── index.ts                       # Barrel export
+├── supabase/
+│   ├── mock-client.ts             # createMockSupabase
+│   ├── mock-locals.ts             # createMockLocals
+│   ├── mock-request.ts            # createMockRequest
+│   └── mock-helpers.ts            # mockSuccess, mockError, mockSequence
+└── fixtures/
+    └── profiles.ts                # mockIds, mockProfiles, factories
+
+tests/database/helpers/            # Database-specific helpers
+├── postgres-client.ts             # Direct PostgreSQL access
+├── test-data-factory.ts           # Builder pattern for test data
+└── trigger-test-helpers.ts        # Core DB utilities
+
+e2e/helpers/                       # E2E test helpers
+├── auth-helpers.ts                # E2E authentication
+└── image-helpers.ts               # Image testing
+```
+
+## Quick Start
+
+```typescript
+// Import all helpers from unified barrel export
+import {
+	createMockSupabase,
+	createMockLocals,
+	mockSuccess,
+	mockError,
+	mockIds,
+	createMockProfile
+} from '$tests/helpers';
 ```
 
 ## Supabase Helpers
 
-**Location**: `tests/helpers/supabase-helpers.ts`
+**Location**: `$tests/helpers` (barrel export from `tests/helpers/supabase/`)
 
 ### createMockSupabase()
 
 Creates a chainable mock Supabase client.
 
 ```typescript
-import { createMockSupabase } from 'tests/helpers/supabase-helpers';
+import { createMockSupabase } from '$tests/helpers';
 
 const supabase = createMockSupabase();
 
@@ -46,7 +63,7 @@ supabase.from('table').select('*').eq('id', '123').single();
 Configure mock to return successful response.
 
 ```typescript
-import { createMockSupabase, mockSuccess } from 'tests/helpers/supabase-helpers';
+import { createMockSupabase, mockSuccess } from '$tests/helpers';
 
 const supabase = createMockSupabase();
 
@@ -71,7 +88,7 @@ mockSuccess(supabase, { id: '123' }, 'then');
 Configure mock to return error response.
 
 ```typescript
-import { createMockSupabase, mockError } from 'tests/helpers/supabase-helpers';
+import { createMockSupabase, mockError } from '$tests/helpers';
 
 const supabase = createMockSupabase();
 
@@ -90,7 +107,7 @@ mockError(supabase, 'Database error', 'then');
 Configure mock for multiple sequential calls.
 
 ```typescript
-import { createMockSupabase, mockSequence } from 'tests/helpers/supabase-helpers';
+import { createMockSupabase, mockSequence } from '$tests/helpers';
 
 const supabase = createMockSupabase();
 
@@ -106,7 +123,7 @@ mockSequence(supabase, [
 Create mock Request object for API tests.
 
 ```typescript
-import { createMockRequest } from 'tests/helpers/supabase-helpers';
+import { createMockRequest } from '$tests/helpers';
 
 const request = createMockRequest({ name: 'Test' }, 'POST');
 
@@ -124,7 +141,7 @@ const body = await request.json();
 Create mock SvelteKit locals object.
 
 ```typescript
-import { createMockLocals, createMockSupabase } from 'tests/helpers/supabase-helpers';
+import { createMockLocals, createMockSupabase } from '$tests/helpers';
 
 // Unauthenticated user
 const locals = createMockLocals();
@@ -144,7 +161,7 @@ const authLocals = createMockLocals('user-123', supabase);
 Create mock URL with search parameters.
 
 ```typescript
-import { createMockURL } from 'tests/helpers/supabase-helpers';
+import { createMockURL } from '$tests/helpers';
 
 const url = createMockURL({ classId: 'class-123', page: '2' });
 // url.searchParams.get('classId') === 'class-123'
@@ -153,11 +170,7 @@ const url = createMockURL({ classId: 'class-123', page: '2' });
 ### Assertion Helpers
 
 ```typescript
-import {
-	expectTableQuery,
-	expectErrorResponse,
-	expectSuccessResponse
-} from 'tests/helpers/supabase-helpers';
+import { expectTableQuery, expectErrorResponse, expectSuccessResponse } from '$tests/helpers';
 
 // Verify table was queried
 expectTableQuery(supabase, 'profiles');
@@ -172,7 +185,7 @@ const data = await expectSuccessResponse(response, 201);
 ### Mock Data Constants
 
 ```typescript
-import { mockIds, mockProfiles } from 'tests/helpers/supabase-helpers';
+import { mockIds, mockProfiles } from '$tests/helpers';
 
 mockIds.teacher; // 'teacher-123'
 mockIds.student; // 'student-456'
@@ -574,7 +587,7 @@ import {
 	createMockLocals,
 	mockSuccess,
 	mockError
-} from 'tests/helpers/supabase-helpers';
+} from '$tests/helpers';
 
 describe('POST /api/endpoint', () => {
 	let supabase: ReturnType<typeof createMockSupabase>;

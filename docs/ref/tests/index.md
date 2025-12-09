@@ -55,25 +55,24 @@ pnpm test:unit -- --coverage
 
 ```
 tests/
+├── helpers/                   # Unified test helpers (use $tests/helpers)
+│   ├── index.ts               # Main barrel export
+│   ├── supabase/              # Supabase mock utilities
+│   │   ├── mock-client.ts     # createMockSupabase (unified)
+│   │   ├── mock-locals.ts     # createMockLocals
+│   │   ├── mock-request.ts    # createMockRequest
+│   │   └── mock-helpers.ts    # mockSuccess, mockError, mockSequence
+│   └── fixtures/              # Test data fixtures
+│       └── profiles.ts        # mockIds, mockProfiles, factories
 ├── database/
 │   ├── helpers/               # Database test utilities
 │   │   ├── postgres-client.ts
-│   │   ├── supabase-client.ts
 │   │   ├── test-data-factory.ts
 │   │   └── trigger-test-helpers.ts
 │   └── triggers/              # PostgreSQL trigger tests
-├── fixtures/
-│   └── game-fixtures.ts       # Game test factories
-├── helpers/
-│   ├── supabase-helpers.ts    # Mock Supabase client
-│   ├── message-helpers.ts
-│   └── exercise-helpers.ts
 ├── integration/               # API + DB integration tests
 └── unit/                      # Unit tests by feature
-    ├── api/
-    ├── server/
-    ├── utils/
-    └── validation/
+    └── api/
 
 src/
 ├── lib/
@@ -81,7 +80,7 @@ src/
 │   ├── stores/*.svelte.test.ts # Store browser tests
 │   └── mathAST/**/*.test.ts   # Math library tests
 └── routes/
-    └── **/*.svelte.spec.ts    # Route component tests
+    └── **/*.test.ts           # Route API tests
 
 e2e/
 ├── auth/                      # Authentication flows
@@ -94,13 +93,15 @@ e2e/
 
 ## Configuration Files
 
-| File                           | Purpose                          |
-| ------------------------------ | -------------------------------- |
-| `vite.config.ts`               | Main Vitest config with projects |
-| `vitest.integration.config.ts` | Integration tests config         |
-| `vitest.triggers.config.ts`    | Database trigger tests config    |
-| `vitest-setup-client.ts`       | Browser test type references     |
-| `playwright.config.ts`         | E2E test configuration           |
+| File                           | Purpose                           |
+| ------------------------------ | --------------------------------- |
+| `vite.config.ts`               | Main Vitest config with projects  |
+| `vitest.base.config.ts`        | Shared base config (dbTestConfig) |
+| `vitest.integration.config.ts` | Integration tests config          |
+| `vitest.triggers.config.ts`    | Database trigger tests config     |
+| `vitest-setup-client.ts`       | Browser test setup                |
+| `vitest-setup-server.ts`       | Server test setup (clears mocks)  |
+| `playwright.config.ts`         | E2E test configuration            |
 
 ## Related Documentation
 
@@ -184,6 +185,23 @@ describe('myFunction', () => {
 	it('should return expected result', () => {
 		const result = myFunction('input');
 		expect(result).toBe('expected');
+	});
+});
+```
+
+### Using Test Helpers
+
+```typescript
+// Import from unified helpers
+import { createMockSupabase, createMockLocals, mockSuccess, mockError } from '$tests/helpers';
+
+describe('API route', () => {
+	it('should handle request', async () => {
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { id: '123', name: 'Test' });
+
+		const locals = createMockLocals('user-id', supabase);
+		// ... test implementation
 	});
 });
 ```
