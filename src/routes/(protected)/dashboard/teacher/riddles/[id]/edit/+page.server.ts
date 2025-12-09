@@ -1,6 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import type { DbRiddle } from '$lib/types/riddle';
 import { error, redirect, fail } from '@sveltejs/kit';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Load riddle for editing
@@ -11,11 +12,13 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		throw redirect(303, '/login');
 	}
 
+	const id = validateUuidParam(params.id);
+
 	// Fetch riddle (RLS ensures user can only access their own)
 	const { data: riddle, error: riddleError } = await supabase
 		.from('riddles')
 		.select('*')
-		.eq('id', params.id)
+		.eq('id', id)
 		.eq('created_by', user.id)
 		.single();
 
@@ -39,6 +42,7 @@ export const actions: Actions = {
 			return fail(401, { message: 'Non authentifié' });
 		}
 
+		const id = validateUuidParam(params.id);
 		const formData = await request.formData();
 
 		// Parse answer config (JSON)
@@ -73,7 +77,7 @@ export const actions: Actions = {
 		const { error: updateError } = await supabase
 			.from('riddles')
 			.update(updateData)
-			.eq('id', params.id)
+			.eq('id', id)
 			.eq('created_by', user.id);
 
 		if (updateError) {

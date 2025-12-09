@@ -14,6 +14,7 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { profile, supabase } = locals;
@@ -23,11 +24,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(403, 'Accès refusé');
 	}
 
+	const id = validateUuidParam(params.id);
+
 	// Fetch template
 	const { data: template, error: fetchError } = await supabase
 		.from('question_templates')
 		.select('*')
-		.eq('id', params.id)
+		.eq('id', id)
 		.single();
 
 	if (fetchError || !template) {

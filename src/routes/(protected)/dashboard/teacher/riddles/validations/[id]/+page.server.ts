@@ -77,13 +77,14 @@ export const actions: Actions = {
 			return fail(401, { message: 'Non authentifié' });
 		}
 
+		const id = validateUuidParam(params.id);
 		const formData = await request.formData();
 		const isCorrect = formData.get('is_correct') === 'true';
 		const feedback = formData.get('feedback')?.toString();
 
 		// Validate using RPC function
 		const { error: validateError } = await supabase.rpc('validate_riddle_attempt', {
-			p_attempt_id: params.id,
+			p_attempt_id: id,
 			p_teacher_id: user.id,
 			p_is_correct: isCorrect
 		});
