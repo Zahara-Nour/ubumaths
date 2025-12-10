@@ -63,6 +63,16 @@ pnpm release               # Create release (main branch only)
 
 ## Essential Rules (CRITICAL)
 
+### 0. NEVER Delete Untracked Files
+
+**NEVER** use `rm`, `rm -rf`, or `mv` on files/directories that are not tracked by git.
+
+Before any destructive operation:
+
+1. Run `git status` to check if files are tracked
+2. If untracked files exist in the target path, **STOP and ask the user**
+3. Only delete files that are either tracked by git OR explicitly created in the current session
+
 ### 1. Always Validate Input with Zod
 
 ```typescript
