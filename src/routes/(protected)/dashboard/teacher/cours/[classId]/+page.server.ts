@@ -16,12 +16,15 @@ import {
 	deleteChapter,
 	reorderChapters
 } from '$lib/server/chapters';
+import { listChapterTemplates, instantiateTemplate } from '$lib/server/chapter-templates';
 import {
 	createChapterSchema,
 	updateChapterSchema,
 	reorderChaptersSchema
 } from '$lib/server/validation/chapters';
+import { instantiateTemplateSchema } from '$lib/server/validation/chapter-templates';
 import type { ChapterSummary } from '$lib/types/chapters';
+import type { TemplateSummary } from '$lib/types/chapter-templates';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	// Only teachers can view this page
@@ -82,10 +85,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		})
 		.filter(Boolean);
 
+	// Get available templates (own + public published)
+	const { data: templates } = await listChapterTemplates(
+		{ page: 1, limit: 100, grades: undefined, ownOnly: false, publicOnly: false },
+		user.id,
+		locals.supabase
+	);
+
 	return {
 		classData,
 		chapters: chapters.sort((a, b) => a.displayOrder - b.displayOrder) as ChapterSummary[],
-		students: studentList
+		students: studentList,
+		templates: (templates || []) as TemplateSummary[]
 	};
 };
 
@@ -316,5 +327,63 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'toggleVisibility' };
+	},
+
+	/**
+	 * Create chapter from template
+	 */
+	instantiateFromTemplate: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const { classId } = params;
+
+		// Verify teacher owns this class
+		const { data: classData } = await locals.supabase
+			.from('classes')
+			.select('id')
+			.eq('id', classId)
+			.eq('teacher_id', user.id)
+			.single();
+
+		if (!classData) {
+			return fail(403, { error: 'Acces refuse', action: 'instantiateFromTemplate' });
+		}
+
+		const formData = await request.formData();
+		const data = {
+			templateId: formData.get('templateId'),
+			classId,
+			title: formData.get('title') || undefined,
+			isVisible: formData.get('isVisible') === 'true'
+		};
+
+		// Validate input
+		const validation = instantiateTemplateSchema.safeParse(data);
+		if (!validation.success) {
+			return fail(400, {
+				error: validation.error.issues[0].message,
+				action: 'instantiateFromTemplate'
+			});
+		}
+
+		// Instantiate template
+		const { data: result, error: instError } = await instantiateTemplate(
+			validation.data,
+			user.id,
+			locals.supabase
+		);
+
+		if (instError || !result) {
+			console.error('[Instantiate Template] Error:', instError);
+			return fail(500, {
+				error: 'Erreur lors de la creation du chapitre depuis le template',
+				action: 'instantiateFromTemplate'
+			});
+		}
+
+		return {
+			success: true,
+			action: 'instantiateFromTemplate',
+			chapterId: result.chapterId
+		};
 	}
 };

@@ -5,6 +5,7 @@
 	 *
 	 * Manage chapters for a specific class:
 	 * - Create new chapters
+	 * - Create from template
 	 * - Edit/delete existing chapters
 	 * - Reorder chapters via drag and drop
 	 * - Toggle visibility
@@ -33,9 +34,15 @@
 		Pencil,
 		GripVertical,
 		FolderOpen,
-		Book
+		Book,
+		FileText,
+		HelpCircle,
+		ClipboardList,
+		Dumbbell,
+		Copy
 	} from 'lucide-svelte';
 	import type { PageData, ActionData } from './$types';
+	import type { TemplateSummary } from '$lib/types/chapter-templates';
 
 	interface Props {
 		data: PageData;
@@ -46,6 +53,7 @@
 
 	// Dialog states
 	let showCreateDialog = $state(false);
+	let showTemplateDialog = $state(false);
 	let showEditDialog = $state(false);
 	let showDeleteDialog = $state(false);
 	let selectedChapter = $state<(typeof data.chapters)[0] | null>(null);
@@ -56,6 +64,16 @@
 	let createColor = $state('');
 	let createIcon = $state('');
 	let createIsVisible = $state(false);
+
+	// Template form states
+	let selectedTemplateId = $state('');
+	let templateTitle = $state('');
+	let templateIsVisible = $state(false);
+
+	// Derived template data
+	let selectedTemplate = $derived(
+		data.templates.find((t: TemplateSummary) => t.id === selectedTemplateId)
+	);
 
 	let editTitle = $state('');
 	let editDescription = $state('');
@@ -79,6 +97,14 @@
 		...CHAPTER_ICONS.map((i) => ({ value: i, label: i }))
 	]);
 
+	// Template items for MySelect
+	let templateItems = $derived(
+		data.templates.map((t: TemplateSummary) => ({
+			value: t.id,
+			label: `${t.title}${t.isOwner ? '' : ' (public)'}`
+		}))
+	);
+
 	// Handle form results
 	$effect(() => {
 		if (form?.success) {
@@ -95,6 +121,10 @@
 				selectedChapter = null;
 			} else if (form.action === 'toggleVisibility') {
 				toaster.success('Visibilite mise a jour');
+			} else if (form.action === 'instantiateFromTemplate') {
+				toaster.success('Chapitre cree depuis le template');
+				showTemplateDialog = false;
+				resetTemplateForm();
 			}
 			invalidateAll();
 		} else if (form?.error) {
@@ -110,6 +140,13 @@
 		createColor = '';
 		createIcon = '';
 		createIsVisible = false;
+	}
+
+	// Reset template form
+	function resetTemplateForm() {
+		selectedTemplateId = '';
+		templateTitle = '';
+		templateIsVisible = false;
 	}
 
 	// Open edit dialog with chapter data
@@ -156,10 +193,18 @@
 				</p>
 			</div>
 		</div>
-		<Button onclick={() => (showCreateDialog = true)}>
-			<Plus class="mr-2 h-4 w-4" />
-			Nouveau chapitre
-		</Button>
+		<div class="flex gap-2">
+			{#if data.templates.length > 0}
+				<Button variant="outline" onclick={() => (showTemplateDialog = true)}>
+					<Copy class="mr-2 h-4 w-4" />
+					Depuis un template
+				</Button>
+			{/if}
+			<Button onclick={() => (showCreateDialog = true)}>
+				<Plus class="mr-2 h-4 w-4" />
+				Nouveau chapitre
+			</Button>
+		</div>
 	</div>
 
 	<!-- Loading state -->
@@ -469,5 +514,131 @@
 				</Dialog.Footer>
 			</form>
 		{/if}
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Create from Template Dialog -->
+<Dialog.Root bind:open={showTemplateDialog}>
+	<Dialog.Content class="max-w-xl">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center gap-2">
+				<Copy class="h-5 w-5 text-primary" />
+				Creer depuis un template
+			</Dialog.Title>
+			<Dialog.Description>
+				Selectionnez un template pour creer un chapitre avec du contenu pre-rempli.
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<form
+			method="POST"
+			action="?/instantiateFromTemplate"
+			use:enhance={() => {
+				isSubmitting = true;
+				return async ({ update }) => {
+					await update();
+				};
+			}}
+			class="space-y-4"
+		>
+			<!-- Template selection -->
+			<div class="space-y-2">
+				<Label for="template-select">Template *</Label>
+				<MySelect
+					id="template-select"
+					type="single"
+					bind:value={selectedTemplateId}
+					items={templateItems}
+					placeholder="Selectionnez un template"
+				/>
+				<input type="hidden" name="templateId" value={selectedTemplateId} />
+			</div>
+
+			<!-- Template preview -->
+			{#if selectedTemplate}
+				<Card.Root>
+					<Card.Header class="pb-3">
+						<Card.Title class="text-base">{selectedTemplate.title}</Card.Title>
+						{#if selectedTemplate.description}
+							<Card.Description class="text-sm">{selectedTemplate.description}</Card.Description>
+						{/if}
+					</Card.Header>
+					<Card.Content>
+						<div class="grid grid-cols-2 gap-3 text-sm">
+							<div class="flex items-center gap-2">
+								<FileText class="h-4 w-4 text-muted-foreground" />
+								<span
+									>{selectedTemplate.documentCount} document{selectedTemplate.documentCount > 1
+										? 's'
+										: ''}</span
+								>
+							</div>
+							<div class="flex items-center gap-2">
+								<HelpCircle class="h-4 w-4 text-muted-foreground" />
+								<span
+									>{selectedTemplate.quizQuestionCount} question{selectedTemplate.quizQuestionCount >
+									1
+										? 's'
+										: ''} quiz</span
+								>
+							</div>
+							<div class="flex items-center gap-2">
+								<ClipboardList class="h-4 w-4 text-muted-foreground" />
+								<span
+									>{selectedTemplate.checklistItemCount} objectif{selectedTemplate.checklistItemCount >
+									1
+										? 's'
+										: ''}</span
+								>
+							</div>
+							<div class="flex items-center gap-2">
+								<Dumbbell class="h-4 w-4 text-muted-foreground" />
+								<span
+									>{selectedTemplate.exerciseCount} exercice{selectedTemplate.exerciseCount > 1
+										? 's'
+										: ''}</span
+								>
+							</div>
+						</div>
+
+						{#if selectedTemplate.grades.length > 0}
+							<div class="mt-3 flex flex-wrap gap-1">
+								{#each selectedTemplate.grades as grade (grade)}
+									<Badge variant="secondary" class="text-xs">{grade}e</Badge>
+								{/each}
+							</div>
+						{/if}
+					</Card.Content>
+				</Card.Root>
+			{/if}
+
+			<!-- Title override -->
+			<div class="space-y-2">
+				<Label for="template-title">Titre du chapitre (optionnel)</Label>
+				<Input
+					id="template-title"
+					name="title"
+					bind:value={templateTitle}
+					placeholder={selectedTemplate?.title || 'Utiliser le titre du template'}
+				/>
+				<p class="text-xs text-muted-foreground">Laissez vide pour utiliser le titre du template</p>
+			</div>
+
+			<!-- Visibility -->
+			<div class="flex items-center gap-2">
+				<MyCheckbox bind:checked={templateIsVisible} label="Visible par les eleves" />
+				<input type="hidden" name="isVisible" value={templateIsVisible} />
+			</div>
+
+			<Dialog.Footer>
+				<Button type="button" variant="outline" onclick={() => (showTemplateDialog = false)}>
+					Annuler
+				</Button>
+				<Button type="submit" disabled={isSubmitting || !selectedTemplateId}>
+					<Copy class="mr-2 h-4 w-4" />
+					{isSubmitting ? 'Creation...' : 'Creer le chapitre'}
+				</Button>
+			</Dialog.Footer>
+		</form>
 	</Dialog.Content>
 </Dialog.Root>

@@ -1,6 +1,6 @@
 # Chapter Templates Feature - Progress
 
-## Status: ✅ MIGRATION APPLIED - READY FOR MANUAL TESTING
+## Status: ✅ TEMPLATES INTEGRATED WITH COURS - READY FOR MANUAL TESTING
 
 Last updated: 2025-12-10
 
@@ -116,18 +116,49 @@ pnpm db:types
 pnpm build  # Success
 ```
 
+## Phase 8: Integration with Cours ✓
+
+### Implemented
+
+- Added "Depuis un template" button to `/dashboard/teacher/cours/[classId]`
+- Created `instantiateFromTemplate` form action
+- Templates loaded in page server load function
+- Dialog with template selection, preview, and customization
+- Shows template content counts (documents, quiz questions, objectives, exercises)
+- Optional title override
+- Visibility toggle
+
+### Modified Files
+
+- `src/routes/(protected)/dashboard/teacher/cours/[classId]/+page.svelte`
+- `src/routes/(protected)/dashboard/teacher/cours/[classId]/+page.server.ts`
+
 ## Next Step Required
 
 ### Test Manually
+
+#### Template Management
 
 1. Navigate to `/dashboard/teacher/templates`
 2. Create a new template
 3. Add content (documents, quiz, checklist, exercises)
 4. Publish the template
-5. Instantiate into a class
-6. Modify template → create new version
-7. Check for updates on instantiated chapter
-8. Migrate chapter to new version
+5. Modify template → create new version
+
+#### Template Instantiation from Cours
+
+6. Navigate to `/dashboard/teacher/cours/[classId]`
+7. Click "Depuis un template" button
+8. Select a template from the dropdown
+9. Optionally customize the title
+10. Toggle visibility
+11. Click "Creer le chapitre"
+12. Verify chapter created with template content
+
+#### Template Updates
+
+13. Check for updates on instantiated chapter
+14. Migrate chapter to new version
 
 ## Files Created
 
