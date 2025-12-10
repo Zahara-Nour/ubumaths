@@ -149,7 +149,7 @@ describe('LaTeX Generator - Integration Tests', () => {
 			MathAST.implies(MathAST.variable('Q'), MathAST.variable('R'))
 		);
 
-		expect(toLatex(expr)).toBe('P \\implies Q \\implies R');
+		expect(toLatex(expr)).toBe('P \\Rightarrow Q \\Rightarrow R');
 	});
 
 	it('generates subset relation', () => {

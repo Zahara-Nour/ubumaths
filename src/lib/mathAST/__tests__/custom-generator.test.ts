@@ -522,9 +522,10 @@ describe('CustomGenerator - Edge Cases', () => {
 		expect(toCustom(MathAST.number('3.14159'))).toBe('3.14159');
 	});
 
-	it('handles empty function arguments', () => {
+	it('handles empty function arguments (omits parentheses)', () => {
+		// Generic functions without arguments omit parentheses
 		const expr = MathAST.func('f', []);
-		expect(toCustom(expr)).toBe('f()');
+		expect(toCustom(expr)).toBe('f');
 	});
 
 	it('handles mixed division styles', () => {
@@ -713,8 +714,9 @@ describe('CustomGenerator - Round-Trip Tests', () => {
 
 describe('CustomGenerator - Composition', () => {
 	it('generates basic composition f@g', () => {
+		// Functions without arguments omit parentheses
 		const expr = MathAST.compose(MathAST.func('f', []), MathAST.func('g', []));
-		expect(toCustom(expr)).toBe('f()@g()');
+		expect(toCustom(expr)).toBe('f@g');
 	});
 
 	it('generates composition with variables as functions', () => {
@@ -738,13 +740,15 @@ describe('CustomGenerator - Composition', () => {
 	});
 
 	it('generates composition with derivatives', () => {
+		// Functions with derivatives but no args omit parentheses
 		const expr = MathAST.compose(MathAST.derivativeFunc('f', [], 1), MathAST.func('g', []));
-		expect(toCustom(expr)).toBe("f'()@g()");
+		expect(toCustom(expr)).toBe("f'@g");
 	});
 
 	it('generates composition with inverse', () => {
+		// Functions with inverse but no args omit parentheses
 		const expr = MathAST.compose(MathAST.inverseFunc('f', []), MathAST.func('g', []));
-		expect(toCustom(expr)).toBe('f^{-1}()@g()');
+		expect(toCustom(expr)).toBe('f^{-1}@g');
 	});
 
 	it('generates composition with operatorMetadata for color', () => {
