@@ -2,8 +2,8 @@
 
 > Documentation exhaustive du transpileur LaTeX vers Custom Markdown pour le système d'exercices.
 >
-> **Statut**: COMPLETE (Phase 10/10)
-> **Dernière mise à jour**: 2025-11-21
+> **Statut**: COMPLETE (Phase 10/10) + Math Custom Syntax
+> **Dernière mise à jour**: 2025-12-10
 
 ---
 
@@ -45,7 +45,8 @@ const result = transpileLatexToMarkdown(`
 console.log(result.markdown);
 // Output:
 // # My Title
-// **Bold** and *italic* text with math: $E = mc^2$
+// **Bold** and *italic* text with math: $E=mc^2$
+// Note: Math content is converted to mathAST custom syntax (spaces removed, etc.)
 
 console.log(result.warnings); // [] - empty if no issues
 console.log(result.stats); // { tokenCount: 15, commandsConverted: 3, ... }
@@ -65,14 +66,16 @@ const result = transpileLatexToMarkdown(latex, {
 
 ### Common Conversions
 
-| LaTeX                                 | Markdown            |
-| ------------------------------------- | ------------------- |
-| `\textbf{bold}`                       | `**bold**`          |
-| `\textit{italic}`                     | `*italic*`          |
-| `\section{Title}`                     | `# Title`           |
-| `$x^2$`                               | `$x^2$` (preserved) |
-| `\begin{itemize}\item A\end{itemize}` | `- A`               |
-| `\begin{verbatim}code\end{verbatim}`  | ` ```code``` `      |
+| LaTeX                                 | Markdown                      |
+| ------------------------------------- | ----------------------------- |
+| `\textbf{bold}`                       | `**bold**`                    |
+| `\textit{italic}`                     | `*italic*`                    |
+| `\section{Title}`                     | `# Title`                     |
+| `$x^2$`                               | `$x^2$` (custom syntax)       |
+| `$\frac{a}{b}$`                       | `$a/b$` (converted to custom) |
+| `$\sin(x)$`                           | `$sin(x)$` (no backslash)     |
+| `\begin{itemize}\item A\end{itemize}` | `- A`                         |
+| `\begin{verbatim}code\end{verbatim}`  | ` ```code``` `                |
 
 ---
 
@@ -286,43 +289,54 @@ type LatexToken =
 
 ### Table Récapitulative
 
-| LaTeX                             | Markdown                           | Phase | Notes                      |
-| --------------------------------- | ---------------------------------- | ----- | -------------------------- |
-| `$x^2$`                           | `$x^2$`                            | 3     | Inline math - pass-through |
-| `\[x^2\]`                         | `$$x^2$$`                          | 3     | Display math               |
-| `\section{...}`                   | `# ...`                            | 3     | Level 1 heading            |
-| `\subsection{...}`                | `## ...`                           | 3     | Level 2 heading            |
-| `\textbf{...}`                    | `**...**`                          | 3     | Bold text                  |
-| `\textit{...}`                    | `*...*`                            | 3     | Italic text                |
-| `\texttt{...}`                    | `` `...` ``                        | 3     | Monospace text             |
-| `\hrule`                          | `---`                              | 3     | Horizontal rule            |
-| `\begin{itemize}`                 | `- item`                           | 4     | Bullet list                |
-| `\begin{enumerate}`               | `1. item`                          | 4     | Numbered list              |
-| `\begin{quote}`                   | `> ...`                            | 5     | Blockquote                 |
-| `\begin{verbatim}`                | ` ``` `                            | 5     | Code block (no language)   |
-| `\begin{lstlisting}[language=X]`  | ` ```x `                           | 5     | Code block with language   |
-| `\begin{minted}{lang}`            | ` ```lang `                        | 5     | Code block with language   |
-| `\includegraphics{path}`          | `![](path)`                        | 5     | Image (no alt text)        |
-| `\begin{figure}...\caption{text}` | `![text](path)`                    | 5     | Image with caption         |
-| `\begin{center}`                  | `<div style="text-align: center">` | 5     | Centered content           |
-| `\begin{tabular}`                 | `\| col \| col \|`                 | 6     | Table (Complétée)          |
-| Commandes non supportées          | `<!-- LaTeX: ... -->`              | 7     | Fallback wrapping          |
-| Environnements non supportés      | `<!-- LaTeX: ... -->`              | 7     | Fallback wrapping          |
+| LaTeX                             | Markdown                           | Phase | Notes                        |
+| --------------------------------- | ---------------------------------- | ----- | ---------------------------- |
+| `$x^2$`                           | `$x^2$`                            | 3     | Inline math → custom syntax  |
+| `\[x^2\]`                         | `$$x^2$$`                          | 3     | Display math → custom syntax |
+| `\section{...}`                   | `# ...`                            | 3     | Level 1 heading              |
+| `\subsection{...}`                | `## ...`                           | 3     | Level 2 heading              |
+| `\textbf{...}`                    | `**...**`                          | 3     | Bold text                    |
+| `\textit{...}`                    | `*...*`                            | 3     | Italic text                  |
+| `\texttt{...}`                    | `` `...` ``                        | 3     | Monospace text               |
+| `\hrule`                          | `---`                              | 3     | Horizontal rule              |
+| `\begin{itemize}`                 | `- item`                           | 4     | Bullet list                  |
+| `\begin{enumerate}`               | `1. item`                          | 4     | Numbered list                |
+| `\begin{quote}`                   | `> ...`                            | 5     | Blockquote                   |
+| `\begin{verbatim}`                | ` ``` `                            | 5     | Code block (no language)     |
+| `\begin{lstlisting}[language=X]`  | ` ```x `                           | 5     | Code block with language     |
+| `\begin{minted}{lang}`            | ` ```lang `                        | 5     | Code block with language     |
+| `\includegraphics{path}`          | `![](path)`                        | 5     | Image (no alt text)          |
+| `\begin{figure}...\caption{text}` | `![text](path)`                    | 5     | Image with caption           |
+| `\begin{center}`                  | `<div style="text-align: center">` | 5     | Centered content             |
+| `\begin{tabular}`                 | `\| col \| col \|`                 | 6     | Table (Complétée)            |
+| Commandes non supportées          | `<!-- LaTeX: ... -->`              | 7     | Fallback wrapping            |
+| Environnements non supportés      | `<!-- LaTeX: ... -->`              | 7     | Fallback wrapping            |
 
 ---
 
 ### Phase 3: Triviales et Faciles
 
-#### Formules Mathématiques (Pass-through)
+#### Formules Mathématiques (Custom Syntax Conversion)
 
-| LaTeX     | Markdown  | Notes                               |
-| --------- | --------- | ----------------------------------- |
-| `$x^2$`   | `$x^2$`   | Inline math - pass-through          |
-| `\(x^2\)` | `$x^2$`   | Alias inline math                   |
-| `\[x^2\]` | `$$x^2$$` | Display math - délimiteurs changent |
-| `$$x^2$$` | `$$x^2$$` | Display math - pass-through         |
+| LaTeX           | Markdown    | Notes                               |
+| --------------- | ----------- | ----------------------------------- |
+| `$x^2$`         | `$x^2$`     | Inline math → mathAST custom syntax |
+| `$\frac{a}{b}$` | `$a/b$`     | Fraction → division syntax          |
+| `$\sin(x)$`     | `$sin(x)$`  | Functions lose backslash            |
+| `$\sqrt{x}$`    | `$sqrt(x)$` | Square root → function syntax       |
+| `\(x^2\)`       | `$x^2$`     | Alias inline math                   |
+| `\[x^2\]`       | `$$x^2$$`   | Display math → custom syntax        |
+| `$$x^2$$`       | `$$x^2$$`   | Display math                        |
 
-**Règle**: Les contenus mathématiques ne sont jamais parsés. Ils sont préservés exactement comme fournis.
+**Règle**: Les contenus mathématiques sont convertis en syntaxe mathAST custom:
+
+- Fractions: `\frac{a}{b}` → `a/b` ou `{a+b}/{c+d}`
+- Fonctions: `\sin(x)` → `sin(x)` (pas de backslash)
+- Racines: `\sqrt{x}` → `sqrt(x)`
+- Greek supportées: `\pi`, `\alpha`, `\beta`, `\gamma`, `\theta`
+- Si conversion impossible (ex: `\delta`), LaTeX original préservé + warning généré
+
+Voir [docs/wip/mathast-latex-extensions.md](../wip/mathast-latex-extensions.md) pour la liste complète des fonctionnalités supportées.
 
 #### Headings (Sections)
 
@@ -821,18 +835,18 @@ Devient:
 
 **Conversions Supportées**:
 
-| LaTeX dans Cellule | Markdown    | Notes                   |
-| ------------------ | ----------- | ----------------------- |
-| `\textbf{...}`     | `**...**`   | Bold text               |
-| `\textit{...}`     | `*...*`     | Italic text             |
-| `\emph{...}`       | `*...*`     | Emphasis (= italic)     |
-| `\texttt{...}`     | `` `...` `` | Monospace               |
-| `$...$`            | `$...$`     | Inline math - preserved |
-| `\&`               | `&`         | Escaped ampersand       |
-| `\%`               | `%`         | Escaped percent         |
-| `\#`               | `#`         | Escaped hash            |
-| `\$`               | `$`         | Escaped dollar          |
-| `\_`               | `_`         | Escaped underscore      |
+| LaTeX dans Cellule | Markdown    | Notes                                    |
+| ------------------ | ----------- | ---------------------------------------- |
+| `\textbf{...}`     | `**...**`   | Bold text                                |
+| `\textit{...}`     | `*...*`     | Italic text                              |
+| `\emph{...}`       | `*...*`     | Emphasis (= italic)                      |
+| `\texttt{...}`     | `` `...` `` | Monospace                                |
+| `$...$`            | `$...$`     | Inline math - converted to custom syntax |
+| `\&`               | `&`         | Escaped ampersand                        |
+| `\%`               | `%`         | Escaped percent                          |
+| `\#`               | `#`         | Escaped hash                             |
+| `\$`               | `$`         | Escaped dollar                           |
+| `\_`               | `_`         | Escaped underscore                       |
 
 #### Table Environment Variants
 

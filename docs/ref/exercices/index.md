@@ -116,8 +116,17 @@ The codebase has **two distinct systems** for math problems. Understanding the d
 
 ## Documentation Index
 
+### For Users
+
+| Document                      | Description                              |
+| ----------------------------- | ---------------------------------------- |
+| [User Guide](./user-guide.md) | Complete guide for teachers and students |
+
+### Technical Reference
+
 | Document                                  | Description                                        |
 | ----------------------------------------- | -------------------------------------------------- |
+| [Architecture](./architecture.md)         | System design, data flows, security, patterns      |
 | [Database Schema](./database-schema.md)   | Tables, views, functions, indexes, triggers        |
 | [API Reference](./api-reference.md)       | All API endpoints with request/response examples   |
 | [Types](./types.md)                       | TypeScript type definitions                        |

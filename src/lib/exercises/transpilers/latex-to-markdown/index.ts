@@ -71,6 +71,17 @@ export {
 	type SplitOptions
 } from './splitter';
 
+// Math to custom syntax converter
+export {
+	convertMathToCustomSyntax,
+	detectUnsupportedFeatures,
+	toCustomSafe,
+	SUPPORTED_GREEK,
+	SUPPORTED_SYMBOLS,
+	type MathConversionResult,
+	type UnsupportedFeature
+} from './converters/math-to-custom';
+
 // Parser exports (to be implemented)
 // export { parseLatexTokens } from './parser';
 
