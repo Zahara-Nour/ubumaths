@@ -45,8 +45,8 @@ const result = transpileLatexToMarkdown(`
 console.log(result.markdown);
 // Output:
 // # My Title
-// **Bold** and *italic* text with math: $E=mc^2$
-// Note: Math content is converted to mathAST custom syntax (spaces removed, etc.)
+// **Bold** and *italic* text with math: ~E=mc^2~
+// Note: Math uses tilde delimiters (~...~ inline, ~~...~~ display) and custom syntax
 
 console.log(result.warnings); // [] - empty if no issues
 console.log(result.stats); // { tokenCount: 15, commandsConverted: 3, ... }
@@ -57,7 +57,7 @@ console.log(result.stats); // { tokenCount: 15, commandsConverted: 3, ... }
 ```typescript
 const result = transpileLatexToMarkdown(latex, {
 	preserveComments: true, // Keep LaTeX % comments as HTML comments
-	mathDelimiters: 'dollar', // 'dollar' ($...$) or 'brackets' (\(...\))
+	mathDelimiters: 'tilde', // 'tilde' (~...~), 'dollar' ($...$), or 'brackets' (\(...\))
 	maxNestingDepth: 10, // Limit recursion depth
 	fallbackToText: false, // true = extract text from unknown commands
 	preserveWhitespace: false // true = preserve exact whitespace
@@ -66,16 +66,17 @@ const result = transpileLatexToMarkdown(latex, {
 
 ### Common Conversions
 
-| LaTeX                                 | Markdown                      |
-| ------------------------------------- | ----------------------------- |
-| `\textbf{bold}`                       | `**bold**`                    |
-| `\textit{italic}`                     | `*italic*`                    |
-| `\section{Title}`                     | `# Title`                     |
-| `$x^2$`                               | `$x^2$` (custom syntax)       |
-| `$\frac{a}{b}$`                       | `$a/b$` (converted to custom) |
-| `$\sin(x)$`                           | `$sin(x)$` (no backslash)     |
-| `\begin{itemize}\item A\end{itemize}` | `- A`                         |
-| `\begin{verbatim}code\end{verbatim}`  | ` ```code``` `                |
+| LaTeX                                 | Markdown                         |
+| ------------------------------------- | -------------------------------- |
+| `\textbf{bold}`                       | `**bold**`                       |
+| `\textit{italic}`                     | `*italic*`                       |
+| `\section{Title}`                     | `# Title`                        |
+| `$x^2$`                               | `~x^2~` (tilde delimiters)       |
+| `$\frac{a}{b}$`                       | `~a/b~` (custom syntax fraction) |
+| `$\sin(x)$`                           | `~sin(x)~` (no backslash)        |
+| `$$E=mc^2$$`                          | `~~E=mc^2~~` (display math)      |
+| `\begin{itemize}\item A\end{itemize}` | `- A`                            |
+| `\begin{verbatim}code\end{verbatim}`  | ` ```code``` `                   |
 
 ---
 
@@ -89,7 +90,7 @@ Convertir du code LaTeX (complet ou fragmentaire) en Custom Markdown compatible 
 
 Le système d'exercices d'UbuMaths supporte un format Markdown enrichi avec:
 
-- Formules mathématiques LaTeX (inline `$...$` et display `$$...$$`)
+- Formules mathématiques (inline `~...~` et display `~~...~~` avec custom syntax)
 - Nodes personnalisées (blockquotes, code blocks, listes)
 
 Le transpileur LaTeX→Markdown permet aux instructeurs d'importer des documents LaTeX existants et de les convertir en format compatible.

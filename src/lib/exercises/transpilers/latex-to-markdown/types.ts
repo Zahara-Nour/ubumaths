@@ -14,8 +14,8 @@ export interface LatexToMarkdownOptions {
 	/** Preserve LaTeX comments (%) as HTML comments. Default: false */
 	preserveComments?: boolean;
 
-	/** Math delimiters to use in output. Default: 'dollar' */
-	mathDelimiters?: 'dollar' | 'brackets';
+	/** Math delimiters to use in output. Default: 'tilde' (custom markdown syntax) */
+	mathDelimiters?: 'tilde' | 'dollar' | 'brackets';
 
 	/** Maximum nesting depth for environments and groups. Default: 10 */
 	maxNestingDepth?: number;

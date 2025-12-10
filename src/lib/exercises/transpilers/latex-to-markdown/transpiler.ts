@@ -72,7 +72,7 @@ import { convertMathToCustomSyntax } from './converters/math-to-custom';
  */
 const DEFAULT_OPTIONS: Required<LatexToMarkdownOptions> = {
 	preserveComments: false,
-	mathDelimiters: 'dollar',
+	mathDelimiters: 'tilde',
 	maxNestingDepth: 10,
 	fallbackToText: false,
 	preserveWhitespace: false
@@ -549,19 +549,35 @@ function isMathEnvironment(name: string): boolean {
 /**
  * Convert a math environment to markdown display math.
  */
-function convertMathEnvironment(token: EnvironmentToken, _context: ConversionContext): string {
+function convertMathEnvironment(token: EnvironmentToken, context: ConversionContext): string {
 	// Wrap content in display math delimiters
 	// Keep the environment structure for complex environments
 	const content = token.content.trim();
 
-	// For simple environments, just use $$
+	// Determine delimiter based on options
+	const getDisplayDelimiters = (): { open: string; close: string } => {
+		switch (context.options.mathDelimiters) {
+			case 'tilde':
+				return { open: '~~', close: '~~' };
+			case 'brackets':
+				return { open: '\\[', close: '\\]' };
+			case 'dollar':
+			default:
+				return { open: '$$', close: '$$' };
+		}
+	};
+
+	const { open, close } = getDisplayDelimiters();
+
+	// For simple environments, convert to custom syntax
 	// For complex ones like align, keep the environment
 	if (['equation', 'equation*'].includes(token.name)) {
-		return `$$${content}$$`;
+		const result = convertMathToCustomSyntax(content, context, token.line, token.column);
+		return `${open}${result.output}${close}`;
 	}
 
 	// For other math environments, preserve the LaTeX structure
-	return `$$\\begin{${token.name}}${content}\\end{${token.name}}$$`;
+	return `${open}\\begin{${token.name}}${content}\\end{${token.name}}${close}`;
 }
 
 /**
@@ -654,10 +670,15 @@ function convertMathInlineToken(token: MathInlineToken, context: ConversionConte
 
 	// Wrap in appropriate delimiters
 	const content = result.output;
-	if (context.options.mathDelimiters === 'brackets') {
-		return `\\(${content}\\)`;
+	switch (context.options.mathDelimiters) {
+		case 'tilde':
+			return `~${content}~`;
+		case 'brackets':
+			return `\\(${content}\\)`;
+		case 'dollar':
+		default:
+			return `$${content}$`;
 	}
-	return `$${content}$`;
 }
 
 /**
@@ -670,10 +691,15 @@ function convertMathDisplayToken(token: MathDisplayToken, context: ConversionCon
 
 	// Wrap in appropriate delimiters
 	const content = result.output;
-	if (context.options.mathDelimiters === 'brackets') {
-		return `\\[${content}\\]`;
+	switch (context.options.mathDelimiters) {
+		case 'tilde':
+			return `~~${content}~~`;
+		case 'brackets':
+			return `\\[${content}\\]`;
+		case 'dollar':
+		default:
+			return `$$${content}$$`;
 	}
-	return `$$${content}$$`;
 }
 
 /**
