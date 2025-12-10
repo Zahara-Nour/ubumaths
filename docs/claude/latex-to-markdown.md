@@ -66,17 +66,21 @@ const result = transpileLatexToMarkdown(latex, {
 
 ### Common Conversions
 
-| LaTeX                                 | Markdown                         |
-| ------------------------------------- | -------------------------------- |
-| `\textbf{bold}`                       | `**bold**`                       |
-| `\textit{italic}`                     | `*italic*`                       |
-| `\section{Title}`                     | `# Title`                        |
-| `$x^2$`                               | `~x^2~` (tilde delimiters)       |
-| `$\frac{a}{b}$`                       | `~a/b~` (custom syntax fraction) |
-| `$\sin(x)$`                           | `~sin(x)~` (no backslash)        |
-| `$$E=mc^2$$`                          | `~~E=mc^2~~` (display math)      |
-| `\begin{itemize}\item A\end{itemize}` | `- A`                            |
-| `\begin{verbatim}code\end{verbatim}`  | ` ```code``` `                   |
+| LaTeX                                 | Markdown                                  |
+| ------------------------------------- | ----------------------------------------- |
+| `\textbf{bold}`                       | `**bold**`                                |
+| `\textit{italic}`                     | `*italic*`                                |
+| `\section{Title}`                     | `# Title`                                 |
+| `$x^2$`                               | `~x^2~` (tilde + custom syntax)           |
+| `$\frac{a}{b}$`                       | `~a/b~` (custom syntax fraction)          |
+| `$\sin(x)$`                           | `~sin(x)~` (no backslash)                 |
+| `$$E=mc^2$$`                          | `~~E=mc^2~~` (display math)               |
+| `$\int_0^1 f(x)$`                     | `$\int_0^1 f(x)$` (**fallback** to LaTeX) |
+| `\begin{align}...\end{align}`         | `$$\begin{align}...\end{align}$$` (LaTeX) |
+| `\begin{itemize}\item A\end{itemize}` | `- A`                                     |
+| `\begin{verbatim}code\end{verbatim}`  | ` ```code``` `                            |
+
+**Note**: Les expressions avec des fonctionnalités non supportées (intégrales, matrices, etc.) gardent leur syntaxe LaTeX avec délimiteurs `$...$` ou `$$...$$`.
 
 ---
 

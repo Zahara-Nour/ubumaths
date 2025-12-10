@@ -554,8 +554,8 @@ function convertMathEnvironment(token: EnvironmentToken, context: ConversionCont
 	// Keep the environment structure for complex environments
 	const content = token.content.trim();
 
-	// Determine delimiter based on options
-	const getDisplayDelimiters = (): { open: string; close: string } => {
+	// Helper to get delimiters for custom syntax (when conversion succeeds)
+	const getCustomDelimiters = (): { open: string; close: string } => {
 		switch (context.options.mathDelimiters) {
 			case 'tilde':
 				return { open: '~~', close: '~~' };
@@ -567,17 +567,22 @@ function convertMathEnvironment(token: EnvironmentToken, context: ConversionCont
 		}
 	};
 
-	const { open, close } = getDisplayDelimiters();
-
-	// For simple environments, convert to custom syntax
-	// For complex ones like align, keep the environment
+	// For simple environments (equation, equation*), try to convert to custom syntax
 	if (['equation', 'equation*'].includes(token.name)) {
 		const result = convertMathToCustomSyntax(content, context, token.line, token.column);
-		return `${open}${result.output}${close}`;
+		if (result.converted) {
+			// Conversion succeeded → use configured delimiters
+			const { open, close } = getCustomDelimiters();
+			return `${open}${result.output}${close}`;
+		} else {
+			// Conversion failed → keep LaTeX with dollar signs
+			return `$$${result.output}$$`;
+		}
 	}
 
-	// For other math environments, preserve the LaTeX structure
-	return `${open}\\begin{${token.name}}${content}\\end{${token.name}}${close}`;
+	// For other math environments (align, matrix, etc.), always preserve LaTeX structure
+	// These are not convertible to custom syntax, so use dollar signs
+	return `$$\\begin{${token.name}}${content}\\end{${token.name}}$$`;
 }
 
 /**
@@ -668,7 +673,12 @@ function convertMathInlineToken(token: MathInlineToken, context: ConversionConte
 	// Try converting to custom syntax
 	const result = convertMathToCustomSyntax(token.latex, context, token.line, token.column);
 
-	// Wrap in appropriate delimiters
+	// If conversion failed, content is still LaTeX → use dollar signs
+	if (!result.converted) {
+		return `$${result.output}$`;
+	}
+
+	// Conversion succeeded → use configured delimiters for custom syntax
 	const content = result.output;
 	switch (context.options.mathDelimiters) {
 		case 'tilde':
@@ -689,7 +699,12 @@ function convertMathDisplayToken(token: MathDisplayToken, context: ConversionCon
 	// Try converting to custom syntax
 	const result = convertMathToCustomSyntax(token.latex, context, token.line, token.column);
 
-	// Wrap in appropriate delimiters
+	// If conversion failed, content is still LaTeX → use dollar signs
+	if (!result.converted) {
+		return `$$${result.output}$$`;
+	}
+
+	// Conversion succeeded → use configured delimiters for custom syntax
 	const content = result.output;
 	switch (context.options.mathDelimiters) {
 		case 'tilde':

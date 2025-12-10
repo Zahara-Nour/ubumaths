@@ -373,7 +373,8 @@ x &= y + z \\\\
 a &= b + c
 \\end{align}`;
 		const result = transpileLatexToMarkdown(input);
-		expect(result.markdown).toContain('~~');
+		// align environment is not convertible → stays as LaTeX with $$ delimiters
+		expect(result.markdown).toContain('$$');
 		expect(result.markdown).toContain('align');
 	});
 });
@@ -622,8 +623,7 @@ In conclusion, this works.`;
 		expect(result.markdown).toContain('**bold text**');
 		expect(result.markdown).toContain('~E=mc^2~'); // custom syntax with tilde delimiters
 		expect(result.markdown).toContain('- First point');
-		expect(result.markdown).toContain('~~'); // display math with tilde
-		// \int not supported by mathAST, falls back to original LaTeX with warning
+		expect(result.markdown).toContain('$$'); // \int not supported → falls back to LaTeX with $$ delimiters
 		expect(result.warnings.length).toBeLessThanOrEqual(1);
 	});
 
@@ -916,9 +916,9 @@ Le score est de 95\\,\\% des élèves.
 Le score est de $95\\,\\%$ des élèves.
 \\end{EXO}`;
 		const result = transpileLatexToMarkdown(input);
-		// Math with spacing commands falls back to original LaTeX (with tilde delimiters)
+		// Math with spacing commands falls back to original LaTeX with $...$ delimiters
 		// because \, and \% are not supported by mathAST parser
-		expect(result.markdown).toContain('~95\\,\\%~');
+		expect(result.markdown).toContain('$95\\,\\%$');
 		// Warning for unsupported math feature is expected
 		expect(result.warnings.length).toBeGreaterThanOrEqual(0);
 	});
