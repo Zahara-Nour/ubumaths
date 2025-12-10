@@ -1,5 +1,7 @@
 # Systeme de Questions - Documentation Technique
 
+> **Documentation modulaire disponible** : Voir [questions/](questions/) pour la documentation organisee par theme.
+
 Ce document decrit l'architecture complete du systeme de questions mathematiques d'UbuMaths, incluant les types de questions, la generation d'instances, la parametrisation, et la validation des reponses.
 
 ---
