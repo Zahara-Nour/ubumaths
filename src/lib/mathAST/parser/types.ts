@@ -574,5 +574,8 @@ export const RELATION_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'notin',
 	'implies',
 	'iff',
-	'impliedby'
+	'impliedby',
+	'Rightarrow',
+	'Leftrightarrow',
+	'Leftarrow'
 ]);

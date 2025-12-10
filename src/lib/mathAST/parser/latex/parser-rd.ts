@@ -95,7 +95,10 @@ const RELATION_COMMAND_MAP: Record<string, RelationType> = {
 	notin: '∉',
 	implies: '⟹',
 	iff: '⟺',
-	impliedby: '⟸'
+	impliedby: '⟸',
+	Rightarrow: '⟹',
+	Leftrightarrow: '⟺',
+	Leftarrow: '⟸'
 };
 
 // =============================================================================
