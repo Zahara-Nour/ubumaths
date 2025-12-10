@@ -333,7 +333,7 @@ export {
 
 export type { CustomGeneratorOptions } from './custom-generator';
 
-export { CustomGenerator, toCustom } from './custom-generator';
+export { CustomGenerator, toCustom, SUPPORTED_GREEK, SUPPORTED_SYMBOLS } from './custom-generator';
 
 // =============================================================================
 // Pretty Printer

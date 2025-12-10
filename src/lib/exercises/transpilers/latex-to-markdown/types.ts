@@ -64,6 +64,7 @@ export interface TranspileStats {
 export type WarningType =
 	| 'unsupported-command'
 	| 'unsupported-environment'
+	| 'unsupported-math-feature'
 	| 'parse-error'
 	| 'nested-too-deep'
 	| 'malformed-table'

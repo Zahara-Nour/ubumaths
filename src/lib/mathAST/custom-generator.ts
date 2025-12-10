@@ -78,13 +78,19 @@ export interface CustomGeneratorOptions {
  * Supported Greek letters in custom syntax.
  * Only these 5 are supported by the custom parser.
  */
-const SUPPORTED_GREEK: ReadonlySet<GreekLetter> = new Set<GreekLetter>([
+export const SUPPORTED_GREEK: ReadonlySet<GreekLetter> = new Set<GreekLetter>([
 	'pi',
 	'alpha',
 	'beta',
 	'gamma',
 	'theta'
 ]);
+
+/**
+ * Supported symbols in custom syntax.
+ * Currently only infinity is supported.
+ */
+export const SUPPORTED_SYMBOLS: ReadonlySet<string> = new Set(['infinity']);
 
 /**
  * Map custom syntax relation types to output strings.

@@ -32,8 +32,6 @@ import { tokenize } from './tokenizer';
 
 // Import converters from simple.ts
 import {
-	convertMathInline,
-	convertMathDisplay,
 	convertDashes,
 	convertSpecialCharacter,
 	hasSimpleConverter,
@@ -60,6 +58,9 @@ import {
 	convertUnsupportedEnvironment,
 	isSupportedEnvironment
 } from './converters/fallback';
+
+// Import math to custom syntax converter
+import { convertMathToCustomSyntax } from './converters/math-to-custom';
 
 // ===========================
 // Default Options
@@ -645,22 +646,34 @@ function convertDocumentEnvironment(token: EnvironmentToken, context: Conversion
 
 /**
  * Convert an inline math token to markdown.
+ * Attempts to convert LaTeX math to custom syntax.
  */
 function convertMathInlineToken(token: MathInlineToken, context: ConversionContext): string {
+	// Try converting to custom syntax
+	const result = convertMathToCustomSyntax(token.latex, context, token.line, token.column);
+
+	// Wrap in appropriate delimiters
+	const content = result.output;
 	if (context.options.mathDelimiters === 'brackets') {
-		return `\\(${token.latex}\\)`;
+		return `\\(${content}\\)`;
 	}
-	return convertMathInline(token);
+	return `$${content}$`;
 }
 
 /**
  * Convert a display math token to markdown.
+ * Attempts to convert LaTeX math to custom syntax.
  */
 function convertMathDisplayToken(token: MathDisplayToken, context: ConversionContext): string {
+	// Try converting to custom syntax
+	const result = convertMathToCustomSyntax(token.latex, context, token.line, token.column);
+
+	// Wrap in appropriate delimiters
+	const content = result.output;
 	if (context.options.mathDelimiters === 'brackets') {
-		return `\\[${token.latex}\\]`;
+		return `\\[${content}\\]`;
 	}
-	return convertMathDisplay(token);
+	return `$$${content}$$`;
 }
 
 /**
