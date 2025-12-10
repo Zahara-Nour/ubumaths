@@ -12,6 +12,7 @@
 	- Renders block nodes with appropriate components
 	- Graceful error handling for parse failures
 	- Callback support for blank detection
+	- Configurable list numbering schemes (auto-detection or explicit)
 
 	Note: This component does NOT perform variable instantiation.
 	Content should already be resolved before rendering.
@@ -26,6 +27,11 @@
 	import type { MarkdownDisplayMode } from './types';
 	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
 	import { hasPrompts } from './utils/math-utils';
+
+	// List numbering
+	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
+	import { getMaxEnumerateDepth } from '$lib/custom-markdown/utils/list-depth';
+	import type { SchemeId, ListNumberingConfig } from '$lib/types/list-numbering';
 
 	// Import node components
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
@@ -61,6 +67,8 @@
 		onInputSubmit?: (index: number) => void;
 		/** Whether inputs are disabled (e.g., after submission) */
 		inputsDisabled?: boolean;
+		/** Override list numbering config for this render (uses global store by default) */
+		listNumberingOverride?: Partial<ListNumberingConfig>;
 	}
 
 	let {
@@ -72,7 +80,8 @@
 		inputs = [],
 		onInputChange,
 		onInputSubmit,
-		inputsDisabled = false
+		inputsDisabled = false,
+		listNumberingOverride
 	}: Props = $props();
 
 	/**
@@ -110,6 +119,30 @@
 			// This will be part of the fill_in_blanks feature
 		}
 	});
+
+	/**
+	 * Compute the effective numbering scheme for lists.
+	 * Uses auto-detection when scheme is 'auto', otherwise uses the specified scheme.
+	 */
+	const effectiveListScheme = $derived.by<SchemeId | null>(() => {
+		// Get config (override takes precedence over store)
+		const config = {
+			...listNumberingStore.config,
+			...listNumberingOverride
+		};
+
+		// If scheme is explicitly set (not auto), use it
+		if (config.scheme !== 'auto') {
+			return config.scheme as SchemeId;
+		}
+
+		// Auto-detect based on AST structure
+		if (!ast) return null;
+
+		const maxDepth = getMaxEnumerateDepth(ast);
+		// If nested lists exist, use nesting scheme; otherwise use flat scheme
+		return maxDepth > 1 ? config.schemeWithNesting : config.schemeWithoutNesting;
+	});
 </script>
 
 {#if mode === 'rendered' || mode === 'both'}
@@ -141,7 +174,12 @@
 				{:else if node.type === 'horizontal-rule'}
 					<HorizontalRule />
 				{:else if node.type === 'list'}
-					<ListNode ordered={node.ordered} start={node.start} items={node.items} />
+					<ListNode
+						ordered={node.ordered}
+						start={node.start}
+						items={node.items}
+						effectiveScheme={effectiveListScheme}
+					/>
 				{:else if node.type === 'table'}
 					<TableNode header={node.header} rows={node.rows} alignments={node.alignments} />
 				{:else if node.type === 'image'}

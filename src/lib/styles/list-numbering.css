@@ -1,0 +1,284 @@
+/**
+ * List Numbering CSS
+ * ==================
+ *
+ * CSS counters for configurable list numbering schemes.
+ * Each scheme uses CSS counters with ::before pseudo-elements.
+ *
+ * Schemes:
+ * - 1-a-i: 1) a) i) (French academic style)
+ * - a-i: a) i) (flat exercises)
+ * - 1.a.i: 1. a. i. (dot separator)
+ * - I.A.1: I. A. 1. (Roman numerals first)
+ * - decimal: 1. 1.1. 1.1.1. (hierarchical numbering)
+ *
+ * Usage: Apply .scheme-{id} and .enumerate-depth-{n} classes to <ol> elements
+ */
+
+/* ============================================================================
+   BASE STYLES
+   ============================================================================ */
+
+/* Reset list styles for all schemes */
+ol[class*='scheme-'] {
+	list-style: none;
+	padding-left: 0;
+}
+
+ol[class*='scheme-'] > li {
+	position: relative;
+	padding-left: 2em;
+}
+
+ol[class*='scheme-'] > li::before {
+	position: absolute;
+	left: 0;
+	min-width: 1.5em;
+	text-align: right;
+	margin-right: 0.5em;
+}
+
+/* ============================================================================
+   SCHEME: 1) a) i) (1-a-i)
+   French academic style with parenthesis
+   ============================================================================ */
+
+/* Depth 1: 1) 2) 3) */
+.scheme-1-a-i.enumerate-depth-1 {
+	counter-reset: enum1;
+}
+
+.scheme-1-a-i.enumerate-depth-1 > li::before {
+	counter-increment: enum1;
+	content: counter(enum1) ') ';
+}
+
+/* Depth 2: a) b) c) */
+.scheme-1-a-i .enumerate-depth-2 {
+	counter-reset: enum2;
+}
+
+.scheme-1-a-i .enumerate-depth-2 > li::before {
+	counter-increment: enum2;
+	content: counter(enum2, lower-alpha) ') ';
+}
+
+/* Depth 3: i) ii) iii) */
+.scheme-1-a-i .enumerate-depth-3 {
+	counter-reset: enum3;
+}
+
+.scheme-1-a-i .enumerate-depth-3 > li::before {
+	counter-increment: enum3;
+	content: counter(enum3, lower-roman) ') ';
+}
+
+/* Depth 4+: fallback to decimal */
+.scheme-1-a-i .enumerate-depth-4,
+.scheme-1-a-i .enumerate-depth-5,
+.scheme-1-a-i .enumerate-depth-6 {
+	counter-reset: enum4;
+}
+
+.scheme-1-a-i .enumerate-depth-4 > li::before,
+.scheme-1-a-i .enumerate-depth-5 > li::before,
+.scheme-1-a-i .enumerate-depth-6 > li::before {
+	counter-increment: enum4;
+	content: counter(enum4) ') ';
+}
+
+/* ============================================================================
+   SCHEME: a) i) (a-i)
+   Flat exercise style starting with letters
+   ============================================================================ */
+
+/* Depth 1: a) b) c) */
+.scheme-a-i.enumerate-depth-1 {
+	counter-reset: enum1;
+}
+
+.scheme-a-i.enumerate-depth-1 > li::before {
+	counter-increment: enum1;
+	content: counter(enum1, lower-alpha) ') ';
+}
+
+/* Depth 2: i) ii) iii) */
+.scheme-a-i .enumerate-depth-2 {
+	counter-reset: enum2;
+}
+
+.scheme-a-i .enumerate-depth-2 > li::before {
+	counter-increment: enum2;
+	content: counter(enum2, lower-roman) ') ';
+}
+
+/* Depth 3+: fallback to decimal */
+.scheme-a-i .enumerate-depth-3,
+.scheme-a-i .enumerate-depth-4,
+.scheme-a-i .enumerate-depth-5,
+.scheme-a-i .enumerate-depth-6 {
+	counter-reset: enum3;
+}
+
+.scheme-a-i .enumerate-depth-3 > li::before,
+.scheme-a-i .enumerate-depth-4 > li::before,
+.scheme-a-i .enumerate-depth-5 > li::before,
+.scheme-a-i .enumerate-depth-6 > li::before {
+	counter-increment: enum3;
+	content: counter(enum3) ') ';
+}
+
+/* ============================================================================
+   SCHEME: 1. a. i. (1.a.i)
+   Dot separator style
+   ============================================================================ */
+
+/* Depth 1: 1. 2. 3. */
+.scheme-1\.a\.i.enumerate-depth-1 {
+	counter-reset: enum1;
+}
+
+.scheme-1\.a\.i.enumerate-depth-1 > li::before {
+	counter-increment: enum1;
+	content: counter(enum1) '. ';
+}
+
+/* Depth 2: a. b. c. */
+.scheme-1\.a\.i .enumerate-depth-2 {
+	counter-reset: enum2;
+}
+
+.scheme-1\.a\.i .enumerate-depth-2 > li::before {
+	counter-increment: enum2;
+	content: counter(enum2, lower-alpha) '. ';
+}
+
+/* Depth 3: i. ii. iii. */
+.scheme-1\.a\.i .enumerate-depth-3 {
+	counter-reset: enum3;
+}
+
+.scheme-1\.a\.i .enumerate-depth-3 > li::before {
+	counter-increment: enum3;
+	content: counter(enum3, lower-roman) '. ';
+}
+
+/* Depth 4+: fallback to decimal */
+.scheme-1\.a\.i .enumerate-depth-4,
+.scheme-1\.a\.i .enumerate-depth-5,
+.scheme-1\.a\.i .enumerate-depth-6 {
+	counter-reset: enum4;
+}
+
+.scheme-1\.a\.i .enumerate-depth-4 > li::before,
+.scheme-1\.a\.i .enumerate-depth-5 > li::before,
+.scheme-1\.a\.i .enumerate-depth-6 > li::before {
+	counter-increment: enum4;
+	content: counter(enum4) '. ';
+}
+
+/* ============================================================================
+   SCHEME: I. A. 1. (I.A.1)
+   Roman numerals first (formal/legal style)
+   ============================================================================ */
+
+/* Depth 1: I. II. III. */
+.scheme-I\.A\.1.enumerate-depth-1 {
+	counter-reset: enum1;
+}
+
+.scheme-I\.A\.1.enumerate-depth-1 > li::before {
+	counter-increment: enum1;
+	content: counter(enum1, upper-roman) '. ';
+}
+
+/* Depth 2: A. B. C. */
+.scheme-I\.A\.1 .enumerate-depth-2 {
+	counter-reset: enum2;
+}
+
+.scheme-I\.A\.1 .enumerate-depth-2 > li::before {
+	counter-increment: enum2;
+	content: counter(enum2, upper-alpha) '. ';
+}
+
+/* Depth 3: 1. 2. 3. */
+.scheme-I\.A\.1 .enumerate-depth-3 {
+	counter-reset: enum3;
+}
+
+.scheme-I\.A\.1 .enumerate-depth-3 > li::before {
+	counter-increment: enum3;
+	content: counter(enum3) '. ';
+}
+
+/* Depth 4+: fallback to lower-alpha */
+.scheme-I\.A\.1 .enumerate-depth-4,
+.scheme-I\.A\.1 .enumerate-depth-5,
+.scheme-I\.A\.1 .enumerate-depth-6 {
+	counter-reset: enum4;
+}
+
+.scheme-I\.A\.1 .enumerate-depth-4 > li::before,
+.scheme-I\.A\.1 .enumerate-depth-5 > li::before,
+.scheme-I\.A\.1 .enumerate-depth-6 > li::before {
+	counter-increment: enum4;
+	content: counter(enum4, lower-alpha) '. ';
+}
+
+/* ============================================================================
+   SCHEME: decimal (1. 1.1. 1.1.1.)
+   Hierarchical decimal numbering
+   ============================================================================ */
+
+/* Depth 1: 1. 2. 3. */
+.scheme-decimal.enumerate-depth-1 {
+	counter-reset: d1;
+}
+
+.scheme-decimal.enumerate-depth-1 > li::before {
+	counter-increment: d1;
+	content: counter(d1) '. ';
+}
+
+/* Depth 2: 1.1. 1.2. etc. */
+.scheme-decimal .enumerate-depth-2 {
+	counter-reset: d2;
+}
+
+.scheme-decimal .enumerate-depth-2 > li::before {
+	counter-increment: d2;
+	content: counter(d1) '.' counter(d2) '. ';
+}
+
+/* Depth 3: 1.1.1. 1.1.2. etc. */
+.scheme-decimal .enumerate-depth-3 {
+	counter-reset: d3;
+}
+
+.scheme-decimal .enumerate-depth-3 > li::before {
+	counter-increment: d3;
+	content: counter(d1) '.' counter(d2) '.' counter(d3) '. ';
+}
+
+/* Depth 4: 1.1.1.1. etc. */
+.scheme-decimal .enumerate-depth-4 {
+	counter-reset: d4;
+}
+
+.scheme-decimal .enumerate-depth-4 > li::before {
+	counter-increment: d4;
+	content: counter(d1) '.' counter(d2) '.' counter(d3) '.' counter(d4) '. ';
+}
+
+/* Depth 5+: just continue the pattern */
+.scheme-decimal .enumerate-depth-5,
+.scheme-decimal .enumerate-depth-6 {
+	counter-reset: d5;
+}
+
+.scheme-decimal .enumerate-depth-5 > li::before,
+.scheme-decimal .enumerate-depth-6 > li::before {
+	counter-increment: d5;
+	content: counter(d1) '.' counter(d2) '.' counter(d3) '.' counter(d4) '.' counter(d5) '. ';
+}
