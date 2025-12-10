@@ -27,6 +27,11 @@ import {
 	getChapterQuizResults
 } from '$lib/server/chapters';
 import {
+	checkForTemplateUpdates,
+	migrateChapterToVersion,
+	detachChapterFromTemplate
+} from '$lib/server/chapter-templates';
+import {
 	createChecklistItemSchema,
 	updateChecklistItemSchema
 } from '$lib/server/validation/chapters';
@@ -36,6 +41,7 @@ import type {
 	ChapterChecklistItem,
 	ChapterExercise
 } from '$lib/types/chapters';
+import type { InstantiationWithStatus } from '$lib/types/chapter-templates';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user } = await requireRole(locals, 'teacher');
@@ -213,6 +219,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		})
 		.filter(Boolean);
 
+	// Check if chapter has template instantiation
+	const { data: templateInstantiation } = await checkForTemplateUpdates(chapterId, locals.supabase);
+
 	return {
 		chapter: {
 			id: chapter.id,
@@ -238,7 +247,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		availableExercises: availableExercises || [],
 		checklistProgress: checklistProgress || [],
 		quizResults: quizResultsData || [],
-		students: studentList
+		students: studentList,
+		templateInstantiation: templateInstantiation as InstantiationWithStatus | null
 	};
 };
 
@@ -684,5 +694,71 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'deleteDocument' };
+	},
+
+	// ============ TEMPLATE ACTIONS ============
+
+	migrateToVersion: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const { chapterId } = params;
+
+		// Verify ownership
+		const { data: chapter } = await locals.supabase
+			.from('class_chapters')
+			.select('id')
+			.eq('id', chapterId)
+			.eq('teacher_id', user.id)
+			.single();
+
+		if (!chapter) {
+			return fail(403, { error: 'Acces refuse', action: 'migrateToVersion' });
+		}
+
+		const formData = await request.formData();
+		const targetVersionStr = formData.get('targetVersion') as string;
+		const targetVersion = parseInt(targetVersionStr, 10);
+
+		if (isNaN(targetVersion) || targetVersion < 1) {
+			return fail(400, { error: 'Version cible invalide', action: 'migrateToVersion' });
+		}
+
+		const { error: migrateError } = await migrateChapterToVersion(
+			chapterId,
+			targetVersion,
+			locals.supabase
+		);
+
+		if (migrateError) {
+			console.error('[migrateToVersion] Error:', migrateError);
+			return fail(500, { error: 'Erreur lors de la migration', action: 'migrateToVersion' });
+		}
+
+		return { success: true, action: 'migrateToVersion' };
+	},
+
+	detachFromTemplate: async ({ locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const { chapterId } = params;
+
+		// Verify ownership
+		const { data: chapter } = await locals.supabase
+			.from('class_chapters')
+			.select('id')
+			.eq('id', chapterId)
+			.eq('teacher_id', user.id)
+			.single();
+
+		if (!chapter) {
+			return fail(403, { error: 'Acces refuse', action: 'detachFromTemplate' });
+		}
+
+		const { error: detachError } = await detachChapterFromTemplate(chapterId, locals.supabase);
+
+		if (detachError) {
+			console.error('[detachFromTemplate] Error:', detachError);
+			return fail(500, { error: 'Erreur lors du detachement', action: 'detachFromTemplate' });
+		}
+
+		return { success: true, action: 'detachFromTemplate' };
 	}
 };

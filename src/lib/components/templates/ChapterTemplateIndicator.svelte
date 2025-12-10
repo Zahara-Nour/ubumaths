@@ -99,8 +99,7 @@
 							size="icon-sm"
 							onclick={onUpdate}
 							class="h-7 w-7"
-							{...builder}
-							use:builder.action
+							builders={[builder]}
 						>
 							<ArrowUpCircle class="h-4 w-4 text-blue-600" />
 						</Button>
@@ -119,8 +118,7 @@
 							size="icon-sm"
 							onclick={onDetach}
 							class="h-7 w-7"
-							{...builder}
-							use:builder.action
+							builders={[builder]}
 						>
 							<Unlink class="h-4 w-4 text-muted-foreground hover:text-destructive" />
 						</Button>
