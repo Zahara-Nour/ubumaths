@@ -434,7 +434,10 @@ export function isRelationToken(token: Token): boolean {
 			'notin',
 			'implies',
 			'iff',
-			'impliedby'
+			'impliedby',
+			'Rightarrow',
+			'Leftrightarrow',
+			'Leftarrow'
 		];
 		return relationCommands.includes(token.value);
 	}
