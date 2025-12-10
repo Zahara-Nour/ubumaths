@@ -24,7 +24,8 @@ Documentation détaillée pour Claude Code lors du développement d'UbuMaths.
 - **[Teacher Cache](./teacher-cache.md)** - Client-side cache dashboard enseignant
 - **[Student Cache](./student-cache.md)** - Client-side cache dashboard étudiant
 - **[UI Components](./ui-components.md)** - Shadcn, MySelect, Tailwind, toasts
-- **[InstrumenPoche Conversion](./instrumenpoche-conversion.md)** 🆕 - Conversion XML → JSON pour constructions
+- **[List Numbering](./list-numbering.md)** 🆕 - Schemas de numerotation configurables pour listes
+- **[InstrumenPoche Conversion](./instrumenpoche-conversion.md)** - Conversion XML → JSON pour constructions
 
 ### Standards & Best Practices
 
