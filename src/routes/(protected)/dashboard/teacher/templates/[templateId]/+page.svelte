@@ -20,7 +20,7 @@
 		CardTitle
 	} from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Select from '$lib/components/ui/select';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -315,24 +315,15 @@
 					<Label for="classId">
 						Classe<span class="text-destructive">*</span>
 					</Label>
-					<Select.Root
-						onSelectedChange={(selected) => {
-							if (selected) {
-								selectedClassId = selected.value;
-							}
-						}}
-					>
-						<Select.Trigger>
-							<Select.Value placeholder="Sélectionnez une classe" />
-						</Select.Trigger>
-						<Select.Content>
-							{#each data.classes as cls (cls.id)}
-								<Select.Item value={cls.id}>
-									{cls.name} ({cls.grade})
-								</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
+					<MySelect
+						type="single"
+						bind:value={selectedClassId}
+						items={data.classes.map((cls) => ({
+							value: cls.id,
+							label: `${cls.name} (${cls.grade})`
+						}))}
+						placeholder="Sélectionnez une classe"
+					/>
 					<input type="hidden" name="classId" value={selectedClassId} />
 				</div>
 
