@@ -25,17 +25,44 @@
 
 	const sampleLatex = `\\section{Exercice}
 
-Soit $f(x) = x^2 + 2x + 1$.
+Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 
 \\begin{enumerate}
-\\item Calculer $f(0)$.
-\\item Factoriser $f(x)$.
+\\item Étudier la fonction $f$ :
+  \\begin{enumerate}
+  \\item Calculer $f(0)$ et $f(1)$.
+  \\item Déterminer les racines de $f$.
+  \\item Étudier les variations :
+    \\begin{itemize}
+    \\item Calculer $f'(x)$
+    \\item Dresser le tableau de signes de $f'(x)$
+    \\item En déduire le tableau de variations
+    \\end{itemize}
+  \\end{enumerate}
+\\item Étudier la fonction $g$ :
+  \\begin{itemize}
+  \\item Domaine de définition
+  \\item Limites aux bornes
+  \\item Asymptotes
+  \\end{itemize}
+\\item Résoudre $f(x) = g(x)$.
 \\end{enumerate}
 
 \\begin{solution}
 \\begin{enumerate}
-\\item $f(0) = 1$
-\\item $f(x) = (x+1)^2$
+\\item Étude de $f$ :
+  \\begin{enumerate}
+  \\item $f(0) = 3$ et $f(1) = 0$
+  \\item $f(x) = (x-1)(x-3)$, donc racines : $x = 1$ et $x = 3$
+  \\item Variations :
+    \\begin{itemize}
+    \\item $f'(x) = 2x - 4$
+    \\item $f'(x) = 0 \\Leftrightarrow x = 2$
+    \\item $f$ décroissante sur $]-\\infty; 2]$, croissante sur $[2; +\\infty[$
+    \\end{itemize}
+  \\end{enumerate}
+\\item $D_g = \\mathbb{R} \\setminus \\{1\\}$, asymptote verticale $x = 1$
+\\item $f(x) = g(x) \\Leftrightarrow x = \\frac{1 + \\sqrt{13}}{2}$
 \\end{enumerate}
 \\end{solution}`;
 
