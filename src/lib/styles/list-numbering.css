@@ -27,15 +27,15 @@ ol[class*='scheme-'] {
 
 ol[class*='scheme-'] > li {
 	position: relative;
-	padding-left: 2em;
+	padding-left: 1.5em;
 }
 
 ol[class*='scheme-'] > li::before {
 	position: absolute;
 	left: 0;
-	min-width: 1.5em;
+	min-width: 1.2em;
 	text-align: right;
-	margin-right: 0.5em;
+	margin-right: 0.3em;
 }
 
 /* ============================================================================
