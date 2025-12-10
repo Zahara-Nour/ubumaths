@@ -28,6 +28,8 @@ export type {
 
 export {
 	DEFAULT_PARSER_OPTIONS,
+	DEFAULT_GENERIC_FUNCTIONS,
+	DEFAULT_GENERIC_FUNCTION_NAMES,
 	KNOWN_COMMANDS,
 	FUNCTION_COMMANDS,
 	GREEK_COMMANDS,
@@ -72,6 +74,7 @@ export {
 
 import type { MathNode } from '../types';
 import type { ParseResult, ParseError, ParserOptions, GenericFunctionConfig } from './types';
+import { DEFAULT_GENERIC_FUNCTIONS } from './types';
 import { parsePratt, parsePrattSafe } from './latex';
 import { parseRD, parseRDSafe } from './latex';
 
@@ -83,8 +86,12 @@ export interface LatexParserOptions {
 	mode?: 'strict' | 'tolerant';
 	/** Parser implementation: 'pratt' or 'rd' */
 	parser?: 'pratt' | 'rd';
-	/** Configuration for generic function names (f, g, h) */
-	genericFunctions?: GenericFunctionConfig;
+	/**
+	 * Configuration for generic function names (f, g, h).
+	 * Defaults to DEFAULT_GENERIC_FUNCTIONS which includes: f, g, h, u, v, w, F, G, H.
+	 * Set to `null` to disable generic function parsing entirely.
+	 */
+	genericFunctions?: GenericFunctionConfig | null;
 }
 
 /**
@@ -117,9 +124,19 @@ export interface LatexParserOptions {
 export function parseLatex(input: string, options?: LatexParserOptions): MathNode {
 	const mode = options?.mode ?? 'strict';
 	const parser = options?.parser ?? 'pratt';
+
+	// Determine generic functions config:
+	// - undefined (not provided): use default
+	// - null: disable entirely
+	// - GenericFunctionConfig: use provided config
+	const genericFunctions =
+		options?.genericFunctions === null
+			? undefined
+			: (options?.genericFunctions ?? DEFAULT_GENERIC_FUNCTIONS);
+
 	const parserOptions: Partial<ParserOptions> = {
 		mode,
-		...(options?.genericFunctions && { genericFunctions: options.genericFunctions })
+		...(genericFunctions && { genericFunctions })
 	};
 
 	if (parser === 'rd') {
@@ -155,9 +172,19 @@ export function parseLatex(input: string, options?: LatexParserOptions): MathNod
 export function parseLatexSafe(input: string, options?: LatexParserOptions): ParseResult {
 	const mode = options?.mode ?? 'tolerant';
 	const parser = options?.parser ?? 'pratt';
+
+	// Determine generic functions config:
+	// - undefined (not provided): use default
+	// - null: disable entirely
+	// - GenericFunctionConfig: use provided config
+	const genericFunctions =
+		options?.genericFunctions === null
+			? undefined
+			: (options?.genericFunctions ?? DEFAULT_GENERIC_FUNCTIONS);
+
 	const parserOptions: Partial<ParserOptions> = {
 		mode,
-		...(options?.genericFunctions && { genericFunctions: options.genericFunctions })
+		...(genericFunctions && { genericFunctions })
 	};
 
 	if (parser === 'rd') {

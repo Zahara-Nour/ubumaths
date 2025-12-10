@@ -313,6 +313,9 @@ export { LatexGenerator, toLatex } from './latex-generator';
 export type { LatexParserOptions, GenericFunctionConfig } from './parser';
 
 export {
+	// Default generic functions configuration
+	DEFAULT_GENERIC_FUNCTIONS,
+	DEFAULT_GENERIC_FUNCTION_NAMES,
 	// Unified API (recommended)
 	parseLatex,
 	parseLatexSafe,
@@ -326,6 +329,27 @@ export {
 	PrattParseException,
 	RDParseException
 } from './parser';
+
+// =============================================================================
+// Custom Syntax Parser
+// =============================================================================
+
+export type { CustomParserOptions } from './parser/custom';
+
+export {
+	// Unified API (recommended) - includes default generic functions
+	parseCustom,
+	parseCustomSafe,
+	// Pratt parser with default generic functions
+	parseCustomPratt,
+	parseCustomPrattSafe,
+	// RD parser with default generic functions
+	parseCustomRD,
+	parseCustomRDSafe,
+	// Parser exceptions
+	PrattParseException as CustomPrattParseException,
+	RDParseException as CustomRDParseException
+} from './parser/custom';
 
 // =============================================================================
 // Custom Syntax Generator
