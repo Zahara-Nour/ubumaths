@@ -16,6 +16,7 @@ The database is designed to support a complete math learning platform with:
 - **Chat Moderation**: User restrictions and moderation audit trail (NEW: 2025-11-10)
 - **Error Monitoring**: Comprehensive error logging and tracking system
 - **Achievements System**: Universal achievement tracking across all features (NEW: 2025-11-21)
+- **Chapter Templates**: Reusable chapter templates with versioning and sharing (NEW: 2025-12-10)
 
 ## Entity Relationship Diagram
 
@@ -866,6 +867,120 @@ Pre-populated student data before first authentication.
 **RLS Policies**:
 
 - Only admins can view, insert, update, or delete pending students
+
+### Chapter Templates System (NEW: 2025-12-10)
+
+Reusable chapter templates that teachers can create, share, version, and instantiate across multiple classes.
+
+#### `chapter_templates`
+
+Reusable chapter templates with versioning and public/private sharing.
+
+| Column              | Type        | Description                                              |
+| ------------------- | ----------- | -------------------------------------------------------- |
+| id                  | UUID (PK)   | Template ID                                              |
+| created_by          | UUID (FK)   | Teacher who created this template → profiles(id)         |
+| status              | TEXT        | Template status: 'draft', 'published', 'archived'        |
+| is_public           | BOOLEAN     | Whether template is visible to all teachers              |
+| title               | TEXT        | Template title (required, non-empty)                     |
+| description         | TEXT        | Optional template description                            |
+| grades              | TEXT[]      | Target grade levels (e.g., ['6eme', '5eme'])             |
+| color               | TEXT        | Hex color code for UI styling (e.g., '#3B82F6')          |
+| icon                | TEXT        | Emoji or icon identifier for visual representation       |
+| content_snapshot    | JSONB       | Current template content (documents, quizzes, checklist) |
+| instantiation_count | INTEGER     | Number of times this template has been instantiated      |
+| current_version     | INTEGER     | Current version number (1-based)                         |
+| created_at          | TIMESTAMPTZ | Creation time                                            |
+| updated_at          | TIMESTAMPTZ | Last update time                                         |
+
+**Constraints**:
+
+- `status` must be one of: 'draft', 'published', 'archived'
+- `color` must be a valid hex color (e.g., '#3B82F6') or NULL
+- `title` must be non-empty
+- `instantiation_count` must be >= 0
+- `current_version` must be >= 1
+
+**Status Workflow**:
+
+- **draft**: Template is editable, visible only to creator
+- **published**: Template is locked (no edits), can be made public
+- **archived**: Template is hidden from browse, existing instances still work
+
+**RLS Policies**:
+
+- Teachers can view/create/update/delete their own templates
+- Teachers can view public published templates
+- Admins can manage all templates
+
+#### `chapter_template_versions`
+
+Version history for chapter templates with content snapshots.
+
+| Column           | Type        | Description                                                            |
+| ---------------- | ----------- | ---------------------------------------------------------------------- |
+| id               | UUID (PK)   | Version ID                                                             |
+| template_id      | UUID (FK)   | Reference to parent template → chapter_templates(id) ON DELETE CASCADE |
+| version_number   | INTEGER     | Version number (1-based, sequential)                                   |
+| created_by       | UUID (FK)   | Teacher who created this version → profiles(id)                        |
+| content_snapshot | JSONB       | Full content snapshot at this version                                  |
+| change_summary   | TEXT        | Optional human-readable summary of changes                             |
+| diff             | JSONB       | Optional structured diff from previous version                         |
+| created_at       | TIMESTAMPTZ | Creation time                                                          |
+
+**Constraints**:
+
+- `(template_id, version_number)` is unique
+- `version_number` must be >= 1
+
+**Automatic Versioning**: When a template is created, version 1 is automatically created via trigger.
+
+**RLS Policies**:
+
+- Teachers can view versions of their templates
+- Teachers can view versions of public published templates
+- Teachers can create versions for their templates
+- Admins can manage all versions
+
+#### `chapter_template_instantiations`
+
+Links chapters to their source templates for versioning and migration.
+
+| Column                   | Type        | Description                                                                  |
+| ------------------------ | ----------- | ---------------------------------------------------------------------------- |
+| id                       | UUID (PK)   | Instantiation ID                                                             |
+| template_id              | UUID (FK)   | Source template (NULL if deleted) → chapter_templates(id) ON DELETE SET NULL |
+| template_version         | INTEGER     | Version used at instantiation                                                |
+| chapter_id               | UUID (FK)   | Instantiated chapter → class_chapters(id) ON DELETE CASCADE                  |
+| current_template_version | INTEGER     | Latest known template version (NULL = template deleted)                      |
+| is_detached              | BOOLEAN     | If true, chapter is independent and won't receive updates                    |
+| instantiated_at          | TIMESTAMPTZ | When chapter was created from template                                       |
+| last_migrated_at         | TIMESTAMPTZ | Last time chapter was updated to match new version                           |
+
+**Constraints**:
+
+- `chapter_id` is unique (one template per chapter)
+- `template_version` must be >= 1
+
+**Workflow**:
+
+1. Teacher selects a template to create chapter
+2. System creates `class_chapter` with content from template
+3. Instantiation record links chapter to template with version
+4. When template gets new version, teacher can choose to migrate
+5. Teacher can "detach" to make chapter independent
+
+**RLS Policies**:
+
+- Teachers can view/create/update/delete instantiations for their chapters
+- Admins can manage all instantiations
+
+**Triggers**:
+
+- `increment_instantiation_count_trigger`: Auto-increments template's `instantiation_count` on insert
+- `create_initial_version_trigger`: Auto-creates version 1 when template is created
+
+**Migration File**: `20251210100000_create_chapter_templates.sql`
 
 ### Friend System Tables
 

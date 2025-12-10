@@ -841,6 +841,161 @@ export type Database = {
 					}
 				];
 			};
+			chapter_template_instantiations: {
+				Row: {
+					chapter_id: string;
+					current_template_version: number | null;
+					id: string;
+					instantiated_at: string;
+					is_detached: boolean;
+					last_migrated_at: string | null;
+					template_id: string | null;
+					template_version: number;
+				};
+				Insert: {
+					chapter_id: string;
+					current_template_version?: number | null;
+					id?: string;
+					instantiated_at?: string;
+					is_detached?: boolean;
+					last_migrated_at?: string | null;
+					template_id?: string | null;
+					template_version: number;
+				};
+				Update: {
+					chapter_id?: string;
+					current_template_version?: number | null;
+					id?: string;
+					instantiated_at?: string;
+					is_detached?: boolean;
+					last_migrated_at?: string | null;
+					template_id?: string | null;
+					template_version?: number;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'chapter_template_instantiations_chapter_id_fkey';
+						columns: ['chapter_id'];
+						isOneToOne: true;
+						referencedRelation: 'class_chapters';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'chapter_template_instantiations_template_id_fkey';
+						columns: ['template_id'];
+						isOneToOne: false;
+						referencedRelation: 'chapter_templates';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			chapter_template_versions: {
+				Row: {
+					change_summary: string | null;
+					content_snapshot: Json;
+					created_at: string;
+					created_by: string;
+					diff: Json | null;
+					id: string;
+					template_id: string;
+					version_number: number;
+				};
+				Insert: {
+					change_summary?: string | null;
+					content_snapshot: Json;
+					created_at?: string;
+					created_by: string;
+					diff?: Json | null;
+					id?: string;
+					template_id: string;
+					version_number: number;
+				};
+				Update: {
+					change_summary?: string | null;
+					content_snapshot?: Json;
+					created_at?: string;
+					created_by?: string;
+					diff?: Json | null;
+					id?: string;
+					template_id?: string;
+					version_number?: number;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'chapter_template_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'chapter_template_versions_template_id_fkey';
+						columns: ['template_id'];
+						isOneToOne: false;
+						referencedRelation: 'chapter_templates';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			chapter_templates: {
+				Row: {
+					color: string | null;
+					content_snapshot: Json;
+					created_at: string;
+					created_by: string;
+					current_version: number;
+					description: string | null;
+					grades: string[];
+					icon: string | null;
+					id: string;
+					instantiation_count: number;
+					is_public: boolean;
+					status: string;
+					title: string;
+					updated_at: string;
+				};
+				Insert: {
+					color?: string | null;
+					content_snapshot?: Json;
+					created_at?: string;
+					created_by: string;
+					current_version?: number;
+					description?: string | null;
+					grades?: string[];
+					icon?: string | null;
+					id?: string;
+					instantiation_count?: number;
+					is_public?: boolean;
+					status?: string;
+					title: string;
+					updated_at?: string;
+				};
+				Update: {
+					color?: string | null;
+					content_snapshot?: Json;
+					created_at?: string;
+					created_by?: string;
+					current_version?: number;
+					description?: string | null;
+					grades?: string[];
+					icon?: string | null;
+					id?: string;
+					instantiation_count?: number;
+					is_public?: boolean;
+					status?: string;
+					title?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'chapter_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			class_chapters: {
 				Row: {
 					class_id: string;
