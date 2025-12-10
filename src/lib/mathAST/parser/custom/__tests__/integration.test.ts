@@ -145,14 +145,33 @@ describe('Custom Parser Integration', () => {
 	});
 
 	describe('Default exports', () => {
-		it('parseCustom should be an alias for parseCustomPratt', () => {
-			expect(parseCustom).toBe(parseCustomPratt);
+		it('parseCustom should produce same AST as parseCustomPratt', () => {
+			const input = '2+3';
+			const result1 = parseCustom(input);
+			const result2 = parseCustomPratt(input);
+			expect(result1).toEqual(result2);
 		});
 
 		it('parseCustomSafe should work', () => {
 			const result = parseCustomSafe('2+3');
 			expect(result.ast).not.toBeNull();
 			expect(result.errors).toHaveLength(0);
+		});
+
+		it('parseCustom should include default generic functions', () => {
+			// f'(x) should parse as a derivative function by default
+			const result = parseCustom("f'(x)");
+			expect(result.type).toBe('function');
+			if (result.type === 'function') {
+				expect(result.name).toBe('f');
+				expect(result.derivativeOrder).toBe(1);
+			}
+		});
+
+		it('parseCustom with genericFunctions=null should disable generic functions', () => {
+			// f without genericFunctions should be a variable
+			const result = parseCustom('f', { genericFunctions: null });
+			expect(result.type).toBe('variable');
 		});
 	});
 

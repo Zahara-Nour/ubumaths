@@ -110,6 +110,38 @@ export interface GenericFunctionConfig {
 }
 
 /**
+ * Default list of generic function names.
+ *
+ * This minimal safe list avoids conflicts with common variable names
+ * while supporting the most commonly used generic functions in mathematics.
+ *
+ * - f, g, h: Standard generic functions
+ * - u, v, w: Auxiliary functions / parameterizations
+ * - F, G, H: Primitives (F = ∫f) / uppercase variants
+ */
+export const DEFAULT_GENERIC_FUNCTION_NAMES: readonly string[] = [
+	'f',
+	'g',
+	'h',
+	'u',
+	'v',
+	'w',
+	'F',
+	'G',
+	'H'
+] as const;
+
+/**
+ * Default configuration for generic functions.
+ * Uses the minimal safe list with derivatives and inverse enabled.
+ */
+export const DEFAULT_GENERIC_FUNCTIONS: GenericFunctionConfig = {
+	names: DEFAULT_GENERIC_FUNCTION_NAMES,
+	allowDerivatives: true,
+	allowInverse: true
+} as const;
+
+/**
  * Options for configuring parser behavior.
  *
  * - 'strict': Fails on any invalid input
