@@ -588,6 +588,337 @@ export type Database = {
 					}
 				];
 			};
+			chapter_checklist_items: {
+				Row: {
+					chapter_id: string;
+					content: string;
+					created_at: string;
+					description: string | null;
+					display_order: number;
+					id: string;
+					updated_at: string;
+				};
+				Insert: {
+					chapter_id: string;
+					content: string;
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					id?: string;
+					updated_at?: string;
+				};
+				Update: {
+					chapter_id?: string;
+					content?: string;
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'chapter_checklist_items_chapter_id_fkey';
+						columns: ['chapter_id'];
+						isOneToOne: false;
+						referencedRelation: 'class_chapters';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			chapter_documents: {
+				Row: {
+					chapter_id: string;
+					created_at: string;
+					description: string | null;
+					display_order: number;
+					file_name: string | null;
+					file_size: number | null;
+					google_drive_url: string | null;
+					google_file_id: string | null;
+					id: string;
+					mime_type: string | null;
+					source_type: string;
+					storage_path: string | null;
+					thumbnail_url: string | null;
+					title: string;
+					updated_at: string;
+				};
+				Insert: {
+					chapter_id: string;
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					file_name?: string | null;
+					file_size?: number | null;
+					google_drive_url?: string | null;
+					google_file_id?: string | null;
+					id?: string;
+					mime_type?: string | null;
+					source_type?: string;
+					storage_path?: string | null;
+					thumbnail_url?: string | null;
+					title: string;
+					updated_at?: string;
+				};
+				Update: {
+					chapter_id?: string;
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					file_name?: string | null;
+					file_size?: number | null;
+					google_drive_url?: string | null;
+					google_file_id?: string | null;
+					id?: string;
+					mime_type?: string | null;
+					source_type?: string;
+					storage_path?: string | null;
+					thumbnail_url?: string | null;
+					title?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'chapter_documents_chapter_id_fkey';
+						columns: ['chapter_id'];
+						isOneToOne: false;
+						referencedRelation: 'class_chapters';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			chapter_exercises: {
+				Row: {
+					chapter_id: string;
+					created_at: string;
+					display_order: number;
+					exercise_id: string;
+					id: string;
+				};
+				Insert: {
+					chapter_id: string;
+					created_at?: string;
+					display_order?: number;
+					exercise_id: string;
+					id?: string;
+				};
+				Update: {
+					chapter_id?: string;
+					created_at?: string;
+					display_order?: number;
+					exercise_id?: string;
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'chapter_exercises_chapter_id_fkey';
+						columns: ['chapter_id'];
+						isOneToOne: false;
+						referencedRelation: 'class_chapters';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'chapter_exercises_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			chapter_quiz_questions: {
+				Row: {
+					chapter_id: string;
+					created_at: string;
+					display_order: number;
+					id: string;
+					points_override: number | null;
+					question_template_id: string;
+				};
+				Insert: {
+					chapter_id: string;
+					created_at?: string;
+					display_order?: number;
+					id?: string;
+					points_override?: number | null;
+					question_template_id: string;
+				};
+				Update: {
+					chapter_id?: string;
+					created_at?: string;
+					display_order?: number;
+					id?: string;
+					points_override?: number | null;
+					question_template_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'chapter_quiz_questions_chapter_id_fkey';
+						columns: ['chapter_id'];
+						isOneToOne: false;
+						referencedRelation: 'class_chapters';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'chapter_quiz_questions_question_template_id_fkey';
+						columns: ['question_template_id'];
+						isOneToOne: false;
+						referencedRelation: 'question_templates';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			chapter_quiz_results: {
+				Row: {
+					attempt_number: number;
+					chapter_quiz_question_id: string;
+					id: string;
+					is_correct: boolean;
+					points_earned: number;
+					student_id: string;
+					submitted_answer: string;
+					submitted_at: string;
+					time_spent_seconds: number | null;
+				};
+				Insert: {
+					attempt_number?: number;
+					chapter_quiz_question_id: string;
+					id?: string;
+					is_correct: boolean;
+					points_earned?: number;
+					student_id: string;
+					submitted_answer: string;
+					submitted_at?: string;
+					time_spent_seconds?: number | null;
+				};
+				Update: {
+					attempt_number?: number;
+					chapter_quiz_question_id?: string;
+					id?: string;
+					is_correct?: boolean;
+					points_earned?: number;
+					student_id?: string;
+					submitted_answer?: string;
+					submitted_at?: string;
+					time_spent_seconds?: number | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'chapter_quiz_results_chapter_quiz_question_id_fkey';
+						columns: ['chapter_quiz_question_id'];
+						isOneToOne: false;
+						referencedRelation: 'chapter_quiz_questions';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'chapter_quiz_results_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'chapter_quiz_results_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'chapter_quiz_results_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'chapter_quiz_results_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			class_chapters: {
+				Row: {
+					class_id: string;
+					color: string | null;
+					created_at: string;
+					description: string | null;
+					display_order: number;
+					icon: string | null;
+					id: string;
+					is_visible: boolean;
+					teacher_id: string;
+					title: string;
+					updated_at: string;
+				};
+				Insert: {
+					class_id: string;
+					color?: string | null;
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					icon?: string | null;
+					id?: string;
+					is_visible?: boolean;
+					teacher_id: string;
+					title: string;
+					updated_at?: string;
+				};
+				Update: {
+					class_id?: string;
+					color?: string | null;
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					icon?: string | null;
+					id?: string;
+					is_visible?: boolean;
+					teacher_id?: string;
+					title?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'class_chapters_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'class_chapters_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'class_chapters_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'class_chapters_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'class_chapters_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			class_google_classroom_links: {
 				Row: {
 					class_id: string;
@@ -5936,6 +6267,80 @@ export type Database = {
 					}
 				];
 			};
+			orphaned_documents: {
+				Row: {
+					file_name: string;
+					file_size: number | null;
+					id: string;
+					mime_type: string | null;
+					original_chapter_id: string;
+					original_class_id: string;
+					original_created_at: string | null;
+					original_document_id: string;
+					orphaned_at: string;
+					orphaned_storage_path: string;
+					teacher_id: string;
+					title: string;
+				};
+				Insert: {
+					file_name: string;
+					file_size?: number | null;
+					id?: string;
+					mime_type?: string | null;
+					original_chapter_id: string;
+					original_class_id: string;
+					original_created_at?: string | null;
+					original_document_id: string;
+					orphaned_at?: string;
+					orphaned_storage_path: string;
+					teacher_id: string;
+					title: string;
+				};
+				Update: {
+					file_name?: string;
+					file_size?: number | null;
+					id?: string;
+					mime_type?: string | null;
+					original_chapter_id?: string;
+					original_class_id?: string;
+					original_created_at?: string | null;
+					original_document_id?: string;
+					orphaned_at?: string;
+					orphaned_storage_path?: string;
+					teacher_id?: string;
+					title?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'orphaned_documents_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'orphaned_documents_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'orphaned_documents_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'orphaned_documents_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			pending_students: {
 				Row: {
 					activated_at: string | null;
@@ -8539,6 +8944,72 @@ export type Database = {
 					{
 						foreignKeyName: 'student_achievements_unlocked_by_fkey';
 						columns: ['unlocked_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			student_checklist_progress: {
+				Row: {
+					checklist_item_id: string;
+					completed_at: string | null;
+					created_at: string;
+					id: string;
+					is_completed: boolean;
+					student_id: string;
+					updated_at: string;
+				};
+				Insert: {
+					checklist_item_id: string;
+					completed_at?: string | null;
+					created_at?: string;
+					id?: string;
+					is_completed?: boolean;
+					student_id: string;
+					updated_at?: string;
+				};
+				Update: {
+					checklist_item_id?: string;
+					completed_at?: string | null;
+					created_at?: string;
+					id?: string;
+					is_completed?: boolean;
+					student_id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_checklist_progress_checklist_item_id_fkey';
+						columns: ['checklist_item_id'];
+						isOneToOne: false;
+						referencedRelation: 'chapter_checklist_items';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_checklist_progress_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_checklist_progress_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_checklist_progress_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_checklist_progress_student_id_fkey';
+						columns: ['student_id'];
 						isOneToOne: false;
 						referencedRelation: 'riddle_progress';
 						referencedColumns: ['student_id'];
@@ -11911,6 +12382,7 @@ export type Database = {
 				Returns: undefined;
 			};
 			is_admin: { Args: never; Returns: boolean };
+			is_class_student: { Args: { p_class_id: string }; Returns: boolean };
 			is_class_teacher: { Args: { p_class_id: string }; Returns: boolean };
 			is_exercise_parameterized: {
 				Args: { exercise_id: string };
@@ -12282,20 +12754,17 @@ export type Database = {
 				Args: { p_message_id: string; p_status: string; p_user_id: string };
 				Returns: undefined;
 			};
-			update_student_bonus:
-				| { Args: { p_delta: number; p_student_id: string }; Returns: number }
-				| {
-						Args: {
-							p_class_id: string;
-							p_created_by?: string;
-							p_delta: number;
-							p_reason?: string;
-							p_student_id: string;
-						};
-						Returns: number;
-				  };
+			update_student_bonus: {
+				Args: {
+					p_class_id: string;
+					p_created_by?: string;
+					p_delta: number;
+					p_reason?: string;
+					p_student_id: string;
+				};
+				Returns: number;
+			};
 			update_student_gidouilles:
-				| { Args: { p_delta: number; p_student_id: string }; Returns: number }
 				| {
 						Args: {
 							p_class_id: string;
@@ -12305,7 +12774,8 @@ export type Database = {
 							p_student_id: string;
 						};
 						Returns: number;
-				  };
+				  }
+				| { Args: { p_delta: number; p_student_id: string }; Returns: number };
 			upsert_error_occurrence: {
 				Args: {
 					p_error_log_id: string;

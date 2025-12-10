@@ -60,7 +60,8 @@
 		BookOpen,
 		Lightbulb,
 		FileText,
-		AlertTriangle
+		AlertTriangle,
+		Book
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -111,6 +112,7 @@
 		if (role === 'student') {
 			return [
 				...commonLinks,
+				{ href: '/dashboard/student/cours', label: 'Cours', icon: Book },
 				// { href: '/dashboard/friends', label: 'Amis', icon: Users },
 				// { href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				// { href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
@@ -125,6 +127,7 @@
 				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				{ href: '/dashboard/teacher/classes', label: 'Classes', icon: GraduationCap },
+				{ href: '/dashboard/teacher/cours', label: 'Cours', icon: Book },
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
 				{ href: '/dashboard/teacher/riddles', label: 'Énigmes', icon: Lightbulb },
 				{ href: '/dashboard/teacher/exercises', label: 'Exercices', icon: BookOpen },
