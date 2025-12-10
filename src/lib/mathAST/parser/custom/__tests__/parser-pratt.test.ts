@@ -1261,19 +1261,21 @@ describe('Composition Operator (@)', () => {
 			const ast = parseWithGenericFunctions('f@g+h');
 
 			// @ has BP=25, + has BP=20, so f@g binds first: (f@g) + h
+			// Note: h outside composition remains a variable
 			expect(ast.type).toBe('addition');
 			const add = ast as AdditionNode;
 			expect(add.left.type).toBe('composition');
-			expect(add.right).toMatchObject({ type: 'function', name: 'h', args: [] });
+			expect(add.right).toMatchObject({ type: 'variable', name: 'h' });
 		});
 
 		it('f+g@h - composition has higher precedence than addition', () => {
 			const ast = parseWithGenericFunctions('f+g@h');
 
 			// f + (g@h)
+			// Note: f outside composition remains a variable
 			expect(ast.type).toBe('addition');
 			const add = ast as AdditionNode;
-			expect(add.left).toMatchObject({ type: 'function', name: 'f', args: [] });
+			expect(add.left).toMatchObject({ type: 'variable', name: 'f' });
 			expect(add.right.type).toBe('composition');
 		});
 

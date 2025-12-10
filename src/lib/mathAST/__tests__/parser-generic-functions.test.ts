@@ -151,10 +151,11 @@ describe('LaTeX Parser - Generic Functions', () => {
 			expect((result.ast as { name: string }).name).toBe('x');
 		});
 
-		it('parses f without parentheses as naked function (for composition)', () => {
+		it('parses f without parentheses as variable (composition converts to function)', () => {
 			const result = parseLatexWithGenericFuncs('f');
 			expectSuccess(result);
-			expectFunction(result.ast!, 'f', { argCount: 0 });
+			expect(result.ast!.type).toBe('variable');
+			expect((result.ast as { name: string }).name).toBe('f');
 		});
 	});
 
@@ -265,8 +266,9 @@ describe('LaTeX Parser - Generic Functions', () => {
 	});
 
 	describe('Edge cases and backward compatibility', () => {
-		it('without genericFunctions config, f(x) is implicit multiplication', () => {
-			const result = parseLatexSafe('f(x)', { mode: 'strict' }); // No genericFunctions
+		it('with genericFunctions disabled, f(x) is implicit multiplication', () => {
+			// Must explicitly disable with null to override defaults
+			const result = parseLatexSafe('f(x)', { mode: 'strict', genericFunctions: null });
 			expectSuccess(result);
 			// Should be f * (x), i.e., multiplication
 			expect(result.ast!.type).toBe('multiplication');
@@ -309,10 +311,11 @@ describe('Custom Parser - Generic Functions', () => {
 			expectFunction(result.ast!, 'g', { argCount: 2 });
 		});
 
-		it('parses naked function f for composition', () => {
+		it('parses f without parentheses as variable (composition converts to function)', () => {
 			const result = parseCustomWithGenericFuncs('f');
 			expectSuccess(result);
-			expectFunction(result.ast!, 'f', { argCount: 0 });
+			expect(result.ast!.type).toBe('variable');
+			expect((result.ast as { name: string }).name).toBe('f');
 		});
 	});
 
@@ -390,12 +393,11 @@ describe('Custom Parser - Generic Functions', () => {
 	});
 
 	describe('Edge cases', () => {
-		it('without genericFunctions, f(x) may parse differently', () => {
-			const result = parseCustomSafe('f(x)', { mode: 'strict' }); // No genericFunctions
+		it('with genericFunctions disabled, f(x) is implicit multiplication', () => {
+			// Must explicitly disable with null to override defaults
+			const result = parseCustomSafe('f(x)', { mode: 'strict', genericFunctions: null });
 			expectSuccess(result);
-			// In custom parser, single letter followed by () might be implicit mult
-			// Let's verify the behavior
-			// Actually custom parser treats it as multiplication: f * (x)
+			// In custom parser, single letter followed by () is implicit mult when disabled
 			expect(result.ast!.type).toBe('multiplication');
 		});
 

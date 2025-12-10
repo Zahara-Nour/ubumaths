@@ -610,7 +610,12 @@ export class CustomGenerator {
 			}
 		}
 
-		// Emit parentheses and arguments (mandatory in custom syntax)
+		// Emit parentheses and arguments
+		// Skip parentheses for functions with no arguments (generic functions like f', f^{-1})
+		if (node.args.length === 0) {
+			return;
+		}
+
 		const leftMeta = getLeftDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
 		const rightMeta = getRightDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
 
@@ -966,7 +971,12 @@ export class CustomGenerator {
 			}
 		}
 
-		// Generate arguments (mandatory parentheses in custom syntax)
+		// Generate arguments
+		// Parentheses are mandatory for standard functions (sin, cos, etc.)
+		// But for generic functions (f, g, h) without arguments, omit parentheses
+		if (node.args.length === 0) {
+			return result;
+		}
 		const args = node.args.map((arg) => this.generateNode(arg)).join(',');
 		return `${result}(${args})`;
 	}

@@ -669,13 +669,19 @@ class CustomPrattParser {
 			);
 		}
 
-		// No parentheses - return a "naked" function (for composition)
-		return this.applyColor(
-			MathAST.func(name, [], {
-				...(derivativeOrder > 0 && { derivativeOrder }),
-				...(isInverse && { isInverse })
-			})
-		);
+		// No parentheses - if there are derivative marks or inverse, return as function
+		// Otherwise return as variable
+		if (derivativeOrder > 0 || isInverse) {
+			return this.applyColor(
+				MathAST.func(name, [], {
+					...(derivativeOrder > 0 && { derivativeOrder }),
+					...(isInverse && { isInverse })
+				})
+			);
+		}
+
+		// Plain letter without parentheses, derivatives, or inverse - it's a variable
+		return this.applyColor(MathAST.variable(name));
 	}
 
 	/**
@@ -963,14 +969,33 @@ class CustomPrattParser {
 	/**
 	 * Parse composition: f@g
 	 * Composition is left-associative: f@g@h = (f@g)@h
+	 *
+	 * If left or right is a variable that matches a generic function name,
+	 * convert it to a function node for proper composition semantics.
 	 */
 	private parseComposition(left: MathNode): MathNode {
 		const operatorColor = this.colorStack.current();
 		this.advance(); // consume @
 		const right = this.parseExpression(BP.COMPOSITION);
-		const node = compose(left, right);
+
+		// Convert variables to functions if they are generic function names
+		const leftFunc = this.variableToFunctionIfGeneric(left);
+		const rightFunc = this.variableToFunctionIfGeneric(right);
+
+		const node = compose(leftFunc, rightFunc);
 		if (operatorColor) {
 			return { ...node, operatorMetadata: { color: operatorColor } } as MathNode;
+		}
+		return node;
+	}
+
+	/**
+	 * Convert a variable node to a function node if the variable name
+	 * matches a generic function name. Used for composition.
+	 */
+	private variableToFunctionIfGeneric(node: MathNode): MathNode {
+		if (node.type === 'variable' && this.isGenericFunctionName(node.name)) {
+			return MathAST.func(node.name, [], node.metadata ? { metadata: node.metadata } : undefined);
 		}
 		return node;
 	}
