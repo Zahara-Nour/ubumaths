@@ -136,9 +136,9 @@ const RELATION_MAP: Record<RelationType, string> = {
 	'⊇': '\\supseteq',
 	'∈': '\\in',
 	'∉': '\\notin',
-	'⟹': '\\implies',
-	'⟺': '\\iff',
-	'⟸': '\\impliedby'
+	'⟹': '\\Rightarrow',
+	'⟺': '\\Leftrightarrow',
+	'⟸': '\\Leftarrow'
 };
 
 // Uppercase Greek letters that are just roman letters in LaTeX

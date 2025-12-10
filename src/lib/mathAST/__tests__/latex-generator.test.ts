@@ -273,9 +273,11 @@ describe('LatexGenerator - Relations', () => {
 
 	it('generates logical implications', () => {
 		expect(toLatex(MathAST.implies(MathAST.variable('P'), MathAST.variable('Q')))).toBe(
-			'P \\implies Q'
+			'P \\Rightarrow Q'
 		);
-		expect(toLatex(MathAST.iff(MathAST.variable('P'), MathAST.variable('Q')))).toBe('P \\iff Q');
+		expect(toLatex(MathAST.iff(MathAST.variable('P'), MathAST.variable('Q')))).toBe(
+			'P \\Leftrightarrow Q'
+		);
 	});
 
 	it('generates all relation types', () => {
@@ -299,9 +301,9 @@ describe('LatexGenerator - Relations', () => {
 			['⊇', '\\supseteq'],
 			['∈', '\\in'],
 			['∉', '\\notin'],
-			['⟹', '\\implies'],
-			['⟺', '\\iff'],
-			['⟸', '\\impliedby']
+			['⟹', '\\Rightarrow'],
+			['⟺', '\\Leftrightarrow'],
+			['⟸', '\\Leftarrow']
 		];
 
 		for (const [rel, latex] of relations) {
@@ -506,12 +508,12 @@ describe('LatexGenerator - Relation Chains', () => {
 
 	it('should generate P => Q => R', () => {
 		const chain = impliesChain(variable('P'), variable('Q'), variable('R'));
-		expect(toLatex(chain)).toBe('P \\implies Q \\implies R');
+		expect(toLatex(chain)).toBe('P \\Rightarrow Q \\Rightarrow R');
 	});
 
 	it('should generate P <=> Q <=> R', () => {
 		const chain = iffChain(variable('P'), variable('Q'), variable('R'));
-		expect(toLatex(chain)).toBe('P \\iff Q \\iff R');
+		expect(toLatex(chain)).toBe('P \\Leftrightarrow Q \\Leftrightarrow R');
 	});
 
 	it('should handle complex operands in chains', () => {
