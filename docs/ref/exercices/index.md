@@ -123,6 +123,7 @@ The codebase has **two distinct systems** for math problems. Understanding the d
 | [Types](./types.md)                       | TypeScript type definitions                        |
 | [Components](./components.md)             | Svelte components reference                        |
 | [Parameterization](./parameterization.md) | Variable syntax, instance generation, distribution |
+| [Troubleshooting](./troubleshooting.md)   | Common issues, debugging, solutions                |
 
 ---
 
