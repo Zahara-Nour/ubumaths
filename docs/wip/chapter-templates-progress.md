@@ -1,6 +1,6 @@
 # Chapter Templates Feature - Progress
 
-## Status: ✅ TEMPLATES INTEGRATED WITH COURS - READY FOR MANUAL TESTING
+## Status: ✅ FULL INTEGRATION COMPLETE - READY FOR MANUAL TESTING
 
 Last updated: 2025-12-10
 
@@ -132,6 +132,24 @@ pnpm build  # Success
 
 - `src/routes/(protected)/dashboard/teacher/cours/[classId]/+page.svelte`
 - `src/routes/(protected)/dashboard/teacher/cours/[classId]/+page.server.ts`
+
+### Phase 9: Template Indicator in Chapter Detail ✓
+
+- **Location**: `src/routes/(protected)/dashboard/teacher/cours/[classId]/[chapterId]/`
+- Features:
+  - ChapterTemplateIndicator in chapter header
+  - Shows template name and version
+  - Update available badge
+  - Migrate to latest version button
+  - Detach from template button
+- Server actions: `migrateToVersion`, `detachFromTemplate`
+- Fixed Svelte 5 `builders={[builder]}` pattern in ChapterTemplateIndicator
+
+### Modified Files (Phase 9)
+
+- `src/routes/(protected)/dashboard/teacher/cours/[classId]/[chapterId]/+page.svelte`
+- `src/routes/(protected)/dashboard/teacher/cours/[classId]/[chapterId]/+page.server.ts`
+- `src/lib/components/templates/ChapterTemplateIndicator.svelte` (fixed Svelte 5 builder pattern)
 
 ## Next Step Required
 

@@ -27,6 +27,7 @@
 		DocumentUpload
 	} from '$lib/components/cours/teacher';
 	import { DocumentCard } from '$lib/components/cours';
+	import { ChapterTemplateIndicator } from '$lib/components/templates';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getChapterColorClasses } from '$lib/types/chapters';
 	import {
@@ -109,7 +110,9 @@
 				unlinkExercise: 'Exercice retire',
 				uploadDocument: 'Document uploade',
 				addGoogleDriveDocument: 'Document Google Drive ajoute',
-				deleteDocument: 'Document supprime'
+				deleteDocument: 'Document supprime',
+				migrateToVersion: 'Chapitre mis a jour depuis le template',
+				detachFromTemplate: 'Chapitre detache du template'
 			};
 			const message = actionMessages[form.action] || 'Operation reussie';
 			toaster.success(message);
@@ -133,6 +136,23 @@
 
 	// Navigating state (reserved for future loading indicators)
 	let _isNavigating = $derived(!!$navigating);
+
+	// Template form refs
+	let migrateForm: HTMLFormElement | undefined = $state();
+	let detachForm: HTMLFormElement | undefined = $state();
+
+	// Template action handlers
+	function handleMigrate() {
+		if (migrateForm) {
+			migrateForm.requestSubmit();
+		}
+	}
+
+	function handleDetach() {
+		if (detachForm) {
+			detachForm.requestSubmit();
+		}
+	}
 </script>
 
 <svelte:head>
@@ -160,6 +180,17 @@
 							<Card.Description class="mt-1">
 								{data.chapter.description}
 							</Card.Description>
+						{/if}
+						<!-- Template indicator -->
+						{#if data.templateInstantiation}
+							<div class="mt-2">
+								<ChapterTemplateIndicator
+									instantiation={data.templateInstantiation}
+									hasUpdate={data.templateInstantiation.hasUpdate}
+									onUpdate={handleMigrate}
+									onDetach={handleDetach}
+								/>
+							</div>
 						{/if}
 					</div>
 				</div>
@@ -481,3 +512,38 @@
 		</form>
 	</Dialog.Content>
 </Dialog.Root>
+
+<!-- Hidden forms for template actions -->
+{#if data.templateInstantiation}
+	<form
+		bind:this={migrateForm}
+		method="POST"
+		action="?/migrateToVersion"
+		use:enhance={() => {
+			isSubmitting = true;
+			return async ({ update }) => {
+				await update();
+			};
+		}}
+		class="hidden"
+	>
+		<input
+			type="hidden"
+			name="targetVersion"
+			value={data.templateInstantiation.latestVersion ?? data.templateInstantiation.templateVersion}
+		/>
+	</form>
+
+	<form
+		bind:this={detachForm}
+		method="POST"
+		action="?/detachFromTemplate"
+		use:enhance={() => {
+			isSubmitting = true;
+			return async ({ update }) => {
+				await update();
+			};
+		}}
+		class="hidden"
+	/>
+{/if}
