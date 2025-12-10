@@ -432,13 +432,13 @@ describe('Integration Tests: Real-World Documents', () => {
 		const time = measureTime(() => {
 			const result = transpileLatexToMarkdown(MATH_HEAVY_DOCUMENT);
 
-			// Check display math (now uses tilde delimiters, falls back for unsupported features)
-			expect(result.markdown).toContain('~~');
-			expect(result.markdown).toMatch(/~~.*\\int|~~.*int/); // Integral - may fallback
+			// Check display math (unsupported features like \int fall back to LaTeX with $$ delimiters)
+			expect(result.markdown).toContain('$$');
+			expect(result.markdown).toMatch(/\$\$.*\\int/); // Integral - falls back to LaTeX
 
-			// Check align environment preservation (tilde delimiters)
-			expect(result.markdown).toContain('~~\\begin{align}');
-			expect(result.markdown).toContain('\\end{align}~~');
+			// Check align environment preservation (falls back to LaTeX with $$ delimiters)
+			expect(result.markdown).toContain('$$\\begin{align}');
+			expect(result.markdown).toContain('\\end{align}$$');
 
 			// Check matrix environment
 			expect(result.markdown).toContain('\\begin{pmatrix}');
