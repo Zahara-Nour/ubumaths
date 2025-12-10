@@ -5,6 +5,7 @@
 	 * This page provides system settings and information for administrators.
 	 * Currently displays:
 	 * - Application version number
+	 * - List numbering scheme configuration
 	 *
 	 * Future additions could include:
 	 * - System configuration settings
@@ -16,8 +17,56 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
+	import { Button } from '$lib/components/ui/button';
 	import { getVersion, getRawVersion } from '$lib/utils/version';
-	import { Settings, Info } from 'lucide-svelte';
+	import { Settings, Info, ListOrdered, RotateCcw } from 'lucide-svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
+	import { NUMBERING_SCHEMES, type SchemeId } from '$lib/types/list-numbering';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+
+	// Convert schemes to select items
+	const schemeItems = Object.values(NUMBERING_SCHEMES).map((s) => ({
+		value: s.id,
+		label: s.name
+	}));
+
+	const modeItems = [{ value: 'auto', label: 'Auto (detection)' }, ...schemeItems];
+
+	// Sample markdown for preview
+	const nestedListPreview = `1. Question principale
+   1. Sous-question a
+      1. Niveau 3
+      2. Niveau 3
+   2. Sous-question b
+2. Question suivante`;
+
+	const flatListPreview = `1. Calculer
+2. Simplifier
+3. Factoriser`;
+
+	// Handlers
+	function handleSchemeChange(value: string | undefined) {
+		if (value) {
+			listNumberingStore.setScheme(value as 'auto' | SchemeId);
+		}
+	}
+
+	function handleSchemeWithNestingChange(value: string | undefined) {
+		if (value) {
+			listNumberingStore.setSchemeWithNesting(value as SchemeId);
+		}
+	}
+
+	function handleSchemeWithoutNestingChange(value: string | undefined) {
+		if (value) {
+			listNumberingStore.setSchemeWithoutNesting(value as SchemeId);
+		}
+	}
+
+	function handleReset() {
+		listNumberingStore.reset();
+	}
 </script>
 
 <div class="space-y-6">
@@ -65,6 +114,90 @@
 					<code class="rounded bg-muted px-2 py-1 text-xs">
 						{getRawVersion()}
 					</code>
+				</div>
+			</div>
+		</Card.Content>
+	</Card.Root>
+
+	<!-- List Numbering Configuration Card -->
+	<Card.Root>
+		<Card.Header>
+			<Card.Title class="flex items-center gap-2">
+				<ListOrdered class="h-5 w-5" />
+				Numerotation des listes
+			</Card.Title>
+			<Card.Description>
+				Configurer le style de numerotation pour les listes ordonnees dans les exercices
+			</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<div class="space-y-6">
+				<!-- Mode Selector -->
+				<div class="space-y-2">
+					<label class="text-sm font-medium text-foreground">Mode</label>
+					<MySelect
+						type="single"
+						items={modeItems}
+						value={listNumberingStore.config.scheme}
+						onValueChange={handleSchemeChange}
+					/>
+					<p class="text-xs text-muted-foreground">
+						En mode Auto, le schema est choisi selon la structure de l'exercice.
+					</p>
+				</div>
+
+				<!-- Auto Mode Sub-options -->
+				{#if listNumberingStore.config.scheme === 'auto'}
+					<div class="space-y-4 rounded-lg border bg-muted/30 p-4">
+						<h4 class="text-sm font-medium text-foreground">Options du mode Auto</h4>
+
+						<div class="space-y-2">
+							<label class="text-sm text-muted-foreground"
+								>Avec imbrication (questions + sous-questions)</label
+							>
+							<MySelect
+								type="single"
+								items={schemeItems}
+								value={listNumberingStore.config.schemeWithNesting}
+								onValueChange={handleSchemeWithNestingChange}
+							/>
+						</div>
+
+						<div class="space-y-2">
+							<label class="text-sm text-muted-foreground"
+								>Sans imbrication (questions simples)</label
+							>
+							<MySelect
+								type="single"
+								items={schemeItems}
+								value={listNumberingStore.config.schemeWithoutNesting}
+								onValueChange={handleSchemeWithoutNestingChange}
+							/>
+						</div>
+					</div>
+				{/if}
+
+				<!-- Preview Section -->
+				<div class="space-y-2">
+					<h4 class="text-sm font-medium text-foreground">Apercu (liste imbriquee)</h4>
+					<div class="rounded-lg border bg-card p-4">
+						<MarkdownRenderer content={nestedListPreview} />
+					</div>
+				</div>
+
+				<div class="space-y-2">
+					<h4 class="text-sm font-medium text-foreground">Apercu (liste simple)</h4>
+					<div class="rounded-lg border bg-card p-4">
+						<MarkdownRenderer content={flatListPreview} />
+					</div>
+				</div>
+
+				<!-- Reset Button -->
+				<div class="flex justify-end">
+					<Button variant="outline" size="sm" onclick={handleReset}>
+						<RotateCcw class="mr-2 h-4 w-4" />
+						Reinitialiser
+					</Button>
 				</div>
 			</div>
 		</Card.Content>

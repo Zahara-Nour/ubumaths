@@ -467,3 +467,12 @@ math-field:focus {
 .blocklyMainWorkspaceScrollbar:hover {
 	opacity: 1;
 }
+
+/*
+ * List Numbering Schemes
+ * ======================
+ *
+ * Custom CSS for configurable list numbering (1) a) i), a) i), etc.)
+ * @see src/lib/styles/list-numbering.css for details
+ */
+@import './lib/styles/list-numbering.css';

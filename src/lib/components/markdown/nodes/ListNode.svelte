@@ -6,14 +6,21 @@
 	- Nested lists (recursive rendering)
 	- Custom starting number for ordered lists
 	- Rich content in list items (paragraphs, nested lists, etc.)
+	- Configurable numbering schemes via CSS classes
 
 	The component handles recursive rendering by importing BlockRenderer
 	which in turn can render nested ListNode components.
+
+	Numbering scheme support:
+	- enumerateDepth: Current depth of ordered lists (itemize is transparent)
+	- effectiveScheme: The numbering scheme to use (e.g., '1-a-i', 'a-i')
+	- CSS classes: .scheme-{id} .enumerate-depth-{n} control numbering
 
 	@see ExerciseDisplay.svelte for original renderList() implementation
 -->
 <script lang="ts">
 	import type { ListItemNode, ASTNode, InlineNode } from '$lib/custom-markdown';
+	import type { SchemeId } from '$lib/types/list-numbering';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
@@ -28,12 +35,42 @@
 		start?: number;
 		items: ListItemNode[];
 		class?: string;
+		/** Current enumerate depth (ordered lists only increment this) */
+		enumerateDepth?: number;
+		/** Effective numbering scheme to apply */
+		effectiveScheme?: SchemeId | null;
 	}
 
-	let { ordered, start = 1, items, class: className = '' }: Props = $props();
+	let {
+		ordered,
+		start = 1,
+		items,
+		class: className = '',
+		enumerateDepth = 0,
+		effectiveScheme = null
+	}: Props = $props();
 
-	// CSS class for list type
-	let listClass = $derived(ordered ? 'list-decimal' : 'list-disc');
+	// Compute depth for this list (only ordered lists increment depth)
+	const currentDepth = $derived(ordered ? enumerateDepth + 1 : enumerateDepth);
+
+	// CSS classes for list type and numbering scheme
+	const listClasses = $derived.by(() => {
+		const classes: string[] = [];
+
+		if (ordered && effectiveScheme) {
+			// Use custom numbering scheme
+			classes.push(`scheme-${effectiveScheme}`);
+			classes.push(`enumerate-depth-${currentDepth}`);
+		} else if (ordered) {
+			// Fallback to default decimal
+			classes.push('list-decimal');
+		} else {
+			// Unordered list
+			classes.push('list-disc');
+		}
+
+		return classes.join(' ');
+	});
 
 	/**
 	 * Check if node is a list node for recursive rendering
@@ -99,13 +136,19 @@
 </script>
 
 {#if ordered}
-	<ol class="{listClass} my-4 text-foreground {className}" start={start > 1 ? start : undefined}>
+	<ol class="{listClasses} my-4 text-foreground {className}" start={start > 1 ? start : undefined}>
 		{#each items as item, itemIndex (itemIndex)}
 			<li class="mb-2 ml-6 text-foreground">
 				{#each item.children as child, childIndex (childIndex)}
 					{#if isListNode(child)}
-						<!-- Recursive list rendering -->
-						<ListNode ordered={child.ordered} start={child.start} items={child.items} />
+						<!-- Recursive list rendering with depth tracking -->
+						<ListNode
+							ordered={child.ordered}
+							start={child.start}
+							items={child.items}
+							enumerateDepth={currentDepth}
+							{effectiveScheme}
+						/>
 					{:else if isParagraphNode(child)}
 						<ParagraphNode children={child.children} />
 					{:else if isHeadingNode(child)}
@@ -134,13 +177,19 @@
 		{/each}
 	</ol>
 {:else}
-	<ul class="{listClass} my-4 text-foreground {className}">
+	<ul class="{listClasses} my-4 text-foreground {className}">
 		{#each items as item, itemIndex (itemIndex)}
 			<li class="mb-2 ml-6 text-foreground">
 				{#each item.children as child, childIndex (childIndex)}
 					{#if isListNode(child)}
-						<!-- Recursive list rendering -->
-						<ListNode ordered={child.ordered} start={child.start} items={child.items} />
+						<!-- Recursive list rendering with depth tracking (itemize doesn't increment depth) -->
+						<ListNode
+							ordered={child.ordered}
+							start={child.start}
+							items={child.items}
+							enumerateDepth={currentDepth}
+							{effectiveScheme}
+						/>
 					{:else if isParagraphNode(child)}
 						<ParagraphNode children={child.children} />
 					{:else if isHeadingNode(child)}
