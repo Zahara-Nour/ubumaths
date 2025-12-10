@@ -136,12 +136,9 @@
 </script>
 
 {#if ordered}
-	<ol
-		class="{listClasses} my-2 ml-4 text-foreground {className}"
-		start={start > 1 ? start : undefined}
-	>
+	<ol class="{listClasses} my-1 text-foreground {className}" start={start > 1 ? start : undefined}>
 		{#each items as item, itemIndex (itemIndex)}
-			<li class="mb-1 text-foreground">
+			<li class="mb-0.5 text-foreground">
 				{#each item.children as child, childIndex (childIndex)}
 					{#if isListNode(child)}
 						<!-- Recursive list rendering with depth tracking -->
@@ -180,9 +177,9 @@
 		{/each}
 	</ol>
 {:else}
-	<ul class="{listClasses} my-2 ml-4 text-foreground {className}">
+	<ul class="{listClasses} my-1 ml-4 text-foreground {className}">
 		{#each items as item, itemIndex (itemIndex)}
-			<li class="mb-1 ml-4 text-foreground">
+			<li class="mb-0.5 text-foreground">
 				{#each item.children as child, childIndex (childIndex)}
 					{#if isListNode(child)}
 						<!-- Recursive list rendering with depth tracking (itemize doesn't increment depth) -->
