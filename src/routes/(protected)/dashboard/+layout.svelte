@@ -61,7 +61,8 @@
 		Lightbulb,
 		FileText,
 		AlertTriangle,
-		Book
+		Book,
+		Layers
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -128,6 +129,7 @@
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
 				{ href: '/dashboard/teacher/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/teacher/cours', label: 'Cours', icon: Book },
+				{ href: '/dashboard/teacher/templates', label: 'Templates', icon: Layers },
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
 				{ href: '/dashboard/teacher/riddles', label: 'Énigmes', icon: Lightbulb },
 				{ href: '/dashboard/teacher/exercises', label: 'Exercices', icon: BookOpen },
@@ -167,6 +169,10 @@
 		// For docs pages, match any /dashboard/admin/docs/* route
 		if (href === '/dashboard/admin/docs') {
 			return page.url.pathname.startsWith('/dashboard/admin/docs');
+		}
+		// For templates pages, match any /dashboard/teacher/templates/* route
+		if (href === '/dashboard/teacher/templates') {
+			return page.url.pathname.startsWith('/dashboard/teacher/templates');
 		}
 		return page.url.pathname === href;
 	}
