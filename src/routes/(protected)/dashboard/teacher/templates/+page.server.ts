@@ -33,7 +33,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		// Use defaults if validation fails
 	}
 
-	const query = validation.success ? validation.data : { page: 1, limit: 20 };
+	const query = validation.success
+		? validation.data
+		: { page: 1, limit: 20, grades: undefined, ownOnly: false, publicOnly: false };
 
 	// Fetch templates
 	const {

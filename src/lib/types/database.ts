@@ -925,8 +925,29 @@ export type Database = {
 						foreignKeyName: 'chapter_template_versions_created_by_fkey';
 						columns: ['created_by'];
 						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'chapter_template_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'chapter_template_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
 						referencedRelation: 'profiles';
 						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'chapter_template_versions_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
 					},
 					{
 						foreignKeyName: 'chapter_template_versions_template_id_fkey';
@@ -991,8 +1012,29 @@ export type Database = {
 						foreignKeyName: 'chapter_templates_created_by_fkey';
 						columns: ['created_by'];
 						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'chapter_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'chapter_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
 						referencedRelation: 'profiles';
 						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'chapter_templates_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
 					}
 				];
 			};

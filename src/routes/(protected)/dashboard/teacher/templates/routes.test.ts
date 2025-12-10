@@ -130,8 +130,10 @@ describe('GET /dashboard/teacher/templates (Gallery)', () => {
 
 		expect(result).toHaveProperty('templates');
 		expect(result).toHaveProperty('total');
-		expect(result.templates).toHaveLength(1);
-		expect(result.templates[0].id).toBe(TEST_IDS.template);
+		expect((result as { templates: unknown[] }).templates).toHaveLength(1);
+		expect((result as { templates: Array<{ id: string }> }).templates[0].id).toBe(
+			TEST_IDS.template
+		);
 	});
 
 	it('should filter templates by grade level', async () => {
@@ -162,7 +164,7 @@ describe('GET /dashboard/teacher/templates (Gallery)', () => {
 
 		const result = await load({ locals, params, url } as never);
 
-		expect(result.templates).toBeDefined();
+		expect((result as { templates: unknown[] }).templates).toBeDefined();
 		expect(mockSupabase._mockChain.overlaps).toHaveBeenCalledWith('grades', ['3', '4']);
 	});
 
@@ -194,7 +196,7 @@ describe('GET /dashboard/teacher/templates (Gallery)', () => {
 
 		const result = await load({ locals, params, url } as never);
 
-		expect(result.templates).toBeDefined();
+		expect((result as { templates: unknown[] }).templates).toBeDefined();
 		expect(mockSupabase._mockChain.ilike).toHaveBeenCalledWith('title', '%Test%');
 	});
 });
@@ -278,7 +280,7 @@ describe('POST /dashboard/teacher/templates/new (Create Template)', () => {
 		const result = await actions.create({ request, locals } as never);
 
 		expect(result).toHaveProperty('error');
-		expect(result.error).toContain('requis');
+		expect((result as { error: string }).error).toContain('requis');
 	});
 
 	it('should reject invalid title (too long)', async () => {
@@ -304,7 +306,7 @@ describe('POST /dashboard/teacher/templates/new (Create Template)', () => {
 		const result = await actions.create({ request, locals } as never);
 
 		expect(result).toHaveProperty('error');
-		expect(result.error).toContain('trop long');
+		expect((result as { error: string }).error).toContain('trop long');
 	});
 
 	it('should create template with valid data', async () => {
@@ -463,7 +465,7 @@ describe('GET /dashboard/teacher/templates/[templateId] (Detail)', () => {
 		const result = await load({ locals, params, url } as never);
 
 		expect(result).toHaveProperty('template');
-		expect(result.template.id).toBe(TEST_IDS.template);
+		expect((result as { template: { id: string } }).template.id).toBe(TEST_IDS.template);
 		expect(result).toHaveProperty('versions');
 		expect(result).toHaveProperty('classes');
 	});
@@ -598,7 +600,7 @@ describe('Template Actions', () => {
 			} as never);
 
 			expect(result).toHaveProperty('error');
-			expect(result.error).toContain('refus');
+			expect((result as { error: string }).error).toContain('refus');
 		});
 	});
 
@@ -730,7 +732,7 @@ describe('Template Actions', () => {
 			} as never);
 
 			expect(result).toHaveProperty('error');
-			expect(result.error).toContain('vide');
+			expect((result as { error: string }).error).toContain('vide');
 		});
 	});
 
