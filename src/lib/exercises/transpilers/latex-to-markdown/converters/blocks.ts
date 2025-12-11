@@ -375,27 +375,18 @@ export function convertFigure(token: EnvironmentToken, _ctx: ConversionContext):
 // ===========================
 
 /**
- * Convert center environment to HTML div with text-align center.
+ * Convert center environment - ignored, just returns content.
+ * Centering is a presentation concern handled by the renderer.
  *
  * @example
  * \begin{center}
  *   Centered text
  * \end{center}
  * ->
- * <div style="text-align: center">
- *
  * Centered text
- *
- * </div>
  */
 export function convertCenter(token: EnvironmentToken, _ctx: ConversionContext): string {
-	const content = token.content.trim();
-
-	if (!content) {
-		return '<div style="text-align: center">\n\n</div>';
-	}
-
-	return `<div style="text-align: center">\n\n${content}\n\n</div>`;
+	return token.content.trim();
 }
 
 // ===========================

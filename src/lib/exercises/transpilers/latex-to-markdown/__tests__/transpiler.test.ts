@@ -276,12 +276,12 @@ def hello():
 		expect(result.markdown).toContain('![My Caption](image.png)');
 	});
 
-	it('should convert center environment', () => {
+	it('should ignore center environment and return content only', () => {
 		const input = `\\begin{center}
 Centered text here
 \\end{center}`;
 		const result = transpileLatexToMarkdown(input);
-		expect(result.markdown).toContain('text-align: center');
+		expect(result.markdown).not.toContain('text-align');
 		expect(result.markdown).toContain('Centered text here');
 	});
 });
