@@ -64,6 +64,9 @@ CREATE TABLE exercises (
   statement_md TEXT NOT NULL,                    -- Exercise statement
   solution_md TEXT NOT NULL,                     -- Solution/correction
 
+  -- Supplementary materials
+  resources JSONB DEFAULT '[]'::jsonb,           -- Array of {type, url, title, description?}
+
   -- Parameterization
   variables JSONB,                               -- Variable definitions
   distribution_mode TEXT DEFAULT 'on_demand'
@@ -93,10 +96,35 @@ CREATE TABLE exercises (
 | `topic`             | TEXT    | No       | Topic category                               |
 | `statement_md`      | TEXT    | Yes      | Markdown with LaTeX and `{{}}` syntax        |
 | `solution_md`       | TEXT    | Yes      | Markdown with LaTeX and `{{}}` syntax        |
+| `resources`         | JSONB   | No       | Array of supplementary materials             |
 | `variables`         | JSONB   | No       | Array of `{ name, expression }` objects      |
 | `distribution_mode` | TEXT    | Yes      | How instances are generated                  |
 | `is_public`         | BOOLEAN | Yes      | Visible to all teachers in library           |
 | `created_by`        | UUID    | Yes      | Foreign key to teacher profile               |
+
+#### Resources JSONB Structure
+
+```json
+[
+	{ "type": "video", "url": "https://youtube.com/...", "title": "Explication vidéo" },
+	{ "type": "pdf", "url": "/docs/fiche.pdf", "title": "Fiche méthode" },
+	{ "type": "geogebra", "url": "https://geogebra.org/...", "title": "Figure interactive" },
+	{
+		"type": "link",
+		"url": "https://...",
+		"title": "Article complémentaire",
+		"description": "Pour aller plus loin"
+	}
+]
+```
+
+| Type       | Description                  |
+| ---------- | ---------------------------- |
+| `video`    | YouTube, Vimeo, etc.         |
+| `pdf`      | PDF documents                |
+| `link`     | Generic web links            |
+| `geogebra` | GeoGebra interactive applets |
+| `image`    | Image files                  |
 
 #### Variables JSONB Structure
 
@@ -540,3 +568,4 @@ USING (
 | `20251031160000_create_exercise_assignments_tables.sql`     | `exercise_completions` + RLS        |
 | `20251031160100_cleanup_duplicate_exercise_indexes.sql`     | Index deduplication                 |
 | `20251211135028_add_exercise_slug.sql`                      | URL-friendly slug field             |
+| `20251211141834_add_exercise_resources.sql`                 | Resources JSONB field               |

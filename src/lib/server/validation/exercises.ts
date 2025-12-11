@@ -70,7 +70,22 @@ export const createExerciseSchema = z.object({
 		.union([z.array(z.any()), z.record(z.string(), z.any())])
 		.optional()
 		.nullable(),
-	is_public: z.boolean().default(false).optional()
+	is_public: z.boolean().default(false).optional(),
+	resources: z
+		.array(
+			z.object({
+				type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
+					message: 'Resource type must be video, pdf, link, geogebra, or image'
+				}),
+				url: z.string().url('Invalid URL').max(2000, 'URL too long'),
+				title: z.string().trim().min(1, 'Title required').max(200, 'Title too long'),
+				description: z.string().trim().max(500, 'Description too long').optional()
+			})
+		)
+		.max(20, 'Maximum 20 resources')
+		.optional()
+		.nullable()
+		.default([])
 });
 
 /**

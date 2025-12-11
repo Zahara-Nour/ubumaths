@@ -54,6 +54,51 @@ export type {
 export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/custom-markdown';
 
 // ============================================================================
+// RESOURCE TYPES
+// ============================================================================
+
+/**
+ * Type of supplementary resource
+ */
+export type ExerciseResourceType = 'video' | 'pdf' | 'link' | 'geogebra' | 'image';
+
+/**
+ * Supplementary resource attached to an exercise
+ *
+ * @example Video resource
+ * ```typescript
+ * const resource: ExerciseResource = {
+ *   type: 'video',
+ *   url: 'https://youtube.com/watch?v=...',
+ *   title: 'Explication détaillée du théorème'
+ * };
+ * ```
+ *
+ * @example PDF with description
+ * ```typescript
+ * const resource: ExerciseResource = {
+ *   type: 'pdf',
+ *   url: '/docs/fiche-methode.pdf',
+ *   title: 'Fiche méthode',
+ *   description: 'Résumé des formules essentielles'
+ * };
+ * ```
+ */
+export interface ExerciseResource {
+	/** Resource type for display icon/handling */
+	type: ExerciseResourceType;
+
+	/** URL to the resource (can be relative or absolute) */
+	url: string;
+
+	/** Display title */
+	title: string;
+
+	/** Optional description for additional context */
+	description?: string;
+}
+
+// ============================================================================
 // PARAMETERIZATION TYPES
 // ============================================================================
 
@@ -292,6 +337,9 @@ export interface Exercise {
 
 	/** Topic category (e.g., 'Algèbre', 'Géométrie') */
 	topic?: string;
+
+	/** Supplementary resources (videos, PDFs, links, etc.) */
+	resources?: ExerciseResource[];
 
 	// Audit fields
 	created_at: string;

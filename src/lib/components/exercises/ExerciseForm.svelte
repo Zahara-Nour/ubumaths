@@ -4,6 +4,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import ExerciseMarkdownEditor from './ExerciseMarkdownEditor.svelte';
+	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
@@ -12,6 +13,7 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import type { TranspileWarning } from '$lib/exercises/transpilers/latex-to-markdown';
 	import type { GradeCode } from '$lib/types/grades';
+	import type { ExerciseResource } from '$lib/exercises/types';
 
 	type Exercise = Database['public']['Tables']['exercises']['Row'];
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -36,6 +38,7 @@
 	let gradeLevels = $state<GradeCode[]>((exercise?.grade_levels as GradeCode[]) || []);
 	let statementMd = $state(exercise?.statement_md || '');
 	let solutionMd = $state(exercise?.solution_md || '');
+	let resources = $state<ExerciseResource[]>((exercise?.resources as ExerciseResource[]) || []);
 
 	// LaTeX import state
 	let latexImportOpen = $state(false);
@@ -95,7 +98,8 @@
 			topic: topic.trim() || null,
 			grade_levels: gradeLevels,
 			statement_md: statementMd,
-			solution_md: solutionMd
+			solution_md: solutionMd,
+			resources: resources.length > 0 ? resources : null
 		};
 
 		await onsubmit(data);
@@ -306,6 +310,20 @@
 			{#if errors.solution_md}
 				<p class="mt-2 text-sm text-destructive">{errors.solution_md}</p>
 			{/if}
+		</Card.Content>
+	</Card.Root>
+
+	<!-- Resources -->
+	<Card.Root>
+		<Card.Header>
+			<Card.Title>Ressources complémentaires</Card.Title>
+			<Card.Description>
+				Ajoutez des liens vers des vidéos, documents PDF, fichiers GeoGebra ou autres ressources
+				utiles.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<ExerciseResourceEditor bind:resources />
 		</Card.Content>
 	</Card.Root>
 
