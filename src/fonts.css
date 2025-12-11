@@ -28,3 +28,13 @@
 @import '@fontsource/lora/400.css'; /* Regular - Subheadings */
 @import '@fontsource/lora/600.css'; /* Semi-bold - Main headings */
 @import '@fontsource/lora/700.css'; /* Bold - Hero headings */
+
+/* Excalifont - Handwritten style font (from Excalidraw) */
+@font-face {
+	font-family: 'Excalifont';
+	src: url('https://unpkg.com/@pablohirafuji/excalifont@0.0.2/Excalifont-Regular.woff2')
+		format('woff2');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}

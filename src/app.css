@@ -61,6 +61,9 @@
 
 	/* Font scaling - default 100% */
 	--font-scale: 1;
+
+	/* Exercise font family - default Inter */
+	--exercise-font-family: 'Inter', sans-serif;
 }
 
 @layer base {
@@ -277,6 +280,34 @@ main math-field {
 .dashboard-content .text-xl {
 	font-size: calc(1.25rem * var(--font-scale)) !important;
 	line-height: calc(1.75rem * var(--font-scale)) !important;
+}
+
+/*
+ * Exercise Font Family
+ * ====================
+ *
+ * Applies user-selected font family to exercise content.
+ * Controlled by exerciseFont store (exerciseFont.svelte.ts).
+ */
+.exercise-content {
+	font-family: var(--exercise-font-family);
+}
+
+.exercise-content p,
+.exercise-content li,
+.exercise-content td,
+.exercise-content th {
+	font-family: var(--exercise-font-family);
+}
+
+/* Headings can optionally use the exercise font too */
+.exercise-content h1,
+.exercise-content h2,
+.exercise-content h3,
+.exercise-content h4,
+.exercise-content h5,
+.exercise-content h6 {
+	font-family: var(--exercise-font-family);
 }
 
 /*
