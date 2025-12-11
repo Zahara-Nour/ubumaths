@@ -1,6 +1,6 @@
 # Exercises System - Type Definitions
 
-> **Last Updated**: 2025-12-10
+> **Last Updated**: 2025-12-11
 >
 > **Source File**: `src/lib/exercises/types.ts` (~1700 lines)
 >
@@ -42,6 +42,7 @@ Database model for exercise template. Can be static or parameterized.
 interface Exercise {
 	// Identity
 	id: string; // UUID
+	slug?: string; // URL-friendly identifier (topic-nanoid)
 
 	// Metadata
 	title?: string; // Optional display title
@@ -54,6 +55,9 @@ interface Exercise {
 	// Content (markdown + LaTeX + {{}} syntax)
 	statement_md: string; // Exercise statement
 	solution_md: string; // Solution/correction
+
+	// Supplementary materials
+	resources?: ExerciseResource[]; // Videos, PDFs, links, etc.
 
 	// Parameterization
 	variables?: Variable[]; // Variable definitions
@@ -104,6 +108,35 @@ type DistributionMode = 'on_demand' | 'per_student' | 'per_group';
 | `on_demand`   | Random each time                 | Infinite practice     |
 | `per_student` | `hash(exercise_id + student_id)` | Personalized homework |
 | `per_group`   | `hash(exercise_id + group_id)`   | Class work            |
+
+### ExerciseResourceType
+
+Types of supplementary resources that can be attached to exercises.
+
+```typescript
+type ExerciseResourceType = 'video' | 'pdf' | 'link' | 'geogebra' | 'image';
+```
+
+| Type       | Description                  |
+| ---------- | ---------------------------- |
+| `video`    | YouTube, Vimeo, etc.         |
+| `pdf`      | PDF documents                |
+| `link`     | Generic web links            |
+| `geogebra` | GeoGebra interactive applets |
+| `image`    | Image files                  |
+
+### ExerciseResource
+
+Supplementary material attached to an exercise.
+
+```typescript
+interface ExerciseResource {
+	type: ExerciseResourceType;
+	url: string;
+	title: string;
+	description?: string;
+}
+```
 
 ### ExerciseCreate
 

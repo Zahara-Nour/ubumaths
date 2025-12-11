@@ -105,7 +105,8 @@ Create a new exercise. Teacher only.
   solution_md: string,    // Required
   variables?: Variable[],
   distribution_mode?: 'on_demand' | 'per_student' | 'per_group',
-  is_public?: boolean
+  is_public?: boolean,
+  resources?: ExerciseResource[]  // Supplementary materials (max 20)
 }
 ```
 
