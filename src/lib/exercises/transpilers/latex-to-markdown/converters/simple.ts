@@ -176,7 +176,11 @@ const ESCAPE_COMMANDS: Record<string, string> = {
 	',': ' ', // thin space in math
 	';': ' ', // medium space in math
 	':': ' ', // medium space in math
-	'!': '' // negative thin space (collapse)
+	'!': '', // negative thin space (collapse)
+
+	// French quotes (babel-french)
+	og: '« ', // opening guillemet
+	fg: ' »' // closing guillemet
 };
 
 /**
@@ -309,7 +313,11 @@ export const simpleCommandConverters: Record<string, ConverterFn<CommandToken>> 
 	',': convertSpecialCharacter as ConverterFn<CommandToken>,
 	';': convertSpecialCharacter as ConverterFn<CommandToken>,
 	':': convertSpecialCharacter as ConverterFn<CommandToken>,
-	'!': convertSpecialCharacter as ConverterFn<CommandToken>
+	'!': convertSpecialCharacter as ConverterFn<CommandToken>,
+
+	// French quotes
+	og: convertSpecialCharacter as ConverterFn<CommandToken>,
+	fg: convertSpecialCharacter as ConverterFn<CommandToken>
 };
 
 /**
