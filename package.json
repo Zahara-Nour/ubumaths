@@ -153,6 +153,7 @@
 		"@tiptap/extension-underline": "^3.7.0",
 		"@tiptap/starter-kit": "^3.7.0",
 		"@types/jszip": "^3.4.1",
+		"@typopro/web-linux-libertine": "^3.7.5",
 		"@uiw/codemirror-theme-dracula": "^4.25.3",
 		"@uiw/codemirror-theme-github": "^4.25.3",
 		"@uiw/codemirror-theme-material": "^4.25.3",
