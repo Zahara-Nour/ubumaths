@@ -2380,6 +2380,7 @@ export type Database = {
 					grade_levels: string[] | null;
 					id: string;
 					is_public: boolean;
+					resources: Json | null;
 					slug: string | null;
 					solution_md: string;
 					source: string | null;
@@ -2398,6 +2399,7 @@ export type Database = {
 					grade_levels?: string[] | null;
 					id?: string;
 					is_public?: boolean;
+					resources?: Json | null;
 					slug?: string | null;
 					solution_md: string;
 					source?: string | null;
@@ -2416,6 +2418,7 @@ export type Database = {
 					grade_levels?: string[] | null;
 					id?: string;
 					is_public?: boolean;
+					resources?: Json | null;
 					slug?: string | null;
 					solution_md?: string;
 					source?: string | null;
