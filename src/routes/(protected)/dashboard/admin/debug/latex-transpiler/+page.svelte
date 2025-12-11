@@ -91,6 +91,22 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 
 	let warningsCount = $derived(transpileResult?.warnings.length || 0);
 
+	// For capturing raw HTML from rendered markdown
+	let htmlContainer = $state<HTMLElement | null>(null);
+	let rawHtml = $state('');
+
+	// Capture HTML after render
+	$effect(() => {
+		if (htmlContainer && statementMarkdown) {
+			// Wait for render to complete
+			requestAnimationFrame(() => {
+				rawHtml = htmlContainer?.innerHTML ?? '';
+			});
+		} else {
+			rawHtml = '';
+		}
+	});
+
 	// ============================================================================
 	// FUNCTIONS
 	// ============================================================================
@@ -193,11 +209,11 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 					{/if}
 				</Tabs.Content>
 
-				<!-- HTML Tab (rendered statement only) -->
+				<!-- HTML Tab (raw HTML output) -->
 				<Tabs.Content value="html" class="mt-4">
-					{#if statementMarkdown}
-						<div class="rounded-lg border border-border p-4">
-							<MarkdownRenderer content={statementMarkdown} />
+					{#if rawHtml}
+						<div class="rounded-lg border border-border bg-muted p-4">
+							<pre class="overflow-x-auto font-mono text-sm whitespace-pre-wrap">{rawHtml}</pre>
 						</div>
 					{:else}
 						<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir le resultat</p>
@@ -315,3 +331,10 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 		</div>
 	</div>
 </div>
+
+<!-- Hidden container for HTML capture -->
+{#if statementMarkdown}
+	<div bind:this={htmlContainer} class="sr-only" aria-hidden="true">
+		<MarkdownRenderer content={statementMarkdown} />
+	</div>
+{/if}
