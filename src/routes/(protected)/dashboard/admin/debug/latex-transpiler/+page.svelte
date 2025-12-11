@@ -6,14 +6,7 @@
 		type SplitResult
 	} from '$lib/exercises/transpilers/latex-to-markdown';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
-	import { parseMarkdown } from '$lib/custom-markdown';
-	import type {
-		DocumentNode,
-		BlockNode,
-		InlineNode,
-		ListNode,
-		TableNode
-	} from '$lib/custom-markdown';
+	import { MarkdownRenderer } from '$lib/components/markdown';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -96,16 +89,6 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 		};
 	});
 
-	let statementHtml = $derived.by<string>(() => {
-		if (!statementMarkdown) return '';
-		try {
-			const ast = parseMarkdown(statementMarkdown);
-			return renderAstToHtml(ast);
-		} catch (e) {
-			return `<p class="text-destructive">Erreur de parsing: ${e instanceof Error ? e.message : 'Unknown error'}</p>`;
-		}
-	});
-
 	let warningsCount = $derived(transpileResult?.warnings.length || 0);
 
 	// ============================================================================
@@ -151,150 +134,6 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 			statementMarkdown = '';
 			solutionMarkdown = '';
 		}
-	}
-
-	// ============================================================================
-	// AST TO HTML RENDERING (same logic as ExerciseDisplay)
-	// ============================================================================
-
-	function renderAstToHtml(ast: DocumentNode): string {
-		if (!ast.children.length) {
-			return '<p class="text-muted-foreground">Aucun contenu</p>';
-		}
-		return ast.children.map((child) => renderBlock(child)).join('');
-	}
-
-	function renderBlock(node: BlockNode): string {
-		switch (node.type) {
-			case 'paragraph':
-				return `<p class="mb-4 text-foreground">${renderInlineChildren(node.children)}</p>`;
-
-			case 'heading': {
-				const level = node.level || 1;
-				const headingClass = `text-${4 - Math.min(level, 3)}xl font-bold mb-4 mt-6 text-foreground`;
-				return `<h${level} class="${headingClass}">${renderInlineChildren(node.children)}</h${level}>`;
-			}
-
-			case 'list':
-				return renderList(node as ListNode);
-
-			case 'table':
-				return renderTable(node as unknown as TableNode);
-
-			case 'math-block':
-				return `<div class="my-6 flex justify-center">
-					<math-field read-only class="text-2xl">${node.expression}</math-field>
-				</div>`;
-
-			case 'image':
-				return `<figure class="my-6">
-					<img src="${node.src}" alt="${node.alt || ''}" class="mx-auto max-w-full rounded-lg shadow-md" />
-					${node.alt ? `<figcaption class="mt-2 text-center text-sm text-muted-foreground">${node.alt}</figcaption>` : ''}
-				</figure>`;
-
-			case 'horizontal-rule':
-				return '<hr class="my-6 border-t border-border" />';
-
-			case 'blockquote':
-				return `<blockquote class="border-l-4 border-muted pl-4 my-4 italic">${node.children.map((c) => renderBlock(c)).join('')}</blockquote>`;
-
-			case 'code-block':
-				return `<pre class="bg-muted p-4 rounded-lg my-4 overflow-x-auto"><code>${escapeHtml(node.code)}</code></pre>`;
-
-			default:
-				return '';
-		}
-	}
-
-	function renderInlineChildren(children: InlineNode[]): string {
-		return children.map((child) => renderInline(child)).join('');
-	}
-
-	function renderInline(node: InlineNode): string {
-		switch (node.type) {
-			case 'text': {
-				let text = escapeHtml(node.content);
-				if (node.bold) text = `<strong>${text}</strong>`;
-				if (node.italic) text = `<em>${text}</em>`;
-				if (node.code)
-					text = `<code class="rounded bg-muted px-1 py-0.5 text-sm text-foreground">${text}</code>`;
-				return text;
-			}
-
-			case 'math-inline':
-				return `<math-field read-only class="inline-math">${node.expression}</math-field>`;
-
-			case 'line-break':
-				return node.hard ? '<br />' : ' ';
-
-			default:
-				return '';
-		}
-	}
-
-	function renderList(node: ListNode): string {
-		const tag = node.ordered ? 'ol' : 'ul';
-		const listClass = node.ordered ? 'list-decimal' : 'list-disc';
-		const startAttr = node.ordered && node.start && node.start > 1 ? ` start="${node.start}"` : '';
-
-		const items = node.items
-			.map((item) => {
-				const content = item.children
-					.map((child) => {
-						if (child.type === 'list') {
-							return renderList(child as ListNode);
-						}
-						if (
-							child.type === 'paragraph' ||
-							child.type === 'heading' ||
-							child.type === 'table' ||
-							child.type === 'math-block' ||
-							child.type === 'image' ||
-							child.type === 'horizontal-rule'
-						) {
-							return renderBlock(child as BlockNode);
-						}
-						return '';
-					})
-					.join('');
-				return `<li class="ml-6 mb-2 text-foreground">${content}</li>`;
-			})
-			.join('');
-
-		return `<${tag} class="${listClass} my-4 text-foreground"${startAttr}>${items}</${tag}>`;
-	}
-
-	function renderTable(node: TableNode): string {
-		const header = node.header
-			.map(
-				(cell) =>
-					`<th class="px-4 py-2 font-semibold text-foreground border border-border">${escapeHtml(cell.content)}</th>`
-			)
-			.join('');
-
-		const body = node.rows
-			.map(
-				(row) => `<tr class="border-b border-border">
-			${row.map((cell) => `<td class="px-4 py-2 text-foreground border border-border">${escapeHtml(cell.content)}</td>`).join('')}
-		</tr>`
-			)
-			.join('');
-
-		return `<div class="my-6 overflow-x-auto">
-			<table class="min-w-full border-collapse border border-border">
-				<thead class="bg-muted"><tr>${header}</tr></thead>
-				<tbody>${body}</tbody>
-			</table>
-		</div>`;
-	}
-
-	function escapeHtml(text: string): string {
-		return text
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&#039;');
 	}
 </script>
 
@@ -354,12 +193,11 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 					{/if}
 				</Tabs.Content>
 
-				<!-- HTML Tab -->
+				<!-- HTML Tab (rendered statement only) -->
 				<Tabs.Content value="html" class="mt-4">
-					{#if transpileResult}
-						<div class="rounded-lg border border-border bg-muted p-4">
-							<pre
-								class="overflow-x-auto font-mono text-sm whitespace-pre-wrap">{statementHtml}</pre>
+					{#if statementMarkdown}
+						<div class="rounded-lg border border-border p-4">
+							<MarkdownRenderer content={statementMarkdown} />
 						</div>
 					{:else}
 						<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir le resultat</p>
@@ -477,38 +315,3 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 		</div>
 	</div>
 </div>
-
-<style>
-	/* Math inline styling */
-	:global(.inline-math) {
-		display: inline-block;
-		vertical-align: baseline;
-		margin: 0 -2px; /* Compensate for MathLive's internal 2px padding */
-		font-size: inherit;
-		line-height: 1;
-	}
-
-	/* Math field read-only styling - minimize internal padding */
-	:global(math-field[read-only]) {
-		border: none;
-		background: transparent;
-		cursor: default;
-		padding: 0;
-		--_padding-vertical: 0;
-		--_padding-horizontal: 0;
-	}
-
-	/* Target MathLive internal elements */
-	:global(math-field[read-only]::part(container)) {
-		padding: 0 !important;
-		margin: 0 !important;
-	}
-
-	:global(math-field[read-only] .ML__container) {
-		padding: 0 !important;
-	}
-
-	:global(math-field[read-only] .ML__base) {
-		padding: 0 !important;
-	}
-</style>
