@@ -100,11 +100,13 @@ export function splitStatementAndSolution(latex: string, options?: SplitOptions)
 	}
 
 	// No split detected
+	// Count leading newlines that will be removed by trim()
+	const leadingNewlines = countLeadingNewlines(documentContent);
 	return {
 		statement: documentContent.trim(),
 		solution: null,
 		splitMethod: 'none',
-		statementLineOffset: lineOffset,
+		statementLineOffset: lineOffset + leadingNewlines,
 		solutionLineOffset: null
 	};
 }
@@ -243,8 +245,14 @@ function tryEnvironmentSplit(
 		return null;
 	}
 
-	const statement = content.substring(0, envStartIndex).trim();
-	const solution = content.substring(contentStartIndex, envEndIndex).trim();
+	const rawStatement = content.substring(0, envStartIndex);
+	const rawSolution = content.substring(contentStartIndex, envEndIndex);
+	const statement = rawStatement.trim();
+	const solution = rawSolution.trim();
+
+	// Count leading newlines that will be removed by trim()
+	const statementLeadingNewlines = countLeadingNewlines(rawStatement);
+	const solutionLeadingNewlines = countLeadingNewlines(rawSolution);
 
 	// Handle case where solution is at the very beginning (statement would be empty)
 	if (statement === '' && solution !== '') {
@@ -252,7 +260,8 @@ function tryEnvironmentSplit(
 			statement: solution,
 			solution: null,
 			splitMethod: 'none',
-			statementLineOffset: baseOffset,
+			statementLineOffset:
+				baseOffset + countNewlinesUpTo(content, contentStartIndex) + solutionLeadingNewlines,
 			solutionLineOffset: null
 		};
 	}
@@ -261,8 +270,10 @@ function tryEnvironmentSplit(
 		statement,
 		solution: solution || null,
 		splitMethod: 'solution-env',
-		statementLineOffset: baseOffset,
-		solutionLineOffset: solution ? baseOffset + countNewlinesUpTo(content, contentStartIndex) : null
+		statementLineOffset: baseOffset + statementLeadingNewlines,
+		solutionLineOffset: solution
+			? baseOffset + countNewlinesUpTo(content, contentStartIndex) + solutionLeadingNewlines
+			: null
 	};
 }
 
@@ -293,9 +304,15 @@ function trySectionSplit(
 	}
 
 	const sectionIndex = match.index;
-	const statement = content.substring(0, sectionIndex).trim();
+	const rawStatement = content.substring(0, sectionIndex);
 	const solutionStartIndex = sectionIndex + match[0].length;
-	const solution = content.substring(solutionStartIndex).trim();
+	const rawSolution = content.substring(solutionStartIndex);
+	const statement = rawStatement.trim();
+	const solution = rawSolution.trim();
+
+	// Count leading newlines that will be removed by trim()
+	const statementLeadingNewlines = countLeadingNewlines(rawStatement);
+	const solutionLeadingNewlines = countLeadingNewlines(rawSolution);
 
 	// Handle case where solution section is at the very beginning
 	if (statement === '' && solution !== '') {
@@ -303,7 +320,8 @@ function trySectionSplit(
 			statement: solution,
 			solution: null,
 			splitMethod: 'none',
-			statementLineOffset: baseOffset,
+			statementLineOffset:
+				baseOffset + countNewlinesUpTo(content, solutionStartIndex) + solutionLeadingNewlines,
 			solutionLineOffset: null
 		};
 	}
@@ -312,9 +330,9 @@ function trySectionSplit(
 		statement,
 		solution: solution || null,
 		splitMethod: 'section',
-		statementLineOffset: baseOffset,
+		statementLineOffset: baseOffset + statementLeadingNewlines,
 		solutionLineOffset: solution
-			? baseOffset + countNewlinesUpTo(content, solutionStartIndex)
+			? baseOffset + countNewlinesUpTo(content, solutionStartIndex) + solutionLeadingNewlines
 			: null
 	};
 }
@@ -336,11 +354,14 @@ function tryCommentSplit(content: string, baseOffset: number): SplitResult | nul
 		for (const pattern of SOLUTION_COMMENT_PATTERNS) {
 			if (pattern.test(line)) {
 				// Found a solution comment marker
-				const statement = lines.slice(0, i).join('\n').trim();
-				const solution = lines
-					.slice(i + 1)
-					.join('\n')
-					.trim();
+				const rawStatement = lines.slice(0, i).join('\n');
+				const rawSolution = lines.slice(i + 1).join('\n');
+				const statement = rawStatement.trim();
+				const solution = rawSolution.trim();
+
+				// Count leading newlines that will be removed by trim()
+				const statementLeadingNewlines = countLeadingNewlines(rawStatement);
+				const solutionLeadingNewlines = countLeadingNewlines(rawSolution);
 
 				// Handle case where comment is at the very beginning
 				if (statement === '' && solution !== '') {
@@ -348,7 +369,7 @@ function tryCommentSplit(content: string, baseOffset: number): SplitResult | nul
 						statement: solution,
 						solution: null,
 						splitMethod: 'none',
-						statementLineOffset: baseOffset,
+						statementLineOffset: baseOffset + i + 1 + solutionLeadingNewlines,
 						solutionLineOffset: null
 					};
 				}
@@ -357,8 +378,8 @@ function tryCommentSplit(content: string, baseOffset: number): SplitResult | nul
 					statement,
 					solution: solution || null,
 					splitMethod: 'comment',
-					statementLineOffset: baseOffset,
-					solutionLineOffset: solution ? baseOffset + i + 1 : null
+					statementLineOffset: baseOffset + statementLeadingNewlines,
+					solutionLineOffset: solution ? baseOffset + i + 1 + solutionLeadingNewlines : null
 				};
 			}
 		}
@@ -431,6 +452,25 @@ function countNewlinesUpTo(text: string, position: number): number {
 	for (let i = 0; i < position && i < text.length; i++) {
 		if (text[i] === '\n') {
 			count++;
+		}
+	}
+	return count;
+}
+
+/**
+ * Count the number of leading newlines in a string (before any non-whitespace content).
+ * This is used to adjust line offsets when trimming content.
+ *
+ * @param text - The text to search
+ * @returns The number of newlines at the start of the string
+ */
+function countLeadingNewlines(text: string): number {
+	let count = 0;
+	for (const char of text) {
+		if (char === '\n') {
+			count++;
+		} else if (char !== ' ' && char !== '\t' && char !== '\r') {
+			break;
 		}
 	}
 	return count;
