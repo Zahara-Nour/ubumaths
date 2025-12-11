@@ -15,26 +15,28 @@
 </script>
 
 <DropdownMenu.Root>
-	<DropdownMenu.Trigger asChild let:builder>
-		<Button builders={[builder]} variant="outline" size="sm" class={className}>
-			<svg
-				class="mr-2 h-4 w-4"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M4 6h16M4 12h16m-7 6h7"
-				/>
-			</svg>
-			<span style="font-family: {exerciseFont.currentFont.family}">
-				{exerciseFont.currentFont.label}
-			</span>
-		</Button>
+	<DropdownMenu.Trigger>
+		{#snippet child({ props })}
+			<Button {...props} variant="outline" size="sm" class={className}>
+				<svg
+					class="mr-2 h-4 w-4"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M4 6h16M4 12h16m-7 6h7"
+					/>
+				</svg>
+				<span style="font-family: {exerciseFont.currentFont.family}">
+					{exerciseFont.currentFont.label}
+				</span>
+			</Button>
+		{/snippet}
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content align="end" class="w-48">
 		<DropdownMenu.Label>Police d'affichage</DropdownMenu.Label>
