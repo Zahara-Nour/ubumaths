@@ -197,6 +197,7 @@ export function parseListItems(content: string): ListItem[] {
 function splitItemContent(content: string): {
 	textBefore: string;
 	nestedList: string | null;
+	nestedListLineOffset: number;
 	textAfter: string;
 } {
 	// Find first nested list environment
@@ -204,11 +205,13 @@ function splitItemContent(content: string): {
 	const beginMatch = content.match(envRegex);
 
 	if (!beginMatch) {
-		return { textBefore: content, nestedList: null, textAfter: '' };
+		return { textBefore: content, nestedList: null, nestedListLineOffset: 0, textAfter: '' };
 	}
 
 	const envName = beginMatch[1];
 	const startIdx = beginMatch.index!;
+	// Calculate line offset: count newlines from start of content to start of nested list
+	const nestedListLineOffset = countNewlinesUpTo(content, startIdx);
 
 	// Find the matching \end{envName}
 	let depth = 1;
@@ -243,17 +246,24 @@ function splitItemContent(content: string): {
 	return {
 		textBefore: content.slice(0, startIdx).trim(),
 		nestedList: content.slice(startIdx, endIdx),
+		nestedListLineOffset,
 		textAfter: content.slice(endIdx).trim()
 	};
 }
 
 /**
  * Convert a nested list found in item content.
+ *
+ * @param nestedListStr - The nested list LaTeX string
+ * @param parentLevel - Nesting level of the parent list
+ * @param context - Conversion context
+ * @param startLine - The line number where this nested list starts (1-indexed)
  */
 function convertNestedList(
 	nestedListStr: string,
 	parentLevel: number,
-	context: ConversionContext
+	context: ConversionContext,
+	startLine: number
 ): string {
 	// Parse the nested list string to extract environment name and content
 	const match = nestedListStr.match(
@@ -274,7 +284,7 @@ function convertNestedList(
 		raw: nestedListStr,
 		start: 0,
 		end: nestedListStr.length,
-		line: 1,
+		line: startLine,
 		column: 1,
 		depth: parentLevel + 1
 	};
@@ -345,7 +355,9 @@ export function convertItemize(token: EnvironmentToken, context: ConversionConte
 	const lines: string[] = [];
 
 	for (const item of items) {
-		const { textBefore, nestedList, textAfter } = splitItemContent(item.content);
+		const { textBefore, nestedList, nestedListLineOffset, textAfter } = splitItemContent(
+			item.content
+		);
 		// Calculate the line number for this item's content
 		const itemStartLine = contentStartLine + (item.lineOffset ?? 0);
 
@@ -369,7 +381,9 @@ export function convertItemize(token: EnvironmentToken, context: ConversionConte
 
 		// Handle nested list
 		if (nestedList) {
-			const nestedResult = convertNestedList(nestedList, level, context);
+			// Calculate the line where the nested list starts
+			const nestedListStartLine = itemStartLine + nestedListLineOffset;
+			const nestedResult = convertNestedList(nestedList, level, context, nestedListStartLine);
 			if (nestedResult) {
 				lines.push(nestedResult);
 			}
@@ -415,7 +429,9 @@ export function convertEnumerate(token: EnvironmentToken, context: ConversionCon
 	for (let i = 0; i < items.length; i++) {
 		const item = items[i];
 		const number = i + 1;
-		const { textBefore, nestedList, textAfter } = splitItemContent(item.content);
+		const { textBefore, nestedList, nestedListLineOffset, textAfter } = splitItemContent(
+			item.content
+		);
 		// Calculate the line number for this item's content
 		const itemStartLine = contentStartLine + (item.lineOffset ?? 0);
 
@@ -439,7 +455,9 @@ export function convertEnumerate(token: EnvironmentToken, context: ConversionCon
 
 		// Handle nested list
 		if (nestedList) {
-			const nestedResult = convertNestedList(nestedList, level, context);
+			// Calculate the line where the nested list starts
+			const nestedListStartLine = itemStartLine + nestedListLineOffset;
+			const nestedResult = convertNestedList(nestedList, level, context, nestedListStartLine);
 			if (nestedResult) {
 				lines.push(nestedResult);
 			}
@@ -484,7 +502,9 @@ export function convertDescription(token: EnvironmentToken, context: ConversionC
 	const lines: string[] = [];
 
 	for (const item of items) {
-		const { textBefore, nestedList, textAfter } = splitItemContent(item.content);
+		const { textBefore, nestedList, nestedListLineOffset, textAfter } = splitItemContent(
+			item.content
+		);
 		// Calculate the line number for this item's content
 		const itemStartLine = contentStartLine + (item.lineOffset ?? 0);
 
@@ -506,7 +526,9 @@ export function convertDescription(token: EnvironmentToken, context: ConversionC
 
 		// Handle nested list
 		if (nestedList) {
-			const nestedResult = convertNestedList(nestedList, level, context);
+			// Calculate the line where the nested list starts
+			const nestedListStartLine = itemStartLine + nestedListLineOffset;
+			const nestedResult = convertNestedList(nestedList, level, context, nestedListStartLine);
 			if (nestedResult) {
 				lines.push(nestedResult);
 			}
