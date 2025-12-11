@@ -24,15 +24,16 @@ const INDENT_SIZE = 2;
  *
  * @param text - Raw text content from a list item
  * @param context - The conversion context with processChildren function
+ * @param startLine - Starting line number for proper error reporting (default: 1)
  * @returns Processed text with LaTeX commands converted
  */
-function processItemText(text: string, context: ConversionContext): string {
+function processItemText(text: string, context: ConversionContext, startLine: number = 1): string {
 	if (!text.trim() || !context.processChildren) {
 		return text;
 	}
 
-	// Tokenize the content to process any LaTeX commands
-	const tokens = tokenize(text);
+	// Tokenize the content to process any LaTeX commands, passing the starting line
+	const tokens = tokenize(text, startLine);
 
 	// Convert the tokens using the context's processChildren
 	return context.processChildren(tokens);
@@ -118,6 +119,19 @@ function isInsideNestedEnv(pos: number, ranges: Array<[number, number]>): boolea
 }
 
 /**
+ * Count newlines in a string up to a given position.
+ */
+function countNewlinesUpTo(text: string, position: number): number {
+	let count = 0;
+	for (let i = 0; i < position && i < text.length; i++) {
+		if (text[i] === '\n') {
+			count++;
+		}
+	}
+	return count;
+}
+
+/**
  * Parse list items from environment content.
  * Handles \item commands and extracts content for each item.
  * Correctly ignores \item commands inside nested environments.
@@ -133,7 +147,12 @@ export function parseListItems(content: string): ListItem[] {
 
 	// Find all \item commands not inside nested environments
 	const itemRegex = /\\item(?:\s*\[([^\]]*)\])?\s*/g;
-	const itemPositions: Array<{ label?: string; startIndex: number; commandEnd: number }> = [];
+	const itemPositions: Array<{
+		label?: string;
+		startIndex: number;
+		commandEnd: number;
+		lineOffset: number;
+	}> = [];
 
 	let match: RegExpExecArray | null;
 	while ((match = itemRegex.exec(content)) !== null) {
@@ -142,10 +161,14 @@ export function parseListItems(content: string): ListItem[] {
 			continue;
 		}
 
+		// Calculate line offset: count newlines from start of content to the \item command
+		const lineOffset = countNewlinesUpTo(content, match.index + match[0].length);
+
 		itemPositions.push({
 			label: match[1],
 			startIndex: match.index,
-			commandEnd: match.index + match[0].length
+			commandEnd: match.index + match[0].length,
+			lineOffset
 		});
 	}
 
@@ -159,7 +182,8 @@ export function parseListItems(content: string): ListItem[] {
 
 		items.push({
 			content: itemContent,
-			label: current.label
+			label: current.label,
+			lineOffset: current.lineOffset
 		});
 	}
 
@@ -279,6 +303,24 @@ function convertNestedList(
 // ===========================
 
 /**
+ * Calculate the line number where the environment content starts.
+ * Counts newlines in the opening tag (\begin{...}) to determine offset.
+ */
+function getContentStartLine(token: EnvironmentToken): number {
+	// Find where content starts in the raw string
+	const contentStart = token.raw.indexOf(token.content);
+	if (contentStart === -1) {
+		return token.line;
+	}
+
+	// Count newlines in the prefix (before content)
+	const prefix = token.raw.substring(0, contentStart);
+	const newlinesInPrefix = countNewlinesUpTo(prefix, prefix.length);
+
+	return token.line + newlinesInPrefix;
+}
+
+/**
  * Convert itemize environment to Markdown unordered list.
  *
  * @example
@@ -294,6 +336,7 @@ export function convertItemize(token: EnvironmentToken, context: ConversionConte
 	const items = parseListItems(token.content);
 	const level = token.depth ?? context.indentLevel;
 	const indent = getIndent(level);
+	const contentStartLine = getContentStartLine(token);
 
 	if (items.length === 0) {
 		return '';
@@ -303,12 +346,14 @@ export function convertItemize(token: EnvironmentToken, context: ConversionConte
 
 	for (const item of items) {
 		const { textBefore, nestedList, textAfter } = splitItemContent(item.content);
+		// Calculate the line number for this item's content
+		const itemStartLine = contentStartLine + (item.lineOffset ?? 0);
 
 		// Process the text content (before nested list)
 		if (textBefore) {
 			const textLines = textBefore.split('\n').filter((l) => l.trim());
 			for (let i = 0; i < textLines.length; i++) {
-				const processedText = processItemText(textLines[i].trim(), context);
+				const processedText = processItemText(textLines[i].trim(), context, itemStartLine + i);
 				if (i === 0) {
 					lines.push(`${indent}- ${processedText}`);
 				} else {
@@ -333,8 +378,8 @@ export function convertItemize(token: EnvironmentToken, context: ConversionConte
 		// Handle text after nested list
 		if (textAfter) {
 			const afterLines = textAfter.split('\n').filter((l) => l.trim());
-			for (const line of afterLines) {
-				const processedLine = processItemText(line.trim(), context);
+			for (let j = 0; j < afterLines.length; j++) {
+				const processedLine = processItemText(afterLines[j].trim(), context, itemStartLine);
 				lines.push(`${indent}  ${processedLine}`);
 			}
 		}
@@ -359,6 +404,7 @@ export function convertEnumerate(token: EnvironmentToken, context: ConversionCon
 	const items = parseListItems(token.content);
 	const level = token.depth ?? context.indentLevel;
 	const indent = getIndent(level);
+	const contentStartLine = getContentStartLine(token);
 
 	if (items.length === 0) {
 		return '';
@@ -370,12 +416,14 @@ export function convertEnumerate(token: EnvironmentToken, context: ConversionCon
 		const item = items[i];
 		const number = i + 1;
 		const { textBefore, nestedList, textAfter } = splitItemContent(item.content);
+		// Calculate the line number for this item's content
+		const itemStartLine = contentStartLine + (item.lineOffset ?? 0);
 
 		// Process the text content (before nested list)
 		if (textBefore) {
 			const textLines = textBefore.split('\n').filter((l) => l.trim());
 			for (let j = 0; j < textLines.length; j++) {
-				const processedText = processItemText(textLines[j].trim(), context);
+				const processedText = processItemText(textLines[j].trim(), context, itemStartLine + j);
 				if (j === 0) {
 					lines.push(`${indent}${number}. ${processedText}`);
 				} else {
@@ -400,8 +448,8 @@ export function convertEnumerate(token: EnvironmentToken, context: ConversionCon
 		// Handle text after nested list
 		if (textAfter) {
 			const afterLines = textAfter.split('\n').filter((l) => l.trim());
-			for (const line of afterLines) {
-				const processedLine = processItemText(line.trim(), context);
+			for (let j = 0; j < afterLines.length; j++) {
+				const processedLine = processItemText(afterLines[j].trim(), context, itemStartLine);
 				lines.push(`${indent}   ${processedLine}`);
 			}
 		}
@@ -427,6 +475,7 @@ export function convertDescription(token: EnvironmentToken, context: ConversionC
 	const items = parseListItems(token.content);
 	const level = token.depth ?? context.indentLevel;
 	const indent = getIndent(level);
+	const contentStartLine = getContentStartLine(token);
 
 	if (items.length === 0) {
 		return '';
@@ -436,11 +485,13 @@ export function convertDescription(token: EnvironmentToken, context: ConversionC
 
 	for (const item of items) {
 		const { textBefore, nestedList, textAfter } = splitItemContent(item.content);
+		// Calculate the line number for this item's content
+		const itemStartLine = contentStartLine + (item.lineOffset ?? 0);
 
 		// Format term and definition
 		const term = item.label ?? '';
 		const rawDefinition = textBefore.trim();
-		const definition = rawDefinition ? processItemText(rawDefinition, context) : '';
+		const definition = rawDefinition ? processItemText(rawDefinition, context, itemStartLine) : '';
 
 		// Build the first line
 		if (term) {
@@ -464,8 +515,8 @@ export function convertDescription(token: EnvironmentToken, context: ConversionC
 		// Handle text after nested list
 		if (textAfter) {
 			const afterLines = textAfter.split('\n').filter((l) => l.trim());
-			for (const line of afterLines) {
-				const processedLine = processItemText(line.trim(), context);
+			for (let j = 0; j < afterLines.length; j++) {
+				const processedLine = processItemText(afterLines[j].trim(), context, itemStartLine);
 				lines.push(`${indent}  ${processedLine}`);
 			}
 		}
