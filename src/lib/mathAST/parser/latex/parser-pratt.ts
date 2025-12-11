@@ -90,7 +90,9 @@ const SYMBOL_COMMAND_MAP: Record<string, MathSymbol> = {
  */
 const RELATION_COMMAND_MAP: Record<string, RelationType> = {
 	leq: '<=',
+	leqslant: '<=',
 	geq: '>=',
+	geqslant: '>=',
 	neq: '!=',
 	equiv: '≡',
 	approx: '≈',

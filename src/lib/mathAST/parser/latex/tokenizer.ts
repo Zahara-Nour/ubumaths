@@ -418,7 +418,9 @@ export function isRelationToken(token: Token): boolean {
 	if (token.type === 'COMMAND') {
 		const relationCommands = [
 			'leq',
+			'leqslant',
 			'geq',
+			'geqslant',
 			'neq',
 			'equiv',
 			'approx',

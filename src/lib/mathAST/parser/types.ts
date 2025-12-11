@@ -558,7 +558,9 @@ export const OPERATOR_COMMANDS: ReadonlySet<string> = new Set<string>([
  */
 export const RELATION_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'leq',
+	'leqslant',
 	'geq',
+	'geqslant',
 	'neq',
 	'equiv',
 	'approx',

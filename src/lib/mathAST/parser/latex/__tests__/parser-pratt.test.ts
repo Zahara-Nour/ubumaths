@@ -663,6 +663,18 @@ describe('Relations', () => {
 			expect(node.relation).toBe('>=');
 		});
 
+		it('should parse \\leqslant', () => {
+			const node = parse('x \\leqslant 5');
+			expectType(node, 'relation');
+			expect(node.relation).toBe('<=');
+		});
+
+		it('should parse \\geqslant', () => {
+			const node = parse('x \\geqslant 5');
+			expectType(node, 'relation');
+			expect(node.relation).toBe('>=');
+		});
+
 		it('should parse \\neq', () => {
 			const node = parse('x \\neq 5');
 			expectType(node, 'relation');
