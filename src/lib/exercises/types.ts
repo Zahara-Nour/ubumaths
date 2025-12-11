@@ -223,6 +223,9 @@ export interface Exercise {
 	/** Unique identifier (UUID) */
 	id: string;
 
+	/** URL-friendly slug (topic-nanoid format, e.g., "algebre-k8m2n4p7") */
+	slug?: string;
+
 	// Metadata
 	/** Exercise title (optional, for organization) */
 	title?: string;

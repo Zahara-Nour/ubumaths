@@ -1,6 +1,6 @@
 # Exercises System - Database Schema
 
-> **Last Updated**: 2025-12-10
+> **Last Updated**: 2025-12-11
 >
 > **Related**: [Index](./index.md) | [API Reference](./api-reference.md)
 
@@ -50,6 +50,7 @@ Core exercise storage table. Supports both static and parameterized exercises.
 CREATE TABLE exercises (
   -- Identity
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE,                              -- URL-friendly identifier (topic-nanoid)
 
   -- Metadata
   title TEXT,                                    -- Optional title
@@ -83,6 +84,7 @@ CREATE TABLE exercises (
 | Column              | Type    | Required | Description                                  |
 | ------------------- | ------- | -------- | -------------------------------------------- |
 | `id`                | UUID    | Auto     | Primary key                                  |
+| `slug`              | TEXT    | No       | URL-friendly identifier (auto-generated)     |
 | `title`             | TEXT    | No       | Display title for organization               |
 | `source`            | TEXT    | No       | Source reference (e.g., "Manuel 3ème, p.45") |
 | `difficulty`        | TEXT    | Yes      | '1' (easy), '2' (medium), '3' (hard)         |
@@ -362,9 +364,13 @@ RETURNS TABLE (
 
 ## Indexes
 
-### exercises Table (3 indexes)
+### exercises Table (4 indexes)
 
 ```sql
+-- URL slug lookup (unique, partial)
+CREATE UNIQUE INDEX idx_exercises_slug ON exercises(slug)
+WHERE slug IS NOT NULL;
+
 -- Full-text search (French language)
 CREATE INDEX idx_exercises_fulltext ON exercises
 USING gin(to_tsvector('french',
@@ -414,7 +420,7 @@ CREATE INDEX idx_exercise_completions_student_completed
   ON exercise_completions(student_id, completed_at) WHERE completed_at IS NOT NULL;
 ```
 
-**Total**: 17 indexes for optimal query performance.
+**Total**: 18 indexes for optimal query performance.
 
 ---
 
@@ -533,3 +539,4 @@ USING (
 | `20251027021000_add_exercise_completion_stats_function.sql` | Statistics functions                |
 | `20251031160000_create_exercise_assignments_tables.sql`     | `exercise_completions` + RLS        |
 | `20251031160100_cleanup_duplicate_exercise_indexes.sql`     | Index deduplication                 |
+| `20251211135028_add_exercise_slug.sql`                      | URL-friendly slug field             |
