@@ -183,7 +183,7 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 
 			case 'math-block':
 				return `<div class="my-6 flex justify-center">
-					<math-field read-only class="text-2xl">${node.latex}</math-field>
+					<math-field read-only class="text-2xl">${node.expression}</math-field>
 				</div>`;
 
 			case 'image':
@@ -222,7 +222,7 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 			}
 
 			case 'math-inline':
-				return `<math-field read-only class="inline-math">${node.latex}</math-field>`;
+				return `<math-field read-only class="inline-math">${node.expression}</math-field>`;
 
 			case 'line-break':
 				return node.hard ? '<br />' : ' ';
