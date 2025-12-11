@@ -34,14 +34,14 @@
 </script>
 
 <div class="math-block-container my-6 flex justify-center {className}">
-	<math-div class="math-block-static text-2xl">{latex}</math-div>
+	<math-div class="math-block-static">{latex}</math-div>
 </div>
 
 <style>
 	/* Math block styling - centered display math */
 	:global(.math-block-static) {
 		display: inline-block;
-		font-size: 1.5rem; /* Larger for display math */
+		font-size: 1em;
 		line-height: 1.4;
 	}
 </style>
