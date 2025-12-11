@@ -361,15 +361,17 @@ export function convertItemize(token: EnvironmentToken, context: ConversionConte
 		// Calculate the line number for this item's content
 		const itemStartLine = contentStartLine + (item.lineOffset ?? 0);
 
-		// Process the text content (before nested list)
+		// Process the text content (before nested list) as a single unit
+		// to preserve multi-line math blocks like \[...\]
 		if (textBefore) {
-			const textLines = textBefore.split('\n').filter((l) => l.trim());
-			for (let i = 0; i < textLines.length; i++) {
-				const processedText = processItemText(textLines[i].trim(), context, itemStartLine + i);
+			const processedText = processItemText(textBefore.trim(), context, itemStartLine);
+			// Split the result into lines for proper markdown formatting
+			const resultLines = processedText.split('\n');
+			for (let i = 0; i < resultLines.length; i++) {
 				if (i === 0) {
-					lines.push(`${indent}- ${processedText}`);
+					lines.push(`${indent}- ${resultLines[i]}`);
 				} else {
-					lines.push(`${indent}  ${processedText}`);
+					lines.push(`${indent}  ${resultLines[i]}`);
 				}
 			}
 		} else {
@@ -389,12 +391,12 @@ export function convertItemize(token: EnvironmentToken, context: ConversionConte
 			}
 		}
 
-		// Handle text after nested list
+		// Handle text after nested list as a single unit
 		if (textAfter) {
-			const afterLines = textAfter.split('\n').filter((l) => l.trim());
-			for (let j = 0; j < afterLines.length; j++) {
-				const processedLine = processItemText(afterLines[j].trim(), context, itemStartLine);
-				lines.push(`${indent}  ${processedLine}`);
+			const processedAfter = processItemText(textAfter.trim(), context, itemStartLine);
+			const afterLines = processedAfter.split('\n');
+			for (const afterLine of afterLines) {
+				lines.push(`${indent}  ${afterLine}`);
 			}
 		}
 	}
@@ -435,15 +437,17 @@ export function convertEnumerate(token: EnvironmentToken, context: ConversionCon
 		// Calculate the line number for this item's content
 		const itemStartLine = contentStartLine + (item.lineOffset ?? 0);
 
-		// Process the text content (before nested list)
+		// Process the text content (before nested list) as a single unit
+		// to preserve multi-line math blocks like \[...\]
 		if (textBefore) {
-			const textLines = textBefore.split('\n').filter((l) => l.trim());
-			for (let j = 0; j < textLines.length; j++) {
-				const processedText = processItemText(textLines[j].trim(), context, itemStartLine + j);
+			const processedText = processItemText(textBefore.trim(), context, itemStartLine);
+			// Split the result into lines for proper markdown formatting
+			const resultLines = processedText.split('\n');
+			for (let j = 0; j < resultLines.length; j++) {
 				if (j === 0) {
-					lines.push(`${indent}${number}. ${processedText}`);
+					lines.push(`${indent}${number}. ${resultLines[j]}`);
 				} else {
-					lines.push(`${indent}   ${processedText}`);
+					lines.push(`${indent}   ${resultLines[j]}`);
 				}
 			}
 		} else {
@@ -463,12 +467,12 @@ export function convertEnumerate(token: EnvironmentToken, context: ConversionCon
 			}
 		}
 
-		// Handle text after nested list
+		// Handle text after nested list as a single unit
 		if (textAfter) {
-			const afterLines = textAfter.split('\n').filter((l) => l.trim());
-			for (let j = 0; j < afterLines.length; j++) {
-				const processedLine = processItemText(afterLines[j].trim(), context, itemStartLine);
-				lines.push(`${indent}   ${processedLine}`);
+			const processedAfter = processItemText(textAfter.trim(), context, itemStartLine);
+			const afterLines = processedAfter.split('\n');
+			for (const afterLine of afterLines) {
+				lines.push(`${indent}   ${afterLine}`);
 			}
 		}
 	}
@@ -534,12 +538,12 @@ export function convertDescription(token: EnvironmentToken, context: ConversionC
 			}
 		}
 
-		// Handle text after nested list
+		// Handle text after nested list as a single unit
 		if (textAfter) {
-			const afterLines = textAfter.split('\n').filter((l) => l.trim());
-			for (let j = 0; j < afterLines.length; j++) {
-				const processedLine = processItemText(afterLines[j].trim(), context, itemStartLine);
-				lines.push(`${indent}  ${processedLine}`);
+			const processedAfter = processItemText(textAfter.trim(), context, itemStartLine);
+			const afterLines = processedAfter.split('\n');
+			for (const afterLine of afterLines) {
+				lines.push(`${indent}  ${afterLine}`);
 			}
 		}
 	}
