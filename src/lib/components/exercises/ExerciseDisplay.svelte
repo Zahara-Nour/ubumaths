@@ -32,6 +32,7 @@
 	import type { Exercise, ExerciseInstance } from '$lib/exercises/types';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import FontSelector from '$lib/components/FontSelector.svelte';
 
 	interface Props {
 		exercise: Exercise;
@@ -212,17 +213,20 @@
 	<!-- ============================================================================ -->
 	<!-- STATEMENT -->
 	<!-- ============================================================================ -->
-	<div class="exercise-statement">
+	<div class="exercise-statement exercise-content">
 		<MarkdownRenderer content={displayStatementMd} />
 	</div>
 
 	<!-- ============================================================================ -->
-	<!-- SOLUTION TOGGLE -->
+	<!-- SOLUTION TOGGLE & FONT SELECTOR -->
 	<!-- ============================================================================ -->
 	<div class="mt-6 flex items-center justify-between border-t border-border pt-4">
-		<Button onclick={() => (showSolution = !showSolution)} variant="secondary" size="sm">
-			{showSolution ? 'Masquer' : 'Afficher'} la solution
-		</Button>
+		<div class="flex items-center gap-2">
+			<Button onclick={() => (showSolution = !showSolution)} variant="secondary" size="sm">
+				{showSolution ? 'Masquer' : 'Afficher'} la solution
+			</Button>
+			<FontSelector />
+		</div>
 
 		{#if mode === 'template' && currentInstance && exercise.variables && exercise.variables.length > 0}
 			<details class="text-sm">
@@ -249,7 +253,7 @@
 	<!-- SOLUTION -->
 	<!-- ============================================================================ -->
 	{#if showSolution}
-		<div class="solution mt-6 rounded-lg border border-border bg-muted/30 p-4">
+		<div class="solution exercise-content mt-6 rounded-lg border border-border bg-muted/30 p-4">
 			<h3 class="mb-3 text-lg font-semibold text-foreground">Solution</h3>
 			<MarkdownRenderer content={displaySolutionMd} />
 		</div>
