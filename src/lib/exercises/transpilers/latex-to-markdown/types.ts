@@ -429,6 +429,9 @@ export interface ListItem {
 
 	/** Nested list (if any) */
 	nestedList?: ParsedList;
+
+	/** Line offset within the environment content (0-based) */
+	lineOffset?: number;
 }
 
 /**

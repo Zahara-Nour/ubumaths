@@ -20,18 +20,19 @@ import type {
 /**
  * Tokenize LaTeX source text into a sequence of tokens.
  * @param latex - The LaTeX source text
+ * @param startLine - Optional starting line number (default: 1)
  * @returns Array of tokens
  */
-export function tokenize(latex: string): LatexToken[] {
+export function tokenize(latex: string, startLine: number = 1): LatexToken[] {
 	const tokens: LatexToken[] = [];
 	let position = 0;
-	let line = 1;
+	let line = startLine;
 	let column = 1;
 
 	while (position < latex.length) {
 		const char = latex[position];
-		const startLine = line;
-		const startColumn = column;
+		const tokenStartLine = line;
+		const tokenStartColumn = column;
 
 		// Handle newlines
 		if (char === '\n') {
@@ -53,8 +54,8 @@ export function tokenize(latex: string): LatexToken[] {
 				raw: latex.substring(startPos, position),
 				start: startPos,
 				end: position,
-				line: startLine,
-				column: startColumn,
+				line: tokenStartLine,
+				column: tokenStartColumn,
 				count,
 				isParagraphBreak: count >= 2
 			} as NewlineToken);
@@ -235,7 +236,7 @@ export function tokenize(latex: string): LatexToken[] {
 				start: startPos,
 				end: position,
 				line,
-				column: startColumn,
+				column: tokenStartColumn,
 				content,
 				isSignificant: content.includes('~')
 			} as WhitespaceToken);
