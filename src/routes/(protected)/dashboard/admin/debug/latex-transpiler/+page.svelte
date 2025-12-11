@@ -95,12 +95,64 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 	let htmlContainer = $state<HTMLElement | null>(null);
 	let rawHtml = $state('');
 
+	/**
+	 * Clean and format HTML for display:
+	 * - Remove Svelte hydration markers (<!---->, <!>)
+	 * - Add newlines and indentation for readability
+	 */
+	function formatHtml(html: string): string {
+		// Remove Svelte markers
+		let cleaned = html
+			.replace(/<!--[\s\S]*?-->/g, '') // Remove all HTML comments
+			.replace(/<!>/g, ''); // Remove Svelte markers
+
+		// Simple formatting: add newlines after closing tags
+		cleaned = cleaned
+			.replace(/>\s*</g, '>\n<') // Newline between tags
+			.replace(
+				/(<\/?(div|p|h[1-6]|ul|ol|li|table|tr|td|th|thead|tbody|blockquote|pre|figure|figcaption|hr)[^>]*>)/gi,
+				'\n$1\n'
+			) // Newlines around block elements
+			.replace(/\n\s*\n/g, '\n') // Remove multiple blank lines
+			.trim();
+
+		// Indent nested elements
+		const lines = cleaned.split('\n');
+		let indent = 0;
+		const formatted = lines
+			.map((line) => {
+				const trimmed = line.trim();
+				if (!trimmed) return '';
+
+				// Decrease indent for closing tags
+				if (trimmed.match(/^<\/(div|ul|ol|li|table|thead|tbody|tr|blockquote|figure)/i)) {
+					indent = Math.max(0, indent - 1);
+				}
+
+				const result = '  '.repeat(indent) + trimmed;
+
+				// Increase indent for opening tags (not self-closing)
+				if (
+					trimmed.match(/^<(div|ul|ol|li|table|thead|tbody|tr|blockquote|figure)(?![^>]*\/>)/i) &&
+					!trimmed.match(/<\/[^>]+>$/)
+				) {
+					indent++;
+				}
+
+				return result;
+			})
+			.filter(Boolean);
+
+		return formatted.join('\n');
+	}
+
 	// Capture HTML after render
 	$effect(() => {
 		if (htmlContainer && statementMarkdown) {
 			// Wait for render to complete
 			requestAnimationFrame(() => {
-				rawHtml = htmlContainer?.innerHTML ?? '';
+				const html = htmlContainer?.innerHTML ?? '';
+				rawHtml = formatHtml(html);
 			});
 		} else {
 			rawHtml = '';
