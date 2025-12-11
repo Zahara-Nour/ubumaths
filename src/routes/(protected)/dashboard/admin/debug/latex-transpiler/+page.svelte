@@ -7,6 +7,7 @@
 	} from '$lib/exercises/transpilers/latex-to-markdown';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import LaTeXEditor from '$lib/components/LaTeXEditor.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -220,13 +221,11 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 		<!-- Left: Input -->
 		<div class="flex flex-col gap-4">
 			<label for="latex-input" class="text-sm font-medium">LaTeX Input</label>
-			<textarea
-				id="latex-input"
+			<LaTeXEditor
 				bind:value={latexInput}
-				rows={20}
-				class="w-full rounded-lg border border-border bg-background p-4 font-mono text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+				height="500px"
 				placeholder="Entrez votre code LaTeX ici..."
-			></textarea>
+			/>
 			<Button onclick={handleTranspile} class="w-full">Transpiler</Button>
 
 			{#if error}
