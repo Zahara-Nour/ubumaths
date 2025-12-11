@@ -22,6 +22,10 @@ export interface SplitResult {
 	solution: string | null;
 	/** The method used to detect the split */
 	splitMethod: SplitMethod;
+	/** Line offset where the statement starts (0-based) */
+	statementLineOffset: number;
+	/** Line offset where the solution starts (0-based), or null if no solution */
+	solutionLineOffset: number | null;
 }
 
 /**
@@ -70,7 +74,7 @@ const SOLUTION_COMMENT_PATTERNS = [
  */
 export function splitStatementAndSolution(latex: string, options?: SplitOptions): SplitResult {
 	// Extract only document content (ignore preamble)
-	const documentContent = extractDocumentContent(latex);
+	const { content: documentContent, lineOffset } = extractDocumentContent(latex);
 
 	// Merge options with defaults
 	const envNames = options?.solutionEnvName ? [options.solutionEnvName] : DEFAULT_SOLUTION_ENVS;
@@ -79,18 +83,18 @@ export function splitStatementAndSolution(latex: string, options?: SplitOptions)
 	// Try each detection method in priority order
 	// Try all solution environment names
 	for (const envName of envNames) {
-		const envResult = tryEnvironmentSplit(documentContent, envName);
+		const envResult = tryEnvironmentSplit(documentContent, envName, lineOffset);
 		if (envResult) {
 			return envResult;
 		}
 	}
 
-	const sectionResult = trySectionSplit(documentContent, sectionTitles);
+	const sectionResult = trySectionSplit(documentContent, sectionTitles, lineOffset);
 	if (sectionResult) {
 		return sectionResult;
 	}
 
-	const commentResult = tryCommentSplit(documentContent);
+	const commentResult = tryCommentSplit(documentContent, lineOffset);
 	if (commentResult) {
 		return commentResult;
 	}
@@ -99,7 +103,9 @@ export function splitStatementAndSolution(latex: string, options?: SplitOptions)
 	return {
 		statement: documentContent.trim(),
 		solution: null,
-		splitMethod: 'none'
+		splitMethod: 'none',
+		statementLineOffset: lineOffset,
+		solutionLineOffset: null
 	};
 }
 
@@ -111,7 +117,7 @@ export function splitStatementAndSolution(latex: string, options?: SplitOptions)
  * @returns The split method that would be used
  */
 export function detectSplitMethod(latex: string, options?: SplitOptions): SplitMethod {
-	const documentContent = extractDocumentContent(latex);
+	const { content: documentContent } = extractDocumentContent(latex);
 	const envNames = options?.solutionEnvName ? [options.solutionEnvName] : DEFAULT_SOLUTION_ENVS;
 	const sectionTitles = options?.solutionSectionTitles ?? DEFAULT_SOLUTION_TITLES;
 
@@ -142,19 +148,20 @@ export function detectSplitMethod(latex: string, options?: SplitOptions): SplitM
  * If no document environment is found, returns the full input.
  *
  * @param latex - The full LaTeX source
- * @returns The document body content
+ * @returns Object with document body content and the line offset where it starts
  */
-function extractDocumentContent(latex: string): string {
+function extractDocumentContent(latex: string): { content: string; lineOffset: number } {
 	// Case-insensitive search for document environment
 	const beginPattern = /\\begin\s*\{document\}/i;
 	const endPattern = /\\end\s*\{document\}/i;
 
 	const beginMatch = latex.match(beginPattern);
 	if (!beginMatch || beginMatch.index === undefined) {
-		return latex;
+		return { content: latex, lineOffset: 0 };
 	}
 
 	const startIndex = beginMatch.index + beginMatch[0].length;
+	const lineOffset = countNewlinesUpTo(latex, startIndex);
 
 	// Find the end of document
 	const remaining = latex.substring(startIndex);
@@ -162,10 +169,10 @@ function extractDocumentContent(latex: string): string {
 
 	if (!endMatch || endMatch.index === undefined) {
 		// No \end{document}, return everything after \begin{document}
-		return latex.substring(startIndex);
+		return { content: latex.substring(startIndex), lineOffset };
 	}
 
-	return remaining.substring(0, endMatch.index);
+	return { content: remaining.substring(0, endMatch.index), lineOffset };
 }
 
 /**
@@ -173,9 +180,14 @@ function extractDocumentContent(latex: string): string {
  *
  * @param content - Document content to search
  * @param envName - Name of the solution environment
+ * @param baseOffset - Line offset to add to all line numbers
  * @returns Split result or null if not found
  */
-function tryEnvironmentSplit(content: string, envName: string): SplitResult | null {
+function tryEnvironmentSplit(
+	content: string,
+	envName: string,
+	baseOffset: number
+): SplitResult | null {
 	// Build case-insensitive pattern for the environment
 	const beginPattern = new RegExp(`\\\\begin\\s*\\{${escapeRegex(envName)}\\}`, 'i');
 	const beginMatch = content.match(beginPattern);
@@ -239,14 +251,18 @@ function tryEnvironmentSplit(content: string, envName: string): SplitResult | nu
 		return {
 			statement: solution,
 			solution: null,
-			splitMethod: 'none'
+			splitMethod: 'none',
+			statementLineOffset: baseOffset,
+			solutionLineOffset: null
 		};
 	}
 
 	return {
 		statement,
 		solution: solution || null,
-		splitMethod: 'solution-env'
+		splitMethod: 'solution-env',
+		statementLineOffset: baseOffset,
+		solutionLineOffset: solution ? baseOffset + countNewlinesUpTo(content, contentStartIndex) : null
 	};
 }
 
@@ -255,9 +271,14 @@ function tryEnvironmentSplit(content: string, envName: string): SplitResult | nu
  *
  * @param content - Document content to search
  * @param titles - Section titles to detect
+ * @param baseOffset - Line offset to add to all line numbers
  * @returns Split result or null if not found
  */
-function trySectionSplit(content: string, titles: string[]): SplitResult | null {
+function trySectionSplit(
+	content: string,
+	titles: string[],
+	baseOffset: number
+): SplitResult | null {
 	// Build pattern that matches \section{Title}, \section*{Title}, \section[short]{Title}
 	const titlesPattern = titles.map(escapeRegex).join('|');
 	const sectionPattern = new RegExp(
@@ -273,21 +294,28 @@ function trySectionSplit(content: string, titles: string[]): SplitResult | null 
 
 	const sectionIndex = match.index;
 	const statement = content.substring(0, sectionIndex).trim();
-	const solution = content.substring(sectionIndex + match[0].length).trim();
+	const solutionStartIndex = sectionIndex + match[0].length;
+	const solution = content.substring(solutionStartIndex).trim();
 
 	// Handle case where solution section is at the very beginning
 	if (statement === '' && solution !== '') {
 		return {
 			statement: solution,
 			solution: null,
-			splitMethod: 'none'
+			splitMethod: 'none',
+			statementLineOffset: baseOffset,
+			solutionLineOffset: null
 		};
 	}
 
 	return {
 		statement,
 		solution: solution || null,
-		splitMethod: 'section'
+		splitMethod: 'section',
+		statementLineOffset: baseOffset,
+		solutionLineOffset: solution
+			? baseOffset + countNewlinesUpTo(content, solutionStartIndex)
+			: null
 	};
 }
 
@@ -295,9 +323,10 @@ function trySectionSplit(content: string, titles: string[]): SplitResult | null 
  * Try to split using a comment marker.
  *
  * @param content - Document content to search
+ * @param baseOffset - Line offset to add to all line numbers
  * @returns Split result or null if not found
  */
-function tryCommentSplit(content: string): SplitResult | null {
+function tryCommentSplit(content: string, baseOffset: number): SplitResult | null {
 	// Split into lines to find the comment marker
 	const lines = content.split('\n');
 
@@ -318,14 +347,18 @@ function tryCommentSplit(content: string): SplitResult | null {
 					return {
 						statement: solution,
 						solution: null,
-						splitMethod: 'none'
+						splitMethod: 'none',
+						statementLineOffset: baseOffset,
+						solutionLineOffset: null
 					};
 				}
 
 				return {
 					statement,
 					solution: solution || null,
-					splitMethod: 'comment'
+					splitMethod: 'comment',
+					statementLineOffset: baseOffset,
+					solutionLineOffset: solution ? baseOffset + i + 1 : null
 				};
 			}
 		}
@@ -384,4 +417,21 @@ function hasSolutionComment(content: string): boolean {
  */
 function escapeRegex(str: string): string {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Count the number of newlines in a string up to a given position.
+ *
+ * @param text - The text to search
+ * @param position - The position to count up to
+ * @returns The number of newlines (which equals the 0-based line number)
+ */
+function countNewlinesUpTo(text: string, position: number): number {
+	let count = 0;
+	for (let i = 0; i < position && i < text.length; i++) {
+		if (text[i] === '\n') {
+			count++;
+		}
+	}
+	return count;
 }

@@ -75,7 +75,8 @@ const DEFAULT_OPTIONS: Required<LatexToMarkdownOptions> = {
 	mathDelimiters: 'tilde',
 	maxNestingDepth: 10,
 	fallbackToText: false,
-	preserveWhitespace: false
+	preserveWhitespace: false,
+	lineOffset: 0
 };
 
 // ===========================
@@ -199,7 +200,7 @@ function createConversionContext(
 		addWarning: (warning, line?, column?) => {
 			const fullWarning: TranspileWarning = {
 				...warning,
-				line,
+				line: line !== undefined ? line + options.lineOffset : undefined,
 				column
 			};
 			warnings.push(fullWarning);

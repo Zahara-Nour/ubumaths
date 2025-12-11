@@ -87,7 +87,8 @@ function createContext(overrides: Partial<ConversionContext> = {}): ConversionCo
 		mathDelimiters: 'dollar',
 		maxNestingDepth: 10,
 		fallbackToText: false,
-		preserveWhitespace: false
+		preserveWhitespace: false,
+		lineOffset: 0
 	};
 
 	return {

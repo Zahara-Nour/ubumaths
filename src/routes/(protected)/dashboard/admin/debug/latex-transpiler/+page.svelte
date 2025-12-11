@@ -173,7 +173,9 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 
 			// Step 2: Transpile each part separately (like LaTeXImportDialog does)
 			if (splitResult.statement.trim()) {
-				const statementResult = transpileLatexToMarkdown(splitResult.statement);
+				const statementResult = transpileLatexToMarkdown(splitResult.statement, {
+					lineOffset: splitResult.statementLineOffset
+				});
 				statementMarkdown = statementResult.markdown;
 				allWarnings.push(...statementResult.warnings);
 			} else {
@@ -181,7 +183,9 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 			}
 
 			if (splitResult.solution?.trim()) {
-				const solutionResult = transpileLatexToMarkdown(splitResult.solution);
+				const solutionResult = transpileLatexToMarkdown(splitResult.solution, {
+					lineOffset: splitResult.solutionLineOffset ?? 0
+				});
 				solutionMarkdown = solutionResult.markdown;
 				allWarnings.push(...solutionResult.warnings);
 			} else {

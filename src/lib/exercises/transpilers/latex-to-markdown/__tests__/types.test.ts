@@ -69,7 +69,8 @@ describe('LaTeX to Markdown Types', () => {
 				mathDelimiters: 'dollar',
 				maxNestingDepth: 5,
 				fallbackToText: false,
-				preserveWhitespace: true
+				preserveWhitespace: true,
+				lineOffset: 0
 			};
 			expect(options.preserveComments).toBe(true);
 			expect(options.mathDelimiters).toBe('dollar');
@@ -598,7 +599,8 @@ describe('LaTeX to Markdown Types', () => {
 					mathDelimiters: 'dollar',
 					maxNestingDepth: 10,
 					fallbackToText: false,
-					preserveWhitespace: false
+					preserveWhitespace: false,
+					lineOffset: 0
 				},
 				warnings,
 				addWarning: (warning, line, column) => {
@@ -631,7 +633,8 @@ describe('LaTeX to Markdown Types', () => {
 					mathDelimiters: 'dollar',
 					maxNestingDepth: 10,
 					fallbackToText: false,
-					preserveWhitespace: false
+					preserveWhitespace: false,
+					lineOffset: 0
 				},
 				warnings,
 				addWarning: (warning, line, column) => {
@@ -661,7 +664,8 @@ describe('LaTeX to Markdown Types', () => {
 					mathDelimiters: 'brackets',
 					maxNestingDepth: 5,
 					fallbackToText: true,
-					preserveWhitespace: true
+					preserveWhitespace: true,
+					lineOffset: 0
 				},
 				warnings,
 				addWarning: (warning, line, column) => {
@@ -704,7 +708,8 @@ describe('LaTeX to Markdown Types', () => {
 					mathDelimiters: 'dollar',
 					maxNestingDepth: 10,
 					fallbackToText: false,
-					preserveWhitespace: false
+					preserveWhitespace: false,
+					lineOffset: 0
 				},
 				warnings: [],
 				addWarning: () => {}
@@ -1053,7 +1058,8 @@ describe('LaTeX to Markdown Types', () => {
 				mathDelimiters: 'brackets',
 				maxNestingDepth: 5,
 				fallbackToText: true,
-				preserveWhitespace: true
+				preserveWhitespace: true,
+				lineOffset: 0
 			});
 			expect(result3.markdown).toBe('test');
 		});

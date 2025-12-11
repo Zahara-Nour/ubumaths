@@ -581,7 +581,9 @@ German answer.
 			const result: SplitResult = {
 				statement: 'test',
 				solution: null,
-				splitMethod: 'none'
+				splitMethod: 'none',
+				statementLineOffset: 0,
+				solutionLineOffset: null
 			};
 			expect(result).toBeDefined();
 		});
