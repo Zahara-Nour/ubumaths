@@ -32,7 +32,8 @@ function createMockContext(): ConversionContext {
 			mathDelimiters: 'dollar',
 			maxNestingDepth: 10,
 			fallbackToText: false,
-			preserveWhitespace: false
+			preserveWhitespace: false,
+			lineOffset: 0
 		},
 		warnings,
 		addWarning: (warning: ConversionContext['warnings'][number]) => warnings.push(warning)

@@ -96,6 +96,7 @@ function createContext(
 		maxNestingDepth: 10,
 		fallbackToText: false,
 		preserveWhitespace: false,
+		lineOffset: 0,
 		...optionOverrides
 	};
 

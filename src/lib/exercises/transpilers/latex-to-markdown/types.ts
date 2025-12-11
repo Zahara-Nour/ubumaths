@@ -25,6 +25,9 @@ export interface LatexToMarkdownOptions {
 
 	/** Preserve original whitespace and formatting. Default: false */
 	preserveWhitespace?: boolean;
+
+	/** Line offset to add to all warning line numbers. Default: 0 */
+	lineOffset?: number;
 }
 
 /**

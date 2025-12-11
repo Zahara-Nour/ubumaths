@@ -34,7 +34,8 @@ function createTestContext(): ConversionContext {
 			mathDelimiters: 'dollar',
 			maxNestingDepth: 10,
 			fallbackToText: false,
-			preserveWhitespace: false
+			preserveWhitespace: false,
+			lineOffset: 0
 		},
 		warnings,
 		addWarning: (warning, line?, column?) => {
