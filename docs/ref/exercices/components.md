@@ -1,6 +1,6 @@
 # Exercises System - Components Reference
 
-> **Last Updated**: 2025-12-10
+> **Last Updated**: 2025-12-11
 >
 > **Related**: [Index](./index.md) | [Types](./types.md) | [Parameterization](./parameterization.md)
 
@@ -24,6 +24,9 @@ The exercises system uses Svelte 5 components with runes for state management. A
 ### Component Locations
 
 ```
+src/lib/components/
+├── FontSelector.svelte          # Font selection dropdown
+
 src/lib/components/exercises/
 ├── ExerciseDisplay.svelte       # Main display component
 └── ExerciseSkeleton.svelte      # Loading placeholder
@@ -70,6 +73,7 @@ interface Props {
 - Supports static and parameterized exercises
 - On-demand mode: "Try New Problem" button
 - Show/hide solution toggle
+- Font selector for customizable display (persisted to localStorage)
 - Renders markdown with MathLive via `MarkdownRenderer`
 
 **Usage**:
@@ -386,6 +390,56 @@ Renders markdown with math support via MathLive.
 ```svelte
 <MarkdownRenderer content={exercise.statement_md} />
 ```
+
+### FontSelector
+
+Dropdown component for selecting exercise display font.
+
+**Location**: `src/lib/components/FontSelector.svelte`
+
+**Store**: `src/lib/stores/exerciseFont.svelte.ts`
+
+**Available Fonts**:
+
+| ID           | Label      | Category    |
+| ------------ | ---------- | ----------- |
+| `system`     | Systeme    | sans-serif  |
+| `inter`      | Inter      | sans-serif  |
+| `lora`       | Lora       | serif       |
+| `georgia`    | Georgia    | serif       |
+| `times`      | Times      | serif       |
+| `comic`      | Comic Sans | sans-serif  |
+| `excalifont` | Excalifont | handwritten |
+
+**Usage**:
+
+```svelte
+<script>
+	import FontSelector from '$lib/components/FontSelector.svelte';
+</script>
+
+<FontSelector />
+```
+
+**Store API**:
+
+```typescript
+import { exerciseFont } from '$lib/stores/exerciseFont.svelte';
+
+// Get current font
+exerciseFont.current; // 'inter'
+exerciseFont.currentFont; // { id, label, family, category }
+
+// Set font
+exerciseFont.setFont('excalifont');
+
+// Reset to default
+exerciseFont.reset();
+```
+
+**CSS**: The font is applied via `--exercise-font-family` CSS variable to `.exercise-content` elements.
+
+---
 
 ### Deadline Badge
 
