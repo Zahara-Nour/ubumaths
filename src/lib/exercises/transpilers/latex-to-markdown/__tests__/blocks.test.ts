@@ -676,16 +676,16 @@ describe('convertCenter', () => {
 	const ctx = createContext();
 
 	describe('simple center', () => {
-		it('should convert centered text', () => {
+		it('should return content without wrapper (center is ignored)', () => {
 			const token = createEnvToken('center', 'Centered text');
 			const result = convertCenter(token, ctx);
-			expect(result).toBe('<div style="text-align: center">\n\nCentered text\n\n</div>');
+			expect(result).toBe('Centered text');
 		});
 
 		it('should handle multi-line centered text', () => {
 			const token = createEnvToken('center', 'Line 1\nLine 2');
 			const result = convertCenter(token, ctx);
-			expect(result).toBe('<div style="text-align: center">\n\nLine 1\nLine 2\n\n</div>');
+			expect(result).toBe('Line 1\nLine 2');
 		});
 	});
 
@@ -693,19 +693,19 @@ describe('convertCenter', () => {
 		it('should trim content', () => {
 			const token = createEnvToken('center', '  \n  Content  \n  ');
 			const result = convertCenter(token, ctx);
-			expect(result).toBe('<div style="text-align: center">\n\nContent\n\n</div>');
+			expect(result).toBe('Content');
 		});
 
 		it('should handle empty center', () => {
 			const token = createEnvToken('center', '');
 			const result = convertCenter(token, ctx);
-			expect(result).toBe('<div style="text-align: center">\n\n</div>');
+			expect(result).toBe('');
 		});
 
 		it('should handle whitespace-only content', () => {
 			const token = createEnvToken('center', '   \n   ');
 			const result = convertCenter(token, ctx);
-			expect(result).toBe('<div style="text-align: center">\n\n</div>');
+			expect(result).toBe('');
 		});
 	});
 
@@ -713,13 +713,13 @@ describe('convertCenter', () => {
 		it('should preserve formatting commands', () => {
 			const token = createEnvToken('center', '\\textbf{Bold centered}');
 			const result = convertCenter(token, ctx);
-			expect(result).toBe('<div style="text-align: center">\n\n\\textbf{Bold centered}\n\n</div>');
+			expect(result).toBe('\\textbf{Bold centered}');
 		});
 
 		it('should preserve math', () => {
 			const token = createEnvToken('center', '$E = mc^2$');
 			const result = convertCenter(token, ctx);
-			expect(result).toBe('<div style="text-align: center">\n\n$E = mc^2$\n\n</div>');
+			expect(result).toBe('$E = mc^2$');
 		});
 	});
 });
