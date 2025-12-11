@@ -27,14 +27,14 @@
 
 	let { level, children, class: className = '' }: Props = $props();
 
-	// Heading size classes based on level
+	// Heading size classes based on level (sized for exercise context)
 	const headingClasses: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
-		1: 'text-3xl font-bold mb-4 mt-6',
-		2: 'text-2xl font-bold mb-4 mt-6',
-		3: 'text-xl font-bold mb-3 mt-5',
-		4: 'text-lg font-semibold mb-3 mt-4',
-		5: 'text-base font-semibold mb-2 mt-4',
-		6: 'text-sm font-semibold mb-2 mt-3'
+		1: 'text-xl font-bold mb-3 mt-4',
+		2: 'text-lg font-bold mb-2 mt-3',
+		3: 'text-base font-bold mb-2 mt-3',
+		4: 'text-base font-semibold mb-2 mt-2',
+		5: 'text-sm font-semibold mb-1 mt-2',
+		6: 'text-sm font-medium mb-1 mt-2'
 	};
 
 	let headingClass = $derived(`${headingClasses[level]} text-foreground ${className}`);
