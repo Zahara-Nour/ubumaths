@@ -37,3 +37,28 @@
 	font-style: normal;
 	font-display: swap;
 }
+
+/* Linux Libertine - Elegant serif font for math/academic content */
+@font-face {
+	font-family: 'Linux Libertine';
+	src: url('/fonts/LinuxLibertine-Regular.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Linux Libertine';
+	src: url('/fonts/LinuxLibertine-Bold.woff2') format('woff2');
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Linux Libertine';
+	src: url('/fonts/LinuxLibertine-Italic.woff2') format('woff2');
+	font-weight: normal;
+	font-style: italic;
+	font-display: swap;
+}

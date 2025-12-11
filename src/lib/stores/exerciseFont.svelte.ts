@@ -19,6 +19,7 @@ export type ExerciseFontId =
 	| 'georgia'
 	| 'times'
 	| 'comic'
+	| 'libertine'
 	| 'excalifont';
 
 export interface ExerciseFontOption {
@@ -57,6 +58,12 @@ export const FONT_OPTIONS: ExerciseFontOption[] = [
 		id: 'times',
 		label: 'Times',
 		family: '"Times New Roman", Times, serif',
+		category: 'serif'
+	},
+	{
+		id: 'libertine',
+		label: 'Linux Libertine',
+		family: '"Linux Libertine", "Libertinus Serif", Georgia, serif',
 		category: 'serif'
 	},
 	{
