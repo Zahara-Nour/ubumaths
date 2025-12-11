@@ -667,6 +667,14 @@ function convertDocumentEnvironment(token: EnvironmentToken, context: Conversion
 }
 
 /**
+ * Normalize LaTeX math content for MathLive compatibility.
+ * - Converts \dots to \cdots (MathLive prefers \cdots)
+ */
+function normalizeMathLatex(latex: string): string {
+	return latex.replace(/\\dots\b/g, '\\cdots');
+}
+
+/**
  * Convert an inline math token to markdown.
  * Attempts to convert LaTeX math to custom syntax.
  */
@@ -676,7 +684,7 @@ function convertMathInlineToken(token: MathInlineToken, context: ConversionConte
 
 	// If conversion failed, content is still LaTeX → use dollar signs
 	if (!result.converted) {
-		return `$${result.output}$`;
+		return `$${normalizeMathLatex(result.output)}$`;
 	}
 
 	// Conversion succeeded → use configured delimiters for custom syntax
@@ -702,7 +710,7 @@ function convertMathDisplayToken(token: MathDisplayToken, context: ConversionCon
 
 	// If conversion failed, content is still LaTeX → use dollar signs
 	if (!result.converted) {
-		return `$$${result.output}$$`;
+		return `$$${normalizeMathLatex(result.output)}$$`;
 	}
 
 	// Conversion succeeded → use configured delimiters for custom syntax
