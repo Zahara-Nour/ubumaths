@@ -499,7 +499,7 @@
 						</div>
 
 						<div class="max-h-[150px] space-y-1 overflow-y-auto">
-							{#each warnings as warning (warning.message + (warning.line ?? ''))}
+							{#each warnings as warning, i (i)}
 								<div class="flex items-start gap-2 text-sm">
 									<span
 										class="flex h-5 w-5 items-center justify-center rounded-full bg-current/10 text-xs font-bold {getSeverityClass(
