@@ -95,6 +95,9 @@ importers:
       '@types/jszip':
         specifier: ^3.4.1
         version: 3.4.1
+      '@typopro/web-linux-libertine':
+        specifier: ^3.7.5
+        version: 3.7.5
       '@uiw/codemirror-theme-dracula':
         specifier: ^4.25.3
         version: 4.25.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8)
@@ -1671,6 +1674,9 @@ packages:
   '@typescript-eslint/visitor-keys@8.46.0':
     resolution: {integrity: sha512-FrvMpAK+hTbFy7vH5j1+tMYHMSKLE6RzluFJlkFNKD0p9YsUT75JlBSmr5so3QRzvMwU5/bIEdeNrxm8du8l3Q==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@typopro/web-linux-libertine@3.7.5':
+    resolution: {integrity: sha512-8SSVw8FKej6UNhnfoKsbQPhpea7eeuD8udNmbWyPfMfUbOFOmXM4yWTMQ006XXxJ//aMqYZW/bKCAeFu0o9CTA==}
 
   '@uiw/codemirror-theme-dracula@4.25.3':
     resolution: {integrity: sha512-Mg7B10rLgZyBB0Ctexvxi2Uk+KTiuRuTLMuddGZ4wS2JiRwsW2fi5drvsyqlIUrW0fG1jUr0jotajG+eQ0zYBg==}
@@ -5558,6 +5564,8 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.46.0
       eslint-visitor-keys: 4.2.1
+
+  '@typopro/web-linux-libertine@3.7.5': {}
 
   '@uiw/codemirror-theme-dracula@4.25.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8)':
     dependencies:
