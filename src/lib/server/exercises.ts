@@ -14,6 +14,7 @@ import {
 	generateGroupSeed,
 	isParameterized
 } from '$lib/exercises/generator/instance-generator';
+import { generateExerciseSlug } from '$lib/exercises/slug-generator';
 
 type _Exercise = Database['public']['Tables']['exercises']['Row'];
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -187,6 +188,20 @@ export async function getExercise(supabase: SupabaseClient<Database>, id: string
 }
 
 /**
+ * Get a single exercise by slug
+ */
+export async function getExerciseBySlug(supabase: SupabaseClient<Database>, slug: string) {
+	const { data, error } = await supabase.from('exercises').select('*').eq('slug', slug).single();
+
+	if (error) {
+		console.error('Error fetching exercise by slug:', error);
+		return { data: null, error };
+	}
+
+	return { data, error: null };
+}
+
+/**
  * Create a new exercise
  * Only teachers can create exercises
  */
@@ -215,10 +230,16 @@ export async function createExercise(
 		};
 	}
 
+	// Generate slug if not provided
+	const slug =
+		(exercise as { slug?: string }).slug ||
+		generateExerciseSlug((exercise as { topic?: string }).topic);
+
 	const { data, error } = await supabase
 		.from('exercises')
 		.insert({
 			...exercise,
+			slug,
 			variables:
 				variablesValidation.variables.length > 0
 					? (variablesValidation.variables as unknown as Database['public']['Tables']['exercises']['Row']['variables'])

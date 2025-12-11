@@ -1,6 +1,6 @@
 # Exercises System - API Reference
 
-> **Last Updated**: 2025-12-10
+> **Last Updated**: 2025-12-11
 >
 > **Related**: [Index](./index.md) | [Database Schema](./database-schema.md) | [Types](./types.md)
 
@@ -95,6 +95,7 @@ Create a new exercise. Teacher only.
 ```typescript
 {
   title?: string,
+  slug?: string,          // Auto-generated if not provided (topic-nanoid format)
   source?: string,
   difficulty: 1 | 2 | 3,
   tags?: string[],
@@ -159,6 +160,31 @@ Get a single exercise by ID.
 
 - Teacher: Can access own exercises
 - Student: Can access if assigned or public
+
+---
+
+### GET /api/exercises/by-slug/[slug]
+
+Get a single exercise by URL slug. Public access for public exercises.
+
+**Response**:
+
+```typescript
+{
+	exercise: Exercise;
+}
+```
+
+**Access Control**:
+
+- Public exercises: Anyone can access
+- Private exercises: Only the creator can access
+
+**Example**:
+
+```bash
+GET /api/exercises/by-slug/algebre-k8m2n4p7
+```
 
 ---
 
@@ -500,7 +526,8 @@ import { ... } from '$lib/server/exercise-assignments';
 | Function                                                                | Description                 |
 | ----------------------------------------------------------------------- | --------------------------- |
 | `getExercises(supabase, filters, pagination)`                           | List exercises with filters |
-| `getExercise(supabase, id)`                                             | Get single exercise         |
+| `getExercise(supabase, id)`                                             | Get single exercise by ID   |
+| `getExerciseBySlug(supabase, slug)`                                     | Get single exercise by slug |
 | `createExercise(supabase, data, userId)`                                | Create exercise             |
 | `updateExercise(supabase, id, updates, userId)`                         | Update exercise             |
 | `deleteExercise(supabase, id, userId)`                                  | Delete exercise             |

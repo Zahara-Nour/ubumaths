@@ -28,6 +28,7 @@
 
 	// Form state
 	let title = $state(exercise?.title || '');
+	let slug = $state(exercise?.slug || '');
 	let source = $state(exercise?.source || '');
 	let difficulty = $state<1 | 2 | 3>((exercise?.difficulty as 1 | 2 | 3) || 2);
 	let tags = $state<string[]>(exercise?.tags || []);
@@ -60,6 +61,18 @@
 			errors.difficulty = 'La difficulté doit être 1, 2 ou 3';
 		}
 
+		// Validate slug format if provided
+		if (slug.trim()) {
+			const slugRegex = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/;
+			if (slug.length < 3) {
+				errors.slug = 'Le slug doit contenir au moins 3 caractères';
+			} else if (slug.length > 100) {
+				errors.slug = 'Le slug ne peut pas dépasser 100 caractères';
+			} else if (!slugRegex.test(slug)) {
+				errors.slug = 'Format invalide (minuscules, chiffres et tirets uniquement)';
+			}
+		}
+
 		return Object.keys(errors).length === 0;
 	}
 
@@ -75,6 +88,7 @@
 
 		const data: Partial<ExerciseInsert> = {
 			title: title.trim() || null,
+			slug: slug.trim() || null,
 			source: source.trim() || null,
 			difficulty,
 			tags,
@@ -192,6 +206,29 @@
 						bind:value={source}
 					/>
 				</div>
+			</div>
+
+			<!-- Slug -->
+			<div class="space-y-2">
+				<Label for="slug">
+					Slug (URL)
+					<span class="ml-1 text-xs text-muted-foreground"> (auto-généré si vide) </span>
+				</Label>
+				<Input
+					id="slug"
+					type="text"
+					placeholder="Ex: algebre-equations-k8m2n4"
+					bind:value={slug}
+					class="font-mono text-sm"
+				/>
+				{#if errors.slug}
+					<p class="text-sm text-destructive">{errors.slug}</p>
+				{/if}
+				{#if slug && !errors.slug}
+					<p class="text-xs text-muted-foreground">
+						URL : /exercice/{slug}
+					</p>
+				{/if}
 			</div>
 
 			<!-- Difficulty & Topic -->

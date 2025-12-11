@@ -43,6 +43,14 @@ export const createExerciseSchema = z.object({
 	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)], {
 		message: 'Difficulty must be 1 (easy), 2 (medium), or 3 (hard)'
 	}),
+	slug: z
+		.string()
+		.trim()
+		.min(3, 'Slug must be at least 3 characters')
+		.max(100, 'Slug too long')
+		.regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, 'Slug must be lowercase alphanumeric with dashes')
+		.optional()
+		.nullable(),
 	tags: z
 		.array(z.string().trim().min(1).max(50))
 		.max(20, 'Maximum 20 tags allowed')
@@ -350,6 +358,7 @@ export function validateUpdateAssignment(data: unknown) {
  */
 export const exerciseResponseSchema = z.object({
 	id: z.string().uuid(),
+	slug: z.string().nullable().optional(),
 	statement_md: z.string(),
 	solution_md: z.string(),
 	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
