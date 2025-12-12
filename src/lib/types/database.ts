@@ -9219,6 +9219,66 @@ export type Database = {
 					}
 				];
 			};
+			student_exercise_mastery: {
+				Row: {
+					exercise_id: string;
+					id: string;
+					status: string;
+					student_id: string;
+					updated_at: string;
+				};
+				Insert: {
+					exercise_id: string;
+					id?: string;
+					status?: string;
+					student_id: string;
+					updated_at?: string;
+				};
+				Update: {
+					exercise_id?: string;
+					id?: string;
+					status?: string;
+					student_id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_exercise_mastery_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_exercise_mastery_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_exercise_mastery_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_exercise_mastery_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_exercise_mastery_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			student_item_inventory: {
 				Row: {
 					acquired_at: string;
