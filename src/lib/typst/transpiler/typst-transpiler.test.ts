@@ -12,7 +12,8 @@ import {
 	resolveImagePath,
 	transpileToTypst,
 	transpileImage,
-	markdownToTypst
+	markdownToTypst,
+	convertLatexToTypstMath
 } from './typst-transpiler';
 import type { DocumentNode, ImageNode, TypstTranspilerOptions } from '$lib/exercises/types';
 
@@ -199,7 +200,8 @@ describe('transpileToTypst', () => {
 		const typst = transpileToTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('$');
-		expect(typst).toContain('\\int_0^\\pi \\sin(x) dx');
+		// LaTeX is now converted to Typst syntax
+		expect(typst).toContain('integral_0^pi sin(x) dx');
 	});
 
 	it('should transpile ordered list', () => {
@@ -1187,5 +1189,282 @@ describe('Edge Cases', () => {
 		expect(typst).toContain('Line 1');
 		expect(typst).toContain('\\');
 		expect(typst).toContain('Line 2');
+	});
+});
+
+// ============================================================================
+// LATEX TO TYPST MATH CONVERSION TESTS
+// ============================================================================
+
+describe('convertLatexToTypstMath - Vectors and Accents', () => {
+	it('should convert \\vec{x} to arrow(x)', () => {
+		expect(convertLatexToTypstMath('\\vec{x}')).toBe('arrow(x)');
+	});
+
+	it('should convert \\vec{AB} to arrow(AB)', () => {
+		expect(convertLatexToTypstMath('\\vec{AB}')).toBe('arrow(AB)');
+	});
+
+	it('should convert \\hat{x} to hat(x)', () => {
+		expect(convertLatexToTypstMath('\\hat{x}')).toBe('hat(x)');
+	});
+
+	it('should convert \\bar{x} to macron(x)', () => {
+		expect(convertLatexToTypstMath('\\bar{x}')).toBe('macron(x)');
+	});
+
+	it('should convert \\tilde{x} to tilde(x)', () => {
+		expect(convertLatexToTypstMath('\\tilde{x}')).toBe('tilde(x)');
+	});
+
+	it('should convert \\dot{x} to dot(x)', () => {
+		expect(convertLatexToTypstMath('\\dot{x}')).toBe('dot(x)');
+	});
+
+	it('should convert \\ddot{x} to diaer(x)', () => {
+		expect(convertLatexToTypstMath('\\ddot{x}')).toBe('diaer(x)');
+	});
+
+	it('should convert \\overline{AB} to overline(AB)', () => {
+		expect(convertLatexToTypstMath('\\overline{AB}')).toBe('overline(AB)');
+	});
+
+	it('should convert \\underline{x} to underline(x)', () => {
+		expect(convertLatexToTypstMath('\\underline{x}')).toBe('underline(x)');
+	});
+});
+
+describe('convertLatexToTypstMath - Ellipsis (Dots)', () => {
+	it('should convert \\ldots to ...', () => {
+		expect(convertLatexToTypstMath('\\ldots')).toBe('...');
+	});
+
+	it('should convert \\cdots to dots.c', () => {
+		expect(convertLatexToTypstMath('\\cdots')).toBe('dots.c');
+	});
+
+	it('should convert \\vdots to dots.v', () => {
+		expect(convertLatexToTypstMath('\\vdots')).toBe('dots.v');
+	});
+
+	it('should convert \\ddots to dots.down', () => {
+		expect(convertLatexToTypstMath('\\ddots')).toBe('dots.down');
+	});
+
+	it('should convert 1, 2, \\ldots, n correctly', () => {
+		expect(convertLatexToTypstMath('1, 2, \\ldots, n')).toBe('1, 2, ..., n');
+	});
+});
+
+describe('convertLatexToTypstMath - Math Spaces', () => {
+	it('should convert \\, to thin space with surrounding spaces', () => {
+		expect(convertLatexToTypstMath('a\\,b')).toBe('a thin b');
+	});
+
+	it('should convert \\: to med space with surrounding spaces', () => {
+		expect(convertLatexToTypstMath('a\\:b')).toBe('a med b');
+	});
+
+	it('should convert \\; to thick space with surrounding spaces', () => {
+		expect(convertLatexToTypstMath('a\\;b')).toBe('a thick b');
+	});
+
+	it('should convert \\! to negative thin space with surrounding spaces', () => {
+		expect(convertLatexToTypstMath('a\\!b')).toBe('a negthin b');
+	});
+
+	it('should convert \\quad to quad with surrounding spaces', () => {
+		expect(convertLatexToTypstMath('a\\quad b')).toBe('a quad  b');
+	});
+
+	it('should convert \\qquad to wide with surrounding spaces', () => {
+		expect(convertLatexToTypstMath('a\\qquad b')).toBe('a wide  b');
+	});
+});
+
+describe('convertLatexToTypstMath - Number Sets (Blackboard Bold)', () => {
+	it('should convert \\mathbb{R} to RR', () => {
+		expect(convertLatexToTypstMath('\\mathbb{R}')).toBe('RR');
+	});
+
+	it('should convert \\mathbb{N} to NN', () => {
+		expect(convertLatexToTypstMath('\\mathbb{N}')).toBe('NN');
+	});
+
+	it('should convert \\mathbb{Z} to ZZ', () => {
+		expect(convertLatexToTypstMath('\\mathbb{Z}')).toBe('ZZ');
+	});
+
+	it('should convert \\mathbb{Q} to QQ', () => {
+		expect(convertLatexToTypstMath('\\mathbb{Q}')).toBe('QQ');
+	});
+
+	it('should convert \\mathbb{C} to CC', () => {
+		expect(convertLatexToTypstMath('\\mathbb{C}')).toBe('CC');
+	});
+
+	it('should convert x \\in \\mathbb{R} correctly', () => {
+		expect(convertLatexToTypstMath('x \\in \\mathbb{R}')).toBe('x in RR');
+	});
+});
+
+describe('convertLatexToTypstMath - Math Text Styles', () => {
+	it('should convert \\mathbf{x} to bold(x)', () => {
+		expect(convertLatexToTypstMath('\\mathbf{x}')).toBe('bold(x)');
+	});
+
+	it('should convert \\mathit{x} to italic(x)', () => {
+		expect(convertLatexToTypstMath('\\mathit{x}')).toBe('italic(x)');
+	});
+
+	it('should convert \\mathrm{d} to upright(d)', () => {
+		expect(convertLatexToTypstMath('\\mathrm{d}')).toBe('upright(d)');
+	});
+
+	it('should convert \\mathcal{L} to cal(L)', () => {
+		expect(convertLatexToTypstMath('\\mathcal{L}')).toBe('cal(L)');
+	});
+
+	it('should convert \\mathfrak{g} to frak(g)', () => {
+		expect(convertLatexToTypstMath('\\mathfrak{g}')).toBe('frak(g)');
+	});
+});
+
+describe('convertLatexToTypstMath - Integrals and Big Operators', () => {
+	it('should convert \\int to integral', () => {
+		expect(convertLatexToTypstMath('\\int')).toBe('integral');
+	});
+
+	it('should convert \\iint to integral.double', () => {
+		expect(convertLatexToTypstMath('\\iint')).toBe('integral.double');
+	});
+
+	it('should convert \\iiint to integral.triple', () => {
+		expect(convertLatexToTypstMath('\\iiint')).toBe('integral.triple');
+	});
+
+	it('should convert \\oint to integral.cont', () => {
+		expect(convertLatexToTypstMath('\\oint')).toBe('integral.cont');
+	});
+
+	it('should convert \\sum to sum', () => {
+		expect(convertLatexToTypstMath('\\sum')).toBe('sum');
+	});
+
+	it('should convert \\prod to product', () => {
+		expect(convertLatexToTypstMath('\\prod')).toBe('product');
+	});
+
+	it('should convert \\int_0^1 f(x) dx correctly', () => {
+		const result = convertLatexToTypstMath('\\int_0^1 f(x) dx');
+		expect(result).toContain('integral');
+		expect(result).toContain('_0^1');
+	});
+
+	it('should convert \\sum_{i=1}^{n} correctly', () => {
+		const result = convertLatexToTypstMath('\\sum_{i=1}^{n}');
+		expect(result).toContain('sum');
+		expect(result).toContain('_{i=1}^{n}');
+	});
+});
+
+describe('convertLatexToTypstMath - Binomial Coefficients', () => {
+	it('should convert \\binom{n}{k} to binom(n, k)', () => {
+		expect(convertLatexToTypstMath('\\binom{n}{k}')).toBe('binom(n, k)');
+	});
+
+	it('should convert \\binom{10}{3} to binom(10, 3)', () => {
+		expect(convertLatexToTypstMath('\\binom{10}{3}')).toBe('binom(10, 3)');
+	});
+
+	it('should convert nested binomials', () => {
+		const result = convertLatexToTypstMath('\\binom{n}{k} + \\binom{n}{k+1}');
+		expect(result).toBe('binom(n, k) + binom(n, k+1)');
+	});
+});
+
+describe('convertLatexToTypstMath - Align Environment', () => {
+	it('should remove \\begin{align} and \\end{align}', () => {
+		const input = '\\begin{align} x &= 1 \\end{align}';
+		const result = convertLatexToTypstMath(input);
+		expect(result).not.toContain('\\begin{align}');
+		expect(result).not.toContain('\\end{align}');
+		expect(result).toContain('x &= 1');
+	});
+
+	it('should remove \\begin{align*} and \\end{align*}', () => {
+		const input = '\\begin{align*} x &= 1 \\end{align*}';
+		const result = convertLatexToTypstMath(input);
+		expect(result).not.toContain('\\begin{align*}');
+		expect(result).not.toContain('\\end{align*}');
+	});
+
+	it('should convert \\\\ to \\ (line break)', () => {
+		const input = 'x &= 1 \\\\ y &= 2';
+		const result = convertLatexToTypstMath(input);
+		expect(result).toBe('x &= 1 \\ y &= 2');
+	});
+
+	it('should handle full align environment', () => {
+		const input = `\\begin{align}
+  x + y &= 5 \\\\
+  2x - y &= 1
+\\end{align}`;
+		const result = convertLatexToTypstMath(input);
+		expect(result).not.toContain('\\begin');
+		expect(result).not.toContain('\\end');
+		expect(result).toContain('x + y &= 5');
+		expect(result).toContain('2x - y &= 1');
+	});
+});
+
+describe('convertLatexToTypstMath - Slant Comparisons', () => {
+	it('should convert \\leqslant to lt.eq.slant', () => {
+		expect(convertLatexToTypstMath('\\leqslant')).toBe('lt.eq.slant');
+	});
+
+	it('should convert \\geqslant to gt.eq.slant', () => {
+		expect(convertLatexToTypstMath('\\geqslant')).toBe('gt.eq.slant');
+	});
+
+	it('should convert \\nleqslant to lt.eq.slant.not', () => {
+		expect(convertLatexToTypstMath('\\nleqslant')).toBe('lt.eq.slant.not');
+	});
+
+	it('should convert \\ngeqslant to gt.eq.slant.not', () => {
+		expect(convertLatexToTypstMath('\\ngeqslant')).toBe('gt.eq.slant.not');
+	});
+
+	it('should handle slant comparison in expression', () => {
+		expect(convertLatexToTypstMath('x \\leqslant 5')).toBe('x lt.eq.slant 5');
+	});
+});
+
+describe('convertLatexToTypstMath - Combined Expressions', () => {
+	it('should handle complex expression with vectors and fractions', () => {
+		const input = '\\vec{v} = \\frac{\\vec{AB}}{|\\vec{AB}|}';
+		const result = convertLatexToTypstMath(input);
+		expect(result).toContain('arrow');
+		expect(result).toContain('frac');
+	});
+
+	it('should handle integral with number set', () => {
+		const input = '\\int_{\\mathbb{R}} f(x) dx';
+		const result = convertLatexToTypstMath(input);
+		expect(result).toContain('integral');
+		expect(result).toContain('RR');
+	});
+
+	it('should handle sum with binomial', () => {
+		const input = '\\sum_{k=0}^{n} \\binom{n}{k}';
+		const result = convertLatexToTypstMath(input);
+		expect(result).toContain('sum');
+		expect(result).toContain('binom');
+	});
+
+	it('should handle probability expression', () => {
+		const input = 'P(X = k) = \\binom{n}{k} p^k (1-p)^{n-k}';
+		const result = convertLatexToTypstMath(input);
+		expect(result).toContain('binom(n, k)');
 	});
 });
