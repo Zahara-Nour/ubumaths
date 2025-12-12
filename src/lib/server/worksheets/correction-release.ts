@@ -40,6 +40,76 @@ export interface CorrectionReleaseStatus {
 }
 
 // ============================================================================
+// HELPERS
+// ============================================================================
+
+/**
+ * Get all student IDs with access to an assignment (multi-class + individual)
+ * Supports both legacy class_id and new worksheet_assignment_classes junction table
+ *
+ * @param supabase - Supabase client
+ * @param assignmentId - The assignment ID
+ * @param legacyClassId - The legacy class_id (for backward compat)
+ * @returns Set of unique student IDs
+ */
+async function getAllAssignmentStudentIds(
+	supabase: SupabaseClient,
+	assignmentId: string,
+	legacyClassId: string | null
+): Promise<Set<string>> {
+	const studentIds = new Set<string>();
+
+	// 1. Get students from multi-class junction table (new)
+	const { data: classAssignments } = await supabase
+		.from('worksheet_assignment_classes')
+		.select('class_id')
+		.eq('assignment_id', assignmentId);
+
+	if (classAssignments && classAssignments.length > 0) {
+		const classIds = classAssignments.map((ca) => ca.class_id);
+		const { data: classMembers } = await supabase
+			.from('class_members')
+			.select('student_id')
+			.in('class_id', classIds);
+
+		classMembers?.forEach((m) => studentIds.add(m.student_id));
+	}
+
+	// 2. Legacy: Also check class_id field for backward compat
+	if (legacyClassId && !classAssignments?.some((ca) => ca.class_id === legacyClassId)) {
+		const { data: legacyMembers } = await supabase
+			.from('class_members')
+			.select('student_id')
+			.eq('class_id', legacyClassId);
+
+		legacyMembers?.forEach((m) => studentIds.add(m.student_id));
+	}
+
+	// 3. Get individual student assignments
+	const { data: individualStudents } = await supabase
+		.from('worksheet_assignment_students')
+		.select('student_id')
+		.eq('assignment_id', assignmentId);
+
+	individualStudents?.forEach((is) => studentIds.add(is.student_id));
+
+	return studentIds;
+}
+
+/**
+ * Check if user is admin
+ */
+async function isUserAdmin(supabase: SupabaseClient, userId: string): Promise<boolean> {
+	const { data: profile } = await supabase
+		.from('profiles')
+		.select('role')
+		.eq('id', userId)
+		.single();
+
+	return profile?.role === 'admin';
+}
+
+// ============================================================================
 // CORRECTION ACCESS CHECKS
 // ============================================================================
 
@@ -146,7 +216,7 @@ export async function releaseCorrections(
 	assignmentId: string,
 	userId: string
 ): Promise<ReleaseCorrectionsResult> {
-	// Verify user is the assignment creator
+	// Verify user is the assignment creator OR admin
 	const { data: assignment, error: fetchError } = await supabase
 		.from('worksheet_assignments')
 		.select('id, created_by, worksheet_id, class_id, correction_release_mode')
@@ -160,7 +230,10 @@ export async function releaseCorrections(
 		};
 	}
 
-	if (assignment.created_by !== userId) {
+	const isCreator = assignment.created_by === userId;
+	const isAdmin = await isUserAdmin(supabase, userId);
+
+	if (!isCreator && !isAdmin) {
 		return {
 			success: false,
 			message: "Vous n'etes pas autorise a publier les corrections de cette assignation"
@@ -184,25 +257,18 @@ export async function releaseCorrections(
 		};
 	}
 
-	// Count affected students
+	// Count affected students (multi-class + individual)
+	const studentIds = await getAllAssignmentStudentIds(supabase, assignmentId, assignment.class_id);
+
 	let affectedStudents = 0;
-	if (assignment.class_id) {
-		// First get student IDs from the class
-		const { data: classMembers } = await supabase
-			.from('class_members')
-			.select('student_id')
-			.eq('class_id', assignment.class_id);
+	if (studentIds.size > 0) {
+		const { count } = await supabase
+			.from('worksheet_instances')
+			.select('id', { count: 'exact', head: true })
+			.eq('worksheet_id', assignment.worksheet_id)
+			.in('student_id', Array.from(studentIds));
 
-		if (classMembers && classMembers.length > 0) {
-			const studentIds = classMembers.map((m) => m.student_id);
-			const { count } = await supabase
-				.from('worksheet_instances')
-				.select('id', { count: 'exact', head: true })
-				.eq('worksheet_id', assignment.worksheet_id)
-				.in('student_id', studentIds);
-
-			affectedStudents = count ?? 0;
-		}
+		affectedStudents = count ?? 0;
 	}
 
 	return {
@@ -226,7 +292,7 @@ export async function revokeCorrections(
 	assignmentId: string,
 	userId: string
 ): Promise<ReleaseCorrectionsResult> {
-	// Verify user is the assignment creator
+	// Verify user is the assignment creator OR admin
 	const { data: assignment, error: fetchError } = await supabase
 		.from('worksheet_assignments')
 		.select('id, created_by, correction_release_mode')
@@ -240,7 +306,10 @@ export async function revokeCorrections(
 		};
 	}
 
-	if (assignment.created_by !== userId) {
+	const isCreator = assignment.created_by === userId;
+	const isAdmin = await isUserAdmin(supabase, userId);
+
+	if (!isCreator && !isAdmin) {
 		return {
 			success: false,
 			message: "Vous n'etes pas autorise a modifier cette assignation"
@@ -390,33 +459,29 @@ export async function getCorrectionReleaseStatus(
 			'check-only' // We're just checking status, not for a specific student
 		);
 
-		// Count students with access
+		// Count students with access (multi-class + individual)
 		let studentsWithAccess = 0;
 		let totalStudents = 0;
 
-		if (assignment.class_id) {
-			// Get class members first
-			const { data: classMembers } = await supabase
-				.from('class_members')
-				.select('student_id')
-				.eq('class_id', assignment.class_id);
+		const studentIds = await getAllAssignmentStudentIds(
+			supabase,
+			assignmentId,
+			assignment.class_id
+		);
 
-			if (classMembers && classMembers.length > 0) {
-				const studentIds = classMembers.map((m) => m.student_id);
+		if (studentIds.size > 0) {
+			// Get instances for all assigned students
+			const { count } = await supabase
+				.from('worksheet_instances')
+				.select('id', { count: 'exact', head: true })
+				.eq('worksheet_id', assignment.worksheet_id)
+				.in('student_id', Array.from(studentIds));
 
-				// Get instances for students in this class
-				const { count } = await supabase
-					.from('worksheet_instances')
-					.select('id', { count: 'exact', head: true })
-					.eq('worksheet_id', assignment.worksheet_id)
-					.in('student_id', studentIds);
+			totalStudents = count ?? 0;
 
-				totalStudents = count ?? 0;
-
-				// If corrections are released, all students have access
-				if (accessResult.canAccess) {
-					studentsWithAccess = totalStudents;
-				}
+			// If corrections are released, all students have access
+			if (accessResult.canAccess) {
+				studentsWithAccess = totalStudents;
 			}
 		}
 
