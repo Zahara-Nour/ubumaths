@@ -576,7 +576,7 @@ function parseContentWithCodeBlocks(
 		blocks.push({
 			type: 'code-block',
 			language,
-			content: code
+			code
 		});
 
 		lastIndex = match.index + match[0].length;

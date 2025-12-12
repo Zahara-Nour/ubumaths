@@ -185,6 +185,46 @@ describe('transpileToTypst', () => {
 		expect(typst).toContain('please');
 	});
 
+	it('should use display mode for inline math with limits', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [
+						{ type: 'text', content: 'Calculate ' },
+						{ type: 'math-inline', expression: '\\lim_{n \\to +\\infty} u_n', syntax: 'latex' },
+						{ type: 'text', content: ' please' }
+					]
+				}
+			]
+		};
+
+		const typst = transpileToTypst(ast, { includeSetup: false });
+
+		// Inline math with lim should use display() for proper limit rendering
+		expect(typst).toContain('$display(');
+		expect(typst).toContain('lim');
+	});
+
+	it('should not use display mode for simple inline math', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [{ type: 'math-inline', expression: 'x + y', syntax: 'latex' }]
+				}
+			]
+		};
+
+		const typst = transpileToTypst(ast, { includeSetup: false });
+
+		// Simple math should not use display()
+		expect(typst).toContain('$x + y$');
+		expect(typst).not.toContain('display');
+	});
+
 	it('should transpile block math', () => {
 		const ast: DocumentNode = {
 			type: 'document',
@@ -237,9 +277,48 @@ describe('transpileToTypst', () => {
 
 		const typst = transpileToTypst(ast, { includeSetup: false });
 
-		expect(typst).toContain('+');
-		expect(typst).toContain('First');
-		expect(typst).toContain('Second');
+		// Typst uses explicit numbering: "1. item"
+		expect(typst).toContain('1. First');
+		expect(typst).toContain('2. Second');
+	});
+
+	it('should transpile ordered list with custom start number', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'list',
+					ordered: true,
+					start: 3,
+					items: [
+						{
+							type: 'list-item',
+							children: [
+								{
+									type: 'paragraph',
+									children: [{ type: 'text', content: 'Third item' }]
+								}
+							]
+						},
+						{
+							type: 'list-item',
+							children: [
+								{
+									type: 'paragraph',
+									children: [{ type: 'text', content: 'Fourth item' }]
+								}
+							]
+						}
+					]
+				}
+			]
+		};
+
+		const typst = transpileToTypst(ast, { includeSetup: false });
+
+		// Should start at 3 and continue to 4
+		expect(typst).toContain('3. Third item');
+		expect(typst).toContain('4. Fourth item');
 	});
 
 	it('should transpile unordered list', () => {
@@ -385,7 +464,10 @@ describe('markdownToTypst', () => {
 
 		const typst = await markdownToTypst(markdown, { includeSetup: false });
 
-		expect(typst).toContain('+');
+		// Ordered lists use explicit numbering: "1. First"
+		expect(typst).toContain('1. First');
+		expect(typst).toContain('2. Second');
+		expect(typst).toContain('3. Third');
 	});
 
 	it('should generate complete document by default', async () => {
@@ -1123,9 +1205,9 @@ describe('Edge Cases', () => {
 
 		const typst = transpileToTypst(ast, { includeSetup: false });
 
-		expect(typst).toContain('+');
+		// Ordered list uses explicit numbering: "1. Parent"
+		expect(typst).toContain('1. Parent');
 		expect(typst).toContain('-');
-		expect(typst).toContain('Parent');
 		expect(typst).toContain('Child');
 	});
 
@@ -1364,7 +1446,7 @@ describe('convertLatexToTypstMath - Integrals and Big Operators', () => {
 	it('should convert \\sum_{i=1}^{n} correctly', () => {
 		const result = convertLatexToTypstMath('\\sum_{i=1}^{n}');
 		expect(result).toContain('sum');
-		expect(result).toContain('_{i=1}^{n}');
+		expect(result).toContain('_(i=1)^(n)');
 	});
 });
 
@@ -1466,5 +1548,61 @@ describe('convertLatexToTypstMath - Combined Expressions', () => {
 		const input = 'P(X = k) = \\binom{n}{k} p^k (1-p)^{n-k}';
 		const result = convertLatexToTypstMath(input);
 		expect(result).toContain('binom(n, k)');
+	});
+});
+
+describe('convertLatexToTypstMath - French Decimal Comma', () => {
+	it('should convert {,} to simple comma', () => {
+		expect(convertLatexToTypstMath('3{,}14')).toBe('3,14');
+	});
+
+	it('should handle pi approximation', () => {
+		expect(convertLatexToTypstMath('3{,}14159')).toBe('3,14159');
+	});
+
+	it('should handle multiple decimal numbers', () => {
+		expect(convertLatexToTypstMath('x = 1{,}5 + 2{,}3')).toBe('x = 1,5 + 2,3');
+	});
+
+	it('should handle decimal in fraction', () => {
+		expect(convertLatexToTypstMath('\\frac{1{,}5}{2}')).toBe('frac(1,5, 2)');
+	});
+
+	it('should not affect regular commas', () => {
+		expect(convertLatexToTypstMath('(a, b, c)')).toBe('(a, b, c)');
+	});
+});
+
+describe('convertLatexToTypstMath - Subscripts and Superscripts', () => {
+	it('should convert superscript braces to parentheses', () => {
+		expect(convertLatexToTypstMath('x^{2}')).toBe('x^(2)');
+	});
+
+	it('should convert subscript braces to parentheses', () => {
+		expect(convertLatexToTypstMath('x_{i}')).toBe('x_(i)');
+	});
+
+	it('should handle multi-character exponents', () => {
+		expect(convertLatexToTypstMath('x^{2n}')).toBe('x^(2n)');
+	});
+
+	it('should handle multi-character subscripts', () => {
+		expect(convertLatexToTypstMath('a_{ij}')).toBe('a_(ij)');
+	});
+
+	it('should handle both subscript and superscript', () => {
+		expect(convertLatexToTypstMath('x_{i}^{2}')).toBe('x_(i)^(2)');
+	});
+
+	it('should keep simple exponents without braces unchanged', () => {
+		expect(convertLatexToTypstMath('x^2')).toBe('x^2');
+	});
+
+	it('should handle expression with n-1 exponent', () => {
+		expect(convertLatexToTypstMath('2^{n-1}')).toBe('2^(n-1)');
+	});
+
+	it('should handle sum with limits', () => {
+		expect(convertLatexToTypstMath('\\sum_{i=1}^{n}')).toBe('sum_(i=1)^(n)');
 	});
 });

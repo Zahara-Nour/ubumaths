@@ -8,6 +8,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Progress } from '$lib/components/ui/progress';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import CodeViewer from '$lib/components/CodeViewer.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		FileDown,
@@ -19,7 +20,10 @@
 		CheckCircle,
 		AlertCircle,
 		Printer,
-		RefreshCw
+		RefreshCw,
+		Code,
+		Copy,
+		FileCode
 	} from 'lucide-svelte';
 	import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 	import type {
@@ -64,6 +68,8 @@
 	let pdfBlob = $state<Blob | null>(null);
 	let pdfFilename = $state<string>('');
 	let svgContent = $state<string>('');
+	let typstContent = $state<string>('');
+	let markdownContent = $state<string>('');
 
 	// Batch generation state
 	let isBatchGenerating = $state(false);
@@ -201,8 +207,24 @@
 			// Generate instance data
 			const instanceData = generateSimpleInstance(worksheet, studentId);
 
+			// Generate markdown content for display
+			const mdParts: string[] = [];
+			mdParts.push(`# ${worksheet.title}\n`);
+			if (worksheet.description) {
+				mdParts.push(`${worksheet.description}\n`);
+			}
+			instanceData.exercises.forEach((ex, i) => {
+				mdParts.push(`## Exercice ${i + 1}\n`);
+				mdParts.push(ex.statement || '');
+				if (mode === 'correction' && ex.solution) {
+					mdParts.push(`\n### Solution\n${ex.solution}`);
+				}
+				mdParts.push('\n');
+			});
+			markdownContent = mdParts.join('\n');
+
 			// Generate Typst content
-			const typstContent = generateWorksheetTypst({
+			const generatedTypst = generateWorksheetTypst({
 				worksheet,
 				instance: instanceData,
 				config: worksheet.config || {},
@@ -211,9 +233,10 @@
 				className: classId ? 'Classe' : undefined,
 				template: worksheet.template
 			});
+			typstContent = generatedTypst;
 
 			// Generate SVG for preview
-			const svg = await typst.svg({ mainContent: typstContent });
+			const svg = await typst.svg({ mainContent: generatedTypst });
 			svgContent = svg;
 
 			// Generate PDF
@@ -507,14 +530,22 @@ INFORMATIONS
 		{:else}
 			<!-- Main content -->
 			<Tabs.Root value="preview">
-				<Tabs.List class="grid w-full grid-cols-2">
+				<Tabs.List class="grid w-full grid-cols-4">
 					<Tabs.Trigger value="preview">
 						<Eye class="mr-2 h-4 w-4" />
 						Apercu
 					</Tabs.Trigger>
+					<Tabs.Trigger value="markdown">
+						<FileCode class="mr-2 h-4 w-4" />
+						Markdown
+					</Tabs.Trigger>
+					<Tabs.Trigger value="typst">
+						<Code class="mr-2 h-4 w-4" />
+						Typst
+					</Tabs.Trigger>
 					<Tabs.Trigger value="batch">
 						<Users class="mr-2 h-4 w-4" />
-						Generation en lot
+						Lot
 					</Tabs.Trigger>
 				</Tabs.List>
 
@@ -600,6 +631,60 @@ INFORMATIONS
 							</div>
 						{/if}
 					</div>
+				</Tabs.Content>
+
+				<!-- Markdown Tab -->
+				<Tabs.Content value="markdown" class="space-y-4">
+					{#if markdownContent}
+						<div class="flex justify-end">
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={() => {
+									navigator.clipboard.writeText(markdownContent);
+									toaster.success('Markdown copie dans le presse-papier');
+								}}
+							>
+								<Copy class="mr-2 h-4 w-4" />
+								Copier
+							</Button>
+						</div>
+						<CodeViewer value={markdownContent} height="500px" label="Code Markdown" />
+					{:else}
+						<div class="rounded-lg border border-dashed border-muted-foreground/25 bg-muted/5 p-12">
+							<div class="space-y-3 text-center">
+								<FileCode class="mx-auto h-12 w-12 text-muted-foreground/50" />
+								<p class="text-muted-foreground">Generez un apercu pour voir le markdown</p>
+							</div>
+						</div>
+					{/if}
+				</Tabs.Content>
+
+				<!-- Typst Code Tab -->
+				<Tabs.Content value="typst" class="space-y-4">
+					{#if typstContent}
+						<div class="flex justify-end">
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={() => {
+									navigator.clipboard.writeText(typstContent);
+									toaster.success('Code Typst copie dans le presse-papier');
+								}}
+							>
+								<Copy class="mr-2 h-4 w-4" />
+								Copier
+							</Button>
+						</div>
+						<CodeViewer value={typstContent} height="500px" label="Code Typst" />
+					{:else}
+						<div class="rounded-lg border border-dashed border-muted-foreground/25 bg-muted/5 p-12">
+							<div class="space-y-3 text-center">
+								<Code class="mx-auto h-12 w-12 text-muted-foreground/50" />
+								<p class="text-muted-foreground">Generez un apercu pour voir le code Typst</p>
+							</div>
+						</div>
+					{/if}
 				</Tabs.Content>
 
 				<!-- Batch Tab -->
