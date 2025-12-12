@@ -28,6 +28,7 @@ interface RawListItem {
 	ordered: boolean; // true for numbered lists
 	startNumber?: number; // Starting number for ordered lists
 	marker: string; // Original marker (e.g., '1.', '-', 'a)')
+	continuations: string[]; // Additional paragraphs for this item (loose list support)
 }
 
 // ============================================================================
@@ -111,7 +112,8 @@ function parseListItemLine(line: string): RawListItem | null {
 			indent,
 			ordered: true,
 			startNumber,
-			marker: `${marker}.`
+			marker: `${marker}.`,
+			continuations: []
 		};
 	}
 
@@ -125,7 +127,8 @@ function parseListItemLine(line: string): RawListItem | null {
 			content: content.trim(),
 			indent,
 			ordered: false,
-			marker
+			marker,
+			continuations: []
 		};
 	}
 
@@ -140,12 +143,13 @@ function parseListItemLine(line: string): RawListItem | null {
  * Parse consecutive list items into a list structure
  *
  * This function takes an array of lines and parses them into a hierarchical
- * list structure with nested lists.
+ * list structure with nested lists. Supports "loose lists" where items can
+ * have additional paragraphs separated by blank lines.
  *
- * @param lines - Array of markdown lines (must be consecutive list items)
+ * @param lines - Array of markdown lines (may include list items, blank lines, and continuation content)
  * @returns Array of ListNode AST nodes
  *
- * @example
+ * @example Simple list
  * const lines = [
  *   '1. First item',
  *   '2. Second item',
@@ -154,14 +158,86 @@ function parseListItemLine(line: string): RawListItem | null {
  *   '3. Third item'
  * ];
  * const lists = parseList(lines);
+ *
+ * @example Loose list with continuation
+ * const lines = [
+ *   '1. First paragraph of item 1',
+ *   '',
+ *   '   Second paragraph of item 1',
+ *   '2. Item 2'
+ * ];
+ * const lists = parseList(lines);
  */
 export function parseList(lines: string[]): ListNode[] {
 	if (lines.length === 0) return [];
 
-	// Parse all lines into raw items
-	const rawItems = lines
-		.map(parseListItemLine)
-		.filter((item): item is RawListItem => item !== null);
+	// Parse lines into raw items, collecting continuation content
+	const rawItems: RawListItem[] = [];
+	let currentItem: RawListItem | null = null;
+	let pendingContinuation: string[] = [];
+
+	// Track code fence state to handle blank lines inside code blocks
+	let inCodeFence = false;
+	let codeFenceChar = '';
+
+	for (const line of lines) {
+		const isBlank = line.trim() === '';
+		const parsed = parseListItemLine(line);
+
+		if (parsed) {
+			// This is a new list item
+			// First, save any pending continuation to the previous item
+			if (currentItem && pendingContinuation.length > 0) {
+				currentItem.continuations.push(pendingContinuation.join('\n').trim());
+				pendingContinuation = [];
+			}
+			currentItem = parsed;
+			rawItems.push(currentItem);
+			// Reset code fence state for new item
+			inCodeFence = false;
+			codeFenceChar = '';
+		} else if (currentItem && !isBlank) {
+			// This is a continuation line (indented content after a list item)
+			// Remove only the list continuation indent (2-3 spaces), preserving any additional
+			// indentation (important for code blocks where internal indent is meaningful)
+			const trimmed = line.replace(/^[ ]{2,3}/, '');
+			pendingContinuation.push(trimmed);
+
+			// Check for code fence markers (``` or ~~~)
+			const fenceMatch = trimmed.match(/^(`{3,}|~{3,})/);
+			if (fenceMatch) {
+				const fenceType = fenceMatch[1][0]; // Get the fence character (` or ~)
+				if (!inCodeFence) {
+					// Opening fence
+					inCodeFence = true;
+					codeFenceChar = fenceType;
+				} else if (fenceType === codeFenceChar) {
+					// Closing fence (must match opening type)
+					inCodeFence = false;
+					codeFenceChar = '';
+				}
+				// If fenceType doesn't match codeFenceChar, it's content inside the code block
+			}
+		} else if (isBlank && pendingContinuation.length > 0) {
+			// Blank line - behavior depends on whether we're inside a code fence
+			if (inCodeFence) {
+				// Inside a code fence, blank lines are part of the code
+				pendingContinuation.push('');
+			} else {
+				// Outside code fence - save current continuation paragraph
+				if (currentItem) {
+					currentItem.continuations.push(pendingContinuation.join('\n').trim());
+					pendingContinuation = [];
+				}
+			}
+		}
+		// Blank lines between items (with no pending continuation) are just skipped
+	}
+
+	// Don't forget to save the last pending continuation
+	if (currentItem && pendingContinuation.length > 0) {
+		currentItem.continuations.push(pendingContinuation.join('\n').trim());
+	}
 
 	if (rawItems.length === 0) return [];
 
@@ -234,6 +310,21 @@ function buildListHierarchy(items: RawListItem[], baseIndent: number = 0): ListN
 			]
 		});
 
+		// Add continuation paragraphs (for loose lists)
+		for (const continuation of item.continuations) {
+			if (continuation) {
+				listItem.children.push({
+					type: 'paragraph',
+					children: [
+						{
+							type: 'text',
+							content: continuation
+						}
+					]
+				});
+			}
+		}
+
 		// Look ahead for nested items
 		const nestedItems: RawListItem[] = [];
 		let j = i + 1;
@@ -262,10 +353,27 @@ function buildListHierarchy(items: RawListItem[], baseIndent: number = 0): ListN
 // ============================================================================
 
 /**
+ * Check if a line is a continuation of a list item (indented content)
+ *
+ * In CommonMark, a line with 2+ spaces of indentation following a list item
+ * is considered a continuation of that item (loose list support).
+ * This includes code fence markers (``` or ~~~) that are indented.
+ *
+ * @param line - Line to check
+ * @returns true if line is indented continuation content
+ */
+function isListContinuation(line: string): boolean {
+	// Check if line starts with at least 2 spaces and has non-whitespace content
+	// This includes indented code fences like "   ```python"
+	return /^[ ]{2,}\S/.test(line);
+}
+
+/**
  * Extract all list blocks from lines
  *
  * This function identifies consecutive list item lines and groups them
- * into separate blocks.
+ * into separate blocks. Supports "loose lists" where items can have
+ * blank lines followed by indented continuation paragraphs.
  *
  * @param lines - Array of all markdown lines
  * @returns Array of line index ranges for each list block
@@ -282,29 +390,81 @@ function buildListHierarchy(items: RawListItem[], baseIndent: number = 0): ListN
  * ];
  * const blocks = findListBlocks(lines);
  * // Returns: [[1, 2], [5, 6]]
+ *
+ * @example Loose list with continuation
+ * const lines = [
+ *   '1. First item',
+ *   '',
+ *   '   Continuation paragraph',
+ *   '2. Second item'
+ * ];
+ * const blocks = findListBlocks(lines);
+ * // Returns: [[0, 3]] - all lines belong to the same list
  */
 export function findListBlocks(lines: string[]): [number, number][] {
 	const blocks: [number, number][] = [];
 	let blockStart: number | null = null;
+	let lastItemEnd: number = -1;
+	let currentListOrdered: boolean | null = null;
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		const isBlank = line.trim() === '';
 
 		if (isListItem(line)) {
+			const isOrdered = ORDERED_LIST_REGEX.test(line);
+
 			if (blockStart === null) {
 				blockStart = i;
+				currentListOrdered = isOrdered;
+			} else if (currentListOrdered !== isOrdered) {
+				// Different list type - start new block
+				blocks.push([blockStart, lastItemEnd]);
+				blockStart = i;
+				currentListOrdered = isOrdered;
 			}
-		} else if (blockStart !== null && (isBlank || i === lines.length - 1)) {
-			// End of list block
-			blocks.push([blockStart, i - 1]);
-			blockStart = null;
+			lastItemEnd = i;
+		} else if (blockStart !== null) {
+			if (isBlank) {
+				// Blank line - check if the list continues
+				let j = i + 1;
+				while (j < lines.length && lines[j].trim() === '') {
+					j++; // Skip multiple blank lines
+				}
+
+				if (j < lines.length) {
+					const nextLine = lines[j];
+					if (isListContinuation(nextLine)) {
+						// List continues with indented continuation paragraph
+						continue;
+					} else if (isListItem(nextLine)) {
+						// Check if it's the same list type
+						const nextIsOrdered = ORDERED_LIST_REGEX.test(nextLine);
+						if (nextIsOrdered === currentListOrdered) {
+							// Same type - continue the list (loose list)
+							continue;
+						}
+					}
+				}
+				// List ends here
+				blocks.push([blockStart, lastItemEnd]);
+				blockStart = null;
+				currentListOrdered = null;
+			} else if (isListContinuation(line)) {
+				// Indented continuation content - extend the block
+				lastItemEnd = i;
+			} else {
+				// Non-list, non-indented content - end the block
+				blocks.push([blockStart, lastItemEnd]);
+				blockStart = null;
+				currentListOrdered = null;
+			}
 		}
 	}
 
 	// Handle case where list goes to end of document
 	if (blockStart !== null) {
-		blocks.push([blockStart, lines.length - 1]);
+		blocks.push([blockStart, lastItemEnd]);
 	}
 
 	return blocks;

@@ -86,8 +86,13 @@ const INLINE_CUSTOM_REGEX = /(?<!\\)~([^~\n]+)~(?!~)/g;
 
 /**
  * Regex for block custom math ~~...~~
+ * Uses negative lookbehind/lookahead to NOT match ~~~ code fences:
+ * - (?<!~)~~ ensures opening ~~ is not preceded by another ~
+ * - ~~(?!~) ensures opening ~~ is not followed by another ~
+ * - (?<!~)~~ ensures closing ~~ is not preceded by another ~
+ * - ~~(?!~) ensures closing ~~ is not followed by another ~
  */
-const BLOCK_CUSTOM_REGEX = /(?<!\\)~~([\s\S]+?)~~/g;
+const BLOCK_CUSTOM_REGEX = /(?<!\\)(?<!~)~~(?!~)([\s\S]+?)(?<!~)~~(?!~)/g;
 
 /**
  * Regex for matching escaped tildes \~
