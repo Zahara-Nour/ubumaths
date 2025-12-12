@@ -493,7 +493,8 @@ describe('markdownToTypst', () => {
 
 		const typst = await markdownToTypst(markdown, { includeSetup: false });
 
-		expect(typst).toContain('```javascript');
+		// Language is stripped to avoid syntax highlighting in PDF
+		expect(typst).toContain('```\n');
 		expect(typst).toContain('const x = 1;');
 	});
 });
@@ -566,7 +567,7 @@ describe('Code Block Transpilation', () => {
 		expect(typst).toContain('const x = 1;');
 	});
 
-	it('should transpile code block with javascript language', () => {
+	it('should transpile code block without language (no syntax highlighting)', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -580,7 +581,9 @@ describe('Code Block Transpilation', () => {
 
 		const typst = transpileToTypst(ast, { includeSetup: false });
 
-		expect(typst).toContain('```javascript');
+		// Language is stripped to avoid syntax highlighting in PDF
+		expect(typst).toContain('```\n');
+		expect(typst).not.toContain('```javascript');
 		expect(typst).toContain('function hello()');
 		expect(typst).toContain('console.log("Hello")');
 	});
