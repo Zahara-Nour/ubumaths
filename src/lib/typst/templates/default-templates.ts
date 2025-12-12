@@ -79,6 +79,8 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 
 // En-tete
 #align(center)[
@@ -149,6 +151,8 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 
 // En-tete avec encadre
 #rect(
@@ -274,6 +278,8 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 
 // Titre officiel
 #align(center)[
@@ -392,6 +398,8 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 
 // En-tete simple
 #grid(
@@ -499,6 +507,8 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 
 // En-tete compact
 #rect(
@@ -582,6 +592,8 @@ export const MINIMAL_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 
 // En-tete minimaliste
 #text(size: 16pt, weight: "bold")[{{title}}]
@@ -625,6 +637,8 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 #set par(justify: true, leading: 0.8em)
 
 // Fonction pour créer des numéros d'exercices stylisés
@@ -772,6 +786,8 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 
 // En-tête élégant sur toute la largeur
 #block(
@@ -925,6 +941,8 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 
 // Bannière titre horizontale avec dégradé chaud
 #rect(
@@ -1101,6 +1119,8 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 10pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 #set par(justify: true)
 
 // Header magazine avec numéro d'édition
@@ -1342,6 +1362,8 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 )
 
 #set text(font: "New Computer Modern", size: 11pt, lang: "fr")
+#set enum(spacing: 1.5em)
+#set list(spacing: 1.5em)
 #set par(justify: true)
 
 // En-tête institutionnel

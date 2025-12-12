@@ -119,7 +119,9 @@
 	/**
 	 * Check if node is a math-block node
 	 */
-	function isMathBlockNode(node: ASTNode): node is { type: 'math-block'; latex: string } {
+	function isMathBlockNode(
+		node: ASTNode
+	): node is { type: 'math-block'; expression: string; syntax: 'latex' | 'custom' } {
 		return node.type === 'math-block';
 	}
 
@@ -164,7 +166,7 @@
 					{:else if isHeadingNode(child)}
 						<HeadingNode level={child.level} children={child.children} />
 					{:else if isMathBlockNode(child)}
-						<MathBlock latex={child.latex} />
+						<MathBlock expression={child.expression} syntax={child.syntax} />
 					{:else if isImageNode(child)}
 						<ImageDisplay
 							src={child.src}
@@ -207,7 +209,7 @@
 					{:else if isHeadingNode(child)}
 						<HeadingNode level={child.level} children={child.children} />
 					{:else if isMathBlockNode(child)}
-						<MathBlock latex={child.latex} />
+						<MathBlock expression={child.expression} syntax={child.syntax} />
 					{:else if isImageNode(child)}
 						<ImageDisplay
 							src={child.src}

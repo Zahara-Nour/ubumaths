@@ -100,6 +100,10 @@ function generateSetup(options: Required<TypstTranspilerOptions>): string {
 	setup += '#set par(justify: true)\n';
 	setup += '#set heading(numbering: "1.1")\n';
 
+	// List item spacing
+	setup += '#set enum(spacing: 1.5em, tight: false)\n';
+	setup += '#set list(spacing: 1.5em, tight: false)\n';
+
 	// Display limits above/below for common operators (like LaTeX display mode)
 	setup += '#show math.sum: math.limits\n';
 	setup += '#show math.product: math.limits\n';
@@ -293,18 +297,31 @@ function transpileList(node: ListNode, options: Required<TypstTranspilerOptions>
 
 	const items = node.items
 		.map((item: ListItemNode, index: number) => {
-			const itemContent = item.children
-				.map((child: ASTNode) => {
-					if (child.type === 'list') {
-						// Indent nested lists
-						return transpileList(child, options)
+			const childBlocks = item.children.map((child: ASTNode) => {
+				if (child.type === 'list') {
+					return transpileList(child, options);
+				}
+				return transpileBlock(child as BlockNode, options);
+			});
+
+			// First child is on the same line as the marker
+			// Subsequent children need to be indented to stay in the item
+			const firstBlock = childBlocks[0] || '';
+			const restBlocks = childBlocks.slice(1);
+
+			let itemContent = firstBlock;
+			if (restBlocks.length > 0) {
+				// Indent continuation blocks to keep them in the list item
+				const indentedRest = restBlocks
+					.map((block) =>
+						block
 							.split('\n')
 							.map((line) => '  ' + line)
-							.join('\n');
-					}
-					return transpileBlock(child as BlockNode, options);
-				})
-				.join('\n');
+							.join('\n')
+					)
+					.join('\n');
+				itemContent += '\n' + indentedRest;
+			}
 
 			if (node.ordered) {
 				// Use explicit numbering (e.g., "3. item") to support custom start numbers
@@ -384,7 +401,8 @@ function transpileMathBlock(node: MathBlockNode): string {
 		node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
 	// Convert LaTeX math to Typst math syntax
 	const typstMath = convertLatexToTypstMath(latex);
-	return `$ ${typstMath} $`;
+	// Wrap in align(center) to ensure centering even inside lists
+	return `#align(center)[$ ${typstMath} $]`;
 }
 
 // ============================================================================
@@ -568,10 +586,8 @@ function transpileBlockquote(
  * @returns Typst raw block
  */
 function transpileCodeBlock(node: CodeBlockNode): string {
-	const lang = node.language?.trim() || '';
-	const langSpec = lang ? lang : '';
-
-	return '```' + langSpec + '\n' + node.code + '\n```';
+	// Don't include language to avoid syntax highlighting in PDF output
+	return '```\n' + node.code + '\n```';
 }
 
 // ============================================================================

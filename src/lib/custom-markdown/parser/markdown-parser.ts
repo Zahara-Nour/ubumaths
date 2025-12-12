@@ -605,6 +605,92 @@ function containsCodeBlocks(content: string): boolean {
 }
 
 /**
+ * Check if content contains block math placeholders
+ */
+function containsBlockMath(content: string, placeholders: MathPlaceholder[]): boolean {
+	return placeholders.some((p) => p.isBlock && content.includes(p.placeholder));
+}
+
+/**
+ * Parse content that may contain block math into block nodes
+ *
+ * Handles cases where list item content contains $$...$$ display math.
+ * Returns an array of BlockNode (paragraphs and math-blocks).
+ *
+ * @param content - Text content that may contain block math placeholders
+ * @param placeholders - Math placeholders from extraction
+ * @param options - Parse options
+ * @returns Array of block nodes
+ */
+function parseContentWithBlockMath(
+	content: string,
+	placeholders: MathPlaceholder[],
+	options: ParseOptions
+): BlockNode[] {
+	const blocks: BlockNode[] = [];
+
+	// Find all block math placeholders in this content
+	const blockMathPlaceholders = placeholders.filter(
+		(p) => p.isBlock && content.includes(p.placeholder)
+	);
+
+	if (blockMathPlaceholders.length === 0) {
+		// No block math, parse as regular inline content
+		const parsedInline = parseInlineContent(content, placeholders, options);
+		if (parsedInline.length > 0) {
+			blocks.push({
+				type: 'paragraph',
+				children: parsedInline
+			});
+		}
+		return blocks;
+	}
+
+	// Split content by block math placeholders
+	let remaining = content;
+	for (const placeholder of blockMathPlaceholders) {
+		const idx = remaining.indexOf(placeholder.placeholder);
+		if (idx === -1) continue;
+
+		// Content before this block math
+		const before = remaining.slice(0, idx).trim();
+		if (before) {
+			const parsedInline = parseInlineContent(before, placeholders, options);
+			if (parsedInline.length > 0) {
+				blocks.push({
+					type: 'paragraph',
+					children: parsedInline
+				});
+			}
+		}
+
+		// The block math itself
+		blocks.push({
+			type: 'math-block',
+			expression: placeholder.expression,
+			syntax: placeholder.syntax
+		});
+
+		// Continue with content after this placeholder
+		remaining = remaining.slice(idx + placeholder.placeholder.length);
+	}
+
+	// Any remaining content after the last block math
+	const after = remaining.trim();
+	if (after) {
+		const parsedInline = parseInlineContent(after, placeholders, options);
+		if (parsedInline.length > 0) {
+			blocks.push({
+				type: 'paragraph',
+				children: parsedInline
+			});
+		}
+	}
+
+	return blocks;
+}
+
+/**
  * Process list items to parse inline content (math, formatting)
  *
  * The list-parser creates simple text nodes with placeholders.
@@ -637,6 +723,12 @@ function processListInlineContent(
 					if (containsCodeBlocks(textContent)) {
 						// Parse as blocks (may return multiple nodes)
 						return parseContentWithCodeBlocks(textContent, placeholders, options);
+					}
+
+					// Check if content contains block math ($$...$$)
+					if (containsBlockMath(textContent, placeholders)) {
+						// Parse as blocks (may return paragraphs and math-blocks)
+						return parseContentWithBlockMath(textContent, placeholders, options);
 					}
 
 					// Parse inline content with placeholders
