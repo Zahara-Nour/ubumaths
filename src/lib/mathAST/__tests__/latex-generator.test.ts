@@ -237,10 +237,10 @@ describe('LatexGenerator - Relations', () => {
 		expect(toLatex(MathAST.lessThan(MathAST.variable('x'), MathAST.number('5')))).toBe('x < 5');
 		expect(toLatex(MathAST.greaterThan(MathAST.variable('x'), MathAST.number('5')))).toBe('x > 5');
 		expect(toLatex(MathAST.lessThanOrEqual(MathAST.variable('x'), MathAST.number('5')))).toBe(
-			'x \\leq 5'
+			'x \\leqslant 5'
 		);
 		expect(toLatex(MathAST.greaterThanOrEqual(MathAST.variable('x'), MathAST.number('5')))).toBe(
-			'x \\geq 5'
+			'x \\geqslant 5'
 		);
 		expect(toLatex(MathAST.notEquals(MathAST.variable('x'), MathAST.number('5')))).toBe(
 			'x \\neq 5'
@@ -285,8 +285,8 @@ describe('LatexGenerator - Relations', () => {
 			['=', '='],
 			['<', '<'],
 			['>', '>'],
-			['<=', '\\leq'],
-			['>=', '\\geq'],
+			['<=', '\\leqslant'],
+			['>=', '\\geqslant'],
 			['!=', '\\neq'],
 			['≡', '\\equiv'],
 			['≢', '\\not\\equiv'],
@@ -503,7 +503,7 @@ describe('LatexGenerator - Relation Chains', () => {
 
 	it('should generate a <= b < c (mixed)', () => {
 		const chain = relationChain([variable('a'), variable('b'), variable('c')], ['<=', '<']);
-		expect(toLatex(chain)).toBe('a \\leq b < c');
+		expect(toLatex(chain)).toBe('a \\leqslant b < c');
 	});
 
 	it('should generate P => Q => R', () => {
@@ -535,7 +535,7 @@ describe('LatexGenerator - Relation Chains', () => {
 
 	it('should generate a <= b <= c', () => {
 		const chain = lessThanOrEqualChain(variable('a'), variable('b'), variable('c'));
-		expect(toLatex(chain)).toBe('a \\leq b \\leq c');
+		expect(toLatex(chain)).toBe('a \\leqslant b \\leqslant c');
 	});
 
 	it('should handle binary relation (not a chain)', () => {

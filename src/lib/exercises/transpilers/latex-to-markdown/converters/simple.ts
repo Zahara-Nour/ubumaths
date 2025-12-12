@@ -241,6 +241,52 @@ export function convertDashes(text: string): string {
 }
 
 // ===========================
+// French Number Formatting (numprint package)
+// ===========================
+
+/**
+ * Format a number string with French spacing (thin space every 3 digits).
+ * Uses Unicode thin space (U+202F) for proper typographic spacing.
+ *
+ * - Integer part: spaces from right to left (1234567 -> 1 234 567)
+ * - Decimal part: spaces from left to right (89012345 -> 890 123 45)
+ *
+ * Examples:
+ * - "12345" -> "12 345"
+ * - "1234567" -> "1 234 567"
+ * - "12345,6789" -> "12 345,678 9"
+ * - "1234567,89012345" -> "1 234 567,890 123 45"
+ */
+function formatFrenchNumber(numStr: string): string {
+	// Split on decimal separator (comma or period)
+	const decimalMatch = numStr.match(/^([^,.]*)([,.]?)(.*)$/);
+	if (!decimalMatch) return numStr;
+
+	const [, intPart, separator, decPart] = decimalMatch;
+
+	// Add thin spaces to integer part (from right to left)
+	const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F');
+
+	if (!separator) {
+		return formattedInt;
+	}
+
+	// Add thin spaces to decimal part (from left to right, every 3 digits)
+	const formattedDec = decPart.replace(/(\d{3})(?=\d)/g, '$1\u202F');
+
+	return `${formattedInt}${separator}${formattedDec}`;
+}
+
+/**
+ * Convert \np{...} (numprint) command to formatted number.
+ * \np{12345} -> 12 345 (with thin spaces)
+ */
+export function convertNumprint(token: CommandToken, _ctx: ConversionContext): string {
+	const content = token.args[0] ?? '';
+	return formatFrenchNumber(content);
+}
+
+// ===========================
 // Command Converter Registry
 // ===========================
 
@@ -317,7 +363,10 @@ export const simpleCommandConverters: Record<string, ConverterFn<CommandToken>> 
 
 	// French quotes
 	og: convertSpecialCharacter as ConverterFn<CommandToken>,
-	fg: convertSpecialCharacter as ConverterFn<CommandToken>
+	fg: convertSpecialCharacter as ConverterFn<CommandToken>,
+
+	// French number formatting (numprint package)
+	np: convertNumprint
 };
 
 /**
