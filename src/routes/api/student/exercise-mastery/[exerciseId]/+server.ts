@@ -38,7 +38,7 @@ import type { ExerciseMasteryUpdateResponse, MasteryStatus } from '$lib/types/ex
 
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// Auth check: Must be a student
-	const user = await requireRole(locals, 'student');
+	const { user } = await requireRole(locals, 'student');
 
 	// Validate URL parameter
 	const paramValidation = validateExerciseIdParam(params);

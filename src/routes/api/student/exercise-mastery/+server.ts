@@ -23,7 +23,7 @@ import type { ExerciseMasteryListResponse, MasteryStatus } from '$lib/types/exer
 
 export const GET: RequestHandler = async ({ locals }) => {
 	// Auth check: Must be a student
-	const user = await requireRole(locals, 'student');
+	const { user } = await requireRole(locals, 'student');
 
 	try {
 		// Fetch all mastery records for this student
