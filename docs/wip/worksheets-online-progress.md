@@ -2,7 +2,7 @@
 
 > Document de progression pour recovery en cas de crash
 
-## Status: Phase 1 complete
+## Status: Phase 2 complete
 
 ---
 
@@ -50,12 +50,74 @@
 
 ---
 
+## Phase 2: Types TypeScript + Schemas Zod - COMPLETE
+
+### Fichiers modifies
+
+- `src/lib/types/worksheets.ts`
+- `src/lib/server/validation/worksheets.ts`
+
+### Types ajoutes
+
+**Row types:**
+
+- `WorksheetAssignmentStudentRow`
+- `WorksheetAssignmentExerciseSettingsRow`
+
+**Insert/Update types:**
+
+- `WorksheetAssignmentStudentInsert`
+- `WorksheetAssignmentExerciseSettingsInsert`
+- `WorksheetAssignmentExerciseSettingsUpdate`
+
+**Student view types:**
+
+- `StudentExerciseView`
+- `StudentWorksheetView`
+- `StudentWorksheetListItem`
+
+**Colonnes ajoutees aux types existants:**
+
+- `WorksheetExerciseRow.correction_visible`
+- `WorksheetAssignmentRow.show_corrections`
+
+### Schemas Zod ajoutes
+
+**Request schemas:**
+
+- `studentWorksheetsQuerySchema`
+- `studentWorksheetParamSchema`
+- `addAssignmentStudentsSchema`
+- `removeAssignmentStudentSchema`
+- `updateCorrectionSettingsSchema`
+- `updateExerciseCorrectionSchema`
+- `bulkUpdateExerciseCorrectionsSchema`
+- `assignmentParamSchema`
+
+**Response schemas:**
+
+- `studentWorksheetListItemSchema`
+- `studentWorksheetsListResponseSchema`
+- `studentExerciseViewSchema`
+- `studentWorksheetDetailResponseSchema`
+- `assignmentStudentsResponseSchema`
+- `addStudentsResponseSchema`
+- `removeStudentResponseSchema`
+- `correctionSettingsResponseSchema`
+- `updateCorrectionSettingsResponseSchema`
+- `updateExerciseCorrectionResponseSchema`
+
+### Reviews effectuees
+
+- [x] code-reviewer (Sonnet) - Excellent, ready to merge
+
+---
+
 ## Prochaines etapes
 
-1. User execute `pnpm db:migrate`
-2. Phase 2: Types TypeScript + Schemas Zod
-3. Phase 3: API Eleve
-4. etc.
+1. Phase 3: API Eleve
+2. Phase 4: API Enseignant
+3. etc.
 
 ---
 
@@ -66,8 +128,13 @@
 - `supabase/migrations/20251212000000_worksheets_online_mode.sql` (cree)
 - `docs/wip/worksheets-online-progress.md` (cree)
 
+### Phase 2
+
+- `src/lib/types/worksheets.ts` (modifie)
+- `src/lib/server/validation/worksheets.ts` (modifie)
+
 ---
 
 ## Derniere mise a jour
 
-2025-12-12 - Phase 1 complete
+2025-12-12 - Phase 2 complete

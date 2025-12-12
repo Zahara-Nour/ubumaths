@@ -62,7 +62,8 @@
 		FileText,
 		AlertTriangle,
 		Book,
-		Layers
+		Layers,
+		FileSpreadsheet
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -133,6 +134,7 @@
 				{ href: '/dashboard/students', label: 'Students', icon: Users },
 				{ href: '/dashboard/teacher/riddles', label: 'Énigmes', icon: Lightbulb },
 				{ href: '/dashboard/teacher/exercises', label: 'Exercices', icon: BookOpen },
+				{ href: '/dashboard/teacher/worksheets', label: 'Worksheets', icon: FileSpreadsheet },
 				{
 					href: '/dashboard/teacher/rewards',
 					label: 'Rewards',
@@ -173,6 +175,10 @@
 		// For templates pages, match any /dashboard/teacher/templates/* route
 		if (href === '/dashboard/teacher/templates') {
 			return page.url.pathname.startsWith('/dashboard/teacher/templates');
+		}
+		// For worksheets pages, match any /dashboard/teacher/worksheets/* route
+		if (href === '/dashboard/teacher/worksheets') {
+			return page.url.pathname.startsWith('/dashboard/teacher/worksheets');
 		}
 		return page.url.pathname === href;
 	}

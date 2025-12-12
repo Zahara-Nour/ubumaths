@@ -142,6 +142,7 @@ export interface WorksheetExerciseRow {
 	variant_mode: VariantMode;
 	variant_config: VariantConfig;
 	custom_instructions: string | null;
+	correction_visible: boolean;
 	created_at: string;
 	updated_at: string;
 }
@@ -176,11 +177,28 @@ export interface WorksheetAssignmentRow {
 	correction_release_mode: CorrectionReleaseMode;
 	correction_release_at: string | null;
 	show_solutions_before_due: boolean;
+	show_corrections: boolean;
 	allow_late_submission: boolean;
 	max_attempts: number;
 	time_limit_minutes: number | null;
 	status: AssignmentStatus;
 	created_by: string;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface WorksheetAssignmentStudentRow {
+	id: string;
+	assignment_id: string;
+	student_id: string;
+	created_at: string;
+}
+
+export interface WorksheetAssignmentExerciseSettingsRow {
+	id: string;
+	assignment_id: string;
+	worksheet_exercise_id: string;
+	show_correction: boolean;
 	created_at: string;
 	updated_at: string;
 }
@@ -254,11 +272,23 @@ export interface WorksheetAssignmentInsert {
 	correction_release_mode?: CorrectionReleaseMode;
 	correction_release_at?: string | null;
 	show_solutions_before_due?: boolean;
+	show_corrections?: boolean;
 	allow_late_submission?: boolean;
 	max_attempts?: number;
 	time_limit_minutes?: number | null;
 	status?: AssignmentStatus;
 	created_by: string;
+}
+
+export interface WorksheetAssignmentStudentInsert {
+	assignment_id: string;
+	student_id: string;
+}
+
+export interface WorksheetAssignmentExerciseSettingsInsert {
+	assignment_id: string;
+	worksheet_exercise_id: string;
+	show_correction: boolean;
 }
 
 // =============================================================================
@@ -323,10 +353,15 @@ export interface WorksheetAssignmentUpdate {
 	correction_release_mode?: CorrectionReleaseMode;
 	correction_release_at?: string | null;
 	show_solutions_before_due?: boolean;
+	show_corrections?: boolean;
 	allow_late_submission?: boolean;
 	max_attempts?: number;
 	time_limit_minutes?: number | null;
 	status?: AssignmentStatus;
+}
+
+export interface WorksheetAssignmentExerciseSettingsUpdate {
+	show_correction?: boolean;
 }
 
 // =============================================================================
@@ -382,6 +417,56 @@ export interface WorksheetAssignmentWithRelations extends WorksheetAssignmentRow
 		first_name: string | null;
 		last_name: string | null;
 	};
+}
+
+// =============================================================================
+// STUDENT VIEW TYPES (for online consultation mode)
+// =============================================================================
+
+/**
+ * Exercise data as seen by students in online mode
+ */
+export interface StudentExerciseView {
+	id: string;
+	position: number;
+	points: number | null;
+	custom_instructions: string | null;
+	statement: string;
+	correction: string | null;
+	correction_visible: boolean;
+}
+
+/**
+ * Worksheet assignment as seen by students
+ */
+export interface StudentWorksheetView {
+	assignment_id: string;
+	worksheet_id: string;
+	title: string;
+	description: string | null;
+	type: WorksheetType;
+	instructions: string | null;
+	available_from: string;
+	due_at: string | null;
+	show_corrections: boolean;
+	class_name: string | null;
+	exercises: StudentExerciseView[];
+}
+
+/**
+ * List item for student worksheet list
+ */
+export interface StudentWorksheetListItem {
+	assignment_id: string;
+	worksheet_id: string;
+	title: string;
+	type: WorksheetType;
+	class_id: string | null;
+	class_name: string | null;
+	available_from: string;
+	due_at: string | null;
+	show_corrections: boolean;
+	exercise_count: number;
 }
 
 // =============================================================================
