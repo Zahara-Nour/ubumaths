@@ -16,11 +16,12 @@ response.headers.set(
 	'Content-Security-Policy',
 	[
 		"default-src 'self'",
-		"script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
-		"style-src 'self' 'unsafe-inline'",
-		"img-src 'self' data: blob: https://lh3.googleusercontent.com https://www.google-analytics.com",
-		"font-src 'self' data:",
-		"connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://api.openai.com",
+		"script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://cdn.plot.ly https://unpkg.com",
+		"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+		"font-src 'self' https://fonts.gstatic.com",
+		"img-src 'self' data: blob: https://*.supabase.co https://*.googleusercontent.com https://unpkg.com",
+		"connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net https://cdn.plot.ly https://*.googleapis.com",
+		"worker-src 'self' blob:",
 		"frame-ancestors 'self'",
 		"object-src 'none'",
 		"base-uri 'self'"
@@ -42,9 +43,10 @@ response.headers.set(
 | `object-src`      | `'none'`                       | Blocks plugins (Flash, etc.)              |
 | `base-uri`        | `'self'`                       | Prevents base tag injection               |
 
-### Why `'unsafe-inline'`?
+### Why `'unsafe-inline'` and `'unsafe-eval'`?
 
-Svelte and Tailwind require inline scripts/styles. Future improvement: nonce-based CSP when SvelteKit adds support.
+- **`'unsafe-inline'`**: Svelte and Tailwind require inline scripts/styles. Future improvement: nonce-based CSP when SvelteKit adds support.
+- **`'unsafe-eval'`**: Required for Typst.js compiler which uses `new Function()` internally for WebAssembly compilation. This is limited to trusted CDN sources only.
 
 ---
 

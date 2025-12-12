@@ -358,8 +358,9 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 
 		// Scripts: self + CDNs + inline (required for Svelte/Vite)
 		// 'wasm-unsafe-eval' for Pyodide and Typst WebAssembly
+		// 'unsafe-eval' required for Typst.js compiler (uses new Function() internally)
 		[
-			"script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'",
+			"script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'",
 			'https://cdn.jsdelivr.net',
 			'https://cdn.plot.ly',
 			'https://unpkg.com'

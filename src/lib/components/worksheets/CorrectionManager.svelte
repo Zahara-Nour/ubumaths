@@ -20,6 +20,13 @@
 	} from 'lucide-svelte';
 	import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
 
+	// Typst library type
+	type TypstLibrary = {
+		setCompilerInitOptions: (options: { getModule: () => string }) => void;
+		setRendererInitOptions: (options: { getModule: () => string }) => void;
+		pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
+	};
+
 	// ============================================================================
 	// PROPS AND STATE
 	// ============================================================================
@@ -54,6 +61,10 @@
 	let isReleasing = $state(false);
 	let isRevoking = $state(false);
 	let isPreviewing = $state(false);
+
+	// Typst state
+	let isTypstLoaded = $state(false);
+	let isTypstLoading = $state(false);
 
 	// Track if settings have changed
 	let hasChanges = $derived(
@@ -168,11 +179,111 @@
 		}
 	}
 
+	/**
+	 * Load Typst.js library from CDN
+	 */
+	async function loadTypst(): Promise<void> {
+		// Check if already loaded globally
+		const existingTypst = (window as { $typst?: TypstLibrary }).$typst;
+		if (existingTypst) {
+			isTypstLoaded = true;
+			return;
+		}
+
+		if (isTypstLoaded) return;
+		if (isTypstLoading) {
+			// Wait for existing load
+			await new Promise<void>((resolve) => {
+				const check = setInterval(() => {
+					if (isTypstLoaded || (window as { $typst?: TypstLibrary }).$typst) {
+						clearInterval(check);
+						isTypstLoaded = true;
+						resolve();
+					}
+				}, 100);
+			});
+			return;
+		}
+
+		isTypstLoading = true;
+
+		return new Promise((resolve, reject) => {
+			// Check for existing typst script
+			const existingScript = document.querySelector('script[src*="typst.ts"]');
+			if (existingScript) {
+				// Wait for it to load
+				const checkTypst = setInterval(() => {
+					const typst = (window as { $typst?: TypstLibrary }).$typst;
+					if (typst) {
+						clearInterval(checkTypst);
+						isTypstLoaded = true;
+						isTypstLoading = false;
+						resolve();
+					}
+				}, 100);
+				// Timeout after 10 seconds
+				setTimeout(() => {
+					clearInterval(checkTypst);
+					if (!isTypstLoaded) {
+						isTypstLoading = false;
+						reject(new Error('Typst library load timeout'));
+					}
+				}, 10000);
+				return;
+			}
+
+			const script = document.createElement('script');
+			script.type = 'module';
+			script.src =
+				'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst.ts/dist/esm/contrib/all-in-one-lite.bundle.js';
+			script.id = 'typst-script-correction';
+
+			script.addEventListener('load', () => {
+				// Wait a bit for typst to initialize itself
+				setTimeout(() => {
+					const typst = (window as { $typst?: TypstLibrary }).$typst;
+					if (typst) {
+						// Only set options if not already initialized
+						try {
+							typst.setCompilerInitOptions({
+								getModule: () =>
+									'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
+							});
+							typst.setRendererInitOptions({
+								getModule: () =>
+									'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
+							});
+						} catch {
+							// Already initialized, that's OK
+						}
+						isTypstLoaded = true;
+						isTypstLoading = false;
+						resolve();
+					} else {
+						isTypstLoading = false;
+						reject(new Error('Typst library not available'));
+					}
+				}, 100);
+			});
+
+			script.addEventListener('error', () => {
+				isTypstLoading = false;
+				reject(new Error('Failed to load Typst library'));
+			});
+
+			document.head.appendChild(script);
+		});
+	}
+
 	async function handlePreviewCorrection() {
 		isPreviewing = true;
 		try {
+			// Load Typst.js if needed
+			await loadTypst();
+
+			// Get Typst content from API
 			const response = await fetch(
-				`/api/worksheets/assignments/${assignment.id}/correction?format=pdf`
+				`/api/worksheets/assignments/${assignment.id}/correction?format=typst`
 			);
 
 			const data = await response.json();
@@ -181,13 +292,16 @@
 				throw new Error(data.message || 'Erreur lors de la generation');
 			}
 
-			// Convert base64 to blob and open in new tab
-			const binaryString = atob(data.pdf);
-			const bytes = new Uint8Array(binaryString.length);
-			for (let i = 0; i < binaryString.length; i++) {
-				bytes[i] = binaryString.charCodeAt(i);
+			// Generate PDF client-side
+			const typst = (window as { $typst?: TypstLibrary }).$typst;
+			if (!typst) {
+				throw new Error('Typst library not loaded');
 			}
-			const blob = new Blob([bytes], { type: 'application/pdf' });
+
+			const pdfData = await typst.pdf({ mainContent: data.typst });
+
+			// Create blob and open
+			const blob = new Blob([pdfData as unknown as BlobPart], { type: 'application/pdf' });
 			const url = URL.createObjectURL(blob);
 
 			window.open(url, '_blank');

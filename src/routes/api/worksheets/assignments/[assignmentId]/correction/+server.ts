@@ -21,19 +21,11 @@ import type {
 	WorksheetAssignmentRow
 } from '$lib/types/worksheets';
 
-// ============================================================================
-// TYPE DEFINITIONS
-// ============================================================================
-
-type TypstLibrary = {
-	setCompilerInitOptions: (options: { getModule: () => string }) => void;
-	setRendererInitOptions: (options: { getModule: () => string }) => void;
-	pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
-};
-
 // Query parameter validation
+// Note: 'pdf' format is not supported server-side (Typst.js requires browser)
+// Use 'typst' to get the Typst source, then generate PDF client-side
 const querySchema = z.object({
-	format: z.enum(['pdf', 'json']).optional().default('pdf')
+	format: z.enum(['typst', 'json']).optional().default('typst')
 });
 
 // ============================================================================
@@ -109,8 +101,17 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		const isAssignmentCreator = assignment.created_by === user.id;
 		const isStudentInClass = assignment.class_id && profile?.class_id === assignment.class_id;
 
-		// Teachers/admins who created the assignment can always access
-		if (!isTeacher && !isStudentInClass) {
+		console.log('[Correction API] Access check:', {
+			userId: user.id,
+			role: profile?.role,
+			isTeacher,
+			isAssignmentCreator,
+			isStudentInClass,
+			assignmentCreatedBy: assignment.created_by
+		});
+
+		// Teachers/admins/creators can always access, students need to be in the class
+		if (!isTeacher && !isAssignmentCreator && !isStudentInClass) {
 			throw error(403, 'Acces non autorise a cette assignation');
 		}
 
@@ -188,7 +189,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			});
 		}
 
-		// Generate correction PDF
+		// Generate Typst content for correction
 		const typstContent = generateWorksheetTypst({
 			worksheet: worksheet,
 			instance: instanceData,
@@ -198,25 +199,24 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			className
 		});
 
-		// Initialize Typst and generate PDF
-		const typst = await initializeTypst();
-		const pdfData = await typst.pdf({ mainContent: typstContent });
-
-		// Return PDF as base64
-		const base64 = Buffer.from(pdfData).toString('base64');
+		// Return Typst source (PDF generation must be done client-side)
 		const filename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_correction${studentName ? '_' + studentName.replace(/[^a-zA-Z0-9]/g, '_') : ''}.pdf`;
 
 		return json({
 			success: true,
-			pdf: base64,
+			typst: typstContent,
 			filename,
 			studentName,
 			worksheetTitle: worksheet.title
 		});
 	} catch (err) {
-		console.error('Correction PDF generation error:', err);
+		console.error('[Correction API] Error:', err);
+		if (err instanceof Error) {
+			console.error('[Correction API] Message:', err.message);
+			console.error('[Correction API] Stack:', err.stack);
+		}
 
-		if (err instanceof Error && 'status' in err) {
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
@@ -227,29 +227,6 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
-
-/**
- * Initialize Typst.js library
- */
-async function initializeTypst(): Promise<TypstLibrary> {
-	const { $typst } = (await import('@myriaddreamin/typst.ts')) as { $typst: TypstLibrary };
-
-	if (!$typst) {
-		throw new Error('Failed to load Typst library');
-	}
-
-	$typst.setCompilerInitOptions({
-		getModule: () =>
-			'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
-	});
-
-	$typst.setRendererInitOptions({
-		getModule: () =>
-			'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
-	});
-
-	return $typst;
-}
 
 /**
  * Generate a simple instance from worksheet exercises (for teacher preview)
