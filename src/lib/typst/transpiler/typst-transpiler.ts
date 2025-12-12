@@ -98,7 +98,21 @@ function generateSetup(options: Required<TypstTranspilerOptions>): string {
 	let setup = `#set page(paper: "${paperSize}")\n`;
 	setup += `#set text(font: "New Computer Modern", size: ${fontSize}pt, lang: "${language}")\n`;
 	setup += '#set par(justify: true)\n';
-	setup += '#set heading(numbering: "1.1")\n\n';
+	setup += '#set heading(numbering: "1.1")\n';
+
+	// Display limits above/below for common operators (like LaTeX display mode)
+	setup += '#show math.sum: math.limits\n';
+	setup += '#show math.product: math.limits\n';
+	setup += '#show math.integral: math.limits.with(inline: false)\n';
+
+	// Redefine operators with limits: true (Typst defaults to false)
+	setup += '#let lim = math.op("lim", limits: true)\n';
+	setup += '#let limsup = math.op("lim sup", limits: true)\n';
+	setup += '#let liminf = math.op("lim inf", limits: true)\n';
+	setup += '#let max = math.op("max", limits: true)\n';
+	setup += '#let min = math.op("min", limits: true)\n';
+	setup += '#let sup = math.op("sup", limits: true)\n';
+	setup += '#let inf = math.op("inf", limits: true)\n\n';
 
 	// Title block
 	if (title || author) {
@@ -213,6 +227,16 @@ function transpileInline(node: InlineNode, _options: Required<TypstTranspilerOpt
 				node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
+
+			// Check if math contains operators that need display mode for proper limit rendering
+			// Note: Can't use \b word boundary because _ is a word character (lim_ has no boundary)
+			const needsDisplayMode =
+				/(^|[^a-zA-Z])(lim|limsup|liminf|sum|prod|product|max|min|sup|inf)([^a-zA-Z]|$)/.test(
+					typstMath
+				);
+			if (needsDisplayMode) {
+				return `$display(${typstMath})$`;
+			}
 			return `$${typstMath}$`;
 		}
 
@@ -265,8 +289,10 @@ function transpileHeading(node: HeadingNode, options: Required<TypstTranspilerOp
  * @returns Typst list
  */
 function transpileList(node: ListNode, options: Required<TypstTranspilerOptions>): string {
+	const startNumber = node.start ?? 1;
+
 	const items = node.items
-		.map((item: ListItemNode) => {
+		.map((item: ListItemNode, index: number) => {
 			const itemContent = item.children
 				.map((child: ASTNode) => {
 					if (child.type === 'list') {
@@ -281,9 +307,10 @@ function transpileList(node: ListNode, options: Required<TypstTranspilerOptions>
 				.join('\n');
 
 			if (node.ordered) {
-				// Note: Typst automatically numbers items, we just use + prefix
-				// The start number is not directly supported in basic Typst lists
-				return `+ ${itemContent}`;
+				// Use explicit numbering (e.g., "3. item") to support custom start numbers
+				// Typst recognizes "N. content" as an explicitly numbered enum item
+				const num = startNumber + index;
+				return `${num}. ${itemContent}`;
 			}
 			return `- ${itemContent}`;
 		})
@@ -563,6 +590,9 @@ function transpileCodeBlock(node: CodeBlockNode): string {
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
 
+	// French decimal comma: {,} -> , (used in LaTeX to avoid space after comma)
+	result = result.replace(/\{,\}/g, ',');
+
 	// Convert \left( ... \right) to ( ... ) - Typst auto-sizes
 	result = result.replace(/\\left\s*\(/g, '(');
 	result = result.replace(/\\right\s*\)/g, ')');
@@ -816,9 +846,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	// END NEW CONVERSIONS
 	// ========================================================================
 
-	// Convert subscript and superscript (these work the same in Typst)
-	// ^ and _ work similarly, but multi-char need no braces in Typst
-	// Actually, braces {} are handled automatically
+	// Convert subscript and superscript braces to parentheses
+	// LaTeX: x^{2n} or x_{ij}  ->  Typst: x^(2n) or x_(ij)
+	// Single characters don't need grouping, but parentheses work for all cases
+	result = result.replace(/\^{([^{}]*)}/g, '^($1)');
+	result = result.replace(/_{([^{}]*)}/g, '_($1)');
 
 	// Keep unknown LaTeX commands as-is (with backslash)
 	// Typst will show a clear error during compilation if not recognized

@@ -604,7 +604,7 @@ describe('parseMarkdown - blank support', () => {
 
 			if (codeBlock && codeBlock.type === 'code-block') {
 				expect(codeBlock.language).toBe('python');
-				expect(codeBlock.content).toContain('def hello()');
+				expect(codeBlock.code).toContain('def hello()');
 			}
 		}
 	});
