@@ -8,7 +8,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import CorrectionSettings from '$lib/components/worksheets/CorrectionSettings.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, Users, Calendar, FileCheck, Settings } from 'lucide-svelte';
+	import { Loader2, Users, Calendar, FileCheck, Settings, Monitor } from 'lucide-svelte';
 	import type { CorrectionReleaseMode, WorksheetAssignmentInsert } from '$lib/types/worksheets';
 
 	// ============================================================================
@@ -28,7 +28,7 @@
 		onCancel?: () => void;
 	}
 
-	let { worksheetId: _worksheetId, worksheetTitle, classes, onSubmit, onCancel }: Props = $props();
+	let { worksheetId, worksheetTitle, classes, onSubmit, onCancel }: Props = $props();
 
 	// ============================================================================
 	// FORM STATE
@@ -53,6 +53,9 @@
 	let correctionReleaseMode = $state<CorrectionReleaseMode>('manual');
 	let correctionScheduledDate = $state<string>('');
 	let showSolutionsBeforeDue = $state<boolean>(false);
+
+	// Online mode
+	let showCorrections = $state<boolean>(false);
 
 	// Loading state
 	let isSubmitting = $state(false);
@@ -96,6 +99,7 @@
 						? new Date(correctionScheduledDate).toISOString()
 						: null,
 				show_solutions_before_due: showSolutionsBeforeDue,
+				show_corrections: showCorrections,
 				allow_late_submission: allowLateSubmission,
 				max_attempts: maxAttempts,
 				time_limit_minutes: timeLimitMinutes ? parseInt(timeLimitMinutes) : null,
@@ -272,6 +276,40 @@
 				bind:scheduledDate={correctionScheduledDate}
 				bind:showSolutionsBeforeDue
 			/>
+		</Card.Content>
+	</Card.Root>
+
+	<Card.Root>
+		<Card.Header>
+			<Card.Title class="flex items-center gap-2">
+				<Monitor class="h-5 w-5" />
+				Mode consultation en ligne
+			</Card.Title>
+		</Card.Header>
+		<Card.Content class="space-y-4">
+			<div class="flex items-start space-x-3">
+				<MyCheckbox id="show-corrections" bind:checked={showCorrections} />
+				<div class="space-y-1">
+					<Label for="show-corrections" class="cursor-pointer font-normal">
+						Activer le mode consultation
+					</Label>
+					<p class="text-xs text-muted-foreground">
+						Permet aux eleves de consulter la feuille de travail directement en ligne sur leur
+						tableau de bord, avec les enonces et eventuellement les corrections.
+					</p>
+				</div>
+			</div>
+
+			{#if showCorrections}
+				<div
+					class="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950"
+				>
+					<p class="text-sm text-blue-800 dark:text-blue-200">
+						Une fois le devoir cree, vous pourrez gerer finement la visibilite des corrections pour
+						chaque exercice depuis la page de gestion du devoir.
+					</p>
+				</div>
+			{/if}
 		</Card.Content>
 	</Card.Root>
 
