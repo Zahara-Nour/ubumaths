@@ -825,6 +825,7 @@ export const studentWorksheetsListResponseSchema = z.object({
  */
 export const studentExerciseViewSchema = z.object({
 	id: z.string().uuid(),
+	exercise_id: z.string().uuid(),
 	position: z.number().int().nonnegative(),
 	points: z.number().int().nullable(),
 	custom_instructions: z.string().nullable(),

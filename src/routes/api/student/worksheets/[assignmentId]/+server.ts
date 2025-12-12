@@ -309,6 +309,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 			exercises.push({
 				id: we.id,
+				exercise_id: exerciseData.id,
 				position: we.position,
 				points: we.points,
 				custom_instructions: we.custom_instructions,
