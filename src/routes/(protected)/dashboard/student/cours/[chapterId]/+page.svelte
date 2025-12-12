@@ -22,7 +22,16 @@
 		ChapterQuiz
 	} from '$lib/components/cours';
 	import { getChapterColorClasses } from '$lib/types/chapters';
-	import { ArrowLeft, FileText, HelpCircle, ListChecks, BookOpen, BookMarked } from 'lucide-svelte';
+	import {
+		ArrowLeft,
+		FileText,
+		HelpCircle,
+		ListChecks,
+		BookOpen,
+		BookMarked,
+		ClipboardList
+	} from 'lucide-svelte';
+	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
 	import type { PageData, ActionData } from './$types';
 
 	interface Props {
@@ -43,6 +52,7 @@
 	let quizCount = $derived(data.chapter.quizQuestionsWithResults.length);
 	let exerciseCount = $derived(data.chapter.exercises.length);
 	let checklistCount = $derived(data.chapter.checklistItemsWithProgress.length);
+	let worksheetCount = $derived(data.worksheets.length);
 
 	// Quiz state
 	let _quizCompleted = $derived(
@@ -96,7 +106,7 @@
 
 	<!-- Content Tabs -->
 	<Tabs.Root bind:value={activeTab} class="w-full">
-		<Tabs.List class="mb-6 grid w-full grid-cols-4">
+		<Tabs.List class="mb-6 grid w-full grid-cols-5">
 			<Tabs.Trigger value="documents" class="flex items-center gap-2">
 				<FileText class="h-4 w-4" />
 				<span class="hidden sm:inline">Documents</span>
@@ -116,6 +126,13 @@
 				<span class="hidden sm:inline">Exercices</span>
 				{#if exerciseCount > 0}
 					<Badge variant="secondary" class="ml-1">{exerciseCount}</Badge>
+				{/if}
+			</Tabs.Trigger>
+			<Tabs.Trigger value="fiches" class="flex items-center gap-2">
+				<ClipboardList class="h-4 w-4" />
+				<span class="hidden sm:inline">Fiches</span>
+				{#if worksheetCount > 0}
+					<Badge variant="secondary" class="ml-1">{worksheetCount}</Badge>
 				{/if}
 			</Tabs.Trigger>
 			<Tabs.Trigger value="checklist" class="flex items-center gap-2">
@@ -199,6 +216,24 @@
 								</Card.Content>
 							</Card.Root>
 						{/if}
+					{/each}
+				</div>
+			{/if}
+		</Tabs.Content>
+
+		<!-- Fiches Tab -->
+		<Tabs.Content value="fiches">
+			{#if worksheetCount === 0}
+				<Card.Root>
+					<Card.Content class="py-12 text-center">
+						<ClipboardList class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+						<p class="text-muted-foreground">Aucune fiche pour cette classe</p>
+					</Card.Content>
+				</Card.Root>
+			{:else}
+				<div class="grid gap-4 sm:grid-cols-2">
+					{#each data.worksheets as worksheet (worksheet.assignment_id)}
+						<WorksheetCard {worksheet} />
 					{/each}
 				</div>
 			{/if}

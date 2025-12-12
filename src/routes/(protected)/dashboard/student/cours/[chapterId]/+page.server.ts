@@ -99,11 +99,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		}
 	}
 
+	// Fetch worksheets for this class
+	const worksheetsResponse = await fetch(`/api/student/worksheets?class_id=${chapter.classId}`);
+	const worksheetsData = worksheetsResponse.ok
+		? await worksheetsResponse.json()
+		: { worksheets: [] };
+
 	return {
 		chapter,
 		className: classInfo?.name || 'Classe',
 		questionTemplates,
-		exerciseDetails
+		exerciseDetails,
+		worksheets: worksheetsData.worksheets || []
 	};
 };
 
