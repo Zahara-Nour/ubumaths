@@ -351,6 +351,57 @@ describe('edge cases', () => {
 });
 
 // =============================================================================
+// Preprocessing Tests
+// =============================================================================
+
+describe('preprocessing', () => {
+	describe('numprint (\\np) command', () => {
+		it('converts \\np{12345} to formatted number', () => {
+			const ctx = createTestContext();
+			const result = convertMathToCustomSyntax('S = \\np{12345}', ctx);
+
+			expect(result.converted).toBe(true);
+			expect(result.output).toBe('S=12\u202F345');
+		});
+
+		it('converts \\np with decimal comma (preprocessing works even if parse fails)', () => {
+			const ctx = createTestContext();
+			const result = convertMathToCustomSyntax('x = \\np{9,0001}', ctx);
+
+			// Decimal comma is not valid math syntax, so conversion fails
+			// But preprocessing should still replace \np (with decimal formatting)
+			expect(result.output).toBe('x = 9,000\u202F1');
+			expect(result.output).not.toContain('\\np');
+		});
+
+		it('converts \\np in subscript context (preprocessing works even if parse fails)', () => {
+			const ctx = createTestContext();
+			const result = convertMathToCustomSyntax('S_{40} = \\np{9,0001}', ctx);
+
+			// Decimal comma causes parse failure but \np should be replaced (with decimal formatting)
+			expect(result.output).toBe('S_{40} = 9,000\u202F1');
+			expect(result.output).not.toContain('\\np');
+		});
+
+		it('converts multiple \\np commands', () => {
+			const ctx = createTestContext();
+			const result = convertMathToCustomSyntax('\\np{1000} + \\np{2000}', ctx);
+
+			expect(result.converted).toBe(true);
+			expect(result.output).toBe('1\u202F000+2\u202F000');
+		});
+
+		it('handles \\np with spaces before brace', () => {
+			const ctx = createTestContext();
+			const result = convertMathToCustomSyntax('x = \\np {12345}', ctx);
+
+			expect(result.converted).toBe(true);
+			expect(result.output).toBe('x=12\u202F345');
+		});
+	});
+});
+
+// =============================================================================
 // Constants Tests
 // =============================================================================
 

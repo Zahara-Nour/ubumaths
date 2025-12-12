@@ -140,6 +140,50 @@ function toCustomSafe(ast: MathNode): { output: string; unsupported: Unsupported
 }
 
 // =============================================================================
+// Preprocessing Functions
+// =============================================================================
+
+/**
+ * Format a number string with French spacing (thin space every 3 digits).
+ * Uses Unicode thin space (U+202F) for proper typographic spacing.
+ *
+ * - Integer part: spaces from right to left (1234567 -> 1 234 567)
+ * - Decimal part: spaces from left to right (89012345 -> 890 123 45)
+ */
+function formatFrenchNumber(numStr: string): string {
+	// Split on decimal separator (comma or period)
+	const decimalMatch = numStr.match(/^([^,.]*)([,.]?)(.*)$/);
+	if (!decimalMatch) return numStr;
+
+	const [, intPart, separator, decPart] = decimalMatch;
+
+	// Add thin spaces to integer part (from right to left)
+	const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F');
+
+	if (!separator) {
+		return formattedInt;
+	}
+
+	// Add thin spaces to decimal part (from left to right, every 3 digits)
+	const formattedDec = decPart.replace(/(\d{3})(?=\d)/g, '$1\u202F');
+
+	return `${formattedInt}${separator}${formattedDec}`;
+}
+
+/**
+ * Preprocess LaTeX math to handle non-standard commands before parsing.
+ * Currently handles:
+ * - \np{...} (numprint package) - French number formatting
+ */
+function preprocessMathLatex(latex: string): string {
+	// Replace \np{...} with formatted number
+	// Pattern: \np followed by {content}
+	return latex.replace(/\\np\s*\{([^}]*)\}/g, (_match, content: string) => {
+		return formatFrenchNumber(content);
+	});
+}
+
+// =============================================================================
 // Main Conversion Function
 // =============================================================================
 
@@ -177,8 +221,11 @@ export function convertMathToCustomSyntax(
 		return { output: '', converted: true };
 	}
 
+	// Preprocess to handle non-standard commands like \np
+	const preprocessedLatex = preprocessMathLatex(latex);
+
 	// Step 1: Parse LaTeX to MathAST
-	const parseResult = parseLatexSafe(latex);
+	const parseResult = parseLatexSafe(preprocessedLatex);
 
 	// Check for parse errors
 	if (parseResult.errors.length > 0) {
@@ -188,20 +235,21 @@ export function convertMathToCustomSyntax(
 				type: 'unsupported-math-feature',
 				message: `Could not parse LaTeX math: ${parseResult.errors[0].message}`,
 				severity: 'info',
-				command: latex.slice(0, 50) + (latex.length > 50 ? '...' : '')
+				command: preprocessedLatex.slice(0, 50) + (preprocessedLatex.length > 50 ? '...' : '')
 			},
 			line,
 			column
 		);
 
+		// Return preprocessed LaTeX (with \np converted) even if parsing failed
 		return {
-			output: latex,
+			output: preprocessedLatex,
 			converted: false,
 			unsupportedFeatures: [
 				{
 					category: 'parse-error',
 					feature: parseResult.errors[0].message,
-					latex
+					latex: preprocessedLatex
 				}
 			]
 		};
@@ -226,8 +274,9 @@ export function convertMathToCustomSyntax(
 			);
 		}
 
+		// Return preprocessed LaTeX (with \np converted) even if conversion failed
 		return {
-			output: latex,
+			output: preprocessedLatex,
 			converted: false,
 			unsupportedFeatures: conversionResult.unsupported
 		};

@@ -281,12 +281,12 @@ describe('Exp - Static Factories (Relations)', () => {
 
 	it('creates lessThanOrEqual', () => {
 		const exp = Exp.lessThanOrEqual(Exp.variable('x'), Exp.number('5'));
-		expect(exp.latex).toBe('x \\leq 5');
+		expect(exp.latex).toBe('x \\leqslant 5');
 	});
 
 	it('creates greaterThanOrEqual', () => {
 		const exp = Exp.greaterThanOrEqual(Exp.variable('x'), Exp.number('0'));
-		expect(exp.latex).toBe('x \\geq 0');
+		expect(exp.latex).toBe('x \\geqslant 0');
 	});
 
 	it('creates notEquals', () => {
@@ -459,12 +459,12 @@ describe('Exp - Instance Methods (Relations)', () => {
 
 	it('chains lessThanOrEqual', () => {
 		const exp = Exp.variable('x').lessThanOrEqual(Exp.number('5'));
-		expect(exp.latex).toBe('x \\leq 5');
+		expect(exp.latex).toBe('x \\leqslant 5');
 	});
 
 	it('chains greaterThanOrEqual', () => {
 		const exp = Exp.variable('x').greaterThanOrEqual(Exp.number('0'));
-		expect(exp.latex).toBe('x \\geq 0');
+		expect(exp.latex).toBe('x \\geqslant 0');
 	});
 
 	it('chains notEquals', () => {
