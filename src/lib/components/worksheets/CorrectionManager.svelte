@@ -7,7 +7,6 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Alert from '$lib/components/ui/alert';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		FileCheck,
@@ -49,7 +48,6 @@
 			? new Date(assignment.correction_release_at).toISOString().slice(0, 16)
 			: ''
 	);
-	let showSolutionsBeforeDue = $state<boolean>(assignment.show_solutions_before_due);
 
 	// Loading states
 	let isUpdating = $state(false);
@@ -64,16 +62,14 @@
 				scheduledDate !==
 					(assignment.correction_release_at
 						? new Date(assignment.correction_release_at).toISOString().slice(0, 16)
-						: '')) ||
-			showSolutionsBeforeDue !== assignment.show_solutions_before_due
+						: ''))
 	);
 
-	// Release mode options
+	// Release mode options (sans after_due car pas de rendu)
 	const releaseModeItems = [
 		{ value: 'manual', label: 'Manuel' },
 		{ value: 'immediate', label: 'Immediat' },
-		{ value: 'scheduled', label: 'Programme' },
-		{ value: 'after_due', label: 'Apres date limite' }
+		{ value: 'scheduled', label: 'Programme' }
 	];
 
 	// Status derived values
@@ -98,8 +94,7 @@
 					correction_release_at:
 						releaseMode === 'scheduled' && scheduledDate
 							? new Date(scheduledDate).toISOString()
-							: null,
-					show_solutions_before_due: showSolutionsBeforeDue
+							: null
 				})
 			});
 
@@ -215,20 +210,18 @@
 		if (!correctionStatus) return 'Statut inconnu';
 
 		if (correctionStatus.isReleased) {
-			return `Publiees (${correctionStatus.studentsWithAccess}/${correctionStatus.totalStudents} eleves)`;
+			return `Visibles (${correctionStatus.studentsWithAccess}/${correctionStatus.totalStudents} eleves)`;
 		}
 
 		switch (correctionStatus.mode) {
 			case 'immediate':
-				return 'Disponibles immediatement';
+				return 'Visibles immediatement';
 			case 'scheduled':
 				if (correctionStatus.releaseAt) {
 					const date = new Date(correctionStatus.releaseAt);
 					return `Programmees pour le ${date.toLocaleDateString('fr-FR')} a ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
 				}
 				return 'Date non definie';
-			case 'after_due':
-				return 'Apres la date limite';
 			case 'manual':
 			default:
 				return 'En attente de publication manuelle';
@@ -243,14 +236,12 @@
 	function getModeDescription(mode: CorrectionReleaseMode): string {
 		switch (mode) {
 			case 'immediate':
-				return 'Les corrections sont disponibles des que le devoir est actif';
+				return "Les corrections sont visibles des l'assignation";
 			case 'scheduled':
-				return 'Les corrections seront publiees a la date et heure specifiees';
-			case 'after_due':
-				return 'Les corrections seront disponibles automatiquement apres la date limite';
+				return 'Les corrections seront visibles a la date et heure specifiees';
 			case 'manual':
 			default:
-				return 'Vous devrez publier les corrections manuellement';
+				return 'Vous pourrez publier les corrections manuellement quand vous le souhaitez';
 		}
 	}
 </script>
@@ -262,7 +253,7 @@
 			Gestion des corrections
 		</Card.Title>
 		<Card.Description>
-			Configurez quand et comment les corrections sont mises a disposition des eleves
+			Configurez quand les corrections sont visibles pour les eleves
 		</Card.Description>
 	</Card.Header>
 
@@ -357,31 +348,10 @@
 					<AlertCircle class="h-4 w-4" />
 					<Alert.Title>Attention</Alert.Title>
 					<Alert.Description>
-						En mode immediat, les eleves pourront voir les corrections des qu'ils accedent au
-						devoir, meme avant de soumettre leur travail.
+						En mode immediat, les eleves verront les corrections des qu'ils accedent a la feuille.
 					</Alert.Description>
 				</Alert.Root>
 			{/if}
-		</div>
-
-		<Separator />
-
-		<!-- Additional Options -->
-		<div class="space-y-4">
-			<h4 class="text-sm font-medium">Options supplementaires</h4>
-
-			<div class="flex items-start space-x-3">
-				<MyCheckbox id="show-before-due" bind:checked={showSolutionsBeforeDue} />
-				<div class="space-y-1">
-					<Label for="show-before-due" class="cursor-pointer">
-						Afficher les solutions avant la date limite
-					</Label>
-					<p class="text-sm text-muted-foreground">
-						Par defaut, les corrections ne sont accessibles qu'apres la date limite, meme si le mode
-						de publication est defini autrement.
-					</p>
-				</div>
-			</div>
 		</div>
 
 		<!-- Save Button -->
@@ -403,8 +373,7 @@
 			<Info class="h-4 w-4" />
 			<Alert.Title>Information</Alert.Title>
 			<Alert.Description>
-				Chaque eleve recevra une correction personnalisee correspondant a sa version de l'exercice.
-				Les parametres et valeurs numeriques seront identiques a ceux de sa feuille de travail.
+				Chaque eleve recevra une correction personnalisee correspondant a sa version de la feuille.
 			</Alert.Description>
 		</Alert.Root>
 	</Card.Content>

@@ -16,13 +16,13 @@ export type WorksheetStatus = (typeof WORKSHEET_STATUSES)[number];
 export const VARIANT_MODES = ['none', 'individual', 'n_versions', 'group'] as const;
 export type VariantMode = (typeof VARIANT_MODES)[number];
 
-export const INSTANCE_STATUSES = ['generated', 'in_progress', 'submitted', 'graded'] as const;
+export const INSTANCE_STATUSES = ['generated'] as const;
 export type InstanceStatus = (typeof INSTANCE_STATUSES)[number];
 
 export const ASSIGNMENT_STATUSES = ['draft', 'active', 'completed', 'cancelled'] as const;
 export type AssignmentStatus = (typeof ASSIGNMENT_STATUSES)[number];
 
-export const CORRECTION_RELEASE_MODES = ['manual', 'immediate', 'scheduled', 'after_due'] as const;
+export const CORRECTION_RELEASE_MODES = ['manual', 'immediate', 'scheduled'] as const;
 export type CorrectionReleaseMode = (typeof CORRECTION_RELEASE_MODES)[number];
 
 export const NUMBERING_STYLES = ['numeric', 'alphabetic', 'roman'] as const;
@@ -156,9 +156,6 @@ export interface WorksheetInstanceRow {
 	variant_version: string | null;
 	status: InstanceStatus;
 	generated_at: string;
-	accessed_at: string | null;
-	submitted_at: string | null;
-	time_spent_seconds: number;
 	created_at: string;
 	updated_at: string;
 }
@@ -172,15 +169,10 @@ export interface WorksheetAssignmentRow {
 	individualized: boolean;
 	assigned_at: string;
 	available_from: string;
-	due_at: string | null;
 	closes_at: string | null;
 	correction_release_mode: CorrectionReleaseMode;
 	correction_release_at: string | null;
-	show_solutions_before_due: boolean;
 	show_corrections: boolean;
-	allow_late_submission: boolean;
-	max_attempts: number;
-	time_limit_minutes: number | null;
 	status: AssignmentStatus;
 	created_by: string;
 	created_at: string;
@@ -257,7 +249,6 @@ export interface WorksheetInstanceInsert {
 	instance_data: InstanceData;
 	variant_seed: number;
 	variant_version?: string | null;
-	status?: InstanceStatus;
 }
 
 export interface WorksheetAssignmentInsert {
@@ -267,15 +258,10 @@ export interface WorksheetAssignmentInsert {
 	instructions?: string | null;
 	individualized?: boolean;
 	available_from?: string;
-	due_at?: string | null;
 	closes_at?: string | null;
 	correction_release_mode?: CorrectionReleaseMode;
 	correction_release_at?: string | null;
-	show_solutions_before_due?: boolean;
 	show_corrections?: boolean;
-	allow_late_submission?: boolean;
-	max_attempts?: number;
-	time_limit_minutes?: number | null;
 	status?: AssignmentStatus;
 	created_by: string;
 }
@@ -338,9 +324,6 @@ export interface WorksheetExerciseUpdate {
 
 export interface WorksheetInstanceUpdate {
 	status?: InstanceStatus;
-	accessed_at?: string | null;
-	submitted_at?: string | null;
-	time_spent_seconds?: number;
 }
 
 export interface WorksheetAssignmentUpdate {
@@ -348,15 +331,10 @@ export interface WorksheetAssignmentUpdate {
 	instructions?: string | null;
 	individualized?: boolean;
 	available_from?: string;
-	due_at?: string | null;
 	closes_at?: string | null;
 	correction_release_mode?: CorrectionReleaseMode;
 	correction_release_at?: string | null;
-	show_solutions_before_due?: boolean;
 	show_corrections?: boolean;
-	allow_late_submission?: boolean;
-	max_attempts?: number;
-	time_limit_minutes?: number | null;
 	status?: AssignmentStatus;
 }
 
@@ -447,7 +425,7 @@ export interface StudentWorksheetView {
 	type: WorksheetType;
 	instructions: string | null;
 	available_from: string;
-	due_at: string | null;
+	closes_at: string | null;
 	show_corrections: boolean;
 	class_name: string | null;
 	exercises: StudentExerciseView[];
@@ -464,7 +442,7 @@ export interface StudentWorksheetListItem {
 	class_id: string | null;
 	class_name: string | null;
 	available_from: string;
-	due_at: string | null;
+	closes_at: string | null;
 	show_corrections: boolean;
 	exercise_count: number;
 }
@@ -500,13 +478,10 @@ export interface WorksheetAssignmentFormData {
 	instructions: string;
 	individualized: boolean;
 	available_from: Date;
-	due_at: Date | null;
 	closes_at: Date | null;
 	correction_release_mode: CorrectionReleaseMode;
 	correction_release_at: Date | null;
-	allow_late_submission: boolean;
-	max_attempts: number;
-	time_limit_minutes: number | null;
+	show_corrections: boolean;
 }
 
 // =============================================================================

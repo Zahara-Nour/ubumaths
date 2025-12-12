@@ -802,7 +802,7 @@ export const studentWorksheetListItemSchema = z.object({
 	class_id: z.string().uuid().nullable(),
 	class_name: z.string().nullable(),
 	available_from: timestampSchema,
-	due_at: timestampSchema.nullable(),
+	closes_at: timestampSchema.nullable(),
 	show_corrections: z.boolean(),
 	exercise_count: z.number().int().nonnegative()
 });
@@ -844,7 +844,7 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	type: worksheetTypeSchema,
 	instructions: z.string().nullable(),
 	available_from: timestampSchema,
-	due_at: timestampSchema.nullable(),
+	closes_at: timestampSchema.nullable(),
 	show_corrections: z.boolean(),
 	class_name: z.string().nullable(),
 	exercises: z.array(studentExerciseViewSchema)

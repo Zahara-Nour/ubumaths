@@ -114,7 +114,7 @@
 
 			// Remove from local state
 			assignedStudents = assignedStudents.filter((s) => s.student_id !== studentId);
-			toaster.success('Eleve retire du devoir');
+			toaster.success("Eleve retire de l'assignation");
 		} catch (err) {
 			console.error('Error removing student:', err);
 			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la suppression');
@@ -177,7 +177,7 @@
 			</div>
 		</div>
 		<Card.Description>
-			Eleves assignes a ce devoir en plus de ceux de la classe. Ces assignations permettent
+			Eleves assignes a cette feuille en plus de ceux de la classe. Ces assignations permettent
 			d'ajouter des eleves specifiques qui ne sont pas dans la classe assignee.
 		</Card.Description>
 	</Card.Header>
