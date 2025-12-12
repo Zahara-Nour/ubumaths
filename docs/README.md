@@ -302,6 +302,24 @@ Système d'animation de constructions géométriques inspiré d'InstrumenPoche (
 - [Guide de conversion InstrumenPoche](claude/instrumenpoche-conversion.md) - Mapping XML → JSON
 - **2025-12-06** : Import des exemples InstrumenPoche
 
+### 📋 Fiches de Travail (Worksheets)
+
+**Status** : ✅ Production | [Documentation →](features/worksheets.md) 🆕 ⭐
+
+Système complet de création et distribution de fiches de travail avec mode consultation en ligne.
+
+- [Vue d'ensemble](features/worksheets.md) - Documentation complète de la feature
+- [Mode Consultation En Ligne](features/worksheets-online-mode.md) - Nouveau mode interactif 🆕
+- Consultation en ligne des fiches assignées (élèves)
+- Résolution déterministe des exercices paramétrés (seed = worksheetId + studentId)
+- Assignation individuelle en plus de l'assignation par classe
+- Contrôle granulaire de la visibilité des corrections (global + par exercice)
+- Intégration dans les chapitres de cours (onglet "Fiches")
+- Génération PDF via Typst avec templates personnalisables
+- Système de variantes pour exercices paramétrés
+- Organisation par sections avec gestion de positions
+- **2025-12-12** : Mode consultation en ligne lancé
+
 ### 💬 Messagerie privée
 
 **Status** : ✅ Production | [Documentation →](features/messaging/README.md)
@@ -504,7 +522,7 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
 
 ## 📊 Statistiques
 
-- **Features en production** : 19 🆕 (Journal des Récompenses ajouté)
+- **Features en production** : 20 🆕 (Fiches de Travail - Mode En Ligne ajouté)
 - **Features en développement** : 1 (Navadra)
 - **Tests** : 3,583 tests (99.3% pass rate)
   - Unit tests: 2,765/2,789 passing (99.1%) 🆕 (+130 summaries tests)
@@ -518,15 +536,16 @@ Documentation historique et obsolète : [Archive →](archive/README.md)
   - 97% fewer N+1 queries (244 → 6 per load)
 - **Database Tables** :
   - 5 chat tables (conversations, messages, conversation_participants, message_reports, user_restrictions)
-  - 7 history tables (gidouilles_history, bonus_history, vip_cards_activity, student_warnings history, daily_summaries, weekly_rewards, reward_events) 🆕
-- **Automated Jobs** : 1 Vercel cron (daily summaries & weekly rewards at 01:00 UTC) 🆕
-- **Multi-Timezone Support** : 80+ IANA timezones with DST handling 🆕
-- **Database Tables (Google)** : 6 Google Classroom tables (integrations, courses, topics, materials, attachments, shared_materials) 🆕
+  - 7 history tables (gidouilles_history, bonus_history, vip_cards_activity, student_warnings history, daily_summaries, weekly_rewards, reward_events)
+  - 8 worksheet tables (templates, worksheets, sections, exercises, instances, assignments, assignment_students, assignment_exercise_settings) 🆕
+- **Automated Jobs** : 1 Vercel cron (daily summaries & weekly rewards at 01:00 UTC)
+- **Multi-Timezone Support** : 80+ IANA timezones with DST handling
+- **Database Tables (Google)** : 6 Google Classroom tables (integrations, courses, topics, materials, attachments, shared_materials)
   - 28 RLS policies pour sécurité granulaire
   - 4 triggers pour dénormalisation automatique (course_name, teacher_name)
   - Chiffrement AES-256-GCM des tokens OAuth
-- **Lignes de documentation** : ~107,000+ 🆕 (added audit trail technical reference)
-- **Dernière mise à jour** : 2025-12-09
+- **Lignes de documentation** : ~110,000+ 🆕 (added worksheets online mode documentation)
+- **Dernière mise à jour** : 2025-12-12
 
 ---
 
