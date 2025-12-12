@@ -446,6 +446,7 @@ export interface WorksheetAssignmentWithRelations extends WorksheetAssignmentRow
  */
 export interface StudentExerciseView {
 	id: string;
+	exercise_id: string;
 	position: number;
 	points: number | null;
 	custom_instructions: string | null;

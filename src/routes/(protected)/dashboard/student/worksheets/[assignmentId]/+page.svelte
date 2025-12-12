@@ -29,7 +29,7 @@
 	// Current exercise mastery status for the modal
 	let currentExercise = $derived(exercises[currentExerciseIndex]);
 	let currentExerciseMasteryStatus = $derived<MasteryStatus>(
-		currentExercise ? (masteryMap.get(currentExercise.id) ?? 'not_worked') : 'not_worked'
+		currentExercise ? (masteryMap.get(currentExercise.exercise_id) ?? 'not_worked') : 'not_worked'
 	);
 
 	// Fetch mastery statuses on mount
@@ -97,7 +97,7 @@
 	function handleMasteryChange(status: MasteryStatus) {
 		const exercise = exercises[currentExerciseIndex];
 		if (exercise) {
-			updateMastery(exercise.id, status);
+			updateMastery(exercise.exercise_id, status);
 		}
 	}
 
@@ -164,7 +164,7 @@
 					<ExerciseListItem
 						{exercise}
 						index={i + 1}
-						masteryStatus={masteryMap.get(exercise.id) ?? 'not_worked'}
+						masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
 						onclick={() => openExercise(i)}
 					/>
 				{/each}
