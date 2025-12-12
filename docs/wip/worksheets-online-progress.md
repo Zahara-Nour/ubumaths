@@ -211,13 +211,42 @@ L'API eleve resout les exercices dynamiquement avec un seed deterministe (worksh
 
 ---
 
+## Phase 6: Interface Eleve - Liste - COMPLETE
+
+### Fichiers crees
+
+- `src/routes/(protected)/dashboard/student/worksheets/+page.server.ts`
+- `src/routes/(protected)/dashboard/student/worksheets/+page.svelte`
+- `src/lib/components/student/worksheets/WorksheetCard.svelte`
+
+### Fonctionnalites implementees
+
+- Page liste avec grille responsive 1-2-3 colonnes
+- Filtre par classe (MySelect) - affiche seulement si >1 classe
+- Pagination avec navigation
+- WorksheetCard avec:
+  - Badge type (worksheet, exam, quiz, homework, assessment)
+  - Badge corrections disponibles
+  - Nombre d'exercices
+  - Date limite avec formatage relatif francais et indicateur urgence
+  - Bouton "Voir la fiche"
+- Loading skeletons pendant chargement
+- Empty state contextuel (avec/sans filtres)
+- Validation Zod des query params avec graceful degradation
+
+### Reviews effectuees
+
+- [x] svelte-autofixer - No issues
+- [x] code-reviewer (Sonnet) - Excellent, ready to merge
+
+---
+
 ## Prochaines etapes
 
-1. Phase 6: Interface Eleve - Liste
-2. Phase 7: Interface Eleve - Detail
-3. Phase 8: Integration Cours
-4. Phase 9: Interface Enseignant - Modifications
-5. Phase 10: Quality Checks + Documentation
+1. Phase 7: Interface Eleve - Detail
+2. Phase 8: Integration Cours
+3. Phase 9: Interface Enseignant - Modifications
+4. Phase 10: Quality Checks + Documentation
 
 ---
 
