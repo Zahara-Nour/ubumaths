@@ -600,23 +600,25 @@
 
 		<!-- Per-Exercise Correction Visibility -->
 		<Collapsible.Root bind:open={exercisesExpanded}>
-			<Collapsible.Trigger asChild let:builder>
-				<Button builders={[builder]} variant="ghost" class="h-auto w-full justify-between p-4">
-					<div class="flex items-center gap-2">
-						<ListChecks class="h-5 w-5" />
-						<span class="font-medium">Corrections par exercice</span>
-						{#if exercises.length > 0}
-							<Badge variant="outline" class="ml-2">
-								{visibleCorrectionsCount}/{exercises.length} visibles
-							</Badge>
+			<Collapsible.Trigger>
+				{#snippet child({ props })}
+					<Button {...props} variant="ghost" class="h-auto w-full justify-between p-4">
+						<div class="flex items-center gap-2">
+							<ListChecks class="h-5 w-5" />
+							<span class="font-medium">Corrections par exercice</span>
+							{#if exercises.length > 0}
+								<Badge variant="outline" class="ml-2">
+									{visibleCorrectionsCount}/{exercises.length} visibles
+								</Badge>
+							{/if}
+						</div>
+						{#if exercisesExpanded}
+							<ChevronDown class="h-4 w-4" />
+						{:else}
+							<ChevronRight class="h-4 w-4" />
 						{/if}
-					</div>
-					{#if exercisesExpanded}
-						<ChevronDown class="h-4 w-4" />
-					{:else}
-						<ChevronRight class="h-4 w-4" />
-					{/if}
-				</Button>
+					</Button>
+				{/snippet}
 			</Collapsible.Trigger>
 
 			<Collapsible.Content>
