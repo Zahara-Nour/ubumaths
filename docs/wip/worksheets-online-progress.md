@@ -172,11 +172,52 @@
 
 ---
 
+## Phase 4: API Enseignant - COMPLETE
+
+### Fichiers crees
+
+- `src/routes/api/worksheets/[id]/assignments/[assignmentId]/students/+server.ts`
+- `src/routes/api/worksheets/[id]/assignments/[assignmentId]/corrections/+server.ts`
+
+### Endpoints
+
+**Students:**
+
+- `GET` - Liste des eleves assignes individuellement
+- `POST` - Ajouter des eleves individuels (batch jusqu'a 200)
+- `DELETE` - Retirer un eleve individuel
+
+**Corrections:**
+
+- `GET` - Parametres de correction (global + overrides)
+- `PUT` - Mise a jour (global, par exercice, ou bulk)
+
+### Reviews effectuees
+
+- [x] code-reviewer (Sonnet) - Good with pattern suggestions
+- [x] security-auditor (Sonnet) - APPROVED (0 critical, 0 high)
+
+---
+
+## Phase 5: Synchronisation Instances - SKIPPED
+
+**Raison:** Non necessaire avec l'architecture choisie.
+
+L'API eleve resout les exercices dynamiquement avec un seed deterministe (worksheetId + studentId), ce qui garantit:
+
+- Memes valeurs parametrees pour chaque eleve
+- Mise a jour automatique quand exercices ajoutes/modifies/supprimes
+- Pas besoin de pre-generer ou synchroniser les instances
+
+---
+
 ## Prochaines etapes
 
-1. Phase 4: API Enseignant (gestion des assignations individuelles, parametres corrections)
-2. Phase 5: Interface eleve (page /student/worksheets)
-3. Phase 6: Interface enseignant (gestion corrections)
+1. Phase 6: Interface Eleve - Liste
+2. Phase 7: Interface Eleve - Detail
+3. Phase 8: Integration Cours
+4. Phase 9: Interface Enseignant - Modifications
+5. Phase 10: Quality Checks + Documentation
 
 ---
 
@@ -198,8 +239,13 @@
 - `src/routes/api/student/worksheets/+server.ts` (cree)
 - `src/routes/api/student/worksheets/[assignmentId]/+server.ts` (cree)
 
+### Phase 4
+
+- `src/routes/api/worksheets/[id]/assignments/[assignmentId]/students/+server.ts` (cree)
+- `src/routes/api/worksheets/[id]/assignments/[assignmentId]/corrections/+server.ts` (cree)
+
 ---
 
 ## Derniere mise a jour
 
-2025-12-12 - Phase 3 complete
+2025-12-12 - Phase 4 complete, Phase 5 skipped
