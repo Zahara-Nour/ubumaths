@@ -681,6 +681,12 @@ export function convertLatexToTypstMath(latex: string): string {
 		result = result.replace(regex, letter);
 	}
 
+	// Ellipsis (dots) - MUST be before \cdot conversion
+	result = result.replace(/\\cdots/g, 'dots.c');
+	result = result.replace(/\\vdots/g, 'dots.v');
+	result = result.replace(/\\ddots/g, 'dots.down');
+	result = result.replace(/\\ldots/g, '...');
+
 	// Convert \cdot to centered dot (Typst uses dot.c)
 	result = result.replace(/\\cdot/g, 'dot.c');
 
@@ -699,7 +705,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Convert \infty to infinity
 	result = result.replace(/\\infty/g, 'infinity');
 
-	// Convert comparison operators
+	// Convert comparison operators - ORDER MATTERS: slant versions before regular
+	result = result.replace(/\\leqslant/g, 'lt.eq.slant');
+	result = result.replace(/\\geqslant/g, 'gt.eq.slant');
+	result = result.replace(/\\nleqslant/g, 'lt.eq.slant.not');
+	result = result.replace(/\\ngeqslant/g, 'gt.eq.slant.not');
 	result = result.replace(/\\leq/g, '<=');
 	result = result.replace(/\\le(?![a-z])/g, '<=');
 	result = result.replace(/\\geq/g, '>=');
@@ -718,6 +728,12 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\Rightarrow/g, '=>');
 	result = result.replace(/\\Leftarrow/g, '<=');
 	result = result.replace(/\\Leftrightarrow/g, '<=>');
+
+	// Integrals - MUST be before \in conversion (otherwise \int becomes "int")
+	result = result.replace(/\\iiint/g, 'integral.triple');
+	result = result.replace(/\\iint/g, 'integral.double');
+	result = result.replace(/\\oint/g, 'integral.cont');
+	result = result.replace(/\\int/g, 'integral');
 
 	// Convert set operators
 	result = result.replace(/\\in/g, 'in');
@@ -741,17 +757,72 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\textbf\s*{([^{}]*)}/g, 'bold("$1")');
 	result = result.replace(/\\textit\s*{([^{}]*)}/g, 'italic("$1")');
 
+	// ========================================================================
+	// NEW CONVERSIONS - Must be BEFORE the catch-all
+	// ========================================================================
+
+	// 1. Align environments - remove delimiters
+	result = result.replace(/\\begin\{align\*?\}/g, '');
+	result = result.replace(/\\end\{align\*?\}/g, '');
+
+	// 2. Binomial coefficients (2 arguments)
+	result = result.replace(/\\binom\s*{([^{}]*)}\s*{([^{}]*)}/g, 'binom($1, $2)');
+
+	// 3. Vectors and accents (1 argument)
+	result = result.replace(/\\vec\s*{([^{}]*)}/g, 'arrow($1)');
+	result = result.replace(/\\hat\s*{([^{}]*)}/g, 'hat($1)');
+	result = result.replace(/\\bar\s*{([^{}]*)}/g, 'macron($1)');
+	result = result.replace(/\\tilde\s*{([^{}]*)}/g, 'tilde($1)');
+	result = result.replace(/\\dot\s*{([^{}]*)}/g, 'dot($1)');
+	result = result.replace(/\\ddot\s*{([^{}]*)}/g, 'diaer($1)');
+	result = result.replace(/\\overline\s*{([^{}]*)}/g, 'overline($1)');
+	result = result.replace(/\\underline\s*{([^{}]*)}/g, 'underline($1)');
+
+	// 4. Number sets (blackboard bold) - specific letters
+	result = result.replace(/\\mathbb\s*{R}/g, 'RR');
+	result = result.replace(/\\mathbb\s*{N}/g, 'NN');
+	result = result.replace(/\\mathbb\s*{Z}/g, 'ZZ');
+	result = result.replace(/\\mathbb\s*{Q}/g, 'QQ');
+	result = result.replace(/\\mathbb\s*{C}/g, 'CC');
+
+	// 5. Math text styles (1 argument)
+	result = result.replace(/\\mathbf\s*{([^{}]*)}/g, 'bold($1)');
+	result = result.replace(/\\mathit\s*{([^{}]*)}/g, 'italic($1)');
+	result = result.replace(/\\mathrm\s*{([^{}]*)}/g, 'upright($1)');
+	result = result.replace(/\\mathcal\s*{([^{}]*)}/g, 'cal($1)');
+	result = result.replace(/\\mathfrak\s*{([^{}]*)}/g, 'frak($1)');
+
+	// 6. Sums and products
+	result = result.replace(/\\sum/g, 'sum');
+	result = result.replace(/\\prod/g, 'product');
+
+	// Limits commands - Typst handles this automatically, just remove them
+	result = result.replace(/\\limits/g, '');
+	result = result.replace(/\\nolimits/g, '');
+
+	// 7. Math spaces - ORDER MATTERS: qquad before quad
+	// Add spaces around to prevent merging with adjacent letters (e.g., "a\:n" → "a med n", not "amedn")
+	result = result.replace(/\\qquad/g, ' wide ');
+	result = result.replace(/\\quad/g, ' quad ');
+	result = result.replace(/\\,/g, ' thin ');
+	result = result.replace(/\\:/g, ' med ');
+	result = result.replace(/\\;/g, ' thick ');
+	result = result.replace(/\\!/g, ' negthin ');
+
+	// 10. Double backslash for line breaks (align environment)
+	result = result.replace(/\\\\/g, '\\');
+
+	// ========================================================================
+	// END NEW CONVERSIONS
+	// ========================================================================
+
 	// Convert subscript and superscript (these work the same in Typst)
 	// ^ and _ work similarly, but multi-char need no braces in Typst
 	// Actually, braces {} are handled automatically
 
-	// Clean up any remaining backslashes before common commands
-	// This is a catch-all for less common commands
-	result = result.replace(/\\([a-zA-Z]+)/g, (match, cmd) => {
-		// If it's a known command we missed, try to convert
-		// Otherwise, leave it as-is (Typst might understand it or error clearly)
-		return cmd;
-	});
+	// Keep unknown LaTeX commands as-is (with backslash)
+	// Typst will show a clear error during compilation if not recognized
+	// This makes debugging easier than silently removing backslashes
 
 	return result;
 }
