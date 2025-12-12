@@ -265,11 +265,56 @@ L'API eleve resout les exercices dynamiquement avec un seed deterministe (worksh
 
 ---
 
-## Prochaines etapes
+## Phase 8: Integration Cours - COMPLETE
 
-1. Phase 8: Integration Cours
-2. Phase 9: Interface Enseignant - Modifications
-3. Phase 10: Quality Checks + Documentation
+### Fichiers modifies
+
+- `src/routes/(protected)/dashboard/student/cours/[chapterId]/+page.server.ts`
+- `src/routes/(protected)/dashboard/student/cours/[chapterId]/+page.svelte`
+
+### Fonctionnalites implementees
+
+- Nouvel onglet "Fiches" dans la page de chapitre etudiant
+- Chargement des worksheets par class_id via API
+- Affichage grille avec WorksheetCard components
+- Badge count dans l'onglet
+
+---
+
+## Phase 9: Interface Enseignant - COMPLETE
+
+### Fichiers crees
+
+- `src/lib/components/worksheets/StudentSelector.svelte`
+- `src/lib/components/worksheets/AssignmentStudentsPanel.svelte`
+- `src/lib/components/worksheets/CorrectionVisibilityPanel.svelte`
+
+### Fichiers modifies
+
+- `src/lib/components/worksheets/WorksheetAssignmentForm.svelte`
+
+### Fonctionnalites implementees
+
+- StudentSelector: Selection d'eleves individuels avec dialog
+- AssignmentStudentsPanel: Gestion des eleves assignes
+- CorrectionVisibilityPanel: Toggle global et par exercice
+- WorksheetAssignmentForm: Mode consultation en ligne toggle
+
+---
+
+## Phase 10: Quality Checks - COMPLETE
+
+### Verifications effectuees
+
+- [x] pnpm build - SUCCESS (no TypeScript errors)
+- [x] pnpm lint - Pre-existing warnings only, no new errors
+- [x] Pre-commit hooks passed on all commits
+
+---
+
+## Status: FEATURE COMPLETE
+
+Toutes les phases sont terminees. La feature "Worksheets Online Mode" est prete pour le merge.
 
 ---
 
