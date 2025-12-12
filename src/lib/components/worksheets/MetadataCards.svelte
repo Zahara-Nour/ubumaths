@@ -410,7 +410,7 @@
 				{/if}
 			</div>
 		</Card.Header>
-		<Card.Content class="space-y-4">
+		<Card.Content class="space-y-3">
 			<!-- Title -->
 			<div>
 				<div class="flex items-center gap-1">
@@ -447,252 +447,241 @@
 				{/if}
 			</div>
 
-			<Separator />
-
 			<!-- Description -->
-			<div>
-				<div class="flex items-center gap-1">
-					<p class="text-xs text-muted-foreground">Description</p>
-					{#if descriptionChanged}
+			{#if worksheet.description || editingDescription}
+				<div>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Description</p>
+						{#if descriptionChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelDescription}
+								aria-label="Annuler la modification de la description"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
+					{#if !editingDescription}
 						<button
 							type="button"
-							class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={cancelDescription}
-							aria-label="Annuler la modification de la description"
+							class="w-full text-left text-sm whitespace-pre-wrap text-muted-foreground {onSave
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={startEditDescription}
+							disabled={!onSave}
 						>
-							<X class="h-3 w-3" />
+							{worksheet.description}
 						</button>
-					{/if}
-				</div>
-				{#if !editingDescription}
-					<button
-						type="button"
-						class="w-full text-left whitespace-pre-wrap {worksheet.description
-							? 'font-medium'
-							: 'text-muted-foreground/50 italic'} {onSave
-							? 'cursor-pointer hover:text-primary'
-							: 'cursor-default'}"
-						onclick={startEditDescription}
-						disabled={!onSave}
-					>
-						{worksheet.description || 'Aucune description'}
-					</button>
-				{:else}
-					<Textarea
-						bind:value={tempDescription}
-						class="min-h-[80px] w-full"
-						placeholder="Description de la feuille..."
-						onkeydown={handleKeydownDescription}
-					/>
-				{/if}
-			</div>
-
-			<Separator />
-
-			<!-- Type -->
-			<div>
-				<div class="flex items-center gap-1">
-					<p class="text-xs text-muted-foreground">Type</p>
-					{#if typeChanged}
-						<button
-							type="button"
-							class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={cancelType}
-							aria-label="Annuler la modification du type"
-						>
-							<X class="h-3 w-3" />
-						</button>
-					{/if}
-				</div>
-				{#if !editingType}
-					<button
-						type="button"
-						class="text-left font-medium {onSave
-							? 'cursor-pointer hover:text-primary'
-							: 'cursor-default'}"
-						onclick={startEditType}
-						disabled={!onSave}
-					>
-						{worksheet.type ? WORKSHEET_TYPE_LABELS[worksheet.type] : '-'}
-					</button>
-				{:else}
-					<MySelect
-						type="single"
-						bind:value={tempType}
-						items={typeOptions}
-						placeholder="Choisir un type"
-					/>
-				{/if}
-			</div>
-
-			<Separator />
-
-			<!-- Template -->
-			<div>
-				<div class="flex items-center gap-1">
-					<p class="text-xs text-muted-foreground">Template</p>
-					{#if templateChanged}
-						<button
-							type="button"
-							class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={cancelTemplate}
-							aria-label="Annuler la modification du template"
-						>
-							<X class="h-3 w-3" />
-						</button>
-					{/if}
-				</div>
-				{#if !editingTemplate}
-					<button
-						type="button"
-						class="text-left font-medium {onSave && templates.length > 0
-							? 'cursor-pointer hover:text-primary'
-							: 'cursor-default'}"
-						onclick={startEditTemplate}
-						disabled={!onSave || templates.length === 0}
-					>
-						{getTemplateName(worksheet.template_id)}
-					</button>
-				{:else}
-					<MySelect
-						type="single"
-						bind:value={tempTemplateId}
-						items={templateOptions}
-						placeholder="Choisir un template"
-					/>
-				{/if}
-			</div>
-
-			<Separator />
-
-			<!-- Duration -->
-			<div>
-				<div class="flex items-center gap-1">
-					<p class="text-xs text-muted-foreground">Duree estimee</p>
-					{#if durationChanged}
-						<button
-							type="button"
-							class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={cancelDuration}
-							aria-label="Annuler la modification de la duree"
-						>
-							<X class="h-3 w-3" />
-						</button>
-					{/if}
-				</div>
-				{#if !editingDuration}
-					<button
-						type="button"
-						class="text-left font-medium {onSave
-							? 'cursor-pointer hover:text-primary'
-							: 'cursor-default'}"
-						onclick={startEditDuration}
-						disabled={!onSave}
-					>
-						{formatDuration(worksheet.estimated_duration_minutes)}
-					</button>
-				{:else}
-					<div class="flex items-center gap-2">
-						<Input
-							type="number"
-							bind:value={tempDuration}
-							class="w-24"
-							min={0}
-							max={480}
-							placeholder="min"
-							onkeydown={handleKeydownDuration}
+					{:else}
+						<Textarea
+							bind:value={tempDescription}
+							class="min-h-[60px] w-full"
+							placeholder="Description de la feuille..."
+							onkeydown={handleKeydownDescription}
 						/>
-						<span class="text-sm text-muted-foreground">min</span>
+					{/if}
+				</div>
+			{/if}
+
+			<Separator />
+
+			<!-- Type, Template, Duration - compact row -->
+			<div class="grid grid-cols-3 gap-4">
+				<!-- Type -->
+				<div>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Type</p>
+						{#if typeChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelType}
+								aria-label="Annuler la modification du type"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
 					</div>
-				{/if}
+					{#if !editingType}
+						<button
+							type="button"
+							class="text-left text-sm font-medium {onSave
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={startEditType}
+							disabled={!onSave}
+						>
+							{worksheet.type ? WORKSHEET_TYPE_LABELS[worksheet.type] : '-'}
+						</button>
+					{:else}
+						<MySelect type="single" bind:value={tempType} items={typeOptions} placeholder="Type" />
+					{/if}
+				</div>
+
+				<!-- Template -->
+				<div>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Template</p>
+						{#if templateChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelTemplate}
+								aria-label="Annuler la modification du template"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
+					{#if !editingTemplate}
+						<button
+							type="button"
+							class="text-left text-sm font-medium {onSave && templates.length > 0
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={startEditTemplate}
+							disabled={!onSave || templates.length === 0}
+						>
+							{getTemplateName(worksheet.template_id)}
+						</button>
+					{:else}
+						<MySelect
+							type="single"
+							bind:value={tempTemplateId}
+							items={templateOptions}
+							placeholder="Template"
+						/>
+					{/if}
+				</div>
+
+				<!-- Duration -->
+				<div>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Duree</p>
+						{#if durationChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelDuration}
+								aria-label="Annuler la modification de la duree"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
+					{#if !editingDuration}
+						<button
+							type="button"
+							class="text-left text-sm font-medium {onSave
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={startEditDuration}
+							disabled={!onSave}
+						>
+							{formatDuration(worksheet.estimated_duration_minutes)}
+						</button>
+					{:else}
+						<div class="flex items-center gap-1">
+							<Input
+								type="number"
+								bind:value={tempDuration}
+								class="h-8 w-16"
+								min={0}
+								max={480}
+								placeholder="min"
+								onkeydown={handleKeydownDuration}
+							/>
+							<span class="text-xs text-muted-foreground">min</span>
+						</div>
+					{/if}
+				</div>
 			</div>
 
 			<Separator />
 
-			<!-- Grade levels -->
-			<div>
-				<div class="flex items-center gap-1">
-					<p class="text-xs text-muted-foreground">Niveaux scolaires</p>
-					{#if gradesChanged}
+			<!-- Grade levels and Tags - compact row -->
+			<div class="grid grid-cols-2 gap-4">
+				<!-- Grade levels -->
+				<div>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Niveaux</p>
+						{#if gradesChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelGrades}
+								aria-label="Annuler la modification des niveaux"
+							>
+								<X class="h-3 w-3" />
+							</button>
+						{/if}
+					</div>
+					{#if !editingGrades}
 						<button
 							type="button"
-							class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={cancelGrades}
-							aria-label="Annuler la modification des niveaux"
+							class="w-full text-left {onSave
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={startEditGrades}
+							disabled={!onSave}
 						>
-							<X class="h-3 w-3" />
+							{#if worksheet.grade_levels && worksheet.grade_levels.length > 0}
+								<div class="flex flex-wrap gap-1">
+									{#each worksheet.grade_levels as grade, i (i)}
+										<Badge variant="outline" class="text-xs">
+											{formatGradeShort(String(grade) as GradeCode)}
+										</Badge>
+									{/each}
+								</div>
+							{:else}
+								<span class="text-sm font-medium">-</span>
+							{/if}
 						</button>
-					{/if}
-				</div>
-				{#if !editingGrades}
-					<button
-						type="button"
-						class="mt-1 w-full text-left {onSave
-							? 'cursor-pointer hover:text-primary'
-							: 'cursor-default'}"
-						onclick={startEditGrades}
-						disabled={!onSave}
-					>
-						{#if worksheet.grade_levels && worksheet.grade_levels.length > 0}
-							<div class="flex flex-wrap gap-1">
-								{#each worksheet.grade_levels as grade, i (i)}
-									<Badge variant="outline">
-										{formatGradeShort(String(grade) as GradeCode)}
-									</Badge>
-								{/each}
-							</div>
-						{:else}
-							<span class="font-medium">-</span>
-						{/if}
-					</button>
-				{:else}
-					<div class="mt-1">
+					{:else}
 						<GradeBadgeSelector bind:value={tempGrades} />
-					</div>
-				{/if}
-			</div>
-
-			<Separator />
-
-			<!-- Tags -->
-			<div>
-				<div class="flex items-center gap-1">
-					<p class="text-xs text-muted-foreground">Tags</p>
-					{#if tagsChanged}
-						<button
-							type="button"
-							class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={cancelTags}
-							aria-label="Annuler la modification des tags"
-						>
-							<X class="h-3 w-3" />
-						</button>
 					{/if}
 				</div>
-				{#if !editingTags}
-					<button
-						type="button"
-						class="mt-1 w-full text-left {onSave
-							? 'cursor-pointer hover:text-primary'
-							: 'cursor-default'}"
-						onclick={startEditTags}
-						disabled={!onSave}
-					>
-						{#if worksheet.tags && worksheet.tags.length > 0}
-							<div class="flex flex-wrap gap-1">
-								{#each worksheet.tags as tag (tag)}
-									<Badge variant="secondary">{tag}</Badge>
-								{/each}
-							</div>
-						{:else}
-							<span class="font-medium">-</span>
+
+				<!-- Tags -->
+				<div>
+					<div class="flex items-center gap-1">
+						<p class="text-xs text-muted-foreground">Tags</p>
+						{#if tagsChanged}
+							<button
+								type="button"
+								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+								onclick={cancelTags}
+								aria-label="Annuler la modification des tags"
+							>
+								<X class="h-3 w-3" />
+							</button>
 						{/if}
-					</button>
-				{:else}
-					<div class="mt-1">
-						<TagBadgeSelector bind:value={tempTags} />
 					</div>
-				{/if}
+					{#if !editingTags}
+						<button
+							type="button"
+							class="w-full text-left {onSave
+								? 'cursor-pointer hover:text-primary'
+								: 'cursor-default'}"
+							onclick={startEditTags}
+							disabled={!onSave}
+						>
+							{#if worksheet.tags && worksheet.tags.length > 0}
+								<div class="flex flex-wrap gap-1">
+									{#each worksheet.tags as tag (tag)}
+										<Badge variant="secondary" class="text-xs">{tag}</Badge>
+									{/each}
+								</div>
+							{:else}
+								<span class="text-sm font-medium">-</span>
+							{/if}
+						</button>
+					{:else}
+						<TagBadgeSelector bind:value={tempTags} />
+					{/if}
+				</div>
 			</div>
 		</Card.Content>
 	</Card.Root>
