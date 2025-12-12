@@ -269,6 +269,107 @@ export const worksheetExerciseIdParamSchema = z.object({
 });
 
 // ============================================================================
+// STUDENT WORKSHEET API SCHEMAS
+// ============================================================================
+
+/**
+ * Query params for student worksheets list (GET /api/student/worksheets)
+ */
+export const studentWorksheetsQuerySchema = z.object({
+	class_id: uuidSchema.optional(),
+	page: z.coerce
+		.number()
+		.int('Page must be an integer')
+		.positive('Page must be positive')
+		.max(1000, 'Page too high')
+		.default(1),
+	limit: z.coerce
+		.number()
+		.int('Limit must be an integer')
+		.positive('Limit must be positive')
+		.max(100, 'Maximum 100 items per page')
+		.default(50)
+});
+
+/**
+ * URL param for student worksheet detail
+ */
+export const studentWorksheetParamSchema = z.object({
+	assignmentId: uuidSchema
+});
+
+// ============================================================================
+// ASSIGNMENT STUDENT MANAGEMENT SCHEMAS (Teacher API)
+// ============================================================================
+
+/**
+ * Schema for adding individual students to assignment
+ * POST /api/worksheets/[id]/assignments/[assignmentId]/students
+ */
+export const addAssignmentStudentsSchema = z.object({
+	student_ids: z
+		.array(uuidSchema)
+		.min(1, 'At least one student required')
+		.max(200, 'Maximum 200 students per request')
+});
+
+/**
+ * Schema for removing individual student from assignment
+ * DELETE /api/worksheets/[id]/assignments/[assignmentId]/students
+ */
+export const removeAssignmentStudentSchema = z.object({
+	student_id: uuidSchema
+});
+
+// ============================================================================
+// CORRECTION SETTINGS SCHEMAS (Teacher API)
+// ============================================================================
+
+/**
+ * Schema for updating global correction setting
+ * PUT /api/worksheets/[id]/assignments/[assignmentId]/corrections
+ */
+export const updateCorrectionSettingsSchema = z.object({
+	show_corrections: z.boolean()
+});
+
+/**
+ * Schema for updating per-exercise correction setting
+ * PUT /api/worksheets/[id]/assignments/[assignmentId]/corrections/exercises
+ */
+export const updateExerciseCorrectionSchema = z.object({
+	worksheet_exercise_id: uuidSchema,
+	show_correction: z.boolean()
+});
+
+/**
+ * Schema for bulk updating exercise correction settings
+ */
+export const bulkUpdateExerciseCorrectionsSchema = z.object({
+	settings: z
+		.array(
+			z.object({
+				worksheet_exercise_id: uuidSchema,
+				show_correction: z.boolean()
+			})
+		)
+		.min(1, 'At least one setting required')
+		.max(200, 'Maximum 200 settings per request')
+});
+
+// ============================================================================
+// ASSIGNMENT URL PARAMS (extended)
+// ============================================================================
+
+/**
+ * URL params for assignment-level operations
+ */
+export const assignmentParamSchema = z.object({
+	id: uuidSchema,
+	assignmentId: uuidSchema
+});
+
+// ============================================================================
 // VALIDATION HELPER FUNCTIONS
 // ============================================================================
 
@@ -333,6 +434,62 @@ export function validateReorderExercises(data: unknown) {
  */
 export function validateWorksheetId(params: Record<string, string>) {
 	return worksheetIdParamSchema.safeParse(params);
+}
+
+/**
+ * Validate student worksheets query params
+ */
+export function validateStudentWorksheetsQuery(params: URLSearchParams) {
+	return studentWorksheetsQuerySchema.safeParse(Object.fromEntries(params));
+}
+
+/**
+ * Validate student worksheet assignment ID param
+ */
+export function validateStudentWorksheetParam(params: Record<string, string>) {
+	return studentWorksheetParamSchema.safeParse(params);
+}
+
+/**
+ * Validate add students to assignment request
+ */
+export function validateAddAssignmentStudents(data: unknown) {
+	return addAssignmentStudentsSchema.safeParse(data);
+}
+
+/**
+ * Validate remove student from assignment request
+ */
+export function validateRemoveAssignmentStudent(data: unknown) {
+	return removeAssignmentStudentSchema.safeParse(data);
+}
+
+/**
+ * Validate correction settings update
+ */
+export function validateUpdateCorrectionSettings(data: unknown) {
+	return updateCorrectionSettingsSchema.safeParse(data);
+}
+
+/**
+ * Validate exercise correction update
+ */
+export function validateUpdateExerciseCorrection(data: unknown) {
+	return updateExerciseCorrectionSchema.safeParse(data);
+}
+
+/**
+ * Validate bulk exercise corrections update
+ */
+export function validateBulkUpdateExerciseCorrections(data: unknown) {
+	return bulkUpdateExerciseCorrectionsSchema.safeParse(data);
+}
+
+/**
+ * Validate assignment URL params
+ */
+export function validateAssignmentParams(params: Record<string, string>) {
+	return assignmentParamSchema.safeParse(params);
 }
 
 // ============================================================================
@@ -628,4 +785,132 @@ export const reorderExercisesResponseSchema = z.object({
 	success: z.literal(true),
 	message: z.string(),
 	updated_count: z.number().int().nonnegative()
+});
+
+// ============================================================================
+// STUDENT WORKSHEET RESPONSE SCHEMAS
+// ============================================================================
+
+/**
+ * Student worksheet list item response
+ */
+export const studentWorksheetListItemSchema = z.object({
+	assignment_id: z.string().uuid(),
+	worksheet_id: z.string().uuid(),
+	title: z.string(),
+	type: worksheetTypeSchema,
+	class_id: z.string().uuid().nullable(),
+	class_name: z.string().nullable(),
+	available_from: timestampSchema,
+	due_at: timestampSchema.nullable(),
+	show_corrections: z.boolean(),
+	exercise_count: z.number().int().nonnegative()
+});
+
+/**
+ * Student worksheets list response
+ */
+export const studentWorksheetsListResponseSchema = z.object({
+	worksheets: z.array(studentWorksheetListItemSchema),
+	pagination: z.object({
+		page: z.number().int().positive(),
+		limit: z.number().int().positive(),
+		total: z.number().int().nonnegative(),
+		totalPages: z.number().int().nonnegative()
+	})
+});
+
+/**
+ * Student exercise view response
+ */
+export const studentExerciseViewSchema = z.object({
+	id: z.string().uuid(),
+	position: z.number().int().nonnegative(),
+	points: z.number().int().nullable(),
+	custom_instructions: z.string().nullable(),
+	statement: z.string(),
+	correction: z.string().nullable(),
+	correction_visible: z.boolean()
+});
+
+/**
+ * Student worksheet detail response
+ */
+export const studentWorksheetDetailResponseSchema = z.object({
+	assignment_id: z.string().uuid(),
+	worksheet_id: z.string().uuid(),
+	title: z.string(),
+	description: z.string().nullable(),
+	type: worksheetTypeSchema,
+	instructions: z.string().nullable(),
+	available_from: timestampSchema,
+	due_at: timestampSchema.nullable(),
+	show_corrections: z.boolean(),
+	class_name: z.string().nullable(),
+	exercises: z.array(studentExerciseViewSchema)
+});
+
+// ============================================================================
+// TEACHER MANAGEMENT RESPONSE SCHEMAS
+// ============================================================================
+
+/**
+ * Assignment students response
+ */
+export const assignmentStudentsResponseSchema = z.object({
+	students: z.array(
+		z.object({
+			id: z.string().uuid(),
+			student_id: z.string().uuid(),
+			first_name: z.string().nullable(),
+			last_name: z.string().nullable(),
+			created_at: timestampSchema
+		})
+	)
+});
+
+/**
+ * Add students response
+ */
+export const addStudentsResponseSchema = z.object({
+	success: z.literal(true),
+	added_count: z.number().int().nonnegative()
+});
+
+/**
+ * Remove student response
+ */
+export const removeStudentResponseSchema = z.object({
+	success: z.literal(true),
+	message: z.string()
+});
+
+/**
+ * Correction settings response
+ */
+export const correctionSettingsResponseSchema = z.object({
+	show_corrections: z.boolean(),
+	exercise_settings: z.array(
+		z.object({
+			worksheet_exercise_id: z.string().uuid(),
+			show_correction: z.boolean()
+		})
+	)
+});
+
+/**
+ * Update correction settings response
+ */
+export const updateCorrectionSettingsResponseSchema = z.object({
+	success: z.literal(true),
+	show_corrections: z.boolean()
+});
+
+/**
+ * Update exercise correction response
+ */
+export const updateExerciseCorrectionResponseSchema = z.object({
+	success: z.literal(true),
+	worksheet_exercise_id: z.string().uuid(),
+	show_correction: z.boolean()
 });

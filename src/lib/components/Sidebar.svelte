@@ -2,7 +2,8 @@
 	import { page } from '$app/state';
 	import {
 		Home,
-		Gamepad2
+		Gamepad2,
+		FileSpreadsheet
 		// Calculator,
 		// Terminal,
 		// CalculatorIcon,
@@ -18,7 +19,13 @@
 		profile = null,
 		items = [
 			{ label: 'Accueil', href: '/', icon: Home },
-			{ label: 'Jeux', href: '/games', icon: Gamepad2 }
+			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
+			{
+				label: 'Worksheets',
+				href: '/dashboard/teacher/worksheets',
+				icon: FileSpreadsheet,
+				roles: ['teacher']
+			}
 			// { label: 'Automaths', href: '/automaths', icon: Calculator },
 			// { label: 'CAS', href: '/cas', icon: Terminal },
 			// {
