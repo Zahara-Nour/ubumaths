@@ -31,8 +31,8 @@ import { CORRECTION_RELEASE_MODES } from '$lib/types/worksheets';
  * Supports updating class_ids and student_ids for multi-class management.
  */
 const updateAssignmentSchema = z.object({
-	title: z.string().min(1).max(255).optional(),
-	instructions: z.string().max(5000).optional(),
+	title: z.string().max(255).nullable().optional(),
+	instructions: z.string().max(5000).nullable().optional(),
 	available_from: z.string().datetime().optional(),
 	closes_at: z.string().datetime().nullable().optional(),
 	correction_release_mode: z.enum(CORRECTION_RELEASE_MODES).optional(),

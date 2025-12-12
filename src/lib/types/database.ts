@@ -10458,6 +10458,42 @@ export type Database = {
 					}
 				];
 			};
+			worksheet_assignment_classes: {
+				Row: {
+					assignment_id: string;
+					class_id: string;
+					created_at: string;
+					id: string;
+				};
+				Insert: {
+					assignment_id: string;
+					class_id: string;
+					created_at?: string;
+					id?: string;
+				};
+				Update: {
+					assignment_id?: string;
+					class_id?: string;
+					created_at?: string;
+					id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheet_assignment_classes_assignment_id_fkey';
+						columns: ['assignment_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheet_assignments';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignment_classes_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			worksheet_assignment_exercise_settings: {
 				Row: {
 					assignment_id: string;
@@ -10559,7 +10595,6 @@ export type Database = {
 			};
 			worksheet_assignments: {
 				Row: {
-					allow_late_submission: boolean | null;
 					assigned_at: string;
 					available_from: string | null;
 					class_id: string | null;
@@ -10568,21 +10603,16 @@ export type Database = {
 					correction_release_mode: string | null;
 					created_at: string;
 					created_by: string;
-					due_at: string | null;
 					id: string;
 					individualized: boolean | null;
 					instructions: string | null;
-					max_attempts: number | null;
 					show_corrections: boolean | null;
-					show_solutions_before_due: boolean | null;
 					status: string | null;
-					time_limit_minutes: number | null;
 					title: string | null;
 					updated_at: string;
 					worksheet_id: string;
 				};
 				Insert: {
-					allow_late_submission?: boolean | null;
 					assigned_at?: string;
 					available_from?: string | null;
 					class_id?: string | null;
@@ -10591,21 +10621,16 @@ export type Database = {
 					correction_release_mode?: string | null;
 					created_at?: string;
 					created_by: string;
-					due_at?: string | null;
 					id?: string;
 					individualized?: boolean | null;
 					instructions?: string | null;
-					max_attempts?: number | null;
 					show_corrections?: boolean | null;
-					show_solutions_before_due?: boolean | null;
 					status?: string | null;
-					time_limit_minutes?: number | null;
 					title?: string | null;
 					updated_at?: string;
 					worksheet_id: string;
 				};
 				Update: {
-					allow_late_submission?: boolean | null;
 					assigned_at?: string;
 					available_from?: string | null;
 					class_id?: string | null;
@@ -10614,15 +10639,11 @@ export type Database = {
 					correction_release_mode?: string | null;
 					created_at?: string;
 					created_by?: string;
-					due_at?: string | null;
 					id?: string;
 					individualized?: boolean | null;
 					instructions?: string | null;
-					max_attempts?: number | null;
 					show_corrections?: boolean | null;
-					show_solutions_before_due?: boolean | null;
 					status?: string | null;
-					time_limit_minutes?: number | null;
 					title?: string | null;
 					updated_at?: string;
 					worksheet_id?: string;
@@ -10741,45 +10762,36 @@ export type Database = {
 			};
 			worksheet_instances: {
 				Row: {
-					accessed_at: string | null;
 					created_at: string;
 					generated_at: string;
 					id: string;
 					instance_data: Json;
 					status: string | null;
 					student_id: string;
-					submitted_at: string | null;
-					time_spent_seconds: number | null;
 					updated_at: string;
 					variant_seed: number;
 					variant_version: string | null;
 					worksheet_id: string;
 				};
 				Insert: {
-					accessed_at?: string | null;
 					created_at?: string;
 					generated_at?: string;
 					id?: string;
 					instance_data?: Json;
 					status?: string | null;
 					student_id: string;
-					submitted_at?: string | null;
-					time_spent_seconds?: number | null;
 					updated_at?: string;
 					variant_seed: number;
 					variant_version?: string | null;
 					worksheet_id: string;
 				};
 				Update: {
-					accessed_at?: string | null;
 					created_at?: string;
 					generated_at?: string;
 					id?: string;
 					instance_data?: Json;
 					status?: string | null;
 					student_id?: string;
-					submitted_at?: string | null;
-					time_spent_seconds?: number | null;
 					updated_at?: string;
 					variant_seed?: number;
 					variant_version?: string | null;
@@ -12689,11 +12701,19 @@ export type Database = {
 				Args: { p_card_id: string; p_count?: number; p_student_id: string };
 				Returns: Json;
 			};
+			has_individual_assignment: {
+				Args: { p_assignment_id: string };
+				Returns: boolean;
+			};
 			initialize_default_categories: {
 				Args: { p_class_id: string };
 				Returns: undefined;
 			};
 			is_admin: { Args: never; Returns: boolean };
+			is_assignment_creator: {
+				Args: { p_assignment_id: string };
+				Returns: boolean;
+			};
 			is_class_student: { Args: { p_class_id: string }; Returns: boolean };
 			is_class_teacher: { Args: { p_class_id: string }; Returns: boolean };
 			is_exercise_parameterized: {
@@ -12702,6 +12722,10 @@ export type Database = {
 			};
 			is_file_assigned_to_student: {
 				Args: { p_file_id: string };
+				Returns: boolean;
+			};
+			is_in_assigned_class: {
+				Args: { p_assignment_id: string };
 				Returns: boolean;
 			};
 			is_notebook_assigned_to_student: {
