@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -6,6 +7,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Alert from '$lib/components/ui/alert';
+	import * as Collapsible from '$lib/components/ui/collapsible';
+	import { Switch } from '$lib/components/ui/switch';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
@@ -16,7 +19,10 @@
 		Loader2,
 		AlertCircle,
 		CheckCircle2,
-		Info
+		Info,
+		ChevronDown,
+		ChevronRight,
+		ListChecks
 	} from 'lucide-svelte';
 	import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
 
@@ -26,6 +32,15 @@
 		setRendererInitOptions: (options: { getModule: () => string }) => void;
 		pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
 	};
+
+	// Exercise type for per-exercise correction management
+	interface ExerciseWithVisibility {
+		id: string; // worksheet_exercise id
+		exercise_id: string;
+		position: number;
+		title: string | null;
+		show_correction: boolean; // current visibility state
+	}
 
 	// ============================================================================
 	// PROPS AND STATE
@@ -46,7 +61,7 @@
 		onUpdate?: () => void;
 	}
 
-	let { assignment, correctionStatus, worksheetId: _worksheetId, onUpdate }: Props = $props();
+	let { assignment, correctionStatus, worksheetId, onUpdate }: Props = $props();
 
 	// Local state for editing
 	let releaseMode = $state<CorrectionReleaseMode>(assignment.correction_release_mode);
@@ -61,10 +76,19 @@
 	let isReleasing = $state(false);
 	let isRevoking = $state(false);
 	let isPreviewing = $state(false);
+	let isLoadingExercises = $state(false);
+	let isTogglingExercise = $state<string | null>(null);
 
 	// Typst state
 	let isTypstLoaded = $state(false);
 	let isTypstLoading = $state(false);
+
+	// Per-exercise correction state
+	let exercises = $state<ExerciseWithVisibility[]>([]);
+	let exercisesExpanded = $state(false);
+
+	// Derived: count of visible corrections
+	let visibleCorrectionsCount = $derived(exercises.filter((e) => e.show_correction).length);
 
 	// Track if settings have changed
 	let hasChanges = $derived(
@@ -87,6 +111,147 @@
 	let isCorrectionsReleased = $derived(correctionStatus?.isReleased ?? false);
 	let releaseStatusText = $derived(getStatusText());
 	let releaseStatusVariant = $derived(getStatusVariant());
+
+	// ============================================================================
+	// LOAD DATA ON MOUNT
+	// ============================================================================
+
+	onMount(() => {
+		loadExercisesWithSettings();
+	});
+
+	/**
+	 * Load exercises for the worksheet and their current correction settings
+	 */
+	async function loadExercisesWithSettings() {
+		isLoadingExercises = true;
+		try {
+			// Fetch worksheet exercises
+			const exercisesRes = await fetch(`/api/worksheets/${worksheetId}/exercises`);
+			if (!exercisesRes.ok) {
+				throw new Error('Erreur lors du chargement des exercices');
+			}
+			const exercisesData = await exercisesRes.json();
+
+			// Fetch per-exercise correction settings for this assignment
+			const settingsRes = await fetch(
+				`/api/worksheets/${worksheetId}/assignments/${assignment.id}/corrections`
+			);
+			if (!settingsRes.ok) {
+				throw new Error('Erreur lors du chargement des parametres');
+			}
+			const settingsData = await settingsRes.json();
+
+			// Build map of exercise settings overrides
+			const settingsMap = new Map<string, boolean>();
+			for (const setting of settingsData.exercise_settings || []) {
+				settingsMap.set(setting.worksheet_exercise_id, setting.show_correction);
+			}
+
+			// Combine exercises with their visibility settings
+			exercises = (exercisesData.exercises || [])
+				.sort(
+					(a: { position: number }, b: { position: number }) =>
+						(a.position ?? 0) - (b.position ?? 0)
+				)
+				.map(
+					(ex: {
+						id: string;
+						exercise_id: string;
+						position: number;
+						correction_visible: boolean;
+						exercise?: { title: string | null };
+					}) => ({
+						id: ex.id,
+						exercise_id: ex.exercise_id,
+						position: ex.position,
+						title: ex.exercise?.title ?? null,
+						// Use override if exists, otherwise use default from worksheet_exercises
+						show_correction: settingsMap.has(ex.id)
+							? settingsMap.get(ex.id)!
+							: (ex.correction_visible ?? true)
+					})
+				);
+		} catch (err) {
+			console.error('Error loading exercises:', err);
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors du chargement');
+		} finally {
+			isLoadingExercises = false;
+		}
+	}
+
+	/**
+	 * Toggle correction visibility for a single exercise
+	 */
+	async function handleToggleExercise(exerciseId: string, newValue: boolean) {
+		isTogglingExercise = exerciseId;
+		try {
+			const response = await fetch(
+				`/api/worksheets/${worksheetId}/assignments/${assignment.id}/corrections`,
+				{
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						worksheet_exercise_id: exerciseId,
+						show_correction: newValue
+					})
+				}
+			);
+
+			if (!response.ok) {
+				const data = await response.json().catch(() => ({}));
+				throw new Error(data.message || 'Erreur lors de la mise a jour');
+			}
+
+			// Update local state
+			exercises = exercises.map((ex) =>
+				ex.id === exerciseId ? { ...ex, show_correction: newValue } : ex
+			);
+		} catch (err) {
+			console.error('Error toggling exercise correction:', err);
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la mise a jour');
+		} finally {
+			isTogglingExercise = null;
+		}
+	}
+
+	/**
+	 * Toggle all exercises at once
+	 */
+	async function handleToggleAll(showAll: boolean) {
+		isLoadingExercises = true;
+		try {
+			const settings = exercises.map((ex) => ({
+				worksheet_exercise_id: ex.id,
+				show_correction: showAll
+			}));
+
+			const response = await fetch(
+				`/api/worksheets/${worksheetId}/assignments/${assignment.id}/corrections`,
+				{
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ settings })
+				}
+			);
+
+			if (!response.ok) {
+				const data = await response.json().catch(() => ({}));
+				throw new Error(data.message || 'Erreur lors de la mise a jour');
+			}
+
+			// Update local state
+			exercises = exercises.map((ex) => ({ ...ex, show_correction: showAll }));
+			toaster.success(
+				showAll ? 'Toutes les corrections visibles' : 'Toutes les corrections masquees'
+			);
+		} catch (err) {
+			console.error('Error toggling all exercises:', err);
+			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la mise a jour');
+		} finally {
+			isLoadingExercises = false;
+		}
+	}
 
 	// ============================================================================
 	// HANDLERS
@@ -430,6 +595,93 @@
 				</Button>
 			</div>
 		</div>
+
+		<Separator />
+
+		<!-- Per-Exercise Correction Visibility -->
+		<Collapsible.Root bind:open={exercisesExpanded}>
+			<Collapsible.Trigger asChild let:builder>
+				<Button builders={[builder]} variant="ghost" class="h-auto w-full justify-between p-4">
+					<div class="flex items-center gap-2">
+						<ListChecks class="h-5 w-5" />
+						<span class="font-medium">Corrections par exercice</span>
+						{#if exercises.length > 0}
+							<Badge variant="outline" class="ml-2">
+								{visibleCorrectionsCount}/{exercises.length} visibles
+							</Badge>
+						{/if}
+					</div>
+					{#if exercisesExpanded}
+						<ChevronDown class="h-4 w-4" />
+					{:else}
+						<ChevronRight class="h-4 w-4" />
+					{/if}
+				</Button>
+			</Collapsible.Trigger>
+
+			<Collapsible.Content>
+				<div class="space-y-3 pt-2">
+					{#if isLoadingExercises}
+						<div class="flex items-center justify-center py-4">
+							<Loader2 class="h-5 w-5 animate-spin text-muted-foreground" />
+							<span class="ml-2 text-sm text-muted-foreground">Chargement...</span>
+						</div>
+					{:else if exercises.length === 0}
+						<p class="py-4 text-center text-sm text-muted-foreground">
+							Aucun exercice dans cette feuille
+						</p>
+					{:else}
+						<!-- Bulk actions -->
+						<div class="flex gap-2 pb-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={() => handleToggleAll(true)}
+								disabled={isLoadingExercises || visibleCorrectionsCount === exercises.length}
+							>
+								Tout afficher
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={() => handleToggleAll(false)}
+								disabled={isLoadingExercises || visibleCorrectionsCount === 0}
+							>
+								Tout masquer
+							</Button>
+						</div>
+
+						<!-- Exercise list -->
+						<div class="max-h-64 space-y-2 overflow-y-auto">
+							{#each exercises as exercise (exercise.id)}
+								<div
+									class="flex items-center justify-between rounded-md border p-3 transition-colors hover:bg-muted/50"
+								>
+									<div class="flex items-center gap-3">
+										<span class="w-8 text-sm font-medium text-muted-foreground">
+											#{exercise.position}
+										</span>
+										<span class="text-sm">
+											{exercise.title || `Exercice ${exercise.position}`}
+										</span>
+									</div>
+									<div class="flex items-center gap-2">
+										{#if isTogglingExercise === exercise.id}
+											<Loader2 class="h-4 w-4 animate-spin" />
+										{/if}
+										<Switch
+											checked={exercise.show_correction}
+											onCheckedChange={(checked) => handleToggleExercise(exercise.id, checked)}
+											disabled={isTogglingExercise === exercise.id || isLoadingExercises}
+										/>
+									</div>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			</Collapsible.Content>
+		</Collapsible.Root>
 
 		<Separator />
 
