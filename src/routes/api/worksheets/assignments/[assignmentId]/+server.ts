@@ -25,14 +25,10 @@ const updateAssignmentSchema = z.object({
 	title: z.string().min(1).max(255).optional(),
 	instructions: z.string().max(5000).optional(),
 	available_from: z.string().datetime().optional(),
-	due_at: z.string().datetime().nullable().optional(),
 	closes_at: z.string().datetime().nullable().optional(),
 	correction_release_mode: z.enum(CORRECTION_RELEASE_MODES).optional(),
 	correction_release_at: z.string().datetime().nullable().optional(),
-	show_solutions_before_due: z.boolean().optional(),
-	allow_late_submission: z.boolean().optional(),
-	max_attempts: z.number().int().min(1).max(10).optional(),
-	time_limit_minutes: z.number().int().min(1).max(600).nullable().optional(),
+	show_corrections: z.boolean().optional(),
 	status: z.enum(['draft', 'active', 'completed', 'cancelled']).optional()
 });
 
@@ -52,7 +48,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, 'ID du devoir requis');
+		throw error(400, "ID de l'assignation requis");
 	}
 
 	try {
@@ -79,7 +75,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (fetchError || !assignment) {
-			throw error(404, 'Devoir non trouve');
+			throw error(404, 'Assignation non trouvee');
 		}
 
 		// Check permissions
@@ -111,7 +107,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la recuperation du devoir');
+		throw error(500, "Erreur lors de la recuperation de l'assignation");
 	}
 };
 
@@ -127,7 +123,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, 'ID du devoir requis');
+		throw error(400, "ID de l'assignation requis");
 	}
 
 	// Parse request body
@@ -162,7 +158,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (fetchError || !assignment) {
-			throw error(404, 'Devoir non trouve');
+			throw error(404, 'Assignation non trouvee');
 		}
 
 		if (assignment.created_by !== user.id) {
@@ -173,7 +169,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 				.single();
 
 			if (profile?.role !== 'admin') {
-				throw error(403, 'Non autorise a modifier ce devoir');
+				throw error(403, 'Non autorise a modifier cette assignation');
 			}
 		}
 
@@ -189,12 +185,12 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (updateError) {
-			throw error(500, 'Erreur lors de la mise a jour du devoir');
+			throw error(500, "Erreur lors de la mise a jour de l'assignation");
 		}
 
 		return json({
 			success: true,
-			message: 'Devoir mis a jour',
+			message: 'Assignation mise a jour',
 			assignment: updated
 		});
 	} catch (err) {
@@ -204,7 +200,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la mise a jour du devoir');
+		throw error(500, "Erreur lors de la mise a jour de l'assignation");
 	}
 };
 
@@ -220,7 +216,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, 'ID du devoir requis');
+		throw error(400, "ID de l'assignation requis");
 	}
 
 	// Parse and validate action
@@ -246,7 +242,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, 'ID du devoir requis');
+		throw error(400, "ID de l'assignation requis");
 	}
 
 	try {
@@ -258,7 +254,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (fetchError || !assignment) {
-			throw error(404, 'Devoir non trouve');
+			throw error(404, 'Assignation non trouvee');
 		}
 
 		if (assignment.created_by !== user.id) {
@@ -269,12 +265,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 				.single();
 
 			if (profile?.role !== 'admin') {
-				throw error(403, 'Non autorise a supprimer ce devoir');
+				throw error(403, 'Non autorise a supprimer cette assignation');
 			}
 		}
 
 		if (assignment.status !== 'draft') {
-			throw error(400, 'Seuls les devoirs en brouillon peuvent etre supprimes');
+			throw error(400, 'Seules les assignations en brouillon peuvent etre supprimees');
 		}
 
 		// Delete assignment
@@ -284,12 +280,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.eq('id', assignmentId);
 
 		if (deleteError) {
-			throw error(500, 'Erreur lors de la suppression du devoir');
+			throw error(500, "Erreur lors de la suppression de l'assignation");
 		}
 
 		return json({
 			success: true,
-			message: 'Devoir supprime'
+			message: 'Assignation supprimee'
 		});
 	} catch (err) {
 		console.error('Error deleting assignment:', err);
@@ -298,7 +294,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la suppression du devoir');
+		throw error(500, "Erreur lors de la suppression de l'assignation");
 	}
 };
 

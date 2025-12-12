@@ -3,7 +3,10 @@
  * ==========================
  *
  * Manages when and how corrections are released to students for worksheet assignments.
- * Supports multiple release modes: manual, immediate, scheduled, and after_due.
+ * Supports multiple release modes: manual, immediate, scheduled.
+ *
+ * Note: Worksheets are view-only (PDF or online consultation), so there's no submission
+ * or due date logic. Corrections are released based on teacher choice.
  *
  * @module server/worksheets/correction-release
  */
@@ -53,32 +56,14 @@ export function canAccessCorrections(
 	_studentId: string,
 	currentTime: Date = new Date()
 ): CorrectionAccessResult {
-	const {
-		correction_release_mode,
-		correction_release_at,
-		due_at,
-		show_solutions_before_due,
-		status
-	} = assignment;
+	const { correction_release_mode, correction_release_at, status } = assignment;
 
 	// Assignment must be active or completed
 	if (status === 'draft' || status === 'cancelled') {
 		return {
 			canAccess: false,
-			reason: "Le devoir n'est pas encore actif",
+			reason: "L'assignation n'est pas encore active",
 			releaseMode: correction_release_mode
-		};
-	}
-
-	// Check if showing solutions before due date is allowed
-	const isDueDatePassed = due_at ? new Date(due_at) <= currentTime : true;
-
-	if (!isDueDatePassed && !show_solutions_before_due) {
-		return {
-			canAccess: false,
-			reason: "La date limite n'est pas encore passee",
-			releaseMode: correction_release_mode,
-			releaseAt: due_at ? new Date(due_at) : undefined
 		};
 	}
 
@@ -119,32 +104,6 @@ export function canAccessCorrections(
 				releaseAt: scheduledTime
 			};
 		}
-
-		case 'after_due':
-			// Corrections available only after due date
-			if (!due_at) {
-				return {
-					canAccess: false,
-					reason: 'Aucune date limite definie',
-					releaseMode: correction_release_mode
-				};
-			}
-
-			if (isDueDatePassed) {
-				return {
-					canAccess: true,
-					reason: 'Corrections disponibles apres la date limite',
-					releaseMode: correction_release_mode,
-					releaseAt: new Date(due_at)
-				};
-			}
-
-			return {
-				canAccess: false,
-				reason: `Corrections disponibles apres le ${new Date(due_at).toLocaleDateString('fr-FR')}`,
-				releaseMode: correction_release_mode,
-				releaseAt: new Date(due_at)
-			};
 
 		case 'manual':
 		default:
@@ -197,14 +156,14 @@ export async function releaseCorrections(
 	if (fetchError || !assignment) {
 		return {
 			success: false,
-			message: 'Devoir non trouve'
+			message: 'Assignation non trouvee'
 		};
 	}
 
 	if (assignment.created_by !== userId) {
 		return {
 			success: false,
-			message: "Vous n'etes pas autorise a publier les corrections de ce devoir"
+			message: "Vous n'etes pas autorise a publier les corrections de cette assignation"
 		};
 	}
 
@@ -277,14 +236,14 @@ export async function revokeCorrections(
 	if (fetchError || !assignment) {
 		return {
 			success: false,
-			message: 'Devoir non trouve'
+			message: 'Assignation non trouvee'
 		};
 	}
 
 	if (assignment.created_by !== userId) {
 		return {
 			success: false,
-			message: "Vous n'etes pas autorise a modifier ce devoir"
+			message: "Vous n'etes pas autorise a modifier cette assignation"
 		};
 	}
 
@@ -334,7 +293,6 @@ export async function updateCorrectionSettings(
 	settings: {
 		correction_release_mode?: CorrectionReleaseMode;
 		correction_release_at?: string | null;
-		show_solutions_before_due?: boolean;
 	}
 ): Promise<ReleaseCorrectionsResult> {
 	// Verify user is the assignment creator
@@ -347,14 +305,14 @@ export async function updateCorrectionSettings(
 	if (fetchError || !assignment) {
 		return {
 			success: false,
-			message: 'Devoir non trouve'
+			message: 'Assignation non trouvee'
 		};
 	}
 
 	if (assignment.created_by !== userId) {
 		return {
 			success: false,
-			message: "Vous n'etes pas autorise a modifier ce devoir"
+			message: "Vous n'etes pas autorise a modifier cette assignation"
 		};
 	}
 
@@ -405,8 +363,6 @@ export async function getCorrectionReleaseStatus(
 			class_id,
 			correction_release_mode,
 			correction_release_at,
-			due_at,
-			show_solutions_before_due,
 			status
 		`
 		)
@@ -526,7 +482,7 @@ export async function canStudentAccessInstanceCorrection(
 	if (!assignment) {
 		return {
 			canAccess: false,
-			reason: 'Aucun devoir associe trouve',
+			reason: 'Aucune assignation associee trouvee',
 			releaseMode: 'manual'
 		};
 	}

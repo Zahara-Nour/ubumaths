@@ -22,15 +22,11 @@ const createAssignmentSchema = z.object({
 	instructions: z.string().max(5000).nullable().optional(),
 	individualized: z.boolean().optional().default(true),
 	available_from: z.string().datetime().optional(),
-	due_at: z.string().datetime().nullable().optional(),
 	closes_at: z.string().datetime().nullable().optional(),
 	correction_release_mode: z.enum(CORRECTION_RELEASE_MODES).optional().default('manual'),
 	correction_release_at: z.string().datetime().nullable().optional(),
-	show_solutions_before_due: z.boolean().optional().default(false),
-	allow_late_submission: z.boolean().optional().default(true),
-	max_attempts: z.number().int().min(1).max(10).optional().default(1),
-	time_limit_minutes: z.number().int().min(1).max(600).nullable().optional(),
-	status: z.enum(ASSIGNMENT_STATUSES).optional().default('draft')
+	show_corrections: z.boolean().optional().default(false),
+	status: z.enum(ASSIGNMENT_STATUSES).optional().default('active')
 });
 
 // ============================================================================
@@ -98,7 +94,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		const { data: assignments, error: fetchError } = await query;
 
 		if (fetchError) {
-			throw error(500, 'Erreur lors de la recuperation des devoirs');
+			throw error(500, 'Erreur lors de la recuperation des assignations');
 		}
 
 		// Get correction status for each assignment
@@ -123,7 +119,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la recuperation des devoirs');
+		throw error(500, 'Erreur lors de la recuperation des assignations');
 	}
 };
 
@@ -202,14 +198,10 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				instructions: validation.data.instructions,
 				individualized: validation.data.individualized,
 				available_from: validation.data.available_from || new Date().toISOString(),
-				due_at: validation.data.due_at,
 				closes_at: validation.data.closes_at,
 				correction_release_mode: validation.data.correction_release_mode,
 				correction_release_at: validation.data.correction_release_at,
-				show_solutions_before_due: validation.data.show_solutions_before_due,
-				allow_late_submission: validation.data.allow_late_submission,
-				max_attempts: validation.data.max_attempts,
-				time_limit_minutes: validation.data.time_limit_minutes,
+				show_corrections: validation.data.show_corrections,
 				status: validation.data.status,
 				created_by: user.id
 			})
@@ -223,12 +215,12 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 
 		if (createError) {
 			console.error('Error creating assignment:', createError);
-			throw error(500, 'Erreur lors de la creation du devoir');
+			throw error(500, "Erreur lors de la creation de l'assignation");
 		}
 
 		return json({
 			success: true,
-			message: 'Devoir cree avec succes',
+			message: 'Assignation creee avec succes',
 			assignment
 		});
 	} catch (err) {
@@ -238,6 +230,6 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la creation du devoir');
+		throw error(500, "Erreur lors de la creation de l'assignation");
 	}
 };

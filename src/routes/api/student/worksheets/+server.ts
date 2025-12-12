@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				worksheet_id,
 				class_id,
 				available_from,
-				due_at,
+				closes_at,
 				show_corrections,
 				worksheets!inner (
 					id,
@@ -134,7 +134,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				class_id: assignment.class_id,
 				class_name: classData?.name ?? null,
 				available_from: assignment.available_from,
-				due_at: assignment.due_at,
+				closes_at: assignment.closes_at,
 				show_corrections: assignment.show_corrections ?? false,
 				exercise_count: exerciseCountMap.get(worksheet.id) ?? 0
 			};

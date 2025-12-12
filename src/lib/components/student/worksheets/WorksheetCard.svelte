@@ -68,51 +68,57 @@
 		}
 	}
 
-	// Format due date relative to now
-	function formatDueDate(dueAt: string | null): { text: string; urgent: boolean } {
-		if (!dueAt) {
-			return { text: 'Pas de date limite', urgent: false };
+	// Format closes_at date relative to now
+	function formatClosesAt(closesAt: string | null): { text: string; urgent: boolean } {
+		if (!closesAt) {
+			return { text: 'Disponible indefiniment', urgent: false };
 		}
 
-		const due = new Date(dueAt);
+		const closes = new Date(closesAt);
 		const now = new Date();
-		const diffMs = due.getTime() - now.getTime();
+		const diffMs = closes.getTime() - now.getTime();
 		const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 		const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
 		if (diffMs < 0) {
-			return { text: 'Date limite depassee', urgent: true };
+			return { text: "N'est plus disponible", urgent: true };
 		}
 
 		if (diffHours < 24) {
 			if (diffHours < 1) {
 				const diffMinutes = Math.floor(diffMs / (1000 * 60));
-				return { text: `Dans ${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`, urgent: true };
+				return {
+					text: `Disponible encore ${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`,
+					urgent: true
+				};
 			}
-			return { text: `Dans ${diffHours} heure${diffHours > 1 ? 's' : ''}`, urgent: true };
+			return {
+				text: `Disponible encore ${diffHours} heure${diffHours > 1 ? 's' : ''}`,
+				urgent: true
+			};
 		}
 
 		if (diffDays === 1) {
-			return { text: 'Demain', urgent: true };
+			return { text: "Disponible jusqu'a demain", urgent: true };
 		}
 
 		if (diffDays < 7) {
-			return { text: `Dans ${diffDays} jours`, urgent: diffDays <= 2 };
+			return { text: `Disponible encore ${diffDays} jours`, urgent: diffDays <= 2 };
 		}
 
 		// Format as date
-		const formattedDate = due.toLocaleDateString('fr-FR', {
+		const formattedDate = closes.toLocaleDateString('fr-FR', {
 			day: 'numeric',
 			month: 'long',
-			year: due.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+			year: closes.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
 		});
-		return { text: `Pour le ${formattedDate}`, urgent: false };
+		return { text: `Disponible jusqu'au ${formattedDate}`, urgent: false };
 	}
 
 	// Derived values
 	let typeInfo = $derived(getTypeInfo(worksheet.type));
 	let typeBadgeVariant = $derived(getTypeBadgeVariant(worksheet.type));
-	let dueInfo = $derived(formatDueDate(worksheet.due_at));
+	let closesInfo = $derived(formatClosesAt(worksheet.closes_at));
 	let TypeIcon = $derived(typeInfo.icon);
 </script>
 
@@ -148,18 +154,18 @@
 			</span>
 		</div>
 
-		<!-- Due date -->
+		<!-- Availability date -->
 		<div
 			class="flex items-center gap-2 text-sm"
-			class:text-destructive={dueInfo.urgent}
-			class:text-muted-foreground={!dueInfo.urgent}
+			class:text-destructive={closesInfo.urgent}
+			class:text-muted-foreground={!closesInfo.urgent}
 		>
-			{#if worksheet.due_at}
+			{#if worksheet.closes_at}
 				<Calendar class="h-4 w-4 flex-shrink-0" />
 			{:else}
 				<Clock class="h-4 w-4 flex-shrink-0" />
 			{/if}
-			<span class:font-medium={dueInfo.urgent}>{dueInfo.text}</span>
+			<span class:font-medium={closesInfo.urgent}>{closesInfo.text}</span>
 		</div>
 	</Card.Content>
 

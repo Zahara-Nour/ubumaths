@@ -19,7 +19,7 @@
  *   type: WorksheetType,
  *   instructions: string | null,
  *   available_from: string,
- *   due_at: string | null,
+ *   closes_at: string | null,
  *   show_corrections: boolean,
  *   class_name: string | null,
  *   exercises: StudentExerciseView[]
@@ -168,7 +168,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				worksheet_id,
 				instructions,
 				available_from,
-				due_at,
+				closes_at,
 				show_corrections,
 				class_id,
 				worksheets!inner (
@@ -327,7 +327,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			type: worksheet.type as WorksheetType,
 			instructions: assignment.instructions,
 			available_from: assignment.available_from,
-			due_at: assignment.due_at,
+			closes_at: assignment.closes_at,
 			show_corrections: assignment.show_corrections ?? false,
 			class_name: classData?.name ?? null,
 			exercises

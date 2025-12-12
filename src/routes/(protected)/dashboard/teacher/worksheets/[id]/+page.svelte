@@ -625,9 +625,11 @@
 														Classe: {(assignment as { class?: { name?: string } }).class?.name ||
 															'N/A'}
 													</p>
-													{#if assignment.due_at}
+													{#if assignment.closes_at}
 														<p class="text-xs text-muted-foreground">
-															Date limite: {new Date(assignment.due_at).toLocaleDateString('fr-FR')}
+															Visible jusqu'au: {new Date(assignment.closes_at).toLocaleDateString(
+																'fr-FR'
+															)}
 														</p>
 													{/if}
 												</div>

@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, 'ID du devoir requis');
+		throw error(400, "ID de l'assignation requis");
 	}
 
 	// Validate query parameters
@@ -95,7 +95,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			.single();
 
 		if (assignmentError || !assignment) {
-			throw error(404, 'Devoir non trouve');
+			throw error(404, 'Assignation non trouvee');
 		}
 
 		// Check if user is a student with access to this assignment
@@ -111,7 +111,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		// Teachers/admins who created the assignment can always access
 		if (!isTeacher && !isStudentInClass) {
-			throw error(403, 'Acces non autorise a ce devoir');
+			throw error(403, 'Acces non autorise a cette assignation');
 		}
 
 		// For students, check if corrections are released
@@ -174,7 +174,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 				assignment: {
 					id: assignment.id,
 					title: assignment.title,
-					due_at: assignment.due_at,
+					closes_at: assignment.closes_at,
 					correction_release_mode: assignment.correction_release_mode
 				},
 				exercises: instanceData.exercises.map((ex) => ({
