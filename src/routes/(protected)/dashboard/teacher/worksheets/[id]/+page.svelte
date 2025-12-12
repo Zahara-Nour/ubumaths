@@ -475,7 +475,7 @@
 				</Tabs.Trigger>
 				<Tabs.Trigger value="assignments" disabled={worksheet.status === 'draft'}>
 					<Users class="mr-2 h-4 w-4" />
-					Devoirs
+					Assignations
 				</Tabs.Trigger>
 				<Tabs.Trigger value="pdf">
 					<FileDown class="mr-2 h-4 w-4" />
@@ -531,7 +531,7 @@
 					<Card.Root>
 						<Card.Content class="py-8 text-center">
 							<p class="text-muted-foreground">
-								Publiez la feuille de travail pour pouvoir creer des devoirs.
+								Publiez la feuille pour pouvoir creer des assignations.
 							</p>
 						</Card.Content>
 					</Card.Root>
@@ -580,7 +580,7 @@
 						<div class="flex justify-end">
 							<Button onclick={() => (showAssignmentForm = true)}>
 								<Plus class="mr-2 h-4 w-4" />
-								Nouveau devoir
+								Nouvelle assignation
 							</Button>
 						</div>
 
@@ -588,16 +588,16 @@
 							<Card.Root>
 								<Card.Content class="py-8 text-center">
 									<Loader2 class="mx-auto h-6 w-6 animate-spin" />
-									<p class="mt-2 text-sm text-muted-foreground">Chargement des devoirs...</p>
+									<p class="mt-2 text-sm text-muted-foreground">Chargement des assignations...</p>
 								</Card.Content>
 							</Card.Root>
 						{:else if assignments.length === 0}
 							<Card.Root>
 								<Card.Content class="py-8 text-center">
 									<Users class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-									<p class="text-muted-foreground">Aucun devoir cree pour cette feuille.</p>
+									<p class="text-muted-foreground">Aucune assignation pour cette feuille.</p>
 									<p class="mt-1 text-sm text-muted-foreground">
-										Cliquez sur "Nouveau devoir" pour assigner cette feuille a une classe.
+										Cliquez sur "Nouvelle assignation" pour distribuer cette feuille a une classe.
 									</p>
 								</Card.Content>
 							</Card.Root>

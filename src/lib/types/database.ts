@@ -10458,6 +10458,105 @@ export type Database = {
 					}
 				];
 			};
+			worksheet_assignment_exercise_settings: {
+				Row: {
+					assignment_id: string;
+					created_at: string;
+					id: string;
+					show_correction: boolean;
+					updated_at: string;
+					worksheet_exercise_id: string;
+				};
+				Insert: {
+					assignment_id: string;
+					created_at?: string;
+					id?: string;
+					show_correction: boolean;
+					updated_at?: string;
+					worksheet_exercise_id: string;
+				};
+				Update: {
+					assignment_id?: string;
+					created_at?: string;
+					id?: string;
+					show_correction?: boolean;
+					updated_at?: string;
+					worksheet_exercise_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheet_assignment_exercise_settin_worksheet_exercise_id_fkey';
+						columns: ['worksheet_exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheet_exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignment_exercise_settings_assignment_id_fkey';
+						columns: ['assignment_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheet_assignments';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			worksheet_assignment_students: {
+				Row: {
+					assignment_id: string;
+					created_at: string;
+					id: string;
+					student_id: string;
+				};
+				Insert: {
+					assignment_id: string;
+					created_at?: string;
+					id?: string;
+					student_id: string;
+				};
+				Update: {
+					assignment_id?: string;
+					created_at?: string;
+					id?: string;
+					student_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheet_assignment_students_assignment_id_fkey';
+						columns: ['assignment_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheet_assignments';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignment_students_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignment_students_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignment_students_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_assignment_students_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			worksheet_assignments: {
 				Row: {
 					allow_late_submission: boolean | null;
@@ -10474,6 +10573,7 @@ export type Database = {
 					individualized: boolean | null;
 					instructions: string | null;
 					max_attempts: number | null;
+					show_corrections: boolean | null;
 					show_solutions_before_due: boolean | null;
 					status: string | null;
 					time_limit_minutes: number | null;
@@ -10496,6 +10596,7 @@ export type Database = {
 					individualized?: boolean | null;
 					instructions?: string | null;
 					max_attempts?: number | null;
+					show_corrections?: boolean | null;
 					show_solutions_before_due?: boolean | null;
 					status?: string | null;
 					time_limit_minutes?: number | null;
@@ -10518,6 +10619,7 @@ export type Database = {
 					individualized?: boolean | null;
 					instructions?: string | null;
 					max_attempts?: number | null;
+					show_corrections?: boolean | null;
 					show_solutions_before_due?: boolean | null;
 					status?: string | null;
 					time_limit_minutes?: number | null;
@@ -10572,6 +10674,7 @@ export type Database = {
 			};
 			worksheet_exercises: {
 				Row: {
+					correction_visible: boolean | null;
 					created_at: string;
 					custom_instructions: string | null;
 					exercise_id: string;
@@ -10585,6 +10688,7 @@ export type Database = {
 					worksheet_id: string;
 				};
 				Insert: {
+					correction_visible?: boolean | null;
 					created_at?: string;
 					custom_instructions?: string | null;
 					exercise_id: string;
@@ -10598,6 +10702,7 @@ export type Database = {
 					worksheet_id: string;
 				};
 				Update: {
+					correction_visible?: boolean | null;
 					created_at?: string;
 					custom_instructions?: string | null;
 					exercise_id?: string;
@@ -11953,6 +12058,10 @@ export type Database = {
 			calculate_worksheet_total_points: {
 				Args: { p_worksheet_id: string };
 				Returns: number;
+			};
+			can_access_assignment: {
+				Args: { p_assignment_id: string };
+				Returns: boolean;
 			};
 			can_moderate_message: {
 				Args: { message_uuid: string; moderator_uuid: string };

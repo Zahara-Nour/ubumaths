@@ -173,7 +173,7 @@
 
 			// Refresh assigned students list
 			await fetchAssignedStudents();
-			toaster.success('Eleve ajoute au devoir');
+			toaster.success("Eleve ajoute a l'assignation");
 			onStudentsChanged?.();
 		} catch (err) {
 			console.error('Error adding student:', err);
@@ -206,7 +206,7 @@
 
 			// Refresh assigned students list
 			await fetchAssignedStudents();
-			toaster.success('Eleve retire du devoir');
+			toaster.success("Eleve retire de l'assignation");
 			onStudentsChanged?.();
 		} catch (err) {
 			console.error('Error removing student:', err);
@@ -267,7 +267,7 @@
 				Selectionner les eleves
 			</Dialog.Title>
 			<Dialog.Description>
-				Cochez les eleves a qui vous souhaitez assigner ce devoir individuellement.
+				Cochez les eleves a qui vous souhaitez assigner cette feuille individuellement.
 			</Dialog.Description>
 		</Dialog.Header>
 

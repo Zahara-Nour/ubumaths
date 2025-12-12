@@ -8,7 +8,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import CorrectionSettings from '$lib/components/worksheets/CorrectionSettings.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, Users, Calendar, FileCheck, Settings, Monitor } from 'lucide-svelte';
+	import { Loader2, Users, Calendar, FileCheck, Monitor } from 'lucide-svelte';
 	import type { CorrectionReleaseMode, WorksheetAssignmentInsert } from '$lib/types/worksheets';
 
 	// ============================================================================
@@ -39,22 +39,15 @@
 	let selectedClassId = $state<string>('');
 	let individualized = $state<boolean>(true);
 
-	// Timing
+	// Disponibilite (defaut: maintenant -> indefiniment)
 	let availableFrom = $state<string>(new Date().toISOString().slice(0, 16));
-	let dueAt = $state<string>('');
 	let closesAt = $state<string>('');
-	let allowLateSubmission = $state<boolean>(true);
-
-	// Attempts and time
-	let maxAttempts = $state<number>(1);
-	let timeLimitMinutes = $state<string>('');
 
 	// Correction settings
 	let correctionReleaseMode = $state<CorrectionReleaseMode>('manual');
 	let correctionScheduledDate = $state<string>('');
-	let showSolutionsBeforeDue = $state<boolean>(false);
 
-	// Online mode
+	// Mode consultation en ligne
 	let showCorrections = $state<boolean>(false);
 
 	// Loading state
@@ -91,19 +84,14 @@
 				instructions: instructions || null,
 				individualized,
 				available_from: availableFrom ? new Date(availableFrom).toISOString() : undefined,
-				due_at: dueAt ? new Date(dueAt).toISOString() : null,
 				closes_at: closesAt ? new Date(closesAt).toISOString() : null,
 				correction_release_mode: correctionReleaseMode,
 				correction_release_at:
 					correctionReleaseMode === 'scheduled' && correctionScheduledDate
 						? new Date(correctionScheduledDate).toISOString()
 						: null,
-				show_solutions_before_due: showSolutionsBeforeDue,
 				show_corrections: showCorrections,
-				allow_late_submission: allowLateSubmission,
-				max_attempts: maxAttempts,
-				time_limit_minutes: timeLimitMinutes ? parseInt(timeLimitMinutes) : null,
-				status: 'draft',
+				status: 'active',
 				created_by: '' // Will be set by the API
 			};
 
@@ -111,7 +99,7 @@
 				await onSubmit(assignmentData);
 			}
 
-			toaster.success('Devoir cree avec succes');
+			toaster.success('Assignation creee avec succes');
 		} catch (err) {
 			console.error('Error creating assignment:', err);
 			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la creation');
@@ -190,7 +178,7 @@
 		<Card.Header>
 			<Card.Title class="flex items-center gap-2">
 				<Calendar class="h-5 w-5" />
-				Calendrier
+				Disponibilite
 			</Card.Title>
 		</Card.Header>
 		<Card.Content class="space-y-4">
@@ -201,63 +189,11 @@
 					<Input id="available-from" type="datetime-local" bind:value={availableFrom} />
 				</div>
 
-				<!-- Due date -->
-				<div class="space-y-2">
-					<Label for="due-at">Date limite de rendu</Label>
-					<Input id="due-at" type="datetime-local" bind:value={dueAt} />
-				</div>
-
 				<!-- Closes at -->
 				<div class="space-y-2">
-					<Label for="closes-at">Fermeture definitive (optionnel)</Label>
+					<Label for="closes-at">Visible jusqu'au (optionnel)</Label>
 					<Input id="closes-at" type="datetime-local" bind:value={closesAt} />
-					<p class="text-xs text-muted-foreground">
-						Aucune soumission ne sera acceptee apres cette date
-					</p>
-				</div>
-			</div>
-
-			<!-- Late submission -->
-			<div class="flex items-start space-x-3">
-				<MyCheckbox id="allow-late" bind:checked={allowLateSubmission} />
-				<div class="space-y-1">
-					<Label for="allow-late" class="cursor-pointer font-normal">
-						Autoriser les soumissions tardives
-					</Label>
-					<p class="text-xs text-muted-foreground">
-						Les eleves pourront rendre apres la date limite (jusqu'a la fermeture)
-					</p>
-				</div>
-			</div>
-		</Card.Content>
-	</Card.Root>
-
-	<Card.Root>
-		<Card.Header>
-			<Card.Title class="flex items-center gap-2">
-				<Settings class="h-5 w-5" />
-				Parametres avances
-			</Card.Title>
-		</Card.Header>
-		<Card.Content class="space-y-4">
-			<div class="grid gap-4 md:grid-cols-2">
-				<!-- Max attempts -->
-				<div class="space-y-2">
-					<Label for="max-attempts">Nombre de tentatives</Label>
-					<Input id="max-attempts" type="number" min="1" max="10" bind:value={maxAttempts} />
-				</div>
-
-				<!-- Time limit -->
-				<div class="space-y-2">
-					<Label for="time-limit">Limite de temps (minutes)</Label>
-					<Input
-						id="time-limit"
-						type="number"
-						min="1"
-						max="600"
-						bind:value={timeLimitMinutes}
-						placeholder="Aucune limite"
-					/>
+					<p class="text-xs text-muted-foreground">Laissez vide pour une visibilite indefinie</p>
 				</div>
 			</div>
 		</Card.Content>
@@ -274,7 +210,6 @@
 			<CorrectionSettings
 				bind:releaseMode={correctionReleaseMode}
 				bind:scheduledDate={correctionScheduledDate}
-				bind:showSolutionsBeforeDue
 			/>
 		</Card.Content>
 	</Card.Root>
@@ -294,8 +229,7 @@
 						Activer le mode consultation
 					</Label>
 					<p class="text-xs text-muted-foreground">
-						Permet aux eleves de consulter la feuille de travail directement en ligne sur leur
-						tableau de bord, avec les enonces et eventuellement les corrections.
+						Permet aux eleves de consulter la feuille directement en ligne sur leur tableau de bord.
 					</p>
 				</div>
 			</div>
@@ -305,8 +239,8 @@
 					class="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950"
 				>
 					<p class="text-sm text-blue-800 dark:text-blue-200">
-						Une fois le devoir cree, vous pourrez gerer finement la visibilite des corrections pour
-						chaque exercice depuis la page de gestion du devoir.
+						Une fois l'assignation creee, vous pourrez gerer la visibilite des corrections pour
+						chaque exercice depuis la page de gestion.
 					</p>
 				</div>
 			{/if}
@@ -323,7 +257,7 @@
 				<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 				Creation...
 			{:else}
-				Creer le devoir
+				Creer l'assignation
 			{/if}
 		</Button>
 	</div>
