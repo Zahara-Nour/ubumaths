@@ -186,6 +186,13 @@ export interface WorksheetAssignmentStudentRow {
 	created_at: string;
 }
 
+export interface WorksheetAssignmentClassRow {
+	id: string;
+	assignment_id: string;
+	class_id: string;
+	created_at: string;
+}
+
 export interface WorksheetAssignmentExerciseSettingsRow {
 	id: string;
 	assignment_id: string;
@@ -251,9 +258,30 @@ export interface WorksheetInstanceInsert {
 	variant_version?: string | null;
 }
 
+/**
+ * Data required to create a worksheet assignment.
+ * Constraint: At least one of class_ids or student_ids must be non-empty.
+ */
 export interface WorksheetAssignmentInsert {
 	worksheet_id: string;
+	/**
+	 * @deprecated Use class_ids instead.
+	 * Migration: { class_id: 'uuid' } -> { class_ids: ['uuid'] }
+	 * Maintained for backward compatibility only.
+	 */
 	class_id?: string | null;
+	/**
+	 * Classes to assign the worksheet to.
+	 * All class members automatically receive this assignment.
+	 * Required if student_ids is empty. Can coexist with student_ids.
+	 */
+	class_ids?: string[];
+	/**
+	 * Individual students to assign (in addition to class members).
+	 * Allows targeting specific students outside their class.
+	 * Can be empty if class_ids is provided. Can coexist with class_ids.
+	 */
+	student_ids?: string[];
 	title?: string | null;
 	instructions?: string | null;
 	individualized?: boolean;
@@ -386,10 +414,22 @@ export interface WorksheetAssignmentWithRelations extends WorksheetAssignmentRow
 		title: string;
 		type: WorksheetType;
 	};
+	/** @deprecated Use classes instead */
 	class?: {
 		id: string;
 		name: string;
 	};
+	/** All classes assigned to this worksheet (multi-class support) */
+	classes?: Array<{
+		id: string;
+		name: string;
+	}>;
+	/** Individual students assigned (not through class membership) */
+	assigned_students?: Array<{
+		id: string;
+		first_name: string | null;
+		last_name: string | null;
+	}>;
 	creator?: {
 		id: string;
 		first_name: string | null;
@@ -472,8 +512,21 @@ export interface WorksheetExerciseFormData {
 	custom_instructions: string;
 }
 
+/**
+ * Form data for creating/editing worksheet assignments.
+ * Constraint: At least one of class_ids or student_ids must be non-empty.
+ */
 export interface WorksheetAssignmentFormData {
-	class_id: string;
+	/**
+	 * Classes to assign the worksheet to.
+	 * Required if student_ids is empty.
+	 */
+	class_ids: string[];
+	/**
+	 * Individual students to assign (in addition to class members).
+	 * Optional if class_ids is provided.
+	 */
+	student_ids: string[];
 	title: string;
 	instructions: string;
 	individualized: boolean;
@@ -482,6 +535,20 @@ export interface WorksheetAssignmentFormData {
 	correction_release_mode: CorrectionReleaseMode;
 	correction_release_at: Date | null;
 	show_corrections: boolean;
+}
+
+// =============================================================================
+// VALIDATION HELPERS
+// =============================================================================
+
+/**
+ * Validates that at least one recipient is specified for an assignment.
+ * Returns true if class_ids OR student_ids is non-empty.
+ */
+export function hasValidAssignmentRecipients(
+	data: Pick<WorksheetAssignmentFormData, 'class_ids' | 'student_ids'>
+): boolean {
+	return data.class_ids.length > 0 || data.student_ids.length > 0;
 }
 
 // =============================================================================
