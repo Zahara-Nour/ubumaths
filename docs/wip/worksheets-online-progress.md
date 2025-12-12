@@ -2,7 +2,7 @@
 
 > Document de progression pour recovery en cas de crash
 
-## Status: Phase 2 complete
+## Status: Phase 3 complete
 
 ---
 
@@ -113,11 +113,70 @@
 
 ---
 
+## Phase 3: API Eleve - COMPLETE
+
+### Fichiers crees
+
+**Utilitaire de visibilite des corrections:**
+
+- `src/lib/server/worksheets/correction-visibility.ts`
+
+**Endpoints API:**
+
+- `src/routes/api/student/worksheets/+server.ts` - Liste des worksheets assignees
+- `src/routes/api/student/worksheets/[assignmentId]/+server.ts` - Detail d'une worksheet
+
+### Fonctions implementees
+
+**correction-visibility.ts:**
+
+- `isCorrectionVisible(supabase, assignmentId, worksheetExerciseId)` - Visibilite pour un exercice
+- `getCorrectionVisibilityMap(supabase, assignmentId, worksheetExerciseIds)` - Batch optimise
+- `getCorrectionContext(supabase, assignmentId)` - Contexte global de visibilite
+
+**GET /api/student/worksheets:**
+
+- Liste paginee des assignations accessibles
+- Filtrage par class_id optionnel
+- Inclut exercise_count pour chaque worksheet
+- Validation Zod des query params
+
+**GET /api/student/worksheets/[assignmentId]:**
+
+- Detail complet avec exercices resolus
+- Resolution deterministe via seed (worksheetId + studentId)
+- Support des instances pre-resolues
+- Visibilite des corrections respectee (global + override par exercice)
+- Validation Zod du param et de la reponse
+
+### Logique de visibilite des corrections
+
+1. Si `show_corrections = false` sur assignment -> pas de correction
+2. Check timing via `correction_release_mode` (immediate, scheduled, after_due, manual)
+3. Check override par exercice dans `worksheet_assignment_exercise_settings`
+4. Sinon, utilise `worksheet_exercises.correction_visible` par defaut
+
+### Securite
+
+- Auth student via `requireRole(locals, 'student')`
+- Acces verifie via `can_access_assignment(UUID)` RPC
+- RLS policies en defense-in-depth
+- Error messages en francais
+
+### Reviews effectuees
+
+- [x] code-reviewer (Sonnet) - Ready to merge
+- [x] security-auditor (Sonnet) - Score 8.5/10, issues corrigees:
+  - Added security comment documenting caller-responsibility pattern
+  - Unified error messages to prevent information disclosure
+
+---
+
 ## Prochaines etapes
 
-1. Phase 3: API Eleve
-2. Phase 4: API Enseignant
-3. etc.
+1. Phase 4: API Enseignant (gestion des assignations individuelles, parametres corrections)
+2. Phase 5: Interface eleve (page /student/worksheets)
+3. Phase 6: Interface enseignant (gestion corrections)
 
 ---
 
@@ -133,8 +192,14 @@
 - `src/lib/types/worksheets.ts` (modifie)
 - `src/lib/server/validation/worksheets.ts` (modifie)
 
+### Phase 3
+
+- `src/lib/server/worksheets/correction-visibility.ts` (cree)
+- `src/routes/api/student/worksheets/+server.ts` (cree)
+- `src/routes/api/student/worksheets/[assignmentId]/+server.ts` (cree)
+
 ---
 
 ## Derniere mise a jour
 
-2025-12-12 - Phase 2 complete
+2025-12-12 - Phase 3 complete
