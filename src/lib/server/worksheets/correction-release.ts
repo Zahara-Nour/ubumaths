@@ -353,69 +353,86 @@ export async function getCorrectionReleaseStatus(
 	supabase: SupabaseClient,
 	assignmentId: string
 ): Promise<CorrectionReleaseStatus | null> {
-	// Fetch assignment
-	const { data: assignment, error: assignmentError } = await supabase
-		.from('worksheet_assignments')
-		.select(
+	try {
+		// Fetch assignment
+		const { data: assignment, error: assignmentError } = await supabase
+			.from('worksheet_assignments')
+			.select(
+				`
+				id,
+				worksheet_id,
+				class_id,
+				correction_release_mode,
+				correction_release_at,
+				status
 			`
-			id,
-			worksheet_id,
-			class_id,
-			correction_release_mode,
-			correction_release_at,
-			status
-		`
-		)
-		.eq('id', assignmentId)
-		.single();
+			)
+			.eq('id', assignmentId)
+			.single();
 
-	if (assignmentError || !assignment) {
-		return null;
-	}
+		if (assignmentError || !assignment) {
+			console.error('[getCorrectionReleaseStatus] Assignment fetch error:', assignmentError);
+			return null;
+		}
 
-	// Check if corrections are currently released
-	const accessResult = canAccessCorrections(
-		assignment as WorksheetAssignmentRow,
-		'check-only' // We're just checking status, not for a specific student
-	);
+		// Validate required fields before casting
+		if (!assignment.correction_release_mode || !assignment.status) {
+			console.error('[getCorrectionReleaseStatus] Missing required fields:', {
+				correction_release_mode: assignment.correction_release_mode,
+				status: assignment.status
+			});
+			return null;
+		}
 
-	// Count students with access
-	let studentsWithAccess = 0;
-	let totalStudents = 0;
+		// Check if corrections are currently released
+		const accessResult = canAccessCorrections(
+			assignment as WorksheetAssignmentRow,
+			'check-only' // We're just checking status, not for a specific student
+		);
 
-	if (assignment.class_id) {
-		// Get class members first
-		const { data: classMembers } = await supabase
-			.from('class_members')
-			.select('student_id')
-			.eq('class_id', assignment.class_id);
+		// Count students with access
+		let studentsWithAccess = 0;
+		let totalStudents = 0;
 
-		if (classMembers && classMembers.length > 0) {
-			const studentIds = classMembers.map((m) => m.student_id);
+		if (assignment.class_id) {
+			// Get class members first
+			const { data: classMembers } = await supabase
+				.from('class_members')
+				.select('student_id')
+				.eq('class_id', assignment.class_id);
 
-			// Get instances for students in this class
-			const { count } = await supabase
-				.from('worksheet_instances')
-				.select('id', { count: 'exact', head: true })
-				.eq('worksheet_id', assignment.worksheet_id)
-				.in('student_id', studentIds);
+			if (classMembers && classMembers.length > 0) {
+				const studentIds = classMembers.map((m) => m.student_id);
 
-			totalStudents = count ?? 0;
+				// Get instances for students in this class
+				const { count } = await supabase
+					.from('worksheet_instances')
+					.select('id', { count: 'exact', head: true })
+					.eq('worksheet_id', assignment.worksheet_id)
+					.in('student_id', studentIds);
 
-			// If corrections are released, all students have access
-			if (accessResult.canAccess) {
-				studentsWithAccess = totalStudents;
+				totalStudents = count ?? 0;
+
+				// If corrections are released, all students have access
+				if (accessResult.canAccess) {
+					studentsWithAccess = totalStudents;
+				}
 			}
 		}
-	}
 
-	return {
-		mode: assignment.correction_release_mode as CorrectionReleaseMode,
-		isReleased: accessResult.canAccess,
-		releaseAt: assignment.correction_release_at ? new Date(assignment.correction_release_at) : null,
-		studentsWithAccess,
-		totalStudents
-	};
+		return {
+			mode: assignment.correction_release_mode as CorrectionReleaseMode,
+			isReleased: accessResult.canAccess,
+			releaseAt: assignment.correction_release_at
+				? new Date(assignment.correction_release_at)
+				: null,
+			studentsWithAccess,
+			totalStudents
+		};
+	} catch (err) {
+		console.error('[getCorrectionReleaseStatus] Unexpected error:', err);
+		return null;
+	}
 }
 
 /**

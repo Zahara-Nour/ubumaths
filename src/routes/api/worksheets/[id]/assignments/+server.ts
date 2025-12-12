@@ -94,19 +94,29 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		const { data: assignments, error: fetchError } = await query;
 
 		if (fetchError) {
+			console.error('[API] Fetch error:', fetchError);
 			throw error(500, 'Erreur lors de la recuperation des assignations');
 		}
 
+		console.log('[API] Found assignments:', assignments?.length ?? 0);
+
 		// Get correction status for each assignment
-		const assignmentsWithStatus = await Promise.all(
-			(assignments || []).map(async (assignment) => {
+		const assignmentsWithStatus = [];
+		for (const assignment of assignments || []) {
+			try {
 				const correctionStatus = await getCorrectionReleaseStatus(locals.supabase, assignment.id);
-				return {
+				assignmentsWithStatus.push({
 					...assignment,
 					correctionStatus
-				};
-			})
-		);
+				});
+			} catch (statusErr) {
+				console.error('[API] Error getting correction status for', assignment.id, statusErr);
+				assignmentsWithStatus.push({
+					...assignment,
+					correctionStatus: null
+				});
+			}
+		}
 
 		return json({
 			success: true,
@@ -114,8 +124,12 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		});
 	} catch (err) {
 		console.error('Error fetching assignments:', err);
+		if (err instanceof Error) {
+			console.error('Error message:', err.message);
+			console.error('Error stack:', err.stack);
+		}
 
-		if (err instanceof Error && 'status' in err) {
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
