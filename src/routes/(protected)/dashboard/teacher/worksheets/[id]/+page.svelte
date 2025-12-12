@@ -24,15 +24,16 @@
 		FileDown,
 		Users,
 		Plus,
-		FilePenLine
+		FilePenLine,
+		Pencil,
+		UserPlus
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type {
 		WorksheetWithRelations,
 		WorksheetSectionRow,
 		WorksheetExerciseWithExercise,
-		WorksheetAssignmentRow,
-		WorksheetAssignmentInsert
+		WorksheetAssignmentWithRelations
 	} from '$lib/types/worksheets';
 	import {
 		WORKSHEET_TYPE_ICONS,
@@ -60,13 +61,17 @@
 	let configModalOpen = $state(false);
 	let selectedExercise = $state<WorksheetExerciseWithExercise | null>(null);
 
+	// Extended assignment type with multi-class support
+	type AssignmentWithExtras = WorksheetAssignmentWithRelations & {
+		correctionStatus?: unknown;
+	};
+
 	// Assignment state
-	let assignments = $state<(WorksheetAssignmentRow & { correctionStatus?: unknown })[]>([]);
+	let assignments = $state<AssignmentWithExtras[]>([]);
 	let assignmentsLoading = $state(false);
 	let showAssignmentForm = $state(false);
-	let selectedAssignment = $state<(WorksheetAssignmentRow & { correctionStatus?: unknown }) | null>(
-		null
-	);
+	let editingAssignment = $state<AssignmentWithExtras | null>(null);
+	let selectedAssignment = $state<AssignmentWithExtras | null>(null);
 	let classes = $state<{ id: string; name: string }[]>([]);
 
 	// Templates state - initialize with default templates
@@ -308,23 +313,21 @@
 	}
 
 	/**
-	 * Handle assignment creation
+	 * Handle assignment form success (create or edit)
 	 */
-	async function handleCreateAssignment(assignmentData: WorksheetAssignmentInsert) {
-		const response = await fetch(`/api/worksheets/${worksheet.id}/assignments`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(assignmentData)
-		});
-
-		const data = await response.json();
-
-		if (!response.ok) {
-			throw new Error(data.message || 'Erreur lors de la creation');
-		}
-
+	async function handleAssignmentFormSuccess(): Promise<void> {
 		showAssignmentForm = false;
+		editingAssignment = null;
 		await loadAssignments();
+	}
+
+	/**
+	 * Handle edit assignment click
+	 */
+	function handleEditAssignment(assignment: AssignmentWithExtras, event: MouseEvent): void {
+		event.stopPropagation();
+		editingAssignment = assignment;
+		showAssignmentForm = true;
 	}
 
 	/**
@@ -540,26 +543,61 @@
 						worksheetId={worksheet.id}
 						worksheetTitle={worksheet.title}
 						{classes}
-						onSubmit={handleCreateAssignment}
-						onCancel={() => (showAssignmentForm = false)}
+						assignment={editingAssignment ?? undefined}
+						onSuccess={handleAssignmentFormSuccess}
+						onCancel={() => {
+							showAssignmentForm = false;
+							editingAssignment = null;
+						}}
 					/>
 				{:else if selectedAssignment}
 					<!-- Correction Manager for selected assignment -->
+					{@const selectedClasses =
+						selectedAssignment.classes ||
+						(selectedAssignment.class ? [selectedAssignment.class] : [])}
+					{@const selectedStudents = selectedAssignment.assigned_students || []}
 					<div class="space-y-4">
 						<div class="flex items-center justify-between">
-							<div>
+							<div class="space-y-1">
 								<h3 class="text-lg font-medium">
 									{selectedAssignment.title || worksheet.title}
 								</h3>
-								<p class="text-sm text-muted-foreground">
-									Classe: {(selectedAssignment as { class?: { name?: string } }).class?.name ||
-										'N/A'}
-								</p>
+								<div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+									<Users class="h-4 w-4" />
+									{#if selectedClasses.length === 0}
+										<span>Aucune classe</span>
+									{:else if selectedClasses.length === 1}
+										<span>{selectedClasses[0].name}</span>
+									{:else}
+										{#each selectedClasses as cls (cls.id)}
+											<Badge variant="outline" class="text-xs">{cls.name}</Badge>
+										{/each}
+									{/if}
+									{#if selectedStudents.length > 0}
+										<span class="text-muted-foreground">
+											+ {selectedStudents.length} eleve(s) individuel(s)
+										</span>
+									{/if}
+								</div>
 							</div>
-							<Button variant="outline" onclick={() => (selectedAssignment = null)}>
-								<ArrowLeft class="mr-2 h-4 w-4" />
-								Retour a la liste
-							</Button>
+							<div class="flex gap-2">
+								<Button
+									variant="outline"
+									size="sm"
+									onclick={(e) => {
+										if (selectedAssignment) {
+											handleEditAssignment(selectedAssignment, e);
+										}
+									}}
+								>
+									<Pencil class="mr-2 h-4 w-4" />
+									Modifier
+								</Button>
+								<Button variant="outline" onclick={() => (selectedAssignment = null)}>
+									<ArrowLeft class="mr-2 h-4 w-4" />
+									Retour
+								</Button>
+							</div>
 						</div>
 						<CorrectionManager
 							assignment={selectedAssignment}
@@ -604,15 +642,18 @@
 						{:else}
 							<div class="grid gap-4">
 								{#each assignments as assignment (assignment.id)}
+									{@const assignmentClasses =
+										assignment.classes || (assignment.class ? [assignment.class] : [])}
+									{@const assignedStudents = assignment.assigned_students || []}
 									<Card.Root
 										class="cursor-pointer transition-colors hover:bg-muted/50"
 										onclick={() => (selectedAssignment = assignment)}
 									>
 										<Card.Content class="p-4">
-											<div class="flex items-center justify-between">
-												<div class="space-y-1">
+											<div class="flex items-start justify-between gap-4">
+												<div class="min-w-0 flex-1 space-y-2">
 													<div class="flex items-center gap-2">
-														<h4 class="font-medium">
+														<h4 class="truncate font-medium">
 															{assignment.title || worksheet.title}
 														</h4>
 														<Badge
@@ -621,10 +662,35 @@
 															{ASSIGNMENT_STATUS_LABELS[assignment.status] || assignment.status}
 														</Badge>
 													</div>
-													<p class="text-sm text-muted-foreground">
-														Classe: {(assignment as { class?: { name?: string } }).class?.name ||
-															'N/A'}
-													</p>
+
+													<!-- Classes list -->
+													<div class="flex flex-wrap items-center gap-1.5">
+														<Users class="h-4 w-4 text-muted-foreground" />
+														{#if assignmentClasses.length === 0}
+															<span class="text-sm text-muted-foreground">Aucune classe</span>
+														{:else if assignmentClasses.length === 1}
+															<span class="text-sm text-muted-foreground">
+																{assignmentClasses[0].name}
+															</span>
+														{:else}
+															{#each assignmentClasses as cls (cls.id)}
+																<Badge variant="outline" class="text-xs">
+																	{cls.name}
+																</Badge>
+															{/each}
+														{/if}
+													</div>
+
+													<!-- Individual students count -->
+													{#if assignedStudents.length > 0}
+														<div class="flex items-center gap-1.5">
+															<UserPlus class="h-4 w-4 text-muted-foreground" />
+															<span class="text-sm text-muted-foreground">
+																{assignedStudents.length} eleve(s) individuel(s)
+															</span>
+														</div>
+													{/if}
+
 													{#if assignment.closes_at}
 														<p class="text-xs text-muted-foreground">
 															Visible jusqu'au: {new Date(assignment.closes_at).toLocaleDateString(
@@ -633,17 +699,29 @@
 														</p>
 													{/if}
 												</div>
-												<div class="text-right text-sm text-muted-foreground">
-													<p>Mode correction:</p>
-													<Badge variant="outline">
-														{assignment.correction_release_mode === 'manual'
-															? 'Manuel'
-															: assignment.correction_release_mode === 'immediate'
-																? 'Immediat'
-																: assignment.correction_release_mode === 'scheduled'
-																	? 'Programme'
-																	: 'Apres date limite'}
-													</Badge>
+
+												<!-- Right side: correction mode and edit button -->
+												<div class="flex flex-col items-end gap-2">
+													<div class="text-right text-sm text-muted-foreground">
+														<p class="text-xs">Mode correction:</p>
+														<Badge variant="outline">
+															{assignment.correction_release_mode === 'manual'
+																? 'Manuel'
+																: assignment.correction_release_mode === 'immediate'
+																	? 'Immediat'
+																	: assignment.correction_release_mode === 'scheduled'
+																		? 'Programme'
+																		: 'Apres date limite'}
+														</Badge>
+													</div>
+													<Button
+														variant="ghost"
+														size="sm"
+														onclick={(e) => handleEditAssignment(assignment, e)}
+														title="Modifier l'assignation"
+													>
+														<Pencil class="h-4 w-4" />
+													</Button>
 												</div>
 											</div>
 										</Card.Content>
