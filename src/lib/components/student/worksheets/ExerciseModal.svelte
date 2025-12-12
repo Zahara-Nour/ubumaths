@@ -3,19 +3,31 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ChevronLeft, ChevronRight, Info } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight, Info, Circle, CheckCircle, AlertCircle } from 'lucide-svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
+	import type { MasteryStatus } from '$lib/types/exercise-mastery';
+	import { MASTERY_LABELS } from '$lib/types/exercise-mastery';
 
 	interface Props {
 		exercises: StudentExerciseView[];
 		currentIndex: number;
 		open: boolean;
+		masteryStatus: MasteryStatus;
 		onOpenChange: (open: boolean) => void;
 		onNavigate: (index: number) => void;
+		onMasteryChange: (status: MasteryStatus) => void;
 	}
 
-	let { exercises, currentIndex, open, onOpenChange, onNavigate }: Props = $props();
+	let {
+		exercises,
+		currentIndex,
+		open,
+		masteryStatus,
+		onOpenChange,
+		onNavigate,
+		onMasteryChange
+	}: Props = $props();
 
 	let exercise = $derived(exercises[currentIndex] ?? null);
 	let hasCorrection = $derived(exercise?.correction_visible && exercise?.correction !== null);
@@ -112,25 +124,63 @@
 		{/if}
 
 		<Dialog.Footer class="flex-shrink-0 border-t pt-4">
-			<div class="flex w-full items-center justify-between">
-				<Button
-					variant="outline"
-					onclick={goPrev}
-					disabled={!canGoPrev}
-					aria-label="Exercice précédent (flèche gauche)"
-				>
-					<ChevronLeft class="mr-1 h-4 w-4" />
-					Précédent
-				</Button>
-				<Button
-					variant="outline"
-					onclick={goNext}
-					disabled={!canGoNext}
-					aria-label="Exercice suivant (flèche droite)"
-				>
-					Suivant
-					<ChevronRight class="ml-1 h-4 w-4" />
-				</Button>
+			<div class="flex w-full flex-col gap-4">
+				<!-- Mastery status buttons -->
+				<div class="flex items-center justify-center gap-2">
+					<span class="mr-2 text-sm text-muted-foreground">Statut :</span>
+					<Button
+						variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
+						size="sm"
+						onclick={() => onMasteryChange('not_worked')}
+						aria-label={MASTERY_LABELS.not_worked}
+						aria-pressed={masteryStatus === 'not_worked'}
+					>
+						<Circle class="mr-1 h-4 w-4" />
+						{MASTERY_LABELS.not_worked}
+					</Button>
+					<Button
+						variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
+						size="sm"
+						onclick={() => onMasteryChange('mastered')}
+						aria-label={MASTERY_LABELS.mastered}
+						aria-pressed={masteryStatus === 'mastered'}
+					>
+						<CheckCircle class="mr-1 h-4 w-4" />
+						{MASTERY_LABELS.mastered}
+					</Button>
+					<Button
+						variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
+						size="sm"
+						onclick={() => onMasteryChange('needs_review')}
+						aria-label={MASTERY_LABELS.needs_review}
+						aria-pressed={masteryStatus === 'needs_review'}
+					>
+						<AlertCircle class="mr-1 h-4 w-4" />
+						{MASTERY_LABELS.needs_review}
+					</Button>
+				</div>
+
+				<!-- Navigation buttons -->
+				<div class="flex items-center justify-between">
+					<Button
+						variant="outline"
+						onclick={goPrev}
+						disabled={!canGoPrev}
+						aria-label="Exercice précédent (flèche gauche)"
+					>
+						<ChevronLeft class="mr-1 h-4 w-4" />
+						Précédent
+					</Button>
+					<Button
+						variant="outline"
+						onclick={goNext}
+						disabled={!canGoNext}
+						aria-label="Exercice suivant (flèche droite)"
+					>
+						Suivant
+						<ChevronRight class="ml-1 h-4 w-4" />
+					</Button>
+				</div>
 			</div>
 		</Dialog.Footer>
 	</Dialog.Content>

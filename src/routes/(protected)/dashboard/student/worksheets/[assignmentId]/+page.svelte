@@ -4,7 +4,9 @@
 	import ExerciseModal from '$lib/components/student/worksheets/ExerciseModal.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
+	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
 
 	interface Props {
 		data: PageData;
@@ -20,6 +22,84 @@
 	// Modal state
 	let modalOpen = $state(false);
 	let currentExerciseIndex = $state(0);
+
+	// Mastery tracking state
+	let masteryMap = $state(new Map<string, MasteryStatus>());
+
+	// Current exercise mastery status for the modal
+	let currentExercise = $derived(exercises[currentExerciseIndex]);
+	let currentExerciseMasteryStatus = $derived<MasteryStatus>(
+		currentExercise ? (masteryMap.get(currentExercise.id) ?? 'not_worked') : 'not_worked'
+	);
+
+	// Fetch mastery statuses on mount
+	$effect(() => {
+		fetchMasteryStatuses();
+	});
+
+	async function fetchMasteryStatuses() {
+		try {
+			const response = await fetch('/api/student/exercise-mastery');
+			if (!response.ok) {
+				console.error('Failed to fetch mastery statuses');
+				return;
+			}
+			const data: ExerciseMasteryListResponse = await response.json();
+
+			// Populate the mastery map
+			const newMap = new Map<string, MasteryStatus>();
+			for (const item of data.mastery) {
+				newMap.set(item.exercise_id, item.status);
+			}
+			masteryMap = newMap;
+		} catch (error) {
+			console.error('Error fetching mastery statuses:', error);
+		}
+	}
+
+	async function updateMastery(exerciseId: string, status: MasteryStatus) {
+		// Optimistic update
+		const previousStatus = masteryMap.get(exerciseId);
+		masteryMap.set(exerciseId, status);
+		// Force reactivity by reassigning
+		masteryMap = new Map(masteryMap);
+
+		try {
+			const response = await fetch(`/api/student/exercise-mastery/${exerciseId}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ status })
+			});
+
+			if (!response.ok) {
+				// Revert on failure
+				if (previousStatus !== undefined) {
+					masteryMap.set(exerciseId, previousStatus);
+				} else {
+					masteryMap.delete(exerciseId);
+				}
+				masteryMap = new Map(masteryMap);
+				toaster.error('Erreur lors de la mise a jour du statut');
+			}
+		} catch (error) {
+			// Revert on error
+			if (previousStatus !== undefined) {
+				masteryMap.set(exerciseId, previousStatus);
+			} else {
+				masteryMap.delete(exerciseId);
+			}
+			masteryMap = new Map(masteryMap);
+			console.error('Error updating mastery status:', error);
+			toaster.error('Erreur lors de la mise a jour du statut');
+		}
+	}
+
+	function handleMasteryChange(status: MasteryStatus) {
+		const exercise = exercises[currentExerciseIndex];
+		if (exercise) {
+			updateMastery(exercise.id, status);
+		}
+	}
 
 	function openExercise(index: number) {
 		currentExerciseIndex = index;
@@ -81,7 +161,12 @@
 			<!-- Exercise List -->
 			<div class="space-y-3">
 				{#each exercises as exercise, i (exercise.id)}
-					<ExerciseListItem {exercise} index={i + 1} onclick={() => openExercise(i)} />
+					<ExerciseListItem
+						{exercise}
+						index={i + 1}
+						masteryStatus={masteryMap.get(exercise.id) ?? 'not_worked'}
+						onclick={() => openExercise(i)}
+					/>
 				{/each}
 			</div>
 		{/if}
@@ -93,6 +178,8 @@
 	{exercises}
 	currentIndex={currentExerciseIndex}
 	open={modalOpen}
+	masteryStatus={currentExerciseMasteryStatus}
 	onOpenChange={handleOpenChange}
 	onNavigate={handleNavigate}
+	onMasteryChange={handleMasteryChange}
 />

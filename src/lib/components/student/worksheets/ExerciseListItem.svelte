@@ -2,14 +2,22 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { CheckCircle, FileText } from 'lucide-svelte';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
+	import type { MasteryStatus } from '$lib/types/exercise-mastery';
+	import { MASTERY_LABELS, MASTERY_COLORS } from '$lib/types/exercise-mastery';
 
 	interface Props {
 		exercise: StudentExerciseView;
 		index: number;
+		masteryStatus?: MasteryStatus;
 		onclick: () => void;
 	}
 
-	let { exercise, index, onclick }: Props = $props();
+	let { exercise, index, masteryStatus, onclick }: Props = $props();
+
+	// Only show mastery badge if status is not 'not_worked'
+	let showMasteryBadge = $derived(masteryStatus && masteryStatus !== 'not_worked');
+	let masteryColors = $derived(masteryStatus ? MASTERY_COLORS[masteryStatus] : null);
+	let masteryLabel = $derived(masteryStatus ? MASTERY_LABELS[masteryStatus] : null);
 
 	let hasCorrection = $derived(exercise.correction_visible && exercise.correction !== null);
 	let pointsLabel = $derived(
@@ -48,6 +56,15 @@
 		{#if pointsLabel}
 			<Badge variant="outline" class="font-normal">
 				{pointsLabel}
+			</Badge>
+		{/if}
+
+		{#if showMasteryBadge && masteryColors && masteryLabel}
+			<Badge
+				variant="outline"
+				class="{masteryColors.bg} {masteryColors.text} {masteryColors.border} font-normal"
+			>
+				{masteryLabel}
 			</Badge>
 		{/if}
 	</div>
