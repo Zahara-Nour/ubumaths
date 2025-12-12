@@ -1,14 +1,27 @@
 # Worksheets Feature
 
-> **Version**: 1.0.0
+> **Version**: 2.0.0
 > **Status**: Production
-> **Last Updated**: 2025-01-23
+> **Last Updated**: 2025-12-12
 
 ---
 
 ## Overview
 
-The Worksheets feature provides teachers with a comprehensive system to create, manage, and distribute mathematical worksheets, assessments, exams, quizzes, and homework. It includes advanced features like parameterized exercises (variants), PDF generation via Typst, correction management, and customizable templates.
+The Worksheets feature provides teachers with a comprehensive system to create, manage, and distribute mathematical worksheets, assessments, exams, quizzes, and homework. It includes advanced features like parameterized exercises (variants), PDF generation via Typst, correction management, customizable templates, and **online consultation mode**.
+
+### 2025-12-12 NEW - Online Consultation Mode
+
+Students can now view and complete worksheets directly in the browser without downloading PDFs. This interactive online mode includes:
+
+- **Student Online Access**: View worksheets at `/dashboard/student/worksheets` with live resolution of parameterized exercises
+- **Course Integration**: Worksheets appear in course chapters under a new "Fiches" tab
+- **Deterministic Resolution**: Exercises resolved with consistent seeds (worksheetId + studentId) for each student
+- **Granular Correction Control**: Global toggle plus per-exercise correction visibility overrides
+- **Individual Assignment**: Assign to specific students in addition to entire classes
+- **Collapsible Corrections**: Corrections hidden by default with expand/collapse controls
+
+See [Worksheets Online Mode](worksheets-online-mode.md) for detailed documentation.
 
 ### Key Capabilities
 
@@ -113,6 +126,23 @@ For batch generation:
    - Time limit (optional)
 4. **Activate** the assignment
 
+### Assigning to Individual Students (2025-12-12 NEW)
+
+Teachers can now assign worksheets to specific students instead of entire classes:
+
+1. **Open** assignment detail page
+2. **Navigate** to "Eleves" tab
+3. **Click** "Ajouter des eleves"
+4. **Select** individual students from the dialog
+5. **Save** - Selected students gain immediate access
+
+Use cases:
+
+- Remediation work for specific students
+- Advanced challenges for top performers
+- Makeup work for absent students
+- Differentiated instruction
+
 ### Managing Corrections
 
 Correction release modes:
@@ -129,6 +159,24 @@ To release corrections manually:
 1. Go to assignment detail
 2. Click "Publier les corrections"
 3. Students gain access immediately
+
+### Managing Per-Exercise Correction Visibility (2025-12-12 NEW)
+
+Teachers can control which exercise corrections are visible to students at a granular level:
+
+1. **Navigate** to assignment detail page
+2. **Click** "Corrections" tab
+3. **Toggle** global `show_corrections` switch (affects all exercises)
+4. **Override** individual exercises:
+   - Click exercise toggle to show/hide specific corrections
+   - Overrides persist even when global toggle changes
+   - Visual indicators show override status
+
+**Priority Logic**:
+
+- If global toggle OFF → All corrections hidden (overrides ignored)
+- If global toggle ON → Per-exercise overrides apply
+- Default: Corrections visible when global toggle ON
 
 ---
 
@@ -283,12 +331,19 @@ Teachers can create custom Typst templates with placeholders:
 
 ### Assignments & Corrections
 
-| Method | Endpoint                                                | Description         |
-| ------ | ------------------------------------------------------- | ------------------- |
-| GET    | `/api/worksheets/{id}/assignments`                      | List assignments    |
-| POST   | `/api/worksheets/{id}/assignments`                      | Create assignment   |
-| PUT    | `/api/worksheets/assignments/{assignmentId}`            | Update assignment   |
-| POST   | `/api/worksheets/assignments/{assignmentId}/correction` | Release corrections |
+| Method | Endpoint                                                | Description                  |
+| ------ | ------------------------------------------------------- | ---------------------------- |
+| GET    | `/api/worksheets/{id}/assignments`                      | List assignments             |
+| POST   | `/api/worksheets/{id}/assignments`                      | Create assignment            |
+| PUT    | `/api/worksheets/assignments/{assignmentId}`            | Update assignment            |
+| POST   | `/api/worksheets/assignments/{assignmentId}/correction` | Release corrections          |
+| GET    | `/api/student/worksheets`                               | Student: List assignments    |
+| GET    | `/api/student/worksheets/{assignmentId}`                | Student: View detail         |
+| GET    | `/api/worksheets/{id}/assignments/{aId}/students`       | List assigned students       |
+| POST   | `/api/worksheets/{id}/assignments/{aId}/students`       | Add individual students      |
+| DELETE | `/api/worksheets/{id}/assignments/{aId}/students/{sId}` | Remove individual student    |
+| GET    | `/api/worksheets/{id}/assignments/{aId}/corrections`    | Get correction settings      |
+| PUT    | `/api/worksheets/{id}/assignments/{aId}/corrections`    | Update correction visibility |
 
 ### Templates
 
@@ -307,12 +362,14 @@ Teachers can create custom Typst templates with placeholders:
 ### Core Tables
 
 ```
-worksheet_templates    - Typst PDF templates
-worksheets            - Main worksheets table
-worksheet_sections    - Section organization
-worksheet_exercises   - Exercise-worksheet junction
-worksheet_instances   - Student-specific instances
-worksheet_assignments - Class assignments
+worksheet_templates                    - Typst PDF templates
+worksheets                            - Main worksheets table
+worksheet_sections                    - Section organization
+worksheet_exercises                   - Exercise-worksheet junction (NEW: correction_visible column)
+worksheet_instances                   - Student-specific instances
+worksheet_assignments                 - Class assignments (NEW: show_corrections column)
+worksheet_assignment_students         - Individual student assignments (NEW 2025-12-12)
+worksheet_assignment_exercise_settings - Per-exercise correction overrides (NEW 2025-12-12)
 ```
 
 ### Entity Relationships
@@ -322,10 +379,14 @@ worksheets
     |-- worksheet_sections (1:N)
     |-- worksheet_exercises (1:N)
     |       |-- exercises (N:1)
+    |       |-- worksheet_assignment_exercise_settings (1:N) [NEW]
     |-- worksheet_instances (1:N)
     |       |-- profiles/students (N:1)
     |-- worksheet_assignments (1:N)
-    |       |-- classes (N:1)
+    |       |-- classes (N:1, optional)
+    |       |-- worksheet_assignment_students (1:N) [NEW]
+    |       |       |-- profiles/students (N:1)
+    |       |-- worksheet_assignment_exercise_settings (1:N) [NEW]
     |-- worksheet_templates (N:1, optional)
 ```
 
@@ -374,20 +435,27 @@ Database trigger prevents students from modifying:
 
 ### UI Components
 
-| Component               | Location                                    | Purpose                    |
-| ----------------------- | ------------------------------------------- | -------------------------- |
-| ExerciseSelector        | `worksheets/ExerciseSelector.svelte`        | Search and add exercises   |
-| ExerciseList            | `worksheets/ExerciseList.svelte`            | Display/reorder exercises  |
-| ExercisePreview         | `worksheets/ExercisePreview.svelte`         | Preview exercise content   |
-| ExerciseConfigModal     | `worksheets/ExerciseConfigModal.svelte`     | Configure variant settings |
-| SectionManager          | `worksheets/SectionManager.svelte`          | Manage sections            |
-| VariantPreview          | `worksheets/VariantPreview.svelte`          | Preview student variants   |
-| PdfPreview              | `worksheets/PdfPreview.svelte`              | Preview generated PDF      |
-| CorrectionManager       | `worksheets/CorrectionManager.svelte`       | Manage correction release  |
-| CorrectionSettings      | `worksheets/CorrectionSettings.svelte`      | Configure correction mode  |
-| WorksheetAssignmentForm | `worksheets/WorksheetAssignmentForm.svelte` | Assign to class            |
-| TemplateSelector        | `worksheets/TemplateSelector.svelte`        | Choose PDF template        |
-| TypstEditor             | `worksheets/TypstEditor.svelte`             | Edit Typst templates       |
+| Component                      | Location                                              | Purpose                           |
+| ------------------------------ | ----------------------------------------------------- | --------------------------------- |
+| ExerciseSelector               | `worksheets/ExerciseSelector.svelte`                  | Search and add exercises          |
+| ExerciseList                   | `worksheets/ExerciseList.svelte`                      | Display/reorder exercises         |
+| ExercisePreview                | `worksheets/ExercisePreview.svelte`                   | Preview exercise content          |
+| ExerciseConfigModal            | `worksheets/ExerciseConfigModal.svelte`               | Configure variant settings        |
+| SectionManager                 | `worksheets/SectionManager.svelte`                    | Manage sections                   |
+| VariantPreview                 | `worksheets/VariantPreview.svelte`                    | Preview student variants          |
+| PdfPreview                     | `worksheets/PdfPreview.svelte`                        | Preview generated PDF             |
+| CorrectionManager              | `worksheets/CorrectionManager.svelte`                 | Manage correction release         |
+| CorrectionSettings             | `worksheets/CorrectionSettings.svelte`                | Configure correction mode         |
+| WorksheetAssignmentForm        | `worksheets/WorksheetAssignmentForm.svelte`           | Assign to class                   |
+| TemplateSelector               | `worksheets/TemplateSelector.svelte`                  | Choose PDF template               |
+| TypstEditor                    | `worksheets/TypstEditor.svelte`                       | Edit Typst templates              |
+| **NEW Online Mode Components** |                                                       |                                   |
+| WorksheetCard                  | `student/worksheets/WorksheetCard.svelte`             | Worksheet card for student list   |
+| WorksheetHeader                | `student/worksheets/WorksheetHeader.svelte`           | Header for worksheet detail       |
+| ExerciseDisplay                | `student/worksheets/ExerciseDisplay.svelte`           | Exercise with collapsible correct |
+| StudentSelector                | `teacher/worksheets/StudentSelector.svelte`           | Individual student selection      |
+| AssignmentStudentsPanel        | `teacher/worksheets/AssignmentStudentsPanel.svelte`   | Manage assigned students          |
+| CorrectionVisibilityPanel      | `teacher/worksheets/CorrectionVisibilityPanel.svelte` | Per-exercise correction toggles   |
 
 ### Server Modules
 
@@ -446,6 +514,13 @@ interface VariantConfig {
 | `/dashboard/teacher/worksheets/[id]/edit`      | Edit worksheet   |
 | `/dashboard/teacher/worksheets/templates`      | Template list    |
 | `/dashboard/teacher/worksheets/templates/[id]` | Edit template    |
+
+### Student Dashboard (2025-12-12 NEW)
+
+| Route                                          | Description                   |
+| ---------------------------------------------- | ----------------------------- |
+| `/dashboard/student/worksheets`                | List assigned worksheets      |
+| `/dashboard/student/worksheets/{assignmentId}` | View worksheet with exercises |
 
 ---
 
