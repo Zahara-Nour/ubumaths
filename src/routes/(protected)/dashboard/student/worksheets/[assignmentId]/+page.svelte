@@ -1,6 +1,7 @@
 <script lang="ts">
 	import WorksheetHeader from '$lib/components/student/worksheets/WorksheetHeader.svelte';
-	import ExerciseDisplay from '$lib/components/student/worksheets/ExerciseDisplay.svelte';
+	import ExerciseListItem from '$lib/components/student/worksheets/ExerciseListItem.svelte';
+	import ExerciseModal from '$lib/components/student/worksheets/ExerciseModal.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
 	import type { PageData } from './$types';
@@ -15,6 +16,23 @@
 	let worksheet = $derived(data.worksheet);
 	let exercises = $derived(worksheet.exercises ?? []);
 	let exerciseCount = $derived(exercises.length);
+
+	// Modal state
+	let modalOpen = $state(false);
+	let currentExerciseIndex = $state(0);
+
+	function openExercise(index: number) {
+		currentExerciseIndex = index;
+		modalOpen = true;
+	}
+
+	function handleNavigate(index: number) {
+		currentExerciseIndex = index;
+	}
+
+	function handleOpenChange(open: boolean) {
+		modalOpen = open;
+	}
 </script>
 
 <svelte:head>
@@ -61,11 +79,20 @@
 			</Card.Root>
 		{:else}
 			<!-- Exercise List -->
-			<div class="space-y-6">
+			<div class="space-y-3">
 				{#each exercises as exercise, i (exercise.id)}
-					<ExerciseDisplay {exercise} index={i + 1} />
+					<ExerciseListItem {exercise} index={i + 1} onclick={() => openExercise(i)} />
 				{/each}
 			</div>
 		{/if}
 	</section>
 </div>
+
+<!-- Exercise Modal -->
+<ExerciseModal
+	{exercises}
+	currentIndex={currentExerciseIndex}
+	open={modalOpen}
+	onOpenChange={handleOpenChange}
+	onNavigate={handleNavigate}
+/>
