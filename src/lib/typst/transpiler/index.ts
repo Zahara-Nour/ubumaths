@@ -4,5 +4,6 @@ export {
 	escapeTypstBrackets,
 	resolveImagePath,
 	markdownToTypst,
-	transpileImage
+	transpileImage,
+	convertLatexToTypstMath
 } from './typst-transpiler';

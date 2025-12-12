@@ -211,7 +211,9 @@ function transpileInline(node: InlineNode, _options: Required<TypstTranspilerOpt
 		case 'math-inline': {
 			const latex =
 				node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
-			return `$${latex}$`;
+			// Convert LaTeX math to Typst math syntax
+			const typstMath = convertLatexToTypstMath(latex);
+			return `$${typstMath}$`;
 		}
 
 		case 'line-break':
@@ -353,7 +355,9 @@ function transpileTable(node: TableNode, _options: Required<TypstTranspilerOptio
 function transpileMathBlock(node: MathBlockNode): string {
 	const latex =
 		node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
-	return `$ ${latex} $`;
+	// Convert LaTeX math to Typst math syntax
+	const typstMath = convertLatexToTypstMath(latex);
+	return `$ ${typstMath} $`;
 }
 
 // ============================================================================
@@ -541,6 +545,215 @@ function transpileCodeBlock(node: CodeBlockNode): string {
 	const langSpec = lang ? lang : '';
 
 	return '```' + langSpec + '\n' + node.code + '\n```';
+}
+
+// ============================================================================
+// LATEX TO TYPST MATH CONVERSION
+// ============================================================================
+
+/**
+ * Convert LaTeX math to Typst math syntax
+ *
+ * Typst uses different syntax than LaTeX for math mode.
+ * This function converts common LaTeX math commands to Typst equivalents.
+ *
+ * @param latex - LaTeX math expression
+ * @returns Typst math expression
+ */
+export function convertLatexToTypstMath(latex: string): string {
+	let result = latex;
+
+	// Convert \left( ... \right) to ( ... ) - Typst auto-sizes
+	result = result.replace(/\\left\s*\(/g, '(');
+	result = result.replace(/\\right\s*\)/g, ')');
+
+	// Convert \left[ ... \right] to [ ... ]
+	result = result.replace(/\\left\s*\[/g, '[');
+	result = result.replace(/\\right\s*\]/g, ']');
+
+	// Convert \left| ... \right| to abs( ... ) or |...|
+	// Use lr(|...|) for proper sizing in Typst
+	result = result.replace(/\\left\s*\|/g, 'lr(|');
+	result = result.replace(/\\right\s*\|/g, '|)');
+
+	// Convert \left\{ ... \right\} to { ... }
+	result = result.replace(/\\left\s*\\{/g, '{');
+	result = result.replace(/\\right\s*\\}/g, '}');
+
+	// Convert \frac{a}{b} to frac(a, b) or (a)/(b)
+	// Typst uses frac(a, b) syntax
+	result = result.replace(/\\frac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
+
+	// Handle nested fractions - repeat the conversion
+	let prev = '';
+	while (prev !== result) {
+		prev = result;
+		result = result.replace(/\\frac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
+	}
+
+	// Convert \sqrt{x} to sqrt(x)
+	result = result.replace(/\\sqrt\s*{([^{}]*)}/g, 'sqrt($1)');
+
+	// Convert \sqrt[n]{x} to root(n, x)
+	result = result.replace(/\\sqrt\s*\[([^\]]*)\]\s*{([^{}]*)}/g, 'root($1, $2)');
+
+	// Convert known functions: \sin, \cos, \tan, \log, \ln, \exp, etc.
+	// Remove backslash - Typst recognizes these directly
+	const knownFunctions = [
+		'sin',
+		'cos',
+		'tan',
+		'cot',
+		'sec',
+		'csc',
+		'arcsin',
+		'arccos',
+		'arctan',
+		'sinh',
+		'cosh',
+		'tanh',
+		'log',
+		'ln',
+		'exp',
+		'lim',
+		'sup',
+		'inf',
+		'min',
+		'max',
+		'det',
+		'dim',
+		'ker',
+		'deg',
+		'gcd',
+		'mod',
+		'arg'
+	];
+	for (const func of knownFunctions) {
+		const regex = new RegExp(`\\\\${func}(?![a-zA-Z])`, 'g');
+		result = result.replace(regex, func);
+	}
+
+	// Convert Greek letters
+	const greekLetters = [
+		'alpha',
+		'beta',
+		'gamma',
+		'delta',
+		'epsilon',
+		'zeta',
+		'eta',
+		'theta',
+		'iota',
+		'kappa',
+		'lambda',
+		'mu',
+		'nu',
+		'xi',
+		'pi',
+		'rho',
+		'sigma',
+		'tau',
+		'upsilon',
+		'phi',
+		'chi',
+		'psi',
+		'omega',
+		'Gamma',
+		'Delta',
+		'Theta',
+		'Lambda',
+		'Xi',
+		'Pi',
+		'Sigma',
+		'Upsilon',
+		'Phi',
+		'Psi',
+		'Omega',
+		'varepsilon',
+		'vartheta',
+		'varpi',
+		'varrho',
+		'varsigma',
+		'varphi'
+	];
+	for (const letter of greekLetters) {
+		const regex = new RegExp(`\\\\${letter}(?![a-zA-Z])`, 'g');
+		result = result.replace(regex, letter);
+	}
+
+	// Convert \cdot to centered dot (Typst uses dot.c)
+	result = result.replace(/\\cdot/g, 'dot.c');
+
+	// Convert \times to times
+	result = result.replace(/\\times/g, 'times');
+
+	// Convert \div to div
+	result = result.replace(/\\div/g, 'div');
+
+	// Convert \pm to plus.minus
+	result = result.replace(/\\pm/g, 'plus.minus');
+
+	// Convert \mp to minus.plus
+	result = result.replace(/\\mp/g, 'minus.plus');
+
+	// Convert \infty to infinity
+	result = result.replace(/\\infty/g, 'infinity');
+
+	// Convert comparison operators
+	result = result.replace(/\\leq/g, '<=');
+	result = result.replace(/\\le(?![a-z])/g, '<=');
+	result = result.replace(/\\geq/g, '>=');
+	result = result.replace(/\\ge(?![a-z])/g, '>=');
+	result = result.replace(/\\neq/g, '!=');
+	result = result.replace(/\\ne(?![a-z])/g, '!=');
+	result = result.replace(/\\approx/g, 'approx');
+	result = result.replace(/\\equiv/g, 'equiv');
+	result = result.replace(/\\sim/g, 'tilde.eq');
+
+	// Convert arrows
+	result = result.replace(/\\to/g, '->');
+	result = result.replace(/\\rightarrow/g, '->');
+	result = result.replace(/\\leftarrow/g, '<-');
+	result = result.replace(/\\leftrightarrow/g, '<->');
+	result = result.replace(/\\Rightarrow/g, '=>');
+	result = result.replace(/\\Leftarrow/g, '<=');
+	result = result.replace(/\\Leftrightarrow/g, '<=>');
+
+	// Convert set operators
+	result = result.replace(/\\in/g, 'in');
+	result = result.replace(/\\notin/g, 'in.not');
+	result = result.replace(/\\subset/g, 'subset');
+	result = result.replace(/\\subseteq/g, 'subset.eq');
+	result = result.replace(/\\supset/g, 'supset');
+	result = result.replace(/\\supseteq/g, 'supset.eq');
+	result = result.replace(/\\cup/g, 'union');
+	result = result.replace(/\\cap/g, 'sect');
+	result = result.replace(/\\emptyset/g, 'emptyset');
+
+	// Convert common symbols
+	result = result.replace(/\\forall/g, 'forall');
+	result = result.replace(/\\exists/g, 'exists');
+	result = result.replace(/\\partial/g, 'diff');
+	result = result.replace(/\\nabla/g, 'nabla');
+
+	// Convert text command
+	result = result.replace(/\\text\s*{([^{}]*)}/g, '"$1"');
+	result = result.replace(/\\textbf\s*{([^{}]*)}/g, 'bold("$1")');
+	result = result.replace(/\\textit\s*{([^{}]*)}/g, 'italic("$1")');
+
+	// Convert subscript and superscript (these work the same in Typst)
+	// ^ and _ work similarly, but multi-char need no braces in Typst
+	// Actually, braces {} are handled automatically
+
+	// Clean up any remaining backslashes before common commands
+	// This is a catch-all for less common commands
+	result = result.replace(/\\([a-zA-Z]+)/g, (match, cmd) => {
+		// If it's a known command we missed, try to convert
+		// Otherwise, leave it as-is (Typst might understand it or error clearly)
+		return cmd;
+	});
+
+	return result;
 }
 
 // ============================================================================
