@@ -13011,8 +13011,14 @@ export type Database = {
 				Returns: string;
 			};
 			start_match: { Args: { p_match_id: string }; Returns: Json };
-			student_has_exercise_access: {
-				Args: { p_exercise_id: string; p_student_id: string };
+			student_has_exercise_access:
+				| { Args: { p_exercise_id: string }; Returns: boolean }
+				| {
+						Args: { p_exercise_id: string; p_student_id: string };
+						Returns: boolean;
+				  };
+			student_has_worksheet_access: {
+				Args: { p_worksheet_id: string };
 				Returns: boolean;
 			};
 			submit_riddle_attempt: {
