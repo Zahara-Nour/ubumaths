@@ -25,6 +25,12 @@
 				href: '/dashboard/teacher/worksheets',
 				icon: FileSpreadsheet,
 				roles: ['teacher']
+			},
+			{
+				label: 'Mes Fiches',
+				href: '/dashboard/student/worksheets',
+				icon: FileSpreadsheet,
+				roles: ['student']
 			}
 			// { label: 'Automaths', href: '/automaths', icon: Calculator },
 			// { label: 'CAS', href: '/cas', icon: Terminal },
