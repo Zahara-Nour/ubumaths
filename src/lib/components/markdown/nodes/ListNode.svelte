@@ -27,6 +27,7 @@
 	import HorizontalRule from './HorizontalRule.svelte';
 	import HeadingNode from './HeadingNode.svelte';
 	import TableNode from './TableNode.svelte';
+	import CodeBlock from './CodeBlock.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
 
@@ -133,6 +134,15 @@
 	} {
 		return node.type === 'table';
 	}
+
+	/**
+	 * Check if node is a code-block node
+	 */
+	function isCodeBlockNode(
+		node: ASTNode
+	): node is { type: 'code-block'; code?: string; content?: string; language?: string } {
+		return node.type === 'code-block';
+	}
 </script>
 
 {#if ordered}
@@ -169,6 +179,8 @@
 						/>
 					{:else if isTableNode(child)}
 						<TableNode header={child.header} rows={child.rows} alignments={child.alignments} />
+					{:else if isCodeBlockNode(child)}
+						<CodeBlock code={child.code || child.content || ''} language={child.language} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -210,6 +222,8 @@
 						/>
 					{:else if isTableNode(child)}
 						<TableNode header={child.header} rows={child.rows} alignments={child.alignments} />
+					{:else if isCodeBlockNode(child)}
+						<CodeBlock code={child.code || child.content || ''} language={child.language} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

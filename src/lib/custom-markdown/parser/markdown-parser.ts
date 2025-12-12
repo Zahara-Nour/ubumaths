@@ -530,10 +530,86 @@ function parseTextFormatting(text: string): InlineNode[] {
 // ============================================================================
 
 /**
+ * Parse content that may contain code blocks into block nodes
+ *
+ * Handles cases where list item continuations contain fenced code blocks.
+ * Returns an array of BlockNode (paragraphs and code blocks).
+ *
+ * @param content - Text content that may contain code blocks
+ * @param placeholders - Math placeholders from extraction
+ * @param options - Parse options
+ * @returns Array of block nodes
+ */
+function parseContentWithCodeBlocks(
+	content: string,
+	placeholders: MathPlaceholder[],
+	options: ParseOptions
+): BlockNode[] {
+	const blocks: BlockNode[] = [];
+
+	// Regex to find fenced code blocks (``` or ~~~)
+	// Important: Use [ \t]* instead of \s* to avoid consuming newlines between blocks
+	const codeBlockRegex = /^(`{3,}|~{3,})(\w*)\n([\s\S]*?)\n\1[ \t]*$/gm;
+
+	let lastIndex = 0;
+	let match: RegExpExecArray | null;
+
+	// Reset regex state
+	codeBlockRegex.lastIndex = 0;
+
+	while ((match = codeBlockRegex.exec(content)) !== null) {
+		// Add paragraph for content before this code block
+		if (match.index > lastIndex) {
+			const beforeText = content.slice(lastIndex, match.index).trim();
+			if (beforeText) {
+				const parsedInline = parseInlineContent(beforeText, placeholders, options);
+				blocks.push({
+					type: 'paragraph',
+					children: parsedInline
+				});
+			}
+		}
+
+		// Add code block
+		const language = match[2] || undefined;
+		const code = match[3];
+		blocks.push({
+			type: 'code-block',
+			language,
+			content: code
+		});
+
+		lastIndex = match.index + match[0].length;
+	}
+
+	// Add paragraph for remaining content after last code block
+	if (lastIndex < content.length) {
+		const afterText = content.slice(lastIndex).trim();
+		if (afterText) {
+			const parsedInline = parseInlineContent(afterText, placeholders, options);
+			blocks.push({
+				type: 'paragraph',
+				children: parsedInline
+			});
+		}
+	}
+
+	return blocks;
+}
+
+/**
+ * Check if content contains fenced code blocks
+ */
+function containsCodeBlocks(content: string): boolean {
+	return /^(`{3,}|~{3,})/m.test(content);
+}
+
+/**
  * Process list items to parse inline content (math, formatting)
  *
  * The list-parser creates simple text nodes with placeholders.
  * This function replaces those text nodes with properly parsed inline content.
+ * Also handles code blocks that may appear in list item continuations.
  *
  * @param list - ListNode to process
  * @param placeholders - Math placeholders from extraction
@@ -549,7 +625,7 @@ function processListInlineContent(
 		...list,
 		items: list.items.map((item) => ({
 			...item,
-			children: item.children.map((child) => {
+			children: item.children.flatMap((child) => {
 				if (child.type === 'paragraph') {
 					// Extract text content from the simple text nodes
 					const textContent = child.children
@@ -557,11 +633,17 @@ function processListInlineContent(
 						.map((n) => (n.type === 'text' ? n.content : ''))
 						.join('');
 
+					// Check if content contains code blocks
+					if (containsCodeBlocks(textContent)) {
+						// Parse as blocks (may return multiple nodes)
+						return parseContentWithCodeBlocks(textContent, placeholders, options);
+					}
+
 					// Parse inline content with placeholders
 					const parsedInline = parseInlineContent(textContent, placeholders, options);
 
 					return {
-						type: 'paragraph',
+						type: 'paragraph' as const,
 						children: parsedInline
 					};
 				} else if (child.type === 'list') {

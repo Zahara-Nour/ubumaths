@@ -203,6 +203,79 @@ describe('findListBlocks', () => {
 
 		expect(blocks).toHaveLength(2);
 	});
+
+	it('should include loose list continuation paragraphs', () => {
+		// This is a "loose list" where item 4 has a continuation paragraph
+		const lines = ['4. First paragraph of item', '', '   Continuation paragraph', '5. Next item'];
+
+		const blocks = findListBlocks(lines);
+
+		// Should be a single block containing all lines
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0]).toEqual([0, 3]);
+	});
+
+	it('should handle multiple continuation paragraphs', () => {
+		const lines = [
+			'1. Item one',
+			'',
+			'   First continuation',
+			'',
+			'   Second continuation',
+			'2. Item two'
+		];
+
+		const blocks = findListBlocks(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0]).toEqual([0, 5]);
+	});
+});
+
+describe('parseList with loose lists', () => {
+	it('should parse loose list with continuation paragraph', () => {
+		const lines = ['1. First paragraph', '', '   Continuation paragraph', '2. Second item'];
+
+		const lists = parseList(lines);
+
+		expect(lists).toHaveLength(1);
+		expect(lists[0].items).toHaveLength(2);
+
+		// First item should have 2 paragraphs
+		const firstItem = lists[0].items[0];
+		expect(firstItem.children).toHaveLength(2);
+		expect(firstItem.children[0].type).toBe('paragraph');
+		expect(firstItem.children[1].type).toBe('paragraph');
+	});
+
+	it('should preserve continuation content', () => {
+		const lines = ['1. Question?', '', '   Interpret the result.', '2. Next question'];
+
+		const lists = parseList(lines);
+		const firstItem = lists[0].items[0];
+
+		// Check first paragraph
+		const firstPara = firstItem.children[0];
+		expect(firstPara.type).toBe('paragraph');
+		if (firstPara.type === 'paragraph') {
+			const textNode = firstPara.children[0];
+			expect(textNode.type).toBe('text');
+			if (textNode.type === 'text') {
+				expect(textNode.content).toBe('Question?');
+			}
+		}
+
+		// Check continuation paragraph
+		const secondPara = firstItem.children[1];
+		expect(secondPara.type).toBe('paragraph');
+		if (secondPara.type === 'paragraph') {
+			const textNode = secondPara.children[0];
+			expect(textNode.type).toBe('text');
+			if (textNode.type === 'text') {
+				expect(textNode.content).toBe('Interpret the result.');
+			}
+		}
+	});
 });
 
 describe('getListType', () => {
@@ -330,5 +403,64 @@ describe('Edge Cases', () => {
 
 		expect(lists).toHaveLength(1);
 		// Should handle different indentation gracefully
+	});
+
+	it('should preserve code blocks with blank lines in list continuations', () => {
+		const lines = [
+			'1. Item with code:',
+			'   ```python',
+			'   def foo():',
+			'       pass',
+			'',
+			'   def bar():',
+			'       pass',
+			'   ```',
+			'2. Second item'
+		];
+
+		const lists = parseList(lines);
+
+		expect(lists).toHaveLength(1);
+		expect(lists[0].items).toHaveLength(2);
+		// First item should have the code block as continuation
+		const firstItem = lists[0].items[0];
+		expect(firstItem.children.length).toBeGreaterThanOrEqual(1);
+		// The continuation should contain the complete code block with blank line preserved
+		if (firstItem.continuations && firstItem.continuations.length > 0) {
+			const continuation = firstItem.continuations[0];
+			expect(continuation).toContain('```python');
+			expect(continuation).toContain('def foo()');
+			expect(continuation).toContain('def bar()');
+		}
+	});
+
+	it('should handle multiple consecutive code blocks in list item', () => {
+		const lines = [
+			'1. Multiple code blocks:',
+			'   ```',
+			'   code1',
+			'   ```',
+			'',
+			'   ```python',
+			'   code2',
+			'   ```',
+			'',
+			'   ~~~bash',
+			'   code3',
+			'   ~~~',
+			'',
+			'   Text after code',
+			'2. Next item'
+		];
+
+		const lists = parseList(lines);
+
+		expect(lists).toHaveLength(1);
+		expect(lists[0].items).toHaveLength(2);
+		// Check that code blocks are collected properly
+		// First item should have children: main paragraph + continuation paragraphs
+		const firstItem = lists[0].items[0];
+		// Main paragraph + at least one continuation (code blocks and text after)
+		expect(firstItem.children.length).toBeGreaterThanOrEqual(2);
 	});
 });

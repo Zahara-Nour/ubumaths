@@ -574,4 +574,38 @@ describe('parseMarkdown - blank support', () => {
 			}
 		}
 	});
+
+	it('should parse code blocks in list item continuations', () => {
+		const markdown = `1. Item with code:
+
+   \`\`\`python
+   def hello():
+       print("world")
+   \`\`\`
+
+2. Next item`;
+
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('list');
+
+		if (ast.children[0].type === 'list') {
+			const list = ast.children[0];
+			expect(list.items).toHaveLength(2);
+
+			// First item should have paragraph + code block
+			const firstItem = list.items[0];
+			expect(firstItem.children.length).toBeGreaterThanOrEqual(2);
+
+			// Find the code block
+			const codeBlock = firstItem.children.find((c) => c.type === 'code-block');
+			expect(codeBlock).toBeDefined();
+
+			if (codeBlock && codeBlock.type === 'code-block') {
+				expect(codeBlock.language).toBe('python');
+				expect(codeBlock.content).toContain('def hello()');
+			}
+		}
+	});
 });

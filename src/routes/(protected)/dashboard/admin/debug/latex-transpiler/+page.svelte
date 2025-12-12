@@ -65,8 +65,11 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 	let splitResult = $state<SplitResult | null>(null);
 	let statementMarkdown = $state<string>('');
 	let solutionMarkdown = $state<string>('');
-	let activeTab = $state('markdown');
+	let activeTab = $state('input');
 	let error = $state<string | null>(null);
+
+	// Editable markdown (separate from transpiled result)
+	let editableMarkdown = $state<string>('');
 
 	// ============================================================================
 	// DERIVED VALUES
@@ -200,13 +203,26 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 				...transpileResult,
 				warnings: allWarnings
 			};
+
+			// Initialize editable markdown with transpiled result
+			editableMarkdown = transpileResult.markdown;
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Erreur inconnue lors de la transpilation';
 			transpileResult = null;
 			splitResult = null;
 			statementMarkdown = '';
 			solutionMarkdown = '';
+			editableMarkdown = '';
 		}
+	}
+
+	/**
+	 * Render the edited markdown in the other tabs
+	 */
+	function handleRenderMarkdown() {
+		// Use the edited markdown directly for rendering
+		statementMarkdown = editableMarkdown;
+		solutionMarkdown = ''; // No solution when rendering edited markdown directly
 	}
 </script>
 
@@ -215,176 +231,179 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 </svelte:head>
 
 <div class="container mx-auto p-6">
-	<h1 class="mb-6 text-2xl font-bold">Debug LaTeX Transpiler</h1>
+	<div class="mb-4 flex items-center justify-between">
+		<h1 class="text-2xl font-bold">Debug LaTeX Transpiler</h1>
+		<Button onclick={handleTranspile}>Transpiler</Button>
+	</div>
 
-	<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-		<!-- Left: Input -->
-		<div class="flex flex-col gap-4">
-			<label for="latex-input" class="text-sm font-medium">LaTeX Input</label>
+	{#if error}
+		<div class="mb-4 rounded-lg border border-destructive bg-destructive/10 p-4">
+			<p class="text-sm font-medium text-destructive">Erreur</p>
+			<p class="mt-1 text-sm text-destructive/80">{error}</p>
+		</div>
+	{/if}
+
+	<Tabs.Root bind:value={activeTab} class="w-full">
+		<Tabs.List class="grid w-full grid-cols-6">
+			<Tabs.Trigger value="input">Input</Tabs.Trigger>
+			<Tabs.Trigger value="markdown">Markdown</Tabs.Trigger>
+			<Tabs.Trigger value="html">HTML</Tabs.Trigger>
+			<Tabs.Trigger value="render">Rendu</Tabs.Trigger>
+			<Tabs.Trigger value="splitter">Splitter</Tabs.Trigger>
+			<Tabs.Trigger value="stats" class="flex items-center gap-2">
+				Stats
+				{#if warningsCount > 0}
+					<Badge variant="destructive" class="ml-1 text-xs">{warningsCount}</Badge>
+				{/if}
+			</Tabs.Trigger>
+		</Tabs.List>
+
+		<!-- Input Tab -->
+		<Tabs.Content value="input" class="mt-4">
 			<LaTeXEditor
 				bind:value={latexInput}
-				height="500px"
+				height="600px"
 				placeholder="Entrez votre code LaTeX ici..."
 			/>
-			<Button onclick={handleTranspile} class="w-full">Transpiler</Button>
+		</Tabs.Content>
 
-			{#if error}
-				<div class="rounded-lg border border-destructive bg-destructive/10 p-4">
-					<p class="text-sm font-medium text-destructive">Erreur</p>
-					<p class="mt-1 text-sm text-destructive/80">{error}</p>
-				</div>
+		<!-- Markdown Tab -->
+		<Tabs.Content value="markdown" class="mt-4">
+			<div class="mb-2 flex justify-end">
+				<Button onclick={handleRenderMarkdown} variant="secondary" disabled={!editableMarkdown}>
+					Render
+				</Button>
+			</div>
+			{#if editableMarkdown || transpileResult}
+				<LaTeXEditor
+					bind:value={editableMarkdown}
+					height="600px"
+					placeholder="Markdown genere (editable)..."
+				/>
+			{:else}
+				<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir le resultat</p>
 			{/if}
-		</div>
+		</Tabs.Content>
 
-		<!-- Right: Output tabs -->
-		<div class="flex flex-col">
-			<Tabs.Root bind:value={activeTab} class="w-full">
-				<Tabs.List class="grid w-full grid-cols-5">
-					<Tabs.Trigger value="markdown">Markdown</Tabs.Trigger>
-					<Tabs.Trigger value="html">HTML</Tabs.Trigger>
-					<Tabs.Trigger value="render">Rendu</Tabs.Trigger>
-					<Tabs.Trigger value="splitter">Splitter</Tabs.Trigger>
-					<Tabs.Trigger value="stats" class="flex items-center gap-2">
-						Stats
-						{#if warningsCount > 0}
-							<Badge variant="destructive" class="ml-1 text-xs">{warningsCount}</Badge>
-						{/if}
-					</Tabs.Trigger>
-				</Tabs.List>
+		<!-- HTML Tab (raw HTML output) -->
+		<Tabs.Content value="html" class="mt-4">
+			{#if rawHtml}
+				<div class="rounded-lg border border-border bg-muted p-4">
+					<pre class="overflow-x-auto font-mono text-sm whitespace-pre-wrap">{rawHtml}</pre>
+				</div>
+			{:else}
+				<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir le resultat</p>
+			{/if}
+		</Tabs.Content>
 
-				<!-- Markdown Tab -->
-				<Tabs.Content value="markdown" class="mt-4">
-					{#if transpileResult}
-						<div class="rounded-lg border border-border bg-muted p-4">
-							<pre
-								class="overflow-x-auto font-mono text-sm whitespace-pre-wrap">{transpileResult.markdown}</pre>
+		<!-- Render Tab -->
+		<Tabs.Content value="render" class="mt-4">
+			{#if mockExercise}
+				<div class="rounded-lg border border-border p-4">
+					<ExerciseDisplay exercise={mockExercise} mode="instance" showSolution={true} />
+				</div>
+			{:else}
+				<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir le rendu</p>
+			{/if}
+		</Tabs.Content>
+
+		<!-- Splitter Tab -->
+		<Tabs.Content value="splitter" class="mt-4">
+			{#if splitResult}
+				<div class="space-y-4">
+					<div class="rounded-lg border border-border p-4">
+						<div class="mb-2 flex items-center gap-2">
+							<h3 class="font-semibold">Methode de detection</h3>
+							<Badge variant="secondary">{splitResult.splitMethod}</Badge>
 						</div>
-					{:else}
-						<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir le resultat</p>
-					{/if}
-				</Tabs.Content>
+					</div>
 
-				<!-- HTML Tab (raw HTML output) -->
-				<Tabs.Content value="html" class="mt-4">
-					{#if rawHtml}
-						<div class="rounded-lg border border-border bg-muted p-4">
-							<pre class="overflow-x-auto font-mono text-sm whitespace-pre-wrap">{rawHtml}</pre>
-						</div>
-					{:else}
-						<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir le resultat</p>
-					{/if}
-				</Tabs.Content>
+					<div class="rounded-lg border border-border p-4">
+						<h3 class="mb-2 font-semibold">Enonce</h3>
+						<pre
+							class="overflow-x-auto rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap">{splitResult.statement}</pre>
+					</div>
 
-				<!-- Render Tab -->
-				<Tabs.Content value="render" class="mt-4">
-					{#if mockExercise}
+					{#if splitResult.solution}
 						<div class="rounded-lg border border-border p-4">
-							<ExerciseDisplay exercise={mockExercise} mode="instance" showSolution={true} />
+							<h3 class="mb-2 font-semibold">Solution</h3>
+							<pre
+								class="overflow-x-auto rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap">{splitResult.solution}</pre>
 						</div>
 					{:else}
-						<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir le rendu</p>
+						<div class="rounded-lg border border-border bg-muted/50 p-4">
+							<p class="text-muted-foreground">Aucune solution detectee</p>
+						</div>
 					{/if}
-				</Tabs.Content>
+				</div>
+			{:else}
+				<p class="text-muted-foreground">
+					Cliquez sur "Transpiler" pour voir le resultat du splitter
+				</p>
+			{/if}
+		</Tabs.Content>
 
-				<!-- Splitter Tab -->
-				<Tabs.Content value="splitter" class="mt-4">
-					{#if splitResult}
-						<div class="space-y-4">
-							<div class="rounded-lg border border-border p-4">
-								<div class="mb-2 flex items-center gap-2">
-									<h3 class="font-semibold">Methode de detection</h3>
-									<Badge variant="secondary">{splitResult.splitMethod}</Badge>
-								</div>
-							</div>
+		<!-- Stats Tab -->
+		<Tabs.Content value="stats" class="mt-4">
+			{#if transpileResult}
+				<div class="space-y-4">
+					<!-- Stats -->
+					{#if transpileResult.stats}
+						<div class="rounded-lg border border-border p-4">
+							<h3 class="mb-3 font-semibold">Statistiques</h3>
+							<pre
+								class="overflow-x-auto rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap">{JSON.stringify(
+									transpileResult.stats,
+									null,
+									2
+								)}</pre>
+						</div>
+					{/if}
 
-							<div class="rounded-lg border border-border p-4">
-								<h3 class="mb-2 font-semibold">Enonce</h3>
-								<pre
-									class="overflow-x-auto rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap">{splitResult.statement}</pre>
-							</div>
-
-							{#if splitResult.solution}
-								<div class="rounded-lg border border-border p-4">
-									<h3 class="mb-2 font-semibold">Solution</h3>
-									<pre
-										class="overflow-x-auto rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap">{splitResult.solution}</pre>
-								</div>
+					<!-- Warnings -->
+					<div class="rounded-lg border border-border p-4">
+						<div class="mb-3 flex items-center gap-2">
+							<h3 class="font-semibold">Warnings</h3>
+							{#if warningsCount > 0}
+								<Badge variant="destructive">{warningsCount}</Badge>
 							{:else}
-								<div class="rounded-lg border border-border bg-muted/50 p-4">
-									<p class="text-muted-foreground">Aucune solution detectee</p>
-								</div>
+								<Badge variant="secondary">0</Badge>
 							{/if}
 						</div>
-					{:else}
-						<p class="text-muted-foreground">
-							Cliquez sur "Transpiler" pour voir le resultat du splitter
-						</p>
-					{/if}
-				</Tabs.Content>
 
-				<!-- Stats Tab -->
-				<Tabs.Content value="stats" class="mt-4">
-					{#if transpileResult}
-						<div class="space-y-4">
-							<!-- Stats -->
-							{#if transpileResult.stats}
-								<div class="rounded-lg border border-border p-4">
-									<h3 class="mb-3 font-semibold">Statistiques</h3>
-									<pre
-										class="overflow-x-auto rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap">{JSON.stringify(
-											transpileResult.stats,
-											null,
-											2
-										)}</pre>
-								</div>
-							{/if}
-
-							<!-- Warnings -->
-							<div class="rounded-lg border border-border p-4">
-								<div class="mb-3 flex items-center gap-2">
-									<h3 class="font-semibold">Warnings</h3>
-									{#if warningsCount > 0}
-										<Badge variant="destructive">{warningsCount}</Badge>
-									{:else}
-										<Badge variant="secondary">0</Badge>
-									{/if}
-								</div>
-
-								{#if transpileResult.warnings.length > 0}
-									<div class="space-y-2">
-										{#each transpileResult.warnings as warning, index (index)}
-											<div class="rounded border border-yellow-500/30 bg-yellow-500/10 p-3">
-												<div class="flex items-start gap-2">
-													<Badge variant="outline" class="shrink-0">{warning.type}</Badge>
-													<div class="flex-1">
-														<p class="text-sm">{warning.message}</p>
-														{#if warning.line}
-															<p class="mt-1 text-xs text-muted-foreground">
-																Ligne {warning.line}{#if warning.column}, colonne {warning.column}{/if}
-															</p>
-														{/if}
-														{#if warning.command}
-															<p class="mt-1 font-mono text-xs text-muted-foreground">
-																Commande: {warning.command}
-															</p>
-														{/if}
-													</div>
-												</div>
+						{#if transpileResult.warnings.length > 0}
+							<div class="space-y-2">
+								{#each transpileResult.warnings as warning, index (index)}
+									<div class="rounded border border-yellow-500/30 bg-yellow-500/10 p-3">
+										<div class="flex items-start gap-2">
+											<Badge variant="outline" class="shrink-0">{warning.type}</Badge>
+											<div class="flex-1">
+												<p class="text-sm">{warning.message}</p>
+												{#if warning.line}
+													<p class="mt-1 text-xs text-muted-foreground">
+														Ligne {warning.line}{#if warning.column}, colonne {warning.column}{/if}
+													</p>
+												{/if}
+												{#if warning.command}
+													<p class="mt-1 font-mono text-xs text-muted-foreground">
+														Commande: {warning.command}
+													</p>
+												{/if}
 											</div>
-										{/each}
+										</div>
 									</div>
-								{:else}
-									<p class="text-sm text-muted-foreground">Aucun warning</p>
-								{/if}
+								{/each}
 							</div>
-						</div>
-					{:else}
-						<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir les statistiques</p>
-					{/if}
-				</Tabs.Content>
-			</Tabs.Root>
-		</div>
-	</div>
+						{:else}
+							<p class="text-sm text-muted-foreground">Aucun warning</p>
+						{/if}
+					</div>
+				</div>
+			{:else}
+				<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir les statistiques</p>
+			{/if}
+		</Tabs.Content>
+	</Tabs.Root>
 </div>
 
 <!-- Hidden container for HTML capture -->

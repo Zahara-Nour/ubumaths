@@ -454,5 +454,34 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 			expect(result.placeholders[0].expression).toBe('x=5');
 			expect(result.placeholders[0].syntax).toBe('custom');
 		});
+
+		it('should NOT match ~~~ tilde code fence as block math', () => {
+			const markdown = '~~~python\ndef hello():\n    print("world")\n~~~';
+			const result = extractMath(markdown);
+
+			// Should NOT extract anything - ~~~ is a code fence, not math
+			expect(result.placeholders).toHaveLength(0);
+			expect(result.text).toBe(markdown);
+		});
+
+		it('should NOT match ~~~ code fence with ``` code fence', () => {
+			const markdown = '```python\ncode1\n```\n~~~python\ncode2\n~~~';
+			const result = extractMath(markdown);
+
+			// Neither code fence should be extracted as math
+			expect(result.placeholders).toHaveLength(0);
+			expect(result.text).toBe(markdown);
+		});
+
+		it('should match ~~ but NOT ~~~', () => {
+			const markdown = 'Math ~~x^2~~ and fence ~~~code~~~';
+			const result = extractMath(markdown);
+
+			// Only the ~~ should be matched
+			expect(result.placeholders).toHaveLength(1);
+			expect(result.placeholders[0].expression).toBe('x^2');
+			expect(result.placeholders[0].isBlock).toBe(true);
+			expect(result.text).toContain('~~~code~~~');
+		});
 	});
 });
