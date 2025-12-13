@@ -105,7 +105,8 @@
 	// Editor State
 	let editorElement = $state<HTMLElement | null>(null);
 	let editor = $state<Editor | null>(null);
-	let isUpdatingFromProp = $state(false);
+	// Non-reactive flag to prevent update loops (NOT $state - just a guard)
+	let isUpdatingFromProp = false;
 
 	// Toolbar Section State
 	let textSectionOpen = $state(true);
