@@ -968,6 +968,12 @@
 		--_padding-horizontal: 0;
 	}
 
+	/* Hide MathLive UI buttons (menu and keyboard toggle) */
+	:global(.math-inline-wrapper math-field::part(menu-toggle)),
+	:global(.math-inline-wrapper math-field::part(virtual-keyboard-toggle)) {
+		display: none;
+	}
+
 	/* Target MathLive internal elements to remove padding */
 	:global(.math-inline-wrapper math-field::part(container)) {
 		padding: 0 !important;
@@ -999,6 +1005,12 @@
 		background: var(--color-muted, #f9fafb);
 		text-align: center;
 		font-size: 1.2em;
+	}
+
+	/* Hide MathLive UI buttons in block math too */
+	:global(.math-block-wrapper math-field::part(menu-toggle)),
+	:global(.math-block-wrapper math-field::part(virtual-keyboard-toggle)) {
+		display: none;
 	}
 
 	:global(.math-block-wrapper math-field:focus) {
