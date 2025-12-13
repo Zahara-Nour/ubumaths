@@ -174,6 +174,14 @@
 		--_padding-horizontal: 0;
 	}
 
+	/* Hide MathLive UI buttons (menu and keyboard toggle) */
+	:global(.math-inline-wrapper math-field::part(menu-toggle)),
+	:global(.math-inline-wrapper math-field::part(virtual-keyboard-toggle)),
+	:global(.math-block-wrapper math-field::part(menu-toggle)),
+	:global(.math-block-wrapper math-field::part(virtual-keyboard-toggle)) {
+		display: none;
+	}
+
 	/* Target MathLive internal elements */
 	:global(.math-inline-wrapper math-field::part(container)) {
 		padding: 0 !important;
