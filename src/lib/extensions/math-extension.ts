@@ -104,7 +104,7 @@ export const MathInline = Node.create({
 			// Set initial LaTeX value
 			mathfield.value = node.attrs.latex as string;
 
-			// Style as inline element (CSS handles most styling via .math-inline-wrapper)
+			// Style as inline element (CSS handles styling via .math-inline-wrapper)
 			mathfield.style.display = 'inline-block';
 
 			// If editor is read-only (display mode), make math field read-only too
@@ -263,7 +263,7 @@ export const MathBlock = Node.create({
 			// Set initial value
 			mathfield.value = node.attrs.latex as string;
 
-			// Style as block element (CSS handles most styling via .math-block-wrapper)
+			// Style as block element (CSS handles styling via .math-block-wrapper)
 			mathfield.style.display = 'block';
 
 			// Read-only mode for display
