@@ -160,38 +160,23 @@ export const MathInline = Node.create({
 	 * Input Rules (Automatic Pattern Detection)
 	 * =========================================
 	 *
-	 * Supports two patterns for math detection:
+	 * Detects $formula$ pattern and converts to math node.
 	 *
-	 * 1. Double dollar: $$formula$$ (LaTeX convention)
-	 *    Regex: /\$\$([^$]+)\$\$$/
+	 * Regex: /\$([^$]+)\$$/
+	 * - \$ - Opening dollar sign
+	 * - ([^$]+) - Capture group: one or more non-$ characters (the formula)
+	 * - \$ - Closing dollar sign
+	 * - $ - End of input (ensures we match at cursor position)
 	 *
-	 * 2. Single dollar: $formula$ (more convenient)
-	 *    Regex: /(?<!\$)\$([^$]+)\$$/
-	 *    Uses negative lookbehind to avoid matching inside $$...$$
-	 *
-	 * Examples:
+	 * Example:
 	 *   User types: "La formule $x^2$ est..." → Converts to math field
-	 *   User types: "Équation $$\frac{a}{b}$$" → Also converts
 	 *
 	 * @see https://tiptap.dev/docs/editor/extensions/functionality#input-rules
 	 */
 	addInputRules() {
 		return [
-			// Double dollar pattern: $$formula$$
 			new InputRule({
-				find: /\$\$([^$]+)\$\$$/,
-				handler: ({ state, range, match }) => {
-					const { tr } = state;
-					const latex = match[1];
-					if (latex) {
-						tr.replaceWith(range.from, range.to, this.type.create({ latex: latex.trim() }));
-					}
-				}
-			}),
-			// Single dollar pattern: $formula$
-			// Negative lookbehind ensures we don't match inside $$...$$
-			new InputRule({
-				find: /(?<!\$)\$([^$]+)\$$/,
+				find: /\$([^$]+)\$$/,
 				handler: ({ state, range, match }) => {
 					const { tr } = state;
 					const latex = match[1];
