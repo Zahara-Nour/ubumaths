@@ -2,24 +2,20 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { User, Hash, Calendar, MessageSquare, CheckCircle2, XCircle } from 'lucide-svelte';
-	import type { TeacherErrorReportView } from '$lib/types/worksheets';
+	import { Calendar, MessageSquare, Hash, FileText, XCircle, CheckCircle2 } from 'lucide-svelte';
+	import type { StudentErrorReportWithDisplay } from '$lib/types/worksheets';
 
 	// Props
 	let {
 		report,
-		onReview
+		onCancel
 	}: {
-		report: TeacherErrorReportView;
-		onReview: (report: TeacherErrorReportView) => void;
+		report: StudentErrorReportWithDisplay;
+		onCancel?: (report: StudentErrorReportWithDisplay) => void;
 	} = $props();
 
 	// Derived values
-	let studentName = $derived(
-		report.student_first_name || report.student_last_name
-			? `${report.student_first_name || ''} ${report.student_last_name || ''}`.trim()
-			: 'Étudiant inconnu'
-	);
+	let displayTitle = $derived(report.assignment_title || report.worksheet_title);
 
 	let statusLabel = $derived(
 		report.status === 'pending' ? 'En attente' : report.status === 'fixed' ? 'Corrigé' : 'Rejeté'
@@ -50,6 +46,8 @@
 			return 'Date invalide';
 		}
 	});
+
+	let canCancel = $derived(report.status === 'pending' && onCancel !== undefined);
 </script>
 
 <Card.Root class="transition-colors hover:bg-muted/30">
@@ -57,13 +55,13 @@
 		<div class="flex items-start justify-between gap-4">
 			<!-- Left side: Report info -->
 			<div class="min-w-0 flex-1 space-y-3">
-				<!-- Header: Student name and exercise -->
+				<!-- Header: Worksheet/Assignment title and exercise position -->
 				<div class="flex flex-wrap items-center gap-2">
 					<div class="flex items-center gap-1.5 text-sm font-medium">
-						<User class="h-4 w-4 text-muted-foreground" />
-						<span>{studentName}</span>
+						<FileText class="h-4 w-4 text-muted-foreground" />
+						<span>{displayTitle}</span>
 					</div>
-					<span class="text-muted-foreground">•</span>
+					<span class="text-muted-foreground">-</span>
 					<div class="flex items-center gap-1.5 text-sm text-muted-foreground">
 						<Hash class="h-4 w-4" />
 						<span>Exercice {report.exercise_position}</span>
@@ -87,10 +85,10 @@
 					</div>
 				{/if}
 
-				<!-- Created date and student name -->
+				<!-- Created date -->
 				<div class="flex items-center gap-1.5 text-xs text-muted-foreground">
 					<Calendar class="h-3.5 w-3.5" />
-					<span>Signalé par <strong>{studentName}</strong> le {formattedDate()}</span>
+					<span>Signalé le {formattedDate}</span>
 				</div>
 			</div>
 
@@ -105,9 +103,17 @@
 					{statusLabel}
 				</Badge>
 
-				<!-- Review button (only for pending reports) -->
-				{#if report.status === 'pending'}
-					<Button size="sm" onclick={() => onReview(report)}>Traiter</Button>
+				<!-- Cancel button (only for pending reports) -->
+				{#if canCancel}
+					<Button
+						size="sm"
+						variant="outline"
+						onclick={() => onCancel?.(report)}
+						class="text-destructive hover:bg-destructive/10"
+					>
+						<XCircle class="mr-1.5 h-4 w-4" />
+						Annuler
+					</Button>
 				{/if}
 			</div>
 		</div>
