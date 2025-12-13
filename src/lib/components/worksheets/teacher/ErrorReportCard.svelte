@@ -4,6 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { User, Hash, Calendar, MessageSquare, CheckCircle2, XCircle } from 'lucide-svelte';
+	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import type { TeacherErrorReportView } from '$lib/types/worksheets';
 
 	// Props
@@ -58,6 +59,33 @@
 			return 'Date invalide';
 		}
 	});
+
+	// Parse JSON description (TipTap format)
+	let descriptionContent = $derived.by(() => {
+		try {
+			return JSON.parse(report.description);
+		} catch {
+			// Fallback for plain text or invalid JSON
+			return {
+				type: 'doc',
+				content: [{ type: 'paragraph', content: [{ type: 'text', text: report.description }] }]
+			};
+		}
+	});
+
+	// Parse JSON response if exists
+	let responseContent = $derived.by(() => {
+		if (!report.response) return null;
+		try {
+			return JSON.parse(report.response);
+		} catch {
+			// Fallback for plain text
+			return {
+				type: 'doc',
+				content: [{ type: 'paragraph', content: [{ type: 'text', text: report.response }] }]
+			};
+		}
+	});
 </script>
 
 <Card.Root class="transition-colors hover:bg-muted/30">
@@ -81,17 +109,17 @@
 				<!-- Description -->
 				<div class="space-y-1">
 					<p class="text-sm text-muted-foreground">Description:</p>
-					<p class="text-sm break-words whitespace-pre-wrap">{report.description}</p>
+					<RichTextDisplay content={descriptionContent} class="text-sm" />
 				</div>
 
 				<!-- Teacher response (if exists) -->
-				{#if report.response}
+				{#if responseContent}
 					<div class="space-y-1 rounded-md bg-muted/50 p-3">
 						<div class="flex items-center gap-1.5 text-sm font-medium">
 							<MessageSquare class="h-4 w-4" />
 							<span>Réponse de l'enseignant:</span>
 						</div>
-						<p class="text-sm break-words whitespace-pre-wrap">{report.response}</p>
+						<RichTextDisplay content={responseContent} class="text-sm" />
 					</div>
 				{/if}
 

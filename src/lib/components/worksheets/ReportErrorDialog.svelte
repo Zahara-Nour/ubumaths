@@ -1,9 +1,10 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
+	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { sanitizePlainText } from '$lib/utils/sanitize';
 	import type { StudentErrorReportView } from '$lib/types/worksheets';
 
 	interface Props {
@@ -18,19 +19,20 @@
 	let { open, assignmentId, exerciseId, exercisePosition, onOpenChange, onReportCreated }: Props =
 		$props();
 
-	// Form state
-	let description = $state('');
+	// Form state - use both value (for char counting) and jsonValue (for storage)
+	let htmlValue = $state('');
+	let jsonValue = $state<unknown>({});
 	let isSubmitting = $state(false);
 
-	// Validation
+	// Validation - count plain text characters (without HTML tags)
 	const MIN_CHARS = 10;
 	const MAX_CHARS = 1000;
-	let charCount = $derived(description.length);
-	let isValid = $derived(charCount >= MIN_CHARS && charCount <= MAX_CHARS);
+	let plainTextLength = $derived(sanitizePlainText(htmlValue).length);
+	let isValid = $derived(plainTextLength >= MIN_CHARS && plainTextLength <= MAX_CHARS);
 	let charCountColor = $derived.by(() => {
-		if (charCount < MIN_CHARS) return 'text-red-500';
-		if (charCount > MAX_CHARS) return 'text-red-500';
-		if (charCount > MAX_CHARS * 0.9) return 'text-amber-500';
+		if (plainTextLength < MIN_CHARS) return 'text-red-500';
+		if (plainTextLength > MAX_CHARS) return 'text-red-500';
+		if (plainTextLength > MAX_CHARS * 0.9) return 'text-amber-500';
 		return 'text-muted-foreground';
 	});
 
@@ -40,6 +42,9 @@
 		isSubmitting = true;
 
 		try {
+			// Store as JSON string
+			const description = JSON.stringify(jsonValue);
+
 			const response = await fetch(
 				`/api/student/worksheets/${assignmentId}/exercises/${exerciseId}/report`,
 				{
@@ -62,7 +67,8 @@
 			toaster.success('Signalement envoyé avec succès');
 
 			// Reset form
-			description = '';
+			htmlValue = '';
+			jsonValue = {};
 
 			// Notify parent and close dialog
 			onReportCreated(data.report);
@@ -76,10 +82,11 @@
 		}
 	}
 
-	// Reset form when dialog opens
+	// Reset form when dialog closes
 	$effect(() => {
 		if (!open) {
-			description = '';
+			htmlValue = '';
+			jsonValue = {};
 		}
 	});
 </script>
@@ -102,20 +109,20 @@
 			class="space-y-4"
 		>
 			<div class="space-y-2">
-				<Label for="description">Description de l'erreur</Label>
-				<Textarea
-					id="description"
-					bind:value={description}
-					placeholder="Exemple : Il y a une faute de frappe dans la question 2, il est écrit 'calcler' au lieu de 'calculer'."
-					rows={6}
+				<Label>Description de l'erreur</Label>
+				<RichTextEditor
+					mode="form"
+					bind:value={htmlValue}
+					bind:jsonValue
+					mathTemplates="basic"
+					minHeight="150px"
 					disabled={isSubmitting}
-					class="resize-none"
 				/>
 				<div class="flex items-center justify-between text-xs">
 					<span class={charCountColor}>
-						{charCount} / {MAX_CHARS} caractères
+						{plainTextLength} / {MAX_CHARS} caractères
 					</span>
-					{#if charCount < MIN_CHARS}
+					{#if plainTextLength > 0 && plainTextLength < MIN_CHARS}
 						<span class="text-red-500">Minimum {MIN_CHARS} caractères requis</span>
 					{/if}
 				</div>

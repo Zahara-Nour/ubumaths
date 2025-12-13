@@ -931,11 +931,14 @@ export const errorReportStatusSchema = z.enum(['pending', 'fixed', 'rejected'], 
  * Schema for creating an error report (POST /api/student/worksheets/[assignmentId]/exercises/[exerciseId]/report)
  */
 export const createErrorReportSchema = z.object({
+	// Description is HTML from RichTextEditor with math support
+	// Frontend validates plain text length (1000 chars max for UX)
+	// Backend accepts up to 5000 chars to accommodate HTML markup + math formulas
 	description: z
 		.string()
 		.trim()
 		.min(10, 'La description doit contenir au moins 10 caractères')
-		.max(1000, 'La description ne peut pas dépasser 1000 caractères')
+		.max(5000, 'La description ne peut pas dépasser 5000 caractères')
 });
 
 /**
