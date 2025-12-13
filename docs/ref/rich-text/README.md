@@ -514,7 +514,8 @@ pnpm test:server src/lib/components/rich-text/RichTextEditor.test.ts -- --watch
    const RichTextEditor = (await import('$lib/components/rich-text/RichTextEditor.svelte')).default;
    ```
 
-2. **Éviter les re-renders** : Le composant utilise `$effect` avec guards pour éviter les boucles infinies.
+2. **Synchronisation TipTap** : `$effect` est utilisé uniquement pour synchroniser
+   l'état Svelte avec l'API impérative TipTap (side effects légitimes).
 
 ### Accessibilité
 
