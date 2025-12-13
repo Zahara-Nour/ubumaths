@@ -22,8 +22,8 @@
 	import LaTeXEditor from '$lib/components/LaTeXEditor.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { ArrowLeft, Check, X, Loader2 } from 'lucide-svelte';
 
 	// Types
@@ -68,6 +68,33 @@
 	// Derived values
 	let isPending = $derived(report.status === 'pending');
 	let canSubmit = $derived(!isSubmitting && isPending);
+
+	// Parse JSON description (TipTap format)
+	let descriptionContent = $derived.by(() => {
+		try {
+			return JSON.parse(report.description);
+		} catch {
+			// Fallback for plain text or invalid JSON
+			return {
+				type: 'doc',
+				content: [{ type: 'paragraph', content: [{ type: 'text', text: report.description }] }]
+			};
+		}
+	});
+
+	// Parse JSON response if exists (for already-processed reports)
+	let responseContent = $derived.by(() => {
+		if (!report.response) return null;
+		try {
+			return JSON.parse(report.response);
+		} catch {
+			// Fallback for plain text
+			return {
+				type: 'doc',
+				content: [{ type: 'paragraph', content: [{ type: 'text', text: report.response }] }]
+			};
+		}
+	});
 
 	// Format date for display
 	function formatDate(dateString: string): string {
@@ -249,7 +276,10 @@
 			</div>
 		</Card.Header>
 		<Card.Content>
-			<p class="whitespace-pre-wrap text-foreground">{report.description}</p>
+			<RichTextDisplay
+				content={descriptionContent}
+				class="prose prose-sm max-w-none dark:prose-invert"
+			/>
 		</Card.Content>
 	</Card.Root>
 
@@ -305,15 +335,16 @@
 		</div>
 	{:else}
 		<!-- Show response for non-pending reports -->
-		{#if report.response}
+		{#if responseContent}
 			<Card.Root class="mb-6 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
 				<Card.Header class="pb-2">
 					<Card.Title class="text-base">Reponse du professeur</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<div class="prose prose-sm max-w-none dark:prose-invert">
-						{@html sanitizeHtml(report.response)}
-					</div>
+					<RichTextDisplay
+						content={responseContent}
+						class="prose prose-sm max-w-none dark:prose-invert"
+					/>
 				</Card.Content>
 			</Card.Root>
 		{/if}

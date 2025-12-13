@@ -147,8 +147,17 @@ export function sanitizeHtmlWithMath(dirty: string): string {
 
 	return DOMPurify.sanitize(dirty, {
 		ALLOWED_TAGS: [...ALLOWED_TAGS, 'math-field'],
-		ALLOWED_ATTR: [...ALLOWED_ATTR, 'read-only', 'value', 'mode'],
-		ALLOW_DATA_ATTR: false,
+		ALLOWED_ATTR: [
+			...ALLOWED_ATTR,
+			'read-only',
+			'value',
+			'mode',
+			// TipTap math extension attributes
+			'latex', // Formula content attribute
+			'data-math-inline', // Inline math marker
+			'data-math-block' // Block math marker
+		],
+		ALLOW_DATA_ATTR: false, // Keep false - we explicitly allow only data-math-* above
 		ALLOW_UNKNOWN_PROTOCOLS: false,
 		SAFE_FOR_TEMPLATES: true,
 		KEEP_CONTENT: true
@@ -172,6 +181,49 @@ export function sanitizePlainText(dirty: string): string {
 		ALLOWED_ATTR: [],
 		KEEP_CONTENT: true // Keep text content
 	});
+}
+
+/**
+ * Transform TipTap math HTML to renderable math-field elements
+ *
+ * TipTap serializes math nodes as:
+ * - <span data-math-inline latex="x^2"></span>
+ * - <div data-math-block latex="x^2"></div>
+ *
+ * This transforms them to MathLive elements:
+ * - <span class="math-inline-wrapper"><math-field read-only>x^2</math-field></span>
+ * - <div class="math-block-wrapper"><math-field read-only>x^2</math-field></div>
+ *
+ * @param html - HTML from RichTextEditor
+ * @returns HTML with math-field elements for display
+ */
+export function transformMathHtml(html: string): string {
+	if (!html || typeof html !== 'string') {
+		return '';
+	}
+
+	// First sanitize the HTML
+	let result = sanitizeHtmlWithMath(html);
+
+	// Transform inline math: <span data-math-inline latex="..."></span>
+	result = result.replace(
+		/<span\s+data-math-inline(?:\s+latex="([^"]*)")?[^>]*><\/span>/g,
+		(_match, latex) => {
+			const escapedLatex = (latex || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			return `<span class="math-inline-wrapper"><math-field read-only>${escapedLatex}</math-field></span>`;
+		}
+	);
+
+	// Transform block math: <div data-math-block latex="..."></div>
+	result = result.replace(
+		/<div\s+data-math-block(?:\s+latex="([^"]*)")?[^>]*><\/div>/g,
+		(_match, latex) => {
+			const escapedLatex = (latex || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			return `<div class="math-block-wrapper"><math-field read-only>${escapedLatex}</math-field></div>`;
+		}
+	);
+
+	return result;
 }
 
 /**
