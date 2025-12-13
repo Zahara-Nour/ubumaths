@@ -39,11 +39,72 @@ interface MoveOutDetail {
 }
 
 /**
- * Plugin key for math keyboard navigation
- * Must be defined at module level to avoid duplicate key errors
- * when multiple editor instances exist
+ * Math Keyboard Navigation Plugin
+ * ================================
+ * Must be defined at module level (both key AND plugin instance)
+ * to avoid "duplicate keyed plugin" errors with multiple editors.
  */
 const mathKeyboardNavKey = new PluginKey('mathKeyboardNav');
+const mathNodeTypes = ['mathInline', 'mathBlock'];
+
+const mathKeyboardNavPlugin = new Plugin({
+	key: mathKeyboardNavKey,
+	props: {
+		handleKeyDown: (view, event) => {
+			// Only handle arrow keys
+			if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+				return false;
+			}
+
+			const { state } = view;
+			const { selection } = state;
+
+			// Only handle text selections (not node selections)
+			if (selection instanceof NodeSelection) {
+				return false;
+			}
+
+			const { $from } = selection;
+			const pos = $from.pos;
+
+			if (event.key === 'ArrowRight') {
+				// Check if there's a math node immediately after cursor
+				const nodeAfter = $from.nodeAfter;
+				if (nodeAfter && mathNodeTypes.includes(nodeAfter.type.name)) {
+					// Find the DOM element for this node
+					const domNode = view.nodeDOM(pos) as
+						| (HTMLElement & { mathfield?: MathFieldElement })
+						| null;
+					if (domNode?.mathfield) {
+						event.preventDefault();
+						domNode.mathfield.focus();
+						domNode.mathfield.executeCommand('moveToMathfieldStart');
+						return true;
+					}
+				}
+			} else if (event.key === 'ArrowLeft') {
+				// Check if there's a math node immediately before cursor
+				const nodeBefore = $from.nodeBefore;
+				if (nodeBefore && mathNodeTypes.includes(nodeBefore.type.name)) {
+					// Find the DOM element for the node before cursor
+					// The node starts at pos - nodeBefore.nodeSize
+					const nodeStartPos = pos - nodeBefore.nodeSize;
+					const domNode = view.nodeDOM(nodeStartPos) as
+						| (HTMLElement & { mathfield?: MathFieldElement })
+						| null;
+					if (domNode?.mathfield) {
+						event.preventDefault();
+						domNode.mathfield.focus();
+						domNode.mathfield.executeCommand('moveToMathfieldEnd');
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+	}
+});
 
 /**
  * MathInline Extension
@@ -242,73 +303,11 @@ export const MathInline = Node.create({
 	 * ProseMirror Plugin for Keyboard Navigation
 	 * ==========================================
 	 *
-	 * Handles entering math nodes with arrow keys:
-	 * - ArrowRight when cursor is just before a math node → enter from left
-	 * - ArrowLeft when cursor is just after a math node → enter from right
+	 * Returns the module-level plugin instance to avoid
+	 * "duplicate keyed plugin" errors with multiple editors.
 	 */
 	addProseMirrorPlugins() {
-		const mathNodeTypes = ['mathInline', 'mathBlock'];
-
-		return [
-			new Plugin({
-				key: mathKeyboardNavKey,
-				props: {
-					handleKeyDown: (view, event) => {
-						// Only handle arrow keys
-						if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
-							return false;
-						}
-
-						const { state } = view;
-						const { selection } = state;
-
-						// Only handle text selections (not node selections)
-						if (selection instanceof NodeSelection) {
-							return false;
-						}
-
-						const { $from } = selection;
-						const pos = $from.pos;
-
-						if (event.key === 'ArrowRight') {
-							// Check if there's a math node immediately after cursor
-							const nodeAfter = $from.nodeAfter;
-							if (nodeAfter && mathNodeTypes.includes(nodeAfter.type.name)) {
-								// Find the DOM element for this node
-								const domNode = view.nodeDOM(pos) as
-									| (HTMLElement & { mathfield?: MathFieldElement })
-									| null;
-								if (domNode?.mathfield) {
-									event.preventDefault();
-									domNode.mathfield.focus();
-									domNode.mathfield.executeCommand('moveToMathfieldStart');
-									return true;
-								}
-							}
-						} else if (event.key === 'ArrowLeft') {
-							// Check if there's a math node immediately before cursor
-							const nodeBefore = $from.nodeBefore;
-							if (nodeBefore && mathNodeTypes.includes(nodeBefore.type.name)) {
-								// Find the DOM element for the node before cursor
-								// The node starts at pos - nodeBefore.nodeSize
-								const nodeStartPos = pos - nodeBefore.nodeSize;
-								const domNode = view.nodeDOM(nodeStartPos) as
-									| (HTMLElement & { mathfield?: MathFieldElement })
-									| null;
-								if (domNode?.mathfield) {
-									event.preventDefault();
-									domNode.mathfield.focus();
-									domNode.mathfield.executeCommand('moveToMathfieldEnd');
-									return true;
-								}
-							}
-						}
-
-						return false;
-					}
-				}
-			})
-		];
+		return [mathKeyboardNavPlugin];
 	}
 });
 
