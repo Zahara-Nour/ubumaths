@@ -184,8 +184,12 @@
 	/**
 	 * Initialize TipTap Editor
 	 */
-	onMount(() => {
+	onMount(async () => {
 		if (!editorElement) return;
+
+		// Disable MathLive sounds globally (client-side only)
+		const { MathfieldElement } = await import('mathlive');
+		MathfieldElement.soundsDirectory = null;
 
 		const extensions = createEditorExtensions({ headingLevels: 6 });
 		const editorProps = getEditorProps({ minHeight });
