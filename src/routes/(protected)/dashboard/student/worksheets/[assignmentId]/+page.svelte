@@ -7,6 +7,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
+	import type { StudentErrorReportView } from '$lib/types/worksheets';
 
 	interface Props {
 		data: PageData;
@@ -18,6 +19,7 @@
 	let worksheet = $derived(data.worksheet);
 	let exercises = $derived(worksheet.exercises ?? []);
 	let exerciseCount = $derived(exercises.length);
+	let assignmentId = $derived(worksheet.assignment_id);
 
 	// Modal state
 	let modalOpen = $state(false);
@@ -26,15 +28,19 @@
 	// Mastery tracking state
 	let masteryMap = $state(new Map<string, MasteryStatus>());
 
+	// Error reports state
+	let reportsMap = $state(new Map<string, StudentErrorReportView>());
+
 	// Current exercise mastery status for the modal
 	let currentExercise = $derived(exercises[currentExerciseIndex]);
 	let currentExerciseMasteryStatus = $derived<MasteryStatus>(
 		currentExercise ? (masteryMap.get(currentExercise.exercise_id) ?? 'not_worked') : 'not_worked'
 	);
 
-	// Fetch mastery statuses on mount
+	// Fetch mastery statuses and error reports on mount
 	$effect(() => {
 		fetchMasteryStatuses();
+		fetchErrorReports();
 	});
 
 	async function fetchMasteryStatuses() {
@@ -54,6 +60,26 @@
 			masteryMap = newMap;
 		} catch (error) {
 			console.error('Error fetching mastery statuses:', error);
+		}
+	}
+
+	async function fetchErrorReports() {
+		try {
+			const response = await fetch(`/api/student/worksheets/${assignmentId}/reports`);
+			if (!response.ok) {
+				console.error('Failed to fetch error reports');
+				return;
+			}
+			const data: { reports: StudentErrorReportView[] } = await response.json();
+
+			// Populate the reports map (keyed by worksheet_exercise_id)
+			const newMap = new Map<string, StudentErrorReportView>();
+			for (const report of data.reports) {
+				newMap.set(report.worksheet_exercise_id, report);
+			}
+			reportsMap = newMap;
+		} catch (error) {
+			console.error('Error fetching error reports:', error);
 		}
 	}
 
@@ -113,6 +139,13 @@
 	function handleOpenChange(open: boolean) {
 		modalOpen = open;
 	}
+
+	function handleReportCreated(worksheetExerciseId: string, report: StudentErrorReportView) {
+		// Add the new report to the map
+		reportsMap.set(worksheetExerciseId, report);
+		// Force reactivity
+		reportsMap = new Map(reportsMap);
+	}
 </script>
 
 <svelte:head>
@@ -165,7 +198,10 @@
 						{exercise}
 						index={i + 1}
 						masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
+						{assignmentId}
+						existingReport={reportsMap.get(exercise.id) ?? null}
 						onclick={() => openExercise(i)}
+						onReportCreated={(report) => handleReportCreated(exercise.id, report)}
 					/>
 				{/each}
 			</div>
@@ -179,7 +215,10 @@
 	currentIndex={currentExerciseIndex}
 	open={modalOpen}
 	masteryStatus={currentExerciseMasteryStatus}
+	{assignmentId}
+	{reportsMap}
 	onOpenChange={handleOpenChange}
 	onNavigate={handleNavigate}
 	onMasteryChange={handleMasteryChange}
+	onReportCreated={handleReportCreated}
 />

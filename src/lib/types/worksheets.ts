@@ -25,6 +25,85 @@ export type AssignmentStatus = (typeof ASSIGNMENT_STATUSES)[number];
 export const CORRECTION_RELEASE_MODES = ['manual', 'immediate', 'scheduled'] as const;
 export type CorrectionReleaseMode = (typeof CORRECTION_RELEASE_MODES)[number];
 
+export const ERROR_REPORT_STATUSES = ['pending', 'fixed', 'rejected'] as const;
+export type ErrorReportStatus = (typeof ERROR_REPORT_STATUSES)[number];
+
+// =============================================================================
+// WORKSHEET ERROR REPORTS - Database Row Types
+// =============================================================================
+
+export interface WorksheetErrorReportRow {
+	id: string;
+	assignment_id: string;
+	worksheet_exercise_id: string;
+	student_id: string;
+	description: string;
+	status: ErrorReportStatus;
+	reviewed_by: string | null;
+	reviewed_at: string | null;
+	response: string | null;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface WorksheetErrorReportInsert {
+	assignment_id: string;
+	worksheet_exercise_id: string;
+	student_id: string;
+	description: string;
+}
+
+export interface WorksheetErrorReportUpdate {
+	status?: ErrorReportStatus;
+	reviewed_by?: string | null;
+	reviewed_at?: string | null;
+	response?: string | null;
+}
+
+/**
+ * Student can only update description of pending reports.
+ * @see updateStudentErrorReportSchema for validation rules (10-1000 chars)
+ */
+export interface StudentErrorReportUpdate {
+	description: string;
+}
+
+// =============================================================================
+// WORKSHEET ERROR REPORTS - View Types
+// =============================================================================
+
+/**
+ * Error report as seen by the student who submitted it
+ */
+export interface StudentErrorReportView {
+	id: string;
+	worksheet_exercise_id: string;
+	exercise_position: number;
+	description: string;
+	status: ErrorReportStatus;
+	response: string | null;
+	created_at: string;
+	updated_at: string;
+}
+
+/**
+ * Error report as seen by the teacher
+ */
+export interface TeacherErrorReportView {
+	id: string;
+	assignment_id: string;
+	worksheet_exercise_id: string;
+	exercise_position: number;
+	student_id: string;
+	student_first_name: string | null;
+	student_last_name: string | null;
+	description: string;
+	status: ErrorReportStatus;
+	response: string | null;
+	created_at: string;
+	updated_at: string;
+}
+
 export const NUMBERING_STYLES = ['numeric', 'alphabetic', 'roman'] as const;
 export type NumberingStyle = (typeof NUMBERING_STYLES)[number];
 

@@ -14,6 +14,7 @@
 	import CorrectionManager from '$lib/components/worksheets/CorrectionManager.svelte';
 	import WorksheetAssignmentForm from '$lib/components/worksheets/WorksheetAssignmentForm.svelte';
 	import MetadataCards from '$lib/components/worksheets/MetadataCards.svelte';
+	import ErrorReportsPanel from '$lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
 	import {
 		ArrowLeft,
 		Send,
@@ -26,7 +27,8 @@
 		Plus,
 		FilePenLine,
 		Pencil,
-		UserPlus
+		UserPlus,
+		AlertCircle
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type {
@@ -471,7 +473,7 @@
 				}
 			}}
 		>
-			<Tabs.List class="grid w-full grid-cols-3">
+			<Tabs.List class="grid w-full grid-cols-4">
 				<Tabs.Trigger value="exercises">
 					<FileText class="mr-2 h-4 w-4" />
 					Exercices
@@ -479,6 +481,10 @@
 				<Tabs.Trigger value="assignments" disabled={worksheet.status === 'draft'}>
 					<Users class="mr-2 h-4 w-4" />
 					Assignations
+				</Tabs.Trigger>
+				<Tabs.Trigger value="reports" disabled={worksheet.status === 'draft'}>
+					<AlertCircle class="mr-2 h-4 w-4" />
+					Signalements
 				</Tabs.Trigger>
 				<Tabs.Trigger value="pdf">
 					<FileDown class="mr-2 h-4 w-4" />
@@ -730,6 +736,44 @@
 							</div>
 						{/if}
 					</div>
+				{/if}
+			</Tabs.Content>
+
+			<!-- Reports Tab -->
+			<Tabs.Content value="reports" class="space-y-6">
+				{#if worksheet.status === 'draft'}
+					<Card.Root>
+						<Card.Content class="py-8 text-center">
+							<p class="text-muted-foreground">
+								Publiez la feuille pour pouvoir consulter les signalements.
+							</p>
+						</Card.Content>
+					</Card.Root>
+				{:else if selectedAssignment}
+					<!-- Show reports for selected assignment -->
+					<div class="space-y-4">
+						<div class="flex items-center justify-between">
+							<h3 class="text-lg font-medium">
+								Signalements: {selectedAssignment.title || worksheet.title}
+							</h3>
+							<Button variant="outline" onclick={() => (selectedAssignment = null)}>
+								<ArrowLeft class="mr-2 h-4 w-4" />
+								Retour aux assignations
+							</Button>
+						</div>
+						<ErrorReportsPanel worksheetId={worksheet.id} assignmentId={selectedAssignment.id} />
+					</div>
+				{:else}
+					<!-- No assignment selected, show message to select one -->
+					<Card.Root>
+						<Card.Content class="py-12 text-center">
+							<AlertCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
+							<p class="text-muted-foreground">
+								Veuillez d'abord sélectionner une assignation dans l'onglet "Assignations" pour voir
+								ses signalements.
+							</p>
+						</Card.Content>
+					</Card.Root>
 				{/if}
 			</Tabs.Content>
 
