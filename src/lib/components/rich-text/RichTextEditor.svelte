@@ -190,6 +190,9 @@
 		const extensions = createEditorExtensions({ headingLevels: 6 });
 		const editorProps = getEditorProps({ minHeight });
 
+		// Prevent reactive updates during initialization
+		isUpdatingFromProp = true;
+
 		editor = new Editor({
 			element: editorElement,
 			extensions,
@@ -212,6 +215,9 @@
 				updateFormattingState();
 			}
 		});
+
+		// Allow reactive updates after initialization
+		isUpdatingFromProp = false;
 
 		updateFormattingState();
 
@@ -237,10 +243,13 @@
 
 	/**
 	 * Handle editor disabled state changes
+	 * Only call setEditable if the value actually changed
 	 */
 	$effect(() => {
-		if (editor) {
+		if (editor && editor.isEditable !== !disabled) {
+			isUpdatingFromProp = true;
 			editor.setEditable(!disabled);
+			isUpdatingFromProp = false;
 		}
 	});
 
