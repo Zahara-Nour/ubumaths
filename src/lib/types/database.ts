@@ -10753,6 +10753,119 @@ export type Database = {
 					}
 				];
 			};
+			worksheet_error_reports: {
+				Row: {
+					assignment_id: string;
+					created_at: string;
+					description: string;
+					id: string;
+					response: string | null;
+					reviewed_at: string | null;
+					reviewed_by: string | null;
+					status: string;
+					student_id: string;
+					updated_at: string;
+					worksheet_exercise_id: string;
+				};
+				Insert: {
+					assignment_id: string;
+					created_at?: string;
+					description: string;
+					id?: string;
+					response?: string | null;
+					reviewed_at?: string | null;
+					reviewed_by?: string | null;
+					status?: string;
+					student_id: string;
+					updated_at?: string;
+					worksheet_exercise_id: string;
+				};
+				Update: {
+					assignment_id?: string;
+					created_at?: string;
+					description?: string;
+					id?: string;
+					response?: string | null;
+					reviewed_at?: string | null;
+					reviewed_by?: string | null;
+					status?: string;
+					student_id?: string;
+					updated_at?: string;
+					worksheet_exercise_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'worksheet_error_reports_assignment_id_fkey';
+						columns: ['assignment_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheet_assignments';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_error_reports_reviewed_by_fkey';
+						columns: ['reviewed_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_error_reports_reviewed_by_fkey';
+						columns: ['reviewed_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_error_reports_reviewed_by_fkey';
+						columns: ['reviewed_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_error_reports_reviewed_by_fkey';
+						columns: ['reviewed_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_error_reports_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_error_reports_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_error_reports_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'worksheet_error_reports_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'worksheet_error_reports_worksheet_exercise_id_fkey';
+						columns: ['worksheet_exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheet_exercises';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			worksheet_exercises: {
 				Row: {
 					correction_visible: boolean | null;

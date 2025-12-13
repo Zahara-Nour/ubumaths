@@ -915,3 +915,214 @@ export const updateExerciseCorrectionResponseSchema = z.object({
 	worksheet_exercise_id: z.string().uuid(),
 	show_correction: z.boolean()
 });
+
+// ============================================================================
+// WORKSHEET ERROR REPORTS SCHEMAS
+// ============================================================================
+
+/**
+ * Error report status enum
+ */
+export const errorReportStatusSchema = z.enum(['pending', 'fixed', 'rejected'], {
+	message: 'Invalid error report status'
+});
+
+/**
+ * Schema for creating an error report (POST /api/student/worksheets/[assignmentId]/exercises/[exerciseId]/report)
+ */
+export const createErrorReportSchema = z.object({
+	description: z
+		.string()
+		.trim()
+		.min(10, 'La description doit contenir au moins 10 caractères')
+		.max(1000, 'La description ne peut pas dépasser 1000 caractères')
+});
+
+/**
+ * Schema for student updating their own pending report
+ * Only allows updating description (status remains pending)
+ */
+export const updateStudentErrorReportSchema = z.object({
+	description: z
+		.string()
+		.trim()
+		.min(10, 'La description doit contenir au moins 10 caractères')
+		.max(1000, 'La description ne peut pas dépasser 1000 caractères')
+});
+
+/**
+ * Schema for teacher reviewing an error report
+ * PUT /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]
+ */
+export const reviewErrorReportSchema = z.object({
+	status: z.enum(['fixed', 'rejected'], {
+		message: 'Status must be "fixed" or "rejected"'
+	}),
+	response: z
+		.string()
+		.trim()
+		.min(1, 'La réponse ne peut pas être vide')
+		.max(2000, 'La réponse ne peut pas dépasser 2000 caractères')
+		.nullable()
+		.optional()
+		.default(null)
+});
+
+/**
+ * Query params for listing error reports (GET /api/worksheets/[id]/assignments/[assignmentId]/reports)
+ */
+export const errorReportsQuerySchema = z.object({
+	status: errorReportStatusSchema.optional(),
+	page: z.coerce
+		.number()
+		.int('Page must be an integer')
+		.positive('Page must be positive')
+		.max(1000, 'Page too high')
+		.default(1),
+	limit: z.coerce
+		.number()
+		.int('Limit must be an integer')
+		.positive('Limit must be positive')
+		.max(100, 'Maximum 100 items per page')
+		.default(50)
+});
+
+/**
+ * URL params for error report operations
+ */
+export const errorReportParamSchema = z.object({
+	id: uuidSchema,
+	assignmentId: uuidSchema,
+	reportId: uuidSchema
+});
+
+/**
+ * URL params for student error report creation
+ */
+export const studentErrorReportParamSchema = z.object({
+	assignmentId: uuidSchema,
+	exerciseId: uuidSchema
+});
+
+// ============================================================================
+// WORKSHEET ERROR REPORTS RESPONSE SCHEMAS
+// ============================================================================
+
+/**
+ * Student view of their own error report
+ */
+export const studentErrorReportViewSchema = z.object({
+	id: z.string().uuid(),
+	worksheet_exercise_id: z.string().uuid(),
+	exercise_position: z.number().int().nonnegative(),
+	description: z.string(),
+	status: errorReportStatusSchema,
+	response: z.string().nullable(),
+	created_at: timestampSchema,
+	updated_at: timestampSchema
+});
+
+/**
+ * Teacher view of an error report
+ */
+export const teacherErrorReportViewSchema = z.object({
+	id: z.string().uuid(),
+	assignment_id: z.string().uuid(),
+	worksheet_exercise_id: z.string().uuid(),
+	exercise_position: z.number().int().nonnegative(),
+	student_id: z.string().uuid(),
+	student_first_name: z.string().nullable(),
+	student_last_name: z.string().nullable(),
+	description: z.string(),
+	status: errorReportStatusSchema,
+	response: z.string().nullable(),
+	created_at: timestampSchema,
+	updated_at: timestampSchema
+});
+
+/**
+ * Student error reports list response
+ */
+export const studentErrorReportsListResponseSchema = z.object({
+	reports: z.array(studentErrorReportViewSchema)
+});
+
+/**
+ * Teacher error reports list response with pagination and counts
+ */
+export const teacherErrorReportsListResponseSchema = z.object({
+	reports: z.array(teacherErrorReportViewSchema),
+	counts: z.object({
+		pending: z.number().int().nonnegative(),
+		fixed: z.number().int().nonnegative(),
+		rejected: z.number().int().nonnegative(),
+		total: z.number().int().nonnegative()
+	}),
+	pagination: z.object({
+		page: z.number().int().positive(),
+		limit: z.number().int().positive(),
+		total: z.number().int().nonnegative(),
+		totalPages: z.number().int().nonnegative()
+	})
+});
+
+/**
+ * Create error report response
+ */
+export const createErrorReportResponseSchema = z.object({
+	report: studentErrorReportViewSchema
+});
+
+/**
+ * Review error report response
+ */
+export const reviewErrorReportResponseSchema = z.object({
+	success: z.literal(true),
+	report: teacherErrorReportViewSchema
+});
+
+// ============================================================================
+// WORKSHEET ERROR REPORTS VALIDATION HELPERS
+// ============================================================================
+
+/**
+ * Validate create error report request body
+ */
+export function validateCreateErrorReport(data: unknown) {
+	return createErrorReportSchema.safeParse(data);
+}
+
+/**
+ * Validate student update error report request body
+ */
+export function validateUpdateStudentErrorReport(data: unknown) {
+	return updateStudentErrorReportSchema.safeParse(data);
+}
+
+/**
+ * Validate teacher review error report request body
+ */
+export function validateReviewErrorReport(data: unknown) {
+	return reviewErrorReportSchema.safeParse(data);
+}
+
+/**
+ * Validate error reports query params
+ */
+export function validateErrorReportsQuery(params: URLSearchParams) {
+	return errorReportsQuerySchema.safeParse(Object.fromEntries(params));
+}
+
+/**
+ * Validate error report URL params (teacher)
+ */
+export function validateErrorReportParams(params: Record<string, string>) {
+	return errorReportParamSchema.safeParse(params);
+}
+
+/**
+ * Validate student error report URL params
+ */
+export function validateStudentErrorReportParams(params: Record<string, string>) {
+	return studentErrorReportParamSchema.safeParse(params);
+}

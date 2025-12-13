@@ -5,7 +5,8 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { ChevronLeft, ChevronRight, Info, Circle, CheckCircle, AlertCircle } from 'lucide-svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import type { StudentExerciseView } from '$lib/types/worksheets';
+	import ReportErrorButton from '$lib/components/worksheets/ReportErrorButton.svelte';
+	import type { StudentExerciseView, StudentErrorReportView } from '$lib/types/worksheets';
 	import type { MasteryStatus } from '$lib/types/exercise-mastery';
 	import { MASTERY_LABELS } from '$lib/types/exercise-mastery';
 
@@ -14,9 +15,12 @@
 		currentIndex: number;
 		open: boolean;
 		masteryStatus: MasteryStatus;
+		assignmentId: string;
+		reportsMap: Map<string, StudentErrorReportView>;
 		onOpenChange: (open: boolean) => void;
 		onNavigate: (index: number) => void;
 		onMasteryChange: (status: MasteryStatus) => void;
+		onReportCreated: (worksheetExerciseId: string, report: StudentErrorReportView) => void;
 	}
 
 	let {
@@ -24,9 +28,12 @@
 		currentIndex,
 		open,
 		masteryStatus,
+		assignmentId,
+		reportsMap,
 		onOpenChange,
 		onNavigate,
-		onMasteryChange
+		onMasteryChange,
+		onReportCreated
 	}: Props = $props();
 
 	let exercise = $derived(exercises[currentIndex] ?? null);
@@ -36,6 +43,7 @@
 	);
 	let canGoPrev = $derived(currentIndex > 0);
 	let canGoNext = $derived(currentIndex < exercises.length - 1);
+	let currentReport = $derived(exercise ? (reportsMap.get(exercise.id) ?? null) : null);
 
 	function goPrev() {
 		if (canGoPrev) onNavigate(currentIndex - 1);
@@ -71,8 +79,19 @@
 						</Badge>
 					{/if}
 				</Dialog.Title>
-				<div class="flex items-center gap-1 text-sm text-muted-foreground">
-					{currentIndex + 1} / {exercises.length}
+				<div class="flex items-center gap-3">
+					{#if exercise}
+						<ReportErrorButton
+							{assignmentId}
+							exerciseId={exercise.exercise_id}
+							exercisePosition={exercise.position}
+							existingReport={currentReport}
+							onReportCreated={(report) => onReportCreated(exercise.id, report)}
+						/>
+					{/if}
+					<div class="text-sm text-muted-foreground">
+						{currentIndex + 1} / {exercises.length}
+					</div>
 				</div>
 			</div>
 		</Dialog.Header>
