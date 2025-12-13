@@ -18,6 +18,25 @@
 
 import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { NodeSelection } from '@tiptap/pm/state';
+
+/**
+ * MathField type with MathLive methods
+ */
+interface MathFieldElement extends HTMLElement {
+	value: string;
+	readOnly: boolean;
+	focus(): void;
+	executeCommand(command: string): void;
+}
+
+/**
+ * Move-out event detail from MathLive
+ */
+interface MoveOutDetail {
+	direction: 'forward' | 'backward' | 'upward' | 'downward';
+}
 
 /**
  * MathInline Extension
@@ -96,16 +115,16 @@ export const MathInline = Node.create({
 			dom.classList.add('math-inline-wrapper');
 
 			// Create MathLive field (custom web component)
-			const mathfield = document.createElement('math-field') as HTMLElement & {
-				value: string;
-				readOnly: boolean;
-			};
+			const mathfield = document.createElement('math-field') as MathFieldElement;
 
 			// Set initial LaTeX value
 			mathfield.value = node.attrs.latex as string;
 
 			// Style as inline element (CSS handles styling via .math-inline-wrapper)
 			mathfield.style.display = 'inline-block';
+
+			// Store mathfield reference on DOM for keyboard navigation plugin
+			(dom as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;
 
 			// If editor is read-only (display mode), make math field read-only too
 			if (!editor.isEditable) {
@@ -115,7 +134,7 @@ export const MathInline = Node.create({
 
 			// Listen for formula changes and update node attributes
 			mathfield.addEventListener('input', (e) => {
-				const target = e.target as HTMLElement & { value: string };
+				const target = e.target as MathFieldElement;
 				const pos = getPos();
 
 				// Only update if we have a valid position
@@ -124,6 +143,30 @@ export const MathInline = Node.create({
 						latex: target.value
 					});
 				}
+			});
+
+			/**
+			 * Handle move-out event from MathLive
+			 * When user navigates out of mathfield with arrow keys,
+			 * return focus to TipTap editor at the appropriate position
+			 */
+			mathfield.addEventListener('move-out', (e: Event) => {
+				const detail = (e as CustomEvent<MoveOutDetail>).detail;
+				const pos = getPos();
+
+				if (typeof pos !== 'number') return;
+
+				e.preventDefault();
+
+				// Calculate target position based on direction
+				// pos is the position of the node, node size is 1 for atoms
+				const targetPos =
+					detail.direction === 'forward'
+						? pos + 1 // After the math node
+						: pos; // Before the math node
+
+				// Set cursor position and focus editor
+				editor.chain().focus().setTextSelection(targetPos).run();
 			});
 
 			dom.appendChild(mathfield);
@@ -182,6 +225,79 @@ export const MathInline = Node.create({
 					const latex = match[1];
 					if (latex) {
 						tr.replaceWith(range.from, range.to, this.type.create({ latex: latex.trim() }));
+					}
+				}
+			})
+		];
+	},
+
+	/**
+	 * ProseMirror Plugin for Keyboard Navigation
+	 * ==========================================
+	 *
+	 * Handles entering math nodes with arrow keys:
+	 * - ArrowRight when cursor is just before a math node → enter from left
+	 * - ArrowLeft when cursor is just after a math node → enter from right
+	 */
+	addProseMirrorPlugins() {
+		const mathNodeTypes = ['mathInline', 'mathBlock'];
+
+		return [
+			new Plugin({
+				key: new PluginKey('mathKeyboardNav'),
+				props: {
+					handleKeyDown: (view, event) => {
+						// Only handle arrow keys
+						if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+							return false;
+						}
+
+						const { state } = view;
+						const { selection } = state;
+
+						// Only handle text selections (not node selections)
+						if (selection instanceof NodeSelection) {
+							return false;
+						}
+
+						const { $from } = selection;
+						const pos = $from.pos;
+
+						if (event.key === 'ArrowRight') {
+							// Check if there's a math node immediately after cursor
+							const nodeAfter = $from.nodeAfter;
+							if (nodeAfter && mathNodeTypes.includes(nodeAfter.type.name)) {
+								// Find the DOM element for this node
+								const domNode = view.nodeDOM(pos) as
+									| (HTMLElement & { mathfield?: MathFieldElement })
+									| null;
+								if (domNode?.mathfield) {
+									event.preventDefault();
+									domNode.mathfield.focus();
+									domNode.mathfield.executeCommand('moveToMathfieldStart');
+									return true;
+								}
+							}
+						} else if (event.key === 'ArrowLeft') {
+							// Check if there's a math node immediately before cursor
+							const nodeBefore = $from.nodeBefore;
+							if (nodeBefore && mathNodeTypes.includes(nodeBefore.type.name)) {
+								// Find the DOM element for the node before cursor
+								// The node starts at pos - nodeBefore.nodeSize
+								const nodeStartPos = pos - nodeBefore.nodeSize;
+								const domNode = view.nodeDOM(nodeStartPos) as
+									| (HTMLElement & { mathfield?: MathFieldElement })
+									| null;
+								if (domNode?.mathfield) {
+									event.preventDefault();
+									domNode.mathfield.focus();
+									domNode.mathfield.executeCommand('moveToMathfieldEnd');
+									return true;
+								}
+							}
+						}
+
+						return false;
 					}
 				}
 			})
@@ -255,16 +371,16 @@ export const MathBlock = Node.create({
 			dom.classList.add('math-block-wrapper');
 
 			// Create MathLive field
-			const mathfield = document.createElement('math-field') as HTMLElement & {
-				value: string;
-				readOnly: boolean;
-			};
+			const mathfield = document.createElement('math-field') as MathFieldElement;
 
 			// Set initial value
 			mathfield.value = node.attrs.latex as string;
 
 			// Style as block element (CSS handles styling via .math-block-wrapper)
 			mathfield.style.display = 'block';
+
+			// Store mathfield reference on DOM for keyboard navigation plugin
+			(dom as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;
 
 			// Read-only mode for display
 			if (!editor.isEditable) {
@@ -274,7 +390,7 @@ export const MathBlock = Node.create({
 
 			// Sync changes back to node
 			mathfield.addEventListener('input', (e) => {
-				const target = e.target as HTMLElement & { value: string };
+				const target = e.target as MathFieldElement;
 				const pos = getPos();
 
 				if (typeof pos === 'number') {
@@ -282,6 +398,30 @@ export const MathBlock = Node.create({
 						latex: target.value
 					});
 				}
+			});
+
+			/**
+			 * Handle move-out event from MathLive
+			 * When user navigates out of mathfield with arrow keys,
+			 * return focus to TipTap editor at the appropriate position
+			 */
+			mathfield.addEventListener('move-out', (e: Event) => {
+				const detail = (e as CustomEvent<MoveOutDetail>).detail;
+				const pos = getPos();
+
+				if (typeof pos !== 'number') return;
+
+				e.preventDefault();
+
+				// Calculate target position based on direction
+				// For block nodes, forward goes after, backward goes before
+				const targetPos =
+					detail.direction === 'forward' || detail.direction === 'downward'
+						? pos + 1 // After the math node
+						: pos; // Before the math node
+
+				// Set cursor position and focus editor
+				editor.chain().focus().setTextSelection(targetPos).run();
 			});
 
 			dom.appendChild(mathfield);
