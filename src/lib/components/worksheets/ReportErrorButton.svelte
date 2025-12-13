@@ -19,11 +19,12 @@
 
 	let dialogOpen = $state(false);
 
-	let hasReport = $derived(existingReport !== null);
+	// Only consider pending reports as "blocking" - rejected/fixed reports allow new submissions
+	let hasPendingReport = $derived(existingReport?.status === 'pending');
 
 	function handleOpenDialog() {
-		// Only allow reporting if no existing report
-		if (!hasReport) {
+		// Allow reporting if no pending report exists
+		if (!hasPendingReport) {
 			dialogOpen = true;
 		}
 	}
@@ -34,14 +35,14 @@
 </script>
 
 <div class="flex items-center gap-2">
-	{#if hasReport && existingReport}
-		<!-- Show status badge and details for existing report -->
+	{#if hasPendingReport && existingReport}
+		<!-- Show status badge and details only for pending reports -->
 		<div class="flex items-center gap-1">
 			<ReportStatusBadge status={existingReport.status} />
 			<ReportDetailsPopover report={existingReport} />
 		</div>
 	{:else}
-		<!-- Show report button when no report exists -->
+		<!-- Show report button when no pending report exists (allows re-reporting after rejection/fix) -->
 		<Button
 			variant="ghost"
 			size="sm"
