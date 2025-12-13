@@ -2,9 +2,11 @@
 	import WorksheetHeader from '$lib/components/student/worksheets/WorksheetHeader.svelte';
 	import ExerciseListItem from '$lib/components/student/worksheets/ExerciseListItem.svelte';
 	import ExerciseModal from '$lib/components/student/worksheets/ExerciseModal.svelte';
+	import StudentReportsPanel from '$lib/components/worksheets/student/StudentReportsPanel.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
+	import * as Tabs from '$lib/components/ui/tabs';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { FileText, AlertTriangle } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
 	import type { StudentErrorReportView } from '$lib/types/worksheets';
@@ -171,41 +173,54 @@
 	<!-- Header -->
 	<WorksheetHeader {worksheet} />
 
-	<!-- Exercises Section -->
+	<!-- Content Tabs -->
 	<section class="mt-8">
-		<div class="mb-4 flex items-center justify-between">
-			<h2 class="text-xl font-semibold">
-				Exercices ({exerciseCount})
-			</h2>
-		</div>
+		<Tabs.Root value="exercises" class="space-y-6">
+			<Tabs.List>
+				<Tabs.Trigger value="exercises" class="gap-2">
+					<FileText class="h-4 w-4" />
+					Exercices ({exerciseCount})
+				</Tabs.Trigger>
+				<Tabs.Trigger value="reports" class="gap-2">
+					<AlertTriangle class="h-4 w-4" />
+					Signalements
+				</Tabs.Trigger>
+			</Tabs.List>
 
-		<Separator class="mb-6" />
+			<!-- Exercises Tab -->
+			<Tabs.Content value="exercises" class="space-y-6">
+				{#if exercises.length === 0}
+					<!-- Empty State -->
+					<Card.Root class="border-dashed">
+						<Card.Content class="flex min-h-48 items-center justify-center p-6">
+							<p class="text-center text-muted-foreground">
+								Aucun exercice disponible pour cette fiche.
+							</p>
+						</Card.Content>
+					</Card.Root>
+				{:else}
+					<!-- Exercise List -->
+					<div class="space-y-3">
+						{#each exercises as exercise, i (exercise.id)}
+							<ExerciseListItem
+								{exercise}
+								index={i + 1}
+								masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
+								{assignmentId}
+								existingReport={reportsMap.get(exercise.id) ?? null}
+								onclick={() => openExercise(i)}
+								onReportCreated={(report) => handleReportCreated(exercise.id, report)}
+							/>
+						{/each}
+					</div>
+				{/if}
+			</Tabs.Content>
 
-		{#if exercises.length === 0}
-			<!-- Empty State -->
-			<Card.Root class="border-dashed">
-				<Card.Content class="flex min-h-48 items-center justify-center p-6">
-					<p class="text-center text-muted-foreground">
-						Aucun exercice disponible pour cette fiche.
-					</p>
-				</Card.Content>
-			</Card.Root>
-		{:else}
-			<!-- Exercise List -->
-			<div class="space-y-3">
-				{#each exercises as exercise, i (exercise.id)}
-					<ExerciseListItem
-						{exercise}
-						index={i + 1}
-						masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
-						{assignmentId}
-						existingReport={reportsMap.get(exercise.id) ?? null}
-						onclick={() => openExercise(i)}
-						onReportCreated={(report) => handleReportCreated(exercise.id, report)}
-					/>
-				{/each}
-			</div>
-		{/if}
+			<!-- Reports Tab -->
+			<Tabs.Content value="reports">
+				<StudentReportsPanel {assignmentId} />
+			</Tabs.Content>
+		</Tabs.Root>
 	</section>
 </div>
 
