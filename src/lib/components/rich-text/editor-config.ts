@@ -2,8 +2,12 @@
  * TipTap Editor Configuration Factory
  * =====================================
  *
- * Factory functions for creating TipTap editor extensions and props.
- * Ensures consistent editor behavior across components.
+ * Provides shared extension instances for TipTap editors.
+ * CRITICAL: Extensions with ProseMirror plugins must be instantiated ONCE
+ * at module level to avoid "duplicate keyed plugin" errors when multiple
+ * editors exist on the same page.
+ *
+ * @see https://tiptap.dev/docs/editor/extensions/custom-extensions
  */
 
 import type { Extensions, EditorOptions } from '@tiptap/core';
@@ -22,22 +26,32 @@ import { MathInline, MathBlock } from '$lib/extensions/math-extension';
 // We configure them via StarterKit options to avoid duplicates
 
 /**
- * Options for editor extensions configuration
+ * Module-level extension instances (singleton pattern)
+ * ====================================================
+ *
+ * These are created ONCE and shared across all editor instances.
+ * This prevents "duplicate keyed plugin" errors from extensions
+ * that create ProseMirror plugins with PluginKeys (like Link).
+ *
+ * Each extension with a PluginKey MUST be instantiated only once
+ * per page, otherwise ProseMirror throws:
+ * "RangeError: Adding different instances of a keyed plugin"
  */
-export interface EditorExtensionsOptions {
-	/** Heading levels to enable (1-6). Default: 6 (all levels) */
-	headingLevels?: number;
+
+// Cache for extension instances by heading level config
+const extensionsCache = new Map<string, Extensions>();
+
+/**
+ * Create a cache key from options
+ */
+function getCacheKey(headingLevels: number): string {
+	return `h${headingLevels}`;
 }
 
 /**
- * Create TipTap editor extensions array
- *
- * @param options - Configuration options
- * @returns Array of TipTap extensions
+ * Create TipTap editor extensions array (internal, uncached)
  */
-export function createEditorExtensions(options: EditorExtensionsOptions = {}): Extensions {
-	const { headingLevels = 6 } = options;
-
+function createExtensionsInternal(headingLevels: number): Extensions {
 	// Build heading levels array [1, 2, 3, ...] up to headingLevels
 	const levels = Array.from({ length: headingLevels }, (_, i) => i + 1) as (
 		| 1
@@ -65,7 +79,6 @@ export function createEditorExtensions(options: EditorExtensionsOptions = {}): E
 		}),
 
 		// Text formatting (NOT in StarterKit)
-		// Always use .configure() to get fresh instances (prevents HMR duplicate warnings)
 		TextStyle.configure({}),
 		Color.configure({}),
 		Highlight.configure({
@@ -95,6 +108,39 @@ export function createEditorExtensions(options: EditorExtensionsOptions = {}): E
 		MathInline.configure({}),
 		MathBlock.configure({})
 	];
+}
+
+/**
+ * Options for editor extensions configuration
+ */
+export interface EditorExtensionsOptions {
+	/** Heading levels to enable (1-6). Default: 6 (all levels) */
+	headingLevels?: number;
+}
+
+/**
+ * Get TipTap editor extensions array (cached singleton)
+ *
+ * IMPORTANT: Returns the SAME extension instances for the same options.
+ * This is required to avoid "duplicate keyed plugin" errors when
+ * multiple editors exist on the same page.
+ *
+ * @param options - Configuration options
+ * @returns Array of TipTap extensions (cached)
+ */
+export function createEditorExtensions(options: EditorExtensionsOptions = {}): Extensions {
+	const { headingLevels = 6 } = options;
+	const cacheKey = getCacheKey(headingLevels);
+
+	// Return cached instance if it exists
+	let extensions = extensionsCache.get(cacheKey);
+	if (!extensions) {
+		// Create new instance and cache it
+		extensions = createExtensionsInternal(headingLevels);
+		extensionsCache.set(cacheKey, extensions);
+	}
+
+	return extensions;
 }
 
 /**
