@@ -18,7 +18,6 @@ import type {
 	SystemEventType
 } from '$lib/types/notification';
 import { sanitizeNotificationHtml } from './sanitization';
-import { createServiceRoleClient } from './serviceRoleClient';
 
 type SupabaseClientType = SupabaseClient<Database>;
 
@@ -144,21 +143,16 @@ export async function createNotification(
  * Create a system notification (automatic)
  *
  * System notifications bypass permission checks and are marked as is_system=true.
- * Uses service role client to bypass RLS - allows system notifications to be created
- * regardless of the authenticated user's role (e.g., students triggering error reports).
  *
- * @param _supabase - Ignored, kept for API compatibility. Service role client is used instead.
- * @param data - Notification data
+ * NOTE: For notifications triggered by student actions (e.g., error reports),
+ * prefer using database triggers with SECURITY DEFINER instead of this function,
+ * as RLS policies may block students from inserting notifications.
  */
 export async function createSystemNotification(
-	_supabase: SupabaseClientType,
+	supabase: SupabaseClientType,
 	data: CreateSystemNotificationData
 ): Promise<{ success: boolean; error?: string }> {
 	try {
-		// Use service role client to bypass RLS
-		// This allows system notifications to be created even when triggered by students
-		const serviceClient = createServiceRoleClient();
-
 		const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
 		// SECURITY: Sanitize message HTML even for system notifications (defense-in-depth)
@@ -166,7 +160,7 @@ export async function createSystemNotification(
 		// in case of bugs or future changes that introduce user-controlled content.
 		const sanitizedMessage = sanitizeNotificationHtml(data.message);
 
-		const { error: insertError } = await serviceClient.from('notifications').insert({
+		const { error: insertError } = await supabase.from('notifications').insert({
 			created_by: null, // System notifications have no creator
 			title: data.title,
 			message: sanitizedMessage, // Use sanitized message

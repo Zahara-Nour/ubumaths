@@ -34,7 +34,6 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'rateLimiter.ts',
 	'errorMonitoring.ts',
 	'serviceRoleClient.ts',
-	'notifications.ts', // System notifications bypass RLS
 	// SRS operations
 	'srs/',
 	// Test files

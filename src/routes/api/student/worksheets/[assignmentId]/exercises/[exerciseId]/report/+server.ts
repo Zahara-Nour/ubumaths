@@ -35,7 +35,8 @@
  * - Unique constraint prevents duplicate pending reports
  *
  * SIDE EFFECTS:
- * - Creates a notification for the worksheet owner (teacher)
+ * - A database trigger (on_error_report_created) automatically creates
+ *   a notification for the worksheet owner (teacher)
  */
 
 import { error, json } from '@sveltejs/kit';
@@ -47,7 +48,6 @@ import {
 	createErrorReportResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
-import { createSystemNotification } from '$lib/server/notifications';
 import type { StudentErrorReportView, WorksheetErrorReportInsert } from '$lib/types/worksheets';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
@@ -153,32 +153,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			throw error(500, 'Erreur lors de la creation du signalement');
 		}
 
-		// Step 5: Fetch student profile for notification
-		const { data: studentProfile } = await locals.supabase
-			.from('profiles')
-			.select('firstname, lastname')
-			.eq('id', user.id)
-			.single();
+		// Note: Notification is created automatically by database trigger
+		// (see migration: 20251213100000_error_report_notification_trigger.sql)
 
-		// Create notification for the teacher (worksheet owner)
-		const studentName =
-			studentProfile?.firstname && studentProfile?.lastname
-				? `${studentProfile.firstname} ${studentProfile.lastname}`
-				: user.email || 'Un élève';
-
-		await createSystemNotification(locals.supabase, {
-			title: "Signalement d'erreur",
-			message: `<strong>${studentName}</strong> a signale une erreur dans l'exercice ${worksheetExercise.position + 1} du devoir "${worksheet.title}".`,
-			type: 'alert',
-			priority: 'normal',
-			system_event_type: 'error_reported',
-			target_type: 'users',
-			target_user_ids: [worksheet.created_by],
-			action_label: 'Voir les signalements',
-			action_url: `/dashboard/teacher/worksheets/${assignment.worksheet_id}/assignments/${assignmentId}/reports`
-		});
-
-		// Step 6: Build response
+		// Step 5: Build response
 		const reportView: StudentErrorReportView = {
 			id: newReport.id,
 			worksheet_exercise_id: newReport.worksheet_exercise_id,
