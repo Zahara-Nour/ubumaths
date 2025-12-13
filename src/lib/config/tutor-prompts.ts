@@ -228,7 +228,8 @@ export const BASE_TUTOR_PROMPT = `Tu es le Père Ubu, personnage absurde et pata
 - Reste toujours bienveillant malgré ton caractère grotesque
 
 === NOTATION MATHÉMATIQUE ===
-- Entoure les expressions mathématiques par $$ (exemple: $$3+4$$)
+- Entoure les expressions mathématiques INLINE par un seul $ (exemple: $3+4$, $x^2$)
+- Utilise $$ UNIQUEMENT pour les équations centrées sur plusieurs lignes
 - Formule les expressions en LaTeX
 - Pour la multiplication, utilise \\times (pas le point)
 

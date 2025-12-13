@@ -34,14 +34,14 @@
 
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Send, User, Trash2, HelpCircle } from 'lucide-svelte';
+	import { User, Trash2, HelpCircle } from 'lucide-svelte';
 	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import TutorUsageIndicator from './TutorUsageIndicator.svelte';
+	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 
 	interface ExerciseContext {
 		exerciseId?: string;
@@ -56,9 +56,16 @@
 	interface Props {
 		exerciseContext?: ExerciseContext;
 		initialHelpLevel?: number;
+		assignmentId?: string;
+		onConversationCreated?: (id: string) => void;
 	}
 
-	let { exerciseContext, initialHelpLevel = 0 }: Props = $props();
+	let {
+		exerciseContext,
+		initialHelpLevel = 0,
+		assignmentId,
+		onConversationCreated
+	}: Props = $props();
 
 	// Message types
 	interface TextContent {
@@ -78,7 +85,6 @@
 
 	// State
 	let messages = $state<Message[]>([]);
-	let inputValue = $state('');
 	let isLoading = $state(false);
 	let loadingRotation = $state(0);
 	let typingMessageIndex = $state<number | null>(null);
@@ -86,9 +92,54 @@
 	let helpLevel = $state(initialHelpLevel);
 	let remaining = $state({ exercise: 15, hour: 30, day: 100 });
 
+	// Persistence state
+	let conversationId = $state<string | null>(null);
+	let isLoadingConversation = $state(false);
+
 	// Refs
 	let messagesContainer: HTMLDivElement | undefined;
-	let textareaElement: HTMLTextAreaElement | undefined;
+
+	// Tiptap JSON node interface
+	interface TiptapNode {
+		type: string;
+		attrs?: Record<string, unknown>;
+		content?: TiptapNode[];
+		text?: string;
+	}
+
+	/**
+	 * Convert Tiptap JSON to plain text with LaTeX math
+	 * Math nodes become $latex$
+	 */
+	function convertTiptapJsonToText(json: unknown): string {
+		if (!json || typeof json !== 'object') return '';
+
+		const doc = json as { type?: string; content?: TiptapNode[] };
+		if (doc.type !== 'doc' || !doc.content) return '';
+
+		const processNode = (node: TiptapNode): string => {
+			switch (node.type) {
+				case 'text':
+					return node.text || '';
+				case 'mathInline':
+					// Math node - wrap in $...$
+					return `$${(node.attrs?.latex as string) || ''}$`;
+				case 'paragraph':
+				case 'doc':
+					return (node.content || []).map(processNode).join('');
+				case 'hardBreak':
+					return '\n';
+				default:
+					// For other nodes, try to process children
+					if (node.content) {
+						return node.content.map(processNode).join('');
+					}
+					return '';
+			}
+		};
+
+		return doc.content.map(processNode).join('\n').trim();
+	}
 
 	// Generate random rotation for avatar
 	function generateRandomRotation(): number {
@@ -206,30 +257,109 @@
 		}
 	});
 
+	// Find or create conversation when exercise/assignment change
+	async function findOrCreateConversation() {
+		if (!exerciseContext?.exerciseId || !assignmentId) return;
+
+		isLoadingConversation = true;
+		try {
+			// Try to find existing conversation
+			const searchParams = new URLSearchParams({
+				exerciseId: exerciseContext.exerciseId,
+				assignmentId: assignmentId
+			});
+			const getResponse = await fetch(`/api/tutor/conversations?${searchParams}`);
+
+			if (getResponse.ok) {
+				const data = await getResponse.json();
+				if (data.conversation) {
+					conversationId = data.conversation.id;
+					// Load existing messages
+					await loadMessages(data.conversation.id);
+					onConversationCreated?.(data.conversation.id);
+					return;
+				}
+			}
+
+			// Create new conversation
+			const postResponse = await fetch('/api/tutor/conversations', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					exerciseId: exerciseContext.exerciseId,
+					assignmentId: assignmentId,
+					statement: exerciseContext.statement,
+					topic: exerciseContext.topic
+				})
+			});
+
+			if (postResponse.ok) {
+				const data = await postResponse.json();
+				conversationId = data.conversation.id;
+				onConversationCreated?.(data.conversation.id);
+			}
+		} catch (error) {
+			console.error('Error finding/creating conversation:', error);
+		} finally {
+			isLoadingConversation = false;
+		}
+	}
+
+	// Load messages for a conversation
+	async function loadMessages(convId: string) {
+		try {
+			const response = await fetch(`/api/tutor/conversations/${convId}/messages`);
+			if (response.ok) {
+				const data = await response.json();
+				// Convert API messages to local Message format
+				messages = (data.messages || []).map(
+					(msg: { role: string; content: string; created_at: string }) => ({
+						role: msg.role as 'user' | 'assistant',
+						content: msg.content,
+						timestamp: new Date(msg.created_at).getTime(),
+						avatarRotation: msg.role === 'assistant' ? generateRandomRotation() : undefined
+					})
+				);
+			}
+		} catch (error) {
+			console.error('Error loading messages:', error);
+		}
+	}
+
+	// Effect to load conversation when props change
+	$effect(() => {
+		if (exerciseContext?.exerciseId && assignmentId) {
+			// Reset state for new exercise
+			messages = [];
+			conversationId = null;
+			helpLevel = initialHelpLevel;
+			findOrCreateConversation();
+		}
+	});
+
+	// Handle rich text editor send
+	async function handleRichTextSend(jsonContent: unknown) {
+		const textContent = convertTiptapJsonToText(jsonContent);
+		if (!textContent.trim()) return;
+		await sendMessage(textContent);
+	}
+
 	// Send message to tutor API
-	async function sendMessage() {
-		if (!inputValue.trim() || isLoading) return;
+	async function sendMessage(text: string) {
+		if (!text.trim() || isLoading) return;
 
 		// Add user message
 		const userMessage: Message = {
 			role: 'user',
-			content: inputValue,
+			content: text,
 			timestamp: Date.now()
 		};
 
 		messages = [...messages, userMessage];
-		inputValue = '';
 		isLoading = true;
 
-		// Reset textarea height
-		setTimeout(() => {
-			if (textareaElement) {
-				textareaElement.style.height = 'auto';
-			}
-		}, 0);
-
 		try {
-			// Call API with tutorMode enabled
+			// Call API with tutorMode enabled and conversationId
 			const response = await fetch('/api/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -237,7 +367,8 @@
 					tutorMode: true,
 					messages: messages.slice(-10).map(({ role, content }) => ({ role, content })),
 					exerciseContext,
-					helpLevel
+					helpLevel,
+					conversationId
 				})
 			});
 
@@ -304,23 +435,6 @@
 		messages = [];
 		helpLevel = initialHelpLevel;
 		toaster.success('Conversation effacée !');
-	}
-
-	// Handle keyboard shortcuts
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Enter' && !e.shiftKey) {
-			e.preventDefault();
-			sendMessage();
-		}
-	}
-
-	// Auto-resize textarea
-	function handleInput(e: Event) {
-		const target = e.target as HTMLTextAreaElement;
-		if (target && target.style) {
-			target.style.height = 'auto';
-			target.style.height = target.scrollHeight + 'px';
-		}
 	}
 </script>
 
@@ -513,27 +627,19 @@
 	</div>
 
 	<!-- Input Area -->
-	<div class="border-t border-border bg-card p-4">
-		<div class="flex gap-2">
-			<Textarea
-				bind:this={textareaElement}
-				bind:value={inputValue}
-				placeholder="Pose ta question... (Entrée pour envoyer, Maj+Entrée pour nouvelle ligne)"
+	<div class="border-t border-border bg-card p-2">
+		{#if isLoadingConversation}
+			<div class="flex items-center justify-center py-4 text-muted-foreground">
+				<span class="animate-pulse">Chargement de la conversation...</span>
+			</div>
+		{:else}
+			<RichTextEditor
+				mode="chat"
+				onSend={handleRichTextSend}
+				mathTemplates="full"
 				disabled={isLoading}
-				onkeydown={handleKeydown}
-				oninput={handleInput}
-				class="max-h-[200px] min-h-[80px] resize-none"
-				style="font-size: calc(1rem * var(--font-scale)); line-height: calc(1.5rem * var(--font-scale));"
-				rows={1}
+				minHeight="60px"
 			/>
-			<Button
-				onclick={sendMessage}
-				disabled={isLoading || !inputValue.trim()}
-				size="icon"
-				class="h-[80px] w-[60px]"
-			>
-				<Send class="h-5 w-5" />
-			</Button>
-		</div>
+		{/if}
 	</div>
 </div>
