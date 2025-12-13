@@ -1,8 +1,9 @@
 # Worksheet Error Reports
 
-> **Version**: 1.0.0
+> **Version**: 2.0.0
 > **Status**: Implemented
 > **Date**: 2025-12-13
+> **Updated**: 2025-12-13 - Added page-based review workflow with exercise editing
 
 ---
 
@@ -14,7 +15,9 @@ This feature allows students to report content errors (typos, incorrect answers,
 
 - **Student Reporting**: Simple form with free-text description
 - **Teacher Notifications**: Uses existing notification system
-- **Full Workflow**: Report -> Review -> Resolve/Reject -> Notify student
+- **Full Workflow**: Report -> Review -> Edit Exercise -> Resolve/Reject -> Notify student
+- **Exercise Editing**: Teachers can directly edit the original exercise content (markdown)
+- **Bonus System**: Students earn 1 bonus point when their report is validated
 - **Privacy**: Students only see their own reports; teacher sees all
 
 ---

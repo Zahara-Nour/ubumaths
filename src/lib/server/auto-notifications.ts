@@ -304,3 +304,72 @@ export async function notifyNewAssessment(
 		// Don't throw - notification failure shouldn't break the assignment
 	}
 }
+
+/**
+ * Create notification when a student's error report is validated
+ *
+ * @param supabase - Supabase client
+ * @param studentId - ID of the student who submitted the report
+ * @param worksheetTitle - Title of the worksheet containing the error
+ * @param exercisePosition - Position of the exercise in the worksheet (1-indexed)
+ */
+export async function notifyErrorReportValidated(
+	supabase: SupabaseClientType,
+	data: {
+		studentId: string;
+		worksheetTitle: string;
+		exercisePosition: number;
+	}
+): Promise<void> {
+	try {
+		await createSystemNotification(supabase, {
+			title: '✅ Signalement validé !',
+			message: `<p>Ton signalement sur l'exercice <strong>${Number(data.exercisePosition)}</strong> du devoir "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été validé. L'erreur a été corrigée. Merci pour ta vigilance !</p><p>Tu as gagné <strong>1 bonus</strong>.</p>`,
+			type: 'info',
+			priority: 'normal',
+			system_event_type: 'error_report_validated',
+			target_type: 'users',
+			target_user_ids: [data.studentId]
+		});
+	} catch (error) {
+		console.error('Error creating error report validated notification:', error);
+		// Don't throw - notification failure shouldn't break the validation flow
+	}
+}
+
+/**
+ * Create notification when a student's error report is rejected
+ *
+ * @param supabase - Supabase client
+ * @param studentId - ID of the student who submitted the report
+ * @param worksheetTitle - Title of the worksheet
+ * @param exercisePosition - Position of the exercise in the worksheet (1-indexed)
+ * @param response - Optional response/reason for rejection (HTML from RichTextEditor, already sanitized)
+ */
+export async function notifyErrorReportRejected(
+	supabase: SupabaseClientType,
+	data: {
+		studentId: string;
+		worksheetTitle: string;
+		exercisePosition: number;
+		response?: string;
+	}
+): Promise<void> {
+	try {
+		// response is already HTML-sanitized from RichTextEditor, do not escape it
+		const responseHtml = data.response ? `<p>${data.response}</p>` : '';
+
+		await createSystemNotification(supabase, {
+			title: 'Signalement traité',
+			message: `<p>Ton signalement pour l'exercice <strong>${Number(data.exercisePosition)}</strong> de "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été étudié. Aucune correction n'était nécessaire cette fois.</p>${responseHtml}<p>Continue à rester attentif !</p>`,
+			type: 'info',
+			priority: 'normal',
+			system_event_type: 'error_report_rejected',
+			target_type: 'users',
+			target_user_ids: [data.studentId]
+		});
+	} catch (error) {
+		console.error('Error creating error report rejected notification:', error);
+		// Don't throw - notification failure shouldn't break the rejection flow
+	}
+}
