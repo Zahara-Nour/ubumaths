@@ -87,6 +87,17 @@ export interface StudentErrorReportView {
 }
 
 /**
+ * Extended error report view for student reports list API
+ * Includes display information from related tables
+ */
+export interface StudentErrorReportWithDisplay extends StudentErrorReportView {
+	assignment_id: string;
+	worksheet_id: string;
+	worksheet_title: string;
+	assignment_title: string | null;
+}
+
+/**
  * Error report as seen by the teacher
  */
 export interface TeacherErrorReportView {
