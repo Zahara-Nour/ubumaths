@@ -9868,10 +9868,12 @@ export type Database = {
 			};
 			tutor_conversations: {
 				Row: {
+					assignment_id: string | null;
 					class_id: string | null;
 					created_at: string | null;
 					effort_score: number | null;
 					ended_at: string | null;
+					exercise_correction: string | null;
 					exercise_id: string | null;
 					exercise_statement: string | null;
 					exercise_topic: string | null;
@@ -9885,10 +9887,12 @@ export type Database = {
 					updated_at: string | null;
 				};
 				Insert: {
+					assignment_id?: string | null;
 					class_id?: string | null;
 					created_at?: string | null;
 					effort_score?: number | null;
 					ended_at?: string | null;
+					exercise_correction?: string | null;
 					exercise_id?: string | null;
 					exercise_statement?: string | null;
 					exercise_topic?: string | null;
@@ -9902,10 +9906,12 @@ export type Database = {
 					updated_at?: string | null;
 				};
 				Update: {
+					assignment_id?: string | null;
 					class_id?: string | null;
 					created_at?: string | null;
 					effort_score?: number | null;
 					ended_at?: string | null;
+					exercise_correction?: string | null;
 					exercise_id?: string | null;
 					exercise_statement?: string | null;
 					exercise_topic?: string | null;
@@ -9919,6 +9925,13 @@ export type Database = {
 					updated_at?: string | null;
 				};
 				Relationships: [
+					{
+						foreignKeyName: 'tutor_conversations_assignment_id_fkey';
+						columns: ['assignment_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheet_assignments';
+						referencedColumns: ['id'];
+					},
 					{
 						foreignKeyName: 'tutor_conversations_class_id_fkey';
 						columns: ['class_id'];

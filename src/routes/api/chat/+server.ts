@@ -39,12 +39,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(400, { message: validation.error.issues[0].message });
 			}
 
-			const {
-				messages,
-				exerciseContext,
-				conversationId: _conversationId,
-				helpLevel
-			} = validation.data;
+			const { messages, exerciseContext, conversationId, helpLevel } = validation.data;
 
 			// 1. Tutor-specific rate limiting
 			const rateLimitResult = await checkTutorRateLimit(user.id, exerciseContext?.exerciseId);
@@ -222,6 +217,43 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					console.error('Failed to log AI chat usage:', logError);
 				}
 			});
+
+			// 11. Persist messages to tutor_messages if conversationId is provided
+			if (conversationId) {
+				try {
+					// Insert user message and assistant response
+					const messagesToInsert = [
+						{
+							conversation_id: conversationId,
+							role: 'user',
+							content: userMessageContent,
+							help_level: helpLevel,
+							cheat_detected: cheatAnalysis.isCheatAttempt?.detected ?? false
+						},
+						{
+							conversation_id: conversationId,
+							role: 'assistant',
+							content: responseMessage,
+							help_level: helpLevel,
+							help_method_used: selectedMethod
+						}
+					];
+
+					await locals.supabase.from('tutor_messages').insert(messagesToInsert);
+
+					// Update conversation stats
+					await locals.supabase
+						.from('tutor_conversations')
+						.update({
+							message_count: messages.length + 1,
+							max_help_level_reached: helpLevel
+						})
+						.eq('id', conversationId);
+				} catch (persistError) {
+					// Non-blocking - log but don't fail the request
+					console.error('Failed to persist tutor messages:', persistError);
+				}
+			}
 
 			return json({
 				message: responseMessage,

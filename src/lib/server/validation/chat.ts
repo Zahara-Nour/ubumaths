@@ -155,6 +155,49 @@ export const tutorRequestSchema = chatRequestSchema.extend({
 });
 
 // ============================================================================
+// TUTOR CONVERSATION MANAGEMENT SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for querying tutor conversations (GET /api/tutor/conversations)
+ *
+ * Security constraints:
+ * - Both exerciseId and assignmentId must be valid UUIDs
+ */
+export const getTutorConversationQuerySchema = z.object({
+	exerciseId: z.string().uuid('ID exercice invalide'),
+	assignmentId: z.string().uuid('ID assignment invalide')
+});
+
+/**
+ * Schema for creating a tutor conversation (POST /api/tutor/conversations)
+ *
+ * Security constraints:
+ * - exerciseId and assignmentId must be valid UUIDs
+ * - statement limited to 5000 chars
+ * - The correction is fetched server-side, not from client
+ */
+export const createTutorConversationSchema = z.object({
+	exerciseId: z.string().uuid('ID exercice invalide'),
+	assignmentId: z.string().uuid('ID assignment invalide'),
+	statement: z.string().max(5000, 'Énoncé trop long (max 5000 caractères)'),
+	topic: z.string().max(100, 'Sujet trop long').optional(),
+	classId: z.string().uuid('ID classe invalide').optional()
+});
+
+/**
+ * Schema for querying tutor messages (GET /api/tutor/conversations/[id]/messages)
+ *
+ * Security constraints:
+ * - limit between 1 and 100
+ * - before must be valid ISO timestamp if provided
+ */
+export const getTutorMessagesQuerySchema = z.object({
+	limit: z.coerce.number().int().min(1).max(100).default(50),
+	before: z.string().datetime('Timestamp invalide').optional()
+});
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
@@ -163,3 +206,6 @@ export type ChatRequest = z.infer<typeof chatRequestSchema>;
 export type TutorRequest = z.infer<typeof tutorRequestSchema>;
 export type ReportMessageInput = z.infer<typeof reportMessageSchema>;
 export type CreateConversationInput = z.infer<typeof createConversationSchema>;
+export type GetTutorConversationQuery = z.infer<typeof getTutorConversationQuerySchema>;
+export type CreateTutorConversationInput = z.infer<typeof createTutorConversationSchema>;
+export type GetTutorMessagesQuery = z.infer<typeof getTutorMessagesQuerySchema>;
