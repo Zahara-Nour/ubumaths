@@ -344,38 +344,56 @@ main math-field {
  * Rich Text Editor - MathLive Integration Styles
  * ==============================================
  *
- * Global styles for MathLive fields used in TipTap rich text editor
- * These styles ensure consistent appearance for inline and block math
+ * Styles for MathLive fields in TipTap rich text editor.
+ * Inline math blends seamlessly with text, block math is visually distinct.
+ *
+ * @see https://mathlive.io/mathfield/guides/customizing/
  */
 
-/* Base math-field styling */
-math-field {
-	border: 1px solid var(--color-border);
+/* Inline math in rich text editor - blend with surrounding text */
+.math-inline-wrapper math-field {
+	border: none;
+	border-radius: 0;
+	padding: 0;
+	margin: 0 2px;
+	background: transparent;
+	vertical-align: baseline;
+	font-size: inherit;
+	line-height: inherit;
+}
+
+.math-inline-wrapper math-field:focus {
+	outline: none;
+	/* Subtle underline to indicate focus without disrupting layout */
+	box-shadow: 0 2px 0 0 var(--color-primary);
+}
+
+/* Block math styling - visually distinct, centered */
+.math-block-wrapper math-field {
+	width: 100%;
+	border: 1px dashed var(--color-border);
 	border-radius: 4px;
-	padding: 4px 8px;
-	margin: 0 4px;
+	margin: 0.5rem 0;
+	padding: 0.75rem;
 	background: var(--color-muted);
-	transition: all 0.2s;
+	text-align: center;
+	font-size: 1.2em;
 }
 
-math-field:hover {
-	border-color: var(--color-primary);
-}
-
-math-field:focus {
+.math-block-wrapper math-field:focus {
 	outline: 2px solid var(--color-ring);
 	outline-offset: 2px;
+	border-color: var(--color-primary);
 	background: var(--color-background);
 }
 
-/* Block math styling */
-.math-block-wrapper math-field {
-	width: 100%;
-	border: 2px dashed var(--color-border);
-	margin: 1rem 0;
-	padding: 1rem;
-	text-align: center;
-	font-size: 1.2em;
+/* Read-only math fields (in RichTextDisplay) - completely invisible chrome */
+math-field[readonly],
+math-field[read-only] {
+	border: none;
+	padding: 0;
+	margin: 0 2px;
+	background: transparent;
 }
 
 /* TipTap editor base styles */

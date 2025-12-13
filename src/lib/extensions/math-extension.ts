@@ -104,13 +104,13 @@ export const MathInline = Node.create({
 			// Set initial LaTeX value
 			mathfield.value = node.attrs.latex as string;
 
-			// Style as inline element
+			// Style as inline element (CSS handles most styling via .math-inline-wrapper)
 			mathfield.style.display = 'inline-block';
-			mathfield.style.fontSize = 'inherit';
 
 			// If editor is read-only (display mode), make math field read-only too
 			if (!editor.isEditable) {
 				mathfield.readOnly = true;
+				mathfield.setAttribute('readonly', ''); // For CSS targeting
 			}
 
 			// Listen for formula changes and update node attributes
@@ -263,15 +263,13 @@ export const MathBlock = Node.create({
 			// Set initial value
 			mathfield.value = node.attrs.latex as string;
 
-			// Style as block element (centered, larger)
+			// Style as block element (CSS handles most styling via .math-block-wrapper)
 			mathfield.style.display = 'block';
-			mathfield.style.fontSize = '1.2em';
-			mathfield.style.textAlign = 'center';
-			mathfield.style.padding = '1rem';
 
 			// Read-only mode for display
 			if (!editor.isEditable) {
 				mathfield.readOnly = true;
+				mathfield.setAttribute('readonly', ''); // For CSS targeting
 			}
 
 			// Sync changes back to node
