@@ -8,17 +8,18 @@
 
 import type { Extensions, EditorOptions } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
-import Link from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { MathInline, MathBlock } from '$lib/extensions/math-extension';
+
+// Note: Link and Underline are now included in StarterKit v3
+// We configure them via StarterKit options to avoid duplicates
 
 /**
  * Options for editor extensions configuration
@@ -48,17 +49,23 @@ export function createEditorExtensions(options: EditorExtensionsOptions = {}): E
 	)[];
 
 	return [
-		// Core editing features
-		// Disable built-in link (if any) since we configure it separately
+		// Core editing features (StarterKit v3 includes Link and Underline)
 		StarterKit.configure({
 			heading: {
 				levels
+			},
+			// Configure Link via StarterKit to avoid duplicate extension
+			link: {
+				openOnClick: false,
+				HTMLAttributes: {
+					class: 'text-primary underline cursor-pointer'
+				}
 			}
+			// Underline uses default configuration
 		}),
 
 		// Text formatting (NOT in StarterKit)
 		// Always use .configure() to get fresh instances (prevents HMR duplicate warnings)
-		Underline.configure({}),
 		TextStyle.configure({}),
 		Color.configure({}),
 		Highlight.configure({
@@ -68,14 +75,6 @@ export function createEditorExtensions(options: EditorExtensionsOptions = {}): E
 		// Paragraph features
 		TextAlign.configure({
 			types: ['heading', 'paragraph']
-		}),
-
-		// Links
-		Link.configure({
-			openOnClick: false,
-			HTMLAttributes: {
-				class: 'text-primary underline cursor-pointer'
-			}
 		}),
 
 		// Subscript and superscript
