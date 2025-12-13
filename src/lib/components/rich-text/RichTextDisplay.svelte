@@ -150,3 +150,54 @@
 		<RichTextDisplay content={msg} class="border-l-4 border-primary pl-4" />
 -->
 <div bind:this={displayElement} class={className}></div>
+
+<style>
+	/*
+	 * MathLive Integration - Read-only Math Display
+	 * ==============================================
+	 * Make math-field blend seamlessly with text (no chrome).
+	 */
+
+	/* Inline math - completely transparent */
+	:global(.math-inline-wrapper math-field) {
+		display: inline-block;
+		vertical-align: baseline;
+		margin: 0 2px;
+		font-size: inherit;
+		line-height: 1;
+		border: none;
+		background: transparent;
+		padding: 0;
+		cursor: default;
+		/* MathLive internal CSS variables */
+		--_padding-vertical: 0;
+		--_padding-horizontal: 0;
+	}
+
+	/* Target MathLive internal elements */
+	:global(.math-inline-wrapper math-field::part(container)) {
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+
+	:global(.math-inline-wrapper math-field .ML__container) {
+		padding: 0 !important;
+	}
+
+	:global(.math-inline-wrapper math-field .ML__base) {
+		padding: 0 !important;
+	}
+
+	/* Block math - subtle styling */
+	:global(.math-block-wrapper math-field) {
+		display: block;
+		width: 100%;
+		border: none;
+		margin: 0.5rem 0;
+		padding: 0.5rem;
+		background: transparent;
+		text-align: center;
+		font-size: 1.2em;
+		cursor: default;
+	}
+</style>

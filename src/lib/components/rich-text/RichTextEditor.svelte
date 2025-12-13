@@ -945,4 +945,66 @@
 	:global(.task-list li > div) {
 		flex: 1;
 	}
+
+	/*
+	 * MathLive Integration - Seamless Inline Math
+	 * ============================================
+	 * Make math-field blend with surrounding text by removing all chrome
+	 * and targeting MathLive's internal padding.
+	 */
+
+	/* Inline math wrapper - blend with text */
+	:global(.math-inline-wrapper math-field) {
+		display: inline-block;
+		vertical-align: baseline;
+		margin: 0 2px;
+		font-size: inherit;
+		line-height: 1;
+		border: none;
+		background: transparent;
+		padding: 0;
+		/* MathLive internal CSS variables */
+		--_padding-vertical: 0;
+		--_padding-horizontal: 0;
+	}
+
+	/* Target MathLive internal elements to remove padding */
+	:global(.math-inline-wrapper math-field::part(container)) {
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+
+	:global(.math-inline-wrapper math-field .ML__container) {
+		padding: 0 !important;
+	}
+
+	:global(.math-inline-wrapper math-field .ML__base) {
+		padding: 0 !important;
+	}
+
+	/* Focus state - subtle underline */
+	:global(.math-inline-wrapper math-field:focus) {
+		outline: none;
+		box-shadow: 0 2px 0 0 var(--color-primary, #3b82f6);
+	}
+
+	/* Block math - keep visually distinct */
+	:global(.math-block-wrapper math-field) {
+		display: block;
+		width: 100%;
+		border: 1px dashed var(--color-border, #e5e7eb);
+		border-radius: 4px;
+		margin: 0.5rem 0;
+		padding: 0.75rem;
+		background: var(--color-muted, #f9fafb);
+		text-align: center;
+		font-size: 1.2em;
+	}
+
+	:global(.math-block-wrapper math-field:focus) {
+		outline: 2px solid var(--color-ring, #3b82f6);
+		outline-offset: 2px;
+		border-color: var(--color-primary, #3b82f6);
+		background: var(--color-background, #ffffff);
+	}
 </style>
