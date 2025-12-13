@@ -122,7 +122,12 @@
 				// { href: '/dashboard/student/assessments', label: 'Évaluations', icon: ClipboardList },
 				// { href: '/dashboard/student/devoirs', label: 'Devoirs', icon: BookOpen },
 				// { href: '/dashboard/student/materials', label: 'Matériel', icon: FileText },
-				{ href: '/dashboard/student/vip-cards/collection', label: 'Collection VIP', icon: Sparkles }
+				{
+					href: '/dashboard/student/vip-cards/collection',
+					label: 'Collection VIP',
+					icon: Sparkles
+				},
+				{ href: '/dashboard/student/reports', label: 'Mes Signalements', icon: AlertTriangle }
 			];
 		} else if (role === 'teacher') {
 			return [
@@ -184,6 +189,10 @@
 		// For student worksheets pages, match any /dashboard/student/worksheets/* route
 		if (href === '/dashboard/student/worksheets') {
 			return page.url.pathname.startsWith('/dashboard/student/worksheets');
+		}
+		// For student reports pages, match any /dashboard/student/reports/* route
+		if (href === '/dashboard/student/reports') {
+			return page.url.pathname.startsWith('/dashboard/student/reports');
 		}
 		return page.url.pathname === href;
 	}
