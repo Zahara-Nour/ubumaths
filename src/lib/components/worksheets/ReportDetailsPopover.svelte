@@ -33,16 +33,18 @@
 </script>
 
 <Popover.Root bind:open>
-	<Popover.Trigger asChild let:builder>
-		<Button
-			builders={[builder]}
-			variant="ghost"
-			size="sm"
-			class="h-auto p-0 hover:bg-transparent"
-			aria-label="Voir les détails du signalement"
-		>
-			<Info class="h-4 w-4 text-muted-foreground hover:text-foreground" />
-		</Button>
+	<Popover.Trigger>
+		{#snippet child({ props })}
+			<Button
+				{...props}
+				variant="ghost"
+				size="sm"
+				class="h-auto p-0 hover:bg-transparent"
+				aria-label="Voir les détails du signalement"
+			>
+				<Info class="h-4 w-4 text-muted-foreground hover:text-foreground" />
+			</Button>
+		{/snippet}
 	</Popover.Trigger>
 	<Popover.Content class="w-80">
 		<div class="space-y-3">
