@@ -21,14 +21,16 @@
 </script>
 
 <Tooltip.Root>
-	<Tooltip.Trigger asChild let:builder>
-		<button
-			builders={[builder]}
-			class="inline-flex items-center justify-center rounded p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-			title="Afficher l'aide sur les raccourcis clavier"
-		>
-			<HelpCircle class="size-4" />
-		</button>
+	<Tooltip.Trigger>
+		{#snippet child({ props })}
+			<button
+				{...props}
+				class="inline-flex items-center justify-center rounded p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+				title="Afficher l'aide sur les raccourcis clavier"
+			>
+				<HelpCircle class="size-4" />
+			</button>
+		{/snippet}
 	</Tooltip.Trigger>
 	<Tooltip.Content side="bottom" align="end" class="max-w-sm">
 		<div class="space-y-3 text-sm">

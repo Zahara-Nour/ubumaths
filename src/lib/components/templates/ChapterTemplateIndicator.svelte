@@ -67,10 +67,12 @@
 			</span>
 			{#if isDetached}
 				<Tooltip.Root>
-					<Tooltip.Trigger asChild let:builder>
-						<span use:builder.action {...builder}>
-							<AlertCircle class="h-3 w-3 text-orange-500" />
-						</span>
+					<Tooltip.Trigger>
+						{#snippet child({ props })}
+							<span {...props}>
+								<AlertCircle class="h-3 w-3 text-orange-500" />
+							</span>
+						{/snippet}
 					</Tooltip.Trigger>
 					<Tooltip.Content>
 						<p>Détaché du template</p>
@@ -93,16 +95,12 @@
 		<div class="flex items-center gap-1">
 			{#if hasUpdate && !isDetached && !isDeleted && onUpdate}
 				<Tooltip.Root>
-					<Tooltip.Trigger asChild let:builder>
-						<Button
-							variant="ghost"
-							size="icon-sm"
-							onclick={onUpdate}
-							class="h-7 w-7"
-							builders={[builder]}
-						>
-							<ArrowUpCircle class="h-4 w-4 text-blue-600" />
-						</Button>
+					<Tooltip.Trigger>
+						{#snippet child({ props })}
+							<Button {...props} variant="ghost" size="icon-sm" onclick={onUpdate} class="h-7 w-7">
+								<ArrowUpCircle class="h-4 w-4 text-blue-600" />
+							</Button>
+						{/snippet}
 					</Tooltip.Trigger>
 					<Tooltip.Content>
 						<p>Mettre à jour depuis le template</p>
@@ -112,16 +110,12 @@
 
 			{#if !isDetached && onDetach}
 				<Tooltip.Root>
-					<Tooltip.Trigger asChild let:builder>
-						<Button
-							variant="ghost"
-							size="icon-sm"
-							onclick={onDetach}
-							class="h-7 w-7"
-							builders={[builder]}
-						>
-							<Unlink class="h-4 w-4 text-muted-foreground hover:text-destructive" />
-						</Button>
+					<Tooltip.Trigger>
+						{#snippet child({ props })}
+							<Button {...props} variant="ghost" size="icon-sm" onclick={onDetach} class="h-7 w-7">
+								<Unlink class="h-4 w-4 text-muted-foreground hover:text-destructive" />
+							</Button>
+						{/snippet}
 					</Tooltip.Trigger>
 					<Tooltip.Content>
 						<p>Détacher du template</p>

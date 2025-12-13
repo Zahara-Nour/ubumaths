@@ -95,11 +95,13 @@
 		<!-- Add cell dropdown -->
 		{#if !isReadonly}
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger asChild let:builder>
-					<Button builders={[builder]} variant="outline" size="sm" class="gap-1.5">
-						<Plus class="size-4" />
-						<span>Ajouter</span>
-					</Button>
+				<DropdownMenu.Trigger>
+					{#snippet child({ props })}
+						<Button {...props} variant="outline" size="sm" class="gap-1.5">
+							<Plus class="size-4" />
+							<span>Ajouter</span>
+						</Button>
+					{/snippet}
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content>
 					<DropdownMenu.Item onclick={onAddCodeCell}>
