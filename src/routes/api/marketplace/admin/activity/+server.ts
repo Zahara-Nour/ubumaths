@@ -233,7 +233,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.order('updated_at', { ascending: false })
 		.limit(limit);
 
-	type ProfileName = { firstname?: string; lastname?: string } | null;
+	type ProfileName = { firstname?: string; lastname?: string } | null | undefined;
 	const formatName = (p: ProfileName) =>
 		p ? `${p.firstname || ''} ${p.lastname || ''}`.trim() || 'Élève inconnu' : 'Élève inconnu';
 

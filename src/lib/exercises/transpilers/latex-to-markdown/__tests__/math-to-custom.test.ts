@@ -419,7 +419,8 @@ describe('SUPPORTED_GREEK', () => {
 	});
 
 	it('does not contain delta', () => {
-		expect(SUPPORTED_GREEK.has('delta')).toBe(false);
+		// Cast to test unsupported letter - TypeScript only allows GreekLetter type
+		expect(SUPPORTED_GREEK.has('delta' as 'pi')).toBe(false);
 	});
 });
 

@@ -2,6 +2,7 @@ import type { PageServerLoad, Actions } from './$types';
 import type { AttemptWithDetails } from '$lib/types/riddle';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { sendValidationResultMessage } from '$lib/server/riddle-messages';
+import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Load validation details

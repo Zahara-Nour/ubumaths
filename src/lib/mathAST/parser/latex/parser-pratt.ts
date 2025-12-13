@@ -796,8 +796,8 @@ class PrattParser {
 		const content = this.parseExpression(BP.NONE);
 		this.expect('RBRACE', "Expected '}' after expression");
 		// Check if this closes a color scope
-		if (this.colorBraceDepth > 0) {
-			this.colorBraceDepth--;
+		if (this.colorScopeStack.length > 0) {
+			this.colorScopeStack.pop();
 			this.colorStack.pop();
 		}
 		return content;
@@ -1593,7 +1593,7 @@ class PrattParser {
 	 * Apply operator color that was captured before parsing the right side.
 	 * This is needed because the color scope may close while parsing the right side.
 	 */
-	private applyColorWithOperator(node: MathNode, operatorColor: string | null): MathNode {
+	private applyColorWithOperator(node: MathNode, operatorColor: string | undefined): MathNode {
 		if (!operatorColor) {
 			return node;
 		}

@@ -42,7 +42,7 @@ import {
 	simplifiedMultiply
 } from './rules';
 import { substitute } from '../eval/substitute';
-import { derivativeFunc, number } from '../factory';
+import { derivativeFunc, number, multiply } from '../factory';
 import { isDerivativeFunction, isInverseFunction } from '../guards';
 
 // =============================================================================

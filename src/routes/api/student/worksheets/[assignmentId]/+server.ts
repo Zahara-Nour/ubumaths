@@ -191,14 +191,19 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw error(404, 'Devoir non trouve');
 		}
 
-		const worksheet = assignment.worksheets as {
-			id: string;
-			title: string;
-			description: string | null;
-			type: string;
-			config: Record<string, unknown>;
-		};
-		const classData = assignment.classes as { name: string } | null;
+		// Helper to extract first element from join result (can be array or object)
+		const getFirstOrSelf = <T>(val: T | T[]): T => (Array.isArray(val) ? val[0] : val);
+
+		const worksheet = getFirstOrSelf(
+			assignment.worksheets as unknown as {
+				id: string;
+				title: string;
+				description: string | null;
+				type: string;
+				config: Record<string, unknown>;
+			}
+		);
+		const classData = getFirstOrSelf(assignment.classes as unknown as { name: string } | null);
 
 		// Fetch worksheet exercises with exercise data
 		const { data: worksheetExercises, error: exercisesError } = await locals.supabase
@@ -252,7 +257,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		const exercises: StudentExerciseView[] = [];
 
 		for (const we of worksheetExercises ?? []) {
-			const exerciseData = we.exercise as ExerciseData | null;
+			const exerciseData = getFirstOrSelf(we.exercise as unknown as ExerciseData | null);
 
 			if (!exerciseData) {
 				// Skip exercises without data (orphaned references)

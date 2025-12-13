@@ -1223,7 +1223,7 @@ class RDParser {
 	 * Used when the color must be captured BEFORE parsing the right operand
 	 * (because the color scope might close during parsing).
 	 */
-	private applyColorWithOperator(node: MathNode, operatorColor: string | null): MathNode {
+	private applyColorWithOperator(node: MathNode, operatorColor: string | undefined): MathNode {
 		if (!operatorColor) {
 			return node;
 		}

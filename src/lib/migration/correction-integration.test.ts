@@ -38,7 +38,8 @@ function createMockStats(): TransformStats {
 		hasImages: false,
 		hasCustomValidation: false,
 		imagesConverted: 0,
-		imagesMissing: 0
+		imagesMissing: 0,
+		asciiMathConverted: 0
 	};
 }
 

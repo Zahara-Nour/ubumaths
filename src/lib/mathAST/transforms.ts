@@ -536,6 +536,11 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
  * @param predicate - Function that returns true for matching nodes
  * @returns Array of all matching nodes
  */
+export function findNodes<T extends MathNode>(
+	node: MathNode,
+	predicate: (node: MathNode) => node is T
+): T[];
+export function findNodes(node: MathNode, predicate: (node: MathNode) => boolean): MathNode[];
 export function findNodes(node: MathNode, predicate: (node: MathNode) => boolean): MathNode[] {
 	const results: MathNode[] = [];
 

@@ -190,22 +190,19 @@ async function executeFtsSearch(
 			return [];
 		}
 
-		return (data || []).map(
-			(row: {
-				id: string;
-				content: string;
-				document_id: string;
-				rag_documents: { id: string; title: string };
-			}) => ({
-				chunkId: row.id,
-				documentId: row.document_id,
-				documentTitle: row.rag_documents?.title || 'Unknown',
-				content: row.content,
+		return (data || []).map((row) => {
+			// rag_documents can be array (from join) or single object
+			const doc = Array.isArray(row.rag_documents) ? row.rag_documents[0] : row.rag_documents;
+			return {
+				chunkId: row.id as string,
+				documentId: row.document_id as string,
+				documentTitle: (doc?.title as string) || 'Unknown',
+				content: row.content as string,
 				combinedScore: 1.0, // FTS doesn't provide comparable scores
 				vectorScore: null,
 				ftsScore: 1.0
-			})
-		);
+			};
+		});
 	} catch (error) {
 		console.error('FTS search failed:', error);
 		return [];

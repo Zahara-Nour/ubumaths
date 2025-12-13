@@ -46,9 +46,7 @@ export const fileValidationSchema = z.object({
 			`La taille du fichier ne peut pas dépasser ${MAX_FILE_SIZE / 1024 / 1024}MB`
 		),
 	type: z.enum(ALLOWED_MIME_TYPES, {
-		errorMap: () => ({
-			message: 'Type de fichier non supporté. Formats acceptés: PDF, TXT, MD'
-		})
+		message: 'Type de fichier non supporté. Formats acceptés: PDF, TXT, MD'
 	})
 });
 
@@ -65,9 +63,9 @@ export const documentListQuerySchema = z.object({
 	gradeLevel: z.string().optional(),
 	topic: z.string().optional(),
 	enabledOnly: z
-		.string()
-		.transform((val) => val === 'true')
+		.enum(['true', 'false'])
 		.default('true')
+		.transform((val) => val === 'true')
 });
 
 /**

@@ -256,7 +256,8 @@ export function convertMathToCustomSyntax(
 	}
 
 	// Step 2: Convert MathAST to custom syntax
-	const conversionResult = toCustomSafe(parseResult.ast);
+	// ast is non-null here since we checked for errors above and returned
+	const conversionResult = toCustomSafe(parseResult.ast!);
 
 	// Check for unsupported features
 	if (conversionResult.unsupported.length > 0) {

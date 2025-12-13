@@ -294,8 +294,8 @@ export function interpolateAngle(
 	const easedT = applyEasing(t, easingName);
 
 	// Normalize angles to 0-360 range
-	let start = ((startAngle % 360) + 360) % 360;
-	let end = ((endAngle % 360) + 360) % 360;
+	const start = ((startAngle % 360) + 360) % 360;
+	const end = ((endAngle % 360) + 360) % 360;
 
 	// Find the shortest rotation direction
 	let delta = end - start;

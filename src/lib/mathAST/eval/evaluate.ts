@@ -528,26 +528,28 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 
 	// FunctionNode
 	if (isFunction(node)) {
-		const funcName = node.name.toLowerCase();
+		const originalName = node.name; // Store name before any narrowing
+		const funcName = originalName.toLowerCase();
+		const funcNode = node;
 		const handler = SUPPORTED_FUNCTIONS[funcName];
 
 		if (!handler) {
 			// Check if this is a derivative or inverse function that wasn't substituted
-			if (isDerivativeFunction(node)) {
+			if (isDerivativeFunction(funcNode)) {
 				throw new Error(
-					`Cannot evaluate derivative function '${node.name}'(x) without a definition. ` +
+					`Cannot evaluate derivative function '${originalName}'(x) without a definition. ` +
 						'Derivative functions remain symbolic and require differentiation rules.'
 				);
 			}
-			if (isInverseFunction(node)) {
+			if (isInverseFunction(funcNode)) {
 				throw new Error(
-					`Cannot evaluate inverse function '${node.name}^{-1}(x)' without a definition. ` +
+					`Cannot evaluate inverse function '${originalName}^{-1}(x)' without a definition. ` +
 						'Inverse functions remain symbolic.'
 				);
 			}
 			// Unknown generic function
 			throw new Error(
-				`Unknown function: ${node.name}. ` +
+				`Unknown function: ${originalName}. ` +
 					'If this is a generic function (like f, g, h), provide its definition in EvalOptions.functions'
 			);
 		}

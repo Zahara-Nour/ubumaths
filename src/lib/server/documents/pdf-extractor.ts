@@ -6,11 +6,33 @@
  */
 
 // Dynamic import to avoid issues with SSR
-let pdfParse: typeof import('pdf-parse') | null = null;
+type PdfParseFunction = (
+	buffer: Buffer,
+	options?: { max?: number }
+) => Promise<{
+	text: string;
+	numpages: number;
+	info: {
+		Title?: string;
+		Author?: string;
+		Subject?: string;
+		Keywords?: string;
+		CreationDate?: string;
+	};
+}>;
 
-async function getPdfParse() {
+let pdfParse: PdfParseFunction | null = null;
+
+async function getPdfParse(): Promise<PdfParseFunction> {
 	if (!pdfParse) {
-		pdfParse = (await import('pdf-parse')).default;
+		const pdfModule = (await import('pdf-parse')) as unknown as
+			| { default: PdfParseFunction }
+			| PdfParseFunction;
+		// pdf-parse exports the function directly in ESM or as default
+		pdfParse =
+			'default' in pdfModule
+				? (pdfModule.default as PdfParseFunction)
+				: (pdfModule as PdfParseFunction);
 	}
 	return pdfParse;
 }

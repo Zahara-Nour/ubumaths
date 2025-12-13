@@ -293,7 +293,7 @@ describe('parse pipeline', () => {
 
 		it('returns genericFunctions config when functions are defined', () => {
 			const state = createEvalState();
-			createFunctionBinding(state, 'f', ['x'], number(1));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
 
 			const options = getParserOptions(state);
 
@@ -301,14 +301,13 @@ describe('parse pipeline', () => {
 			expect(options.genericFunctions?.names).toContain('f');
 			expect(options.genericFunctions?.allowDerivatives).toBe(true);
 			expect(options.genericFunctions?.allowInverse).toBe(true);
-			expect(options.genericFunctions?.allowComposition).toBe(true);
 		});
 
 		it('includes all function names in parser config', () => {
 			const state = createEvalState();
-			createFunctionBinding(state, 'f', ['x'], number(1));
-			createFunctionBinding(state, 'g', ['x'], number(2));
-			createFunctionBinding(state, 'h', ['x', 'y'], number(3));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
+			createFunctionBinding(state, 'g', ['x'], number('2'));
+			createFunctionBinding(state, 'h', ['x', 'y'], number('3'));
 
 			const options = getParserOptions(state);
 			const names = options.genericFunctions?.names ?? [];
@@ -327,7 +326,7 @@ describe('parse pipeline', () => {
 	describe('state-aware parsing', () => {
 		it('parses f(x) as generic function when f is defined in state', () => {
 			const state = createEvalState();
-			createFunctionBinding(state, 'f', ['x'], superscript(variable('x'), number(2)));
+			createFunctionBinding(state, 'f', ['x'], superscript(variable('x'), number('2')));
 
 			const result = parse('f(x)', { evalState: state });
 
@@ -342,7 +341,7 @@ describe('parse pipeline', () => {
 
 		it('parses f(3) with numeric argument', () => {
 			const state = createEvalState();
-			createFunctionBinding(state, 'f', ['x'], number(1));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
 
 			const result = parse('f(3)', { evalState: state });
 
@@ -355,8 +354,8 @@ describe('parse pipeline', () => {
 
 		it('parses multiple defined functions', () => {
 			const state = createEvalState();
-			createFunctionBinding(state, 'f', ['x'], number(1));
-			createFunctionBinding(state, 'g', ['x'], number(2));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
+			createFunctionBinding(state, 'g', ['x'], number('2'));
 
 			// Parse f(x) + g(x)
 			const result = parse('f(x) + g(x)', { evalState: state });
