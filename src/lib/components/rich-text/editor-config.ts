@@ -57,9 +57,10 @@ export function createEditorExtensions(options: EditorExtensionsOptions = {}): E
 		}),
 
 		// Text formatting (NOT in StarterKit)
-		Underline,
-		TextStyle,
-		Color,
+		// Always use .configure() to get fresh instances (prevents HMR duplicate warnings)
+		Underline.configure({}),
+		TextStyle.configure({}),
+		Color.configure({}),
 		Highlight.configure({
 			multicolor: true
 		}),
@@ -78,8 +79,8 @@ export function createEditorExtensions(options: EditorExtensionsOptions = {}): E
 		}),
 
 		// Subscript and superscript
-		Subscript,
-		Superscript,
+		Subscript.configure({}),
+		Superscript.configure({}),
 
 		// Task lists
 		TaskList.configure({
@@ -92,8 +93,8 @@ export function createEditorExtensions(options: EditorExtensionsOptions = {}): E
 		}),
 
 		// Math formulas
-		MathInline,
-		MathBlock
+		MathInline.configure({}),
+		MathBlock.configure({})
 	];
 }
 
