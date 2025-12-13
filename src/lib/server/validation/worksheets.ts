@@ -1126,3 +1126,108 @@ export function validateErrorReportParams(params: Record<string, string>) {
 export function validateStudentErrorReportParams(params: Record<string, string>) {
 	return studentErrorReportParamSchema.safeParse(params);
 }
+
+// ============================================================================
+// STUDENT ERROR REPORTS API SCHEMAS (GET /api/student/reports)
+// ============================================================================
+
+/**
+ * Status filter for student reports query
+ * 'all' returns all statuses
+ */
+export const studentReportsStatusFilterSchema = z.enum(['pending', 'fixed', 'rejected', 'all'], {
+	message: 'Invalid status filter'
+});
+
+/**
+ * Query params for student reports list (GET /api/student/reports)
+ */
+export const studentReportsQuerySchema = z.object({
+	status: studentReportsStatusFilterSchema.default('all'),
+	assignmentId: uuidSchema.optional(),
+	page: z.coerce
+		.number()
+		.int('Page must be an integer')
+		.positive('Page must be positive')
+		.max(1000, 'Page too high')
+		.default(1),
+	limit: z.coerce
+		.number()
+		.int('Limit must be an integer')
+		.positive('Limit must be positive')
+		.max(50, 'Maximum 50 items per page')
+		.default(10)
+});
+
+/**
+ * URL param for student report ID (DELETE /api/student/reports/[reportId])
+ */
+export const studentReportIdParamSchema = z.object({
+	reportId: uuidSchema
+});
+
+// ============================================================================
+// STUDENT ERROR REPORTS RESPONSE SCHEMAS
+// ============================================================================
+
+// Helper for Supabase timestamps (accepts both Z and +00:00 formats)
+const studentReportsTimestampSchema = z
+	.string()
+	.refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid timestamp' });
+
+/**
+ * Extended student error report view with display information
+ */
+export const studentErrorReportWithDisplaySchema = z.object({
+	id: z.string().uuid(),
+	worksheet_exercise_id: z.string().uuid(),
+	exercise_position: z.number().int().nonnegative(),
+	description: z.string(),
+	status: errorReportStatusSchema,
+	response: z.string().nullable(),
+	created_at: studentReportsTimestampSchema,
+	updated_at: studentReportsTimestampSchema,
+	// Extended display fields
+	assignment_id: z.string().uuid(),
+	worksheet_id: z.string().uuid(),
+	worksheet_title: z.string(),
+	assignment_title: z.string().nullable()
+});
+
+/**
+ * Student reports list response with pagination
+ */
+export const studentReportsListResponseSchema = z.object({
+	reports: z.array(studentErrorReportWithDisplaySchema),
+	pagination: z.object({
+		page: z.number().int().positive(),
+		limit: z.number().int().positive(),
+		total: z.number().int().nonnegative(),
+		totalPages: z.number().int().nonnegative()
+	})
+});
+
+/**
+ * Delete report success response
+ */
+export const deleteStudentReportResponseSchema = z.object({
+	success: z.literal(true)
+});
+
+// ============================================================================
+// STUDENT ERROR REPORTS VALIDATION HELPERS
+// ============================================================================
+
+/**
+ * Validate student reports query params
+ */
+export function validateStudentReportsQuery(params: URLSearchParams) {
+	return studentReportsQuerySchema.safeParse(Object.fromEntries(params));
+}
+
+/**
+ * Validate student report ID URL param
+ */
+export function validateStudentReportIdParam(params: Record<string, string>) {
+	return studentReportIdParamSchema.safeParse(params);
+}
