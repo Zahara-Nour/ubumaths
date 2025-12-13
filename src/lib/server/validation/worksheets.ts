@@ -953,20 +953,72 @@ export const updateStudentErrorReportSchema = z.object({
 /**
  * Schema for teacher reviewing an error report
  * PUT /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]
+ *
+ * When status is 'fixed':
+ * - statement_md is required (updated exercise content)
+ * - solution_md is optional (can be null)
+ * - response is optional
+ *
+ * When status is 'rejected':
+ * - response is required (rejection reason)
+ * - statement_md and solution_md are ignored
  */
-export const reviewErrorReportSchema = z.object({
-	status: z.enum(['fixed', 'rejected'], {
-		message: 'Status must be "fixed" or "rejected"'
-	}),
-	response: z
-		.string()
-		.trim()
-		.min(1, 'La réponse ne peut pas être vide')
-		.max(2000, 'La réponse ne peut pas dépasser 2000 caractères')
-		.nullable()
-		.optional()
-		.default(null)
-});
+export const reviewErrorReportSchema = z
+	.object({
+		status: z.enum(['fixed', 'rejected'], {
+			message: 'Status must be "fixed" or "rejected"'
+		}),
+		response: z
+			.string()
+			.trim()
+			.min(1, 'La reponse ne peut pas etre vide')
+			.max(2000, 'La reponse ne peut pas depasser 2000 caracteres')
+			.nullable()
+			.optional()
+			.default(null),
+		statement_md: z
+			.string()
+			.trim()
+			.min(1, "L'enonce ne peut pas etre vide")
+			.max(50000, "L'enonce ne peut pas depasser 50000 caracteres")
+			.optional(),
+		solution_md: z
+			.string()
+			.trim()
+			.max(50000, 'La solution ne peut pas depasser 50000 caracteres')
+			.nullable()
+			.optional()
+	})
+	.refine(
+		(data) => {
+			// If status is 'rejected', response is required
+			if (data.status === 'rejected') {
+				return data.response !== null && data.response !== undefined && data.response.length > 0;
+			}
+			return true;
+		},
+		{
+			message: 'Le motif de rejet est requis',
+			path: ['response']
+		}
+	)
+	.refine(
+		(data) => {
+			// If status is 'fixed', statement_md is required
+			if (data.status === 'fixed') {
+				return (
+					data.statement_md !== undefined &&
+					data.statement_md !== null &&
+					data.statement_md.length > 0
+				);
+			}
+			return true;
+		},
+		{
+			message: "L'enonce corrige est requis pour valider la correction",
+			path: ['statement_md']
+		}
+	);
 
 /**
  * Query params for listing error reports (GET /api/worksheets/[id]/assignments/[assignmentId]/reports)
@@ -1079,6 +1131,23 @@ export const createErrorReportResponseSchema = z.object({
 export const reviewErrorReportResponseSchema = z.object({
 	success: z.literal(true),
 	report: teacherErrorReportViewSchema
+});
+
+/**
+ * Get single error report detail response (for teacher review page)
+ * GET /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]
+ */
+export const getErrorReportDetailResponseSchema = z.object({
+	report: teacherErrorReportViewSchema.extend({
+		statement_md: z.string(),
+		solution_md: z.string().nullable()
+	}),
+	context: z.object({
+		worksheet_title: z.string(),
+		student_name: z.string(),
+		exercise_position: z.number().int().nonnegative()
+	}),
+	next_pending_report_id: z.string().uuid().nullable()
 });
 
 // ============================================================================

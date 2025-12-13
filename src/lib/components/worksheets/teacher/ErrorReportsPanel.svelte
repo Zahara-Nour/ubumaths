@@ -4,7 +4,6 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { AlertCircle, Loader2 } from 'lucide-svelte';
 	import ErrorReportCard from './ErrorReportCard.svelte';
-	import ReviewReportDialog from './ReviewReportDialog.svelte';
 	import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
 
 	// Props
@@ -24,10 +23,6 @@
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let limit = $state(50);
-
-	// Dialog state
-	let selectedReport = $state<TeacherErrorReportView | null>(null);
-	let dialogOpen = $state(false);
 
 	// Filter buttons configuration
 	let filterButtons = $derived([
@@ -110,23 +105,6 @@
 		loadReports();
 	}
 
-	/**
-	 * Handle review button click
-	 */
-	function handleReviewClick(report: TeacherErrorReportView) {
-		selectedReport = report;
-		dialogOpen = true;
-	}
-
-	/**
-	 * Handle successful review
-	 */
-	function handleReviewSuccess() {
-		dialogOpen = false;
-		selectedReport = null;
-		loadReports(); // Reload to update counts and list
-	}
-
 	// Load reports on mount
 	$effect(() => {
 		loadReports();
@@ -180,7 +158,7 @@
 		<!-- Reports list -->
 		<div class="grid gap-4">
 			{#each reports as report (report.id)}
-				<ErrorReportCard {report} onReview={handleReviewClick} />
+				<ErrorReportCard {report} {worksheetId} />
 			{/each}
 		</div>
 
@@ -233,18 +211,3 @@
 		{/if}
 	{/if}
 </div>
-
-<!-- Review dialog -->
-{#if selectedReport}
-	<ReviewReportDialog
-		report={selectedReport}
-		{worksheetId}
-		{assignmentId}
-		open={dialogOpen}
-		onClose={() => {
-			dialogOpen = false;
-			selectedReport = null;
-		}}
-		onSuccess={handleReviewSuccess}
-	/>
-{/if}

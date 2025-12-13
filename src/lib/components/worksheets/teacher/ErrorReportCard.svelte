@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -8,11 +9,18 @@
 	// Props
 	let {
 		report,
-		onReview
+		worksheetId
 	}: {
 		report: TeacherErrorReportView;
-		onReview: (report: TeacherErrorReportView) => void;
+		worksheetId: string;
 	} = $props();
+
+	// Navigate to the report review page
+	function handleReview() {
+		goto(
+			`/dashboard/teacher/worksheets/${worksheetId}/assignments/${report.assignment_id}/reports/${report.id}`
+		);
+	}
 
 	// Derived values
 	let studentName = $derived(
@@ -107,7 +115,7 @@
 
 				<!-- Review button (only for pending reports) -->
 				{#if report.status === 'pending'}
-					<Button size="sm" onclick={() => onReview(report)}>Traiter</Button>
+					<Button size="sm" onclick={handleReview}>Traiter</Button>
 				{/if}
 			</div>
 		</div>

@@ -20,6 +20,7 @@ import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
+import { parseCustomSafe, toLatex } from '$lib/mathAST';
 
 /**
  * MathField type with MathLive methods
@@ -272,6 +273,8 @@ export const MathInline = Node.create({
 	 * =========================================
 	 *
 	 * Detects $formula$ pattern and converts to math node.
+	 * The formula content is parsed using mathAST custom syntax and
+	 * transpiled to LaTeX before creating the math field.
 	 *
 	 * Regex: /\$([^$]+)\$$/
 	 * - \$ - Opening dollar sign
@@ -279,10 +282,13 @@ export const MathInline = Node.create({
 	 * - \$ - Closing dollar sign
 	 * - $ - End of input (ensures we match at cursor position)
 	 *
-	 * Example:
-	 *   User types: "La formule $x^2$ est..." → Converts to math field
+	 * Examples:
+	 *   User types: "$x^2$" → Converts to math field with LaTeX "x^2"
+	 *   User types: "$sin(x)$" → Converts to "\sin\left( x \right)"
+	 *   User types: "$2/3$" → Converts to "\frac{2}{3}"
 	 *
 	 * @see https://tiptap.dev/docs/editor/extensions/functionality#input-rules
+	 * @see src/lib/mathAST for custom syntax documentation
 	 */
 	addInputRules() {
 		return [
@@ -290,9 +296,12 @@ export const MathInline = Node.create({
 				find: /\$([^$]+)\$$/,
 				handler: ({ state, range, match }) => {
 					const { tr } = state;
-					const latex = match[1];
-					if (latex) {
-						tr.replaceWith(range.from, range.to, this.type.create({ latex: latex.trim() }));
+					const input = match[1]?.trim();
+					if (input) {
+						// Try to parse as mathAST custom syntax and convert to LaTeX
+						const parseResult = parseCustomSafe(input);
+						const latex = parseResult.success ? toLatex(parseResult.data) : input;
+						tr.replaceWith(range.from, range.to, this.type.create({ latex }));
 					}
 				}
 			})
