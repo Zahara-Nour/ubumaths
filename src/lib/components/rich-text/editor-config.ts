@@ -49,13 +49,14 @@ export function createEditorExtensions(options: EditorExtensionsOptions = {}): E
 
 	return [
 		// Core editing features
+		// Disable built-in link (if any) since we configure it separately
 		StarterKit.configure({
 			heading: {
 				levels
 			}
 		}),
 
-		// Text formatting
+		// Text formatting (NOT in StarterKit)
 		Underline,
 		TextStyle,
 		Color,
