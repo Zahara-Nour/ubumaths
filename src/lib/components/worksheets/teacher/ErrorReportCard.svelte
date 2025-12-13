@@ -90,7 +90,7 @@
 				<!-- Created date and student name -->
 				<div class="flex items-center gap-1.5 text-xs text-muted-foreground">
 					<Calendar class="h-3.5 w-3.5" />
-					<span>Signalé par <strong>{studentName}</strong> le {formattedDate()}</span>
+					<span>Signalé par <strong>{studentName}</strong> le {formattedDate}</span>
 				</div>
 			</div>
 
