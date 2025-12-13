@@ -58,11 +58,13 @@
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Trigger asChild let:builder>
-		<Button builders={[builder]} {variant} class="gap-2">
-			<HelpCircle class="h-4 w-4" />
-			Demander au Père Ubu
-		</Button>
+	<Dialog.Trigger>
+		{#snippet child({ props })}
+			<Button {...props} {variant} class="gap-2">
+				<HelpCircle class="h-4 w-4" />
+				Demander au Père Ubu
+			</Button>
+		{/snippet}
 	</Dialog.Trigger>
 	<Dialog.Portal>
 		<Dialog.Overlay />
