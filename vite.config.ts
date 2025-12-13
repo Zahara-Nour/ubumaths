@@ -56,8 +56,10 @@ export default defineConfig(({ mode }) => {
 		 * Vite pre-bundles these dependencies on first run, creating an optimized
 		 * cache in node_modules/.vite/ that speeds up subsequent dev server starts.
 		 *
-		 * INCLUDE: Frequently used libraries that benefit from pre-bundling
-		 * EXCLUDE: Large libraries that are better loaded on-demand (TipTap)
+		 * IMPORTANT: ProseMirror packages MUST be included to prevent
+		 * "Adding different instances of a keyed plugin" errors when
+		 * multiple TipTap editors exist on the same page.
+		 * @see https://discuss.prosemirror.net/t/rangeerror-adding-different-instances-of-a-keyed-plugin-plugin/4242
 		 */
 		optimizeDeps: {
 			include: [
@@ -66,11 +68,22 @@ export default defineConfig(({ mode }) => {
 				'mathlive', // Math input editor (large library)
 				'canvas-confetti', // Celebration effects
 				'mode-watcher', // Dark mode management
-				'svelte-sonner' // Toast notifications
-			],
-			// Exclude heavy dependencies that don't need pre-bundling
-			// TipTap is only used in specific routes, better to load on-demand
-			exclude: ['@tiptap/core', '@tiptap/starter-kit']
+				'svelte-sonner', // Toast notifications
+				// TipTap and ProseMirror - MUST be included to prevent duplicate plugin errors
+				'@tiptap/core',
+				'@tiptap/starter-kit',
+				// @tiptap/pm subpath exports (prosemirror packages are re-exported through these)
+				'@tiptap/pm/state',
+				'@tiptap/pm/view',
+				'@tiptap/pm/model',
+				'@tiptap/pm/transform',
+				'@tiptap/pm/commands',
+				'@tiptap/pm/keymap',
+				'@tiptap/pm/inputrules',
+				'@tiptap/pm/gapcursor',
+				'@tiptap/pm/dropcursor',
+				'@tiptap/pm/history'
+			]
 		},
 
 		/**
