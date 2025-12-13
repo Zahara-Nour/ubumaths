@@ -346,6 +346,7 @@ export interface WorksheetInstanceInsert {
 	instance_data: InstanceData;
 	variant_seed: number;
 	variant_version?: string | null;
+	status?: string | null;
 }
 
 /**

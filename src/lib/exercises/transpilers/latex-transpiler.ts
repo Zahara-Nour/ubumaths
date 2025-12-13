@@ -674,7 +674,7 @@ export async function markdownToLatex(
 	options: LatexTranspilerOptions = {}
 ): Promise<string> {
 	// Dynamic import to avoid circular dependency issues
-	const { parseMarkdown } = await import('../parser/markdown-parser');
+	const { parseMarkdown } = await import('$lib/custom-markdown/parser/markdown-parser');
 	const ast = parseMarkdown(markdown);
 	return transpileToLatex(ast, options);
 }

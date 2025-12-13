@@ -16,9 +16,7 @@ import { MASTERY_STATUSES } from '$lib/types/exercise-mastery';
  * Mastery status enum validation
  */
 export const masteryStatusSchema = z.enum(MASTERY_STATUSES, {
-	errorMap: () => ({
-		message: 'Statut invalide. Valeurs acceptées: not_worked, mastered, needs_review'
-	})
+	message: 'Statut invalide. Valeurs acceptées: not_worked, mastered, needs_review'
 });
 
 // ============================================================================

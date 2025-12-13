@@ -78,6 +78,9 @@ function containsVariable(node: MathNode, varName: string): boolean {
 		case 'unit':
 			return containsVariable(node.expression, varName);
 
+		case 'composition':
+			return containsVariable(node.outer, varName) || containsVariable(node.inner, varName);
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = node;

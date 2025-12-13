@@ -79,7 +79,7 @@ describe('EvalState', () => {
 		});
 
 		it('hasBinding returns true for existing binding', () => {
-			setBinding(state, 'x', number(42));
+			setBinding(state, 'x', number('42'));
 			expect(hasBinding(state, 'x')).toBe(true);
 		});
 
@@ -88,7 +88,7 @@ describe('EvalState', () => {
 		});
 
 		it('unsets a binding', () => {
-			setBinding(state, 'x', number(1));
+			setBinding(state, 'x', number('1'));
 			expect(unsetBinding(state, 'x')).toBe(true);
 			expect(hasBinding(state, 'x')).toBe(false);
 		});
@@ -98,22 +98,22 @@ describe('EvalState', () => {
 		});
 
 		it('clears all bindings', () => {
-			setBinding(state, 'x', number(1));
-			setBinding(state, 'y', number(2));
+			setBinding(state, 'x', number('1'));
+			setBinding(state, 'y', number('2'));
 			clearBindings(state);
 			expect(getBindingCount(state)).toBe(0);
 		});
 
 		it('counts bindings', () => {
-			setBinding(state, 'a', number(1));
-			setBinding(state, 'b', number(2));
-			setBinding(state, 'c', number(3));
+			setBinding(state, 'a', number('1'));
+			setBinding(state, 'b', number('2'));
+			setBinding(state, 'c', number('3'));
 			expect(getBindingCount(state)).toBe(3);
 		});
 
 		it('gets all binding names', () => {
-			setBinding(state, 'x', number(1));
-			setBinding(state, 'y', number(2));
+			setBinding(state, 'x', number('1'));
+			setBinding(state, 'y', number('2'));
 			const names = getBindingNames(state);
 			expect(names).toHaveLength(2);
 			expect(names).toContain('x');
@@ -121,11 +121,11 @@ describe('EvalState', () => {
 		});
 
 		it('converts bindings to record', () => {
-			setBinding(state, 'x', number(1));
-			setBinding(state, 'y', number(2));
+			setBinding(state, 'x', number('1'));
+			setBinding(state, 'y', number('2'));
 			const record = bindingsToRecord(state.bindings);
-			expect(record['x']).toEqual(number(1));
-			expect(record['y']).toEqual(number(2));
+			expect(record['x']).toEqual(number('1'));
+			expect(record['y']).toEqual(number('2'));
 		});
 	});
 
@@ -164,7 +164,7 @@ describe('EvalState', () => {
 	describe('createFunctionBinding', () => {
 		it('creates a simple function binding f(x) = x^2', () => {
 			const x = variable('x');
-			const xSquared = superscript(x, number(2));
+			const xSquared = superscript(x, number('2'));
 			createFunctionBinding(state, 'f', ['x'], xSquared);
 
 			expect(hasFunction(state, 'f')).toBe(true);
@@ -172,7 +172,7 @@ describe('EvalState', () => {
 		});
 
 		it('stores expression and parameters correctly', () => {
-			const expr = add(variable('x'), number(1));
+			const expr = add(variable('x'), number('1'));
 			createFunctionBinding(state, 'g', ['x'], expr);
 
 			const def = getFunction(state, 'g');
@@ -190,8 +190,8 @@ describe('EvalState', () => {
 		});
 
 		it('creates function with derivative', () => {
-			const expr = superscript(variable('x'), number(2));
-			const derivative = multiply(number(2), variable('x'));
+			const expr = superscript(variable('x'), number('2'));
+			const derivative = multiply(number('2'), variable('x'), 'implicit');
 			createFunctionBinding(state, 'f', ['x'], expr, derivative);
 
 			const def = getFunction(state, 'f');
@@ -199,7 +199,7 @@ describe('EvalState', () => {
 		});
 
 		it('creates function with inverse', () => {
-			const expr = superscript(variable('x'), number(2));
+			const expr = superscript(variable('x'), number('2'));
 			const inverse = variable('x'); // sqrt would be function call
 			createFunctionBinding(state, 'f', ['x'], expr, undefined, inverse);
 
@@ -208,8 +208,8 @@ describe('EvalState', () => {
 		});
 
 		it('creates function with both derivative and inverse', () => {
-			const expr = superscript(variable('x'), number(2));
-			const derivative = multiply(number(2), variable('x'));
+			const expr = superscript(variable('x'), number('2'));
+			const derivative = multiply(number('2'), variable('x'), 'implicit');
 			const inverse = variable('x');
 			createFunctionBinding(state, 'f', ['x'], expr, derivative, inverse);
 
@@ -219,19 +219,19 @@ describe('EvalState', () => {
 		});
 
 		it('overwrites existing function with same name', () => {
-			createFunctionBinding(state, 'f', ['x'], number(1));
-			createFunctionBinding(state, 'f', ['x'], number(2));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
+			createFunctionBinding(state, 'f', ['x'], number('2'));
 
 			const def = getFunction(state, 'f');
-			expect(def?.expression).toEqual(number(2));
+			expect(def?.expression).toEqual(number('2'));
 			expect(getFunctionCount(state)).toBe(1);
 		});
 	});
 
 	describe('setFunctionDerivative', () => {
 		it('sets derivative for existing function', () => {
-			createFunctionBinding(state, 'f', ['x'], superscript(variable('x'), number(2)));
-			const derivative = multiply(number(2), variable('x'));
+			createFunctionBinding(state, 'f', ['x'], superscript(variable('x'), number('2')));
+			const derivative = multiply(number('2'), variable('x'), 'implicit');
 
 			const result = setFunctionDerivative(state, 'f', derivative);
 
@@ -240,15 +240,15 @@ describe('EvalState', () => {
 		});
 
 		it('returns false for non-existent function', () => {
-			const derivative = multiply(number(2), variable('x'));
+			const derivative = multiply(number('2'), variable('x'), 'implicit');
 			const result = setFunctionDerivative(state, 'nonexistent', derivative);
 
 			expect(result).toBe(false);
 		});
 
 		it('overwrites existing derivative', () => {
-			const oldDerivative = number(1);
-			const newDerivative = multiply(number(2), variable('x'));
+			const oldDerivative = number('1');
+			const newDerivative = multiply(number('2'), variable('x'), 'implicit');
 			createFunctionBinding(state, 'f', ['x'], variable('x'), oldDerivative);
 
 			setFunctionDerivative(state, 'f', newDerivative);
@@ -257,10 +257,10 @@ describe('EvalState', () => {
 		});
 
 		it('preserves expression and parameters', () => {
-			const expr = superscript(variable('x'), number(2));
+			const expr = superscript(variable('x'), number('2'));
 			createFunctionBinding(state, 'f', ['x'], expr);
 
-			setFunctionDerivative(state, 'f', number(2));
+			setFunctionDerivative(state, 'f', number('2'));
 
 			const def = getFunction(state, 'f');
 			expect(def?.expression).toBe(expr);
@@ -270,7 +270,7 @@ describe('EvalState', () => {
 
 	describe('setFunctionInverse', () => {
 		it('sets inverse for existing function', () => {
-			createFunctionBinding(state, 'f', ['x'], superscript(variable('x'), number(2)));
+			createFunctionBinding(state, 'f', ['x'], superscript(variable('x'), number('2')));
 			const inverse = variable('x'); // representing sqrt(x)
 
 			const result = setFunctionInverse(state, 'f', inverse);
@@ -287,7 +287,7 @@ describe('EvalState', () => {
 		});
 
 		it('overwrites existing inverse', () => {
-			const oldInverse = number(1);
+			const oldInverse = number('1');
 			const newInverse = variable('x');
 			createFunctionBinding(state, 'f', ['x'], variable('x'), undefined, oldInverse);
 
@@ -297,8 +297,8 @@ describe('EvalState', () => {
 		});
 
 		it('preserves expression, parameters, and derivative', () => {
-			const expr = superscript(variable('x'), number(2));
-			const derivative = multiply(number(2), variable('x'));
+			const expr = superscript(variable('x'), number('2'));
+			const derivative = multiply(number('2'), variable('x'), 'implicit');
 			createFunctionBinding(state, 'f', ['x'], expr, derivative);
 
 			setFunctionInverse(state, 'f', variable('x'));
@@ -312,7 +312,7 @@ describe('EvalState', () => {
 
 	describe('removeFunctionBinding', () => {
 		it('removes an existing function', () => {
-			createFunctionBinding(state, 'f', ['x'], number(1));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
 
 			const result = removeFunctionBinding(state, 'f');
 
@@ -328,8 +328,8 @@ describe('EvalState', () => {
 		});
 
 		it('removes from both functions and functionNames', () => {
-			createFunctionBinding(state, 'f', ['x'], number(1));
-			createFunctionBinding(state, 'g', ['x'], number(2));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
+			createFunctionBinding(state, 'g', ['x'], number('2'));
 
 			removeFunctionBinding(state, 'f');
 
@@ -344,9 +344,9 @@ describe('EvalState', () => {
 		});
 
 		it('returns all function names', () => {
-			createFunctionBinding(state, 'f', ['x'], number(1));
-			createFunctionBinding(state, 'g', ['x'], number(2));
-			createFunctionBinding(state, 'h', ['x', 'y'], number(3));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
+			createFunctionBinding(state, 'g', ['x'], number('2'));
+			createFunctionBinding(state, 'h', ['x', 'y'], number('3'));
 
 			const names = getFunctionNames(state);
 			expect(names).toHaveLength(3);
@@ -362,7 +362,7 @@ describe('EvalState', () => {
 		});
 
 		it('returns function definition', () => {
-			const expr = add(variable('x'), number(1));
+			const expr = add(variable('x'), number('1'));
 			createFunctionBinding(state, 'f', ['x'], expr);
 
 			const def = getFunction(state, 'f');
@@ -377,7 +377,7 @@ describe('EvalState', () => {
 		});
 
 		it('returns true for existing function', () => {
-			createFunctionBinding(state, 'f', ['x'], number(1));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
 			expect(hasFunction(state, 'f')).toBe(true);
 		});
 	});
@@ -388,16 +388,16 @@ describe('EvalState', () => {
 		});
 
 		it('returns correct count', () => {
-			createFunctionBinding(state, 'f', ['x'], number(1));
-			createFunctionBinding(state, 'g', ['x'], number(2));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
+			createFunctionBinding(state, 'g', ['x'], number('2'));
 			expect(getFunctionCount(state)).toBe(2);
 		});
 	});
 
 	describe('clearFunctions', () => {
 		it('clears all functions', () => {
-			createFunctionBinding(state, 'f', ['x'], number(1));
-			createFunctionBinding(state, 'g', ['x'], number(2));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
+			createFunctionBinding(state, 'g', ['x'], number('2'));
 
 			clearFunctions(state);
 
@@ -407,20 +407,20 @@ describe('EvalState', () => {
 		});
 
 		it('does not affect variable bindings', () => {
-			setBinding(state, 'x', number(42));
-			createFunctionBinding(state, 'f', ['x'], number(1));
+			setBinding(state, 'x', number('42'));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
 
 			clearFunctions(state);
 
 			expect(getBindingCount(state)).toBe(1);
-			expect(getBinding(state, 'x')).toEqual(number(42));
+			expect(getBinding(state, 'x')).toEqual(number('42'));
 		});
 	});
 
 	describe('clearAllState', () => {
 		it('clears bindings, functions, and resets mode', () => {
-			setBinding(state, 'x', number(1));
-			createFunctionBinding(state, 'f', ['x'], number(1));
+			setBinding(state, 'x', number('1'));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
 			setMode(state, 'decimal');
 
 			clearAllState(state);
@@ -437,8 +437,8 @@ describe('EvalState', () => {
 
 	describe('integration with parser', () => {
 		it('functionNames set is synchronized with functions', () => {
-			createFunctionBinding(state, 'f', ['x'], number(1));
-			createFunctionBinding(state, 'g', ['x'], number(2));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
+			createFunctionBinding(state, 'g', ['x'], number('2'));
 
 			// Both should be in sync
 			expect(state.functionNames.size).toBe(Object.keys(state.functions).length);
@@ -453,8 +453,8 @@ describe('EvalState', () => {
 		});
 
 		it('functionNames can be spread to array for parser config', () => {
-			createFunctionBinding(state, 'f', ['x'], number(1));
-			createFunctionBinding(state, 'g', ['x'], number(2));
+			createFunctionBinding(state, 'f', ['x'], number('1'));
+			createFunctionBinding(state, 'g', ['x'], number('2'));
 
 			const names = [...state.functionNames];
 			expect(names).toHaveLength(2);

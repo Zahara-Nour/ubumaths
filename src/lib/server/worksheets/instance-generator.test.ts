@@ -19,6 +19,7 @@ describe('Instance Generator', () => {
 			variant_mode: 'individual',
 			variant_config: {},
 			custom_instructions: null,
+			correction_visible: true,
 			created_at: '2024-01-01',
 			updated_at: '2024-01-01',
 			exercise: {
@@ -44,6 +45,7 @@ describe('Instance Generator', () => {
 			variant_mode: 'individual',
 			variant_config: {},
 			custom_instructions: null,
+			correction_visible: true,
 			created_at: '2024-01-01',
 			updated_at: '2024-01-01',
 			exercise: {

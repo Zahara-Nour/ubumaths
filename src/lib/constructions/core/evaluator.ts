@@ -10,7 +10,7 @@
  */
 
 import { parseLatexSafe } from '$lib/mathAST/parser';
-import { substitute, getVariables } from '$lib/mathAST/eval/substitute';
+import { getVariables } from '$lib/mathAST/eval/substitute';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
 import type { MathNode } from '$lib/mathAST/types';
 import type { Expr, ParameterValues, Position } from '../types';

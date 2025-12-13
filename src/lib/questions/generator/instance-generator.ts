@@ -230,7 +230,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				);
 				return {
 					content: resolvedContent,
-					isCorrect: choice.isCorrect
+					isCorrect: choice.isCorrect ?? false
 				};
 			});
 

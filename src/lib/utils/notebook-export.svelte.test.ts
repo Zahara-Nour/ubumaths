@@ -7,8 +7,10 @@ import { downloadIpynb } from './notebook-export';
 import type { NotebookContent } from '$lib/types/notebook';
 
 describe('downloadIpynb', () => {
-	let createElementSpy: ReturnType<typeof vi.spyOn>;
-	let revokeObjectURLSpy: ReturnType<typeof vi.spyOn>;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let createElementSpy: any;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let revokeObjectURLSpy: any;
 
 	beforeEach(() => {
 		// Mock DOM elements

@@ -10,8 +10,6 @@ import type { RequestEvent as _RequestEvent } from '@sveltejs/kit';
 import { GET, PUT } from './+server';
 import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
 import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
 import { createMockSupabase } from '$tests/helpers';
 
 // Helper to create request context - simplified to match actual RequestEvent structure
@@ -24,7 +22,7 @@ interface RequestContext {
 	locals: {
 		user: { id: string } | null;
 		profile: { id: string; role: string } | null;
-		supabase: SupabaseClient<Database>;
+		supabase: ReturnType<typeof createMockSupabase>;
 	};
 }
 
@@ -40,7 +38,7 @@ async function expectError(promise: Promise<any> | any, expectedStatus: number) 
 }
 
 describe('GET /api/admin/schools/[schoolId]/config', () => {
-	let mockSupabase: SupabaseClient<Database>;
+	let mockSupabase: ReturnType<typeof createMockSupabase>;
 	let mockRequest: Request;
 
 	beforeEach(() => {
@@ -264,7 +262,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 });
 
 describe('PUT /api/admin/schools/[schoolId]/config', () => {
-	let mockSupabase: SupabaseClient<Database>;
+	let mockSupabase: ReturnType<typeof createMockSupabase>;
 	let mockRequest: Request;
 
 	beforeEach(() => {

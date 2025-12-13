@@ -32,7 +32,7 @@ function xPlusYPlusZ(): MathNode {
 }
 
 function twoTimesX(): MathNode {
-	return multiply(number('2'), variable('x'));
+	return multiply(number('2'), variable('x'), 'implicit');
 }
 
 describe('FnsCommand', () => {
@@ -402,7 +402,12 @@ describe('FnsCommand', () => {
 		it('handles many functions', () => {
 			const evalState = createEvalState();
 			for (let i = 0; i < 20; i++) {
-				createFunctionBinding(evalState, `fn${i}`, ['x'], multiply(number(`${i}`), variable('x')));
+				createFunctionBinding(
+					evalState,
+					`fn${i}`,
+					['x'],
+					multiply(number(`${i}`), variable('x'), 'implicit')
+				);
 			}
 
 			const ctx: CommandContext = {

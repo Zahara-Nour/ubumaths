@@ -95,12 +95,18 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw error(500, 'Erreur lors de la recuperation des fiches');
 		}
 
+		// Helper to extract first element from join result (can be array or object)
+		const getFirstOrSelf = <T>(val: T | T[]): T => (Array.isArray(val) ? val[0] : val);
+
 		// Get exercise counts for all worksheets in a separate query
 		const worksheetIds = [
 			...new Set(
-				(assignments ?? []).map(
-					(a) => (a.worksheets as { id: string; title: string; type: string }).id
-				)
+				(assignments ?? []).map((a) => {
+					const worksheet = getFirstOrSelf(
+						a.worksheets as unknown as { id: string; title: string; type: string }
+					);
+					return worksheet.id;
+				})
 			)
 		];
 
@@ -123,8 +129,12 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// Transform to response format
 		const worksheets: StudentWorksheetListItem[] = (assignments ?? []).map((assignment) => {
-			const worksheet = assignment.worksheets as { id: string; title: string; type: string };
-			const classData = assignment.classes as { id: string; name: string } | null;
+			const worksheet = getFirstOrSelf(
+				assignment.worksheets as unknown as { id: string; title: string; type: string }
+			);
+			const classData = getFirstOrSelf(
+				assignment.classes as unknown as { id: string; name: string } | null
+			);
 
 			return {
 				assignment_id: assignment.id,

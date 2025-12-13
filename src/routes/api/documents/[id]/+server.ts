@@ -70,13 +70,14 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			throw error(404, 'Document non trouve');
 		}
 
-		// Access control
-		const chapter = document.chapter as {
+		// Access control - chapter is array from join, get first element
+		const chapterArray = document.chapter as unknown as Array<{
 			id: string;
 			is_visible: boolean;
 			class_id: string;
 			teacher_id: string;
-		};
+		}>;
+		const chapter = Array.isArray(chapterArray) ? chapterArray[0] : chapterArray;
 
 		const profile = locals.profile;
 		let hasAccess = false;

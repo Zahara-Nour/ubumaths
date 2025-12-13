@@ -403,7 +403,72 @@ export {
 // Pattern Matching
 // =============================================================================
 
-export * from './pattern';
+// Export pattern matching (excluding nodesEqual - already exported from normal,
+// and renaming conflicting exports)
+export {
+	// Core matching
+	match,
+	tryMatch,
+	matches,
+	// Builder
+	P,
+	wildcard,
+	num as patternNum,
+	varPat,
+	lit,
+	add as patternAdd,
+	sub as patternSub,
+	mul as patternMul,
+	div as patternDiv,
+	pow as patternPow,
+	func as patternFunc,
+	neg as patternNeg,
+	pos as patternPos,
+	paren,
+	subscript as patternSubscript,
+	rel,
+	// Constraint builders (renamed to avoid conflicts with guards)
+	isType,
+	isNumber as patternIsNumber,
+	isVariable as patternIsVariable,
+	isPositive as patternIsPositive,
+	isNegative as patternIsNegative,
+	isNonzero,
+	isInteger as patternIsInteger,
+	isFreeOf,
+	custom,
+	and as patternAnd,
+	or as patternOr,
+	not as patternNot,
+	rule,
+	// Constraint functions
+	checkConstraint,
+	containsVariable as patternContainsVariable,
+	isFreeOfVariables,
+	// Rules
+	createRule,
+	instantiate,
+	applyRule,
+	applyRuleDeep,
+	applyRules,
+	arithmeticRules,
+	powerRules,
+	allRules,
+	// Type guards
+	isWildcardPattern,
+	isLiteralPattern,
+	isPositiveConstraint,
+	isNegativeConstraint,
+	isNonzeroConstraint,
+	isIntegerConstraint,
+	// Types
+	type Pattern,
+	type MatchResult,
+	type PatternConstraint,
+	type MatchBindings,
+	type Rule,
+	type RuleOptions
+} from './pattern';
 
 // =============================================================================
 // Symbolic Differentiation

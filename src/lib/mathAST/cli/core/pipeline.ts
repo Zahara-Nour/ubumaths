@@ -66,8 +66,7 @@ export function getParserOptions(state?: EvalState): LatexParserOptions {
 		genericFunctions: {
 			names: [...state.functionNames],
 			allowDerivatives: true,
-			allowInverse: true,
-			allowComposition: true
+			allowInverse: true
 		}
 	};
 }

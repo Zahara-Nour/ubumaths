@@ -98,7 +98,12 @@ const mockTeacherProfile: Profile = {
 	gidouilles: 0,
 	grade: null,
 	vip_cards: {},
-	vip_cards_history: {}
+	vip_cards_history: {},
+	python_settings: null,
+	rejection_reason: null,
+	status: 'approved',
+	status_changed_at: null,
+	status_changed_by: null
 };
 
 const mockAdminProfile: Profile = {

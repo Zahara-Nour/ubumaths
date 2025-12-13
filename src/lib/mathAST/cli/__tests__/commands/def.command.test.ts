@@ -662,7 +662,7 @@ describe('DefCommand', () => {
 			command.execute(ctx);
 
 			// Simulate setting derivative via API using factory
-			const derivativeAst = multiply(number('2'), variable('x'));
+			const derivativeAst = multiply(number('2'), variable('x'), 'implicit');
 			const def = evalState.functions['f'];
 			evalState.functions['f'] = {
 				...def,

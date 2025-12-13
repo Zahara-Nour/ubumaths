@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	// Calculate date range based on period
 	const now = new Date();
-	let dateFrom: Date;
+	let dateFrom: Date = new Date(now); // Default initialization
 
 	switch (period) {
 		case 'day':
@@ -61,6 +61,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			dateFrom.setMonth(dateFrom.getMonth() - 1);
 			dateFrom.setHours(0, 0, 0, 0);
 			break;
+		default:
+			// For any other period, default to last month
+			dateFrom.setMonth(dateFrom.getMonth() - 1);
+			dateFrom.setHours(0, 0, 0, 0);
 	}
 
 	// Get student IDs based on role and filters

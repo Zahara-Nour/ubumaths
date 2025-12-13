@@ -110,7 +110,8 @@ export interface EvalOptions {
  */
 export const DEFAULT_EVAL_OPTIONS: Required<EvalOptions> = {
 	mode: 'exact',
-	precision: 15
+	precision: 15,
+	functions: {}
 } as const;
 
 // =============================================================================

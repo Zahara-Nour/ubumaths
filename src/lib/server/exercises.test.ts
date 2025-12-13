@@ -61,7 +61,9 @@ describe('getExercises', () => {
 				created_by: 'user-123',
 				distribution_mode: 'on_demand',
 				is_public: false,
-				variables: {}
+				variables: {},
+				resources: {},
+				slug: null
 			}
 		];
 
@@ -152,7 +154,9 @@ describe('getExercise', () => {
 			created_by: 'user-123',
 			distribution_mode: 'on_demand',
 			is_public: false,
-			variables: {}
+			variables: {},
+			resources: {},
+			slug: null
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: mockExercise, error: null });
@@ -201,7 +205,9 @@ describe('createExercise', () => {
 			created_by: 'user-123',
 			distribution_mode: 'on_demand',
 			is_public: false,
-			variables: {}
+			variables: {},
+			resources: {},
+			slug: null
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: createdExercise, error: null });
@@ -238,7 +244,9 @@ describe('updateExercise', () => {
 			created_by: 'user-123',
 			distribution_mode: 'on_demand',
 			is_public: false,
-			variables: {}
+			variables: {},
+			resources: {},
+			slug: null
 		};
 
 		const updates = {
@@ -275,7 +283,9 @@ describe('updateExercise', () => {
 			created_by: 'owner-456',
 			distribution_mode: 'on_demand',
 			is_public: false,
-			variables: {}
+			variables: {},
+			resources: {},
+			slug: null
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });
@@ -306,7 +316,9 @@ describe('deleteExercise', () => {
 			created_by: 'user-123',
 			distribution_mode: 'on_demand',
 			is_public: false,
-			variables: {}
+			variables: {},
+			resources: {},
+			slug: null
 		};
 
 		// Mock getExercise call - .single() returns the exercise
@@ -347,7 +359,9 @@ describe('deleteExercise', () => {
 			created_by: 'owner-456',
 			distribution_mode: 'on_demand',
 			is_public: false,
-			variables: {}
+			variables: {},
+			resources: {},
+			slug: null
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });

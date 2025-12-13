@@ -2,9 +2,9 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.safeGetSession();
+	const { user } = await locals.safeGetSession();
 
-	if (!session.session) {
+	if (!user) {
 		throw redirect(303, '/login');
 	}
 
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: profile } = await locals.supabase
 		.from('profiles')
 		.select('role')
-		.eq('id', session.user?.id)
+		.eq('id', user.id)
 		.single();
 
 	if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {

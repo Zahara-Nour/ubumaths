@@ -162,8 +162,7 @@ export const classStudentsQuerySchema = z.object({
  */
 export const updateUserStatusSchema = z.object({
 	status: z.enum(['approved', 'rejected'], {
-		required_error: 'Le statut est requis',
-		invalid_type_error: 'Statut invalide'
+		message: 'Le statut doit être "approved" ou "rejected"'
 	}),
 	rejection_reason: z
 		.string()

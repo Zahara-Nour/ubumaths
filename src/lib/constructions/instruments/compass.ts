@@ -42,7 +42,7 @@ const COMPASS_PIVOT_RADIUS = 6; // Radius of the pivot circle
  * Default opening angle in degrees (angle between branches)
  * 30 degrees gives a nice visual default
  */
-const DEFAULT_OPENING_ANGLE = 30;
+const _DEFAULT_OPENING_ANGLE = 30;
 
 /**
  * Compass visual styles

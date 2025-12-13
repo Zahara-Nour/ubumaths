@@ -130,7 +130,9 @@ export class FunctionBindingError extends Error {
  * @returns True if the function should be substituted
  */
 function shouldSubstitute(funcNode: FunctionNode, bindings: FunctionBindings): boolean {
-	const definition = bindings[funcNode.name];
+	// Store name to avoid TypeScript narrowing issues with type guards
+	const funcName = funcNode.name;
+	const definition = bindings[funcName];
 
 	// Handle derivative functions
 	if (isDerivativeFunction(funcNode)) {
@@ -152,7 +154,7 @@ function shouldSubstitute(funcNode: FunctionNode, bindings: FunctionBindings): b
 	}
 
 	// Regular function call - substitute if we have a binding
-	return funcNode.name in bindings;
+	return funcName in bindings;
 }
 
 /**
@@ -184,12 +186,15 @@ function shouldSubstitute(funcNode: FunctionNode, bindings: FunctionBindings): b
  * // result is equivalent to parseLatex('2*3')
  */
 export function applyFunction(funcNode: FunctionNode, bindings: FunctionBindings): MathNode | null {
+	// Store name to avoid TypeScript narrowing issues with type guards
+	const funcName = funcNode.name;
+
 	// Check if this function should be substituted
 	if (!shouldSubstitute(funcNode, bindings)) {
 		return null;
 	}
 
-	const definition = bindings[funcNode.name];
+	const definition = bindings[funcName];
 	if (!definition) {
 		return null;
 	}
@@ -211,13 +216,13 @@ export function applyFunction(funcNode: FunctionNode, bindings: FunctionBindings
 	// Validate argument count
 	if (funcNode.args.length !== definition.parameters.length) {
 		const funcDesc = isDerivativeFunction(funcNode)
-			? `${funcNode.name}'`
+			? `${funcName}'`
 			: isInverseFunction(funcNode)
-				? `${funcNode.name}^{-1}`
-				: funcNode.name;
+				? `${funcName}^{-1}`
+				: funcName;
 		throw new FunctionBindingError(
 			`Function '${funcDesc}' expects ${definition.parameters.length} argument(s) but got ${funcNode.args.length}`,
-			funcNode.name,
+			funcName,
 			`Parameters: [${definition.parameters.join(', ')}], Arguments provided: ${funcNode.args.length}`
 		);
 	}
@@ -461,15 +466,16 @@ export function getUndefinedFunctions(node: MathNode, bindings: FunctionBindings
 
 	mapNode(node, (n) => {
 		if (isFunction(n)) {
-			const name = n.name.toLowerCase();
+			const funcName = n.name; // Capture to avoid TypeScript narrowing issues
+			const name = funcName.toLowerCase();
 			// Skip built-in functions, derivatives, and inverses
 			if (
 				!builtInFunctions.has(name) &&
 				!isDerivativeFunction(n) &&
 				!isInverseFunction(n) &&
-				!(n.name in bindings)
+				!(funcName in bindings)
 			) {
-				undefinedFuncs.add(n.name);
+				undefinedFuncs.add(funcName);
 			}
 		}
 		return n;

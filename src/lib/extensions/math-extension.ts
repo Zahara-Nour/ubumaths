@@ -193,7 +193,7 @@ export const MathInline = Node.create({
 			mathfield.style.display = 'inline-block';
 
 			// Store mathfield reference on DOM for keyboard navigation plugin
-			(dom as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;
+			(dom as unknown as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;
 
 			// If editor is read-only (display mode), make math field read-only too
 			if (!editor.isEditable) {
@@ -396,7 +396,7 @@ export const MathBlock = Node.create({
 			mathfield.style.display = 'block';
 
 			// Store mathfield reference on DOM for keyboard navigation plugin
-			(dom as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;
+			(dom as unknown as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;
 
 			// Read-only mode for display
 			if (!editor.isEditable) {
