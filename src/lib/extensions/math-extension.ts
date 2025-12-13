@@ -299,8 +299,9 @@ export const MathInline = Node.create({
 					const input = match[1]?.trim();
 					if (input) {
 						// Try to parse as mathAST custom syntax and convert to LaTeX
+						// If parsing fails (ast is null), use raw input as fallback (assumes LaTeX)
 						const parseResult = parseCustomSafe(input);
-						const latex = parseResult.success ? toLatex(parseResult.data) : input;
+						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
 						tr.replaceWith(range.from, range.to, this.type.create({ latex }));
 					}
 				}
