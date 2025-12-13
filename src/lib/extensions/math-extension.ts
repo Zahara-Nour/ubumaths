@@ -39,6 +39,13 @@ interface MoveOutDetail {
 }
 
 /**
+ * Plugin key for math keyboard navigation
+ * Must be defined at module level to avoid duplicate key errors
+ * when multiple editor instances exist
+ */
+const mathKeyboardNavKey = new PluginKey('mathKeyboardNav');
+
+/**
  * MathInline Extension
  * ====================
  *
@@ -244,7 +251,7 @@ export const MathInline = Node.create({
 
 		return [
 			new Plugin({
-				key: new PluginKey('mathKeyboardNav'),
+				key: mathKeyboardNavKey,
 				props: {
 					handleKeyDown: (view, event) => {
 						// Only handle arrow keys
