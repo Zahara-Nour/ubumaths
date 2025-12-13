@@ -160,42 +160,43 @@ export const MathInline = Node.create({
 	 * Input Rules (Automatic Pattern Detection)
 	 * =========================================
 	 *
-	 * Automatically detects $$...$$ patterns and converts them to math nodes.
+	 * Supports two patterns for math detection:
 	 *
-	 * Regex: /\$\$([^\$]+)\$\$$/
-	 * - \$\$ - Opening delimiter (escaped $)
-	 * - ([^\$]+) - Capture group: one or more non-$ characters (the formula)
-	 * - \$\$ - Closing delimiter
-	 * - $ - End of input (ensures we match at cursor position)
+	 * 1. Double dollar: $$formula$$ (LaTeX convention)
+	 *    Regex: /\$\$([^$]+)\$\$$/
 	 *
-	 * Example:
-	 *   User types: "La formule $$x^2+y^2$$ est..."
-	 *   When the second $$ is typed, text is replaced with math field
+	 * 2. Single dollar: $formula$ (more convenient)
+	 *    Regex: /(?<!\$)\$([^$]+)\$$/
+	 *    Uses negative lookbehind to avoid matching inside $$...$$
+	 *
+	 * Examples:
+	 *   User types: "La formule $x^2$ est..." → Converts to math field
+	 *   User types: "Équation $$\frac{a}{b}$$" → Also converts
 	 *
 	 * @see https://tiptap.dev/docs/editor/extensions/functionality#input-rules
 	 */
 	addInputRules() {
 		return [
+			// Double dollar pattern: $$formula$$
 			new InputRule({
-				// Pattern to detect: $$formula$$
 				find: /\$\$([^$]+)\$\$$/,
-
-				// Handler called when pattern is matched
 				handler: ({ state, range, match }) => {
-					const { tr } = state; // Transaction (ProseMirror's way of modifying document)
-					const start = range.from; // Start position of match
-					const end = range.to; // End position of match
-					const latex = match[1]; // Captured formula (between $$)
-
+					const { tr } = state;
+					const latex = match[1];
 					if (latex) {
-						// Replace matched text with math node
-						tr.replaceWith(
-							start,
-							end,
-							this.type.create({
-								latex: latex.trim() // Remove leading/trailing whitespace
-							})
-						);
+						tr.replaceWith(range.from, range.to, this.type.create({ latex: latex.trim() }));
+					}
+				}
+			}),
+			// Single dollar pattern: $formula$
+			// Negative lookbehind ensures we don't match inside $$...$$
+			new InputRule({
+				find: /(?<!\$)\$([^$]+)\$$/,
+				handler: ({ state, range, match }) => {
+					const { tr } = state;
+					const latex = match[1];
+					if (latex) {
+						tr.replaceWith(range.from, range.to, this.type.create({ latex: latex.trim() }));
 					}
 				}
 			})
