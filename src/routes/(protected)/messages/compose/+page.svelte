@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
+	import RichTextEditorUnified from '$lib/components/rich-text/RichTextEditorUnified.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Loader2, Send, X, Save, Check, Paperclip, FileIcon, Trash2, Reply } from 'lucide-svelte';
 	import { onMount } from 'svelte';
@@ -609,7 +609,7 @@
 					<!-- Content -->
 					<div class="space-y-2">
 						<Label for="content">Message *</Label>
-						<FormRichTextEditor bind:value={content} bind:jsonValue={contentJson} />
+						<RichTextEditorUnified bind:value={content} bind:jsonValue={contentJson} />
 					</div>
 
 					<!-- Attachments -->
