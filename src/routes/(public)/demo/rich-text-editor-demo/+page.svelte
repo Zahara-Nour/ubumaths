@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tick } from 'svelte';
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+	import RichTextEditorUnified from '$lib/components/rich-text/RichTextEditorUnified.svelte';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Separator } from '$lib/components/ui/separator';
@@ -187,7 +187,7 @@
 
 		<!-- Editor area -->
 		<div class="border-t border-border bg-background p-4">
-			<RichTextEditor onSend={handleSendMessage} />
+			<RichTextEditorUnified mode="chat" onSend={handleSendMessage} />
 			<p class="mt-2 text-center text-xs text-muted-foreground">
 				💡 Tapez <code class="rounded bg-muted px-1 py-0.5">$$x^2$$</code> ou utilisez le bouton "Formule"
 				pour insérer des mathématiques

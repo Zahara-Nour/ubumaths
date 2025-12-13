@@ -112,7 +112,7 @@
 	// Lazy loading functions for heavy components
 	async function loadFormRichTextEditor() {
 		if (!loadedComponents.richText) {
-			const module = await import('./rich-text/FormRichTextEditor.svelte');
+			const module = await import('./rich-text/RichTextEditorUnified.svelte');
 			FormRichTextEditor = module.default;
 			loadedComponents.richText = true;
 		}

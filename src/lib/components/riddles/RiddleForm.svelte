@@ -31,7 +31,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import FormRichTextEditor from '$lib/components/rich-text/FormRichTextEditor.svelte';
+	import RichTextEditorUnified from '$lib/components/rich-text/RichTextEditorUnified.svelte';
 	import AnswerConfigEditor from '$lib/components/riddles/AnswerConfigEditor.svelte';
 	import { Lightbulb, Image as ImageIcon, Save, X } from 'lucide-svelte';
 
@@ -191,7 +191,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<FormRichTextEditor bind:value={statement} />
+			<RichTextEditorUnified bind:value={statement} />
 		</Card.Content>
 	</Card.Root>
 
@@ -204,7 +204,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<FormRichTextEditor bind:value={correction} />
+			<RichTextEditorUnified bind:value={correction} />
 		</Card.Content>
 	</Card.Root>
 

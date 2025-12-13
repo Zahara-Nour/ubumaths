@@ -20,7 +20,7 @@
 		- Disabled state while sending
 -->
 <script lang="ts">
-	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+	import RichTextEditorUnified from '$lib/components/rich-text/RichTextEditorUnified.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Paperclip, X } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -205,7 +205,7 @@
 
 		<!-- Rich Text Editor -->
 		<div class="flex-1">
-			<RichTextEditor onSend={handleSend} />
+			<RichTextEditorUnified mode="chat" onSend={handleSend} />
 		</div>
 	</div>
 
