@@ -6,7 +6,7 @@ A comprehensive rich text editor built with **TipTap** and **MathLive** for the 
 
 ### 1. RichTextEditor.svelte
 
-The main editable rich text editor component with complete formatting and math support.
+**Unified rich text editor component** supporting both form mode (with `bind:value`) and chat mode (with `onSend` callback).
 
 **Features:**
 
@@ -58,7 +58,25 @@ The main editable rich text editor component with complete formatting and math s
 - Code blocks (multi-line)
 - Horizontal rules
 
-**Usage:**
+**Usage Examples:**
+
+**Form Mode** (with two-way binding):
+
+```svelte
+<script>
+	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+	let content = $state('');
+	let contentJson = $state(null);
+</script>
+
+<!-- Basic binding (HTML string) -->
+<RichTextEditor bind:value={content} placeholder="Écrivez votre réponse..." />
+
+<!-- With JSON binding (for database storage) -->
+<RichTextEditor bind:value={content} bind:jsonValue={contentJson} />
+```
+
+**Chat Mode** (with send callback):
 
 ```svelte
 <script>
@@ -66,16 +84,21 @@ The main editable rich text editor component with complete formatting and math s
 
 	function handleSend(content) {
 		console.log('Content:', content);
-		// Save to database, send to API, etc.
+		// Send message to chat, etc.
 	}
 </script>
 
-<RichTextEditor onSend={handleSend} placeholder="Écrivez votre réponse..." />
+<RichTextEditor mode="chat" onSend={handleSend} placeholder="Écrivez votre message..." />
 ```
 
 **Props:**
 
-- `onSend?: (content: any) => void` - Callback when user clicks "Envoyer"
+- `mode?: 'form' | 'chat'` - Editor mode (default: 'form')
+  - `form`: Two-way binding mode with `value` prop
+  - `chat`: Send button mode with `onSend` callback
+- `value?: string` - HTML content (form mode only, use with `bind:value`)
+- `jsonValue?: unknown` - JSON content (form mode only, use with `bind:jsonValue`)
+- `onSend?: (content: unknown) => void` - Send callback (chat mode only)
 - `placeholder?: string` - Placeholder text (default: "Écrivez votre message...")
 
 ### 2. RichTextDisplay.svelte

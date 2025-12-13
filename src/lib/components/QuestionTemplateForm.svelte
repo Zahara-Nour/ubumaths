@@ -46,7 +46,7 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 
 	// Lazy-loaded heavy components to reduce initial bundle size
-	let FormRichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+	let RichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let QuestionPreview = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let JsonViewer = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 	let loadedComponents = $state({
@@ -110,10 +110,10 @@
 	let subdomainOptions = $state<string[]>([]);
 
 	// Lazy loading functions for heavy components
-	async function loadFormRichTextEditor() {
+	async function loadRichTextEditor() {
 		if (!loadedComponents.richText) {
-			const module = await import('./rich-text/RichTextEditorUnified.svelte');
-			FormRichTextEditor = module.default;
+			const module = await import('./rich-text/RichTextEditor.svelte');
+			RichTextEditor = module.default;
 			loadedComponents.richText = true;
 		}
 	}
@@ -508,7 +508,7 @@
 			<Collapsible.Root
 				bind:open={descriptionOpen}
 				onOpenChange={async (open) => {
-					if (open) await loadFormRichTextEditor();
+					if (open) await loadRichTextEditor();
 				}}
 			>
 				<div class="space-y-2">
@@ -523,9 +523,9 @@
 						/>
 					</Collapsible.Trigger>
 					<Collapsible.Content class="space-y-2">
-						{#if FormRichTextEditor}
+						{#if RichTextEditor}
 							<svelte:component
-								this={FormRichTextEditor}
+								this={RichTextEditor}
 								bind:value={description}
 								placeholder="Description ou contexte supplémentaire pour ce template..."
 							/>

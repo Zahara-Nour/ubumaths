@@ -1,77 +1,31 @@
 <!--
-	RichTextEditor Component
-	========================
+	RichTextEditorUnified Component
+	================================
 
-	Comprehensive rich text editor with mathematical formula support for educational use.
-	Built with TipTap (ProseMirror) and MathLive integration.
+	Unified rich text editor that combines RichTextEditor (chat mode) and
+	FormRichTextEditor (form mode) into a single component.
 
-	TOOLBAR ORGANIZATION:
-	- Collapsible sections (Texte, Paragraphe, Insertion, Formule)
-	- Always-visible: "Plus" dropdown, "Effacer", "Envoyer"
-	- Chevron icons indicate section state (▼ = open, ▶ = closed)
+	MODES:
+	- 'form' (default): Bidirectional binding with value prop, no send button
+	- 'chat': Send callback with JSON content, clears after send
 
-	FEATURES BY SECTION:
+	USAGE:
+	<script>
+		// Form mode (default)
+		let content = $state('');
+		<RichTextEditorUnified bind:value={content} />
 
-	📝 Texte (default: open):
-		- Bold, Italic, Underline, Strikethrough, Code
-		- Subscript, Superscript
-
-	¶ Paragraphe:
-		- Headings (H1-H6) with dropdown
-		- Text alignment (left, center, right, justify)
-
-	➕ Insertion:
-		- Lists: Bullet, Ordered, Task (checkboxes)
-		- Text color picker (8 preset colors)
-		- Text highlighting (6 preset colors + clear)
-		- Hyperlinks with inline URL dialog
-		- Emoji picker (200+ curated emojis in 8 categories)
-
-	Σ Formule:
-		- Empty formula button
-		- 9 math templates with icon buttons (ᵃ⁄ᵦ, √x, xⁿ, xᵢ, ∫, ∑, lim, f', ±)
-		- Block formula button (centered equations)
-		- Auto-detection of $$...$$ patterns
-
-	⋯ Plus (dropdown):
-		- Blockquote (citations)
-		- Code block (multi-line code)
-		- Horizontal rule (separator)
-
-	REACTIVE HIGHLIGHTING:
-	All formatting buttons show active state when cursor is on formatted text.
-	Uses updateFormattingState() called on selection changes.
-
-	EMOJI CATEGORIES:
-	1. Smileys (37) - Emotions and expressions
-	2. Feedback (17) - Hand gestures for interaction
-	3. Math & Science (17) - Educational tools and symbols
-	4. School (23) - Study materials and supplies
-	5. Stars & Symbols (21) - Achievement markers
-	6. Shapes (26) - Geometric shapes and colors
-	7. Arrows (19) - Direction indicators
-	8. Nature (22) - Weather and elements
-
-	@see src/lib/extensions/math-extension.ts for math node implementations
-	@see src/lib/components/rich-text/README.md for complete documentation
+		// Chat mode
+		function handleSend(json) { ... }
+		<RichTextEditorUnified mode="chat" onSend={handleSend} />
+	</script>
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Editor } from '@tiptap/core';
-	import StarterKit from '@tiptap/starter-kit';
-	import Underline from '@tiptap/extension-underline';
-	import TextAlign from '@tiptap/extension-text-align';
-	import { TextStyle } from '@tiptap/extension-text-style';
-	import Color from '@tiptap/extension-color';
-	import Highlight from '@tiptap/extension-highlight';
-	import Link from '@tiptap/extension-link';
-	import Subscript from '@tiptap/extension-subscript';
-	import Superscript from '@tiptap/extension-superscript';
-	import TaskList from '@tiptap/extension-task-list';
-	import TaskItem from '@tiptap/extension-task-item';
-	import { MathInline, MathBlock } from '$lib/extensions/math-extension';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as Tabs from '$lib/components/ui/tabs';
 	import { Input } from '$lib/components/ui/input';
 	import {
 		Bold,
@@ -103,20 +57,55 @@
 		Type,
 		PilcrowSquare,
 		Plus,
-		Smile
+		Smile,
+		Send,
+		X
 	} from 'lucide-svelte';
 	import 'mathlive';
 
+	// Shared configuration imports
+	import {
+		TEXT_COLORS,
+		HIGHLIGHT_COLORS,
+		EMOJI_CATEGORIES,
+		MATH_TEMPLATES_FULL,
+		MATH_TEMPLATES_BASIC
+	} from './config';
+	import { createEditorExtensions, getEditorProps } from './editor-config';
+	import type { RichTextMode, MathTemplateLevel } from './types';
+
 	// Component Props
 	interface Props {
+		mode?: RichTextMode;
+		value?: string;
+		jsonValue?: unknown;
 		onSend?: (content: unknown) => void;
+		mathTemplates?: MathTemplateLevel;
+		showSendButton?: boolean;
+		showClearButton?: boolean;
+		minHeight?: string;
+		disabled?: boolean;
 	}
 
-	let { onSend }: Props = $props();
+	let {
+		mode = 'form',
+		value = $bindable(''),
+		jsonValue = $bindable(undefined),
+		onSend,
+		mathTemplates = 'full',
+		showSendButton,
+		showClearButton = true,
+		minHeight = '100px',
+		disabled = false
+	}: Props = $props();
+
+	// Computed defaults based on mode
+	let effectiveShowSendButton = $derived(showSendButton ?? mode === 'chat');
 
 	// Editor State
 	let editorElement = $state<HTMLElement | null>(null);
 	let editor = $state<Editor | null>(null);
+	let isUpdatingFromProp = $state(false);
 
 	// Toolbar Section State
 	let textSectionOpen = $state(true);
@@ -144,285 +133,20 @@
 	let showLinkDialog = $state(false);
 	let linkUrl = $state('');
 
-	// Math templates with icon representations
-	const mathTemplates = [
-		{ label: 'Fraction', latex: '\\frac{a}{b}', icon: 'ᵃ⁄ᵦ', title: 'Fraction' },
-		{ label: 'Racine carrée', latex: '\\sqrt{x}', icon: '√x', title: 'Racine carrée' },
-		{ label: 'Puissance', latex: 'x^{n}', icon: 'xⁿ', title: 'Puissance' },
-		{ label: 'Indice', latex: 'x_{i}', icon: 'xᵢ', title: 'Indice' },
-		{ label: 'Intégrale', latex: '\\int_{a}^{b} f(x) dx', icon: '∫', title: 'Intégrale' },
-		{ label: 'Somme', latex: '\\sum_{i=1}^{n} x_i', icon: '∑', title: 'Somme' },
-		{ label: 'Limite', latex: '\\lim_{x \\to \\infty} f(x)', icon: 'lim', title: 'Limite' },
-		{ label: 'Dérivée', latex: '\\frac{d}{dx} f(x)', icon: "f'", title: 'Dérivée' },
-		{
-			label: 'Équation du 2nd degré',
-			latex: '\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}',
-			icon: '±',
-			title: 'Équation du 2nd degré'
-		}
-	];
+	// Emoji picker state
+	let selectedEmojiCategory = $state('Smileys');
 
-	// Color palettes
-	const colors = [
-		'#000000',
-		'#ef4444',
-		'#f97316',
-		'#eab308',
-		'#22c55e',
-		'#3b82f6',
-		'#8b5cf6',
-		'#ec4899'
-	];
-
-	const highlights = ['', '#fef3c7', '#fecaca', '#d9f99d', '#bfdbfe', '#e9d5ff', '#fbcfe8'];
+	// Get math templates based on level
+	let mathTemplatesList = $derived(
+		mathTemplates === 'full'
+			? MATH_TEMPLATES_FULL
+			: mathTemplates === 'basic'
+				? MATH_TEMPLATES_BASIC
+				: []
+	);
 
 	/**
-	 * Curated Emoji Categories for Educational Use
-	 * ==============================================
-	 *
-	 * 200+ carefully selected emojis organized into 8 categories.
-	 * No external emoji libraries - uses native Unicode emojis.
-	 *
-	 * Category Selection Rationale:
-	 * - Smileys: Student/teacher expression and engagement
-	 * - Feedback: Quick positive/negative responses
-	 * - Math & Science: Domain-specific educational symbols
-	 * - School: Study materials and academic context
-	 * - Stars & Symbols: Achievement marking and feedback
-	 * - Shapes: Visual representation and color coding
-	 * - Arrows: Directional indicators for problem-solving
-	 * - Nature: Universal symbols for context setting
-	 */
-	const emojiCategories = [
-		{
-			name: 'Smileys',
-			emojis: [
-				'😊',
-				'😀',
-				'😃',
-				'😄',
-				'😁',
-				'😅',
-				'😂',
-				'🤣',
-				'😉',
-				'😌',
-				'😍',
-				'🥰',
-				'😘',
-				'😋',
-				'😎',
-				'🤓',
-				'🧐',
-				'🤔',
-				'🤨',
-				'😐',
-				'😑',
-				'😶',
-				'🙄',
-				'😏',
-				'😬',
-				'😮',
-				'😯',
-				'😲',
-				'😳',
-				'🥺',
-				'😢',
-				'😭',
-				'😤',
-				'😠',
-				'😡',
-				'🤯',
-				'😱'
-			]
-		},
-		{
-			name: 'Feedback',
-			emojis: [
-				'👍',
-				'👎',
-				'👏',
-				'🙌',
-				'👌',
-				'✌️',
-				'🤞',
-				'🤝',
-				'🙏',
-				'✋',
-				'🤚',
-				'👋',
-				'💪',
-				'✊',
-				'👊',
-				'🤜',
-				'🤛'
-			]
-		},
-		{
-			name: 'Math & Science',
-			emojis: [
-				'📐',
-				'📏',
-				'📊',
-				'📈',
-				'📉',
-				'🔬',
-				'🔭',
-				'⚗️',
-				'🧮',
-				'🧬',
-				'⚛️',
-				'🔢',
-				'➕',
-				'➖',
-				'✖️',
-				'➗',
-				'🟰'
-			]
-		},
-		{
-			name: 'School',
-			emojis: [
-				'📚',
-				'📖',
-				'📝',
-				'✏️',
-				'✒️',
-				'🖊️',
-				'🖍️',
-				'📒',
-				'📓',
-				'📔',
-				'📕',
-				'📗',
-				'📘',
-				'📙',
-				'🎓',
-				'🎒',
-				'🏫',
-				'💡',
-				'🧠',
-				'📌',
-				'📍',
-				'✂️',
-				'📎'
-			]
-		},
-		{
-			name: 'Stars & Symbols',
-			emojis: [
-				'⭐',
-				'🌟',
-				'✨',
-				'💫',
-				'🔥',
-				'💥',
-				'✅',
-				'❌',
-				'⚠️',
-				'❗',
-				'❓',
-				'❕',
-				'❔',
-				'💯',
-				'🎯',
-				'🏆',
-				'🥇',
-				'🥈',
-				'🥉',
-				'🎖️',
-				'🏅'
-			]
-		},
-		{
-			name: 'Shapes',
-			emojis: [
-				'🔴',
-				'🟠',
-				'🟡',
-				'🟢',
-				'🔵',
-				'🟣',
-				'🟤',
-				'⚫',
-				'⚪',
-				'🟥',
-				'🟧',
-				'🟨',
-				'🟩',
-				'🟦',
-				'🟪',
-				'🟫',
-				'⬛',
-				'⬜',
-				'🔶',
-				'🔷',
-				'🔸',
-				'🔹',
-				'🔺',
-				'🔻',
-				'💠',
-				'🔘'
-			]
-		},
-		{
-			name: 'Arrows',
-			emojis: [
-				'⬆️',
-				'↗️',
-				'➡️',
-				'↘️',
-				'⬇️',
-				'↙️',
-				'⬅️',
-				'↖️',
-				'↕️',
-				'↔️',
-				'↩️',
-				'↪️',
-				'⤴️',
-				'⤵️',
-				'🔃',
-				'🔄',
-				'🔀',
-				'🔁',
-				'🔂'
-			]
-		},
-		{
-			name: 'Nature',
-			emojis: [
-				'🌞',
-				'🌝',
-				'🌛',
-				'⭐',
-				'🌟',
-				'💫',
-				'✨',
-				'🌍',
-				'🌎',
-				'🌏',
-				'🌈',
-				'☀️',
-				'⛅',
-				'☁️',
-				'🌧️',
-				'⛈️',
-				'🌩️',
-				'⚡',
-				'❄️',
-				'🔥',
-				'💧',
-				'🌊'
-			]
-		}
-	];
-
-	// Currently selected emoji category (0-7 index)
-	let selectedEmojiCategory = $state(0);
-
-	/**
-	 * Update Formatting State
+	 * Update reactive formatting state based on current selection
 	 */
 	function updateFormattingState() {
 		if (!editor) return;
@@ -462,43 +186,25 @@
 	onMount(() => {
 		if (!editorElement) return;
 
+		const extensions = createEditorExtensions({ headingLevels: 6 });
+		const editorProps = getEditorProps({ minHeight });
+
 		editor = new Editor({
 			element: editorElement,
-			extensions: [
-				StarterKit.configure({
-					heading: {
-						levels: [1, 2, 3, 4, 5, 6]
+			extensions,
+			content: mode === 'form' ? value || '' : '',
+			editorProps,
+			editable: !disabled,
+			onUpdate: ({ editor: ed }) => {
+				if (isUpdatingFromProp) return;
+
+				// Update bound values in form mode
+				if (mode === 'form') {
+					value = ed.getHTML();
+					if (jsonValue !== undefined) {
+						jsonValue = ed.getJSON();
 					}
-				}),
-				Underline,
-				TextAlign.configure({
-					types: ['heading', 'paragraph']
-				}),
-				TextStyle,
-				Color,
-				Highlight.configure({ multicolor: true }),
-				Link.configure({
-					openOnClick: false,
-					HTMLAttributes: {
-						class: 'text-primary underline cursor-pointer'
-					}
-				}),
-				Subscript,
-				Superscript,
-				TaskList,
-				TaskItem.configure({
-					nested: true
-				}),
-				MathInline,
-				MathBlock
-			],
-			content: '',
-			editorProps: {
-				attributes: {
-					class: 'prose prose-sm max-w-none focus:outline-none min-h-[100px] p-3'
 				}
-			},
-			onUpdate: () => {
 				updateFormattingState();
 			},
 			onSelectionUpdate: () => {
@@ -514,13 +220,38 @@
 	});
 
 	/**
-	 * Handle Send Button
+	 * Sync external value changes (form mode only)
+	 */
+	$effect(() => {
+		if (mode !== 'form' || !editor || !value) return;
+
+		// Avoid infinite loops
+		const currentHtml = editor.getHTML();
+		if (currentHtml !== value) {
+			isUpdatingFromProp = true;
+			editor.commands.setContent(value);
+			isUpdatingFromProp = false;
+		}
+	});
+
+	/**
+	 * Handle editor disabled state changes
+	 */
+	$effect(() => {
+		if (editor) {
+			editor.setEditable(!disabled);
+		}
+	});
+
+	/**
+	 * Handle Send Button (chat mode)
 	 */
 	function handleSend() {
 		if (!editor) return;
 
 		const content = editor.getJSON();
 
+		// Check if content is empty
 		if (
 			!content.content ||
 			content.content.length === 0 ||
@@ -540,10 +271,13 @@
 	 */
 	function handleClear() {
 		editor?.commands.clearContent();
+		if (mode === 'form') {
+			value = '';
+		}
 	}
 
 	/**
-	 * Insert Math Formulas
+	 * Insert Math Formulas using custom commands
 	 */
 	function insertMathInline(latex: string = '') {
 		// @ts-expect-error - Custom Tiptap command from math extension
@@ -603,7 +337,7 @@
 	/**
 	 * Set Highlight Color
 	 */
-	function setHighlight(color: string) {
+	function setHighlight(color: string | null) {
 		if (color) {
 			editor?.chain().focus().setHighlight({ color }).run();
 		} else {
@@ -629,11 +363,12 @@
 		<div class="flex flex-wrap items-center gap-1 p-2">
 			<!-- Text Section Toggle -->
 			<Button
+				type="button"
 				variant="ghost"
 				size="sm"
 				onclick={() => (textSectionOpen = !textSectionOpen)}
 				class="font-medium"
-				disabled={!editor}
+				{disabled}
 			>
 				<Type class="mr-1 h-4 w-4" />
 				Texte
@@ -646,11 +381,12 @@
 
 			<!-- Paragraph Section Toggle -->
 			<Button
+				type="button"
 				variant="ghost"
 				size="sm"
 				onclick={() => (paragraphSectionOpen = !paragraphSectionOpen)}
 				class="font-medium"
-				disabled={!editor}
+				{disabled}
 			>
 				<PilcrowSquare class="mr-1 h-4 w-4" />
 				Paragraphe
@@ -663,11 +399,12 @@
 
 			<!-- Insert Section Toggle -->
 			<Button
+				type="button"
 				variant="ghost"
 				size="sm"
 				onclick={() => (insertSectionOpen = !insertSectionOpen)}
 				class="font-medium"
-				disabled={!editor}
+				{disabled}
 			>
 				<Plus class="mr-1 h-4 w-4" />
 				Insertion
@@ -678,31 +415,39 @@
 				{/if}
 			</Button>
 
-			<!-- Formule Section Toggle -->
-			<Button
-				variant="ghost"
-				size="sm"
-				onclick={() => (formuleSectionOpen = !formuleSectionOpen)}
-				class="font-medium"
-				disabled={!editor}
-			>
-				<Sigma class="mr-1 h-4 w-4" />
-				Formule
-				{#if formuleSectionOpen}
-					<ChevronDown class="ml-1 h-3 w-3" />
-				{:else}
-					<ChevronRight class="ml-1 h-3 w-3" />
-				{/if}
-			</Button>
+			<!-- Formule Section Toggle (only if mathTemplates !== 'none') -->
+			{#if mathTemplates !== 'none'}
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={() => (formuleSectionOpen = !formuleSectionOpen)}
+					class="font-medium"
+					{disabled}
+				>
+					<Sigma class="mr-1 h-4 w-4" />
+					Formule
+					{#if formuleSectionOpen}
+						<ChevronDown class="ml-1 h-3 w-3" />
+					{:else}
+						<ChevronRight class="ml-1 h-3 w-3" />
+					{/if}
+				</Button>
+			{/if}
 
 			<!-- More Dropdown (Advanced Features) -->
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger
-					class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-					disabled={!editor}
-				>
-					<MoreHorizontal class="h-4 w-4" />
-					Plus
+				<DropdownMenu.Trigger {disabled}>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+						>
+							<MoreHorizontal class="h-4 w-4" />
+							Plus
+						</button>
+					{/snippet}
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content>
 					<DropdownMenu.Label>Blocs spéciaux</DropdownMenu.Label>
@@ -731,67 +476,74 @@
 			<div class="flex-1"></div>
 
 			<!-- Action Buttons (Always Visible) -->
-			<Button variant="ghost" size="sm" onclick={handleClear} disabled={!editor}>
-				<Eraser class="mr-1 h-4 w-4" />
-				Effacer
-			</Button>
+			{#if showClearButton}
+				<Button type="button" variant="ghost" size="sm" onclick={handleClear} {disabled}>
+					<Eraser class="mr-1 h-4 w-4" />
+					Effacer
+				</Button>
+			{/if}
 
-			<Button size="sm" onclick={handleSend} disabled={!editor}>Envoyer</Button>
+			{#if effectiveShowSendButton}
+				<Button type="button" size="sm" onclick={handleSend} {disabled}>
+					<Send class="mr-1 h-4 w-4" />
+					Envoyer
+				</Button>
+			{/if}
 		</div>
 
 		<!-- Text Section (Collapsible) -->
 		{#if textSectionOpen}
 			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isBold ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleBold().run()}
-					class={isBold ? 'bg-accent' : ''}
-					disabled={!editor}
+					{disabled}
 					title="Gras"
 				>
 					<Bold class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isItalic ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleItalic().run()}
-					class={isItalic ? 'bg-accent' : ''}
-					disabled={!editor}
+					{disabled}
 					title="Italique"
 				>
 					<Italic class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isUnderline ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleUnderline().run()}
-					class={isUnderline ? 'bg-accent' : ''}
-					disabled={!editor}
-					title="Souligné"
+					{disabled}
+					title="Souligne"
 				>
 					<UnderlineIcon class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isStrike ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleStrike().run()}
-					class={isStrike ? 'bg-accent' : ''}
-					disabled={!editor}
-					title="Barré"
+					{disabled}
+					title="Barre"
 				>
 					<Strikethrough class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isCode ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleCode().run()}
-					class={isCode ? 'bg-accent' : ''}
-					disabled={!editor}
+					{disabled}
 					title="Code inline"
 				>
 					<Code class="h-4 w-4" />
@@ -800,22 +552,22 @@
 				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isSubscript ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleSubscript().run()}
-					class={isSubscript ? 'bg-accent' : ''}
-					disabled={!editor}
+					{disabled}
 					title="Indice"
 				>
 					<SubscriptIcon class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isSuperscript ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleSuperscript().run()}
-					class={isSuperscript ? 'bg-accent' : ''}
-					disabled={!editor}
+					{disabled}
 					title="Exposant"
 				>
 					<SuperscriptIcon class="h-4 w-4" />
@@ -828,18 +580,23 @@
 			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Headings Dropdown -->
 				<DropdownMenu.Root>
-					<DropdownMenu.Trigger
-						class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 {currentHeading
-							? 'bg-accent'
-							: ''}"
-						disabled={!editor}
-					>
-						<Heading class="mr-1 h-4 w-4" />
-						{#if currentHeading}
-							<span>H{currentHeading}</span>
-						{:else}
-							<span>Titre</span>
-						{/if}
+					<DropdownMenu.Trigger {disabled}>
+						{#snippet child({ props })}
+							<button
+								{...props}
+								type="button"
+								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 {currentHeading
+									? 'bg-accent'
+									: ''}"
+							>
+								<Heading class="mr-1 h-4 w-4" />
+								{#if currentHeading}
+									<span>H{currentHeading}</span>
+								{:else}
+									<span>Titre</span>
+								{/if}
+							</button>
+						{/snippet}
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content>
 						<DropdownMenu.Item onclick={() => editor?.chain().focus().setParagraph().run()}>
@@ -858,44 +615,44 @@
 
 				<!-- Text Alignment -->
 				<Button
-					variant="ghost"
+					type="button"
+					variant={currentAlignment === 'left' ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().setTextAlign('left').run()}
-					class={currentAlignment === 'left' ? 'bg-accent' : ''}
-					disabled={!editor}
-					title="Aligner à gauche"
+					{disabled}
+					title="Aligner a gauche"
 				>
 					<AlignLeft class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={currentAlignment === 'center' ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().setTextAlign('center').run()}
-					class={currentAlignment === 'center' ? 'bg-accent' : ''}
-					disabled={!editor}
+					{disabled}
 					title="Centrer"
 				>
 					<AlignCenter class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={currentAlignment === 'right' ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().setTextAlign('right').run()}
-					class={currentAlignment === 'right' ? 'bg-accent' : ''}
-					disabled={!editor}
-					title="Aligner à droite"
+					{disabled}
+					title="Aligner a droite"
 				>
 					<AlignRight class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={currentAlignment === 'justify' ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().setTextAlign('justify').run()}
-					class={currentAlignment === 'justify' ? 'bg-accent' : ''}
-					disabled={!editor}
+					{disabled}
 					title="Justifier"
 				>
 					<AlignJustify class="h-4 w-4" />
@@ -908,34 +665,34 @@
 			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Lists -->
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isBulletList ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleBulletList().run()}
-					class={isBulletList ? 'bg-accent' : ''}
-					disabled={!editor}
-					title="Liste à puces"
+					{disabled}
+					title="Liste a puces"
 				>
 					<List class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isOrderedList ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleOrderedList().run()}
-					class={isOrderedList ? 'bg-accent' : ''}
-					disabled={!editor}
-					title="Liste numérotée"
+					{disabled}
+					title="Liste numerotee"
 				>
 					<ListOrdered class="h-4 w-4" />
 				</Button>
 
 				<Button
-					variant="ghost"
+					type="button"
+					variant={isTaskList ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={() => editor?.chain().focus().toggleTaskList().run()}
-					class={isTaskList ? 'bg-accent' : ''}
-					disabled={!editor}
-					title="Liste de tâches"
+					{disabled}
+					title="Liste de taches"
 				>
 					<ListTodo class="h-4 w-4" />
 				</Button>
@@ -944,21 +701,28 @@
 
 				<!-- Color Picker -->
 				<DropdownMenu.Root>
-					<DropdownMenu.Trigger
-						class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-						disabled={!editor}
-					>
-						<Palette class="h-4 w-4" />
+					<DropdownMenu.Trigger {disabled}>
+						{#snippet child({ props })}
+							<button
+								{...props}
+								type="button"
+								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+							>
+								<Palette class="h-4 w-4" />
+							</button>
+						{/snippet}
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content>
 						<DropdownMenu.Label>Couleur du texte</DropdownMenu.Label>
 						<div class="grid grid-cols-4 gap-1 p-2">
-							{#each colors as color (color)}
+							{#each TEXT_COLORS as color (color.value)}
 								<button
-									onclick={() => setColor(color)}
+									type="button"
+									onclick={() => setColor(color.value)}
 									class="h-8 w-8 rounded border-2 border-border transition-transform hover:scale-110"
-									style="background-color: {color}"
-									title={color}
+									style="background-color: {color.value}"
+									title={color.name}
+									aria-label={color.name}
 								></button>
 							{/each}
 						</div>
@@ -967,24 +731,31 @@
 
 				<!-- Highlight Picker -->
 				<DropdownMenu.Root>
-					<DropdownMenu.Trigger
-						class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-						disabled={!editor}
-					>
-						<Highlighter class="h-4 w-4" />
+					<DropdownMenu.Trigger {disabled}>
+						{#snippet child({ props })}
+							<button
+								{...props}
+								type="button"
+								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+							>
+								<Highlighter class="h-4 w-4" />
+							</button>
+						{/snippet}
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content>
 						<DropdownMenu.Label>Surlignage</DropdownMenu.Label>
 						<div class="grid grid-cols-4 gap-1 p-2">
-							{#each highlights as color, i (i)}
+							{#each HIGHLIGHT_COLORS as color, i (i)}
 								<button
-									onclick={() => setHighlight(color)}
-									class="h-8 w-8 rounded border-2 border-border transition-transform hover:scale-110"
-									style="background-color: {color || 'transparent'}"
-									title={i === 0 ? 'Aucun' : color}
+									type="button"
+									onclick={() => setHighlight(color.value)}
+									class="flex h-8 w-8 items-center justify-center rounded border-2 border-border transition-transform hover:scale-110"
+									style="background-color: {color.value || 'transparent'}"
+									title={color.name}
+									aria-label={color.name}
 								>
-									{#if i === 0}
-										<span class="text-xs">✕</span>
+									{#if color.value === null}
+										<X class="h-4 w-4 text-muted-foreground" />
 									{/if}
 								</button>
 							{/each}
@@ -996,11 +767,11 @@
 
 				<!-- Link -->
 				<Button
-					variant="ghost"
+					type="button"
+					variant={editor?.isActive('link') ? 'secondary' : 'ghost'}
 					size="sm"
 					onclick={toggleLink}
-					class={editor?.isActive('link') ? 'bg-accent' : ''}
-					disabled={!editor}
+					{disabled}
 					title="Lien"
 				>
 					<LinkIcon class="h-4 w-4" />
@@ -1008,70 +779,83 @@
 
 				<div class="mx-1 h-6 w-px bg-border"></div>
 
-				<!-- Emoji Picker -->
+				<!-- Emoji Picker with Tabs -->
 				<DropdownMenu.Root>
-					<DropdownMenu.Trigger
-						class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-						disabled={!editor}
-					>
-						<Smile class="h-4 w-4" />
+					<DropdownMenu.Trigger {disabled}>
+						{#snippet child({ props })}
+							<button
+								{...props}
+								type="button"
+								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+							>
+								<Smile class="h-4 w-4" />
+							</button>
+						{/snippet}
 					</DropdownMenu.Trigger>
-					<DropdownMenu.Content class="w-80">
-						<!-- Emoji Category Tabs -->
-						<div class="mb-2 flex border-b border-border">
-							{#each emojiCategories as category, index (category.name)}
-								<button
-									onclick={() => (selectedEmojiCategory = index)}
-									class="flex-1 px-2 py-1.5 text-xs font-medium transition-colors hover:bg-accent {selectedEmojiCategory ===
-									index
-										? 'border-b-2 border-primary text-primary'
-										: 'text-muted-foreground'}"
-								>
-									{category.name}
-								</button>
+					<DropdownMenu.Content class="w-80 p-0">
+						<Tabs.Root bind:value={selectedEmojiCategory} class="w-full">
+							<Tabs.List class="grid h-auto w-full grid-cols-4 rounded-none border-b">
+								{#each EMOJI_CATEGORIES.slice(0, 4) as category (category.name)}
+									<Tabs.Trigger value={category.name} class="px-2 py-1.5 text-xs">
+										{category.name.slice(0, 4)}
+									</Tabs.Trigger>
+								{/each}
+							</Tabs.List>
+							<Tabs.List class="grid h-auto w-full grid-cols-4 rounded-none border-b">
+								{#each EMOJI_CATEGORIES.slice(4, 8) as category (category.name)}
+									<Tabs.Trigger value={category.name} class="px-2 py-1.5 text-xs">
+										{category.name.slice(0, 4)}
+									</Tabs.Trigger>
+								{/each}
+							</Tabs.List>
+							{#each EMOJI_CATEGORIES as category (category.name)}
+								<Tabs.Content value={category.name} class="mt-0 p-2">
+									<div class="grid max-h-48 grid-cols-8 gap-1 overflow-y-auto">
+										{#each category.emojis as emoji (emoji)}
+											<button
+												type="button"
+												onclick={() => insertEmoji(emoji)}
+												class="rounded p-1 text-xl transition-colors hover:bg-accent"
+												title={emoji}
+											>
+												{emoji}
+											</button>
+										{/each}
+									</div>
+								</Tabs.Content>
 							{/each}
-						</div>
-						<!-- Emoji Grid -->
-						<div class="grid max-h-64 grid-cols-8 gap-1 overflow-y-auto p-2">
-							{#each emojiCategories[selectedEmojiCategory].emojis as emoji (emoji)}
-								<button
-									onclick={() => insertEmoji(emoji)}
-									class="rounded p-1 text-2xl transition-colors hover:bg-accent"
-									title={emoji}
-								>
-									{emoji}
-								</button>
-							{/each}
-						</div>
+						</Tabs.Root>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 			</div>
 		{/if}
 
-		<!-- Formule Section (Collapsible) -->
-		{#if formuleSectionOpen}
+		<!-- Formule Section (Collapsible) - Only if mathTemplates !== 'none' -->
+		{#if formuleSectionOpen && mathTemplates !== 'none'}
 			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Empty Formula Button -->
 				<Button
+					type="button"
 					variant="ghost"
 					size="sm"
 					onclick={() => insertMathInline()}
-					disabled={!editor}
+					{disabled}
 					title="Formule vide"
 					class="font-mono"
 				>
-					∅
+					$$
 				</Button>
 
 				<div class="mx-1 h-6 w-px bg-border"></div>
 
 				<!-- Math Template Buttons -->
-				{#each mathTemplates as template (template.latex)}
+				{#each mathTemplatesList as template (template.latex)}
 					<Button
+						type="button"
 						variant="ghost"
 						size="sm"
 						onclick={() => insertMathInline(template.latex)}
-						disabled={!editor}
+						{disabled}
 						title={template.title}
 						class="font-mono text-base"
 					>
@@ -1083,14 +867,15 @@
 
 				<!-- Block Formula Button -->
 				<Button
+					type="button"
 					variant="ghost"
 					size="sm"
 					onclick={() => insertMathBlock()}
-					disabled={!editor}
-					title="Bloc de formule (centré)"
+					{disabled}
+					title="Bloc de formule (centre)"
 					class="font-mono"
 				>
-					⬚
+					$$...$$
 				</Button>
 			</div>
 		{/if}
@@ -1113,8 +898,9 @@
 					}
 				}}
 			/>
-			<Button size="sm" onclick={setLink}>Valider</Button>
+			<Button type="button" size="sm" onclick={setLink}>Valider</Button>
 			<Button
+				type="button"
 				size="sm"
 				variant="ghost"
 				onclick={() => {
@@ -1128,3 +914,25 @@
 	<!-- Editor Content Area -->
 	<div bind:this={editorElement} class="bg-background"></div>
 </div>
+
+<style>
+	/* Task list styling */
+	:global(.task-list) {
+		list-style: none;
+		padding-left: 0;
+	}
+
+	:global(.task-list li) {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+
+	:global(.task-list li > label) {
+		margin-top: 0.25rem;
+	}
+
+	:global(.task-list li > div) {
+		flex: 1;
+	}
+</style>
