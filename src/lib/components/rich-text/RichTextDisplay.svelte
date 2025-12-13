@@ -7,10 +7,10 @@
 	for mathematical formulas.
 
 	Features:
-	- Displays formatted text (bold, italic, etc.)
+	- Displays formatted text (bold, italic, links, underline, etc.)
 	- Renders math formulas (non-editable)
 	- Automatically updates when content changes
-	- Same styling as editor for consistency
+	- Uses same extensions as RichTextEditor for consistency
 
 	Usage:
 		<RichTextDisplay content={messageContent} />
@@ -49,8 +49,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Editor, type Content } from '@tiptap/core';
-	import StarterKit from '@tiptap/starter-kit';
-	import { MathInline, MathBlock } from '$lib/extensions/math-extension';
+	import { createEditorExtensions } from './editor-config';
 	import 'mathlive'; // Import MathLive web components
 
 	// Component Props (Svelte 5 runes)
@@ -87,13 +86,13 @@
 	onMount(() => {
 		if (!displayElement) return;
 
+		// Use shared extension configuration for consistency with RichTextEditor
+		// This ensures links, underlines, and other formatting render correctly
+		const extensions = createEditorExtensions({ headingLevels: 6 });
+
 		editor = new Editor({
 			element: displayElement,
-			extensions: [
-				StarterKit, // Basic text rendering
-				MathInline, // Inline math formulas
-				MathBlock // Block math formulas
-			],
+			extensions,
 			content: content as Content, // Initial content from props
 			editable: false, // IMPORTANT: Makes content read-only
 			editorProps: {
