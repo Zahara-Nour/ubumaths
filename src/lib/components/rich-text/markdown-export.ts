@@ -366,7 +366,7 @@ function convertVideoToMarkdown(video: JSONContent): string {
 	const attrs: string[] = [];
 	if (sizeClass) attrs.push(`size=${sizeClass}`);
 	if (widthPercent !== undefined && widthPercent !== null) attrs.push(`width=${widthPercent}%`);
-	if (alignment && alignment !== 'center') attrs.push(`align=${alignment}`);
+	if (alignment) attrs.push(`align=${alignment}`);
 	// controls defaults to true, so only output if false
 	if (controls === false) attrs.push('controls=false');
 	if (autoplay) attrs.push('autoplay');
