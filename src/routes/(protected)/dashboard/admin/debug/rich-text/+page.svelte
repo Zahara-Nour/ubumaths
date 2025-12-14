@@ -233,6 +233,55 @@ function hello() {
 	);
 
 	// ============================================
+	// Diff computation for roundtrip failures
+	// ============================================
+	type DiffLine = {
+		type: 'unchanged' | 'added' | 'removed' | 'modified';
+		importLine?: string;
+		exportLine?: string;
+		lineNumber: number;
+	};
+
+	/**
+	 * Compute line-by-line diff between import and export markdown
+	 * Uses a simple algorithm comparing normalized lines
+	 */
+	function computeDiff(importMd: string, exportMd: string): DiffLine[] {
+		const importLines = normalizeMarkdown(importMd).split('\n');
+		const exportLines = normalizeMarkdown(exportMd).split('\n');
+		const diff: DiffLine[] = [];
+
+		const maxLen = Math.max(importLines.length, exportLines.length);
+
+		for (let i = 0; i < maxLen; i++) {
+			const importLine = importLines[i];
+			const exportLine = exportLines[i];
+
+			if (importLine === undefined && exportLine !== undefined) {
+				// Line only in export (added)
+				diff.push({ type: 'added', exportLine, lineNumber: i + 1 });
+			} else if (exportLine === undefined && importLine !== undefined) {
+				// Line only in import (removed)
+				diff.push({ type: 'removed', importLine, lineNumber: i + 1 });
+			} else if (importLine === exportLine) {
+				// Lines are identical
+				diff.push({ type: 'unchanged', importLine, exportLine, lineNumber: i + 1 });
+			} else {
+				// Lines differ (modified)
+				diff.push({ type: 'modified', importLine, exportLine, lineNumber: i + 1 });
+			}
+		}
+
+		return diff;
+	}
+
+	// Compute diff only when roundtrip fails
+	let diffResult = $derived(!isRoundtripValid ? computeDiff(importMarkdown, exportMarkdown) : []);
+
+	// Check if there are any differences to show
+	let hasDifferences = $derived(diffResult.some((d) => d.type !== 'unchanged'));
+
+	// ============================================
 	// Copy to clipboard
 	// ============================================
 	let copiedHtml = $state(false);
@@ -930,13 +979,16 @@ function hello() {
 				</Card.Content>
 			</Card.Root>
 
-			<!-- Card 3: Export Markdown -->
+			<!-- Card 3: Export Markdown with Diff View -->
 			<Card.Root>
 				<Card.Header>
 					<Card.Title class="flex items-center justify-between">
 						<span class="flex items-center gap-2">
 							<Code class="h-4 w-4" />
 							Export Markdown
+							{#if !isRoundtripValid && hasDifferences}
+								<Badge variant="outline" class="ml-2 text-xs">Diff View</Badge>
+							{/if}
 						</span>
 						<Button
 							size="sm"
@@ -953,22 +1005,118 @@ function hello() {
 						</Button>
 					</Card.Title>
 					<Card.Description>
-						Resultat de la conversion du contenu de l'editeur vers Markdown
+						{#if !isRoundtripValid && hasDifferences}
+							<span class="text-amber-600 dark:text-amber-400">
+								⚠️ Différences détectées entre l'import et l'export
+							</span>
+						{:else}
+							Resultat de la conversion du contenu de l'editeur vers Markdown
+						{/if}
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
-					<details open class="group">
-						<summary class="mb-2 flex cursor-pointer items-center gap-2 text-sm font-medium">
-							<span class="transition-transform group-open:rotate-90">&#9654;</span>
-							Markdown genere
-						</summary>
-						<textarea
-							class="h-48 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
-							value={exportMarkdown}
-							readonly
-							aria-label="Markdown exporte"
-						></textarea>
-					</details>
+					{#if !isRoundtripValid && hasDifferences}
+						<!-- Diff View -->
+						<div class="mb-3 flex items-center gap-4 text-xs">
+							<span class="flex items-center gap-1">
+								<span class="inline-block h-3 w-3 rounded bg-red-200 dark:bg-red-900"></span>
+								Supprimé (import)
+							</span>
+							<span class="flex items-center gap-1">
+								<span class="inline-block h-3 w-3 rounded bg-green-200 dark:bg-green-900"></span>
+								Ajouté (export)
+							</span>
+							<span class="flex items-center gap-1">
+								<span class="inline-block h-3 w-3 rounded bg-amber-200 dark:bg-amber-900"></span>
+								Modifié
+							</span>
+						</div>
+						<div
+							class="max-h-96 overflow-auto rounded-md border border-border bg-muted/30 font-mono text-sm"
+						>
+							{#each diffResult as line (line.lineNumber)}
+								{#if line.type === 'unchanged'}
+									<div class="flex border-b border-border/30 px-2 py-0.5">
+										<span class="w-8 shrink-0 pr-2 text-right text-muted-foreground"
+											>{line.lineNumber}</span
+										>
+										<span class="break-all whitespace-pre-wrap">{line.exportLine || ''}</span>
+									</div>
+								{:else if line.type === 'removed'}
+									<div
+										class="flex border-b border-border/30 bg-red-100 px-2 py-0.5 dark:bg-red-950"
+									>
+										<span class="w-8 shrink-0 pr-2 text-right text-red-600 dark:text-red-400"
+											>-{line.lineNumber}</span
+										>
+										<span class="break-all whitespace-pre-wrap text-red-700 dark:text-red-300"
+											>{line.importLine || ''}</span
+										>
+									</div>
+								{:else if line.type === 'added'}
+									<div
+										class="flex border-b border-border/30 bg-green-100 px-2 py-0.5 dark:bg-green-950"
+									>
+										<span class="w-8 shrink-0 pr-2 text-right text-green-600 dark:text-green-400"
+											>+{line.lineNumber}</span
+										>
+										<span class="break-all whitespace-pre-wrap text-green-700 dark:text-green-300"
+											>{line.exportLine || ''}</span
+										>
+									</div>
+								{:else if line.type === 'modified'}
+									<!-- Show both old and new lines for modifications -->
+									<div
+										class="flex border-b border-border/30 bg-red-100 px-2 py-0.5 dark:bg-red-950"
+									>
+										<span class="w-8 shrink-0 pr-2 text-right text-red-600 dark:text-red-400"
+											>-{line.lineNumber}</span
+										>
+										<span class="break-all whitespace-pre-wrap text-red-700 dark:text-red-300"
+											>{line.importLine || ''}</span
+										>
+									</div>
+									<div
+										class="flex border-b border-border/30 bg-green-100 px-2 py-0.5 dark:bg-green-950"
+									>
+										<span class="w-8 shrink-0 pr-2 text-right text-green-600 dark:text-green-400"
+											>+{line.lineNumber}</span
+										>
+										<span class="break-all whitespace-pre-wrap text-green-700 dark:text-green-300"
+											>{line.exportLine || ''}</span
+										>
+									</div>
+								{/if}
+							{/each}
+						</div>
+						<!-- Also show raw export for reference -->
+						<details class="group mt-4">
+							<summary class="mb-2 flex cursor-pointer items-center gap-2 text-sm font-medium">
+								<span class="transition-transform group-open:rotate-90">&#9654;</span>
+								Voir le markdown brut exporté
+							</summary>
+							<textarea
+								class="h-32 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+								value={exportMarkdown}
+								readonly
+								aria-label="Markdown exporte brut"
+							></textarea>
+						</details>
+					{:else}
+						<!-- Normal view when roundtrip is OK -->
+						<details open class="group">
+							<summary class="mb-2 flex cursor-pointer items-center gap-2 text-sm font-medium">
+								<span class="transition-transform group-open:rotate-90">&#9654;</span>
+								Markdown genere
+							</summary>
+							<textarea
+								class="h-48 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+								value={exportMarkdown}
+								readonly
+								aria-label="Markdown exporte"
+							></textarea>
+						</details>
+					{/if}
 				</Card.Content>
 			</Card.Root>
 		</Tabs.Content>
