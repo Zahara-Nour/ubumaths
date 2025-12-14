@@ -45,6 +45,44 @@ f5437eb4 fix(rich-text): improve video roundtrip consistency
 
 ---
 
+## MarkdownRenderer Completeness (December 2024)
+
+Added missing node rendering to `MarkdownRenderer.svelte`:
+
+### Bug Fix
+
+- **HeadingNode math**: Fixed `latex={child.latex}` → `expression={child.expression} syntax={child.syntax}`
+
+### New Block Nodes
+
+- **VideoDisplay.svelte**: Renders HTML5 video and YouTube embeds with sizing/alignment
+
+### New Inline Nodes
+
+- **LinkNode**: External links with `target="_blank" rel="noopener noreferrer"`
+- **HashtagNode**: Callback `onHashtagClick` or default link to `/search?tag=...`
+- **MentionNode**: Callback `onMentionClick` or default link to `/profile/...`
+
+### Files Modified
+
+| File                         | Changes                                |
+| ---------------------------- | -------------------------------------- |
+| `nodes/HeadingNode.svelte`   | Fix math bug, add link/hashtag/mention |
+| `nodes/VideoDisplay.svelte`  | **NEW** - Video rendering              |
+| `nodes/ParagraphNode.svelte` | Add link/hashtag/mention               |
+| `nodes/ListNode.svelte`      | Propagate callbacks                    |
+| `MarkdownRenderer.svelte`    | Add video case, callback props         |
+
+### Commits
+
+```
+c9d37dce fix(markdown): correct math-inline rendering in HeadingNode
+273e697a feat(markdown): add VideoDisplay component for MarkdownRenderer
+d402f222 feat(markdown): add link, hashtag, mention inline node support
+```
+
+---
+
 ## Previous: Custom Markdown Refactoring - COMPLETE
 
 ### Final State: All 7 Phases Complete
