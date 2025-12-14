@@ -72,6 +72,9 @@ function convertBlockToMarkdown(block: JSONContent, indentLevel = 0): string | n
 		case 'image':
 			return convertImageToMarkdown(block);
 
+		case 'video':
+			return convertVideoToMarkdown(block);
+
 		case 'table':
 			return convertTableToMarkdown(block);
 
@@ -335,6 +338,40 @@ function convertImageToMarkdown(img: JSONContent): string {
 	if (widthPercent !== undefined) attrs.push(`width=${widthPercent}%`);
 	if (alignment) attrs.push(`align=${alignment}`);
 	if (caption) attrs.push(`caption="${caption}"`);
+
+	if (attrs.length > 0) {
+		markdown += `{${attrs.join(' ')}}`;
+	}
+
+	return markdown;
+}
+
+/**
+ * Convert video to Markdown
+ */
+function convertVideoToMarkdown(video: JSONContent): string {
+	const src = (video.attrs?.src as string) || '';
+	const alt = (video.attrs?.alt as string) || '';
+	const sizeClass = video.attrs?.sizeClass as string | undefined;
+	const widthPercent = video.attrs?.widthPercent as number | undefined;
+	const alignment = video.attrs?.alignment as string | undefined;
+	const controls = video.attrs?.controls as boolean;
+	const autoplay = video.attrs?.autoplay as boolean;
+	const loop = video.attrs?.loop as boolean;
+	const muted = video.attrs?.muted as boolean;
+
+	let markdown = `!video[${alt}](${src})`;
+
+	// Build attributes - only include non-default values
+	const attrs: string[] = [];
+	if (sizeClass) attrs.push(`size=${sizeClass}`);
+	if (widthPercent !== undefined && widthPercent !== null) attrs.push(`width=${widthPercent}%`);
+	if (alignment && alignment !== 'center') attrs.push(`align=${alignment}`);
+	// controls defaults to true, so only output if false
+	if (controls === false) attrs.push('controls=false');
+	if (autoplay) attrs.push('autoplay');
+	if (loop) attrs.push('loop');
+	if (muted) attrs.push('muted');
 
 	if (attrs.length > 0) {
 		markdown += `{${attrs.join(' ')}}`;

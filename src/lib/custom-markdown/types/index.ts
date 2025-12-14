@@ -33,6 +33,7 @@ export type {
 	TableNode,
 	MathBlockNode,
 	ImageNode,
+	VideoNode,
 	HorizontalRuleNode,
 	BlockquoteNode,
 	CodeBlockNode,
@@ -44,6 +45,8 @@ export type {
 	ImageSizeClass,
 	ImageAlignment,
 	ImageSizeMapping,
+	// Video types
+	VideoProvider,
 	// Input state
 	InputState
 } from './ast';

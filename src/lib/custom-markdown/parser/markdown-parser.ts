@@ -24,6 +24,7 @@ import type {
 	ParseOptions,
 	MathPlaceholder,
 	ImageNode,
+	VideoNode,
 	ListNode,
 	BlockquoteNode,
 	ImageSizeClass,
@@ -74,6 +75,35 @@ import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser
  * ```
  */
 const IMAGE_REGEX = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\{([^}]*)\})?/g;
+
+/**
+ * Regex for markdown videos: !video[alt](url "title"){attrs}
+ *
+ * Captures:
+ * - Group 1: alt text
+ * - Group 2: URL (video file or YouTube URL)
+ * - Group 3: optional title (inside quotes)
+ * - Group 4: optional attributes (inside curly braces)
+ *
+ * @example HTML5 video
+ * ```
+ * !video[Demo](video.mp4)
+ * !video[Demo](video.mp4 "title")
+ * ```
+ *
+ * @example Extended syntax with attributes
+ * ```
+ * !video[Demo](video.mp4){controls}
+ * !video[Demo](video.mp4 "title"){size=large align=center controls autoplay loop muted}
+ * ```
+ *
+ * @example YouTube video
+ * ```
+ * !video[Tutorial](https://youtube.com/watch?v=VIDEO_ID){size=large}
+ * !video[Tutorial](https://youtu.be/VIDEO_ID){align=center}
+ * ```
+ */
+const VIDEO_REGEX = /!video\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\{([^}]*)\})?/;
 
 /**
  * Regex for linked images: [![alt](src "imgTitle")](href "linkTitle"){attrs}
@@ -353,6 +383,17 @@ function parseBlocks(
 			const image = parseImageLine(line);
 			if (image) {
 				blocks.push(image);
+				i++;
+				continue;
+			}
+		}
+
+		// Check for video on its own line (must start with !video[)
+		const trimmedLine = line.trim();
+		if (trimmedLine.startsWith('!video[')) {
+			const video = parseVideoLine(trimmedLine);
+			if (video) {
+				blocks.push(video);
 				i++;
 				continue;
 			}
@@ -1273,6 +1314,252 @@ function parseImageLine(line: string): ImageNode | null {
 	}
 
 	return imageNode;
+}
+
+// ============================================================================
+// VIDEO PARSING
+// ============================================================================
+
+/**
+ * Video provider detection result
+ */
+interface VideoProviderInfo {
+	provider: 'html5' | 'youtube';
+	videoId?: string;
+}
+
+/**
+ * Detect video provider from URL
+ *
+ * Analyzes the URL to determine if it's a YouTube video or an HTML5 video file.
+ * Extracts YouTube video ID if applicable.
+ *
+ * @param url - Video URL to analyze
+ * @returns Provider information with optional video ID
+ *
+ * @example YouTube URLs
+ * ```typescript
+ * detectVideoProvider('https://youtube.com/watch?v=ABC123');
+ * // { provider: 'youtube', videoId: 'ABC123' }
+ *
+ * detectVideoProvider('https://youtu.be/ABC123');
+ * // { provider: 'youtube', videoId: 'ABC123' }
+ *
+ * detectVideoProvider('https://youtube.com/embed/ABC123');
+ * // { provider: 'youtube', videoId: 'ABC123' }
+ * ```
+ *
+ * @example HTML5 video files
+ * ```typescript
+ * detectVideoProvider('video.mp4');
+ * // { provider: 'html5' }
+ *
+ * detectVideoProvider('/assets/demo.webm');
+ * // { provider: 'html5' }
+ * ```
+ */
+function detectVideoProvider(url: string): VideoProviderInfo {
+	// YouTube patterns
+	// Pattern 1: https://youtube.com/watch?v=VIDEO_ID or https://www.youtube.com/watch?v=VIDEO_ID
+	const youtubeWatch = url.match(
+		/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/
+	);
+	if (youtubeWatch) {
+		return { provider: 'youtube', videoId: youtubeWatch[1] };
+	}
+
+	// Pattern 2: https://youtu.be/VIDEO_ID
+	const youtubeShort = url.match(/(?:https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]+)/);
+	if (youtubeShort) {
+		return { provider: 'youtube', videoId: youtubeShort[1] };
+	}
+
+	// Pattern 3: https://youtube.com/embed/VIDEO_ID
+	const youtubeEmbed = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+	if (youtubeEmbed) {
+		return { provider: 'youtube', videoId: youtubeEmbed[1] };
+	}
+
+	// Default: HTML5 video
+	return { provider: 'html5' };
+}
+
+/**
+ * Parsed video attributes from extended markdown syntax
+ *
+ * @internal Used by parseVideoAttributes
+ */
+interface ParsedVideoAttributes {
+	sizeClass?: ImageSizeClass;
+	widthPercent?: number;
+	alignment?: ImageAlignment;
+	controls?: boolean;
+	autoplay?: boolean;
+	loop?: boolean;
+	muted?: boolean;
+}
+
+/**
+ * Parse video attributes from curly brace syntax
+ *
+ * Supports the following attributes:
+ * - `size=<value>` - Semantic size class (inline, small, medium, large, full)
+ * - `width=<value>%` - Width percentage (0-100)
+ * - `align=<value>` - Alignment (left, center, right)
+ * - `controls` or `controls=true/false` - Show video controls (default: true)
+ * - `autoplay` or `autoplay=true/false` - Auto-play video (default: false)
+ * - `loop` or `loop=true/false` - Loop video (default: false)
+ * - `muted` or `muted=true/false` - Mute video (default: false)
+ *
+ * @param attrString - Attribute string from inside curly braces
+ * @returns Parsed video attributes object
+ *
+ * @example Boolean attributes
+ * ```typescript
+ * parseVideoAttributes('controls');
+ * // { controls: true }
+ *
+ * parseVideoAttributes('controls=false');
+ * // { controls: false }
+ *
+ * parseVideoAttributes('autoplay loop muted');
+ * // { autoplay: true, loop: true, muted: true }
+ * ```
+ *
+ * @example Combined attributes
+ * ```typescript
+ * parseVideoAttributes('size=large align=center controls autoplay');
+ * // { sizeClass: 'large', alignment: 'center', controls: true, autoplay: true }
+ * ```
+ */
+function parseVideoAttributes(attrString: string | undefined): ParsedVideoAttributes {
+	if (!attrString) return { controls: true }; // Default: controls enabled
+
+	const attrs: ParsedVideoAttributes = {};
+
+	// Parse size (same as images)
+	const sizeMatch = attrString.match(/size=["']?(\w+)["']?/);
+	if (sizeMatch) {
+		const size = sizeMatch[1];
+		if (VALID_SIZE_CLASSES.includes(size as ImageSizeClass)) {
+			attrs.sizeClass = size as ImageSizeClass;
+		}
+	}
+
+	// Parse width percentage (same as images)
+	const widthMatch = attrString.match(/width=["']?(\d+)%?["']?/);
+	if (widthMatch) {
+		const width = parseInt(widthMatch[1], 10);
+		if (width >= 0 && width <= 100) {
+			attrs.widthPercent = width;
+		}
+	}
+
+	// Parse alignment (same as images)
+	const alignMatch = attrString.match(/align=["']?(\w+)["']?/);
+	if (alignMatch) {
+		const align = alignMatch[1];
+		if (VALID_ALIGNMENTS.includes(align as ImageAlignment)) {
+			attrs.alignment = align as ImageAlignment;
+		}
+	}
+
+	// Parse boolean attributes: controls, autoplay, loop, muted
+	// Support both {controls} (implicit true) and {controls=false} (explicit false)
+	const parseBooleanAttr = (name: string): boolean | undefined => {
+		// Check for explicit value: attr=true or attr=false
+		const explicitMatch = attrString.match(new RegExp(`${name}=["']?(true|false)["']?`));
+		if (explicitMatch) {
+			return explicitMatch[1] === 'true';
+		}
+
+		// Check for implicit true: just the attribute name present
+		const implicitMatch = attrString.match(new RegExp(`\\b${name}\\b`));
+		if (implicitMatch) {
+			return true;
+		}
+
+		return undefined;
+	};
+
+	const controls = parseBooleanAttr('controls');
+	const autoplay = parseBooleanAttr('autoplay');
+	const loop = parseBooleanAttr('loop');
+	const muted = parseBooleanAttr('muted');
+
+	// Set controls with default value of true
+	attrs.controls = controls !== undefined ? controls : true;
+
+	// Only set other boolean attrs if explicitly specified
+	if (autoplay !== undefined) attrs.autoplay = autoplay;
+	if (loop !== undefined) attrs.loop = loop;
+	if (muted !== undefined) attrs.muted = muted;
+
+	return attrs;
+}
+
+/**
+ * Parse a video from a line
+ *
+ * Supports video markdown syntax with attributes:
+ * - Standard: `!video[alt](url "title")`
+ * - Extended: `!video[alt](url "title"){size=medium controls autoplay}`
+ *
+ * Automatically detects YouTube vs HTML5 videos based on URL.
+ *
+ * @param line - Line containing video markdown
+ * @returns VideoNode or null if no valid video
+ *
+ * @example HTML5 video
+ * ```typescript
+ * parseVideoLine('!video[Demo](demo.mp4){controls}');
+ * // { type: 'video', src: 'demo.mp4', alt: 'Demo', provider: 'html5', controls: true }
+ * ```
+ *
+ * @example YouTube video
+ * ```typescript
+ * parseVideoLine('!video[Tutorial](https://youtube.com/watch?v=ABC123){size=large}');
+ * // { type: 'video', src: '...', alt: 'Tutorial', provider: 'youtube', videoId: 'ABC123', sizeClass: 'large' }
+ * ```
+ */
+function parseVideoLine(line: string): VideoNode | null {
+	const regex = new RegExp(VIDEO_REGEX.source);
+	const match = line.match(regex);
+	if (!match) return null;
+
+	const [, alt, src, , attrsStr] = match;
+
+	// Detect video provider
+	const providerInfo = detectVideoProvider(src);
+
+	// Parse attributes
+	const attrs = parseVideoAttributes(attrsStr);
+
+	// Build VideoNode
+	const videoNode: VideoNode = {
+		type: 'video',
+		src: src.trim(),
+		alt: alt?.trim() || undefined,
+		provider: providerInfo.provider
+	};
+
+	// Add YouTube video ID if applicable
+	if (providerInfo.videoId) {
+		videoNode.videoId = providerInfo.videoId;
+	}
+
+	// Add sizing attributes
+	if (attrs.sizeClass) videoNode.sizeClass = attrs.sizeClass;
+	if (attrs.widthPercent !== undefined) videoNode.widthPercent = attrs.widthPercent;
+	if (attrs.alignment) videoNode.alignment = attrs.alignment;
+
+	// Add playback attributes
+	if (attrs.controls !== undefined) videoNode.controls = attrs.controls;
+	if (attrs.autoplay !== undefined) videoNode.autoplay = attrs.autoplay;
+	if (attrs.loop !== undefined) videoNode.loop = attrs.loop;
+	if (attrs.muted !== undefined) videoNode.muted = attrs.muted;
+
+	return videoNode;
 }
 
 // ============================================================================

@@ -22,6 +22,7 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table';
 import { CustomImage } from '$lib/extensions/image-extension';
+import { Video } from '$lib/extensions/video-extension';
 import { MathInline, MathBlock } from '$lib/extensions/math-extension';
 import {
 	TemplateVariable,
@@ -56,7 +57,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after hashtag/mention extensions added
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v13`;
+	return `h${headingLevels}-v14`;
 }
 
 /**
@@ -134,6 +135,9 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 			inline: false,
 			allowBase64: true
 		}),
+
+		// Videos with extended attributes (HTML5 and YouTube support)
+		Video.configure({}),
 
 		// Tables
 		Table.configure({

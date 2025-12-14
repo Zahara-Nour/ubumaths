@@ -260,7 +260,25 @@ Mention simple : @professeur
 
 Mention avec point : @classe.3eme
 
-Texte mixte : Exercice de #fractions pour @alice niveau #facile`;
+Texte mixte : Exercice de #fractions pour @alice niveau #facile
+
+## Vidéos
+
+Vidéo HTML5 basique :
+
+!video[Demo video](https://www.w3schools.com/html/mov_bbb.mp4)
+
+Vidéo avec options de lecture :
+
+!video[Animation](https://www.w3schools.com/html/mov_bbb.mp4){autoplay loop muted size=medium}
+
+YouTube embed :
+
+!video[Big Buck Bunny](https://www.youtube.com/watch?v=aqz-KE-bpKQ){size=large}
+
+YouTube format court :
+
+!video[Test YouTube](https://youtu.be/aqz-KE-bpKQ){size=medium align=center}`;
 
 	let importMarkdown = $state(INITIAL_MARKDOWN);
 	let editorJsonValue = $state<unknown>(markdownToTipTap(INITIAL_MARKDOWN));
