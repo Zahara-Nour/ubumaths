@@ -281,6 +281,9 @@ function hello() {
 	// Check if there are any differences to show
 	let hasDifferences = $derived(diffResult.some((d) => d.type !== 'unchanged'));
 
+	// Export view mode: 'diff' or 'raw'
+	let exportViewMode = $state<'diff' | 'raw'>('diff');
+
 	// ============================================
 	// Copy to clipboard
 	// ============================================
@@ -1016,106 +1019,115 @@ function hello() {
 				</Card.Header>
 				<Card.Content>
 					{#if !isRoundtripValid && hasDifferences}
-						<!-- Diff View -->
-						<div class="mb-3 flex items-center gap-4 text-xs">
-							<span class="flex items-center gap-1">
-								<span class="inline-block h-3 w-3 rounded bg-red-200 dark:bg-red-900"></span>
-								Supprimé (import)
-							</span>
-							<span class="flex items-center gap-1">
-								<span class="inline-block h-3 w-3 rounded bg-green-200 dark:bg-green-900"></span>
-								Ajouté (export)
-							</span>
-							<span class="flex items-center gap-1">
-								<span class="inline-block h-3 w-3 rounded bg-amber-200 dark:bg-amber-900"></span>
-								Modifié
-							</span>
+						<!-- Tabs for Diff/Raw view -->
+						<div class="mb-4 flex gap-2">
+							<Button
+								size="sm"
+								variant={exportViewMode === 'diff' ? 'default' : 'outline'}
+								onclick={() => (exportViewMode = 'diff')}
+							>
+								Diff
+							</Button>
+							<Button
+								size="sm"
+								variant={exportViewMode === 'raw' ? 'default' : 'outline'}
+								onclick={() => (exportViewMode = 'raw')}
+							>
+								Raw
+							</Button>
 						</div>
-						<div
-							class="max-h-96 overflow-auto rounded-md border border-border bg-muted/30 font-mono text-sm"
-						>
-							{#each diffResult as line (line.lineNumber)}
-								{#if line.type === 'unchanged'}
-									<div class="flex border-b border-border/30 px-2 py-0.5">
-										<span class="w-8 shrink-0 pr-2 text-right text-muted-foreground"
-											>{line.lineNumber}</span
+
+						{#if exportViewMode === 'diff'}
+							<!-- Diff View -->
+							<div class="mb-3 flex items-center gap-4 text-xs">
+								<span class="flex items-center gap-1">
+									<span class="inline-block h-3 w-3 rounded bg-red-200 dark:bg-red-900"></span>
+									Supprimé (import)
+								</span>
+								<span class="flex items-center gap-1">
+									<span class="inline-block h-3 w-3 rounded bg-green-200 dark:bg-green-900"></span>
+									Ajouté (export)
+								</span>
+								<span class="flex items-center gap-1">
+									<span class="inline-block h-3 w-3 rounded bg-amber-200 dark:bg-amber-900"></span>
+									Modifié
+								</span>
+							</div>
+							<div
+								class="max-h-96 overflow-auto rounded-md border border-border bg-muted/30 font-mono text-sm"
+							>
+								{#each diffResult as line (line.lineNumber)}
+									{#if line.type === 'unchanged'}
+										<div class="flex border-b border-border/30 px-2 py-0.5">
+											<span class="w-8 shrink-0 pr-2 text-right text-muted-foreground"
+												>{line.lineNumber}</span
+											>
+											<span class="break-all whitespace-pre-wrap">{line.exportLine || ''}</span>
+										</div>
+									{:else if line.type === 'removed'}
+										<div
+											class="flex border-b border-border/30 bg-red-100 px-2 py-0.5 dark:bg-red-950"
 										>
-										<span class="break-all whitespace-pre-wrap">{line.exportLine || ''}</span>
-									</div>
-								{:else if line.type === 'removed'}
-									<div
-										class="flex border-b border-border/30 bg-red-100 px-2 py-0.5 dark:bg-red-950"
-									>
-										<span class="w-8 shrink-0 pr-2 text-right text-red-600 dark:text-red-400"
-											>-{line.lineNumber}</span
+											<span class="w-8 shrink-0 pr-2 text-right text-red-600 dark:text-red-400"
+												>-{line.lineNumber}</span
+											>
+											<span class="break-all whitespace-pre-wrap text-red-700 dark:text-red-300"
+												>{line.importLine || ''}</span
+											>
+										</div>
+									{:else if line.type === 'added'}
+										<div
+											class="flex border-b border-border/30 bg-green-100 px-2 py-0.5 dark:bg-green-950"
 										>
-										<span class="break-all whitespace-pre-wrap text-red-700 dark:text-red-300"
-											>{line.importLine || ''}</span
+											<span class="w-8 shrink-0 pr-2 text-right text-green-600 dark:text-green-400"
+												>+{line.lineNumber}</span
+											>
+											<span class="break-all whitespace-pre-wrap text-green-700 dark:text-green-300"
+												>{line.exportLine || ''}</span
+											>
+										</div>
+									{:else if line.type === 'modified'}
+										<!-- Show both old and new lines for modifications -->
+										<div
+											class="flex border-b border-border/30 bg-red-100 px-2 py-0.5 dark:bg-red-950"
 										>
-									</div>
-								{:else if line.type === 'added'}
-									<div
-										class="flex border-b border-border/30 bg-green-100 px-2 py-0.5 dark:bg-green-950"
-									>
-										<span class="w-8 shrink-0 pr-2 text-right text-green-600 dark:text-green-400"
-											>+{line.lineNumber}</span
+											<span class="w-8 shrink-0 pr-2 text-right text-red-600 dark:text-red-400"
+												>-{line.lineNumber}</span
+											>
+											<span class="break-all whitespace-pre-wrap text-red-700 dark:text-red-300"
+												>{line.importLine || ''}</span
+											>
+										</div>
+										<div
+											class="flex border-b border-border/30 bg-green-100 px-2 py-0.5 dark:bg-green-950"
 										>
-										<span class="break-all whitespace-pre-wrap text-green-700 dark:text-green-300"
-											>{line.exportLine || ''}</span
-										>
-									</div>
-								{:else if line.type === 'modified'}
-									<!-- Show both old and new lines for modifications -->
-									<div
-										class="flex border-b border-border/30 bg-red-100 px-2 py-0.5 dark:bg-red-950"
-									>
-										<span class="w-8 shrink-0 pr-2 text-right text-red-600 dark:text-red-400"
-											>-{line.lineNumber}</span
-										>
-										<span class="break-all whitespace-pre-wrap text-red-700 dark:text-red-300"
-											>{line.importLine || ''}</span
-										>
-									</div>
-									<div
-										class="flex border-b border-border/30 bg-green-100 px-2 py-0.5 dark:bg-green-950"
-									>
-										<span class="w-8 shrink-0 pr-2 text-right text-green-600 dark:text-green-400"
-											>+{line.lineNumber}</span
-										>
-										<span class="break-all whitespace-pre-wrap text-green-700 dark:text-green-300"
-											>{line.exportLine || ''}</span
-										>
-									</div>
-								{/if}
-							{/each}
-						</div>
-						<!-- Also show raw export for reference -->
-						<details class="group mt-4">
-							<summary class="mb-2 flex cursor-pointer items-center gap-2 text-sm font-medium">
-								<span class="transition-transform group-open:rotate-90">&#9654;</span>
-								Voir le markdown brut exporté
-							</summary>
-							<textarea
-								class="h-32 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
-								value={exportMarkdown}
-								readonly
-								aria-label="Markdown exporte brut"
-							></textarea>
-						</details>
-					{:else}
-						<!-- Normal view when roundtrip is OK -->
-						<details open class="group">
-							<summary class="mb-2 flex cursor-pointer items-center gap-2 text-sm font-medium">
-								<span class="transition-transform group-open:rotate-90">&#9654;</span>
-								Markdown genere
-							</summary>
+											<span class="w-8 shrink-0 pr-2 text-right text-green-600 dark:text-green-400"
+												>+{line.lineNumber}</span
+											>
+											<span class="break-all whitespace-pre-wrap text-green-700 dark:text-green-300"
+												>{line.exportLine || ''}</span
+											>
+										</div>
+									{/if}
+								{/each}
+							</div>
+						{:else}
+							<!-- Raw View -->
 							<textarea
 								class="h-48 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 								value={exportMarkdown}
 								readonly
-								aria-label="Markdown exporte"
+								aria-label="Markdown exporte brut"
 							></textarea>
-						</details>
+						{/if}
+					{:else}
+						<!-- Normal view when roundtrip is OK -->
+						<textarea
+							class="h-48 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+							value={exportMarkdown}
+							readonly
+							aria-label="Markdown exporte"
+						></textarea>
 					{/if}
 				</Card.Content>
 			</Card.Root>
