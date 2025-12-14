@@ -215,16 +215,33 @@ function convertMathBlockToMarkdown(math: JSONContent): string {
 
 /**
  * Convert image to Markdown
+ * Supports extended attributes: sizeClass, widthPercent, alignment, caption
+ * Output: ![alt](src "title"){size=large align=center width=50% caption="..."}
  */
 function convertImageToMarkdown(img: JSONContent): string {
 	const src = (img.attrs?.src as string) || '';
 	const alt = (img.attrs?.alt as string) || '';
 	const title = img.attrs?.title as string | undefined;
+	const sizeClass = img.attrs?.sizeClass as string | undefined;
+	const widthPercent = img.attrs?.widthPercent as number | undefined;
+	const alignment = img.attrs?.alignment as string | undefined;
+	const caption = img.attrs?.caption as string | undefined;
 
-	if (title) {
-		return `![${alt}](${src} "${title}")`;
+	// Build base markdown
+	let markdown = title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`;
+
+	// Build extended attributes if any
+	const attrs: string[] = [];
+	if (sizeClass) attrs.push(`size=${sizeClass}`);
+	if (widthPercent !== undefined) attrs.push(`width=${widthPercent}%`);
+	if (alignment) attrs.push(`align=${alignment}`);
+	if (caption) attrs.push(`caption="${caption}"`);
+
+	if (attrs.length > 0) {
+		markdown += `{${attrs.join(' ')}}`;
 	}
-	return `![${alt}](${src})`;
+
+	return markdown;
 }
 
 // ============================================================================

@@ -306,15 +306,24 @@ function convertMathBlock(math: MathBlockNode): JSONContent {
 
 /**
  * Convert ImageNode to TipTap image
+ * Supports extended attributes: sizeClass, widthPercent, alignment, caption
  */
 function convertImage(img: ImageNode): JSONContent {
+	const attrs: Record<string, unknown> = {
+		src: img.src,
+		alt: img.alt || '',
+		title: img.title || null
+	};
+
+	// Add extended attributes if present
+	if (img.sizeClass) attrs.sizeClass = img.sizeClass;
+	if (img.widthPercent !== undefined) attrs.widthPercent = img.widthPercent;
+	if (img.alignment) attrs.alignment = img.alignment;
+	if (img.caption) attrs.caption = img.caption;
+
 	return {
 		type: 'image',
-		attrs: {
-			src: img.src,
-			alt: img.alt || '',
-			title: img.title || null
-		}
+		attrs
 	};
 }
 
