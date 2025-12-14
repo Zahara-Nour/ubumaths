@@ -209,10 +209,15 @@
 		// Prevent reactive updates during initialization
 		isUpdatingFromProp = true;
 
+		// TipTap accepts both HTML string and JSON object for content
+		// Priority: jsonValue (if object) > value (if string) > empty
+		const initialContent =
+			mode === 'form' ? (jsonValue && typeof jsonValue === 'object' ? jsonValue : value || '') : '';
+
 		editor = new Editor({
 			element: editorElement,
 			extensions,
-			content: mode === 'form' ? value || '' : '',
+			content: initialContent,
 			editorProps,
 			editable: !disabled,
 			onUpdate: ({ editor: ed }) => {
@@ -253,6 +258,22 @@
 		if (currentHtml !== value) {
 			isUpdatingFromProp = true;
 			editor.commands.setContent(value);
+			isUpdatingFromProp = false;
+		}
+	});
+
+	/**
+	 * Sync external jsonValue changes (form mode only)
+	 * This is used when content is set programmatically via JSON (e.g., from markdown import)
+	 */
+	$effect(() => {
+		if (mode !== 'form' || !editor || !jsonValue || typeof jsonValue !== 'object') return;
+
+		// Compare JSON to avoid infinite loops
+		const currentJson = editor.getJSON();
+		if (JSON.stringify(currentJson) !== JSON.stringify(jsonValue)) {
+			isUpdatingFromProp = true;
+			editor.commands.setContent(jsonValue);
 			isUpdatingFromProp = false;
 		}
 	});
