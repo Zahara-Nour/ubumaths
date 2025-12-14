@@ -147,6 +147,7 @@
 		"@tiptap/extension-link": "^3.7.0",
 		"@tiptap/extension-subscript": "^3.7.0",
 		"@tiptap/extension-superscript": "^3.7.0",
+		"@tiptap/extension-table": "^3.7.0",
 		"@tiptap/extension-task-item": "^3.7.0",
 		"@tiptap/extension-task-list": "^3.7.0",
 		"@tiptap/extension-text-align": "^3.7.0",
@@ -154,6 +155,7 @@
 		"@tiptap/extension-underline": "^3.7.0",
 		"@tiptap/pm": "^3.13.0",
 		"@tiptap/starter-kit": "^3.7.0",
+		"@tiptap/suggestion": "^3.13.0",
 		"@types/jszip": "^3.4.1",
 		"@typopro/web-linux-libertine": "^3.7.5",
 		"@uiw/codemirror-theme-dracula": "^4.25.3",
@@ -181,6 +183,7 @@
 		"pdf-parse": "^2.4.5",
 		"proper-lockfile": "^4.1.2",
 		"svelte-sonner": "^1.0.5",
+		"tippy.js": "^6.3.7",
 		"ws": "^8.18.3",
 		"yaml": "^2.8.1",
 		"zod": "^4.1.12"

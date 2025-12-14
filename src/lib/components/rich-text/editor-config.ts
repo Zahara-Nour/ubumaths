@@ -20,6 +20,7 @@ import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
+import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table';
 import { CustomImage } from '$lib/extensions/image-extension';
 import { MathInline, MathBlock } from '$lib/extensions/math-extension';
 import {
@@ -28,6 +29,8 @@ import {
 	TemplateEval
 } from '$lib/extensions/template-extensions';
 import { BlankField } from '$lib/extensions/blank-extension';
+import { Hashtag } from '$lib/extensions/hashtag-extension';
+import { Mention } from '$lib/extensions/mention-extension';
 
 // Note: Link and Underline are now included in StarterKit v3
 // We configure them via StarterKit options to avoid duplicates
@@ -50,10 +53,10 @@ const extensionsCache = new Map<string, Extensions>();
 
 /**
  * Create a cache key from options
- * Updated cache key to invalidate old editor instances after template extensions added
+ * Updated cache key to invalidate old editor instances after hashtag/mention extensions added
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v11`;
+	return `h${headingLevels}-v13`;
 }
 
 /**
@@ -122,10 +125,37 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 		TemplateEval.configure({}),
 		BlankField.configure({}),
 
+		// Social features
+		Hashtag.configure({}),
+		Mention.configure({}),
+
 		// Images with extended attributes (sizeClass, widthPercent, alignment, caption)
 		CustomImage.configure({
 			inline: false,
 			allowBase64: true
+		}),
+
+		// Tables
+		Table.configure({
+			resizable: false,
+			HTMLAttributes: {
+				class: 'border-collapse border border-border my-4'
+			}
+		}),
+		TableRow.configure({
+			HTMLAttributes: {
+				class: 'border-b border-border'
+			}
+		}),
+		TableHeader.configure({
+			HTMLAttributes: {
+				class: 'border border-border bg-muted px-3 py-2 text-left font-semibold'
+			}
+		}),
+		TableCell.configure({
+			HTMLAttributes: {
+				class: 'border border-border px-3 py-2'
+			}
 		})
 	];
 }

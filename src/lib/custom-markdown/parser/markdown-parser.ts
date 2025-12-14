@@ -28,7 +28,10 @@ import type {
 	BlockquoteNode,
 	ImageSizeClass,
 	ImageAlignment,
-	BlankNode
+	BlankNode,
+	LinkNode,
+	HashtagNode,
+	MentionNode
 } from '../types';
 import {
 	extractMath,
@@ -73,6 +76,35 @@ import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser
 const IMAGE_REGEX = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\{([^}]*)\})?/g;
 
 /**
+ * Regex for linked images: [![alt](src "imgTitle")](href "linkTitle"){attrs}
+ *
+ * Captures:
+ * - Group 1: alt text
+ * - Group 2: image URL (src)
+ * - Group 3: optional image title
+ * - Group 4: link URL (href)
+ * - Group 5: optional link title
+ * - Group 6: optional attributes (inside curly braces)
+ *
+ * @example Basic linked image
+ * ```
+ * [![Click me](image.png)](https://example.com)
+ * ```
+ *
+ * @example Linked image with titles
+ * ```
+ * [![Click me](image.png "Image title")](https://example.com "Link title")
+ * ```
+ *
+ * @example Linked image with attributes
+ * ```
+ * [![Click me](image.png)](https://example.com){size=medium align=center}
+ * ```
+ */
+const LINKED_IMAGE_REGEX =
+	/\[!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\{([^}]*)\})?/g;
+
+/**
  * Regex for headings: # Heading or ## Heading, etc.
  */
 const HEADING_REGEX = /^(#{1,6})\s+(.+)$/;
@@ -91,6 +123,64 @@ const HEADING_REGEX = /^(#{1,6})\s+(.+)$/;
  * ```
  */
 const BLANK_REGEX = /\{\{blank:(\d+)\}\}/g;
+
+/**
+ * Regex for markdown links: [text](url) or [text](url "title")
+ *
+ * Uses negative lookbehind to NOT match images (which have ! prefix).
+ *
+ * Captures:
+ * - Group 1: link text
+ * - Group 2: URL
+ * - Group 3: optional title (inside quotes)
+ *
+ * @example
+ * ```
+ * [text](https://example.com)
+ * [text](https://example.com "title")
+ * ```
+ */
+const LINK_REGEX = /(?<!!)\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g;
+
+/**
+ * Regex for hashtags: #tag (must start with lowercase letter, supports accents)
+ *
+ * Uses negative lookbehind to NOT match if preceded by alphanumeric.
+ * Does NOT match:
+ * - Headings: "# Heading" (space after #)
+ * - Hex colors: "#FF0000" (uppercase only)
+ *
+ * Starts with lowercase letter to avoid matching hex colors (#AABBCC).
+ *
+ * Captures:
+ * - Group 1: tag name (without #)
+ *
+ * @example
+ * ```
+ * #mathematiques
+ * #equation-2nde
+ * #algebre_II
+ * ```
+ */
+const HASHTAG_REGEX = /(?<![a-zA-Z0-9])#([a-zàâäéèêëïîôùûüçœæ][a-zA-Zàâäéèêëïîôùûüçœæ0-9_-]*)/g;
+
+/**
+ * Regex for mentions: @username (must start with letter)
+ *
+ * Uses negative lookbehind to NOT match if preceded by alphanumeric, dot, or @.
+ * This prevents matching emails like "user@example.com".
+ *
+ * Captures:
+ * - Group 1: username (without @)
+ *
+ * @example
+ * ```
+ * @alice
+ * @jean.dupont
+ * @user_123
+ * ```
+ */
+const MENTION_REGEX = /(?<![a-zA-Z0-9.@])@([a-zA-Z][a-zA-Z0-9_.-]*)/g;
 
 // ============================================================================
 // MAIN PARSE FUNCTION
@@ -234,7 +324,9 @@ function parseBlocks(
 			const tableLines = lines.slice(start, end + 1);
 			const table = parseTable(tableLines);
 			if (table) {
-				blocks.push(table);
+				// Post-process table to restore math placeholders in cell content
+				const processedTable = processTableCellContent(table, placeholders);
+				blocks.push(processedTable);
 			}
 			i = end + 1;
 			continue;
@@ -254,9 +346,10 @@ function parseBlocks(
 			}
 		}
 
-		// Check for image on its own line
+		// Check for image on its own line (linked or standard)
+		const linkedImageMatch = line.match(LINKED_IMAGE_REGEX);
 		const imageMatch = line.match(IMAGE_REGEX);
-		if (imageMatch && options.parseImages !== false) {
+		if ((linkedImageMatch || imageMatch) && options.parseImages !== false) {
 			const image = parseImageLine(line);
 			if (image) {
 				blocks.push(image);
@@ -427,6 +520,148 @@ function parseTextForBlanks(text: string): (string | BlankNode)[] {
 }
 
 /**
+ * Parse text for links ([text](url) or [text](url "title"))
+ *
+ * Extracts markdown links from text and returns an array of
+ * text segments and LinkNodes. Text segments will be further processed
+ * for formatting (bold, italic, code).
+ *
+ * Note: Uses negative lookbehind to not match images (![alt](url)).
+ *
+ * @param text - Text possibly containing [text](url) syntax
+ * @returns Array of strings (text segments) and LinkNodes
+ */
+function parseTextForLinks(text: string): (string | LinkNode)[] {
+	if (!text) return [];
+
+	const results: (string | LinkNode)[] = [];
+	let position = 0;
+
+	// Reset regex state for global matching
+	const linkRegex = new RegExp(LINK_REGEX.source, 'g');
+	let match: RegExpExecArray | null;
+
+	while ((match = linkRegex.exec(text)) !== null) {
+		// Add text segment before this link
+		if (match.index > position) {
+			results.push(text.substring(position, match.index));
+		}
+
+		// Add link node
+		const linkNode: LinkNode = {
+			type: 'link',
+			text: match[1], // link text
+			url: match[2] // URL
+		};
+
+		// Add optional title if present
+		if (match[3]) {
+			linkNode.title = match[3];
+		}
+
+		results.push(linkNode);
+		position = match.index + match[0].length;
+	}
+
+	// Add remaining text after last link
+	if (position < text.length) {
+		results.push(text.substring(position));
+	}
+
+	return results;
+}
+
+/**
+ * Parse text for hashtags (#tag)
+ *
+ * Extracts hashtag markers from text and returns an array of
+ * text segments and HashtagNodes. Text segments will be further processed
+ * for formatting (bold, italic, code).
+ *
+ * @param text - Text possibly containing #tag syntax
+ * @returns Array of strings (text segments) and HashtagNodes
+ */
+function parseTextForHashtags(text: string): (string | HashtagNode)[] {
+	if (!text) return [];
+
+	const results: (string | HashtagNode)[] = [];
+	let position = 0;
+
+	// Reset regex state for global matching
+	const hashtagRegex = new RegExp(HASHTAG_REGEX.source, 'g');
+	let match: RegExpExecArray | null;
+
+	while ((match = hashtagRegex.exec(text)) !== null) {
+		// Add text segment before this hashtag
+		if (match.index > position) {
+			results.push(text.substring(position, match.index));
+		}
+
+		// Add hashtag node
+		const hashtagNode: HashtagNode = {
+			type: 'hashtag',
+			tag: match[1] // tag name without #
+		};
+
+		results.push(hashtagNode);
+		position = match.index + match[0].length;
+	}
+
+	// Add remaining text after last hashtag
+	if (position < text.length) {
+		results.push(text.substring(position));
+	}
+
+	return results;
+}
+
+/**
+ * Parse text for mentions (@username)
+ *
+ * Extracts mention markers from text and returns an array of
+ * text segments and MentionNodes. Text segments will be further processed
+ * for formatting (bold, italic, code).
+ *
+ * Note: Uses negative lookbehind to not match emails (user@example.com).
+ *
+ * @param text - Text possibly containing @username syntax
+ * @returns Array of strings (text segments) and MentionNodes
+ */
+function parseTextForMentions(text: string): (string | MentionNode)[] {
+	if (!text) return [];
+
+	const results: (string | MentionNode)[] = [];
+	let position = 0;
+
+	// Reset regex state for global matching
+	const mentionRegex = new RegExp(MENTION_REGEX.source, 'g');
+	let match: RegExpExecArray | null;
+
+	while ((match = mentionRegex.exec(text)) !== null) {
+		// Add text segment before this mention
+		if (match.index > position) {
+			results.push(text.substring(position, match.index));
+		}
+
+		// Add mention node
+		const mentionNode: MentionNode = {
+			type: 'mention',
+			username: match[1] // username without @
+		};
+
+		results.push(mentionNode);
+		position = match.index + match[0].length;
+	}
+
+	// Add remaining text after last mention
+	if (position < text.length) {
+		results.push(text.substring(position));
+	}
+
+	return results;
+}
+
+/**
  * Parse text formatting (bold, italic, code) for a single text segment
  *
  * Parses markdown inline formatting and returns text nodes with appropriate properties.
@@ -494,31 +729,66 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 }
 
 /**
- * Parse text formatting (bold, italic, code) with blank support
+ * Parse text formatting (bold, italic, code) with blank, link, hashtag, and mention support
  *
- * First extracts {{blank:N}} placeholders, then parses markdown inline
- * formatting on the remaining text segments.
- * Priority order: blanks > code > bold > italic
+ * Processing pipeline:
+ * 1. Extract {{blank:N}} placeholders
+ * 2. Extract [text](url) links
+ * 3. Extract #hashtags
+ * 4. Extract @mentions
+ * 5. Parse remaining text for formatting (bold, italic, code)
  *
- * @param text - Plain text possibly with markdown formatting and blanks
- * @returns Array of inline nodes (text, blank)
+ * Priority order: blanks > links > hashtags > mentions > code > bold > italic
+ *
+ * @param text - Plain text possibly with markdown formatting, blanks, links, hashtags, and mentions
+ * @returns Array of inline nodes (text, blank, link, hashtag, mention)
  */
 function parseTextFormatting(text: string): InlineNode[] {
 	if (!text) return [];
 
 	// Step 1: Extract blanks first
-	const segments = parseTextForBlanks(text);
+	const blankSegments = parseTextForBlanks(text);
 
-	// Step 2: Process each segment
+	// Step 2-5: Process each segment through the pipeline
 	const nodes: InlineNode[] = [];
-	for (const segment of segments) {
-		if (typeof segment === 'string') {
-			// Parse text formatting on text segments
-			const formatted = parseTextFormattingSegment(segment);
-			nodes.push(...formatted);
+	for (const blankSegment of blankSegments) {
+		if (typeof blankSegment === 'string') {
+			// Step 2: Extract links from text segment
+			const linkSegments = parseTextForLinks(blankSegment);
+
+			for (const linkSegment of linkSegments) {
+				if (typeof linkSegment === 'string') {
+					// Step 3: Extract hashtags from text segment
+					const hashtagSegments = parseTextForHashtags(linkSegment);
+
+					for (const hashtagSegment of hashtagSegments) {
+						if (typeof hashtagSegment === 'string') {
+							// Step 4: Extract mentions from text segment
+							const mentionSegments = parseTextForMentions(hashtagSegment);
+
+							for (const mentionSegment of mentionSegments) {
+								if (typeof mentionSegment === 'string') {
+									// Step 5: Parse text formatting on remaining text
+									const formatted = parseTextFormattingSegment(mentionSegment);
+									nodes.push(...formatted);
+								} else {
+									// MentionNode - add directly
+									nodes.push(mentionSegment);
+								}
+							}
+						} else {
+							// HashtagNode - add directly
+							nodes.push(hashtagSegment);
+						}
+					}
+				} else {
+					// LinkNode - add directly
+					nodes.push(linkSegment);
+				}
+			}
 		} else {
 			// BlankNode - add directly
-			nodes.push(segment);
+			nodes.push(blankSegment);
 		}
 	}
 
@@ -749,6 +1019,70 @@ function processListInlineContent(
 }
 
 // ============================================================================
+// TABLE PROCESSING
+// ============================================================================
+
+/**
+ * Restore math placeholders in a string to their original markdown syntax
+ *
+ * This converts __MATH_0__ back to $expression$ or ~expression~ etc.
+ * Used for table cell content which stores strings, not parsed InlineNodes.
+ *
+ * @param text - Text with placeholders
+ * @param placeholders - Math placeholders from extraction
+ * @returns Text with placeholders restored to original syntax
+ */
+function restorePlaceholdersToMarkdown(text: string, placeholders: MathPlaceholder[]): string {
+	let result = text;
+
+	for (const p of placeholders) {
+		if (result.includes(p.placeholder)) {
+			// Restore to original markdown syntax based on type
+			const [openDelim, closeDelim] = p.isBlock
+				? p.syntax === 'latex'
+					? ['$$', '$$']
+					: ['~~', '~~']
+				: p.syntax === 'latex'
+					? ['$', '$']
+					: ['~', '~'];
+
+			result = result.replace(p.placeholder, `${openDelim}${p.expression}${closeDelim}`);
+		}
+	}
+
+	return result;
+}
+
+/**
+ * Process table to restore math placeholders in cell content
+ *
+ * Table cells store content as strings, so we restore placeholders
+ * to their original markdown syntax for downstream processing.
+ *
+ * @param table - TableNode to process
+ * @param placeholders - Math placeholders from extraction
+ * @returns Processed TableNode with placeholders restored in cell content
+ */
+function processTableCellContent(
+	table: import('../types').TableNode,
+	placeholders: MathPlaceholder[]
+): import('../types').TableNode {
+	return {
+		...table,
+		header: table.header.map((cell) => ({
+			...cell,
+			content: restorePlaceholdersToMarkdown(cell.content, placeholders)
+		})),
+		rows: table.rows.map((row) =>
+			row.map((cell) => ({
+				...cell,
+				content: restorePlaceholdersToMarkdown(cell.content, placeholders)
+			}))
+		)
+	};
+}
+
+// ============================================================================
 // IMAGE PARSING
 // ============================================================================
 
@@ -849,8 +1183,9 @@ function parseImageAttributes(attrString: string | undefined): ParsedImageAttrib
 /**
  * Parse an image from a line
  *
- * Supports standard markdown and extended syntax with attributes:
+ * Supports standard markdown, linked images, and extended syntax with attributes:
  * - Standard: `![alt](url "title")`
+ * - Linked: `[![alt](url)](href)` or `[![alt](url "imgTitle")](href "linkTitle")`
  * - Extended: `![alt](url "title"){size=medium align=center caption="Figure 1"}`
  *
  * @param line - Line containing image markdown
@@ -862,6 +1197,12 @@ function parseImageAttributes(attrString: string | undefined): ParsedImageAttrib
  * // { type: 'image', src: 'cat.png', alt: 'A cat', title: 'My cat' }
  * ```
  *
+ * @example Linked image
+ * ```typescript
+ * parseImageLine('[![Click](cat.png)](https://example.com)');
+ * // { type: 'image', src: 'cat.png', alt: 'Click', href: 'https://example.com' }
+ * ```
+ *
  * @example Extended syntax
  * ```typescript
  * parseImageLine('![Figure](graph.png){size=large align=center caption="Results"}');
@@ -869,7 +1210,37 @@ function parseImageAttributes(attrString: string | undefined): ParsedImageAttrib
  * ```
  */
 function parseImageLine(line: string): ImageNode | null {
-	// Use non-global regex for single match extraction
+	// First, try to match linked image: [![alt](src)](href)
+	const linkedRegex =
+		/\[!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\{([^}]*)\})?/;
+	const linkedMatch = line.match(linkedRegex);
+
+	if (linkedMatch) {
+		const [, alt, src, imgTitle, href, linkTitle, attrsStr] = linkedMatch;
+
+		// Parse extended attributes if present
+		const attrs = parseImageAttributes(attrsStr);
+
+		// Build ImageNode with link fields
+		const imageNode: ImageNode = {
+			type: 'image',
+			src: src.trim(),
+			alt: alt?.trim() || undefined,
+			title: imgTitle?.trim(),
+			href: href.trim(),
+			linkTitle: linkTitle?.trim()
+		};
+
+		// Add extended attributes if present
+		if (attrs.sizeClass) imageNode.sizeClass = attrs.sizeClass;
+		if (attrs.widthPercent !== undefined) imageNode.widthPercent = attrs.widthPercent;
+		if (attrs.alignment) imageNode.alignment = attrs.alignment;
+		if (attrs.caption) imageNode.caption = attrs.caption;
+
+		return imageNode;
+	}
+
+	// Fall back to standard image: ![alt](src)
 	const regex = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)(?:\{([^}]*)\})?/;
 	const match = line.match(regex);
 	if (!match) return null;

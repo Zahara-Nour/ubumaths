@@ -609,3 +609,524 @@ describe('parseMarkdown - blank support', () => {
 		}
 	});
 });
+
+describe('parseMarkdown - link support', () => {
+	it('should parse simple link', () => {
+		const markdown = '[Click here](https://example.com)';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('link');
+
+			if (paragraph.children[0].type === 'link') {
+				expect(paragraph.children[0].text).toBe('Click here');
+				expect(paragraph.children[0].url).toBe('https://example.com');
+				expect(paragraph.children[0].title).toBeUndefined();
+			}
+		}
+	});
+
+	it('should parse link with title', () => {
+		const markdown = '[Click here](https://example.com "My title")';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('link');
+
+			if (paragraph.children[0].type === 'link') {
+				expect(paragraph.children[0].text).toBe('Click here');
+				expect(paragraph.children[0].url).toBe('https://example.com');
+				expect(paragraph.children[0].title).toBe('My title');
+			}
+		}
+	});
+
+	it('should parse link surrounded by text', () => {
+		const markdown = 'Visit [our website](https://example.com) for more info.';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(3);
+
+			// First: text before link
+			expect(paragraph.children[0].type).toBe('text');
+			if (paragraph.children[0].type === 'text') {
+				expect(paragraph.children[0].content).toBe('Visit ');
+			}
+
+			// Second: the link
+			expect(paragraph.children[1].type).toBe('link');
+			if (paragraph.children[1].type === 'link') {
+				expect(paragraph.children[1].text).toBe('our website');
+				expect(paragraph.children[1].url).toBe('https://example.com');
+			}
+
+			// Third: text after link
+			expect(paragraph.children[2].type).toBe('text');
+			if (paragraph.children[2].type === 'text') {
+				expect(paragraph.children[2].content).toBe(' for more info.');
+			}
+		}
+	});
+
+	it('should parse multiple links', () => {
+		const markdown = '[First](https://first.com) and [Second](https://second.com)';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(3);
+
+			// First link
+			expect(paragraph.children[0].type).toBe('link');
+			if (paragraph.children[0].type === 'link') {
+				expect(paragraph.children[0].text).toBe('First');
+				expect(paragraph.children[0].url).toBe('https://first.com');
+			}
+
+			// Text between
+			expect(paragraph.children[1].type).toBe('text');
+			if (paragraph.children[1].type === 'text') {
+				expect(paragraph.children[1].content).toBe(' and ');
+			}
+
+			// Second link
+			expect(paragraph.children[2].type).toBe('link');
+			if (paragraph.children[2].type === 'link') {
+				expect(paragraph.children[2].text).toBe('Second');
+				expect(paragraph.children[2].url).toBe('https://second.com');
+			}
+		}
+	});
+
+	it('should not parse images as links (negative lookbehind)', () => {
+		const markdown = '![Alt text](image.png)';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('image');
+
+		// Should NOT be parsed as a link
+		if (ast.children[0].type === 'image') {
+			expect(ast.children[0].src).toBe('image.png');
+			expect(ast.children[0].alt).toBe('Alt text');
+		}
+	});
+
+	it('should parse link and image on same line', () => {
+		const markdown = 'Check [this](https://example.com) and ![img](pic.png)';
+		const ast = parseMarkdown(markdown);
+
+		// This is complex - the whole line becomes a paragraph since image is inline
+		// Actually images on their own line are block-level, mixed with text they stay inline
+		expect(ast.children.length).toBeGreaterThan(0);
+	});
+});
+
+describe('parseMarkdown - hashtag support', () => {
+	it('should parse simple hashtag', () => {
+		const markdown = '#mathematiques';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('hashtag');
+
+			if (paragraph.children[0].type === 'hashtag') {
+				expect(paragraph.children[0].tag).toBe('mathematiques');
+			}
+		}
+	});
+
+	it('should parse hashtag with accents', () => {
+		const markdown = '#équation-dérivée';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('hashtag');
+
+			if (paragraph.children[0].type === 'hashtag') {
+				expect(paragraph.children[0].tag).toBe('équation-dérivée');
+			}
+		}
+	});
+
+	it('should parse hashtag with underscore and digits', () => {
+		const markdown = '#algebre_2nde';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('hashtag');
+
+			if (paragraph.children[0].type === 'hashtag') {
+				expect(paragraph.children[0].tag).toBe('algebre_2nde');
+			}
+		}
+	});
+
+	it('should NOT parse heading as hashtag (space after #)', () => {
+		const markdown = '# Heading';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('heading');
+
+		if (ast.children[0].type === 'heading') {
+			expect(ast.children[0].level).toBe(1);
+		}
+	});
+
+	it('should NOT parse hex color as hashtag (digits only)', () => {
+		const markdown = 'Color: #FF0000';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			// Should be plain text, not hashtag
+			const hashtagNode = paragraph.children.find((n) => n.type === 'hashtag');
+			expect(hashtagNode).toBeUndefined();
+
+			// Text should contain #FF0000
+			const textContent = paragraph.children
+				.filter((n) => n.type === 'text')
+				.map((n) => (n.type === 'text' ? n.content : ''))
+				.join('');
+			expect(textContent).toContain('#FF0000');
+		}
+	});
+
+	it('should parse multiple hashtags', () => {
+		const markdown = '#math #facile';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			const hashtags = paragraph.children.filter((n) => n.type === 'hashtag');
+			expect(hashtags).toHaveLength(2);
+
+			if (hashtags[0].type === 'hashtag' && hashtags[1].type === 'hashtag') {
+				expect(hashtags[0].tag).toBe('math');
+				expect(hashtags[1].tag).toBe('facile');
+			}
+		}
+	});
+
+	it('should parse hashtag in text', () => {
+		const markdown = 'Exercice sur les #fractions niveau #facile';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have text + hashtag + text + hashtag
+			expect(paragraph.children.length).toBeGreaterThanOrEqual(4);
+
+			// First text
+			expect(paragraph.children[0].type).toBe('text');
+			if (paragraph.children[0].type === 'text') {
+				expect(paragraph.children[0].content).toBe('Exercice sur les ');
+			}
+
+			// First hashtag
+			expect(paragraph.children[1].type).toBe('hashtag');
+			if (paragraph.children[1].type === 'hashtag') {
+				expect(paragraph.children[1].tag).toBe('fractions');
+			}
+
+			// Find the second hashtag
+			const hashtags = paragraph.children.filter((n) => n.type === 'hashtag');
+			expect(hashtags).toHaveLength(2);
+			if (hashtags[1].type === 'hashtag') {
+				expect(hashtags[1].tag).toBe('facile');
+			}
+		}
+	});
+
+	it('should NOT parse hashtag preceded by alphanumeric', () => {
+		const markdown = 'test#nohashtag';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			// Should be plain text, no hashtag
+			const hashtagNode = paragraph.children.find((n) => n.type === 'hashtag');
+			expect(hashtagNode).toBeUndefined();
+		}
+	});
+
+	it('should parse hashtag with math', () => {
+		const markdown = 'Calculate $x^2$ #exercice';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have math and hashtag
+			const mathNode = paragraph.children.find((n) => n.type === 'math-inline');
+			expect(mathNode).toBeDefined();
+
+			const hashtagNode = paragraph.children.find((n) => n.type === 'hashtag');
+			expect(hashtagNode).toBeDefined();
+			if (hashtagNode && hashtagNode.type === 'hashtag') {
+				expect(hashtagNode.tag).toBe('exercice');
+			}
+		}
+	});
+});
+
+describe('parseMarkdown - mention support', () => {
+	it('should parse simple mention', () => {
+		const markdown = '@alice';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('mention');
+
+			if (paragraph.children[0].type === 'mention') {
+				expect(paragraph.children[0].username).toBe('alice');
+			}
+		}
+	});
+
+	it('should parse mention with dot', () => {
+		const markdown = '@jean.dupont';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('mention');
+
+			if (paragraph.children[0].type === 'mention') {
+				expect(paragraph.children[0].username).toBe('jean.dupont');
+			}
+		}
+	});
+
+	it('should parse mention with underscore and digits', () => {
+		const markdown = '@user_123';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('mention');
+
+			if (paragraph.children[0].type === 'mention') {
+				expect(paragraph.children[0].username).toBe('user_123');
+			}
+		}
+	});
+
+	it('should NOT parse email as mention', () => {
+		const markdown = 'Contact user@example.com for help';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			// Should NOT have any mention nodes
+			const mentionNode = paragraph.children.find((n) => n.type === 'mention');
+			expect(mentionNode).toBeUndefined();
+
+			// Email should be in text
+			const textContent = paragraph.children
+				.filter((n) => n.type === 'text')
+				.map((n) => (n.type === 'text' ? n.content : ''))
+				.join('');
+			expect(textContent).toContain('user@example.com');
+		}
+	});
+
+	it('should NOT parse mention starting with digit', () => {
+		const markdown = '@123user';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			// Should NOT have mention (starts with digit)
+			const mentionNode = paragraph.children.find((n) => n.type === 'mention');
+			expect(mentionNode).toBeUndefined();
+		}
+	});
+
+	it('should parse multiple mentions', () => {
+		const markdown = '@alice @bob';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			const mentions = paragraph.children.filter((n) => n.type === 'mention');
+			expect(mentions).toHaveLength(2);
+
+			if (mentions[0].type === 'mention' && mentions[1].type === 'mention') {
+				expect(mentions[0].username).toBe('alice');
+				expect(mentions[1].username).toBe('bob');
+			}
+		}
+	});
+
+	it('should parse mention in text', () => {
+		const markdown = 'Bravo @marie pour cette solution !';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have text + mention + text
+			expect(paragraph.children.length).toBeGreaterThanOrEqual(3);
+
+			// First text
+			expect(paragraph.children[0].type).toBe('text');
+			if (paragraph.children[0].type === 'text') {
+				expect(paragraph.children[0].content).toBe('Bravo ');
+			}
+
+			// Mention
+			expect(paragraph.children[1].type).toBe('mention');
+			if (paragraph.children[1].type === 'mention') {
+				expect(paragraph.children[1].username).toBe('marie');
+			}
+
+			// After text
+			expect(paragraph.children[2].type).toBe('text');
+			if (paragraph.children[2].type === 'text') {
+				expect(paragraph.children[2].content).toBe(' pour cette solution !');
+			}
+		}
+	});
+
+	it('should NOT parse mention preceded by alphanumeric', () => {
+		const markdown = 'test@notamention';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			// Should be plain text, no mention
+			const mentionNode = paragraph.children.find((n) => n.type === 'mention');
+			expect(mentionNode).toBeUndefined();
+		}
+	});
+
+	it('should parse mention with hashtag', () => {
+		const markdown = 'Exercice #algebre pour @classe';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have both hashtag and mention
+			const hashtagNode = paragraph.children.find((n) => n.type === 'hashtag');
+			expect(hashtagNode).toBeDefined();
+			if (hashtagNode && hashtagNode.type === 'hashtag') {
+				expect(hashtagNode.tag).toBe('algebre');
+			}
+
+			const mentionNode = paragraph.children.find((n) => n.type === 'mention');
+			expect(mentionNode).toBeDefined();
+			if (mentionNode && mentionNode.type === 'mention') {
+				expect(mentionNode.username).toBe('classe');
+			}
+		}
+	});
+
+	it('should parse mention with link', () => {
+		const markdown = 'Contact @admin at [support](https://help.example.com)';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have both mention and link
+			const mentionNode = paragraph.children.find((n) => n.type === 'mention');
+			expect(mentionNode).toBeDefined();
+			if (mentionNode && mentionNode.type === 'mention') {
+				expect(mentionNode.username).toBe('admin');
+			}
+
+			const linkNode = paragraph.children.find((n) => n.type === 'link');
+			expect(linkNode).toBeDefined();
+			if (linkNode && linkNode.type === 'link') {
+				expect(linkNode.text).toBe('support');
+				expect(linkNode.url).toBe('https://help.example.com');
+			}
+		}
+	});
+});

@@ -587,6 +587,51 @@ math-field:focus {
 	font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ============================================================================
+   HASHTAG AND MENTION CHIPS
+   ============================================================================ */
+
+/* Hashtag chip - Sky Blue */
+.hashtag-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.125rem 0.375rem;
+	border-radius: 0.25rem;
+	font-size: 0.875em;
+	font-family: ui-sans-serif, system-ui, sans-serif;
+	background-color: light-dark(#e0f2fe, #0c4a6e);
+	color: light-dark(#0369a1, #7dd3fc);
+	border: 1px solid light-dark(#7dd3fc, #0284c7);
+	cursor: default;
+}
+
+/* Mention chip - Amber/Yellow */
+.mention-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.125rem 0.375rem;
+	border-radius: 0.25rem;
+	font-size: 0.875em;
+	font-family: ui-sans-serif, system-ui, sans-serif;
+	background-color: light-dark(#fef3c7, #451a03);
+	color: light-dark(#92400e, #fcd34d);
+	border: 1px solid light-dark(#fcd34d, #d97706);
+	cursor: default;
+}
+
+/* Hover states for interactive contexts */
+.hashtag-chip:hover,
+.mention-chip:hover {
+	opacity: 0.9;
+}
+
+/* Selected state */
+.ProseMirror .hashtag-chip.ProseMirror-selectednode,
+.ProseMirror .mention-chip.ProseMirror-selectednode {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 1px;
+}
+
 /* Template edit popover */
 .template-edit-popover {
 	position: absolute;

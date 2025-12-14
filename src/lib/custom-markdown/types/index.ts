@@ -20,6 +20,9 @@ export type {
 	MathInlineNode,
 	LineBreakNode,
 	BlankNode,
+	LinkNode,
+	HashtagNode,
+	MentionNode,
 	InlineNode,
 	// Block nodes
 	ParagraphNode,
