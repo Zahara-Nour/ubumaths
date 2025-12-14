@@ -270,7 +270,7 @@ Vidéo HTML5 basique :
 
 Vidéo avec options de lecture :
 
-!video[Animation](https://www.w3schools.com/html/mov_bbb.mp4){autoplay loop muted size=medium}
+!video[Animation](https://www.w3schools.com/html/mov_bbb.mp4){size=medium autoplay loop muted}
 
 YouTube embed :
 
