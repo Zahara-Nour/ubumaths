@@ -3,11 +3,24 @@
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
+	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Copy, Check, RotateCcw, Play, Eye, Code, Settings, Beaker } from 'lucide-svelte';
+	import {
+		Copy,
+		Check,
+		RotateCcw,
+		Play,
+		Eye,
+		Code,
+		Settings,
+		Beaker,
+		ArrowRightLeft
+	} from 'lucide-svelte';
+	import { markdownToTipTap } from '$lib/components/rich-text/markdown-import';
+	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
 	import type { MathTemplateLevel, RichTextMode } from '$lib/components/rich-text/types';
 
 	// ============================================
@@ -104,19 +117,68 @@
 	}
 
 	// ============================================
+	// Import/Export Markdown state
+	// ============================================
+	const INITIAL_MARKDOWN = `# Test Import/Export
+
+Texte avec **gras** et *italique*.
+
+Variable : {{testVar}}
+Aléatoire : {{1..10}}
+Expression : {{eval:a+b}}
+Champ : {{blank:1}}
+
+Math LaTeX : $x^2 + y^2$
+Math custom : ~2/3~`;
+
+	let importMarkdown = $state(INITIAL_MARKDOWN);
+	let editorJsonValue = $state<unknown>(markdownToTipTap(INITIAL_MARKDOWN));
+	let exportMarkdown = $state(INITIAL_MARKDOWN);
+
+	// Track if we're updating from import to avoid loops
+	let isUpdatingFromImport = false;
+
+	// Handler for import textarea changes
+	function handleImportChange(event: Event) {
+		const textarea = event.target as HTMLTextAreaElement;
+		importMarkdown = textarea.value;
+		isUpdatingFromImport = true;
+		editorJsonValue = markdownToTipTap(importMarkdown);
+		exportMarkdown = tipTapToMarkdown(editorJsonValue as import('@tiptap/core').JSONContent);
+		// Reset flag after the update cycle
+		queueMicrotask(() => {
+			isUpdatingFromImport = false;
+		});
+	}
+
+	// Watch editorJsonValue changes (from editor) and update export
+	$effect(() => {
+		// Access the value to track it
+		const json = editorJsonValue;
+		// Only update export if not coming from import (to avoid overwriting during import)
+		if (!isUpdatingFromImport && json && typeof json === 'object') {
+			exportMarkdown = tipTapToMarkdown(json as import('@tiptap/core').JSONContent);
+		}
+	});
+
+	// ============================================
 	// Copy to clipboard
 	// ============================================
 	let copiedHtml = $state(false);
 	let copiedJson = $state(false);
+	let copiedMarkdown = $state(false);
 
-	async function copyToClipboard(text: string, type: 'html' | 'json') {
+	async function copyToClipboard(text: string, type: 'html' | 'json' | 'markdown') {
 		await navigator.clipboard.writeText(text);
 		if (type === 'html') {
 			copiedHtml = true;
 			setTimeout(() => (copiedHtml = false), 2000);
-		} else {
+		} else if (type === 'json') {
 			copiedJson = true;
 			setTimeout(() => (copiedJson = false), 2000);
+		} else {
+			copiedMarkdown = true;
+			setTimeout(() => (copiedMarkdown = false), 2000);
 		}
 	}
 
@@ -158,403 +220,428 @@
 		</p>
 	</div>
 
-	<Separator />
+	<Tabs.Root value="editor" class="w-full">
+		<Tabs.List class="mb-6">
+			<Tabs.Trigger value="editor" class="flex items-center gap-2">
+				<Beaker class="h-4 w-4" />
+				Editeur
+			</Tabs.Trigger>
+			<Tabs.Trigger value="import-export" class="flex items-center gap-2">
+				<ArrowRightLeft class="h-4 w-4" />
+				Import/Export
+			</Tabs.Trigger>
+		</Tabs.List>
 
-	<!-- ============================================ -->
-	<!-- Section 1: Side-by-side comparison -->
-	<!-- ============================================ -->
-	<section>
-		<div class="mb-4 flex items-center gap-2">
-			<Eye class="h-5 w-5" />
-			<h2 class="text-2xl font-semibold">Comparaison côte-à-côte</h2>
-		</div>
-		<p class="mb-6 text-muted-foreground">
-			Les deux modes du composant unifié avec leurs comportements par défaut.
-		</p>
+		<!-- ============================================ -->
+		<!-- Tab 1: Editor (existing content) -->
+		<!-- ============================================ -->
+		<Tabs.Content value="editor" class="space-y-8">
+			<!-- ============================================ -->
+			<!-- Section 1: Side-by-side comparison -->
+			<!-- ============================================ -->
+			<section>
+				<div class="mb-4 flex items-center gap-2">
+					<Eye class="h-5 w-5" />
+					<h2 class="text-2xl font-semibold">Comparaison côte-à-côte</h2>
+				</div>
+				<p class="mb-6 text-muted-foreground">
+					Les deux modes du composant unifié avec leurs comportements par défaut.
+				</p>
 
-		<div class="grid gap-6 lg:grid-cols-2">
-			<!-- Chat Mode -->
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="flex items-center justify-between">
-						<span>Mode Chat</span>
-						<Badge>mode="chat"</Badge>
-					</Card.Title>
-					<Card.Description>
-						Callback <code>onSend</code>, contenu effacé après envoi, bouton Envoyer intégré
-					</Card.Description>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					<RichTextEditor mode="chat" onSend={handleChatSend} minHeight="120px" />
+				<div class="grid gap-6 lg:grid-cols-2">
+					<!-- Chat Mode -->
+					<Card.Root>
+						<Card.Header>
+							<Card.Title class="flex items-center justify-between">
+								<span>Mode Chat</span>
+								<Badge>mode="chat"</Badge>
+							</Card.Title>
+							<Card.Description>
+								Callback <code>onSend</code>, contenu effacé après envoi, bouton Envoyer intégré
+							</Card.Description>
+						</Card.Header>
+						<Card.Content class="space-y-4">
+							<RichTextEditor mode="chat" onSend={handleChatSend} minHeight="120px" />
 
-					<div>
-						<div class="mb-2 flex items-center justify-between">
-							<span class="text-sm font-medium">Messages envoyés ({chatMessages.length})</span>
-							{#if chatMessages.length > 0}
-								<Button size="sm" variant="ghost" onclick={clearChatMessages}>
-									<RotateCcw class="mr-1 h-3 w-3" />
-									Clear
-								</Button>
-							{/if}
-						</div>
-						{#if chatMessages.length === 0}
-							<div
-								class="rounded border border-dashed p-3 text-center text-sm text-muted-foreground"
-							>
-								Tapez du texte et cliquez sur Envoyer
-							</div>
-						{:else}
-							<div class="max-h-48 space-y-2 overflow-y-auto">
-								{#each chatMessages as msg, i (i)}
-									<details class="rounded border bg-muted/30 p-2">
-										<summary class="cursor-pointer text-xs">
-											#{i + 1} - {msg.timestamp.toLocaleTimeString('fr-FR')}
-										</summary>
-										<pre class="mt-2 overflow-x-auto text-xs">{JSON.stringify(
-												msg.content,
-												null,
-												2
-											)}</pre>
-									</details>
-								{/each}
-							</div>
-						{/if}
-					</div>
-				</Card.Content>
-			</Card.Root>
-
-			<!-- Form Mode -->
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="flex items-center justify-between">
-						<span>Mode Form</span>
-						<Badge variant="secondary">mode="form" (défaut)</Badge>
-					</Card.Title>
-					<Card.Description>
-						Binding <code>bind:value</code>, contenu persistant, pas de bouton Envoyer
-					</Card.Description>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					<RichTextEditor
-						mode="form"
-						bind:value={formHtmlContent}
-						bind:jsonValue={formJsonContent}
-						minHeight="120px"
-					/>
-
-					<div class="grid gap-2">
-						<details class="rounded border bg-muted/30 p-2">
-							<summary class="cursor-pointer text-xs font-medium">
-								HTML ({formHtmlContent.length} chars)
-							</summary>
-							<pre class="mt-2 max-h-32 overflow-auto text-xs">{formHtmlContent || '(vide)'}</pre>
-						</details>
-						<details class="rounded border bg-muted/30 p-2">
-							<summary class="cursor-pointer text-xs font-medium">JSON</summary>
-							<pre class="mt-2 max-h-32 overflow-auto text-xs">{JSON.stringify(
-									formJsonContent,
-									null,
-									2
-								)}</pre>
-						</details>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</div>
-	</section>
-
-	<Separator />
-
-	<!-- ============================================ -->
-	<!-- Section 2: Configurable Playground -->
-	<!-- ============================================ -->
-	<section>
-		<div class="mb-4 flex items-center gap-2">
-			<Beaker class="h-5 w-5" />
-			<h2 class="text-2xl font-semibold">Playground configurable</h2>
-		</div>
-		<p class="mb-6 text-muted-foreground">Testez toutes les combinaisons de props en temps réel.</p>
-
-		<div class="grid gap-6 lg:grid-cols-3">
-			<!-- Controls Panel -->
-			<Card.Root class="lg:col-span-1">
-				<Card.Header>
-					<Card.Title class="flex items-center gap-2">
-						<Settings class="h-4 w-4" />
-						Contrôles
-					</Card.Title>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					<div>
-						<label class="mb-1 block text-sm font-medium">mode</label>
-						<MySelect type="single" items={modeItems} bind:value={playgroundMode} />
-					</div>
-
-					<div>
-						<label class="mb-1 block text-sm font-medium">mathTemplates</label>
-						<MySelect
-							type="single"
-							items={mathTemplatesItems}
-							bind:value={playgroundMathTemplates}
-						/>
-					</div>
-
-					<div>
-						<label class="mb-1 block text-sm font-medium">showSendButton</label>
-						<MySelect type="single" items={showSendButtonItems} bind:value={showSendButtonSelect} />
-						<p class="mt-1 text-xs text-muted-foreground">
-							Effectif : {effectiveShowSendButton ? 'visible' : 'masqué'}
-						</p>
-					</div>
-
-					<div>
-						<label class="mb-1 block text-sm font-medium">minHeight</label>
-						<MySelect type="single" items={minHeightItems} bind:value={playgroundMinHeight} />
-					</div>
-
-					<div class="space-y-2">
-						<MyCheckbox bind:checked={playgroundShowClearButton} label="showClearButton" />
-						<MyCheckbox bind:checked={playgroundDisabled} label="disabled" />
-					</div>
-
-					<Separator />
-
-					<div>
-						<p class="mb-2 text-sm font-medium">Charger un exemple</p>
-						<div class="flex flex-wrap gap-1">
-							<Button size="sm" variant="outline" onclick={() => loadExample('simple')}>
-								Simple
-							</Button>
-							<Button size="sm" variant="outline" onclick={() => loadExample('math')}>Math</Button>
-							<Button size="sm" variant="outline" onclick={() => loadExample('emojis')}>
-								Emojis
-							</Button>
-							<Button size="sm" variant="outline" onclick={() => loadExample('complex')}>
-								Complexe
-							</Button>
-							<Button size="sm" variant="outline" onclick={() => loadExample('taskList')}>
-								Tasks
-							</Button>
-						</div>
-						{#if playgroundMode === 'chat'}
-							<p class="mt-1 text-xs text-muted-foreground">
-								⚠️ Chargement disponible en mode form uniquement
-							</p>
-						{/if}
-					</div>
-
-					<Button variant="outline" class="w-full" onclick={resetPlayground}>
-						<RotateCcw class="mr-2 h-4 w-4" />
-						Reset tout
-					</Button>
-				</Card.Content>
-			</Card.Root>
-
-			<!-- Editor + Output -->
-			<Card.Root class="lg:col-span-2">
-				<Card.Header>
-					<Card.Title class="flex items-center gap-2">
-						<Play class="h-4 w-4" />
-						Éditeur
-					</Card.Title>
-					<Card.Description>
-						Props actifs :
-						<code class="text-xs">
-							mode="{playgroundMode}" mathTemplates="{playgroundMathTemplates}" showSendButton={'{'}
-							{playgroundShowSendButton === undefined ? 'undefined' : playgroundShowSendButton}
-							} showClearButton={'{'}
-							{playgroundShowClearButton}
-							} minHeight="{playgroundMinHeight}" disabled={'{'}
-							{playgroundDisabled}
-							}
-						</code>
-					</Card.Description>
-				</Card.Header>
-				<Card.Content class="space-y-4">
-					{#if playgroundMode === 'form'}
-						<RichTextEditor
-							mode="form"
-							bind:value={playgroundHtmlValue}
-							bind:jsonValue={playgroundJsonValue}
-							mathTemplates={playgroundMathTemplates}
-							showSendButton={playgroundShowSendButton}
-							showClearButton={playgroundShowClearButton}
-							minHeight={playgroundMinHeight}
-							disabled={playgroundDisabled}
-						/>
-					{:else}
-						<RichTextEditor
-							mode="chat"
-							onSend={handlePlaygroundSend}
-							mathTemplates={playgroundMathTemplates}
-							showSendButton={playgroundShowSendButton}
-							showClearButton={playgroundShowClearButton}
-							minHeight={playgroundMinHeight}
-							disabled={playgroundDisabled}
-						/>
-					{/if}
-
-					<Separator />
-
-					<!-- Output Inspection -->
-					<div>
-						<h4 class="mb-2 flex items-center gap-2 text-sm font-medium">
-							<Eye class="h-4 w-4" />
-							Output
-						</h4>
-
-						{#if playgroundMode === 'form'}
-							<div class="grid gap-2 md:grid-cols-2">
-								<!-- HTML Output -->
-								<div class="rounded border p-3">
-									<div class="mb-2 flex items-center justify-between">
-										<span class="text-xs font-medium"
-											>HTML ({playgroundHtmlValue.length} chars)</span
-										>
-										<Button
-											size="sm"
-											variant="ghost"
-											class="h-6 px-2"
-											onclick={() => copyToClipboard(playgroundHtmlValue, 'html')}
-										>
-											{#if copiedHtml}
-												<Check class="h-3 w-3 text-green-600" />
-											{:else}
-												<Copy class="h-3 w-3" />
-											{/if}
-										</Button>
-									</div>
-									<pre
-										class="max-h-40 overflow-auto rounded bg-muted/50 p-2 text-xs">{playgroundHtmlValue ||
-											'(vide)'}</pre>
-								</div>
-
-								<!-- JSON Output -->
-								<div class="rounded border p-3">
-									<div class="mb-2 flex items-center justify-between">
-										<span class="text-xs font-medium">JSON</span>
-										<Button
-											size="sm"
-											variant="ghost"
-											class="h-6 px-2"
-											onclick={() =>
-												copyToClipboard(JSON.stringify(playgroundJsonValue, null, 2), 'json')}
-										>
-											{#if copiedJson}
-												<Check class="h-3 w-3 text-green-600" />
-											{:else}
-												<Copy class="h-3 w-3" />
-											{/if}
-										</Button>
-									</div>
-									<pre
-										class="max-h-40 overflow-auto rounded bg-muted/50 p-2 text-xs">{JSON.stringify(
-											playgroundJsonValue,
-											null,
-											2
-										)}</pre>
-								</div>
-							</div>
-
-							<!-- Visual Render -->
-							<div class="mt-2 rounded border p-3">
-								<span class="mb-2 block text-xs font-medium">Rendu visuel</span>
-								{#if playgroundHtmlValue}
-									<div class="prose prose-sm max-w-none rounded bg-background p-2">
-										{@html playgroundHtmlValue}
-									</div>
-								{:else}
-									<p class="text-sm text-muted-foreground">(vide)</p>
-								{/if}
-							</div>
-						{:else}
-							<!-- Chat mode output -->
-							<div class="rounded border p-3">
+							<div>
 								<div class="mb-2 flex items-center justify-between">
-									<span class="text-xs font-medium">
-										Messages envoyés ({playgroundSentMessages.length})
-									</span>
-									{#if playgroundSentMessages.length > 0}
-										<Button
-											size="sm"
-											variant="ghost"
-											class="h-6 px-2"
-											onclick={() => (playgroundSentMessages = [])}
-										>
-											<RotateCcw class="h-3 w-3" />
+									<span class="text-sm font-medium">Messages envoyés ({chatMessages.length})</span>
+									{#if chatMessages.length > 0}
+										<Button size="sm" variant="ghost" onclick={clearChatMessages}>
+											<RotateCcw class="mr-1 h-3 w-3" />
+											Clear
 										</Button>
 									{/if}
 								</div>
-								{#if playgroundSentMessages.length === 0}
-									<p class="text-sm text-muted-foreground">Aucun message envoyé</p>
+								{#if chatMessages.length === 0}
+									<div
+										class="rounded border border-dashed p-3 text-center text-sm text-muted-foreground"
+									>
+										Tapez du texte et cliquez sur Envoyer
+									</div>
 								{:else}
-									<div class="max-h-60 space-y-2 overflow-y-auto">
-										{#each playgroundSentMessages as msg, i (i)}
-											<div class="rounded bg-muted/50 p-2">
-												<div class="mb-1 flex items-center justify-between">
-													<span class="text-xs text-muted-foreground">
-														#{i + 1} - {msg.timestamp.toLocaleTimeString('fr-FR')}
-													</span>
-													<Button
-														size="sm"
-														variant="ghost"
-														class="h-5 px-1"
-														onclick={() =>
-															copyToClipboard(JSON.stringify(msg.content, null, 2), 'json')}
-													>
-														<Copy class="h-3 w-3" />
-													</Button>
-												</div>
-												<pre class="overflow-x-auto text-xs">{JSON.stringify(
+									<div class="max-h-48 space-y-2 overflow-y-auto">
+										{#each chatMessages as msg, i (i)}
+											<details class="rounded border bg-muted/30 p-2">
+												<summary class="cursor-pointer text-xs">
+													#{i + 1} - {msg.timestamp.toLocaleTimeString('fr-FR')}
+												</summary>
+												<pre class="mt-2 overflow-x-auto text-xs">{JSON.stringify(
 														msg.content,
 														null,
 														2
 													)}</pre>
-												<!-- Visual render of message -->
-												<details class="mt-2">
-													<summary class="cursor-pointer text-xs text-muted-foreground">
-														Voir le rendu
-													</summary>
-													<div class="mt-1 rounded bg-background p-2">
-														<RichTextDisplay content={msg.content} />
-													</div>
-												</details>
-											</div>
+											</details>
 										{/each}
 									</div>
 								{/if}
 							</div>
-						{/if}
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</div>
-	</section>
+						</Card.Content>
+					</Card.Root>
 
-	<Separator />
+					<!-- Form Mode -->
+					<Card.Root>
+						<Card.Header>
+							<Card.Title class="flex items-center justify-between">
+								<span>Mode Form</span>
+								<Badge variant="secondary">mode="form" (défaut)</Badge>
+							</Card.Title>
+							<Card.Description>
+								Binding <code>bind:value</code>, contenu persistant, pas de bouton Envoyer
+							</Card.Description>
+						</Card.Header>
+						<Card.Content class="space-y-4">
+							<RichTextEditor
+								mode="form"
+								bind:value={formHtmlContent}
+								bind:jsonValue={formJsonContent}
+								minHeight="120px"
+							/>
 
-	<!-- ============================================ -->
-	<!-- Section 3: Code Examples -->
-	<!-- ============================================ -->
-	<section>
-		<div class="mb-4 flex items-center gap-2">
-			<Code class="h-5 w-5" />
-			<h2 class="text-2xl font-semibold">Exemples de code</h2>
-		</div>
-		<p class="mb-6 text-muted-foreground">Comment utiliser le composant unifié dans votre code.</p>
+							<div class="grid gap-2">
+								<details class="rounded border bg-muted/30 p-2">
+									<summary class="cursor-pointer text-xs font-medium">
+										HTML ({formHtmlContent.length} chars)
+									</summary>
+									<pre class="mt-2 max-h-32 overflow-auto text-xs">{formHtmlContent ||
+											'(vide)'}</pre>
+								</details>
+								<details class="rounded border bg-muted/30 p-2">
+									<summary class="cursor-pointer text-xs font-medium">JSON</summary>
+									<pre class="mt-2 max-h-32 overflow-auto text-xs">{JSON.stringify(
+											formJsonContent,
+											null,
+											2
+										)}</pre>
+								</details>
+							</div>
+						</Card.Content>
+					</Card.Root>
+				</div>
+			</section>
 
-		<div class="grid gap-6 lg:grid-cols-2">
-			<!-- Form Mode Example -->
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="flex items-center gap-2">
-						<Badge variant="secondary">Form</Badge>
-						Formulaires / CRUD
-					</Card.Title>
-				</Card.Header>
-				<Card.Content>
-					<pre class="overflow-x-auto rounded bg-muted p-4 text-xs"><code
-							>&lt;script lang="ts"&gt;
+			<Separator />
+
+			<!-- ============================================ -->
+			<!-- Section 2: Configurable Playground -->
+			<!-- ============================================ -->
+			<section>
+				<div class="mb-4 flex items-center gap-2">
+					<Beaker class="h-5 w-5" />
+					<h2 class="text-2xl font-semibold">Playground configurable</h2>
+				</div>
+				<p class="mb-6 text-muted-foreground">
+					Testez toutes les combinaisons de props en temps réel.
+				</p>
+
+				<div class="grid gap-6 lg:grid-cols-3">
+					<!-- Controls Panel -->
+					<Card.Root class="lg:col-span-1">
+						<Card.Header>
+							<Card.Title class="flex items-center gap-2">
+								<Settings class="h-4 w-4" />
+								Contrôles
+							</Card.Title>
+						</Card.Header>
+						<Card.Content class="space-y-4">
+							<div>
+								<label class="mb-1 block text-sm font-medium">mode</label>
+								<MySelect type="single" items={modeItems} bind:value={playgroundMode} />
+							</div>
+
+							<div>
+								<label class="mb-1 block text-sm font-medium">mathTemplates</label>
+								<MySelect
+									type="single"
+									items={mathTemplatesItems}
+									bind:value={playgroundMathTemplates}
+								/>
+							</div>
+
+							<div>
+								<label class="mb-1 block text-sm font-medium">showSendButton</label>
+								<MySelect
+									type="single"
+									items={showSendButtonItems}
+									bind:value={showSendButtonSelect}
+								/>
+								<p class="mt-1 text-xs text-muted-foreground">
+									Effectif : {effectiveShowSendButton ? 'visible' : 'masqué'}
+								</p>
+							</div>
+
+							<div>
+								<label class="mb-1 block text-sm font-medium">minHeight</label>
+								<MySelect type="single" items={minHeightItems} bind:value={playgroundMinHeight} />
+							</div>
+
+							<div class="space-y-2">
+								<MyCheckbox bind:checked={playgroundShowClearButton} label="showClearButton" />
+								<MyCheckbox bind:checked={playgroundDisabled} label="disabled" />
+							</div>
+
+							<Separator />
+
+							<div>
+								<p class="mb-2 text-sm font-medium">Charger un exemple</p>
+								<div class="flex flex-wrap gap-1">
+									<Button size="sm" variant="outline" onclick={() => loadExample('simple')}>
+										Simple
+									</Button>
+									<Button size="sm" variant="outline" onclick={() => loadExample('math')}
+										>Math</Button
+									>
+									<Button size="sm" variant="outline" onclick={() => loadExample('emojis')}>
+										Emojis
+									</Button>
+									<Button size="sm" variant="outline" onclick={() => loadExample('complex')}>
+										Complexe
+									</Button>
+									<Button size="sm" variant="outline" onclick={() => loadExample('taskList')}>
+										Tasks
+									</Button>
+								</div>
+								{#if playgroundMode === 'chat'}
+									<p class="mt-1 text-xs text-muted-foreground">
+										⚠️ Chargement disponible en mode form uniquement
+									</p>
+								{/if}
+							</div>
+
+							<Button variant="outline" class="w-full" onclick={resetPlayground}>
+								<RotateCcw class="mr-2 h-4 w-4" />
+								Reset tout
+							</Button>
+						</Card.Content>
+					</Card.Root>
+
+					<!-- Editor + Output -->
+					<Card.Root class="lg:col-span-2">
+						<Card.Header>
+							<Card.Title class="flex items-center gap-2">
+								<Play class="h-4 w-4" />
+								Éditeur
+							</Card.Title>
+							<Card.Description>
+								Props actifs :
+								<code class="text-xs">
+									mode="{playgroundMode}" mathTemplates="{playgroundMathTemplates}" showSendButton={'{'}
+									{playgroundShowSendButton === undefined ? 'undefined' : playgroundShowSendButton}
+									} showClearButton={'{'}
+									{playgroundShowClearButton}
+									} minHeight="{playgroundMinHeight}" disabled={'{'}
+									{playgroundDisabled}
+									}
+								</code>
+							</Card.Description>
+						</Card.Header>
+						<Card.Content class="space-y-4">
+							{#if playgroundMode === 'form'}
+								<RichTextEditor
+									mode="form"
+									bind:value={playgroundHtmlValue}
+									bind:jsonValue={playgroundJsonValue}
+									mathTemplates={playgroundMathTemplates}
+									showSendButton={playgroundShowSendButton}
+									showClearButton={playgroundShowClearButton}
+									minHeight={playgroundMinHeight}
+									disabled={playgroundDisabled}
+								/>
+							{:else}
+								<RichTextEditor
+									mode="chat"
+									onSend={handlePlaygroundSend}
+									mathTemplates={playgroundMathTemplates}
+									showSendButton={playgroundShowSendButton}
+									showClearButton={playgroundShowClearButton}
+									minHeight={playgroundMinHeight}
+									disabled={playgroundDisabled}
+								/>
+							{/if}
+
+							<Separator />
+
+							<!-- Output Inspection -->
+							<div>
+								<h4 class="mb-2 flex items-center gap-2 text-sm font-medium">
+									<Eye class="h-4 w-4" />
+									Output
+								</h4>
+
+								{#if playgroundMode === 'form'}
+									<div class="grid gap-2 md:grid-cols-2">
+										<!-- HTML Output -->
+										<div class="rounded border p-3">
+											<div class="mb-2 flex items-center justify-between">
+												<span class="text-xs font-medium"
+													>HTML ({playgroundHtmlValue.length} chars)</span
+												>
+												<Button
+													size="sm"
+													variant="ghost"
+													class="h-6 px-2"
+													onclick={() => copyToClipboard(playgroundHtmlValue, 'html')}
+												>
+													{#if copiedHtml}
+														<Check class="h-3 w-3 text-green-600" />
+													{:else}
+														<Copy class="h-3 w-3" />
+													{/if}
+												</Button>
+											</div>
+											<pre
+												class="max-h-40 overflow-auto rounded bg-muted/50 p-2 text-xs">{playgroundHtmlValue ||
+													'(vide)'}</pre>
+										</div>
+
+										<!-- JSON Output -->
+										<div class="rounded border p-3">
+											<div class="mb-2 flex items-center justify-between">
+												<span class="text-xs font-medium">JSON</span>
+												<Button
+													size="sm"
+													variant="ghost"
+													class="h-6 px-2"
+													onclick={() =>
+														copyToClipboard(JSON.stringify(playgroundJsonValue, null, 2), 'json')}
+												>
+													{#if copiedJson}
+														<Check class="h-3 w-3 text-green-600" />
+													{:else}
+														<Copy class="h-3 w-3" />
+													{/if}
+												</Button>
+											</div>
+											<pre
+												class="max-h-40 overflow-auto rounded bg-muted/50 p-2 text-xs">{JSON.stringify(
+													playgroundJsonValue,
+													null,
+													2
+												)}</pre>
+										</div>
+									</div>
+
+									<!-- Visual Render -->
+									<div class="mt-2 rounded border p-3">
+										<span class="mb-2 block text-xs font-medium">Rendu visuel</span>
+										{#if playgroundHtmlValue}
+											<div class="prose prose-sm max-w-none rounded bg-background p-2">
+												{@html playgroundHtmlValue}
+											</div>
+										{:else}
+											<p class="text-sm text-muted-foreground">(vide)</p>
+										{/if}
+									</div>
+								{:else}
+									<!-- Chat mode output -->
+									<div class="rounded border p-3">
+										<div class="mb-2 flex items-center justify-between">
+											<span class="text-xs font-medium">
+												Messages envoyés ({playgroundSentMessages.length})
+											</span>
+											{#if playgroundSentMessages.length > 0}
+												<Button
+													size="sm"
+													variant="ghost"
+													class="h-6 px-2"
+													onclick={() => (playgroundSentMessages = [])}
+												>
+													<RotateCcw class="h-3 w-3" />
+												</Button>
+											{/if}
+										</div>
+										{#if playgroundSentMessages.length === 0}
+											<p class="text-sm text-muted-foreground">Aucun message envoyé</p>
+										{:else}
+											<div class="max-h-60 space-y-2 overflow-y-auto">
+												{#each playgroundSentMessages as msg, i (i)}
+													<div class="rounded bg-muted/50 p-2">
+														<div class="mb-1 flex items-center justify-between">
+															<span class="text-xs text-muted-foreground">
+																#{i + 1} - {msg.timestamp.toLocaleTimeString('fr-FR')}
+															</span>
+															<Button
+																size="sm"
+																variant="ghost"
+																class="h-5 px-1"
+																onclick={() =>
+																	copyToClipboard(JSON.stringify(msg.content, null, 2), 'json')}
+															>
+																<Copy class="h-3 w-3" />
+															</Button>
+														</div>
+														<pre class="overflow-x-auto text-xs">{JSON.stringify(
+																msg.content,
+																null,
+																2
+															)}</pre>
+														<!-- Visual render of message -->
+														<details class="mt-2">
+															<summary class="cursor-pointer text-xs text-muted-foreground">
+																Voir le rendu
+															</summary>
+															<div class="mt-1 rounded bg-background p-2">
+																<RichTextDisplay content={msg.content} />
+															</div>
+														</details>
+													</div>
+												{/each}
+											</div>
+										{/if}
+									</div>
+								{/if}
+							</div>
+						</Card.Content>
+					</Card.Root>
+				</div>
+			</section>
+
+			<Separator />
+
+			<!-- ============================================ -->
+			<!-- Section 3: Code Examples -->
+			<!-- ============================================ -->
+			<section>
+				<div class="mb-4 flex items-center gap-2">
+					<Code class="h-5 w-5" />
+					<h2 class="text-2xl font-semibold">Exemples de code</h2>
+				</div>
+				<p class="mb-6 text-muted-foreground">
+					Comment utiliser le composant unifié dans votre code.
+				</p>
+
+				<div class="grid gap-6 lg:grid-cols-2">
+					<!-- Form Mode Example -->
+					<Card.Root>
+						<Card.Header>
+							<Card.Title class="flex items-center gap-2">
+								<Badge variant="secondary">Form</Badge>
+								Formulaires / CRUD
+							</Card.Title>
+						</Card.Header>
+						<Card.Content>
+							<pre class="overflow-x-auto rounded bg-muted p-4 text-xs"><code
+									>&lt;script lang="ts"&gt;
   import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 
   let description = $state('');
@@ -583,21 +670,21 @@
   showClearButton=&#123;false&#125;
   minHeight="200px"
 /&gt;</code
-						></pre>
-				</Card.Content>
-			</Card.Root>
+								></pre>
+						</Card.Content>
+					</Card.Root>
 
-			<!-- Chat Mode Example -->
-			<Card.Root>
-				<Card.Header>
-					<Card.Title class="flex items-center gap-2">
-						<Badge>Chat</Badge>
-						Messagerie / Temps réel
-					</Card.Title>
-				</Card.Header>
-				<Card.Content>
-					<pre class="overflow-x-auto rounded bg-muted p-4 text-xs"><code
-							>&lt;script lang="ts"&gt;
+					<!-- Chat Mode Example -->
+					<Card.Root>
+						<Card.Header>
+							<Card.Title class="flex items-center gap-2">
+								<Badge>Chat</Badge>
+								Messagerie / Temps réel
+							</Card.Title>
+						</Card.Header>
+						<Card.Content>
+							<pre class="overflow-x-auto rounded bg-muted p-4 text-xs"><code
+									>&lt;script lang="ts"&gt;
   import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 
   async function handleSend(content: unknown) &#123;
@@ -619,86 +706,187 @@
   mathTemplates="none"
   minHeight="100px"
 /&gt;</code
-						></pre>
+								></pre>
+						</Card.Content>
+					</Card.Root>
+
+					<!-- Props Reference -->
+					<Card.Root class="lg:col-span-2">
+						<Card.Header>
+							<Card.Title>Référence des Props</Card.Title>
+						</Card.Header>
+						<Card.Content>
+							<div class="overflow-x-auto">
+								<table class="w-full text-sm">
+									<thead>
+										<tr class="border-b">
+											<th class="p-2 text-left font-medium">Prop</th>
+											<th class="p-2 text-left font-medium">Type</th>
+											<th class="p-2 text-left font-medium">Défaut</th>
+											<th class="p-2 text-left font-medium">Description</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr class="border-b">
+											<td class="p-2"><code>mode</code></td>
+											<td class="p-2"><code>'chat' | 'form'</code></td>
+											<td class="p-2"><code>'form'</code></td>
+											<td class="p-2">Mode d'utilisation</td>
+										</tr>
+										<tr class="border-b">
+											<td class="p-2"><code>value</code></td>
+											<td class="p-2"><code>string</code></td>
+											<td class="p-2"><code>''</code></td>
+											<td class="p-2">Contenu HTML (bindable, mode form)</td>
+										</tr>
+										<tr class="border-b">
+											<td class="p-2"><code>jsonValue</code></td>
+											<td class="p-2"><code>unknown</code></td>
+											<td class="p-2"><code>null</code></td>
+											<td class="p-2">Contenu JSON TipTap (bindable, optionnel)</td>
+										</tr>
+										<tr class="border-b">
+											<td class="p-2"><code>onSend</code></td>
+											<td class="p-2"><code>(content: unknown) => void</code></td>
+											<td class="p-2">-</td>
+											<td class="p-2">Callback envoi (mode chat)</td>
+										</tr>
+										<tr class="border-b">
+											<td class="p-2"><code>mathTemplates</code></td>
+											<td class="p-2"><code>'full' | 'basic' | 'none'</code></td>
+											<td class="p-2"><code>'full'</code></td>
+											<td class="p-2">Niveau des templates math (9/4/0)</td>
+										</tr>
+										<tr class="border-b">
+											<td class="p-2"><code>showSendButton</code></td>
+											<td class="p-2"><code>boolean</code></td>
+											<td class="p-2"><code>mode === 'chat'</code></td>
+											<td class="p-2">Afficher le bouton Envoyer</td>
+										</tr>
+										<tr class="border-b">
+											<td class="p-2"><code>showClearButton</code></td>
+											<td class="p-2"><code>boolean</code></td>
+											<td class="p-2"><code>true</code></td>
+											<td class="p-2">Afficher le bouton Effacer</td>
+										</tr>
+										<tr class="border-b">
+											<td class="p-2"><code>minHeight</code></td>
+											<td class="p-2"><code>string</code></td>
+											<td class="p-2"><code>'100px'</code></td>
+											<td class="p-2">Hauteur minimum de l'éditeur</td>
+										</tr>
+										<tr class="border-b">
+											<td class="p-2"><code>disabled</code></td>
+											<td class="p-2"><code>boolean</code></td>
+											<td class="p-2"><code>false</code></td>
+											<td class="p-2">Désactiver l'éditeur</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</Card.Content>
+					</Card.Root>
+				</div>
+			</section>
+		</Tabs.Content>
+
+		<!-- ============================================ -->
+		<!-- Tab 2: Import/Export Markdown -->
+		<!-- ============================================ -->
+		<Tabs.Content value="import-export" class="space-y-6">
+			<div class="mb-4">
+				<h2 class="text-2xl font-semibold">Import/Export Markdown</h2>
+				<p class="text-muted-foreground">
+					Testez la conversion bidirectionnelle entre Markdown et le format TipTap JSON.
+				</p>
+			</div>
+
+			<!-- Card 1: Import Markdown -->
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2">
+						<Code class="h-4 w-4" />
+						Import Markdown
+					</Card.Title>
+					<Card.Description>
+						Collez ou tapez du Markdown ici pour le convertir en contenu riche
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<details open class="group">
+						<summary class="mb-2 flex cursor-pointer items-center gap-2 text-sm font-medium">
+							<span class="transition-transform group-open:rotate-90">&#9654;</span>
+							Source Markdown
+						</summary>
+						<textarea
+							class="h-48 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+							value={importMarkdown}
+							oninput={handleImportChange}
+							placeholder="# Titre&#10;&#10;Texte avec **gras** et *italique*..."
+							spellcheck="false"
+							aria-label="Source Markdown"
+						></textarea>
+					</details>
 				</Card.Content>
 			</Card.Root>
 
-			<!-- Props Reference -->
-			<Card.Root class="lg:col-span-2">
+			<!-- Card 2: RichTextEditor -->
+			<Card.Root>
 				<Card.Header>
-					<Card.Title>Référence des Props</Card.Title>
+					<Card.Title class="flex items-center gap-2">
+						<Eye class="h-4 w-4" />
+						Editeur RichText
+					</Card.Title>
+					<Card.Description>
+						Le contenu est synchronise avec l'import Markdown ci-dessus
+					</Card.Description>
 				</Card.Header>
 				<Card.Content>
-					<div class="overflow-x-auto">
-						<table class="w-full text-sm">
-							<thead>
-								<tr class="border-b">
-									<th class="p-2 text-left font-medium">Prop</th>
-									<th class="p-2 text-left font-medium">Type</th>
-									<th class="p-2 text-left font-medium">Défaut</th>
-									<th class="p-2 text-left font-medium">Description</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr class="border-b">
-									<td class="p-2"><code>mode</code></td>
-									<td class="p-2"><code>'chat' | 'form'</code></td>
-									<td class="p-2"><code>'form'</code></td>
-									<td class="p-2">Mode d'utilisation</td>
-								</tr>
-								<tr class="border-b">
-									<td class="p-2"><code>value</code></td>
-									<td class="p-2"><code>string</code></td>
-									<td class="p-2"><code>''</code></td>
-									<td class="p-2">Contenu HTML (bindable, mode form)</td>
-								</tr>
-								<tr class="border-b">
-									<td class="p-2"><code>jsonValue</code></td>
-									<td class="p-2"><code>unknown</code></td>
-									<td class="p-2"><code>null</code></td>
-									<td class="p-2">Contenu JSON TipTap (bindable, optionnel)</td>
-								</tr>
-								<tr class="border-b">
-									<td class="p-2"><code>onSend</code></td>
-									<td class="p-2"><code>(content: unknown) => void</code></td>
-									<td class="p-2">-</td>
-									<td class="p-2">Callback envoi (mode chat)</td>
-								</tr>
-								<tr class="border-b">
-									<td class="p-2"><code>mathTemplates</code></td>
-									<td class="p-2"><code>'full' | 'basic' | 'none'</code></td>
-									<td class="p-2"><code>'full'</code></td>
-									<td class="p-2">Niveau des templates math (9/4/0)</td>
-								</tr>
-								<tr class="border-b">
-									<td class="p-2"><code>showSendButton</code></td>
-									<td class="p-2"><code>boolean</code></td>
-									<td class="p-2"><code>mode === 'chat'</code></td>
-									<td class="p-2">Afficher le bouton Envoyer</td>
-								</tr>
-								<tr class="border-b">
-									<td class="p-2"><code>showClearButton</code></td>
-									<td class="p-2"><code>boolean</code></td>
-									<td class="p-2"><code>true</code></td>
-									<td class="p-2">Afficher le bouton Effacer</td>
-								</tr>
-								<tr class="border-b">
-									<td class="p-2"><code>minHeight</code></td>
-									<td class="p-2"><code>string</code></td>
-									<td class="p-2"><code>'100px'</code></td>
-									<td class="p-2">Hauteur minimum de l'éditeur</td>
-								</tr>
-								<tr class="border-b">
-									<td class="p-2"><code>disabled</code></td>
-									<td class="p-2"><code>boolean</code></td>
-									<td class="p-2"><code>false</code></td>
-									<td class="p-2">Désactiver l'éditeur</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+					<RichTextEditor mode="form" bind:jsonValue={editorJsonValue} minHeight="200px" />
 				</Card.Content>
 			</Card.Root>
-		</div>
-	</section>
+
+			<!-- Card 3: Export Markdown -->
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="flex items-center justify-between">
+						<span class="flex items-center gap-2">
+							<Code class="h-4 w-4" />
+							Export Markdown
+						</span>
+						<Button
+							size="sm"
+							variant="ghost"
+							onclick={() => copyToClipboard(exportMarkdown, 'markdown')}
+						>
+							{#if copiedMarkdown}
+								<Check class="mr-1 h-3 w-3 text-green-600" />
+								Copie
+							{:else}
+								<Copy class="mr-1 h-3 w-3" />
+								Copier
+							{/if}
+						</Button>
+					</Card.Title>
+					<Card.Description>
+						Resultat de la conversion du contenu de l'editeur vers Markdown
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<details open class="group">
+						<summary class="mb-2 flex cursor-pointer items-center gap-2 text-sm font-medium">
+							<span class="transition-transform group-open:rotate-90">&#9654;</span>
+							Markdown genere
+						</summary>
+						<textarea
+							class="h-48 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+							value={exportMarkdown}
+							readonly
+							aria-label="Markdown exporte"
+						></textarea>
+					</details>
+				</Card.Content>
+			</Card.Root>
+		</Tabs.Content>
+	</Tabs.Root>
 </div>
