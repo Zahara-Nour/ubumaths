@@ -507,3 +507,152 @@ math-field:focus {
  * @see src/lib/styles/list-numbering.css for details
  */
 @import './lib/styles/list-numbering.css';
+
+/*
+ * Template Chip Styles
+ * ====================
+ *
+ * Visual chips for template syntax in rich text editor:
+ * - Variable chips (blue): {{varName}}
+ * - Random chips (green): {{1..10}}, {{random:...}}
+ * - Eval chips (purple): {{eval:expr}}
+ * - Blank chips (orange): {{blank:N}}
+ *
+ * Features:
+ * - Automatic dark mode support via light-dark()
+ * - Keyboard accessible with focus states
+ * - Read-only mode styling
+ */
+
+/* Base chip styles shared by all template types */
+.template-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.125rem 0.5rem;
+	border-radius: 9999px;
+	font-size: 0.875rem;
+	font-family: ui-monospace, monospace;
+	cursor: pointer;
+	user-select: none;
+	vertical-align: baseline;
+	line-height: 1.25;
+	transition:
+		box-shadow 0.15s ease,
+		opacity 0.15s ease;
+}
+
+/* Focus state for keyboard navigation */
+.template-chip:focus {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 2px;
+}
+
+/* Hover state for editable chips */
+.template-chip:not([aria-disabled='true']):hover {
+	opacity: 0.9;
+}
+
+/* Read-only/disabled state */
+.template-chip[aria-disabled='true'] {
+	cursor: default;
+	opacity: 0.8;
+}
+
+/* Variable chip - Blue */
+.template-chip-variable {
+	background-color: light-dark(#dbeafe, #1e3a5f);
+	color: light-dark(#1e40af, #93c5fd);
+	border: 1px solid light-dark(#93c5fd, #3b82f6);
+}
+
+/* Random chip - Green */
+.template-chip-random {
+	background-color: light-dark(#dcfce7, #14532d);
+	color: light-dark(#166534, #86efac);
+	border: 1px solid light-dark(#86efac, #22c55e);
+}
+
+/* Eval chip - Purple */
+.template-chip-eval {
+	background-color: light-dark(#f3e8ff, #3b0764);
+	color: light-dark(#6b21a8, #d8b4fe);
+	border: 1px solid light-dark(#d8b4fe, #a855f7);
+}
+
+/* Blank chip - Orange (uses sans-serif font) */
+.template-chip-blank {
+	background-color: light-dark(#ffedd5, #431407);
+	color: light-dark(#9a3412, #fdba74);
+	border: 1px solid light-dark(#fdba74, #f97316);
+	font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Template edit popover */
+.template-edit-popover {
+	position: absolute;
+	z-index: 50;
+	background: var(--color-popover);
+	border: 1px solid var(--color-border);
+	border-radius: 0.5rem;
+	padding: 0.5rem;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.template-edit-popover input {
+	padding: 0.25rem 0.5rem;
+	border: 1px solid var(--color-border);
+	border-radius: 0.25rem;
+	font-size: 0.875rem;
+	font-family: ui-monospace, monospace;
+	min-width: 150px;
+	background: var(--color-background);
+	color: var(--color-foreground);
+}
+
+.template-edit-popover input:focus {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 1px;
+}
+
+.template-edit-popover input.error {
+	border-color: var(--color-destructive);
+}
+
+.template-edit-popover button {
+	padding: 0.25rem 0.5rem;
+	background: var(--color-primary);
+	color: var(--color-primary-foreground);
+	border: none;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	font-size: 0.875rem;
+}
+
+.template-edit-popover button:hover {
+	opacity: 0.9;
+}
+
+.template-edit-popover .error-message {
+	color: var(--color-destructive);
+	font-size: 0.75rem;
+}
+
+/* Blank field popover label */
+.template-edit-popover .label {
+	font-size: 0.875rem;
+	color: var(--color-muted-foreground);
+}
+
+/* Blank field number input */
+.template-edit-popover input[type='number'] {
+	width: 60px;
+	text-align: center;
+}
+
+/* Orange button for blank chips */
+.template-edit-popover button.blank-save {
+	background: light-dark(#f97316, #ea580c);
+}
