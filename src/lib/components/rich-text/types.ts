@@ -28,6 +28,8 @@ export interface ToolbarConfig {
 	insertion?: boolean;
 	/** Formula tools: Math templates, empty formula, block formula */
 	formula?: boolean;
+	/** Template tools: Variable, Random, Eval, BlankField */
+	templates?: boolean;
 	/** Advanced tools: Blockquote, Code block, Horizontal rule */
 	more?: boolean;
 }

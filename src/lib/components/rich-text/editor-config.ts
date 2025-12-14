@@ -21,6 +21,12 @@ import Superscript from '@tiptap/extension-superscript';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import { MathInline, MathBlock } from '$lib/extensions/math-extension';
+import {
+	TemplateVariable,
+	TemplateRandom,
+	TemplateEval
+} from '$lib/extensions/template-extensions';
+import { BlankField } from '$lib/extensions/blank-extension';
 
 // Note: Link and Underline are now included in StarterKit v3
 // We configure them via StarterKit options to avoid duplicates
@@ -43,9 +49,10 @@ const extensionsCache = new Map<string, Extensions>();
 
 /**
  * Create a cache key from options
+ * Updated cache key to invalidate old editor instances after template extensions added
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}`;
+	return `h${headingLevels}-v2`;
 }
 
 /**
@@ -106,7 +113,13 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 
 		// Math formulas
 		MathInline.configure({}),
-		MathBlock.configure({})
+		MathBlock.configure({}),
+
+		// Template syntax
+		TemplateVariable.configure({}),
+		TemplateRandom.configure({}),
+		TemplateEval.configure({}),
+		BlankField.configure({})
 	];
 }
 

@@ -59,7 +59,8 @@
 		Plus,
 		Smile,
 		Send,
-		X
+		X,
+		Braces
 	} from 'lucide-svelte';
 	import 'mathlive';
 
@@ -106,6 +107,7 @@
 	let showParagraph = $derived(toolbar?.paragraph ?? true);
 	let showInsertion = $derived(toolbar?.insertion ?? true);
 	let showFormula = $derived(toolbar?.formula ?? true);
+	let showTemplates = $derived(toolbar?.templates ?? true);
 	let showMore = $derived(toolbar?.more ?? true);
 
 	// Computed defaults based on mode
@@ -122,6 +124,7 @@
 	let paragraphSectionOpen = $state(false);
 	let insertSectionOpen = $state(false);
 	let formuleSectionOpen = $state(false);
+	let templatesSectionOpen = $state(false);
 
 	// Reactive formatting state
 	let isBold = $state(false);
@@ -374,6 +377,33 @@
 	function insertEmoji(emoji: string) {
 		editor?.chain().focus().insertContent(emoji).run();
 	}
+
+	/**
+	 * Insert Template Elements using custom commands
+	 */
+	function insertVariable() {
+		// @ts-expect-error - Custom Tiptap command from template extension
+		editor?.commands.insertTemplateVariable('var');
+		editor?.commands.focus();
+	}
+
+	function insertRandom() {
+		// @ts-expect-error - Custom Tiptap command from template extension
+		editor?.commands.insertTemplateRandom('1..10');
+		editor?.commands.focus();
+	}
+
+	function insertEval() {
+		// @ts-expect-error - Custom Tiptap command from template extension
+		editor?.commands.insertTemplateEval('a+b');
+		editor?.commands.focus();
+	}
+
+	function insertBlank() {
+		// @ts-expect-error - Custom Tiptap command from blank extension
+		editor?.commands.insertBlankField('?');
+		editor?.commands.focus();
+	}
 </script>
 
 <!--
@@ -457,6 +487,26 @@
 					<Sigma class="mr-1 h-4 w-4" />
 					Formule
 					{#if formuleSectionOpen}
+						<ChevronDown class="ml-1 h-3 w-3" />
+					{:else}
+						<ChevronRight class="ml-1 h-3 w-3" />
+					{/if}
+				</Button>
+			{/if}
+
+			<!-- Templates Section Toggle -->
+			{#if showTemplates}
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={() => (templatesSectionOpen = !templatesSectionOpen)}
+					class="font-medium"
+					{disabled}
+				>
+					<Braces class="mr-1 h-4 w-4" />
+					Templates
+					{#if templatesSectionOpen}
 						<ChevronDown class="ml-1 h-3 w-3" />
 					{:else}
 						<ChevronRight class="ml-1 h-3 w-3" />
@@ -907,6 +957,69 @@
 					class="font-mono"
 				>
 					$$...$$
+				</Button>
+			</div>
+		{/if}
+
+		<!-- Templates Section (Collapsible) -->
+		{#if showTemplates && templatesSectionOpen}
+			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
+				<!-- Variable Button -->
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={insertVariable}
+					{disabled}
+					title="Variable"
+					class="font-mono"
+				>
+					{'{{x}}'}
+				</Button>
+
+				<div class="mx-1 h-6 w-px bg-border"></div>
+
+				<!-- Random Button -->
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={insertRandom}
+					{disabled}
+					title="Valeur aléatoire"
+					class="font-mono"
+				>
+					{'{{1..10}}'}
+				</Button>
+
+				<div class="mx-1 h-6 w-px bg-border"></div>
+
+				<!-- Eval Button -->
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={insertEval}
+					{disabled}
+					title="Expression évaluée"
+					class="font-mono"
+				>
+					{'{{eval:}}'}
+				</Button>
+
+				<div class="mx-1 h-6 w-px bg-border"></div>
+
+				<!-- Blank Field Button -->
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={insertBlank}
+					{disabled}
+					title="Champ à remplir"
+					class="font-mono"
+				>
+					[____]
 				</Button>
 			</div>
 		{/if}
