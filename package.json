@@ -8,7 +8,7 @@
 		"build": "NODE_OPTIONS='--max-old-space-size=4096' vite build",
 		"preview": "vite preview",
 		"prepare": "husky",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check": "NODE_OPTIONS='--max-old-space-size=4096' svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"check:changed": "bash scripts/check-changed.sh",
 		"check:staged": "bash scripts/check-changed.sh --staged",

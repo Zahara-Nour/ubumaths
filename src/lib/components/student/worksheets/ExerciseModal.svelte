@@ -98,8 +98,9 @@
 
 <Dialog.Root {open} {onOpenChange}>
 	<Dialog.Content
-		class="fixed inset-0 z-50 flex h-screen max-h-none w-screen max-w-none flex-col rounded-none p-0"
+		class="fixed inset-0 !top-0 !left-0 z-50 flex h-screen !max-h-none w-screen !max-w-none !translate-x-0 !translate-y-0 flex-col rounded-none border-none p-0"
 		onkeydown={handleKeydown}
+		showCloseButton={false}
 	>
 		<!-- DESKTOP LAYOUT: Split 60/40 -->
 		<div class="hidden h-full w-full lg:flex">
