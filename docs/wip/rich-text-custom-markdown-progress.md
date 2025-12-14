@@ -115,6 +115,29 @@
 
 ---
 
+## Phase 6: Debug Page Enhancements ✅
+
+### Commits
+
+- `b432d7da` - feat(debug): add roundtrip validation badge to Import/Export tab
+- `97b09070` - feat(debug): add diff view when markdown roundtrip fails
+- `b875df6f` - feat(debug): add Diff/Raw toggle tabs for export view
+- `708a7dc8` - fix(debug): normalize blank lines in roundtrip comparison
+- `a2057c5b` - fix(rich-text): remove all empty lines in normalizeMarkdown for comparison
+
+### Fichiers modifiés
+
+- `src/routes/(protected)/dashboard/admin/debug/rich-text/+page.svelte`
+
+### Fonctionnalités
+
+- Badge roundtrip validation (vert "Roundtrip OK" / rouge "Roundtrip FAIL")
+- Diff view : comparaison ligne par ligne avec couleurs (rouge = supprimé, vert = ajouté)
+- Toggle Diff/Raw pour basculer entre vue diff et textarea brut
+- Normalisation markdown intelligente pour comparaison sémantique (ignore les lignes vides)
+
+---
+
 ## Dernière mise à jour
 
 Date: 2025-12-14
@@ -128,4 +151,5 @@ Date: 2025-12-14
 | 2         | `4f5daeaa`    | 34            |
 | 3         | `ad5cab8a`    | 106           |
 | 4         | `d2cef3b7`    | -             |
-| **Total** | **4 commits** | **187 tests** |
+| 6         | 5 commits     | -             |
+| **Total** | **9 commits** | **187 tests** |
