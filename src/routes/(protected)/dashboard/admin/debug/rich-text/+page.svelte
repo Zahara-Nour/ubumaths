@@ -121,15 +121,66 @@
 	// ============================================
 	const INITIAL_MARKDOWN = `# Test Import/Export
 
-Texte avec **gras** et *italique*.
+## Formatage de texte
 
-Variable : {{testVar}}
-Aléatoire : {{1..10}}
-Expression : {{eval:a+b}}
-Champ : {{blank:1}}
+Texte avec **gras**, *italique* et \`code inline\`.
 
-Math LaTeX : $x^2 + y^2$
-Math custom : ~2/3~`;
+## Templates
+
+- Variable : {{testVar}}
+- Aléatoire (range) : {{1..10}}
+- Aléatoire (liste) : {{rouge|vert|bleu}}
+- Expression : {{eval:a+b}}
+- Champ réponse : {{blank:1}} + {{blank:2}} = {{blank:3}}
+
+## Mathématiques
+
+Math LaTeX inline : $x^2 + y^2 = r^2$
+
+Math custom inline : ~2/3 + 1/4~
+
+Math LaTeX bloc (seul sur sa ligne) :
+
+$$\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$
+
+Math custom bloc (seul sur sa ligne) :
+
+~~(a+b)^2 = a^2 + 2ab + b^2~~
+
+## Listes
+
+Liste à puces :
+- Premier élément
+- Deuxième élément
+  - Sous-élément 2.1
+  - Sous-élément 2.2
+    - Sous-sous-élément 2.2.1
+- Troisième élément
+
+Liste numérotée :
+1. Étape 1
+2. Étape 2
+   1. Sous-étape 2.1
+   2. Sous-étape 2.2
+3. Étape 3
+
+## Citation
+
+> Ceci est une citation.
+> Elle peut s'étendre sur plusieurs lignes.
+
+## Bloc de code
+
+\`\`\`javascript
+function hello() {
+  console.log("Hello, world!");
+}
+\`\`\`
+
+## Titres
+
+### Titre niveau 3
+#### Titre niveau 4`;
 
 	let importMarkdown = $state(INITIAL_MARKDOWN);
 	let editorJsonValue = $state<unknown>(markdownToTipTap(INITIAL_MARKDOWN));

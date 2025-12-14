@@ -113,7 +113,8 @@ function convertBulletListToMarkdown(list: JSONContent, indentLevel = 0): string
 function convertOrderedListToMarkdown(list: JSONContent, indentLevel = 0): string {
 	if (!list.content) return '';
 
-	const indent = '  '.repeat(indentLevel);
+	// Use 3 spaces for ordered lists to align with "1. " format
+	const indent = '   '.repeat(indentLevel);
 	const startNum = (list.attrs?.start as number) || 1;
 
 	const items = list.content.map((item, index) => {
@@ -157,7 +158,10 @@ function convertBlockquoteToMarkdown(quote: JSONContent, level = 1): string {
 
 	for (const child of quote.content) {
 		if (child.type === 'paragraph') {
-			lines.push(prefix + convertParagraphToMarkdown(child));
+			// Handle newlines within the paragraph text
+			const paraContent = convertParagraphToMarkdown(child);
+			const paraLines = paraContent.split('\n');
+			lines.push(...paraLines.map((line) => prefix + line));
 		} else if (child.type === 'blockquote') {
 			// Nested blockquote
 			lines.push(convertBlockquoteToMarkdown(child, level + 1));

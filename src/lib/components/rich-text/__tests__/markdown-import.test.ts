@@ -388,6 +388,17 @@ describe('markdownToTipTap - Math Block', () => {
 		expect(result.content?.[0].type).toBe('mathBlock');
 		expect(result.content?.[0].attrs?.originalExpression).toContain('a^2');
 	});
+
+	it('handles text followed by blank line followed by block math', () => {
+		const markdown = 'Math LaTeX bloc (seul sur sa ligne) :\n\n$$\\frac{-b}{2a}$$';
+		const result = markdownToTipTap(markdown);
+
+		// Should have 2 blocks: paragraph + mathBlock
+		expect(result.content).toHaveLength(2);
+		expect(result.content?.[0].type).toBe('paragraph');
+		expect(result.content?.[1].type).toBe('mathBlock');
+		expect(result.content?.[1].attrs?.syntax).toBe('latex');
+	});
 });
 
 // ============================================================================
