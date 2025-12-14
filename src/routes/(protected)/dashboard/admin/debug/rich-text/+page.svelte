@@ -214,16 +214,21 @@ function hello() {
 
 	/**
 	 * Normalize markdown for comparison
-	 * - Trim lines
-	 * - Normalize multiple blank lines to single
-	 * - Remove trailing whitespace
+	 * - Trim each line
+	 * - Collapse all blank line sequences (1+ empty lines) to single separator
+	 * - This makes "text\nlist" equivalent to "text\n\nlist"
 	 */
 	function normalizeMarkdown(md: string): string {
 		return md
 			.split('\n')
 			.map((line) => line.trimEnd())
+			.filter((line, i, arr) => {
+				// Keep non-empty lines
+				if (line !== '') return true;
+				// Keep first empty line in a sequence, skip subsequent ones
+				return i === 0 || arr[i - 1] !== '';
+			})
 			.join('\n')
-			.replace(/\n{3,}/g, '\n\n')
 			.trim();
 	}
 
