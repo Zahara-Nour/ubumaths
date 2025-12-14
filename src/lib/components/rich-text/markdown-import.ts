@@ -352,7 +352,7 @@ function convertVideo(video: VideoNode): JSONContent {
 			videoId: video.videoId || null,
 			sizeClass: video.sizeClass || null,
 			widthPercent: video.widthPercent,
-			alignment: video.alignment || 'center',
+			alignment: video.alignment || null,
 			controls: video.controls ?? true,
 			autoplay: video.autoplay ?? false,
 			loop: video.loop ?? false,
