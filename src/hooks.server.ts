@@ -388,8 +388,11 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 		// Workers: for Pyodide Web Worker
 		"worker-src 'self' blob:",
 
-		// Child/Frame: Supabase auth popups
-		"frame-src 'self' https://*.supabase.co",
+		// Media: video/audio sources
+		"media-src 'self' blob: data: https:",
+
+		// Child/Frame: Supabase auth popups + YouTube embeds
+		"frame-src 'self' https://*.supabase.co https://www.youtube.com https://www.youtube-nocookie.com",
 
 		// Frame ancestors: prevent clickjacking (allow only self)
 		"frame-ancestors 'self'",
