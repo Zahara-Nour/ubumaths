@@ -184,7 +184,25 @@ function hello() {
 
 ## Images
 
-![Carré rouge 100x100](data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='100'%20height='100'%3E%3Crect%20fill='%23e74c3c'%20width='100'%20height='100'/%3E%3Ctext%20x='50'%20y='55'%20text-anchor='middle'%20fill='white'%20font-size='14'%3ETEST%3C/text%3E%3C/svg%3E "Test image SVG")`;
+Image simple :
+
+![Photo random](https://picsum.photos/200/100 "Image depuis Picsum")
+
+Image small alignée à droite :
+
+![Small right](https://picsum.photos/150/100){size=small align=right}
+
+Image medium centrée avec caption :
+
+![Medium centered](https://picsum.photos/300/150){size=medium align=center caption="Une belle image"}
+
+Image large :
+
+![Large image](https://picsum.photos/400/200){size=large}
+
+Image avec width personnalisé (60%) :
+
+![Custom width](https://picsum.photos/350/175){width=60% align=center}`;
 
 	let importMarkdown = $state(INITIAL_MARKDOWN);
 	let editorJsonValue = $state<unknown>(markdownToTipTap(INITIAL_MARKDOWN));
