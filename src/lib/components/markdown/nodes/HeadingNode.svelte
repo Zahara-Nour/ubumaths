@@ -84,7 +84,7 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline latex={child.latex} />
+				<MathInline expression={child.expression} syntax={child.syntax} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -104,7 +104,7 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline latex={child.latex} />
+				<MathInline expression={child.expression} syntax={child.syntax} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -124,7 +124,7 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline latex={child.latex} />
+				<MathInline expression={child.expression} syntax={child.syntax} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -144,7 +144,7 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline latex={child.latex} />
+				<MathInline expression={child.expression} syntax={child.syntax} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -164,7 +164,7 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline latex={child.latex} />
+				<MathInline expression={child.expression} syntax={child.syntax} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -184,7 +184,7 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline latex={child.latex} />
+				<MathInline expression={child.expression} syntax={child.syntax} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
