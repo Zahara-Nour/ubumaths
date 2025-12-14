@@ -5,10 +5,9 @@
  * Custom TipTap node extension that creates visual chips for hashtags.
  * Hashtags are used for categorizing content (e.g., #mathematiques, #facile).
  *
- * Syntax: #tagname (must start with lowercase letter)
- *
  * Features:
  * - Automatic #tag syntax detection via input rule
+ * - Autocomplete popup with predefined hashtags
  * - Visual blue chip styling
  * - Inline atomic node (non-editable)
  * - Keyboard navigation support
@@ -16,9 +15,12 @@
  * @see https://tiptap.dev/docs/editor/extensions/custom-extensions
  */
 
-import { Node, mergeAttributes, InputRule } from '@tiptap/core';
+import { Node, mergeAttributes } from '@tiptap/core';
+import Suggestion from '@tiptap/suggestion';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
+import { filterHashtags } from '$lib/stores/hashtags.svelte';
+import { createSuggestionRenderer, type SuggestionItem } from '$lib/extensions/suggestion-renderer';
 
 // ============================================================================
 // KEYBOARD NAVIGATION PLUGIN
@@ -77,15 +79,36 @@ const hashtagKeyboardNavPlugin = new Plugin({
 });
 
 // ============================================================================
+// SUGGESTION CONFIGURATION
+// ============================================================================
+
+/**
+ * Convert hashtag strings to SuggestionItem format
+ */
+function hashtagsToItems(tags: string[]): SuggestionItem[] {
+	return tags.map((tag) => ({
+		id: tag,
+		label: tag
+	}));
+}
+
+// ============================================================================
 // HASHTAG EXTENSION
 // ============================================================================
+
+export interface HashtagOptions {
+	/** HTML attributes to add to the hashtag element */
+	HTMLAttributes: Record<string, unknown>;
+	/** Maximum number of suggestions to show */
+	maxSuggestions: number;
+}
 
 /**
  * Hashtag Extension
  * =================
  *
  * Creates inline hashtag chips for content categorization.
- * Syntax: #tagname
+ * Typing # followed by text shows an autocomplete popup.
  *
  * Node Configuration:
  * - group: 'inline' - Can appear within paragraphs
@@ -95,11 +118,18 @@ const hashtagKeyboardNavPlugin = new Plugin({
  * Attributes:
  * - tag: string - The tag name (without #)
  */
-export const Hashtag = Node.create({
+export const Hashtag = Node.create<HashtagOptions>({
 	name: 'hashtag',
 	group: 'inline',
 	inline: true,
 	atom: true,
+
+	addOptions() {
+		return {
+			HTMLAttributes: {},
+			maxSuggestions: 8
+		};
+	},
 
 	addAttributes() {
 		return {
@@ -125,11 +155,11 @@ export const Hashtag = Node.create({
 		];
 	},
 
-	renderHTML({ node }) {
+	renderHTML({ node, HTMLAttributes }) {
 		const tag = node.attrs.tag as string;
 		return [
 			'span',
-			mergeAttributes({
+			mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
 				'data-hashtag': tag,
 				class: 'hashtag-chip'
 			}),
@@ -169,27 +199,45 @@ export const Hashtag = Node.create({
 		};
 	},
 
-	addInputRules() {
+	addProseMirrorPlugins() {
 		return [
-			// Match #tagname followed by space or end of input
-			// Only lowercase first letter to avoid hex colors
-			new InputRule({
-				find: /#([a-z\u00e0\u00e2\u00e4\u00e9\u00e8\u00ea\u00eb\u00ef\u00ee\u00f4\u00f9\u00fb\u00fc\u00e7\u0153\u00e6][a-zA-Z\u00e0\u00e2\u00e4\u00e9\u00e8\u00ea\u00eb\u00ef\u00ee\u00f4\u00f9\u00fb\u00fc\u00e7\u0153\u00e60-9_-]*)\s$/,
-				handler: ({ state, range, match }) => {
-					const { tr } = state;
-					const tag = match[1];
-					if (tag) {
-						// Replace the hashtag text with the node, keeping the trailing space
-						tr.replaceWith(range.from, range.to - 1, this.type.create({ tag }));
-						// Add space after the node
-						tr.insertText(' ');
-					}
-				}
+			hashtagKeyboardNavPlugin,
+			Suggestion({
+				editor: this.editor,
+				char: '#',
+				pluginKey: new PluginKey('hashtagSuggestion'),
+				allowSpaces: false,
+				allowedPrefixes: [' ', '\n', '\t', '(', '[', '{', '"', "'", '—', '–', '-'],
+				startOfLine: true,
+
+				// Filter items based on query
+				items: ({ query }) => {
+					const filtered = filterHashtags(query);
+					return hashtagsToItems(filtered.slice(0, this.options.maxSuggestions));
+				},
+
+				// Command to insert hashtag when selected
+				command: ({ editor, range, props }) => {
+					const item = props as SuggestionItem;
+					editor
+						.chain()
+						.focus()
+						.deleteRange(range)
+						.insertContent({
+							type: this.name,
+							attrs: { tag: item.id }
+						})
+						.run();
+				},
+
+				// Render suggestion popup
+				render: () =>
+					createSuggestionRenderer({
+						type: 'hashtag',
+						prefix: '#',
+						noResultsText: 'Aucun hashtag trouvé'
+					})
 			})
 		];
-	},
-
-	addProseMirrorPlugins() {
-		return [hashtagKeyboardNavPlugin];
 	}
 });
