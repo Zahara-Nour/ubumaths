@@ -70,10 +70,11 @@
 		HIGHLIGHT_COLORS,
 		EMOJI_CATEGORIES,
 		MATH_TEMPLATES_FULL,
-		MATH_TEMPLATES_BASIC
+		MATH_TEMPLATES_BASIC,
+		EDITOR_PRESETS
 	} from './config';
 	import { createEditorExtensions, getEditorProps } from './editor-config';
-	import type { RichTextMode, MathTemplateLevel, ToolbarConfig } from './types';
+	import type { RichTextMode, MathTemplateLevel, ToolbarConfig, EditorPreset } from './types';
 
 	// Component Props
 	interface Props {
@@ -81,6 +82,8 @@
 		value?: string;
 		jsonValue?: unknown;
 		onSend?: (content: unknown) => void;
+		/** Editor preset - predefined configurations. Explicit props override preset values. */
+		preset?: EditorPreset;
 		mathTemplates?: MathTemplateLevel;
 		toolbar?: ToolbarConfig;
 		showSendButton?: boolean;
@@ -94,21 +97,28 @@
 		value = $bindable(''),
 		jsonValue = $bindable(undefined),
 		onSend,
-		mathTemplates = 'full',
-		toolbar,
+		preset = 'full',
+		mathTemplates: mathTemplatesOverride,
+		toolbar: toolbarOverride,
 		showSendButton,
 		showClearButton = true,
 		minHeight = '100px',
 		disabled = false
 	}: Props = $props();
 
-	// Computed toolbar visibility (default: all sections visible)
-	let showText = $derived(toolbar?.text ?? true);
-	let showParagraph = $derived(toolbar?.paragraph ?? true);
-	let showInsertion = $derived(toolbar?.insertion ?? true);
-	let showFormula = $derived(toolbar?.formula ?? true);
-	let showTemplates = $derived(toolbar?.templates ?? true);
-	let showMore = $derived(toolbar?.more ?? true);
+	// Resolve configuration: explicit props override preset values
+	let resolvedToolbar = $derived(toolbarOverride ?? EDITOR_PRESETS[preset].toolbar);
+	let resolvedMathTemplates = $derived(
+		mathTemplatesOverride ?? EDITOR_PRESETS[preset].mathTemplates
+	);
+
+	// Computed toolbar visibility from resolved config
+	let showText = $derived(resolvedToolbar.text ?? true);
+	let showParagraph = $derived(resolvedToolbar.paragraph ?? true);
+	let showInsertion = $derived(resolvedToolbar.insertion ?? true);
+	let showFormula = $derived(resolvedToolbar.formula ?? true);
+	let showTemplates = $derived(resolvedToolbar.templates ?? true);
+	let showMore = $derived(resolvedToolbar.more ?? true);
 
 	// Computed defaults based on mode
 	let effectiveShowSendButton = $derived(showSendButton ?? mode === 'chat');
@@ -149,11 +159,11 @@
 	// Emoji picker state
 	let selectedEmojiCategory = $state('Smileys');
 
-	// Get math templates based on level
+	// Get math templates based on resolved level
 	let mathTemplatesList = $derived(
-		mathTemplates === 'full'
+		resolvedMathTemplates === 'full'
 			? MATH_TEMPLATES_FULL
-			: mathTemplates === 'basic'
+			: resolvedMathTemplates === 'basic'
 				? MATH_TEMPLATES_BASIC
 				: []
 	);
@@ -495,8 +505,8 @@
 				</Button>
 			{/if}
 
-			<!-- Formule Section Toggle (only if showFormula and mathTemplates !== 'none') -->
-			{#if showFormula && mathTemplates !== 'none'}
+			<!-- Formule Section Toggle (only if showFormula and resolvedMathTemplates !== 'none') -->
+			{#if showFormula && resolvedMathTemplates !== 'none'}
 				<Button
 					type="button"
 					variant="ghost"
@@ -932,8 +942,8 @@
 			</div>
 		{/if}
 
-		<!-- Formule Section (Collapsible) - Only if showFormula and mathTemplates !== 'none' -->
-		{#if showFormula && formuleSectionOpen && mathTemplates !== 'none'}
+		<!-- Formule Section (Collapsible) - Only if showFormula and resolvedMathTemplates !== 'none' -->
+		{#if showFormula && formuleSectionOpen && resolvedMathTemplates !== 'none'}
 			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Empty Formula Button -->
 				<Button
