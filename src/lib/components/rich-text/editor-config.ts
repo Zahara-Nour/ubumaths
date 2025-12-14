@@ -53,7 +53,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after template extensions added
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v5`;
+	return `h${headingLevels}-v7`;
 }
 
 /**

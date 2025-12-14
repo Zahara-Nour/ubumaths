@@ -184,7 +184,7 @@ function hello() {
 
 ## Images
 
-![Carré rouge](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAAEklEQVR42mP8z8DwHwGRMYAuAN0mApj9z7eIAAAAAElFTkSuQmCC "Test image")`;
+![Carré rouge 100x100](data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='100'%20height='100'%3E%3Crect%20fill='%23e74c3c'%20width='100'%20height='100'/%3E%3Ctext%20x='50'%20y='55'%20text-anchor='middle'%20fill='white'%20font-size='14'%3ETEST%3C/text%3E%3C/svg%3E "Test image SVG")`;
 
 	let importMarkdown = $state(INITIAL_MARKDOWN);
 	let editorJsonValue = $state<unknown>(markdownToTipTap(INITIAL_MARKDOWN));
