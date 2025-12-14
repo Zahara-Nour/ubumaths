@@ -53,7 +53,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after template extensions added
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v3`;
+	return `h${headingLevels}-v5`;
 }
 
 /**
@@ -125,7 +125,10 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 		// Images
 		Image.configure({
 			inline: false,
-			allowBase64: true
+			allowBase64: true,
+			HTMLAttributes: {
+				class: 'max-w-full h-auto rounded-md my-2'
+			}
 		})
 	];
 }

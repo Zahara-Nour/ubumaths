@@ -184,11 +184,7 @@ function hello() {
 
 ## Images
 
-![Carré rouge](data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23e74c3c' width='100' height='100'/%3E%3C/svg%3E "Image de test")
-
-Image sans titre :
-
-![Rectangle bleu](data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='50'%3E%3Crect fill='%233498db' width='150' height='50'/%3E%3C/svg%3E)`;
+![Carré rouge](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC64paAAAAEklEQVR42mP8z8DwHwGRMYAuAN0mApj9z7eIAAAAAElFTkSuQmCC "Test image")`;
 
 	let importMarkdown = $state(INITIAL_MARKDOWN);
 	let editorJsonValue = $state<unknown>(markdownToTipTap(INITIAL_MARKDOWN));
@@ -990,7 +986,44 @@ Image sans titre :
 				</Card.Content>
 			</Card.Root>
 
-			<!-- Card 3: Export Markdown with Diff View -->
+			<!-- Card 3: JSON Debug -->
+			<Card.Root>
+				<Card.Header>
+					<Card.Title class="flex items-center justify-between">
+						<span class="flex items-center gap-2">
+							<Code class="h-4 w-4" />
+							JSON Debug
+						</span>
+						<Button
+							size="sm"
+							variant="ghost"
+							onclick={() => copyToClipboard(JSON.stringify(editorJsonValue, null, 2), 'json')}
+						>
+							{#if copiedJson}
+								<Check class="mr-1 h-3 w-3 text-green-600" />
+								Copié
+							{:else}
+								<Copy class="mr-1 h-3 w-3" />
+								Copier
+							{/if}
+						</Button>
+					</Card.Title>
+					<Card.Description>Format TipTap JSON intermédiaire (pour debug)</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<details>
+						<summary class="mb-2 cursor-pointer text-sm font-medium"> Voir le JSON TipTap </summary>
+						<pre
+							class="max-h-64 overflow-auto rounded-md border border-border bg-muted/50 p-4 font-mono text-xs">{JSON.stringify(
+								editorJsonValue,
+								null,
+								2
+							)}</pre>
+					</details>
+				</Card.Content>
+			</Card.Root>
+
+			<!-- Card 4: Export Markdown with Diff View -->
 			<Card.Root>
 				<Card.Header>
 					<Card.Title class="flex items-center justify-between">
