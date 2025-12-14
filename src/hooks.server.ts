@@ -372,8 +372,8 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 		// Fonts: self + Google Fonts
 		"font-src 'self' https://fonts.gstatic.com",
 
-		// Images: self + data URIs (base64 matplotlib plots) + blob + Supabase storage + Google profile pics + Blockly media + Picsum (test)
-		"img-src 'self' data: blob: https://*.supabase.co https://*.googleusercontent.com https://unpkg.com https://picsum.photos https://fastly.picsum.photos",
+		// Images: self + data URIs (base64 matplotlib plots) + blob + Supabase storage + Google profile pics + Blockly media + Picsum (test) + YouTube thumbnails
+		"img-src 'self' data: blob: https://*.supabase.co https://*.googleusercontent.com https://unpkg.com https://picsum.photos https://fastly.picsum.photos https://i.ytimg.com",
 
 		// Connect: API calls + WebSocket for realtime
 		[
