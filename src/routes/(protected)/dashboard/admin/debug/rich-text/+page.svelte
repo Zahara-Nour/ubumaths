@@ -212,6 +212,26 @@ function hello() {
 		}
 	});
 
+	/**
+	 * Normalize markdown for comparison
+	 * - Trim lines
+	 * - Normalize multiple blank lines to single
+	 * - Remove trailing whitespace
+	 */
+	function normalizeMarkdown(md: string): string {
+		return md
+			.split('\n')
+			.map((line) => line.trimEnd())
+			.join('\n')
+			.replace(/\n{3,}/g, '\n\n')
+			.trim();
+	}
+
+	// Roundtrip validation
+	let isRoundtripValid = $derived(
+		normalizeMarkdown(importMarkdown) === normalizeMarkdown(exportMarkdown)
+	);
+
 	// ============================================
 	// Copy to clipboard
 	// ============================================
@@ -846,7 +866,20 @@ function hello() {
 		<!-- ============================================ -->
 		<Tabs.Content value="import-export" class="space-y-6">
 			<div class="mb-4">
-				<h2 class="text-2xl font-semibold">Import/Export Markdown</h2>
+				<div class="flex items-center gap-4">
+					<h2 class="text-2xl font-semibold">Import/Export Markdown</h2>
+					{#if isRoundtripValid}
+						<Badge class="h-8 bg-green-600 px-4 text-base hover:bg-green-600">
+							<Check class="mr-2 h-5 w-5" />
+							Roundtrip OK
+						</Badge>
+					{:else}
+						<Badge variant="destructive" class="h-8 px-4 text-base">
+							<span class="mr-2">✗</span>
+							Roundtrip FAIL
+						</Badge>
+					{/if}
+				</div>
 				<p class="text-muted-foreground">
 					Testez la conversion bidirectionnelle entre Markdown et le format TipTap JSON.
 				</p>
