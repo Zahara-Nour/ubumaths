@@ -10,8 +10,11 @@
 - [Types](#types)
 - [Utilisation](#utilisation)
 - [Intégration MathLive](#intégration-mathlive)
+- [Extensions Templates](#extensions-templates)
+- [Import/Export Markdown](#importexport-markdown)
 - [Stockage des données](#stockage-des-données)
 - [Tests](#tests)
+- [Debug Page](#debug-page)
 
 ---
 
@@ -27,10 +30,21 @@ src/lib/components/rich-text/
 ├── config.ts                 # Configuration (couleurs, emojis, templates)
 ├── editor-config.ts          # Factory TipTap
 ├── types.ts                  # Types TypeScript
+├── markdown-import.ts        # Markdown → TipTap JSON conversion
+├── markdown-export.ts        # TipTap JSON → Markdown conversion
+├── __tests__/
+│   ├── markdown-import.test.ts   # 46 tests
+│   └── markdown-export.test.ts   # 60 tests
 └── README.md                 # Documentation composant
 
 src/lib/extensions/
-└── math-extension.ts         # Extensions TipTap pour MathLive
+├── math-extension.ts         # Extensions TipTap pour MathLive
+├── template-extensions.ts    # Extensions pour templates {{...}}
+├── blank-extension.ts        # Extension pour blanks {{blank:N}}
+└── __tests__/
+    ├── math-extension.svelte.test.ts      # 34 tests
+    ├── template-extensions.svelte.test.ts # 33 tests
+    └── blank-extension.svelte.test.ts     # 14 tests
 ```
 
 ### Stack technique
@@ -96,6 +110,7 @@ interface ToolbarConfig {
 	paragraph?: boolean; // Titres H1-H6, Alignement
 	insertion?: boolean; // Listes, Couleurs, Surlignage, Liens, Emojis
 	formula?: boolean; // Templates math, Formule vide, Bloc formule
+	templates?: boolean; // Variable, Aléatoire, Expression, Blanc
 	more?: boolean; // Citation, Bloc de code, Ligne horizontale
 }
 ```
@@ -307,6 +322,7 @@ export interface ToolbarConfig {
 	paragraph?: boolean; // Paragraphe (Titres, Alignement)
 	insertion?: boolean; // Insertion (Listes, Couleurs, Liens, Emojis)
 	formula?: boolean; // Formules mathématiques
+	templates?: boolean; // Templates custom markdown
 	more?: boolean; // Blocs spéciaux (Citation, Code, Ligne)
 }
 
@@ -400,6 +416,172 @@ Structure HTML :
 | HTML   | `<span data-math-inline>`                         | `<div data-math-block>`                          |
 | JSON   | `{ type: 'mathInline', attrs: { latex: '...' } }` | `{ type: 'mathBlock', attrs: { latex: '...' } }` |
 
+### Syntaxe Custom (~...~)
+
+En plus de la syntaxe LaTeX standard (`$...$`), une syntaxe custom est supportée :
+
+| Syntaxe    | Type       | Description               |
+| ---------- | ---------- | ------------------------- |
+| `~expr~`   | MathInline | Expression custom inline  |
+| `~~expr~~` | MathBlock  | Expression custom en bloc |
+
+L'attribut `syntax` distingue les deux formats :
+
+```typescript
+// LaTeX standard
+{ type: 'mathInline', attrs: { latex: 'x^2', syntax: 'latex' } }
+
+// Custom syntax (préservé pour round-trip)
+{ type: 'mathInline', attrs: { latex: 'x^2', syntax: 'custom', originalExpression: '2x+3' } }
+```
+
+---
+
+## Extensions Templates
+
+Extensions TipTap pour le custom markdown UbuMaths.
+
+### TemplateVariable
+
+Variables de template : `{{var}}`
+
+```typescript
+// Insertion
+editor.commands.insertTemplateVariable('a');
+
+// HTML output
+<span data-template-variable="a" class="template-chip template-variable">{{a}}</span>
+```
+
+**Chip** : Bleu avec icône variable
+
+### TemplateRandom
+
+Valeurs aléatoires : `{{1..10}}` ou `{{random:dice,coin}}`
+
+```typescript
+// Range
+editor.commands.insertTemplateRandom('1..10');
+
+// List
+editor.commands.insertTemplateRandom('random:option1,option2');
+
+// HTML output
+<span data-template-random="1..10" class="template-chip template-random">{{1..10}}</span>
+```
+
+**Chip** : Vert avec icône dé
+
+### TemplateEval
+
+Expressions évaluées : `{{eval:a+b}}`
+
+```typescript
+// Insertion
+editor.commands.insertTemplateEval('a * b + 1');
+
+// HTML output
+<span data-template-eval="a * b + 1" class="template-chip template-eval">{{eval:a * b + 1}}</span>
+```
+
+**Chip** : Violet avec icône calculatrice
+
+### BlankField
+
+Champs de réponse vides : `{{blank:N}}`
+
+```typescript
+// Insertion
+editor.commands.insertBlankField(1);
+
+// HTML output
+<span data-template-blank="1" class="template-chip template-blank">[Blank #1]</span>
+```
+
+**Chip** : Orange avec numéro
+
+### InputRules (auto-détection)
+
+| Pattern          | Extension        | Exemple                      |
+| ---------------- | ---------------- | ---------------------------- |
+| `{{nom}}`        | TemplateVariable | `{{x}}` → chip bleu          |
+| `{{N..M}}`       | TemplateRandom   | `{{1..10}}` → chip vert      |
+| `{{random:...}}` | TemplateRandom   | `{{random:a,b}}` → chip vert |
+| `{{eval:...}}`   | TemplateEval     | `{{eval:x+1}}` → chip violet |
+| `{{blank:N}}`    | BlankField       | `{{blank:1}}` → chip orange  |
+
+### Validation
+
+```typescript
+import { validateBlankNumber } from '$lib/extensions/blank-extension';
+
+validateBlankNumber('1'); // true
+validateBlankNumber('0'); // false (must be positive)
+validateBlankNumber('abc'); // false
+```
+
+---
+
+## Import/Export Markdown
+
+Conversion bidirectionnelle entre Markdown custom et TipTap JSON.
+
+### markdownToTipTap
+
+Convertit du Markdown vers TipTap JSON.
+
+```typescript
+import { markdownToTipTap } from '$lib/components/rich-text/markdown-import';
+
+const markdown = `# Title
+
+Some text with **bold** and ~math~.
+
+{{a}} + {{b}} = {{eval:a+b}}`;
+
+const tipTapJson = markdownToTipTap(markdown);
+```
+
+#### Syntaxes supportées
+
+| Markdown       | TipTap Node                 |
+| -------------- | --------------------------- |
+| `# Title`      | heading (level 1-6)         |
+| `**bold**`     | text (marks: bold)          |
+| `*italic*`     | text (marks: italic)        |
+| `` `code` ``   | text (marks: code)          |
+| `$latex$`      | mathInline (syntax: latex)  |
+| `~expr~`       | mathInline (syntax: custom) |
+| `~~expr~~`     | mathBlock (syntax: custom)  |
+| `{{var}}`      | templateVariable            |
+| `{{1..10}}`    | templateRandom              |
+| `{{eval:...}}` | templateEval                |
+| `{{blank:N}}`  | blankField                  |
+| `> quote`      | blockquote                  |
+| `- item`       | bulletList                  |
+| `1. item`      | orderedList                 |
+| ` `code` `     | codeBlock                   |
+
+### tipTapToMarkdown
+
+Convertit du TipTap JSON vers Markdown.
+
+```typescript
+import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+
+const markdown = tipTapToMarkdown(tipTapJson);
+// Round-trip preserves original syntax
+```
+
+#### Préservation de la syntaxe
+
+L'attribut `syntax` et `originalExpression` permettent de préserver la syntaxe originale :
+
+```typescript
+// Input markdown: ~2x+3~
+// After import → export: ~2x+3~ (not $2x+3$)
+```
+
 ---
 
 ## Stockage des données
@@ -444,9 +626,9 @@ Structure HTML :
 ### Organisation
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ [Texte ▼] [Paragraphe ▼] [Insertion ▼] [Formule ▼] [Plus ▼] [Effacer] [Envoyer] │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│ [Texte ▼] [Paragraphe ▼] [Insertion ▼] [Formule ▼] [Templates ▼] [Plus ▼] [Effacer] │
+└─────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Sections collapsibles
@@ -457,6 +639,7 @@ Structure HTML :
 | **Paragraphe** | Titres H1-H6, Alignement (gauche, centre, droite, justifié)            |
 | **Insertion**  | Listes (puces, numérotée, tâches), Couleurs, Surlignage, Liens, Emojis |
 | **Formule**    | Templates math, Formule vide, Bloc formule                             |
+| **Templates**  | Variable, Aléatoire, Expression, Blanc (pour custom markdown)          |
 | **Plus**       | Citation, Bloc de code, Ligne horizontale                              |
 
 ### Raccourcis clavier
@@ -474,26 +657,29 @@ Structure HTML :
 
 ### Couverture
 
-45 tests unitaires couvrant :
+232 tests unitaires au total :
 
-| Catégorie               | Tests |
-| ----------------------- | ----- |
-| Configuration des modes | 7     |
-| Templates mathématiques | 12    |
-| Détection contenu vide  | 6     |
-| Props par défaut        | 5     |
-| Cas limites             | 9     |
-| Type safety             | 2     |
-| Intégration config      | 4     |
+| Fichier                              | Tests | Description                                    |
+| ------------------------------------ | ----- | ---------------------------------------------- |
+| `RichTextEditor.test.ts`             | 45    | Configuration, modes, props                    |
+| `math-extension.svelte.test.ts`      | 34    | MathInline, MathBlock, syntaxe custom          |
+| `template-extensions.svelte.test.ts` | 33    | TemplateVariable, TemplateRandom, TemplateEval |
+| `blank-extension.svelte.test.ts`     | 14    | BlankField validation, serialization           |
+| `markdown-import.test.ts`            | 46    | Markdown → TipTap conversion                   |
+| `markdown-export.test.ts`            | 60    | TipTap → Markdown conversion                   |
 
 ### Exécution
 
 ```bash
 # Tous les tests rich-text
-pnpm test:server src/lib/components/rich-text/RichTextEditor.test.ts
+pnpm test:server src/lib/components/rich-text/
 
-# Mode watch
-pnpm test:server src/lib/components/rich-text/RichTextEditor.test.ts -- --watch
+# Tests extensions
+pnpm test:client src/lib/extensions/
+
+# Tests spécifiques
+pnpm test:server src/lib/components/rich-text/RichTextEditor.test.ts
+pnpm test:client src/lib/extensions/math-extension.svelte.test.ts
 ```
 
 ---
@@ -561,6 +747,51 @@ pnpm test:server src/lib/components/rich-text/RichTextEditor.test.ts -- --watch
 
 ---
 
+## Debug Page
+
+Page de développement pour tester les fonctionnalités du RichTextEditor.
+
+**URL** : `/dashboard/admin/debug/rich-text`
+
+### Onglets
+
+| Onglet            | Description                                          |
+| ----------------- | ---------------------------------------------------- |
+| **Test Editor**   | Test général du RichTextEditor avec output HTML/JSON |
+| **Import/Export** | Test du round-trip Markdown ↔ TipTap                |
+
+### Import/Export Tab
+
+Interface de test pour la conversion Markdown :
+
+```
+┌─────────────────────────────────────────────────┐
+│ [Import Markdown ▼]          (CodeMirror)       │
+│ # Title                                         │
+│ Text with **bold** and ~math~                   │
+│ {{a}} + {{b}} = {{eval:a+b}}                    │
+└─────────────────────────────────────────────────┘
+                      ↓
+┌─────────────────────────────────────────────────┐
+│ [RichTextEditor Result ▼]                       │
+│ WYSIWYG editor with chips and math              │
+└─────────────────────────────────────────────────┘
+                      ↓
+┌─────────────────────────────────────────────────┐
+│ [Export Markdown ▼]          (CodeMirror)       │
+│ # Title                                         │
+│ Text with **bold** and ~math~                   │
+│ {{a}} + {{b}} = {{eval:a+b}}                    │
+└─────────────────────────────────────────────────┘
+```
+
+### Chaîne de réactivité
+
+1. **Import modifié** → mise à jour automatique RichTextEditor + Export
+2. **RichTextEditor modifié** → mise à jour automatique Export uniquement
+
+---
+
 ## Fichiers de référence
 
 | Fichier                                               | Description             |
@@ -570,4 +801,8 @@ pnpm test:server src/lib/components/rich-text/RichTextEditor.test.ts -- --watch
 | `src/lib/components/rich-text/config.ts`              | Configuration           |
 | `src/lib/components/rich-text/editor-config.ts`       | Factory TipTap          |
 | `src/lib/components/rich-text/types.ts`               | Types TypeScript        |
+| `src/lib/components/rich-text/markdown-import.ts`     | Markdown → TipTap       |
+| `src/lib/components/rich-text/markdown-export.ts`     | TipTap → Markdown       |
 | `src/lib/extensions/math-extension.ts`                | Extensions math         |
+| `src/lib/extensions/template-extensions.ts`           | Extensions templates    |
+| `src/lib/extensions/blank-extension.ts`               | Extension blank         |
