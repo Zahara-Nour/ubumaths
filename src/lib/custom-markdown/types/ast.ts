@@ -318,6 +318,69 @@ export interface ImageNode extends BaseNode {
 	linkTitle?: string; // Link title attribute (shown on hover)
 }
 
+// ============================================================================
+// VIDEO NODE
+// ============================================================================
+
+/**
+ * Video provider type
+ *
+ * Determines how the video should be rendered:
+ * - 'html5': Native HTML5 video element for local/direct video files
+ * - 'youtube': YouTube embed via iframe
+ */
+export type VideoProvider = 'html5' | 'youtube';
+
+/**
+ * Video node
+ *
+ * Supports HTML5 video files and YouTube embeds.
+ * Uses the same sizing system as images (sizeClass, widthPercent, alignment).
+ *
+ * @example HTML5 video
+ * ```markdown
+ * !video[Demo](video.mp4){controls}
+ * !video[Animation](animation.webm){autoplay loop muted size=medium}
+ * ```
+ *
+ * @example YouTube embed
+ * ```markdown
+ * !video[Tutorial](https://youtube.com/watch?v=VIDEO_ID){size=large}
+ * !video[Course](https://youtu.be/VIDEO_ID){align=center}
+ * ```
+ */
+export interface VideoNode extends BaseNode {
+	type: 'video';
+	/** Video source URL (file path or YouTube URL) */
+	src: string;
+	/** Alt text for accessibility */
+	alt?: string;
+
+	// Provider detection (auto-detected from URL)
+	/** Video provider: 'html5' for direct files, 'youtube' for YouTube */
+	provider?: VideoProvider;
+	/** YouTube video ID (extracted from URL if provider is 'youtube') */
+	videoId?: string;
+
+	// Sizing (same pattern as images)
+	/** Semantic size class */
+	sizeClass?: ImageSizeClass;
+	/** Width as percentage (0-100) */
+	widthPercent?: number;
+	/** Horizontal alignment */
+	alignment?: ImageAlignment;
+
+	// Playback options
+	/** Show video controls (default: true) */
+	controls?: boolean;
+	/** Auto-play video (default: false, requires muted in most browsers) */
+	autoplay?: boolean;
+	/** Loop video playback (default: false) */
+	loop?: boolean;
+	/** Mute video audio (default: false) */
+	muted?: boolean;
+}
+
 /**
  * Horizontal rule node (---, ***, ___)
  */
@@ -354,6 +417,7 @@ export type BlockNode =
 	| TableNode
 	| MathBlockNode
 	| ImageNode
+	| VideoNode
 	| HorizontalRuleNode
 	| BlockquoteNode
 	| CodeBlockNode;

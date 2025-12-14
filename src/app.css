@@ -780,3 +780,49 @@ math-field:focus {
 .suggestion-popup-mention .suggestion-item-label {
 	color: light-dark(#92400e, #fcd34d);
 }
+
+/* ============================================================================
+   VIDEO STYLES
+   ============================================================================
+
+   Styles for embedded videos (HTML5 and YouTube) in the rich text editor.
+   Uses the same sizing system as images.
+*/
+
+/* Video wrapper - handles sizing and alignment */
+.video-wrapper {
+	display: block;
+	margin: 1rem 0;
+}
+
+/* YouTube responsive container */
+.video-youtube iframe {
+	border: none;
+	border-radius: 0.5rem;
+	background: #000;
+}
+
+/* HTML5 video */
+.video-html5 video {
+	border-radius: 0.5rem;
+	background: #000;
+}
+
+/* Selected state in editor */
+.ProseMirror .video-wrapper.ProseMirror-selectednode {
+	outline: 2px solid var(--color-ring);
+	outline-offset: 2px;
+}
+
+/* Video placeholder when loading */
+.video-wrapper[data-loading='true']::after {
+	content: 'Chargement...';
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+	color: white;
+	font-size: 0.875rem;
+}

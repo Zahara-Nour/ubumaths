@@ -26,6 +26,7 @@ import type {
 	MathInlineNode,
 	BlankNode,
 	ImageNode,
+	VideoNode,
 	TableNode,
 	LinkNode,
 	HashtagNode,
@@ -167,6 +168,9 @@ function convertBlock(block: BlockNode): JSONContent | null {
 
 		case 'image':
 			return convertImage(block as ImageNode);
+
+		case 'video':
+			return convertVideo(block as VideoNode);
 
 		case 'table':
 			return convertTable(block as TableNode);
@@ -332,6 +336,28 @@ function convertImage(img: ImageNode): JSONContent {
 	return {
 		type: 'image',
 		attrs
+	};
+}
+
+/**
+ * Convert VideoNode to TipTap video
+ */
+function convertVideo(video: VideoNode): JSONContent {
+	return {
+		type: 'video',
+		attrs: {
+			src: video.src,
+			alt: video.alt || '',
+			provider: video.provider || 'html5',
+			videoId: video.videoId || null,
+			sizeClass: video.sizeClass || null,
+			widthPercent: video.widthPercent,
+			alignment: video.alignment || 'center',
+			controls: video.controls ?? true,
+			autoplay: video.autoplay ?? false,
+			loop: video.loop ?? false,
+			muted: video.muted ?? false
+		}
 	};
 }
 
