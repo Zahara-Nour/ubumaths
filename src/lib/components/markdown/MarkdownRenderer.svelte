@@ -42,6 +42,7 @@
 	import ListNode from './nodes/ListNode.svelte';
 	import TableNode from './nodes/TableNode.svelte';
 	import ImageDisplay from './nodes/ImageDisplay.svelte';
+	import VideoDisplay from './nodes/VideoDisplay.svelte';
 	import CodeBlock from './nodes/CodeBlock.svelte';
 	import Blockquote from './nodes/Blockquote.svelte';
 
@@ -193,6 +194,20 @@
 						caption={node.caption}
 						originalWidth={node.originalWidth}
 						originalHeight={node.originalHeight}
+					/>
+				{:else if node.type === 'video'}
+					<VideoDisplay
+						src={node.src}
+						alt={node.alt}
+						provider={node.provider}
+						videoId={node.videoId}
+						sizeClass={node.sizeClass}
+						widthPercent={node.widthPercent}
+						alignment={node.alignment}
+						controls={node.controls}
+						autoplay={node.autoplay}
+						loop={node.loop}
+						muted={node.muted}
 					/>
 				{:else if node.type === 'code-block'}
 					<CodeBlock code={node.code} language={node.language} />
