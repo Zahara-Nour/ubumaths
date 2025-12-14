@@ -1,6 +1,53 @@
-# Custom Markdown Refactoring - COMPLETE
+# Custom Markdown Progress
 
-## Final State: All 7 Phases Complete
+## Latest: Video Support (December 2024)
+
+Added video support with HTML5 and YouTube embeds:
+
+### Syntax
+
+```markdown
+!video[alt](url) # Basic video
+!video[alt](url){size=medium} # With size class
+!video[alt](url){autoplay loop muted} # With playback options
+!video[YouTube](https://youtube.com/watch?v=ID){size=large} # YouTube embed
+```
+
+### Features
+
+- **HTML5 video**: MP4, WebM, Ogg files
+- **YouTube embeds**: youtube.com, youtu.be, youtube.com/embed
+- **Privacy**: Uses youtube-nocookie.com for embeds
+- **Attributes**: size, width%, align, controls, autoplay, loop, muted
+- **Roundtrip**: Perfect Markdown → TipTap → Markdown conversion
+
+### Files Modified/Created
+
+| File                                    | Action                         |
+| --------------------------------------- | ------------------------------ |
+| `types/ast.ts`                          | Added VideoNode, VideoProvider |
+| `parser/markdown-parser.ts`             | Added video parsing            |
+| `extensions/video-extension.ts`         | NEW - TipTap extension         |
+| `rich-text/markdown-import.ts`          | Video AST → TipTap             |
+| `rich-text/markdown-export.ts`          | TipTap → Video markdown        |
+| `hooks.server.ts`                       | CSP for media-src, YouTube     |
+| `__tests__/parser/video-parser.test.ts` | NEW - 42 tests                 |
+
+### Commits
+
+```
+6387491e feat(rich-text): add video support with HTML5 and YouTube embeds
+1fc9d593 fix(csp): add media-src and YouTube frame-src for video support
+6e119842 fix(csp): add YouTube thumbnails to img-src
+f5437eb4 fix(rich-text): improve video roundtrip consistency
+5cef3988 fix(rich-text): preserve video alignment only when explicitly set
+```
+
+---
+
+## Previous: Custom Markdown Refactoring - COMPLETE
+
+### Final State: All 7 Phases Complete
 
 ### Summary
 
