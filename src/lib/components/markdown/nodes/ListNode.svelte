@@ -40,6 +40,10 @@
 		enumerateDepth?: number;
 		/** Effective numbering scheme to apply */
 		effectiveScheme?: SchemeId | null;
+		/** Callback when a hashtag is clicked */
+		onHashtagClick?: (tag: string) => void;
+		/** Callback when a mention is clicked */
+		onMentionClick?: (username: string) => void;
 	}
 
 	let {
@@ -48,7 +52,9 @@
 		items,
 		class: className = '',
 		enumerateDepth = 0,
-		effectiveScheme = null
+		effectiveScheme = null,
+		onHashtagClick,
+		onMentionClick
 	}: Props = $props();
 
 	// Compute depth for this list (only ordered lists increment depth)
@@ -160,11 +166,18 @@
 							items={child.items}
 							enumerateDepth={currentDepth}
 							{effectiveScheme}
+							{onHashtagClick}
+							{onMentionClick}
 						/>
 					{:else if isParagraphNode(child)}
-						<ParagraphNode children={child.children} />
+						<ParagraphNode children={child.children} {onHashtagClick} {onMentionClick} />
 					{:else if isHeadingNode(child)}
-						<HeadingNode level={child.level} children={child.children} />
+						<HeadingNode
+							level={child.level}
+							children={child.children}
+							{onHashtagClick}
+							{onMentionClick}
+						/>
 					{:else if isMathBlockNode(child)}
 						<MathBlock expression={child.expression} syntax={child.syntax} />
 					{:else if isImageNode(child)}
@@ -203,11 +216,18 @@
 							items={child.items}
 							enumerateDepth={currentDepth}
 							{effectiveScheme}
+							{onHashtagClick}
+							{onMentionClick}
 						/>
 					{:else if isParagraphNode(child)}
-						<ParagraphNode children={child.children} />
+						<ParagraphNode children={child.children} {onHashtagClick} {onMentionClick} />
 					{:else if isHeadingNode(child)}
-						<HeadingNode level={child.level} children={child.children} />
+						<HeadingNode
+							level={child.level}
+							children={child.children}
+							{onHashtagClick}
+							{onMentionClick}
+						/>
 					{:else if isMathBlockNode(child)}
 						<MathBlock expression={child.expression} syntax={child.syntax} />
 					{:else if isImageNode(child)}

@@ -23,9 +23,13 @@
 		level: 1 | 2 | 3 | 4 | 5 | 6;
 		children: InlineNode[];
 		class?: string;
+		/** Callback when a hashtag is clicked */
+		onHashtagClick?: (tag: string) => void;
+		/** Callback when a mention is clicked */
+		onMentionClick?: (username: string) => void;
 	}
 
-	let { level, children, class: className = '' }: Props = $props();
+	let { level, children, class: className = '', onHashtagClick, onMentionClick }: Props = $props();
 
 	// Heading size classes based on level (sized for exercise context)
 	const headingClasses: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
@@ -85,6 +89,50 @@
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
 				<MathInline expression={child.expression} syntax={child.syntax} />
+			{:else if child.type === 'link'}
+				<a
+					href={child.url}
+					title={child.title}
+					class="text-primary underline hover:text-primary/80"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{child.text}
+				</a>
+			{:else if child.type === 'hashtag'}
+				{#if onHashtagClick}
+					<button
+						type="button"
+						class="hashtag cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onHashtagClick?.(child.tag)}
+					>
+						#{child.tag}
+					</button>
+				{:else}
+					<a
+						href="/search?tag={encodeURIComponent(child.tag)}"
+						class="hashtag font-medium text-primary hover:text-primary/80"
+					>
+						#{child.tag}
+					</a>
+				{/if}
+			{:else if child.type === 'mention'}
+				{#if onMentionClick}
+					<button
+						type="button"
+						class="mention cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onMentionClick?.(child.username)}
+					>
+						@{child.username}
+					</button>
+				{:else}
+					<a
+						href="/profile/{encodeURIComponent(child.username)}"
+						class="mention font-medium text-primary hover:text-primary/80"
+					>
+						@{child.username}
+					</a>
+				{/if}
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -105,6 +153,50 @@
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
 				<MathInline expression={child.expression} syntax={child.syntax} />
+			{:else if child.type === 'link'}
+				<a
+					href={child.url}
+					title={child.title}
+					class="text-primary underline hover:text-primary/80"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{child.text}
+				</a>
+			{:else if child.type === 'hashtag'}
+				{#if onHashtagClick}
+					<button
+						type="button"
+						class="hashtag cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onHashtagClick?.(child.tag)}
+					>
+						#{child.tag}
+					</button>
+				{:else}
+					<a
+						href="/search?tag={encodeURIComponent(child.tag)}"
+						class="hashtag font-medium text-primary hover:text-primary/80"
+					>
+						#{child.tag}
+					</a>
+				{/if}
+			{:else if child.type === 'mention'}
+				{#if onMentionClick}
+					<button
+						type="button"
+						class="mention cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onMentionClick?.(child.username)}
+					>
+						@{child.username}
+					</button>
+				{:else}
+					<a
+						href="/profile/{encodeURIComponent(child.username)}"
+						class="mention font-medium text-primary hover:text-primary/80"
+					>
+						@{child.username}
+					</a>
+				{/if}
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -125,6 +217,50 @@
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
 				<MathInline expression={child.expression} syntax={child.syntax} />
+			{:else if child.type === 'link'}
+				<a
+					href={child.url}
+					title={child.title}
+					class="text-primary underline hover:text-primary/80"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{child.text}
+				</a>
+			{:else if child.type === 'hashtag'}
+				{#if onHashtagClick}
+					<button
+						type="button"
+						class="hashtag cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onHashtagClick?.(child.tag)}
+					>
+						#{child.tag}
+					</button>
+				{:else}
+					<a
+						href="/search?tag={encodeURIComponent(child.tag)}"
+						class="hashtag font-medium text-primary hover:text-primary/80"
+					>
+						#{child.tag}
+					</a>
+				{/if}
+			{:else if child.type === 'mention'}
+				{#if onMentionClick}
+					<button
+						type="button"
+						class="mention cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onMentionClick?.(child.username)}
+					>
+						@{child.username}
+					</button>
+				{:else}
+					<a
+						href="/profile/{encodeURIComponent(child.username)}"
+						class="mention font-medium text-primary hover:text-primary/80"
+					>
+						@{child.username}
+					</a>
+				{/if}
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -145,6 +281,50 @@
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
 				<MathInline expression={child.expression} syntax={child.syntax} />
+			{:else if child.type === 'link'}
+				<a
+					href={child.url}
+					title={child.title}
+					class="text-primary underline hover:text-primary/80"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{child.text}
+				</a>
+			{:else if child.type === 'hashtag'}
+				{#if onHashtagClick}
+					<button
+						type="button"
+						class="hashtag cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onHashtagClick?.(child.tag)}
+					>
+						#{child.tag}
+					</button>
+				{:else}
+					<a
+						href="/search?tag={encodeURIComponent(child.tag)}"
+						class="hashtag font-medium text-primary hover:text-primary/80"
+					>
+						#{child.tag}
+					</a>
+				{/if}
+			{:else if child.type === 'mention'}
+				{#if onMentionClick}
+					<button
+						type="button"
+						class="mention cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onMentionClick?.(child.username)}
+					>
+						@{child.username}
+					</button>
+				{:else}
+					<a
+						href="/profile/{encodeURIComponent(child.username)}"
+						class="mention font-medium text-primary hover:text-primary/80"
+					>
+						@{child.username}
+					</a>
+				{/if}
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -165,6 +345,50 @@
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
 				<MathInline expression={child.expression} syntax={child.syntax} />
+			{:else if child.type === 'link'}
+				<a
+					href={child.url}
+					title={child.title}
+					class="text-primary underline hover:text-primary/80"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{child.text}
+				</a>
+			{:else if child.type === 'hashtag'}
+				{#if onHashtagClick}
+					<button
+						type="button"
+						class="hashtag cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onHashtagClick?.(child.tag)}
+					>
+						#{child.tag}
+					</button>
+				{:else}
+					<a
+						href="/search?tag={encodeURIComponent(child.tag)}"
+						class="hashtag font-medium text-primary hover:text-primary/80"
+					>
+						#{child.tag}
+					</a>
+				{/if}
+			{:else if child.type === 'mention'}
+				{#if onMentionClick}
+					<button
+						type="button"
+						class="mention cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onMentionClick?.(child.username)}
+					>
+						@{child.username}
+					</button>
+				{:else}
+					<a
+						href="/profile/{encodeURIComponent(child.username)}"
+						class="mention font-medium text-primary hover:text-primary/80"
+					>
+						@{child.username}
+					</a>
+				{/if}
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -185,6 +409,50 @@
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
 				<MathInline expression={child.expression} syntax={child.syntax} />
+			{:else if child.type === 'link'}
+				<a
+					href={child.url}
+					title={child.title}
+					class="text-primary underline hover:text-primary/80"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					{child.text}
+				</a>
+			{:else if child.type === 'hashtag'}
+				{#if onHashtagClick}
+					<button
+						type="button"
+						class="hashtag cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onHashtagClick?.(child.tag)}
+					>
+						#{child.tag}
+					</button>
+				{:else}
+					<a
+						href="/search?tag={encodeURIComponent(child.tag)}"
+						class="hashtag font-medium text-primary hover:text-primary/80"
+					>
+						#{child.tag}
+					</a>
+				{/if}
+			{:else if child.type === 'mention'}
+				{#if onMentionClick}
+					<button
+						type="button"
+						class="mention cursor-pointer font-medium text-primary hover:text-primary/80"
+						onclick={() => onMentionClick?.(child.username)}
+					>
+						@{child.username}
+					</button>
+				{:else}
+					<a
+						href="/profile/{encodeURIComponent(child.username)}"
+						class="mention font-medium text-primary hover:text-primary/80"
+					>
+						@{child.username}
+					</a>
+				{/if}
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}

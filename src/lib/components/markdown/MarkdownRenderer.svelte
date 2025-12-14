@@ -70,6 +70,10 @@
 		inputsDisabled?: boolean;
 		/** Override list numbering config for this render (uses global store by default) */
 		listNumberingOverride?: Partial<ListNumberingConfig>;
+		/** Callback when a hashtag is clicked */
+		onHashtagClick?: (tag: string) => void;
+		/** Callback when a mention is clicked */
+		onMentionClick?: (username: string) => void;
 	}
 
 	let {
@@ -82,7 +86,9 @@
 		onInputChange,
 		onInputSubmit,
 		inputsDisabled = false,
-		listNumberingOverride
+		listNumberingOverride,
+		onHashtagClick,
+		onMentionClick
 	}: Props = $props();
 
 	/**
@@ -157,9 +163,16 @@
 						{onInputChange}
 						{onInputSubmit}
 						{inputsDisabled}
+						{onHashtagClick}
+						{onMentionClick}
 					/>
 				{:else if node.type === 'heading'}
-					<HeadingNode level={node.level} children={node.children} />
+					<HeadingNode
+						level={node.level}
+						children={node.children}
+						{onHashtagClick}
+						{onMentionClick}
+					/>
 				{:else if node.type === 'math-block'}
 					{#if hasPrompts(node.expression, node.syntax)}
 						<MathPrompt
@@ -180,6 +193,8 @@
 						start={node.start}
 						items={node.items}
 						effectiveScheme={effectiveListScheme}
+						{onHashtagClick}
+						{onMentionClick}
 					/>
 				{:else if node.type === 'table'}
 					<TableNode header={node.header} rows={node.rows} alignments={node.alignments} />
