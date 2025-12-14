@@ -6,7 +6,14 @@
  * Unified from RichTextEditor.svelte and FormRichTextEditor.svelte.
  */
 
-import type { TextColor, HighlightColor, MathTemplate, EmojiCategory } from './types';
+import type {
+	TextColor,
+	HighlightColor,
+	MathTemplate,
+	EmojiCategory,
+	EditorPreset,
+	PresetConfig
+} from './types';
 
 /**
  * Text Color Palette (8 colors)
@@ -310,3 +317,46 @@ export const MATH_TEMPLATES_BASIC: MathTemplate[] = [
 	{ label: 'Puissance', latex: 'x^{n}', icon: 'xⁿ', title: 'Puissance' },
 	{ label: 'Indice', latex: 'x_{i}', icon: 'xᵢ', title: 'Indice' }
 ];
+
+/**
+ * Editor Presets - Predefined configurations for common use cases
+ *
+ * - minimal: Basic text formatting only (comments, simple notes)
+ * - standard: Common features without templates (exercises, general content)
+ * - full: All features including templates (exercise creation, advanced content)
+ */
+export const EDITOR_PRESETS: Record<EditorPreset, PresetConfig> = {
+	minimal: {
+		toolbar: {
+			text: true,
+			paragraph: false,
+			insertion: false,
+			formula: false,
+			templates: false,
+			more: false
+		},
+		mathTemplates: 'none'
+	},
+	standard: {
+		toolbar: {
+			text: true,
+			paragraph: true,
+			insertion: true,
+			formula: true,
+			templates: false,
+			more: false
+		},
+		mathTemplates: 'basic'
+	},
+	full: {
+		toolbar: {
+			text: true,
+			paragraph: true,
+			insertion: true,
+			formula: true,
+			templates: true,
+			more: true
+		},
+		mathTemplates: 'full'
+	}
+};

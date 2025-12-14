@@ -16,6 +16,19 @@ export type RichTextMode = 'chat' | 'form';
 export type MathTemplateLevel = 'full' | 'basic' | 'none';
 
 /**
+ * Editor preset - predefined configurations for common use cases
+ */
+export type EditorPreset = 'minimal' | 'standard' | 'full';
+
+/**
+ * Preset configuration structure
+ */
+export interface PresetConfig {
+	toolbar: ToolbarConfig;
+	mathTemplates: MathTemplateLevel;
+}
+
+/**
  * Toolbar section configuration
  * Controls which sections are visible in the toolbar
  */
