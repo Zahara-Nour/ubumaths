@@ -136,12 +136,20 @@ export const MathInline = Node.create({
 
 	/**
 	 * Define node attributes
-	 * The 'latex' attribute stores the LaTeX formula string
+	 * - latex: The LaTeX formula string (transpiled or raw)
+	 * - syntax: Which syntax was used ('latex' for $...$ or 'custom' for ~...~)
+	 * - originalExpression: The raw expression before transpilation (for round-trip)
 	 */
 	addAttributes() {
 		return {
 			latex: {
 				default: ''
+			},
+			syntax: {
+				default: 'latex' // Default for backward compatibility
+			},
+			originalExpression: {
+				default: '' // Default for backward compatibility
 			}
 		};
 	},
@@ -149,17 +157,40 @@ export const MathInline = Node.create({
 	/**
 	 * HTML parsing rules
 	 * Recognizes <span data-math-inline> tags when loading from HTML
+	 * Extracts data-math-syntax and data-math-original attributes
 	 */
 	parseHTML() {
-		return [{ tag: 'span[data-math-inline]' }];
+		return [
+			{
+				tag: 'span[data-math-inline]',
+				getAttrs: (node) => {
+					const element = node as HTMLElement;
+					return {
+						syntax: element.getAttribute('data-math-syntax') || 'latex',
+						originalExpression: element.getAttribute('data-math-original') || ''
+					};
+				}
+			}
+		];
 	},
 
 	/**
 	 * HTML rendering rules
 	 * Converts node to <span data-math-inline> when serializing to HTML
+	 * Includes data-math-syntax and data-math-original for round-trip support
 	 */
-	renderHTML({ HTMLAttributes }) {
-		return ['span', mergeAttributes({ 'data-math-inline': '' }, HTMLAttributes)];
+	renderHTML({ node, HTMLAttributes }) {
+		return [
+			'span',
+			mergeAttributes(
+				{
+					'data-math-inline': '',
+					'data-math-syntax': node.attrs.syntax,
+					'data-math-original': node.attrs.originalExpression
+				},
+				HTMLAttributes
+			)
+		];
 	},
 
 	/**
@@ -251,18 +282,19 @@ export const MathInline = Node.create({
 	 *
 	 * Usage:
 	 *   editor.commands.insertMathInline('x^2 + y^2')
+	 *   editor.commands.insertMathInline('x^2', 'custom', 'x^2') // With syntax
 	 */
 	// TipTap's command typing is complex - using type assertion for custom commands
 	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertMathInline:
-				(latex = '') =>
+				(latex = '', syntax = 'latex', originalExpression = '') =>
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				({ commands }: any) => {
 					return commands.insertContent({
 						type: this.name,
-						attrs: { latex }
+						attrs: { latex, syntax, originalExpression }
 					});
 				}
 		};
@@ -272,26 +304,34 @@ export const MathInline = Node.create({
 	 * Input Rules (Automatic Pattern Detection)
 	 * =========================================
 	 *
-	 * Detects $formula$ pattern and converts to math node.
+	 * Detects $formula$ and ~formula~ patterns and converts to math nodes.
 	 * The formula content is parsed using mathAST custom syntax and
 	 * transpiled to LaTeX before creating the math field.
 	 *
-	 * Regex: /\$([^$]+)\$$/
+	 * Regex for $...$: /\$([^$]+)\$$/
 	 * - \$ - Opening dollar sign
 	 * - ([^$]+) - Capture group: one or more non-$ characters (the formula)
 	 * - \$ - Closing dollar sign
 	 * - $ - End of input (ensures we match at cursor position)
 	 *
+	 * Regex for ~...~: /~([^~]+)~$/
+	 * - ~ - Opening tilde
+	 * - ([^~]+) - Capture group: one or more non-~ characters (the formula)
+	 * - ~ - Closing tilde
+	 * - $ - End of input (ensures we match at cursor position)
+	 *
 	 * Examples:
-	 *   User types: "$x^2$" → Converts to math field with LaTeX "x^2"
-	 *   User types: "$sin(x)$" → Converts to "\sin\left( x \right)"
-	 *   User types: "$2/3$" → Converts to "\frac{2}{3}"
+	 *   User types: "$x^2$" → LaTeX syntax, may transpile
+	 *   User types: "~x^2~" → Custom syntax, transpiled to LaTeX
+	 *   User types: "$2/3$" → LaTeX syntax, transpiles to "\frac{2}{3}"
+	 *   User types: "~2/3~" → Custom syntax, transpiles to "\frac{2}{3}"
 	 *
 	 * @see https://tiptap.dev/docs/editor/extensions/functionality#input-rules
 	 * @see src/lib/mathAST for custom syntax documentation
 	 */
 	addInputRules() {
 		return [
+			// LaTeX syntax: $...$
 			new InputRule({
 				find: /\$([^$]+)\$$/,
 				handler: ({ state, range, match }) => {
@@ -302,7 +342,38 @@ export const MathInline = Node.create({
 						// If parsing fails (ast is null), use raw input as fallback (assumes LaTeX)
 						const parseResult = parseCustomSafe(input);
 						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
-						tr.replaceWith(range.from, range.to, this.type.create({ latex }));
+						tr.replaceWith(
+							range.from,
+							range.to,
+							this.type.create({
+								latex,
+								syntax: 'latex',
+								originalExpression: input
+							})
+						);
+					}
+				}
+			}),
+			// Custom syntax: ~...~
+			new InputRule({
+				find: /~([^~]+)~$/,
+				handler: ({ state, range, match }) => {
+					const { tr } = state;
+					const input = match[1]?.trim();
+					if (input) {
+						// Try to parse as mathAST custom syntax and convert to LaTeX
+						// If parsing fails, use raw input as fallback
+						const parseResult = parseCustomSafe(input);
+						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
+						tr.replaceWith(
+							range.from,
+							range.to,
+							this.type.create({
+								latex,
+								syntax: 'custom',
+								originalExpression: input
+							})
+						);
 					}
 				}
 			})
@@ -347,27 +418,59 @@ export const MathBlock = Node.create({
 
 	/**
 	 * Define node attributes
+	 * - latex: The LaTeX formula string (transpiled or raw)
+	 * - syntax: Which syntax was used ('latex' for manual or 'custom' for ~~...~~)
+	 * - originalExpression: The raw expression before transpilation (for round-trip)
 	 */
 	addAttributes() {
 		return {
 			latex: {
 				default: ''
+			},
+			syntax: {
+				default: 'latex' // Default for backward compatibility
+			},
+			originalExpression: {
+				default: '' // Default for backward compatibility
 			}
 		};
 	},
 
 	/**
 	 * HTML parsing rules
+	 * Extracts data-math-syntax and data-math-original attributes
 	 */
 	parseHTML() {
-		return [{ tag: 'div[data-math-block]' }];
+		return [
+			{
+				tag: 'div[data-math-block]',
+				getAttrs: (node) => {
+					const element = node as HTMLElement;
+					return {
+						syntax: element.getAttribute('data-math-syntax') || 'latex',
+						originalExpression: element.getAttribute('data-math-original') || ''
+					};
+				}
+			}
+		];
 	},
 
 	/**
 	 * HTML rendering rules
+	 * Includes data-math-syntax and data-math-original for round-trip support
 	 */
-	renderHTML({ HTMLAttributes }) {
-		return ['div', mergeAttributes({ 'data-math-block': '' }, HTMLAttributes)];
+	renderHTML({ node, HTMLAttributes }) {
+		return [
+			'div',
+			mergeAttributes(
+				{
+					'data-math-block': '',
+					'data-math-syntax': node.attrs.syntax,
+					'data-math-original': node.attrs.originalExpression
+				},
+				HTMLAttributes
+			)
+		];
 	},
 
 	/**
@@ -450,20 +553,70 @@ export const MathBlock = Node.create({
 	 * ===============
 	 *
 	 * Adds editor.commands.insertMathBlock() command.
+	 *
+	 * Usage:
+	 *   editor.commands.insertMathBlock('\\int_0^\\infty e^{-x^2} dx')
+	 *   editor.commands.insertMathBlock('\\sqrt{16}', 'custom', 'sqrt(16)') // With syntax
 	 */
 	// TipTap's command typing is complex - using type assertion for custom commands
 	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertMathBlock:
-				(latex = '') =>
+				(latex = '', syntax = 'latex', originalExpression = '') =>
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				({ commands }: any) => {
 					return commands.insertContent({
 						type: this.name,
-						attrs: { latex }
+						attrs: { latex, syntax, originalExpression }
 					});
 				}
 		};
+	},
+
+	/**
+	 * Input Rules for Block Math (~~...~~)
+	 * ====================================
+	 *
+	 * Detects ~~formula~~ pattern and converts to block math node.
+	 * The formula content is parsed using mathAST custom syntax and
+	 * transpiled to LaTeX before creating the math field.
+	 *
+	 * Regex: /~~([^~]+)~~$/
+	 * - ~~ - Opening double tilde
+	 * - ([^~]+) - Capture group: one or more non-~ characters (the formula)
+	 * - ~~ - Closing double tilde
+	 * - $ - End of input (ensures we match at cursor position)
+	 *
+	 * Examples:
+	 *   User types: "~~x^2~~" → Custom syntax block math
+	 *   User types: "~~sqrt(16)~~" → Transpiles to "\sqrt{16}"
+	 */
+	addInputRules() {
+		return [
+			// Custom syntax block: ~~...~~
+			new InputRule({
+				find: /~~([^~]+)~~$/,
+				handler: ({ state, range, match }) => {
+					const { tr } = state;
+					const input = match[1]?.trim();
+					if (input) {
+						// Try to parse as mathAST custom syntax and convert to LaTeX
+						// If parsing fails, use raw input as fallback
+						const parseResult = parseCustomSafe(input);
+						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
+						tr.replaceWith(
+							range.from,
+							range.to,
+							this.type.create({
+								latex,
+								syntax: 'custom',
+								originalExpression: input
+							})
+						);
+					}
+				}
+			})
+		];
 	}
 });
