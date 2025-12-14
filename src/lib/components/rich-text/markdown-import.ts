@@ -24,7 +24,8 @@ import type {
 	MathBlockNode,
 	TextNode,
 	MathInlineNode,
-	BlankNode
+	BlankNode,
+	ImageNode
 } from '$lib/custom-markdown/types';
 
 // ============================================================================
@@ -161,6 +162,8 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return { type: 'horizontalRule' };
 
 		case 'image':
+			return convertImage(block as ImageNode);
+
 		case 'table':
 			// Not supported in this version
 			return null;
@@ -297,6 +300,20 @@ function convertMathBlock(math: MathBlockNode): JSONContent {
 			latex,
 			syntax: math.syntax,
 			originalExpression: math.expression
+		}
+	};
+}
+
+/**
+ * Convert ImageNode to TipTap image
+ */
+function convertImage(img: ImageNode): JSONContent {
+	return {
+		type: 'image',
+		attrs: {
+			src: img.src,
+			alt: img.alt || '',
+			title: img.title || null
 		}
 	};
 }

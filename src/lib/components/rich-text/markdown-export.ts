@@ -69,6 +69,9 @@ function convertBlockToMarkdown(block: JSONContent, indentLevel = 0): string | n
 		case 'horizontalRule':
 			return '---';
 
+		case 'image':
+			return convertImageToMarkdown(block);
+
 		default:
 			return null;
 	}
@@ -208,6 +211,20 @@ function convertMathBlockToMarkdown(math: JSONContent): string {
 	} else {
 		return `$$${expression}$$`;
 	}
+}
+
+/**
+ * Convert image to Markdown
+ */
+function convertImageToMarkdown(img: JSONContent): string {
+	const src = (img.attrs?.src as string) || '';
+	const alt = (img.attrs?.alt as string) || '';
+	const title = img.attrs?.title as string | undefined;
+
+	if (title) {
+		return `![${alt}](${src} "${title}")`;
+	}
+	return `![${alt}](${src})`;
 }
 
 // ============================================================================
