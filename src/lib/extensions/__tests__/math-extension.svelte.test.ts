@@ -652,3 +652,90 @@ describe('Math Edge Cases', () => {
 		editor.destroy();
 	});
 });
+
+// ============================================================================
+// JSON CONTENT LOADING TESTS
+// ============================================================================
+
+describe('Math JSON Content Loading', () => {
+	it('should preserve mathBlock when loading JSON with setContent', () => {
+		const editor = createTestEditor('<p></p>');
+
+		// Create JSON with paragraph followed by mathBlock (typical markdown structure)
+		const jsonContent = {
+			type: 'doc',
+			content: [
+				{
+					type: 'paragraph',
+					content: [{ type: 'text', text: 'Some text before' }]
+				},
+				{
+					type: 'mathBlock',
+					attrs: {
+						latex: '\\frac{a}{b}',
+						syntax: 'latex',
+						originalExpression: '\\frac{a}{b}'
+					}
+				}
+			]
+		};
+
+		editor.commands.setContent(jsonContent);
+
+		const json = getJSON(editor);
+		const content = (json as { content?: unknown[] }).content;
+
+		// TipTap may add empty paragraphs, but mathBlock should be preserved
+		// Find the mathBlock node
+		const mathBlockNode = content?.find(
+			(node: unknown) => (node as { type: string }).type === 'mathBlock'
+		);
+
+		expect(mathBlockNode).toBeDefined();
+		expect((mathBlockNode as { attrs?: { latex?: string } }).attrs?.latex).toBe('\\frac{a}{b}');
+		expect((mathBlockNode as { attrs?: { syntax?: string } }).attrs?.syntax).toBe('latex');
+
+		editor.destroy();
+	});
+
+	it('should not convert mathBlock to mathInline when loading JSON', () => {
+		const editor = createTestEditor('<p></p>');
+
+		// JSON with mathBlock at document level
+		const jsonContent = {
+			type: 'doc',
+			content: [
+				{
+					type: 'mathBlock',
+					attrs: {
+						latex: 'x^2 + y^2',
+						syntax: 'latex',
+						originalExpression: 'x^2 + y^2'
+					}
+				}
+			]
+		};
+
+		editor.commands.setContent(jsonContent);
+
+		const json = getJSON(editor);
+		const content = (json as { content?: unknown[] }).content;
+
+		// mathBlock should remain mathBlock, not be converted to mathInline
+		const hasMathBlock = content?.some(
+			(node: unknown) => (node as { type: string }).type === 'mathBlock'
+		);
+		const hasMathInline = content?.some((node: unknown) => {
+			const typedNode = node as { type: string; content?: unknown[] };
+			return (
+				typedNode.type === 'paragraph' &&
+				typedNode.content?.some((c: unknown) => (c as { type: string }).type === 'mathInline')
+			);
+		});
+
+		expect(hasMathBlock).toBe(true);
+		expect(hasMathInline).toBe(false);
+
+		editor.destroy();
+	});
+});
