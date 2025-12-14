@@ -20,6 +20,7 @@ import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
+import Image from '@tiptap/extension-image';
 import { MathInline, MathBlock } from '$lib/extensions/math-extension';
 import {
 	TemplateVariable,
@@ -52,7 +53,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after template extensions added
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v2`;
+	return `h${headingLevels}-v3`;
 }
 
 /**
@@ -119,7 +120,13 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 		TemplateVariable.configure({}),
 		TemplateRandom.configure({}),
 		TemplateEval.configure({}),
-		BlankField.configure({})
+		BlankField.configure({}),
+
+		// Images
+		Image.configure({
+			inline: false,
+			allowBase64: true
+		})
 	];
 }
 

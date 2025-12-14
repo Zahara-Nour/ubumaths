@@ -180,7 +180,15 @@ function hello() {
 ## Titres
 
 ### Titre niveau 3
-#### Titre niveau 4`;
+#### Titre niveau 4
+
+## Images
+
+![Carré rouge](data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23e74c3c' width='100' height='100'/%3E%3C/svg%3E "Image de test")
+
+Image sans titre :
+
+![Rectangle bleu](data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='50'%3E%3Crect fill='%233498db' width='150' height='50'/%3E%3C/svg%3E)`;
 
 	let importMarkdown = $state(INITIAL_MARKDOWN);
 	let editorJsonValue = $state<unknown>(markdownToTipTap(INITIAL_MARKDOWN));
