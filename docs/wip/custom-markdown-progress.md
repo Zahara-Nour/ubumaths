@@ -1,6 +1,48 @@
 # Custom Markdown Progress
 
-## Latest: Video Support (December 2024)
+## Latest: RichTextEditor Presets (December 2024)
+
+Added preset configuration system for easier editor setup:
+
+### Presets
+
+| Preset     | Toolbar                             | Math Templates | Use Case                    |
+| ---------- | ----------------------------------- | -------------- | --------------------------- |
+| `minimal`  | Text only                           | None           | Comments, simple notes      |
+| `standard` | Text, Paragraph, Insertion, Formula | Basic          | Exercises, general content  |
+| `full`     | All sections                        | Full           | Exercise creation (default) |
+
+### Usage
+
+```svelte
+<RichTextEditor preset="minimal" />
+<RichTextEditor preset="standard" />
+<RichTextEditor preset="full" />
+
+<!-- Override specific settings -->
+<RichTextEditor preset="minimal" toolbar={{ formula: true }} />
+
+<!-- Combined with mode -->
+<RichTextEditor mode="chat" preset="minimal" />
+```
+
+### Files Modified
+
+| File                              | Changes                                    |
+| --------------------------------- | ------------------------------------------ |
+| `rich-text/types.ts`              | Added `EditorPreset`, `PresetConfig` types |
+| `rich-text/config.ts`             | Added `EDITOR_PRESETS` constants           |
+| `rich-text/RichTextEditor.svelte` | Added `preset` prop with config merge      |
+
+### Commit
+
+```
+cb22a7f0 feat(rich-text): add preset configuration system
+```
+
+---
+
+## Video Support (December 2024)
 
 Added video support with HTML5 and YouTube embeds:
 
