@@ -25,7 +25,11 @@ import type {
 	TextNode,
 	MathInlineNode,
 	BlankNode,
-	ImageNode
+	ImageNode,
+	TableNode,
+	LinkNode,
+	HashtagNode,
+	MentionNode
 } from '$lib/custom-markdown/types';
 
 // ============================================================================
@@ -165,8 +169,7 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return convertImage(block as ImageNode);
 
 		case 'table':
-			// Not supported in this version
-			return null;
+			return convertTable(block as TableNode);
 
 		default:
 			return null;
@@ -307,6 +310,7 @@ function convertMathBlock(math: MathBlockNode): JSONContent {
 /**
  * Convert ImageNode to TipTap image
  * Supports extended attributes: sizeClass, widthPercent, alignment, caption
+ * Also supports linked images with href and linkTitle
  */
 function convertImage(img: ImageNode): JSONContent {
 	const attrs: Record<string, unknown> = {
@@ -321,9 +325,144 @@ function convertImage(img: ImageNode): JSONContent {
 	if (img.alignment) attrs.alignment = img.alignment;
 	if (img.caption) attrs.caption = img.caption;
 
+	// Add link attributes for linked images
+	if (img.href) attrs.href = img.href;
+	if (img.linkTitle) attrs.linkTitle = img.linkTitle;
+
 	return {
 		type: 'image',
 		attrs
+	};
+}
+
+/**
+ * Parse inline markdown content from a string (for table cells)
+ * Handles both LaTeX ($...$) and custom (~...~) math expressions
+ */
+function parseInlineMarkdownString(text: string): JSONContent[] {
+	if (!text) return [];
+
+	// Combined regex for both LaTeX ($...$) and custom (~...~) math
+	// Uses alternation to match either pattern
+	const mathRegex = /\$([^$\n]+)\$|~([^~\n]+)~/g;
+	const segments: JSONContent[] = [];
+	let lastIndex = 0;
+	let match: RegExpExecArray | null;
+
+	while ((match = mathRegex.exec(text)) !== null) {
+		// Add text before math
+		if (match.index > lastIndex) {
+			const beforeText = text.substring(lastIndex, match.index);
+			if (beforeText) {
+				segments.push({ type: 'text', text: beforeText });
+			}
+		}
+
+		// Determine if it's LaTeX or custom syntax
+		const isLatex = match[1] !== undefined;
+		const expression = isLatex ? match[1] : match[2];
+
+		// For custom syntax, convert to LaTeX
+		let latex = expression;
+		if (!isLatex) {
+			const parseResult = parseCustomSafe(expression);
+			if (parseResult.ast) {
+				latex = toLatex(parseResult.ast);
+			}
+		}
+
+		segments.push({
+			type: 'mathInline',
+			attrs: {
+				latex,
+				syntax: isLatex ? 'latex' : 'custom',
+				originalExpression: expression
+			}
+		});
+
+		lastIndex = match.index + match[0].length;
+	}
+
+	// Add remaining text after last math
+	if (lastIndex < text.length) {
+		const remainingText = text.substring(lastIndex);
+		if (remainingText) {
+			segments.push({ type: 'text', text: remainingText });
+		}
+	}
+
+	// If no math found, return the whole text
+	if (segments.length === 0 && text) {
+		segments.push({ type: 'text', text });
+	}
+
+	return segments;
+}
+
+/**
+ * Convert TableNode to TipTap table
+ * TipTap table structure: table > tableRow > (tableHeader | tableCell)
+ * Preserves column alignment from GFM syntax (:---, :---:, ---:)
+ */
+function convertTable(table: TableNode): JSONContent {
+	const rows: JSONContent[] = [];
+	const alignments = table.alignments || [];
+
+	// Convert header row
+	const headerRow: JSONContent = {
+		type: 'tableRow',
+		content: table.header.map((cell, index) => {
+			const align = alignments[index] || 'left';
+			return {
+				type: 'tableHeader',
+				attrs: {
+					colspan: 1,
+					rowspan: 1,
+					colwidth: null,
+					textAlign: align
+				},
+				content: [
+					{
+						type: 'paragraph',
+						attrs: align !== 'left' ? { textAlign: align } : undefined,
+						content: parseInlineMarkdownString(cell.content)
+					}
+				]
+			};
+		})
+	};
+	rows.push(headerRow);
+
+	// Convert data rows
+	for (const row of table.rows) {
+		const tableRow: JSONContent = {
+			type: 'tableRow',
+			content: row.map((cell, index) => {
+				const align = alignments[index] || 'left';
+				return {
+					type: 'tableCell',
+					attrs: {
+						colspan: 1,
+						rowspan: 1,
+						colwidth: null,
+						textAlign: align
+					},
+					content: [
+						{
+							type: 'paragraph',
+							attrs: align !== 'left' ? { textAlign: align } : undefined,
+							content: parseInlineMarkdownString(cell.content)
+						}
+					]
+				};
+			})
+		};
+		rows.push(tableRow);
+	}
+
+	return {
+		type: 'table',
+		content: rows
 	};
 }
 
@@ -368,6 +507,15 @@ function convertInlineNode(node: InlineNode): JSONContent[] {
 
 		case 'line-break':
 			return [{ type: 'hardBreak' }];
+
+		case 'link':
+			return [convertLinkNode(node)];
+
+		case 'hashtag':
+			return [convertHashtagNode(node)];
+
+		case 'mention':
+			return [convertMentionNode(node)];
 
 		default:
 			return [];
@@ -517,6 +665,56 @@ function convertBlankNode(node: BlankNode): JSONContent {
 		type: 'blankField',
 		attrs: {
 			index: node.index
+		}
+	};
+}
+
+/**
+ * Convert LinkNode to TipTap text with link mark
+ *
+ * In TipTap, links are represented as text nodes with a 'link' mark
+ * that contains the href and optional title attributes.
+ */
+function convertLinkNode(node: LinkNode): JSONContent {
+	const linkMark: { type: 'link'; attrs: { href: string; title?: string | null } } = {
+		type: 'link',
+		attrs: {
+			href: node.url,
+			title: node.title || null
+		}
+	};
+
+	return {
+		type: 'text',
+		text: node.text,
+		marks: [linkMark]
+	};
+}
+
+/**
+ * Convert HashtagNode to TipTap hashtag node
+ *
+ * Hashtags are inline atomic nodes that display as chips/badges.
+ */
+function convertHashtagNode(node: HashtagNode): JSONContent {
+	return {
+		type: 'hashtag',
+		attrs: {
+			tag: node.tag
+		}
+	};
+}
+
+/**
+ * Convert MentionNode to TipTap mention node
+ *
+ * Mentions are inline atomic nodes that display as chips/badges.
+ */
+function convertMentionNode(node: MentionNode): JSONContent {
+	return {
+		type: 'mention',
+		attrs: {
+			username: node.username
 		}
 	};
 }

@@ -591,3 +591,103 @@ $$f(x) = x^2$$
 		expect(image).toBeDefined();
 	});
 });
+
+// ============================================================================
+// 6. LINKED IMAGES
+// ============================================================================
+
+describe('Image Parser - Linked Images', () => {
+	it('should parse basic linked image: [![alt](src)](href)', () => {
+		const image = parseImageMarkdown('[![Click me](image.png)](https://example.com)');
+
+		expect(image).not.toBeNull();
+		expect(image?.type).toBe('image');
+		expect(image?.src).toBe('image.png');
+		expect(image?.alt).toBe('Click me');
+		expect(image?.href).toBe('https://example.com');
+		expect(image?.linkTitle).toBeUndefined();
+	});
+
+	it('should parse linked image with image title: [![alt](src "imgTitle")](href)', () => {
+		const image = parseImageMarkdown(
+			'[![Click me](image.png "Image tooltip")](https://example.com)'
+		);
+
+		expect(image).not.toBeNull();
+		expect(image?.src).toBe('image.png');
+		expect(image?.alt).toBe('Click me');
+		expect(image?.title).toBe('Image tooltip');
+		expect(image?.href).toBe('https://example.com');
+		expect(image?.linkTitle).toBeUndefined();
+	});
+
+	it('should parse linked image with link title: [![alt](src)](href "linkTitle")', () => {
+		const image = parseImageMarkdown(
+			'[![Click me](image.png)](https://example.com "Visit Example")'
+		);
+
+		expect(image).not.toBeNull();
+		expect(image?.src).toBe('image.png');
+		expect(image?.alt).toBe('Click me');
+		expect(image?.href).toBe('https://example.com');
+		expect(image?.linkTitle).toBe('Visit Example');
+	});
+
+	it('should parse linked image with both titles', () => {
+		const image = parseImageMarkdown(
+			'[![Click me](image.png "Image tooltip")](https://example.com "Visit Example")'
+		);
+
+		expect(image).not.toBeNull();
+		expect(image?.src).toBe('image.png');
+		expect(image?.alt).toBe('Click me');
+		expect(image?.title).toBe('Image tooltip');
+		expect(image?.href).toBe('https://example.com');
+		expect(image?.linkTitle).toBe('Visit Example');
+	});
+
+	it('should parse linked image with attributes', () => {
+		const image = parseImageMarkdown(
+			'[![Logo](logo.png)](https://company.com){size=medium align=center}'
+		);
+
+		expect(image).not.toBeNull();
+		expect(image?.src).toBe('logo.png');
+		expect(image?.alt).toBe('Logo');
+		expect(image?.href).toBe('https://company.com');
+		expect(image?.sizeClass).toBe('medium');
+		expect(image?.alignment).toBe('center');
+	});
+
+	it('should parse linked image with all features', () => {
+		const image = parseImageMarkdown(
+			'[![Clickable logo](logo.png "Company Logo")](https://company.com "Visit our website"){size=large align=center caption="Our logo"}'
+		);
+
+		expect(image).not.toBeNull();
+		expect(image?.src).toBe('logo.png');
+		expect(image?.alt).toBe('Clickable logo');
+		expect(image?.title).toBe('Company Logo');
+		expect(image?.href).toBe('https://company.com');
+		expect(image?.linkTitle).toBe('Visit our website');
+		expect(image?.sizeClass).toBe('large');
+		expect(image?.alignment).toBe('center');
+		expect(image?.caption).toBe('Our logo');
+	});
+
+	it('should not confuse regular link with linked image', () => {
+		const ast = parseMarkdown('[Click here](https://example.com)');
+
+		// Regular link should be in a paragraph, not parsed as image
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+	});
+
+	it('should not confuse regular image with linked image', () => {
+		const image = parseImageMarkdown('![Regular image](image.png)');
+
+		expect(image).not.toBeNull();
+		expect(image?.src).toBe('image.png');
+		expect(image?.href).toBeUndefined();
+	});
+});

@@ -72,6 +72,9 @@ function convertBlockToMarkdown(block: JSONContent, indentLevel = 0): string | n
 		case 'image':
 			return convertImageToMarkdown(block);
 
+		case 'table':
+			return convertTableToMarkdown(block);
+
 		default:
 			return null;
 	}
@@ -214,9 +217,93 @@ function convertMathBlockToMarkdown(math: JSONContent): string {
 }
 
 /**
+ * Convert table to Markdown (GFM format)
+ * TipTap structure: table > tableRow > (tableHeader | tableCell)
+ * Preserves column alignment with :---, :---:, ---: syntax
+ * Output:
+ * | Header1 | Header2 |
+ * |:--------|:-------:|
+ * | Cell1   | Cell2   |
+ */
+function convertTableToMarkdown(table: JSONContent): string {
+	if (!table.content || table.content.length === 0) return '';
+
+	const rows: string[][] = [];
+	const alignments: string[] = [];
+
+	for (const row of table.content) {
+		if (row.type !== 'tableRow' || !row.content) continue;
+
+		const cells: string[] = [];
+		for (let i = 0; i < row.content.length; i++) {
+			const cell = row.content[i];
+			// Extract text from cell's paragraph content
+			const cellText = extractCellText(cell);
+			cells.push(cellText);
+
+			// Extract alignment from first row (header) cells
+			if (rows.length === 0) {
+				const align = cell.attrs?.textAlign as string | undefined;
+				alignments.push(align || 'left');
+			}
+		}
+		rows.push(cells);
+	}
+
+	if (rows.length === 0) return '';
+
+	// Build markdown table
+	const lines: string[] = [];
+
+	// Header row (first row)
+	const headerRow = rows[0];
+	lines.push('| ' + headerRow.join(' | ') + ' |');
+
+	// Separator row with alignment indicators
+	const separator = alignments.map((align) => {
+		switch (align) {
+			case 'center':
+				return ':---:';
+			case 'right':
+				return '---:';
+			default:
+				return '---';
+		}
+	});
+	lines.push('|' + separator.join('|') + '|');
+
+	// Data rows
+	for (let i = 1; i < rows.length; i++) {
+		lines.push('| ' + rows[i].join(' | ') + ' |');
+	}
+
+	return lines.join('\n');
+}
+
+/**
+ * Extract text content from a table cell
+ */
+function extractCellText(cell: JSONContent): string {
+	if (!cell.content) return '';
+
+	const texts: string[] = [];
+	for (const block of cell.content) {
+		if (block.type === 'paragraph' && block.content) {
+			const paraText = convertInlineNodesToMarkdown(block.content);
+			texts.push(paraText);
+		}
+	}
+	return texts.join(' ');
+}
+
+/**
  * Convert image to Markdown
  * Supports extended attributes: sizeClass, widthPercent, alignment, caption
- * Output: ![alt](src "title"){size=large align=center width=50% caption="..."}
+ * Also supports linked images with href and linkTitle
+ *
+ * Output formats:
+ * - Standard: ![alt](src "title"){attrs}
+ * - Linked: [![alt](src "imgTitle")](href "linkTitle"){attrs}
  */
 function convertImageToMarkdown(img: JSONContent): string {
 	const src = (img.attrs?.src as string) || '';
@@ -226,9 +313,21 @@ function convertImageToMarkdown(img: JSONContent): string {
 	const widthPercent = img.attrs?.widthPercent as number | undefined;
 	const alignment = img.attrs?.alignment as string | undefined;
 	const caption = img.attrs?.caption as string | undefined;
+	const href = img.attrs?.href as string | undefined;
+	const linkTitle = img.attrs?.linkTitle as string | undefined;
 
-	// Build base markdown
-	let markdown = title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`;
+	// Build base image markdown: ![alt](src "title")
+	const imageMarkdown = title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`;
+
+	// If linked, wrap image in link syntax: [![...](...)(...)](href "linkTitle")
+	let markdown: string;
+	if (href) {
+		markdown = linkTitle
+			? `[${imageMarkdown}](${href} "${linkTitle}")`
+			: `[${imageMarkdown}](${href})`;
+	} else {
+		markdown = imageMarkdown;
+	}
 
 	// Build extended attributes if any
 	const attrs: string[] = [];
@@ -281,6 +380,12 @@ function convertInlineNodeToMarkdown(node: JSONContent): string {
 		case 'hardBreak':
 			return '\n';
 
+		case 'hashtag':
+			return `#${node.attrs?.tag || ''}`;
+
+		case 'mention':
+			return `@${node.attrs?.username || ''}`;
+
 		default:
 			return '';
 	}
@@ -288,6 +393,9 @@ function convertInlineNodeToMarkdown(node: JSONContent): string {
 
 /**
  * Convert text node with marks to Markdown
+ *
+ * Handles marks in order: code > bold > italic > link
+ * Link mark wraps the entire formatted text.
  */
 function convertTextNodeToMarkdown(node: JSONContent): string {
 	const text = node.text || '';
@@ -297,22 +405,35 @@ function convertTextNodeToMarkdown(node: JSONContent): string {
 
 	let result = text;
 
-	// Check for marks and apply in order: code > bold > italic
+	// Check for marks and apply in order: code > bold > italic > link
 	const hasBold = node.marks.some((m) => m.type === 'bold');
 	const hasItalic = node.marks.some((m) => m.type === 'italic');
 	const hasCode = node.marks.some((m) => m.type === 'code');
+	const linkMark = node.marks.find((m) => m.type === 'link');
 
 	// Code takes precedence (can't have formatting inside code)
 	if (hasCode) {
-		return `\`${text}\``;
+		result = `\`${text}\``;
+	} else {
+		// Apply bold then italic
+		if (hasBold) {
+			result = `**${result}**`;
+		}
+		if (hasItalic) {
+			result = `*${result}*`;
+		}
 	}
 
-	// Apply bold then italic
-	if (hasBold) {
-		result = `**${result}**`;
-	}
-	if (hasItalic) {
-		result = `*${result}*`;
+	// Link wraps the entire formatted text
+	if (linkMark) {
+		const href = linkMark.attrs?.href as string;
+		const title = linkMark.attrs?.title as string | undefined;
+
+		if (title) {
+			result = `[${result}](${href} "${title}")`;
+		} else {
+			result = `[${result}](${href})`;
+		}
 	}
 
 	return result;

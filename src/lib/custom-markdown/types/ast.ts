@@ -75,9 +75,71 @@ export interface BlankNode extends BaseNode {
 }
 
 /**
+ * Link node - represents a hyperlink
+ *
+ * Syntax in markdown: [text](url) or [text](url "title")
+ *
+ * @example
+ * ```markdown
+ * Visit [our site](https://example.com)
+ * Check [documentation](https://docs.example.com "Official docs")
+ * ```
+ */
+export interface LinkNode extends BaseNode {
+	type: 'link';
+	/** The visible link text */
+	text: string;
+	/** The URL/href of the link */
+	url: string;
+	/** Optional title attribute (shown on hover) */
+	title?: string;
+}
+
+/**
+ * Hashtag node - represents a hashtag for categorization
+ *
+ * Syntax in markdown: #tag (must start with letter, supports accents)
+ *
+ * @example
+ * ```markdown
+ * Exercice de #mathematiques niveau #facile
+ * #equation-second-degre #algebre_II
+ * ```
+ */
+export interface HashtagNode extends BaseNode {
+	type: 'hashtag';
+	/** The tag name without the # prefix */
+	tag: string;
+}
+
+/**
+ * Mention node - represents a user mention
+ *
+ * Syntax in markdown: @username (must start with letter)
+ *
+ * @example
+ * ```markdown
+ * Bravo @alice pour cette solution !
+ * Assigné à @jean.dupont et @user_123
+ * ```
+ */
+export interface MentionNode extends BaseNode {
+	type: 'mention';
+	/** The username without the @ prefix */
+	username: string;
+}
+
+/**
  * Union of inline nodes (can appear within paragraphs, headings, etc.)
  */
-export type InlineNode = TextNode | MathInlineNode | LineBreakNode | BlankNode;
+export type InlineNode =
+	| TextNode
+	| MathInlineNode
+	| LineBreakNode
+	| BlankNode
+	| LinkNode
+	| HashtagNode
+	| MentionNode;
 
 // ============================================================================
 // BLOCK NODES
@@ -225,6 +287,19 @@ export const DEFAULT_IMAGE_SIZE_MAPPINGS: Record<ImageSizeClass, ImageSizeMappin
 
 /**
  * Image node
+ *
+ * Supports both standalone images and linked images (clickable).
+ *
+ * @example Standalone image
+ * ```markdown
+ * ![alt](image.png "title")
+ * ```
+ *
+ * @example Linked image (clickable)
+ * ```markdown
+ * [![alt](image.png)](https://example.com)
+ * [![alt](image.png "img title")](https://example.com "link title")
+ * ```
  */
 export interface ImageNode extends BaseNode {
 	type: 'image';
@@ -238,6 +313,9 @@ export interface ImageNode extends BaseNode {
 	caption?: string;
 	originalWidth?: number; // Original image width in pixels
 	originalHeight?: number; // Original image height in pixels
+	// Link support (for clickable images)
+	href?: string; // Link URL when image is clickable
+	linkTitle?: string; // Link title attribute (shown on hover)
 }
 
 /**

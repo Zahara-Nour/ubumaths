@@ -177,6 +177,16 @@ function hello() {
 }
 \`\`\`
 
+## Liens
+
+Lien simple : [Ubumaths](https://ubumaths.fr)
+
+Lien avec titre : [Documentation](https://docs.example.com "Lire la documentation")
+
+Texte avec lien au milieu : Visitez [notre site](https://example.com) pour plus d'infos.
+
+Plusieurs liens : [Premier](https://first.com) et [Second](https://second.com)
+
 ## Titres
 
 ### Titre niveau 3
@@ -202,7 +212,55 @@ Image large :
 
 Image avec width personnalisé (60%) :
 
-![Custom width](https://picsum.photos/350/175){width=60% align=center}`;
+![Custom width](https://picsum.photos/350/175){width=60% align=center}
+
+### Images cliquables (Linked Images)
+
+Image simple cliquable :
+
+[![Click me](https://picsum.photos/200/100)](https://ubumaths.fr)
+
+Image cliquable avec attributs :
+
+[![Logo cliquable](https://picsum.photos/300/150 "Notre logo")](https://example.com "Visitez notre site"){size=medium align=center}
+
+## Tableaux
+
+Tableau simple :
+
+| Nom | Prénom | Age |
+|-----|--------|-----|
+| Dupont | Jean | 25 |
+| Martin | Marie | 30 |
+| Bernard | Pierre | 28 |
+
+Tableau avec formatage et alignement :
+
+| Opération | Expression | Résultat |
+|:----------|:----------:|----------:|
+| Addition | $2 + 3$ | $5$ |
+| Soustraction | $7 - 4$ | $3$ |
+| Multiplication | $3 \\times 4$ | $12$ |
+
+Tableau de données :
+
+| Niveau | Difficulté | Score max |
+|--------|------------|-----------|
+| 1 | Facile | 100 |
+| 2 | Moyen | 200 |
+| 3 | Difficile | 300 |
+
+## Hashtags et Mentions
+
+Hashtag simple : #mathematiques
+
+Hashtag avec tiret : #equation-second-degre
+
+Mention simple : @professeur
+
+Mention avec point : @classe.3eme
+
+Texte mixte : Exercice de #fractions pour @alice niveau #facile`;
 
 	let importMarkdown = $state(INITIAL_MARKDOWN);
 	let editorJsonValue = $state<unknown>(markdownToTipTap(INITIAL_MARKDOWN));
@@ -238,12 +296,31 @@ Image avec width personnalisé (60%) :
 	 * Normalize markdown for comparison
 	 * - Trim each line
 	 * - Remove ALL empty lines (compares content only, ignores whitespace between blocks)
+	 * - Normalize table separator rows preserving alignment (:---, :---:, ---:)
 	 * - This makes "text\nlist" equivalent to "text\n\nlist"
 	 */
 	function normalizeMarkdown(md: string): string {
 		return md
 			.split('\n')
-			.map((line) => line.trimEnd())
+			.map((line) => {
+				const trimmed = line.trimEnd();
+				// Normalize table separator rows preserving alignment
+				// Matches lines that only contain |, -, :, and spaces
+				if (/^\|[\s:|-]+\|$/.test(trimmed) && trimmed.includes('-')) {
+					// Extract cells and normalize each one
+					const cells = trimmed.split('|').slice(1, -1); // Remove first/last empty from split
+					const normalized = cells.map((cell) => {
+						const c = cell.trim();
+						const hasLeft = c.startsWith(':');
+						const hasRight = c.endsWith(':');
+						if (hasLeft && hasRight) return ':---:';
+						if (hasRight) return '---:';
+						return '---';
+					});
+					return '|' + normalized.join('|') + '|';
+				}
+				return trimmed;
+			})
 			.filter((line) => line !== '')
 			.join('\n')
 			.trim();
