@@ -84,10 +84,19 @@ interface Props {
 
 	// Configuration
 	mathTemplates?: 'full' | 'basic' | 'none'; // default: 'full'
+	toolbar?: ToolbarConfig; // Toolbar sections visibility (default: all visible)
 	showSendButton?: boolean; // default: mode === 'chat'
 	showClearButton?: boolean; // default: true
 	minHeight?: string; // default: '100px'
 	disabled?: boolean; // default: false
+}
+
+interface ToolbarConfig {
+	text?: boolean; // Gras, Italique, Souligné, Barré, Code, Indice, Exposant
+	paragraph?: boolean; // Titres H1-H6, Alignement
+	insertion?: boolean; // Listes, Couleurs, Surlignage, Liens, Emojis
+	formula?: boolean; // Templates math, Formule vide, Bloc formule
+	more?: boolean; // Citation, Bloc de code, Ligne horizontale
 }
 ```
 
@@ -136,6 +145,17 @@ interface Props {
   showClearButton={false}    // Masquer le bouton "Effacer"
   minHeight="200px"          // Hauteur minimum
   disabled={isLoading}       // Désactiver pendant le chargement
+/>
+
+<!-- Toolbar personnalisée -->
+<RichTextEditor
+  toolbar={{
+    text: true,        // Garder le formatage texte
+    paragraph: false,  // Masquer titres et alignement
+    insertion: true,   // Garder listes, couleurs, liens, emojis
+    formula: true,     // Garder les formules math
+    more: false        // Masquer citations, blocs de code, lignes
+  }}
 />
 ```
 
@@ -281,6 +301,15 @@ export type RichTextMode = 'chat' | 'form';
 // Niveaux de templates math
 export type MathTemplateLevel = 'full' | 'basic' | 'none';
 
+// Configuration des sections de la toolbar
+export interface ToolbarConfig {
+	text?: boolean; // Formatage texte (Gras, Italique, etc.)
+	paragraph?: boolean; // Paragraphe (Titres, Alignement)
+	insertion?: boolean; // Insertion (Listes, Couleurs, Liens, Emojis)
+	formula?: boolean; // Formules mathématiques
+	more?: boolean; // Blocs spéciaux (Citation, Code, Ligne)
+}
+
 // Props du composant
 export interface RichTextEditorProps {
 	mode?: RichTextMode;
@@ -288,6 +317,7 @@ export interface RichTextEditorProps {
 	jsonValue?: unknown;
 	onSend?: (content: unknown) => void;
 	mathTemplates?: MathTemplateLevel;
+	toolbar?: ToolbarConfig;
 	showSendButton?: boolean;
 	showClearButton?: boolean;
 	minHeight?: string;

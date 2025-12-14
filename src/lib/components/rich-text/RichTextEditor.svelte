@@ -72,7 +72,7 @@
 		MATH_TEMPLATES_BASIC
 	} from './config';
 	import { createEditorExtensions, getEditorProps } from './editor-config';
-	import type { RichTextMode, MathTemplateLevel } from './types';
+	import type { RichTextMode, MathTemplateLevel, ToolbarConfig } from './types';
 
 	// Component Props
 	interface Props {
@@ -81,6 +81,7 @@
 		jsonValue?: unknown;
 		onSend?: (content: unknown) => void;
 		mathTemplates?: MathTemplateLevel;
+		toolbar?: ToolbarConfig;
 		showSendButton?: boolean;
 		showClearButton?: boolean;
 		minHeight?: string;
@@ -93,11 +94,19 @@
 		jsonValue = $bindable(undefined),
 		onSend,
 		mathTemplates = 'full',
+		toolbar,
 		showSendButton,
 		showClearButton = true,
 		minHeight = '100px',
 		disabled = false
 	}: Props = $props();
+
+	// Computed toolbar visibility (default: all sections visible)
+	let showText = $derived(toolbar?.text ?? true);
+	let showParagraph = $derived(toolbar?.paragraph ?? true);
+	let showInsertion = $derived(toolbar?.insertion ?? true);
+	let showFormula = $derived(toolbar?.formula ?? true);
+	let showMore = $derived(toolbar?.more ?? true);
 
 	// Computed defaults based on mode
 	let effectiveShowSendButton = $derived(showSendButton ?? mode === 'chat');
@@ -376,61 +385,67 @@
 		<!-- Main Toolbar Row -->
 		<div class="flex flex-wrap items-center gap-1 p-2">
 			<!-- Text Section Toggle -->
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={() => (textSectionOpen = !textSectionOpen)}
-				class="font-medium"
-				{disabled}
-			>
-				<Type class="mr-1 h-4 w-4" />
-				Texte
-				{#if textSectionOpen}
-					<ChevronDown class="ml-1 h-3 w-3" />
-				{:else}
-					<ChevronRight class="ml-1 h-3 w-3" />
-				{/if}
-			</Button>
+			{#if showText}
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={() => (textSectionOpen = !textSectionOpen)}
+					class="font-medium"
+					{disabled}
+				>
+					<Type class="mr-1 h-4 w-4" />
+					Texte
+					{#if textSectionOpen}
+						<ChevronDown class="ml-1 h-3 w-3" />
+					{:else}
+						<ChevronRight class="ml-1 h-3 w-3" />
+					{/if}
+				</Button>
+			{/if}
 
 			<!-- Paragraph Section Toggle -->
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={() => (paragraphSectionOpen = !paragraphSectionOpen)}
-				class="font-medium"
-				{disabled}
-			>
-				<PilcrowSquare class="mr-1 h-4 w-4" />
-				Paragraphe
-				{#if paragraphSectionOpen}
-					<ChevronDown class="ml-1 h-3 w-3" />
-				{:else}
-					<ChevronRight class="ml-1 h-3 w-3" />
-				{/if}
-			</Button>
+			{#if showParagraph}
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={() => (paragraphSectionOpen = !paragraphSectionOpen)}
+					class="font-medium"
+					{disabled}
+				>
+					<PilcrowSquare class="mr-1 h-4 w-4" />
+					Paragraphe
+					{#if paragraphSectionOpen}
+						<ChevronDown class="ml-1 h-3 w-3" />
+					{:else}
+						<ChevronRight class="ml-1 h-3 w-3" />
+					{/if}
+				</Button>
+			{/if}
 
 			<!-- Insert Section Toggle -->
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={() => (insertSectionOpen = !insertSectionOpen)}
-				class="font-medium"
-				{disabled}
-			>
-				<Plus class="mr-1 h-4 w-4" />
-				Insertion
-				{#if insertSectionOpen}
-					<ChevronDown class="ml-1 h-3 w-3" />
-				{:else}
-					<ChevronRight class="ml-1 h-3 w-3" />
-				{/if}
-			</Button>
+			{#if showInsertion}
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={() => (insertSectionOpen = !insertSectionOpen)}
+					class="font-medium"
+					{disabled}
+				>
+					<Plus class="mr-1 h-4 w-4" />
+					Insertion
+					{#if insertSectionOpen}
+						<ChevronDown class="ml-1 h-3 w-3" />
+					{:else}
+						<ChevronRight class="ml-1 h-3 w-3" />
+					{/if}
+				</Button>
+			{/if}
 
-			<!-- Formule Section Toggle (only if mathTemplates !== 'none') -->
-			{#if mathTemplates !== 'none'}
+			<!-- Formule Section Toggle (only if showFormula and mathTemplates !== 'none') -->
+			{#if showFormula && mathTemplates !== 'none'}
 				<Button
 					type="button"
 					variant="ghost"
@@ -450,41 +465,43 @@
 			{/if}
 
 			<!-- More Dropdown (Advanced Features) -->
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger {disabled}>
-					{#snippet child({ props })}
-						<button
-							{...props}
-							type="button"
-							class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+			{#if showMore}
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger {disabled}>
+						{#snippet child({ props })}
+							<button
+								{...props}
+								type="button"
+								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+							>
+								<MoreHorizontal class="h-4 w-4" />
+								Plus
+							</button>
+						{/snippet}
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content>
+						<DropdownMenu.Label>Blocs spéciaux</DropdownMenu.Label>
+						<DropdownMenu.Item
+							onclick={() => editor?.chain().focus().toggleBlockquote().run()}
+							class={isBlockquote ? 'bg-accent' : ''}
 						>
-							<MoreHorizontal class="h-4 w-4" />
-							Plus
-						</button>
-					{/snippet}
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content>
-					<DropdownMenu.Label>Blocs spéciaux</DropdownMenu.Label>
-					<DropdownMenu.Item
-						onclick={() => editor?.chain().focus().toggleBlockquote().run()}
-						class={isBlockquote ? 'bg-accent' : ''}
-					>
-						<Quote class="mr-2 h-4 w-4" />
-						Citation
-					</DropdownMenu.Item>
-					<DropdownMenu.Item
-						onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
-						class={isCodeBlock ? 'bg-accent' : ''}
-					>
-						<CodeSquare class="mr-2 h-4 w-4" />
-						Bloc de code
-					</DropdownMenu.Item>
-					<DropdownMenu.Item onclick={() => editor?.chain().focus().setHorizontalRule().run()}>
-						<Minus class="mr-2 h-4 w-4" />
-						Ligne horizontale
-					</DropdownMenu.Item>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+							<Quote class="mr-2 h-4 w-4" />
+							Citation
+						</DropdownMenu.Item>
+						<DropdownMenu.Item
+							onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
+							class={isCodeBlock ? 'bg-accent' : ''}
+						>
+							<CodeSquare class="mr-2 h-4 w-4" />
+							Bloc de code
+						</DropdownMenu.Item>
+						<DropdownMenu.Item onclick={() => editor?.chain().focus().setHorizontalRule().run()}>
+							<Minus class="mr-2 h-4 w-4" />
+							Ligne horizontale
+						</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			{/if}
 
 			<!-- Spacer -->
 			<div class="flex-1"></div>
@@ -506,7 +523,7 @@
 		</div>
 
 		<!-- Text Section (Collapsible) -->
-		{#if textSectionOpen}
+		{#if showText && textSectionOpen}
 			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<Button
 					type="button"
@@ -590,7 +607,7 @@
 		{/if}
 
 		<!-- Paragraph Section (Collapsible) -->
-		{#if paragraphSectionOpen}
+		{#if showParagraph && paragraphSectionOpen}
 			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Headings Dropdown -->
 				<DropdownMenu.Root>
@@ -675,7 +692,7 @@
 		{/if}
 
 		<!-- Insert Section (Collapsible) -->
-		{#if insertSectionOpen}
+		{#if showInsertion && insertSectionOpen}
 			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Lists -->
 				<Button
@@ -844,8 +861,8 @@
 			</div>
 		{/if}
 
-		<!-- Formule Section (Collapsible) - Only if mathTemplates !== 'none' -->
-		{#if formuleSectionOpen && mathTemplates !== 'none'}
+		<!-- Formule Section (Collapsible) - Only if showFormula and mathTemplates !== 'none' -->
+		{#if showFormula && formuleSectionOpen && mathTemplates !== 'none'}
 			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 				<!-- Empty Formula Button -->
 				<Button

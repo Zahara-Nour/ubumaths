@@ -16,6 +16,23 @@ export type RichTextMode = 'chat' | 'form';
 export type MathTemplateLevel = 'full' | 'basic' | 'none';
 
 /**
+ * Toolbar section configuration
+ * Controls which sections are visible in the toolbar
+ */
+export interface ToolbarConfig {
+	/** Text formatting: Bold, Italic, Underline, Strike, Code, Subscript, Superscript */
+	text?: boolean;
+	/** Paragraph formatting: Headings H1-H6, Text alignment */
+	paragraph?: boolean;
+	/** Insertion tools: Lists, Colors, Highlight, Links, Emojis */
+	insertion?: boolean;
+	/** Formula tools: Math templates, empty formula, block formula */
+	formula?: boolean;
+	/** Advanced tools: Blockquote, Code block, Horizontal rule */
+	more?: boolean;
+}
+
+/**
  * Props for unified rich text editor component
  */
 export interface RichTextEditorProps {
@@ -29,6 +46,8 @@ export interface RichTextEditorProps {
 	onSend?: (content: unknown) => void;
 	/** Math template level */
 	mathTemplates?: MathTemplateLevel;
+	/** Toolbar sections visibility configuration */
+	toolbar?: ToolbarConfig;
 	/** Show send button (chat mode) */
 	showSendButton?: boolean;
 	/** Show clear button */
