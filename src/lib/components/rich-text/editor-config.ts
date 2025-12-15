@@ -20,8 +20,10 @@ import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
-import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table';
+import { Table, TableRow } from '@tiptap/extension-table';
+import { CustomTableHeader, CustomTableCell } from '$lib/extensions/table-extension';
 import { CustomImage } from '$lib/extensions/image-extension';
+import { CustomLink } from '$lib/extensions/link-extension';
 import { Video } from '$lib/extensions/video-extension';
 import { MathInline, MathBlock } from '$lib/extensions/math-extension';
 import {
@@ -34,8 +36,8 @@ import { Hashtag } from '$lib/extensions/hashtag-extension';
 import { Mention } from '$lib/extensions/mention-extension';
 import { MarkdownPaste } from './markdown-paste-extension';
 
-// Note: Link and Underline are now included in StarterKit v3
-// We configure them via StarterKit options to avoid duplicates
+// Note: Underline is included in StarterKit v3
+// Link is disabled in StarterKit and replaced with CustomLink to preserve title attribute
 
 /**
  * Module-level extension instances (singleton pattern)
@@ -58,7 +60,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v16`;
+	return `h${headingLevels}-v18`;
 }
 
 /**
@@ -81,14 +83,17 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 			heading: {
 				levels
 			},
-			// Configure Link via StarterKit to avoid duplicate extension
-			link: {
-				openOnClick: false,
-				HTMLAttributes: {
-					class: 'text-primary underline cursor-pointer'
-				}
-			}
+			// Disable StarterKit's Link - we use CustomLink to preserve title attribute
+			link: false
 			// Underline uses default configuration
+		}),
+
+		// Custom Link extension that preserves title attribute for roundtrip
+		CustomLink.configure({
+			openOnClick: false,
+			HTMLAttributes: {
+				class: 'text-primary underline cursor-pointer'
+			}
 		}),
 
 		// Text formatting (NOT in StarterKit)
@@ -155,12 +160,12 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 				class: 'border-b border-border'
 			}
 		}),
-		TableHeader.configure({
+		CustomTableHeader.configure({
 			HTMLAttributes: {
 				class: 'border border-border bg-muted px-3 py-2 text-left font-semibold'
 			}
 		}),
-		TableCell.configure({
+		CustomTableCell.configure({
 			HTMLAttributes: {
 				class: 'border border-border px-3 py-2'
 			}
