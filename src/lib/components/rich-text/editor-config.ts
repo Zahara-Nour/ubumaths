@@ -32,6 +32,7 @@ import {
 import { BlankField } from '$lib/extensions/blank-extension';
 import { Hashtag } from '$lib/extensions/hashtag-extension';
 import { Mention } from '$lib/extensions/mention-extension';
+import { MarkdownPaste } from './markdown-paste-extension';
 
 // Note: Link and Underline are now included in StarterKit v3
 // We configure them via StarterKit options to avoid duplicates
@@ -54,10 +55,10 @@ const extensionsCache = new Map<string, Extensions>();
 
 /**
  * Create a cache key from options
- * Updated cache key to invalidate old editor instances after hashtag/mention extensions added
+ * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v14`;
+	return `h${headingLevels}-v16`;
 }
 
 /**
@@ -129,6 +130,9 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 		// Social features
 		Hashtag.configure({}),
 		Mention.configure({}),
+
+		// Markdown paste support - converts pasted Markdown to rich text
+		MarkdownPaste.configure({ enabled: true }),
 
 		// Images with extended attributes (sizeClass, widthPercent, alignment, caption)
 		CustomImage.configure({
