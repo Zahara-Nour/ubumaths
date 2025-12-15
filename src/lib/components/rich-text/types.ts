@@ -112,3 +112,12 @@ export interface EmojiCategory {
 	name: string;
 	emojis: string[];
 }
+
+/**
+ * Image upload configuration for RichTextEditor
+ * Enables image upload functionality when provided
+ */
+export interface ImageUploadConfig {
+	/** Upload function - receives file, returns URL or error */
+	uploadFn: (file: File) => Promise<{ success: boolean; url?: string; error?: string }>;
+}

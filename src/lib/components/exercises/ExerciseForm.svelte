@@ -3,7 +3,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
-	import ExerciseMarkdownEditor from './ExerciseMarkdownEditor.svelte';
+	import ExerciseRichTextEditor from './ExerciseRichTextEditor.svelte';
 	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
 	import GenericFunctionInput from './GenericFunctionInput.svelte';
@@ -297,7 +297,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<ExerciseMarkdownEditor bind:value={statementMd} {supabase} {userId} {genericFunctions} />
+			<ExerciseRichTextEditor bind:value={statementMd} {supabase} {userId} />
 			{#if errors.statement_md}
 				<p class="mt-2 text-sm text-destructive">{errors.statement_md}</p>
 			{/if}
@@ -315,7 +315,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<ExerciseMarkdownEditor bind:value={solutionMd} {supabase} {userId} {genericFunctions} />
+			<ExerciseRichTextEditor bind:value={solutionMd} {supabase} {userId} />
 			{#if errors.solution_md}
 				<p class="mt-2 text-sm text-destructive">{errors.solution_md}</p>
 			{/if}

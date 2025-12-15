@@ -103,8 +103,10 @@ interface Props {
 	onSend?: (content: unknown) => void;
 
 	// Configuration
+	preset?: 'minimal' | 'standard' | 'full'; // Configuration prédéfinie
 	mathTemplates?: 'full' | 'basic' | 'none'; // default: 'full'
 	toolbar?: ToolbarConfig; // Toolbar sections visibility (default: all visible)
+	imageUpload?: ImageUploadConfig; // Upload d'images (optionnel)
 	showSendButton?: boolean; // default: mode === 'chat'
 	showClearButton?: boolean; // default: true
 	minHeight?: string; // default: '100px'
@@ -117,10 +119,16 @@ export function getMarkdown(): string; // Retourne le markdown actuel
 interface ToolbarConfig {
 	text?: boolean; // Gras, Italique, Souligné, Barré, Code, Indice, Exposant
 	paragraph?: boolean; // Titres H1-H6, Alignement
-	insertion?: boolean; // Listes, Couleurs, Surlignage, Liens, Emojis
+	insertion?: boolean; // Listes, Couleurs, Surlignage, Liens, Emojis, Images
 	formula?: boolean; // Templates math, Formule vide, Bloc formule
 	templates?: boolean; // Variable, Aléatoire, Expression, Blanc
 	more?: boolean; // Citation, Bloc de code, Ligne horizontale
+	preview?: boolean; // Panneau preview Markdown
+	fullscreen?: boolean; // Mode plein écran
+}
+
+interface ImageUploadConfig {
+	uploadFn: (file: File) => Promise<{ success: boolean; url?: string; error?: string }>;
 }
 ```
 
@@ -205,6 +213,23 @@ Quand plusieurs props sont fournies au montage : `markdownValue` > `jsonValue` >
     formula: true,     // Garder les formules math
     more: false        // Masquer citations, blocs de code, lignes
   }}
+/>
+
+<!-- Avec upload d'images -->
+<script lang="ts">
+  async function uploadImage(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch('/api/upload', { method: 'POST', body: formData });
+    const result = await response.json();
+    return result; // { success: boolean, url?: string, error?: string }
+  }
+</script>
+
+<RichTextEditor
+  bind:markdownValue={content}
+  preset="full"
+  imageUpload={{ uploadFn: uploadImage }}
 />
 ```
 
@@ -358,6 +383,14 @@ export interface ToolbarConfig {
 	formula?: boolean; // Formules mathématiques
 	templates?: boolean; // Templates custom markdown
 	more?: boolean; // Blocs spéciaux (Citation, Code, Ligne)
+	preview?: boolean; // Panneau preview Markdown
+	fullscreen?: boolean; // Mode plein écran
+}
+
+// Configuration upload d'images
+interface ImageUploadConfig {
+	/** Fonction d'upload - reçoit un fichier, retourne URL ou erreur */
+	uploadFn: (file: File) => Promise<{ success: boolean; url?: string; error?: string }>;
 }
 
 // Props du composant
@@ -746,14 +779,14 @@ L'indentation **commune** (minimum) est supprimée, mais l'indentation **relativ
 
 ### Sections collapsibles
 
-| Section        | Contenu                                                                |
-| -------------- | ---------------------------------------------------------------------- |
-| **Texte**      | Gras, Italique, Souligné, Barré, Code, Indice, Exposant                |
-| **Paragraphe** | Titres H1-H6, Alignement (gauche, centre, droite, justifié)            |
-| **Insertion**  | Listes (puces, numérotée, tâches), Couleurs, Surlignage, Liens, Emojis |
-| **Formule**    | Templates math, Formule vide, Bloc formule                             |
-| **Templates**  | Variable, Aléatoire, Expression, Blanc (pour custom markdown)          |
-| **Plus**       | Citation, Bloc de code, Ligne horizontale                              |
+| Section        | Contenu                                                                        |
+| -------------- | ------------------------------------------------------------------------------ |
+| **Texte**      | Gras, Italique, Souligné, Barré, Code, Indice, Exposant                        |
+| **Paragraphe** | Titres H1-H6, Alignement (gauche, centre, droite, justifié)                    |
+| **Insertion**  | Listes (puces, numérotée, tâches), Couleurs, Surlignage, Liens, Emojis, Images |
+| **Formule**    | Templates math, Formule vide, Bloc formule                                     |
+| **Templates**  | Variable, Aléatoire, Expression, Blanc (pour custom markdown)                  |
+| **Plus**       | Citation, Bloc de code, Ligne horizontale                                      |
 
 ### Raccourcis clavier
 
