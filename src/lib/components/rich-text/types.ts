@@ -61,6 +61,8 @@ export interface RichTextEditorProps {
 	value?: string;
 	/** JSON content value (TipTap format) */
 	jsonValue?: unknown;
+	/** Markdown content value (bindable, reactive) */
+	markdownValue?: string;
 	/** Send callback (chat mode only) */
 	onSend?: (content: unknown) => void;
 	/** Math template level */

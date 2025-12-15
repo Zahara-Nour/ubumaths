@@ -97,6 +97,7 @@ interface Props {
 	// Binding (mode form)
 	value?: string; // HTML content (bindable)
 	jsonValue?: unknown; // TipTap JSON (bindable, optional)
+	markdownValue?: string; // Markdown content (bindable, optional)
 
 	// Callback (mode chat)
 	onSend?: (content: unknown) => void;
@@ -110,6 +111,9 @@ interface Props {
 	disabled?: boolean; // default: false
 }
 
+// Méthode exposée via bind:this
+export function getMarkdown(): string; // Retourne le markdown actuel
+
 interface ToolbarConfig {
 	text?: boolean; // Gras, Italique, Souligné, Barré, Code, Indice, Exposant
 	paragraph?: boolean; // Titres H1-H6, Alignement
@@ -122,10 +126,14 @@ interface ToolbarConfig {
 
 #### Modes
 
-| Mode   | Description                      | Output                     | Bouton Envoyer   |
-| ------ | -------------------------------- | -------------------------- | ---------------- |
-| `form` | Formulaires, édition persistante | HTML via `bind:value`      | Non (par défaut) |
-| `chat` | Messagerie temps réel            | JSON via `onSend` callback | Oui              |
+| Mode   | Description                      | Output                               | Bouton Envoyer   |
+| ------ | -------------------------------- | ------------------------------------ | ---------------- |
+| `form` | Formulaires, édition persistante | HTML, JSON, ou Markdown via bindings | Non (par défaut) |
+| `chat` | Messagerie temps réel            | JSON via `onSend` callback           | Oui              |
+
+#### Priorité des bindings (initialisation)
+
+Quand plusieurs props sont fournies au montage : `markdownValue` > `jsonValue` > `value` (HTML)
 
 #### Exemples d'utilisation
 
@@ -148,6 +156,27 @@ interface ToolbarConfig {
   bind:value={htmlContent}
   bind:jsonValue={jsonContent}
 />
+
+<!-- Mode Form - Avec Markdown (two-way binding) -->
+<script lang="ts">
+  let markdown = $state('# Titre\n\nTexte avec **gras** et ~formule~');
+</script>
+
+<RichTextEditor bind:markdownValue={markdown} />
+
+<!-- Mode Form - getMarkdown() on-demand (via bind:this) -->
+<script lang="ts">
+  import type RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+  let editorRef: RichTextEditor;
+
+  function handleExport() {
+    const md = editorRef.getMarkdown();
+    console.log('Markdown:', md);
+  }
+</script>
+
+<RichTextEditor bind:this={editorRef} />
+<button onclick={handleExport}>Exporter en Markdown</button>
 
 <!-- Mode Chat -->
 <script lang="ts">
