@@ -74,7 +74,7 @@ src/lib/extensions/
 │         ▼                  ▼                  ▼             │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
 │  │   Config    │    │ Extensions  │    │   Props     │     │
-│  │  (config.ts)│    │(math-ext.ts)│    │(bind:value) │     │
+│  │  (config.ts)│    │(math-ext.ts)│    │ (bindings)  │     │
 │  └─────────────┘    └─────────────┘    └─────────────┘     │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -830,7 +830,7 @@ pnpm test:client src/lib/extensions/math-extension.svelte.test.ts
 <script>
   import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 </script>
-<RichTextEditor bind:value={content} />
+<RichTextEditor bind:htmlValue={content} />
 ```
 
 ---
