@@ -575,13 +575,13 @@ YouTube format court :
 								<Badge variant="secondary">mode="form" (défaut)</Badge>
 							</Card.Title>
 							<Card.Description>
-								Binding <code>bind:value</code>, contenu persistant, pas de bouton Envoyer
+								Binding <code>bind:htmlValue</code>, contenu persistant, pas de bouton Envoyer
 							</Card.Description>
 						</Card.Header>
 						<Card.Content class="space-y-4">
 							<RichTextEditor
 								mode="form"
-								bind:value={formHtmlContent}
+								bind:htmlValue={formHtmlContent}
 								bind:jsonValue={formJsonContent}
 								minHeight="120px"
 							/>
@@ -727,7 +727,7 @@ YouTube format court :
 							{#if playgroundMode === 'form'}
 								<RichTextEditor
 									mode="form"
-									bind:value={playgroundHtmlValue}
+									bind:htmlValue={playgroundHtmlValue}
 									bind:jsonValue={playgroundJsonValue}
 									mathTemplates={playgroundMathTemplates}
 									showSendButton={playgroundShowSendButton}
@@ -920,20 +920,20 @@ YouTube format court :
 &lt;/script&gt;
 
 &lt;!-- Création --&gt;
-&lt;RichTextEditor bind:value=&#123;description&#125; /&gt;
+&lt;RichTextEditor bind:htmlValue=&#123;description&#125; /&gt;
 
 &lt;!-- Avec JSON --&gt;
 &lt;RichTextEditor
-  bind:value=&#123;description&#125;
+  bind:htmlValue=&#123;description&#125;
   bind:jsonValue=&#123;jsonContent&#125;
 /&gt;
 
 &lt;!-- Édition existante --&gt;
-&lt;RichTextEditor bind:value=&#123;existingHtml&#125; /&gt;
+&lt;RichTextEditor bind:htmlValue=&#123;existingHtml&#125; /&gt;
 
 &lt;!-- Options --&gt;
 &lt;RichTextEditor
-  bind:value=&#123;description&#125;
+  bind:htmlValue=&#123;description&#125;
   mathTemplates="basic"
   showClearButton=&#123;false&#125;
   minHeight="200px"

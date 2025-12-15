@@ -6,14 +6,14 @@
 	FormRichTextEditor (form mode) into a single component.
 
 	MODES:
-	- 'form' (default): Bidirectional binding with value prop, no send button
+	- 'form' (default): Bidirectional binding with htmlValue prop, no send button
 	- 'chat': Send callback with JSON content, clears after send
 
 	USAGE:
 	<script>
 		// Form mode (default)
 		let content = $state('');
-		<RichTextEditorUnified bind:value={content} />
+		<RichTextEditorUnified bind:htmlValue={content} />
 
 		// Chat mode
 		function handleSend(json) { ... }
@@ -87,7 +87,7 @@
 	// Component Props
 	interface Props {
 		mode?: RichTextMode;
-		value?: string;
+		htmlValue?: string;
 		jsonValue?: unknown;
 		markdownValue?: string;
 		onSend?: (content: unknown) => void;
@@ -103,7 +103,7 @@
 
 	let {
 		mode = 'form',
-		value = $bindable(''),
+		htmlValue = $bindable(''),
 		jsonValue = $bindable(undefined),
 		markdownValue = $bindable(undefined as string | undefined),
 		onSend,
@@ -263,14 +263,14 @@
 		isUpdatingFromProp = true;
 
 		// TipTap accepts both HTML string and JSON object for content
-		// Priority: markdownValue > jsonValue (if object) > value (if string) > empty
+		// Priority: markdownValue > jsonValue (if object) > htmlValue (if string) > empty
 		const initialContent =
 			mode === 'form'
 				? markdownValue !== undefined
 					? markdownToTipTap(markdownValue)
 					: jsonValue && typeof jsonValue === 'object'
 						? jsonValue
-						: value || ''
+						: htmlValue || ''
 				: '';
 
 		editor = new Editor({
@@ -284,7 +284,7 @@
 
 				// Update bound values in form mode
 				if (mode === 'form') {
-					value = ed.getHTML();
+					htmlValue = ed.getHTML();
 					if (jsonValue !== undefined) {
 						jsonValue = ed.getJSON();
 					}
@@ -320,16 +320,16 @@
 	});
 
 	/**
-	 * Sync external value changes (form mode only)
+	 * Sync external htmlValue changes (form mode only)
 	 */
 	$effect(() => {
-		if (mode !== 'form' || !editor || !value) return;
+		if (mode !== 'form' || !editor || !htmlValue) return;
 
 		// Avoid infinite loops
 		const currentHtml = editor.getHTML();
-		if (currentHtml !== value) {
+		if (currentHtml !== htmlValue) {
 			isUpdatingFromProp = true;
-			editor.commands.setContent(value);
+			editor.commands.setContent(htmlValue);
 			isUpdatingFromProp = false;
 		}
 	});
@@ -407,7 +407,7 @@
 	function handleClear() {
 		editor?.commands.clearContent();
 		if (mode === 'form') {
-			value = '';
+			htmlValue = '';
 		}
 	}
 
