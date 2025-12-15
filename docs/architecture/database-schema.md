@@ -17,6 +17,8 @@ The database is designed to support a complete math learning platform with:
 - **Error Monitoring**: Comprehensive error logging and tracking system
 - **Achievements System**: Universal achievement tracking across all features (NEW: 2025-11-21)
 - **Chapter Templates**: Reusable chapter templates with versioning and sharing (NEW: 2025-12-10)
+- **View Security**: All views use `security_invoker = true` to respect RLS policies (NEW: 2025-12-14)
+- **Secure RPC Functions**: Role-based data access via `get_assessment_results_for_*` and `get_*_exercise_assignments` (NEW: 2025-12-14)
 
 ## Entity Relationship Diagram
 

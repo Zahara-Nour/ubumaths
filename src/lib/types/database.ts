@@ -12413,6 +12413,36 @@ export type Database = {
 					total_points: number;
 				}[];
 			};
+			get_all_exercise_assignments: {
+				Args: Record<string, never>;
+				Returns: {
+					assigned_at: string;
+					assigned_by: string;
+					assigned_by_name: string;
+					assigned_by_role: string;
+					assigned_to_name: string;
+					assigned_to_type: string;
+					class_id: string | null;
+					class_name: string | null;
+					difficulty: string | null;
+					distribution_mode: string | null;
+					exercise_creator_id: string;
+					exercise_id: string;
+					exercise_is_public: boolean;
+					exercise_title: string;
+					grade_levels: string[] | null;
+					id: string;
+					is_active: boolean;
+					notes: string | null;
+					optional_deadline: string | null;
+					solution_md: string | null;
+					statement_md: string;
+					student_email: string | null;
+					student_id: string | null;
+					tags: string[] | null;
+					variables: Json | null;
+				}[];
+			};
 			get_allowed_recipients: {
 				Args: { p_user_id: string };
 				Returns: {
@@ -12421,6 +12451,66 @@ export type Database = {
 					relationship: string;
 					role: string;
 					user_id: string;
+				}[];
+			};
+			get_assessment_results_for_admin: {
+				Args: { p_assessment_id?: string };
+				Returns: {
+					assessment_grade: string | null;
+					assessment_id: string;
+					assessment_title: string;
+					assignment_id: string;
+					attempts_count: number;
+					best_score: number | null;
+					class_id: string | null;
+					class_name: string | null;
+					last_attempt_at: string | null;
+					status: string;
+					student_firstname: string | null;
+					student_id: string | null;
+					student_lastname: string | null;
+					student_user_id: string | null;
+					total_questions: number | null;
+				}[];
+			};
+			get_assessment_results_for_student: {
+				Args: Record<string, never>;
+				Returns: {
+					assessment_grade: string | null;
+					assessment_id: string;
+					assessment_title: string;
+					assignment_id: string;
+					attempts_count: number;
+					best_score: number | null;
+					class_id: string | null;
+					class_name: string | null;
+					last_attempt_at: string | null;
+					status: string;
+					student_firstname: string | null;
+					student_id: string | null;
+					student_lastname: string | null;
+					student_user_id: string | null;
+					total_questions: number | null;
+				}[];
+			};
+			get_assessment_results_for_teacher: {
+				Args: { p_assessment_id?: string };
+				Returns: {
+					assessment_grade: string | null;
+					assessment_id: string;
+					assessment_title: string;
+					assignment_id: string;
+					attempts_count: number;
+					best_score: number | null;
+					class_id: string | null;
+					class_name: string | null;
+					last_attempt_at: string | null;
+					status: string;
+					student_firstname: string | null;
+					student_id: string | null;
+					student_lastname: string | null;
+					student_user_id: string | null;
+					total_questions: number | null;
 				}[];
 			};
 			get_assignment_completion_stats: {
@@ -12509,6 +12599,36 @@ export type Database = {
 				}[];
 			};
 			get_match_state: { Args: { p_match_id: string }; Returns: Json };
+			get_my_exercise_assignments: {
+				Args: Record<string, never>;
+				Returns: {
+					assigned_at: string;
+					assigned_by: string;
+					assigned_by_name: string;
+					assigned_by_role: string;
+					assigned_to_name: string;
+					assigned_to_type: string;
+					class_id: string | null;
+					class_name: string | null;
+					difficulty: string | null;
+					distribution_mode: string | null;
+					exercise_creator_id: string;
+					exercise_id: string;
+					exercise_is_public: boolean;
+					exercise_title: string;
+					grade_levels: string[] | null;
+					id: string;
+					is_active: boolean;
+					notes: string | null;
+					optional_deadline: string | null;
+					solution_md: string | null;
+					statement_md: string;
+					student_email: string | null;
+					student_id: string | null;
+					tags: string[] | null;
+					variables: Json | null;
+				}[];
+			};
 			get_message_attachments: {
 				Args: { p_message_id: string };
 				Returns: {
@@ -12709,6 +12829,36 @@ export type Database = {
 					total_assignments: number;
 					total_completions: number;
 					unique_students_engaged: number;
+				}[];
+			};
+			get_teacher_exercise_assignments: {
+				Args: Record<string, never>;
+				Returns: {
+					assigned_at: string;
+					assigned_by: string;
+					assigned_by_name: string;
+					assigned_by_role: string;
+					assigned_to_name: string;
+					assigned_to_type: string;
+					class_id: string | null;
+					class_name: string | null;
+					difficulty: string | null;
+					distribution_mode: string | null;
+					exercise_creator_id: string;
+					exercise_id: string;
+					exercise_is_public: boolean;
+					exercise_title: string;
+					grade_levels: string[] | null;
+					id: string;
+					is_active: boolean;
+					notes: string | null;
+					optional_deadline: string | null;
+					solution_md: string | null;
+					statement_md: string;
+					student_email: string | null;
+					student_id: string | null;
+					tags: string[] | null;
+					variables: Json | null;
 				}[];
 			};
 			get_teacher_classes_for_messaging: {
