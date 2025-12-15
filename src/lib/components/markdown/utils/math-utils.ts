@@ -34,14 +34,6 @@ export function expressionToLatex(
 ): string {
 	if (syntax === 'latex') return expression;
 
-	// Debug: log when custom syntax is parsed with genericFunctions
-	if (genericFunctions) {
-		console.log('[math-utils] Parsing custom syntax with genericFunctions:', {
-			expression,
-			genericFunctions: genericFunctions.names
-		});
-	}
-
 	const result = parseCustomSafe(expression, { genericFunctions });
 	if (result.ast) {
 		return toLatex(result.ast);

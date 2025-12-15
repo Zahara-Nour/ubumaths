@@ -37,7 +37,9 @@
 	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions));
 </script>
 
-<math-span class="inline-math-static {className}">{latex}</math-span>
+{#key latex}
+	<math-span class="inline-math-static {className}">{latex}</math-span>
+{/key}
 
 <style>
 	/* Math inline styling - blend seamlessly with text */

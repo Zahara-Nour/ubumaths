@@ -142,7 +142,9 @@
 				{:else if output.data['text/plain']}
 					<!-- LaTeX or plain text -->
 					<div class="rounded bg-muted p-3">
-						<math-span class="block text-base">{output.data['text/plain']}</math-span>
+						{#key output.data['text/plain']}
+							<math-span class="block text-base">{output.data['text/plain']}</math-span>
+						{/key}
 					</div>
 				{:else if output.data['application/json']}
 					<!-- Plotly interactive chart -->

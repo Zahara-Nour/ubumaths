@@ -101,20 +101,6 @@
 		genericFunctions
 	}: Props = $props();
 
-	// Debug: unique instance ID to trace which renderer is which
-	const instanceId = Math.random().toString(36).slice(2, 6);
-
-	// Debug: track genericFunctions in MarkdownRenderer
-	$effect(() => {
-		const gfNames = genericFunctions?.names ?? null;
-		console.log(
-			`[MarkdownRenderer:${instanceId}] genericFunctions:`,
-			gfNames,
-			'content preview:',
-			content?.slice(0, 30)
-		);
-	});
-
 	/**
 	 * Parse the markdown content into an AST.
 	 * Uses LRU cache to avoid re-parsing identical content.
@@ -200,11 +186,6 @@
 						{onMentionClick}
 					/>
 				{:else if node.type === 'math-block'}
-					<!-- DEBUG: Log right before rendering MathBlock -->
-					{@const _ = console.log(
-						`[MarkdownRenderer:${instanceId}] Rendering MathBlock with gf:`,
-						genericFunctions?.names
-					)}
 					<MathBlock expression={node.expression} syntax={node.syntax} {genericFunctions} />
 				{:else if node.type === 'horizontal-rule'}
 					<HorizontalRule />
