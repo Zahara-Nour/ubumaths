@@ -33,6 +33,17 @@
 
 	let { expression, syntax, class: className = '', genericFunctions }: Props = $props();
 
+	// Debug: log what MathBlock receives - access genericFunctions directly to ensure tracking
+	$effect(() => {
+		const gfNames = genericFunctions?.names ?? null;
+		console.log('[MathBlock] Rendering:', {
+			expression,
+			syntax,
+			genericFunctions: gfNames,
+			hasGenericFunctions: !!genericFunctions
+		});
+	});
+
 	// Convert to LaTeX for rendering
 	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions));
 </script>

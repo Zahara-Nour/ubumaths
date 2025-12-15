@@ -21,6 +21,7 @@
 <script lang="ts">
 	import type { ListItemNode, ASTNode, InlineNode } from '$lib/custom-markdown';
 	import type { SchemeId } from '$lib/types/list-numbering';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
@@ -44,6 +45,8 @@
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
 		onMentionClick?: (username: string) => void;
+		/** Configuration for generic function names in math parsing */
+		genericFunctions?: GenericFunctionConfig | null;
 	}
 
 	let {
@@ -54,7 +57,8 @@
 		enumerateDepth = 0,
 		effectiveScheme = null,
 		onHashtagClick,
-		onMentionClick
+		onMentionClick,
+		genericFunctions
 	}: Props = $props();
 
 	// Compute depth for this list (only ordered lists increment depth)
@@ -168,9 +172,15 @@
 							{effectiveScheme}
 							{onHashtagClick}
 							{onMentionClick}
+							{genericFunctions}
 						/>
 					{:else if isParagraphNode(child)}
-						<ParagraphNode children={child.children} {onHashtagClick} {onMentionClick} />
+						<ParagraphNode
+							children={child.children}
+							{onHashtagClick}
+							{onMentionClick}
+							{genericFunctions}
+						/>
 					{:else if isHeadingNode(child)}
 						<HeadingNode
 							level={child.level}
@@ -179,7 +189,7 @@
 							{onMentionClick}
 						/>
 					{:else if isMathBlockNode(child)}
-						<MathBlock expression={child.expression} syntax={child.syntax} />
+						<MathBlock expression={child.expression} syntax={child.syntax} {genericFunctions} />
 					{:else if isImageNode(child)}
 						<ImageDisplay
 							src={child.src}
@@ -218,9 +228,15 @@
 							{effectiveScheme}
 							{onHashtagClick}
 							{onMentionClick}
+							{genericFunctions}
 						/>
 					{:else if isParagraphNode(child)}
-						<ParagraphNode children={child.children} {onHashtagClick} {onMentionClick} />
+						<ParagraphNode
+							children={child.children}
+							{onHashtagClick}
+							{onMentionClick}
+							{genericFunctions}
+						/>
 					{:else if isHeadingNode(child)}
 						<HeadingNode
 							level={child.level}
@@ -229,7 +245,7 @@
 							{onMentionClick}
 						/>
 					{:else if isMathBlockNode(child)}
-						<MathBlock expression={child.expression} syntax={child.syntax} />
+						<MathBlock expression={child.expression} syntax={child.syntax} {genericFunctions} />
 					{:else if isImageNode(child)}
 						<ImageDisplay
 							src={child.src}

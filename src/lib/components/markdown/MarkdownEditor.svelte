@@ -47,6 +47,7 @@
 	import MarkdownRenderer from './MarkdownRenderer.svelte';
 	import type { ImageUploadConfig } from './types';
 	import type { Variable } from '$lib/custom-markdown';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	// Props
 	interface Props {
@@ -68,6 +69,8 @@
 		class?: string;
 		/** Callback when image is inserted (for custom handling) */
 		onImageInsert?: (markdown: string) => void;
+		/** Custom function identifiers for math parsing (e.g., ['P', 'Q']) */
+		genericFunctions?: string[];
 	}
 
 	let {
@@ -79,8 +82,24 @@
 		variables = [],
 		rows = 10,
 		class: className = '',
-		onImageInsert
+		onImageInsert,
+		genericFunctions
 	}: Props = $props();
+
+	// Build GenericFunctionConfig from genericFunctions array
+	let genericFunctionsConfig = $derived.by<GenericFunctionConfig | undefined>(() => {
+		console.log('[MarkdownEditor] genericFunctions prop:', genericFunctions);
+		if (!genericFunctions || genericFunctions.length === 0) {
+			return undefined;
+		}
+		const config = {
+			names: genericFunctions,
+			allowDerivatives: true,
+			allowInverse: true
+		};
+		console.log('[MarkdownEditor] Created config:', config);
+		return config;
+	});
 
 	// Editor state
 	let textareaEl = $state<HTMLTextAreaElement | null>(null);
@@ -549,7 +568,7 @@
 		<!-- Live Preview -->
 		{#if previewVisible}
 			<div class="w-1/2 overflow-y-auto bg-background p-4">
-				<MarkdownRenderer content={value} />
+				<MarkdownRenderer content={value} genericFunctions={genericFunctionsConfig} />
 			</div>
 		{/if}
 	</div>

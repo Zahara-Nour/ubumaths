@@ -54,6 +54,8 @@
 		variables?: Variable[];
 		/** Distribution mode for the exercise (bindable) */
 		distributionMode?: DistributionMode;
+		/** Custom function identifiers for math parsing (e.g., ['P', 'Q']) */
+		genericFunctions?: string[];
 	}
 
 	let {
@@ -63,7 +65,8 @@
 		supabase,
 		userId,
 		variables = $bindable([]),
-		distributionMode = $bindable('on_demand')
+		distributionMode = $bindable('on_demand'),
+		genericFunctions
 	}: Props = $props();
 
 	// Image configuration dialog state
@@ -157,6 +160,7 @@
 		showParameterization={variables && variables.length > 0}
 		imageUpload={imageUploadConfig}
 		{variables}
+		{genericFunctions}
 		onImageInsert={handleImageButtonClick}
 	>
 		<!-- Custom preview slot would go here if MarkdownEditor supported slots -->
