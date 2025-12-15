@@ -88,7 +88,10 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline expression={child.expression} syntax={child.syntax} />
+				{#key child.expression}<MathInline
+						expression={child.expression}
+						syntax={child.syntax}
+					/>{/key}
 			{:else if child.type === 'link'}
 				<a
 					href={child.url}
@@ -152,7 +155,10 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline expression={child.expression} syntax={child.syntax} />
+				{#key child.expression}<MathInline
+						expression={child.expression}
+						syntax={child.syntax}
+					/>{/key}
 			{:else if child.type === 'link'}
 				<a
 					href={child.url}
@@ -216,7 +222,10 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline expression={child.expression} syntax={child.syntax} />
+				{#key child.expression}<MathInline
+						expression={child.expression}
+						syntax={child.syntax}
+					/>{/key}
 			{:else if child.type === 'link'}
 				<a
 					href={child.url}
@@ -280,7 +289,10 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline expression={child.expression} syntax={child.syntax} />
+				{#key child.expression}<MathInline
+						expression={child.expression}
+						syntax={child.syntax}
+					/>{/key}
 			{:else if child.type === 'link'}
 				<a
 					href={child.url}
@@ -344,7 +356,10 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline expression={child.expression} syntax={child.syntax} />
+				{#key child.expression}<MathInline
+						expression={child.expression}
+						syntax={child.syntax}
+					/>{/key}
 			{:else if child.type === 'link'}
 				<a
 					href={child.url}
@@ -408,7 +423,10 @@
 					code={child.code}
 				/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 			{:else if child.type === 'math-inline'}
-				<MathInline expression={child.expression} syntax={child.syntax} />
+				{#key child.expression}<MathInline
+						expression={child.expression}
+						syntax={child.syntax}
+					/>{/key}
 			{:else if child.type === 'link'}
 				<a
 					href={child.url}

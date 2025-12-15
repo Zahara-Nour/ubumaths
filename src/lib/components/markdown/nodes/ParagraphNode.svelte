@@ -117,16 +117,20 @@
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
 			{#if hasPrompts(child.expression, child.syntax)}
-				<MathPrompt
-					expression={child.expression}
-					syntax={child.syntax}
-					display="inline"
-					inputs={inputs.filter((i) => i.type === 'math')}
-					onPromptChange={onInputChange}
-					{genericFunctions}
-				/>
+				{#key child.expression}
+					<MathPrompt
+						expression={child.expression}
+						syntax={child.syntax}
+						display="inline"
+						inputs={inputs.filter((i) => i.type === 'math')}
+						onPromptChange={onInputChange}
+						{genericFunctions}
+					/>
+				{/key}
 			{:else}
-				<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
+				{#key child.expression}
+					<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
+				{/key}
 			{/if}
 		{:else if child.type === 'blank'}
 			{@const state = getInputState(child.index)}
