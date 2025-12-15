@@ -397,6 +397,38 @@ math-field:focus {
 	color: var(--color-foreground) !important;
 }
 
+/* Headings in TipTap editor - ensure dark mode support */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+	color: var(--color-foreground) !important;
+}
+
+/* Blockquote in TipTap editor */
+.ProseMirror blockquote {
+	border-left-color: var(--color-border);
+	color: var(--color-muted-foreground);
+}
+
+/* Code blocks in TipTap editor */
+.ProseMirror code {
+	background-color: var(--color-muted);
+	color: var(--color-foreground);
+}
+
+.ProseMirror pre {
+	background-color: var(--color-muted);
+	color: var(--color-foreground);
+}
+
+/* Links in TipTap editor */
+.ProseMirror a {
+	color: var(--color-primary);
+}
+
 /* Ensure proper math field rendering in editor */
 .math-inline-wrapper {
 	display: inline-block;

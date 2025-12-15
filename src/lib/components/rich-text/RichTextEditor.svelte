@@ -1236,9 +1236,7 @@
 			<div
 				class="h-1/2 overflow-y-auto border-t border-border bg-muted/20 p-4 md:h-full md:w-1/2 md:border-t-0"
 			>
-				<div class="prose prose-sm max-w-none dark:prose-invert">
-					<MarkdownRenderer content={previewMarkdown} />
-				</div>
+				<MarkdownRenderer content={previewMarkdown} />
 			</div>
 		{/if}
 	</div>
