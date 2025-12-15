@@ -80,6 +80,7 @@
 	} from './config';
 	import { createEditorExtensions, getEditorProps } from './editor-config';
 	import { tipTapToMarkdown } from './markdown-export';
+	import { markdownToTipTap } from './markdown-import';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { RichTextMode, MathTemplateLevel, ToolbarConfig, EditorPreset } from './types';
 
@@ -88,6 +89,7 @@
 		mode?: RichTextMode;
 		value?: string;
 		jsonValue?: unknown;
+		markdownValue?: string;
 		onSend?: (content: unknown) => void;
 		/** Editor preset - predefined configurations. Explicit props override preset values. */
 		preset?: EditorPreset;
@@ -103,6 +105,7 @@
 		mode = 'form',
 		value = $bindable(''),
 		jsonValue = $bindable(undefined),
+		markdownValue = $bindable(undefined as string | undefined),
 		onSend,
 		preset = 'full',
 		mathTemplates: mathTemplatesOverride,
@@ -175,6 +178,10 @@
 	let previewTimeout: ReturnType<typeof setTimeout> | null = null;
 	const PREVIEW_DEBOUNCE_MS = 150;
 
+	// Markdown binding debounce
+	const MARKDOWN_DEBOUNCE_MS = 150;
+	let markdownTimeout: ReturnType<typeof setTimeout> | null = null;
+
 	// Get math templates based on resolved level
 	let mathTemplatesList = $derived(
 		resolvedMathTemplates === 'full'
@@ -220,6 +227,26 @@
 	}
 
 	/**
+	 * Update markdown binding with debounce (only if bound)
+	 */
+	function updateMarkdownDebounced() {
+		if (markdownTimeout) clearTimeout(markdownTimeout);
+		markdownTimeout = setTimeout(() => {
+			if (editor && markdownValue !== undefined) {
+				markdownValue = tipTapToMarkdown(editor.getJSON());
+			}
+		}, MARKDOWN_DEBOUNCE_MS);
+	}
+
+	/**
+	 * Get markdown content on-demand (exported method)
+	 */
+	export function getMarkdown(): string {
+		if (!editor) return '';
+		return tipTapToMarkdown(editor.getJSON());
+	}
+
+	/**
 	 * Initialize TipTap Editor
 	 */
 	onMount(async () => {
@@ -236,9 +263,15 @@
 		isUpdatingFromProp = true;
 
 		// TipTap accepts both HTML string and JSON object for content
-		// Priority: jsonValue (if object) > value (if string) > empty
+		// Priority: markdownValue > jsonValue (if object) > value (if string) > empty
 		const initialContent =
-			mode === 'form' ? (jsonValue && typeof jsonValue === 'object' ? jsonValue : value || '') : '';
+			mode === 'form'
+				? markdownValue !== undefined
+					? markdownToTipTap(markdownValue)
+					: jsonValue && typeof jsonValue === 'object'
+						? jsonValue
+						: value || ''
+				: '';
 
 		editor = new Editor({
 			element: editorElement,
@@ -255,6 +288,10 @@
 					if (jsonValue !== undefined) {
 						jsonValue = ed.getJSON();
 					}
+					// Update markdown binding (debounced) - only if bound
+					if (markdownValue !== undefined) {
+						updateMarkdownDebounced();
+					}
 				}
 				updateFormattingState();
 				updatePreviewDebounced();
@@ -270,7 +307,14 @@
 		updateFormattingState();
 
 		return () => {
-			if (previewTimeout) clearTimeout(previewTimeout);
+			if (previewTimeout) {
+				clearTimeout(previewTimeout);
+				previewTimeout = null;
+			}
+			if (markdownTimeout) {
+				clearTimeout(markdownTimeout);
+				markdownTimeout = null;
+			}
 			editor?.destroy();
 		};
 	});
@@ -302,6 +346,22 @@
 		if (JSON.stringify(currentJson) !== JSON.stringify(jsonValue)) {
 			isUpdatingFromProp = true;
 			editor.commands.setContent(jsonValue);
+			isUpdatingFromProp = false;
+		}
+	});
+
+	/**
+	 * Sync external markdownValue changes (form mode only)
+	 */
+	$effect(() => {
+		if (mode !== 'form' || !editor || markdownValue === undefined) return;
+
+		// Compare with current markdown to avoid infinite loops
+		const currentMd = tipTapToMarkdown(editor.getJSON());
+		if (currentMd !== markdownValue) {
+			isUpdatingFromProp = true;
+			const json = markdownToTipTap(markdownValue);
+			editor.commands.setContent(json);
 			isUpdatingFromProp = false;
 		}
 	});
