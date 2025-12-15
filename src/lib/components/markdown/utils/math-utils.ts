@@ -10,6 +10,7 @@
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { toLatex, parseLatexSafe } from '$lib/mathAST';
 import type { MathNode } from '$lib/mathAST/types';
+import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 /**
  * Convert a math expression to LaTeX for rendering.
@@ -20,12 +21,20 @@ import type { MathNode } from '$lib/mathAST/types';
  *
  * @param expression - The math expression string
  * @param syntax - The syntax type: 'latex' or 'custom'
+ * @param genericFunctions - Optional configuration for generic function names.
+ *   - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
+ *   - null: Disable generic function parsing entirely
+ *   - GenericFunctionConfig: Custom configuration
  * @returns LaTeX string suitable for MathLive rendering
  */
-export function expressionToLatex(expression: string, syntax: 'latex' | 'custom'): string {
+export function expressionToLatex(
+	expression: string,
+	syntax: 'latex' | 'custom',
+	genericFunctions?: GenericFunctionConfig | null
+): string {
 	if (syntax === 'latex') return expression;
 
-	const result = parseCustomSafe(expression);
+	const result = parseCustomSafe(expression, { genericFunctions });
 	if (result.ast) {
 		return toLatex(result.ast);
 	}

@@ -17,6 +17,7 @@
 <script lang="ts">
 	import 'mathlive';
 	import type { InputState } from '$lib/custom-markdown';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 
 	/**
@@ -44,6 +45,8 @@
 		onPromptChange?: (index: number, value: string) => void;
 		/** Additional CSS classes */
 		class?: string;
+		/** Configuration for generic function names (f, g, h, P, Q, etc.) */
+		genericFunctions?: GenericFunctionConfig | null;
 	}
 
 	let {
@@ -52,11 +55,12 @@
 		display = 'inline',
 		inputs = [],
 		onPromptChange,
-		class: className = ''
+		class: className = '',
+		genericFunctions
 	}: Props = $props();
 
 	// Convert to LaTeX for rendering
-	let latex = $derived(expressionToLatex(expression, syntax));
+	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions));
 
 	// Extract prompt indices from the expression
 	let promptIndices = $derived(extractPromptIndices(expression, syntax));

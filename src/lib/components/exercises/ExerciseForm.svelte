@@ -6,6 +6,7 @@
 	import ExerciseMarkdownEditor from './ExerciseMarkdownEditor.svelte';
 	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
+	import GenericFunctionInput from './GenericFunctionInput.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -39,6 +40,7 @@
 	let statementMd = $state(exercise?.statement_md || '');
 	let solutionMd = $state(exercise?.solution_md || '');
 	let resources = $state<ExerciseResource[]>((exercise?.resources as ExerciseResource[]) || []);
+	let genericFunctions = $state<string[]>(exercise?.generic_functions || []);
 
 	// LaTeX import state
 	let latexImportOpen = $state(false);
@@ -99,7 +101,9 @@
 			grade_levels: gradeLevels,
 			statement_md: statementMd,
 			solution_md: solutionMd,
-			resources: resources.length > 0 ? resources : null
+			resources: resources.length > 0 ? resources : null,
+			// generic_functions: empty array means "disable", null/undefined means "use defaults"
+			generic_functions: genericFunctions.length > 0 ? genericFunctions : null
 		};
 
 		await onsubmit(data);
@@ -324,6 +328,21 @@
 		</Card.Header>
 		<Card.Content>
 			<ExerciseResourceEditor bind:resources />
+		</Card.Content>
+	</Card.Root>
+
+	<!-- Advanced: Generic Functions -->
+	<Card.Root>
+		<Card.Header>
+			<Card.Title>Fonctions génériques</Card.Title>
+			<Card.Description>
+				Définissez quels identifiants doivent être reconnus comme des fonctions dans les expressions
+				mathématiques. Utile pour les dérivées (<code class="text-xs">P'(x)</code>) et fonctions
+				personnalisées.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<GenericFunctionInput bind:value={genericFunctions} />
 		</Card.Content>
 	</Card.Root>
 

@@ -27,6 +27,7 @@
 	import type { MarkdownDisplayMode } from './types';
 	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
 	import { hasPrompts } from './utils/math-utils';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	// List numbering
 	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
@@ -74,6 +75,16 @@
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
 		onMentionClick?: (username: string) => void;
+		/**
+		 * Configuration for generic function names in math parsing.
+		 * Controls which identifiers are recognized as function calls (e.g., f(x), P'(x))
+		 * vs implicit multiplication.
+		 *
+		 * - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
+		 * - null: Disable generic function parsing
+		 * - GenericFunctionConfig: Custom configuration
+		 */
+		genericFunctions?: GenericFunctionConfig | null;
 	}
 
 	let {
@@ -88,7 +99,8 @@
 		inputsDisabled = false,
 		listNumberingOverride,
 		onHashtagClick,
-		onMentionClick
+		onMentionClick,
+		genericFunctions
 	}: Props = $props();
 
 	/**
@@ -165,6 +177,7 @@
 						{inputsDisabled}
 						{onHashtagClick}
 						{onMentionClick}
+						{genericFunctions}
 					/>
 				{:else if node.type === 'heading'}
 					<HeadingNode
@@ -181,9 +194,10 @@
 							display="block"
 							inputs={inputs.filter((i) => i.type === 'math')}
 							onPromptChange={onInputChange}
+							{genericFunctions}
 						/>
 					{:else}
-						<MathBlock expression={node.expression} syntax={node.syntax} />
+						<MathBlock expression={node.expression} syntax={node.syntax} {genericFunctions} />
 					{/if}
 				{:else if node.type === 'horizontal-rule'}
 					<HorizontalRule />
