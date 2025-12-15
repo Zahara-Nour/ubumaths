@@ -18,9 +18,11 @@
 
 	interface Props {
 		markdown: string;
+		/** Custom function identifiers for math parsing (e.g., ['P', 'Q']) */
+		genericFunctions?: string[];
 	}
 
-	let { markdown }: Props = $props();
+	let { markdown, genericFunctions }: Props = $props();
 
 	// Create minimal Exercise object for preview
 	// This is a temporary object used only for rendering the preview
@@ -31,6 +33,7 @@
 		distribution_mode: 'on_demand' as const,
 		difficulty: 1 as const,
 		tags: [],
+		generic_functions: genericFunctions,
 		created_by: 'preview',
 		created_at: new Date().toISOString(),
 		updated_at: new Date().toISOString()

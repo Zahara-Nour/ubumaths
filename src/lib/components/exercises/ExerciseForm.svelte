@@ -42,6 +42,11 @@
 	let resources = $state<ExerciseResource[]>((exercise?.resources as ExerciseResource[]) || []);
 	let genericFunctions = $state<string[]>(exercise?.generic_functions || []);
 
+	// Debug: track genericFunctions changes
+	$effect(() => {
+		console.log('[ExerciseForm] genericFunctions changed:', $state.snapshot(genericFunctions));
+	});
+
 	// LaTeX import state
 	let latexImportOpen = $state(false);
 
@@ -292,7 +297,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<ExerciseMarkdownEditor bind:value={statementMd} {supabase} {userId} />
+			<ExerciseMarkdownEditor bind:value={statementMd} {supabase} {userId} {genericFunctions} />
 			{#if errors.statement_md}
 				<p class="mt-2 text-sm text-destructive">{errors.statement_md}</p>
 			{/if}
@@ -310,7 +315,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<ExerciseMarkdownEditor bind:value={solutionMd} {supabase} {userId} />
+			<ExerciseMarkdownEditor bind:value={solutionMd} {supabase} {userId} {genericFunctions} />
 			{#if errors.solution_md}
 				<p class="mt-2 text-sm text-destructive">{errors.solution_md}</p>
 			{/if}

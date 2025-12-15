@@ -26,7 +26,6 @@
 	import type { DocumentNode, ParseOptions, InputState } from '$lib/custom-markdown';
 	import type { MarkdownDisplayMode } from './types';
 	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
-	import { hasPrompts } from './utils/math-utils';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	// List numbering
@@ -38,7 +37,6 @@
 	import ParagraphNode from './nodes/ParagraphNode.svelte';
 	import HeadingNode from './nodes/HeadingNode.svelte';
 	import MathBlock from './nodes/MathBlock.svelte';
-	import MathPrompt from './nodes/MathPrompt.svelte';
 	import HorizontalRule from './nodes/HorizontalRule.svelte';
 	import ListNode from './nodes/ListNode.svelte';
 	import TableNode from './nodes/TableNode.svelte';
@@ -102,6 +100,20 @@
 		onMentionClick,
 		genericFunctions
 	}: Props = $props();
+
+	// Debug: unique instance ID to trace which renderer is which
+	const instanceId = Math.random().toString(36).slice(2, 6);
+
+	// Debug: track genericFunctions in MarkdownRenderer
+	$effect(() => {
+		const gfNames = genericFunctions?.names ?? null;
+		console.log(
+			`[MarkdownRenderer:${instanceId}] genericFunctions:`,
+			gfNames,
+			'content preview:',
+			content?.slice(0, 30)
+		);
+	});
 
 	/**
 	 * Parse the markdown content into an AST.
@@ -167,7 +179,8 @@
 {#if mode === 'rendered' || mode === 'both'}
 	<div class="markdown-content {className}">
 		{#if ast}
-			{#each ast.children as node (node)}
+			<!-- Key includes genericFunctions to force re-render when it changes -->
+			{#each ast.children as node, i (`${i}-${genericFunctions?.names?.length ?? 0}`)}
 				{#if node.type === 'paragraph'}
 					<ParagraphNode
 						children={node.children}
@@ -187,18 +200,12 @@
 						{onMentionClick}
 					/>
 				{:else if node.type === 'math-block'}
-					{#if hasPrompts(node.expression, node.syntax)}
-						<MathPrompt
-							expression={node.expression}
-							syntax={node.syntax}
-							display="block"
-							inputs={inputs.filter((i) => i.type === 'math')}
-							onPromptChange={onInputChange}
-							{genericFunctions}
-						/>
-					{:else}
-						<MathBlock expression={node.expression} syntax={node.syntax} {genericFunctions} />
-					{/if}
+					<!-- DEBUG: Log right before rendering MathBlock -->
+					{@const _ = console.log(
+						`[MarkdownRenderer:${instanceId}] Rendering MathBlock with gf:`,
+						genericFunctions?.names
+					)}
+					<MathBlock expression={node.expression} syntax={node.syntax} {genericFunctions} />
 				{:else if node.type === 'horizontal-rule'}
 					<HorizontalRule />
 				{:else if node.type === 'list'}
@@ -209,6 +216,7 @@
 						effectiveScheme={effectiveListScheme}
 						{onHashtagClick}
 						{onMentionClick}
+						{genericFunctions}
 					/>
 				{:else if node.type === 'table'}
 					<TableNode header={node.header} rows={node.rows} alignments={node.alignments} />
