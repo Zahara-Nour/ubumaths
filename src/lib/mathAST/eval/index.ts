@@ -114,3 +114,5 @@ export type { SubstituteAllOptions } from './substitute';
 // =============================================================================
 
 export { evaluate } from './evaluate';
+
+export { evaluateWithModifiers } from './evaluate-with-modifiers';

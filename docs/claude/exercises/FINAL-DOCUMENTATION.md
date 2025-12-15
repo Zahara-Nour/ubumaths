@@ -1,8 +1,15 @@
 # Multi-Format Image System - Final Documentation
 
+> **DEPRECATED**: This is historical documentation from 2025-11-22.
+> The transpilers mentioned in this document have been moved:
+>
+> - LaTeX transpiler: `src/lib/custom-markdown/generators/latex-generator.ts`
+> - Typst transpiler: `src/lib/custom-markdown/generators/typst-generator.ts`
+>   See [docs/claude/latex-to-markdown.md](../../claude/latex-to-markdown.md) for current documentation.
+
 **Version**: 1.0.0
 **Last Updated**: 2025-11-22
-**Status**: Complete
+**Status**: Complete (Historical)
 
 This documentation provides a complete reference for the multi-format image system in UbuMaths exercises. The system enables teachers to embed images in exercise content with consistent rendering across HTML (web), LaTeX (PDF), and Typst (modern typesetting) formats.
 

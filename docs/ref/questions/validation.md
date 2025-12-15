@@ -300,7 +300,7 @@ Expression booleenne personnalisee.
 
 ## 4. Equivalence mathematique
 
-**Fichier** : `src/lib/questions/compute-engine/wrapper.ts`
+**Fichier** : `src/lib/math/compute-engine/wrapper.ts`
 
 ### Fonctions principales
 

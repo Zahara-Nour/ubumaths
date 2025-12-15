@@ -41,8 +41,7 @@ import type {
 } from '$lib/types/worksheets';
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
 import { BaseTypstGenerator } from './base-generator';
-import { transpileToTypst, escapeTypst } from '../transpiler';
-import { parseMarkdown } from '$lib/custom-markdown';
+import { generateTypst, escapeTypst, parseMarkdown } from '$lib/custom-markdown';
 import { getDefaultTemplate, renderTemplate } from '../templates';
 import { getTypeLabel, formatNumber } from '../utils';
 
@@ -472,7 +471,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		// Exercise statement
 		const statementAst = parseMarkdown(exercise.statement);
-		const statementTypst = transpileToTypst(statementAst, {
+		const statementTypst = generateTypst(statementAst, {
 			includeSetup: false,
 			language: 'fr'
 		});
@@ -500,7 +499,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			content += '  #v(0.3em)\n';
 
 			const solutionAst = parseMarkdown(exercise.solution);
-			const solutionTypst = transpileToTypst(solutionAst, {
+			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
 				language: 'fr'
 			});
@@ -569,7 +568,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		// Exercise statement
 		const statementAst = parseMarkdown(exercise.statement);
-		const statementTypst = transpileToTypst(statementAst, {
+		const statementTypst = generateTypst(statementAst, {
 			includeSetup: false,
 			language: 'fr'
 		});
@@ -599,7 +598,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 `;
 
 			const solutionAst = parseMarkdown(exercise.solution);
-			const solutionTypst = transpileToTypst(solutionAst, {
+			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
 				language: 'fr'
 			});

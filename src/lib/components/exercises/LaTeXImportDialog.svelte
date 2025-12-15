@@ -9,7 +9,7 @@
 		splitStatementAndSolution,
 		detectSplitMethod,
 		type TranspileWarning
-	} from '$lib/exercises/transpilers/latex-to-markdown';
+	} from '$lib/custom-markdown/importers/latex';
 
 	// Types
 	type SplitMode = 'statement-only' | 'auto' | 'solution-only';

@@ -338,7 +338,7 @@ interface QuestionVariation {
 
 ## 8. Key Files to Modify
 
-1. `src/lib/questions/compute-engine/wrapper.ts` - Extend with new methods
+1. `src/lib/math/compute-engine/wrapper.ts` - Extend with new methods
 2. `src/lib/utils/answer-validator.ts` - New validation pipeline
 3. `src/lib/questions/types.ts` - Add validation types
 4. `src/lib/migration/question-transformer.ts` - Map old options
@@ -761,14 +761,14 @@ Based on 633 questions:
 
 ### Files to Create/Modify
 
-| File                                          | Action         | Priority |
-| --------------------------------------------- | -------------- | -------- |
-| `src/lib/questions/feedback.ts`               | Create         | High     |
-| `src/lib/questions/units.ts`                  | Create         | High     |
-| `src/lib/questions/constraint-validators.ts`  | Create         | High     |
-| `src/lib/utils/answer-validator.ts`           | Extend         | High     |
-| `src/lib/questions/compute-engine/wrapper.ts` | Fix derivative | Medium   |
-| `src/lib/migration/question-transformer.ts`   | Add ternary    | Medium   |
+| File                                         | Action         | Priority |
+| -------------------------------------------- | -------------- | -------- |
+| `src/lib/questions/feedback.ts`              | Create         | High     |
+| `src/lib/questions/units.ts`                 | Create         | High     |
+| `src/lib/questions/constraint-validators.ts` | Create         | High     |
+| `src/lib/utils/answer-validator.ts`          | Extend         | High     |
+| `src/lib/math/compute-engine/wrapper.ts`     | Fix derivative | Medium   |
+| `src/lib/migration/question-transformer.ts`  | Add ternary    | Medium   |
 
 ---
 

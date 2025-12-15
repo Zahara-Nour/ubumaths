@@ -1,18 +1,13 @@
 /**
- * LaTeX Transpiler Tests
- * =======================
+ * LaTeX Generator Tests
+ * =====================
  *
- * Unit tests for the LaTeX transpilation module.
+ * Unit tests for the LaTeX generation module.
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-	escapeLatex,
-	resolveImagePath,
-	transpileToLatex,
-	markdownToLatex
-} from './latex-transpiler';
-import type { DocumentNode } from '../types';
+import { escapeLatex, resolveImagePath, generateLatex, markdownToLatex } from '../latex-generator';
+import type { DocumentNode } from '$lib/exercises/types';
 
 describe('escapeLatex', () => {
 	it('should escape special LaTeX characters', () => {
@@ -78,7 +73,7 @@ describe('resolveImagePath', () => {
 	});
 });
 
-describe('transpileToLatex', () => {
+describe('generateLatex', () => {
 	it('should generate document with preamble', () => {
 		const ast: DocumentNode = {
 			type: 'document',
@@ -90,7 +85,7 @@ describe('transpileToLatex', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast);
+		const latex = generateLatex(ast);
 
 		expect(latex).toContain('\\documentclass');
 		expect(latex).toContain('\\begin{document}');
@@ -109,14 +104,14 @@ describe('transpileToLatex', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).not.toContain('\\documentclass');
 		expect(latex).not.toContain('\\begin{document}');
 		expect(latex).toContain('Content');
 	});
 
-	it('should transpile paragraph with text', () => {
+	it('should generate paragraph with text', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -127,12 +122,12 @@ describe('transpileToLatex', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('Simple paragraph');
 	});
 
-	it('should transpile inline math', () => {
+	it('should generate inline math', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -147,14 +142,14 @@ describe('transpileToLatex', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('Calculate');
 		expect(latex).toContain('$x^2$');
 		expect(latex).toContain('please');
 	});
 
-	it('should transpile block math', () => {
+	it('should generate block math', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -166,14 +161,14 @@ describe('transpileToLatex', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\[');
 		expect(latex).toContain('\\int_0^\\pi \\sin(x) dx');
 		expect(latex).toContain('\\]');
 	});
 
-	it('should transpile ordered list', () => {
+	it('should generate ordered list', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -204,7 +199,7 @@ describe('transpileToLatex', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{enumerate}');
 		expect(latex).toContain('\\end{enumerate}');
@@ -213,7 +208,7 @@ describe('transpileToLatex', () => {
 		expect(latex).toContain('Second');
 	});
 
-	it('should transpile unordered list', () => {
+	it('should generate unordered list', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -235,14 +230,14 @@ describe('transpileToLatex', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{itemize}');
 		expect(latex).toContain('\\end{itemize}');
 		expect(latex).toContain('\\item');
 	});
 
-	it('should transpile table', () => {
+	it('should generate table', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -267,7 +262,7 @@ describe('transpileToLatex', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{tabular}');
 		expect(latex).toContain('\\end{tabular}');
@@ -276,7 +271,7 @@ describe('transpileToLatex', () => {
 		expect(latex).toContain('f(x)');
 	});
 
-	it('should transpile image', () => {
+	it('should generate image', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -288,7 +283,7 @@ describe('transpileToLatex', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\includegraphics');
 		expect(latex).toContain('image.png');
@@ -304,7 +299,7 @@ describe('transpileToLatex', () => {
 			children: []
 		};
 
-		const latex = transpileToLatex(ast, {
+		const latex = generateLatex(ast, {
 			title: 'Test Document',
 			author: 'Test Author'
 		});
@@ -320,7 +315,7 @@ describe('transpileToLatex', () => {
 			children: []
 		};
 
-		const latex = transpileToLatex(ast, {
+		const latex = generateLatex(ast, {
 			documentClass: 'report',
 			paperSize: 'letterpaper',
 			fontSize: '12pt'
@@ -335,7 +330,7 @@ describe('transpileToLatex', () => {
 			children: []
 		};
 
-		const latex = transpileToLatex(ast, {
+		const latex = generateLatex(ast, {
 			extraPackages: ['tikz', 'pgfplots']
 		});
 
@@ -403,8 +398,8 @@ describe('markdownToLatex', () => {
 	});
 });
 
-describe('Blockquote Transpilation', () => {
-	it('should transpile simple blockquote', () => {
+describe('Blockquote Generation', () => {
+	it('should generate simple blockquote', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -420,14 +415,14 @@ describe('Blockquote Transpilation', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{quote}');
 		expect(latex).toContain('\\end{quote}');
 		expect(latex).toContain('Quoted text');
 	});
 
-	it('should transpile nested blockquotes', () => {
+	it('should generate nested blockquotes', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -452,7 +447,7 @@ describe('Blockquote Transpilation', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		// Should have nested quote environments
 		expect(latex.match(/\\begin{quote}/g)?.length).toBe(2);
@@ -461,7 +456,7 @@ describe('Blockquote Transpilation', () => {
 		expect(latex).toContain('Inner quote');
 	});
 
-	it('should transpile blockquote with formatted content', () => {
+	it('should generate blockquote with formatted content', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -481,7 +476,7 @@ describe('Blockquote Transpilation', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{quote}');
 		expect(latex).toContain('\\textbf{important}');
@@ -489,8 +484,8 @@ describe('Blockquote Transpilation', () => {
 	});
 });
 
-describe('Code Block Transpilation', () => {
-	it('should transpile code block without language', () => {
+describe('Code Block Generation', () => {
+	it('should generate code block without language', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -501,7 +496,7 @@ describe('Code Block Transpilation', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{lstlisting}');
 		expect(latex).toContain('\\end{lstlisting}');
@@ -510,7 +505,7 @@ describe('Code Block Transpilation', () => {
 		expect(latex).not.toContain('language=');
 	});
 
-	it('should transpile code block with javascript language', () => {
+	it('should generate code block with javascript language', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -522,14 +517,14 @@ describe('Code Block Transpilation', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{lstlisting}[language=JavaScript]');
 		expect(latex).toContain('function hello()');
 		expect(latex).toContain('console.log("Hello")');
 	});
 
-	it('should transpile code block with python language', () => {
+	it('should generate code block with python language', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -541,7 +536,7 @@ describe('Code Block Transpilation', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{lstlisting}[language=Python]');
 		expect(latex).toContain('def hello()');
@@ -559,7 +554,7 @@ describe('Code Block Transpilation', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain(code);
 	});
@@ -575,15 +570,15 @@ describe('Code Block Transpilation', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast);
+		const latex = generateLatex(ast);
 
 		expect(latex).toContain('\\usepackage{listings}');
 		expect(latex).toContain('\\lstset');
 	});
 });
 
-describe('Image Transpilation Enhanced', () => {
-	it('should transpile basic image without attributes (default medium size, center)', () => {
+describe('Image Generation Enhanced', () => {
+	it('should generate basic image without attributes (default medium size, center)', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -594,7 +589,7 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\includegraphics');
 		expect(latex).toContain('width=0.5\\textwidth');
@@ -603,7 +598,7 @@ describe('Image Transpilation Enhanced', () => {
 		expect(latex).toContain('\\par');
 	});
 
-	it('should transpile image with sizeClass small', () => {
+	it('should generate image with sizeClass small', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -615,12 +610,12 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('width=0.25\\textwidth');
 	});
 
-	it('should transpile image with sizeClass large', () => {
+	it('should generate image with sizeClass large', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -632,12 +627,12 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('width=0.75\\textwidth');
 	});
 
-	it('should transpile image with sizeClass full', () => {
+	it('should generate image with sizeClass full', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -649,12 +644,12 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('width=\\textwidth');
 	});
 
-	it('should transpile image with widthPercent (overrides sizeClass)', () => {
+	it('should generate image with widthPercent (overrides sizeClass)', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -667,13 +662,13 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('width=0.6\\textwidth');
 		expect(latex).not.toContain('0.25'); // small sizeClass width should NOT appear
 	});
 
-	it('should transpile image with left alignment', () => {
+	it('should generate image with left alignment', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -685,12 +680,12 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\raggedright');
 	});
 
-	it('should transpile image with right alignment', () => {
+	it('should generate image with right alignment', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -702,12 +697,12 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\raggedleft');
 	});
 
-	it('should transpile image with caption in figure environment', () => {
+	it('should generate image with caption in figure environment', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -719,7 +714,7 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{figure}[htbp]');
 		expect(latex).toContain('\\end{figure}');
@@ -739,12 +734,12 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\caption{Price: \\$10 \\& 50\\% off}');
 	});
 
-	it('should transpile inline image', () => {
+	it('should generate inline image', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -756,7 +751,7 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\includegraphics[height=1em]{icon.png}');
 		// Inline images should not have centering or figure environment
@@ -765,7 +760,7 @@ describe('Image Transpilation Enhanced', () => {
 		expect(latex).not.toContain('\\par');
 	});
 
-	it('should transpile image with all attributes combined', () => {
+	it('should generate image with all attributes combined', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -780,7 +775,7 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\begin{figure}[htbp]');
 		expect(latex).toContain('\\raggedright');
@@ -802,7 +797,7 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('keepaspectratio');
 		expect(latex).toContain('max height=0.3\\textheight');
@@ -821,7 +816,7 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('keepaspectratio');
 		expect(latex).toContain('max width=0.5\\textwidth');
@@ -838,7 +833,7 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, {
+		const latex = generateLatex(ast, {
 			includePreamble: false,
 			imageBasePath: '/images'
 		});
@@ -857,7 +852,7 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		// URL images get extracted to filename
 		expect(latex).toContain('remote-image.png');
@@ -876,7 +871,7 @@ describe('Image Transpilation Enhanced', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		// Should use group with centering, not figure environment
 		expect(latex).toContain('{\\centering');
@@ -892,7 +887,7 @@ describe('Edge Cases', () => {
 			children: []
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toBe('');
 	});
@@ -934,7 +929,7 @@ describe('Edge Cases', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('enumerate');
 		expect(latex).toContain('itemize');
@@ -959,7 +954,7 @@ describe('Edge Cases', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('{|l|c|r|}');
 	});
@@ -975,7 +970,7 @@ describe('Edge Cases', () => {
 			]
 		};
 
-		const latex = transpileToLatex(ast, { includePreamble: false });
+		const latex = generateLatex(ast, { includePreamble: false });
 
 		expect(latex).toContain('\\$');
 		expect(latex).toContain('\\&');

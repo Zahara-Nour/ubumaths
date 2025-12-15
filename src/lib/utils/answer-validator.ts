@@ -18,7 +18,7 @@ import type {
 	ValidationRule
 } from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
-import { evaluateExpression, areEquivalent } from '$lib/questions/compute-engine/wrapper';
+import { evaluateExpression, areEquivalent } from '$lib/math/compute-engine';
 import {
 	checkSpaces,
 	checkProducts,

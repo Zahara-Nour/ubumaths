@@ -128,10 +128,15 @@ export {
 } from './utils';
 
 // ============================================================================
-// TRANSPILER
+// TRANSPILER (re-exported from custom-markdown/generators)
 // ============================================================================
 
-export { transpileToTypst, resolveImagePath, markdownToTypst, transpileImage } from './transpiler';
+export {
+	generateTypst as transpileToTypst,
+	resolveTypstImagePath as resolveImagePath,
+	markdownToTypst,
+	transpileImage
+} from '$lib/custom-markdown/generators';
 
 // ============================================================================
 // TEMPLATES

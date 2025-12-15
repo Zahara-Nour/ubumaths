@@ -22,7 +22,7 @@ import { parseVariableReference } from '../parser/variable-parser';
 import { parseRandomSpec } from '../parser/random-parser';
 import { parseEvalExpressionWithModifiers } from '../parser/eval-parser';
 import { generateRandomNumber } from './random-generator';
-import { evaluateWithModifiers } from '$lib/questions/compute-engine/wrapper';
+import { evaluateWithModifiers } from '$lib/mathAST/eval';
 
 /**
  * Resolve all variables using 3-stage pipeline

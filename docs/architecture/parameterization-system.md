@@ -1036,7 +1036,7 @@ export function generateExerciseInstance(exercise: Exercise, seed?: number): Exe
 The shared library uses MathLive's Compute Engine for expression evaluation:
 
 ```typescript
-// src/lib/questions/compute-engine/wrapper.ts
+// src/lib/math/compute-engine/wrapper.ts
 
 import { ComputeEngine } from '@cortexjs/compute-engine';
 

@@ -1,8 +1,8 @@
 /**
- * Typst Transpiler Tests
- * =======================
+ * Typst Generator Tests
+ * =====================
  *
- * Unit tests for the Typst transpilation module.
+ * Unit tests for the Typst generation module.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -10,11 +10,11 @@ import {
 	escapeTypst,
 	escapeTypstBrackets,
 	resolveImagePath,
-	transpileToTypst,
+	generateTypst,
 	transpileImage,
 	markdownToTypst,
 	convertLatexToTypstMath
-} from './typst-transpiler';
+} from '../typst-generator';
 import type { DocumentNode, ImageNode, TypstTranspilerOptions } from '$lib/exercises/types';
 
 describe('escapeTypst', () => {
@@ -110,7 +110,7 @@ describe('resolveImagePath', () => {
 	});
 });
 
-describe('transpileToTypst', () => {
+describe('generateTypst', () => {
 	it('should generate document with setup', () => {
 		const ast: DocumentNode = {
 			type: 'document',
@@ -122,7 +122,7 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast);
+		const typst = generateTypst(ast);
 
 		expect(typst).toContain('#set page');
 		expect(typst).toContain('#set text');
@@ -140,14 +140,14 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).not.toContain('#set page');
 		expect(typst).not.toContain('#set text');
 		expect(typst).toContain('Content');
 	});
 
-	it('should transpile paragraph with text', () => {
+	it('should generate paragraph with text', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -158,12 +158,12 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('Simple paragraph');
 	});
 
-	it('should transpile inline math', () => {
+	it('should generate inline math', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -178,7 +178,7 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('Calculate');
 		expect(typst).toContain('$x^2$');
@@ -200,7 +200,7 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Inline math with lim should use display() for proper limit rendering
 		expect(typst).toContain('$display(');
@@ -218,14 +218,14 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Simple math should not use display()
 		expect(typst).toContain('$x + y$');
 		expect(typst).not.toContain('display');
 	});
 
-	it('should transpile block math', () => {
+	it('should generate block math', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -237,14 +237,14 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('$');
 		// LaTeX is now converted to Typst syntax
 		expect(typst).toContain('integral_0^pi sin(x) dx');
 	});
 
-	it('should transpile ordered list', () => {
+	it('should generate ordered list', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -275,14 +275,14 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Typst uses explicit numbering: "1. item"
 		expect(typst).toContain('1. First');
 		expect(typst).toContain('2. Second');
 	});
 
-	it('should transpile ordered list with custom start number', () => {
+	it('should generate ordered list with custom start number', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -314,14 +314,14 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Should start at 3 and continue to 4
 		expect(typst).toContain('3. Third item');
 		expect(typst).toContain('4. Fourth item');
 	});
 
-	it('should transpile unordered list', () => {
+	it('should generate unordered list', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -343,13 +343,13 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('-');
 		expect(typst).toContain('Item');
 	});
 
-	it('should transpile table', () => {
+	it('should generate table', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -374,14 +374,14 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('#table');
 		expect(typst).toContain('columns:');
 		expect(typst).toContain('f(x)');
 	});
 
-	it('should transpile basic image', () => {
+	it('should generate basic image', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -393,7 +393,7 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('#image');
 		expect(typst).toContain('image.png');
@@ -406,7 +406,7 @@ describe('transpileToTypst', () => {
 			children: []
 		};
 
-		const typst = transpileToTypst(ast, {
+		const typst = generateTypst(ast, {
 			title: 'Test Document',
 			author: 'Test Author'
 		});
@@ -423,7 +423,7 @@ describe('transpileToTypst', () => {
 			children: []
 		};
 
-		const typst = transpileToTypst(ast, {
+		const typst = generateTypst(ast, {
 			paperSize: 'us-letter',
 			fontSize: 12
 		});
@@ -432,7 +432,7 @@ describe('transpileToTypst', () => {
 		expect(typst).toContain('12pt');
 	});
 
-	it('should transpile horizontal rule', () => {
+	it('should generate horizontal rule', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -442,7 +442,7 @@ describe('transpileToTypst', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('#line(length: 100%)');
 	});
@@ -499,8 +499,8 @@ describe('markdownToTypst', () => {
 	});
 });
 
-describe('Blockquote Transpilation', () => {
-	it('should transpile simple blockquote', () => {
+describe('Blockquote Generation', () => {
+	it('should generate simple blockquote', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -516,13 +516,13 @@ describe('Blockquote Transpilation', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('#quote(block: true)');
 		expect(typst).toContain('Quoted text');
 	});
 
-	it('should transpile blockquote with formatted content', () => {
+	it('should generate blockquote with formatted content', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -542,15 +542,15 @@ describe('Blockquote Transpilation', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('#quote(block: true)');
 		expect(typst).toContain('*important*');
 	});
 });
 
-describe('Code Block Transpilation', () => {
-	it('should transpile code block without language', () => {
+describe('Code Block Generation', () => {
+	it('should generate code block without language', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -561,13 +561,13 @@ describe('Code Block Transpilation', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('```');
 		expect(typst).toContain('const x = 1;');
 	});
 
-	it('should transpile code block without language (no syntax highlighting)', () => {
+	it('should generate code block without language (no syntax highlighting)', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -579,7 +579,7 @@ describe('Code Block Transpilation', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Language is stripped to avoid syntax highlighting in PDF
 		expect(typst).toContain('```\n');
@@ -600,13 +600,13 @@ describe('Code Block Transpilation', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain(code);
 	});
 });
 
-describe('Image Transpilation - Basic', () => {
+describe('Image Generation - Basic', () => {
 	const defaultOptions: Required<TypstTranspilerOptions> = {
 		paperSize: 'a4',
 		fontSize: 11,
@@ -617,7 +617,7 @@ describe('Image Transpilation - Basic', () => {
 		author: ''
 	};
 
-	it('should transpile basic image without attributes (default medium size, center)', () => {
+	it('should generate basic image without attributes (default medium size, center)', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'diagram.png'
@@ -632,7 +632,7 @@ describe('Image Transpilation - Basic', () => {
 	});
 });
 
-describe('Image Transpilation - Size Classes', () => {
+describe('Image Generation - Size Classes', () => {
 	const defaultOptions: Required<TypstTranspilerOptions> = {
 		paperSize: 'a4',
 		fontSize: 11,
@@ -643,7 +643,7 @@ describe('Image Transpilation - Size Classes', () => {
 		author: ''
 	};
 
-	it('should transpile image with sizeClass small', () => {
+	it('should generate image with sizeClass small', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'small-img.png',
@@ -655,7 +655,7 @@ describe('Image Transpilation - Size Classes', () => {
 		expect(result).toContain('width: 25%');
 	});
 
-	it('should transpile image with sizeClass medium', () => {
+	it('should generate image with sizeClass medium', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'medium-img.png',
@@ -667,7 +667,7 @@ describe('Image Transpilation - Size Classes', () => {
 		expect(result).toContain('width: 50%');
 	});
 
-	it('should transpile image with sizeClass large', () => {
+	it('should generate image with sizeClass large', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'large-img.png',
@@ -679,7 +679,7 @@ describe('Image Transpilation - Size Classes', () => {
 		expect(result).toContain('width: 75%');
 	});
 
-	it('should transpile image with sizeClass full', () => {
+	it('should generate image with sizeClass full', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'full-img.png',
@@ -692,7 +692,7 @@ describe('Image Transpilation - Size Classes', () => {
 	});
 });
 
-describe('Image Transpilation - Width Percent', () => {
+describe('Image Generation - Width Percent', () => {
 	const defaultOptions: Required<TypstTranspilerOptions> = {
 		paperSize: 'a4',
 		fontSize: 11,
@@ -703,7 +703,7 @@ describe('Image Transpilation - Width Percent', () => {
 		author: ''
 	};
 
-	it('should transpile image with widthPercent (overrides sizeClass)', () => {
+	it('should generate image with widthPercent (overrides sizeClass)', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'custom-width.png',
@@ -742,7 +742,7 @@ describe('Image Transpilation - Width Percent', () => {
 	});
 });
 
-describe('Image Transpilation - Alignment', () => {
+describe('Image Generation - Alignment', () => {
 	const defaultOptions: Required<TypstTranspilerOptions> = {
 		paperSize: 'a4',
 		fontSize: 11,
@@ -753,7 +753,7 @@ describe('Image Transpilation - Alignment', () => {
 		author: ''
 	};
 
-	it('should transpile image with left alignment', () => {
+	it('should generate image with left alignment', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'left-img.png',
@@ -765,7 +765,7 @@ describe('Image Transpilation - Alignment', () => {
 		expect(result).toContain('#align(left)');
 	});
 
-	it('should transpile image with center alignment (default)', () => {
+	it('should generate image with center alignment (default)', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'center-img.png',
@@ -777,7 +777,7 @@ describe('Image Transpilation - Alignment', () => {
 		expect(result).toContain('#align(center)');
 	});
 
-	it('should transpile image with right alignment', () => {
+	it('should generate image with right alignment', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'right-img.png',
@@ -790,7 +790,7 @@ describe('Image Transpilation - Alignment', () => {
 	});
 });
 
-describe('Image Transpilation - Caption (Figure)', () => {
+describe('Image Generation - Caption (Figure)', () => {
 	const defaultOptions: Required<TypstTranspilerOptions> = {
 		paperSize: 'a4',
 		fontSize: 11,
@@ -801,7 +801,7 @@ describe('Image Transpilation - Caption (Figure)', () => {
 		author: ''
 	};
 
-	it('should transpile image with caption in figure', () => {
+	it('should generate image with caption in figure', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'figure.png',
@@ -832,7 +832,7 @@ describe('Image Transpilation - Caption (Figure)', () => {
 	});
 });
 
-describe('Image Transpilation - Inline', () => {
+describe('Image Generation - Inline', () => {
 	const defaultOptions: Required<TypstTranspilerOptions> = {
 		paperSize: 'a4',
 		fontSize: 11,
@@ -843,7 +843,7 @@ describe('Image Transpilation - Inline', () => {
 		author: ''
 	};
 
-	it('should transpile inline image', () => {
+	it('should generate inline image', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'icon.png',
@@ -860,7 +860,7 @@ describe('Image Transpilation - Inline', () => {
 	});
 });
 
-describe('Image Transpilation - All Attributes Combined', () => {
+describe('Image Generation - All Attributes Combined', () => {
 	const defaultOptions: Required<TypstTranspilerOptions> = {
 		paperSize: 'a4',
 		fontSize: 11,
@@ -871,7 +871,7 @@ describe('Image Transpilation - All Attributes Combined', () => {
 		author: ''
 	};
 
-	it('should transpile image with all attributes combined', () => {
+	it('should generate image with all attributes combined', () => {
 		const node: ImageNode = {
 			type: 'image',
 			src: 'complex.png',
@@ -905,7 +905,7 @@ describe('Image Transpilation - All Attributes Combined', () => {
 	});
 });
 
-describe('Image Transpilation - Aspect Ratio Handling', () => {
+describe('Image Generation - Aspect Ratio Handling', () => {
 	const defaultOptions: Required<TypstTranspilerOptions> = {
 		paperSize: 'a4',
 		fontSize: 11,
@@ -960,7 +960,7 @@ describe('Image Transpilation - Aspect Ratio Handling', () => {
 	});
 });
 
-describe('Image Transpilation - Path Resolution', () => {
+describe('Image Generation - Path Resolution', () => {
 	it('should resolve image path with base path', () => {
 		const options: Required<TypstTranspilerOptions> = {
 			paperSize: 'a4',
@@ -1005,7 +1005,7 @@ describe('Image Transpilation - Path Resolution', () => {
 	});
 });
 
-describe('Image Transpilation - Block Without Caption', () => {
+describe('Image Generation - Block Without Caption', () => {
 	const defaultOptions: Required<TypstTranspilerOptions> = {
 		paperSize: 'a4',
 		fontSize: 11,
@@ -1033,8 +1033,8 @@ describe('Image Transpilation - Block Without Caption', () => {
 	});
 });
 
-describe('Heading Transpilation', () => {
-	it('should transpile h1 heading', () => {
+describe('Heading Generation', () => {
+	it('should generate h1 heading', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1046,12 +1046,12 @@ describe('Heading Transpilation', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('= Main Title');
 	});
 
-	it('should transpile h2 heading', () => {
+	it('should generate h2 heading', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1063,12 +1063,12 @@ describe('Heading Transpilation', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('== Section');
 	});
 
-	it('should transpile h3 heading', () => {
+	it('should generate h3 heading', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1080,12 +1080,12 @@ describe('Heading Transpilation', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('=== Subsection');
 	});
 
-	it('should transpile heading with formatting', () => {
+	it('should generate heading with formatting', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1101,14 +1101,14 @@ describe('Heading Transpilation', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('= Title with *bold* text');
 	});
 });
 
 describe('Text Formatting', () => {
-	it('should transpile bold text', () => {
+	it('should generate bold text', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1119,12 +1119,12 @@ describe('Text Formatting', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('*Bold*');
 	});
 
-	it('should transpile italic text', () => {
+	it('should generate italic text', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1135,12 +1135,12 @@ describe('Text Formatting', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('_Italic_');
 	});
 
-	it('should transpile inline code', () => {
+	it('should generate inline code', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1151,7 +1151,7 @@ describe('Text Formatting', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('`code`');
 	});
@@ -1164,7 +1164,7 @@ describe('Edge Cases', () => {
 			children: []
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toBe('');
 	});
@@ -1206,7 +1206,7 @@ describe('Edge Cases', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Ordered list uses explicit numbering: "1. Parent"
 		expect(typst).toContain('1. Parent');
@@ -1231,7 +1231,7 @@ describe('Edge Cases', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('align: (left, center, right)');
 	});
@@ -1247,7 +1247,7 @@ describe('Edge Cases', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('\\$');
 		expect(typst).toContain('\\@');
@@ -1269,7 +1269,7 @@ describe('Edge Cases', () => {
 			]
 		};
 
-		const typst = transpileToTypst(ast, { includeSetup: false });
+		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('Line 1');
 		expect(typst).toContain('\\');

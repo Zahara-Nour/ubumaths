@@ -1,5 +1,9 @@
 # Phase 6: Typst Transpiler for Enhanced Images
 
+> **DEPRECATED**: This is historical documentation from 2025-11-22.
+> The Typst transpiler has been moved to `src/lib/custom-markdown/generators/typst-generator.ts`.
+> See current documentation in the custom-markdown module.
+
 ## Overview
 
 Created `typst-transpiler.ts` to generate proper Typst code for images with full support for:

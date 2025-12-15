@@ -861,9 +861,9 @@ type GenerationResult =
 
 ### Compute Engine
 
-| Fichier                                       | Description           |
-| --------------------------------------------- | --------------------- |
-| `src/lib/questions/compute-engine/wrapper.ts` | Interface MathLive CE |
+| Fichier                                  | Description           |
+| ---------------------------------------- | --------------------- |
+| `src/lib/math/compute-engine/wrapper.ts` | Interface MathLive CE |
 
 ### Base de donnees
 
