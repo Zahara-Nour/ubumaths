@@ -11,6 +11,7 @@
 import type {
 	LatexToken,
 	LatexToMarkdownOptions,
+	ResolvedLatexToMarkdownOptions,
 	TranspileResult,
 	TranspileStats,
 	TranspileWarning,
@@ -60,7 +61,7 @@ import {
 } from './converters/fallback';
 
 // Import math to custom syntax converter
-import { convertMathToCustomSyntax } from './converters/math-to-custom';
+import { convertMathToCustomSyntax, type MathConversionOptions } from './converters/math-to-custom';
 
 // ===========================
 // Default Options
@@ -120,7 +121,7 @@ export function transpileLatexToMarkdown(
 	options?: LatexToMarkdownOptions
 ): TranspileResult {
 	// Merge options with defaults
-	const mergedOptions: Required<LatexToMarkdownOptions> = {
+	const mergedOptions: ResolvedLatexToMarkdownOptions = {
 		...DEFAULT_OPTIONS,
 		...options
 	};
@@ -183,7 +184,7 @@ export function transpileLatexToMarkdown(
  * @returns A fully initialized ConversionContext
  */
 function createConversionContext(
-	options: Required<LatexToMarkdownOptions>,
+	options: ResolvedLatexToMarkdownOptions,
 	warnings: TranspileWarning[],
 	stats: TranspileStats
 ): ConversionContext {
@@ -524,6 +525,17 @@ function convertEnvironmentToken(token: EnvironmentToken, context: ConversionCon
 }
 
 /**
+ * Build math conversion options from transpiler options.
+ */
+function getMathConversionOptions(context: ConversionContext): MathConversionOptions | undefined {
+	const additionalNames = context.options.additionalFunctionNames;
+	if (!additionalNames || additionalNames.length === 0) {
+		return undefined;
+	}
+	return { additionalFunctionNames: additionalNames };
+}
+
+/**
  * Check if an environment is a math environment.
  */
 function isMathEnvironment(name: string): boolean {
@@ -570,7 +582,14 @@ function convertMathEnvironment(token: EnvironmentToken, context: ConversionCont
 
 	// For simple environments (equation, equation*), try to convert to custom syntax
 	if (['equation', 'equation*'].includes(token.name)) {
-		const result = convertMathToCustomSyntax(content, context, token.line, token.column);
+		const mathOptions = getMathConversionOptions(context);
+		const result = convertMathToCustomSyntax(
+			content,
+			context,
+			token.line,
+			token.column,
+			mathOptions
+		);
 		if (result.converted) {
 			// Conversion succeeded → use configured delimiters
 			const { open, close } = getCustomDelimiters();
@@ -680,7 +699,14 @@ function normalizeMathLatex(latex: string): string {
  */
 function convertMathInlineToken(token: MathInlineToken, context: ConversionContext): string {
 	// Try converting to custom syntax
-	const result = convertMathToCustomSyntax(token.latex, context, token.line, token.column);
+	const mathOptions = getMathConversionOptions(context);
+	const result = convertMathToCustomSyntax(
+		token.latex,
+		context,
+		token.line,
+		token.column,
+		mathOptions
+	);
 
 	// If conversion failed, content is still LaTeX → use dollar signs
 	if (!result.converted) {
@@ -706,7 +732,14 @@ function convertMathInlineToken(token: MathInlineToken, context: ConversionConte
  */
 function convertMathDisplayToken(token: MathDisplayToken, context: ConversionContext): string {
 	// Try converting to custom syntax
-	const result = convertMathToCustomSyntax(token.latex, context, token.line, token.column);
+	const mathOptions = getMathConversionOptions(context);
+	const result = convertMathToCustomSyntax(
+		token.latex,
+		context,
+		token.line,
+		token.column,
+		mathOptions
+	);
 
 	// If conversion failed, content is still LaTeX → use dollar signs
 	if (!result.converted) {
