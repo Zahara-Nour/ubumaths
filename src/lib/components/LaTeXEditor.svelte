@@ -20,13 +20,15 @@
 		disabled = false,
 		fontSize = 14,
 		height = '400px',
-		placeholder = ''
+		placeholder = '',
+		lineWrapping = false
 	}: {
 		value?: string;
 		disabled?: boolean;
 		fontSize?: number;
 		height?: string;
 		placeholder?: string;
+		lineWrapping?: boolean;
 	} = $props();
 
 	// State
@@ -86,6 +88,9 @@
 
 				// Placeholder
 				...(placeholder ? [placeholderExt(placeholder)] : []),
+
+				// Line wrapping
+				...(lineWrapping ? [EditorView.lineWrapping] : []),
 
 				// Update listener
 				EditorView.updateListener.of((update) => {

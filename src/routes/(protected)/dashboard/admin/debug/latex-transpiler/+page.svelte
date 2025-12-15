@@ -260,6 +260,17 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 	}
 
 	let copied = $state(false);
+	let markdownCopied = $state(false);
+
+	/**
+	 * Copy markdown to clipboard
+	 */
+	async function copyMarkdown() {
+		if (!editableMarkdown) return;
+		await navigator.clipboard.writeText(editableMarkdown);
+		markdownCopied = true;
+		setTimeout(() => (markdownCopied = false), 2000);
+	}
 </script>
 
 <svelte:head>
@@ -314,12 +325,16 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 				bind:value={latexInput}
 				height="600px"
 				placeholder="Entrez votre code LaTeX ici..."
+				lineWrapping={true}
 			/>
 		</Tabs.Content>
 
 		<!-- Markdown Tab -->
 		<Tabs.Content value="markdown" class="mt-4">
-			<div class="mb-2 flex justify-end">
+			<div class="mb-2 flex justify-end gap-2">
+				<Button onclick={copyMarkdown} variant="outline" disabled={!editableMarkdown}>
+					{markdownCopied ? 'Copié !' : 'Copier'}
+				</Button>
 				<Button onclick={handleRenderMarkdown} variant="secondary" disabled={!editableMarkdown}>
 					Render
 				</Button>
@@ -329,6 +344,7 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 					bind:value={editableMarkdown}
 					height="600px"
 					placeholder="Markdown genere (editable)..."
+					lineWrapping={true}
 				/>
 			{:else}
 				<p class="text-muted-foreground">Cliquez sur "Transpiler" pour voir le resultat</p>
