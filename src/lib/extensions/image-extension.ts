@@ -35,17 +35,19 @@ export const CustomImage = Image.extend({
 	name: 'image',
 
 	addAttributes() {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const parentAttrs = (this as any).parent?.() ?? {};
 		return {
-			...this.parent?.(),
+			...parentAttrs,
 			sizeClass: {
 				default: null,
-				parseHTML: (element) => element.getAttribute('data-size-class'),
+				parseHTML: (element: HTMLElement) => element.getAttribute('data-size-class'),
 				// Don't render here - we handle it in main renderHTML
 				renderHTML: () => ({})
 			},
 			widthPercent: {
 				default: null,
-				parseHTML: (element) => {
+				parseHTML: (element: HTMLElement) => {
 					const val = element.getAttribute('data-width-percent');
 					return val ? parseInt(val, 10) : null;
 				},
@@ -53,18 +55,24 @@ export const CustomImage = Image.extend({
 			},
 			alignment: {
 				default: null,
-				parseHTML: (element) => element.getAttribute('data-alignment'),
+				parseHTML: (element: HTMLElement) => element.getAttribute('data-alignment'),
 				renderHTML: () => ({})
 			},
 			caption: {
 				default: null,
-				parseHTML: (element) => element.getAttribute('data-caption'),
+				parseHTML: (element: HTMLElement) => element.getAttribute('data-caption'),
 				renderHTML: () => ({})
 			}
 		};
 	},
 
-	renderHTML({ node, HTMLAttributes }) {
+	renderHTML({
+		node,
+		HTMLAttributes
+	}: {
+		node: { attrs: Record<string, unknown> };
+		HTMLAttributes: Record<string, unknown>;
+	}) {
 		// Access raw attribute values from node.attrs
 		const sizeClass = node.attrs.sizeClass as string | null;
 		const widthPercent = node.attrs.widthPercent as number | null;

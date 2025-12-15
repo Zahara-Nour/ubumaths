@@ -228,7 +228,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 							role: 'user',
 							content: userMessageContent,
 							help_level: helpLevel,
-							cheat_detected: cheatAnalysis.isCheatAttempt?.detected ?? false
+							cheat_detected: cheatAnalysis.isCheatAttempt ?? false
 						},
 						{
 							conversation_id: conversationId,

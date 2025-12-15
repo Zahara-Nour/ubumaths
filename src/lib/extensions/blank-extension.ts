@@ -19,7 +19,7 @@
  * @see https://tiptap.dev/docs/editor/extensions/custom-extensions
  */
 
-import { Node, mergeAttributes, InputRule } from '@tiptap/core';
+import { Node as TipTapNode, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
@@ -243,7 +243,7 @@ function createBlankEditPopover(
  * Attributes:
  * - number: number - The blank field number (1, 2, 3, ...)
  */
-export const BlankField = Node.create({
+export const BlankField = TipTapNode.create({
 	name: 'blankField',
 	group: 'inline',
 	inline: true,

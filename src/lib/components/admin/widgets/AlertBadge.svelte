@@ -48,6 +48,6 @@
 		<span
 			class={cn('absolute inset-0 animate-ping rounded-full opacity-75', severityClasses.ring)}
 			aria-hidden="true"
-		/>
+		></span>
 	{/if}
 </div>

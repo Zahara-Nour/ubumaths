@@ -10,6 +10,7 @@
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
+	import { resolvedMarkdown } from '$lib/custom-markdown';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
@@ -20,99 +21,78 @@
 	const numericalQuestion: QuestionInstance = {
 		templateId: 'demo-numerical',
 		type: 'numerical_exact',
-		statement: [
-			{
-				type: 'text',
-				content: 'Calculate $$\\frac{3}{4} + \\frac{1}{2}$$'
-			}
-		],
-		answer: '5/4',
+		statement: resolvedMarkdown('Calculate $$\\frac{3}{4} + \\frac{1}{2}$$'),
+		solution: '5/4',
 		precision: { type: 'none' },
 		grades: ['6', '5'],
 		theme: 'Algèbre',
 		domain: 'Fractions',
 		level: 1,
-		correction: [
-			{
-				type: 'text',
-				content:
+		correction: {
+			steps: [
+				resolvedMarkdown(
 					'Pour additionner des fractions, il faut trouver un dénominateur commun:\n\n$$\\frac{3}{4} + \\frac{1}{2} = \\frac{3}{4} + \\frac{2}{4} = \\frac{5}{4}$$'
-			}
-		],
+				)
+			]
+		},
 		generatedAt: new Date().toISOString()
 	};
 
 	const algebraicQuestion: QuestionInstance = {
 		templateId: 'demo-algebraic',
 		type: 'algebraic_transform',
-		statement: [
-			{
-				type: 'text',
-				content: 'Factor the expression: $$x^2 - 9$$'
-			}
-		],
-		answer: '(x-3)(x+3)',
+		statement: resolvedMarkdown('Factor the expression: $$x^2 - 9$$'),
+		solution: '(x-3)(x+3)',
 		transformType: 'factor',
 		grades: ['3', '2'],
 		theme: 'Algèbre',
 		domain: 'Factorisation',
 		level: 2,
-		correction: [
-			{
-				type: 'text',
-				content: "Il s'agit d'une différence de carrés:\n\n$$x^2 - 9 = x^2 - 3^2 = (x-3)(x+3)$$"
-			}
-		],
+		correction: {
+			steps: [
+				resolvedMarkdown(
+					"Il s'agit d'une différence de carrés:\n\n$$x^2 - 9 = x^2 - 3^2 = (x-3)(x+3)$$"
+				)
+			]
+		},
 		generatedAt: new Date().toISOString()
 	};
 
 	const qcmQuestion: QuestionInstance = {
 		templateId: 'demo-qcm',
 		type: 'multiple_choice',
-		statement: [
-			{
-				type: 'text',
-				content: 'What is the value of $$\\pi$$ (approximated to 2 decimals)?'
-			}
-		],
-		answer: '1', // Index of correct choice
+		statement: resolvedMarkdown('What is the value of $$\\pi$$ (approximated to 2 decimals)?'),
+		solution: '1', // Index of correct choice
 		choices: [
-			{ content: [{ type: 'text', content: '$$3.00$$' }], isCorrect: false },
-			{ content: [{ type: 'text', content: '$$3.14$$' }], isCorrect: true },
-			{ content: [{ type: 'text', content: '$$3.41$$' }], isCorrect: false },
-			{ content: [{ type: 'text', content: '$$2.71$$' }], isCorrect: false }
+			{ content: resolvedMarkdown('$$3.00$$'), isCorrect: false },
+			{ content: resolvedMarkdown('$$3.14$$'), isCorrect: true },
+			{ content: resolvedMarkdown('$$3.41$$'), isCorrect: false },
+			{ content: resolvedMarkdown('$$2.71$$'), isCorrect: false }
 		],
 		shuffledChoices: [
-			{ content: [{ type: 'text', content: '$$3.00$$' }], originalIndex: 0 },
-			{ content: [{ type: 'text', content: '$$3.14$$' }], originalIndex: 1 },
-			{ content: [{ type: 'text', content: '$$3.41$$' }], originalIndex: 2 },
-			{ content: [{ type: 'text', content: '$$2.71$$' }], originalIndex: 3 }
+			{ content: resolvedMarkdown('$$3.00$$'), originalIndex: 0 },
+			{ content: resolvedMarkdown('$$3.14$$'), originalIndex: 1 },
+			{ content: resolvedMarkdown('$$3.41$$'), originalIndex: 2 },
+			{ content: resolvedMarkdown('$$2.71$$'), originalIndex: 3 }
 		],
 		multipleAnswers: false,
 		grades: ['6'],
 		theme: 'Géométrie',
 		domain: 'Constantes',
 		level: 1,
-		correction: [
-			{
-				type: 'text',
-				content: '$$\\pi \\approx 3.14159...$$ donc arrondi à 2 décimales: $$3.14$$'
-			}
-		],
+		correction: {
+			steps: [resolvedMarkdown('$$\\pi \\approx 3.14159...$$ donc arrondi à 2 décimales: $$3.14$$')]
+		},
 		generatedAt: new Date().toISOString()
 	};
 
 	const fillBlanksQuestion: QuestionInstance = {
 		templateId: 'demo-fill-blanks',
 		type: 'fill_in_blanks',
-		statement: [
-			{
-				type: 'text',
-				content:
-					'The Pythagorean theorem states that for a right triangle: $$a^2 + b^2 = ____^2$$ where ____ is the hypotenuse.'
-			}
-		],
-		answer: ['c', 'c'],
+		statement: resolvedMarkdown(
+			'The Pythagorean theorem states that for a right triangle: $$a^2 + b^2 = ____^2$$ where ____ is the hypotenuse.'
+		),
+		solution: ['c', 'c'],
 		blanks: [
 			{ position: 0, expectedAnswer: 'c' },
 			{ position: 1, expectedAnswer: 'c' }
@@ -121,13 +101,13 @@
 		theme: 'Géométrie',
 		domain: 'Théorème de Pythagore',
 		level: 2,
-		correction: [
-			{
-				type: 'text',
-				content:
+		correction: {
+			steps: [
+				resolvedMarkdown(
 					"Le théorème de Pythagore: $$a^2 + b^2 = c^2$$ où $$c$$ est l'hypoténuse (le côté opposé à l'angle droit)."
-			}
-		],
+				)
+			]
+		},
 		generatedAt: new Date().toISOString()
 	};
 

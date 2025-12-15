@@ -195,7 +195,7 @@
 					<!-- Type -->
 					<div class="space-y-2">
 						<Label>Type</Label>
-						<MySelect items={typeOptions} bind:value={worksheetType} />
+						<MySelect type="single" items={typeOptions} bind:value={worksheetType} />
 					</div>
 
 					<!-- Estimated duration -->
@@ -283,11 +283,11 @@
 						<div class="grid gap-4 sm:grid-cols-2">
 							<div class="space-y-2">
 								<Label>Numerotation</Label>
-								<MySelect items={numberingOptions} bind:value={numberingStyle} />
+								<MySelect type="single" items={numberingOptions} bind:value={numberingStyle} />
 							</div>
 							<div class="space-y-2">
 								<Label>Format de page</Label>
-								<MySelect items={layoutOptions} bind:value={pageLayout} />
+								<MySelect type="single" items={layoutOptions} bind:value={pageLayout} />
 							</div>
 						</div>
 

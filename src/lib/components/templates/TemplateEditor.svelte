@@ -383,7 +383,12 @@
 				<!-- Status -->
 				<div class="space-y-2">
 					<Label>Statut</Label>
-					<MySelect bind:value={status} items={statusItems} placeholder="Choisir un statut" />
+					<MySelect
+						type="single"
+						bind:value={status}
+						items={statusItems}
+						placeholder="Choisir un statut"
+					/>
 					{#if status === 'published' && !hasContent}
 						<div
 							class="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 p-3 text-sm dark:border-orange-800 dark:bg-orange-900/30"

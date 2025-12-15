@@ -94,8 +94,8 @@
 	let config = $derived(rarityConfig[rarity]);
 	let RarityIcon = $derived(config.icon);
 
-	// Points from metadata or column
-	let points = $derived(achievement.metadata?.points ?? achievement.points ?? 0);
+	// Points from metadata
+	let points = $derived(achievement.metadata?.points ?? 0);
 
 	// Format unlock date
 	let formattedDate = $derived.by(() => {
@@ -122,7 +122,9 @@
 		collection: 'Collection'
 	};
 
-	let categoryLabel = $derived(categoryLabels[achievement.category] ?? achievement.category);
+	let categoryLabel = $derived(
+		achievement.category ? (categoryLabels[achievement.category] ?? achievement.category) : ''
+	);
 
 	// Determine if achievement is progressive (has progress but not unlocked)
 	let isProgressive = $derived(progress !== null && !unlocked);
