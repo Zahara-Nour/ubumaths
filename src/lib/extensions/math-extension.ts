@@ -20,7 +20,7 @@ import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
 import { Plugin, PluginKey, Selection } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
-import { parseCustomSafe, toLatex } from '$lib/mathAST';
+import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '$lib/mathAST';
 
 /**
  * MathField type with MathLive methods
@@ -37,6 +37,28 @@ interface MathFieldElement extends HTMLElement {
  */
 interface MoveOutDetail {
 	direction: 'forward' | 'backward' | 'upward' | 'downward';
+}
+
+/**
+ * Convert LaTeX to custom syntax if possible.
+ * Falls back to LaTeX if parsing fails.
+ *
+ * @param latex - LaTeX string from MathLive
+ * @returns Object with expression and syntax
+ */
+function latexToCustomSyntax(latex: string): { expression: string; syntax: 'latex' | 'custom' } {
+	const parseResult = parseLatexSafe(latex);
+	if (parseResult.success) {
+		try {
+			const customExpr = toCustom(parseResult.ast);
+			return { expression: customExpr, syntax: 'custom' };
+		} catch {
+			// toCustom failed, fall back to latex
+			return { expression: latex, syntax: 'latex' };
+		}
+	}
+	// Parsing failed, keep as latex
+	return { expression: latex, syntax: 'latex' };
 }
 
 /**
@@ -247,13 +269,27 @@ export const MathInline = Node.create({
 
 					if (nodeAtPos && nodeAtPos.type.name === 'mathInline') {
 						// When user edits via math-field, MathLive returns LaTeX.
-						// Clear originalExpression so markdown export uses the new latex value,
-						// and set syntax to 'latex' for proper export delimiters.
+						// If original syntax was 'custom', convert back to custom syntax if possible.
+						const originalSyntax = nodeAtPos.attrs.syntax as string;
+						let newExpression: string;
+						let newSyntax: 'latex' | 'custom';
+
+						if (originalSyntax === 'custom') {
+							// Try to convert to custom syntax
+							const converted = latexToCustomSyntax(target.value);
+							newExpression = converted.expression;
+							newSyntax = converted.syntax;
+						} else {
+							// Keep as latex
+							newExpression = target.value;
+							newSyntax = 'latex';
+						}
+
 						tr.setNodeMarkup(pos, undefined, {
 							...nodeAtPos.attrs,
 							latex: target.value,
-							originalExpression: '',
-							syntax: 'latex'
+							originalExpression: newSyntax === 'custom' ? newExpression : '',
+							syntax: newSyntax
 						});
 						editor.view.dispatch(tr);
 					}
@@ -585,13 +621,27 @@ export const MathBlock = Node.create({
 
 					if (nodeAtPos && nodeAtPos.type.name === 'mathBlock') {
 						// When user edits via math-field, MathLive returns LaTeX.
-						// Clear originalExpression so markdown export uses the new latex value,
-						// and set syntax to 'latex' for proper export delimiters.
+						// If original syntax was 'custom', convert back to custom syntax if possible.
+						const originalSyntax = nodeAtPos.attrs.syntax as string;
+						let newExpression: string;
+						let newSyntax: 'latex' | 'custom';
+
+						if (originalSyntax === 'custom') {
+							// Try to convert to custom syntax
+							const converted = latexToCustomSyntax(target.value);
+							newExpression = converted.expression;
+							newSyntax = converted.syntax;
+						} else {
+							// Keep as latex
+							newExpression = target.value;
+							newSyntax = 'latex';
+						}
+
 						tr.setNodeMarkup(pos, undefined, {
 							...nodeAtPos.attrs,
 							latex: target.value,
-							originalExpression: '',
-							syntax: 'latex'
+							originalExpression: newSyntax === 'custom' ? newExpression : '',
+							syntax: newSyntax
 						});
 						editor.view.dispatch(tr);
 					}
