@@ -1234,7 +1234,7 @@
 		<!-- Preview Panel -->
 		{#if isPreviewMode}
 			<div
-				class="h-1/2 overflow-y-auto border-t border-border bg-muted/20 p-4 md:h-full md:w-1/2 md:border-t-0"
+				class="rich-text-preview h-1/2 overflow-y-auto border-t border-border bg-muted/20 p-4 md:h-full md:w-1/2 md:border-t-0"
 			>
 				<MarkdownRenderer content={previewMarkdown} />
 			</div>
