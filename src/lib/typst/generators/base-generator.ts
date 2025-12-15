@@ -25,7 +25,7 @@
 
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
 import { DEFAULT_GENERATOR_CONFIG } from '../types';
-import { escapeTypst } from '../transpiler';
+import { escapeTypst } from '$lib/custom-markdown/generators';
 import { formatNumber, formatDateFR } from '../utils';
 
 /**

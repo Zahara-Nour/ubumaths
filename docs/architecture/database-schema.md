@@ -4408,8 +4408,9 @@ WHERE distribution_mode = 'per_student'
   - `supabase/migrations/20251026153000_add_exercise_parameterization.sql` (parameterization)
 - **Types**: `src/lib/exercises/types.ts`
 - **Instance Generator**: `src/lib/exercises/generator/instance-generator.ts`
-- **Parser**: `src/lib/exercises/parser/`
-- **Transpilers**: `src/lib/exercises/transpilers/`
+- **Parser**: `src/lib/custom-markdown/parser/`
+- **Generators**: `src/lib/custom-markdown/generators/`
+- **Importers**: `src/lib/custom-markdown/importers/`
 - **Components**: `src/lib/components/exercises/`
 - **Test Page**: `src/routes/(protected)/test-exercises/` (development)
 - **Feature Documentation**:

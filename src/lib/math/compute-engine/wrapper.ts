@@ -5,7 +5,7 @@
  * Provides interface to MathLive's Compute Engine for evaluating
  * mathematical expressions in LaTeX format.
  *
- * @module questions/compute-engine/wrapper
+ * @module math/compute-engine/wrapper
  */
 
 import { ComputeEngine } from '@cortex-js/compute-engine';

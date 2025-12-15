@@ -32,13 +32,13 @@ export { validateTemplate, isValidTemplate } from './validators/template-validat
 
 export { detectCircularDependencies } from '$lib/custom-markdown';
 
-// Compute Engine
+// Compute Engine (re-exported from $lib/math)
 export {
 	evaluateExpression,
 	simplifyExpression,
 	areEquivalent,
 	isValidLatex
-} from './compute-engine/wrapper';
+} from '$lib/math/compute-engine';
 
 // Validation Rule Evaluator
 export {

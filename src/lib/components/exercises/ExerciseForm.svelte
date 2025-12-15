@@ -11,7 +11,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { TranspileWarning } from '$lib/exercises/transpilers/latex-to-markdown';
+	import type { TranspileWarning } from '$lib/custom-markdown/importers/latex';
 	import type { GradeCode } from '$lib/types/grades';
 	import type { ExerciseResource } from '$lib/exercises/types';
 

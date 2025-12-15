@@ -1,8 +1,8 @@
 /**
- * Typst Transpiler - Convert AST to Typst
- * ========================================
+ * Typst Generator - Convert AST to Typst
+ * =======================================
  *
- * This module transpiles our markdown AST into compilable Typst documents.
+ * This module generates compilable Typst documents from our markdown AST.
  * Typst is a modern typesetting system that combines simplicity with power.
  *
  * Features:
@@ -14,7 +14,7 @@
  *
  * Output can be compiled with the Typst CLI.
  *
- * @module exercises/transpilers/typst-transpiler
+ * @module custom-markdown/generators/typst-generator
  */
 
 import type {
@@ -51,27 +51,27 @@ const DEFAULT_OPTIONS: Required<TypstTranspilerOptions> = {
 };
 
 // ============================================================================
-// MAIN TRANSPILER FUNCTION
+// MAIN GENERATOR FUNCTION
 // ============================================================================
 
 /**
- * Transpile AST to Typst document
+ * Generate Typst document from AST
  *
- * @param ast - Document AST to transpile
- * @param options - Transpiler options
+ * @param ast - Document AST to generate from
+ * @param options - Generator options
  * @returns Complete Typst document string
  *
  * @example
- * const typst = transpileToTypst(ast, {
+ * const typst = generateTypst(ast, {
  *   title: 'Exercices de Mathematiques',
  *   author: 'Prof. Dupont'
  * });
  */
-export function transpileToTypst(ast: DocumentNode, options: TypstTranspilerOptions = {}): string {
+export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions = {}): string {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
 	const setup = opts.includeSetup ? generateSetup(opts) : '';
-	const body = transpileBody(ast, opts);
+	const body = generateBody(ast, opts);
 
 	return setup + body;
 }
@@ -89,7 +89,7 @@ export function transpileToTypst(ast: DocumentNode, options: TypstTranspilerOpti
  * - Language settings
  * - Title and author (if provided)
  *
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Typst setup string
  */
 function generateSetup(options: Required<TypstTranspilerOptions>): string {
@@ -133,43 +133,43 @@ function generateSetup(options: Required<TypstTranspilerOptions>): string {
 }
 
 // ============================================================================
-// BODY TRANSPILATION
+// BODY GENERATION
 // ============================================================================
 
 /**
- * Transpile document body (all block nodes)
+ * Generate document body (all block nodes)
  *
  * @param ast - Document AST
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Typst body content
  */
-function transpileBody(ast: DocumentNode, options: Required<TypstTranspilerOptions>): string {
-	return ast.children.map((node) => transpileBlock(node, options)).join('\n\n');
+function generateBody(ast: DocumentNode, options: Required<TypstTranspilerOptions>): string {
+	return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
 }
 
 /**
- * Transpile a single block node
+ * Generate a single block node
  *
- * @param node - Block node to transpile
- * @param options - Transpiler options
+ * @param node - Block node to generate
+ * @param options - Generator options
  * @returns Typst string for this block
  */
-function transpileBlock(node: BlockNode, options: Required<TypstTranspilerOptions>): string {
+function generateBlock(node: BlockNode, options: Required<TypstTranspilerOptions>): string {
 	switch (node.type) {
 		case 'paragraph':
-			return transpileParagraph(node, options);
+			return generateParagraph(node, options);
 
 		case 'heading':
-			return transpileHeading(node, options);
+			return generateHeading(node, options);
 
 		case 'list':
-			return transpileList(node, options);
+			return generateList(node, options);
 
 		case 'table':
-			return transpileTable(node, options);
+			return generateTable(node, options);
 
 		case 'math-block':
-			return transpileMathBlock(node);
+			return generateMathBlock(node);
 
 		case 'image':
 			return transpileImage(node, options);
@@ -178,10 +178,10 @@ function transpileBlock(node: BlockNode, options: Required<TypstTranspilerOption
 			return '#line(length: 100%)';
 
 		case 'blockquote':
-			return transpileBlockquote(node, options);
+			return generateBlockquote(node, options);
 
 		case 'code-block':
-			return transpileCodeBlock(node);
+			return generateCodeBlock(node);
 
 		default:
 			return '';
@@ -189,34 +189,29 @@ function transpileBlock(node: BlockNode, options: Required<TypstTranspilerOption
 }
 
 // ============================================================================
-// PARAGRAPH TRANSPILATION
+// PARAGRAPH GENERATION
 // ============================================================================
 
 /**
- * Transpile paragraph node
+ * Generate paragraph node
  *
  * @param node - Paragraph node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Typst paragraph string
  */
-function transpileParagraph(
-	node: ParagraphNode,
-	options: Required<TypstTranspilerOptions>
-): string {
-	const content = node.children
-		.map((child: InlineNode) => transpileInline(child, options))
-		.join('');
+function generateParagraph(node: ParagraphNode, options: Required<TypstTranspilerOptions>): string {
+	const content = node.children.map((child: InlineNode) => generateInline(child, options)).join('');
 	return content;
 }
 
 /**
- * Transpile inline node
+ * Generate inline node
  *
  * @param node - Inline node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Typst inline content
  */
-function transpileInline(node: InlineNode, _options: Required<TypstTranspilerOptions>): string {
+function generateInline(node: InlineNode, _options: Required<TypstTranspilerOptions>): string {
 	switch (node.type) {
 		case 'text': {
 			let text = escapeTypst(node.content);
@@ -253,11 +248,11 @@ function transpileInline(node: InlineNode, _options: Required<TypstTranspilerOpt
 }
 
 // ============================================================================
-// HEADING TRANSPILATION
+// HEADING GENERATION
 // ============================================================================
 
 /**
- * Transpile heading node
+ * Generate heading node
  *
  * Maps markdown heading levels to Typst headings:
  * - # -> = Heading
@@ -266,13 +261,11 @@ function transpileInline(node: InlineNode, _options: Required<TypstTranspilerOpt
  * - etc.
  *
  * @param node - Heading node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Typst heading
  */
-function transpileHeading(node: HeadingNode, options: Required<TypstTranspilerOptions>): string {
-	const content = node.children
-		.map((child: InlineNode) => transpileInline(child, options))
-		.join('');
+function generateHeading(node: HeadingNode, options: Required<TypstTranspilerOptions>): string {
+	const content = node.children.map((child: InlineNode) => generateInline(child, options)).join('');
 
 	const prefix = '='.repeat(node.level);
 
@@ -280,28 +273,28 @@ function transpileHeading(node: HeadingNode, options: Required<TypstTranspilerOp
 }
 
 // ============================================================================
-// LIST TRANSPILATION
+// LIST GENERATION
 // ============================================================================
 
 /**
- * Transpile list node
+ * Generate list node
  *
  * Uses numbered lists for ordered, bullet lists for unordered.
  *
  * @param node - List node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Typst list
  */
-function transpileList(node: ListNode, options: Required<TypstTranspilerOptions>): string {
+function generateList(node: ListNode, options: Required<TypstTranspilerOptions>): string {
 	const startNumber = node.start ?? 1;
 
 	const items = node.items
 		.map((item: ListItemNode, index: number) => {
 			const childBlocks = item.children.map((child: ASTNode) => {
 				if (child.type === 'list') {
-					return transpileList(child, options);
+					return generateList(child, options);
 				}
-				return transpileBlock(child as BlockNode, options);
+				return generateBlock(child as BlockNode, options);
 			});
 
 			// First child is on the same line as the marker
@@ -337,19 +330,19 @@ function transpileList(node: ListNode, options: Required<TypstTranspilerOptions>
 }
 
 // ============================================================================
-// TABLE TRANSPILATION
+// TABLE GENERATION
 // ============================================================================
 
 /**
- * Transpile table node
+ * Generate table node
  *
  * Uses Typst's table function with proper column alignment.
  *
  * @param node - Table node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Typst table
  */
-function transpileTable(node: TableNode, _options: Required<TypstTranspilerOptions>): string {
+function generateTable(node: TableNode, _options: Required<TypstTranspilerOptions>): string {
 	const numCols = node.header.length;
 
 	// Map alignments
@@ -385,18 +378,18 @@ function transpileTable(node: TableNode, _options: Required<TypstTranspilerOptio
 }
 
 // ============================================================================
-// MATH TRANSPILATION
+// MATH GENERATION
 // ============================================================================
 
 /**
- * Transpile math block node
+ * Generate math block node
  *
  * Uses $ ... $ with display modifier for block math.
  *
  * @param node - Math block node
  * @returns Typst math block
  */
-function transpileMathBlock(node: MathBlockNode): string {
+function generateMathBlock(node: MathBlockNode): string {
 	const latex =
 		node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
 	// Convert LaTeX math to Typst math syntax
@@ -406,11 +399,11 @@ function transpileMathBlock(node: MathBlockNode): string {
 }
 
 // ============================================================================
-// IMAGE TRANSPILATION
+// IMAGE GENERATION
 // ============================================================================
 
 /**
- * Transpile image node with full multi-format sizing support
+ * Generate image node with full multi-format sizing support
  *
  * Supports:
  * - sizeClass: Semantic sizes (inline, small, medium, large, full)
@@ -424,7 +417,7 @@ function transpileMathBlock(node: MathBlockNode): string {
  * - Block with caption: #figure(image("path", width: 50%), caption: [caption])
  *
  * @param node - Image node with optional sizing attributes
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Typst image command with proper formatting
  *
  * @example Basic image
@@ -552,40 +545,40 @@ function buildAlignedImage(node: ImageNode, imageCommand: string): string {
 }
 
 // ============================================================================
-// BLOCKQUOTE TRANSPILATION
+// BLOCKQUOTE GENERATION
 // ============================================================================
 
 /**
- * Transpile blockquote node
+ * Generate blockquote node
  *
  * Uses Typst's #quote block with block: true for block quotes.
  *
  * @param node - Blockquote node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Typst quote block
  */
-function transpileBlockquote(
+function generateBlockquote(
 	node: BlockquoteNode,
 	options: Required<TypstTranspilerOptions>
 ): string {
-	const content = node.children.map((child) => transpileBlock(child, options)).join('\n\n');
+	const content = node.children.map((child) => generateBlock(child, options)).join('\n\n');
 
 	return `#quote(block: true)[${content}]`;
 }
 
 // ============================================================================
-// CODE BLOCK TRANSPILATION
+// CODE BLOCK GENERATION
 // ============================================================================
 
 /**
- * Transpile code block node
+ * Generate code block node
  *
  * Uses Typst's raw block with language specification.
  *
  * @param node - Code block node
  * @returns Typst raw block
  */
-function transpileCodeBlock(node: CodeBlockNode): string {
+function generateCodeBlock(node: CodeBlockNode): string {
 	// Don't include language to avoid syntax highlighting in PDF output
 	return '```\n' + node.code + '\n```';
 }
@@ -847,7 +840,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\nolimits/g, '');
 
 	// 7. Math spaces - ORDER MATTERS: qquad before quad
-	// Add spaces around to prevent merging with adjacent letters (e.g., "a\:n" → "a med n", not "amedn")
+	// Add spaces around to prevent merging with adjacent letters (e.g., "a\:n" -> "a med n", not "amedn")
 	result = result.replace(/\\qquad/g, ' wide ');
 	result = result.replace(/\\quad/g, ' quad ');
 	result = result.replace(/\\,/g, ' thin ');
@@ -948,11 +941,11 @@ export function resolveImagePath(src: string, basePath: string): string {
 /**
  * Generate minimal Typst document from markdown
  *
- * Convenience function that parses and transpiles in one step.
+ * Convenience function that parses and generates in one step.
  * Useful for quick testing.
  *
  * @param markdown - Markdown text
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Complete Typst document
  */
 export async function markdownToTypst(
@@ -962,5 +955,5 @@ export async function markdownToTypst(
 	// Dynamic import to avoid circular dependency issues
 	const { parseMarkdown } = await import('$lib/custom-markdown/parser/markdown-parser');
 	const ast = parseMarkdown(markdown);
-	return transpileToTypst(ast, options);
+	return generateTypst(ast, options);
 }

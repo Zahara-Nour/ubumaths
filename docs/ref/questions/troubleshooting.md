@@ -419,7 +419,7 @@ console.log(spec);
 ### Tester le Compute Engine
 
 ```typescript
-import { evaluateExpression, areEquivalent } from '$lib/questions/compute-engine/wrapper';
+import { evaluateExpression, areEquivalent } from '$lib/math/compute-engine';
 
 // Evaluer
 console.log(evaluateExpression('sqrt(16)')); // 4

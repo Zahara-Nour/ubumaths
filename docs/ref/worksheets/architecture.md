@@ -375,11 +375,11 @@ const statement = resolveText(exercise.statement_md, resolvedVars);
 ### Typst Transpiler
 
 ```typescript
-import { transpileToTypst, escapeTypst } from '$lib/exercises/transpilers/typst-transpiler';
+import { generateTypst, escapeTypst } from '$lib/custom-markdown';
 
 // Convert markdown AST to Typst
 const statementAst = parseMarkdown(exercise.statement);
-const typstContent = transpileToTypst(statementAst, { includeSetup: false });
+const typstContent = generateTypst(statementAst, { includeSetup: false });
 ```
 
 ### Class System

@@ -4,7 +4,7 @@
 		splitStatementAndSolution,
 		type TranspileResult,
 		type SplitResult
-	} from '$lib/exercises/transpilers/latex-to-markdown';
+	} from '$lib/custom-markdown/importers/latex';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import LaTeXEditor from '$lib/components/LaTeXEditor.svelte';

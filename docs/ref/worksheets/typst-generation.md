@@ -451,7 +451,7 @@ function initializeCompiler(typst: TypstCompiler): void {
 Special characters must be escaped in user content:
 
 ```typescript
-import { escapeTypst } from '$lib/exercises/transpilers/typst-transpiler';
+import { escapeTypst } from '$lib/custom-markdown';
 
 // Escapes: \ # $ [ ]
 const safe = escapeTypst(userInput);

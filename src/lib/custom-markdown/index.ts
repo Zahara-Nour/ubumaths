@@ -58,6 +58,9 @@ export type {
 	MathInlineNode,
 	LineBreakNode,
 	BlankNode,
+	LinkNode,
+	HashtagNode,
+	MentionNode,
 	InlineNode,
 	// Block nodes
 	ParagraphNode,
@@ -68,6 +71,7 @@ export type {
 	TableNode,
 	MathBlockNode,
 	ImageNode,
+	VideoNode,
 	HorizontalRuleNode,
 	BlockquoteNode,
 	CodeBlockNode,
@@ -79,6 +83,8 @@ export type {
 	ImageSizeClass,
 	ImageAlignment,
 	ImageSizeMapping,
+	// Video types
+	VideoProvider,
 	// Input state
 	InputState
 } from './types';
@@ -240,3 +246,49 @@ export { detectCircularDependencies, validateVariables } from './parameterizatio
 
 // Expression Transforms
 export { applyDisplayTransforms, canTransform, getExpressionStructure } from './parameterization';
+
+// ============================================================================
+// UTILITY EXPORTS
+// ============================================================================
+
+// List depth analysis
+export { getMaxEnumerateDepth, getEnumerateDepth } from './utils/list-depth';
+
+// ============================================================================
+// GENERATOR EXPORTS
+// ============================================================================
+
+// LaTeX Generator
+export { generateLatex, escapeLatex, resolveLatexImagePath, markdownToLatex } from './generators';
+
+// Typst Generator
+export {
+	generateTypst,
+	escapeTypst,
+	escapeTypstBrackets,
+	resolveTypstImagePath,
+	markdownToTypst,
+	transpileImage,
+	convertLatexToTypstMath
+} from './generators';
+
+// ============================================================================
+// IMPORTER EXPORTS
+// ============================================================================
+
+// LaTeX Importer
+export {
+	// Main transpiler function
+	transpileLatexToMarkdown,
+	// Splitter functions
+	splitStatementAndSolution,
+	detectSplitMethod,
+	// Tokenizer
+	tokenizeLatex,
+	// Types
+	type LatexToMarkdownOptions,
+	type TranspileResult,
+	type TranspileWarning,
+	type SplitResult,
+	type SplitMethod
+} from './importers';

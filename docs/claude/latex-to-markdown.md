@@ -34,7 +34,7 @@
 Use `transpileLatexToMarkdown()` in 30 seconds:
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 
 // Basic usage - converts LaTeX to Markdown
 const result = transpileLatexToMarkdown(`
@@ -187,7 +187,7 @@ function transpileLatexToMarkdown(latex: string, options?: LatexToMarkdownOption
 **Exemple**:
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 
 const latex = `
 \\section{Introduction}
@@ -922,7 +922,7 @@ Devient:
 
 Phase 7 implémente un système de gestion robuste pour les commandes et environnements LaTeX non reconnus. Au lieu de les ignorer ou de lever des erreurs, le transpileur les enveloppe dans des commentaires HTML spécialisés pour préservation et référence future.
 
-**Fichier Principal**: `src/lib/exercises/transpilers/latex-to-markdown/converters/fallback.ts`
+**Fichier Principal**: `src/lib/custom-markdown/importers/latex/converters/fallback.ts`
 
 #### Commandes Non Supportées
 
@@ -984,7 +984,7 @@ Le fallback converter maintient un registre des commandes supportées pour déte
 **Vérifier le support**:
 
 ```typescript
-import { isSupportedCommand, getSupportedCommands } from '$lib/exercises/transpilers';
+import { isSupportedCommand, getSupportedCommands } from '$lib/custom-markdown/importers/latex';
 
 // Check si une commande est supportée
 if (isSupportedCommand('textbf')) {
@@ -1015,7 +1015,10 @@ Le fallback converter maintient un registre des environnements supportés:
 **Vérifier le support**:
 
 ```typescript
-import { isSupportedEnvironment, getSupportedEnvironments } from '$lib/exercises/transpilers';
+import {
+	isSupportedEnvironment,
+	getSupportedEnvironments
+} from '$lib/custom-markdown/importers/latex';
 
 // Check si un environnement est supporté
 if (isSupportedEnvironment('itemize')) {
@@ -1075,7 +1078,7 @@ interface LatexToMarkdownOptions {
 **Exemple**:
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 
 const latex = '\\mycommand{Important content here}';
 
@@ -1098,7 +1101,7 @@ import {
 	addSupportedEnvironment,
 	removeSupportedCommand,
 	removeSupportedEnvironment
-} from '$lib/exercises/transpilers';
+} from '$lib/custom-markdown/importers/latex';
 
 // Ajouter le support custom
 addSupportedCommand('mycommand');
@@ -1363,7 +1366,7 @@ Practical examples for typical use cases in UbuMaths.
 ### Pattern 1: Simple Math Exercise
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 
 const exerciseLatex = `
 \\textbf{Exercise 1:} Calculate the derivative of $f(x) = x^3 + 2x$.
@@ -1390,7 +1393,7 @@ if (warnings.length > 0) {
 ### Pattern 2: Academic Document Import
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 
 const academicLatex = `
 \\documentclass{article}
@@ -1428,7 +1431,7 @@ const result = transpileLatexToMarkdown(academicLatex, {
 ### Pattern 3: Fragment Copy-Paste
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 
 // User pastes a LaTeX fragment (no document structure)
 const fragment = `\\textbf{Important:} The equation $E = mc^2$ shows...
@@ -1445,7 +1448,7 @@ const { markdown } = transpileLatexToMarkdown(fragment);
 ### Pattern 4: Batch Conversion
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 
 const latexDocuments = [
 	{ id: 1, content: '\\section{Doc 1}...' },
@@ -1471,8 +1474,7 @@ const problemDocs = results.filter((r) => r.hasWarnings);
 ### Pattern 5: Integration with markdown-parser
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
-import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
+import { transpileLatexToMarkdown, parseMarkdown } from '$lib/custom-markdown';
 
 // Full roundtrip: LaTeX -> Markdown -> AST
 const latex = `\\section{Title}\\textbf{Bold} text with $x^2$`;
@@ -1491,7 +1493,7 @@ console.log(ast.children); // [HeadingNode, ParagraphNode, ...]
 ### Pattern 6: Error Handling
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 
 function safeTranspile(latex: string): { markdown: string; errors: string[] } {
 	const { markdown, warnings } = transpileLatexToMarkdown(latex, {
@@ -1527,7 +1529,7 @@ function safeTranspile(latex: string): { markdown: string; errors: string[] } {
 
 Phase 8 implémente l'orchestrateur principal qui coordonne le transpileur complet. Au lieu d'avoir une fonction monolithique, les conversions sont organisées en registres spécialisés avec un système de routage intelligente pour les tokens.
 
-**Fichier Principal**: `src/lib/exercises/transpilers/latex-to-markdown/transpiler.ts`
+**Fichier Principal**: `src/lib/custom-markdown/importers/latex/transpiler.ts`
 
 ### Fonction Principale: `transpileLatexToMarkdown()`
 
@@ -1551,7 +1553,7 @@ export function transpileLatexToMarkdown(
 **Exemple Complet**:
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
+import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 
 const latex = `
 \\documentclass{article}
@@ -1737,7 +1739,7 @@ if (hasSimpleConverter(name)) {
 }
 ```
 
-Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/simple.ts`
+Source: `src/lib/custom-markdown/importers/latex/converters/simple.ts`
 
 #### 2. Convertisseurs de Blocs
 
@@ -1759,7 +1761,7 @@ if (hasBlockEnvironmentConverter(name)) {
 }
 ```
 
-Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/blocks.ts`
+Source: `src/lib/custom-markdown/importers/latex/converters/blocks.ts`
 
 #### 3. Convertisseurs de Listes
 
@@ -1774,7 +1776,7 @@ if (isListEnvironment(name)) {
 }
 ```
 
-Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/lists.ts`
+Source: `src/lib/custom-markdown/importers/latex/converters/lists.ts`
 
 #### 4. Convertisseurs de Tables
 
@@ -1789,7 +1791,7 @@ if (isTableEnvironment(name)) {
 }
 ```
 
-Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/tables.ts`
+Source: `src/lib/custom-markdown/importers/latex/converters/tables.ts`
 
 #### 5. Commandes Spéciales
 
@@ -1863,7 +1865,7 @@ if (!isSupportedEnvironment(name)) {
 }
 ```
 
-Source: `src/lib/exercises/transpilers/latex-to-markdown/converters/fallback.ts`
+Source: `src/lib/custom-markdown/importers/latex/converters/fallback.ts`
 
 ### Gestion du Contexte (`ConversionContext`)
 
@@ -2079,7 +2081,7 @@ Le transpileur génère du markdown qui sera parsé par `markdown-parser`. Consi
 
 ### Tests
 
-Tests pour Phase 8: `src/lib/exercises/transpilers/latex-to-markdown/__tests__/transpiler.test.ts`
+Tests pour Phase 8: `src/lib/custom-markdown/importers/latex/__tests__/transpiler.test.ts`
 
 **Coverage**: 91 comprehensive tests couvrant:
 
@@ -2100,7 +2102,7 @@ Tests pour Phase 8: `src/lib/exercises/transpilers/latex-to-markdown/__tests__/t
 
 Phase 9 implémente une suite complète de tests d'intégration et benchmarks de performance pour valider le transpileur dans des conditions réalistes. Au lieu de tester uniquement des fonctions isolées, cette phase teste le système complet avec des documents réalistes, cas limites, et scénarios d'erreur.
 
-**Fichier Principal**: `src/lib/exercises/transpilers/latex-to-markdown/__tests__/integration.test.ts`
+**Fichier Principal**: `src/lib/custom-markdown/importers/latex/__tests__/integration.test.ts`
 
 ### Test Fixtures - Documents Réalistes
 
@@ -2508,8 +2510,7 @@ Génère dynamiquement documents de taille configurable pour benchmarks scalabil
 La sortie du transpileur est entièrement compatible avec `markdown-parser`:
 
 ```typescript
-import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
-import { parseMarkdown } from '$lib/exercises/parser/markdown-parser';
+import { transpileLatexToMarkdown, parseMarkdown } from '$lib/custom-markdown';
 
 const latexDoc = '\\section{Test}\\textbf{Bold} text';
 const { markdown, warnings, stats } = transpileLatexToMarkdown(latexDoc);
@@ -2623,8 +2624,9 @@ The LaTeX to Markdown Transpiler project is now **COMPLETE**. This phase finaliz
 ## Structure de Dossiers
 
 ```
-src/lib/exercises/transpilers/
-├── latex-to-markdown/
+src/lib/custom-markdown/
+├── importers/
+│   └── latex/
 │   ├── index.ts                    # Orchestrateur principal
 │   ├── types.ts                    # Types TypeScript
 │   ├── tokenizer.ts                # Tokenizer LaTeX
@@ -2871,7 +2873,7 @@ Common issues and their solutions.
 2. **Add command to registry** (for custom extensions):
 
    ```typescript
-   import { addSupportedCommand } from '$lib/exercises/transpilers';
+   import { addSupportedCommand } from '$lib/custom-markdown/importers/latex';
    addSupportedCommand('mycommand');
    ```
 
@@ -3057,7 +3059,7 @@ To contribute improvements:
 **Exemple (Simple)**:
 
 ```typescript
-// src/lib/exercises/transpilers/latex-to-markdown/converters/simple.ts
+// src/lib/custom-markdown/importers/latex/converters/simple.ts
 
 /**
  * Convertit \textbf{...} en **...**
@@ -3072,7 +3074,7 @@ export function convertTextbf(content: string): string {
 **Exemple (Environment)**:
 
 ```typescript
-// src/lib/exercises/transpilers/latex-to-markdown/converters/lists.ts
+// src/lib/custom-markdown/importers/latex/converters/lists.ts
 
 /**
  * Convertit \begin{itemize}...\end{itemize} en liste markdown
@@ -3088,7 +3090,7 @@ export function convertItemize(content: string): string {
 #### 3. Intégrer dans l'Orchestrateur Principal
 
 ```typescript
-// src/lib/exercises/transpilers/latex-to-markdown/index.ts
+// src/lib/custom-markdown/importers/latex/index.ts
 
 const COMMAND_HANDLERS: Record<string, (args: string[]) => string> = {
 	textbf: (args) => convertTextbf(args[0]),
@@ -3106,7 +3108,7 @@ const ENV_HANDLERS: Record<string, (content: string) => string> = {
 #### 4. Écrire les Tests
 
 ```typescript
-// src/lib/exercises/transpilers/latex-to-markdown/__tests__/converters.test.ts
+// src/lib/custom-markdown/importers/latex/__tests__/converters.test.ts
 
 describe('convertTextbf', () => {
 	it('should convert \\textbf{text} to **text**', () => {

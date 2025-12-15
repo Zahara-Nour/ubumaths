@@ -15,7 +15,7 @@
  * @module questions/units/ce-integration
  */
 
-import { evaluateExpression } from '$lib/questions/compute-engine/wrapper';
+import { evaluateExpression } from '$lib/math/compute-engine';
 import type { Unit, Quantity } from './types';
 import { parseLatexQuantity, parseUnitExpression } from './parser';
 import { unitsAreCompatible, getConversionFactor, createUnit } from './operations';

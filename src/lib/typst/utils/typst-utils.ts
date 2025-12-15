@@ -10,9 +10,9 @@
 
 /**
  * Escape special Typst characters in text
- * Re-exports from transpiler for convenience
+ * Re-exports from custom-markdown/generators for convenience
  */
-export { escapeTypst, escapeTypstBrackets } from '../transpiler';
+export { escapeTypst, escapeTypstBrackets } from '$lib/custom-markdown/generators';
 
 /**
  * Format a number according to numbering style

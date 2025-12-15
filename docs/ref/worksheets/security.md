@@ -352,7 +352,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 User content is escaped before Typst rendering:
 
 ```typescript
-import { escapeTypst } from '$lib/exercises/transpilers/typst-transpiler';
+import { escapeTypst } from '$lib/custom-markdown';
 
 // Escapes: \ # $ [ ]
 const safeContent = escapeTypst(userInput);

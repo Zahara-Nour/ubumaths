@@ -66,10 +66,10 @@ const { typstContent, metadata } = generator.generate({
 ### Fonctions legacy (compatibilité)
 
 ```typescript
-// Ces imports continuent de fonctionner (avec warning de dépréciation)
+// Ces imports continuent de fonctionner
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { getTypstCompiler } from '$lib/worksheets/typst-compiler';
-import { transpileToTypst } from '$lib/exercises/transpilers/typst-transpiler';
+import { generateTypst } from '$lib/custom-markdown';
 ```
 
 ## Types principaux

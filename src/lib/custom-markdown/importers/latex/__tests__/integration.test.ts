@@ -9,7 +9,7 @@
 
 import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import { transpileLatexToMarkdown } from '../transpiler';
-import { parseMarkdown } from '../../../../custom-markdown/parser/markdown-parser';
+import { parseMarkdown } from '../../../parser/markdown-parser';
 
 // ============================================================================
 // Test Document Fixtures

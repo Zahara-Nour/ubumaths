@@ -46,10 +46,14 @@ MathInlineNode {                      expressionToLatex(expression, syntax)
 - `src/lib/components/markdown/nodes/ParagraphNode.svelte`
 - `src/lib/components/markdown/MarkdownRenderer.svelte`
 
-### Transpilers
+### Generators
 
-- `src/lib/exercises/transpilers/latex-transpiler.ts`
-- `src/lib/exercises/transpilers/typst-transpiler.ts`
+- `src/lib/custom-markdown/generators/latex-generator.ts`
+- `src/lib/custom-markdown/generators/typst-generator.ts`
+
+### Importers
+
+- `src/lib/custom-markdown/importers/latex/` (LaTeX → markdown transpiler)
 
 ### Tests
 
@@ -58,8 +62,9 @@ MathInlineNode {                      expressionToLatex(expression, syntax)
 - `src/lib/custom-markdown/__tests__/parser/markdown-parser-integration.test.ts`
 - `src/lib/custom-markdown/__tests__/parser/complete-integration.test.ts`
 - `src/lib/custom-markdown/__tests__/parser/unified-inputs.test.ts`
-- `src/lib/exercises/transpilers/latex-transpiler.test.ts`
-- `src/lib/exercises/transpilers/typst-transpiler.test.ts`
+- `src/lib/custom-markdown/generators/__tests__/latex-generator.test.ts`
+- `src/lib/custom-markdown/generators/__tests__/typst-generator.test.ts`
+- `src/lib/custom-markdown/importers/latex/__tests__/` (LaTeX importer tests)
 
 ---
 

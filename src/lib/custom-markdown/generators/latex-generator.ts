@@ -1,8 +1,8 @@
 /**
- * LaTeX Transpiler - Convert AST to LaTeX
- * ========================================
+ * LaTeX Generator - Convert AST to LaTeX
+ * =======================================
  *
- * This module transpiles our markdown AST into compilable LaTeX documents.
+ * This module generates compilable LaTeX documents from our markdown AST.
  *
  * Features:
  * - Full document generation with preamble
@@ -13,7 +13,7 @@
  *
  * Output can be compiled with pdflatex, lualatex, or xelatex.
  *
- * @module exercises/transpilers/latex-transpiler
+ * @module custom-markdown/generators/latex-generator
  */
 
 import type {
@@ -31,8 +31,11 @@ import type {
 	BlockquoteNode,
 	CodeBlockNode,
 	LatexTranspilerOptions
-} from '../types';
-import { getDimensionsForFormat, getAlignmentStyles } from '../services/image-dimensions';
+} from '$lib/exercises/types';
+import {
+	getDimensionsForFormat,
+	getAlignmentStyles
+} from '$lib/exercises/services/image-dimensions';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 
 // ============================================================================
@@ -52,27 +55,27 @@ const DEFAULT_OPTIONS: Required<LatexTranspilerOptions> = {
 };
 
 // ============================================================================
-// MAIN TRANSPILER FUNCTION
+// MAIN GENERATOR FUNCTION
 // ============================================================================
 
 /**
- * Transpile AST to LaTeX document
+ * Generate LaTeX document from AST
  *
- * @param ast - Document AST to transpile
- * @param options - Transpiler options
+ * @param ast - Document AST to generate from
+ * @param options - Generator options
  * @returns Complete LaTeX document string
  *
  * @example
- * const latex = transpileToLatex(ast, {
- *   title: 'Exercices de Mathématiques',
+ * const latex = generateLatex(ast, {
+ *   title: 'Exercices de Mathematiques',
  *   author: 'Prof. Dupont'
  * });
  */
-export function transpileToLatex(ast: DocumentNode, options: LatexTranspilerOptions = {}): string {
+export function generateLatex(ast: DocumentNode, options: LatexTranspilerOptions = {}): string {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
 	const preamble = opts.includePreamble ? generatePreamble(opts) : '';
-	const body = transpileBody(ast, opts);
+	const body = generateBody(ast, opts);
 	const closing = opts.includePreamble ? '\n\\end{document}\n' : '';
 
 	return preamble + body + closing;
@@ -91,7 +94,7 @@ export function transpileToLatex(ast: DocumentNode, options: LatexTranspilerOpti
  * - Custom packages
  * - Title and author (if provided)
  *
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns LaTeX preamble string
  */
 function generatePreamble(options: Required<LatexTranspilerOptions>): string {
@@ -147,55 +150,55 @@ function generatePreamble(options: Required<LatexTranspilerOptions>): string {
 }
 
 // ============================================================================
-// BODY TRANSPILATION
+// BODY GENERATION
 // ============================================================================
 
 /**
- * Transpile document body (all block nodes)
+ * Generate document body (all block nodes)
  *
  * @param ast - Document AST
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns LaTeX body content
  */
-function transpileBody(ast: DocumentNode, options: Required<LatexTranspilerOptions>): string {
-	return ast.children.map((node) => transpileBlock(node, options)).join('\n\n');
+function generateBody(ast: DocumentNode, options: Required<LatexTranspilerOptions>): string {
+	return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
 }
 
 /**
- * Transpile a single block node
+ * Generate a single block node
  *
- * @param node - Block node to transpile
- * @param options - Transpiler options
+ * @param node - Block node to generate
+ * @param options - Generator options
  * @returns LaTeX string for this block
  */
-function transpileBlock(node: BlockNode, options: Required<LatexTranspilerOptions>): string {
+function generateBlock(node: BlockNode, options: Required<LatexTranspilerOptions>): string {
 	switch (node.type) {
 		case 'paragraph':
-			return transpileParagraph(node, options);
+			return generateParagraph(node, options);
 
 		case 'heading':
-			return transpileHeading(node, options);
+			return generateHeading(node, options);
 
 		case 'list':
-			return transpileList(node, options);
+			return generateList(node, options);
 
 		case 'table':
-			return transpileTable(node, options);
+			return generateTable(node, options);
 
 		case 'math-block':
-			return transpileMathBlock(node);
+			return generateMathBlock(node);
 
 		case 'image':
-			return transpileImage(node, options);
+			return generateImage(node, options);
 
 		case 'horizontal-rule':
 			return '\\noindent\\rule{\\textwidth}{0.4pt}';
 
 		case 'blockquote':
-			return transpileBlockquote(node, options);
+			return generateBlockquote(node, options);
 
 		case 'code-block':
-			return transpileCodeBlock(node);
+			return generateCodeBlock(node);
 
 		default:
 			return '';
@@ -203,34 +206,29 @@ function transpileBlock(node: BlockNode, options: Required<LatexTranspilerOption
 }
 
 // ============================================================================
-// PARAGRAPH TRANSPILATION
+// PARAGRAPH GENERATION
 // ============================================================================
 
 /**
- * Transpile paragraph node
+ * Generate paragraph node
  *
  * @param node - Paragraph node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns LaTeX paragraph string
  */
-function transpileParagraph(
-	node: ParagraphNode,
-	options: Required<LatexTranspilerOptions>
-): string {
-	const content = node.children
-		.map((child: InlineNode) => transpileInline(child, options))
-		.join('');
+function generateParagraph(node: ParagraphNode, options: Required<LatexTranspilerOptions>): string {
+	const content = node.children.map((child: InlineNode) => generateInline(child, options)).join('');
 	return content;
 }
 
 /**
- * Transpile inline node
+ * Generate inline node
  *
  * @param node - Inline node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns LaTeX inline content
  */
-function transpileInline(node: InlineNode, _options: Required<LatexTranspilerOptions>): string {
+function generateInline(node: InlineNode, _options: Required<LatexTranspilerOptions>): string {
 	switch (node.type) {
 		case 'text': {
 			let text = escapeLatex(node.content);
@@ -255,26 +253,24 @@ function transpileInline(node: InlineNode, _options: Required<LatexTranspilerOpt
 }
 
 // ============================================================================
-// HEADING TRANSPILATION
+// HEADING GENERATION
 // ============================================================================
 
 /**
- * Transpile heading node
+ * Generate heading node
  *
  * Maps markdown heading levels to LaTeX sections:
- * - # → \section
- * - ## → \subsection
- * - ### → \subsubsection
- * - #### and beyond → \paragraph
+ * - # -> \section
+ * - ## -> \subsection
+ * - ### -> \subsubsection
+ * - #### and beyond -> \paragraph
  *
  * @param node - Heading node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns LaTeX section command
  */
-function transpileHeading(node: HeadingNode, options: Required<LatexTranspilerOptions>): string {
-	const content = node.children
-		.map((child: InlineNode) => transpileInline(child, options))
-		.join('');
+function generateHeading(node: HeadingNode, options: Required<LatexTranspilerOptions>): string {
+	const content = node.children.map((child: InlineNode) => generateInline(child, options)).join('');
 
 	const commands = ['section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph'];
 	const command = commands[Math.min(node.level - 1, commands.length - 1)];
@@ -283,19 +279,19 @@ function transpileHeading(node: HeadingNode, options: Required<LatexTranspilerOp
 }
 
 // ============================================================================
-// LIST TRANSPILATION
+// LIST GENERATION
 // ============================================================================
 
 /**
- * Transpile list node
+ * Generate list node
  *
  * Uses enumerate for ordered lists, itemize for unordered lists.
  *
  * @param node - List node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns LaTeX list environment
  */
-function transpileList(node: ListNode, options: Required<LatexTranspilerOptions>): string {
+function generateList(node: ListNode, options: Required<LatexTranspilerOptions>): string {
 	const env = node.ordered ? 'enumerate' : 'itemize';
 	const startOption = node.ordered && node.start && node.start !== 1 ? `[start=${node.start}]` : '';
 
@@ -304,9 +300,9 @@ function transpileList(node: ListNode, options: Required<LatexTranspilerOptions>
 			const itemContent = item.children
 				.map((child: ASTNode) => {
 					if (child.type === 'list') {
-						return transpileList(child, options);
+						return generateList(child, options);
 					}
-					return transpileBlock(child as BlockNode, options);
+					return generateBlock(child as BlockNode, options);
 				})
 				.join('\n');
 			return `\\item ${itemContent}`;
@@ -317,19 +313,19 @@ function transpileList(node: ListNode, options: Required<LatexTranspilerOptions>
 }
 
 // ============================================================================
-// TABLE TRANSPILATION
+// TABLE GENERATION
 // ============================================================================
 
 /**
- * Transpile table node
+ * Generate table node
  *
  * Uses tabular environment with proper column alignment.
  *
  * @param node - Table node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns LaTeX table environment
  */
-function transpileTable(node: TableNode, _options: Required<LatexTranspilerOptions>): string {
+function generateTable(node: TableNode, _options: Required<LatexTranspilerOptions>): string {
 	// Generate column specification
 	const colSpec = node.alignments
 		.map((align: string) => {
@@ -344,12 +340,12 @@ function transpileTable(node: TableNode, _options: Required<LatexTranspilerOptio
 		})
 		.join('|');
 
-	// Transpile header
+	// Generate header
 	const header = node.header
 		.map((cell: { content: string }) => escapeLatex(cell.content))
 		.join(' & ');
 
-	// Transpile rows
+	// Generate rows
 	const rows = node.rows
 		.map((row: { content: string }[]) =>
 			row.map((cell: { content: string }) => escapeLatex(cell.content)).join(' & ')
@@ -366,29 +362,29 @@ ${rows} \\\\
 }
 
 // ============================================================================
-// MATH TRANSPILATION
+// MATH GENERATION
 // ============================================================================
 
 /**
- * Transpile math block node
+ * Generate math block node
  *
  * Uses \[ \] for display math.
  *
  * @param node - Math block node
  * @returns LaTeX math environment
  */
-function transpileMathBlock(node: MathBlockNode): string {
+function generateMathBlock(node: MathBlockNode): string {
 	const latex =
 		node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
 	return `\\[${latex}\\]`;
 }
 
 // ============================================================================
-// IMAGE TRANSPILATION
+// IMAGE GENERATION
 // ============================================================================
 
 /**
- * Transpile image node with full multi-format sizing support
+ * Generate image node with full multi-format sizing support
  *
  * Supports:
  * - sizeClass: Semantic sizes (inline, small, medium, large, full)
@@ -402,28 +398,28 @@ function transpileMathBlock(node: MathBlockNode): string {
  * - Block with caption: \begin{figure}...\caption{...}\end{figure}
  *
  * @param node - Image node with optional sizing attributes
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns LaTeX includegraphics command with proper formatting
  *
  * @example Basic image
  * ```typescript
- * transpileImage({ type: 'image', src: 'fig.png' }, options);
+ * generateImage({ type: 'image', src: 'fig.png' }, options);
  * // {\centering\includegraphics[width=0.5\textwidth]{fig.png}\par}
  * ```
  *
  * @example Image with caption
  * ```typescript
- * transpileImage({ type: 'image', src: 'fig.png', caption: 'Figure 1' }, options);
+ * generateImage({ type: 'image', src: 'fig.png', caption: 'Figure 1' }, options);
  * // \begin{figure}[htbp]\centering\includegraphics[width=0.5\textwidth]{fig.png}\caption{Figure 1}\end{figure}
  * ```
  *
  * @example Inline image
  * ```typescript
- * transpileImage({ type: 'image', src: 'icon.png', sizeClass: 'inline' }, options);
+ * generateImage({ type: 'image', src: 'icon.png', sizeClass: 'inline' }, options);
  * // \includegraphics[height=1em]{icon.png}
  * ```
  */
-function transpileImage(node: ImageNode, options: Required<LatexTranspilerOptions>): string {
+function generateImage(node: ImageNode, options: Required<LatexTranspilerOptions>): string {
 	const imagePath = resolveImagePath(node.src, options.imageBasePath);
 	const isInline = node.sizeClass === 'inline';
 
@@ -524,34 +520,34 @@ function buildAlignedImage(node: ImageNode, includegraphics: string): string {
 }
 
 // ============================================================================
-// BLOCKQUOTE TRANSPILATION
+// BLOCKQUOTE GENERATION
 // ============================================================================
 
 /**
- * Transpile blockquote node
+ * Generate blockquote node
  *
  * Uses the quote environment for blockquotes. Nested blockquotes
  * are supported through recursive calls.
  *
  * @param node - Blockquote node
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns LaTeX quote environment
  */
-function transpileBlockquote(
+function generateBlockquote(
 	node: BlockquoteNode,
 	options: Required<LatexTranspilerOptions>
 ): string {
-	const content = node.children.map((child) => transpileBlock(child, options)).join('\n\n');
+	const content = node.children.map((child) => generateBlock(child, options)).join('\n\n');
 
 	return `\\begin{quote}\n${content}\n\\end{quote}`;
 }
 
 // ============================================================================
-// CODE BLOCK TRANSPILATION
+// CODE BLOCK GENERATION
 // ============================================================================
 
 /**
- * Transpile code block node
+ * Generate code block node
  *
  * Uses the lstlisting environment for code blocks with optional
  * language specification for syntax highlighting.
@@ -559,13 +555,13 @@ function transpileBlockquote(
  * @param node - Code block node
  * @returns LaTeX lstlisting environment
  */
-function transpileCodeBlock(node: CodeBlockNode): string {
+function generateCodeBlock(node: CodeBlockNode): string {
 	// Map common language names to listings language identifiers
 	// Fallback choices are deliberate approximations:
-	// - TypeScript → JavaScript: Similar syntax highlighting needs
-	// - CSS → HTML: Both markup-like, acceptable for styling code
-	// - JSON → JavaScript: Object notation similarities
-	// - YAML → Python: Similar block-structure highlighting
+	// - TypeScript -> JavaScript: Similar syntax highlighting needs
+	// - CSS -> HTML: Both markup-like, acceptable for styling code
+	// - JSON -> JavaScript: Object notation similarities
+	// - YAML -> Python: Similar block-structure highlighting
 	const languageMap: Record<string, string> = {
 		javascript: 'JavaScript',
 		typescript: 'JavaScript', // listings doesn't have TS, use JS
@@ -662,11 +658,11 @@ export function resolveImagePath(src: string, basePath: string): string {
 /**
  * Generate minimal LaTeX document from markdown
  *
- * Convenience function that parses and transpiles in one step.
+ * Convenience function that parses and generates in one step.
  * Useful for quick testing.
  *
  * @param markdown - Markdown text
- * @param options - Transpiler options
+ * @param options - Generator options
  * @returns Complete LaTeX document
  */
 export async function markdownToLatex(
@@ -676,5 +672,5 @@ export async function markdownToLatex(
 	// Dynamic import to avoid circular dependency issues
 	const { parseMarkdown } = await import('$lib/custom-markdown/parser/markdown-parser');
 	const ast = parseMarkdown(markdown);
-	return transpileToLatex(ast, options);
+	return generateLatex(ast, options);
 }
