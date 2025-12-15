@@ -14,23 +14,27 @@
 	- Static MathLive rendering for display
 	- Centered layout with vertical margins
 	- Larger font size for display math
+	- Configurable generic function recognition for derivatives (f'(x), P''(x))
 
 	@see ExerciseDisplay.svelte for rendering context
 -->
 <script lang="ts">
 	import 'mathlive';
 	import { expressionToLatex } from '../utils/math-utils';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	interface Props {
 		expression: string;
 		syntax: 'latex' | 'custom';
 		class?: string;
+		/** Configuration for generic function names (f, g, h, P, Q, etc.) */
+		genericFunctions?: GenericFunctionConfig | null;
 	}
 
-	let { expression, syntax, class: className = '' }: Props = $props();
+	let { expression, syntax, class: className = '', genericFunctions }: Props = $props();
 
 	// Convert to LaTeX for rendering
-	let latex = $derived(expressionToLatex(expression, syntax));
+	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions));
 </script>
 
 <div class="math-block-container my-6 flex justify-center {className}">

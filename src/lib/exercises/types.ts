@@ -341,6 +341,34 @@ export interface Exercise {
 	/** Supplementary resources (videos, PDFs, links, etc.) */
 	resources?: ExerciseResource[];
 
+	// Math parsing configuration
+	/**
+	 * Custom function identifiers to recognize in math expressions.
+	 *
+	 * When math expressions contain identifiers like P(x), Q'(x), etc., the parser
+	 * needs to know which identifiers should be treated as function calls rather
+	 * than implicit multiplication.
+	 *
+	 * - `undefined`: Use parser defaults (f, g, h, u, v, w, F, G, H)
+	 * - `[]`: Disable generic function parsing entirely
+	 * - `['f', 'P', 'Q']`: Recognize only these identifiers as functions
+	 *
+	 * This enables parsing of:
+	 * - Function calls: P(x), Q(a, b)
+	 * - Derivatives: f'(x), P''(x)
+	 * - Inverse functions: f^{-1}(x)
+	 *
+	 * @example
+	 * ```typescript
+	 * const exercise: Exercise = {
+	 *   generic_functions: ['f', 'P', 'Q'],
+	 *   statement_md: "Soit $f$ et $P$ deux fonctions. Calculer $P'(x)$.",
+	 *   // P'(x) will be parsed as derivative of function P
+	 * };
+	 * ```
+	 */
+	generic_functions?: string[];
+
 	// Audit fields
 	created_at: string;
 	updated_at: string;

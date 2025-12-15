@@ -30,6 +30,7 @@
 		generateGroupSeed
 	} from '$lib/exercises/generator/instance-generator';
 	import type { Exercise, ExerciseInstance } from '$lib/exercises/types';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import FontSelector from '$lib/components/FontSelector.svelte';
@@ -149,6 +150,26 @@
 	let displaySolutionMd = $derived(
 		currentInstance ? currentInstance.solution_md : exercise.solution_md
 	);
+
+	/**
+	 * Build GenericFunctionConfig from exercise.generic_functions.
+	 *
+	 * - undefined: Exercise doesn't specify → use parser defaults
+	 * - []: Empty array → disable generic function parsing
+	 * - ['f', 'P', ...]: Custom list → use those identifiers
+	 */
+	let genericFunctionsConfig = $derived.by<GenericFunctionConfig | undefined>(() => {
+		if (exercise.generic_functions === undefined || exercise.generic_functions === null) {
+			// Use parser defaults
+			return undefined;
+		}
+		// Custom configuration from exercise
+		return {
+			names: exercise.generic_functions,
+			allowDerivatives: true,
+			allowInverse: true
+		};
+	});
 </script>
 
 <!-- ============================================================================ -->
@@ -214,7 +235,7 @@
 	<!-- STATEMENT -->
 	<!-- ============================================================================ -->
 	<div class="exercise-statement exercise-content">
-		<MarkdownRenderer content={displayStatementMd} />
+		<MarkdownRenderer content={displayStatementMd} genericFunctions={genericFunctionsConfig} />
 	</div>
 
 	<!-- ============================================================================ -->
@@ -255,7 +276,7 @@
 	{#if showSolution}
 		<div class="solution exercise-content mt-6 rounded-lg border border-border bg-muted/30 p-4">
 			<h3 class="mb-3 text-lg font-semibold text-foreground">Solution</h3>
-			<MarkdownRenderer content={displaySolutionMd} />
+			<MarkdownRenderer content={displaySolutionMd} genericFunctions={genericFunctionsConfig} />
 		</div>
 	{/if}
 {/if}

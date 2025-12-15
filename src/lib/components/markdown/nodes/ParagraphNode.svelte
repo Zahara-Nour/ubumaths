@@ -22,6 +22,7 @@
 -->
 <script lang="ts">
 	import type { InlineNode, InputState } from '$lib/custom-markdown';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import MathInline from './MathInline.svelte';
 	import MathPrompt from './MathPrompt.svelte';
 	import TextNode from './TextNode.svelte';
@@ -43,6 +44,8 @@
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
 		onMentionClick?: (username: string) => void;
+		/** Configuration for generic function names (f, g, h, P, Q, etc.) */
+		genericFunctions?: GenericFunctionConfig | null;
 	}
 
 	let {
@@ -53,7 +56,8 @@
 		onInputSubmit,
 		inputsDisabled = false,
 		onHashtagClick,
-		onMentionClick
+		onMentionClick,
+		genericFunctions
 	}: Props = $props();
 
 	/**
@@ -119,9 +123,10 @@
 					display="inline"
 					inputs={inputs.filter((i) => i.type === 'math')}
 					onPromptChange={onInputChange}
+					{genericFunctions}
 				/>
 			{:else}
-				<MathInline expression={child.expression} syntax={child.syntax} />
+				<MathInline expression={child.expression} syntax={child.syntax} {genericFunctions} />
 			{/if}
 		{:else if child.type === 'blank'}
 			{@const state = getInputState(child.index)}

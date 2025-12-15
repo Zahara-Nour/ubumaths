@@ -37,6 +37,18 @@ export {
 /**
  * Schema for creating a new exercise (POST /api/exercises)
  */
+/**
+ * Schema for valid function identifier names.
+ * Must start with a letter, followed by letters, numbers, or underscores.
+ */
+const functionIdentifierSchema = z
+	.string()
+	.min(1, 'Function name cannot be empty')
+	.regex(
+		/^[a-zA-Z][a-zA-Z0-9_]*$/,
+		'Function name must start with a letter and contain only letters, numbers, or underscores'
+	);
+
 export const createExerciseSchema = z.object({
 	statement_md: z.string().trim().min(1, 'Statement is required').max(50000, 'Statement too long'),
 	solution_md: z.string().trim().min(1, 'Solution is required').max(50000, 'Solution too long'),
@@ -85,7 +97,22 @@ export const createExerciseSchema = z.object({
 		.max(20, 'Maximum 20 resources')
 		.optional()
 		.nullable()
-		.default([])
+		.default([]),
+	/**
+	 * Custom function identifiers to recognize in math expressions.
+	 * When set, these identifiers will be parsed as function calls (e.g., P(x), Q'(x))
+	 * instead of implicit multiplication.
+	 *
+	 * - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
+	 * - null: Use parser defaults
+	 * - []: Disable generic function parsing entirely
+	 * - ['f', 'P', 'Q']: Recognize only these identifiers as functions
+	 */
+	generic_functions: z
+		.array(functionIdentifierSchema)
+		.max(50, 'Maximum 50 function names')
+		.optional()
+		.nullable()
 });
 
 /**
@@ -387,6 +414,8 @@ export const exerciseResponseSchema = z.object({
 		.union([z.array(z.any()), z.record(z.string(), z.any())])
 		.nullable()
 		.optional(),
+	// Generic function identifiers for math parsing
+	generic_functions: z.array(z.string()).nullable().optional(),
 	is_public: z.boolean(),
 	created_by: z.string().uuid(),
 	// Supabase returns datetime with +00:00 offset, not Z suffix
