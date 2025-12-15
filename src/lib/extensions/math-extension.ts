@@ -246,9 +246,14 @@ export const MathInline = Node.create({
 					const nodeAtPos = editor.state.doc.nodeAt(pos);
 
 					if (nodeAtPos && nodeAtPos.type.name === 'mathInline') {
+						// When user edits via math-field, MathLive returns LaTeX.
+						// Clear originalExpression so markdown export uses the new latex value,
+						// and set syntax to 'latex' for proper export delimiters.
 						tr.setNodeMarkup(pos, undefined, {
 							...nodeAtPos.attrs,
-							latex: target.value
+							latex: target.value,
+							originalExpression: '',
+							syntax: 'latex'
 						});
 						editor.view.dispatch(tr);
 					}
@@ -579,9 +584,14 @@ export const MathBlock = Node.create({
 					const nodeAtPos = editor.state.doc.nodeAt(pos);
 
 					if (nodeAtPos && nodeAtPos.type.name === 'mathBlock') {
+						// When user edits via math-field, MathLive returns LaTeX.
+						// Clear originalExpression so markdown export uses the new latex value,
+						// and set syntax to 'latex' for proper export delimiters.
 						tr.setNodeMarkup(pos, undefined, {
 							...nodeAtPos.attrs,
-							latex: target.value
+							latex: target.value,
+							originalExpression: '',
+							syntax: 'latex'
 						});
 						editor.view.dispatch(tr);
 					}

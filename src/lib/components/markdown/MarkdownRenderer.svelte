@@ -186,7 +186,9 @@
 						{onMentionClick}
 					/>
 				{:else if node.type === 'math-block'}
-					<MathBlock expression={node.expression} syntax={node.syntax} {genericFunctions} />
+					{#key node.expression}
+						<MathBlock expression={node.expression} syntax={node.syntax} {genericFunctions} />
+					{/key}
 				{:else if node.type === 'horizontal-rule'}
 					<HorizontalRule />
 				{:else if node.type === 'list'}
