@@ -285,6 +285,7 @@ export type KnownCommand =
 	| 'mod'
 	// Structure
 	| 'frac'
+	| 'dfrac'
 	| 'sqrt'
 	| 'left'
 	| 'right'
@@ -409,6 +410,7 @@ export const KNOWN_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'mod',
 	// Structure
 	'frac',
+	'dfrac',
 	'sqrt',
 	'left',
 	'right',
