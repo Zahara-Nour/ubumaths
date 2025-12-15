@@ -315,6 +315,7 @@ YouTube format court :
 	 * - Trim each line
 	 * - Remove ALL empty lines (compares content only, ignores whitespace between blocks)
 	 * - Normalize table separator rows preserving alignment (:---, :---:, ---:)
+	 *   Note: Both '---' and ':---' are treated as left-align for normalization
 	 * - This makes "text\nlist" equivalent to "text\n\nlist"
 	 */
 	function normalizeMarkdown(md: string): string {
@@ -333,7 +334,9 @@ YouTube format court :
 						const hasRight = c.endsWith(':');
 						if (hasLeft && hasRight) return ':---:';
 						if (hasRight) return '---:';
-						return '---';
+						// For left alignment, always use :--- for consistent comparison
+						// (both '---' and ':---' represent left alignment in GFM)
+						return ':---';
 					});
 					return '|' + normalized.join('|') + '|';
 				}
@@ -400,6 +403,31 @@ YouTube format court :
 
 	// Export view mode: 'diff' or 'raw'
 	let exportViewMode = $state<'diff' | 'raw'>('diff');
+
+	/**
+	 * Convert diff result to a copyable text format (standard diff format)
+	 */
+	function diffToText(diff: DiffLine[]): string {
+		const lines: string[] = [];
+		for (const line of diff) {
+			if (line.type === 'unchanged') {
+				lines.push(`  ${line.exportLine || ''}`);
+			} else if (line.type === 'removed') {
+				lines.push(`- ${line.importLine || ''}`);
+			} else if (line.type === 'added') {
+				lines.push(`+ ${line.exportLine || ''}`);
+			} else if (line.type === 'modified') {
+				lines.push(`- ${line.importLine || ''}`);
+				lines.push(`+ ${line.exportLine || ''}`);
+			}
+		}
+		return lines.join('\n');
+	}
+
+	// Text content to copy based on view mode
+	let exportCopyContent = $derived(
+		exportViewMode === 'diff' && hasDifferences ? diffToText(diffResult) : exportMarkdown
+	);
 
 	// ============================================
 	// Copy to clipboard
@@ -1150,11 +1178,11 @@ YouTube format court :
 						<Button
 							size="sm"
 							variant="ghost"
-							onclick={() => copyToClipboard(exportMarkdown, 'markdown')}
+							onclick={() => copyToClipboard(exportCopyContent, 'markdown')}
 						>
 							{#if copiedMarkdown}
 								<Check class="mr-1 h-3 w-3 text-green-600" />
-								Copie
+								Copié
 							{:else}
 								<Copy class="mr-1 h-3 w-3" />
 								Copier

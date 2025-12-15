@@ -226,9 +226,9 @@ describe('tipTapToMarkdown - Template Eval', () => {
 // ============================================================================
 
 describe('tipTapToMarkdown - Blank Fields', () => {
-	it('converts blankField to {{blank:index}}', () => {
+	it('converts blankField to {{blank:number}}', () => {
 		const json = createDoc(
-			createParagraph(createText('Answer: '), { type: 'blankField', attrs: { index: 1 } })
+			createParagraph(createText('Answer: '), { type: 'blankField', attrs: { number: 1 } })
 		);
 		const result = tipTapToMarkdown(json);
 
@@ -238,11 +238,11 @@ describe('tipTapToMarkdown - Blank Fields', () => {
 	it('handles multiple blank fields', () => {
 		const json = createDoc(
 			createParagraph(
-				{ type: 'blankField', attrs: { index: 1 } },
+				{ type: 'blankField', attrs: { number: 1 } },
 				createText(' + '),
-				{ type: 'blankField', attrs: { index: 2 } },
+				{ type: 'blankField', attrs: { number: 2 } },
 				createText(' = '),
-				{ type: 'blankField', attrs: { index: 3 } }
+				{ type: 'blankField', attrs: { number: 3 } }
 			)
 		);
 		const result = tipTapToMarkdown(json);
