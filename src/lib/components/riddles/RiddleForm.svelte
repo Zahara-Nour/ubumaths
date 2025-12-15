@@ -191,7 +191,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<RichTextEditor bind:value={statement} />
+			<RichTextEditor bind:htmlValue={statement} />
 		</Card.Content>
 	</Card.Root>
 
@@ -204,7 +204,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<RichTextEditor bind:value={correction} />
+			<RichTextEditor bind:htmlValue={correction} />
 		</Card.Content>
 	</Card.Root>
 

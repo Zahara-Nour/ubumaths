@@ -95,7 +95,7 @@ interface Props {
 	mode?: 'chat' | 'form'; // default: 'form'
 
 	// Binding (mode form)
-	value?: string; // HTML content (bindable)
+	htmlValue?: string; // HTML content (bindable)
 	jsonValue?: unknown; // TipTap JSON (bindable, optional)
 	markdownValue?: string; // Markdown content (bindable, optional)
 
@@ -133,18 +133,18 @@ interface ToolbarConfig {
 
 #### Priorité des bindings (initialisation)
 
-Quand plusieurs props sont fournies au montage : `markdownValue` > `jsonValue` > `value` (HTML)
+Quand plusieurs props sont fournies au montage : `markdownValue` > `jsonValue` > `htmlValue`
 
 #### Exemples d'utilisation
 
 ```svelte
-<!-- Mode Form (défaut) - Édition simple -->
+<!-- Mode Form (défaut) - Édition simple avec HTML -->
 <script lang="ts">
   import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
   let content = $state('');
 </script>
 
-<RichTextEditor bind:value={content} />
+<RichTextEditor bind:htmlValue={content} />
 
 <!-- Mode Form - Avec JSON -->
 <script lang="ts">
@@ -153,7 +153,7 @@ Quand plusieurs props sont fournies au montage : `markdownValue` > `jsonValue` >
 </script>
 
 <RichTextEditor
-  bind:value={htmlContent}
+  bind:htmlValue={htmlContent}
   bind:jsonValue={jsonContent}
 />
 

@@ -609,7 +609,7 @@
 					<!-- Content -->
 					<div class="space-y-2">
 						<Label for="content">Message *</Label>
-						<RichTextEditor bind:value={content} bind:jsonValue={contentJson} />
+						<RichTextEditor bind:htmlValue={content} bind:jsonValue={contentJson} />
 					</div>
 
 					<!-- Attachments -->

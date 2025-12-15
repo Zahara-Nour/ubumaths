@@ -58,7 +58,7 @@ export interface RichTextEditorProps {
 	/** Editor mode (chat or form) */
 	mode?: RichTextMode;
 	/** HTML content value */
-	value?: string;
+	htmlValue?: string;
 	/** JSON content value (TipTap format) */
 	jsonValue?: unknown;
 	/** Markdown content value (bindable, reactive) */

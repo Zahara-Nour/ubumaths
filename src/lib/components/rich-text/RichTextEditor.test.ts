@@ -835,7 +835,7 @@ describe('RichTextEditorUnified - markdownValue Binding (Import)', () => {
 		// TODO: Once implemented, test should verify:
 		// - editor.isEmpty returns true
 		// - jsonValue is also cleared
-		// - value (HTML) is also cleared
+		// - htmlValue is also cleared
 	});
 
 	it('should handle markdown with custom syntax when importing', () => {
@@ -979,7 +979,7 @@ describe('RichTextEditorUnified - getMarkdown() Method', () => {
 describe('RichTextEditorUnified - Initialization Priority', () => {
 	/**
 	 * Tests for prop initialization priority.
-	 * When multiple value props are provided at mount, markdownValue should take priority.
+	 * When multiple binding props are provided at mount, markdownValue should take priority.
 	 */
 
 	it('should prioritize markdownValue over jsonValue at mount', () => {
@@ -989,7 +989,7 @@ describe('RichTextEditorUnified - Initialization Priority', () => {
 		// This documents the expected priority order:
 		// 1. markdownValue (if provided and non-empty)
 		// 2. jsonValue (if provided and is object)
-		// 3. value (HTML string fallback)
+		// 3. htmlValue (HTML string fallback)
 
 		const markdownValue = '**Priority test**';
 		const jsonValue = {
@@ -1006,19 +1006,19 @@ describe('RichTextEditorUnified - Initialization Priority', () => {
 		// - markdownValue is converted to TipTap JSON correctly
 	});
 
-	it('should prioritize markdownValue over value (HTML) at mount', () => {
+	it('should prioritize markdownValue over htmlValue at mount', () => {
 		// Expected behavior:
-		// If both markdownValue and value are provided, markdownValue wins
+		// If both markdownValue and htmlValue are provided, markdownValue wins
 
 		const markdownValue = '# Markdown heading';
-		const value = '<p>HTML content</p>';
+		const htmlValue = '<p>HTML content</p>';
 
 		expect(markdownValue).toBeDefined();
-		expect(value).toBeDefined();
+		expect(htmlValue).toBeDefined();
 
 		// TODO: Once implemented, test should verify:
 		// - Initial editor content is the heading from markdownValue
-		// - Not the paragraph from value
+		// - Not the paragraph from htmlValue
 	});
 
 	it('should fall back to jsonValue if markdownValue is undefined', () => {
