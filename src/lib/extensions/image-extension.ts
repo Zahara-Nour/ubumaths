@@ -7,6 +7,8 @@
  * - widthPercent: 0-100
  * - alignment: 'left' | 'center' | 'right'
  * - caption: string (displayed as figcaption)
+ * - href: link URL for clickable images
+ * - linkTitle: title attribute for the link
  *
  * @module extensions/image-extension
  */
@@ -62,6 +64,16 @@ export const CustomImage = Image.extend({
 				default: null,
 				parseHTML: (element: HTMLElement) => element.getAttribute('data-caption'),
 				renderHTML: () => ({})
+			},
+			href: {
+				default: null,
+				parseHTML: (element: HTMLElement) => element.getAttribute('data-href'),
+				renderHTML: () => ({})
+			},
+			linkTitle: {
+				default: null,
+				parseHTML: (element: HTMLElement) => element.getAttribute('data-link-title'),
+				renderHTML: () => ({})
 			}
 		};
 	},
@@ -78,6 +90,8 @@ export const CustomImage = Image.extend({
 		const widthPercent = node.attrs.widthPercent as number | null;
 		const alignment = node.attrs.alignment as string | null;
 		const caption = node.attrs.caption as string | null;
+		const href = node.attrs.href as string | null;
+		const linkTitle = node.attrs.linkTitle as string | null;
 
 		// HTMLAttributes contains src, alt, title from parent Image extension
 		const { src, alt, title } = HTMLAttributes;
@@ -121,9 +135,27 @@ export const CustomImage = Image.extend({
 				'data-size-class': sizeClass || undefined,
 				'data-width-percent': widthPercent ?? undefined,
 				'data-alignment': alignment || undefined,
-				'data-caption': caption || undefined
+				'data-caption': caption || undefined,
+				'data-href': href || undefined,
+				'data-link-title': linkTitle || undefined
 			}
 		];
+
+		// If href exists, wrap img in a link
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		let imageContent: any = imgElement;
+		if (href) {
+			imageContent = [
+				'a',
+				{
+					href,
+					title: linkTitle || undefined,
+					target: '_blank',
+					rel: 'noopener noreferrer'
+				},
+				imgElement
+			];
+		}
 
 		// If caption exists, wrap in figure with figcaption
 		if (caption) {
@@ -133,7 +165,7 @@ export const CustomImage = Image.extend({
 					class: 'image-figure',
 					style: wrapperStyles.join('; ')
 				},
-				imgElement,
+				imageContent,
 				[
 					'figcaption',
 					{
@@ -145,14 +177,14 @@ export const CustomImage = Image.extend({
 			];
 		}
 
-		// No caption - wrap img in a div for alignment
+		// No caption - wrap in a div for alignment
 		return [
 			'div',
 			{
 				class: 'image-wrapper',
 				style: wrapperStyles.join('; ')
 			},
-			imgElement
+			imageContent
 		];
 	}
 });
