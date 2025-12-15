@@ -12,6 +12,7 @@
 - [Intégration MathLive](#intégration-mathlive)
 - [Extensions Templates](#extensions-templates)
 - [Import/Export Markdown](#importexport-markdown)
+- [Copier-Coller Markdown](#copier-coller-markdown)
 - [Stockage des données](#stockage-des-données)
 - [Tests](#tests)
 - [Debug Page](#debug-page)
@@ -24,18 +25,22 @@
 
 ```
 src/lib/components/rich-text/
-├── RichTextEditor.svelte     # Composant principal (édition)
-├── RichTextDisplay.svelte    # Composant d'affichage (lecture seule)
-├── RichTextEditor.test.ts    # Tests unitaires (45 tests)
-├── config.ts                 # Configuration (couleurs, emojis, templates)
-├── editor-config.ts          # Factory TipTap
-├── types.ts                  # Types TypeScript
-├── markdown-import.ts        # Markdown → TipTap JSON conversion
-├── markdown-export.ts        # TipTap JSON → Markdown conversion
+├── RichTextEditor.svelte        # Composant principal (édition)
+├── RichTextDisplay.svelte       # Composant d'affichage (lecture seule)
+├── RichTextEditor.test.ts       # Tests unitaires (45 tests)
+├── config.ts                    # Configuration (couleurs, emojis, templates)
+├── editor-config.ts             # Factory TipTap
+├── types.ts                     # Types TypeScript
+├── markdown-import.ts           # Markdown → TipTap JSON conversion
+├── markdown-export.ts           # TipTap JSON → Markdown conversion
+├── markdown-detection.ts        # Détection syntaxe Markdown (pour paste)
+├── markdown-paste-extension.ts  # Extension TipTap pour paste Markdown
 ├── __tests__/
-│   ├── markdown-import.test.ts   # 46 tests
-│   └── markdown-export.test.ts   # 60 tests
-└── README.md                 # Documentation composant
+│   ├── markdown-import.test.ts  # 46 tests
+│   ├── markdown-export.test.ts  # 60 tests
+│   └── markdown-paste.test.ts   # 30 tests
+├── markdown-detection.test.ts   # 31 tests
+└── README.md                    # Documentation composant
 
 src/lib/extensions/
 ├── math-extension.ts         # Extensions TipTap pour MathLive
@@ -584,6 +589,85 @@ L'attribut `syntax` et `originalExpression` permettent de préserver la syntaxe 
 
 ---
 
+## Copier-Coller Markdown
+
+Le RichTextEditor supporte le copier-coller de contenu Markdown. Le texte Markdown collé est automatiquement converti en contenu riche.
+
+### Fonctionnement
+
+1. **Détection** : Le texte collé est analysé pour détecter la syntaxe Markdown
+2. **Normalisation** : L'indentation commune est supprimée (préserve l'indentation relative pour les listes imbriquées)
+3. **Conversion** : Le Markdown est converti en TipTap JSON via `markdownToTipTap()`
+4. **Insertion** : Le contenu riche est inséré dans l'éditeur
+
+### Syntaxes supportées
+
+| Markdown        | Résultat                     |
+| --------------- | ---------------------------- |
+| `# Titre`       | Heading niveau 1-6           |
+| `**gras**`      | Texte en gras                |
+| `*italique*`    | Texte en italique            |
+| `` `code` ``    | Code inline                  |
+| `- item`        | Liste à puces                |
+| `1. item`       | Liste numérotée              |
+| `  - sous-item` | Liste imbriquée (2 espaces)  |
+| `> citation`    | Blockquote                   |
+| `$x^2$`         | Formule math inline (LaTeX)  |
+| `~2x+3~`        | Formule math inline (custom) |
+| `{{var}}`       | Template variable            |
+| `{{1..10}}`     | Template random              |
+| `{{eval:a+b}}`  | Template eval                |
+| `{{blank:1}}`   | Champ à remplir              |
+
+### Exemple
+
+Coller ce texte :
+
+```markdown
+# Titre
+
+Texte **gras** et _italique_.
+
+- Item 1
+- Item 2
+  - Sous-item 2.1
+
+Math: $x^2 + y^2$
+
+Template: {{variable}}
+```
+
+Produit un document riche avec :
+
+- Un heading H1
+- Un paragraphe avec formatage bold/italic
+- Une liste à puces avec sous-liste
+- Une formule mathématique MathLive
+- Un chip template variable
+
+### Gestion de l'indentation
+
+Le système normalise automatiquement l'indentation :
+
+```
+Texte copié (avec indentation) :     Après normalisation :
+  # Titre                            # Titre
+  - Item 1                           - Item 1
+    - Sous-item                        - Sous-item
+  - Item 2                           - Item 2
+```
+
+L'indentation **commune** (minimum) est supprimée, mais l'indentation **relative** est préservée pour les listes imbriquées.
+
+### Fichiers
+
+| Fichier                       | Rôle                                       |
+| ----------------------------- | ------------------------------------------ |
+| `markdown-detection.ts`       | Détection de syntaxe Markdown (scoring)    |
+| `markdown-paste-extension.ts` | Extension TipTap pour intercepter le paste |
+
+---
+
 ## Stockage des données
 
 ### Format JSON (recommandé pour le chat)
@@ -657,7 +741,7 @@ L'attribut `syntax` et `originalExpression` permettent de préserver la syntaxe 
 
 ### Couverture
 
-232 tests unitaires au total :
+293 tests unitaires au total :
 
 | Fichier                              | Tests | Description                                    |
 | ------------------------------------ | ----- | ---------------------------------------------- |
@@ -667,6 +751,8 @@ L'attribut `syntax` et `originalExpression` permettent de préserver la syntaxe 
 | `blank-extension.svelte.test.ts`     | 14    | BlankField validation, serialization           |
 | `markdown-import.test.ts`            | 46    | Markdown → TipTap conversion                   |
 | `markdown-export.test.ts`            | 60    | TipTap → Markdown conversion                   |
+| `markdown-detection.test.ts`         | 31    | Détection syntaxe Markdown (scoring)           |
+| `markdown-paste.test.ts`             | 30    | Extension paste et trivial HTML detection      |
 
 ### Exécution
 
@@ -794,15 +880,17 @@ Interface de test pour la conversion Markdown :
 
 ## Fichiers de référence
 
-| Fichier                                               | Description             |
-| ----------------------------------------------------- | ----------------------- |
-| `src/lib/components/rich-text/RichTextEditor.svelte`  | Composant principal     |
-| `src/lib/components/rich-text/RichTextDisplay.svelte` | Affichage lecture seule |
-| `src/lib/components/rich-text/config.ts`              | Configuration           |
-| `src/lib/components/rich-text/editor-config.ts`       | Factory TipTap          |
-| `src/lib/components/rich-text/types.ts`               | Types TypeScript        |
-| `src/lib/components/rich-text/markdown-import.ts`     | Markdown → TipTap       |
-| `src/lib/components/rich-text/markdown-export.ts`     | TipTap → Markdown       |
-| `src/lib/extensions/math-extension.ts`                | Extensions math         |
-| `src/lib/extensions/template-extensions.ts`           | Extensions templates    |
-| `src/lib/extensions/blank-extension.ts`               | Extension blank         |
+| Fichier                                                    | Description                |
+| ---------------------------------------------------------- | -------------------------- |
+| `src/lib/components/rich-text/RichTextEditor.svelte`       | Composant principal        |
+| `src/lib/components/rich-text/RichTextDisplay.svelte`      | Affichage lecture seule    |
+| `src/lib/components/rich-text/config.ts`                   | Configuration              |
+| `src/lib/components/rich-text/editor-config.ts`            | Factory TipTap             |
+| `src/lib/components/rich-text/types.ts`                    | Types TypeScript           |
+| `src/lib/components/rich-text/markdown-import.ts`          | Markdown → TipTap          |
+| `src/lib/components/rich-text/markdown-export.ts`          | TipTap → Markdown          |
+| `src/lib/components/rich-text/markdown-detection.ts`       | Détection syntaxe Markdown |
+| `src/lib/components/rich-text/markdown-paste-extension.ts` | Extension paste Markdown   |
+| `src/lib/extensions/math-extension.ts`                     | Extensions math            |
+| `src/lib/extensions/template-extensions.ts`                | Extensions templates       |
+| `src/lib/extensions/blank-extension.ts`                    | Extension blank            |
