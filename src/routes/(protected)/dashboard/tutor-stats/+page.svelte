@@ -174,12 +174,12 @@
 			<div class="flex flex-wrap items-center gap-4">
 				<div class="flex items-center gap-2">
 					<label for="period-select" class="text-sm font-medium">Période:</label>
-					<MySelect bind:value={selectedPeriod} items={periodItems} />
+					<MySelect type="single" bind:value={selectedPeriod} items={periodItems} />
 				</div>
 
 				<div class="flex items-center gap-2">
 					<label for="class-select" class="text-sm font-medium">Classe:</label>
-					<MySelect bind:value={selectedClassId} items={classItems} />
+					<MySelect type="single" bind:value={selectedClassId} items={classItems} />
 				</div>
 
 				<Button

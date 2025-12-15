@@ -13519,3 +13519,92 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// ============================================================================
+// Custom Type Exports
+// These types are derived from database tables and used throughout the app
+// ============================================================================
+
+// Notification types
+export type Notification = Tables<'notifications'>;
+export type NotificationType = 'info' | 'alert' | 'announcement' | 'reminder';
+export type NotificationPriority = 'urgent' | 'important' | 'normal';
+export type NotificationTargetType = 'all' | 'role' | 'class' | 'user' | 'users';
+export type SystemEventType =
+	| 'maintenance'
+	| 'update'
+	| 'security'
+	| 'feature'
+	| 'general'
+	| 'assignment_created'
+	| 'resource_added'
+	| 'reward_earned'
+	| 'badge_unlocked'
+	| 'maintenance_scheduled'
+	| 'feature_released'
+	| 'assessment_assigned'
+	| 'assessment_graded'
+	| 'error_report_validated'
+	| 'error_report_rejected'
+	| 'pending_user'
+	| 'user_approved';
+
+// Achievement types
+export type Achievement = Tables<'achievements'>;
+
+// Class and related types
+export type Class = Tables<'classes'>;
+export type ClassSchedule = Tables<'class_schedules'>;
+
+// User types
+export type UserRole = 'student' | 'teacher' | 'admin';
+export type Gender = 'male' | 'female' | 'other' | 'prefer_not_to_say';
+
+// Friendship types
+export type FriendshipType = 'pending' | 'accepted' | 'blocked';
+export interface FriendshipWithProfile {
+	id: string;
+	requester_id: string;
+	addressee_id: string;
+	status: FriendshipType;
+	friendship_type?: FriendshipType;
+	created_at: string;
+	updated_at: string;
+	friend_profile?: {
+		id: string;
+		full_name?: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url?: string | null;
+		avatar_skin?: string | null;
+		avatar_eyes?: string | null;
+		avatar_mouth?: string | null;
+		role?: string;
+		gender?: string | null;
+		presence?: {
+			is_online: boolean;
+			last_seen: string;
+		};
+	};
+}
+
+// Week configuration (stored as JSON in schools.week_config)
+export interface WeekConfig {
+	first_day: number;
+	last_day: number;
+	school_days: number[];
+	weekend_days: number[];
+}
+
+// School timetable types (stored as JSON in schools.timetable)
+export interface SchoolPeriod {
+	number: number;
+	name: string | null;
+	start_time: string;
+	end_time: string;
+}
+
+export interface SchoolTimetable {
+	periods: SchoolPeriod[];
+	week_config?: WeekConfig;
+}

@@ -138,8 +138,8 @@
 					return (a.achievement.display_order ?? 0) - (b.achievement.display_order ?? 0);
 				}
 				case 'points': {
-					const pointsA = a.achievement.metadata?.points ?? a.achievement.points ?? 0;
-					const pointsB = b.achievement.metadata?.points ?? b.achievement.points ?? 0;
+					const pointsA = a.achievement.metadata?.points ?? 0;
+					const pointsB = b.achievement.metadata?.points ?? 0;
 					// Higher points first
 					const pointsDiff = pointsB - pointsA;
 					if (pointsDiff !== 0) return pointsDiff;
@@ -164,7 +164,7 @@
 		const totalPoints = achievements
 			.filter((a) => a.unlocked)
 			.reduce((sum, a) => {
-				const points = a.achievement.metadata?.points ?? a.achievement.points ?? 0;
+				const points = a.achievement.metadata?.points ?? 0;
 				return sum + points;
 			}, 0);
 
@@ -264,25 +264,40 @@
 			<!-- Context filter -->
 			<div class="flex items-center gap-2">
 				<span class="text-sm text-muted-foreground">Contexte:</span>
-				<MySelect bind:value={filterContext} items={contextOptions} placeholder="Contexte" />
+				<MySelect
+					type="single"
+					bind:value={filterContext}
+					items={contextOptions}
+					placeholder="Contexte"
+				/>
 			</div>
 
 			<!-- Status filter -->
 			<div class="flex items-center gap-2">
 				<span class="text-sm text-muted-foreground">Statut:</span>
-				<MySelect bind:value={filterStatus} items={statusOptions} placeholder="Statut" />
+				<MySelect
+					type="single"
+					bind:value={filterStatus}
+					items={statusOptions}
+					placeholder="Statut"
+				/>
 			</div>
 
 			<!-- Category filter -->
 			<div class="flex items-center gap-2">
 				<span class="text-sm text-muted-foreground">Categorie:</span>
-				<MySelect bind:value={filterCategory} items={categoryOptions} placeholder="Categorie" />
+				<MySelect
+					type="single"
+					bind:value={filterCategory}
+					items={categoryOptions}
+					placeholder="Categorie"
+				/>
 			</div>
 
 			<!-- Sort -->
 			<div class="flex items-center gap-2">
 				<span class="text-sm text-muted-foreground">Trier:</span>
-				<MySelect bind:value={sortBy} items={sortOptions} placeholder="Tri" />
+				<MySelect type="single" bind:value={sortBy} items={sortOptions} placeholder="Tri" />
 			</div>
 
 			<!-- Compact mode toggle -->

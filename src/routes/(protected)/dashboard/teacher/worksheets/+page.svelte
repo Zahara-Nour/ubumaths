@@ -266,7 +266,12 @@
 				<!-- Type -->
 				<div class="space-y-2">
 					<Label>Type</Label>
-					<MySelect items={typeOptions} bind:value={selectedType} placeholder="Tous les types" />
+					<MySelect
+						type="single"
+						items={typeOptions}
+						bind:value={selectedType}
+						placeholder="Tous les types"
+					/>
 				</div>
 
 				<!-- Actions -->

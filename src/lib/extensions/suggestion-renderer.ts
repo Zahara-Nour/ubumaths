@@ -103,17 +103,18 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 	 * Renders items in the popup
 	 */
 	function renderItems(): void {
-		if (!popup) return;
+		const currentPopup = popup;
+		if (!currentPopup) return;
 
 		// Clear existing content
-		popup.innerHTML = '';
+		currentPopup.innerHTML = '';
 
 		if (state.items.length === 0) {
 			// Show no results message
 			const noResults = document.createElement('div');
 			noResults.classList.add('suggestion-no-results');
 			noResults.textContent = noResultsText;
-			popup.appendChild(noResults);
+			currentPopup.appendChild(noResults);
 			return;
 		}
 
@@ -155,7 +156,7 @@ export function createSuggestionRenderer(config: SuggestionRendererConfig) {
 				renderItems();
 			});
 
-			popup.appendChild(itemEl);
+			currentPopup.appendChild(itemEl);
 		});
 	}
 

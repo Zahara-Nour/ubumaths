@@ -21,7 +21,7 @@
  * @see https://tiptap.dev/docs/editor/extensions/custom-extensions
  */
 
-import { Node, mergeAttributes, InputRule } from '@tiptap/core';
+import { Node as TipTapNode, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
@@ -322,7 +322,7 @@ function createEditPopover(
  * Attributes:
  * - name: string - The variable name
  */
-export const TemplateVariable = Node.create({
+export const TemplateVariable = TipTapNode.create({
 	name: 'templateVariable',
 	group: 'inline',
 	inline: true,
@@ -472,7 +472,7 @@ export const TemplateVariable = Node.create({
  * Attributes:
  * - spec: string - The random specification
  */
-export const TemplateRandom = Node.create({
+export const TemplateRandom = TipTapNode.create({
 	name: 'templateRandom',
 	group: 'inline',
 	inline: true,
@@ -643,7 +643,7 @@ export const TemplateRandom = Node.create({
  * Attributes:
  * - expression: string - The expression (may include modifiers)
  */
-export const TemplateEval = Node.create({
+export const TemplateEval = TipTapNode.create({
 	name: 'templateEval',
 	group: 'inline',
 	inline: true,

@@ -365,7 +365,11 @@
 							<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
 								<div class="space-y-2">
 									<Label>Difficulte</Label>
-									<MySelect bind:value={selectedDifficulty} items={difficultyOptions} />
+									<MySelect
+										type="single"
+										bind:value={selectedDifficulty}
+										items={difficultyOptions}
+									/>
 								</div>
 
 								<div class="space-y-2">
