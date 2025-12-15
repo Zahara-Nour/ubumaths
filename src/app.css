@@ -369,12 +369,17 @@ math-field:focus {
 }
 
 /* Block math styling */
-.math-block-wrapper math-field {
-	width: 100%;
-	border: 2px dashed var(--color-border);
+.math-block-wrapper {
+	display: flex;
+	justify-content: center;
 	margin: 1rem 0;
-	padding: 1rem;
-	text-align: center;
+}
+
+.math-block-inner {
+	display: inline-block;
+}
+
+.math-block-inner math-field {
 	font-size: 1.2em;
 }
 
@@ -399,7 +404,7 @@ math-field:focus {
 
 /* Headings in TipTap editor - consistent sizing and dark mode support */
 .ProseMirror h1 {
-	font-size: 1.5rem !important;
+	font-size: 1.75rem !important;
 	line-height: 2rem !important;
 	font-weight: 700;
 	color: var(--color-foreground) !important;
@@ -428,29 +433,6 @@ math-field:focus {
 	color: var(--color-foreground) !important;
 }
 
-/* Headings in rich-text preview panel - override main h1-h6 styles */
-.rich-text-preview h1 {
-	font-size: 1.5rem !important;
-	line-height: 2rem !important;
-}
-
-.rich-text-preview h2 {
-	font-size: 1.25rem !important;
-	line-height: 1.75rem !important;
-}
-
-.rich-text-preview h3 {
-	font-size: 1.125rem !important;
-	line-height: 1.5rem !important;
-}
-
-.rich-text-preview h4,
-.rich-text-preview h5,
-.rich-text-preview h6 {
-	font-size: 1rem !important;
-	line-height: 1.5rem !important;
-}
-
 /* Blockquote in TipTap editor */
 .ProseMirror blockquote {
 	border-left-color: var(--color-border);
@@ -476,10 +458,6 @@ math-field:focus {
 /* Ensure proper math field rendering in editor */
 .math-inline-wrapper {
 	display: inline-block;
-}
-
-.math-block-wrapper {
-	display: block;
 }
 
 /*

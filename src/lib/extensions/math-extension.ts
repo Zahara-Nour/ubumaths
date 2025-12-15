@@ -270,7 +270,26 @@ export const MathInline = Node.create({
 			});
 
 			dom.appendChild(mathfield);
-			return { dom };
+
+			return {
+				dom,
+				/**
+				 * Tell ProseMirror to ignore events from within the math-field.
+				 * This prevents the editor from stealing focus when clicking
+				 * on complex formulas like fractions.
+				 */
+				stopEvent: (event: Event) => {
+					// Check if the event target is within the mathfield
+					const target = event.target;
+					if (target instanceof HTMLElement || target instanceof Element) {
+						// Check if target is the mathfield or inside it
+						if (target === mathfield || mathfield.contains(target)) {
+							return true; // Stop ProseMirror from handling this event
+						}
+					}
+					return false;
+				}
+			};
 		};
 	},
 
@@ -485,18 +504,19 @@ export const MathBlock = Node.create({
 	 */
 	addNodeView() {
 		return ({ node, editor, getPos }: NodeViewRendererProps) => {
-			// Create block wrapper
+			// Create outer wrapper for centering
 			const dom = document.createElement('div');
 			dom.classList.add('math-block-wrapper');
+
+			// Create inner wrapper that shrinks to content
+			const innerWrapper = document.createElement('div');
+			innerWrapper.classList.add('math-block-inner');
 
 			// Create MathLive field
 			const mathfield = document.createElement('math-field') as MathFieldElement;
 
 			// Set initial value
 			mathfield.value = node.attrs.latex as string;
-
-			// Style as block element (CSS handles styling via .math-block-wrapper)
-			mathfield.style.display = 'block';
 
 			// Store mathfield reference on DOM for keyboard navigation plugin
 			(dom as unknown as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;
@@ -543,8 +563,28 @@ export const MathBlock = Node.create({
 				editor.chain().focus().setTextSelection(targetPos).run();
 			});
 
-			dom.appendChild(mathfield);
-			return { dom };
+			innerWrapper.appendChild(mathfield);
+			dom.appendChild(innerWrapper);
+
+			return {
+				dom,
+				/**
+				 * Tell ProseMirror to ignore events from within the math-field.
+				 * This prevents the editor from stealing focus when clicking
+				 * on complex formulas like fractions.
+				 */
+				stopEvent: (event: Event) => {
+					// Check if the event target is within the mathfield
+					const target = event.target;
+					if (target instanceof HTMLElement || target instanceof Element) {
+						// Check if target is the mathfield or inside it
+						if (target === mathfield || mathfield.contains(target)) {
+							return true; // Stop ProseMirror from handling this event
+						}
+					}
+					return false;
+				}
+			};
 		};
 	},
 
