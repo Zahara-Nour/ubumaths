@@ -60,8 +60,13 @@
 		Smile,
 		Send,
 		X,
-		Braces
+		Braces,
+		Eye,
+		EyeOff,
+		Maximize,
+		Minimize
 	} from 'lucide-svelte';
+	import { browser } from '$app/environment';
 	import 'mathlive';
 
 	// Shared configuration imports
@@ -74,6 +79,8 @@
 		EDITOR_PRESETS
 	} from './config';
 	import { createEditorExtensions, getEditorProps } from './editor-config';
+	import { tipTapToMarkdown } from './markdown-export';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { RichTextMode, MathTemplateLevel, ToolbarConfig, EditorPreset } from './types';
 
 	// Component Props
@@ -119,6 +126,8 @@
 	let showFormula = $derived(resolvedToolbar.formula ?? true);
 	let showTemplates = $derived(resolvedToolbar.templates ?? true);
 	let showMore = $derived(resolvedToolbar.more ?? true);
+	let showPreview = $derived(resolvedToolbar.preview ?? false);
+	let showFullscreen = $derived(resolvedToolbar.fullscreen ?? true);
 
 	// Computed defaults based on mode
 	let effectiveShowSendButton = $derived(showSendButton ?? mode === 'chat');
@@ -158,6 +167,13 @@
 
 	// Emoji picker state
 	let selectedEmojiCategory = $state('Smileys');
+
+	// Preview and Fullscreen state
+	let isPreviewMode = $state(false);
+	let isFullscreen = $state(false);
+	let previewMarkdown = $state('');
+	let previewTimeout: ReturnType<typeof setTimeout> | null = null;
+	const PREVIEW_DEBOUNCE_MS = 150;
 
 	// Get math templates based on resolved level
 	let mathTemplatesList = $derived(
@@ -241,6 +257,7 @@
 					}
 				}
 				updateFormattingState();
+				updatePreviewDebounced();
 			},
 			onSelectionUpdate: () => {
 				updateFormattingState();
@@ -253,6 +270,7 @@
 		updateFormattingState();
 
 		return () => {
+			if (previewTimeout) clearTimeout(previewTimeout);
 			editor?.destroy();
 		};
 	});
@@ -435,12 +453,86 @@
 		editor?.commands.insertBlankField('?');
 		editor?.commands.focus();
 	}
+
+	/**
+	 * Update preview markdown with debounce (150ms)
+	 */
+	function updatePreviewDebounced() {
+		if (!isPreviewMode) return;
+		if (previewTimeout) clearTimeout(previewTimeout);
+		previewTimeout = setTimeout(() => {
+			if (editor) {
+				try {
+					previewMarkdown = tipTapToMarkdown(editor.getJSON());
+				} catch (error) {
+					console.error('Preview conversion failed:', error);
+					previewMarkdown = '_Erreur de conversion_';
+				}
+			}
+		}, PREVIEW_DEBOUNCE_MS);
+	}
+
+	/**
+	 * Toggle preview mode and immediately update preview when enabling
+	 */
+	function togglePreview() {
+		isPreviewMode = !isPreviewMode;
+		if (isPreviewMode && editor) {
+			// Immediately update preview when enabling
+			try {
+				previewMarkdown = tipTapToMarkdown(editor.getJSON());
+			} catch (error) {
+				console.error('Preview conversion failed:', error);
+				previewMarkdown = '_Erreur de conversion_';
+			}
+		} else if (previewTimeout) {
+			// Clear pending timeout when disabling preview
+			clearTimeout(previewTimeout);
+			previewTimeout = null;
+		}
+	}
+
+	/**
+	 * Toggle fullscreen mode
+	 */
+	function toggleFullscreen() {
+		isFullscreen = !isFullscreen;
+	}
+
+	/**
+	 * Handle ESC key for fullscreen exit
+	 */
+	function handleFullscreenKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && isFullscreen) {
+			isFullscreen = false;
+		}
+	}
+
+	/**
+	 * Body scroll lock when fullscreen
+	 */
+	$effect(() => {
+		if (!browser) return;
+		document.body.style.overflow = isFullscreen ? 'hidden' : '';
+		return () => {
+			document.body.style.overflow = '';
+		};
+	});
 </script>
+
+<!--
+	ESC key handler for fullscreen exit
+-->
+<svelte:window onkeydown={handleFullscreenKeydown} />
 
 <!--
 	Editor Container with Organized Collapsible Toolbar
 -->
-<div class="overflow-hidden rounded-lg border border-border bg-card">
+<div
+	class={isFullscreen
+		? 'fixed inset-0 z-50 flex flex-col bg-background'
+		: 'overflow-hidden rounded-lg border border-border bg-card'}
+>
 	<!-- Toolbar -->
 	<div class="border-b border-border bg-muted/50">
 		<!-- Main Toolbar Row -->
@@ -582,6 +674,45 @@
 						</DropdownMenu.Item>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
+			{/if}
+
+			<!-- Preview Toggle -->
+			{#if showPreview}
+				<Button
+					type="button"
+					variant={isPreviewMode ? 'secondary' : 'ghost'}
+					size="sm"
+					onclick={togglePreview}
+					{disabled}
+					title={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
+					aria-label={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
+				>
+					{#if isPreviewMode}
+						<EyeOff class="mr-1 h-4 w-4" aria-hidden="true" />
+					{:else}
+						<Eye class="mr-1 h-4 w-4" aria-hidden="true" />
+					{/if}
+					Apercu
+				</Button>
+			{/if}
+
+			<!-- Fullscreen Toggle -->
+			{#if showFullscreen}
+				<Button
+					type="button"
+					variant={isFullscreen ? 'secondary' : 'ghost'}
+					size="sm"
+					onclick={toggleFullscreen}
+					{disabled}
+					title={isFullscreen ? 'Quitter plein ecran' : 'Plein ecran'}
+					aria-label={isFullscreen ? 'Quitter plein ecran' : 'Plein ecran'}
+				>
+					{#if isFullscreen}
+						<Minimize class="h-4 w-4" aria-hidden="true" />
+					{:else}
+						<Maximize class="h-4 w-4" aria-hidden="true" />
+					{/if}
+				</Button>
 			{/if}
 
 			<!-- Spacer -->
@@ -1086,8 +1217,31 @@
 		</div>
 	{/if}
 
-	<!-- Editor Content Area -->
-	<div bind:this={editorElement} class="bg-background"></div>
+	<!-- Editor Content Area with Split View -->
+	<div
+		class="flex min-h-0 flex-1 {isPreviewMode ? 'flex-col md:flex-row' : ''}"
+		style={isFullscreen ? '' : `min-height: ${minHeight}`}
+	>
+		<!-- Editor Panel -->
+		<div
+			class={isPreviewMode
+				? 'h-1/2 min-h-0 overflow-y-auto md:h-full md:w-1/2 md:border-r md:border-border'
+				: 'h-full w-full'}
+		>
+			<div bind:this={editorElement} class="h-full bg-background"></div>
+		</div>
+
+		<!-- Preview Panel -->
+		{#if isPreviewMode}
+			<div
+				class="h-1/2 overflow-y-auto border-t border-border bg-muted/20 p-4 md:h-full md:w-1/2 md:border-t-0"
+			>
+				<div class="prose prose-sm max-w-none dark:prose-invert">
+					<MarkdownRenderer content={previewMarkdown} />
+				</div>
+			</div>
+		{/if}
+	</div>
 </div>
 
 <style>

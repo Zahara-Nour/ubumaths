@@ -45,6 +45,10 @@ export interface ToolbarConfig {
 	templates?: boolean;
 	/** Advanced tools: Blockquote, Code block, Horizontal rule */
 	more?: boolean;
+	/** Preview toggle: Show/hide markdown preview panel */
+	preview?: boolean;
+	/** Fullscreen toggle: Enter/exit fullscreen mode */
+	fullscreen?: boolean;
 }
 
 /**

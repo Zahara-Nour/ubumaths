@@ -333,7 +333,9 @@ export const EDITOR_PRESETS: Record<EditorPreset, PresetConfig> = {
 			insertion: false,
 			formula: false,
 			templates: false,
-			more: false
+			more: false,
+			preview: false,
+			fullscreen: true
 		},
 		mathTemplates: 'none'
 	},
@@ -344,7 +346,9 @@ export const EDITOR_PRESETS: Record<EditorPreset, PresetConfig> = {
 			insertion: true,
 			formula: true,
 			templates: false,
-			more: false
+			more: false,
+			preview: true,
+			fullscreen: true
 		},
 		mathTemplates: 'basic'
 	},
@@ -355,7 +359,9 @@ export const EDITOR_PRESETS: Record<EditorPreset, PresetConfig> = {
 			insertion: true,
 			formula: true,
 			templates: true,
-			more: true
+			more: true,
+			preview: true,
+			fullscreen: true
 		},
 		mathTemplates: 'full'
 	}
