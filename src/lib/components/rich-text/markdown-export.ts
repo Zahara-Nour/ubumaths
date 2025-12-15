@@ -263,14 +263,19 @@ function convertTableToMarkdown(table: JSONContent): string {
 	lines.push('| ' + headerRow.join(' | ') + ' |');
 
 	// Separator row with alignment indicators
+	// Always use explicit markers for proper roundtrip:
+	// - left: :--- (explicit left-align)
+	// - center: :---:
+	// - right: ---:
 	const separator = alignments.map((align) => {
 		switch (align) {
 			case 'center':
 				return ':---:';
 			case 'right':
 				return '---:';
+			case 'left':
 			default:
-				return '---';
+				return ':---';
 		}
 	});
 	lines.push('|' + separator.join('|') + '|');
@@ -335,7 +340,7 @@ function convertImageToMarkdown(img: JSONContent): string {
 	// Build extended attributes if any
 	const attrs: string[] = [];
 	if (sizeClass) attrs.push(`size=${sizeClass}`);
-	if (widthPercent !== undefined) attrs.push(`width=${widthPercent}%`);
+	if (widthPercent !== undefined && widthPercent !== null) attrs.push(`width=${widthPercent}%`);
 	if (alignment) attrs.push(`align=${alignment}`);
 	if (caption) attrs.push(`caption="${caption}"`);
 
@@ -412,7 +417,7 @@ function convertInlineNodeToMarkdown(node: JSONContent): string {
 			return `{{eval:${node.attrs?.expression || ''}}}`;
 
 		case 'blankField':
-			return `{{blank:${node.attrs?.index || 1}}}`;
+			return `{{blank:${node.attrs?.number || 1}}}`;
 
 		case 'hardBreak':
 			return '\n';

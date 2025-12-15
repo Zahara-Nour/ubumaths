@@ -640,7 +640,7 @@ function extractTemplatesFromText(text: string): Array<string | JSONContent> {
 				case 'blank':
 					results.push({
 						type: 'blankField',
-						attrs: { index: parseInt(classified.value, 10) }
+						attrs: { number: parseInt(classified.value, 10) }
 					});
 					break;
 			}
@@ -690,7 +690,7 @@ function convertBlankNode(node: BlankNode): JSONContent {
 	return {
 		type: 'blankField',
 		attrs: {
-			index: node.index
+			number: node.index
 		}
 	};
 }
