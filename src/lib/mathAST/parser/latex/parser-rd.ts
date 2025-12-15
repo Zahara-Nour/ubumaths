@@ -691,6 +691,7 @@ class RDParser {
 					FUNCTION_COMMANDS.has(token.value) ||
 					token.value in SYMBOL_COMMAND_MAP ||
 					token.value === 'frac' ||
+					token.value === 'dfrac' ||
 					token.value === 'sqrt' ||
 					token.value === 'left'))
 		);
@@ -743,6 +744,7 @@ class RDParser {
 		// Special commands
 		switch (cmd) {
 			case 'frac':
+			case 'dfrac':
 				return this.parseFraction();
 
 			case 'sqrt':

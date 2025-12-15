@@ -507,6 +507,7 @@ class PrattParser {
 					GREEK_COMMANDS.has(token.value) ||
 					token.value in SYMBOL_COMMAND_MAP ||
 					token.value === 'frac' ||
+					token.value === 'dfrac' ||
 					token.value === 'sqrt' ||
 					token.value === 'left'
 				) {
@@ -746,6 +747,7 @@ class PrattParser {
 		// Special commands
 		switch (cmd) {
 			case 'frac':
+			case 'dfrac':
 				return this.parseFraction();
 
 			case 'sqrt':
@@ -1070,6 +1072,7 @@ class PrattParser {
 					FUNCTION_COMMANDS.has(token.value) ||
 					token.value in SYMBOL_COMMAND_MAP ||
 					token.value === 'frac' ||
+					token.value === 'dfrac' ||
 					token.value === 'sqrt' ||
 					token.value === 'left'))
 		);
