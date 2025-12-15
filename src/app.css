@@ -397,14 +397,58 @@ math-field:focus {
 	color: var(--color-foreground) !important;
 }
 
-/* Headings in TipTap editor - ensure dark mode support */
-.ProseMirror h1,
-.ProseMirror h2,
-.ProseMirror h3,
+/* Headings in TipTap editor - consistent sizing and dark mode support */
+.ProseMirror h1 {
+	font-size: 1.5rem !important;
+	line-height: 2rem !important;
+	font-weight: 700;
+	color: var(--color-foreground) !important;
+}
+
+.ProseMirror h2 {
+	font-size: 1.25rem !important;
+	line-height: 1.75rem !important;
+	font-weight: 700;
+	color: var(--color-foreground) !important;
+}
+
+.ProseMirror h3 {
+	font-size: 1.125rem !important;
+	line-height: 1.5rem !important;
+	font-weight: 700;
+	color: var(--color-foreground) !important;
+}
+
 .ProseMirror h4,
 .ProseMirror h5,
 .ProseMirror h6 {
+	font-size: 1rem !important;
+	line-height: 1.5rem !important;
+	font-weight: 600;
 	color: var(--color-foreground) !important;
+}
+
+/* Headings in rich-text preview panel - override main h1-h6 styles */
+.rich-text-preview h1 {
+	font-size: 1.5rem !important;
+	line-height: 2rem !important;
+}
+
+.rich-text-preview h2 {
+	font-size: 1.25rem !important;
+	line-height: 1.75rem !important;
+}
+
+.rich-text-preview h3 {
+	font-size: 1.125rem !important;
+	line-height: 1.5rem !important;
+}
+
+.rich-text-preview h4,
+.rich-text-preview h5,
+.rich-text-preview h6 {
+	font-size: 1rem !important;
+	line-height: 1.5rem !important;
 }
 
 /* Blockquote in TipTap editor */
