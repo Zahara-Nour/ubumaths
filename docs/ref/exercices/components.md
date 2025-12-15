@@ -1,6 +1,6 @@
 # Exercises System - Components Reference
 
-> **Last Updated**: 2025-12-11
+> **Last Updated**: 2025-12-16
 >
 > **Related**: [Index](./index.md) | [Types](./types.md) | [Parameterization](./parameterization.md)
 
@@ -29,6 +29,7 @@ src/lib/components/
 
 src/lib/components/exercises/
 ├── ExerciseDisplay.svelte       # Main display component
+├── ExerciseRichTextEditor.svelte # WYSIWYG editor for exercises
 └── ExerciseSkeleton.svelte      # Loading placeholder
 
 src/routes/(protected)/dashboard/teacher/exercises/
@@ -332,6 +333,48 @@ export async function load({ locals, params }) {
 ---
 
 ## Form Components
+
+### ExerciseRichTextEditor
+
+WYSIWYG editor wrapper for exercise content (statement and solution).
+
+**Location**: `src/lib/components/exercises/ExerciseRichTextEditor.svelte`
+
+**Props**:
+
+```typescript
+interface Props {
+	/** Markdown content (bindable) */
+	value?: string;
+	/** Supabase client for image uploads */
+	supabase?: SupabaseClient;
+	/** User ID for image organization */
+	userId?: string;
+}
+```
+
+**Features**:
+
+- WYSIWYG editing with markdown storage
+- Image upload to Supabase `exercise-images` bucket
+- Full toolbar with math formulas and templates
+- Preview mode
+- Supports all RichTextEditor features (templates, math, etc.)
+
+**Usage**:
+
+```svelte
+<script lang="ts">
+	import ExerciseRichTextEditor from '$lib/components/exercises/ExerciseRichTextEditor.svelte';
+	let content = $state('');
+</script>
+
+<ExerciseRichTextEditor bind:value={content} {supabase} {userId} />
+```
+
+**Used in**: `ExerciseForm.svelte` for statement and solution editing.
+
+---
 
 ### Variable Editor
 

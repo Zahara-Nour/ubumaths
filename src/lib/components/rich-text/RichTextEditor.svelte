@@ -64,8 +64,13 @@
 		Eye,
 		EyeOff,
 		Maximize,
-		Minimize
+		Minimize,
+		ImageIcon
 	} from 'lucide-svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
+	import { parseMarkdown } from '$lib/custom-markdown/parser';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
 	import 'mathlive';
 
@@ -82,7 +87,13 @@
 	import { tipTapToMarkdown } from './markdown-export';
 	import { markdownToTipTap } from './markdown-import';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import type { RichTextMode, MathTemplateLevel, ToolbarConfig, EditorPreset } from './types';
+	import type {
+		RichTextMode,
+		MathTemplateLevel,
+		ToolbarConfig,
+		EditorPreset,
+		ImageUploadConfig
+	} from './types';
 
 	// Component Props
 	interface Props {
@@ -99,6 +110,8 @@
 		showClearButton?: boolean;
 		minHeight?: string;
 		disabled?: boolean;
+		/** Image upload configuration - enables image button in toolbar when provided */
+		imageUpload?: ImageUploadConfig;
 	}
 
 	let {
@@ -113,7 +126,8 @@
 		showSendButton,
 		showClearButton = true,
 		minHeight = '100px',
-		disabled = false
+		disabled = false,
+		imageUpload
 	}: Props = $props();
 
 	// Resolve configuration: explicit props override preset values
@@ -170,6 +184,12 @@
 
 	// Emoji picker state
 	let selectedEmojiCategory = $state('Smileys');
+
+	// Image upload dialog state
+	let imageDialogOpen = $state(false);
+	let uploadedImageUrl = $state('');
+	let uploadedImageAlt = $state('');
+	let isUploadingImage = $state(false);
 
 	// Preview and Fullscreen state
 	let isPreviewMode = $state(false);
@@ -512,6 +532,90 @@
 		// @ts-expect-error - Custom Tiptap command from blank extension
 		editor?.commands.insertBlankField('?');
 		editor?.commands.focus();
+	}
+
+	/**
+	 * Handle Image Upload button click
+	 * Opens file picker, uploads via imageUpload.uploadFn, then shows configuration dialog
+	 */
+	async function handleImageUpload() {
+		if (!imageUpload || isUploadingImage) return; // Guard against duplicate calls
+
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept = 'image/*';
+
+		input.onchange = async () => {
+			const file = input.files?.[0];
+			if (!file) return;
+
+			isUploadingImage = true;
+			try {
+				const result = await imageUpload.uploadFn(file);
+				if (result.success && result.url) {
+					uploadedImageUrl = result.url;
+					uploadedImageAlt = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+					imageDialogOpen = true;
+				} else {
+					toaster.error(result.error || "Erreur lors de l'upload de l'image");
+				}
+			} catch (err) {
+				console.error('Image upload error:', err);
+				toaster.error("Erreur lors de l'upload de l'image");
+			} finally {
+				isUploadingImage = false;
+			}
+		};
+
+		input.click();
+	}
+
+	/**
+	 * Handle image insertion from ImageAttributePanel
+	 * Parses the markdown to extract image attributes and inserts via TipTap
+	 */
+	function handleImageInsert(markdown: string) {
+		if (!editor) return;
+
+		try {
+			// Parse the markdown to extract image node attributes
+			const ast = parseMarkdown(markdown);
+			const imageNode = ast.children.find((n) => n.type === 'image');
+
+			if (imageNode && imageNode.type === 'image') {
+				// Insert image with all attributes using TipTap's setImage command
+				editor
+					.chain()
+					.focus()
+					.setImage({
+						src: imageNode.src,
+						alt: imageNode.alt || '',
+						title: imageNode.title || undefined,
+						sizeClass: imageNode.sizeClass || undefined,
+						widthPercent: imageNode.widthPercent || undefined,
+						alignment: imageNode.alignment || undefined,
+						caption: imageNode.caption || undefined
+					})
+					.run();
+			}
+		} catch (err) {
+			console.error('Error parsing image markdown:', err);
+			toaster.error("Erreur lors de l'insertion de l'image");
+		}
+
+		// Close dialog and reset state
+		imageDialogOpen = false;
+		uploadedImageUrl = '';
+		uploadedImageAlt = '';
+	}
+
+	/**
+	 * Close image dialog and reset state
+	 */
+	function closeImageDialog() {
+		imageDialogOpen = false;
+		uploadedImageUrl = '';
+		uploadedImageAlt = '';
 	}
 
 	/**
@@ -1130,6 +1234,26 @@
 						</Tabs.Root>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
+
+				<!-- Image Upload Button (only if imageUpload is provided) -->
+				{#if imageUpload}
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={handleImageUpload}
+						disabled={disabled || isUploadingImage}
+						title="Inserer une image"
+					>
+						{#if isUploadingImage}
+							<span class="h-4 w-4 animate-spin">⏳</span>
+						{:else}
+							<ImageIcon class="h-4 w-4" />
+						{/if}
+					</Button>
+				{/if}
 			</div>
 		{/if}
 
@@ -1301,6 +1425,31 @@
 		{/if}
 	</div>
 </div>
+
+<!-- Image Configuration Dialog -->
+{#if imageUpload}
+	<Dialog.Root
+		bind:open={imageDialogOpen}
+		onOpenChange={(open) => {
+			if (!open) closeImageDialog();
+		}}
+	>
+		<Dialog.Content class="max-h-[90vh] max-w-2xl overflow-y-auto">
+			<Dialog.Header>
+				<Dialog.Title>Configurer l'image</Dialog.Title>
+				<Dialog.Description>
+					Ajustez les parametres d'affichage de votre image avant de l'inserer.
+				</Dialog.Description>
+			</Dialog.Header>
+
+			<ImageAttributePanel
+				initialUrl={uploadedImageUrl}
+				initialAlt={uploadedImageAlt}
+				onInsert={handleImageInsert}
+			/>
+		</Dialog.Content>
+	</Dialog.Root>
+{/if}
 
 <style>
 	/* Task list styling */
