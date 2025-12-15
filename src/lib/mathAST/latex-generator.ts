@@ -513,6 +513,11 @@ export class LatexGenerator {
 		}
 
 		// Emit parentheses and arguments
+		// Skip parentheses for functions with no arguments (generic functions like f', f^{-1})
+		if (node.args.length === 0) {
+			return;
+		}
+
 		const leftMeta = getLeftDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
 		const rightMeta = getRightDelimiterMetadata(node) ?? node.delimiterMetadata ?? node.metadata;
 
@@ -835,6 +840,11 @@ export class LatexGenerator {
 			const baseStr = this.generateNode(node.base);
 			const wrappedBase = this.needsBraces(baseStr) ? `{${baseStr}}` : baseStr;
 			nameWithBase = `${nameWithPower}_${wrappedBase}`;
+		}
+
+		// Skip parentheses for functions with no arguments (generic functions like f', f^{-1})
+		if (node.args.length === 0) {
+			return nameWithBase;
 		}
 
 		// Generate arguments
