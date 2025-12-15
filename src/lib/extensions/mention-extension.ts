@@ -208,7 +208,8 @@ export const Mention = Node.create<MentionOptions>({
 				char: '@',
 				pluginKey: new PluginKey('mentionSuggestion'),
 				allowSpaces: false,
-				allowedPrefixes: [' ', '\n', '\t', '(', '[', '{', '"', "'", '—', '–', '-'],
+				// Note: hyphen '-' must be first to avoid invalid regex range in character class
+				allowedPrefixes: ['-', ' ', '\n', '\t', '(', '[', '{', '"', "'", '—', '–'],
 				startOfLine: true,
 
 				// Filter items based on query (async)

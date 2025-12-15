@@ -207,7 +207,8 @@ export const Hashtag = Node.create<HashtagOptions>({
 				char: '#',
 				pluginKey: new PluginKey('hashtagSuggestion'),
 				allowSpaces: false,
-				allowedPrefixes: [' ', '\n', '\t', '(', '[', '{', '"', "'", '—', '–', '-'],
+				// Note: hyphen '-' must be first to avoid invalid regex range in character class
+				allowedPrefixes: ['-', ' ', '\n', '\t', '(', '[', '{', '"', "'", '—', '–'],
 				startOfLine: true,
 
 				// Filter items based on query
