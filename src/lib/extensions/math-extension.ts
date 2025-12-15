@@ -18,7 +18,7 @@
 
 import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { Plugin, PluginKey, Selection } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
 import { parseCustomSafe, toLatex } from '$lib/mathAST';
 
@@ -239,9 +239,19 @@ export const MathInline = Node.create({
 
 				// Only update if we have a valid position
 				if (typeof pos === 'number') {
-					editor.commands.updateAttributes('mathInline', {
-						latex: target.value
-					});
+					// IMPORTANT: Use a transaction that targets THIS specific node by position
+					// Do NOT use updateAttributes() as it operates on the current selection,
+					// which may be a different math node, causing state corruption
+					const { tr } = editor.state;
+					const nodeAtPos = editor.state.doc.nodeAt(pos);
+
+					if (nodeAtPos && nodeAtPos.type.name === 'mathInline') {
+						tr.setNodeMarkup(pos, undefined, {
+							...nodeAtPos.attrs,
+							latex: target.value
+						});
+						editor.view.dispatch(tr);
+					}
 				}
 			});
 
@@ -265,14 +275,43 @@ export const MathInline = Node.create({
 						? pos + 1 // After the math node
 						: pos; // Before the math node
 
-				// Set cursor position and focus editor
-				editor.chain().focus().setTextSelection(targetPos).run();
+				// Check if the position is valid for text selection
+				const { doc, tr } = editor.state;
+				const clampedPos = Math.min(targetPos, doc.content.size);
+				const $pos = doc.resolve(clampedPos);
+
+				// Only set text selection if position is inside inline content
+				if ($pos.parent.inlineContent) {
+					editor.chain().focus().setTextSelection(clampedPos).run();
+				} else {
+					// Fallback: find nearest valid selection using Selection.near
+					const bias = detail.direction === 'forward' ? 1 : -1;
+					const nearSelection = Selection.near($pos, bias);
+					editor.view.dispatch(tr.setSelection(nearSelection).scrollIntoView());
+					editor.view.focus();
+				}
 			});
 
 			dom.appendChild(mathfield);
 
 			return {
 				dom,
+				/**
+				 * Handle node updates without recreating the DOM.
+				 * This preserves focus when the user is typing in the mathfield.
+				 */
+				update: (updatedNode: typeof node) => {
+					// Only handle updates for the same node type
+					if (updatedNode.type.name !== 'mathInline') return false;
+
+					// Only update mathfield if the value actually differs
+					// (avoid updating when we're the source of the change)
+					if (updatedNode.attrs.latex !== mathfield.value) {
+						mathfield.value = updatedNode.attrs.latex as string;
+					}
+
+					return true; // View can be reused
+				},
 				/**
 				 * Tell ProseMirror to ignore events from within the math-field.
 				 * This prevents the editor from stealing focus when clicking
@@ -533,9 +572,19 @@ export const MathBlock = Node.create({
 				const pos = getPos();
 
 				if (typeof pos === 'number') {
-					editor.commands.updateAttributes('mathBlock', {
-						latex: target.value
-					});
+					// IMPORTANT: Use a transaction that targets THIS specific node by position
+					// Do NOT use updateAttributes() as it operates on the current selection,
+					// which may be a different math node, causing state corruption
+					const { tr } = editor.state;
+					const nodeAtPos = editor.state.doc.nodeAt(pos);
+
+					if (nodeAtPos && nodeAtPos.type.name === 'mathBlock') {
+						tr.setNodeMarkup(pos, undefined, {
+							...nodeAtPos.attrs,
+							latex: target.value
+						});
+						editor.view.dispatch(tr);
+					}
 				}
 			});
 
@@ -559,8 +608,22 @@ export const MathBlock = Node.create({
 						? pos + 1 // After the math node
 						: pos; // Before the math node
 
-				// Set cursor position and focus editor
-				editor.chain().focus().setTextSelection(targetPos).run();
+				// Check if the position is valid for text selection
+				const { doc, tr } = editor.state;
+				const clampedPos = Math.min(targetPos, doc.content.size);
+				const $pos = doc.resolve(clampedPos);
+
+				// Only set text selection if position is inside inline content
+				if ($pos.parent.inlineContent) {
+					editor.chain().focus().setTextSelection(clampedPos).run();
+				} else {
+					// Fallback: find nearest valid selection using Selection.near
+					// bias: 1 for forward/down, -1 for backward/up
+					const bias = detail.direction === 'forward' || detail.direction === 'downward' ? 1 : -1;
+					const nearSelection = Selection.near($pos, bias);
+					editor.view.dispatch(tr.setSelection(nearSelection).scrollIntoView());
+					editor.view.focus();
+				}
 			});
 
 			innerWrapper.appendChild(mathfield);
@@ -568,6 +631,22 @@ export const MathBlock = Node.create({
 
 			return {
 				dom,
+				/**
+				 * Handle node updates without recreating the DOM.
+				 * This preserves focus when the user is typing in the mathfield.
+				 */
+				update: (updatedNode: typeof node) => {
+					// Only handle updates for the same node type
+					if (updatedNode.type.name !== 'mathBlock') return false;
+
+					// Only update mathfield if the value actually differs
+					// (avoid updating when we're the source of the change)
+					if (updatedNode.attrs.latex !== mathfield.value) {
+						mathfield.value = updatedNode.attrs.latex as string;
+					}
+
+					return true; // View can be reused
+				},
 				/**
 				 * Tell ProseMirror to ignore events from within the math-field.
 				 * This prevents the editor from stealing focus when clicking
