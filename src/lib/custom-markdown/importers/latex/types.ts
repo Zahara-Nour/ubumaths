@@ -28,7 +28,22 @@ export interface LatexToMarkdownOptions {
 
 	/** Line offset to add to all warning line numbers. Default: 0 */
 	lineOffset?: number;
+
+	/**
+	 * Additional function names to recognize for derivative notation (e.g., C', P').
+	 * These are merged with the default names (f, g, h, u, v, w, F, G, H).
+	 * @example ['C', 'P', 'N'] to recognize C'(x), P'(x), N'(x)
+	 */
+	additionalFunctionNames?: string[];
 }
+
+/**
+ * Options type with all required fields except additionalFunctionNames
+ */
+export type ResolvedLatexToMarkdownOptions = Required<
+	Omit<LatexToMarkdownOptions, 'additionalFunctionNames'>
+> &
+	Pick<LatexToMarkdownOptions, 'additionalFunctionNames'>;
 
 /**
  * Result of LaTeX to Markdown transpilation
@@ -360,7 +375,7 @@ export interface ConversionContext {
 	environmentStack: string[];
 
 	/** Options passed to transpiler */
-	options: Required<LatexToMarkdownOptions>;
+	options: ResolvedLatexToMarkdownOptions;
 
 	/** Warnings collector */
 	warnings: TranspileWarning[];

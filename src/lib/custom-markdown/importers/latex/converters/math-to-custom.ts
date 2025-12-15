@@ -11,11 +11,19 @@
  * - Only \infty for symbols
  */
 
-import { parseLatexSafe } from '$lib/mathAST/parser';
+import { parseLatexSafe, DEFAULT_GENERIC_FUNCTION_NAMES } from '$lib/mathAST/parser';
 import { toCustom, SUPPORTED_GREEK, SUPPORTED_SYMBOLS } from '$lib/mathAST/custom-generator';
 import { findNodes } from '$lib/mathAST/transforms';
 import type { MathNode, GreekLetterNode, SymbolNode } from '$lib/mathAST/types';
 import type { ConversionContext } from '../types';
+
+/**
+ * Options for math conversion
+ */
+export interface MathConversionOptions {
+	/** Additional function names to recognize (merged with defaults) */
+	additionalFunctionNames?: string[];
+}
 
 // =============================================================================
 // Types
@@ -214,7 +222,8 @@ export function convertMathToCustomSyntax(
 	latex: string,
 	context: ConversionContext,
 	line?: number,
-	column?: number
+	column?: number,
+	options?: MathConversionOptions
 ): MathConversionResult {
 	// Handle empty input
 	if (!latex || latex.trim() === '') {
@@ -224,8 +233,18 @@ export function convertMathToCustomSyntax(
 	// Preprocess to handle non-standard commands like \np
 	const preprocessedLatex = preprocessMathLatex(latex);
 
+	// Build generic functions config with additional names if provided
+	const functionNames =
+		options?.additionalFunctionNames && options.additionalFunctionNames.length > 0
+			? [...DEFAULT_GENERIC_FUNCTION_NAMES, ...options.additionalFunctionNames]
+			: undefined; // undefined = use defaults
+
 	// Step 1: Parse LaTeX to MathAST
-	const parseResult = parseLatexSafe(preprocessedLatex);
+	const parseResult = parseLatexSafe(preprocessedLatex, {
+		genericFunctions: functionNames
+			? { names: functionNames, allowDerivatives: true, allowInverse: true }
+			: undefined
+	});
 
 	// Check for parse errors
 	if (parseResult.errors.length > 0) {

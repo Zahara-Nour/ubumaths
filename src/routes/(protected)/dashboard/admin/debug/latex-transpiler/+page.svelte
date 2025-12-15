@@ -68,6 +68,9 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 	let activeTab = $state('input');
 	let error = $state<string | null>(null);
 
+	// Additional function names for derivative notation (e.g., C', P')
+	let functionNamesInput = $state('');
+
 	// Editable markdown (separate from transpiled result)
 	let editableMarkdown = $state<string>('');
 
@@ -94,6 +97,14 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 	});
 
 	let warningsCount = $derived(transpileResult?.warnings.length || 0);
+
+	// Parse function names from input (comma or space separated)
+	let additionalFunctionNames = $derived(
+		functionNamesInput
+			.split(/[,\s]+/)
+			.map((s) => s.trim())
+			.filter((s) => s.length > 0)
+	);
 
 	// For capturing raw HTML from rendered markdown
 	let htmlContainer = $state<HTMLElement | null>(null);
@@ -171,6 +182,10 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 		error = null;
 		const allWarnings: TranspileResult['warnings'] = [];
 
+		// Build options with additional function names if provided
+		const baseOptions =
+			additionalFunctionNames.length > 0 ? { additionalFunctionNames } : undefined;
+
 		try {
 			// Step 1: Split LaTeX into statement and solution FIRST
 			splitResult = splitStatementAndSolution(latexInput);
@@ -178,6 +193,7 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 			// Step 2: Transpile each part separately (like LaTeXImportDialog does)
 			if (splitResult.statement.trim()) {
 				const statementResult = transpileLatexToMarkdown(splitResult.statement, {
+					...baseOptions,
 					lineOffset: splitResult.statementLineOffset
 				});
 				statementMarkdown = statementResult.markdown;
@@ -188,6 +204,7 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 
 			if (splitResult.solution?.trim()) {
 				const solutionResult = transpileLatexToMarkdown(splitResult.solution, {
+					...baseOptions,
 					lineOffset: splitResult.solutionLineOffset ?? 0
 				});
 				solutionMarkdown = solutionResult.markdown;
@@ -197,7 +214,7 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 			}
 
 			// Step 3: Also transpile full input for the "Markdown" tab (to show raw output)
-			transpileResult = transpileLatexToMarkdown(latexInput);
+			transpileResult = transpileLatexToMarkdown(latexInput, baseOptions);
 			// Merge warnings from all transpilations
 			transpileResult = {
 				...transpileResult,
@@ -224,6 +241,25 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 		statementMarkdown = editableMarkdown;
 		solutionMarkdown = ''; // No solution when rendering edited markdown directly
 	}
+
+	/**
+	 * Export warnings to clipboard as JSON
+	 */
+	async function exportWarnings() {
+		if (!transpileResult?.warnings.length) return;
+
+		const data = {
+			exportedAt: new Date().toISOString(),
+			warningsCount: transpileResult.warnings.length,
+			warnings: transpileResult.warnings
+		};
+
+		await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+		copied = true;
+		setTimeout(() => (copied = false), 2000);
+	}
+
+	let copied = $state(false);
 </script>
 
 <svelte:head>
@@ -233,7 +269,21 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 <div class="container mx-auto p-6">
 	<div class="mb-4 flex items-center justify-between">
 		<h1 class="text-2xl font-bold">Debug LaTeX Transpiler</h1>
-		<Button onclick={handleTranspile}>Transpiler</Button>
+		<div class="flex items-center gap-4">
+			<div class="flex items-center gap-2">
+				<label for="function-names" class="text-sm whitespace-nowrap text-muted-foreground"
+					>Fonctions :</label
+				>
+				<input
+					id="function-names"
+					type="text"
+					bind:value={functionNamesInput}
+					placeholder="C, P, N..."
+					class="h-9 w-32 rounded-md border border-input bg-background px-3 text-sm"
+				/>
+			</div>
+			<Button onclick={handleTranspile}>Transpiler</Button>
+		</div>
 	</div>
 
 	{#if error}
@@ -362,12 +412,19 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 
 					<!-- Warnings -->
 					<div class="rounded-lg border border-border p-4">
-						<div class="mb-3 flex items-center gap-2">
-							<h3 class="font-semibold">Warnings</h3>
+						<div class="mb-3 flex items-center justify-between">
+							<div class="flex items-center gap-2">
+								<h3 class="font-semibold">Warnings</h3>
+								{#if warningsCount > 0}
+									<Badge variant="destructive">{warningsCount}</Badge>
+								{:else}
+									<Badge variant="secondary">0</Badge>
+								{/if}
+							</div>
 							{#if warningsCount > 0}
-								<Badge variant="destructive">{warningsCount}</Badge>
-							{:else}
-								<Badge variant="secondary">0</Badge>
+								<Button variant="outline" size="sm" onclick={exportWarnings}>
+									{copied ? 'Copié !' : 'Copier JSON'}
+								</Button>
 							{/if}
 						</div>
 
