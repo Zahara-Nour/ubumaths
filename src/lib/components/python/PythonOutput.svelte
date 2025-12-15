@@ -230,7 +230,9 @@
 					{/if}
 				</div>
 				<div class="rounded bg-background p-4">
-					<math-span class="block text-lg">{latexOutput}</math-span>
+					{#key latexOutput}
+						<math-span class="block text-lg">{latexOutput}</math-span>
+					{/key}
 				</div>
 			</div>
 		{/if}
