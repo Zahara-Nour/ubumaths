@@ -37,6 +37,7 @@ export type {
 	HorizontalRuleNode,
 	BlockquoteNode,
 	CodeBlockNode,
+	VariationTableNode,
 	BlockNode,
 	// Composite
 	ASTNode,
@@ -52,6 +53,30 @@ export type {
 } from './ast';
 
 export { DEFAULT_IMAGE_SIZE_MAPPINGS } from './ast';
+
+// ============================================================================
+// VARIATION TABLE TYPES
+// ============================================================================
+
+export type {
+	// Position and markers
+	VariationPosition,
+	VariationMarker,
+	// Sign row types
+	SignValueSign,
+	SignValueMarker,
+	SignValue,
+	SignRow,
+	// Variation row types
+	VariationValue,
+	VariationRow,
+	// Domain types
+	DomainPoint,
+	// Utility types
+	TableRow,
+	VariationTableParseError,
+	VariationTableParseResult
+} from './variation-table';
 
 // ============================================================================
 // PARSER TYPES

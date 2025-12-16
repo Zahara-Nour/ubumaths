@@ -48,6 +48,7 @@ import {
 	extractBlockquoteContent
 } from './blockquote-parser';
 import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser';
+import { findVariationBlocks, parseVariationTable } from './variation-table-parser';
 
 // ============================================================================
 // REGULAR EXPRESSIONS
@@ -281,9 +282,10 @@ function parseBlocks(
 	const blocks: BlockNode[] = [];
 	let i = 0;
 
-	// Find all structured blocks (code, blockquotes, lists, tables)
-	// Code blocks have highest priority as their content is verbatim
+	// Find all structured blocks (code, variation tables, blockquotes, lists, tables)
+	// Code blocks and variation tables have highest priority as their content is verbatim
 	// Use original lines for code blocks to preserve math expressions
+	const variationBlocks = findVariationBlocks(originalLines);
 	const codeBlocks = findCodeBlocks(originalLines);
 	const blockquoteBlocks = findBlockquoteBlocks(lines);
 	const listBlocks = findListBlocks(lines);
@@ -298,7 +300,26 @@ function parseBlocks(
 			continue;
 		}
 
-		// PRIORITY 1: Check if this line is part of a code block (highest priority)
+		// PRIORITY 1a: Check if this line is part of a variation table block (highest priority)
+		// Variation tables use ```variation syntax and must be checked before regular code blocks
+		const variationBlock = variationBlocks.find(
+			(range) => i >= range.startIndex && i <= range.endIndex
+		);
+		if (variationBlock) {
+			const result = parseVariationTable(
+				originalLines,
+				variationBlock.startIndex,
+				variationBlock.endIndex
+			);
+			if (result.node) {
+				blocks.push(result.node);
+			}
+			// Note: Errors are silently ignored for now; could be logged if needed
+			i = variationBlock.endIndex + 1;
+			continue;
+		}
+
+		// PRIORITY 1b: Check if this line is part of a code block (highest priority)
 		const codeBlock = codeBlocks.find((range) => i >= range.startIndex && i <= range.endIndex);
 		if (codeBlock) {
 			// Use original lines to preserve math expressions in code blocks
