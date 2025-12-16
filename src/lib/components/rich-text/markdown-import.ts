@@ -30,7 +30,8 @@ import type {
 	TableNode,
 	LinkNode,
 	HashtagNode,
-	MentionNode
+	MentionNode,
+	VariationTableNode
 } from '$lib/custom-markdown/types';
 
 // ============================================================================
@@ -174,6 +175,9 @@ function convertBlock(block: BlockNode): JSONContent | null {
 
 		case 'table':
 			return convertTable(block as TableNode);
+
+		case 'variation-table':
+			return convertVariationTable(block as VariationTableNode);
 
 		default:
 			return null;
@@ -358,6 +362,81 @@ function convertVideo(video: VideoNode): JSONContent {
 			loop: video.loop ?? false,
 			muted: video.muted ?? false
 		}
+	};
+}
+
+/**
+ * Convert VariationTableNode to TipTap codeBlock with language='variation'
+ *
+ * Since TipTap doesn't have a native variation table extension,
+ * we serialize the parsed node back to the variation block syntax
+ * and display it as a code block.
+ */
+function convertVariationTable(node: VariationTableNode): JSONContent {
+	const lines: string[] = [];
+
+	// Variable line
+	lines.push(`variable: ${node.variable}`);
+
+	// Domain line
+	const domainParts = node.domain.map((point) => {
+		if (point.open === true) {
+			return `]${point.expression}[`;
+		}
+		return point.expression;
+	});
+	lines.push(`domain: ${domainParts.join(', ')}`);
+
+	// Rows
+	for (const row of node.rows) {
+		lines.push(''); // Blank line before each row
+
+		if (row.type === 'sign') {
+			lines.push(`sign: ${row.label}`);
+			for (const [key, value] of row.values) {
+				if (value.type === 'sign') {
+					lines.push(`  ${key}: ${value.value}`);
+				} else {
+					// Marker
+					const markerMap: Record<string, string> = {
+						zero: 'z',
+						asymptote: '||',
+						forbidden: '|h|',
+						discontinuity: 'd'
+					};
+					lines.push(`  ${key}: ${markerMap[value.marker] || value.marker}`);
+				}
+			}
+		} else {
+			// Variation row
+			lines.push(`variation: ${row.label}`);
+			for (const [key, value] of row.values) {
+				let lineContent = `  ${key}: `;
+				if (value.marker === 'asymptote' && value.limits) {
+					// Asymptote with limits: ||, leftLimit, rightLimit
+					lineContent += `||, ${value.limits[0]}, ${value.limits[1]}`;
+				} else if (value.marker) {
+					// Other markers
+					const markerMap: Record<string, string> = {
+						zero: 'z',
+						asymptote: '||',
+						forbidden: '|h|',
+						discontinuity: 'd'
+					};
+					lineContent += markerMap[value.marker] || value.marker;
+				} else {
+					// Normal value with position
+					lineContent += `${value.expression}, ${value.position}`;
+				}
+				lines.push(lineContent);
+			}
+		}
+	}
+
+	return {
+		type: 'codeBlock',
+		attrs: { language: 'variation' },
+		content: [{ type: 'text', text: lines.join('\n') }]
 	};
 }
 

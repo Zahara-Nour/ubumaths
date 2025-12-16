@@ -250,6 +250,42 @@ Tableau de données :
 | 2 | Moyen | 200 |
 | 3 | Difficile | 300 |
 
+## Tableaux de Variations
+
+Tableau de variations simple :
+
+\`\`\`variation
+variable: x
+domain: -inf, 0, +inf
+
+sign: f'(x)
+  -inf,0: +
+  0: z
+  0,+inf: -
+
+variation: f(x)
+  -inf: -inf, bottom
+  0: 3, top
+  +inf: -inf, bottom
+\`\`\`
+
+Tableau avec asymptote :
+
+\`\`\`variation
+variable: x
+domain: -inf, 1, +inf
+
+sign: f'(x)
+  -inf,1: +
+  1: ||
+  1,+inf: +
+
+variation: f(x)
+  -inf: 0, bottom
+  1: ||, +inf, -inf
+  +inf: 0, top
+\`\`\`
+
 ## Hashtags et Mentions
 
 Hashtag simple : #mathematiques
