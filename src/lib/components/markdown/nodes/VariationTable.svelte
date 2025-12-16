@@ -304,12 +304,12 @@
 									>
 										{#if arrowData.arrowDir === 'up'}
 											<!-- Ascending arrow (bottom-left to top-right) -->
-											<line x1="5" y1="55" x2="95" y2="5" stroke="currentColor" stroke-width="2" />
-											<polygon points="95,5 80,5 95,20" fill="currentColor" />
+											<line x1="5" y1="55" x2="95" y2="5" class="vt-arrow-line" />
+											<polygon points="95,5 80,5 95,20" class="vt-arrow-head" />
 										{:else if arrowData.arrowDir === 'down'}
 											<!-- Descending arrow (top-left to bottom-right) -->
-											<line x1="5" y1="5" x2="95" y2="55" stroke="currentColor" stroke-width="2" />
-											<polygon points="95,55 80,55 95,40" fill="currentColor" />
+											<line x1="5" y1="5" x2="95" y2="55" class="vt-arrow-line" />
+											<polygon points="95,55 80,55 95,40" class="vt-arrow-head" />
 										{/if}
 									</svg>
 								{:else if isForbiddenZone(arrowData.currentValue) || isForbiddenZone(arrowData.nextValue)}
@@ -595,6 +595,16 @@
 		width: 100%;
 		height: 2.5em;
 		color: var(--vt-arrow-color);
+	}
+
+	/* SVG arrow styling - use stroke and fill with currentColor */
+	.variation-table :global(.vt-arrow-line) {
+		stroke: currentColor;
+		stroke-width: 3;
+	}
+
+	.variation-table :global(.vt-arrow-head) {
+		fill: currentColor;
 	}
 
 	/* Math element styling */
