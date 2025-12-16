@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card } from '$lib/components/ui/card';
+	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import type { PageData } from './$types';
@@ -11,7 +11,9 @@
 		const groups = new Map();
 
 		for (const item of data.coursework) {
-			const className = item.class?.name || 'Sans classe';
+			// item.class is an array from Supabase join
+			const classData = Array.isArray(item.class) ? item.class[0] : item.class;
+			const className = classData?.name || 'Sans classe';
 			if (!groups.has(className)) {
 				groups.set(className, []);
 			}
@@ -165,10 +167,8 @@
 																{material.title || material.file_name}
 															</p>
 														</div>
-														<Button variant="outline" size="sm" asChild>
-															<a href={material.file_url} target="_blank" rel="noopener noreferrer">
-																Ouvrir
-															</a>
+														<Button href={material.file_url} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">
+															Ouvrir
 														</Button>
 													</div>
 												{/each}

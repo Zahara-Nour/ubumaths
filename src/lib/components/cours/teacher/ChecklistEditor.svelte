@@ -9,6 +9,7 @@
 -->
 <script lang="ts">
 	import type { ChapterChecklistItem } from '$lib/types/chapters';
+	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -27,28 +28,13 @@
 		Target
 	} from 'lucide-svelte';
 
-	// Types for inputs
-	interface CreateChecklistItemInput {
-		content: string;
-		description: string | null;
-	}
-
-	interface UpdateChecklistItemInput {
-		content?: string;
-		description?: string | null;
-	}
-
-	// Props
+	// Props - callbacks are now optional (using form actions instead)
 	interface Props {
 		items: ChapterChecklistItem[];
 		chapterId: string;
-		onAdd: (data: CreateChecklistItemInput) => void;
-		onUpdate: (itemId: string, data: UpdateChecklistItemInput) => void;
-		onDelete: (itemId: string) => void;
-		onReorder: (orderUpdates: { id: string; displayOrder: number }[]) => void;
 	}
 
-	let { items, chapterId: _chapterId, onAdd, onUpdate, onDelete, onReorder }: Props = $props();
+	let { items, chapterId }: Props = $props();
 
 	// Local state
 	let newContent = $state('');
@@ -61,16 +47,13 @@
 	// Sort items by display order
 	const sortedItems = $derived([...items].sort((a, b) => a.displayOrder - b.displayOrder));
 
-	// Add new item
-	function handleAdd() {
-		if (!newContent.trim()) return;
+	// Form refs for programmatic submission
+	let addFormRef: HTMLFormElement | null = $state(null);
+	let updateFormRef: HTMLFormElement | null = $state(null);
 
-		onAdd({
-			content: newContent.trim(),
-			description: newDescription.trim() || null
-		});
-
-		// Reset form
+	// Add new item - now handled by form action
+	function handleAddSuccess() {
+		// Reset form after successful submission
 		newContent = '';
 		newDescription = '';
 		isAdding = false;
@@ -90,60 +73,19 @@
 		editDescription = '';
 	}
 
-	// Save edit
-	function saveEdit() {
-		if (!editingId || !editContent.trim()) return;
-
-		onUpdate(editingId, {
-			content: editContent.trim(),
-			description: editDescription.trim() || null
-		});
-
+	// Save edit - now handled via form action
+	function handleEditSuccess() {
 		cancelEdit();
 	}
 
-	// Delete item
-	function handleDelete(itemId: string) {
-		if (confirm('Supprimer cet objectif ?')) {
-			onDelete(itemId);
-		}
-	}
+	// Form submission state
+	let isSubmitting = $state(false);
 
-	// Move item up
-	function moveUp(index: number) {
-		if (index <= 0) return;
+	// Move item up - form action
+	let moveUpFormRef: HTMLFormElement | null = $state(null);
 
-		const newItems = [...sortedItems];
-		const temp = newItems[index - 1];
-		newItems[index - 1] = newItems[index];
-		newItems[index] = temp;
-
-		// Calculate new order updates
-		const orderUpdates = newItems.map((item, i) => ({
-			id: item.id,
-			displayOrder: i
-		}));
-
-		onReorder(orderUpdates);
-	}
-
-	// Move item down
-	function moveDown(index: number) {
-		if (index >= sortedItems.length - 1) return;
-
-		const newItems = [...sortedItems];
-		const temp = newItems[index + 1];
-		newItems[index + 1] = newItems[index];
-		newItems[index] = temp;
-
-		// Calculate new order updates
-		const orderUpdates = newItems.map((item, i) => ({
-			id: item.id,
-			displayOrder: i
-		}));
-
-		onReorder(orderUpdates);
-	}
+	// Move item down - form action
+	let moveDownFormRef: HTMLFormElement | null = $state(null);
 </script>
 
 <Card.Root>
@@ -175,27 +117,33 @@
 							editingId === item.id && 'ring-2 ring-primary'
 						)}
 					>
-						<!-- Drag handle -->
+						<!-- Drag handle with form actions for reordering -->
 						<div class="flex flex-col items-center gap-1 pt-1">
-							<button
-								type="button"
-								class="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
-								onclick={() => moveUp(index)}
-								disabled={index === 0}
-								aria-label="Monter"
-							>
-								<ChevronUp class="h-4 w-4" />
-							</button>
+							<form method="POST" action="?/reorderChecklistItem" use:enhance>
+								<input type="hidden" name="itemId" value={item.id} />
+								<input type="hidden" name="direction" value="up" />
+								<button
+									type="submit"
+									class="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
+									disabled={index === 0}
+									aria-label="Monter"
+								>
+									<ChevronUp class="h-4 w-4" />
+								</button>
+							</form>
 							<GripVertical class="h-4 w-4 text-muted-foreground/50" />
-							<button
-								type="button"
-								class="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
-								onclick={() => moveDown(index)}
-								disabled={index === sortedItems.length - 1}
-								aria-label="Descendre"
-							>
-								<ChevronDown class="h-4 w-4" />
-							</button>
+							<form method="POST" action="?/reorderChecklistItem" use:enhance>
+								<input type="hidden" name="itemId" value={item.id} />
+								<input type="hidden" name="direction" value="down" />
+								<button
+									type="submit"
+									class="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
+									disabled={index === sortedItems.length - 1}
+									aria-label="Descendre"
+								>
+									<ChevronDown class="h-4 w-4" />
+								</button>
+							</form>
 						</div>
 
 						<!-- Content -->
@@ -229,15 +177,31 @@
 						<!-- Actions -->
 						<div class="flex items-center gap-1">
 							{#if editingId === item.id}
-								<!-- Edit actions -->
-								<Button
-									variant="ghost"
-									size="icon-sm"
-									onclick={saveEdit}
-									disabled={!editContent.trim()}
+								<!-- Edit actions - form for update -->
+								<form
+									method="POST"
+									action="?/updateChecklistItem"
+									use:enhance={() => {
+										isSubmitting = true;
+										return async ({ update }) => {
+											isSubmitting = false;
+											handleEditSuccess();
+											await update();
+										};
+									}}
 								>
-									<Check class="h-4 w-4 text-green-600" />
-								</Button>
+									<input type="hidden" name="itemId" value={item.id} />
+									<input type="hidden" name="content" value={editContent} />
+									<input type="hidden" name="description" value={editDescription} />
+									<Button
+										type="submit"
+										variant="ghost"
+										size="icon-sm"
+										disabled={!editContent.trim() || isSubmitting}
+									>
+										<Check class="h-4 w-4 text-green-600" />
+									</Button>
+								</form>
 								<Button variant="ghost" size="icon-sm" onclick={cancelEdit}>
 									<X class="h-4 w-4 text-red-600" />
 								</Button>
@@ -251,14 +215,17 @@
 								>
 									<Pencil class="h-4 w-4" />
 								</Button>
-								<Button
-									variant="ghost"
-									size="icon-sm"
-									onclick={() => handleDelete(item.id)}
-									class="text-destructive opacity-0 transition-opacity group-hover:opacity-100"
-								>
-									<Trash2 class="h-4 w-4" />
-								</Button>
+								<form method="POST" action="?/deleteChecklistItem" use:enhance>
+									<input type="hidden" name="itemId" value={item.id} />
+									<Button
+										type="submit"
+										variant="ghost"
+										size="icon-sm"
+										class="text-destructive opacity-0 transition-opacity group-hover:opacity-100"
+									>
+										<Trash2 class="h-4 w-4" />
+									</Button>
+								</form>
 							{/if}
 						</div>
 					</li>
@@ -268,11 +235,26 @@
 
 		<!-- Add new item form -->
 		{#if isAdding}
-			<div class="space-y-3 rounded-lg border-2 border-dashed border-primary/50 p-4">
+			<form
+				method="POST"
+				action="?/addChecklistItem"
+				use:enhance={() => {
+					isSubmitting = true;
+					return async ({ update }) => {
+						isSubmitting = false;
+						handleAddSuccess();
+						await update();
+					};
+				}}
+				class="space-y-3 rounded-lg border-2 border-dashed border-primary/50 p-4"
+			>
+				<input type="hidden" name="chapterId" value={chapterId} />
+
 				<div class="space-y-2">
 					<Label for="new-content">Nouvel objectif</Label>
 					<Input
 						id="new-content"
+						name="content"
 						bind:value={newContent}
 						placeholder="Ex: Savoir additionner deux fractions"
 						autofocus
@@ -283,6 +265,7 @@
 					<Label for="new-description">Description (optionnel)</Label>
 					<Textarea
 						id="new-description"
+						name="description"
 						bind:value={newDescription}
 						placeholder="Details supplementaires..."
 						rows={2}
@@ -291,6 +274,7 @@
 
 				<div class="flex justify-end gap-2">
 					<Button
+						type="button"
 						variant="outline"
 						size="sm"
 						onclick={() => {
@@ -301,12 +285,12 @@
 					>
 						Annuler
 					</Button>
-					<Button size="sm" onclick={handleAdd} disabled={!newContent.trim()}>
+					<Button type="submit" size="sm" disabled={!newContent.trim() || isSubmitting}>
 						<Plus class="mr-1 h-4 w-4" />
 						Ajouter
 					</Button>
 				</div>
-			</div>
+			</form>
 		{:else}
 			<Button
 				variant="outline"

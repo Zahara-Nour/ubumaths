@@ -66,12 +66,13 @@
 							<div class="flex items-center gap-3">
 								<div class="flex-1">
 									<Slider
+										type="single"
 										id={name}
 										min={def.min}
 										max={def.max}
 										step={def.step ?? 1}
 										value={[value as number]}
-										onValueChange={(values) => handleSliderChange(name, values)}
+										onValueChange={(values: number[]) => handleSliderChange(name, values)}
 									/>
 								</div>
 								<span class="min-w-12 text-right font-mono text-sm text-foreground tabular-nums">

@@ -22,16 +22,16 @@
 		name: string;
 	}
 
-	interface ProgressEntry {
+	// Progress data structure from getStudentChecklistProgress
+	interface StudentProgress {
 		studentId: string;
-		itemId: string;
-		isCompleted: boolean;
+		items: (ChapterChecklistItem & { isCompleted: boolean; completedAt: string | null })[];
 	}
 
 	interface Props {
 		students: Student[];
 		checklistItems: ChapterChecklistItem[];
-		progress: ProgressEntry[];
+		progress: StudentProgress[];
 	}
 
 	let { students, checklistItems, progress }: Props = $props();
@@ -40,9 +40,16 @@
 	const sortedItems = $derived([...checklistItems].sort((a, b) => a.displayOrder - b.displayOrder));
 
 	// Create a lookup map for quick progress checking
-	const progressMap = $derived(
-		new Map(progress.map((p) => [`${p.studentId}-${p.itemId}`, p.isCompleted]))
-	);
+	// Convert from StudentProgress[] to Map<studentId-itemId, isCompleted>
+	const progressMap = $derived.by(() => {
+		const map = new Map<string, boolean>();
+		for (const studentProgress of progress) {
+			for (const item of studentProgress.items) {
+				map.set(`${studentProgress.studentId}-${item.id}`, item.isCompleted);
+			}
+		}
+		return map;
+	});
 
 	// Check if a student has completed an item
 	function isItemCompleted(studentId: string, itemId: string): boolean {
@@ -72,7 +79,10 @@
 		if (students.length === 0 || checklistItems.length === 0) return 0;
 
 		const totalPossible = students.length * checklistItems.length;
-		const totalCompleted = progress.filter((p) => p.isCompleted).length;
+		let totalCompleted = 0;
+		for (const studentProgress of progress) {
+			totalCompleted += studentProgress.items.filter((item) => item.isCompleted).length;
+		}
 
 		return Math.round((totalCompleted / totalPossible) * 100);
 	});

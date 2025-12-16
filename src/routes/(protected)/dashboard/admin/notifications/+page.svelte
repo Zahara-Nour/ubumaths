@@ -209,7 +209,7 @@
 									<span>Par rôle</span>
 								</label>
 								<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
-									<input type="radio" bind:group={targetType} value="classes" class="h-4 w-4" />
+									<input type="radio" bind:group={targetType} value="class" class="h-4 w-4" />
 									<span>Par classe</span>
 								</label>
 								<label class="flex items-center gap-2 rounded border p-2 hover:bg-muted">
@@ -221,10 +221,10 @@
 						</div>
 
 						<!-- Role selection -->
-						{#if targetType === 'roles' || targetType === 'users'}
+						{#if targetType === 'role' || targetType === 'users'}
 							<div class="space-y-2">
 								<Label
-									>{targetType === 'roles' ? 'Sélectionner les rôles' : 'Filtrer par rôle'}</Label
+									>{targetType === 'role' ? 'Sélectionner les rôles' : 'Filtrer par rôle'}</Label
 								>
 								<div class="grid gap-2 sm:grid-cols-3">
 									{#each ['admin', 'teacher', 'student'] as role (role)}
@@ -236,7 +236,7 @@
 												class="h-4 w-4"
 											/>
 											<span>{roleLabels[role]}</span>
-											{#if targetType === 'roles'}
+											{#if targetType === 'role'}
 												<input
 													type="hidden"
 													name="roles"
@@ -251,7 +251,7 @@
 						{/if}
 
 						<!-- Class selection -->
-						{#if targetType === 'classes'}
+						{#if targetType === 'class'}
 							<div class="space-y-2">
 								<Label>Sélectionner les classes</Label>
 								<div class="max-h-48 overflow-y-auto rounded border p-2">

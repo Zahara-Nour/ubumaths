@@ -193,7 +193,7 @@
 	function handleSaveTimetablePeriod() {
 		const newPeriod: SchoolPeriod = {
 			number: timetableFormData.number,
-			name: timetableFormData.name.trim() || undefined,
+			name: timetableFormData.name.trim() || null,
 			start_time: timetableFormData.start_time + ':00',
 			end_time: timetableFormData.end_time + ':00'
 		};

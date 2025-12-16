@@ -12,7 +12,7 @@ import {
 	isListEnvironment,
 	getListConverter
 } from '../converters/lists';
-import type { EnvironmentToken, ConversionContext, LatexToMarkdownOptions } from '../types';
+import type { EnvironmentToken, ConversionContext, ResolvedLatexToMarkdownOptions } from '../types';
 
 // ===========================
 // Test Helpers
@@ -40,13 +40,14 @@ function createEnvToken(name: string, content: string, depth: number = 0): Envir
  * Create a mock ConversionContext for testing
  */
 function createContext(overrides: Partial<ConversionContext> = {}): ConversionContext {
-	const defaultOptions: Required<LatexToMarkdownOptions> = {
+	const defaultOptions: ResolvedLatexToMarkdownOptions = {
 		preserveComments: false,
 		mathDelimiters: 'dollar',
 		maxNestingDepth: 10,
 		fallbackToText: false,
 		preserveWhitespace: false,
-		lineOffset: 0
+		lineOffset: 0,
+		additionalFunctionNames: undefined
 	};
 
 	return {

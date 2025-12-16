@@ -54,10 +54,12 @@
 						<p class="mt-1 font-mono text-sm text-muted-foreground">{expression}</p>
 					{/if}
 				</div>
-				<DialogPrimitive.Close asChild>
-					<Button variant="ghost" size="icon" class="size-8" aria-label="Fermer">
-						<X class="size-4" />
-					</Button>
+				<DialogPrimitive.Close>
+					{#snippet child({ props })}
+						<Button {...props} variant="ghost" size="icon" class="size-8" aria-label="Fermer">
+							<X class="size-4" />
+						</Button>
+					{/snippet}
 				</DialogPrimitive.Close>
 			</div>
 

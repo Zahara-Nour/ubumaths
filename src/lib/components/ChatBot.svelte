@@ -199,9 +199,9 @@
 	}
 
 	// Refs for DOM elements
-	let messagesContainer: HTMLDivElement | undefined;
-	let textareaElement: HTMLTextAreaElement | undefined;
-	let fileInputElement: HTMLInputElement | undefined;
+	let messagesContainer: HTMLDivElement | undefined = $state();
+	let textareaElement: HTMLTextAreaElement | undefined = $state();
+	let fileInputElement: HTMLInputElement | undefined = $state();
 
 	// Constants for image validation
 	const MAX_FILE_SIZE_MB = 4; // 4MB for base64

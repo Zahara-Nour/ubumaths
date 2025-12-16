@@ -306,7 +306,7 @@
 						<p class="mb-2 text-sm font-medium text-foreground">Motif du rejet (obligatoire) :</p>
 						<RichTextEditor
 							mode="form"
-							bind:value={rejectionReason}
+							bind:htmlValue={rejectionReason}
 							mathTemplates="basic"
 							minHeight="100px"
 							disabled={isSubmitting}

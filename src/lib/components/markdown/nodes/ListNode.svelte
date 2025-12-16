@@ -152,7 +152,7 @@
 	 */
 	function isCodeBlockNode(
 		node: ASTNode
-	): node is { type: 'code-block'; code?: string; content?: string; language?: string } {
+	): node is { type: 'code-block'; code: string; language?: string } {
 		return node.type === 'code-block';
 	}
 </script>
@@ -205,7 +205,7 @@
 					{:else if isTableNode(child)}
 						<TableNode header={child.header} rows={child.rows} alignments={child.alignments} />
 					{:else if isCodeBlockNode(child)}
-						<CodeBlock code={child.code || child.content || ''} language={child.language} />
+						<CodeBlock code={child.code} language={child.language} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -261,7 +261,7 @@
 					{:else if isTableNode(child)}
 						<TableNode header={child.header} rows={child.rows} alignments={child.alignments} />
 					{:else if isCodeBlockNode(child)}
-						<CodeBlock code={child.code || child.content || ''} language={child.language} />
+						<CodeBlock code={child.code} language={child.language} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

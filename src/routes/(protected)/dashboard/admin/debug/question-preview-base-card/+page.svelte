@@ -10,9 +10,11 @@
 	import type { QuestionInstance } from '$lib/questions/types';
 	import QuestionPreviewBaseCard from '$lib/components/questions/QuestionPreviewBaseCard.svelte';
 	import * as Card from '$lib/components/ui/card';
+	import { resolvedMarkdown } from '$lib/custom-markdown';
 
 	// ============================================================================
 	// SAMPLE DATA
+	// Note: These are properly typed instances for debug/testing purposes
 	// ============================================================================
 
 	const sampleInstance: QuestionInstance = {
@@ -21,29 +23,26 @@
 		title: 'Résoudre une équation du second degré',
 		description: "Exercice de résolution d'équations du second degré avec discriminant positif.",
 		exerciseInstruction: 'Calculer',
-		statement: [
-			{
-				type: 'text',
-				content: "Résoudre l'équation $$x^2 + 3x - 10 = 0$$ dans $$\\mathbb{R}$$."
-			}
-		],
-		answer: '2 ou -5',
+		statement: resolvedMarkdown(
+			"Résoudre l'équation $$x^2 + 3x - 10 = 0$$ dans $$\\mathbb{R}$$."
+		),
+		solution: '2 ou -5',
 		resolvedVariables: [
 			{ name: 'a', value: '1' },
 			{ name: 'b', value: '3' },
 			{ name: 'c', value: '-10' },
 			{ name: 'delta', value: '49' }
 		],
-		correction: [
-			{
-				type: 'text',
-				content:
+		correction: {
+			feedback: {
+				correct: resolvedMarkdown(
 					'On calcule le discriminant: $$\\Delta = b^2 - 4ac = 9 + 40 = 49$$\n\n' +
-					'Comme $$\\Delta > 0$$, il y a deux solutions réelles distinctes:\n\n' +
-					'$$x_1 = \\frac{-b - \\sqrt{\\Delta}}{2a} = \\frac{-3 - 7}{2} = -5$$\n\n' +
-					'$$x_2 = \\frac{-b + \\sqrt{\\Delta}}{2a} = \\frac{-3 + 7}{2} = 2$$'
+						'Comme $$\\Delta > 0$$, il y a deux solutions réelles distinctes:\n\n' +
+						'$$x_1 = \\frac{-b - \\sqrt{\\Delta}}{2a} = \\frac{-3 - 7}{2} = -5$$\n\n' +
+						'$$x_2 = \\frac{-b + \\sqrt{\\Delta}}{2a} = \\frac{-3 + 7}{2} = 2$$'
+				)
 			}
-		],
+		},
 		grades: ['4', '3', '2'],
 		theme: 'Algèbre',
 		domain: 'Équations',
@@ -60,18 +59,13 @@
 		templateId: 'qcm-001-abc-def',
 		type: 'multiple_choice',
 		title: 'Identifier les nombres premiers',
-		statement: [
-			{
-				type: 'text',
-				content: 'Parmi les nombres suivants, lesquels sont premiers ?'
-			}
-		],
-		answer: ['1', '3'], // Indices of correct choices
+		statement: resolvedMarkdown('Parmi les nombres suivants, lesquels sont premiers ?'),
+		solution: ['1', '3'], // Indices of correct choices
 		shuffledChoices: [
-			{ content: [{ type: 'text', content: '$$15$$' }], originalIndex: 0 },
-			{ content: [{ type: 'text', content: '$$17$$' }], originalIndex: 1 },
-			{ content: [{ type: 'text', content: '$$21$$' }], originalIndex: 2 },
-			{ content: [{ type: 'text', content: '$$23$$' }], originalIndex: 3 }
+			{ content: resolvedMarkdown('$$15$$'), originalIndex: 0 },
+			{ content: resolvedMarkdown('$$17$$'), originalIndex: 1 },
+			{ content: resolvedMarkdown('$$21$$'), originalIndex: 2 },
+			{ content: resolvedMarkdown('$$23$$'), originalIndex: 3 }
 		],
 		multipleAnswers: true,
 		grades: ['6', '5'],
@@ -87,17 +81,13 @@
 		templateId: 'long-text-001',
 		type: 'algebraic_transform',
 		title: 'Développer et réduire',
-		statement: [
-			{
-				type: 'text',
-				content:
-					"Soit l'expression algébrique suivante: $$E = (2x + 3)(x - 5) + (x + 1)^2 - 7x$$. " +
-					'On souhaite développer et réduire cette expression pour obtenir une forme polynomiale simplifiée. ' +
-					'Attention à bien respecter les règles de distributivité et à regrouper les termes semblables. ' +
-					"N'oubliez pas de vérifier votre résultat en remplaçant $$x$$ par une valeur numérique simple."
-			}
-		],
-		answer: '3x^2 - 3x - 8',
+		statement: resolvedMarkdown(
+			"Soit l'expression algébrique suivante: $$E = (2x + 3)(x - 5) + (x + 1)^2 - 7x$$. " +
+				'On souhaite développer et réduire cette expression pour obtenir une forme polynomiale simplifiée. ' +
+				'Attention à bien respecter les règles de distributivité et à regrouper les termes semblables. ' +
+				"N'oubliez pas de vérifier votre résultat en remplaçant $$x$$ par une valeur numérique simple."
+		),
+		solution: '3x^2 - 3x - 8',
 		resolvedVariables: [],
 		grades: ['4', '3'],
 		theme: 'Algèbre',

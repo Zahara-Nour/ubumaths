@@ -114,9 +114,27 @@
 
 	const isInputDisabled = $derived(!interactive || isSubmitted || hasReachedMaxAttempts);
 
-	// Markdown content - instance.statement and instance.correction are now ResolvedMarkdown (strings)
+	// Markdown content - instance.statement is ResolvedMarkdown (string)
+	// instance.correction is ResolvedCorrection (object with feedback and steps)
 	const statementMarkdown = $derived(instance.statement);
-	const correctionMarkdown = $derived(instance.correction || '');
+
+	// Build correction markdown from ResolvedCorrection object
+	const correctionMarkdown = $derived.by(() => {
+		if (!instance.correction) return '';
+		const parts: string[] = [];
+
+		// Add steps if present
+		if (instance.correction.steps && instance.correction.steps.length > 0) {
+			parts.push(...instance.correction.steps);
+		}
+
+		// Add feedback if present (typically shown after answer validation)
+		if (instance.correction.feedback?.correct) {
+			parts.push(instance.correction.feedback.correct);
+		}
+
+		return parts.join('\n\n');
+	});
 
 	// ============================================================================
 	// INITIALIZATION
@@ -391,20 +409,13 @@
 										disabled={isInputDisabled}
 										showValidation={isSubmitted}
 									/>
-								{:else if instance.type === 'ordering'}
-									<div
-										class="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-8 text-center"
-									>
-										<AlertCircle class="h-10 w-10 text-muted-foreground" />
-										<div>
-											<p class="font-semibold text-muted-foreground">
-												Type de question "ordering" non implémenté
-											</p>
-											<p class="mt-1 text-sm text-muted-foreground/70">
-												Cette fonctionnalité sera disponible prochainement
-											</p>
-										</div>
-									</div>
+								{:else}
+									<!-- numerical_with_unit and any future types - fallback to numerical input -->
+									<NumericalInput
+										bind:value={userAnswer as string}
+										disabled={isInputDisabled}
+										onSubmit={handleSubmit}
+									/>
 								{/if}
 
 								<!-- Submit Button -->
@@ -515,14 +526,14 @@
 						<div class="correct-answer">
 							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
 							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
-								{#if Array.isArray(instance.answer)}
+								{#if Array.isArray(instance.solution)}
 									<ul class="space-y-1">
-										{#each instance.answer as ans, i (i)}
+										{#each instance.solution as ans, i (i)}
 											<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
 										{/each}
 									</ul>
 								{:else}
-									<MarkdownRenderer content={`$$${String(instance.answer)}$$`} />
+									<MarkdownRenderer content={`$$${String(instance.solution)}$$`} />
 								{/if}
 							</div>
 						</div>

@@ -107,6 +107,7 @@
 		<!-- Mode selection -->
 		<div class="grid gap-4 py-4 sm:grid-cols-3">
 			{#each modeConfigs as config (config.mode)}
+				{@const Icon = config.icon}
 				<button type="button" onclick={() => handleModeSelect(config.mode)} class="transition-all">
 					<Card.Root
 						class="h-full cursor-pointer transition-all hover:shadow-lg {selectedMode ===
@@ -121,7 +122,7 @@
 										? 'bg-primary text-primary-foreground'
 										: 'bg-muted'}"
 								>
-									<svelte:component this={config.icon} class="h-6 w-6" />
+									<Icon class="h-6 w-6" />
 								</div>
 								<Card.Title class="text-base">{config.title}</Card.Title>
 							</div>

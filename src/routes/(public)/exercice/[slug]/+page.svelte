@@ -69,7 +69,7 @@
 
 		<Card.Content>
 			<!-- Exercise content -->
-			<ExerciseDisplay exercise={data.exercise} mode="instance" bind:showSolution parseAST={true} />
+			<ExerciseDisplay exercise={data.exercise} mode="instance" bind:showSolution />
 		</Card.Content>
 	</Card.Root>
 

@@ -633,12 +633,12 @@ YouTube format court :
 						</Card.Header>
 						<Card.Content class="space-y-4">
 							<div>
-								<label class="mb-1 block text-sm font-medium">mode</label>
+								<span class="mb-1 block text-sm font-medium">mode</span>
 								<MySelect type="single" items={modeItems} bind:value={playgroundMode} />
 							</div>
 
 							<div>
-								<label class="mb-1 block text-sm font-medium">mathTemplates</label>
+								<span class="mb-1 block text-sm font-medium">mathTemplates</span>
 								<MySelect
 									type="single"
 									items={mathTemplatesItems}
@@ -647,19 +647,19 @@ YouTube format court :
 							</div>
 
 							<div>
-								<label class="mb-1 block text-sm font-medium">showSendButton</label>
+								<span class="mb-1 block text-sm font-medium">showSendButton</span>
 								<MySelect
 									type="single"
 									items={showSendButtonItems}
 									bind:value={showSendButtonSelect}
 								/>
 								<p class="mt-1 text-xs text-muted-foreground">
-									Effectif : {effectiveShowSendButton ? 'visible' : 'masqué'}
+									Effectif : {effectiveShowSendButton ? 'visible' : 'masque'}
 								</p>
 							</div>
 
 							<div>
-								<label class="mb-1 block text-sm font-medium">minHeight</label>
+								<span class="mb-1 block text-sm font-medium">minHeight</span>
 								<MySelect type="single" items={minHeightItems} bind:value={playgroundMinHeight} />
 							</div>
 

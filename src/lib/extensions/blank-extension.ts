@@ -25,6 +25,21 @@ import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
 
 // ============================================================================
+// TYPE DECLARATIONS
+// ============================================================================
+
+declare module '@tiptap/core' {
+	interface Commands<ReturnType> {
+		blankField: {
+			/**
+			 * Insert a blank field with the given number
+			 */
+			insertBlankField: (number?: number) => ReturnType;
+		};
+	}
+}
+
+// ============================================================================
 // VALIDATION
 // ============================================================================
 
@@ -349,7 +364,6 @@ export const BlankField = TipTapNode.create({
 		};
 	},
 
-	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertBlankField:

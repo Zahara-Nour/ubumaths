@@ -40,6 +40,19 @@
 	let mathLiveLoaded = $state(false);
 	let selectedVariationIndex = $state<number | 'random'>(0);
 
+	// Build correction markdown from ResolvedCorrection object
+	const correctionMarkdown = $derived.by(() => {
+		if (!instance?.correction) return '';
+		const parts: string[] = [];
+		if (instance.correction.steps && instance.correction.steps.length > 0) {
+			parts.push(...instance.correction.steps);
+		}
+		if (instance.correction.feedback?.correct) {
+			parts.push(instance.correction.feedback.correct);
+		}
+		return parts.join('\n\n');
+	});
+
 	// FlashCard configuration
 	let interactive = $state<boolean>(true);
 	let displaySize = $state<'sm' | 'md' | 'lg'>('md');
@@ -322,9 +335,9 @@
 				<div class="space-y-2">
 					<Badge variant="outline">Réponse</Badge>
 					<div class="rounded border bg-green-50 p-3 dark:bg-green-950/20">
-						{#if Array.isArray(instance.answer)}
+						{#if Array.isArray(instance.solution)}
 							<ul class="space-y-1">
-								{#each instance.answer as ans, i (i)}
+								{#each instance.solution as ans, i (i)}
 									<li class="flex items-center gap-2">
 										<Badge class="bg-green-600">{i + 1}</Badge>
 										<code class="font-mono">{ans}</code>
@@ -332,7 +345,7 @@
 								{/each}
 							</ul>
 						{:else}
-							<code class="font-mono text-lg">{instance.answer}</code>
+							<code class="font-mono text-lg">{instance.solution}</code>
 						{/if}
 					</div>
 				</div>
@@ -344,8 +357,8 @@
 						<div class="space-y-2">
 							{#each instance.shuffledChoices as choice, i (i)}
 								{@const isCorrect =
-									(typeof instance.answer === 'string' && instance.answer === String(i)) ||
-									(Array.isArray(instance.answer) && instance.answer.includes(String(i)))}
+									(typeof instance.solution === 'string' && instance.solution === String(i)) ||
+									(Array.isArray(instance.solution) && instance.solution.includes(String(i)))}
 								<div
 									class="flex items-center gap-3 rounded border p-3 {isCorrect
 										? 'border-green-500 bg-green-50 dark:bg-green-950/20'
@@ -365,11 +378,11 @@
 				{/if}
 
 				<!-- Correction (if any) -->
-				{#if instance.correction}
+				{#if correctionMarkdown}
 					<div class="space-y-2">
 						<Badge variant="outline">Correction</Badge>
 						<div class="rounded-lg border bg-muted/50 p-4 text-sm">
-							<MarkdownRenderer content={instance.correction} />
+							<MarkdownRenderer content={correctionMarkdown} />
 						</div>
 					</div>
 				{/if}

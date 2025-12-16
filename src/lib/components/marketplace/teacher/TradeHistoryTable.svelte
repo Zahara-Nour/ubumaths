@@ -228,15 +228,15 @@
 				{#if isLoading}
 					{#each Array(5) as _, i (i)}
 						<TableRow>
-							<TableCell><div class="h-4 w-24 animate-pulse rounded bg-gray-200" /></TableCell>
-							<TableCell><div class="h-4 w-20 animate-pulse rounded bg-gray-200" /></TableCell>
-							<TableCell><div class="h-4 w-20 animate-pulse rounded bg-gray-200" /></TableCell>
-							<TableCell><div class="h-4 w-16 animate-pulse rounded bg-gray-200" /></TableCell>
+							<TableCell><div class="h-4 w-24 animate-pulse rounded bg-gray-200"></div></TableCell>
+							<TableCell><div class="h-4 w-20 animate-pulse rounded bg-gray-200"></div></TableCell>
+							<TableCell><div class="h-4 w-20 animate-pulse rounded bg-gray-200"></div></TableCell>
+							<TableCell><div class="h-4 w-16 animate-pulse rounded bg-gray-200"></div></TableCell>
 							<TableCell
-								><div class="mx-auto h-4 w-12 animate-pulse rounded bg-gray-200" /></TableCell
+								><div class="mx-auto h-4 w-12 animate-pulse rounded bg-gray-200"></div></TableCell
 							>
 							<TableCell
-								><div class="mx-auto h-4 w-12 animate-pulse rounded bg-gray-200" /></TableCell
+								><div class="mx-auto h-4 w-12 animate-pulse rounded bg-gray-200"></div></TableCell
 							>
 						</TableRow>
 					{/each}

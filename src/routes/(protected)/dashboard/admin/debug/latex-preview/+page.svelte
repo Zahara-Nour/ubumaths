@@ -84,7 +84,7 @@ Exemple de matrice :
 	let compilationError = $state<string | null>(null);
 	let compilationLog = $state<string | null>(null);
 	let pdfBlobUrl = $state<string | null>(null);
-	let textareaElement: HTMLTextAreaElement | null = null;
+	let textareaElement: HTMLTextAreaElement | null = $state(null);
 
 	// Regex to detect %!TEX engine comment
 	const engineRegex = /% *!TEX.*[^a-zA-Z](((pdf|xe|lua)?latex)|context) *\n/i;

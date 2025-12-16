@@ -427,9 +427,7 @@
 			<StudentProgressTable
 				students={data.students}
 				checklistItems={data.checklistItems}
-				checklistProgress={data.checklistProgress}
-				quizQuestions={data.quizQuestions}
-				quizResults={data.quizResults}
+				progress={data.checklistProgress}
 			/>
 		</Tabs.Content>
 	</Tabs.Root>
@@ -545,5 +543,5 @@
 			};
 		}}
 		class="hidden"
-	/>
+	></form>
 {/if}

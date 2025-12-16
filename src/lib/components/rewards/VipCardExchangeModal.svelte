@@ -435,7 +435,13 @@
 		</div>
 	{:else if result}
 		<!-- Success State -->
-		<div class="cursor-pointer py-6" onclick={handleClose} role="button" tabindex="0">
+		<div
+			class="cursor-pointer py-6"
+			onclick={handleClose}
+			onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClose()}
+			role="button"
+			tabindex={0}
+		>
 			<div class="mb-6">
 				<h3 class="mb-4 text-lg font-semibold">Cartes données :</h3>
 				<div class="grid grid-cols-3 gap-4">

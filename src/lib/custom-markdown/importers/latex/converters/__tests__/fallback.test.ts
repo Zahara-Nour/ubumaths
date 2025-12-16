@@ -26,6 +26,7 @@ import type {
 	EnvironmentToken,
 	ConversionContext,
 	LatexToMarkdownOptions,
+	ResolvedLatexToMarkdownOptions,
 	TranspileWarning
 } from '../../types';
 
@@ -90,13 +91,14 @@ function createContext(
 	overrides: Partial<ConversionContext> = {},
 	optionOverrides: Partial<LatexToMarkdownOptions> = {}
 ): ConversionContext {
-	const defaultOptions: Required<LatexToMarkdownOptions> = {
+	const defaultOptions: ResolvedLatexToMarkdownOptions = {
 		preserveComments: false,
 		mathDelimiters: 'dollar',
 		maxNestingDepth: 10,
 		fallbackToText: false,
 		preserveWhitespace: false,
 		lineOffset: 0,
+		additionalFunctionNames: undefined,
 		...optionOverrides
 	};
 

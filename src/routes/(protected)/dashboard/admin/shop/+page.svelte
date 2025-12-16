@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script lang="ts" module>
 	// Auto-trigger file input when component mounts
 	function autoTrigger(node: HTMLInputElement) {
 		node.click();
@@ -101,8 +101,10 @@
 
 		// Sort by sort_order, then by created_at
 		filtered.sort((a, b) => {
-			if (a.sort_order !== b.sort_order) {
-				return a.sort_order - b.sort_order;
+			const aSort = a.sort_order ?? Number.MAX_SAFE_INTEGER;
+			const bSort = b.sort_order ?? Number.MAX_SAFE_INTEGER;
+			if (aSort !== bSort) {
+				return aSort - bSort;
 			}
 			return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
 		});
@@ -243,8 +245,9 @@
 			}
 
 			const result = await response.json();
+			const uploadItemId = uploadingImageItem!.id;
 			items = items.map((i) =>
-				i.id === uploadingImageItem.id ? { ...i, icon_url: result.icon_url } : i
+				i.id === uploadItemId ? { ...i, icon_url: result.icon_url } : i
 			);
 
 			toaster.success('Image mise à jour');

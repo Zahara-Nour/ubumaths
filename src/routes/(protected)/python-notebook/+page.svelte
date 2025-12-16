@@ -104,14 +104,18 @@
 					<Card.Root class="cursor-pointer transition-shadow hover:shadow-lg">
 						<Card.Header>
 							<div class="flex items-start justify-between">
-								<div class="flex-1" onclick={() => handleOpenNotebook(notebook.id)}>
+								<button
+									class="flex-1 text-left"
+									onclick={() => handleOpenNotebook(notebook.id)}
+									type="button"
+								>
 									<Card.Title class="text-lg">{notebook.title}</Card.Title>
 									{#if notebook.description}
 										<Card.Description class="mt-1 line-clamp-2">
 											{notebook.description}
 										</Card.Description>
 									{/if}
-								</div>
+								</button>
 								{#if data.userRole === 'teacher'}
 									<Button
 										variant="ghost"

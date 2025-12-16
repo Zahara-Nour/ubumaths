@@ -137,15 +137,17 @@
 	<!-- Left side: Kernel status -->
 	<div class="flex items-center gap-4">
 		<!-- Kernel status -->
-		<div class="flex items-center gap-1.5 {kernelColorClass}">
-			<svelte:component
-				this={kernelIcon}
-				class="size-3.5 {kernelStatus === 'busy' || kernelStatus === 'initializing'
-					? 'animate-spin'
-					: ''}"
-			/>
-			<span class="font-medium">{kernelStatusText}</span>
-		</div>
+		{#if kernelIcon}
+			{@const KernelIcon = kernelIcon}
+			<div class="flex items-center gap-1.5 {kernelColorClass}">
+				<KernelIcon
+					class="size-3.5 {kernelStatus === 'busy' || kernelStatus === 'initializing'
+						? 'animate-spin'
+						: ''}"
+				/>
+				<span class="font-medium">{kernelStatusText}</span>
+			</div>
+		{/if}
 
 		<!-- Queue status -->
 		{#if queuedCellsCount > 0}

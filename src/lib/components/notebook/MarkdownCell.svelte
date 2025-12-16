@@ -73,7 +73,7 @@
 - À puces"
 				spellcheck="false"
 				disabled={isReadonly}
-			/>
+			></textarea>
 			<div class="mt-2 text-xs text-muted-foreground">
 				Appuyez sur <kbd class="rounded bg-muted px-1">Échap</kbd> pour prévisualiser
 			</div>

@@ -6,10 +6,8 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import VipCardActionEditor from '$lib/components/vip-cards/VipCardActionEditor.svelte';
-	import type { Database } from '$lib/types/database';
+	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 	import type { VipCardAction } from '$lib/types/vip-card';
-
-	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
 
 	interface Props {
 		card?: VipCardTemplate;

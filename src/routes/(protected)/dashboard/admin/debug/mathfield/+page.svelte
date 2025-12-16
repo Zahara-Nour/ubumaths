@@ -107,8 +107,8 @@
 	function initMathfield(node: MathfieldElement) {
 		mathfield = node;
 
-		// Configure virtual keyboard
-		node.virtualKeyboardMode = virtualKeyboardMode;
+		// Configure virtual keyboard (cast needed as property may not be in types)
+		(node as unknown as { virtualKeyboardMode: string }).virtualKeyboardMode = virtualKeyboardMode;
 
 		// Set math-virtual-keyboard-policy to allow virtual keyboard
 		node.mathVirtualKeyboardPolicy = 'auto';
@@ -174,7 +174,8 @@
 	 */
 	$effect(() => {
 		if (mathfield) {
-			mathfield.virtualKeyboardMode = virtualKeyboardMode;
+			(mathfield as unknown as { virtualKeyboardMode: string }).virtualKeyboardMode =
+				virtualKeyboardMode;
 		}
 	});
 

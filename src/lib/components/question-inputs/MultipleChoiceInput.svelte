@@ -182,7 +182,7 @@
 		color: rgb(22, 101, 52); /* green-900 */
 	}
 
-	.dark .choice-button.correct {
+	:global(.dark) .choice-button.correct {
 		border-color: rgb(34, 197, 94);
 		background: rgb(20, 83, 45); /* green-950 */
 		color: rgb(187, 247, 208); /* green-200 */
@@ -194,7 +194,7 @@
 		color: rgb(127, 29, 29); /* red-900 */
 	}
 
-	.dark .choice-button.incorrect {
+	:global(.dark) .choice-button.incorrect {
 		border-color: rgb(220, 38, 38);
 		background: rgb(69, 10, 10); /* red-950 */
 		color: rgb(254, 202, 202); /* red-200 */

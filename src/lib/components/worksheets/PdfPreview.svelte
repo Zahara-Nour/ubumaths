@@ -62,7 +62,7 @@
 
 	// Preview state
 	let mode = $state<'worksheet' | 'correction'>('worksheet');
-	let selectedStudentId = $state<string | null>(null);
+	let selectedStudentId = $state<string | undefined>(undefined);
 	let isGenerating = $state(false);
 	let pdfUrl = $state<string | null>(null);
 	let pdfBlob = $state<Blob | null>(null);
@@ -241,7 +241,7 @@
 
 			// Generate PDF
 			const pdfData = await typst.pdf({ mainContent: typstContent });
-			pdfBlob = new Blob([pdfData], { type: 'application/pdf' });
+			pdfBlob = new Blob([pdfData as BlobPart], { type: 'application/pdf' });
 			pdfUrl = URL.createObjectURL(pdfBlob);
 
 			// Set filename

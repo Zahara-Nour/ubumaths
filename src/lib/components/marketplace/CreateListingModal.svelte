@@ -26,7 +26,7 @@
 	let offeredGidouilles = $state(0);
 	let wantedCardTemplateIds = $state<string[]>([]);
 	let wantedGidouilles = $state(0);
-	let expiresInDays = $state(7);
+	let expiresInDays = $state('7');
 	let isSubmitting = $state(false);
 
 	// Template selection mode
@@ -87,7 +87,7 @@
 		offeredGidouilles = 0;
 		wantedCardTemplateIds = [];
 		wantedGidouilles = 0;
-		expiresInDays = 7;
+		expiresInDays = '7';
 		showTemplateSelector = false;
 	}
 
@@ -107,7 +107,7 @@
 				wanted_card_template_ids:
 					wantedCardTemplateIds.length > 0 ? wantedCardTemplateIds : undefined,
 				wanted_gidouilles: wantedGidouilles > 0 ? wantedGidouilles : undefined,
-				expires_in_days: expiresInDays
+				expires_in_days: parseInt(expiresInDays, 10)
 			};
 
 			const success = await marketplaceStore.createListing(data);

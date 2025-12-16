@@ -5,6 +5,8 @@
  * Type definitions for VIP card administration system
  */
 
+import type { VipCardAction } from '$lib/types/vip-card';
+
 /**
  * Database table types
  * Note: These should be imported from database.ts once regenerated
@@ -22,11 +24,7 @@ export interface VipCardTemplate {
 	category: 'bonus' | 'privilege' | 'social' | 'power';
 	image_path: string;
 	is_enabled: boolean;
-	action: {
-		type: 'draw_cards' | 'remove_warnings' | 'exchange_cards' | 'add_gidouilles';
-		count?: number;
-		amount?: number;
-	} | null;
+	action: VipCardAction | null;
 	sort_order: number;
 	created_at: string;
 	updated_at: string;
@@ -77,11 +75,7 @@ export interface CreateTemplateRequest {
 	category: 'bonus' | 'privilege' | 'social' | 'power';
 	isEnabled: boolean;
 	imagePath: string;
-	action?: {
-		type: 'draw_cards' | 'remove_warnings' | 'exchange_cards' | 'add_gidouilles';
-		count?: number;
-		amount?: number;
-	};
+	action?: VipCardAction;
 	sortOrder?: number;
 }
 
@@ -101,11 +95,7 @@ export interface TemplateResponse {
 	category: 'bonus' | 'privilege' | 'social' | 'power';
 	imagePath: string;
 	isEnabled: boolean;
-	action: {
-		type: 'draw_cards' | 'remove_warnings' | 'exchange_cards' | 'add_gidouilles';
-		count?: number;
-		amount?: number;
-	} | null;
+	action: VipCardAction | null;
 	sortOrder: number;
 	createdAt: string;
 }

@@ -28,7 +28,7 @@ import type {
 	EnvironmentToken,
 	CommandToken,
 	ConversionContext,
-	LatexToMarkdownOptions
+	ResolvedLatexToMarkdownOptions
 } from '../types';
 
 // ===========================
@@ -82,13 +82,14 @@ function createCommandToken(name: string, args: string[] = [], options?: string[
  * Create a mock ConversionContext for testing
  */
 function createContext(overrides: Partial<ConversionContext> = {}): ConversionContext {
-	const defaultOptions: Required<LatexToMarkdownOptions> = {
+	const defaultOptions: ResolvedLatexToMarkdownOptions = {
 		preserveComments: false,
 		mathDelimiters: 'dollar',
 		maxNestingDepth: 10,
 		fallbackToText: false,
 		preserveWhitespace: false,
-		lineOffset: 0
+		lineOffset: 0,
+		additionalFunctionNames: undefined
 	};
 
 	return {

@@ -6,8 +6,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Search, UserPlus, Check, Clock, UserX } from 'lucide-svelte';
-	import type { FriendshipType } from '$lib/types/database';
 	import { getAvatarUrl } from '$lib/utils/avatar';
+
+	// Friendship relationship type (different from status which is 'pending' | 'accepted' | 'blocked')
+	type FriendshipRelationType = 'classmate' | 'mentor';
 
 	let searchQuery = $state('');
 	let searchResults = $state<
@@ -22,7 +24,7 @@
 		}>
 	>([]);
 	let isSearching = $state(false);
-	let selectedFriendshipType = $state<FriendshipType>('classmate');
+	let selectedFriendshipType = $state<FriendshipRelationType>('classmate');
 
 	// Items for MySelect
 	const friendshipTypeItems = [

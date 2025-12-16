@@ -175,7 +175,6 @@
 				userId={data.userId}
 				groupId={data.classIds[0]}
 				bind:showSolution
-				parseAST={true}
 			/>
 		</Card.Content>
 	</Card.Root>

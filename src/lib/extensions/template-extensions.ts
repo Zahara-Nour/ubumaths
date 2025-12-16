@@ -27,6 +27,33 @@ import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
 
 // ============================================================================
+// TYPE DECLARATIONS
+// ============================================================================
+
+declare module '@tiptap/core' {
+	interface Commands<ReturnType> {
+		templateVariable: {
+			/**
+			 * Insert a template variable
+			 */
+			insertTemplateVariable: (name?: string) => ReturnType;
+		};
+		templateRandom: {
+			/**
+			 * Insert a template random number
+			 */
+			insertTemplateRandom: (spec?: string) => ReturnType;
+		};
+		templateEval: {
+			/**
+			 * Insert a template eval expression
+			 */
+			insertTemplateEval: (expression?: string) => ReturnType;
+		};
+	}
+}
+
+// ============================================================================
 // VALIDATION FUNCTIONS
 // ============================================================================
 
@@ -422,7 +449,6 @@ export const TemplateVariable = TipTapNode.create({
 		};
 	},
 
-	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertTemplateVariable:
@@ -574,7 +600,6 @@ export const TemplateRandom = TipTapNode.create({
 		};
 	},
 
-	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertTemplateRandom:
@@ -743,7 +768,6 @@ export const TemplateEval = TipTapNode.create({
 		};
 	},
 
-	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertTemplateEval:

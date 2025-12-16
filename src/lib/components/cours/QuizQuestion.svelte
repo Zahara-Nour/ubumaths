@@ -30,7 +30,6 @@
 
 	// Local state for tracking user's answer (for highlighting)
 	let selectedAnswer = $state<string | null>(null);
-	let _correctAnswerIndex = $state<number | null>(null);
 
 	// Determine if this is a true/false question
 	const isTrueFalse = $derived(!question.choices || question.choices.length === 0);
@@ -40,9 +39,6 @@
 		if (showFeedback) return; // Already answered
 
 		selectedAnswer = answer;
-		if (index !== undefined) {
-			correctAnswerIndex = index;
-		}
 
 		// For true/false, first choice is always "VRAI" (correct answer for true)
 		// The parent component will determine if the answer is correct
@@ -127,7 +123,7 @@
 					FAUX
 				</Button>
 			</div>
-		{:else}
+		{:else if question.choices}
 			<!-- Multiple choice buttons -->
 			<div class="flex flex-col gap-3">
 				{#each question.choices as choice, index (index)}

@@ -134,7 +134,7 @@
 			<div class="space-y-6">
 				<!-- Mode Selector -->
 				<div class="space-y-2">
-					<label class="text-sm font-medium text-foreground">Mode</label>
+					<span class="text-sm font-medium text-foreground">Mode</span>
 					<MySelect
 						type="single"
 						items={modeItems}
@@ -152,8 +152,8 @@
 						<h4 class="text-sm font-medium text-foreground">Options du mode Auto</h4>
 
 						<div class="space-y-2">
-							<label class="text-sm text-muted-foreground"
-								>Avec imbrication (questions + sous-questions)</label
+							<span class="text-sm text-muted-foreground"
+								>Avec imbrication (questions + sous-questions)</span
 							>
 							<MySelect
 								type="single"
@@ -164,8 +164,8 @@
 						</div>
 
 						<div class="space-y-2">
-							<label class="text-sm text-muted-foreground"
-								>Sans imbrication (questions simples)</label
+							<span class="text-sm text-muted-foreground"
+								>Sans imbrication (questions simples)</span
 							>
 							<MySelect
 								type="single"

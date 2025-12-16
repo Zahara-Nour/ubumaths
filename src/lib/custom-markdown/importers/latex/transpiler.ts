@@ -71,13 +71,14 @@ import { convertMathToCustomSyntax, type MathConversionOptions } from './convert
  * Default options for transpilation.
  * These values are used when not specified by the caller.
  */
-const DEFAULT_OPTIONS: Required<LatexToMarkdownOptions> = {
+const DEFAULT_OPTIONS: ResolvedLatexToMarkdownOptions = {
 	preserveComments: false,
 	mathDelimiters: 'tilde',
 	maxNestingDepth: 10,
 	fallbackToText: false,
 	preserveWhitespace: false,
-	lineOffset: 0
+	lineOffset: 0,
+	additionalFunctionNames: undefined
 };
 
 // ===========================
@@ -849,7 +850,7 @@ function convertSpecialToken(token: SpecialToken, context: ConversionContext): s
  * @param options - The transpilation options
  * @returns The cleaned markdown
  */
-function cleanupMarkdown(markdown: string, options: Required<LatexToMarkdownOptions>): string {
+function cleanupMarkdown(markdown: string, options: ResolvedLatexToMarkdownOptions): string {
 	if (options.preserveWhitespace) {
 		return markdown;
 	}

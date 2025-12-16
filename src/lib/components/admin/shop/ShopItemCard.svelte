@@ -132,10 +132,12 @@
 
 			{#if onEdit || onDelete || onUploadImage || onToggle}
 				<DropdownMenu.Root>
-					<DropdownMenu.Trigger asChild>
-						<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Actions de l'article">
-							<MoreVertical class="h-4 w-4" />
-						</Button>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Button {...props} variant="ghost" size="icon" class="h-8 w-8" aria-label="Actions de l'article">
+								<MoreVertical class="h-4 w-4" />
+							</Button>
+						{/snippet}
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content align="end">
 						{#if onToggle}

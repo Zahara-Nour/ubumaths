@@ -20,11 +20,11 @@
 	let display_name = $state(item?.display_name || '');
 	let description = $state(item?.description || '');
 	let category = $state<'consumable' | 'booster' | 'cosmetic' | 'utility'>(
-		item?.category || 'consumable'
+		(item?.category as 'consumable' | 'booster' | 'cosmetic' | 'utility') || 'consumable'
 	);
 	let item_type = $state(item?.item_type || '');
 	let rarity = $state<'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'>(
-		item?.rarity || 'common'
+		(item?.rarity as 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary') || 'common'
 	);
 	let base_price = $state(item?.base_price || 100);
 	let discount_percentage = $state(item?.discount_percentage || 0);

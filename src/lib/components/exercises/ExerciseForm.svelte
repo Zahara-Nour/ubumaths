@@ -39,8 +39,13 @@
 	let gradeLevels = $state<GradeCode[]>((exercise?.grade_levels as GradeCode[]) || []);
 	let statementMd = $state(exercise?.statement_md || '');
 	let solutionMd = $state(exercise?.solution_md || '');
-	let resources = $state<ExerciseResource[]>((exercise?.resources as ExerciseResource[]) || []);
-	let genericFunctions = $state<string[]>(exercise?.generic_functions || []);
+	let resources = $state<ExerciseResource[]>(
+		(exercise?.resources as unknown as ExerciseResource[]) || []
+	);
+	// generic_functions may exist after migration but not in generated types yet
+	let genericFunctions = $state<string[]>(
+		((exercise as Record<string, unknown>)?.generic_functions as string[]) || []
+	);
 
 	// Debug: track genericFunctions changes
 	$effect(() => {
@@ -96,7 +101,7 @@
 			return;
 		}
 
-		const data: Partial<ExerciseInsert> = {
+		const data: Partial<ExerciseInsert> & { generic_functions?: string[] | null } = {
 			title: title.trim() || null,
 			slug: slug.trim() || null,
 			source: source.trim() || null,
@@ -106,7 +111,7 @@
 			grade_levels: gradeLevels,
 			statement_md: statementMd,
 			solution_md: solutionMd,
-			resources: resources.length > 0 ? resources : null,
+			resources: (resources.length > 0 ? resources : null) as ExerciseInsert['resources'],
 			// generic_functions: empty array means "disable", null/undefined means "use defaults"
 			generic_functions: genericFunctions.length > 0 ? genericFunctions : null
 		};

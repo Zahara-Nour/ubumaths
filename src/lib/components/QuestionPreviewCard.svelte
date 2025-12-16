@@ -31,15 +31,13 @@
 	let isInCart = $derived(questionCart.hasCategory(category));
 
 	/**
-	 * Get preview text from statement
+	 * Get preview text from statement (ResolvedMarkdown string)
+	 * Truncates to 200 chars if needed
 	 */
-	function getPreviewText(statement: typeof preview.statement): string {
-		const textFields = statement.filter((field) => field.type === 'text');
-		if (textFields.length === 0) return '';
-
-		// Join all text content, truncate to 200 chars
-		const fullText = textFields.map((f) => f.content).join(' ');
-		return fullText.length > 200 ? fullText.substring(0, 200) + '...' : fullText;
+	function getPreviewText(statement: string): string {
+		if (!statement) return '';
+		// Statement is now a ResolvedMarkdown string
+		return statement.length > 200 ? statement.substring(0, 200) + '...' : statement;
 	}
 
 	/**

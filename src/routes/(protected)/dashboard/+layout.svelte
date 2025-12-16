@@ -350,7 +350,7 @@
 										role: data.profile.role,
 										gender: data.profile.gender
 									},
-									data.user
+									data.user ?? undefined
 								)}
 								alt={data.profile.email || 'User'}
 							/>

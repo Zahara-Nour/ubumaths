@@ -72,7 +72,10 @@
 			aria-modal="true"
 			tabindex="-1"
 		>
-			<svelte:component this={currentModal.component} {...currentModal.props} />
+			{#if currentModal.component}
+				{@const ModalComponent = currentModal.component}
+				<ModalComponent {...currentModal.props} />
+			{/if}
 		</div>
 	</button>
 {/if}

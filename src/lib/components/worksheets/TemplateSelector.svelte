@@ -223,9 +223,7 @@
 				<div class="rounded-lg border bg-white p-4 dark:bg-zinc-950">
 					<pre
 						class="font-mono text-xs leading-relaxed whitespace-pre-wrap text-foreground">{renderTemplate(
-							'template_content' in previewTemplate
-								? previewTemplate.template_content
-								: previewTemplate.template_content,
+							previewTemplate.template_content,
 							SAMPLE_PREVIEW_DATA
 						)}</pre>
 				</div>

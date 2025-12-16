@@ -236,7 +236,7 @@
 		background: rgb(220, 252, 231); /* green-100 */
 	}
 
-	.dark .ordering-item.correct {
+	:global(.dark) .ordering-item.correct {
 		border-color: rgb(34, 197, 94);
 		background: rgb(20, 83, 45); /* green-950 */
 	}
@@ -246,7 +246,7 @@
 		background: rgb(254, 226, 226); /* red-100 */
 	}
 
-	.dark .ordering-item.incorrect {
+	:global(.dark) .ordering-item.incorrect {
 		border-color: rgb(220, 38, 38);
 		background: rgb(69, 10, 10); /* red-950 */
 	}

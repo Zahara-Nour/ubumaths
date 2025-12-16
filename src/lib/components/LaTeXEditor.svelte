@@ -194,14 +194,13 @@
 		{:else if loadError}
 			<div class="flex h-full flex-col items-center justify-center gap-2 p-4">
 				<p class="text-sm text-destructive">{loadError}</p>
+				<!-- svelte-ignore a11y_autocomplete_valid -->
 				<textarea
 					class="h-full w-full resize-none rounded border border-border bg-background p-4 font-mono text-sm text-foreground focus:outline-none"
 					bind:value
 					{placeholder}
 					spellcheck="false"
 					autocomplete="off"
-					autocorrect="off"
-					autocapitalize="off"
 					aria-label="Editeur LaTeX (mode degrade)"
 					{disabled}
 				></textarea>

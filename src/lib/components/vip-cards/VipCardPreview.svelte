@@ -1,17 +1,11 @@
 <script lang="ts">
 	import { Switch } from '$lib/components/ui/switch';
 	import { Check, ImageIcon, Pencil, Trash2 } from 'lucide-svelte';
-	import type { Database } from '$lib/types/database';
+	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
+	import type { VipCardAction } from '$lib/types/vip-card';
 	import { categoryIcon } from './utils';
 	import MySelect from '$lib/components/MySelect.svelte';
-
-	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
-	type ActionType =
-		| 'draw_cards'
-		| 'remove_warnings'
-		| 'exchange_cards'
-		| 'add_gidouilles'
-		| 'choose_card';
+	type ActionType = VipCardAction['type'];
 
 	// Typed action interface (Database stores as Json, but we know the structure)
 	interface TypedAction {
@@ -205,14 +199,21 @@
 	}
 
 	// Build action object from temp state
-	function buildAction(): VipCardTemplate['action'] {
+	function buildAction(): VipCardAction | null {
 		if (!tempActionType || tempActionType === '') return null;
 
 		if (tempActionType === 'add_gidouilles') {
-			return { type: tempActionType, amount: tempActionValue };
-		} else {
-			return { type: tempActionType as ActionType, count: tempActionValue };
+			return { type: 'add_gidouilles', amount: tempActionValue };
+		} else if (tempActionType === 'draw_cards') {
+			return { type: 'draw_cards', count: tempActionValue };
+		} else if (tempActionType === 'remove_warnings') {
+			return { type: 'remove_warnings', count: tempActionValue };
+		} else if (tempActionType === 'choose_card') {
+			return { type: 'choose_card', count: tempActionValue };
+		} else if (tempActionType === 'exchange_cards') {
+			return { type: 'exchange_cards', exchange: { mode: 'replace_random', count: tempActionValue } };
 		}
+		return null;
 	}
 
 	// Handle save
@@ -377,7 +378,7 @@
 					rows="1"
 					use:autoFocus
 					aria-label="Modifier le nom de la carte"
-				/>
+				></textarea>
 			{:else}
 				<button
 					type="button"
@@ -407,7 +408,7 @@
 					rows="2"
 					use:autoFocus
 					aria-label="Modifier la description de la carte"
-				/>
+				></textarea>
 			{:else}
 				<button
 					type="button"

@@ -2,7 +2,7 @@
 	import type { MarketplaceListing } from '$lib/types/marketplace';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Avatar } from '$lib/components/ui/avatar';
+	import * as Avatar from '$lib/components/ui/avatar';
 	import { Clock, Eye, MessageSquare } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
@@ -47,7 +47,9 @@
 	});
 
 	// Get listing type badge variant
-	let typeVariant = $derived(listing.listing_type === 'sell' ? 'default' : 'secondary');
+	let typeVariant = $derived<'default' | 'secondary'>(
+		listing.listing_type === 'sell' ? 'default' : 'secondary'
+	);
 
 	// Format offer/demand text
 	let offerText = $derived(() => {
@@ -87,7 +89,7 @@
 	<!-- Grid View Card -->
 	<Card.Root
 		role="button"
-		tabindex="0"
+		tabindex={0}
 		{onclick}
 		onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && onclick?.()}
 		aria-label={`Annonce: ${listing.title} par ${listing.creator?.username || 'Anonyme'}`}
@@ -172,7 +174,7 @@
 	<!-- List View Card -->
 	<Card.Root
 		role="button"
-		tabindex="0"
+		tabindex={0}
 		{onclick}
 		onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && onclick?.()}
 		aria-label={`Annonce: ${listing.title} par ${listing.creator?.username || 'Anonyme'}`}

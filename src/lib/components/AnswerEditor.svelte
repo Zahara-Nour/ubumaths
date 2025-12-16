@@ -42,7 +42,7 @@
 		precision?: PrecisionType;
 		transformType?: string;
 		blanks?: { position: number; expectedAnswer: string }[];
-		choices?: { content: TemplateMarkdown; isCorrect: boolean }[];
+		choices?: { content: TemplateMarkdown; isCorrect?: boolean }[];
 		multipleAnswers?: boolean;
 	}
 

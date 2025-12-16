@@ -89,13 +89,13 @@
 	}
 
 	// Reset values when type changes
-	let previousType = $state(answerType);
+	let previousType: AnswerType | null = null;
 	$effect(() => {
-		if (answerType !== previousType) {
+		if (previousType !== null && answerType !== previousType) {
 			answerValue = '';
 			correctChoices = [0];
-			previousType = answerType;
 		}
+		previousType = answerType;
 	});
 
 	function addQcmChoice() {

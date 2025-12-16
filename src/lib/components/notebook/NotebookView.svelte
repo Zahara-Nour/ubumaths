@@ -272,11 +272,12 @@
 
 	// Lifecycle - Keyboard listener with cleanup
 	$effect(() => {
-		if (containerRef) {
-			containerRef.addEventListener('keydown', handleKeydown);
+		const container = containerRef;
+		if (container) {
+			container.addEventListener('keydown', handleKeydown);
 
 			return () => {
-				containerRef.removeEventListener('keydown', handleKeydown);
+				container.removeEventListener('keydown', handleKeydown);
 			};
 		}
 	});

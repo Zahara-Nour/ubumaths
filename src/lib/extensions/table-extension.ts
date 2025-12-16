@@ -12,8 +12,7 @@
  * @module extensions/table-extension
  */
 
-import { TableHeader } from '@tiptap/extension-table-header';
-import { TableCell } from '@tiptap/extension-table-cell';
+import { TableHeader, TableCell } from '@tiptap/extension-table';
 
 /**
  * Custom TableHeader extension with textAlign attribute support

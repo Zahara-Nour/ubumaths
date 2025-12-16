@@ -196,11 +196,11 @@
 			{#each Array(4) as _, i (i)}
 				<Card>
 					<CardHeader>
-						<div class="h-5 w-32 animate-pulse rounded bg-gray-200" />
-						<div class="mt-2 h-4 w-48 animate-pulse rounded bg-gray-200" />
+						<div class="h-5 w-32 animate-pulse rounded bg-gray-200"></div>
+						<div class="mt-2 h-4 w-48 animate-pulse rounded bg-gray-200"></div>
 					</CardHeader>
 					<CardContent>
-						<div class="h-24 animate-pulse rounded bg-gray-200" />
+						<div class="h-24 animate-pulse rounded bg-gray-200"></div>
 					</CardContent>
 				</Card>
 			{/each}

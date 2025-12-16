@@ -6,7 +6,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import { Avatar } from '$lib/components/ui/avatar';
+	import * as Avatar from '$lib/components/ui/avatar';
 	import {
 		ArrowLeftRight,
 		Clock,
@@ -85,15 +85,18 @@
 		marketplaceStore.fetchMyTrades();
 	}
 
+	// Type for current offer structure
+	interface CurrentOffer {
+		from_initiator?: { cards?: string[]; gidouilles?: number };
+		from_partner?: { cards?: string[]; gidouilles?: number };
+	}
+
 	// Get offer summary
 	function getOfferSummary(trade: MarketplaceTrade) {
 		const isInitiator = trade.initiator_id === userId;
-		const myOffer = isInitiator
-			? trade.current_offer?.from_initiator
-			: trade.current_offer?.from_partner;
-		const theirOffer = isInitiator
-			? trade.current_offer?.from_partner
-			: trade.current_offer?.from_initiator;
+		const offer = trade.current_offer as CurrentOffer | null;
+		const myOffer = isInitiator ? offer?.from_initiator : offer?.from_partner;
+		const theirOffer = isInitiator ? offer?.from_partner : offer?.from_initiator;
 
 		const myParts = [];
 		const theirParts = [];
@@ -102,7 +105,7 @@
 			if (myOffer.cards?.length) {
 				myParts.push(`${myOffer.cards.length} carte${myOffer.cards.length > 1 ? 's' : ''}`);
 			}
-			if (myOffer.gidouilles > 0) {
+			if (myOffer.gidouilles && myOffer.gidouilles > 0) {
 				myParts.push(`${myOffer.gidouilles} gidouilles`);
 			}
 		}
@@ -113,7 +116,7 @@
 					`${theirOffer.cards.length} carte${theirOffer.cards.length > 1 ? 's' : ''}`
 				);
 			}
-			if (theirOffer.gidouilles > 0) {
+			if (theirOffer.gidouilles && theirOffer.gidouilles > 0) {
 				theirParts.push(`${theirOffer.gidouilles} gidouilles`);
 			}
 		}
@@ -147,10 +150,10 @@
 	<Tabs.Root bind:value={selectedTab}>
 		<Tabs.List>
 			<Tabs.Trigger value="active">
-				Négociations ({activeTrades().length})
+				Négociations ({activeTrades.length})
 			</Tabs.Trigger>
 			<Tabs.Trigger value="completed">
-				Terminés ({completedTrades().length})
+				Terminés ({completedTrades.length})
 			</Tabs.Trigger>
 		</Tabs.List>
 
@@ -167,7 +170,7 @@
 						<Button onclick={refresh}>Réessayer</Button>
 					</Card.Content>
 				</Card.Root>
-			{:else if activeTrades().length === 0}
+			{:else if activeTrades.length === 0}
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
 						<ArrowLeftRight class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
@@ -178,7 +181,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each activeTrades() as trade (trade.id)}
+				{#each activeTrades as trade (trade.id)}
 					{@const partner = getTradePartner(trade)}
 					{@const myTurn = isMyTurn(trade)}
 					{@const offerSummary = getOfferSummary(trade)}
@@ -275,7 +278,7 @@
 
 		<!-- Completed Trades -->
 		<Tabs.Content value="completed" class="mt-4 space-y-4">
-			{#if completedTrades().length === 0}
+			{#if completedTrades.length === 0}
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
 						<CheckCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
@@ -284,7 +287,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each completedTrades() as trade (trade.id)}
+				{#each completedTrades as trade (trade.id)}
 					{@const partner = getTradePartner(trade)}
 
 					<Card.Root>

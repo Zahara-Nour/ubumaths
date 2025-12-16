@@ -32,9 +32,10 @@
 	let victory = $state(false);
 	let rewards = $state<unknown>(null);
 
-	// Player HP calculation
+	// Player HP calculation - initialize once at combat start
 	const playerMaxHP = $derived(calculatePlayerMaxEndurance(data.gamePlayer.level));
-	const playerCurrentHP = $state(playerMaxHP);
+	const initialMaxHP = calculatePlayerMaxEndurance(data.gamePlayer.level);
+	let playerCurrentHP = $state(initialMaxHP);
 
 	// Derived view state for debugging
 	const currentView = $derived(

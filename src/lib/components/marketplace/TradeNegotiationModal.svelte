@@ -5,7 +5,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Avatar } from '$lib/components/ui/avatar';
+	import * as Avatar from '$lib/components/ui/avatar';
 	import { Separator } from '$lib/components/ui/separator';
 	import VipCardSelector from './VipCardSelector.svelte';
 	import { ArrowLeftRight, CheckCircle, XCircle } from 'lucide-svelte';

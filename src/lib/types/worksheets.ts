@@ -22,7 +22,7 @@ export type InstanceStatus = (typeof INSTANCE_STATUSES)[number];
 export const ASSIGNMENT_STATUSES = ['draft', 'active', 'completed', 'cancelled'] as const;
 export type AssignmentStatus = (typeof ASSIGNMENT_STATUSES)[number];
 
-export const CORRECTION_RELEASE_MODES = ['manual', 'immediate', 'scheduled'] as const;
+export const CORRECTION_RELEASE_MODES = ['manual', 'immediate', 'scheduled', 'after_due'] as const;
 export type CorrectionReleaseMode = (typeof CORRECTION_RELEASE_MODES)[number];
 
 export const ERROR_REPORT_STATUSES = ['pending', 'fixed', 'rejected'] as const;

@@ -26,10 +26,22 @@
 	import type {
 		QuestionTemplate,
 		QuestionVariation,
+		QuestionCorrection,
 		QuestionType,
 		GradeLevel,
 		PrecisionType
 	} from '$lib/questions/types';
+
+	// Helper to check if QuestionCorrection has meaningful content
+	function hasNonEmptyCorrection(correction: QuestionCorrection | undefined): boolean {
+		if (!correction) return false;
+		const hasFeedback =
+			correction.feedback?.correct?.trim() ||
+			correction.feedback?.incorrect?.trim() ||
+			correction.feedback?.partial?.trim();
+		const hasSteps = correction.steps && correction.steps.some((s) => s.trim());
+		return !!(hasFeedback || hasSteps);
+	}
 	import { GRADE_CODES, GRADES } from '$lib/types/grades';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -221,26 +233,52 @@
 	let variablesOpen = $state(true); // Open by default for ease of use
 	let answerSectionOpen = $state(true); // Open by default as it's required
 
+	// Helper to convert QuestionCorrection object to simple string (for editing)
+	function correctionToString(correction: QuestionCorrection | undefined): string {
+		if (!correction) return '';
+		// Prefer steps if available, otherwise use feedback
+		if (correction.steps && correction.steps.length > 0) {
+			return correction.steps.join('\n\n');
+		}
+		if (correction.feedback?.correct) {
+			return correction.feedback.correct;
+		}
+		return '';
+	}
+
+	// Helper to convert string to QuestionCorrection object
+	function stringToCorrection(str: string): QuestionCorrection | undefined {
+		const trimmed = str.trim();
+		if (!trimmed) return undefined;
+		// Store simple string as steps
+		return {
+			steps: [templateMarkdown(trimmed)]
+		};
+	}
+
 	// Variations state (NEW)
-	// Note: correction is initialized to empty string for editing, cleaned up in buildTemplate()
+	// Note: correction is optional, only used if provided
 	let variations = $state<QuestionVariation[]>(
 		template?.variations.map((v) => ({
 			...v,
 			variables: v.variables || [],
 			blanks: v.blanks || [],
 			choices: v.choices || [],
-			// Ensure correction is always a string for the editor (cleaned up in buildTemplate)
-			correction: v.correction ?? templateMarkdown('')
+			correction: v.correction
 		})) || [
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				answer: '',
+				solution: '',
 				blanks: [],
-				choices: [],
-				correction: templateMarkdown('')
+				choices: []
 			}
 		]
+	);
+
+	// Separate state for correction editing (as strings)
+	let correctionStrings = $state<string[]>(
+		template?.variations.map((v) => correctionToString(v.correction)) || ['']
 	);
 
 	// Current variation index for editing
@@ -294,18 +332,19 @@
 			{
 				statement: templateMarkdown(''),
 				variables: [],
-				answer: '',
+				solution: '',
 				blanks: [],
-				choices: [],
-				correction: templateMarkdown('')
+				choices: []
 			}
 		];
+		correctionStrings = [...correctionStrings, ''];
 		currentVariationIndex = variations.length - 1;
 	}
 
 	function removeVariation(index: number) {
 		if (variations.length <= 1) return; // Must have at least 1 variation
 		variations = variations.filter((_, i) => i !== index);
+		correctionStrings = correctionStrings.filter((_, i) => i !== index);
 		if (currentVariationIndex >= variations.length) {
 			currentVariationIndex = variations.length - 1;
 		}
@@ -334,15 +373,19 @@
 			// statement is now a branded string (TemplateMarkdown), so no deep copy needed
 			statement: templateMarkdown(sourceVariation.statement),
 			variables: JSON.parse(JSON.stringify(sourceVariation.variables || [])),
-			answer: sourceVariation.answer,
-			// correction is also a branded string (TemplateMarkdown), ensure it's always a string for editor
-			correction: templateMarkdown(sourceVariation.correction ?? ''),
+			solution: sourceVariation.solution,
+			// correction is set from correctionStrings when building template
+			correction: undefined,
 			blanks: sourceVariation.blanks ? JSON.parse(JSON.stringify(sourceVariation.blanks)) : [],
 			choices: sourceVariation.choices ? JSON.parse(JSON.stringify(sourceVariation.choices)) : []
 		};
 
 		// Replace the current variation with the duplicated content
 		variations = variations.map((v, i) => (i === currentVariationIndex ? duplicatedVariation : v));
+		// Also copy the correction string
+		correctionStrings = correctionStrings.map((s, i) =>
+			i === currentVariationIndex ? correctionStrings[duplicateSourceIndex] : s
+		);
 		showDuplicateDialog = false;
 	}
 
@@ -351,12 +394,13 @@
 		QuestionTemplate,
 		'id' | 'created_at' | 'updated_at' | 'created_by'
 	> {
-		// Clean up empty corrections (correction is now a TemplateMarkdown string)
-		const cleanedVariations = variations.map((variation) => {
+		// Build variations with corrections from correctionStrings
+		const cleanedVariations = variations.map((variation, index) => {
+			const correctionStr = correctionStrings[index] || '';
 			return {
 				...variation,
-				// Keep correction only if it has non-empty content
-				correction: variation.correction?.trim() ? variation.correction : undefined
+				// Convert correction string to QuestionCorrection object
+				correction: stringToCorrection(correctionStr)
 			};
 		});
 
@@ -446,7 +490,7 @@
 				(v) =>
 					// statement is now a TemplateMarkdown string
 					v.statement.trim().length > 0 &&
-					(typeof v.answer === 'string' ? v.answer.trim().length > 0 : v.answer.length > 0)
+					(typeof v.solution === 'string' ? v.solution.trim().length > 0 : v.solution.length > 0)
 			) &&
 			grades.length > 0 &&
 			theme.trim().length > 0 &&
@@ -524,8 +568,7 @@
 					</Collapsible.Trigger>
 					<Collapsible.Content class="space-y-2">
 						{#if RichTextEditor}
-							<svelte:component
-								this={RichTextEditor}
+							<RichTextEditor
 								bind:value={description}
 								placeholder="Description ou contexte supplémentaire pour ce template..."
 							/>
@@ -860,7 +903,7 @@
 										<Card.Content>
 											<AnswerEditor
 												{questionType}
-												bind:answer={variation.answer}
+												bind:answer={variation.solution}
 												{precision}
 												{transformType}
 												bind:blanks={variation.blanks}
@@ -901,7 +944,7 @@
 									<Collapsible.Content>
 										<Card.Content>
 											<MarkdownEditor
-												bind:value={variation.correction}
+												bind:value={correctionStrings[index]}
 												showParameterization={true}
 												variables={variation.variables}
 												placeholder="Explication de la solution (optionnel)..."
@@ -933,7 +976,7 @@
 
 		<Tabs.Content value="preview">
 			{#if QuestionPreview}
-				<svelte:component this={QuestionPreview} template={buildTemplate()} />
+				<QuestionPreview template={buildTemplate()} />
 			{:else}
 				<div class="flex items-center justify-center p-8">
 					<p class="text-muted-foreground">Chargement de l'aperçu...</p>
@@ -943,7 +986,7 @@
 
 		<Tabs.Content value="json">
 			{#if JsonViewer}
-				<svelte:component this={JsonViewer} data={buildTemplate()} />
+				<JsonViewer data={buildTemplate()} />
 			{:else}
 				<div class="flex items-center justify-center p-8">
 					<p class="text-muted-foreground">Chargement du JSON...</p>

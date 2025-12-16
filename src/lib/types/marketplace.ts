@@ -222,6 +222,9 @@ export interface VipCardWithLockStatus {
 	earned_at: string;
 	is_locked: boolean;
 	lock_reason?: 'in_trade' | 'in_listing' | 'in_proposal';
+	locked_for_listing_id?: string | null;
+	locked_for_trade_id?: string | null;
+	custom_name?: string | null;
 	template: {
 		id: string;
 		name: string;
@@ -229,6 +232,7 @@ export interface VipCardWithLockStatus {
 		image_path: string | null;
 		rarity: 'common' | 'rare' | 'epic' | 'legendary';
 		category: string | null;
+		seasonal_event?: string | null;
 	};
 }
 

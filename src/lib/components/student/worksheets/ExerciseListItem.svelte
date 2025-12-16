@@ -85,7 +85,7 @@
 	</button>
 
 	<!-- Report button - separate from clickable area -->
-	<div onclick={(e) => e.stopPropagation()}>
+	<div role="presentation" onclick={(e) => e.stopPropagation()}>
 		<ReportErrorButton
 			{assignmentId}
 			exerciseId={exercise.exercise_id}

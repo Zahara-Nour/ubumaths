@@ -64,8 +64,7 @@
 		exercise
 			? {
 					exerciseId: exercise.exercise_id,
-					statement: exercise.statement,
-					topic: exercise.topic ?? undefined
+					statement: exercise.statement
 				}
 			: undefined
 	);

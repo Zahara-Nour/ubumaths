@@ -128,11 +128,21 @@
 		needsTruncation ? statementMarkdown.substring(0, statementMaxLength) + '...' : statementMarkdown
 	);
 
-	// Correction markdown - instance.correction is now ResolvedMarkdown (string) or undefined
-	const hasCorrection = $derived(
-		instance.correction && instance.correction.length > 0 && showCorrection
-	);
-	const correctionMarkdown = $derived(instance.correction || '');
+	// Correction markdown - instance.correction is ResolvedCorrection (object) or undefined
+	// Build correction markdown from ResolvedCorrection object
+	const correctionMarkdown = $derived.by(() => {
+		const correction = instance.correction;
+		if (!correction) return '';
+		const parts: string[] = [];
+		if (correction.steps && correction.steps.length > 0) {
+			parts.push(...correction.steps);
+		}
+		if (correction.feedback?.correct) {
+			parts.push(correction.feedback.correct);
+		}
+		return parts.join('\n\n');
+	});
+	const hasCorrection = $derived(correctionMarkdown.length > 0 && showCorrection);
 
 	// Variables
 	const hasVariables = $derived(
@@ -148,9 +158,9 @@
 			showChoices
 	);
 
-	// Answer as array
+	// Answer as array (solution from QuestionInstance)
 	const answerArray = $derived(
-		Array.isArray(instance.answer) ? instance.answer : [instance.answer]
+		Array.isArray(instance.solution) ? instance.solution : [instance.solution]
 	);
 
 	// ============================================================================
@@ -318,19 +328,6 @@
 			<div class="rounded-lg border bg-card p-4">
 				<MarkdownRenderer content={displayedStatement} />
 
-				<!-- Statement Images -->
-				{#if statementImages.length > 0}
-					<div class="mt-3 space-y-2">
-						{#each statementImages as image, i (i)}
-							<img
-								src={image.content}
-								alt={image.alt || 'Question image'}
-								class="max-w-full rounded-lg"
-							/>
-						{/each}
-					</div>
-				{/if}
-
 				<!-- Expand/Collapse Button -->
 				{#if truncateStatement && statementMarkdown.length > statementMaxLength}
 					<Button
@@ -418,8 +415,8 @@
 				<div class="space-y-2">
 					{#each instance.shuffledChoices || [] as choice, i (i)}
 						{@const isCorrect =
-							(typeof instance.answer === 'string' && instance.answer === String(i)) ||
-							(Array.isArray(instance.answer) && instance.answer.includes(String(i)))}
+							(typeof instance.solution === 'string' && instance.solution === String(i)) ||
+							(Array.isArray(instance.solution) && instance.solution.includes(String(i)))}
 						<div
 							class={cn(
 								'flex items-center gap-3 rounded border p-3',

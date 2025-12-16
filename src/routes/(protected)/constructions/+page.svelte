@@ -68,8 +68,8 @@
 	 * Format author name
 	 */
 	function formatAuthor(construction: (typeof data.constructions)[0]): string {
-		if (!construction.profiles) return 'Auteur inconnu';
-		const { firstname, lastname } = construction.profiles;
+		if (!construction.profiles || construction.profiles.length === 0) return 'Auteur inconnu';
+		const { firstname, lastname } = construction.profiles[0];
 		if (firstname && lastname) return `${firstname} ${lastname}`;
 		if (firstname) return firstname;
 		if (lastname) return lastname;

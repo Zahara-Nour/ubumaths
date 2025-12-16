@@ -127,7 +127,8 @@
 	/**
 	 * Handle successful upload
 	 */
-	function handleUploadComplete(data: UploadedImage) {
+	function handleUploadComplete(data: UploadedImage | undefined) {
+		if (!data) return;
 		uploadedImage = data;
 
 		// Auto-detect best size class based on dimensions

@@ -46,7 +46,7 @@
 	// CSV Upload State
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let csvFile = $state<File | null>(null); // For future file upload feature
-	let fileInput: HTMLInputElement;
+	let fileInput: HTMLInputElement = $state() as HTMLInputElement;
 
 	// Paste State
 	let pasteText = $state('');

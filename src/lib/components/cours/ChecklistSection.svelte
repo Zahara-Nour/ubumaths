@@ -9,27 +9,30 @@
 	@module components/cours/ChecklistSection
 -->
 <script lang="ts">
-	import type { ChapterChecklistItem, StudentChecklistProgress } from '$lib/types/chapters';
+	import type { ChapterChecklistItem, ChapterProgress } from '$lib/types/chapters';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
 	import { cn } from '$lib/utils';
 	import { CheckCircle2, Circle, Target } from 'lucide-svelte';
+	import { enhance } from '$app/forms';
+
+	// Item with progress included
+	type ChecklistItemWithProgress = ChapterChecklistItem & {
+		isCompleted: boolean;
+		completedAt: string | null;
+	};
 
 	// Props
 	interface Props {
-		items: ChapterChecklistItem[];
-		progress: StudentChecklistProgress[];
-		onToggle: (itemId: string, isCompleted: boolean) => void;
+		items: ChecklistItemWithProgress[];
+		progress: ChapterProgress;
 	}
 
-	let { items, progress, onToggle }: Props = $props();
-
-	// Create a map of progress by item ID for quick lookup
-	const progressMap = $derived(new Map(progress.map((p) => [p.checklistItemId, p])));
+	let { items, progress }: Props = $props();
 
 	// Calculate completion statistics
-	const completedCount = $derived(progress.filter((p) => p.isCompleted).length);
+	const completedCount = $derived(items.filter((item) => item.isCompleted).length);
 	const totalCount = $derived(items.length);
 	const progressPercent = $derived(
 		totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
@@ -38,15 +41,15 @@
 	// Sort items by display order
 	const sortedItems = $derived([...items].sort((a, b) => a.displayOrder - b.displayOrder));
 
-	// Check if an item is completed
-	function isItemCompleted(itemId: string): boolean {
-		const itemProgress = progressMap.get(itemId);
-		return itemProgress?.isCompleted ?? false;
-	}
+	// Optimistic update state
+	let optimisticUpdates = $state<Record<string, boolean>>({});
 
-	// Handle checkbox toggle
-	function handleToggle(itemId: string, checked: boolean) {
-		onToggle(itemId, checked);
+	// Check if an item is completed (with optimistic updates)
+	function isItemCompleted(item: ChecklistItemWithProgress): boolean {
+		if (item.id in optimisticUpdates) {
+			return optimisticUpdates[item.id];
+		}
+		return item.isCompleted;
 	}
 </script>
 
@@ -91,18 +94,40 @@
 		{:else}
 			<ul class="space-y-3">
 				{#each sortedItems as item (item.id)}
-					{@const completed = isItemCompleted(item.id)}
+					{@const completed = isItemCompleted(item)}
 					<li
 						class={cn(
 							'flex items-start gap-3 rounded-lg p-3 transition-all',
 							completed ? 'bg-green-50 dark:bg-green-900/20' : 'bg-muted/50 hover:bg-muted'
 						)}
 					>
-						<MyCheckbox
-							checked={completed}
-							onCheckedChange={(checked) => handleToggle(item.id, checked === true)}
-							class="mt-0.5"
-						/>
+						<form
+							method="POST"
+							action="?/toggleChecklist"
+							use:enhance={() => {
+								// Optimistic update
+								optimisticUpdates[item.id] = !completed;
+								return async ({ update }) => {
+									await update();
+									// Clear optimistic state after server response
+									delete optimisticUpdates[item.id];
+								};
+							}}
+						>
+							<input type="hidden" name="checklistItemId" value={item.id} />
+							<input type="hidden" name="isCompleted" value={!completed} />
+							<MyCheckbox
+								checked={completed}
+								onCheckedChange={() => {
+									// Trigger form submission
+									const form = document.querySelector(
+										`form[action="?/toggleChecklist"] input[value="${item.id}"]`
+									)?.closest('form');
+									form?.requestSubmit();
+								}}
+								class="mt-0.5"
+							/>
+						</form>
 
 						<div class="min-w-0 flex-1">
 							<p

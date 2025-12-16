@@ -190,8 +190,10 @@
 	): { feedback: string; steps: string[] } | null {
 		if (!correction) return null;
 		try {
-			const feedback = correction.feedback
-				? resolveExpression(correction.feedback, resolved, seed)
+			// correction.feedback is an object with correct/incorrect/partial properties
+			const feedbackText = correction.feedback?.correct || '';
+			const feedback = feedbackText
+				? resolveExpression(feedbackText, resolved, seed)
 				: '';
 			const steps = correction.steps
 				? correction.steps.map((step) => {

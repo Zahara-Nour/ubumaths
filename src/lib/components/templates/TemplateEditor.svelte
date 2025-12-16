@@ -331,7 +331,7 @@
 						<MySelect
 							value={icon ?? 'book'}
 							items={iconItems}
-							onValueChange={(v) => {
+							onValueChange={(v: string) => {
 								icon = v as ChapterIcon;
 							}}
 							placeholder="Choisir une icône"
@@ -352,7 +352,7 @@
 						<MySelect
 							value={color ?? ''}
 							items={colorItems}
-							onValueChange={(v) => {
+							onValueChange={(v: string) => {
 								color = v ? (v as ChapterColor) : null;
 							}}
 							placeholder="Choisir une couleur"
