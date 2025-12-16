@@ -102,7 +102,8 @@
 					studentId,
 					count,
 					paymentMethod,
-					filters, // Pass filters to API
+					// Include filters if provided (for draw_cards action)
+					...(filters ? { filters } : {}),
 					...(paymentMethod === 'gidouilles' ? { gidouillesCost } : { vipCardInstanceId })
 				})
 			});

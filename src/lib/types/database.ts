@@ -2377,6 +2377,7 @@ export type Database = {
 					created_by: string;
 					difficulty: number;
 					distribution_mode: string;
+					generic_functions: string[] | null;
 					grade_levels: string[] | null;
 					id: string;
 					is_public: boolean;
@@ -2396,6 +2397,7 @@ export type Database = {
 					created_by: string;
 					difficulty: number;
 					distribution_mode?: string;
+					generic_functions?: string[] | null;
 					grade_levels?: string[] | null;
 					id?: string;
 					is_public?: boolean;
@@ -2415,6 +2417,7 @@ export type Database = {
 					created_by?: string;
 					difficulty?: number;
 					distribution_mode?: string;
+					generic_functions?: string[] | null;
 					grade_levels?: string[] | null;
 					id?: string;
 					is_public?: boolean;
@@ -12345,7 +12348,11 @@ export type Database = {
 			draw_multiple_vip_cards: {
 				Args: {
 					p_count: number;
+					p_exclude_card_ids?: string[];
+					p_force_rarity?: string;
 					p_gidouilles_cost?: number;
+					p_min_rarity?: string;
+					p_only_cards_with_actions?: boolean;
 					p_payment_method: string;
 					p_student_id: string;
 					p_vip_card_instance_id?: string;
@@ -12414,7 +12421,7 @@ export type Database = {
 				}[];
 			};
 			get_all_exercise_assignments: {
-				Args: Record<string, never>;
+				Args: never;
 				Returns: {
 					assigned_at: string;
 					assigned_by: string;
@@ -12422,25 +12429,25 @@ export type Database = {
 					assigned_by_role: string;
 					assigned_to_name: string;
 					assigned_to_type: string;
-					class_id: string | null;
-					class_name: string | null;
-					difficulty: string | null;
-					distribution_mode: string | null;
+					class_id: string;
+					class_name: string;
+					difficulty: string;
+					distribution_mode: string;
 					exercise_creator_id: string;
 					exercise_id: string;
 					exercise_is_public: boolean;
 					exercise_title: string;
-					grade_levels: string[] | null;
+					grade_levels: string[];
 					id: string;
 					is_active: boolean;
-					notes: string | null;
-					optional_deadline: string | null;
-					solution_md: string | null;
+					notes: string;
+					optional_deadline: string;
+					solution_md: string;
 					statement_md: string;
-					student_email: string | null;
-					student_id: string | null;
-					tags: string[] | null;
-					variables: Json | null;
+					student_email: string;
+					student_id: string;
+					tags: string[];
+					variables: Json;
 				}[];
 			};
 			get_allowed_recipients: {
@@ -12456,61 +12463,61 @@ export type Database = {
 			get_assessment_results_for_admin: {
 				Args: { p_assessment_id?: string };
 				Returns: {
-					assessment_grade: string | null;
+					assessment_grade: string;
 					assessment_id: string;
 					assessment_title: string;
 					assignment_id: string;
 					attempts_count: number;
-					best_score: number | null;
-					class_id: string | null;
-					class_name: string | null;
-					last_attempt_at: string | null;
+					best_score: number;
+					class_id: string;
+					class_name: string;
+					last_attempt_at: string;
 					status: string;
-					student_firstname: string | null;
-					student_id: string | null;
-					student_lastname: string | null;
-					student_user_id: string | null;
-					total_questions: number | null;
+					student_firstname: string;
+					student_id: string;
+					student_lastname: string;
+					student_user_id: string;
+					total_questions: number;
 				}[];
 			};
 			get_assessment_results_for_student: {
-				Args: Record<string, never>;
+				Args: never;
 				Returns: {
-					assessment_grade: string | null;
+					assessment_grade: string;
 					assessment_id: string;
 					assessment_title: string;
 					assignment_id: string;
 					attempts_count: number;
-					best_score: number | null;
-					class_id: string | null;
-					class_name: string | null;
-					last_attempt_at: string | null;
+					best_score: number;
+					class_id: string;
+					class_name: string;
+					last_attempt_at: string;
 					status: string;
-					student_firstname: string | null;
-					student_id: string | null;
-					student_lastname: string | null;
-					student_user_id: string | null;
-					total_questions: number | null;
+					student_firstname: string;
+					student_id: string;
+					student_lastname: string;
+					student_user_id: string;
+					total_questions: number;
 				}[];
 			};
 			get_assessment_results_for_teacher: {
 				Args: { p_assessment_id?: string };
 				Returns: {
-					assessment_grade: string | null;
+					assessment_grade: string;
 					assessment_id: string;
 					assessment_title: string;
 					assignment_id: string;
 					attempts_count: number;
-					best_score: number | null;
-					class_id: string | null;
-					class_name: string | null;
-					last_attempt_at: string | null;
+					best_score: number;
+					class_id: string;
+					class_name: string;
+					last_attempt_at: string;
 					status: string;
-					student_firstname: string | null;
-					student_id: string | null;
-					student_lastname: string | null;
-					student_user_id: string | null;
-					total_questions: number | null;
+					student_firstname: string;
+					student_id: string;
+					student_lastname: string;
+					student_user_id: string;
+					total_questions: number;
 				}[];
 			};
 			get_assignment_completion_stats: {
@@ -12599,36 +12606,6 @@ export type Database = {
 				}[];
 			};
 			get_match_state: { Args: { p_match_id: string }; Returns: Json };
-			get_my_exercise_assignments: {
-				Args: Record<string, never>;
-				Returns: {
-					assigned_at: string;
-					assigned_by: string;
-					assigned_by_name: string;
-					assigned_by_role: string;
-					assigned_to_name: string;
-					assigned_to_type: string;
-					class_id: string | null;
-					class_name: string | null;
-					difficulty: string | null;
-					distribution_mode: string | null;
-					exercise_creator_id: string;
-					exercise_id: string;
-					exercise_is_public: boolean;
-					exercise_title: string;
-					grade_levels: string[] | null;
-					id: string;
-					is_active: boolean;
-					notes: string | null;
-					optional_deadline: string | null;
-					solution_md: string | null;
-					statement_md: string;
-					student_email: string | null;
-					student_id: string | null;
-					tags: string[] | null;
-					variables: Json | null;
-				}[];
-			};
 			get_message_attachments: {
 				Args: { p_message_id: string };
 				Returns: {
@@ -12709,6 +12686,36 @@ export type Database = {
 					sender_firstname: string;
 					sender_id: string;
 					sender_lastname: string;
+				}[];
+			};
+			get_my_exercise_assignments: {
+				Args: never;
+				Returns: {
+					assigned_at: string;
+					assigned_by: string;
+					assigned_by_name: string;
+					assigned_by_role: string;
+					assigned_to_name: string;
+					assigned_to_type: string;
+					class_id: string;
+					class_name: string;
+					difficulty: string;
+					distribution_mode: string;
+					exercise_creator_id: string;
+					exercise_id: string;
+					exercise_is_public: boolean;
+					exercise_title: string;
+					grade_levels: string[];
+					id: string;
+					is_active: boolean;
+					notes: string;
+					optional_deadline: string;
+					solution_md: string;
+					statement_md: string;
+					student_email: string;
+					student_id: string;
+					tags: string[];
+					variables: Json;
 				}[];
 			};
 			get_next_riddle_attempt_number: {
@@ -12831,36 +12838,6 @@ export type Database = {
 					unique_students_engaged: number;
 				}[];
 			};
-			get_teacher_exercise_assignments: {
-				Args: Record<string, never>;
-				Returns: {
-					assigned_at: string;
-					assigned_by: string;
-					assigned_by_name: string;
-					assigned_by_role: string;
-					assigned_to_name: string;
-					assigned_to_type: string;
-					class_id: string | null;
-					class_name: string | null;
-					difficulty: string | null;
-					distribution_mode: string | null;
-					exercise_creator_id: string;
-					exercise_id: string;
-					exercise_is_public: boolean;
-					exercise_title: string;
-					grade_levels: string[] | null;
-					id: string;
-					is_active: boolean;
-					notes: string | null;
-					optional_deadline: string | null;
-					solution_md: string | null;
-					statement_md: string;
-					student_email: string | null;
-					student_id: string | null;
-					tags: string[] | null;
-					variables: Json | null;
-				}[];
-			};
 			get_teacher_classes_for_messaging: {
 				Args: { p_teacher_id: string };
 				Returns: {
@@ -12896,6 +12873,36 @@ export type Database = {
 					students: Json;
 					teacher_id: string;
 					updated_at: string;
+				}[];
+			};
+			get_teacher_exercise_assignments: {
+				Args: never;
+				Returns: {
+					assigned_at: string;
+					assigned_by: string;
+					assigned_by_name: string;
+					assigned_by_role: string;
+					assigned_to_name: string;
+					assigned_to_type: string;
+					class_id: string;
+					class_name: string;
+					difficulty: string;
+					distribution_mode: string;
+					exercise_creator_id: string;
+					exercise_id: string;
+					exercise_is_public: boolean;
+					exercise_title: string;
+					grade_levels: string[];
+					id: string;
+					is_active: boolean;
+					notes: string;
+					optional_deadline: string;
+					solution_md: string;
+					statement_md: string;
+					student_email: string;
+					student_id: string;
+					tags: string[];
+					variables: Json;
 				}[];
 			};
 			get_teacher_override_impact: {
@@ -13669,98 +13676,3 @@ export const Constants = {
 		}
 	}
 } as const;
-
-// ============================================================================
-// Custom Type Exports
-// These types are derived from database tables and used throughout the app
-// ============================================================================
-
-// Notification types
-export type Notification = Tables<'notifications'>;
-export type NotificationType = 'info' | 'alert' | 'announcement' | 'reminder';
-export type NotificationPriority = 'urgent' | 'important' | 'normal';
-export type NotificationTargetType = 'all' | 'role' | 'class' | 'user' | 'users';
-export type SystemEventType =
-	| 'maintenance'
-	| 'update'
-	| 'security'
-	| 'feature'
-	| 'general'
-	| 'assignment_created'
-	| 'resource_added'
-	| 'reward_earned'
-	| 'badge_unlocked'
-	| 'maintenance_scheduled'
-	| 'feature_released'
-	| 'assessment_assigned'
-	| 'assessment_graded'
-	| 'error_report_validated'
-	| 'error_report_rejected'
-	| 'pending_user'
-	| 'user_approved';
-
-// Achievement types
-export type Achievement = Tables<'achievements'>;
-
-// Class and related types
-export type Class = Tables<'classes'>;
-export type ClassSchedule = Tables<'class_schedules'>;
-
-// User types
-export type UserRole = 'student' | 'teacher' | 'admin';
-export type Gender = 'male' | 'female' | 'other' | 'prefer_not_to_say';
-
-// Friendship types
-export type FriendshipStatus = 'pending' | 'accepted' | 'blocked' | 'rejected';
-export type FriendshipRelationType = 'classmate' | 'mentor';
-/** @deprecated Use FriendshipStatus instead */
-export type FriendshipType = FriendshipRelationType;
-export interface FriendshipWithProfile {
-	id: string;
-	requester_id?: string;
-	addressee_id?: string;
-	status: FriendshipStatus;
-	friendship_type?: FriendshipRelationType;
-	created_at: string;
-	updated_at: string;
-	friend_profile?: {
-		id: string;
-		full_name?: string | null;
-		firstname: string | null;
-		lastname: string | null;
-		avatar_url?: string | null;
-		avatar_skin?: string | null;
-		avatar_eyes?: string | null;
-		avatar_mouth?: string | null;
-		role?: string;
-		gender?: string | null;
-		presence?: {
-			is_online: boolean;
-			last_seen: string;
-		};
-	};
-}
-
-// Week configuration (stored as JSON in schools.week_config)
-export interface WeekConfig {
-	first_day: number;
-	last_day: number;
-	school_days: number[];
-	weekend_days: number[];
-}
-
-// School timetable types (stored as JSON in schools.timetable)
-export interface SchoolPeriod {
-	number: number;
-	name: string | null;
-	start_time: string;
-	end_time: string;
-}
-
-export interface SchoolTimetable {
-	periods: SchoolPeriod[];
-	week_config?: WeekConfig;
-}
-
-// Type alias for the profiles table Row
-export type Profile = Database['public']['Tables']['profiles']['Row'];
