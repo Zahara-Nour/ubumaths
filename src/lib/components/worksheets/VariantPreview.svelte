@@ -11,6 +11,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import { Eye, RefreshCw, Users, Copy } from 'lucide-svelte';
 	import type { InstanceData } from '$lib/types/worksheets';
 
@@ -320,7 +321,7 @@
 											</div>
 										{/if}
 										<div class="prose prose-sm max-w-none">
-											{@html exercise.statement.replace(/\n/g, '<br>')}
+											{@html sanitizeHtml(exercise.statement.replace(/\n/g, '<br>'))}
 										</div>
 									</CardContent>
 								</Card>
@@ -348,7 +349,7 @@
 											</div>
 										{/if}
 										<div class="prose prose-sm max-w-none">
-											{@html exercise.statement.replace(/\n/g, '<br>')}
+											{@html sanitizeHtml(exercise.statement.replace(/\n/g, '<br>'))}
 										</div>
 									</CardContent>
 								</Card>
@@ -387,7 +388,7 @@
 								<div>
 									<div class="mb-1 text-sm font-medium">Énoncé:</div>
 									<div class="prose prose-sm max-w-none rounded-md border bg-background p-3">
-										{@html exercise.statement.replace(/\n/g, '<br>')}
+										{@html sanitizeHtml(exercise.statement.replace(/\n/g, '<br>'))}
 									</div>
 								</div>
 
@@ -395,7 +396,7 @@
 									<div>
 										<div class="mb-1 text-sm font-medium">Solution:</div>
 										<div class="prose prose-sm max-w-none rounded-md bg-muted/50 p-3">
-											{@html exercise.solution.replace(/\n/g, '<br>')}
+											{@html sanitizeHtml(exercise.solution.replace(/\n/g, '<br>'))}
 										</div>
 									</div>
 								{/if}

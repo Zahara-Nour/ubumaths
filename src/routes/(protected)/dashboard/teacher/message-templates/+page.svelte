@@ -35,6 +35,7 @@
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
 	import { renderTemplate } from '$lib/templates/templateEngine';
 	import { cn } from '$lib/utils';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 
 	// Types
 	interface TemplateVersion {
@@ -799,7 +800,7 @@
 													Corps du template:
 												</div>
 												<div class="text-xs">
-													{@html template.body_template.slice(0, 300)}
+													{@html sanitizeHtml(template.body_template.slice(0, 300))}
 													{template.body_template.length > 300 ? '...' : ''}
 												</div>
 											</div>
@@ -983,7 +984,7 @@
 							<div>
 								<Label class="text-xs text-muted-foreground">Corps</Label>
 								<div class="prose prose-sm mt-1 max-w-none rounded bg-background p-3">
-									{@html previewBody}
+									{@html sanitizeHtml(previewBody)}
 								</div>
 							</div>
 						</div>
