@@ -11,6 +11,7 @@
 import type { JSONContent } from '@tiptap/core';
 import { parseMarkdown } from '$lib/custom-markdown/parser/markdown-parser';
 import { parseCustomSafe, toLatex } from '$lib/mathAST';
+import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 import type {
 	DocumentNode,
 	BlockNode,
@@ -91,6 +92,24 @@ function classifyTemplate(
 }
 
 // ============================================================================
+// IMPORT OPTIONS & CONTEXT
+// ============================================================================
+
+/**
+ * Options for markdown import
+ */
+export interface MarkdownImportOptions {
+	/** Generic function configuration for math parsing (e.g., for C', P' notation) */
+	genericFunctions?: GenericFunctionConfig;
+}
+
+/**
+ * Module-level context for current import operation.
+ * This avoids passing options through every intermediate function.
+ */
+let currentImportContext: MarkdownImportOptions = {};
+
+// ============================================================================
 // MAIN CONVERTER
 // ============================================================================
 
@@ -101,22 +120,37 @@ function classifyTemplate(
  * that AST to TipTap's JSON structure.
  *
  * @param markdown - Markdown text to convert
+ * @param options - Optional import options (e.g., genericFunctions for C'(x) notation)
  * @returns TipTap JSON document
  *
  * @example
  * const json = markdownToTipTap('Hello **world** with $x^2$');
  * // Returns: { type: 'doc', content: [...] }
+ *
+ * @example
+ * // With generic functions for derivative notation
+ * const json = markdownToTipTap('Calculate ~~C\'(x)~~', {
+ *   genericFunctions: { names: ['C', 'P'], allowDerivatives: true }
+ * });
  */
-export function markdownToTipTap(markdown: string): JSONContent {
+export function markdownToTipTap(markdown: string, options?: MarkdownImportOptions): JSONContent {
 	if (!markdown || markdown.trim() === '') {
 		return { type: 'doc', content: [] };
 	}
 
-	// Parse markdown to AST using existing parser
-	const ast = parseMarkdown(markdown);
+	// Set context for this import operation
+	currentImportContext = options ?? {};
 
-	// Convert AST to TipTap JSON
-	return convertDocument(ast);
+	try {
+		// Parse markdown to AST using existing parser
+		const ast = parseMarkdown(markdown);
+
+		// Convert AST to TipTap JSON
+		return convertDocument(ast);
+	} finally {
+		// Clear context after import
+		currentImportContext = {};
+	}
 }
 
 // ============================================================================
@@ -299,7 +333,10 @@ function convertMathBlock(math: MathBlockNode): JSONContent {
 	// For custom syntax, transpile to LaTeX
 	let latex = math.expression;
 	if (math.syntax === 'custom') {
-		const parseResult = parseCustomSafe(math.expression);
+		// Use genericFunctions from context for derivative notation (C'(x), P'(x), etc.)
+		const parseResult = parseCustomSafe(math.expression, {
+			genericFunctions: currentImportContext.genericFunctions
+		});
 		if (parseResult.ast) {
 			latex = toLatex(parseResult.ast);
 		}
@@ -746,7 +783,10 @@ function convertMathInline(node: MathInlineNode): JSONContent {
 	// For custom syntax, transpile to LaTeX
 	let latex = node.expression;
 	if (node.syntax === 'custom') {
-		const parseResult = parseCustomSafe(node.expression);
+		// Use genericFunctions from context for derivative notation (C'(x), P'(x), etc.)
+		const parseResult = parseCustomSafe(node.expression, {
+			genericFunctions: currentImportContext.genericFunctions
+		});
 		if (parseResult.ast) {
 			latex = toLatex(parseResult.ast);
 		}
