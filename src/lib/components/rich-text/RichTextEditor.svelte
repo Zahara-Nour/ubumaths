@@ -306,7 +306,9 @@
 			const initialContent =
 				mode === 'form'
 					? markdownValue !== undefined
-						? markdownToTipTap(markdownValue)
+						? markdownToTipTap(markdownValue, {
+								genericFunctions: genericFunctions ?? undefined
+							})
 						: jsonValue && typeof jsonValue === 'object'
 							? jsonValue
 							: htmlValue || ''
@@ -400,7 +402,9 @@
 		const currentMd = tipTapToMarkdown(editor.getJSON());
 		if (currentMd !== markdownValue) {
 			isUpdatingFromProp = true;
-			const json = markdownToTipTap(markdownValue);
+			const json = markdownToTipTap(markdownValue, {
+				genericFunctions: genericFunctions ?? undefined
+			});
 			editor.commands.setContent(json);
 			isUpdatingFromProp = false;
 		}
