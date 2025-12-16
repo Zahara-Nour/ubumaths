@@ -407,6 +407,16 @@ export interface CodeBlockNode extends BaseNode {
 	language?: string; // Optional language identifier (e.g., 'typescript', 'python')
 }
 
+// ============================================================================
+// VARIATION TABLE NODE (imported from variation-table.ts)
+// ============================================================================
+
+// Re-export VariationTableNode for inclusion in BlockNode union
+export type { VariationTableNode } from './variation-table';
+
+// Import the type for use in BlockNode union
+import type { VariationTableNode } from './variation-table';
+
 /**
  * Union of block nodes (top-level document structure)
  */
@@ -420,7 +430,8 @@ export type BlockNode =
 	| VideoNode
 	| HorizontalRuleNode
 	| BlockquoteNode
-	| CodeBlockNode;
+	| CodeBlockNode
+	| VariationTableNode;
 
 // ============================================================================
 // COMPOSITE NODES

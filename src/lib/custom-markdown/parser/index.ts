@@ -96,6 +96,22 @@ export {
 	normalizeBlockquoteLines
 } from './blockquote-parser';
 
+// Variation table parser
+export {
+	parseVariationTable,
+	parseVariationTableContent,
+	findVariationBlocks,
+	isVariationBlockStart,
+	isBlockEnd,
+	hasSignRows,
+	hasVariationRows,
+	getSignRows,
+	getVariationRows,
+	getDomainPointCount
+} from './variation-table-parser';
+
+export type { VariationBlockRange } from './variation-table-parser';
+
 // ============================================================================
 // TYPE RE-EXPORTS (for convenience)
 // ============================================================================
@@ -117,6 +133,7 @@ export type {
 	TableNode,
 	TableCellNode,
 	MathBlockNode,
+	VariationTableNode,
 	// Inline nodes
 	TextNode,
 	MathInlineNode,
@@ -129,5 +146,16 @@ export type {
 	MathPlaceholder,
 	// Image types
 	ImageSizeClass,
-	ImageAlignment
+	ImageAlignment,
+	// Variation table types
+	VariationPosition,
+	VariationMarker,
+	SignValue,
+	SignRow,
+	VariationValue,
+	VariationRow,
+	DomainPoint,
+	TableRow,
+	VariationTableParseError,
+	VariationTableParseResult
 } from '../types';
