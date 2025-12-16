@@ -93,6 +93,23 @@ describe('generateLatex', () => {
 		expect(latex).toContain('Hello World');
 	});
 
+	it('should include tkz-tab package in preamble', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [{ type: 'text', content: 'Test' }]
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: true });
+
+		expect(latex).toContain('\\usepackage{tkz-tab}');
+		expect(latex).toContain('\\usetikzlibrary{arrows}');
+	});
+
 	it('should generate document without preamble when disabled', () => {
 		const ast: DocumentNode = {
 			type: 'document',
@@ -975,5 +992,46 @@ describe('Edge Cases', () => {
 		expect(latex).toContain('\\$');
 		expect(latex).toContain('\\&');
 		expect(latex).toContain('\\%');
+	});
+
+	it('should generate variation table with tkz-tab', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'variation-table',
+					variable: 'x',
+					domain: [{ expression: '-inf' }, { expression: '0' }, { expression: '+inf' }],
+					rows: [
+						{
+							type: 'sign',
+							label: "f'(x)",
+							values: new Map([
+								['-inf,0', { type: 'sign', value: '+' }],
+								['0', { type: 'marker', marker: 'zero' }],
+								['0,+inf', { type: 'sign', value: '-' }]
+							])
+						},
+						{
+							type: 'variation',
+							label: 'f(x)',
+							values: new Map([
+								['-inf', { expression: '-inf', position: 'bottom' }],
+								['0', { expression: '3', position: 'top' }],
+								['+inf', { expression: '-inf', position: 'bottom' }]
+							])
+						}
+					]
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('\\begin{tikzpicture}');
+		expect(latex).toContain('\\tkzTabInit');
+		expect(latex).toContain('\\tkzTabLine');
+		expect(latex).toContain('\\tkzTabVar');
+		expect(latex).toContain('\\end{tikzpicture}');
 	});
 });
