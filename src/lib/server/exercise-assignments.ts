@@ -63,7 +63,11 @@ function fromUnknownTable(supabase: TypedSupabaseClient, table: UnknownTable): a
 // Helper to bypass type checking for RPC functions not yet in schema
 // Returns a promise typed as 'any' to prevent cascading type errors
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function callUnknownRpc(supabase: TypedSupabaseClient, fn: string, params?: any): any {
+function callUnknownRpc(
+	supabase: TypedSupabaseClient,
+	fn: string,
+	params?: Record<string, unknown>
+): any {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return (supabase as any).rpc(fn, params);
 }

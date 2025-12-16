@@ -18,6 +18,56 @@ interface ServerCacheRow {
 	created_at?: string;
 }
 
+// Admin view types (not in generated types yet)
+interface AdminErrorStats24h {
+	critical_errors_24h?: number;
+	unresolved_errors?: number;
+	total_errors_1h?: number;
+}
+
+interface AdminUserActivity {
+	new_users_7d?: number;
+	total_students?: number;
+	total_teachers?: number;
+	total_admins?: number;
+}
+
+interface AdminOnlineUsers {
+	online_users?: number;
+}
+
+interface AdminContentStats {
+	total_exercises?: number;
+	total_assessments?: number;
+	total_riddles?: number;
+	total_srs_decks?: number;
+	assignments_24h?: number;
+	completions_24h?: number;
+}
+
+interface BackgroundJobRun {
+	job_name: string;
+	status: string;
+	started_at?: string;
+	completed_at?: string | null;
+	error_message?: string | null;
+	execution_time_ms?: number | null;
+}
+
+interface AdminJobStatus {
+	job_name: string;
+	status: string;
+	started_at?: string;
+	completed_at?: string;
+	error_message?: string | null;
+	execution_time_ms?: number | null;
+}
+
+// Helper type for untyped Supabase client (tables not in database.ts)
+type UntypedSupabaseClient = SupabaseClient<Database> & {
+	from: (table: string) => ReturnType<SupabaseClient<Database>['from']>;
+};
+
 // ============================================================================
 // CACHE HELPERS
 // ============================================================================
@@ -30,8 +80,8 @@ export async function getCachedHealthStats(
 	supabase: SupabaseClient<Database>,
 	cacheKey: string
 ): Promise<HealthStatsResponse | null> {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const { data, error } = await (supabase as any)
+	const client = supabase as UntypedSupabaseClient;
+	const { data, error } = await client
 		.from('server_cache')
 		.select('value, expires_at')
 		.eq('key', cacheKey)
@@ -56,9 +106,9 @@ export async function setCachedHealthStats(
 	ttlSeconds: number = 300
 ): Promise<void> {
 	const expiresAt = new Date(Date.now() + ttlSeconds * 1000);
+	const client = supabase as UntypedSupabaseClient;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	await (supabase as any).from('server_cache').upsert({
+	await client.from('server_cache').upsert({
 		key: cacheKey,
 		value: stats,
 		expires_at: expiresAt.toISOString()
@@ -101,19 +151,12 @@ async function fetch7DayErrorTrend(supabase: SupabaseClient<Database>): Promise<
  * Fetch error statistics
  */
 async function fetchErrorStats(supabase: SupabaseClient<Database>) {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const { data: errorStats } = await (supabase as any)
-		.from('admin_error_stats_24h')
-		.select('*')
-		.single();
+	const client = supabase as UntypedSupabaseClient;
+	const { data: errorStats } = await client.from('admin_error_stats_24h').select('*').single();
 
 	const trend7d = await fetch7DayErrorTrend(supabase);
 
-	const stats = errorStats as {
-		critical_errors_24h?: number;
-		unresolved_errors?: number;
-		total_errors_1h?: number;
-	} | null;
+	const stats = errorStats as AdminErrorStats24h | null;
 
 	return {
 		critical: stats?.critical_errors_24h ?? 0,
@@ -163,10 +206,9 @@ async function fetchActiveUsersByPeriod(supabase: SupabaseClient<Database>) {
  * Fetch user statistics
  */
 async function fetchUserStats(supabase: SupabaseClient<Database>) {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const userActivityPromise = (supabase as any).from('admin_user_activity').select('*').single();
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const onlineUsersPromise = (supabase as any).from('admin_online_users').select('*').single();
+	const client = supabase as UntypedSupabaseClient;
+	const userActivityPromise = client.from('admin_user_activity').select('*').single();
+	const onlineUsersPromise = client.from('admin_online_users').select('*').single();
 	const activeUsersPromise = fetchActiveUsersByPeriod(supabase);
 
 	const [userActivity, onlineUsers, activeUsers] = await Promise.all([
@@ -175,16 +217,8 @@ async function fetchUserStats(supabase: SupabaseClient<Database>) {
 		activeUsersPromise
 	]);
 
-	const userActivityData = userActivity.data as {
-		new_users_7d?: number;
-		total_students?: number;
-		total_teachers?: number;
-		total_admins?: number;
-	} | null;
-
-	const onlineUsersData = onlineUsers.data as {
-		online_users?: number;
-	} | null;
+	const userActivityData = userActivity.data as AdminUserActivity | null;
+	const onlineUsersData = onlineUsers.data as AdminOnlineUsers | null;
 
 	return {
 		online: onlineUsersData?.online_users ?? 0,
@@ -266,20 +300,10 @@ async function fetchPerformanceStats(supabase: SupabaseClient<Database>) {
  * Fetch content statistics
  */
 async function fetchContentStats(supabase: SupabaseClient<Database>) {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const { data: contentStats } = await (supabase as any)
-		.from('admin_content_stats')
-		.select('*')
-		.single();
+	const client = supabase as UntypedSupabaseClient;
+	const { data: contentStats } = await client.from('admin_content_stats').select('*').single();
 
-	const stats = contentStats as {
-		total_exercises?: number;
-		total_assessments?: number;
-		total_riddles?: number;
-		total_srs_decks?: number;
-		assignments_24h?: number;
-		completions_24h?: number;
-	} | null;
+	const stats = contentStats as AdminContentStats | null;
 
 	return {
 		exercises: stats?.total_exercises ?? 0,
@@ -299,39 +323,25 @@ async function fetchContentStats(supabase: SupabaseClient<Database>) {
  * Fetch job statistics
  */
 async function fetchJobStats(supabase: SupabaseClient<Database>) {
+	const client = supabase as UntypedSupabaseClient;
+
 	// Get recent job runs (last 20)
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const { data: recentJobs } = await (supabase as any)
+	const { data: recentJobs } = await client
 		.from('background_job_runs')
 		.select('job_name, status, started_at, completed_at, error_message, execution_time_ms')
 		.order('started_at', { ascending: false })
 		.limit(20);
 
 	// Get job status summary
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const { data: jobSummary } = await (supabase as any).from('admin_job_status').select('*');
+	const { data: jobSummary } = await client.from('admin_job_status').select('*');
 
-	const jobs = (jobSummary ?? []) as Array<{
-		job_name: string;
-		status: string;
-		started_at?: string;
-		completed_at?: string;
-		error_message?: string | null;
-		execution_time_ms?: number | null;
-	}>;
+	const jobs = (jobSummary ?? []) as AdminJobStatus[];
 
 	const total = jobs.length;
 	const running = jobs.filter((j) => j.status === 'running').length;
 	const failed = jobs.filter((j) => j.status === 'failed' || j.status === 'timeout').length;
 
-	const jobRuns = (recentJobs ?? []) as Array<{
-		job_name: string;
-		status: string;
-		started_at?: string;
-		completed_at?: string | null;
-		error_message?: string | null;
-		execution_time_ms?: number | null;
-	}>;
+	const jobRuns = (recentJobs ?? []) as BackgroundJobRun[];
 
 	const recentJobsFormatted = jobRuns.map((job) => ({
 		name: job.job_name,
