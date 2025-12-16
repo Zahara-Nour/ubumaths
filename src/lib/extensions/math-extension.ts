@@ -618,8 +618,21 @@ export const MathBlock = Node.create({
 			// Create MathLive field
 			const mathfield = document.createElement('math-field') as MathFieldElement;
 
-			// Set initial value
-			mathfield.value = node.attrs.latex as string;
+			// Helper to add \displaystyle prefix for display mode rendering
+			const toDisplayStyle = (latex: string) => {
+				if (!latex) return latex;
+				// Don't double-add if already present
+				if (latex.startsWith('\\displaystyle')) return latex;
+				return `\\displaystyle ${latex}`;
+			};
+
+			// Helper to remove \displaystyle prefix for storage
+			const fromDisplayStyle = (latex: string) => {
+				return latex.replace(/^\\displaystyle\s*/, '');
+			};
+
+			// Set initial value with displaystyle for proper fraction rendering
+			mathfield.value = toDisplayStyle(node.attrs.latex as string);
 
 			// Store mathfield reference on DOM for keyboard navigation plugin
 			(dom as unknown as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;
@@ -643,6 +656,9 @@ export const MathBlock = Node.create({
 					const nodeAtPos = editor.state.doc.nodeAt(pos);
 
 					if (nodeAtPos && nodeAtPos.type.name === 'mathBlock') {
+						// Strip displaystyle prefix before storing
+						const cleanLatex = fromDisplayStyle(target.value);
+
 						// When user edits via math-field, MathLive returns LaTeX.
 						// If original syntax was 'custom', convert back to custom syntax if possible.
 						const originalSyntax = nodeAtPos.attrs.syntax as string;
@@ -651,18 +667,18 @@ export const MathBlock = Node.create({
 
 						if (originalSyntax === 'custom') {
 							// Try to convert to custom syntax
-							const converted = latexToCustomSyntax(target.value);
+							const converted = latexToCustomSyntax(cleanLatex);
 							newExpression = converted.expression;
 							newSyntax = converted.syntax;
 						} else {
 							// Keep as latex
-							newExpression = target.value;
+							newExpression = cleanLatex;
 							newSyntax = 'latex';
 						}
 
 						tr.setNodeMarkup(pos, undefined, {
 							...nodeAtPos.attrs,
-							latex: target.value,
+							latex: cleanLatex,
 							originalExpression: newSyntax === 'custom' ? newExpression : '',
 							syntax: newSyntax
 						});
@@ -723,9 +739,10 @@ export const MathBlock = Node.create({
 					if (updatedNode.type.name !== 'mathBlock') return false;
 
 					// Only update mathfield if the value actually differs
-					// (avoid updating when we're the source of the change)
-					if (updatedNode.attrs.latex !== mathfield.value) {
-						mathfield.value = updatedNode.attrs.latex as string;
+					// Compare stored latex (without displaystyle) with mathfield value (with displaystyle)
+					const displayValue = toDisplayStyle(updatedNode.attrs.latex as string);
+					if (displayValue !== mathfield.value) {
+						mathfield.value = displayValue;
 					}
 
 					return true; // View can be reused
