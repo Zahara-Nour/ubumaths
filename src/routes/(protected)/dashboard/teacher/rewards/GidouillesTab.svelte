@@ -15,6 +15,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Tooltip from '$lib/components/ui/tooltip';
+	import { Loader2 } from 'lucide-svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getStudentCardCounts } from '$lib/utils/vip-cards';
@@ -75,6 +76,11 @@
 	// Get students from cache (reactively updates when cache changes)
 	let currentStudents = $derived(
 		selectedClassId ? (teacherCache.getStudentsSync(selectedClassId) as Student[]) : []
+	);
+
+	// Check if students are loaded in cache (for loading spinner)
+	let isStudentsLoaded = $derived(
+		selectedClassId ? teacherCache.hasStudentsCached(selectedClassId) : true
 	);
 
 	// Filtered students list based on selected VIP card
@@ -276,7 +282,13 @@
 
 					<!-- STUDENT LIST -->
 					<Tooltip.Provider>
-						{#if currentStudents.length === 0}
+						{#if !isStudentsLoaded}
+							<!-- Loading spinner while students are being fetched -->
+							<div class="rounded-lg border border-border bg-card p-12 text-center">
+								<Loader2 class="mx-auto mb-4 h-8 w-8 animate-spin text-muted-foreground" />
+								<p class="text-muted-foreground">Chargement des eleves...</p>
+							</div>
+						{:else if currentStudents.length === 0}
 							<div class="rounded-lg border border-border bg-card p-12 text-center">
 								<p class="text-lg font-medium">Aucun eleve dans cette classe</p>
 								<p class="mt-2 text-sm text-muted-foreground">
