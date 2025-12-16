@@ -342,6 +342,21 @@ export class TeacherDashboardCache {
 	}
 
 	/**
+	 * Check if students are cached for a class (for loading state detection)
+	 * Returns true if valid cache exists, false if loading is needed
+	 *
+	 * @param classId - The class ID
+	 * @returns true if students are cached and not expired
+	 */
+	hasStudentsCached(classId: string): boolean {
+		const cached = this.studentsCache.get(classId);
+		if (!cached) return false;
+
+		const now = Date.now();
+		return now - cached.fetchedAt < this.STUDENTS_TTL;
+	}
+
+	/**
 	 * Get all cached classes synchronously (for $derived)
 	 * Returns empty array if cache is empty or expired
 	 *
