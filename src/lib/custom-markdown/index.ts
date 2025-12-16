@@ -75,6 +75,7 @@ export type {
 	HorizontalRuleNode,
 	BlockquoteNode,
 	CodeBlockNode,
+	VariationTableNode,
 	BlockNode,
 	// Composite
 	ASTNode,
@@ -87,6 +88,22 @@ export type {
 	VideoProvider,
 	// Input state
 	InputState
+} from './types';
+
+// Variation Table Types
+export type {
+	VariationPosition,
+	VariationMarker,
+	SignValueSign,
+	SignValueMarker,
+	SignValue,
+	SignRow,
+	VariationValue,
+	VariationRow,
+	DomainPoint,
+	TableRow as VariationTableRow,
+	VariationTableParseError,
+	VariationTableParseResult
 } from './types';
 
 // Parser Types

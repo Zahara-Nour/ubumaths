@@ -115,6 +115,7 @@ export { default as TableNodeComponent } from './nodes/TableNode.svelte';
 export { default as ImageDisplayComponent } from './nodes/ImageDisplay.svelte';
 export { default as CodeBlockComponent } from './nodes/CodeBlock.svelte';
 export { default as BlockquoteComponent } from './nodes/Blockquote.svelte';
+export { default as VariationTableComponent } from './nodes/VariationTable.svelte';
 
 // Utilities
 export { escapeHtml } from './utils';
