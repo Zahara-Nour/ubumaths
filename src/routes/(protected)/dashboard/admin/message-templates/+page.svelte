@@ -25,6 +25,7 @@
 		Search
 	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import type { MessageTemplate, TriggerType } from '$lib/types/messageTemplates';
 	import type { Json } from '$lib/types/database';
 	import { getVariablesForTrigger } from '$lib/templates/templateVariables';
@@ -754,7 +755,7 @@
 					<div>
 						<div class="mb-2 text-sm font-medium text-muted-foreground">Corps:</div>
 						<div class="prose prose-sm max-w-none dark:prose-invert">
-							{@html previewHtml.body || formBody}
+							{@html sanitizeHtml(previewHtml.body || formBody)}
 						</div>
 					</div>
 					{#if previewHtml.missingVariables && previewHtml.missingVariables.length > 0}
