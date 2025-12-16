@@ -302,7 +302,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<ExerciseRichTextEditor bind:value={statementMd} {supabase} {userId} />
+			<ExerciseRichTextEditor bind:value={statementMd} {supabase} {userId} {genericFunctions} />
 			{#if errors.statement_md}
 				<p class="mt-2 text-sm text-destructive">{errors.statement_md}</p>
 			{/if}
@@ -320,7 +320,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<ExerciseRichTextEditor bind:value={solutionMd} {supabase} {userId} />
+			<ExerciseRichTextEditor bind:value={solutionMd} {supabase} {userId} {genericFunctions} />
 			{#if errors.solution_md}
 				<p class="mt-2 text-sm text-destructive">{errors.solution_md}</p>
 			{/if}
