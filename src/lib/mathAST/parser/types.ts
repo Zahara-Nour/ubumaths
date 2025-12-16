@@ -112,41 +112,23 @@ export interface GenericFunctionConfig {
 /**
  * Default list of generic function names.
  *
- * This list supports commonly used generic functions in mathematics,
- * particularly for derivative notation (f'(x), C'(x), etc.).
+ * This minimal safe list avoids conflicts with common variable names
+ * while supporting the most commonly used generic functions in mathematics.
  *
  * - f, g, h: Standard generic functions
  * - u, v, w: Auxiliary functions / parameterizations
  * - F, G, H: Primitives (F = ∫f) / uppercase variants
- * - A, B, C, D: Common uppercase functions (C for cost/coût, etc.)
- * - L, N, P, R, S, T: Additional commonly used function names
- *   (P = probability, R = revenue/recette, S = sum, T = temperature/time)
  */
 export const DEFAULT_GENERIC_FUNCTION_NAMES: readonly string[] = [
-	// Standard generic functions
 	'f',
 	'g',
 	'h',
-	// Auxiliary functions
 	'u',
 	'v',
 	'w',
-	// Primitives / uppercase variants
 	'F',
 	'G',
-	'H',
-	// Common uppercase functions (A, B, C, D)
-	'A',
-	'B',
-	'C',
-	'D',
-	// Additional common function names
-	'L',
-	'N',
-	'P',
-	'R',
-	'S',
-	'T'
+	'H'
 ] as const;
 
 /**
