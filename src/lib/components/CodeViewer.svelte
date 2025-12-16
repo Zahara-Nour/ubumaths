@@ -7,6 +7,7 @@
 	 * - Dark theme (oneDark)
 	 * - Lazy loading of CodeMirror
 	 * - Read-only mode
+	 * - Optional language syntax highlighting (json, python)
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
@@ -19,9 +20,11 @@
 		fontSize?: number;
 		height?: string;
 		label?: string;
+		/** Language for syntax highlighting: 'json' | 'python' | undefined */
+		language?: 'json' | 'python';
 	}
 
-	let { value = '', fontSize = 13, height = '400px', label = 'Code' }: Props = $props();
+	let { value = '', fontSize = 13, height = '400px', label = 'Code', language }: Props = $props();
 
 	let editorContainer: HTMLDivElement | null = $state(null);
 	let editor = $state.raw<EditorView | null>(null);
@@ -47,12 +50,23 @@
 				import('@codemirror/theme-one-dark')
 			]);
 
+			// Load language extension if specified
+			let languageExtension: Extension | null = null;
+			if (language === 'json') {
+				const { json } = await import('@codemirror/lang-json');
+				languageExtension = json();
+			} else if (language === 'python') {
+				const { python } = await import('@codemirror/lang-python');
+				languageExtension = python();
+			}
+
 			const extensions: Extension[] = [
 				lineNumbers(),
 				highlightActiveLineGutter(),
 				highlightActiveLine(),
 				bracketMatching(),
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+				...(languageExtension ? [languageExtension] : []),
 
 				// Read-only
 				EditorState.readOnly.of(true),

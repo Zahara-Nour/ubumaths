@@ -150,6 +150,9 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 			parts.push('\n' + convertBulletListToMarkdown(child, indentLevel + 1));
 		} else if (child.type === 'orderedList') {
 			parts.push('\n' + convertOrderedListToMarkdown(child, indentLevel + 1));
+		} else if (child.type === 'mathBlock') {
+			// Math block inside list item - add on its own line
+			parts.push('\n' + convertMathBlockToMarkdown(child));
 		}
 	}
 

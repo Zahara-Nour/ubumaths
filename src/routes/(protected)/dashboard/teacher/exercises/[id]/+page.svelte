@@ -4,7 +4,9 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Users } from 'lucide-svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Users, Braces, Copy, Check } from 'lucide-svelte';
+	import CodeViewer from '$lib/components/CodeViewer.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { PageData } from './$types';
 
@@ -13,6 +15,24 @@
 	let { data }: { data: PageData } = $props();
 
 	let submitting = $state(false);
+	let jsonDialogOpen = $state(false);
+	let copied = $state(false);
+
+	// Format JSON for display
+	let formattedJson = $derived(JSON.stringify(data.exercise, null, 2));
+
+	/**
+	 * Copy JSON to clipboard
+	 */
+	async function copyJson() {
+		try {
+			await navigator.clipboard.writeText(formattedJson);
+			copied = true;
+			setTimeout(() => (copied = false), 2000);
+		} catch {
+			toaster.error('Erreur lors de la copie');
+		}
+	}
 
 	/**
 	 * Update exercise
@@ -53,11 +73,23 @@
 
 <div class="container mx-auto py-6">
 	<div class="mb-6 flex items-start justify-between">
-		<div>
-			<h1 class="text-3xl font-bold">Modifier l'exercice</h1>
-			<p class="text-muted-foreground">
-				{data.exercise.title || '(Sans titre)'}
-			</p>
+		<div class="flex items-center gap-3">
+			<div>
+				<h1 class="text-3xl font-bold">Modifier l'exercice</h1>
+				<p class="text-muted-foreground">
+					{data.exercise.title || '(Sans titre)'}
+				</p>
+			</div>
+			<!-- Debug JSON Button -->
+			<Button
+				variant="ghost"
+				size="icon"
+				onclick={() => (jsonDialogOpen = true)}
+				title="Voir le JSON"
+				class="text-muted-foreground hover:text-foreground"
+			>
+				<Braces class="h-5 w-5" />
+			</Button>
 		</div>
 
 		<!-- Assignments Quick Access -->
@@ -100,3 +132,29 @@
 		userId={data.user?.id}
 	/>
 </div>
+
+<!-- JSON Debug Dialog -->
+<Dialog.Root bind:open={jsonDialogOpen}>
+	<Dialog.Content class="max-h-[85vh] max-w-5xl">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center gap-2">
+				<Braces class="h-5 w-5" />
+				JSON de l'exercice
+			</Dialog.Title>
+			<Dialog.Description class="flex items-center justify-between">
+				<span>Donnees brutes importees de la base de donnees</span>
+				<Button variant="outline" size="sm" onclick={copyJson}>
+					{#if copied}
+						<Check class="mr-1 h-4 w-4 text-green-500" />
+						Copié
+					{:else}
+						<Copy class="mr-1 h-4 w-4" />
+						Copier
+					{/if}
+				</Button>
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<CodeViewer value={formattedJson} language="json" height="60vh" label="JSON de l'exercice" />
+	</Dialog.Content>
+</Dialog.Root>

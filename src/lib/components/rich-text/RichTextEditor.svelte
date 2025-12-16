@@ -65,7 +65,8 @@
 		EyeOff,
 		Maximize,
 		Minimize,
-		ImageIcon
+		ImageIcon,
+		FileCode
 	} from 'lucide-svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
@@ -87,6 +88,7 @@
 	import { tipTapToMarkdown } from './markdown-export';
 	import { markdownToTipTap } from './markdown-import';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import type { MarkdownDisplayMode } from '$lib/components/markdown/types';
 	import type {
 		RichTextMode,
 		MathTemplateLevel,
@@ -94,6 +96,7 @@
 		EditorPreset,
 		ImageUploadConfig
 	} from './types';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	// Component Props
 	interface Props {
@@ -112,6 +115,11 @@
 		disabled?: boolean;
 		/** Image upload configuration - enables image button in toolbar when provided */
 		imageUpload?: ImageUploadConfig;
+		/**
+		 * Configuration for generic function names in math parsing (for preview).
+		 * Controls which identifiers are recognized as function calls (e.g., f(x), C'(x))
+		 */
+		genericFunctions?: GenericFunctionConfig | null;
 	}
 
 	let {
@@ -127,7 +135,8 @@
 		showClearButton = true,
 		minHeight = '100px',
 		disabled = false,
-		imageUpload
+		imageUpload,
+		genericFunctions
 	}: Props = $props();
 
 	// Resolve configuration: explicit props override preset values
@@ -195,8 +204,16 @@
 	let isPreviewMode = $state(false);
 	let isFullscreen = $state(false);
 	let previewMarkdown = $state('');
+	let previewDisplayMode = $state<MarkdownDisplayMode>('rendered');
 	let previewTimeout: ReturnType<typeof setTimeout> | null = null;
 	const PREVIEW_DEBOUNCE_MS = 150;
+
+	/**
+	 * Toggle preview display mode between rendered and raw
+	 */
+	function togglePreviewDisplayMode() {
+		previewDisplayMode = previewDisplayMode === 'rendered' ? 'raw' : 'rendered';
+	}
 
 	// Markdown binding debounce
 	const MARKDOWN_DEBOUNCE_MS = 150;
@@ -1450,9 +1467,26 @@
 		<!-- Preview Panel -->
 		{#if isPreviewMode}
 			<div
-				class="rich-text-preview h-1/2 overflow-y-auto border-t border-border bg-muted/20 p-4 md:h-full md:w-1/2 md:border-t-0"
+				class="rich-text-preview relative h-1/2 overflow-y-auto border-t border-border bg-muted/20 p-4 md:h-full md:w-1/2 md:border-t-0"
 			>
-				<MarkdownRenderer content={previewMarkdown} />
+				<!-- Floating toggle button -->
+				<button
+					type="button"
+					onclick={togglePreviewDisplayMode}
+					class="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-muted"
+					title={previewDisplayMode === 'rendered' ? 'Voir le source' : 'Voir le rendu'}
+					aria-label={previewDisplayMode === 'rendered'
+						? 'Voir le source markdown'
+						: 'Voir le rendu'}
+				>
+					{#if previewDisplayMode === 'rendered'}
+						<FileCode class="h-4 w-4" />
+					{:else}
+						<Eye class="h-4 w-4" />
+					{/if}
+				</button>
+
+				<MarkdownRenderer content={previewMarkdown} mode={previewDisplayMode} {genericFunctions} />
 			</div>
 		{/if}
 	</div>
