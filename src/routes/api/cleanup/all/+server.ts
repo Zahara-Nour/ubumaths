@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// Type assertions needed for RPC functions not yet in database.ts
-// Run `pnpm db:types` after migrations are pushed to remove this
-
 /**
  * GET/POST /api/cleanup/all
  *
@@ -76,7 +72,9 @@ const cleanupHandler: RequestHandler = async ({ request, locals: { supabase } })
 		// CLEANUP 1: Expired cache entries
 		// ============================================================
 		try {
+			// RPC function not yet in database.ts types - run `pnpm db:types` after migration
 			const { data: deletedCount, error: cacheError } = await serviceClient.rpc(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				'cleanup_expired_cache' as any
 			);
 

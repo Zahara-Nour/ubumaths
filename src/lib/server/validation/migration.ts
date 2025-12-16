@@ -249,11 +249,12 @@ export function sanitizeConversionErrors(
 		.slice(0, 50) // Limit to 50 errors
 		.map((error, index) => {
 			if (typeof error === 'object' && error !== null) {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const e = error as any;
+				const e = error as { code?: unknown; message?: unknown; canRetry?: unknown };
+				const code = typeof e.code === 'string' ? e.code : `ERROR_${index}`;
+				const message = typeof e.message === 'string' ? e.message : String(error);
 				return {
-					code: sanitizeString(e.code || `ERROR_${index}`, 50),
-					message: sanitizeString(e.message || String(error), 500),
+					code: sanitizeString(code, 50),
+					message: sanitizeString(message, 500),
 					canRetry: Boolean(e.canRetry)
 				};
 			}

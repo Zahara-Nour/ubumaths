@@ -56,9 +56,9 @@
 export function formatUserError(error: unknown): string {
 	if (error instanceof Error) {
 		// Extract Supabase error details if available
-		if ('details' in error) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			return (error as any).details || error.message;
+		const errorWithDetails = error as Error & { details?: string };
+		if ('details' in error && typeof errorWithDetails.details === 'string') {
+			return errorWithDetails.details || error.message;
 		}
 		return error.message;
 	}
@@ -68,8 +68,8 @@ export function formatUserError(error: unknown): string {
 	}
 
 	if (error && typeof error === 'object' && 'message' in error) {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return String((error as any).message);
+		const errorWithMessage = error as { message: unknown };
+		return String(errorWithMessage.message);
 	}
 
 	return "Une erreur inattendue s'est produite";
