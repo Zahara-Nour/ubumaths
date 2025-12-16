@@ -5,10 +5,13 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Users, Braces, Copy, Check } from 'lucide-svelte';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import { Users, Braces, Copy, Check, FileText } from 'lucide-svelte';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { PageData } from './$types';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -16,10 +19,18 @@
 
 	let submitting = $state(false);
 	let jsonDialogOpen = $state(false);
+	let markdownDialogOpen = $state(false);
 	let copied = $state(false);
 
 	// Format JSON for display
 	let formattedJson = $derived(JSON.stringify(data.exercise, null, 2));
+
+	// Generic functions config for markdown rendering
+	let genericFunctionsConfig = $derived.by<GenericFunctionConfig | undefined>(() => {
+		const gf = data.exercise.generic_functions;
+		if (!gf || gf.length === 0) return undefined;
+		return { names: gf, allowDerivatives: true, allowInverse: true };
+	});
 
 	/**
 	 * Copy JSON to clipboard
@@ -90,6 +101,16 @@
 			>
 				<Braces class="h-5 w-5" />
 			</Button>
+			<!-- Debug Markdown Button -->
+			<Button
+				variant="ghost"
+				size="icon"
+				onclick={() => (markdownDialogOpen = true)}
+				title="Voir le Markdown"
+				class="text-muted-foreground hover:text-foreground"
+			>
+				<FileText class="h-5 w-5" />
+			</Button>
 		</div>
 
 		<!-- Assignments Quick Access -->
@@ -156,5 +177,89 @@
 		</Dialog.Header>
 
 		<CodeViewer value={formattedJson} language="json" height="60vh" label="JSON de l'exercice" />
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Markdown Debug Dialog -->
+<Dialog.Root bind:open={markdownDialogOpen}>
+	<Dialog.Content class="max-h-[90vh] w-[95vw] max-w-[1600px] sm:max-w-[1600px]">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center gap-2">
+				<FileText class="h-5 w-5" />
+				Markdown de l'exercice
+			</Dialog.Title>
+			<Dialog.Description>
+				Visualisation du markdown brut et rendu de l'énoncé et de la solution
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<Tabs.Root value="statement" class="w-full">
+			<Tabs.List class="grid w-full grid-cols-2">
+				<Tabs.Trigger value="statement">Énoncé</Tabs.Trigger>
+				<Tabs.Trigger value="solution">Solution</Tabs.Trigger>
+			</Tabs.List>
+
+			<Tabs.Content value="statement" class="mt-4">
+				<div class="grid grid-cols-2 gap-4">
+					<!-- Raw Markdown -->
+					<div class="flex flex-col">
+						<h3 class="mb-2 text-sm font-medium text-muted-foreground">Source Markdown</h3>
+						<div class="h-[50vh] overflow-hidden rounded-lg border">
+							<CodeViewer
+								value={data.exercise.statement_md || '(Aucun énoncé)'}
+								height="100%"
+								label="Énoncé markdown"
+								lineWrap
+							/>
+						</div>
+					</div>
+					<!-- Rendered -->
+					<div class="flex flex-col">
+						<h3 class="mb-2 text-sm font-medium text-muted-foreground">Rendu</h3>
+						<div class="h-[50vh] overflow-auto rounded-lg border bg-background p-4">
+							{#if data.exercise.statement_md}
+								<MarkdownRenderer
+									content={data.exercise.statement_md}
+									genericFunctions={genericFunctionsConfig}
+								/>
+							{:else}
+								<p class="text-muted-foreground">(Aucun énoncé)</p>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</Tabs.Content>
+
+			<Tabs.Content value="solution" class="mt-4">
+				<div class="grid grid-cols-2 gap-4">
+					<!-- Raw Markdown -->
+					<div class="flex flex-col">
+						<h3 class="mb-2 text-sm font-medium text-muted-foreground">Source Markdown</h3>
+						<div class="h-[50vh] overflow-hidden rounded-lg border">
+							<CodeViewer
+								value={data.exercise.solution_md || '(Aucune solution)'}
+								height="100%"
+								label="Solution markdown"
+								lineWrap
+							/>
+						</div>
+					</div>
+					<!-- Rendered -->
+					<div class="flex flex-col">
+						<h3 class="mb-2 text-sm font-medium text-muted-foreground">Rendu</h3>
+						<div class="h-[50vh] overflow-auto rounded-lg border bg-background p-4">
+							{#if data.exercise.solution_md}
+								<MarkdownRenderer
+									content={data.exercise.solution_md}
+									genericFunctions={genericFunctionsConfig}
+								/>
+							{:else}
+								<p class="text-muted-foreground">(Aucune solution)</p>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</Tabs.Content>
+		</Tabs.Root>
 	</Dialog.Content>
 </Dialog.Root>

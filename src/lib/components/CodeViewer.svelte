@@ -22,9 +22,18 @@
 		label?: string;
 		/** Language for syntax highlighting: 'json' | 'python' | undefined */
 		language?: 'json' | 'python';
+		/** Enable line wrapping */
+		lineWrap?: boolean;
 	}
 
-	let { value = '', fontSize = 13, height = '400px', label = 'Code', language }: Props = $props();
+	let {
+		value = '',
+		fontSize = 13,
+		height = '400px',
+		label = 'Code',
+		language,
+		lineWrap = false
+	}: Props = $props();
 
 	let editorContainer: HTMLDivElement | null = $state(null);
 	let editor = $state.raw<EditorView | null>(null);
@@ -67,6 +76,7 @@
 				bracketMatching(),
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
 				...(languageExtension ? [languageExtension] : []),
+				...(lineWrap ? [EditorView.lineWrapping] : []),
 
 				// Read-only
 				EditorState.readOnly.of(true),
