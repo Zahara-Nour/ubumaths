@@ -35,6 +35,8 @@ import type {
 } from '$lib/exercises/types';
 import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import { generateVariationTableTypst } from './variation-table-typst';
+import type { VariationTableNode } from '../types/variation-table';
 
 // ============================================================================
 // DEFAULT OPTIONS
@@ -182,6 +184,9 @@ function generateBlock(node: BlockNode, options: Required<TypstTranspilerOptions
 
 		case 'code-block':
 			return generateCodeBlock(node);
+
+		case 'variation-table':
+			return generateVariationTableTypst(node as unknown as VariationTableNode);
 
 		default:
 			return '';
