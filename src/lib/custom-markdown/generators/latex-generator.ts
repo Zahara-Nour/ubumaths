@@ -37,6 +37,7 @@ import {
 	getAlignmentStyles
 } from '$lib/exercises/services/image-dimensions';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import { generateVariationTableLatex } from './variation-table-latex';
 
 // ============================================================================
 // DEFAULT OPTIONS
@@ -118,7 +119,9 @@ function generatePreamble(options: Required<LatexTranspilerOptions>): string {
 	preamble += '\\geometry{margin=2cm}\n';
 	preamble += '\\usepackage{listings}\n'; // For code blocks
 	preamble += '\\usepackage{xcolor}\n'; // For code syntax colors
-	preamble += '\\lstset{basicstyle=\\ttfamily\\small,breaklines=true,frame=single}\n\n';
+	preamble += '\\lstset{basicstyle=\\ttfamily\\small,breaklines=true,frame=single}\n';
+	preamble += '\\usepackage{tkz-tab}\n'; // For variation tables
+	preamble += '\\usetikzlibrary{arrows}\n\n';
 
 	// Extra packages
 	if (extraPackages.length > 0) {
@@ -199,6 +202,9 @@ function generateBlock(node: BlockNode, options: Required<LatexTranspilerOptions
 
 		case 'code-block':
 			return generateCodeBlock(node);
+
+		case 'variation-table':
+			return generateVariationTableLatex(node);
 
 		default:
 			return '';
