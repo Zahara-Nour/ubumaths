@@ -44,6 +44,7 @@
 	import VideoDisplay from './nodes/VideoDisplay.svelte';
 	import CodeBlock from './nodes/CodeBlock.svelte';
 	import Blockquote from './nodes/Blockquote.svelte';
+	import VariationTable from './nodes/VariationTable.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -233,6 +234,8 @@
 					<CodeBlock code={node.code} language={node.language} />
 				{:else if node.type === 'blockquote'}
 					<Blockquote children={node.children} />
+				{:else if node.type === 'variation-table'}
+					<VariationTable {node} />
 				{/if}
 			{/each}
 		{:else}
