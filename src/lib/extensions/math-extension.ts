@@ -621,6 +621,9 @@ export const MathBlock = Node.create({
 			// Set initial value
 			mathfield.value = node.attrs.latex as string;
 
+			// Use display mode for block math (renders fractions vertically, not inline)
+			mathfield.setAttribute('math-style', 'display');
+
 			// Store mathfield reference on DOM for keyboard navigation plugin
 			(dom as unknown as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;
 
@@ -643,9 +646,6 @@ export const MathBlock = Node.create({
 					const nodeAtPos = editor.state.doc.nodeAt(pos);
 
 					if (nodeAtPos && nodeAtPos.type.name === 'mathBlock') {
-						// Strip displaystyle prefix before storing
-						const cleanLatex = fromDisplayStyle(target.value);
-
 						// When user edits via math-field, MathLive returns LaTeX.
 						// If original syntax was 'custom', convert back to custom syntax if possible.
 						const originalSyntax = nodeAtPos.attrs.syntax as string;
@@ -654,18 +654,18 @@ export const MathBlock = Node.create({
 
 						if (originalSyntax === 'custom') {
 							// Try to convert to custom syntax
-							const converted = latexToCustomSyntax(cleanLatex);
+							const converted = latexToCustomSyntax(target.value);
 							newExpression = converted.expression;
 							newSyntax = converted.syntax;
 						} else {
 							// Keep as latex
-							newExpression = cleanLatex;
+							newExpression = target.value;
 							newSyntax = 'latex';
 						}
 
 						tr.setNodeMarkup(pos, undefined, {
 							...nodeAtPos.attrs,
-							latex: cleanLatex,
+							latex: target.value,
 							originalExpression: newSyntax === 'custom' ? newExpression : '',
 							syntax: newSyntax
 						});
@@ -726,10 +726,9 @@ export const MathBlock = Node.create({
 					if (updatedNode.type.name !== 'mathBlock') return false;
 
 					// Only update mathfield if the value actually differs
-					// Compare stored latex (without displaystyle) with mathfield value (with displaystyle)
-					const displayValue = toDisplayStyle(updatedNode.attrs.latex as string);
-					if (displayValue !== mathfield.value) {
-						mathfield.value = displayValue;
+					// (avoid updating when we're the source of the change)
+					if (updatedNode.attrs.latex !== mathfield.value) {
+						mathfield.value = updatedNode.attrs.latex as string;
 					}
 
 					return true; // View can be reused
