@@ -80,16 +80,18 @@
 </script>
 
 <DropdownMenu.Root>
-	<DropdownMenu.Trigger asChild>
-		<Button
-			variant="outline"
-			size="icon"
-			title="Exporter le graphique"
-			aria-label="Exporter le graphique"
-			disabled={!svgRef || isExporting}
-		>
-			<Download class="h-4 w-4" />
-		</Button>
+	<DropdownMenu.Trigger disabled={!svgRef || isExporting}>
+		{#snippet child({ props })}
+			<Button
+				{...props}
+				variant="outline"
+				size="icon"
+				title="Exporter le graphique"
+				aria-label="Exporter le graphique"
+			>
+				<Download class="h-4 w-4" />
+			</Button>
+		{/snippet}
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content align="end">
 		<DropdownMenu.Item onclick={handleExportSvg}>

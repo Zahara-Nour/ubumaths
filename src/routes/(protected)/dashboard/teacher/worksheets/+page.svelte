@@ -315,7 +315,9 @@
 						</Table.Row>
 					{:else}
 						{#each data.worksheets as worksheet (worksheet.id)}
-							{@const TypeIcon = typeIcons[worksheet.type]}
+							{@const worksheetType = worksheet.type as WorksheetType}
+							{@const worksheetStatus = worksheet.status as WorksheetStatus}
+							{@const TypeIcon = typeIcons[worksheetType]}
 							<Table.Row>
 								<Table.Cell class="font-medium">
 									<a href="/dashboard/teacher/worksheets/{worksheet.id}" class="hover:underline">
@@ -325,12 +327,12 @@
 								<Table.Cell>
 									<div class="flex items-center gap-2">
 										<TypeIcon class="h-4 w-4 text-muted-foreground" />
-										<span>{typeLabels[worksheet.type]}</span>
+										<span>{typeLabels[worksheetType]}</span>
 									</div>
 								</Table.Cell>
 								<Table.Cell>
-									<Badge variant={statusVariants[worksheet.status]}>
-										{statusLabels[worksheet.status]}
+									<Badge variant={statusVariants[worksheetStatus]}>
+										{statusLabels[worksheetStatus]}
 									</Badge>
 								</Table.Cell>
 								<Table.Cell>

@@ -69,7 +69,7 @@
 			case 'relation':
 				return { type: 'Relation', value: n.relation, badge: 'relation' };
 			case 'unit':
-				return { type: 'Unit', value: n.unit.symbol, badge: 'unit' };
+				return { type: 'Unit', value: n.unit.original ?? '[unit]', badge: 'unit' };
 			default:
 				return { type: n.type, badge: 'unknown' };
 		}
@@ -177,7 +177,8 @@
 				if (hasChildren) expanded = !expanded;
 			}
 		}}
-		tabindex="0"
+		role="button"
+		tabindex={hasChildren ? 0 : -1}
 	>
 		<!-- Expand/Collapse indicator -->
 		<span class="flex size-4 shrink-0 items-center justify-center">

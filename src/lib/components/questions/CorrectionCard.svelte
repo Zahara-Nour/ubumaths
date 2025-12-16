@@ -71,7 +71,19 @@
 
 	// Markdown content - instance.statement and instance.correction are now ResolvedMarkdown (strings)
 	const statementMarkdown = $derived(answerResult.instance.statement);
-	const correctionMarkdown = $derived(answerResult.instance.correction || '');
+	// Build correction markdown from ResolvedCorrection object
+	const correctionMarkdown = $derived.by(() => {
+		const correction = answerResult.instance.correction;
+		if (!correction) return '';
+		const parts: string[] = [];
+		if (correction.steps && correction.steps.length > 0) {
+			parts.push(...correction.steps);
+		}
+		if (correction.feedback?.correct) {
+			parts.push(correction.feedback.correct);
+		}
+		return parts.join('\n\n');
+	});
 
 	// ============================================================================
 	// INITIALIZATION
@@ -253,14 +265,14 @@
 						<div class="correct-answer-section">
 							<h3 class="mb-3 text-lg font-semibold">Réponse correcte</h3>
 							<div class="rounded-lg border-2 border-green-600 bg-green-100 p-4 dark:bg-green-950">
-								{#if Array.isArray(answerResult.instance.answer)}
+								{#if Array.isArray(answerResult.instance.solution)}
 									<ul class="space-y-1">
-										{#each answerResult.instance.answer as ans, i (i)}
+										{#each answerResult.instance.solution as ans, i (i)}
 											<li><MarkdownRenderer content={`$$${String(ans)}$$`} /></li>
 										{/each}
 									</ul>
 								{:else}
-									<MarkdownRenderer content={`$$${String(answerResult.instance.answer)}$$`} />
+									<MarkdownRenderer content={`$$${String(answerResult.instance.solution)}$$`} />
 								{/if}
 							</div>
 						</div>

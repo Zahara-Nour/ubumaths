@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { Checkbox } from '$lib/components/ui/checkbox';
-	import type { Database } from '$lib/types/database';
+	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 	import { categoryIcon } from './utils';
-
-	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
 
 	interface Props {
 		card: VipCardTemplate;

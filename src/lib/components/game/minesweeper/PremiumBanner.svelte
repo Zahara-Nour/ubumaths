@@ -43,17 +43,13 @@
 			</ul>
 
 			<div class="flex flex-col gap-2 sm:flex-row">
-				<Button asChild size="default" class="flex-1">
-					<a href="/login">
-						<span class="mr-2" aria-hidden="true">🚀</span>
-						Se connecter
-					</a>
+				<Button href="/login" size="default" class="flex-1">
+					<span class="mr-2" aria-hidden="true">🚀</span>
+					Se connecter
 				</Button>
-				<Button asChild variant="outline" size="default" class="flex-1">
-					<a href="/register">
-						<span class="mr-2" aria-hidden="true">✨</span>
-						Créer un compte
-					</a>
+				<Button href="/register" variant="outline" size="default" class="flex-1">
+					<span class="mr-2" aria-hidden="true">✨</span>
+					Créer un compte
 				</Button>
 			</div>
 		</div>

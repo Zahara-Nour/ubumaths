@@ -22,6 +22,27 @@ import { Plugin, PluginKey, Selection } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
 import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '$lib/mathAST';
 
+// ============================================================================
+// TYPE DECLARATIONS
+// ============================================================================
+
+declare module '@tiptap/core' {
+	interface Commands<ReturnType> {
+		mathInline: {
+			/**
+			 * Insert an inline math field
+			 */
+			insertMathInline: (latex?: string, syntax?: string, originalExpression?: string) => ReturnType;
+		};
+		mathBlock: {
+			/**
+			 * Insert a block math field
+			 */
+			insertMathBlock: (latex?: string, syntax?: string, originalExpression?: string) => ReturnType;
+		};
+	}
+}
+
 /**
  * MathField type with MathLive methods
  */
@@ -48,7 +69,7 @@ interface MoveOutDetail {
  */
 function latexToCustomSyntax(latex: string): { expression: string; syntax: 'latex' | 'custom' } {
 	const parseResult = parseLatexSafe(latex);
-	if (parseResult.success) {
+	if (parseResult.ast !== null) {
 		try {
 			const customExpr = toCustom(parseResult.ast);
 			return { expression: customExpr, syntax: 'custom' };
@@ -383,8 +404,6 @@ export const MathInline = Node.create({
 	 *   editor.commands.insertMathInline('x^2 + y^2')
 	 *   editor.commands.insertMathInline('x^2', 'custom', 'x^2') // With syntax
 	 */
-	// TipTap's command typing is complex - using type assertion for custom commands
-	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertMathInline:
@@ -737,8 +756,6 @@ export const MathBlock = Node.create({
 	 *   editor.commands.insertMathBlock('\\int_0^\\infty e^{-x^2} dx')
 	 *   editor.commands.insertMathBlock('\\sqrt{16}', 'custom', 'sqrt(16)') // With syntax
 	 */
-	// TipTap's command typing is complex - using type assertion for custom commands
-	// @ts-expect-error - TipTap command typing requires exact match with RawCommands
 	addCommands() {
 		return {
 			insertMathBlock:

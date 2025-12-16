@@ -33,7 +33,12 @@
 		onCancel?: () => void;
 	}
 
-	let { initialFrontContent = '', initialBackContent = '', onSave, onCancel }: Props = $props();
+	let {
+		initialFrontContent = templateMarkdown(''),
+		initialBackContent = templateMarkdown(''),
+		onSave,
+		onCancel
+	}: Props = $props();
 
 	// State
 	let frontMarkdown = $state(initialFrontContent || '');

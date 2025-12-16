@@ -655,6 +655,8 @@
 
 			<!-- Templates Display (Table or Card view) -->
 			{#if viewMode === 'table'}
+				{@const SortTypeIcon = getSortIcon('type')}
+				{@const SortCreatedAtIcon = getSortIcon('created_at')}
 				<!-- Table View -->
 				<Card.Root>
 					<Card.Content class="p-0">
@@ -669,7 +671,7 @@
 												class="flex items-center gap-1 hover:text-foreground"
 											>
 												Type
-												<svelte:component this={getSortIcon('type')} class="h-4 w-4" />
+												<SortTypeIcon class="h-4 w-4" />
 											</button>
 										</th>
 										<th class="px-4 py-3 text-left text-sm font-medium">Titre</th>
@@ -681,7 +683,7 @@
 												class="flex items-center gap-1 hover:text-foreground"
 											>
 												Créé le
-												<svelte:component this={getSortIcon('created_at')} class="h-4 w-4" />
+												<SortCreatedAtIcon class="h-4 w-4" />
 											</button>
 										</th>
 										<th class="px-4 py-3 text-right text-sm font-medium">Actions</th>
@@ -823,6 +825,8 @@
 
 			<!-- Templates Display (Table or Card view) -->
 			{#if viewMode === 'table'}
+				{@const SortTypeIcon = getSortIcon('type')}
+				{@const SortCreatedAtIcon = getSortIcon('created_at')}
 				<!-- Table View -->
 				<Card.Root>
 					<Card.Content class="p-0">
@@ -837,7 +841,7 @@
 												class="flex items-center gap-1 hover:text-foreground"
 											>
 												Type
-												<svelte:component this={getSortIcon('type')} class="h-4 w-4" />
+												<SortTypeIcon class="h-4 w-4" />
 											</button>
 										</th>
 										<th class="px-4 py-3 text-left text-sm font-medium">Titre</th>
@@ -849,7 +853,7 @@
 												class="flex items-center gap-1 hover:text-foreground"
 											>
 												Créé le
-												<svelte:component this={getSortIcon('created_at')} class="h-4 w-4" />
+												<SortCreatedAtIcon class="h-4 w-4" />
 											</button>
 										</th>
 										<th class="px-4 py-3 text-right text-sm font-medium">Actions</th>

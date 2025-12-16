@@ -2,10 +2,22 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const user = locals.user;
+	const authUser = locals.user;
 
-	if (!user) {
+	if (!authUser) {
 		throw error(401, 'Non authentifié');
+	}
+
+	// Get full user profile from profiles table
+	const { data: userProfile, error: profileError } = await locals.supabase
+		.from('profiles')
+		.select('*')
+		.eq('id', authUser.id)
+		.single();
+
+	if (profileError || !userProfile) {
+		console.error('Failed to load user profile:', profileError);
+		throw error(500, 'Impossible de charger le profil utilisateur');
 	}
 
 	// Get player's current ELO and stats for each difficulty
@@ -14,7 +26,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { data: stats, error: statsError } = await locals.supabase
 		.from('minesweeper_player_stats')
 		.select('difficulty, rank, games_played, games_won, win_rate')
-		.eq('student_id', user.id)
+		.eq('student_id', authUser.id)
 		.eq('season', currentMonth);
 
 	if (statsError) {
@@ -23,6 +35,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	return {
+		user: userProfile,
 		playerStats: stats || [],
 		currentSeason: currentMonth
 	};

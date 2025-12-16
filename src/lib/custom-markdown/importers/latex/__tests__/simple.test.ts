@@ -23,18 +23,19 @@ import type {
 	MathDisplayToken,
 	SpecialToken,
 	ConversionContext,
-	LatexToMarkdownOptions
+	ResolvedLatexToMarkdownOptions
 } from '../types';
 
 // Helper to create a minimal ConversionContext for testing
 function createMockContext(): ConversionContext {
-	const defaultOptions: Required<LatexToMarkdownOptions> = {
+	const defaultOptions: ResolvedLatexToMarkdownOptions = {
 		preserveComments: false,
 		mathDelimiters: 'dollar',
 		maxNestingDepth: 10,
 		fallbackToText: false,
 		preserveWhitespace: false,
-		lineOffset: 0
+		lineOffset: 0,
+		additionalFunctionNames: undefined
 	};
 
 	return {

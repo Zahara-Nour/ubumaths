@@ -99,7 +99,7 @@
 						</Card.Description>
 					{/if}
 				</div>
-				<ChapterProgressIndicator progress={data.chapter.progress} size="lg" />
+				<ChapterProgressIndicator progress={data.chapter.progress} />
 			</div>
 		</Card.Header>
 	</Card.Root>

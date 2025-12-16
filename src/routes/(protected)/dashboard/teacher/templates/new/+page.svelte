@@ -103,7 +103,7 @@
 						type="text"
 						placeholder="Ex: Chapitre sur les équations du second degré"
 						required
-						maxlength="200"
+						maxlength={200}
 						bind:value={title}
 					/>
 					<p class="text-xs text-muted-foreground">{title.length}/200 caractères</p>
@@ -117,7 +117,7 @@
 						name="description"
 						placeholder="Décrivez le contenu et l'objectif de ce template..."
 						rows={4}
-						maxlength="2000"
+						maxlength={2000}
 						bind:value={description}
 					/>
 					<p class="text-xs text-muted-foreground">{description.length}/2000 caractères</p>

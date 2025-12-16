@@ -13711,13 +13711,16 @@ export type UserRole = 'student' | 'teacher' | 'admin';
 export type Gender = 'male' | 'female' | 'other' | 'prefer_not_to_say';
 
 // Friendship types
-export type FriendshipType = 'pending' | 'accepted' | 'blocked';
+export type FriendshipStatus = 'pending' | 'accepted' | 'blocked' | 'rejected';
+export type FriendshipRelationType = 'classmate' | 'mentor';
+/** @deprecated Use FriendshipStatus instead */
+export type FriendshipType = FriendshipRelationType;
 export interface FriendshipWithProfile {
 	id: string;
-	requester_id: string;
-	addressee_id: string;
-	status: FriendshipType;
-	friendship_type?: FriendshipType;
+	requester_id?: string;
+	addressee_id?: string;
+	status: FriendshipStatus;
+	friendship_type?: FriendshipRelationType;
 	created_at: string;
 	updated_at: string;
 	friend_profile?: {
@@ -13758,3 +13761,6 @@ export interface SchoolTimetable {
 	periods: SchoolPeriod[];
 	week_config?: WeekConfig;
 }
+
+// Type alias for the profiles table Row
+export type Profile = Database['public']['Tables']['profiles']['Row'];

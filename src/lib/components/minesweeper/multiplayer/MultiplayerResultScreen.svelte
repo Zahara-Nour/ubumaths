@@ -72,7 +72,7 @@
 
 {#if result}
 	<div class="flex min-h-[400px] items-center justify-center p-4">
-		<Card className="w-full max-w-md p-6">
+		<Card class="w-full max-w-md p-6">
 			<!-- Result Header -->
 			<div class="mb-6 text-center">
 				{#if isDraw}
@@ -87,7 +87,7 @@
 				{/if}
 			</div>
 
-			<Separator className="my-4" />
+			<Separator class="my-4" />
 
 			<!-- Match Summary -->
 			<div class="mb-4 text-center text-sm text-muted-foreground">
@@ -119,7 +119,7 @@
 								>
 							</div>
 						{/if}
-						<Separator className="my-2" />
+						<Separator class="my-2" />
 						<div class="flex justify-between text-base">
 							<span class="font-semibold text-foreground">Total:</span>
 							<span class="font-bold text-primary">{result.gidouilles} gidouilles</span>
@@ -148,11 +148,11 @@
 
 			<!-- Action Buttons -->
 			<div class="mt-6 flex flex-col gap-3 sm:flex-row">
-				<Button onclick={onPlayAgain} variant="default" className="flex-1">
+				<Button onclick={onPlayAgain} variant="default" class="flex-1">
 					<span class="mr-2">🎮</span>
 					Rejouer
 				</Button>
-				<Button onclick={onReturnToMenu} variant="outline" className="flex-1">
+				<Button onclick={onReturnToMenu} variant="outline" class="flex-1">
 					<span class="mr-2">🏠</span>
 					Retour au menu
 				</Button>

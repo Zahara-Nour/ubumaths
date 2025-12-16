@@ -6,7 +6,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import { Avatar } from '$lib/components/ui/avatar';
+	import * as Avatar from '$lib/components/ui/avatar';
 	import {
 		Package,
 		Clock,
@@ -112,13 +112,13 @@
 	<Tabs.Root bind:value={selectedTab}>
 		<Tabs.List>
 			<Tabs.Trigger value="active">
-				Actives ({activeListings().length})
+				Actives ({activeListings.length})
 			</Tabs.Trigger>
 			<Tabs.Trigger value="completed">
-				Complétées ({completedListings().length})
+				Complétées ({completedListings.length})
 			</Tabs.Trigger>
 			<Tabs.Trigger value="expired">
-				Expirées/Annulées ({expiredListings().length})
+				Expirées/Annulées ({expiredListings.length})
 			</Tabs.Trigger>
 		</Tabs.List>
 
@@ -126,7 +126,7 @@
 		<Tabs.Content value="active" class="mt-4 space-y-4">
 			{#if marketplaceStore.isLoading.myListings}
 				<SkeletonList itemCount={3} />
-			{:else if activeListings().length === 0}
+			{:else if activeListings.length === 0}
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
 						<Package class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
@@ -135,7 +135,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each activeListings() as listing (listing.id)}
+				{#each activeListings as listing (listing.id)}
 					{@const proposals = getListingProposals(listing.id)}
 					{@const pendingCount = getPendingProposalsCount(listing.id)}
 
@@ -255,7 +255,7 @@
 
 		<!-- Completed Listings -->
 		<Tabs.Content value="completed" class="mt-4 space-y-4">
-			{#if completedListings().length === 0}
+			{#if completedListings.length === 0}
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
 						<CheckCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
@@ -264,14 +264,14 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each completedListings() as listing (listing.id)}
+				{#each completedListings as listing (listing.id)}
 					<Card.Root>
 						<Card.Content class="py-4">
 							<div class="flex items-center justify-between">
 								<div>
 									<h4 class="font-medium">{listing.title}</h4>
 									<p class="mt-1 text-sm text-muted-foreground">
-										Complétée {formatTime(listing.updated_at)}
+										Complétée {formatTime(listing.completed_at ?? listing.created_at)}
 									</p>
 								</div>
 								<Badge variant="success">
@@ -287,7 +287,7 @@
 
 		<!-- Expired/Cancelled Listings -->
 		<Tabs.Content value="expired" class="mt-4 space-y-4">
-			{#if expiredListings().length === 0}
+			{#if expiredListings.length === 0}
 				<Card.Root>
 					<Card.Content class="py-12 text-center">
 						<AlertCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
@@ -296,7 +296,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				{#each expiredListings() as listing (listing.id)}
+				{#each expiredListings as listing (listing.id)}
 					<Card.Root>
 						<Card.Content class="py-4">
 							<div class="flex items-center justify-between">
@@ -304,7 +304,7 @@
 									<h4 class="font-medium">{listing.title}</h4>
 									<p class="mt-1 text-sm text-muted-foreground">
 										{listing.status === 'expired' ? 'Expirée' : 'Annulée'}
-										{formatTime(listing.updated_at)}
+										{formatTime(listing.cancelled_at ?? listing.expires_at)}
 									</p>
 								</div>
 								<Badge variant={listing.status === 'expired' ? 'destructive' : 'outline'}>

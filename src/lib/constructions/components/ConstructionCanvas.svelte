@@ -61,7 +61,9 @@
 
 	// Effective default color: prop > script config > constants
 	let effectiveDefaultColor = $derived(
-		defaultColor ?? engine.canvasConfig.defaultColor ?? DEFAULT_COLORS.primary
+		defaultColor ??
+			(engine.canvasConfig as { defaultColor?: string }).defaultColor ??
+			DEFAULT_COLORS.primary
 	);
 
 	// Derived state from engine

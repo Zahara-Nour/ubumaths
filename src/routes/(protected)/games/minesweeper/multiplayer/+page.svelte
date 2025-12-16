@@ -231,7 +231,7 @@
 <!-- Loading State -->
 {#if !isInitialized}
 	<div class="flex min-h-screen items-center justify-center p-4">
-		<Card className="p-6 text-center">
+		<Card class="p-6 text-center">
 			<div class="mb-4 text-5xl">⏳</div>
 			<h2 class="mb-2 text-xl font-semibold text-foreground">Chargement...</h2>
 			<p class="text-sm text-muted-foreground">Initialisation du mode multijoueur</p>
@@ -305,7 +305,7 @@
 {:else}
 	<!-- Fallback: Unknown State -->
 	<div class="flex min-h-screen items-center justify-center p-4">
-		<Card className="p-6 text-center">
+		<Card class="p-6 text-center">
 			<div class="mb-4 text-5xl">⚠️</div>
 			<h2 class="mb-2 text-xl font-semibold text-foreground">État inattendu</h2>
 			<p class="mb-4 text-sm text-muted-foreground">Le match est dans un état inattendu.</p>

@@ -55,114 +55,75 @@
 		numerical_exact: {
 			templateId: 'debug-numerical-1',
 			type: 'numerical_exact',
-			statement: [
-				{
-					type: 'text',
-					content: 'Calculez: $$\\frac{15}{3}$$'
-				}
-			],
-			answer: '5',
+			statement: 'Calculez: $$\\frac{15}{3}$$' as QuestionInstance['statement'],
+			solution: '5',
 			precision: { type: 'none' },
-			correction: [
-				{
-					type: 'text',
-					content:
-						'Pour diviser 15 par 3, on cherche combien de fois 3 rentre dans 15. La réponse est **5** car $$3 \\times 5 = 15$$.'
-				}
-			],
+			correction: {
+				steps: [
+					'Pour diviser 15 par 3, on cherche combien de fois 3 rentre dans 15. La réponse est **5** car $$3 \\times 5 = 15$$.' as QuestionInstance['statement']
+				]
+			},
 			grades: ['6', '5']
 		},
 		numerical_decimal: {
 			templateId: 'debug-numerical-2',
 			type: 'numerical_decimal',
-			statement: [
-				{
-					type: 'text',
-					content: 'Calculez avec 2 décimales: $$\\frac{22}{7}$$'
-				}
-			],
-			answer: '3.14',
+			statement: 'Calculez avec 2 décimales: $$\\frac{22}{7}$$' as QuestionInstance['statement'],
+			solution: '3.14',
 			precision: { type: 'decimal', digits: 2 },
-			correction: [
-				{
-					type: 'text',
-					content:
-						'La division $$22 \\div 7 \\approx 3.142857...$$. Arrondie à 2 décimales, la réponse est **3.14**.'
-				}
-			],
+			correction: {
+				steps: [
+					'La division $$22 \\div 7 \\approx 3.142857...$$. Arrondie à 2 décimales, la réponse est **3.14**.' as QuestionInstance['statement']
+				]
+			},
 			grades: ['4', '3']
 		},
 		algebraic_transform: {
 			templateId: 'debug-algebraic-1',
 			type: 'algebraic_transform',
-			statement: [
-				{
-					type: 'text',
-					content: 'Factorisez: $$x^2 - 9$$'
-				}
-			],
-			answer: '(x-3)(x+3)',
+			statement: 'Factorisez: $$x^2 - 9$$' as QuestionInstance['statement'],
+			solution: '(x-3)(x+3)',
 			transformType: 'factor',
-			correction: [
-				{
-					type: 'text',
-					content:
-						'On reconnaît une différence de carrés: $$a^2 - b^2 = (a-b)(a+b)$$. Ici, $$x^2 - 9 = x^2 - 3^2 = (x-3)(x+3)$$.'
-				}
-			],
+			correction: {
+				steps: [
+					'On reconnaît une différence de carrés: $$a^2 - b^2 = (a-b)(a+b)$$. Ici, $$x^2 - 9 = x^2 - 3^2 = (x-3)(x+3)$$.' as QuestionInstance['statement']
+				]
+			},
 			grades: ['3', '2']
 		},
 		fill_in_blanks: {
 			templateId: 'debug-blanks-1',
 			type: 'fill_in_blanks',
-			statement: [
-				{
-					type: 'text',
-					content: "Si les côtés sont 3 et 4, l'hypoténuse est ____ selon le théorème de ____."
-				}
-			],
-			answer: ['5', 'Pythagore'],
+			statement:
+				"Si les côtés sont 3 et 4, l'hypoténuse est ____ selon le théorème de ____." as QuestionInstance['statement'],
+			solution: ['5', 'Pythagore'],
 			blanks: [
 				{ position: 0, expectedAnswer: '5' },
 				{ position: 1, expectedAnswer: 'Pythagore' }
 			],
-			correction: [
-				{
-					type: 'text',
-					content:
-						'Le théorème de **Pythagore** dit que $$c^2 = a^2 + b^2$$. Donc $$c = \\sqrt{3^2 + 4^2} = \\sqrt{9 + 16} = \\sqrt{25} = 5$$.'
-				}
-			],
+			correction: {
+				steps: [
+					'Le théorème de **Pythagore** dit que $$c^2 = a^2 + b^2$$. Donc $$c = \\sqrt{3^2 + 4^2} = \\sqrt{9 + 16} = \\sqrt{25} = 5$$.' as QuestionInstance['statement']
+				]
+			},
 			grades: ['4', '3']
 		},
 		multiple_choice: {
 			templateId: 'debug-qcm-1',
 			type: 'multiple_choice',
-			statement: [
-				{
-					type: 'text',
-					content: 'Résolvez: $$2x + 5 = 13$$'
-				}
-			],
-			answer: '0',
-			choices: [
-				{ content: [{ type: 'text', content: '$$x = 4$$' }], isCorrect: true },
-				{ content: [{ type: 'text', content: '$$x = 9$$' }], isCorrect: false },
-				{ content: [{ type: 'text', content: '$$x = 6.5$$' }], isCorrect: false }
-			],
+			statement: 'Résolvez: $$2x + 5 = 13$$' as QuestionInstance['statement'],
+			solution: '0',
 			shuffledChoices: [
-				{ content: [{ type: 'text', content: '$$x = 4$$' }], originalIndex: 0 },
-				{ content: [{ type: 'text', content: '$$x = 9$$' }], originalIndex: 1 },
-				{ content: [{ type: 'text', content: '$$x = 6.5$$' }], originalIndex: 2 }
+				{ content: '$$x = 4$$' as QuestionInstance['statement'], originalIndex: 0 },
+				{ content: '$$x = 9$$' as QuestionInstance['statement'], originalIndex: 1 },
+				{ content: '$$x = 6.5$$' as QuestionInstance['statement'], originalIndex: 2 }
 			],
 			multipleAnswers: false,
-			correction: [
-				{
-					type: 'text',
-					content:
-						'On résout: $$2x + 5 = 13 \\Rightarrow 2x = 13 - 5 \\Rightarrow 2x = 8 \\Rightarrow x = 4$$.'
-				}
-			],
+			correction: {
+				steps: [
+					'On résout: $$2x + 5 = 13 \\Rightarrow 2x = 13 - 5 \\Rightarrow 2x = 8 \\Rightarrow x = 4$$.' as QuestionInstance['statement']
+				]
+			},
 			grades: ['3', '2']
 		}
 	};
@@ -345,7 +306,7 @@
 				{interactive}
 				instance={currentInstance as QuestionInstance}
 				onAnswerSubmit={handleAnswerSubmit}
-				onAnswerChange={handleAnswerChange}
+				_onAnswerChange={handleAnswerChange}
 				onComplete={handleComplete}
 				onFlip={handleFlip}
 				{size}
@@ -416,9 +377,9 @@
 								</div>
 							</div>
 							<div>
-								<span class="text-sm font-medium">Answer Type:</span>
+								<span class="text-sm font-medium">Solution Type:</span>
 								<Badge variant="outline" class="ml-2">
-									{Array.isArray(currentInstance.answer) ? 'Array' : 'String'}
+									{Array.isArray((currentInstance as QuestionInstance).solution) ? 'Array' : 'String'}
 								</Badge>
 							</div>
 						</div>

@@ -251,14 +251,16 @@
 				<Card.Header class="cursor-pointer" onclick={() => (configOpen = !configOpen)}>
 					<div class="flex items-center justify-between">
 						<Card.Title>Options d'affichage</Card.Title>
-						<Collapsible.Trigger asChild>
-							<Button variant="ghost" size="icon" class="h-8 w-8">
-								{#if configOpen}
-									<ChevronUp class="h-4 w-4" />
-								{:else}
-									<ChevronDown class="h-4 w-4" />
-								{/if}
-							</Button>
+						<Collapsible.Trigger>
+							{#snippet child({ props })}
+								<Button {...props} variant="ghost" size="icon" class="h-8 w-8">
+									{#if configOpen}
+										<ChevronUp class="h-4 w-4" />
+									{:else}
+										<ChevronDown class="h-4 w-4" />
+									{/if}
+								</Button>
+							{/snippet}
 						</Collapsible.Trigger>
 					</div>
 					<Card.Description>

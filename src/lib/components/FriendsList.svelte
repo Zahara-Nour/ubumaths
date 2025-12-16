@@ -54,7 +54,7 @@
 						<!-- Avatar -->
 						<Avatar.Root class="size-10">
 							<Avatar.Image
-								src={getAvatarUrl(friend.friend_profile)}
+								src={friend.friend_profile ? getAvatarUrl(friend.friend_profile) : undefined}
 								alt={friendsManager.getDisplayName(friend)}
 							/>
 							<Avatar.Fallback>
@@ -66,11 +66,15 @@
 						<div>
 							<div class="flex items-center gap-2">
 								<p class="font-medium">{friendsManager.getDisplayName(friend)}</p>
-								<OnlineStatus status={friendsManager.getFriendPresence(friend.friend_profile.id)} />
+								<OnlineStatus
+									status={friend.friend_profile
+										? friendsManager.getFriendPresence(friend.friend_profile.id)
+										: 'offline'}
+								/>
 							</div>
 							<p class="text-sm text-muted-foreground">
 								{getFriendshipTypeLabel(friend.friendship_type as 'classmate' | 'mentor')}
-								{#if friend.friend_profile.role === 'teacher'}
+								{#if friend.friend_profile?.role === 'teacher'}
 									• Enseignant
 								{/if}
 							</p>
@@ -91,7 +95,7 @@
 							<DropdownMenu.Item>
 								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 								<a
-									href={`/dashboard/profile/${friend.friend_profile.id}`}
+									href={`/dashboard/profile/${friend.friend_profile?.id ?? ''}`}
 									class="flex w-full items-center"
 								>
 									Voir le profil

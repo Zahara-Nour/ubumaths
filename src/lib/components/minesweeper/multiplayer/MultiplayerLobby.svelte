@@ -70,7 +70,7 @@
 </script>
 
 <div class="flex min-h-[500px] items-center justify-center p-4">
-	<Card className="w-full max-w-md p-6">
+	<Card class="w-full max-w-md p-6">
 		<!-- Header -->
 		<div class="mb-6 text-center">
 			<h2 class="flex items-center justify-center gap-2 text-2xl font-bold text-foreground">
@@ -79,7 +79,7 @@
 			</h2>
 		</div>
 
-		<Separator className="my-4" />
+		<Separator class="my-4" />
 
 		<!-- Configuration -->
 		<div class="mb-6 space-y-4">
@@ -123,12 +123,12 @@
 		<!-- Queue Action Button -->
 		<div class="mb-4">
 			{#if !inQueue}
-				<Button onclick={handleJoinQueue} className="w-full" size="lg">
+				<Button onclick={handleJoinQueue} class="w-full" size="lg">
 					<span class="mr-2">🚀</span>
 					Rejoindre la file d'attente
 				</Button>
 			{:else}
-				<Button onclick={handleLeaveQueue} variant="destructive" className="w-full" size="lg">
+				<Button onclick={handleLeaveQueue} variant="destructive" class="w-full" size="lg">
 					<span class="mr-2">❌</span>
 					Quitter la file d'attente
 				</Button>
@@ -143,7 +143,7 @@
 				<!-- Status Icon & Text -->
 				<div class="mb-2 flex items-center justify-center gap-2">
 					{#if isSearching}
-						<Loader2 className="h-5 w-5 animate-spin text-primary" />
+						<Loader2 class="h-5 w-5 animate-spin text-primary" />
 					{:else if hasError}
 						<span class="text-xl">⚠️</span>
 					{:else if queueStatus === 'found'}

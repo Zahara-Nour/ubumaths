@@ -254,20 +254,13 @@
 							disabled={isInputDisabled}
 							showValidation={false}
 						/>
-					{:else if instance.type === 'ordering'}
-						<div
-							class="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/20 p-8 text-center"
-						>
-							<AlertCircle class="h-10 w-10 text-muted-foreground" />
-							<div>
-								<p class="font-semibold text-muted-foreground">
-									Type de question "ordering" non implémenté
-								</p>
-								<p class="mt-1 text-sm text-muted-foreground/70">
-									Cette fonctionnalité sera disponible prochainement
-								</p>
-							</div>
-						</div>
+					{:else}
+						<!-- numerical_with_unit and any future types - fallback to numerical input -->
+						<NumericalInput
+							bind:value={userAnswer as string}
+							disabled={isInputDisabled}
+							onSubmit={handleSubmit}
+						/>
 					{/if}
 
 					<!-- Submit Button -->

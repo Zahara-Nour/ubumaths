@@ -113,17 +113,6 @@
 	 */
 
 	/**
-	 * Users to display in the list (pending, search results, or class filter)
-	 */
-	let displayUsers = $derived(
-		showPendingOnly && filteredPendingResults.length > 0
-			? filteredPendingResults
-			: filteredSearchResults.length > 0
-				? filteredSearchResults
-				: filteredClassResults
-	);
-
-	/**
 	 * Get user's full display name
 	 * Falls back to full_name or email if first/last names not available
 	 */
@@ -241,6 +230,17 @@
 	 * Get filtered pending results based on test filter
 	 */
 	let filteredPendingResults = $derived(applyTestFilter(pendingResults));
+
+	/**
+	 * Users to display in the list (pending, search results, or class filter)
+	 */
+	let displayUsers = $derived(
+		showPendingOnly && filteredPendingResults.length > 0
+			? filteredPendingResults
+			: filteredSearchResults.length > 0
+				? filteredSearchResults
+				: filteredClassResults
+	);
 
 	/**
 	 * Search Handlers

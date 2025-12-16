@@ -60,7 +60,9 @@
 							<!-- Avatar -->
 							<Avatar.Root class="size-10">
 								<Avatar.Image
-									src={getAvatarUrl(request.friend_profile)}
+									src={request.friend_profile
+										? getAvatarUrl(request.friend_profile)
+										: undefined}
 									alt={friendsManager.getDisplayName(request)}
 								/>
 								<Avatar.Fallback>
@@ -73,7 +75,7 @@
 								<p class="font-medium">{friendsManager.getDisplayName(request)}</p>
 								<p class="text-sm text-muted-foreground">
 									{getFriendshipTypeLabel(request.friendship_type as 'classmate' | 'mentor')}
-									{#if request.friend_profile.role === 'teacher'}
+									{#if request.friend_profile?.role === 'teacher'}
 										• Enseignant
 									{/if}
 								</p>
@@ -126,7 +128,9 @@
 							<!-- Avatar -->
 							<Avatar.Root class="size-10">
 								<Avatar.Image
-									src={getAvatarUrl(request.friend_profile)}
+									src={request.friend_profile
+										? getAvatarUrl(request.friend_profile)
+										: undefined}
 									alt={friendsManager.getDisplayName(request)}
 								/>
 								<Avatar.Fallback>
@@ -139,7 +143,7 @@
 								<p class="font-medium">{friendsManager.getDisplayName(request)}</p>
 								<p class="text-sm text-muted-foreground">
 									{getFriendshipTypeLabel(request.friendship_type as 'classmate' | 'mentor')}
-									{#if request.friend_profile.role === 'teacher'}
+									{#if request.friend_profile?.role === 'teacher'}
 										• Enseignant
 									{/if}
 								</p>

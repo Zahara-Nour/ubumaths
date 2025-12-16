@@ -43,12 +43,8 @@
 	PROPS:
 	- exerciseContext?: Optional exercise context for targeted help
 
-	USAGE:
-	```svelte
-	<TutorWidget />
-	<!-- Or with context -->
-<TutorWidget exerciseContext={{ statement: 'Calculate...', topic: 'algebra' }} />
-``` @component -->
+	@component
+-->
 
 <!-- Floating button when closed -->
 {#if !isOpen}

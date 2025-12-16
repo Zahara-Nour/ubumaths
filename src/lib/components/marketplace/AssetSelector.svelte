@@ -45,7 +45,7 @@
 	// Toggle card selection
 	function toggleCard(cardId: string) {
 		if (selectedCardIds.includes(cardId)) {
-			selectedCardIds = selectedCardIds.filter((id) => id !== cardId);
+			selectedCardIds = selectedCardIds.filter((id: string) => id !== cardId);
 		} else {
 			if (selectedCardIds.length >= maxCards) {
 				return;
@@ -57,7 +57,7 @@
 	// Toggle item selection
 	function toggleItem(itemId: string) {
 		if (selectedItemIds.includes(itemId)) {
-			selectedItemIds = selectedItemIds.filter((id) => id !== itemId);
+			selectedItemIds = selectedItemIds.filter((id: string) => id !== itemId);
 		} else {
 			if (selectedItemIds.length >= maxItems) {
 				return;

@@ -211,7 +211,7 @@
 					<div class="grid gap-4 md:grid-cols-3">
 						<!-- Class filter -->
 						<div class="space-y-2">
-							<label class="text-sm font-medium">Classe</label>
+							<span class="text-sm font-medium">Classe</span>
 							<MySelect
 								type="single"
 								bind:value={selectedClass}
@@ -223,7 +223,7 @@
 						<!-- Category filter (only if class selected and has categories) -->
 						{#if selectedClass && data.categories.length > 0}
 							<div class="space-y-2">
-								<label class="text-sm font-medium">Catégorie UbuMaths</label>
+								<span class="text-sm font-medium">Categorie UbuMaths</span>
 								<MySelect
 									type="single"
 									bind:value={selectedCategory}
@@ -236,7 +236,7 @@
 						<!-- Topic filter (only if class selected and has topics) -->
 						{#if selectedClass && data.topics.length > 0}
 							<div class="space-y-2">
-								<label class="text-sm font-medium">Sujet Google</label>
+								<span class="text-sm font-medium">Sujet Google</span>
 								<MySelect
 									type="single"
 									bind:value={selectedTopic}

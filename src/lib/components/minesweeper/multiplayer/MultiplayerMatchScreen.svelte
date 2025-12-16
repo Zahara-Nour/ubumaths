@@ -35,7 +35,7 @@
 	let isAbandoned = $derived(matchStatus === 'abandoned');
 
 	let difficultyLabel = $derived.by(() => {
-		if (!match) return '';
+		if (!match || !match.difficulty) return '';
 		const labels: Record<string, string> = {
 			beginner: 'Débutant',
 			intermediate: 'Intermédiaire',
@@ -95,13 +95,13 @@
 {#if match}
 	<div class="space-y-4 p-4">
 		<!-- Status Header -->
-		<Card className="p-4">
+		<Card class="p-4">
 			<div class="mb-3 text-center">
 				<div class="mb-2 text-4xl">{statusEmoji}</div>
 				<h2 class="text-xl font-bold text-foreground">{statusMessage}</h2>
 			</div>
 
-			<Separator className="my-3" />
+			<Separator class="my-3" />
 
 			<!-- Match Info -->
 			<div class="text-center text-sm text-muted-foreground">
@@ -119,7 +119,7 @@
 		{#if isInProgress || isCompleted}
 			<div class="grid gap-4 md:grid-cols-2">
 				<!-- Your Progress -->
-				<Card className="p-4">
+				<Card class="p-4">
 					<h3 class="mb-3 flex items-center gap-2 font-semibold text-foreground">
 						<span>📊</span>
 						<span>Vous</span>
@@ -149,7 +149,7 @@
 
 		<!-- Countdown Display (large) -->
 		{#if isCountdown && countdown > 0}
-			<Card className="bg-primary/5 p-8">
+			<Card class="bg-primary/5 p-8">
 				<div class="text-center">
 					<div class="mb-4 animate-pulse text-7xl font-bold text-primary">{countdown}</div>
 					<p class="text-lg text-muted-foreground">Préparez-vous...</p>
@@ -169,7 +169,7 @@
 
 		<!-- Game Instructions (countdown only) -->
 		{#if isCountdown}
-			<Card className="bg-muted/30 p-4">
+			<Card class="bg-muted/30 p-4">
 				<h3 class="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
 					<span>💡</span>
 					<span>Objectif</span>
@@ -202,7 +202,7 @@
 	</Dialog.Root>
 {:else}
 	<div class="flex min-h-[400px] items-center justify-center p-4">
-		<Card className="w-full max-w-md p-6 text-center">
+		<Card class="w-full max-w-md p-6 text-center">
 			<div class="mb-4 text-5xl">⏳</div>
 			<h2 class="mb-2 text-xl font-semibold text-foreground">Chargement de la partie...</h2>
 			<p class="text-sm text-muted-foreground">Veuillez patienter</p>

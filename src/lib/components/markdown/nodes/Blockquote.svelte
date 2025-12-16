@@ -43,7 +43,7 @@
 		return node.type === 'heading';
 	}
 
-	function isMathBlockNode(node: BlockNode): node is { type: 'math-block'; latex: string } {
+	function isMathBlockNode(node: BlockNode): node is { type: 'math-block'; expression: string; syntax: 'latex' | 'custom' } {
 		return node.type === 'math-block';
 	}
 
@@ -99,7 +99,7 @@
 		{:else if isHeadingNode(child)}
 			<HeadingNode level={child.level} children={child.children} />
 		{:else if isMathBlockNode(child)}
-			<MathBlock latex={child.latex} />
+			<MathBlock expression={child.expression} syntax={child.syntax} />
 		{:else if isListNode(child)}
 			<ListNode ordered={child.ordered} start={child.start} items={child.items} />
 		{:else if isTableNode(child)}

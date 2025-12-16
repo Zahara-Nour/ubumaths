@@ -201,7 +201,7 @@
 		<!-- Actions -->
 		<div class="mt-4 flex gap-2">
 			{#if canUse}
-				<ItemUseButton inventoryId={item.id} itemName={item.template.display_name} />
+				<ItemUseButton inventoryId={item.id} />
 			{/if}
 
 			{#if canEquip}

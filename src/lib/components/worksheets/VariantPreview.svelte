@@ -189,7 +189,7 @@
 		<!-- Controls -->
 		<div class="grid gap-4 md:grid-cols-3">
 			<div>
-				<label class="mb-2 block text-sm font-medium">Élève</label>
+				<span class="mb-2 block text-sm font-medium">Élève</span>
 				<MySelect
 					type="single"
 					bind:value={selectedStudentId}
@@ -199,9 +199,10 @@
 			</div>
 
 			<div>
-				<label class="mb-2 block text-sm font-medium">Seed personnalisé</label>
+				<label for="custom-seed" class="mb-2 block text-sm font-medium">Seed personnalisé</label>
 				<div class="flex gap-2">
 					<input
+						id="custom-seed"
 						type="number"
 						bind:value={customSeed}
 						placeholder="Auto"

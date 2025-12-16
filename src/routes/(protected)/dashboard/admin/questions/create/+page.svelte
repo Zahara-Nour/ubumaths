@@ -112,8 +112,7 @@
 					<Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
 				</div>
 			{:else if QuestionTemplateForm}
-				<svelte:component
-					this={QuestionTemplateForm}
+				<QuestionTemplateForm
 					onSave={handleSave}
 					onCancel={handleCancel}
 					{isSubmitting}

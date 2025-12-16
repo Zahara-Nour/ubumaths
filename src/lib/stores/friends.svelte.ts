@@ -1,5 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, FriendshipWithProfile, FriendshipType } from '$lib/types/database';
+import type {
+	Database,
+	FriendshipWithProfile,
+	FriendshipRelationType,
+	FriendshipStatus
+} from '$lib/types/database';
 import { presenceManager } from './presence.svelte';
 
 class FriendsManager {
@@ -104,8 +109,8 @@ class FriendsManager {
 
 					const enrichedFriendship: FriendshipWithProfile = {
 						id: friendship.id,
-						status: friendship.status as FriendshipType,
-						friendship_type: friendship.friendship_type as FriendshipType,
+						status: friendship.status as FriendshipStatus,
+						friendship_type: friendship.friendship_type as FriendshipRelationType,
 						created_at: friendship.created_at,
 						updated_at: friendship.updated_at,
 						requester_id: friendship.requester_id,
@@ -152,7 +157,10 @@ class FriendsManager {
 	/**
 	 * Send a friend request
 	 */
-	async sendFriendRequest(friendId: string, friendshipType: FriendshipType): Promise<boolean> {
+	async sendFriendRequest(
+		friendId: string,
+		friendshipType: FriendshipRelationType
+	): Promise<boolean> {
 		if (!this.supabase || !this.currentUserId) {
 			console.error('Friends manager not initialized');
 			return false;

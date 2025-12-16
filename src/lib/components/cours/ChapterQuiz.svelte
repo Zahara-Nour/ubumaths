@@ -9,7 +9,11 @@
 	@module components/cours/ChapterQuiz
 -->
 <script lang="ts">
-	import type { ChapterQuizQuestion as _ChapterQuizQuestion } from '$lib/types/chapters';
+	import type {
+		ChapterQuizQuestion,
+		ChapterQuizResult,
+		ChapterProgress
+	} from '$lib/types/chapters';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
@@ -19,22 +23,33 @@
 	import QuizQuestion from './QuizQuestion.svelte';
 	import QuizSummary from './QuizSummary.svelte';
 
-	// Props
-	interface QuizQuestionWithDetails {
+	// Question with results from data
+	type QuizQuestionWithResult = ChapterQuizQuestion & {
+		bestResult: ChapterQuizResult | null;
+		attemptsCount: number;
+	};
+
+	// Question template from data
+	interface QuestionTemplate {
 		id: string;
-		statement: string;
-		choices?: string[];
-		explanation?: string;
-		correctAnswer: boolean | number; // true/false for T/F, index for multiple choice
+		question: string;
+		answer: boolean;
+		explanation: string | null;
 	}
 
 	interface Props {
-		questions: QuizQuestionWithDetails[];
-		chapterId: string;
+		questions: QuizQuestionWithResult[];
+		questionTemplates: Record<string, QuestionTemplate>;
+		progress: ChapterProgress;
 		onComplete?: (score: number, total: number) => void;
 	}
 
-	let { questions, chapterId: _chapterId, onComplete }: Props = $props();
+	let { questions, questionTemplates, progress: _progress, onComplete }: Props = $props();
+
+	// Filter questions to only those with templates
+	const validQuestions = $derived(
+		questions.filter((q) => questionTemplates[q.questionTemplateId])
+	);
 
 	// Quiz state
 	let currentIndex = $state(0);
@@ -46,8 +61,11 @@
 	let isSubmitting = $state(false);
 
 	// Derived values
-	const currentQuestion = $derived(questions[currentIndex]);
-	const totalQuestions = $derived(questions.length);
+	const currentQuestion = $derived(validQuestions[currentIndex]);
+	const currentTemplate = $derived(
+		currentQuestion ? questionTemplates[currentQuestion.questionTemplateId] : null
+	);
+	const totalQuestions = $derived(validQuestions.length);
 	const progressPercent = $derived(
 		Math.round(((currentIndex + (showFeedback ? 1 : 0)) / totalQuestions) * 100)
 	);
@@ -56,28 +74,19 @@
 
 	// Initialize answers array
 	$effect(() => {
-		if (answers.length !== questions.length) {
-			answers = questions.map(() => null);
+		if (answers.length !== validQuestions.length) {
+			answers = validQuestions.map(() => null);
 		}
 	});
 
 	// Handle answer submission
-	async function handleAnswer(isCorrect: boolean) {
-		if (showFeedback || isSubmitting) return;
+	async function handleAnswer(userAnswer: boolean) {
+		if (showFeedback || isSubmitting || !currentTemplate) return;
 
 		isSubmitting = true;
 
-		// Calculate if user's answer matches the correct answer
-		const question = currentQuestion;
-		let userAnswerCorrect = false;
-
-		if (typeof question.correctAnswer === 'boolean') {
-			// True/False question
-			userAnswerCorrect = isCorrect === question.correctAnswer;
-		} else {
-			// Multiple choice - isCorrect here means they selected index 0
-			userAnswerCorrect = isCorrect;
-		}
+		// Calculate if user's answer matches the correct answer from template
+		const userAnswerCorrect = userAnswer === currentTemplate.answer;
 
 		// Update state
 		lastAnswerCorrect = userAnswerCorrect;
@@ -89,7 +98,7 @@
 
 		// Submit to API
 		try {
-			await submitAnswer(question.id, userAnswerCorrect);
+			await submitAnswer(currentQuestion.id, userAnswerCorrect);
 		} catch (error) {
 			console.error('Failed to submit quiz answer:', error);
 			// Continue anyway - we don't want to block the user
@@ -141,7 +150,7 @@
 	function restart() {
 		currentIndex = 0;
 		score = 0;
-		answers = questions.map(() => null);
+		answers = validQuestions.map(() => null);
 		showFeedback = false;
 		lastAnswerCorrect = false;
 		isComplete = false;
@@ -175,16 +184,17 @@
 
 			<Card.Content class="pt-2">
 				<!-- Question display -->
-				<QuizQuestion
-					question={{
-						statement: currentQuestion.statement,
-						choices: currentQuestion.choices,
-						explanation: currentQuestion.explanation
-					}}
-					onAnswer={handleAnswer}
-					{showFeedback}
-					wasCorrect={lastAnswerCorrect}
-				/>
+				{#if currentTemplate}
+					<QuizQuestion
+						question={{
+							statement: currentTemplate.question,
+							explanation: currentTemplate.explanation ?? undefined
+						}}
+						onAnswer={handleAnswer}
+						{showFeedback}
+						wasCorrect={lastAnswerCorrect}
+					/>
+				{/if}
 			</Card.Content>
 
 			<Card.Footer class="flex justify-between">
@@ -216,7 +226,7 @@
 
 		<!-- Question dots indicator -->
 		<div class="mt-4 flex justify-center gap-2">
-			{#each questions as _, index (index)}
+			{#each validQuestions as _, index (index)}
 				{@const isAnswered = answers[index] !== null}
 				{@const isCurrent = index === currentIndex}
 				{@const wasCorrect = answers[index] === true}

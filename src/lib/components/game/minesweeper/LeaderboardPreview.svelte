@@ -81,11 +81,9 @@
 				{/each}
 			</ol>
 
-			<Button asChild variant="outline" size="sm" class="w-full">
-				<a href="/games/minesweeper/leaderboard?difficulty={difficulty}">
-					Voir le classement complet
-					<span class="ml-2" aria-hidden="true">→</span>
-				</a>
+			<Button href="/games/minesweeper/leaderboard?difficulty={difficulty}" variant="outline" size="sm" class="w-full">
+				Voir le classement complet
+				<span class="ml-2" aria-hidden="true">→</span>
 			</Button>
 		{/if}
 

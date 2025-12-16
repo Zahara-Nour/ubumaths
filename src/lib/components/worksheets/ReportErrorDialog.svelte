@@ -112,7 +112,7 @@
 				<Label>Description de l'erreur</Label>
 				<RichTextEditor
 					mode="form"
-					bind:value={htmlValue}
+					bind:htmlValue
 					bind:jsonValue
 					mathTemplates="basic"
 					minHeight="150px"

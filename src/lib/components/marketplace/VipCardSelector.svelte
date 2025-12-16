@@ -63,7 +63,7 @@
 
 		return Array.from(groups.values()).sort((a, b) => {
 			// Sort by rarity (legendary first) then by name
-			const rarityOrder = { legendary: 0, epic: 1, rare: 2, common: 3 };
+			const rarityOrder: Record<string, number> = { legendary: 0, epic: 1, rare: 2, common: 3 };
 			const rarityDiff = rarityOrder[a.template.rarity] - rarityOrder[b.template.rarity];
 			if (rarityDiff !== 0) return rarityDiff;
 			return a.template.name.localeCompare(b.template.name);
@@ -74,7 +74,7 @@
 	let selectedCountPerTemplate = $derived(() => {
 		const counts = new Map<string, number>();
 		for (const cardId of selectedCardIds) {
-			const card = cards.find((c) => c.id === cardId);
+			const card = cards.find((c: { id: string; template_id: string }) => c.id === cardId);
 			if (card) {
 				const count = counts.get(card.template_id) || 0;
 				counts.set(card.template_id, count + 1);
@@ -93,14 +93,14 @@
 		if (availableCards.length === 0) return;
 
 		// Get currently selected cards from this template
-		const selectedFromTemplate = selectedCardIds.filter((id) => {
-			const card = cards.find((c) => c.id === id);
+		const selectedFromTemplate = selectedCardIds.filter((id: string) => {
+			const card = cards.find((c: { id: string; template_id: string }) => c.id === id);
 			return card?.template_id === templateId;
 		});
 
 		if (selectedFromTemplate.length > 0) {
 			// Deselect all cards from this template
-			selectedCardIds = selectedCardIds.filter((id) => !selectedFromTemplate.includes(id));
+			selectedCardIds = selectedCardIds.filter((id: string) => !selectedFromTemplate.includes(id));
 		} else {
 			// Select one (or all if multiple) card from this template
 			if (mode === 'single') {
@@ -127,8 +127,8 @@
 		const newCount = Math.max(0, Math.min(availableCards.length, currentCount + delta));
 
 		// Remove all current selections for this template
-		const otherSelections = selectedCardIds.filter((id) => {
-			const card = cards.find((c) => c.id === id);
+		const otherSelections = selectedCardIds.filter((id: string) => {
+			const card = cards.find((c: { id: string; template_id: string }) => c.id === id);
 			return card?.template_id !== templateId;
 		});
 
@@ -173,16 +173,23 @@
 				: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
 		)}
 	>
-		{#each groupedCards() as group (group.template_id)}
+		{#each groupedCards() as group (group.template.id)}
 			{@const selectedCount = selectedCountPerTemplate().get(group.template.id) || 0}
 			{@const isDisabled =
 				group.availableCount === 0 ||
 				(maxSelection && selectedCardIds.length >= maxSelection && selectedCount === 0)}
 
-			<button
-				type="button"
-				onclick={() => toggleCardSelection(group.template.id)}
-				disabled={isDisabled}
+			<div
+				role="button"
+				tabindex={isDisabled ? -1 : 0}
+				onclick={() => !isDisabled && toggleCardSelection(group.template.id)}
+				onkeydown={(e) => {
+					if ((e.key === 'Enter' || e.key === ' ') && !isDisabled) {
+						e.preventDefault();
+						toggleCardSelection(group.template.id);
+					}
+				}}
+				aria-disabled={isDisabled}
 				class={cn(
 					'relative rounded-lg border transition-all',
 					compact ? 'p-2' : 'p-3',
@@ -313,7 +320,7 @@
 						<Lock class="h-3 w-3 text-muted-foreground" />
 					</div>
 				{/if}
-			</button>
+			</div>
 		{/each}
 	</div>
 

@@ -156,6 +156,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			},
 			rewards: {
 				gidouilles: 0,
+				bonus: 0,
 				vip_cards: {}
 			}
 		};

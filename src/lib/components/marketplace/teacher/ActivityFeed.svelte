@@ -28,7 +28,10 @@
 		total_gidouilles?: number;
 		total_cards?: number;
 		partner_name?: string;
-		[key: string]: unknown;
+		initiator_gidouilles?: number;
+		partner_gidouilles?: number;
+		initiator_cards_count?: number;
+		partner_cards_count?: number;
 	}
 
 	interface Activity {
@@ -248,10 +251,10 @@
 			{#if isLoading && activities.length === 0}
 				{#each Array(5) as _, i (i)}
 					<div class="flex animate-pulse gap-3 p-3">
-						<div class="h-10 w-10 rounded-full bg-gray-200" />
+						<div class="h-10 w-10 rounded-full bg-gray-200"></div>
 						<div class="flex-1 space-y-2">
-							<div class="h-4 w-48 rounded bg-gray-200" />
-							<div class="h-3 w-32 rounded bg-gray-200" />
+							<div class="h-4 w-48 rounded bg-gray-200"></div>
+							<div class="h-3 w-32 rounded bg-gray-200"></div>
 						</div>
 					</div>
 				{/each}
@@ -295,13 +298,13 @@
 								<!-- Additional details based on type -->
 								{#if activity.type === 'listing' && activity.details}
 									<div class="flex gap-4 text-xs text-muted-foreground">
-										{#if activity.details.offered_gidouilles > 0}
+										{#if (activity.details.offered_gidouilles ?? 0) > 0}
 											<span class="flex items-center gap-1">
 												<Coins class="h-3 w-3" />
 												{activity.details.offered_gidouilles} offerts
 											</span>
 										{/if}
-										{#if activity.details.wanted_gidouilles > 0}
+										{#if (activity.details.wanted_gidouilles ?? 0) > 0}
 											<span class="flex items-center gap-1">
 												<Coins class="h-3 w-3" />
 												{activity.details.wanted_gidouilles} demandés
@@ -312,18 +315,18 @@
 
 								{#if activity.type === 'trade_completed' && activity.details}
 									<div class="flex gap-4 text-xs">
-										{#if activity.details.initiator_gidouilles > 0 || activity.details.partner_gidouilles > 0}
+										{#if (activity.details.initiator_gidouilles ?? 0) > 0 || (activity.details.partner_gidouilles ?? 0) > 0}
 											<span class="flex items-center gap-1 text-green-600">
 												<Coins class="h-3 w-3" />
-												{activity.details.initiator_gidouilles +
-													activity.details.partner_gidouilles} gidouilles
+												{(activity.details.initiator_gidouilles ?? 0) +
+													(activity.details.partner_gidouilles ?? 0)} gidouilles
 											</span>
 										{/if}
-										{#if activity.details.initiator_cards_count > 0 || activity.details.partner_cards_count > 0}
+										{#if (activity.details.initiator_cards_count ?? 0) > 0 || (activity.details.partner_cards_count ?? 0) > 0}
 											<span class="flex items-center gap-1 text-blue-600">
 												<Package class="h-3 w-3" />
-												{activity.details.initiator_cards_count +
-													activity.details.partner_cards_count} cartes
+												{(activity.details.initiator_cards_count ?? 0) +
+													(activity.details.partner_cards_count ?? 0)} cartes
 											</span>
 										{/if}
 									</div>

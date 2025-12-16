@@ -143,7 +143,6 @@
 	onmousedown={handleMouseDown}
 	oncontextmenu={handleRightClick}
 	onkeydown={handleKeyDown}
-	role="button"
 	aria-label={ariaLabel}
 	aria-pressed={isRevealed}
 	tabindex={disabled ? -1 : 0}

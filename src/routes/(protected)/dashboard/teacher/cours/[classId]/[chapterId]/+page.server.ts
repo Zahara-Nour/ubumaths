@@ -217,7 +217,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 					}
 				: null;
 		})
-		.filter(Boolean);
+		.filter((s): s is { id: string; name: string; avatar: string | null } => s !== null);
 
 	// Check if chapter has template instantiation
 	const { data: templateInstantiation } = await checkForTemplateUpdates(chapterId, locals.supabase);

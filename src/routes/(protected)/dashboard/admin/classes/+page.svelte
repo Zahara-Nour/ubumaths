@@ -173,7 +173,7 @@
 		<div class="flex flex-wrap items-end gap-6">
 			<!-- School Filter -->
 			<div>
-				<label class="mb-2 block text-sm font-medium text-foreground"> Filtrer par école </label>
+				<span class="mb-2 block text-sm font-medium text-foreground">Filtrer par école</span>
 				<MySelect
 					type="single"
 					bind:value={selectedSchool}
@@ -475,7 +475,7 @@
 
 							<!-- School -->
 							<div>
-								<label class="mb-1 block text-sm font-medium text-foreground"> École </label>
+								<span class="mb-1 block text-sm font-medium text-foreground">École</span>
 								<input type="hidden" name="school_id" value={formData.school_id} />
 								<MySelect
 									type="single"
@@ -488,7 +488,7 @@
 
 							<!-- Teacher -->
 							<div>
-								<label class="mb-1 block text-sm font-medium text-foreground"> Enseignant * </label>
+								<span class="mb-1 block text-sm font-medium text-foreground">Enseignant *</span>
 								<input type="hidden" name="teacher_id" value={formData.teacher_id} />
 								<MySelect
 									type="single"

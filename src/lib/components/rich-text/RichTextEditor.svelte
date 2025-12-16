@@ -269,62 +269,65 @@
 	/**
 	 * Initialize TipTap Editor
 	 */
-	onMount(async () => {
+	onMount(() => {
 		if (!editorElement) return;
 
-		// Disable MathLive sounds globally (client-side only)
-		const { MathfieldElement } = await import('mathlive');
-		MathfieldElement.soundsDirectory = null;
+		// Async initialization wrapped in an IIFE
+		(async () => {
+			// Disable MathLive sounds globally (client-side only)
+			const { MathfieldElement } = await import('mathlive');
+			MathfieldElement.soundsDirectory = null;
 
-		const extensions = createEditorExtensions({ headingLevels: 6 });
-		const editorProps = getEditorProps({ minHeight });
+			const extensions = createEditorExtensions({ headingLevels: 6 });
+			const editorProps = getEditorProps({ minHeight });
 
-		// Prevent reactive updates during initialization
-		isUpdatingFromProp = true;
+			// Prevent reactive updates during initialization
+			isUpdatingFromProp = true;
 
-		// TipTap accepts both HTML string and JSON object for content
-		// Priority: markdownValue > jsonValue (if object) > htmlValue (if string) > empty
-		const initialContent =
-			mode === 'form'
-				? markdownValue !== undefined
-					? markdownToTipTap(markdownValue)
-					: jsonValue && typeof jsonValue === 'object'
-						? jsonValue
-						: htmlValue || ''
-				: '';
+			// TipTap accepts both HTML string and JSON object for content
+			// Priority: markdownValue > jsonValue (if object) > htmlValue (if string) > empty
+			const initialContent =
+				mode === 'form'
+					? markdownValue !== undefined
+						? markdownToTipTap(markdownValue)
+						: jsonValue && typeof jsonValue === 'object'
+							? jsonValue
+							: htmlValue || ''
+					: '';
 
-		editor = new Editor({
-			element: editorElement,
-			extensions,
-			content: initialContent,
-			editorProps,
-			editable: !disabled,
-			onUpdate: ({ editor: ed }) => {
-				if (isUpdatingFromProp) return;
+			editor = new Editor({
+				element: editorElement,
+				extensions,
+				content: initialContent,
+				editorProps,
+				editable: !disabled,
+				onUpdate: ({ editor: ed }) => {
+					if (isUpdatingFromProp) return;
 
-				// Update bound values in form mode
-				if (mode === 'form') {
-					htmlValue = ed.getHTML();
-					if (jsonValue !== undefined) {
-						jsonValue = ed.getJSON();
+					// Update bound values in form mode
+					if (mode === 'form') {
+						htmlValue = ed.getHTML();
+						if (jsonValue !== undefined) {
+							jsonValue = ed.getJSON();
+						}
+						// Update markdown binding (debounced) - only if bound
+						if (markdownValue !== undefined) {
+							updateMarkdownDebounced();
+						}
 					}
-					// Update markdown binding (debounced) - only if bound
-					if (markdownValue !== undefined) {
-						updateMarkdownDebounced();
-					}
+					updateFormattingState();
+					updatePreviewDebounced();
+				},
+				onSelectionUpdate: () => {
+					updateFormattingState();
 				}
-				updateFormattingState();
-				updatePreviewDebounced();
-			},
-			onSelectionUpdate: () => {
-				updateFormattingState();
-			}
-		});
+			});
 
-		// Allow reactive updates after initialization
-		isUpdatingFromProp = false;
+			// Allow reactive updates after initialization
+			isUpdatingFromProp = false;
 
-		updateFormattingState();
+			updateFormattingState();
+		})();
 
 		return () => {
 			if (previewTimeout) {
@@ -435,14 +438,14 @@
 	 * Insert Math Formulas using custom commands
 	 */
 	function insertMathInline(latex: string = '') {
-		// @ts-expect-error - Custom Tiptap command from math extension
-		editor?.commands.insertMathInline(latex);
+		// Custom Tiptap command from math extension
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertMathInline?.(latex);
 		editor?.commands.focus();
 	}
 
 	function insertMathBlock(latex: string = '') {
-		// @ts-expect-error - Custom Tiptap command from math extension
-		editor?.commands.insertMathBlock(latex);
+		// Custom Tiptap command from math extension
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertMathBlock?.(latex);
 		editor?.commands.focus();
 	}
 
@@ -511,26 +514,26 @@
 	 * Insert Template Elements using custom commands
 	 */
 	function insertVariable() {
-		// @ts-expect-error - Custom Tiptap command from template extension
-		editor?.commands.insertTemplateVariable('var');
+		// Custom Tiptap command from template extension
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertTemplateVariable?.('var');
 		editor?.commands.focus();
 	}
 
 	function insertRandom() {
-		// @ts-expect-error - Custom Tiptap command from template extension
-		editor?.commands.insertTemplateRandom('1..10');
+		// Custom Tiptap command from template extension
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertTemplateRandom?.('1..10');
 		editor?.commands.focus();
 	}
 
 	function insertEval() {
-		// @ts-expect-error - Custom Tiptap command from template extension
-		editor?.commands.insertTemplateEval('a+b');
+		// Custom Tiptap command from template extension
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertTemplateEval?.('a+b');
 		editor?.commands.focus();
 	}
 
 	function insertBlank() {
-		// @ts-expect-error - Custom Tiptap command from blank extension
-		editor?.commands.insertBlankField('?');
+		// Custom Tiptap command from blank extension
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertBlankField?.('?');
 		editor?.commands.focus();
 	}
 
@@ -584,19 +587,31 @@
 
 			if (imageNode && imageNode.type === 'image') {
 				// Insert image with all attributes using TipTap's setImage command
+				// Use type assertion for custom image attributes not in the base type
 				editor
 					.chain()
 					.focus()
 					.setImage({
 						src: imageNode.src,
 						alt: imageNode.alt || '',
-						title: imageNode.title || undefined,
+						title: imageNode.title || undefined
+					} as Parameters<typeof editor.commands.setImage>[0] & {
+						sizeClass?: string;
+						widthPercent?: number;
+						alignment?: string;
+						caption?: string;
+					})
+					.run();
+
+				// If we have custom attributes, update the node
+				if (imageNode.sizeClass || imageNode.widthPercent || imageNode.alignment || imageNode.caption) {
+					editor.commands.updateAttributes('image', {
 						sizeClass: imageNode.sizeClass || undefined,
 						widthPercent: imageNode.widthPercent || undefined,
 						alignment: imageNode.alignment || undefined,
 						caption: imageNode.caption || undefined
-					})
-					.run();
+					});
+				}
 			}
 		} catch (err) {
 			console.error('Error parsing image markdown:', err);

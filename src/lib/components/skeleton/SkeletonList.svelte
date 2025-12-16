@@ -5,6 +5,14 @@
 	List/Table skeleton with header and rows.
 	Perfect for pages showing lists, tables, or search results.
 -->
+<script lang="ts">
+	interface Props {
+		itemCount?: number;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let { itemCount = 8 }: Props = $props();
+</script>
 
 <div class="animate-in fade-in space-y-6 duration-300">
 	<!-- Page header with actions -->

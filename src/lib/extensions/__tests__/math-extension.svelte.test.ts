@@ -66,15 +66,15 @@ interface MathNodeJSON {
 		syntax?: 'latex' | 'custom';
 		originalExpression?: string;
 	};
+	content?: MathNodeJSON[];
 }
 
 /**
  * Type guard for document JSON structure
  */
 interface DocumentJSON {
-	content?: Array<{
-		content?: MathNodeJSON[];
-	}>;
+	type?: string;
+	content?: MathNodeJSON[];
 }
 
 // ============================================================================
@@ -484,7 +484,6 @@ describe('Math HTML Parsing', () => {
 describe('Math Commands', () => {
 	it('should support insertMathInline with explicit syntax parameter', () => {
 		const editor = createTestEditor('<p></p>');
-		// @ts-expect-error - Testing new API signature not yet typed
 		editor.commands.insertMathInline('x^2', 'custom', 'x^2');
 
 		const json = getJSON(editor) as DocumentJSON;
@@ -499,7 +498,6 @@ describe('Math Commands', () => {
 
 	it('should support insertMathBlock with explicit syntax parameter', () => {
 		const editor = createTestEditor('<p></p>');
-		// @ts-expect-error - Testing new API signature not yet typed
 		editor.commands.insertMathBlock('\\sqrt{16}', 'custom', 'sqrt(16)');
 
 		const json = getJSON(editor) as DocumentJSON;

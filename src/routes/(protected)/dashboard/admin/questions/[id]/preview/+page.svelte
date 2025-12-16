@@ -262,7 +262,7 @@ TEMPLATE - PAGE LAYOUT
 					<div class="flex justify-between">
 						<span class="text-muted-foreground">Réponse attendue:</span>
 						<code class="max-w-md truncate">
-							{JSON.stringify(instance.answer)}
+							{JSON.stringify(instance.solution)}
 						</code>
 					</div>
 					{#if instance.resolvedVariables && Object.keys(instance.resolvedVariables).length > 0}

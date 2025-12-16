@@ -112,7 +112,7 @@
 			// Create workspace options
 			const options: Blockly.BlocklyOptions = {
 				...DEFAULT_WORKSPACE_OPTIONS,
-				toolbox: toolbox as Blockly.utils.toolbox.ToolboxDefinition,
+				toolbox: toolbox as unknown as Blockly.utils.toolbox.ToolboxDefinition,
 				readOnly: readonly,
 				// Use custom theme with black category text, or provided theme
 				theme: theme ?? UBUMATHS_THEME

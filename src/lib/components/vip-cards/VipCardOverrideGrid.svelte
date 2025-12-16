@@ -1,9 +1,7 @@
 <script lang="ts">
-	import type { Database } from '$lib/types/database';
+	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 	import VipCardOverrideToggle from './VipCardOverrideToggle.svelte';
 	import { rarityLabel } from './utils';
-
-	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
 
 	interface Props {
 		templates: VipCardTemplate[];

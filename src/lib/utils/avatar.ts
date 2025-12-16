@@ -67,10 +67,11 @@ export function getAvatarInitials(firstname: string | null, lastname: string | n
  * @returns Avatar URL string or empty string for fallback to initials
  */
 export function getAvatarUrl(
-	profile: {
-		avatar_url: string | null;
-		role?: UserRole;
-		gender?: Gender | null;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	profile: Record<string, any> & {
+		avatar_url?: string | null;
+		role?: string | null;
+		gender?: string | null;
 	},
 	user?: {
 		user_metadata?: {
@@ -95,8 +96,9 @@ export function getAvatarUrl(
 	}
 
 	// 4. Role/gender-based default avatar
+	// Cast to expected types - runtime validation done by getAvatarFallback
 	if (profile.role && profile.gender !== undefined) {
-		return getAvatarFallback(profile.role, profile.gender);
+		return getAvatarFallback(profile.role as UserRole, profile.gender as Gender | null);
 	}
 
 	// 5. Empty string (triggers Avatar.Fallback for initials)

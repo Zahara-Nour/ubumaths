@@ -285,10 +285,4 @@
 			opacity: 0.5;
 		}
 	}
-
-	.animate-fade-in-pulse {
-		animation:
-			fade-in-pulse 0.8s ease-out,
-			pulse 2s ease-in-out 0.8s infinite;
-	}
 </style>
