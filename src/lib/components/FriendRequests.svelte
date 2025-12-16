@@ -60,9 +60,7 @@
 							<!-- Avatar -->
 							<Avatar.Root class="size-10">
 								<Avatar.Image
-									src={request.friend_profile
-										? getAvatarUrl(request.friend_profile)
-										: undefined}
+									src={request.friend_profile ? getAvatarUrl(request.friend_profile) : undefined}
 									alt={friendsManager.getDisplayName(request)}
 								/>
 								<Avatar.Fallback>
@@ -128,9 +126,7 @@
 							<!-- Avatar -->
 							<Avatar.Root class="size-10">
 								<Avatar.Image
-									src={request.friend_profile
-										? getAvatarUrl(request.friend_profile)
-										: undefined}
+									src={request.friend_profile ? getAvatarUrl(request.friend_profile) : undefined}
 									alt={friendsManager.getDisplayName(request)}
 								/>
 								<Avatar.Fallback>

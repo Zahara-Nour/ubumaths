@@ -81,7 +81,12 @@
 				{/each}
 			</ol>
 
-			<Button href="/games/minesweeper/leaderboard?difficulty={difficulty}" variant="outline" size="sm" class="w-full">
+			<Button
+				href="/games/minesweeper/leaderboard?difficulty={difficulty}"
+				variant="outline"
+				size="sm"
+				class="w-full"
+			>
 				Voir le classement complet
 				<span class="ml-2" aria-hidden="true">→</span>
 			</Button>

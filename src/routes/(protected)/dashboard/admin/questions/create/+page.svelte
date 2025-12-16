@@ -112,11 +112,7 @@
 					<Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
 				</div>
 			{:else if QuestionTemplateForm}
-				<QuestionTemplateForm
-					onSave={handleSave}
-					onCancel={handleCancel}
-					{isSubmitting}
-				/>
+				<QuestionTemplateForm onSave={handleSave} onCancel={handleCancel} {isSubmitting} />
 			{/if}
 		</Card.Content>
 	</Card.Root>

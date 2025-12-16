@@ -379,7 +379,9 @@
 							<div>
 								<span class="text-sm font-medium">Solution Type:</span>
 								<Badge variant="outline" class="ml-2">
-									{Array.isArray((currentInstance as QuestionInstance).solution) ? 'Array' : 'String'}
+									{Array.isArray((currentInstance as QuestionInstance).solution)
+										? 'Array'
+										: 'String'}
 								</Badge>
 							</div>
 						</div>

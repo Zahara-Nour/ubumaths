@@ -457,7 +457,9 @@
 									<div class="flex flex-wrap gap-1">
 										{#if exercise.grade_levels && exercise.grade_levels.length > 0}
 											{#each exercise.grade_levels.slice(0, 3) as grade (grade)}
-												<Badge variant="secondary" class="text-xs">{formatGradeShort(grade as GradeCode)}</Badge>
+												<Badge variant="secondary" class="text-xs"
+													>{formatGradeShort(grade as GradeCode)}</Badge
+												>
 											{/each}
 											{#if exercise.grade_levels.length > 3}
 												<Badge variant="secondary" class="text-xs">

@@ -246,9 +246,7 @@
 
 			const result = await response.json();
 			const uploadItemId = uploadingImageItem!.id;
-			items = items.map((i) =>
-				i.id === uploadItemId ? { ...i, icon_url: result.icon_url } : i
-			);
+			items = items.map((i) => (i.id === uploadItemId ? { ...i, icon_url: result.icon_url } : i));
 
 			toaster.success('Image mise à jour');
 			uploadingImageItem = null;

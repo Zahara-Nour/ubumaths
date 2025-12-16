@@ -211,7 +211,10 @@
 		} else if (tempActionType === 'choose_card') {
 			return { type: 'choose_card', count: tempActionValue };
 		} else if (tempActionType === 'exchange_cards') {
-			return { type: 'exchange_cards', exchange: { mode: 'replace_random', count: tempActionValue } };
+			return {
+				type: 'exchange_cards',
+				exchange: { mode: 'replace_random', count: tempActionValue }
+			};
 		}
 		return null;
 	}

@@ -47,9 +47,7 @@
 	let { questions, questionTemplates, progress: _progress, onComplete }: Props = $props();
 
 	// Filter questions to only those with templates
-	const validQuestions = $derived(
-		questions.filter((q) => questionTemplates[q.questionTemplateId])
-	);
+	const validQuestions = $derived(questions.filter((q) => questionTemplates[q.questionTemplateId]));
 
 	// Quiz state
 	let currentIndex = $state(0);

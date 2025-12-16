@@ -439,13 +439,17 @@
 	 */
 	function insertMathInline(latex: string = '') {
 		// Custom Tiptap command from math extension
-		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertMathInline?.(latex);
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertMathInline?.(
+			latex
+		);
 		editor?.commands.focus();
 	}
 
 	function insertMathBlock(latex: string = '') {
 		// Custom Tiptap command from math extension
-		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertMathBlock?.(latex);
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertMathBlock?.(
+			latex
+		);
 		editor?.commands.focus();
 	}
 
@@ -515,25 +519,33 @@
 	 */
 	function insertVariable() {
 		// Custom Tiptap command from template extension
-		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertTemplateVariable?.('var');
+		(
+			editor?.commands as unknown as Record<string, (arg?: string) => boolean>
+		).insertTemplateVariable?.('var');
 		editor?.commands.focus();
 	}
 
 	function insertRandom() {
 		// Custom Tiptap command from template extension
-		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertTemplateRandom?.('1..10');
+		(
+			editor?.commands as unknown as Record<string, (arg?: string) => boolean>
+		).insertTemplateRandom?.('1..10');
 		editor?.commands.focus();
 	}
 
 	function insertEval() {
 		// Custom Tiptap command from template extension
-		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertTemplateEval?.('a+b');
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertTemplateEval?.(
+			'a+b'
+		);
 		editor?.commands.focus();
 	}
 
 	function insertBlank() {
 		// Custom Tiptap command from blank extension
-		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertBlankField?.('?');
+		(editor?.commands as unknown as Record<string, (arg?: string) => boolean>).insertBlankField?.(
+			'?'
+		);
 		editor?.commands.focus();
 	}
 
@@ -604,7 +616,12 @@
 					.run();
 
 				// If we have custom attributes, update the node
-				if (imageNode.sizeClass || imageNode.widthPercent || imageNode.alignment || imageNode.caption) {
+				if (
+					imageNode.sizeClass ||
+					imageNode.widthPercent ||
+					imageNode.alignment ||
+					imageNode.caption
+				) {
 					editor.commands.updateAttributes('image', {
 						sizeClass: imageNode.sizeClass || undefined,
 						widthPercent: imageNode.widthPercent || undefined,
