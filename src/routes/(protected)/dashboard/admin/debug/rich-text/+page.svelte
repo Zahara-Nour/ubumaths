@@ -286,6 +286,34 @@ variation: f(x)
   +inf: 0, top
 \`\`\`
 
+Tableau complet avec deux lignes de signes :
+
+\`\`\`variation
+variable: x
+domain: -inf, -1, 0, 2, +inf
+
+sign: f'(x)
+  -inf,-1: +
+  -1: 0
+  -1,0: -
+  0: 0
+  0,2: -
+  2: 0
+  2,+inf: +
+
+sign: f''(x)
+  -inf,0: +
+  0: 0
+  0,+inf: -
+
+variation: f(x)
+  -inf: -inf, bottom
+  -1: 4, top
+  0: 2, center
+  2: -2, bottom
+  +inf: +inf, top
+\`\`\`
+
 ## Hashtags et Mentions
 
 Hashtag simple : #mathematiques

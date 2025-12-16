@@ -618,21 +618,8 @@ export const MathBlock = Node.create({
 			// Create MathLive field
 			const mathfield = document.createElement('math-field') as MathFieldElement;
 
-			// Helper to add \displaystyle prefix for display mode rendering
-			const toDisplayStyle = (latex: string) => {
-				if (!latex) return latex;
-				// Don't double-add if already present
-				if (latex.startsWith('\\displaystyle')) return latex;
-				return `\\displaystyle ${latex}`;
-			};
-
-			// Helper to remove \displaystyle prefix for storage
-			const fromDisplayStyle = (latex: string) => {
-				return latex.replace(/^\\displaystyle\s*/, '');
-			};
-
-			// Set initial value with displaystyle for proper fraction rendering
-			mathfield.value = toDisplayStyle(node.attrs.latex as string);
+			// Set initial value
+			mathfield.value = node.attrs.latex as string;
 
 			// Store mathfield reference on DOM for keyboard navigation plugin
 			(dom as unknown as HTMLElement & { mathfield: MathFieldElement }).mathfield = mathfield;

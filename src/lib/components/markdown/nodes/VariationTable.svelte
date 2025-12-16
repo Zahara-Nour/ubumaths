@@ -37,6 +37,17 @@
 
 	let { node, class: className = '' }: Props = $props();
 
+	/**
+	 * Convert expression to proper LaTeX for MathLive rendering
+	 * Handles infinity symbols and other common patterns
+	 */
+	function toLatex(expr: string): string {
+		return expr
+			.replace(/\+inf/g, '+\\infty')
+			.replace(/-inf/g, '-\\infty')
+			.replace(/^inf$/g, '\\infty');
+	}
+
 	// Separate sign rows from variation rows
 	let signRows = $derived(node.rows.filter((row): row is SignRow => row.type === 'sign'));
 	let variationRows = $derived(
@@ -66,6 +77,16 @@
 	}
 
 	/**
+	 * Get the order (vertical position) for a value or limit expression
+	 * +inf = top (3), -inf = bottom (1), other = center (2)
+	 */
+	function getExpressionOrder(expr: string): number {
+		if (expr.includes('+inf') || expr === 'inf') return 3;
+		if (expr.includes('-inf')) return 1;
+		return 2;
+	}
+
+	/**
 	 * Determine arrow direction between two variation values
 	 * Returns 'up' for ascending, 'down' for descending, or null if undetermined
 	 */
@@ -79,8 +100,7 @@
 
 		if (!fromValue || !toValue) return null;
 
-		// Compare positions: top > center > bottom
-		// Also handle limit positions
+		// Position order: top > center > bottom
 		const positionOrder: Record<string, number> = {
 			top: 3,
 			'limit-top': 3,
@@ -89,8 +109,23 @@
 			'limit-bottom': 1
 		};
 
-		const fromOrder = positionOrder[fromValue.position];
-		const toOrder = positionOrder[toValue.position];
+		// Determine the "from" order
+		let fromOrder: number;
+		if (fromValue.marker === 'asymptote' && fromValue.limits) {
+			// Leaving an asymptote: use the RIGHT limit (limits[1])
+			fromOrder = getExpressionOrder(fromValue.limits[1]);
+		} else {
+			fromOrder = positionOrder[fromValue.position];
+		}
+
+		// Determine the "to" order
+		let toOrder: number;
+		if (toValue.marker === 'asymptote' && toValue.limits) {
+			// Approaching an asymptote: use the LEFT limit (limits[0])
+			toOrder = getExpressionOrder(toValue.limits[0]);
+		} else {
+			toOrder = positionOrder[toValue.position];
+		}
 
 		if (toOrder > fromOrder) return 'up';
 		if (toOrder < fromOrder) return 'down';
@@ -99,9 +134,14 @@
 
 	/**
 	 * Check if a marker indicates a forbidden zone (no arrow should be drawn)
+	 * Asymptotes with limits still allow arrows - only pure forbidden zones block arrows
 	 */
 	function isForbiddenZone(value: VariationValue | undefined): boolean {
-		return value?.marker === 'forbidden' || value?.marker === 'asymptote';
+		if (!value) return false;
+		if (value.marker === 'forbidden') return true;
+		// Asymptote without limits is a forbidden zone
+		if (value.marker === 'asymptote' && !value.limits) return true;
+		return false;
 	}
 
 	/**
@@ -184,7 +224,7 @@
 				{#each node.domain as point, idx (idx)}
 					<th class="vt-domain-cell">
 						<span class="vt-domain-point" class:vt-open={point.open}>
-							<math-span>{point.expression}</math-span>
+							<math-span>{toLatex(point.expression)}</math-span>
 						</span>
 					</th>
 					<!-- Interval columns between domain points -->
@@ -215,7 +255,7 @@
 										{#if pointValue.marker === 'zero'}
 											<span class="vt-zero">0</span>
 										{:else if pointValue.marker === 'asymptote'}
-											<span class="vt-double-bar">||</span>
+											<span class="vt-asymptote-bar vt-asymptote-bar-sign"></span>
 										{:else if pointValue.marker === 'forbidden'}
 											<span class="vt-hatch"></span>
 										{:else if pointValue.marker === 'discontinuity'}
@@ -271,11 +311,11 @@
 									<!-- Asymptote with limits -->
 									<div class="vt-asymptote-limits">
 										<span class="vt-limit vt-limit-left {getPositionClass('top')}">
-											<math-span>{value.limits[0]}</math-span>
+											<math-span>{toLatex(value.limits[0])}</math-span>
 										</span>
 										<span class="vt-asymptote-bar"></span>
 										<span class="vt-limit vt-limit-right {getPositionClass('bottom')}">
-											<math-span>{value.limits[1]}</math-span>
+											<math-span>{toLatex(value.limits[1])}</math-span>
 										</span>
 									</div>
 								{:else if value.marker === 'forbidden'}
@@ -284,7 +324,7 @@
 									</div>
 								{:else}
 									<div class="vt-value-container {getPositionClass(value.position)}">
-										<math-span>{value.expression}</math-span>
+										<math-span>{toLatex(value.expression)}</math-span>
 									</div>
 								{/if}
 							{/if}
@@ -445,32 +485,14 @@
 		font-size: 1.2em;
 	}
 
-	.vt-sign-plus {
-		color: var(--vt-plus-color);
-	}
-
+	.vt-sign-plus,
 	.vt-sign-minus {
-		color: var(--vt-minus-color);
+		color: inherit;
 	}
 
 	/* Zero marker */
 	.vt-zero {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 1.5em;
-		height: 1.5em;
-		border: 2px solid var(--vt-text-color);
-		border-radius: 50%;
-		font-size: 0.85em;
-		font-weight: bold;
-	}
-
-	/* Double bar (asymptote marker) */
-	.vt-double-bar {
-		font-weight: bold;
-		letter-spacing: -0.2em;
-		font-size: 1.2em;
+		font-weight: normal;
 	}
 
 	/* Discontinuity marker */
@@ -569,9 +591,23 @@
 	}
 
 	.vt-asymptote-bar {
-		width: 2px;
-		background-color: var(--vt-text-color);
+		width: 5px;
 		margin: 0 0.25em;
+		background: linear-gradient(
+			to right,
+			var(--vt-text-color) 0px,
+			var(--vt-text-color) 1px,
+			transparent 1px,
+			transparent 4px,
+			var(--vt-text-color) 4px,
+			var(--vt-text-color) 5px
+		);
+	}
+
+	.vt-asymptote-bar-sign {
+		display: inline-block;
+		height: 1.5em;
+		vertical-align: middle;
 	}
 
 	/* Forbidden cell */
@@ -600,7 +636,7 @@
 	/* SVG arrow styling - use stroke and fill with currentColor */
 	.variation-table :global(.vt-arrow-line) {
 		stroke: currentColor;
-		stroke-width: 3;
+		stroke-width: 2;
 	}
 
 	.variation-table :global(.vt-arrow-head) {
@@ -619,6 +655,7 @@
 		--vt-text-color: var(--foreground, #f3f4f6);
 		--vt-plus-color: #22c55e;
 		--vt-minus-color: #f87171;
+		--vt-arrow-color: var(--foreground, #f3f4f6);
 		--vt-hatch-color: var(--muted-foreground, #9ca3af);
 	}
 
