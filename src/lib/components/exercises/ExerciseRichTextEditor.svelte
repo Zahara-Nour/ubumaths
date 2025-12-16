@@ -24,6 +24,7 @@
 	import { uploadExerciseImage } from '$lib/exercises/services/image-upload';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import type { ImageUploadConfig } from '$lib/components/rich-text/types';
+	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	interface Props {
 		/** Markdown content (bindable) */
@@ -32,9 +33,23 @@
 		supabase?: SupabaseClient;
 		/** User ID for image organization */
 		userId?: string;
+		/** Generic function names for math parsing (e.g., ['C', 'P']) */
+		genericFunctions?: string[];
 	}
 
-	let { value = $bindable(''), supabase, userId }: Props = $props();
+	let { value = $bindable(''), supabase, userId, genericFunctions }: Props = $props();
+
+	// Convert string array to GenericFunctionConfig
+	const genericFunctionsConfig = $derived.by<GenericFunctionConfig | undefined>(() => {
+		if (!genericFunctions || genericFunctions.length === 0) {
+			return undefined;
+		}
+		return {
+			names: genericFunctions,
+			allowDerivatives: true,
+			allowInverse: true
+		};
+	});
 
 	// Create image upload config if supabase and userId are provided
 	const imageUploadConfig: ImageUploadConfig | undefined = $derived(
@@ -51,4 +66,5 @@
 	preset="full"
 	imageUpload={imageUploadConfig}
 	toolbar={{ preview: true }}
+	genericFunctions={genericFunctionsConfig}
 />
