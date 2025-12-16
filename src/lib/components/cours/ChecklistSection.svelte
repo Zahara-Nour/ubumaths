@@ -29,7 +29,7 @@
 		progress: ChapterProgress;
 	}
 
-	let { items, progress }: Props = $props();
+	let { items, progress: _progress }: Props = $props();
 
 	// Calculate completion statistics
 	const completedCount = $derived(items.filter((item) => item.isCompleted).length);
@@ -120,9 +120,9 @@
 								checked={completed}
 								onCheckedChange={() => {
 									// Trigger form submission
-									const form = document.querySelector(
-										`form[action="?/toggleChecklist"] input[value="${item.id}"]`
-									)?.closest('form');
+									const form = document
+										.querySelector(`form[action="?/toggleChecklist"] input[value="${item.id}"]`)
+										?.closest('form');
 									form?.requestSubmit();
 								}}
 								class="mt-0.5"

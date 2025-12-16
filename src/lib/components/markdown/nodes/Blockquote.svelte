@@ -43,7 +43,9 @@
 		return node.type === 'heading';
 	}
 
-	function isMathBlockNode(node: BlockNode): node is { type: 'math-block'; expression: string; syntax: 'latex' | 'custom' } {
+	function isMathBlockNode(
+		node: BlockNode
+	): node is { type: 'math-block'; expression: string; syntax: 'latex' | 'custom' } {
 		return node.type === 'math-block';
 	}
 

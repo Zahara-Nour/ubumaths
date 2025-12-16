@@ -104,7 +104,7 @@
 	role="button"
 	tabindex={0}
 	class={cn(
-		'w-48 rounded-xl p-4 transition-all duration-200 cursor-pointer',
+		'w-48 cursor-pointer rounded-xl p-4 transition-all duration-200',
 		'hover:scale-105 focus:scale-105',
 		'focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none',
 		selectedCard

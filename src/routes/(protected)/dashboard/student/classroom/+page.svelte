@@ -167,7 +167,13 @@
 																{material.title || material.file_name}
 															</p>
 														</div>
-														<Button href={material.file_url} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">
+														<Button
+															href={material.file_url}
+															variant="outline"
+															size="sm"
+															target="_blank"
+															rel="noopener noreferrer"
+														>
 															Ouvrir
 														</Button>
 													</div>

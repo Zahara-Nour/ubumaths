@@ -192,9 +192,7 @@
 		try {
 			// correction.feedback is an object with correct/incorrect/partial properties
 			const feedbackText = correction.feedback?.correct || '';
-			const feedback = feedbackText
-				? resolveExpression(feedbackText, resolved, seed)
-				: '';
+			const feedback = feedbackText ? resolveExpression(feedbackText, resolved, seed) : '';
 			const steps = correction.steps
 				? correction.steps.map((step) => {
 						if (typeof step === 'string') {

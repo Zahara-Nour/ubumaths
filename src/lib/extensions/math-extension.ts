@@ -32,7 +32,11 @@ declare module '@tiptap/core' {
 			/**
 			 * Insert an inline math field
 			 */
-			insertMathInline: (latex?: string, syntax?: string, originalExpression?: string) => ReturnType;
+			insertMathInline: (
+				latex?: string,
+				syntax?: string,
+				originalExpression?: string
+			) => ReturnType;
 		};
 		mathBlock: {
 			/**

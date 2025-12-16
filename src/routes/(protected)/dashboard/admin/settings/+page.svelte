@@ -164,8 +164,7 @@
 						</div>
 
 						<div class="space-y-2">
-							<span class="text-sm text-muted-foreground"
-								>Sans imbrication (questions simples)</span
+							<span class="text-sm text-muted-foreground">Sans imbrication (questions simples)</span
 							>
 							<MySelect
 								type="single"

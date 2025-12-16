@@ -23,9 +23,7 @@
 		title: 'Résoudre une équation du second degré',
 		description: "Exercice de résolution d'équations du second degré avec discriminant positif.",
 		exerciseInstruction: 'Calculer',
-		statement: resolvedMarkdown(
-			"Résoudre l'équation $$x^2 + 3x - 10 = 0$$ dans $$\\mathbb{R}$$."
-		),
+		statement: resolvedMarkdown("Résoudre l'équation $$x^2 + 3x - 10 = 0$$ dans $$\\mathbb{R}$$."),
 		solution: '2 ou -5',
 		resolvedVariables: [
 			{ name: 'a', value: '1' },
