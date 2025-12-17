@@ -392,46 +392,48 @@
 				class:pt-highlighted={isHighlighted}
 				class:pt-dimmed={hasHighlight && !isHighlighted}
 			>
-				<Tooltip.Root>
-					<Tooltip.Trigger>
-						<!-- Invisible wider line for easier hover/focus -->
-						<line
-							role="button"
-							tabindex="0"
-							aria-label="Branche: {branchData.branch.eventLabel}, probabilité: {branchData.branch
-								.probability.display}"
-							x1={branchData.parentPos.x}
-							y1={branchData.parentPos.y}
-							x2={branchData.childPos.x}
-							y2={branchData.childPos.y}
-							class="pt-branch-hitarea"
-							onmouseenter={() => handleBranchHover(branchData.parentId, branchData.childId)}
-							onmouseleave={handleBranchLeave}
-							onclick={() => handleBranchClick(branchData.parentId, branchData.childId)}
-							onkeydown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
-									e.preventDefault();
-									handleBranchClick(branchData.parentId, branchData.childId);
-								}
-							}}
-							onfocus={() => handleBranchHover(branchData.parentId, branchData.childId)}
-							onblur={handleBranchLeave}
-						/>
-						<!-- Visible line -->
-						<line
-							x1={branchData.parentPos.x}
-							y1={branchData.parentPos.y}
-							x2={branchData.childPos.x}
-							y2={branchData.childPos.y}
-							class="pt-branch-line"
-						/>
-					</Tooltip.Trigger>
-					<Tooltip.Content>
-						<p class="text-sm">
-							P = {activeTooltipContent || branchData.branch.probability.display}
-						</p>
-					</Tooltip.Content>
-				</Tooltip.Root>
+				<Tooltip.Provider>
+					<Tooltip.Root>
+						<Tooltip.Trigger>
+							<!-- Invisible wider line for easier hover/focus -->
+							<line
+								role="button"
+								tabindex="0"
+								aria-label="Branche: {branchData.branch.eventLabel}, probabilité: {branchData.branch
+									.probability.display}"
+								x1={branchData.parentPos.x}
+								y1={branchData.parentPos.y}
+								x2={branchData.childPos.x}
+								y2={branchData.childPos.y}
+								class="pt-branch-hitarea"
+								onmouseenter={() => handleBranchHover(branchData.parentId, branchData.childId)}
+								onmouseleave={handleBranchLeave}
+								onclick={() => handleBranchClick(branchData.parentId, branchData.childId)}
+								onkeydown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										handleBranchClick(branchData.parentId, branchData.childId);
+									}
+								}}
+								onfocus={() => handleBranchHover(branchData.parentId, branchData.childId)}
+								onblur={handleBranchLeave}
+							/>
+							<!-- Visible line -->
+							<line
+								x1={branchData.parentPos.x}
+								y1={branchData.parentPos.y}
+								x2={branchData.childPos.x}
+								y2={branchData.childPos.y}
+								class="pt-branch-line"
+							/>
+						</Tooltip.Trigger>
+						<Tooltip.Content>
+							<p class="text-sm">
+								P = {activeTooltipContent || branchData.branch.probability.display}
+							</p>
+						</Tooltip.Content>
+					</Tooltip.Root>
+				</Tooltip.Provider>
 
 				<!-- Event label (above line) -->
 				<foreignObject x={midX - 40} y={midY + LABEL_OFFSET_Y - 16} width="80" height="20">
