@@ -62,8 +62,43 @@
 - Dark mode support via CSS variables
 - Responsive (adapte taille au conteneur)
 
+## Phase 3: Generateurs LaTeX/Typst - COMPLETE
+
+### Fichiers crees
+
+- `src/lib/custom-markdown/generators/probability-tree-latex.ts` - Generateur TikZ
+- `src/lib/custom-markdown/generators/probability-tree-typst.ts` - Generateur CeTZ
+
+### Fichiers modifies
+
+- `src/lib/custom-markdown/generators/latex-generator.ts` - Integration case probability-tree
+- `src/lib/custom-markdown/generators/typst-generator.ts` - Integration case probability-tree
+- `src/lib/custom-markdown/generators/index.ts` - Export des nouveaux generateurs et types
+
+### Decisions prises
+
+- LaTeX: TikZ avec grow=right, level distance configurable
+- Typst: CeTZ 0.3.0 avec canvas drawing
+- Labels evenements au-dessus des branches, probabilites en dessous
+- Outcomes a droite des feuilles (si showOutcomes=true)
+- Conversion LaTeX -> Typst pour les expressions math
+- Constants nommees pour les offsets de positionnement
+
+### Fonctionnalites implementees
+
+- Generation TikZ valide avec edge labels
+- Generation CeTZ avec positionnement calcule
+- Escaping des caracteres speciaux (infinity, etc.)
+- Support options configurables (spacing)
+- Gestion d'erreurs avec commentaires dans l'output
+
+### Code review fixes
+
+- Utilisation coherente de `isLeaf` pour detection des feuilles
+- Extraction des magic numbers en constantes nommees
+- Export des types d'options dans index.ts
+
 ## Prochaines etapes
 
-- Phase 3: Generateurs LaTeX/Typst
 - Phase 4: Polish + Documentation
 - Phase Finale: Quality checks
