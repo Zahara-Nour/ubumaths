@@ -363,6 +363,19 @@ Verte:2/9
   Verte:1/8, P(VV)
 \`\`\`
 
+### Arbre exercice (à compléter)
+
+\`\`\`probtree
+root: Urne
+
+Rouge:3/5
+  Rouge:...
+  Bleue:...
+Bleue:...
+  Rouge:...
+  Bleue:...
+\`\`\`
+
 ## Hashtags et Mentions
 
 Hashtag simple : #mathematiques
