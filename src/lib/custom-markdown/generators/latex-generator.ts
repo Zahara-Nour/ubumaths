@@ -38,6 +38,7 @@ import {
 } from '$lib/exercises/services/image-dimensions';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 import { generateVariationTableLatex } from './variation-table-latex';
+import { generateProbabilityTreeLatex } from './probability-tree-latex';
 
 // ============================================================================
 // DEFAULT OPTIONS
@@ -205,6 +206,9 @@ function generateBlock(node: BlockNode, options: Required<LatexTranspilerOptions
 
 		case 'variation-table':
 			return generateVariationTableLatex(node);
+
+		case 'probability-tree':
+			return generateProbabilityTreeLatex(node);
 
 		default:
 			return '';

@@ -36,7 +36,9 @@ import type {
 import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 import { generateVariationTableTypst } from './variation-table-typst';
+import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import type { VariationTableNode } from '../types/variation-table';
+import type { ProbabilityTreeNode } from '../types/probability-tree';
 
 // ============================================================================
 // DEFAULT OPTIONS
@@ -187,6 +189,9 @@ function generateBlock(node: BlockNode, options: Required<TypstTranspilerOptions
 
 		case 'variation-table':
 			return generateVariationTableTypst(node as unknown as VariationTableNode);
+
+		case 'probability-tree':
+			return generateProbabilityTreeTypst(node as unknown as ProbabilityTreeNode);
 
 		default:
 			return '';
