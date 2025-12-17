@@ -18,7 +18,6 @@
 -->
 <script lang="ts">
 	import 'mathlive';
-	import * as Tooltip from '$lib/components/ui/tooltip';
 	import type {
 		ProbabilityTreeNode,
 		ProbTreeNode,
@@ -36,15 +35,70 @@
 	// LAYOUT CONSTANTS
 	// =========================================================================
 
-	const LEVEL_DISTANCE = 140; // Horizontal distance between levels
+	const BRANCH_LENGTH = 80; // Length of each branch (horizontal)
 	const MIN_NODE_SPACING = 50; // Minimum vertical spacing between sibling leaves
-	const LABEL_OFFSET_Y = -8; // Offset for event label above line
-	const PROB_OFFSET_Y = 14; // Offset for probability below line
-	const ROOT_X = 40; // X position of root
+	const CHAR_WIDTH = 8; // Estimated width per character for labels
+	const MIN_LABEL_WIDTH = 25; // Minimum width for event labels
+	const LABEL_PADDING = 16; // Extra padding around labels
+	const PROB_PERP_OFFSET = 14; // Perpendicular offset for probability label above line
+	const PROB_HORIZ_SHIFT = 12; // Horizontal shift along branch direction (towards child)
+	const ROOT_X = 20; // X position of root
 	const PADDING_TOP = 30;
 	const PADDING_BOTTOM = 30;
 	const PADDING_RIGHT = 40;
 	const OUTCOMES_WIDTH = 120; // Width reserved for outcomes column
+
+	// =========================================================================
+	// DYNAMIC LABEL WIDTH CALCULATION
+	// =========================================================================
+
+	/**
+	 * Estimate visual length of a label (accounting for LaTeX commands)
+	 * LaTeX commands like \bar{A} render as single character with diacritic
+	 */
+	function estimateVisualLength(text: string): number {
+		// Commands that modify but don't add width (\bar{X} -> X, same width)
+		let processed = text
+			.replace(/\\(bar|hat|tilde|overline|underline|vec|dot|ddot)\{([^}]*)\}/g, '$2')
+			// Greek letters and symbols render as single characters
+			.replace(
+				/\\(Omega|omega|Alpha|alpha|Beta|beta|Gamma|gamma|Delta|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|pi|rho|sigma|tau|upsilon|phi|chi|psi|infty|pm|mp|times|div|cdot|frac)/gi,
+				'X'
+			)
+			// Any other LaTeX command becomes approximately single char
+			.replace(/\\[a-zA-Z]+/g, 'X')
+			// Remove braces and backslashes
+			.replace(/[{}\\]/g, '');
+
+		return processed.length || 1;
+	}
+
+	/**
+	 * Collect all event labels from the tree
+	 */
+	function collectAllLabels(treeNode: ProbTreeNode): string[] {
+		const labels: string[] = [];
+		for (const branch of treeNode.branches) {
+			labels.push(branch.eventLabel);
+			labels.push(...collectAllLabels(branch.child));
+		}
+		return labels;
+	}
+
+	// Calculate dynamic label width based on longest event label (visual length)
+	let nodeLabelWidth = $derived.by(() => {
+		const allLabels = collectAllLabels(node.root);
+		// Include root label if present
+		if (node.config.rootLabel) {
+			allLabels.push(node.config.rootLabel);
+		}
+		if (allLabels.length === 0) return MIN_LABEL_WIDTH;
+		const maxVisualLength = Math.max(...allLabels.map((l) => estimateVisualLength(l)));
+		return Math.max(MIN_LABEL_WIDTH, maxVisualLength * CHAR_WIDTH + LABEL_PADDING);
+	});
+
+	// Calculate level distance (branch + label width)
+	let levelDistance = $derived(BRANCH_LENGTH + nodeLabelWidth);
 
 	// =========================================================================
 	// STATE
@@ -84,7 +138,8 @@
 		treeNode: ProbTreeNode,
 		x: number,
 		yStart: number,
-		positions: Map<string, NodePosition>
+		positions: Map<string, NodePosition>,
+		levelDist: number
 	): number {
 		const subtreeHeight = getSubtreeHeight(treeNode);
 
@@ -99,7 +154,13 @@
 		let maxChildY = -Infinity;
 
 		for (const branch of treeNode.branches) {
-			const childHeight = calculatePositions(branch.child, x + LEVEL_DISTANCE, currentY, positions);
+			const childHeight = calculatePositions(
+				branch.child,
+				x + levelDist,
+				currentY,
+				positions,
+				levelDist
+			);
 			const childPos = positions.get(branch.child.id);
 			if (childPos) {
 				minChildY = Math.min(minChildY, childPos.y);
@@ -118,14 +179,15 @@
 	// Calculate all positions
 	let positions = $derived.by(() => {
 		const posMap = new Map<string, NodePosition>();
-		calculatePositions(node.root, ROOT_X, PADDING_TOP, posMap);
+		calculatePositions(node.root, ROOT_X, PADDING_TOP, posMap, levelDistance);
 		return posMap;
 	});
 
 	// Calculate SVG dimensions
 	let svgWidth = $derived(
 		ROOT_X +
-			LEVEL_DISTANCE * node.maxDepth +
+			levelDistance * node.maxDepth +
+			nodeLabelWidth + // Space for leaf event labels
 			PADDING_RIGHT +
 			(node.config.showOutcomes ? OUTCOMES_WIDTH : 0)
 	);
@@ -357,7 +419,7 @@
 <div class="probability-tree {className}">
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 	<svg
-		width="100%"
+		width={svgWidth}
 		height={svgHeight}
 		viewBox="0 0 {svgWidth} {svgHeight}"
 		class="pt-svg"
@@ -365,12 +427,12 @@
 		aria-label="Arbre de probabilité{node.config.rootLabel ? ` : ${node.config.rootLabel}` : ''}"
 		onclick={handleSvgClick}
 	>
-		<!-- Root label -->
+		<!-- Root label (at root node position, same as event labels) -->
 		{#if node.config.rootLabel}
 			{@const rootPos = positions.get(node.root.id)}
 			{#if rootPos}
-				<foreignObject x={rootPos.x - 35} y={rootPos.y - 10} width="30" height="20">
-					<div class="pt-root-label">
+				<foreignObject x={rootPos.x} y={rootPos.y - 10} width={nodeLabelWidth} height="20">
+					<div class="pt-label pt-event-label pt-root-label">
 						<math-span>{toLatex(node.config.rootLabel)}</math-span>
 					</div>
 				</foreignObject>
@@ -384,80 +446,94 @@
 				branchData.childId,
 				effectivePath
 			)}
-			{@const midX = (branchData.parentPos.x + branchData.childPos.x) / 2}
-			{@const midY = (branchData.parentPos.y + branchData.childPos.y) / 2}
+			{@const branchStartX = branchData.parentPos.x + nodeLabelWidth}
+			{@const branchEndX = branchData.childPos.x}
+			{@const branchStartY = branchData.parentPos.y}
+			{@const branchEndY = branchData.childPos.y}
+			{@const midX = (branchStartX + branchEndX) / 2}
+			{@const midY = (branchStartY + branchEndY) / 2}
+			{@const dx = branchEndX - branchStartX}
+			{@const dy = branchEndY - branchStartY}
+			{@const branchLength = Math.sqrt(dx * dx + dy * dy)}
+			{@const normalX = dy / branchLength}
+			{@const normalY = -dx / branchLength}
+			{@const isHorizontal = Math.abs(dy / dx) < 0.3}
+			{@const isDescending = dy > 10}
+			{@const tangentShift = isHorizontal
+				? PROB_HORIZ_SHIFT
+				: isDescending
+					? PROB_HORIZ_SHIFT * 0.5
+					: 0}
+			{@const labelX = midX + normalX * PROB_PERP_OFFSET + (dx / branchLength) * tangentShift}
+			{@const labelY = midY + normalY * PROB_PERP_OFFSET + (dy / branchLength) * tangentShift}
 
 			<g
 				class="pt-branch"
 				class:pt-highlighted={isHighlighted}
 				class:pt-dimmed={hasHighlight && !isHighlighted}
 			>
-				<Tooltip.Provider>
-					<Tooltip.Root>
-						<Tooltip.Trigger>
-							<!-- Invisible wider line for easier hover/focus -->
-							<line
-								role="button"
-								tabindex="0"
-								aria-label="Branche: {branchData.branch.eventLabel}, probabilité: {branchData.branch
-									.probability.display}"
-								x1={branchData.parentPos.x}
-								y1={branchData.parentPos.y}
-								x2={branchData.childPos.x}
-								y2={branchData.childPos.y}
-								class="pt-branch-hitarea"
-								onmouseenter={() => handleBranchHover(branchData.parentId, branchData.childId)}
-								onmouseleave={handleBranchLeave}
-								onclick={() => handleBranchClick(branchData.parentId, branchData.childId)}
-								onkeydown={(e) => {
-									if (e.key === 'Enter' || e.key === ' ') {
-										e.preventDefault();
-										handleBranchClick(branchData.parentId, branchData.childId);
-									}
-								}}
-								onfocus={() => handleBranchHover(branchData.parentId, branchData.childId)}
-								onblur={handleBranchLeave}
-							/>
-							<!-- Visible line -->
-							<line
-								x1={branchData.parentPos.x}
-								y1={branchData.parentPos.y}
-								x2={branchData.childPos.x}
-								y2={branchData.childPos.y}
-								class="pt-branch-line"
-							/>
-						</Tooltip.Trigger>
-						<Tooltip.Content>
-							<p class="text-sm">
-								P = {activeTooltipContent || branchData.branch.probability.display}
-							</p>
-						</Tooltip.Content>
-					</Tooltip.Root>
-				</Tooltip.Provider>
+				<!-- Invisible wider line for easier hover/focus -->
+				<line
+					role="button"
+					tabindex="0"
+					aria-label="Branche: {branchData.branch.eventLabel}, probabilité: {branchData.branch
+						.probability.display}"
+					x1={branchStartX}
+					y1={branchData.parentPos.y}
+					x2={branchEndX}
+					y2={branchData.childPos.y}
+					class="pt-branch-hitarea"
+					onmouseenter={() => handleBranchHover(branchData.parentId, branchData.childId)}
+					onmouseleave={handleBranchLeave}
+					onclick={() => handleBranchClick(branchData.parentId, branchData.childId)}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							handleBranchClick(branchData.parentId, branchData.childId);
+						}
+					}}
+					onfocus={() => handleBranchHover(branchData.parentId, branchData.childId)}
+					onblur={handleBranchLeave}
+				>
+					<title>P = {activeTooltipContent || branchData.branch.probability.display}</title>
+				</line>
+				<!-- Visible line -->
+				<line
+					x1={branchStartX}
+					y1={branchData.parentPos.y}
+					x2={branchEndX}
+					y2={branchData.childPos.y}
+					class="pt-branch-line"
+				/>
 
-				<!-- Event label (above line) -->
-				<foreignObject x={midX - 40} y={midY + LABEL_OFFSET_Y - 16} width="80" height="20">
-					<div class="pt-label pt-event-label">
-						<math-span>{toLatex(branchData.branch.eventLabel)}</math-span>
+				<!-- Probability label (perpendicular to branch, above line) -->
+				<foreignObject x={labelX - 30} y={labelY - 10} width="60" height="20">
+					<div class="pt-label pt-prob-label">
+						<math-span>{toLatex(branchData.branch.probability.display)}</math-span>
 					</div>
 				</foreignObject>
 
-				<!-- Probability label (below line) -->
-				<foreignObject x={midX - 40} y={midY + PROB_OFFSET_Y - 4} width="80" height="20">
-					<div class="pt-label pt-prob-label">
-						<math-span>{toLatex(branchData.branch.probability.display)}</math-span>
+				<!-- Event label (at child node, centered in label space) -->
+				<foreignObject
+					x={branchData.childPos.x}
+					y={branchData.childPos.y - 10}
+					width={nodeLabelWidth}
+					height="20"
+				>
+					<div class="pt-label pt-event-label">
+						<math-span>{toLatex(branchData.branch.eventLabel)}</math-span>
 					</div>
 				</foreignObject>
 			</g>
 		{/each}
 
-		<!-- Outcomes column -->
+		<!-- Outcomes column (after leaf event labels) -->
 		{#if node.config.showOutcomes}
 			{#each allLeaves as leaf (leaf.node.id)}
 				{#if leaf.node.outcome}
 					{@const isHighlighted = isInPath(leaf.node.id, effectivePath)}
 					<foreignObject
-						x={leaf.pos.x + 15}
+						x={leaf.pos.x + nodeLabelWidth + 10}
 						y={leaf.pos.y - 12}
 						width={OUTCOMES_WIDTH - 20}
 						height="24"
@@ -496,17 +572,11 @@
 	/* SVG */
 	.pt-svg {
 		display: block;
-		max-width: 100%;
-		height: auto;
 	}
 
-	/* Root label */
+	/* Root label - inherits from pt-label and pt-event-label */
 	.pt-root-label {
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		height: 100%;
-		font-weight: 500;
+		/* Additional styling if needed */
 	}
 
 	/* Branch group */
@@ -528,22 +598,23 @@
 	}
 
 	.pt-branch-hitarea:focus-visible + .pt-branch-line {
-		stroke: var(--pt-highlight-color);
-		stroke-width: var(--pt-highlight-width);
+		stroke: var(--pt-highlight-color, #3b82f6);
+		stroke-width: var(--pt-highlight-width, 2.5px);
 	}
 
 	.pt-branch-line {
-		stroke: var(--pt-line-color);
-		stroke-width: var(--pt-line-width);
+		stroke: var(--pt-line-color, #1f2937);
+		stroke-width: var(--pt-line-width, 1.5px);
 		fill: none;
+		pointer-events: none;
 		transition:
 			stroke 0.2s ease,
 			stroke-width 0.2s ease;
 	}
 
 	.pt-branch.pt-highlighted .pt-branch-line {
-		stroke: var(--pt-highlight-color);
-		stroke-width: var(--pt-highlight-width);
+		stroke: var(--pt-highlight-color, #3b82f6);
+		stroke-width: var(--pt-highlight-width, 2.5px);
 	}
 
 	/* Labels */
@@ -557,18 +628,21 @@
 		pointer-events: none;
 	}
 
-	.pt-event-label {
-		font-weight: 500;
-	}
-
 	.pt-prob-label {
-		color: var(--muted-foreground, #6b7280);
-		font-size: 0.85em;
+		font-weight: 500;
 	}
 
 	.pt-branch.pt-highlighted .pt-prob-label {
-		color: var(--pt-highlight-color);
+		color: var(--pt-highlight-color, #3b82f6);
+	}
+
+	.pt-event-label {
+		justify-content: center;
 		font-weight: 500;
+	}
+
+	.pt-branch.pt-highlighted .pt-event-label {
+		color: var(--pt-highlight-color, #3b82f6);
 	}
 
 	/* Outcomes */
