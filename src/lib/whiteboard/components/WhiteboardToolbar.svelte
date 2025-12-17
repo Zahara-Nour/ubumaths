@@ -40,8 +40,10 @@
 		FilePlus,
 		Cloud,
 		CloudOff,
-		Loader2
+		Loader2,
+		Download
 	} from 'lucide-svelte';
+	import ExportDialog from './ExportDialog.svelte';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
 	import { INSTRUMENT_LABELS, type InstrumentType } from '../types/document';
 	import { importImageFile } from '../utils/image-loader';
@@ -109,6 +111,9 @@
 
 	/** Import loading state */
 	let isImporting = $state(false);
+
+	/** Export dialog state */
+	let exportDialogOpen = $state(false);
 
 	// ==========================================================================
 	// Derived State
@@ -731,6 +736,20 @@
 				<span class="hidden sm:inline">Ouvrir</span>
 			</Button>
 
+			<!-- Export Document -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={() => (exportDialogOpen = true)}
+				title="Exporter (Ctrl+E)"
+				aria-label="Exporter"
+				class="gap-1"
+			>
+				<Download class="h-4 w-4" />
+				<span class="hidden sm:inline">Exporter</span>
+			</Button>
+
 			<!-- Separator -->
 			<div class="mx-2 h-6 w-px bg-border"></div>
 
@@ -779,6 +798,9 @@
 	class="hidden"
 	aria-hidden="true"
 />
+
+<!-- Export Dialog -->
+<ExportDialog bind:open={exportDialogOpen} />
 
 <style>
 	.whiteboard-toolbar {
