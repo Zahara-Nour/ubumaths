@@ -19,11 +19,17 @@ Event2:probability2
 
 ### Configuration Options
 
-| Option         | Values       | Default | Description                      |
-| -------------- | ------------ | ------- | -------------------------------- |
-| `root:`        | string       | (none)  | Label for root node              |
-| `outcomes`     | true / false | false   | Show outcome column at leaves    |
-| `intersection` | true / false | false   | Show P(A ∩ B) notation at leaves |
+| Option         | Values       | Default | Description                                      |
+| -------------- | ------------ | ------- | ------------------------------------------------ |
+| `root:`        | string       | (none)  | Label for root node                              |
+| `outcomes`     | true / false | false   | Show **manual** outcome column (user-defined)    |
+| `intersection` | true / false | false   | Show **auto** P(A ∩ B) notation (path-generated) |
+
+**outcomes vs intersection:**
+
+- `outcomes: true` displays the text you write after the comma (e.g., `Rouge:2/8, P(RR)` → shows "P(RR)")
+- `intersection: true` auto-generates P(A ∩ B) notation from the path (e.g., Rouge→Bleue → shows "P(Rouge ∩ Bleue)")
+- Use one OR the other, not both (they serve similar purposes)
 
 ### Line Format
 
@@ -116,9 +122,9 @@ The `ProbabilityTree.svelte` component renders:
 - **Click leaf event label**: Highlight all paths ending with the same event (e.g., click "Rouge" at a leaf to see all paths to "Rouge")
 - **Keyboard**: Enter/Space to select, focus navigation
 
-**Automatic displays:**
+**Automatic displays (when `intersection: true`):**
 
-- **Intersection probability at leaves**: Shows `P(A ∩ B)` notation for each path (e.g., `P(Rouge ∩ Bleue)`)
+- **Intersection probability at leaves**: Auto-generates `P(A ∩ B)` notation from the path events (e.g., path Rouge→Bleue displays `P(Rouge ∩ Bleue)`)
 
 ### LaTeX Export (TikZ)
 

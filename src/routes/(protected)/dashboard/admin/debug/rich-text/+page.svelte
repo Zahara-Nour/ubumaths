@@ -347,21 +347,20 @@ Arbre à 3 couleurs (urne avec boules rouges, bleues et vertes) :
 
 \`\`\`probtree
 root: Urne
-outcomes: true
 intersection: true
 
 Rouge:3/9
-  Rouge:2/8, P(RR)
-  Bleue:4/8, P(RB)
-  Verte:2/8, P(RV)
+  Rouge:2/8
+  Bleue:4/8
+  Verte:2/8
 Bleue:4/9
-  Rouge:3/8, P(BR)
-  Bleue:3/8, P(BB)
-  Verte:2/8, P(BV)
+  Rouge:3/8
+  Bleue:3/8
+  Verte:2/8
 Verte:2/9
-  Rouge:3/8, P(VR)
-  Bleue:4/8, P(VB)
-  Verte:1/8, P(VV)
+  Rouge:3/8
+  Bleue:4/8
+  Verte:1/8
 \`\`\`
 
 ### Arbre exercice (à compléter)
