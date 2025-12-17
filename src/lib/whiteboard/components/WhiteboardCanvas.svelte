@@ -16,7 +16,14 @@
 	import { createShapeElement, getShapeSvgProps } from '../core/shapes';
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
-	import type { Point, StrokeElement, ShapeElement, ShapeType } from '../types/document';
+	import ImageLayer from './ImageLayer.svelte';
+	import type {
+		Point,
+		StrokeElement,
+		ShapeElement,
+		ShapeType,
+		ImageElement
+	} from '../types/document';
 
 	// ==========================================================================
 	// Props
@@ -71,6 +78,9 @@
 
 	/** Only shape elements for rendering */
 	let shapeElements = $derived(elements.filter((el): el is ShapeElement => el.type === 'shape'));
+
+	/** Only image elements for rendering */
+	let imageElements = $derived(elements.filter((el): el is ImageElement => el.type === 'image'));
 
 	/** Shape tools */
 	const SHAPE_TOOLS = ['line', 'rectangle', 'circle', 'arrow'] as const;
@@ -386,7 +396,8 @@
 		style="width: 100%; height: 100%;"
 		role="img"
 		aria-label="Tableau blanc interactif avec {strokeElements.length +
-			shapeElements.length} éléments dessinés"
+			shapeElements.length +
+			imageElements.length} éléments"
 		onpointerdown={handlePointerDown}
 		onpointermove={handlePointerMove}
 		onpointerup={handlePointerUp}
@@ -425,6 +436,30 @@
 					</defs>
 					<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="url(#dotted-pattern)" />
 				{/if}
+			{:else if currentPage?.background.type === 'image'}
+				<!-- White base for transparency -->
+				<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="#ffffff" />
+				<!-- Background image -->
+				<image
+					href={currentPage.background.src}
+					x="0"
+					y="0"
+					width={pageWidth}
+					height={pageHeight}
+					preserveAspectRatio="xMidYMid meet"
+				/>
+			{:else if currentPage?.background.type === 'pdf'}
+				<!-- White base -->
+				<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="#ffffff" />
+				<!-- PDF page rendered as image -->
+				<image
+					href={currentPage.background.pdfData}
+					x="0"
+					y="0"
+					width={pageWidth}
+					height={pageHeight}
+					preserveAspectRatio="xMidYMid meet"
+				/>
 			{/if}
 		</g>
 
@@ -494,6 +529,11 @@
 					/>
 				{/if}
 			{/each}
+		</g>
+
+		<!-- Layer 2.5: Images -->
+		<g class="layer-images">
+			<ImageLayer />
 		</g>
 
 		<!-- Layer 3: Active Stroke/Shape (currently drawing) -->

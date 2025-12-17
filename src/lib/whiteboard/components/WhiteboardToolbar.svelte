@@ -31,9 +31,15 @@
 		Palette,
 		Ruler,
 		Compass,
-		Triangle
+		Triangle,
+		Image,
+		FileText,
+		Upload
 	} from 'lucide-svelte';
 	import { INSTRUMENT_LABELS, type InstrumentType } from '../types/document';
+	import { importImageFile } from '../utils/image-loader';
+	import { importPdfFile } from '../utils/pdf-loader';
+	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// ==========================================================================
 	// Constants
@@ -83,9 +89,17 @@
 	let drawingSectionOpen = $state(true);
 	let shapesSectionOpen = $state(false);
 	let instrumentsSectionOpen = $state(false);
+	let importSectionOpen = $state(false);
 
 	/** Color picker open state */
 	let colorPickerOpen = $state(false);
+
+	/** File input references */
+	let imageInputRef: HTMLInputElement | null = $state(null);
+	let pdfInputRef: HTMLInputElement | null = $state(null);
+
+	/** Import loading state */
+	let isImporting = $state(false);
 
 	// ==========================================================================
 	// Derived State
@@ -150,6 +164,83 @@
 	function handleInstrumentToggle(type: InstrumentType) {
 		whiteboardStore.toggleInstrument(type);
 	}
+
+	function toggleImportSection() {
+		importSectionOpen = !importSectionOpen;
+	}
+
+	function handleImageImportClick() {
+		imageInputRef?.click();
+	}
+
+	function handlePdfImportClick() {
+		pdfInputRef?.click();
+	}
+
+	async function handleImageFileSelect(e: Event) {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		isImporting = true;
+		try {
+			const page = whiteboardStore.currentPage;
+			if (!page) return;
+
+			// Center the image on the page
+			const position = {
+				x: page.width / 2 - 200,
+				y: page.height / 2 - 150
+			};
+
+			const result = await importImageFile(file, position);
+
+			if (result.success && result.element) {
+				whiteboardStore.addImage(
+					result.element.position,
+					result.element.width,
+					result.element.height,
+					result.element.src,
+					result.element.originalFilename
+				);
+				toaster.success('Image importée');
+			} else {
+				toaster.error(result.error || "Erreur lors de l'import");
+			}
+		} catch (error) {
+			console.error('Image import error:', error);
+			toaster.error("Erreur lors de l'import de l'image");
+		} finally {
+			isImporting = false;
+			// Reset input to allow re-selecting same file
+			input.value = '';
+		}
+	}
+
+	async function handlePdfFileSelect(e: Event) {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		isImporting = true;
+		try {
+			const result = await importPdfFile(file, { fitMode: 'fit' });
+
+			if (result.success && result.pages && result.pages.length > 0) {
+				whiteboardStore.addPagesFromPdf(result.pages);
+				toaster.success(`${result.pages.length} page(s) importée(s) du PDF`);
+			} else {
+				toaster.error(result.error || "Erreur lors de l'import du PDF");
+			}
+		} catch (error) {
+			console.error('PDF import error:', error);
+			toaster.error("Erreur lors de l'import du PDF");
+		} finally {
+			isImporting = false;
+			// Reset input to allow re-selecting same file
+			input.value = '';
+		}
+	}
 </script>
 
 <div class="whiteboard-toolbar border-t border-border bg-muted/50">
@@ -205,6 +296,24 @@
 				<Ruler class="h-4 w-4" />
 				<span class="hidden sm:inline">Instruments</span>
 				{#if instrumentsSectionOpen}
+					<ChevronUp class="h-3 w-3" />
+				{:else}
+					<ChevronDown class="h-3 w-3" />
+				{/if}
+			</Button>
+
+			<!-- Import Section Toggle -->
+			<Button
+				type="button"
+				variant={importSectionOpen ? 'secondary' : 'ghost'}
+				size="sm"
+				onclick={toggleImportSection}
+				class="gap-1"
+				aria-expanded={importSectionOpen}
+			>
+				<Upload class="h-4 w-4" />
+				<span class="hidden sm:inline">Import</span>
+				{#if importSectionOpen}
 					<ChevronUp class="h-3 w-3" />
 				{:else}
 					<ChevronDown class="h-3 w-3" />
@@ -414,7 +523,69 @@
 			{/if}
 		</div>
 	</div>
+
+	<!-- Import Section (Collapsible with animation) -->
+	<div
+		class="import-section overflow-hidden border-t border-border/50 transition-all duration-200 ease-in-out"
+		class:max-h-0={!importSectionOpen}
+		class:max-h-20={importSectionOpen}
+		class:opacity-0={!importSectionOpen}
+		class:opacity-100={importSectionOpen}
+	>
+		<div class="flex items-center gap-1 px-3 py-2">
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={handleImageImportClick}
+				disabled={isImporting}
+				title="Importer une image (PNG, JPG, SVG, WebP)"
+				aria-label="Importer une image"
+				class="gap-1"
+			>
+				<Image class="h-4 w-4" />
+				<span class="hidden sm:inline">Image</span>
+			</Button>
+
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={handlePdfImportClick}
+				disabled={isImporting}
+				title="Importer un PDF comme pages"
+				aria-label="Importer un PDF"
+				class="gap-1"
+			>
+				<FileText class="h-4 w-4" />
+				<span class="hidden sm:inline">PDF</span>
+			</Button>
+
+			{#if isImporting}
+				<span class="ml-2 text-sm text-muted-foreground">Importation...</span>
+			{/if}
+		</div>
+	</div>
 </div>
+
+<!-- Hidden file inputs -->
+<input
+	bind:this={imageInputRef}
+	type="file"
+	accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+	onchange={handleImageFileSelect}
+	class="hidden"
+	aria-hidden="true"
+/>
+
+<input
+	bind:this={pdfInputRef}
+	type="file"
+	accept="application/pdf"
+	onchange={handlePdfFileSelect}
+	class="hidden"
+	aria-hidden="true"
+/>
 
 <style>
 	.whiteboard-toolbar {

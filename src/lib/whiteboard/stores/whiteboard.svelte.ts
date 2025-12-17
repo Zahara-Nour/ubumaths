@@ -15,8 +15,10 @@ import {
 	PAGE_FORMATS,
 	type WhiteboardDocument,
 	type Page,
+	type PageBackground,
 	type WhiteboardElement,
 	type TextBlockElement,
+	type ImageElement,
 	type PageFormatKey,
 	type InstrumentType,
 	type InstrumentState
@@ -45,7 +47,7 @@ export type DrawingTool = 'pen' | 'highlighter' | 'eraser';
 export type ShapeTool = 'line' | 'rectangle' | 'circle' | 'arrow';
 
 /** Action tools */
-export type ActionTool = 'select' | 'pan' | 'text';
+export type ActionTool = 'select' | 'pan' | 'text' | 'image';
 
 // =============================================================================
 // TextBlock Constants
@@ -58,6 +60,14 @@ export const DEFAULT_TEXT_BLOCK_HEIGHT = 100;
 /** Minimum dimensions for text blocks */
 export const MIN_TEXT_BLOCK_WIDTH = 150;
 export const MIN_TEXT_BLOCK_HEIGHT = 50;
+
+// =============================================================================
+// Image Constants
+// =============================================================================
+
+/** Minimum dimensions for images */
+export const MIN_IMAGE_WIDTH = 50;
+export const MIN_IMAGE_HEIGHT = 50;
 
 /** Instrument tools */
 export type InstrumentTool = 'ruler' | 'protractor' | 'compass' | 'set-square';
@@ -542,6 +552,128 @@ function createWhiteboardStore() {
 					position
 				};
 			});
+		},
+
+		// === Image Operations ===
+
+		/**
+		 * Add an image element at the given position
+		 */
+		addImage(
+			position: { x: number; y: number },
+			width: number,
+			height: number,
+			src: string,
+			originalFilename?: string
+		): string {
+			const element: ImageElement = {
+				id: crypto.randomUUID(),
+				type: 'image',
+				position: { x: position.x, y: position.y },
+				width: Math.max(width, MIN_IMAGE_WIDTH),
+				height: Math.max(height, MIN_IMAGE_HEIGHT),
+				src,
+				originalFilename
+			};
+
+			this.addElement(element);
+			return element.id;
+		},
+
+		/**
+		 * Move an image element to a new position
+		 */
+		moveImage(elementId: string, position: { x: number; y: number }): void {
+			this.updateElement(elementId, (el) => {
+				if (el.type !== 'image') return el;
+				return { ...el, position };
+			});
+		},
+
+		/**
+		 * Resize an image element
+		 */
+		resizeImage(elementId: string, width: number, height: number): void {
+			this.updateElement(elementId, (el) => {
+				if (el.type !== 'image') return el;
+				return {
+					...el,
+					width: Math.max(width, MIN_IMAGE_WIDTH),
+					height: Math.max(height, MIN_IMAGE_HEIGHT)
+				};
+			});
+		},
+
+		/**
+		 * Resize and move an image in a single operation
+		 */
+		resizeAndMoveImage(
+			elementId: string,
+			width: number,
+			height: number,
+			position: { x: number; y: number }
+		): void {
+			this.updateElement(elementId, (el) => {
+				if (el.type !== 'image') return el;
+				return {
+					...el,
+					width: Math.max(width, MIN_IMAGE_WIDTH),
+					height: Math.max(height, MIN_IMAGE_HEIGHT),
+					position
+				};
+			});
+		},
+
+		// === Background Operations ===
+
+		/**
+		 * Set the background of the current page
+		 */
+		setPageBackground(background: PageBackground): void {
+			updateCurrentPage((page) => ({
+				...page,
+				background
+			}));
+		},
+
+		/**
+		 * Clear the background (reset to plain white)
+		 */
+		clearPageBackground(): void {
+			this.setPageBackground({
+				type: 'plain',
+				style: 'plain',
+				color: '#ffffff'
+			});
+		},
+
+		// === PDF Import Operations ===
+
+		/**
+		 * Add pages from PDF import
+		 */
+		addPagesFromPdf(newPages: Page[]): void {
+			if (!document || newPages.length === 0) return;
+
+			updateDocument((doc) => ({
+				...doc,
+				pages: [...doc.pages, ...newPages],
+				currentPageIndex: doc.pages.length // Go to first new page
+			}));
+		},
+
+		/**
+		 * Replace all pages with PDF pages (for opening a PDF as new document)
+		 */
+		replacePagesWithPdf(newPages: Page[], title?: string): void {
+			if (!document || newPages.length === 0) return;
+
+			updateDocument((doc) => ({
+				...doc,
+				title: title ?? doc.title,
+				pages: newPages,
+				currentPageIndex: 0
+			}));
 		},
 
 		// === Tool Operations ===

@@ -2,9 +2,75 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 7 - Multi-pages
+**Phase completee** : Phase 8 - Import images + PDF
 **Date** : 2025-12-17
 **Statut** : Pret pour commit
+
+---
+
+## Phase 8 : Import images + PDF
+
+### Fichiers crees
+
+| Fichier                                           | Description                               |
+| ------------------------------------------------- | ----------------------------------------- |
+| `src/lib/whiteboard/utils/image-loader.ts`        | Validation, chargement, compression image |
+| `src/lib/whiteboard/utils/pdf-loader.ts`          | Import PDF avec pdfjs-dist                |
+| `src/lib/whiteboard/components/ImageLayer.svelte` | Couche SVG images (drag + resize)         |
+| `src/lib/whiteboard/tests/image-import.test.ts`   | Tests import images (54 tests)            |
+| `src/lib/whiteboard/tests/pdf-import.test.ts`     | Tests import PDF (42 tests)               |
+
+### Fichiers modifies
+
+| Fichier                                                  | Modifications                                          |
+| -------------------------------------------------------- | ------------------------------------------------------ |
+| `src/lib/whiteboard/stores/whiteboard.svelte.ts`         | Image ops (add, move, resize), background ops, PDF ops |
+| `src/lib/whiteboard/components/WhiteboardCanvas.svelte`  | ImageLayer + image/PDF background rendering            |
+| `src/lib/whiteboard/components/WhiteboardToolbar.svelte` | Section Import + boutons Image/PDF                     |
+| `src/lib/whiteboard/types/document.ts`                   | ImageElement, PageBackground types                     |
+
+### Dependances ajoutees
+
+- `pdfjs-dist@4.10.39` - Import PDF (lazy loaded)
+
+### Tests crees
+
+| Fichier                                         | Tests    |
+| ----------------------------------------------- | -------- |
+| `src/lib/whiteboard/tests/image-import.test.ts` | 54 tests |
+| `src/lib/whiteboard/tests/pdf-import.test.ts`   | 42 tests |
+
+**Total Phase 8 : 96 nouveaux tests**
+**Total cumule : 324 tests**
+
+### Fonctionnalites implementees
+
+1. **Image validation** : Types (PNG, JPG, SVG, WebP), taille max 5MB
+2. **Image compression** : JPEG 80% qualite, max 2000px dimension
+3. **Image storage** : Data URL (portable, inclus dans .ubw)
+4. **PDF validation** : Type PDF, taille max 20MB
+5. **PDF import** : pdfjs-dist lazy loaded, selection pages
+6. **PDF as background** : Page annotable avec fond PDF
+7. **Image manipulation** : Drag-to-move, 8 handles resize
+8. **Toolbar section** : Import toggle, boutons Image/PDF
+9. **Fit modes** : fit, fill, stretch pour backgrounds
+10. **Auto-create pages** : Import PDF multi-pages cree toutes les pages
+
+### Decisions techniques
+
+1. **Data URL vs fichiers externes** : Data URL choisi pour portabilite
+2. **Compression images** : JPEG avec 80% qualite, redimensionnement si >2000px
+3. **PDF lazy loading** : pdfjs-dist charge uniquement si PDF importe
+4. **PDF render scale** : 2x pour haute resolution
+
+### Code Review
+
+- **Score** : Good (apres corrections)
+- **Reviewer** : code-reviewer agent
+- **Issues corrigees** :
+  - `getSvgDimensions()` : validation format data URL, defensive array access
+  - `getCanvasScale()` : validation viewBox, NaN checks, division by zero
+  - `compressImage()` : cleanup canvas dans finally block pour GC
 
 ---
 
@@ -345,16 +411,16 @@
 
 ## Prochaines etapes
 
-### Phase 8 : Import images + PDF
+### Phase 9 : Stockage local + Google Drive
 
 **A faire** :
 
-1. Importer PNG/JPG/SVG comme image
-2. Importer PDF avec selection de page (pdfjs-dist)
-3. PDF comme fond de page annotable
-4. Options fit/fill/stretch
+1. Sauvegarder en fichier .ubw local
+2. Charger fichier .ubw avec validation Zod
+3. Integration Google Drive (utiliser OAuth existant)
+4. Sauvegarder/charger depuis Drive
 
-**Agent** : `frontend-developer`
+**Agent** : `backend-developer` + `security-auditor`
 
 ---
 
@@ -367,6 +433,7 @@ src/lib/whiteboard/
 │   ├── WhiteboardCanvas.svelte
 │   ├── WhiteboardToolbar.svelte
 │   ├── InstrumentLayer.svelte
+│   ├── ImageLayer.svelte
 │   ├── PageThumbnails.svelte
 │   ├── TextBlock.svelte
 │   └── TextBlockLayer.svelte
@@ -380,8 +447,10 @@ src/lib/whiteboard/
 ├── tests/
 │   ├── document.test.ts
 │   ├── history.svelte.test.ts
+│   ├── image-import.test.ts
 │   ├── instruments.test.ts
 │   ├── multipage.test.ts
+│   ├── pdf-import.test.ts
 │   ├── serialization.test.ts
 │   ├── shapes.test.ts
 │   ├── stroke-smoothing.test.ts
@@ -391,6 +460,8 @@ src/lib/whiteboard/
 ├── types/
 │   ├── document.ts
 │   └── file-format.ts
-├── utils/               # (Phase 8+)
+├── utils/
+│   ├── image-loader.ts
+│   └── pdf-loader.ts
 └── index.ts
 ```
