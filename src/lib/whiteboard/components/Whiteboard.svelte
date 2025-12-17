@@ -9,6 +9,7 @@
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import WhiteboardCanvas from './WhiteboardCanvas.svelte';
 	import WhiteboardToolbar from './WhiteboardToolbar.svelte';
+	import PageThumbnails from './PageThumbnails.svelte';
 	import type { PageFormatKey } from '../types/document';
 
 	// ==========================================================================
@@ -54,12 +55,20 @@
 	/** Tool state */
 	let toolState = $derived(whiteboardStore.toolState);
 
+	/** Sidebar visibility */
+	let sidebarVisible = $derived(whiteboardStore.sidebarVisible);
+
+	/** Sidebar width for layout calculation */
+	const SIDEBAR_WIDTH = 180;
+
 	/** Calculate scale to fit page in container with padding */
 	let fitScale = $derived.by(() => {
 		if (containerWidth === 0 || containerHeight === 0) return 1;
 
 		const padding = 40; // pixels of padding around the page
-		const availableWidth = containerWidth - padding * 2;
+		// Account for sidebar width when visible
+		const sidebarOffset = sidebarVisible ? SIDEBAR_WIDTH : 0;
+		const availableWidth = containerWidth - padding * 2 - sidebarOffset;
 		const availableHeight = containerHeight - padding * 2;
 
 		const scaleX = availableWidth / pageWidth;
@@ -127,6 +136,18 @@
 			return;
 		}
 
+		// Page navigation (no modifier needed)
+		if (e.key === 'PageDown') {
+			e.preventDefault();
+			whiteboardStore.nextPage();
+			return;
+		}
+		if (e.key === 'PageUp') {
+			e.preventDefault();
+			whiteboardStore.previousPage();
+			return;
+		}
+
 		// Tool shortcuts (when no modifier)
 		if (!isCtrl && !e.altKey && !e.shiftKey) {
 			switch (e.key.toLowerCase()) {
@@ -182,15 +203,24 @@
 		<span class="text-primary capitalize">{toolState.toolType}</span>
 	</div>
 
-	<!-- Canvas area (flex-grow to take available space) -->
-	<div class="whiteboard-canvas-area flex flex-1 items-center justify-center overflow-hidden">
-		<!-- Canvas wrapper with shadow -->
+	<!-- Main content area with sidebar -->
+	<div class="whiteboard-main relative flex-1 overflow-hidden">
+		<!-- Canvas area -->
 		<div
-			class="whiteboard-page-wrapper relative shadow-lg"
-			style="width: {canvasWidth}px; height: {canvasHeight}px;"
+			class="whiteboard-canvas-area flex h-full items-center justify-center transition-all duration-200"
+			style="margin-right: {sidebarVisible ? SIDEBAR_WIDTH : 0}px;"
 		>
-			<WhiteboardCanvas class="h-full w-full" />
+			<!-- Canvas wrapper with shadow -->
+			<div
+				class="whiteboard-page-wrapper relative shadow-lg"
+				style="width: {canvasWidth}px; height: {canvasHeight}px;"
+			>
+				<WhiteboardCanvas class="h-full w-full" />
+			</div>
 		</div>
+
+		<!-- Page thumbnails sidebar (right) -->
+		<PageThumbnails />
 	</div>
 
 	<!-- Toolbar at bottom -->
