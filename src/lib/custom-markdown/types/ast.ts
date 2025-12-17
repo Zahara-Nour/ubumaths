@@ -414,8 +414,12 @@ export interface CodeBlockNode extends BaseNode {
 // Re-export VariationTableNode for inclusion in BlockNode union
 export type { VariationTableNode } from './variation-table';
 
-// Import the type for use in BlockNode union
+// Re-export ProbabilityTreeNode for inclusion in BlockNode union
+export type { ProbabilityTreeNode } from './probability-tree';
+
+// Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
+import type { ProbabilityTreeNode } from './probability-tree';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -431,7 +435,8 @@ export type BlockNode =
 	| HorizontalRuleNode
 	| BlockquoteNode
 	| CodeBlockNode
-	| VariationTableNode;
+	| VariationTableNode
+	| ProbabilityTreeNode;
 
 // ============================================================================
 // COMPOSITE NODES

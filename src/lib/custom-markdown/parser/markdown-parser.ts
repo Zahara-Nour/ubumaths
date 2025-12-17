@@ -49,6 +49,7 @@ import {
 } from './blockquote-parser';
 import { isCodeFence, findCodeBlocks, parseCodeBlock } from './code-block-parser';
 import { findVariationBlocks, parseVariationTable } from './variation-table-parser';
+import { findProbTreeBlocks, parseProbabilityTree } from './probability-tree-parser';
 
 // ============================================================================
 // REGULAR EXPRESSIONS
@@ -282,10 +283,11 @@ function parseBlocks(
 	const blocks: BlockNode[] = [];
 	let i = 0;
 
-	// Find all structured blocks (code, variation tables, blockquotes, lists, tables)
-	// Code blocks and variation tables have highest priority as their content is verbatim
+	// Find all structured blocks (code, variation tables, probability trees, blockquotes, lists, tables)
+	// Code blocks, variation tables, and probability trees have highest priority as their content is verbatim
 	// Use original lines for code blocks to preserve math expressions
 	const variationBlocks = findVariationBlocks(originalLines);
+	const probTreeBlocks = findProbTreeBlocks(originalLines);
 	const codeBlocks = findCodeBlocks(originalLines);
 	const blockquoteBlocks = findBlockquoteBlocks(lines);
 	const listBlocks = findListBlocks(lines);
@@ -319,7 +321,26 @@ function parseBlocks(
 			continue;
 		}
 
-		// PRIORITY 1b: Check if this line is part of a code block (highest priority)
+		// PRIORITY 1b: Check if this line is part of a probability tree block
+		// Probability trees use ```probtree syntax and must be checked before regular code blocks
+		const probTreeBlock = probTreeBlocks.find(
+			(range) => i >= range.startIndex && i <= range.endIndex
+		);
+		if (probTreeBlock) {
+			const result = parseProbabilityTree(
+				originalLines,
+				probTreeBlock.startIndex,
+				probTreeBlock.endIndex
+			);
+			if (result.node) {
+				blocks.push(result.node);
+			}
+			// Note: Errors are silently ignored for now; could be logged if needed
+			i = probTreeBlock.endIndex + 1;
+			continue;
+		}
+
+		// PRIORITY 1c: Check if this line is part of a code block (highest priority)
 		const codeBlock = codeBlocks.find((range) => i >= range.startIndex && i <= range.endIndex);
 		if (codeBlock) {
 			// Use original lines to preserve math expressions in code blocks
