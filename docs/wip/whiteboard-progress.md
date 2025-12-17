@@ -2,9 +2,54 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 2 - Canvas + Dessin de base
+**Phase completee** : Phase 3 - Formes geometriques
 **Date** : 2025-12-17
 **Statut** : Pret pour commit
+
+---
+
+## Phase 3 : Formes geometriques
+
+### Fichiers crees
+
+| Fichier                                   | Description                           |
+| ----------------------------------------- | ------------------------------------- |
+| `src/lib/whiteboard/core/shapes.ts`       | Utilitaires creation/rendu des formes |
+| `src/lib/whiteboard/tests/shapes.test.ts` | Tests formes geometriques             |
+
+### Fichiers modifies
+
+| Fichier                                                 | Modifications                            |
+| ------------------------------------------------------- | ---------------------------------------- |
+| `src/lib/whiteboard/components/WhiteboardCanvas.svelte` | Ajout dessin formes + preview pointilles |
+| `src/lib/whiteboard/components/Whiteboard.svelte`       | Raccourcis clavier L, R, C, A            |
+| `src/lib/whiteboard/index.ts`                           | Export module shapes                     |
+
+### Tests crees
+
+| Fichier                                   | Tests    |
+| ----------------------------------------- | -------- |
+| `src/lib/whiteboard/tests/shapes.test.ts` | 23 tests |
+
+**Total Phase 3 : 23 nouveaux tests**
+**Total cumule : 148 tests**
+
+### Fonctionnalites implementees
+
+1. **Outils de forme** : line, rectangle, circle, arrow
+2. **Preview pointilles** pendant le dessin
+3. **Arrow marker** pour les fleches (SVG marker)
+4. **Validation formes** : lignes min 5px, rectangles/cercles dimensions non-zero
+5. **Raccourcis clavier** : L (line), R (rectangle), C (circle), A (arrow)
+6. **Rendu SVG** : line, rect, ellipse avec support inverted coordinates
+
+### Code Review
+
+- **Score** : Good
+- **Reviewer** : code-reviewer agent
+- **Issues corrigees** :
+  - Null safety amelioree dans `finalizeShape()` (capture locale des points)
+  - Validation differenciee : lignes/fleches 5px min, rectangles/cercles non-zero width ET height
 
 ---
 
@@ -99,13 +144,15 @@
 
 ## Prochaines etapes
 
-### Phase 3 : Formes geometriques
+### Phase 4 : Toolbar + Selection d'outils
 
 **A faire** :
 
-1. Dessiner lignes, rectangles, cercles, fleches
-2. Apercu en pointilles pendant le dessin
-3. Appliquer styles (stroke, fill, opacite)
+1. Sections depliables (pattern RichTextEditor)
+2. Selection outil met a jour le store
+3. Picker couleur avec presets
+4. Slider epaisseur avec apercu
+5. Raccourcis clavier documentes
 
 **Agent** : `frontend-developer`
 
@@ -115,16 +162,22 @@
 
 ```
 src/lib/whiteboard/
-├── components/          # (Phase 2+)
+├── components/
+│   ├── Whiteboard.svelte
+│   └── WhiteboardCanvas.svelte
 ├── core/
 │   ├── history.svelte.ts
-│   └── serialization.ts
+│   ├── serialization.ts
+│   ├── shapes.ts
+│   └── stroke-smoothing.ts
 ├── stores/
 │   └── whiteboard.svelte.ts
 ├── tests/
 │   ├── document.test.ts
-│   ├── serialization.test.ts
 │   ├── history.svelte.test.ts
+│   ├── serialization.test.ts
+│   ├── shapes.test.ts
+│   ├── stroke-smoothing.test.ts
 │   └── whiteboard-store.svelte.test.ts
 ├── types/
 │   ├── document.ts
