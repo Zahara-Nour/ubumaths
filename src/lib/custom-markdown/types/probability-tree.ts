@@ -113,6 +113,8 @@ export interface ProbTreeConfig {
 	rootLabel: string;
 	/** Whether to show outcomes column on the right (default: false) */
 	showOutcomes: boolean;
+	/** Whether to show intersection probability P(A ∩ B) at leaves (default: false) */
+	showIntersection: boolean;
 }
 
 // ============================================================================

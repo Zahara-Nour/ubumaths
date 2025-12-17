@@ -348,6 +348,7 @@ Arbre à 3 couleurs (urne avec boules rouges, bleues et vertes) :
 \`\`\`probtree
 root: Urne
 outcomes: true
+intersection: true
 
 Rouge:3/9
   Rouge:2/8, P(RR)

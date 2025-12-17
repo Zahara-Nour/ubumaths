@@ -61,6 +61,11 @@ const ROOT_REGEX = /^\s*root\s*:\s*(.+?)\s*$/;
 const OUTCOMES_REGEX = /^\s*outcomes\s*:\s*(true|false)\s*$/i;
 
 /**
+ * Regex to parse intersection config: intersection: true/false
+ */
+const INTERSECTION_REGEX = /^\s*intersection\s*:\s*(true|false)\s*$/i;
+
+/**
  * Regex to parse branch line with optional outcome
  * Format: event:probability[, outcome]
  * Supports spaces around colon
@@ -351,7 +356,8 @@ export function parseProbTreeContent(lines: string[]): ProbTreeParseResult {
 	// Parse configuration
 	const config: ProbTreeConfig = {
 		rootLabel: '',
-		showOutcomes: false
+		showOutcomes: false,
+		showIntersection: false
 	};
 
 	const branchLines: ParsedBranchLine[] = [];
@@ -377,6 +383,13 @@ export function parseProbTreeContent(lines: string[]): ProbTreeParseResult {
 		const outcomesMatch = line.match(OUTCOMES_REGEX);
 		if (outcomesMatch) {
 			config.showOutcomes = outcomesMatch[1].toLowerCase() === 'true';
+			continue;
+		}
+
+		// Try to parse as intersection config
+		const intersectionMatch = line.match(INTERSECTION_REGEX);
+		if (intersectionMatch) {
+			config.showIntersection = intersectionMatch[1].toLowerCase() === 'true';
 			continue;
 		}
 
