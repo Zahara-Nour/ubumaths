@@ -498,6 +498,9 @@ function convertProbabilityTree(node: ProbabilityTreeNode): JSONContent {
 	if (node.config.showOutcomes) {
 		lines.push(`outcomes: true`);
 	}
+	if (node.config.showIntersection) {
+		lines.push(`intersection: true`);
+	}
 
 	// Add blank line before branches if we have config
 	if (lines.length > 0) {
