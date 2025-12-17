@@ -137,10 +137,6 @@
 		protractor: { x: 156, y: 0 }, // Right edge
 		setSquare: { x: 131, y: 0 } // Bottom-right corner
 	};
-
-	function getRotationHandlePosition(type: InstrumentType): { x: number; y: number } {
-		return ROTATION_HANDLE_POSITIONS[type];
-	}
 </script>
 
 <!-- Instrument Layer SVG Group -->
@@ -181,10 +177,9 @@
 					tabindex="0"
 					aria-label="Pivoter la regle"
 				>
-					{@const handle = getRotationHandlePosition('ruler')}
 					<circle
-						cx={handle.x}
-						cy={handle.y}
+						cx={ROTATION_HANDLE_POSITIONS.ruler.x}
+						cy={ROTATION_HANDLE_POSITIONS.ruler.y}
 						r="10"
 						fill="var(--color-primary, #3b82f6)"
 						fill-opacity="0.8"
@@ -192,8 +187,8 @@
 						stroke-width="2"
 					/>
 					<text
-						x={handle.x}
-						y={handle.y + 4}
+						x={ROTATION_HANDLE_POSITIONS.ruler.x}
+						y={ROTATION_HANDLE_POSITIONS.ruler.y + 4}
 						text-anchor="middle"
 						fill="white"
 						font-size="12"
@@ -235,10 +230,9 @@
 					tabindex="0"
 					aria-label="Pivoter le rapporteur"
 				>
-					{@const handle = getRotationHandlePosition('protractor')}
 					<circle
-						cx={handle.x}
-						cy={handle.y}
+						cx={ROTATION_HANDLE_POSITIONS.protractor.x}
+						cy={ROTATION_HANDLE_POSITIONS.protractor.y}
 						r="10"
 						fill="var(--color-primary, #3b82f6)"
 						fill-opacity="0.8"
@@ -246,8 +240,8 @@
 						stroke-width="2"
 					/>
 					<text
-						x={handle.x}
-						y={handle.y + 4}
+						x={ROTATION_HANDLE_POSITIONS.protractor.x}
+						y={ROTATION_HANDLE_POSITIONS.protractor.y + 4}
 						text-anchor="middle"
 						fill="white"
 						font-size="12"
@@ -289,10 +283,9 @@
 					tabindex="0"
 					aria-label="Pivoter l'equerre"
 				>
-					{@const handle = getRotationHandlePosition('setSquare')}
 					<circle
-						cx={handle.x}
-						cy={handle.y}
+						cx={ROTATION_HANDLE_POSITIONS.setSquare.x}
+						cy={ROTATION_HANDLE_POSITIONS.setSquare.y}
 						r="10"
 						fill="var(--color-primary, #3b82f6)"
 						fill-opacity="0.8"
@@ -300,8 +293,8 @@
 						stroke-width="2"
 					/>
 					<text
-						x={handle.x}
-						y={handle.y + 4}
+						x={ROTATION_HANDLE_POSITIONS.setSquare.x}
+						y={ROTATION_HANDLE_POSITIONS.setSquare.y + 4}
 						text-anchor="middle"
 						fill="white"
 						font-size="12"
