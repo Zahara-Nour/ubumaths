@@ -106,6 +106,8 @@
 
 	let hoveredPath = $state<string[]>([]);
 	let selectedPath = $state<string[]>([]);
+	// Track which branches show probability name instead of value (use object for guaranteed reactivity)
+	let showProbName = $state<Record<string, boolean>>({});
 
 	// =========================================================================
 	// LAYOUT CALCULATION
@@ -300,6 +302,61 @@
 		return parentIndex !== -1 && childIndex !== -1 && childIndex === parentIndex + 1;
 	}
 
+	/**
+	 * Build a map from node ID to the branch that leads to it (for parent event lookup)
+	 */
+	function buildParentBranchMap(
+		current: ProbTreeNode,
+		parentBranch: ProbTreeBranch | null,
+		map: Map<string, ProbTreeBranch | null>
+	): void {
+		map.set(current.id, parentBranch);
+		for (const branch of current.branches) {
+			buildParentBranchMap(branch.child, branch, map);
+		}
+	}
+
+	// Map from node ID to its parent branch (null for root)
+	let parentBranchMap = $derived.by(() => {
+		const map = new Map<string, ProbTreeBranch | null>();
+		buildParentBranchMap(node.root, null, map);
+		return map;
+	});
+
+	/**
+	 * Wrap multi-letter text labels in \text{} for proper LaTeX rendering
+	 * Single letters or already LaTeX-formatted strings are left as-is
+	 */
+	function wrapTextLabel(label: string): string {
+		// Already contains LaTeX commands - leave as-is
+		if (label.includes('\\')) return label;
+		// Single character - leave as-is (will render as math variable)
+		if (label.length === 1) return label;
+		// Multi-letter word - wrap in \text{}
+		return `\\text{${label}}`;
+	}
+
+	/**
+	 * Get conditional probability notation P_A(B) for a branch
+	 * - First level (from root): P(B)
+	 * - Deeper levels: P_A(B) where A is parent event
+	 */
+	function getConditionalProbabilityName(parentId: string, childEventLabel: string): string {
+		const parentBranch = parentBranchMap.get(parentId);
+		// Clean event label for notation (remove $ markers if present)
+		const cleanChild = childEventLabel.replace(/^\$|\$$/g, '');
+		const wrappedChild = wrapTextLabel(cleanChild);
+
+		if (parentBranch === null || parentBranch === undefined) {
+			// First level - simple P(B)
+			return `P(${wrappedChild})`;
+		}
+		// Deeper level - conditional P_A(B)
+		const cleanParent = parentBranch.eventLabel.replace(/^\$|\$$/g, '');
+		const wrappedParent = wrapTextLabel(cleanParent);
+		return `P_{${wrappedParent}}(${wrappedChild})`;
+	}
+
 	// =========================================================================
 	// EVENT HANDLERS
 	// =========================================================================
@@ -332,6 +389,12 @@
 		if (event.target === event.currentTarget) {
 			selectedPath = [];
 		}
+	}
+
+	function handleProbLabelClick(event: MouseEvent, branchKey: string) {
+		event.stopPropagation();
+		const currentValue = showProbName[branchKey] ?? false;
+		showProbName = { ...showProbName, [branchKey]: !currentValue };
 	}
 
 	// =========================================================================
@@ -433,7 +496,7 @@
 			{#if rootPos}
 				<foreignObject x={rootPos.x} y={rootPos.y - 10} width={nodeLabelWidth} height="20">
 					<div class="pt-label pt-event-label pt-root-label">
-						<math-span>{toLatex(node.config.rootLabel)}</math-span>
+						<math-span>{toLatex(wrapTextLabel(node.config.rootLabel))}</math-span>
 					</div>
 				</foreignObject>
 			{/if}
@@ -466,6 +529,11 @@
 					: 0}
 			{@const labelX = midX + normalX * PROB_PERP_OFFSET + (dx / branchLength) * tangentShift}
 			{@const labelY = midY + normalY * PROB_PERP_OFFSET + (dy / branchLength) * tangentShift}
+			{@const branchKey = `${branchData.parentId}-${branchData.childId}`}
+			{@const showName = showProbName[branchKey] ?? false}
+			{@const probText = showName
+				? getConditionalProbabilityName(branchData.parentId, branchData.branch.eventLabel)
+				: branchData.branch.probability.display}
 
 			<g
 				class="pt-branch"
@@ -506,10 +574,19 @@
 					class="pt-branch-line"
 				/>
 
-				<!-- Probability label (perpendicular to branch, above line) -->
-				<foreignObject x={labelX - 30} y={labelY - 10} width="60" height="20">
-					<div class="pt-label pt-prob-label">
-						<math-span>{toLatex(branchData.branch.probability.display)}</math-span>
+				<!-- Probability label (perpendicular to branch, above line) - clickable to toggle name/value -->
+				<foreignObject
+					x={labelX - 40}
+					y={labelY - 10}
+					width="80"
+					height="20"
+					class="pt-prob-foreign"
+					onclick={(e) => handleProbLabelClick(e, branchKey)}
+				>
+					<div class="pt-label pt-prob-label pt-prob-clickable">
+						{#key probText}
+							<math-span>{toLatex(probText)}</math-span>
+						{/key}
 					</div>
 				</foreignObject>
 
@@ -521,7 +598,7 @@
 					height="20"
 				>
 					<div class="pt-label pt-event-label">
-						<math-span>{toLatex(branchData.branch.eventLabel)}</math-span>
+						<math-span>{toLatex(wrapTextLabel(branchData.branch.eventLabel))}</math-span>
 					</div>
 				</foreignObject>
 			</g>
@@ -630,6 +707,19 @@
 
 	.pt-prob-label {
 		font-weight: 500;
+	}
+
+	.pt-prob-foreign {
+		cursor: pointer;
+	}
+
+	.pt-prob-clickable {
+		pointer-events: auto;
+		cursor: pointer;
+	}
+
+	.pt-prob-clickable:hover {
+		color: var(--pt-highlight-color, #3b82f6);
 	}
 
 	.pt-branch.pt-highlighted .pt-prob-label {
