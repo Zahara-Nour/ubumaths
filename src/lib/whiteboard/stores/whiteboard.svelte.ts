@@ -92,6 +92,20 @@ function createWhiteboardStore() {
 	const canUndo = $derived(history?.canUndo ?? false);
 	const canRedo = $derived(history?.canRedo ?? false);
 
+	// Combined tool state for convenience
+	const toolState = $derived.by(() => {
+		const settings =
+			currentTool in toolSettings
+				? toolSettings[currentTool as DrawingTool]
+				: { color: '#000000', width: 2, opacity: 1 };
+		return {
+			toolType: currentTool,
+			color: settings.color,
+			strokeWidth: settings.width,
+			opacity: settings.opacity
+		};
+	});
+
 	// === Internal Methods ===
 
 	function scheduleAutosave(): void {
@@ -166,6 +180,9 @@ function createWhiteboardStore() {
 		},
 		get toolSettings() {
 			return toolSettings;
+		},
+		get toolState() {
+			return toolState;
 		},
 		get hasUnsavedChanges() {
 			return hasUnsavedChanges;

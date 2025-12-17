@@ -65,3 +65,17 @@ export type {
 	ToolSettings
 } from './stores/whiteboard.svelte';
 export { whiteboardStore } from './stores/whiteboard.svelte';
+
+// Stroke smoothing
+export type { SmoothingOptions, BoundingBox } from './core/stroke-smoothing';
+export {
+	smoothStroke,
+	getToolOptions,
+	pointsToSvgPath,
+	getBoundingBox,
+	doStrokesIntersect
+} from './core/stroke-smoothing';
+
+// Components
+export { default as Whiteboard } from './components/Whiteboard.svelte';
+export { default as WhiteboardCanvas } from './components/WhiteboardCanvas.svelte';

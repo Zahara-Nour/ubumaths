@@ -2,9 +2,51 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 1 - Foundation (Core + Store)
+**Phase completee** : Phase 2 - Canvas + Dessin de base
 **Date** : 2025-12-17
 **Statut** : Pret pour commit
+
+---
+
+## Phase 2 : Canvas + Dessin de base
+
+### Fichiers crees
+
+| Fichier                                                 | Description                              |
+| ------------------------------------------------------- | ---------------------------------------- |
+| `src/lib/whiteboard/core/stroke-smoothing.ts`           | Integration perfect-freehand + geometrie |
+| `src/lib/whiteboard/components/WhiteboardCanvas.svelte` | Canvas SVG multi-couches                 |
+| `src/lib/whiteboard/components/Whiteboard.svelte`       | Conteneur principal + raccourcis clavier |
+
+### Tests crees
+
+| Fichier                                             | Tests    |
+| --------------------------------------------------- | -------- |
+| `src/lib/whiteboard/tests/stroke-smoothing.test.ts` | 23 tests |
+
+**Total Phase 2 : 23 nouveaux tests**
+**Total cumule : 125 tests**
+
+### Fonctionnalites implementees
+
+1. **Lissage des traits** avec perfect-freehand
+2. **Canvas SVG 4 couches** : background, content, active-stroke, instruments
+3. **Outils de dessin** : pen, highlighter, eraser
+4. **Eraser par intersection** : suppression reelle des strokes (pas white overlay)
+5. **Backgrounds** : plain, grid, ruled, dotted
+6. **Raccourcis clavier** : P (pen), H (highlighter), E (eraser), Ctrl+Z (undo)
+7. **Detection d'intersection** : bounding box + segment-to-segment
+
+### Code Review
+
+- **Score** : Good
+- **Reviewer** : code-reviewer agent
+- **Issues corrigees** :
+  - Ajout `toolState` getter au store
+  - Fix `isLoading` const -> let
+  - Ajout try/finally pour release pointer capture
+  - Ajout attributs accessibilite SVG (role, aria-label)
+  - Suppression code mort (containerEl, scale, viewportOffset)
 
 ---
 
@@ -57,14 +99,13 @@
 
 ## Prochaines etapes
 
-### Phase 2 : Canvas + Dessin de base
+### Phase 3 : Formes geometriques
 
 **A faire** :
 
-1. Creer `WhiteboardCanvas.svelte` avec SVG multi-couches
-2. Implementer capture pointer events
-3. Integrer `perfect-freehand` pour lissage
-4. Supporter stylo, surligneur, gomme
+1. Dessiner lignes, rectangles, cercles, fleches
+2. Apercu en pointilles pendant le dessin
+3. Appliquer styles (stroke, fill, opacite)
 
 **Agent** : `frontend-developer`
 
