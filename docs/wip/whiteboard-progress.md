@@ -2,9 +2,60 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 5 - Instruments educatifs
+**Phase completee** : Phase 6 - TextBlocks
 **Date** : 2025-12-17
 **Statut** : Pret pour commit
+
+---
+
+## Phase 6 : TextBlocks
+
+### Fichiers crees
+
+| Fichier                                               | Description                          |
+| ----------------------------------------------------- | ------------------------------------ |
+| `src/lib/whiteboard/components/TextBlock.svelte`      | Composant bloc texte VIEW/EDIT modes |
+| `src/lib/whiteboard/components/TextBlockLayer.svelte` | Conteneur des blocs texte            |
+| `src/lib/whiteboard/tests/textblock.test.ts`          | Tests TextBlock (42 tests)           |
+
+### Fichiers modifies
+
+| Fichier                                                  | Modifications                                |
+| -------------------------------------------------------- | -------------------------------------------- |
+| `src/lib/whiteboard/stores/whiteboard.svelte.ts`         | TextBlock ops (create, update, resize, move) |
+| `src/lib/whiteboard/components/WhiteboardCanvas.svelte`  | Integration TextBlockLayer + text tool       |
+| `src/lib/whiteboard/components/WhiteboardToolbar.svelte` | Bouton outil Text (T)                        |
+| `src/lib/whiteboard/components/Whiteboard.svelte`        | Raccourci T + contentEditable check          |
+
+### Tests crees
+
+| Fichier                                      | Tests    |
+| -------------------------------------------- | -------- |
+| `src/lib/whiteboard/tests/textblock.test.ts` | 42 tests |
+
+**Total Phase 6 : 42 nouveaux tests**
+**Total cumule : 182 tests**
+
+### Fonctionnalites implementees
+
+1. **TextBlock component** : Bloc texte avec modes VIEW et EDIT
+2. **Mode VIEW** : MarkdownRenderer avec double-clic pour editer
+3. **Mode EDIT** : RichTextEditor avec support LaTeX (MathLive)
+4. **Drag** : Deplacement des blocs par drag (mode VIEW uniquement)
+5. **Resize** : 8 handles de redimensionnement avec contraintes min (150x50)
+6. **Sortie edit** : Escape ou clic exterieur sauvegarde et sort
+7. **Outil Text** : Bouton toolbar + raccourci T
+8. **Focus auto** : Focus sur l'editeur en entrant mode edit
+
+### Code Review
+
+- **Score** : Good (apres corrections)
+- **Reviewer** : code-reviewer agent
+- **Issues corrigees** :
+  - `resizeAndMoveTextBlock()` combine pour eviter double history entries
+  - Click-outside avec capture phase (sans delai 100ms)
+  - Focus management auto sur contenteditable
+  - ContentEditable check pour keyboard shortcuts
 
 ---
 
@@ -244,18 +295,16 @@
 
 ## Prochaines etapes
 
-### Phase 6 : TextBlocks
+### Phase 7 : Multi-pages
 
 **A faire** :
 
-1. Creer un bloc texte au clic (outil texte)
-2. Mode EDIT = RichTextEditor avec toolbar integree
-3. Mode VIEW = MarkdownRenderer (double-clic pour editer)
-4. Support formules LaTeX (MathLive)
-5. Resize avec handles
-6. Escape ou clic exterieur = sortir du mode edit
+1. Sidebar avec thumbnails des pages
+2. Ajouter/supprimer pages
+3. Navigation entre pages
+4. Generation thumbnails a partir du contenu
 
-**Agent** : `svelte-expert`
+**Agent** : `frontend-developer`
 
 ---
 
@@ -267,7 +316,9 @@ src/lib/whiteboard/
 │   ├── Whiteboard.svelte
 │   ├── WhiteboardCanvas.svelte
 │   ├── WhiteboardToolbar.svelte
-│   └── InstrumentLayer.svelte
+│   ├── InstrumentLayer.svelte
+│   ├── TextBlock.svelte
+│   └── TextBlockLayer.svelte
 ├── core/
 │   ├── history.svelte.ts
 │   ├── serialization.ts
@@ -282,6 +333,7 @@ src/lib/whiteboard/
 │   ├── serialization.test.ts
 │   ├── shapes.test.ts
 │   ├── stroke-smoothing.test.ts
+│   ├── textblock.test.ts
 │   ├── toolbar.test.ts
 │   └── whiteboard-store.svelte.test.ts
 ├── types/

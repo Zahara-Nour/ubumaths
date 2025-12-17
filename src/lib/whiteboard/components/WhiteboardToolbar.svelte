@@ -18,6 +18,7 @@
 		Pen,
 		Highlighter,
 		Eraser,
+		Type,
 		Minus,
 		Square,
 		Circle,
@@ -56,7 +57,8 @@
 	const DRAWING_TOOLS: { id: Tool; icon: typeof Pen; shortcut: string; label: string }[] = [
 		{ id: 'pen', icon: Pen, shortcut: 'P', label: 'Stylo' },
 		{ id: 'highlighter', icon: Highlighter, shortcut: 'H', label: 'Surligneur' },
-		{ id: 'eraser', icon: Eraser, shortcut: 'E', label: 'Gomme' }
+		{ id: 'eraser', icon: Eraser, shortcut: 'E', label: 'Gomme' },
+		{ id: 'text', icon: Type, shortcut: 'T', label: 'Texte' }
 	];
 
 	const SHAPE_TOOLS: { id: Tool; icon: typeof Minus; shortcut: string; label: string }[] = [
