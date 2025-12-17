@@ -136,10 +136,25 @@ export function findProbTreeBlocks(lines: string[]): ProbTreeBlockRange[] {
 // ============================================================================
 
 /**
+ * Regex to detect placeholder patterns for fill-in-the-blank exercises
+ * Matches: ..., ???, ??, ?, \ldots, or any sequence of dots
+ */
+const PLACEHOLDER_REGEX = /^(\.{2,}|\?{1,3}|\\ldots)$/;
+
+/**
  * Parse a probability string into a ProbabilityValue
  */
 export function parseProbability(probStr: string): ProbabilityValue {
 	const trimmed = probStr.trim();
+
+	// Check for placeholder patterns first (for fill-in-the-blank exercises)
+	if (PLACEHOLDER_REGEX.test(trimmed)) {
+		return {
+			display: '\\ldots', // Render as proper LaTeX ellipsis
+			numeric: null,
+			format: 'placeholder'
+		};
+	}
 
 	// Try simple fraction: 1/2, 3/5
 	const fractionMatch = trimmed.match(FRACTION_REGEX);

@@ -36,13 +36,33 @@ EventLabel:probability[, outcome]
 
 ### Probability Formats
 
-| Format     | Example       | Description          |
-| ---------- | ------------- | -------------------- |
-| Fraction   | `3/5`         | Simple fraction      |
-| Decimal    | `0.6`         | Decimal number       |
-| Symbolic   | `P(A)`        | Symbolic notation    |
-| LaTeX      | `\frac{1}{3}` | LaTeX fraction       |
-| Expression | `1-p`         | Algebraic expression |
+| Format      | Example       | Description                        |
+| ----------- | ------------- | ---------------------------------- |
+| Fraction    | `3/5`         | Simple fraction                    |
+| Decimal     | `0.6`         | Decimal number                     |
+| Symbolic    | `P(A)`        | Symbolic notation                  |
+| LaTeX       | `\frac{1}{3}` | LaTeX fraction                     |
+| Expression  | `1-p`         | Algebraic expression               |
+| Placeholder | `...`         | Fill-in-the-blank (renders as `…`) |
+
+### Placeholder for Exercises
+
+Use `...`, `???`, `?`, or `\ldots` for fill-in-the-blank exercises:
+
+````markdown
+```probtree
+root: Urne
+
+Rouge:3/5
+  Rouge:...
+  Bleue:...
+Bleue:...
+  Rouge:...
+  Bleue:...
+```
+````
+
+All placeholder patterns render as `…` (LaTeX ellipsis).
 
 ### Indentation
 
@@ -89,9 +109,15 @@ The `ProbabilityTree.svelte` component renders:
 
 **Interactivity:**
 
-- **Hover**: Highlights path from root to hovered branch, shows cumulative probability in tooltip
-- **Click**: Persistent path selection (click again to deselect)
+- **Hover branch**: Highlights path from root to hovered branch, shows cumulative probability in tooltip
+- **Click branch**: Persistent path selection (click again to deselect)
+- **Click probability label**: Toggle between value (e.g., `3/5`) and conditional notation (e.g., `P_Rouge(Bleue)`)
+- **Click leaf event label**: Highlight all paths ending with the same event (e.g., click "Rouge" at a leaf to see all paths to "Rouge")
 - **Keyboard**: Enter/Space to select, focus navigation
+
+**Automatic displays:**
+
+- **Intersection probability at leaves**: Shows `P(A ∩ B)` notation for each path (e.g., `P(Rouge ∩ Bleue)`)
 
 ### LaTeX Export (TikZ)
 

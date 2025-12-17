@@ -25,8 +25,9 @@ import type { BaseNode } from './ast';
  * - 'fraction': e.g., "1/2", "3/5"
  * - 'decimal': e.g., "0.5", "0.333"
  * - 'symbolic': e.g., "P(A)", "P(A|B)", non-numeric expression
+ * - 'placeholder': e.g., "...", "???", "?" for fill-in-the-blank exercises
  */
-export type ProbabilityFormat = 'fraction' | 'decimal' | 'symbolic';
+export type ProbabilityFormat = 'fraction' | 'decimal' | 'symbolic' | 'placeholder';
 
 /**
  * Probability value representation
