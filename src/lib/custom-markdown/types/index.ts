@@ -38,6 +38,7 @@ export type {
 	BlockquoteNode,
 	CodeBlockNode,
 	VariationTableNode,
+	ProbabilityTreeNode,
 	BlockNode,
 	// Composite
 	ASTNode,
@@ -77,6 +78,29 @@ export type {
 	VariationTableParseError,
 	VariationTableParseResult
 } from './variation-table';
+
+// ============================================================================
+// PROBABILITY TREE TYPES
+// ============================================================================
+
+export type {
+	// Probability value
+	ProbabilityFormat,
+	ProbabilityValue,
+	// Tree structure
+	ProbTreeBranch,
+	ProbTreeNode,
+	// Configuration
+	ProbTreeConfig,
+	// Parser types
+	ProbTreeParseError,
+	ProbTreeParseWarning,
+	ProbTreeParseResult,
+	ProbTreeBlockRange,
+	// Utility types
+	TreePath,
+	CumulativeProbability
+} from './probability-tree';
 
 // ============================================================================
 // PARSER TYPES
