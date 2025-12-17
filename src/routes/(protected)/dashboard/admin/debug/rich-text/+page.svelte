@@ -314,6 +314,35 @@ variation: f(x)
   +inf: +inf, top
 \`\`\`
 
+## Arbres de Probabilité
+
+Arbre simple (urne avec boules) :
+
+\`\`\`probtree
+root: Urne
+outcomes: true
+
+Rouge:3/5
+  Rouge:2/4, P(RR)=6/20
+  Bleue:2/4, P(RB)=6/20
+Bleue:2/5
+  Rouge:3/4, P(BR)=6/20
+  Bleue:1/4, P(BB)=2/20
+\`\`\`
+
+Arbre avec probabilités symboliques :
+
+\`\`\`probtree
+root: $\\Omega$
+
+$A$:p
+  $B$:q
+  $\\bar{B}$:1-q
+$\\bar{A}$:1-p
+  $B$:q
+  $\\bar{B}$:1-q
+\`\`\`
+
 ## Hashtags et Mentions
 
 Hashtag simple : #mathematiques
