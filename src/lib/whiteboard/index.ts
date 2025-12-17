@@ -76,6 +76,15 @@ export {
 	doStrokesIntersect
 } from './core/stroke-smoothing';
 
+// Shapes
+export type { ShapeOptions, ShapeRenderProps, ShapeBounds } from './core/shapes';
+export {
+	createShapeElement,
+	getShapeSvgProps,
+	calculateShapeBounds,
+	isPointInShapeBounds
+} from './core/shapes';
+
 // Components
 export { default as Whiteboard } from './components/Whiteboard.svelte';
 export { default as WhiteboardCanvas } from './components/WhiteboardCanvas.svelte';

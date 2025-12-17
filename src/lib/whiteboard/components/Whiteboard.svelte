@@ -130,6 +130,7 @@
 		// Tool shortcuts (when no modifier)
 		if (!isCtrl && !e.altKey && !e.shiftKey) {
 			switch (e.key.toLowerCase()) {
+				// Drawing tools
 				case 'p':
 					e.preventDefault();
 					whiteboardStore.setTool('pen');
@@ -141,6 +142,23 @@
 				case 'e':
 					e.preventDefault();
 					whiteboardStore.setTool('eraser');
+					break;
+				// Shape tools
+				case 'l':
+					e.preventDefault();
+					whiteboardStore.setTool('line');
+					break;
+				case 'r':
+					e.preventDefault();
+					whiteboardStore.setTool('rectangle');
+					break;
+				case 'c':
+					e.preventDefault();
+					whiteboardStore.setTool('circle');
+					break;
+				case 'a':
+					e.preventDefault();
+					whiteboardStore.setTool('arrow');
 					break;
 			}
 		}
@@ -184,7 +202,10 @@
 		<kbd class="rounded bg-gray-100 px-1">P</kbd> Pen
 		<kbd class="ml-2 rounded bg-gray-100 px-1">H</kbd> Highlighter
 		<kbd class="ml-2 rounded bg-gray-100 px-1">E</kbd> Eraser
-		<kbd class="ml-2 rounded bg-gray-100 px-1">Ctrl+Z</kbd> Undo
+		<kbd class="ml-2 rounded bg-gray-100 px-1">L</kbd> Line
+		<kbd class="ml-2 rounded bg-gray-100 px-1">R</kbd> Rect
+		<kbd class="ml-2 rounded bg-gray-100 px-1">C</kbd> Circle
+		<kbd class="ml-2 rounded bg-gray-100 px-1">A</kbd> Arrow
 	</div>
 </div>
 
