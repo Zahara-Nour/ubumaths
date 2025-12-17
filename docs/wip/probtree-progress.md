@@ -98,7 +98,31 @@
 - Extraction des magic numbers en constantes nommees
 - Export des types d'options dans index.ts
 
+## Phase 4: Polish + Documentation - COMPLETE
+
+### Fichiers crees
+
+- `docs/claude/probability-trees.md` - Documentation complete du module
+
+### Revue des messages d'erreur
+
+Messages d'erreur existants (clairs et explicites):
+
+- "Invalid branch format: missing probability separator (:)"
+- "Invalid indentation: X spaces (must be multiple of 2)"
+- "Orphan branch: skips indentation level"
+- "Empty probtree block"
+- "No branches defined in probtree block"
+
+### Edge cases couverts (via tests Phase 1)
+
+- Arbre vide (erreur)
+- Aucune branche (erreur)
+- Indentation invalide (erreur)
+- Arbre simple (1 niveau)
+- Arbre complexe (multi-niveaux)
+- Probabilites formats multiples
+
 ## Prochaines etapes
 
-- Phase 4: Polish + Documentation
 - Phase Finale: Quality checks
