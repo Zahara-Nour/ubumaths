@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import type { Page, WhiteboardDocument } from '../types/document';
+import type { Page, WhiteboardDocument, WhiteboardElement } from '../types/document';
 import { createEmptyPage, createEmptyDocument } from '../types/document';
 
 // =============================================================================
@@ -17,9 +17,10 @@ import { createEmptyPage, createEmptyDocument } from '../types/document';
  */
 function createTestDocument(pageCount: number = 3): WhiteboardDocument {
 	const doc = createEmptyDocument('Test Document', 'A4');
-	// Add additional pages
+	// Add additional pages (cast to mutable array for test setup)
+	const mutablePages = doc.pages as Page[];
 	for (let i = 1; i < pageCount; i++) {
-		doc.pages.push(createEmptyPage('A4'));
+		mutablePages.push(createEmptyPage('A4'));
 	}
 	return doc;
 }
@@ -95,10 +96,10 @@ describe('Page Navigation', () => {
 	});
 
 	it('can navigate to any valid page index', () => {
-		doc.currentPageIndex = 2;
+		(doc as unknown as { currentPageIndex: number }).currentPageIndex = 2;
 		expect(doc.currentPageIndex).toBe(2);
 
-		doc.currentPageIndex = 4;
+		(doc as unknown as { currentPageIndex: number }).currentPageIndex = 4;
 		expect(doc.currentPageIndex).toBe(4);
 	});
 
@@ -113,7 +114,7 @@ describe('Page Navigation', () => {
 	});
 
 	it('can get current page by index', () => {
-		doc.currentPageIndex = 2;
+		(doc as unknown as { currentPageIndex: number }).currentPageIndex = 2;
 		const currentPage = doc.pages[doc.currentPageIndex];
 		expect(currentPage).toBe(doc.pages[2]);
 	});
@@ -136,7 +137,7 @@ describe('Page Reordering', () => {
 		];
 		// Give them identifiable IDs for testing
 		pages.forEach((p, i) => {
-			(p as { id: string }).id = `page-${i}`;
+			(p as unknown as { id: string }).id = `page-${i}`;
 		});
 	});
 
@@ -237,7 +238,7 @@ describe('Add Page', () => {
 
 	it('adds page at the end', () => {
 		const newPage = createEmptyPage('A4');
-		doc.pages.push(newPage);
+		(doc.pages as Page[]).push(newPage);
 		expect(doc.pages.length).toBe(3);
 		expect(doc.pages[2]).toBe(newPage);
 	});
@@ -269,7 +270,7 @@ describe('Delete Page', () => {
 
 	it('can delete page by index', () => {
 		const removedId = doc.pages[1].id;
-		doc.pages.splice(1, 1);
+		(doc.pages as Page[]).splice(1, 1);
 		expect(doc.pages.length).toBe(2);
 		expect(doc.pages.find((p) => p.id === removedId)).toBeUndefined();
 	});
@@ -281,23 +282,29 @@ describe('Delete Page', () => {
 	});
 
 	it('adjusts currentPageIndex when deleting current page', () => {
-		doc.currentPageIndex = 2;
-		doc.pages.splice(2, 1);
+		(doc as unknown as { currentPageIndex: number }).currentPageIndex = 2;
+		(doc.pages as Page[]).splice(2, 1);
 		// Should clamp to valid range
-		doc.currentPageIndex = Math.min(doc.currentPageIndex, doc.pages.length - 1);
+		(doc as unknown as { currentPageIndex: number }).currentPageIndex = Math.min(
+			doc.currentPageIndex,
+			doc.pages.length - 1
+		);
 		expect(doc.currentPageIndex).toBe(1);
 	});
 
 	it('adjusts currentPageIndex when deleting page before current', () => {
-		doc.currentPageIndex = 2;
-		doc.pages.splice(0, 1);
-		doc.currentPageIndex = Math.max(0, doc.currentPageIndex - 1);
+		(doc as unknown as { currentPageIndex: number }).currentPageIndex = 2;
+		(doc.pages as Page[]).splice(0, 1);
+		(doc as unknown as { currentPageIndex: number }).currentPageIndex = Math.max(
+			0,
+			doc.currentPageIndex - 1
+		);
 		expect(doc.currentPageIndex).toBe(1);
 	});
 
 	it('keeps currentPageIndex when deleting page after current', () => {
-		doc.currentPageIndex = 0;
-		doc.pages.splice(2, 1);
+		(doc as unknown as { currentPageIndex: number }).currentPageIndex = 0;
+		(doc.pages as Page[]).splice(2, 1);
 		expect(doc.currentPageIndex).toBe(0);
 	});
 });
@@ -318,7 +325,7 @@ describe('Thumbnail Data Generation', () => {
 
 	it('detects strokes', () => {
 		const page = createEmptyPage('A4');
-		page.elements.push({
+		(page.elements as WhiteboardElement[]).push({
 			id: 'stroke-1',
 			type: 'stroke',
 			toolType: 'pen',
@@ -334,7 +341,7 @@ describe('Thumbnail Data Generation', () => {
 
 	it('detects shapes', () => {
 		const page = createEmptyPage('A4');
-		page.elements.push({
+		(page.elements as WhiteboardElement[]).push({
 			id: 'shape-1',
 			type: 'shape',
 			shapeType: 'rectangle',
@@ -350,7 +357,7 @@ describe('Thumbnail Data Generation', () => {
 
 	it('detects text blocks', () => {
 		const page = createEmptyPage('A4');
-		page.elements.push({
+		(page.elements as WhiteboardElement[]).push({
 			id: 'textblock-1',
 			type: 'textblock',
 			position: { x: 0, y: 0 },
@@ -365,7 +372,7 @@ describe('Thumbnail Data Generation', () => {
 
 	it('counts all element types', () => {
 		const page = createEmptyPage('A4');
-		page.elements.push(
+		(page.elements as WhiteboardElement[]).push(
 			{
 				id: 'stroke-1',
 				type: 'stroke',

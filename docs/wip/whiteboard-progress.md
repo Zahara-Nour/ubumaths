@@ -2,9 +2,70 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 9 - Stockage local + Google Drive
+**Phase completee** : Phase 10 - Export (PNG, SVG, PDF)
 **Date** : 2025-12-17
-**Statut** : Pret pour commit
+**Commit** : `fe99a914`
+**Statut** : En cours Phase 11
+
+---
+
+## Phase 10 : Export (PNG, SVG, PDF)
+
+### Fichiers crees
+
+| Fichier                                             | Description                                       |
+| --------------------------------------------------- | ------------------------------------------------- |
+| `src/lib/whiteboard/core/pdf-export.ts`             | Export PNG, SVG, PDF (jspdf)                      |
+| `src/lib/whiteboard/components/ExportDialog.svelte` | Dialog options export (format, resolution, pages) |
+| `src/lib/whiteboard/tests/export.test.ts`           | Tests export (47 tests)                           |
+
+### Fichiers modifies
+
+| Fichier                                                  | Modifications          |
+| -------------------------------------------------------- | ---------------------- |
+| `src/lib/whiteboard/components/WhiteboardToolbar.svelte` | Bouton Export + Dialog |
+
+### Dependances ajoutees
+
+- `jspdf@3.0.4` - Generation PDF client-side (lazy loaded)
+
+### Tests crees
+
+| Fichier                                   | Tests    |
+| ----------------------------------------- | -------- |
+| `src/lib/whiteboard/tests/export.test.ts` | 47 tests |
+
+**Total Phase 10 : 47 nouveaux tests**
+**Total cumule : 532 tests**
+
+### Fonctionnalites implementees
+
+1. **Export PNG** : 1x, 2x, 3x resolution (choix utilisateur)
+2. **Export SVG** : Export vectoriel
+3. **Export PDF** : Multi-pages avec jspdf (lazy loaded)
+4. **Selection pages** : Page courante, toutes, ou selection personnalisee
+5. **Instruments inclus** : Option pour inclure/exclure instruments
+6. **Indicateur progression** : Pour documents > 5 pages
+7. **Bouton Export** : Dans toolbar, ouvre ExportDialog
+
+### Decisions techniques
+
+1. **jspdf lazy loading** : Charge uniquement si export PDF demande
+2. **Resolution PNG** : Choix 1x/2x/3x (par defaut 2x)
+3. **Canvas rendering** : SVG -> Canvas -> PNG pour haute qualite
+4. **Memory management** : Canvas cleanup dans error handlers
+
+### Security Review
+
+- **Score** : Secure (apres corrections)
+- **Reviewer** : code-reviewer agent (implicit security)
+- **Issues corrigees** :
+  - **XSS in foreignObject** : Remplace par native SVG text elements
+  - **XSS image sources** : sanitizeImageSrc() rejette javascript:, http:, SVG data URLs
+  - **Memory leaks** : Canvas cleanup (width=0, height=0) dans onerror
+  - **Download timing** : setTimeout(1000ms) avant URL.revokeObjectURL
+  - **Accessibility** : aria-label/describedby sur custom pages input
+  - **French translations** : Tous messages d'erreur en francais
 
 ---
 
@@ -471,26 +532,24 @@
 
 ## Prochaines etapes
 
-### Phase 10 : Export PDF
+### Phase 11 : Route + Integration (EN COURS)
 
 **A faire** :
 
-1. Exporter page courante en PNG (2x resolution)
-2. Exporter page courante en SVG
-3. Exporter toutes les pages en PDF (jspdf)
-4. Indicateur de progression pour gros documents
+1. Creer route `/whiteboard` (protected)
+2. Page +page.svelte avec Whiteboard component
+3. Page +page.server.ts pour auth check
+4. Layout responsive
 
 **Agent** : `frontend-developer` + `code-reviewer`
 
-### Phase 11 : Route + Integration
+### Quality Checks Finaux
 
 **A faire** :
 
-1. Creer route `/whiteboard`
-2. Integration avec systeme d'authentification
-3. Page loader et layout
-
-**Agent** : `frontend-developer` + `code-reviewer`
+1. `pnpm lint` - Verifier 0 erreurs
+2. `pnpm check` - Verifier types
+3. Corriger tout probleme trouve
 
 ---
 
@@ -502,6 +561,7 @@ src/lib/whiteboard/
 │   ├── Whiteboard.svelte
 │   ├── WhiteboardCanvas.svelte
 │   ├── WhiteboardToolbar.svelte
+│   ├── ExportDialog.svelte          # NEW Phase 10
 │   ├── InstrumentLayer.svelte
 │   ├── ImageLayer.svelte
 │   ├── PageThumbnails.svelte
@@ -509,6 +569,7 @@ src/lib/whiteboard/
 │   └── TextBlockLayer.svelte
 ├── core/
 │   ├── history.svelte.ts
+│   ├── pdf-export.ts                # NEW Phase 10
 │   ├── serialization.ts
 │   ├── shapes.ts
 │   └── stroke-smoothing.ts
@@ -516,6 +577,7 @@ src/lib/whiteboard/
 │   └── whiteboard.svelte.ts
 ├── tests/
 │   ├── document.test.ts
+│   ├── export.test.ts               # NEW Phase 10
 │   ├── file-operations.test.ts
 │   ├── google-drive.test.ts
 │   ├── history.svelte.test.ts
