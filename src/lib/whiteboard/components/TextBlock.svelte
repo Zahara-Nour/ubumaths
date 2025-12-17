@@ -270,7 +270,7 @@
 			<RichTextEditor
 				mode="form"
 				bind:markdownValue={editContent}
-				preset="compact"
+				preset="minimal"
 				minHeight="{height - 20}px"
 			/>
 		</div>
