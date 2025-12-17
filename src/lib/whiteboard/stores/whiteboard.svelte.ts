@@ -98,6 +98,7 @@ function createWhiteboardStore() {
 	// === UI State ===
 	let hasUnsavedChanges = $state(false);
 	const isLoading = $state(false);
+	let sidebarVisible = $state(true);
 
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -214,6 +215,12 @@ function createWhiteboardStore() {
 		},
 		get instruments() {
 			return document?.instruments ?? null;
+		},
+		get sidebarVisible() {
+			return sidebarVisible;
+		},
+		get currentPageIndex() {
+			return document?.currentPageIndex ?? 0;
 		},
 
 		// === Document Operations ===
@@ -363,6 +370,58 @@ function createWhiteboardStore() {
 			if (prev >= 0) {
 				this.goToPage(prev);
 			}
+		},
+
+		/**
+		 * Reorder pages by moving a page from one index to another
+		 */
+		reorderPages(fromIndex: number, toIndex: number): void {
+			if (!document) return;
+			if (fromIndex === toIndex) return;
+			if (fromIndex < 0 || fromIndex >= document.pages.length) return;
+			if (toIndex < 0 || toIndex >= document.pages.length) return;
+
+			const currentIdx = document.currentPageIndex;
+
+			// Calculate new current page index
+			let newCurrentIdx = currentIdx;
+			if (currentIdx === fromIndex) {
+				// Current page was moved
+				newCurrentIdx = toIndex;
+			} else if (fromIndex < currentIdx && toIndex >= currentIdx) {
+				// Page moved from before current to after current
+				newCurrentIdx = currentIdx - 1;
+			} else if (fromIndex > currentIdx && toIndex <= currentIdx) {
+				// Page moved from after current to before current
+				newCurrentIdx = currentIdx + 1;
+			}
+
+			updateDocument((doc) => {
+				const newPages = [...doc.pages];
+				const [movedPage] = newPages.splice(fromIndex, 1);
+				newPages.splice(toIndex, 0, movedPage);
+				return {
+					...doc,
+					pages: newPages,
+					currentPageIndex: newCurrentIdx
+				};
+			});
+		},
+
+		// === UI Operations ===
+
+		/**
+		 * Toggle sidebar visibility
+		 */
+		toggleSidebar(): void {
+			sidebarVisible = !sidebarVisible;
+		},
+
+		/**
+		 * Set sidebar visibility
+		 */
+		setSidebarVisible(visible: boolean): void {
+			sidebarVisible = visible;
 		},
 
 		// === Element Operations ===

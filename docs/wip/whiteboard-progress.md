@@ -2,9 +2,59 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 6 - TextBlocks
+**Phase completee** : Phase 7 - Multi-pages
 **Date** : 2025-12-17
 **Statut** : Pret pour commit
+
+---
+
+## Phase 7 : Multi-pages
+
+### Fichiers crees
+
+| Fichier                                               | Description                    |
+| ----------------------------------------------------- | ------------------------------ |
+| `src/lib/whiteboard/components/PageThumbnails.svelte` | Sidebar droite avec thumbnails |
+| `src/lib/whiteboard/tests/multipage.test.ts`          | Tests multi-pages (46 tests)   |
+
+### Fichiers modifies
+
+| Fichier                                           | Modifications                                 |
+| ------------------------------------------------- | --------------------------------------------- |
+| `src/lib/whiteboard/stores/whiteboard.svelte.ts`  | reorderPages, sidebar state, currentPageIndex |
+| `src/lib/whiteboard/components/Whiteboard.svelte` | PageThumbnails + PageUp/Down + layout sidebar |
+
+### Tests crees
+
+| Fichier                                      | Tests    |
+| -------------------------------------------- | -------- |
+| `src/lib/whiteboard/tests/multipage.test.ts` | 46 tests |
+
+**Total Phase 7 : 46 nouveaux tests**
+**Total cumule : 228 tests**
+
+### Fonctionnalites implementees
+
+1. **Sidebar droite** : Thumbnails 100px wide avec ratio A4
+2. **Toggle sidebar** : Bouton chevron pour afficher/masquer
+3. **Navigation pages** : Click sur thumbnail pour changer page
+4. **Add/Delete pages** : Boutons + et X avec confirmation suppression
+5. **Drag & drop** : Reordonner pages par glisser-deposer
+6. **Keyboard navigation** : Ctrl+Arrows pour reorder, Enter/Space pour select
+7. **SVG preview** : Miniatures avec apercu simplifie des elements
+8. **Raccourcis clavier** : PageUp/PageDown dans Whiteboard
+9. **Layout responsive** : Canvas ajuste selon visibilite sidebar
+
+### Code Review
+
+- **Score** : Good (apres corrections)
+- **Reviewer** : code-reviewer agent
+- **Issues corrigees** :
+  - Keyboard reorder support (Ctrl+Arrow keys)
+  - Window blur drag state cleanup via $effect
+  - Defensive SVG checks (null guards)
+  - ARIA attributes (role, aria-label, aria-current)
+  - tabindex="0" pour focus keyboard
 
 ---
 
@@ -295,14 +345,14 @@
 
 ## Prochaines etapes
 
-### Phase 7 : Multi-pages
+### Phase 8 : Import images + PDF
 
 **A faire** :
 
-1. Sidebar avec thumbnails des pages
-2. Ajouter/supprimer pages
-3. Navigation entre pages
-4. Generation thumbnails a partir du contenu
+1. Importer PNG/JPG/SVG comme image
+2. Importer PDF avec selection de page (pdfjs-dist)
+3. PDF comme fond de page annotable
+4. Options fit/fill/stretch
 
 **Agent** : `frontend-developer`
 
@@ -317,6 +367,7 @@ src/lib/whiteboard/
 │   ├── WhiteboardCanvas.svelte
 │   ├── WhiteboardToolbar.svelte
 │   ├── InstrumentLayer.svelte
+│   ├── PageThumbnails.svelte
 │   ├── TextBlock.svelte
 │   └── TextBlockLayer.svelte
 ├── core/
@@ -330,6 +381,7 @@ src/lib/whiteboard/
 │   ├── document.test.ts
 │   ├── history.svelte.test.ts
 │   ├── instruments.test.ts
+│   ├── multipage.test.ts
 │   ├── serialization.test.ts
 │   ├── shapes.test.ts
 │   ├── stroke-smoothing.test.ts
