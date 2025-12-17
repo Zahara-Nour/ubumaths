@@ -106,6 +106,8 @@
 
 	let hoveredPath = $state<string[]>([]);
 	let selectedPath = $state<string[]>([]);
+	// Multiple paths selected (for event label click)
+	let selectedPaths = $state<string[][]>([]);
 	// Track which branches show probability name instead of value (use object for guaranteed reactivity)
 	let showProbName = $state<Record<string, boolean>>({});
 
@@ -287,19 +289,53 @@
 	}
 
 	/**
-	 * Check if a node is in the current highlighted path
-	 */
-	function isInPath(nodeId: string, path: string[]): boolean {
-		return path.includes(nodeId);
-	}
-
-	/**
 	 * Check if a branch is in the current highlighted path
 	 */
 	function isBranchInPath(parentId: string, childId: string, path: string[]): boolean {
 		const parentIndex = path.indexOf(parentId);
 		const childIndex = path.indexOf(childId);
 		return parentIndex !== -1 && childIndex !== -1 && childIndex === parentIndex + 1;
+	}
+
+	/**
+	 * Check if a node is in any of the multiple selected paths
+	 */
+	function isInAnyPath(nodeId: string, paths: string[][]): boolean {
+		return paths.some((path) => path.includes(nodeId));
+	}
+
+	/**
+	 * Check if a branch is in any of the multiple selected paths
+	 */
+	function isBranchInAnyPath(parentId: string, childId: string, paths: string[][]): boolean {
+		return paths.some((path) => isBranchInPath(parentId, childId, path));
+	}
+
+	/**
+	 * Find all paths from root to leaves that end with a specific event label
+	 */
+	function findPathsByEventLabel(eventLabel: string): string[][] {
+		const paths: string[][] = [];
+
+		function traverse(current: ProbTreeNode, currentPath: string[]) {
+			const newPath = [...currentPath, current.id];
+
+			if (current.isLeaf) {
+				// Check if this leaf's parent branch has the matching event label
+				const parentBranch = parentBranchMap.get(current.id);
+				if (parentBranch && parentBranch.eventLabel === eventLabel) {
+					paths.push(newPath);
+				}
+				return;
+			}
+
+			for (const branch of current.branches) {
+				traverse(branch.child, newPath);
+			}
+		}
+
+		traverse(node.root, []);
+		return paths;
 	}
 
 	/**
@@ -373,6 +409,8 @@
 	}
 
 	function handleBranchClick(parentId: string, childId: string) {
+		// Clear multi-path selection when clicking a branch
+		selectedPaths = [];
 		const path = getPathToNode(childId, node.root, []);
 		if (path) {
 			// Toggle selection
@@ -384,10 +422,28 @@
 		}
 	}
 
+	function handleEventLabelClick(event: MouseEvent, eventLabel: string) {
+		event.stopPropagation();
+		// Clear single path selection
+		selectedPath = [];
+		// Find all paths ending with this event label
+		const paths = findPathsByEventLabel(eventLabel);
+		// Toggle: if same paths are already selected, deselect
+		if (
+			selectedPaths.length === paths.length &&
+			paths.every((p) => selectedPaths.some((sp) => sp.join('-') === p.join('-')))
+		) {
+			selectedPaths = [];
+		} else {
+			selectedPaths = paths;
+		}
+	}
+
 	function handleSvgClick(event: MouseEvent) {
 		// Only deselect if clicking directly on SVG background
 		if (event.target === event.currentTarget) {
 			selectedPath = [];
+			selectedPaths = [];
 		}
 	}
 
@@ -402,14 +458,20 @@
 	// =========================================================================
 
 	/**
-	 * Get the effective path for highlighting (selected takes precedence)
+	 * Get the effective paths for highlighting
+	 * Priority: selectedPaths > selectedPath > hoveredPath
 	 */
-	let effectivePath = $derived(selectedPath.length > 0 ? selectedPath : hoveredPath);
+	let effectivePaths = $derived.by(() => {
+		if (selectedPaths.length > 0) return selectedPaths;
+		if (selectedPath.length > 0) return [selectedPath];
+		if (hoveredPath.length > 0) return [hoveredPath];
+		return [];
+	});
 
 	/**
 	 * Determine if we should dim non-highlighted elements
 	 */
-	let hasHighlight = $derived(effectivePath.length > 0);
+	let hasHighlight = $derived(effectivePaths.length > 0);
 
 	/**
 	 * Compute tooltip content based on hovered path (derived to avoid race condition)
@@ -504,11 +566,12 @@
 
 		<!-- Branches (lines with labels) -->
 		{#each allBranches as branchData (branchData.parentId + '-' + branchData.childId)}
-			{@const isHighlighted = isBranchInPath(
+			{@const isHighlighted = isBranchInAnyPath(
 				branchData.parentId,
 				branchData.childId,
-				effectivePath
+				effectivePaths
 			)}
+			{@const isLeaf = branchData.branch.child.isLeaf}
 			{@const branchStartX = branchData.parentPos.x + nodeLabelWidth}
 			{@const branchEndX = branchData.childPos.x}
 			{@const branchStartY = branchData.parentPos.y}
@@ -591,13 +654,22 @@
 				</foreignObject>
 
 				<!-- Event label (at child node, centered in label space) -->
+				<!-- If leaf, make clickable to highlight all paths ending with this event -->
 				<foreignObject
 					x={branchData.childPos.x}
 					y={branchData.childPos.y - 10}
 					width={nodeLabelWidth}
 					height="20"
+					class:pt-event-foreign-clickable={isLeaf}
 				>
-					<div class="pt-label pt-event-label">
+					<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+					<div
+						class="pt-label pt-event-label"
+						class:pt-event-clickable={isLeaf}
+						onclick={isLeaf
+							? (e) => handleEventLabelClick(e, branchData.branch.eventLabel)
+							: undefined}
+					>
 						<math-span>{toLatex(wrapTextLabel(branchData.branch.eventLabel))}</math-span>
 					</div>
 				</foreignObject>
@@ -608,7 +680,7 @@
 		{#if node.config.showOutcomes}
 			{#each allLeaves as leaf (leaf.node.id)}
 				{#if leaf.node.outcome}
-					{@const isHighlighted = isInPath(leaf.node.id, effectivePath)}
+					{@const isHighlighted = isInAnyPath(leaf.node.id, effectivePaths)}
 					<foreignObject
 						x={leaf.pos.x + nodeLabelWidth + 10}
 						y={leaf.pos.y - 12}
@@ -729,6 +801,19 @@
 	.pt-event-label {
 		justify-content: center;
 		font-weight: 500;
+	}
+
+	.pt-event-foreign-clickable {
+		cursor: pointer;
+	}
+
+	.pt-event-clickable {
+		pointer-events: auto;
+		cursor: pointer;
+	}
+
+	.pt-event-clickable:hover {
+		color: var(--pt-highlight-color, #3b82f6);
 	}
 
 	.pt-branch.pt-highlighted .pt-event-label {
