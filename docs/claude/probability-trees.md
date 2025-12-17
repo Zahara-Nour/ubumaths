@@ -19,10 +19,11 @@ Event2:probability2
 
 ### Configuration Options
 
-| Option     | Values       | Default | Description                   |
-| ---------- | ------------ | ------- | ----------------------------- |
-| `root:`    | string       | (none)  | Label for root node           |
-| `outcomes` | true / false | false   | Show outcome column at leaves |
+| Option         | Values       | Default | Description                      |
+| -------------- | ------------ | ------- | -------------------------------- |
+| `root:`        | string       | (none)  | Label for root node              |
+| `outcomes`     | true / false | false   | Show outcome column at leaves    |
+| `intersection` | true / false | false   | Show P(A ∩ B) notation at leaves |
 
 ### Line Format
 

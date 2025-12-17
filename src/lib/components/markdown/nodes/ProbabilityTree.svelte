@@ -192,8 +192,8 @@
 		ROOT_X +
 			levelDistance * node.maxDepth +
 			nodeLabelWidth + // Space for leaf event labels
-			OUTCOMES_WIDTH + // Space for intersection probability P(A ∩ B)
 			PADDING_RIGHT +
+			(node.config.showIntersection ? OUTCOMES_WIDTH : 0) + // Space for P(A ∩ B) if enabled
 			(node.config.showOutcomes ? OUTCOMES_WIDTH : 0)
 	);
 
@@ -707,32 +707,35 @@
 		{/each}
 
 		<!-- Intersection probability at leaves: P(A ∩ B ∩ ...) -->
-		{#each allLeaves as leaf (leaf.node.id)}
-			{@const isHighlighted = isInAnyPath(leaf.node.id, effectivePaths)}
-			{@const intersectionProb = getIntersectionProbability(leaf.node.id)}
-			<foreignObject
-				x={leaf.pos.x + nodeLabelWidth + 10}
-				y={leaf.pos.y - 12}
-				width={OUTCOMES_WIDTH - 20}
-				height="24"
-			>
-				<div
-					class="pt-intersection-prob"
-					class:pt-highlighted={isHighlighted}
-					class:pt-dimmed={hasHighlight && !isHighlighted}
+		{#if node.config.showIntersection}
+			{#each allLeaves as leaf (leaf.node.id)}
+				{@const isHighlighted = isInAnyPath(leaf.node.id, effectivePaths)}
+				{@const intersectionProb = getIntersectionProbability(leaf.node.id)}
+				<foreignObject
+					x={leaf.pos.x + nodeLabelWidth + 10}
+					y={leaf.pos.y - 12}
+					width={OUTCOMES_WIDTH - 20}
+					height="24"
 				>
-					<math-span>{toLatex(intersectionProb)}</math-span>
-				</div>
-			</foreignObject>
-		{/each}
+					<div
+						class="pt-intersection-prob"
+						class:pt-highlighted={isHighlighted}
+						class:pt-dimmed={hasHighlight && !isHighlighted}
+					>
+						<math-span>{toLatex(intersectionProb)}</math-span>
+					</div>
+				</foreignObject>
+			{/each}
+		{/if}
 
-		<!-- Outcomes column (after intersection probabilities) -->
+		<!-- Outcomes column (after intersection probabilities if shown) -->
 		{#if node.config.showOutcomes}
+			{@const outcomesOffsetX = node.config.showIntersection ? OUTCOMES_WIDTH : 0}
 			{#each allLeaves as leaf (leaf.node.id)}
 				{#if leaf.node.outcome}
 					{@const isHighlighted = isInAnyPath(leaf.node.id, effectivePaths)}
 					<foreignObject
-						x={leaf.pos.x + nodeLabelWidth + OUTCOMES_WIDTH}
+						x={leaf.pos.x + nodeLabelWidth + 10 + outcomesOffsetX}
 						y={leaf.pos.y - 12}
 						width={OUTCOMES_WIDTH - 20}
 						height="24"
