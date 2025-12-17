@@ -2,9 +2,69 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 8 - Import images + PDF
+**Phase completee** : Phase 9 - Stockage local + Google Drive
 **Date** : 2025-12-17
 **Statut** : Pret pour commit
+
+---
+
+## Phase 9 : Stockage local + Google Drive
+
+### Fichiers crees
+
+| Fichier                                            | Description                                     |
+| -------------------------------------------------- | ----------------------------------------------- |
+| `src/lib/whiteboard/utils/file-operations.ts`      | Validation .ubw, serialization, download/upload |
+| `src/lib/whiteboard/utils/sync-state.ts`           | Sync state management for Google Drive          |
+| `src/lib/whiteboard/tests/file-operations.test.ts` | Tests file operations (56 tests)                |
+| `src/lib/whiteboard/tests/google-drive.test.ts`    | Tests sync state management (47 tests)          |
+
+### Fichiers modifies
+
+| Fichier                                                  | Modifications                                        |
+| -------------------------------------------------------- | ---------------------------------------------------- |
+| `src/lib/whiteboard/stores/whiteboard.svelte.ts`         | File ops (save/load .ubw), sync state management     |
+| `src/lib/whiteboard/components/WhiteboardToolbar.svelte` | Section Fichier + boutons Nouveau/Sauvegarder/Ouvrir |
+
+### Tests crees
+
+| Fichier                                            | Tests    |
+| -------------------------------------------------- | -------- |
+| `src/lib/whiteboard/tests/file-operations.test.ts` | 56 tests |
+| `src/lib/whiteboard/tests/google-drive.test.ts`    | 47 tests |
+
+**Total Phase 9 : 103 nouveaux tests**
+**Total cumule : 485 tests**
+
+### Fonctionnalites implementees
+
+1. **File validation** : Zod schema validation pour .ubw files
+2. **Filename generation** : Auto-generate from document title
+3. **File download** : Blob + object URL pour telechargement local
+4. **File upload** : FileReader API pour chargement fichier
+5. **Sync state** : Types et helpers pour Google Drive sync status
+6. **Auto-sync scheduling** : 5s debounce pour modifications
+7. **Toolbar File section** : Nouveau, Sauvegarder, Ouvrir buttons
+8. **Unsaved indicator** : Yellow dot quand modifications non sauvegardees
+9. **Filename prompts** : Demande nom document au premier save
+10. **Confirmation dialogs** : Warn before losing unsaved changes
+
+### Decisions techniques
+
+1. **Local file first** : Stockage local .ubw implemente en premier
+2. **Google Drive deferred** : API Drive necessite changement scope OAuth (drive.readonly -> drive.file)
+3. **Sync state preparation** : Infrastructure prete pour Drive integration future
+4. **Filename validation** : Caracteres invalides (<>:"/\|?\*) rejetes
+
+### Code Review
+
+- **Score** : Good (apres corrections)
+- **Reviewer** : code-reviewer agent
+- **Issues corrigees** :
+  - DOM refs sans $state() (plain variables suffisent pour bind:this)
+  - saveToFile() retourne maintenant result object avec success/error
+  - Color picker utilise oninput au lieu de onchange (feedback immediat)
+  - Filename validation ajoutee dans saveToFile()
 
 ---
 
@@ -411,16 +471,26 @@
 
 ## Prochaines etapes
 
-### Phase 9 : Stockage local + Google Drive
+### Phase 10 : Export PDF
 
 **A faire** :
 
-1. Sauvegarder en fichier .ubw local
-2. Charger fichier .ubw avec validation Zod
-3. Integration Google Drive (utiliser OAuth existant)
-4. Sauvegarder/charger depuis Drive
+1. Exporter page courante en PNG (2x resolution)
+2. Exporter page courante en SVG
+3. Exporter toutes les pages en PDF (jspdf)
+4. Indicateur de progression pour gros documents
 
-**Agent** : `backend-developer` + `security-auditor`
+**Agent** : `frontend-developer` + `code-reviewer`
+
+### Phase 11 : Route + Integration
+
+**A faire** :
+
+1. Creer route `/whiteboard`
+2. Integration avec systeme d'authentification
+3. Page loader et layout
+
+**Agent** : `frontend-developer` + `code-reviewer`
 
 ---
 
@@ -446,6 +516,8 @@ src/lib/whiteboard/
 │   └── whiteboard.svelte.ts
 ├── tests/
 │   ├── document.test.ts
+│   ├── file-operations.test.ts
+│   ├── google-drive.test.ts
 │   ├── history.svelte.test.ts
 │   ├── image-import.test.ts
 │   ├── instruments.test.ts
@@ -461,7 +533,9 @@ src/lib/whiteboard/
 │   ├── document.ts
 │   └── file-format.ts
 ├── utils/
+│   ├── file-operations.ts
 │   ├── image-loader.ts
-│   └── pdf-loader.ts
+│   ├── pdf-loader.ts
+│   └── sync-state.ts
 └── index.ts
 ```
