@@ -45,6 +45,7 @@
 	import CodeBlock from './nodes/CodeBlock.svelte';
 	import Blockquote from './nodes/Blockquote.svelte';
 	import VariationTable from './nodes/VariationTable.svelte';
+	import ProbabilityTree from './nodes/ProbabilityTree.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -236,6 +237,8 @@
 					<Blockquote children={node.children} />
 				{:else if node.type === 'variation-table'}
 					<VariationTable {node} />
+				{:else if node.type === 'probability-tree'}
+					<ProbabilityTree {node} />
 				{/if}
 			{/each}
 		{:else}

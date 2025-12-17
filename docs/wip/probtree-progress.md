@@ -31,8 +31,39 @@
 - Gestion d'erreurs
 - Generation d'IDs uniques
 
+## Phase 2: Composant SVG Interactif - COMPLETE
+
+### Fichiers crees
+
+- `src/lib/components/markdown/nodes/ProbabilityTree.svelte` - Composant SVG interactif
+
+### Fichiers modifies
+
+- `src/lib/components/markdown/MarkdownRenderer.svelte` - Integration du composant
+
+### Decisions prises
+
+- Lignes droites (pas de courbes de Bezier)
+- Pas de cercles pour les noeuds (juste les points de jonction)
+- Shadcn Tooltip pour afficher la probabilite cumulative
+- Layout horizontal: racine a gauche, feuilles a droite
+- SVG responsive avec viewBox
+- CSS variables pour theming et dark mode
+
+### Fonctionnalites implementees
+
+- Rendu SVG avec lignes droites pour les branches
+- Labels evenements au-dessus des branches
+- Probabilites en dessous des branches
+- Colonne outcomes a droite (si configuree)
+- Hover: highlight chemin + tooltip proba cumulee
+- Click: selection persistante du chemin
+- MathLive pour les expressions mathematiques
+- Dark mode support via CSS variables
+- Responsive (adapte taille au conteneur)
+
 ## Prochaines etapes
 
-- Phase 2: Composant SVG interactif
 - Phase 3: Generateurs LaTeX/Typst
 - Phase 4: Polish + Documentation
+- Phase Finale: Quality checks
