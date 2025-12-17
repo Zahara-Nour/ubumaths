@@ -103,8 +103,11 @@
 	// ==========================================================================
 
 	function handleKeyDown(e: KeyboardEvent) {
-		// Don't handle if in an input field
+		// Don't handle if in an input field or contenteditable (text blocks)
 		if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+			return;
+		}
+		if (e.target instanceof HTMLElement && e.target.isContentEditable) {
 			return;
 		}
 
@@ -139,6 +142,10 @@
 				case 'e':
 					e.preventDefault();
 					whiteboardStore.setTool('eraser');
+					break;
+				case 't':
+					e.preventDefault();
+					whiteboardStore.setTool('text');
 					break;
 				// Shape tools
 				case 'l':

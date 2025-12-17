@@ -15,6 +15,7 @@
 	} from '../core/stroke-smoothing';
 	import { createShapeElement, getShapeSvgProps } from '../core/shapes';
 	import InstrumentLayer from './InstrumentLayer.svelte';
+	import TextBlockLayer from './TextBlockLayer.svelte';
 	import type { Point, StrokeElement, ShapeElement, ShapeType } from '../types/document';
 
 	// ==========================================================================
@@ -44,6 +45,9 @@
 	/** Shape drawing state */
 	let shapeStartPoint: Point | null = $state(null);
 	let shapeEndPoint: Point | null = $state(null);
+
+	/** TextBlockLayer reference */
+	let textBlockLayerRef: TextBlockLayer | null = $state(null);
 
 	// ==========================================================================
 	// Derived State
@@ -79,6 +83,9 @@
 	let isDrawingTool = $derived(
 		DRAWING_TOOLS.includes(toolState.toolType as (typeof DRAWING_TOOLS)[number])
 	);
+
+	/** Text tool */
+	let isTextTool = $derived(toolState.toolType === 'text');
 
 	/** ViewBox for SVG */
 	let viewBox = $derived(`0 0 ${pageWidth} ${pageHeight}`);
@@ -120,6 +127,13 @@
 		if (e.button !== 0) return;
 
 		const point = getPointFromEvent(e);
+
+		// Handle text tool - create new text block
+		if (isTextTool) {
+			e.preventDefault();
+			textBlockLayerRef?.createBlockAtPosition(point.x, point.y);
+			return;
+		}
 
 		// Handle shape tools
 		if (isShapeTool) {
@@ -545,6 +559,9 @@
 			<InstrumentLayer />
 		</g>
 	</svg>
+
+	<!-- TextBlock Layer (HTML overlay on SVG) -->
+	<TextBlockLayer bind:this={textBlockLayerRef} />
 </div>
 
 <style>

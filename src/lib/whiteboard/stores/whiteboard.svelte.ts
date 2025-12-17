@@ -16,6 +16,7 @@ import {
 	type WhiteboardDocument,
 	type Page,
 	type WhiteboardElement,
+	type TextBlockElement,
 	type PageFormatKey,
 	type InstrumentType,
 	type InstrumentState
@@ -45,6 +46,18 @@ export type ShapeTool = 'line' | 'rectangle' | 'circle' | 'arrow';
 
 /** Action tools */
 export type ActionTool = 'select' | 'pan' | 'text';
+
+// =============================================================================
+// TextBlock Constants
+// =============================================================================
+
+/** Default dimensions for new text blocks */
+export const DEFAULT_TEXT_BLOCK_WIDTH = 300;
+export const DEFAULT_TEXT_BLOCK_HEIGHT = 100;
+
+/** Minimum dimensions for text blocks */
+export const MIN_TEXT_BLOCK_WIDTH = 150;
+export const MIN_TEXT_BLOCK_HEIGHT = 50;
 
 /** Instrument tools */
 export type InstrumentTool = 'ruler' | 'protractor' | 'compass' | 'set-square';
@@ -392,6 +405,84 @@ function createWhiteboardStore() {
 				...page,
 				elements: []
 			}));
+		},
+
+		// === TextBlock Operations ===
+
+		/**
+		 * Create a new text block at the given position
+		 */
+		createTextBlock(
+			position: { x: number; y: number },
+			width: number = DEFAULT_TEXT_BLOCK_WIDTH,
+			height: number = DEFAULT_TEXT_BLOCK_HEIGHT
+		): string {
+			const element: TextBlockElement = {
+				id: crypto.randomUUID(),
+				type: 'textblock',
+				position: { x: position.x, y: position.y },
+				width: Math.max(width, MIN_TEXT_BLOCK_WIDTH),
+				height: Math.max(height, MIN_TEXT_BLOCK_HEIGHT),
+				markdownContent: ''
+			};
+
+			this.addElement(element);
+			return element.id;
+		},
+
+		/**
+		 * Update text block content
+		 */
+		updateTextBlockContent(elementId: string, markdownContent: string): void {
+			this.updateElement(elementId, (el) => {
+				if (el.type !== 'textblock') return el;
+				return { ...el, markdownContent };
+			});
+		},
+
+		/**
+		 * Resize a text block
+		 */
+		resizeTextBlock(elementId: string, width: number, height: number): void {
+			this.updateElement(elementId, (el) => {
+				if (el.type !== 'textblock') return el;
+				return {
+					...el,
+					width: Math.max(width, MIN_TEXT_BLOCK_WIDTH),
+					height: Math.max(height, MIN_TEXT_BLOCK_HEIGHT)
+				};
+			});
+		},
+
+		/**
+		 * Move a text block to a new position
+		 */
+		moveTextBlock(elementId: string, position: { x: number; y: number }): void {
+			this.updateElement(elementId, (el) => {
+				if (el.type !== 'textblock') return el;
+				return { ...el, position };
+			});
+		},
+
+		/**
+		 * Resize and move a text block in a single operation
+		 * Used during resize handles that affect both position and size
+		 */
+		resizeAndMoveTextBlock(
+			elementId: string,
+			width: number,
+			height: number,
+			position: { x: number; y: number }
+		): void {
+			this.updateElement(elementId, (el) => {
+				if (el.type !== 'textblock') return el;
+				return {
+					...el,
+					width: Math.max(width, MIN_TEXT_BLOCK_WIDTH),
+					height: Math.max(height, MIN_TEXT_BLOCK_HEIGHT),
+					position
+				};
+			});
 		},
 
 		// === Tool Operations ===
