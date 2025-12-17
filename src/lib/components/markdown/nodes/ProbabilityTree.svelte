@@ -192,6 +192,7 @@
 		ROOT_X +
 			levelDistance * node.maxDepth +
 			nodeLabelWidth + // Space for leaf event labels
+			OUTCOMES_WIDTH + // Space for intersection probability P(A ∩ B)
 			PADDING_RIGHT +
 			(node.config.showOutcomes ? OUTCOMES_WIDTH : 0)
 	);
@@ -358,6 +359,35 @@
 		buildParentBranchMap(node.root, null, map);
 		return map;
 	});
+
+	/**
+	 * Get intersection probability notation P(A ∩ B ∩ ...) for a path to a leaf
+	 * Traverses from root to leaf collecting all event labels
+	 */
+	function getIntersectionProbability(leafId: string): string {
+		const eventLabels: string[] = [];
+
+		function traverse(current: ProbTreeNode, targetId: string): boolean {
+			if (current.id === targetId) {
+				return true;
+			}
+			for (const branch of current.branches) {
+				if (traverse(branch.child, targetId)) {
+					// Found the path - add this branch's event label
+					const cleanLabel = branch.eventLabel.replace(/^\$|\$$/g, '');
+					eventLabels.unshift(wrapTextLabel(cleanLabel)); // prepend to keep order root->leaf
+					return true;
+				}
+			}
+			return false;
+		}
+
+		traverse(node.root, leafId);
+
+		if (eventLabels.length === 0) return '';
+		if (eventLabels.length === 1) return `P(${eventLabels[0]})`;
+		return `P(${eventLabels.join(' \\cap ')})`;
+	}
 
 	/**
 	 * Wrap multi-letter text labels in \text{} for proper LaTeX rendering
@@ -676,13 +706,33 @@
 			</g>
 		{/each}
 
-		<!-- Outcomes column (after leaf event labels) -->
+		<!-- Intersection probability at leaves: P(A ∩ B ∩ ...) -->
+		{#each allLeaves as leaf (leaf.node.id)}
+			{@const isHighlighted = isInAnyPath(leaf.node.id, effectivePaths)}
+			{@const intersectionProb = getIntersectionProbability(leaf.node.id)}
+			<foreignObject
+				x={leaf.pos.x + nodeLabelWidth + 10}
+				y={leaf.pos.y - 12}
+				width={OUTCOMES_WIDTH - 20}
+				height="24"
+			>
+				<div
+					class="pt-intersection-prob"
+					class:pt-highlighted={isHighlighted}
+					class:pt-dimmed={hasHighlight && !isHighlighted}
+				>
+					<math-span>{toLatex(intersectionProb)}</math-span>
+				</div>
+			</foreignObject>
+		{/each}
+
+		<!-- Outcomes column (after intersection probabilities) -->
 		{#if node.config.showOutcomes}
 			{#each allLeaves as leaf (leaf.node.id)}
 				{#if leaf.node.outcome}
 					{@const isHighlighted = isInAnyPath(leaf.node.id, effectivePaths)}
 					<foreignObject
-						x={leaf.pos.x + nodeLabelWidth + 10}
+						x={leaf.pos.x + nodeLabelWidth + OUTCOMES_WIDTH}
 						y={leaf.pos.y - 12}
 						width={OUTCOMES_WIDTH - 20}
 						height="24"
@@ -818,6 +868,24 @@
 
 	.pt-branch.pt-highlighted .pt-event-label {
 		color: var(--pt-highlight-color, #3b82f6);
+	}
+
+	/* Intersection probability at leaves */
+	.pt-intersection-prob {
+		display: flex;
+		align-items: center;
+		height: 100%;
+		font-size: 0.85em;
+		transition: opacity 0.2s ease;
+	}
+
+	.pt-intersection-prob.pt-highlighted {
+		color: var(--pt-highlight-color);
+		font-weight: 500;
+	}
+
+	.pt-intersection-prob.pt-dimmed {
+		opacity: var(--pt-dimmed-opacity);
 	}
 
 	/* Outcomes */
