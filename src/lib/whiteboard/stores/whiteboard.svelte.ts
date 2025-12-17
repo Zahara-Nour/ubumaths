@@ -417,6 +417,36 @@ function createWhiteboardStore() {
 			return null;
 		},
 
+		/**
+		 * Set color for current drawing tool
+		 */
+		setColor(color: string): void {
+			if (currentTool in toolSettings && currentTool !== 'eraser') {
+				toolSettings = {
+					...toolSettings,
+					[currentTool as DrawingTool]: {
+						...toolSettings[currentTool as DrawingTool],
+						color
+					}
+				};
+			}
+		},
+
+		/**
+		 * Set stroke width for current tool
+		 */
+		setStrokeWidth(width: number): void {
+			if (currentTool in toolSettings) {
+				toolSettings = {
+					...toolSettings,
+					[currentTool as DrawingTool]: {
+						...toolSettings[currentTool as DrawingTool],
+						width
+					}
+				};
+			}
+		},
+
 		// === History Operations ===
 
 		/**

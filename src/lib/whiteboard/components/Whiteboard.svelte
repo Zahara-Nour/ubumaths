@@ -2,12 +2,13 @@
 	/**
 	 * Whiteboard - Main container component
 	 *
-	 * Combines canvas, toolbar (future), and page navigation into a complete whiteboard experience.
+	 * Combines canvas, toolbar, and page navigation into a complete whiteboard experience.
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import WhiteboardCanvas from './WhiteboardCanvas.svelte';
+	import WhiteboardToolbar from './WhiteboardToolbar.svelte';
 	import type { PageFormatKey } from '../types/document';
 
 	// ==========================================================================
@@ -52,10 +53,6 @@
 
 	/** Tool state */
 	let toolState = $derived(whiteboardStore.toolState);
-
-	/** History state */
-	let canUndo = $derived(whiteboardStore.canUndo);
-	let canRedo = $derived(whiteboardStore.canRedo);
 
 	/** Calculate scale to fit page in container with padding */
 	let fitScale = $derived.by(() => {
@@ -167,46 +164,30 @@
 
 <svelte:window onkeydown={handleKeyDown} />
 
-<div
-	bind:this={containerEl}
-	class="whiteboard-container flex flex-col items-center justify-center bg-gray-200 {className}"
->
+<div bind:this={containerEl} class="whiteboard-container flex flex-col bg-gray-200 {className}">
 	<!-- Status bar -->
-	<div
-		class="whiteboard-status absolute top-2 left-2 flex items-center gap-4 text-xs text-gray-600"
-	>
+	<div class="whiteboard-status flex items-center gap-4 px-3 py-2 text-xs text-gray-600">
 		<span class="font-medium">{document?.title ?? 'Sans titre'}</span>
 		<span>
 			Page {(whiteboardStore.document?.currentPageIndex ?? 0) + 1} / {document?.pages.length ?? 1}
 		</span>
 		<span>{pageWidth} × {pageHeight}</span>
-		<span class="capitalize">{toolState.toolType}</span>
+		<span class="text-primary capitalize">{toolState.toolType}</span>
 	</div>
 
-	<!-- Undo/Redo indicators -->
-	<div class="absolute top-2 right-2 flex items-center gap-2 text-xs text-gray-500">
-		<span class:opacity-30={!canUndo}>Undo</span>
-		<span class:opacity-30={!canRedo}>Redo</span>
+	<!-- Canvas area (flex-grow to take available space) -->
+	<div class="whiteboard-canvas-area flex flex-1 items-center justify-center overflow-hidden">
+		<!-- Canvas wrapper with shadow -->
+		<div
+			class="whiteboard-page-wrapper relative shadow-lg"
+			style="width: {canvasWidth}px; height: {canvasHeight}px;"
+		>
+			<WhiteboardCanvas class="h-full w-full" />
+		</div>
 	</div>
 
-	<!-- Canvas wrapper with shadow -->
-	<div
-		class="whiteboard-page-wrapper relative shadow-lg"
-		style="width: {canvasWidth}px; height: {canvasHeight}px;"
-	>
-		<WhiteboardCanvas class="h-full w-full" />
-	</div>
-
-	<!-- Keyboard shortcuts hint -->
-	<div class="absolute bottom-2 left-2 text-xs text-gray-400">
-		<kbd class="rounded bg-gray-100 px-1">P</kbd> Pen
-		<kbd class="ml-2 rounded bg-gray-100 px-1">H</kbd> Highlighter
-		<kbd class="ml-2 rounded bg-gray-100 px-1">E</kbd> Eraser
-		<kbd class="ml-2 rounded bg-gray-100 px-1">L</kbd> Line
-		<kbd class="ml-2 rounded bg-gray-100 px-1">R</kbd> Rect
-		<kbd class="ml-2 rounded bg-gray-100 px-1">C</kbd> Circle
-		<kbd class="ml-2 rounded bg-gray-100 px-1">A</kbd> Arrow
-	</div>
+	<!-- Toolbar at bottom -->
+	<WhiteboardToolbar />
 </div>
 
 <style>
