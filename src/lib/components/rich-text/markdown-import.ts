@@ -32,7 +32,8 @@ import type {
 	LinkNode,
 	HashtagNode,
 	MentionNode,
-	VariationTableNode
+	VariationTableNode,
+	ProbabilityTreeNode
 } from '$lib/custom-markdown/types';
 
 // ============================================================================
@@ -212,6 +213,9 @@ function convertBlock(block: BlockNode): JSONContent | null {
 
 		case 'variation-table':
 			return convertVariationTable(block as VariationTableNode);
+
+		case 'probability-tree':
+			return convertProbabilityTree(block as ProbabilityTreeNode);
 
 		default:
 			return null;
@@ -473,6 +477,60 @@ function convertVariationTable(node: VariationTableNode): JSONContent {
 	return {
 		type: 'codeBlock',
 		attrs: { language: 'variation' },
+		content: [{ type: 'text', text: lines.join('\n') }]
+	};
+}
+
+/**
+ * Convert ProbabilityTreeNode to TipTap codeBlock with language='probtree'
+ *
+ * Since TipTap doesn't have a native probability tree extension,
+ * we serialize the parsed node back to the probtree block syntax
+ * and display it as a code block.
+ */
+function convertProbabilityTree(node: ProbabilityTreeNode): JSONContent {
+	const lines: string[] = [];
+
+	// Config lines
+	if (node.config.rootLabel) {
+		lines.push(`root: ${node.config.rootLabel}`);
+	}
+	if (node.config.showOutcomes) {
+		lines.push(`outcomes: true`);
+	}
+
+	// Add blank line before branches if we have config
+	if (lines.length > 0) {
+		lines.push('');
+	}
+
+	// Serialize branches recursively
+	function serializeBranches(
+		branches: ProbabilityTreeNode['root']['branches'],
+		indent: number
+	): void {
+		const indentStr = '  '.repeat(indent);
+		for (const branch of branches) {
+			let line = `${indentStr}${branch.eventLabel}:${branch.probability.display}`;
+			if (branch.child.outcome) {
+				line += `, ${branch.child.outcome}`;
+			}
+			lines.push(line);
+
+			// Recurse for children
+			if (branch.child.branches.length > 0) {
+				serializeBranches(branch.child.branches, indent + 1);
+			}
+		}
+	}
+
+	if (node.root) {
+		serializeBranches(node.root.branches, 0);
+	}
+
+	return {
+		type: 'codeBlock',
+		attrs: { language: 'probtree' },
 		content: [{ type: 'text', text: lines.join('\n') }]
 	};
 }
