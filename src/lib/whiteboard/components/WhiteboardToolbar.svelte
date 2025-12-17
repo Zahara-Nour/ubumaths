@@ -27,8 +27,12 @@
 		Trash2,
 		ChevronUp,
 		ChevronDown,
-		Palette
+		Palette,
+		Ruler,
+		Compass,
+		Triangle
 	} from 'lucide-svelte';
+	import { INSTRUMENT_LABELS, type InstrumentType } from '../types/document';
 
 	// ==========================================================================
 	// Constants
@@ -62,6 +66,13 @@
 		{ id: 'arrow', icon: MoveRight, shortcut: 'A', label: 'Flèche' }
 	];
 
+	/** Instrument definitions with icons */
+	const INSTRUMENT_TOOLS: { id: InstrumentType; icon: typeof Ruler; label: string }[] = [
+		{ id: 'ruler', icon: Ruler, label: INSTRUMENT_LABELS.ruler },
+		{ id: 'protractor', icon: Compass, label: INSTRUMENT_LABELS.protractor },
+		{ id: 'setSquare', icon: Triangle, label: INSTRUMENT_LABELS.setSquare }
+	];
+
 	// ==========================================================================
 	// State
 	// ==========================================================================
@@ -69,6 +80,7 @@
 	/** Section visibility state */
 	let drawingSectionOpen = $state(true);
 	let shapesSectionOpen = $state(false);
+	let instrumentsSectionOpen = $state(false);
 
 	/** Color picker open state */
 	let colorPickerOpen = $state(false);
@@ -82,6 +94,7 @@
 	let canRedo = $derived(whiteboardStore.canRedo);
 	let currentColor = $derived(toolState.color);
 	let currentStrokeWidth = $derived(toolState.strokeWidth);
+	let instruments = $derived(whiteboardStore.instruments);
 
 	// ==========================================================================
 	// Handlers
@@ -127,6 +140,14 @@
 	function toggleShapesSection() {
 		shapesSectionOpen = !shapesSectionOpen;
 	}
+
+	function toggleInstrumentsSection() {
+		instrumentsSectionOpen = !instrumentsSectionOpen;
+	}
+
+	function handleInstrumentToggle(type: InstrumentType) {
+		whiteboardStore.toggleInstrument(type);
+	}
 </script>
 
 <div class="whiteboard-toolbar border-t border-border bg-muted/50">
@@ -164,6 +185,24 @@
 				<Square class="h-4 w-4" />
 				<span class="hidden sm:inline">Formes</span>
 				{#if shapesSectionOpen}
+					<ChevronUp class="h-3 w-3" />
+				{:else}
+					<ChevronDown class="h-3 w-3" />
+				{/if}
+			</Button>
+
+			<!-- Instruments Section Toggle -->
+			<Button
+				type="button"
+				variant={instrumentsSectionOpen ? 'secondary' : 'ghost'}
+				size="sm"
+				onclick={toggleInstrumentsSection}
+				class="gap-1"
+				aria-expanded={instrumentsSectionOpen}
+			>
+				<Ruler class="h-4 w-4" />
+				<span class="hidden sm:inline">Instruments</span>
+				{#if instrumentsSectionOpen}
 					<ChevronUp class="h-3 w-3" />
 				{:else}
 					<ChevronDown class="h-3 w-3" />
@@ -337,6 +376,40 @@
 					<kbd class="ml-1 hidden rounded bg-muted px-1 text-xs sm:inline">{tool.shortcut}</kbd>
 				</Button>
 			{/each}
+		</div>
+	</div>
+
+	<!-- Instruments Section (Collapsible with animation) -->
+	<div
+		class="instruments-section overflow-hidden border-t border-border/50 transition-all duration-200 ease-in-out"
+		class:max-h-0={!instrumentsSectionOpen}
+		class:max-h-20={instrumentsSectionOpen}
+		class:opacity-0={!instrumentsSectionOpen}
+		class:opacity-100={instrumentsSectionOpen}
+	>
+		<div class="flex items-center gap-1 px-3 py-2">
+			{#if instruments}
+				{#each INSTRUMENT_TOOLS as tool (tool.id)}
+					<Button
+						type="button"
+						variant={instruments[tool.id].visible ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => handleInstrumentToggle(tool.id)}
+						title="{tool.label} - cliquer pour {instruments[tool.id].visible
+							? 'masquer'
+							: 'afficher'}"
+						aria-label="{tool.label} ({instruments[tool.id].visible ? 'visible' : 'masqué'})"
+						aria-pressed={instruments[tool.id].visible}
+						class="gap-1"
+					>
+						<tool.icon class="h-4 w-4" />
+						<span class="hidden sm:inline">{tool.label}</span>
+						{#if instruments[tool.id].visible}
+							<span class="ml-1 h-2 w-2 rounded-full bg-primary" aria-hidden="true"></span>
+						{/if}
+					</Button>
+				{/each}
+			{/if}
 		</div>
 	</div>
 </div>

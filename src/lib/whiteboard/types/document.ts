@@ -140,6 +140,45 @@ export interface BackgroundPlain {
 export type PageBackground = BackgroundImage | BackgroundPdf | BackgroundPlain;
 
 // =============================================================================
+// Instrument Types
+// =============================================================================
+
+/** Instrument types available in the whiteboard */
+export type InstrumentType = 'ruler' | 'protractor' | 'setSquare';
+
+/** State for a single instrument */
+export interface InstrumentState {
+	readonly type: InstrumentType;
+	readonly visible: boolean;
+	readonly x: number;
+	readonly y: number;
+	readonly rotation: number;
+}
+
+/** Default instrument configurations */
+export const DEFAULT_INSTRUMENTS: Record<InstrumentType, Omit<InstrumentState, 'type'>> = {
+	ruler: { visible: false, x: 100, y: 300, rotation: 0 },
+	protractor: { visible: false, x: 300, y: 300, rotation: 0 },
+	setSquare: { visible: false, x: 200, y: 200, rotation: 0 }
+};
+
+/** Instrument display labels */
+export const INSTRUMENT_LABELS: Record<InstrumentType, string> = {
+	ruler: 'Règle',
+	protractor: 'Rapporteur',
+	setSquare: 'Équerre'
+};
+
+/** Create default instruments state */
+export function createDefaultInstruments(): Record<InstrumentType, InstrumentState> {
+	return {
+		ruler: { type: 'ruler', ...DEFAULT_INSTRUMENTS.ruler },
+		protractor: { type: 'protractor', ...DEFAULT_INSTRUMENTS.protractor },
+		setSquare: { type: 'setSquare', ...DEFAULT_INSTRUMENTS.setSquare }
+	};
+}
+
+// =============================================================================
 // Page & Document Types
 // =============================================================================
 
@@ -161,6 +200,8 @@ export interface WhiteboardDocument {
 	readonly updatedAt: string;
 	readonly pages: readonly Page[];
 	readonly currentPageIndex: number;
+	/** Instrument state (persisted across sessions) */
+	readonly instruments: Record<InstrumentType, InstrumentState>;
 }
 
 // =============================================================================
@@ -200,6 +241,7 @@ export function createEmptyDocument(
 		createdAt: now,
 		updatedAt: now,
 		pages: [createEmptyPage(format)],
-		currentPageIndex: 0
+		currentPageIndex: 0,
+		instruments: createDefaultInstruments()
 	};
 }

@@ -2,9 +2,60 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 4 - Toolbar + Selection d'outils
+**Phase completee** : Phase 5 - Instruments educatifs
 **Date** : 2025-12-17
 **Statut** : Pret pour commit
+
+---
+
+## Phase 5 : Instruments educatifs
+
+### Fichiers crees
+
+| Fichier                                                | Description                              |
+| ------------------------------------------------------ | ---------------------------------------- |
+| `src/lib/whiteboard/components/InstrumentLayer.svelte` | Couche SVG instruments (drag + rotation) |
+| `src/lib/whiteboard/tests/instruments.test.ts`         | Tests etat instruments                   |
+
+### Fichiers modifies
+
+| Fichier                                                  | Modifications                                      |
+| -------------------------------------------------------- | -------------------------------------------------- |
+| `src/lib/whiteboard/types/document.ts`                   | InstrumentType, InstrumentState, factory functions |
+| `src/lib/whiteboard/types/file-format.ts`                | Schema Zod validation instruments                  |
+| `src/lib/whiteboard/stores/whiteboard.svelte.ts`         | 7 methodes instruments + getter                    |
+| `src/lib/whiteboard/components/WhiteboardCanvas.svelte`  | Integration InstrumentLayer                        |
+| `src/lib/whiteboard/components/WhiteboardToolbar.svelte` | Section instruments toggle + boutons               |
+| `src/lib/whiteboard/index.ts`                            | Exports instruments                                |
+
+### Tests crees
+
+| Fichier                                        | Tests    |
+| ---------------------------------------------- | -------- |
+| `src/lib/whiteboard/tests/instruments.test.ts` | 23 tests |
+
+**Total Phase 5 : 23 nouveaux tests**
+**Total cumule : 198 tests**
+
+### Fonctionnalites implementees
+
+1. **Types instruments** : InstrumentType ('ruler', 'protractor', 'setSquare'), InstrumentState
+2. **Constantes** : DEFAULT_INSTRUMENTS, INSTRUMENT_LABELS, createDefaultInstruments()
+3. **Schema Zod** : Validation instruments dans file-format.ts
+4. **Store methods** : toggleInstrument, showInstrument, hideInstrument, updateInstrumentPosition, updateInstrumentRotation, updateInstrument, resetInstruments
+5. **InstrumentLayer** : Composant SVG avec drag-to-move et rotation handle
+6. **Toolbar section** : Instruments toggle buttons avec indicateur visuel
+7. **Reutilisation** : Ruler.svelte, Protractor.svelte, SetSquare.svelte existants
+
+### Code Review
+
+- **Score** : Excellent (apres corrections)
+- **Reviewer** : code-reviewer agent
+- **Issues corrigees** :
+  - Calcul rotation corrige (angle delta depuis start angle)
+  - Error handling setPointerCapture avec try-catch
+  - Constantes ROTATION_HANDLE_POSITIONS extraites
+  - Champs dragState renommes pour clarte (startPointerX/Y)
 
 ---
 
@@ -193,16 +244,18 @@
 
 ## Prochaines etapes
 
-### Phase 5 : Instruments educatifs
+### Phase 6 : TextBlocks
 
 **A faire** :
 
-1. Afficher/masquer regle, rapporteur, compas, equerre
-2. Drag pour repositionner
-3. Handle pour rotation
-4. Persistance positions dans le document
+1. Creer un bloc texte au clic (outil texte)
+2. Mode EDIT = RichTextEditor avec toolbar integree
+3. Mode VIEW = MarkdownRenderer (double-clic pour editer)
+4. Support formules LaTeX (MathLive)
+5. Resize avec handles
+6. Escape ou clic exterieur = sortir du mode edit
 
-**Agent** : `frontend-developer`
+**Agent** : `svelte-expert`
 
 ---
 
@@ -213,7 +266,8 @@ src/lib/whiteboard/
 ├── components/
 │   ├── Whiteboard.svelte
 │   ├── WhiteboardCanvas.svelte
-│   └── WhiteboardToolbar.svelte
+│   ├── WhiteboardToolbar.svelte
+│   └── InstrumentLayer.svelte
 ├── core/
 │   ├── history.svelte.ts
 │   ├── serialization.ts
@@ -224,6 +278,7 @@ src/lib/whiteboard/
 ├── tests/
 │   ├── document.test.ts
 │   ├── history.svelte.test.ts
+│   ├── instruments.test.ts
 │   ├── serialization.test.ts
 │   ├── shapes.test.ts
 │   ├── stroke-smoothing.test.ts

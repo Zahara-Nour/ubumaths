@@ -11,11 +11,14 @@ import { browser } from '$app/environment';
 import {
 	createEmptyDocument,
 	createEmptyPage,
+	createDefaultInstruments,
 	PAGE_FORMATS,
 	type WhiteboardDocument,
 	type Page,
 	type WhiteboardElement,
-	type PageFormatKey
+	type PageFormatKey,
+	type InstrumentType,
+	type InstrumentState
 } from '../types/document';
 import { createHistoryManager, type HistoryManager } from '../core/history.svelte';
 import { serialize, deserialize } from '../core/serialization';
@@ -195,6 +198,9 @@ function createWhiteboardStore() {
 		},
 		get canRedo() {
 			return canRedo;
+		},
+		get instruments() {
+			return document?.instruments ?? null;
 		},
 
 		// === Document Operations ===
@@ -471,6 +477,100 @@ function createWhiteboardStore() {
 				hasUnsavedChanges = true;
 				scheduleAutosave();
 			}
+		},
+
+		// === Instrument Operations ===
+
+		/**
+		 * Toggle instrument visibility
+		 */
+		toggleInstrument(type: InstrumentType): void {
+			if (!document) return;
+
+			const current = document.instruments[type];
+			updateDocument((doc) => ({
+				...doc,
+				instruments: {
+					...doc.instruments,
+					[type]: { ...current, visible: !current.visible }
+				}
+			}));
+		},
+
+		/**
+		 * Show an instrument
+		 */
+		showInstrument(type: InstrumentType): void {
+			if (!document || document.instruments[type].visible) return;
+			this.toggleInstrument(type);
+		},
+
+		/**
+		 * Hide an instrument
+		 */
+		hideInstrument(type: InstrumentType): void {
+			if (!document || !document.instruments[type].visible) return;
+			this.toggleInstrument(type);
+		},
+
+		/**
+		 * Update instrument position
+		 */
+		updateInstrumentPosition(type: InstrumentType, x: number, y: number): void {
+			if (!document) return;
+
+			const current = document.instruments[type];
+			updateDocument((doc) => ({
+				...doc,
+				instruments: {
+					...doc.instruments,
+					[type]: { ...current, x, y }
+				}
+			}));
+		},
+
+		/**
+		 * Update instrument rotation
+		 */
+		updateInstrumentRotation(type: InstrumentType, rotation: number): void {
+			if (!document) return;
+
+			const current = document.instruments[type];
+			updateDocument((doc) => ({
+				...doc,
+				instruments: {
+					...doc.instruments,
+					[type]: { ...current, rotation }
+				}
+			}));
+		},
+
+		/**
+		 * Update full instrument state
+		 */
+		updateInstrument(type: InstrumentType, state: Partial<Omit<InstrumentState, 'type'>>): void {
+			if (!document) return;
+
+			const current = document.instruments[type];
+			updateDocument((doc) => ({
+				...doc,
+				instruments: {
+					...doc.instruments,
+					[type]: { ...current, ...state }
+				}
+			}));
+		},
+
+		/**
+		 * Reset instruments to default positions
+		 */
+		resetInstruments(): void {
+			if (!document) return;
+
+			updateDocument((doc) => ({
+				...doc,
+				instruments: createDefaultInstruments()
+			}));
 		},
 
 		// === Cleanup ===

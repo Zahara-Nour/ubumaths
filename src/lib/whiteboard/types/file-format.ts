@@ -108,6 +108,26 @@ const backgroundSchema = z.discriminatedUnion('type', [
 ]);
 
 // =============================================================================
+// Instrument Schemas
+// =============================================================================
+
+const instrumentTypeSchema = z.enum(['ruler', 'protractor', 'setSquare']);
+
+const instrumentStateSchema = z.object({
+	type: instrumentTypeSchema,
+	visible: z.boolean(),
+	x: z.number().finite(),
+	y: z.number().finite(),
+	rotation: z.number().finite()
+});
+
+const instrumentsSchema = z.object({
+	ruler: instrumentStateSchema,
+	protractor: instrumentStateSchema,
+	setSquare: instrumentStateSchema
+});
+
+// =============================================================================
 // Page Schema
 // =============================================================================
 
@@ -130,7 +150,8 @@ export const whiteboardDocumentSchema = z.object({
 	createdAt: z.string().datetime(),
 	updatedAt: z.string().datetime(),
 	pages: z.array(pageSchema).min(1).max(100),
-	currentPageIndex: z.number().int().min(0)
+	currentPageIndex: z.number().int().min(0),
+	instruments: instrumentsSchema
 });
 
 // Refine to ensure currentPageIndex is within bounds
