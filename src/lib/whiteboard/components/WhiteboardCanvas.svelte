@@ -1,0 +1,354 @@
+<script lang="ts">
+	/**
+	 * WhiteboardCanvas - SVG-based drawing canvas
+	 *
+	 * Multi-layered SVG canvas for whiteboard drawing.
+	 * Layers (bottom to top): background, content, active-stroke, instruments
+	 */
+
+	import { whiteboardStore } from '../stores/whiteboard.svelte';
+	import {
+		smoothStroke,
+		getToolOptions,
+		pointsToSvgPath,
+		doStrokesIntersect
+	} from '../core/stroke-smoothing';
+	import type { Point, StrokeElement } from '../types/document';
+
+	// ==========================================================================
+	// Props
+	// ==========================================================================
+
+	interface Props {
+		/** Optional class for the container */
+		class?: string;
+	}
+
+	let { class: className = '' }: Props = $props();
+
+	// ==========================================================================
+	// State
+	// ==========================================================================
+
+	/** Current drawing state */
+	let isDrawing = $state(false);
+
+	/** Points collected during current stroke */
+	let currentPoints: Point[] = $state([]);
+
+	/** SVG path for the active stroke preview */
+	let activeStrokePath = $state('');
+
+	// ==========================================================================
+	// Derived State
+	// ==========================================================================
+
+	/** Current page from store */
+	let currentPage = $derived(whiteboardStore.currentPage);
+
+	/** Current tool settings */
+	let toolState = $derived(whiteboardStore.toolState);
+
+	/** Page dimensions */
+	let pageWidth = $derived(currentPage?.width ?? 794);
+	let pageHeight = $derived(currentPage?.height ?? 1123);
+
+	/** Elements on current page */
+	let elements = $derived(currentPage?.elements ?? []);
+
+	/** Only stroke elements for rendering */
+	let strokeElements = $derived(elements.filter((el): el is StrokeElement => el.type === 'stroke'));
+
+	/** ViewBox for SVG */
+	let viewBox = $derived(`0 0 ${pageWidth} ${pageHeight}`);
+
+	/** Current stroke style */
+	let currentStrokeStyle = $derived({
+		color: toolState.color,
+		width: toolState.strokeWidth,
+		opacity: toolState.toolType === 'highlighter' ? 0.3 : 1
+	});
+
+	// ==========================================================================
+	// Pointer Event Handlers
+	// ==========================================================================
+
+	/**
+	 * Get point coordinates relative to SVG
+	 */
+	function getPointFromEvent(e: PointerEvent): Point {
+		const svg = e.currentTarget as SVGSVGElement;
+		const rect = svg.getBoundingClientRect();
+
+		// Calculate position relative to SVG viewBox
+		const x = ((e.clientX - rect.left) / rect.width) * pageWidth;
+		const y = ((e.clientY - rect.top) / rect.height) * pageHeight;
+
+		return {
+			x,
+			y,
+			pressure: e.pressure > 0 ? e.pressure : undefined
+		};
+	}
+
+	/**
+	 * Handle pointer down - start drawing
+	 */
+	function handlePointerDown(e: PointerEvent) {
+		// Only handle primary button (left click / touch)
+		if (e.button !== 0) return;
+
+		// Skip if not a drawing tool
+		if (!['pen', 'highlighter', 'eraser'].includes(toolState.toolType)) return;
+
+		e.preventDefault();
+		(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
+
+		isDrawing = true;
+		const point = getPointFromEvent(e);
+		currentPoints = [point];
+
+		// Update active stroke preview
+		updateActiveStroke();
+	}
+
+	/**
+	 * Handle pointer move - add points to stroke
+	 */
+	function handlePointerMove(e: PointerEvent) {
+		if (!isDrawing) return;
+
+		e.preventDefault();
+		const point = getPointFromEvent(e);
+
+		// Add point to current stroke
+		currentPoints = [...currentPoints, point];
+
+		// Update active stroke preview
+		updateActiveStroke();
+	}
+
+	/**
+	 * Handle pointer up - finalize stroke
+	 */
+	function handlePointerUp(e: PointerEvent) {
+		if (!isDrawing) return;
+
+		e.preventDefault();
+
+		try {
+			finalizeStroke();
+		} finally {
+			// Always release capture, even on error
+			(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+		}
+	}
+
+	/**
+	 * Handle pointer cancel - abort stroke
+	 */
+	function handlePointerCancel(e: PointerEvent) {
+		if (!isDrawing) return;
+
+		(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+
+		// Abort current stroke
+		isDrawing = false;
+		currentPoints = [];
+		activeStrokePath = '';
+	}
+
+	// ==========================================================================
+	// Stroke Processing
+	// ==========================================================================
+
+	/**
+	 * Update the active stroke preview path
+	 */
+	function updateActiveStroke() {
+		if (currentPoints.length === 0) {
+			activeStrokePath = '';
+			return;
+		}
+
+		const options = getToolOptions(
+			toolState.toolType as 'pen' | 'highlighter' | 'eraser',
+			toolState.strokeWidth,
+			toolState.color,
+			1
+		);
+
+		const outlinePoints = smoothStroke(currentPoints, options);
+		activeStrokePath = pointsToSvgPath(outlinePoints);
+	}
+
+	/**
+	 * Finalize the current stroke
+	 */
+	function finalizeStroke() {
+		if (currentPoints.length < 2) {
+			// Not enough points for a stroke
+			isDrawing = false;
+			currentPoints = [];
+			activeStrokePath = '';
+			return;
+		}
+
+		if (toolState.toolType === 'eraser') {
+			// Eraser: remove intersecting strokes
+			eraseIntersectingStrokes();
+		} else {
+			// Pen/Highlighter: add new stroke
+			addStrokeElement();
+		}
+
+		// Reset state
+		isDrawing = false;
+		currentPoints = [];
+		activeStrokePath = '';
+	}
+
+	/**
+	 * Add a new stroke element to the document
+	 */
+	function addStrokeElement() {
+		const element: StrokeElement = {
+			id: crypto.randomUUID(),
+			type: 'stroke',
+			toolType: toolState.toolType as 'pen' | 'highlighter',
+			points: currentPoints,
+			color: toolState.color,
+			width: toolState.strokeWidth,
+			opacity: toolState.toolType === 'highlighter' ? 0.3 : 1
+		};
+
+		whiteboardStore.addElement(element);
+	}
+
+	/**
+	 * Erase strokes that intersect with the eraser path
+	 */
+	function eraseIntersectingStrokes() {
+		const eraserWidth = toolState.strokeWidth;
+
+		// Find all strokes that intersect with the eraser path
+		const strokesToRemove: string[] = [];
+
+		for (const stroke of strokeElements) {
+			if (doStrokesIntersect(currentPoints, stroke.points as Point[], eraserWidth, stroke.width)) {
+				strokesToRemove.push(stroke.id);
+			}
+		}
+
+		// Remove intersecting strokes
+		for (const id of strokesToRemove) {
+			whiteboardStore.removeElement(id);
+		}
+	}
+
+	// ==========================================================================
+	// Stroke Rendering
+	// ==========================================================================
+
+	/**
+	 * Get SVG path for a stroke element
+	 */
+	function getStrokePath(stroke: StrokeElement): string {
+		const options = getToolOptions(stroke.toolType, stroke.width, stroke.color, stroke.opacity);
+		const outlinePoints = smoothStroke(stroke.points as Point[], options);
+		return pointsToSvgPath(outlinePoints);
+	}
+</script>
+
+<div class="whiteboard-canvas-container relative overflow-hidden bg-gray-100 {className}">
+	<svg
+		class="whiteboard-svg"
+		{viewBox}
+		preserveAspectRatio="xMidYMid meet"
+		style="width: 100%; height: 100%;"
+		role="img"
+		aria-label="Tableau blanc interactif avec {strokeElements.length} éléments dessinés"
+		onpointerdown={handlePointerDown}
+		onpointermove={handlePointerMove}
+		onpointerup={handlePointerUp}
+		onpointercancel={handlePointerCancel}
+		onpointerleave={handlePointerCancel}
+	>
+		<!-- Layer 1: Background -->
+		<g class="layer-background">
+			{#if currentPage?.background.type === 'plain'}
+				<rect
+					x="0"
+					y="0"
+					width={pageWidth}
+					height={pageHeight}
+					fill={currentPage.background.color}
+				/>
+				{#if currentPage.background.style === 'grid'}
+					<defs>
+						<pattern id="grid-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+							<path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="0.5" />
+						</pattern>
+					</defs>
+					<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="url(#grid-pattern)" />
+				{:else if currentPage.background.style === 'ruled'}
+					<defs>
+						<pattern id="ruled-pattern" width={pageWidth} height="24" patternUnits="userSpaceOnUse">
+							<line x1="0" y1="24" x2={pageWidth} y2="24" stroke="#e5e7eb" stroke-width="0.5" />
+						</pattern>
+					</defs>
+					<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="url(#ruled-pattern)" />
+				{:else if currentPage.background.style === 'dotted'}
+					<defs>
+						<pattern id="dotted-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+							<circle cx="10" cy="10" r="1" fill="#d1d5db" />
+						</pattern>
+					</defs>
+					<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="url(#dotted-pattern)" />
+				{/if}
+			{/if}
+		</g>
+
+		<!-- Layer 2: Content (existing strokes) -->
+		<g class="layer-content">
+			{#each strokeElements as stroke (stroke.id)}
+				<path
+					d={getStrokePath(stroke)}
+					fill={stroke.color}
+					fill-opacity={stroke.opacity}
+					stroke="none"
+				/>
+			{/each}
+		</g>
+
+		<!-- Layer 3: Active Stroke (currently drawing) -->
+		<g class="layer-active-stroke">
+			{#if isDrawing && activeStrokePath}
+				<path
+					d={activeStrokePath}
+					fill={toolState.toolType === 'eraser' ? '#f87171' : currentStrokeStyle.color}
+					fill-opacity={toolState.toolType === 'eraser' ? 0.3 : currentStrokeStyle.opacity}
+					stroke="none"
+				/>
+			{/if}
+		</g>
+
+		<!-- Layer 4: Instruments (ruler, protractor, etc.) - placeholder for Phase 5 -->
+		<g class="layer-instruments">
+			<!-- Instruments will be rendered here -->
+		</g>
+	</svg>
+</div>
+
+<style>
+	.whiteboard-canvas-container {
+		touch-action: none;
+		user-select: none;
+		-webkit-user-select: none;
+	}
+
+	.whiteboard-svg {
+		display: block;
+		cursor: crosshair;
+	}
+</style>
