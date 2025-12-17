@@ -23,15 +23,20 @@ export type {
 	Point,
 	StrokeToolType,
 	ShapeType,
-	PageFormatKey
+	PageFormatKey,
+	InstrumentType,
+	InstrumentState
 } from './types/document';
 
 export {
 	createEmptyDocument,
 	createEmptyPage,
+	createDefaultInstruments,
 	PAGE_FORMATS,
 	DEFAULT_PAGE_FORMAT,
-	UBW_FILE_VERSION
+	UBW_FILE_VERSION,
+	DEFAULT_INSTRUMENTS,
+	INSTRUMENT_LABELS
 } from './types/document';
 
 // File format validation
@@ -89,3 +94,4 @@ export {
 export { default as Whiteboard } from './components/Whiteboard.svelte';
 export { default as WhiteboardCanvas } from './components/WhiteboardCanvas.svelte';
 export { default as WhiteboardToolbar } from './components/WhiteboardToolbar.svelte';
+export { default as InstrumentLayer } from './components/InstrumentLayer.svelte';

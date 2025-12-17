@@ -14,6 +14,7 @@
 		doStrokesIntersect
 	} from '../core/stroke-smoothing';
 	import { createShapeElement, getShapeSvgProps } from '../core/shapes';
+	import InstrumentLayer from './InstrumentLayer.svelte';
 	import type { Point, StrokeElement, ShapeElement, ShapeType } from '../types/document';
 
 	// ==========================================================================
@@ -539,9 +540,9 @@
 			{/if}
 		</g>
 
-		<!-- Layer 4: Instruments (ruler, protractor, etc.) - placeholder for Phase 5 -->
+		<!-- Layer 4: Instruments (ruler, protractor, etc.) -->
 		<g class="layer-instruments">
-			<!-- Instruments will be rendered here -->
+			<InstrumentLayer />
 		</g>
 	</svg>
 </div>
