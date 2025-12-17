@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import type { WhiteboardDocument } from '../types/document';
+import type { WhiteboardDocument, Page, WhiteboardElement } from '../types/document';
 import { createEmptyDocument, createEmptyPage } from '../types/document';
 
 // =============================================================================
@@ -502,7 +502,11 @@ describe('Metadata Extraction', () => {
 
 	beforeEach(() => {
 		document = createEmptyDocument('Mon Document');
-		document.pages = [createEmptyPage('A4'), createEmptyPage('A4'), createEmptyPage('A4')];
+		(document as unknown as { pages: Page[] }).pages = [
+			createEmptyPage('A4'),
+			createEmptyPage('A4'),
+			createEmptyPage('A4')
+		];
 	});
 
 	it('extracts version', () => {
@@ -569,7 +573,7 @@ describe('Prepare for Save', () => {
 
 	it('updates updatedAt timestamp', () => {
 		// Set document to an old timestamp
-		document.updatedAt = '2024-01-01T00:00:00.000Z';
+		(document as unknown as { updatedAt: string }).updatedAt = '2024-01-01T00:00:00.000Z';
 		const original = document.updatedAt;
 
 		const prepared = prepareForSave(document);
@@ -620,7 +624,7 @@ describe('File Constants', () => {
 describe('Round-trip Save/Load', () => {
 	it('document survives serialize -> validate cycle', () => {
 		const original = createEmptyDocument('Test Document');
-		original.pages[0].elements = [
+		(original.pages[0] as unknown as { elements: WhiteboardElement[] }).elements = [
 			{
 				id: 'stroke-1',
 				type: 'stroke',
@@ -645,7 +649,7 @@ describe('Round-trip Save/Load', () => {
 
 	it('complex document with all element types survives round-trip', () => {
 		const original = createEmptyDocument('Complex Document');
-		original.pages = [
+		(original as unknown as { pages: Page[] }).pages = [
 			{
 				...createEmptyPage('A4'),
 				elements: [
@@ -662,11 +666,10 @@ describe('Round-trip Save/Load', () => {
 						id: 'shape-1',
 						type: 'shape',
 						shapeType: 'rectangle',
-						startPoint: { x: 50, y: 50 },
-						endPoint: { x: 150, y: 100 },
+						start: { x: 50, y: 50 },
+						end: { x: 150, y: 100 },
 						color: '#0000ff',
-						width: 1,
-						opacity: 1,
+						strokeWidth: 1,
 						fill: '#ffffff'
 					},
 					{
@@ -675,8 +678,7 @@ describe('Round-trip Save/Load', () => {
 						position: { x: 200, y: 200 },
 						width: 300,
 						height: 100,
-						markdownContent: '# Hello\n\nThis is **bold**',
-						isEditing: false
+						markdownContent: '# Hello\n\nThis is **bold**'
 					},
 					{
 						id: 'image-1',
@@ -699,13 +701,13 @@ describe('Round-trip Save/Load', () => {
 
 	it('multi-page document survives round-trip', () => {
 		const original = createEmptyDocument('Multi-page');
-		original.pages = [
+		(original as unknown as { pages: Page[] }).pages = [
 			createEmptyPage('A4'),
 			createEmptyPage('A4'),
 			createEmptyPage('A3'),
 			createEmptyPage('A4')
 		];
-		original.currentPageIndex = 2;
+		(original as unknown as { currentPageIndex: number }).currentPageIndex = 2;
 
 		const serialized = serializeDocument(original);
 		const validation = validateUbwFile(serialized);
@@ -733,7 +735,7 @@ describe('File Size', () => {
 		const document = createEmptyDocument('Many Strokes');
 
 		// Add 100 strokes
-		const strokes = [];
+		const strokes: WhiteboardElement[] = [];
 		for (let i = 0; i < 100; i++) {
 			strokes.push({
 				id: `stroke-${i}`,
@@ -745,7 +747,7 @@ describe('File Size', () => {
 				opacity: 1
 			});
 		}
-		document.pages[0].elements = strokes;
+		(document.pages[0] as unknown as { elements: WhiteboardElement[] }).elements = strokes;
 
 		const serialized = serializeDocument(document);
 		const validation = validateUbwFile(serialized);

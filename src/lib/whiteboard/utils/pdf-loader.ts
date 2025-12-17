@@ -109,8 +109,9 @@ async function getPdfjs(): Promise<typeof import('pdfjs-dist')> {
 	pdfjsLib = await import('pdfjs-dist');
 
 	// Set worker source
+	// @ts-expect-error - pdfjs-dist worker module lacks type declarations
 	const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.mjs');
-	pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker.default;
+	pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker.default as string;
 
 	return pdfjsLib;
 }
@@ -192,11 +193,12 @@ export async function renderPdfPage(
 			return { success: false, error: 'Canvas context not available' };
 		}
 
-		// Render page
+		// Render page (cast to bypass strict type checking on RenderParameters)
 		await page.render({
 			canvasContext: ctx,
-			viewport
-		}).promise;
+			viewport,
+			canvas
+		} as Parameters<typeof page.render>[0]).promise;
 
 		const dataUrl = canvas.toDataURL('image/png');
 

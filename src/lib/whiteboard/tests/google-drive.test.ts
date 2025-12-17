@@ -285,19 +285,19 @@ describe('Needs Sync Check', () => {
 
 	it('needs sync if document updated after last sync', () => {
 		const oldSyncTime = '2024-01-01T00:00:00.000Z';
-		document.updatedAt = '2024-01-02T00:00:00.000Z';
+		(document as unknown as { updatedAt: string }).updatedAt = '2024-01-02T00:00:00.000Z';
 		expect(needsSync(document, oldSyncTime)).toBe(true);
 	});
 
 	it('does not need sync if synced after last update', () => {
-		document.updatedAt = '2024-01-01T00:00:00.000Z';
+		(document as unknown as { updatedAt: string }).updatedAt = '2024-01-01T00:00:00.000Z';
 		const recentSyncTime = '2024-01-02T00:00:00.000Z';
 		expect(needsSync(document, recentSyncTime)).toBe(false);
 	});
 
 	it('does not need sync if synced at same time as update', () => {
 		const timestamp = '2024-01-01T12:00:00.000Z';
-		document.updatedAt = timestamp;
+		(document as unknown as { updatedAt: string }).updatedAt = timestamp;
 		expect(needsSync(document, timestamp)).toBe(false);
 	});
 });
