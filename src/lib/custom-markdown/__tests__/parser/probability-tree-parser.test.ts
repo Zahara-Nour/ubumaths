@@ -152,6 +152,24 @@ describe('parseProbTreeContent - Configuration', () => {
 		expect(result.node!.config.rootLabel).toBe('Test');
 		expect(result.node!.config.showOutcomes).toBe(true);
 	});
+
+	it('should parse intersection: true', () => {
+		const content = ['intersection: true', '', 'A:1/2', 'B:1/2'];
+
+		const result = parseProbTreeContent(content);
+
+		expect(result.node).not.toBeNull();
+		expect(result.node!.config.showIntersection).toBe(true);
+	});
+
+	it('should default showIntersection to false', () => {
+		const content = ['A:1/2', 'B:1/2'];
+
+		const result = parseProbTreeContent(content);
+
+		expect(result.node).not.toBeNull();
+		expect(result.node!.config.showIntersection).toBe(false);
+	});
 });
 
 // ============================================================================
