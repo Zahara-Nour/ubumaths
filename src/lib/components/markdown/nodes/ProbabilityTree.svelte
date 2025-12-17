@@ -47,6 +47,7 @@
 	const PADDING_BOTTOM = 30;
 	const PADDING_RIGHT = 40;
 	const OUTCOMES_WIDTH = 120; // Width reserved for outcomes column
+	const INTERSECTION_WIDTH = 180; // Width reserved for P(A ∩ B) column (needs more space)
 
 	// =========================================================================
 	// DYNAMIC LABEL WIDTH CALCULATION
@@ -193,7 +194,7 @@
 			levelDistance * node.maxDepth +
 			nodeLabelWidth + // Space for leaf event labels
 			PADDING_RIGHT +
-			(node.config.showIntersection ? OUTCOMES_WIDTH : 0) + // Space for P(A ∩ B) if enabled
+			(node.config.showIntersection ? INTERSECTION_WIDTH : 0) + // Space for P(A ∩ B) if enabled
 			(node.config.showOutcomes ? OUTCOMES_WIDTH : 0)
 	);
 
@@ -386,7 +387,8 @@
 
 		if (eventLabels.length === 0) return '';
 		if (eventLabels.length === 1) return `P(${eventLabels[0]})`;
-		return `P(${eventLabels.join(' \\cap ')})`;
+		// Use \, for thin space around \cap for proper math formatting
+		return `P(${eventLabels.join('\\,\\cap\\,')})`;
 	}
 
 	/**
@@ -714,7 +716,7 @@
 				<foreignObject
 					x={leaf.pos.x + nodeLabelWidth + 10}
 					y={leaf.pos.y - 12}
-					width={OUTCOMES_WIDTH - 20}
+					width={INTERSECTION_WIDTH - 20}
 					height="24"
 				>
 					<div
@@ -730,7 +732,7 @@
 
 		<!-- Outcomes column (after intersection probabilities if shown) -->
 		{#if node.config.showOutcomes}
-			{@const outcomesOffsetX = node.config.showIntersection ? OUTCOMES_WIDTH : 0}
+			{@const outcomesOffsetX = node.config.showIntersection ? INTERSECTION_WIDTH : 0}
 			{#each allLeaves as leaf (leaf.node.id)}
 				{#if leaf.node.outcome}
 					{@const isHighlighted = isInAnyPath(leaf.node.id, effectivePaths)}
