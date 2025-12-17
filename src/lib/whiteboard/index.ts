@@ -88,3 +88,4 @@ export {
 // Components
 export { default as Whiteboard } from './components/Whiteboard.svelte';
 export { default as WhiteboardCanvas } from './components/WhiteboardCanvas.svelte';
+export { default as WhiteboardToolbar } from './components/WhiteboardToolbar.svelte';

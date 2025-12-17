@@ -2,9 +2,58 @@
 
 ## Etat actuel
 
-**Phase completee** : Phase 3 - Formes geometriques
+**Phase completee** : Phase 4 - Toolbar + Selection d'outils
 **Date** : 2025-12-17
 **Statut** : Pret pour commit
+
+---
+
+## Phase 4 : Toolbar + Selection d'outils
+
+### Fichiers crees
+
+| Fichier                                                  | Description                 |
+| -------------------------------------------------------- | --------------------------- |
+| `src/lib/whiteboard/components/WhiteboardToolbar.svelte` | Toolbar horizontale en bas  |
+| `src/lib/whiteboard/tests/toolbar.test.ts`               | Tests configuration toolbar |
+
+### Fichiers modifies
+
+| Fichier                                           | Modifications                          |
+| ------------------------------------------------- | -------------------------------------- |
+| `src/lib/whiteboard/components/Whiteboard.svelte` | Integration toolbar, suppression hints |
+| `src/lib/whiteboard/stores/whiteboard.svelte.ts`  | Ajout setColor, setStrokeWidth         |
+| `src/lib/whiteboard/index.ts`                     | Export WhiteboardToolbar               |
+
+### Tests crees
+
+| Fichier                                    | Tests    |
+| ------------------------------------------ | -------- |
+| `src/lib/whiteboard/tests/toolbar.test.ts` | 27 tests |
+
+**Total Phase 4 : 27 nouveaux tests**
+**Total cumule : 175 tests**
+
+### Fonctionnalites implementees
+
+1. **Toolbar horizontale en bas** avec sections depliables animees
+2. **Sections** : Dessin (pen, highlighter, eraser), Formes (line, rect, circle, arrow)
+3. **Color picker** avec 6 presets + couleur custom
+4. **Slider epaisseur** 1-20px avec preview visuel
+5. **Actions** : Undo, Redo, Clear (avec confirmation)
+6. **Accessibilite** : aria-labels, aria-pressed, aria-expanded, keyboard nav
+
+### Code Review
+
+- **Score** : Good (apres corrections)
+- **Reviewer** : code-reviewer agent
+- **Issues corrigees** :
+  - Confirmation avant clear (protection perte donnees)
+  - Direction chevrons corrigee (UX standard)
+  - setColor() affecte uniquement l'outil courant (coherence)
+  - aria-pressed sur boutons couleur
+  - aria-label sur slider
+  - Utilisation constante STROKE_WIDTH_MAX
 
 ---
 
@@ -144,15 +193,14 @@
 
 ## Prochaines etapes
 
-### Phase 4 : Toolbar + Selection d'outils
+### Phase 5 : Instruments educatifs
 
 **A faire** :
 
-1. Sections depliables (pattern RichTextEditor)
-2. Selection outil met a jour le store
-3. Picker couleur avec presets
-4. Slider epaisseur avec apercu
-5. Raccourcis clavier documentes
+1. Afficher/masquer regle, rapporteur, compas, equerre
+2. Drag pour repositionner
+3. Handle pour rotation
+4. Persistance positions dans le document
 
 **Agent** : `frontend-developer`
 
@@ -164,7 +212,8 @@
 src/lib/whiteboard/
 ├── components/
 │   ├── Whiteboard.svelte
-│   └── WhiteboardCanvas.svelte
+│   ├── WhiteboardCanvas.svelte
+│   └── WhiteboardToolbar.svelte
 ├── core/
 │   ├── history.svelte.ts
 │   ├── serialization.ts
@@ -178,6 +227,7 @@ src/lib/whiteboard/
 │   ├── serialization.test.ts
 │   ├── shapes.test.ts
 │   ├── stroke-smoothing.test.ts
+│   ├── toolbar.test.ts
 │   └── whiteboard-store.svelte.test.ts
 ├── types/
 │   ├── document.ts
