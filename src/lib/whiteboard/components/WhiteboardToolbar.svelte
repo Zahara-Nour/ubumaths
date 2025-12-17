@@ -34,8 +34,15 @@
 		Triangle,
 		Image,
 		FileText,
-		Upload
+		Upload,
+		Save,
+		FolderOpen,
+		FilePlus,
+		Cloud,
+		CloudOff,
+		Loader2
 	} from 'lucide-svelte';
+	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
 	import { INSTRUMENT_LABELS, type InstrumentType } from '../types/document';
 	import { importImageFile } from '../utils/image-loader';
 	import { importPdfFile } from '../utils/pdf-loader';
@@ -90,13 +97,15 @@
 	let shapesSectionOpen = $state(false);
 	let instrumentsSectionOpen = $state(false);
 	let importSectionOpen = $state(false);
+	let fileSectionOpen = $state(false);
 
 	/** Color picker open state */
 	let colorPickerOpen = $state(false);
 
-	/** File input references */
-	let imageInputRef: HTMLInputElement | null = $state(null);
-	let pdfInputRef: HTMLInputElement | null = $state(null);
+	/** File input references (plain variables, no reactivity needed for bind:this) */
+	let imageInputRef: HTMLInputElement | null = null;
+	let pdfInputRef: HTMLInputElement | null = null;
+	let ubwInputRef: HTMLInputElement | null = null;
 
 	/** Import loading state */
 	let isImporting = $state(false);
@@ -111,6 +120,8 @@
 	let currentColor = $derived(toolState.color);
 	let currentStrokeWidth = $derived(toolState.strokeWidth);
 	let instruments = $derived(whiteboardStore.instruments);
+	let syncState = $derived(whiteboardStore.syncState);
+	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
 
 	// ==========================================================================
 	// Handlers
@@ -241,6 +252,82 @@
 			input.value = '';
 		}
 	}
+
+	// ==========================================================================
+	// File Operations Handlers
+	// ==========================================================================
+
+	function toggleFileSection() {
+		fileSectionOpen = !fileSectionOpen;
+	}
+
+	function handleNewDocument() {
+		if (hasUnsavedChanges) {
+			if (!confirm('Vous avez des modifications non sauvegardées. Voulez-vous continuer ?')) {
+				return;
+			}
+		}
+
+		// Ask for document title
+		const title = prompt('Nom du nouveau document:', 'Sans titre');
+		if (title === null) return; // User cancelled
+
+		whiteboardStore.createNew(title || 'Sans titre');
+		toaster.success('Nouveau document créé');
+	}
+
+	function handleSaveDocument() {
+		const doc = whiteboardStore.document;
+		if (!doc) return;
+
+		// If document has never been saved, ask for filename
+		if (doc.title === 'Sans titre' || !doc.title) {
+			const title = prompt('Nom du document:', doc.title || 'Sans titre');
+			if (title === null) return; // User cancelled
+			if (title) {
+				whiteboardStore.setTitle(title);
+			}
+		}
+
+		const result = whiteboardStore.saveToFile();
+		if (result.success) {
+			toaster.success('Document sauvegardé');
+		} else {
+			toaster.error(result.error || 'Erreur lors de la sauvegarde');
+		}
+	}
+
+	function handleOpenDocument() {
+		ubwInputRef?.click();
+	}
+
+	async function handleUbwFileSelect(e: Event) {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		if (hasUnsavedChanges) {
+			if (!confirm('Vous avez des modifications non sauvegardées. Voulez-vous continuer ?')) {
+				input.value = '';
+				return;
+			}
+		}
+
+		try {
+			const result = await whiteboardStore.loadFromFile(file);
+
+			if (result.success) {
+				toaster.success('Document chargé');
+			} else {
+				toaster.error(result.error || 'Erreur lors du chargement');
+			}
+		} catch (error) {
+			console.error('File load error:', error);
+			toaster.error('Erreur lors du chargement du fichier');
+		} finally {
+			input.value = '';
+		}
+	}
 </script>
 
 <div class="whiteboard-toolbar border-t border-border bg-muted/50">
@@ -320,6 +407,28 @@
 				{/if}
 			</Button>
 
+			<!-- File Section Toggle -->
+			<Button
+				type="button"
+				variant={fileSectionOpen ? 'secondary' : 'ghost'}
+				size="sm"
+				onclick={toggleFileSection}
+				class="gap-1"
+				aria-expanded={fileSectionOpen}
+			>
+				<Save class="h-4 w-4" />
+				<span class="hidden sm:inline">Fichier</span>
+				{#if hasUnsavedChanges}
+					<span class="h-2 w-2 rounded-full bg-yellow-500" title="Modifications non sauvegardées"
+					></span>
+				{/if}
+				{#if fileSectionOpen}
+					<ChevronUp class="h-3 w-3" />
+				{:else}
+					<ChevronDown class="h-3 w-3" />
+				{/if}
+			</Button>
+
 			<!-- Separator -->
 			<div class="mx-2 h-6 w-px bg-border"></div>
 
@@ -363,7 +472,7 @@
 						<input
 							type="color"
 							value={currentColor}
-							onchange={(e) => handleColorSelect(e.currentTarget.value)}
+							oninput={(e) => handleColorSelect(e.currentTarget.value)}
 							class="h-8 w-8 cursor-pointer rounded border-0 p-0"
 							aria-label="Couleur personnalisée"
 						/>
@@ -566,6 +675,81 @@
 			{/if}
 		</div>
 	</div>
+
+	<!-- File Section (Collapsible with animation) -->
+	<div
+		class="file-section overflow-hidden border-t border-border/50 transition-all duration-200 ease-in-out"
+		class:max-h-0={!fileSectionOpen}
+		class:max-h-20={fileSectionOpen}
+		class:opacity-0={!fileSectionOpen}
+		class:opacity-100={fileSectionOpen}
+	>
+		<div class="flex items-center gap-1 px-3 py-2">
+			<!-- New Document -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={handleNewDocument}
+				title="Nouveau document (Ctrl+N)"
+				aria-label="Nouveau document"
+				class="gap-1"
+			>
+				<FilePlus class="h-4 w-4" />
+				<span class="hidden sm:inline">Nouveau</span>
+			</Button>
+
+			<!-- Save Document -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={handleSaveDocument}
+				title="Sauvegarder (Ctrl+S)"
+				aria-label="Sauvegarder"
+				class="gap-1"
+			>
+				<Save class="h-4 w-4" />
+				<span class="hidden sm:inline">Sauvegarder</span>
+				{#if hasUnsavedChanges}
+					<span class="h-2 w-2 rounded-full bg-yellow-500" title="Modifications non sauvegardées"
+					></span>
+				{/if}
+			</Button>
+
+			<!-- Open Document -->
+			<Button
+				type="button"
+				variant="ghost"
+				size="sm"
+				onclick={handleOpenDocument}
+				title="Ouvrir (Ctrl+O)"
+				aria-label="Ouvrir un document"
+				class="gap-1"
+			>
+				<FolderOpen class="h-4 w-4" />
+				<span class="hidden sm:inline">Ouvrir</span>
+			</Button>
+
+			<!-- Separator -->
+			<div class="mx-2 h-6 w-px bg-border"></div>
+
+			<!-- Sync Status Indicator -->
+			<div
+				class="flex items-center gap-1 text-sm {getSyncStatusColor(syncState)}"
+				title={getSyncStatusLabel(syncState)}
+			>
+				{#if syncState.status === 'syncing'}
+					<Loader2 class="h-4 w-4 animate-spin" />
+				{:else if syncState.status === 'disconnected'}
+					<CloudOff class="h-4 w-4" />
+				{:else}
+					<Cloud class="h-4 w-4" />
+				{/if}
+				<span class="hidden sm:inline">{getSyncStatusLabel(syncState)}</span>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!-- Hidden file inputs -->
@@ -583,6 +767,15 @@
 	type="file"
 	accept="application/pdf"
 	onchange={handlePdfFileSelect}
+	class="hidden"
+	aria-hidden="true"
+/>
+
+<input
+	bind:this={ubwInputRef}
+	type="file"
+	accept=".ubw"
+	onchange={handleUbwFileSelect}
 	class="hidden"
 	aria-hidden="true"
 />

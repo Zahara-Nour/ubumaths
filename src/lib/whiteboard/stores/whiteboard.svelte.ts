@@ -25,6 +25,26 @@ import {
 } from '../types/document';
 import { createHistoryManager, type HistoryManager } from '../core/history.svelte';
 import { serialize, deserialize } from '../core/serialization';
+import {
+	downloadDocument,
+	loadDocumentFromFile,
+	generateFilename,
+	prepareForSave,
+	serializeDocument,
+	isValidFilename,
+	FILE_EXTENSION
+} from '../utils/file-operations';
+import {
+	createInitialSyncState,
+	updateSyncStateAfterSync,
+	updateSyncStateOnError,
+	updateSyncStateToSyncing,
+	markAsModified,
+	shouldAutoSync,
+	type SyncState,
+	type SyncStatus,
+	AUTO_SYNC_DELAY
+} from '../utils/sync-state';
 
 // =============================================================================
 // Constants
@@ -110,8 +130,12 @@ function createWhiteboardStore() {
 	const isLoading = $state(false);
 	let sidebarVisible = $state(true);
 
+	// === Sync State ===
+	let syncState = $state<SyncState>(createInitialSyncState());
+
 	// === Autosave ===
 	let autosaveTimeout: ReturnType<typeof setTimeout> | null = null;
+	let autoSyncTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// === Derived State ===
 	const currentPage = $derived(document?.pages[document.currentPageIndex] ?? null);
@@ -178,6 +202,28 @@ function createWhiteboardStore() {
 		history?.push(updated);
 		hasUnsavedChanges = true;
 		scheduleAutosave();
+
+		// Mark sync state as modified and schedule auto-sync
+		if (syncState.status !== 'disconnected') {
+			syncState = markAsModified(syncState);
+			scheduleAutoSync();
+		}
+	}
+
+	function scheduleAutoSync(): void {
+		if (!browser) return;
+		if (!shouldAutoSync(syncState)) return;
+
+		// Clear existing timeout
+		if (autoSyncTimeout) {
+			clearTimeout(autoSyncTimeout);
+		}
+
+		// Schedule auto-sync
+		autoSyncTimeout = setTimeout(() => {
+			// This will be called by UI to trigger actual sync
+			// The store just marks it ready for sync
+		}, AUTO_SYNC_DELAY);
 	}
 
 	function updateCurrentPage(updater: (page: Page) => Page): void {
@@ -231,6 +277,12 @@ function createWhiteboardStore() {
 		},
 		get currentPageIndex() {
 			return document?.currentPageIndex ?? 0;
+		},
+		get syncState() {
+			return syncState;
+		},
+		get syncStatus(): SyncStatus {
+			return syncState.status;
 		},
 
 		// === Document Operations ===
@@ -855,6 +907,121 @@ function createWhiteboardStore() {
 			}));
 		},
 
+		// === File Operations ===
+
+		/**
+		 * Save document to local file (.ubw)
+		 */
+		saveToFile(filename?: string): { success: boolean; error?: string } {
+			if (!document) return { success: false, error: 'No document to save' };
+
+			// Generate or validate filename
+			let finalFilename = filename || generateFilename(document.title);
+
+			// Ensure .ubw extension
+			if (!finalFilename.endsWith(FILE_EXTENSION)) {
+				finalFilename += FILE_EXTENSION;
+			}
+
+			// Validate filename
+			if (!isValidFilename(finalFilename)) {
+				return { success: false, error: 'Invalid filename' };
+			}
+
+			downloadDocument(document, { filename: finalFilename });
+			hasUnsavedChanges = false;
+			return { success: true };
+		},
+
+		/**
+		 * Load document from local file
+		 */
+		async loadFromFile(file: File): Promise<{ success: boolean; error?: string }> {
+			const result = await loadDocumentFromFile(file);
+
+			if (!result.success || !result.document) {
+				return { success: false, error: result.error };
+			}
+
+			document = result.document;
+			history = createHistoryManager(document);
+			hasUnsavedChanges = false;
+			syncState = createInitialSyncState(); // Reset sync state
+
+			return { success: true };
+		},
+
+		/**
+		 * Get document as JSON string for external saving
+		 */
+		getDocumentJson(): string | null {
+			if (!document) return null;
+			return serializeDocument(prepareForSave(document));
+		},
+
+		/**
+		 * Get suggested filename for current document
+		 */
+		getSuggestedFilename(): string {
+			if (!document) return 'Sans_titre.ubw';
+			return generateFilename(document.title);
+		},
+
+		// === Sync State Operations ===
+
+		/**
+		 * Set sync state to syncing
+		 */
+		setSyncing(): void {
+			syncState = updateSyncStateToSyncing(syncState);
+		},
+
+		/**
+		 * Update sync state after successful sync
+		 */
+		setSyncSuccess(fileId: string): void {
+			syncState = updateSyncStateAfterSync(syncState, fileId);
+			hasUnsavedChanges = false;
+		},
+
+		/**
+		 * Update sync state on error
+		 */
+		setSyncError(error: string): void {
+			syncState = updateSyncStateOnError(syncState, error);
+		},
+
+		/**
+		 * Connect to Drive (set initial connected state)
+		 */
+		connectToDrive(fileId?: string, folderId?: string): void {
+			syncState = {
+				status: fileId ? 'synced' : 'modified',
+				lastSyncAt: fileId ? new Date().toISOString() : null,
+				driveFileId: fileId || null,
+				driveFolderId: folderId || null,
+				error: null
+			};
+		},
+
+		/**
+		 * Disconnect from Drive
+		 */
+		disconnectFromDrive(): void {
+			syncState = createInitialSyncState();
+			if (autoSyncTimeout) {
+				clearTimeout(autoSyncTimeout);
+				autoSyncTimeout = null;
+			}
+		},
+
+		/**
+		 * Check if auto-sync should be triggered
+		 */
+		shouldTriggerAutoSync(): boolean {
+			return shouldAutoSync(syncState);
+		},
+
 		// === Cleanup ===
 
 		/**
@@ -863,6 +1030,9 @@ function createWhiteboardStore() {
 		destroy(): void {
 			if (autosaveTimeout) {
 				clearTimeout(autosaveTimeout);
+			}
+			if (autoSyncTimeout) {
+				clearTimeout(autoSyncTimeout);
 			}
 			// Final save before destroy
 			if (hasUnsavedChanges) {
