@@ -147,6 +147,34 @@
 	}
 
 	/**
+	 * Duplicate a variation
+	 */
+	function duplicateVariation(index: number) {
+		if (variations.length >= 10) {
+			toaster.warning('Maximum 10 variations autorisees');
+			return;
+		}
+
+		const source = variations[index];
+		const duplicate: ExerciseVariation = {
+			label: source.label,
+			statement_md: source.statement_md,
+			solution_md: source.solution_md,
+			variables: source.variables ? [...source.variables.map((v) => ({ ...v }))] : undefined,
+			hints: source.hints ? [...source.hints.map((h) => ({ ...h }))] : undefined
+		};
+
+		// Insert the duplicate after the source
+		const newVariations = [...variations];
+		newVariations.splice(index + 1, 0, duplicate);
+		variations = newVariations;
+
+		// Switch to the new duplicate
+		activeVariationTab = String(index + 1);
+		toaster.success('Variation dupliquee');
+	}
+
+	/**
 	 * Add shared variable
 	 */
 	function addSharedVariable() {
@@ -481,9 +509,26 @@
 						type="button"
 						variant="outline"
 						size="sm"
+						onclick={() => duplicateVariation(parseInt(activeVariationTab))}
+						disabled={variations.length >= 10}
+						title="Dupliquer la variation active"
+					>
+						<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+							/>
+						</svg>
+					</Button>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
 						onclick={addVariation}
 						disabled={variations.length >= 10}
-						title="Ajouter une variation"
+						title="Ajouter une variation vide"
 					>
 						+
 					</Button>
