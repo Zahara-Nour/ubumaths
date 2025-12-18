@@ -1721,8 +1721,9 @@ function createWhiteboardStore() {
 				userPreferences = { ...userPreferences, strokeStyle: style };
 			}
 			const updatedSettings = { ...toolSettings };
-			// Only apply to shape tools
-			const shapeTools: ConfigurableTool[] = [
+			// Apply to shape tools and pen (pen is used as reference for non-configurable tools)
+			const toolsToUpdate: ConfigurableTool[] = [
+				'pen',
 				'line',
 				'rectangle',
 				'circle',
@@ -1731,7 +1732,7 @@ function createWhiteboardStore() {
 				'hexagon',
 				'star'
 			];
-			for (const tool of shapeTools) {
+			for (const tool of toolsToUpdate) {
 				updatedSettings[tool] = { ...updatedSettings[tool], strokeStyle: style };
 			}
 			toolSettings = updatedSettings;
@@ -1749,8 +1750,9 @@ function createWhiteboardStore() {
 			}
 			const updatedSettings = { ...toolSettings };
 			// Only apply to shape tools that support corner radius (not line/arrow)
-			const shapesWithCorners: ConfigurableTool[] = ['rectangle', 'pentagon', 'hexagon', 'star'];
-			for (const tool of shapesWithCorners) {
+			// Also update 'pen' as it's used as reference for non-configurable tools (select, pan)
+			const toolsToUpdate: ConfigurableTool[] = ['pen', 'rectangle', 'pentagon', 'hexagon', 'star'];
+			for (const tool of toolsToUpdate) {
 				updatedSettings[tool] = { ...updatedSettings[tool], cornerRadius: clampedRadius };
 			}
 			toolSettings = updatedSettings;
@@ -1767,14 +1769,16 @@ function createWhiteboardStore() {
 			}
 			const updatedSettings = { ...toolSettings };
 			// Apply to shape tools that support fill (not line/arrow)
-			const shapesWithFill: ConfigurableTool[] = [
+			// Also update 'pen' as it's used as reference for non-configurable tools (select, pan)
+			const toolsToUpdate: ConfigurableTool[] = [
+				'pen',
 				'rectangle',
 				'circle',
 				'pentagon',
 				'hexagon',
 				'star'
 			];
-			for (const tool of shapesWithFill) {
+			for (const tool of toolsToUpdate) {
 				updatedSettings[tool] = { ...updatedSettings[tool], fillMode: mode };
 			}
 			toolSettings = updatedSettings;
@@ -1792,14 +1796,16 @@ function createWhiteboardStore() {
 			}
 			const updatedSettings = { ...toolSettings };
 			// Apply to shape tools that support fill
-			const shapesWithFill: ConfigurableTool[] = [
+			// Also update 'pen' as it's used as reference for non-configurable tools (select, pan)
+			const toolsToUpdate: ConfigurableTool[] = [
+				'pen',
 				'rectangle',
 				'circle',
 				'pentagon',
 				'hexagon',
 				'star'
 			];
-			for (const tool of shapesWithFill) {
+			for (const tool of toolsToUpdate) {
 				updatedSettings[tool] = { ...updatedSettings[tool], fillOpacity: clampedOpacity };
 			}
 			toolSettings = updatedSettings;
@@ -1816,14 +1822,16 @@ function createWhiteboardStore() {
 			}
 			const updatedSettings = { ...toolSettings };
 			// Apply to shape tools that support fill
-			const shapesWithFill: ConfigurableTool[] = [
+			// Also update 'pen' as it's used as reference for non-configurable tools (select, pan)
+			const toolsToUpdate: ConfigurableTool[] = [
+				'pen',
 				'rectangle',
 				'circle',
 				'pentagon',
 				'hexagon',
 				'star'
 			];
-			for (const tool of shapesWithFill) {
+			for (const tool of toolsToUpdate) {
 				updatedSettings[tool] = { ...updatedSettings[tool], fillColor: color };
 			}
 			toolSettings = updatedSettings;
