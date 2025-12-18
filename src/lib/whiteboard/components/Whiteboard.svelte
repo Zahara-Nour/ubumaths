@@ -290,6 +290,25 @@
 			return;
 		}
 
+		// Selection shortcuts (no modifier needed)
+		// Delete selected elements
+		if (e.key === 'Delete' || e.key === 'Backspace') {
+			if (whiteboardStore.hasSelection) {
+				e.preventDefault();
+				whiteboardStore.deleteSelected();
+				return;
+			}
+		}
+
+		// Escape - clear selection
+		if (e.key === 'Escape') {
+			if (whiteboardStore.hasSelection) {
+				e.preventDefault();
+				whiteboardStore.clearSelection();
+				return;
+			}
+		}
+
 		// Page navigation (no modifier needed)
 		if (e.key === 'PageDown') {
 			e.preventDefault();
