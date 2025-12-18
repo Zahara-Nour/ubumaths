@@ -123,6 +123,18 @@ export function getToolOptions(
 				end: { taper: 0, cap: true }
 			};
 
+		case 'marker':
+			// Marker: no pressure sensitivity, consistent width
+			return {
+				size: clampedSize,
+				thinning: 0, // No thinning for consistent width
+				smoothing: 0.5,
+				streamline: 0.5,
+				simulatePressure: false, // Ignore pressure data
+				start: { taper: 0, cap: true },
+				end: { taper: 0, cap: true }
+			};
+
 		case 'highlighter':
 			return {
 				size: clampedSize,

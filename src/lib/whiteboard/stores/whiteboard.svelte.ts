@@ -63,7 +63,7 @@ const AUTOSAVE_DELAY_MS = 60_000;
 // =============================================================================
 
 /** Drawing tools */
-export type DrawingTool = 'pen' | 'highlighter' | 'eraser';
+export type DrawingTool = 'pen' | 'marker' | 'highlighter' | 'eraser';
 
 /** Shape tools */
 export type ShapeTool = 'line' | 'rectangle' | 'circle' | 'arrow' | 'pentagon' | 'hexagon' | 'star';
@@ -135,6 +135,16 @@ const DEFAULT_FILL_OPACITY = 1;
 const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
 	// Drawing tools (strokeStyle/cornerRadius/fill not used for freehand)
 	pen: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: 'none',
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
+	},
+	marker: {
 		color: DEFAULT_COLOR,
 		width: DEFAULT_WIDTH,
 		opacity: 1,

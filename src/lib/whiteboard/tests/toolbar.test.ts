@@ -23,6 +23,7 @@ const COLOR_PRESETS = [
 /** Default stroke widths per tool type */
 const DEFAULT_STROKE_WIDTHS: Record<string, number> = {
 	pen: 2,
+	marker: 2,
 	highlighter: 12,
 	eraser: 20,
 	line: 2,
@@ -38,6 +39,7 @@ const STROKE_WIDTH_MAX = 20;
 /** Tool keyboard shortcuts */
 const TOOL_SHORTCUTS: Record<string, string> = {
 	pen: 'P',
+	marker: 'M',
 	highlighter: 'H',
 	eraser: 'E',
 	line: 'L',
@@ -127,7 +129,16 @@ describe('Toolbar Stroke Width Constraints', () => {
 
 describe('Toolbar Keyboard Shortcuts', () => {
 	it('has shortcuts for all tools', () => {
-		const expectedTools = ['pen', 'highlighter', 'eraser', 'line', 'rectangle', 'circle', 'arrow'];
+		const expectedTools = [
+			'pen',
+			'marker',
+			'highlighter',
+			'eraser',
+			'line',
+			'rectangle',
+			'circle',
+			'arrow'
+		];
 		for (const tool of expectedTools) {
 			expect(TOOL_SHORTCUTS[tool]).toBeDefined();
 		}
@@ -148,6 +159,7 @@ describe('Toolbar Keyboard Shortcuts', () => {
 
 	it('drawing tools have expected shortcuts', () => {
 		expect(TOOL_SHORTCUTS.pen).toBe('P');
+		expect(TOOL_SHORTCUTS.marker).toBe('M');
 		expect(TOOL_SHORTCUTS.highlighter).toBe('H');
 		expect(TOOL_SHORTCUTS.eraser).toBe('E');
 	});
@@ -161,12 +173,12 @@ describe('Toolbar Keyboard Shortcuts', () => {
 });
 
 describe('Toolbar Tool Categories', () => {
-	const DRAWING_TOOLS = ['pen', 'highlighter', 'eraser'];
+	const DRAWING_TOOLS = ['pen', 'marker', 'highlighter', 'eraser'];
 	const SHAPE_TOOLS = ['line', 'rectangle', 'circle', 'arrow'];
 	const ACTION_TOOLS = ['undo', 'redo', 'clear'];
 
-	it('has 3 drawing tools', () => {
-		expect(DRAWING_TOOLS.length).toBe(3);
+	it('has 4 drawing tools', () => {
+		expect(DRAWING_TOOLS.length).toBe(4);
 	});
 
 	it('has 4 shape tools', () => {

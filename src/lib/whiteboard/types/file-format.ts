@@ -27,7 +27,7 @@ export const pointSchema = z.object({
 const strokeElementSchema = z.object({
 	id: z.string().uuid(),
 	type: z.literal('stroke'),
-	toolType: z.enum(['pen', 'highlighter', 'eraser']),
+	toolType: z.enum(['pen', 'marker', 'highlighter', 'eraser']),
 	points: z.array(pointSchema).min(1).max(50000),
 	color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 	width: z.number().positive().max(100),
