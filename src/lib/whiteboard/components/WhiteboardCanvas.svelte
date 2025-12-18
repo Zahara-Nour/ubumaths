@@ -635,6 +635,10 @@
 		};
 
 		whiteboardStore.addElement(element);
+
+		// Select the newly created stroke (for potential modification via keyboard/context menu)
+		// but keep the current tool for continued drawing
+		whiteboardStore.selectElement(element.id);
 	}
 
 	/**
@@ -708,6 +712,10 @@
 
 		whiteboardStore.addElement(shape);
 		resetShapeState();
+
+		// Select the newly created shape (for potential modification via keyboard/context menu)
+		// but keep the current tool for continued drawing
+		whiteboardStore.selectElement(shape.id);
 	}
 
 	/**
