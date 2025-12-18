@@ -243,15 +243,34 @@ function renderBackgroundToSvg(page: Page): string {
 	const { width, height, background } = page;
 
 	if (background.type === 'plain') {
+		const gridSpacing = background.gridSpacing ?? 20;
+		const gridOpacity = background.gridOpacity ?? 0.3;
+
 		let svg = `<rect width="${width}" height="${height}" fill="${background.color}"/>`;
 
-		// Add grid/ruled/dotted patterns
-		if (background.style === 'grid') {
-			svg += renderGridPattern(width, height);
-		} else if (background.style === 'ruled') {
-			svg += renderRuledPattern(width, height);
-		} else if (background.style === 'dotted') {
-			svg += renderDottedPattern(width, height);
+		// Add grid/ruled/dotted/triangular/hexagonal patterns
+		switch (background.style) {
+			case 'grid':
+				svg += renderGridPattern(width, height, gridSpacing, gridOpacity);
+				break;
+			case 'ruled':
+				svg += renderRuledPattern(width, height, gridSpacing, gridOpacity);
+				break;
+			case 'dotted':
+				svg += renderDottedPattern(width, height, gridSpacing, gridOpacity);
+				break;
+			case 'triangular':
+				svg += renderTriangularPattern(width, height, gridSpacing, gridOpacity);
+				break;
+			case 'triangular-dotted':
+				svg += renderTriangularDottedPattern(width, height, gridSpacing, gridOpacity);
+				break;
+			case 'hexagonal':
+				svg += renderHexagonalPattern(width, height, gridSpacing, gridOpacity);
+				break;
+			case 'hexagonal-dotted':
+				svg += renderHexagonalDottedPattern(width, height, gridSpacing, gridOpacity);
+				break;
 		}
 
 		return svg;
@@ -277,8 +296,13 @@ function renderBackgroundToSvg(page: Page): string {
 /**
  * Render grid pattern
  */
-function renderGridPattern(width: number, height: number, spacing: number = 20): string {
-	let svg = '<g stroke="#e5e5e5" stroke-width="0.5">';
+function renderGridPattern(
+	width: number,
+	height: number,
+	spacing: number = 20,
+	opacity: number = 0.3
+): string {
+	let svg = `<g stroke="#000000" stroke-width="0.5" opacity="${opacity}">`;
 
 	// Vertical lines
 	for (let x = spacing; x < width; x += spacing) {
@@ -297,8 +321,13 @@ function renderGridPattern(width: number, height: number, spacing: number = 20):
 /**
  * Render ruled pattern (horizontal lines only)
  */
-function renderRuledPattern(width: number, height: number, spacing: number = 24): string {
-	let svg = '<g stroke="#e5e5e5" stroke-width="0.5">';
+function renderRuledPattern(
+	width: number,
+	height: number,
+	spacing: number = 24,
+	opacity: number = 0.3
+): string {
+	let svg = `<g stroke="#000000" stroke-width="0.5" opacity="${opacity}">`;
 
 	for (let y = spacing; y < height; y += spacing) {
 		svg += `<line x1="0" y1="${y}" x2="${width}" y2="${y}"/>`;
@@ -311,12 +340,140 @@ function renderRuledPattern(width: number, height: number, spacing: number = 24)
 /**
  * Render dotted pattern
  */
-function renderDottedPattern(width: number, height: number, spacing: number = 20): string {
-	let svg = '<g fill="#d4d4d4">';
+function renderDottedPattern(
+	width: number,
+	height: number,
+	spacing: number = 20,
+	opacity: number = 0.3
+): string {
+	let svg = `<g fill="#000000" opacity="${opacity}">`;
 
 	for (let x = spacing; x < width; x += spacing) {
 		for (let y = spacing; y < height; y += spacing) {
-			svg += `<circle cx="${x}" cy="${y}" r="1"/>`;
+			svg += `<circle cx="${x}" cy="${y}" r="1.5"/>`;
+		}
+	}
+
+	svg += '</g>';
+	return svg;
+}
+
+/**
+ * Render triangular (isometric) grid pattern
+ */
+function renderTriangularPattern(
+	width: number,
+	height: number,
+	spacing: number = 20,
+	opacity: number = 0.3
+): string {
+	const triHeight = spacing * 0.866; // sqrt(3)/2
+
+	let svg = `<g stroke="#000000" stroke-width="0.5" fill="none" opacity="${opacity}">`;
+
+	// Draw rows of triangles
+	let row = 0;
+	for (let y = 0; y < height + triHeight; y += triHeight) {
+		const offset = row % 2 === 0 ? 0 : spacing / 2;
+		for (let x = offset; x < width + spacing; x += spacing) {
+			// Upper triangle (pointing up)
+			if (row % 2 === 0) {
+				svg += `<path d="M ${x} ${y + triHeight} L ${x + spacing / 2} ${y} L ${x + spacing} ${y + triHeight} Z"/>`;
+			} else {
+				// Lower triangle (pointing down)
+				svg += `<path d="M ${x} ${y} L ${x + spacing / 2} ${y + triHeight} L ${x + spacing} ${y} Z"/>`;
+			}
+		}
+		row++;
+	}
+
+	svg += '</g>';
+	return svg;
+}
+
+/**
+ * Render triangular dotted pattern
+ */
+function renderTriangularDottedPattern(
+	width: number,
+	height: number,
+	spacing: number = 20,
+	opacity: number = 0.3
+): string {
+	const triHeight = spacing * 0.866;
+
+	let svg = `<g fill="#000000" opacity="${opacity}">`;
+
+	let row = 0;
+	for (let y = 0; y < height + triHeight; y += triHeight) {
+		const offset = row % 2 === 0 ? 0 : spacing / 2;
+		for (let x = offset; x < width + spacing; x += spacing) {
+			svg += `<circle cx="${x}" cy="${y}" r="2"/>`;
+		}
+		row++;
+	}
+
+	svg += '</g>';
+	return svg;
+}
+
+/**
+ * Render hexagonal (honeycomb) grid pattern
+ */
+function renderHexagonalPattern(
+	width: number,
+	height: number,
+	spacing: number = 20,
+	opacity: number = 0.3
+): string {
+	const s = spacing / 2;
+	const h = s * 0.866; // sqrt(3)/2
+
+	let svg = `<g stroke="#000000" stroke-width="0.5" fill="none" opacity="${opacity}">`;
+
+	for (let row = 0; row * h * 2 < height + h * 2; row++) {
+		for (let col = 0; col * s * 3 < width + s * 3; col++) {
+			const offsetX = col * s * 3;
+			const offsetY = row * h * 2;
+
+			// First hexagon
+			svg += `<path d="M ${offsetX + s * 0.5} ${offsetY} L ${offsetX + s * 1.5} ${offsetY} L ${offsetX + s * 2} ${offsetY + h} L ${offsetX + s * 1.5} ${offsetY + h * 2} L ${offsetX + s * 0.5} ${offsetY + h * 2} L ${offsetX} ${offsetY + h} Z"/>`;
+
+			// Second hexagon (offset)
+			svg += `<path d="M ${offsetX + s * 2} ${offsetY + h} L ${offsetX + s * 3} ${offsetY + h} L ${offsetX + s * 3.5} ${offsetY + h * 2} L ${offsetX + s * 3} ${offsetY + h * 3} L ${offsetX + s * 2} ${offsetY + h * 3} L ${offsetX + s * 1.5} ${offsetY + h * 2} Z"/>`;
+		}
+	}
+
+	svg += '</g>';
+	return svg;
+}
+
+/**
+ * Render hexagonal dotted pattern
+ */
+function renderHexagonalDottedPattern(
+	width: number,
+	height: number,
+	spacing: number = 20,
+	opacity: number = 0.3
+): string {
+	const s = spacing / 2;
+	const h = s * 0.866;
+
+	let svg = `<g fill="#000000" opacity="${opacity}">`;
+
+	for (let row = 0; row * h * 2 < height + h * 2; row++) {
+		for (let col = 0; col * s * 3 < width + s * 3; col++) {
+			const offsetX = col * s * 3;
+			const offsetY = row * h * 2;
+
+			// Hexagon vertices
+			svg += `<circle cx="${offsetX + s * 0.5}" cy="${offsetY}" r="2"/>`;
+			svg += `<circle cx="${offsetX + s * 1.5}" cy="${offsetY}" r="2"/>`;
+			svg += `<circle cx="${offsetX + s * 2}" cy="${offsetY + h}" r="2"/>`;
+			svg += `<circle cx="${offsetX + s * 1.5}" cy="${offsetY + h * 2}" r="2"/>`;
+			svg += `<circle cx="${offsetX + s * 0.5}" cy="${offsetY + h * 2}" r="2"/>`;
+			svg += `<circle cx="${offsetX}" cy="${offsetY + h}" r="2"/>`;
 		}
 	}
 
@@ -359,46 +516,165 @@ function renderStrokeToSvg(element: Extract<Page['elements'][number], { type: 's
  * Render shape element to SVG
  */
 function renderShapeToSvg(element: Extract<Page['elements'][number], { type: 'shape' }>): string {
-	const { shapeType, start, end, color, strokeWidth, fill, fillOpacity } = element;
+	const {
+		shapeType,
+		start,
+		end,
+		color,
+		strokeWidth,
+		opacity,
+		strokeStyle,
+		fillMode,
+		fill,
+		fillOpacity,
+		cornerRadius,
+		rotation
+	} = element;
 
-	const fillAttr = fill ? `fill="${fill}" fill-opacity="${fillOpacity ?? 1}"` : 'fill="none"';
+	// Calculate bounding box
+	const x = Math.min(start.x, end.x);
+	const y = Math.min(start.y, end.y);
+	const width = Math.abs(end.x - start.x);
+	const height = Math.abs(end.y - start.y);
+	const cx = (start.x + end.x) / 2;
+	const cy = (start.y + end.y) / 2;
+
+	// Build fill attribute based on fillMode
+	let fillAttr = 'fill="none"';
+	let defsContent = '';
+	if (fillMode === 'solid' && fill) {
+		fillAttr = `fill="${fill}" fill-opacity="${fillOpacity ?? 1}"`;
+	} else if (fillMode === 'hatched' && fill) {
+		const patternId = `hatch-${element.id}`;
+		defsContent = `
+			<pattern id="${patternId}" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+				<line x1="0" y1="0" x2="0" y2="8" stroke="${fill}" stroke-width="2" opacity="${fillOpacity ?? 1}"/>
+			</pattern>`;
+		fillAttr = `fill="url(#${patternId})"`;
+	}
+
+	// Build stroke-dasharray for stroke style
+	let dashAttr = '';
+	if (strokeStyle && strokeStyle !== 'solid') {
+		const dashArray =
+			strokeStyle === 'dashed'
+				? `${strokeWidth * 4} ${strokeWidth * 2}`
+				: strokeStyle === 'dotted'
+					? `${strokeWidth} ${strokeWidth * 2}`
+					: `${strokeWidth * 4} ${strokeWidth * 2} ${strokeWidth} ${strokeWidth * 2}`;
+		dashAttr = `stroke-dasharray="${dashArray}"`;
+	}
+
+	// Build opacity attribute
+	const opacityAttr = opacity !== undefined && opacity !== 1 ? `opacity="${opacity}"` : '';
+
+	// Build rotation transform
+	const rotationAttr = rotation ? `transform="rotate(${rotation} ${cx} ${cy})"` : '';
+
+	// Common stroke attributes
+	const strokeAttrs = `stroke="${color}" stroke-width="${strokeWidth}" ${dashAttr} ${opacityAttr}`;
+
+	let shapeContent = '';
 
 	switch (shapeType) {
 		case 'line':
-			return `<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" stroke="${color}" stroke-width="${strokeWidth}"/>`;
+			shapeContent = `<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" ${strokeAttrs} ${rotationAttr}/>`;
+			break;
 
 		case 'arrow': {
-			// Arrow with marker
 			const markerId = `arrow-${element.id}`;
-			return `
-				<defs>
-					<marker id="${markerId}" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-						<polygon points="0 0, 10 3.5, 0 7" fill="${color}"/>
-					</marker>
-				</defs>
-				<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" stroke="${color}" stroke-width="${strokeWidth}" marker-end="url(#${markerId})"/>
-			`;
+			defsContent += `
+				<marker id="${markerId}" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+					<polygon points="0 0, 10 3.5, 0 7" fill="${color}"/>
+				</marker>`;
+			shapeContent = `<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" ${strokeAttrs} marker-end="url(#${markerId})" ${rotationAttr}/>`;
+			break;
 		}
 
 		case 'rectangle': {
-			const x = Math.min(start.x, end.x);
-			const y = Math.min(start.y, end.y);
-			const width = Math.abs(end.x - start.x);
-			const height = Math.abs(end.y - start.y);
-			return `<rect x="${x}" y="${y}" width="${width}" height="${height}" stroke="${color}" stroke-width="${strokeWidth}" ${fillAttr}/>`;
+			const rx = cornerRadius ?? 0;
+			shapeContent = `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${rx}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
+			break;
 		}
 
 		case 'circle': {
-			const cx = (start.x + end.x) / 2;
-			const cy = (start.y + end.y) / 2;
-			const rx = Math.abs(end.x - start.x) / 2;
-			const ry = Math.abs(end.y - start.y) / 2;
-			return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" stroke="${color}" stroke-width="${strokeWidth}" ${fillAttr}/>`;
+			const rx = width / 2;
+			const ry = height / 2;
+			shapeContent = `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
+			break;
+		}
+
+		case 'pentagon': {
+			const points = generatePolygonPoints(cx, cy, Math.min(width, height) / 2, 5, -90);
+			shapeContent = `<polygon points="${points}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
+			break;
+		}
+
+		case 'hexagon': {
+			const points = generatePolygonPoints(cx, cy, Math.min(width, height) / 2, 6, -90);
+			shapeContent = `<polygon points="${points}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
+			break;
+		}
+
+		case 'star': {
+			const points = generateStarPoints(cx, cy, Math.min(width, height) / 2, 5);
+			shapeContent = `<polygon points="${points}" ${strokeAttrs} ${fillAttr} ${rotationAttr}/>`;
+			break;
 		}
 
 		default:
 			return '';
 	}
+
+	// Wrap with defs if needed
+	if (defsContent) {
+		return `<g><defs>${defsContent}</defs>${shapeContent}</g>`;
+	}
+	return shapeContent;
+}
+
+/**
+ * Generate polygon points for regular polygons
+ */
+function generatePolygonPoints(
+	cx: number,
+	cy: number,
+	radius: number,
+	sides: number,
+	startAngle: number = 0
+): string {
+	const points: string[] = [];
+	const angleStep = (2 * Math.PI) / sides;
+	const startRad = (startAngle * Math.PI) / 180;
+
+	for (let i = 0; i < sides; i++) {
+		const angle = startRad + i * angleStep;
+		const x = cx + radius * Math.cos(angle);
+		const y = cy + radius * Math.sin(angle);
+		points.push(`${x},${y}`);
+	}
+
+	return points.join(' ');
+}
+
+/**
+ * Generate star points
+ */
+function generateStarPoints(cx: number, cy: number, radius: number, points: number): string {
+	const innerRadius = radius * 0.4;
+	const result: string[] = [];
+	const angleStep = Math.PI / points;
+	const startAngle = -Math.PI / 2;
+
+	for (let i = 0; i < points * 2; i++) {
+		const angle = startAngle + i * angleStep;
+		const r = i % 2 === 0 ? radius : innerRadius;
+		const x = cx + r * Math.cos(angle);
+		const y = cy + r * Math.sin(angle);
+		result.push(`${x},${y}`);
+	}
+
+	return result.join(' ');
 }
 
 /**
