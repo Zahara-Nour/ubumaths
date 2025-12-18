@@ -133,6 +133,23 @@
 	// ==========================================================================
 
 	/**
+	 * Sync toolbar to show element's color/strokeWidth
+	 * Called from event handler when selecting an element (UI event → handler → update state)
+	 */
+	function syncToolbarWithElement(elementId: string): void {
+		const element = elements.find((el) => el.id === elementId);
+		if (!element) return;
+
+		if (element.type === 'stroke') {
+			whiteboardStore.setColor(element.color);
+			whiteboardStore.setStrokeWidth(element.width);
+		} else if (element.type === 'shape') {
+			whiteboardStore.setColor(element.color);
+			whiteboardStore.setStrokeWidth(element.strokeWidth);
+		}
+	}
+
+	/**
 	 * Get point coordinates relative to SVG
 	 */
 	function getPointFromEvent(e: PointerEvent): Point {
@@ -175,6 +192,8 @@
 						return;
 					} else {
 						whiteboardStore.selectElement(result.elementId, true);
+						// Sync toolbar with newly added element
+						syncToolbarWithElement(result.elementId);
 					}
 				} else {
 					// Replace selection (or keep if already selected)
@@ -182,6 +201,8 @@
 						whiteboardStore.clearSelection();
 						whiteboardStore.selectElement(result.elementId);
 					}
+					// Sync toolbar with selected element (new or existing)
+					syncToolbarWithElement(result.elementId);
 				}
 
 				// Start drag tracking - element is now selected
