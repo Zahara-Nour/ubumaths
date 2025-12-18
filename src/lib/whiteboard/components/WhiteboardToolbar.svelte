@@ -115,7 +115,11 @@
 		plain: 'Vierge',
 		grid: 'Quadrillé',
 		ruled: 'Ligné',
-		dotted: 'Pointillé'
+		dotted: 'Pointillé',
+		triangular: 'Triangulaire',
+		'triangular-dotted': 'Triangulaire pointillé',
+		hexagonal: 'Hexagonal',
+		'hexagonal-dotted': 'Hexagonal pointillé'
 	};
 
 	// ==========================================================================
@@ -262,6 +266,23 @@
 		return page.background.style;
 	});
 
+	/** Current page grid spacing */
+	let currentGridSpacing = $derived.by(() => {
+		const page = whiteboardStore.currentPage;
+		if (!page || page.background.type !== 'plain') return 20;
+		return page.background.gridSpacing ?? 20;
+	});
+
+	/** Current page grid opacity */
+	let currentGridOpacity = $derived.by(() => {
+		const page = whiteboardStore.currentPage;
+		if (!page || page.background.type !== 'plain') return 0.3;
+		return page.background.gridOpacity ?? 0.3;
+	});
+
+	/** Whether grid controls should be shown (not for plain style) */
+	let showGridControls = $derived(currentBackgroundStyle !== 'plain');
+
 	// ==========================================================================
 	// Handlers
 	// ==========================================================================
@@ -338,12 +359,47 @@
 	}
 
 	function handleBackgroundStyleChange(style: BackgroundStyle) {
+		const page = whiteboardStore.currentPage;
+		const existingGridSpacing =
+			page?.background.type === 'plain' ? page.background.gridSpacing : undefined;
+		const existingGridOpacity =
+			page?.background.type === 'plain' ? page.background.gridOpacity : undefined;
+
 		whiteboardStore.setPageBackground({
 			type: 'plain',
 			style,
-			color: '#ffffff'
+			color: '#ffffff',
+			gridSpacing: existingGridSpacing,
+			gridOpacity: existingGridOpacity
 		});
-		backgroundPopoverOpen = false;
+		// Only close popover for plain style, keep open for grids to allow adjustments
+		if (style === 'plain') {
+			backgroundPopoverOpen = false;
+		}
+	}
+
+	function handleGridSpacingChange(value: number[]) {
+		if (value.length > 0) {
+			const page = whiteboardStore.currentPage;
+			if (!page || page.background.type !== 'plain') return;
+
+			whiteboardStore.setPageBackground({
+				...page.background,
+				gridSpacing: value[0]
+			});
+		}
+	}
+
+	function handleGridOpacityChange(value: number[]) {
+		if (value.length > 0) {
+			const page = whiteboardStore.currentPage;
+			if (!page || page.background.type !== 'plain') return;
+
+			whiteboardStore.setPageBackground({
+				...page.background,
+				gridOpacity: value[0]
+			});
+		}
 	}
 
 	// ==========================================================================
@@ -859,56 +915,138 @@
 						</button>
 					{/snippet}
 				</Popover.Trigger>
-				<Popover.Content class="w-auto p-2" side="top" align="start">
-					<div class="flex flex-col gap-1">
-						<span class="mb-1 px-2 text-xs font-medium text-muted-foreground">Fond de page</span>
-						{#each Object.entries(BACKGROUND_STYLE_LABELS) as [style, label] (style)}
-							<Button
-								type="button"
-								variant={currentBackgroundStyle === style ? 'secondary' : 'ghost'}
-								size="sm"
-								onclick={() => handleBackgroundStyleChange(style as BackgroundStyle)}
-								class="justify-start gap-3"
-							>
-								<!-- Background preview icon -->
-								<svg class="h-5 w-5" viewBox="0 0 20 20">
-									<rect
-										x="1"
-										y="1"
-										width="18"
-										height="18"
-										rx="2"
-										fill="white"
-										stroke="currentColor"
-										stroke-width="1"
+				<Popover.Content class="w-56 p-3" side="top" align="start">
+					<div class="flex flex-col gap-3">
+						<div>
+							<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Style</span>
+							<div class="flex flex-col gap-1">
+								{#each Object.entries(BACKGROUND_STYLE_LABELS) as [style, label] (style)}
+									<Button
+										type="button"
+										variant={currentBackgroundStyle === style ? 'secondary' : 'ghost'}
+										size="sm"
+										onclick={() => handleBackgroundStyleChange(style as BackgroundStyle)}
+										class="justify-start gap-3"
+									>
+										<!-- Background preview icon -->
+										<svg class="h-5 w-5" viewBox="0 0 20 20">
+											<rect
+												x="1"
+												y="1"
+												width="18"
+												height="18"
+												rx="2"
+												fill="white"
+												stroke="currentColor"
+												stroke-width="1"
+											/>
+											{#if style === 'grid'}
+												<!-- Grid pattern -->
+												<line x1="7" y1="1" x2="7" y2="19" stroke="#ddd" stroke-width="0.5" />
+												<line x1="13" y1="1" x2="13" y2="19" stroke="#ddd" stroke-width="0.5" />
+												<line x1="1" y1="7" x2="19" y2="7" stroke="#ddd" stroke-width="0.5" />
+												<line x1="1" y1="13" x2="19" y2="13" stroke="#ddd" stroke-width="0.5" />
+											{:else if style === 'ruled'}
+												<!-- Ruled lines -->
+												<line x1="1" y1="5" x2="19" y2="5" stroke="#ddd" stroke-width="0.5" />
+												<line x1="1" y1="10" x2="19" y2="10" stroke="#ddd" stroke-width="0.5" />
+												<line x1="1" y1="15" x2="19" y2="15" stroke="#ddd" stroke-width="0.5" />
+											{:else if style === 'dotted'}
+												<!-- Dots pattern -->
+												<circle cx="5" cy="5" r="0.8" fill="#ccc" />
+												<circle cx="10" cy="5" r="0.8" fill="#ccc" />
+												<circle cx="15" cy="5" r="0.8" fill="#ccc" />
+												<circle cx="5" cy="10" r="0.8" fill="#ccc" />
+												<circle cx="10" cy="10" r="0.8" fill="#ccc" />
+												<circle cx="15" cy="10" r="0.8" fill="#ccc" />
+												<circle cx="5" cy="15" r="0.8" fill="#ccc" />
+												<circle cx="10" cy="15" r="0.8" fill="#ccc" />
+												<circle cx="15" cy="15" r="0.8" fill="#ccc" />
+											{:else if style === 'triangular'}
+												<!-- Triangular grid -->
+												<path
+													d="M 4 15 L 10 4 L 16 15 Z"
+													fill="none"
+													stroke="#ddd"
+													stroke-width="0.5"
+												/>
+												<path d="M 1 15 L 4 15 M 16 15 L 19 15" stroke="#ddd" stroke-width="0.5" />
+												<path d="M 7 10 L 13 10" stroke="#ddd" stroke-width="0.5" />
+											{:else if style === 'triangular-dotted'}
+												<!-- Triangular dots -->
+												<circle cx="10" cy="4" r="1" fill="#ccc" />
+												<circle cx="4" cy="15" r="1" fill="#ccc" />
+												<circle cx="16" cy="15" r="1" fill="#ccc" />
+												<circle cx="7" cy="9.5" r="0.8" fill="#ccc" />
+												<circle cx="13" cy="9.5" r="0.8" fill="#ccc" />
+											{:else if style === 'hexagonal'}
+												<!-- Hexagonal grid -->
+												<path
+													d="M 6 4 L 14 4 L 17 10 L 14 16 L 6 16 L 3 10 Z"
+													fill="none"
+													stroke="#ddd"
+													stroke-width="0.5"
+												/>
+											{:else if style === 'hexagonal-dotted'}
+												<!-- Hexagonal dots -->
+												<circle cx="6" cy="4" r="1" fill="#ccc" />
+												<circle cx="14" cy="4" r="1" fill="#ccc" />
+												<circle cx="17" cy="10" r="1" fill="#ccc" />
+												<circle cx="14" cy="16" r="1" fill="#ccc" />
+												<circle cx="6" cy="16" r="1" fill="#ccc" />
+												<circle cx="3" cy="10" r="1" fill="#ccc" />
+											{/if}
+										</svg>
+										<span>{label}</span>
+									</Button>
+								{/each}
+							</div>
+						</div>
+
+						{#if showGridControls}
+							<div class="h-px bg-border"></div>
+
+							<!-- Grid spacing slider -->
+							<div>
+								<span class="mb-1.5 block text-xs font-medium text-muted-foreground"
+									>Espacement</span
+								>
+								<div class="flex items-center gap-2">
+									<Slider
+										value={[currentGridSpacing]}
+										onValueChange={handleGridSpacingChange}
+										min={5}
+										max={100}
+										step={1}
+										class="flex-1"
+										aria-label="Espacement de la grille: {currentGridSpacing}px"
 									/>
-									{#if style === 'grid'}
-										<!-- Grid pattern -->
-										<line x1="7" y1="1" x2="7" y2="19" stroke="#ddd" stroke-width="0.5" />
-										<line x1="13" y1="1" x2="13" y2="19" stroke="#ddd" stroke-width="0.5" />
-										<line x1="1" y1="7" x2="19" y2="7" stroke="#ddd" stroke-width="0.5" />
-										<line x1="1" y1="13" x2="19" y2="13" stroke="#ddd" stroke-width="0.5" />
-									{:else if style === 'ruled'}
-										<!-- Ruled lines -->
-										<line x1="1" y1="5" x2="19" y2="5" stroke="#ddd" stroke-width="0.5" />
-										<line x1="1" y1="10" x2="19" y2="10" stroke="#ddd" stroke-width="0.5" />
-										<line x1="1" y1="15" x2="19" y2="15" stroke="#ddd" stroke-width="0.5" />
-									{:else if style === 'dotted'}
-										<!-- Dots pattern -->
-										<circle cx="5" cy="5" r="0.8" fill="#ccc" />
-										<circle cx="10" cy="5" r="0.8" fill="#ccc" />
-										<circle cx="15" cy="5" r="0.8" fill="#ccc" />
-										<circle cx="5" cy="10" r="0.8" fill="#ccc" />
-										<circle cx="10" cy="10" r="0.8" fill="#ccc" />
-										<circle cx="15" cy="10" r="0.8" fill="#ccc" />
-										<circle cx="5" cy="15" r="0.8" fill="#ccc" />
-										<circle cx="10" cy="15" r="0.8" fill="#ccc" />
-										<circle cx="15" cy="15" r="0.8" fill="#ccc" />
-									{/if}
-								</svg>
-								<span>{label}</span>
-							</Button>
-						{/each}
+									<span class="min-w-[3rem] text-right text-xs text-muted-foreground"
+										>{currentGridSpacing}px</span
+									>
+								</div>
+							</div>
+
+							<!-- Grid opacity slider -->
+							<div>
+								<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Intensité</span
+								>
+								<div class="flex items-center gap-2">
+									<Slider
+										value={[currentGridOpacity]}
+										onValueChange={handleGridOpacityChange}
+										min={0.1}
+										max={1}
+										step={0.05}
+										class="flex-1"
+										aria-label="Intensité de la grille: {Math.round(currentGridOpacity * 100)}%"
+									/>
+									<span class="min-w-[3rem] text-right text-xs text-muted-foreground"
+										>{Math.round(currentGridOpacity * 100)}%</span
+									>
+								</div>
+							</div>
+						{/if}
 					</div>
 				</Popover.Content>
 			</Popover.Root>

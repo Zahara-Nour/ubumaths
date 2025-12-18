@@ -160,7 +160,15 @@ export type WhiteboardElement = StrokeElement | ShapeElement | TextBlockElement 
 // =============================================================================
 
 /** Background style types */
-export type BackgroundStyle = 'plain' | 'grid' | 'ruled' | 'dotted';
+export type BackgroundStyle =
+	| 'plain'
+	| 'grid'
+	| 'ruled'
+	| 'dotted'
+	| 'triangular'
+	| 'triangular-dotted'
+	| 'hexagonal'
+	| 'hexagonal-dotted';
 
 /** Image background */
 export interface BackgroundImage {
@@ -185,6 +193,8 @@ export interface BackgroundPlain {
 	readonly type: 'plain';
 	readonly style: BackgroundStyle;
 	readonly color: string;
+	readonly gridSpacing?: number; // Spacing between lines/dots in pixels (default: 20)
+	readonly gridOpacity?: number; // Opacity of grid lines (0-1, default: 0.3)
 }
 
 /** Union of background types */
