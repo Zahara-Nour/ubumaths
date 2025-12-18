@@ -43,7 +43,9 @@
 		Loader2,
 		Download,
 		MousePointer2,
-		Hand
+		Hand,
+		ZoomIn,
+		ZoomOut
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
@@ -91,6 +93,31 @@
 		{ id: 'protractor', icon: Compass, label: INSTRUMENT_LABELS.protractor },
 		{ id: 'setSquare', icon: Triangle, label: INSTRUMENT_LABELS.setSquare }
 	];
+
+	// ==========================================================================
+	// Props
+	// ==========================================================================
+
+	interface Props {
+		/** Current zoom level (1 = 100%) */
+		zoomLevel?: number;
+		/** Current zoom percentage for display */
+		zoomPercent?: number;
+		/** Callback to zoom in */
+		onZoomIn?: () => void;
+		/** Callback to zoom out */
+		onZoomOut?: () => void;
+		/** Callback to reset zoom to fit */
+		onZoomToFit?: () => void;
+	}
+
+	let {
+		zoomLevel: _zoomLevel = 1,
+		zoomPercent = 100,
+		onZoomIn,
+		onZoomOut,
+		onZoomToFit
+	}: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -693,6 +720,42 @@
 						)}px; background-color: {currentColor}"
 					></div>
 				</div>
+			</div>
+
+			<!-- Separator -->
+			<div class="mx-2 h-6 w-px bg-border"></div>
+
+			<!-- Zoom Controls -->
+			<div class="flex items-center gap-1">
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={onZoomOut}
+					title="Zoom arrière (Ctrl+-)"
+					aria-label="Zoom arrière"
+				>
+					<ZoomOut class="h-4 w-4" />
+				</Button>
+				<button
+					type="button"
+					onclick={onZoomToFit}
+					class="min-w-[3.5rem] rounded-md px-2 py-1 text-xs font-medium hover:bg-accent"
+					title="Ajuster à la fenêtre (Ctrl+0)"
+					aria-label="Zoom: {zoomPercent}%"
+				>
+					{zoomPercent}%
+				</button>
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={onZoomIn}
+					title="Zoom avant (Ctrl++)"
+					aria-label="Zoom avant"
+				>
+					<ZoomIn class="h-4 w-4" />
+				</Button>
 			</div>
 		</div>
 
