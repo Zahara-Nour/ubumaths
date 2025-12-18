@@ -125,7 +125,7 @@
 	let currentStrokeStyle = $derived({
 		color: toolState.color,
 		width: toolState.strokeWidth,
-		opacity: toolState.toolType === 'highlighter' ? 0.3 : 1
+		opacity: toolState.opacity
 	});
 
 	// ==========================================================================
@@ -133,19 +133,26 @@
 	// ==========================================================================
 
 	/**
-	 * Sync toolbar to show element's color/strokeWidth
+	 * Sync toolbar to show element's color/strokeWidth/opacity (temporary display)
 	 * Called from event handler when selecting an element (UI event → handler → update state)
+	 * Uses syncToolbarFromElement which doesn't save to user preferences
 	 */
 	function syncToolbarWithElement(elementId: string): void {
 		const element = elements.find((el) => el.id === elementId);
 		if (!element) return;
 
 		if (element.type === 'stroke') {
-			whiteboardStore.setColor(element.color);
-			whiteboardStore.setStrokeWidth(element.width);
+			whiteboardStore.syncToolbarFromElement({
+				color: element.color,
+				strokeWidth: element.width,
+				opacity: element.opacity
+			});
 		} else if (element.type === 'shape') {
-			whiteboardStore.setColor(element.color);
-			whiteboardStore.setStrokeWidth(element.strokeWidth);
+			whiteboardStore.syncToolbarFromElement({
+				color: element.color,
+				strokeWidth: element.strokeWidth,
+				opacity: element.opacity
+			});
 		}
 	}
 
@@ -456,7 +463,7 @@
 			points: currentPoints,
 			color: toolState.color,
 			width: toolState.strokeWidth,
-			opacity: toolState.toolType === 'highlighter' ? 0.3 : 1
+			opacity: toolState.opacity
 		};
 
 		whiteboardStore.addElement(element);
@@ -522,7 +529,8 @@
 		// Create and add the shape element
 		const shape = createShapeElement(currentTool as ShapeType, start, end, {
 			color: toolState.color,
-			strokeWidth: toolState.strokeWidth
+			strokeWidth: toolState.strokeWidth,
+			opacity: toolState.opacity
 		});
 
 		whiteboardStore.addElement(shape);
@@ -631,10 +639,24 @@
 			{/if}
 		</g>
 
-		<!-- Arrow marker definition -->
+		<!-- Arrow marker definitions (one per arrow with its specific color) -->
 		<defs>
+			{#each shapeElements.filter((s) => s.shapeType === 'arrow') as arrow (arrow.id)}
+				<marker
+					id="arrow-marker-{arrow.id}"
+					viewBox="0 0 10 10"
+					refX="9"
+					refY="5"
+					markerWidth="6"
+					markerHeight="6"
+					orient="auto-start-reverse"
+				>
+					<path d="M 0 0 L 10 5 L 0 10 z" fill={arrow.color} />
+				</marker>
+			{/each}
+			<!-- Preview arrow marker -->
 			<marker
-				id="arrow-marker"
+				id="arrow-marker-preview"
 				viewBox="0 0 10 10"
 				refX="9"
 				refY="5"
@@ -642,7 +664,7 @@
 				markerHeight="6"
 				orient="auto-start-reverse"
 			>
-				<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+				<path d="M 0 0 L 10 5 L 0 10 z" fill={toolState.color} />
 			</marker>
 		</defs>
 
@@ -670,8 +692,8 @@
 						stroke={shape.color}
 						stroke-width={shape.strokeWidth}
 						stroke-linecap="round"
-						marker-end={props.hasArrowMarker ? 'url(#arrow-marker)' : undefined}
-						style={props.hasArrowMarker ? `color: ${shape.color}` : ''}
+						opacity={shape.opacity}
+						marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
 					/>
 				{:else if props.type === 'rect'}
 					<rect
@@ -681,6 +703,7 @@
 						height={props.height}
 						stroke={shape.color}
 						stroke-width={shape.strokeWidth}
+						opacity={shape.opacity}
 						fill={shape.fill ?? 'none'}
 						fill-opacity={shape.fillOpacity ?? 1}
 					/>
@@ -692,6 +715,7 @@
 						ry={props.ry}
 						stroke={shape.color}
 						stroke-width={shape.strokeWidth}
+						opacity={shape.opacity}
 						fill={shape.fill ?? 'none'}
 						fill-opacity={shape.fillOpacity ?? 1}
 					/>
@@ -733,8 +757,8 @@
 						stroke-width={toolState.strokeWidth}
 						stroke-dasharray="5,5"
 						stroke-linecap="round"
-						marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker)' : undefined}
-						style={previewProps.hasArrowMarker ? `color: ${toolState.color}` : ''}
+						opacity={toolState.opacity}
+						marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker-preview)' : undefined}
 					/>
 				{:else if previewProps.type === 'rect'}
 					<rect
@@ -745,6 +769,7 @@
 						stroke={toolState.color}
 						stroke-width={toolState.strokeWidth}
 						stroke-dasharray="5,5"
+						opacity={toolState.opacity}
 						fill="none"
 					/>
 				{:else if previewProps.type === 'ellipse'}
@@ -756,6 +781,7 @@
 						stroke={toolState.color}
 						stroke-width={toolState.strokeWidth}
 						stroke-dasharray="5,5"
+						opacity={toolState.opacity}
 						fill="none"
 					/>
 				{/if}

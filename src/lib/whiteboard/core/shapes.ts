@@ -15,6 +15,7 @@ import type { Point, ShapeElement, ShapeType } from '../types/document';
 export interface ShapeOptions {
 	color: string;
 	strokeWidth: number;
+	opacity: number;
 	fill?: string;
 	fillOpacity?: number;
 }
@@ -68,6 +69,7 @@ export function createShapeElement(
 		end: { x: end.x, y: end.y },
 		color: options.color,
 		strokeWidth: options.strokeWidth,
+		opacity: options.opacity,
 		fill: options.fill,
 		fillOpacity: options.fillOpacity
 	};

@@ -348,7 +348,8 @@ describe('Thumbnail Data Generation', () => {
 			start: { x: 0, y: 0 },
 			end: { x: 100, y: 100 },
 			color: '#000',
-			strokeWidth: 2
+			strokeWidth: 2,
+			opacity: 1
 		});
 		const data = generateThumbnailData(page);
 		expect(data.hasShapes).toBe(true);
@@ -389,7 +390,8 @@ describe('Thumbnail Data Generation', () => {
 				start: { x: 0, y: 0 },
 				end: { x: 50, y: 50 },
 				color: '#000',
-				strokeWidth: 2
+				strokeWidth: 2,
+				opacity: 1
 			},
 			{
 				id: 'textblock-1',

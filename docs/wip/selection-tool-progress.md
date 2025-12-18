@@ -17,7 +17,7 @@ See: `/Users/david/.claude/plans/luminous-riding-thimble.md`
 | 7     | Keyboard Shortcuts    | Completed | 23073cb5 |
 | 8     | Hover Feedback        | Completed | 5c3c34d7 |
 | 9     | Immediate Drag        | Completed | e14ac5c7 |
-| 10    | Style Editing         | Completed | 6780e1a0 |
+| 10    | Style Editing         | Completed | e9b3ed40 |
 
 ---
 

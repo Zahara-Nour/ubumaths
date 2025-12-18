@@ -66,6 +66,9 @@ export type DrawingTool = 'pen' | 'highlighter' | 'eraser';
 /** Shape tools */
 export type ShapeTool = 'line' | 'rectangle' | 'circle' | 'arrow';
 
+/** Tools with configurable settings (color, width) */
+export type ConfigurableTool = DrawingTool | ShapeTool;
+
 /** Action tools */
 export type ActionTool = 'select' | 'pan' | 'text' | 'image';
 
@@ -102,11 +105,21 @@ export interface ToolSettings {
 	opacity: number;
 }
 
-/** Default settings per tool */
-const DEFAULT_TOOL_SETTINGS: Record<DrawingTool, ToolSettings> = {
-	pen: { color: '#000000', width: 2, opacity: 1 },
-	highlighter: { color: '#ffff00', width: 20, opacity: 0.5 },
-	eraser: { color: '#ffffff', width: 20, opacity: 1 }
+/** Default color and width (shared across all configurable tools) */
+const DEFAULT_COLOR = '#000000';
+const DEFAULT_WIDTH = 2;
+
+/** Default settings per tool (color/width are global, opacity is per-tool) */
+const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
+	// Drawing tools
+	pen: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 },
+	highlighter: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 0.5 },
+	eraser: { color: '#ffffff', width: 20, opacity: 1 },
+	// Shape tools
+	line: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 },
+	rectangle: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 },
+	circle: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 },
+	arrow: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 }
 };
 
 // =============================================================================
@@ -123,7 +136,14 @@ function createWhiteboardStore() {
 
 	// === Tool State ===
 	let currentTool = $state<Tool>('pen');
-	let toolSettings = $state<Record<DrawingTool, ToolSettings>>({ ...DEFAULT_TOOL_SETTINGS });
+	let toolSettings = $state<Record<ConfigurableTool, ToolSettings>>({ ...DEFAULT_TOOL_SETTINGS });
+
+	// === User Preferences (restored after deselection) ===
+	let userPreferences = $state({
+		color: DEFAULT_COLOR,
+		strokeWidth: DEFAULT_WIDTH,
+		opacity: 1
+	});
 
 	// === UI State ===
 	let hasUnsavedChanges = $state(false);
@@ -147,11 +167,12 @@ function createWhiteboardStore() {
 	const canRedo = $derived(history?.canRedo ?? false);
 
 	// Combined tool state for convenience
+	// Use 'pen' as reference for shared settings when current tool is not configurable (e.g., select, pan)
 	const toolState = $derived.by(() => {
 		const settings =
 			currentTool in toolSettings
-				? toolSettings[currentTool as DrawingTool]
-				: { color: '#000000', width: 2, opacity: 1 };
+				? toolSettings[currentTool as ConfigurableTool]
+				: toolSettings.pen; // Use pen's settings as reference for non-configurable tools
 		return {
 			toolType: currentTool,
 			color: settings.color,
@@ -568,14 +589,20 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Clear all selected elements
+		 * Clear all selected elements and restore user preferences
 		 */
 		clearSelection(): void {
+			const hadSelection = selectedIds.size > 0;
 			selectedIds = new Set();
+			// Restore user's preferred settings after deselection
+			if (hadSelection) {
+				this.restoreUserPreferences();
+			}
 		},
 
 		/**
 		 * Deselect a single element (remove from selection)
+		 * Restores user preferences if this was the last selected element
 		 * @param id - Element ID to deselect
 		 */
 		deselectElement(id: string): void {
@@ -583,6 +610,10 @@ function createWhiteboardStore() {
 				const newIds = new Set(selectedIds);
 				newIds.delete(id);
 				selectedIds = newIds;
+				// Restore preferences if no more selection
+				if (newIds.size === 0) {
+					this.restoreUserPreferences();
+				}
 			}
 		},
 
@@ -776,7 +807,7 @@ function createWhiteboardStore() {
 		 * Works with stroke and shape elements
 		 * @param style - Properties to update
 		 */
-		updateSelectedStyles(style: { color?: string; strokeWidth?: number }): void {
+		updateSelectedStyles(style: { color?: string; strokeWidth?: number; opacity?: number }): void {
 			if (selectedIds.size === 0) return;
 
 			updateCurrentPage((page) => ({
@@ -789,13 +820,15 @@ function createWhiteboardStore() {
 							return {
 								...element,
 								...(style.color !== undefined && { color: style.color }),
-								...(style.strokeWidth !== undefined && { width: style.strokeWidth })
+								...(style.strokeWidth !== undefined && { width: style.strokeWidth }),
+								...(style.opacity !== undefined && { opacity: style.opacity })
 							};
 						case 'shape':
 							return {
 								...element,
 								...(style.color !== undefined && { color: style.color }),
-								...(style.strokeWidth !== undefined && { strokeWidth: style.strokeWidth })
+								...(style.strokeWidth !== undefined && { strokeWidth: style.strokeWidth }),
+								...(style.opacity !== undefined && { opacity: style.opacity })
 							};
 						default:
 							return element;
@@ -1014,9 +1047,9 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Update settings for a drawing tool
+		 * Update settings for a configurable tool (drawing or shape)
 		 */
-		setToolSettings(tool: DrawingTool, settings: Partial<ToolSettings>): void {
+		setToolSettings(tool: ConfigurableTool, settings: Partial<ToolSettings>): void {
 			toolSettings = {
 				...toolSettings,
 				[tool]: { ...toolSettings[tool], ...settings }
@@ -1024,43 +1057,104 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Get current tool settings (for drawing tools)
+		 * Get current tool settings (for configurable tools)
 		 */
 		getCurrentToolSettings(): ToolSettings | null {
 			if (currentTool in toolSettings) {
-				return toolSettings[currentTool as DrawingTool];
+				return toolSettings[currentTool as ConfigurableTool];
 			}
 			return null;
 		},
 
 		/**
-		 * Set color for current drawing tool
+		 * Set color for all configurable tools (except eraser)
+		 * Only saves to user preferences if no element is selected
 		 */
 		setColor(color: string): void {
-			if (currentTool in toolSettings && currentTool !== 'eraser') {
-				toolSettings = {
-					...toolSettings,
-					[currentTool as DrawingTool]: {
-						...toolSettings[currentTool as DrawingTool],
-						color
-					}
-				};
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, color };
 			}
+			const updatedSettings = { ...toolSettings };
+			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
+				if (tool !== 'eraser') {
+					updatedSettings[tool] = { ...updatedSettings[tool], color };
+				}
+			}
+			toolSettings = updatedSettings;
 		},
 
 		/**
-		 * Set stroke width for current tool
+		 * Set stroke width for all configurable tools
+		 * Only saves to user preferences if no element is selected
 		 */
 		setStrokeWidth(width: number): void {
-			if (currentTool in toolSettings) {
-				toolSettings = {
-					...toolSettings,
-					[currentTool as DrawingTool]: {
-						...toolSettings[currentTool as DrawingTool],
-						width
-					}
-				};
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, strokeWidth: width };
 			}
+			const updatedSettings = { ...toolSettings };
+			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
+				updatedSettings[tool] = { ...updatedSettings[tool], width };
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
+		 * Set opacity for all configurable tools (except eraser)
+		 * Only saves to user preferences if no element is selected
+		 */
+		setOpacity(opacity: number): void {
+			const clampedOpacity = Math.max(0.1, Math.min(1, opacity));
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, opacity: clampedOpacity };
+			}
+			const updatedSettings = { ...toolSettings };
+			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
+				if (tool !== 'eraser') {
+					updatedSettings[tool] = { ...updatedSettings[tool], opacity: clampedOpacity };
+				}
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
+		 * Sync toolbar display from element properties (temporary, doesn't save to preferences)
+		 * Used when selecting an element to show its properties
+		 */
+		syncToolbarFromElement(element: { color: string; strokeWidth: number; opacity: number }): void {
+			const updatedSettings = { ...toolSettings };
+			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
+				if (tool !== 'eraser') {
+					updatedSettings[tool] = {
+						...updatedSettings[tool],
+						color: element.color,
+						width: element.strokeWidth,
+						opacity: element.opacity
+					};
+				}
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
+		 * Restore toolbar to user's manually selected preferences
+		 * Called when selection is cleared
+		 */
+		restoreUserPreferences(): void {
+			const updatedSettings = { ...toolSettings };
+			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
+				if (tool !== 'eraser') {
+					updatedSettings[tool] = {
+						...updatedSettings[tool],
+						color: userPreferences.color,
+						width: userPreferences.strokeWidth,
+						opacity: userPreferences.opacity
+					};
+				}
+			}
+			toolSettings = updatedSettings;
 		},
 
 		// === History Operations ===

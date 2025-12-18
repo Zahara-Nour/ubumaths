@@ -76,6 +76,7 @@ export interface ShapeElement {
 	readonly end: Point;
 	readonly color: string;
 	readonly strokeWidth: number;
+	readonly opacity: number;
 	readonly fill?: string;
 	readonly fillOpacity?: number;
 }
