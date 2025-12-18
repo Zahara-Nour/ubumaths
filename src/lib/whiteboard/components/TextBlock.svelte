@@ -40,8 +40,9 @@
 	/** Local content for editing (synced on save) */
 	let editContent = $state(element.markdownContent);
 
-	/** JSON content updated immediately (not debounced) for reliable save */
-	let editJson = $state<unknown>({});
+	/** JSON content updated immediately (not debounced) for reliable save
+	 *  Use null (not undefined) so onUpdate writes to it, but sync effect skips it */
+	let editJson = $state<unknown>(null);
 
 	/** Drag state */
 	let isDragging = $state(false);
