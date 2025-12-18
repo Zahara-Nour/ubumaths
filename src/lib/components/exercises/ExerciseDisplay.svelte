@@ -12,6 +12,8 @@
 	- On-demand mode: "Try New Problem" button for practice
 	- Renders markdown with MathLive math rendering via MarkdownRenderer
 	- Show/hide solution toggle
+	- Exercise variations: Display variation label and resolved hints
+	- Hint system: Pass resolved hints to MarkdownRenderer for {{hint:id}} references
 	- Responsive design with loading states
 	- Accessible keyboard navigation
 
@@ -151,6 +153,12 @@
 		currentInstance ? currentInstance.solution_md : exercise.solution_md
 	);
 
+	// Hints from resolved variation (if available)
+	let displayHints = $derived(currentInstance?.resolvedHints);
+
+	// Variation label (if exercise uses variations)
+	let variationLabel = $derived(currentInstance?.selectedVariationLabel);
+
 	/**
 	 * Build GenericFunctionConfig from exercise.generic_functions.
 	 *
@@ -232,10 +240,24 @@
 	</div>
 {:else}
 	<!-- ============================================================================ -->
+	<!-- VARIATION LABEL (if present) -->
+	<!-- ============================================================================ -->
+	{#if variationLabel}
+		<div class="mb-3 text-sm text-muted-foreground">
+			<span class="font-medium">Variation :</span>
+			<span class="capitalize">{variationLabel}</span>
+		</div>
+	{/if}
+
+	<!-- ============================================================================ -->
 	<!-- STATEMENT -->
 	<!-- ============================================================================ -->
 	<div class="exercise-statement exercise-content">
-		<MarkdownRenderer content={displayStatementMd} genericFunctions={genericFunctionsConfig} />
+		<MarkdownRenderer
+			content={displayStatementMd}
+			genericFunctions={genericFunctionsConfig}
+			hints={displayHints}
+		/>
 	</div>
 
 	<!-- ============================================================================ -->
@@ -276,7 +298,11 @@
 	{#if showSolution}
 		<div class="solution exercise-content mt-6 rounded-lg border border-border bg-muted/30 p-4">
 			<h3 class="mb-3 text-lg font-semibold text-foreground">Solution</h3>
-			<MarkdownRenderer content={displaySolutionMd} genericFunctions={genericFunctionsConfig} />
+			<MarkdownRenderer
+				content={displaySolutionMd}
+				genericFunctions={genericFunctionsConfig}
+				hints={displayHints}
+			/>
 		</div>
 	{/if}
 {/if}
