@@ -48,7 +48,8 @@
 		ZoomOut,
 		Pentagon,
 		Hexagon,
-		Star
+		Star,
+		Grid3x3
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
@@ -58,7 +59,8 @@
 		FILL_MODE_LABELS,
 		type InstrumentType,
 		type StrokeStyle,
-		type FillMode
+		type FillMode,
+		type BackgroundStyle
 	} from '../types/document';
 	import { importImageFile } from '../utils/image-loader';
 	import { importPdfFile } from '../utils/pdf-loader';
@@ -108,6 +110,14 @@
 		{ id: 'setSquare', icon: Triangle, label: INSTRUMENT_LABELS.setSquare }
 	];
 
+	/** Background style labels */
+	const BACKGROUND_STYLE_LABELS: Record<BackgroundStyle, string> = {
+		plain: 'Vierge',
+		grid: 'Quadrillé',
+		ruled: 'Ligné',
+		dotted: 'Pointillé'
+	};
+
 	// ==========================================================================
 	// Props
 	// ==========================================================================
@@ -143,6 +153,7 @@
 	let instrumentsPopoverOpen = $state(false);
 	let importPopoverOpen = $state(false);
 	let filePopoverOpen = $state(false);
+	let backgroundPopoverOpen = $state(false);
 
 	/** File input references (plain variables, no reactivity needed for bind:this) */
 	let imageInputRef: HTMLInputElement | null = null;
@@ -244,6 +255,13 @@
 	/** Show fill selector when fillable shape tool active OR fillable shape is selected */
 	let showFillSelector = $derived(isFillableToolActive || hasSelectedFillableShape);
 
+	/** Current page background style */
+	let currentBackgroundStyle = $derived.by(() => {
+		const page = whiteboardStore.currentPage;
+		if (!page || page.background.type !== 'plain') return 'plain';
+		return page.background.style;
+	});
+
 	// ==========================================================================
 	// Handlers
 	// ==========================================================================
@@ -317,6 +335,15 @@
 		if (whiteboardStore.hasSelection) {
 			whiteboardStore.updateSelectedStyles({ fill: color });
 		}
+	}
+
+	function handleBackgroundStyleChange(style: BackgroundStyle) {
+		whiteboardStore.setPageBackground({
+			type: 'plain',
+			style,
+			color: '#ffffff'
+		});
+		backgroundPopoverOpen = false;
 	}
 
 	// ==========================================================================
@@ -813,6 +840,75 @@
 							<FileText class="h-4 w-4" />
 							<span>PDF comme pages</span>
 						</Button>
+					</div>
+				</Popover.Content>
+			</Popover.Root>
+
+			<!-- Page Background Popover -->
+			<Popover.Root bind:open={backgroundPopoverOpen}>
+				<Popover.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
+							aria-label="Fond de page"
+							title="Fond de page"
+						>
+							<Grid3x3 class="h-4 w-4" />
+						</button>
+					{/snippet}
+				</Popover.Trigger>
+				<Popover.Content class="w-auto p-2" side="top" align="start">
+					<div class="flex flex-col gap-1">
+						<span class="mb-1 px-2 text-xs font-medium text-muted-foreground">Fond de page</span>
+						{#each Object.entries(BACKGROUND_STYLE_LABELS) as [style, label] (style)}
+							<Button
+								type="button"
+								variant={currentBackgroundStyle === style ? 'secondary' : 'ghost'}
+								size="sm"
+								onclick={() => handleBackgroundStyleChange(style as BackgroundStyle)}
+								class="justify-start gap-3"
+							>
+								<!-- Background preview icon -->
+								<svg class="h-5 w-5" viewBox="0 0 20 20">
+									<rect
+										x="1"
+										y="1"
+										width="18"
+										height="18"
+										rx="2"
+										fill="white"
+										stroke="currentColor"
+										stroke-width="1"
+									/>
+									{#if style === 'grid'}
+										<!-- Grid pattern -->
+										<line x1="7" y1="1" x2="7" y2="19" stroke="#ddd" stroke-width="0.5" />
+										<line x1="13" y1="1" x2="13" y2="19" stroke="#ddd" stroke-width="0.5" />
+										<line x1="1" y1="7" x2="19" y2="7" stroke="#ddd" stroke-width="0.5" />
+										<line x1="1" y1="13" x2="19" y2="13" stroke="#ddd" stroke-width="0.5" />
+									{:else if style === 'ruled'}
+										<!-- Ruled lines -->
+										<line x1="1" y1="5" x2="19" y2="5" stroke="#ddd" stroke-width="0.5" />
+										<line x1="1" y1="10" x2="19" y2="10" stroke="#ddd" stroke-width="0.5" />
+										<line x1="1" y1="15" x2="19" y2="15" stroke="#ddd" stroke-width="0.5" />
+									{:else if style === 'dotted'}
+										<!-- Dots pattern -->
+										<circle cx="5" cy="5" r="0.8" fill="#ccc" />
+										<circle cx="10" cy="5" r="0.8" fill="#ccc" />
+										<circle cx="15" cy="5" r="0.8" fill="#ccc" />
+										<circle cx="5" cy="10" r="0.8" fill="#ccc" />
+										<circle cx="10" cy="10" r="0.8" fill="#ccc" />
+										<circle cx="15" cy="10" r="0.8" fill="#ccc" />
+										<circle cx="5" cy="15" r="0.8" fill="#ccc" />
+										<circle cx="10" cy="15" r="0.8" fill="#ccc" />
+										<circle cx="15" cy="15" r="0.8" fill="#ccc" />
+									{/if}
+								</svg>
+								<span>{label}</span>
+							</Button>
+						{/each}
 					</div>
 				</Popover.Content>
 			</Popover.Root>
