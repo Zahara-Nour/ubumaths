@@ -635,11 +635,12 @@
 			<!-- Select Tool -->
 			<Button
 				type="button"
-				variant={toolState.toolType === 'select' ? 'secondary' : 'ghost'}
+				variant={toolState.toolType === 'select' ? 'default' : 'ghost'}
 				size="sm"
 				onclick={() => handleToolSelect('select')}
 				title="Sélection (V)"
 				aria-label="Outil de sélection"
+				class={toolState.toolType === 'select' ? 'ring-2 ring-primary ring-offset-1' : ''}
 			>
 				<MousePointer2 class="h-4 w-4" />
 			</Button>
@@ -647,11 +648,12 @@
 			<!-- Pan Tool -->
 			<Button
 				type="button"
-				variant={toolState.toolType === 'pan' ? 'secondary' : 'ghost'}
+				variant={toolState.toolType === 'pan' ? 'default' : 'ghost'}
 				size="sm"
 				onclick={() => handleToolSelect('pan')}
 				title="Déplacer la vue (Espace)"
 				aria-label="Déplacer la vue"
+				class={toolState.toolType === 'pan' ? 'ring-2 ring-primary ring-offset-1' : ''}
 			>
 				<Hand class="h-4 w-4" />
 			</Button>
@@ -667,7 +669,7 @@
 							{...props}
 							type="button"
 							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors {isDrawingToolActive
-								? 'bg-secondary text-secondary-foreground'
+								? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-1'
 								: 'hover:bg-accent'}"
 							aria-label="Outils de dessin"
 							title="Dessin"
@@ -703,7 +705,7 @@
 							{...props}
 							type="button"
 							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors {isShapeToolActive
-								? 'bg-secondary text-secondary-foreground'
+								? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-1'
 								: 'hover:bg-accent'}"
 							aria-label="Formes"
 							title="Formes"
