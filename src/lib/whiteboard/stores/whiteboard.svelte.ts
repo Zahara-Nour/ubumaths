@@ -713,7 +713,8 @@ function createWhiteboardStore() {
 			elementId: string,
 			handle: 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw',
 			dx: number,
-			dy: number
+			dy: number,
+			constrainAspectRatio: boolean = false
 		): void {
 			const MIN_SIZE = 50;
 
@@ -722,6 +723,7 @@ function createWhiteboardStore() {
 			const affectsRight = (h: string) => h === 'ne' || h === 'e' || h === 'se';
 			const affectsTop = (h: string) => h === 'nw' || h === 'n' || h === 'ne';
 			const affectsBottom = (h: string) => h === 'sw' || h === 's' || h === 'se';
+			const isCornerHandle = (h: string) => h === 'nw' || h === 'ne' || h === 'sw' || h === 'se';
 
 			updateCurrentPage((page) => ({
 				...page,
@@ -740,16 +742,73 @@ function createWhiteboardStore() {
 						const minY = Math.min(newStart.y, newEnd.y);
 						const maxY = Math.max(newStart.y, newEnd.y);
 
+						const currentWidth = maxX - minX;
+						const currentHeight = maxY - minY;
+
 						let left = minX,
 							right = maxX,
 							top = minY,
 							bottom = maxY;
 
+						// Adjust deltas to maintain aspect ratio if constrained
+						let adjustedDx = dx;
+						let adjustedDy = dy;
+						if (constrainAspectRatio && currentWidth > 0 && currentHeight > 0) {
+							const aspectRatio = currentWidth / currentHeight;
+							if (isCornerHandle(handle)) {
+								// For corner handles, use the larger delta and adjust the other
+								if (Math.abs(dx) * currentHeight >= Math.abs(dy) * currentWidth) {
+									// Width change is dominant
+									adjustedDy = dx / aspectRatio;
+									// Preserve sign based on handle direction
+									if (affectsTop(handle) && affectsRight(handle))
+										adjustedDy = -Math.abs(adjustedDy);
+									if (affectsTop(handle) && affectsLeft(handle))
+										adjustedDy = dx > 0 ? Math.abs(adjustedDy) : -Math.abs(adjustedDy);
+									if (affectsBottom(handle) && affectsLeft(handle)) adjustedDy = -adjustedDy;
+								} else {
+									// Height change is dominant
+									adjustedDx = dy * aspectRatio;
+									// Preserve sign based on handle direction
+									if (affectsLeft(handle) && affectsBottom(handle))
+										adjustedDx = -Math.abs(adjustedDx);
+									if (affectsLeft(handle) && affectsTop(handle))
+										adjustedDx = dy > 0 ? Math.abs(adjustedDx) : -Math.abs(adjustedDx);
+									if (affectsRight(handle) && affectsTop(handle)) adjustedDx = -adjustedDx;
+								}
+							} else {
+								// Edge handles: adjust the perpendicular dimension proportionally
+								if (handle === 'n' || handle === 's') {
+									adjustedDx = dy * aspectRatio * (handle === 'n' ? -1 : 1);
+								} else {
+									adjustedDy = (dx / aspectRatio) * (handle === 'w' ? -1 : 1);
+								}
+							}
+						}
+
 						// Apply deltas to bounding box edges based on handle
-						if (affectsLeft(handle)) left += dx;
-						if (affectsRight(handle)) right += dx;
-						if (affectsTop(handle)) top += dy;
-						if (affectsBottom(handle)) bottom += dy;
+						if (affectsLeft(handle)) left += adjustedDx;
+						if (affectsRight(handle)) right += adjustedDx;
+						if (affectsTop(handle)) top += adjustedDy;
+						if (affectsBottom(handle)) bottom += adjustedDy;
+
+						// For edge handles with aspect ratio, also expand in perpendicular direction (centered)
+						if (
+							constrainAspectRatio &&
+							currentWidth > 0 &&
+							currentHeight > 0 &&
+							!isCornerHandle(handle)
+						) {
+							if (handle === 'n' || handle === 's') {
+								const widthChange = Math.abs(adjustedDx);
+								left -= widthChange / 2;
+								right += widthChange / 2;
+							} else {
+								const heightChange = Math.abs(adjustedDy);
+								top -= heightChange / 2;
+								bottom += heightChange / 2;
+							}
+						}
 
 						// Enforce minimum size
 						if (right - left < MIN_SIZE) {
@@ -781,34 +840,180 @@ function createWhiteboardStore() {
 						return { ...element, start: newStart, end: newEnd };
 					}
 
+					if (element.type === 'stroke') {
+						// Strokes use an array of points - we scale all points based on bounding box changes
+						const { points } = element;
+						if (points.length === 0) return element;
+
+						// Calculate current bounding box
+						let minX = points[0].x,
+							maxX = points[0].x,
+							minY = points[0].y,
+							maxY = points[0].y;
+						for (const p of points) {
+							if (p.x < minX) minX = p.x;
+							if (p.x > maxX) maxX = p.x;
+							if (p.y < minY) minY = p.y;
+							if (p.y > maxY) maxY = p.y;
+						}
+
+						const currentWidth = maxX - minX;
+						const currentHeight = maxY - minY;
+
+						// Handle degenerate cases (single point or line)
+						if (currentWidth < 1 && currentHeight < 1) return element;
+
+						let left = minX,
+							right = maxX,
+							top = minY,
+							bottom = maxY;
+
+						// Adjust deltas to maintain aspect ratio if constrained
+						let adjustedDx = dx;
+						let adjustedDy = dy;
+						if (constrainAspectRatio && currentWidth > 0 && currentHeight > 0) {
+							const aspectRatio = currentWidth / currentHeight;
+							if (isCornerHandle(handle)) {
+								if (Math.abs(dx) * currentHeight >= Math.abs(dy) * currentWidth) {
+									adjustedDy = dx / aspectRatio;
+									if (affectsTop(handle) && affectsRight(handle))
+										adjustedDy = -Math.abs(adjustedDy);
+									if (affectsTop(handle) && affectsLeft(handle))
+										adjustedDy = dx > 0 ? Math.abs(adjustedDy) : -Math.abs(adjustedDy);
+									if (affectsBottom(handle) && affectsLeft(handle)) adjustedDy = -adjustedDy;
+								} else {
+									adjustedDx = dy * aspectRatio;
+									if (affectsLeft(handle) && affectsBottom(handle))
+										adjustedDx = -Math.abs(adjustedDx);
+									if (affectsLeft(handle) && affectsTop(handle))
+										adjustedDx = dy > 0 ? Math.abs(adjustedDx) : -Math.abs(adjustedDx);
+									if (affectsRight(handle) && affectsTop(handle)) adjustedDx = -adjustedDx;
+								}
+							} else {
+								if (handle === 'n' || handle === 's') {
+									adjustedDx = dy * aspectRatio * (handle === 'n' ? -1 : 1);
+								} else {
+									adjustedDy = (dx / aspectRatio) * (handle === 'w' ? -1 : 1);
+								}
+							}
+						}
+
+						// Apply deltas to bounding box edges based on handle
+						if (affectsLeft(handle)) left += adjustedDx;
+						if (affectsRight(handle)) right += adjustedDx;
+						if (affectsTop(handle)) top += adjustedDy;
+						if (affectsBottom(handle)) bottom += adjustedDy;
+
+						// For edge handles with aspect ratio, also expand in perpendicular direction (centered)
+						if (
+							constrainAspectRatio &&
+							currentWidth > 0 &&
+							currentHeight > 0 &&
+							!isCornerHandle(handle)
+						) {
+							if (handle === 'n' || handle === 's') {
+								const widthChange = Math.abs(adjustedDx);
+								left -= widthChange / 2;
+								right += widthChange / 2;
+							} else {
+								const heightChange = Math.abs(adjustedDy);
+								top -= heightChange / 2;
+								bottom += heightChange / 2;
+							}
+						}
+
+						// Enforce minimum size
+						const newWidth = right - left;
+						const newHeight = bottom - top;
+						if (newWidth < MIN_SIZE || newHeight < MIN_SIZE) return element;
+
+						// Calculate scale factors
+						const scaleX = currentWidth > 0 ? newWidth / currentWidth : 1;
+						const scaleY = currentHeight > 0 ? newHeight / currentHeight : 1;
+
+						// Transform all points
+						const newPoints = points.map((p) => ({
+							x: left + (p.x - minX) * scaleX,
+							y: top + (p.y - minY) * scaleY,
+							pressure: p.pressure
+						}));
+
+						return { ...element, points: newPoints };
+					}
+
 					if (element.type === 'image') {
 						// Images use position + width/height (simpler than shapes)
 						let { x, y } = element.position;
 						let { width, height } = element;
+						const aspectRatio = width / height;
+
+						// Adjust deltas to maintain aspect ratio if constrained
+						let adjustedDx = dx;
+						let adjustedDy = dy;
+						if (constrainAspectRatio && width > 0 && height > 0) {
+							if (isCornerHandle(handle)) {
+								// For corner handles, use the larger delta and adjust the other
+								if (Math.abs(dx) * height >= Math.abs(dy) * width) {
+									adjustedDy = dx / aspectRatio;
+									if (affectsTop(handle) && affectsRight(handle))
+										adjustedDy = -Math.abs(adjustedDy);
+									if (affectsTop(handle) && affectsLeft(handle))
+										adjustedDy = dx > 0 ? Math.abs(adjustedDy) : -Math.abs(adjustedDy);
+									if (affectsBottom(handle) && affectsLeft(handle)) adjustedDy = -adjustedDy;
+								} else {
+									adjustedDx = dy * aspectRatio;
+									if (affectsLeft(handle) && affectsBottom(handle))
+										adjustedDx = -Math.abs(adjustedDx);
+									if (affectsLeft(handle) && affectsTop(handle))
+										adjustedDx = dy > 0 ? Math.abs(adjustedDx) : -Math.abs(adjustedDx);
+									if (affectsRight(handle) && affectsTop(handle)) adjustedDx = -adjustedDx;
+								}
+							} else {
+								// Edge handles: adjust the perpendicular dimension proportionally
+								if (handle === 'n' || handle === 's') {
+									adjustedDx = dy * aspectRatio * (handle === 'n' ? -1 : 1);
+								} else {
+									adjustedDy = (dx / aspectRatio) * (handle === 'w' ? -1 : 1);
+								}
+							}
+						}
 
 						// Left handle: move x and shrink width
 						if (affectsLeft(handle)) {
-							const newWidth = width - dx;
+							const newWidth = width - adjustedDx;
 							if (newWidth >= MIN_SIZE) {
-								x += dx;
+								x += adjustedDx;
 								width = newWidth;
 							}
 						}
 						// Right handle: grow width
 						if (affectsRight(handle)) {
-							width = Math.max(MIN_SIZE, width + dx);
+							width = Math.max(MIN_SIZE, width + adjustedDx);
 						}
 						// Top handle: move y and shrink height
 						if (affectsTop(handle)) {
-							const newHeight = height - dy;
+							const newHeight = height - adjustedDy;
 							if (newHeight >= MIN_SIZE) {
-								y += dy;
+								y += adjustedDy;
 								height = newHeight;
 							}
 						}
 						// Bottom handle: grow height
 						if (affectsBottom(handle)) {
-							height = Math.max(MIN_SIZE, height + dy);
+							height = Math.max(MIN_SIZE, height + adjustedDy);
+						}
+
+						// For edge handles with aspect ratio, also expand in perpendicular direction (centered)
+						if (constrainAspectRatio && !isCornerHandle(handle)) {
+							if (handle === 'n' || handle === 's') {
+								const widthChange = Math.abs(adjustedDx);
+								x -= widthChange / 2;
+								width += widthChange;
+							} else {
+								const heightChange = Math.abs(adjustedDy);
+								y -= heightChange / 2;
+								height += heightChange;
+							}
 						}
 
 						return {

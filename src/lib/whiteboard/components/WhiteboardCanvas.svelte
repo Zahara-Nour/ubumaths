@@ -201,6 +201,20 @@
 	}
 
 	/**
+	 * Constrain end point to create a 1:1 aspect ratio (square/circle)
+	 * Used when Shift is held during rectangle/circle drawing
+	 */
+	function constrainToSquare(start: Point, end: Point): Point {
+		const dx = end.x - start.x;
+		const dy = end.y - start.y;
+		const size = Math.max(Math.abs(dx), Math.abs(dy));
+		return {
+			x: start.x + size * Math.sign(dx || 1),
+			y: start.y + size * Math.sign(dy || 1)
+		};
+	}
+
+	/**
 	 * Handle context menu (right-click) - show z-order menu
 	 * If clicking on an element, select it first, then show menu
 	 */
@@ -368,7 +382,16 @@
 
 		// Handle shape tools
 		if (isShapeTool) {
-			shapeEndPoint = point;
+			// Apply 1:1 constraint for rectangle/circle when Shift is held
+			if (
+				e.shiftKey &&
+				shapeStartPoint &&
+				(toolState.toolType === 'rectangle' || toolState.toolType === 'circle')
+			) {
+				shapeEndPoint = constrainToSquare(shapeStartPoint, point);
+			} else {
+				shapeEndPoint = point;
+			}
 			return;
 		}
 
@@ -936,8 +959,8 @@
 				{selectedElements}
 				{scale}
 				{hoveredElementId}
-				onResize={(elementId, handle, dx, dy) =>
-					whiteboardStore.resizeElement(elementId, handle, dx, dy)}
+				onResize={(elementId, handle, dx, dy, constrainAspectRatio) =>
+					whiteboardStore.resizeElement(elementId, handle, dx, dy, constrainAspectRatio)}
 			/>
 		</g>
 

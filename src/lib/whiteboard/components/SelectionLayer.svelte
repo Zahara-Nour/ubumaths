@@ -39,7 +39,13 @@
 		/** ID of element currently hovered (for hover feedback) */
 		hoveredElementId: string | null;
 		/** Callback when an element is resized via handles */
-		onResize?: (elementId: string, handle: HandlePosition, dx: number, dy: number) => void;
+		onResize?: (
+			elementId: string,
+			handle: HandlePosition,
+			dx: number,
+			dy: number,
+			constrainAspectRatio: boolean
+		) => void;
 	}
 
 	let { selectedElements, scale, hoveredElementId, onResize }: Props = $props();
@@ -132,7 +138,7 @@
 	let strokeWidth = $derived(1 / scale);
 
 	/** Element types that support resize handles */
-	const RESIZABLE_TYPES = ['shape', 'image'] as const;
+	const RESIZABLE_TYPES = ['shape', 'image', 'stroke'] as const;
 
 	/** Check if an element type supports resize handles */
 	function isResizable(type: WhiteboardElement['type']): boolean {
@@ -188,7 +194,8 @@
 		resizeStartX = e.clientX;
 		resizeStartY = e.clientY;
 
-		onResize?.(resizeElementId, resizeHandle, dx, dy);
+		// Pass shiftKey to constrain aspect ratio
+		onResize?.(resizeElementId, resizeHandle, dx, dy, e.shiftKey);
 	}
 
 	/**
