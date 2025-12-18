@@ -6,7 +6,7 @@
  * @module whiteboard/core/shapes
  */
 
-import type { Point, ShapeElement, ShapeType } from '../types/document';
+import type { Point, ShapeElement, ShapeType, StrokeStyle } from '../types/document';
 
 // =============================================================================
 // Types
@@ -16,6 +16,7 @@ export interface ShapeOptions {
 	color: string;
 	strokeWidth: number;
 	opacity: number;
+	strokeStyle?: StrokeStyle;
 	fill?: string;
 	fillOpacity?: number;
 }
@@ -70,6 +71,7 @@ export function createShapeElement(
 		color: options.color,
 		strokeWidth: options.strokeWidth,
 		opacity: options.opacity,
+		strokeStyle: options.strokeStyle,
 		fill: options.fill,
 		fillOpacity: options.fillOpacity
 	};

@@ -9,9 +9,16 @@
 	 * @module whiteboard/components/SelectionLayer
 	 */
 
-	import { getElementBounds, type BoundingBox } from '../core/hit-testing';
+	import {
+		getElementBounds,
+		getBoundsCenter,
+		calculateAngleFromCenter,
+		normalizeAngle,
+		snapAngle,
+		type BoundingBox
+	} from '../core/hit-testing';
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import type { WhiteboardElement } from '../types/document';
+	import type { WhiteboardElement, ShapeElement, StrokeElement } from '../types/document';
 
 	// ==========================================================================
 	// Types
@@ -46,9 +53,11 @@
 			dy: number,
 			constrainAspectRatio: boolean
 		) => void;
+		/** Callback when an element is rotated */
+		onRotate?: (elementId: string, rotation: number) => void;
 	}
 
-	let { selectedElements, scale, hoveredElementId, onResize }: Props = $props();
+	let { selectedElements, scale, hoveredElementId, onResize, onRotate }: Props = $props();
 
 	// ==========================================================================
 	// Resize State
@@ -68,6 +77,25 @@
 	let resizeStartY = $state(0);
 
 	// ==========================================================================
+	// Rotation State
+	// ==========================================================================
+
+	/** Whether user is currently rotating an element */
+	let isRotating = $state(false);
+
+	/** Element ID being rotated */
+	let rotateElementId = $state<string | null>(null);
+
+	/** Initial element rotation when drag started */
+	let initialElementRotation = $state(0);
+
+	/** Initial mouse angle relative to center when drag started */
+	let initialMouseAngle = $state(0);
+
+	/** Center of the element being rotated (in canvas coordinates) */
+	let rotationCenter = $state<{ x: number; y: number }>({ x: 0, y: 0 });
+
+	// ==========================================================================
 	// Constants
 	// ==========================================================================
 
@@ -79,6 +107,15 @@
 
 	/** Selection rectangle stroke color */
 	const SELECTION_STROKE_COLOR = '#3b82f6';
+
+	/** Distance of rotation handle above the selection box (in pixels) */
+	const ROTATION_HANDLE_OFFSET = 24;
+
+	/** Rotation handle visual radius */
+	const ROTATION_HANDLE_RADIUS = 5;
+
+	/** Angle increment for Shift key snapping (15 degrees) */
+	const ROTATION_SNAP_INCREMENT = 15;
 
 	/** Handle configuration for all 8 positions */
 	const HANDLE_CONFIGS: HandleConfig[] = [
@@ -140,9 +177,25 @@
 	/** Element types that support resize handles */
 	const RESIZABLE_TYPES = ['shape', 'image', 'stroke'] as const;
 
+	/** Element types that support rotation */
+	const ROTATABLE_TYPES = ['shape', 'stroke'] as const;
+
 	/** Check if an element type supports resize handles */
 	function isResizable(type: WhiteboardElement['type']): boolean {
 		return RESIZABLE_TYPES.includes(type as (typeof RESIZABLE_TYPES)[number]);
+	}
+
+	/** Check if an element type supports rotation */
+	function isRotatable(type: WhiteboardElement['type']): boolean {
+		return ROTATABLE_TYPES.includes(type as (typeof ROTATABLE_TYPES)[number]);
+	}
+
+	/** Get current rotation of an element */
+	function getElementRotation(element: WhiteboardElement): number {
+		if (element.type === 'shape' || element.type === 'stroke') {
+			return (element as ShapeElement | StrokeElement).rotation ?? 0;
+		}
+		return 0;
 	}
 
 	/** Get hovered element (if not already selected) */
@@ -209,6 +262,103 @@
 			(e.currentTarget as SVGElement).releasePointerCapture(e.pointerId);
 		}
 	}
+
+	// ==========================================================================
+	// Rotation Handlers
+	// ==========================================================================
+
+	/**
+	 * Convert client coordinates to SVG viewBox coordinates
+	 * Finds the parent SVG with a valid viewBox (WhiteboardCanvas SVG)
+	 */
+	function clientToSvgCoords(e: PointerEvent): { x: number; y: number } | null {
+		// Find the main SVG element with a valid viewBox
+		let svgElement = (e.currentTarget as SVGElement).ownerSVGElement;
+
+		// Traverse up to find SVG with valid viewBox (the WhiteboardCanvas SVG)
+		while (svgElement) {
+			const viewBox = svgElement.viewBox.baseVal;
+			if (viewBox.width > 0 && viewBox.height > 0) {
+				break;
+			}
+			svgElement = svgElement.ownerSVGElement;
+		}
+
+		if (!svgElement) return null;
+
+		const rect = svgElement.getBoundingClientRect();
+		const viewBox = svgElement.viewBox.baseVal;
+
+		// Use viewBox dimensions for proper coordinate mapping
+		const x = ((e.clientX - rect.left) / rect.width) * viewBox.width;
+		const y = ((e.clientY - rect.top) / rect.height) * viewBox.height;
+
+		return { x, y };
+	}
+
+	/**
+	 * Handle pointer down on rotation handle - start rotating
+	 */
+	function handleRotationPointerDown(e: PointerEvent, element: WhiteboardElement) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const coords = clientToSvgCoords(e);
+		if (!coords) return;
+
+		const bounds = getElementBounds(element);
+		const center = getBoundsCenter(bounds);
+
+		isRotating = true;
+		rotateElementId = element.id;
+		initialElementRotation = getElementRotation(element);
+		rotationCenter = center;
+		initialMouseAngle = calculateAngleFromCenter(center, coords);
+
+		(e.currentTarget as SVGElement).setPointerCapture(e.pointerId);
+	}
+
+	/**
+	 * Handle pointer move during rotation - calculate and apply rotation
+	 */
+	function handleRotationPointerMove(e: PointerEvent) {
+		if (!isRotating || !rotateElementId) return;
+
+		const coords = clientToSvgCoords(e);
+		if (!coords) return;
+
+		// Calculate current mouse angle relative to center
+		const currentMouseAngle = calculateAngleFromCenter(rotationCenter, coords);
+
+		// Calculate rotation delta from initial mouse angle
+		const angleDelta = currentMouseAngle - initialMouseAngle;
+
+		// Calculate new rotation
+		let newRotation = initialElementRotation + angleDelta;
+
+		// Snap to 15° increments if Shift is held
+		if (e.shiftKey) {
+			newRotation = snapAngle(newRotation, ROTATION_SNAP_INCREMENT);
+		}
+
+		// Normalize angle
+		newRotation = normalizeAngle(newRotation);
+
+		onRotate?.(rotateElementId, newRotation);
+	}
+
+	/**
+	 * Handle pointer up - end rotating
+	 */
+	function handleRotationPointerUp(e: PointerEvent) {
+		if (isRotating) {
+			isRotating = false;
+			rotateElementId = null;
+			initialElementRotation = 0;
+			initialMouseAngle = 0;
+			(e.currentTarget as SVGElement).releasePointerCapture(e.pointerId);
+		}
+	}
 </script>
 
 <svg class="selection-layer pointer-events-none absolute inset-0 h-full w-full overflow-visible">
@@ -232,52 +382,105 @@
 	{#each selectedElements as element (element.id)}
 		{@const bounds = getElementBounds(element)}
 		{@const showHandles = isResizable(element.type)}
+		{@const showRotation = isRotatable(element.type)}
+		{@const elementRotation = getElementRotation(element)}
+		{@const center = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }}
 
-		<!-- Selection rectangle (dashed border) for individual element -->
-		<rect
-			x={bounds.x}
-			y={bounds.y}
-			width={bounds.width}
-			height={bounds.height}
-			fill="none"
-			stroke={SELECTION_STROKE_COLOR}
-			stroke-width={strokeWidth}
-			stroke-dasharray={`${4 / scale} ${4 / scale}`}
-		/>
+		<!-- Group that rotates selection UI with the element -->
+		<g
+			transform={elementRotation !== 0
+				? `rotate(${elementRotation}, ${center.x}, ${center.y})`
+				: undefined}
+		>
+			<!-- Selection rectangle (dashed border) for individual element -->
+			<rect
+				x={bounds.x}
+				y={bounds.y}
+				width={bounds.width}
+				height={bounds.height}
+				fill="none"
+				stroke={SELECTION_STROKE_COLOR}
+				stroke-width={strokeWidth}
+				stroke-dasharray={`${4 / scale} ${4 / scale}`}
+			/>
 
-		<!-- Resize handles (only for shapes and images) -->
-		{#if showHandles}
-			{#each HANDLE_CONFIGS as handle (handle.position)}
-				{@const coords = handle.getCoords(bounds)}
+			<!-- Resize handles (only for shapes and images) -->
+			{#if showHandles}
+				{#each HANDLE_CONFIGS as handle (handle.position)}
+					{@const coords = handle.getCoords(bounds)}
 
-				<!-- Invisible larger hit area -->
-				<rect
-					class="pointer-events-auto"
-					x={coords.x - hitAreaSize / 2}
-					y={coords.y - hitAreaSize / 2}
-					width={hitAreaSize}
-					height={hitAreaSize}
-					fill="transparent"
-					style="cursor: {handle.cursor};"
-					data-handle={handle.position}
-					data-element-id={element.id}
-					onpointerdown={handleHandlePointerDown}
-					onpointermove={handleHandlePointerMove}
-					onpointerup={handleHandlePointerUp}
-					onpointercancel={handleHandlePointerUp}
+					<!-- Invisible larger hit area -->
+					<rect
+						class="pointer-events-auto"
+						x={coords.x - hitAreaSize / 2}
+						y={coords.y - hitAreaSize / 2}
+						width={hitAreaSize}
+						height={hitAreaSize}
+						fill="transparent"
+						style="cursor: {handle.cursor};"
+						data-handle={handle.position}
+						data-element-id={element.id}
+						onpointerdown={handleHandlePointerDown}
+						onpointermove={handleHandlePointerMove}
+						onpointerup={handleHandlePointerUp}
+						onpointercancel={handleHandlePointerUp}
+					/>
+
+					<!-- Visible handle -->
+					<rect
+						x={coords.x - handleSize / 2}
+						y={coords.y - handleSize / 2}
+						width={handleSize}
+						height={handleSize}
+						fill="white"
+						stroke={SELECTION_STROKE_COLOR}
+						stroke-width={strokeWidth}
+					/>
+				{/each}
+			{/if}
+
+			<!-- Rotation handle (only for shapes and strokes) -->
+			{#if showRotation}
+				{@const centerX = bounds.x + bounds.width / 2}
+				{@const topY = bounds.y}
+				{@const handleOffset = ROTATION_HANDLE_OFFSET / scale}
+				{@const handleRadius = ROTATION_HANDLE_RADIUS / scale}
+				{@const hitRadius = HANDLE_HIT_SIZE / scale / 2}
+
+				<!-- Connecting line from selection box to rotation handle -->
+				<line
+					x1={centerX}
+					y1={topY}
+					x2={centerX}
+					y2={topY - handleOffset}
+					stroke={SELECTION_STROKE_COLOR}
+					stroke-width={strokeWidth}
 				/>
 
-				<!-- Visible handle -->
-				<rect
-					x={coords.x - handleSize / 2}
-					y={coords.y - handleSize / 2}
-					width={handleSize}
-					height={handleSize}
+				<!-- Invisible larger hit area for rotation handle -->
+				<circle
+					class="pointer-events-auto"
+					cx={centerX}
+					cy={topY - handleOffset}
+					r={hitRadius}
+					fill="transparent"
+					style="cursor: grab;"
+					onpointerdown={(e) => handleRotationPointerDown(e, element)}
+					onpointermove={handleRotationPointerMove}
+					onpointerup={handleRotationPointerUp}
+					onpointercancel={handleRotationPointerUp}
+				/>
+
+				<!-- Visible rotation handle (circle) -->
+				<circle
+					cx={centerX}
+					cy={topY - handleOffset}
+					r={handleRadius}
 					fill="white"
 					stroke={SELECTION_STROKE_COLOR}
 					stroke-width={strokeWidth}
 				/>
-			{/each}
-		{/if}
+			{/if}
+		</g>
 	{/each}
 </svg>

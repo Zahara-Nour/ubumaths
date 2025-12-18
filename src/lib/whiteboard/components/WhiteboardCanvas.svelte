@@ -18,6 +18,8 @@
 		hitTestElements,
 		getElementsInRect,
 		getElementsIntersectingRect,
+		getElementBounds,
+		getBoundsCenter,
 		type BoundingBox
 	} from '../core/hit-testing';
 	import InstrumentLayer from './InstrumentLayer.svelte';
@@ -25,12 +27,13 @@
 	import ImageLayer from './ImageLayer.svelte';
 	import SelectionLayer from './SelectionLayer.svelte';
 	import ContextMenu from './ContextMenu.svelte';
-	import type {
-		Point,
-		StrokeElement,
-		ShapeElement,
-		ShapeType,
-		ImageElement
+	import {
+		getStrokeDashArray,
+		type Point,
+		type StrokeElement,
+		type ShapeElement,
+		type ShapeType,
+		type ImageElement
 	} from '../types/document';
 
 	// ==========================================================================
@@ -177,7 +180,8 @@
 			whiteboardStore.syncToolbarFromElement({
 				color: element.color,
 				strokeWidth: element.strokeWidth,
-				opacity: element.opacity
+				opacity: element.opacity,
+				strokeStyle: element.strokeStyle
 			});
 		}
 	}
@@ -683,7 +687,8 @@
 		const shape = createShapeElement(currentTool as ShapeType, start, end, {
 			color: toolState.color,
 			strokeWidth: toolState.strokeWidth,
-			opacity: toolState.opacity
+			opacity: toolState.opacity,
+			strokeStyle: toolState.strokeStyle
 		});
 
 		whiteboardStore.addElement(shape);
@@ -832,54 +837,76 @@
 		<g class="layer-content">
 			<!-- Strokes -->
 			{#each strokeElements as stroke (stroke.id)}
-				<path
-					d={getStrokePath(stroke)}
-					fill={stroke.color}
-					fill-opacity={stroke.opacity}
-					stroke="none"
-				/>
+				{@const strokeRotation = stroke.rotation ?? 0}
+				{@const strokeBounds = getElementBounds(stroke)}
+				{@const strokeCenter = getBoundsCenter(strokeBounds)}
+				<g
+					transform={strokeRotation !== 0
+						? `rotate(${strokeRotation}, ${strokeCenter.x}, ${strokeCenter.y})`
+						: undefined}
+				>
+					<path
+						d={getStrokePath(stroke)}
+						fill={stroke.color}
+						fill-opacity={stroke.opacity}
+						stroke="none"
+					/>
+				</g>
 			{/each}
 
 			<!-- Shapes -->
 			{#each shapeElements as shape (shape.id)}
 				{@const props = getShapeSvgProps(shape.shapeType, shape.start, shape.end)}
-				{#if props.type === 'line'}
-					<line
-						x1={props.x1}
-						y1={props.y1}
-						x2={props.x2}
-						y2={props.y2}
-						stroke={shape.color}
-						stroke-width={shape.strokeWidth}
-						stroke-linecap="round"
-						opacity={shape.opacity}
-						marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
-					/>
-				{:else if props.type === 'rect'}
-					<rect
-						x={props.x}
-						y={props.y}
-						width={props.width}
-						height={props.height}
-						stroke={shape.color}
-						stroke-width={shape.strokeWidth}
-						opacity={shape.opacity}
-						fill={shape.fill ?? 'none'}
-						fill-opacity={shape.fillOpacity ?? 1}
-					/>
-				{:else if props.type === 'ellipse'}
-					<ellipse
-						cx={props.cx}
-						cy={props.cy}
-						rx={props.rx}
-						ry={props.ry}
-						stroke={shape.color}
-						stroke-width={shape.strokeWidth}
-						opacity={shape.opacity}
-						fill={shape.fill ?? 'none'}
-						fill-opacity={shape.fillOpacity ?? 1}
-					/>
-				{/if}
+				{@const dashArray = getStrokeDashArray(shape.strokeStyle ?? 'solid', shape.strokeWidth)}
+				{@const shapeRotation = shape.rotation ?? 0}
+				{@const shapeBounds = getElementBounds(shape)}
+				{@const shapeCenter = getBoundsCenter(shapeBounds)}
+				<g
+					transform={shapeRotation !== 0
+						? `rotate(${shapeRotation}, ${shapeCenter.x}, ${shapeCenter.y})`
+						: undefined}
+				>
+					{#if props.type === 'line'}
+						<line
+							x1={props.x1}
+							y1={props.y1}
+							x2={props.x2}
+							y2={props.y2}
+							stroke={shape.color}
+							stroke-width={shape.strokeWidth}
+							stroke-linecap="round"
+							stroke-dasharray={dashArray}
+							opacity={shape.opacity}
+							marker-end={props.hasArrowMarker ? `url(#arrow-marker-${shape.id})` : undefined}
+						/>
+					{:else if props.type === 'rect'}
+						<rect
+							x={props.x}
+							y={props.y}
+							width={props.width}
+							height={props.height}
+							stroke={shape.color}
+							stroke-width={shape.strokeWidth}
+							stroke-dasharray={dashArray}
+							opacity={shape.opacity}
+							fill={shape.fill ?? 'none'}
+							fill-opacity={shape.fillOpacity ?? 1}
+						/>
+					{:else if props.type === 'ellipse'}
+						<ellipse
+							cx={props.cx}
+							cy={props.cy}
+							rx={props.rx}
+							ry={props.ry}
+							stroke={shape.color}
+							stroke-width={shape.strokeWidth}
+							stroke-dasharray={dashArray}
+							opacity={shape.opacity}
+							fill={shape.fill ?? 'none'}
+							fill-opacity={shape.fillOpacity ?? 1}
+						/>
+					{/if}
+				</g>
 			{/each}
 		</g>
 
@@ -900,13 +927,14 @@
 				/>
 			{/if}
 
-			<!-- Active shape preview (dashed outline) -->
+			<!-- Active shape preview -->
 			{#if isDrawing && isShapeTool && shapeStartPoint && shapeEndPoint}
 				{@const previewProps = getShapeSvgProps(
 					toolState.toolType as ShapeType,
 					shapeStartPoint,
 					shapeEndPoint
 				)}
+				{@const previewDashArray = getStrokeDashArray(toolState.strokeStyle, toolState.strokeWidth)}
 				{#if previewProps.type === 'line'}
 					<line
 						x1={previewProps.x1}
@@ -915,7 +943,7 @@
 						y2={previewProps.y2}
 						stroke={toolState.color}
 						stroke-width={toolState.strokeWidth}
-						stroke-dasharray="5,5"
+						stroke-dasharray={previewDashArray}
 						stroke-linecap="round"
 						opacity={toolState.opacity}
 						marker-end={previewProps.hasArrowMarker ? 'url(#arrow-marker-preview)' : undefined}
@@ -928,7 +956,7 @@
 						height={previewProps.height}
 						stroke={toolState.color}
 						stroke-width={toolState.strokeWidth}
-						stroke-dasharray="5,5"
+						stroke-dasharray={previewDashArray}
 						opacity={toolState.opacity}
 						fill="none"
 					/>
@@ -940,7 +968,7 @@
 						ry={previewProps.ry}
 						stroke={toolState.color}
 						stroke-width={toolState.strokeWidth}
-						stroke-dasharray="5,5"
+						stroke-dasharray={previewDashArray}
 						opacity={toolState.opacity}
 						fill="none"
 					/>
@@ -961,6 +989,7 @@
 				{hoveredElementId}
 				onResize={(elementId, handle, dx, dy, constrainAspectRatio) =>
 					whiteboardStore.resizeElement(elementId, handle, dx, dy, constrainAspectRatio)}
+				onRotate={(elementId, rotation) => whiteboardStore.rotateElement(elementId, rotation)}
 			/>
 		</g>
 

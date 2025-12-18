@@ -56,6 +56,34 @@ export type StrokeToolType = 'pen' | 'highlighter' | 'eraser';
 /** Shape types */
 export type ShapeType = 'line' | 'rectangle' | 'circle' | 'arrow';
 
+/** Stroke/line style for shapes */
+export type StrokeStyle = 'solid' | 'dashed' | 'dotted' | 'dashdot';
+
+/** Stroke style labels for UI */
+export const STROKE_STYLE_LABELS: Record<StrokeStyle, string> = {
+	solid: 'Plein',
+	dashed: 'Tirets',
+	dotted: 'Pointillé',
+	dashdot: 'Mixte'
+};
+
+/**
+ * Get SVG stroke-dasharray value for a stroke style
+ * Values are relative to stroke width for consistent appearance
+ */
+export function getStrokeDashArray(style: StrokeStyle, strokeWidth: number): string | undefined {
+	switch (style) {
+		case 'solid':
+			return undefined;
+		case 'dashed':
+			return `${strokeWidth * 4} ${strokeWidth * 2}`;
+		case 'dotted':
+			return `${strokeWidth} ${strokeWidth * 2}`;
+		case 'dashdot':
+			return `${strokeWidth * 4} ${strokeWidth * 2} ${strokeWidth} ${strokeWidth * 2}`;
+	}
+}
+
 /** Stroke element - freehand drawing */
 export interface StrokeElement {
 	readonly id: string;
@@ -65,6 +93,8 @@ export interface StrokeElement {
 	readonly color: string;
 	readonly width: number;
 	readonly opacity: number;
+	/** Rotation angle in degrees (0-360), default 0 */
+	readonly rotation?: number;
 }
 
 /** Shape element - geometric shapes */
@@ -77,8 +107,11 @@ export interface ShapeElement {
 	readonly color: string;
 	readonly strokeWidth: number;
 	readonly opacity: number;
+	readonly strokeStyle?: StrokeStyle;
 	readonly fill?: string;
 	readonly fillOpacity?: number;
+	/** Rotation angle in degrees (0-360), default 0 */
+	readonly rotation?: number;
 }
 
 /** Text block element - rich text with markdown */

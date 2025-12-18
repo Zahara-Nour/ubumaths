@@ -49,7 +49,12 @@
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
-	import { INSTRUMENT_LABELS, type InstrumentType } from '../types/document';
+	import {
+		INSTRUMENT_LABELS,
+		STROKE_STYLE_LABELS,
+		type InstrumentType,
+		type StrokeStyle
+	} from '../types/document';
 	import { importImageFile } from '../utils/image-loader';
 	import { importPdfFile } from '../utils/pdf-loader';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -126,6 +131,7 @@
 	/** Popover open states */
 	let drawingPopoverOpen = $state(false);
 	let shapesPopoverOpen = $state(false);
+	let strokeStylePopoverOpen = $state(false);
 	let instrumentsPopoverOpen = $state(false);
 	let importPopoverOpen = $state(false);
 	let filePopoverOpen = $state(false);
@@ -152,6 +158,7 @@
 	let currentColor = $derived(toolState.color);
 	let currentStrokeWidth = $derived(toolState.strokeWidth);
 	let currentOpacity = $derived(toolState.opacity);
+	let currentStrokeStyle = $derived(toolState.strokeStyle);
 	let instruments = $derived(whiteboardStore.instruments);
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
@@ -210,6 +217,11 @@
 				whiteboardStore.updateSelectedStyles({ opacity: value[0] });
 			}
 		}
+	}
+
+	function handleStrokeStyleChange(style: StrokeStyle) {
+		whiteboardStore.setStrokeStyle(style);
+		// Note: strokeStyle changes are not applied to selected elements as it only affects shapes
 	}
 
 	function handleUndo() {
@@ -756,6 +768,78 @@
 					aria-label="Opacité: {Math.round(currentOpacity * 100)}%"
 				/>
 			</div>
+
+			<!-- Stroke Style Popover (only show when shape tool is active) -->
+			{#if isShapeToolActive}
+				<Popover.Root bind:open={strokeStylePopoverOpen}>
+					<Popover.Trigger>
+						{#snippet child({ props })}
+							<button
+								{...props}
+								type="button"
+								class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
+								aria-label="Style de trait"
+								title="Style de trait"
+							>
+								<svg class="h-4 w-8" viewBox="0 0 32 8">
+									<line
+										x1="2"
+										y1="4"
+										x2="30"
+										y2="4"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-dasharray={currentStrokeStyle === 'solid'
+											? undefined
+											: currentStrokeStyle === 'dashed'
+												? '6 3'
+												: currentStrokeStyle === 'dotted'
+													? '2 3'
+													: '6 2 2 2'}
+									/>
+								</svg>
+							</button>
+						{/snippet}
+					</Popover.Trigger>
+					<Popover.Content class="w-auto p-2" side="top" align="start">
+						<div class="flex flex-col gap-1">
+							{#each Object.entries(STROKE_STYLE_LABELS) as [style, label] (style)}
+								<Button
+									type="button"
+									variant={currentStrokeStyle === style ? 'secondary' : 'ghost'}
+									size="sm"
+									onclick={() => {
+										handleStrokeStyleChange(style as StrokeStyle);
+										strokeStylePopoverOpen = false;
+									}}
+									class="justify-start gap-3"
+								>
+									<svg class="h-4 w-10" viewBox="0 0 40 8">
+										<line
+											x1="2"
+											y1="4"
+											x2="38"
+											y2="4"
+											stroke="currentColor"
+											stroke-width="2"
+											stroke-linecap="round"
+											stroke-dasharray={style === 'solid'
+												? undefined
+												: style === 'dashed'
+													? '6 3'
+													: style === 'dotted'
+														? '2 3'
+														: '6 2 2 2'}
+										/>
+									</svg>
+									<span>{label}</span>
+								</Button>
+							{/each}
+						</div>
+					</Popover.Content>
+				</Popover.Root>
+			{/if}
 
 			<!-- Separator -->
 			<div class="mx-2 h-6 w-px bg-border"></div>
