@@ -1,0 +1,300 @@
+<script lang="ts">
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
+	import * as Card from '$lib/components/ui/card';
+	import * as Collapsible from '$lib/components/ui/collapsible';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import ExerciseRichTextEditor from './ExerciseRichTextEditor.svelte';
+	import HintEditor from './HintEditor.svelte';
+	import type { ExerciseVariation, GuidanceLabel, ExerciseHint } from '$lib/exercises/types';
+	import type { Variable } from '$lib/custom-markdown';
+	import type { SupabaseClient } from '@supabase/supabase-js';
+
+	interface Props {
+		variation: ExerciseVariation;
+		supabase?: SupabaseClient;
+		userId?: string;
+		genericFunctions?: string[];
+		onchange?: () => void;
+	}
+
+	let { variation = $bindable(), supabase, userId, genericFunctions, onchange }: Props = $props();
+
+	// Label options
+	const guidanceLabelItems: { value: GuidanceLabel | 'custom'; label: string }[] = [
+		{ value: 'guided', label: 'Guide' },
+		{ value: 'intermediate', label: 'Intermediaire' },
+		{ value: 'autonomous', label: 'Autonome' },
+		{ value: 'custom', label: 'Personnalise' }
+	];
+
+	// Determine if label is custom
+	const standardLabels: GuidanceLabel[] = ['guided', 'intermediate', 'autonomous'];
+	let labelType = $state<GuidanceLabel | 'custom'>(
+		standardLabels.includes(variation.label as GuidanceLabel)
+			? (variation.label as GuidanceLabel)
+			: 'custom'
+	);
+	let customLabel = $state(
+		standardLabels.includes(variation.label as GuidanceLabel) ? '' : variation.label
+	);
+
+	// Variables section state
+	let variablesOpen = $state(false);
+	let newVarName = $state('');
+	let newVarExpression = $state('');
+
+	// Hints section state
+	let hintsOpen = $state(false);
+
+	/**
+	 * Update variation label when type or custom label changes
+	 */
+	function handleLabelTypeChange(newType: GuidanceLabel | 'custom') {
+		labelType = newType;
+		if (newType === 'custom') {
+			variation.label = customLabel || 'custom';
+		} else {
+			variation.label = newType;
+		}
+		onchange?.();
+	}
+
+	/**
+	 * Update variation label when custom input changes
+	 */
+	function handleCustomLabelChange() {
+		if (labelType === 'custom') {
+			variation.label = customLabel || 'custom';
+			onchange?.();
+		}
+	}
+
+	/**
+	 * Add variable to variation
+	 */
+	function addVariable() {
+		if (!newVarName.trim() || !newVarExpression.trim()) return;
+
+		const newVar: Variable = {
+			name: newVarName.trim(),
+			expression: newVarExpression.trim()
+		};
+
+		variation.variables = [...(variation.variables ?? []), newVar];
+		onchange?.();
+
+		// Reset form
+		newVarName = '';
+		newVarExpression = '';
+	}
+
+	/**
+	 * Remove variable from variation
+	 */
+	function removeVariable(index: number) {
+		if (!variation.variables) return;
+		variation.variables = variation.variables.filter((_, i) => i !== index);
+		onchange?.();
+	}
+
+	/**
+	 * Handle hints change
+	 */
+	function handleHintsChange() {
+		onchange?.();
+	}
+</script>
+
+<div class="space-y-6">
+	<!-- Guidance Label -->
+	<div class="space-y-3">
+		<Label>Niveau de guidage</Label>
+		<div class="flex gap-3">
+			<div class="w-48">
+				<MySelect
+					type="single"
+					value={labelType}
+					onValueChange={handleLabelTypeChange}
+					items={guidanceLabelItems}
+					placeholder="Type"
+				/>
+			</div>
+			{#if labelType === 'custom'}
+				<Input
+					type="text"
+					placeholder="Nom personnalise"
+					bind:value={customLabel}
+					oninput={handleCustomLabelChange}
+					class="flex-1"
+				/>
+			{/if}
+		</div>
+	</div>
+
+	<!-- Statement -->
+	<div class="space-y-2">
+		<Label>
+			Enonce <span class="text-destructive">*</span>
+		</Label>
+		<p class="text-xs text-muted-foreground">
+			Utilisez <code class="rounded bg-muted px-1">{'{{hint:id}}'}</code> pour inserer des aides.
+		</p>
+		<ExerciseRichTextEditor
+			bind:value={variation.statement_md}
+			{supabase}
+			{userId}
+			{genericFunctions}
+		/>
+	</div>
+
+	<!-- Solution -->
+	<div class="space-y-2">
+		<Label>
+			Solution <span class="text-destructive">*</span>
+		</Label>
+		<ExerciseRichTextEditor
+			bind:value={variation.solution_md}
+			{supabase}
+			{userId}
+			{genericFunctions}
+		/>
+	</div>
+
+	<!-- Variables (collapsible) -->
+	<Collapsible.Root bind:open={variablesOpen}>
+		<Card.Root>
+			<Collapsible.Trigger asChild>
+				{#snippet child({ props })}
+					<Card.Header class="cursor-pointer" {...props}>
+						<div class="flex items-center justify-between">
+							<div>
+								<Card.Title class="text-base">
+									Variables specifiques
+									{#if variation.variables && variation.variables.length > 0}
+										<span class="ml-2 text-sm font-normal text-muted-foreground">
+											({variation.variables.length})
+										</span>
+									{/if}
+								</Card.Title>
+								<Card.Description>
+									Variables propres a cette variation (remplacent les variables partagees)
+								</Card.Description>
+							</div>
+							<span
+								class="text-muted-foreground transition-transform"
+								class:rotate-180={variablesOpen}
+							>
+								▼
+							</span>
+						</div>
+					</Card.Header>
+				{/snippet}
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<Card.Content class="space-y-4">
+					<!-- Existing variables -->
+					{#if variation.variables && variation.variables.length > 0}
+						<div class="space-y-2">
+							{#each variation.variables as variable, index (index)}
+								<div class="flex items-center gap-2 rounded-md border bg-muted/50 p-2 text-sm">
+									<code class="rounded bg-background px-2 py-1 font-mono text-xs">
+										{variable.name}
+									</code>
+									<span class="text-muted-foreground">=</span>
+									<code class="flex-1 truncate font-mono text-xs">
+										{variable.expression}
+									</code>
+									<Button
+										type="button"
+										variant="ghost"
+										size="sm"
+										onclick={() => removeVariable(index)}
+										class="h-8 w-8 p-0 text-destructive hover:text-destructive"
+									>
+										×
+									</Button>
+								</div>
+							{/each}
+						</div>
+					{/if}
+
+					<!-- Add variable form -->
+					<div class="flex gap-2">
+						<Input
+							type="text"
+							placeholder="nom"
+							bind:value={newVarName}
+							class="h-9 w-24 font-mono text-xs"
+						/>
+						<span class="flex items-center text-muted-foreground">=</span>
+						<Input
+							type="text"
+							placeholder={'expression (ex: {{1..10}})'}
+							bind:value={newVarExpression}
+							class="h-9 flex-1 font-mono text-xs"
+						/>
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onclick={addVariable}
+							disabled={!newVarName.trim() || !newVarExpression.trim()}
+						>
+							+
+						</Button>
+					</div>
+
+					<p class="text-xs text-muted-foreground">
+						Syntaxe: <code class="rounded bg-muted px-1">{'{{1..10}}'}</code> (aleatoire),
+						<code class="rounded bg-muted px-1">{'{{eval:a+b}}'}</code> (calcul),
+						<code class="rounded bg-muted px-1">{'{{var}}'}</code> (reference)
+					</p>
+				</Card.Content>
+			</Collapsible.Content>
+		</Card.Root>
+	</Collapsible.Root>
+
+	<!-- Hints (collapsible) -->
+	<Collapsible.Root bind:open={hintsOpen}>
+		<Card.Root>
+			<Collapsible.Trigger asChild>
+				{#snippet child({ props })}
+					<Card.Header class="cursor-pointer" {...props}>
+						<div class="flex items-center justify-between">
+							<div>
+								<Card.Title class="text-base">
+									Aides (hints)
+									{#if variation.hints && variation.hints.length > 0}
+										<span class="ml-2 text-sm font-normal text-muted-foreground">
+											({variation.hints.length})
+										</span>
+									{/if}
+								</Card.Title>
+								<Card.Description>
+									Ressources accessibles via <code class="rounded bg-muted px-1 text-xs"
+										>{'{{hint:id}}'}</code
+									>
+								</Card.Description>
+							</div>
+							<span class="text-muted-foreground transition-transform" class:rotate-180={hintsOpen}>
+								▼
+							</span>
+						</div>
+					</Card.Header>
+				{/snippet}
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<Card.Content>
+					<HintEditor
+						bind:hints={variation.hints as ExerciseHint[]}
+						statementMd={variation.statement_md}
+						solutionMd={variation.solution_md}
+						onchange={handleHintsChange}
+					/>
+				</Card.Content>
+			</Collapsible.Content>
+		</Card.Root>
+	</Collapsible.Root>
+</div>

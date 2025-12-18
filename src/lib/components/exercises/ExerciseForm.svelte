@@ -3,8 +3,12 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import * as Collapsible from '$lib/components/ui/collapsible';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import ExerciseRichTextEditor from './ExerciseRichTextEditor.svelte';
 	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
+	import VariationEditor from './VariationEditor.svelte';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
 	import GenericFunctionInput from './GenericFunctionInput.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
@@ -14,7 +18,12 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import type { TranspileWarning } from '$lib/custom-markdown/importers/latex';
 	import type { GradeCode } from '$lib/types/grades';
-	import type { ExerciseResource } from '$lib/exercises/types';
+	import type {
+		ExerciseResource,
+		ExerciseVariation,
+		SharedExerciseDefaults
+	} from '$lib/exercises/types';
+	import type { Variable } from '$lib/custom-markdown';
 
 	type Exercise = Database['public']['Tables']['exercises']['Row'];
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -37,15 +46,50 @@
 	let tags = $state<string[]>(exercise?.tags || []);
 	let topic = $state(exercise?.topic || '');
 	let gradeLevels = $state<GradeCode[]>((exercise?.grade_levels as GradeCode[]) || []);
-	let statementMd = $state(exercise?.statement_md || '');
-	let solutionMd = $state(exercise?.solution_md || '');
 	let resources = $state<ExerciseResource[]>(
 		(exercise?.resources as unknown as ExerciseResource[]) || []
 	);
+
 	// generic_functions may exist after migration but not in generated types yet
 	let genericFunctions = $state<string[]>(
 		((exercise as Record<string, unknown>)?.generic_functions as string[]) || []
 	);
+
+	// Variations mode state
+	let useVariations = $state(
+		((exercise as Record<string, unknown>)?.variations as ExerciseVariation[] | undefined)?.length
+			? true
+			: false
+	);
+
+	// Legacy single statement/solution (used when useVariations is false)
+	let statementMd = $state(exercise?.statement_md || '');
+	let solutionMd = $state(exercise?.solution_md || '');
+
+	// Variations (used when useVariations is true)
+	let variations = $state<ExerciseVariation[]>(
+		((exercise as Record<string, unknown>)?.variations as ExerciseVariation[] | undefined) ?? [
+			{
+				label: 'guided',
+				statement_md: exercise?.statement_md || '',
+				solution_md: exercise?.solution_md || '',
+				hints: []
+			}
+		]
+	);
+
+	// Shared defaults for variations
+	let shared = $state<SharedExerciseDefaults | undefined>(
+		(exercise as Record<string, unknown>)?.shared as SharedExerciseDefaults | undefined
+	);
+
+	// Active variation tab
+	let activeVariationTab = $state('0');
+
+	// Shared variables section state
+	let sharedVariablesOpen = $state(false);
+	let newSharedVarName = $state('');
+	let newSharedVarExpression = $state('');
 
 	// Debug: track genericFunctions changes
 	$effect(() => {
@@ -59,30 +103,160 @@
 	let errors = $state<Record<string, string>>({});
 
 	/**
+	 * Get display label for a variation
+	 */
+	function getVariationDisplayLabel(variation: ExerciseVariation): string {
+		switch (variation.label) {
+			case 'guided':
+				return 'Guide';
+			case 'intermediate':
+				return 'Intermediaire';
+			case 'autonomous':
+				return 'Autonome';
+			default:
+				return variation.label;
+		}
+	}
+
+	/**
+	 * Add a new variation
+	 */
+	function addVariation() {
+		if (variations.length >= 10) {
+			toaster.warning('Maximum 10 variations autorisees');
+			return;
+		}
+
+		const newVariation: ExerciseVariation = {
+			label: 'intermediate',
+			statement_md: '',
+			solution_md: '',
+			hints: []
+		};
+
+		variations = [...variations, newVariation];
+		activeVariationTab = String(variations.length - 1);
+		toaster.success('Variation ajoutee');
+	}
+
+	/**
+	 * Remove a variation
+	 */
+	function removeVariation(index: number) {
+		if (variations.length <= 1) {
+			toaster.warning('Au moins une variation est requise');
+			return;
+		}
+
+		variations = variations.filter((_, i) => i !== index);
+
+		// Adjust active tab if needed
+		const currentIndex = parseInt(activeVariationTab);
+		if (currentIndex >= variations.length) {
+			activeVariationTab = String(variations.length - 1);
+		} else if (currentIndex > index) {
+			activeVariationTab = String(currentIndex - 1);
+		}
+	}
+
+	/**
+	 * Add shared variable
+	 */
+	function addSharedVariable() {
+		if (!newSharedVarName.trim() || !newSharedVarExpression.trim()) return;
+
+		const newVar: Variable = {
+			name: newSharedVarName.trim(),
+			expression: newSharedVarExpression.trim()
+		};
+
+		if (!shared) {
+			shared = { variables: [newVar] };
+		} else {
+			shared.variables = [...(shared.variables ?? []), newVar];
+		}
+
+		// Reset form
+		newSharedVarName = '';
+		newSharedVarExpression = '';
+	}
+
+	/**
+	 * Remove shared variable
+	 */
+	function removeSharedVariable(index: number) {
+		if (!shared?.variables) return;
+		shared.variables = shared.variables.filter((_, i) => i !== index);
+		if (shared.variables.length === 0) {
+			shared.variables = undefined;
+		}
+	}
+
+	/**
+	 * Toggle variations mode
+	 */
+	function handleVariationsModeChange(checked: boolean) {
+		useVariations = checked;
+
+		if (checked) {
+			// Switching to variations mode - copy current content to first variation
+			if (variations.length === 0 || !variations[0].statement_md) {
+				variations = [
+					{
+						label: 'guided',
+						statement_md: statementMd,
+						solution_md: solutionMd,
+						hints: []
+					}
+				];
+			}
+		} else {
+			// Switching to simple mode - copy first variation content back
+			if (variations.length > 0) {
+				statementMd = variations[0].statement_md;
+				solutionMd = variations[0].solution_md;
+			}
+		}
+	}
+
+	/**
 	 * Validate form
 	 */
 	function validate(): boolean {
 		errors = {};
 
-		if (!statementMd.trim()) {
-			errors.statement_md = "L'énoncé est requis";
-		}
+		if (useVariations) {
+			// Validate each variation
+			for (let i = 0; i < variations.length; i++) {
+				const v = variations[i];
+				if (!v.statement_md.trim()) {
+					errors[`variation_${i}_statement`] = `L'enonce de la variation ${i + 1} est requis`;
+				}
+				if (!v.solution_md.trim()) {
+					errors[`variation_${i}_solution`] = `La solution de la variation ${i + 1} est requise`;
+				}
+			}
+		} else {
+			if (!statementMd.trim()) {
+				errors.statement_md = "L'enonce est requis";
+			}
 
-		if (!solutionMd.trim()) {
-			errors.solution_md = 'La solution est requise';
+			if (!solutionMd.trim()) {
+				errors.solution_md = 'La solution est requise';
+			}
 		}
 
 		if (![1, 2, 3].includes(difficulty)) {
-			errors.difficulty = 'La difficulté doit être 1, 2 ou 3';
+			errors.difficulty = 'La difficulte doit etre 1, 2 ou 3';
 		}
 
 		// Validate slug format if provided
 		if (slug.trim()) {
 			const slugRegex = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/;
 			if (slug.length < 3) {
-				errors.slug = 'Le slug doit contenir au moins 3 caractères';
+				errors.slug = 'Le slug doit contenir au moins 3 caracteres';
 			} else if (slug.length > 100) {
-				errors.slug = 'Le slug ne peut pas dépasser 100 caractères';
+				errors.slug = 'Le slug ne peut pas depasser 100 caracteres';
 			} else if (!slugRegex.test(slug)) {
 				errors.slug = 'Format invalide (minuscules, chiffres et tirets uniquement)';
 			}
@@ -98,10 +272,25 @@
 		e.preventDefault();
 
 		if (!validate()) {
+			// If there are variation errors, show toast and switch to first problematic tab
+			const variationErrorKeys = Object.keys(errors).filter((k) => k.startsWith('variation_'));
+			if (variationErrorKeys.length > 0) {
+				const firstErrorKey = variationErrorKeys[0];
+				const match = firstErrorKey.match(/variation_(\d+)/);
+				if (match) {
+					activeVariationTab = match[1];
+				}
+				toaster.error('Veuillez corriger les erreurs dans les variations');
+			}
 			return;
 		}
 
-		const data: Partial<ExerciseInsert> & { generic_functions?: string[] | null } = {
+		// Prepare data based on mode
+		const data: Partial<ExerciseInsert> & {
+			generic_functions?: string[] | null;
+			variations?: ExerciseVariation[] | null;
+			shared?: SharedExerciseDefaults | null;
+		} = {
 			title: title.trim() || null,
 			slug: slug.trim() || null,
 			source: source.trim() || null,
@@ -109,12 +298,27 @@
 			tags,
 			topic: topic.trim() || null,
 			grade_levels: gradeLevels,
-			statement_md: statementMd,
-			solution_md: solutionMd,
 			resources: (resources.length > 0 ? resources : null) as ExerciseInsert['resources'],
-			// generic_functions: empty array means "disable", null/undefined means "use defaults"
 			generic_functions: genericFunctions.length > 0 ? genericFunctions : null
 		};
+
+		if (useVariations) {
+			// Variations mode - use variations array
+			data.variations = variations;
+			data.shared =
+				shared && (shared.variables?.length || shared.statement_md || shared.solution_md)
+					? shared
+					: null;
+			// Use first variation's content for backwards compatibility
+			data.statement_md = variations[0]?.statement_md || '';
+			data.solution_md = variations[0]?.solution_md || '';
+		} else {
+			// Simple mode - use single statement/solution
+			data.statement_md = statementMd;
+			data.solution_md = solutionMd;
+			data.variations = null;
+			data.shared = null;
+		}
 
 		await onsubmit(data);
 	}
@@ -127,21 +331,43 @@
 		solution: string | null;
 		warnings: TranspileWarning[];
 	}) {
-		// Check if we should confirm overwriting existing content
-		const hasExistingStatement = statementMd.trim().length > 0;
-		const hasExistingSolution = solutionMd.trim().length > 0;
+		// Determine where to import based on mode
+		if (useVariations) {
+			const currentIndex = parseInt(activeVariationTab);
+			const currentVariation = variations[currentIndex];
 
-		if (hasExistingStatement || hasExistingSolution) {
-			const confirmMsg = 'Le contenu existant sera remplacé par le contenu importé. Continuer ?';
-			if (!confirm(confirmMsg)) {
-				return;
+			const hasExistingStatement = currentVariation?.statement_md.trim().length > 0;
+			const hasExistingSolution = currentVariation?.solution_md.trim().length > 0;
+
+			if (hasExistingStatement || hasExistingSolution) {
+				const confirmMsg = 'Le contenu existant de cette variation sera remplace. Continuer ?';
+				if (!confirm(confirmMsg)) {
+					return;
+				}
 			}
-		}
 
-		// Apply imported content
-		statementMd = result.statement;
-		if (result.solution) {
-			solutionMd = result.solution;
+			// Update current variation
+			variations[currentIndex] = {
+				...currentVariation,
+				statement_md: result.statement,
+				solution_md: result.solution ?? currentVariation.solution_md
+			};
+		} else {
+			const hasExistingStatement = statementMd.trim().length > 0;
+			const hasExistingSolution = solutionMd.trim().length > 0;
+
+			if (hasExistingStatement || hasExistingSolution) {
+				const confirmMsg = 'Le contenu existant sera remplace par le contenu importe. Continuer ?';
+				if (!confirm(confirmMsg)) {
+					return;
+				}
+			}
+
+			// Apply imported content
+			statementMd = result.statement;
+			if (result.solution) {
+				solutionMd = result.solution;
+			}
 		}
 
 		// Close dialog
@@ -154,15 +380,15 @@
 
 			if (errorCount > 0) {
 				toaster.warning(
-					`Contenu importé avec ${errorCount} erreur${errorCount > 1 ? 's' : ''} et ${warningCount} avertissement${warningCount > 1 ? 's' : ''}. Vérifiez le contenu.`
+					`Contenu importe avec ${errorCount} erreur${errorCount > 1 ? 's' : ''} et ${warningCount} avertissement${warningCount > 1 ? 's' : ''}. Verifiez le contenu.`
 				);
 			} else if (warningCount > 0) {
 				toaster.info(
-					`Contenu importé avec ${warningCount} avertissement${warningCount > 1 ? 's' : ''}. Vérifiez le contenu.`
+					`Contenu importe avec ${warningCount} avertissement${warningCount > 1 ? 's' : ''}. Verifiez le contenu.`
 				);
 			}
 		} else {
-			toaster.success('Contenu LaTeX importé avec succès');
+			toaster.success('Contenu LaTeX importe avec succes');
 		}
 	}
 </script>
@@ -174,7 +400,7 @@
 		<p class="text-sm text-muted-foreground">
 			{exercise
 				? "Modifiez les informations de l'exercice"
-				: 'Créez un nouvel exercice avec support LaTeX'}
+				: 'Creez un nouvel exercice avec support LaTeX'}
 		</p>
 	</div>
 	<Button variant="outline" onclick={() => (latexImportOpen = true)}>
@@ -200,8 +426,8 @@
 	<!-- Metadata -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Informations générales</Card.Title>
-			<Card.Description>Métadonnées de l'exercice (optionnel sauf difficulté)</Card.Description>
+			<Card.Title>Informations generales</Card.Title>
+			<Card.Description>Metadonnees de l'exercice (optionnel sauf difficulte)</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-4">
 			<!-- Title & Source -->
@@ -211,7 +437,7 @@
 					<Input
 						id="title"
 						type="text"
-						placeholder="Ex: Équations du premier degré"
+						placeholder="Ex: Equations du premier degre"
 						bind:value={title}
 					/>
 				</div>
@@ -220,7 +446,7 @@
 					<Input
 						id="source"
 						type="text"
-						placeholder="Ex: Livre de 3ème, p. 42"
+						placeholder="Ex: Livre de 3eme, p. 42"
 						bind:value={source}
 					/>
 				</div>
@@ -230,7 +456,7 @@
 			<div class="space-y-2">
 				<Label for="slug">
 					Slug (URL)
-					<span class="ml-1 text-xs text-muted-foreground"> (auto-généré si vide) </span>
+					<span class="ml-1 text-xs text-muted-foreground"> (auto-genere si vide) </span>
 				</Label>
 				<Input
 					id="slug"
@@ -253,7 +479,7 @@
 			<div class="grid gap-4 md:grid-cols-2">
 				<div class="space-y-2">
 					<Label for="difficulty">
-						Difficulté <span class="text-destructive">*</span>
+						Difficulte <span class="text-destructive">*</span>
 					</Label>
 					<select
 						id="difficulty"
@@ -270,8 +496,8 @@
 				</div>
 
 				<div class="space-y-2">
-					<Label for="topic">Thème</Label>
-					<Input id="topic" type="text" placeholder="Ex: Algèbre" bind:value={topic} />
+					<Label for="topic">Theme</Label>
+					<Input id="topic" type="text" placeholder="Ex: Algebre" bind:value={topic} />
 				</div>
 			</div>
 
@@ -290,49 +516,238 @@
 		</Card.Content>
 	</Card.Root>
 
-	<!-- Statement -->
+	<!-- Variations Mode Toggle -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>
-				Énoncé <span class="text-destructive">*</span>
-			</Card.Title>
-			<Card.Description>
-				Rédigez l'énoncé en Markdown. Utilisez $...$ pour les formules mathématiques en ligne et
-				$$...$$ pour les formules sur une ligne séparée.
-			</Card.Description>
+			<div class="flex items-center justify-between">
+				<div>
+					<Card.Title>Mode variations</Card.Title>
+					<Card.Description>
+						Activez pour creer plusieurs versions de l'exercice avec differents niveaux de guidage
+					</Card.Description>
+				</div>
+				<MyCheckbox
+					checked={useVariations}
+					onCheckedChange={(v) => {
+						if (v !== 'indeterminate') handleVariationsModeChange(v);
+					}}
+					aria-label="Activer le mode variations"
+				/>
+			</div>
 		</Card.Header>
-		<Card.Content>
-			<ExerciseRichTextEditor bind:value={statementMd} {supabase} {userId} {genericFunctions} />
-			{#if errors.statement_md}
-				<p class="mt-2 text-sm text-destructive">{errors.statement_md}</p>
-			{/if}
-		</Card.Content>
 	</Card.Root>
 
-	<!-- Solution -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title>
-				Solution <span class="text-destructive">*</span>
-			</Card.Title>
-			<Card.Description>
-				Rédigez la solution en Markdown avec le même format que l'énoncé.
-			</Card.Description>
-		</Card.Header>
-		<Card.Content>
-			<ExerciseRichTextEditor bind:value={solutionMd} {supabase} {userId} {genericFunctions} />
-			{#if errors.solution_md}
-				<p class="mt-2 text-sm text-destructive">{errors.solution_md}</p>
-			{/if}
-		</Card.Content>
-	</Card.Root>
+	{#if useVariations}
+		<!-- Variations Editor -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Variations</Card.Title>
+				<Card.Description>
+					Chaque variation peut avoir un niveau de guidage different (guide, intermediaire,
+					autonome)
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<Tabs.Root bind:value={activeVariationTab}>
+					<div class="mb-4 flex items-center gap-2">
+						<Tabs.List class="flex-wrap">
+							{#each variations as variation, index (index)}
+								<Tabs.Trigger value={String(index)} class="relative pr-8">
+									{getVariationDisplayLabel(variation)}
+									{#if variations.length > 1}
+										<button
+											type="button"
+											onclick={(e) => {
+												e.stopPropagation();
+												removeVariation(index);
+											}}
+											class="absolute top-1/2 right-1 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
+											title="Supprimer cette variation"
+										>
+											<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M6 18L18 6M6 6l12 12"
+												/>
+											</svg>
+										</button>
+									{/if}
+								</Tabs.Trigger>
+							{/each}
+						</Tabs.List>
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onclick={addVariation}
+							disabled={variations.length >= 10}
+							title="Ajouter une variation"
+						>
+							+
+						</Button>
+					</div>
+
+					{#each variations as _, index (index)}
+						<Tabs.Content value={String(index)}>
+							{#if errors[`variation_${index}_statement`] || errors[`variation_${index}_solution`]}
+								<div class="mb-4 rounded-md border border-destructive bg-destructive/10 p-3">
+									{#if errors[`variation_${index}_statement`]}
+										<p class="text-sm text-destructive">{errors[`variation_${index}_statement`]}</p>
+									{/if}
+									{#if errors[`variation_${index}_solution`]}
+										<p class="text-sm text-destructive">{errors[`variation_${index}_solution`]}</p>
+									{/if}
+								</div>
+							{/if}
+							<VariationEditor
+								bind:variation={variations[index]}
+								{supabase}
+								{userId}
+								{genericFunctions}
+							/>
+						</Tabs.Content>
+					{/each}
+				</Tabs.Root>
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Shared Variables (collapsible) -->
+		<Collapsible.Root bind:open={sharedVariablesOpen}>
+			<Card.Root>
+				<Collapsible.Trigger asChild>
+					{#snippet child({ props })}
+						<Card.Header class="cursor-pointer" {...props}>
+							<div class="flex items-center justify-between">
+								<div>
+									<Card.Title>
+										Variables partagees
+										{#if shared?.variables && shared.variables.length > 0}
+											<span class="ml-2 text-sm font-normal text-muted-foreground">
+												({shared.variables.length})
+											</span>
+										{/if}
+									</Card.Title>
+									<Card.Description>Variables communes a toutes les variations</Card.Description>
+								</div>
+								<span
+									class="text-muted-foreground transition-transform"
+									class:rotate-180={sharedVariablesOpen}
+								>
+									&#9660;
+								</span>
+							</div>
+						</Card.Header>
+					{/snippet}
+				</Collapsible.Trigger>
+				<Collapsible.Content>
+					<Card.Content class="space-y-4">
+						<!-- Existing shared variables -->
+						{#if shared?.variables && shared.variables.length > 0}
+							<div class="space-y-2">
+								{#each shared.variables as variable, index (index)}
+									<div class="flex items-center gap-2 rounded-md border bg-muted/50 p-2 text-sm">
+										<code class="rounded bg-background px-2 py-1 font-mono text-xs">
+											{variable.name}
+										</code>
+										<span class="text-muted-foreground">=</span>
+										<code class="flex-1 truncate font-mono text-xs">
+											{variable.expression}
+										</code>
+										<Button
+											type="button"
+											variant="ghost"
+											size="sm"
+											onclick={() => removeSharedVariable(index)}
+											class="h-8 w-8 p-0 text-destructive hover:text-destructive"
+										>
+											x
+										</Button>
+									</div>
+								{/each}
+							</div>
+						{/if}
+
+						<!-- Add shared variable form -->
+						<div class="flex gap-2">
+							<Input
+								type="text"
+								placeholder="nom"
+								bind:value={newSharedVarName}
+								class="h-9 w-24 font-mono text-xs"
+							/>
+							<span class="flex items-center text-muted-foreground">=</span>
+							<Input
+								type="text"
+								placeholder={'expression (ex: {{1..10}})'}
+								bind:value={newSharedVarExpression}
+								class="h-9 flex-1 font-mono text-xs"
+							/>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onclick={addSharedVariable}
+								disabled={!newSharedVarName.trim() || !newSharedVarExpression.trim()}
+							>
+								+
+							</Button>
+						</div>
+
+						<p class="text-xs text-muted-foreground">
+							Ces variables sont resolues avant celles des variations. Les variations peuvent les
+							surcharger.
+						</p>
+					</Card.Content>
+				</Collapsible.Content>
+			</Card.Root>
+		</Collapsible.Root>
+	{:else}
+		<!-- Simple Mode: Statement -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>
+					Enonce <span class="text-destructive">*</span>
+				</Card.Title>
+				<Card.Description>
+					Redigez l'enonce en Markdown. Utilisez $...$ pour les formules mathematiques en ligne et
+					$$...$$ pour les formules sur une ligne separee.
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<ExerciseRichTextEditor bind:value={statementMd} {supabase} {userId} {genericFunctions} />
+				{#if errors.statement_md}
+					<p class="mt-2 text-sm text-destructive">{errors.statement_md}</p>
+				{/if}
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Simple Mode: Solution -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>
+					Solution <span class="text-destructive">*</span>
+				</Card.Title>
+				<Card.Description>
+					Redigez la solution en Markdown avec le meme format que l'enonce.
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<ExerciseRichTextEditor bind:value={solutionMd} {supabase} {userId} {genericFunctions} />
+				{#if errors.solution_md}
+					<p class="mt-2 text-sm text-destructive">{errors.solution_md}</p>
+				{/if}
+			</Card.Content>
+		</Card.Root>
+	{/if}
 
 	<!-- Resources -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Ressources complémentaires</Card.Title>
+			<Card.Title>Ressources complementaires</Card.Title>
 			<Card.Description>
-				Ajoutez des liens vers des vidéos, documents PDF, fichiers GeoGebra ou autres ressources
+				Ajoutez des liens vers des videos, documents PDF, fichiers GeoGebra ou autres ressources
 				utiles.
 			</Card.Description>
 		</Card.Header>
@@ -344,11 +759,11 @@
 	<!-- Advanced: Generic Functions -->
 	<Card.Root>
 		<Card.Header>
-			<Card.Title>Fonctions génériques</Card.Title>
+			<Card.Title>Fonctions generiques</Card.Title>
 			<Card.Description>
-				Définissez quels identifiants doivent être reconnus comme des fonctions dans les expressions
-				mathématiques. Utile pour les dérivées (<code class="text-xs">P'(x)</code>) et fonctions
-				personnalisées.
+				Definissez quels identifiants doivent etre reconnus comme des fonctions dans les expressions
+				mathematiques. Utile pour les derivees (<code class="text-xs">P'(x)</code>) et fonctions
+				personnalisees.
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
@@ -360,7 +775,7 @@
 	<div class="flex justify-end gap-4">
 		<Button type="button" variant="outline" href="/dashboard/teacher/exercises">Annuler</Button>
 		<Button type="submit" disabled={submitting}>
-			{submitting ? 'Enregistrement...' : exercise ? 'Mettre à jour' : "Créer l'exercice"}
+			{submitting ? 'Enregistrement...' : exercise ? 'Mettre a jour' : "Creer l'exercice"}
 		</Button>
 	</div>
 </form>
