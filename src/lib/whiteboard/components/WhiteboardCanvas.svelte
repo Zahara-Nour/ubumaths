@@ -120,7 +120,15 @@
 	let selectedElements = $derived(whiteboardStore.selectedElements);
 
 	/** Shape tools */
-	const SHAPE_TOOLS = ['line', 'rectangle', 'circle', 'arrow'] as const;
+	const SHAPE_TOOLS = [
+		'line',
+		'rectangle',
+		'circle',
+		'arrow',
+		'pentagon',
+		'hexagon',
+		'star'
+	] as const;
 	let isShapeTool = $derived(
 		SHAPE_TOOLS.includes(toolState.toolType as (typeof SHAPE_TOOLS)[number])
 	);
@@ -174,14 +182,16 @@
 			whiteboardStore.syncToolbarFromElement({
 				color: element.color,
 				strokeWidth: element.width,
-				opacity: element.opacity
+				opacity: element.opacity,
+				strokeStyle: element.strokeStyle
 			});
 		} else if (element.type === 'shape') {
 			whiteboardStore.syncToolbarFromElement({
 				color: element.color,
 				strokeWidth: element.strokeWidth,
 				opacity: element.opacity,
-				strokeStyle: element.strokeStyle
+				strokeStyle: element.strokeStyle,
+				cornerRadius: element.cornerRadius
 			});
 		}
 	}
@@ -242,8 +252,8 @@
 			}
 			// Show context menu
 			contextMenuRef?.show(e.clientX, e.clientY);
-		} else if (whiteboardStore.hasSelection) {
-			// If clicking empty space but there's a selection, show menu anyway
+		} else if (whiteboardStore.hasSelection || whiteboardStore.hasClipboard) {
+			// If clicking empty space but there's a selection or clipboard content, show menu
 			contextMenuRef?.show(e.clientX, e.clientY);
 		}
 	}
@@ -386,12 +396,13 @@
 
 		// Handle shape tools
 		if (isShapeTool) {
-			// Apply 1:1 constraint for rectangle/circle when Shift is held
-			if (
-				e.shiftKey &&
-				shapeStartPoint &&
-				(toolState.toolType === 'rectangle' || toolState.toolType === 'circle')
-			) {
+			// Regular polygons (pentagon, hexagon, star) always use 1:1 ratio
+			const alwaysRegular = ['pentagon', 'hexagon', 'star'].includes(toolState.toolType);
+			// Rectangle/circle use 1:1 ratio only when Shift is held
+			const shiftConstrained =
+				e.shiftKey && (toolState.toolType === 'rectangle' || toolState.toolType === 'circle');
+
+			if (shapeStartPoint && (alwaysRegular || shiftConstrained)) {
 				shapeEndPoint = constrainToSquare(shapeStartPoint, point);
 			} else {
 				shapeEndPoint = point;
@@ -620,10 +631,15 @@
 			points: currentPoints,
 			color: toolState.color,
 			width: toolState.strokeWidth,
-			opacity: toolState.opacity
+			opacity: toolState.opacity,
+			strokeStyle: toolState.strokeStyle
 		};
 
 		whiteboardStore.addElement(element);
+
+		// Select the newly created stroke and switch to select tool
+		whiteboardStore.selectElement(element.id);
+		whiteboardStore.setTool('select');
 	}
 
 	/**
@@ -688,11 +704,19 @@
 			color: toolState.color,
 			strokeWidth: toolState.strokeWidth,
 			opacity: toolState.opacity,
-			strokeStyle: toolState.strokeStyle
+			strokeStyle: toolState.strokeStyle,
+			fillMode: toolState.fillMode,
+			fill: toolState.fillColor,
+			fillOpacity: toolState.fillOpacity,
+			cornerRadius: toolState.cornerRadius
 		});
 
 		whiteboardStore.addElement(shape);
 		resetShapeState();
+
+		// Select the newly created shape and switch to select tool
+		whiteboardStore.selectElement(shape.id);
+		whiteboardStore.setTool('select');
 	}
 
 	/**
@@ -709,12 +733,25 @@
 	// ==========================================================================
 
 	/**
-	 * Get SVG path for a stroke element
+	 * Get SVG path for a stroke element (filled outline with variable width)
 	 */
 	function getStrokePath(stroke: StrokeElement): string {
 		const options = getToolOptions(stroke.toolType, stroke.width, stroke.color, stroke.opacity);
 		const outlinePoints = smoothStroke(stroke.points as Point[], options);
 		return pointsToSvgPath(outlinePoints);
+	}
+
+	/**
+	 * Get simple SVG path for a stroke (centerline only, for dashed/dotted styles)
+	 */
+	function getSimpleStrokePath(points: readonly Point[]): string {
+		if (points.length === 0) return '';
+		if (points.length === 1) {
+			// Single point - draw a small circle
+			return `M ${points[0].x} ${points[0].y} L ${points[0].x + 0.1} ${points[0].y}`;
+		}
+		const [first, ...rest] = points;
+		return `M ${first.x} ${first.y} ${rest.map((p) => `L ${p.x} ${p.y}`).join(' ')}`;
 	}
 </script>
 
@@ -804,7 +841,7 @@
 			{/if}
 		</g>
 
-		<!-- Arrow marker definitions (one per arrow with its specific color) -->
+		<!-- Arrow marker and hatched pattern definitions -->
 		<defs>
 			{#each shapeElements.filter((s) => s.shapeType === 'arrow') as arrow (arrow.id)}
 				<marker
@@ -831,6 +868,30 @@
 			>
 				<path d="M 0 0 L 10 5 L 0 10 z" fill={toolState.color} />
 			</marker>
+			<!-- Hatched patterns for shapes with fillMode='hatched' -->
+			{#each shapeElements.filter((s) => s.fillMode === 'hatched') as shape (shape.id)}
+				<pattern
+					id="hatch-{shape.id}"
+					patternUnits="userSpaceOnUse"
+					width="8"
+					height="8"
+					patternTransform="rotate(45)"
+				>
+					<line x1="0" y1="0" x2="0" y2="8" stroke={shape.fill ?? shape.color} stroke-width="2" />
+				</pattern>
+			{/each}
+			<!-- Preview hatched pattern -->
+			{#if toolState.fillMode === 'hatched'}
+				<pattern
+					id="hatch-preview"
+					patternUnits="userSpaceOnUse"
+					width="8"
+					height="8"
+					patternTransform="rotate(45)"
+				>
+					<line x1="0" y1="0" x2="0" y2="8" stroke={toolState.fillColor} stroke-width="2" />
+				</pattern>
+			{/if}
 		</defs>
 
 		<!-- Layer 2: Content (existing strokes and shapes) -->
@@ -840,27 +901,55 @@
 				{@const strokeRotation = stroke.rotation ?? 0}
 				{@const strokeBounds = getElementBounds(stroke)}
 				{@const strokeCenter = getBoundsCenter(strokeBounds)}
+				{@const strokeStyle = stroke.strokeStyle ?? 'solid'}
+				{@const isDashedStroke = strokeStyle !== 'solid'}
 				<g
 					transform={strokeRotation !== 0
 						? `rotate(${strokeRotation}, ${strokeCenter.x}, ${strokeCenter.y})`
 						: undefined}
 				>
-					<path
-						d={getStrokePath(stroke)}
-						fill={stroke.color}
-						fill-opacity={stroke.opacity}
-						stroke="none"
-					/>
+					{#if isDashedStroke}
+						<!-- Dashed/dotted stroke: use simple path with stroke -->
+						<path
+							d={getSimpleStrokePath(stroke.points)}
+							fill="none"
+							stroke={stroke.color}
+							stroke-width={stroke.width}
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-dasharray={getStrokeDashArray(strokeStyle, stroke.width)}
+							opacity={stroke.opacity}
+						/>
+					{:else}
+						<!-- Solid stroke: use filled outline for variable width -->
+						<path
+							d={getStrokePath(stroke)}
+							fill={stroke.color}
+							fill-opacity={stroke.opacity}
+							stroke="none"
+						/>
+					{/if}
 				</g>
 			{/each}
 
 			<!-- Shapes -->
 			{#each shapeElements as shape (shape.id)}
-				{@const props = getShapeSvgProps(shape.shapeType, shape.start, shape.end)}
+				{@const props = getShapeSvgProps(
+					shape.shapeType,
+					shape.start,
+					shape.end,
+					shape.cornerRadius ?? 0
+				)}
 				{@const dashArray = getStrokeDashArray(shape.strokeStyle ?? 'solid', shape.strokeWidth)}
 				{@const shapeRotation = shape.rotation ?? 0}
 				{@const shapeBounds = getElementBounds(shape)}
 				{@const shapeCenter = getBoundsCenter(shapeBounds)}
+				{@const shapeFill =
+					shape.fillMode === 'none' || !shape.fillMode
+						? 'none'
+						: shape.fillMode === 'hatched'
+							? `url(#hatch-${shape.id})`
+							: (shape.fill ?? 'none')}
 				<g
 					transform={shapeRotation !== 0
 						? `rotate(${shapeRotation}, ${shapeCenter.x}, ${shapeCenter.y})`
@@ -885,11 +974,13 @@
 							y={props.y}
 							width={props.width}
 							height={props.height}
+							rx={props.cornerRadius}
+							ry={props.cornerRadius}
 							stroke={shape.color}
 							stroke-width={shape.strokeWidth}
 							stroke-dasharray={dashArray}
 							opacity={shape.opacity}
-							fill={shape.fill ?? 'none'}
+							fill={shapeFill}
 							fill-opacity={shape.fillOpacity ?? 1}
 						/>
 					{:else if props.type === 'ellipse'}
@@ -902,7 +993,29 @@
 							stroke-width={shape.strokeWidth}
 							stroke-dasharray={dashArray}
 							opacity={shape.opacity}
-							fill={shape.fill ?? 'none'}
+							fill={shapeFill}
+							fill-opacity={shape.fillOpacity ?? 1}
+						/>
+					{:else if props.type === 'polygon'}
+						<polygon
+							points={props.points}
+							stroke={shape.color}
+							stroke-width={shape.strokeWidth}
+							stroke-linejoin="round"
+							stroke-dasharray={dashArray}
+							opacity={shape.opacity}
+							fill={shapeFill}
+							fill-opacity={shape.fillOpacity ?? 1}
+						/>
+					{:else if props.type === 'path'}
+						<path
+							d={props.d}
+							stroke={shape.color}
+							stroke-width={shape.strokeWidth}
+							stroke-linejoin="round"
+							stroke-dasharray={dashArray}
+							opacity={shape.opacity}
+							fill={shapeFill}
 							fill-opacity={shape.fillOpacity ?? 1}
 						/>
 					{/if}
@@ -932,9 +1045,16 @@
 				{@const previewProps = getShapeSvgProps(
 					toolState.toolType as ShapeType,
 					shapeStartPoint,
-					shapeEndPoint
+					shapeEndPoint,
+					toolState.cornerRadius
 				)}
 				{@const previewDashArray = getStrokeDashArray(toolState.strokeStyle, toolState.strokeWidth)}
+				{@const previewFill =
+					toolState.fillMode === 'none' || !toolState.fillMode
+						? 'none'
+						: toolState.fillMode === 'hatched'
+							? 'url(#hatch-preview)'
+							: toolState.fillColor}
 				{#if previewProps.type === 'line'}
 					<line
 						x1={previewProps.x1}
@@ -954,11 +1074,14 @@
 						y={previewProps.y}
 						width={previewProps.width}
 						height={previewProps.height}
+						rx={previewProps.cornerRadius}
+						ry={previewProps.cornerRadius}
 						stroke={toolState.color}
 						stroke-width={toolState.strokeWidth}
 						stroke-dasharray={previewDashArray}
 						opacity={toolState.opacity}
-						fill="none"
+						fill={previewFill}
+						fill-opacity={toolState.fillOpacity}
 					/>
 				{:else if previewProps.type === 'ellipse'}
 					<ellipse
@@ -970,7 +1093,30 @@
 						stroke-width={toolState.strokeWidth}
 						stroke-dasharray={previewDashArray}
 						opacity={toolState.opacity}
-						fill="none"
+						fill={previewFill}
+						fill-opacity={toolState.fillOpacity}
+					/>
+				{:else if previewProps.type === 'polygon'}
+					<polygon
+						points={previewProps.points}
+						stroke={toolState.color}
+						stroke-width={toolState.strokeWidth}
+						stroke-linejoin="round"
+						stroke-dasharray={previewDashArray}
+						opacity={toolState.opacity}
+						fill={previewFill}
+						fill-opacity={toolState.fillOpacity}
+					/>
+				{:else if previewProps.type === 'path'}
+					<path
+						d={previewProps.d}
+						stroke={toolState.color}
+						stroke-width={toolState.strokeWidth}
+						stroke-linejoin="round"
+						stroke-dasharray={previewDashArray}
+						opacity={toolState.opacity}
+						fill={previewFill}
+						fill-opacity={toolState.fillOpacity}
 					/>
 				{/if}
 			{/if}

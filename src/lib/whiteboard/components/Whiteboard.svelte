@@ -290,6 +290,33 @@
 			return;
 		}
 
+		// Copy: Ctrl+C
+		if (isCtrl && e.key === 'c' && !e.shiftKey) {
+			if (whiteboardStore.hasSelection) {
+				e.preventDefault();
+				whiteboardStore.copySelected();
+				return;
+			}
+		}
+
+		// Cut: Ctrl+X
+		if (isCtrl && e.key === 'x') {
+			if (whiteboardStore.hasSelection) {
+				e.preventDefault();
+				whiteboardStore.cutSelected();
+				return;
+			}
+		}
+
+		// Paste: Ctrl+V
+		if (isCtrl && e.key === 'v' && !e.shiftKey) {
+			if (whiteboardStore.hasClipboard) {
+				e.preventDefault();
+				whiteboardStore.paste();
+				return;
+			}
+		}
+
 		// Select all: Ctrl+A
 		if (isCtrl && e.key === 'a') {
 			e.preventDefault();

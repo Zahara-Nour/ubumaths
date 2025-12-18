@@ -22,7 +22,8 @@ import {
 	type PageFormatKey,
 	type InstrumentType,
 	type InstrumentState,
-	type StrokeStyle
+	type StrokeStyle,
+	type FillMode
 } from '../types/document';
 import { createHistoryManager, type HistoryManager } from '../core/history.svelte';
 import { serialize, deserialize } from '../core/serialization';
@@ -65,7 +66,7 @@ const AUTOSAVE_DELAY_MS = 60_000;
 export type DrawingTool = 'pen' | 'highlighter' | 'eraser';
 
 /** Shape tools */
-export type ShapeTool = 'line' | 'rectangle' | 'circle' | 'arrow';
+export type ShapeTool = 'line' | 'rectangle' | 'circle' | 'arrow' | 'pentagon' | 'hexagon' | 'star';
 
 /** Tools with configurable settings (color, width) */
 export type ConfigurableTool = DrawingTool | ShapeTool;
@@ -105,6 +106,10 @@ export interface ToolSettings {
 	width: number;
 	opacity: number;
 	strokeStyle: StrokeStyle;
+	cornerRadius: number;
+	fillMode: FillMode;
+	fillColor: string;
+	fillOpacity: number;
 }
 
 /** Default color and width (shared across all configurable tools) */
@@ -114,46 +119,121 @@ const DEFAULT_WIDTH = 2;
 /** Default stroke style */
 const DEFAULT_STROKE_STYLE: StrokeStyle = 'solid';
 
+/** Default corner radius */
+const DEFAULT_CORNER_RADIUS = 0;
+
+/** Default fill mode (solid = same color as stroke) */
+const DEFAULT_FILL_MODE: FillMode = 'solid';
+
+/** Default fill color */
+const DEFAULT_FILL_COLOR = '#000000';
+
+/** Default fill opacity */
+const DEFAULT_FILL_OPACITY = 1;
+
 /** Default settings per tool (color/width are global, opacity is per-tool) */
 const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
-	// Drawing tools (strokeStyle not used for freehand)
+	// Drawing tools (strokeStyle/cornerRadius/fill not used for freehand)
 	pen: {
 		color: DEFAULT_COLOR,
 		width: DEFAULT_WIDTH,
 		opacity: 1,
-		strokeStyle: DEFAULT_STROKE_STYLE
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: 'none',
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
 	},
 	highlighter: {
 		color: DEFAULT_COLOR,
 		width: DEFAULT_WIDTH,
 		opacity: 0.5,
-		strokeStyle: DEFAULT_STROKE_STYLE
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: 'none',
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
 	},
-	eraser: { color: '#ffffff', width: 20, opacity: 1, strokeStyle: DEFAULT_STROKE_STYLE },
-	// Shape tools (strokeStyle applies here)
+	eraser: {
+		color: '#ffffff',
+		width: 20,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: 'none',
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
+	},
+	// Shape tools (strokeStyle, cornerRadius, fillMode apply here)
 	line: {
 		color: DEFAULT_COLOR,
 		width: DEFAULT_WIDTH,
 		opacity: 1,
-		strokeStyle: DEFAULT_STROKE_STYLE
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: 'none', // Lines don't have fill
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
 	},
 	rectangle: {
 		color: DEFAULT_COLOR,
 		width: DEFAULT_WIDTH,
 		opacity: 1,
-		strokeStyle: DEFAULT_STROKE_STYLE
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: DEFAULT_FILL_MODE,
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
 	},
 	circle: {
 		color: DEFAULT_COLOR,
 		width: DEFAULT_WIDTH,
 		opacity: 1,
-		strokeStyle: DEFAULT_STROKE_STYLE
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: DEFAULT_FILL_MODE,
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
 	},
 	arrow: {
 		color: DEFAULT_COLOR,
 		width: DEFAULT_WIDTH,
 		opacity: 1,
-		strokeStyle: DEFAULT_STROKE_STYLE
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: 'none', // Arrows don't have fill
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
+	},
+	pentagon: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: DEFAULT_FILL_MODE,
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
+	},
+	hexagon: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: DEFAULT_FILL_MODE,
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
+	},
+	star: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: DEFAULT_FILL_MODE,
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
 	}
 };
 
@@ -178,7 +258,11 @@ function createWhiteboardStore() {
 		color: DEFAULT_COLOR,
 		strokeWidth: DEFAULT_WIDTH,
 		opacity: 1,
-		strokeStyle: DEFAULT_STROKE_STYLE as StrokeStyle
+		strokeStyle: DEFAULT_STROKE_STYLE as StrokeStyle,
+		cornerRadius: DEFAULT_CORNER_RADIUS,
+		fillMode: DEFAULT_FILL_MODE as FillMode,
+		fillColor: DEFAULT_FILL_COLOR,
+		fillOpacity: DEFAULT_FILL_OPACITY
 	});
 
 	// === UI State ===
@@ -188,6 +272,9 @@ function createWhiteboardStore() {
 
 	// === Selection State ===
 	let selectedIds = $state<Set<string>>(new Set());
+
+	// === Clipboard State ===
+	let clipboard = $state<WhiteboardElement[]>([]);
 
 	// === Sync State ===
 	let syncState = $state<SyncState>(createInitialSyncState());
@@ -214,7 +301,11 @@ function createWhiteboardStore() {
 			color: settings.color,
 			strokeWidth: settings.width,
 			opacity: settings.opacity,
-			strokeStyle: settings.strokeStyle
+			strokeStyle: settings.strokeStyle,
+			cornerRadius: settings.cornerRadius,
+			fillMode: settings.fillMode,
+			fillColor: settings.fillColor,
+			fillOpacity: settings.fillOpacity
 		};
 	});
 
@@ -360,6 +451,9 @@ function createWhiteboardStore() {
 		},
 		get hasSelection() {
 			return hasSelection;
+		},
+		get hasClipboard() {
+			return clipboard.length > 0;
 		},
 
 		// === Document Operations ===
@@ -691,6 +785,81 @@ function createWhiteboardStore() {
 
 			// Clear selection after deletion
 			selectedIds = new Set();
+		},
+
+		/**
+		 * Copy selected elements to clipboard
+		 * Creates deep copies of elements for later pasting
+		 */
+		copySelected(): void {
+			if (selectedIds.size === 0 || !currentPage) return;
+
+			// Deep copy selected elements
+			const elementsToCopy = currentPage.elements.filter((el) => selectedIds.has(el.id));
+			clipboard = elementsToCopy.map((el) => JSON.parse(JSON.stringify(el)));
+		},
+
+		/**
+		 * Cut selected elements (copy then delete)
+		 */
+		cutSelected(): void {
+			if (selectedIds.size === 0) return;
+
+			this.copySelected();
+			this.deleteSelected();
+		},
+
+		/**
+		 * Paste elements from clipboard
+		 * Creates new elements with new IDs and offset position
+		 * @param offset - Offset from original position (default 20px)
+		 */
+		paste(offset: number = 20): void {
+			if (clipboard.length === 0 || !currentPage) return;
+
+			// Create new elements with new IDs and offset
+			const newElements: WhiteboardElement[] = clipboard.map((el) => {
+				const newId = crypto.randomUUID();
+
+				switch (el.type) {
+					case 'stroke':
+						return {
+							...el,
+							id: newId,
+							points: el.points.map((p) => ({
+								...p,
+								x: p.x + offset,
+								y: p.y + offset
+							}))
+						};
+					case 'shape':
+						return {
+							...el,
+							id: newId,
+							start: { x: el.start.x + offset, y: el.start.y + offset },
+							end: { x: el.end.x + offset, y: el.end.y + offset }
+						};
+					case 'image':
+					case 'textblock':
+						return {
+							...el,
+							id: newId,
+							position: {
+								x: el.position.x + offset,
+								y: el.position.y + offset
+							}
+						};
+				}
+			});
+
+			// Add all new elements
+			updateCurrentPage((page) => ({
+				...page,
+				elements: [...page.elements, ...newElements]
+			}));
+
+			// Select the newly pasted elements
+			selectedIds = new Set(newElements.map((el) => el.id));
 		},
 
 		/**
@@ -1117,11 +1286,20 @@ function createWhiteboardStore() {
 		},
 
 		/**
-		 * Update style properties (color, strokeWidth) for selected elements
+		 * Update style properties (color, strokeWidth, strokeStyle, cornerRadius) for selected elements
 		 * Works with stroke and shape elements
 		 * @param style - Properties to update
 		 */
-		updateSelectedStyles(style: { color?: string; strokeWidth?: number; opacity?: number }): void {
+		updateSelectedStyles(style: {
+			color?: string;
+			strokeWidth?: number;
+			opacity?: number;
+			strokeStyle?: StrokeStyle;
+			cornerRadius?: number;
+			fillMode?: FillMode;
+			fill?: string;
+			fillOpacity?: number;
+		}): void {
 			if (selectedIds.size === 0) return;
 
 			updateCurrentPage((page) => ({
@@ -1135,14 +1313,20 @@ function createWhiteboardStore() {
 								...element,
 								...(style.color !== undefined && { color: style.color }),
 								...(style.strokeWidth !== undefined && { width: style.strokeWidth }),
-								...(style.opacity !== undefined && { opacity: style.opacity })
+								...(style.opacity !== undefined && { opacity: style.opacity }),
+								...(style.strokeStyle !== undefined && { strokeStyle: style.strokeStyle })
 							};
 						case 'shape':
 							return {
 								...element,
 								...(style.color !== undefined && { color: style.color }),
 								...(style.strokeWidth !== undefined && { strokeWidth: style.strokeWidth }),
-								...(style.opacity !== undefined && { opacity: style.opacity })
+								...(style.opacity !== undefined && { opacity: style.opacity }),
+								...(style.strokeStyle !== undefined && { strokeStyle: style.strokeStyle }),
+								...(style.cornerRadius !== undefined && { cornerRadius: style.cornerRadius }),
+								...(style.fillMode !== undefined && { fillMode: style.fillMode }),
+								...(style.fill !== undefined && { fill: style.fill }),
+								...(style.fillOpacity !== undefined && { fillOpacity: style.fillOpacity })
 							};
 						default:
 							return element;
@@ -1538,9 +1722,109 @@ function createWhiteboardStore() {
 			}
 			const updatedSettings = { ...toolSettings };
 			// Only apply to shape tools
-			const shapeTools: ConfigurableTool[] = ['line', 'rectangle', 'circle', 'arrow'];
+			const shapeTools: ConfigurableTool[] = [
+				'line',
+				'rectangle',
+				'circle',
+				'arrow',
+				'pentagon',
+				'hexagon',
+				'star'
+			];
 			for (const tool of shapeTools) {
 				updatedSettings[tool] = { ...updatedSettings[tool], strokeStyle: style };
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
+		 * Set corner radius for shape tools
+		 * Only saves to user preferences if no element is selected
+		 */
+		setCornerRadius(radius: number): void {
+			const clampedRadius = Math.max(0, Math.min(100, radius));
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, cornerRadius: clampedRadius };
+			}
+			const updatedSettings = { ...toolSettings };
+			// Only apply to shape tools that support corner radius (not line/arrow)
+			const shapesWithCorners: ConfigurableTool[] = ['rectangle', 'pentagon', 'hexagon', 'star'];
+			for (const tool of shapesWithCorners) {
+				updatedSettings[tool] = { ...updatedSettings[tool], cornerRadius: clampedRadius };
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
+		 * Set fill mode for shape tools (none, solid, hatched)
+		 * Only saves to user preferences if no element is selected
+		 */
+		setFillMode(mode: FillMode): void {
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, fillMode: mode };
+			}
+			const updatedSettings = { ...toolSettings };
+			// Apply to shape tools that support fill (not line/arrow)
+			const shapesWithFill: ConfigurableTool[] = [
+				'rectangle',
+				'circle',
+				'pentagon',
+				'hexagon',
+				'star'
+			];
+			for (const tool of shapesWithFill) {
+				updatedSettings[tool] = { ...updatedSettings[tool], fillMode: mode };
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
+		 * Set fill opacity for shape tools
+		 * Only saves to user preferences if no element is selected
+		 */
+		setFillOpacity(opacity: number): void {
+			const clampedOpacity = Math.max(0, Math.min(1, opacity));
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, fillOpacity: clampedOpacity };
+			}
+			const updatedSettings = { ...toolSettings };
+			// Apply to shape tools that support fill
+			const shapesWithFill: ConfigurableTool[] = [
+				'rectangle',
+				'circle',
+				'pentagon',
+				'hexagon',
+				'star'
+			];
+			for (const tool of shapesWithFill) {
+				updatedSettings[tool] = { ...updatedSettings[tool], fillOpacity: clampedOpacity };
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
+		 * Set fill color for shape tools
+		 * Only saves to user preferences if no element is selected
+		 */
+		setFillColor(color: string): void {
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, fillColor: color };
+			}
+			const updatedSettings = { ...toolSettings };
+			// Apply to shape tools that support fill
+			const shapesWithFill: ConfigurableTool[] = [
+				'rectangle',
+				'circle',
+				'pentagon',
+				'hexagon',
+				'star'
+			];
+			for (const tool of shapesWithFill) {
+				updatedSettings[tool] = { ...updatedSettings[tool], fillColor: color };
 			}
 			toolSettings = updatedSettings;
 		},
@@ -1554,16 +1838,26 @@ function createWhiteboardStore() {
 			strokeWidth: number;
 			opacity: number;
 			strokeStyle?: StrokeStyle;
+			cornerRadius?: number;
+			fillMode?: FillMode;
+			fill?: string;
+			fillOpacity?: number;
 		}): void {
 			const updatedSettings = { ...toolSettings };
 			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
 				if (tool !== 'eraser') {
+					const currentToolSettings = updatedSettings[tool];
 					updatedSettings[tool] = {
-						...updatedSettings[tool],
+						...currentToolSettings,
 						color: element.color,
 						width: element.strokeWidth,
 						opacity: element.opacity,
-						strokeStyle: element.strokeStyle ?? 'solid'
+						// Only update these if provided (shapes have them, strokes don't)
+						strokeStyle: element.strokeStyle ?? currentToolSettings.strokeStyle,
+						cornerRadius: element.cornerRadius ?? currentToolSettings.cornerRadius,
+						fillMode: element.fillMode ?? currentToolSettings.fillMode,
+						fillColor: element.fill ?? currentToolSettings.fillColor,
+						fillOpacity: element.fillOpacity ?? currentToolSettings.fillOpacity
 					};
 				}
 			}
@@ -1583,7 +1877,11 @@ function createWhiteboardStore() {
 						color: userPreferences.color,
 						width: userPreferences.strokeWidth,
 						opacity: userPreferences.opacity,
-						strokeStyle: userPreferences.strokeStyle
+						strokeStyle: userPreferences.strokeStyle,
+						cornerRadius: userPreferences.cornerRadius,
+						fillMode: userPreferences.fillMode,
+						fillColor: userPreferences.fillColor,
+						fillOpacity: userPreferences.fillOpacity
 					};
 				}
 			}

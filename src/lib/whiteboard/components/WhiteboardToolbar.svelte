@@ -28,7 +28,6 @@
 		Undo2,
 		Redo2,
 		Trash2,
-		Palette,
 		Ruler,
 		Compass,
 		Triangle,
@@ -45,15 +44,20 @@
 		MousePointer2,
 		Hand,
 		ZoomIn,
-		ZoomOut
+		ZoomOut,
+		Pentagon,
+		Hexagon,
+		Star
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
 	import {
 		INSTRUMENT_LABELS,
 		STROKE_STYLE_LABELS,
+		FILL_MODE_LABELS,
 		type InstrumentType,
-		type StrokeStyle
+		type StrokeStyle,
+		type FillMode
 	} from '../types/document';
 	import { importImageFile } from '../utils/image-loader';
 	import { importPdfFile } from '../utils/pdf-loader';
@@ -89,7 +93,10 @@
 		{ id: 'line', icon: Minus, shortcut: 'L', label: 'Ligne' },
 		{ id: 'rectangle', icon: Square, shortcut: 'R', label: 'Rectangle' },
 		{ id: 'circle', icon: Circle, shortcut: 'C', label: 'Cercle' },
-		{ id: 'arrow', icon: MoveRight, shortcut: 'A', label: 'Flèche' }
+		{ id: 'arrow', icon: MoveRight, shortcut: 'A', label: 'Flèche' },
+		{ id: 'pentagon', icon: Pentagon, shortcut: '', label: 'Pentagone' },
+		{ id: 'hexagon', icon: Hexagon, shortcut: '', label: 'Hexagone' },
+		{ id: 'star', icon: Star, shortcut: '', label: 'Étoile' }
 	];
 
 	/** Instrument definitions with icons */
@@ -131,11 +138,11 @@
 	/** Popover open states */
 	let drawingPopoverOpen = $state(false);
 	let shapesPopoverOpen = $state(false);
-	let strokeStylePopoverOpen = $state(false);
+	let strokePropertiesPopoverOpen = $state(false);
+	let fillModePopoverOpen = $state(false);
 	let instrumentsPopoverOpen = $state(false);
 	let importPopoverOpen = $state(false);
 	let filePopoverOpen = $state(false);
-	let colorPickerOpen = $state(false);
 
 	/** File input references (plain variables, no reactivity needed for bind:this) */
 	let imageInputRef: HTMLInputElement | null = null;
@@ -159,6 +166,10 @@
 	let currentStrokeWidth = $derived(toolState.strokeWidth);
 	let currentOpacity = $derived(toolState.opacity);
 	let currentStrokeStyle = $derived(toolState.strokeStyle);
+	let currentCornerRadius = $derived(toolState.cornerRadius);
+	let currentFillMode = $derived(toolState.fillMode);
+	let currentFillColor = $derived(toolState.fillColor);
+	let currentFillOpacity = $derived(toolState.fillOpacity);
 	let instruments = $derived(whiteboardStore.instruments);
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
@@ -179,6 +190,44 @@
 	/** Check if current tool is a shape tool */
 	let isShapeToolActive = $derived(SHAPE_TOOLS.some((t) => t.id === toolState.toolType));
 
+	/** Shape tools that support corner radius */
+	const SHAPES_WITH_CORNERS = ['rectangle', 'pentagon', 'hexagon', 'star'] as const;
+
+	/** Check if current shape tool supports corner radius */
+	let isCornerRadiusToolActive = $derived(
+		SHAPES_WITH_CORNERS.some((s) => s === toolState.toolType)
+	);
+
+	/** Check if selected shape supports corner radius */
+	let hasSelectedShapeWithCorners = $derived(
+		whiteboardStore.selectedElements.some(
+			(el) =>
+				el.type === 'shape' &&
+				SHAPES_WITH_CORNERS.includes(el.shapeType as (typeof SHAPES_WITH_CORNERS)[number])
+		)
+	);
+
+	/** Show corner radius slider when applicable shape tool active OR shape with corners is selected */
+	let showCornerRadiusSlider = $derived(isCornerRadiusToolActive || hasSelectedShapeWithCorners);
+
+	/** Shape tools that support fill (exclude line and arrow) */
+	const SHAPES_WITH_FILL = ['rectangle', 'circle', 'pentagon', 'hexagon', 'star'] as const;
+
+	/** Check if current shape tool supports fill */
+	let isFillableToolActive = $derived(SHAPES_WITH_FILL.some((s) => s === toolState.toolType));
+
+	/** Check if selected shape supports fill */
+	let hasSelectedFillableShape = $derived(
+		whiteboardStore.selectedElements.some(
+			(el) =>
+				el.type === 'shape' &&
+				SHAPES_WITH_FILL.includes(el.shapeType as (typeof SHAPES_WITH_FILL)[number])
+		)
+	);
+
+	/** Show fill selector when fillable shape tool active OR fillable shape is selected */
+	let showFillSelector = $derived(isFillableToolActive || hasSelectedFillableShape);
+
 	// ==========================================================================
 	// Handlers
 	// ==========================================================================
@@ -188,15 +237,6 @@
 		// Close the relevant popover
 		drawingPopoverOpen = false;
 		shapesPopoverOpen = false;
-	}
-
-	function handleColorSelect(color: string) {
-		whiteboardStore.setColor(color);
-		// Apply to selected elements if any
-		if (whiteboardStore.hasSelection) {
-			whiteboardStore.updateSelectedStyles({ color });
-		}
-		colorPickerOpen = false;
 	}
 
 	function handleStrokeWidthChange(value: number[]) {
@@ -221,7 +261,46 @@
 
 	function handleStrokeStyleChange(style: StrokeStyle) {
 		whiteboardStore.setStrokeStyle(style);
-		// Note: strokeStyle changes are not applied to selected elements as it only affects shapes
+		// Apply to selected shapes if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ strokeStyle: style });
+		}
+	}
+
+	function handleCornerRadiusChange(value: number[]) {
+		if (value.length > 0) {
+			whiteboardStore.setCornerRadius(value[0]);
+			// Apply to selected shapes if any
+			if (whiteboardStore.hasSelection) {
+				whiteboardStore.updateSelectedStyles({ cornerRadius: value[0] });
+			}
+		}
+	}
+
+	function handleFillModeChange(mode: FillMode) {
+		whiteboardStore.setFillMode(mode);
+		// Apply to selected shapes if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ fillMode: mode });
+		}
+	}
+
+	function handleFillOpacityChange(value: number[]) {
+		if (value.length > 0) {
+			whiteboardStore.setFillOpacity(value[0]);
+			// Apply to selected shapes if any
+			if (whiteboardStore.hasSelection) {
+				whiteboardStore.updateSelectedStyles({ fillOpacity: value[0] });
+			}
+		}
+	}
+
+	function handleFillColorChange(color: string) {
+		whiteboardStore.setFillColor(color);
+		// Apply to selected shapes if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ fill: color });
+		}
 	}
 
 	function handleUndo() {
@@ -487,18 +566,16 @@
 					{/snippet}
 				</Popover.Trigger>
 				<Popover.Content class="w-auto p-2" side="top" align="start">
-					<div class="flex flex-col gap-1">
+					<div class="flex gap-1">
 						{#each SHAPE_TOOLS as tool (tool.id)}
 							<Button
 								type="button"
 								variant={toolState.toolType === tool.id ? 'secondary' : 'ghost'}
-								size="sm"
+								size="icon"
 								onclick={() => handleToolSelect(tool.id)}
-								class="justify-start gap-2"
+								title={tool.label}
 							>
 								<tool.icon class="h-4 w-4" />
-								<span>{tool.label}</span>
-								<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">{tool.shortcut}</kbd>
 							</Button>
 						{/each}
 					</div>
@@ -680,163 +757,384 @@
 			<!-- Separator -->
 			<div class="mx-2 h-6 w-px bg-border"></div>
 
-			<!-- Color Picker -->
-			<Popover.Root bind:open={colorPickerOpen}>
+			<!-- Stroke Properties Popover -->
+			<Popover.Root bind:open={strokePropertiesPopoverOpen}>
 				<Popover.Trigger>
 					{#snippet child({ props })}
 						<button
 							{...props}
 							type="button"
-							class="flex h-9 items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent"
-							aria-label="Choisir une couleur"
+							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
+							aria-label="Propriétés du trait"
+							title="Trait"
 						>
-							<div
-								class="h-5 w-5 rounded border border-border"
-								style="background-color: {currentColor}"
-							></div>
-							<Palette class="h-4 w-4 text-muted-foreground" />
+							<!-- Button shows a line preview with current color, width, and style -->
+							<svg class="h-6 w-10" viewBox="0 0 40 24">
+								<line
+									x1="2"
+									y1="12"
+									x2="38"
+									y2="12"
+									stroke={currentColor}
+									stroke-width={Math.max(Math.min(currentStrokeWidth, 6), 2)}
+									stroke-linecap="round"
+									stroke-dasharray={currentStrokeStyle === 'solid'
+										? undefined
+										: currentStrokeStyle === 'dashed'
+											? '8 4'
+											: currentStrokeStyle === 'dotted'
+												? '1 4'
+												: '8 3 2 3'}
+									opacity={currentOpacity}
+								/>
+							</svg>
 						</button>
 					{/snippet}
 				</Popover.Trigger>
-				<Popover.Content class="w-auto p-3" side="top">
-					<div class="grid grid-cols-6 gap-2" role="group" aria-label="Couleurs prédéfinies">
-						{#each COLOR_PRESETS as color (color.value)}
-							<button
-								type="button"
-								onclick={() => handleColorSelect(color.value)}
-								class="h-8 w-8 rounded-md border-2 transition-transform hover:scale-110 {currentColor ===
-								color.value
-									? 'border-primary ring-2 ring-primary ring-offset-2'
-									: 'border-border'}"
-								style="background-color: {color.value}"
-								title={color.name}
-								aria-label="{color.name}{currentColor === color.value ? ' (sélectionné)' : ''}"
-								aria-pressed={currentColor === color.value}
-							></button>
-						{/each}
-					</div>
-					<!-- Custom color input -->
-					<div class="mt-3 flex items-center gap-2">
-						<input
-							type="color"
-							value={currentColor}
-							oninput={(e) => handleColorSelect(e.currentTarget.value)}
-							class="h-8 w-8 cursor-pointer rounded border-0 p-0"
-							aria-label="Couleur personnalisée"
-						/>
-						<span class="text-xs text-muted-foreground">Personnalisé</span>
+				<Popover.Content class="w-64 p-3" side="top" align="start">
+					<div class="flex flex-col gap-3">
+						<!-- Stroke color -->
+						<div>
+							<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Couleur</span>
+							<div class="grid grid-cols-6 gap-1.5">
+								{#each COLOR_PRESETS as color (color.value)}
+									<button
+										type="button"
+										onclick={() => {
+											whiteboardStore.setColor(color.value);
+											if (whiteboardStore.hasSelection) {
+												whiteboardStore.updateSelectedStyles({ color: color.value });
+											}
+										}}
+										class="h-7 w-7 rounded border-2 transition-transform hover:scale-110 {currentColor ===
+										color.value
+											? 'border-primary ring-1 ring-primary ring-offset-1'
+											: 'border-border'}"
+										style="background-color: {color.value}"
+										title={color.name}
+										aria-label="{color.name}{currentColor === color.value ? ' (sélectionné)' : ''}"
+									></button>
+								{/each}
+							</div>
+							<div class="mt-1.5 flex items-center gap-2">
+								<input
+									type="color"
+									value={currentColor}
+									oninput={(e) => {
+										whiteboardStore.setColor(e.currentTarget.value);
+										if (whiteboardStore.hasSelection) {
+											whiteboardStore.updateSelectedStyles({ color: e.currentTarget.value });
+										}
+									}}
+									class="h-7 w-7 cursor-pointer rounded border-0 p-0"
+									aria-label="Couleur personnalisée"
+								/>
+								<span class="text-xs text-muted-foreground">Personnalisé</span>
+							</div>
+						</div>
+
+						<!-- Stroke width -->
+						<div>
+							<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Épaisseur</span>
+							<div class="flex items-center gap-2">
+								<Slider
+									value={[currentStrokeWidth]}
+									onValueChange={handleStrokeWidthChange}
+									min={STROKE_WIDTH_MIN}
+									max={STROKE_WIDTH_MAX}
+									step={1}
+									class="flex-1"
+									aria-label="Épaisseur du trait: {currentStrokeWidth} pixels"
+								/>
+								<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
+									>{currentStrokeWidth}px</span
+								>
+							</div>
+						</div>
+
+						<!-- Opacity -->
+						<div>
+							<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Opacité</span>
+							<div class="flex items-center gap-2">
+								<Slider
+									value={[currentOpacity]}
+									onValueChange={handleOpacityChange}
+									min={0.1}
+									max={1}
+									step={0.1}
+									class="flex-1"
+									aria-label="Opacité: {Math.round(currentOpacity * 100)}%"
+								/>
+								<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
+									>{Math.round(currentOpacity * 100)}%</span
+								>
+							</div>
+						</div>
+
+						<!-- Stroke style -->
+						<div>
+							<span class="mb-1.5 block text-xs font-medium text-muted-foreground"
+								>Style de trait</span
+							>
+							<div class="flex flex-col gap-1">
+								{#each Object.entries(STROKE_STYLE_LABELS) as [style, label] (style)}
+									<Button
+										type="button"
+										variant={currentStrokeStyle === style ? 'secondary' : 'ghost'}
+										size="sm"
+										onclick={() => handleStrokeStyleChange(style as StrokeStyle)}
+										class="justify-start gap-3"
+									>
+										<svg class="h-4 w-10" viewBox="0 0 40 8">
+											<line
+												x1="2"
+												y1="4"
+												x2="38"
+												y2="4"
+												stroke="currentColor"
+												stroke-width="2"
+												stroke-linecap="round"
+												stroke-dasharray={style === 'solid'
+													? undefined
+													: style === 'dashed'
+														? '6 3'
+														: style === 'dotted'
+															? '2 3'
+															: '6 2 2 2'}
+											/>
+										</svg>
+										<span>{label}</span>
+									</Button>
+								{/each}
+							</div>
+						</div>
 					</div>
 				</Popover.Content>
 			</Popover.Root>
 
-			<!-- Stroke Width Slider -->
-			<div class="flex items-center gap-2 px-2">
-				<span class="text-xs text-muted-foreground" aria-hidden="true">{currentStrokeWidth}px</span>
-				<Slider
-					value={[currentStrokeWidth]}
-					onValueChange={handleStrokeWidthChange}
-					min={STROKE_WIDTH_MIN}
-					max={STROKE_WIDTH_MAX}
-					step={1}
-					class="w-24"
-					aria-label="Épaisseur du trait: {currentStrokeWidth} pixels"
-				/>
-				<!-- Stroke preview -->
-				<div class="flex h-6 w-6 items-center justify-center" aria-hidden="true">
-					<div
-						class="rounded-full"
-						style="width: {Math.min(currentStrokeWidth, STROKE_WIDTH_MAX)}px; height: {Math.min(
-							currentStrokeWidth,
-							STROKE_WIDTH_MAX
-						)}px; background-color: {currentColor}; opacity: {currentOpacity}"
-					></div>
+			<!-- Corner Radius Slider (show when applicable shape tool active OR shape with corners is selected) -->
+			{#if showCornerRadiusSlider}
+				<div class="flex items-center gap-2 px-2">
+					<svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 16 16" aria-hidden="true">
+						<path
+							d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+							rx={Math.max(1, currentCornerRadius / 10)}
+						/>
+					</svg>
+					<Slider
+						value={[currentCornerRadius]}
+						onValueChange={handleCornerRadiusChange}
+						min={0}
+						max={50}
+						step={1}
+						class="w-16"
+						aria-label="Rayon des coins: {currentCornerRadius}px"
+					/>
+					<span class="min-w-[2rem] text-xs text-muted-foreground" aria-hidden="true"
+						>{currentCornerRadius}px</span
+					>
 				</div>
-			</div>
+			{/if}
 
-			<!-- Opacity Slider -->
-			<div class="flex items-center gap-2 px-2">
-				<span class="text-xs text-muted-foreground" aria-hidden="true"
-					>{Math.round(currentOpacity * 100)}%</span
-				>
-				<Slider
-					value={[currentOpacity]}
-					onValueChange={handleOpacityChange}
-					min={0.1}
-					max={1}
-					step={0.1}
-					class="w-20"
-					aria-label="Opacité: {Math.round(currentOpacity * 100)}%"
-				/>
-			</div>
-
-			<!-- Stroke Style Popover (only show when shape tool is active) -->
-			{#if isShapeToolActive}
-				<Popover.Root bind:open={strokeStylePopoverOpen}>
+			<!-- Fill Mode Selector (show when fillable shape tool active OR fillable shape is selected) -->
+			{#if showFillSelector}
+				<Popover.Root bind:open={fillModePopoverOpen}>
 					<Popover.Trigger>
 						{#snippet child({ props })}
 							<button
 								{...props}
 								type="button"
 								class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
-								aria-label="Style de trait"
-								title="Style de trait"
+								aria-label="Mode de remplissage"
+								title="Remplissage"
 							>
-								<svg class="h-4 w-8" viewBox="0 0 32 8">
-									<line
-										x1="2"
-										y1="4"
-										x2="30"
-										y2="4"
-										stroke="currentColor"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-dasharray={currentStrokeStyle === 'solid'
-											? undefined
-											: currentStrokeStyle === 'dashed'
-												? '6 3'
-												: currentStrokeStyle === 'dotted'
-													? '2 3'
-													: '6 2 2 2'}
-									/>
+								<svg class="h-5 w-5" viewBox="0 0 20 20">
+									{#if currentFillMode === 'none'}
+										<!-- Empty square -->
+										<rect
+											x="2"
+											y="2"
+											width="16"
+											height="16"
+											rx="2"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="1.5"
+										/>
+									{:else if currentFillMode === 'solid'}
+										<!-- Filled square -->
+										<rect
+											x="2"
+											y="2"
+											width="16"
+											height="16"
+											rx="2"
+											fill={currentFillColor}
+											stroke="currentColor"
+											stroke-width="1.5"
+											opacity={currentFillOpacity}
+										/>
+									{:else}
+										<!-- Hatched square -->
+										<defs>
+											<pattern
+												id="toolbar-hatch"
+												patternUnits="userSpaceOnUse"
+												width="4"
+												height="4"
+												patternTransform="rotate(45)"
+											>
+												<line
+													x1="0"
+													y1="0"
+													x2="0"
+													y2="4"
+													stroke={currentFillColor}
+													stroke-width="1"
+												/>
+											</pattern>
+										</defs>
+										<rect
+											x="2"
+											y="2"
+											width="16"
+											height="16"
+											rx="2"
+											fill="url(#toolbar-hatch)"
+											stroke="currentColor"
+											stroke-width="1.5"
+											opacity={currentFillOpacity}
+										/>
+									{/if}
 								</svg>
 							</button>
 						{/snippet}
 					</Popover.Trigger>
 					<Popover.Content class="w-auto p-2" side="top" align="start">
 						<div class="flex flex-col gap-1">
-							{#each Object.entries(STROKE_STYLE_LABELS) as [style, label] (style)}
+							{#each Object.entries(FILL_MODE_LABELS) as [mode, label] (mode)}
 								<Button
 									type="button"
-									variant={currentStrokeStyle === style ? 'secondary' : 'ghost'}
+									variant={currentFillMode === mode ? 'secondary' : 'ghost'}
 									size="sm"
 									onclick={() => {
-										handleStrokeStyleChange(style as StrokeStyle);
-										strokeStylePopoverOpen = false;
+										handleFillModeChange(mode as FillMode);
 									}}
 									class="justify-start gap-3"
 								>
-									<svg class="h-4 w-10" viewBox="0 0 40 8">
-										<line
-											x1="2"
-											y1="4"
-											x2="38"
-											y2="4"
-											stroke="currentColor"
-											stroke-width="2"
-											stroke-linecap="round"
-											stroke-dasharray={style === 'solid'
-												? undefined
-												: style === 'dashed'
-													? '6 3'
-													: style === 'dotted'
-														? '2 3'
-														: '6 2 2 2'}
-										/>
+									<svg class="h-5 w-5" viewBox="0 0 20 20">
+										{#if mode === 'none'}
+											<rect
+												x="2"
+												y="2"
+												width="16"
+												height="16"
+												rx="2"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="1.5"
+											/>
+										{:else if mode === 'solid'}
+											<rect
+												x="2"
+												y="2"
+												width="16"
+												height="16"
+												rx="2"
+												fill={currentFillColor}
+												stroke="currentColor"
+												stroke-width="1.5"
+											/>
+										{:else}
+											<defs>
+												<pattern
+													id="menu-hatch-{mode}"
+													patternUnits="userSpaceOnUse"
+													width="4"
+													height="4"
+													patternTransform="rotate(45)"
+												>
+													<line
+														x1="0"
+														y1="0"
+														x2="0"
+														y2="4"
+														stroke={currentFillColor}
+														stroke-width="1"
+													/>
+												</pattern>
+											</defs>
+											<rect
+												x="2"
+												y="2"
+												width="16"
+												height="16"
+												rx="2"
+												fill="url(#menu-hatch-{mode})"
+												stroke="currentColor"
+												stroke-width="1.5"
+											/>
+										{/if}
 									</svg>
 									<span>{label}</span>
 								</Button>
 							{/each}
 						</div>
+						<!-- Fill color and opacity (only when fill is not 'none') -->
+						{#if currentFillMode !== 'none'}
+							<div class="mt-2 border-t border-border pt-2">
+								<!-- Fill color picker -->
+								<div class="mb-2">
+									<span class="mb-1 block text-xs text-muted-foreground">Couleur fond</span>
+									<div class="grid grid-cols-6 gap-1.5">
+										{#each COLOR_PRESETS as color (color.value)}
+											<button
+												type="button"
+												onclick={() => handleFillColorChange(color.value)}
+												class="h-6 w-6 rounded border-2 transition-transform hover:scale-110 {currentFillColor ===
+												color.value
+													? 'border-primary ring-1 ring-primary ring-offset-1'
+													: 'border-border'}"
+												style="background-color: {color.value}"
+												title={color.name}
+												aria-label="{color.name}{currentFillColor === color.value
+													? ' (sélectionné)'
+													: ''}"
+											></button>
+										{/each}
+									</div>
+									<div class="mt-1.5 flex items-center gap-2">
+										<input
+											type="color"
+											value={currentFillColor}
+											oninput={(e) => handleFillColorChange(e.currentTarget.value)}
+											class="h-6 w-6 cursor-pointer rounded border-0 p-0"
+											aria-label="Couleur de remplissage personnalisée"
+										/>
+										<span class="text-xs text-muted-foreground">Personnalisé</span>
+									</div>
+								</div>
+								<!-- Fill opacity slider -->
+								<div class="flex items-center gap-2">
+									<span class="text-xs text-muted-foreground">Opacité</span>
+									<Slider
+										value={[currentFillOpacity]}
+										onValueChange={handleFillOpacityChange}
+										min={0.1}
+										max={1}
+										step={0.1}
+										class="w-20"
+										aria-label="Opacité du remplissage: {Math.round(currentFillOpacity * 100)}%"
+									/>
+									<span class="min-w-[2rem] text-xs text-muted-foreground"
+										>{Math.round(currentFillOpacity * 100)}%</span
+									>
+								</div>
+							</div>
+						{/if}
 					</Popover.Content>
 				</Popover.Root>
 			{/if}
