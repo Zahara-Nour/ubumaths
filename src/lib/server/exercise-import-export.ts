@@ -9,7 +9,14 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import type { Exercise, ExerciseExport, ImportResult, ImportOptions } from '$lib/exercises/types';
+import type {
+	Exercise,
+	ExerciseExport,
+	ExerciseExportV1,
+	ExerciseExportV2,
+	ImportResult,
+	ImportOptions
+} from '$lib/exercises/types';
 import {
 	validateExerciseExport,
 	sanitizeExerciseForInsert,
@@ -27,12 +34,13 @@ import { createHash } from 'crypto';
 // ============================================================================
 
 /**
- * Convert an Exercise database record to clean export format
+ * Convert an Exercise database record to clean export format (legacy v1.0)
  *
+ * @deprecated Use exerciseToExportV2 for new exports with variations support
  * @param exercise - Exercise from database
- * @returns Clean export format without id, timestamps, created_by
+ * @returns Clean export format without id, timestamps, created_by (v1.0 format)
  */
-export function exerciseToExport(exercise: Exercise): ExerciseExport {
+export function exerciseToExport(exercise: Exercise): ExerciseExportV1 {
 	return {
 		version: '1.0',
 		title: exercise.title,
@@ -47,43 +55,101 @@ export function exerciseToExport(exercise: Exercise): ExerciseExport {
 }
 
 /**
- * Export exercise to JSON string
+ * Convert an Exercise database record to v2.0 export format with variations
+ *
+ * @param exercise - Exercise from database
+ * @returns Export format v2.0 with variations and shared defaults
+ */
+export function exerciseToExportV2(exercise: Exercise): ExerciseExportV2 {
+	// Cast variations and shared from database JSONB to TypeScript types
+	const variations = exercise.variations as Exercise['variations'];
+	const shared = exercise.shared as Exercise['shared'];
+
+	return {
+		version: '2.0',
+		title: exercise.title,
+		source: exercise.source,
+		difficulty: exercise.difficulty,
+		tags: exercise.tags,
+		statement_md: exercise.statement_md,
+		solution_md: exercise.solution_md,
+		grade_levels: exercise.grade_levels,
+		topic: exercise.topic,
+		variations: variations,
+		shared: shared
+	};
+}
+
+/**
+ * Export exercise to JSON string (v2.0 format with variations)
  *
  * @param exercise - Exercise to export
  * @param prettyPrint - Whether to pretty-print JSON
- * @returns JSON string
+ * @returns JSON string in v2.0 format
  */
 export function exportExerciseToJSON(exercise: Exercise, prettyPrint = true): string {
-	const exportData = exerciseToExport(exercise);
+	const exportData = exerciseToExportV2(exercise);
 	return prettyPrint ? JSON.stringify(exportData, null, 2) : JSON.stringify(exportData);
 }
 
 /**
- * Export multiple exercises to JSON string
+ * Export multiple exercises to JSON string (v2.0 format with variations)
  *
  * @param exercises - Exercises to export
  * @param prettyPrint - Whether to pretty-print JSON
- * @returns JSON string with array of exercises
+ * @returns JSON string with array of exercises in v2.0 format
  */
 export function exportExercisesToJSON(exercises: Exercise[], prettyPrint = true): string {
-	const exportData = exercises.map(exerciseToExport);
+	const exportData = exercises.map(exerciseToExportV2);
 	return prettyPrint ? JSON.stringify(exportData, null, 2) : JSON.stringify(exportData);
 }
 
 /**
- * Export exercise to Markdown with frontmatter
+ * Export exercise to Markdown with frontmatter (v2.0 format with variations)
  *
  * @param exercise - Exercise to export
- * @returns Markdown string with YAML frontmatter
+ * @returns Markdown string with YAML frontmatter in v2.0 format
  */
 export function exportExerciseToMarkdown(exercise: Exercise): string {
-	const exportData = exerciseToExport(exercise);
+	const exportData = exerciseToExportV2(exercise);
 	return serializeToMarkdown(exportData);
 }
 
 // ============================================================================
 // IMPORT FUNCTIONS
 // ============================================================================
+
+/**
+ * Migrate legacy v1.0 format (without variations) to v2.0 format
+ *
+ * Converts a legacy exercise export to the new variations format by:
+ * - Creating a single variation with label "Default"
+ * - Moving statement_md and solution_md into the variation
+ * - Preserving all other fields
+ *
+ * @param legacyData - Exercise in v1.0 or v2.0 format
+ * @returns Exercise in v2.0 format with variations
+ */
+function migrateLegacyToVariations(legacyData: ExerciseExport): ExerciseExportV2 {
+	// If already v2.0 with variations, return as-is
+	if (legacyData.version === '2.0') {
+		return legacyData;
+	}
+
+	// Create v2.0 format with single "Default" variation
+	return {
+		...legacyData,
+		version: '2.0',
+		variations: [
+			{
+				label: 'Default',
+				statement_md: legacyData.statement_md,
+				solution_md: legacyData.solution_md
+			}
+		],
+		shared: undefined // No shared defaults for migrated exercises
+	};
+}
 
 /**
  * Compute hash of exercise content for duplicate detection
@@ -101,13 +167,13 @@ function computeExerciseHash(statement: string, title?: string): string {
  * Check if exercise already exists (duplicate detection)
  *
  * @param supabase - Supabase client
- * @param exercise - Exercise data to check
+ * @param exercise - Exercise data to check (can be v1.0 or v2.0 format)
  * @param userId - User ID performing the check
  * @returns Exercise ID if duplicate exists, null otherwise
  */
 async function findDuplicateExercise(
 	supabase: SupabaseClient<Database>,
-	exercise: ExerciseExport,
+	exercise: ValidatedExerciseExport,
 	userId: string
 ): Promise<string | null> {
 	const hash = computeExerciseHash(exercise.statement_md, exercise.title);
@@ -173,6 +239,9 @@ async function generateUniqueCopyTitle(
 /**
  * Import a single exercise from JSON data
  *
+ * Supports both v1.0 (legacy) and v2.0 (with variations) formats.
+ * Legacy exercises are automatically migrated to variations format.
+ *
  * @param supabase - Supabase client
  * @param data - Exercise data (unknown type, will be validated)
  * @param userId - User ID performing the import
@@ -194,7 +263,17 @@ export async function importExerciseFromJSON(
 		data = validation.data;
 	}
 
-	const exerciseData = data as ValidatedExerciseExport;
+	let exerciseData = data as ValidatedExerciseExport;
+
+	// Detect version and migrate if legacy format
+	const version = exerciseData.version || '1.0';
+	if (version === '1.0') {
+		// Migrate legacy format to v2.0 with variations
+		// The migrateLegacyToVariations function handles the conversion
+		const v1Data = exerciseData as ExerciseExportV1;
+		const v2Data = migrateLegacyToVariations(v1Data);
+		exerciseData = v2Data as ValidatedExerciseExport;
+	}
 
 	// Check for duplicates
 	const duplicateId = await findDuplicateExercise(supabase, exerciseData, userId);

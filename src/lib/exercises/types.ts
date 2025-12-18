@@ -172,6 +172,13 @@ export interface GenerateInstanceOptions {
 	 * @default false
 	 */
 	parseAST?: boolean;
+
+	/**
+	 * Select specific variation by index (for exercises with variations)
+	 * If not provided, first variation (index 0) is used
+	 * @default 0
+	 */
+	variationIndex?: number;
 }
 
 /**
@@ -987,10 +994,10 @@ export interface TypstTranspilerOptions {
 // ============================================================================
 
 /**
- * Clean exercise format for export (without id, timestamps, created_by)
- * This is the format used for JSON export and sharing between teachers
+ * Legacy exercise export format (v1.0 - without variations)
+ * This format is kept for backward compatibility with existing exports
  */
-export interface ExerciseExport {
+export interface ExerciseExportV1 {
 	/** Format version for backwards compatibility */
 	version: '1.0';
 
@@ -1010,10 +1017,44 @@ export interface ExerciseExport {
 }
 
 /**
- * YAML frontmatter for Markdown export
- * Used in the --- section at the top of exported .md files
+ * Modern exercise export format (v2.0 - with variations support)
+ * This is the current format used for new exports
  */
-export interface ExerciseFrontmatter {
+export interface ExerciseExportV2 {
+	/** Format version */
+	version: '2.0';
+
+	// Metadata
+	title?: string;
+	source?: string;
+	difficulty: 1 | 2 | 3;
+	tags: string[];
+
+	// Content - preserved for legacy compatibility and as fallbacks
+	statement_md: string;
+	solution_md: string;
+
+	// Additional metadata
+	grade_levels?: string[];
+	topic?: string;
+
+	// Variations system
+	variations?: ExerciseVariation[];
+	shared?: SharedExerciseDefaults;
+}
+
+/**
+ * Clean exercise format for export (without id, timestamps, created_by)
+ * This is the format used for JSON export and sharing between teachers
+ *
+ * Union type supporting both v1.0 (legacy) and v2.0 (with variations) formats.
+ */
+export type ExerciseExport = ExerciseExportV1 | ExerciseExportV2;
+
+/**
+ * YAML frontmatter for Markdown export (v1.0 - legacy)
+ */
+export interface ExerciseFrontmatterV1 {
 	/** Format version */
 	version: '1.0';
 
@@ -1025,6 +1066,34 @@ export interface ExerciseFrontmatter {
 	grade_levels?: string[];
 	topic?: string;
 }
+
+/**
+ * YAML frontmatter for Markdown export (v2.0 - with variations)
+ */
+export interface ExerciseFrontmatterV2 {
+	/** Format version */
+	version: '2.0';
+
+	// Metadata
+	title?: string;
+	source?: string;
+	difficulty: 1 | 2 | 3;
+	tags: string[];
+	grade_levels?: string[];
+	topic?: string;
+
+	// Variations system
+	variations?: ExerciseVariation[];
+	shared?: SharedExerciseDefaults;
+}
+
+/**
+ * YAML frontmatter for Markdown export
+ * Used in the --- section at the top of exported .md files
+ *
+ * Union type supporting both v1.0 (legacy) and v2.0 (with variations) formats.
+ */
+export type ExerciseFrontmatter = ExerciseFrontmatterV1 | ExerciseFrontmatterV2;
 
 /**
  * Result of an import operation
