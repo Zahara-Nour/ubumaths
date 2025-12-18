@@ -38,24 +38,11 @@
 		scale: number;
 		/** ID of element currently hovered (for hover feedback) */
 		hoveredElementId: string | null;
-		/** Callback when selection is moved by dragging */
-		onMove?: (dx: number, dy: number) => void;
 		/** Callback when an element is resized via handles */
 		onResize?: (elementId: string, handle: HandlePosition, dx: number, dy: number) => void;
 	}
 
-	let { selectedElements, scale, hoveredElementId, onMove, onResize }: Props = $props();
-
-	// ==========================================================================
-	// Drag State
-	// ==========================================================================
-
-	/** Whether user is currently dragging the selection */
-	let isDragging = $state(false);
-
-	/** Start position of drag in client coordinates */
-	let dragStartX = $state(0);
-	let dragStartY = $state(0);
+	let { selectedElements, scale, hoveredElementId, onResize }: Props = $props();
 
 	// ==========================================================================
 	// Resize State
@@ -152,33 +139,6 @@
 		return RESIZABLE_TYPES.includes(type as (typeof RESIZABLE_TYPES)[number]);
 	}
 
-	/** Calculate combined bounding box for all selected elements */
-	let combinedBounds = $derived.by(() => {
-		if (selectedElements.length === 0) return null;
-		if (selectedElements.length === 1) return getElementBounds(selectedElements[0]);
-
-		// Combine bounds of all selected elements
-		let minX = Infinity;
-		let minY = Infinity;
-		let maxX = -Infinity;
-		let maxY = -Infinity;
-
-		for (const element of selectedElements) {
-			const bounds = getElementBounds(element);
-			minX = Math.min(minX, bounds.x);
-			minY = Math.min(minY, bounds.y);
-			maxX = Math.max(maxX, bounds.x + bounds.width);
-			maxY = Math.max(maxY, bounds.y + bounds.height);
-		}
-
-		return {
-			x: minX,
-			y: minY,
-			width: maxX - minX,
-			height: maxY - minY
-		};
-	});
-
 	/** Get hovered element (if not already selected) */
 	let hoveredElement = $derived.by(() => {
 		if (!hoveredElementId) return null;
@@ -187,53 +147,6 @@
 		// Find the element in page
 		return whiteboardStore.currentPage?.elements.find((el) => el.id === hoveredElementId) ?? null;
 	});
-
-	// ==========================================================================
-	// Drag Handlers
-	// ==========================================================================
-
-	/**
-	 * Handle pointer down on selection rectangle - start dragging
-	 */
-	function handleSelectionPointerDown(e: PointerEvent) {
-		e.preventDefault();
-		e.stopPropagation();
-
-		isDragging = true;
-		dragStartX = e.clientX;
-		dragStartY = e.clientY;
-
-		(e.currentTarget as SVGElement).setPointerCapture(e.pointerId);
-	}
-
-	/**
-	 * Handle pointer move during drag - calculate delta and move elements
-	 */
-	function handleSelectionPointerMove(e: PointerEvent) {
-		if (!isDragging) return;
-
-		const dx = (e.clientX - dragStartX) / scale;
-		const dy = (e.clientY - dragStartY) / scale;
-
-		// Safeguard against invalid transformations (scale = 0 or NaN)
-		if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
-
-		// Update drag start for incremental delta calculation
-		dragStartX = e.clientX;
-		dragStartY = e.clientY;
-
-		onMove?.(dx, dy);
-	}
-
-	/**
-	 * Handle pointer up - end dragging
-	 */
-	function handleSelectionPointerUp(e: PointerEvent) {
-		if (isDragging) {
-			isDragging = false;
-			(e.currentTarget as SVGElement).releasePointerCapture(e.pointerId);
-		}
-	}
 
 	// ==========================================================================
 	// Resize Handlers
@@ -360,32 +273,4 @@
 			{/each}
 		{/if}
 	{/each}
-
-	<!-- Draggable overlay for moving selection -->
-	{#if combinedBounds}
-		<rect
-			class="pointer-events-auto cursor-move"
-			class:cursor-grabbing={isDragging}
-			x={combinedBounds.x}
-			y={combinedBounds.y}
-			width={combinedBounds.width}
-			height={combinedBounds.height}
-			fill="transparent"
-			stroke="none"
-			onpointerdown={handleSelectionPointerDown}
-			onpointermove={handleSelectionPointerMove}
-			onpointerup={handleSelectionPointerUp}
-			onpointercancel={handleSelectionPointerUp}
-		/>
-	{/if}
 </svg>
-
-<style>
-	.cursor-move {
-		cursor: move;
-	}
-
-	.cursor-grabbing {
-		cursor: grabbing;
-	}
-</style>

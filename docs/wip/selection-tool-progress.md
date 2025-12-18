@@ -15,6 +15,7 @@ See: `/Users/david/.claude/plans/luminous-riding-thimble.md`
 | 5     | Drag to Move          | Completed | 601f5ceb |
 | 6     | Resize Handles        | Completed | 14a1d15d |
 | 7     | Keyboard Shortcuts    | Completed | 23073cb5 |
+| 8     | Hover Feedback        | Completed | 5c3c34d7 |
 
 ---
 

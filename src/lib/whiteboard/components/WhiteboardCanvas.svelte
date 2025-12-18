@@ -63,6 +63,14 @@
 	/** Hovered element ID (for select tool hover feedback) */
 	let hoveredElementId = $state<string | null>(null);
 
+	/** Selection drag state (for immediate drag without prior selection) */
+	let isSelectionDragging = $state(false);
+	let selectionDragStartX = $state(0);
+	let selectionDragStartY = $state(0);
+
+	/** Minimum drag distance before movement starts (prevents jitter) */
+	const MIN_DRAG_DISTANCE = 2;
+
 	// ==========================================================================
 	// Derived State
 	// ==========================================================================
@@ -151,26 +159,36 @@
 
 		const point = getPointFromEvent(e);
 
-		// Handle select tool - click to select elements
+		// Handle select tool - click to select elements with immediate drag support
 		if (isSelectTool) {
 			e.preventDefault();
 			const result = hitTestElements(point, elements);
 
 			if (result) {
-				// Element found
+				// Element found - handle selection
 				if (e.shiftKey) {
 					// Toggle selection (add if not selected, remove if selected)
 					const isAlreadySelected = selectedElements.some((el) => el.id === result.elementId);
 					if (isAlreadySelected) {
 						whiteboardStore.deselectElement(result.elementId);
+						// Don't start drag when deselecting
+						return;
 					} else {
 						whiteboardStore.selectElement(result.elementId, true);
 					}
 				} else {
-					// Replace selection
-					whiteboardStore.clearSelection();
-					whiteboardStore.selectElement(result.elementId);
+					// Replace selection (or keep if already selected)
+					if (!selectedElements.some((el) => el.id === result.elementId)) {
+						whiteboardStore.clearSelection();
+						whiteboardStore.selectElement(result.elementId);
+					}
 				}
+
+				// Start drag tracking - element is now selected
+				isSelectionDragging = true;
+				selectionDragStartX = e.clientX;
+				selectionDragStartY = e.clientY;
+				(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
 			} else {
 				// Click in empty space - clear selection
 				whiteboardStore.clearSelection();
@@ -215,7 +233,27 @@
 	function handlePointerMove(e: PointerEvent) {
 		const point = getPointFromEvent(e);
 
-		// Track hover for select tool (when not drawing)
+		// Handle selection dragging (immediate drag on click)
+		if (isSelectionDragging) {
+			e.preventDefault(); // Prevent browser defaults during drag
+
+			const dx = (e.clientX - selectionDragStartX) / scale;
+			const dy = (e.clientY - selectionDragStartY) / scale;
+
+			// Only move if distance exceeds threshold (prevents jitter from mouse micro-movements)
+			if (
+				Number.isFinite(dx) &&
+				Number.isFinite(dy) &&
+				(Math.abs(dx) >= MIN_DRAG_DISTANCE || Math.abs(dy) >= MIN_DRAG_DISTANCE)
+			) {
+				selectionDragStartX = e.clientX;
+				selectionDragStartY = e.clientY;
+				whiteboardStore.moveElements(dx, dy);
+			}
+			return;
+		}
+
+		// Track hover for select tool (when not drawing or dragging)
 		if (isSelectTool && !isDrawing) {
 			const result = hitTestElements(point, elements);
 			hoveredElementId = result?.elementId ?? null;
@@ -243,9 +281,22 @@
 	}
 
 	/**
-	 * Handle pointer up - finalize stroke
+	 * Handle pointer up - finalize stroke or end selection drag
 	 */
 	function handlePointerUp(e: PointerEvent) {
+		// End selection dragging
+		if (isSelectionDragging) {
+			isSelectionDragging = false;
+			selectionDragStartX = 0;
+			selectionDragStartY = 0;
+			try {
+				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+			} catch {
+				// Ignore - capture may already be released or not set
+			}
+			return;
+		}
+
 		if (!isDrawing) return;
 
 		e.preventDefault();
@@ -264,9 +315,22 @@
 	}
 
 	/**
-	 * Handle pointer cancel - abort stroke
+	 * Handle pointer cancel - abort stroke or selection drag
 	 */
 	function handlePointerCancel(e: PointerEvent) {
+		// Cancel selection dragging
+		if (isSelectionDragging) {
+			isSelectionDragging = false;
+			selectionDragStartX = 0;
+			selectionDragStartY = 0;
+			try {
+				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+			} catch {
+				// Ignore - capture may already be released or not set
+			}
+			return;
+		}
+
 		if (!isDrawing) return;
 
 		(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
@@ -280,11 +344,23 @@
 	}
 
 	/**
-	 * Handle pointer leave - clear hover state and abort any drawing
+	 * Handle pointer leave - clear hover state and abort any drawing or drag
 	 */
 	function handlePointerLeave(e: PointerEvent) {
 		// Clear hover state
 		hoveredElementId = null;
+
+		// Cancel selection dragging
+		if (isSelectionDragging) {
+			isSelectionDragging = false;
+			selectionDragStartX = 0;
+			selectionDragStartY = 0;
+			try {
+				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+			} catch {
+				// Ignore - capture may already be released or not set
+			}
+		}
 
 		// Also handle cancel if drawing
 		if (isDrawing) {
@@ -458,8 +534,9 @@
 <div class="whiteboard-canvas-container relative overflow-hidden bg-gray-100 {className}">
 	<svg
 		class="whiteboard-svg"
-		class:cursor-default={isSelectTool && !hoveredElementId}
-		class:cursor-pointer={isSelectTool && hoveredElementId}
+		class:cursor-default={isSelectTool && !hoveredElementId && !isSelectionDragging}
+		class:cursor-pointer={isSelectTool && hoveredElementId && !isSelectionDragging}
+		class:cursor-grabbing={isSelectionDragging}
 		class:cursor-crosshair={!isSelectTool}
 		{viewBox}
 		preserveAspectRatio="xMidYMid meet"
@@ -675,7 +752,6 @@
 				{selectedElements}
 				{scale}
 				{hoveredElementId}
-				onMove={(dx, dy) => whiteboardStore.moveElements(dx, dy)}
 				onResize={(elementId, handle, dx, dy) =>
 					whiteboardStore.resizeElement(elementId, handle, dx, dy)}
 			/>
@@ -707,5 +783,9 @@
 
 	.whiteboard-svg.cursor-crosshair {
 		cursor: crosshair;
+	}
+
+	.whiteboard-svg.cursor-grabbing {
+		cursor: grabbing;
 	}
 </style>
