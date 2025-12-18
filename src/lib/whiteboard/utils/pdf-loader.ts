@@ -108,10 +108,10 @@ async function getPdfjs(): Promise<typeof import('pdfjs-dist')> {
 
 	pdfjsLib = await import('pdfjs-dist');
 
-	// Set worker source
-	// @ts-expect-error - pdfjs-dist worker module lacks type declarations
-	const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.mjs');
-	pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker.default as string;
+	// Set worker source using Vite's ?url import suffix
+	// This returns the resolved URL of the worker file
+	const workerUrl = await import('pdfjs-dist/build/pdf.worker.mjs?url');
+	pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl.default;
 
 	return pdfjsLib;
 }
