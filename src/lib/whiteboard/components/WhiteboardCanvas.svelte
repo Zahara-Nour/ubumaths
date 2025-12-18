@@ -60,6 +60,9 @@
 	/** TextBlockLayer reference */
 	let textBlockLayerRef: TextBlockLayer | null = $state(null);
 
+	/** Hovered element ID (for select tool hover feedback) */
+	let hoveredElementId = $state<string | null>(null);
+
 	// ==========================================================================
 	// Derived State
 	// ==========================================================================
@@ -207,13 +210,21 @@
 	}
 
 	/**
-	 * Handle pointer move - add points to stroke
+	 * Handle pointer move - add points to stroke or track hover
 	 */
 	function handlePointerMove(e: PointerEvent) {
+		const point = getPointFromEvent(e);
+
+		// Track hover for select tool (when not drawing)
+		if (isSelectTool && !isDrawing) {
+			const result = hitTestElements(point, elements);
+			hoveredElementId = result?.elementId ?? null;
+			return;
+		}
+
 		if (!isDrawing) return;
 
 		e.preventDefault();
-		const point = getPointFromEvent(e);
 
 		// Handle shape tools
 		if (isShapeTool) {
@@ -266,6 +277,25 @@
 		activeStrokePath = '';
 		shapeStartPoint = null;
 		shapeEndPoint = null;
+	}
+
+	/**
+	 * Handle pointer leave - clear hover state and abort any drawing
+	 */
+	function handlePointerLeave(e: PointerEvent) {
+		// Clear hover state
+		hoveredElementId = null;
+
+		// Also handle cancel if drawing
+		if (isDrawing) {
+			(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+
+			isDrawing = false;
+			currentPoints = [];
+			activeStrokePath = '';
+			shapeStartPoint = null;
+			shapeEndPoint = null;
+		}
 	}
 
 	// ==========================================================================
@@ -428,7 +458,9 @@
 <div class="whiteboard-canvas-container relative overflow-hidden bg-gray-100 {className}">
 	<svg
 		class="whiteboard-svg"
-		class:cursor-default={isSelectTool}
+		class:cursor-default={isSelectTool && !hoveredElementId}
+		class:cursor-pointer={isSelectTool && hoveredElementId}
+		class:cursor-crosshair={!isSelectTool}
 		{viewBox}
 		preserveAspectRatio="xMidYMid meet"
 		style="width: 100%; height: 100%;"
@@ -440,7 +472,7 @@
 		onpointermove={handlePointerMove}
 		onpointerup={handlePointerUp}
 		onpointercancel={handlePointerCancel}
-		onpointerleave={handlePointerCancel}
+		onpointerleave={handlePointerLeave}
 	>
 		<!-- Layer 1: Background -->
 		<g class="layer-background">
@@ -642,6 +674,7 @@
 			<SelectionLayer
 				{selectedElements}
 				{scale}
+				{hoveredElementId}
 				onMove={(dx, dy) => whiteboardStore.moveElements(dx, dy)}
 				onResize={(elementId, handle, dx, dy) =>
 					whiteboardStore.resizeElement(elementId, handle, dx, dy)}
@@ -662,10 +695,17 @@
 
 	.whiteboard-svg {
 		display: block;
-		cursor: crosshair;
 	}
 
 	.whiteboard-svg.cursor-default {
 		cursor: default;
+	}
+
+	.whiteboard-svg.cursor-pointer {
+		cursor: pointer;
+	}
+
+	.whiteboard-svg.cursor-crosshair {
+		cursor: crosshair;
 	}
 </style>

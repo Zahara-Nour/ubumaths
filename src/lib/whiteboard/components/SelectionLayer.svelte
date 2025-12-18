@@ -10,6 +10,7 @@
 	 */
 
 	import { getElementBounds, type BoundingBox } from '../core/hit-testing';
+	import { whiteboardStore } from '../stores/whiteboard.svelte';
 	import type { WhiteboardElement } from '../types/document';
 
 	// ==========================================================================
@@ -35,13 +36,15 @@
 		selectedElements: readonly WhiteboardElement[];
 		/** Current canvas scale (for handle sizing) */
 		scale: number;
+		/** ID of element currently hovered (for hover feedback) */
+		hoveredElementId: string | null;
 		/** Callback when selection is moved by dragging */
 		onMove?: (dx: number, dy: number) => void;
 		/** Callback when an element is resized via handles */
 		onResize?: (elementId: string, handle: HandlePosition, dx: number, dy: number) => void;
 	}
 
-	let { selectedElements, scale, onMove, onResize }: Props = $props();
+	let { selectedElements, scale, hoveredElementId, onMove, onResize }: Props = $props();
 
 	// ==========================================================================
 	// Drag State
@@ -176,6 +179,15 @@
 		};
 	});
 
+	/** Get hovered element (if not already selected) */
+	let hoveredElement = $derived.by(() => {
+		if (!hoveredElementId) return null;
+		// Don't show hover if already selected
+		if (selectedElements.some((el) => el.id === hoveredElementId)) return null;
+		// Find the element in page
+		return whiteboardStore.currentPage?.elements.find((el) => el.id === hoveredElementId) ?? null;
+	});
+
 	// ==========================================================================
 	// Drag Handlers
 	// ==========================================================================
@@ -280,6 +292,22 @@
 </script>
 
 <svg class="selection-layer pointer-events-none absolute inset-0 h-full w-full overflow-visible">
+	<!-- Hover highlight (for non-selected elements) -->
+	{#if hoveredElement}
+		{@const bounds = getElementBounds(hoveredElement)}
+		<rect
+			x={bounds.x}
+			y={bounds.y}
+			width={bounds.width}
+			height={bounds.height}
+			fill="rgba(59, 130, 246, 0.08)"
+			stroke="#93c5fd"
+			stroke-width={strokeWidth}
+			stroke-dasharray={`${3 / scale} ${3 / scale}`}
+			class="pointer-events-none"
+		/>
+	{/if}
+
 	<!-- Individual element selection rectangles (dashed borders) -->
 	{#each selectedElements as element (element.id)}
 		{@const bounds = getElementBounds(element)}
