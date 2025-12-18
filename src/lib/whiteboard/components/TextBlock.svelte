@@ -60,6 +60,9 @@
 	/** Edit container reference for focus management */
 	let editContainerEl: HTMLDivElement | null = $state(null);
 
+	/** RichTextEditor reference for getting markdown synchronously */
+	let editorRef: { getMarkdown: () => string } | null = $state(null);
+
 	// ==========================================================================
 	// Derived
 	// ==========================================================================
@@ -132,8 +135,10 @@
 	}
 
 	function saveAndClose() {
+		// Get markdown synchronously to avoid debounce timing issues
+		const content = editorRef?.getMarkdown() ?? editContent;
 		// Save content to store
-		whiteboardStore.updateTextBlockContent(element.id, editContent);
+		whiteboardStore.updateTextBlockContent(element.id, content);
 		onEndEdit();
 	}
 
@@ -268,6 +273,7 @@
 			class="edit-container h-full w-full overflow-auto rounded border-2 border-primary bg-white shadow-lg"
 		>
 			<RichTextEditor
+				bind:this={editorRef}
 				mode="form"
 				bind:markdownValue={editContent}
 				preset="minimal"
