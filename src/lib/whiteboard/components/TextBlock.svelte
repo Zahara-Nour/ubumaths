@@ -138,7 +138,9 @@
 	function saveAndClose() {
 		// Convert JSON to markdown synchronously to avoid debounce timing issues
 		// jsonValue is updated immediately (not debounced) unlike markdownValue
-		const content = editJson ? tipTapToMarkdown(editJson) : editContent;
+		// Only use JSON if it's a valid TipTap document (has type: 'doc'), otherwise keep original
+		const json = editJson as Record<string, unknown>;
+		const content = json?.type === 'doc' ? tipTapToMarkdown(editJson) : editContent;
 		// Save content to store
 		whiteboardStore.updateTextBlockContent(element.id, content);
 		onEndEdit();
