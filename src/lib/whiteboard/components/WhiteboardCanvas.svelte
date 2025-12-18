@@ -19,6 +19,7 @@
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ImageLayer from './ImageLayer.svelte';
 	import SelectionLayer from './SelectionLayer.svelte';
+	import ContextMenu from './ContextMenu.svelte';
 	import type {
 		Point,
 		StrokeElement,
@@ -59,6 +60,9 @@
 
 	/** TextBlockLayer reference */
 	let textBlockLayerRef: TextBlockLayer | null = $state(null);
+
+	/** ContextMenu reference */
+	let contextMenuRef: ContextMenu | null = $state(null);
 
 	/** Hovered element ID (for select tool hover feedback) */
 	let hoveredElementId = $state<string | null>(null);
@@ -175,9 +179,42 @@
 	}
 
 	/**
+	 * Handle context menu (right-click) - show z-order menu
+	 * If clicking on an element, select it first, then show menu
+	 */
+	function handleContextMenu(e: MouseEvent) {
+		e.preventDefault();
+
+		// Get point in canvas coordinates
+		const rect = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
+		const x = ((e.clientX - rect.left) / rect.width) * pageWidth;
+		const y = ((e.clientY - rect.top) / rect.height) * pageHeight;
+		const point = { x, y };
+
+		// Hit test to find element under cursor
+		const result = hitTestElements(point, elements);
+
+		if (result) {
+			// If element is not already selected, select it
+			if (!whiteboardStore.selectedIds.has(result.elementId)) {
+				whiteboardStore.clearSelection();
+				whiteboardStore.selectElement(result.elementId);
+			}
+			// Show context menu
+			contextMenuRef?.show(e.clientX, e.clientY);
+		} else if (whiteboardStore.hasSelection) {
+			// If clicking empty space but there's a selection, show menu anyway
+			contextMenuRef?.show(e.clientX, e.clientY);
+		}
+	}
+
+	/**
 	 * Handle pointer down - start drawing
 	 */
 	function handlePointerDown(e: PointerEvent) {
+		// Hide context menu on any click
+		contextMenuRef?.hide();
+
 		// Only handle primary button (left click / touch)
 		if (e.button !== 0) return;
 
@@ -579,6 +616,7 @@
 		onpointerup={handlePointerUp}
 		onpointercancel={handlePointerCancel}
 		onpointerleave={handlePointerLeave}
+		oncontextmenu={handleContextMenu}
 	>
 		<!-- Layer 1: Background -->
 		<g class="layer-background">
@@ -807,6 +845,9 @@
 
 	<!-- TextBlock Layer (HTML overlay on SVG) -->
 	<TextBlockLayer bind:this={textBlockLayerRef} {scale} />
+
+	<!-- Context Menu (for z-order operations) -->
+	<ContextMenu bind:this={contextMenuRef} />
 </div>
 
 <style>

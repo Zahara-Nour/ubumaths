@@ -837,6 +837,100 @@ function createWhiteboardStore() {
 			}));
 		},
 
+		// === Z-Order Operations ===
+
+		/**
+		 * Move elements to front (top of z-order)
+		 * Preserves relative order among moved elements
+		 * @param elementIds - IDs of elements to move to front
+		 */
+		bringToFront(elementIds: string[]): void {
+			if (elementIds.length === 0) return;
+
+			updateCurrentPage((page) => {
+				const idsSet = new Set(elementIds);
+				const elementsToMove = page.elements.filter((el) => idsSet.has(el.id));
+				const remainingElements = page.elements.filter((el) => !idsSet.has(el.id));
+
+				// If all elements are already at top, no change needed
+				if (elementsToMove.length === 0) return page;
+
+				return {
+					...page,
+					elements: [...remainingElements, ...elementsToMove]
+				};
+			});
+		},
+
+		/**
+		 * Move elements to back (bottom of z-order)
+		 * Preserves relative order among moved elements
+		 * @param elementIds - IDs of elements to move to back
+		 */
+		sendToBack(elementIds: string[]): void {
+			if (elementIds.length === 0) return;
+
+			updateCurrentPage((page) => {
+				const idsSet = new Set(elementIds);
+				const elementsToMove = page.elements.filter((el) => idsSet.has(el.id));
+				const remainingElements = page.elements.filter((el) => !idsSet.has(el.id));
+
+				// If all elements are already at bottom, no change needed
+				if (elementsToMove.length === 0) return page;
+
+				return {
+					...page,
+					elements: [...elementsToMove, ...remainingElements]
+				};
+			});
+		},
+
+		/**
+		 * Move elements one position forward (up in z-order)
+		 * @param elementIds - IDs of elements to move forward
+		 */
+		bringForward(elementIds: string[]): void {
+			if (elementIds.length === 0) return;
+
+			updateCurrentPage((page) => {
+				const idsSet = new Set(elementIds);
+				const elements = [...page.elements];
+
+				// Process from end to start to handle multiple elements correctly
+				for (let i = elements.length - 2; i >= 0; i--) {
+					if (idsSet.has(elements[i].id) && !idsSet.has(elements[i + 1].id)) {
+						// Swap with next element
+						[elements[i], elements[i + 1]] = [elements[i + 1], elements[i]];
+					}
+				}
+
+				return { ...page, elements };
+			});
+		},
+
+		/**
+		 * Move elements one position backward (down in z-order)
+		 * @param elementIds - IDs of elements to move backward
+		 */
+		sendBackward(elementIds: string[]): void {
+			if (elementIds.length === 0) return;
+
+			updateCurrentPage((page) => {
+				const idsSet = new Set(elementIds);
+				const elements = [...page.elements];
+
+				// Process from start to end to handle multiple elements correctly
+				for (let i = 1; i < elements.length; i++) {
+					if (idsSet.has(elements[i].id) && !idsSet.has(elements[i - 1].id)) {
+						// Swap with previous element
+						[elements[i - 1], elements[i]] = [elements[i], elements[i - 1]];
+					}
+				}
+
+				return { ...page, elements };
+			});
+		},
+
 		// === TextBlock Operations ===
 
 		/**
