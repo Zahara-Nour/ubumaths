@@ -16,8 +16,10 @@
 -->
 <script lang="ts">
 	import type { InlineNode } from '$lib/custom-markdown';
+	import type { ExerciseHint } from '$lib/exercises/types';
 	import MathInline from './MathInline.svelte';
 	import TextNode from './TextNode.svelte';
+	import HintReference from './HintReference.svelte';
 
 	interface Props {
 		level: 1 | 2 | 3 | 4 | 5 | 6;
@@ -27,9 +29,21 @@
 		onHashtagClick?: (tag: string) => void;
 		/** Callback when a mention is clicked */
 		onMentionClick?: (username: string) => void;
+		/** Available hints for {{hint:id}} references */
+		hints?: ExerciseHint[];
+		/** Callback when a hint is opened */
+		onHintOpen?: (hintId: string) => void;
 	}
 
-	let { level, children, class: className = '', onHashtagClick, onMentionClick }: Props = $props();
+	let {
+		level,
+		children,
+		class: className = '',
+		onHashtagClick,
+		onMentionClick,
+		hints = [],
+		onHintOpen
+	}: Props = $props();
 
 	// Heading size classes based on level (consistent with TipTap editor)
 	const headingClasses: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
@@ -136,6 +150,8 @@
 						@{child.username}
 					</a>
 				{/if}
+			{:else if child.type === 'hint-reference'}
+				<HintReference hintId={child.hintId} {hints} {onHintOpen} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -203,6 +219,8 @@
 						@{child.username}
 					</a>
 				{/if}
+			{:else if child.type === 'hint-reference'}
+				<HintReference hintId={child.hintId} {hints} {onHintOpen} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -270,6 +288,8 @@
 						@{child.username}
 					</a>
 				{/if}
+			{:else if child.type === 'hint-reference'}
+				<HintReference hintId={child.hintId} {hints} {onHintOpen} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -337,6 +357,8 @@
 						@{child.username}
 					</a>
 				{/if}
+			{:else if child.type === 'hint-reference'}
+				<HintReference hintId={child.hintId} {hints} {onHintOpen} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -404,6 +426,8 @@
 						@{child.username}
 					</a>
 				{/if}
+			{:else if child.type === 'hint-reference'}
+				<HintReference hintId={child.hintId} {hints} {onHintOpen} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}
@@ -471,6 +495,8 @@
 						@{child.username}
 					</a>
 				{/if}
+			{:else if child.type === 'hint-reference'}
+				<HintReference hintId={child.hintId} {hints} {onHintOpen} />
 			{:else if child.type === 'line-break'}
 				{#if child.hard}<br />{/if}
 			{/if}

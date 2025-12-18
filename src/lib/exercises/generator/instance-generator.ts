@@ -6,11 +6,12 @@
  * with resolved values.
  *
  * Process:
- * 1. Check if exercise is parameterized (has variables)
- * 2. If parameterized: resolve variables using shared library
- * 3. Resolve {{}} syntax in markdown content (statement_md, solution_md)
- * 4. Optionally parse markdown to AST
- * 5. Return ExerciseInstance with metadata
+ * 1. Check if exercise uses variations system or legacy format
+ * 2. For variations: select variation based on seed, merge shared/per-variation variables
+ * 3. Resolve variables using shared library
+ * 4. Resolve {{}} syntax in markdown content (statement_md, solution_md)
+ * 5. Optionally parse markdown to AST
+ * 6. Return ExerciseInstance with metadata
  *
  * Supports three distribution modes:
  * - `on_demand`: Random instance each time
@@ -59,6 +60,40 @@
  *   console.log(result.instance.solution_ast);  // DocumentNode
  * }
  * ```
+ *
+ * @example Exercise with variations (new system)
+ * ```typescript
+ * const exercise: Exercise = {
+ *   id: 'ex-789',
+ *   shared: {
+ *     variables: [
+ *       { name: 'a', expression: '{{3..10}}' },
+ *       { name: 'b', expression: '{{3..10}}' }
+ *     ],
+ *     solution_md: 'AC = {{result}} cm'
+ *   },
+ *   variations: [
+ *     {
+ *       label: 'guided',
+ *       statement_md: 'With hints: {{hint:pythagore}}...',
+ *       hints: [{ id: 'pythagore', type: 'video', url: '...', title: 'Rappel' }]
+ *     },
+ *     {
+ *       label: 'autonomous',
+ *       statement_md: 'Calculate directly...'
+ *     }
+ *   ],
+ *   distribution_mode: 'per_student',
+ *   difficulty: 2,
+ *   tags: ['geometry']
+ * };
+ *
+ * const result = generateExerciseInstance(exercise, { seed: 42 });
+ * if (result.success) {
+ *   console.log(result.instance.selectedVariationLabel); // 'guided' or 'autonomous'
+ *   console.log(result.instance.resolvedHints); // hints from selected variation
+ * }
+ * ```
  */
 
 import type {
@@ -67,6 +102,7 @@ import type {
 	GenerateInstanceOptions,
 	InstanceGenerationResult
 } from '../types';
+import { isVariationsExercise, resolveExerciseVariationWithShared } from '../types';
 import {
 	resolveVariables,
 	resolveText,
@@ -87,9 +123,9 @@ import {
  *
  * **Process**:
  * 1. Generate or use provided seed
- * 2. Check if exercise is parameterized (has variables)
- * 3. If parameterized: resolve variables and content
- * 4. If static: passthrough content unchanged
+ * 2. Check if exercise uses variations system
+ * 3. If variations: select variation, merge variables, resolve
+ * 4. If legacy: check parameterization, resolve if needed
  * 5. Optionally parse markdown to AST
  * 6. Return instance with metadata
  *
@@ -167,7 +203,7 @@ import {
  * const result = generateExerciseInstance(exercise);
  * if (!result.success) {
  *   console.error(result.errors);
- *   // ['Circular dependency detected: a → b → a']
+ *   // ['Circular dependency detected: a -> b -> a']
  * }
  * ```
  */
@@ -176,98 +212,16 @@ export function generateExerciseInstance(
 	options: GenerateInstanceOptions = {}
 ): InstanceGenerationResult {
 	try {
-		// 1. Generate seed if not provided
+		// Generate seed if not provided
 		const seed = options.seed ?? Math.floor(Math.random() * 1000000);
 
-		// 2. Check if exercise is parameterized
-		const parameterized = isParameterized(exercise);
-
-		let resolvedStatementMd: string;
-		let resolvedSolutionMd: string;
-		let resolvedVariables: Array<{ name: string; value: string }> = [];
-
-		if (parameterized) {
-			// 3a. Parameterized: resolve variables and content
-
-			// Check for circular dependencies first
-			const circularResult = detectCircularDependencies(exercise.variables!);
-			if (!circularResult.valid) {
-				return {
-					success: false,
-					errors: circularResult.errors.map((e) => e.message)
-				};
-			}
-
-			try {
-				// Resolve variables using shared library
-				resolvedVariables = resolveVariables(exercise.variables!, seed);
-
-				// Resolve {{}} syntax in content using resolved variables
-				resolvedStatementMd = resolveText(exercise.statement_md, resolvedVariables);
-				resolvedSolutionMd = resolveText(exercise.solution_md, resolvedVariables);
-			} catch (error) {
-				// Catch errors from variable resolution or text resolution
-				return {
-					success: false,
-					errors: [error instanceof Error ? error.message : String(error)]
-				};
-			}
-		} else {
-			// 3b. Static: passthrough content unchanged
-			resolvedStatementMd = exercise.statement_md;
-			resolvedSolutionMd = exercise.solution_md;
+		// Check if exercise uses variations system
+		if (isVariationsExercise(exercise)) {
+			return generateVariationsInstance(exercise, seed, options);
 		}
 
-		// 4. Optionally parse markdown to AST
-		let statementAst;
-		let solutionAst;
-
-		if (options.parseAST === true) {
-			try {
-				statementAst = parseMarkdown(resolvedStatementMd);
-				solutionAst = parseMarkdown(resolvedSolutionMd);
-			} catch (error) {
-				return {
-					success: false,
-					errors: [
-						`Markdown parsing failed: ${error instanceof Error ? error.message : String(error)}`
-					]
-				};
-			}
-		}
-
-		// 5. Construct instance
-		const instance: ExerciseInstance = {
-			// Metadata from template
-			exerciseId: exercise.id,
-			title: exercise.title,
-			difficulty: exercise.difficulty,
-			tags: exercise.tags,
-			source: exercise.source,
-			grade_levels: exercise.grade_levels,
-			topic: exercise.topic,
-
-			// Instance-specific data
-			seed,
-			resolvedVariables,
-
-			// Resolved content
-			statement_md: resolvedStatementMd,
-			solution_md: resolvedSolutionMd,
-
-			// Optional AST
-			statement_ast: statementAst,
-			solution_ast: solutionAst,
-
-			// Generation metadata
-			generatedAt: new Date(),
-			distributionMode: exercise.distribution_mode
-		};
-
-		return {
-			success: true,
-			instance
-		};
+		// Legacy path: exercise without variations
+		return generateLegacyInstance(exercise, seed, options);
 	} catch (error) {
 		// Catch any unexpected errors
 		return {
@@ -277,6 +231,238 @@ export function generateExerciseInstance(
 			]
 		};
 	}
+}
+
+// ============================================================================
+// VARIATIONS INSTANCE GENERATOR
+// ============================================================================
+
+/**
+ * Generate instance for exercise using the variations system
+ *
+ * @param exercise - Exercise with variations array
+ * @param seed - Random seed for reproducible generation
+ * @param options - Generation options
+ * @returns Generation result with instance or errors
+ */
+function generateVariationsInstance(
+	exercise: Exercise,
+	seed: number,
+	options: GenerateInstanceOptions
+): InstanceGenerationResult {
+	// 1. Select variation based on seed (deterministic)
+	const variationIndex = Math.abs(seed) % exercise.variations!.length;
+	const selectedVariation = exercise.variations![variationIndex];
+
+	// 2. Merge shared defaults with variation
+	const resolvedVariation = resolveExerciseVariationWithShared(exercise.shared, selectedVariation);
+
+	// 3. Check for circular dependencies in merged variables
+	if (resolvedVariation.variables?.length) {
+		const circularResult = detectCircularDependencies(resolvedVariation.variables);
+		if (!circularResult.valid) {
+			return {
+				success: false,
+				errors: circularResult.errors.map((e) => e.message)
+			};
+		}
+	}
+
+	// 4. Resolve variables
+	let resolvedVariables: Array<{ name: string; value: string }> = [];
+	try {
+		resolvedVariables = resolvedVariation.variables?.length
+			? resolveVariables(resolvedVariation.variables, seed)
+			: [];
+	} catch (error) {
+		return {
+			success: false,
+			errors: [error instanceof Error ? error.message : String(error)]
+		};
+	}
+
+	// 5. Resolve {{varName}} in content
+	// Note: {{hint:id}} references are NOT resolved here - they stay as-is
+	// The frontend component will handle rendering hints from the hints array
+	let resolvedStatementMd: string;
+	let resolvedSolutionMd: string;
+	try {
+		resolvedStatementMd = resolveText(resolvedVariation.statement_md, resolvedVariables);
+		resolvedSolutionMd = resolveText(resolvedVariation.solution_md, resolvedVariables);
+	} catch (error) {
+		return {
+			success: false,
+			errors: [error instanceof Error ? error.message : String(error)]
+		};
+	}
+
+	// 6. Parse AST if requested
+	let statementAst;
+	let solutionAst;
+
+	if (options.parseAST === true) {
+		try {
+			statementAst = parseMarkdown(resolvedStatementMd);
+			solutionAst = parseMarkdown(resolvedSolutionMd);
+		} catch (error) {
+			return {
+				success: false,
+				errors: [
+					`Markdown parsing failed: ${error instanceof Error ? error.message : String(error)}`
+				]
+			};
+		}
+	}
+
+	// 7. Construct instance with variation info
+	const instance: ExerciseInstance = {
+		// Metadata from template
+		exerciseId: exercise.id,
+		title: exercise.title,
+		difficulty: exercise.difficulty,
+		tags: exercise.tags,
+		source: exercise.source,
+		grade_levels: exercise.grade_levels,
+		topic: exercise.topic,
+
+		// Instance-specific data
+		seed,
+		resolvedVariables,
+
+		// Resolved content
+		statement_md: resolvedStatementMd,
+		solution_md: resolvedSolutionMd,
+
+		// Optional AST
+		statement_ast: statementAst,
+		solution_ast: solutionAst,
+
+		// Generation metadata
+		generatedAt: new Date(),
+		distributionMode: exercise.distribution_mode,
+
+		// Variation tracking
+		selectedVariationIndex: variationIndex,
+		selectedVariationLabel: selectedVariation.label,
+		resolvedHints: resolvedVariation.hints
+	};
+
+	return {
+		success: true,
+		instance
+	};
+}
+
+// ============================================================================
+// LEGACY INSTANCE GENERATOR
+// ============================================================================
+
+/**
+ * Generate instance for legacy exercise (without variations)
+ *
+ * This handles exercises that use the original format with:
+ * - Direct statement_md/solution_md fields
+ * - Optional variables array at exercise level
+ *
+ * @param exercise - Legacy exercise without variations
+ * @param seed - Random seed for reproducible generation
+ * @param options - Generation options
+ * @returns Generation result with instance or errors
+ */
+function generateLegacyInstance(
+	exercise: Exercise,
+	seed: number,
+	options: GenerateInstanceOptions
+): InstanceGenerationResult {
+	// Check if exercise is parameterized
+	const parameterized = isParameterized(exercise);
+
+	let resolvedStatementMd: string;
+	let resolvedSolutionMd: string;
+	let resolvedVariables: Array<{ name: string; value: string }> = [];
+
+	if (parameterized) {
+		// Parameterized: resolve variables and content
+
+		// Check for circular dependencies first
+		const circularResult = detectCircularDependencies(exercise.variables!);
+		if (!circularResult.valid) {
+			return {
+				success: false,
+				errors: circularResult.errors.map((e) => e.message)
+			};
+		}
+
+		try {
+			// Resolve variables using shared library
+			resolvedVariables = resolveVariables(exercise.variables!, seed);
+
+			// Resolve {{}} syntax in content using resolved variables
+			resolvedStatementMd = resolveText(exercise.statement_md, resolvedVariables);
+			resolvedSolutionMd = resolveText(exercise.solution_md, resolvedVariables);
+		} catch (error) {
+			// Catch errors from variable resolution or text resolution
+			return {
+				success: false,
+				errors: [error instanceof Error ? error.message : String(error)]
+			};
+		}
+	} else {
+		// Static: passthrough content unchanged
+		resolvedStatementMd = exercise.statement_md;
+		resolvedSolutionMd = exercise.solution_md;
+	}
+
+	// Optionally parse markdown to AST
+	let statementAst;
+	let solutionAst;
+
+	if (options.parseAST === true) {
+		try {
+			statementAst = parseMarkdown(resolvedStatementMd);
+			solutionAst = parseMarkdown(resolvedSolutionMd);
+		} catch (error) {
+			return {
+				success: false,
+				errors: [
+					`Markdown parsing failed: ${error instanceof Error ? error.message : String(error)}`
+				]
+			};
+		}
+	}
+
+	// Construct instance
+	const instance: ExerciseInstance = {
+		// Metadata from template
+		exerciseId: exercise.id,
+		title: exercise.title,
+		difficulty: exercise.difficulty,
+		tags: exercise.tags,
+		source: exercise.source,
+		grade_levels: exercise.grade_levels,
+		topic: exercise.topic,
+
+		// Instance-specific data
+		seed,
+		resolvedVariables,
+
+		// Resolved content
+		statement_md: resolvedStatementMd,
+		solution_md: resolvedSolutionMd,
+
+		// Optional AST
+		statement_ast: statementAst,
+		solution_ast: solutionAst,
+
+		// Generation metadata
+		generatedAt: new Date(),
+		distributionMode: exercise.distribution_mode
+	};
+
+	return {
+		success: true,
+		instance
+	};
 }
 
 // ============================================================================

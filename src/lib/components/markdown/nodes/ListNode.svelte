@@ -22,6 +22,7 @@
 	import type { ListItemNode, ASTNode, InlineNode } from '$lib/custom-markdown';
 	import type { SchemeId } from '$lib/types/list-numbering';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { ExerciseHint } from '$lib/exercises/types';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import MathBlock from './MathBlock.svelte';
 	import ImageDisplay from './ImageDisplay.svelte';
@@ -47,6 +48,10 @@
 		onMentionClick?: (username: string) => void;
 		/** Configuration for generic function names in math parsing */
 		genericFunctions?: GenericFunctionConfig | null;
+		/** Available hints for {{hint:id}} references */
+		hints?: ExerciseHint[];
+		/** Callback when a hint is opened */
+		onHintOpen?: (hintId: string) => void;
 	}
 
 	let {
@@ -58,7 +63,9 @@
 		effectiveScheme = null,
 		onHashtagClick,
 		onMentionClick,
-		genericFunctions
+		genericFunctions,
+		hints = [],
+		onHintOpen
 	}: Props = $props();
 
 	// Compute depth for this list (only ordered lists increment depth)
@@ -173,6 +180,8 @@
 							{onHashtagClick}
 							{onMentionClick}
 							{genericFunctions}
+							{hints}
+							{onHintOpen}
 						/>
 					{:else if isParagraphNode(child)}
 						<ParagraphNode
@@ -180,6 +189,8 @@
 							{onHashtagClick}
 							{onMentionClick}
 							{genericFunctions}
+							{hints}
+							{onHintOpen}
 						/>
 					{:else if isHeadingNode(child)}
 						<HeadingNode
@@ -187,6 +198,8 @@
 							children={child.children}
 							{onHashtagClick}
 							{onMentionClick}
+							{hints}
+							{onHintOpen}
 						/>
 					{:else if isMathBlockNode(child)}
 						<MathBlock expression={child.expression} syntax={child.syntax} {genericFunctions} />
@@ -229,6 +242,8 @@
 							{onHashtagClick}
 							{onMentionClick}
 							{genericFunctions}
+							{hints}
+							{onHintOpen}
 						/>
 					{:else if isParagraphNode(child)}
 						<ParagraphNode
@@ -236,6 +251,8 @@
 							{onHashtagClick}
 							{onMentionClick}
 							{genericFunctions}
+							{hints}
+							{onHintOpen}
 						/>
 					{:else if isHeadingNode(child)}
 						<HeadingNode
@@ -243,6 +260,8 @@
 							children={child.children}
 							{onHashtagClick}
 							{onMentionClick}
+							{hints}
+							{onHintOpen}
 						/>
 					{:else if isMathBlockNode(child)}
 						<MathBlock expression={child.expression} syntax={child.syntax} {genericFunctions} />

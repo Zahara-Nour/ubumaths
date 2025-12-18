@@ -373,6 +373,224 @@ export interface Exercise {
 	created_at: string;
 	updated_at: string;
 	created_by: string; // UUID of creator
+
+	// Variations system (optional - for exercises with multiple guidance levels)
+	/**
+	 * Shared defaults applied to all variations
+	 *
+	 * Variables defined here are resolved before per-variation variables.
+	 * statement_md and solution_md serve as fallbacks if a variation doesn't define them.
+	 */
+	shared?: SharedExerciseDefaults;
+
+	/**
+	 * Array of variations with different guidance levels
+	 *
+	 * When defined, the exercise supports multiple versions (e.g., guided, intermediate, autonomous).
+	 * Each variation can have its own hints, statement, solution, and variables.
+	 */
+	variations?: ExerciseVariation[];
+}
+
+// ============================================================================
+// VARIATION TYPES
+// ============================================================================
+
+/**
+ * Guidance level label for exercise variations
+ *
+ * Standard labels for progressive difficulty/autonomy:
+ * - `guided`: Maximum support (step-by-step hints, detailed prompts)
+ * - `intermediate`: Moderate support (some hints available)
+ * - `autonomous`: Minimal support (student works independently)
+ *
+ * Custom string labels are also supported for flexibility.
+ */
+export type GuidanceLabel = 'guided' | 'intermediate' | 'autonomous';
+
+/**
+ * Inline hint that can be referenced in markdown via {{hint:id}} syntax
+ *
+ * Hints are displayed as interactive elements (buttons/tooltips) that reveal
+ * additional resources when clicked. Different from ExerciseResource which
+ * is shown in a separate resources section.
+ *
+ * @example Video hint
+ * ```typescript
+ * const hint: ExerciseHint = {
+ *   id: 'rappel-pythagore',
+ *   type: 'video',
+ *   url: 'https://youtube.com/watch?v=...',
+ *   title: 'Rappel: Théorème de Pythagore',
+ *   description: 'Vidéo de 3 minutes expliquant le théorème'
+ * };
+ * // Referenced in markdown as: {{hint:rappel-pythagore}}
+ * ```
+ *
+ * @example Image hint
+ * ```typescript
+ * const hint: ExerciseHint = {
+ *   id: 'schema-triangle',
+ *   type: 'image',
+ *   url: '/images/triangle-rectangle.png',
+ *   title: 'Schéma du triangle'
+ * };
+ * ```
+ */
+export interface ExerciseHint {
+	/** Unique ID for {{hint:id}} reference in markdown */
+	id: string;
+
+	/** Resource type for display handling (icon, viewer, etc.) */
+	type: ExerciseResourceType;
+
+	/** URL to the hint resource */
+	url: string;
+
+	/** Display title shown on hint button/tooltip */
+	title: string;
+
+	/** Optional description providing context */
+	description?: string;
+}
+
+/**
+ * Exercise variation with specific guidance level
+ *
+ * Variations allow the same exercise to be presented with different levels
+ * of scaffolding. A guided variation might include step-by-step hints,
+ * while an autonomous variation provides just the problem statement.
+ *
+ * Statements can include {{hint:id}} references that render as interactive
+ * hint buttons, allowing students to access help on demand.
+ *
+ * @example Guided variation with hints
+ * ```typescript
+ * const variation: ExerciseVariation = {
+ *   label: 'guided',
+ *   statement_md: `Dans un triangle rectangle ABC, on donne AB = {{a}} cm et BC = {{b}} cm.
+ *     {{hint:rappel-pythagore}}
+ *     Calculer AC.`,
+ *   solution_md: `On applique le théorème de Pythagore...`,
+ *   hints: [
+ *     {
+ *       id: 'rappel-pythagore',
+ *       type: 'video',
+ *       url: 'https://...',
+ *       title: 'Rappel: Théorème de Pythagore'
+ *     }
+ *   ]
+ * };
+ * ```
+ *
+ * @example Autonomous variation (minimal hints)
+ * ```typescript
+ * const variation: ExerciseVariation = {
+ *   label: 'autonomous',
+ *   statement_md: `Triangle ABC rectangle en B. AB = {{a}} cm, BC = {{b}} cm. Calculer AC.`,
+ *   solution_md: `AC = √({{a}}² + {{b}}²) = {{result}} cm`
+ * };
+ * ```
+ */
+export interface ExerciseVariation {
+	/**
+	 * Guidance level label
+	 *
+	 * Use standard labels ('guided', 'intermediate', 'autonomous') when possible
+	 * for consistent UI treatment. Custom strings are supported for special cases.
+	 */
+	label: GuidanceLabel | string;
+
+	/**
+	 * Statement markdown - can contain {{hint:id}} references
+	 *
+	 * The statement can embed hint triggers using the syntax {{hint:id}}
+	 * where id matches a hint in the hints array.
+	 */
+	statement_md: string;
+
+	/**
+	 * Solution markdown - can adapt to guidance level
+	 *
+	 * Guided variations might have more detailed solutions with
+	 * step-by-step explanations, while autonomous variations
+	 * might show just the final answer.
+	 */
+	solution_md: string;
+
+	/**
+	 * Per-variation variables (merged with shared variables)
+	 *
+	 * These variables are resolved after shared variables.
+	 * If a variable name matches a shared variable, it overrides it.
+	 */
+	variables?: Variable[];
+
+	/**
+	 * Hints available in this variation
+	 *
+	 * Each hint can be referenced in statement_md or solution_md
+	 * via {{hint:id}} syntax.
+	 */
+	hints?: ExerciseHint[];
+}
+
+/**
+ * Shared defaults applied to all variations
+ *
+ * Reduces duplication when variations share common content.
+ * Per-variation fields take precedence over shared defaults.
+ *
+ * @example Shared variables with variation-specific statements
+ * ```typescript
+ * const exercise: Exercise = {
+ *   // ... other fields ...
+ *   shared: {
+ *     variables: [
+ *       { name: 'a', expression: '{{3..10}}' },
+ *       { name: 'b', expression: '{{3..10}}' },
+ *       { name: 'result', expression: '{{eval:Math.sqrt(a*a + b*b)}}' }
+ *     ],
+ *     solution_md: 'AC = {{result}} cm'
+ *   },
+ *   variations: [
+ *     {
+ *       label: 'guided',
+ *       statement_md: 'Detailed statement with hints...',
+ *       solution_md: 'Step-by-step solution...' // Overrides shared
+ *     },
+ *     {
+ *       label: 'autonomous',
+ *       statement_md: 'Concise statement...'
+ *       // Uses shared solution_md
+ *     }
+ *   ]
+ * };
+ * ```
+ */
+export interface SharedExerciseDefaults {
+	/**
+	 * Shared variables resolved before per-variation variables
+	 *
+	 * Variables with the same name in per-variation override these.
+	 */
+	variables?: Variable[];
+
+	/**
+	 * Fallback statement if variation doesn't define one
+	 *
+	 * Useful when all variations share the same problem setup
+	 * but differ only in hints and scaffolding.
+	 */
+	statement_md?: string;
+
+	/**
+	 * Fallback solution if variation doesn't define one
+	 *
+	 * Useful when all variations lead to the same answer
+	 * but provide different levels of detail.
+	 */
+	solution_md?: string;
 }
 
 /**
@@ -551,6 +769,31 @@ export interface ExerciseInstance {
 
 	/** Distribution mode (copied from template) */
 	distributionMode: DistributionMode;
+
+	// Variation tracking (only for exercises using variations system)
+	/**
+	 * Index of the selected variation in the exercise's variations array
+	 *
+	 * Only present if the exercise uses the variations system.
+	 * Used to track which variation was shown to the student.
+	 */
+	selectedVariationIndex?: number;
+
+	/**
+	 * Label of the selected variation (e.g., 'guided', 'intermediate', 'autonomous')
+	 *
+	 * Copied from the selected variation for easy access without
+	 * needing to look up the original exercise template.
+	 */
+	selectedVariationLabel?: string;
+
+	/**
+	 * Resolved hints from the selected variation
+	 *
+	 * Contains the hints with URLs ready for display.
+	 * {{hint:id}} references in statement_md/solution_md use these.
+	 */
+	resolvedHints?: ExerciseHint[];
 }
 
 /**
@@ -1775,4 +2018,163 @@ export function formatAssignmentTarget(assignment: ExerciseAssignment): string {
 		case 'public':
 			return 'Public';
 	}
+}
+
+// ============================================================================
+// VARIATION HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Check if exercise uses the variations system
+ *
+ * An exercise uses variations if it has a non-empty variations array.
+ * This determines whether to use the standard rendering path or
+ * the variation-aware rendering path.
+ *
+ * @param exercise - Exercise to check
+ * @returns True if exercise has variations defined
+ *
+ * @example Standard exercise (no variations)
+ * ```typescript
+ * const exercise: Exercise = {
+ *   // ... fields ...
+ *   variations: undefined
+ * };
+ * isVariationsExercise(exercise); // false
+ * ```
+ *
+ * @example Exercise with variations
+ * ```typescript
+ * const exercise: Exercise = {
+ *   // ... fields ...
+ *   variations: [
+ *     { label: 'guided', statement_md: '...', solution_md: '...' },
+ *     { label: 'autonomous', statement_md: '...', solution_md: '...' }
+ *   ]
+ * };
+ * isVariationsExercise(exercise); // true
+ * ```
+ */
+export function isVariationsExercise(exercise: Exercise): boolean {
+	return exercise.variations !== undefined && exercise.variations.length > 0;
+}
+
+/**
+ * Merge shared and per-variation variables
+ *
+ * Combines shared variables with per-variation variables, allowing
+ * per-variation to override shared variables with the same name.
+ *
+ * Resolution order:
+ * 1. Shared variables (resolved first)
+ * 2. Per-variation variables (can reference and override shared)
+ *
+ * @param shared - Shared variables from exercise.shared.variables
+ * @param perVariation - Per-variation variables from variation.variables
+ * @returns Merged variable array, or undefined if both are empty
+ *
+ * @example No variables
+ * ```typescript
+ * mergeExerciseVariables(undefined, undefined); // undefined
+ * ```
+ *
+ * @example Only shared variables
+ * ```typescript
+ * const shared = [{ name: 'a', expression: '{{1..10}}' }];
+ * mergeExerciseVariables(shared, undefined);
+ * // [{ name: 'a', expression: '{{1..10}}' }]
+ * ```
+ *
+ * @example Override shared variable
+ * ```typescript
+ * const shared = [{ name: 'a', expression: '{{1..10}}' }];
+ * const perVar = [{ name: 'a', expression: '{{5..15}}' }];
+ * mergeExerciseVariables(shared, perVar);
+ * // [{ name: 'a', expression: '{{5..15}}' }] - per-variation wins
+ * ```
+ *
+ * @example Merge different variables
+ * ```typescript
+ * const shared = [{ name: 'a', expression: '{{1..10}}' }];
+ * const perVar = [{ name: 'b', expression: '{{eval:a*2}}' }];
+ * mergeExerciseVariables(shared, perVar);
+ * // [{ name: 'a', expression: '{{1..10}}' }, { name: 'b', expression: '{{eval:a*2}}' }]
+ * ```
+ */
+export function mergeExerciseVariables(
+	shared: Variable[] | undefined,
+	perVariation: Variable[] | undefined
+): Variable[] | undefined {
+	if (!shared?.length) return perVariation;
+	if (!perVariation?.length) return shared;
+
+	// Build set of overridden variable names
+	const overriddenNames = new Set(perVariation.map((v) => v.name));
+
+	// Filter out shared variables that are overridden
+	const effectiveShared = shared.filter((v) => !overriddenNames.has(v.name));
+
+	return [...effectiveShared, ...perVariation];
+}
+
+/**
+ * Resolve variation with shared defaults applied
+ *
+ * Creates a complete variation by applying shared defaults for any
+ * fields not defined in the per-variation object.
+ *
+ * Priority (highest to lowest):
+ * 1. Per-variation value (if defined and non-empty)
+ * 2. Shared default value
+ * 3. Empty string (for required string fields)
+ *
+ * @param shared - Shared defaults from exercise.shared
+ * @param variation - Per-variation values
+ * @returns Complete variation with all fields resolved
+ *
+ * @example No shared defaults
+ * ```typescript
+ * const variation = {
+ *   label: 'guided',
+ *   statement_md: 'Problem...',
+ *   solution_md: 'Answer...'
+ * };
+ * resolveExerciseVariationWithShared(undefined, variation);
+ * // Returns variation unchanged
+ * ```
+ *
+ * @example Using shared solution
+ * ```typescript
+ * const shared = {
+ *   variables: [{ name: 'a', expression: '{{1..10}}' }],
+ *   solution_md: 'The answer is {{a}}'
+ * };
+ * const variation = {
+ *   label: 'guided',
+ *   statement_md: 'Calculate {{a}}...',
+ *   solution_md: '' // Empty, will use shared
+ * };
+ * resolveExerciseVariationWithShared(shared, variation);
+ * // {
+ * //   label: 'guided',
+ * //   statement_md: 'Calculate {{a}}...',
+ * //   solution_md: 'The answer is {{a}}', // From shared
+ * //   variables: [{ name: 'a', expression: '{{1..10}}' }],
+ * //   hints: undefined
+ * // }
+ * ```
+ */
+export function resolveExerciseVariationWithShared(
+	shared: SharedExerciseDefaults | undefined,
+	variation: ExerciseVariation
+): ExerciseVariation {
+	if (!shared) return variation;
+
+	return {
+		label: variation.label,
+		statement_md: variation.statement_md || shared.statement_md || '',
+		solution_md: variation.solution_md || shared.solution_md || '',
+		variables: mergeExerciseVariables(shared.variables, variation.variables),
+		hints: variation.hints
+	};
 }

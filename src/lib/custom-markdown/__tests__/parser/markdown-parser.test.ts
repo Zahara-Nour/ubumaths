@@ -1130,3 +1130,352 @@ describe('parseMarkdown - mention support', () => {
 		}
 	});
 });
+
+describe('parseMarkdown - hint reference support', () => {
+	it('should parse simple hint reference', () => {
+		const markdown = '{{hint:formula1}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('hint-reference');
+
+			if (paragraph.children[0].type === 'hint-reference') {
+				expect(paragraph.children[0].hintId).toBe('formula1');
+			}
+		}
+	});
+
+	it('should parse hint reference with dash', () => {
+		const markdown = '{{hint:derivative-rule}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('hint-reference');
+
+			if (paragraph.children[0].type === 'hint-reference') {
+				expect(paragraph.children[0].hintId).toBe('derivative-rule');
+			}
+		}
+	});
+
+	it('should parse hint reference with underscore', () => {
+		const markdown = '{{hint:rappel_addition}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(1);
+			expect(paragraph.children[0].type).toBe('hint-reference');
+
+			if (paragraph.children[0].type === 'hint-reference') {
+				expect(paragraph.children[0].hintId).toBe('rappel_addition');
+			}
+		}
+	});
+
+	it('should parse hint reference surrounded by text', () => {
+		const markdown = 'Calculate the derivative. {{hint:derivative-rule}} Then simplify.';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(3);
+
+			// First: text before hint
+			expect(paragraph.children[0].type).toBe('text');
+			if (paragraph.children[0].type === 'text') {
+				expect(paragraph.children[0].content).toBe('Calculate the derivative. ');
+			}
+
+			// Second: hint reference
+			expect(paragraph.children[1].type).toBe('hint-reference');
+			if (paragraph.children[1].type === 'hint-reference') {
+				expect(paragraph.children[1].hintId).toBe('derivative-rule');
+			}
+
+			// Third: text after hint
+			expect(paragraph.children[2].type).toBe('text');
+			if (paragraph.children[2].type === 'text') {
+				expect(paragraph.children[2].content).toBe(' Then simplify.');
+			}
+		}
+	});
+
+	it('should parse multiple hint references', () => {
+		const markdown = '{{hint:step1}} and {{hint:step2}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			const hints = paragraph.children.filter((n) => n.type === 'hint-reference');
+			expect(hints).toHaveLength(2);
+
+			if (hints[0].type === 'hint-reference' && hints[1].type === 'hint-reference') {
+				expect(hints[0].hintId).toBe('step1');
+				expect(hints[1].hintId).toBe('step2');
+			}
+		}
+	});
+
+	it('should NOT parse hint starting with digit', () => {
+		const markdown = '{{hint:123-invalid}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			// Should NOT have hint-reference node (starts with digit)
+			const hintNode = paragraph.children.find((n) => n.type === 'hint-reference');
+			expect(hintNode).toBeUndefined();
+
+			// Should be plain text
+			expect(paragraph.children[0].type).toBe('text');
+			if (paragraph.children[0].type === 'text') {
+				expect(paragraph.children[0].content).toBe('{{hint:123-invalid}}');
+			}
+		}
+	});
+
+	it('should NOT parse variable placeholders as hints', () => {
+		const markdown = '{{varName}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			// Should NOT have hint-reference (no "hint:" prefix)
+			const hintNode = paragraph.children.find((n) => n.type === 'hint-reference');
+			expect(hintNode).toBeUndefined();
+
+			// Should be plain text
+			expect(paragraph.children[0].type).toBe('text');
+			if (paragraph.children[0].type === 'text') {
+				expect(paragraph.children[0].content).toBe('{{varName}}');
+			}
+		}
+	});
+
+	it('should NOT parse blank placeholders as hints', () => {
+		const markdown = '{{blank:1}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			// Should be blank, not hint-reference
+			expect(paragraph.children[0].type).toBe('blank');
+			const hintNode = paragraph.children.find((n) => n.type === 'hint-reference');
+			expect(hintNode).toBeUndefined();
+		}
+	});
+
+	it('should parse hint reference with math', () => {
+		const markdown = 'Calculate $x^2$ {{hint:formula}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have math and hint
+			const mathNode = paragraph.children.find((n) => n.type === 'math-inline');
+			expect(mathNode).toBeDefined();
+			if (mathNode && mathNode.type === 'math-inline') {
+				expect(mathNode.expression).toBe('x^2');
+			}
+
+			const hintNode = paragraph.children.find((n) => n.type === 'hint-reference');
+			expect(hintNode).toBeDefined();
+			if (hintNode && hintNode.type === 'hint-reference') {
+				expect(hintNode.hintId).toBe('formula');
+			}
+		}
+	});
+
+	it('should parse hint reference with blank', () => {
+		const markdown = '{{blank:1}} {{hint:hint1}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have blank and hint
+			const blankNode = paragraph.children.find((n) => n.type === 'blank');
+			expect(blankNode).toBeDefined();
+			if (blankNode && blankNode.type === 'blank') {
+				expect(blankNode.index).toBe(1);
+			}
+
+			const hintNode = paragraph.children.find((n) => n.type === 'hint-reference');
+			expect(hintNode).toBeDefined();
+			if (hintNode && hintNode.type === 'hint-reference') {
+				expect(hintNode.hintId).toBe('hint1');
+			}
+		}
+	});
+
+	it('should parse hint reference with link', () => {
+		const markdown = 'See {{hint:explanation}} or [docs](https://example.com)';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have hint and link
+			const hintNode = paragraph.children.find((n) => n.type === 'hint-reference');
+			expect(hintNode).toBeDefined();
+			if (hintNode && hintNode.type === 'hint-reference') {
+				expect(hintNode.hintId).toBe('explanation');
+			}
+
+			const linkNode = paragraph.children.find((n) => n.type === 'link');
+			expect(linkNode).toBeDefined();
+			if (linkNode && linkNode.type === 'link') {
+				expect(linkNode.text).toBe('docs');
+				expect(linkNode.url).toBe('https://example.com');
+			}
+		}
+	});
+
+	it('should parse hint reference with hashtag and mention', () => {
+		const markdown = '{{hint:help}} #math @teacher';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have hint, hashtag, and mention
+			const hintNode = paragraph.children.find((n) => n.type === 'hint-reference');
+			expect(hintNode).toBeDefined();
+			if (hintNode && hintNode.type === 'hint-reference') {
+				expect(hintNode.hintId).toBe('help');
+			}
+
+			const hashtagNode = paragraph.children.find((n) => n.type === 'hashtag');
+			expect(hashtagNode).toBeDefined();
+			if (hashtagNode && hashtagNode.type === 'hashtag') {
+				expect(hashtagNode.tag).toBe('math');
+			}
+
+			const mentionNode = paragraph.children.find((n) => n.type === 'mention');
+			expect(mentionNode).toBeDefined();
+			if (mentionNode && mentionNode.type === 'mention') {
+				expect(mentionNode.username).toBe('teacher');
+			}
+		}
+	});
+
+	it('should parse hint reference with formatting', () => {
+		const markdown = '**Important:** {{hint:key-formula}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have bold text and hint
+			const boldNode = paragraph.children.find(
+				(n) => n.type === 'text' && n.bold && n.content === 'Important:'
+			);
+			expect(boldNode).toBeDefined();
+
+			const hintNode = paragraph.children.find((n) => n.type === 'hint-reference');
+			expect(hintNode).toBeDefined();
+			if (hintNode && hintNode.type === 'hint-reference') {
+				expect(hintNode.hintId).toBe('key-formula');
+			}
+		}
+	});
+
+	it('should parse hint reference in list item', () => {
+		const markdown = `1. Solve $x^2 = 4$ {{hint:square-root}}
+2. Simplify {{hint:simplify}}`;
+
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('list');
+
+		if (ast.children[0].type === 'list') {
+			const list = ast.children[0];
+			expect(list.items).toHaveLength(2);
+
+			// Check first item has hint
+			const firstItem = list.items[0];
+			if (firstItem.children[0].type === 'paragraph') {
+				const hintNode = firstItem.children[0].children.find((n) => n.type === 'hint-reference');
+				expect(hintNode).toBeDefined();
+				if (hintNode && hintNode.type === 'hint-reference') {
+					expect(hintNode.hintId).toBe('square-root');
+				}
+			}
+
+			// Check second item has hint
+			const secondItem = list.items[1];
+			if (secondItem.children[0].type === 'paragraph') {
+				const hintNode = secondItem.children[0].children.find((n) => n.type === 'hint-reference');
+				expect(hintNode).toBeDefined();
+				if (hintNode && hintNode.type === 'hint-reference') {
+					expect(hintNode.hintId).toBe('simplify');
+				}
+			}
+		}
+	});
+
+	it('should parse hint reference in heading', () => {
+		const markdown = '## Formula {{hint:definition}}';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('heading');
+
+		if (ast.children[0].type === 'heading') {
+			const heading = ast.children[0];
+			expect(heading.level).toBe(2);
+
+			const hintNode = heading.children.find((n) => n.type === 'hint-reference');
+			expect(hintNode).toBeDefined();
+			if (hintNode && hintNode.type === 'hint-reference') {
+				expect(hintNode.hintId).toBe('definition');
+			}
+		}
+	});
+});

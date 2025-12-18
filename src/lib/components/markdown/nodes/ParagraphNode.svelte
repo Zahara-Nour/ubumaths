@@ -23,10 +23,12 @@
 <script lang="ts">
 	import type { InlineNode, InputState } from '$lib/custom-markdown';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { ExerciseHint } from '$lib/exercises/types';
 	import MathInline from './MathInline.svelte';
 	import MathPrompt from './MathPrompt.svelte';
 	import TextNode from './TextNode.svelte';
 	import BlankInput from './BlankInput.svelte';
+	import HintReference from './HintReference.svelte';
 	import { hasPrompts } from '../utils/math-utils';
 
 	interface Props {
@@ -46,6 +48,10 @@
 		onMentionClick?: (username: string) => void;
 		/** Configuration for generic function names (f, g, h, P, Q, etc.) */
 		genericFunctions?: GenericFunctionConfig | null;
+		/** Available hints for {{hint:id}} references */
+		hints?: ExerciseHint[];
+		/** Callback when a hint is opened */
+		onHintOpen?: (hintId: string) => void;
 	}
 
 	let {
@@ -57,14 +63,18 @@
 		inputsDisabled = false,
 		onHashtagClick,
 		onMentionClick,
-		genericFunctions
+		genericFunctions,
+		hints = [],
+		onHintOpen
 	}: Props = $props();
 
 	/**
-	 * Check if adjacent node is inline-block (math or blank) for whitespace handling
+	 * Check if adjacent node is inline-block (math, blank, or hint) for whitespace handling
 	 */
 	function isInlineBlockNode(node: InlineNode | undefined): boolean {
-		return node?.type === 'math-inline' || node?.type === 'blank';
+		return (
+			node?.type === 'math-inline' || node?.type === 'blank' || node?.type === 'hint-reference'
+		);
 	}
 
 	/**
@@ -186,6 +196,8 @@
 					@{child.username}
 				</a>
 			{/if}
+		{:else if child.type === 'hint-reference'}
+			<HintReference hintId={child.hintId} {hints} {onHintOpen} />
 		{:else if child.type === 'line-break'}
 			{#if child.hard}<br />{/if}
 		{/if}
