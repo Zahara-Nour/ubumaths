@@ -402,7 +402,8 @@
 		>
 			<!-- Canvas wrapper with shadow -->
 			<div
-				class="whiteboard-page-wrapper relative shadow-lg transition-transform"
+				class="whiteboard-page-wrapper relative shadow-lg"
+				class:transition-transform={!isPanning}
 				style="width: {canvasWidth}px; height: {canvasHeight}px; transform: translate({panX}px, {panY}px);"
 			>
 				<WhiteboardCanvas class="h-full w-full" scale={effectiveScale} />
