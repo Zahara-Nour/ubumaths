@@ -204,6 +204,9 @@ export async function getExerciseBySlug(supabase: SupabaseClient<Database>, slug
 /**
  * Create a new exercise
  * Only teachers can create exercises
+ *
+ * Supports both legacy format (statement_md, solution_md, variables) and
+ * variations format (variations array with optional shared defaults).
  */
 export async function createExercise(
 	supabase: SupabaseClient<Database>,
@@ -221,7 +224,8 @@ export async function createExercise(
 		};
 	}
 
-	// Validate and serialize variables
+	// Validate legacy variables (if provided) - backward compatibility
+	// Note: The legacy 'variables' field is separate from variations.variables
 	const variablesValidation = validateVariables(exercise.variables);
 	if (!variablesValidation.valid) {
 		return {
@@ -235,20 +239,26 @@ export async function createExercise(
 		(exercise as { slug?: string }).slug ||
 		generateExerciseSlug((exercise as { topic?: string }).topic);
 
-	const { data, error } = await supabase
-		.from('exercises')
-		.insert({
-			...exercise,
-			slug,
-			variables:
-				variablesValidation.variables.length > 0
-					? (variablesValidation.variables as unknown as Database['public']['Tables']['exercises']['Row']['variables'])
-					: undefined,
-			distribution_mode: distributionMode,
-			created_by: userId
-		})
-		.select()
-		.single();
+	// Prepare insert data
+	// variations and shared are already validated by Zod at API level
+	// They are JSONB columns and will be stored as-is
+	const insertData = {
+		...exercise,
+		slug,
+		variables:
+			variablesValidation.variables.length > 0
+				? (variablesValidation.variables as unknown as Database['public']['Tables']['exercises']['Row']['variables'])
+				: undefined,
+		distribution_mode: distributionMode,
+		created_by: userId,
+		// variations and shared pass through (JSONB, validated by Zod)
+		variations: (exercise as { variations?: unknown })
+			.variations as Database['public']['Tables']['exercises']['Row']['variations'],
+		shared: (exercise as { shared?: unknown })
+			.shared as Database['public']['Tables']['exercises']['Row']['shared']
+	};
+
+	const { data, error } = await supabase.from('exercises').insert(insertData).select().single();
 
 	if (error) {
 		console.error('Error creating exercise:', error);
@@ -261,6 +271,8 @@ export async function createExercise(
 /**
  * Update an existing exercise
  * Only the creator can update their own exercise
+ *
+ * Supports updating both legacy format fields and variations/shared fields.
  */
 export async function updateExercise(
 	supabase: SupabaseClient<Database>,
@@ -291,7 +303,7 @@ export async function updateExercise(
 		}
 	}
 
-	// Validate variables if provided
+	// Validate legacy variables if provided
 	if (updates.variables !== undefined) {
 		const variablesValidation = validateVariables(updates.variables);
 		if (!variablesValidation.valid) {
@@ -310,10 +322,21 @@ export async function updateExercise(
 		};
 	}
 
+	// Prepare update data
+	// variations and shared are validated by Zod at API level and pass through as JSONB
+	const updateData = {
+		...updates,
+		// Cast variations and shared for database compatibility
+		variations: (updates as { variations?: unknown })
+			.variations as Database['public']['Tables']['exercises']['Row']['variations'],
+		shared: (updates as { shared?: unknown })
+			.shared as Database['public']['Tables']['exercises']['Row']['shared']
+	};
+
 	// Update the exercise
 	const { data, error } = await supabase
 		.from('exercises')
-		.update(updates)
+		.update(updateData)
 		.eq('id', id)
 		.eq('created_by', userId) // Double-check ownership via RLS
 		.select()
@@ -491,6 +514,16 @@ export async function getTeacherExercises(
  * );
  * // All students in this assignment get same values
  * ```
+ *
+ * @example With specific variation
+ * ```typescript
+ * const result = await generateExerciseInstanceServer(
+ *   supabase,
+ *   'ex-123',
+ *   'user-456',
+ *   { variationIndex: 1 } // Select variation at index 1
+ * );
+ * ```
  */
 export async function generateExerciseInstanceServer(
 	supabase: SupabaseClient<Database>,
@@ -500,6 +533,7 @@ export async function generateExerciseInstanceServer(
 		groupId?: string; // For per-group distribution
 		seed?: number; // Override seed
 		parseAST?: boolean; // Parse markdown to AST
+		variationIndex?: number; // Select specific variation (for exercises with variations)
 	}
 ): Promise<InstanceGenerationResult> {
 	// Fetch the exercise
@@ -554,9 +588,11 @@ export async function generateExerciseInstanceServer(
 	}
 
 	// Generate instance using the generator
+	// The variationIndex option is passed to the generator which handles variation selection
 	return generateExerciseInstance(exerciseTemplate, {
 		seed,
-		parseAST: options?.parseAST ?? false
+		parseAST: options?.parseAST ?? false,
+		variationIndex: options?.variationIndex
 	});
 }
 

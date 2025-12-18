@@ -2382,6 +2382,7 @@ export type Database = {
 					id: string;
 					is_public: boolean;
 					resources: Json | null;
+					shared: Json | null;
 					slug: string | null;
 					solution_md: string;
 					source: string | null;
@@ -2391,6 +2392,7 @@ export type Database = {
 					topic: string | null;
 					updated_at: string;
 					variables: Json;
+					variations: Json | null;
 				};
 				Insert: {
 					created_at?: string;
@@ -2402,6 +2404,7 @@ export type Database = {
 					id?: string;
 					is_public?: boolean;
 					resources?: Json | null;
+					shared?: Json | null;
 					slug?: string | null;
 					solution_md: string;
 					source?: string | null;
@@ -2411,6 +2414,7 @@ export type Database = {
 					topic?: string | null;
 					updated_at?: string;
 					variables?: Json;
+					variations?: Json | null;
 				};
 				Update: {
 					created_at?: string;
@@ -2422,6 +2426,7 @@ export type Database = {
 					id?: string;
 					is_public?: boolean;
 					resources?: Json | null;
+					shared?: Json | null;
 					slug?: string | null;
 					solution_md?: string;
 					source?: string | null;
@@ -2431,6 +2436,7 @@ export type Database = {
 					topic?: string | null;
 					updated_at?: string;
 					variables?: Json;
+					variations?: Json | null;
 				};
 				Relationships: [
 					{

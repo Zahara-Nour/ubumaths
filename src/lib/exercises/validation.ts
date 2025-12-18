@@ -55,42 +55,62 @@ const gradeLevelsSchema = z
 // ============================================================================
 
 /**
- * Schema for ExerciseExport (clean export format)
- * Used for JSON import/export
+ * Schema for exercise variable (from custom-markdown)
+ */
+const variableSchema = z.object({
+	name: z.string(),
+	expression: z.string()
+});
+
+/**
+ * Schema for exercise hint
+ */
+const exerciseHintSchema = z.object({
+	id: z.string(),
+	type: z.enum(['video', 'pdf', 'text']),
+	url: z.string().optional(),
+	title: z.string(),
+	description: z.string().optional(),
+	content: z.string().optional()
+});
+
+/**
+ * Schema for exercise variation
+ */
+const exerciseVariationSchema = z.object({
+	label: z.string(),
+	statement_md: z.string(),
+	solution_md: z.string(),
+	variables: z.array(variableSchema).optional(),
+	hints: z.array(exerciseHintSchema).optional()
+});
+
+/**
+ * Schema for shared exercise defaults
+ */
+const sharedExerciseDefaultsSchema = z.object({
+	variables: z.array(variableSchema).optional(),
+	statement_md: z.string().optional(),
+	solution_md: z.string().optional()
+});
+
+/**
+ * Schema for ExerciseExport v1.0 (legacy format without variations)
  *
- * @example Valid exercise export
+ * @example Valid v1.0 exercise
  * ```typescript
  * const exercise = {
  *   version: '1.0',
  *   title: 'Équations du premier degré',
- *   source: 'Livre Chapitre 3',
  *   difficulty: 2,
  *   tags: ['algèbre', 'équations'],
  *   statement_md: '# Résoudre\n\nRésoudre l\'équation: $2x + 5 = 13$',
- *   solution_md: '# Solution\n\n$2x = 8$\n\n$x = 4$',
- *   estimated_time_minutes: 10,
- *   grade_levels: ['4eme', '3eme'],
- *   topic: 'Algèbre'
+ *   solution_md: '# Solution\n\n$2x = 8$\n\n$x = 4$'
  * };
- *
- * const result = exerciseExportSchema.parse(exercise);
- * // ✅ Valid - returns typed exercise object
- * ```
- *
- * @example Invalid exercise (missing required fields)
- * ```typescript
- * const invalid = {
- *   version: '1.0',
- *   difficulty: 2,
- *   statement_md: 'Some question'
- *   // ❌ Missing solution_md (required)
- * };
- *
- * exerciseExportSchema.parse(invalid);
- * // Throws: ZodError - solution_md is required
+ * exerciseExportSchemaV1.parse(exercise); // ✅ Valid
  * ```
  */
-export const exerciseExportSchema = z.object({
+const exerciseExportSchemaV1 = z.object({
 	version: z.literal('1.0'),
 
 	// Metadata
@@ -109,7 +129,82 @@ export const exerciseExportSchema = z.object({
 });
 
 /**
- * Type inferred from export schema
+ * Schema for ExerciseExport v2.0 (with variations support)
+ *
+ * @example Valid v2.0 exercise with variations
+ * ```typescript
+ * const exercise = {
+ *   version: '2.0',
+ *   difficulty: 2,
+ *   tags: ['algèbre'],
+ *   statement_md: 'Base statement',
+ *   solution_md: 'Base solution',
+ *   variations: [
+ *     { label: 'guided', statement_md: 'Guided', solution_md: 'Solution' }
+ *   ]
+ * };
+ * exerciseExportSchemaV2.parse(exercise); // ✅ Valid
+ * ```
+ */
+const exerciseExportSchemaV2 = z.object({
+	version: z.literal('2.0'),
+
+	// Metadata
+	title: z.string().trim().optional(),
+	source: z.string().trim().optional(),
+	difficulty: difficultySchema,
+	tags: tagsSchema,
+
+	// Content (required - preserved for backward compatibility)
+	statement_md: z.string().trim().min(1, 'Exercise statement cannot be empty'),
+	solution_md: z.string().trim().min(1, 'Exercise solution cannot be empty'),
+
+	// Additional metadata
+	grade_levels: gradeLevelsSchema,
+	topic: z.string().trim().optional(),
+
+	// Variations system
+	variations: z.array(exerciseVariationSchema).optional(),
+	shared: sharedExerciseDefaultsSchema.optional()
+});
+
+/**
+ * Schema for ExerciseExport (clean export format)
+ * Supports both v1.0 (legacy) and v2.0 (with variations) formats
+ *
+ * Used for JSON import/export with automatic version detection
+ *
+ * @example Valid v1.0 exercise (legacy)
+ * ```typescript
+ * const v1Exercise = {
+ *   version: '1.0',
+ *   difficulty: 2,
+ *   tags: ['algèbre'],
+ *   statement_md: 'Question',
+ *   solution_md: 'Answer'
+ * };
+ * exerciseExportSchema.parse(v1Exercise); // ✅ Valid
+ * ```
+ *
+ * @example Valid v2.0 exercise (with variations)
+ * ```typescript
+ * const v2Exercise = {
+ *   version: '2.0',
+ *   difficulty: 2,
+ *   tags: ['algèbre'],
+ *   statement_md: 'Base',
+ *   solution_md: 'Base solution',
+ *   variations: [
+ *     { label: 'guided', statement_md: 'Guided', solution_md: 'Solution' }
+ *   ]
+ * };
+ * exerciseExportSchema.parse(v2Exercise); // ✅ Valid
+ * ```
+ */
+export const exerciseExportSchema = z.union([exerciseExportSchemaV1, exerciseExportSchemaV2]);
+
+/**
+ * Type inferred from export schema (union of v1.0 and v2.0)
  */
 export type ValidatedExerciseExport = z.infer<typeof exerciseExportSchema>;
 
