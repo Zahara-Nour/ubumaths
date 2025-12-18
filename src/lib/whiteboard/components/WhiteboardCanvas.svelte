@@ -978,7 +978,7 @@
 							stroke={shape.color}
 							stroke-width={shape.strokeWidth}
 							stroke-dasharray={dashArray}
-							opacity={shape.opacity}
+							stroke-opacity={shape.opacity}
 							fill={shapeFill}
 							fill-opacity={shape.fillOpacity ?? 1}
 						/>
@@ -991,7 +991,7 @@
 							stroke={shape.color}
 							stroke-width={shape.strokeWidth}
 							stroke-dasharray={dashArray}
-							opacity={shape.opacity}
+							stroke-opacity={shape.opacity}
 							fill={shapeFill}
 							fill-opacity={shape.fillOpacity ?? 1}
 						/>
@@ -1002,7 +1002,7 @@
 							stroke-width={shape.strokeWidth}
 							stroke-linejoin="round"
 							stroke-dasharray={dashArray}
-							opacity={shape.opacity}
+							stroke-opacity={shape.opacity}
 							fill={shapeFill}
 							fill-opacity={shape.fillOpacity ?? 1}
 						/>
@@ -1013,7 +1013,7 @@
 							stroke-width={shape.strokeWidth}
 							stroke-linejoin="round"
 							stroke-dasharray={dashArray}
-							opacity={shape.opacity}
+							stroke-opacity={shape.opacity}
 							fill={shapeFill}
 							fill-opacity={shape.fillOpacity ?? 1}
 						/>
@@ -1078,7 +1078,7 @@
 						stroke={toolState.color}
 						stroke-width={toolState.strokeWidth}
 						stroke-dasharray={previewDashArray}
-						opacity={toolState.opacity}
+						stroke-opacity={toolState.opacity}
 						fill={previewFill}
 						fill-opacity={toolState.fillOpacity}
 					/>
@@ -1091,7 +1091,7 @@
 						stroke={toolState.color}
 						stroke-width={toolState.strokeWidth}
 						stroke-dasharray={previewDashArray}
-						opacity={toolState.opacity}
+						stroke-opacity={toolState.opacity}
 						fill={previewFill}
 						fill-opacity={toolState.fillOpacity}
 					/>
@@ -1102,7 +1102,7 @@
 						stroke-width={toolState.strokeWidth}
 						stroke-linejoin="round"
 						stroke-dasharray={previewDashArray}
-						opacity={toolState.opacity}
+						stroke-opacity={toolState.opacity}
 						fill={previewFill}
 						fill-opacity={toolState.fillOpacity}
 					/>
@@ -1113,7 +1113,7 @@
 						stroke-width={toolState.strokeWidth}
 						stroke-linejoin="round"
 						stroke-dasharray={previewDashArray}
-						opacity={toolState.opacity}
+						stroke-opacity={toolState.opacity}
 						fill={previewFill}
 						fill-opacity={toolState.fillOpacity}
 					/>
