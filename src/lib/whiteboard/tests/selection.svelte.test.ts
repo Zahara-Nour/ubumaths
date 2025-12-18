@@ -193,6 +193,45 @@ describe('Selection State', () => {
 		});
 	});
 
+	describe('deselectElement', () => {
+		it('removes a single element from selection', () => {
+			const element1 = createTestStroke('stroke-1');
+			const element2 = createTestStroke('stroke-2');
+			whiteboardStore.addElement(element1);
+			whiteboardStore.addElement(element2);
+
+			whiteboardStore.selectElement('stroke-1');
+			whiteboardStore.selectElement('stroke-2', true);
+			expect(whiteboardStore.selectedIds.size).toBe(2);
+
+			whiteboardStore.deselectElement('stroke-1');
+
+			expect(whiteboardStore.selectedIds.size).toBe(1);
+			expect(whiteboardStore.selectedIds.has('stroke-1')).toBe(false);
+			expect(whiteboardStore.selectedIds.has('stroke-2')).toBe(true);
+		});
+
+		it('does nothing when element is not selected', () => {
+			const element = createTestStroke('stroke-1');
+			whiteboardStore.addElement(element);
+
+			whiteboardStore.deselectElement('stroke-1');
+
+			expect(whiteboardStore.selectedIds.size).toBe(0);
+		});
+
+		it('can deselect the only selected element', () => {
+			const element = createTestStroke('stroke-1');
+			whiteboardStore.addElement(element);
+
+			whiteboardStore.selectElement('stroke-1');
+			whiteboardStore.deselectElement('stroke-1');
+
+			expect(whiteboardStore.selectedIds.size).toBe(0);
+			expect(whiteboardStore.hasSelection).toBe(false);
+		});
+	});
+
 	describe('deleteSelected', () => {
 		it('deletes all selected elements from the page', () => {
 			const element1 = createTestStroke('stroke-1');

@@ -14,6 +14,7 @@
 		doStrokesIntersect
 	} from '../core/stroke-smoothing';
 	import { createShapeElement, getShapeSvgProps } from '../core/shapes';
+	import { hitTestElements } from '../core/hit-testing';
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ImageLayer from './ImageLayer.svelte';
@@ -103,6 +104,9 @@
 	/** Text tool */
 	let isTextTool = $derived(toolState.toolType === 'text');
 
+	/** Select tool active */
+	let isSelectTool = $derived(toolState.toolType === 'select');
+
 	/** ViewBox for SVG */
 	let viewBox = $derived(`0 0 ${pageWidth} ${pageHeight}`);
 
@@ -143,6 +147,33 @@
 		if (e.button !== 0) return;
 
 		const point = getPointFromEvent(e);
+
+		// Handle select tool - click to select elements
+		if (isSelectTool) {
+			e.preventDefault();
+			const result = hitTestElements(point, elements);
+
+			if (result) {
+				// Element found
+				if (e.shiftKey) {
+					// Toggle selection (add if not selected, remove if selected)
+					const isAlreadySelected = selectedElements.some((el) => el.id === result.elementId);
+					if (isAlreadySelected) {
+						whiteboardStore.deselectElement(result.elementId);
+					} else {
+						whiteboardStore.selectElement(result.elementId, true);
+					}
+				} else {
+					// Replace selection
+					whiteboardStore.clearSelection();
+					whiteboardStore.selectElement(result.elementId);
+				}
+			} else {
+				// Click in empty space - clear selection
+				whiteboardStore.clearSelection();
+			}
+			return;
+		}
 
 		// Handle text tool - create new text block
 		if (isTextTool) {
@@ -397,6 +428,7 @@
 <div class="whiteboard-canvas-container relative overflow-hidden bg-gray-100 {className}">
 	<svg
 		class="whiteboard-svg"
+		class:cursor-default={isSelectTool}
 		{viewBox}
 		preserveAspectRatio="xMidYMid meet"
 		style="width: 100%; height: 100%;"
@@ -625,5 +657,9 @@
 	.whiteboard-svg {
 		display: block;
 		cursor: crosshair;
+	}
+
+	.whiteboard-svg.cursor-default {
+		cursor: default;
 	}
 </style>

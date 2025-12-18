@@ -313,6 +313,7 @@ function createWhiteboardStore() {
 			document = createEmptyDocument(title, format);
 			history = createHistoryManager(document);
 			hasUnsavedChanges = false;
+			selectedIds = new Set();
 		},
 
 		/**
@@ -328,6 +329,7 @@ function createWhiteboardStore() {
 			document = result.document;
 			history = createHistoryManager(document);
 			hasUnsavedChanges = false;
+			selectedIds = new Set();
 
 			return { success: true };
 		},
@@ -570,6 +572,18 @@ function createWhiteboardStore() {
 		 */
 		clearSelection(): void {
 			selectedIds = new Set();
+		},
+
+		/**
+		 * Deselect a single element (remove from selection)
+		 * @param id - Element ID to deselect
+		 */
+		deselectElement(id: string): void {
+			if (selectedIds.has(id)) {
+				const newIds = new Set(selectedIds);
+				newIds.delete(id);
+				selectedIds = newIds;
+			}
 		},
 
 		/**
