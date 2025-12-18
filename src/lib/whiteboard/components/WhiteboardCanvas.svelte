@@ -639,7 +639,11 @@
 
 		<!-- Layer 5: Selection (handles, resize controls) -->
 		<g class="layer-selection">
-			<SelectionLayer {selectedElements} {scale} />
+			<SelectionLayer
+				{selectedElements}
+				{scale}
+				onMove={(dx, dy) => whiteboardStore.moveElements(dx, dy)}
+			/>
 		</g>
 	</svg>
 

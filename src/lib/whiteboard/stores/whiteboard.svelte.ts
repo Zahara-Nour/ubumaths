@@ -603,6 +603,52 @@ function createWhiteboardStore() {
 			selectedIds = new Set();
 		},
 
+		/**
+		 * Move selected elements by a delta
+		 * Supports all element types: stroke, shape, image, textblock
+		 * @param dx - Horizontal delta in canvas coordinates
+		 * @param dy - Vertical delta in canvas coordinates
+		 */
+		moveElements(dx: number, dy: number): void {
+			if (selectedIds.size === 0) return;
+
+			updateCurrentPage((page) => ({
+				...page,
+				elements: page.elements.map((element) => {
+					if (!selectedIds.has(element.id)) return element;
+
+					switch (element.type) {
+						case 'stroke':
+							return {
+								...element,
+								points: element.points.map((p) => ({
+									...p,
+									x: p.x + dx,
+									y: p.y + dy
+								}))
+							};
+						case 'shape':
+							return {
+								...element,
+								start: { x: element.start.x + dx, y: element.start.y + dy },
+								end: { x: element.end.x + dx, y: element.end.y + dy }
+							};
+						case 'image':
+						case 'textblock':
+							return {
+								...element,
+								position: {
+									x: element.position.x + dx,
+									y: element.position.y + dy
+								}
+							};
+						default:
+							return element;
+					}
+				})
+			}));
+		},
+
 		// === TextBlock Operations ===
 
 		/**
