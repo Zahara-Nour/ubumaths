@@ -17,6 +17,7 @@
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ImageLayer from './ImageLayer.svelte';
+	import SelectionLayer from './SelectionLayer.svelte';
 	import type {
 		Point,
 		StrokeElement,
@@ -83,6 +84,9 @@
 
 	/** Only image elements for rendering */
 	let imageElements = $derived(elements.filter((el): el is ImageElement => el.type === 'image'));
+
+	/** Selected elements from store */
+	let selectedElements = $derived(whiteboardStore.selectedElements);
 
 	/** Shape tools */
 	const SHAPE_TOOLS = ['line', 'rectangle', 'circle', 'arrow'] as const;
@@ -599,6 +603,11 @@
 		<!-- Layer 4: Instruments (ruler, protractor, etc.) -->
 		<g class="layer-instruments">
 			<InstrumentLayer {scale} />
+		</g>
+
+		<!-- Layer 5: Selection (handles, resize controls) -->
+		<g class="layer-selection">
+			<SelectionLayer {selectedElements} {scale} />
 		</g>
 	</svg>
 
