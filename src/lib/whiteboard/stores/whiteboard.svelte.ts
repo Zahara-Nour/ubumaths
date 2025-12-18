@@ -1622,6 +1622,31 @@ function createWhiteboardStore() {
 			});
 		},
 
+		/**
+		 * Set the format (dimensions) of the current page
+		 */
+		setPageFormat(format: PageFormatKey): void {
+			const { width, height } = PAGE_FORMATS[format];
+			updateCurrentPage((page) => ({
+				...page,
+				width,
+				height
+			}));
+		},
+
+		/**
+		 * Get the current page format key (if it matches a predefined format)
+		 */
+		getCurrentPageFormat(): PageFormatKey | null {
+			if (!currentPage) return null;
+			for (const [key, value] of Object.entries(PAGE_FORMATS)) {
+				if (value.width === currentPage.width && value.height === currentPage.height) {
+					return key as PageFormatKey;
+				}
+			}
+			return null; // Custom dimensions
+		},
+
 		// === PDF Import Operations ===
 
 		/**
