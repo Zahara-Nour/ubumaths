@@ -11,7 +11,7 @@
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import type { Page, ShapeElement, StrokeElement, Point } from '../types/document';
+	import type { Page, ShapeElement, StrokeElement, ImageElement, Point } from '../types/document';
 	import { getStrokeDashArray } from '../types/document';
 	import { getShapeSvgProps } from '../core/shapes';
 	import { smoothStroke, getToolOptions, pointsToSvgPath } from '../core/stroke-smoothing';
@@ -322,6 +322,10 @@
 										shape.strokeStyle ?? 'solid',
 										shape.strokeWidth
 									)}
+									{@const shapeCx = (shape.start.x + shape.end.x) / 2}
+									{@const shapeCy = (shape.start.y + shape.end.y) / 2}
+									{@const rotation = shape.rotation ?? 0}
+									{@const fillValue = shape.fillMode === 'solid' ? (shape.fill ?? 'none') : 'none'}
 									{#if props.type === 'line'}
 										<line
 											x1={props.x1}
@@ -333,6 +337,7 @@
 											stroke-linecap="round"
 											stroke-dasharray={dashArray}
 											opacity={shape.opacity}
+											transform={rotation ? `rotate(${rotation} ${shapeCx} ${shapeCy})` : undefined}
 										/>
 									{:else if props.type === 'rect'}
 										<rect
@@ -342,11 +347,12 @@
 											height={props.height}
 											rx={props.cornerRadius}
 											ry={props.cornerRadius}
-											fill={shape.fill ?? 'none'}
+											fill={fillValue}
 											stroke={shape.color}
 											stroke-width={shape.strokeWidth}
 											stroke-dasharray={dashArray}
 											opacity={shape.opacity}
+											transform={rotation ? `rotate(${rotation} ${shapeCx} ${shapeCy})` : undefined}
 										/>
 									{:else if props.type === 'ellipse'}
 										<ellipse
@@ -354,33 +360,51 @@
 											cy={props.cy}
 											rx={props.rx}
 											ry={props.ry}
-											fill={shape.fill ?? 'none'}
+											fill={fillValue}
 											stroke={shape.color}
 											stroke-width={shape.strokeWidth}
 											stroke-dasharray={dashArray}
 											opacity={shape.opacity}
+											transform={rotation ? `rotate(${rotation} ${shapeCx} ${shapeCy})` : undefined}
 										/>
 									{:else if props.type === 'polygon'}
 										<polygon
 											points={props.points}
-											fill={shape.fill ?? 'none'}
+											fill={fillValue}
 											stroke={shape.color}
 											stroke-width={shape.strokeWidth}
 											stroke-linejoin="round"
 											stroke-dasharray={dashArray}
 											opacity={shape.opacity}
+											transform={rotation ? `rotate(${rotation} ${shapeCx} ${shapeCy})` : undefined}
 										/>
 									{:else if props.type === 'path'}
 										<path
 											d={props.d}
-											fill={shape.fill ?? 'none'}
+											fill={fillValue}
 											stroke={shape.color}
 											stroke-width={shape.strokeWidth}
 											stroke-linejoin="round"
 											stroke-dasharray={dashArray}
 											opacity={shape.opacity}
+											transform={rotation ? `rotate(${rotation} ${shapeCx} ${shapeCy})` : undefined}
 										/>
 									{/if}
+								{:else if element.type === 'image' && element.position}
+									<!-- Image rendering -->
+									{@const img = element as ImageElement}
+									{@const imgCx = img.position.x + img.width / 2}
+									{@const imgCy = img.position.y + img.height / 2}
+									{@const imgRotation = img.rotation ?? 0}
+									<image
+										href={img.src}
+										x={img.position.x}
+										y={img.position.y}
+										width={img.width}
+										height={img.height}
+										preserveAspectRatio="none"
+										transform={imgRotation ? `rotate(${imgRotation} ${imgCx} ${imgCy})` : undefined}
+									/>
 								{:else if element.type === 'textblock' && element.position}
 									<!-- Simplified text block -->
 									<rect
