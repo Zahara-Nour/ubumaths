@@ -290,6 +290,13 @@
 			return;
 		}
 
+		// Select all: Ctrl+A
+		if (isCtrl && e.key === 'a') {
+			e.preventDefault();
+			whiteboardStore.selectAll();
+			return;
+		}
+
 		// Selection shortcuts (no modifier needed)
 		// Delete selected elements
 		if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -400,6 +407,13 @@
 		</span>
 		<span>{pageWidth} × {pageHeight}</span>
 		<span class="text-primary capitalize">{toolState.toolType}</span>
+		{#if whiteboardStore.hasSelection}
+			<span class="rounded bg-blue-100 px-1.5 py-0.5 text-blue-700">
+				{whiteboardStore.selectedIds.size} sélectionné{whiteboardStore.selectedIds.size > 1
+					? 's'
+					: ''}
+			</span>
+		{/if}
 		<span class="ml-auto">{zoomPercent}%</span>
 	</div>
 

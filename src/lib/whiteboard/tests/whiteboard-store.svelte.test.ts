@@ -470,4 +470,80 @@ describe('Whiteboard Store', () => {
 			});
 		});
 	});
+
+	describe('multi-selection operations', () => {
+		// Helper to create test elements
+		function createTestElement(id: string) {
+			return {
+				id,
+				type: 'stroke' as const,
+				toolType: 'pen' as const,
+				points: [{ x: 0, y: 0 }],
+				color: '#000000',
+				width: 2,
+				opacity: 1
+			};
+		}
+
+		beforeEach(() => {
+			whiteboardStore.createNew();
+			whiteboardStore.addElement(createTestElement('E1'));
+			whiteboardStore.addElement(createTestElement('E2'));
+			whiteboardStore.addElement(createTestElement('E3'));
+		});
+
+		describe('selectMultipleElements', () => {
+			it('selects multiple elements at once', () => {
+				whiteboardStore.selectMultipleElements(['E1', 'E2']);
+				expect(whiteboardStore.selectedIds.size).toBe(2);
+				expect(whiteboardStore.selectedIds.has('E1')).toBe(true);
+				expect(whiteboardStore.selectedIds.has('E2')).toBe(true);
+			});
+
+			it('replaces selection by default', () => {
+				whiteboardStore.selectElement('E3');
+				whiteboardStore.selectMultipleElements(['E1', 'E2']);
+				expect(whiteboardStore.selectedIds.size).toBe(2);
+				expect(whiteboardStore.selectedIds.has('E3')).toBe(false);
+			});
+
+			it('adds to selection when addToSelection is true', () => {
+				whiteboardStore.selectElement('E3');
+				whiteboardStore.selectMultipleElements(['E1', 'E2'], true);
+				expect(whiteboardStore.selectedIds.size).toBe(3);
+				expect(whiteboardStore.selectedIds.has('E1')).toBe(true);
+				expect(whiteboardStore.selectedIds.has('E2')).toBe(true);
+				expect(whiteboardStore.selectedIds.has('E3')).toBe(true);
+			});
+
+			it('does nothing when given empty array', () => {
+				whiteboardStore.selectElement('E3');
+				whiteboardStore.selectMultipleElements([]);
+				expect(whiteboardStore.selectedIds.size).toBe(1);
+				expect(whiteboardStore.selectedIds.has('E3')).toBe(true);
+			});
+		});
+
+		describe('selectAll', () => {
+			it('selects all elements on the current page', () => {
+				whiteboardStore.selectAll();
+				expect(whiteboardStore.selectedIds.size).toBe(3);
+				expect(whiteboardStore.selectedIds.has('E1')).toBe(true);
+				expect(whiteboardStore.selectedIds.has('E2')).toBe(true);
+				expect(whiteboardStore.selectedIds.has('E3')).toBe(true);
+			});
+
+			it('does nothing on empty page', () => {
+				whiteboardStore.clearPage();
+				whiteboardStore.selectAll();
+				expect(whiteboardStore.selectedIds.size).toBe(0);
+			});
+
+			it('replaces existing selection', () => {
+				whiteboardStore.selectElement('E1');
+				whiteboardStore.selectAll();
+				expect(whiteboardStore.selectedIds.size).toBe(3);
+			});
+		});
+	});
 });

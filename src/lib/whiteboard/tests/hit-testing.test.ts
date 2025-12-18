@@ -547,3 +547,183 @@ describe('getElementBounds', () => {
 		expect(bounds.height).toBe(50);
 	});
 });
+
+// =============================================================================
+// Rectangle Intersection
+// =============================================================================
+
+import { rectanglesIntersect, getElementsInRect, type BoundingBox } from '../core/hit-testing';
+
+describe('rectanglesIntersect', () => {
+	it('returns true for overlapping rectangles', () => {
+		const rect1: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+		const rect2: BoundingBox = { x: 50, y: 50, width: 100, height: 100 };
+
+		expect(rectanglesIntersect(rect1, rect2)).toBe(true);
+	});
+
+	it('returns true when one rectangle contains another', () => {
+		const outer: BoundingBox = { x: 0, y: 0, width: 200, height: 200 };
+		const inner: BoundingBox = { x: 50, y: 50, width: 50, height: 50 };
+
+		expect(rectanglesIntersect(outer, inner)).toBe(true);
+		expect(rectanglesIntersect(inner, outer)).toBe(true);
+	});
+
+	it('returns true for touching edges (inclusive)', () => {
+		const rect1: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+		const rect2: BoundingBox = { x: 100, y: 0, width: 100, height: 100 };
+
+		expect(rectanglesIntersect(rect1, rect2)).toBe(true);
+	});
+
+	it('returns false for non-overlapping rectangles', () => {
+		const rect1: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+		const rect2: BoundingBox = { x: 200, y: 200, width: 100, height: 100 };
+
+		expect(rectanglesIntersect(rect1, rect2)).toBe(false);
+	});
+
+	it('returns false when rectangles are close but not touching', () => {
+		const rect1: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+		const rect2: BoundingBox = { x: 101, y: 0, width: 100, height: 100 };
+
+		expect(rectanglesIntersect(rect1, rect2)).toBe(false);
+	});
+
+	it('handles zero-size rectangles', () => {
+		const rect1: BoundingBox = { x: 50, y: 50, width: 0, height: 0 };
+		const rect2: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		// A point (zero-size rect) at 50,50 is inside rect2
+		expect(rectanglesIntersect(rect1, rect2)).toBe(true);
+	});
+});
+
+// =============================================================================
+// Get Elements In Rectangle
+// =============================================================================
+
+describe('getElementsInRect', () => {
+	it('returns empty array when no elements intersect', () => {
+		const elements: WhiteboardElement[] = [
+			createImage({ x: 200, y: 200 }, 50, 50),
+			createImage({ x: 300, y: 300 }, 50, 50)
+		];
+		const selectionRect: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		const result = getElementsInRect(selectionRect, elements);
+
+		expect(result).toHaveLength(0);
+	});
+
+	it('returns all elements fully inside selection', () => {
+		const img1: ImageElement = { ...createImage({ x: 10, y: 10 }, 30, 30), id: 'img1' };
+		const img2: ImageElement = { ...createImage({ x: 50, y: 50 }, 30, 30), id: 'img2' };
+		const elements: WhiteboardElement[] = [img1, img2];
+		const selectionRect: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		const result = getElementsInRect(selectionRect, elements);
+
+		expect(result).toHaveLength(2);
+		expect(result.map((e) => e.id)).toContain('img1');
+		expect(result.map((e) => e.id)).toContain('img2');
+	});
+
+	it('returns elements partially intersecting selection', () => {
+		const img1: ImageElement = { ...createImage({ x: 80, y: 80 }, 50, 50), id: 'img1' }; // partially inside
+		const img2: ImageElement = { ...createImage({ x: 200, y: 200 }, 50, 50), id: 'img2' }; // outside
+		const elements: WhiteboardElement[] = [img1, img2];
+		const selectionRect: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		const result = getElementsInRect(selectionRect, elements);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].id).toBe('img1');
+	});
+
+	it('handles strokes correctly', () => {
+		const stroke1 = {
+			...createStroke([
+				{ x: 10, y: 10 },
+				{ x: 50, y: 50 }
+			]),
+			id: 'stroke1'
+		};
+		const stroke2 = {
+			...createStroke([
+				{ x: 200, y: 200 },
+				{ x: 250, y: 250 }
+			]),
+			id: 'stroke2'
+		};
+		const elements: WhiteboardElement[] = [stroke1, stroke2];
+		const selectionRect: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		const result = getElementsInRect(selectionRect, elements);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].id).toBe('stroke1');
+	});
+
+	it('handles shapes correctly', () => {
+		const shape1 = {
+			...createShape('rectangle', { x: 10, y: 10 }, { x: 50, y: 50 }),
+			id: 'shape1'
+		};
+		const shape2 = {
+			...createShape('rectangle', { x: 200, y: 200 }, { x: 250, y: 250 }),
+			id: 'shape2'
+		};
+		const elements: WhiteboardElement[] = [shape1, shape2];
+		const selectionRect: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		const result = getElementsInRect(selectionRect, elements);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].id).toBe('shape1');
+	});
+
+	it('handles textblocks correctly', () => {
+		const textblock1 = { ...createTextBlock({ x: 10, y: 10 }, 40, 30), id: 'text1' };
+		const textblock2 = { ...createTextBlock({ x: 200, y: 200 }, 40, 30), id: 'text2' };
+		const elements: WhiteboardElement[] = [textblock1, textblock2];
+		const selectionRect: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		const result = getElementsInRect(selectionRect, elements);
+
+		expect(result).toHaveLength(1);
+		expect(result[0].id).toBe('text1');
+	});
+
+	it('handles mixed element types', () => {
+		const elements: WhiteboardElement[] = [
+			{ ...createImage({ x: 10, y: 10 }, 30, 30), id: 'img' },
+			{ ...createShape('rectangle', { x: 50, y: 50 }, { x: 80, y: 80 }), id: 'shape' },
+			{
+				...createStroke([
+					{ x: 20, y: 60 },
+					{ x: 60, y: 80 }
+				]),
+				id: 'stroke'
+			},
+			{ ...createTextBlock({ x: 200, y: 200 }, 50, 50), id: 'text-outside' }
+		];
+		const selectionRect: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		const result = getElementsInRect(selectionRect, elements);
+
+		expect(result).toHaveLength(3);
+		expect(result.map((e) => e.id)).toContain('img');
+		expect(result.map((e) => e.id)).toContain('shape');
+		expect(result.map((e) => e.id)).toContain('stroke');
+	});
+
+	it('returns empty array for empty elements array', () => {
+		const selectionRect: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		const result = getElementsInRect(selectionRect, []);
+
+		expect(result).toHaveLength(0);
+	});
+});
