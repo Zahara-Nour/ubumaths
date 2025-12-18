@@ -5,8 +5,6 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Collapsible from '$lib/components/ui/collapsible';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import ExerciseRichTextEditor from './ExerciseRichTextEditor.svelte';
 	import ExerciseResourceEditor from './ExerciseResourceEditor.svelte';
 	import VariationEditor from './VariationEditor.svelte';
 	import LaTeXImportDialog from './LaTeXImportDialog.svelte';
@@ -55,18 +53,7 @@
 		((exercise as Record<string, unknown>)?.generic_functions as string[]) || []
 	);
 
-	// Variations mode state
-	let useVariations = $state(
-		((exercise as Record<string, unknown>)?.variations as ExerciseVariation[] | undefined)?.length
-			? true
-			: false
-	);
-
-	// Legacy single statement/solution (used when useVariations is false)
-	let statementMd = $state(exercise?.statement_md || '');
-	let solutionMd = $state(exercise?.solution_md || '');
-
-	// Variations (used when useVariations is true)
+	// Variations (always used - legacy exercises are auto-converted)
 	let variations = $state<ExerciseVariation[]>(
 		((exercise as Record<string, unknown>)?.variations as ExerciseVariation[] | undefined) ?? [
 			{
@@ -193,56 +180,19 @@
 	}
 
 	/**
-	 * Toggle variations mode
-	 */
-	function handleVariationsModeChange(checked: boolean) {
-		useVariations = checked;
-
-		if (checked) {
-			// Switching to variations mode - copy current content to first variation
-			if (variations.length === 0 || !variations[0].statement_md) {
-				variations = [
-					{
-						label: 'guided',
-						statement_md: statementMd,
-						solution_md: solutionMd,
-						hints: []
-					}
-				];
-			}
-		} else {
-			// Switching to simple mode - copy first variation content back
-			if (variations.length > 0) {
-				statementMd = variations[0].statement_md;
-				solutionMd = variations[0].solution_md;
-			}
-		}
-	}
-
-	/**
 	 * Validate form
 	 */
 	function validate(): boolean {
 		errors = {};
 
-		if (useVariations) {
-			// Validate each variation
-			for (let i = 0; i < variations.length; i++) {
-				const v = variations[i];
-				if (!v.statement_md.trim()) {
-					errors[`variation_${i}_statement`] = `L'enonce de la variation ${i + 1} est requis`;
-				}
-				if (!v.solution_md.trim()) {
-					errors[`variation_${i}_solution`] = `La solution de la variation ${i + 1} est requise`;
-				}
+		// Validate each variation
+		for (let i = 0; i < variations.length; i++) {
+			const v = variations[i];
+			if (!v.statement_md.trim()) {
+				errors[`variation_${i}_statement`] = `L'enonce de la variation ${i + 1} est requis`;
 			}
-		} else {
-			if (!statementMd.trim()) {
-				errors.statement_md = "L'enonce est requis";
-			}
-
-			if (!solutionMd.trim()) {
-				errors.solution_md = 'La solution est requise';
+			if (!v.solution_md.trim()) {
+				errors[`variation_${i}_solution`] = `La solution de la variation ${i + 1} est requise`;
 			}
 		}
 
@@ -302,23 +252,15 @@
 			generic_functions: genericFunctions.length > 0 ? genericFunctions : null
 		};
 
-		if (useVariations) {
-			// Variations mode - use variations array
-			data.variations = variations;
-			data.shared =
-				shared && (shared.variables?.length || shared.statement_md || shared.solution_md)
-					? shared
-					: null;
-			// Use first variation's content for backwards compatibility
-			data.statement_md = variations[0]?.statement_md || '';
-			data.solution_md = variations[0]?.solution_md || '';
-		} else {
-			// Simple mode - use single statement/solution
-			data.statement_md = statementMd;
-			data.solution_md = solutionMd;
-			data.variations = null;
-			data.shared = null;
-		}
+		// Always use variations
+		data.variations = variations;
+		data.shared =
+			shared && (shared.variables?.length || shared.statement_md || shared.solution_md)
+				? shared
+				: null;
+		// Use first variation's content for backwards compatibility
+		data.statement_md = variations[0]?.statement_md || '';
+		data.solution_md = variations[0]?.solution_md || '';
 
 		await onsubmit(data);
 	}
@@ -331,44 +273,25 @@
 		solution: string | null;
 		warnings: TranspileWarning[];
 	}) {
-		// Determine where to import based on mode
-		if (useVariations) {
-			const currentIndex = parseInt(activeVariationTab);
-			const currentVariation = variations[currentIndex];
+		const currentIndex = parseInt(activeVariationTab);
+		const currentVariation = variations[currentIndex];
 
-			const hasExistingStatement = currentVariation?.statement_md.trim().length > 0;
-			const hasExistingSolution = currentVariation?.solution_md.trim().length > 0;
+		const hasExistingStatement = currentVariation?.statement_md.trim().length > 0;
+		const hasExistingSolution = currentVariation?.solution_md.trim().length > 0;
 
-			if (hasExistingStatement || hasExistingSolution) {
-				const confirmMsg = 'Le contenu existant de cette variation sera remplace. Continuer ?';
-				if (!confirm(confirmMsg)) {
-					return;
-				}
-			}
-
-			// Update current variation
-			variations[currentIndex] = {
-				...currentVariation,
-				statement_md: result.statement,
-				solution_md: result.solution ?? currentVariation.solution_md
-			};
-		} else {
-			const hasExistingStatement = statementMd.trim().length > 0;
-			const hasExistingSolution = solutionMd.trim().length > 0;
-
-			if (hasExistingStatement || hasExistingSolution) {
-				const confirmMsg = 'Le contenu existant sera remplace par le contenu importe. Continuer ?';
-				if (!confirm(confirmMsg)) {
-					return;
-				}
-			}
-
-			// Apply imported content
-			statementMd = result.statement;
-			if (result.solution) {
-				solutionMd = result.solution;
+		if (hasExistingStatement || hasExistingSolution) {
+			const confirmMsg = 'Le contenu existant de cette variation sera remplace. Continuer ?';
+			if (!confirm(confirmMsg)) {
+				return;
 			}
 		}
+
+		// Update current variation
+		variations[currentIndex] = {
+			...currentVariation,
+			statement_md: result.statement,
+			solution_md: result.solution ?? currentVariation.solution_md
+		};
 
 		// Close dialog
 		latexImportOpen = false;
@@ -516,231 +439,170 @@
 		</Card.Content>
 	</Card.Root>
 
-	<!-- Variations Mode Toggle -->
+	<!-- Variations Editor -->
 	<Card.Root>
 		<Card.Header>
-			<div class="flex items-center justify-between">
-				<div>
-					<Card.Title>Mode variations</Card.Title>
-					<Card.Description>
-						Activez pour creer plusieurs versions de l'exercice avec differents niveaux de guidage
-					</Card.Description>
-				</div>
-				<MyCheckbox
-					checked={useVariations}
-					onCheckedChange={(v) => {
-						if (v !== 'indeterminate') handleVariationsModeChange(v);
-					}}
-					aria-label="Activer le mode variations"
-				/>
-			</div>
+			<Card.Title>Variations</Card.Title>
+			<Card.Description>
+				Chaque variation peut avoir un niveau de guidage different (guide, intermediaire, autonome)
+			</Card.Description>
 		</Card.Header>
+		<Card.Content>
+			<Tabs.Root bind:value={activeVariationTab}>
+				<div class="mb-4 flex items-center gap-2">
+					<Tabs.List class="flex-wrap">
+						{#each variations as variation, index (index)}
+							<Tabs.Trigger value={String(index)} class="relative pr-8">
+								{getVariationDisplayLabel(variation)}
+								{#if variations.length > 1}
+									<button
+										type="button"
+										onclick={(e) => {
+											e.stopPropagation();
+											removeVariation(index);
+										}}
+										class="absolute top-1/2 right-1 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
+										title="Supprimer cette variation"
+									>
+										<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M6 18L18 6M6 6l12 12"
+											/>
+										</svg>
+									</button>
+								{/if}
+							</Tabs.Trigger>
+						{/each}
+					</Tabs.List>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onclick={addVariation}
+						disabled={variations.length >= 10}
+						title="Ajouter une variation"
+					>
+						+
+					</Button>
+				</div>
+
+				{#each variations as _, index (index)}
+					<Tabs.Content value={String(index)}>
+						{#if errors[`variation_${index}_statement`] || errors[`variation_${index}_solution`]}
+							<div class="mb-4 rounded-md border border-destructive bg-destructive/10 p-3">
+								{#if errors[`variation_${index}_statement`]}
+									<p class="text-sm text-destructive">{errors[`variation_${index}_statement`]}</p>
+								{/if}
+								{#if errors[`variation_${index}_solution`]}
+									<p class="text-sm text-destructive">{errors[`variation_${index}_solution`]}</p>
+								{/if}
+							</div>
+						{/if}
+						<VariationEditor
+							bind:variation={variations[index]}
+							{supabase}
+							{userId}
+							{genericFunctions}
+						/>
+					</Tabs.Content>
+				{/each}
+			</Tabs.Root>
+		</Card.Content>
 	</Card.Root>
 
-	{#if useVariations}
-		<!-- Variations Editor -->
+	<!-- Shared Variables (collapsible) -->
+	<Collapsible.Root bind:open={sharedVariablesOpen}>
 		<Card.Root>
-			<Card.Header>
-				<Card.Title>Variations</Card.Title>
-				<Card.Description>
-					Chaque variation peut avoir un niveau de guidage different (guide, intermediaire,
-					autonome)
-				</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<Tabs.Root bind:value={activeVariationTab}>
-					<div class="mb-4 flex items-center gap-2">
-						<Tabs.List class="flex-wrap">
-							{#each variations as variation, index (index)}
-								<Tabs.Trigger value={String(index)} class="relative pr-8">
-									{getVariationDisplayLabel(variation)}
-									{#if variations.length > 1}
-										<button
-											type="button"
-											onclick={(e) => {
-												e.stopPropagation();
-												removeVariation(index);
-											}}
-											class="absolute top-1/2 right-1 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
-											title="Supprimer cette variation"
-										>
-											<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
-													d="M6 18L18 6M6 6l12 12"
-												/>
-											</svg>
-										</button>
+			<Collapsible.Trigger asChild>
+				{#snippet child({ props })}
+					<Card.Header class="cursor-pointer" {...props}>
+						<div class="flex items-center justify-between">
+							<div>
+								<Card.Title>
+									Variables partagees
+									{#if shared?.variables && shared.variables.length > 0}
+										<span class="ml-2 text-sm font-normal text-muted-foreground">
+											({shared.variables.length})
+										</span>
 									{/if}
-								</Tabs.Trigger>
+								</Card.Title>
+								<Card.Description>Variables communes a toutes les variations</Card.Description>
+							</div>
+							<span
+								class="text-muted-foreground transition-transform"
+								class:rotate-180={sharedVariablesOpen}
+							>
+								&#9660;
+							</span>
+						</div>
+					</Card.Header>
+				{/snippet}
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<Card.Content class="space-y-4">
+					<!-- Existing shared variables -->
+					{#if shared?.variables && shared.variables.length > 0}
+						<div class="space-y-2">
+							{#each shared.variables as variable, index (index)}
+								<div class="flex items-center gap-2 rounded-md border bg-muted/50 p-2 text-sm">
+									<code class="rounded bg-background px-2 py-1 font-mono text-xs">
+										{variable.name}
+									</code>
+									<span class="text-muted-foreground">=</span>
+									<code class="flex-1 truncate font-mono text-xs">
+										{variable.expression}
+									</code>
+									<Button
+										type="button"
+										variant="ghost"
+										size="sm"
+										onclick={() => removeSharedVariable(index)}
+										class="h-8 w-8 p-0 text-destructive hover:text-destructive"
+									>
+										x
+									</Button>
+								</div>
 							{/each}
-						</Tabs.List>
+						</div>
+					{/if}
+
+					<!-- Add shared variable form -->
+					<div class="flex gap-2">
+						<Input
+							type="text"
+							placeholder="nom"
+							bind:value={newSharedVarName}
+							class="h-9 w-24 font-mono text-xs"
+						/>
+						<span class="flex items-center text-muted-foreground">=</span>
+						<Input
+							type="text"
+							placeholder={'expression (ex: {{1..10}})'}
+							bind:value={newSharedVarExpression}
+							class="h-9 flex-1 font-mono text-xs"
+						/>
 						<Button
 							type="button"
 							variant="outline"
 							size="sm"
-							onclick={addVariation}
-							disabled={variations.length >= 10}
-							title="Ajouter une variation"
+							onclick={addSharedVariable}
+							disabled={!newSharedVarName.trim() || !newSharedVarExpression.trim()}
 						>
 							+
 						</Button>
 					</div>
 
-					{#each variations as _, index (index)}
-						<Tabs.Content value={String(index)}>
-							{#if errors[`variation_${index}_statement`] || errors[`variation_${index}_solution`]}
-								<div class="mb-4 rounded-md border border-destructive bg-destructive/10 p-3">
-									{#if errors[`variation_${index}_statement`]}
-										<p class="text-sm text-destructive">{errors[`variation_${index}_statement`]}</p>
-									{/if}
-									{#if errors[`variation_${index}_solution`]}
-										<p class="text-sm text-destructive">{errors[`variation_${index}_solution`]}</p>
-									{/if}
-								</div>
-							{/if}
-							<VariationEditor
-								bind:variation={variations[index]}
-								{supabase}
-								{userId}
-								{genericFunctions}
-							/>
-						</Tabs.Content>
-					{/each}
-				</Tabs.Root>
-			</Card.Content>
+					<p class="text-xs text-muted-foreground">
+						Ces variables sont resolues avant celles des variations. Les variations peuvent les
+						surcharger.
+					</p>
+				</Card.Content>
+			</Collapsible.Content>
 		</Card.Root>
-
-		<!-- Shared Variables (collapsible) -->
-		<Collapsible.Root bind:open={sharedVariablesOpen}>
-			<Card.Root>
-				<Collapsible.Trigger asChild>
-					{#snippet child({ props })}
-						<Card.Header class="cursor-pointer" {...props}>
-							<div class="flex items-center justify-between">
-								<div>
-									<Card.Title>
-										Variables partagees
-										{#if shared?.variables && shared.variables.length > 0}
-											<span class="ml-2 text-sm font-normal text-muted-foreground">
-												({shared.variables.length})
-											</span>
-										{/if}
-									</Card.Title>
-									<Card.Description>Variables communes a toutes les variations</Card.Description>
-								</div>
-								<span
-									class="text-muted-foreground transition-transform"
-									class:rotate-180={sharedVariablesOpen}
-								>
-									&#9660;
-								</span>
-							</div>
-						</Card.Header>
-					{/snippet}
-				</Collapsible.Trigger>
-				<Collapsible.Content>
-					<Card.Content class="space-y-4">
-						<!-- Existing shared variables -->
-						{#if shared?.variables && shared.variables.length > 0}
-							<div class="space-y-2">
-								{#each shared.variables as variable, index (index)}
-									<div class="flex items-center gap-2 rounded-md border bg-muted/50 p-2 text-sm">
-										<code class="rounded bg-background px-2 py-1 font-mono text-xs">
-											{variable.name}
-										</code>
-										<span class="text-muted-foreground">=</span>
-										<code class="flex-1 truncate font-mono text-xs">
-											{variable.expression}
-										</code>
-										<Button
-											type="button"
-											variant="ghost"
-											size="sm"
-											onclick={() => removeSharedVariable(index)}
-											class="h-8 w-8 p-0 text-destructive hover:text-destructive"
-										>
-											x
-										</Button>
-									</div>
-								{/each}
-							</div>
-						{/if}
-
-						<!-- Add shared variable form -->
-						<div class="flex gap-2">
-							<Input
-								type="text"
-								placeholder="nom"
-								bind:value={newSharedVarName}
-								class="h-9 w-24 font-mono text-xs"
-							/>
-							<span class="flex items-center text-muted-foreground">=</span>
-							<Input
-								type="text"
-								placeholder={'expression (ex: {{1..10}})'}
-								bind:value={newSharedVarExpression}
-								class="h-9 flex-1 font-mono text-xs"
-							/>
-							<Button
-								type="button"
-								variant="outline"
-								size="sm"
-								onclick={addSharedVariable}
-								disabled={!newSharedVarName.trim() || !newSharedVarExpression.trim()}
-							>
-								+
-							</Button>
-						</div>
-
-						<p class="text-xs text-muted-foreground">
-							Ces variables sont resolues avant celles des variations. Les variations peuvent les
-							surcharger.
-						</p>
-					</Card.Content>
-				</Collapsible.Content>
-			</Card.Root>
-		</Collapsible.Root>
-	{:else}
-		<!-- Simple Mode: Statement -->
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>
-					Enonce <span class="text-destructive">*</span>
-				</Card.Title>
-				<Card.Description>
-					Redigez l'enonce en Markdown. Utilisez $...$ pour les formules mathematiques en ligne et
-					$$...$$ pour les formules sur une ligne separee.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<ExerciseRichTextEditor bind:value={statementMd} {supabase} {userId} {genericFunctions} />
-				{#if errors.statement_md}
-					<p class="mt-2 text-sm text-destructive">{errors.statement_md}</p>
-				{/if}
-			</Card.Content>
-		</Card.Root>
-
-		<!-- Simple Mode: Solution -->
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>
-					Solution <span class="text-destructive">*</span>
-				</Card.Title>
-				<Card.Description>
-					Redigez la solution en Markdown avec le meme format que l'enonce.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<ExerciseRichTextEditor bind:value={solutionMd} {supabase} {userId} {genericFunctions} />
-				{#if errors.solution_md}
-					<p class="mt-2 text-sm text-destructive">{errors.solution_md}</p>
-				{/if}
-			</Card.Content>
-		</Card.Root>
-	{/if}
+	</Collapsible.Root>
 
 	<!-- Resources -->
 	<Card.Root>
