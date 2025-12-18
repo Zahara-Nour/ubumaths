@@ -4,17 +4,17 @@
 
 See: `/Users/david/.claude/plans/luminous-riding-thimble.md`
 
-## Status
+## Status: COMPLETED
 
 | Etape | Description           | Status    | Commit   |
 | ----- | --------------------- | --------- | -------- |
 | 1     | Store Selection State | Completed | 5c8752ff |
-| 2     | Module Hit-Testing    | Completed | Pending  |
-| 3     | SelectionLayer Visuel | Pending   | -        |
-| 4     | Click to Select       | Pending   | -        |
-| 5     | Drag to Move          | Pending   | -        |
-| 6     | Resize Handles        | Pending   | -        |
-| 7     | Keyboard Shortcuts    | Pending   | -        |
+| 2     | Module Hit-Testing    | Completed | ce628dd3 |
+| 3     | SelectionLayer Visuel | Completed | 65455d10 |
+| 4     | Click to Select       | Completed | 4a87c3ed |
+| 5     | Drag to Move          | Completed | 601f5ceb |
+| 6     | Resize Handles        | Completed | 14a1d15d |
+| 7     | Keyboard Shortcuts    | Completed | 23073cb5 |
 
 ---
 
