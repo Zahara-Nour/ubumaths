@@ -41,7 +41,7 @@
 	let editContent = $state(element.markdownContent);
 
 	/** JSON content updated immediately (not debounced) for reliable save */
-	let editJson = $state<unknown>(undefined);
+	let editJson = $state<unknown>({});
 
 	/** Drag state */
 	let isDragging = $state(false);
