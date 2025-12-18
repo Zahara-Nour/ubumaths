@@ -184,12 +184,20 @@
 
 	function handleColorSelect(color: string) {
 		whiteboardStore.setColor(color);
+		// Apply to selected elements if any
+		if (whiteboardStore.hasSelection) {
+			whiteboardStore.updateSelectedStyles({ color });
+		}
 		colorPickerOpen = false;
 	}
 
 	function handleStrokeWidthChange(value: number[]) {
 		if (value.length > 0) {
 			whiteboardStore.setStrokeWidth(value[0]);
+			// Apply to selected elements if any
+			if (whiteboardStore.hasSelection) {
+				whiteboardStore.updateSelectedStyles({ strokeWidth: value[0] });
+			}
 		}
 	}
 

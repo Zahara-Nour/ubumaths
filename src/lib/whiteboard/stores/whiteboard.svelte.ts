@@ -771,6 +771,39 @@ function createWhiteboardStore() {
 			}));
 		},
 
+		/**
+		 * Update style properties (color, strokeWidth) for selected elements
+		 * Works with stroke and shape elements
+		 * @param style - Properties to update
+		 */
+		updateSelectedStyles(style: { color?: string; strokeWidth?: number }): void {
+			if (selectedIds.size === 0) return;
+
+			updateCurrentPage((page) => ({
+				...page,
+				elements: page.elements.map((element) => {
+					if (!selectedIds.has(element.id)) return element;
+
+					switch (element.type) {
+						case 'stroke':
+							return {
+								...element,
+								...(style.color !== undefined && { color: style.color }),
+								...(style.strokeWidth !== undefined && { width: style.strokeWidth })
+							};
+						case 'shape':
+							return {
+								...element,
+								...(style.color !== undefined && { color: style.color }),
+								...(style.strokeWidth !== undefined && { strokeWidth: style.strokeWidth })
+							};
+						default:
+							return element;
+					}
+				})
+			}));
+		},
+
 		// === TextBlock Operations ===
 
 		/**
