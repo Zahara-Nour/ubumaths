@@ -149,6 +149,7 @@ export interface ImageElement {
 	readonly height: number;
 	readonly src: string; // Data URL or blob URL
 	readonly originalFilename?: string;
+	readonly rotation?: number; // Rotation in degrees (0-360)
 }
 
 /** Union of all element types */

@@ -20,6 +20,10 @@
 	const HANDLE_POSITIONS = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'] as const;
 	type HandlePosition = (typeof HANDLE_POSITIONS)[number];
 
+	/** Distance of rotation handle from top center */
+	const ROTATION_HANDLE_OFFSET = 25;
+	const ROTATION_HANDLE_SIZE = 10;
+
 	// ==========================================================================
 	// State
 	// ==========================================================================
@@ -42,6 +46,11 @@
 		width: number;
 		height: number;
 	} | null>(null);
+
+	/** Rotation state */
+	let isRotating = $state(false);
+	let rotationStartAngle = $state(0);
+	let rotationStartImageAngle = $state(0);
 
 	// ==========================================================================
 	// Derived
@@ -221,8 +230,67 @@
 		resizeStartBounds = null;
 	}
 
+	function handleRotatePointerDown(e: PointerEvent) {
+		if (e.button !== 0 || !selectedImage) return;
+		e.stopPropagation();
+
+		isRotating = true;
+		rotationStartImageAngle = selectedImage.rotation ?? 0;
+
+		// Calculate initial angle from center of image to mouse position
+		const centerX = selectedImage.position.x + selectedImage.width / 2;
+		const centerY = selectedImage.position.y + selectedImage.height / 2;
+		const scale = getCanvasScale();
+
+		// Get SVG coordinates
+		const svg = document.querySelector('.whiteboard-canvas-area svg');
+		if (svg) {
+			const rect = svg.getBoundingClientRect();
+			const mouseX = (e.clientX - rect.left) / scale;
+			const mouseY = (e.clientY - rect.top) / scale;
+			rotationStartAngle = Math.atan2(mouseY - centerY, mouseX - centerX) * (180 / Math.PI);
+		}
+
+		(e.currentTarget as SVGElement).setPointerCapture(e.pointerId);
+	}
+
+	function handleRotatePointerMove(e: PointerEvent) {
+		if (!isRotating || !selectedImage || !selectedImageId) return;
+
+		const centerX = selectedImage.position.x + selectedImage.width / 2;
+		const centerY = selectedImage.position.y + selectedImage.height / 2;
+		const scale = getCanvasScale();
+
+		// Get SVG coordinates
+		const svg = document.querySelector('.whiteboard-canvas-area svg');
+		if (!svg) return;
+
+		const rect = svg.getBoundingClientRect();
+		const mouseX = (e.clientX - rect.left) / scale;
+		const mouseY = (e.clientY - rect.top) / scale;
+
+		const currentAngle = Math.atan2(mouseY - centerY, mouseX - centerX) * (180 / Math.PI);
+		const deltaAngle = currentAngle - rotationStartAngle;
+
+		let newRotation = rotationStartImageAngle + deltaAngle;
+
+		// Snap to 15 degree increments when shift is held
+		if (e.shiftKey) {
+			newRotation = Math.round(newRotation / 15) * 15;
+		}
+
+		whiteboardStore.rotateImage(selectedImageId, newRotation);
+	}
+
+	function handleRotatePointerUp(e: PointerEvent) {
+		if (isRotating) {
+			(e.currentTarget as SVGElement).releasePointerCapture(e.pointerId);
+		}
+		isRotating = false;
+	}
+
 	function handleClickOutside() {
-		if (!isDragging && !isResizing) {
+		if (!isDragging && !isResizing && !isRotating) {
 			selectedImageId = null;
 		}
 	}
@@ -260,7 +328,11 @@
 <svelte:window
 	onclick={(e) => {
 		const target = e.target as Element;
-		if (!target.closest('.image-element') && !target.closest('.resize-handle')) {
+		if (
+			!target.closest('.image-element') &&
+			!target.closest('.resize-handle') &&
+			!target.closest('.rotate-handle')
+		) {
 			handleClickOutside();
 		}
 	}}
@@ -270,9 +342,17 @@
 <g class="image-layer">
 	{#each images as image (image.id)}
 		{@const isSelected = image.id === selectedImageId}
+		{@const rotation = image.rotation ?? 0}
+		{@const centerX = image.position.x + image.width / 2}
+		{@const centerY = image.position.y + image.height / 2}
 
-		<!-- Image element -->
-		<g class="image-element" role="img" aria-label={image.originalFilename ?? 'Image'}>
+		<!-- Image element with rotation -->
+		<g
+			class="image-element"
+			role="img"
+			aria-label={image.originalFilename ?? 'Image'}
+			transform="rotate({rotation} {centerX} {centerY})"
+		>
 			<!-- The actual image -->
 			<image
 				href={image.src}
@@ -301,6 +381,17 @@
 					pointer-events="none"
 				/>
 
+				<!-- Line from top center to rotation handle -->
+				<line
+					x1={image.position.x + image.width / 2}
+					y1={image.position.y}
+					x2={image.position.x + image.width / 2}
+					y2={image.position.y - ROTATION_HANDLE_OFFSET + ROTATION_HANDLE_SIZE / 2}
+					stroke="#3b82f6"
+					stroke-width="1"
+					pointer-events="none"
+				/>
+
 				<!-- Resize handles -->
 				{#each HANDLE_POSITIONS as handle (handle)}
 					{@const pos = getHandlePosition(image, handle)}
@@ -319,6 +410,21 @@
 						onpointerup={handleResizePointerUp}
 					/>
 				{/each}
+
+				<!-- Rotation handle (circle above the image) -->
+				<circle
+					class="rotate-handle"
+					cx={image.position.x + image.width / 2}
+					cy={image.position.y - ROTATION_HANDLE_OFFSET}
+					r={ROTATION_HANDLE_SIZE / 2}
+					fill="white"
+					stroke="#3b82f6"
+					stroke-width="1"
+					style="cursor: grab;"
+					onpointerdown={handleRotatePointerDown}
+					onpointermove={handleRotatePointerMove}
+					onpointerup={handleRotatePointerUp}
+				/>
 			{/if}
 		</g>
 	{/each}
