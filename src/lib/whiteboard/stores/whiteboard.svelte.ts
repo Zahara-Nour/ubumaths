@@ -130,6 +130,9 @@ function createWhiteboardStore() {
 	const isLoading = $state(false);
 	let sidebarVisible = $state(true);
 
+	// === Selection State ===
+	let selectedIds = $state<Set<string>>(new Set());
+
 	// === Sync State ===
 	let syncState = $state<SyncState>(createInitialSyncState());
 
@@ -155,6 +158,13 @@ function createWhiteboardStore() {
 			strokeWidth: settings.width,
 			opacity: settings.opacity
 		};
+	});
+
+	// Selection derived state
+	const hasSelection = $derived(selectedIds.size > 0);
+	const selectedElements = $derived.by(() => {
+		if (!currentPage || selectedIds.size === 0) return [];
+		return currentPage.elements.filter((el) => selectedIds.has(el.id));
 	});
 
 	// === Internal Methods ===
@@ -284,6 +294,15 @@ function createWhiteboardStore() {
 		get syncStatus(): SyncStatus {
 			return syncState.status;
 		},
+		get selectedIds() {
+			return selectedIds;
+		},
+		get selectedElements() {
+			return selectedElements;
+		},
+		get hasSelection() {
+			return hasSelection;
+		},
 
 		// === Document Operations ===
 
@@ -408,7 +427,10 @@ function createWhiteboardStore() {
 		goToPage(index: number): void {
 			if (!document) return;
 			if (index < 0 || index >= document.pages.length) return;
+			if (index === document.currentPageIndex) return; // No change
 
+			// Clear selection when changing pages
+			selectedIds = new Set();
 			document = { ...document, currentPageIndex: index };
 		},
 
@@ -526,6 +548,45 @@ function createWhiteboardStore() {
 				...page,
 				elements: []
 			}));
+		},
+
+		// === Selection Operations ===
+
+		/**
+		 * Select an element by ID
+		 * @param id - Element ID to select
+		 * @param addToSelection - If true, add to existing selection instead of replacing
+		 */
+		selectElement(id: string, addToSelection: boolean = false): void {
+			if (addToSelection) {
+				selectedIds = new Set([...selectedIds, id]);
+			} else {
+				selectedIds = new Set([id]);
+			}
+		},
+
+		/**
+		 * Clear all selected elements
+		 */
+		clearSelection(): void {
+			selectedIds = new Set();
+		},
+
+		/**
+		 * Delete all selected elements from the current page
+		 * Supports undo via saveToHistory
+		 */
+		deleteSelected(): void {
+			if (selectedIds.size === 0) return;
+
+			const idsToDelete = new Set(selectedIds);
+			updateCurrentPage((page) => ({
+				...page,
+				elements: page.elements.filter((e) => !idsToDelete.has(e.id))
+			}));
+
+			// Clear selection after deletion
+			selectedIds = new Set();
 		},
 
 		// === TextBlock Operations ===
