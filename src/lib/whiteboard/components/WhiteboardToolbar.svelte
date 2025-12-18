@@ -49,7 +49,8 @@
 		Pentagon,
 		Hexagon,
 		Star,
-		Grid3x3
+		Grid3x3,
+		Maximize2
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
@@ -57,10 +58,12 @@
 		INSTRUMENT_LABELS,
 		STROKE_STYLE_LABELS,
 		FILL_MODE_LABELS,
+		PAGE_FORMATS,
 		type InstrumentType,
 		type StrokeStyle,
 		type FillMode,
-		type BackgroundStyle
+		type BackgroundStyle,
+		type PageFormatKey
 	} from '../types/document';
 	import { importImageFile } from '../utils/image-loader';
 	import { importPdfFile } from '../utils/pdf-loader';
@@ -158,6 +161,7 @@
 	let importPopoverOpen = $state(false);
 	let filePopoverOpen = $state(false);
 	let backgroundPopoverOpen = $state(false);
+	let pageFormatPopoverOpen = $state(false);
 
 	/** File input references (plain variables, no reactivity needed for bind:this) */
 	let imageInputRef: HTMLInputElement | null = null;
@@ -283,6 +287,26 @@
 	/** Whether grid controls should be shown (not for plain style) */
 	let showGridControls = $derived(currentBackgroundStyle !== 'plain');
 
+	/** Current page format */
+	let currentPageFormat = $derived.by(() => {
+		const page = whiteboardStore.currentPage;
+		if (!page) return 'A4';
+		// Find matching format
+		for (const [key, value] of Object.entries(PAGE_FORMATS)) {
+			if (value.width === page.width && value.height === page.height) {
+				return key as PageFormatKey;
+			}
+		}
+		return null; // Custom dimensions
+	});
+
+	/** Current page dimensions for display */
+	let currentPageDimensions = $derived.by(() => {
+		const page = whiteboardStore.currentPage;
+		if (!page) return { width: 794, height: 1123 };
+		return { width: page.width, height: page.height };
+	});
+
 	// ==========================================================================
 	// Handlers
 	// ==========================================================================
@@ -400,6 +424,11 @@
 				gridOpacity: value[0]
 			});
 		}
+	}
+
+	function handlePageFormatChange(format: PageFormatKey) {
+		whiteboardStore.setPageFormat(format);
+		pageFormatPopoverOpen = false;
 	}
 
 	// ==========================================================================
@@ -1045,6 +1074,52 @@
 										>{Math.round(currentGridOpacity * 100)}%</span
 									>
 								</div>
+							</div>
+						{/if}
+					</div>
+				</Popover.Content>
+			</Popover.Root>
+
+			<!-- Page Format Popover -->
+			<Popover.Root bind:open={pageFormatPopoverOpen}>
+				<Popover.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
+							aria-label="Format de page"
+							title="Format de page"
+						>
+							<Maximize2 class="h-4 w-4" />
+							<span class="text-xs text-muted-foreground">
+								{currentPageFormat
+									? PAGE_FORMATS[currentPageFormat].label
+									: `${currentPageDimensions.width}×${currentPageDimensions.height}`}
+							</span>
+						</button>
+					{/snippet}
+				</Popover.Trigger>
+				<Popover.Content class="w-56 p-3" side="top" align="start">
+					<div class="flex flex-col gap-2">
+						<span class="text-xs font-medium text-muted-foreground">Format de page</span>
+						<div class="flex flex-col gap-1">
+							{#each Object.entries(PAGE_FORMATS) as [key, format] (key)}
+								<Button
+									type="button"
+									variant={currentPageFormat === key ? 'secondary' : 'ghost'}
+									size="sm"
+									onclick={() => handlePageFormatChange(key as PageFormatKey)}
+									class="justify-between"
+								>
+									<span>{format.label}</span>
+									<span class="text-xs text-muted-foreground">{format.width}×{format.height}</span>
+								</Button>
+							{/each}
+						</div>
+						{#if !currentPageFormat}
+							<div class="mt-1 rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
+								Dimensions actuelles : {currentPageDimensions.width}×{currentPageDimensions.height}px
 							</div>
 						{/if}
 					</div>
