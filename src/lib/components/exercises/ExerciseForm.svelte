@@ -305,7 +305,7 @@
 		data.shared =
 			shared && (shared.variables?.length || shared.statement_md || shared.solution_md)
 				? shared
-				: null;
+				: undefined;
 		// Use first variation's content for backwards compatibility
 		data.statement_md = variations[0]?.statement_md || '';
 		data.solution_md = variations[0]?.solution_md || '';

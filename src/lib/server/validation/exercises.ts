@@ -130,7 +130,8 @@ export const sharedExerciseDefaultsSchema = z
 		statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
 		solution_md: z.string().trim().max(50000, 'Solution too long').optional()
 	})
-	.optional();
+	.optional()
+	.nullable();
 
 export const createExerciseSchema = z
 	.object({
