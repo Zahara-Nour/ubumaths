@@ -130,6 +130,27 @@ export interface MentionNode extends BaseNode {
 }
 
 /**
+ * Hint reference node - renders as expandable hint button
+ *
+ * Syntax in markdown: {{hint:id}} where id references a hint in the exercise variation
+ *
+ * The hint ID must:
+ * - Start with a letter (a-zA-Z)
+ * - Can contain letters, numbers, dashes, underscores
+ *
+ * @example
+ * ```markdown
+ * Calculate the derivative. {{hint:derivative-rule}} Then simplify.
+ * Use the formula {{hint:formula1}} to solve this equation.
+ * ```
+ */
+export interface HintReferenceNode extends BaseNode {
+	type: 'hint-reference';
+	/** The hint ID (without "hint:" prefix) */
+	hintId: string;
+}
+
+/**
  * Union of inline nodes (can appear within paragraphs, headings, etc.)
  */
 export type InlineNode =
@@ -139,7 +160,8 @@ export type InlineNode =
 	| BlankNode
 	| LinkNode
 	| HashtagNode
-	| MentionNode;
+	| MentionNode
+	| HintReferenceNode;
 
 // ============================================================================
 // BLOCK NODES

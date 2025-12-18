@@ -32,7 +32,8 @@ import type {
 	BlankNode,
 	LinkNode,
 	HashtagNode,
-	MentionNode
+	MentionNode,
+	HintReferenceNode
 } from '../types';
 import {
 	extractMath,
@@ -213,6 +214,28 @@ const HASHTAG_REGEX = /(?<![a-zA-Z0-9])#([a-zàâäéèêëïîôùûüçœæ][a
  * ```
  */
 const MENTION_REGEX = /(?<![a-zA-Z0-9.@])@([a-zA-Z][a-zA-Z0-9_.-]*)/g;
+
+/**
+ * Regex for hint references: {{hint:id}} where id starts with a letter
+ *
+ * Used in exercises to reference hints defined in the variation's hints array.
+ * The hint ID must start with a letter and can contain letters, numbers, dashes, underscores.
+ *
+ * Note: This pattern is distinct from:
+ * - Variable placeholders {{varName}} which don't have the "hint:" prefix
+ * - Blank placeholders {{blank:N}} which use numeric indices
+ *
+ * Captures:
+ * - Group 1: hint ID (without "hint:" prefix)
+ *
+ * @example
+ * ```
+ * {{hint:derivative-rule}} → HintReferenceNode with hintId 'derivative-rule'
+ * {{hint:formula1}} → HintReferenceNode with hintId 'formula1'
+ * {{hint:rappel_addition}} → HintReferenceNode with hintId 'rappel_addition'
+ * ```
+ */
+const HINT_REFERENCE_REGEX = /\{\{hint:([a-zA-Z][a-zA-Z0-9_-]*)\}\}/g;
 
 // ============================================================================
 // MAIN PARSE FUNCTION
@@ -745,6 +768,50 @@ function parseTextForMentions(text: string): (string | MentionNode)[] {
 }
 
 /**
+ * Parse text for hint references ({{hint:id}})
+ *
+ * Extracts hint reference markers from text and returns an array of
+ * text segments and HintReferenceNodes. Text segments will be further processed
+ * for formatting (bold, italic, code).
+ *
+ * @param text - Text possibly containing {{hint:id}} syntax
+ * @returns Array of strings (text segments) and HintReferenceNodes
+ */
+function parseTextForHints(text: string): (string | HintReferenceNode)[] {
+	if (!text) return [];
+
+	const results: (string | HintReferenceNode)[] = [];
+	let position = 0;
+
+	// Reset regex state for global matching
+	const hintRegex = new RegExp(HINT_REFERENCE_REGEX.source, 'g');
+	let match: RegExpExecArray | null;
+
+	while ((match = hintRegex.exec(text)) !== null) {
+		// Add text segment before this hint reference
+		if (match.index > position) {
+			results.push(text.substring(position, match.index));
+		}
+
+		// Add hint reference node
+		const hintNode: HintReferenceNode = {
+			type: 'hint-reference',
+			hintId: match[1] // hint ID without "hint:" prefix
+		};
+
+		results.push(hintNode);
+		position = match.index + match[0].length;
+	}
+
+	// Add remaining text after last hint reference
+	if (position < text.length) {
+		results.push(text.substring(position));
+	}
+
+	return results;
+}
+
+/**
  * Parse text formatting (bold, italic, code) for a single text segment
  *
  * Parses markdown inline formatting and returns text nodes with appropriate properties.
@@ -812,19 +879,20 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 }
 
 /**
- * Parse text formatting (bold, italic, code) with blank, link, hashtag, and mention support
+ * Parse text formatting (bold, italic, code) with blank, hint, link, hashtag, and mention support
  *
  * Processing pipeline:
  * 1. Extract {{blank:N}} placeholders
- * 2. Extract [text](url) links
- * 3. Extract #hashtags
- * 4. Extract @mentions
- * 5. Parse remaining text for formatting (bold, italic, code)
+ * 2. Extract {{hint:id}} references
+ * 3. Extract [text](url) links
+ * 4. Extract #hashtags
+ * 5. Extract @mentions
+ * 6. Parse remaining text for formatting (bold, italic, code)
  *
- * Priority order: blanks > links > hashtags > mentions > code > bold > italic
+ * Priority order: blanks > hints > links > hashtags > mentions > code > bold > italic
  *
- * @param text - Plain text possibly with markdown formatting, blanks, links, hashtags, and mentions
- * @returns Array of inline nodes (text, blank, link, hashtag, mention)
+ * @param text - Plain text possibly with markdown formatting, blanks, hints, links, hashtags, and mentions
+ * @returns Array of inline nodes (text, blank, hint-reference, link, hashtag, mention)
  */
 function parseTextFormatting(text: string): InlineNode[] {
 	if (!text) return [];
@@ -832,41 +900,51 @@ function parseTextFormatting(text: string): InlineNode[] {
 	// Step 1: Extract blanks first
 	const blankSegments = parseTextForBlanks(text);
 
-	// Step 2-5: Process each segment through the pipeline
+	// Step 2-6: Process each segment through the pipeline
 	const nodes: InlineNode[] = [];
 	for (const blankSegment of blankSegments) {
 		if (typeof blankSegment === 'string') {
-			// Step 2: Extract links from text segment
-			const linkSegments = parseTextForLinks(blankSegment);
+			// Step 2: Extract hint references from text segment
+			const hintSegments = parseTextForHints(blankSegment);
 
-			for (const linkSegment of linkSegments) {
-				if (typeof linkSegment === 'string') {
-					// Step 3: Extract hashtags from text segment
-					const hashtagSegments = parseTextForHashtags(linkSegment);
+			for (const hintSegment of hintSegments) {
+				if (typeof hintSegment === 'string') {
+					// Step 3: Extract links from text segment
+					const linkSegments = parseTextForLinks(hintSegment);
 
-					for (const hashtagSegment of hashtagSegments) {
-						if (typeof hashtagSegment === 'string') {
-							// Step 4: Extract mentions from text segment
-							const mentionSegments = parseTextForMentions(hashtagSegment);
+					for (const linkSegment of linkSegments) {
+						if (typeof linkSegment === 'string') {
+							// Step 4: Extract hashtags from text segment
+							const hashtagSegments = parseTextForHashtags(linkSegment);
 
-							for (const mentionSegment of mentionSegments) {
-								if (typeof mentionSegment === 'string') {
-									// Step 5: Parse text formatting on remaining text
-									const formatted = parseTextFormattingSegment(mentionSegment);
-									nodes.push(...formatted);
+							for (const hashtagSegment of hashtagSegments) {
+								if (typeof hashtagSegment === 'string') {
+									// Step 5: Extract mentions from text segment
+									const mentionSegments = parseTextForMentions(hashtagSegment);
+
+									for (const mentionSegment of mentionSegments) {
+										if (typeof mentionSegment === 'string') {
+											// Step 6: Parse text formatting on remaining text
+											const formatted = parseTextFormattingSegment(mentionSegment);
+											nodes.push(...formatted);
+										} else {
+											// MentionNode - add directly
+											nodes.push(mentionSegment);
+										}
+									}
 								} else {
-									// MentionNode - add directly
-									nodes.push(mentionSegment);
+									// HashtagNode - add directly
+									nodes.push(hashtagSegment);
 								}
 							}
 						} else {
-							// HashtagNode - add directly
-							nodes.push(hashtagSegment);
+							// LinkNode - add directly
+							nodes.push(linkSegment);
 						}
 					}
 				} else {
-					// LinkNode - add directly
-					nodes.push(linkSegment);
+					// HintReferenceNode - add directly
+					nodes.push(hintSegment);
 				}
 			}
 		} else {

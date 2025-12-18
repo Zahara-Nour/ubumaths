@@ -49,71 +49,174 @@ const functionIdentifierSchema = z
 		'Function name must start with a letter and contain only letters, numbers, or underscores'
 	);
 
-export const createExerciseSchema = z.object({
-	statement_md: z.string().trim().min(1, 'Statement is required').max(50000, 'Statement too long'),
-	solution_md: z.string().trim().min(1, 'Solution is required').max(50000, 'Solution too long'),
-	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)], {
-		message: 'Difficulty must be 1 (easy), 2 (medium), or 3 (hard)'
-	}),
-	slug: z
+// ============================================================================
+// VARIATIONS SYSTEM SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for exercise variables (used in variations and shared defaults)
+ */
+export const variableSchema = z.object({
+	name: z.string().trim().min(1, 'Variable name required').max(50, 'Variable name too long'),
+	expression: z.string().trim().min(1, 'Expression required').max(1000, 'Expression too long'),
+	displayOptions: z.record(z.string(), z.any()).optional()
+});
+
+/**
+ * Schema for exercise hints (videos, PDFs, links, GeoGebra, images)
+ */
+export const exerciseHintSchema = z.object({
+	id: z
 		.string()
 		.trim()
-		.min(3, 'Slug must be at least 3 characters')
-		.max(100, 'Slug too long')
-		.regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, 'Slug must be lowercase alphanumeric with dashes')
-		.optional()
-		.nullable(),
-	tags: z
-		.array(z.string().trim().min(1).max(50))
-		.max(20, 'Maximum 20 tags allowed')
-		.default([])
-		.optional()
-		.nullable(),
-	grade_levels: z
-		.array(z.string().trim().min(1).max(20))
-		.max(7, 'Maximum 7 grade levels')
-		.optional()
-		.nullable()
-		.default([]),
-	topic: z.string().trim().max(100, 'Topic too long').optional().nullable(),
-	source: z.string().trim().max(200, 'Source too long').optional().nullable(),
-	title: z.string().trim().max(200, 'Title too long').optional().nullable(),
-	variables: z
-		.union([z.array(z.any()), z.record(z.string(), z.any())])
-		.optional()
-		.nullable(),
-	is_public: z.boolean().default(false).optional(),
-	resources: z
-		.array(
-			z.object({
-				type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
-					message: 'Resource type must be video, pdf, link, geogebra, or image'
-				}),
-				url: z.string().url('Invalid URL').max(2000, 'URL too long'),
-				title: z.string().trim().min(1, 'Title required').max(200, 'Title too long'),
-				description: z.string().trim().max(500, 'Description too long').optional()
-			})
-		)
-		.max(20, 'Maximum 20 resources')
-		.optional()
-		.nullable()
-		.default([]),
-	/**
-	 * Custom function identifiers to recognize in math expressions.
-	 * When set, these identifiers will be parsed as function calls (e.g., P(x), Q'(x))
-	 * instead of implicit multiplication.
-	 *
-	 * - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
-	 * - null: Use parser defaults
-	 * - []: Disable generic function parsing entirely
-	 * - ['f', 'P', 'Q']: Recognize only these identifiers as functions
-	 */
-	generic_functions: z
-		.array(functionIdentifierSchema)
-		.max(50, 'Maximum 50 function names')
-		.optional()
-		.nullable()
+		.min(1, 'Hint ID is required')
+		.max(50, 'Hint ID too long')
+		.regex(
+			/^[a-zA-Z][a-zA-Z0-9_-]*$/,
+			'Hint ID must start with a letter and contain only letters, numbers, dashes, and underscores'
+		),
+	type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
+		message: 'Hint type must be video, pdf, link, geogebra, or image'
+	}),
+	url: z.string().url('Invalid URL').max(2000, 'URL too long'),
+	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
+	description: z.string().trim().max(500, 'Description too long').optional()
 });
+
+/**
+ * Schema for exercise variations (alternative versions of an exercise)
+ */
+export const exerciseVariationSchema = z
+	.object({
+		label: z.string().trim().min(1, 'Label is required').max(50, 'Label too long'),
+		statement_md: z
+			.string()
+			.trim()
+			.min(1, 'Statement is required')
+			.max(50000, 'Statement too long'),
+		solution_md: z.string().trim().min(1, 'Solution is required').max(50000, 'Solution too long'),
+		variables: z.array(variableSchema).max(100, 'Maximum 100 variables per variation').optional(),
+		hints: z.array(exerciseHintSchema).max(20, 'Maximum 20 hints per variation').optional()
+	})
+	.refine(
+		(data) => {
+			// Validate that all {{hint:id}} references in content have corresponding hints defined
+			if (!data.hints?.length) {
+				// Check if there are any hint references without hints
+				const hintRefs = [
+					...data.statement_md.matchAll(/\{\{hint:([a-zA-Z][a-zA-Z0-9_-]*)\}\}/g),
+					...data.solution_md.matchAll(/\{\{hint:([a-zA-Z][a-zA-Z0-9_-]*)\}\}/g)
+				];
+				return hintRefs.length === 0; // No hints defined means no references allowed
+			}
+
+			const hintIds = new Set(data.hints.map((h) => h.id));
+			const referencedIds = [
+				...data.statement_md.matchAll(/\{\{hint:([a-zA-Z][a-zA-Z0-9_-]*)\}\}/g),
+				...data.solution_md.matchAll(/\{\{hint:([a-zA-Z][a-zA-Z0-9_-]*)\}\}/g)
+			].map((m) => m[1]);
+
+			return referencedIds.every((id) => hintIds.has(id));
+		},
+		{ message: 'All {{hint:id}} references must have corresponding hints defined' }
+	);
+
+/**
+ * Schema for shared exercise defaults (applied to all variations)
+ */
+export const sharedExerciseDefaultsSchema = z
+	.object({
+		variables: z.array(variableSchema).max(100, 'Maximum 100 shared variables').optional(),
+		statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
+		solution_md: z.string().trim().max(50000, 'Solution too long').optional()
+	})
+	.optional();
+
+export const createExerciseSchema = z
+	.object({
+		// Statement and solution are optional when using variations system
+		statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
+		solution_md: z.string().trim().max(50000, 'Solution too long').optional(),
+		difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)], {
+			message: 'Difficulty must be 1 (easy), 2 (medium), or 3 (hard)'
+		}),
+		slug: z
+			.string()
+			.trim()
+			.min(3, 'Slug must be at least 3 characters')
+			.max(100, 'Slug too long')
+			.regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, 'Slug must be lowercase alphanumeric with dashes')
+			.optional()
+			.nullable(),
+		tags: z
+			.array(z.string().trim().min(1).max(50))
+			.max(20, 'Maximum 20 tags allowed')
+			.default([])
+			.optional()
+			.nullable(),
+		grade_levels: z
+			.array(z.string().trim().min(1).max(20))
+			.max(7, 'Maximum 7 grade levels')
+			.optional()
+			.nullable()
+			.default([]),
+		topic: z.string().trim().max(100, 'Topic too long').optional().nullable(),
+		source: z.string().trim().max(200, 'Source too long').optional().nullable(),
+		title: z.string().trim().max(200, 'Title too long').optional().nullable(),
+		// Legacy variables format (kept for backward compatibility)
+		variables: z
+			.union([z.array(z.any()), z.record(z.string(), z.any())])
+			.optional()
+			.nullable(),
+		is_public: z.boolean().default(false).optional(),
+		resources: z
+			.array(
+				z.object({
+					type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
+						message: 'Resource type must be video, pdf, link, geogebra, or image'
+					}),
+					url: z.string().url('Invalid URL').max(2000, 'URL too long'),
+					title: z.string().trim().min(1, 'Title required').max(200, 'Title too long'),
+					description: z.string().trim().max(500, 'Description too long').optional()
+				})
+			)
+			.max(20, 'Maximum 20 resources')
+			.optional()
+			.nullable()
+			.default([]),
+		/**
+		 * Custom function identifiers to recognize in math expressions.
+		 * When set, these identifiers will be parsed as function calls (e.g., P(x), Q'(x))
+		 * instead of implicit multiplication.
+		 *
+		 * - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
+		 * - null: Use parser defaults
+		 * - []: Disable generic function parsing entirely
+		 * - ['f', 'P', 'Q']: Recognize only these identifiers as functions
+		 */
+		generic_functions: z
+			.array(functionIdentifierSchema)
+			.max(50, 'Maximum 50 function names')
+			.optional()
+			.nullable(),
+		// NEW: Variations system
+		shared: sharedExerciseDefaultsSchema,
+		variations: z
+			.array(exerciseVariationSchema)
+			.min(1, 'At least one variation required')
+			.max(10, 'Maximum 10 variations')
+			.optional()
+	})
+	.refine(
+		(data) => {
+			// Either use variations OR legacy fields (statement_md + solution_md)
+			const hasVariations = data.variations && data.variations.length > 0;
+			const hasLegacy = data.statement_md && data.solution_md;
+
+			return hasVariations || hasLegacy;
+		},
+		{ message: 'Must provide either variations or statement_md/solution_md' }
+	);
 
 /**
  * Schema for updating an exercise (PUT /api/exercises/[id])

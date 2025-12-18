@@ -23,6 +23,7 @@ export type {
 	LinkNode,
 	HashtagNode,
 	MentionNode,
+	HintReferenceNode,
 	InlineNode,
 	// Block nodes
 	ParagraphNode,

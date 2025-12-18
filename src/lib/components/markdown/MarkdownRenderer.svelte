@@ -27,6 +27,7 @@
 	import type { MarkdownDisplayMode } from './types';
 	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { ExerciseHint } from '$lib/exercises/types';
 
 	// List numbering
 	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
@@ -85,6 +86,10 @@
 		 * - GenericFunctionConfig: Custom configuration
 		 */
 		genericFunctions?: GenericFunctionConfig | null;
+		/** Available hints for {{hint:id}} references */
+		hints?: ExerciseHint[];
+		/** Callback when a hint is opened */
+		onHintOpen?: (hintId: string) => void;
 	}
 
 	let {
@@ -100,7 +105,9 @@
 		listNumberingOverride,
 		onHashtagClick,
 		onMentionClick,
-		genericFunctions
+		genericFunctions,
+		hints = [],
+		onHintOpen
 	}: Props = $props();
 
 	/**
@@ -179,6 +186,8 @@
 						{onHashtagClick}
 						{onMentionClick}
 						{genericFunctions}
+						{hints}
+						{onHintOpen}
 					/>
 				{:else if node.type === 'heading'}
 					<HeadingNode
@@ -186,6 +195,8 @@
 						children={node.children}
 						{onHashtagClick}
 						{onMentionClick}
+						{hints}
+						{onHintOpen}
 					/>
 				{:else if node.type === 'math-block'}
 					{#key node.expression}
@@ -202,6 +213,8 @@
 						{onHashtagClick}
 						{onMentionClick}
 						{genericFunctions}
+						{hints}
+						{onHintOpen}
 					/>
 				{:else if node.type === 'table'}
 					<TableNode header={node.header} rows={node.rows} alignments={node.alignments} />

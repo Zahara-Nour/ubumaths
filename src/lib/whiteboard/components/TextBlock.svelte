@@ -12,7 +12,6 @@
 	import type { TextBlockElement } from '../types/document';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
 
 	// ==========================================================================
 	// Props
@@ -40,9 +39,8 @@
 	/** Local content for editing (synced on save) */
 	let editContent = $state(element.markdownContent);
 
-	/** JSON content updated immediately (not debounced) for reliable save
-	 *  Use null (not undefined) so onUpdate writes to it, but sync effect skips it */
-	let editJson = $state<unknown>(null);
+	/** Reference to RichTextEditor to call getMarkdown() synchronously */
+	let editorRef: ReturnType<typeof RichTextEditor> | null = $state(null);
 
 	/** Drag state */
 	let isDragging = $state(false);
@@ -137,11 +135,8 @@
 	}
 
 	function saveAndClose() {
-		// Convert JSON to markdown synchronously to avoid debounce timing issues
-		// jsonValue is updated immediately (not debounced) unlike markdownValue
-		// Only use JSON if it's a valid TipTap document (has type: 'doc'), otherwise keep original
-		const json = editJson as Record<string, unknown>;
-		const content = json?.type === 'doc' ? tipTapToMarkdown(editJson) : editContent;
+		// Get markdown synchronously from editor to avoid debounce timing issues
+		const content = editorRef?.getMarkdown?.() ?? editContent;
 		// Save content to store
 		whiteboardStore.updateTextBlockContent(element.id, content);
 		onEndEdit();
@@ -278,9 +273,9 @@
 			class="edit-container h-full w-full overflow-auto rounded border-2 border-primary bg-white shadow-lg"
 		>
 			<RichTextEditor
+				bind:this={editorRef}
 				mode="form"
 				bind:markdownValue={editContent}
-				bind:jsonValue={editJson}
 				preset="minimal"
 				minHeight="{height - 20}px"
 			/>
