@@ -51,7 +51,7 @@ export interface Point {
 // =============================================================================
 
 /** Tool types for strokes */
-export type StrokeToolType = 'pen' | 'highlighter' | 'eraser';
+export type StrokeToolType = 'pen' | 'marker' | 'highlighter' | 'eraser';
 
 /** Shape types */
 export type ShapeType = 'line' | 'rectangle' | 'circle' | 'arrow' | 'pentagon' | 'hexagon' | 'star';

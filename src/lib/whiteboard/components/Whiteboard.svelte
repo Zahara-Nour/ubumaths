@@ -376,6 +376,10 @@
 					e.preventDefault();
 					whiteboardStore.setTool('pen');
 					break;
+				case 'm':
+					e.preventDefault();
+					whiteboardStore.setTool('marker');
+					break;
 				case 'h':
 					e.preventDefault();
 					whiteboardStore.setTool('highlighter');

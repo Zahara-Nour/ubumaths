@@ -133,7 +133,7 @@
 	);
 
 	/** Drawing tools */
-	const DRAWING_TOOLS = ['pen', 'highlighter', 'eraser'] as const;
+	const DRAWING_TOOLS = ['pen', 'marker', 'highlighter', 'eraser'] as const;
 	let isDrawingTool = $derived(
 		DRAWING_TOOLS.includes(toolState.toolType as (typeof DRAWING_TOOLS)[number])
 	);
@@ -336,7 +336,7 @@
 			return;
 		}
 
-		// Handle drawing tools (pen, highlighter, eraser)
+		// Handle drawing tools (pen, marker, highlighter, eraser)
 		if (isDrawingTool) {
 			e.preventDefault();
 			(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
@@ -583,7 +583,7 @@
 		}
 
 		const options = getToolOptions(
-			toolState.toolType as 'pen' | 'highlighter' | 'eraser',
+			toolState.toolType as 'pen' | 'marker' | 'highlighter' | 'eraser',
 			toolState.strokeWidth,
 			toolState.color,
 			1
@@ -626,7 +626,7 @@
 		const element: StrokeElement = {
 			id: crypto.randomUUID(),
 			type: 'stroke',
-			toolType: toolState.toolType as 'pen' | 'highlighter',
+			toolType: toolState.toolType as 'pen' | 'marker' | 'highlighter',
 			points: currentPoints,
 			color: toolState.color,
 			width: toolState.strokeWidth,

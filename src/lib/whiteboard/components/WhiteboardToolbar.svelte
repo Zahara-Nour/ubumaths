@@ -18,6 +18,7 @@
 	import { Slider } from '$lib/components/ui/slider';
 	import {
 		Pen,
+		Pencil,
 		Highlighter,
 		Eraser,
 		Type,
@@ -83,7 +84,8 @@
 
 	/** Tool definitions with icons and shortcuts */
 	const DRAWING_TOOLS: { id: Tool; icon: typeof Pen; shortcut: string; label: string }[] = [
-		{ id: 'pen', icon: Pen, shortcut: 'P', label: 'Stylo' },
+		{ id: 'pen', icon: Pen, shortcut: 'P', label: 'Stylo (pression)' },
+		{ id: 'marker', icon: Pencil, shortcut: 'M', label: 'Feutre' },
 		{ id: 'highlighter', icon: Highlighter, shortcut: 'H', label: 'Surligneur' },
 		{ id: 'eraser', icon: Eraser, shortcut: 'E', label: 'Gomme' },
 		{ id: 'text', icon: Type, shortcut: 'T', label: 'Texte' }
