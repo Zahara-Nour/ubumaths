@@ -138,7 +138,6 @@
 	/** Popover open states */
 	let drawingPopoverOpen = $state(false);
 	let shapesPopoverOpen = $state(false);
-	let fillModePopoverOpen = $state(false);
 	let instrumentsPopoverOpen = $state(false);
 	let importPopoverOpen = $state(false);
 	let filePopoverOpen = $state(false);
@@ -158,9 +157,17 @@
 	let strokePanelOpen = $state(false);
 	let strokePanelPosition = $state({ x: 100, y: 100 });
 	let isDraggingStrokePanel = $state(false);
+	let strokePanelRef: HTMLDivElement | null = $state(null);
+
+	/** Draggable fill panel state */
+	let fillPanelOpen = $state(false);
+	let fillPanelPosition = $state({ x: 150, y: 100 });
+	let isDraggingFillPanel = $state(false);
+	let fillPanelRef: HTMLDivElement | null = $state(null);
+
+	/** Shared drag state */
 	let dragStartPos = $state({ x: 0, y: 0 });
 	let dragStartOffset = $state({ x: 0, y: 0 });
-	let strokePanelRef: HTMLDivElement | null = $state(null);
 
 	// ==========================================================================
 	// Derived State
@@ -366,7 +373,8 @@
 		}
 	}
 
-	function closeStrokePanelOnClickOutside(e: MouseEvent) {
+	function closePanelsOnClickOutside(e: MouseEvent) {
+		// Close stroke panel if clicking outside
 		if (
 			strokePanelOpen &&
 			strokePanelRef &&
@@ -374,6 +382,67 @@
 			!(e.target as HTMLElement).closest('[data-stroke-panel-trigger]')
 		) {
 			strokePanelOpen = false;
+		}
+		// Close fill panel if clicking outside
+		if (
+			fillPanelOpen &&
+			fillPanelRef &&
+			!fillPanelRef.contains(e.target as Node) &&
+			!(e.target as HTMLElement).closest('[data-fill-panel-trigger]')
+		) {
+			fillPanelOpen = false;
+		}
+	}
+
+	// ==========================================================================
+	// Fill Panel Drag Handlers
+	// ==========================================================================
+
+	function handleFillPanelDragStart(e: PointerEvent) {
+		e.preventDefault();
+		isDraggingFillPanel = true;
+		dragStartPos = { x: e.clientX, y: e.clientY };
+		dragStartOffset = { ...fillPanelPosition };
+
+		window.addEventListener('pointermove', handleFillPanelDragMove);
+		window.addEventListener('pointerup', handleFillPanelDragEnd);
+	}
+
+	function handleFillPanelDragMove(e: PointerEvent) {
+		if (!isDraggingFillPanel) return;
+		const dx = e.clientX - dragStartPos.x;
+		const dy = e.clientY - dragStartPos.y;
+
+		const newX = dragStartOffset.x + dx;
+		const newY = dragStartOffset.y + dy;
+
+		const panelWidth = 256;
+		const panelHeight = 400;
+		const maxX = window.innerWidth - panelWidth - 10;
+		const maxY = window.innerHeight - panelHeight - 10;
+
+		fillPanelPosition = {
+			x: Math.max(10, Math.min(maxX, newX)),
+			y: Math.max(10, Math.min(maxY, newY))
+		};
+	}
+
+	function handleFillPanelDragEnd() {
+		isDraggingFillPanel = false;
+		window.removeEventListener('pointermove', handleFillPanelDragMove);
+		window.removeEventListener('pointerup', handleFillPanelDragEnd);
+	}
+
+	function toggleFillPanel(e: MouseEvent) {
+		if (fillPanelOpen) {
+			fillPanelOpen = false;
+		} else {
+			const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+			fillPanelPosition = {
+				x: rect.left,
+				y: rect.top - 420
+			};
+			fillPanelOpen = true;
 		}
 	}
 
@@ -555,7 +624,7 @@
 	}
 </script>
 
-<svelte:window onclick={closeStrokePanelOnClickOutside} />
+<svelte:window onclick={closePanelsOnClickOutside} />
 
 <div class="whiteboard-toolbar border-t border-border bg-muted/95 backdrop-blur-sm">
 	<div class="flex items-center justify-between gap-2 px-3 py-2">
@@ -866,224 +935,68 @@
 				</svg>
 			</button>
 
-			<!-- Fill Mode Selector (show when fillable shape tool active OR fillable shape is selected) -->
+			<!-- Fill Mode Button (opens floating panel, show when fillable shape tool active OR fillable shape is selected) -->
 			{#if showFillSelector}
-				<Popover.Root bind:open={fillModePopoverOpen}>
-					<Popover.Trigger>
-						{#snippet child({ props })}
-							<button
-								{...props}
-								type="button"
-								class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
-								aria-label="Mode de remplissage"
-								title="Remplissage"
-							>
-								<svg class="h-5 w-5" viewBox="0 0 20 20">
-									{#if currentFillMode === 'none'}
-										<!-- Empty square -->
-										<rect
-											x="2"
-											y="2"
-											width="16"
-											height="16"
-											rx="2"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="1.5"
-										/>
-									{:else if currentFillMode === 'solid'}
-										<!-- Filled square -->
-										<rect
-											x="2"
-											y="2"
-											width="16"
-											height="16"
-											rx="2"
-											fill={currentFillColor}
-											stroke="currentColor"
-											stroke-width="1.5"
-											opacity={currentFillOpacity}
-										/>
-									{:else}
-										<!-- Hatched square -->
-										<defs>
-											<pattern
-												id="toolbar-hatch"
-												patternUnits="userSpaceOnUse"
-												width="4"
-												height="4"
-												patternTransform="rotate(45)"
-											>
-												<line
-													x1="0"
-													y1="0"
-													x2="0"
-													y2="4"
-													stroke={currentFillColor}
-													stroke-width="1"
-												/>
-											</pattern>
-										</defs>
-										<rect
-											x="2"
-											y="2"
-											width="16"
-											height="16"
-											rx="2"
-											fill="url(#toolbar-hatch)"
-											stroke="currentColor"
-											stroke-width="1.5"
-											opacity={currentFillOpacity}
-										/>
-									{/if}
-								</svg>
-							</button>
-						{/snippet}
-					</Popover.Trigger>
-					<Popover.Content class="w-auto p-2" side="top" align="start">
-						<div class="flex flex-col gap-1">
-							{#each Object.entries(FILL_MODE_LABELS) as [mode, label] (mode)}
-								<Button
-									type="button"
-									variant={currentFillMode === mode ? 'secondary' : 'ghost'}
-									size="sm"
-									onclick={() => {
-										handleFillModeChange(mode as FillMode);
-									}}
-									class="justify-start gap-3"
+				<button
+					type="button"
+					class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent {fillPanelOpen
+						? 'bg-secondary'
+						: ''}"
+					aria-label="Mode de remplissage"
+					title="Remplissage"
+					data-fill-panel-trigger
+					onclick={toggleFillPanel}
+				>
+					<svg class="h-5 w-5" viewBox="0 0 20 20">
+						{#if currentFillMode === 'none'}
+							<rect
+								x="2"
+								y="2"
+								width="16"
+								height="16"
+								rx="2"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+							/>
+						{:else if currentFillMode === 'solid'}
+							<rect
+								x="2"
+								y="2"
+								width="16"
+								height="16"
+								rx="2"
+								fill={currentFillColor}
+								stroke="currentColor"
+								stroke-width="1.5"
+								opacity={currentFillOpacity}
+							/>
+						{:else}
+							<defs>
+								<pattern
+									id="toolbar-hatch"
+									patternUnits="userSpaceOnUse"
+									width="4"
+									height="4"
+									patternTransform="rotate(45)"
 								>
-									<svg class="h-5 w-5" viewBox="0 0 20 20">
-										{#if mode === 'none'}
-											<rect
-												x="2"
-												y="2"
-												width="16"
-												height="16"
-												rx="2"
-												fill="none"
-												stroke="currentColor"
-												stroke-width="1.5"
-											/>
-										{:else if mode === 'solid'}
-											<rect
-												x="2"
-												y="2"
-												width="16"
-												height="16"
-												rx="2"
-												fill={currentFillColor}
-												stroke="currentColor"
-												stroke-width="1.5"
-											/>
-										{:else}
-											<defs>
-												<pattern
-													id="menu-hatch-{mode}"
-													patternUnits="userSpaceOnUse"
-													width="4"
-													height="4"
-													patternTransform="rotate(45)"
-												>
-													<line
-														x1="0"
-														y1="0"
-														x2="0"
-														y2="4"
-														stroke={currentFillColor}
-														stroke-width="1"
-													/>
-												</pattern>
-											</defs>
-											<rect
-												x="2"
-												y="2"
-												width="16"
-												height="16"
-												rx="2"
-												fill="url(#menu-hatch-{mode})"
-												stroke="currentColor"
-												stroke-width="1.5"
-											/>
-										{/if}
-									</svg>
-									<span>{label}</span>
-								</Button>
-							{/each}
-						</div>
-						<!-- Fill color and opacity (only when fill is not 'none') -->
-						{#if currentFillMode !== 'none'}
-							<div class="mt-2 border-t border-border pt-2">
-								<!-- Fill color picker -->
-								<div class="mb-2">
-									<span class="mb-1 block text-xs text-muted-foreground">Couleur fond</span>
-									<div class="grid grid-cols-6 gap-1.5">
-										{#each COLOR_PRESETS as color (color.value)}
-											<button
-												type="button"
-												onclick={() => handleFillColorChange(color.value)}
-												class="h-6 w-6 rounded border-2 transition-transform hover:scale-110 {currentFillColor ===
-												color.value
-													? 'border-primary ring-1 ring-primary ring-offset-1'
-													: 'border-border'}"
-												style="background-color: {color.value}"
-												title={color.name}
-												aria-label="{color.name}{currentFillColor === color.value
-													? ' (sélectionné)'
-													: ''}"
-											></button>
-										{/each}
-									</div>
-									<div class="mt-1.5 flex items-center gap-2">
-										<input
-											type="color"
-											value={currentFillColor}
-											oninput={(e) => handleFillColorChange(e.currentTarget.value)}
-											class="h-6 w-6 cursor-pointer rounded border-0 p-0"
-											aria-label="Couleur de remplissage personnalisée"
-										/>
-										<span class="text-xs text-muted-foreground">Personnalisé</span>
-									</div>
-								</div>
-								<!-- Fill opacity slider -->
-								<div class="flex items-center gap-2">
-									<span class="text-xs text-muted-foreground">Opacité</span>
-									<Slider
-										value={[currentFillOpacity]}
-										onValueChange={handleFillOpacityChange}
-										min={0.1}
-										max={1}
-										step={0.1}
-										class="w-20"
-										aria-label="Opacité du remplissage: {Math.round(currentFillOpacity * 100)}%"
-									/>
-									<span class="min-w-[2rem] text-xs text-muted-foreground"
-										>{Math.round(currentFillOpacity * 100)}%</span
-									>
-								</div>
-							</div>
+									<line x1="0" y1="0" x2="0" y2="4" stroke={currentFillColor} stroke-width="1" />
+								</pattern>
+							</defs>
+							<rect
+								x="2"
+								y="2"
+								width="16"
+								height="16"
+								rx="2"
+								fill="url(#toolbar-hatch)"
+								stroke="currentColor"
+								stroke-width="1.5"
+								opacity={currentFillOpacity}
+							/>
 						{/if}
-						<!-- Corner radius slider (only for shapes with corners) -->
-						{#if showCornerRadiusSlider}
-							<div class="mt-2 border-t border-border pt-2">
-								<div class="flex items-center gap-2">
-									<span class="text-xs text-muted-foreground">Arrondi</span>
-									<Slider
-										value={[currentCornerRadius]}
-										onValueChange={handleCornerRadiusChange}
-										min={0}
-										max={50}
-										step={1}
-										class="w-20"
-										aria-label="Rayon des coins: {currentCornerRadius}px"
-									/>
-									<span class="min-w-[2rem] text-xs text-muted-foreground"
-										>{currentCornerRadius}px</span
-									>
-								</div>
-							</div>
-						{/if}
-					</Popover.Content>
-				</Popover.Root>
+					</svg>
+				</button>
 			{/if}
 
 			<!-- Separator -->
@@ -1303,6 +1216,179 @@
 					{/each}
 				</div>
 			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Floating Fill Properties Panel -->
+{#if fillPanelOpen}
+	<div
+		bind:this={fillPanelRef}
+		class="fixed z-50 w-64 rounded-md border border-border bg-popover shadow-lg"
+		style="left: {fillPanelPosition.x}px; top: {fillPanelPosition.y}px;"
+		role="dialog"
+		aria-label="Propriétés de remplissage"
+	>
+		<!-- Drag handle header -->
+		<div
+			class="flex cursor-move items-center justify-between rounded-t-md border-b border-border bg-muted/50 px-3 py-1.5"
+			class:cursor-grabbing={isDraggingFillPanel}
+			onpointerdown={handleFillPanelDragStart}
+			role="button"
+			tabindex="-1"
+			aria-label="Déplacer le panneau"
+		>
+			<span class="text-xs font-medium text-muted-foreground">Remplissage</span>
+			<svg class="h-3 w-3 text-muted-foreground/50" viewBox="0 0 12 12">
+				<circle cx="3" cy="3" r="1" fill="currentColor" />
+				<circle cx="9" cy="3" r="1" fill="currentColor" />
+				<circle cx="3" cy="9" r="1" fill="currentColor" />
+				<circle cx="9" cy="9" r="1" fill="currentColor" />
+			</svg>
+		</div>
+		<div class="flex flex-col gap-3 p-3">
+			<!-- Fill mode -->
+			<div>
+				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Mode</span>
+				<div class="flex flex-col gap-1">
+					{#each Object.entries(FILL_MODE_LABELS) as [mode, label] (mode)}
+						<Button
+							type="button"
+							variant={currentFillMode === mode ? 'secondary' : 'ghost'}
+							size="sm"
+							onclick={() => handleFillModeChange(mode as FillMode)}
+							class="justify-start gap-3"
+						>
+							<svg class="h-5 w-5" viewBox="0 0 20 20">
+								{#if mode === 'none'}
+									<rect
+										x="2"
+										y="2"
+										width="16"
+										height="16"
+										rx="2"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"
+									/>
+								{:else if mode === 'solid'}
+									<rect
+										x="2"
+										y="2"
+										width="16"
+										height="16"
+										rx="2"
+										fill={currentFillColor}
+										stroke="currentColor"
+										stroke-width="1.5"
+									/>
+								{:else}
+									<defs>
+										<pattern
+											id="fill-panel-hatch-{mode}"
+											patternUnits="userSpaceOnUse"
+											width="4"
+											height="4"
+											patternTransform="rotate(45)"
+										>
+											<line
+												x1="0"
+												y1="0"
+												x2="0"
+												y2="4"
+												stroke={currentFillColor}
+												stroke-width="1"
+											/>
+										</pattern>
+									</defs>
+									<rect
+										x="2"
+										y="2"
+										width="16"
+										height="16"
+										rx="2"
+										fill="url(#fill-panel-hatch-{mode})"
+										stroke="currentColor"
+										stroke-width="1.5"
+									/>
+								{/if}
+							</svg>
+							<span>{label}</span>
+						</Button>
+					{/each}
+				</div>
+			</div>
+
+			<!-- Fill color and opacity (only when fill is not 'none') -->
+			{#if currentFillMode !== 'none'}
+				<div>
+					<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Couleur</span>
+					<div class="grid grid-cols-6 gap-1.5">
+						{#each COLOR_PRESETS as color (color.value)}
+							<button
+								type="button"
+								onclick={() => handleFillColorChange(color.value)}
+								class="h-7 w-7 rounded border-2 transition-transform hover:scale-110 {currentFillColor ===
+								color.value
+									? 'border-primary ring-1 ring-primary ring-offset-1'
+									: 'border-border'}"
+								style="background-color: {color.value}"
+								title={color.name}
+								aria-label="{color.name}{currentFillColor === color.value ? ' (sélectionné)' : ''}"
+							></button>
+						{/each}
+					</div>
+					<div class="mt-1.5 flex items-center gap-2">
+						<input
+							type="color"
+							value={currentFillColor}
+							oninput={(e) => handleFillColorChange(e.currentTarget.value)}
+							class="h-7 w-7 cursor-pointer rounded border-0 p-0"
+							aria-label="Couleur de remplissage personnalisée"
+						/>
+						<span class="text-xs text-muted-foreground">Personnalisé</span>
+					</div>
+				</div>
+
+				<div>
+					<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Opacité</span>
+					<div class="flex items-center gap-2">
+						<Slider
+							value={[currentFillOpacity]}
+							onValueChange={handleFillOpacityChange}
+							min={0.1}
+							max={1}
+							step={0.1}
+							class="flex-1"
+							aria-label="Opacité du remplissage: {Math.round(currentFillOpacity * 100)}%"
+						/>
+						<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
+							>{Math.round(currentFillOpacity * 100)}%</span
+						>
+					</div>
+				</div>
+			{/if}
+
+			<!-- Corner radius slider (only for shapes with corners) -->
+			{#if showCornerRadiusSlider}
+				<div>
+					<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Arrondi</span>
+					<div class="flex items-center gap-2">
+						<Slider
+							value={[currentCornerRadius]}
+							onValueChange={handleCornerRadiusChange}
+							min={0}
+							max={50}
+							step={1}
+							class="flex-1"
+							aria-label="Rayon des coins: {currentCornerRadius}px"
+						/>
+						<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
+							>{currentCornerRadius}px</span
+						>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
