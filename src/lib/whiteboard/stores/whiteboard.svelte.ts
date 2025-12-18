@@ -589,6 +589,28 @@ function createWhiteboardStore() {
 		},
 
 		/**
+		 * Select multiple elements by IDs (for marquee selection)
+		 * @param ids - Array of element IDs to select
+		 * @param addToSelection - If true, add to existing selection instead of replacing
+		 */
+		selectMultipleElements(ids: string[], addToSelection: boolean = false): void {
+			if (ids.length === 0) return;
+			if (addToSelection) {
+				selectedIds = new Set([...selectedIds, ...ids]);
+			} else {
+				selectedIds = new Set(ids);
+			}
+		},
+
+		/**
+		 * Select all elements on the current page
+		 */
+		selectAll(): void {
+			if (!currentPage || currentPage.elements.length === 0) return;
+			selectedIds = new Set(currentPage.elements.map((el) => el.id));
+		},
+
+		/**
 		 * Clear all selected elements and restore user preferences
 		 */
 		clearSelection(): void {

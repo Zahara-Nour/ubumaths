@@ -14,7 +14,7 @@
 		doStrokesIntersect
 	} from '../core/stroke-smoothing';
 	import { createShapeElement, getShapeSvgProps } from '../core/shapes';
-	import { hitTestElements } from '../core/hit-testing';
+	import { hitTestElements, getElementsInRect, type BoundingBox } from '../core/hit-testing';
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ImageLayer from './ImageLayer.svelte';
@@ -72,6 +72,12 @@
 	let selectionDragStartX = $state(0);
 	let selectionDragStartY = $state(0);
 
+	/** Marquee selection state (drag to select multiple elements) */
+	let isMarqueeSelecting = $state(false);
+	let marqueeStart = $state<Point | null>(null);
+	let marqueeEnd = $state<Point | null>(null);
+	let marqueeAddToSelection = $state(false);
+
 	/** Minimum drag distance before movement starts (prevents jitter) */
 	const MIN_DRAG_DISTANCE = 2;
 
@@ -124,6 +130,16 @@
 
 	/** ViewBox for SVG */
 	let viewBox = $derived(`0 0 ${pageWidth} ${pageHeight}`);
+
+	/** Marquee selection rectangle (normalized to always have positive width/height) */
+	let marqueeRect = $derived.by(() => {
+		if (!marqueeStart || !marqueeEnd) return null;
+		const x = Math.min(marqueeStart.x, marqueeEnd.x);
+		const y = Math.min(marqueeStart.y, marqueeEnd.y);
+		const width = Math.abs(marqueeEnd.x - marqueeStart.x);
+		const height = Math.abs(marqueeEnd.y - marqueeStart.y);
+		return { x, y, width, height };
+	});
 
 	/** Current stroke style */
 	let currentStrokeStyle = $derived({
@@ -255,8 +271,15 @@
 				selectionDragStartY = e.clientY;
 				(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
 			} else {
-				// Click in empty space - clear selection
-				whiteboardStore.clearSelection();
+				// Click in empty space - start marquee selection
+				isMarqueeSelecting = true;
+				marqueeStart = point;
+				marqueeEnd = point;
+				marqueeAddToSelection = e.shiftKey;
+				if (!e.shiftKey) {
+					whiteboardStore.clearSelection();
+				}
+				(e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
 			}
 			return;
 		}
@@ -297,6 +320,13 @@
 	 */
 	function handlePointerMove(e: PointerEvent) {
 		const point = getPointFromEvent(e);
+
+		// Handle marquee selection (drag on empty space)
+		if (isMarqueeSelecting) {
+			e.preventDefault();
+			marqueeEnd = point;
+			return;
+		}
 
 		// Handle selection dragging (immediate drag on click)
 		if (isSelectionDragging) {
@@ -349,6 +379,29 @@
 	 * Handle pointer up - finalize stroke or end selection drag
 	 */
 	function handlePointerUp(e: PointerEvent) {
+		// End marquee selection and select elements in the rectangle
+		if (isMarqueeSelecting) {
+			if (
+				marqueeRect &&
+				marqueeRect.width > MIN_DRAG_DISTANCE &&
+				marqueeRect.height > MIN_DRAG_DISTANCE
+			) {
+				const elementsInRect = getElementsInRect(marqueeRect as BoundingBox, elements);
+				const ids = elementsInRect.map((el) => el.id);
+				whiteboardStore.selectMultipleElements(ids, marqueeAddToSelection);
+			}
+			isMarqueeSelecting = false;
+			marqueeStart = null;
+			marqueeEnd = null;
+			marqueeAddToSelection = false;
+			try {
+				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+			} catch {
+				// Ignore - capture may already be released or not set
+			}
+			return;
+		}
+
 		// End selection dragging
 		if (isSelectionDragging) {
 			isSelectionDragging = false;
@@ -383,6 +436,20 @@
 	 * Handle pointer cancel - abort stroke or selection drag
 	 */
 	function handlePointerCancel(e: PointerEvent) {
+		// Cancel marquee selection
+		if (isMarqueeSelecting) {
+			isMarqueeSelecting = false;
+			marqueeStart = null;
+			marqueeEnd = null;
+			marqueeAddToSelection = false;
+			try {
+				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+			} catch {
+				// Ignore - capture may already be released or not set
+			}
+			return;
+		}
+
 		// Cancel selection dragging
 		if (isSelectionDragging) {
 			isSelectionDragging = false;
@@ -414,6 +481,19 @@
 	function handlePointerLeave(e: PointerEvent) {
 		// Clear hover state
 		hoveredElementId = null;
+
+		// Cancel marquee selection
+		if (isMarqueeSelecting) {
+			isMarqueeSelecting = false;
+			marqueeStart = null;
+			marqueeEnd = null;
+			marqueeAddToSelection = false;
+			try {
+				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
+			} catch {
+				// Ignore - capture may already be released or not set
+			}
+		}
 
 		// Cancel selection dragging
 		if (isSelectionDragging) {
@@ -600,10 +680,16 @@
 <div class="whiteboard-canvas-container relative overflow-hidden bg-gray-100 {className}">
 	<svg
 		class="whiteboard-svg"
-		class:cursor-default={isSelectTool && !hoveredElementId && !isSelectionDragging}
-		class:cursor-pointer={isSelectTool && hoveredElementId && !isSelectionDragging}
+		class:cursor-default={isSelectTool &&
+			!hoveredElementId &&
+			!isSelectionDragging &&
+			!isMarqueeSelecting}
+		class:cursor-pointer={isSelectTool &&
+			hoveredElementId &&
+			!isSelectionDragging &&
+			!isMarqueeSelecting}
 		class:cursor-grabbing={isSelectionDragging}
-		class:cursor-crosshair={!isSelectTool}
+		class:cursor-crosshair={!isSelectTool || isMarqueeSelecting}
 		{viewBox}
 		preserveAspectRatio="xMidYMid meet"
 		style="width: 100%; height: 100%;"
@@ -841,6 +927,21 @@
 					whiteboardStore.resizeElement(elementId, handle, dx, dy)}
 			/>
 		</g>
+
+		<!-- Layer 6: Marquee Selection Rectangle -->
+		{#if isMarqueeSelecting && marqueeRect}
+			<rect
+				x={marqueeRect.x}
+				y={marqueeRect.y}
+				width={marqueeRect.width}
+				height={marqueeRect.height}
+				fill="rgba(59, 130, 246, 0.1)"
+				stroke="#3b82f6"
+				stroke-width={1 / scale}
+				stroke-dasharray={`${4 / scale} ${4 / scale}`}
+				class="pointer-events-none"
+			/>
+		{/if}
 	</svg>
 
 	<!-- TextBlock Layer (HTML overlay on SVG) -->

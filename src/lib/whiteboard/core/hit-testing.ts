@@ -315,3 +315,41 @@ function getTextBlockBounds(textblock: TextBlockElement): BoundingBox {
 		height: textblock.height
 	};
 }
+
+// =============================================================================
+// Rectangle Intersection (for marquee selection)
+// =============================================================================
+
+/**
+ * Test if two rectangles intersect (inclusive of edges).
+ *
+ * Used for marquee/rectangle selection to determine which elements
+ * fall within the selection area.
+ */
+export function rectanglesIntersect(rect1: BoundingBox, rect2: BoundingBox): boolean {
+	// Calculate right and bottom edges
+	const r1Right = rect1.x + rect1.width;
+	const r1Bottom = rect1.y + rect1.height;
+	const r2Right = rect2.x + rect2.width;
+	const r2Bottom = rect2.y + rect2.height;
+
+	// Two rectangles intersect if they overlap on both axes
+	// Using <= for inclusive edges (touching counts as intersection)
+	return rect1.x <= r2Right && r1Right >= rect2.x && rect1.y <= r2Bottom && r1Bottom >= rect2.y;
+}
+
+/**
+ * Get all elements that intersect with a selection rectangle.
+ *
+ * Returns elements whose bounding boxes intersect with the selection rect.
+ * Used for marquee selection (drag to select multiple elements).
+ */
+export function getElementsInRect(
+	selectionRect: BoundingBox,
+	elements: readonly WhiteboardElement[]
+): WhiteboardElement[] {
+	return elements.filter((element) => {
+		const elementBounds = getElementBounds(element);
+		return rectanglesIntersect(selectionRect, elementBounds);
+	});
+}
