@@ -155,6 +155,12 @@
 	/** Export dialog state */
 	let exportDialogOpen = $state(false);
 
+	/** Draggable stroke popover state */
+	let strokePopoverPosition = $state<{ x: number; y: number } | null>(null);
+	let isDraggingStrokePopover = $state(false);
+	let dragStartPos = $state({ x: 0, y: 0 });
+	let dragStartOffset = $state({ x: 0, y: 0 });
+
 	// ==========================================================================
 	// Derived State
 	// ==========================================================================
@@ -300,6 +306,39 @@
 		// Apply to selected shapes if any
 		if (whiteboardStore.hasSelection) {
 			whiteboardStore.updateSelectedStyles({ fill: color });
+		}
+	}
+
+	// ==========================================================================
+	// Stroke Popover Drag Handlers
+	// ==========================================================================
+
+	function handleStrokePopoverDragStart(e: PointerEvent) {
+		e.preventDefault();
+		isDraggingStrokePopover = true;
+		dragStartPos = { x: e.clientX, y: e.clientY };
+		dragStartOffset = strokePopoverPosition ?? { x: 0, y: 0 };
+		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+	}
+
+	function handleStrokePopoverDragMove(e: PointerEvent) {
+		if (!isDraggingStrokePopover) return;
+		const dx = e.clientX - dragStartPos.x;
+		const dy = e.clientY - dragStartPos.y;
+		strokePopoverPosition = {
+			x: dragStartOffset.x + dx,
+			y: dragStartOffset.y + dy
+		};
+	}
+
+	function handleStrokePopoverDragEnd(e: PointerEvent) {
+		if (isDraggingStrokePopover) {
+			isDraggingStrokePopover = false;
+			try {
+				(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+			} catch {
+				// Ignore
+			}
 		}
 	}
 
@@ -791,8 +830,34 @@
 						</button>
 					{/snippet}
 				</Popover.Trigger>
-				<Popover.Content class="w-64 p-3" side="top" align="start">
-					<div class="flex flex-col gap-3">
+				<Popover.Content
+					class="w-64 p-0"
+					side="top"
+					align="start"
+					style={strokePopoverPosition
+						? `transform: translate(${strokePopoverPosition.x}px, ${strokePopoverPosition.y}px);`
+						: ''}
+				>
+					<!-- Drag handle header -->
+					<div
+						class="flex cursor-move items-center justify-between rounded-t-md border-b border-border bg-muted/50 px-3 py-1.5"
+						onpointerdown={handleStrokePopoverDragStart}
+						onpointermove={handleStrokePopoverDragMove}
+						onpointerup={handleStrokePopoverDragEnd}
+						onpointercancel={handleStrokePopoverDragEnd}
+						role="button"
+						tabindex="-1"
+						aria-label="Déplacer le panneau"
+					>
+						<span class="text-xs font-medium text-muted-foreground">Trait</span>
+						<svg class="h-3 w-3 text-muted-foreground/50" viewBox="0 0 12 12">
+							<circle cx="3" cy="3" r="1" fill="currentColor" />
+							<circle cx="9" cy="3" r="1" fill="currentColor" />
+							<circle cx="3" cy="9" r="1" fill="currentColor" />
+							<circle cx="9" cy="9" r="1" fill="currentColor" />
+						</svg>
+					</div>
+					<div class="flex flex-col gap-3 p-3">
 						<!-- Stroke color -->
 						<div>
 							<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Couleur</span>
