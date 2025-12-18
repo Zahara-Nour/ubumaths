@@ -1,11 +1,13 @@
 <script lang="ts">
 	/**
-	 * WhiteboardToolbar - Horizontal bottom toolbar
+	 * WhiteboardToolbar - Horizontal bottom toolbar with popup menus
 	 *
-	 * Sections dépliables avec animation:
-	 * - Drawing: pen, highlighter, eraser
+	 * Sections in popups:
+	 * - Drawing: pen, highlighter, eraser, text
 	 * - Shapes: line, rectangle, circle, arrow
-	 * - Actions: undo, redo, clear
+	 * - Instruments: ruler, protractor, set square
+	 * - Import: image, PDF
+	 * - File: new, save, open, export
 	 * - Color picker + stroke width slider
 	 */
 
@@ -26,8 +28,6 @@
 		Undo2,
 		Redo2,
 		Trash2,
-		ChevronUp,
-		ChevronDown,
 		Palette,
 		Ruler,
 		Compass,
@@ -94,14 +94,12 @@
 	// State
 	// ==========================================================================
 
-	/** Section visibility state */
-	let drawingSectionOpen = $state(true);
-	let shapesSectionOpen = $state(false);
-	let instrumentsSectionOpen = $state(false);
-	let importSectionOpen = $state(false);
-	let fileSectionOpen = $state(false);
-
-	/** Color picker open state */
+	/** Popover open states */
+	let drawingPopoverOpen = $state(false);
+	let shapesPopoverOpen = $state(false);
+	let instrumentsPopoverOpen = $state(false);
+	let importPopoverOpen = $state(false);
+	let filePopoverOpen = $state(false);
 	let colorPickerOpen = $state(false);
 
 	/** File input references (plain variables, no reactivity needed for bind:this) */
@@ -128,12 +126,31 @@
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
 
+	/** Current drawing tool icon for the button */
+	let currentDrawingTool = $derived(
+		DRAWING_TOOLS.find((t) => t.id === toolState.toolType) || DRAWING_TOOLS[0]
+	);
+
+	/** Current shape tool icon for the button */
+	let currentShapeTool = $derived(
+		SHAPE_TOOLS.find((t) => t.id === toolState.toolType) || SHAPE_TOOLS[0]
+	);
+
+	/** Check if current tool is a drawing tool */
+	let isDrawingToolActive = $derived(DRAWING_TOOLS.some((t) => t.id === toolState.toolType));
+
+	/** Check if current tool is a shape tool */
+	let isShapeToolActive = $derived(SHAPE_TOOLS.some((t) => t.id === toolState.toolType));
+
 	// ==========================================================================
 	// Handlers
 	// ==========================================================================
 
 	function handleToolSelect(tool: Tool) {
 		whiteboardStore.setTool(tool);
+		// Close the relevant popover
+		drawingPopoverOpen = false;
+		shapesPopoverOpen = false;
 	}
 
 	function handleColorSelect(color: string) {
@@ -165,32 +182,18 @@
 		}
 	}
 
-	function toggleDrawingSection() {
-		drawingSectionOpen = !drawingSectionOpen;
-	}
-
-	function toggleShapesSection() {
-		shapesSectionOpen = !shapesSectionOpen;
-	}
-
-	function toggleInstrumentsSection() {
-		instrumentsSectionOpen = !instrumentsSectionOpen;
-	}
-
 	function handleInstrumentToggle(type: InstrumentType) {
 		whiteboardStore.toggleInstrument(type);
 	}
 
-	function toggleImportSection() {
-		importSectionOpen = !importSectionOpen;
-	}
-
 	function handleImageImportClick() {
 		imageInputRef?.click();
+		importPopoverOpen = false;
 	}
 
 	function handlePdfImportClick() {
 		pdfInputRef?.click();
+		importPopoverOpen = false;
 	}
 
 	async function handleImageFileSelect(e: Event) {
@@ -262,10 +265,6 @@
 	// File Operations Handlers
 	// ==========================================================================
 
-	function toggleFileSection() {
-		fileSectionOpen = !fileSectionOpen;
-	}
-
 	function handleNewDocument() {
 		if (hasUnsavedChanges) {
 			if (!confirm('Vous avez des modifications non sauvegardées. Voulez-vous continuer ?')) {
@@ -279,6 +278,7 @@
 
 		whiteboardStore.createNew(title || 'Sans titre');
 		toaster.success('Nouveau document créé');
+		filePopoverOpen = false;
 	}
 
 	function handleSaveDocument() {
@@ -300,10 +300,17 @@
 		} else {
 			toaster.error(result.error || 'Erreur lors de la sauvegarde');
 		}
+		filePopoverOpen = false;
 	}
 
 	function handleOpenDocument() {
 		ubwInputRef?.click();
+		filePopoverOpen = false;
+	}
+
+	function handleExportClick() {
+		exportDialogOpen = true;
+		filePopoverOpen = false;
 	}
 
 	async function handleUbwFileSelect(e: Event) {
@@ -336,103 +343,252 @@
 </script>
 
 <div class="whiteboard-toolbar border-t border-border bg-muted/50">
-	<!-- Main Row: Section toggles + Actions -->
 	<div class="flex items-center justify-between gap-2 px-3 py-2">
-		<!-- Left: Section toggles -->
+		<!-- Left: Tool menus -->
 		<div class="flex items-center gap-1">
-			<!-- Drawing Section Toggle -->
-			<Button
-				type="button"
-				variant={drawingSectionOpen ? 'secondary' : 'ghost'}
-				size="sm"
-				onclick={toggleDrawingSection}
-				class="gap-1"
-				aria-expanded={drawingSectionOpen}
-			>
-				<Pen class="h-4 w-4" />
-				<span class="hidden sm:inline">Dessin</span>
-				{#if drawingSectionOpen}
-					<ChevronUp class="h-3 w-3" />
-				{:else}
-					<ChevronDown class="h-3 w-3" />
-				{/if}
-			</Button>
+			<!-- Drawing Tools Popover -->
+			<Popover.Root bind:open={drawingPopoverOpen}>
+				<Popover.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors {isDrawingToolActive
+								? 'bg-secondary text-secondary-foreground'
+								: 'hover:bg-accent'}"
+							aria-label="Outils de dessin"
+						>
+							<currentDrawingTool.icon class="h-4 w-4" />
+							<span class="hidden sm:inline">Dessin</span>
+						</button>
+					{/snippet}
+				</Popover.Trigger>
+				<Popover.Content class="w-auto p-2" side="top" align="start">
+					<div class="flex flex-col gap-1">
+						{#each DRAWING_TOOLS as tool (tool.id)}
+							<Button
+								type="button"
+								variant={toolState.toolType === tool.id ? 'secondary' : 'ghost'}
+								size="sm"
+								onclick={() => handleToolSelect(tool.id)}
+								class="justify-start gap-2"
+							>
+								<tool.icon class="h-4 w-4" />
+								<span>{tool.label}</span>
+								<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">{tool.shortcut}</kbd>
+							</Button>
+						{/each}
+					</div>
+				</Popover.Content>
+			</Popover.Root>
 
-			<!-- Shapes Section Toggle -->
-			<Button
-				type="button"
-				variant={shapesSectionOpen ? 'secondary' : 'ghost'}
-				size="sm"
-				onclick={toggleShapesSection}
-				class="gap-1"
-				aria-expanded={shapesSectionOpen}
-			>
-				<Square class="h-4 w-4" />
-				<span class="hidden sm:inline">Formes</span>
-				{#if shapesSectionOpen}
-					<ChevronUp class="h-3 w-3" />
-				{:else}
-					<ChevronDown class="h-3 w-3" />
-				{/if}
-			</Button>
+			<!-- Shape Tools Popover -->
+			<Popover.Root bind:open={shapesPopoverOpen}>
+				<Popover.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors {isShapeToolActive
+								? 'bg-secondary text-secondary-foreground'
+								: 'hover:bg-accent'}"
+							aria-label="Formes"
+						>
+							<currentShapeTool.icon class="h-4 w-4" />
+							<span class="hidden sm:inline">Formes</span>
+						</button>
+					{/snippet}
+				</Popover.Trigger>
+				<Popover.Content class="w-auto p-2" side="top" align="start">
+					<div class="flex flex-col gap-1">
+						{#each SHAPE_TOOLS as tool (tool.id)}
+							<Button
+								type="button"
+								variant={toolState.toolType === tool.id ? 'secondary' : 'ghost'}
+								size="sm"
+								onclick={() => handleToolSelect(tool.id)}
+								class="justify-start gap-2"
+							>
+								<tool.icon class="h-4 w-4" />
+								<span>{tool.label}</span>
+								<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">{tool.shortcut}</kbd>
+							</Button>
+						{/each}
+					</div>
+				</Popover.Content>
+			</Popover.Root>
 
-			<!-- Instruments Section Toggle -->
-			<Button
-				type="button"
-				variant={instrumentsSectionOpen ? 'secondary' : 'ghost'}
-				size="sm"
-				onclick={toggleInstrumentsSection}
-				class="gap-1"
-				aria-expanded={instrumentsSectionOpen}
-			>
-				<Ruler class="h-4 w-4" />
-				<span class="hidden sm:inline">Instruments</span>
-				{#if instrumentsSectionOpen}
-					<ChevronUp class="h-3 w-3" />
-				{:else}
-					<ChevronDown class="h-3 w-3" />
-				{/if}
-			</Button>
+			<!-- Instruments Popover -->
+			<Popover.Root bind:open={instrumentsPopoverOpen}>
+				<Popover.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors hover:bg-accent"
+							aria-label="Instruments"
+						>
+							<Ruler class="h-4 w-4" />
+							<span class="hidden sm:inline">Instruments</span>
+						</button>
+					{/snippet}
+				</Popover.Trigger>
+				<Popover.Content class="w-auto p-2" side="top" align="start">
+					<div class="flex flex-col gap-1">
+						{#if instruments}
+							{#each INSTRUMENT_TOOLS as tool (tool.id)}
+								<Button
+									type="button"
+									variant={instruments[tool.id].visible ? 'secondary' : 'ghost'}
+									size="sm"
+									onclick={() => handleInstrumentToggle(tool.id)}
+									class="justify-start gap-2"
+								>
+									<tool.icon class="h-4 w-4" />
+									<span>{tool.label}</span>
+									{#if instruments[tool.id].visible}
+										<span class="ml-auto h-2 w-2 rounded-full bg-primary"></span>
+									{/if}
+								</Button>
+							{/each}
+						{/if}
+					</div>
+				</Popover.Content>
+			</Popover.Root>
 
-			<!-- Import Section Toggle -->
-			<Button
-				type="button"
-				variant={importSectionOpen ? 'secondary' : 'ghost'}
-				size="sm"
-				onclick={toggleImportSection}
-				class="gap-1"
-				aria-expanded={importSectionOpen}
-			>
-				<Upload class="h-4 w-4" />
-				<span class="hidden sm:inline">Import</span>
-				{#if importSectionOpen}
-					<ChevronUp class="h-3 w-3" />
-				{:else}
-					<ChevronDown class="h-3 w-3" />
-				{/if}
-			</Button>
+			<!-- Import Popover -->
+			<Popover.Root bind:open={importPopoverOpen}>
+				<Popover.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors hover:bg-accent"
+							aria-label="Importer"
+							disabled={isImporting}
+						>
+							{#if isImporting}
+								<Loader2 class="h-4 w-4 animate-spin" />
+							{:else}
+								<Upload class="h-4 w-4" />
+							{/if}
+							<span class="hidden sm:inline">Import</span>
+						</button>
+					{/snippet}
+				</Popover.Trigger>
+				<Popover.Content class="w-auto p-2" side="top" align="start">
+					<div class="flex flex-col gap-1">
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={handleImageImportClick}
+							disabled={isImporting}
+							class="justify-start gap-2"
+						>
+							<Image class="h-4 w-4" />
+							<span>Image (PNG, JPG, SVG)</span>
+						</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={handlePdfImportClick}
+							disabled={isImporting}
+							class="justify-start gap-2"
+						>
+							<FileText class="h-4 w-4" />
+							<span>PDF comme pages</span>
+						</Button>
+					</div>
+				</Popover.Content>
+			</Popover.Root>
 
-			<!-- File Section Toggle -->
-			<Button
-				type="button"
-				variant={fileSectionOpen ? 'secondary' : 'ghost'}
-				size="sm"
-				onclick={toggleFileSection}
-				class="gap-1"
-				aria-expanded={fileSectionOpen}
-			>
-				<Save class="h-4 w-4" />
-				<span class="hidden sm:inline">Fichier</span>
-				{#if hasUnsavedChanges}
-					<span class="h-2 w-2 rounded-full bg-yellow-500" title="Modifications non sauvegardées"
-					></span>
-				{/if}
-				{#if fileSectionOpen}
-					<ChevronUp class="h-3 w-3" />
-				{:else}
-					<ChevronDown class="h-3 w-3" />
-				{/if}
-			</Button>
+			<!-- File Popover -->
+			<Popover.Root bind:open={filePopoverOpen}>
+				<Popover.Trigger>
+					{#snippet child({ props })}
+						<button
+							{...props}
+							type="button"
+							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors hover:bg-accent"
+							aria-label="Fichier"
+						>
+							<Save class="h-4 w-4" />
+							<span class="hidden sm:inline">Fichier</span>
+							{#if hasUnsavedChanges}
+								<span class="h-2 w-2 rounded-full bg-yellow-500"></span>
+							{/if}
+						</button>
+					{/snippet}
+				</Popover.Trigger>
+				<Popover.Content class="w-auto p-2" side="top" align="start">
+					<div class="flex flex-col gap-1">
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={handleNewDocument}
+							class="justify-start gap-2"
+						>
+							<FilePlus class="h-4 w-4" />
+							<span>Nouveau</span>
+							<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">Ctrl+N</kbd>
+						</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={handleSaveDocument}
+							class="justify-start gap-2"
+						>
+							<Save class="h-4 w-4" />
+							<span>Sauvegarder</span>
+							{#if hasUnsavedChanges}
+								<span class="h-2 w-2 rounded-full bg-yellow-500"></span>
+							{/if}
+							<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">Ctrl+S</kbd>
+						</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={handleOpenDocument}
+							class="justify-start gap-2"
+						>
+							<FolderOpen class="h-4 w-4" />
+							<span>Ouvrir</span>
+							<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">Ctrl+O</kbd>
+						</Button>
+						<div class="my-1 h-px bg-border"></div>
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={handleExportClick}
+							class="justify-start gap-2"
+						>
+							<Download class="h-4 w-4" />
+							<span>Exporter</span>
+							<kbd class="ml-auto rounded bg-muted px-1.5 text-xs">Ctrl+E</kbd>
+						</Button>
+						<div class="my-1 h-px bg-border"></div>
+						<!-- Sync Status -->
+						<div
+							class="flex items-center gap-2 px-3 py-1.5 text-sm {getSyncStatusColor(syncState)}"
+						>
+							{#if syncState.status === 'syncing'}
+								<Loader2 class="h-4 w-4 animate-spin" />
+							{:else if syncState.status === 'disconnected'}
+								<CloudOff class="h-4 w-4" />
+							{:else}
+								<Cloud class="h-4 w-4" />
+							{/if}
+							<span>{getSyncStatusLabel(syncState)}</span>
+						</div>
+					</div>
+				</Popover.Content>
+			</Popover.Root>
 
 			<!-- Separator -->
 			<div class="mx-2 h-6 w-px bg-border"></div>
@@ -547,226 +703,6 @@
 			>
 				<Trash2 class="h-4 w-4" />
 			</Button>
-		</div>
-	</div>
-
-	<!-- Drawing Section (Collapsible with animation) -->
-	<div
-		class="drawing-section overflow-hidden border-t border-border/50 transition-all duration-200 ease-in-out"
-		class:max-h-0={!drawingSectionOpen}
-		class:max-h-20={drawingSectionOpen}
-		class:opacity-0={!drawingSectionOpen}
-		class:opacity-100={drawingSectionOpen}
-	>
-		<div class="flex items-center gap-1 px-3 py-2">
-			{#each DRAWING_TOOLS as tool (tool.id)}
-				<Button
-					type="button"
-					variant={toolState.toolType === tool.id ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => handleToolSelect(tool.id)}
-					title="{tool.label} ({tool.shortcut})"
-					aria-label={tool.label}
-					class="gap-1"
-				>
-					<tool.icon class="h-4 w-4" />
-					<span class="hidden sm:inline">{tool.label}</span>
-					<kbd class="ml-1 hidden rounded bg-muted px-1 text-xs sm:inline">{tool.shortcut}</kbd>
-				</Button>
-			{/each}
-		</div>
-	</div>
-
-	<!-- Shapes Section (Collapsible with animation) -->
-	<div
-		class="shapes-section overflow-hidden border-t border-border/50 transition-all duration-200 ease-in-out"
-		class:max-h-0={!shapesSectionOpen}
-		class:max-h-20={shapesSectionOpen}
-		class:opacity-0={!shapesSectionOpen}
-		class:opacity-100={shapesSectionOpen}
-	>
-		<div class="flex items-center gap-1 px-3 py-2">
-			{#each SHAPE_TOOLS as tool (tool.id)}
-				<Button
-					type="button"
-					variant={toolState.toolType === tool.id ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => handleToolSelect(tool.id)}
-					title="{tool.label} ({tool.shortcut})"
-					aria-label={tool.label}
-					class="gap-1"
-				>
-					<tool.icon class="h-4 w-4" />
-					<span class="hidden sm:inline">{tool.label}</span>
-					<kbd class="ml-1 hidden rounded bg-muted px-1 text-xs sm:inline">{tool.shortcut}</kbd>
-				</Button>
-			{/each}
-		</div>
-	</div>
-
-	<!-- Instruments Section (Collapsible with animation) -->
-	<div
-		class="instruments-section overflow-hidden border-t border-border/50 transition-all duration-200 ease-in-out"
-		class:max-h-0={!instrumentsSectionOpen}
-		class:max-h-20={instrumentsSectionOpen}
-		class:opacity-0={!instrumentsSectionOpen}
-		class:opacity-100={instrumentsSectionOpen}
-	>
-		<div class="flex items-center gap-1 px-3 py-2">
-			{#if instruments}
-				{#each INSTRUMENT_TOOLS as tool (tool.id)}
-					<Button
-						type="button"
-						variant={instruments[tool.id].visible ? 'secondary' : 'ghost'}
-						size="sm"
-						onclick={() => handleInstrumentToggle(tool.id)}
-						title="{tool.label} - cliquer pour {instruments[tool.id].visible
-							? 'masquer'
-							: 'afficher'}"
-						aria-label="{tool.label} ({instruments[tool.id].visible ? 'visible' : 'masqué'})"
-						aria-pressed={instruments[tool.id].visible}
-						class="gap-1"
-					>
-						<tool.icon class="h-4 w-4" />
-						<span class="hidden sm:inline">{tool.label}</span>
-						{#if instruments[tool.id].visible}
-							<span class="ml-1 h-2 w-2 rounded-full bg-primary" aria-hidden="true"></span>
-						{/if}
-					</Button>
-				{/each}
-			{/if}
-		</div>
-	</div>
-
-	<!-- Import Section (Collapsible with animation) -->
-	<div
-		class="import-section overflow-hidden border-t border-border/50 transition-all duration-200 ease-in-out"
-		class:max-h-0={!importSectionOpen}
-		class:max-h-20={importSectionOpen}
-		class:opacity-0={!importSectionOpen}
-		class:opacity-100={importSectionOpen}
-	>
-		<div class="flex items-center gap-1 px-3 py-2">
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleImageImportClick}
-				disabled={isImporting}
-				title="Importer une image (PNG, JPG, SVG, WebP)"
-				aria-label="Importer une image"
-				class="gap-1"
-			>
-				<Image class="h-4 w-4" />
-				<span class="hidden sm:inline">Image</span>
-			</Button>
-
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handlePdfImportClick}
-				disabled={isImporting}
-				title="Importer un PDF comme pages"
-				aria-label="Importer un PDF"
-				class="gap-1"
-			>
-				<FileText class="h-4 w-4" />
-				<span class="hidden sm:inline">PDF</span>
-			</Button>
-
-			{#if isImporting}
-				<span class="ml-2 text-sm text-muted-foreground">Importation...</span>
-			{/if}
-		</div>
-	</div>
-
-	<!-- File Section (Collapsible with animation) -->
-	<div
-		class="file-section overflow-hidden border-t border-border/50 transition-all duration-200 ease-in-out"
-		class:max-h-0={!fileSectionOpen}
-		class:max-h-20={fileSectionOpen}
-		class:opacity-0={!fileSectionOpen}
-		class:opacity-100={fileSectionOpen}
-	>
-		<div class="flex items-center gap-1 px-3 py-2">
-			<!-- New Document -->
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleNewDocument}
-				title="Nouveau document (Ctrl+N)"
-				aria-label="Nouveau document"
-				class="gap-1"
-			>
-				<FilePlus class="h-4 w-4" />
-				<span class="hidden sm:inline">Nouveau</span>
-			</Button>
-
-			<!-- Save Document -->
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleSaveDocument}
-				title="Sauvegarder (Ctrl+S)"
-				aria-label="Sauvegarder"
-				class="gap-1"
-			>
-				<Save class="h-4 w-4" />
-				<span class="hidden sm:inline">Sauvegarder</span>
-				{#if hasUnsavedChanges}
-					<span class="h-2 w-2 rounded-full bg-yellow-500" title="Modifications non sauvegardées"
-					></span>
-				{/if}
-			</Button>
-
-			<!-- Open Document -->
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={handleOpenDocument}
-				title="Ouvrir (Ctrl+O)"
-				aria-label="Ouvrir un document"
-				class="gap-1"
-			>
-				<FolderOpen class="h-4 w-4" />
-				<span class="hidden sm:inline">Ouvrir</span>
-			</Button>
-
-			<!-- Export Document -->
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				onclick={() => (exportDialogOpen = true)}
-				title="Exporter (Ctrl+E)"
-				aria-label="Exporter"
-				class="gap-1"
-			>
-				<Download class="h-4 w-4" />
-				<span class="hidden sm:inline">Exporter</span>
-			</Button>
-
-			<!-- Separator -->
-			<div class="mx-2 h-6 w-px bg-border"></div>
-
-			<!-- Sync Status Indicator -->
-			<div
-				class="flex items-center gap-1 text-sm {getSyncStatusColor(syncState)}"
-				title={getSyncStatusLabel(syncState)}
-			>
-				{#if syncState.status === 'syncing'}
-					<Loader2 class="h-4 w-4 animate-spin" />
-				{:else if syncState.status === 'disconnected'}
-					<CloudOff class="h-4 w-4" />
-				{:else}
-					<Cloud class="h-4 w-4" />
-				{/if}
-				<span class="hidden sm:inline">{getSyncStatusLabel(syncState)}</span>
-			</div>
 		</div>
 	</div>
 </div>
