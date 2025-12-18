@@ -41,7 +41,9 @@
 		Cloud,
 		CloudOff,
 		Loader2,
-		Download
+		Download,
+		MousePointer2,
+		Hand
 	} from 'lucide-svelte';
 	import ExportDialog from './ExportDialog.svelte';
 	import { getSyncStatusColor, getSyncStatusLabel } from '../utils/sync-state';
@@ -346,6 +348,33 @@
 	<div class="flex items-center justify-between gap-2 px-3 py-2">
 		<!-- Left: Tool menus -->
 		<div class="flex items-center gap-1">
+			<!-- Select Tool -->
+			<Button
+				type="button"
+				variant={toolState.toolType === 'select' ? 'secondary' : 'ghost'}
+				size="sm"
+				onclick={() => handleToolSelect('select')}
+				title="Sélection (V)"
+				aria-label="Outil de sélection"
+			>
+				<MousePointer2 class="h-4 w-4" />
+			</Button>
+
+			<!-- Pan Tool -->
+			<Button
+				type="button"
+				variant={toolState.toolType === 'pan' ? 'secondary' : 'ghost'}
+				size="sm"
+				onclick={() => handleToolSelect('pan')}
+				title="Déplacer la vue (Espace)"
+				aria-label="Déplacer la vue"
+			>
+				<Hand class="h-4 w-4" />
+			</Button>
+
+			<!-- Separator -->
+			<div class="mx-1 h-6 w-px bg-border"></div>
+
 			<!-- Drawing Tools Popover -->
 			<Popover.Root bind:open={drawingPopoverOpen}>
 				<Popover.Trigger>
