@@ -353,4 +353,121 @@ describe('Whiteboard Store', () => {
 			expect(whiteboardStore.hasUnsavedChanges).toBe(false);
 		});
 	});
+
+	describe('z-order operations', () => {
+		// Helper to create test elements
+		function createTestElement(id: string) {
+			return {
+				id,
+				type: 'stroke' as const,
+				toolType: 'pen' as const,
+				points: [{ x: 0, y: 0 }],
+				color: '#000000',
+				width: 2,
+				opacity: 1
+			};
+		}
+
+		function getElementIds() {
+			return whiteboardStore.currentPage?.elements.map((e) => e.id) ?? [];
+		}
+
+		beforeEach(() => {
+			whiteboardStore.createNew();
+			// Add 4 elements: A, B, C, D (D is on top)
+			whiteboardStore.addElement(createTestElement('A'));
+			whiteboardStore.addElement(createTestElement('B'));
+			whiteboardStore.addElement(createTestElement('C'));
+			whiteboardStore.addElement(createTestElement('D'));
+		});
+
+		describe('bringToFront', () => {
+			it('moves single element to end of array (top)', () => {
+				whiteboardStore.bringToFront(['A']);
+				expect(getElementIds()).toEqual(['B', 'C', 'D', 'A']);
+			});
+
+			it('moves multiple elements to end, preserving relative order', () => {
+				whiteboardStore.bringToFront(['A', 'C']);
+				expect(getElementIds()).toEqual(['B', 'D', 'A', 'C']);
+			});
+
+			it('does nothing if element already at top', () => {
+				whiteboardStore.bringToFront(['D']);
+				expect(getElementIds()).toEqual(['A', 'B', 'C', 'D']);
+			});
+
+			it('ignores non-existent element IDs', () => {
+				whiteboardStore.bringToFront(['nonexistent']);
+				expect(getElementIds()).toEqual(['A', 'B', 'C', 'D']);
+			});
+		});
+
+		describe('sendToBack', () => {
+			it('moves single element to beginning of array (bottom)', () => {
+				whiteboardStore.sendToBack(['D']);
+				expect(getElementIds()).toEqual(['D', 'A', 'B', 'C']);
+			});
+
+			it('moves multiple elements to beginning, preserving relative order', () => {
+				whiteboardStore.sendToBack(['B', 'D']);
+				expect(getElementIds()).toEqual(['B', 'D', 'A', 'C']);
+			});
+
+			it('does nothing if element already at bottom', () => {
+				whiteboardStore.sendToBack(['A']);
+				expect(getElementIds()).toEqual(['A', 'B', 'C', 'D']);
+			});
+
+			it('ignores non-existent element IDs', () => {
+				whiteboardStore.sendToBack(['nonexistent']);
+				expect(getElementIds()).toEqual(['A', 'B', 'C', 'D']);
+			});
+		});
+
+		describe('bringForward', () => {
+			it('moves single element one position up', () => {
+				whiteboardStore.bringForward(['B']);
+				expect(getElementIds()).toEqual(['A', 'C', 'B', 'D']);
+			});
+
+			it('does nothing if element already at top', () => {
+				whiteboardStore.bringForward(['D']);
+				expect(getElementIds()).toEqual(['A', 'B', 'C', 'D']);
+			});
+
+			it('moves adjacent selected elements together as a group', () => {
+				// A and B are adjacent, so they move together past C
+				whiteboardStore.bringForward(['A', 'B']);
+				expect(getElementIds()).toEqual(['C', 'A', 'B', 'D']);
+			});
+
+			it('ignores non-existent element IDs', () => {
+				whiteboardStore.bringForward(['nonexistent']);
+				expect(getElementIds()).toEqual(['A', 'B', 'C', 'D']);
+			});
+		});
+
+		describe('sendBackward', () => {
+			it('moves single element one position down', () => {
+				whiteboardStore.sendBackward(['C']);
+				expect(getElementIds()).toEqual(['A', 'C', 'B', 'D']);
+			});
+
+			it('does nothing if element already at bottom', () => {
+				whiteboardStore.sendBackward(['A']);
+				expect(getElementIds()).toEqual(['A', 'B', 'C', 'D']);
+			});
+
+			it('moves multiple elements one position down each', () => {
+				whiteboardStore.sendBackward(['C', 'D']);
+				expect(getElementIds()).toEqual(['A', 'C', 'D', 'B']);
+			});
+
+			it('ignores non-existent element IDs', () => {
+				whiteboardStore.sendBackward(['nonexistent']);
+				expect(getElementIds()).toEqual(['A', 'B', 'C', 'D']);
+			});
+		});
+	});
 });
