@@ -71,7 +71,8 @@ const imageElementSchema = z.object({
 	width: z.number().positive().max(10000),
 	height: z.number().positive().max(10000),
 	src: z.string().max(10_000_000), // Max ~10MB base64
-	originalFilename: z.string().max(255).optional()
+	originalFilename: z.string().max(255).optional(),
+	rotation: z.number().min(0).max(360).optional()
 });
 
 export const elementSchema = z.discriminatedUnion('type', [

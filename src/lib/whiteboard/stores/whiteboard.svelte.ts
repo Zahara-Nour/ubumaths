@@ -1587,6 +1587,18 @@ function createWhiteboardStore() {
 			});
 		},
 
+		/**
+		 * Rotate an image element
+		 */
+		rotateImage(elementId: string, rotation: number): void {
+			// Normalize rotation to 0-360 range
+			const normalizedRotation = ((rotation % 360) + 360) % 360;
+			this.updateElement(elementId, (el) => {
+				if (el.type !== 'image') return el;
+				return { ...el, rotation: normalizedRotation };
+			});
+		},
+
 		// === Background Operations ===
 
 		/**
