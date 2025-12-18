@@ -912,33 +912,6 @@
 				</Popover.Content>
 			</Popover.Root>
 
-			<!-- Corner Radius Slider (show when applicable shape tool active OR shape with corners is selected) -->
-			{#if showCornerRadiusSlider}
-				<div class="flex items-center gap-2 px-2">
-					<svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 16 16" aria-hidden="true">
-						<path
-							d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.5"
-							rx={Math.max(1, currentCornerRadius / 10)}
-						/>
-					</svg>
-					<Slider
-						value={[currentCornerRadius]}
-						onValueChange={handleCornerRadiusChange}
-						min={0}
-						max={50}
-						step={1}
-						class="w-16"
-						aria-label="Rayon des coins: {currentCornerRadius}px"
-					/>
-					<span class="min-w-[2rem] text-xs text-muted-foreground" aria-hidden="true"
-						>{currentCornerRadius}px</span
-					>
-				</div>
-			{/if}
-
 			<!-- Fill Mode Selector (show when fillable shape tool active OR fillable shape is selected) -->
 			{#if showFillSelector}
 				<Popover.Root bind:open={fillModePopoverOpen}>
@@ -1131,6 +1104,26 @@
 									/>
 									<span class="min-w-[2rem] text-xs text-muted-foreground"
 										>{Math.round(currentFillOpacity * 100)}%</span
+									>
+								</div>
+							</div>
+						{/if}
+						<!-- Corner radius slider (only for shapes with corners) -->
+						{#if showCornerRadiusSlider}
+							<div class="mt-2 border-t border-border pt-2">
+								<div class="flex items-center gap-2">
+									<span class="text-xs text-muted-foreground">Arrondi</span>
+									<Slider
+										value={[currentCornerRadius]}
+										onValueChange={handleCornerRadiusChange}
+										min={0}
+										max={50}
+										step={1}
+										class="w-20"
+										aria-label="Rayon des coins: {currentCornerRadius}px"
+									/>
+									<span class="min-w-[2rem] text-xs text-muted-foreground"
+										>{currentCornerRadius}px</span
 									>
 								</div>
 							</div>
