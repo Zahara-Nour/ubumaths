@@ -11,7 +11,10 @@
 	 */
 
 	import { whiteboardStore } from '../stores/whiteboard.svelte';
-	import type { Page } from '../types/document';
+	import type { Page, ShapeElement, StrokeElement, Point } from '../types/document';
+	import { getStrokeDashArray } from '../types/document';
+	import { getShapeSvgProps } from '../core/shapes';
+	import { smoothStroke, getToolOptions, pointsToSvgPath } from '../core/stroke-smoothing';
 	import { Button } from '$lib/components/ui/button';
 	import { Plus, X, ChevronLeft, ChevronRight, GripVertical } from 'lucide-svelte';
 
@@ -190,6 +193,15 @@
 		const texts = page.elements.filter((el) => el.type === 'textblock').length;
 		return { strokes, shapes, texts };
 	}
+
+	/**
+	 * Get SVG path for a stroke element
+	 */
+	function getStrokePath(stroke: StrokeElement): string {
+		const options = getToolOptions(stroke.toolType, stroke.width, stroke.color, stroke.opacity);
+		const outlinePoints = smoothStroke(stroke.points as Point[], options);
+		return pointsToSvgPath(outlinePoints);
+	}
 </script>
 
 <!-- Toggle button (always visible) -->
@@ -288,25 +300,87 @@
 							<!-- Simplified content preview -->
 							{#each page.elements as element (element.id)}
 								{#if element.type === 'stroke' && element.points?.length > 0}
-									<!-- Simplified stroke as dots -->
-									<circle
-										cx={element.points[0].x}
-										cy={element.points[0].y}
-										r="10"
-										fill={element.color}
-										opacity={element.opacity}
+									<!-- Real stroke rendering -->
+									{@const stroke = element as StrokeElement}
+									{@const strokePath = getStrokePath(stroke)}
+									<path
+										d={strokePath}
+										fill={stroke.color}
+										fill-opacity={stroke.opacity}
+										stroke="none"
 									/>
 								{:else if element.type === 'shape' && element.start && element.end}
-									<!-- Simplified shape -->
-									<rect
-										x={Math.min(element.start.x, element.end.x)}
-										y={Math.min(element.start.y, element.end.y)}
-										width={Math.abs(element.end.x - element.start.x)}
-										height={Math.abs(element.end.y - element.start.y)}
-										fill="none"
-										stroke={element.color}
-										stroke-width="5"
-									/>
+									<!-- Real shape rendering -->
+									{@const shape = element as ShapeElement}
+									{@const props = getShapeSvgProps(
+										shape.shapeType,
+										shape.start,
+										shape.end,
+										shape.cornerRadius ?? 0
+									)}
+									{@const dashArray = getStrokeDashArray(
+										shape.strokeStyle ?? 'solid',
+										shape.strokeWidth
+									)}
+									{#if props.type === 'line'}
+										<line
+											x1={props.x1}
+											y1={props.y1}
+											x2={props.x2}
+											y2={props.y2}
+											stroke={shape.color}
+											stroke-width={shape.strokeWidth}
+											stroke-linecap="round"
+											stroke-dasharray={dashArray}
+											opacity={shape.opacity}
+										/>
+									{:else if props.type === 'rect'}
+										<rect
+											x={props.x}
+											y={props.y}
+											width={props.width}
+											height={props.height}
+											rx={props.cornerRadius}
+											ry={props.cornerRadius}
+											fill={shape.fill ?? 'none'}
+											stroke={shape.color}
+											stroke-width={shape.strokeWidth}
+											stroke-dasharray={dashArray}
+											opacity={shape.opacity}
+										/>
+									{:else if props.type === 'ellipse'}
+										<ellipse
+											cx={props.cx}
+											cy={props.cy}
+											rx={props.rx}
+											ry={props.ry}
+											fill={shape.fill ?? 'none'}
+											stroke={shape.color}
+											stroke-width={shape.strokeWidth}
+											stroke-dasharray={dashArray}
+											opacity={shape.opacity}
+										/>
+									{:else if props.type === 'polygon'}
+										<polygon
+											points={props.points}
+											fill={shape.fill ?? 'none'}
+											stroke={shape.color}
+											stroke-width={shape.strokeWidth}
+											stroke-linejoin="round"
+											stroke-dasharray={dashArray}
+											opacity={shape.opacity}
+										/>
+									{:else if props.type === 'path'}
+										<path
+											d={props.d}
+											fill={shape.fill ?? 'none'}
+											stroke={shape.color}
+											stroke-width={shape.strokeWidth}
+											stroke-linejoin="round"
+											stroke-dasharray={dashArray}
+											opacity={shape.opacity}
+										/>
+									{/if}
 								{:else if element.type === 'textblock' && element.position}
 									<!-- Simplified text block -->
 									<rect

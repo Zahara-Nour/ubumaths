@@ -54,7 +54,7 @@ export interface Point {
 export type StrokeToolType = 'pen' | 'highlighter' | 'eraser';
 
 /** Shape types */
-export type ShapeType = 'line' | 'rectangle' | 'circle' | 'arrow';
+export type ShapeType = 'line' | 'rectangle' | 'circle' | 'arrow' | 'pentagon' | 'hexagon' | 'star';
 
 /** Stroke/line style for shapes */
 export type StrokeStyle = 'solid' | 'dashed' | 'dotted' | 'dashdot';
@@ -65,6 +65,16 @@ export const STROKE_STYLE_LABELS: Record<StrokeStyle, string> = {
 	dashed: 'Tirets',
 	dotted: 'Pointillé',
 	dashdot: 'Mixte'
+};
+
+/** Fill mode for shapes */
+export type FillMode = 'none' | 'solid' | 'hatched';
+
+/** Fill mode labels for UI */
+export const FILL_MODE_LABELS: Record<FillMode, string> = {
+	none: 'Sans fond',
+	solid: 'Couleur unie',
+	hatched: 'Hachuré'
 };
 
 /**
@@ -93,6 +103,8 @@ export interface StrokeElement {
 	readonly color: string;
 	readonly width: number;
 	readonly opacity: number;
+	/** Stroke style (solid, dashed, dotted, dashdot), default solid */
+	readonly strokeStyle?: StrokeStyle;
 	/** Rotation angle in degrees (0-360), default 0 */
 	readonly rotation?: number;
 }
@@ -108,8 +120,12 @@ export interface ShapeElement {
 	readonly strokeWidth: number;
 	readonly opacity: number;
 	readonly strokeStyle?: StrokeStyle;
+	/** Fill mode: none (transparent), solid (color), hatched (diagonal lines) */
+	readonly fillMode?: FillMode;
 	readonly fill?: string;
 	readonly fillOpacity?: number;
+	/** Corner radius for rounded corners (0 = sharp corners), default 0 */
+	readonly cornerRadius?: number;
 	/** Rotation angle in degrees (0-360), default 0 */
 	readonly rotation?: number;
 }

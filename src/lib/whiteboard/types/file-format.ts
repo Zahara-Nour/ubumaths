@@ -31,22 +31,28 @@ const strokeElementSchema = z.object({
 	points: z.array(pointSchema).min(1).max(50000),
 	color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 	width: z.number().positive().max(100),
-	opacity: z.number().min(0).max(1)
+	opacity: z.number().min(0).max(1),
+	strokeStyle: z.enum(['solid', 'dashed', 'dotted', 'dashdot']).optional()
 });
 
 const shapeElementSchema = z.object({
 	id: z.string().uuid(),
 	type: z.literal('shape'),
-	shapeType: z.enum(['line', 'rectangle', 'circle', 'arrow']),
+	shapeType: z.enum(['line', 'rectangle', 'circle', 'arrow', 'pentagon', 'hexagon', 'star']),
 	start: pointSchema,
 	end: pointSchema,
 	color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 	strokeWidth: z.number().positive().max(50),
+	opacity: z.number().min(0).max(1).optional(),
+	strokeStyle: z.enum(['solid', 'dashed', 'dotted', 'dashdot']).optional(),
+	fillMode: z.enum(['none', 'solid', 'hatched']).optional(),
 	fill: z
 		.string()
 		.regex(/^#[0-9A-Fa-f]{6}$/)
 		.optional(),
-	fillOpacity: z.number().min(0).max(1).optional()
+	fillOpacity: z.number().min(0).max(1).optional(),
+	cornerRadius: z.number().min(0).max(100).optional(),
+	rotation: z.number().min(0).max(360).optional()
 });
 
 const textBlockElementSchema = z.object({
