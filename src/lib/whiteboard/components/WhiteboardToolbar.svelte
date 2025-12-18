@@ -138,7 +138,6 @@
 	/** Popover open states */
 	let drawingPopoverOpen = $state(false);
 	let shapesPopoverOpen = $state(false);
-	let strokePropertiesPopoverOpen = $state(false);
 	let fillModePopoverOpen = $state(false);
 	let instrumentsPopoverOpen = $state(false);
 	let importPopoverOpen = $state(false);
@@ -155,11 +154,13 @@
 	/** Export dialog state */
 	let exportDialogOpen = $state(false);
 
-	/** Draggable stroke popover state */
-	let strokePopoverPosition = $state<{ x: number; y: number } | null>(null);
-	let isDraggingStrokePopover = $state(false);
+	/** Draggable stroke panel state (independent floating panel, not using Popover) */
+	let strokePanelOpen = $state(false);
+	let strokePanelPosition = $state({ x: 100, y: 100 });
+	let isDraggingStrokePanel = $state(false);
 	let dragStartPos = $state({ x: 0, y: 0 });
 	let dragStartOffset = $state({ x: 0, y: 0 });
+	let strokePanelRef: HTMLDivElement | null = $state(null);
 
 	// ==========================================================================
 	// Derived State
@@ -310,35 +311,69 @@
 	}
 
 	// ==========================================================================
-	// Stroke Popover Drag Handlers
+	// Stroke Panel Drag Handlers
 	// ==========================================================================
 
-	function handleStrokePopoverDragStart(e: PointerEvent) {
+	function handleStrokePanelDragStart(e: PointerEvent) {
 		e.preventDefault();
-		isDraggingStrokePopover = true;
+		isDraggingStrokePanel = true;
 		dragStartPos = { x: e.clientX, y: e.clientY };
-		dragStartOffset = strokePopoverPosition ?? { x: 0, y: 0 };
-		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+		dragStartOffset = { ...strokePanelPosition };
+
+		// Add window listeners for drag
+		window.addEventListener('pointermove', handleStrokePanelDragMove);
+		window.addEventListener('pointerup', handleStrokePanelDragEnd);
 	}
 
-	function handleStrokePopoverDragMove(e: PointerEvent) {
-		if (!isDraggingStrokePopover) return;
+	function handleStrokePanelDragMove(e: PointerEvent) {
+		if (!isDraggingStrokePanel) return;
 		const dx = e.clientX - dragStartPos.x;
 		const dy = e.clientY - dragStartPos.y;
-		strokePopoverPosition = {
-			x: dragStartOffset.x + dx,
-			y: dragStartOffset.y + dy
+
+		// Calculate new position with bounds checking
+		const newX = dragStartOffset.x + dx;
+		const newY = dragStartOffset.y + dy;
+
+		// Keep panel within viewport
+		const panelWidth = 256; // w-64 = 16rem = 256px
+		const panelHeight = 350; // approximate height
+		const maxX = window.innerWidth - panelWidth - 10;
+		const maxY = window.innerHeight - panelHeight - 10;
+
+		strokePanelPosition = {
+			x: Math.max(10, Math.min(maxX, newX)),
+			y: Math.max(10, Math.min(maxY, newY))
 		};
 	}
 
-	function handleStrokePopoverDragEnd(e: PointerEvent) {
-		if (isDraggingStrokePopover) {
-			isDraggingStrokePopover = false;
-			try {
-				(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-			} catch {
-				// Ignore
-			}
+	function handleStrokePanelDragEnd() {
+		isDraggingStrokePanel = false;
+		window.removeEventListener('pointermove', handleStrokePanelDragMove);
+		window.removeEventListener('pointerup', handleStrokePanelDragEnd);
+	}
+
+	function toggleStrokePanel(e: MouseEvent) {
+		if (strokePanelOpen) {
+			strokePanelOpen = false;
+		} else {
+			// Position panel near the button
+			const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+			strokePanelPosition = {
+				x: rect.left,
+				y: rect.top - 360 // Above the toolbar
+			};
+			strokePanelOpen = true;
+		}
+	}
+
+	function closeStrokePanelOnClickOutside(e: MouseEvent) {
+		if (
+			strokePanelOpen &&
+			strokePanelRef &&
+			!strokePanelRef.contains(e.target as Node) &&
+			!(e.target as HTMLElement).closest('[data-stroke-panel-trigger]')
+		) {
+			strokePanelOpen = false;
 		}
 	}
 
@@ -519,6 +554,8 @@
 		}
 	}
 </script>
+
+<svelte:window onclick={closeStrokePanelOnClickOutside} />
 
 <div class="whiteboard-toolbar border-t border-border bg-muted/95 backdrop-blur-sm">
 	<div class="flex items-center justify-between gap-2 px-3 py-2">
@@ -796,186 +833,38 @@
 			<!-- Separator -->
 			<div class="mx-2 h-6 w-px bg-border"></div>
 
-			<!-- Stroke Properties Popover -->
-			<Popover.Root bind:open={strokePropertiesPopoverOpen}>
-				<Popover.Trigger>
-					{#snippet child({ props })}
-						<button
-							{...props}
-							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
-							aria-label="Propriétés du trait"
-							title="Trait"
-						>
-							<!-- Button shows a line preview with current color, width, and style -->
-							<svg class="h-6 w-10" viewBox="0 0 40 24">
-								<line
-									x1="2"
-									y1="12"
-									x2="38"
-									y2="12"
-									stroke={currentColor}
-									stroke-width={Math.max(Math.min(currentStrokeWidth, 6), 2)}
-									stroke-linecap="round"
-									stroke-dasharray={currentStrokeStyle === 'solid'
-										? undefined
-										: currentStrokeStyle === 'dashed'
-											? '8 4'
-											: currentStrokeStyle === 'dotted'
-												? '1 4'
-												: '8 3 2 3'}
-									opacity={currentOpacity}
-								/>
-							</svg>
-						</button>
-					{/snippet}
-				</Popover.Trigger>
-				<Popover.Content
-					class="w-64 p-0"
-					side="top"
-					align="start"
-					style={strokePopoverPosition
-						? `transform: translate(${strokePopoverPosition.x}px, ${strokePopoverPosition.y}px);`
-						: ''}
-				>
-					<!-- Drag handle header -->
-					<div
-						class="flex cursor-move items-center justify-between rounded-t-md border-b border-border bg-muted/50 px-3 py-1.5"
-						onpointerdown={handleStrokePopoverDragStart}
-						onpointermove={handleStrokePopoverDragMove}
-						onpointerup={handleStrokePopoverDragEnd}
-						onpointercancel={handleStrokePopoverDragEnd}
-						role="button"
-						tabindex="-1"
-						aria-label="Déplacer le panneau"
-					>
-						<span class="text-xs font-medium text-muted-foreground">Trait</span>
-						<svg class="h-3 w-3 text-muted-foreground/50" viewBox="0 0 12 12">
-							<circle cx="3" cy="3" r="1" fill="currentColor" />
-							<circle cx="9" cy="3" r="1" fill="currentColor" />
-							<circle cx="3" cy="9" r="1" fill="currentColor" />
-							<circle cx="9" cy="9" r="1" fill="currentColor" />
-						</svg>
-					</div>
-					<div class="flex flex-col gap-3 p-3">
-						<!-- Stroke color -->
-						<div>
-							<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Couleur</span>
-							<div class="grid grid-cols-6 gap-1.5">
-								{#each COLOR_PRESETS as color (color.value)}
-									<button
-										type="button"
-										onclick={() => {
-											whiteboardStore.setColor(color.value);
-											if (whiteboardStore.hasSelection) {
-												whiteboardStore.updateSelectedStyles({ color: color.value });
-											}
-										}}
-										class="h-7 w-7 rounded border-2 transition-transform hover:scale-110 {currentColor ===
-										color.value
-											? 'border-primary ring-1 ring-primary ring-offset-1'
-											: 'border-border'}"
-										style="background-color: {color.value}"
-										title={color.name}
-										aria-label="{color.name}{currentColor === color.value ? ' (sélectionné)' : ''}"
-									></button>
-								{/each}
-							</div>
-							<div class="mt-1.5 flex items-center gap-2">
-								<input
-									type="color"
-									value={currentColor}
-									oninput={(e) => {
-										whiteboardStore.setColor(e.currentTarget.value);
-										if (whiteboardStore.hasSelection) {
-											whiteboardStore.updateSelectedStyles({ color: e.currentTarget.value });
-										}
-									}}
-									class="h-7 w-7 cursor-pointer rounded border-0 p-0"
-									aria-label="Couleur personnalisée"
-								/>
-								<span class="text-xs text-muted-foreground">Personnalisé</span>
-							</div>
-						</div>
-
-						<!-- Stroke width -->
-						<div>
-							<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Épaisseur</span>
-							<div class="flex items-center gap-2">
-								<Slider
-									value={[currentStrokeWidth]}
-									onValueChange={handleStrokeWidthChange}
-									min={STROKE_WIDTH_MIN}
-									max={STROKE_WIDTH_MAX}
-									step={1}
-									class="flex-1"
-									aria-label="Épaisseur du trait: {currentStrokeWidth} pixels"
-								/>
-								<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
-									>{currentStrokeWidth}px</span
-								>
-							</div>
-						</div>
-
-						<!-- Opacity -->
-						<div>
-							<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Opacité</span>
-							<div class="flex items-center gap-2">
-								<Slider
-									value={[currentOpacity]}
-									onValueChange={handleOpacityChange}
-									min={0.1}
-									max={1}
-									step={0.1}
-									class="flex-1"
-									aria-label="Opacité: {Math.round(currentOpacity * 100)}%"
-								/>
-								<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
-									>{Math.round(currentOpacity * 100)}%</span
-								>
-							</div>
-						</div>
-
-						<!-- Stroke style -->
-						<div>
-							<span class="mb-1.5 block text-xs font-medium text-muted-foreground"
-								>Style de trait</span
-							>
-							<div class="flex flex-col gap-1">
-								{#each Object.entries(STROKE_STYLE_LABELS) as [style, label] (style)}
-									<Button
-										type="button"
-										variant={currentStrokeStyle === style ? 'secondary' : 'ghost'}
-										size="sm"
-										onclick={() => handleStrokeStyleChange(style as StrokeStyle)}
-										class="justify-start gap-3"
-									>
-										<svg class="h-4 w-10" viewBox="0 0 40 8">
-											<line
-												x1="2"
-												y1="4"
-												x2="38"
-												y2="4"
-												stroke="currentColor"
-												stroke-width="2"
-												stroke-linecap="round"
-												stroke-dasharray={style === 'solid'
-													? undefined
-													: style === 'dashed'
-														? '6 3'
-														: style === 'dotted'
-															? '2 3'
-															: '6 2 2 2'}
-											/>
-										</svg>
-										<span>{label}</span>
-									</Button>
-								{/each}
-							</div>
-						</div>
-					</div>
-				</Popover.Content>
-			</Popover.Root>
+			<!-- Stroke Properties Button (opens floating panel) -->
+			<button
+				type="button"
+				class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent {strokePanelOpen
+					? 'bg-secondary'
+					: ''}"
+				aria-label="Propriétés du trait"
+				title="Trait"
+				data-stroke-panel-trigger
+				onclick={toggleStrokePanel}
+			>
+				<!-- Button shows a line preview with current color, width, and style -->
+				<svg class="h-6 w-10" viewBox="0 0 40 24">
+					<line
+						x1="2"
+						y1="12"
+						x2="38"
+						y2="12"
+						stroke={currentColor}
+						stroke-width={Math.max(Math.min(currentStrokeWidth, 6), 2)}
+						stroke-linecap="round"
+						stroke-dasharray={currentStrokeStyle === 'solid'
+							? undefined
+							: currentStrokeStyle === 'dashed'
+								? '8 4'
+								: currentStrokeStyle === 'dotted'
+									? '1 4'
+									: '8 3 2 3'}
+						opacity={currentOpacity}
+					/>
+				</svg>
+			</button>
 
 			<!-- Fill Mode Selector (show when fillable shape tool active OR fillable shape is selected) -->
 			{#if showFillSelector}
@@ -1273,6 +1162,150 @@
 		</div>
 	</div>
 </div>
+
+<!-- Floating Stroke Properties Panel -->
+{#if strokePanelOpen}
+	<div
+		bind:this={strokePanelRef}
+		class="fixed z-50 w-64 rounded-md border border-border bg-popover shadow-lg"
+		style="left: {strokePanelPosition.x}px; top: {strokePanelPosition.y}px;"
+		role="dialog"
+		aria-label="Propriétés du trait"
+	>
+		<!-- Drag handle header -->
+		<div
+			class="flex cursor-move items-center justify-between rounded-t-md border-b border-border bg-muted/50 px-3 py-1.5"
+			class:cursor-grabbing={isDraggingStrokePanel}
+			onpointerdown={handleStrokePanelDragStart}
+			role="button"
+			tabindex="-1"
+			aria-label="Déplacer le panneau"
+		>
+			<span class="text-xs font-medium text-muted-foreground">Trait</span>
+			<svg class="h-3 w-3 text-muted-foreground/50" viewBox="0 0 12 12">
+				<circle cx="3" cy="3" r="1" fill="currentColor" />
+				<circle cx="9" cy="3" r="1" fill="currentColor" />
+				<circle cx="3" cy="9" r="1" fill="currentColor" />
+				<circle cx="9" cy="9" r="1" fill="currentColor" />
+			</svg>
+		</div>
+		<div class="flex flex-col gap-3 p-3">
+			<!-- Stroke color -->
+			<div>
+				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Couleur</span>
+				<div class="grid grid-cols-6 gap-1.5">
+					{#each COLOR_PRESETS as color (color.value)}
+						<button
+							type="button"
+							onclick={() => {
+								whiteboardStore.setColor(color.value);
+								if (whiteboardStore.hasSelection) {
+									whiteboardStore.updateSelectedStyles({ color: color.value });
+								}
+							}}
+							class="h-7 w-7 rounded border-2 transition-transform hover:scale-110 {currentColor ===
+							color.value
+								? 'border-primary ring-1 ring-primary ring-offset-1'
+								: 'border-border'}"
+							style="background-color: {color.value}"
+							title={color.name}
+							aria-label="{color.name}{currentColor === color.value ? ' (sélectionné)' : ''}"
+						></button>
+					{/each}
+				</div>
+				<div class="mt-1.5 flex items-center gap-2">
+					<input
+						type="color"
+						value={currentColor}
+						oninput={(e) => {
+							whiteboardStore.setColor(e.currentTarget.value);
+							if (whiteboardStore.hasSelection) {
+								whiteboardStore.updateSelectedStyles({ color: e.currentTarget.value });
+							}
+						}}
+						class="h-7 w-7 cursor-pointer rounded border-0 p-0"
+						aria-label="Couleur personnalisée"
+					/>
+					<span class="text-xs text-muted-foreground">Personnalisé</span>
+				</div>
+			</div>
+
+			<!-- Stroke width -->
+			<div>
+				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Épaisseur</span>
+				<div class="flex items-center gap-2">
+					<Slider
+						value={[currentStrokeWidth]}
+						onValueChange={handleStrokeWidthChange}
+						min={STROKE_WIDTH_MIN}
+						max={STROKE_WIDTH_MAX}
+						step={1}
+						class="flex-1"
+						aria-label="Épaisseur du trait: {currentStrokeWidth} pixels"
+					/>
+					<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
+						>{currentStrokeWidth}px</span
+					>
+				</div>
+			</div>
+
+			<!-- Opacity -->
+			<div>
+				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Opacité</span>
+				<div class="flex items-center gap-2">
+					<Slider
+						value={[currentOpacity]}
+						onValueChange={handleOpacityChange}
+						min={0.1}
+						max={1}
+						step={0.1}
+						class="flex-1"
+						aria-label="Opacité: {Math.round(currentOpacity * 100)}%"
+					/>
+					<span class="min-w-[2.5rem] text-right text-xs text-muted-foreground"
+						>{Math.round(currentOpacity * 100)}%</span
+					>
+				</div>
+			</div>
+
+			<!-- Stroke style -->
+			<div>
+				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Style de trait</span>
+				<div class="flex flex-col gap-1">
+					{#each Object.entries(STROKE_STYLE_LABELS) as [style, label] (style)}
+						<Button
+							type="button"
+							variant={currentStrokeStyle === style ? 'secondary' : 'ghost'}
+							size="sm"
+							onclick={() => handleStrokeStyleChange(style as StrokeStyle)}
+							class="justify-start gap-3"
+						>
+							<svg class="h-4 w-10" viewBox="0 0 40 8">
+								<line
+									x1="2"
+									y1="4"
+									x2="38"
+									y2="4"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-dasharray={style === 'solid'
+										? undefined
+										: style === 'dashed'
+											? '6 3'
+											: style === 'dotted'
+												? '2 3'
+												: '6 2 2 2'}
+								/>
+							</svg>
+							<span>{label}</span>
+						</Button>
+					{/each}
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <!-- Hidden file inputs -->
 <input
