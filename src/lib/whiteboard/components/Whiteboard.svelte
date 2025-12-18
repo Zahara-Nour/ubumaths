@@ -389,7 +389,7 @@
 
 <div
 	bind:this={containerEl}
-	class="whiteboard-container flex flex-col bg-gray-200 {className}"
+	class="whiteboard-container grid grid-rows-[auto_1fr_auto] bg-gray-200 {className}"
 	onwheel={handleWheel}
 >
 	<!-- Status bar -->
@@ -404,7 +404,7 @@
 	</div>
 
 	<!-- Main content area with sidebar -->
-	<div class="whiteboard-main relative flex-1 overflow-hidden">
+	<div class="whiteboard-main relative min-h-0 overflow-hidden">
 		<!-- Canvas area -->
 		<div
 			bind:this={canvasAreaEl}

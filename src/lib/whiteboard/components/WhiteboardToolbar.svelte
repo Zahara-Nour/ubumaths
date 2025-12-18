@@ -390,7 +390,7 @@
 	}
 </script>
 
-<div class="whiteboard-toolbar border-t border-border bg-muted/50">
+<div class="whiteboard-toolbar border-t border-border bg-muted/95 backdrop-blur-sm">
 	<div class="flex items-center justify-between gap-2 px-3 py-2">
 		<!-- Left: Tool menus -->
 		<div class="flex items-center gap-1">
@@ -428,13 +428,13 @@
 						<button
 							{...props}
 							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors {isDrawingToolActive
+							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors {isDrawingToolActive
 								? 'bg-secondary text-secondary-foreground'
 								: 'hover:bg-accent'}"
 							aria-label="Outils de dessin"
+							title="Dessin"
 						>
 							<currentDrawingTool.icon class="h-4 w-4" />
-							<span class="hidden sm:inline">Dessin</span>
 						</button>
 					{/snippet}
 				</Popover.Trigger>
@@ -464,13 +464,13 @@
 						<button
 							{...props}
 							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors {isShapeToolActive
+							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors {isShapeToolActive
 								? 'bg-secondary text-secondary-foreground'
 								: 'hover:bg-accent'}"
 							aria-label="Formes"
+							title="Formes"
 						>
 							<currentShapeTool.icon class="h-4 w-4" />
-							<span class="hidden sm:inline">Formes</span>
 						</button>
 					{/snippet}
 				</Popover.Trigger>
@@ -500,11 +500,11 @@
 						<button
 							{...props}
 							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors hover:bg-accent"
+							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
 							aria-label="Instruments"
+							title="Instruments"
 						>
 							<Ruler class="h-4 w-4" />
-							<span class="hidden sm:inline">Instruments</span>
 						</button>
 					{/snippet}
 				</Popover.Trigger>
@@ -538,8 +538,9 @@
 						<button
 							{...props}
 							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors hover:bg-accent"
+							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
 							aria-label="Importer"
+							title="Import"
 							disabled={isImporting}
 						>
 							{#if isImporting}
@@ -547,7 +548,6 @@
 							{:else}
 								<Upload class="h-4 w-4" />
 							{/if}
-							<span class="hidden sm:inline">Import</span>
 						</button>
 					{/snippet}
 				</Popover.Trigger>
@@ -586,11 +586,11 @@
 						<button
 							{...props}
 							type="button"
-							class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm transition-colors hover:bg-accent"
+							class="flex h-9 items-center gap-1.5 rounded-md px-2 text-sm transition-colors hover:bg-accent"
 							aria-label="Fichier"
+							title="Fichier"
 						>
 							<Save class="h-4 w-4" />
-							<span class="hidden sm:inline">Fichier</span>
 							{#if hasUnsavedChanges}
 								<span class="h-2 w-2 rounded-full bg-yellow-500"></span>
 							{/if}
