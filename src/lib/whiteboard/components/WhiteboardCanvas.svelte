@@ -635,10 +635,6 @@
 		};
 
 		whiteboardStore.addElement(element);
-
-		// Select the newly created stroke and switch to select tool
-		whiteboardStore.selectElement(element.id);
-		whiteboardStore.setTool('select');
 	}
 
 	/**
@@ -712,10 +708,6 @@
 
 		whiteboardStore.addElement(shape);
 		resetShapeState();
-
-		// Select the newly created shape and switch to select tool
-		whiteboardStore.selectElement(shape.id);
-		whiteboardStore.setTool('select');
 	}
 
 	/**
