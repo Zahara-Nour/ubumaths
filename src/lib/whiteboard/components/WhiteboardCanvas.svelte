@@ -643,6 +643,8 @@
 				{selectedElements}
 				{scale}
 				onMove={(dx, dy) => whiteboardStore.moveElements(dx, dy)}
+				onResize={(elementId, handle, dx, dy) =>
+					whiteboardStore.resizeElement(elementId, handle, dx, dy)}
 			/>
 		</g>
 	</svg>

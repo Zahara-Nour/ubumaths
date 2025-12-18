@@ -37,9 +37,11 @@
 		scale: number;
 		/** Callback when selection is moved by dragging */
 		onMove?: (dx: number, dy: number) => void;
+		/** Callback when an element is resized via handles */
+		onResize?: (elementId: string, handle: HandlePosition, dx: number, dy: number) => void;
 	}
 
-	let { selectedElements, scale, onMove }: Props = $props();
+	let { selectedElements, scale, onMove, onResize }: Props = $props();
 
 	// ==========================================================================
 	// Drag State
@@ -51,6 +53,23 @@
 	/** Start position of drag in client coordinates */
 	let dragStartX = $state(0);
 	let dragStartY = $state(0);
+
+	// ==========================================================================
+	// Resize State
+	// ==========================================================================
+
+	/** Whether user is currently resizing an element */
+	let isResizing = $state(false);
+
+	/** Which handle is being dragged */
+	let resizeHandle = $state<HandlePosition | null>(null);
+
+	/** Element ID being resized */
+	let resizeElementId = $state<string | null>(null);
+
+	/** Start position of resize in client coordinates */
+	let resizeStartX = $state(0);
+	let resizeStartY = $state(0);
 
 	// ==========================================================================
 	// Constants
@@ -203,6 +222,61 @@
 			(e.currentTarget as SVGElement).releasePointerCapture(e.pointerId);
 		}
 	}
+
+	// ==========================================================================
+	// Resize Handlers
+	// ==========================================================================
+
+	/**
+	 * Handle pointer down on resize handle - start resizing
+	 */
+	function handleHandlePointerDown(e: PointerEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const target = e.currentTarget as SVGElement;
+		const handle = target.dataset.handle as HandlePosition;
+		const elementId = target.dataset.elementId!;
+
+		isResizing = true;
+		resizeHandle = handle;
+		resizeElementId = elementId;
+		resizeStartX = e.clientX;
+		resizeStartY = e.clientY;
+
+		target.setPointerCapture(e.pointerId);
+	}
+
+	/**
+	 * Handle pointer move during resize - calculate delta and resize element
+	 */
+	function handleHandlePointerMove(e: PointerEvent) {
+		if (!isResizing || !resizeHandle || !resizeElementId) return;
+
+		const dx = (e.clientX - resizeStartX) / scale;
+		const dy = (e.clientY - resizeStartY) / scale;
+
+		// Safeguard against invalid transformations (scale = 0 or NaN)
+		if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
+
+		// Update resize start for incremental delta calculation
+		resizeStartX = e.clientX;
+		resizeStartY = e.clientY;
+
+		onResize?.(resizeElementId, resizeHandle, dx, dy);
+	}
+
+	/**
+	 * Handle pointer up - end resizing
+	 */
+	function handleHandlePointerUp(e: PointerEvent) {
+		if (isResizing) {
+			isResizing = false;
+			resizeHandle = null;
+			resizeElementId = null;
+			(e.currentTarget as SVGElement).releasePointerCapture(e.pointerId);
+		}
+	}
 </script>
 
 <svg class="selection-layer pointer-events-none absolute inset-0 h-full w-full overflow-visible">
@@ -239,6 +313,10 @@
 					style="cursor: {handle.cursor};"
 					data-handle={handle.position}
 					data-element-id={element.id}
+					onpointerdown={handleHandlePointerDown}
+					onpointermove={handleHandlePointerMove}
+					onpointerup={handleHandlePointerUp}
+					onpointercancel={handleHandlePointerUp}
 				/>
 
 				<!-- Visible handle -->

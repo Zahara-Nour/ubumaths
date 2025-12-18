@@ -649,6 +649,128 @@ function createWhiteboardStore() {
 			}));
 		},
 
+		/**
+		 * Resize an element (shapes and images only)
+		 * @param elementId - Element to resize
+		 * @param handle - Which handle is being dragged ('n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw')
+		 * @param dx - Horizontal delta in canvas coordinates
+		 * @param dy - Vertical delta in canvas coordinates
+		 */
+		resizeElement(
+			elementId: string,
+			handle: 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw',
+			dx: number,
+			dy: number
+		): void {
+			const MIN_SIZE = 50;
+
+			// Helper functions for explicit handle direction checks
+			const affectsLeft = (h: string) => h === 'nw' || h === 'w' || h === 'sw';
+			const affectsRight = (h: string) => h === 'ne' || h === 'e' || h === 'se';
+			const affectsTop = (h: string) => h === 'nw' || h === 'n' || h === 'ne';
+			const affectsBottom = (h: string) => h === 'sw' || h === 's' || h === 'se';
+
+			updateCurrentPage((page) => ({
+				...page,
+				elements: page.elements.map((element) => {
+					if (element.id !== elementId) return element;
+
+					if (element.type === 'shape') {
+						// Shapes use start/end points. Handles are positioned on the bounding box.
+						// We modify the bounding box, then map back to start/end preserving direction.
+						const newStart = { ...element.start };
+						const newEnd = { ...element.end };
+
+						// Calculate current bounding box from start/end
+						const minX = Math.min(newStart.x, newEnd.x);
+						const maxX = Math.max(newStart.x, newEnd.x);
+						const minY = Math.min(newStart.y, newEnd.y);
+						const maxY = Math.max(newStart.y, newEnd.y);
+
+						let left = minX,
+							right = maxX,
+							top = minY,
+							bottom = maxY;
+
+						// Apply deltas to bounding box edges based on handle
+						if (affectsLeft(handle)) left += dx;
+						if (affectsRight(handle)) right += dx;
+						if (affectsTop(handle)) top += dy;
+						if (affectsBottom(handle)) bottom += dy;
+
+						// Enforce minimum size
+						if (right - left < MIN_SIZE) {
+							if (affectsLeft(handle)) left = right - MIN_SIZE;
+							else right = left + MIN_SIZE;
+						}
+						if (bottom - top < MIN_SIZE) {
+							if (affectsTop(handle)) top = bottom - MIN_SIZE;
+							else bottom = top + MIN_SIZE;
+						}
+
+						// Map bounding box back to start/end, preserving original direction
+						// (shapes can be drawn in any direction, handles always align to bbox)
+						if (element.start.x <= element.end.x) {
+							newStart.x = left;
+							newEnd.x = right;
+						} else {
+							newStart.x = right;
+							newEnd.x = left;
+						}
+						if (element.start.y <= element.end.y) {
+							newStart.y = top;
+							newEnd.y = bottom;
+						} else {
+							newStart.y = bottom;
+							newEnd.y = top;
+						}
+
+						return { ...element, start: newStart, end: newEnd };
+					}
+
+					if (element.type === 'image') {
+						// Images use position + width/height (simpler than shapes)
+						let { x, y } = element.position;
+						let { width, height } = element;
+
+						// Left handle: move x and shrink width
+						if (affectsLeft(handle)) {
+							const newWidth = width - dx;
+							if (newWidth >= MIN_SIZE) {
+								x += dx;
+								width = newWidth;
+							}
+						}
+						// Right handle: grow width
+						if (affectsRight(handle)) {
+							width = Math.max(MIN_SIZE, width + dx);
+						}
+						// Top handle: move y and shrink height
+						if (affectsTop(handle)) {
+							const newHeight = height - dy;
+							if (newHeight >= MIN_SIZE) {
+								y += dy;
+								height = newHeight;
+							}
+						}
+						// Bottom handle: grow height
+						if (affectsBottom(handle)) {
+							height = Math.max(MIN_SIZE, height + dy);
+						}
+
+						return {
+							...element,
+							position: { x, y },
+							width,
+							height
+						};
+					}
+
+					return element;
+				})
+			}));
+		},
+
 		// === TextBlock Operations ===
 
 		/**
