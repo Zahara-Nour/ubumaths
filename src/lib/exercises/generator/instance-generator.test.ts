@@ -526,6 +526,324 @@ describe('Utility Functions', () => {
 });
 
 // ============================================================================
+// VARIATIONS SYSTEM TESTS
+// ============================================================================
+
+describe('Variations System', () => {
+	it('should select variation based on seed (deterministic)', () => {
+		const exercise = createExercise({
+			statement_md: 'Default statement (not used)', // Required for backward compatibility
+			solution_md: 'Default solution (not used)', // Required for backward compatibility
+			shared: {
+				variables: [
+					{ name: 'a', expression: '{{3..10}}' },
+					{ name: 'b', expression: '{{3..10}}' }
+				],
+				solution_md: 'AC = {{result}} cm'
+			},
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Guided: Calculate with AB = {{a}} and BC = {{b}}',
+					solution_md: 'Step by step solution...',
+					variables: [{ name: 'result', expression: '{{eval:{{a}} + {{b}}}}' }]
+				},
+				{
+					label: 'autonomous',
+					statement_md: 'Autonomous: Calculate with AB = {{a}} and BC = {{b}}',
+					solution_md: 'Direct solution...',
+					variables: [{ name: 'result', expression: '{{eval:{{a}} + {{b}}}}' }]
+				}
+			]
+		});
+
+		// Test with seed that gives index 0
+		const result1 = generateExerciseInstance(exercise, { seed: 0 });
+		expect(result1.success).toBe(true);
+		if (result1.success && result1.instance) {
+			expect(result1.instance.selectedVariationIndex).toBe(0);
+			expect(result1.instance.selectedVariationLabel).toBe('guided');
+			expect(result1.instance.statement_md).toContain('Guided:');
+		}
+
+		// Test with seed that gives index 1
+		const result2 = generateExerciseInstance(exercise, { seed: 1 });
+		expect(result2.success).toBe(true);
+		if (result2.success && result2.instance) {
+			expect(result2.instance.selectedVariationIndex).toBe(1);
+			expect(result2.instance.selectedVariationLabel).toBe('autonomous');
+			expect(result2.instance.statement_md).toContain('Autonomous:');
+		}
+	});
+
+	it('should merge shared and variation variables', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			shared: {
+				variables: [
+					{ name: 'a', expression: '5' },
+					{ name: 'b', expression: '3' }
+				]
+			},
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Calculate {{a}} + {{b}} = {{sum}}',
+					solution_md: 'Answer: {{sum}}',
+					variables: [{ name: 'sum', expression: '{{eval:{{a}} + {{b}}}}' }]
+				}
+			]
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			expect(result.instance.resolvedVariables).toHaveLength(3);
+			expect(result.instance.resolvedVariables.map((v) => v.name)).toEqual(['a', 'b', 'sum']);
+			expect(result.instance.statement_md).toBe('Calculate 5 + 3 = 8');
+		}
+	});
+
+	it('should override shared variables with variation variables', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			shared: {
+				variables: [{ name: 'x', expression: '10' }]
+			},
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Value of x is {{x}}',
+					solution_md: 'Done',
+					variables: [{ name: 'x', expression: '20' }] // Override
+				}
+			]
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			const xVar = result.instance.resolvedVariables.find((v) => v.name === 'x');
+			expect(xVar?.value).toBe('20'); // Variation value wins
+			expect(result.instance.statement_md).toBe('Value of x is 20');
+		}
+	});
+
+	it('should use shared solution when variation does not define one', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			shared: {
+				solution_md: 'Shared solution content'
+			},
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Statement',
+					solution_md: '' // Empty, should use shared
+				}
+			]
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			expect(result.instance.solution_md).toBe('Shared solution content');
+		}
+	});
+
+	it('should include resolved hints from selected variation', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Use {{hint:pythagore}} to solve',
+					solution_md: 'Done',
+					hints: [
+						{
+							id: 'pythagore',
+							type: 'video',
+							url: 'https://example.com/video',
+							title: 'Pythagore Theorem'
+						}
+					]
+				}
+			]
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			expect(result.instance.resolvedHints).toBeDefined();
+			expect(result.instance.resolvedHints).toHaveLength(1);
+			expect(result.instance.resolvedHints![0].id).toBe('pythagore');
+			expect(result.instance.resolvedHints![0].type).toBe('video');
+			expect(result.instance.statement_md).toContain('{{hint:pythagore}}'); // Hint refs stay in markdown
+		}
+	});
+
+	it('should handle variation without hints', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			variations: [
+				{
+					label: 'autonomous',
+					statement_md: 'Calculate directly',
+					solution_md: 'Done'
+					// No hints field
+				}
+			]
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			expect(result.instance.resolvedHints).toBeUndefined();
+		}
+	});
+
+	it('should handle variation without variables (use shared only)', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			shared: {
+				variables: [{ name: 'a', expression: '7' }]
+			},
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Value: {{a}}',
+					solution_md: 'Done'
+					// No variables field
+				}
+			]
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			expect(result.instance.resolvedVariables).toHaveLength(1);
+			expect(result.instance.resolvedVariables[0].value).toBe('7');
+			expect(result.instance.statement_md).toBe('Value: 7');
+		}
+	});
+
+	it('should detect circular dependencies in merged variables', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			shared: {
+				variables: [{ name: 'a', expression: '{{b}}' }]
+			},
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Test',
+					solution_md: 'Test',
+					variables: [{ name: 'b', expression: '{{a}}' }] // Circular!
+				}
+			]
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(false);
+		expect(result.errors).toBeDefined();
+		if (!result.success) {
+			expect(result.errors![0]).toContain('Circular dependency');
+		}
+	});
+
+	it('should use same seed for all variations (reproducible)', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			shared: {
+				variables: [{ name: 'a', expression: '{{1..100}}' }]
+			},
+			variations: [
+				{
+					label: 'v1',
+					statement_md: 'Value: {{a}}',
+					solution_md: 'Done'
+				},
+				{
+					label: 'v2',
+					statement_md: 'Number: {{a}}',
+					solution_md: 'Done'
+				}
+			]
+		});
+
+		const result1 = generateExerciseInstance(exercise, { seed: 12345 });
+		const result2 = generateExerciseInstance(exercise, { seed: 12345 });
+
+		expect(result1.success).toBe(true);
+		expect(result2.success).toBe(true);
+
+		if (result1.success && result1.instance && result2.success && result2.instance) {
+			// Same seed should give same variation and same variable values
+			expect(result1.instance.selectedVariationIndex).toBe(result2.instance.selectedVariationIndex);
+			expect(result1.instance.resolvedVariables).toEqual(result2.instance.resolvedVariables);
+		}
+	});
+});
+
+// ============================================================================
+// BACKWARD COMPATIBILITY TESTS
+// ============================================================================
+
+describe('Backward Compatibility', () => {
+	it('should handle legacy exercise without variations', () => {
+		const exercise = createExercise({
+			variables: [{ name: 'a', expression: '5' }],
+			statement_md: 'Value: {{a}}',
+			solution_md: 'Answer: {{a}}'
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 0 });
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			// Should not have variation tracking fields
+			expect(result.instance.selectedVariationIndex).toBeUndefined();
+			expect(result.instance.selectedVariationLabel).toBeUndefined();
+			expect(result.instance.resolvedHints).toBeUndefined();
+
+			// Should still resolve variables correctly
+			expect(result.instance.statement_md).toBe('Value: 5');
+		}
+	});
+
+	it('should handle static exercise (no variables, no variations)', () => {
+		const exercise = createExercise({
+			statement_md: 'Calculate 2 + 3',
+			solution_md: 'Answer: 5'
+		});
+
+		const result = generateExerciseInstance(exercise);
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			expect(result.instance.statement_md).toBe('Calculate 2 + 3');
+			expect(result.instance.solution_md).toBe('Answer: 5');
+			expect(result.instance.resolvedVariables).toEqual([]);
+		}
+	});
+});
+
+// ============================================================================
 // INTEGRATION TESTS
 // ============================================================================
 
@@ -568,6 +886,81 @@ describe('Integration Tests', () => {
 			expect(result.instance.title).toBe('Quadratic Equation');
 			expect(result.instance.difficulty).toBe(2);
 			expect(result.instance.distributionMode).toBe('per_student');
+		}
+	});
+
+	it('should handle realistic exercise with variations and hints', () => {
+		const exercise = createExercise({
+			title: 'Théorème de Pythagore',
+			difficulty: 2,
+			tags: ['géométrie', 'pythagore'],
+			shared: {
+				variables: [
+					{ name: 'a', expression: '{{3..10}}' },
+					{ name: 'b', expression: '{{3..10}}' },
+					{ name: 'c', expression: '{{eval:{{a}} * {{a}} + {{b}} * {{b}}}}' }
+				],
+				solution_md: 'En appliquant le théorème, AC = {{c}} cm'
+			},
+			variations: [
+				{
+					label: 'guided',
+					statement_md:
+						'Dans un triangle rectangle ABC, AB = {{a}} cm et BC = {{b}} cm.\n{{hint:rappel-pythagore}}\n{{hint:schema}}\nCalculer AC.',
+					solution_md: 'Étape 1: $AC^2 = {{a}}^2 + {{b}}^2$\nÉtape 2: AC = {{c}} cm',
+					hints: [
+						{
+							id: 'rappel-pythagore',
+							type: 'video',
+							url: 'https://example.com/pythagore',
+							title: 'Rappel: Théorème de Pythagore'
+						},
+						{
+							id: 'schema',
+							type: 'image',
+							url: '/images/triangle.png',
+							title: 'Schéma du triangle'
+						}
+					]
+				},
+				{
+					label: 'autonomous',
+					statement_md: 'Triangle ABC rectangle en B. AB = {{a}} cm, BC = {{b}} cm. Calculer AC.',
+					solution_md: 'AC = {{c}} cm'
+				}
+			],
+			distribution_mode: 'per_student'
+		});
+
+		const result = generateExerciseInstance(exercise, { seed: 42, parseAST: true });
+
+		expect(result.success).toBe(true);
+
+		if (result.success && result.instance) {
+			// Verify variation selection
+			expect(result.instance.selectedVariationIndex).toBeDefined();
+			expect(result.instance.selectedVariationLabel).toBeDefined();
+
+			// Verify variables resolved
+			expect(result.instance.resolvedVariables).toHaveLength(3);
+
+			// Verify content resolved (but hints stay as {{hint:id}})
+			expect(result.instance.statement_md).not.toContain('{{a}}');
+			expect(result.instance.statement_md).not.toContain('{{b}}');
+
+			// If guided variation, should have hints
+			if (result.instance.selectedVariationLabel === 'guided') {
+				expect(result.instance.resolvedHints).toHaveLength(2);
+				expect(result.instance.statement_md).toContain('{{hint:rappel-pythagore}}');
+			}
+
+			// Verify AST parsed
+			expect(result.instance.statement_ast).toBeDefined();
+			expect(result.instance.solution_ast).toBeDefined();
+
+			// Verify metadata
+			expect(result.instance.title).toBe('Théorème de Pythagore');
+			expect(result.instance.difficulty).toBe(2);
 		}
 	});
 });
