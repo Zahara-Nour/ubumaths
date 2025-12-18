@@ -32,9 +32,11 @@
 	interface Props {
 		/** Optional class for the container */
 		class?: string;
+		/** Scale factor for coordinate transformation */
+		scale?: number;
 	}
 
-	let { class: className = '' }: Props = $props();
+	let { class: className = '', scale = 1 }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -596,12 +598,12 @@
 
 		<!-- Layer 4: Instruments (ruler, protractor, etc.) -->
 		<g class="layer-instruments">
-			<InstrumentLayer />
+			<InstrumentLayer {scale} />
 		</g>
 	</svg>
 
 	<!-- TextBlock Layer (HTML overlay on SVG) -->
-	<TextBlockLayer bind:this={textBlockLayerRef} />
+	<TextBlockLayer bind:this={textBlockLayerRef} {scale} />
 </div>
 
 <style>
