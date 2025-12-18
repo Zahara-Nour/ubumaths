@@ -14,7 +14,8 @@ describe('Shape Creation', () => {
 
 			const shape = createShapeElement('line', start, end, {
 				color: '#000000',
-				strokeWidth: 2
+				strokeWidth: 2,
+				opacity: 1
 			});
 
 			expect(shape.id).toMatch(/^[0-9a-f-]{36}$/i);
@@ -33,6 +34,7 @@ describe('Shape Creation', () => {
 			const shape = createShapeElement('rectangle', start, end, {
 				color: '#ff0000',
 				strokeWidth: 3,
+				opacity: 1,
 				fill: '#ffcccc',
 				fillOpacity: 0.5
 			});
@@ -48,7 +50,8 @@ describe('Shape Creation', () => {
 
 			const shape = createShapeElement('circle', start, end, {
 				color: '#0000ff',
-				strokeWidth: 2
+				strokeWidth: 2,
+				opacity: 1
 			});
 
 			expect(shape.shapeType).toBe('circle');
@@ -60,7 +63,8 @@ describe('Shape Creation', () => {
 
 			const shape = createShapeElement('arrow', start, end, {
 				color: '#00ff00',
-				strokeWidth: 2
+				strokeWidth: 2,
+				opacity: 1
 			});
 
 			expect(shape.shapeType).toBe('arrow');
@@ -69,7 +73,7 @@ describe('Shape Creation', () => {
 		it('generates unique IDs for each shape', () => {
 			const start: Point = { x: 0, y: 0 };
 			const end: Point = { x: 10, y: 10 };
-			const options = { color: '#000000', strokeWidth: 1 };
+			const options = { color: '#000000', strokeWidth: 1, opacity: 1 };
 
 			const shape1 = createShapeElement('line', start, end, options);
 			const shape2 = createShapeElement('line', start, end, options);
@@ -200,7 +204,8 @@ describe('Shape Types', () => {
 			{ x: 100, y: 100 },
 			{
 				color: '#000000',
-				strokeWidth: 2
+				strokeWidth: 2,
+				opacity: 1
 			}
 		);
 

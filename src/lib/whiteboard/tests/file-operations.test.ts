@@ -670,6 +670,7 @@ describe('Round-trip Save/Load', () => {
 						end: { x: 150, y: 100 },
 						color: '#0000ff',
 						strokeWidth: 1,
+						opacity: 1,
 						fill: '#ffffff'
 					},
 					{

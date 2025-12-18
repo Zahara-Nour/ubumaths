@@ -52,7 +52,8 @@ function createShape(
 		start,
 		end,
 		color: '#000000',
-		strokeWidth
+		strokeWidth,
+		opacity: 1
 	};
 }
 

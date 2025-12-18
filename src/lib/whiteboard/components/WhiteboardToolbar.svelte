@@ -151,6 +151,7 @@
 	let canRedo = $derived(whiteboardStore.canRedo);
 	let currentColor = $derived(toolState.color);
 	let currentStrokeWidth = $derived(toolState.strokeWidth);
+	let currentOpacity = $derived(toolState.opacity);
 	let instruments = $derived(whiteboardStore.instruments);
 	let syncState = $derived(whiteboardStore.syncState);
 	let hasUnsavedChanges = $derived(whiteboardStore.hasUnsavedChanges);
@@ -197,6 +198,16 @@
 			// Apply to selected elements if any
 			if (whiteboardStore.hasSelection) {
 				whiteboardStore.updateSelectedStyles({ strokeWidth: value[0] });
+			}
+		}
+	}
+
+	function handleOpacityChange(value: number[]) {
+		if (value.length > 0) {
+			whiteboardStore.setOpacity(value[0]);
+			// Apply to selected elements if any
+			if (whiteboardStore.hasSelection) {
+				whiteboardStore.updateSelectedStyles({ opacity: value[0] });
 			}
 		}
 	}
@@ -725,9 +736,25 @@
 						style="width: {Math.min(currentStrokeWidth, STROKE_WIDTH_MAX)}px; height: {Math.min(
 							currentStrokeWidth,
 							STROKE_WIDTH_MAX
-						)}px; background-color: {currentColor}"
+						)}px; background-color: {currentColor}; opacity: {currentOpacity}"
 					></div>
 				</div>
+			</div>
+
+			<!-- Opacity Slider -->
+			<div class="flex items-center gap-2 px-2">
+				<span class="text-xs text-muted-foreground" aria-hidden="true"
+					>{Math.round(currentOpacity * 100)}%</span
+				>
+				<Slider
+					value={[currentOpacity]}
+					onValueChange={handleOpacityChange}
+					min={0.1}
+					max={1}
+					step={0.1}
+					class="w-20"
+					aria-label="Opacité: {Math.round(currentOpacity * 100)}%"
+				/>
 			</div>
 
 			<!-- Separator -->
