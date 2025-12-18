@@ -78,6 +78,26 @@
 	let newSharedVarName = $state('');
 	let newSharedVarExpression = $state('');
 
+	// Image counter for slug-based naming
+	// Count existing images in all variations to initialize counter
+	function countExistingImages(): number {
+		let count = 0;
+		const imageRegex = /!\[.*?\]\(.*?\)/g;
+		for (const v of variations) {
+			count += (v.statement_md.match(imageRegex) || []).length;
+			count += (v.solution_md.match(imageRegex) || []).length;
+		}
+		return count;
+	}
+	let imageCounter = $state(countExistingImages() + 1);
+
+	/**
+	 * Get the next image number for this exercise and increment the counter
+	 */
+	function getNextImageNumber(): number {
+		return imageCounter++;
+	}
+
 	// Debug: track genericFunctions changes
 	$effect(() => {
 		console.log('[ExerciseForm] genericFunctions changed:', $state.snapshot(genericFunctions));
@@ -551,6 +571,8 @@
 							{supabase}
 							{userId}
 							{genericFunctions}
+							imageSlug={slug || undefined}
+							{getNextImageNumber}
 						/>
 					</Tabs.Content>
 				{/each}

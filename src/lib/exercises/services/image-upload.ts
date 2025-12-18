@@ -75,6 +75,16 @@ export interface ImageDeleteResult {
 	error?: string;
 }
 
+/**
+ * Options for custom image naming
+ */
+export interface ImageNamingOptions {
+	/** Exercise slug for custom filename */
+	slug: string;
+	/** Image number within the exercise */
+	imageNumber: number;
+}
+
 // ============================================================================
 // VALIDATION
 // ============================================================================
@@ -148,6 +158,39 @@ export function generateUniqueFilename(originalFilename: string): string {
 }
 
 /**
+ * Extract file extension from filename
+ *
+ * @param filename - Original filename
+ * @returns Lowercase extension with dot (e.g., '.png') or empty string
+ */
+export function extractExtension(filename: string): string {
+	const lastDotIndex = filename.lastIndexOf('.');
+	if (lastDotIndex < 0) return '';
+	return filename.substring(lastDotIndex).replace(/[/\\]/g, '').toLowerCase();
+}
+
+/**
+ * Generate custom filename with slug and image number
+ *
+ * @param slug - Exercise slug (base name)
+ * @param imageNumber - Image number within the exercise
+ * @param originalFilename - Original filename (for extension)
+ * @returns Custom filename: {slug}-{number}.{ext}
+ *
+ * @example
+ * generateSlugFilename('pythagore', 1, 'photo.png')
+ * // Returns: 'pythagore-1.png'
+ */
+export function generateSlugFilename(
+	slug: string,
+	imageNumber: number,
+	originalFilename: string
+): string {
+	const extension = extractExtension(originalFilename);
+	return `${slug}-${imageNumber}${extension}`;
+}
+
+/**
  * Generate storage path for exercise image
  *
  * @param userId - User ID (teacher)
@@ -172,26 +215,32 @@ export function generateStoragePath(userId: string, filename: string): string {
  * Uploads an image to the 'exercise-images' bucket with automatic validation,
  * unique filename generation, and public URL retrieval.
  *
- * PATH STRUCTURE: {userId}/{timestamp}-{uuid}.{ext}
+ * PATH STRUCTURE:
+ * - Default: {userId}/{timestamp}-{uuid}.{ext}
+ * - With naming options: {userId}/{slug}-{imageNumber}.{ext}
  *
  * @param supabase - Supabase client
  * @param file - Image file to upload
  * @param userId - User ID (teacher creating the exercise)
+ * @param namingOptions - Optional custom naming with slug and image number
  * @returns Upload result with public URL or error message
  *
  * @example
+ * // Default naming (UUID-based)
  * const result = await uploadExerciseImage(supabase, file, userId);
- * if (result.success) {
- *   console.log('Uploaded to:', result.url);
- *   // Insert markdown: ![Description](${result.url})
- * } else {
- *   console.error('Upload failed:', result.error);
- * }
+ *
+ * // Custom naming with slug
+ * const result = await uploadExerciseImage(supabase, file, userId, {
+ *   slug: 'pythagore',
+ *   imageNumber: 1
+ * });
+ * // Filename: pythagore-1.png
  */
 export async function uploadExerciseImage(
 	supabase: SupabaseClient,
 	file: File,
-	userId: string
+	userId: string,
+	namingOptions?: ImageNamingOptions
 ): Promise<ImageUploadResult> {
 	// Validate file
 	const validationError = validateImageFile(file);
@@ -202,9 +251,11 @@ export async function uploadExerciseImage(
 		};
 	}
 
-	// Generate unique filename and path
-	const uniqueFilename = generateUniqueFilename(file.name);
-	const storagePath = generateStoragePath(userId, uniqueFilename);
+	// Generate filename based on naming options
+	const filename = namingOptions
+		? generateSlugFilename(namingOptions.slug, namingOptions.imageNumber, file.name)
+		: generateUniqueFilename(file.name);
+	const storagePath = generateStoragePath(userId, filename);
 
 	try {
 		// Upload to Supabase Storage
