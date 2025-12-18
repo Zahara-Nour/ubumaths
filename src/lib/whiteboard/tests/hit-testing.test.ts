@@ -552,7 +552,12 @@ describe('getElementBounds', () => {
 // Rectangle Intersection
 // =============================================================================
 
-import { rectanglesIntersect, getElementsInRect, type BoundingBox } from '../core/hit-testing';
+import {
+	rectanglesIntersect,
+	rectangleContains,
+	getElementsInRect,
+	type BoundingBox
+} from '../core/hit-testing';
 
 describe('rectanglesIntersect', () => {
 	it('returns true for overlapping rectangles', () => {
@@ -601,7 +606,48 @@ describe('rectanglesIntersect', () => {
 });
 
 // =============================================================================
-// Get Elements In Rectangle
+// Rectangle Contains
+// =============================================================================
+
+describe('rectangleContains', () => {
+	it('returns true when contained rect is fully inside', () => {
+		const container: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+		const contained: BoundingBox = { x: 10, y: 10, width: 30, height: 30 };
+
+		expect(rectangleContains(container, contained)).toBe(true);
+	});
+
+	it('returns true when contained rect touches edges (inclusive)', () => {
+		const container: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+		const contained: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+
+		expect(rectangleContains(container, contained)).toBe(true);
+	});
+
+	it('returns false when contained rect partially overlaps', () => {
+		const container: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+		const contained: BoundingBox = { x: 50, y: 50, width: 100, height: 100 };
+
+		expect(rectangleContains(container, contained)).toBe(false);
+	});
+
+	it('returns false when contained rect is outside', () => {
+		const container: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+		const contained: BoundingBox = { x: 200, y: 200, width: 50, height: 50 };
+
+		expect(rectangleContains(container, contained)).toBe(false);
+	});
+
+	it('returns false when contained rect extends past one edge', () => {
+		const container: BoundingBox = { x: 0, y: 0, width: 100, height: 100 };
+		const contained: BoundingBox = { x: 10, y: 10, width: 100, height: 30 }; // extends past right edge
+
+		expect(rectangleContains(container, contained)).toBe(false);
+	});
+});
+
+// =============================================================================
+// Get Elements In Rectangle (Containment Mode)
 // =============================================================================
 
 describe('getElementsInRect', () => {
@@ -630,7 +676,7 @@ describe('getElementsInRect', () => {
 		expect(result.map((e) => e.id)).toContain('img2');
 	});
 
-	it('returns elements partially intersecting selection', () => {
+	it('does NOT return elements only partially inside (containment mode)', () => {
 		const img1: ImageElement = { ...createImage({ x: 80, y: 80 }, 50, 50), id: 'img1' }; // partially inside
 		const img2: ImageElement = { ...createImage({ x: 200, y: 200 }, 50, 50), id: 'img2' }; // outside
 		const elements: WhiteboardElement[] = [img1, img2];
@@ -638,8 +684,8 @@ describe('getElementsInRect', () => {
 
 		const result = getElementsInRect(selectionRect, elements);
 
-		expect(result).toHaveLength(1);
-		expect(result[0].id).toBe('img1');
+		// Neither element is fully contained
+		expect(result).toHaveLength(0);
 	});
 
 	it('handles strokes correctly', () => {

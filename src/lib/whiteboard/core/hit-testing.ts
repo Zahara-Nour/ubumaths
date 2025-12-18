@@ -339,12 +339,41 @@ export function rectanglesIntersect(rect1: BoundingBox, rect2: BoundingBox): boo
 }
 
 /**
- * Get all elements that intersect with a selection rectangle.
+ * Test if rect2 is fully contained within rect1.
+ */
+export function rectangleContains(container: BoundingBox, contained: BoundingBox): boolean {
+	return (
+		contained.x >= container.x &&
+		contained.y >= container.y &&
+		contained.x + contained.width <= container.x + container.width &&
+		contained.y + contained.height <= container.y + container.height
+	);
+}
+
+/**
+ * Get all elements fully contained within a selection rectangle.
  *
- * Returns elements whose bounding boxes intersect with the selection rect.
+ * Returns elements whose bounding boxes are entirely inside the selection rect.
  * Used for marquee selection (drag to select multiple elements).
+ * This is the default mode - only selects elements fully inside the rectangle.
  */
 export function getElementsInRect(
+	selectionRect: BoundingBox,
+	elements: readonly WhiteboardElement[]
+): WhiteboardElement[] {
+	return elements.filter((element) => {
+		const elementBounds = getElementBounds(element);
+		return rectangleContains(selectionRect, elementBounds);
+	});
+}
+
+/**
+ * Get all elements that intersect with a selection rectangle.
+ *
+ * Returns elements whose bounding boxes touch or overlap the selection rect.
+ * Used for marquee selection with Alt modifier (intersection mode).
+ */
+export function getElementsIntersectingRect(
 	selectionRect: BoundingBox,
 	elements: readonly WhiteboardElement[]
 ): WhiteboardElement[] {

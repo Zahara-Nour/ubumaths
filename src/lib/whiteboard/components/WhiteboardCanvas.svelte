@@ -14,7 +14,12 @@
 		doStrokesIntersect
 	} from '../core/stroke-smoothing';
 	import { createShapeElement, getShapeSvgProps } from '../core/shapes';
-	import { hitTestElements, getElementsInRect, type BoundingBox } from '../core/hit-testing';
+	import {
+		hitTestElements,
+		getElementsInRect,
+		getElementsIntersectingRect,
+		type BoundingBox
+	} from '../core/hit-testing';
 	import InstrumentLayer from './InstrumentLayer.svelte';
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ImageLayer from './ImageLayer.svelte';
@@ -77,6 +82,7 @@
 	let marqueeStart = $state<Point | null>(null);
 	let marqueeEnd = $state<Point | null>(null);
 	let marqueeAddToSelection = $state(false);
+	let marqueeIntersectionMode = $state(false); // Alt key = intersection mode
 
 	/** Minimum drag distance before movement starts (prevents jitter) */
 	const MIN_DRAG_DISTANCE = 2;
@@ -276,6 +282,7 @@
 				marqueeStart = point;
 				marqueeEnd = point;
 				marqueeAddToSelection = e.shiftKey;
+				marqueeIntersectionMode = e.altKey; // Alt = intersection mode
 				if (!e.shiftKey) {
 					whiteboardStore.clearSelection();
 				}
@@ -386,7 +393,10 @@
 				marqueeRect.width > MIN_DRAG_DISTANCE &&
 				marqueeRect.height > MIN_DRAG_DISTANCE
 			) {
-				const elementsInRect = getElementsInRect(marqueeRect as BoundingBox, elements);
+				// Alt key = intersection mode, otherwise containment mode
+				const elementsInRect = marqueeIntersectionMode
+					? getElementsIntersectingRect(marqueeRect as BoundingBox, elements)
+					: getElementsInRect(marqueeRect as BoundingBox, elements);
 				const ids = elementsInRect.map((el) => el.id);
 				whiteboardStore.selectMultipleElements(ids, marqueeAddToSelection);
 			}
@@ -394,6 +404,7 @@
 			marqueeStart = null;
 			marqueeEnd = null;
 			marqueeAddToSelection = false;
+			marqueeIntersectionMode = false;
 			try {
 				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
 			} catch {
@@ -442,6 +453,7 @@
 			marqueeStart = null;
 			marqueeEnd = null;
 			marqueeAddToSelection = false;
+			marqueeIntersectionMode = false;
 			try {
 				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
 			} catch {
@@ -488,6 +500,7 @@
 			marqueeStart = null;
 			marqueeEnd = null;
 			marqueeAddToSelection = false;
+			marqueeIntersectionMode = false;
 			try {
 				(e.currentTarget as SVGSVGElement).releasePointerCapture(e.pointerId);
 			} catch {
@@ -929,14 +942,15 @@
 		</g>
 
 		<!-- Layer 6: Marquee Selection Rectangle -->
+		<!-- Blue = containment mode (default), Orange = intersection mode (Alt) -->
 		{#if isMarqueeSelecting && marqueeRect}
 			<rect
 				x={marqueeRect.x}
 				y={marqueeRect.y}
 				width={marqueeRect.width}
 				height={marqueeRect.height}
-				fill="rgba(59, 130, 246, 0.1)"
-				stroke="#3b82f6"
+				fill={marqueeIntersectionMode ? 'rgba(234, 88, 12, 0.1)' : 'rgba(59, 130, 246, 0.1)'}
+				stroke={marqueeIntersectionMode ? '#ea580c' : '#3b82f6'}
 				stroke-width={1 / scale}
 				stroke-dasharray={`${4 / scale} ${4 / scale}`}
 				class="pointer-events-none"
