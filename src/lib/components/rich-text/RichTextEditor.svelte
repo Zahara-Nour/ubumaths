@@ -592,6 +592,10 @@
 					uploadedImageUrl = result.url;
 					uploadedImageAlt = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
 					imageDialogOpen = true;
+					// Show warning if filename was auto-incremented
+					if (result.warning) {
+						toaster.warning(result.warning);
+					}
 				} else {
 					toaster.error(result.error || "Erreur lors de l'upload de l'image");
 				}

@@ -63,6 +63,8 @@ export interface ImageUploadResult {
 	storagePath?: string;
 	/** Error message (only if success=false) */
 	error?: string;
+	/** Warning message (e.g., filename was auto-incremented) */
+	warning?: string;
 }
 
 /**
@@ -251,39 +253,78 @@ export async function uploadExerciseImage(
 		};
 	}
 
-	// Generate filename based on naming options
-	const filename = namingOptions
-		? generateSlugFilename(namingOptions.slug, namingOptions.imageNumber, file.name)
-		: generateUniqueFilename(file.name);
-	const storagePath = generateStoragePath(userId, filename);
+	// If no naming options, use UUID-based naming (no conflicts possible)
+	if (!namingOptions) {
+		const filename = generateUniqueFilename(file.name);
+		const storagePath = generateStoragePath(userId, filename);
+		return attemptUpload(supabase, file, storagePath);
+	}
 
+	// With naming options, try to upload with auto-increment on conflict
+	const MAX_ATTEMPTS = 100;
+	let currentNumber = namingOptions.imageNumber;
+	const originalNumber = namingOptions.imageNumber;
+
+	for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+		const filename = generateSlugFilename(namingOptions.slug, currentNumber, file.name);
+		const storagePath = generateStoragePath(userId, filename);
+
+		const result = await attemptUpload(supabase, file, storagePath);
+
+		if (result.success) {
+			// Add warning if we had to increment the number
+			if (currentNumber !== originalNumber) {
+				result.warning = `Le fichier "${namingOptions.slug}-${originalNumber}" existait déjà. Renommé en "${namingOptions.slug}-${currentNumber}".`;
+			}
+			return result;
+		}
+
+		// If error is "already exists", try next number
+		if (result.error?.includes('existe déjà') || result.error?.includes('already exists')) {
+			currentNumber++;
+			continue;
+		}
+
+		// Other error, return it
+		return result;
+	}
+
+	return {
+		success: false,
+		error: `Impossible de trouver un nom disponible après ${MAX_ATTEMPTS} tentatives`
+	};
+}
+
+/**
+ * Attempt a single upload to Supabase Storage
+ */
+async function attemptUpload(
+	supabase: SupabaseClient,
+	file: File,
+	storagePath: string
+): Promise<ImageUploadResult> {
 	try {
-		// Upload to Supabase Storage
 		const { error: uploadError } = await supabase.storage
 			.from(EXERCISE_IMAGES_BUCKET)
 			.upload(storagePath, file, {
 				cacheControl: '3600',
-				upsert: false // Prevent accidental overwrites
+				upsert: false
 			});
 
 		if (uploadError) {
-			console.error('Storage upload error:', uploadError);
-
-			// Provide user-friendly error messages
 			if (uploadError.message.includes('already exists')) {
 				return {
 					success: false,
-					error: 'Un fichier avec ce nom existe déjà. Veuillez réessayer.'
+					error: 'Un fichier avec ce nom existe déjà.'
 				};
 			}
-
+			console.error('Storage upload error:', uploadError);
 			return {
 				success: false,
 				error: `Erreur d'upload: ${uploadError.message}`
 			};
 		}
 
-		// Get public URL
 		const {
 			data: { publicUrl }
 		} = supabase.storage.from(EXERCISE_IMAGES_BUCKET).getPublicUrl(storagePath);

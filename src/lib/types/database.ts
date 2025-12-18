@@ -12374,6 +12374,14 @@ export type Database = {
 				Returns: undefined;
 			};
 			execute_trade: { Args: { p_trade_id: string }; Returns: Json };
+			exercise_has_multiple_variations: {
+				Args: { exercise_id: string };
+				Returns: boolean;
+			};
+			exercise_variation_count: {
+				Args: { exercise_id: string };
+				Returns: number;
+			};
 			exercises_search_vector: {
 				Args: {
 					solution_md: string;
