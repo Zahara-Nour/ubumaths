@@ -784,6 +784,8 @@
 		<!-- Layer 1: Background -->
 		<g class="layer-background">
 			{#if currentPage?.background.type === 'plain'}
+				{@const gridSpacing = currentPage.background.gridSpacing ?? 20}
+				{@const gridOpacity = currentPage.background.gridOpacity ?? 0.3}
 				<rect
 					x="0"
 					y="0"
@@ -793,25 +795,190 @@
 				/>
 				{#if currentPage.background.style === 'grid'}
 					<defs>
-						<pattern id="grid-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
-							<path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="0.5" />
+						<pattern
+							id="grid-pattern"
+							width={gridSpacing}
+							height={gridSpacing}
+							patternUnits="userSpaceOnUse"
+						>
+							<path
+								d="M {gridSpacing} 0 L 0 0 0 {gridSpacing}"
+								fill="none"
+								stroke="#000000"
+								stroke-width="0.5"
+								opacity={gridOpacity}
+							/>
 						</pattern>
 					</defs>
 					<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="url(#grid-pattern)" />
 				{:else if currentPage.background.style === 'ruled'}
 					<defs>
-						<pattern id="ruled-pattern" width={pageWidth} height="24" patternUnits="userSpaceOnUse">
-							<line x1="0" y1="24" x2={pageWidth} y2="24" stroke="#e5e7eb" stroke-width="0.5" />
+						<pattern
+							id="ruled-pattern"
+							width={pageWidth}
+							height={gridSpacing}
+							patternUnits="userSpaceOnUse"
+						>
+							<line
+								x1="0"
+								y1={gridSpacing}
+								x2={pageWidth}
+								y2={gridSpacing}
+								stroke="#000000"
+								stroke-width="0.5"
+								opacity={gridOpacity}
+							/>
 						</pattern>
 					</defs>
 					<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="url(#ruled-pattern)" />
 				{:else if currentPage.background.style === 'dotted'}
 					<defs>
-						<pattern id="dotted-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
-							<circle cx="10" cy="10" r="1" fill="#d1d5db" />
+						<pattern
+							id="dotted-pattern"
+							width={gridSpacing}
+							height={gridSpacing}
+							patternUnits="userSpaceOnUse"
+						>
+							<circle
+								cx={gridSpacing / 2}
+								cy={gridSpacing / 2}
+								r="1"
+								fill="#000000"
+								opacity={gridOpacity}
+							/>
 						</pattern>
 					</defs>
 					<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="url(#dotted-pattern)" />
+				{:else if currentPage.background.style === 'triangular'}
+					{@const triHeight = gridSpacing * 0.866}
+					<defs>
+						<pattern
+							id="triangular-pattern"
+							width={gridSpacing}
+							height={triHeight * 2}
+							patternUnits="userSpaceOnUse"
+						>
+							<!-- Isometric grid: 2 triangles = 1 rhombus -->
+							<!-- Upper triangle (pointing up) -->
+							<path
+								d="M 0 {triHeight} L {gridSpacing / 2} 0 L {gridSpacing} {triHeight} Z"
+								fill="none"
+								stroke="#000000"
+								stroke-width="0.5"
+								opacity={gridOpacity}
+							/>
+							<!-- Lower triangle (pointing down) -->
+							<path
+								d="M 0 {triHeight} L {gridSpacing / 2} {triHeight *
+									2} L {gridSpacing} {triHeight} Z"
+								fill="none"
+								stroke="#000000"
+								stroke-width="0.5"
+								opacity={gridOpacity}
+							/>
+						</pattern>
+					</defs>
+					<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="url(#triangular-pattern)" />
+				{:else if currentPage.background.style === 'triangular-dotted'}
+					{@const triHeight = gridSpacing * 0.866}
+					<defs>
+						<pattern
+							id="triangular-dotted-pattern"
+							width={gridSpacing}
+							height={triHeight * 2}
+							patternUnits="userSpaceOnUse"
+						>
+							<!-- Dots at all triangle vertices -->
+							<!-- Top vertex -->
+							<circle cx={gridSpacing / 2} cy="0" r="1.5" fill="#000000" opacity={gridOpacity} />
+							<!-- Middle left vertex -->
+							<circle cx="0" cy={triHeight} r="1.5" fill="#000000" opacity={gridOpacity} />
+							<!-- Middle right vertex -->
+							<circle
+								cx={gridSpacing}
+								cy={triHeight}
+								r="1.5"
+								fill="#000000"
+								opacity={gridOpacity}
+							/>
+							<!-- Bottom vertex -->
+							<circle
+								cx={gridSpacing / 2}
+								cy={triHeight * 2}
+								r="1.5"
+								fill="#000000"
+								opacity={gridOpacity}
+							/>
+						</pattern>
+					</defs>
+					<rect
+						x="0"
+						y="0"
+						width={pageWidth}
+						height={pageHeight}
+						fill="url(#triangular-dotted-pattern)"
+					/>
+				{:else if currentPage.background.style === 'hexagonal'}
+					{@const s = gridSpacing / 2}
+					{@const h = s * 0.866}
+					<defs>
+						<pattern
+							id="hexagonal-pattern"
+							width={s * 3}
+							height={h * 2}
+							patternUnits="userSpaceOnUse"
+						>
+							<!-- Honeycomb pattern: flat-top hexagons -->
+							<!-- First hexagon (top-left) -->
+							<path
+								d="M {s * 0.5} 0 L {s * 1.5} 0 L {s * 2} {h} L {s * 1.5} {h * 2} L {s * 0.5} {h *
+									2} L 0 {h} Z"
+								fill="none"
+								stroke="#000000"
+								stroke-width="0.5"
+								opacity={gridOpacity}
+							/>
+							<!-- Second hexagon (offset right and down) -->
+							<path
+								d="M {s * 2} {h} L {s * 3} {h} L {s * 3.5} {h * 2} L {s * 3} {h * 3} L {s * 2} {h *
+									3} L {s * 1.5} {h * 2}"
+								fill="none"
+								stroke="#000000"
+								stroke-width="0.5"
+								opacity={gridOpacity}
+							/>
+						</pattern>
+					</defs>
+					<rect x="0" y="0" width={pageWidth} height={pageHeight} fill="url(#hexagonal-pattern)" />
+				{:else if currentPage.background.style === 'hexagonal-dotted'}
+					{@const s = gridSpacing / 2}
+					{@const h = s * 0.866}
+					<defs>
+						<pattern
+							id="hexagonal-dotted-pattern"
+							width={s * 3}
+							height={h * 2}
+							patternUnits="userSpaceOnUse"
+						>
+							<!-- Dots at hexagon vertices (honeycomb pattern) -->
+							<!-- First hexagon vertices -->
+							<circle cx={s * 0.5} cy="0" r="1.5" fill="#000000" opacity={gridOpacity} />
+							<circle cx={s * 1.5} cy="0" r="1.5" fill="#000000" opacity={gridOpacity} />
+							<circle cx={s * 2} cy={h} r="1.5" fill="#000000" opacity={gridOpacity} />
+							<circle cx={s * 1.5} cy={h * 2} r="1.5" fill="#000000" opacity={gridOpacity} />
+							<circle cx={s * 0.5} cy={h * 2} r="1.5" fill="#000000" opacity={gridOpacity} />
+							<circle cx="0" cy={h} r="1.5" fill="#000000" opacity={gridOpacity} />
+							<!-- Second hexagon additional vertices -->
+							<circle cx={s * 3} cy={h} r="1.5" fill="#000000" opacity={gridOpacity} />
+						</pattern>
+					</defs>
+					<rect
+						x="0"
+						y="0"
+						width={pageWidth}
+						height={pageHeight}
+						fill="url(#hexagonal-dotted-pattern)"
+					/>
 				{/if}
 			{:else if currentPage?.background.type === 'image'}
 				<!-- White base for transparency -->

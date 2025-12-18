@@ -104,8 +104,19 @@ const backgroundPdfSchema = z.object({
 
 const backgroundPlainSchema = z.object({
 	type: z.literal('plain'),
-	style: z.enum(['plain', 'grid', 'ruled', 'dotted']),
-	color: z.string().regex(/^#[0-9A-Fa-f]{6}$/)
+	style: z.enum([
+		'plain',
+		'grid',
+		'ruled',
+		'dotted',
+		'triangular',
+		'triangular-dotted',
+		'hexagonal',
+		'hexagonal-dotted'
+	]),
+	color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+	gridSpacing: z.number().min(5).max(100).optional(),
+	gridOpacity: z.number().min(0).max(1).optional()
 });
 
 const backgroundSchema = z.discriminatedUnion('type', [
