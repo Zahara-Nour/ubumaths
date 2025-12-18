@@ -11,6 +11,7 @@
 	import WhiteboardCanvas from './WhiteboardCanvas.svelte';
 	import WhiteboardToolbar from './WhiteboardToolbar.svelte';
 	import PageThumbnails from './PageThumbnails.svelte';
+	import ContextMenu from './ContextMenu.svelte';
 	import type { PageFormatKey } from '../types/document';
 
 	// ==========================================================================
@@ -65,6 +66,9 @@
 	let panStartY = $state(0);
 	let panStartOffsetX = $state(0);
 	let panStartOffsetY = $state(0);
+
+	/** Context menu reference (must be outside transformed area for correct positioning) */
+	let contextMenuRef: ContextMenu | null = $state(null);
 
 	// ==========================================================================
 	// Derived State
@@ -466,9 +470,12 @@
 				class:transition-transform={!isPanning}
 				style="width: {canvasWidth}px; height: {canvasHeight}px; transform: translate({panX}px, {panY}px);"
 			>
-				<WhiteboardCanvas class="h-full w-full" scale={effectiveScale} />
+				<WhiteboardCanvas class="h-full w-full" scale={effectiveScale} {contextMenuRef} />
 			</div>
 		</div>
+
+		<!-- Context Menu (rendered outside transformed area for correct fixed positioning) -->
+		<ContextMenu bind:this={contextMenuRef} />
 
 		<!-- Page thumbnails sidebar (right) -->
 		<PageThumbnails />

@@ -26,7 +26,7 @@
 	import TextBlockLayer from './TextBlockLayer.svelte';
 	import ImageLayer from './ImageLayer.svelte';
 	import SelectionLayer from './SelectionLayer.svelte';
-	import ContextMenu from './ContextMenu.svelte';
+	import type ContextMenu from './ContextMenu.svelte';
 	import {
 		getStrokeDashArray,
 		type Point,
@@ -45,9 +45,11 @@
 		class?: string;
 		/** Scale factor for coordinate transformation */
 		scale?: number;
+		/** Context menu reference (rendered outside transformed area) */
+		contextMenuRef?: ContextMenu | null;
 	}
 
-	let { class: className = '', scale = 1 }: Props = $props();
+	let { class: className = '', scale = 1, contextMenuRef = null }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -68,9 +70,6 @@
 
 	/** TextBlockLayer reference */
 	let textBlockLayerRef: TextBlockLayer | null = $state(null);
-
-	/** ContextMenu reference */
-	let contextMenuRef: ContextMenu | null = $state(null);
 
 	/** Hovered element ID (for select tool hover feedback) */
 	let hoveredElementId = $state<string | null>(null);
@@ -1158,9 +1157,6 @@
 
 	<!-- TextBlock Layer (HTML overlay on SVG) -->
 	<TextBlockLayer bind:this={textBlockLayerRef} {scale} />
-
-	<!-- Context Menu (for z-order operations) -->
-	<ContextMenu bind:this={contextMenuRef} />
 </div>
 
 <style>
