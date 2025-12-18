@@ -40,6 +40,100 @@ export interface HitTestResult {
 const DEFAULT_TOLERANCE = 5;
 
 // =============================================================================
+// Rotation Utilities
+// =============================================================================
+
+/**
+ * Rotate a point around a center point by an angle in degrees.
+ * Positive angle = clockwise rotation.
+ */
+export function rotatePoint(point: Point, center: Point, angleDeg: number): Point {
+	if (angleDeg === 0) return point;
+
+	const angleRad = (angleDeg * Math.PI) / 180;
+	const cos = Math.cos(angleRad);
+	const sin = Math.sin(angleRad);
+	const dx = point.x - center.x;
+	const dy = point.y - center.y;
+
+	return {
+		x: center.x + dx * cos - dy * sin,
+		y: center.y + dx * sin + dy * cos
+	};
+}
+
+/**
+ * Get the center point of a bounding box.
+ */
+export function getBoundsCenter(bounds: BoundingBox): Point {
+	return {
+		x: bounds.x + bounds.width / 2,
+		y: bounds.y + bounds.height / 2
+	};
+}
+
+/**
+ * Calculate rotation angle from center to mouse position (in degrees).
+ * Returns angle where 0° = right, 90° = down, etc.
+ */
+export function calculateAngleFromCenter(center: Point, mousePos: Point): number {
+	const dx = mousePos.x - center.x;
+	const dy = mousePos.y - center.y;
+	// atan2 gives angle in radians from -PI to PI, convert to degrees
+	const radians = Math.atan2(dy, dx);
+	return (radians * 180) / Math.PI;
+}
+
+/**
+ * Normalize angle to 0-360 range.
+ */
+export function normalizeAngle(angle: number): number {
+	let normalized = angle % 360;
+	if (normalized < 0) normalized += 360;
+	return normalized;
+}
+
+/**
+ * Snap angle to nearest increment (e.g., 15° for Shift key).
+ */
+export function snapAngle(angle: number, increment: number): number {
+	return Math.round(angle / increment) * increment;
+}
+
+/**
+ * Internal helper to calculate stroke bounds without rotation.
+ * Used by hit-testing before the main getStrokeBounds function.
+ */
+function getStrokeBoundsInternal(stroke: StrokeElement): BoundingBox {
+	const { points, width } = stroke;
+	const padding = width / 2;
+
+	if (points.length === 0) {
+		return { x: 0, y: 0, width: 0, height: 0 };
+	}
+
+	let minX = points[0].x;
+	let minY = points[0].y;
+	let maxX = points[0].x;
+	let maxY = points[0].y;
+
+	for (let i = 1; i < points.length; i++) {
+		const p = points[i];
+		if (p.x < minX) minX = p.x;
+		if (p.y < minY) minY = p.y;
+		if (p.x > maxX) maxX = p.x;
+		if (p.y > maxY) maxY = p.y;
+	}
+
+	return {
+		x: minX - padding,
+		y: minY - padding,
+		width: maxX - minX + 2 * padding,
+		height: maxY - minY + 2 * padding
+	};
+}
+
+// =============================================================================
 // Geometry Utilities
 // =============================================================================
 
@@ -85,13 +179,14 @@ export function pointToSegmentDistance(
  *
  * Iterates through all segments of the stroke and checks if the distance
  * from the point to any segment is within the stroke's width plus tolerance.
+ * For rotated strokes, transforms the test point into local coordinate space.
  */
 export function hitTestStroke(
 	point: Point,
 	stroke: StrokeElement,
 	tolerance: number = DEFAULT_TOLERANCE
 ): boolean {
-	const { points, width } = stroke;
+	const { points, width, rotation = 0 } = stroke;
 	const hitRadius = width / 2 + tolerance;
 
 	// Handle empty stroke
@@ -99,10 +194,19 @@ export function hitTestStroke(
 		return false;
 	}
 
+	// Transform test point into local coordinate system if rotated
+	let testPoint = point;
+	if (rotation !== 0) {
+		const bounds = getStrokeBoundsInternal(stroke);
+		const center = getBoundsCenter(bounds);
+		// Rotate test point in opposite direction to transform into local space
+		testPoint = rotatePoint(point, center, -rotation);
+	}
+
 	// Handle single point stroke
 	if (points.length === 1) {
 		const p = points[0];
-		const distance = Math.sqrt((point.x - p.x) ** 2 + (point.y - p.y) ** 2);
+		const distance = Math.sqrt((testPoint.x - p.x) ** 2 + (testPoint.y - p.y) ** 2);
 		return distance <= hitRadius;
 	}
 
@@ -111,7 +215,7 @@ export function hitTestStroke(
 		const p1 = points[i];
 		const p2 = points[i + 1];
 
-		const distance = pointToSegmentDistance(point.x, point.y, p1.x, p1.y, p2.x, p2.y);
+		const distance = pointToSegmentDistance(testPoint.x, testPoint.y, p1.x, p1.y, p2.x, p2.y);
 
 		if (distance <= hitRadius) {
 			return true;
@@ -125,6 +229,7 @@ export function hitTestStroke(
  * Test if a point hits a shape element.
  *
  * Uses the shape's bounding box plus tolerance for hit detection.
+ * For rotated shapes, transforms the test point into local coordinate space.
  */
 export function hitTestShape(
 	point: Point,
@@ -132,12 +237,24 @@ export function hitTestShape(
 	tolerance: number = DEFAULT_TOLERANCE
 ): boolean {
 	const bounds = calculateShapeBounds(shape.shapeType, shape.start, shape.end, shape.strokeWidth);
+	const rotation = shape.rotation ?? 0;
+
+	// Transform test point into local coordinate system if rotated
+	let testPoint = point;
+	if (rotation !== 0) {
+		const center = {
+			x: (bounds.minX + bounds.maxX) / 2,
+			y: (bounds.minY + bounds.maxY) / 2
+		};
+		// Rotate test point in opposite direction to transform into local space
+		testPoint = rotatePoint(point, center, -rotation);
+	}
 
 	return (
-		point.x >= bounds.minX - tolerance &&
-		point.x <= bounds.maxX + tolerance &&
-		point.y >= bounds.minY - tolerance &&
-		point.y <= bounds.maxY + tolerance
+		testPoint.x >= bounds.minX - tolerance &&
+		testPoint.x <= bounds.maxX + tolerance &&
+		testPoint.y >= bounds.minY - tolerance &&
+		testPoint.y <= bounds.maxY + tolerance
 	);
 }
 

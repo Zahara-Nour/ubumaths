@@ -21,7 +21,8 @@ import {
 	type ImageElement,
 	type PageFormatKey,
 	type InstrumentType,
-	type InstrumentState
+	type InstrumentState,
+	type StrokeStyle
 } from '../types/document';
 import { createHistoryManager, type HistoryManager } from '../core/history.svelte';
 import { serialize, deserialize } from '../core/serialization';
@@ -103,23 +104,57 @@ export interface ToolSettings {
 	color: string;
 	width: number;
 	opacity: number;
+	strokeStyle: StrokeStyle;
 }
 
 /** Default color and width (shared across all configurable tools) */
 const DEFAULT_COLOR = '#000000';
 const DEFAULT_WIDTH = 2;
 
+/** Default stroke style */
+const DEFAULT_STROKE_STYLE: StrokeStyle = 'solid';
+
 /** Default settings per tool (color/width are global, opacity is per-tool) */
 const DEFAULT_TOOL_SETTINGS: Record<ConfigurableTool, ToolSettings> = {
-	// Drawing tools
-	pen: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 },
-	highlighter: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 0.5 },
-	eraser: { color: '#ffffff', width: 20, opacity: 1 },
-	// Shape tools
-	line: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 },
-	rectangle: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 },
-	circle: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 },
-	arrow: { color: DEFAULT_COLOR, width: DEFAULT_WIDTH, opacity: 1 }
+	// Drawing tools (strokeStyle not used for freehand)
+	pen: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE
+	},
+	highlighter: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 0.5,
+		strokeStyle: DEFAULT_STROKE_STYLE
+	},
+	eraser: { color: '#ffffff', width: 20, opacity: 1, strokeStyle: DEFAULT_STROKE_STYLE },
+	// Shape tools (strokeStyle applies here)
+	line: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE
+	},
+	rectangle: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE
+	},
+	circle: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE
+	},
+	arrow: {
+		color: DEFAULT_COLOR,
+		width: DEFAULT_WIDTH,
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE
+	}
 };
 
 // =============================================================================
@@ -142,7 +177,8 @@ function createWhiteboardStore() {
 	let userPreferences = $state({
 		color: DEFAULT_COLOR,
 		strokeWidth: DEFAULT_WIDTH,
-		opacity: 1
+		opacity: 1,
+		strokeStyle: DEFAULT_STROKE_STYLE as StrokeStyle
 	});
 
 	// === UI State ===
@@ -177,7 +213,8 @@ function createWhiteboardStore() {
 			toolType: currentTool,
 			color: settings.color,
 			strokeWidth: settings.width,
-			opacity: settings.opacity
+			opacity: settings.opacity,
+			strokeStyle: settings.strokeStyle
 		};
 	});
 
@@ -1030,6 +1067,56 @@ function createWhiteboardStore() {
 		},
 
 		/**
+		 * Rotate an element to a specific angle (in degrees)
+		 * @param elementId - Element to rotate
+		 * @param rotation - New rotation angle in degrees (0-360)
+		 */
+		rotateElement(elementId: string, rotation: number): void {
+			// Normalize angle to 0-360
+			let normalizedRotation = rotation % 360;
+			if (normalizedRotation < 0) normalizedRotation += 360;
+
+			updateCurrentPage((page) => ({
+				...page,
+				elements: page.elements.map((element) => {
+					if (element.id !== elementId) return element;
+
+					// Only shapes and strokes support rotation
+					if (element.type === 'shape' || element.type === 'stroke') {
+						return { ...element, rotation: normalizedRotation };
+					}
+
+					return element;
+				})
+			}));
+		},
+
+		/**
+		 * Rotate all selected elements by a delta angle
+		 * @param deltaAngle - Angle to add to current rotation (in degrees)
+		 */
+		rotateSelected(deltaAngle: number): void {
+			if (selectedIds.size === 0) return;
+
+			updateCurrentPage((page) => ({
+				...page,
+				elements: page.elements.map((element) => {
+					if (!selectedIds.has(element.id)) return element;
+
+					// Only shapes and strokes support rotation
+					if (element.type === 'shape' || element.type === 'stroke') {
+						const currentRotation = element.rotation ?? 0;
+						let newRotation = (currentRotation + deltaAngle) % 360;
+						if (newRotation < 0) newRotation += 360;
+						return { ...element, rotation: newRotation };
+					}
+
+					return element;
+				})
+			}));
+		},
+
+		/**
 		 * Update style properties (color, strokeWidth) for selected elements
 		 * Works with stroke and shape elements
 		 * @param style - Properties to update
@@ -1441,10 +1528,33 @@ function createWhiteboardStore() {
 		},
 
 		/**
+		 * Set stroke style for shape tools
+		 * Only saves to user preferences if no element is selected
+		 */
+		setStrokeStyle(style: StrokeStyle): void {
+			// Only save to preferences if no element is selected
+			if (selectedIds.size === 0) {
+				userPreferences = { ...userPreferences, strokeStyle: style };
+			}
+			const updatedSettings = { ...toolSettings };
+			// Only apply to shape tools
+			const shapeTools: ConfigurableTool[] = ['line', 'rectangle', 'circle', 'arrow'];
+			for (const tool of shapeTools) {
+				updatedSettings[tool] = { ...updatedSettings[tool], strokeStyle: style };
+			}
+			toolSettings = updatedSettings;
+		},
+
+		/**
 		 * Sync toolbar display from element properties (temporary, doesn't save to preferences)
 		 * Used when selecting an element to show its properties
 		 */
-		syncToolbarFromElement(element: { color: string; strokeWidth: number; opacity: number }): void {
+		syncToolbarFromElement(element: {
+			color: string;
+			strokeWidth: number;
+			opacity: number;
+			strokeStyle?: StrokeStyle;
+		}): void {
 			const updatedSettings = { ...toolSettings };
 			for (const tool of Object.keys(updatedSettings) as ConfigurableTool[]) {
 				if (tool !== 'eraser') {
@@ -1452,7 +1562,8 @@ function createWhiteboardStore() {
 						...updatedSettings[tool],
 						color: element.color,
 						width: element.strokeWidth,
-						opacity: element.opacity
+						opacity: element.opacity,
+						strokeStyle: element.strokeStyle ?? 'solid'
 					};
 				}
 			}
@@ -1471,7 +1582,8 @@ function createWhiteboardStore() {
 						...updatedSettings[tool],
 						color: userPreferences.color,
 						width: userPreferences.strokeWidth,
-						opacity: userPreferences.opacity
+						opacity: userPreferences.opacity,
+						strokeStyle: userPreferences.strokeStyle
 					};
 				}
 			}
