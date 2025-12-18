@@ -8,6 +8,7 @@
 	FEATURES:
 	- WYSIWYG editing with markdown storage
 	- Image upload to Supabase exercise-images bucket
+	- Custom image naming with slug: {slug}-{number}.{ext}
 	- Full toolbar with math formulas and templates
 	- Preview mode
 
@@ -15,9 +16,16 @@
 	<script>
 		import ExerciseRichTextEditor from './ExerciseRichTextEditor.svelte';
 		let content = $state('');
+		let imageCounter = $state(1);
 	</script>
 
-	<ExerciseRichTextEditor bind:value={content} {supabase} {userId} />
+	<ExerciseRichTextEditor
+		bind:value={content}
+		{supabase}
+		{userId}
+		imageSlug="pythagore"
+		getNextImageNumber={() => imageCounter++}
+	/>
 -->
 <script lang="ts">
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
@@ -35,9 +43,20 @@
 		userId?: string;
 		/** Generic function names for math parsing (e.g., ['C', 'P']) */
 		genericFunctions?: string[];
+		/** Exercise slug for image naming (e.g., 'pythagore') */
+		imageSlug?: string;
+		/** Function to get the next image number for this exercise */
+		getNextImageNumber?: () => number;
 	}
 
-	let { value = $bindable(''), supabase, userId, genericFunctions }: Props = $props();
+	let {
+		value = $bindable(''),
+		supabase,
+		userId,
+		genericFunctions,
+		imageSlug,
+		getNextImageNumber
+	}: Props = $props();
 
 	// Convert string array to GenericFunctionConfig
 	const genericFunctionsConfig = $derived.by<GenericFunctionConfig | undefined>(() => {
@@ -55,7 +74,14 @@
 	const imageUploadConfig: ImageUploadConfig | undefined = $derived(
 		supabase && userId
 			? {
-					uploadFn: async (file: File) => uploadExerciseImage(supabase, file, userId)
+					uploadFn: async (file: File) => {
+						// Use custom naming if slug and counter are provided
+						const namingOptions =
+							imageSlug && getNextImageNumber
+								? { slug: imageSlug, imageNumber: getNextImageNumber() }
+								: undefined;
+						return uploadExerciseImage(supabase, file, userId, namingOptions);
+					}
 				}
 			: undefined
 	);

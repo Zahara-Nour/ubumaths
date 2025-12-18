@@ -16,10 +16,22 @@
 		supabase?: SupabaseClient;
 		userId?: string;
 		genericFunctions?: string[];
+		/** Exercise slug for image naming */
+		imageSlug?: string;
+		/** Function to get the next image number for this exercise */
+		getNextImageNumber?: () => number;
 		onchange?: () => void;
 	}
 
-	let { variation = $bindable(), supabase, userId, genericFunctions, onchange }: Props = $props();
+	let {
+		variation = $bindable(),
+		supabase,
+		userId,
+		genericFunctions,
+		imageSlug,
+		getNextImageNumber,
+		onchange
+	}: Props = $props();
 
 	// Label options
 	const guidanceLabelItems: { value: GuidanceLabel | 'custom'; label: string }[] = [
@@ -146,6 +158,8 @@
 			{supabase}
 			{userId}
 			{genericFunctions}
+			{imageSlug}
+			{getNextImageNumber}
 		/>
 	</div>
 
@@ -159,6 +173,8 @@
 			{supabase}
 			{userId}
 			{genericFunctions}
+			{imageSlug}
+			{getNextImageNumber}
 		/>
 	</div>
 
