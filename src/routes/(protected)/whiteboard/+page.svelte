@@ -27,13 +27,6 @@
 	/>
 </svelte:head>
 
-<div class="whiteboard-page">
+<div class="h-full">
 	<Whiteboard />
 </div>
-
-<style>
-	.whiteboard-page {
-		height: calc(100vh - 4rem); /* Account for navbar height */
-		overflow: hidden;
-	}
-</style>

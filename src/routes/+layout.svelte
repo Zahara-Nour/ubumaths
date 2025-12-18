@@ -42,6 +42,9 @@
 	// Check if we're in a dashboard route
 	let isDashboardRoute = $derived(page.url.pathname.startsWith('/dashboard'));
 
+	// Check if we're on the whiteboard page (needs full screen, no footer/padding)
+	let isWhiteboardRoute = $derived(page.url.pathname.startsWith('/whiteboard'));
+
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
@@ -100,10 +103,16 @@
 		{/if}
 
 		<!-- Main content -->
-		<main class="relative flex-1 overflow-y-auto" class:p-6={!isDashboardRoute}>
+		<main
+			class="relative flex-1"
+			class:overflow-y-auto={!isWhiteboardRoute}
+			class:overflow-hidden={isWhiteboardRoute}
+			class:p-6={!isDashboardRoute && !isWhiteboardRoute}
+		>
 			<!-- Always render children so page can load -->
 			<div
 				class:opacity-0={$navigating && !isDashboardRoute}
+				class:h-full={isWhiteboardRoute}
 				class="transition-opacity duration-200"
 			>
 				{@render children?.()}
@@ -126,8 +135,8 @@
 		</main>
 	</div>
 
-	<!-- Footer - only show on non-dashboard routes -->
-	{#if !isDashboardRoute}
+	<!-- Footer - only show on non-dashboard and non-whiteboard routes -->
+	{#if !isDashboardRoute && !isWhiteboardRoute}
 		<footer class="border-t border-border bg-background py-4">
 			<div
 				class="container mx-auto flex items-center justify-between px-4 text-sm text-muted-foreground"
