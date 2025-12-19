@@ -714,6 +714,14 @@ describe('Round-trip: Markdown -> TipTap -> Markdown', () => {
 
 		expect(result).toBe(original);
 	});
+
+	it('preserves math block with hardbreak in list item', () => {
+		const original = '2. Montrer que, pour tout ~x>0~\\\n   ~~C(x)={5(x^3+16)}/x~~';
+		const tipTap = markdownToTipTap(original);
+		const result = tipTapToMarkdown(tipTap);
+
+		expect(result).toBe(original);
+	});
 });
 
 // ============================================================================
