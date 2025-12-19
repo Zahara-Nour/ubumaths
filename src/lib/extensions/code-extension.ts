@@ -101,9 +101,10 @@ export const CustomCode = Code.extend({
 						const contentWithMark = state.schema.text(content, [codeMark]);
 						tr.insert(patternStartInDoc, contentWithMark);
 
-						// Insert a space after the code to visually separate cursor
+						// Insert a space WITHOUT any marks (explicitly no marks)
 						const spacePos = patternStartInDoc + content.length;
-						tr.insertText(' ', spacePos);
+						const spaceNode = state.schema.text(' ', []); // Empty marks array
+						tr.insert(spacePos, spaceNode);
 
 						// Position cursor after the space
 						const cursorPos = spacePos + 1;
