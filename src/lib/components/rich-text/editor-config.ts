@@ -35,9 +35,11 @@ import { BlankField } from '$lib/extensions/blank-extension';
 import { Hashtag } from '$lib/extensions/hashtag-extension';
 import { Mention } from '$lib/extensions/mention-extension';
 import { MarkdownPaste } from './markdown-paste-extension';
+import { CustomCode, CustomCodeBlock } from '$lib/extensions/code-extension';
 
 // Note: Underline is included in StarterKit v3
 // Link is disabled in StarterKit and replaced with CustomLink to preserve title attribute
+// Code and CodeBlock are disabled and replaced with CustomCode/CustomCodeBlock for input rules
 
 /**
  * Module-level extension instances (singleton pattern)
@@ -60,7 +62,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v19`; // v19: Added ImageNodeView for interactive editing
+	return `h${headingLevels}-v20`; // v20: Added CustomCode/CustomCodeBlock with backtick input rules
 }
 
 /**
@@ -84,9 +86,16 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 				levels
 			},
 			// Disable StarterKit's Link - we use CustomLink to preserve title attribute
-			link: false
+			link: false,
+			// Disable StarterKit's Code/CodeBlock - we use CustomCode/CustomCodeBlock for input rules
+			code: false,
+			codeBlock: false
 			// Underline uses default configuration
 		}),
+
+		// Custom Code extensions with backtick input rules
+		CustomCode.configure({}),
+		CustomCodeBlock.configure({}),
 
 		// Custom Link extension that preserves title attribute for roundtrip
 		CustomLink.configure({
