@@ -45,6 +45,18 @@
 	let markdownInputRef = $state<HTMLTextAreaElement | null>(null);
 	let syntaxStatus = $state<'unknown' | 'valid' | 'invalid'>('unknown');
 
+	// Track previous selected state to detect keyboard navigation
+	let wasSelected = $state(false);
+
+	// Enter edit mode when node becomes selected via keyboard (arrow keys)
+	$effect(() => {
+		if (selected && !wasSelected && !isHovering && !editDialogOpen) {
+			// Node just became selected, likely via keyboard navigation
+			enterEditMode();
+		}
+		wasSelected = selected;
+	});
+
 	// Zod schema for image attributes validation
 	const imageAttributesSchema = z.object({
 		src: z.string().min(1, 'URL requise'),
