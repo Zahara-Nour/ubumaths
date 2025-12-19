@@ -375,6 +375,11 @@ math-field:focus {
 	margin: 1rem 0;
 }
 
+/* Reduce math block margin inside list items */
+li .math-block-wrapper {
+	margin: 0.25rem 0;
+}
+
 .math-block-inner {
 	display: inline-block;
 }
