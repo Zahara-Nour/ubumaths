@@ -37,7 +37,7 @@
 	let latex = $derived(expressionToLatex(expression, syntax, genericFunctions));
 </script>
 
-<div class="math-block-container my-6 flex justify-center {className}">
+<div class="math-block-container flex justify-center {className}">
 	{#key latex}
 		<math-div class="math-block-static">{latex}</math-div>
 	{/key}
@@ -45,6 +45,15 @@
 
 <style>
 	/* Math block styling - centered display math */
+	.math-block-container {
+		margin: 1.5rem 0;
+	}
+
+	/* Reduce margin inside list items */
+	:global(li) .math-block-container {
+		margin: 0.25rem 0;
+	}
+
 	:global(.math-block-static) {
 		display: inline-block;
 		font-size: 1em;
