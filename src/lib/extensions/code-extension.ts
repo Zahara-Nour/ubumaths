@@ -37,6 +37,11 @@ const inlineCodePluginKey = new PluginKey('inlineCodeInput');
  * a `...` pattern by typing the closing backtick.
  */
 export const CustomCode = Code.extend({
+	// Disable parent's input rules - we handle it ourselves
+	addInputRules() {
+		return [];
+	},
+
 	addProseMirrorPlugins() {
 		const type = this.type;
 
@@ -48,20 +53,15 @@ export const CustomCode = Code.extend({
 					 * Intercept text input to detect inline code pattern
 					 * This fires BEFORE the character is inserted
 					 */
-					handleTextInput(view, from, to, text) {
+					handleTextInput(view, from, _to, text) {
 						// Only process when typing a backtick
 						if (text !== '`') return false;
 
 						const { state } = view;
-						const $from = state.doc.resolve(from);
 
-						// Get text before cursor in current text node
-						const textBefore = $from.parent.textBetween(
-							Math.max(0, $from.parentOffset - 200),
-							$from.parentOffset,
-							null,
-							'\ufffc'
-						);
+						// Get text before cursor directly from document
+						const searchStart = Math.max(0, from - 200);
+						const textBefore = state.doc.textBetween(searchStart, from, null, '\ufffc');
 
 						// Check if there's an opening backtick with content
 						// Pattern: ` followed by non-backtick content, at the end
@@ -71,23 +71,21 @@ export const CustomCode = Code.extend({
 						const content = match[1];
 						if (!content || content.trim() === '') return false;
 
-						// Calculate the start position of the pattern
-						// match.index is the position in textBefore where ` starts
-						const patternStartInNode = $from.parentOffset - textBefore.length + match.index;
-						const patternStartInDoc = $from.start() + patternStartInNode;
+						// Calculate positions
+						// match.index is where ` starts in textBefore
+						// The actual document position is searchStart + match.index
+						const patternStart = searchStart + match.index;
 
-						// Create transaction:
-						// 1. Delete from opening backtick to cursor (where closing backtick would go)
-						// 2. Insert content with code mark
+						// Create transaction
 						const tr = state.tr;
 
-						// Delete the `content pattern (the closing backtick hasn't been inserted yet)
-						tr.delete(patternStartInDoc, from);
+						// Delete the `content pattern (from opening backtick to cursor)
+						tr.delete(patternStart, from);
 
-						// Insert the content with code mark
+						// Insert the content with code mark at the deletion point
 						const codeMark = type.create();
 						const contentWithMark = state.schema.text(content, [codeMark]);
-						tr.insert(patternStartInDoc, contentWithMark);
+						tr.insert(patternStart, contentWithMark);
 
 						// Remove stored mark so next typing isn't in code
 						tr.removeStoredMark(type);
