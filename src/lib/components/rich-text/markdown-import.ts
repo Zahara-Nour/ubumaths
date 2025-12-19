@@ -294,6 +294,27 @@ function convertListItem(item: ListItemNode): JSONContent {
 		// Other block types in list items not supported
 	}
 
+	// Remove trailing hardBreak from paragraphs when followed by a block
+	// This prevents visual double line breaks in TipTap
+	for (let i = 0; i < content.length - 1; i++) {
+		const current = content[i];
+		const next = content[i + 1];
+
+		// Check if current is a paragraph followed by a block (mathBlock, codeBlock, list)
+		if (
+			current.type === 'paragraph' &&
+			current.content &&
+			Array.isArray(current.content) &&
+			['mathBlock', 'codeBlock', 'bulletList', 'orderedList'].includes(next.type || '')
+		) {
+			// Remove trailing hardBreak if present
+			const lastChild = current.content[current.content.length - 1];
+			if (lastChild && lastChild.type === 'hardBreak') {
+				current.content.pop();
+			}
+		}
+	}
+
 	return {
 		type: 'listItem',
 		content
