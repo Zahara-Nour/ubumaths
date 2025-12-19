@@ -126,8 +126,32 @@ export const CustomCode = Code.extend({
  * Custom CodeBlock extension with triple backtick input rule
  *
  * Typing ``` (and optionally a language) then Enter creates a code block
+ * Displays language label in the top-right corner
  */
 export const CustomCodeBlock = CodeBlock.extend({
+	addAttributes() {
+		return {
+			language: {
+				default: null,
+				parseHTML: (element) => element.getAttribute('data-language'),
+				renderHTML: (attributes) => {
+					if (!attributes.language) return {};
+					return { 'data-language': attributes.language };
+				}
+			}
+		};
+	},
+
+	renderHTML({ node, HTMLAttributes }) {
+		const language = node.attrs.language as string | null;
+
+		return [
+			'div',
+			{ class: 'code-block-wrapper', 'data-language': language || undefined },
+			['pre', HTMLAttributes, ['code', { class: language ? `language-${language}` : undefined }, 0]]
+		];
+	},
+
 	addInputRules() {
 		return [
 			textblockTypeInputRule({
