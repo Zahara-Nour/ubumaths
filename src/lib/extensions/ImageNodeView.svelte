@@ -23,7 +23,7 @@
 	import type { ImageSizeClass, ImageAlignment } from '$lib/custom-markdown';
 
 	// NodeView props from TipTap
-	let { node, updateAttributes, deleteNode, selected }: NodeViewProps = $props();
+	let { node, updateAttributes, deleteNode, selected, editor, getPos }: NodeViewProps = $props();
 
 	// Extract attributes from node
 	const src = $derived(node.attrs.src as string);
@@ -212,6 +212,25 @@
 	}
 
 	/**
+	 * Exit edit mode and move cursor to before/after the image
+	 * @param direction - 'before' or 'after' the image
+	 */
+	async function exitEditModeAndMoveCursor(direction: 'before' | 'after') {
+		// First validate and save
+		await exitEditMode(true);
+
+		// Then move cursor using TipTap editor
+		if (editor && typeof getPos === 'function') {
+			const pos = getPos();
+			if (typeof pos === 'number') {
+				const targetPos = direction === 'before' ? pos : pos + node.nodeSize;
+				editor.commands.setTextSelection(targetPos);
+				editor.commands.focus();
+			}
+		}
+	}
+
+	/**
 	 * Handle keyboard events in inline edit mode
 	 */
 	function handleEditKeydown(event: KeyboardEvent) {
@@ -221,6 +240,21 @@
 		} else if (event.key === 'Escape') {
 			event.preventDefault();
 			exitEditMode(false);
+		} else if (event.key === 'ArrowLeft') {
+			// If cursor at start of textarea, exit and move before image
+			const textarea = event.target as HTMLTextAreaElement;
+			if (textarea.selectionStart === 0 && textarea.selectionEnd === 0) {
+				event.preventDefault();
+				exitEditModeAndMoveCursor('before');
+			}
+		} else if (event.key === 'ArrowRight') {
+			// If cursor at end of textarea, exit and move after image
+			const textarea = event.target as HTMLTextAreaElement;
+			const len = textarea.value.length;
+			if (textarea.selectionStart === len && textarea.selectionEnd === len) {
+				event.preventDefault();
+				exitEditModeAndMoveCursor('after');
+			}
 		}
 		// Tab: let it blur naturally, which triggers save
 	}
