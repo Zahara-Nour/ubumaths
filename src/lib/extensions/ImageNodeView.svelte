@@ -56,24 +56,29 @@
 		caption: z.string().nullable().default(null)
 	});
 
-	// Compute wrapper styles
+	// Compute wrapper styles - use node.attrs directly for reactivity
 	const wrapperStyle = $derived.by(() => {
 		const styles: string[] = ['margin-top: 0.5rem', 'margin-bottom: 0.5rem', 'position: relative'];
 
+		// Read directly from node.attrs for proper reactivity
+		const currentSizeClass = node.attrs.sizeClass as ImageSizeClass | null;
+		const currentWidthPercent = node.attrs.widthPercent as number | null;
+		const currentAlignment = node.attrs.alignment as ImageAlignment | null;
+
 		// Determine width
-		if (sizeClass && SIZE_CLASS_STYLES[sizeClass]) {
-			styles.push(`width: ${SIZE_CLASS_STYLES[sizeClass].width}`);
-			styles.push(`max-width: ${SIZE_CLASS_STYLES[sizeClass].maxWidth}`);
-		} else if (widthPercent !== null) {
-			styles.push(`width: ${widthPercent}%`);
+		if (currentSizeClass && SIZE_CLASS_STYLES[currentSizeClass]) {
+			styles.push(`width: ${SIZE_CLASS_STYLES[currentSizeClass].width}`);
+			styles.push(`max-width: ${SIZE_CLASS_STYLES[currentSizeClass].maxWidth}`);
+		} else if (currentWidthPercent !== null) {
+			styles.push(`width: ${currentWidthPercent}%`);
 		} else {
 			styles.push('width: fit-content', 'max-width: 100%');
 		}
 
 		// Alignment via margins
-		if (alignment === 'center') {
+		if (currentAlignment === 'center') {
 			styles.push('margin-left: auto', 'margin-right: auto');
-		} else if (alignment === 'right') {
+		} else if (currentAlignment === 'right') {
 			styles.push('margin-left: auto', 'margin-right: 0');
 		} else {
 			styles.push('margin-left: 0', 'margin-right: auto');
@@ -98,7 +103,7 @@
 			attrs.push(`size=${sizeClass}`);
 		}
 
-		if (alignment && alignment !== 'center') {
+		if (alignment) {
 			attrs.push(`align=${alignment}`);
 		}
 
@@ -123,10 +128,14 @@
 		markdownText = generateImageMarkdown();
 		syntaxStatus = 'valid'; // Initial state is valid (generated from current attrs)
 		isEditingMarkdown = true;
-		// Focus input after render
+		// Focus input after render and place cursor at end
 		requestAnimationFrame(() => {
-			markdownInputRef?.focus();
-			markdownInputRef?.select();
+			if (markdownInputRef) {
+				markdownInputRef.focus();
+				// Place cursor at end
+				const len = markdownText.length;
+				markdownInputRef.setSelectionRange(len, len);
+			}
 		});
 	}
 
