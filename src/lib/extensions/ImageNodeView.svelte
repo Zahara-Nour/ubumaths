@@ -524,8 +524,9 @@
 		box-shadow: 0 1px 0 hsl(var(--border));
 	}
 
-	/* Editing state indicator */
+	/* Editing state - expand to full width */
 	:global(.image-node-view[data-editing='true']) {
-		min-width: 300px;
+		width: 100% !important;
+		max-width: 100% !important;
 	}
 </style>
