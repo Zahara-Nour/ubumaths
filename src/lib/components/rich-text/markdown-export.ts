@@ -214,6 +214,40 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 			}
 
 			parts.push(mathOutput);
+		} else if (child.type === 'codeBlock') {
+			// Code block inside list item - needs proper indentation
+			const codeMarkdown = convertCodeBlockToMarkdown(child);
+
+			// Check if previous part ends with hardbreak (\\\n)
+			const lastPart = parts[parts.length - 1];
+			const endsWithHardbreak = lastPart && lastPart.endsWith('\\\n');
+
+			// Code blocks are multi-line, need to indent each line
+			const codeLines = codeMarkdown.split('\n');
+			const indentedCode = codeLines
+				.map((line, idx) => {
+					// First line gets indent only if not following a hardbreak (which already has newline)
+					if (idx === 0 && endsWithHardbreak) return continuationIndent + line;
+					if (idx === 0) return line; // Will be prefixed by \n below
+					return continuationIndent + line;
+				})
+				.join('\n');
+
+			let codeOutput: string;
+			if (endsWithHardbreak) {
+				// Already have \\\n from hardbreak
+				codeOutput = indentedCode;
+			} else {
+				// Need newline before code block + indent first line
+				codeOutput = '\n' + continuationIndent + indentedCode;
+			}
+
+			// If followed by paragraph, add hardbreak at end (for round-trip)
+			if (nextChild?.type === 'paragraph') {
+				codeOutput += '\\\n';
+			}
+
+			parts.push(codeOutput);
 		}
 	}
 
