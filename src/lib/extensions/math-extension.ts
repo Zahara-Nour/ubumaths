@@ -18,9 +18,19 @@
 
 import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
-import { Plugin, PluginKey, Selection } from '@tiptap/pm/state';
+import { Plugin, PluginKey, Selection, TextSelection } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
 import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '$lib/mathAST';
+
+/**
+ * Plugin key for custom math inline input handler (~...~)
+ */
+const customMathInlinePluginKey = new PluginKey('customMathInlineInput');
+
+/**
+ * Plugin key for custom math block input handler (~~...~~)
+ */
+const customMathBlockPluginKey = new PluginKey('customMathBlockInput');
 
 // ============================================================================
 // TYPE DECLARATIONS
@@ -475,42 +485,90 @@ export const MathInline = Node.create({
 						);
 					}
 				}
-			}),
-			// Custom syntax: ~...~
-			new InputRule({
-				find: /~([^~]+)~$/,
-				handler: ({ state, range, match }) => {
-					const { tr } = state;
-					const input = match[1]?.trim();
-					if (input) {
-						// Try to parse as mathAST custom syntax and convert to LaTeX
-						// If parsing fails, use raw input as fallback
-						const parseResult = parseCustomSafe(input);
-						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
-						tr.replaceWith(
-							range.from,
-							range.to,
-							this.type.create({
-								latex,
-								syntax: 'custom',
-								originalExpression: input
-							})
-						);
-					}
-				}
 			})
+			// Note: ~...~ is handled by handleTextInput plugin for immediate triggering
 		];
 	},
 
 	/**
-	 * ProseMirror Plugin for Keyboard Navigation
-	 * ==========================================
+	 * ProseMirror Plugins
+	 * ===================
 	 *
-	 * Returns the module-level plugin instance to avoid
-	 * "duplicate keyed plugin" errors with multiple editors.
+	 * Includes keyboard navigation and custom syntax input handling.
 	 */
 	addProseMirrorPlugins() {
-		return [mathKeyboardNavPlugin];
+		const nodeType = this.type;
+
+		return [
+			mathKeyboardNavPlugin,
+			// Custom syntax ~...~ handler - triggers immediately on closing ~
+			new Plugin({
+				key: customMathInlinePluginKey,
+				props: {
+					handleTextInput(view, from, _to, text) {
+						// Only process when typing a single ~
+						if (text !== '~') return false;
+
+						const { state } = view;
+						const $from = state.doc.resolve(from);
+						const parent = $from.parent;
+						const parentStart = $from.start();
+						const cursorOffset = $from.parentOffset;
+
+						// Search backwards for opening ~ (but not ~~)
+						const parentText = parent.textContent;
+						let openTildeOffset = -1;
+
+						for (let i = cursorOffset - 1; i >= 0; i--) {
+							const char = parentText[i];
+							if (char === '~') {
+								// Check this isn't part of ~~ (block syntax)
+								const prevChar = i > 0 ? parentText[i - 1] : '';
+								const nextChar = i < cursorOffset - 1 ? parentText[i + 1] : '';
+								// Single ~ if not preceded or followed by ~
+								if (prevChar !== '~' && nextChar !== '~') {
+									openTildeOffset = i;
+									break;
+								}
+							}
+						}
+
+						if (openTildeOffset === -1) return false;
+
+						// Get content between tildes
+						const content = parentText.slice(openTildeOffset + 1, cursorOffset);
+						if (!content || content.trim() === '' || content.includes('~')) {
+							return false;
+						}
+
+						// Create the math node
+						const parseResult = parseCustomSafe(content.trim());
+						const latex = parseResult.ast ? toLatex(parseResult.ast) : content.trim();
+
+						const patternStart = parentStart + openTildeOffset;
+						const patternEnd = from; // Cursor position (before the ~ we're typing)
+
+						const tr = state.tr;
+						tr.delete(patternStart, patternEnd);
+						tr.insert(
+							patternStart,
+							nodeType.create({
+								latex,
+								syntax: 'custom',
+								originalExpression: content.trim()
+							})
+						);
+
+						// Position cursor after the node
+						const newPos = patternStart + 1;
+						tr.setSelection(TextSelection.create(tr.doc, newPos));
+
+						view.dispatch(tr);
+						return true; // Prevent default (don't insert the ~)
+					}
+				}
+			})
+		];
 	}
 });
 
@@ -831,38 +889,88 @@ export const MathBlock = Node.create({
 						}
 					}
 				}
-			}),
-			// Custom syntax block: ~~...~~
-			new InputRule({
-				find: /~~([^~]+)~~$/,
-				handler: ({ state, range, match }) => {
-					const { tr } = state;
-					const input = match[1]?.trim();
-					if (input) {
-						const parseResult = parseCustomSafe(input);
-						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
-						const mathBlockNode = this.type.create({
+			})
+			// Note: ~~...~~ is handled by handleTextInput plugin for immediate triggering
+		];
+	},
+
+	/**
+	 * ProseMirror Plugin for custom syntax ~~...~~
+	 * Triggers immediately on the closing ~ without needing a space
+	 */
+	addProseMirrorPlugins() {
+		const nodeType = this.type;
+
+		return [
+			new Plugin({
+				key: customMathBlockPluginKey,
+				props: {
+					handleTextInput(view, from, _to, text) {
+						// Only process when typing ~
+						if (text !== '~') return false;
+
+						const { state } = view;
+						const $from = state.doc.resolve(from);
+						const parent = $from.parent;
+						const parentStart = $from.start();
+						const cursorOffset = $from.parentOffset;
+
+						const parentText = parent.textContent;
+
+						// Check if the previous character is also ~ (we're completing ~~...~~)
+						if (cursorOffset < 1 || parentText[cursorOffset - 1] !== '~') {
+							return false;
+						}
+
+						// Search backwards for opening ~~ pattern
+						let openDoubleTildeOffset = -1;
+						for (let i = cursorOffset - 2; i >= 1; i--) {
+							if (parentText[i] === '~' && parentText[i - 1] === '~') {
+								openDoubleTildeOffset = i - 1;
+								break;
+							}
+						}
+
+						if (openDoubleTildeOffset === -1) return false;
+
+						// Get content between ~~ and ~
+						// Pattern is ~~content~ and we're about to type the final ~
+						const content = parentText.slice(openDoubleTildeOffset + 2, cursorOffset - 1);
+						if (!content || content.trim() === '' || content.includes('~~')) {
+							return false;
+						}
+
+						// Create the math block node
+						const parseResult = parseCustomSafe(content.trim());
+						const latex = parseResult.ast ? toLatex(parseResult.ast) : content.trim();
+						const mathBlockNode = nodeType.create({
 							latex,
 							syntax: 'custom',
-							originalExpression: input
+							originalExpression: content.trim()
 						});
 
-						// Check if paragraph only contains this pattern (is empty after removal)
-						const $from = state.doc.resolve(range.from);
-						const paragraph = $from.parent;
-						const paragraphStart = $from.start();
-						const paragraphEnd = paragraphStart + paragraph.content.size;
-						const isOnlyContent = range.from === paragraphStart && range.to === paragraphEnd;
+						const patternStart = parentStart + openDoubleTildeOffset;
+						const patternEnd = from; // Before the ~ we're typing
 
-						if (isOnlyContent && paragraph.type.name === 'paragraph') {
+						// Check if paragraph only contains this pattern
+						const paragraphEnd = parentStart + parent.content.size;
+						const isOnlyContent = patternStart === parentStart && patternEnd + 1 >= paragraphEnd;
+
+						const tr = state.tr;
+
+						if (isOnlyContent && parent.type.name === 'paragraph') {
 							// Replace entire paragraph with mathBlock
 							const blockStart = $from.before();
 							const blockEnd = $from.after();
 							tr.replaceWith(blockStart, blockEnd, mathBlockNode);
 						} else {
 							// Just replace the pattern
-							tr.replaceWith(range.from, range.to, mathBlockNode);
+							tr.delete(patternStart, patternEnd);
+							tr.insert(patternStart, mathBlockNode);
 						}
+
+						view.dispatch(tr);
+						return true; // Prevent default (don't insert the ~)
 					}
 				}
 			})
