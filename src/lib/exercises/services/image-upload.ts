@@ -473,3 +473,141 @@ export function extractStoragePathFromUrl(publicUrl: string): string | null {
 export function isExerciseImageUrl(url: string): boolean {
 	return url.includes('/exercise-images/');
 }
+
+// ============================================================================
+// LIST OPERATIONS
+// ============================================================================
+
+/**
+ * Info about an existing exercise image
+ */
+export interface ExerciseImageInfo {
+	/** Filename only (e.g., 'pythagore-1.png') */
+	name: string;
+	/** Full storage path (e.g., 'user123/pythagore-1.png') */
+	storagePath: string;
+	/** Public URL */
+	url: string;
+	/** File size in bytes */
+	size: number;
+	/** Image number extracted from filename (e.g., 1 for 'pythagore-1.png') */
+	imageNumber: number | null;
+	/** Creation timestamp */
+	createdAt: string;
+}
+
+/**
+ * Result of listing exercise images
+ */
+export interface ListImagesResult {
+	/** Whether listing succeeded */
+	success: boolean;
+	/** Array of images found (only if success=true) */
+	images?: ExerciseImageInfo[];
+	/** Error message (only if success=false) */
+	error?: string;
+}
+
+/**
+ * List all images for an exercise by slug prefix
+ *
+ * Lists all images in the user's folder that match the exercise slug pattern.
+ * Only returns images named with the format: {slug}-{number}.{ext}
+ *
+ * @param supabase - Supabase client
+ * @param userId - User ID (teacher who owns the images)
+ * @param slug - Exercise slug to filter by
+ * @returns List result with images sorted by image number
+ *
+ * @example
+ * const result = await listExerciseImages(supabase, userId, 'pythagore');
+ * // Returns images like: pythagore-1.png, pythagore-2.png, etc.
+ */
+export async function listExerciseImages(
+	supabase: SupabaseClient,
+	userId: string,
+	slug: string
+): Promise<ListImagesResult> {
+	try {
+		// List all files in user's folder
+		const { data: files, error } = await supabase.storage
+			.from(EXERCISE_IMAGES_BUCKET)
+			.list(userId, {
+				limit: 1000,
+				sortBy: { column: 'name', order: 'asc' }
+			});
+
+		if (error) {
+			console.error('Storage list error:', error);
+			return {
+				success: false,
+				error: `Erreur lors de la liste des images: ${error.message}`
+			};
+		}
+
+		// Filter files matching the slug pattern: {slug}-{number}.{ext}
+		const slugPattern = new RegExp(`^${escapeRegex(slug)}-(\\d+)\\.[a-z]+$`, 'i');
+		const images: ExerciseImageInfo[] = [];
+
+		for (const file of files || []) {
+			const match = file.name.match(slugPattern);
+			if (match) {
+				const storagePath = `${userId}/${file.name}`;
+				const {
+					data: { publicUrl }
+				} = supabase.storage.from(EXERCISE_IMAGES_BUCKET).getPublicUrl(storagePath);
+
+				images.push({
+					name: file.name,
+					storagePath,
+					url: publicUrl,
+					size: file.metadata?.size || 0,
+					imageNumber: parseInt(match[1], 10),
+					createdAt: file.created_at || ''
+				});
+			}
+		}
+
+		// Sort by image number
+		images.sort((a, b) => (a.imageNumber ?? 0) - (b.imageNumber ?? 0));
+
+		return {
+			success: true,
+			images
+		};
+	} catch (error) {
+		console.error('Exception during image listing:', error);
+		return {
+			success: false,
+			error: 'Erreur inattendue lors de la liste des images'
+		};
+	}
+}
+
+/**
+ * Get the next available image number for an exercise
+ *
+ * @param supabase - Supabase client
+ * @param userId - User ID
+ * @param slug - Exercise slug
+ * @returns Next available number (highest existing + 1, or 1 if no images)
+ */
+export async function getNextImageNumber(
+	supabase: SupabaseClient,
+	userId: string,
+	slug: string
+): Promise<number> {
+	const result = await listExerciseImages(supabase, userId, slug);
+	if (!result.success || !result.images || result.images.length === 0) {
+		return 1;
+	}
+	const maxNumber = Math.max(...result.images.map((img) => img.imageNumber ?? 0));
+	return maxNumber + 1;
+}
+
+/**
+ * Escape special regex characters in a string
+ */
+function escapeRegex(string: string): string {
+	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

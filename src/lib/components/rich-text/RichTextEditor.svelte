@@ -70,6 +70,8 @@
 	} from 'lucide-svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
+	import ImageGalleryModal from './ImageGalleryModal.svelte';
+	import type { GalleryImageInfo } from './types';
 	import { parseMarkdown } from '$lib/custom-markdown/parser';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
@@ -199,6 +201,11 @@
 	let uploadedImageUrl = $state('');
 	let uploadedImageAlt = $state('');
 	let isUploadingImage = $state(false);
+
+	// Image gallery state
+	let galleryOpen = $state(false);
+	let galleryImages = $state<GalleryImageInfo[]>([]);
+	let isLoadingGallery = $state(false);
 
 	// Preview and Fullscreen state
 	let isPreviewMode = $state(false);
@@ -572,10 +579,36 @@
 
 	/**
 	 * Handle Image Upload button click
-	 * Opens file picker, uploads via imageUpload.uploadFn, then shows configuration dialog
+	 * If gallery listing is available, shows gallery first. Otherwise opens file picker directly.
 	 */
 	async function handleImageUpload() {
 		if (!imageUpload || isUploadingImage) return; // Guard against duplicate calls
+
+		// If listing function is available, show gallery first
+		if (imageUpload.listExistingImages) {
+			isLoadingGallery = true;
+			galleryOpen = true;
+
+			try {
+				galleryImages = await imageUpload.listExistingImages();
+			} catch (err) {
+				console.error('Error loading gallery images:', err);
+				galleryImages = [];
+			} finally {
+				isLoadingGallery = false;
+			}
+			return;
+		}
+
+		// No gallery available, open file picker directly
+		openFilePicker();
+	}
+
+	/**
+	 * Open file picker and handle upload
+	 */
+	function openFilePicker() {
+		if (!imageUpload) return;
 
 		const input = document.createElement('input');
 		input.type = 'file';
@@ -608,6 +641,32 @@
 		};
 
 		input.click();
+	}
+
+	/**
+	 * Handle selecting an existing image from the gallery
+	 */
+	function handleGallerySelectImage(image: GalleryImageInfo) {
+		galleryOpen = false;
+		// Pre-fill the config dialog with selected image
+		uploadedImageUrl = image.url;
+		uploadedImageAlt = image.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+		imageDialogOpen = true;
+	}
+
+	/**
+	 * Handle upload new button from gallery
+	 */
+	function handleGalleryUploadNew() {
+		galleryOpen = false;
+		openFilePicker();
+	}
+
+	/**
+	 * Handle gallery close
+	 */
+	function handleGalleryClose() {
+		galleryOpen = false;
 	}
 
 	/**
@@ -1499,6 +1558,18 @@
 		{/if}
 	</div>
 </div>
+
+<!-- Image Gallery Modal -->
+{#if imageUpload}
+	<ImageGalleryModal
+		bind:open={galleryOpen}
+		images={galleryImages}
+		isLoading={isLoadingGallery}
+		onSelectImage={handleGallerySelectImage}
+		onUploadNew={handleGalleryUploadNew}
+		onClose={handleGalleryClose}
+	/>
+{/if}
 
 <!-- Image Configuration Dialog -->
 {#if imageUpload}

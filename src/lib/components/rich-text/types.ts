@@ -114,10 +114,35 @@ export interface EmojiCategory {
 }
 
 /**
+ * Image upload result
+ */
+export interface ImageUploadResult {
+	success: boolean;
+	url?: string;
+	error?: string;
+	/** Warning message (e.g., filename was auto-incremented) */
+	warning?: string;
+}
+
+/**
+ * Info about an existing image for the gallery
+ */
+export interface GalleryImageInfo {
+	/** Filename (e.g., 'pythagore-1.png') */
+	name: string;
+	/** Public URL */
+	url: string;
+	/** Image number (e.g., 1 for 'pythagore-1.png') */
+	imageNumber: number | null;
+}
+
+/**
  * Image upload configuration for RichTextEditor
  * Enables image upload functionality when provided
  */
 export interface ImageUploadConfig {
 	/** Upload function - receives file, returns URL or error */
-	uploadFn: (file: File) => Promise<{ success: boolean; url?: string; error?: string }>;
+	uploadFn: (file: File) => Promise<ImageUploadResult>;
+	/** Optional function to list existing images for gallery display */
+	listExistingImages?: () => Promise<GalleryImageInfo[]>;
 }

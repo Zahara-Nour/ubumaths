@@ -20,6 +20,8 @@
 		imageSlug?: string;
 		/** Function to get the next image number for this exercise */
 		getNextImageNumber?: () => number;
+		/** Function to ensure slug exists (generates via API if needed) */
+		ensureSlugExists?: () => Promise<string | undefined>;
 		onchange?: () => void;
 	}
 
@@ -30,6 +32,7 @@
 		genericFunctions,
 		imageSlug,
 		getNextImageNumber,
+		ensureSlugExists,
 		onchange
 	}: Props = $props();
 
@@ -160,6 +163,7 @@
 			{genericFunctions}
 			{imageSlug}
 			{getNextImageNumber}
+			{ensureSlugExists}
 		/>
 	</div>
 
@@ -175,6 +179,7 @@
 			{genericFunctions}
 			{imageSlug}
 			{getNextImageNumber}
+			{ensureSlugExists}
 		/>
 	</div>
 

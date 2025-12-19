@@ -98,6 +98,44 @@
 		return imageCounter++;
 	}
 
+	// Slug generation state
+	let isGeneratingSlug = $state(false);
+
+	/**
+	 * Ensure slug exists - generates one via API if needed
+	 * Called before image upload to ensure proper naming
+	 */
+	async function ensureSlugExists(): Promise<string | undefined> {
+		// Already have a slug
+		if (slug) return slug;
+
+		// Already generating
+		if (isGeneratingSlug) return undefined;
+
+		isGeneratingSlug = true;
+		try {
+			const response = await fetch('/api/exercises/generate-slug', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ topic: topic || undefined })
+			});
+
+			if (!response.ok) {
+				console.error('Failed to generate slug:', await response.text());
+				return undefined;
+			}
+
+			const data = await response.json();
+			slug = data.slug;
+			return slug;
+		} catch (err) {
+			console.error('Error generating slug:', err);
+			return undefined;
+		} finally {
+			isGeneratingSlug = false;
+		}
+	}
+
 	// Debug: track genericFunctions changes
 	$effect(() => {
 		console.log('[ExerciseForm] genericFunctions changed:', $state.snapshot(genericFunctions));
@@ -427,14 +465,19 @@
 			<div class="space-y-2">
 				<Label for="slug">
 					Slug (URL)
-					<span class="ml-1 text-xs text-muted-foreground"> (auto-genere si vide) </span>
+					{#if slug}
+						<span class="ml-1 text-xs text-muted-foreground"> (non modifiable) </span>
+					{:else}
+						<span class="ml-1 text-xs text-muted-foreground"> (auto-genere si vide) </span>
+					{/if}
 				</Label>
 				<Input
 					id="slug"
 					type="text"
 					placeholder="Ex: algebre-equations-k8m2n4"
 					bind:value={slug}
-					class="font-mono text-sm"
+					disabled={!!slug}
+					class="font-mono text-sm {slug ? 'bg-muted' : ''}"
 				/>
 				{#if errors.slug}
 					<p class="text-sm text-destructive">{errors.slug}</p>
@@ -503,13 +546,21 @@
 							<Tabs.Trigger value={String(index)} class="relative pr-8">
 								{getVariationDisplayLabel(variation)}
 								{#if variations.length > 1}
-									<button
-										type="button"
+									<span
+										role="button"
+										tabindex="0"
 										onclick={(e) => {
 											e.stopPropagation();
 											removeVariation(index);
 										}}
-										class="absolute top-1/2 right-1 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
+										onkeydown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+												e.stopPropagation();
+												removeVariation(index);
+											}
+										}}
+										class="absolute top-1/2 right-1 -translate-y-1/2 cursor-pointer rounded-full p-0.5 text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
 										title="Supprimer cette variation"
 									>
 										<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -520,7 +571,7 @@
 												d="M6 18L18 6M6 6l12 12"
 											/>
 										</svg>
-									</button>
+									</span>
 								{/if}
 							</Tabs.Trigger>
 						{/each}
@@ -573,6 +624,7 @@
 							{genericFunctions}
 							imageSlug={slug || undefined}
 							{getNextImageNumber}
+							{ensureSlugExists}
 						/>
 					</Tabs.Content>
 				{/each}
