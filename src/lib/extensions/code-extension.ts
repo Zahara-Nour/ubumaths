@@ -101,6 +101,10 @@ export const CustomCode = Code.extend({
 						const contentWithMark = state.schema.text(content, [codeMark]);
 						tr.insert(patternStartInDoc, contentWithMark);
 
+						// Position cursor after the code (outside the mark)
+						const cursorPos = patternStartInDoc + content.length;
+						tr.setSelection(state.selection.constructor.near(tr.doc.resolve(cursorPos)));
+
 						// Remove stored mark so next typing isn't in code
 						tr.removeStoredMark(type);
 
