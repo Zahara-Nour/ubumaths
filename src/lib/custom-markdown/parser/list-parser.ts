@@ -108,7 +108,8 @@ function parseListItemLine(line: string): RawListItem | null {
 		}
 
 		return {
-			content: content.trim(),
+			// Only trim leading whitespace - trailing spaces may be significant for hardbreaks
+			content: content.trimStart(),
 			indent,
 			ordered: true,
 			startNumber,
@@ -124,7 +125,8 @@ function parseListItemLine(line: string): RawListItem | null {
 		const indent = getIndentLevel(spaces);
 
 		return {
-			content: content.trim(),
+			// Only trim leading whitespace - trailing spaces may be significant for hardbreaks
+			content: content.trimStart(),
 			indent,
 			ordered: false,
 			marker,

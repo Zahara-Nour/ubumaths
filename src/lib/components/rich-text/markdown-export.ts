@@ -136,15 +136,32 @@ function convertOrderedListToMarkdown(list: JSONContent, indentLevel = 0): strin
 
 /**
  * Convert list item content to Markdown
+ *
+ * Handles hardbreaks within list items by adding continuation indent
+ * (3 spaces) to lines after a hardbreak so they remain part of the item.
  */
 function convertListItemToMarkdown(item: JSONContent, indentLevel: number): string {
 	if (!item.content) return '';
 
 	const parts: string[] = [];
+	// List continuation indent: base indent + 3 spaces for the marker (e.g., "1. ")
+	const continuationIndent = '   '.repeat(indentLevel + 1);
 
 	for (const child of item.content) {
 		if (child.type === 'paragraph') {
-			parts.push(convertParagraphToMarkdown(child));
+			const paraContent = convertParagraphToMarkdown(child);
+			// If paragraph has hardbreaks, add continuation indent after each newline
+			if (paraContent.includes('\n')) {
+				const lines = paraContent.split('\n');
+				// First line has no extra indent (marker provides it)
+				// Subsequent lines need continuation indent
+				const indentedContent = lines
+					.map((line, i) => (i === 0 ? line : continuationIndent + line))
+					.join('\n');
+				parts.push(indentedContent);
+			} else {
+				parts.push(paraContent);
+			}
 		} else if (child.type === 'bulletList') {
 			// Nested list - add newline and indent
 			parts.push('\n' + convertBulletListToMarkdown(child, indentLevel + 1));
@@ -423,7 +440,7 @@ function convertInlineNodeToMarkdown(node: JSONContent): string {
 			return `{{blank:${node.attrs?.number || 1}}}`;
 
 		case 'hardBreak':
-			return '\n';
+			return '\\\n';
 
 		case 'hashtag':
 			return `#${node.attrs?.tag || ''}`;
