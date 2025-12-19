@@ -881,7 +881,14 @@ function parseTextForHardBreaks(text: string): (string | LineBreakNode)[] {
 		results.push(text.substring(position));
 	}
 
-	return results;
+	// Convert soft breaks (remaining \n) to spaces in text segments
+	// This is standard markdown behavior: soft breaks become spaces when rendered
+	return results.map((item) => {
+		if (typeof item === 'string') {
+			return item.replace(/\n/g, ' ');
+		}
+		return item;
+	});
 }
 
 /**
