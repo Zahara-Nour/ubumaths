@@ -90,6 +90,7 @@
 	import { tipTapToMarkdown } from './markdown-export';
 	import { markdownToTipTap } from './markdown-import';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import MarkdownCodeEditor from './MarkdownCodeEditor.svelte';
 	import type { MarkdownDisplayMode } from '$lib/components/markdown/types';
 	import type {
 		RichTextMode,
@@ -214,6 +215,10 @@
 	let previewDisplayMode = $state<MarkdownDisplayMode>('rendered');
 	let previewTimeout: ReturnType<typeof setTimeout> | null = null;
 	const PREVIEW_DEBOUNCE_MS = 150;
+
+	// Raw Markdown Edit Mode state
+	let isMarkdownEditMode = $state(false);
+	let rawMarkdownContent = $state('');
 
 	/**
 	 * Toggle preview display mode between rendered and raw
@@ -777,6 +782,53 @@
 	 */
 	function toggleFullscreen() {
 		isFullscreen = !isFullscreen;
+	}
+
+	/**
+	 * Toggle raw markdown edit mode
+	 * When enabling: export current TipTap content to markdown
+	 * When disabling: import markdown back to TipTap
+	 */
+	function toggleMarkdownEditMode() {
+		if (!editor) return;
+
+		if (isMarkdownEditMode) {
+			// Exiting markdown edit mode - import markdown back to TipTap
+			try {
+				const json = markdownToTipTap(rawMarkdownContent, {
+					genericFunctions: genericFunctions ?? undefined
+				});
+				isUpdatingFromProp = true;
+				editor.commands.setContent(json);
+				isUpdatingFromProp = false;
+
+				// Update bound values
+				if (mode === 'form') {
+					htmlValue = editor.getHTML();
+					if (jsonValue !== undefined) {
+						jsonValue = editor.getJSON();
+					}
+					if (markdownValue !== undefined) {
+						markdownValue = rawMarkdownContent;
+					}
+				}
+			} catch (error) {
+				console.error('Error importing markdown:', error);
+				toaster.error("Erreur lors de l'import du markdown");
+				return; // Don't exit edit mode if import failed
+			}
+		} else {
+			// Entering markdown edit mode - export TipTap to markdown
+			try {
+				rawMarkdownContent = tipTapToMarkdown(editor.getJSON());
+			} catch (error) {
+				console.error('Error exporting to markdown:', error);
+				toaster.error("Erreur lors de l'export en markdown");
+				return; // Don't enter edit mode if export failed
+			}
+		}
+
+		isMarkdownEditMode = !isMarkdownEditMode;
 	}
 
 	/**
@@ -1524,11 +1576,40 @@
 	>
 		<!-- Editor Panel -->
 		<div
-			class={isPreviewMode
+			class="relative {isPreviewMode
 				? 'h-1/2 min-h-0 overflow-y-auto md:h-full md:w-1/2 md:border-r md:border-border'
-				: 'h-full w-full'}
+				: 'h-full w-full'}"
 		>
-			<div bind:this={editorElement} class="h-full bg-background"></div>
+			<!-- Floating markdown edit mode toggle button -->
+			<button
+				type="button"
+				onclick={toggleMarkdownEditMode}
+				class="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-muted {isMarkdownEditMode
+					? 'bg-secondary'
+					: ''}"
+				title={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown'}
+				aria-label={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown brut'}
+				{disabled}
+			>
+				<FileCode class="h-4 w-4" />
+			</button>
+
+			<!-- TipTap editor - always in DOM, hidden when in markdown mode -->
+			<div
+				bind:this={editorElement}
+				class="h-full bg-background {isMarkdownEditMode ? 'hidden' : ''}"
+			></div>
+
+			<!-- CodeMirror markdown editor - shown only in markdown mode -->
+			{#if isMarkdownEditMode}
+				<div class="h-full pt-10">
+					<MarkdownCodeEditor
+						bind:value={rawMarkdownContent}
+						{disabled}
+						placeholder="Entrez votre markdown ici..."
+					/>
+				</div>
+			{/if}
 		</div>
 
 		<!-- Preview Panel -->

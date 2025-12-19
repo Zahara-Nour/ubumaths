@@ -155,8 +155,13 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 				const lines = paraContent.split('\n');
 				// First line has no extra indent (marker provides it)
 				// Subsequent lines need continuation indent
+				// BUT: don't indent the last line if it's empty (trailing hardbreak)
 				const indentedContent = lines
-					.map((line, i) => (i === 0 ? line : continuationIndent + line))
+					.map((line, i) => {
+						if (i === 0) return line; // First line: no indent
+						if (i === lines.length - 1 && line === '') return line; // Last empty line: no indent
+						return continuationIndent + line;
+					})
 					.join('\n');
 				parts.push(indentedContent);
 			} else {
@@ -168,8 +173,20 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 		} else if (child.type === 'orderedList') {
 			parts.push('\n' + convertOrderedListToMarkdown(child, indentLevel + 1));
 		} else if (child.type === 'mathBlock') {
-			// Math block inside list item - add on its own line
-			parts.push('\n' + convertMathBlockToMarkdown(child));
+			// Math block inside list item
+			const mathMarkdown = convertMathBlockToMarkdown(child);
+
+			// Check if previous part ends with hardbreak (\\\n)
+			const lastPart = parts[parts.length - 1];
+			const endsWithHardbreak = lastPart && lastPart.endsWith('\\\n');
+
+			if (endsWithHardbreak) {
+				// Already have \\\n from hardbreak, just add indented math block
+				parts.push(continuationIndent + mathMarkdown);
+			} else {
+				// Need newline before math block + indent
+				parts.push('\n' + continuationIndent + mathMarkdown);
+			}
 		}
 	}
 
