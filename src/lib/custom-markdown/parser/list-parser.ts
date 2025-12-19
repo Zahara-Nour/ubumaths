@@ -203,7 +203,25 @@ export function parseList(lines: string[]): ListNode[] {
 			// Remove only the list continuation indent (2-3 spaces), preserving any additional
 			// indentation (important for code blocks where internal indent is meaningful)
 			const trimmed = line.replace(/^[ ]{2,3}/, '');
-			pendingContinuation.push(trimmed);
+
+			// Check if this continuation follows a hardbreak (line ending with \)
+			// If so, append to the existing content/continuation instead of starting new paragraph
+			const lastContent =
+				pendingContinuation.length > 0
+					? pendingContinuation[pendingContinuation.length - 1]
+					: currentItem.content;
+
+			if (lastContent.endsWith('\\')) {
+				// Hardbreak continuation - append to the same paragraph
+				if (pendingContinuation.length > 0) {
+					pendingContinuation[pendingContinuation.length - 1] += '\n' + trimmed;
+				} else {
+					currentItem.content += '\n' + trimmed;
+				}
+			} else {
+				// Normal continuation - add to pending
+				pendingContinuation.push(trimmed);
+			}
 
 			// Check for code fence markers (``` or ~~~)
 			const fenceMatch = trimmed.match(/^(`{3,}|~{3,})/);
