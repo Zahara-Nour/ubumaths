@@ -14,7 +14,7 @@
  * @module extensions/code-extension
  */
 
-import { textblockTypeInputRule } from '@tiptap/core';
+import { InputRule } from '@tiptap/core';
 import Code from '@tiptap/extension-code';
 import CodeBlock from '@tiptap/extension-code-block';
 import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
@@ -154,12 +154,116 @@ export const CustomCodeBlock = CodeBlock.extend({
 
 	addInputRules() {
 		return [
-			textblockTypeInputRule({
+			new InputRule({
 				find: CODE_BLOCK_INPUT_REGEX,
-				type: this.type,
-				getAttributes: (match) => ({
-					language: match[1] || null
-				})
+				handler: ({ state, range, match }) => {
+					const $start = state.doc.resolve(range.from);
+					const language = match[1] || null;
+
+					// Check if we're inside a listItem by traversing ancestors
+					let isInList = false;
+					let listItemDepth = -1;
+					for (let depth = $start.depth; depth > 0; depth--) {
+						if ($start.node(depth).type.name === 'listItem') {
+							isInList = true;
+							listItemDepth = depth;
+							break;
+						}
+					}
+
+					if (!isInList) {
+						// Standard behavior: replace the block with codeBlock
+						// Check if parent can accept codeBlock
+						const $from = state.doc.resolve(range.from);
+						if (!$from.node(-1).canReplaceWith($from.index(-1), $from.indexAfter(-1), this.type)) {
+							return null;
+						}
+						state.tr
+							.delete(range.from, range.to)
+							.setBlockType(range.from, range.from, this.type, { language });
+					} else {
+						// Inside a list: insert codeBlock after the current paragraph
+						const tr = state.tr;
+
+						// Get the paragraph node we're in
+						const paragraphDepth = $start.depth;
+						const paragraphNode = $start.node(paragraphDepth);
+						const paragraphStart = $start.start(paragraphDepth);
+						const paragraphEnd = paragraphStart + paragraphNode.nodeSize - 2; // -2 for open/close tokens
+
+						// Delete the ``` pattern first
+						tr.delete(range.from, range.to);
+
+						// Calculate position after deletion
+						const deletedLength = range.to - range.from;
+
+						// Check if the paragraph is now empty (only had the ``` pattern)
+						const textBeforePattern = state.doc.textBetween(paragraphStart, range.from);
+						const textAfterPattern = state.doc.textBetween(range.to, paragraphEnd + 2);
+						const isEmptyAfterDeletion =
+							textBeforePattern.trim() === '' && textAfterPattern.trim() === '';
+
+						// Create the codeBlock node
+						const codeBlockNode = this.type.create({ language });
+
+						if (isEmptyAfterDeletion) {
+							// Replace the empty paragraph with the codeBlock
+							// Find paragraph position relative to listItem
+							const listItemNode = $start.node(listItemDepth);
+							const listItemStart = $start.start(listItemDepth);
+
+							// Find which child index the paragraph is
+							let paragraphPosInListItem = -1;
+							let offset = 0;
+							for (let i = 0; i < listItemNode.childCount; i++) {
+								const child = listItemNode.child(i);
+								if (listItemStart + offset === paragraphStart - 1) {
+									// -1 because start() gives content start
+									paragraphPosInListItem = i;
+									break;
+								}
+								offset += child.nodeSize;
+							}
+
+							if (paragraphPosInListItem === 0) {
+								// First paragraph in listItem - can't replace it (schema requires paragraph first)
+								// Insert codeBlock after and keep empty paragraph
+								const insertPos = paragraphStart + paragraphNode.nodeSize - deletedLength;
+								tr.insert(insertPos, codeBlockNode);
+							} else {
+								// Not the first element - we can replace the paragraph
+								const replaceFrom = paragraphStart - 1; // Include opening tag
+								const replaceTo = paragraphStart + paragraphNode.nodeSize - 1 - deletedLength;
+								tr.replaceWith(replaceFrom, replaceTo, codeBlockNode);
+							}
+						} else {
+							// Paragraph has other content - insert codeBlock after it
+							const insertPos = paragraphStart + paragraphNode.nodeSize - deletedLength;
+							tr.insert(insertPos, codeBlockNode);
+						}
+
+						// Set selection inside the new codeBlock
+						const newDoc = tr.doc;
+						// Find the codeBlock we just inserted
+						let codeBlockPos = -1;
+						newDoc.descendants((node, pos) => {
+							if (
+								node.type.name === 'codeBlock' &&
+								node.attrs.language === language &&
+								codeBlockPos === -1
+							) {
+								// Simple heuristic - find a codeBlock with matching language near our edit
+								codeBlockPos = pos;
+								return false;
+							}
+							return true;
+						});
+
+						if (codeBlockPos !== -1) {
+							tr.setSelection(TextSelection.create(tr.doc, codeBlockPos + 1));
+						}
+					}
+				}
 			})
 		];
 	}

@@ -380,6 +380,11 @@ li .math-block-wrapper {
 	margin: 0.25rem 0;
 }
 
+/* Reduce code block margin inside list items */
+li .code-block-wrapper {
+	margin: 0.25rem 0;
+}
+
 .math-block-inner {
 	display: inline-block;
 }

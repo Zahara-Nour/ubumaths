@@ -722,6 +722,26 @@ describe('Round-trip: Markdown -> TipTap -> Markdown', () => {
 
 		expect(result).toBe(original);
 	});
+
+	it('preserves code block in list item continuation', () => {
+		// Code blocks in lists are separated by blank line (like the parser test)
+		// Note: on export, a hardbreak is added before the block for consistency
+		const input = `1. Voici un exemple de code
+
+   \`\`\`javascript
+   const x = 1;
+   \`\`\``;
+
+		const expected = `1. Voici un exemple de code\\
+   \`\`\`javascript
+   const x = 1;
+   \`\`\``;
+
+		const tipTap = markdownToTipTap(input);
+		const result = tipTapToMarkdown(tipTap);
+
+		expect(result).toBe(expected);
+	});
 });
 
 // ============================================================================
