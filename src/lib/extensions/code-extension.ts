@@ -58,34 +58,48 @@ export const CustomCode = Code.extend({
 						if (text !== '`') return false;
 
 						const { state } = view;
+						const $from = state.doc.resolve(from);
+						const parent = $from.parent;
+						const parentStart = $from.start(); // Document position where parent content starts
+						const cursorOffset = $from.parentOffset; // Cursor position within parent
 
-						// Get text before cursor directly from document
-						const searchStart = Math.max(0, from - 200);
-						const textBefore = state.doc.textBetween(searchStart, from, null, '\ufffc');
+						// Search backwards in parent's text for opening backtick
+						const parentText = parent.textContent;
+						let openBacktickOffset = -1;
 
-						// Check if there's an opening backtick with content
-						// Pattern: ` followed by non-backtick content, at the end
-						const match = /`([^`]+)$/.exec(textBefore);
-						if (!match) return false;
+						for (let i = cursorOffset - 1; i >= 0; i--) {
+							const char = parentText[i];
+							if (char === '`') {
+								openBacktickOffset = i;
+								break;
+							}
+						}
 
-						const content = match[1];
-						if (!content || content.trim() === '') return false;
+						// No opening backtick found
+						if (openBacktickOffset === -1) return false;
 
-						// Calculate positions
-						// match.index is where ` starts in textBefore
-						// The actual document position is searchStart + match.index
-						const patternStart = searchStart + match.index;
+						// Get content between backticks
+						const content = parentText.slice(openBacktickOffset + 1, cursorOffset);
+
+						// Validate content
+						if (!content || content.trim() === '' || content.includes('`')) {
+							return false;
+						}
+
+						// Calculate document positions
+						const patternStartInDoc = parentStart + openBacktickOffset;
+						const patternEndInDoc = from; // Cursor position
 
 						// Create transaction
 						const tr = state.tr;
 
 						// Delete the `content pattern (from opening backtick to cursor)
-						tr.delete(patternStart, from);
+						tr.delete(patternStartInDoc, patternEndInDoc);
 
-						// Insert the content with code mark at the deletion point
+						// Insert the content with code mark
 						const codeMark = type.create();
 						const contentWithMark = state.schema.text(content, [codeMark]);
-						tr.insert(patternStart, contentWithMark);
+						tr.insert(patternStartInDoc, contentWithMark);
 
 						// Remove stored mark so next typing isn't in code
 						tr.removeStoredMark(type);
