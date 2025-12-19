@@ -93,11 +93,10 @@
 		const alt = altText || uploadedImage?.filename || 'image';
 		let attributes: string[] = [];
 
-		// Add size attribute
+		// Add size attribute (always include for clarity)
 		if (customWidth !== undefined) {
 			attributes.push(`width=${customWidth}%`);
-		} else if (sizeClass !== 'medium') {
-			// Only add size if not default
+		} else {
 			attributes.push(`size=${sizeClass}`);
 		}
 

@@ -153,9 +153,6 @@
 		<Label>
 			Enonce <span class="text-destructive">*</span>
 		</Label>
-		<p class="text-xs text-muted-foreground">
-			Utilisez <code class="rounded bg-muted px-1">{'{{hint:id}}'}</code> pour inserer des aides.
-		</p>
 		<ExerciseRichTextEditor
 			bind:value={variation.statement_md}
 			{supabase}
