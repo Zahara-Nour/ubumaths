@@ -8,22 +8,16 @@
  * - Inline code: `text` -> applies code mark
  * - Code block: ```language + Enter -> creates code block
  *
- * Uses custom InputRule handlers (like math-extension) for precise control
- * over the replacement behavior.
+ * Uses a ProseMirror plugin with handleTextInput for reliable
+ * backtick detection (InputRule has issues with this pattern).
  *
  * @module extensions/code-extension
  */
 
-import { InputRule, textblockTypeInputRule } from '@tiptap/core';
+import { textblockTypeInputRule } from '@tiptap/core';
 import Code from '@tiptap/extension-code';
 import CodeBlock from '@tiptap/extension-code-block';
-
-/**
- * Regex for inline code with backticks: `code`
- * Simple pattern: backtick, content (no backticks), backtick at end
- * Works at start of paragraph or after any text
- */
-const INLINE_CODE_INPUT_REGEX = /`([^`]+)`$/;
+import { Plugin, PluginKey } from '@tiptap/pm/state';
 
 /**
  * Regex for code block with triple backticks: ```language
@@ -32,33 +26,75 @@ const INLINE_CODE_INPUT_REGEX = /`([^`]+)`$/;
 const CODE_BLOCK_INPUT_REGEX = /^```([a-z]*)?[\s\n]$/;
 
 /**
- * Custom Code extension with backtick input rule
+ * Plugin key for the inline code input handler
+ */
+const inlineCodePluginKey = new PluginKey('inlineCodeInput');
+
+/**
+ * Custom Code extension with backtick input handling
  *
- * Typing `code` automatically converts to inline code.
- * Uses a custom InputRule handler for precise control.
+ * Uses a ProseMirror plugin to detect when the user completes
+ * a `...` pattern by typing the closing backtick.
  */
 export const CustomCode = Code.extend({
-	addInputRules() {
+	addProseMirrorPlugins() {
 		const type = this.type;
 
 		return [
-			new InputRule({
-				find: INLINE_CODE_INPUT_REGEX,
-				handler: ({ state, range, match }) => {
-					const { tr } = state;
-					const content = match[1]; // Content between backticks
+			new Plugin({
+				key: inlineCodePluginKey,
+				props: {
+					/**
+					 * Intercept text input to detect inline code pattern
+					 * This fires BEFORE the character is inserted
+					 */
+					handleTextInput(view, from, to, text) {
+						// Only process when typing a backtick
+						if (text !== '`') return false;
 
-					if (!content) return;
+						const { state } = view;
+						const $from = state.doc.resolve(from);
 
-					// Delete the entire `content` pattern (including backticks)
-					tr.delete(range.from, range.to);
+						// Get text before cursor in current text node
+						const textBefore = $from.parent.textBetween(
+							Math.max(0, $from.parentOffset - 200),
+							$from.parentOffset,
+							null,
+							'\ufffc'
+						);
 
-					// Insert the content with code mark applied
-					tr.insertText(content, range.from);
-					tr.addMark(range.from, range.from + content.length, type.create());
+						// Check if there's an opening backtick with content
+						// Pattern: ` followed by non-backtick content, at the end
+						const match = /`([^`]+)$/.exec(textBefore);
+						if (!match) return false;
 
-					// Remove the stored mark so subsequent typing isn't in code
-					tr.removeStoredMark(type);
+						const content = match[1];
+						if (!content || content.trim() === '') return false;
+
+						// Calculate the start position of the pattern
+						// match.index is the position in textBefore where ` starts
+						const patternStartInNode = $from.parentOffset - textBefore.length + match.index;
+						const patternStartInDoc = $from.start() + patternStartInNode;
+
+						// Create transaction:
+						// 1. Delete from opening backtick to cursor (where closing backtick would go)
+						// 2. Insert content with code mark
+						const tr = state.tr;
+
+						// Delete the `content pattern (the closing backtick hasn't been inserted yet)
+						tr.delete(patternStartInDoc, from);
+
+						// Insert the content with code mark
+						const codeMark = type.create();
+						const contentWithMark = state.schema.text(content, [codeMark]);
+						tr.insert(patternStartInDoc, contentWithMark);
+
+						// Remove stored mark so next typing isn't in code
+						tr.removeStoredMark(type);
+
+						view.dispatch(tr);
+						return true; // Prevent default handling (don't insert the backtick)
+					}
 				}
 			})
 		];
