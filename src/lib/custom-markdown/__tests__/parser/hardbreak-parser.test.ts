@@ -288,4 +288,32 @@ describe('parseMarkdown - hardbreak support', () => {
 			}
 		});
 	});
+
+	describe('in blockquotes', () => {
+		it('should work with backslash syntax in blockquote', () => {
+			const markdown = '> First line\\\n> Second line';
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(1);
+			expect(ast.children[0].type).toBe('blockquote');
+
+			if (ast.children[0].type === 'blockquote') {
+				const blockquote = ast.children[0];
+				expect(blockquote.children).toHaveLength(1);
+				expect(blockquote.children[0].type).toBe('paragraph');
+
+				if (blockquote.children[0].type === 'paragraph') {
+					const paragraph = blockquote.children[0];
+
+					// Should have exactly one line break (between lines, not at the end)
+					const lineBreaks = paragraph.children.filter((n) => n.type === 'line-break');
+					expect(lineBreaks).toHaveLength(1);
+
+					// Check structure: text, line-break, text (no trailing line-break)
+					const lastChild = paragraph.children[paragraph.children.length - 1];
+					expect(lastChild.type).not.toBe('line-break');
+				}
+			}
+		});
+	});
 });

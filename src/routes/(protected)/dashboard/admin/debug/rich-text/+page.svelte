@@ -184,7 +184,7 @@ Liste à puces avec hardbreaks :
 
 ## Citation
 
-> Ceci est une citation.
+> Ceci est une citation.\\
 > Elle peut s'étendre sur plusieurs lignes.
 
 ## Bloc de code
