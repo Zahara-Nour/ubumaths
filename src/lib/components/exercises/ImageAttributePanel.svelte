@@ -100,10 +100,8 @@
 			attributes.push(`size=${sizeClass}`);
 		}
 
-		// Add alignment if not center (default)
-		if (alignment !== 'center') {
-			attributes.push(`align=${alignment}`);
-		}
+		// Always include alignment for clarity
+		attributes.push(`align=${alignment}`);
 
 		// Add caption if present
 		if (caption) {
