@@ -453,9 +453,9 @@ export const MathInline = Node.create({
 	 */
 	addInputRules() {
 		return [
-			// LaTeX syntax: $...$
+			// LaTeX syntax: $...$ (but not $$...$ which is the start of a block)
 			new InputRule({
-				find: /\$([^$]+)\$$/,
+				find: /(?<!\$)\$([^$]+)\$$/,
 				handler: ({ state, range, match }) => {
 					const { tr } = state;
 					const input = match[1]?.trim();
@@ -792,11 +792,46 @@ export const MathBlock = Node.create({
 	 * - $ - End of input (ensures we match at cursor position)
 	 *
 	 * Examples:
+	 *   User types: "$$x^2$$" → LaTeX syntax block math
 	 *   User types: "~~x^2~~" → Custom syntax block math
 	 *   User types: "~~sqrt(16)~~" → Transpiles to "\sqrt{16}"
 	 */
 	addInputRules() {
 		return [
+			// LaTeX syntax block: $$...$$
+			new InputRule({
+				find: /\$\$([^$]+)\$\$$/,
+				handler: ({ state, range, match }) => {
+					const { tr } = state;
+					const input = match[1]?.trim();
+					if (input) {
+						const parseResult = parseCustomSafe(input);
+						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
+						const mathBlockNode = this.type.create({
+							latex,
+							syntax: 'latex',
+							originalExpression: input
+						});
+
+						// Check if paragraph only contains this pattern (is empty after removal)
+						const $from = state.doc.resolve(range.from);
+						const paragraph = $from.parent;
+						const paragraphStart = $from.start();
+						const paragraphEnd = paragraphStart + paragraph.content.size;
+						const isOnlyContent = range.from === paragraphStart && range.to === paragraphEnd;
+
+						if (isOnlyContent && paragraph.type.name === 'paragraph') {
+							// Replace entire paragraph with mathBlock
+							const blockStart = $from.before();
+							const blockEnd = $from.after();
+							tr.replaceWith(blockStart, blockEnd, mathBlockNode);
+						} else {
+							// Just replace the pattern
+							tr.replaceWith(range.from, range.to, mathBlockNode);
+						}
+					}
+				}
+			}),
 			// Custom syntax block: ~~...~~
 			new InputRule({
 				find: /~~([^~]+)~~$/,
@@ -804,19 +839,30 @@ export const MathBlock = Node.create({
 					const { tr } = state;
 					const input = match[1]?.trim();
 					if (input) {
-						// Try to parse as mathAST custom syntax and convert to LaTeX
-						// If parsing fails, use raw input as fallback
 						const parseResult = parseCustomSafe(input);
 						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
-						tr.replaceWith(
-							range.from,
-							range.to,
-							this.type.create({
-								latex,
-								syntax: 'custom',
-								originalExpression: input
-							})
-						);
+						const mathBlockNode = this.type.create({
+							latex,
+							syntax: 'custom',
+							originalExpression: input
+						});
+
+						// Check if paragraph only contains this pattern (is empty after removal)
+						const $from = state.doc.resolve(range.from);
+						const paragraph = $from.parent;
+						const paragraphStart = $from.start();
+						const paragraphEnd = paragraphStart + paragraph.content.size;
+						const isOnlyContent = range.from === paragraphStart && range.to === paragraphEnd;
+
+						if (isOnlyContent && paragraph.type.name === 'paragraph') {
+							// Replace entire paragraph with mathBlock
+							const blockStart = $from.before();
+							const blockEnd = $from.after();
+							tr.replaceWith(blockStart, blockEnd, mathBlockNode);
+						} else {
+							// Just replace the pattern
+							tr.replaceWith(range.from, range.to, mathBlockNode);
+						}
 					}
 				}
 			})
