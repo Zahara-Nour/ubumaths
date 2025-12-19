@@ -162,13 +162,64 @@
 	): node is { type: 'code-block'; code: string; language?: string } {
 		return node.type === 'code-block';
 	}
+
+	/**
+	 * Check if node is a block-level element (for hardbreak removal)
+	 */
+	function isBlockNode(node: ASTNode): boolean {
+		return ['math-block', 'code-block', 'list', 'image', 'table', 'horizontal-rule'].includes(
+			node.type
+		);
+	}
+
+	/**
+	 * Remove leading/trailing hardbreaks from paragraphs at block boundaries.
+	 * This prevents visual double line breaks when a paragraph is adjacent to a block.
+	 *
+	 * @param itemChildren - Array of block nodes in a list item
+	 * @returns Processed array with boundary hardbreaks removed from paragraphs
+	 */
+	function removeBlockBoundaryHardbreaks(itemChildren: ASTNode[]): ASTNode[] {
+		return itemChildren.map((child, index) => {
+			if (!isParagraphNode(child)) return child;
+
+			const prev = index > 0 ? itemChildren[index - 1] : null;
+			const next = index < itemChildren.length - 1 ? itemChildren[index + 1] : null;
+			const prevIsBlock = prev && isBlockNode(prev);
+			const nextIsBlock = next && isBlockNode(next);
+
+			// If no adjacent blocks, return as-is
+			if (!prevIsBlock && !nextIsBlock) return child;
+
+			// Clone children array to avoid mutation
+			let newChildren = [...child.children];
+
+			// Remove leading line-break if preceded by block
+			if (prevIsBlock && newChildren.length > 0 && newChildren[0].type === 'line-break') {
+				newChildren = newChildren.slice(1);
+			}
+
+			// Remove trailing line-break if followed by block
+			if (
+				nextIsBlock &&
+				newChildren.length > 0 &&
+				newChildren[newChildren.length - 1].type === 'line-break'
+			) {
+				newChildren = newChildren.slice(0, -1);
+			}
+
+			// Return modified paragraph
+			return { ...child, children: newChildren };
+		});
+	}
 </script>
 
 {#if ordered}
 	<ol class="{listClasses} my-1 text-foreground {className}" start={start > 1 ? start : undefined}>
 		{#each items as item, itemIndex (itemIndex)}
+			{@const processedChildren = removeBlockBoundaryHardbreaks(item.children)}
 			<li class="mb-0.5 text-foreground">
-				{#each item.children as child, childIndex (childIndex)}
+				{#each processedChildren as child, childIndex (childIndex)}
 					{#if isListNode(child)}
 						<!-- Recursive list rendering with depth tracking -->
 						<ListNode
@@ -229,8 +280,9 @@
 {:else}
 	<ul class="{listClasses} my-1 ml-4 text-foreground {className}">
 		{#each items as item, itemIndex (itemIndex)}
+			{@const processedChildren = removeBlockBoundaryHardbreaks(item.children)}
 			<li class="mb-0.5 text-foreground">
-				{#each item.children as child, childIndex (childIndex)}
+				{#each processedChildren as child, childIndex (childIndex)}
 					{#if isListNode(child)}
 						<!-- Recursive list rendering with depth tracking (itemize doesn't increment depth) -->
 						<ListNode
