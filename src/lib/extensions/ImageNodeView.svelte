@@ -3,8 +3,10 @@
 	=======================
 
 	Custom TipTap NodeView for images with interactive overlay.
-	Provides edit/delete buttons on hover and opens ImageAttributePanel
-	dialog for editing image properties.
+
+	Two editing modes:
+	1. OVERLAY (mouse): Hover → buttons → Dialog with ImageAttributePanel
+	2. INLINE (keyboard): Focus/double-click → Edit markdown directly
 
 	@see image-extension.ts for the TipTap extension
 	@see ImageAttributePanel.svelte for the editing UI
@@ -32,10 +34,16 @@
 	const alignment = $derived((node.attrs.alignment as ImageAlignment) || null);
 	const caption = $derived((node.attrs.caption as string) || '');
 
-	// UI State
+	// UI State - Overlay mode (mouse)
 	let isHovering = $state(false);
 	let editDialogOpen = $state(false);
 	let isUpdating = $state(false);
+
+	// UI State - Inline markdown editing mode (keyboard)
+	let isEditingMarkdown = $state(false);
+	let markdownText = $state('');
+	let markdownInputRef = $state<HTMLInputElement | null>(null);
+	let hasParseError = $state(false);
 
 	// Zod schema for image attributes validation
 	const imageAttributesSchema = z.object({
@@ -75,6 +83,158 @@
 	});
 
 	/**
+	 * Generate markdown string from current image attributes
+	 */
+	function generateImageMarkdown(): string {
+		const altText = alt || 'image';
+		let md = `![${altText}](${src})`;
+
+		// Build attributes block
+		const attrs: string[] = [];
+
+		if (widthPercent !== null) {
+			attrs.push(`width=${widthPercent}%`);
+		} else if (sizeClass) {
+			attrs.push(`size=${sizeClass}`);
+		}
+
+		if (alignment && alignment !== 'center') {
+			attrs.push(`align=${alignment}`);
+		}
+
+		if (caption) {
+			// Escape quotes in caption
+			const escapedCaption = caption.replace(/"/g, '\\"');
+			attrs.push(`caption="${escapedCaption}"`);
+		}
+
+		if (attrs.length > 0) {
+			md += `{${attrs.join(' ')}}`;
+		}
+
+		return md;
+	}
+
+	/**
+	 * Enter inline markdown editing mode
+	 */
+	function enterEditMode() {
+		if (isEditingMarkdown || editDialogOpen) return;
+		markdownText = generateImageMarkdown();
+		hasParseError = false;
+		isEditingMarkdown = true;
+		// Focus input after render
+		requestAnimationFrame(() => {
+			markdownInputRef?.focus();
+			markdownInputRef?.select();
+		});
+	}
+
+	/**
+	 * Exit inline editing mode and validate
+	 * @param shouldSave - true to save changes, false to cancel
+	 */
+	async function exitEditMode(shouldSave: boolean) {
+		if (!isEditingMarkdown) return;
+
+		if (!shouldSave || !markdownText.trim()) {
+			// Cancel: restore original state
+			isEditingMarkdown = false;
+			hasParseError = false;
+			return;
+		}
+
+		// Try to parse and validate the markdown
+		try {
+			const { parseMarkdown } = await import('$lib/custom-markdown/parser');
+			const ast = parseMarkdown(markdownText);
+			const imageNode = ast.children.find((n) => n.type === 'image');
+
+			if (!imageNode || imageNode.type !== 'image') {
+				toaster.error('Syntaxe markdown invalide');
+				// Restore original state
+				isEditingMarkdown = false;
+				hasParseError = false;
+				return;
+			}
+
+			// Validate with Zod
+			const validation = imageAttributesSchema.safeParse({
+				src: imageNode.src,
+				alt: imageNode.alt || '',
+				title: imageNode.title || null,
+				sizeClass: imageNode.sizeClass || null,
+				widthPercent: imageNode.widthPercent || null,
+				alignment: imageNode.alignment || null,
+				caption: imageNode.caption || null
+			});
+
+			if (!validation.success) {
+				toaster.error("Attributs d'image invalides");
+				// Restore original state
+				isEditingMarkdown = false;
+				hasParseError = false;
+				return;
+			}
+
+			// Success: update attributes
+			updateAttributes(validation.data);
+			isEditingMarkdown = false;
+			hasParseError = false;
+		} catch (err) {
+			console.error('Error parsing image markdown:', err);
+			toaster.error('Syntaxe markdown invalide');
+			// Restore original state
+			isEditingMarkdown = false;
+			hasParseError = false;
+		}
+	}
+
+	/**
+	 * Handle keyboard events in inline edit mode
+	 */
+	function handleEditKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			exitEditMode(true);
+		} else if (event.key === 'Escape') {
+			event.preventDefault();
+			exitEditMode(false);
+		}
+		// Tab: let it blur naturally, which triggers save
+	}
+
+	/**
+	 * Handle blur on inline edit input
+	 */
+	function handleEditBlur() {
+		// Small delay to allow Tab to work properly
+		setTimeout(() => {
+			if (isEditingMarkdown) {
+				exitEditMode(true);
+			}
+		}, 100);
+	}
+
+	/**
+	 * Live validation while typing (optional visual feedback)
+	 */
+	async function validateLive() {
+		if (!markdownText.trim()) {
+			hasParseError = false;
+			return;
+		}
+		try {
+			const { parseMarkdown } = await import('$lib/custom-markdown/parser');
+			const ast = parseMarkdown(markdownText);
+			const imageNode = ast.children.find((n) => n.type === 'image');
+			hasParseError = !imageNode || imageNode.type !== 'image';
+		} catch {
+			hasParseError = true;
+		}
+	}
+
+	/**
 	 * Handle edit button click - open dialog
 	 */
 	function handleEdit() {
@@ -89,22 +249,36 @@
 	}
 
 	/**
-	 * Handle markdown insertion from ImageAttributePanel
-	 * Parse the markdown to extract new attributes and update the node
+	 * Handle double-click on image - enter inline edit mode
+	 */
+	function handleDoubleClick() {
+		enterEditMode();
+	}
+
+	/**
+	 * Handle focus on image container - enter inline edit mode
+	 */
+	function handleContainerFocus() {
+		// Only enter edit mode on keyboard focus (Tab navigation)
+		// Not on click focus (which should use overlay)
+		if (!isHovering) {
+			enterEditMode();
+		}
+	}
+
+	/**
+	 * Handle markdown insertion from ImageAttributePanel (dialog mode)
 	 */
 	async function handleImageUpdate(markdown: string) {
 		if (isUpdating) return;
 		isUpdating = true;
 
 		try {
-			// Dynamically import the parser to avoid circular dependencies
 			const { parseMarkdown } = await import('$lib/custom-markdown/parser');
-
 			const ast = parseMarkdown(markdown);
 			const imageNode = ast.children.find((n) => n.type === 'image');
 
 			if (imageNode && imageNode.type === 'image') {
-				// Validate with Zod before updating
 				const validation = imageAttributesSchema.safeParse({
 					src: imageNode.src,
 					alt: imageNode.alt || '',
@@ -121,7 +295,6 @@
 					return;
 				}
 
-				// Update all attributes
 				updateAttributes(validation.data);
 			}
 
@@ -129,7 +302,6 @@
 		} catch (err) {
 			console.error('Error parsing image markdown:', err);
 			toaster.error("Impossible de mettre a jour l'image. Veuillez reessayer.");
-			// Keep dialog open on error so user can retry
 		} finally {
 			isUpdating = false;
 		}
@@ -148,50 +320,79 @@
 	class="image-node-view"
 	style={wrapperStyle}
 	data-selected={selected ? 'true' : undefined}
+	data-editing={isEditingMarkdown ? 'true' : undefined}
 >
-	<div
-		class="image-container"
-		onmouseenter={() => (isHovering = true)}
-		onmouseleave={() => (isHovering = false)}
-	>
-		<!-- Overlay with action buttons -->
-		{#if isHovering || selected}
-			<div class="overlay-buttons">
-				<Button
-					type="button"
-					variant="secondary"
-					size="sm"
-					onclick={handleEdit}
-					title="Modifier l'image"
-					class="h-8 w-8 p-0"
-					disabled={isUpdating}
-				>
-					<Pencil class="h-4 w-4" />
-				</Button>
-				<Button
-					type="button"
-					variant="destructive"
-					size="sm"
-					onclick={handleDelete}
-					title="Supprimer l'image"
-					class="h-8 w-8 p-0"
-				>
-					<Trash2 class="h-4 w-4" />
-				</Button>
+	{#if isEditingMarkdown}
+		<!-- Inline Markdown Edit Mode -->
+		<div class="markdown-edit-container">
+			<input
+				bind:this={markdownInputRef}
+				type="text"
+				bind:value={markdownText}
+				oninput={validateLive}
+				onkeydown={handleEditKeydown}
+				onblur={handleEditBlur}
+				class="markdown-input"
+				class:has-error={hasParseError}
+				spellcheck="false"
+				autocomplete="off"
+			/>
+			<div class="markdown-hint">
+				<span><kbd>Enter</kbd> valider</span>
+				<span><kbd>Esc</kbd> annuler</span>
+				<span><kbd>Tab</kbd> suivant</span>
 			</div>
-		{/if}
+		</div>
+	{:else}
+		<!-- Image Display Mode -->
+		<div
+			class="image-container"
+			onmouseenter={() => (isHovering = true)}
+			onmouseleave={() => (isHovering = false)}
+			ondblclick={handleDoubleClick}
+			onfocus={handleContainerFocus}
+			role="button"
+			tabindex="0"
+		>
+			<!-- Overlay with action buttons -->
+			{#if isHovering || selected}
+				<div class="overlay-buttons">
+					<Button
+						type="button"
+						variant="secondary"
+						size="sm"
+						onclick={handleEdit}
+						title="Modifier l'image (dialog)"
+						class="h-8 w-8 p-0"
+						disabled={isUpdating}
+					>
+						<Pencil class="h-4 w-4" />
+					</Button>
+					<Button
+						type="button"
+						variant="destructive"
+						size="sm"
+						onclick={handleDelete}
+						title="Supprimer l'image"
+						class="h-8 w-8 p-0"
+					>
+						<Trash2 class="h-4 w-4" />
+					</Button>
+				</div>
+			{/if}
 
-		<!-- Image -->
-		<img {src} alt={alt || "Image de l'exercice"} {title} class="node-image" />
+			<!-- Image -->
+			<img {src} alt={alt || "Image de l'exercice"} {title} class="node-image" />
 
-		<!-- Caption -->
-		{#if caption}
-			<figcaption class="image-caption">{caption}</figcaption>
-		{/if}
-	</div>
+			<!-- Caption -->
+			{#if caption}
+				<figcaption class="image-caption">{caption}</figcaption>
+			{/if}
+		</div>
+	{/if}
 </NodeViewWrapper>
 
-<!-- Edit Dialog -->
+<!-- Edit Dialog (for overlay mode) -->
 <Dialog.Root
 	bind:open={editDialogOpen}
 	onOpenChange={(open) => {
@@ -217,9 +418,18 @@
 </Dialog.Root>
 
 <style>
+	/* ==================== */
+	/* Image Display Mode   */
+	/* ==================== */
+
 	.image-container {
 		position: relative;
 		width: 100%;
+		cursor: pointer;
+	}
+
+	.image-container:focus {
+		outline: none;
 	}
 
 	.node-image {
@@ -257,5 +467,65 @@
 		outline: 2px solid hsl(var(--ring));
 		outline-offset: 2px;
 		border-radius: 0.375rem;
+	}
+
+	/* ==================== */
+	/* Markdown Edit Mode   */
+	/* ==================== */
+
+	.markdown-edit-container {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding: 0.5rem;
+		background: hsl(var(--muted) / 0.5);
+		border: 2px solid hsl(var(--ring));
+		border-radius: 0.375rem;
+	}
+
+	.markdown-input {
+		width: 100%;
+		padding: 0.5rem 0.75rem;
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.875rem;
+		line-height: 1.5;
+		background: hsl(var(--background));
+		border: 1px solid hsl(var(--border));
+		border-radius: 0.25rem;
+		color: hsl(var(--foreground));
+	}
+
+	.markdown-input:focus {
+		outline: none;
+		border-color: hsl(var(--ring));
+		box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+	}
+
+	.markdown-input.has-error {
+		border-color: hsl(var(--destructive));
+		box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.2);
+	}
+
+	.markdown-hint {
+		display: flex;
+		gap: 1rem;
+		font-size: 0.75rem;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.markdown-hint kbd {
+		display: inline-block;
+		padding: 0.125rem 0.375rem;
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.6875rem;
+		background: hsl(var(--muted));
+		border: 1px solid hsl(var(--border));
+		border-radius: 0.25rem;
+		box-shadow: 0 1px 0 hsl(var(--border));
+	}
+
+	/* Editing state indicator */
+	:global(.image-node-view[data-editing='true']) {
+		min-width: 300px;
 	}
 </style>

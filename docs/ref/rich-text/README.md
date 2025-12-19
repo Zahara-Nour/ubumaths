@@ -733,9 +733,9 @@ L'indentation **commune** (minimum) est supprimée, mais l'indentation **relativ
 
 ## Édition d'images
 
-Les images insérées dans le RichTextEditor sont interactives et modifiables.
+Les images insérées dans le RichTextEditor sont interactives et modifiables via deux modes.
 
-### Fonctionnalités
+### Mode 1 : Overlay (souris)
 
 | Action        | Déclencheur                  | Résultat                               |
 | ------------- | ---------------------------- | -------------------------------------- |
@@ -743,6 +743,17 @@ Les images insérées dans le RichTextEditor sont interactives et modifiables.
 | **Éditer**    | Clic sur ✏️                  | Ouvre le panneau ImageAttributePanel   |
 | **Supprimer** | Clic sur 🗑️                  | Supprime l'image de l'éditeur          |
 | **Sélection** | Clic sur l'image             | Outline bleu + boutons visibles        |
+
+### Mode 2 : Édition markdown inline (clavier)
+
+| Action      | Déclencheur              | Résultat                              |
+| ----------- | ------------------------ | ------------------------------------- |
+| **Entrer**  | Tab sur image / dbl-clic | L'image devient un champ markdown     |
+| **Valider** | Enter / Tab / clic hors  | Parse le markdown, met à jour l'image |
+| **Annuler** | Escape                   | Restaure l'état précédent             |
+| **Erreur**  | Syntaxe invalide         | Toast d'erreur + restauration         |
+
+**Exemple :** `![triangle](url){size=medium align=center caption="Figure 1"}`
 
 ### Attributs modifiables
 
