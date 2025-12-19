@@ -17,7 +17,7 @@
 import { textblockTypeInputRule } from '@tiptap/core';
 import Code from '@tiptap/extension-code';
 import CodeBlock from '@tiptap/extension-code-block';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
 
 /**
  * Regex for code block with triple backticks: ```language
@@ -101,9 +101,13 @@ export const CustomCode = Code.extend({
 						const contentWithMark = state.schema.text(content, [codeMark]);
 						tr.insert(patternStartInDoc, contentWithMark);
 
-						// Position cursor after the code (outside the mark)
-						const cursorPos = patternStartInDoc + content.length;
-						tr.setSelection(state.selection.constructor.near(tr.doc.resolve(cursorPos)));
+						// Insert a space after the code to visually separate cursor
+						const spacePos = patternStartInDoc + content.length;
+						tr.insertText(' ', spacePos);
+
+						// Position cursor after the space
+						const cursorPos = spacePos + 1;
+						tr.setSelection(TextSelection.create(tr.doc, cursorPos));
 
 						// Remove stored mark so next typing isn't in code
 						tr.removeStoredMark(type);
