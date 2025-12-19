@@ -294,23 +294,31 @@ function convertListItem(item: ListItemNode): JSONContent {
 		// Other block types in list items not supported
 	}
 
-	// Remove trailing hardBreak from paragraphs when followed by a block
-	// This prevents visual double line breaks in TipTap
-	for (let i = 0; i < content.length - 1; i++) {
+	// Remove hardBreaks at block boundaries to prevent visual double line breaks in TipTap
+	// 1. Remove trailing hardBreak from paragraphs when followed by a block
+	// 2. Remove leading hardBreak from paragraphs when preceded by a block
+	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList'];
+
+	for (let i = 0; i < content.length; i++) {
 		const current = content[i];
+		const prev = i > 0 ? content[i - 1] : null;
 		const next = content[i + 1];
 
-		// Check if current is a paragraph followed by a block (mathBlock, codeBlock, list)
-		if (
-			current.type === 'paragraph' &&
-			current.content &&
-			Array.isArray(current.content) &&
-			['mathBlock', 'codeBlock', 'bulletList', 'orderedList'].includes(next.type || '')
-		) {
-			// Remove trailing hardBreak if present
-			const lastChild = current.content[current.content.length - 1];
-			if (lastChild && lastChild.type === 'hardBreak') {
-				current.content.pop();
+		if (current.type === 'paragraph' && current.content && Array.isArray(current.content)) {
+			// Remove trailing hardBreak if followed by a block
+			if (next && blockTypes.includes(next.type || '')) {
+				const lastChild = current.content[current.content.length - 1];
+				if (lastChild && lastChild.type === 'hardBreak') {
+					current.content.pop();
+				}
+			}
+
+			// Remove leading hardBreak if preceded by a block
+			if (prev && blockTypes.includes(prev.type || '')) {
+				const firstChild = current.content[0];
+				if (firstChild && firstChild.type === 'hardBreak') {
+					current.content.shift();
+				}
 			}
 		}
 	}

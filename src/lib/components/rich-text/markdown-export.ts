@@ -150,7 +150,9 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 
 	for (let i = 0; i < item.content.length; i++) {
 		const child = item.content[i];
+		const prevChild = i > 0 ? item.content[i - 1] : null;
 		const nextChild = item.content[i + 1];
+		const prevIsBlock = prevChild && blockTypes.includes(prevChild.type || '');
 		const nextIsBlock = nextChild && blockTypes.includes(nextChild.type || '');
 
 		if (child.type === 'paragraph') {
@@ -161,15 +163,21 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 				paraContent += '\\\n';
 			}
 
+			// If paragraph follows a block, add indent to first line
+			// (the previous block already added \\\n, so we just need indent)
+			if (prevIsBlock) {
+				paraContent = continuationIndent + paraContent;
+			}
+
 			// If paragraph has hardbreaks, add continuation indent after each newline
 			if (paraContent.includes('\n')) {
 				const lines = paraContent.split('\n');
-				// First line has no extra indent (marker provides it)
+				// First line has no extra indent (marker provides it, or prevIsBlock already added it)
 				// Subsequent lines need continuation indent
 				// BUT: don't indent the last line if it's empty (trailing hardbreak)
 				const indentedContent = lines
 					.map((line, idx) => {
-						if (idx === 0) return line; // First line: no indent
+						if (idx === 0) return line; // First line: no indent (already handled)
 						if (idx === lines.length - 1 && line === '') return line; // Last empty line: no indent
 						return continuationIndent + line;
 					})
@@ -191,13 +199,21 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 			const lastPart = parts[parts.length - 1];
 			const endsWithHardbreak = lastPart && lastPart.endsWith('\\\n');
 
+			let mathOutput: string;
 			if (endsWithHardbreak) {
 				// Already have \\\n from hardbreak, just add indented math block
-				parts.push(continuationIndent + mathMarkdown);
+				mathOutput = continuationIndent + mathMarkdown;
 			} else {
 				// Need newline before math block + indent
-				parts.push('\n' + continuationIndent + mathMarkdown);
+				mathOutput = '\n' + continuationIndent + mathMarkdown;
 			}
+
+			// If followed by paragraph, add hardbreak at end (for round-trip)
+			if (nextChild?.type === 'paragraph') {
+				mathOutput += '\\\n';
+			}
+
+			parts.push(mathOutput);
 		}
 	}
 
