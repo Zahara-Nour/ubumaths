@@ -194,6 +194,9 @@ importers:
       svelte-sonner:
         specifier: ^1.0.5
         version: 1.0.5(svelte@5.39.9)
+      svelte-tiptap:
+        specifier: ^3.0.1
+        version: 3.0.1(@floating-ui/dom@1.7.2)(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/extension-bubble-menu@3.13.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0))(@tiptap/extension-floating-menu@3.13.0(@floating-ui/dom@1.7.2)(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)(svelte@5.39.9)
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7
@@ -1477,6 +1480,12 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.7.0
 
+  '@tiptap/extension-bubble-menu@3.13.0':
+    resolution: {integrity: sha512-qZ3j2DBsqP9DjG2UlExQ+tHMRhAnWlCKNreKddKocb/nAFrPdBCtvkqIEu+68zPlbLD4ukpoyjUklRJg+NipFg==}
+    peerDependencies:
+      '@tiptap/core': ^3.13.0
+      '@tiptap/pm': ^3.13.0
+
   '@tiptap/extension-bullet-list@3.7.0':
     resolution: {integrity: sha512-AwH8nyfSnicvD7k0IVVVxpHawJ0IDNo6FIW+lpKvIywnAE4gwMTBGS16X2FmOiSaIoex87XJpQ0wqqWcnXb3kA==}
     peerDependencies:
@@ -1507,6 +1516,13 @@ packages:
     resolution: {integrity: sha512-48xgZXNngt52aUV9FHhU5mSdQkc165pv6HFjcLWu+wIUTwm+qM/K94q117YBJmNtIN9OtvkvH36xxhnR02qlsw==}
     peerDependencies:
       '@tiptap/extensions': ^3.7.0
+
+  '@tiptap/extension-floating-menu@3.13.0':
+    resolution: {integrity: sha512-OsezV2cMofZM4c13gvgi93IEYBUzZgnu8BXTYZQiQYekz4bX4uulBmLa1KOA9EN71FzS+SoLkXHU0YzlbLjlxA==}
+    peerDependencies:
+      '@floating-ui/dom': ^1.0.0
+      '@tiptap/core': ^3.13.0
+      '@tiptap/pm': ^3.13.0
 
   '@tiptap/extension-gapcursor@3.7.0':
     resolution: {integrity: sha512-v556NDRpfvMGDqybBHhyL88/PpPKdpLHgH+F/yGlormOBJohTFHhJtRzJu9LiXrPOh9MQtNDHTlSoHn+BuWMlQ==}
@@ -4001,6 +4017,16 @@ packages:
     peerDependencies:
       svelte: ^5.0.0
 
+  svelte-tiptap@3.0.1:
+    resolution: {integrity: sha512-Vi3kVGOd01f7mslOxGbJB7z2QavdvH+6WffhB+Y5fleTiZaW0YWqIboyO2u/uh4BQeosiINmmuRJ+Qwb7mYP+A==}
+    peerDependencies:
+      '@floating-ui/dom': ^1.0.0
+      '@tiptap/core': ^3.0.0
+      '@tiptap/extension-bubble-menu': ^3.0.0
+      '@tiptap/extension-floating-menu': ^3.0.0
+      '@tiptap/pm': ^3.0.0
+      svelte: ^5.0.0
+
   svelte-toolbelt@0.10.5:
     resolution: {integrity: sha512-8e+eWTgxw1aiLxhDE8Rb1X6AoLitqpJz+WhAul2W7W58C8KoLoJQf1TgQdFPBiCPJ0Jg5y0Zi1uyua9em4VS0w==}
     engines: {node: '>=18', pnpm: '>=8.7.0'}
@@ -5458,6 +5484,12 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.7.0(@tiptap/pm@3.13.0)
 
+  '@tiptap/extension-bubble-menu@3.13.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)':
+    dependencies:
+      '@floating-ui/dom': 1.7.2
+      '@tiptap/core': 3.7.0(@tiptap/pm@3.13.0)
+      '@tiptap/pm': 3.13.0
+
   '@tiptap/extension-bullet-list@3.7.0(@tiptap/extension-list@3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0))':
     dependencies:
       '@tiptap/extension-list': 3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)
@@ -5482,6 +5514,12 @@ snapshots:
   '@tiptap/extension-dropcursor@3.7.0(@tiptap/extensions@3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0))':
     dependencies:
       '@tiptap/extensions': 3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)
+
+  '@tiptap/extension-floating-menu@3.13.0(@floating-ui/dom@1.7.2)(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)':
+    dependencies:
+      '@floating-ui/dom': 1.7.2
+      '@tiptap/core': 3.7.0(@tiptap/pm@3.13.0)
+      '@tiptap/pm': 3.13.0
 
   '@tiptap/extension-gapcursor@3.7.0(@tiptap/extensions@3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0))':
     dependencies:
@@ -8116,6 +8154,15 @@ snapshots:
   svelte-sonner@1.0.5(svelte@5.39.9):
     dependencies:
       runed: 0.28.0(svelte@5.39.9)
+      svelte: 5.39.9
+
+  svelte-tiptap@3.0.1(@floating-ui/dom@1.7.2)(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/extension-bubble-menu@3.13.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0))(@tiptap/extension-floating-menu@3.13.0(@floating-ui/dom@1.7.2)(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)(svelte@5.39.9):
+    dependencies:
+      '@floating-ui/dom': 1.7.2
+      '@tiptap/core': 3.7.0(@tiptap/pm@3.13.0)
+      '@tiptap/extension-bubble-menu': 3.13.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)
+      '@tiptap/extension-floating-menu': 3.13.0(@floating-ui/dom@1.7.2)(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)
+      '@tiptap/pm': 3.13.0
       svelte: 5.39.9
 
   svelte-toolbelt@0.10.5(svelte@5.39.9):

@@ -10,21 +10,15 @@
  * - href: link URL for clickable images
  * - linkTitle: title attribute for the link
  *
+ * Uses a custom Svelte NodeView for interactive editing (hover overlay).
+ *
  * @module extensions/image-extension
  */
 
 import Image from '@tiptap/extension-image';
-
-/**
- * Size class to CSS width mapping
- */
-const SIZE_CLASS_STYLES: Record<string, { width: string; maxWidth: string }> = {
-	inline: { width: '1.5em', maxWidth: '1.5em' },
-	small: { width: '25%', maxWidth: '300px' },
-	medium: { width: '50%', maxWidth: '600px' },
-	large: { width: '75%', maxWidth: '900px' },
-	full: { width: '100%', maxWidth: '1200px' }
-};
+import { SvelteNodeViewRenderer } from 'svelte-tiptap';
+import ImageNodeView from './ImageNodeView.svelte';
+import { SIZE_CLASS_STYLES } from './image-constants';
 
 /**
  * Custom Image extension with extended attributes
@@ -35,6 +29,11 @@ const SIZE_CLASS_STYLES: Record<string, { width: string; maxWidth: string }> = {
  */
 export const CustomImage = Image.extend({
 	name: 'image',
+
+	// Use Svelte NodeView for interactive editing
+	addNodeView() {
+		return SvelteNodeViewRenderer(ImageNodeView);
+	},
 
 	addAttributes() {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any

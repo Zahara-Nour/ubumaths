@@ -13,6 +13,7 @@
 - [Extensions Templates](#extensions-templates)
 - [Import/Export Markdown](#importexport-markdown)
 - [Copier-Coller Markdown](#copier-coller-markdown)
+- [Édition d'images](#édition-dimages)
 - [Stockage des données](#stockage-des-données)
 - [Tests](#tests)
 - [Debug Page](#debug-page)
@@ -727,6 +728,73 @@ L'indentation **commune** (minimum) est supprimée, mais l'indentation **relativ
 | ----------------------------- | ------------------------------------------ |
 | `markdown-detection.ts`       | Détection de syntaxe Markdown (scoring)    |
 | `markdown-paste-extension.ts` | Extension TipTap pour intercepter le paste |
+
+---
+
+## Édition d'images
+
+Les images insérées dans le RichTextEditor sont interactives et modifiables.
+
+### Fonctionnalités
+
+| Action        | Déclencheur                  | Résultat                               |
+| ------------- | ---------------------------- | -------------------------------------- |
+| **Survol**    | Passer la souris sur l'image | Affiche les boutons Éditer / Supprimer |
+| **Éditer**    | Clic sur ✏️                  | Ouvre le panneau ImageAttributePanel   |
+| **Supprimer** | Clic sur 🗑️                  | Supprime l'image de l'éditeur          |
+| **Sélection** | Clic sur l'image             | Outline bleu + boutons visibles        |
+
+### Attributs modifiables
+
+- **Texte alternatif** (alt) : Description pour l'accessibilité
+- **Taille** : inline, small, medium, large, full ou pourcentage personnalisé
+- **Alignement** : gauche, centre, droite
+- **Légende** (caption) : Texte affiché sous l'image
+
+### Architecture
+
+Le système utilise un **NodeView Svelte** personnalisé :
+
+```
+src/lib/extensions/
+├── image-extension.ts      # Extension TipTap avec SvelteNodeViewRenderer
+├── ImageNodeView.svelte    # Composant avec overlay d'édition
+```
+
+### Flow d'édition
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Image dans l'éditeur                                       │
+│  ┌─────────────────────────────────────┐                    │
+│  │       [Image]                       │ ← Survol           │
+│  │  ┌──────────────────────────┐       │                    │
+│  │  │ ✏️ Éditer │ 🗑️ Supprimer │       │ ← Overlay          │
+│  │  └──────────────────────────┘       │                    │
+│  │       "Légende"                     │                    │
+│  └─────────────────────────────────────┘                    │
+└─────────────────────────────────────────────────────────────┘
+          │
+          ▼ Clic sur Éditer
+┌─────────────────────────────────────────────────────────────┐
+│  Dialog "Modifier l'image"                                  │
+│  ┌─────────────────────────────────────────────────────────┐│
+│  │ ImageAttributePanel                                     ││
+│  │ - Aperçu de l'image                                     ││
+│  │ - Texte alternatif                                      ││
+│  │ - Sélecteur de taille                                   ││
+│  │ - Sélecteur d'alignement                                ││
+│  │ - Champ légende                                         ││
+│  │ - Preview Markdown                                      ││
+│  └─────────────────────────────────────────────────────────┘│
+│              [Réinitialiser]  [Insérer dans l'éditeur]      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Dépendances
+
+- `svelte-tiptap` : Package pour les NodeViews Svelte dans TipTap
+- `ImageAttributePanel` : Composant réutilisé pour l'insertion et l'édition
 
 ---
 
