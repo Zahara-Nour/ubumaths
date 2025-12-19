@@ -29,9 +29,9 @@
 -->
 <script lang="ts">
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import { uploadExerciseImage } from '$lib/exercises/services/image-upload';
+	import { uploadExerciseImage, listExerciseImages } from '$lib/exercises/services/image-upload';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { ImageUploadConfig } from '$lib/components/rich-text/types';
+	import type { ImageUploadConfig, GalleryImageInfo } from '$lib/components/rich-text/types';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 	interface Props {
@@ -47,6 +47,8 @@
 		imageSlug?: string;
 		/** Function to get the next image number for this exercise */
 		getNextImageNumber?: () => number;
+		/** Function to ensure slug exists (generates via API if needed) */
+		ensureSlugExists?: () => Promise<string | undefined>;
 	}
 
 	let {
@@ -55,8 +57,18 @@
 		userId,
 		genericFunctions,
 		imageSlug,
-		getNextImageNumber
+		getNextImageNumber,
+		ensureSlugExists
 	}: Props = $props();
+
+	/**
+	 * Get the current slug, generating one if needed
+	 */
+	async function getSlug(): Promise<string | undefined> {
+		if (imageSlug) return imageSlug;
+		if (ensureSlugExists) return ensureSlugExists();
+		return undefined;
+	}
 
 	// Convert string array to GenericFunctionConfig
 	const genericFunctionsConfig = $derived.by<GenericFunctionConfig | undefined>(() => {
@@ -75,12 +87,26 @@
 		supabase && userId
 			? {
 					uploadFn: async (file: File) => {
-						// Use custom naming if slug and counter are provided
+						// Get or generate slug for naming
+						const slug = await getSlug();
 						const namingOptions =
-							imageSlug && getNextImageNumber
-								? { slug: imageSlug, imageNumber: getNextImageNumber() }
-								: undefined;
+							slug && getNextImageNumber ? { slug, imageNumber: getNextImageNumber() } : undefined;
 						return uploadExerciseImage(supabase, file, userId, namingOptions);
+					},
+					// Always enable gallery listing - will get/generate slug when called
+					listExistingImages: async (): Promise<GalleryImageInfo[]> => {
+						const slug = await getSlug();
+						if (!slug) return [];
+
+						const result = await listExerciseImages(supabase, userId, slug);
+						if (!result.success || !result.images) {
+							return [];
+						}
+						return result.images.map((img) => ({
+							name: img.name,
+							url: img.url,
+							imageNumber: img.imageNumber
+						}));
 					}
 				}
 			: undefined
