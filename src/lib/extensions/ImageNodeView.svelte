@@ -14,7 +14,7 @@
 <script lang="ts">
 	import { z } from 'zod';
 	import { NodeViewWrapper, type NodeViewProps } from 'svelte-tiptap';
-	import { Pencil, Trash2 } from 'lucide-svelte';
+	import { Pencil, Trash2, Check, X } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
@@ -42,8 +42,8 @@
 	// UI State - Inline markdown editing mode (keyboard)
 	let isEditingMarkdown = $state(false);
 	let markdownText = $state('');
-	let markdownInputRef = $state<HTMLInputElement | null>(null);
-	let hasParseError = $state(false);
+	let markdownInputRef = $state<HTMLTextAreaElement | null>(null);
+	let syntaxStatus = $state<'unknown' | 'valid' | 'invalid'>('unknown');
 
 	// Zod schema for image attributes validation
 	const imageAttributesSchema = z.object({
@@ -121,7 +121,7 @@
 	function enterEditMode() {
 		if (isEditingMarkdown || editDialogOpen) return;
 		markdownText = generateImageMarkdown();
-		hasParseError = false;
+		syntaxStatus = 'valid'; // Initial state is valid (generated from current attrs)
 		isEditingMarkdown = true;
 		// Focus input after render
 		requestAnimationFrame(() => {
@@ -140,7 +140,7 @@
 		if (!shouldSave || !markdownText.trim()) {
 			// Cancel: restore original state
 			isEditingMarkdown = false;
-			hasParseError = false;
+			syntaxStatus = 'unknown';
 			return;
 		}
 
@@ -154,7 +154,7 @@
 				toaster.error('Syntaxe markdown invalide');
 				// Restore original state
 				isEditingMarkdown = false;
-				hasParseError = false;
+				syntaxStatus = 'unknown';
 				return;
 			}
 
@@ -173,20 +173,20 @@
 				toaster.error("Attributs d'image invalides");
 				// Restore original state
 				isEditingMarkdown = false;
-				hasParseError = false;
+				syntaxStatus = 'unknown';
 				return;
 			}
 
 			// Success: update attributes
 			updateAttributes(validation.data);
 			isEditingMarkdown = false;
-			hasParseError = false;
+			syntaxStatus = 'unknown';
 		} catch (err) {
 			console.error('Error parsing image markdown:', err);
 			toaster.error('Syntaxe markdown invalide');
 			// Restore original state
 			isEditingMarkdown = false;
-			hasParseError = false;
+			syntaxStatus = 'unknown';
 		}
 	}
 
@@ -216,22 +216,34 @@
 		}, 100);
 	}
 
+	// Debounce timer for live validation
+	let validateTimeout: ReturnType<typeof setTimeout> | null = null;
+
 	/**
-	 * Live validation while typing (optional visual feedback)
+	 * Live validation while typing (visual feedback)
+	 * Debounced to avoid too many async imports
 	 */
-	async function validateLive() {
-		if (!markdownText.trim()) {
-			hasParseError = false;
-			return;
+	function validateLive() {
+		// Clear previous timeout
+		if (validateTimeout) {
+			clearTimeout(validateTimeout);
 		}
-		try {
-			const { parseMarkdown } = await import('$lib/custom-markdown/parser');
-			const ast = parseMarkdown(markdownText);
-			const imageNode = ast.children.find((n) => n.type === 'image');
-			hasParseError = !imageNode || imageNode.type !== 'image';
-		} catch {
-			hasParseError = true;
-		}
+
+		// Debounce validation
+		validateTimeout = setTimeout(async () => {
+			if (!markdownText.trim()) {
+				syntaxStatus = 'unknown';
+				return;
+			}
+			try {
+				const { parseMarkdown } = await import('$lib/custom-markdown/parser');
+				const ast = parseMarkdown(markdownText);
+				const imageNode = ast.children.find((n) => n.type === 'image');
+				syntaxStatus = imageNode && imageNode.type === 'image' ? 'valid' : 'invalid';
+			} catch {
+				syntaxStatus = 'invalid';
+			}
+		}, 150);
 	}
 
 	/**
@@ -325,18 +337,28 @@
 	{#if isEditingMarkdown}
 		<!-- Inline Markdown Edit Mode -->
 		<div class="markdown-edit-container">
-			<input
+			<!-- Status indicator above textarea -->
+			<div class="status-row">
+				<span class="status-label">Markdown</span>
+				{#if syntaxStatus === 'valid'}
+					<div class="status-icon valid"><Check class="h-4 w-4" /></div>
+				{:else if syntaxStatus === 'invalid'}
+					<div class="status-icon invalid"><X class="h-4 w-4" /></div>
+				{/if}
+			</div>
+			<textarea
 				bind:this={markdownInputRef}
-				type="text"
 				bind:value={markdownText}
 				oninput={validateLive}
 				onkeydown={handleEditKeydown}
 				onblur={handleEditBlur}
 				class="markdown-input"
-				class:has-error={hasParseError}
+				class:is-valid={syntaxStatus === 'valid'}
+				class:is-invalid={syntaxStatus === 'invalid'}
 				spellcheck="false"
 				autocomplete="off"
-			/>
+				rows="3"
+			></textarea>
 			<div class="markdown-hint">
 				<span><kbd>Enter</kbd> valider</span>
 				<span><kbd>Esc</kbd> annuler</span>
@@ -493,6 +515,8 @@
 		border: 1px solid hsl(var(--border));
 		border-radius: 0.25rem;
 		color: hsl(var(--foreground));
+		resize: vertical;
+		min-height: 4rem;
 	}
 
 	.markdown-input:focus {
@@ -501,9 +525,48 @@
 		box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
 	}
 
-	.markdown-input.has-error {
-		border-color: hsl(var(--destructive));
-		box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.2);
+	.markdown-input.is-valid,
+	.markdown-input.is-valid:focus {
+		border-color: hsl(142 76% 36%) !important; /* green-600 */
+		box-shadow: 0 0 0 2px hsl(142 76% 36% / 0.2) !important;
+	}
+
+	.markdown-input.is-invalid,
+	.markdown-input.is-invalid:focus {
+		border-color: hsl(0 84% 60%) !important; /* red-500 */
+		box-shadow: 0 0 0 2px hsl(0 84% 60% / 0.2) !important;
+	}
+
+	.status-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.25rem;
+	}
+
+	.status-label {
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.status-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.5rem;
+		height: 1.5rem;
+		border-radius: 50%;
+	}
+
+	.status-icon.valid {
+		background: hsl(142 76% 36% / 0.15);
+		color: hsl(142 76% 36%);
+	}
+
+	.status-icon.invalid {
+		background: hsl(0 84% 60% / 0.15); /* red-500 */
+		color: hsl(0 84% 60%);
 	}
 
 	.markdown-hint {
