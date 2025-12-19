@@ -146,10 +146,21 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 	const parts: string[] = [];
 	// List continuation indent: base indent + 3 spaces for the marker (e.g., "1. ")
 	const continuationIndent = '   '.repeat(indentLevel + 1);
+	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList'];
 
-	for (const child of item.content) {
+	for (let i = 0; i < item.content.length; i++) {
+		const child = item.content[i];
+		const nextChild = item.content[i + 1];
+		const nextIsBlock = nextChild && blockTypes.includes(nextChild.type || '');
+
 		if (child.type === 'paragraph') {
-			const paraContent = convertParagraphToMarkdown(child);
+			let paraContent = convertParagraphToMarkdown(child);
+
+			// If paragraph is followed by a block and doesn't end with hardbreak, add one
+			if (nextIsBlock && !paraContent.endsWith('\\\n')) {
+				paraContent += '\\\n';
+			}
+
 			// If paragraph has hardbreaks, add continuation indent after each newline
 			if (paraContent.includes('\n')) {
 				const lines = paraContent.split('\n');
@@ -157,9 +168,9 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 				// Subsequent lines need continuation indent
 				// BUT: don't indent the last line if it's empty (trailing hardbreak)
 				const indentedContent = lines
-					.map((line, i) => {
-						if (i === 0) return line; // First line: no indent
-						if (i === lines.length - 1 && line === '') return line; // Last empty line: no indent
+					.map((line, idx) => {
+						if (idx === 0) return line; // First line: no indent
+						if (idx === lines.length - 1 && line === '') return line; // Last empty line: no indent
 						return continuationIndent + line;
 					})
 					.join('\n');
