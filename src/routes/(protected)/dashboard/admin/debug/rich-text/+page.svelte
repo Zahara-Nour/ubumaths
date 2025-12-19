@@ -164,6 +164,24 @@ Liste numérotée :
    2. Sous-étape 2.2
 3. Étape 3
 
+## Hardbreaks dans les listes
+
+Liste avec hardbreaks (backslash) :
+1. Première ligne\\
+   Deuxième ligne du même item
+2. Item simple
+3. Ligne A\\
+   Ligne B\\
+   Ligne C
+
+Liste à puces avec hardbreaks :
+- Item avec\\
+  continuation
+- Item normal
+- Multiple\\
+  lignes\\
+  ici
+
 ## Citation
 
 > Ceci est une citation.
