@@ -753,4 +753,15 @@ describe('Edge Cases', () => {
 		// The escaped $ should be preserved
 		expect(result).toContain('$');
 	});
+
+	it('preserves multiple math blocks with paragraphs between them in list item', () => {
+		// This tests the complex case: para -> mathBlock -> para -> mathBlock
+		const original = `1. Le volume de la boîte est\\
+   ~~V=x^2h~~\\
+   donc\\
+   ~~h=V/{x^2}=10/{x^2}~~`;
+		const tipTap = markdownToTipTap(original);
+		const result = tipTapToMarkdown(tipTap);
+		expect(result).toBe(original);
+	});
 });
