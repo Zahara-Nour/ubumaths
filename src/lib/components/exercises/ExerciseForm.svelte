@@ -11,6 +11,7 @@
 	import GenericFunctionInput from './GenericFunctionInput.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { SupabaseClient } from '@supabase/supabase-js';
@@ -402,42 +403,32 @@
 	}
 </script>
 
-<!-- Header with LaTeX import button -->
+<!-- Header with LaTeX import button (only for new exercises) -->
 <div class="mb-6 flex items-center justify-between">
-	<div>
-		<h2 class="text-lg font-semibold">{exercise ? "Modifier l'exercice" : 'Nouvel exercice'}</h2>
-		<p class="text-sm text-muted-foreground">
-			{exercise
-				? "Modifiez les informations de l'exercice"
-				: 'Creez un nouvel exercice avec support LaTeX'}
-		</p>
-	</div>
-	<Button variant="outline" onclick={() => (latexImportOpen = true)}>
-		<svg
-			class="mr-2 h-4 w-4"
-			fill="none"
-			stroke="currentColor"
-			viewBox="0 0 24 24"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				stroke-width="2"
-				d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-			/>
-		</svg>
-		Import LaTeX
-	</Button>
+	{#if !exercise}
+		<Button variant="outline" onclick={() => (latexImportOpen = true)}>
+			<svg
+				class="mr-2 h-4 w-4"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+				/>
+			</svg>
+			Import LaTeX
+		</Button>
+	{/if}
 </div>
 
 <form onsubmit={handleSubmit} class="space-y-6">
 	<!-- Metadata -->
 	<Card.Root>
-		<Card.Header>
-			<Card.Title>Informations generales</Card.Title>
-			<Card.Description>Metadonnees de l'exercice (optionnel sauf difficulte)</Card.Description>
-		</Card.Header>
 		<Card.Content class="space-y-4">
 			<!-- Title & Source -->
 			<div class="grid gap-4 md:grid-cols-2">
@@ -461,51 +452,39 @@
 				</div>
 			</div>
 
-			<!-- Slug -->
-			<div class="space-y-2">
-				<Label for="slug">
-					Slug (URL)
-					{#if slug}
-						<span class="ml-1 text-xs text-muted-foreground"> (non modifiable) </span>
-					{:else}
-						<span class="ml-1 text-xs text-muted-foreground"> (auto-genere si vide) </span>
-					{/if}
-				</Label>
-				<Input
-					id="slug"
-					type="text"
-					placeholder="Ex: algebre-equations-k8m2n4"
-					bind:value={slug}
-					disabled={!!slug}
-					class="font-mono text-sm {slug ? 'bg-muted' : ''}"
-				/>
-				{#if errors.slug}
-					<p class="text-sm text-destructive">{errors.slug}</p>
-				{/if}
-				{#if slug && !errors.slug}
-					<p class="text-xs text-muted-foreground">
-						URL : /exercice/{slug}
-					</p>
-				{/if}
-			</div>
-
-			<!-- Difficulty & Topic -->
-			<div class="grid gap-4 md:grid-cols-2">
+			<!-- Difficulty, Slug & Topic -->
+			<div class="grid gap-4 md:grid-cols-3">
 				<div class="space-y-2">
 					<Label for="difficulty">
 						Difficulte <span class="text-destructive">*</span>
 					</Label>
-					<select
-						id="difficulty"
+					<MySelect
+						type="single"
 						bind:value={difficulty}
-						class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						<option value={1}>1 - Facile</option>
-						<option value={2}>2 - Moyen</option>
-						<option value={3}>3 - Difficile</option>
-					</select>
+						items={[
+							{ value: 1, label: '1 - Facile' },
+							{ value: 2, label: '2 - Moyen' },
+							{ value: 3, label: '3 - Difficile' }
+						]}
+						placeholder="Selectionnez..."
+					/>
 					{#if errors.difficulty}
 						<p class="text-sm text-destructive">{errors.difficulty}</p>
+					{/if}
+				</div>
+
+				<div class="space-y-2">
+					<Label for="slug">Slug</Label>
+					<Input
+						id="slug"
+						type="text"
+						placeholder="Ex: algebre-equations-k8m2n4"
+						bind:value={slug}
+						disabled={!!slug}
+						class="font-mono text-sm {slug ? 'bg-muted' : ''}"
+					/>
+					{#if errors.slug}
+						<p class="text-sm text-destructive">{errors.slug}</p>
 					{/if}
 				</div>
 
@@ -534,9 +513,6 @@
 	<Card.Root>
 		<Card.Header>
 			<Card.Title>Variations</Card.Title>
-			<Card.Description>
-				Chaque variation peut avoir un niveau de guidage different (guide, intermediaire, autonome)
-			</Card.Description>
 		</Card.Header>
 		<Card.Content>
 			<Tabs.Root bind:value={activeVariationTab}>
@@ -761,5 +737,7 @@
 	</div>
 </form>
 
-<!-- LaTeX Import Dialog -->
-<LaTeXImportDialog bind:open={latexImportOpen} onImport={handleLatexImport} />
+<!-- LaTeX Import Dialog (only for new exercises) -->
+{#if !exercise}
+	<LaTeXImportDialog bind:open={latexImportOpen} onImport={handleLatexImport} />
+{/if}
