@@ -60,7 +60,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v18`;
+	return `h${headingLevels}-v19`; // v19: Added ImageNodeView for interactive editing
 }
 
 /**
