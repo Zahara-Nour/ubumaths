@@ -218,7 +218,7 @@
 	<ol class="{listClasses} my-1 text-foreground {className}" start={start > 1 ? start : undefined}>
 		{#each items as item, itemIndex (itemIndex)}
 			{@const processedChildren = removeBlockBoundaryHardbreaks(item.children)}
-			<li class="mt-2 text-foreground first:mt-0">
+			<li class="mt-6 text-foreground first:mt-0">
 				{#each processedChildren as child, childIndex (childIndex)}
 					{#if isListNode(child)}
 						<!-- Recursive list rendering with depth tracking -->
@@ -281,7 +281,7 @@
 	<ul class="{listClasses} my-1 ml-4 text-foreground {className}">
 		{#each items as item, itemIndex (itemIndex)}
 			{@const processedChildren = removeBlockBoundaryHardbreaks(item.children)}
-			<li class="mt-2 text-foreground first:mt-0">
+			<li class="mt-6 text-foreground first:mt-0">
 				{#each processedChildren as child, childIndex (childIndex)}
 					{#if isListNode(child)}
 						<!-- Recursive list rendering with depth tracking (itemize doesn't increment depth) -->
