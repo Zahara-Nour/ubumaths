@@ -143,6 +143,20 @@ const LINKED_IMAGE_REGEX =
 const HEADING_REGEX = /^(#{1,6})\s+(.+)$/;
 
 /**
+ * Check if a line is a heading (starts with 1-6 # followed by space)
+ */
+function isHeading(line: string): boolean {
+	return HEADING_REGEX.test(line);
+}
+
+/**
+ * Check if a line is a horizontal rule (ubumark uses -- not ---, ***, ___)
+ */
+function isHorizontalRule(line: string): boolean {
+	return /^-{2,}$/.test(line.trim());
+}
+
+/**
  * Regex for blank placeholders: {{blank:N}} where N is a positive integer
  *
  * Used in fill-in-the-blank questions. The index N is 1-based.
@@ -480,8 +494,8 @@ function parseBlocks(
 			continue;
 		}
 
-		// Check for horizontal rule
-		if (/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
+		// Check for horizontal rule (ubumark uses -- not ---, ***, ___ which are bold+italic)
+		if (/^-{2,}$/.test(line.trim())) {
 			blocks.push({
 				type: 'horizontal-rule'
 			});
@@ -498,7 +512,10 @@ function parseBlocks(
 			!isBlockquoteLine(lines[i]) &&
 			!isListItem(lines[i]) &&
 			!isTableRow(lines[i]) &&
-			!isAlignmentRow(lines[i])
+			!isAlignmentRow(lines[i]) &&
+			!isHeading(lines[i]) &&
+			!isHorizontalRule(lines[i]) &&
+			!isMathPlaceholder(lines[i].trim())
 		) {
 			paragraphLines.push(lines[i]);
 			i++;

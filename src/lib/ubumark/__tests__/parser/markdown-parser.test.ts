@@ -1546,4 +1546,159 @@ describe('parseMarkdown - hint reference support', () => {
 			}
 		}
 	});
+
+	// =====================================
+	// Paragraph Interruption Tests
+	// =====================================
+	// In ubumark, block elements can interrupt paragraphs without a blank line
+
+	describe('paragraph interruption', () => {
+		it('should allow heading to interrupt paragraph (no blank line)', () => {
+			const markdown = `Some text
+# Heading`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(2);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('heading');
+
+			if (ast.children[1].type === 'heading') {
+				expect(ast.children[1].level).toBe(1);
+			}
+		});
+
+		it('should allow math block $$...$$ to interrupt paragraph (no blank line)', () => {
+			const markdown = `Some text
+$$x^2 + y^2 = z^2$$`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(2);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('math-block');
+
+			if (ast.children[1].type === 'math-block') {
+				expect(ast.children[1].expression).toBe('x^2 + y^2 = z^2');
+			}
+		});
+
+		it('should allow math block ~~...~~ to interrupt paragraph (no blank line)', () => {
+			const markdown = `Some text
+~~a + b = c~~`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(2);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('math-block');
+
+			if (ast.children[1].type === 'math-block') {
+				expect(ast.children[1].expression).toBe('a + b = c');
+			}
+		});
+
+		it('should allow code fence to interrupt paragraph (no blank line)', () => {
+			const markdown = `Some text
+\`\`\`js
+const x = 1;
+\`\`\``;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(2);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('code-block');
+
+			if (ast.children[1].type === 'code-block') {
+				expect(ast.children[1].language).toBe('js');
+			}
+		});
+
+		it('should allow blockquote to interrupt paragraph (no blank line)', () => {
+			const markdown = `Some text
+> Quote here`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(2);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('blockquote');
+		});
+
+		it('should allow unordered list to interrupt paragraph (no blank line)', () => {
+			const markdown = `Some text
+- item 1
+- item 2`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(2);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('list');
+
+			if (ast.children[1].type === 'list') {
+				expect(ast.children[1].ordered).toBe(false);
+				expect(ast.children[1].items).toHaveLength(2);
+			}
+		});
+
+		it('should allow ordered list to interrupt paragraph (no blank line)', () => {
+			const markdown = `Some text
+1. first
+2. second`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(2);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('list');
+
+			if (ast.children[1].type === 'list') {
+				expect(ast.children[1].ordered).toBe(true);
+				expect(ast.children[1].items).toHaveLength(2);
+			}
+		});
+
+		it('should allow horizontal rule (--) to interrupt paragraph (no blank line)', () => {
+			const markdown = `Some text
+--`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(2);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('horizontal-rule');
+		});
+
+		it('should allow table to interrupt paragraph (no blank line)', () => {
+			const markdown = `Some text
+| A | B |
+|---|---|
+| 1 | 2 |`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(2);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('table');
+		});
+
+		it('should handle multiple consecutive interruptions', () => {
+			const markdown = `Text 1
+# Heading
+Text 2
+$$math$$
+Text 3`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(5);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('heading');
+			expect(ast.children[2].type).toBe('paragraph');
+			expect(ast.children[3].type).toBe('math-block');
+			expect(ast.children[4].type).toBe('paragraph');
+		});
+	});
 });
