@@ -4,7 +4,7 @@
  *
  * Comprehensive tests for the variation table Typst generator.
  *
- * @module custom-markdown/__tests__/generators/variation-table-typst.test
+ * @module ubumark/__tests__/generators/variation-table-typst.test
  */
 
 import { describe, it, expect } from 'vitest';

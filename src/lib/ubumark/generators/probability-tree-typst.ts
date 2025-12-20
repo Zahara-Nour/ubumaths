@@ -12,7 +12,7 @@
  * - Optional outcomes column at leaves
  * - Math expressions converted from LaTeX to Typst
  *
- * @module custom-markdown/generators/probability-tree-typst
+ * @module ubumark/generators/probability-tree-typst
  */
 
 import type { ProbabilityTreeNode, ProbTreeNode } from '../types/probability-tree';

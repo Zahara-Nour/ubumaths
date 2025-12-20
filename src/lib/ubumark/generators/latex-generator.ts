@@ -13,7 +13,7 @@
  *
  * Output can be compiled with pdflatex, lualatex, or xelatex.
  *
- * @module custom-markdown/generators/latex-generator
+ * @module ubumark/generators/latex-generator
  */
 
 import type {

@@ -10,7 +10,7 @@
  * - Support for open/closed bounds
  * - Complex math expressions in domain points
  *
- * @module custom-markdown/types/variation-table
+ * @module ubumark/types/variation-table
  */
 
 import type { BaseNode } from './ast';

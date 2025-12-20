@@ -13,7 +13,7 @@
  * 5. Parse inline content (bold, italic, math placeholders)
  * 6. Reconstruct final AST with math nodes restored
  *
- * @module custom-markdown/parser/markdown-parser
+ * @module ubumark/parser/markdown-parser
  */
 
 import type {

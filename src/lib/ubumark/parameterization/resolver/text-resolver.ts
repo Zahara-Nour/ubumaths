@@ -5,7 +5,7 @@
  * Replaces all parameter tokens in text with their resolved values.
  * Works with any text content: statements, corrections, descriptions, etc.
  *
- * @module custom-markdown/parameterization/resolver/text-resolver
+ * @module ubumark/parameterization/resolver/text-resolver
  */
 
 import type { ResolvedVariable } from '../../types';

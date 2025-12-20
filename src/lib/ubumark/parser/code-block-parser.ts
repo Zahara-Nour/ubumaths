@@ -21,7 +21,7 @@
  *                    print("world")
  *                ~~~
  *
- * @module custom-markdown/parser/code-block-parser
+ * @module ubumark/parser/code-block-parser
  */
 
 import type { CodeBlockNode } from '../types';

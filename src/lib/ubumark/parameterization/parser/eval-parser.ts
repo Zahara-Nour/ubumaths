@@ -11,7 +11,7 @@
  * - ()/bracket: Wrap negative results in parentheses
  * - '/derivative: Take derivative before evaluating
  *
- * @module custom-markdown/parameterization/parser/eval-parser
+ * @module ubumark/parameterization/parser/eval-parser
  */
 
 import type { EvalModifiers, ParsedEvalExpression } from '../../types';

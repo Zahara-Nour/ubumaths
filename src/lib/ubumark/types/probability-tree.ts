@@ -10,7 +10,7 @@
  * - Optional outcomes column
  * - Support for LaTeX in labels
  *
- * @module custom-markdown/types/probability-tree
+ * @module ubumark/types/probability-tree
  */
 
 import type { BaseNode } from './ast';

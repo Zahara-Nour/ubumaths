@@ -7,7 +7,7 @@
  * - Random: {{random:1..10}} or {{1..10}} or {{a|b|c}}
  * - Eval: {{eval:expr}}
  *
- * @module custom-markdown/parameterization/parser/tokenizer
+ * @module ubumark/parameterization/parser/tokenizer
  */
 
 import type { Token } from '../../types';

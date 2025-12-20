@@ -10,7 +10,7 @@
  * - Math expressions converted from LaTeX to Typst
  * - Error comments for invalid input
  *
- * @module custom-markdown/generators/variation-table-typst
+ * @module ubumark/generators/variation-table-typst
  */
 
 import type {

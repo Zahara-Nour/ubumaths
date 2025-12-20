@@ -11,7 +11,7 @@
  * - removeNullTerms: Remove zero terms via canonization (x + 0 -> x)
  * - removeUnnecessaryBrackets: Simplify brackets via canonization
  *
- * @module custom-markdown/parameterization/expression-transforms
+ * @module ubumark/parameterization/expression-transforms
  *
  * @example Basic usage
  * ```typescript

@@ -10,7 +10,7 @@
  * - Optional outcomes column at leaves
  * - Proper LaTeX math escaping
  *
- * @module custom-markdown/generators/probability-tree-latex
+ * @module ubumark/generators/probability-tree-latex
  */
 
 import type { ProbabilityTreeNode, ProbTreeNode, ProbTreeBranch } from '../types/probability-tree';

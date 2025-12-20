@@ -10,7 +10,7 @@
  * - Block nodes: paragraph, heading, list, table, math-block, image, etc.
  * - Special nodes: document (root), list-item
  *
- * @module custom-markdown/types/ast
+ * @module ubumark/types/ast
  */
 
 // ============================================================================

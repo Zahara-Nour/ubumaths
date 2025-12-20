@@ -23,7 +23,7 @@
  *   -1: 3, top
  * ```
  *
- * @module custom-markdown/parser/variation-table-parser
+ * @module ubumark/parser/variation-table-parser
  */
 
 import type {

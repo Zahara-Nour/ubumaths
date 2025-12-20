@@ -4,7 +4,7 @@
  *
  * Comprehensive tests for the variation table LaTeX generator.
  *
- * @module custom-markdown/__tests__/generators/variation-table-latex.test
+ * @module ubumark/__tests__/generators/variation-table-latex.test
  */
 
 import { describe, it, expect } from 'vitest';

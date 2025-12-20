@@ -4,7 +4,7 @@
  *
  * Types for parser configuration, results, and internal structures.
  *
- * @module custom-markdown/types/parser
+ * @module ubumark/types/parser
  */
 
 // ============================================================================

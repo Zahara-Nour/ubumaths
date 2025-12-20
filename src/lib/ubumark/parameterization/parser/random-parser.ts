@@ -16,7 +16,7 @@
  * - Modifier separator: `;` (semicolon) for modifiers like `;+-`
  * - Exclusion separator: `!` for exclusions
  *
- * @module custom-markdown/parameterization/parser/random-parser
+ * @module ubumark/parameterization/parser/random-parser
  */
 
 import type { RandomSpec, NumberOrVariable, Exclusion } from '../../types';

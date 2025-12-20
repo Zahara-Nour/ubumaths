@@ -16,7 +16,7 @@
  * | Cell 4   | Cell 5   | Cell 6   |
  * ```
  *
- * @module custom-markdown/parser/table-parser
+ * @module ubumark/parser/table-parser
  */
 
 import type { TableNode, TableCellNode } from '../types';

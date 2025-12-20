@@ -8,7 +8,7 @@
  * - Exclusion pattern support
  * - Multiple decimal formats
  *
- * @module custom-markdown/parameterization/resolver/random-generator
+ * @module ubumark/parameterization/resolver/random-generator
  */
 
 import type { RandomSpec, ResolvedVariable, NumberOrVariable } from '../../types';

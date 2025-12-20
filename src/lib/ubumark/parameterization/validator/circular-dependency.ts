@@ -9,7 +9,7 @@
  * - Variable A depends on B, B depends on C, C depends on A
  * - Variable A depends on itself
  *
- * @module custom-markdown/parameterization/validator/circular-dependency
+ * @module ubumark/parameterization/validator/circular-dependency
  */
 
 import type { Variable, ValidationResult, ValidationError } from '../../types';

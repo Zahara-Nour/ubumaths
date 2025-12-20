@@ -14,7 +14,7 @@
  * - Circular dependency detection
  * - Display options for expression formatting
  *
- * @module custom-markdown/types/parameterization
+ * @module ubumark/types/parameterization
  */
 
 import type { DisplayOptions } from '../parameterization/display-options';

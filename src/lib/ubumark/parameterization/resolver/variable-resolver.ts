@@ -10,7 +10,7 @@
  * Variables are resolved in declaration order, allowing later
  * variables to reference earlier ones.
  *
- * @module custom-markdown/parameterization/resolver/variable-resolver
+ * @module ubumark/parameterization/resolver/variable-resolver
  */
 
 import type { Variable, ResolvedVariable } from '../../types';

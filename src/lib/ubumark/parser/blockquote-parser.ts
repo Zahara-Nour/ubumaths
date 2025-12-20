@@ -17,7 +17,7 @@
  *               >
  *               > Second paragraph
  *
- * @module custom-markdown/parser/blockquote-parser
+ * @module ubumark/parser/blockquote-parser
  */
 
 import type { BlockquoteNode } from '../types';

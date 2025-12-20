@@ -15,7 +15,7 @@
  * - Images: ![alt](url)
  * - Standard markdown: headers, lists, tables, etc.
  *
- * @module custom-markdown/types/template
+ * @module ubumark/types/template
  */
 
 // ============================================================================

@@ -10,7 +10,7 @@
  * - Unordered lists: - or * or +
  * - Nested lists with indentation (2 or 4 spaces)
  *
- * @module custom-markdown/parser/list-parser
+ * @module ubumark/parser/list-parser
  */
 
 import type { ListNode, ListItemNode } from '../types';

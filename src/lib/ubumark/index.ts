@@ -5,7 +5,7 @@
  * Complete markdown processing library for UbuMaths educational content.
  * Provides parsing, parameterization, and template resolution for mathematical exercises.
  *
- * @module custom-markdown
+ * @module ubumark
  *
  * @example Basic parsing
  * ```typescript
