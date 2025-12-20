@@ -1,5 +1,5 @@
 /**
- * Custom Markdown AST - Type Definitions
+ * Ubumark AST - Type Definitions
  * =======================================
  *
  * Abstract Syntax Tree node types for the custom markdown parser.

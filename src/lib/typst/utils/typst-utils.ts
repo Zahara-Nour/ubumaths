@@ -10,7 +10,7 @@
 
 /**
  * Escape special Typst characters in text
- * Re-exports from custom-markdown/generators for convenience
+ * Re-exports from ubumark/generators for convenience
  */
 export { escapeTypst, escapeTypstBrackets } from '$lib/ubumark/generators';
 

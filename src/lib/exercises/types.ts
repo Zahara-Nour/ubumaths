@@ -19,7 +19,7 @@
 
 import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
 
-// Re-export AST types from custom-markdown for backwards compatibility
+// Re-export AST types from ubumark for backwards compatibility
 export type {
 	BaseNode,
 	TextNode,

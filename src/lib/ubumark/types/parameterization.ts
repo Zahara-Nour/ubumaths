@@ -1,5 +1,5 @@
 /**
- * Custom Markdown Parameterization - Type Definitions
+ * Ubumark Parameterization - Type Definitions
  * ====================================================
  *
  * Content-agnostic parameterization system using Markdown syntax:

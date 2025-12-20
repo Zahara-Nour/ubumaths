@@ -1,5 +1,5 @@
 /**
- * Custom Markdown Library - Main Entry Point
+ * Ubumark Library - Main Entry Point
  * ===========================================
  *
  * Complete markdown processing library for UbuMaths educational content.

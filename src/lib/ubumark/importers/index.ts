@@ -1,6 +1,6 @@
 /**
- * Custom Markdown Importers
- * Modules for importing content from other formats into Custom Markdown
+ * Ubumark Importers
+ * Modules for importing content from other formats into Ubumark
  */
 
 // LaTeX Importer

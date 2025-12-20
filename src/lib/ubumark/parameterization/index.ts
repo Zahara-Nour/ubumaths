@@ -1,5 +1,5 @@
 /**
- * Custom Markdown Parameterization Library
+ * Ubumark Parameterization Library
  * =========================================
  *
  * Content-agnostic parameterization system for Questions and Exercises.
@@ -61,7 +61,7 @@
  */
 
 // ============================================================================
-// TYPES (re-export from custom-markdown/types)
+// TYPES (re-export from ubumark/types)
 // ============================================================================
 
 export type {
@@ -87,7 +87,7 @@ export type {
  *
  * Controls transformations (shuffle, remove nulls, etc.) applied before rendering.
  * Supports 3-level cascade: global -> template -> variable.
- * See: {@link module:custom-markdown/parameterization/display-options}
+ * See: {@link module:ubumark/parameterization/display-options}
  */
 export {
 	type DisplayOptions,
@@ -103,7 +103,7 @@ export {
  * Extract all parameterization tokens from text
  *
  * Supports Markdown syntax.
- * See: {@link module:custom-markdown/parameterization/parser/tokenizer}
+ * See: {@link module:ubumark/parameterization/parser/tokenizer}
  */
 export { tokenize } from './parser/tokenizer';
 
@@ -111,7 +111,7 @@ export { tokenize } from './parser/tokenizer';
  * Parse a variable reference token
  *
  * Extracts variable name from {{var}}.
- * See: {@link module:custom-markdown/parameterization/parser/variable-parser}
+ * See: {@link module:ubumark/parameterization/parser/variable-parser}
  */
 export { parseVariableReference } from './parser/variable-parser';
 
@@ -119,7 +119,7 @@ export { parseVariableReference } from './parser/variable-parser';
  * Parse a random specification token
  *
  * Handles all formats: integer range, decimal by digits, decimal range with step.
- * See: {@link module:custom-markdown/parameterization/parser/random-parser}
+ * See: {@link module:ubumark/parameterization/parser/random-parser}
  */
 export { parseRandomSpec } from './parser/random-parser';
 
@@ -127,7 +127,7 @@ export { parseRandomSpec } from './parser/random-parser';
  * Parse an eval expression token
  *
  * Extracts expression from {{eval:expr}}.
- * See: {@link module:custom-markdown/parameterization/parser/eval-parser}
+ * See: {@link module:ubumark/parameterization/parser/eval-parser}
  */
 export { parseEvalExpression, parseEvalExpressionWithModifiers } from './parser/eval-parser';
 
@@ -142,7 +142,7 @@ export { parseEvalExpression, parseEvalExpressionWithModifiers } from './parser/
  * 2. Generate random numbers
  * 3. Evaluate expressions
  *
- * See: {@link module:custom-markdown/parameterization/resolver/variable-resolver}
+ * See: {@link module:ubumark/parameterization/resolver/variable-resolver}
  */
 export { resolveVariables } from './resolver/variable-resolver';
 
@@ -152,7 +152,7 @@ export { resolveVariables } from './resolver/variable-resolver';
  * Resolves an arbitrary expression (not a variable definition) through
  * variable references, random generation, and evaluation.
  *
- * See: {@link module:custom-markdown/parameterization/resolver/variable-resolver}
+ * See: {@link module:ubumark/parameterization/resolver/variable-resolver}
  */
 export { resolveExpression } from './resolver/variable-resolver';
 
@@ -160,7 +160,7 @@ export { resolveExpression } from './resolver/variable-resolver';
  * Generate a random number from specification
  *
  * Supports integer/decimal ranges, variable bounds, exclusions, and seeding.
- * See: {@link module:custom-markdown/parameterization/resolver/random-generator}
+ * See: {@link module:ubumark/parameterization/resolver/random-generator}
  */
 export { generateRandomNumber } from './resolver/random-generator';
 
@@ -169,7 +169,7 @@ export { generateRandomNumber } from './resolver/random-generator';
  *
  * Replaces variables with their resolved values.
  * Optionally uses displayValue for transformed expression output.
- * See: {@link module:custom-markdown/parameterization/resolver/text-resolver}
+ * See: {@link module:ubumark/parameterization/resolver/text-resolver}
  */
 export { resolveText, type ResolveTextOptions } from './resolver/text-resolver';
 
@@ -181,7 +181,7 @@ export { resolveText, type ResolveTextOptions } from './resolver/text-resolver';
  * Detect circular dependencies in variable definitions
  *
  * Uses DFS to find cycles in the dependency graph.
- * See: {@link module:custom-markdown/parameterization/validator/circular-dependency}
+ * See: {@link module:ubumark/parameterization/validator/circular-dependency}
  */
 export { detectCircularDependencies } from './validator/circular-dependency';
 
@@ -189,7 +189,7 @@ export { detectCircularDependencies } from './validator/circular-dependency';
  * Validate variable definitions
  *
  * Checks names, syntax, references, ranges, and expressions.
- * See: {@link module:custom-markdown/parameterization/validator/variable-validator}
+ * See: {@link module:ubumark/parameterization/validator/variable-validator}
  */
 export { validateVariables } from './validator/variable-validator';
 
@@ -201,7 +201,7 @@ export { validateVariables } from './validator/variable-validator';
  * Apply display transformations to LaTeX expressions
  *
  * Transforms expressions based on display options (shuffle, canonize, etc.).
- * See: {@link module:custom-markdown/parameterization/expression-transforms}
+ * See: {@link module:ubumark/parameterization/expression-transforms}
  */
 export {
 	applyDisplayTransforms,

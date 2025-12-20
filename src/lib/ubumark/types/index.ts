@@ -1,5 +1,5 @@
 /**
- * Custom Markdown Types - Barrel Export
+ * Ubumark Types - Barrel Export
  * ======================================
  *
  * Central export point for all custom markdown types.
