@@ -1,5 +1,5 @@
 /**
- * Custom Markdown Generators
+ * Ubumark Generators
  * ==========================
  *
  * This module exports generators that convert markdown AST to various output formats.

@@ -55,7 +55,7 @@ const gradeLevelsSchema = z
 // ============================================================================
 
 /**
- * Schema for exercise variable (from custom-markdown)
+ * Schema for exercise variable (from ubumark)
  */
 const variableSchema = z.object({
 	name: z.string(),

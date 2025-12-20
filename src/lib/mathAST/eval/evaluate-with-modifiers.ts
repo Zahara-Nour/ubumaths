@@ -4,7 +4,7 @@
  * Provides a convenience function for evaluating LaTeX expressions
  * with formatting modifiers (decimal output, positive sign, bracket negative).
  *
- * This module bridges MathAST evaluation with the custom-markdown
+ * This module bridges MathAST evaluation with the ubumark
  * parameterization system's EvalModifiers interface.
  *
  * @module mathAST/eval/evaluate-with-modifiers
@@ -59,7 +59,7 @@ function formatNumber(value: number): string {
  * Evaluate a LaTeX expression with optional formatting modifiers.
  *
  * This function provides a simple API for evaluating mathematical expressions
- * that matches the interface expected by the custom-markdown parameterization system.
+ * that matches the interface expected by the ubumark parameterization system.
  *
  * Supports formatting modifiers:
  * - `decimal`: Force decimal output (convert fractions to decimals)

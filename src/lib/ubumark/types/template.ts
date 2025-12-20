@@ -1,11 +1,11 @@
 /**
- * Custom Markdown Template - Type Definitions
+ * Ubumark Template - Type Definitions
  * ============================================
  *
  * Branded types for distinguishing between template and resolved markdown.
  * Ensures type safety when working with our custom markdown syntax.
  *
- * Custom Markdown Syntax:
+ * Ubumark Syntax:
  * - Variables: {{variable}}
  * - Random: {{random:1..10}}, {{random:2.3}}, {{random:1..10!5}}
  * - Eval: {{eval:a+b}}

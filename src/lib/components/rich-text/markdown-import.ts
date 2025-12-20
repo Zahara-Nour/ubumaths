@@ -3,7 +3,7 @@
  * ==================================
  *
  * Converts Markdown text to TipTap JSON format using the existing
- * custom-markdown parser. Handles all supported block and inline types.
+ * ubumark parser. Handles all supported block and inline types.
  *
  * @module rich-text/markdown-import
  */

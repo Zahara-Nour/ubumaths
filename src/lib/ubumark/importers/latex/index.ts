@@ -1,6 +1,6 @@
 /**
  * LaTeX to Markdown transpiler
- * Converts LaTeX documents to Custom Markdown format
+ * Converts LaTeX documents to Ubumark format
  */
 
 // Export all types

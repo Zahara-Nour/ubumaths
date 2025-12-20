@@ -1,5 +1,5 @@
 /**
- * Custom Markdown Parser - Barrel Export
+ * Ubumark Parser - Barrel Export
  * =======================================
  *
  * Central export point for all markdown parsing utilities.

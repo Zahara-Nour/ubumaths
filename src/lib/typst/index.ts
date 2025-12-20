@@ -128,7 +128,7 @@ export {
 } from './utils';
 
 // ============================================================================
-// TRANSPILER (re-exported from custom-markdown/generators)
+// TRANSPILER (re-exported from ubumark/generators)
 // ============================================================================
 
 export {

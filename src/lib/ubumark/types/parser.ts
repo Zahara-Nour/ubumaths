@@ -1,5 +1,5 @@
 /**
- * Custom Markdown Parser - Type Definitions
+ * Ubumark Parser - Type Definitions
  * ==========================================
  *
  * Types for parser configuration, results, and internal structures.

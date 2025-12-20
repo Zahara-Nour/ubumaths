@@ -1,6 +1,6 @@
 /**
  * Types for LaTeX to Markdown transpiler
- * Converts LaTeX documents to Custom Markdown format for further processing
+ * Converts LaTeX documents to Ubumark format for further processing
  */
 
 // ===========================
