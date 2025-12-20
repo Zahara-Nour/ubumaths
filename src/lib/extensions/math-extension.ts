@@ -31,14 +31,8 @@
 
 import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
-import { Plugin, PluginKey, Selection } from '@tiptap/pm/state';
-import { NodeSelection } from '@tiptap/pm/state';
+import { Plugin, PluginKey, Selection, NodeSelection } from '@tiptap/pm/state';
 import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '$lib/mathAST';
-
-/**
- * Plugin key for custom math block input handler (~~...~~)
- */
-const customMathBlockPluginKey = new PluginKey('customMathBlockInput');
 
 // ============================================================================
 // TYPE DECLARATIONS
@@ -874,87 +868,41 @@ export const MathBlock = Node.create({
 						}
 					}
 				}
-			})
-			// Note: ~~...~~ is handled by handleTextInput plugin for immediate triggering
-		];
-	},
-
-	/**
-	 * ProseMirror Plugin for custom syntax ~~...~~
-	 * Triggers immediately on the closing ~ without needing a space
-	 */
-	addProseMirrorPlugins() {
-		const nodeType = this.type;
-
-		return [
-			new Plugin({
-				key: customMathBlockPluginKey,
-				props: {
-					handleTextInput(view, from, _to, text) {
-						// Only process when typing ~
-						if (text !== '~') return false;
-
-						const { state } = view;
-						const $from = state.doc.resolve(from);
-						const parent = $from.parent;
-						const parentStart = $from.start();
-						const cursorOffset = $from.parentOffset;
-
-						const parentText = parent.textContent;
-
-						// Check if the previous character is also ~ (we're completing ~~...~~)
-						if (cursorOffset < 1 || parentText[cursorOffset - 1] !== '~') {
-							return false;
-						}
-
-						// Search backwards for opening ~~ pattern
-						let openDoubleTildeOffset = -1;
-						for (let i = cursorOffset - 2; i >= 1; i--) {
-							if (parentText[i] === '~' && parentText[i - 1] === '~') {
-								openDoubleTildeOffset = i - 1;
-								break;
-							}
-						}
-
-						if (openDoubleTildeOffset === -1) return false;
-
-						// Get content between ~~ and ~
-						// Pattern is ~~content~ and we're about to type the final ~
-						const content = parentText.slice(openDoubleTildeOffset + 2, cursorOffset - 1);
-						if (!content || content.trim() === '' || content.includes('~~')) {
-							return false;
-						}
-
-						// Create the math block node
-						const parseResult = parseCustomSafe(content.trim());
-						const latex = parseResult.ast ? toLatex(parseResult.ast) : content.trim();
-						const mathBlockNode = nodeType.create({
+			}),
+			// Custom syntax block: ~~...~~
+			// Note: On French keyboards, ~ is a dead key. Users must type a space or
+			// another character after the closing ~~ to complete composition and trigger
+			// this rule. Example: "~~x^2~~ " (with trailing space)
+			new InputRule({
+				find: /~~([^~]+)~~$/,
+				handler: ({ state, range, match }) => {
+					const { tr } = state;
+					const input = match[1]?.trim();
+					if (input) {
+						const parseResult = parseCustomSafe(input);
+						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
+						const mathBlockNode = this.type.create({
 							latex,
 							syntax: 'custom',
-							originalExpression: content.trim()
+							originalExpression: input
 						});
 
-						const patternStart = parentStart + openDoubleTildeOffset;
-						const patternEnd = from; // Before the ~ we're typing
+						// Check if paragraph only contains this pattern (is empty after removal)
+						const $from = state.doc.resolve(range.from);
+						const paragraph = $from.parent;
+						const paragraphStart = $from.start();
+						const paragraphEnd = paragraphStart + paragraph.content.size;
+						const isOnlyContent = range.from === paragraphStart && range.to === paragraphEnd;
 
-						// Check if paragraph only contains this pattern
-						const paragraphEnd = parentStart + parent.content.size;
-						const isOnlyContent = patternStart === parentStart && patternEnd + 1 >= paragraphEnd;
-
-						const tr = state.tr;
-
-						if (isOnlyContent && parent.type.name === 'paragraph') {
+						if (isOnlyContent && paragraph.type.name === 'paragraph') {
 							// Replace entire paragraph with mathBlock
 							const blockStart = $from.before();
 							const blockEnd = $from.after();
 							tr.replaceWith(blockStart, blockEnd, mathBlockNode);
 						} else {
-							// Just replace the pattern - use replaceWith to match InputRule behavior
-							tr.replaceWith(patternStart, patternEnd, mathBlockNode);
+							// Just replace the pattern
+							tr.replaceWith(range.from, range.to, mathBlockNode);
 						}
-
-						view.dispatch(tr);
-						return true; // Prevent default (don't insert the ~)
 					}
 				}
 			})
