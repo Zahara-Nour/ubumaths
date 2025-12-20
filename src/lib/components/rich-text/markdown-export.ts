@@ -627,18 +627,23 @@ function convertTextNodeToMarkdown(node: JSONContent): string {
 
 	let result = text;
 
-	// Check for marks and apply in order: code > strikethrough > bold+italic > bold > italic > link
+	// Check for marks and apply in order: code > highlight > strikethrough > bold+italic > bold > italic > link
 	const hasBold = node.marks.some((m) => m.type === 'bold');
 	const hasItalic = node.marks.some((m) => m.type === 'italic');
 	const hasCode = node.marks.some((m) => m.type === 'code');
 	const hasStrike = node.marks.some((m) => m.type === 'strike');
+	const hasHighlight = node.marks.some((m) => m.type === 'highlight');
 	const linkMark = node.marks.find((m) => m.type === 'link');
 
 	// Code takes precedence (can't have formatting inside code)
 	if (hasCode) {
 		result = `\`${text}\``;
 	} else {
-		// Apply strikethrough first (using -/-text-/- syntax)
+		// Apply highlight first (using ==text== syntax)
+		if (hasHighlight) {
+			result = `==${result}==`;
+		}
+		// Apply strikethrough (using -/-text-/- syntax)
 		if (hasStrike) {
 			result = `-/-${result}-/-`;
 		}
