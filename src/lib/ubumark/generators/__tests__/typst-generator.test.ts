@@ -1177,6 +1177,28 @@ describe('Text Formatting', () => {
 		expect(typst).toContain('#strike[deleted]');
 		expect(typst).toContain('text');
 	});
+
+	it('should generate highlighted text with #highlight', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [
+						{ type: 'text', content: 'This is ' },
+						{ type: 'text', content: 'important', highlight: true },
+						{ type: 'text', content: ' text' }
+					]
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain('This is');
+		expect(typst).toContain('#highlight[important]');
+		expect(typst).toContain('text');
+	});
 });
 
 describe('Edge Cases', () => {

@@ -38,6 +38,7 @@ export interface TextNode extends BaseNode {
 	italic?: boolean;
 	code?: boolean;
 	strikethrough?: boolean;
+	highlight?: boolean;
 }
 
 /**

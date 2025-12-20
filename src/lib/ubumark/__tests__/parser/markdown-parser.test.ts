@@ -363,6 +363,40 @@ Text after`;
 		}
 	});
 
+	it('should parse text formatting - highlight', () => {
+		const markdown = 'This is ==highlighted== text';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+			expect(paragraph.children).toHaveLength(3);
+
+			// First: plain text
+			expect(paragraph.children[0].type).toBe('text');
+			if (paragraph.children[0].type === 'text') {
+				expect(paragraph.children[0].content).toBe('This is ');
+				expect(paragraph.children[0].highlight).toBeUndefined();
+			}
+
+			// Second: highlighted text
+			expect(paragraph.children[1].type).toBe('text');
+			if (paragraph.children[1].type === 'text') {
+				expect(paragraph.children[1].content).toBe('highlighted');
+				expect(paragraph.children[1].highlight).toBe(true);
+			}
+
+			// Third: plain text
+			expect(paragraph.children[2].type).toBe('text');
+			if (paragraph.children[2].type === 'text') {
+				expect(paragraph.children[2].content).toBe(' text');
+				expect(paragraph.children[2].highlight).toBeUndefined();
+			}
+		}
+	});
+
 	it('should parse mixed formatting', () => {
 		const markdown = '**Note** : Utiliser les *propriétés* des fonctions `trigonométriques`.';
 		const ast = parseMarkdown(markdown);
