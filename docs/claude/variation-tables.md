@@ -94,17 +94,17 @@ variation: f(x)
 
 ### Types
 
-- `src/lib/custom-markdown/types/variation-table.ts` - TypeScript interfaces
+- `src/lib/ubumark/types/variation-table.ts` - TypeScript interfaces
 
 ### Parser
 
-- `src/lib/custom-markdown/parser/variation-table-parser.ts` - Markdown parser
+- `src/lib/ubumark/parser/variation-table-parser.ts` - Markdown parser
 
 ### Renderers
 
 - `src/lib/components/markdown/nodes/VariationTable.svelte` - HTML renderer
-- `src/lib/custom-markdown/generators/variation-table-latex.ts` - LaTeX (tkz-tab)
-- `src/lib/custom-markdown/generators/variation-table-typst.ts` - Typst (vartable)
+- `src/lib/ubumark/generators/variation-table-latex.ts` - LaTeX (tkz-tab)
+- `src/lib/ubumark/generators/variation-table-typst.ts` - Typst (vartable)
 
 ## Usage in Components
 

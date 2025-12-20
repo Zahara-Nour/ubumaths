@@ -1,7 +1,7 @@
 # Phase 5: LaTeX Transpiler for Enhanced Images
 
 > **DEPRECATED**: This is historical documentation from 2025-11-22.
-> The LaTeX transpiler has been moved to `src/lib/custom-markdown/generators/latex-generator.ts`.
+> The LaTeX transpiler has been moved to `src/lib/ubumark/generators/latex-generator.ts`.
 > See [docs/claude/latex-to-markdown.md](../../claude/latex-to-markdown.md) for current documentation.
 
 ## Overview

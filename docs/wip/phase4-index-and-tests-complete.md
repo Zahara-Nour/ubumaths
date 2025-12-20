@@ -6,9 +6,9 @@
 
 ### 1. Created Main Entry Point
 
-**File**: `src/lib/custom-markdown/index.ts`
+**File**: `src/lib/ubumark/index.ts`
 
-- Comprehensive barrel export for the entire custom-markdown library
+- Comprehensive barrel export for the entire ubumark library
 - Organized exports by category:
   - Type exports (AST, Parser, Template, Parameterization types)
   - Constant exports (defaults, configurations)
@@ -16,11 +16,11 @@
   - Parser exports (main parser, sub-parsers, utilities)
   - Parameterization exports (parsers, resolvers, validators, transforms)
 - Well-documented with JSDoc examples for common use cases
-- Provides clean public API: `import { parseMarkdown, resolveVariables } from '$lib/custom-markdown'`
+- Provides clean public API: `import { parseMarkdown, resolveVariables } from '$lib/ubumark'`
 
 ### 2. Migrated All Test Files
 
-**Test Directory Structure**: `src/lib/custom-markdown/__tests__/`
+**Test Directory Structure**: `src/lib/ubumark/__tests__/`
 
 ```
 __tests__/
@@ -78,7 +78,7 @@ import { templateMarkdown } from '../types';
 
 #### Bug 1: Circular Dependency Arrow Character
 
-**File**: `src/lib/custom-markdown/parameterization/validator/circular-dependency.ts`
+**File**: `src/lib/ubumark/parameterization/validator/circular-dependency.ts`
 
 - **Issue**: Used `->` instead of `→` for cycle path display
 - **Fix**: Changed to `→` to match test expectations
@@ -86,7 +86,7 @@ import { templateMarkdown } from '../types';
 
 #### Bug 2: Relative Integer Modifier Detection
 
-**File**: `src/lib/custom-markdown/parameterization/parser/random-parser.ts`
+**File**: `src/lib/ubumark/parameterization/parser/random-parser.ts`
 
 - **Issue**: Line 133 had duplicate condition `modifier === '+-' || modifier === '+-'`
 - **Fix**: Changed to `modifier === '+-' || modifier === '±'`
@@ -112,14 +112,14 @@ Duration    3.81s
 
 ### New Files (2)
 
-1. `src/lib/custom-markdown/index.ts` - Main entry point
-2. All 23 test files in `src/lib/custom-markdown/__tests__/`
+1. `src/lib/ubumark/index.ts` - Main entry point
+2. All 23 test files in `src/lib/ubumark/__tests__/`
 
 ### Modified Files (2)
 
-1. `src/lib/custom-markdown/parameterization/validator/circular-dependency.ts`
+1. `src/lib/ubumark/parameterization/validator/circular-dependency.ts`
    - Fixed arrow character in error message
-2. `src/lib/custom-markdown/parameterization/parser/random-parser.ts`
+2. `src/lib/ubumark/parameterization/parser/random-parser.ts`
    - Fixed relative integer modifier detection
 
 ## Original Test Files
@@ -136,11 +136,11 @@ These will be deleted in Phase 6 after all consumers are updated.
 
 ### Phase 5: Update Consumers
 
-- Update all imports in codebase to use `$lib/custom-markdown`
+- Update all imports in codebase to use `$lib/ubumark`
 - Replace old imports from:
-  - `$lib/exercises/parser` → `$lib/custom-markdown/parser`
-  - `$lib/shared/parameterization` → `$lib/custom-markdown/parameterization`
-  - `$lib/shared/markdown` → `$lib/custom-markdown/types`
+  - `$lib/exercises/parser` → `$lib/ubumark/parser`
+  - `$lib/shared/parameterization` → `$lib/ubumark/parameterization`
+  - `$lib/shared/markdown` → `$lib/ubumark/types`
 - Update all barrel imports to use new structure
 
 ### Phase 6: Cleanup
@@ -155,7 +155,7 @@ These will be deleted in Phase 6 after all consumers are updated.
 ### Simple Usage (Main Entry Point)
 
 ```typescript
-import { parseMarkdown, resolveVariables, resolveText } from '$lib/custom-markdown';
+import { parseMarkdown, resolveVariables, resolveText } from '$lib/ubumark';
 
 // Parse markdown
 const doc = parseMarkdown('# Title\n\nSome **bold** text with $x = 5$');
@@ -176,16 +176,16 @@ const result = resolveText(text, resolved);
 
 ```typescript
 // Parser sub-module
-import { parseList, parseTable } from '$lib/custom-markdown/parser';
+import { parseList, parseTable } from '$lib/ubumark/parser';
 
 // Parameterization sub-module
 import {
 	validateVariables,
 	detectCircularDependencies
-} from '$lib/custom-markdown/parameterization';
+} from '$lib/ubumark/parameterization';
 
 // Types
-import type { DocumentNode, Variable, RandomSpec } from '$lib/custom-markdown';
+import type { DocumentNode, Variable, RandomSpec } from '$lib/ubumark';
 ```
 
 ## Validation

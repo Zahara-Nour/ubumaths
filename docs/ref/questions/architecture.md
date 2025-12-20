@@ -30,7 +30,7 @@ Le systeme de questions est une architecture **en couches** avec separation stri
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                         COUCHE INFRASTRUCTURE                               │
 │  ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────────┐   │
-│  │  Compute Engine   │  │ Custom Markdown   │  │   Unit System         │   │
+│  │  Compute Engine   │  │ Ubumark   │  │   Unit System         │   │
 │  └───────────────────┘  └───────────────────┘  └───────────────────────┘   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                            COUCHE DONNEES                                   │
@@ -161,7 +161,7 @@ src/lib/questions/
         │                    │                    │
         ▼                    ▼                    ▼
 ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│custom-markdown│    │compute-engine │    │    units/     │
+│ubumark│    │compute-engine │    │    units/     │
 └───────────────┘    └───────────────┘    └───────────────┘
         │                    │
         └────────────────────┘
@@ -411,7 +411,7 @@ ValidationResult
 ### Branded Types (Type Safety)
 
 ```typescript
-// custom-markdown/types.ts
+// ubumark/types.ts
 
 // Template non resolu (peut contenir {{...}})
 type TemplateMarkdown = string & { __brand: 'TemplateMarkdown' };
@@ -460,20 +460,20 @@ function renderStatement(content: ResolvedMarkdown): void;
     └───────────────────────────────────────────────────────┘
 ```
 
-### Custom Markdown Library
+### Ubumark Library
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                   Questions Module                          │
 │                                                             │
 │  import { resolveVariables, resolveText } from              │
-│          '$lib/custom-markdown';                            │
+│          '$lib/ubumark';                            │
 │                                                             │
 └────────────────────────────┬────────────────────────────────┘
                              │
                              ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                  $lib/custom-markdown/                      │
+│                  $lib/ubumark/                      │
 │                                                             │
 │  ┌─────────────────┐  ┌─────────────────┐                   │
 │  │   Tokenizer     │  │   Resolvers     │                   │

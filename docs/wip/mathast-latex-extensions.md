@@ -4,7 +4,7 @@
 >
 > **Updated**: 2025-12-10
 >
-> **Related**: `src/lib/custom-markdown/importers/latex/converters/math-to-custom.ts`
+> **Related**: `src/lib/ubumark/importers/latex/converters/math-to-custom.ts`
 
 ---
 

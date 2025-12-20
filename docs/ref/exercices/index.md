@@ -177,4 +177,4 @@ The codebase has **two distinct systems** for math problems. Understanding the d
 
 - [Parameterization Guide](../../features/exercises/parameterization-guide.md) - Detailed variable syntax
 - [Import/Export](../../features/exercises/import-export.md) - JSON and Markdown formats
-- [Custom Markdown](../markdown.md) - Markdown parser with math support
+- [Ubumark](../markdown.md) - Markdown parser with math support

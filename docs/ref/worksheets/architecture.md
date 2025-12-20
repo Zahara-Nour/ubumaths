@@ -21,7 +21,7 @@ Technical architecture of the worksheets system including data flow, design patt
                               ▼
 ┌────────────────────────────────────────────────────────────────┐
 │                      Business Logic Layer                       │
-│   Instance Generator + Typst Generator + Custom Markdown       │
+│   Instance Generator + Typst Generator + Ubumark       │
 └────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -360,10 +360,10 @@ CREATE INDEX idx_worksheets_search ON worksheets
 
 ## Integration Points
 
-### Custom Markdown System
+### Ubumark System
 
 ```typescript
-import { parseMarkdown, resolveVariables, resolveText } from '$lib/custom-markdown';
+import { parseMarkdown, resolveVariables, resolveText } from '$lib/ubumark';
 
 // Resolve variables with seed
 const resolvedVars = resolveVariables(variables, seed);
@@ -375,7 +375,7 @@ const statement = resolveText(exercise.statement_md, resolvedVars);
 ### Typst Transpiler
 
 ```typescript
-import { generateTypst, escapeTypst } from '$lib/custom-markdown';
+import { generateTypst, escapeTypst } from '$lib/ubumark';
 
 // Convert markdown AST to Typst
 const statementAst = parseMarkdown(exercise.statement);

@@ -1,4 +1,4 @@
-# Custom Markdown Refactoring - Progress Document
+# Ubumark Refactoring - Progress Document
 
 **Started**: 2025-12-15
 **Completed**: 2025-12-15
@@ -6,12 +6,12 @@
 
 ## Objective
 
-Consolidate all custom markdown related modules into `src/lib/custom-markdown/` and resolve architectural inconsistencies.
+Consolidate all custom markdown related modules into `src/lib/ubumark/` and resolve architectural inconsistencies.
 
 ## Target Architecture
 
 ```
-src/lib/custom-markdown/
+src/lib/ubumark/
 ├── parser/              # markdown → AST (exists)
 ├── types/               # AST types (exists)
 ├── parameterization/    # templates (exists)
@@ -33,7 +33,7 @@ src/lib/math/            # NEW: shared module
 | ----- | ----------------------------------- | ------ | ------------- |
 | 0     | Preparation                         | DONE   | Initial setup |
 | 1     | Create $lib/math/compute-engine     | DONE   | 33502ebf      |
-| 2     | Use MathAST/eval in custom-markdown | DONE   | 33502ebf      |
+| 2     | Use MathAST/eval in ubumark | DONE   | 33502ebf      |
 | 3     | Add missing exports                 | DONE   | 33502ebf      |
 | 4     | Create generators/                  | DONE   | 33502ebf      |
 | 5     | Create importers/                   | DONE   | 33502ebf      |
@@ -47,19 +47,19 @@ src/lib/math/            # NEW: shared module
 
 1. **Moved Compute Engine to Shared Location** (`$lib/math/compute-engine/`)
    - Moved from `$lib/questions/compute-engine/` to make it available for non-question code
-   - Now accessible to custom-markdown without circular dependencies
+   - Now accessible to ubumark without circular dependencies
 
 2. **Created MathAST Evaluation Function** (`$lib/mathAST/eval/evaluate-with-modifiers.ts`)
-   - Replaced direct compute-engine dependency in custom-markdown
+   - Replaced direct compute-engine dependency in ubumark
    - Supports evaluation modifiers (display, fixed, sci, etc.)
    - Cleaner separation of concerns
 
-3. **Created Generators Directory** (`$lib/custom-markdown/generators/`)
+3. **Created Generators Directory** (`$lib/ubumark/generators/`)
    - Moved LaTeX generator from typst module
    - Moved Typst generator from separate module
    - All markdown → other format conversions in one place
 
-4. **Created Importers Directory** (`$lib/custom-markdown/importers/`)
+4. **Created Importers Directory** (`$lib/ubumark/importers/`)
    - Moved LaTeX importer from `$lib/exercises/transpilers/latex-to-markdown/`
    - Clean separation: importers bring content IN, generators output content OUT
 
@@ -70,10 +70,10 @@ src/lib/math/            # NEW: shared module
 
 ### New Architecture
 
-All custom-markdown functionality is now consolidated under `$lib/custom-markdown/`:
+All ubumark functionality is now consolidated under `$lib/ubumark/`:
 
 ```
-src/lib/custom-markdown/
+src/lib/ubumark/
 ├── parser/              # markdown → AST
 ├── types/               # AST types
 ├── parameterization/    # templates, variables
@@ -96,7 +96,7 @@ src/lib/math/
 
 ### Phase 0-1: Setup & Compute Engine Move
 
-- `docs/wip/custom-markdown-refactor-progress.md` (this file)
+- `docs/wip/ubumark-refactor-progress.md` (this file)
 - `src/lib/math/` (created)
 - `src/lib/math/compute-engine/` (moved from questions)
 - `src/lib/math/index.ts` (created)
@@ -104,23 +104,23 @@ src/lib/math/
 ### Phase 2: MathAST Evaluation
 
 - `src/lib/mathAST/eval/evaluate-with-modifiers.ts` (created)
-- `src/lib/custom-markdown/parameterization/resolvers/eval-resolver.ts` (updated to use new function)
+- `src/lib/ubumark/parameterization/resolvers/eval-resolver.ts` (updated to use new function)
 
 ### Phase 3: Exports
 
-- `src/lib/custom-markdown/index.ts` (added generator and importer exports)
-- `src/lib/custom-markdown/generators/index.ts` (created)
-- `src/lib/custom-markdown/importers/index.ts` (created)
+- `src/lib/ubumark/index.ts` (added generator and importer exports)
+- `src/lib/ubumark/generators/index.ts` (created)
+- `src/lib/ubumark/importers/index.ts` (created)
 
 ### Phase 4: Generators
 
-- `src/lib/custom-markdown/generators/latex-generator.ts` (moved from typst)
-- `src/lib/custom-markdown/generators/typst-generator.ts` (moved from typst/transpiler)
-- `src/lib/custom-markdown/generators/__tests__/` (moved tests)
+- `src/lib/ubumark/generators/latex-generator.ts` (moved from typst)
+- `src/lib/ubumark/generators/typst-generator.ts` (moved from typst/transpiler)
+- `src/lib/ubumark/generators/__tests__/` (moved tests)
 
 ### Phase 5: Importers
 
-- `src/lib/custom-markdown/importers/latex/` (moved from exercises/transpilers/latex-to-markdown)
+- `src/lib/ubumark/importers/latex/` (moved from exercises/transpilers/latex-to-markdown)
 - All subdirectories and tests moved
 
 ### Phase 6: Cleanup
@@ -132,11 +132,11 @@ src/lib/math/
 ### Phase 7: Documentation
 
 - `docs/claude/latex-to-markdown.md` (updated all import paths)
-- `docs/wip/custom-markdown-refactor-progress.md` (this summary)
+- `docs/wip/ubumark-refactor-progress.md` (this summary)
 
 ## Decisions Made
 
-1. **Typst module**: Move `typst-transpiler.ts` to custom-markdown/generators/
+1. **Typst module**: Move `typst-transpiler.ts` to ubumark/generators/
 2. **Circular dependency**: Use MathAST/eval + move compute-engine to $lib/math
 3. **Question\* components**: Out of scope (separate task)
 4. **Backward compatibility**: Breaking change (no shims)
@@ -149,9 +149,9 @@ Code that previously imported from these locations needs to be updated:
 
 | Old Path                                       | New Path                               |
 | ---------------------------------------------- | -------------------------------------- |
-| `$lib/exercises/transpilers`                   | `$lib/custom-markdown` (main exports)  |
-| `$lib/exercises/transpilers/latex-to-markdown` | `$lib/custom-markdown/importers/latex` |
-| `$lib/typst/transpiler`                        | `$lib/custom-markdown/generators`      |
+| `$lib/exercises/transpilers`                   | `$lib/ubumark` (main exports)  |
+| `$lib/exercises/transpilers/latex-to-markdown` | `$lib/ubumark/importers/latex` |
+| `$lib/typst/transpiler`                        | `$lib/ubumark/generators`      |
 | `$lib/questions/compute-engine`                | `$lib/math/compute-engine`             |
 
 ### Recommended Imports
@@ -163,7 +163,7 @@ Code that previously imported from these locations needs to be updated:
 import { transpileLatexToMarkdown } from '$lib/exercises/transpilers';
 
 // After
-import { transpileLatexToMarkdown } from '$lib/custom-markdown';
+import { transpileLatexToMarkdown } from '$lib/ubumark';
 ```
 
 **For Typst generation:**
@@ -173,9 +173,9 @@ import { transpileLatexToMarkdown } from '$lib/custom-markdown';
 import { generateTypst, escapeTypst } from '$lib/typst/transpiler';
 
 // After
-import { generateTypst, escapeTypst } from '$lib/custom-markdown';
+import { generateTypst, escapeTypst } from '$lib/ubumark';
 // or
-import { generateTypst, escapeTypst } from '$lib/custom-markdown/generators';
+import { generateTypst, escapeTypst } from '$lib/ubumark/generators';
 ```
 
 **For Compute Engine:**
@@ -198,7 +198,7 @@ git revert 33502ebf
 
 ## Next Steps
 
-This refactoring is complete. All custom-markdown functionality is now:
+This refactoring is complete. All ubumark functionality is now:
 
 - ✅ Consolidated in one location
 - ✅ Properly organized by function (parse, generate, import)

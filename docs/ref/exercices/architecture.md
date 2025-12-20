@@ -128,7 +128,7 @@ The Exercises System is a complete solution for creating, managing, assigning, a
 │                                 │                                           │
 │                                 ▼                                           │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │  $lib/custom-markdown/parameterization/                              │   │
+│  │  $lib/ubumark/parameterization/                              │   │
 │  │  ├─ variable-resolver.ts    → Resolve variable expressions          │   │
 │  │  ├─ text-resolver.ts        → Replace {{}} in content               │   │
 │  │  ├─ random-generator.ts     → Seeded random number generation       │   │
@@ -795,7 +795,7 @@ async function toggleCompletion(exerciseId: string) {
 
 ## Integration Points
 
-### 1. Markdown Rendering (Custom Markdown Library)
+### 1. Markdown Rendering (Ubumark Library)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -1028,7 +1028,7 @@ src/
 │   │       ├── MarkdownRenderer.svelte       # AST renderer
 │   │       └── nodes/                        # Node components
 │   │
-│   ├── custom-markdown/
+│   ├── ubumark/
 │   │   ├── parser/                           # Markdown → AST
 │   │   ├── parameterization/
 │   │   │   ├── variable-resolver.ts          # Resolve variables

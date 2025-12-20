@@ -4,7 +4,7 @@
 
 ### Summary
 
-Refactored math node structure in custom-markdown:
+Refactored math node structure in ubumark:
 
 1. **`latex` → `expression`**: Le champ contient maintenant l'expression dans sa syntaxe originale
 2. **`syntax` obligatoire**: `'latex' | 'custom'` indique comment interpréter l'expression
@@ -29,13 +29,13 @@ MathInlineNode {                      expressionToLatex(expression, syntax)
 
 ### Types
 
-- `src/lib/custom-markdown/types/ast.ts`
-- `src/lib/custom-markdown/types/parser.ts`
+- `src/lib/ubumark/types/ast.ts`
+- `src/lib/ubumark/types/parser.ts`
 
 ### Parser
 
-- `src/lib/custom-markdown/parser/math-extractor.ts`
-- `src/lib/custom-markdown/parser/markdown-parser.ts`
+- `src/lib/ubumark/parser/math-extractor.ts`
+- `src/lib/ubumark/parser/markdown-parser.ts`
 
 ### Composants
 
@@ -48,23 +48,23 @@ MathInlineNode {                      expressionToLatex(expression, syntax)
 
 ### Generators
 
-- `src/lib/custom-markdown/generators/latex-generator.ts`
-- `src/lib/custom-markdown/generators/typst-generator.ts`
+- `src/lib/ubumark/generators/latex-generator.ts`
+- `src/lib/ubumark/generators/typst-generator.ts`
 
 ### Importers
 
-- `src/lib/custom-markdown/importers/latex/` (LaTeX → markdown transpiler)
+- `src/lib/ubumark/importers/latex/` (LaTeX → markdown transpiler)
 
 ### Tests
 
-- `src/lib/custom-markdown/__tests__/parser/math-extractor.test.ts`
-- `src/lib/custom-markdown/__tests__/parser/markdown-parser.test.ts`
-- `src/lib/custom-markdown/__tests__/parser/markdown-parser-integration.test.ts`
-- `src/lib/custom-markdown/__tests__/parser/complete-integration.test.ts`
-- `src/lib/custom-markdown/__tests__/parser/unified-inputs.test.ts`
-- `src/lib/custom-markdown/generators/__tests__/latex-generator.test.ts`
-- `src/lib/custom-markdown/generators/__tests__/typst-generator.test.ts`
-- `src/lib/custom-markdown/importers/latex/__tests__/` (LaTeX importer tests)
+- `src/lib/ubumark/__tests__/parser/math-extractor.test.ts`
+- `src/lib/ubumark/__tests__/parser/markdown-parser.test.ts`
+- `src/lib/ubumark/__tests__/parser/markdown-parser-integration.test.ts`
+- `src/lib/ubumark/__tests__/parser/complete-integration.test.ts`
+- `src/lib/ubumark/__tests__/parser/unified-inputs.test.ts`
+- `src/lib/ubumark/generators/__tests__/latex-generator.test.ts`
+- `src/lib/ubumark/generators/__tests__/typst-generator.test.ts`
+- `src/lib/ubumark/importers/latex/__tests__/` (LaTeX importer tests)
 
 ---
 

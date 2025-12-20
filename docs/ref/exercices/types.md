@@ -24,7 +24,7 @@
 
 ## Overview
 
-All types are defined in `$lib/exercises/types.ts` and re-export AST types from `$lib/custom-markdown`.
+All types are defined in `$lib/exercises/types.ts` and re-export AST types from `$lib/ubumark`.
 
 ```typescript
 import type { Exercise, ExerciseInstance, ExerciseAssignment } from '$lib/exercises/types';
@@ -75,7 +75,7 @@ interface Exercise {
 
 ### Variable
 
-Variable definition for parameterized exercises. From `$lib/custom-markdown`.
+Variable definition for parameterized exercises. From `$lib/ubumark`.
 
 ```typescript
 interface Variable {

@@ -31,9 +31,9 @@
 
 ### Parser
 
-- `src/lib/custom-markdown/types/ast.ts` - HintReferenceNode
-- `src/lib/custom-markdown/types/index.ts` - Export
-- `src/lib/custom-markdown/parser/markdown-parser.ts` - {{hint:id}} parsing
+- `src/lib/ubumark/types/ast.ts` - HintReferenceNode
+- `src/lib/ubumark/types/index.ts` - Export
+- `src/lib/ubumark/parser/markdown-parser.ts` - {{hint:id}} parsing
 
 ### Instance Generator
 

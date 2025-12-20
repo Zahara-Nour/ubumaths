@@ -387,13 +387,13 @@ interface InstanceData {
 
 ---
 
-## Integration with Custom Markdown
+## Integration with Ubumark
 
 The instance generator uses the custom markdown system for variable resolution:
 
 ```typescript
-import type { Variable } from '$lib/custom-markdown';
-import { resolveVariables, resolveText } from '$lib/custom-markdown';
+import type { Variable } from '$lib/ubumark';
+import { resolveVariables, resolveText } from '$lib/ubumark';
 
 // Variable definition
 interface Variable {

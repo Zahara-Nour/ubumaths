@@ -3,8 +3,8 @@
 > **DEPRECATED**: This is historical documentation from 2025-11-22.
 > The transpilers mentioned in this document have been moved:
 >
-> - LaTeX transpiler: `src/lib/custom-markdown/generators/latex-generator.ts`
-> - Typst transpiler: `src/lib/custom-markdown/generators/typst-generator.ts`
+> - LaTeX transpiler: `src/lib/ubumark/generators/latex-generator.ts`
+> - Typst transpiler: `src/lib/ubumark/generators/typst-generator.ts`
 >   See [docs/claude/latex-to-markdown.md](../../claude/latex-to-markdown.md) for current documentation.
 
 **Version**: 1.0.0

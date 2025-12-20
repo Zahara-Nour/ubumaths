@@ -177,7 +177,7 @@ src/
 | System              | Relationship                                                                        |
 | ------------------- | ----------------------------------------------------------------------------------- |
 | **Exercices**       | Worksheets contain references to exercises via `worksheet_exercises` junction table |
-| **Custom Markdown** | Exercise statements use `{{variable}}` syntax resolved by instance generator        |
+| **Ubumark** | Exercise statements use `{{variable}}` syntax resolved by instance generator        |
 | **Classes**         | Assignments link worksheets to classes via `worksheet_assignments`                  |
 | **Profiles**        | Ownership and permissions tied to `profiles` table                                  |
 

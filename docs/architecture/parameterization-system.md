@@ -141,7 +141,7 @@ The library is used by:
 ### Module Structure
 
 ```
-src/lib/custom-markdown/parameterization/
+src/lib/ubumark/parameterization/
 ├── index.ts                      # Public API exports
 │
 ├── parser/                       # Parser Layer
@@ -160,7 +160,7 @@ src/lib/custom-markdown/parameterization/
     └── variable-validator.ts    # Comprehensive validation
 ```
 
-**Note**: Types are defined in `src/lib/custom-markdown/types/parameterization.ts`
+**Note**: Types are defined in `src/lib/ubumark/types/parameterization.ts`
 
 ---
 
@@ -976,7 +976,7 @@ findCycle('a', graph, {}, {}, [])
 ```typescript
 // src/lib/questions/generator/instance-generator.ts
 
-import { resolveVariables, resolveText } from '$lib/custom-markdown';
+import { resolveVariables, resolveText } from '$lib/ubumark';
 
 export function generateInstance(template: QuestionTemplate, seed?: number): QuestionInstance {
 	// Map QuestionVariable[] to Variable[]
@@ -1011,7 +1011,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Que
 ```typescript
 // src/lib/exercises/generator.ts
 
-import { resolveVariables, resolveText } from '$lib/custom-markdown';
+import { resolveVariables, resolveText } from '$lib/ubumark';
 
 export function generateExerciseInstance(exercise: Exercise, seed?: number): ExerciseInstance {
 	// Map exercise variables to shared Variable type
@@ -1252,8 +1252,8 @@ When adding new features:
 
 ## Resources
 
-- **Custom Markdown Module:** [`/src/lib/custom-markdown/`](/src/lib/custom-markdown/)
-- **Parameterization Types:** [`/src/lib/custom-markdown/types/parameterization.ts`](/src/lib/custom-markdown/types/parameterization.ts)
+- **Ubumark Module:** [`/src/lib/ubumark/`](/src/lib/ubumark/)
+- **Parameterization Types:** [`/src/lib/ubumark/types/parameterization.ts`](/src/lib/ubumark/types/parameterization.ts)
 - **Questions Documentation:** [`/docs/features/questions/`](/docs/features/questions/)
 - **Exercises Documentation:** [`/docs/features/exercises/`](/docs/features/exercises/)
 - **MathLive Compute Engine:** https://cortexjs.io/compute-engine/

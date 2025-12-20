@@ -196,7 +196,7 @@ Pour chaque fichier de test, Claude presente :
 
 #### Session 2.1 : Parametrisation des exercices
 
-**Fichiers** : `src/lib/custom-markdown/__tests__/parameterization/**`
+**Fichiers** : `src/lib/ubumark/__tests__/parameterization/**`
 
 **Questions cles** :
 
