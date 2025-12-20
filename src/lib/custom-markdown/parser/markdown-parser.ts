@@ -1127,6 +1127,79 @@ function containsCodeBlocks(content: string): boolean {
 }
 
 /**
+ * Check if content contains blockquote
+ */
+function containsBlockquote(content: string): boolean {
+	return /^>/m.test(content);
+}
+
+/**
+ * Parse content that may contain blockquotes into block nodes
+ *
+ * Handles cases where list item content contains > blockquotes.
+ * Returns an array of BlockNode (paragraphs and blockquotes).
+ *
+ * @param content - Text content that may contain blockquotes
+ * @param placeholders - Math placeholders from extraction
+ * @param options - Parse options
+ * @returns Array of block nodes
+ */
+function parseContentWithBlockquote(
+	content: string,
+	placeholders: MathPlaceholder[],
+	options: ParseOptions
+): BlockNode[] {
+	const blocks: BlockNode[] = [];
+	const lines = content.split('\n');
+
+	let i = 0;
+	while (i < lines.length) {
+		const line = lines[i];
+
+		// Check if this line starts a blockquote
+		if (isBlockquoteLine(line)) {
+			// Collect all consecutive blockquote lines
+			const quoteLines: string[] = [];
+			while (i < lines.length && isBlockquoteLine(lines[i])) {
+				quoteLines.push(lines[i]);
+				i++;
+			}
+
+			// Parse the blockquote - extractBlockquoteContent returns string[]
+			const quoteContentLines = extractBlockquoteContent(quoteLines);
+			const quoteContent = quoteContentLines.join('\n');
+			const parsedQuote = parseMarkdown(quoteContent, options);
+
+			blocks.push({
+				type: 'blockquote',
+				children: parsedQuote.children as BlockNode[]
+			});
+		} else if (line.trim()) {
+			// Non-empty, non-blockquote line - collect as paragraph
+			const paraLines: string[] = [];
+			while (i < lines.length && lines[i].trim() && !isBlockquoteLine(lines[i])) {
+				paraLines.push(lines[i]);
+				i++;
+			}
+
+			const paraContent = paraLines.join('\n').trim();
+			if (paraContent) {
+				const parsedInline = parseInlineContent(paraContent, placeholders, options);
+				blocks.push({
+					type: 'paragraph',
+					children: parsedInline
+				});
+			}
+		} else {
+			// Empty line - skip
+			i++;
+		}
+	}
+
+	return blocks;
+}
+
+/**
  * Check if content contains block math placeholders
  */
 function containsBlockMath(content: string, placeholders: MathPlaceholder[]): boolean {
@@ -1251,6 +1324,12 @@ function processListInlineContent(
 					if (containsBlockMath(textContent, placeholders)) {
 						// Parse as blocks (may return paragraphs and math-blocks)
 						return parseContentWithBlockMath(textContent, placeholders, options);
+					}
+
+					// Check if content contains blockquotes (> ...)
+					if (containsBlockquote(textContent)) {
+						// Parse as blocks (may return paragraphs and blockquotes)
+						return parseContentWithBlockquote(textContent, placeholders, options);
 					}
 
 					// Parse inline content with placeholders

@@ -290,6 +290,8 @@ function convertListItem(item: ListItemNode): JSONContent {
 			if (code) content.push(code);
 		} else if (child.type === 'math-block') {
 			content.push(convertMathBlock(child));
+		} else if (child.type === 'blockquote') {
+			content.push(convertBlockquote(child));
 		}
 		// Other block types in list items not supported
 	}
@@ -297,7 +299,7 @@ function convertListItem(item: ListItemNode): JSONContent {
 	// Remove hardBreaks at block boundaries to prevent visual double line breaks in TipTap
 	// 1. Remove trailing hardBreak from paragraphs when followed by a block
 	// 2. Remove leading hardBreak from paragraphs when preceded by a block
-	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList'];
+	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList', 'blockquote'];
 
 	for (let i = 0; i < content.length; i++) {
 		const current = content[i];
