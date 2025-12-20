@@ -579,15 +579,20 @@ function convertProbabilityTree(node: ProbabilityTreeNode): JSONContent {
 function parseInlineMarkdownString(text: string): JSONContent[] {
 	if (!text) return [];
 
-	// Combined regex for both LaTeX ($...$) and custom (~...~) math
-	// Uses alternation to match either pattern
-	const mathRegex = /\$([^$\n]+)\$|~([^~\n]+)~/g;
 	const segments: JSONContent[] = [];
+
+	// Combined regex for all inline formatting:
+	// - `code` (backticks)
+	// - $math$ (LaTeX) or ~math~ (custom)
+	// - **bold** or __bold__
+	// - *italic* or _italic_
+	// Order matters: code first (to protect backtick content), then math, then bold (before italic)
+	const inlineRegex = /(`[^`]+`)|(\$[^$\n]+\$|~[^~\n]+~)|(\*\*|__)([^*_]+)\3|(\*|_)([^*_]+)\5/g;
 	let lastIndex = 0;
 	let match: RegExpExecArray | null;
 
-	while ((match = mathRegex.exec(text)) !== null) {
-		// Add text before math
+	while ((match = inlineRegex.exec(text)) !== null) {
+		// Add plain text before this match
 		if (match.index > lastIndex) {
 			const beforeText = text.substring(lastIndex, match.index);
 			if (beforeText) {
@@ -595,32 +600,57 @@ function parseInlineMarkdownString(text: string): JSONContent[] {
 			}
 		}
 
-		// Determine if it's LaTeX or custom syntax
-		const isLatex = match[1] !== undefined;
-		const expression = isLatex ? match[1] : match[2];
+		if (match[1]) {
+			// Code: `content`
+			const content = match[1].slice(1, -1); // Remove backticks
+			segments.push({
+				type: 'text',
+				text: content,
+				marks: [{ type: 'code' }]
+			});
+		} else if (match[2]) {
+			// Math: $latex$ or ~custom~
+			const fullMatch = match[2];
+			const isLatex = fullMatch.startsWith('$');
+			const expression = fullMatch.slice(1, -1); // Remove delimiters
 
-		// For custom syntax, convert to LaTeX
-		let latex = expression;
-		if (!isLatex) {
-			const parseResult = parseCustomSafe(expression);
-			if (parseResult.ast) {
-				latex = toLatex(parseResult.ast);
+			// For custom syntax, convert to LaTeX
+			let latex = expression;
+			if (!isLatex) {
+				const parseResult = parseCustomSafe(expression);
+				if (parseResult.ast) {
+					latex = toLatex(parseResult.ast);
+				}
 			}
+
+			segments.push({
+				type: 'mathInline',
+				attrs: {
+					latex,
+					syntax: isLatex ? 'latex' : 'custom',
+					originalExpression: expression
+				}
+			});
+		} else if (match[3] && match[4]) {
+			// Bold: **content** or __content__
+			segments.push({
+				type: 'text',
+				text: match[4],
+				marks: [{ type: 'bold' }]
+			});
+		} else if (match[5] && match[6]) {
+			// Italic: *content* or _content_
+			segments.push({
+				type: 'text',
+				text: match[6],
+				marks: [{ type: 'italic' }]
+			});
 		}
-
-		segments.push({
-			type: 'mathInline',
-			attrs: {
-				latex,
-				syntax: isLatex ? 'latex' : 'custom',
-				originalExpression: expression
-			}
-		});
 
 		lastIndex = match.index + match[0].length;
 	}
 
-	// Add remaining text after last math
+	// Add remaining text after last match
 	if (lastIndex < text.length) {
 		const remainingText = text.substring(lastIndex);
 		if (remainingText) {
@@ -628,7 +658,7 @@ function parseInlineMarkdownString(text: string): JSONContent[] {
 		}
 	}
 
-	// If no math found, return the whole text
+	// If nothing found, return the whole text
 	if (segments.length === 0 && text) {
 		segments.push({ type: 'text', text });
 	}
@@ -742,8 +772,11 @@ function convertInlineNode(node: InlineNode): JSONContent[] {
 		case 'blank':
 			return [convertBlankNode(node)];
 
-		case 'line-break':
-			return [{ type: 'hardBreak' }];
+		case 'line-break': {
+			// Distinguish between hard breaks (explicit \) and soft breaks (natural line continuation)
+			const isHard = (node as { hard?: boolean }).hard !== false;
+			return [{ type: 'hardBreak', attrs: { soft: !isHard } }];
+		}
 
 		case 'link':
 			return [convertLinkNode(node)];

@@ -595,6 +595,11 @@ function convertInlineNodeToMarkdown(node: JSONContent): string {
 			return `{{blank:${node.attrs?.number || 1}}}`;
 
 		case 'hardBreak':
+			// Soft breaks (from natural line continuation) export as just newline
+			// Hard breaks (from explicit \) export with backslash
+			if (node.attrs?.soft) {
+				return '\n';
+			}
 			return '\\\n';
 
 		case 'hashtag':
