@@ -433,120 +433,657 @@ describe('CommonMark: Block separation in list items', () => {
 // ============================================================================
 
 describe('Strict round-trip: exact markdown preservation', () => {
-	// -------------------------------------------------------------------------
-	// Bullet list block-first items
-	// -------------------------------------------------------------------------
+	// =========================================================================
+	// BASIC BLOCK TYPES (standalone)
+	// =========================================================================
 
-	it('exact: bullet list item starting with code block', () => {
-		const markdown = '-\n  ```js\n  const x = 1;\n  ```';
+	it('exact: paragraph', () => {
+		const markdown = 'Simple paragraph text';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	it('exact: bullet list item starting with blockquote', () => {
-		const markdown = '-\n  > A quote as first block';
+	it('exact: code block with language', () => {
+		const markdown = '```javascript\nconst x = 1;\n```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	it('exact: bullet list item starting with math block', () => {
-		const markdown = '-\n  $$x^2 + y^2$$';
+	it('exact: blockquote', () => {
+		const markdown = '> This is a quote';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	it('exact: bullet list item starting with nested list', () => {
-		const markdown = '-\n  - Nested item 1\n  - Nested item 2';
+	it('exact: math block ($$...$$)', () => {
+		const markdown = '$$\\frac{a}{b}$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	// -------------------------------------------------------------------------
-	// Ordered list block-first items
-	// -------------------------------------------------------------------------
-
-	it('exact: ordered list item starting with code block', () => {
-		const markdown = '1.\n   ```js\n   const x = 1;\n   ```';
+	it('exact: bullet list (simple)', () => {
+		const markdown = '- Item 1\n- Item 2';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	it('exact: ordered list item starting with blockquote', () => {
-		const markdown = '1.\n   > A quote in ordered list';
+	it('exact: ordered list (simple)', () => {
+		const markdown = '1. First\n2. Second';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	it('exact: ordered list item starting with math block', () => {
-		const markdown = '1.\n   $$a + b = c$$';
+	it('exact: nested bullet list', () => {
+		const markdown = '- Parent\n  - Child 1\n  - Child 2';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	// -------------------------------------------------------------------------
-	// Block-first with following content
-	// -------------------------------------------------------------------------
-
-	it('exact: code block followed by paragraph', () => {
-		const markdown = '-\n  ```js\n  code\n  ```\n\n  Some text after';
+	it('exact: nested ordered list', () => {
+		const markdown = '1. Parent\n   1. Child 1\n   2. Child 2';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	it('exact: blockquote followed by paragraph', () => {
-		const markdown = '-\n  > Quote first\n\n  Text after';
+	// =========================================================================
+	// BULLET LISTS: SINGLE BLOCK TYPES (first and only content)
+	// =========================================================================
+
+	it('exact: bullet - code only', () => {
+		const markdown = '-\n  ```js\n  code\n  ```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	it('exact: math block followed by paragraph', () => {
-		const markdown = '-\n  $$a^2$$\n\n  Explanation text';
+	it('exact: bullet - blockquote only', () => {
+		const markdown = '-\n  > quote';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	// -------------------------------------------------------------------------
-	// Multiple block types in same list item
-	// -------------------------------------------------------------------------
-
-	it('exact: paragraph then code block then math', () => {
-		const markdown = '- Description\n\n  ```js\n  code\n  ```\n\n  $$x^2$$';
+	it('exact: bullet - math only', () => {
+		const markdown = '-\n  $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	it('exact: paragraph then blockquote then code block', () => {
-		const markdown = '- Intro\n\n  > A quote\n\n  ```python\n  print("hi")\n  ```';
+	it('exact: bullet - nested list only', () => {
+		const markdown = '-\n  - nested';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
 		expect(result).toBe(markdown);
 	});
 
-	it('exact: all block types combined', () => {
-		const markdown = '- Text\n\n  > Quote\n\n  ```js\n  code\n  ```\n\n  $$math$$\n\n  - Nested';
+	// =========================================================================
+	// BULLET LISTS: PARAGRAPH FIRST, THEN BLOCK
+	// =========================================================================
+
+	it('exact: bullet - paragraph then code', () => {
+		const markdown = '- text\n\n  ```js\n  code\n  ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - paragraph then blockquote', () => {
+		const markdown = '- text\n\n  > quote';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - paragraph then math', () => {
+		const markdown = '- text\n\n  $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - paragraph then nested list', () => {
+		const markdown = '- text\n\n  - nested';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// BULLET LISTS: BLOCK FIRST, THEN PARAGRAPH
+	// =========================================================================
+
+	it('exact: bullet - code then paragraph', () => {
+		const markdown = '-\n  ```js\n  code\n  ```\n\n  text';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - blockquote then paragraph', () => {
+		const markdown = '-\n  > quote\n\n  text';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - math then paragraph', () => {
+		const markdown = '-\n  $$math$$\n\n  text';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// BULLET LISTS: TWO BLOCKS (no paragraph)
+	// =========================================================================
+
+	it('exact: bullet - code then math', () => {
+		const markdown = '-\n  ```js\n  code\n  ```\n\n  $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - blockquote then code', () => {
+		const markdown = '-\n  > quote\n\n  ```js\n  code\n  ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - math then blockquote', () => {
+		const markdown = '-\n  $$math$$\n\n  > quote';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// BULLET LISTS: PARAGRAPH + BLOCK + PARAGRAPH (sandwich)
+	// =========================================================================
+
+	it('exact: bullet - text, code, text (sandwich)', () => {
+		const markdown = '- text1\n\n  ```js\n  code\n  ```\n\n  text2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - text, blockquote, text (sandwich)', () => {
+		const markdown = '- text1\n\n  > quote\n\n  text2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - text, math, text (sandwich)', () => {
+		const markdown = '- text1\n\n  $$math$$\n\n  text2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// BULLET LISTS: BLOCK + PARAGRAPH + BLOCK
+	// =========================================================================
+
+	it('exact: bullet - code, text, math', () => {
+		const markdown = '-\n  ```js\n  code1\n  ```\n\n  text\n\n  $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - blockquote, text, code', () => {
+		const markdown = '-\n  > quote\n\n  text\n\n  ```js\n  code\n  ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// BULLET LISTS: THREE+ BLOCKS MIXED
+	// =========================================================================
+
+	it('exact: bullet - blockquote, code, math (no paragraph)', () => {
+		const markdown = '-\n  > quote\n\n  ```js\n  code\n  ```\n\n  $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - text, blockquote, code, math', () => {
+		const markdown = '- text\n\n  > quote\n\n  ```js\n  code\n  ```\n\n  $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// ORDERED LISTS: SINGLE BLOCK TYPES (first and only content)
+	// =========================================================================
+
+	it('exact: ordered - code only', () => {
+		const markdown = '1.\n   ```js\n   code\n   ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - blockquote only', () => {
+		const markdown = '1.\n   > quote';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - math only', () => {
+		const markdown = '1.\n   $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - nested list only', () => {
+		const markdown = '1.\n   - nested';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// ORDERED LISTS: PARAGRAPH FIRST, THEN BLOCK
+	// =========================================================================
+
+	it('exact: ordered - paragraph then code', () => {
+		const markdown = '1. text\n\n   ```js\n   code\n   ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - paragraph then blockquote', () => {
+		const markdown = '1. text\n\n   > quote';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - paragraph then math', () => {
+		const markdown = '1. text\n\n   $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - paragraph then nested list', () => {
+		const markdown = '1. text\n\n   - nested';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// ORDERED LISTS: BLOCK FIRST, THEN PARAGRAPH
+	// =========================================================================
+
+	it('exact: ordered - code then paragraph', () => {
+		const markdown = '1.\n   ```js\n   code\n   ```\n\n   text';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - blockquote then paragraph', () => {
+		const markdown = '1.\n   > quote\n\n   text';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - math then paragraph', () => {
+		const markdown = '1.\n   $$math$$\n\n   text';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// ORDERED LISTS: TWO BLOCKS (no paragraph)
+	// =========================================================================
+
+	it('exact: ordered - code then math', () => {
+		const markdown = '1.\n   ```js\n   code\n   ```\n\n   $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - blockquote then code', () => {
+		const markdown = '1.\n   > quote\n\n   ```js\n   code\n   ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - math then blockquote', () => {
+		const markdown = '1.\n   $$math$$\n\n   > quote';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// ORDERED LISTS: PARAGRAPH + BLOCK + PARAGRAPH (sandwich)
+	// =========================================================================
+
+	it('exact: ordered - text, code, text (sandwich)', () => {
+		const markdown = '1. text1\n\n   ```js\n   code\n   ```\n\n   text2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - text, blockquote, text (sandwich)', () => {
+		const markdown = '1. text1\n\n   > quote\n\n   text2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - text, math, text (sandwich)', () => {
+		const markdown = '1. text1\n\n   $$math$$\n\n   text2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// ORDERED LISTS: BLOCK + PARAGRAPH + BLOCK
+	// =========================================================================
+
+	it('exact: ordered - code, text, math', () => {
+		const markdown = '1.\n   ```js\n   code1\n   ```\n\n   text\n\n   $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - blockquote, text, code', () => {
+		const markdown = '1.\n   > quote\n\n   text\n\n   ```js\n   code\n   ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// ORDERED LISTS: THREE+ BLOCKS MIXED
+	// =========================================================================
+
+	it('exact: ordered - blockquote, code, math (no paragraph)', () => {
+		const markdown = '1.\n   > quote\n\n   ```js\n   code\n   ```\n\n   $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - text, blockquote, code, math', () => {
+		const markdown = '1. text\n\n   > quote\n\n   ```js\n   code\n   ```\n\n   $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// MULTIPLE LIST ITEMS
+	// =========================================================================
+
+	it('exact: bullet - two simple items', () => {
+		const markdown = '- item1\n- item2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - first with block, second simple', () => {
+		const markdown = '- text\n\n  ```js\n  code\n  ```\n- item2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - block-first item, then simple item', () => {
+		const markdown = '-\n  ```js\n  code\n  ```\n- item2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - both items with blocks', () => {
+		const markdown = '- text1\n\n  ```js\n  code1\n  ```\n- text2\n\n  $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - two simple items', () => {
+		const markdown = '1. item1\n2. item2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - first with block, second simple', () => {
+		const markdown = '1. text\n\n   ```js\n   code\n   ```\n2. item2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - block-first item, then simple item', () => {
+		const markdown = '1.\n   ```js\n   code\n   ```\n2. item2';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// DEEPLY NESTED: NESTED LIST INSIDE BLOCK-FIRST ITEM
+	// =========================================================================
+
+	it('exact: bullet - block-first with deeply nested list', () => {
+		const markdown = '-\n  - nested1\n    - deeply nested';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - code then nested list', () => {
+		const markdown = '-\n  ```js\n  code\n  ```\n\n  - nested';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - nested list then code', () => {
+		const markdown = '-\n  - nested\n\n  ```js\n  code\n  ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// DEEPLY NESTED: BLOCK INSIDE NESTED LIST ITEM
+	// =========================================================================
+
+	it('exact: bullet - nested item with code block', () => {
+		const markdown = '- parent\n  - nested\n\n    ```js\n    code\n    ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - nested item with blockquote', () => {
+		const markdown = '- parent\n  - nested\n\n    > quote';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - nested item with math', () => {
+		const markdown = '- parent\n  - nested\n\n    $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: bullet - nested item starting with code (block-first)', () => {
+		const markdown = '- parent\n  -\n    ```js\n    code\n    ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - nested item with code block', () => {
+		const markdown = '1. parent\n   1. nested\n\n      ```js\n      code\n      ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - nested item starting with code (block-first)', () => {
+		const markdown = '1. parent\n   1.\n      ```js\n      code\n      ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// MIXED LIST TYPES
+	// =========================================================================
+
+	it('exact: bullet with nested ordered list', () => {
+		const markdown = '- parent\n  1. ordered child';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered with nested bullet list', () => {
+		const markdown = '1. parent\n   - bullet child';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	// =========================================================================
+	// COMPLEX COMBINATIONS
+	// =========================================================================
+
+	it('exact: bullet - all block types with nested list', () => {
+		const markdown = '- text\n\n  > quote\n\n  ```js\n  code\n  ```\n\n  $$math$$\n\n  - nested';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: ordered - all block types with nested list', () => {
+		const markdown =
+			'1. text\n\n   > quote\n\n   ```js\n   code\n   ```\n\n   $$math$$\n\n   - nested';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: multiple bullet items each with different blocks', () => {
+		const markdown = '-\n  ```js\n  code\n  ```\n-\n  > quote\n-\n  $$math$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('exact: multiple ordered items each with different blocks', () => {
+		const markdown = '1.\n   ```js\n   code\n   ```\n2.\n   > quote\n3.\n   $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
