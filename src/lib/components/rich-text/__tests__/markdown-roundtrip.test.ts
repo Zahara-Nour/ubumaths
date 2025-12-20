@@ -51,7 +51,7 @@ describe('Round-trip: Markdown -> TipTap -> Markdown', () => {
 	});
 
 	it('preserves strikethrough text', () => {
-		const markdown = 'This is ---deleted--- text';
+		const markdown = 'This is ==deleted== text';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -59,7 +59,7 @@ describe('Round-trip: Markdown -> TipTap -> Markdown', () => {
 	});
 
 	it('preserves strikethrough with other formatting', () => {
-		const markdown = 'Normal ---strikethrough--- and **bold** text';
+		const markdown = 'Normal ==strikethrough== and **bold** text';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -1193,7 +1193,7 @@ describe('Table cell inline formatting', () => {
 	});
 
 	it('preserves strikethrough text in table cells', () => {
-		const markdown = '| Header | Value |\n|:---|:---|\n| ---deleted--- | normal |';
+		const markdown = '| Header | Value |\n|:---|:---|\n| ==deleted== | normal |';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
