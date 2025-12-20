@@ -441,11 +441,11 @@ function convertVideo(video: VideoNode): JSONContent {
 }
 
 /**
- * Convert VariationTableNode to TipTap codeBlock with language='variation'
+ * Convert VariationTableNode to TipTap variationTable node
  *
- * Since TipTap doesn't have a native variation table extension,
- * we serialize the parsed node back to the variation block syntax
- * and display it as a code block.
+ * We serialize the parsed AST node back to the original markdown syntax
+ * and store it in the content attribute. The VariationTableNodeView
+ * will parse and render it.
  */
 function convertVariationTable(node: VariationTableNode): JSONContent {
 	const lines: string[] = [];
@@ -509,9 +509,12 @@ function convertVariationTable(node: VariationTableNode): JSONContent {
 	}
 
 	return {
-		type: 'codeBlock',
-		attrs: { language: 'variation' },
-		content: [{ type: 'text', text: lines.join('\n') }]
+		type: 'variationTable',
+		attrs: {
+			content: lines.join('\n'),
+			hasError: false,
+			errorMessage: null
+		}
 	};
 }
 

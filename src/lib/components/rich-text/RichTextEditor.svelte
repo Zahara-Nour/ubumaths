@@ -66,7 +66,8 @@
 		Maximize,
 		Minimize,
 		ImageIcon,
-		FileCode
+		FileCode,
+		TrendingUp
 	} from 'lucide-svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
@@ -737,6 +738,15 @@
 		imageDialogOpen = false;
 		uploadedImageUrl = '';
 		uploadedImageAlt = '';
+	}
+
+	/**
+	 * Insert a variation table at the current position
+	 */
+	function insertVariationTable() {
+		// Custom TipTap command from variation-table-extension
+		(editor?.commands as unknown as Record<string, () => boolean>).insertVariationTable?.();
+		editor?.commands.focus();
 	}
 
 	/**
@@ -1422,6 +1432,20 @@
 						{/if}
 					</Button>
 				{/if}
+
+				<div class="mx-1 h-6 w-px bg-border"></div>
+
+				<!-- Variation Table Button -->
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onclick={insertVariationTable}
+					{disabled}
+					title="Inserer un tableau de variation"
+				>
+					<TrendingUp class="h-4 w-4" />
+				</Button>
 			</div>
 		{/if}
 

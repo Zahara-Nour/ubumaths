@@ -996,7 +996,12 @@ function parseTextFormatting(text: string): InlineNode[] {
  * Parse content that may contain code blocks into block nodes
  *
  * Handles cases where list item continuations contain fenced code blocks.
- * Returns an array of BlockNode (paragraphs and code blocks).
+ * Returns an array of BlockNode (paragraphs, code blocks, variation tables, probability trees).
+ *
+ * Special handling for:
+ * - ```variation blocks → parsed as variation-table nodes
+ * - ```probtree blocks → parsed as probability-tree nodes
+ * - Other code blocks → parsed as code-block nodes
  *
  * @param content - Text content that may contain code blocks
  * @param placeholders - Math placeholders from extraction
@@ -1033,14 +1038,32 @@ function parseContentWithCodeBlocks(
 			}
 		}
 
-		// Add code block
 		const language = match[2] || undefined;
 		const code = match[3];
-		blocks.push({
-			type: 'code-block',
-			language,
-			code
-		});
+
+		// Check for special block types
+		if (language === 'variation') {
+			// Parse as variation table
+			const lines = ['```variation', ...code.split('\n'), '```'];
+			const result = parseVariationTable(lines, 0, lines.length - 1);
+			if (result.node) {
+				blocks.push(result.node);
+			}
+		} else if (language === 'probtree') {
+			// Parse as probability tree
+			const lines = ['```probtree', ...code.split('\n'), '```'];
+			const result = parseProbabilityTree(lines, 0, lines.length - 1);
+			if (result.node) {
+				blocks.push(result.node);
+			}
+		} else {
+			// Regular code block
+			blocks.push({
+				type: 'code-block',
+				language,
+				code
+			});
+		}
 
 		lastIndex = match.index + match[0].length;
 	}
