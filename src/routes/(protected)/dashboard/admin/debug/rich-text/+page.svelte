@@ -495,48 +495,209 @@ YouTube format court :
 
 		lists_with_blocks: {
 			label: 'Listes avec blocs',
-			content: `# Listes avec blocs
+			content: `# Listes avec blocs (complet)
 
-## Liste avec code
+## Blocs de code dans listes
 
-- Exemple de code :
+- Item avec texte puis code :
+
   \`\`\`javascript
   console.log("Hello");
   \`\`\`
-- Autre element
+- Item normal apres code
 
-## Liste avec math
+1. Etape avec code inline \`const x = 5\` et bloc :
 
-1. Formule quadratique : $ax^2 + bx + c = 0$
-2. Solution : $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$
+   \`\`\`python
+   def hello():
+       print("Hello")
+   \`\`\`
+2. Etape suivante
 
-## Liste avec citation
+## Math dans listes
 
-- Citation importante :
-  > Ceci est une citation dans une liste
-- Suite de la liste`
+- Fraction simple : ~1/2 + 1/3~
+- Equation complete : $ax^2 + bx + c = 0$
+- Math bloc dans item :
+
+  $$\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$$
+- Item apres math bloc
+
+1. Theoreme : $a^2 + b^2 = c^2$
+2. Formule avec custom syntax :
+
+   ~~(a+b)^2 = a^2 + 2ab + b^2~~
+3. Suite normale
+
+## Citations dans listes
+
+- Citation simple :
+
+  > Une citation dans une liste
+- Citation multiligne :
+
+  > Premiere ligne de citation
+  > Deuxieme ligne de citation
+  > Troisieme ligne
+
+1. Point avec citation :
+
+   > Citation numerotee
+2. Point suivant
+
+## Tableaux dans listes
+
+- Tableau simple :
+
+  | A | B |
+  |---|---|
+  | 1 | 2 |
+- Item apres tableau
+
+## Combinaisons complexes
+
+1. Code puis citation :
+
+   \`\`\`sql
+   SELECT * FROM users;
+   \`\`\`
+
+   > Note importante sur la requete
+2. Math puis code :
+
+   La formule $E = mc^2$ s'implemente ainsi :
+
+   \`\`\`javascript
+   const E = m * c * c;
+   \`\`\`
+3. Plusieurs blocs :
+
+   > Citation d'introduction
+
+   Texte explicatif avec $x^2$.
+
+   \`\`\`python
+   x = 42
+   \`\`\`
+
+## Imbrication avec blocs
+
+- Niveau 1 avec code :
+
+  \`\`\`js
+  let a = 1;
+  \`\`\`
+  - Niveau 2 avec math : $a + b$
+    - Niveau 3 avec citation :
+
+      > Citation profonde
+  - Niveau 2 avec code :
+
+    \`\`\`js
+    let b = 2;
+    \`\`\`
+- Retour niveau 1
+
+1. Premier niveau :
+
+   > Citation niveau 1
+   1. Sous-niveau :
+      - Puce avec $math$
+      - Puce avec \`code\``
 		},
 
 		lists_block_first: {
 			label: 'Listes bloc en premier (CommonMark)',
-			content: `# Listes avec bloc en premier
+			content: `# Listes avec bloc en premier (CommonMark)
 
-## Code en premier
+Quand un item de liste commence directement par un bloc (code, citation, math), sans paragraphe avant.
+
+## Code bloc en premier
 
 - \`\`\`python
   def hello():
       print("Hello")
   \`\`\`
+- \`\`\`javascript
+  const x = 42;
+  \`\`\`
+
+  Texte apres le code
+
+1. \`\`\`sql
+   SELECT * FROM users;
+   \`\`\`
+2. \`\`\`bash
+   npm install
+   \`\`\`
+
+   Puis executez le script
 
 ## Citation en premier
 
-1. > Citation au debut de l'item
-   > sur plusieurs lignes
+- > Citation qui commence l'item
+  > sur plusieurs lignes
+- > Autre citation
+
+  Suivi de texte normal
+
+1. > Citation numerotee
+2. > Deuxieme citation
+   > encore multiligne
+
+   Avec texte apres
 
 ## Math bloc en premier
 
 - $$E = mc^2$$
-  Formule celebre d'Einstein`
+- $$\\int_0^1 x^2 dx = \\frac{1}{3}$$
+
+  Integrale de base
+
+1. $$a^2 + b^2 = c^2$$
+2. $$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$
+
+   Somme de Gauss
+
+## Custom math bloc en premier
+
+- ~~(a+b)^2 = a^2 + 2ab + b^2~~
+- ~~x^2 - 1 = (x-1)(x+1)~~
+
+  Identite remarquable
+
+## Melanges blocs en premier
+
+- \`\`\`js
+  let a = 1;
+  \`\`\`
+
+  Puis une citation :
+
+  > Citation apres code
+- > Citation d'abord
+
+  Puis du code :
+
+  \`\`\`python
+  x = 42
+  \`\`\`
+- $$E = mc^2$$
+
+  Avec du \`code inline\` et $math inline$.
+
+## Imbrication blocs en premier
+
+- \`\`\`js
+  let outer = true;
+  \`\`\`
+  - > Citation niveau 2
+    - $$nested = true$$
+
+1. > Citation niveau 1
+   1. \`\`\`python
+      nested_code = True
+      \`\`\``
 		},
 
 		// Code blocks examples
