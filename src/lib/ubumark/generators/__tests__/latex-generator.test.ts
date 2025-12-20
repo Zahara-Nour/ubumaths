@@ -897,6 +897,46 @@ describe('Image Generation Enhanced', () => {
 	});
 });
 
+describe('Text Formatting', () => {
+	it('should generate strikethrough text with \\sout', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [
+						{ type: 'text', content: 'This is ' },
+						{ type: 'text', content: 'deleted', strikethrough: true },
+						{ type: 'text', content: ' text' }
+					]
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('This is');
+		expect(latex).toContain('\\sout{deleted}');
+		expect(latex).toContain('text');
+	});
+
+	it('should include ulem package in preamble for strikethrough', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [{ type: 'text', content: 'Test' }]
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: true });
+
+		expect(latex).toContain('\\usepackage[normalem]{ulem}');
+	});
+});
+
 describe('Edge Cases', () => {
 	it('should handle empty document', () => {
 		const ast: DocumentNode = {

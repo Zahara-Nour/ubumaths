@@ -227,6 +227,7 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 			let text = escapeTypst(node.content);
 			if (node.bold) text = `*${text}*`;
 			if (node.italic) text = `_${text}_`;
+			if (node.strikethrough) text = `#strike[${text}]`;
 			if (node.code) text = `\`${text}\``;
 			return text;
 		}

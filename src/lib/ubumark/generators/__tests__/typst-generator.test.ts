@@ -1155,6 +1155,28 @@ describe('Text Formatting', () => {
 
 		expect(typst).toContain('`code`');
 	});
+
+	it('should generate strikethrough text with #strike', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [
+						{ type: 'text', content: 'This is ' },
+						{ type: 'text', content: 'deleted', strikethrough: true },
+						{ type: 'text', content: ' text' }
+					]
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		expect(typst).toContain('This is');
+		expect(typst).toContain('#strike[deleted]');
+		expect(typst).toContain('text');
+	});
 });
 
 describe('Edge Cases', () => {
