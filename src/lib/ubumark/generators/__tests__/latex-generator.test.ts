@@ -935,6 +935,44 @@ describe('Text Formatting', () => {
 
 		expect(latex).toContain('\\usepackage[normalem]{ulem}');
 	});
+
+	it('should generate highlighted text with \\hl', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [
+						{ type: 'text', content: 'This is ' },
+						{ type: 'text', content: 'important', highlight: true },
+						{ type: 'text', content: ' text' }
+					]
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		expect(latex).toContain('This is');
+		expect(latex).toContain('\\hl{important}');
+		expect(latex).toContain('text');
+	});
+
+	it('should include soul package in preamble for highlight', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [{ type: 'text', content: 'Test' }]
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: true });
+
+		expect(latex).toContain('\\usepackage{soul}');
+	});
 });
 
 describe('Edge Cases', () => {

@@ -228,6 +228,7 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 			if (node.bold) text = `*${text}*`;
 			if (node.italic) text = `_${text}_`;
 			if (node.strikethrough) text = `#strike[${text}]`;
+			if (node.highlight) text = `#highlight[${text}]`;
 			if (node.code) text = `\`${text}\``;
 			return text;
 		}

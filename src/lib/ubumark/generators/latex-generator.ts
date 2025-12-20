@@ -123,7 +123,8 @@ function generatePreamble(options: Required<LatexTranspilerOptions>): string {
 	preamble += '\\lstset{basicstyle=\\ttfamily\\small,breaklines=true,frame=single}\n';
 	preamble += '\\usepackage{tkz-tab}\n'; // For variation tables
 	preamble += '\\usetikzlibrary{arrows}\n';
-	preamble += '\\usepackage[normalem]{ulem}\n'; // For strikethrough (\sout{})\n
+	preamble += '\\usepackage[normalem]{ulem}\n'; // For strikethrough (\sout{})
+	preamble += '\\usepackage{soul}\n'; // For highlight (\hl{})
 
 	// Extra packages
 	if (extraPackages.length > 0) {
@@ -246,6 +247,7 @@ function generateInline(node: InlineNode, _options: Required<LatexTranspilerOpti
 			if (node.bold) text = `\\textbf{${text}}`;
 			if (node.italic) text = `\\textit{${text}}`;
 			if (node.strikethrough) text = `\\sout{${text}}`;
+			if (node.highlight) text = `\\hl{${text}}`;
 			if (node.code) text = `\\texttt{${text}}`;
 			return text;
 		}
