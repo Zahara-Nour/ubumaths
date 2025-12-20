@@ -36,10 +36,12 @@ import { Hashtag } from '$lib/extensions/hashtag-extension';
 import { Mention } from '$lib/extensions/mention-extension';
 import { MarkdownPaste } from './markdown-paste-extension';
 import { CustomCode, CustomCodeBlock } from '$lib/extensions/code-extension';
+import { CustomStrike } from '$lib/extensions/strike-extension';
 
 // Note: Underline is included in StarterKit v3
 // Link is disabled in StarterKit and replaced with CustomLink to preserve title attribute
 // Code and CodeBlock are disabled and replaced with CustomCode/CustomCodeBlock for input rules
+// Strike is disabled and replaced with CustomStrike for ==text== input rule
 
 /**
  * Module-level extension instances (singleton pattern)
@@ -62,7 +64,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v24`; // v24: Simplified ~...~ to use standard InputRule like $...$
+	return `h${headingLevels}-v25`; // v25: Changed strikethrough syntax from ---text--- to ==text==
 }
 
 /**
@@ -89,13 +91,18 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 			link: false,
 			// Disable StarterKit's Code/CodeBlock - we use CustomCode/CustomCodeBlock for input rules
 			code: false,
-			codeBlock: false
+			codeBlock: false,
+			// Disable StarterKit's Strike - we use CustomStrike for ==text== input rule
+			strike: false
 			// Underline uses default configuration
 		}),
 
 		// Custom Code extensions with backtick input rules
 		CustomCode.configure({}),
 		CustomCodeBlock.configure({}),
+
+		// Custom Strike extension with ==text== input rule
+		CustomStrike.configure({}),
 
 		// Custom Link extension that preserves title attribute for roundtrip
 		CustomLink.configure({

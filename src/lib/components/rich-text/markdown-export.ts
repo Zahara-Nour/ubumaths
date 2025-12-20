@@ -638,9 +638,9 @@ function convertTextNodeToMarkdown(node: JSONContent): string {
 	if (hasCode) {
 		result = `\`${text}\``;
 	} else {
-		// Apply strikethrough first
+		// Apply strikethrough first (using ==text== syntax)
 		if (hasStrike) {
-			result = `---${result}---`;
+			result = `==${result}==`;
 		}
 		// Apply bold+italic combined as *** or separately
 		if (hasBold && hasItalic) {

@@ -617,6 +617,7 @@ const tipTapJson = markdownToTipTap(markdown);
 | `# Title`      | heading (level 1-6)         |
 | `**bold**`     | text (marks: bold)          |
 | `*italic*`     | text (marks: italic)        |
+| `==strike==`   | text (marks: strike)        |
 | `` `code` ``   | text (marks: code)          |
 | `$latex$`      | mathInline (syntax: latex)  |
 | `~expr~`       | mathInline (syntax: custom) |
@@ -670,6 +671,7 @@ Le RichTextEditor supporte le copier-coller de contenu Markdown. Le texte Markdo
 | `# Titre`       | Heading niveau 1-6           |
 | `**gras**`      | Texte en gras                |
 | `*italique*`    | Texte en italique            |
+| `==barré==`     | Texte barré (strikethrough)  |
 | `` `code` ``    | Code inline                  |
 | `- item`        | Liste à puces                |
 | `1. item`       | Liste numérotée              |
