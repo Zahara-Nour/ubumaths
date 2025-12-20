@@ -33,6 +33,9 @@
 	let isHovering = $state(false);
 	let editDialogOpen = $state(false);
 	let dialogContent = $state('');
+	let dialogPreviewResult = $derived.by(() =>
+		parseVariationTableContent(dialogContent.split('\n'))
+	);
 
 	// UI State - Inline markdown editing mode (keyboard)
 	let isEditingMarkdown = $state(false);
@@ -419,14 +422,13 @@
 
 			<div class="dialog-preview">
 				<h4 class="preview-title">Apercu</h4>
-				{@const previewResult = parseVariationTableContent(dialogContent.split('\n'))}
-				{#if previewResult.node}
-					<VariationTable node={previewResult.node} />
+				{#if dialogPreviewResult.node}
+					<VariationTable node={dialogPreviewResult.node} />
 				{:else}
 					<div class="preview-error">
 						<AlertCircle class="h-4 w-4" />
 						<span>Syntaxe invalide</span>
-						{#each previewResult.errors as error, i (i)}
+						{#each dialogPreviewResult.errors as error, i (i)}
 							<p class="preview-error-detail">{error.message}</p>
 						{/each}
 					</div>
