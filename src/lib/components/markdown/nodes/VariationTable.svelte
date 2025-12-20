@@ -336,20 +336,45 @@
 									<svg
 										class="vt-arrow vt-arrow-{arrowData.arrowDir}"
 										viewBox="0 0 100 60"
-										preserveAspectRatio="none"
+										preserveAspectRatio="xMidYMid meet"
 										role="img"
 										aria-label={arrowData.arrowDir === 'up'
 											? 'Fonction croissante'
 											: 'Fonction décroissante'}
 									>
+										<defs>
+											<marker
+												id="vt-arrowhead-{arrowData.arrowDir}"
+												viewBox="0 0 10 10"
+												refX="10"
+												refY="5"
+												markerWidth="8"
+												markerHeight="8"
+												orient="auto"
+											>
+												<path d="M 0 0 L 10 5 L 0 10 z" class="vt-arrow-head" />
+											</marker>
+										</defs>
 										{#if arrowData.arrowDir === 'up'}
 											<!-- Ascending arrow (bottom-left to top-right) -->
-											<line x1="5" y1="55" x2="95" y2="5" class="vt-arrow-line" />
-											<polygon points="95,5 80,5 95,20" class="vt-arrow-head" />
+											<line
+												x1="5"
+												y1="55"
+												x2="95"
+												y2="5"
+												class="vt-arrow-line"
+												marker-end="url(#vt-arrowhead-up)"
+											/>
 										{:else if arrowData.arrowDir === 'down'}
 											<!-- Descending arrow (top-left to bottom-right) -->
-											<line x1="5" y1="5" x2="95" y2="55" class="vt-arrow-line" />
-											<polygon points="95,55 80,55 95,40" class="vt-arrow-head" />
+											<line
+												x1="5"
+												y1="5"
+												x2="95"
+												y2="55"
+												class="vt-arrow-line"
+												marker-end="url(#vt-arrowhead-down)"
+											/>
 										{/if}
 									</svg>
 								{:else if isForbiddenZone(arrowData.currentValue) || isForbiddenZone(arrowData.nextValue)}
