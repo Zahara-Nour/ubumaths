@@ -327,7 +327,8 @@ function convertListItem(item: ListItemNode): JSONContent {
 
 	return {
 		type: 'listItem',
-		content
+		content,
+		attrs: item.loose ? { loose: true } : undefined
 	};
 }
 

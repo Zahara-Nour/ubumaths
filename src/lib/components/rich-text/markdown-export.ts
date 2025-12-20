@@ -106,11 +106,21 @@ function convertHeadingToMarkdown(heading: JSONContent): string {
  *
  * CommonMark: When a list item starts with a block (not a paragraph),
  * the marker line should be empty: `-\n  block` not `- block`
+ *
+ * @param list - The bullet list node
+ * @param indentLevel - Current nesting depth (0 for top-level)
+ * @param parentListType - The type of the PARENT list (for calculating correct indent base)
  */
-function convertBulletListToMarkdown(list: JSONContent, indentLevel = 0): string {
+function convertBulletListToMarkdown(
+	list: JSONContent,
+	indentLevel = 0,
+	parentListType: 'bullet' | 'ordered' = 'bullet'
+): string {
 	if (!list.content) return '';
 
-	const indent = '  '.repeat(indentLevel);
+	// Use parent's indent style for base indentation
+	const baseIndent = parentListType === 'bullet' ? '  ' : '   ';
+	const indent = baseIndent.repeat(indentLevel);
 	const items = list.content.map((item) => {
 		const itemContent = convertListItemToMarkdown(item, indentLevel, 'bullet');
 		// If item content starts with newline, it's a block-first item
@@ -129,12 +139,21 @@ function convertBulletListToMarkdown(list: JSONContent, indentLevel = 0): string
  *
  * CommonMark: When a list item starts with a block (not a paragraph),
  * the marker line should be empty: `1.\n   block` not `1. block`
+ *
+ * @param list - The ordered list node
+ * @param indentLevel - Current nesting depth (0 for top-level)
+ * @param parentListType - The type of the PARENT list (for calculating correct indent base)
  */
-function convertOrderedListToMarkdown(list: JSONContent, indentLevel = 0): string {
+function convertOrderedListToMarkdown(
+	list: JSONContent,
+	indentLevel = 0,
+	parentListType: 'bullet' | 'ordered' = 'ordered'
+): string {
 	if (!list.content) return '';
 
-	// Use 3 spaces for ordered lists to align with "1. " format
-	const indent = '   '.repeat(indentLevel);
+	// Use parent's indent style for base indentation
+	const baseIndent = parentListType === 'bullet' ? '  ' : '   ';
+	const indent = baseIndent.repeat(indentLevel);
 	const startNum = (list.attrs?.start as number) || 1;
 
 	const items = list.content.map((item, index) => {
@@ -207,20 +226,30 @@ function convertListItemToMarkdown(
 				parts.push(paraContent);
 			}
 		} else if (child.type === 'bulletList') {
-			// Nested list - blank line before + the list content
-			const listContent = convertBulletListToMarkdown(child, indentLevel + 1);
+			// Nested list - use parent's list type for correct indentation
+			const listContent = convertBulletListToMarkdown(child, indentLevel + 1, listType);
+			const isLoose = item.attrs?.loose === true;
 			if (isFirstChild) {
 				// List at start of item - just newline for the list items
 				parts.push('\n' + listContent);
+			} else if (prevChild?.type === 'paragraph' && i === 1 && !isLoose) {
+				// List directly after first paragraph in tight list - no blank line
+				parts.push('\n' + listContent);
 			} else {
-				// List after other content - blank line separator
+				// List after other content OR loose list - blank line separator
 				parts.push('\n\n' + listContent);
 			}
 		} else if (child.type === 'orderedList') {
-			const listContent = convertOrderedListToMarkdown(child, indentLevel + 1);
+			// Nested list - use parent's list type for correct indentation
+			const listContent = convertOrderedListToMarkdown(child, indentLevel + 1, listType);
+			const isLoose = item.attrs?.loose === true;
 			if (isFirstChild) {
 				parts.push('\n' + listContent);
+			} else if (prevChild?.type === 'paragraph' && i === 1 && !isLoose) {
+				// List directly after first paragraph in tight list - no blank line
+				parts.push('\n' + listContent);
 			} else {
+				// Loose list or list after other content - blank line separator
 				parts.push('\n\n' + listContent);
 			}
 		} else if (child.type === 'mathBlock') {

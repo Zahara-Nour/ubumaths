@@ -29,6 +29,8 @@ interface RawListItem {
 	startNumber?: number; // Starting number for ordered lists
 	marker: string; // Original marker (e.g., '1.', '-', 'a)')
 	continuations: string[]; // Additional paragraphs for this item (loose list support)
+	hasBlankBeforeNested: boolean; // true if there's a blank line before nested content
+	lateContinations: string[]; // Continuations that come AFTER nested items
 }
 
 // ============================================================================
@@ -118,7 +120,9 @@ function parseListItemLine(line: string): RawListItem | null {
 			ordered: true,
 			startNumber,
 			marker: `${marker}.`,
-			continuations: []
+			continuations: [],
+			hasBlankBeforeNested: false,
+			lateContinations: []
 		};
 	}
 
@@ -135,7 +139,9 @@ function parseListItemLine(line: string): RawListItem | null {
 			indent,
 			ordered: false,
 			marker,
-			continuations: []
+			continuations: [],
+			hasBlankBeforeNested: false,
+			lateContinations: []
 		};
 	}
 
@@ -187,6 +193,9 @@ export function parseList(lines: string[]): ListNode[] {
 	let inCodeFence = false;
 	let codeFenceChar = '';
 
+	// Track if we're in "late continuation mode" (content after nested items at parent level)
+	let inLateContination = false;
+
 	for (const line of lines) {
 		const isBlank = line.trim() === '';
 		const parsed = parseListItemLine(line);
@@ -195,37 +204,94 @@ export function parseList(lines: string[]): ListNode[] {
 			// This is a new list item
 			// First, save any pending continuation to the previous item
 			if (currentItem && pendingContinuation.length > 0) {
-				currentItem.continuations.push(pendingContinuation.join('\n').trim());
+				if (inLateContination) {
+					currentItem.lateContinations.push(pendingContinuation.join('\n').trim());
+				} else {
+					currentItem.continuations.push(pendingContinuation.join('\n').trim());
+				}
 				pendingContinuation = [];
 			}
 			currentItem = parsed;
 			rawItems.push(currentItem);
-			// Reset code fence state for new item
+			// Reset code fence and late continuation state for new item
 			inCodeFence = false;
 			codeFenceChar = '';
+			inLateContination = false;
 		} else if (currentItem && !isBlank) {
 			// This is a continuation line (indented content after a list item)
-			// Remove only the list continuation indent (2-3 spaces), preserving any additional
-			// indentation (important for code blocks where internal indent is meaningful)
-			const trimmed = line.replace(/^[ ]{2,3}/, '');
+			// Remove the list continuation indent based on current item's indent level and type
+			// - Bullet lists: 2 spaces per level (for "- " prefix)
+			// - Ordered lists: 3 spaces per level (for "1. " prefix)
+			const baseIndentSize = currentItem.ordered ? 3 : 2;
+			const continuationIndentSize = (currentItem.indent + 1) * baseIndentSize;
+
+			// Get the actual indent of this line
+			const actualIndentMatch = line.match(/^(\s*)/);
+			const actualIndent = actualIndentMatch ? actualIndentMatch[1].length : 0;
+
+			// If the line's indent is LESS than expected, it might belong to a parent level
+			// In that case, find the appropriate parent item to attach to
+			if (actualIndent < continuationIndentSize && currentItem.indent > 0 && !inLateContination) {
+				// Find the parent-level item in rawItems (last item at a lower indent)
+				let parentItem: RawListItem | null = null;
+				for (let idx = rawItems.length - 1; idx >= 0; idx--) {
+					const parentBaseIndent = rawItems[idx].ordered ? 3 : 2;
+					const parentContinuationIndent = (rawItems[idx].indent + 1) * parentBaseIndent;
+					if (
+						actualIndent >= parentContinuationIndent &&
+						rawItems[idx].indent < currentItem.indent
+					) {
+						parentItem = rawItems[idx];
+						// Save current item's pending continuation first
+						if (pendingContinuation.length > 0) {
+							currentItem.continuations.push(pendingContinuation.join('\n').trim());
+							pendingContinuation = [];
+						}
+						currentItem = parentItem;
+						inLateContination = true; // Enter late continuation mode
+						break;
+					}
+				}
+			}
+
+			const indentPattern = new RegExp(
+				`^[ ]{${(currentItem.indent + 1) * (currentItem.ordered ? 3 : 2)}}`
+			);
+			const trimmed = line.replace(indentPattern, '');
 
 			// Check if this continuation follows a hardbreak (line ending with \)
 			// If so, append to the existing content/continuation instead of starting new paragraph
-			const lastContent =
-				pendingContinuation.length > 0
+			const lastContent = inLateContination
+				? currentItem.lateContinations[currentItem.lateContinations.length - 1] || ''
+				: pendingContinuation.length > 0
 					? pendingContinuation[pendingContinuation.length - 1]
 					: currentItem.content;
 
 			if (lastContent.endsWith('\\')) {
 				// Hardbreak continuation - append to the same paragraph
-				if (pendingContinuation.length > 0) {
+				if (inLateContination) {
+					if (currentItem.lateContinations.length > 0) {
+						currentItem.lateContinations[currentItem.lateContinations.length - 1] += '\n' + trimmed;
+					} else {
+						currentItem.lateContinations.push(trimmed);
+					}
+				} else if (pendingContinuation.length > 0) {
 					pendingContinuation[pendingContinuation.length - 1] += '\n' + trimmed;
 				} else {
 					currentItem.content += '\n' + trimmed;
 				}
 			} else {
-				// Normal continuation - add to pending
-				pendingContinuation.push(trimmed);
+				// Normal continuation - add to pending or late
+				if (inLateContination) {
+					// When in a code fence, append to the last entry to keep the block together
+					if (inCodeFence && currentItem.lateContinations.length > 0) {
+						currentItem.lateContinations[currentItem.lateContinations.length - 1] += '\n' + trimmed;
+					} else {
+						currentItem.lateContinations.push(trimmed);
+					}
+				} else {
+					pendingContinuation.push(trimmed);
+				}
 			}
 
 			// Check for code fence markers (``` or ~~~)
@@ -238,6 +304,10 @@ export function parseList(lines: string[]): ListNode[] {
 					codeFenceChar = fenceType;
 				} else if (fenceType === codeFenceChar) {
 					// Closing fence (must match opening type)
+					// For late continuations, append the closing fence to complete the block
+					if (inLateContination && currentItem.lateContinations.length > 0) {
+						// The closing fence was already added above, so no need to do anything
+					}
 					inCodeFence = false;
 					codeFenceChar = '';
 				}
@@ -255,13 +325,20 @@ export function parseList(lines: string[]): ListNode[] {
 					pendingContinuation = [];
 				}
 			}
+		} else if (isBlank && currentItem && pendingContinuation.length === 0) {
+			// Blank line with no pending continuation - this indicates a loose list
+			// Mark the current item as having a blank line before its next nested/sibling content
+			currentItem.hasBlankBeforeNested = true;
 		}
-		// Blank lines between items (with no pending continuation) are just skipped
 	}
 
 	// Don't forget to save the last pending continuation
 	if (currentItem && pendingContinuation.length > 0) {
-		currentItem.continuations.push(pendingContinuation.join('\n').trim());
+		if (inLateContination) {
+			currentItem.lateContinations.push(pendingContinuation.join('\n').trim());
+		} else {
+			currentItem.continuations.push(pendingContinuation.join('\n').trim());
+		}
 	}
 
 	if (rawItems.length === 0) return [];
@@ -321,7 +398,8 @@ function buildListHierarchy(items: RawListItem[], baseIndent: number = 0): ListN
 		// Create list item
 		const listItem: ListItemNode = {
 			type: 'list-item',
-			children: []
+			children: [],
+			loose: item.hasBlankBeforeNested || undefined
 		};
 
 		// Add text content as a paragraph (simplified - will be enhanced in main parser)
@@ -368,6 +446,21 @@ function buildListHierarchy(items: RawListItem[], baseIndent: number = 0): ListN
 			i = j; // Skip the nested items we just processed
 		} else {
 			i++;
+		}
+
+		// Add late continuation paragraphs (content that comes AFTER nested items)
+		for (const lateCont of item.lateContinations) {
+			if (lateCont) {
+				listItem.children.push({
+					type: 'paragraph',
+					children: [
+						{
+							type: 'text',
+							content: lateCont
+						}
+					]
+				});
+			}
 		}
 
 		currentList.items.push(listItem);
@@ -441,12 +534,14 @@ export function findListBlocks(lines: string[]): [number, number][] {
 
 		if (isListItem(line)) {
 			const isOrdered = ORDERED_LIST_REGEX.test(line);
+			const lineIndent = getIndentLevel(line.match(/^(\s*)/)?.[1] ?? '');
 
 			if (blockStart === null) {
 				blockStart = i;
 				currentListOrdered = isOrdered;
-			} else if (currentListOrdered !== isOrdered) {
-				// Different list type - start new block
+			} else if (currentListOrdered !== isOrdered && lineIndent === 0) {
+				// Different list type AT BASE LEVEL - start new block
+				// Nested items of different type are still part of the same block
 				blocks.push([blockStart, lastItemEnd]);
 				blockStart = i;
 				currentListOrdered = isOrdered;

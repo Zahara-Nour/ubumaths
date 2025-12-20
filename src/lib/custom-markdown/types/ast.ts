@@ -190,6 +190,8 @@ export interface HeadingNode extends BaseNode {
 export interface ListItemNode extends BaseNode {
 	type: 'list-item';
 	children: ASTNode[]; // Can contain nested lists, paragraphs, etc.
+	/** True if there's a blank line between content and nested items (loose list) */
+	loose?: boolean;
 }
 
 /**
