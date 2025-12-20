@@ -14,7 +14,7 @@
  *
  * Output can be compiled with the Typst CLI.
  *
- * @module custom-markdown/generators/typst-generator
+ * @module ubumark/generators/typst-generator
  */
 
 import type {

@@ -11,7 +11,7 @@
  * - Math expressions in values
  * - Error comments for invalid input
  *
- * @module custom-markdown/generators/variation-table-latex
+ * @module ubumark/generators/variation-table-latex
  */
 
 import type {

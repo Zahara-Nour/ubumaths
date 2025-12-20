@@ -24,7 +24,7 @@
  * Note: Conversion from custom syntax to LaTeX happens during rendering,
  * not during extraction.
  *
- * @module custom-markdown/parser/math-extractor
+ * @module ubumark/parser/math-extractor
  */
 
 import type { MathPlaceholder } from '../types';

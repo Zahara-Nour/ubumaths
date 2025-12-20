@@ -10,7 +10,7 @@
  * - Invalid random specifications
  * - Invalid eval expressions
  *
- * @module custom-markdown/parameterization/validator/variable-validator
+ * @module ubumark/parameterization/validator/variable-validator
  */
 
 import type { Variable, ValidationResult, ValidationError } from '../../types';

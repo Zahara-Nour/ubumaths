@@ -15,7 +15,7 @@
  * - Expression evaluation
  * - Circular dependency detection
  *
- * @module custom-markdown/parameterization
+ * @module ubumark/parameterization
  *
  * @example Basic usage
  * ```typescript

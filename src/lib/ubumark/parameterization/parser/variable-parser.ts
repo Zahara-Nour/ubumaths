@@ -4,7 +4,7 @@
  *
  * Parses variable references from Markdown syntax: {{varName}}
  *
- * @module custom-markdown/parameterization/parser/variable-parser
+ * @module ubumark/parameterization/parser/variable-parser
  */
 
 /**

@@ -5,7 +5,7 @@
  * Central export point for all custom markdown types.
  * Re-exports types from ast, parser, template, and parameterization modules.
  *
- * @module custom-markdown/types
+ * @module ubumark/types
  */
 
 // ============================================================================

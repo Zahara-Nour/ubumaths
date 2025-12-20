@@ -4,7 +4,7 @@
  *
  * This module exports generators that convert markdown AST to various output formats.
  *
- * @module custom-markdown/generators
+ * @module ubumark/generators
  */
 
 // ============================================================================

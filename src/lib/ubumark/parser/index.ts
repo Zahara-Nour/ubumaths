@@ -6,7 +6,7 @@
  * This module provides a complete markdown parsing solution with
  * support for math expressions, lists, tables, code blocks, and more.
  *
- * @module custom-markdown/parser
+ * @module ubumark/parser
  */
 
 // ============================================================================

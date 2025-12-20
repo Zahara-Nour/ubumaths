@@ -8,7 +8,7 @@
  * 2. TEMPLATE (defaultDisplayOptions on QuestionTemplate)
  * 3. VARIABLE (displayOptions on individual Variable - highest priority)
  *
- * @module custom-markdown/parameterization/display-options
+ * @module ubumark/parameterization/display-options
  *
  * @example Basic usage
  * ```typescript

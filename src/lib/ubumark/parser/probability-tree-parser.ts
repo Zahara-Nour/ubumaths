@@ -21,7 +21,7 @@
  *   Bleue:1/4, P(BB)=2/20
  * ```
  *
- * @module custom-markdown/parser/probability-tree-parser
+ * @module ubumark/parser/probability-tree-parser
  */
 
 import type {
