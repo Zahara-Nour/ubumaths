@@ -37,6 +37,7 @@ export interface TextNode extends BaseNode {
 	bold?: boolean;
 	italic?: boolean;
 	code?: boolean;
+	strikethrough?: boolean;
 }
 
 /**

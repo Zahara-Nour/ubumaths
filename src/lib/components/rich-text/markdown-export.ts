@@ -616,7 +616,7 @@ function convertInlineNodeToMarkdown(node: JSONContent): string {
 /**
  * Convert text node with marks to Markdown
  *
- * Handles marks in order: code > bold > italic > link
+ * Handles marks in order: code > strikethrough > bold+italic > bold > italic > link
  * Link mark wraps the entire formatted text.
  */
 function convertTextNodeToMarkdown(node: JSONContent): string {
@@ -627,21 +627,27 @@ function convertTextNodeToMarkdown(node: JSONContent): string {
 
 	let result = text;
 
-	// Check for marks and apply in order: code > bold > italic > link
+	// Check for marks and apply in order: code > strikethrough > bold+italic > bold > italic > link
 	const hasBold = node.marks.some((m) => m.type === 'bold');
 	const hasItalic = node.marks.some((m) => m.type === 'italic');
 	const hasCode = node.marks.some((m) => m.type === 'code');
+	const hasStrike = node.marks.some((m) => m.type === 'strike');
 	const linkMark = node.marks.find((m) => m.type === 'link');
 
 	// Code takes precedence (can't have formatting inside code)
 	if (hasCode) {
 		result = `\`${text}\``;
 	} else {
-		// Apply bold then italic
-		if (hasBold) {
-			result = `**${result}**`;
+		// Apply strikethrough first
+		if (hasStrike) {
+			result = `---${result}---`;
 		}
-		if (hasItalic) {
+		// Apply bold+italic combined as *** or separately
+		if (hasBold && hasItalic) {
+			result = `***${result}***`;
+		} else if (hasBold) {
+			result = `**${result}**`;
+		} else if (hasItalic) {
 			result = `*${result}*`;
 		}
 	}

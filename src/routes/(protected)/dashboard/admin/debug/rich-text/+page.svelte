@@ -1103,13 +1103,13 @@ Texte en *italique* (emphasis).
 
 Texte en ***gras et italique***.
 
-Texte ~~barre~~ (strikethrough).
+Texte ---barre--- (strikethrough).
 
 ## Combine
 
-**Texte gras avec *italique* dedans**.
+Texte ***gras et italique*** (bold+italic combine).
 
-*Texte italique avec **gras** dedans*.
+Note: Les formatages imbriques (ex: **gras avec *italique* dedans**) ne sont pas supportes.
 
 ## Code inline
 
