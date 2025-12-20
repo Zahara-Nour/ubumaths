@@ -137,8 +137,10 @@ function convertOrderedListToMarkdown(list: JSONContent, indentLevel = 0): strin
 /**
  * Convert list item content to Markdown
  *
- * Handles hardbreaks within list items by adding continuation indent
- * (3 spaces) to lines after a hardbreak so they remain part of the item.
+ * CommonMark rules for blocks in list items:
+ * - Blocks (paragraphs, code blocks, math blocks) are separated by BLANK LINES
+ * - Continuation content is indented (3 spaces for ordered lists)
+ * - Hardbreaks (\) are only for line breaks WITHIN a paragraph
  */
 function convertListItemToMarkdown(item: JSONContent, indentLevel: number): string {
 	if (!item.content) return '';
@@ -151,35 +153,30 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 	for (let i = 0; i < item.content.length; i++) {
 		const child = item.content[i];
 		const prevChild = i > 0 ? item.content[i - 1] : null;
-		const nextChild = item.content[i + 1];
+		const isFirstChild = i === 0;
 		const prevIsBlock = prevChild && blockTypes.includes(prevChild.type || '');
-		const nextIsBlock = nextChild && blockTypes.includes(nextChild.type || '');
 
 		if (child.type === 'paragraph') {
 			let paraContent = convertParagraphToMarkdown(child);
 
-			// If paragraph is followed by a block and doesn't end with hardbreak, add one
-			// But NOT if paragraph is empty - empty paragraph followed by block just needs blank line
-			if (nextIsBlock && !paraContent.endsWith('\\\n') && paraContent.trim() !== '') {
-				paraContent += '\\\n';
-			}
-
-			// If paragraph follows a block, add indent to first line
-			// (the previous block already added \\\n, so we just need indent)
+			// If paragraph follows a block, add blank line + indent (CommonMark)
 			if (prevIsBlock) {
-				paraContent = continuationIndent + paraContent;
+				paraContent = '\n\n' + continuationIndent + paraContent;
+			} else if (!isFirstChild) {
+				// Paragraph follows another paragraph - add blank line + indent
+				paraContent = '\n\n' + continuationIndent + paraContent;
 			}
 
-			// If paragraph has hardbreaks, add continuation indent after each newline
-			if (paraContent.includes('\n')) {
+			// If paragraph has hardbreaks (internal line breaks), add continuation indent
+			if (paraContent.includes('\\\n')) {
 				const lines = paraContent.split('\n');
-				// First line has no extra indent (marker provides it, or prevIsBlock already added it)
-				// Subsequent lines need continuation indent
-				// BUT: don't indent the last line if it's empty (trailing hardbreak)
 				const indentedContent = lines
 					.map((line, idx) => {
-						if (idx === 0) return line; // First line: no indent (already handled)
-						if (idx === lines.length - 1 && line === '') return line; // Last empty line: no indent
+						if (idx === 0) return line; // First line: no extra indent
+						// Lines after hardbreak need continuation indent
+						// But not if they're already indented (from prevIsBlock case)
+						if (line.startsWith(continuationIndent)) return line;
+						if (line === '') return line; // Empty line (after trailing \)
 						return continuationIndent + line;
 					})
 					.join('\n');
@@ -188,64 +185,56 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 				parts.push(paraContent);
 			}
 		} else if (child.type === 'bulletList') {
-			// Nested list - add newline and indent
-			parts.push('\n' + convertBulletListToMarkdown(child, indentLevel + 1));
+			// Nested list - blank line before + the list content
+			const listContent = convertBulletListToMarkdown(child, indentLevel + 1);
+			if (isFirstChild) {
+				// List at start of item - just newline for the list items
+				parts.push('\n' + listContent);
+			} else {
+				// List after other content - blank line separator
+				parts.push('\n\n' + listContent);
+			}
 		} else if (child.type === 'orderedList') {
-			parts.push('\n' + convertOrderedListToMarkdown(child, indentLevel + 1));
+			const listContent = convertOrderedListToMarkdown(child, indentLevel + 1);
+			if (isFirstChild) {
+				parts.push('\n' + listContent);
+			} else {
+				parts.push('\n\n' + listContent);
+			}
 		} else if (child.type === 'mathBlock') {
 			// Math block inside list item
 			const mathMarkdown = convertMathBlockToMarkdown(child);
 
-			// Check if previous part ends with hardbreak (\\\n)
-			const lastPart = parts[parts.length - 1];
-			const endsWithHardbreak = lastPart && lastPart.endsWith('\\\n');
-
 			let mathOutput: string;
-			if (endsWithHardbreak) {
-				// Already have \\\n from hardbreak, just add indented math block
-				mathOutput = continuationIndent + mathMarkdown;
-			} else {
-				// Need newline before math block + indent
+			if (isFirstChild) {
+				// Math block at start of item - blank line then indented math
 				mathOutput = '\n' + continuationIndent + mathMarkdown;
-			}
-
-			// If followed by paragraph, add hardbreak at end (for round-trip)
-			if (nextChild?.type === 'paragraph') {
-				mathOutput += '\\\n';
+			} else {
+				// Math block after other content - blank line separator + indent
+				mathOutput = '\n\n' + continuationIndent + mathMarkdown;
 			}
 
 			parts.push(mathOutput);
 		} else if (child.type === 'codeBlock') {
-			// Code block inside list item - needs proper indentation
+			// Code block inside list item - needs proper indentation for each line
 			const codeMarkdown = convertCodeBlockToMarkdown(child);
-
-			// Check if previous part ends with hardbreak (\\\n)
-			const lastPart = parts[parts.length - 1];
-			const endsWithHardbreak = lastPart && lastPart.endsWith('\\\n');
 
 			// Code blocks are multi-line, need to indent each line
 			const codeLines = codeMarkdown.split('\n');
 			const indentedCode = codeLines
 				.map((line, idx) => {
-					// First line gets indent only if not following a hardbreak (which already has newline)
-					if (idx === 0 && endsWithHardbreak) return continuationIndent + line;
-					if (idx === 0) return line; // Will be prefixed by \n below
+					if (idx === 0) return continuationIndent + line;
 					return continuationIndent + line;
 				})
 				.join('\n');
 
 			let codeOutput: string;
-			if (endsWithHardbreak) {
-				// Already have \\\n from hardbreak
-				codeOutput = indentedCode;
+			if (isFirstChild) {
+				// Code block at start of item - blank line then indented code
+				codeOutput = '\n' + indentedCode;
 			} else {
-				// Need newline before code block + indent first line
-				codeOutput = '\n' + continuationIndent + indentedCode;
-			}
-
-			// If followed by paragraph, add hardbreak at end (for round-trip)
-			if (nextChild?.type === 'paragraph') {
-				codeOutput += '\\\n';
+				// Code block after other content - blank line separator
+				codeOutput = '\n\n' + indentedCode;
 			}
 
 			parts.push(codeOutput);
