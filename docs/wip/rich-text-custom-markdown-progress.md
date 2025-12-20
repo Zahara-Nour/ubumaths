@@ -1,4 +1,4 @@
-# Progress: Custom Markdown Support in RichTextEditor
+# Progress: Ubumark Support in RichTextEditor
 
 ## Status: ✅ COMPLETE
 

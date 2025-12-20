@@ -48,7 +48,7 @@ variables: [
 **Debugging**:
 
 ```typescript
-import { detectCircularDependencies } from '$lib/custom-markdown';
+import { detectCircularDependencies } from '$lib/ubumark';
 
 const result = detectCircularDependencies(exercise.variables);
 if (!result.valid) {

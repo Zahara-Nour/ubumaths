@@ -4435,9 +4435,9 @@ WHERE distribution_mode = 'per_student'
   - `supabase/migrations/20251026153000_add_exercise_parameterization.sql` (parameterization)
 - **Types**: `src/lib/exercises/types.ts`
 - **Instance Generator**: `src/lib/exercises/generator/instance-generator.ts`
-- **Parser**: `src/lib/custom-markdown/parser/`
-- **Generators**: `src/lib/custom-markdown/generators/`
-- **Importers**: `src/lib/custom-markdown/importers/`
+- **Parser**: `src/lib/ubumark/parser/`
+- **Generators**: `src/lib/ubumark/generators/`
+- **Importers**: `src/lib/ubumark/importers/`
 - **Components**: `src/lib/components/exercises/`
 - **Test Page**: `src/routes/(protected)/test-exercises/` (development)
 - **Feature Documentation**:

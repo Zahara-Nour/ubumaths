@@ -53,7 +53,7 @@ Texte: Calcule {{a}} + {{b}} = {{sum}}
 Rendu: Calcule 5 + 10 = 15
 ```
 
-**Source** : `src/lib/custom-markdown/types/parameterization.ts`
+**Source** : `src/lib/ubumark/types/parameterization.ts`
 
 ---
 
@@ -182,7 +182,7 @@ Comme pour les autres types aleatoires, les exclusions utilisent `!` :
 | `decimal-range`     | Plage decimale avec pas         | `{{0.5..9.99:0.01}}` |
 | `discrete-list`     | Selection dans une liste finie  | `{{a\|b\|c}}`        |
 
-**Source** : `src/lib/custom-markdown/parameterization/parser/random-parser.ts`
+**Source** : `src/lib/ubumark/parameterization/parser/random-parser.ts`
 
 ---
 
@@ -284,7 +284,7 @@ Simplification de fraction:
 {{eval:numerator/gcd}} / {{eval:denominator/gcd}}
 ```
 
-**Source** : `src/lib/custom-markdown/parameterization/parser/eval-parser.ts`
+**Source** : `src/lib/ubumark/parameterization/parser/eval-parser.ts`
 
 ---
 
@@ -347,7 +347,7 @@ Derive: $f(x) = {{a}}x^2 + {{b}}x + {{c}}$
 Resultat: ${{a}} + {{b}} = {{eval:a+b}}$
 ```
 
-**Source** : `src/lib/custom-markdown/parser/math-extractor.ts`
+**Source** : `src/lib/ubumark/parser/math-extractor.ts`
 
 ---
 
@@ -427,7 +427,7 @@ Resultat: ~{{eval:a+b}}~
 
 **Note** : Les variables templates `{{}}` sont resolues AVANT le parsing MathAST.
 
-**Source** : `src/lib/custom-markdown/parser/math-extractor.ts`
+**Source** : `src/lib/ubumark/parser/math-extractor.ts`
 
 ---
 
@@ -447,7 +447,7 @@ Donne les deux solutions: x = {{blank:1}} et x = {{blank:2}}
 - Plusieurs `{{blank:N}}` avec le meme N attendent la meme reponse
 - Utilise dans les questions de type `fill_in_blanks`
 
-**Source** : `src/lib/custom-markdown/parser/markdown-parser.ts`
+**Source** : `src/lib/ubumark/parser/markdown-parser.ts`
 
 ---
 
@@ -524,7 +524,7 @@ interface InputState {
 }
 ```
 
-**Source** : `src/lib/custom-markdown/parser/math-extractor.ts`, `src/lib/components/markdown/nodes/MathPrompt.svelte`
+**Source** : `src/lib/ubumark/parser/math-extractor.ts`, `src/lib/components/markdown/nodes/MathPrompt.svelte`
 
 ---
 
@@ -573,7 +573,7 @@ interface InputState {
 ![Icone](icon.png){size=inline}
 ```
 
-**Source** : `src/lib/custom-markdown/parser/markdown-parser.ts`
+**Source** : `src/lib/ubumark/parser/markdown-parser.ts`
 
 ---
 
@@ -684,7 +684,7 @@ function add(a, b) {
 ---
 ```
 
-**Source** : `src/lib/custom-markdown/parser/`
+**Source** : `src/lib/ubumark/parser/`
 
 ---
 
@@ -716,7 +716,7 @@ L'AST (Abstract Syntax Tree) represente la structure parsee du markdown.
 | `blank`       | Champ blanc   | `index: number`                        |
 | `line-break`  | Saut de ligne | `hard?: boolean`                       |
 
-**Source** : `src/lib/custom-markdown/types/ast.ts`
+**Source** : `src/lib/ubumark/types/ast.ts`
 
 ---
 
@@ -855,22 +855,22 @@ Complete les calculs:
 
 | Fichier                                                              | Fonction                             |
 | -------------------------------------------------------------------- | ------------------------------------ |
-| `src/lib/custom-markdown/parameterization/parser/random-parser.ts`   | Parse `{{random:...}}` et raccourcis |
-| `src/lib/custom-markdown/parameterization/parser/eval-parser.ts`     | Parse `{{eval:...}}` avec modifiers  |
-| `src/lib/custom-markdown/parameterization/parser/variable-parser.ts` | Parse `{{variable}}`                 |
-| `src/lib/custom-markdown/parser/markdown-parser.ts`                  | Parser markdown principal            |
-| `src/lib/custom-markdown/parser/math-extractor.ts`                   | Extraction `$...$` et `$$...$$`      |
-| `src/lib/custom-markdown/parser/list-parser.ts`                      | Parse listes                         |
-| `src/lib/custom-markdown/parser/table-parser.ts`                     | Parse tables                         |
-| `src/lib/custom-markdown/parser/blockquote-parser.ts`                | Parse citations                      |
-| `src/lib/custom-markdown/parser/code-block-parser.ts`                | Parse blocs de code                  |
+| `src/lib/ubumark/parameterization/parser/random-parser.ts`   | Parse `{{random:...}}` et raccourcis |
+| `src/lib/ubumark/parameterization/parser/eval-parser.ts`     | Parse `{{eval:...}}` avec modifiers  |
+| `src/lib/ubumark/parameterization/parser/variable-parser.ts` | Parse `{{variable}}`                 |
+| `src/lib/ubumark/parser/markdown-parser.ts`                  | Parser markdown principal            |
+| `src/lib/ubumark/parser/math-extractor.ts`                   | Extraction `$...$` et `$$...$$`      |
+| `src/lib/ubumark/parser/list-parser.ts`                      | Parse listes                         |
+| `src/lib/ubumark/parser/table-parser.ts`                     | Parse tables                         |
+| `src/lib/ubumark/parser/blockquote-parser.ts`                | Parse citations                      |
+| `src/lib/ubumark/parser/code-block-parser.ts`                | Parse blocs de code                  |
 
 ### Types
 
 | Fichier                                             | Contenu                                            |
 | --------------------------------------------------- | -------------------------------------------------- |
-| `src/lib/custom-markdown/types/parameterization.ts` | Types: Variable, RandomSpec, EvalModifiers         |
-| `src/lib/custom-markdown/types/ast.ts`              | Types AST: DocumentNode, BlockNode, InlineNode     |
+| `src/lib/ubumark/types/parameterization.ts` | Types: Variable, RandomSpec, EvalModifiers         |
+| `src/lib/ubumark/types/ast.ts`              | Types AST: DocumentNode, BlockNode, InlineNode     |
 | `src/lib/exercises/types.ts`                        | Types Exercise, ExerciseInstance (re-exports AST)  |
 | `src/lib/questions/types.ts`                        | Types Question, QuestionTemplate, QuestionInstance |
 
@@ -878,8 +878,8 @@ Complete les calculs:
 
 | Fichier                                                        | Tests pour                     |
 | -------------------------------------------------------------- | ------------------------------ |
-| `src/lib/custom-markdown/__tests__/parser/*.test.ts`           | Markdown, math, blanks, images |
-| `src/lib/custom-markdown/__tests__/parameterization/*.test.ts` | Tous les parsers partages      |
+| `src/lib/ubumark/__tests__/parser/*.test.ts`           | Markdown, math, blanks, images |
+| `src/lib/ubumark/__tests__/parameterization/*.test.ts` | Tous les parsers partages      |
 
 ---
 

@@ -28,9 +28,9 @@
 
 The Exercise system uses a custom Markdown parser optimized for mathematical content. It converts Markdown text with LaTeX math into an Abstract Syntax Tree (AST) that can be rendered in the browser or transpiled to other formats (LaTeX, Typst).
 
-**Location**: `src/lib/custom-markdown/parser/markdown-parser.ts`
+**Location**: `src/lib/ubumark/parser/markdown-parser.ts`
 
-**Type Definitions**: `src/lib/custom-markdown/types/`
+**Type Definitions**: `src/lib/ubumark/types/`
 
 ### Key Features
 
@@ -451,8 +451,8 @@ type ASTNode = InlineNode | BlockNode | ListItemNode;
 ### Parsing Markdown
 
 ```typescript
-import { parseMarkdown } from '$lib/custom-markdown';
-import type { DocumentNode } from '$lib/custom-markdown';
+import { parseMarkdown } from '$lib/ubumark';
+import type { DocumentNode } from '$lib/ubumark';
 
 const markdown = `
 # Exercise 1
@@ -510,7 +510,7 @@ if (result.success) {
 
 ```svelte
 <script lang="ts">
-	import type { DocumentNode, BlockNode } from '$lib/custom-markdown';
+	import type { DocumentNode, BlockNode } from '$lib/ubumark';
 	import { renderBlockNode } from '$lib/exercises/renderer';
 
 	let { ast }: { ast: DocumentNode } = $props();

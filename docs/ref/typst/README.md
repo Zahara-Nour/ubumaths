@@ -69,7 +69,7 @@ const { typstContent, metadata } = generator.generate({
 // Ces imports continuent de fonctionner
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { getTypstCompiler } from '$lib/worksheets/typst-compiler';
-import { generateTypst } from '$lib/custom-markdown';
+import { generateTypst } from '$lib/ubumark';
 ```
 
 ## Types principaux

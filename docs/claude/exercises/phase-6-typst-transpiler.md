@@ -1,8 +1,8 @@
 # Phase 6: Typst Transpiler for Enhanced Images
 
 > **DEPRECATED**: This is historical documentation from 2025-11-22.
-> The Typst transpiler has been moved to `src/lib/custom-markdown/generators/typst-generator.ts`.
-> See current documentation in the custom-markdown module.
+> The Typst transpiler has been moved to `src/lib/ubumark/generators/typst-generator.ts`.
+> See current documentation in the ubumark module.
 
 ## Overview
 

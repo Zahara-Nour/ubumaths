@@ -15,7 +15,7 @@ Création complète de la suite de tests pour le système de variations d'exerci
 
 ### 1. Tests du parser de hints
 
-**Fichier**: `src/lib/custom-markdown/__tests__/parser/hint-parser.test.ts`
+**Fichier**: `src/lib/ubumark/__tests__/parser/hint-parser.test.ts`
 
 **Couverture**: 27 tests passants
 

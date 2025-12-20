@@ -1,4 +1,4 @@
-# Custom Markdown Progress
+# Ubumark Progress
 
 ## Latest: RichTextEditor Presets (December 2024)
 
@@ -125,13 +125,13 @@ d402f222 feat(markdown): add link, hashtag, mention inline node support
 
 ---
 
-## Previous: Custom Markdown Refactoring - COMPLETE
+## Previous: Ubumark Refactoring - COMPLETE
 
 ### Final State: All 7 Phases Complete
 
 ### Summary
 
-Consolidated all custom markdown functionality into `src/lib/custom-markdown/`:
+Consolidated all custom markdown functionality into `src/lib/ubumark/`:
 
 - Parser AST (from `exercises/parser/`)
 - Template types (from `shared/markdown/`)
@@ -155,7 +155,7 @@ Consolidated all custom markdown functionality into `src/lib/custom-markdown/`:
 ## Final Structure
 
 ```
-src/lib/custom-markdown/
+src/lib/ubumark/
 ├── index.ts                           # Main public API
 ├── types/
 │   ├── index.ts                       # Barrel exports
@@ -198,7 +198,7 @@ src/lib/custom-markdown/
 | --------------------- | ------------------------------- |
 | Custom-markdown tests | ✅ 813 passed, 1 skipped        |
 | TypeScript check      | ✅ No new errors                |
-| ESLint                | ✅ No errors in custom-markdown |
+| ESLint                | ✅ No errors in ubumark |
 | Imports updated       | ✅ 50 consumer files            |
 
 **Note**: Pre-existing test failures (470) and lint errors (4) in other modules are unrelated to this refactoring.
@@ -215,10 +215,10 @@ src/lib/custom-markdown/
 
 ## Backward Compatibility
 
-`src/lib/exercises/types.ts` re-exports AST types from custom-markdown for existing consumers:
+`src/lib/exercises/types.ts` re-exports AST types from ubumark for existing consumers:
 
 ```typescript
-export type { BaseNode, TextNode, MathInlineNode, ... } from '$lib/custom-markdown';
+export type { BaseNode, TextNode, MathInlineNode, ... } from '$lib/ubumark';
 ```
 
 ---
@@ -227,16 +227,16 @@ export type { BaseNode, TextNode, MathInlineNode, ... } from '$lib/custom-markdo
 
 ```typescript
 // Parser
-import { parseMarkdown, extractMath } from '$lib/custom-markdown';
+import { parseMarkdown, extractMath } from '$lib/ubumark';
 
 // Template types
-import { templateMarkdown, resolvedMarkdown, isTemplateMarkdown } from '$lib/custom-markdown';
-import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/custom-markdown';
+import { templateMarkdown, resolvedMarkdown, isTemplateMarkdown } from '$lib/ubumark';
+import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
 
 // Parameterization
-import { resolveVariables, resolveText, validateVariables } from '$lib/custom-markdown';
-import type { Variable, ResolvedVariable, RandomSpec } from '$lib/custom-markdown';
+import { resolveVariables, resolveText, validateVariables } from '$lib/ubumark';
+import type { Variable, ResolvedVariable, RandomSpec } from '$lib/ubumark';
 
 // AST types
-import type { DocumentNode, BlockNode, InlineNode, ParseOptions } from '$lib/custom-markdown';
+import type { DocumentNode, BlockNode, InlineNode, ParseOptions } from '$lib/ubumark';
 ```

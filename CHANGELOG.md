@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-- **custom-markdown:** Math node structure has changed:
+- **ubumark:** Math node structure has changed:
 
 * `latex: string` → `expression: string` (contains original syntax)
 * `syntax?: 'latex' | 'custom'` → `syntax: 'latex' | 'custom'` (required)
@@ -110,7 +110,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### ♻️ Code Refactoring
 
 - **constraints:** rename modes to strict/warn/off for clarity ([9a5320b](https://github.com/Zahara-Nour/ubumaths/commit/9a5320bfc85923526bbf517cb92a00ed9aca26ce))
-- **custom-markdown:** rename latex to expression, make syntax required ([1aec1ed](https://github.com/Zahara-Nour/ubumaths/commit/1aec1ed8f25619aaf471fe11b6cd96e3c21513f9))
+- **ubumark:** rename latex to expression, make syntax required ([1aec1ed](https://github.com/Zahara-Nour/ubumaths/commit/1aec1ed8f25619aaf471fe11b6cd96e3c21513f9))
 - **parser:** use only .. syntax for random ranges ([cc4127e](https://github.com/Zahara-Nour/ubumaths/commit/cc4127e871df67df1740b6e5e7143f56f46bf720))
 - **types:** migrate core types to branded markdown ([c4059b3](https://github.com/Zahara-Nour/ubumaths/commit/c4059b316ac6ee891692b0eff907edac2cdf1760))
 - **units:** simplify parser to use single \unit{} and \hms{} macros ([ea17aa0](https://github.com/Zahara-Nour/ubumaths/commit/ea17aa030674a31a7e45692b26a000c7479bda10))
@@ -183,7 +183,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - update migration progress with transformer changes ([7c307e8](https://github.com/Zahara-Nour/ubumaths/commit/7c307e808d7eda4ed487523c6d5297b1cf4adb4d))
 - update migration review system progress to completed ([07e6b81](https://github.com/Zahara-Nour/ubumaths/commit/07e6b8126f9116acd24960d682f476f6bd1c039e))
 - update outdated ContentField references in comments ([e88581a](https://github.com/Zahara-Nour/ubumaths/commit/e88581ae98f8dd6d1818fb6eb35e8b81953d0c64))
-- update paths after custom-markdown consolidation ([29b7131](https://github.com/Zahara-Nour/ubumaths/commit/29b7131833ab39659858fde46ea5b07ebfc302b3))
+- update paths after ubumark consolidation ([29b7131](https://github.com/Zahara-Nour/ubumaths/commit/29b7131833ab39659858fde46ea5b07ebfc302b3))
 - update progress with Phase 8 & 9 details and project summary ([1f18913](https://github.com/Zahara-Nour/ubumaths/commit/1f18913dfd6b98ebf0be9194cdbeecf4cb74f00e))
 - update question-migration-analysis.md to reflect constraint validators implementation ([41932df](https://github.com/Zahara-Nour/ubumaths/commit/41932df4b8d6b99ccbdb25c46ef4832c5f8ad141))
 - update random syntax to use only .. ([bb38e20](https://github.com/Zahara-Nour/ubumaths/commit/bb38e206fef3450b2eecf9b267b6aedeb10709f0))
@@ -333,8 +333,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - **constructions:** constructions avec instruments ([9237bee](https://github.com/Zahara-Nour/ubumaths/commit/9237bee980b60b365d30160991ed4a79c34fb8a7))
 - **constructions:** import InstrumenPoche examples ([ff54c39](https://github.com/Zahara-Nour/ubumaths/commit/ff54c39d73821ae2dfa89954b85cd9417abd4fd6))
 - **constructions:** reactive player + distance-based drawing speed ([23d1ad0](https://github.com/Zahara-Nour/ubumaths/commit/23d1ad036d5c8f58ebfbeac13f12dcefd1369996))
-- **custom-markdown:** add ~custom~ math syntax extraction ([54df362](https://github.com/Zahara-Nour/ubumaths/commit/54df3621fe3f6465efb7750759e66c2092e43f6e))
-- **custom-markdown:** add syntax field to math AST nodes ([a7c42ae](https://github.com/Zahara-Nour/ubumaths/commit/a7c42aebb6ed709b1bbca1d200f895335ed28417))
+- **ubumark:** add ~custom~ math syntax extraction ([54df362](https://github.com/Zahara-Nour/ubumaths/commit/54df3621fe3f6465efb7750759e66c2092e43f6e))
+- **ubumark:** add syntax field to math AST nodes ([a7c42ae](https://github.com/Zahara-Nour/ubumaths/commit/a7c42aebb6ed709b1bbca1d200f895335ed28417))
 - **database:** backfill historical reward events ([51f302c](https://github.com/Zahara-Nour/ubumaths/commit/51f302c2c34ec8531d94bc884910500cbcee7e35))
 - **database:** create unified reward_events audit trail system ([541b39d](https://github.com/Zahara-Nour/ubumaths/commit/541b39dbe15c6d96cb2e1fb09e7c2a5a9b9a50fc))
 - **db:** add grade standardization migration ([dbb09e7](https://github.com/Zahara-Nour/ubumaths/commit/dbb09e75f61a00160c1e439108c8f398ca5644b5))
