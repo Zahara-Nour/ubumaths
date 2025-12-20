@@ -883,7 +883,7 @@ function parseTextForHardBreaks(text: string): (string | LineBreakNode)[] {
 
 	// Convert soft breaks (remaining \n) to line-break nodes
 	// According to CommonMark, soft breaks should be preserved as line breaks
-	const finalResults: (string | { type: 'line-break'; hard: boolean })[] = [];
+	const finalResults: (string | LineBreakNode)[] = [];
 	for (const item of results) {
 		if (typeof item === 'string') {
 			// Split by newlines and insert soft line-break nodes between segments
@@ -905,10 +905,10 @@ function parseTextForHardBreaks(text: string): (string | LineBreakNode)[] {
 }
 
 /**
- * Parse text formatting (bold, italic, code) for a single text segment
+ * Parse text formatting (bold, italic, code, strikethrough) for a single text segment
  *
  * Parses markdown inline formatting and returns text nodes with appropriate properties.
- * Priority order: code > bold > italic (to avoid conflicts)
+ * Priority order: code > strikethrough > bold+italic > bold > italic (to avoid conflicts)
  *
  * @param text - Plain text possibly with markdown formatting
  * @returns Array of text nodes with formatting
@@ -920,8 +920,13 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 	let position = 0;
 
 	// Combined regex to find all formatting markers
-	// Matches: `code`, **bold**, __bold__, *italic*, _italic_
-	const formatRegex = /(`[^`]+`)|(\*\*|__)([^*_]+)\2|(\*|_)([^*_]+)\4/g;
+	// Matches: `code`, ---strikethrough---, ***bold+italic***, **bold**, __bold__, *italic*, _italic_
+	// Order matters:
+	// - strikethrough (---) must be before bold (**) to avoid conflicts
+	// - bold+italic (***) must be before bold (**) and italic (*) to match first
+	// Note: strikethrough uses ---text--- (not ~~text~~ which is block math)
+	const formatRegex =
+		/(`[^`]+`)|(---)(?!-)(.+?)(?<!-)---|\*\*\*([^*]+)\*\*\*|(\*\*|__)([^*_]+)\5|(\*|_)([^*_]+)\7/g;
 	let match: RegExpExecArray | null;
 
 	while ((match = formatRegex.exec(text)) !== null) {
@@ -942,17 +947,32 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 				code: true
 			});
 		} else if (match[2] && match[3]) {
-			// Bold: **content** or __content__
+			// Strikethrough: ---content---
 			nodes.push({
 				type: 'text',
 				content: match[3],
+				strikethrough: true
+			});
+		} else if (match[4]) {
+			// Bold+Italic: ***content***
+			nodes.push({
+				type: 'text',
+				content: match[4],
+				bold: true,
+				italic: true
+			});
+		} else if (match[5] && match[6]) {
+			// Bold: **content** or __content__
+			nodes.push({
+				type: 'text',
+				content: match[6],
 				bold: true
 			});
-		} else if (match[4] && match[5]) {
+		} else if (match[7] && match[8]) {
 			// Italic: *content* or _content_
 			nodes.push({
 				type: 'text',
-				content: match[5],
+				content: match[8],
 				italic: true
 			});
 		}

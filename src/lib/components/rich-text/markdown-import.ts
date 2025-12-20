@@ -584,10 +584,12 @@ function parseInlineMarkdownString(text: string): JSONContent[] {
 	// Combined regex for all inline formatting:
 	// - `code` (backticks)
 	// - $math$ (LaTeX) or ~math~ (custom)
+	// - ---strikethrough---
 	// - **bold** or __bold__
 	// - *italic* or _italic_
-	// Order matters: code first (to protect backtick content), then math, then bold (before italic)
-	const inlineRegex = /(`[^`]+`)|(\$[^$\n]+\$|~[^~\n]+~)|(\*\*|__)([^*_]+)\3|(\*|_)([^*_]+)\5/g;
+	// Order matters: code first (to protect backtick content), then math, then strikethrough, then bold (before italic)
+	const inlineRegex =
+		/(`[^`]+`)|(\$[^$\n]+\$|~[^~\n]+~)|(---)(?!-)(.+?)(?<!-)---|(\*\*|__)([^*_]+)\5|(\*|_)([^*_]+)\7/g;
 	let lastIndex = 0;
 	let match: RegExpExecArray | null;
 
@@ -632,17 +634,24 @@ function parseInlineMarkdownString(text: string): JSONContent[] {
 				}
 			});
 		} else if (match[3] && match[4]) {
-			// Bold: **content** or __content__
+			// Strikethrough: ---content---
 			segments.push({
 				type: 'text',
 				text: match[4],
-				marks: [{ type: 'bold' }]
+				marks: [{ type: 'strike' }]
 			});
 		} else if (match[5] && match[6]) {
-			// Italic: *content* or _content_
+			// Bold: **content** or __content__
 			segments.push({
 				type: 'text',
 				text: match[6],
+				marks: [{ type: 'bold' }]
+			});
+		} else if (match[7] && match[8]) {
+			// Italic: *content* or _content_
+			segments.push({
+				type: 'text',
+				text: match[8],
 				marks: [{ type: 'italic' }]
 			});
 		}
@@ -818,6 +827,7 @@ function convertTextNode(node: TextNode): JSONContent[] {
 				if (node.bold) marks.push({ type: 'bold' });
 				if (node.italic) marks.push({ type: 'italic' });
 				if (node.code) marks.push({ type: 'code' });
+				if (node.strikethrough) marks.push({ type: 'strike' });
 
 				if (marks.length > 0) {
 					textNode.marks = marks;

@@ -42,6 +42,30 @@ describe('Round-trip: Markdown -> TipTap -> Markdown', () => {
 		expect(result).toBe(markdown);
 	});
 
+	it('preserves bold and italic combined', () => {
+		const markdown = 'This is ***bold and italic*** text';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves strikethrough text', () => {
+		const markdown = 'This is ---deleted--- text';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves strikethrough with other formatting', () => {
+		const markdown = 'Normal ---strikethrough--- and **bold** text';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
 	it('preserves inline code', () => {
 		const markdown = 'Use `console.log()` for debugging';
 		const json = markdownToTipTap(markdown);
@@ -1162,6 +1186,14 @@ describe('Table cell inline formatting', () => {
 
 	it('preserves italic text in table cells', () => {
 		const markdown = '| Header | Value |\n|:---|:---|\n| *italic* | normal |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves strikethrough text in table cells', () => {
+		const markdown = '| Header | Value |\n|:---|:---|\n| ---deleted--- | normal |';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
