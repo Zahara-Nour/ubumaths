@@ -122,7 +122,8 @@ function generatePreamble(options: Required<LatexTranspilerOptions>): string {
 	preamble += '\\usepackage{xcolor}\n'; // For code syntax colors
 	preamble += '\\lstset{basicstyle=\\ttfamily\\small,breaklines=true,frame=single}\n';
 	preamble += '\\usepackage{tkz-tab}\n'; // For variation tables
-	preamble += '\\usetikzlibrary{arrows}\n\n';
+	preamble += '\\usetikzlibrary{arrows}\n';
+	preamble += '\\usepackage[normalem]{ulem}\n'; // For strikethrough (\sout{})\n
 
 	// Extra packages
 	if (extraPackages.length > 0) {
@@ -244,6 +245,7 @@ function generateInline(node: InlineNode, _options: Required<LatexTranspilerOpti
 			let text = escapeLatex(node.content);
 			if (node.bold) text = `\\textbf{${text}}`;
 			if (node.italic) text = `\\textit{${text}}`;
+			if (node.strikethrough) text = `\\sout{${text}}`;
 			if (node.code) text = `\\texttt{${text}}`;
 			return text;
 		}

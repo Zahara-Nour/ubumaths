@@ -827,8 +827,8 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 	let position = 0;
 
 	// Combined regex to find all formatting markers
-	// Matches: `code`, **bold**, __bold__, *italic*, _italic_
-	const formatRegex = /(`[^`]+`)|(\*\*|__)([^*_]+)\2|(\*|_)([^*_]+)\4/g;
+	// Matches: `code`, -/-strikethrough-/-, **bold**, __bold__, *italic*, _italic_
+	const formatRegex = /(`[^`]+`)|(-\/-)(.+?)-\/-|(\*\*|__)([^*_]+)\4|(\*|_)([^*_]+)\6/g;
 	let match: RegExpExecArray | null;
 
 	while ((match = formatRegex.exec(text)) !== null) {
@@ -849,17 +849,24 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 				code: true
 			});
 		} else if (match[2] && match[3]) {
-			// Bold: **content** or __content__
+			// Strikethrough: -/-content-/-
 			nodes.push({
 				type: 'text',
 				content: match[3],
-				bold: true
+				strikethrough: true
 			});
 		} else if (match[4] && match[5]) {
-			// Italic: *content* or _content_
+			// Bold: **content** or __content__
 			nodes.push({
 				type: 'text',
 				content: match[5],
+				bold: true
+			});
+		} else if (match[6] && match[7]) {
+			// Italic: *content* or _content_
+			nodes.push({
+				type: 'text',
+				content: match[7],
 				italic: true
 			});
 		}
