@@ -715,24 +715,29 @@ describe('Round-trip: Markdown -> TipTap -> Markdown', () => {
 		expect(result).toBe(original);
 	});
 
-	it('preserves math block with hardbreak in list item', () => {
-		const original = '2. Montrer que, pour tout ~x>0~\\\n   ~~C(x)={5(x^3+16)}/x~~';
-		const tipTap = markdownToTipTap(original);
+	it('preserves math block after paragraph in list item (CommonMark)', () => {
+		// CommonMark: blocks in list items are separated by blank lines, not hardbreaks
+		const input = '2. Montrer que, pour tout ~x>0~\\\n   ~~C(x)={5(x^3+16)}/x~~';
+		// Export uses blank line between paragraph and math block
+		const expected = '2. Montrer que, pour tout ~x>0~\n\n   ~~C(x)={5(x^3+16)}/x~~';
+		const tipTap = markdownToTipTap(input);
 		const result = tipTapToMarkdown(tipTap);
 
-		expect(result).toBe(original);
+		expect(result).toBe(expected);
 	});
 
-	it('preserves code block in list item continuation', () => {
-		// Code blocks in lists are separated by blank line (like the parser test)
-		// Note: on export, a hardbreak is added before the block for consistency
+	it('preserves code block in list item continuation (CommonMark)', () => {
+		// CommonMark: blocks in list items are separated by blank lines
+		// Both input and output use blank lines (no hardbreaks)
 		const input = `1. Voici un exemple de code
 
    \`\`\`javascript
    const x = 1;
    \`\`\``;
 
-		const expected = `1. Voici un exemple de code\\
+		// Export preserves the CommonMark format with blank lines
+		const expected = `1. Voici un exemple de code
+
    \`\`\`javascript
    const x = 1;
    \`\`\``;
@@ -774,14 +779,103 @@ describe('Edge Cases', () => {
 		expect(result).toContain('$');
 	});
 
-	it('preserves multiple math blocks with paragraphs between them in list item', () => {
+	it('preserves multiple math blocks with paragraphs between them in list item (CommonMark)', () => {
 		// This tests the complex case: para -> mathBlock -> para -> mathBlock
-		const original = `1. Le volume de la boîte est\\
+		// CommonMark: blocks are separated by blank lines, not hardbreaks
+		const input = `1. Le volume de la boîte est\\
    ~~V=x^2h~~\\
    donc\\
    ~~h=V/{x^2}=10/{x^2}~~`;
-		const tipTap = markdownToTipTap(original);
+		// Export converts to CommonMark format with blank lines
+		const expected = `1. Le volume de la boîte est
+
+   ~~V=x^2h~~
+
+   donc
+
+   ~~h=V/{x^2}=10/{x^2}~~`;
+		const tipTap = markdownToTipTap(input);
 		const result = tipTapToMarkdown(tipTap);
-		expect(result).toBe(original);
+		expect(result).toBe(expected);
+	});
+});
+
+// ============================================================================
+// COMMONMARK BLOCK SEPARATION IN LISTS
+// ============================================================================
+
+describe('CommonMark: Block separation in list items', () => {
+	it('list item starting with code block', () => {
+		// Code block at the start of a list item
+		const markdown = `1.
+   \`\`\`js
+   const x = 1;
+   \`\`\``;
+		const tipTap = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(tipTap);
+		expect(result).toBe(markdown);
+	});
+
+	it('list item starting with math block', () => {
+		// Math block at the start of a list item
+		const markdown = `1.
+   $$x^2$$`;
+		const tipTap = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(tipTap);
+		expect(result).toBe(markdown);
+	});
+
+	it('multiple paragraphs in list item', () => {
+		// Multiple paragraphs separated by blank lines
+		const markdown = `1. Premier paragraphe
+
+   Deuxième paragraphe
+
+   Troisième paragraphe`;
+		const tipTap = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(tipTap);
+		expect(result).toBe(markdown);
+	});
+
+	it('hardbreaks WITHIN a paragraph are preserved', () => {
+		// Hardbreaks within a single paragraph should remain
+		const markdown = `1. Ligne 1\\
+   Ligne 2\\
+   Ligne 3`;
+		const tipTap = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(tipTap);
+		expect(result).toBe(markdown);
+	});
+
+	it('paragraph with hardbreaks followed by math block', () => {
+		// Hardbreaks in paragraph, then blank line before math block
+		const input = `1. Ligne 1\\
+   Ligne 2\\
+   $$x^2$$`;
+		// The trailing hardbreak before math block becomes blank line
+		const expected = `1. Ligne 1\\
+   Ligne 2
+
+   $$x^2$$`;
+		const tipTap = markdownToTipTap(input);
+		const result = tipTapToMarkdown(tipTap);
+		expect(result).toBe(expected);
+	});
+
+	it('complex: para, code, para, math, para', () => {
+		const markdown = `1. Introduction
+
+   \`\`\`python
+   print("hello")
+   \`\`\`
+
+   Explication
+
+   $$E = mc^2$$
+
+   Conclusion`;
+		const tipTap = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(tipTap);
+		expect(result).toBe(markdown);
 	});
 });
