@@ -23,7 +23,10 @@ import { Plugin, PluginKey, TextSelection } from '@tiptap/pm/state';
  * Regex for code block with triple backticks: ```language
  * Captures optional language identifier
  */
-const CODE_BLOCK_INPUT_REGEX = /^```([a-z]*)?[\s\n]$/;
+/**
+ * Note: No ^ anchor so it works anywhere in the text (including after content in list items)
+ */
+const CODE_BLOCK_INPUT_REGEX = /```([a-z]*)?[\s\n]$/;
 
 /**
  * Plugin key for the inline code input handler
