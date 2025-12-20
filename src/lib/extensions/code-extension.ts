@@ -228,7 +228,8 @@ export const CustomCodeBlock = CodeBlock.extend({
 							if (paragraphPosInListItem === 0) {
 								// First paragraph in listItem - can't replace it (schema requires paragraph first)
 								// Insert codeBlock after and keep empty paragraph
-								const insertPos = paragraphStart + paragraphNode.nodeSize - deletedLength;
+								// Position after paragraph = paragraphStart + nodeSize - 1, adjusted for deletion
+								const insertPos = paragraphStart + paragraphNode.nodeSize - deletedLength - 1;
 								tr.insert(insertPos, codeBlockNode);
 							} else {
 								// Not the first element - we can replace the paragraph
@@ -238,7 +239,8 @@ export const CustomCodeBlock = CodeBlock.extend({
 							}
 						} else {
 							// Paragraph has other content - insert codeBlock after it
-							const insertPos = paragraphStart + paragraphNode.nodeSize - deletedLength;
+							// Position after paragraph = paragraphStart + nodeSize - 1, adjusted for deletion
+							const insertPos = paragraphStart + paragraphNode.nodeSize - deletedLength - 1;
 							tr.insert(insertPos, codeBlockNode);
 						}
 
