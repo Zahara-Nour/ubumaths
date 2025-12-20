@@ -1138,3 +1138,59 @@ describe('Strict round-trip: exact markdown preservation', () => {
 		expect(result).toBe(markdown);
 	});
 });
+
+// ============================================================================
+// TABLE CELL INLINE FORMATTING
+// ============================================================================
+
+describe('Table cell inline formatting', () => {
+	it('preserves inline code in table cells', () => {
+		const markdown = '| Function | Example |\n|:---|:---|\n| `map()` | `[1,2].map(x => x*2)` |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves bold text in table cells', () => {
+		const markdown = '| Header | Value |\n|:---|:---|\n| **bold** | normal |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves italic text in table cells', () => {
+		const markdown = '| Header | Value |\n|:---|:---|\n| *italic* | normal |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves mixed formatting in table cells', () => {
+		const markdown =
+			'| Type | Example |\n|:---|:---|\n| Code | `console.log()` |\n| Bold | **strong** |\n| Italic | *emphasis* |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves math in table cells', () => {
+		const markdown = '| Formula | Description |\n|:---|:---|\n| $x^2$ | Square |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+
+	it('preserves complex table with multiple formatting types', () => {
+		const markdown =
+			'| Function | Description | Example |\n|:---|:---|:---|\n| `map()` | Transforme | `[1,2].map(x => x*2)` |\n| `filter()` | **Filtre** | *resultat* |';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toBe(markdown);
+	});
+});

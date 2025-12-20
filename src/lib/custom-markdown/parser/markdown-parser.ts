@@ -881,14 +881,27 @@ function parseTextForHardBreaks(text: string): (string | LineBreakNode)[] {
 		results.push(text.substring(position));
 	}
 
-	// Convert soft breaks (remaining \n) to spaces in text segments
-	// This is standard markdown behavior: soft breaks become spaces when rendered
-	return results.map((item) => {
+	// Convert soft breaks (remaining \n) to line-break nodes
+	// According to CommonMark, soft breaks should be preserved as line breaks
+	const finalResults: (string | { type: 'line-break'; hard: boolean })[] = [];
+	for (const item of results) {
 		if (typeof item === 'string') {
-			return item.replace(/\n/g, ' ');
+			// Split by newlines and insert soft line-break nodes between segments
+			const segments = item.split('\n');
+			for (let i = 0; i < segments.length; i++) {
+				if (segments[i]) {
+					finalResults.push(segments[i]);
+				}
+				if (i < segments.length - 1) {
+					// Insert soft line break between segments
+					finalResults.push({ type: 'line-break', hard: false });
+				}
+			}
+		} else {
+			finalResults.push(item);
 		}
-		return item;
-	});
+	}
+	return finalResults;
 }
 
 /**

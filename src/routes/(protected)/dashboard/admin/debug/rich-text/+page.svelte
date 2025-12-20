@@ -610,8 +610,7 @@ YouTube format court :
 			label: 'Listes bloc en premier (CommonMark)',
 			content: `# Listes avec bloc en premier (CommonMark)
 
-Quand un item de liste commence directement par un bloc (code, citation, math), sans paragraphe avant.
-En CommonMark, le marqueur de liste est seul sur sa ligne, suivi du bloc indente.
+Quand un item de liste commence directement par un bloc (code, citation, math), sans paragraphe avant, le marqueur de liste est seul sur sa ligne, suivi du bloc indente.
 
 ## Code bloc en premier
 
@@ -857,7 +856,9 @@ Identite remarquable :
 ## Exercices
 
 - Calculer ~2/3 + 1/4~
-- Simplifier ~~x^2 + 2x + 1~~
+- Simplifier
+
+  ~~x^2 + 2x + 1~~
 - Resoudre $ax + b = 0$`
 		},
 
