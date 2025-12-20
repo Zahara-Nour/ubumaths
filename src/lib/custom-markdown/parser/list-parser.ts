@@ -38,18 +38,21 @@ interface RawListItem {
 /**
  * Regex for ordered list markers: 1. 2. 3. or 1) 2) 3)
  * Also supports letter numbering: a. b. c. or a) b) c)
+ * Allows empty content (CommonMark: list item starting with block)
  */
-const ORDERED_LIST_REGEX = /^(\s*)(\d+|[a-z])[.)]\s+(.*)$/;
+const ORDERED_LIST_REGEX = /^(\s*)(\d+|[a-z])[.)](?:\s+(.*))?$/;
 
 /**
  * Regex for unordered list markers: - or * or +
+ * Allows empty content (CommonMark: list item starting with block)
  */
-const UNORDERED_LIST_REGEX = /^(\s*)([-*+])\s+(.*)$/;
+const UNORDERED_LIST_REGEX = /^(\s*)([-*+])(?:\s+(.*))?$/;
 
 /**
  * Combined regex to detect any list item
+ * Allows empty content (CommonMark: list item starting with block)
  */
-const LIST_ITEM_REGEX = /^(\s*)(?:(\d+|[a-z])[.)]|([-*+]))\s+(.*)$/;
+const LIST_ITEM_REGEX = /^(\s*)(?:(\d+|[a-z])[.)]|([-*+]))(?:\s+(.*))?$/;
 
 // ============================================================================
 // LIST DETECTION
@@ -108,8 +111,9 @@ function parseListItemLine(line: string): RawListItem | null {
 		}
 
 		return {
+			// Content may be undefined for list items with only a marker (CommonMark block-first syntax)
 			// Only trim leading whitespace - trailing spaces may be significant for hardbreaks
-			content: content.trimStart(),
+			content: content?.trimStart() ?? '',
 			indent,
 			ordered: true,
 			startNumber,
@@ -125,8 +129,9 @@ function parseListItemLine(line: string): RawListItem | null {
 		const indent = getIndentLevel(spaces);
 
 		return {
+			// Content may be undefined for list items with only a marker (CommonMark block-first syntax)
 			// Only trim leading whitespace - trailing spaces may be significant for hardbreaks
-			content: content.trimStart(),
+			content: content?.trimStart() ?? '',
 			indent,
 			ordered: false,
 			marker,
@@ -320,15 +325,18 @@ function buildListHierarchy(items: RawListItem[], baseIndent: number = 0): ListN
 		};
 
 		// Add text content as a paragraph (simplified - will be enhanced in main parser)
-		listItem.children.push({
-			type: 'paragraph',
-			children: [
-				{
-					type: 'text',
-					content: item.content
-				}
-			]
-		});
+		// Skip if content is empty (CommonMark: list item starting with block)
+		if (item.content) {
+			listItem.children.push({
+				type: 'paragraph',
+				children: [
+					{
+						type: 'text',
+						content: item.content
+					}
+				]
+			});
+		}
 
 		// Add continuation paragraphs (for loose lists)
 		for (const continuation of item.continuations) {

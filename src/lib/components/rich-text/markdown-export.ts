@@ -103,6 +103,9 @@ function convertHeadingToMarkdown(heading: JSONContent): string {
 
 /**
  * Convert bullet list to Markdown
+ *
+ * CommonMark: When a list item starts with a block (not a paragraph),
+ * the marker line should be empty: `-\n  block` not `- block`
  */
 function convertBulletListToMarkdown(list: JSONContent, indentLevel = 0): string {
 	if (!list.content) return '';
@@ -110,6 +113,11 @@ function convertBulletListToMarkdown(list: JSONContent, indentLevel = 0): string
 	const indent = '  '.repeat(indentLevel);
 	const items = list.content.map((item) => {
 		const itemContent = convertListItemToMarkdown(item, indentLevel);
+		// If item content starts with newline, it's a block-first item
+		// Use just "-" without trailing space for proper CommonMark
+		if (itemContent.startsWith('\n')) {
+			return `${indent}-${itemContent}`;
+		}
 		return `${indent}- ${itemContent}`;
 	});
 
@@ -118,6 +126,9 @@ function convertBulletListToMarkdown(list: JSONContent, indentLevel = 0): string
 
 /**
  * Convert ordered list to Markdown
+ *
+ * CommonMark: When a list item starts with a block (not a paragraph),
+ * the marker line should be empty: `1.\n   block` not `1. block`
  */
 function convertOrderedListToMarkdown(list: JSONContent, indentLevel = 0): string {
 	if (!list.content) return '';
@@ -128,7 +139,13 @@ function convertOrderedListToMarkdown(list: JSONContent, indentLevel = 0): strin
 
 	const items = list.content.map((item, index) => {
 		const itemContent = convertListItemToMarkdown(item, indentLevel);
-		return `${indent}${startNum + index}. ${itemContent}`;
+		const marker = `${startNum + index}.`;
+		// If item content starts with newline, it's a block-first item
+		// Use just marker without trailing space for proper CommonMark
+		if (itemContent.startsWith('\n')) {
+			return `${indent}${marker}${itemContent}`;
+		}
+		return `${indent}${marker} ${itemContent}`;
 	});
 
 	return items.join('\n');
@@ -148,7 +165,7 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 	const parts: string[] = [];
 	// List continuation indent: base indent + 3 spaces for the marker (e.g., "1. ")
 	const continuationIndent = '   '.repeat(indentLevel + 1);
-	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList'];
+	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList', 'blockquote'];
 
 	for (let i = 0; i < item.content.length; i++) {
 		const child = item.content[i];
@@ -238,6 +255,24 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 			}
 
 			parts.push(codeOutput);
+		} else if (child.type === 'blockquote') {
+			// Blockquote inside list item - needs proper indentation for each line
+			const quoteMarkdown = convertBlockquoteToMarkdown(child);
+
+			// Blockquotes are multi-line, need to indent each line
+			const quoteLines = quoteMarkdown.split('\n');
+			const indentedQuote = quoteLines.map((line) => continuationIndent + line).join('\n');
+
+			let quoteOutput: string;
+			if (isFirstChild) {
+				// Blockquote at start of item - newline then indented quote
+				quoteOutput = '\n' + indentedQuote;
+			} else {
+				// Blockquote after other content - blank line separator
+				quoteOutput = '\n\n' + indentedQuote;
+			}
+
+			parts.push(quoteOutput);
 		}
 	}
 

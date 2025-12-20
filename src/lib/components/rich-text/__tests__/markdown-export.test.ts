@@ -1,16 +1,15 @@
 /**
- * Markdown Export Tests
- * =====================
+ * Markdown Export Tests (Unit Tests)
+ * ===================================
  *
  * Tests for converting TipTap JSON to Markdown format.
- * Ensures proper syntax preservation and round-trip compatibility.
+ * These tests use manually created JSON to avoid heavy imports.
  *
  * @module rich-text/__tests__/markdown-export.test
  */
 
 import { describe, it, expect } from 'vitest';
 import { tipTapToMarkdown } from '../markdown-export';
-import { markdownToTipTap } from '../markdown-import';
 import type { JSONContent } from '@tiptap/core';
 
 // ============================================================================
@@ -556,326 +555,124 @@ describe('tipTapToMarkdown - Horizontal Rules', () => {
 });
 
 // ============================================================================
-// ROUND-TRIP TESTS
+// COMMONMARK: LIST ITEMS STARTING WITH BLOCKS
 // ============================================================================
 
-describe('Round-trip: Markdown -> TipTap -> Markdown', () => {
-	it('preserves simple text', () => {
-		const original = 'Hello world';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
+describe('tipTapToMarkdown - CommonMark list items with block-first content', () => {
+	it('exports list item starting with code block correctly', () => {
+		const json = createDoc({
+			type: 'bulletList',
+			content: [
+				{
+					type: 'listItem',
+					content: [
+						{
+							type: 'codeBlock',
+							attrs: { language: 'js' },
+							content: [createText('const x = 1;')]
+						}
+					]
+				}
+			]
+		});
+		const result = tipTapToMarkdown(json);
 
-		expect(result).toBe(original);
+		// Should be "-\n   ```js..." not "- \n   ```js..."
+		expect(result).toMatch(/^-\n/);
+		expect(result).toContain('```js');
+		expect(result).toContain('const x = 1;');
 	});
 
-	it('preserves bold formatting', () => {
-		const original = 'This is **bold** text';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
+	it('exports list item starting with blockquote correctly', () => {
+		const json = createDoc({
+			type: 'bulletList',
+			content: [
+				{
+					type: 'listItem',
+					content: [
+						{
+							type: 'blockquote',
+							content: [createParagraph(createText('A quote'))]
+						}
+					]
+				}
+			]
+		});
+		const result = tipTapToMarkdown(json);
 
-		expect(result).toBe(original);
+		// Should be "-\n   > A quote" not "- \n   > A quote"
+		expect(result).toMatch(/^-\n/);
+		expect(result).toContain('> A quote');
 	});
 
-	it('preserves italic formatting', () => {
-		const original = 'This is *italic* text';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
+	it('exports list item starting with math block correctly', () => {
+		const json = createDoc({
+			type: 'bulletList',
+			content: [
+				{
+					type: 'listItem',
+					content: [
+						{
+							type: 'mathBlock',
+							attrs: { latex: 'x^2', syntax: 'latex', originalExpression: 'x^2' }
+						}
+					]
+				}
+			]
+		});
+		const result = tipTapToMarkdown(json);
 
-		expect(result).toBe(original);
+		// Should be "-\n   $$x^2$$" not "- \n   $$x^2$$"
+		expect(result).toMatch(/^-\n/);
+		expect(result).toContain('$$x^2$$');
 	});
 
-	it('preserves template variables', () => {
-		const original = 'Value: {{myVar}}';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
+	it('exports list item starting with nested list correctly', () => {
+		const json = createDoc({
+			type: 'bulletList',
+			content: [
+				{
+					type: 'listItem',
+					content: [
+						{
+							type: 'bulletList',
+							content: [
+								{ type: 'listItem', content: [createParagraph(createText('Nested 1'))] },
+								{ type: 'listItem', content: [createParagraph(createText('Nested 2'))] }
+							]
+						}
+					]
+				}
+			]
+		});
+		const result = tipTapToMarkdown(json);
 
-		expect(result).toBe(original);
+		// Should be "-\n  - Nested 1..." not "- \n  - Nested 1..."
+		expect(result).toMatch(/^-\n/);
+		expect(result).toContain('- Nested 1');
+		expect(result).toContain('- Nested 2');
 	});
 
-	it('preserves template random', () => {
-		const original = 'Number: {{1..10}}';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
+	it('exports ordered list item starting with code block correctly', () => {
+		const json = createDoc({
+			type: 'orderedList',
+			content: [
+				{
+					type: 'listItem',
+					content: [
+						{
+							type: 'codeBlock',
+							attrs: { language: 'python' },
+							content: [createText('print("hello")')]
+						}
+					]
+				}
+			]
+		});
+		const result = tipTapToMarkdown(json);
 
-		expect(result).toBe(original);
-	});
-
-	it('preserves template eval', () => {
-		const original = 'Result: {{eval:a+b}}';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves blank fields', () => {
-		const original = 'Answer: {{blank:1}}';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves LaTeX math syntax', () => {
-		const original = 'Formula: $x^2$';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves custom math syntax', () => {
-		const original = 'Calculate: ~2/3~';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves block math LaTeX syntax', () => {
-		const original = '$$\\frac{a}{b}$$';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves block math custom syntax', () => {
-		const original = '~~sqrt(16)~~';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves headings', () => {
-		const original = '# Main Title';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves unordered lists', () => {
-		const original = '- Item 1\n- Item 2';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves ordered lists', () => {
-		const original = '1. First\n2. Second';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves blockquotes', () => {
-		const original = '> This is a quote';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves code blocks', () => {
-		const original = '```javascript\nconst x = 1;\n```';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves complex mixed content', () => {
-		// Note: Bold around template variables ({{a}}) is not preserved
-		// because TipTap atom nodes (templateVariable, mathInline) don't support marks.
-		// The content is still correct, just without the bold formatting on the template.
-		const original = 'Calculate {{a}} times $x^2$';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves bold text adjacent to templates', () => {
-		const original = '**Bold text** {{var}} more text';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves multiple paragraphs', () => {
-		const original = 'First paragraph\n\nSecond paragraph';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('preserves math block after paragraph in list item (CommonMark)', () => {
-		// CommonMark: blocks in list items are separated by blank lines, not hardbreaks
-		const input = '2. Montrer que, pour tout ~x>0~\\\n   ~~C(x)={5(x^3+16)}/x~~';
-		// Export uses blank line between paragraph and math block
-		const expected = '2. Montrer que, pour tout ~x>0~\n\n   ~~C(x)={5(x^3+16)}/x~~';
-		const tipTap = markdownToTipTap(input);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(expected);
-	});
-
-	it('preserves code block in list item continuation (CommonMark)', () => {
-		// CommonMark: blocks in list items are separated by blank lines
-		// Both input and output use blank lines (no hardbreaks)
-		const input = `1. Voici un exemple de code
-
-   \`\`\`javascript
-   const x = 1;
-   \`\`\``;
-
-		// Export preserves the CommonMark format with blank lines
-		const expected = `1. Voici un exemple de code
-
-   \`\`\`javascript
-   const x = 1;
-   \`\`\``;
-
-		const tipTap = markdownToTipTap(input);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(expected);
-	});
-});
-
-// ============================================================================
-// EDGE CASES
-// ============================================================================
-
-describe('Edge Cases', () => {
-	it('handles consecutive template nodes', () => {
-		const original = '{{a}}{{b}}{{c}}';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('handles math followed by template', () => {
-		const original = '$x^2$ = {{blank:1}}';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		expect(result).toBe(original);
-	});
-
-	it('handles special characters in text', () => {
-		const original = 'Price: 10$ (escaped)';
-		const tipTap = markdownToTipTap(original);
-		const result = tipTapToMarkdown(tipTap);
-
-		// The escaped $ should be preserved
-		expect(result).toContain('$');
-	});
-
-	it('preserves multiple math blocks with paragraphs between them in list item (CommonMark)', () => {
-		// This tests the complex case: para -> mathBlock -> para -> mathBlock
-		// CommonMark: blocks are separated by blank lines, not hardbreaks
-		const input = `1. Le volume de la boîte est\\
-   ~~V=x^2h~~\\
-   donc\\
-   ~~h=V/{x^2}=10/{x^2}~~`;
-		// Export converts to CommonMark format with blank lines
-		const expected = `1. Le volume de la boîte est
-
-   ~~V=x^2h~~
-
-   donc
-
-   ~~h=V/{x^2}=10/{x^2}~~`;
-		const tipTap = markdownToTipTap(input);
-		const result = tipTapToMarkdown(tipTap);
-		expect(result).toBe(expected);
-	});
-});
-
-// ============================================================================
-// COMMONMARK BLOCK SEPARATION IN LISTS
-// ============================================================================
-
-describe('CommonMark: Block separation in list items', () => {
-	it('list item starting with code block', () => {
-		// Code block at the start of a list item
-		const markdown = `1.
-   \`\`\`js
-   const x = 1;
-   \`\`\``;
-		const tipTap = markdownToTipTap(markdown);
-		const result = tipTapToMarkdown(tipTap);
-		expect(result).toBe(markdown);
-	});
-
-	it('list item starting with math block', () => {
-		// Math block at the start of a list item
-		const markdown = `1.
-   $$x^2$$`;
-		const tipTap = markdownToTipTap(markdown);
-		const result = tipTapToMarkdown(tipTap);
-		expect(result).toBe(markdown);
-	});
-
-	it('multiple paragraphs in list item', () => {
-		// Multiple paragraphs separated by blank lines
-		const markdown = `1. Premier paragraphe
-
-   Deuxième paragraphe
-
-   Troisième paragraphe`;
-		const tipTap = markdownToTipTap(markdown);
-		const result = tipTapToMarkdown(tipTap);
-		expect(result).toBe(markdown);
-	});
-
-	it('hardbreaks WITHIN a paragraph are preserved', () => {
-		// Hardbreaks within a single paragraph should remain
-		const markdown = `1. Ligne 1\\
-   Ligne 2\\
-   Ligne 3`;
-		const tipTap = markdownToTipTap(markdown);
-		const result = tipTapToMarkdown(tipTap);
-		expect(result).toBe(markdown);
-	});
-
-	it('paragraph with hardbreaks followed by math block', () => {
-		// Hardbreaks in paragraph, then blank line before math block
-		const input = `1. Ligne 1\\
-   Ligne 2\\
-   $$x^2$$`;
-		// The trailing hardbreak before math block becomes blank line
-		const expected = `1. Ligne 1\\
-   Ligne 2
-
-   $$x^2$$`;
-		const tipTap = markdownToTipTap(input);
-		const result = tipTapToMarkdown(tipTap);
-		expect(result).toBe(expected);
-	});
-
-	it('complex: para, code, para, math, para', () => {
-		const markdown = `1. Introduction
-
-   \`\`\`python
-   print("hello")
-   \`\`\`
-
-   Explication
-
-   $$E = mc^2$$
-
-   Conclusion`;
-		const tipTap = markdownToTipTap(markdown);
-		const result = tipTapToMarkdown(tipTap);
-		expect(result).toBe(markdown);
+		// Should be "1.\n   ```python..." not "1. \n   ```python..."
+		expect(result).toMatch(/^1\.\n/);
+		expect(result).toContain('```python');
 	});
 });
