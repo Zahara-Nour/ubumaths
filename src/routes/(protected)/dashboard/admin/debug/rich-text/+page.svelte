@@ -1103,7 +1103,9 @@ Texte en *italique* (emphasis).
 
 Texte en ***gras et italique***.
 
-Texte ---barre--- (strikethrough).
+Texte -/-barre-/- (strikethrough).
+
+Texte ==surligne== (highlight).
 
 ## Combine
 
