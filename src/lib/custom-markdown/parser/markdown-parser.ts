@@ -1134,10 +1134,85 @@ function containsBlockquote(content: string): boolean {
 }
 
 /**
+ * Check if content contains a table (line starting with |)
+ */
+function containsTable(content: string): boolean {
+	return /^\|/m.test(content);
+}
+
+/**
+ * Parse content that may contain tables into block nodes
+ *
+ * Handles cases where list item content contains | tables.
+ * Returns an array of BlockNode (paragraphs and tables).
+ *
+ * @param content - Text content that may contain tables
+ * @param placeholders - Math placeholders from extraction
+ * @param options - Parse options
+ * @returns Array of block nodes
+ */
+function parseContentWithTable(
+	content: string,
+	placeholders: MathPlaceholder[],
+	options: ParseOptions
+): BlockNode[] {
+	const blocks: BlockNode[] = [];
+	const lines = content.split('\n');
+
+	let i = 0;
+	while (i < lines.length) {
+		const line = lines[i];
+
+		// Check if this line starts a table
+		if (isTableRow(line)) {
+			// Collect all consecutive table lines
+			const tableLines: string[] = [];
+			while (i < lines.length && (isTableRow(lines[i]) || isAlignmentRow(lines[i]))) {
+				tableLines.push(lines[i]);
+				i++;
+			}
+
+			// Parse the table
+			const table = parseTable(tableLines);
+			if (table) {
+				// Process table to restore math placeholders
+				const processedTable = processTableCellContent(table, placeholders);
+				blocks.push(processedTable);
+			}
+		} else if (line.trim()) {
+			// Non-empty, non-table line - collect as paragraph
+			const paraLines: string[] = [];
+			while (i < lines.length && lines[i].trim() && !isTableRow(lines[i])) {
+				paraLines.push(lines[i]);
+				i++;
+			}
+
+			const paraContent = paraLines.join('\n').trim();
+			if (paraContent) {
+				const parsedInline = parseInlineContent(paraContent, placeholders, options);
+				blocks.push({
+					type: 'paragraph',
+					children: parsedInline
+				});
+			}
+		} else {
+			// Empty line - skip
+			i++;
+		}
+	}
+
+	return blocks;
+}
+
+/**
  * Parse content that may contain blockquotes into block nodes
  *
  * Handles cases where list item content contains > blockquotes.
  * Returns an array of BlockNode (paragraphs and blockquotes).
+ *
+ * For roundtrip fidelity, consecutive blockquote lines (> Line1\n> Line2)
+ * are treated as separate paragraphs, NOT as a single paragraph with soft breaks.
+ * This preserves the multi-line structure when exporting.
  *
  * @param content - Text content that may contain blockquotes
  * @param placeholders - Math placeholders from extraction
@@ -1167,12 +1242,31 @@ function parseContentWithBlockquote(
 
 			// Parse the blockquote - extractBlockquoteContent returns string[]
 			const quoteContentLines = extractBlockquoteContent(quoteLines);
-			const quoteContent = quoteContentLines.join('\n');
-			const parsedQuote = parseMarkdown(quoteContent, options);
+
+			// For roundtrip fidelity: treat each line as a separate paragraph
+			// within the blockquote (NOT CommonMark's default soft-break behavior)
+			const quoteChildren: BlockNode[] = [];
+			for (const contentLine of quoteContentLines) {
+				if (contentLine.trim()) {
+					// Check if this is a nested blockquote
+					if (isBlockquoteLine(contentLine)) {
+						// Recursively parse nested blockquote
+						const nestedBlocks = parseContentWithBlockquote(contentLine, placeholders, options);
+						quoteChildren.push(...nestedBlocks);
+					} else {
+						// Regular content line - parse as paragraph
+						const parsedInline = parseInlineContent(contentLine, placeholders, options);
+						quoteChildren.push({
+							type: 'paragraph',
+							children: parsedInline
+						});
+					}
+				}
+			}
 
 			blocks.push({
 				type: 'blockquote',
-				children: parsedQuote.children as BlockNode[]
+				children: quoteChildren
 			});
 		} else if (line.trim()) {
 			// Non-empty, non-blockquote line - collect as paragraph
@@ -1330,6 +1424,12 @@ function processListInlineContent(
 					if (containsBlockquote(textContent)) {
 						// Parse as blocks (may return paragraphs and blockquotes)
 						return parseContentWithBlockquote(textContent, placeholders, options);
+					}
+
+					// Check if content contains tables (| ...)
+					if (containsTable(textContent)) {
+						// Parse as blocks (may return paragraphs and tables)
+						return parseContentWithTable(textContent, placeholders, options);
 					}
 
 					// Parse inline content with placeholders

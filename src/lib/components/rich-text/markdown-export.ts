@@ -189,7 +189,7 @@ function convertListItemToMarkdown(
 	// List continuation indent: 2 spaces for bullet (aligns with "- "), 3 for ordered (aligns with "1. ")
 	const baseIndent = listType === 'bullet' ? '  ' : '   ';
 	const continuationIndent = baseIndent.repeat(indentLevel + 1);
-	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList', 'blockquote'];
+	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList', 'blockquote', 'table'];
 
 	for (let i = 0; i < item.content.length; i++) {
 		const child = item.content[i];
@@ -232,12 +232,12 @@ function convertListItemToMarkdown(
 			if (isFirstChild) {
 				// List at start of item - just newline for the list items
 				parts.push('\n' + listContent);
-			} else if (prevChild?.type === 'paragraph' && i === 1 && !isLoose) {
-				// List directly after first paragraph in tight list - no blank line
-				parts.push('\n' + listContent);
-			} else {
-				// List after other content OR loose list - blank line separator
+			} else if (isLoose || prevIsBlock) {
+				// Loose list item OR list after block - add blank line separator
 				parts.push('\n\n' + listContent);
+			} else {
+				// Tight list - no blank line needed
+				parts.push('\n' + listContent);
 			}
 		} else if (child.type === 'orderedList') {
 			// Nested list - use parent's list type for correct indentation
@@ -245,12 +245,12 @@ function convertListItemToMarkdown(
 			const isLoose = item.attrs?.loose === true;
 			if (isFirstChild) {
 				parts.push('\n' + listContent);
-			} else if (prevChild?.type === 'paragraph' && i === 1 && !isLoose) {
-				// List directly after first paragraph in tight list - no blank line
-				parts.push('\n' + listContent);
-			} else {
-				// Loose list or list after other content - blank line separator
+			} else if (isLoose || prevIsBlock) {
+				// Loose list item OR list after block - add blank line separator
 				parts.push('\n\n' + listContent);
+			} else {
+				// Tight list - no blank line needed
+				parts.push('\n' + listContent);
 			}
 		} else if (child.type === 'mathBlock') {
 			// Math block inside list item
@@ -307,6 +307,24 @@ function convertListItemToMarkdown(
 			}
 
 			parts.push(quoteOutput);
+		} else if (child.type === 'table') {
+			// Table inside list item - needs proper indentation for each line
+			const tableMarkdown = convertTableToMarkdown(child);
+
+			// Tables are multi-line, need to indent each line
+			const tableLines = tableMarkdown.split('\n');
+			const indentedTable = tableLines.map((line) => continuationIndent + line).join('\n');
+
+			let tableOutput: string;
+			if (isFirstChild) {
+				// Table at start of item - newline then indented table
+				tableOutput = '\n' + indentedTable;
+			} else {
+				// Table after other content - blank line separator
+				tableOutput = '\n\n' + indentedTable;
+			}
+
+			parts.push(tableOutput);
 		}
 	}
 
