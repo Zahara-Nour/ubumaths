@@ -117,9 +117,13 @@
 	}
 
 	// ============================================
-	// Import/Export Markdown state
+	// Markdown Examples by Category
 	// ============================================
-	const INITIAL_MARKDOWN = `# Test Import/Export
+	const MARKDOWN_EXAMPLES: Record<string, { label: string; content: string }> = {
+		// Complete example (existing)
+		complete: {
+			label: 'Exemple complet',
+			content: `# Test Import/Export
 
 ## Formatage de texte
 
@@ -422,11 +426,624 @@ YouTube embed :
 
 YouTube format court :
 
-!video[Test YouTube](https://youtu.be/aqz-KE-bpKQ){size=medium align=center}`;
+!video[Test YouTube](https://youtu.be/aqz-KE-bpKQ){size=medium align=center}`
+		},
 
+		// Lists examples
+		lists_simple: {
+			label: 'Listes simples',
+			content: `# Listes simples
+
+## Liste a puces
+
+- Premier element
+- Deuxieme element
+- Troisieme element
+
+## Liste numerotee
+
+1. Etape 1
+2. Etape 2
+3. Etape 3`
+		},
+
+		lists_nested: {
+			label: 'Listes imbriquees',
+			content: `# Listes imbriquees
+
+## Liste a puces imbriquee
+
+- Niveau 1
+  - Niveau 2
+    - Niveau 3
+    - Autre niveau 3
+  - Autre niveau 2
+- Autre niveau 1
+
+## Liste numerotee imbriquee
+
+1. Premier
+   1. Sous-premier
+   2. Sous-deuxieme
+      1. Sous-sous-premier
+2. Deuxieme
+   1. Sous-premier`
+		},
+
+		lists_mixed: {
+			label: 'Listes mixtes',
+			content: `# Listes mixtes
+
+## Puces dans numerotee
+
+1. Premiere etape
+   - Point A
+   - Point B
+2. Deuxieme etape
+   - Point C
+   - Point D
+
+## Numerotee dans puces
+
+- Categorie A
+  1. Item 1
+  2. Item 2
+- Categorie B
+  1. Item 3
+  2. Item 4`
+		},
+
+		lists_with_blocks: {
+			label: 'Listes avec blocs',
+			content: `# Listes avec blocs
+
+## Liste avec code
+
+- Exemple de code :
+  \`\`\`javascript
+  console.log("Hello");
+  \`\`\`
+- Autre element
+
+## Liste avec math
+
+1. Formule quadratique : $ax^2 + bx + c = 0$
+2. Solution : $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$
+
+## Liste avec citation
+
+- Citation importante :
+  > Ceci est une citation dans une liste
+- Suite de la liste`
+		},
+
+		lists_block_first: {
+			label: 'Listes bloc en premier (CommonMark)',
+			content: `# Listes avec bloc en premier
+
+## Code en premier
+
+- \`\`\`python
+  def hello():
+      print("Hello")
+  \`\`\`
+
+## Citation en premier
+
+1. > Citation au debut de l'item
+   > sur plusieurs lignes
+
+## Math bloc en premier
+
+- $$E = mc^2$$
+  Formule celebre d'Einstein`
+		},
+
+		// Code blocks examples
+		code_inline: {
+			label: 'Code inline',
+			content: `# Code inline
+
+Utilisez \`console.log()\` pour afficher dans la console.
+
+La fonction \`map()\` transforme chaque element.
+
+Le fichier \`package.json\` contient les dependances.`
+		},
+
+		code_blocks: {
+			label: 'Blocs de code',
+			content: `# Blocs de code
+
+## JavaScript
+
+\`\`\`javascript
+function factorial(n) {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
+}
+\`\`\`
+
+## Python
+
+\`\`\`python
+def factorial(n):
+    if n <= 1:
+        return 1
+    return n * factorial(n - 1)
+\`\`\`
+
+## SQL
+
+\`\`\`sql
+SELECT name, age
+FROM users
+WHERE age > 18
+ORDER BY name;
+\`\`\`
+
+## Sans langage
+
+\`\`\`
+Texte brut
+sans coloration syntaxique
+\`\`\``
+		},
+
+		code_in_lists: {
+			label: 'Code dans listes',
+			content: `# Code dans les listes
+
+1. Premiere etape - declarer une variable :
+   \`\`\`javascript
+   const x = 5;
+   \`\`\`
+
+2. Deuxieme etape - utiliser la variable :
+   \`\`\`javascript
+   console.log(x * 2);
+   \`\`\`
+
+- Utiliser \`let\` pour les variables modifiables
+- Utiliser \`const\` pour les constantes`
+		},
+
+		// Math examples
+		math_inline: {
+			label: 'Math inline LaTeX',
+			content: `# Math inline LaTeX
+
+L'equation $ax^2 + bx + c = 0$ est une equation du second degre.
+
+La solution est $x = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}$ ou $\\Delta = b^2 - 4ac$.
+
+Le theoreme de Pythagore : $a^2 + b^2 = c^2$.
+
+Integrale : $\\int_0^1 x^2 dx = \\frac{1}{3}$.`
+		},
+
+		math_block: {
+			label: 'Math bloc LaTeX',
+			content: `# Math bloc LaTeX
+
+Formule de la derivee :
+
+$$f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}$$
+
+Formule d'Euler :
+
+$$e^{i\\pi} + 1 = 0$$
+
+Somme de Gauss :
+
+$$\\sum_{k=1}^{n} k = \\frac{n(n+1)}{2}$$`
+		},
+
+		math_custom: {
+			label: 'Math syntaxe custom',
+			content: `# Math syntaxe custom
+
+## Inline avec tilde simple
+
+La fraction ~1/2~ est egale a ~0.5~.
+
+Calculer ~3/4 + 1/8~.
+
+## Bloc avec double tilde
+
+Expression developpee :
+
+~~(a+b)^2 = a^2 + 2ab + b^2~~
+
+Identite remarquable :
+
+~~a^2 - b^2 = (a-b)(a+b)~~`
+		},
+
+		math_in_lists: {
+			label: 'Math dans listes',
+			content: `# Math dans les listes
+
+## Formules importantes
+
+1. Derivee de $x^n$ : $nx^{n-1}$
+2. Integrale de $x^n$ : $\\frac{x^{n+1}}{n+1} + C$
+3. Derivee de $e^x$ : $e^x$
+
+## Exercices
+
+- Calculer ~2/3 + 1/4~
+- Simplifier ~~x^2 + 2x + 1~~
+- Resoudre $ax + b = 0$`
+		},
+
+		// Images & Media
+		images_basic: {
+			label: 'Images basiques',
+			content: `# Images basiques
+
+Image simple :
+
+![Photo aleatoire](https://picsum.photos/300/200)
+
+Image avec titre :
+
+![Paysage](https://picsum.photos/400/250 "Un beau paysage")`
+		},
+
+		images_attributes: {
+			label: 'Images avec attributs',
+			content: `# Images avec attributs
+
+## Tailles
+
+Petite image :
+
+![Small](https://picsum.photos/200/100){size=small}
+
+Image moyenne :
+
+![Medium](https://picsum.photos/300/150){size=medium}
+
+Grande image :
+
+![Large](https://picsum.photos/400/200){size=large}
+
+## Alignement
+
+A droite :
+
+![Right](https://picsum.photos/150/100){align=right}
+
+Centree :
+
+![Center](https://picsum.photos/200/100){align=center}
+
+## Avec caption
+
+![Image avec caption](https://picsum.photos/300/150){size=medium align=center caption="Ceci est une legende"}
+
+## Largeur personnalisee
+
+![Custom width](https://picsum.photos/350/175){width=60% align=center}`
+		},
+
+		videos: {
+			label: 'Videos',
+			content: `# Videos
+
+## Video HTML5
+
+!video[Demo video](https://www.w3schools.com/html/mov_bbb.mp4)
+
+## Video avec options
+
+!video[Animation](https://www.w3schools.com/html/mov_bbb.mp4){size=medium autoplay loop muted}
+
+## YouTube
+
+!video[Big Buck Bunny](https://www.youtube.com/watch?v=aqz-KE-bpKQ){size=large}
+
+## YouTube format court
+
+!video[Test YouTube](https://youtu.be/aqz-KE-bpKQ){size=medium align=center}`
+		},
+
+		// Blockquotes
+		quotes_simple: {
+			label: 'Citations simples',
+			content: `# Citations simples
+
+> Ceci est une citation simple.
+
+Texte normal entre les citations.
+
+> Une autre citation
+> qui continue sur plusieurs lignes.`
+		},
+
+		quotes_nested: {
+			label: 'Citations imbriquees',
+			content: `# Citations imbriquees
+
+> Premiere niveau de citation
+> > Deuxieme niveau
+> > > Troisieme niveau
+> > Retour au deuxieme
+> Retour au premier`
+		},
+
+		quotes_in_lists: {
+			label: 'Citations dans listes',
+			content: `# Citations dans les listes
+
+1. Premier point avec citation :
+   > Citation importante a retenir
+
+2. Deuxieme point
+
+- Element avec citation longue :
+  > Cette citation
+  > s'etend sur
+  > plusieurs lignes`
+		},
+
+		// Tables
+		tables_simple: {
+			label: 'Tableaux simples',
+			content: `# Tableaux simples
+
+| Nom | Age | Ville |
+|-----|-----|-------|
+| Alice | 25 | Paris |
+| Bob | 30 | Lyon |
+| Claire | 28 | Marseille |`
+		},
+
+		tables_aligned: {
+			label: 'Tableaux avec alignement',
+			content: `# Tableaux avec alignement
+
+| Gauche | Centre | Droite |
+|:-------|:------:|-------:|
+| texte | texte | texte |
+| aligné | aligné | aligné |
+| à gauche | au centre | à droite |
+
+## Tableau mathematique
+
+| Operation | Expression | Resultat |
+|:----------|:----------:|----------:|
+| Addition | $2 + 3$ | $5$ |
+| Soustraction | $7 - 4$ | $3$ |
+| Multiplication | $3 \\times 4$ | $12$ |`
+		},
+
+		tables_formatted: {
+			label: 'Tableaux avec formatage',
+			content: `# Tableaux avec formatage
+
+| Fonction | Description | Exemple |
+|----------|-------------|---------|
+| \`map()\` | Transforme les elements | \`[1,2].map(x => x*2)\` |
+| \`filter()\` | Filtre les elements | \`[1,2,3].filter(x => x>1)\` |
+| \`reduce()\` | Reduit a une valeur | \`[1,2,3].reduce((a,b) => a+b)\` |
+
+| Niveau | **Difficulte** | *Score* |
+|--------|----------------|---------|
+| 1 | Facile | 100 |
+| 2 | **Moyen** | 200 |
+| 3 | ***Difficile*** | 300 |`
+		},
+
+		// Templates
+		templates_variables: {
+			label: 'Templates - Variables',
+			content: `# Variables dans les templates
+
+Bonjour {{prenom}} {{nom}} !
+
+Vous avez {{age}} ans et habitez a {{ville}}.
+
+Votre email est {{email}}.`
+		},
+
+		templates_random: {
+			label: 'Templates - Aleatoire',
+			content: `# Valeurs aleatoires
+
+## Range numerique
+
+Un nombre entre 1 et 10 : {{1..10}}
+
+Un nombre entre 100 et 999 : {{100..999}}
+
+## Liste de valeurs
+
+Couleur : {{rouge|vert|bleu|jaune}}
+
+Fruit : {{pomme|poire|orange|banane}}
+
+Animal : {{chat|chien|lapin}}`
+		},
+
+		templates_eval: {
+			label: 'Templates - Eval',
+			content: `# Expressions evaluees
+
+## Calculs
+
+Le double de a : {{eval:a*2}}
+
+La somme : {{eval:a+b+c}}
+
+Le produit : {{eval:a*b}}
+
+## Conditions
+
+Resultat : {{eval:x>0?"positif":"negatif"}}
+
+Parite : {{eval:n%2==0?"pair":"impair"}}`
+		},
+
+		templates_blank: {
+			label: 'Templates - Champs reponse',
+			content: `# Champs de reponse
+
+## Calcul a completer
+
+{{blank:1}} + {{blank:2}} = {{blank:3}}
+
+## Phrase a trous
+
+Le {{blank:sujet}} mange une {{blank:objet}}.
+
+## Exercice
+
+Resoudre : $2x + {{blank:a}} = {{blank:b}}$
+
+Donc $x = {{blank:result}}$`
+		},
+
+		// Formatting
+		formatting_text: {
+			label: 'Formatage texte',
+			content: `# Formatage de texte
+
+## Basique
+
+Texte en **gras** (bold).
+
+Texte en *italique* (emphasis).
+
+Texte en ***gras et italique***.
+
+Texte ~~barre~~ (strikethrough).
+
+## Combine
+
+**Texte gras avec *italique* dedans**.
+
+*Texte italique avec **gras** dedans*.
+
+## Code inline
+
+Utilisez la fonction \`calculate()\` pour obtenir le resultat.`
+		},
+
+		formatting_links: {
+			label: 'Liens',
+			content: `# Liens
+
+## Lien simple
+
+Visitez [Ubumaths](https://ubumaths.fr) pour apprendre les maths.
+
+## Lien avec titre
+
+Consultez la [documentation](https://docs.example.com "Documentation complete").
+
+## Plusieurs liens
+
+Entre [premier lien](https://first.com) et [second lien](https://second.com).
+
+## Lien email
+
+Contactez-nous : [email](mailto:contact@example.com)`
+		},
+
+		formatting_headings: {
+			label: 'Titres',
+			content: `# Titre niveau 1
+
+Texte d'introduction.
+
+## Titre niveau 2
+
+Contenu de la section.
+
+### Titre niveau 3
+
+Sous-section.
+
+#### Titre niveau 4
+
+Detail supplementaire.
+
+##### Titre niveau 5
+
+Encore plus de detail.
+
+###### Titre niveau 6
+
+Le plus petit titre.`
+		}
+	};
+
+	// Select items for markdown examples dropdown (grouped)
+	const markdownExampleItems = [
+		{ value: 'complete', label: 'Exemple complet' },
+		{ value: '_sep_lists', label: '--- Listes ---', disabled: true },
+		{ value: 'lists_simple', label: 'Listes simples' },
+		{ value: 'lists_nested', label: 'Listes imbriquees' },
+		{ value: 'lists_mixed', label: 'Listes mixtes' },
+		{ value: 'lists_with_blocks', label: 'Listes avec blocs' },
+		{ value: 'lists_block_first', label: 'Bloc en premier (CommonMark)' },
+		{ value: '_sep_code', label: '--- Code ---', disabled: true },
+		{ value: 'code_inline', label: 'Code inline' },
+		{ value: 'code_blocks', label: 'Blocs de code' },
+		{ value: 'code_in_lists', label: 'Code dans listes' },
+		{ value: '_sep_math', label: '--- Math ---', disabled: true },
+		{ value: 'math_inline', label: 'Math inline LaTeX' },
+		{ value: 'math_block', label: 'Math bloc LaTeX' },
+		{ value: 'math_custom', label: 'Syntaxe custom (~, ~~)' },
+		{ value: 'math_in_lists', label: 'Math dans listes' },
+		{ value: '_sep_images', label: '--- Images & Media ---', disabled: true },
+		{ value: 'images_basic', label: 'Images basiques' },
+		{ value: 'images_attributes', label: 'Images avec attributs' },
+		{ value: 'videos', label: 'Videos' },
+		{ value: '_sep_quotes', label: '--- Citations ---', disabled: true },
+		{ value: 'quotes_simple', label: 'Citations simples' },
+		{ value: 'quotes_nested', label: 'Citations imbriquees' },
+		{ value: 'quotes_in_lists', label: 'Citations dans listes' },
+		{ value: '_sep_tables', label: '--- Tableaux ---', disabled: true },
+		{ value: 'tables_simple', label: 'Tableaux simples' },
+		{ value: 'tables_aligned', label: 'Tableaux avec alignement' },
+		{ value: 'tables_formatted', label: 'Tableaux avec formatage' },
+		{ value: '_sep_templates', label: '--- Templates ---', disabled: true },
+		{ value: 'templates_variables', label: 'Variables {{var}}' },
+		{ value: 'templates_random', label: 'Aleatoire {{1..10}}' },
+		{ value: 'templates_eval', label: 'Eval {{eval:...}}' },
+		{ value: 'templates_blank', label: 'Champs {{blank:n}}' },
+		{ value: '_sep_formatting', label: '--- Formatage ---', disabled: true },
+		{ value: 'formatting_text', label: 'Texte (gras, italique)' },
+		{ value: 'formatting_links', label: 'Liens' },
+		{ value: 'formatting_headings', label: 'Titres' }
+	];
+
+	// ============================================
+	// Import/Export Markdown state
+	// ============================================
+	const INITIAL_MARKDOWN = MARKDOWN_EXAMPLES.complete.content;
+
+	let selectedExample = $state('complete');
 	let importMarkdown = $state(INITIAL_MARKDOWN);
 	let editorJsonValue = $state<unknown>(markdownToTipTap(INITIAL_MARKDOWN));
 	let exportMarkdown = $state(INITIAL_MARKDOWN);
+
+	// Handler for example selection
+	function handleExampleChange(value: string) {
+		if (value && MARKDOWN_EXAMPLES[value]) {
+			selectedExample = value;
+			importMarkdown = MARKDOWN_EXAMPLES[value].content;
+			isUpdatingFromImport = true;
+			editorJsonValue = markdownToTipTap(importMarkdown);
+			exportMarkdown = tipTapToMarkdown(editorJsonValue as import('@tiptap/core').JSONContent);
+			queueMicrotask(() => {
+				isUpdatingFromImport = false;
+			});
+		}
+	}
 
 	// Track if we're updating from import to avoid loops
 	let isUpdatingFromImport = false;
@@ -1229,9 +1846,22 @@ YouTube format court :
 			<!-- Card 1: Import Markdown -->
 			<Card.Root>
 				<Card.Header>
-					<Card.Title class="flex items-center gap-2">
-						<Code class="h-4 w-4" />
-						Import Markdown
+					<Card.Title class="flex items-center justify-between">
+						<span class="flex items-center gap-2">
+							<Code class="h-4 w-4" />
+							Import Markdown
+						</span>
+						<div class="flex items-center gap-2">
+							<span class="text-sm font-normal text-muted-foreground">Exemple :</span>
+							<MySelect
+								type="single"
+								items={markdownExampleItems}
+								value={selectedExample}
+								onValueChange={handleExampleChange}
+								placeholder="Choisir un exemple"
+								triggerClass="h-8 w-56 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+							/>
+						</div>
 					</Card.Title>
 					<Card.Description>
 						Collez ou tapez du Markdown ici pour le convertir en contenu riche
