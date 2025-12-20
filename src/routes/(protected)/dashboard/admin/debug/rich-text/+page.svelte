@@ -1097,11 +1097,13 @@ Donc $x = {{blank:result}}$`
 
 ## Basique
 
-Texte en **gras** (bold).
+Texte en **gras** (bold avec asterisques).
 
-Texte en *italique* (emphasis).
+Texte en __gras__ (bold avec underscores).
 
-Texte en ***gras et italique***.
+Texte en *italique* (emphasis avec asterisque).
+
+Texte en _italique_ (emphasis avec underscore).
 
 Texte -/-barre-/- (strikethrough).
 
@@ -1109,7 +1111,9 @@ Texte ==surligne== (highlight).
 
 ## Combine
 
-Texte ***gras et italique*** (bold+italic combine).
+Texte ***gras et italique*** (bold+italic avec asterisques).
+
+Texte ___gras et italique___ (bold+italic avec underscores).
 
 Note: Les formatages imbriques (ex: **gras avec *italique* dedans**) ne sont pas supportes.
 
