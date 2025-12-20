@@ -8,24 +8,32 @@
  * Features:
  * - Inline math formulas (within text flow)
  * - Block math formulas (centered, larger)
- * - Automatic $$...$$ LaTeX detection
- * - Interactive MathLive fields
+ * - Automatic pattern detection via InputRules
+ * - Interactive MathLive fields with keyboard navigation
  * - Read-only mode for display
+ *
+ * Supported Syntax:
+ * - $...$ : LaTeX syntax for inline math (e.g., $x^2$)
+ * - ~...~ : Custom syntax for inline math (e.g., ~x^2~)
+ * - $$...$$ : LaTeX syntax for block math
+ * - ~~...~~ : Custom syntax for block math
+ *
+ * IMPORTANT - Keyboard Behavior on French Keyboards:
+ * The tilde (~) character is a dead key on French keyboards, requiring a
+ * space or another character after the closing ~ to complete the composition.
+ * This is a limitation of the InputRule system which triggers after composition
+ * events complete. Example: type "~x~ " (with trailing space) to convert.
  *
  * @see https://tiptap.dev/docs/editor/extensions/custom-extensions
  * @see https://cortexjs.io/mathlive/
+ * @module extensions/math-extension
  */
 
 import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
-import { Plugin, PluginKey, Selection, TextSelection } from '@tiptap/pm/state';
+import { Plugin, PluginKey, Selection } from '@tiptap/pm/state';
 import { NodeSelection } from '@tiptap/pm/state';
 import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '$lib/mathAST';
-
-/**
- * Plugin key for custom math inline input handler (~...~)
- */
-const customMathInlinePluginKey = new PluginKey('customMathInlineInput');
 
 /**
  * Plugin key for custom math block input handler (~~...~~)
@@ -109,7 +117,7 @@ const mathKeyboardNavPlugin = new Plugin({
 	key: mathKeyboardNavKey,
 	props: {
 		handleKeyDown: (view, event) => {
-			// Only handle arrow keys
+			// Only handle arrow keys for navigation into/out of math nodes
 			if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
 				return false;
 			}
@@ -133,11 +141,24 @@ const mathKeyboardNavPlugin = new Plugin({
 					const domNode = view.nodeDOM(pos) as
 						| (HTMLElement & { mathfield?: MathFieldElement })
 						| null;
+
+					// If mathfield reference is on wrapper, use it
 					if (domNode?.mathfield) {
 						event.preventDefault();
 						domNode.mathfield.focus();
 						domNode.mathfield.executeCommand('moveToMathfieldStart');
 						return true;
+					}
+
+					// Fallback: search for math-field element inside the wrapper
+					if (domNode) {
+						const mathFieldElement = domNode.querySelector('math-field') as MathFieldElement | null;
+						if (mathFieldElement) {
+							event.preventDefault();
+							mathFieldElement.focus();
+							mathFieldElement.executeCommand('moveToMathfieldStart');
+							return true;
+						}
 					}
 				}
 			} else if (event.key === 'ArrowLeft') {
@@ -150,11 +171,24 @@ const mathKeyboardNavPlugin = new Plugin({
 					const domNode = view.nodeDOM(nodeStartPos) as
 						| (HTMLElement & { mathfield?: MathFieldElement })
 						| null;
+
+					// If mathfield reference is on wrapper, use it
 					if (domNode?.mathfield) {
 						event.preventDefault();
 						domNode.mathfield.focus();
 						domNode.mathfield.executeCommand('moveToMathfieldEnd');
 						return true;
+					}
+
+					// Fallback: search for math-field element inside the wrapper
+					if (domNode) {
+						const mathFieldElement = domNode.querySelector('math-field') as MathFieldElement | null;
+						if (mathFieldElement) {
+							event.preventDefault();
+							mathFieldElement.focus();
+							mathFieldElement.executeCommand('moveToMathfieldEnd');
+							return true;
+						}
 					}
 				}
 			}
@@ -440,23 +474,21 @@ export const MathInline = Node.create({
 	 * The formula content is parsed using mathAST custom syntax and
 	 * transpiled to LaTeX before creating the math field.
 	 *
-	 * Regex for $...$: /\$([^$]+)\$$/
-	 * - \$ - Opening dollar sign
-	 * - ([^$]+) - Capture group: one or more non-$ characters (the formula)
-	 * - \$ - Closing dollar sign
-	 * - $ - End of input (ensures we match at cursor position)
-	 *
-	 * Regex for ~...~: /~([^~]+)~$/
-	 * - ~ - Opening tilde
-	 * - ([^~]+) - Capture group: one or more non-~ characters (the formula)
-	 * - ~ - Closing tilde
-	 * - $ - End of input (ensures we match at cursor position)
+	 * Regex Patterns:
+	 * - /(?<!\$)\$([^$]+)\$$/  : Matches $...$ (not preceded by $)
+	 * - /(?<!~)~([^~]+)~$/     : Matches ~...~ (not preceded by ~)
 	 *
 	 * Examples:
-	 *   User types: "$x^2$" → LaTeX syntax, may transpile
-	 *   User types: "~x^2~" → Custom syntax, transpiled to LaTeX
-	 *   User types: "$2/3$" → LaTeX syntax, transpiles to "\frac{2}{3}"
-	 *   User types: "~2/3~" → Custom syntax, transpiles to "\frac{2}{3}"
+	 *   User types: "$x^2$" → LaTeX syntax, creates math node
+	 *   User types: "~x^2~ " → Custom syntax, creates math node (space required)
+	 *   User types: "$2/3$" → Transpiles to "\frac{2}{3}"
+	 *   User types: "~2/3~ " → Transpiles to "\frac{2}{3}" (space required)
+	 *
+	 * IMPORTANT - French Keyboard Behavior:
+	 * The tilde (~) is a dead key on French keyboards. InputRules trigger
+	 * after composition events complete, so users must type a space or
+	 * another character after the closing ~ to trigger conversion.
+	 * This is a limitation of the browser's composition event system.
 	 *
 	 * @see https://tiptap.dev/docs/editor/extensions/functionality#input-rules
 	 * @see src/lib/mathAST for custom syntax documentation
@@ -485,8 +517,31 @@ export const MathInline = Node.create({
 						);
 					}
 				}
+			}),
+			// Custom syntax: ~...~ (but not ~~...~ which is the start of a block)
+			// Note: On French keyboards, ~ is a dead key. Users must type a space or
+			// another character after the closing ~ to complete composition and trigger
+			// this rule. Example: "~x^2~ " (with trailing space)
+			new InputRule({
+				find: /(?<!~)~([^~]+)~$/,
+				handler: ({ state, range, match }) => {
+					const { tr } = state;
+					const input = match[1]?.trim();
+					if (input) {
+						const parseResult = parseCustomSafe(input);
+						const latex = parseResult.ast ? toLatex(parseResult.ast) : input;
+						tr.replaceWith(
+							range.from,
+							range.to,
+							this.type.create({
+								latex,
+								syntax: 'custom',
+								originalExpression: input
+							})
+						);
+					}
+				}
 			})
-			// Note: ~...~ is handled by handleTextInput plugin for immediate triggering
 		];
 	},
 
@@ -494,81 +549,11 @@ export const MathInline = Node.create({
 	 * ProseMirror Plugins
 	 * ===================
 	 *
-	 * Includes keyboard navigation and custom syntax input handling.
+	 * Includes keyboard navigation plugin for arrow key navigation
+	 * into and out of math nodes.
 	 */
 	addProseMirrorPlugins() {
-		const nodeType = this.type;
-
-		return [
-			mathKeyboardNavPlugin,
-			// Custom syntax ~...~ handler - triggers immediately on closing ~
-			new Plugin({
-				key: customMathInlinePluginKey,
-				props: {
-					handleTextInput(view, from, _to, text) {
-						// Only process when typing a single ~
-						if (text !== '~') return false;
-
-						const { state } = view;
-						const $from = state.doc.resolve(from);
-						const parent = $from.parent;
-						const parentStart = $from.start();
-						const cursorOffset = $from.parentOffset;
-
-						// Search backwards for opening ~ (but not ~~)
-						const parentText = parent.textContent;
-						let openTildeOffset = -1;
-
-						for (let i = cursorOffset - 1; i >= 0; i--) {
-							const char = parentText[i];
-							if (char === '~') {
-								// Check this isn't part of ~~ (block syntax)
-								const prevChar = i > 0 ? parentText[i - 1] : '';
-								const nextChar = i < cursorOffset - 1 ? parentText[i + 1] : '';
-								// Single ~ if not preceded or followed by ~
-								if (prevChar !== '~' && nextChar !== '~') {
-									openTildeOffset = i;
-									break;
-								}
-							}
-						}
-
-						if (openTildeOffset === -1) return false;
-
-						// Get content between tildes
-						const content = parentText.slice(openTildeOffset + 1, cursorOffset);
-						if (!content || content.trim() === '' || content.includes('~')) {
-							return false;
-						}
-
-						// Create the math node
-						const parseResult = parseCustomSafe(content.trim());
-						const latex = parseResult.ast ? toLatex(parseResult.ast) : content.trim();
-
-						const patternStart = parentStart + openTildeOffset;
-						const patternEnd = from; // Cursor position (before the ~ we're typing)
-
-						const tr = state.tr;
-						tr.delete(patternStart, patternEnd);
-						tr.insert(
-							patternStart,
-							nodeType.create({
-								latex,
-								syntax: 'custom',
-								originalExpression: content.trim()
-							})
-						);
-
-						// Position cursor after the node
-						const newPos = patternStart + 1;
-						tr.setSelection(TextSelection.create(tr.doc, newPos));
-
-						view.dispatch(tr);
-						return true; // Prevent default (don't insert the ~)
-					}
-				}
-			})
-		];
+		return [mathKeyboardNavPlugin];
 	}
 });
 
@@ -964,9 +949,8 @@ export const MathBlock = Node.create({
 							const blockEnd = $from.after();
 							tr.replaceWith(blockStart, blockEnd, mathBlockNode);
 						} else {
-							// Just replace the pattern
-							tr.delete(patternStart, patternEnd);
-							tr.insert(patternStart, mathBlockNode);
+							// Just replace the pattern - use replaceWith to match InputRule behavior
+							tr.replaceWith(patternStart, patternEnd, mathBlockNode);
 						}
 
 						view.dispatch(tr);

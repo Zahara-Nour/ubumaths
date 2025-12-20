@@ -62,7 +62,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v20`; // v20: Added CustomCode/CustomCodeBlock with backtick input rules
+	return `h${headingLevels}-v24`; // v24: Simplified ~...~ to use standard InputRule like $...$
 }
 
 /**
