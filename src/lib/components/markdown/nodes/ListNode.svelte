@@ -30,8 +30,12 @@
 	import HeadingNode from './HeadingNode.svelte';
 	import TableNode from './TableNode.svelte';
 	import CodeBlock from './CodeBlock.svelte';
+	import VariationTable from './VariationTable.svelte';
+	import ProbabilityTree from './ProbabilityTree.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
+	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+	import type { ProbabilityTreeNode } from '$lib/ubumark/types/probability-tree';
 
 	interface Props {
 		ordered: boolean;
@@ -164,12 +168,33 @@
 	}
 
 	/**
+	 * Check if node is a variation-table node
+	 */
+	function isVariationTableNode(node: ASTNode): node is VariationTableNode {
+		return node.type === 'variation-table';
+	}
+
+	/**
+	 * Check if node is a probability-tree node
+	 */
+	function isProbabilityTreeNode(node: ASTNode): node is ProbabilityTreeNode {
+		return node.type === 'probability-tree';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
-		return ['math-block', 'code-block', 'list', 'image', 'table', 'horizontal-rule'].includes(
-			node.type
-		);
+		return [
+			'math-block',
+			'code-block',
+			'list',
+			'image',
+			'table',
+			'horizontal-rule',
+			'variation-table',
+			'probability-tree'
+		].includes(node.type);
 	}
 
 	/**
@@ -270,6 +295,10 @@
 						<TableNode header={child.header} rows={child.rows} alignments={child.alignments} />
 					{:else if isCodeBlockNode(child)}
 						<CodeBlock code={child.code} language={child.language} />
+					{:else if isVariationTableNode(child)}
+						<VariationTable node={child} />
+					{:else if isProbabilityTreeNode(child)}
+						<ProbabilityTree node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -333,6 +362,10 @@
 						<TableNode header={child.header} rows={child.rows} alignments={child.alignments} />
 					{:else if isCodeBlockNode(child)}
 						<CodeBlock code={child.code} language={child.language} />
+					{:else if isVariationTableNode(child)}
+						<VariationTable node={child} />
+					{:else if isProbabilityTreeNode(child)}
+						<ProbabilityTree node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

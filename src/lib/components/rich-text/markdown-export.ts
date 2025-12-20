@@ -78,6 +78,9 @@ function convertBlockToMarkdown(block: JSONContent, indentLevel = 0): string | n
 		case 'table':
 			return convertTableToMarkdown(block);
 
+		case 'variationTable':
+			return convertVariationTableToMarkdown(block);
+
 		default:
 			return null;
 	}
@@ -558,6 +561,15 @@ function convertVideoToMarkdown(video: JSONContent): string {
 	}
 
 	return markdown;
+}
+
+/**
+ * Convert variation table to Markdown
+ * Exports as a fenced code block with ```variation language
+ */
+function convertVariationTableToMarkdown(node: JSONContent): string {
+	const content = (node.attrs?.content as string) || '';
+	return `\`\`\`variation\n${content}\n\`\`\``;
 }
 
 // ============================================================================

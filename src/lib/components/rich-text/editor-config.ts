@@ -37,6 +37,7 @@ import { Mention } from '$lib/extensions/mention-extension';
 import { MarkdownPaste } from './markdown-paste-extension';
 import { CustomCode, CustomCodeBlock } from '$lib/extensions/code-extension';
 import { CustomStrike } from '$lib/extensions/strike-extension';
+import { VariationTableExtension } from '$lib/extensions/variation-table-extension';
 
 // Note: Underline is included in StarterKit v3
 // Link is disabled in StarterKit and replaced with CustomLink to preserve title attribute
@@ -64,7 +65,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v26`; // v26: Changed strikethrough syntax to -/-text-/-
+	return `h${headingLevels}-v27`; // v27: Added VariationTableExtension
 }
 
 /**
@@ -185,7 +186,10 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 			HTMLAttributes: {
 				class: 'border border-border px-3 py-2'
 			}
-		})
+		}),
+
+		// Variation tables (sign/variation tables)
+		VariationTableExtension.configure({})
 	];
 }
 
