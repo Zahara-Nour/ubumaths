@@ -19,7 +19,7 @@
  *
  * @example Basic usage
  * ```typescript
- * import { resolveVariables, resolveText } from '$lib/custom-markdown/parameterization';
+ * import { resolveVariables, resolveText } from '$lib/ubumark/parameterization';
  *
  * // Define variables
  * const variables = [
@@ -39,7 +39,7 @@
  *
  * @example Validation
  * ```typescript
- * import { validateVariables, detectCircularDependencies } from '$lib/custom-markdown/parameterization';
+ * import { validateVariables, detectCircularDependencies } from '$lib/ubumark/parameterization';
  *
  * const variables = [
  *   { name: 'a', expression: '{{b}}' },

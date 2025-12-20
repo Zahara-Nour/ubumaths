@@ -13,7 +13,7 @@ import { page } from '@vitest/browser/context';
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import VariationTable from '../nodes/VariationTable.svelte';
-import type { VariationTableNode } from '$lib/custom-markdown/types/variation-table';
+import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 
 // =============================================================================
 // Test Helpers

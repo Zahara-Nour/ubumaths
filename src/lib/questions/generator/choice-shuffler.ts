@@ -8,7 +8,7 @@
  * @module questions/generator/choice-shuffler
  */
 
-import type { ResolvedMarkdown } from '$lib/custom-markdown';
+import type { ResolvedMarkdown } from '$lib/ubumark';
 import { randomInt } from '$lib/utils/random';
 
 /**

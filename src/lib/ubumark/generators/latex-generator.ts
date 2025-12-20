@@ -680,7 +680,7 @@ export async function markdownToLatex(
 	options: LatexTranspilerOptions = {}
 ): Promise<string> {
 	// Dynamic import to avoid circular dependency issues
-	const { parseMarkdown } = await import('$lib/custom-markdown/parser/markdown-parser');
+	const { parseMarkdown } = await import('$lib/ubumark/parser/markdown-parser');
 	const ast = parseMarkdown(markdown);
 	return generateLatex(ast, options);
 }

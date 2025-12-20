@@ -33,8 +33,7 @@ import type {
 	LinkNode,
 	HashtagNode,
 	MentionNode,
-	HintReferenceNode,
-	LineBreakNode
+	HintReferenceNode
 } from '../types';
 import {
 	extractMath,
@@ -813,102 +812,10 @@ function parseTextForHints(text: string): (string | HintReferenceNode)[] {
 }
 
 /**
- * Regex for hard line breaks in markdown
- *
- * Matches two syntaxes:
- * - Backslash at end of line: `\` followed by newline (or end of string)
- * - Two or more spaces at end of line followed by newline
- *
- * Note: Also matches `\` at absolute end of string to support edge cases
- * where content ends with a trailing backslash (e.g., in list items where
- * the newline is stripped during parsing).
- *
- * @example Backslash syntax
- * ```
- * First line\
- * Second line
- * ```
- *
- * @example Two spaces syntax
- * ```
- * First line
- * Second line
- * ```
- */
-const HARDBREAK_REGEX = /\\(?:\n|$)|  +(?:\n|$)/g;
-
-/**
- * Parse text for hard line breaks (backslash or two+ spaces at end of line)
- *
- * Extracts hard break markers from text and returns an array of
- * text segments and LineBreakNodes. Text segments will be further processed
- * for formatting (bold, italic, code).
- *
- * Supports two syntaxes:
- * - Backslash at end of line: `\\\n`
- * - Two or more spaces at end of line: `  \n`
- *
- * @param text - Text possibly containing hardbreak syntax
- * @returns Array of strings (text segments) and LineBreakNodes
- */
-function parseTextForHardBreaks(text: string): (string | LineBreakNode)[] {
-	if (!text) return [];
-
-	const results: (string | LineBreakNode)[] = [];
-	let position = 0;
-
-	// Reset regex state for global matching
-	const hardbreakRegex = new RegExp(HARDBREAK_REGEX.source, 'g');
-	let match: RegExpExecArray | null;
-
-	while ((match = hardbreakRegex.exec(text)) !== null) {
-		// Add text segment before this hardbreak
-		if (match.index > position) {
-			results.push(text.substring(position, match.index));
-		}
-
-		// Add line break node (hard = true)
-		results.push({
-			type: 'line-break',
-			hard: true
-		});
-
-		position = match.index + match[0].length;
-	}
-
-	// Add remaining text after last hardbreak
-	if (position < text.length) {
-		results.push(text.substring(position));
-	}
-
-	// Convert soft breaks (remaining \n) to line-break nodes
-	// According to CommonMark, soft breaks should be preserved as line breaks
-	const finalResults: (string | LineBreakNode)[] = [];
-	for (const item of results) {
-		if (typeof item === 'string') {
-			// Split by newlines and insert soft line-break nodes between segments
-			const segments = item.split('\n');
-			for (let i = 0; i < segments.length; i++) {
-				if (segments[i]) {
-					finalResults.push(segments[i]);
-				}
-				if (i < segments.length - 1) {
-					// Insert soft line break between segments
-					finalResults.push({ type: 'line-break', hard: false });
-				}
-			}
-		} else {
-			finalResults.push(item);
-		}
-	}
-	return finalResults;
-}
-
-/**
- * Parse text formatting (bold, italic, code, strikethrough) for a single text segment
+ * Parse text formatting (bold, italic, code) for a single text segment
  *
  * Parses markdown inline formatting and returns text nodes with appropriate properties.
- * Priority order: code > strikethrough > bold+italic > bold > italic (to avoid conflicts)
+ * Priority order: code > bold > italic (to avoid conflicts)
  *
  * @param text - Plain text possibly with markdown formatting
  * @returns Array of text nodes with formatting
@@ -920,13 +827,8 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 	let position = 0;
 
 	// Combined regex to find all formatting markers
-	// Matches: `code`, ---strikethrough---, ***bold+italic***, **bold**, __bold__, *italic*, _italic_
-	// Order matters:
-	// - strikethrough (---) must be before bold (**) to avoid conflicts
-	// - bold+italic (***) must be before bold (**) and italic (*) to match first
-	// Note: strikethrough uses ---text--- (not ~~text~~ which is block math)
-	const formatRegex =
-		/(`[^`]+`)|(---)(?!-)(.+?)(?<!-)---|\*\*\*([^*]+)\*\*\*|(\*\*|__)([^*_]+)\5|(\*|_)([^*_]+)\7/g;
+	// Matches: `code`, **bold**, __bold__, *italic*, _italic_
+	const formatRegex = /(`[^`]+`)|(\*\*|__)([^*_]+)\2|(\*|_)([^*_]+)\4/g;
 	let match: RegExpExecArray | null;
 
 	while ((match = formatRegex.exec(text)) !== null) {
@@ -947,32 +849,17 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 				code: true
 			});
 		} else if (match[2] && match[3]) {
-			// Strikethrough: ---content---
-			nodes.push({
-				type: 'text',
-				content: match[3],
-				strikethrough: true
-			});
-		} else if (match[4]) {
-			// Bold+Italic: ***content***
-			nodes.push({
-				type: 'text',
-				content: match[4],
-				bold: true,
-				italic: true
-			});
-		} else if (match[5] && match[6]) {
 			// Bold: **content** or __content__
 			nodes.push({
 				type: 'text',
-				content: match[6],
+				content: match[3],
 				bold: true
 			});
-		} else if (match[7] && match[8]) {
+		} else if (match[4] && match[5]) {
 			// Italic: *content* or _content_
 			nodes.push({
 				type: 'text',
-				content: match[8],
+				content: match[5],
 				italic: true
 			});
 		}
@@ -992,88 +879,77 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 }
 
 /**
- * Parse text formatting (bold, italic, code) with hardbreaks, blanks, hints, links, hashtags, and mentions
+ * Parse text formatting (bold, italic, code) with blank, hint, link, hashtag, and mention support
  *
  * Processing pipeline:
- * 1. Extract hard line breaks (backslash or two+ spaces at end of line)
- * 2. Extract {{blank:N}} placeholders
- * 3. Extract {{hint:id}} references
- * 4. Extract [text](url) links
- * 5. Extract #hashtags
- * 6. Extract @mentions
- * 7. Parse remaining text for formatting (bold, italic, code)
+ * 1. Extract {{blank:N}} placeholders
+ * 2. Extract {{hint:id}} references
+ * 3. Extract [text](url) links
+ * 4. Extract #hashtags
+ * 5. Extract @mentions
+ * 6. Parse remaining text for formatting (bold, italic, code)
  *
- * Priority order: hardbreaks > blanks > hints > links > hashtags > mentions > code > bold > italic
+ * Priority order: blanks > hints > links > hashtags > mentions > code > bold > italic
  *
- * @param text - Plain text possibly with markdown formatting, hardbreaks, blanks, hints, links, hashtags, and mentions
- * @returns Array of inline nodes (text, line-break, blank, hint-reference, link, hashtag, mention)
+ * @param text - Plain text possibly with markdown formatting, blanks, hints, links, hashtags, and mentions
+ * @returns Array of inline nodes (text, blank, hint-reference, link, hashtag, mention)
  */
 function parseTextFormatting(text: string): InlineNode[] {
 	if (!text) return [];
 
-	// Step 1: Extract hardbreaks first
-	const hardbreakSegments = parseTextForHardBreaks(text);
+	// Step 1: Extract blanks first
+	const blankSegments = parseTextForBlanks(text);
 
-	// Step 2-7: Process each segment through the pipeline
+	// Step 2-6: Process each segment through the pipeline
 	const nodes: InlineNode[] = [];
-	for (const hardbreakSegment of hardbreakSegments) {
-		if (typeof hardbreakSegment === 'string') {
-			// Step 2: Extract blanks from text segment
-			const blankSegments = parseTextForBlanks(hardbreakSegment);
+	for (const blankSegment of blankSegments) {
+		if (typeof blankSegment === 'string') {
+			// Step 2: Extract hint references from text segment
+			const hintSegments = parseTextForHints(blankSegment);
 
-			for (const blankSegment of blankSegments) {
-				if (typeof blankSegment === 'string') {
-					// Step 3: Extract hint references from text segment
-					const hintSegments = parseTextForHints(blankSegment);
+			for (const hintSegment of hintSegments) {
+				if (typeof hintSegment === 'string') {
+					// Step 3: Extract links from text segment
+					const linkSegments = parseTextForLinks(hintSegment);
 
-					for (const hintSegment of hintSegments) {
-						if (typeof hintSegment === 'string') {
-							// Step 4: Extract links from text segment
-							const linkSegments = parseTextForLinks(hintSegment);
+					for (const linkSegment of linkSegments) {
+						if (typeof linkSegment === 'string') {
+							// Step 4: Extract hashtags from text segment
+							const hashtagSegments = parseTextForHashtags(linkSegment);
 
-							for (const linkSegment of linkSegments) {
-								if (typeof linkSegment === 'string') {
-									// Step 5: Extract hashtags from text segment
-									const hashtagSegments = parseTextForHashtags(linkSegment);
+							for (const hashtagSegment of hashtagSegments) {
+								if (typeof hashtagSegment === 'string') {
+									// Step 5: Extract mentions from text segment
+									const mentionSegments = parseTextForMentions(hashtagSegment);
 
-									for (const hashtagSegment of hashtagSegments) {
-										if (typeof hashtagSegment === 'string') {
-											// Step 6: Extract mentions from text segment
-											const mentionSegments = parseTextForMentions(hashtagSegment);
-
-											for (const mentionSegment of mentionSegments) {
-												if (typeof mentionSegment === 'string') {
-													// Step 7: Parse text formatting on remaining text
-													const formatted = parseTextFormattingSegment(mentionSegment);
-													nodes.push(...formatted);
-												} else {
-													// MentionNode - add directly
-													nodes.push(mentionSegment);
-												}
-											}
+									for (const mentionSegment of mentionSegments) {
+										if (typeof mentionSegment === 'string') {
+											// Step 6: Parse text formatting on remaining text
+											const formatted = parseTextFormattingSegment(mentionSegment);
+											nodes.push(...formatted);
 										} else {
-											// HashtagNode - add directly
-											nodes.push(hashtagSegment);
+											// MentionNode - add directly
+											nodes.push(mentionSegment);
 										}
 									}
 								} else {
-									// LinkNode - add directly
-									nodes.push(linkSegment);
+									// HashtagNode - add directly
+									nodes.push(hashtagSegment);
 								}
 							}
 						} else {
-							// HintReferenceNode - add directly
-							nodes.push(hintSegment);
+							// LinkNode - add directly
+							nodes.push(linkSegment);
 						}
 					}
 				} else {
-					// BlankNode - add directly
-					nodes.push(blankSegment);
+					// HintReferenceNode - add directly
+					nodes.push(hintSegment);
 				}
 			}
 		} else {
-			// LineBreakNode - add directly
-			nodes.push(hardbreakSegment);
+			// BlankNode - add directly
+			nodes.push(blankSegment);
 		}
 	}
 
@@ -1157,173 +1033,6 @@ function parseContentWithCodeBlocks(
  */
 function containsCodeBlocks(content: string): boolean {
 	return /^(`{3,}|~{3,})/m.test(content);
-}
-
-/**
- * Check if content contains blockquote
- */
-function containsBlockquote(content: string): boolean {
-	return /^>/m.test(content);
-}
-
-/**
- * Check if content contains a table (line starting with |)
- */
-function containsTable(content: string): boolean {
-	return /^\|/m.test(content);
-}
-
-/**
- * Parse content that may contain tables into block nodes
- *
- * Handles cases where list item content contains | tables.
- * Returns an array of BlockNode (paragraphs and tables).
- *
- * @param content - Text content that may contain tables
- * @param placeholders - Math placeholders from extraction
- * @param options - Parse options
- * @returns Array of block nodes
- */
-function parseContentWithTable(
-	content: string,
-	placeholders: MathPlaceholder[],
-	options: ParseOptions
-): BlockNode[] {
-	const blocks: BlockNode[] = [];
-	const lines = content.split('\n');
-
-	let i = 0;
-	while (i < lines.length) {
-		const line = lines[i];
-
-		// Check if this line starts a table
-		if (isTableRow(line)) {
-			// Collect all consecutive table lines
-			const tableLines: string[] = [];
-			while (i < lines.length && (isTableRow(lines[i]) || isAlignmentRow(lines[i]))) {
-				tableLines.push(lines[i]);
-				i++;
-			}
-
-			// Parse the table
-			const table = parseTable(tableLines);
-			if (table) {
-				// Process table to restore math placeholders
-				const processedTable = processTableCellContent(table, placeholders);
-				blocks.push(processedTable);
-			}
-		} else if (line.trim()) {
-			// Non-empty, non-table line - collect as paragraph
-			const paraLines: string[] = [];
-			while (i < lines.length && lines[i].trim() && !isTableRow(lines[i])) {
-				paraLines.push(lines[i]);
-				i++;
-			}
-
-			const paraContent = paraLines.join('\n').trim();
-			if (paraContent) {
-				const parsedInline = parseInlineContent(paraContent, placeholders, options);
-				blocks.push({
-					type: 'paragraph',
-					children: parsedInline
-				});
-			}
-		} else {
-			// Empty line - skip
-			i++;
-		}
-	}
-
-	return blocks;
-}
-
-/**
- * Parse content that may contain blockquotes into block nodes
- *
- * Handles cases where list item content contains > blockquotes.
- * Returns an array of BlockNode (paragraphs and blockquotes).
- *
- * For roundtrip fidelity, consecutive blockquote lines (> Line1\n> Line2)
- * are treated as separate paragraphs, NOT as a single paragraph with soft breaks.
- * This preserves the multi-line structure when exporting.
- *
- * @param content - Text content that may contain blockquotes
- * @param placeholders - Math placeholders from extraction
- * @param options - Parse options
- * @returns Array of block nodes
- */
-function parseContentWithBlockquote(
-	content: string,
-	placeholders: MathPlaceholder[],
-	options: ParseOptions
-): BlockNode[] {
-	const blocks: BlockNode[] = [];
-	const lines = content.split('\n');
-
-	let i = 0;
-	while (i < lines.length) {
-		const line = lines[i];
-
-		// Check if this line starts a blockquote
-		if (isBlockquoteLine(line)) {
-			// Collect all consecutive blockquote lines
-			const quoteLines: string[] = [];
-			while (i < lines.length && isBlockquoteLine(lines[i])) {
-				quoteLines.push(lines[i]);
-				i++;
-			}
-
-			// Parse the blockquote - extractBlockquoteContent returns string[]
-			const quoteContentLines = extractBlockquoteContent(quoteLines);
-
-			// For roundtrip fidelity: treat each line as a separate paragraph
-			// within the blockquote (NOT CommonMark's default soft-break behavior)
-			const quoteChildren: BlockNode[] = [];
-			for (const contentLine of quoteContentLines) {
-				if (contentLine.trim()) {
-					// Check if this is a nested blockquote
-					if (isBlockquoteLine(contentLine)) {
-						// Recursively parse nested blockquote
-						const nestedBlocks = parseContentWithBlockquote(contentLine, placeholders, options);
-						quoteChildren.push(...nestedBlocks);
-					} else {
-						// Regular content line - parse as paragraph
-						const parsedInline = parseInlineContent(contentLine, placeholders, options);
-						quoteChildren.push({
-							type: 'paragraph',
-							children: parsedInline
-						});
-					}
-				}
-			}
-
-			blocks.push({
-				type: 'blockquote',
-				children: quoteChildren
-			});
-		} else if (line.trim()) {
-			// Non-empty, non-blockquote line - collect as paragraph
-			const paraLines: string[] = [];
-			while (i < lines.length && lines[i].trim() && !isBlockquoteLine(lines[i])) {
-				paraLines.push(lines[i]);
-				i++;
-			}
-
-			const paraContent = paraLines.join('\n').trim();
-			if (paraContent) {
-				const parsedInline = parseInlineContent(paraContent, placeholders, options);
-				blocks.push({
-					type: 'paragraph',
-					children: parsedInline
-				});
-			}
-		} else {
-			// Empty line - skip
-			i++;
-		}
-	}
-
-	return blocks;
 }
 
 /**
@@ -1451,18 +1160,6 @@ function processListInlineContent(
 					if (containsBlockMath(textContent, placeholders)) {
 						// Parse as blocks (may return paragraphs and math-blocks)
 						return parseContentWithBlockMath(textContent, placeholders, options);
-					}
-
-					// Check if content contains blockquotes (> ...)
-					if (containsBlockquote(textContent)) {
-						// Parse as blocks (may return paragraphs and blockquotes)
-						return parseContentWithBlockquote(textContent, placeholders, options);
-					}
-
-					// Check if content contains tables (| ...)
-					if (containsTable(textContent)) {
-						// Parse as blocks (may return paragraphs and tables)
-						return parseContentWithTable(textContent, placeholders, options);
 					}
 
 					// Parse inline content with placeholders

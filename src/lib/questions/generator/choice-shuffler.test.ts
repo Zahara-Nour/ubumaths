@@ -8,8 +8,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { shuffleChoices, type ShuffledChoice } from './choice-shuffler';
-import type { ResolvedMarkdown } from '$lib/custom-markdown';
-import { resolvedMarkdown } from '$lib/custom-markdown';
+import type { ResolvedMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown } from '$lib/ubumark';
 
 // Helper to create resolved markdown content
 function markdownChoice(content: string): ResolvedMarkdown {

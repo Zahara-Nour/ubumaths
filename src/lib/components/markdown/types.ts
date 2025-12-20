@@ -38,17 +38,17 @@ export type {
 	BlockNode,
 	ASTNode,
 	DocumentNode
-} from '$lib/custom-markdown';
+} from '$lib/ubumark';
 
 // Image Types
-export type { ImageSizeClass, ImageAlignment, ImageSizeMapping } from '$lib/custom-markdown';
-export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/custom-markdown';
+export type { ImageSizeClass, ImageAlignment, ImageSizeMapping } from '$lib/ubumark';
+export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/ubumark';
 
 // Parser and Render Options
-export type { ParseOptions, RenderOptions } from '$lib/custom-markdown';
+export type { ParseOptions, RenderOptions } from '$lib/ubumark';
 
 // Utility Types
-export type { ParseResult, MathPlaceholder } from '$lib/custom-markdown';
+export type { ParseResult, MathPlaceholder } from '$lib/ubumark';
 
 // ============================================================================
 // DISPLAY MODE TYPES
@@ -137,13 +137,13 @@ export interface MarkdownRendererOptions {
 	 * Options de parsing (passees au parser)
 	 * Controls how markdown is parsed into AST
 	 */
-	parseOptions?: import('$lib/custom-markdown').ParseOptions;
+	parseOptions?: import('$lib/ubumark').ParseOptions;
 
 	/**
 	 * Options de rendu
 	 * Controls how AST is rendered to HTML
 	 */
-	renderOptions?: import('$lib/custom-markdown').RenderOptions;
+	renderOptions?: import('$lib/ubumark').RenderOptions;
 
 	/**
 	 * Callback quand un {{blank:N}} est trouve

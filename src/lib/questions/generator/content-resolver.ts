@@ -11,8 +11,8 @@
  */
 
 import type { ResolvedVariable } from '../types';
-import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/custom-markdown';
-import { resolvedMarkdown } from '$lib/custom-markdown';
+import type { TemplateMarkdown, ResolvedMarkdown } from '$lib/ubumark';
+import { resolvedMarkdown } from '$lib/ubumark';
 import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 

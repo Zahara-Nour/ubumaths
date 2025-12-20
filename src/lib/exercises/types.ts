@@ -8,7 +8,7 @@
  * - Transpiler options
  * - Rendering options
  *
- * Note: AST types and ParseOptions are now in $lib/custom-markdown
+ * Note: AST types and ParseOptions are now in $lib/ubumark
  *
  * @module exercises/types
  */
@@ -17,7 +17,7 @@
 // IMPORTS
 // ============================================================================
 
-import type { Variable, ResolvedVariable, DocumentNode } from '$lib/custom-markdown';
+import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
 
 // Re-export AST types from custom-markdown for backwards compatibility
 export type {
@@ -49,9 +49,9 @@ export type {
 	ParseResult,
 	MathPlaceholder,
 	RenderOptions
-} from '$lib/custom-markdown';
+} from '$lib/ubumark';
 
-export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/custom-markdown';
+export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/ubumark';
 
 // ============================================================================
 // RESOURCE TYPES
@@ -882,7 +882,7 @@ export type ExerciseUpdate = Partial<Omit<Exercise, 'id' | 'created_at' | 'creat
 	id: string;
 };
 
-// Note: AST NODE TYPES and PARSER OPTIONS have been moved to $lib/custom-markdown/types
+// Note: AST NODE TYPES and PARSER OPTIONS have been moved to $lib/ubumark/types
 
 // ============================================================================
 // TRANSPILER OPTIONS
@@ -987,7 +987,7 @@ export interface TypstTranspilerOptions {
 	author?: string;
 }
 
-// Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/custom-markdown
+// Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/ubumark
 
 // ============================================================================
 // EXPORT/IMPORT TYPES

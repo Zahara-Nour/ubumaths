@@ -22,8 +22,8 @@ import type {
 	SharedVariationDefaults,
 	ResolvedCorrection
 } from '../types';
-import type { ResolvedMarkdown } from '$lib/custom-markdown';
-import { templateMarkdown, detectCircularDependencies } from '$lib/custom-markdown';
+import type { ResolvedMarkdown } from '$lib/ubumark';
+import { templateMarkdown, detectCircularDependencies } from '$lib/ubumark';
 import { validateTemplate } from '../validators/template-validator';
 import { resolveVariables } from './variable-resolver';
 import { resolveMarkdownContent, resolveSolution, resolveExpression } from './content-resolver';

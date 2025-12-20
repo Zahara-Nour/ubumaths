@@ -30,7 +30,7 @@ export { shuffleChoices, type ShuffledChoice } from './generator/choice-shuffler
 // Validators
 export { validateTemplate, isValidTemplate } from './validators/template-validator';
 
-export { detectCircularDependencies } from '$lib/custom-markdown';
+export { detectCircularDependencies } from '$lib/ubumark';
 
 // Compute Engine (re-exported from $lib/math)
 export {

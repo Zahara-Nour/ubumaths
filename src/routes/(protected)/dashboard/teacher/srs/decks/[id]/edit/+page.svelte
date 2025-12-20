@@ -25,7 +25,7 @@
 	import { Save, Plus, Trash2, ArrowLeft, Sparkles, BookOpen } from 'lucide-svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
 	import type { FSRSConfig } from '$lib/srs/types';
-	import type { TemplateMarkdown } from '$lib/custom-markdown';
+	import type { TemplateMarkdown } from '$lib/ubumark';
 
 	interface DeckCard {
 		id: string;

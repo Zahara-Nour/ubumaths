@@ -15,14 +15,14 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { TranspileWarning } from '$lib/custom-markdown/importers/latex';
+	import type { TranspileWarning } from '$lib/ubumark/importers/latex';
 	import type { GradeCode } from '$lib/types/grades';
 	import type {
 		ExerciseResource,
 		ExerciseVariation,
 		SharedExerciseDefaults
 	} from '$lib/exercises/types';
-	import type { Variable } from '$lib/custom-markdown';
+	import type { Variable } from '$lib/ubumark';
 
 	type Exercise = Database['public']['Tables']['exercises']['Row'];
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];

@@ -17,8 +17,8 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
-	import type { ImageSizeClass } from '$lib/custom-markdown';
-	import { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/custom-markdown';
+	import type { ImageSizeClass } from '$lib/ubumark';
+	import { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/ubumark';
 
 	// Types
 	interface SizeOption {

@@ -12,7 +12,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { QuestionInstance } from '$lib/questions/types';
 import type { CardState } from '$lib/srs/types';
-import type { TemplateMarkdown } from '$lib/custom-markdown';
+import type { TemplateMarkdown } from '$lib/ubumark';
 import { generateSRSInstance } from '$lib/srs/generator';
 import { dueCardsQuerySchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';

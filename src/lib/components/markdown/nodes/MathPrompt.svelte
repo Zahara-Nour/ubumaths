@@ -16,7 +16,7 @@
 -->
 <script lang="ts">
 	import 'mathlive';
-	import type { InputState } from '$lib/custom-markdown';
+	import type { InputState } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 

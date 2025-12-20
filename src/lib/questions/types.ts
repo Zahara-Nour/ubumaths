@@ -29,12 +29,12 @@ import type {
 	DisplayOptions,
 	TemplateMarkdown,
 	ResolvedMarkdown
-} from '$lib/custom-markdown';
+} from '$lib/ubumark';
 
 // Re-export shared types for convenience
 export type NumberOrVariable = SharedNumberOrVariable;
 export type Exclusion = SharedExclusion;
-export type { DisplayOptions } from '$lib/custom-markdown';
+export type { DisplayOptions } from '$lib/ubumark';
 
 // ============================================================================
 // GRADE LEVELS (re-exported from unified system)

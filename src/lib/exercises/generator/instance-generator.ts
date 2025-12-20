@@ -99,6 +99,7 @@
 import type {
 	Exercise,
 	ExerciseInstance,
+	ExerciseVariation,
 	GenerateInstanceOptions,
 	InstanceGenerationResult
 } from '../types';
@@ -108,7 +109,7 @@ import {
 	resolveText,
 	detectCircularDependencies,
 	parseMarkdown
-} from '$lib/custom-markdown';
+} from '$lib/ubumark';
 
 // ============================================================================
 // MAIN GENERATOR

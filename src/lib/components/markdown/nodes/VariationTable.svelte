@@ -28,7 +28,7 @@
 		VariationValue,
 		DomainPoint,
 		VariationMarker
-	} from '$lib/custom-markdown/types/variation-table';
+	} from '$lib/ubumark/types/variation-table';
 
 	interface Props {
 		node: VariationTableNode;

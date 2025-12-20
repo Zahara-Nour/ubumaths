@@ -15,7 +15,7 @@
  *
  * @example Basic usage
  * ```typescript
- * import { applyDisplayTransforms, GLOBAL_DISPLAY_DEFAULTS } from '$lib/custom-markdown/parameterization';
+ * import { applyDisplayTransforms, GLOBAL_DISPLAY_DEFAULTS } from '$lib/ubumark/parameterization';
  *
  * const latex = 'a + b + c';
  * const options = { ...GLOBAL_DISPLAY_DEFAULTS, shuffleTerms: true };

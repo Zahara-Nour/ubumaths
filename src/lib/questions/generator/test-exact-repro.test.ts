@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from './instance-generator';
 import type { QuestionTemplate, ResolvedVariable } from '../types';
-import { templateMarkdown } from '$lib/custom-markdown';
+import { templateMarkdown } from '$lib/ubumark';
 
 function getVarValue(resolvedVariables: ResolvedVariable[] | undefined, varName: string): number {
 	if (!resolvedVariables) return NaN;

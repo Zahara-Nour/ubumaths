@@ -23,8 +23,8 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	import { Eye, Save, X } from 'lucide-svelte';
-	import type { TemplateMarkdown } from '$lib/custom-markdown';
-	import { templateMarkdown } from '$lib/custom-markdown';
+	import type { TemplateMarkdown } from '$lib/ubumark';
+	import { templateMarkdown } from '$lib/ubumark';
 
 	interface Props {
 		initialFrontContent?: TemplateMarkdown;

@@ -15,7 +15,7 @@
 	@see ParagraphNode.svelte for similar inline rendering
 -->
 <script lang="ts">
-	import type { InlineNode } from '$lib/custom-markdown';
+	import type { InlineNode } from '$lib/ubumark';
 	import type { ExerciseHint } from '$lib/exercises/types';
 	import MathInline from './MathInline.svelte';
 	import TextNode from './TextNode.svelte';

@@ -9,7 +9,7 @@
  */
 
 import { ComputeEngine } from '@cortex-js/compute-engine';
-import type { EvalModifiers } from '$lib/custom-markdown';
+import type { EvalModifiers } from '$lib/ubumark';
 
 /**
  * Shared Compute Engine instance

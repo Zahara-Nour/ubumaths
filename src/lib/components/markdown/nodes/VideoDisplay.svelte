@@ -17,7 +17,7 @@
 	@see video-extension.ts for TipTap rendering logic
 -->
 <script lang="ts">
-	import type { ImageSizeClass, ImageAlignment } from '$lib/custom-markdown';
+	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
 	import { escapeHtml } from '../utils';
 
 	type VideoProvider = 'html5' | 'youtube';

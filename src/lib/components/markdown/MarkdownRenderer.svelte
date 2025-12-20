@@ -22,8 +22,8 @@
 	@module components/markdown/MarkdownRenderer
 -->
 <script lang="ts">
-	import { parseMarkdown } from '$lib/custom-markdown';
-	import type { DocumentNode, ParseOptions, InputState } from '$lib/custom-markdown';
+	import { parseMarkdown } from '$lib/ubumark';
+	import type { DocumentNode, ParseOptions, InputState } from '$lib/ubumark';
 	import type { MarkdownDisplayMode } from './types';
 	import { getCachedAST, setCachedAST } from '$lib/utils/markdown-cache';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
@@ -31,7 +31,7 @@
 
 	// List numbering
 	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
-	import { getMaxEnumerateDepth } from '$lib/custom-markdown/utils/list-depth';
+	import { getMaxEnumerateDepth } from '$lib/ubumark/utils/list-depth';
 	import type { SchemeId, ListNumberingConfig } from '$lib/types/list-numbering';
 
 	// Import node components

@@ -65,11 +65,10 @@
 	}
 
 	/**
-	 * Get icon component for hint type
+	 * Get icon for hint type
 	 */
-	const HintIcon = $derived.by(() => {
-		if (!hint) return Lightbulb;
-		switch (hint.type) {
+	function getHintIcon(type: ExerciseHint['type']) {
+		switch (type) {
 			case 'video':
 				return Video;
 			case 'pdf':
@@ -83,7 +82,7 @@
 			default:
 				return Lightbulb;
 		}
-	});
+	}
 </script>
 
 {#if !hint}
@@ -114,7 +113,7 @@
 			aria-expanded={isOpen}
 			aria-label="Afficher l'indice: {hint.title}"
 		>
-			<HintIcon class="h-3.5 w-3.5 text-primary" />
+			<Lightbulb class="h-3.5 w-3.5 text-primary" />
 			<span class="font-medium text-primary">{hint.title}</span>
 			{#if isOpen}
 				<ChevronUp class="h-3 w-3 text-primary" />
@@ -191,7 +190,11 @@
 					</a>
 				{:else if hint.type === 'image'}
 					<!-- Image display -->
-					<img src={hint.url} alt={hint.title} class="max-h-64 w-full rounded-md object-contain" />
+					<img
+						src={hint.url}
+						alt={hint.title}
+						class="max-h-64 w-full rounded-md object-contain"
+					/>
 				{:else if hint.type === 'geogebra'}
 					<!-- GeoGebra link (could be enhanced with embed in future) -->
 					<a

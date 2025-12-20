@@ -9,7 +9,7 @@
 		splitStatementAndSolution,
 		detectSplitMethod,
 		type TranspileWarning
-	} from '$lib/custom-markdown/importers/latex';
+	} from '$lib/ubumark/importers/latex';
 
 	// Types
 	type SplitMode = 'statement-only' | 'auto' | 'solution-only';

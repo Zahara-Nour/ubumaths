@@ -10,7 +10,7 @@
  * @module mathAST/eval/evaluate-with-modifiers
  */
 
-import type { EvalModifiers } from '$lib/custom-markdown';
+import type { EvalModifiers } from '$lib/ubumark';
 import { parseLatex } from '$lib/mathAST/parser';
 import { evaluate } from './evaluate';
 import type { Rational } from '../normal/types';

@@ -15,7 +15,7 @@
 -->
 
 <script lang="ts">
-	import type { ResolvedMarkdown } from '$lib/custom-markdown';
+	import type { ResolvedMarkdown } from '$lib/ubumark';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { Check, X } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
