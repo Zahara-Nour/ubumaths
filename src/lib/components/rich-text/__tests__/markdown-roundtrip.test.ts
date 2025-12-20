@@ -357,4 +357,73 @@ describe('CommonMark: Block separation in list items', () => {
 		expect(result).toContain('Nested item 1');
 		expect(result).toContain('Nested item 2');
 	});
+
+	// -------------------------------------------------------------------------
+	// Ordered lists with block-first items
+	// -------------------------------------------------------------------------
+
+	it('handles ordered list item starting with code block (CommonMark syntax)', () => {
+		// CommonMark: when list item starts with a block, marker line is empty
+		const markdown = '1.\n   ```js\n   const x = 1;\n   ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toContain('```');
+		expect(result).toContain('const x = 1;');
+	});
+
+	it('handles ordered list item starting with math block (CommonMark syntax)', () => {
+		const markdown = '1.\n   $$a + b = c$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toContain('$$a + b = c$$');
+	});
+
+	it('handles ordered list item starting with blockquote (CommonMark syntax)', () => {
+		const markdown = '1.\n   > A quote in ordered list';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toContain('> A quote in ordered list');
+	});
+
+	// -------------------------------------------------------------------------
+	// Multiple block types in same list item
+	// -------------------------------------------------------------------------
+
+	it('handles list item with code block followed by math block', () => {
+		const markdown = '- Description\n\n  ```js\n  code\n  ```\n\n  $$x^2$$';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toContain('Description');
+		expect(result).toContain('```js');
+		expect(result).toContain('code');
+		expect(result).toContain('$$x^2$$');
+	});
+
+	it('handles list item with blockquote followed by code block', () => {
+		const markdown = '- Intro\n\n  > A quote\n\n  ```python\n  print("hi")\n  ```';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toContain('Intro');
+		expect(result).toContain('> A quote');
+		expect(result).toContain('```python');
+		expect(result).toContain('print("hi")');
+	});
+
+	it('handles list item with all block types', () => {
+		const markdown = '- Text\n\n  > Quote\n\n  ```js\n  code\n  ```\n\n  $$math$$\n\n  - Nested';
+		const json = markdownToTipTap(markdown);
+		const result = tipTapToMarkdown(json);
+
+		expect(result).toContain('Text');
+		expect(result).toContain('> Quote');
+		expect(result).toContain('```js');
+		expect(result).toContain('code');
+		expect(result).toContain('$$math$$');
+		expect(result).toContain('Nested');
+	});
 });
