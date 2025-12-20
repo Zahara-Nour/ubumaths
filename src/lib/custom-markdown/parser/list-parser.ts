@@ -73,11 +73,19 @@ export function isListItem(line: string): boolean {
 /**
  * Get indentation level from leading spaces
  *
- * Convention:
+ * CommonMark specifies different indentation for bullet vs ordered lists:
+ * - Bullet lists (- * +): marker takes 2 chars ("- "), so indent is 2 spaces per level
+ * - Ordered lists (1. 2.): marker takes 3 chars ("1. "), so indent is 3 spaces per level
+ *
+ * This function detects the pattern and computes the correct level:
  * - 0 spaces = level 0
- * - 2-3 spaces = level 1
- * - 4-5 spaces = level 2
- * - etc.
+ * - 2 spaces = level 1 (bullet) or could be level 0.67 (ordered, rounded to 1)
+ * - 3 spaces = level 1 (ordered) or level 1.5 (bullet, rounded to 1)
+ * - 4 spaces = level 2 (bullet)
+ * - 6 spaces = level 2 (ordered) or level 3 (bullet)
+ *
+ * We use a heuristic: if divisible by 3 with remainder 0, treat as ordered (3 spaces/level)
+ * Otherwise, treat as bullet (2 spaces/level)
  *
  * @param spaces - Leading spaces
  * @returns Indent level (0, 1, 2, ...)
@@ -85,8 +93,14 @@ export function isListItem(line: string): boolean {
 function getIndentLevel(spaces: string): number {
 	const count = spaces.length;
 	if (count === 0) return 0;
-	// Every 2 spaces = 1 level
-	return Math.floor(count / 2);
+
+	// Heuristic: if divisible by 3, it's likely ordered list indent
+	// Otherwise treat as bullet list (2 spaces per level)
+	if (count % 3 === 0) {
+		return count / 3;
+	}
+	// For 2, 4, 5, 7, 8... spaces, use 2-space rule
+	return Math.floor((count + 1) / 2);
 }
 
 /**
