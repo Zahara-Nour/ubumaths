@@ -275,6 +275,10 @@ function convertList(list: ListNode): JSONContent {
 
 /**
  * Convert ListItemNode to TipTap listItem
+ *
+ * IMPORTANT: TipTap's ListItem schema is `content: 'paragraph block*'`
+ * This means a listItem MUST start with a paragraph, followed by zero or more blocks.
+ * If the first child is NOT a paragraph, we must insert an empty paragraph first.
  */
 function convertListItem(item: ListItemNode): JSONContent {
 	const content: JSONContent[] = [];
@@ -294,14 +298,33 @@ function convertListItem(item: ListItemNode): JSONContent {
 			content.push(convertBlockquote(child));
 		} else if (child.type === 'table') {
 			content.push(convertTable(child));
+		} else if (child.type === 'variation-table') {
+			content.push(convertVariationTable(child as VariationTableNode));
+		} else if (child.type === 'probability-tree') {
+			content.push(convertProbabilityTree(child as ProbabilityTreeNode));
 		}
 		// Other block types in list items not supported
+	}
+
+	// Ensure listItem starts with a paragraph (TipTap schema requirement)
+	// If the first child is not a paragraph, insert an empty paragraph at the start
+	if (content.length === 0 || content[0].type !== 'paragraph') {
+		content.unshift({ type: 'paragraph', content: [] });
 	}
 
 	// Remove hardBreaks at block boundaries to prevent visual double line breaks in TipTap
 	// 1. Remove trailing hardBreak from paragraphs when followed by a block
 	// 2. Remove leading hardBreak from paragraphs when preceded by a block
-	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList', 'blockquote', 'table'];
+	const blockTypes = [
+		'mathBlock',
+		'codeBlock',
+		'bulletList',
+		'orderedList',
+		'blockquote',
+		'table',
+		'variationTable',
+		'probabilityTree'
+	];
 
 	for (let i = 0; i < content.length; i++) {
 		const current = content[i];

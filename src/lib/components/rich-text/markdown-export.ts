@@ -192,7 +192,15 @@ function convertListItemToMarkdown(
 	// List continuation indent: 2 spaces for bullet (aligns with "- "), 3 for ordered (aligns with "1. ")
 	const baseIndent = listType === 'bullet' ? '  ' : '   ';
 	const continuationIndent = baseIndent.repeat(indentLevel + 1);
-	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList', 'blockquote', 'table'];
+	const blockTypes = [
+		'mathBlock',
+		'codeBlock',
+		'bulletList',
+		'orderedList',
+		'blockquote',
+		'table',
+		'variationTable'
+	];
 
 	for (let i = 0; i < item.content.length; i++) {
 		const child = item.content[i];
@@ -328,6 +336,24 @@ function convertListItemToMarkdown(
 			}
 
 			parts.push(tableOutput);
+		} else if (child.type === 'variationTable') {
+			// Variation table inside list item - needs proper indentation for each line
+			const variationMarkdown = convertVariationTableToMarkdown(child);
+
+			// Variation tables are multi-line, need to indent each line
+			const variationLines = variationMarkdown.split('\n');
+			const indentedVariation = variationLines.map((line) => continuationIndent + line).join('\n');
+
+			let variationOutput: string;
+			if (isFirstChild) {
+				// Variation table at start of item - newline then indented content
+				variationOutput = '\n' + indentedVariation;
+			} else {
+				// Variation table after other content - blank line separator
+				variationOutput = '\n\n' + indentedVariation;
+			}
+
+			parts.push(variationOutput);
 		}
 	}
 
