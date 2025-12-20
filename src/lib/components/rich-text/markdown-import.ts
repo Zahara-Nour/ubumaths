@@ -828,6 +828,7 @@ function convertTextNode(node: TextNode): JSONContent[] {
 				if (node.italic) marks.push({ type: 'italic' });
 				if (node.code) marks.push({ type: 'code' });
 				if (node.strikethrough) marks.push({ type: 'strike' });
+				if (node.highlight) marks.push({ type: 'highlight' });
 
 				if (marks.length > 0) {
 					textNode.marks = marks;
