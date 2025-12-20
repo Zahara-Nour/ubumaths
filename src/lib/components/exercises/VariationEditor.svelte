@@ -8,7 +8,7 @@
 	import ExerciseRichTextEditor from './ExerciseRichTextEditor.svelte';
 	import HintEditor from './HintEditor.svelte';
 	import type { ExerciseVariation, GuidanceLabel, ExerciseHint } from '$lib/exercises/types';
-	import type { Variable } from '$lib/custom-markdown';
+	import type { Variable } from '$lib/ubumark';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	interface Props {

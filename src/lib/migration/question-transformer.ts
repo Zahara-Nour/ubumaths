@@ -42,8 +42,8 @@ import type {
 	ConstraintOptions
 } from '$lib/questions/types';
 
-import type { DisplayOptions, TemplateMarkdown } from '$lib/custom-markdown';
-import { templateMarkdown } from '$lib/custom-markdown';
+import type { DisplayOptions, TemplateMarkdown } from '$lib/ubumark';
+import { templateMarkdown } from '$lib/ubumark';
 
 import {
 	hasChoices,

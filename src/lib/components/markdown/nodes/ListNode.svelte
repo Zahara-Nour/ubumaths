@@ -19,7 +19,7 @@
 	@see ExerciseDisplay.svelte for original renderList() implementation
 -->
 <script lang="ts">
-	import type { ListItemNode, ASTNode, InlineNode } from '$lib/custom-markdown';
+	import type { ListItemNode, ASTNode, InlineNode } from '$lib/ubumark';
 	import type { SchemeId } from '$lib/types/list-numbering';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import type { ExerciseHint } from '$lib/exercises/types';

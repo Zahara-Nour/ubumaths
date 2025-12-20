@@ -7,7 +7,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { Exercise, DistributionMode, InstanceGenerationResult } from '$lib/exercises/types';
-import type { Variable } from '$lib/custom-markdown';
+import type { Variable } from '$lib/ubumark';
 import {
 	generateExerciseInstance,
 	generateStudentSeed,

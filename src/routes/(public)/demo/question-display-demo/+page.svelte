@@ -10,7 +10,7 @@
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
-	import { resolvedMarkdown } from '$lib/custom-markdown';
+	import { resolvedMarkdown } from '$lib/ubumark';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';

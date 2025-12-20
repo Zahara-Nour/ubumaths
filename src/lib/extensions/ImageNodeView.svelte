@@ -20,7 +20,7 @@
 	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { SIZE_CLASS_STYLES, SIZE_CLASSES, ALIGNMENTS } from './image-constants';
-	import type { ImageSizeClass, ImageAlignment } from '$lib/custom-markdown';
+	import type { ImageSizeClass, ImageAlignment } from '$lib/ubumark';
 
 	// NodeView props from TipTap
 	let { node, updateAttributes, deleteNode, selected, editor, getPos }: NodeViewProps = $props();
@@ -167,7 +167,7 @@
 
 		// Try to parse and validate the markdown
 		try {
-			const { parseMarkdown } = await import('$lib/custom-markdown/parser');
+			const { parseMarkdown } = await import('$lib/ubumark/parser');
 			const ast = parseMarkdown(markdownText);
 			const imageNode = ast.children.find((n) => n.type === 'image');
 
@@ -291,7 +291,7 @@
 				return;
 			}
 			try {
-				const { parseMarkdown } = await import('$lib/custom-markdown/parser');
+				const { parseMarkdown } = await import('$lib/ubumark/parser');
 				const ast = parseMarkdown(markdownText);
 				const imageNode = ast.children.find((n) => n.type === 'image');
 				syntaxStatus = imageNode && imageNode.type === 'image' ? 'valid' : 'invalid';
@@ -341,7 +341,7 @@
 		isUpdating = true;
 
 		try {
-			const { parseMarkdown } = await import('$lib/custom-markdown/parser');
+			const { parseMarkdown } = await import('$lib/ubumark/parser');
 			const ast = parseMarkdown(markdown);
 			const imageNode = ast.children.find((n) => n.type === 'image');
 

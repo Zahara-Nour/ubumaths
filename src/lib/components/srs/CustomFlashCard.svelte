@@ -22,7 +22,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { RotateCw } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import type { TemplateMarkdown } from '$lib/custom-markdown';
+	import type { TemplateMarkdown } from '$lib/ubumark';
 
 	interface Props {
 		frontContent: TemplateMarkdown;

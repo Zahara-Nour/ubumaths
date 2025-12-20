@@ -10,7 +10,7 @@
 	import type { QuestionInstance } from '$lib/questions/types';
 	import QuestionPreviewBaseCard from '$lib/components/questions/QuestionPreviewBaseCard.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import { resolvedMarkdown } from '$lib/custom-markdown';
+	import { resolvedMarkdown } from '$lib/ubumark';
 
 	// ============================================================================
 	// SAMPLE DATA

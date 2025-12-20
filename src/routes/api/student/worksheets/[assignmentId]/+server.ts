@@ -44,8 +44,8 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
-import { resolveVariables, resolveText } from '$lib/custom-markdown';
-import type { Variable } from '$lib/custom-markdown';
+import { resolveVariables, resolveText } from '$lib/ubumark';
+import type { Variable } from '$lib/ubumark';
 import type {
 	StudentExerciseView,
 	StudentWorksheetView,

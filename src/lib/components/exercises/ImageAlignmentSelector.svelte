@@ -15,7 +15,7 @@
 <script lang="ts">
 	import { Label } from '$lib/components/ui/label';
 	import { AlignLeft, AlignCenter, AlignRight } from 'lucide-svelte';
-	import type { ImageAlignment } from '$lib/custom-markdown';
+	import type { ImageAlignment } from '$lib/ubumark';
 
 	// Types
 	interface AlignmentOption {

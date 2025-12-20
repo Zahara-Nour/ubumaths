@@ -72,7 +72,7 @@
 	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
 	import ImageGalleryModal from './ImageGalleryModal.svelte';
 	import type { GalleryImageInfo } from './types';
-	import { parseMarkdown } from '$lib/custom-markdown/parser';
+	import { parseMarkdown } from '$lib/ubumark/parser';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
 	import 'mathlive';

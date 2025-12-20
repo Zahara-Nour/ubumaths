@@ -41,7 +41,7 @@ import type {
 } from '$lib/types/worksheets';
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
 import { BaseTypstGenerator } from './base-generator';
-import { generateTypst, escapeTypst, parseMarkdown } from '$lib/custom-markdown';
+import { generateTypst, escapeTypst, parseMarkdown } from '$lib/ubumark';
 import { getDefaultTemplate, renderTemplate } from '../templates';
 import { getTypeLabel, formatNumber } from '../utils';
 

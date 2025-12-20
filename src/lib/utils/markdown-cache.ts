@@ -5,7 +5,7 @@
  * @module utils/markdown-cache
  */
 
-import type { DocumentNode, ParseOptions } from '$lib/custom-markdown';
+import type { DocumentNode, ParseOptions } from '$lib/ubumark';
 
 interface CacheEntry {
 	ast: DocumentNode;

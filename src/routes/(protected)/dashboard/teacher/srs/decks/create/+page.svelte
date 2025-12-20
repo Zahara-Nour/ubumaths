@@ -26,7 +26,7 @@
 	import { Save, Plus, Trash2, BookOpen, ArrowLeft } from 'lucide-svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
 	import type { CreateDeckRequest, CreateCardRequest } from '$lib/srs/types';
-	import type { TemplateMarkdown } from '$lib/custom-markdown';
+	import type { TemplateMarkdown } from '$lib/ubumark';
 
 	// Card data types
 	type TemplateCardData = {

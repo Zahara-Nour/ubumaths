@@ -14,8 +14,8 @@ import type {
 	InstanceData,
 	WorksheetExerciseWithExercise
 } from '$lib/types/worksheets';
-import type { Variable } from '$lib/custom-markdown';
-import { resolveVariables, resolveText } from '$lib/custom-markdown';
+import type { Variable } from '$lib/ubumark';
+import { resolveVariables, resolveText } from '$lib/ubumark';
 
 /**
  * Parameters for generating a worksheet instance

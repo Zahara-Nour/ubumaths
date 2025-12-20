@@ -9,7 +9,7 @@
  */
 
 import type { JSONContent } from '@tiptap/core';
-import { parseMarkdown } from '$lib/custom-markdown/parser/markdown-parser';
+import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { parseCustomSafe, toLatex } from '$lib/mathAST';
 import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 import type {
@@ -34,7 +34,7 @@ import type {
 	MentionNode,
 	VariationTableNode,
 	ProbabilityTreeNode
-} from '$lib/custom-markdown/types';
+} from '$lib/ubumark/types';
 
 // ============================================================================
 // TEMPLATE DETECTION REGEX (same as template-extensions.ts)

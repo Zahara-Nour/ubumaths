@@ -136,7 +136,7 @@ export {
 	resolveTypstImagePath as resolveImagePath,
 	markdownToTypst,
 	transpileImage
-} from '$lib/custom-markdown/generators';
+} from '$lib/ubumark/generators';
 
 // ============================================================================
 // TEMPLATES

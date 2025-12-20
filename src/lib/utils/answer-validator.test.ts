@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateAnswer } from './answer-validator';
 import type { QuestionInstance } from '$lib/questions/types';
-import type { ResolvedMarkdown } from '$lib/custom-markdown';
+import type { ResolvedMarkdown } from '$lib/ubumark';
 
 // ============================================================================
 // HELPER FUNCTIONS

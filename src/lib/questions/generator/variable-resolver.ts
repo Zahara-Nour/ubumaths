@@ -22,7 +22,7 @@ import type { QuestionVariable, ResolvedVariable } from '../types';
 import {
 	resolveVariables as sharedResolveVariables,
 	resolveExpression as sharedResolveExpression
-} from '$lib/custom-markdown';
+} from '$lib/ubumark';
 
 /**
  * Resolve a single variable expression

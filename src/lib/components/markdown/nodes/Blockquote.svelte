@@ -11,7 +11,7 @@
 	@see types.ts BlockquoteNode for the AST node type
 -->
 <script lang="ts">
-	import type { BlockNode, InlineNode, ListItemNode } from '$lib/custom-markdown';
+	import type { BlockNode, InlineNode, ListItemNode } from '$lib/ubumark';
 	import ParagraphNode from './ParagraphNode.svelte';
 	import HeadingNode from './HeadingNode.svelte';
 	import MathBlock from './MathBlock.svelte';

@@ -22,7 +22,7 @@
 		ProbabilityTreeNode,
 		ProbTreeNode,
 		ProbTreeBranch
-	} from '$lib/custom-markdown/types/probability-tree';
+	} from '$lib/ubumark/types/probability-tree';
 
 	interface Props {
 		node: ProbabilityTreeNode;
