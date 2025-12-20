@@ -827,10 +827,10 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 	let position = 0;
 
 	// Combined regex to find all formatting markers
-	// Matches: `code`, -/-strikethrough-/-, ==highlight==, ***bold+italic***, **bold**, __bold__, *italic*, _italic_
-	// Order matters: ***bold+italic*** must come before **bold** and *italic*
+	// Matches: `code`, -/-strikethrough-/-, ==highlight==, ***bold+italic***, ___bold+italic___, **bold**, __bold__, *italic*, _italic_
+	// Order matters: ***bold+italic*** and ___bold+italic___ must come before **bold**, __bold__, *italic*, _italic_
 	const formatRegex =
-		/(`[^`]+`)|(-\/-)(.+?)-\/-|(==)(.+?)==|(\*\*\*)(.+?)\*\*\*|(\*\*|__)([^*_]+)\8|(\*|_)([^*_]+)\10/g;
+		/(`[^`]+`)|(-\/-)(.+?)-\/-|(==)(.+?)==|(\*\*\*)(.+?)\*\*\*|(___)(.+?)___|(\*\*|__)([^*_]+)\10|(\*|_)([^*_]+)\12/g;
 	let match: RegExpExecArray | null;
 
 	while ((match = formatRegex.exec(text)) !== null) {
@@ -873,17 +873,25 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 				italic: true
 			});
 		} else if (match[8] && match[9]) {
-			// Bold: **content** or __content__
+			// Bold+Italic: ___content___
 			nodes.push({
 				type: 'text',
 				content: match[9],
-				bold: true
+				bold: true,
+				italic: true
 			});
 		} else if (match[10] && match[11]) {
-			// Italic: *content* or _content_
+			// Bold: **content** or __content__
 			nodes.push({
 				type: 'text',
 				content: match[11],
+				bold: true
+			});
+		} else if (match[12] && match[13]) {
+			// Italic: *content* or _content_
+			nodes.push({
+				type: 'text',
+				content: match[13],
 				italic: true
 			});
 		}
