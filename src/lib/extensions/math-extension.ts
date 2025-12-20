@@ -112,7 +112,12 @@ const mathKeyboardNavPlugin = new Plugin({
 	props: {
 		handleKeyDown: (view, event) => {
 			// Only handle arrow keys for navigation into/out of math nodes
-			if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+			if (
+				event.key !== 'ArrowRight' &&
+				event.key !== 'ArrowLeft' &&
+				event.key !== 'ArrowDown' &&
+				event.key !== 'ArrowUp'
+			) {
 				return false;
 			}
 
@@ -127,62 +132,92 @@ const mathKeyboardNavPlugin = new Plugin({
 			const { $from } = selection;
 			const pos = $from.pos;
 
-			if (event.key === 'ArrowRight') {
-				// Check if there's a math node immediately after cursor
-				const nodeAfter = $from.nodeAfter;
-				if (nodeAfter && mathNodeTypes.includes(nodeAfter.type.name)) {
-					// Find the DOM element for this node
-					const domNode = view.nodeDOM(pos) as
-						| (HTMLElement & { mathfield?: MathFieldElement })
-						| null;
+			// Helper function to focus a mathfield at a given position
+			const focusMathfield = (nodePos: number, atStart: boolean): boolean => {
+				const domNode = view.nodeDOM(nodePos) as
+					| (HTMLElement & { mathfield?: MathFieldElement })
+					| null;
 
-					// If mathfield reference is on wrapper, use it
-					if (domNode?.mathfield) {
+				// If mathfield reference is on wrapper, use it
+				if (domNode?.mathfield) {
+					event.preventDefault();
+					domNode.mathfield.focus();
+					domNode.mathfield.executeCommand(atStart ? 'moveToMathfieldStart' : 'moveToMathfieldEnd');
+					return true;
+				}
+
+				// Fallback: search for math-field element inside the wrapper
+				if (domNode) {
+					const mathFieldElement = domNode.querySelector('math-field') as MathFieldElement | null;
+					if (mathFieldElement) {
 						event.preventDefault();
-						domNode.mathfield.focus();
-						domNode.mathfield.executeCommand('moveToMathfieldStart');
+						mathFieldElement.focus();
+						mathFieldElement.executeCommand(
+							atStart ? 'moveToMathfieldStart' : 'moveToMathfieldEnd'
+						);
 						return true;
-					}
-
-					// Fallback: search for math-field element inside the wrapper
-					if (domNode) {
-						const mathFieldElement = domNode.querySelector('math-field') as MathFieldElement | null;
-						if (mathFieldElement) {
-							event.preventDefault();
-							mathFieldElement.focus();
-							mathFieldElement.executeCommand('moveToMathfieldStart');
-							return true;
-						}
 					}
 				}
+				return false;
+			};
+
+			// =================================================================
+			// INLINE MATH NAVIGATION (ArrowRight/ArrowLeft within paragraph)
+			// =================================================================
+			if (event.key === 'ArrowRight') {
+				// Check if there's a math node immediately after cursor (inline)
+				const nodeAfter = $from.nodeAfter;
+				if (nodeAfter && mathNodeTypes.includes(nodeAfter.type.name)) {
+					return focusMathfield(pos, true);
+				}
 			} else if (event.key === 'ArrowLeft') {
-				// Check if there's a math node immediately before cursor
+				// Check if there's a math node immediately before cursor (inline)
 				const nodeBefore = $from.nodeBefore;
 				if (nodeBefore && mathNodeTypes.includes(nodeBefore.type.name)) {
-					// Find the DOM element for the node before cursor
-					// The node starts at pos - nodeBefore.nodeSize
 					const nodeStartPos = pos - nodeBefore.nodeSize;
-					const domNode = view.nodeDOM(nodeStartPos) as
-						| (HTMLElement & { mathfield?: MathFieldElement })
-						| null;
+					return focusMathfield(nodeStartPos, false);
+				}
+			}
 
-					// If mathfield reference is on wrapper, use it
-					if (domNode?.mathfield) {
-						event.preventDefault();
-						domNode.mathfield.focus();
-						domNode.mathfield.executeCommand('moveToMathfieldEnd');
-						return true;
+			// =================================================================
+			// BLOCK MATH NAVIGATION (ArrowDown/ArrowUp or ArrowRight/Left at edges)
+			// =================================================================
+			const parent = $from.parent;
+			const parentStart = $from.start();
+			const parentEnd = parentStart + parent.content.size;
+			const isAtEndOfBlock = pos === parentEnd;
+			const isAtStartOfBlock = pos === parentStart;
+
+			// Get the position of the parent block in the document
+			const depth = $from.depth;
+			if (depth < 1) return false;
+
+			const parentPos = $from.before(depth);
+			const grandParent = $from.node(depth - 1);
+			const parentIndex = $from.index(depth - 1);
+
+			// Navigate forward (ArrowDown or ArrowRight at end of block)
+			if (event.key === 'ArrowDown' || (event.key === 'ArrowRight' && isAtEndOfBlock)) {
+				// Check if there's a next sibling block
+				if (parentIndex < grandParent.childCount - 1) {
+					const nextBlock = grandParent.child(parentIndex + 1);
+					if (nextBlock.type.name === 'mathBlock') {
+						// Calculate position of the next block
+						const nextBlockPos = parentPos + parent.nodeSize;
+						return focusMathfield(nextBlockPos, true);
 					}
+				}
+			}
 
-					// Fallback: search for math-field element inside the wrapper
-					if (domNode) {
-						const mathFieldElement = domNode.querySelector('math-field') as MathFieldElement | null;
-						if (mathFieldElement) {
-							event.preventDefault();
-							mathFieldElement.focus();
-							mathFieldElement.executeCommand('moveToMathfieldEnd');
-							return true;
-						}
+			// Navigate backward (ArrowUp or ArrowLeft at start of block)
+			if (event.key === 'ArrowUp' || (event.key === 'ArrowLeft' && isAtStartOfBlock)) {
+				// Check if there's a previous sibling block
+				if (parentIndex > 0) {
+					const prevBlock = grandParent.child(parentIndex - 1);
+					if (prevBlock.type.name === 'mathBlock') {
+						// Calculate position of the previous block
+						const prevBlockPos = parentPos - prevBlock.nodeSize;
+						return focusMathfield(prevBlockPos, false);
 					}
 				}
 			}
