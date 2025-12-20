@@ -139,14 +139,81 @@ export const VariationTableExtension = Node.create({
 			new InputRule({
 				find: VARIATION_BLOCK_INPUT_REGEX,
 				handler: ({ state, range }) => {
-					const { tr } = state;
+					const $start = state.doc.resolve(range.from);
 
-					// Delete the ```variation text
-					tr.delete(range.from, range.to);
+					// Check if we're inside a listItem by traversing ancestors
+					let isInList = false;
+					let listItemDepth = -1;
+					for (let depth = $start.depth; depth > 0; depth--) {
+						if ($start.node(depth).type.name === 'listItem') {
+							isInList = true;
+							listItemDepth = depth;
+							break;
+						}
+					}
 
-					// Insert the variationTable node
-					const node = this.type.create({ content: VARIATION_TABLE_TEMPLATE });
-					tr.insert(range.from, node);
+					// Create the variationTable node
+					const variationNode = this.type.create({ content: VARIATION_TABLE_TEMPLATE });
+
+					if (!isInList) {
+						// Standard behavior: delete pattern and insert node
+						const { tr } = state;
+						tr.delete(range.from, range.to);
+						tr.insert(range.from, variationNode);
+					} else {
+						// Inside a list: insert variationTable after the current paragraph
+						const tr = state.tr;
+
+						// Get the paragraph node we're in
+						const paragraphDepth = $start.depth;
+						const paragraphNode = $start.node(paragraphDepth);
+						const paragraphStart = $start.start(paragraphDepth);
+						const paragraphEnd = paragraphStart + paragraphNode.nodeSize - 2;
+
+						// Delete the ```variation pattern first
+						tr.delete(range.from, range.to);
+
+						// Calculate position after deletion
+						const deletedLength = range.to - range.from;
+
+						// Check if the paragraph is now empty
+						const textBeforePattern = state.doc.textBetween(paragraphStart, range.from);
+						const textAfterPattern = state.doc.textBetween(range.to, paragraphEnd + 2);
+						const isEmptyAfterDeletion =
+							textBeforePattern.trim() === '' && textAfterPattern.trim() === '';
+
+						if (isEmptyAfterDeletion) {
+							// Find which child index the paragraph is in listItem
+							const listItemNode = $start.node(listItemDepth);
+							const listItemStart = $start.start(listItemDepth);
+
+							let paragraphPosInListItem = -1;
+							let offset = 0;
+							for (let i = 0; i < listItemNode.childCount; i++) {
+								const child = listItemNode.child(i);
+								if (listItemStart + offset === paragraphStart - 1) {
+									paragraphPosInListItem = i;
+									break;
+								}
+								offset += child.nodeSize;
+							}
+
+							if (paragraphPosInListItem === 0) {
+								// First paragraph - insert after, keep empty paragraph
+								const insertPos = paragraphStart + paragraphNode.nodeSize - deletedLength - 1;
+								tr.insert(insertPos, variationNode);
+							} else {
+								// Not first - replace the paragraph
+								const replaceFrom = paragraphStart - 1;
+								const replaceTo = paragraphStart + paragraphNode.nodeSize - 1 - deletedLength;
+								tr.replaceWith(replaceFrom, replaceTo, variationNode);
+							}
+						} else {
+							// Paragraph has other content - insert after
+							const insertPos = paragraphStart + paragraphNode.nodeSize - deletedLength - 1;
+							tr.insert(insertPos, variationNode);
+						}
+					}
 
 					// The NodeView will automatically enter edit mode for new nodes
 				}
