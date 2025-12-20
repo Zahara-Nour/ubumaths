@@ -159,7 +159,8 @@ function convertListItemToMarkdown(item: JSONContent, indentLevel: number): stri
 			let paraContent = convertParagraphToMarkdown(child);
 
 			// If paragraph is followed by a block and doesn't end with hardbreak, add one
-			if (nextIsBlock && !paraContent.endsWith('\\\n')) {
+			// But NOT if paragraph is empty - empty paragraph followed by block just needs blank line
+			if (nextIsBlock && !paraContent.endsWith('\\\n') && paraContent.trim() !== '') {
 				paraContent += '\\\n';
 			}
 
