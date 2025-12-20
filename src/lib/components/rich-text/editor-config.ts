@@ -64,7 +64,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v25`; // v25: Changed strikethrough syntax from ---text--- to ==text==
+	return `h${headingLevels}-v26`; // v26: Changed strikethrough syntax to -/-text-/-
 }
 
 /**
