@@ -611,23 +611,28 @@ YouTube format court :
 			content: `# Listes avec bloc en premier (CommonMark)
 
 Quand un item de liste commence directement par un bloc (code, citation, math), sans paragraphe avant.
+En CommonMark, le marqueur de liste est seul sur sa ligne, suivi du bloc indente.
 
 ## Code bloc en premier
 
-- \`\`\`python
+-
+  \`\`\`python
   def hello():
       print("Hello")
   \`\`\`
-- \`\`\`javascript
+-
+  \`\`\`javascript
   const x = 42;
   \`\`\`
 
   Texte apres le code
 
-1. \`\`\`sql
+1.
+   \`\`\`sql
    SELECT * FROM users;
    \`\`\`
-2. \`\`\`bash
+2.
+   \`\`\`bash
    npm install
    \`\`\`
 
@@ -635,67 +640,85 @@ Quand un item de liste commence directement par un bloc (code, citation, math), 
 
 ## Citation en premier
 
-- > Citation qui commence l'item
+-
+  > Citation qui commence l'item
   > sur plusieurs lignes
-- > Autre citation
+-
+  > Autre citation
 
   Suivi de texte normal
 
-1. > Citation numerotee
-2. > Deuxieme citation
+1.
+   > Citation numerotee
+2.
+   > Deuxieme citation
    > encore multiligne
 
    Avec texte apres
 
 ## Math bloc en premier
 
-- $$E = mc^2$$
-- $$\\int_0^1 x^2 dx = \\frac{1}{3}$$
+-
+  $$E = mc^2$$
+-
+  $$\\int_0^1 x^2 dx = \\frac{1}{3}$$
 
   Integrale de base
 
-1. $$a^2 + b^2 = c^2$$
-2. $$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$
+1.
+   $$a^2 + b^2 = c^2$$
+2.
+   $$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$
 
    Somme de Gauss
 
 ## Custom math bloc en premier
 
-- ~~(a+b)^2 = a^2 + 2ab + b^2~~
-- ~~x^2 - 1 = (x-1)(x+1)~~
+-
+  ~~(a+b)^2 = a^2 + 2ab + b^2~~
+-
+  ~~x^2 - 1 = (x-1)(x+1)~~
 
   Identite remarquable
 
 ## Melanges blocs en premier
 
-- \`\`\`js
+-
+  \`\`\`js
   let a = 1;
   \`\`\`
 
   Puis une citation :
 
   > Citation apres code
-- > Citation d'abord
+-
+  > Citation d'abord
 
   Puis du code :
 
   \`\`\`python
   x = 42
   \`\`\`
-- $$E = mc^2$$
+-
+  $$E = mc^2$$
 
   Avec du \`code inline\` et $math inline$.
 
 ## Imbrication blocs en premier
 
-- \`\`\`js
+-
+  \`\`\`js
   let outer = true;
   \`\`\`
-  - > Citation niveau 2
-    - $$nested = true$$
+  -
+    > Citation niveau 2
+    -
+      $$nested = true$$
 
-1. > Citation niveau 1
-   1. \`\`\`python
+1.
+   > Citation niveau 1
+   1.
+      \`\`\`python
       nested_code = True
       \`\`\``
 		},
