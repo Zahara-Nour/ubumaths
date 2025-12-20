@@ -112,7 +112,7 @@ function convertBulletListToMarkdown(list: JSONContent, indentLevel = 0): string
 
 	const indent = '  '.repeat(indentLevel);
 	const items = list.content.map((item) => {
-		const itemContent = convertListItemToMarkdown(item, indentLevel);
+		const itemContent = convertListItemToMarkdown(item, indentLevel, 'bullet');
 		// If item content starts with newline, it's a block-first item
 		// Use just "-" without trailing space for proper CommonMark
 		if (itemContent.startsWith('\n')) {
@@ -138,7 +138,7 @@ function convertOrderedListToMarkdown(list: JSONContent, indentLevel = 0): strin
 	const startNum = (list.attrs?.start as number) || 1;
 
 	const items = list.content.map((item, index) => {
-		const itemContent = convertListItemToMarkdown(item, indentLevel);
+		const itemContent = convertListItemToMarkdown(item, indentLevel, 'ordered');
 		const marker = `${startNum + index}.`;
 		// If item content starts with newline, it's a block-first item
 		// Use just marker without trailing space for proper CommonMark
@@ -156,15 +156,20 @@ function convertOrderedListToMarkdown(list: JSONContent, indentLevel = 0): strin
  *
  * CommonMark rules for blocks in list items:
  * - Blocks (paragraphs, code blocks, math blocks) are separated by BLANK LINES
- * - Continuation content is indented (3 spaces for ordered lists)
+ * - Continuation content is indented (2 spaces for bullet lists, 3 for ordered)
  * - Hardbreaks (\) are only for line breaks WITHIN a paragraph
  */
-function convertListItemToMarkdown(item: JSONContent, indentLevel: number): string {
+function convertListItemToMarkdown(
+	item: JSONContent,
+	indentLevel: number,
+	listType: 'bullet' | 'ordered' = 'bullet'
+): string {
 	if (!item.content) return '';
 
 	const parts: string[] = [];
-	// List continuation indent: base indent + 3 spaces for the marker (e.g., "1. ")
-	const continuationIndent = '   '.repeat(indentLevel + 1);
+	// List continuation indent: 2 spaces for bullet (aligns with "- "), 3 for ordered (aligns with "1. ")
+	const baseIndent = listType === 'bullet' ? '  ' : '   ';
+	const continuationIndent = baseIndent.repeat(indentLevel + 1);
 	const blockTypes = ['mathBlock', 'codeBlock', 'bulletList', 'orderedList', 'blockquote'];
 
 	for (let i = 0; i < item.content.length; i++) {
