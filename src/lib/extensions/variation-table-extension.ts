@@ -35,10 +35,11 @@ variation: f(x)
   +inf: -inf, bottom`;
 
 /**
- * Regex for variation block input: ```variation
- * Triggers node creation when user types ```variation and presses Enter
+ * Regex for variation block input: ```variation + space or Enter
+ * Triggers node creation when user types ```variation followed by space or newline
+ * Note: [\s\n]$ requires whitespace at end (like code-extension.ts pattern)
  */
-const VARIATION_BLOCK_INPUT_REGEX = /^```variation\s*$/;
+const VARIATION_BLOCK_INPUT_REGEX = /^```variation[\s\n]$/;
 
 /**
  * Custom Variation Table extension
