@@ -584,12 +584,12 @@ function parseInlineMarkdownString(text: string): JSONContent[] {
 	// Combined regex for all inline formatting:
 	// - `code` (backticks)
 	// - $math$ (LaTeX) or ~math~ (custom)
-	// - ==strikethrough==
+	// - -/-strikethrough-/-
 	// - **bold** or __bold__
 	// - *italic* or _italic_
 	// Order matters: code first (to protect backtick content), then math, then strikethrough, then bold (before italic)
 	const inlineRegex =
-		/(`[^`]+`)|(\$[^$\n]+\$|~[^~\n]+~)|(==)(?!=)(.+?)(?<!=)==|(\*\*|__)([^*_]+)\5|(\*|_)([^*_]+)\7/g;
+		/(`[^`]+`)|(\$[^$\n]+\$|~[^~\n]+~)|(-\/-)(.+?)-\/-|(\*\*|__)([^*_]+)\5|(\*|_)([^*_]+)\7/g;
 	let lastIndex = 0;
 	let match: RegExpExecArray | null;
 
@@ -634,7 +634,7 @@ function parseInlineMarkdownString(text: string): JSONContent[] {
 				}
 			});
 		} else if (match[3] && match[4]) {
-			// Strikethrough: ==content==
+			// Strikethrough: -/-content-/-
 			segments.push({
 				type: 'text',
 				text: match[4],

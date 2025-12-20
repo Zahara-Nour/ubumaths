@@ -80,6 +80,9 @@ importers:
       '@tiptap/extension-link':
         specifier: ^3.7.0
         version: 3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)
+      '@tiptap/extension-strike':
+        specifier: ^3.14.0
+        version: 3.14.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))
       '@tiptap/extension-subscript':
         specifier: ^3.7.0
         version: 3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)
@@ -1625,10 +1628,10 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.7.0
 
-  '@tiptap/extension-strike@3.7.0':
-    resolution: {integrity: sha512-aijZWz7mCn2RUkqL3ZwTn1CYG9ETbryOIwVwX9fMs4xm3rwQ0D8dWBvZbkBEVg3CfZ2tz3HfWtMR0rbvcTl5Qg==}
+  '@tiptap/extension-strike@3.14.0':
+    resolution: {integrity: sha512-R8BbAhnWpisBml6okMKl98hY4tJjedTTgyTkx8tPabIJ92nS9IURKEk3foWB9uHxdTOBUqTvVT+2ScDf9r6QHg==}
     peerDependencies:
-      '@tiptap/core': ^3.7.0
+      '@tiptap/core': ^3.14.0
 
   '@tiptap/extension-subscript@3.7.0':
     resolution: {integrity: sha512-EKj2gYtJOIYNk631WsCuHEjKlSpruiwq4ADFFy0kPBeUMoYM2hLsoT2/bn39igK4x1MNQIC8kQH6KuIw0O01Kg==}
@@ -5673,7 +5676,7 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.7.0(@tiptap/pm@3.13.0)
 
-  '@tiptap/extension-strike@3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))':
+  '@tiptap/extension-strike@3.14.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))':
     dependencies:
       '@tiptap/core': 3.7.0(@tiptap/pm@3.13.0)
 
@@ -5763,7 +5766,7 @@ snapshots:
       '@tiptap/extension-list-keymap': 3.7.0(@tiptap/extension-list@3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0))
       '@tiptap/extension-ordered-list': 3.7.0(@tiptap/extension-list@3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0))
       '@tiptap/extension-paragraph': 3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))
-      '@tiptap/extension-strike': 3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))
+      '@tiptap/extension-strike': 3.14.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))
       '@tiptap/extension-text': 3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))
       '@tiptap/extension-underline': 3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))
       '@tiptap/extensions': 3.7.0(@tiptap/core@3.7.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)
