@@ -47,6 +47,9 @@
 	// Track previous selected state to detect keyboard navigation
 	let wasSelected = $state(false);
 
+	// Track if we've already auto-opened edit mode for new nodes
+	let hasAutoOpened = $state(false);
+
 	// Parsed node for rendering
 	let parsedNode = $state<VariationTableNode | null>(null);
 
@@ -57,6 +60,17 @@
 			parsedNode = result.node;
 		} else {
 			parsedNode = null;
+		}
+	});
+
+	// Auto-open edit mode for newly created nodes (with default template)
+	$effect(() => {
+		if (!hasAutoOpened && content === VARIATION_TABLE_TEMPLATE) {
+			hasAutoOpened = true;
+			// Small delay to ensure the node is fully rendered
+			requestAnimationFrame(() => {
+				enterEditMode();
+			});
 		}
 	});
 
