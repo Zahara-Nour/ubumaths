@@ -38,6 +38,24 @@
 	let { node, class: className = '' }: Props = $props();
 
 	/**
+	 * Unique ID for this component instance - CRITICAL for SVG markers.
+	 *
+	 * SVG markers use `url(#marker-id)` references which are GLOBAL in the DOM.
+	 * Without unique IDs, when multiple VariationTable components exist on the
+	 * same page (e.g., in different exercise variation tabs like "Guidée" and
+	 * "Autonome"), the second table's arrows reference the first table's markers.
+	 *
+	 * Problem scenario:
+	 * 1. User views "Guidée" tab → Table 1 renders with markers id="vt-arrowhead-up"
+	 * 2. User switches to "Autonome" tab → Table 2 renders, references url(#vt-arrowhead-up)
+	 * 3. Table 1's DOM may be hidden/destroyed → url(#vt-arrowhead-up) points to nothing
+	 * 4. Result: arrows display without arrowheads in Table 2
+	 *
+	 * Solution: Each instance gets unique marker IDs like "vt-arrowhead-abc123de-up"
+	 */
+	const instanceId = crypto.randomUUID().slice(0, 8);
+
+	/**
 	 * Convert expression to proper LaTeX for MathLive rendering
 	 * Handles infinity symbols and other common patterns
 	 */
@@ -343,8 +361,9 @@
 											: 'Fonction décroissante'}
 									>
 										<defs>
+											<!-- Unique marker ID per component instance to avoid conflicts -->
 											<marker
-												id="vt-arrowhead-{arrowData.arrowDir}"
+												id="vt-arrowhead-{instanceId}-{arrowData.arrowDir}"
 												viewBox="0 0 10 10"
 												refX="10"
 												refY="5"
@@ -363,7 +382,7 @@
 												x2="95"
 												y2="5"
 												class="vt-arrow-line"
-												marker-end="url(#vt-arrowhead-up)"
+												marker-end="url(#vt-arrowhead-{instanceId}-up)"
 											/>
 										{:else if arrowData.arrowDir === 'down'}
 											<!-- Descending arrow (top-left to bottom-right) -->
@@ -373,7 +392,7 @@
 												x2="95"
 												y2="55"
 												class="vt-arrow-line"
-												marker-end="url(#vt-arrowhead-down)"
+												marker-end="url(#vt-arrowhead-{instanceId}-down)"
 											/>
 										{/if}
 									</svg>

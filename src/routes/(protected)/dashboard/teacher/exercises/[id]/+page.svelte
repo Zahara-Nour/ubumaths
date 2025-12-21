@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -16,6 +18,24 @@
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
 	let { data }: { data: PageData } = $props();
+
+	// Get variation from URL, default to 'guided'
+	// NOTE: This is NOT reactive ($derived) intentionally - we only read the URL once at mount.
+	// Using $derived would cause a render loop when combined with the $effect in ExerciseForm.
+	let initialVariation = $page.url.searchParams.get('variation') || 'guided';
+
+	/**
+	 * Update URL when variation changes (without triggering navigation)
+	 * NOTE: We use history.replaceState instead of goto() to avoid triggering
+	 * SvelteKit's reactive navigation, which would cause a render loop:
+	 *   $effect fires → onvariationchange → goto → $page.url updates → re-render → $effect fires...
+	 */
+	function handleVariationChange(label: string) {
+		if (!browser) return;
+		const url = new URL(window.location.href);
+		url.searchParams.set('variation', label);
+		history.replaceState(history.state, '', url.toString());
+	}
 
 	let submitting = $state(false);
 	let jsonDialogOpen = $state(false);
@@ -151,6 +171,8 @@
 		{submitting}
 		supabase={data.supabase}
 		userId={data.user?.id}
+		{initialVariation}
+		onvariationchange={handleVariationChange}
 	/>
 </div>
 
