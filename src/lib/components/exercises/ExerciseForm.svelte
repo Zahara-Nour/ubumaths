@@ -188,6 +188,8 @@
 				return 'Intermédiaire';
 			case 'autonomous':
 				return 'Autonome';
+			case 'custom':
+				return 'Personnalisée';
 			default:
 				return variation.label;
 		}
