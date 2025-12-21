@@ -785,8 +785,8 @@ describe('Extended Metadata System', () => {
 					operatorMetadata: { color: 'red' }
 				});
 				const latex = toLatex(node, { renderMetadata: true });
-				// The \frac{ is colored, then 1 (no color), then }{ colored, etc.
-				expect(latex).toBe('\\textcolor{red}{\\frac{}1\\textcolor{red}{}{}2\\textcolor{red}{}}');
+				// The \dfrac{ is colored, then 1 (no color), then }{ colored, etc.
+				expect(latex).toBe('\\textcolor{red}{\\dfrac{}1\\textcolor{red}{}{}2\\textcolor{red}{}}');
 			});
 
 			it('should coalesce fraction when all parts have same color', () => {
@@ -798,7 +798,7 @@ describe('Extended Metadata System', () => {
 					{ operatorMetadata: { color: 'red' } }
 				);
 				const latex = toLatex(node, { renderMetadata: true });
-				expect(latex).toBe('\\textcolor{red}{\\frac{1}{2}}');
+				expect(latex).toBe('\\textcolor{red}{\\dfrac{1}{2}}');
 			});
 
 			it('should coalesce with inline division', () => {
@@ -1017,9 +1017,9 @@ describe('Extended Metadata System', () => {
 					operatorMetadata: { color: 'green' }
 				});
 				const latex = toLatex(node, { renderMetadata: true });
-				// The \frac{ is colored green, then red 1, then green }{, then blue 2, then green }
+				// The \dfrac{ is colored green, then red 1, then green }{, then blue 2, then green }
 				expect(latex).toBe(
-					'\\textcolor{green}{\\frac{}\\textcolor{red}{1}\\textcolor{green}{}{}\\textcolor{blue}{2}\\textcolor{green}{}}'
+					'\\textcolor{green}{\\dfrac{}\\textcolor{red}{1}\\textcolor{green}{}{}\\textcolor{blue}{2}\\textcolor{green}{}}'
 				);
 			});
 		});

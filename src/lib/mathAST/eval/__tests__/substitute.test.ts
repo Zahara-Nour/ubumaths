@@ -616,8 +616,8 @@ describe('substitute with LaTeX round-trip', () => {
 		expect(result).toBe('2 \\cdot 3');
 	});
 
-	it('frac{x}{y} with x=1, y=2 gives frac{1}{2}', () => {
-		expect(substLatex('\\frac{x}{y}', { x: 1, y: 2 })).toBe('\\frac{1}{2}');
+	it('frac{x}{y} with x=1, y=2 gives dfrac{1}{2}', () => {
+		expect(substLatex('\\frac{x}{y}', { x: 1, y: 2 })).toBe('\\dfrac{1}{2}');
 	});
 
 	it('x^2 with x=3 gives 3^2', () => {

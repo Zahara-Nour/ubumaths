@@ -417,7 +417,7 @@ export class LatexGenerator {
 		const opMeta = node.operatorMetadata ?? node.metadata;
 		switch (node.displayStyle) {
 			case 'fraction':
-				this.emit('\\frac{', opMeta);
+				this.emit('\\dfrac{', opMeta);
 				this.visitWithSpans(node.numerator);
 				this.emit('}{', opMeta);
 				this.visitWithSpans(node.denominator);
@@ -817,7 +817,7 @@ export class LatexGenerator {
 
 		switch (node.displayStyle) {
 			case 'fraction':
-				return `\\frac{${num}}{${denom}}`;
+				return `\\dfrac{${num}}{${denom}}`;
 			case 'inline':
 				return `${num} / ${denom}`;
 			case 'ratio':

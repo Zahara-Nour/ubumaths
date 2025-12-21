@@ -230,7 +230,7 @@ describe('Pattern Matching Integration', () => {
 				const simplified = expr.simplifyWith(arithmeticRules);
 
 				// Should remain unchanged because condition fails
-				expect(simplified.latex).toBe('\\frac{0}{0}');
+				expect(simplified.latex).toBe('\\dfrac{0}{0}');
 			});
 
 			it('simplifies --x to x', () => {

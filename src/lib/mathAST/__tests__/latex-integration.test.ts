@@ -33,11 +33,11 @@ describe('LaTeX Generator - Integration Tests', () => {
 		);
 
 		const latex = toLatex(expr);
-		expect(latex).toContain('\\frac{');
+		expect(latex).toContain('\\dfrac{');
 		expect(latex).toContain('\\sqrt{'); // Now uses proper LaTeX \sqrt{} syntax
 		expect(latex).toContain('\\left(');
 		expect(latex).toContain('\\right)');
-		expect(latex).toBe('x = \\frac{-b + \\left( \\sqrt{b^2 - 4 a c} \\right)}{2 a}');
+		expect(latex).toBe('x = \\dfrac{-b + \\left( \\sqrt{b^2 - 4 a c} \\right)}{2 a}');
 	});
 
 	it('generates trigonometric identity', () => {
@@ -57,7 +57,7 @@ describe('LaTeX Generator - Integration Tests', () => {
 		// df/dx
 		const expr = MathAST.fraction(MathAST.variable('df'), MathAST.variable('dx'));
 
-		expect(toLatex(expr)).toBe('\\frac{\\mathit{df}}{\\mathit{dx}}');
+		expect(toLatex(expr)).toBe('\\dfrac{\\mathit{df}}{\\mathit{dx}}');
 	});
 
 	it('generates summation notation', () => {
@@ -112,7 +112,7 @@ describe('LaTeX Generator - Integration Tests', () => {
 		);
 
 		expect(toLatex(expr)).toBe(
-			'\\frac{\\left( \\frac{1}{2} \\right)}{\\left( \\frac{3}{4} \\right)}'
+			'\\dfrac{\\left( \\dfrac{1}{2} \\right)}{\\left( \\dfrac{3}{4} \\right)}'
 		);
 	});
 

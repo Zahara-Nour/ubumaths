@@ -313,7 +313,7 @@ describe('LaTeX Generation', () => {
 
 	it('generates hole in fraction', () => {
 		const expr = MathAST.fraction(hole(1), MathAST.variable('x'));
-		expect(toLatex(expr)).toBe('\\frac{\\placeholder[1]{}}{x}');
+		expect(toLatex(expr)).toBe('\\dfrac{\\placeholder[1]{}}{x}');
 	});
 });
 
@@ -361,7 +361,7 @@ describe('Round-trip Conversions', () => {
 			'\\placeholder[1]{}',
 			'\\placeholder[5]{}',
 			'\\placeholder[1]{} + x',
-			'\\frac{\\placeholder[1]{}}{2}'
+			'\\dfrac{\\placeholder[1]{}}{2}'
 		];
 
 		latexRoundTrips.forEach((input) => {
