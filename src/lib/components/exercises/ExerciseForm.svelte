@@ -33,9 +33,21 @@
 		submitting?: boolean;
 		supabase?: SupabaseClient;
 		userId?: string;
+		/** Initial variation label to select (from URL) */
+		initialVariation?: string;
+		/** Callback when variation tab changes */
+		onvariationchange?: (label: string) => void;
 	}
 
-	let { exercise = undefined, onsubmit, submitting = false, supabase, userId }: Props = $props();
+	let {
+		exercise = undefined,
+		onsubmit,
+		submitting = false,
+		supabase,
+		userId,
+		initialVariation,
+		onvariationchange
+	}: Props = $props();
 
 	// Form state
 	let title = $state(exercise?.title || '');
@@ -71,8 +83,23 @@
 		(exercise as Record<string, unknown>)?.shared as SharedExerciseDefaults | undefined
 	);
 
-	// Active variation tab
-	let activeVariationTab = $state('0');
+	// Active variation tab - find index from initialVariation label or default to first
+	function getInitialTabIndex(): string {
+		if (initialVariation) {
+			const index = variations.findIndex((v) => v.label === initialVariation);
+			if (index !== -1) return String(index);
+		}
+		return '0';
+	}
+	let activeVariationTab = $state(getInitialTabIndex());
+
+	// Notify parent when variation tab changes
+	$effect(() => {
+		const index = parseInt(activeVariationTab);
+		if (index >= 0 && index < variations.length) {
+			onvariationchange?.(variations[index].label);
+		}
+	});
 
 	// Shared variables section state
 	let sharedVariablesOpen = $state(false);
