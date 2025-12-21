@@ -20,12 +20,12 @@
 	import type {
 		ExerciseResource,
 		ExerciseVariation,
-		SharedExerciseDefaults
+		SharedExerciseDefaults,
+		Exercise
 	} from '$lib/exercises/types';
 	import type { Variable } from '$lib/ubumark';
 	import { Save, Loader2 } from 'lucide-svelte';
 
-	type Exercise = Database['public']['Tables']['exercises']['Row'];
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
 	interface Props {
@@ -62,14 +62,18 @@
 		(exercise?.resources as unknown as ExerciseResource[]) || []
 	);
 
-	// generic_functions may exist after migration but not in generated types yet
-	let genericFunctions = $state<string[]>(
-		((exercise as Record<string, unknown>)?.generic_functions as string[]) || []
-	);
+	/**
+	 * Generic function names for math expression parsing.
+	 * Now properly typed via Exercise interface from $lib/exercises/types.
+	 */
+	let genericFunctions = $state<string[]>(exercise?.generic_functions ?? []);
 
-	// Variations (always used - legacy exercises are auto-converted)
+	/**
+	 * Variations (always used - legacy exercises are auto-converted to single variation).
+	 * The Exercise type from $lib/exercises/types includes this field with proper typing.
+	 */
 	let variations = $state<ExerciseVariation[]>(
-		((exercise as Record<string, unknown>)?.variations as ExerciseVariation[] | undefined) ?? [
+		exercise?.variations ?? [
 			{
 				label: 'guided',
 				statement_md: exercise?.statement_md || '',
@@ -79,10 +83,11 @@
 		]
 	);
 
-	// Shared defaults for variations
-	let shared = $state<SharedExerciseDefaults | undefined>(
-		(exercise as Record<string, unknown>)?.shared as SharedExerciseDefaults | undefined
-	);
+	/**
+	 * Shared defaults for variations (variables, statement, solution fallbacks).
+	 * Properly typed via Exercise interface.
+	 */
+	let shared = $state<SharedExerciseDefaults | undefined>(exercise?.shared);
 
 	// Active variation tab - find index from initialVariation label or default to first
 	function getInitialTabIndex(): string {
@@ -182,21 +187,21 @@
 		}
 	}
 
-	// Debug: track genericFunctions changes
-	$effect(() => {
-		console.log('[ExerciseForm] genericFunctions changed:', $state.snapshot(genericFunctions));
-	});
+	/**
+	 * Reference to the form element for programmatic submission (Ctrl+S).
+	 * Using bind:this instead of document.querySelector for Svelte-idiomatic approach.
+	 */
+	let formElement: HTMLFormElement | undefined = $state();
 
-	// Keyboard shortcuts (Ctrl+S to save)
+	/**
+	 * Keyboard shortcuts handler (Ctrl+S / Cmd+S to save).
+	 * Triggers form submission via the bound form reference.
+	 */
 	function handleKeydown(e: KeyboardEvent) {
 		if ((e.ctrlKey || e.metaKey) && e.key === 's') {
 			e.preventDefault();
-			if (!submitting) {
-				// Trigger form submission programmatically
-				const form = document.querySelector('form');
-				if (form) {
-					form.requestSubmit();
-				}
+			if (!submitting && formElement) {
+				formElement.requestSubmit();
 			}
 		}
 	}
@@ -493,7 +498,7 @@
 	{/if}
 </div>
 
-<form onsubmit={handleSubmit} class="space-y-6 pb-20">
+<form bind:this={formElement} onsubmit={handleSubmit} class="space-y-6 pb-20">
 	<!-- Metadata (collapsible, closed by default when editing) -->
 	<Collapsible.Root bind:open={metadataOpen}>
 		<Card.Root>

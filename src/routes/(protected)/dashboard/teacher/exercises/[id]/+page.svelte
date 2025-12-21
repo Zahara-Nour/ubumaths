@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -19,10 +19,13 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Get variation from URL, default to 'guided'
-	// NOTE: This is NOT reactive ($derived) intentionally - we only read the URL once at mount.
-	// Using $derived would cause a render loop when combined with the $effect in ExerciseForm.
-	let initialVariation = $page.url.searchParams.get('variation') || 'guided';
+	/**
+	 * Get variation from URL, default to 'guided'.
+	 * NOTE: We use `page.url` from $app/state (not a store) - it's an object with reactive properties.
+	 * We read the URL once at initialization; using $derived here would cause a render loop
+	 * when combined with the URL update in handleVariationChange.
+	 */
+	let initialVariation = page.url.searchParams.get('variation') || 'guided';
 
 	/**
 	 * Update URL when variation changes (without triggering navigation)

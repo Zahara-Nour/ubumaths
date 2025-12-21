@@ -96,10 +96,20 @@
 		}
 	}
 
+	/** Maximum number of hints allowed per variation (enforced limit) */
+	const MAX_HINTS = 20;
+
 	/**
-	 * Add new hint
+	 * Add new hint.
+	 * Enforces a maximum of 20 hints per variation for performance and UX.
 	 */
 	function addHint() {
+		// Enforce maximum limit
+		if (hints.length >= MAX_HINTS) {
+			toaster.warning(`Maximum ${MAX_HINTS} aides autorisees`);
+			return;
+		}
+
 		// Generate ID if empty
 		const finalId = newId.trim() || generateHintId(newTitle);
 
@@ -440,14 +450,14 @@
 				variant="outline"
 				size="sm"
 				onclick={addHint}
-				disabled={!newUrl.trim() || !newTitle.trim()}
+				disabled={!newUrl.trim() || !newTitle.trim() || hints.length >= MAX_HINTS}
 			>
 				+ Ajouter
 			</Button>
 		</div>
 	</div>
 
-	{#if hints.length >= 20}
-		<p class="text-xs text-muted-foreground">Maximum 20 aides atteint</p>
+	{#if hints.length >= MAX_HINTS}
+		<p class="text-xs text-muted-foreground">Maximum {MAX_HINTS} aides atteint</p>
 	{/if}
 </div>
