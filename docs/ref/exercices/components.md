@@ -1,6 +1,6 @@
 # Exercises System - Components Reference
 
-> **Last Updated**: 2025-12-16
+> **Last Updated**: 2025-12-21
 >
 > **Related**: [Index](./index.md) | [Types](./types.md) | [Parameterization](./parameterization.md)
 
@@ -25,24 +25,40 @@ The exercises system uses Svelte 5 components with runes for state management. A
 
 ```
 src/lib/components/
-├── FontSelector.svelte          # Font selection dropdown
+├── FontSelector.svelte           # Font selection dropdown
+├── ExerciseSkeleton.svelte       # Loading placeholder
 
 src/lib/components/exercises/
-├── ExerciseDisplay.svelte       # Main display component
+├── ExerciseDisplay.svelte        # Main display component
 ├── ExerciseRichTextEditor.svelte # WYSIWYG editor for exercises
-└── ExerciseSkeleton.svelte      # Loading placeholder
+├── ExerciseForm.svelte           # Full exercise form
+├── ExerciseMarkdownEditor.svelte # Markdown editor integration
+├── ExerciseMarkdownPreview.svelte # Preview panel
+├── ExerciseParameterizationEditor.svelte # Variable editor
+├── ExerciseResourceEditor.svelte # Resource management
+├── HintEditor.svelte             # Hint management
+├── VariationEditor.svelte        # Variation management
+├── GenericFunctionInput.svelte   # Generic function editor
+├── ImportDialog.svelte           # Import exercises dialog
+├── ExportDialog.svelte           # Export exercises dialog
+├── LaTeXImportDialog.svelte      # LaTeX import dialog
+├── ImageUploader.svelte          # Image upload component
+├── ImageAlignmentSelector.svelte # Image alignment options
+├── ImageSizeSelector.svelte      # Image size options
+├── ImageAttributePanel.svelte    # Image attributes editor
+└── ImageCaptionInput.svelte      # Image caption input
 
 src/routes/(protected)/dashboard/teacher/exercises/
-├── +page.svelte                 # Exercise list
-├── +page.server.ts              # Data loading
-├── create/+page.svelte          # Create form
-├── [id]/edit/+page.svelte       # Edit form
-└── [id]/assign/+page.svelte     # Assignment interface
+├── +page.svelte                  # Exercise list
+├── +page.server.ts               # Data loading
+├── new/+page.svelte              # Create form
+├── [id]/+page.svelte             # View exercise
+└── [id]/assign/+page.svelte      # Assignment interface
 
 src/routes/(protected)/dashboard/student/exercises/
-├── +page.svelte                 # Student exercise list
-├── +page.server.ts              # Data loading
-└── [id]/+page.svelte            # Exercise view
+├── +page.svelte                  # Student exercise list
+├── +page.server.ts               # Data loading
+└── [id]/+page.svelte             # Exercise view
 ```
 
 ---
@@ -146,7 +162,7 @@ function generateInstance() {
 
 Loading placeholder for exercise content.
 
-**Location**: `src/lib/components/exercises/ExerciseSkeleton.svelte`
+**Location**: `src/lib/components/ExerciseSkeleton.svelte`
 
 **Usage**:
 

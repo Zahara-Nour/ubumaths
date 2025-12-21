@@ -1,6 +1,6 @@
 # Exercises System - Parameterization Guide
 
-> **Last Updated**: 2025-12-10
+> **Last Updated**: 2025-12-21
 >
 > **Source File**: `src/lib/exercises/generator/instance-generator.ts`
 >

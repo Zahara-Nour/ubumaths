@@ -1,6 +1,6 @@
 # Exercises System - API Reference
 
-> **Last Updated**: 2025-12-11
+> **Last Updated**: 2025-12-21
 >
 > **Related**: [Index](./index.md) | [Database Schema](./database-schema.md) | [Types](./types.md)
 
@@ -224,6 +224,29 @@ Delete an exercise. Owner only.
 
 ## Assignment Operations
 
+### GET /api/exercises/[id]/assign
+
+List assignments for a specific exercise. Teacher only.
+
+**Query Parameters**:
+
+| Parameter   | Type      | Description                  |
+| ----------- | --------- | ---------------------------- |
+| `is_active` | `boolean` | Filter by active status      |
+| `limit`     | `number`  | Items per page (default: 50) |
+| `offset`    | `number`  | Pagination offset            |
+
+**Response**:
+
+```typescript
+{
+  data: ExerciseAssignment[],
+  total: number
+}
+```
+
+---
+
 ### POST /api/exercises/[id]/assign
 
 Create assignment(s) for an exercise. Teacher only.
@@ -313,7 +336,7 @@ Get all exercises assigned to current student.
 
 ---
 
-### PUT /api/exercises/assignments/[assignmentId]
+### PATCH /api/exercises/assignments/[assignmentId]
 
 Update an assignment. Owner only.
 
@@ -449,6 +472,55 @@ Get aggregate assignment statistics for current teacher.
 
 ---
 
+## Utility Endpoints
+
+### POST /api/exercises/generate-slug
+
+Generate a unique URL slug for an exercise. Teacher only.
+
+**Request Body**:
+
+```typescript
+{
+  topic?: string,      // Topic to use as prefix
+  title?: string       // Title for slug generation (fallback)
+}
+```
+
+**Response**:
+
+```typescript
+{
+	slug: string; // Generated slug (e.g., "algebre-k8m2n4p7")
+}
+```
+
+---
+
+### POST /api/exercises/images
+
+Upload an image for an exercise. Teacher only.
+
+**Request Body**: `multipart/form-data` with:
+
+| Field        | Type   | Description            |
+| ------------ | ------ | ---------------------- |
+| `file`       | File   | Image file to upload   |
+| `exerciseId` | string | Exercise ID (optional) |
+
+**Response**:
+
+```typescript
+{
+  url: string,         // Public URL of uploaded image
+  path: string         // Storage path
+}
+```
+
+**Storage**: Images are stored in `exercise-images` bucket organized by `userId/exerciseId/`.
+
+---
+
 ## Import/Export
 
 ### POST /api/exercises/import
@@ -538,20 +610,24 @@ import { ... } from '$lib/server/exercise-assignments';
 
 #### exercise-assignments.ts
 
-| Function                                                                | Description              |
-| ----------------------------------------------------------------------- | ------------------------ |
-| `createExerciseAssignment(supabase, data, userId)`                      | Create single assignment |
-| `createBulkAssignments(supabase, data, userId)`                         | Bulk create assignments  |
-| `getAssignmentsForExercise(supabase, exerciseId, filters, pagination)`  | Teacher view             |
-| `getAssignmentsForStudent(supabase, studentId, filters, pagination)`    | Student view             |
-| `updateAssignment(supabase, assignmentId, updates, userId)`             | Update assignment        |
-| `deleteAssignment(supabase, assignmentId, userId, hard)`                | Delete assignment        |
-| `markExerciseAsViewed(supabase, exerciseId, studentId, assignmentId)`   | Record view              |
-| `markExerciseAsComplete(supabase, exerciseId, studentId, assignmentId)` | Mark complete            |
-| `markExerciseAsIncomplete(supabase, exerciseId, studentId)`             | Unmark complete          |
-| `getAssignmentStats(supabase, teacherId)`                               | Teacher statistics       |
-| `getExerciseCompletionStats(supabase, exerciseId)`                      | Exercise statistics      |
-| `studentHasAccess(supabase, exerciseId, studentId)`                     | Check access             |
+| Function                                                                | Description               |
+| ----------------------------------------------------------------------- | ------------------------- |
+| `createExerciseAssignment(supabase, data, userId)`                      | Create single assignment  |
+| `createBulkAssignments(supabase, data, userId)`                         | Bulk create assignments   |
+| `getAssignmentsForExercise(supabase, exerciseId, filters, pagination)`  | Teacher view              |
+| `getAssignmentsForStudent(supabase, studentId, filters, pagination)`    | Student view              |
+| `updateAssignment(supabase, assignmentId, updates, userId)`             | Update assignment         |
+| `deleteAssignment(supabase, assignmentId, userId, hard)`                | Delete assignment         |
+| `markExerciseAsViewed(supabase, exerciseId, studentId, assignmentId)`   | Record view               |
+| `markExerciseAsComplete(supabase, exerciseId, studentId, assignmentId)` | Mark complete             |
+| `markExerciseAsIncomplete(supabase, exerciseId, studentId)`             | Unmark complete           |
+| `getAssignmentStats(supabase, teacherId)`                               | Teacher statistics        |
+| `getExerciseCompletionStats(supabase, exerciseId)`                      | Exercise statistics       |
+| `studentHasAccess(supabase, exerciseId, studentId)`                     | Check access              |
+| `getStudentCompletion(supabase, exerciseId, studentId)`                 | Get completion record     |
+| `getStudentProgress(supabase, studentId)`                               | Get student metrics       |
+| `getAccessibleExercises(supabase, studentId)`                           | List accessible exercises |
+| `getStudentClasses(supabase, studentId)`                                | Get student's classes     |
 
 ### Usage Example
 
