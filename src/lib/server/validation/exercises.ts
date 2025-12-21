@@ -653,3 +653,93 @@ export const completeExerciseResponseSchema = z.object({
 	success: z.literal(true),
 	completed_at: z.string().datetime()
 });
+
+// ============================================================================
+// SHARE TOKEN SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for share token query parameter (GET /exercice/[slug]?token=...)
+ */
+export const shareTokenQuerySchema = z.object({
+	token: z
+		.string()
+		.length(16, 'Token must be exactly 16 characters')
+		.regex(/^[A-Za-z0-9]+$/, 'Token must be alphanumeric')
+		.optional()
+});
+
+/**
+ * Schema for creating a share token (POST /api/exercises/[id]/share)
+ */
+export const createShareTokenSchema = z.object({
+	expires_in_days: z
+		.number()
+		.int('Days must be an integer')
+		.min(1, 'Minimum 1 day')
+		.max(365, 'Maximum 365 days')
+		.optional()
+		.nullable()
+});
+
+/**
+ * Schema for revoking a share token (DELETE /api/exercises/[id]/share/[tokenId])
+ */
+export const revokeShareTokenSchema = z.object({
+	token_id: z.string().uuid('Invalid token ID')
+});
+
+/**
+ * Share token response schema
+ */
+export const shareTokenResponseSchema = z.object({
+	id: z.string().uuid(),
+	exercise_id: z.string().uuid(),
+	token: z.string().length(16),
+	created_by: z.string().uuid(),
+	created_at: z.string(),
+	expires_at: z.string().nullable(),
+	is_active: z.boolean(),
+	access_count: z.number().int().nonnegative(),
+	last_accessed_at: z.string().nullable()
+});
+
+/**
+ * Share tokens list response schema (GET /api/exercises/[id]/share)
+ */
+export const shareTokensListResponseSchema = z.object({
+	tokens: z.array(shareTokenResponseSchema)
+});
+
+/**
+ * Create share token response schema (POST /api/exercises/[id]/share)
+ */
+export const createShareTokenResponseSchema = z.object({
+	token: shareTokenResponseSchema,
+	share_url: z.string().url()
+});
+
+// ============================================================================
+// SHARE TOKEN VALIDATION HELPERS
+// ============================================================================
+
+/**
+ * Validate share token query parameter
+ */
+export function validateShareTokenQuery(params: URLSearchParams) {
+	return shareTokenQuerySchema.safeParse(Object.fromEntries(params));
+}
+
+/**
+ * Validate create share token request body
+ */
+export function validateCreateShareToken(data: unknown) {
+	return createShareTokenSchema.safeParse(data);
+}
+
+/**
+ * Validate revoke share token params
+ */
+export function validateRevokeShareToken(data: unknown) {
+	return revokeShareTokenSchema.safeParse(data);
+}

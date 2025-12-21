@@ -1223,6 +1223,86 @@ export interface ImageUploadProgress {
 }
 
 // ============================================================================
+// SHARE TOKEN TYPES
+// ============================================================================
+
+/**
+ * Share token for private exercise access via unique URLs
+ *
+ * Enables teachers to share private exercises with anyone via a unique token URL.
+ * Tokens can expire and be revoked, with access tracking for analytics.
+ *
+ * @example Active token with no expiration
+ * ```typescript
+ * const token: ExerciseShareToken = {
+ *   id: 'token-uuid',
+ *   exercise_id: 'ex-123',
+ *   token: 'AbCdEfGh12345678',
+ *   created_by: 'teacher-uuid',
+ *   created_at: '2024-01-15T10:00:00Z',
+ *   expires_at: null, // Never expires
+ *   is_active: true,
+ *   access_count: 42,
+ *   last_accessed_at: '2024-01-16T14:30:00Z'
+ * };
+ * ```
+ *
+ * @example Token with expiration
+ * ```typescript
+ * const token: ExerciseShareToken = {
+ *   id: 'token-uuid',
+ *   exercise_id: 'ex-456',
+ *   token: 'XyZaBcDe87654321',
+ *   created_by: 'teacher-uuid',
+ *   created_at: '2024-01-15T10:00:00Z',
+ *   expires_at: '2024-02-15T23:59:59Z', // Expires in 30 days
+ *   is_active: true,
+ *   access_count: 0,
+ *   last_accessed_at: null
+ * };
+ * ```
+ */
+export interface ExerciseShareToken {
+	/** Unique identifier (UUID) */
+	id: string;
+
+	/** Exercise this token grants access to (FK → exercises) */
+	exercise_id: string;
+
+	/** 16-character alphanumeric token for URL sharing */
+	token: string;
+
+	/** Teacher who created the token (FK → profiles) */
+	created_by: string;
+
+	/** Timestamp when token was created (ISO 8601) */
+	created_at: string;
+
+	/** Expiration timestamp (ISO 8601, null = never expires) */
+	expires_at: string | null;
+
+	/** Whether token is active (can be revoked by teacher) */
+	is_active: boolean;
+
+	/** Number of times the token has been used to access the exercise */
+	access_count: number;
+
+	/** Timestamp of last access via this token (ISO 8601, null if never accessed) */
+	last_accessed_at: string | null;
+}
+
+/**
+ * Data for creating a new share token
+ */
+export interface CreateShareTokenData {
+	/** Exercise to create token for */
+	exercise_id: string;
+
+	/** Number of days until expiration (optional, null = never expires) */
+	expires_in_days?: number | null;
+}
+
+// ============================================================================
 // SHARING & FAVORITES TYPES
 // ============================================================================
 

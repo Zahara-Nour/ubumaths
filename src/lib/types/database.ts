@@ -2309,6 +2309,78 @@ export type Database = {
 					}
 				];
 			};
+			exercise_share_tokens: {
+				Row: {
+					access_count: number;
+					created_at: string;
+					created_by: string;
+					exercise_id: string;
+					expires_at: string | null;
+					id: string;
+					is_active: boolean;
+					last_accessed_at: string | null;
+					token: string;
+				};
+				Insert: {
+					access_count?: number;
+					created_at?: string;
+					created_by: string;
+					exercise_id: string;
+					expires_at?: string | null;
+					id?: string;
+					is_active?: boolean;
+					last_accessed_at?: string | null;
+					token: string;
+				};
+				Update: {
+					access_count?: number;
+					created_at?: string;
+					created_by?: string;
+					exercise_id?: string;
+					expires_at?: string | null;
+					id?: string;
+					is_active?: boolean;
+					last_accessed_at?: string | null;
+					token?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'exercise_share_tokens_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'exercise_share_tokens_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'exercise_share_tokens_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercise_share_tokens_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'exercise_share_tokens_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			exercise_templates: {
 				Row: {
 					created_at: string;
@@ -12415,6 +12487,7 @@ export type Database = {
 				};
 				Returns: string;
 			};
+			generate_share_token: { Args: never; Returns: string };
 			generate_variant_seed: {
 				Args: {
 					p_base_seed?: number;
@@ -13073,6 +13146,10 @@ export type Database = {
 			};
 			is_class_student: { Args: { p_class_id: string }; Returns: boolean };
 			is_class_teacher: { Args: { p_class_id: string }; Returns: boolean };
+			is_conversation_participant: {
+				Args: { p_conversation_id: string; p_user_id: string };
+				Returns: boolean;
+			};
 			is_exercise_parameterized: {
 				Args: { exercise_id: string };
 				Returns: boolean;

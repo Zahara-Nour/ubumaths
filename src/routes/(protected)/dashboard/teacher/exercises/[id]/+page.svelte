@@ -3,17 +3,21 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import ExerciseForm from '$lib/components/exercises/ExerciseForm.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { Users, Braces, Copy, Check, FileText } from 'lucide-svelte';
+	import { Separator } from '$lib/components/ui/separator';
+	import { Users, Braces, Copy, Check, FileText, Share2, Trash2, Link, Clock } from 'lucide-svelte';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { PageData } from './$types';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { ExerciseShareToken } from '$lib/exercises/types';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -44,6 +48,23 @@
 	let jsonDialogOpen = $state(false);
 	let markdownDialogOpen = $state(false);
 	let copied = $state(false);
+
+	// Share dialog state
+	let shareDialogOpen = $state(false);
+	let shareTokens = $state<ExerciseShareToken[]>([]);
+	let loadingTokens = $state(false);
+	let creatingToken = $state(false);
+	let selectedExpiration = $state<string>('none');
+	let copiedTokenId = $state<string | null>(null);
+	let revokingTokenId = $state<string | null>(null);
+
+	// Expiration options for token creation
+	const expirationOptions = [
+		{ value: 'none', label: 'Sans expiration' },
+		{ value: '7', label: '7 jours' },
+		{ value: '30', label: '30 jours' },
+		{ value: '90', label: '90 jours' }
+	];
 
 	// Format JSON for display
 	let formattedJson = $derived(JSON.stringify(data.exercise, null, 2));
@@ -99,6 +120,141 @@
 			submitting = false;
 		}
 	}
+
+	/**
+	 * Load share tokens when dialog opens
+	 */
+	async function loadShareTokens() {
+		loadingTokens = true;
+		try {
+			const response = await fetch(`/api/exercises/${data.exercise.id}/share`);
+			if (!response.ok) {
+				throw new Error('Erreur lors du chargement des liens de partage');
+			}
+			const result = await response.json();
+			shareTokens = result.tokens;
+		} catch (error) {
+			console.error('Error loading share tokens:', error);
+			toaster.error('Erreur lors du chargement des liens de partage');
+		} finally {
+			loadingTokens = false;
+		}
+	}
+
+	/**
+	 * Create a new share token
+	 */
+	async function createShareToken() {
+		creatingToken = true;
+		try {
+			const body: { expires_in_days?: number } = {};
+			if (selectedExpiration !== 'none') {
+				body.expires_in_days = parseInt(selectedExpiration, 10);
+			}
+
+			const response = await fetch(`/api/exercises/${data.exercise.id}/share`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(body)
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Erreur lors de la création du lien');
+			}
+
+			toaster.success('Lien de partage créé avec succès');
+			await loadShareTokens();
+		} catch (error) {
+			console.error('Error creating share token:', error);
+			toaster.error(
+				error instanceof Error ? error.message : 'Erreur lors de la création du lien de partage'
+			);
+		} finally {
+			creatingToken = false;
+		}
+	}
+
+	/**
+	 * Revoke a share token
+	 */
+	async function revokeShareToken(tokenId: string) {
+		revokingTokenId = tokenId;
+		try {
+			const response = await fetch(`/api/exercises/${data.exercise.id}/share/${tokenId}`, {
+				method: 'DELETE'
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Erreur lors de la révocation');
+			}
+
+			toaster.success('Lien de partage révoqué');
+			await loadShareTokens();
+		} catch (error) {
+			console.error('Error revoking share token:', error);
+			toaster.error(
+				error instanceof Error ? error.message : 'Erreur lors de la révocation du lien'
+			);
+		} finally {
+			revokingTokenId = null;
+		}
+	}
+
+	/**
+	 * Build share URL for a token
+	 */
+	function buildShareUrl(token: ExerciseShareToken): string {
+		const origin = browser ? window.location.origin : '';
+		const slug = data.exercise.slug || data.exercise.id;
+		return `${origin}/exercice/${slug}?token=${token.token}`;
+	}
+
+	/**
+	 * Copy share URL to clipboard
+	 */
+	async function copyShareUrl(token: ExerciseShareToken) {
+		try {
+			await navigator.clipboard.writeText(buildShareUrl(token));
+			copiedTokenId = token.id;
+			setTimeout(() => (copiedTokenId = null), 2000);
+			toaster.success('Lien copié dans le presse-papiers');
+		} catch {
+			toaster.error('Erreur lors de la copie du lien');
+		}
+	}
+
+	/**
+	 * Format date for display
+	 */
+	function formatDate(dateString: string): string {
+		return new Date(dateString).toLocaleDateString('fr-FR', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric'
+		});
+	}
+
+	/**
+	 * Check if token is expired
+	 */
+	function isTokenExpired(token: ExerciseShareToken): boolean {
+		if (!token.expires_at) return false;
+		return new Date(token.expires_at) < new Date();
+	}
+
+	/**
+	 * Handle share dialog open
+	 */
+	function handleShareDialogOpen(open: boolean) {
+		shareDialogOpen = open;
+		if (open) {
+			loadShareTokens();
+		}
+	}
 </script>
 
 <svelte:head>
@@ -136,36 +292,45 @@
 			</Button>
 		</div>
 
-		<!-- Assignments Quick Access -->
-		{#if data.assignmentCount > 0}
-			<Card.Root class="w-64">
-				<Card.Content class="p-4">
-					<div class="flex items-center justify-between">
-						<div class="flex items-center gap-2">
-							<Users class="h-5 w-5 text-muted-foreground" />
-							<div>
-								<div class="text-sm font-medium">Assignations</div>
-								<div class="text-xs text-muted-foreground">
-									{data.assignmentCount} active{data.assignmentCount > 1 ? 's' : ''}
+		<!-- Actions section -->
+		<div class="flex items-center gap-3">
+			<!-- Share Button -->
+			<Button variant="outline" onclick={() => handleShareDialogOpen(true)}>
+				<Share2 class="mr-2 h-4 w-4" />
+				Partager
+			</Button>
+
+			<!-- Assignments Quick Access -->
+			{#if data.assignmentCount > 0}
+				<Card.Root class="w-64">
+					<Card.Content class="p-4">
+						<div class="flex items-center justify-between">
+							<div class="flex items-center gap-2">
+								<Users class="h-5 w-5 text-muted-foreground" />
+								<div>
+									<div class="text-sm font-medium">Assignations</div>
+									<div class="text-xs text-muted-foreground">
+										{data.assignmentCount} active{data.assignmentCount > 1 ? 's' : ''}
+									</div>
 								</div>
 							</div>
+							<Button
+								size="sm"
+								variant="outline"
+								href="/dashboard/teacher/exercises/{data.exercise.id}/assign"
+							>
+								Gérer
+							</Button>
 						</div>
-						<Button
-							size="sm"
-							variant="outline"
-							href="/dashboard/teacher/exercises/{data.exercise.id}/assign"
-						>
-							Gérer
-						</Button>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		{:else}
-			<Button variant="outline" href="/dashboard/teacher/exercises/{data.exercise.id}/assign">
-				<Users class="mr-2 h-4 w-4" />
-				Assigner
-			</Button>
-		{/if}
+					</Card.Content>
+				</Card.Root>
+			{:else}
+				<Button variant="outline" href="/dashboard/teacher/exercises/{data.exercise.id}/assign">
+					<Users class="mr-2 h-4 w-4" />
+					Assigner
+				</Button>
+			{/if}
+		</div>
 	</div>
 
 	<ExerciseForm
@@ -286,5 +451,124 @@
 				</div>
 			</Tabs.Content>
 		</Tabs.Root>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Share Dialog -->
+<Dialog.Root open={shareDialogOpen} onOpenChange={handleShareDialogOpen}>
+	<Dialog.Content class="max-h-[85vh] max-w-lg overflow-y-auto">
+		<Dialog.Header>
+			<Dialog.Title class="flex items-center gap-2">
+				<Share2 class="h-5 w-5" />
+				Partager l'exercice
+			</Dialog.Title>
+			<Dialog.Description>
+				Créez des liens de partage pour donner accès à cet exercice sans authentification.
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<!-- Create token section -->
+		<div class="mt-4 space-y-4">
+			<div class="flex items-end gap-3">
+				<div class="flex-1">
+					<label for="expiration-select" class="mb-2 block text-sm font-medium"> Expiration </label>
+					<MySelect
+						id="expiration-select"
+						type="single"
+						bind:value={selectedExpiration}
+						items={expirationOptions}
+						triggerClass="w-full h-9 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					/>
+				</div>
+				<Button onclick={createShareToken} disabled={creatingToken}>
+					{#if creatingToken}
+						<Clock class="mr-2 h-4 w-4 animate-spin" />
+						Création...
+					{:else}
+						<Link class="mr-2 h-4 w-4" />
+						Créer un lien
+					{/if}
+				</Button>
+			</div>
+		</div>
+
+		<!-- Existing tokens section -->
+		{#if loadingTokens}
+			<div class="mt-6 flex items-center justify-center py-8">
+				<Clock class="h-5 w-5 animate-spin text-muted-foreground" />
+				<span class="ml-2 text-sm text-muted-foreground">Chargement...</span>
+			</div>
+		{:else if shareTokens.length > 0}
+			<Separator class="my-6" />
+			<div class="space-y-3">
+				<h3 class="text-sm font-medium">Liens existants</h3>
+				<div class="space-y-2">
+					{#each shareTokens as token (token.id)}
+						{@const expired = isTokenExpired(token)}
+						{@const inactive = !token.is_active}
+						<div
+							class="flex items-center justify-between rounded-lg border p-3 {expired || inactive
+								? 'opacity-60'
+								: ''}"
+						>
+							<div class="min-w-0 flex-1 space-y-1">
+								<div class="flex items-center gap-2">
+									<code class="rounded bg-muted px-2 py-0.5 font-mono text-xs">
+										{token.token.substring(0, 8)}...
+									</code>
+									{#if expired}
+										<Badge variant="destructive">Expiré</Badge>
+									{:else if inactive}
+										<Badge variant="secondary">Révoqué</Badge>
+									{:else}
+										<Badge variant="success">Actif</Badge>
+									{/if}
+								</div>
+								<div class="flex items-center gap-3 text-xs text-muted-foreground">
+									<span>Créé le {formatDate(token.created_at)}</span>
+									{#if token.expires_at}
+										<span>Expire le {formatDate(token.expires_at)}</span>
+									{/if}
+									<span>{token.access_count} accès</span>
+								</div>
+							</div>
+							<div class="flex items-center gap-1">
+								<Button
+									variant="ghost"
+									size="icon"
+									onclick={() => copyShareUrl(token)}
+									disabled={expired || inactive}
+									title="Copier le lien"
+								>
+									{#if copiedTokenId === token.id}
+										<Check class="h-4 w-4 text-green-500" />
+									{:else}
+										<Copy class="h-4 w-4" />
+									{/if}
+								</Button>
+								<Button
+									variant="ghost"
+									size="icon"
+									onclick={() => revokeShareToken(token.id)}
+									disabled={revokingTokenId === token.id || inactive}
+									title="Révoquer le lien"
+									class="text-destructive hover:text-destructive"
+								>
+									{#if revokingTokenId === token.id}
+										<Clock class="h-4 w-4 animate-spin" />
+									{:else}
+										<Trash2 class="h-4 w-4" />
+									{/if}
+								</Button>
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{:else}
+			<div class="mt-6 py-8 text-center text-sm text-muted-foreground">
+				Aucun lien de partage créé pour cet exercice.
+			</div>
+		{/if}
 	</Dialog.Content>
 </Dialog.Root>
