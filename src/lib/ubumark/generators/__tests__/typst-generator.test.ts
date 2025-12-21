@@ -1156,6 +1156,42 @@ describe('Text Formatting', () => {
 		expect(typst).toContain('`code`');
 	});
 
+	it('should preserve special characters in inline code without escaping', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [{ type: 'text', content: '10**(-4)', code: true }]
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Special characters like * should NOT be escaped in inline code
+		expect(typst).toContain('`10**(-4)`');
+		expect(typst).not.toContain('\\*');
+	});
+
+	it('should unescape markdown escape sequences in inline code', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'paragraph',
+					children: [{ type: 'text', content: '10\\*\\*(-4)', code: true }]
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Escaped \* should become literal * in inline code
+		expect(typst).toContain('`10**(-4)`');
+		expect(typst).not.toContain('\\*');
+	});
+
 	it('should generate strikethrough text with #strike', () => {
 		const ast: DocumentNode = {
 			type: 'document',

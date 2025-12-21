@@ -55,6 +55,40 @@ const DEFAULT_OPTIONS: Required<TypstTranspilerOptions> = {
 };
 
 // ============================================================================
+// ESCAPE SEQUENCE HANDLING
+// ============================================================================
+
+/**
+ * Regex to match markdown escape sequences: \* \_ \` \\
+ */
+const MARKDOWN_ESCAPE_REGEX = /\\([*_`\\])/g;
+
+/**
+ * Unescape markdown escape sequences fully
+ *
+ * Handles multiple levels of escaping by looping until no more changes.
+ * This is necessary because source markdown may have double-escaped sequences
+ * like \\* which need multiple passes to fully unescape.
+ *
+ * @param text - Text containing escape sequences
+ * @returns Text with all escape sequences resolved
+ *
+ * @example
+ * unescapeMarkdown('10\\*\\*(-4)') // Returns '10**(-4)'
+ * unescapeMarkdown('10\\\\*\\\\*(-4)') // Returns '10**(-4)' (double backslash)
+ */
+function unescapeMarkdown(text: string): string {
+	let result = text;
+	let prev = '';
+	// Loop until no more changes (handles multiple escape levels)
+	while (result !== prev) {
+		prev = result;
+		result = result.replace(MARKDOWN_ESCAPE_REGEX, '$1');
+	}
+	return result;
+}
+
+// ============================================================================
 // MAIN GENERATOR FUNCTION
 // ============================================================================
 
@@ -224,15 +258,20 @@ function generateParagraph(node: ParagraphNode, options: Required<TypstTranspile
 function generateInline(node: InlineNode, _options: Required<TypstTranspilerOptions>): string {
 	switch (node.type) {
 		case 'text': {
-			// First, unescape markdown escape sequences (e.g., \* -> *, \_ -> _)
-			// These come from the source markdown and should be literal characters
-			const unescapedContent = node.content.replace(/\\([*_`\\])/g, '$1');
+			// Unescape markdown escape sequences (handles multiple levels like \\*)
+			const unescapedContent = unescapeMarkdown(node.content);
+
+			// For inline code, don't escape - Typst raw text preserves content as-is
+			if (node.code) {
+				return `\`${unescapedContent}\``;
+			}
+
+			// For regular text, escape special Typst characters
 			let text = escapeTypst(unescapedContent);
 			if (node.bold) text = `*${text}*`;
 			if (node.italic) text = `_${text}_`;
 			if (node.strikethrough) text = `#strike[${text}]`;
 			if (node.highlight) text = `#highlight[${text}]`;
-			if (node.code) text = `\`${text}\``;
 			return text;
 		}
 
@@ -645,8 +684,8 @@ function generateBlockquote(
  */
 function generateCodeBlock(node: CodeBlockNode): string {
 	// Don't include language to avoid syntax highlighting in PDF output
-	// Clean up markdown escape sequences (e.g., \* -> *, \_ -> _)
-	const cleanedCode = node.code.replace(/\\([*_`\\])/g, '$1');
+	// Unescape markdown escape sequences (handles multiple levels like \\*)
+	const cleanedCode = unescapeMarkdown(node.code);
 	return '```\n' + cleanedCode + '\n```';
 }
 
