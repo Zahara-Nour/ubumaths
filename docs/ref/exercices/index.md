@@ -1,6 +1,6 @@
 # Exercises System - Technical Reference
 
-> **Last Updated**: 2025-12-10
+> **Last Updated**: 2025-12-21
 >
 > **Status**: Production-ready
 
@@ -159,7 +159,7 @@ The codebase has **two distinct systems** for math problems. Understanding the d
 
 | File                                                  | Purpose                        |
 | ----------------------------------------------------- | ------------------------------ |
-| `src/lib/exercises/types.ts`                          | Type definitions (~1700 lines) |
+| `src/lib/exercises/types.ts`                          | Type definitions (~2250 lines) |
 | `src/lib/exercises/generator/instance-generator.ts`   | Parameterization engine        |
 | `src/lib/components/exercises/ExerciseDisplay.svelte` | Main display component         |
 

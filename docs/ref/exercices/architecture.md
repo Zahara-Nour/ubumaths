@@ -1,6 +1,6 @@
 # Exercises System - Architecture Documentation
 
-> **Last Updated**: 2025-12-10
+> **Last Updated**: 2025-12-21
 >
 > **Status**: Production-ready
 >
@@ -128,11 +128,11 @@ The Exercises System is a complete solution for creating, managing, assigning, a
 │                                 │                                           │
 │                                 ▼                                           │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │  $lib/ubumark/parameterization/                              │   │
-│  │  ├─ variable-resolver.ts    → Resolve variable expressions          │   │
-│  │  ├─ text-resolver.ts        → Replace {{}} in content               │   │
-│  │  ├─ random-generator.ts     → Seeded random number generation       │   │
-│  │  └─ expression-evaluator.ts → Evaluate {{eval:...}} expressions     │   │
+│  │  $lib/ubumark/parameterization/                                     │   │
+│  │  ├─ resolver/variable-resolver.ts → Resolve variable expressions   │   │
+│  │  ├─ resolver/text-resolver.ts     → Replace {{}} in content        │   │
+│  │  ├─ resolver/random-generator.ts  → Seeded random number generation│   │
+│  │  └─ parser/eval-parser.ts         → Parse {{eval:...}} expressions │   │
 │  └─────────────────────────────────────────────────────────────────────┘   │
 │                                                                             │
 │  Resolution Pipeline:                                                       │
@@ -1031,14 +1031,14 @@ src/
 │   ├── ubumark/
 │   │   ├── parser/                           # Markdown → AST
 │   │   ├── parameterization/
-│   │   │   ├── variable-resolver.ts          # Resolve variables
-│   │   │   ├── text-resolver.ts              # Replace {{}} in text
-│   │   │   ├── random-generator.ts           # Seeded RNG
-│   │   │   └── expression-evaluator.ts       # Eval expressions
-│   │   └── types.ts
+│   │   │   ├── resolver/variable-resolver.ts # Resolve variables
+│   │   │   ├── resolver/text-resolver.ts     # Replace {{}} in text
+│   │   │   ├── resolver/random-generator.ts  # Seeded RNG
+│   │   │   └── parser/eval-parser.ts         # Eval expressions
+│   │   └── types/
 │   │
 │   ├── exercises/
-│   │   ├── types.ts                          # ~1700 lines of types
+│   │   ├── types.ts                          # ~2250 lines of types
 │   │   └── generator/
 │   │       └── instance-generator.ts         # Instance generation
 │   │

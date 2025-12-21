@@ -1,6 +1,6 @@
 # Exercises System - Database Schema
 
-> **Last Updated**: 2025-12-11
+> **Last Updated**: 2025-12-21
 >
 > **Related**: [Index](./index.md) | [API Reference](./api-reference.md)
 
@@ -55,10 +55,11 @@ CREATE TABLE exercises (
   -- Metadata
   title TEXT,                                    -- Optional title
   source TEXT,                                   -- Source reference (book, author)
-  difficulty TEXT CHECK (difficulty IN ('1', '2', '3')),
+  difficulty INTEGER NOT NULL CHECK (difficulty BETWEEN 1 AND 3),
   tags TEXT[],                                   -- Categorization tags
   grade_levels TEXT[],                           -- Target grades ('3', '2', '1_SPE')
   topic TEXT,                                    -- Topic category
+  estimated_time_minutes INTEGER,                -- Estimated completion time
 
   -- Content (markdown with LaTeX)
   statement_md TEXT NOT NULL,                    -- Exercise statement
@@ -71,6 +72,11 @@ CREATE TABLE exercises (
   variables JSONB,                               -- Variable definitions
   distribution_mode TEXT DEFAULT 'on_demand'
     CHECK (distribution_mode IN ('on_demand', 'per_student', 'per_group')),
+  generic_functions TEXT[],                      -- Generic functions used in expressions
+
+  -- Variations (for multi-question exercises)
+  variations JSONB,                              -- Array of variation objects
+  shared JSONB,                                  -- Shared configuration across variations
 
   -- Sharing
   is_public BOOLEAN DEFAULT FALSE,              -- Visible in public library
@@ -84,23 +90,27 @@ CREATE TABLE exercises (
 
 #### Column Details
 
-| Column              | Type    | Required | Description                                  |
-| ------------------- | ------- | -------- | -------------------------------------------- |
-| `id`                | UUID    | Auto     | Primary key                                  |
-| `slug`              | TEXT    | No       | URL-friendly identifier (auto-generated)     |
-| `title`             | TEXT    | No       | Display title for organization               |
-| `source`            | TEXT    | No       | Source reference (e.g., "Manuel 3ème, p.45") |
-| `difficulty`        | TEXT    | Yes      | '1' (easy), '2' (medium), '3' (hard)         |
-| `tags`              | TEXT[]  | No       | Array of tags for filtering                  |
-| `grade_levels`      | TEXT[]  | No       | Grade codes (uses GradeCode system)          |
-| `topic`             | TEXT    | No       | Topic category                               |
-| `statement_md`      | TEXT    | Yes      | Markdown with LaTeX and `{{}}` syntax        |
-| `solution_md`       | TEXT    | Yes      | Markdown with LaTeX and `{{}}` syntax        |
-| `resources`         | JSONB   | No       | Array of supplementary materials             |
-| `variables`         | JSONB   | No       | Array of `{ name, expression }` objects      |
-| `distribution_mode` | TEXT    | Yes      | How instances are generated                  |
-| `is_public`         | BOOLEAN | Yes      | Visible to all teachers in library           |
-| `created_by`        | UUID    | Yes      | Foreign key to teacher profile               |
+| Column                   | Type    | Required | Description                                  |
+| ------------------------ | ------- | -------- | -------------------------------------------- |
+| `id`                     | UUID    | Auto     | Primary key                                  |
+| `slug`                   | TEXT    | No       | URL-friendly identifier (auto-generated)     |
+| `title`                  | TEXT    | No       | Display title for organization               |
+| `source`                 | TEXT    | No       | Source reference (e.g., "Manuel 3ème, p.45") |
+| `difficulty`             | INTEGER | Yes      | 1 (easy), 2 (medium), 3 (hard)               |
+| `tags`                   | TEXT[]  | No       | Array of tags for filtering                  |
+| `grade_levels`           | TEXT[]  | No       | Grade codes (uses GradeCode system)          |
+| `topic`                  | TEXT    | No       | Topic category                               |
+| `estimated_time_minutes` | INTEGER | No       | Estimated completion time                    |
+| `statement_md`           | TEXT    | Yes      | Markdown with LaTeX and `{{}}` syntax        |
+| `solution_md`            | TEXT    | Yes      | Markdown with LaTeX and `{{}}` syntax        |
+| `resources`              | JSONB   | No       | Array of supplementary materials             |
+| `variables`              | JSONB   | No       | Array of `{ name, expression }` objects      |
+| `distribution_mode`      | TEXT    | Yes      | How instances are generated                  |
+| `generic_functions`      | TEXT[]  | No       | Generic functions used in expressions        |
+| `variations`             | JSONB   | No       | Array of variation objects                   |
+| `shared`                 | JSONB   | No       | Shared config across variations              |
+| `is_public`              | BOOLEAN | Yes      | Visible to all teachers in library           |
+| `created_by`             | UUID    | Yes      | Foreign key to teacher profile               |
 
 #### Resources JSONB Structure
 
@@ -392,7 +402,7 @@ RETURNS TABLE (
 
 ## Indexes
 
-### exercises Table (4 indexes)
+### exercises Table (17 indexes)
 
 ```sql
 -- URL slug lookup (unique, partial)
@@ -416,7 +426,7 @@ WHERE topic IS NOT NULL;
 CREATE INDEX idx_exercises_created_by ON exercises(created_by);
 ```
 
-### exercise_assignments Table (8 indexes)
+### exercise_assignments Table (11 indexes)
 
 ```sql
 CREATE INDEX idx_exercise_assignments_exercise ON exercise_assignments(exercise_id);
@@ -448,7 +458,7 @@ CREATE INDEX idx_exercise_completions_student_completed
   ON exercise_completions(student_id, completed_at) WHERE completed_at IS NOT NULL;
 ```
 
-**Total**: 18 indexes for optimal query performance.
+**Total**: 34 indexes for optimal query performance.
 
 ---
 

@@ -1,8 +1,8 @@
 # Exercises System - Type Definitions
 
-> **Last Updated**: 2025-12-11
+> **Last Updated**: 2025-12-21
 >
-> **Source File**: `src/lib/exercises/types.ts` (~1700 lines)
+> **Source File**: `src/lib/exercises/types.ts` (~2250 lines)
 >
 > **Related**: [Index](./index.md) | [API Reference](./api-reference.md)
 
