@@ -224,7 +224,10 @@ function generateParagraph(node: ParagraphNode, options: Required<TypstTranspile
 function generateInline(node: InlineNode, _options: Required<TypstTranspilerOptions>): string {
 	switch (node.type) {
 		case 'text': {
-			let text = escapeTypst(node.content);
+			// First, unescape markdown escape sequences (e.g., \* -> *, \_ -> _)
+			// These come from the source markdown and should be literal characters
+			const unescapedContent = node.content.replace(/\\([*_`\\])/g, '$1');
+			let text = escapeTypst(unescapedContent);
 			if (node.bold) text = `*${text}*`;
 			if (node.italic) text = `_${text}_`;
 			if (node.strikethrough) text = `#strike[${text}]`;
@@ -642,7 +645,9 @@ function generateBlockquote(
  */
 function generateCodeBlock(node: CodeBlockNode): string {
 	// Don't include language to avoid syntax highlighting in PDF output
-	return '```\n' + node.code + '\n```';
+	// Clean up markdown escape sequences (e.g., \* -> *, \_ -> _)
+	const cleanedCode = node.code.replace(/\\([*_`\\])/g, '$1');
+	return '```\n' + cleanedCode + '\n```';
 }
 
 // ============================================================================
