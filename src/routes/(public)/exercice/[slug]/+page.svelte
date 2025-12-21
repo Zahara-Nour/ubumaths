@@ -47,9 +47,9 @@
 
 	const hasVariations = $derived(isVariationsExercise(data.exercise));
 	const variationOptions = $derived(getVariationOptions());
-	const isParameterized = $derived(
-		(data.exercise.variables && data.exercise.variables.length > 0) || hasVariations
-	);
+	const hasVariables = $derived(data.exercise.variables && data.exercise.variables.length > 0);
+	// isParameterized is true if there are variables OR variations (affects link sharing)
+	const isParameterized = $derived(hasVariables || hasVariations);
 
 	/**
 	 * Get default variation index based on priority order
@@ -280,7 +280,7 @@
 
 		<!-- Action buttons -->
 		<div class="flex items-center gap-2">
-			{#if isParameterized}
+			{#if hasVariables}
 				<Button
 					onclick={regenerate}
 					variant="outline"
