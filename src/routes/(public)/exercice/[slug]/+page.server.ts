@@ -60,15 +60,15 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 
 	let dbExercise: Awaited<ReturnType<typeof getExerciseBySlug>>['data'] = null;
 	let accessViaToken = false;
+	let tokenError: string | null = null;
 
-	// Strategy 1: If token is provided, use it to get exercise directly
+	// Strategy 1: If token is provided, try to use it
 	if (token) {
 		const tokenResult = await getExerciseByShareToken(locals.supabase, token);
 		if (tokenResult.error) {
-			// Token-specific error (invalid, expired, revoked)
-			throw error(403, tokenResult.error);
-		}
-		if (tokenResult.data) {
+			// Store error but don't throw yet - exercise might be public
+			tokenError = tokenResult.error;
+		} else if (tokenResult.data) {
 			// Cast Exercise back to DB row format for consistency
 			// (getExerciseByShareToken returns Exercise type directly)
 			dbExercise = tokenResult.data as unknown as typeof dbExercise;
@@ -100,9 +100,12 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 	}
 
 	// Access control: public OR valid token
-	// Note: if token was provided and valid for ANY exercise, accessViaToken is already true
-	// If token was provided but invalid/expired, error was already thrown above
+	// If exercise is public, allow access regardless of token validity
+	// If exercise is private and token failed, show the token error
 	if (!dbExercise.is_public && !accessViaToken) {
+		if (tokenError) {
+			throw error(403, tokenError);
+		}
 		throw error(403, "Cet exercice n'est pas public. Un lien de partage est requis.");
 	}
 
