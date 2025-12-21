@@ -114,7 +114,7 @@ import { NUMBERING_SCHEMES } from '$lib/types/list-numbering';
 | ----------------------------------------------------- | -------------------------------- |
 | `src/lib/types/list-numbering.ts`                     | Types et definitions des schemas |
 | `src/lib/stores/listNumbering.svelte.ts`              | Store de configuration           |
-| `src/lib/ubumark/utils/list-depth.ts`         | Analyse AST pour profondeur      |
+| `src/lib/ubumark/utils/list-depth.ts`                 | Analyse AST pour profondeur      |
 | `src/lib/styles/list-numbering.css`                   | CSS counters                     |
 | `src/lib/components/markdown/nodes/ListNode.svelte`   | Composant liste                  |
 | `src/lib/components/markdown/MarkdownRenderer.svelte` | Orchestrateur                    |

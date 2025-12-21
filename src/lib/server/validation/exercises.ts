@@ -95,10 +95,7 @@ export const exerciseVariationSchema = z
 			.min(1, 'Statement is required')
 			.max(50000, 'Statement too long'),
 		solution_md: z.string().trim().min(1, 'Solution is required').max(50000, 'Solution too long'),
-		variables: z
-			.array(variableSchema)
-			.max(100, 'Maximum 100 variables per variation')
-			.optional(),
+		variables: z.array(variableSchema).max(100, 'Maximum 100 variables per variation').optional(),
 		hints: z.array(exerciseHintSchema).max(20, 'Maximum 20 hints per variation').optional()
 	})
 	.refine(
@@ -167,7 +164,10 @@ export const createExerciseSchema = z
 		source: z.string().trim().max(200, 'Source too long').optional().nullable(),
 		title: z.string().trim().max(200, 'Title too long').optional().nullable(),
 		// Legacy variables format (kept for backward compatibility)
-		variables: z.union([z.array(z.any()), z.record(z.string(), z.any())]).optional().nullable(),
+		variables: z
+			.union([z.array(z.any()), z.record(z.string(), z.any())])
+			.optional()
+			.nullable(),
 		is_public: z.boolean().default(false).optional(),
 		resources: z
 			.array(

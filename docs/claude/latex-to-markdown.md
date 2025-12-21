@@ -1015,10 +1015,7 @@ Le fallback converter maintient un registre des environnements supportés:
 **Vérifier le support**:
 
 ```typescript
-import {
-	isSupportedEnvironment,
-	getSupportedEnvironments
-} from '$lib/ubumark/importers/latex';
+import { isSupportedEnvironment, getSupportedEnvironments } from '$lib/ubumark/importers/latex';
 
 // Check si un environnement est supporté
 if (isSupportedEnvironment('itemize')) {

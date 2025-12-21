@@ -179,10 +179,7 @@ const result = resolveText(text, resolved);
 import { parseList, parseTable } from '$lib/ubumark/parser';
 
 // Parameterization sub-module
-import {
-	validateVariables,
-	detectCircularDependencies
-} from '$lib/ubumark/parameterization';
+import { validateVariables, detectCircularDependencies } from '$lib/ubumark/parameterization';
 
 // Types
 import type { DocumentNode, Variable, RandomSpec } from '$lib/ubumark';

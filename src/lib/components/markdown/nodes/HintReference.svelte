@@ -31,8 +31,7 @@
 		AlertCircle,
 		ExternalLink,
 		FileText,
-		Video,
-		Image as ImageIcon
+		Video
 	} from 'lucide-svelte';
 
 	interface Props {
@@ -61,26 +60,6 @@
 		isOpen = !isOpen;
 		if (isOpen && onHintOpen && hint) {
 			onHintOpen(hintId);
-		}
-	}
-
-	/**
-	 * Get icon for hint type
-	 */
-	function getHintIcon(type: ExerciseHint['type']) {
-		switch (type) {
-			case 'video':
-				return Video;
-			case 'pdf':
-				return FileText;
-			case 'link':
-				return ExternalLink;
-			case 'image':
-				return ImageIcon;
-			case 'geogebra':
-				return ExternalLink;
-			default:
-				return Lightbulb;
 		}
 	}
 </script>
@@ -190,11 +169,7 @@
 					</a>
 				{:else if hint.type === 'image'}
 					<!-- Image display -->
-					<img
-						src={hint.url}
-						alt={hint.title}
-						class="max-h-64 w-full rounded-md object-contain"
-					/>
+					<img src={hint.url} alt={hint.title} class="max-h-64 w-full rounded-md object-contain" />
 				{:else if hint.type === 'geogebra'}
 					<!-- GeoGebra link (could be enhanced with embed in future) -->
 					<a

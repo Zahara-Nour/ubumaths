@@ -29,17 +29,17 @@ src/lib/math/            # NEW: shared module
 
 ## Phase Progress
 
-| Phase | Description                         | Status | Commit        |
-| ----- | ----------------------------------- | ------ | ------------- |
-| 0     | Preparation                         | DONE   | Initial setup |
-| 1     | Create $lib/math/compute-engine     | DONE   | 33502ebf      |
-| 2     | Use MathAST/eval in ubumark | DONE   | 33502ebf      |
-| 3     | Add missing exports                 | DONE   | 33502ebf      |
-| 4     | Create generators/                  | DONE   | 33502ebf      |
-| 5     | Create importers/                   | DONE   | 33502ebf      |
-| 6     | Cleanup                             | DONE   | 33502ebf      |
-| 7     | Documentation                       | DONE   | This update   |
-| 8     | Final verification                  | DONE   | Complete      |
+| Phase | Description                     | Status | Commit        |
+| ----- | ------------------------------- | ------ | ------------- |
+| 0     | Preparation                     | DONE   | Initial setup |
+| 1     | Create $lib/math/compute-engine | DONE   | 33502ebf      |
+| 2     | Use MathAST/eval in ubumark     | DONE   | 33502ebf      |
+| 3     | Add missing exports             | DONE   | 33502ebf      |
+| 4     | Create generators/              | DONE   | 33502ebf      |
+| 5     | Create importers/               | DONE   | 33502ebf      |
+| 6     | Cleanup                         | DONE   | 33502ebf      |
+| 7     | Documentation                   | DONE   | This update   |
+| 8     | Final verification              | DONE   | Complete      |
 
 ## Summary of Changes
 
@@ -147,12 +147,12 @@ src/lib/math/
 
 Code that previously imported from these locations needs to be updated:
 
-| Old Path                                       | New Path                               |
-| ---------------------------------------------- | -------------------------------------- |
+| Old Path                                       | New Path                       |
+| ---------------------------------------------- | ------------------------------ |
 | `$lib/exercises/transpilers`                   | `$lib/ubumark` (main exports)  |
 | `$lib/exercises/transpilers/latex-to-markdown` | `$lib/ubumark/importers/latex` |
 | `$lib/typst/transpiler`                        | `$lib/ubumark/generators`      |
-| `$lib/questions/compute-engine`                | `$lib/math/compute-engine`             |
+| `$lib/questions/compute-engine`                | `$lib/math/compute-engine`     |
 
 ### Recommended Imports
 

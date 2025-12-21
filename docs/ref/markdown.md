@@ -853,8 +853,8 @@ Complete les calculs:
 
 ### Parsers
 
-| Fichier                                                              | Fonction                             |
-| -------------------------------------------------------------------- | ------------------------------------ |
+| Fichier                                                      | Fonction                             |
+| ------------------------------------------------------------ | ------------------------------------ |
 | `src/lib/ubumark/parameterization/parser/random-parser.ts`   | Parse `{{random:...}}` et raccourcis |
 | `src/lib/ubumark/parameterization/parser/eval-parser.ts`     | Parse `{{eval:...}}` avec modifiers  |
 | `src/lib/ubumark/parameterization/parser/variable-parser.ts` | Parse `{{variable}}`                 |
@@ -867,17 +867,17 @@ Complete les calculs:
 
 ### Types
 
-| Fichier                                             | Contenu                                            |
-| --------------------------------------------------- | -------------------------------------------------- |
+| Fichier                                     | Contenu                                            |
+| ------------------------------------------- | -------------------------------------------------- |
 | `src/lib/ubumark/types/parameterization.ts` | Types: Variable, RandomSpec, EvalModifiers         |
 | `src/lib/ubumark/types/ast.ts`              | Types AST: DocumentNode, BlockNode, InlineNode     |
-| `src/lib/exercises/types.ts`                        | Types Exercise, ExerciseInstance (re-exports AST)  |
-| `src/lib/questions/types.ts`                        | Types Question, QuestionTemplate, QuestionInstance |
+| `src/lib/exercises/types.ts`                | Types Exercise, ExerciseInstance (re-exports AST)  |
+| `src/lib/questions/types.ts`                | Types Question, QuestionTemplate, QuestionInstance |
 
 ### Tests
 
-| Fichier                                                        | Tests pour                     |
-| -------------------------------------------------------------- | ------------------------------ |
+| Fichier                                                | Tests pour                     |
+| ------------------------------------------------------ | ------------------------------ |
 | `src/lib/ubumark/__tests__/parser/*.test.ts`           | Markdown, math, blanks, images |
 | `src/lib/ubumark/__tests__/parameterization/*.test.ts` | Tous les parsers partages      |
 

@@ -194,12 +194,12 @@ src/lib/ubumark/
 
 ## Verification Results
 
-| Check                 | Result                          |
-| --------------------- | ------------------------------- |
-| Custom-markdown tests | ✅ 813 passed, 1 skipped        |
-| TypeScript check      | ✅ No new errors                |
-| ESLint                | ✅ No errors in ubumark |
-| Imports updated       | ✅ 50 consumer files            |
+| Check                 | Result                   |
+| --------------------- | ------------------------ |
+| Custom-markdown tests | ✅ 813 passed, 1 skipped |
+| TypeScript check      | ✅ No new errors         |
+| ESLint                | ✅ No errors in ubumark  |
+| Imports updated       | ✅ 50 consumer files     |
 
 **Note**: Pre-existing test failures (470) and lint errors (4) in other modules are unrelated to this refactoring.
 
