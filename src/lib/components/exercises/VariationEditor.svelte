@@ -180,6 +180,7 @@
 						{imageSlug}
 						{getNextImageNumber}
 						{ensureSlugExists}
+						{onchange}
 					/>
 				</Card.Content>
 			</Collapsible.Content>
@@ -216,6 +217,7 @@
 						{imageSlug}
 						{getNextImageNumber}
 						{ensureSlugExists}
+						{onchange}
 					/>
 				</Card.Content>
 			</Collapsible.Content>
