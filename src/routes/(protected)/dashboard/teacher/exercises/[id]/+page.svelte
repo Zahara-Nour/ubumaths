@@ -11,7 +11,18 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Users, Braces, Copy, Check, FileText, Share2, Trash2, Link, Clock } from 'lucide-svelte';
+	import {
+		Users,
+		Braces,
+		Copy,
+		Check,
+		FileText,
+		Share2,
+		Trash2,
+		Link,
+		Clock,
+		Globe
+	} from 'lucide-svelte';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { Database } from '$lib/types/database';
@@ -265,7 +276,15 @@
 	<div class="mb-6 flex items-start justify-between">
 		<div class="flex items-center gap-3">
 			<div>
-				<h1 class="text-3xl font-bold">Modifier l'exercice</h1>
+				<div class="flex items-center gap-2">
+					<h1 class="text-3xl font-bold">Modifier l'exercice</h1>
+					{#if data.exercise.is_public}
+						<Badge variant="success" class="flex items-center gap-1">
+							<Globe class="h-3 w-3" />
+							Public
+						</Badge>
+					{/if}
+				</div>
 				<p class="text-muted-foreground">
 					{data.exercise.title || '(Sans titre)'}
 				</p>
