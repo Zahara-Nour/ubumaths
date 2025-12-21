@@ -1,6 +1,6 @@
 # Exercises System - User Guide
 
-> **Last Updated**: 2025-12-10
+> **Last Updated**: 2025-12-21
 >
 > **Audience**: Teachers and Students
 >
@@ -17,10 +17,13 @@
   - [Writing Mathematical Content](#writing-mathematical-content)
   - [Creating Parameterized Exercises](#creating-parameterized-exercises)
   - [Managing Exercises](#managing-exercises)
+  - [Making Exercises Public](#making-exercises-public)
+  - [Sharing Exercises with Tokens](#sharing-exercises-with-tokens)
   - [Assigning Exercises](#assigning-exercises)
   - [Tracking Progress](#tracking-progress)
   - [Import and Export](#import-and-export)
 - [Student Guide](#student-guide)
+  - [Accessing Public Exercises](#accessing-public-exercises)
   - [Viewing Assigned Exercises](#viewing-assigned-exercises)
   - [Working on an Exercise](#working-on-an-exercise)
   - [Marking Completion](#marking-completion)
@@ -306,6 +309,103 @@ The exercise list provides:
 
 ---
 
+### Making Exercises Public
+
+Public exercises are accessible to anyone via a direct URL, without authentication.
+
+#### Setting an Exercise as Public
+
+1. Open the exercise in edit mode
+2. In the **Metadonnees** section, check **"Exercice public"**
+3. The field has a green border when enabled
+4. Save the exercise
+
+#### Identifying Public Exercises
+
+- In the exercise list, public exercises show a **globe icon** 🌐 next to the title
+- In the exercise detail page, a green **"Public"** badge appears in the header
+- Public exercises are accessible at `/exercice/[slug]` or `/exercice/[id]`
+
+#### Public Exercise Viewer Features
+
+When viewing a public exercise at `/exercice/[slug]`:
+
+| Feature                | Description                                                                   |
+| ---------------------- | ----------------------------------------------------------------------------- |
+| **Variation Selector** | Choose between autonomous, intermediate, or guided versions (if available)    |
+| **Show/Hide Solution** | Toggle solution visibility                                                    |
+| **PDF Export**         | Download exercise as PDF with French academic formatting (1) a) i) numbering) |
+| **Copy Link**          | Copy shareable URL with current variation and seed                            |
+| **Regenerate**         | Generate new random values (for parameterized exercises only)                 |
+| **Seed Preservation**  | URL includes `?seed=...` for reproducible instances                           |
+
+#### Public vs Private Access
+
+| Exercise Type | Access Method                    |
+| ------------- | -------------------------------- |
+| **Public**    | Direct URL, no authentication    |
+| **Private**   | Share token required (see below) |
+
+---
+
+### Sharing Exercises with Tokens
+
+Share tokens allow you to share private exercises without making them fully public.
+
+#### Creating a Share Token
+
+1. Open the exercise detail page
+2. Click the **"Partager"** button
+3. Choose an expiration period:
+   - **Aucune** (never expires)
+   - **7 jours**
+   - **30 jours**
+   - **90 jours**
+   - **1 an**
+4. Click **"Creer un lien"**
+5. Copy the generated URL
+
+#### Token URL Format
+
+```
+https://ubumaths.fr/exercice/[slug]?token=ABC123XYZ789...
+```
+
+The token is a 16-character alphanumeric string.
+
+#### Managing Existing Tokens
+
+In the share dialog, you can see all tokens for an exercise:
+
+| Column      | Description                        |
+| ----------- | ---------------------------------- |
+| **Cree le** | Creation date                      |
+| **Expire**  | Expiration date (or "Jamais")      |
+| **Acces**   | Number of times the token was used |
+| **Actions** | Copy link, Revoke token            |
+
+#### Revoking a Token
+
+1. Open the share dialog
+2. Find the token to revoke
+3. Click the **trash icon**
+4. The token is immediately deactivated
+
+#### Access Control Matrix
+
+| Exercise Status | Token Status | Result                          |
+| --------------- | ------------ | ------------------------------- |
+| Public          | Valid        | Access granted, token counted   |
+| Public          | Invalid      | Access granted, token ignored   |
+| Public          | None         | Access granted                  |
+| Private         | Valid        | Access granted                  |
+| Private         | Invalid      | 403 error with token message    |
+| Private         | None         | 403 error "Share link required" |
+
+**Note**: Public exercises remain accessible even with expired tokens in the URL.
+
+---
+
 ### Assigning Exercises
 
 #### Step 1: Access Assignment Page
@@ -406,6 +506,42 @@ From the assignment page:
 ---
 
 ## Student Guide
+
+### Accessing Public Exercises
+
+Public exercises and exercises shared via token are accessible without logging in.
+
+#### Viewing a Shared Exercise
+
+1. Open the link provided by your teacher (e.g., `https://ubumaths.fr/exercice/equations-premier-degre`)
+2. The exercise loads with all features available:
+   - **Statement**: Read the problem
+   - **Solution**: Click "Afficher la solution" to see the answer
+   - **Variations**: Select autonomous/intermediate/guided if available
+   - **Regenerate**: Get new random values (for parameterized exercises)
+   - **PDF**: Download exercise as PDF
+   - **Copy Link**: Share your specific instance with classmates
+
+#### URL Parameters
+
+Teachers may share links with specific parameters:
+
+| Parameter   | Example             | Purpose                      |
+| ----------- | ------------------- | ---------------------------- |
+| `variation` | `?variation=guided` | Select a specific variation  |
+| `seed`      | `?seed=123456`      | Generate a specific instance |
+| `token`     | `?token=ABC123...`  | Access a private exercise    |
+
+#### Default Variation Order
+
+If no variation is specified, the system chooses automatically:
+
+1. **Autonomous** (if available)
+2. **Intermediate** (if available)
+3. **Guided** (if available)
+4. First variation
+
+---
 
 ### Viewing Assigned Exercises
 

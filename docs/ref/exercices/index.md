@@ -103,14 +103,23 @@ The codebase has **two distinct systems** for math problems. Understanding the d
 
 ### API Endpoints Summary
 
-| Endpoint                       | Method         | Purpose              |
-| ------------------------------ | -------------- | -------------------- |
-| `/api/exercises`               | GET            | List exercises       |
-| `/api/exercises`               | POST           | Create exercise      |
-| `/api/exercises/[id]`          | GET/PUT/DELETE | Single exercise CRUD |
-| `/api/exercises/[id]/assign`   | POST           | Create assignment(s) |
-| `/api/exercises/[id]/complete` | POST/DELETE    | Toggle completion    |
-| `/api/exercises/[id]/view`     | POST           | Record view          |
+| Endpoint                              | Method         | Purpose              |
+| ------------------------------------- | -------------- | -------------------- |
+| `/api/exercises`                      | GET            | List exercises       |
+| `/api/exercises`                      | POST           | Create exercise      |
+| `/api/exercises/[id]`                 | GET/PUT/DELETE | Single exercise CRUD |
+| `/api/exercises/[id]/assign`          | POST           | Create assignment(s) |
+| `/api/exercises/[id]/complete`        | POST/DELETE    | Toggle completion    |
+| `/api/exercises/[id]/view`            | POST           | Record view          |
+| `/api/exercises/[id]/share`           | GET/POST       | List/Create tokens   |
+| `/api/exercises/[id]/share/[tokenId]` | DELETE         | Revoke token         |
+
+### Public Routes
+
+| Route              | Purpose                                        |
+| ------------------ | ---------------------------------------------- |
+| `/exercice/[slug]` | Public exercise viewer (supports `?token=...`) |
+| `/exercice/[id]`   | Fallback if slug is UUID                       |
 
 ---
 
@@ -140,20 +149,23 @@ The codebase has **two distinct systems** for math problems. Understanding the d
 
 ### Database
 
-| File                                                                        | Purpose                |
-| --------------------------------------------------------------------------- | ---------------------- |
-| `supabase/migrations/20251026080000_create_exercises_table.sql`             | Core `exercises` table |
-| `supabase/migrations/20251027005912_create_exercise_assignments.sql`        | Assignments schema     |
-| `supabase/migrations/20251031160000_create_exercise_assignments_tables.sql` | Completions & RLS      |
-| `supabase/migrations/20251027010000_add_exercise_fulltext_search.sql`       | French FTS index       |
+| File                                                                        | Purpose                  |
+| --------------------------------------------------------------------------- | ------------------------ |
+| `supabase/migrations/20251026080000_create_exercises_table.sql`             | Core `exercises` table   |
+| `supabase/migrations/20251027005912_create_exercise_assignments.sql`        | Assignments schema       |
+| `supabase/migrations/20251031160000_create_exercise_assignments_tables.sql` | Completions & RLS        |
+| `supabase/migrations/20251027010000_add_exercise_fulltext_search.sql`       | French FTS index         |
+| `supabase/migrations/20251221141345_create_exercise_share_tokens.sql`       | Share tokens table       |
+| `supabase/migrations/20251221181000_fix_exercise_token_rls_recursion.sql`   | Token access via RLS fix |
 
 ### Server
 
-| File                                     | Purpose                       |
-| ---------------------------------------- | ----------------------------- |
-| `src/lib/server/exercises.ts`            | Core CRUD operations          |
-| `src/lib/server/exercise-assignments.ts` | Assignment & completion logic |
-| `src/lib/server/validation/exercises.ts` | Zod validation schemas        |
+| File                                      | Purpose                       |
+| ----------------------------------------- | ----------------------------- |
+| `src/lib/server/exercises.ts`             | Core CRUD operations          |
+| `src/lib/server/exercise-assignments.ts`  | Assignment & completion logic |
+| `src/lib/server/exercise-share-tokens.ts` | Share token CRUD operations   |
+| `src/lib/server/validation/exercises.ts`  | Zod validation schemas        |
 
 ### Client
 
@@ -161,20 +173,24 @@ The codebase has **two distinct systems** for math problems. Understanding the d
 | ----------------------------------------------------- | ------------------------------ |
 | `src/lib/exercises/types.ts`                          | Type definitions (~2250 lines) |
 | `src/lib/exercises/generator/instance-generator.ts`   | Parameterization engine        |
+| `src/lib/exercises/typst/exercise-typst-generator.ts` | PDF generation via Typst       |
 | `src/lib/components/exercises/ExerciseDisplay.svelte` | Main display component         |
 
 ### Routes
 
-| Route                                                 | Purpose       |
-| ----------------------------------------------------- | ------------- |
-| `src/routes/api/exercises/`                           | API endpoints |
-| `src/routes/(protected)/dashboard/teacher/exercises/` | Teacher pages |
-| `src/routes/(protected)/dashboard/student/exercises/` | Student pages |
+| Route                                                 | Purpose                |
+| ----------------------------------------------------- | ---------------------- |
+| `src/routes/api/exercises/`                           | API endpoints          |
+| `src/routes/api/exercises/[id]/share/`                | Share token API        |
+| `src/routes/(public)/exercice/[slug]/`                | Public exercise viewer |
+| `src/routes/(protected)/dashboard/teacher/exercises/` | Teacher pages          |
+| `src/routes/(protected)/dashboard/student/exercises/` | Student pages          |
 
 ---
 
 ## Related Documentation
 
+- [Public Viewer](../../features/exercises/public-viewer.md) - Share tokens and public access
 - [Parameterization Guide](../../features/exercises/parameterization-guide.md) - Detailed variable syntax
 - [Import/Export](../../features/exercises/import-export.md) - JSON and Markdown formats
 - [Ubumark](../markdown.md) - Markdown parser with math support
