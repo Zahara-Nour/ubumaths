@@ -248,7 +248,8 @@ describe('Exp - Static Factories (Functions)', () => {
 
 	it('creates sqrt', () => {
 		const exp = Exp.sqrt(Exp.variable('x'));
-		expect(exp.latex).toBe('sqrt\\left( x \\right)');
+		// sqrt() is rendered as \sqrt{x} in LaTeX for round-trip compatibility
+		expect(exp.latex).toBe('\\sqrt{x}');
 	});
 
 	it('creates abs', () => {
@@ -422,7 +423,8 @@ describe('Exp - Instance Methods (Functions)', () => {
 
 	it('applies sqrt to this', () => {
 		const exp = Exp.variable('x').sqrt();
-		expect(exp.latex).toBe('sqrt\\left( x \\right)');
+		// sqrt() is rendered as \sqrt{x} in LaTeX for round-trip compatibility
+		expect(exp.latex).toBe('\\sqrt{x}');
 	});
 
 	it('applies abs to this', () => {

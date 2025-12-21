@@ -225,6 +225,39 @@ describe('LatexGenerator - Functions', () => {
 		});
 		expect(toLatex(expr)).toBe('\\sin^{10}\\left( x \\right)');
 	});
+
+	// Square root, cube root, and nth root use \sqrt{} syntax for LaTeX round-trip compatibility
+	it('generates sqrt as \\sqrt{x}', () => {
+		const expr = MathAST.sqrt(MathAST.variable('x'));
+		expect(toLatex(expr)).toBe('\\sqrt{x}');
+	});
+
+	it('generates sqrt with complex radicand', () => {
+		const expr = MathAST.sqrt(
+			MathAST.subtract(
+				MathAST.power(MathAST.variable('b'), MathAST.number('2')),
+				MathAST.implicitMultiply(MathAST.number('4'), MathAST.variable('a'))
+			)
+		);
+		expect(toLatex(expr)).toBe('\\sqrt{b^2 - 4 a}');
+	});
+
+	it('generates nth root (sqrt with base) as \\sqrt[n]{x}', () => {
+		const expr = MathAST.func('sqrt', [MathAST.variable('x')], {
+			base: MathAST.number('3')
+		});
+		expect(toLatex(expr)).toBe('\\sqrt[3]{x}');
+	});
+
+	it('generates cbrt as \\sqrt[3]{x}', () => {
+		const expr = MathAST.func('cbrt', [MathAST.variable('x')]);
+		expect(toLatex(expr)).toBe('\\sqrt[3]{x}');
+	});
+
+	it('generates root(radicand, index) as \\sqrt[index]{radicand}', () => {
+		const expr = MathAST.func('root', [MathAST.variable('x'), MathAST.number('5')]);
+		expect(toLatex(expr)).toBe('\\sqrt[5]{x}');
+	});
 });
 
 describe('LatexGenerator - Relations', () => {

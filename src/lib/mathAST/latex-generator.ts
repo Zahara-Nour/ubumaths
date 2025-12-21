@@ -462,7 +462,11 @@ export class LatexGenerator {
 
 	/**
 	 * Emits spans for a function node.
-	 * Special case: abs(x) is rendered as |x| using \left| \right|
+	 * Special cases:
+	 * - abs(x) is rendered as |x| using \left| \right|
+	 * - sqrt(x) is rendered as \sqrt{x} (not sqrt\left( x \right))
+	 * - cbrt(x) is rendered as \sqrt[3]{x}
+	 * - root(x, n) is rendered as \sqrt[n]{x}
 	 * Handles derivativeOrder (f', f'', f^{(n)}) and isInverse (f^{-1})
 	 */
 	private visitFunctionSpans(node: FunctionNode): void {
@@ -473,6 +477,49 @@ export class LatexGenerator {
 			this.emit('\\left| ', leftMeta);
 			this.visitWithSpans(node.args[0]);
 			this.emit(' \\right|', rightMeta);
+			return;
+		}
+
+		// Special case: sqrt, cbrt, root functions use \sqrt{} syntax instead of function call syntax.
+		// This is necessary for LaTeX round-trip compatibility:
+		// - LaTeX parser expects \sqrt{x} or \sqrt[n]{x}
+		// - Without this, we would generate "sqrt\left( x \right)" which fails to parse back
+		// - sqrt uses: \sqrt{radicand}
+		// - sqrt with base (nth root) uses: \sqrt[index]{radicand}
+		// - cbrt (cube root) uses: \sqrt[3]{radicand}
+		// - root(radicand, index) uses: \sqrt[index]{radicand}
+		if (node.name === 'sqrt' && node.args.length === 1 && !node.power) {
+			if (node.base) {
+				// Nth root: \sqrt[n]{x} - the index is stored in node.base
+				this.emit('\\sqrt[', node.nameMetadata ?? node.metadata);
+				this.visitWithSpans(node.base);
+				this.emit(']{', node.metadata);
+				this.visitWithSpans(node.args[0]);
+				this.emit('}', node.metadata);
+			} else {
+				// Square root: \sqrt{x}
+				this.emit('\\sqrt{', node.nameMetadata ?? node.metadata);
+				this.visitWithSpans(node.args[0]);
+				this.emit('}', node.metadata);
+			}
+			return;
+		}
+
+		if (node.name === 'cbrt' && node.args.length === 1 && !node.power && !node.base) {
+			// Cube root: \sqrt[3]{x}
+			this.emit('\\sqrt[3]{', node.nameMetadata ?? node.metadata);
+			this.visitWithSpans(node.args[0]);
+			this.emit('}', node.metadata);
+			return;
+		}
+
+		if (node.name === 'root' && node.args.length === 2 && !node.power && !node.base) {
+			// General nth root: root(radicand, index) → \sqrt[index]{radicand}
+			this.emit('\\sqrt[', node.nameMetadata ?? node.metadata);
+			this.visitWithSpans(node.args[1]); // index is second argument
+			this.emit(']{', node.metadata);
+			this.visitWithSpans(node.args[0]); // radicand is first argument
+			this.emit('}', node.metadata);
 			return;
 		}
 
@@ -794,7 +841,11 @@ export class LatexGenerator {
 
 	/**
 	 * Generates LaTeX for a function node.
-	 * Special case: abs(x) is rendered as |x| using \left| \right|
+	 * Special cases:
+	 * - abs(x) is rendered as |x| using \left| \right|
+	 * - sqrt(x) is rendered as \sqrt{x} (not sqrt\left( x \right))
+	 * - cbrt(x) is rendered as \sqrt[3]{x}
+	 * - root(x, n) is rendered as \sqrt[n]{x}
 	 * Handles derivativeOrder (f', f'', f^{(n)}) and isInverse (f^{-1})
 	 */
 	private generateFunction(node: FunctionNode): string {
@@ -802,6 +853,39 @@ export class LatexGenerator {
 		if (node.name === 'abs' && node.args.length === 1 && !node.power && !node.base) {
 			const content = this.generateNode(node.args[0]);
 			return `\\left| ${content} \\right|`;
+		}
+
+		// Special case: sqrt, cbrt, root functions use \sqrt{} syntax instead of function call syntax.
+		// This is necessary for LaTeX round-trip compatibility:
+		// - LaTeX parser expects \sqrt{x} or \sqrt[n]{x}
+		// - Without this, we would generate "sqrt\left( x \right)" which fails to parse back
+		// - sqrt uses: \sqrt{radicand}
+		// - sqrt with base (nth root) uses: \sqrt[index]{radicand}
+		// - cbrt (cube root) uses: \sqrt[3]{radicand}
+		// - root(radicand, index) uses: \sqrt[index]{radicand}
+		if (node.name === 'sqrt' && node.args.length === 1 && !node.power) {
+			const radicand = this.generateNode(node.args[0]);
+			if (node.base) {
+				// Nth root: \sqrt[n]{x} - the index is stored in node.base
+				const index = this.generateNode(node.base);
+				return `\\sqrt[${index}]{${radicand}}`;
+			} else {
+				// Square root: \sqrt{x}
+				return `\\sqrt{${radicand}}`;
+			}
+		}
+
+		if (node.name === 'cbrt' && node.args.length === 1 && !node.power && !node.base) {
+			// Cube root: \sqrt[3]{x}
+			const radicand = this.generateNode(node.args[0]);
+			return `\\sqrt[3]{${radicand}}`;
+		}
+
+		if (node.name === 'root' && node.args.length === 2 && !node.power && !node.base) {
+			// General nth root: root(radicand, index) → \sqrt[index]{radicand}
+			const radicand = this.generateNode(node.args[0]);
+			const index = this.generateNode(node.args[1]);
+			return `\\sqrt[${index}]{${radicand}}`;
 		}
 
 		const isKnown = KNOWN_FUNCTIONS.has(node.name);
