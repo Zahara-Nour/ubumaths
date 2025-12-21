@@ -262,7 +262,7 @@ describe('differentiate', () => {
 		it('d/dx(ln(x)) = 1/x', () => {
 			const expr = ln(variable('x'));
 			const result = differentiate(expr);
-			expect(toLatex(result)).toBe('\\frac{1}{x}');
+			expect(toLatex(result)).toBe('\\dfrac{1}{x}');
 		});
 
 		it('d/dx(exp(x)) = exp(x)', () => {
@@ -276,7 +276,7 @@ describe('differentiate', () => {
 			const expr = sqrt(variable('x'));
 			const result = differentiate(expr);
 			const latex = toLatex(result);
-			expect(latex).toContain('\\frac');
+			expect(latex).toContain('\\dfrac');
 			expect(latex).toContain('sqrt');
 		});
 	});

@@ -103,7 +103,7 @@ describe('LatexGenerator - Binary Operations', () => {
 
 	it('generates fraction division', () => {
 		const expr = MathAST.fraction(MathAST.variable('a'), MathAST.variable('b'));
-		expect(toLatex(expr)).toBe('\\frac{a}{b}');
+		expect(toLatex(expr)).toBe('\\dfrac{a}{b}');
 	});
 
 	it('generates inline division', () => {
@@ -384,7 +384,7 @@ describe('LatexGenerator - Complex Expressions', () => {
 			MathAST.fraction(MathAST.variable('a'), MathAST.variable('b')),
 			MathAST.fraction(MathAST.variable('c'), MathAST.variable('d'))
 		);
-		expect(toLatex(expr)).toBe('\\frac{\\frac{a}{b}}{\\frac{c}{d}}');
+		expect(toLatex(expr)).toBe('\\dfrac{\\dfrac{a}{b}}{\\dfrac{c}{d}}');
 	});
 
 	it('generates complex subscripts', () => {

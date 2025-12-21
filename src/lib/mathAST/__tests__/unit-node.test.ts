@@ -592,7 +592,7 @@ describe('UnitNode', () => {
 			const expr = divide(number('1'), number('2'), 'fraction');
 			const node = withUnit(expr, unit);
 
-			expect(toLatex(node)).toBe('\\frac{1}{2}~\\unit{m}');
+			expect(toLatex(node)).toBe('\\dfrac{1}{2}~\\unit{m}');
 		});
 
 		it('generates correct LaTeX for power expression with unit', () => {

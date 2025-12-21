@@ -139,7 +139,7 @@ describe('Exp - Static Factories (Binary Operations)', () => {
 	it('creates division with default fraction style', () => {
 		const exp = Exp.divide(Exp.variable('a'), Exp.variable('b'));
 		expect(exp.type).toBe('division');
-		expect(exp.latex).toBe('\\frac{a}{b}');
+		expect(exp.latex).toBe('\\dfrac{a}{b}');
 	});
 
 	it('creates division with inline style', () => {
@@ -149,7 +149,7 @@ describe('Exp - Static Factories (Binary Operations)', () => {
 
 	it('creates fraction', () => {
 		const exp = Exp.fraction(Exp.number('1'), Exp.number('2'));
-		expect(exp.latex).toBe('\\frac{1}{2}');
+		expect(exp.latex).toBe('\\dfrac{1}{2}');
 	});
 
 	it('accepts MathNode directly', () => {
@@ -333,12 +333,12 @@ describe('Exp - Instance Methods (Binary Operations)', () => {
 
 	it('chains divide', () => {
 		const exp = Exp.number('6').divide(Exp.number('2'));
-		expect(exp.latex).toBe('\\frac{6}{2}');
+		expect(exp.latex).toBe('\\dfrac{6}{2}');
 	});
 
 	it('chains fraction', () => {
 		const exp = Exp.variable('a').fraction(Exp.variable('b'));
-		expect(exp.latex).toBe('\\frac{a}{b}');
+		expect(exp.latex).toBe('\\dfrac{a}{b}');
 	});
 
 	it('supports complex chaining', () => {
@@ -599,7 +599,7 @@ describe('Exp - Complex Usage Scenarios', () => {
 			Exp.variable('c').add(Exp.variable('d')).parentheses()
 		);
 
-		expect(expr.latex).toContain('\\frac');
+		expect(expr.latex).toContain('\\dfrac');
 	});
 
 	it('parses and transforms LaTeX', () => {
