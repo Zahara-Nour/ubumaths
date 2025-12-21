@@ -650,6 +650,80 @@ function generateCodeBlock(node: CodeBlockNode): string {
 // ============================================================================
 
 /**
+ * Find the matching closing brace for an opening brace at the given position.
+ * Handles nested braces properly.
+ *
+ * @param str - The string to search in
+ * @param openPos - Position of the opening brace
+ * @returns Position of the matching closing brace, or -1 if not found
+ */
+function findMatchingBrace(str: string, openPos: number): number {
+	if (str[openPos] !== '{') return -1;
+	let depth = 1;
+	let i = openPos + 1;
+	while (i < str.length && depth > 0) {
+		if (str[i] === '{') depth++;
+		else if (str[i] === '}') depth--;
+		i++;
+	}
+	return depth === 0 ? i - 1 : -1;
+}
+
+/**
+ * Convert LaTeX \frac{...}{...} and \dfrac{...}{...} to Typst frac(..., ...)
+ * Handles nested braces properly (e.g., \dfrac{(-1)^{n+1}}{u^2_n})
+ *
+ * @param str - Input string
+ * @returns String with fractions converted
+ */
+function convertLatexFractions(str: string): string {
+	let result = str;
+	const fracPattern = /\\d?frac\s*\{/g;
+	let match;
+
+	// Keep converting until no more matches (handles nested fractions)
+	let changed = true;
+	while (changed) {
+		changed = false;
+		fracPattern.lastIndex = 0;
+
+		while ((match = fracPattern.exec(result)) !== null) {
+			const startIndex = match.index;
+			const openBraceIndex = match.index + match[0].length - 1;
+
+			// Find matching closing brace for numerator
+			const numEnd = findMatchingBrace(result, openBraceIndex);
+			if (numEnd === -1) continue;
+
+			const numerator = result.slice(openBraceIndex + 1, numEnd);
+
+			// Skip whitespace and find denominator
+			let i = numEnd + 1;
+			while (i < result.length && /\s/.test(result[i])) i++;
+
+			if (result[i] !== '{') continue;
+
+			const denomStart = i;
+			const denomEnd = findMatchingBrace(result, denomStart);
+			if (denomEnd === -1) continue;
+
+			const denominator = result.slice(denomStart + 1, denomEnd);
+
+			// Replace the whole \frac{...}{...} with frac(...)
+			const replacement = 'frac(' + numerator + ', ' + denominator + ')';
+			result = result.slice(0, startIndex) + replacement + result.slice(denomEnd + 1);
+
+			changed = true;
+			// Reset and start over since string changed
+			fracPattern.lastIndex = 0;
+			break;
+		}
+	}
+
+	return result;
+}
+
+/**
  * Convert LaTeX math to Typst math syntax
  *
  * Typst uses different syntax than LaTeX for math mode.
@@ -682,17 +756,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\right\s*\\}/g, '}');
 
 	// Convert \dfrac{a}{b} and \frac{a}{b} to frac(a, b)
-	// Typst uses frac(a, b) syntax - \dfrac is display style fraction in LaTeX
-	result = result.replace(/\\dfrac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
-	result = result.replace(/\\frac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
-
-	// Handle nested fractions - repeat the conversion
-	let prev = '';
-	while (prev !== result) {
-		prev = result;
-		result = result.replace(/\\dfrac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
-		result = result.replace(/\\frac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
-	}
+	// Uses balanced brace matching to handle nested braces like \dfrac{(-1)^{n+1}}{u^2_n}
+	result = convertLatexFractions(result);
 
 	// Convert \begin{cases} ... \end{cases} to Typst cases()
 	// LaTeX: \begin{cases} a & b \\ c & d \end{cases}
