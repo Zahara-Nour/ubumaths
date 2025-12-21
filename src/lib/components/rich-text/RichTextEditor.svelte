@@ -124,6 +124,8 @@
 		 * Controls which identifiers are recognized as function calls (e.g., f(x), C'(x))
 		 */
 		genericFunctions?: GenericFunctionConfig | null;
+		/** Callback called when content changes (user input, not programmatic updates) */
+		onchange?: () => void;
 	}
 
 	let {
@@ -140,7 +142,8 @@
 		minHeight = '100px',
 		disabled = false,
 		imageUpload,
-		genericFunctions
+		genericFunctions,
+		onchange
 	}: Props = $props();
 
 	// Resolve configuration: explicit props override preset values
@@ -167,6 +170,8 @@
 	let editor = $state<Editor | null>(null);
 	// Non-reactive flag to prevent update loops (NOT $state - just a guard)
 	let isUpdatingFromProp = false;
+	// Flag to track when editor is ready for user input (prevents onchange during init)
+	let hasInitialized = false;
 
 	// Toolbar Section State
 	let textSectionOpen = $state(true);
@@ -349,6 +354,11 @@
 					}
 					updateFormattingState();
 					updatePreviewDebounced();
+
+					// Notify parent of user-initiated change (only after initialization)
+					if (hasInitialized) {
+						onchange?.();
+					}
 				},
 				onSelectionUpdate: () => {
 					updateFormattingState();
@@ -359,6 +369,12 @@
 			isUpdatingFromProp = false;
 
 			updateFormattingState();
+
+			// Mark as initialized after a tick to let any pending TipTap updates complete
+			// This ensures onchange is not called during initial content sync
+			setTimeout(() => {
+				hasInitialized = true;
+			}, 0);
 		})();
 
 		return () => {

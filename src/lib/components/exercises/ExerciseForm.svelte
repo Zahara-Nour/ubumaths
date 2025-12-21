@@ -23,6 +23,7 @@
 		SharedExerciseDefaults
 	} from '$lib/exercises/types';
 	import type { Variable } from '$lib/ubumark';
+	import { Save, Loader2 } from 'lucide-svelte';
 
 	type Exercise = Database['public']['Tables']['exercises']['Row'];
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -102,11 +103,26 @@
 	});
 
 	// Collapsible section states
+	// Metadata collapsed by default when editing, open when creating
+	let metadataOpen = $state(!exercise);
 	let sharedVariablesOpen = $state(false);
 	let resourcesOpen = $state(false);
 	let genericFunctionsOpen = $state(false);
 	let newSharedVarName = $state('');
 	let newSharedVarExpression = $state('');
+
+	// Simple dirty state tracking - activates on any user modification
+	let isDirty = $state(false);
+
+	// Mark form as dirty (called by input handlers)
+	function markDirty() {
+		isDirty = true;
+	}
+
+	// Reset dirty state after successful save
+	function resetDirty() {
+		isDirty = false;
+	}
 
 	// Image counter for slug-based naming
 	// Count existing images in all variations to initialize counter
@@ -170,6 +186,20 @@
 	$effect(() => {
 		console.log('[ExerciseForm] genericFunctions changed:', $state.snapshot(genericFunctions));
 	});
+
+	// Keyboard shortcuts (Ctrl+S to save)
+	function handleKeydown(e: KeyboardEvent) {
+		if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+			e.preventDefault();
+			if (!submitting) {
+				// Trigger form submission programmatically
+				const form = document.querySelector('form');
+				if (form) {
+					form.requestSubmit();
+				}
+			}
+		}
+	}
 
 	// LaTeX import state
 	let latexImportOpen = $state(false);
@@ -381,6 +411,9 @@
 		data.solution_md = variations[0]?.solution_md || '';
 
 		await onsubmit(data);
+		// Reset dirty state after successful save
+		// Note: The parent component should handle errors before we get here
+		resetDirty();
 	}
 
 	/**
@@ -434,6 +467,9 @@
 	}
 </script>
 
+<!-- Keyboard shortcuts handler -->
+<svelte:window onkeydown={handleKeydown} />
+
 <!-- Header with LaTeX import button (only for new exercises) -->
 <div class="mb-6 flex items-center justify-between">
 	{#if !exercise}
@@ -457,88 +493,116 @@
 	{/if}
 </div>
 
-<form onsubmit={handleSubmit} class="space-y-6">
-	<!-- Metadata -->
-	<Card.Root>
-		<Card.Content class="space-y-4">
-			<!-- Title & Source -->
-			<div class="grid gap-4 md:grid-cols-2">
-				<div class="space-y-2">
-					<Label for="title">Titre</Label>
-					<Input
-						id="title"
-						type="text"
-						placeholder="Ex: Equations du premier degre"
-						bind:value={title}
-					/>
-				</div>
-				<div class="space-y-2">
-					<Label for="source">Source</Label>
-					<Input
-						id="source"
-						type="text"
-						placeholder="Ex: Livre de 3eme, p. 42"
-						bind:value={source}
-					/>
-				</div>
-			</div>
+<form onsubmit={handleSubmit} class="space-y-6 pb-20">
+	<!-- Metadata (collapsible, closed by default when editing) -->
+	<Collapsible.Root bind:open={metadataOpen}>
+		<Card.Root>
+			<Collapsible.Trigger asChild>
+				{#snippet child({ props })}
+					<Card.Header class="cursor-pointer py-3" {...props}>
+						<div class="flex items-center justify-between">
+							<div>
+								<Card.Title>Metadonnees</Card.Title>
+								{#if !metadataOpen && title}
+									<Card.Description class="mt-1 truncate">{title}</Card.Description>
+								{/if}
+							</div>
+							<span
+								class="text-muted-foreground transition-transform"
+								class:rotate-180={metadataOpen}
+							>
+								&#9660;
+							</span>
+						</div>
+					</Card.Header>
+				{/snippet}
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<Card.Content class="space-y-4 pt-0">
+					<!-- Title & Source -->
+					<div class="grid gap-4 md:grid-cols-2">
+						<div class="space-y-2">
+							<Label for="title">Titre</Label>
+							<Input
+								id="title"
+								type="text"
+								placeholder="Ex: Equations du premier degre"
+								bind:value={title}
+							/>
+						</div>
+						<div class="space-y-2">
+							<Label for="source">Source</Label>
+							<Input
+								id="source"
+								type="text"
+								placeholder="Ex: Livre de 3eme, p. 42"
+								bind:value={source}
+							/>
+						</div>
+					</div>
 
-			<!-- Difficulty, Slug & Topic -->
-			<div class="grid gap-4 md:grid-cols-3">
-				<div class="space-y-2">
-					<Label for="difficulty">
-						Difficulte <span class="text-destructive">*</span>
-					</Label>
-					<MySelect
-						type="single"
-						bind:value={difficulty}
-						items={[
-							{ value: 1, label: '1 - Facile' },
-							{ value: 2, label: '2 - Moyen' },
-							{ value: 3, label: '3 - Difficile' }
-						]}
-						placeholder="Selectionnez..."
-					/>
-					{#if errors.difficulty}
-						<p class="text-sm text-destructive">{errors.difficulty}</p>
-					{/if}
-				</div>
+					<!-- Difficulty, Slug & Topic -->
+					<div class="grid gap-4 md:grid-cols-3">
+						<div class="space-y-2">
+							<Label for="difficulty">
+								Difficulte <span class="text-destructive">*</span>
+							</Label>
+							<MySelect
+								type="single"
+								bind:value={difficulty}
+								items={[
+									{ value: 1, label: '1 - Facile' },
+									{ value: 2, label: '2 - Moyen' },
+									{ value: 3, label: '3 - Difficile' }
+								]}
+								placeholder="Selectionnez..."
+							/>
+							{#if errors.difficulty}
+								<p class="text-sm text-destructive">{errors.difficulty}</p>
+							{/if}
+						</div>
 
-				<div class="space-y-2">
-					<Label for="slug">Slug</Label>
-					<Input
-						id="slug"
-						type="text"
-						placeholder="Ex: algebre-equations-k8m2n4"
-						bind:value={slug}
-						disabled={!!slug}
-						class="font-mono text-sm {slug ? 'bg-muted' : ''}"
-					/>
-					{#if errors.slug}
-						<p class="text-sm text-destructive">{errors.slug}</p>
-					{/if}
-				</div>
+						<div class="space-y-2">
+							<Label for="slug">Slug</Label>
+							<Input
+								id="slug"
+								type="text"
+								placeholder="Ex: algebre-equations-k8m2n4"
+								bind:value={slug}
+								disabled={!!slug}
+								class="font-mono text-sm {slug ? 'bg-muted' : ''}"
+							/>
+							{#if errors.slug}
+								<p class="text-sm text-destructive">{errors.slug}</p>
+							{/if}
+						</div>
 
-				<div class="space-y-2">
-					<Label for="topic">Theme</Label>
-					<Input id="topic" type="text" placeholder="Ex: Algebre" bind:value={topic} />
-				</div>
-			</div>
+						<div class="space-y-2">
+							<Label for="topic">Theme</Label>
+							<Input id="topic" type="text" placeholder="Ex: Algebre" bind:value={topic} />
+						</div>
+					</div>
 
-			<!-- Tags & Grade Levels -->
-			<div class="grid gap-4 md:grid-cols-2">
-				<div class="space-y-2">
-					<Label>Tags</Label>
-					<TagBadgeSelector bind:value={tags} placeholder="Ajouter des tags" maxSelections={20} />
-				</div>
+					<!-- Tags & Grade Levels -->
+					<div class="grid gap-4 md:grid-cols-2">
+						<div class="space-y-2">
+							<Label>Tags</Label>
+							<TagBadgeSelector
+								bind:value={tags}
+								placeholder="Ajouter des tags"
+								maxSelections={20}
+							/>
+						</div>
 
-				<div class="space-y-2">
-					<Label>Niveaux</Label>
-					<GradeBadgeSelector bind:value={gradeLevels} placeholder="Ajouter des niveaux" />
-				</div>
-			</div>
-		</Card.Content>
-	</Card.Root>
+						<div class="space-y-2">
+							<Label>Niveaux</Label>
+							<GradeBadgeSelector bind:value={gradeLevels} placeholder="Ajouter des niveaux" />
+						</div>
+					</div>
+				</Card.Content>
+			</Collapsible.Content>
+		</Card.Root>
+	</Collapsible.Root>
 
 	<!-- Variations Editor -->
 	<Card.Root>
@@ -547,7 +611,8 @@
 		</Card.Header>
 		<Card.Content>
 			<Tabs.Root bind:value={activeVariationTab}>
-				<div class="mb-4 flex items-center gap-2">
+				<!-- Sticky tabs bar -->
+				<div class="sticky top-0 z-10 mb-4 flex items-center gap-2 bg-card py-2">
 					<Tabs.List class="flex-wrap">
 						{#each variations as variation, index (index)}
 							<Tabs.Trigger value={String(index)} class="relative pr-8">
@@ -632,6 +697,7 @@
 							imageSlug={slug || undefined}
 							{getNextImageNumber}
 							{ensureSlugExists}
+							onchange={markDirty}
 						/>
 					</Tabs.Content>
 				{/each}
@@ -818,6 +884,30 @@
 		</Button>
 	</div>
 </form>
+
+<!-- Floating Action Button (FAB) for save - always visible -->
+<button
+	type="button"
+	onclick={() => {
+		const form = document.querySelector('form');
+		if (form) form.requestSubmit();
+	}}
+	disabled={submitting}
+	title={isDirty ? 'Modifications non sauvegardees - Ctrl+S' : 'Enregistrer - Ctrl+S'}
+	class="fixed right-6 bottom-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none disabled:opacity-50"
+>
+	{#if submitting}
+		<Loader2 class="h-6 w-6 animate-spin" />
+	{:else}
+		<Save class="h-6 w-6" />
+	{/if}
+	<!-- Dirty indicator dot -->
+	{#if isDirty && !submitting}
+		<span
+			class="absolute -top-1 -right-1 h-4 w-4 rounded-full border-2 border-background bg-orange-500"
+		></span>
+	{/if}
+</button>
 
 <!-- LaTeX Import Dialog (only for new exercises) -->
 {#if !exercise}

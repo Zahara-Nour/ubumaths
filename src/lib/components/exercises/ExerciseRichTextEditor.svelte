@@ -49,6 +49,8 @@
 		getNextImageNumber?: () => number;
 		/** Function to ensure slug exists (generates via API if needed) */
 		ensureSlugExists?: () => Promise<string | undefined>;
+		/** Callback called when content changes */
+		onchange?: () => void;
 	}
 
 	let {
@@ -58,7 +60,8 @@
 		genericFunctions,
 		imageSlug,
 		getNextImageNumber,
-		ensureSlugExists
+		ensureSlugExists,
+		onchange
 	}: Props = $props();
 
 	/**
@@ -119,4 +122,5 @@
 	imageUpload={imageUploadConfig}
 	toolbar={{ preview: true }}
 	genericFunctions={genericFunctionsConfig}
+	{onchange}
 />
