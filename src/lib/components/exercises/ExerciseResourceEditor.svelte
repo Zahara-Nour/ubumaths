@@ -3,7 +3,11 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { ExerciseResource, ExerciseResourceType } from '$lib/exercises/types';
+
+	/** Maximum number of resources allowed per exercise (enforced limit) */
+	const MAX_RESOURCES = 20;
 
 	interface Props {
 		resources: ExerciseResource[];
@@ -26,7 +30,17 @@
 	let newTitle = $state('');
 	let newDescription = $state('');
 
+	/**
+	 * Add new resource.
+	 * Enforces a maximum of 20 resources per exercise for performance and UX.
+	 */
 	function addResource() {
+		// Enforce maximum limit
+		if (resources.length >= MAX_RESOURCES) {
+			toaster.warning(`Maximum ${MAX_RESOURCES} ressources autorisees`);
+			return;
+		}
+
 		if (!newUrl.trim() || !newTitle.trim()) return;
 
 		const newResource: ExerciseResource = {
@@ -153,14 +167,14 @@
 				variant="outline"
 				size="sm"
 				onclick={addResource}
-				disabled={!newUrl.trim() || !newTitle.trim()}
+				disabled={!newUrl.trim() || !newTitle.trim() || resources.length >= MAX_RESOURCES}
 			>
 				+ Ajouter
 			</Button>
 		</div>
 	</div>
 
-	{#if resources.length >= 20}
-		<p class="text-xs text-muted-foreground">Maximum 20 ressources atteint</p>
+	{#if resources.length >= MAX_RESOURCES}
+		<p class="text-xs text-muted-foreground">Maximum {MAX_RESOURCES} ressources atteint</p>
 	{/if}
 </div>
