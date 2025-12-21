@@ -338,8 +338,14 @@
 				content: initialContent,
 				editorProps,
 				editable: !disabled,
+				onCreate: () => {
+					// TipTap signals it's fully initialized - now safe to track user changes
+					hasInitialized = true;
+					isUpdatingFromProp = false;
+					updateFormattingState();
+				},
 				onUpdate: ({ editor: ed }) => {
-					if (isUpdatingFromProp) return;
+					if (isUpdatingFromProp || !hasInitialized) return;
 
 					// Update bound values in form mode
 					if (mode === 'form') {
@@ -355,26 +361,13 @@
 					updateFormattingState();
 					updatePreviewDebounced();
 
-					// Notify parent of user-initiated change (only after initialization)
-					if (hasInitialized) {
-						onchange?.();
-					}
+					// Notify parent of user-initiated change
+					onchange?.();
 				},
 				onSelectionUpdate: () => {
 					updateFormattingState();
 				}
 			});
-
-			// Allow reactive updates after initialization
-			isUpdatingFromProp = false;
-
-			updateFormattingState();
-
-			// Mark as initialized after a tick to let any pending TipTap updates complete
-			// This ensures onchange is not called during initial content sync
-			setTimeout(() => {
-				hasInitialized = true;
-			}, 0);
 		})();
 
 		return () => {
