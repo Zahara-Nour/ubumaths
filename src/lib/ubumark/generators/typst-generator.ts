@@ -104,8 +104,8 @@ function generateSetup(options: Required<TypstTranspilerOptions>): string {
 	setup += '#set par(justify: true)\n';
 	setup += '#set heading(numbering: "1.1")\n';
 
-	// List item spacing
-	setup += '#set enum(spacing: 1.5em, tight: false)\n';
+	// List item spacing and numbering scheme (French academic: 1) a) i))
+	setup += '#set enum(numbering: "1)", spacing: 1.5em, tight: false)\n';
 	setup += '#set list(spacing: 1.5em, tight: false)\n';
 
 	// Display limits above/below for common operators (like LaTeX display mode)
@@ -289,22 +289,49 @@ function generateHeading(node: HeadingNode, options: Required<TypstTranspilerOpt
 // ============================================================================
 
 /**
- * Generate list node
+ * Numbering patterns for French academic style (1) a) i))
+ * Used to match the HTML export numbering scheme.
+ */
+const ENUM_NUMBERING_PATTERNS = [
+	'1)', // Depth 1: 1) 2) 3)
+	'a)', // Depth 2: a) b) c)
+	'i)', // Depth 3: i) ii) iii)
+	'1)' // Depth 4+: fallback to numeric
+];
+
+/**
+ * Get numbering pattern for a given enumerate depth
+ */
+function getNumberingPattern(depth: number): string {
+	return ENUM_NUMBERING_PATTERNS[Math.min(depth - 1, ENUM_NUMBERING_PATTERNS.length - 1)];
+}
+
+/**
+ * Generate list node with depth tracking for proper numbering
  *
  * Uses numbered lists for ordered, bullet lists for unordered.
+ * Ordered lists use the French academic style: 1) a) i)
  *
  * @param node - List node
  * @param options - Generator options
+ * @param enumerateDepth - Current enumerate depth (only increments for ordered lists)
  * @returns Typst list
  */
-function generateList(node: ListNode, options: Required<TypstTranspilerOptions>): string {
+function generateList(
+	node: ListNode,
+	options: Required<TypstTranspilerOptions>,
+	enumerateDepth: number = 0
+): string {
+	// Calculate new depth: only ordered lists increment enumerate depth
+	const newDepth = node.ordered ? enumerateDepth + 1 : enumerateDepth;
 	const startNumber = node.start ?? 1;
 
 	const items = node.items
 		.map((item: ListItemNode, index: number) => {
 			const childBlocks = item.children.map((child: ASTNode) => {
 				if (child.type === 'list') {
-					return generateList(child, options);
+					// Pass the current depth to nested lists
+					return generateList(child, options, newDepth);
 				}
 				return generateBlock(child as BlockNode, options);
 			});
@@ -329,14 +356,37 @@ function generateList(node: ListNode, options: Required<TypstTranspilerOptions>)
 			}
 
 			if (node.ordered) {
-				// Use explicit numbering (e.g., "3. item") to support custom start numbers
-				// Typst recognizes "N. content" as an explicitly numbered enum item
-				const num = startNumber + index;
-				return `${num}. ${itemContent}`;
+				// For depth 1, use explicit numbering to support custom start numbers
+				// For deeper levels, use + marker (Typst's enum continuation)
+				if (newDepth === 1) {
+					const num = startNumber + index;
+					return `${num}. ${itemContent}`;
+				}
+				// For nested enums, use + marker
+				return `+ ${itemContent}`;
 			}
 			return `- ${itemContent}`;
 		})
 		.join('\n');
+
+	// For nested ordered lists (depth > 1), wrap with #enum() to set custom numbering
+	if (node.ordered && newDepth > 1) {
+		const pattern = getNumberingPattern(newDepth);
+		// Convert items from "+ content" to array format for #enum()
+		const enumItems = node.items
+			.map((item: ListItemNode) => {
+				const childBlocks = item.children.map((child: ASTNode) => {
+					if (child.type === 'list') {
+						return generateList(child, options, newDepth);
+					}
+					return generateBlock(child as BlockNode, options);
+				});
+				const content = childBlocks.join('\n');
+				return `[${content}]`;
+			})
+			.join(',\n  ');
+		return `#enum(numbering: "${pattern}",\n  ${enumItems}\n)`;
+	}
 
 	return items;
 }
@@ -631,16 +681,30 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\left\s*\\{/g, '{');
 	result = result.replace(/\\right\s*\\}/g, '}');
 
-	// Convert \frac{a}{b} to frac(a, b) or (a)/(b)
-	// Typst uses frac(a, b) syntax
+	// Convert \dfrac{a}{b} and \frac{a}{b} to frac(a, b)
+	// Typst uses frac(a, b) syntax - \dfrac is display style fraction in LaTeX
+	result = result.replace(/\\dfrac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
 	result = result.replace(/\\frac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
 
 	// Handle nested fractions - repeat the conversion
 	let prev = '';
 	while (prev !== result) {
 		prev = result;
+		result = result.replace(/\\dfrac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
 		result = result.replace(/\\frac\s*{([^{}]*)}\s*{([^{}]*)}/g, 'frac($1, $2)');
 	}
+
+	// Convert \begin{cases} ... \end{cases} to Typst cases()
+	// LaTeX: \begin{cases} a & b \\ c & d \end{cases}
+	// Typst: cases(a & b, c & d)
+	result = result.replace(/\\begin\s*\{cases\}([\s\S]*?)\\end\s*\{cases\}/g, (_, content) => {
+		// Split by \\ and clean up
+		const lines = content
+			.split(/\\\\/)
+			.map((line: string) => line.trim())
+			.filter((line: string) => line.length > 0);
+		return 'cases(' + lines.join(', ') + ')';
+	});
 
 	// Convert \sqrt{x} to sqrt(x)
 	result = result.replace(/\\sqrt\s*{([^{}]*)}/g, 'sqrt($1)');
