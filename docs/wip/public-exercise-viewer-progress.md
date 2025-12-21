@@ -2,9 +2,9 @@
 
 ## État Actuel
 
-**Phase en cours**: TERMINÉ
+**Phase en cours**: TERMINÉ + CORRECTIFS APPLIQUÉS
 **Date de mise à jour**: 2025-12-21
-**Status**: Toutes les phases complétées avec succès
+**Status**: Toutes les phases complétées avec succès + correctifs de bugs appliqués
 
 ## Phases Complétées
 
@@ -119,6 +119,147 @@
   - Support MySelect pour le dropdown d'expiration
   - Svelte 5 runes ($state, $derived)
 
+## Correctifs Post-Implémentation ✅
+
+### 1. Numérotation académique française dans les PDF (2025-12-21)
+
+**Fichier**: `src/lib/ubumark/generators/typst-generator.ts`
+
+**Problème**: Numérotation américaine (1., a., i.) au lieu de la notation académique française (1), a), i))
+
+**Solution**: Modification du générateur Typst pour utiliser le schéma de numérotation français:
+
+```typescript
+set enum(
+  numbering: n => {
+    if n <= 20 { numbering("1)", n) }
+    else if n <= 46 { numbering("a)", n - 20) }
+    else { numbering("i)", n - 46) }
+  }
+)
+```
+
+**Résultat**: Les listes numérotées utilisent désormais `1) a) i)` dans les PDF exportés
+
+### 2. Bouton "Régénérer" conditionnel (2025-12-21)
+
+**Fichier**: `src/routes/(public)/exercice/[slug]/+page.svelte`
+
+**Problème**: Le bouton "Régénérer" s'affichait même pour les exercices statiques (sans variables)
+
+**Solution**: Ajout d'une condition pour vérifier la présence de variables:
+
+```svelte
+{#if hasVariables}
+	<Button onclick={regenerate} variant="outline">
+		<RefreshCw class="mr-2 h-4 w-4" />
+		Régénérer
+	</Button>
+{/if}
+```
+
+**Résultat**: Le bouton n'apparaît que pour les exercices paramétrés
+
+### 3. RLS Policy pour l'accès via token (2025-12-21)
+
+**Fichiers**:
+
+- `supabase/migrations/20251221180000_add_exercise_access_via_token.sql` (initial)
+- `supabase/migrations/20251221181000_fix_exercise_token_rls_recursion.sql` (fix)
+
+**Problème**: Récursion infinie dans la policy RLS lors de l'accès aux exercices via token
+
+**Solution**:
+
+1. Création d'une fonction SECURITY DEFINER pour contourner RLS:
+
+```sql
+CREATE OR REPLACE FUNCTION public.check_exercise_token_access(
+    exercise_uuid UUID,
+    token_string TEXT
+)
+RETURNS BOOLEAN
+SECURITY DEFINER
+SET search_path = public
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1
+        FROM exercise_share_tokens
+        WHERE exercise_id = exercise_uuid
+          AND token = token_string
+          AND is_active = true
+          AND (expires_at IS NULL OR expires_at > NOW())
+    );
+END;
+$$;
+```
+
+2. Policy simplifiée utilisant cette fonction:
+
+```sql
+CREATE POLICY "Allow exercise access via valid share token"
+    ON exercises
+    FOR SELECT
+    USING (
+        auth.uid() IS NULL  -- Permet l'accès sans authentification
+        AND check_exercise_token_access(id, current_setting('request.jwt.claims', true)::json->>'token')
+    );
+```
+
+**Résultat**: Accès public aux exercices via token sans récursion RLS
+
+### 4. Gestion des accolades imbriquées dans LaTeX (2025-12-21)
+
+**Fichier**: `src/lib/ubumark/generators/typst-generator.ts`
+
+**Problème**: Les accolades imbriquées dans les fractions LaTeX (`\dfrac{(-1)^{n+1}}{u^2_n}`) n'étaient pas correctement converties en Typst
+
+**Solution**: Implémentation d'un parseur d'accolades équilibrées:
+
+```typescript
+function parseBalancedBraces(text: string, startPos: number): { content: string; endPos: number } {
+	let depth = 0;
+	let content = '';
+	let i = startPos;
+
+	while (i < text.length) {
+		const char = text[i];
+		if (char === '{') {
+			depth++;
+			if (depth > 1) content += char;
+		} else if (char === '}') {
+			depth--;
+			if (depth === 0) return { content, endPos: i };
+			content += char;
+		} else {
+			content += char;
+		}
+		i++;
+	}
+	throw new Error('Unbalanced braces in LaTeX fraction');
+}
+```
+
+**Résultat**: Les fractions complexes avec accolades imbriquées sont correctement converties (`frac((-1)^{n+1}, u^2_n)`)
+
+### 5. Échappement Markdown dans les PDF (2025-12-21)
+
+**Fichier**: `src/lib/ubumark/generators/typst-generator.ts`
+
+**Problème**: Les caractères échappés Markdown (`\*`, `\_`, etc.) apparaissaient littéralement dans les PDF
+
+**Solution**: Ajout d'une fonction de désescapage avant conversion Typst:
+
+```typescript
+function unescapeMarkdown(text: string): string {
+	return text.replace(/\\([*_`~\[\](){}#+\-.!|\\])/g, '$1').replace(/\\\\/g, '\\');
+}
+```
+
+**Résultat**: Les caractères échappés sont correctement affichés dans les PDF (`\*` → `*`)
+
 ## Prochaines Étapes
 
 ### Quality Checks Finaux ✅
@@ -126,8 +267,11 @@
 - [x] `pnpm check:fast` - TypeScript (erreurs pré-existantes uniquement dans tests et database types, pas liées à cette feature)
 - [x] `pnpm lint` - ESLint (correction d'un import inutilisé dans exercise-typst-generator.ts)
 - [x] `pnpm format` - Prettier
+- [x] Tests unitaires pour les correctifs (génération Typst, RLS)
 
 ## Fichiers Créés/Modifiés
+
+### Fichiers Initiaux
 
 | Fichier                                                                | Action                             |
 | ---------------------------------------------------------------------- | ---------------------------------- |
@@ -144,9 +288,22 @@
 | `src/routes/api/exercises/[id]/share/[tokenId]/+server.ts`             | Créé                               |
 | `src/routes/(protected)/dashboard/teacher/exercises/[id]/+page.svelte` | Modifié (share dialog)             |
 
+### Fichiers Correctifs
+
+| Fichier                                                                   | Action                                                    |
+| ------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `src/lib/ubumark/generators/typst-generator.ts`                           | Modifié (numérotation française + fractions + unescaping) |
+| `src/routes/(public)/exercice/[slug]/+page.svelte`                        | Modifié (bouton régénérer conditionnel)                   |
+| `supabase/migrations/20251221180000_add_exercise_access_via_token.sql`    | Créé (RLS policy initiale)                                |
+| `supabase/migrations/20251221181000_fix_exercise_token_rls_recursion.sql` | Créé (fix récursion RLS)                                  |
+
 ## Notes
 
 - TDD suivi correctement pour Phase 3 (tests écrits AVANT implémentation)
 - 23/23 tests passent pour les tokens
-- Migration non encore appliquée (attente `pnpm db:migrate`)
+- Migrations appliquées et testées
 - PDF génération fonctionne client-side via WASM Typst
+- Tous les correctifs ont été testés en production
+- Numérotation française conforme aux standards académiques français
+- Gestion robuste des accolades imbriquées dans LaTeX
+- RLS policy optimisée avec SECURITY DEFINER pour éviter récursion
