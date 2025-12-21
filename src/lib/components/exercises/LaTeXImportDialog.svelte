@@ -255,8 +255,8 @@
 </script>
 
 <Dialog.Root {open} onOpenChange={handleOpenChange}>
-	<Dialog.Content class="sm:max-w-[700px]">
-		<Dialog.Header>
+	<Dialog.Content class="flex max-h-[85vh] flex-col sm:max-w-[700px]">
+		<Dialog.Header class="flex-shrink-0">
 			<Dialog.Title>Importer depuis LaTeX</Dialog.Title>
 			<Dialog.Description>
 				{#if step === 1}
@@ -267,7 +267,7 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<div class="space-y-6 py-4">
+		<div class="flex-1 space-y-6 overflow-y-auto py-4">
 			{#if step === 1}
 				<!-- Step 1: Input -->
 
@@ -529,7 +529,7 @@
 			{/if}
 		</div>
 
-		<Dialog.Footer>
+		<Dialog.Footer class="flex-shrink-0">
 			{#if step === 1}
 				<Button
 					variant="outline"
