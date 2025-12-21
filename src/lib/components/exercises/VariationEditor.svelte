@@ -36,6 +36,11 @@
 		onchange
 	}: Props = $props();
 
+	// Ensure hints is always an array (required for bind: to work with HintEditor)
+	if (variation.hints === undefined) {
+		variation.hints = [];
+	}
+
 	// Label options
 	const guidanceLabelItems: { value: GuidanceLabel | 'custom'; label: string }[] = [
 		{ value: 'guided', label: 'Guidée' },
