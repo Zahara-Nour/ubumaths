@@ -119,9 +119,24 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 
 ---
 
-## Agent Reference (OBLIGATOIRE)
+## Agent Reference
 
-**Regle** : TOUJOURS deleguer aux agents specialises. Ne JAMAIS faire directement ce qu'un agent peut faire.
+### Quand NE PAS utiliser d'agent (PRIORITAIRE)
+
+**Travail direct OBLIGATOIRE pour** :
+
+- Bug cible dans 1-2 fichiers connus (regex, typo, logique simple)
+- Modification < 20 lignes de code
+- Investigation de code existant (Read + Grep suffisent)
+- Tout ce qui peut etre fait en < 5 minutes
+
+**INTERDIT aux agents** :
+
+- Lancer `pnpm test:unit` ou des tests en masse pour "comprendre" un bug
+- Lancer des builds/checks sans raison explicite
+- Tourner > 5 minutes sans produire de resultat concret
+
+### Quand utiliser un agent
 
 | Agent                   | Trigger                                | Cas d'usage                                |
 | ----------------------- | -------------------------------------- | ------------------------------------------ |
@@ -148,8 +163,8 @@ Use proper types, `unknown` with type guards, or Database types from `$lib/types
 
 ### Regle d'Or
 
-**SI** : >3 etapes OU code important OU plusieurs fichiers OU expertise specialisee
-**ALORS** : Agent obligatoire. **EXCEPTION** : commits simples (voir ci-dessus).
+**SI** : >3 etapes ET code important ET plusieurs fichiers ET expertise specialisee
+**ALORS** : Agent. **SINON** : Travail direct.
 
 ---
 
