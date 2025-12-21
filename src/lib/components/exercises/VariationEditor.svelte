@@ -38,10 +38,10 @@
 
 	// Label options
 	const guidanceLabelItems: { value: GuidanceLabel | 'custom'; label: string }[] = [
-		{ value: 'guided', label: 'Guide' },
-		{ value: 'intermediate', label: 'Intermediaire' },
+		{ value: 'guided', label: 'Guidée' },
+		{ value: 'intermediate', label: 'Intermédiaire' },
 		{ value: 'autonomous', label: 'Autonome' },
-		{ value: 'custom', label: 'Personnalise' }
+		{ value: 'custom', label: 'Personnalisée' }
 	];
 
 	// Determine if label is custom
@@ -55,13 +55,15 @@
 		standardLabels.includes(variation.label as GuidanceLabel) ? '' : variation.label
 	);
 
-	// Variables section state
+	// Collapsible section states
+	let statementOpen = $state(true);
+	let solutionOpen = $state(true);
 	let variablesOpen = $state(false);
+	let hintsOpen = $state(false);
+
+	// Variables form state
 	let newVarName = $state('');
 	let newVarExpression = $state('');
-
-	// Hints section state
-	let hintsOpen = $state(false);
 
 	/**
 	 * Update variation label when type or custom label changes
@@ -148,37 +150,77 @@
 		</div>
 	</div>
 
-	<!-- Statement -->
-	<div class="space-y-2">
-		<Label>
-			Enonce <span class="text-destructive">*</span>
-		</Label>
-		<ExerciseRichTextEditor
-			bind:value={variation.statement_md}
-			{supabase}
-			{userId}
-			{genericFunctions}
-			{imageSlug}
-			{getNextImageNumber}
-			{ensureSlugExists}
-		/>
-	</div>
+	<!-- Statement (collapsible) -->
+	<Collapsible.Root bind:open={statementOpen}>
+		<Card.Root>
+			<Collapsible.Trigger asChild>
+				{#snippet child({ props })}
+					<Card.Header class="cursor-pointer py-3" {...props}>
+						<div class="flex items-center justify-between">
+							<Card.Title class="text-base">
+								Enonce <span class="text-destructive">*</span>
+							</Card.Title>
+							<span
+								class="text-muted-foreground transition-transform"
+								class:rotate-180={statementOpen}
+							>
+								▼
+							</span>
+						</div>
+					</Card.Header>
+				{/snippet}
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<Card.Content class="pt-0">
+					<ExerciseRichTextEditor
+						bind:value={variation.statement_md}
+						{supabase}
+						{userId}
+						{genericFunctions}
+						{imageSlug}
+						{getNextImageNumber}
+						{ensureSlugExists}
+					/>
+				</Card.Content>
+			</Collapsible.Content>
+		</Card.Root>
+	</Collapsible.Root>
 
-	<!-- Solution -->
-	<div class="space-y-2">
-		<Label>
-			Solution <span class="text-destructive">*</span>
-		</Label>
-		<ExerciseRichTextEditor
-			bind:value={variation.solution_md}
-			{supabase}
-			{userId}
-			{genericFunctions}
-			{imageSlug}
-			{getNextImageNumber}
-			{ensureSlugExists}
-		/>
-	</div>
+	<!-- Solution (collapsible) -->
+	<Collapsible.Root bind:open={solutionOpen}>
+		<Card.Root>
+			<Collapsible.Trigger asChild>
+				{#snippet child({ props })}
+					<Card.Header class="cursor-pointer py-3" {...props}>
+						<div class="flex items-center justify-between">
+							<Card.Title class="text-base">
+								Solution <span class="text-destructive">*</span>
+							</Card.Title>
+							<span
+								class="text-muted-foreground transition-transform"
+								class:rotate-180={solutionOpen}
+							>
+								▼
+							</span>
+						</div>
+					</Card.Header>
+				{/snippet}
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<Card.Content class="pt-0">
+					<ExerciseRichTextEditor
+						bind:value={variation.solution_md}
+						{supabase}
+						{userId}
+						{genericFunctions}
+						{imageSlug}
+						{getNextImageNumber}
+						{ensureSlugExists}
+					/>
+				</Card.Content>
+			</Collapsible.Content>
+		</Card.Root>
+	</Collapsible.Root>
 
 	<!-- Variables (collapsible) -->
 	<Collapsible.Root bind:open={variablesOpen}>
