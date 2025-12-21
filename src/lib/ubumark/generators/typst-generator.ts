@@ -39,6 +39,9 @@ import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import type { VariationTableNode } from '../types/variation-table';
 import type { ProbabilityTreeNode } from '../types/probability-tree';
+import { createLogger } from '$lib/utils/logger';
+
+const logger = createLogger('typst-generator');
 
 // ============================================================================
 // DEFAULT OPTIONS
@@ -714,6 +717,56 @@ function findMatchingBrace(str: string, openPos: number): number {
 }
 
 /**
+ * Convert a LaTeX command with one braced argument to a Typst function
+ * Handles nested braces properly
+ *
+ * @param str - Input string
+ * @param latexCmd - LaTeX command without backslash (e.g., "mathcal")
+ * @param typstFunc - Typst function name (e.g., "cal")
+ * @returns String with command converted
+ */
+function convertLatexOneArgCommand(str: string, latexCmd: string, typstFunc: string): string {
+	let result = str;
+
+	// First, handle \command{...} syntax (with braces)
+	const bracePattern = new RegExp(`\\\\${latexCmd}\\s*\\{`, 'g');
+	let match;
+
+	let changed = true;
+	while (changed) {
+		changed = false;
+		bracePattern.lastIndex = 0;
+
+		while ((match = bracePattern.exec(result)) !== null) {
+			const startIndex = match.index;
+			const openBraceIndex = match.index + match[0].length - 1;
+
+			// Find matching closing brace
+			const closeIndex = findMatchingBrace(result, openBraceIndex);
+			if (closeIndex === -1) continue;
+
+			const content = result.slice(openBraceIndex + 1, closeIndex);
+
+			// Replace the whole \command{...} with func(...)
+			const replacement = `${typstFunc}(${content})`;
+			result = result.slice(0, startIndex) + replacement + result.slice(closeIndex + 1);
+
+			changed = true;
+			bracePattern.lastIndex = 0;
+			break;
+		}
+	}
+
+	// Second, handle \command X syntax (space + single character, no braces)
+	// This is valid LaTeX syntax for single-character arguments
+	// Match: \mathcal followed by space(s) then a single letter (not followed by another letter)
+	const spacePattern = new RegExp(`\\\\${latexCmd}\\s+([A-Za-z])(?![A-Za-z])`, 'g');
+	result = result.replace(spacePattern, `${typstFunc}($1)`);
+
+	return result;
+}
+
+/**
  * Convert LaTeX \frac{...}{...} and \dfrac{...}{...} to Typst frac(..., ...)
  * Handles nested braces properly (e.g., \dfrac{(-1)^{n+1}}{u^2_n})
  *
@@ -779,6 +832,13 @@ function convertLatexFractions(str: string): string {
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
 
+	// Debug: log if we have mathcal that might not be converted
+	if (result.includes('mathcal')) {
+		logger.trace('convertLatexToTypstMath: input contains mathcal', {
+			preview: result.slice(0, 200)
+		});
+	}
+
 	// French decimal comma: {,} -> , (used in LaTeX to avoid space after comma)
 	result = result.replace(/\{,\}/g, ',');
 
@@ -815,11 +875,13 @@ export function convertLatexToTypstMath(latex: string): string {
 		return 'cases(' + lines.join(', ') + ')';
 	});
 
-	// Convert \sqrt{x} to sqrt(x)
-	result = result.replace(/\\sqrt\s*{([^{}]*)}/g, 'sqrt($1)');
+	// Convert \sqrt{x} to sqrt(x) - use balanced brace matching
+	result = convertLatexOneArgCommand(result, 'sqrt', 'sqrt');
 
-	// Convert \sqrt[n]{x} to root(n, x)
-	result = result.replace(/\\sqrt\s*\[([^\]]*)\]\s*{([^{}]*)}/g, 'root($1, $2)');
+	// Convert \sqrt[n]{x} to root(n, x) - handle separately (two arguments)
+	// This must be done AFTER the simple \sqrt conversion
+	// Note: we use a simplified pattern here as nested braces in the optional arg are rare
+	result = result.replace(/sqrt\s*\[([^\]]*)\]\s*\(([^()]*)\)/g, 'root($1, $2)');
 
 	// Convert known functions: \sin, \cos, \tan, \log, \ln, \exp, etc.
 	// Remove backslash - Typst recognizes these directly
@@ -986,8 +1048,30 @@ export function convertLatexToTypstMath(latex: string): string {
 	// ========================================================================
 
 	// 1. Align environments - remove delimiters
+	// Handle: align, align*, aligned, aligned*, gather, gather*, equation, equation*, split, multline
 	result = result.replace(/\\begin\{align\*?\}/g, '');
 	result = result.replace(/\\end\{align\*?\}/g, '');
+	result = result.replace(/\\begin\{aligned\*?\}/g, '');
+	result = result.replace(/\\end\{aligned\*?\}/g, '');
+	result = result.replace(/\\begin\{gather\*?\}/g, '');
+	result = result.replace(/\\end\{gather\*?\}/g, '');
+	result = result.replace(/\\begin\{equation\*?\}/g, '');
+	result = result.replace(/\\end\{equation\*?\}/g, '');
+	result = result.replace(/\\begin\{split\}/g, '');
+	result = result.replace(/\\end\{split\}/g, '');
+	result = result.replace(/\\begin\{multline\*?\}/g, '');
+	result = result.replace(/\\end\{multline\*?\}/g, '');
+	result = result.replace(/\\begin\{flalign\*?\}/g, '');
+	result = result.replace(/\\end\{flalign\*?\}/g, '');
+
+	// Debug: log any remaining \begin{...} patterns that weren't converted
+	const beginMatch = result.match(/\\begin\{([^}]+)\}/);
+	if (beginMatch) {
+		logger.warn('convertLatexToTypstMath: unhandled \\begin environment', {
+			environment: beginMatch[1],
+			context: result.slice(Math.max(0, beginMatch.index! - 20), beginMatch.index! + 50)
+		});
+	}
 
 	// 2. Binomial coefficients (2 arguments)
 	result = result.replace(/\\binom\s*{([^{}]*)}\s*{([^{}]*)}/g, 'binom($1, $2)');
@@ -1009,12 +1093,19 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\mathbb\s*{Q}/g, 'QQ');
 	result = result.replace(/\\mathbb\s*{C}/g, 'CC');
 
-	// 5. Math text styles (1 argument)
-	result = result.replace(/\\mathbf\s*{([^{}]*)}/g, 'bold($1)');
-	result = result.replace(/\\mathit\s*{([^{}]*)}/g, 'italic($1)');
-	result = result.replace(/\\mathrm\s*{([^{}]*)}/g, 'upright($1)');
-	result = result.replace(/\\mathcal\s*{([^{}]*)}/g, 'cal($1)');
-	result = result.replace(/\\mathfrak\s*{([^{}]*)}/g, 'frak($1)');
+	// 5. Math text styles (1 argument) - use balanced brace matching for nested content
+	result = convertLatexOneArgCommand(result, 'mathbf', 'bold');
+	result = convertLatexOneArgCommand(result, 'mathit', 'italic');
+	result = convertLatexOneArgCommand(result, 'mathrm', 'upright');
+	result = convertLatexOneArgCommand(result, 'mathcal', 'cal');
+	result = convertLatexOneArgCommand(result, 'mathfrak', 'frak');
+
+	// Debug: check if mathcal still remains after conversion
+	if (result.includes('mathcal')) {
+		logger.warn('convertLatexToTypstMath: mathcal still present after conversion', {
+			preview: result.slice(0, 200)
+		});
+	}
 
 	// 6. Sums and products
 	result = result.replace(/\\sum/g, 'sum');
@@ -1023,6 +1114,28 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Limits commands - Typst handles this automatically, just remove them
 	result = result.replace(/\\limits/g, '');
 	result = result.replace(/\\nolimits/g, '');
+
+	// Display style commands - remove (Typst handles display mode differently)
+	// IMPORTANT: Must be before other conversions to prevent \d being interpreted as escape
+	result = result.replace(/\\displaystyle/g, '');
+	result = result.replace(/\\textstyle/g, '');
+	result = result.replace(/\\scriptstyle/g, '');
+	result = result.replace(/\\scriptscriptstyle/g, '');
+
+	// Limit operator
+	result = result.replace(/\\lim(?![a-z])/g, 'lim');
+
+	// Arrow operators
+	result = result.replace(/\\to(?![a-z])/g, '->');
+	result = result.replace(/\\rightarrow/g, '->');
+	result = result.replace(/\\leftarrow/g, '<-');
+	result = result.replace(/\\Rightarrow/g, '=>');
+	result = result.replace(/\\Leftarrow/g, '<=');
+	result = result.replace(/\\Leftrightarrow/g, '<=>');
+	result = result.replace(/\\longrightarrow/g, '-->');
+	result = result.replace(/\\longleftarrow/g, '<--');
+	result = result.replace(/\\mapsto/g, '|->');
+	result = result.replace(/\\iff/g, '<=>');
 
 	// 7. Math spaces - ORDER MATTERS: qquad before quad
 	// Add spaces around to prevent merging with adjacent letters (e.g., "a\:n" -> "a med n", not "amedn")

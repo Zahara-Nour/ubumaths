@@ -373,9 +373,24 @@ export class TypstService {
 
 			return { success: true, data, format, cached: false };
 		} catch (error) {
+			// Log the full error for debugging
+			console.error('[TypstService] Compilation error:', error);
+			if (error instanceof Error) {
+				console.error('[TypstService] Error message:', error.message);
+				console.error('[TypstService] Error stack:', error.stack);
+			}
+			// Try to extract as much info as possible from the error
+			let errorMessage = 'Compilation failed';
+			if (error instanceof Error) {
+				errorMessage = error.message || 'Compilation failed';
+			} else if (typeof error === 'string') {
+				errorMessage = error;
+			} else if (error && typeof error === 'object') {
+				errorMessage = JSON.stringify(error);
+			}
 			return {
 				success: false,
-				error: error instanceof Error ? error.message : 'Compilation failed',
+				error: errorMessage,
 				format
 			};
 		}
