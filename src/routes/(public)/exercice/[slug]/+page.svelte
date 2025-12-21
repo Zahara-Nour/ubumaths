@@ -11,6 +11,7 @@
 	 */
 	import { page } from '$app/state';
 	import * as Card from '$lib/components/ui/card';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
@@ -40,6 +41,7 @@
 	let currentSeed = $state(data.initialSeed ?? Math.floor(Math.random() * 1000000));
 	let linkCopied = $state(false);
 	let isPdfLoading = $state(false);
+	let showPdfDialog = $state(false);
 
 	// ============================================================================
 	// VARIATION LOGIC
@@ -177,27 +179,40 @@
 	/**
 	 * Download exercise as PDF
 	 */
-	async function downloadPdf() {
+	async function downloadPdf(includeSolution: boolean) {
+		showPdfDialog = false;
 		isPdfLoading = true;
+		console.log('[PDF] Starting download', { includeSolution, exerciseId: data.exercise.id });
+
 		try {
 			// Generate Typst content
+			console.log('[PDF] Generating Typst content...');
 			const typstResult = await generateExerciseTypst({
 				exercise: data.exercise,
 				variationIndex: selectedVariationIndex,
 				seed: currentSeed,
-				includeSolution: showSolution,
+				includeSolution,
 				includeMetadata: true
 			});
 
 			if (!typstResult.success || !typstResult.typstContent) {
+				console.error('[PDF] Typst generation failed', typstResult.error);
 				toaster.error(typstResult.error || 'Erreur lors de la génération du PDF');
 				return;
 			}
 
+			console.log('[PDF] Typst content generated', {
+				length: typstResult.typstContent.length,
+				preview: typstResult.typstContent.slice(0, 200)
+			});
+
 			// Compile to PDF using TypstService
+			console.log('[PDF] Initializing TypstService...');
 			const service = getTypstService();
 			await service.initialize();
+			console.log('[PDF] TypstService initialized');
 
+			console.log('[PDF] Compiling to PDF...');
 			const compileResult = await service.compileWithPriority(
 				typstResult.typstContent,
 				{ format: 'pdf' },
@@ -205,9 +220,14 @@
 			);
 
 			if (!compileResult.success || !compileResult.data) {
+				console.error('[PDF] Compilation failed', compileResult.error);
 				toaster.error(compileResult.error || 'Erreur lors de la compilation PDF');
 				return;
 			}
+
+			console.log('[PDF] Compilation successful', {
+				pdfSize: (compileResult.data as Uint8Array).length
+			});
 
 			// Download the PDF
 			const blob = new Blob([compileResult.data as Uint8Array], { type: 'application/pdf' });
@@ -220,10 +240,11 @@
 			document.body.removeChild(a);
 			URL.revokeObjectURL(url);
 
+			console.log('[PDF] Download triggered');
 			toaster.success('PDF téléchargé !');
 		} catch (error) {
+			console.error('[PDF] Error during PDF generation:', error);
 			toaster.error('Erreur lors de la génération du PDF');
-			console.error('PDF generation error:', error);
 		} finally {
 			isPdfLoading = false;
 		}
@@ -292,7 +313,7 @@
 				</Button>
 			{/if}
 			<Button
-				onclick={downloadPdf}
+				onclick={() => (showPdfDialog = true)}
 				variant="outline"
 				size="sm"
 				title="Télécharger en PDF"
@@ -416,3 +437,19 @@
 		{/if}
 	</div>
 </div>
+
+<!-- PDF Download Dialog -->
+<Dialog.Root bind:open={showPdfDialog}>
+	<Dialog.Content class="sm:max-w-md">
+		<Dialog.Header>
+			<Dialog.Title>Télécharger en PDF</Dialog.Title>
+			<Dialog.Description>Voulez-vous inclure la correction dans le PDF ?</Dialog.Description>
+		</Dialog.Header>
+		<Dialog.Footer class="flex-col gap-2 sm:flex-row">
+			<Button variant="outline" onclick={() => downloadPdf(false)} class="w-full sm:w-auto">
+				Sans correction
+			</Button>
+			<Button onclick={() => downloadPdf(true)} class="w-full sm:w-auto">Avec correction</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

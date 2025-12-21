@@ -30,6 +30,9 @@ import type { Exercise, ExerciseInstance } from '$lib/exercises/types';
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 import { generateTypst, escapeTypst } from '$lib/ubumark/generators/typst-generator';
 import { parseMarkdown } from '$lib/ubumark';
+import { createLogger } from '$lib/utils/logger';
+
+const logger = createLogger('exercise-typst-generator');
 
 // ============================================================================
 // TYPES
@@ -118,14 +121,24 @@ export async function generateExerciseTypst(
 		includeMetadata = true
 	} = options;
 
+	logger.info('generateExerciseTypst started', {
+		exerciseId: exercise.id,
+		variationIndex,
+		seed,
+		includeSolution,
+		includeMetadata
+	});
+
 	try {
 		// 1. Generate exercise instance
+		logger.info('Generating exercise instance...');
 		const instanceResult = generateExerciseInstance(exercise, {
 			seed,
 			variationIndex
 		});
 
 		if (!instanceResult.success || !instanceResult.instance) {
+			logger.error('Instance generation failed', { errors: instanceResult.errors });
 			return {
 				success: false,
 				error: instanceResult.errors?.join(', ') || 'Failed to generate exercise instance'
@@ -133,22 +146,48 @@ export async function generateExerciseTypst(
 		}
 
 		const instance = instanceResult.instance;
+		logger.info('Instance generated successfully', {
+			hasStatement: !!instance.statement_md,
+			hasSolution: !!instance.solution_md,
+			statementLength: instance.statement_md?.length,
+			solutionLength: instance.solution_md?.length
+		});
 
 		// 2. Build Typst document
+		logger.info('Building Typst document...');
 		let typst = generateSetup();
+		logger.info('Setup generated');
+
 		typst += generateHeader(exercise, instance, includeMetadata);
+		logger.info('Header generated');
+
+		logger.info('Generating statement...', {
+			statementPreview: instance.statement_md?.slice(0, 100)
+		});
 		typst += generateStatement(instance.statement_md);
+		logger.info('Statement generated');
 
 		if (includeSolution && instance.solution_md) {
+			logger.info('Generating solution...', {
+				solutionPreview: instance.solution_md?.slice(0, 100)
+			});
 			typst += generateSolution(instance.solution_md);
+			logger.info('Solution generated');
+		} else {
+			logger.info('Solution skipped', { includeSolution, hasSolution: !!instance.solution_md });
 		}
 
+		logger.info('Typst generation complete', { typstLength: typst.length });
 		return {
 			success: true,
 			typstContent: typst,
 			instance
 		};
 	} catch (error) {
+		logger.error('Typst generation failed', {
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined
+		});
 		return {
 			success: false,
 			error: `Typst generation failed: ${error instanceof Error ? error.message : String(error)}`
@@ -286,8 +325,17 @@ function generateHeader(
  * @param markdown - Statement markdown content
  */
 function generateStatement(markdown: string): string {
+	logger.info('generateStatement: parsing markdown', { length: markdown?.length });
 	const ast = parseMarkdown(markdown);
+	logger.info('generateStatement: markdown parsed', {
+		astType: ast?.type,
+		childCount: ast?.children?.length
+	});
+
+	logger.info('generateStatement: generating typst');
 	const typstContent = generateTypst(ast, { includeSetup: false });
+	logger.info('generateStatement: typst generated', { typstLength: typstContent?.length });
+
 	return typstContent + '\n\n';
 }
 
@@ -297,12 +345,24 @@ function generateStatement(markdown: string): string {
  * @param markdown - Solution markdown content
  */
 function generateSolution(markdown: string): string {
+	logger.info('generateSolution: starting', { markdownLength: markdown?.length });
+
 	let content = `#v(1em)\n`;
 	content += `#line(length: 100%, stroke: 0.5pt + gray)\n\n`;
 	content += `#text(weight: "bold", fill: rgb("#166534"))[Correction]\n\n`;
 
+	logger.info('generateSolution: parsing markdown', { preview: markdown?.slice(0, 200) });
 	const ast = parseMarkdown(markdown);
-	content += generateTypst(ast, { includeSetup: false });
+	logger.info('generateSolution: markdown parsed', {
+		astType: ast?.type,
+		childCount: ast?.children?.length
+	});
+
+	logger.info('generateSolution: generating typst');
+	const typstOutput = generateTypst(ast, { includeSetup: false });
+	logger.info('generateSolution: typst generated', { typstLength: typstOutput?.length });
+
+	content += typstOutput;
 
 	return content;
 }
