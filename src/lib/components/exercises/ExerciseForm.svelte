@@ -12,6 +12,7 @@
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { Database } from '$lib/types/database';
 	import type { SupabaseClient } from '@supabase/supabase-js';
@@ -61,6 +62,7 @@
 	let resources = $state<ExerciseResource[]>(
 		(exercise?.resources as unknown as ExerciseResource[]) || []
 	);
+	let isPublic = $state(exercise?.is_public ?? false);
 
 	/**
 	 * Generic function names for math expression parsing.
@@ -402,7 +404,8 @@
 			topic: topic.trim() || null,
 			grade_levels: gradeLevels,
 			resources: (resources.length > 0 ? resources : null) as ExerciseInsert['resources'],
-			generic_functions: genericFunctions.length > 0 ? genericFunctions : null
+			generic_functions: genericFunctions.length > 0 ? genericFunctions : null,
+			is_public: isPublic
 		};
 
 		// Always use variations
@@ -603,6 +606,25 @@
 							<Label>Niveaux</Label>
 							<GradeBadgeSelector bind:value={gradeLevels} placeholder="Ajouter des niveaux" />
 						</div>
+					</div>
+
+					<!-- Public visibility -->
+					<div
+						class="rounded-lg border p-4 {isPublic
+							? 'border-green-500/50 bg-green-50 dark:bg-green-950/20'
+							: 'bg-muted/30'}"
+					>
+						<div class="flex items-start gap-3">
+							<MyCheckbox bind:checked={isPublic} label="Exercice public" />
+						</div>
+						<p class="mt-2 text-sm text-muted-foreground">
+							{#if isPublic}
+								Cet exercice est accessible a tous via son lien direct.
+							{:else}
+								Cet exercice est prive. Seuls les eleves assignes ou avec un lien de partage peuvent
+								y acceder.
+							{/if}
+						</p>
 					</div>
 				</Card.Content>
 			</Collapsible.Content>

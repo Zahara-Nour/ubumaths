@@ -14,7 +14,7 @@
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown, Eye } from 'lucide-svelte';
+	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown, Eye, Globe } from 'lucide-svelte';
 	import type { Exercise } from '$lib/exercises/types';
 	import type { PageData } from './$types';
 	import type { GradeCode } from '$lib/types/grades';
@@ -446,7 +446,21 @@
 									/>
 								</Table.Cell>
 								<Table.Cell class="font-medium">
-									{exercise.title || '(Sans titre)'}
+									<div class="flex items-center gap-2">
+										{exercise.title || '(Sans titre)'}
+										{#if exercise.is_public}
+											<Tooltip.Provider>
+												<Tooltip.Root>
+													<Tooltip.Trigger>
+														<Globe class="h-4 w-4 text-green-600" />
+													</Tooltip.Trigger>
+													<Tooltip.Content>
+														<p>Exercice public</p>
+													</Tooltip.Content>
+												</Tooltip.Root>
+											</Tooltip.Provider>
+										{/if}
+									</div>
 								</Table.Cell>
 								<Table.Cell>
 									<Badge variant={getDifficultyVariant(exercise.difficulty)}>

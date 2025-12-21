@@ -3,4 +3,10 @@
  * Re-exported from badge.svelte for better TypeScript compatibility
  */
 
-export type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
+export type BadgeVariant =
+	| 'default'
+	| 'secondary'
+	| 'destructive'
+	| 'warning'
+	| 'success'
+	| 'outline';
