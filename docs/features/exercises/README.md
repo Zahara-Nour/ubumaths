@@ -100,6 +100,7 @@ Teacher Interface → API → Services → Database
 - **[Components](components.md)** - UI components (editor, display, preview)
 - **[API Reference](api.md)** - 13 REST API endpoints
 - **[Import/Export](import-export.md)** - Formats and duplicate strategies
+- **[Public Viewer](public-viewer.md)** - Share tokens, variation selection, PDF export
 
 ### Parameterization System
 
@@ -167,6 +168,10 @@ Generate unique instances for each student automatically.
 - ✅ Import/Export (JSON, Markdown, LaTeX)
 - ✅ 13 API endpoints with Zod validation
 - ✅ Teacher dashboard UI (production-ready)
+- ✅ Public exercise viewer with share tokens (2025-12-21)
+- ✅ Variation selection (autonomous/intermediate/guided)
+- ✅ Client-side PDF export via Typst with French numbering
+- ✅ Shareable links with seed preservation
 
 ### In Progress 🔄
 
