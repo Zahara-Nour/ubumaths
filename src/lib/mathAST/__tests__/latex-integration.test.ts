@@ -8,7 +8,7 @@ import { MathAST, toLatex } from '../index';
 describe('LaTeX Generator - Integration Tests', () => {
 	it('generates quadratic formula', () => {
 		// x = (-b ± √(b² - 4ac)) / 2a
-		// Note: sqrt is rendered as a function sqrt\left(...\right) not \sqrt{...}
+		// sqrt is rendered as \sqrt{...} for LaTeX round-trip compatibility
 		const expr = MathAST.equals(
 			MathAST.variable('x'),
 			MathAST.fraction(
@@ -34,10 +34,10 @@ describe('LaTeX Generator - Integration Tests', () => {
 
 		const latex = toLatex(expr);
 		expect(latex).toContain('\\frac{');
-		expect(latex).toContain('sqrt'); // Custom function, not \sqrt{}
+		expect(latex).toContain('\\sqrt{'); // Now uses proper LaTeX \sqrt{} syntax
 		expect(latex).toContain('\\left(');
 		expect(latex).toContain('\\right)');
-		expect(latex).toBe('x = \\frac{-b + \\left( sqrt\\left( b^2 - 4 a c \\right) \\right)}{2 a}');
+		expect(latex).toBe('x = \\frac{-b + \\left( \\sqrt{b^2 - 4 a c} \\right)}{2 a}');
 	});
 
 	it('generates trigonometric identity', () => {
