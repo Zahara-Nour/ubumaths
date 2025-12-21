@@ -31,6 +31,28 @@ The Public Exercise Viewer allows teachers to share exercises with students and 
 | **Token**    | Valid share token | `/exercice/[slug]?token=ABC123...` |
 | **Fallback** | UUID as slug      | `/exercice/[uuid]`                 |
 
+**Access Matrix**:
+
+| Exercise | Token   | Result                          |
+| -------- | ------- | ------------------------------- |
+| Public   | Valid   | ✅ Access (token count updated) |
+| Public   | Invalid | ✅ Access (token ignored)       |
+| Public   | None    | ✅ Access                       |
+| Private  | Valid   | ✅ Access                       |
+| Private  | Invalid | ❌ 403 with token error         |
+| Private  | None    | ❌ 403 "Share link required"    |
+
+**Note**: Public exercises are always accessible, even with an invalid/expired token in the URL. This ensures shared links continue working after an exercise is made public.
+
+**Managing Public Status**:
+
+Teachers can toggle `is_public` in the exercise form:
+
+- Dashboard: `/dashboard/teacher/exercises/[id]` → "Modifier"
+- Checkbox: "Exercice public" with visual feedback
+- List view shows globe icon 🌐 for public exercises
+- Detail page shows green "Public" badge
+
 ### 2. Share Token System
 
 **Token Format**: 16-character alphanumeric (excluding ambiguous characters: `0OIl`)
