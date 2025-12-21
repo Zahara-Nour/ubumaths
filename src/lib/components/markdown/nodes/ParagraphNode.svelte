@@ -72,7 +72,9 @@
 	 * Check if adjacent node is inline-block (math, blank, or hint) for whitespace handling
 	 */
 	function isInlineBlockNode(node: InlineNode | undefined): boolean {
-		return node?.type === 'math-inline' || node?.type === 'blank' || node?.type === 'hint-reference';
+		return (
+			node?.type === 'math-inline' || node?.type === 'blank' || node?.type === 'hint-reference'
+		);
 	}
 
 	/**
