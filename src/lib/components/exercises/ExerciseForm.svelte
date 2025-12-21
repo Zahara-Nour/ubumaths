@@ -101,8 +101,10 @@
 		}
 	});
 
-	// Shared variables section state
+	// Collapsible section states
 	let sharedVariablesOpen = $state(false);
+	let resourcesOpen = $state(false);
+	let genericFunctionsOpen = $state(false);
 	let newSharedVarName = $state('');
 	let newSharedVarExpression = $state('');
 
@@ -726,34 +728,85 @@
 		</Card.Root>
 	</Collapsible.Root>
 
-	<!-- Resources -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title>Ressources complementaires</Card.Title>
-			<Card.Description>
-				Ajoutez des liens vers des videos, documents PDF, fichiers GeoGebra ou autres ressources
-				utiles.
-			</Card.Description>
-		</Card.Header>
-		<Card.Content>
-			<ExerciseResourceEditor bind:resources />
-		</Card.Content>
-	</Card.Root>
+	<!-- Resources (collapsible) -->
+	<Collapsible.Root bind:open={resourcesOpen}>
+		<Card.Root>
+			<Collapsible.Trigger asChild>
+				{#snippet child({ props })}
+					<Card.Header class="cursor-pointer" {...props}>
+						<div class="flex items-center justify-between">
+							<div>
+								<Card.Title>
+									Ressources complementaires
+									{#if resources.length > 0}
+										<span class="ml-2 text-sm font-normal text-muted-foreground">
+											({resources.length})
+										</span>
+									{/if}
+								</Card.Title>
+								<Card.Description>
+									Ajoutez des liens vers des videos, documents PDF, fichiers GeoGebra ou autres
+									ressources utiles.
+								</Card.Description>
+							</div>
+							<span
+								class="text-muted-foreground transition-transform"
+								class:rotate-180={resourcesOpen}
+							>
+								&#9660;
+							</span>
+						</div>
+					</Card.Header>
+				{/snippet}
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<Card.Content>
+					<ExerciseResourceEditor bind:resources />
+				</Card.Content>
+			</Collapsible.Content>
+		</Card.Root>
+	</Collapsible.Root>
 
-	<!-- Advanced: Generic Functions -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title>Fonctions generiques</Card.Title>
-			<Card.Description>
-				Definissez quels identifiants doivent etre reconnus comme des fonctions dans les expressions
-				mathematiques. Utile pour les derivees (<code class="text-xs">P'(x)</code>) et fonctions
-				personnalisees.
-			</Card.Description>
-		</Card.Header>
-		<Card.Content>
-			<GenericFunctionInput bind:value={genericFunctions} />
-		</Card.Content>
-	</Card.Root>
+	<!-- Advanced: Generic Functions (collapsible) -->
+	<Collapsible.Root bind:open={genericFunctionsOpen}>
+		<Card.Root>
+			<Collapsible.Trigger asChild>
+				{#snippet child({ props })}
+					<Card.Header class="cursor-pointer" {...props}>
+						<div class="flex items-center justify-between">
+							<div>
+								<Card.Title>
+									Fonctions generiques
+									{#if genericFunctions.length > 0}
+										<span class="ml-2 text-sm font-normal text-muted-foreground">
+											({genericFunctions.length})
+										</span>
+									{/if}
+								</Card.Title>
+								<Card.Description>
+									Definissez quels identifiants doivent etre reconnus comme des fonctions dans les
+									expressions mathematiques. Utile pour les derivees (<code class="text-xs"
+										>P'(x)</code
+									>) et fonctions personnalisees.
+								</Card.Description>
+							</div>
+							<span
+								class="text-muted-foreground transition-transform"
+								class:rotate-180={genericFunctionsOpen}
+							>
+								&#9660;
+							</span>
+						</div>
+					</Card.Header>
+				{/snippet}
+			</Collapsible.Trigger>
+			<Collapsible.Content>
+				<Card.Content>
+					<GenericFunctionInput bind:value={genericFunctions} />
+				</Card.Content>
+			</Collapsible.Content>
+		</Card.Root>
+	</Collapsible.Root>
 
 	<!-- Actions -->
 	<div class="flex justify-end gap-4">
