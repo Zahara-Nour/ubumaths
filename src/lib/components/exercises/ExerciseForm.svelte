@@ -183,9 +183,9 @@
 	function getVariationDisplayLabel(variation: ExerciseVariation): string {
 		switch (variation.label) {
 			case 'guided':
-				return 'Guide';
+				return 'Guidée';
 			case 'intermediate':
-				return 'Intermediaire';
+				return 'Intermédiaire';
 			case 'autonomous':
 				return 'Autonome';
 			default:
