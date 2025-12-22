@@ -2,6 +2,10 @@
 
 Module centralisé pour la compilation Typst et la génération de documents PDF.
 
+## Documentation
+
+- [French Decimals](./french-decimals.md) - Format français des nombres (virgule, espaces fines)
+
 ## Structure
 
 ```

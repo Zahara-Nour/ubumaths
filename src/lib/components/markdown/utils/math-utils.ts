@@ -9,6 +9,7 @@
 
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { toLatex, parseLatexSafe } from '$lib/mathAST';
+import { toFrenchDecimal } from '$lib/utils/french-math';
 import type { MathNode } from '$lib/mathAST/types';
 import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
@@ -32,17 +33,24 @@ export function expressionToLatex(
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null
 ): string {
-	if (syntax === 'latex') return expression;
+	let latex: string;
 
-	const result = parseCustomSafe(expression, { genericFunctions });
-	if (result.ast) {
-		return toLatex(result.ast);
+	if (syntax === 'latex') {
+		latex = expression;
+	} else {
+		const result = parseCustomSafe(expression, { genericFunctions });
+		if (result.ast) {
+			latex = toLatex(result.ast);
+		} else {
+			// On error, display error message in red (no French formatting for errors)
+			const errorMsg = result.errors?.[0]?.message ?? 'Parse error';
+			const escapedMsg = errorMsg.replace(/[\\{}#$%&_^~]/g, '\\$&');
+			return `\\textcolor{red}{\\text{${escapedMsg}}}`;
+		}
 	}
 
-	// On error, display error message in red
-	const errorMsg = result.errors?.[0]?.message ?? 'Parse error';
-	const escapedMsg = errorMsg.replace(/[\\{}#$%&_^~]/g, '\\$&');
-	return `\\textcolor{red}{\\text{${escapedMsg}}}`;
+	// Convert to French decimal notation (comma separator, thin spaces)
+	return toFrenchDecimal(latex);
 }
 
 /**

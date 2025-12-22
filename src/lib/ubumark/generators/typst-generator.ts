@@ -11,9 +11,27 @@
  * - Image path resolution
  * - Special character escaping
  * - Customizable options
+ * - French number formatting (comma decimal, thin spaces)
  *
- * Output can be compiled with the Typst CLI.
+ * ## French Decimal Handling
  *
+ * Numbers are displayed in French notation:
+ * - Comma as decimal separator: 3,14 (not 3.14)
+ * - Thin spaces for digit grouping: 1 234 567
+ *
+ * The conversion flow:
+ * 1. Source markdown uses standard notation: 3.14
+ * 2. math-utils.ts converts to LaTeX French: 3{,}14, 1\,234
+ * 3. This generator converts to Typst:
+ *    - {,} → "," (string for literal comma without separator spacing)
+ *    - \, → thin (Typst thin space keyword)
+ *
+ * Why use "," (string) for decimal comma:
+ * - In Typst math mode, bare comma is an argument separator with spacing
+ * - String "," displays as literal comma without extra spacing
+ * - This preserves proper spacing for argument separators like (a, b, c)
+ *
+ * @see https://github.com/typst/typst/issues/5272 - Typst decimal separator discussion
  * @module ubumark/generators/typst-generator
  */
 
@@ -839,8 +857,16 @@ export function convertLatexToTypstMath(latex: string): string {
 		});
 	}
 
-	// French decimal comma: {,} -> , (used in LaTeX to avoid space after comma)
-	result = result.replace(/\{,\}/g, ',');
+	// ========================================================================
+	// FRENCH DECIMAL COMMA HANDLING (Step 1 of 2)
+	// ========================================================================
+	// LaTeX {,} represents a French decimal comma (from french-math.ts).
+	// We use a placeholder here because:
+	// 1. LaTeX \, (thin space) will be converted to Typst "thin" later
+	// 2. {,} must become "," (string) in Typst for proper display
+	// The placeholder avoids conflicts between these two conversions.
+	// Final replacement happens at the end of this function (Step 2).
+	result = result.replace(/\{,\}/g, '<<<DECIMAL_COMMA>>>');
 
 	// Convert \left( ... \right) to ( ... ) - Typst auto-sizes
 	result = result.replace(/\\left\s*\(/g, '(');
@@ -858,6 +884,22 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Convert \left\{ ... \right\} to { ... }
 	result = result.replace(/\\left\s*\\{/g, '{');
 	result = result.replace(/\\right\s*\\}/g, '}');
+
+	// Convert \left\lbrace ... \right\rbrace to { ... }
+	result = result.replace(/\\left\s*\\lbrace/g, '{');
+	result = result.replace(/\\right\s*\\rbrace/g, '}');
+
+	// Convert standalone \lbrace and \rbrace
+	result = result.replace(/\\lbrace/g, '{');
+	result = result.replace(/\\rbrace/g, '}');
+
+	// Handle invisible delimiters \left. and \right.
+	result = result.replace(/\\left\s*\./g, '');
+	result = result.replace(/\\right\s*\./g, '');
+
+	// Fallback: remove any remaining \left or \right (unhandled delimiter cases)
+	result = result.replace(/\\left\s*/g, '');
+	result = result.replace(/\\right\s*/g, '');
 
 	// Convert \dfrac{a}{b} and \frac{a}{b} to frac(a, b)
 	// Uses balanced brace matching to handle nested braces like \dfrac{(-1)^{n+1}}{u^2_n}
@@ -1037,6 +1079,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\exists/g, 'exists');
 	result = result.replace(/\\partial/g, 'diff');
 	result = result.replace(/\\nabla/g, 'nabla');
+	result = result.replace(/\\ell/g, 'ell'); // Script lowercase L (ℓ)
 
 	// Convert text command
 	result = result.replace(/\\text\s*{([^{}]*)}/g, '"$1"');
@@ -1162,6 +1205,17 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Keep unknown LaTeX commands as-is (with backslash)
 	// Typst will show a clear error during compilation if not recognized
 	// This makes debugging easier than silently removing backslashes
+
+	// ========================================================================
+	// FRENCH DECIMAL COMMA HANDLING (Step 2 of 2)
+	// ========================================================================
+	// Convert the placeholder to Typst string comma: ","
+	// Why "," (string) and not bare comma:
+	// - In Typst math mode, bare comma is an argument separator with spacing
+	// - String "," displays as literal comma without extra spacing
+	// - This is the recommended approach per Typst GitHub issue #5272
+	// Must be done AFTER \, -> thin conversion to avoid conflict.
+	result = result.replace(/<<<DECIMAL_COMMA>>>/g, '","');
 
 	return result;
 }
