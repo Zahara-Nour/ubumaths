@@ -497,7 +497,7 @@
 
 <!-- Share Dialog -->
 <Dialog.Root open={shareDialogOpen} onOpenChange={handleShareDialogOpen}>
-	<Dialog.Content class="max-h-[85vh] max-w-lg overflow-y-auto">
+	<Dialog.Content class="max-h-[85vh] w-full max-w-md overflow-hidden sm:max-w-lg">
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Share2 class="h-5 w-5" />
@@ -519,12 +519,14 @@
 					<Globe class="h-4 w-4 text-green-600" />
 					<span class="text-sm font-medium text-green-600">Exercice public</span>
 				</div>
-				<div class="flex min-w-0 items-center gap-2 rounded-lg border bg-muted/50 p-3">
-					<code class="min-w-0 flex-1 truncate text-sm">{buildPublicUrl()}</code>
-					<Button variant="outline" size="sm" class="shrink-0" onclick={copyPublicUrl}>
+				<div class="space-y-2">
+					<div class="overflow-hidden rounded-lg border bg-muted/50 p-3">
+						<code class="block truncate text-sm">{buildPublicUrl()}</code>
+					</div>
+					<Button variant="outline" size="sm" class="w-full" onclick={copyPublicUrl}>
 						{#if copiedPublicLink}
 							<Check class="mr-1 h-4 w-4 text-green-500" />
-							Copie
+							Copié
 						{:else}
 							<Copy class="mr-1 h-4 w-4" />
 							Copier le lien
@@ -541,27 +543,25 @@
 
 		<!-- Create token section -->
 		<div class="space-y-4">
-			<div class="flex items-end gap-3">
-				<div class="flex-1">
-					<label for="expiration-select" class="mb-2 block text-sm font-medium"> Expiration </label>
-					<MySelect
-						id="expiration-select"
-						type="single"
-						bind:value={selectedExpiration}
-						items={expirationOptions}
-						triggerClass="w-full h-9 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
-					/>
-				</div>
-				<Button onclick={createShareToken} disabled={creatingToken}>
-					{#if creatingToken}
-						<Clock class="mr-2 h-4 w-4 animate-spin" />
-						Création...
-					{:else}
-						<Link class="mr-2 h-4 w-4" />
-						Créer un lien
-					{/if}
-				</Button>
+			<div>
+				<label for="expiration-select" class="mb-2 block text-sm font-medium"> Expiration </label>
+				<MySelect
+					id="expiration-select"
+					type="single"
+					bind:value={selectedExpiration}
+					items={expirationOptions}
+					triggerClass="w-full h-9 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+				/>
 			</div>
+			<Button class="w-full" onclick={createShareToken} disabled={creatingToken}>
+				{#if creatingToken}
+					<Clock class="mr-2 h-4 w-4 animate-spin" />
+					Création...
+				{:else}
+					<Link class="mr-2 h-4 w-4" />
+					Créer un lien
+				{/if}
+			</Button>
 		</div>
 
 		<!-- Existing tokens section -->
