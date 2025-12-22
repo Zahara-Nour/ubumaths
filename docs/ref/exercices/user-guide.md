@@ -18,6 +18,7 @@
   - [Creating Parameterized Exercises](#creating-parameterized-exercises)
   - [Managing Exercises](#managing-exercises)
   - [Making Exercises Public](#making-exercises-public)
+    - [Sharing a Public Exercise](#sharing-a-public-exercise)
   - [Sharing Exercises with Tokens](#sharing-exercises-with-tokens)
   - [Assigning Exercises](#assigning-exercises)
   - [Tracking Progress](#tracking-progress)
@@ -326,6 +327,16 @@ Public exercises are accessible to anyone via a direct URL, without authenticati
 - In the exercise detail page, a green **"Public"** badge appears in the header
 - Public exercises are accessible at `/exercice/[slug]` or `/exercice/[id]`
 
+#### Sharing a Public Exercise
+
+For public exercises, simply copy and share the URL - **no token required**:
+
+1. Open the exercise detail page
+2. Click **"Copier le lien"** button
+3. Share the URL directly with anyone
+
+The URL format is: `https://ubumaths.fr/exercice/[slug]`
+
 #### Public Exercise Viewer Features
 
 When viewing a public exercise at `/exercice/[slug]`:
@@ -349,6 +360,8 @@ When viewing a public exercise at `/exercice/[slug]`:
 ---
 
 ### Sharing Exercises with Tokens
+
+> **Note**: Tokens are only needed for **private exercises**. For public exercises, simply share the direct URL (see [Sharing a Public Exercise](#sharing-a-public-exercise)).
 
 Share tokens allow you to share private exercises without making them fully public.
 

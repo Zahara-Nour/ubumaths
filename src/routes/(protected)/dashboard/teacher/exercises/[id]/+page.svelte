@@ -68,6 +68,7 @@
 	let selectedExpiration = $state<string>('none');
 	let copiedTokenId = $state<string | null>(null);
 	let revokingTokenId = $state<string | null>(null);
+	let copiedPublicLink = $state(false);
 
 	// Expiration options for token creation
 	const expirationOptions = [
@@ -216,12 +217,33 @@
 	}
 
 	/**
+	 * Build public URL (no token needed for public exercises)
+	 */
+	function buildPublicUrl(): string {
+		const origin = browser ? window.location.origin : '';
+		const slug = data.exercise.slug || data.exercise.id;
+		return `${origin}/exercice/${slug}`;
+	}
+
+	/**
 	 * Build share URL for a token
 	 */
 	function buildShareUrl(token: ExerciseShareToken): string {
-		const origin = browser ? window.location.origin : '';
-		const slug = data.exercise.slug || data.exercise.id;
-		return `${origin}/exercice/${slug}?token=${token.token}`;
+		return `${buildPublicUrl()}?token=${token.token}`;
+	}
+
+	/**
+	 * Copy public URL to clipboard (for public exercises)
+	 */
+	async function copyPublicUrl() {
+		try {
+			await navigator.clipboard.writeText(buildPublicUrl());
+			copiedPublicLink = true;
+			setTimeout(() => (copiedPublicLink = false), 2000);
+			toaster.success('Lien copie dans le presse-papiers');
+		} catch {
+			toaster.error('Erreur lors de la copie du lien');
+		}
 	}
 
 	/**
@@ -482,12 +504,43 @@
 				Partager l'exercice
 			</Dialog.Title>
 			<Dialog.Description>
-				Créez des liens de partage pour donner accès à cet exercice sans authentification.
+				{#if data.exercise.is_public}
+					Cet exercice est public. Copiez simplement le lien pour le partager.
+				{:else}
+					Creez des liens de partage pour donner acces a cet exercice sans authentification.
+				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
 
+		{#if data.exercise.is_public}
+			<!-- Public exercise: direct link copy -->
+			<div class="mt-4 space-y-3">
+				<div class="flex items-center gap-2">
+					<Globe class="h-4 w-4 text-green-600" />
+					<span class="text-sm font-medium text-green-600">Exercice public</span>
+				</div>
+				<div class="flex min-w-0 items-center gap-2 rounded-lg border bg-muted/50 p-3">
+					<code class="min-w-0 flex-1 truncate text-sm">{buildPublicUrl()}</code>
+					<Button variant="outline" size="sm" class="shrink-0" onclick={copyPublicUrl}>
+						{#if copiedPublicLink}
+							<Check class="mr-1 h-4 w-4 text-green-500" />
+							Copie
+						{:else}
+							<Copy class="mr-1 h-4 w-4" />
+							Copier le lien
+						{/if}
+					</Button>
+				</div>
+				<p class="text-xs text-muted-foreground">
+					Pas besoin de creer un token. Vous pouvez aussi creer des liens avec expiration ci-dessous
+					si necessaire.
+				</p>
+			</div>
+			<Separator class="my-4" />
+		{/if}
+
 		<!-- Create token section -->
-		<div class="mt-4 space-y-4">
+		<div class="space-y-4">
 			<div class="flex items-end gap-3">
 				<div class="flex-1">
 					<label for="expiration-select" class="mb-2 block text-sm font-medium"> Expiration </label>
