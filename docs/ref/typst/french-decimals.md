@@ -19,7 +19,9 @@ Source (Markdown)  →  LaTeX (intermediate)  →  Typst (final)  →  PDF
 
 ### Step-by-step
 
-1. **Source**: Author writes `$3.14$` in markdown
+1. **Source**: Author writes math in markdown using either syntax:
+   - LaTeX syntax: `$3.14$` or `$$3.14$$`
+   - Custom syntax: `~3.14~` or `~~3.14~~`
 2. **LaTeX conversion** (`french-math.ts`):
    - Decimal point → `{,}` (LaTeX grouped comma)
    - Thin spaces → `\,` (LaTeX thin space)
