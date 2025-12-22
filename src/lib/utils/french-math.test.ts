@@ -93,6 +93,34 @@ describe('toFrenchDecimal', () => {
 			expect(toFrenchDecimal('\\log10')).toBe('\\log10');
 		});
 
+		it('convertit les nombres après \\times', () => {
+			expect(toFrenchDecimal('1.2\\times3.4')).toBe('1{,}2\\times3{,}4');
+			expect(toFrenchDecimal('\\times3.14')).toBe('\\times3{,}14');
+		});
+
+		it('convertit les nombres après \\div', () => {
+			expect(toFrenchDecimal('10.5\\div2.5')).toBe('10{,}5\\div2{,}5');
+		});
+
+		it('convertit les nombres après \\cdot', () => {
+			expect(toFrenchDecimal('1.5\\cdot2.5')).toBe('1{,}5\\cdot2{,}5');
+		});
+
+		it('convertit les nombres après \\pm et \\mp', () => {
+			expect(toFrenchDecimal('3.14\\pm0.01')).toBe('3{,}14\\pm0{,}01');
+			expect(toFrenchDecimal('5\\mp2.5')).toBe('5\\mp2{,}5');
+		});
+
+		it('convertit les nombres après les opérateurs de comparaison', () => {
+			expect(toFrenchDecimal('x\\leq3.5')).toBe('x\\leq3{,}5');
+			expect(toFrenchDecimal('y\\geq1.2')).toBe('y\\geq1{,}2');
+		});
+
+		it('convertit les entiers ≥ 4 chiffres après les opérateurs', () => {
+			expect(toFrenchDecimal('x\\times1234')).toBe('x\\times1\\,234');
+			expect(toFrenchDecimal('y\\div12345')).toBe('y\\div12\\,345');
+		});
+
 		it('préserve les expressions complexes', () => {
 			expect(toFrenchDecimal('x = 3.14 + \\frac{1234.5}{2}')).toBe(
 				'x = 3{,}14 + \\frac{1\\,234{,}5}{2}'

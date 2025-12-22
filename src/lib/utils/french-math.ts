@@ -132,22 +132,9 @@ function formatSingleNumber(numStr: string, options: Required<FrenchDecimalOptio
 export function toFrenchDecimal(latex: string, options: FrenchDecimalOptions = {}): string {
 	const opts = { ...DEFAULT_OPTIONS, ...options };
 
-	// Match standalone numbers (not part of LaTeX commands)
+	// Match all numbers and convert them to French notation
 	// Pattern: digit sequences with optional decimal point
-	// Negative lookbehind would be ideal but we use a simpler approach:
-	// Match numbers that are not immediately preceded by a letter
-	return latex.replace(/(\d+(?:\.\d+)?)/g, (match, numStr, offset) => {
-		// Check if this number is part of a LaTeX command (preceded by backslash + letters)
-		// Simple heuristic: if preceded by a letter, skip
-		if (offset > 0) {
-			const prevChar = latex[offset - 1];
-			// Skip if preceded by a letter (likely part of command like \frac123)
-			// But allow after operators, braces, spaces
-			if (/[a-zA-Z]/.test(prevChar)) {
-				return match;
-			}
-		}
-
+	return latex.replace(/(\d+(?:\.\d+)?)/g, (match, numStr) => {
 		return formatSingleNumber(numStr, opts);
 	});
 }
