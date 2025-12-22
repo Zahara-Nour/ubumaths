@@ -1635,24 +1635,63 @@ describe('convertLatexToTypstMath - Combined Expressions', () => {
 });
 
 describe('convertLatexToTypstMath - French Decimal Comma', () => {
-	it('should convert {,} to simple comma', () => {
-		expect(convertLatexToTypstMath('3{,}14')).toBe('3,14');
+	it('should convert {,} to string comma for French notation', () => {
+		// {,} -> "," (string comma in Typst, displays as comma without spacing)
+		expect(convertLatexToTypstMath('3{,}14')).toBe('3","14');
 	});
 
-	it('should handle pi approximation', () => {
-		expect(convertLatexToTypstMath('3{,}14159')).toBe('3,14159');
+	it('should handle pi approximation with French comma', () => {
+		expect(convertLatexToTypstMath('3{,}14159')).toBe('3","14159');
 	});
 
-	it('should handle multiple decimal numbers', () => {
-		expect(convertLatexToTypstMath('x = 1{,}5 + 2{,}3')).toBe('x = 1,5 + 2,3');
+	it('should handle multiple decimal numbers with French commas', () => {
+		expect(convertLatexToTypstMath('x = 1{,}5 + 2{,}3')).toBe('x = 1","5 + 2","3');
 	});
 
-	it('should handle decimal in fraction', () => {
-		expect(convertLatexToTypstMath('\\frac{1{,}5}{2}')).toBe('frac(1,5, 2)');
+	it('should handle decimal in fraction with string comma', () => {
+		// String comma is not treated as argument separator
+		expect(convertLatexToTypstMath('\\frac{1{,}5}{2}')).toBe('frac(1","5, 2)');
 	});
 
-	it('should not affect regular commas', () => {
+	it('should not affect regular commas (argument separators)', () => {
 		expect(convertLatexToTypstMath('(a, b, c)')).toBe('(a, b, c)');
+	});
+});
+
+describe('convertLatexToTypstMath - French Number Formatting with Digit Grouping', () => {
+	it('should convert thin space \\, to Typst thin space for digit grouping', () => {
+		// Input: 1\,234 (LaTeX thin space)
+		const result = convertLatexToTypstMath('1\\,234');
+		expect(result).toBe('1 thin 234');
+	});
+
+	it('should handle French decimal with thin spaces in integer part', () => {
+		// Input: 1\,234{,}56
+		const result = convertLatexToTypstMath('1\\,234{,}56');
+		// LaTeX \, -> thin, {,} -> "," (string comma)
+		expect(result).toContain('thin');
+		expect(result).toBe('1 thin 234","56');
+	});
+
+	it('should handle French decimal with thin spaces in decimal part', () => {
+		// Input: 3{,}141\,59
+		const result = convertLatexToTypstMath('3{,}141\\,59');
+		// {,} -> "," (string comma), \, -> thin
+		expect(result).toBe('3","141 thin 59');
+	});
+
+	it('should handle full French number with thin spaces in both parts', () => {
+		// Input: 1\,234\,567{,}890\,123\,45
+		const result = convertLatexToTypstMath('1\\,234\\,567{,}890\\,123\\,45');
+		// LaTeX \, -> thin, {,} -> "," (string comma)
+		expect(result).toBe('1 thin 234 thin 567","890 thin 123 thin 45');
+	});
+
+	it('should preserve French comma with thin spaces', () => {
+		const result = convertLatexToTypstMath('1\\,234{,}5');
+		// LaTeX \, -> thin (Typst thin space)
+		// {,} -> "," (Typst string comma)
+		expect(result).toBe('1 thin 234","5');
 	});
 });
 
