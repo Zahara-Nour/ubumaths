@@ -27,7 +27,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { AlertCircle } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
 
 	// Input components

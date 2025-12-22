@@ -33,7 +33,7 @@
 	} from '$lib/questions/types';
 
 	// Helper to check if QuestionCorrection has meaningful content
-	function hasNonEmptyCorrection(correction: QuestionCorrection | undefined): boolean {
+	function _hasNonEmptyCorrection(correction: QuestionCorrection | undefined): boolean {
 		if (!correction) return false;
 		const hasFeedback =
 			correction.feedback?.correct?.trim() ||
