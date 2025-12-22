@@ -37,6 +37,7 @@ import {
 	getAlignmentStyles
 } from '$lib/exercises/services/image-dimensions';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import { toFrenchDecimal } from '$lib/utils/french-math';
 import { generateVariationTableLatex } from './variation-table-latex';
 import { generateProbabilityTreeLatex } from './probability-tree-latex';
 
@@ -254,7 +255,9 @@ function generateInline(node: InlineNode, _options: Required<LatexTranspilerOpti
 
 		case 'math-inline': {
 			const latex =
-				node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
+				node.syntax === 'custom'
+					? expressionToLatex(node.expression, 'custom')
+					: toFrenchDecimal(node.expression);
 			return `$${latex}$`;
 		}
 
@@ -389,7 +392,9 @@ ${rows} \\\\
  */
 function generateMathBlock(node: MathBlockNode): string {
 	const latex =
-		node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
+		node.syntax === 'custom'
+			? expressionToLatex(node.expression, 'custom')
+			: toFrenchDecimal(node.expression);
 	return `\\[${latex}\\]`;
 }
 

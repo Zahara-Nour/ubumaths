@@ -53,6 +53,7 @@ import type {
 } from '$lib/exercises/types';
 import { getDimensionsForFormat } from '$lib/exercises/services/image-dimensions';
 import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
+import { toFrenchDecimal } from '$lib/utils/french-math';
 import { generateVariationTableTypst } from './variation-table-typst';
 import { generateProbabilityTreeTypst } from './probability-tree-typst';
 import type { VariationTableNode } from '../types/variation-table';
@@ -298,7 +299,9 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 
 		case 'math-inline': {
 			const latex =
-				node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
+				node.syntax === 'custom'
+					? expressionToLatex(node.expression, 'custom')
+					: toFrenchDecimal(node.expression);
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
 
@@ -516,7 +519,9 @@ function generateTable(node: TableNode, _options: Required<TypstTranspilerOption
  */
 function generateMathBlock(node: MathBlockNode): string {
 	const latex =
-		node.syntax === 'custom' ? expressionToLatex(node.expression, 'custom') : node.expression;
+		node.syntax === 'custom'
+			? expressionToLatex(node.expression, 'custom')
+			: toFrenchDecimal(node.expression);
 	// Convert LaTeX math to Typst math syntax
 	const typstMath = convertLatexToTypstMath(latex);
 	// Wrap in align(center) to ensure centering even inside lists
