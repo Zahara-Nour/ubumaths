@@ -50,6 +50,43 @@ describe('parseMarkdown', () => {
 		}
 	});
 
+	it('should parse standalone inline math (on its own line)', () => {
+		// Regression test: inline math alone on a line should be wrapped in paragraph
+		// This was causing an infinite loop before the fix
+		const markdown = '$1$';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			expect(ast.children[0].children).toHaveLength(1);
+			expect(ast.children[0].children[0].type).toBe('math-inline');
+
+			if (ast.children[0].children[0].type === 'math-inline') {
+				expect(ast.children[0].children[0].expression).toBe('1');
+			}
+		}
+	});
+
+	it('should parse standalone custom inline math (on its own line)', () => {
+		const markdown = '~2x+3~';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			expect(ast.children[0].children).toHaveLength(1);
+			expect(ast.children[0].children[0].type).toBe('math-inline');
+
+			if (ast.children[0].children[0].type === 'math-inline') {
+				expect(ast.children[0].children[0].expression).toBe('2x+3');
+				expect(ast.children[0].children[0].syntax).toBe('custom');
+			}
+		}
+	});
+
 	it('should parse lists with inline math', () => {
 		const markdown = `1. $2x + 3 = 7$
 2. $(x + 2)(x - 3) = 0$

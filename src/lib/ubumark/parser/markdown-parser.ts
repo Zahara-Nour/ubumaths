@@ -441,15 +441,30 @@ function parseBlocks(
 			continue;
 		}
 
-		// Check for block math (standalone placeholder that is block math)
+		// Check for standalone math placeholder (block or inline on its own line)
 		if (isMathPlaceholder(line.trim())) {
 			const placeholder = findPlaceholder(placeholders, line.trim());
-			if (placeholder && placeholder.isBlock) {
-				blocks.push({
-					type: 'math-block',
-					expression: placeholder.expression,
-					syntax: placeholder.syntax
-				});
+			if (placeholder) {
+				if (placeholder.isBlock) {
+					// Block math: create a math-block node
+					blocks.push({
+						type: 'math-block',
+						expression: placeholder.expression,
+						syntax: placeholder.syntax
+					});
+				} else {
+					// Inline math on its own line: wrap in a paragraph
+					blocks.push({
+						type: 'paragraph',
+						children: [
+							{
+								type: 'math-inline',
+								expression: placeholder.expression,
+								syntax: placeholder.syntax
+							}
+						]
+					});
+				}
 				i++;
 				continue;
 			}
