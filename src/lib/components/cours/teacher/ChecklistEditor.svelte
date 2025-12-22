@@ -48,8 +48,8 @@
 	const sortedItems = $derived([...items].sort((a, b) => a.displayOrder - b.displayOrder));
 
 	// Form refs for programmatic submission
-	let addFormRef: HTMLFormElement | null = $state(null);
-	let updateFormRef: HTMLFormElement | null = $state(null);
+	let _addFormRef: HTMLFormElement | null = $state(null);
+	let _updateFormRef: HTMLFormElement | null = $state(null);
 
 	// Add new item - now handled by form action
 	function handleAddSuccess() {
@@ -82,10 +82,10 @@
 	let isSubmitting = $state(false);
 
 	// Move item up - form action
-	let moveUpFormRef: HTMLFormElement | null = $state(null);
+	let _moveUpFormRef: HTMLFormElement | null = $state(null);
 
 	// Move item down - form action
-	let moveDownFormRef: HTMLFormElement | null = $state(null);
+	let _moveDownFormRef: HTMLFormElement | null = $state(null);
 </script>
 
 <Card.Root>
