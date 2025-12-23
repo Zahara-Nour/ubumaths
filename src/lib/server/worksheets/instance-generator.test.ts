@@ -5,6 +5,8 @@
 import { describe, it, expect } from 'vitest';
 import { generateWorksheetInstance, generatePreviewInstance } from './instance-generator';
 import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
+import type { Variable } from '$lib/ubumark';
+import type { ExerciseHint, ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 
 describe('Instance Generator', () => {
 	// Mock worksheet exercises with parameterized content
@@ -360,6 +362,247 @@ describe('Instance Generator', () => {
 
 			expect(sum).toBe(a + b);
 			expect(result).toBe(sum * 2);
+		});
+	});
+
+	// =========================================================================
+	// NEW TESTS: Strong Typing (R1)
+	// =========================================================================
+	describe('Strong typing with Variable[]', () => {
+		it('should accept properly typed Variable[] in exercise', () => {
+			// This test verifies compile-time type safety
+			const typedVariables: Variable[] = [
+				{ name: 'x', expression: '{{random:1..10}}' },
+				{ name: 'y', expression: '{{eval:x*2}}' }
+			];
+
+			const typedExercises: WorksheetExerciseWithExercise[] = [
+				{
+					...mockExercises[0],
+					exercise: {
+						id: 'typed-ex',
+						title: 'Typed exercise',
+						statement_md: 'x = {{x}}, y = {{y}}',
+						solution_md: 'y = 2x',
+						difficulty: 1,
+						variables: typedVariables // Should be Variable[], not unknown[]
+					}
+				}
+			];
+
+			const params = {
+				worksheetId: 'worksheet-typed',
+				studentId: 'student-typed',
+				exercises: typedExercises,
+				config: {}
+			};
+
+			const instance = generateWorksheetInstance(params);
+
+			expect(instance.exercises[0].statement).toMatch(/x = \d+, y = \d+/);
+			const x = parseInt(instance.exercises[0].parameters.x as string);
+			const y = parseInt(instance.exercises[0].parameters.y as string);
+			expect(y).toBe(x * 2);
+		});
+	});
+
+	// =========================================================================
+	// NEW TESTS: Variations Support
+	// =========================================================================
+	describe('Exercise variations support', () => {
+		const exerciseWithVariations: WorksheetExerciseWithExercise = {
+			id: 'we-var',
+			worksheet_id: 'w1',
+			exercise_id: 'e-var',
+			section_id: null,
+			position: 0,
+			points: 10,
+			variant_mode: 'individual',
+			variant_config: {},
+			custom_instructions: null,
+			correction_visible: true,
+			created_at: '2024-01-01',
+			updated_at: '2024-01-01',
+			exercise: {
+				id: 'e-var',
+				title: 'Exercise with variations',
+				statement_md: '', // Will be overridden by variation
+				solution_md: 'AC = {{result}} cm',
+				difficulty: 2,
+				variables: [
+					{ name: 'a', expression: '{{random:3..10}}' },
+					{ name: 'b', expression: '{{random:3..10}}' }
+				],
+				shared: {
+					variables: [
+						{ name: 'a', expression: '{{random:3..10}}' },
+						{ name: 'b', expression: '{{random:3..10}}' }
+					],
+					solution_md: 'AC = {{result}} cm'
+				} as SharedExerciseDefaults,
+				variations: [
+					{
+						label: 'guided',
+						statement_md: 'Avec aide: Calculer AC sachant AB={{a}} et BC={{b}}',
+						variables: [{ name: 'result', expression: '{{eval:a+b}}' }],
+						hints: [
+							{
+								id: 'rappel',
+								type: 'link', // Valid ExerciseResourceType
+								url: '#',
+								title: 'Rappel'
+							}
+						] as ExerciseHint[]
+					},
+					{
+						label: 'autonomous',
+						statement_md: 'Calculer AC sachant AB={{a}} et BC={{b}}',
+						variables: [{ name: 'result', expression: '{{eval:a+b}}' }]
+					}
+				] as ExerciseVariation[]
+			}
+		};
+
+		it('should select a variation based on seed', () => {
+			const params = {
+				worksheetId: 'worksheet-var',
+				studentId: 'student-var',
+				exercises: [exerciseWithVariations],
+				config: {}
+			};
+
+			const instance = generateWorksheetInstance(params);
+
+			// Should have resolved content from selected variation
+			expect(instance.exercises[0].statement).not.toContain('{{');
+			expect(instance.exercises[0].statement).toMatch(/Calculer AC/);
+
+			// Should include variation info
+			expect(instance.exercises[0]).toHaveProperty('selectedVariationIndex');
+			expect(instance.exercises[0]).toHaveProperty('selectedVariationLabel');
+			expect(['guided', 'autonomous']).toContain(instance.exercises[0].selectedVariationLabel);
+		});
+
+		it('should include hints from selected variation', () => {
+			// Use a seed that selects the 'guided' variation (with hints)
+			// We need to find a studentId that gives us the guided variation
+			let guidedInstance = null;
+
+			// Try multiple student IDs to find one that selects 'guided'
+			for (let i = 0; i < 20; i++) {
+				const params = {
+					worksheetId: 'worksheet-var',
+					studentId: `student-${i}`,
+					exercises: [exerciseWithVariations],
+					config: {}
+				};
+
+				const instance = generateWorksheetInstance(params);
+				if (instance.exercises[0].selectedVariationLabel === 'guided') {
+					guidedInstance = instance;
+					break;
+				}
+			}
+
+			// Should have found a guided instance
+			expect(guidedInstance).not.toBeNull();
+			expect(guidedInstance!.exercises[0].hints).toBeDefined();
+			expect(guidedInstance!.exercises[0].hints).toHaveLength(1);
+			expect(guidedInstance!.exercises[0].hints![0].id).toBe('rappel');
+		});
+
+		it('should deterministically select same variation for same seed', () => {
+			const params = {
+				worksheetId: 'worksheet-var',
+				studentId: 'student-deterministic',
+				exercises: [exerciseWithVariations],
+				config: {}
+			};
+
+			const instance1 = generateWorksheetInstance(params);
+			const instance2 = generateWorksheetInstance(params);
+
+			expect(instance1.exercises[0].selectedVariationIndex).toBe(
+				instance2.exercises[0].selectedVariationIndex
+			);
+			expect(instance1.exercises[0].selectedVariationLabel).toBe(
+				instance2.exercises[0].selectedVariationLabel
+			);
+		});
+	});
+
+	// =========================================================================
+	// NEW TESTS: AST Support
+	// =========================================================================
+	describe('AST (Abstract Syntax Tree) support', () => {
+		it('should include statement_ast and solution_ast in resolved exercises', () => {
+			const params = {
+				worksheetId: 'worksheet-ast',
+				studentId: 'student-ast',
+				exercises: mockExercises,
+				config: {}
+			};
+
+			const instance = generateWorksheetInstance(params);
+
+			// Should have AST for both statement and solution
+			expect(instance.exercises[0]).toHaveProperty('statement_ast');
+			expect(instance.exercises[0]).toHaveProperty('solution_ast');
+
+			// AST should be a DocumentNode
+			expect(instance.exercises[0].statement_ast).toHaveProperty('type', 'document');
+			expect(instance.exercises[0].statement_ast).toHaveProperty('children');
+			expect(Array.isArray(instance.exercises[0].statement_ast!.children)).toBe(true);
+
+			expect(instance.exercises[0].solution_ast).toHaveProperty('type', 'document');
+			expect(instance.exercises[0].solution_ast).toHaveProperty('children');
+		});
+
+		it('should have AST that matches the resolved content', () => {
+			const staticExercises: WorksheetExerciseWithExercise[] = [
+				{
+					...mockExercises[0],
+					exercise: {
+						id: 'e-static-ast',
+						title: 'Static for AST test',
+						statement_md: 'Calculate $2 + 3$',
+						solution_md: 'The answer is $5$',
+						difficulty: 1,
+						variables: []
+					}
+				}
+			];
+
+			const params = {
+				worksheetId: 'worksheet-ast-static',
+				studentId: 'student-ast',
+				exercises: staticExercises,
+				config: {}
+			};
+
+			const instance = generateWorksheetInstance(params);
+
+			// The AST should contain the math content
+			const statementAst = instance.exercises[0].statement_ast;
+			expect(statementAst).toBeDefined();
+
+			// Verify structure has paragraph with content
+			expect(statementAst!.children.length).toBeGreaterThan(0);
+		});
+
+		it('should generate AST for preview instances too', () => {
+			const params = {
+				worksheetId: 'worksheet-ast-preview',
+				exercises: mockExercises,
+				config: {},
+				variantSeed: 12345
+			};
+
+			const instance = generatePreviewInstance(params);
+
+			expect(instance.exercises[0]).toHaveProperty('statement_ast');
+			expect(instance.exercises[0]).toHaveProperty('solution_ast');
+			expect(instance.exercises[0].statement_ast).toHaveProperty('type', 'document');
 		});
 	});
 });

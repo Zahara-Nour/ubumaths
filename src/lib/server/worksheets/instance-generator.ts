@@ -4,6 +4,8 @@
  *
  * Generates unique worksheet instances for students with resolved parameters.
  * Supports multiple variant modes and deterministic generation based on seeds.
+ *
+ * Uses the central Exercise generator for consistency with the exercise system.
  */
 
 import type {
@@ -14,8 +16,8 @@ import type {
 	InstanceData,
 	WorksheetExerciseWithExercise
 } from '$lib/types/worksheets';
-import type { Variable } from '$lib/ubumark';
-import { resolveVariables, resolveText } from '$lib/ubumark';
+import type { Exercise } from '$lib/exercises/types';
+import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 
 /**
  * Parameters for generating a worksheet instance
@@ -149,7 +151,37 @@ function shuffleArray<T>(array: T[], seed: number): T[] {
 }
 
 /**
- * Resolves an exercise with parameterized content
+ * Converts worksheet exercise data to an Exercise template for the generator
+ *
+ * Note: Audit fields (created_at, updated_at, created_by) are set to placeholders
+ * since they're not used by the generator but required by the Exercise type.
+ */
+function toExerciseTemplate(worksheetExercise: WorksheetExerciseWithExercise): Exercise {
+	const ex = worksheetExercise.exercise;
+	if (!ex) {
+		throw new Error(`Exercise not found for worksheet_exercise ${worksheetExercise.id}`);
+	}
+
+	return {
+		id: ex.id,
+		title: ex.title,
+		statement_md: ex.statement_md,
+		solution_md: ex.solution_md ?? '',
+		variables: ex.variables ?? undefined,
+		shared: ex.shared ?? undefined,
+		variations: ex.variations ?? undefined,
+		distribution_mode: 'on_demand', // Worksheets handle their own distribution
+		difficulty: (ex.difficulty as 1 | 2 | 3) ?? 1,
+		tags: [],
+		// Required audit fields (not used by generator, but required by Exercise type)
+		created_at: worksheetExercise.created_at,
+		updated_at: worksheetExercise.updated_at,
+		created_by: worksheetExercise.worksheet_id // Use worksheet_id as placeholder
+	};
+}
+
+/**
+ * Resolves an exercise with parameterized content using the central Exercise generator
  */
 function resolveExercise(
 	exercise: WorksheetExerciseWithExercise,
@@ -161,58 +193,53 @@ function resolveExercise(
 		throw new Error(`Exercise not found for worksheet_exercise ${exercise.id}`);
 	}
 
-	// Prepare variables from exercise
-	const variables: Variable[] = [];
-	const parameters: Record<string, number | string> = {};
-
-	// Check if exercise has variables
-	if (exercise.exercise.variables && Array.isArray(exercise.exercise.variables)) {
-		// Convert variables to the expected format
-		for (const variable of exercise.exercise.variables) {
-			if (
-				typeof variable === 'object' &&
-				variable !== null &&
-				'name' in variable &&
-				'expression' in variable
-			) {
-				variables.push({
-					name: String(variable.name),
-					expression: String(variable.expression)
-				});
-			}
-		}
-	}
+	// Convert to Exercise template
+	const template = toExerciseTemplate(exercise);
 
 	// Apply parameter overrides from variant config if provided
-	if (variantConfig?.parameter_overrides) {
+	if (variantConfig?.parameter_overrides && template.variables) {
 		for (const [name, value] of Object.entries(variantConfig.parameter_overrides)) {
-			const existingIndex = variables.findIndex((v) => v.name === name);
+			const existingIndex = template.variables.findIndex((v) => v.name === name);
 			if (existingIndex >= 0) {
-				variables[existingIndex].expression = String(value);
+				template.variables[existingIndex].expression = String(value);
 			}
 		}
 	}
 
-	// Resolve variables with the provided seed
-	const resolvedVariables = resolveVariables(variables, seed + position);
+	// Use the central exercise generator with AST parsing enabled
+	const result = generateExerciseInstance(template, {
+		seed: seed + position,
+		parseAST: true
+	});
 
-	// Convert resolved variables to parameters
-	for (const resolved of resolvedVariables) {
-		parameters[resolved.name] = resolved.value;
+	if (!result.success) {
+		const errorMessage = result.errors?.join(', ') ?? 'Unknown error';
+		throw new Error(`Failed to generate exercise instance: ${errorMessage}`);
 	}
 
-	// Resolve statement and solution with parameters
-	const statement = resolveText(exercise.exercise.statement_md, resolvedVariables);
-	const solution = exercise.exercise.solution_md
-		? resolveText(exercise.exercise.solution_md, resolvedVariables)
-		: '';
+	// Type guard: result.success === true guarantees instance is defined
+	const instance = result.instance;
+	if (!instance) {
+		throw new Error('Instance generation succeeded but returned no instance');
+	}
+
+	// Build parameters map from resolved variables
+	const parameters: Record<string, number | string> = {};
+	for (const resolved of instance.resolvedVariables) {
+		parameters[resolved.name] = resolved.value;
+	}
 
 	return {
 		exercise_id: exercise.exercise_id,
 		position,
 		parameters,
-		statement,
-		solution
+		statement: instance.statement_md,
+		solution: instance.solution_md,
+		statement_ast: instance.statement_ast,
+		solution_ast: instance.solution_ast,
+		selectedVariationIndex: instance.selectedVariationIndex,
+		selectedVariationLabel: instance.selectedVariationLabel,
+		hints: instance.resolvedHints
 	};
 }
 
@@ -334,7 +361,7 @@ export function generatePreviewInstance(
 
 		for (let i = 0; i < exercises.length; i++) {
 			const exercise = exercises[i];
-			const resolved = resolveExercise(exercise, i, variantSeed + i, exercise.variant_config);
+			const resolved = resolveExercise(exercise, i, variantSeed, exercise.variant_config);
 			resolvedExercises.push(resolved);
 		}
 

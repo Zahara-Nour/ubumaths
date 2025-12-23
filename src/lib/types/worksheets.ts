@@ -3,6 +3,9 @@
  * Generated from migration: 20250123000000_worksheets.sql
  */
 
+import type { Variable, DocumentNode } from '$lib/ubumark';
+import type { ExerciseVariation, SharedExerciseDefaults, ExerciseHint } from '$lib/exercises/types';
+
 // =============================================================================
 // ENUMS AND CONSTANTS
 // =============================================================================
@@ -162,6 +165,16 @@ export interface ResolvedExercise {
 	parameters: Record<string, number | string>;
 	statement: string;
 	solution: string;
+	/** Parsed AST for the statement (for rich rendering) */
+	statement_ast?: DocumentNode;
+	/** Parsed AST for the solution (for rich rendering) */
+	solution_ast?: DocumentNode;
+	/** Index of the selected variation (if exercise uses variations) */
+	selectedVariationIndex?: number;
+	/** Label of the selected variation (e.g., 'guided', 'autonomous') */
+	selectedVariationLabel?: string;
+	/** Hints from the selected variation */
+	hints?: ExerciseHint[];
 }
 
 export interface InstanceData {
@@ -483,7 +496,12 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 		statement_md: string;
 		solution_md: string | null;
 		difficulty: number | null;
-		variables: unknown[] | null;
+		/** Strongly typed variables (was unknown[]) */
+		variables: Variable[] | null;
+		/** Shared defaults for variations (new) */
+		shared?: SharedExerciseDefaults | null;
+		/** Exercise variations for different guidance levels (new) */
+		variations?: ExerciseVariation[] | null;
 	};
 }
 
