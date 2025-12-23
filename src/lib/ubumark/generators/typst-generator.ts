@@ -639,7 +639,8 @@ function generateAlignedGrid(rows: string[]): string {
 
 			// Column 3: use inline math $...$ (no spaces) to avoid centering behavior
 			const col3 = col3Content ? `[$${convertLatexToTypstMath(col3Content)}$]` : '[]';
-			const col4 = col4Content ? `[$${convertLatexToTypstMath(col4Content)}$]` : '[]';
+			// Column 4: add left padding with #h(1em) for visual separation
+			const col4 = col4Content ? `[#h(1em)$${convertLatexToTypstMath(col4Content)}$]` : '[]';
 
 			gridRows.push(`  ${col1}, ${col2}, ${col3}, ${col4}`);
 		} else {
