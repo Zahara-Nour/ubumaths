@@ -2,7 +2,7 @@
 
 ## Statut actuel
 
-**Phase** : 3 - Store et Executor - Terminee
+**Phase** : 4 - Composants UI - Terminee
 **Derniere mise a jour** : 2024-12-23
 
 ## Phases
@@ -12,7 +12,7 @@
 | 1      | Types et Messages                | Termine    |
 | 2      | Python Tracer (Worker)           | Termine    |
 | 3      | Store et Executor                | Termine    |
-| 4      | Composants UI                    | En attente |
+| 4      | Composants UI                    | Termine    |
 | 5      | Integration                      | En attente |
 | 6      | Visualisation Heap (Optionnelle) | En attente |
 | Finale | Quality Checks                   | En attente |
@@ -87,6 +87,57 @@
 
 ---
 
+## Phase 4 : Composants UI
+
+### Fichiers crees
+
+- [x] `src/lib/components/python/debug/DebugToolbar.svelte`
+  - Mode switch Execute/Debug
+  - Controles debug : Step, Step Over, Step Out, Continue, Run to End
+  - Navigation historique : Step Back/Forward
+  - Indicateur de statut (running, paused, finished)
+- [x] `src/lib/components/python/debug/VariablesPanel.svelte`
+  - Accordion pour variables locales/globales
+  - Badges de type colores par categorie Python
+  - Indicateurs de changement (jaune=modifie, vert=nouveau)
+- [x] `src/lib/components/python/debug/CallStackPanel.svelte`
+  - Affichage pile d'appels (bottom=oldest, top=current)
+  - Indicateur frame courante avec fleche
+  - Selection de frame pour inspection
+- [x] `src/lib/components/python/debug/LoopIndicator.svelte`
+  - Affichage boucles actives avec type (for/while)
+  - Barre de progression si max iterations connu
+  - Animation pulse pour while sans max
+- [x] `src/lib/components/python/debug/DebugPanel.svelte`
+  - Container combinant tous les panels
+  - Header avec info pause/ligne courante
+  - Layout responsive (grid 2 colonnes sur md+)
+- [x] `src/lib/components/python/debug/index.ts` - Exports
+
+### Fichiers modifies
+
+- [x] `src/lib/stores/pythonDebug.svelte.ts`
+  - `historyIndex` rendu public (etait `_historyIndex`)
+  - Necessaire pour afficher position dans toolbar
+
+### Decisions prises
+
+- Svelte 5 runes ($state, $derived, $props) partout
+- Shadcn-svelte components (Button, Switch, Accordion, Badge, Progress)
+- Labels UI en francais
+- Accessibilite : aria-labels, aria-current, focus-visible
+- Icons Lucide cohérents
+- Dark mode support via Tailwind dark: variants
+
+### Code Review (Issues fixes)
+
+1. **History index** : `_historyIndex` rendu public pour toolbar
+2. **ARIA labels** : Ajoutes sur Accordion.Content
+3. **MODULE_NAME constant** : Extrait magic string dans CallStackPanel
+4. **Keyboard shortcut hints** : Retires (implementation Phase 5)
+
+---
+
 ## Notes de reprise
 
 En cas de crash, reprendre a partir de :
@@ -95,4 +146,4 @@ En cas de crash, reprendre a partir de :
 - Continuer la phase en cours
 - Consulter ce document pour l'etat actuel
 
-Phase suivante : Phase 4 - Composants UI
+Phase suivante : Phase 5 - Integration
