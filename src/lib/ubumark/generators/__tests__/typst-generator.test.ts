@@ -1728,3 +1728,86 @@ describe('convertLatexToTypstMath - Subscripts and Superscripts', () => {
 		expect(convertLatexToTypstMath('\\sum_{i=1}^{n}')).toBe('sum_(i=1)^(n)');
 	});
 });
+
+describe('convertLatexToTypstMath - Operators with spacing', () => {
+	it('should add space before times when preceded by letter', () => {
+		expect(convertLatexToTypstMath('x\\times y')).toBe('x times y');
+	});
+
+	it('should add space after times when followed by digit', () => {
+		expect(convertLatexToTypstMath('\\times0.6')).toBe('times 0.6');
+	});
+
+	it('should add spaces both before and after times', () => {
+		expect(convertLatexToTypstMath('x\\times0')).toBe('x times 0');
+	});
+
+	it('should handle complex expression with times', () => {
+		expect(convertLatexToTypstMath('0.75x\\times0.15')).toBe('0.75x times 0.15');
+	});
+
+	it('should add space before approx when preceded by letter', () => {
+		expect(convertLatexToTypstMath('x\\approx0')).toBe('x approx 0');
+	});
+
+	it('should add space before div when preceded by letter', () => {
+		expect(convertLatexToTypstMath('x\\div2')).toBe('x div 2');
+	});
+
+	it('should handle prime symbol', () => {
+		expect(convertLatexToTypstMath('f\\prime')).toBe('f prime');
+	});
+
+	it('should handle u_n times expression correctly', () => {
+		const result = convertLatexToTypstMath('u_n\\times(1-0.15u_n)');
+		expect(result).toBe('u_n times (1-0.15u_n)');
+	});
+
+	it('should add space after operator before open paren', () => {
+		expect(convertLatexToTypstMath('\\times(x)')).toBe('times (x)');
+		expect(convertLatexToTypstMath('\\div(x)')).toBe('div (x)');
+		expect(convertLatexToTypstMath('\\approx(x)')).toBe('approx (x)');
+	});
+
+	it('should handle subscript followed by paren (no times)', () => {
+		const result = convertLatexToTypstMath('u_n(1-0.15u_n)');
+		// In Typst, u_n(x) would be parsed as u with subscript n(x)
+		// We need space after single-letter subscript: u_n (x)
+		expect(result).toBe('u_n (1-0.15u_n)');
+	});
+
+	it('should add space after single-letter subscript followed by paren', () => {
+		expect(convertLatexToTypstMath('a_i(x)')).toBe('a_i (x)');
+		expect(convertLatexToTypstMath('x_0(y)')).toBe('x_0 (y)');
+	});
+
+	it('should handle multiple subscripts followed by parens', () => {
+		const result = convertLatexToTypstMath('u_n(1-0.15u_n)');
+		// Both u_n should have space before their following parens
+		expect(result).toBe('u_n (1-0.15u_n)');
+	});
+});
+
+describe('convertLatexToTypstMath - Brace handling', () => {
+	it('should convert standalone \\{ and \\} to braces', () => {
+		expect(convertLatexToTypstMath('\\{x\\}')).toBe('{x}');
+	});
+
+	it('should handle \\{,\\} (escaped braces around comma) as French decimal', () => {
+		// If source has \{,\}, after \{ -> { conversion, it becomes {,}
+		// which should then be converted to decimal comma
+		const result = convertLatexToTypstMath('0\\{,\\}25');
+		expect(result).toBe('0","25');
+	});
+
+	it('should handle fraction without extra braces', () => {
+		const result = convertLatexToTypstMath('\\frac{0{,}25}{0{,}1125}');
+		expect(result).toBe('frac(0","25, 0","1125)');
+	});
+
+	it('should handle fraction with French decimal and thin spaces', () => {
+		// Simulates what toFrenchDecimal produces for numbers with >= 4 decimal digits
+		const result = convertLatexToTypstMath('\\frac{-0{,}25}{0{,}112\\,5}');
+		expect(result).toBe('frac(-0","25, 0","112 thin 5)');
+	});
+});

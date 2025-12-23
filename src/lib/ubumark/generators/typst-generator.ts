@@ -852,6 +852,34 @@ function convertLatexFractions(str: string): string {
  * @param latex - LaTeX math expression
  * @returns Typst math expression
  */
+/**
+ * Replace LaTeX command with Typst equivalent, adding spaces to prevent
+ * variable name fusion like "xtimes" or "times0" or "times(" being parsed as function.
+ */
+function replaceLatexCmd(str: string, latexCmd: string, typstCmd: string): string {
+	// Pattern: \command not followed by letter (to avoid partial matches)
+	const pattern = new RegExp(`\\\\${latexCmd}(?![a-zA-Z])`, 'g');
+
+	return str.replace(pattern, (match, offset) => {
+		let result = typstCmd;
+
+		// Add space BEFORE if preceded by a letter (prevents "xtimes")
+		if (offset > 0 && /[a-zA-Z]/.test(str[offset - 1])) {
+			result = ' ' + result;
+		}
+
+		// Add space AFTER if followed by digit or open paren
+		// - digit: prevents "times0" being parsed as variable
+		// - paren: prevents "times(...)" being parsed as function call
+		const afterPos = offset + match.length;
+		if (afterPos < str.length && /[\d(]/.test(str[afterPos])) {
+			result = result + ' ';
+		}
+
+		return result;
+	});
+}
+
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
 
@@ -897,6 +925,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Convert standalone \lbrace and \rbrace
 	result = result.replace(/\\lbrace/g, '{');
 	result = result.replace(/\\rbrace/g, '}');
+
+	// Convert standalone LaTeX escaped braces \{ and \}
+	// These produce literal braces in LaTeX, must be after \left\{ handling
+	result = result.replace(/\\{/g, '{');
+	result = result.replace(/\\}/g, '}');
+
+	// Re-run {,} replacement in case \{,\} was converted to {,}
+	result = result.replace(/\{,\}/g, '<<<DECIMAL_COMMA>>>');
 
 	// Handle invisible delimiters \left. and \right.
 	result = result.replace(/\\left\s*\./g, '');
@@ -1020,38 +1056,29 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\ddots/g, 'dots.down');
 	result = result.replace(/\\ldots/g, '...');
 
-	// Convert \cdot to centered dot (Typst uses dot.c)
-	result = result.replace(/\\cdot/g, 'dot.c');
+	// Convert arithmetic operators (using helper to add space before digits)
+	result = replaceLatexCmd(result, 'cdot', 'dot.c');
+	result = replaceLatexCmd(result, 'times', 'times');
+	result = replaceLatexCmd(result, 'div', 'div');
+	result = replaceLatexCmd(result, 'pm', 'plus.minus');
+	result = replaceLatexCmd(result, 'mp', 'minus.plus');
+	result = replaceLatexCmd(result, 'infty', 'infinity');
 
-	// Convert \times to times
-	result = result.replace(/\\times/g, 'times');
-
-	// Convert \div to div
-	result = result.replace(/\\div/g, 'div');
-
-	// Convert \pm to plus.minus
-	result = result.replace(/\\pm/g, 'plus.minus');
-
-	// Convert \mp to minus.plus
-	result = result.replace(/\\mp/g, 'minus.plus');
-
-	// Convert \infty to infinity
-	result = result.replace(/\\infty/g, 'infinity');
-
-	// Convert comparison operators - ORDER MATTERS: slant versions before regular
-	result = result.replace(/\\leqslant/g, 'lt.eq.slant');
-	result = result.replace(/\\geqslant/g, 'gt.eq.slant');
-	result = result.replace(/\\nleqslant/g, 'lt.eq.slant.not');
-	result = result.replace(/\\ngeqslant/g, 'gt.eq.slant.not');
+	// Convert comparison operators - ORDER MATTERS: slant/negated versions before regular
+	result = replaceLatexCmd(result, 'nleqslant', 'lt.eq.slant.not');
+	result = replaceLatexCmd(result, 'ngeqslant', 'gt.eq.slant.not');
+	result = replaceLatexCmd(result, 'leqslant', 'lt.eq.slant');
+	result = replaceLatexCmd(result, 'geqslant', 'gt.eq.slant');
 	result = result.replace(/\\leq/g, '<=');
 	result = result.replace(/\\le(?![a-z])/g, '<=');
 	result = result.replace(/\\geq/g, '>=');
 	result = result.replace(/\\ge(?![a-z])/g, '>=');
 	result = result.replace(/\\neq/g, '!=');
 	result = result.replace(/\\ne(?![a-z])/g, '!=');
-	result = result.replace(/\\approx/g, 'approx');
-	result = result.replace(/\\equiv/g, 'equiv');
-	result = result.replace(/\\sim/g, 'tilde.eq');
+	// Comparison operators that end with letters (using helper)
+	result = replaceLatexCmd(result, 'approx', 'approx');
+	result = replaceLatexCmd(result, 'equiv', 'equiv');
+	result = replaceLatexCmd(result, 'sim', 'tilde.eq');
 
 	// Convert arrows
 	result = result.replace(/\\to/g, '->');
@@ -1063,28 +1090,30 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\Leftrightarrow/g, '<=>');
 
 	// Integrals - MUST be before \in conversion (otherwise \int becomes "int")
-	result = result.replace(/\\iiint/g, 'integral.triple');
-	result = result.replace(/\\iint/g, 'integral.double');
-	result = result.replace(/\\oint/g, 'integral.cont');
-	result = result.replace(/\\int/g, 'integral');
+	// Order matters: longer commands first
+	result = replaceLatexCmd(result, 'iiint', 'integral.triple');
+	result = replaceLatexCmd(result, 'iint', 'integral.double');
+	result = replaceLatexCmd(result, 'oint', 'integral.cont');
+	result = replaceLatexCmd(result, 'int', 'integral');
 
 	// Convert set operators
-	result = result.replace(/\\in/g, 'in');
-	result = result.replace(/\\notin/g, 'in.not');
-	result = result.replace(/\\subset/g, 'subset');
-	result = result.replace(/\\subseteq/g, 'subset.eq');
-	result = result.replace(/\\supset/g, 'supset');
-	result = result.replace(/\\supseteq/g, 'supset.eq');
-	result = result.replace(/\\cup/g, 'union');
-	result = result.replace(/\\cap/g, 'sect');
-	result = result.replace(/\\emptyset/g, 'emptyset');
+	result = replaceLatexCmd(result, 'notin', 'in.not');
+	result = replaceLatexCmd(result, 'in', 'in');
+	result = replaceLatexCmd(result, 'subseteq', 'subset.eq');
+	result = replaceLatexCmd(result, 'subset', 'subset');
+	result = replaceLatexCmd(result, 'supseteq', 'supset.eq');
+	result = replaceLatexCmd(result, 'supset', 'supset');
+	result = replaceLatexCmd(result, 'cup', 'union');
+	result = replaceLatexCmd(result, 'cap', 'sect');
+	result = replaceLatexCmd(result, 'emptyset', 'emptyset');
 
 	// Convert common symbols
-	result = result.replace(/\\forall/g, 'forall');
-	result = result.replace(/\\exists/g, 'exists');
-	result = result.replace(/\\partial/g, 'diff');
-	result = result.replace(/\\nabla/g, 'nabla');
-	result = result.replace(/\\ell/g, 'ell'); // Script lowercase L (ℓ)
+	result = replaceLatexCmd(result, 'forall', 'forall');
+	result = replaceLatexCmd(result, 'exists', 'exists');
+	result = replaceLatexCmd(result, 'partial', 'diff');
+	result = replaceLatexCmd(result, 'nabla', 'nabla');
+	result = replaceLatexCmd(result, 'ell', 'ell'); // Script lowercase L (ℓ)
+	result = replaceLatexCmd(result, 'prime', 'prime'); // Prime symbol (′)
 
 	// Convert text command
 	result = result.replace(/\\text\s*{([^{}]*)}/g, '"$1"');
@@ -1156,8 +1185,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	}
 
 	// 6. Sums and products
-	result = result.replace(/\\sum/g, 'sum');
-	result = result.replace(/\\prod/g, 'product');
+	result = replaceLatexCmd(result, 'sum', 'sum');
+	result = replaceLatexCmd(result, 'prod', 'product');
 
 	// Limits commands - Typst handles this automatically, just remove them
 	result = result.replace(/\\limits/g, '');
@@ -1171,7 +1200,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\scriptscriptstyle/g, '');
 
 	// Limit operator
-	result = result.replace(/\\lim(?![a-z])/g, 'lim');
+	result = replaceLatexCmd(result, 'lim', 'lim');
 
 	// Arrow operators
 	result = result.replace(/\\to(?![a-z])/g, '->');
@@ -1206,6 +1235,12 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Single characters don't need grouping, but parentheses work for all cases
 	result = result.replace(/\^{([^{}]*)}/g, '^($1)');
 	result = result.replace(/_{([^{}]*)}/g, '_($1)');
+
+	// Add space after single-letter subscripts when followed by open parenthesis
+	// Prevents Typst from parsing u_n(...) as u with subscript n(...)
+	// LaTeX: u_n(1-x) means u subscript n, then parenthetical expression
+	// Typst: u_n (1-x) - space needed to separate subscript from parenthesis
+	result = result.replace(/_([a-zA-Z0-9])\(/g, '_$1 (');
 
 	// Keep unknown LaTeX commands as-is (with backslash)
 	// Typst will show a clear error during compilation if not recognized
