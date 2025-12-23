@@ -98,7 +98,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				statement_md,
 				solution_md,
 				difficulty,
-				variables
+				variables,
+				shared,
+				variations
 			)
 		`
 		)

@@ -73,7 +73,9 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 						statement_md,
 						solution_md,
 						difficulty,
-						variables
+						variables,
+						shared,
+						variations
 					)
 				)
 			`

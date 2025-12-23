@@ -32,7 +32,7 @@
  *
  * INSTANCE RESOLUTION:
  * - If a worksheet_instance exists, uses pre-resolved data
- * - Otherwise, resolves dynamically using deterministic seed
+ * - Otherwise, resolves dynamically using generateExerciseInstance
  */
 
 import { error, json } from '@sveltejs/kit';
@@ -44,8 +44,10 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
-import { resolveVariables, resolveText } from '$lib/ubumark';
+import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
+import type { Exercise } from '$lib/exercises/types';
 import type { Variable } from '$lib/ubumark';
+import type { ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 import type {
 	StudentExerciseView,
 	StudentWorksheetView,
@@ -72,15 +74,20 @@ function generateSeed(worksheetId: string, studentId: string): number {
 }
 
 // ============================================================================
-// EXERCISE RESOLUTION
+// TYPES
 // ============================================================================
 
+/**
+ * Exercise data from database query (strongly typed)
+ */
 interface ExerciseData {
 	id: string;
 	title: string | null;
 	statement_md: string;
 	solution_md: string | null;
-	variables: unknown[] | null;
+	variables: Variable[] | null;
+	shared: SharedExerciseDefaults | null;
+	variations: ExerciseVariation[] | null;
 }
 
 interface WorksheetExerciseData {
@@ -92,8 +99,13 @@ interface WorksheetExerciseData {
 	exercise: ExerciseData;
 }
 
+// ============================================================================
+// EXERCISE RESOLUTION
+// ============================================================================
+
 /**
- * Resolves an exercise with parameterized content using the given seed.
+ * Resolves an exercise using the central exercise generator.
+ * Supports variations and AST parsing.
  */
 function resolveExercise(
 	worksheetExercise: WorksheetExerciseData,
@@ -101,35 +113,52 @@ function resolveExercise(
 ): { statement: string; correction: string | null } {
 	const exercise = worksheetExercise.exercise;
 
-	// Prepare variables from exercise
-	const variables: Variable[] = [];
+	// Convert to Exercise template for the generator
+	const template: Exercise = {
+		id: exercise.id,
+		title: exercise.title ?? undefined,
+		statement_md: exercise.statement_md,
+		solution_md: exercise.solution_md ?? '',
+		variables: exercise.variables ?? undefined,
+		shared: exercise.shared ?? undefined,
+		variations: exercise.variations ?? undefined,
+		distribution_mode: 'on_demand',
+		difficulty: 1,
+		tags: [],
+		// Audit fields (not used by generator but required by type)
+		created_at: new Date().toISOString(),
+		updated_at: new Date().toISOString(),
+		created_by: 'system'
+	};
 
-	if (exercise.variables && Array.isArray(exercise.variables)) {
-		for (const variable of exercise.variables) {
-			if (
-				typeof variable === 'object' &&
-				variable !== null &&
-				'name' in variable &&
-				'expression' in variable
-			) {
-				variables.push({
-					name: String((variable as { name: unknown }).name),
-					expression: String((variable as { expression: unknown }).expression)
-				});
-			}
-		}
+	// Use the central generator with the seed + position for uniqueness
+	const result = generateExerciseInstance(template, {
+		seed: seed + worksheetExercise.position,
+		parseAST: false // Don't parse AST for student view (performance)
+	});
+
+	if (!result.success) {
+		const errorMessage = result.errors?.join(', ') ?? 'Unknown error';
+		console.error(`[API] Failed to resolve exercise ${exercise.id}: ${errorMessage}`);
+		// Return original content as fallback
+		return {
+			statement: exercise.statement_md,
+			correction: exercise.solution_md
+		};
 	}
 
-	// Resolve variables with the seed + position for uniqueness
-	const resolvedVariables = resolveVariables(variables, seed + worksheetExercise.position);
+	const instance = result.instance;
+	if (!instance) {
+		return {
+			statement: exercise.statement_md,
+			correction: exercise.solution_md
+		};
+	}
 
-	// Resolve statement and solution with parameters
-	const statement = resolveText(exercise.statement_md, resolvedVariables);
-	const correction = exercise.solution_md
-		? resolveText(exercise.solution_md, resolvedVariables)
-		: null;
-
-	return { statement, correction };
+	return {
+		statement: instance.statement_md,
+		correction: instance.solution_md || null
+	};
 }
 
 // ============================================================================
@@ -205,7 +234,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		);
 		const classData = getFirstOrSelf(assignment.classes as unknown as { name: string } | null);
 
-		// Fetch worksheet exercises with exercise data
+		// Fetch worksheet exercises with exercise data (R4: include variations and shared)
 		const { data: worksheetExercises, error: exercisesError } = await locals.supabase
 			.from('worksheet_exercises')
 			.select(
@@ -220,7 +249,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					title,
 					statement_md,
 					solution_md,
-					variables
+					variables,
+					shared,
+					variations
 				)
 			`
 			)

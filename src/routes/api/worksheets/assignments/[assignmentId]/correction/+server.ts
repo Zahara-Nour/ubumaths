@@ -73,7 +73,9 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 							statement_md,
 							solution_md,
 							difficulty,
-							variables
+							variables,
+							shared,
+							variations
 						)
 					)
 				),
