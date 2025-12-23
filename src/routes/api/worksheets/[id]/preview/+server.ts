@@ -90,7 +90,9 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 					statement_md,
 					solution_md,
 					difficulty,
-					variables
+					variables,
+					shared,
+					variations
 				)
 			`
 			)
