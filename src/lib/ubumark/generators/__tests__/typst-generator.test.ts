@@ -1896,3 +1896,185 @@ describe('convertLatexToTypstMath - Unknown LaTeX commands', () => {
 		expect(convertLatexToTypstMath('\\frac{a}{b}')).toBe('frac(a, b)');
 	});
 });
+
+// ============================================================================
+// ALIGN ENVIRONMENT GRID GENERATION TESTS
+// ============================================================================
+
+describe('Align Environment - Implication Chain Grid', () => {
+	it('should generate 4-column grid for implication chain', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'math-block',
+					expression: `\\begin{align}
+x^2+x-2 > 0 &\\Rightarrow (x+2)(x-1) > 0 \\\\
+&\\Rightarrow x < -2 \\text{ ou } x > 1
+\\end{align}`,
+					syntax: 'latex'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Should use 4-column grid structure
+		expect(typst).toContain('#grid(');
+		expect(typst).toContain('columns: (auto, auto, auto, auto)');
+		expect(typst).toContain(
+			'align: (right + horizon, center + horizon, left + horizon, left + horizon)'
+		);
+		// First row should have the initial expression
+		expect(typst).toContain('x^2+x-2 > 0');
+		// Should have the implication symbol converted to Typst shorthand (inline math)
+		expect(typst).toContain('[$=>$]');
+	});
+
+	it('should generate 4-column grid for equivalence chain', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'math-block',
+					expression: `\\begin{align}
+2x + 3 &\\Leftrightarrow x = 5 \\\\
+&\\Leftrightarrow x = \\frac{5}{2}
+\\end{align}`,
+					syntax: 'latex'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Should use grid structure
+		expect(typst).toContain('#grid(');
+		// Should have the equivalence symbol converted to Typst shorthand (inline math)
+		expect(typst).toContain('[$<=>$]');
+	});
+
+	it('should extract explanatory text after \\quad', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'math-block',
+					expression: `\\begin{align}
+x^2 > 0 &\\Rightarrow x \\neq 0 \\quad \\text{car } x \\in \\mathbb{R}
+\\end{align}`,
+					syntax: 'latex'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Should have 4 columns
+		expect(typst).toContain('columns: (auto, auto, auto, auto)');
+		// Should have the explanatory text in column 4
+		expect(typst).toContain('car');
+	});
+});
+
+describe('Align Environment - Equation Grid', () => {
+	it('should generate 4-column grid for system of equations with = alignment', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'math-block',
+					expression: `\\begin{align}
+x + y &= 5 \\\\
+2x - y &= 1
+\\end{align}`,
+					syntax: 'latex'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Should use 4-column grid structure with = as alignment symbol
+		expect(typst).toContain('#grid(');
+		expect(typst).toContain('columns: (auto, auto, auto, auto)');
+		expect(typst).toContain(
+			'align: (right + horizon, center + horizon, left + horizon, left + horizon)'
+		);
+		// The = symbol should be in column 2 (inline math)
+		expect(typst).toContain('[$=$]');
+	});
+
+	it('should generate 4-column grid for inequation with < alignment', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'math-block',
+					expression: `\\begin{align}
+x &< 5 \\\\
+y &< 10
+\\end{align}`,
+					syntax: 'latex'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Should use 4-column grid with < as alignment symbol (inline math)
+		expect(typst).toContain('#grid(');
+		expect(typst).toContain('columns: (auto, auto, auto, auto)');
+		expect(typst).toContain('[$<$]');
+	});
+
+	it('should generate 4-column grid for inequation with \\leq alignment', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'math-block',
+					expression: `\\begin{align}
+x &\\leq 5 \\\\
+y &\\geq 0
+\\end{align}`,
+					syntax: 'latex'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Should use 4-column grid with comparison symbols (inline math)
+		expect(typst).toContain('#grid(');
+		expect(typst).toContain('columns: (auto, auto, auto, auto)');
+		// \leq is converted to <= (Typst shorthand)
+		expect(typst).toContain('[$<=$]');
+		expect(typst).toContain('[$>=$]');
+	});
+
+	it('should handle nested cases environment inside align', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'math-block',
+					expression: `\\begin{align}
+x^2 = 0 &\\Leftrightarrow \\begin{cases} x = 0 \\\\ \\text{ou} \\\\ x = 1 \\end{cases}
+\\end{align}`,
+					syntax: 'latex'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Should have the grid structure
+		expect(typst).toContain('#grid(');
+		// Should have the cases() function (not literal begin{cases})
+		expect(typst).toContain('cases(');
+		// Should NOT have literal begin{cases} text
+		expect(typst).not.toContain('begin{cases}');
+		expect(typst).not.toContain('end{cases}');
+	});
+});

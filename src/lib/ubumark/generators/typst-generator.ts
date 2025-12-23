@@ -505,6 +505,7 @@ function generateTable(node: TableNode, _options: Required<TypstTranspilerOption
  * Generate math block node
  *
  * Uses $ ... $ with display modifier for block math.
+ * For aligned equations (align, aligned, etc.), uses a grid for proper alignment.
  *
  * @param node - Math block node
  * @returns Typst math block
@@ -514,10 +515,175 @@ function generateMathBlock(node: MathBlockNode): string {
 		node.syntax === 'custom'
 			? expressionToLatex(node.expression, 'custom')
 			: toFrenchDecimal(node.expression);
+
+	// Check if this is an aligned equation (contains \begin{align} etc.)
+	const alignMatch = latex.match(/\\begin\s*\{(align|aligned)\*?\}([\s\S]*?)\\end\s*\{\1\*?\}/);
+
+	if (alignMatch) {
+		return generateAlignedEquation(alignMatch[2]);
+	}
+
 	// Convert LaTeX math to Typst math syntax
 	const typstMath = convertLatexToTypstMath(latex);
-	// Wrap in align(center) to ensure centering even inside lists
+
+	// For simple equations, wrap in align(center) to ensure centering inside lists
 	return `#align(center)[$ ${typstMath} $]`;
+}
+
+/**
+ * Generate aligned equation using Typst grid for proper alignment
+ *
+ * Detects implication/equivalence chains and generates a 4-column grid:
+ * - Column 1: Initial expression (only first row), right-aligned
+ * - Column 2: Logical symbol (⇒, ⇔, etc.), centered
+ * - Column 3: Result expression, left-aligned
+ * - Column 4: Explanatory text, left-aligned
+ *
+ * @param content - Content inside \begin{align}...\end{align}
+ * @returns Typst grid structure
+ */
+function generateAlignedEquation(content: string): string {
+	// Protect nested environments (cases, matrix, etc.) before splitting by \\
+	// These environments contain \\ that should NOT be treated as row separators
+	const nestedEnvs: string[] = [];
+	const protectedContent = content.replace(
+		/\\begin\s*\{(cases|matrix|pmatrix|bmatrix|vmatrix|Vmatrix)\}[\s\S]*?\\end\s*\{\1\}/g,
+		(match) => {
+			nestedEnvs.push(match);
+			return `__NESTED_ENV_${nestedEnvs.length - 1}__`;
+		}
+	);
+
+	// Split by \\ to get rows
+	const rows = protectedContent
+		.split(/\\\\/)
+		.map((row) => row.trim())
+		.filter((row) => row.length > 0)
+		// Restore nested environments
+		.map((row) => row.replace(/__NESTED_ENV_(\d+)__/g, (_, idx) => nestedEnvs[parseInt(idx)]));
+
+	if (rows.length === 0) {
+		return '';
+	}
+
+	// Check if this uses alignment symbols (implications, equivalences, equations, inequations)
+	// Look for these symbols after the & alignment point
+	// Pattern matches: \Rightarrow, \Leftrightarrow, =, <, >, \leq, \geq, \neq, etc.
+	const alignmentSymbolPattern =
+		/^(\\(Rightarrow|Leftarrow|Leftrightarrow|iff|implies|impliedby|leq|geq|leqslant|geqslant|neq|ne|lt|gt|le|ge)|[=<>])/;
+	const hasAlignmentSymbol = rows.some((row) => {
+		const parts = row.split('&');
+		if (parts.length >= 2) {
+			const rightPart = parts[1].trim();
+			return alignmentSymbolPattern.test(rightPart);
+		}
+		return false;
+	});
+
+	if (hasAlignmentSymbol) {
+		return generateAlignedGrid(rows);
+	}
+
+	// Fallback to simple 2-column grid for other align environments
+	return generateSimpleAlignGrid(rows);
+}
+
+/**
+ * Generate 4-column grid for aligned equations (implications, equivalences, equations, inequations)
+ */
+function generateAlignedGrid(rows: string[]): string {
+	const gridRows: string[] = [];
+	// Pattern matches alignment symbols: implications, equivalences, =, <, >, \leq, \geq, etc.
+	const alignmentSymbolPattern =
+		/^(\\(Rightarrow|Leftarrow|Leftrightarrow|iff|implies|impliedby|leq|geq|leqslant|geqslant|neq|ne|lt|gt|le|ge)|[=<>])/;
+
+	for (let i = 0; i < rows.length; i++) {
+		const row = rows[i];
+		const parts = row.split('&').map((p) => p.trim());
+
+		// Column 1: Initial expression (only first row) - use inline math
+		const col1 = i === 0 && parts[0] ? `[$${convertLatexToTypstMath(parts[0])}$]` : '[]';
+
+		if (parts.length >= 2) {
+			const rightPart = parts.slice(1).join('&').trim();
+
+			// Extract alignment symbol (=, <, >, \Rightarrow, \leq, etc.)
+			const symbolMatch = rightPart.match(alignmentSymbolPattern);
+			let col2 = '[]';
+			let restOfRight = rightPart;
+
+			if (symbolMatch) {
+				const symbol = symbolMatch[0];
+				col2 = `[$${convertLatexToTypstMath(symbol)}$]`;
+				restOfRight = rightPart.slice(symbol.length).trim();
+			}
+
+			// Extract explanatory text (after \quad or \qquad followed by \text)
+			// Pattern: expression \quad \text{...} or expression \quad "text" $math$ "text"
+			const textPattern = /\\q?quad\s*(\\text\s*\{[^}]*\}.*|.*)$/;
+			const textMatch = restOfRight.match(textPattern);
+
+			let col3Content = restOfRight;
+			let col4Content = '';
+
+			if (textMatch) {
+				// Find where the \quad starts
+				const quadIndex = restOfRight.search(/\\q?quad/);
+				if (quadIndex !== -1) {
+					col3Content = restOfRight.slice(0, quadIndex).trim();
+					col4Content = restOfRight.slice(quadIndex).trim();
+					// Remove the \quad/\qquad prefix from the text
+					col4Content = col4Content.replace(/^\\q?quad\s*/, '');
+				}
+			}
+
+			// Column 3: use inline math $...$ (no spaces) to avoid centering behavior
+			const col3 = col3Content ? `[$${convertLatexToTypstMath(col3Content)}$]` : '[]';
+			const col4 = col4Content ? `[$${convertLatexToTypstMath(col4Content)}$]` : '[]';
+
+			gridRows.push(`  ${col1}, ${col2}, ${col3}, ${col4}`);
+		} else {
+			// No alignment point - put everything in column 3
+			const mathPart = parts[0] ? convertLatexToTypstMath(parts[0]) : '';
+			gridRows.push(`  ${col1}, [], [$${mathPart}$], []`);
+		}
+	}
+
+	return `#grid(
+  columns: (auto, auto, auto, auto),
+  column-gutter: 0.5em,
+  row-gutter: 0.6em,
+  align: (right + horizon, center + horizon, left + horizon, left + horizon),
+${gridRows.join(',\n')}
+)`;
+}
+
+/**
+ * Generate simple 2-column grid for non-implication align environments
+ */
+function generateSimpleAlignGrid(rows: string[]): string {
+	const gridRows: string[] = [];
+
+	for (const row of rows) {
+		const parts = row.split('&').map((p) => p.trim());
+
+		if (parts.length >= 2) {
+			const leftPart = convertLatexToTypstMath(parts[0]);
+			const rightPart = convertLatexToTypstMath(parts.slice(1).join('&'));
+			gridRows.push(`  [$ ${leftPart} $], [$ ${rightPart} $]`);
+		} else {
+			const mathPart = convertLatexToTypstMath(parts[0]);
+			gridRows.push(`  grid.cell(colspan: 2)[$ ${mathPart} $]`);
+		}
+	}
+
+	return `#grid(
+  columns: (1fr, 2fr),
+  column-gutter: 0.3em,
+  row-gutter: 0.8em,
+  align: (right, left),
+${gridRows.join(',\n')}
+)`;
 }
 
 // ============================================================================
