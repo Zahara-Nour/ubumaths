@@ -9,6 +9,7 @@
 	 * - Theme switching (light/dark)
 	 * - Keyboard shortcuts
 	 * - Error line highlighting with red background and gutter marker
+	 * - Debug line highlighting with yellow background and arrow marker
 	 * - Lazy loading of CodeMirror
 	 */
 
@@ -24,6 +25,7 @@
 	let {
 		value = $bindable(''),
 		errorLine = null as number | null,
+		debugLine = null as number | null,
 		disabled = false,
 		fontSize = 14,
 		theme = 'default' as EditorTheme,
@@ -33,6 +35,7 @@
 	}: {
 		value?: string;
 		errorLine?: number | null;
+		debugLine?: number | null;
 		disabled?: boolean;
 		fontSize?: number;
 		theme?: EditorTheme;
@@ -119,6 +122,10 @@
 	// Error line effect type - stored after CodeMirror is loaded
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let errorLineEffectType: { of: (value: number | null) => any } | null = null;
+
+	// Debug line effect type - stored after CodeMirror is loaded
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let debugLineEffectType: { of: (value: number | null) => any } | null = null;
 
 	// Track current theme for change detection
 	let currentTheme = $state<EditorTheme>(theme);
@@ -219,6 +226,29 @@
 		}
 	}
 
+	/**
+	 * Update debug line highlighting in CodeMirror
+	 * This is called whenever debugLine changes (current line in debug mode)
+	 */
+	function updateDebugHighlight(line: number | null): void {
+		if (!editor || !debugLineEffectType) return;
+
+		const effects = [debugLineEffectType.of(line)];
+
+		if (line !== null && line > 0 && line <= editor.state.doc.lines) {
+			// Scroll to debug line and highlight it
+			const lineInfo = editor.state.doc.line(line);
+			editor.dispatch({
+				effects,
+				selection: { anchor: lineInfo.from },
+				scrollIntoView: true
+			});
+		} else {
+			// Clear debug highlighting
+			editor.dispatch({ effects });
+		}
+	}
+
 	// Initialize CodeMirror with lazy loading
 	async function initEditor(): Promise<void> {
 		if (!browser || !editorContainer) return;
@@ -257,7 +287,7 @@
 			const themeExtension = await loadThemeExtension(theme);
 
 			// Create error line highlighting system
-			const effectType = StateEffect.define<number | null>();
+			const errorEffectType = StateEffect.define<number | null>();
 
 			// Error line decoration (red background)
 			const errorLineMark = Decoration.line({ class: 'cm-errorLine' });
@@ -276,7 +306,7 @@
 				},
 				update(value, tr) {
 					for (const effect of tr.effects) {
-						if (effect.is(effectType)) {
+						if (effect.is(errorEffectType)) {
 							const newLine = effect.value;
 							if (newLine === null || newLine < 1) {
 								return { line: null, decorations: Decoration.none };
@@ -319,6 +349,69 @@
 				}
 			});
 
+			// Create debug line highlighting system
+			const debugEffectType = StateEffect.define<number | null>();
+
+			// Debug line decoration (yellow/amber background)
+			const debugLineMark = Decoration.line({ class: 'cm-debugLine' });
+
+			// Debug gutter marker (arrow) - imported from shared module
+			const { DebugGutterMarker } = await import('$lib/utils/codemirror-debug-marker');
+			const debugMarker = new DebugGutterMarker();
+
+			// State field to track debug line and compute decorations
+			const debugLineFieldDef = StateField.define<{
+				line: number | null;
+				decorations: typeof RangeSet.prototype;
+			}>({
+				create() {
+					return { line: null, decorations: Decoration.none };
+				},
+				update(value, tr) {
+					for (const effect of tr.effects) {
+						if (effect.is(debugEffectType)) {
+							const newLine = effect.value;
+							if (newLine === null || newLine < 1) {
+								return { line: null, decorations: Decoration.none };
+							}
+							// Create decoration for the debug line
+							const doc = tr.state.doc;
+							if (newLine <= doc.lines) {
+								const lineInfo = doc.line(newLine);
+								return {
+									line: newLine,
+									decorations: Decoration.set([debugLineMark.range(lineInfo.from)])
+								};
+							}
+							return { line: null, decorations: Decoration.none };
+						}
+					}
+					// Handle document changes - remap decorations
+					if (tr.docChanged && value.line !== null) {
+						return { line: value.line, decorations: value.decorations.map(tr.changes) };
+					}
+					return value;
+				},
+				provide: (field) => EditorView.decorations.from(field, (value) => value.decorations)
+			});
+
+			// Debug gutter extension
+			const debugGutter = gutter({
+				class: 'cm-debugGutter',
+				markers: (view) => {
+					const state = view.state.field(debugLineFieldDef);
+					if (state.line === null || state.line < 1) {
+						return RangeSet.empty;
+					}
+					const doc = view.state.doc;
+					if (state.line <= doc.lines) {
+						const lineInfo = doc.line(state.line);
+						return RangeSet.of([debugMarker.range(lineInfo.from)]);
+					}
+					return RangeSet.empty;
+				}
+			});
+
 			// Track the current theme
 			currentTheme = theme;
 
@@ -342,6 +435,10 @@
 				// Error line highlighting
 				errorLineFieldDef,
 				errorGutter,
+
+				// Debug line highlighting
+				debugLineFieldDef,
+				debugGutter,
 
 				// Key bindings
 				keymap.of([
@@ -420,14 +517,18 @@
 				parent: editorContainer
 			});
 
-			// Store effect type for later use
-			errorLineEffectType = effectType;
+			// Store effect types for later use
+			errorLineEffectType = errorEffectType;
+			debugLineEffectType = debugEffectType;
 
 			isLoading = false;
 
-			// Apply initial error highlight if errorLine is already set
+			// Apply initial highlights if already set
 			if (errorLine !== null) {
 				updateErrorHighlight(errorLine);
+			}
+			if (debugLine !== null) {
+				updateDebugHighlight(debugLine);
 			}
 		} catch (error) {
 			console.error('[PythonEditor] Failed to load CodeMirror:', error);
@@ -457,6 +558,16 @@
 		// Only update if editor is ready
 		if (editor && errorLineEffectType) {
 			updateErrorHighlight(line);
+		}
+	});
+
+	// React to debugLine prop changes - sync debug line to CodeMirror
+	$effect(() => {
+		// Read debugLine to track it
+		const line = debugLine;
+		// Only update if editor is ready
+		if (editor && debugLineEffectType) {
+			updateDebugHighlight(line);
 		}
 	});
 
@@ -574,6 +685,27 @@
 	:global(.cm-errorGutterMarker) {
 		color: #ef4444;
 		font-size: 12px;
+		line-height: 1;
+	}
+
+	/* Debug line highlighting - yellow/amber background */
+	:global(.cm-debugLine) {
+		background-color: rgba(245, 158, 11, 0.2) !important;
+	}
+
+	:global(.dark .cm-debugLine) {
+		background-color: rgba(245, 158, 11, 0.3) !important;
+	}
+
+	/* Debug gutter marker - arrow */
+	:global(.cm-debugGutter) {
+		width: 18px;
+	}
+
+	:global(.cm-debugGutterMarker) {
+		color: #f59e0b;
+		font-size: 14px;
+		font-weight: bold;
 		line-height: 1;
 	}
 </style>

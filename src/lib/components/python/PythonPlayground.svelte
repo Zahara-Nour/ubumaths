@@ -338,6 +338,7 @@
 				<PythonEditor
 					bind:value={pythonStore.code}
 					errorLine={pythonStore.errorLine}
+					debugLine={debugStore.currentLine}
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
 					theme={pythonStore.editorTheme}
@@ -418,6 +419,7 @@
 				<PythonEditor
 					bind:value={pythonStore.code}
 					errorLine={pythonStore.errorLine}
+					debugLine={debugStore.currentLine}
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
 					theme={pythonStore.editorTheme}

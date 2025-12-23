@@ -242,12 +242,13 @@ Le Python Debugger est maintenant integre dans UbuMaths avec :
 5. **Call Stack** : Visualisation pile d'appels
 6. **Loops** : Indicateur d'iteration avec barre de progression
 7. **Keyboard shortcuts** : F5, F10, F11, Shift+F11, Shift+F5
+8. **Highlight ligne courante** : Fond jaune + fleche dans gutter
 
 ### TODO (follow-up)
 
 - [ ] Breakpoint gutter dans PythonEditor (CodeMirror)
 - [ ] F9 key handler pour toggle breakpoint
-- [ ] Highlight ligne courante dans editeur
+- [x] Highlight ligne courante dans editeur (jaune + fleche)
 - [ ] Phase 6 : Visualisation Heap (optionnelle)
 
 ### Fichiers crees
@@ -272,6 +273,9 @@ src/lib/components/python/debug/
 src/lib/workers/
 └── pyodide.worker.debug.test.ts
 
+src/lib/utils/
+└── codemirror-debug-marker.ts
+
 docs/wip/
 ├── debug-tracer-testing-guide.md
 └── python-debugger-progress.md
@@ -287,4 +291,5 @@ src/lib/workers/pyodide.worker.ts
 src/lib/shared/python/execution/base-executor.svelte.ts
 src/lib/shared/python/execution/playground-executor.svelte.ts
 src/lib/components/python/PythonPlayground.svelte
+src/lib/components/python/PythonEditor.svelte
 ```
