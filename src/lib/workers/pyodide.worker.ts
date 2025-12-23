@@ -913,7 +913,7 @@ def _ubumaths_debug_generator(code, breakpoints_json):
             'timestamp': time.time() * 1000,
             'callStack': frames,
             'globals': globals_vars,
-            'loops': [{'lineNumber': l['lineno'], 'iteration': l['iteration'], 'type': l['type']} for l in active_loops],
+            'loops': [{'loopId': f"loop_{l['lineno']}", 'lineNumber': l['lineno'], 'iterationCount': l['iteration'], 'loopType': l['type']} for l in active_loops],
             'stdout': stdout_capture,
             'event': event
         }

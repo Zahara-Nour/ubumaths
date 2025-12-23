@@ -278,7 +278,11 @@ export abstract class BasePythonExecutor {
 			this.worker.onmessage = (event: MessageEvent<unknown>) => {
 				const validation = fromWorkerMessageSchema.safeParse(event.data);
 				if (!validation.success) {
-					console.error('[BasePythonExecutor] Invalid worker message:', validation.error.issues);
+					console.warn(
+						'[BasePythonExecutor] Invalid worker message:',
+						event.data,
+						validation.error.issues
+					);
 					return;
 				}
 				this.handleWorkerMessage(validation.data);
