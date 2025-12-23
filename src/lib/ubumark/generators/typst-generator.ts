@@ -161,7 +161,8 @@ function generateSetup(options: Required<TypstTranspilerOptions>): string {
 	setup += '#set heading(numbering: "1.1")\n';
 
 	// List item spacing and numbering scheme (French academic: 1) a) i))
-	setup += '#set enum(numbering: "1)", spacing: 1.5em, tight: false)\n';
+	// Multi-level numbering pattern handles nested ordered lists automatically
+	setup += '#set enum(numbering: "1) a) i)", spacing: 1.5em, tight: false)\n';
 	setup += '#set list(spacing: 1.5em, tight: false)\n';
 
 	// Display limits above/below for common operators (like LaTeX display mode)
@@ -355,24 +356,6 @@ function generateHeading(node: HeadingNode, options: Required<TypstTranspilerOpt
 // ============================================================================
 
 /**
- * Numbering patterns for French academic style (1) a) i))
- * Used to match the HTML export numbering scheme.
- */
-const ENUM_NUMBERING_PATTERNS = [
-	'1)', // Depth 1: 1) 2) 3)
-	'a)', // Depth 2: a) b) c)
-	'i)', // Depth 3: i) ii) iii)
-	'1)' // Depth 4+: fallback to numeric
-];
-
-/**
- * Get numbering pattern for a given enumerate depth
- */
-function getNumberingPattern(depth: number): string {
-	return ENUM_NUMBERING_PATTERNS[Math.min(depth - 1, ENUM_NUMBERING_PATTERNS.length - 1)];
-}
-
-/**
  * Generate list node with depth tracking for proper numbering
  *
  * Uses numbered lists for ordered, bullet lists for unordered.
@@ -402,57 +385,63 @@ function generateList(
 				return generateBlock(child as BlockNode, options);
 			});
 
-			// First child is on the same line as the marker
-			// Subsequent children need to be indented to stay in the item
+			// Check if first child is a nested list (needs special handling in Typst)
+			const firstChildIsList = item.children[0]?.type === 'list';
 			const firstBlock = childBlocks[0] || '';
 			const restBlocks = childBlocks.slice(1);
 
-			let itemContent = firstBlock;
-			if (restBlocks.length > 0) {
-				// Indent continuation blocks to keep them in the list item
-				const indentedRest = restBlocks
-					.map((block) =>
-						block
-							.split('\n')
-							.map((line) => '  ' + line)
-							.join('\n')
-					)
+			let itemContent: string;
+
+			if (firstChildIsList) {
+				// When first child is a list, put it on a new line with proper indentation
+				// This ensures Typst recognizes it as nested content
+				const indentedFirst = firstBlock
+					.split('\n')
+					.map((line) => '  ' + line)
 					.join('\n');
-				itemContent += '\n' + indentedRest;
+				itemContent = '\n' + indentedFirst;
+
+				if (restBlocks.length > 0) {
+					const indentedRest = restBlocks
+						.map((block) =>
+							block
+								.split('\n')
+								.map((line) => '  ' + line)
+								.join('\n')
+						)
+						.join('\n');
+					itemContent += '\n' + indentedRest;
+				}
+			} else {
+				// Normal case: first block on same line, rest indented
+				itemContent = firstBlock;
+				if (restBlocks.length > 0) {
+					const indentedRest = restBlocks
+						.map((block) =>
+							block
+								.split('\n')
+								.map((line) => '  ' + line)
+								.join('\n')
+						)
+						.join('\n');
+					itemContent += '\n' + indentedRest;
+				}
 			}
 
 			if (node.ordered) {
 				// For depth 1, use explicit numbering to support custom start numbers
 				// For deeper levels, use + marker (Typst's enum continuation)
+				// The multi-level numbering pattern in setup handles the style automatically
 				if (newDepth === 1) {
 					const num = startNumber + index;
-					return `${num}. ${itemContent}`;
+					return `${num}.${itemContent.startsWith('\n') ? '' : ' '}${itemContent}`;
 				}
 				// For nested enums, use + marker
-				return `+ ${itemContent}`;
+				return `+${itemContent.startsWith('\n') ? '' : ' '}${itemContent}`;
 			}
-			return `- ${itemContent}`;
+			return `-${itemContent.startsWith('\n') ? '' : ' '}${itemContent}`;
 		})
 		.join('\n');
-
-	// For nested ordered lists (depth > 1), wrap with #enum() to set custom numbering
-	if (node.ordered && newDepth > 1) {
-		const pattern = getNumberingPattern(newDepth);
-		// Convert items from "+ content" to array format for #enum()
-		const enumItems = node.items
-			.map((item: ListItemNode) => {
-				const childBlocks = item.children.map((child: ASTNode) => {
-					if (child.type === 'list') {
-						return generateList(child, options, newDepth);
-					}
-					return generateBlock(child as BlockNode, options);
-				});
-				const content = childBlocks.join('\n');
-				return `[${content}]`;
-			})
-			.join(',\n  ');
-		return `#enum(numbering: "${pattern}",\n  ${enumItems}\n)`;
-	}
 
 	return items;
 }
@@ -1242,9 +1231,45 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Typst: u_n (1-x) - space needed to separate subscript from parenthesis
 	result = result.replace(/_([a-zA-Z0-9])\(/g, '_$1 (');
 
-	// Keep unknown LaTeX commands as-is (with backslash)
-	// Typst will show a clear error during compilation if not recognized
-	// This makes debugging easier than silently removing backslashes
+	// Add space after multi-character subscripts when followed by open parenthesis
+	// Handles cases like u_{n+1}(x) -> u_(n+1) (x)
+	// The subscript has already been converted from _{...} to _(...) above
+	// Pattern: _(...) immediately followed by ( needs a space
+	result = result.replace(/_\(([^()]*)\)\(/g, '_($1) (');
+
+	// ========================================================================
+	// UNKNOWN LATEX COMMANDS HANDLING
+	// ========================================================================
+	// Convert remaining backslash commands to Typst text to prevent compilation errors.
+	// Pattern: \commandname (backslash followed by letters)
+	// These are converted to quoted strings so they display visibly for debugging.
+	const knownTypstKeywords = new Set([
+		// Typst spacing commands (already converted, but might appear in edge cases)
+		'thin',
+		'med',
+		'thick',
+		'quad',
+		'wide',
+		'negthin',
+		// Escape sequences that should remain
+		'n',
+		't',
+		'r'
+	]);
+
+	result = result.replace(/\\([a-zA-Z]+)/g, (match, cmdName: string) => {
+		// Skip known Typst keywords
+		if (knownTypstKeywords.has(cmdName)) {
+			return match;
+		}
+		// Convert unknown LaTeX command to visible text
+		// This prevents Typst compilation errors while making the issue visible
+		logger.warn('convertLatexToTypstMath: unknown LaTeX command converted to text', {
+			command: match,
+			context: result.slice(0, 50)
+		});
+		return `"${cmdName}"`;
+	});
 
 	// ========================================================================
 	// FRENCH DECIMAL COMMA HANDLING (Step 2 of 2)
