@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Imports
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
+	import { debugStore } from '$lib/stores/pythonDebug.svelte';
 	import PythonToolbar from './PythonToolbar.svelte';
 	import PythonEditor from './PythonEditor.svelte';
 	import PythonOutput from './PythonOutput.svelte';
@@ -9,10 +10,12 @@
 	import PythonFileManager from './PythonFileManager.svelte';
 	import PythonMigrationPrompt from './PythonMigrationPrompt.svelte';
 	import PythonSettings from './PythonSettings.svelte';
+	import { DebugToolbar, DebugPanel } from './debug';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
 	import { onMount, onDestroy } from 'svelte';
 	import type { Database } from '$lib/types/database';
+	import type { DebugStepAction } from '$lib/shared/python/debug/types';
 
 	// Types
 	type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -41,6 +44,10 @@
 	let currentFileName = $derived(pythonStore.currentFile?.title ?? null);
 	let isModifiedFromCloud = $derived(pythonStore.isModifiedFromCloud);
 	let isSaving = $derived(pythonStore.isSaving);
+
+	// Debug derived state
+	let isDebugging = $derived(debugStore.isDebugging);
+	let isDebugActive = $derived(debugStore.sessionState !== 'idle');
 
 	// Fullscreen state
 	let isFullscreen = $state(false);
@@ -117,10 +124,104 @@
 		isFullscreen = !isFullscreen;
 	}
 
-	// Handle Escape key to exit fullscreen
+	// Debug handlers
+	function handleDebugRun(): void {
+		if (!pythonStore.isReady) return;
+
+		// Capture current mode at time of click to avoid race conditions
+		const currentMode = debugStore.mode;
+
+		if (currentMode === 'debug') {
+			try {
+				// Start debug session - set store state BEFORE executor
+				const breakpoints = debugStore.getBreakpointsForWorker();
+				debugStore.startSession();
+				pythonStore.executor.startDebugSession(pythonStore.code, breakpoints);
+			} catch (error) {
+				console.error('[PythonPlayground] Debug start failed:', error);
+				toaster.error('Erreur lors du démarrage du débogage');
+				debugStore.resetSession();
+			}
+		} else {
+			// Normal execution
+			pythonStore.execute();
+		}
+	}
+
+	function handleDebugStep(action: DebugStepAction): void {
+		if (!debugStore.canStep()) return;
+		try {
+			debugStore.resumeSession(action !== 'continue' && action !== 'run-to-end');
+			pythonStore.executor.debugStep(action);
+		} catch (error) {
+			console.error('[PythonPlayground] Debug step failed:', error);
+			toaster.error('Erreur lors du débogage');
+			debugStore.resetSession();
+		}
+	}
+
+	function handleDebugStop(): void {
+		try {
+			pythonStore.executor.stopDebugSession();
+		} catch (error) {
+			console.error('[PythonPlayground] Debug stop failed:', error);
+		} finally {
+			// Always reset session, even if stop fails
+			debugStore.resetSession();
+		}
+	}
+
+	// Handle keyboard shortcuts
 	function handleKeydown(event: KeyboardEvent): void {
+		// Escape to exit fullscreen
 		if (event.key === 'Escape' && isFullscreen) {
 			isFullscreen = false;
+			return;
+		}
+
+		// Debug keyboard shortcuts (only when in debug mode)
+		if (debugStore.isDebugging) {
+			switch (event.key) {
+				case 'F5':
+					event.preventDefault();
+					if (event.shiftKey) {
+						// Shift+F5: Stop debug
+						handleDebugStop();
+					} else {
+						// F5: Continue / Start debug
+						if (debugStore.isPaused) {
+							handleDebugStep('continue');
+						} else if (debugStore.sessionState === 'idle') {
+							handleDebugRun();
+						}
+					}
+					break;
+				case 'F10':
+					event.preventDefault();
+					// F10: Step over
+					if (debugStore.canStep()) {
+						handleDebugStep('step-over');
+					}
+					break;
+				case 'F11':
+					event.preventDefault();
+					if (event.shiftKey) {
+						// Shift+F11: Step out
+						if (debugStore.canStep()) {
+							handleDebugStep('step-out');
+						}
+					} else {
+						// F11: Step into
+						if (debugStore.canStep()) {
+							handleDebugStep('step');
+						}
+					}
+					break;
+				case 'F9':
+					// F9: Toggle breakpoint (handled by editor via onToggleBreakpoint)
+					// This is a fallback if the editor doesn't handle it
+					break;
+			}
 		}
 	}
 
@@ -215,6 +316,16 @@
 		fontSize={pythonStore.fontSize}
 	/>
 
+	<!-- Debug Toolbar -->
+	<div class="border-b border-border px-4 py-2">
+		<DebugToolbar
+			onRun={handleDebugRun}
+			onStep={handleDebugStep}
+			onStop={handleDebugStop}
+			disabled={!canExecute || isExecuting}
+		/>
+	</div>
+
 	<!-- Main content area -->
 	<!-- Mobile: stacked layout -->
 	<div class="flex min-h-[500px] flex-1 flex-col lg:hidden">
@@ -237,18 +348,23 @@
 			</div>
 		</div>
 
-		<!-- Output -->
+		<!-- Output / Debug Panel -->
 		<div class="flex flex-1 flex-col">
 			<div class="border-b border-border bg-muted/50 px-4 py-2">
-				<span class="text-sm font-medium text-muted-foreground">Sortie</span>
+				<span class="text-sm font-medium text-muted-foreground">
+					{isDebugActive ? 'Débogueur' : 'Sortie'}
+				</span>
 			</div>
 			<div
 				class="flex-1 overflow-auto bg-muted/20 p-4"
 				role="region"
-				aria-label="Sortie d'exécution Python"
+				aria-label={isDebugActive ? 'Panneau de débogage' : "Sortie d'exécution Python"}
 				aria-live="polite"
 			>
-				{#if pythonStore.isLoading}
+				{#if isDebugActive}
+					<!-- Debug panel -->
+					<DebugPanel />
+				{:else if pythonStore.isLoading}
 					<!-- Loading state -->
 					<div class="flex flex-col items-center justify-center gap-4 py-8">
 						<div
@@ -315,18 +431,23 @@
 		<!-- Splitter -->
 		<PythonSplitter onDrag={handleSplitterDrag} onDoubleClick={resetSplitterWidth} />
 
-		<!-- Right: Output -->
+		<!-- Right: Output / Debug Panel -->
 		<div class="flex flex-1 flex-col overflow-hidden">
 			<div class="border-b border-border bg-muted/50 px-4 py-2">
-				<span class="text-sm font-medium text-muted-foreground">Sortie</span>
+				<span class="text-sm font-medium text-muted-foreground">
+					{isDebugActive ? 'Débogueur' : 'Sortie'}
+				</span>
 			</div>
 			<div
 				class="flex-1 overflow-auto bg-muted/20 p-4"
 				role="region"
-				aria-label="Sortie d'exécution Python"
+				aria-label={isDebugActive ? 'Panneau de débogage' : "Sortie d'exécution Python"}
 				aria-live="polite"
 			>
-				{#if pythonStore.isLoading}
+				{#if isDebugActive}
+					<!-- Debug panel -->
+					<DebugPanel />
+				{:else if pythonStore.isLoading}
 					<!-- Loading state -->
 					<div class="flex flex-col items-center justify-center gap-4 py-8">
 						<div

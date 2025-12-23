@@ -18,6 +18,8 @@
  */
 
 import { BasePythonExecutor } from './base-executor.svelte';
+import { debugStore } from '$lib/stores/pythonDebug.svelte';
+import type { DebugSnapshot, DebugPauseReason } from '../debug/types';
 
 // =============================================================================
 // Playground Executor
@@ -80,5 +82,40 @@ export class PlaygroundExecutor extends BasePythonExecutor {
 	protected onExecutionError(_message: string, _line?: number): void {
 		// No additional handling needed for playground mode
 		// The base class already updates stderr and errorLine
+	}
+
+	// ===========================================================================
+	// Debug Hook Implementations
+	// ===========================================================================
+
+	/**
+	 * Hook called when a debug snapshot is received.
+	 * Updates the debugStore with the new snapshot.
+	 *
+	 * @param snapshot - The debug snapshot from the worker
+	 */
+	protected onDebugSnapshot(snapshot: DebugSnapshot): void {
+		debugStore.pushSnapshot(snapshot);
+	}
+
+	/**
+	 * Hook called when execution is paused.
+	 * Updates the debugStore session state.
+	 *
+	 * @param reason - Why execution paused (breakpoint, step, etc.)
+	 */
+	protected onDebugPaused(reason: DebugPauseReason): void {
+		const currentLine = debugStore.currentSnapshot?.lineNumber ?? 1;
+		debugStore.pauseSession(reason, currentLine);
+	}
+
+	/**
+	 * Hook called when debug session finishes.
+	 * Updates the debugStore to finished state.
+	 *
+	 * @param _duration - Execution time in milliseconds (unused)
+	 */
+	protected onDebugFinished(_duration: number): void {
+		debugStore.finishSession();
 	}
 }
