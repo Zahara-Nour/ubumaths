@@ -482,6 +482,37 @@ export interface ExerciseValidationResultMessage {
 	id: string;
 }
 
+// =============================================================================
+// Debug Messages: Worker -> Main Thread
+// =============================================================================
+
+/**
+ * Debug snapshot message - sent when execution pauses
+ */
+export interface DebugSnapshotMessage {
+	type: 'debug-snapshot';
+	id: string;
+	snapshot: import('./debug/types').DebugSnapshot;
+}
+
+/**
+ * Debug paused message - indicates why execution paused
+ */
+export interface DebugPausedMessage {
+	type: 'debug-paused';
+	id: string;
+	reason: import('./debug/types').DebugPauseReason;
+}
+
+/**
+ * Debug finished message - sent when debug session completes
+ */
+export interface DebugFinishedMessage {
+	type: 'debug-finished';
+	id: string;
+	duration: number;
+}
+
 /**
  * Union type for all messages sent from the worker
  */
@@ -503,7 +534,10 @@ export type FromWorkerMessage =
 	| ContextDestroyedMessage
 	| ContextResetMessage
 	| ValidationResultMessage
-	| ExerciseValidationResultMessage;
+	| ExerciseValidationResultMessage
+	| DebugSnapshotMessage
+	| DebugPausedMessage
+	| DebugFinishedMessage;
 
 // =============================================================================
 // Pyodide Types (for worker internal use)
