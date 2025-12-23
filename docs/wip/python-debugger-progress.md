@@ -2,7 +2,7 @@
 
 ## Statut actuel
 
-**Phase** : 4 - Composants UI - Terminee
+**Phase** : 5 - Integration - Terminee
 **Derniere mise a jour** : 2024-12-23
 
 ## Phases
@@ -13,7 +13,7 @@
 | 2      | Python Tracer (Worker)           | Termine    |
 | 3      | Store et Executor                | Termine    |
 | 4      | Composants UI                    | Termine    |
-| 5      | Integration                      | En attente |
+| 5      | Integration                      | Termine    |
 | 6      | Visualisation Heap (Optionnelle) | En attente |
 | Finale | Quality Checks                   | En attente |
 
@@ -138,6 +138,70 @@
 
 ---
 
+## Phase 5 : Integration
+
+### Fichiers modifies
+
+- [x] `src/lib/components/python/PythonPlayground.svelte`
+  - Import DebugToolbar et DebugPanel
+  - Import debugStore et DebugStepAction type
+  - Derived state : isDebugging, isDebugActive
+  - Handlers : handleDebugRun, handleDebugStep, handleDebugStop
+  - Keyboard shortcuts : F5 (Continue/Start), F10 (Step Over), F11 (Step Into), Shift+F11 (Step Out), Shift+F5 (Stop)
+  - DebugToolbar below PythonToolbar
+  - Output/Debug panel switch based on isDebugActive
+- [x] `src/lib/shared/python/execution/playground-executor.svelte.ts`
+  - Override onDebugSnapshot() -> debugStore.pushSnapshot()
+  - Override onDebugPaused() -> debugStore.pauseSession()
+  - Override onDebugFinished() -> debugStore.finishSession()
+
+### Architecture
+
+```
+PythonPlayground
+├── PythonToolbar (existing)
+├── DebugToolbar (new - mode switch + debug controls)
+├── Editor panel
+│   └── PythonEditor
+└── Output/Debug panel (conditional)
+    ├── DebugPanel (when debugging active)
+    │   ├── LoopIndicator
+    │   ├── VariablesPanel
+    │   └── CallStackPanel
+    └── PythonOutput (when not debugging)
+```
+
+### Keyboard Shortcuts
+
+| Raccourci    | Action              |
+| ------------ | ------------------- |
+| F5           | Continue/Start      |
+| Shift+F5     | Stop debug          |
+| F10          | Step over           |
+| F11          | Step into           |
+| Shift+F11    | Step out            |
+
+### TODO (follow-up)
+
+- [ ] Breakpoint gutter in PythonEditor (CodeMirror integration)
+- [ ] F9 key handler for toggle breakpoint at cursor
+- [ ] Visual current line highlight in editor during debug
+
+### Flow
+
+1. User toggle mode Execute -> Debug
+2. User ajoute breakpoints (TODO: click gutter, not yet implemented)
+3. User clique Run/F5 -> debug session starts
+4. Worker executes statement, sends snapshot
+5. PlaygroundExecutor.onDebugSnapshot() -> debugStore.pushSnapshot()
+6. PlaygroundExecutor.onDebugPaused() -> debugStore.pauseSession()
+7. UI updates: DebugPanel shows variables, stack, position
+8. User step/continue -> handleDebugStep() -> debugStore.resumeSession() + executor.debugStep()
+9. Repeat until finished
+10. PlaygroundExecutor.onDebugFinished() -> debugStore.finishSession()
+
+---
+
 ## Notes de reprise
 
 En cas de crash, reprendre a partir de :
@@ -146,4 +210,4 @@ En cas de crash, reprendre a partir de :
 - Continuer la phase en cours
 - Consulter ce document pour l'etat actuel
 
-Phase suivante : Phase 5 - Integration
+Phase suivante : Phase Finale - Quality Checks
