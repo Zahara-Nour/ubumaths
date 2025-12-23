@@ -161,7 +161,7 @@ function generateSetup(options: Required<TypstTranspilerOptions>): string {
 
 	// List item spacing (numbering is set per-list via #enum())
 	setup += '#set enum(spacing: 1.5em, tight: false)\n';
-	setup += '#set list(spacing: 1.5em, tight: false)\n';
+	setup += '#set list(spacing: 2em, tight: false)\n';
 
 	// Display limits above/below for common operators (like LaTeX display mode)
 	setup += '#show math.sum: math.limits\n';
@@ -400,15 +400,15 @@ function generateList(
 		return `#enum(${startParam}numbering: "${pattern}",\n  ${enumItems}\n)`;
 	}
 
-	// For bullet lists, use simple - markers with proper indentation
-	const items = node.items
+	// For bullet lists, use #list() with explicit spacing between items
+	const listItems = node.items
 		.map((item: ListItemNode) => {
 			const content = generateListItemContent(item, options, newDepth);
-			return `- ${content}`;
+			return `[${content}]`;
 		})
-		.join('\n');
+		.join(',\n  ');
 
-	return items;
+	return `#list(spacing: 1.5em,\n  ${listItems}\n)`;
 }
 
 /**
