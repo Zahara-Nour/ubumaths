@@ -649,13 +649,13 @@ function generateAlignedGrid(rows: string[]): string {
 		}
 	}
 
-	return `#grid(
+	return `#align(center)[#grid(
   columns: (auto, auto, auto, auto),
   column-gutter: 0.5em,
-  row-gutter: 0.6em,
+  row-gutter: 1em,
   align: (right + horizon, center + horizon, left + horizon, left + horizon),
 ${gridRows.join(',\n')}
-)`;
+)]`;
 }
 
 /**
@@ -678,13 +678,13 @@ function generateSimpleAlignGrid(rows: string[]): string {
 		}
 	}
 
-	return `#grid(
+	return `#align(center)[#grid(
   columns: (auto, auto),
   column-gutter: 0.5em,
-  row-gutter: 0.6em,
+  row-gutter: 1em,
   align: (right + horizon, left + horizon),
 ${gridRows.join(',\n')}
-)`;
+)]`;
 }
 
 // ============================================================================
@@ -1107,14 +1107,16 @@ export function convertLatexToTypstMath(latex: string): string {
 
 	// Convert \begin{cases} ... \end{cases} to Typst cases()
 	// LaTeX: \begin{cases} a & b \\ c & d \end{cases}
-	// Typst: cases(a & b, c & d)
+	// Typst: cases(display(a & b), display(c & d))
+	// Use display() to ensure normal size (not cramped style)
 	result = result.replace(/\\begin\s*\{cases\}([\s\S]*?)\\end\s*\{cases\}/g, (_, content) => {
 		// Split by \\ and clean up
 		const lines = content
 			.split(/\\\\/)
 			.map((line: string) => line.trim())
 			.filter((line: string) => line.length > 0);
-		return 'cases(' + lines.join(', ') + ')';
+		// Wrap each line in display() for normal size
+		return 'cases(' + lines.map((line: string) => `display(${line})`).join(', ') + ')';
 	});
 
 	// Convert \sqrt{x} to sqrt(x) - use balanced brace matching
