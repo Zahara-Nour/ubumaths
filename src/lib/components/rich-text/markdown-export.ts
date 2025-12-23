@@ -125,7 +125,8 @@ function convertBulletListToMarkdown(
 	const baseIndent = parentListType === 'bullet' ? '  ' : '   ';
 	const indent = baseIndent.repeat(indentLevel);
 	const items = list.content.map((item) => {
-		const itemContent = convertListItemToMarkdown(item, indentLevel, 'bullet');
+		// Pass parentListType so item can calculate correct continuation indent
+		const itemContent = convertListItemToMarkdown(item, indentLevel, 'bullet', parentListType);
 		// If item content starts with newline, it's a block-first item
 		// Use just "-" without trailing space for proper CommonMark
 		if (itemContent.startsWith('\n')) {
@@ -160,7 +161,8 @@ function convertOrderedListToMarkdown(
 	const startNum = (list.attrs?.start as number) || 1;
 
 	const items = list.content.map((item, index) => {
-		const itemContent = convertListItemToMarkdown(item, indentLevel, 'ordered');
+		// Pass parentListType so item can calculate correct continuation indent
+		const itemContent = convertListItemToMarkdown(item, indentLevel, 'ordered', parentListType);
 		const marker = `${startNum + index}.`;
 		// If item content starts with newline, it's a block-first item
 		// Use just marker without trailing space for proper CommonMark
@@ -180,18 +182,27 @@ function convertOrderedListToMarkdown(
  * - Blocks (paragraphs, code blocks, math blocks) are separated by BLANK LINES
  * - Continuation content is indented (2 spaces for bullet lists, 3 for ordered)
  * - Hardbreaks (\) are only for line breaks WITHIN a paragraph
+ *
+ * @param item - The list item node
+ * @param indentLevel - Current nesting depth
+ * @param listType - Type of the current list ('bullet' or 'ordered')
+ * @param parentListType - Type of the parent list (used for marker indentation calculation)
  */
 function convertListItemToMarkdown(
 	item: JSONContent,
 	indentLevel: number,
-	listType: 'bullet' | 'ordered' = 'bullet'
+	listType: 'bullet' | 'ordered' = 'bullet',
+	parentListType: 'bullet' | 'ordered' = listType
 ): string {
 	if (!item.content) return '';
 
 	const parts: string[] = [];
-	// List continuation indent: 2 spaces for bullet (aligns with "- "), 3 for ordered (aligns with "1. ")
-	const baseIndent = listType === 'bullet' ? '  ' : '   ';
-	const continuationIndent = baseIndent.repeat(indentLevel + 1);
+	// The marker indent uses parent's list type (how many spaces per level to reach the marker)
+	const parentBaseIndent = parentListType === 'bullet' ? '  ' : '   ';
+	const markerIndent = parentBaseIndent.repeat(indentLevel);
+	// Content indent = marker indent + current list's content offset (2 for "- ", 3 for "1. ")
+	const contentOffset = listType === 'bullet' ? '  ' : '   ';
+	const continuationIndent = markerIndent + contentOffset;
 	const blockTypes = [
 		'mathBlock',
 		'codeBlock',
