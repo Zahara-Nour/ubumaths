@@ -113,6 +113,9 @@ class PythonDebugStore {
 	/** Total number of snapshots in history */
 	snapshotCount = $derived(this._snapshots.length);
 
+	/** All snapshots (most recent first) - for history visualization */
+	allSnapshots = $derived([...this._snapshots]);
+
 	/** Number of enabled breakpoints */
 	enabledBreakpointCount = $derived(this.breakpoints.filter((bp) => bp.enabled).length);
 

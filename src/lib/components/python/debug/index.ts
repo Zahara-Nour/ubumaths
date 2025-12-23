@@ -21,6 +21,7 @@
 
 export { default as DebugToolbar } from './DebugToolbar.svelte';
 export { default as VariablesPanel } from './VariablesPanel.svelte';
+export { default as VariablesHistory } from './VariablesHistory.svelte';
 export { default as CallStackPanel } from './CallStackPanel.svelte';
 export { default as LoopIndicator } from './LoopIndicator.svelte';
 export { default as DebugPanel } from './DebugPanel.svelte';

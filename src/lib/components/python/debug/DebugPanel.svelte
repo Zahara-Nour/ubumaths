@@ -9,11 +9,14 @@
 	// Imports
 	import { debugStore } from '$lib/stores/pythonDebug.svelte';
 	import VariablesPanel from './VariablesPanel.svelte';
+	import VariablesHistory from './VariablesHistory.svelte';
 	import CallStackPanel from './CallStackPanel.svelte';
 	import LoopIndicator from './LoopIndicator.svelte';
 	import { cn } from '$lib/utils';
 	import Bug from '@lucide/svelte/icons/bug';
 	import Info from '@lucide/svelte/icons/info';
+	import Table from '@lucide/svelte/icons/table';
+	import List from '@lucide/svelte/icons/list';
 
 	// Types
 	interface Props {
@@ -25,6 +28,9 @@
 
 	// Props
 	let { onSelectFrame, class: className }: Props = $props();
+
+	// Local state for view toggle
+	let viewMode = $state<'list' | 'table'>('list');
 
 	// Derived state from debug store
 	let currentSnapshot = $derived(debugStore.currentSnapshot);
@@ -118,18 +124,62 @@
 		<!-- Loop indicator (shown at top when active) -->
 		<LoopIndicator {loops} />
 
-		<!-- Main content: Variables and Call Stack -->
-		<div class="grid gap-4 md:grid-cols-2">
-			<!-- Variables Panel -->
-			<div class="min-w-0">
-				<VariablesPanel {locals} {globals} />
-			</div>
-
-			<!-- Call Stack Panel -->
-			<div class="min-w-0">
-				<CallStackPanel {callStack} {onSelectFrame} />
+		<!-- View mode toggle -->
+		<div class="flex items-center gap-2">
+			<span class="text-xs text-muted-foreground">Vue:</span>
+			<div class="flex rounded-md border border-border">
+				<button
+					type="button"
+					onclick={() => (viewMode = 'list')}
+					class={cn(
+						'flex items-center gap-1.5 px-2.5 py-1 text-xs transition-colors',
+						viewMode === 'list'
+							? 'bg-primary text-primary-foreground'
+							: 'bg-background text-muted-foreground hover:bg-muted'
+					)}
+					aria-pressed={viewMode === 'list'}
+				>
+					<List class="size-3.5" aria-hidden="true" />
+					Liste
+				</button>
+				<button
+					type="button"
+					onclick={() => (viewMode = 'table')}
+					class={cn(
+						'flex items-center gap-1.5 px-2.5 py-1 text-xs transition-colors',
+						viewMode === 'table'
+							? 'bg-primary text-primary-foreground'
+							: 'bg-background text-muted-foreground hover:bg-muted'
+					)}
+					aria-pressed={viewMode === 'table'}
+				>
+					<Table class="size-3.5" aria-hidden="true" />
+					Historique
+				</button>
 			</div>
 		</div>
+
+		<!-- Main content based on view mode -->
+		{#if viewMode === 'list'}
+			<!-- List view: Variables and Call Stack side by side -->
+			<div class="grid gap-4 md:grid-cols-2">
+				<!-- Variables Panel -->
+				<div class="min-w-0">
+					<VariablesPanel {locals} {globals} />
+				</div>
+
+				<!-- Call Stack Panel -->
+				<div class="min-w-0">
+					<CallStackPanel {callStack} {onSelectFrame} />
+				</div>
+			</div>
+		{:else}
+			<!-- Table view: Variables history -->
+			<VariablesHistory />
+
+			<!-- Call Stack (compact) -->
+			<CallStackPanel {callStack} {onSelectFrame} />
+		{/if}
 
 		<!-- Snapshot info (debug helper) -->
 		{#if currentSnapshot}
