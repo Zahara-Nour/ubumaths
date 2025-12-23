@@ -11,7 +11,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, Json } from '$lib/types/database';
 import {
 	type ExerciseBackup,
 	type ExerciseBackupRecord,
@@ -283,9 +283,7 @@ export async function exportBackupSQL(
 	lines.push('-- ============================================================================');
 	lines.push('-- UbuMaths Exercise Backup - SQL Dump');
 	lines.push(`-- Generated: ${timestamp}`);
-	lines.push(
-		'-- Tables: exercises, exercise_templates, exercise_favorites, exercise_share_tokens'
-	);
+	lines.push('-- Tables: exercises, exercise_templates, exercise_favorites, exercise_share_tokens');
 	lines.push('-- ============================================================================');
 	lines.push('');
 	lines.push('BEGIN;');
@@ -478,7 +476,9 @@ export async function restoreFromBackup(
 				exercise_favorites: { imported: 0, skipped: 0, replaced: 0, failed: 0 },
 				exercise_share_tokens: { imported: 0, skipped: 0, replaced: 0, failed: 0 }
 			},
-			errors: [{ table: 'options', record_id: '', error: optionsValidation.error ?? 'Unknown error' }]
+			errors: [
+				{ table: 'options', record_id: '', error: optionsValidation.error ?? 'Unknown error' }
+			]
 		};
 	}
 
@@ -592,10 +592,10 @@ async function restoreExercises(
 						topic: record.topic,
 						is_public: record.is_public,
 						distribution_mode: record.distribution_mode,
-						variables: record.variables,
-						variations: record.variations,
-						shared: record.shared,
-						resources: record.resources,
+						variables: record.variables as Json,
+						variations: record.variations as Json | null,
+						shared: record.shared as Json | null,
+						resources: record.resources as Json | null,
 						generic_functions: record.generic_functions,
 						updated_at: new Date().toISOString()
 					})
@@ -608,8 +608,8 @@ async function restoreExercises(
 					result.stats.exercises.replaced++;
 				}
 			} else {
-				// Insert new
-				const { error } = await supabase.from('exercises').insert({
+				// Insert new - use type assertion for id since backup restore needs explicit id
+				const insertData = {
 					id: record.id,
 					slug: record.slug,
 					title: record.title,
@@ -622,15 +622,16 @@ async function restoreExercises(
 					topic: record.topic,
 					is_public: record.is_public,
 					distribution_mode: record.distribution_mode,
-					variables: record.variables,
-					variations: record.variations,
-					shared: record.shared,
-					resources: record.resources,
+					variables: record.variables as Json,
+					variations: record.variations as Json | null,
+					shared: record.shared as Json | null,
+					resources: record.resources as Json | null,
 					generic_functions: record.generic_functions,
 					created_at: record.created_at,
 					updated_at: record.updated_at,
 					created_by: createdBy
-				});
+				} as Database['public']['Tables']['exercises']['Insert'] & { id: string };
+				const { error } = await supabase.from('exercises').insert(insertData);
 
 				if (error) {
 					result.stats.exercises.failed++;
@@ -693,7 +694,7 @@ async function restoreTemplates(
 					.update({
 						title: record.title,
 						description: record.description,
-						template_data: record.template_data,
+						template_data: record.template_data as Json,
 						is_system: record.is_system,
 						updated_at: new Date().toISOString()
 					})
@@ -710,17 +711,18 @@ async function restoreTemplates(
 					result.stats.exercise_templates.replaced++;
 				}
 			} else {
-				// Insert new
-				const { error } = await supabase.from('exercise_templates').insert({
+				// Insert new - use type assertion for id since backup restore needs explicit id
+				const insertData = {
 					id: record.id,
 					title: record.title,
 					description: record.description,
-					template_data: record.template_data,
+					template_data: record.template_data as Json,
 					is_system: record.is_system,
 					created_at: record.created_at,
 					updated_at: record.updated_at,
 					created_by: createdBy
-				});
+				} as Database['public']['Tables']['exercise_templates']['Insert'] & { id: string };
+				const { error } = await supabase.from('exercise_templates').insert(insertData);
 
 				if (error) {
 					result.stats.exercise_templates.failed++;

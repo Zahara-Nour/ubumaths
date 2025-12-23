@@ -32,7 +32,7 @@ function findHintReferences(ast: DocumentNode): HintReferenceNode[] {
 		if (node.type === 'hint-reference') {
 			hints.push(node);
 		}
-		if (node.children) {
+		if ('children' in node && node.children) {
 			node.children.forEach(traverse);
 		}
 	}

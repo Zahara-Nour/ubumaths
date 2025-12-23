@@ -84,7 +84,10 @@ describe('Integration: Complete Daily Summary Flow', () => {
 		// Mock class schedule check (had class yesterday)
 		vi.mocked(mockSupabase.rpc).mockResolvedValueOnce({
 			data: true,
-			error: null
+			error: null,
+			count: null,
+			status: 200,
+			statusText: 'OK'
 		});
 
 		// Mock student list
@@ -148,7 +151,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 		];
 
 		let rpcCallCount = 0;
-		vi.mocked(mockSupabase.rpc).mockImplementation((funcName: string) => {
+		vi.mocked(mockSupabase.rpc).mockImplementation(((funcName: string) => {
 			if (funcName === 'aggregate_daily_changes') {
 				const aggregation = mockAggregations[rpcCallCount];
 				rpcCallCount++;
@@ -158,7 +161,8 @@ describe('Integration: Complete Daily Summary Flow', () => {
 				return Promise.resolve({ data: null, error: null });
 			}
 			return Promise.resolve({ data: null, error: null });
-		});
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		}) as any);
 
 		// Run daily summary generation
 		const summariesCreated = await generateDailySummary(
@@ -231,7 +235,7 @@ describe('Integration: Complete Daily Summary Flow', () => {
 		});
 
 		// Mock no activity
-		vi.mocked(mockSupabase.rpc).mockImplementation((funcName: string) => {
+		vi.mocked(mockSupabase.rpc).mockImplementation(((funcName: string) => {
 			if (funcName === 'aggregate_daily_changes') {
 				return Promise.resolve({
 					data: {
@@ -249,7 +253,8 @@ describe('Integration: Complete Daily Summary Flow', () => {
 				});
 			}
 			return Promise.resolve({ data: null, error: null });
-		});
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		}) as any);
 
 		const summariesCreated = await generateDailySummary(
 			mockSupabase,
@@ -332,7 +337,7 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 		];
 
 		let rpcCallCount = 0;
-		vi.mocked(mockSupabase.rpc).mockImplementation((funcName: string) => {
+		vi.mocked(mockSupabase.rpc).mockImplementation(((funcName: string) => {
 			if (funcName === 'aggregate_weekly_activity') {
 				const data = mockWeeklyData[rpcCallCount];
 				rpcCallCount++;
@@ -342,7 +347,8 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 				return Promise.resolve({ data: null, error: null });
 			}
 			return Promise.resolve({ data: null, error: null });
-		});
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		}) as any);
 
 		const rewardsAwarded = await generateWeeklyRewards(
 			mockSupabase,
@@ -409,7 +415,10 @@ describe('Integration: Complete Weekly Rewards Flow', () => {
 				days_with_activity: 0,
 				reward_amount: 0
 			},
-			error: null
+			error: null,
+			count: null,
+			status: 200,
+			statusText: 'OK'
 		});
 
 		const rewardsAwarded = await generateWeeklyRewards(
@@ -542,7 +551,10 @@ describe('Integration: Edge Cases', () => {
 		// Mock no schedules
 		vi.mocked(mockSupabase.rpc).mockResolvedValue({
 			data: false,
-			error: null
+			error: null,
+			count: null,
+			status: 200,
+			statusText: 'OK'
 		});
 
 		const hadClass = await checkClassSchedule(mockSupabase, 'class-1', yesterday);
@@ -636,7 +648,7 @@ describe('Integration: Edge Cases', () => {
 		});
 
 		let rpcCallCount = 0;
-		vi.mocked(mockSupabase.rpc).mockImplementation((funcName: string) => {
+		vi.mocked(mockSupabase.rpc).mockImplementation(((funcName: string) => {
 			if (funcName === 'aggregate_daily_changes') {
 				rpcCallCount++;
 				if (rpcCallCount === 1) {
@@ -667,7 +679,8 @@ describe('Integration: Edge Cases', () => {
 				return Promise.resolve({ data: null, error: null });
 			}
 			return Promise.resolve({ data: null, error: null });
-		});
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		}) as any);
 
 		// Should process second student despite first failure
 		const summariesCreated = await generateDailySummary(
@@ -808,7 +821,7 @@ describe('Integration: Performance Considerations', () => {
 		});
 
 		// Mock aggregation and insertion
-		vi.mocked(mockSupabase.rpc).mockImplementation((funcName: string) => {
+		vi.mocked(mockSupabase.rpc).mockImplementation(((funcName: string) => {
 			if (funcName === 'aggregate_daily_changes') {
 				return Promise.resolve({
 					data: {
@@ -829,7 +842,8 @@ describe('Integration: Performance Considerations', () => {
 				return Promise.resolve({ data: null, error: null });
 			}
 			return Promise.resolve({ data: null, error: null });
-		});
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		}) as any);
 
 		const startTime = Date.now();
 		await generateDailySummary(mockSupabase, mockClass, yesterday, 'Europe/Paris');
