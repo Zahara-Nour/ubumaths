@@ -35,8 +35,8 @@
 	let variableNames = $derived.by(() => {
 		const names = new SvelteSet<string>();
 		for (const snapshot of snapshots) {
-			// Get variables from current frame (locals) and globals
-			const currentFrame = snapshot.callStack[snapshot.callStack.length - 1];
+			// Get variables from current frame (locals) - index 0 is innermost frame
+			const currentFrame = snapshot.callStack[0];
 			if (currentFrame) {
 				for (const v of currentFrame.locals) {
 					if (!v.isBuiltin) names.add(v.name);
@@ -56,8 +56,8 @@
 		varName: string,
 		snapshot: DebugSnapshot
 	): DebugVariable | undefined {
-		// First check locals in current frame
-		const currentFrame = snapshot.callStack[snapshot.callStack.length - 1];
+		// First check locals in current frame (index 0 is innermost)
+		const currentFrame = snapshot.callStack[0];
 		if (currentFrame) {
 			const local = currentFrame.locals.find((v) => v.name === varName);
 			if (local) return local;
