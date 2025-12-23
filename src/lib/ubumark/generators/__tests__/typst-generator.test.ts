@@ -347,8 +347,9 @@ describe('generateTypst', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		expect(typst).toContain('-');
-		expect(typst).toContain('Item');
+		// Bullet lists use #list() for proper paragraph spacing
+		expect(typst).toContain('#list(');
+		expect(typst).toContain('[Item]');
 	});
 
 	it('should generate table', () => {
@@ -1291,10 +1292,11 @@ describe('Edge Cases', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		// Ordered list uses #enum() with nested bullet list
+		// Ordered list uses #enum() with nested bullet list using #list()
 		expect(typst).toContain('#enum(numbering: "1)"');
 		expect(typst).toContain('Parent');
-		expect(typst).toContain('- Child');
+		expect(typst).toContain('#list(');
+		expect(typst).toContain('[Child]');
 	});
 
 	it('should handle table with different alignments', () => {
