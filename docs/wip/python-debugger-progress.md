@@ -2,15 +2,15 @@
 
 ## Statut actuel
 
-**Phase** : 1 - Types et Messages
-**Dernière mise à jour** : 2024-12-23
+**Phase** : 2 - Python Tracer (Worker) - Terminee
+**Derniere mise a jour** : 2024-12-23
 
 ## Phases
 
 | Phase  | Description                      | Statut     |
 | ------ | -------------------------------- | ---------- |
-| 1      | Types et Messages                | En cours   |
-| 2      | Python Tracer (Worker)           | En attente |
+| 1      | Types et Messages                | Termine    |
+| 2      | Python Tracer (Worker)           | Termine    |
 | 3      | Store et Executor                | En attente |
 | 4      | Composants UI                    | En attente |
 | 5      | Integration                      | En attente |
@@ -21,7 +21,7 @@
 
 ## Phase 1 : Types et Messages
 
-### Fichiers creees
+### Fichiers crees
 
 - [x] `src/lib/shared/python/debug/types.ts`
 - [x] `src/lib/shared/python/debug/types.test.ts` (30 tests)
@@ -34,13 +34,42 @@
 - Schemas Zod suivent le pattern existant dans messages.ts
 - DebugVariable avec serialisation JSON pour valeurs complexes
 
-### Prochaines etapes
+---
 
-1. Creer types.ts avec tous les types debug
-2. Ecrire tests unitaires
-3. Ajouter schemas Zod dans messages.ts
-4. Code review
-5. Commit
+## Phase 2 : Python Tracer (Worker)
+
+### Fichiers modifies/crees
+
+- [x] `src/lib/workers/pyodide.worker.ts` - Tracer Python avec generateur
+- [x] `src/lib/shared/python/types.ts` - Types messages debug (DebugSnapshotMessage, etc.)
+- [x] `src/lib/workers/pyodide.worker.debug.test.ts` (41 tests)
+- [x] `docs/wip/debug-tracer-testing-guide.md` - Guide de test
+
+### Decisions prises
+
+- **Approche generateur** au lieu de sys.settrace() :
+  - sys.settrace() ne peut pas vraiment pauser l'execution
+  - Le generateur `yield` avant chaque statement pause reellement Python
+  - `generator.send(action)` reprend avec l'action choisie
+
+- Serialisation des valeurs avec limites :
+  - MAX_SERIALIZE_DEPTH = 5
+  - MAX_SERIALIZE_ITEMS = 50
+  - MAX_STRING_LENGTH = 200
+  - Detection des references circulaires
+
+- Execution statement-par-statement via AST :
+  - Parse avec `ast.parse()`
+  - Gere for, while, if, try/except, with
+  - Tracking des iterations de boucle
+  - Capture stdout pendant l'execution
+
+### Tests
+
+- 124 tests passent (30 + 53 + 41)
+- Tests unitaires pour convertMapToObject
+- Specification tests documentent le comportement attendu
+- Tests E2E a ajouter en Phase 5
 
 ---
 
@@ -51,3 +80,5 @@ En cas de crash, reprendre a partir de :
 - Verifier quels fichiers ont ete crees
 - Continuer la phase en cours
 - Consulter ce document pour l'etat actuel
+
+Phase suivante : Phase 3 - Store et Executor
