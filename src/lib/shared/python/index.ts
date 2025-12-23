@@ -66,6 +66,12 @@ export type {
 	ValidateExerciseMessage,
 	ToWorkerMessage,
 
+	// Debug messages to worker
+	WorkerBreakpoint,
+	DebugStartMessage,
+	DebugStepMessage,
+	DebugStopMessage,
+
 	// Messages from worker
 	LoadingProgressMessage,
 	PyodideReadyMessage,
@@ -88,6 +94,11 @@ export type {
 	ValidationResultMessage,
 	ExerciseValidationResultMessage,
 	FromWorkerMessage,
+
+	// Debug messages from worker
+	DebugSnapshotMessage,
+	DebugPausedMessage,
+	DebugFinishedMessage,
 
 	// Pyodide types
 	PyodideInterface,

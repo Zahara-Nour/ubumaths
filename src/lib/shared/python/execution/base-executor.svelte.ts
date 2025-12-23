@@ -17,8 +17,18 @@
  * ```
  */
 
-import type { ToWorkerMessage, FromWorkerMessage, CompletionItem } from '$lib/shared/python';
+import type {
+	ToWorkerMessage,
+	FromWorkerMessage,
+	CompletionItem,
+	WorkerBreakpoint
+} from '$lib/shared/python';
 import { PYODIDE_CONFIG, fromWorkerMessageSchema } from '$lib/shared/python';
+import type {
+	DebugStepAction,
+	DebugSnapshot,
+	DebugPauseReason
+} from '$lib/shared/python/debug/types';
 
 // Use a simple browser check instead of $app/environment
 // This avoids issues with SvelteKit runtime modules in worker-related contexts
@@ -171,6 +181,16 @@ export abstract class BasePythonExecutor {
 	private lastAutocompleteRequestId: string | null = null;
 
 	// ===========================================================================
+	// Debug State
+	// ===========================================================================
+
+	/** Current debug execution ID (null when not in debug session) */
+	private debugExecutionId: string | null = null;
+
+	/** Debug session start time for duration tracking */
+	private debugStartTime: number = 0;
+
+	// ===========================================================================
 	// Abstract Methods - Must be implemented by subclasses
 	// ===========================================================================
 
@@ -310,6 +330,10 @@ export abstract class BasePythonExecutor {
 		}
 		this.pendingCompletions.clear();
 
+		// Clean up debug session state
+		this.debugExecutionId = null;
+		this.debugStartTime = 0;
+
 		this.state = 'initial';
 		this.currentExecutionId = null;
 	}
@@ -436,6 +460,28 @@ export abstract class BasePythonExecutor {
 
 			case 'autocomplete-result':
 				this.handleAutocompleteResult(message.id, message.completions);
+				break;
+
+			// Debug-related messages
+			case 'debug-snapshot':
+				if (message.id === this.debugExecutionId) {
+					this.onDebugSnapshot(message.snapshot);
+				}
+				break;
+
+			case 'debug-paused':
+				if (message.id === this.debugExecutionId) {
+					this.onDebugPaused(message.reason);
+				}
+				break;
+
+			case 'debug-finished':
+				if (message.id === this.debugExecutionId) {
+					const duration = message.duration;
+					this.debugExecutionId = null;
+					this.debugStartTime = 0;
+					this.onDebugFinished(duration);
+				}
 				break;
 
 			// Context-related messages (for notebook mode)
@@ -623,6 +669,145 @@ export abstract class BasePythonExecutor {
 				});
 			}, AUTOCOMPLETE_DEBOUNCE_MS);
 		});
+	}
+
+	// ===========================================================================
+	// Debug Execution Methods
+	// ===========================================================================
+
+	/**
+	 * Start a debug session with the given code and breakpoints.
+	 * The session will pause at the first line or first breakpoint.
+	 *
+	 * @param code - The Python code to debug
+	 * @param breakpoints - Array of breakpoints to set
+	 */
+	startDebugSession(code: string, breakpoints: WorkerBreakpoint[]): void {
+		if (!this.isReady) {
+			console.warn('[BasePythonExecutor] Pyodide is not ready yet');
+			return;
+		}
+
+		if (!this.worker) {
+			console.warn('[BasePythonExecutor] Worker not initialized');
+			return;
+		}
+
+		const trimmedCode = code.trim();
+		if (!trimmedCode) return;
+
+		// Generate unique debug execution ID
+		const executionId = `debug-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+		this.debugExecutionId = executionId;
+		this.debugStartTime = performance.now();
+
+		// Clear previous output
+		this.clearOutput();
+
+		// Send debug-start message to worker
+		this.postToWorker({
+			type: 'debug-start',
+			code: trimmedCode,
+			id: executionId,
+			breakpoints
+		});
+	}
+
+	/**
+	 * Send a step command during an active debug session.
+	 *
+	 * @param action - The step action to perform
+	 */
+	debugStep(action: DebugStepAction): void {
+		if (!this.debugExecutionId) {
+			console.warn('[BasePythonExecutor] No active debug session');
+			return;
+		}
+
+		if (!this.worker) {
+			console.warn('[BasePythonExecutor] Worker not initialized');
+			return;
+		}
+
+		this.postToWorker({
+			type: 'debug-step',
+			id: this.debugExecutionId,
+			action
+		});
+	}
+
+	/**
+	 * Stop the current debug session.
+	 */
+	stopDebugSession(): void {
+		if (!this.debugExecutionId) {
+			return;
+		}
+
+		if (this.worker) {
+			this.postToWorker({
+				type: 'debug-stop',
+				id: this.debugExecutionId
+			});
+		}
+
+		this.debugExecutionId = null;
+		this.debugStartTime = 0;
+	}
+
+	/**
+	 * Check if a debug session is currently active.
+	 *
+	 * @returns true if a debug session is active
+	 */
+	isDebugSessionActive(): boolean {
+		return this.debugExecutionId !== null;
+	}
+
+	/**
+	 * Get the current debug execution ID.
+	 *
+	 * @returns The debug execution ID or null
+	 */
+	getDebugExecutionId(): string | null {
+		return this.debugExecutionId;
+	}
+
+	// ===========================================================================
+	// Debug Hooks (for subclasses to override)
+	// ===========================================================================
+
+	/**
+	 * Hook called when a debug snapshot is received.
+	 * Override in subclasses to handle snapshots.
+	 *
+	 * @param snapshot - The execution snapshot
+	 */
+	protected onDebugSnapshot(snapshot: DebugSnapshot): void {
+		// Default: no-op, subclasses override
+		void snapshot;
+	}
+
+	/**
+	 * Hook called when debug execution pauses.
+	 * Override in subclasses to handle pause events.
+	 *
+	 * @param reason - Why execution paused
+	 */
+	protected onDebugPaused(reason: DebugPauseReason): void {
+		// Default: no-op, subclasses override
+		void reason;
+	}
+
+	/**
+	 * Hook called when debug session finishes.
+	 * Override in subclasses to handle session completion.
+	 *
+	 * @param duration - Total debug session duration in milliseconds
+	 */
+	protected onDebugFinished(duration: number): void {
+		// Default: no-op, subclasses override
+		void duration;
 	}
 
 	// ===========================================================================

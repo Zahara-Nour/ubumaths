@@ -156,15 +156,9 @@ export interface Breakpoint {
 
 /**
  * Breakpoint for worker communication (simplified)
+ * Re-exported from types.ts to maintain backwards compatibility
  */
-export interface WorkerBreakpoint {
-	/** Line number (1-based) */
-	lineNumber: number;
-	/** Whether breakpoint is enabled */
-	enabled: boolean;
-	/** Optional condition expression */
-	condition?: string;
-}
+export type { WorkerBreakpoint } from '../types';
 
 // =============================================================================
 // Heap Visualization (PythonTutor-style)
