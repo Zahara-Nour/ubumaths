@@ -44,7 +44,6 @@ import type {
 	ListNode,
 	TableNode,
 	ListItemNode,
-	ASTNode,
 	MathBlockNode,
 	ImageNode,
 	BlockquoteNode,
@@ -160,9 +159,8 @@ function generateSetup(options: Required<TypstTranspilerOptions>): string {
 	setup += '#set par(justify: true)\n';
 	setup += '#set heading(numbering: "1.1")\n';
 
-	// List item spacing and numbering scheme (French academic: 1) a) i))
-	// Multi-level numbering pattern handles nested ordered lists automatically
-	setup += '#set enum(numbering: "1) a) i)", spacing: 1.5em, tight: false)\n';
+	// List item spacing (numbering is set per-list via #enum())
+	setup += '#set enum(spacing: 1.5em, tight: false)\n';
 	setup += '#set list(spacing: 1.5em, tight: false)\n';
 
 	// Display limits above/below for common operators (like LaTeX display mode)
@@ -356,6 +354,18 @@ function generateHeading(node: HeadingNode, options: Required<TypstTranspilerOpt
 // ============================================================================
 
 /**
+ * Numbering patterns for French academic style (1) a) i))
+ */
+const ENUM_NUMBERING_PATTERNS = ['1)', 'a)', 'i)', '1)'];
+
+/**
+ * Get numbering pattern for a given enumerate depth
+ */
+function getNumberingPattern(depth: number): string {
+	return ENUM_NUMBERING_PATTERNS[Math.min(depth - 1, ENUM_NUMBERING_PATTERNS.length - 1)];
+}
+
+/**
  * Generate list node with depth tracking for proper numbering
  *
  * Uses numbered lists for ordered, bullet lists for unordered.
@@ -375,75 +385,68 @@ function generateList(
 	const newDepth = node.ordered ? enumerateDepth + 1 : enumerateDepth;
 	const startNumber = node.start ?? 1;
 
+	// For ordered lists, use #enum() to ensure proper numbering at all levels
+	if (node.ordered) {
+		const pattern = getNumberingPattern(newDepth);
+		const enumItems = node.items
+			.map((item: ListItemNode) => {
+				const content = generateListItemContent(item, options, newDepth);
+				return `[${content}]`;
+			})
+			.join(',\n  ');
+
+		// Include start parameter only if not starting at 1
+		const startParam = startNumber !== 1 ? `start: ${startNumber}, ` : '';
+		return `#enum(${startParam}numbering: "${pattern}",\n  ${enumItems}\n)`;
+	}
+
+	// For bullet lists, use simple - markers with proper indentation
 	const items = node.items
-		.map((item: ListItemNode, index: number) => {
-			const childBlocks = item.children.map((child: ASTNode) => {
-				if (child.type === 'list') {
-					// Pass the current depth to nested lists
-					return generateList(child, options, newDepth);
-				}
-				return generateBlock(child as BlockNode, options);
-			});
-
-			// Check if first child is a nested list (needs special handling in Typst)
-			const firstChildIsList = item.children[0]?.type === 'list';
-			const firstBlock = childBlocks[0] || '';
-			const restBlocks = childBlocks.slice(1);
-
-			let itemContent: string;
-
-			if (firstChildIsList) {
-				// When first child is a list, put it on a new line with proper indentation
-				// This ensures Typst recognizes it as nested content
-				const indentedFirst = firstBlock
-					.split('\n')
-					.map((line) => '  ' + line)
-					.join('\n');
-				itemContent = '\n' + indentedFirst;
-
-				if (restBlocks.length > 0) {
-					const indentedRest = restBlocks
-						.map((block) =>
-							block
-								.split('\n')
-								.map((line) => '  ' + line)
-								.join('\n')
-						)
-						.join('\n');
-					itemContent += '\n' + indentedRest;
-				}
-			} else {
-				// Normal case: first block on same line, rest indented
-				itemContent = firstBlock;
-				if (restBlocks.length > 0) {
-					const indentedRest = restBlocks
-						.map((block) =>
-							block
-								.split('\n')
-								.map((line) => '  ' + line)
-								.join('\n')
-						)
-						.join('\n');
-					itemContent += '\n' + indentedRest;
-				}
-			}
-
-			if (node.ordered) {
-				// For depth 1, use explicit numbering to support custom start numbers
-				// For deeper levels, use + marker (Typst's enum continuation)
-				// The multi-level numbering pattern in setup handles the style automatically
-				if (newDepth === 1) {
-					const num = startNumber + index;
-					return `${num}.${itemContent.startsWith('\n') ? '' : ' '}${itemContent}`;
-				}
-				// For nested enums, use + marker
-				return `+${itemContent.startsWith('\n') ? '' : ' '}${itemContent}`;
-			}
-			return `-${itemContent.startsWith('\n') ? '' : ' '}${itemContent}`;
+		.map((item: ListItemNode) => {
+			const content = generateListItemContent(item, options, newDepth);
+			return `- ${content}`;
 		})
 		.join('\n');
 
 	return items;
+}
+
+/**
+ * Generate content for a list item, handling nested lists and multiple blocks
+ */
+function generateListItemContent(
+	item: ListItemNode,
+	options: Required<TypstTranspilerOptions>,
+	currentDepth: number
+): string {
+	const blocks: string[] = [];
+
+	for (let i = 0; i < item.children.length; i++) {
+		const child = item.children[i];
+
+		if (child.type === 'list') {
+			// Nested list - generate with current depth
+			const listContent = generateList(child, options, currentDepth);
+			// Add blank line before nested list if there's content before it
+			if (blocks.length > 0) {
+				blocks.push('\n' + listContent);
+			} else {
+				blocks.push(listContent);
+			}
+		} else {
+			// Regular block (paragraph, math, etc.)
+			const blockContent = generateBlock(child as BlockNode, options);
+
+			// Add blank line between paragraphs to preserve line breaks
+			if (i > 0 && item.children[i - 1].type !== 'list') {
+				blocks.push('\n' + blockContent);
+			} else {
+				blocks.push(blockContent);
+			}
+		}
+	}
+
+	return blocks.join('\n');
 }
 
 // ============================================================================
