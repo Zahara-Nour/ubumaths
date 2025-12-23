@@ -2,7 +2,7 @@
 
 ## Statut actuel
 
-**Phase** : 2 - Python Tracer (Worker) - Terminee
+**Phase** : 3 - Store et Executor - Terminee
 **Derniere mise a jour** : 2024-12-23
 
 ## Phases
@@ -11,7 +11,7 @@
 | ------ | -------------------------------- | ---------- |
 | 1      | Types et Messages                | Termine    |
 | 2      | Python Tracer (Worker)           | Termine    |
-| 3      | Store et Executor                | En attente |
+| 3      | Store et Executor                | Termine    |
 | 4      | Composants UI                    | En attente |
 | 5      | Integration                      | En attente |
 | 6      | Visualisation Heap (Optionnelle) | En attente |
@@ -41,35 +41,49 @@
 ### Fichiers modifies/crees
 
 - [x] `src/lib/workers/pyodide.worker.ts` - Tracer Python avec generateur
-- [x] `src/lib/shared/python/types.ts` - Types messages debug (DebugSnapshotMessage, etc.)
+- [x] `src/lib/shared/python/types.ts` - Types messages debug
 - [x] `src/lib/workers/pyodide.worker.debug.test.ts` (41 tests)
 - [x] `docs/wip/debug-tracer-testing-guide.md` - Guide de test
 
 ### Decisions prises
 
-- **Approche generateur** au lieu de sys.settrace() :
-  - sys.settrace() ne peut pas vraiment pauser l'execution
-  - Le generateur `yield` avant chaque statement pause reellement Python
-  - `generator.send(action)` reprend avec l'action choisie
+- **Approche generateur** au lieu de sys.settrace()
+- Serialisation des valeurs avec limites (depth=5, items=50, string=200)
+- Execution statement-par-statement via AST
 
-- Serialisation des valeurs avec limites :
-  - MAX_SERIALIZE_DEPTH = 5
-  - MAX_SERIALIZE_ITEMS = 50
-  - MAX_STRING_LENGTH = 200
-  - Detection des references circulaires
+---
 
-- Execution statement-par-statement via AST :
-  - Parse avec `ast.parse()`
-  - Gere for, while, if, try/except, with
-  - Tracking des iterations de boucle
-  - Capture stdout pendant l'execution
+## Phase 3 : Store et Executor
+
+### Fichiers crees
+
+- [x] `src/lib/stores/pythonDebug.svelte.ts` - Store debug avec Svelte 5 runes
+- [x] `src/lib/stores/pythonDebug.svelte.test.ts` (114 tests)
+
+### Fichiers modifies
+
+- [x] `src/lib/shared/python/execution/base-executor.svelte.ts`
+  - Methodes debug : startDebugSession(), debugStep(), stopDebugSession()
+  - Handlers : debug-snapshot, debug-paused, debug-finished
+  - Hooks proteges pour sous-classes
+- [x] `src/lib/shared/python/types.ts` - Types messages To/From worker
+- [x] `src/lib/shared/python/index.ts` - Exports
+- [x] `src/lib/shared/python/debug/types.ts` - Re-export WorkerBreakpoint
+
+### Decisions prises
+
+- Store singleton avec pattern classe (comme pythonPlayground.svelte.ts)
+- Buffer circulaire pour snapshots (max 10 via DEBUG_CONFIG.MAX_HISTORY_SIZE)
+- Machine a etats : idle -> running -> paused -> stepping -> finished -> idle
+- Derived states : isDebugging, isPaused, canStepBack, currentSnapshot
+- Breakpoints avec conditions optionnelles
+- Cleanup explicite dans destroy()
 
 ### Tests
 
-- 124 tests passent (30 + 53 + 41)
-- Tests unitaires pour convertMapToObject
-- Specification tests documentent le comportement attendu
-- Tests E2E a ajouter en Phase 5
+- 114 tests pour pythonDebug store
+- Couvre : mode, breakpoints, snapshots, session state, derived states
+- Tests client (Svelte runes) necessitent Playwright
 
 ---
 
@@ -81,4 +95,4 @@ En cas de crash, reprendre a partir de :
 - Continuer la phase en cours
 - Consulter ce document pour l'etat actuel
 
-Phase suivante : Phase 3 - Store et Executor
+Phase suivante : Phase 4 - Composants UI

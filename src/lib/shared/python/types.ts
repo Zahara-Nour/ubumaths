@@ -285,6 +285,46 @@ export interface ValidateExerciseMessage {
 	id: string;
 }
 
+// =============================================================================
+// Debug Messages: Main Thread -> Worker
+// =============================================================================
+
+/**
+ * Worker breakpoint format (without id)
+ */
+export interface WorkerBreakpoint {
+	lineNumber: number;
+	enabled: boolean;
+	condition?: string;
+}
+
+/**
+ * Start a debug session with code and breakpoints
+ */
+export interface DebugStartMessage {
+	type: 'debug-start';
+	code: string;
+	id: string;
+	breakpoints: WorkerBreakpoint[];
+}
+
+/**
+ * Send a step command during debug session
+ */
+export interface DebugStepMessage {
+	type: 'debug-step';
+	id: string;
+	action: import('./debug/types').DebugStepAction;
+}
+
+/**
+ * Stop the current debug session
+ */
+export interface DebugStopMessage {
+	type: 'debug-stop';
+	id: string;
+}
+
 /**
  * Union type for all messages sent to the worker
  */
@@ -297,7 +337,10 @@ export type ToWorkerMessage =
 	| DestroyContextMessage
 	| ResetContextMessage
 	| ValidateMessage
-	| ValidateExerciseMessage;
+	| ValidateExerciseMessage
+	| DebugStartMessage
+	| DebugStepMessage
+	| DebugStopMessage;
 
 // =============================================================================
 // Messages: Worker -> Main Thread (Extended)
