@@ -1811,3 +1811,83 @@ describe('convertLatexToTypstMath - Brace handling', () => {
 		expect(result).toBe('frac(-0","25, 0","112 thin 5)');
 	});
 });
+
+describe('convertLatexToTypstMath - Multi-character subscripts with parentheses', () => {
+	it('should add space after multi-char subscript followed by paren', () => {
+		// u_{n+1}(x) -> u_(n+1) (x)
+		expect(convertLatexToTypstMath('u_{n+1}(x)')).toBe('u_(n+1) (x)');
+	});
+
+	it('should handle subscripts with comma', () => {
+		// f_{i,j}(x) -> f_(i,j) (x)
+		expect(convertLatexToTypstMath('f_{i,j}(x)')).toBe('f_(i,j) (x)');
+	});
+
+	it('should handle subscripts with numbers and letters', () => {
+		// a_{2n}(0) -> a_(2n) (0)
+		expect(convertLatexToTypstMath('a_{2n}(0)')).toBe('a_(2n) (0)');
+	});
+
+	it('should handle subscripts with subtraction', () => {
+		// P_{n-1}(x) -> P_(n-1) (x)
+		expect(convertLatexToTypstMath('P_{n-1}(x)')).toBe('P_(n-1) (x)');
+	});
+
+	it('should still handle single-char subscripts', () => {
+		// Existing behavior should still work
+		expect(convertLatexToTypstMath('u_n(x)')).toBe('u_n (x)');
+	});
+
+	it('should handle complex expression with multiple multi-char subscripts', () => {
+		// u_{n+1} = u_n(1 - 0.15u_{n-1})
+		const result = convertLatexToTypstMath('u_{n+1} = u_n(1 - 0.15u_{n-1})');
+		expect(result).toContain('u_(n+1)');
+		expect(result).toContain('u_n (1');
+	});
+
+	it('should handle subscripts without parentheses following', () => {
+		// No space needed when subscript is not followed by (
+		expect(convertLatexToTypstMath('x_{n+1} + y')).toBe('x_(n+1) + y');
+	});
+});
+
+describe('convertLatexToTypstMath - Unknown LaTeX commands', () => {
+	it('should convert truly unknown LaTeX command to text', () => {
+		// \unknowncmd is not mapped -> "unknowncmd"
+		expect(convertLatexToTypstMath('\\unknowncmd')).toBe('"unknowncmd"');
+	});
+
+	it('should handle mathbb correctly (already mapped)', () => {
+		// \mathbb{R} is mapped to RR (Typst blackboard bold)
+		expect(convertLatexToTypstMath('\\mathbb{R}')).toBe('RR');
+		expect(convertLatexToTypstMath('\\mathbb{N}')).toBe('NN');
+	});
+
+	it('should convert \textcolor to text (unsupported command)', () => {
+		expect(convertLatexToTypstMath('\\textcolor{red}{x}')).toBe('"textcolor"{red}{x}');
+	});
+
+	it('should preserve known Typst spacing keywords', () => {
+		// \, is converted to thin earlier in the pipeline
+		const result = convertLatexToTypstMath('a\\,b');
+		expect(result).toBe('a thin b');
+	});
+
+	it('should handle Greek letters correctly (already mapped)', () => {
+		// Greek letters are already converted to Typst equivalents
+		expect(convertLatexToTypstMath('\\delta x')).toBe('delta x');
+		expect(convertLatexToTypstMath('\\sigma + \\delta')).toBe('sigma + delta');
+	});
+
+	it('should handle partial derivative correctly (already mapped)', () => {
+		// \partial is mapped to diff in Typst
+		expect(convertLatexToTypstMath('\\partial x')).toBe('diff x');
+	});
+
+	it('should not affect known LaTeX commands that were already converted', () => {
+		// \sin is converted to sin (no backslash)
+		expect(convertLatexToTypstMath('\\sin(x)')).toBe('sin(x)');
+		// \frac is converted to frac(...)
+		expect(convertLatexToTypstMath('\\frac{a}{b}')).toBe('frac(a, b)');
+	});
+});
