@@ -174,9 +174,10 @@ export interface GenerateInstanceOptions {
 	parseAST?: boolean;
 
 	/**
-	 * Select specific variation by index (for exercises with variations)
-	 * If not provided, first variation (index 0) is used
-	 * @default 0
+	 * Force a specific variation by index (for exercises with variations).
+	 * When provided, overrides seed-based selection.
+	 * Value is clamped to valid range [0, variations.length - 1].
+	 * If not provided, variation is selected deterministically based on seed.
 	 */
 	variationIndex?: number;
 }

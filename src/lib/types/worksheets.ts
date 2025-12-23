@@ -246,6 +246,12 @@ export interface WorksheetExerciseRow {
 	variant_config: VariantConfig;
 	custom_instructions: string | null;
 	correction_visible: boolean;
+	/**
+	 * Optional: Force a specific variation index (0-based).
+	 * NULL = seed-based selection (default behavior).
+	 * When set, this variation is used for all students regardless of seed.
+	 */
+	variation_index: number | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -351,6 +357,8 @@ export interface WorksheetExerciseInsert {
 	variant_mode?: VariantMode;
 	variant_config?: VariantConfig;
 	custom_instructions?: string | null;
+	/** Optional: Force a specific variation index (0-based). NULL = seed-based. */
+	variation_index?: number | null;
 }
 
 export interface WorksheetInstanceInsert {
@@ -452,6 +460,8 @@ export interface WorksheetExerciseUpdate {
 	variant_mode?: VariantMode;
 	variant_config?: VariantConfig;
 	custom_instructions?: string | null;
+	/** Optional: Force a specific variation index (0-based). NULL = seed-based. */
+	variation_index?: number | null;
 }
 
 export interface WorksheetInstanceUpdate {

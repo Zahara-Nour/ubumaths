@@ -798,6 +798,122 @@ describe('Variations System', () => {
 			expect(result1.instance.resolvedVariables).toEqual(result2.instance.resolvedVariables);
 		}
 	});
+
+	it('should use forced variationIndex when provided (R3: teacher control)', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			variations: [
+				{
+					label: 'guided',
+					statement_md: 'Guided version',
+					solution_md: 'Guided solution'
+				},
+				{
+					label: 'intermediate',
+					statement_md: 'Intermediate version',
+					solution_md: 'Intermediate solution'
+				},
+				{
+					label: 'autonomous',
+					statement_md: 'Autonomous version',
+					solution_md: 'Autonomous solution'
+				}
+			]
+		});
+
+		// Seed 0 would normally select index 0 (guided)
+		// But we force index 2 (autonomous)
+		const result = generateExerciseInstance(exercise, {
+			seed: 0,
+			variationIndex: 2
+		});
+
+		expect(result.success).toBe(true);
+		if (result.success && result.instance) {
+			expect(result.instance.selectedVariationIndex).toBe(2);
+			expect(result.instance.selectedVariationLabel).toBe('autonomous');
+			expect(result.instance.statement_md).toBe('Autonomous version');
+		}
+	});
+
+	it('should clamp variationIndex to valid range when out of bounds', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			variations: [
+				{
+					label: 'first',
+					statement_md: 'First variation',
+					solution_md: 'Solution 1'
+				},
+				{
+					label: 'second',
+					statement_md: 'Second variation',
+					solution_md: 'Solution 2'
+				}
+			]
+		});
+
+		// Index 10 is out of bounds (only 2 variations), should clamp to max (1)
+		const resultHigh = generateExerciseInstance(exercise, {
+			seed: 0,
+			variationIndex: 10
+		});
+
+		expect(resultHigh.success).toBe(true);
+		if (resultHigh.success && resultHigh.instance) {
+			expect(resultHigh.instance.selectedVariationIndex).toBe(1); // Clamped to max
+			expect(resultHigh.instance.selectedVariationLabel).toBe('second');
+		}
+
+		// Negative index should clamp to 0
+		const resultNegative = generateExerciseInstance(exercise, {
+			seed: 0,
+			variationIndex: -5
+		});
+
+		expect(resultNegative.success).toBe(true);
+		if (resultNegative.success && resultNegative.instance) {
+			expect(resultNegative.instance.selectedVariationIndex).toBe(0); // Clamped to min
+			expect(resultNegative.instance.selectedVariationLabel).toBe('first');
+		}
+	});
+
+	it('should override seed-based selection with explicit variationIndex', () => {
+		const exercise = createExercise({
+			statement_md: 'Default',
+			solution_md: 'Default',
+			variations: [
+				{
+					label: 'v0',
+					statement_md: 'Variation 0',
+					solution_md: 'Sol 0'
+				},
+				{
+					label: 'v1',
+					statement_md: 'Variation 1',
+					solution_md: 'Sol 1'
+				}
+			]
+		});
+
+		// Seeds 0 and 1 would normally select different variations
+		// But with explicit variationIndex, both should get the same
+		const result0 = generateExerciseInstance(exercise, { seed: 0, variationIndex: 1 });
+		const result1 = generateExerciseInstance(exercise, { seed: 1, variationIndex: 1 });
+
+		expect(result0.success).toBe(true);
+		expect(result1.success).toBe(true);
+
+		if (result0.success && result0.instance && result1.success && result1.instance) {
+			// Both should use variationIndex 1, ignoring seed
+			expect(result0.instance.selectedVariationIndex).toBe(1);
+			expect(result1.instance.selectedVariationIndex).toBe(1);
+			expect(result0.instance.selectedVariationLabel).toBe('v1');
+			expect(result1.instance.selectedVariationLabel).toBe('v1');
+		}
+	});
 });
 
 // ============================================================================
