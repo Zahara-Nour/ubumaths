@@ -277,9 +277,10 @@ describe('generateTypst', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		// Typst uses explicit numbering: "1. item"
-		expect(typst).toContain('1. First');
-		expect(typst).toContain('2. Second');
+		// Typst uses #enum() for ordered lists with proper numbering
+		expect(typst).toContain('#enum(numbering: "1)"');
+		expect(typst).toContain('[First]');
+		expect(typst).toContain('[Second]');
 	});
 
 	it('should generate ordered list with custom start number', () => {
@@ -316,9 +317,10 @@ describe('generateTypst', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		// Should start at 3 and continue to 4
-		expect(typst).toContain('3. Third item');
-		expect(typst).toContain('4. Fourth item');
+		// Should use #enum with start: 3
+		expect(typst).toContain('#enum(start: 3, numbering: "1)"');
+		expect(typst).toContain('[Third item]');
+		expect(typst).toContain('[Fourth item]');
 	});
 
 	it('should generate unordered list', () => {
@@ -464,10 +466,11 @@ describe('markdownToTypst', () => {
 
 		const typst = await markdownToTypst(markdown, { includeSetup: false });
 
-		// Ordered lists use explicit numbering: "1. First"
-		expect(typst).toContain('1. First');
-		expect(typst).toContain('2. Second');
-		expect(typst).toContain('3. Third');
+		// Ordered lists use #enum() with proper numbering
+		expect(typst).toContain('#enum(numbering: "1)"');
+		expect(typst).toContain('[First]');
+		expect(typst).toContain('[Second]');
+		expect(typst).toContain('[Third]');
 	});
 
 	it('should generate complete document by default', async () => {
@@ -1288,10 +1291,10 @@ describe('Edge Cases', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		// Ordered list uses explicit numbering: "1. Parent"
-		expect(typst).toContain('1. Parent');
-		expect(typst).toContain('-');
-		expect(typst).toContain('Child');
+		// Ordered list uses #enum() with nested bullet list
+		expect(typst).toContain('#enum(numbering: "1)"');
+		expect(typst).toContain('Parent');
+		expect(typst).toContain('- Child');
 	});
 
 	it('should handle table with different alignments', () => {
