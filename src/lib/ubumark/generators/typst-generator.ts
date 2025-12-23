@@ -502,6 +502,13 @@ function generateTable(node: TableNode, _options: Required<TypstTranspilerOption
 // ============================================================================
 
 /**
+ * Pattern to match alignment symbols in LaTeX align environments.
+ * Matches: \Rightarrow, \Leftrightarrow, =, <, >, \leq, \geq, \neq, etc.
+ */
+const ALIGNMENT_SYMBOL_PATTERN =
+	/^(\\(Rightarrow|Leftarrow|Leftrightarrow|iff|implies|impliedby|leq|geq|leqslant|geqslant|neq|ne|lt|gt|le|ge)|[=<>])/;
+
+/**
  * Generate math block node
  *
  * Uses $ ... $ with display modifier for block math.
@@ -567,15 +574,11 @@ function generateAlignedEquation(content: string): string {
 	}
 
 	// Check if this uses alignment symbols (implications, equivalences, equations, inequations)
-	// Look for these symbols after the & alignment point
-	// Pattern matches: \Rightarrow, \Leftrightarrow, =, <, >, \leq, \geq, \neq, etc.
-	const alignmentSymbolPattern =
-		/^(\\(Rightarrow|Leftarrow|Leftrightarrow|iff|implies|impliedby|leq|geq|leqslant|geqslant|neq|ne|lt|gt|le|ge)|[=<>])/;
 	const hasAlignmentSymbol = rows.some((row) => {
 		const parts = row.split('&');
 		if (parts.length >= 2) {
 			const rightPart = parts[1].trim();
-			return alignmentSymbolPattern.test(rightPart);
+			return ALIGNMENT_SYMBOL_PATTERN.test(rightPart);
 		}
 		return false;
 	});
@@ -593,9 +596,6 @@ function generateAlignedEquation(content: string): string {
  */
 function generateAlignedGrid(rows: string[]): string {
 	const gridRows: string[] = [];
-	// Pattern matches alignment symbols: implications, equivalences, =, <, >, \leq, \geq, etc.
-	const alignmentSymbolPattern =
-		/^(\\(Rightarrow|Leftarrow|Leftrightarrow|iff|implies|impliedby|leq|geq|leqslant|geqslant|neq|ne|lt|gt|le|ge)|[=<>])/;
 
 	for (let i = 0; i < rows.length; i++) {
 		const row = rows[i];
@@ -608,7 +608,7 @@ function generateAlignedGrid(rows: string[]): string {
 			const rightPart = parts.slice(1).join('&').trim();
 
 			// Extract alignment symbol (=, <, >, \Rightarrow, \leq, etc.)
-			const symbolMatch = rightPart.match(alignmentSymbolPattern);
+			const symbolMatch = rightPart.match(ALIGNMENT_SYMBOL_PATTERN);
 			let col2 = '[]';
 			let restOfRight = rightPart;
 
@@ -659,7 +659,7 @@ ${gridRows.join(',\n')}
 }
 
 /**
- * Generate simple 2-column grid for non-implication align environments
+ * Generate simple 2-column grid for align environments without alignment symbols
  */
 function generateSimpleAlignGrid(rows: string[]): string {
 	const gridRows: string[] = [];
@@ -670,18 +670,19 @@ function generateSimpleAlignGrid(rows: string[]): string {
 		if (parts.length >= 2) {
 			const leftPart = convertLatexToTypstMath(parts[0]);
 			const rightPart = convertLatexToTypstMath(parts.slice(1).join('&'));
-			gridRows.push(`  [$ ${leftPart} $], [$ ${rightPart} $]`);
+			// Use inline math $...$ (no spaces) to avoid centering
+			gridRows.push(`  [$${leftPart}$], [$${rightPart}$]`);
 		} else {
 			const mathPart = convertLatexToTypstMath(parts[0]);
-			gridRows.push(`  grid.cell(colspan: 2)[$ ${mathPart} $]`);
+			gridRows.push(`  grid.cell(colspan: 2)[$${mathPart}$]`);
 		}
 	}
 
 	return `#grid(
-  columns: (1fr, 2fr),
-  column-gutter: 0.3em,
-  row-gutter: 0.8em,
-  align: (right, left),
+  columns: (auto, auto),
+  column-gutter: 0.5em,
+  row-gutter: 0.6em,
+  align: (right + horizon, left + horizon),
 ${gridRows.join(',\n')}
 )`;
 }
