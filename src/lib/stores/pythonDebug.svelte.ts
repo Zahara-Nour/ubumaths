@@ -75,8 +75,8 @@ class PythonDebugStore {
 	/** Execution snapshots for step-back functionality */
 	private _snapshots = $state<DebugSnapshot[]>([]);
 
-	/** Current position in snapshot history (0 = most recent) */
-	private _historyIndex = $state(0);
+	/** Current position in snapshot history (0 = most recent, higher = older) */
+	historyIndex = $state(0);
 
 	// ===========================================================================
 	// Current Execution Info
@@ -102,13 +102,13 @@ class PythonDebugStore {
 	isRunning = $derived(this.sessionState === 'running' || this.sessionState === 'stepping');
 
 	/** Whether we can step back in history */
-	canStepBack = $derived(this._historyIndex < this._snapshots.length - 1);
+	canStepBack = $derived(this.historyIndex < this._snapshots.length - 1);
 
 	/** Whether we can step forward in history */
-	canStepForward = $derived(this._historyIndex > 0);
+	canStepForward = $derived(this.historyIndex > 0);
 
 	/** Current snapshot at history index (null if no snapshots) */
-	currentSnapshot = $derived(this._snapshots[this._historyIndex] ?? null);
+	currentSnapshot = $derived(this._snapshots[this.historyIndex] ?? null);
 
 	/** Total number of snapshots in history */
 	snapshotCount = $derived(this._snapshots.length);
@@ -277,7 +277,7 @@ class PythonDebugStore {
 		}
 
 		this._snapshots = newSnapshots;
-		this._historyIndex = 0;
+		this.historyIndex = 0;
 
 		// Update current line from snapshot
 		this.currentLine = snapshot.lineNumber;
@@ -289,8 +289,8 @@ class PythonDebugStore {
 	 */
 	stepBack(): void {
 		if (this.canStepBack) {
-			this._historyIndex++;
-			const snapshot = this._snapshots[this._historyIndex];
+			this.historyIndex++;
+			const snapshot = this._snapshots[this.historyIndex];
 			if (snapshot) {
 				this.currentLine = snapshot.lineNumber;
 			}
@@ -303,8 +303,8 @@ class PythonDebugStore {
 	 */
 	stepForward(): void {
 		if (this.canStepForward) {
-			this._historyIndex--;
-			const snapshot = this._snapshots[this._historyIndex];
+			this.historyIndex--;
+			const snapshot = this._snapshots[this.historyIndex];
 			if (snapshot) {
 				this.currentLine = snapshot.lineNumber;
 			}
@@ -318,8 +318,8 @@ class PythonDebugStore {
 	 */
 	goToSnapshot(index: number): void {
 		if (index >= 0 && index < this._snapshots.length) {
-			this._historyIndex = index;
-			const snapshot = this._snapshots[this._historyIndex];
+			this.historyIndex = index;
+			const snapshot = this._snapshots[this.historyIndex];
 			if (snapshot) {
 				this.currentLine = snapshot.lineNumber;
 			}
@@ -331,7 +331,7 @@ class PythonDebugStore {
 	 */
 	clearSnapshots(): void {
 		this._snapshots = [];
-		this._historyIndex = 0;
+		this.historyIndex = 0;
 	}
 
 	// ===========================================================================
