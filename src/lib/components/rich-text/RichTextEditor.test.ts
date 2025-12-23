@@ -1135,3 +1135,228 @@ describe('RichTextEditorUnified - Lazy Evaluation', () => {
 		expect(isBound3).toBe(true);
 	});
 });
+
+// =============================================================================
+// 13. Nested List Indentation Tests
+// =============================================================================
+
+describe('RichTextEditorUnified - Nested List Indentation', () => {
+	/**
+	 * Tests for proper indentation of nested lists.
+	 * CommonMark requires continuation content to be indented correctly
+	 * relative to the list marker, not just the nesting level.
+	 */
+
+	it('should correctly indent continuation text in bullet list within ordered list', () => {
+		// Arrange: orderedList > listItem > bulletList > listItem with paragraph + continuation
+		// This is the exact structure from the bug report
+		const jsonContent: JSONContent = {
+			type: 'doc',
+			content: [
+				{
+					type: 'orderedList',
+					attrs: { start: 4 },
+					content: [
+						{
+							type: 'listItem',
+							content: [
+								{
+									type: 'orderedList',
+									attrs: { start: 1 },
+									content: [
+										{
+											type: 'listItem',
+											content: [
+												{
+													type: 'bulletList',
+													content: [
+														{
+															type: 'listItem',
+															content: [
+																{
+																	type: 'paragraph',
+																	content: [{ type: 'text', text: 'Initialisation:' }]
+																},
+																{
+																	type: 'paragraph',
+																	content: [{ type: 'text', text: 'On a vu que...' }]
+																}
+															]
+														},
+														{
+															type: 'listItem',
+															content: [
+																{
+																	type: 'paragraph',
+																	content: [{ type: 'text', text: 'Hérédité:' }]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		};
+
+		// Act
+		const markdown = tipTapToMarkdown(jsonContent);
+
+		// Assert: The continuation "On a vu que..." should be indented MORE than "- Hérédité"
+		const lines = markdown.split('\n');
+
+		// Find the lines we care about
+		const initialisationLine = lines.find((l) => l.includes('- Initialisation'));
+		const continuationLine = lines.find((l) => l.includes('On a vu que'));
+		const herediteLine = lines.find((l) => l.includes('- Hérédité'));
+
+		expect(initialisationLine).toBeDefined();
+		expect(continuationLine).toBeDefined();
+		expect(herediteLine).toBeDefined();
+
+		// Get indentation (leading spaces)
+		const getIndent = (line: string | undefined) => line?.match(/^(\s*)/)?.[1]?.length ?? 0;
+
+		const initialisationIndent = getIndent(initialisationLine);
+		const continuationIndent = getIndent(continuationLine);
+		const herediteIndent = getIndent(herediteLine);
+
+		// The continuation text should be indented MORE than the list markers
+		// "- Initialisation" and "- Hérédité" should have the same indent
+		expect(initialisationIndent).toBe(herediteIndent);
+		// "On a vu que..." should be indented relative to the bullet marker (2 more spaces)
+		expect(continuationIndent).toBeGreaterThan(initialisationIndent);
+	});
+
+	it('should correctly indent simple nested bullet list', () => {
+		// Arrange: Simple nested bullet list
+		const jsonContent: JSONContent = {
+			type: 'doc',
+			content: [
+				{
+					type: 'bulletList',
+					content: [
+						{
+							type: 'listItem',
+							content: [
+								{
+									type: 'paragraph',
+									content: [{ type: 'text', text: 'Parent item' }]
+								},
+								{
+									type: 'bulletList',
+									content: [
+										{
+											type: 'listItem',
+											content: [
+												{
+													type: 'paragraph',
+													content: [{ type: 'text', text: 'Child item' }]
+												},
+												{
+													type: 'paragraph',
+													content: [{ type: 'text', text: 'Child continuation' }]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		};
+
+		// Act
+		const markdown = tipTapToMarkdown(jsonContent);
+
+		// Assert
+		const lines = markdown.split('\n');
+
+		const parentLine = lines.find((l) => l.includes('Parent item'));
+		const childLine = lines.find((l) => l.includes('Child item'));
+		const continuationLine = lines.find((l) => l.includes('Child continuation'));
+
+		expect(parentLine).toBeDefined();
+		expect(childLine).toBeDefined();
+		expect(continuationLine).toBeDefined();
+
+		const getIndent = (line: string | undefined) => line?.match(/^(\s*)/)?.[1]?.length ?? 0;
+
+		const parentIndent = getIndent(parentLine);
+		const childIndent = getIndent(childLine);
+		const continuationIndent = getIndent(continuationLine);
+
+		// Parent should be at root (0 indent)
+		expect(parentIndent).toBe(0);
+		// Child should be indented (nested list)
+		expect(childIndent).toBeGreaterThan(parentIndent);
+		// Continuation should be indented MORE than child marker
+		expect(continuationIndent).toBeGreaterThan(childIndent);
+	});
+
+	it('should correctly indent nested ordered list within bullet list', () => {
+		// Arrange: bulletList > listItem > orderedList > listItem with continuation
+		const jsonContent: JSONContent = {
+			type: 'doc',
+			content: [
+				{
+					type: 'bulletList',
+					content: [
+						{
+							type: 'listItem',
+							content: [
+								{
+									type: 'orderedList',
+									attrs: { start: 1 },
+									content: [
+										{
+											type: 'listItem',
+											content: [
+												{
+													type: 'paragraph',
+													content: [{ type: 'text', text: 'First' }]
+												},
+												{
+													type: 'paragraph',
+													content: [{ type: 'text', text: 'First continuation' }]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		};
+
+		// Act
+		const markdown = tipTapToMarkdown(jsonContent);
+
+		// Assert
+		const lines = markdown.split('\n');
+
+		const firstLine = lines.find((l) => l.includes('1.') && l.includes('First'));
+		const continuationLine = lines.find((l) => l.includes('First continuation'));
+
+		expect(firstLine).toBeDefined();
+		expect(continuationLine).toBeDefined();
+
+		const getIndent = (line: string | undefined) => line?.match(/^(\s*)/)?.[1]?.length ?? 0;
+
+		const firstIndent = getIndent(firstLine);
+		const continuationIndent = getIndent(continuationLine);
+
+		// Continuation should be indented MORE than the "1." marker
+		expect(continuationIndent).toBeGreaterThan(firstIndent);
+	});
+});
