@@ -22,6 +22,7 @@ describe('Instance Generator', () => {
 			variant_config: {},
 			custom_instructions: null,
 			correction_visible: true,
+			variation_index: null,
 			created_at: '2024-01-01',
 			updated_at: '2024-01-01',
 			exercise: {
@@ -48,6 +49,7 @@ describe('Instance Generator', () => {
 			variant_config: {},
 			custom_instructions: null,
 			correction_visible: true,
+			variation_index: null,
 			created_at: '2024-01-01',
 			updated_at: '2024-01-01',
 			exercise: {
@@ -421,6 +423,7 @@ describe('Instance Generator', () => {
 			variant_config: {},
 			custom_instructions: null,
 			correction_visible: true,
+			variation_index: null, // Seed-based selection (default)
 			created_at: '2024-01-01',
 			updated_at: '2024-01-01',
 			exercise: {
@@ -528,6 +531,75 @@ describe('Instance Generator', () => {
 			expect(instance1.exercises[0].selectedVariationLabel).toBe(
 				instance2.exercises[0].selectedVariationLabel
 			);
+		});
+
+		it('should use forced variation_index when set by teacher (R3)', () => {
+			// Create exercise with variation_index set to force 'autonomous' (index 1)
+			const exerciseWithForcedVariation: WorksheetExerciseWithExercise = {
+				...exerciseWithVariations,
+				id: 'we-forced-var',
+				variation_index: 1 // Force 'autonomous' variation
+			};
+
+			const params = {
+				worksheetId: 'worksheet-forced-var',
+				studentId: 'student-1',
+				exercises: [exerciseWithForcedVariation],
+				config: {}
+			};
+
+			const instance = generateWorksheetInstance(params);
+
+			// Should use the forced variation (index 1 = autonomous)
+			expect(instance.exercises[0].selectedVariationIndex).toBe(1);
+			expect(instance.exercises[0].selectedVariationLabel).toBe('autonomous');
+			expect(instance.exercises[0].statement).toContain('Calculer AC sachant AB=');
+
+			// Different student should get the SAME forced variation
+			const params2 = {
+				worksheetId: 'worksheet-forced-var',
+				studentId: 'student-different',
+				exercises: [exerciseWithForcedVariation],
+				config: {}
+			};
+
+			const instance2 = generateWorksheetInstance(params2);
+			expect(instance2.exercises[0].selectedVariationIndex).toBe(1);
+			expect(instance2.exercises[0].selectedVariationLabel).toBe('autonomous');
+		});
+
+		it('should use seed-based selection when variation_index is null', () => {
+			// Create exercise without forced variation_index
+			const exerciseWithNullVariation: WorksheetExerciseWithExercise = {
+				...exerciseWithVariations,
+				id: 'we-null-var',
+				variation_index: null // Seed-based selection
+			};
+
+			const params = {
+				worksheetId: 'worksheet-null-var',
+				studentId: 'student-1',
+				exercises: [exerciseWithNullVariation],
+				config: {}
+			};
+
+			const instance1 = generateWorksheetInstance(params);
+
+			// Different student should potentially get different variation (seed-based)
+			const params2 = {
+				worksheetId: 'worksheet-null-var',
+				studentId: 'student-very-different-id',
+				exercises: [exerciseWithNullVariation],
+				config: {}
+			};
+
+			const instance2 = generateWorksheetInstance(params2);
+
+			// Both should have valid variation info (whether same or different)
+			expect(instance1.exercises[0].selectedVariationIndex).toBeDefined();
+			expect(instance2.exercises[0].selectedVariationIndex).toBeDefined();
+			expect(['guided', 'autonomous']).toContain(instance1.exercises[0].selectedVariationLabel);
+			expect(['guided', 'autonomous']).toContain(instance2.exercises[0].selectedVariationLabel);
 		});
 	});
 

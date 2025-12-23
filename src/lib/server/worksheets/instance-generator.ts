@@ -207,9 +207,11 @@ function resolveExercise(
 	}
 
 	// Use the central exercise generator with AST parsing enabled
+	// Variation selection (R3): Pass teacher-forced index if set
 	const result = generateExerciseInstance(template, {
 		seed: seed + position,
-		parseAST: true
+		parseAST: true,
+		variationIndex: exercise.variation_index ?? undefined
 	});
 
 	if (!result.success) {

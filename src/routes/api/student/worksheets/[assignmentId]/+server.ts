@@ -96,6 +96,12 @@ interface WorksheetExerciseData {
 	points: number | null;
 	custom_instructions: string | null;
 	correction_visible: boolean;
+	/**
+	 * Teacher control (R3): Force specific variation index.
+	 * If null, variation is selected based on seed.
+	 * If set, overrides seed-based selection for all students.
+	 */
+	variation_index: number | null;
 	exercise: ExerciseData;
 }
 
@@ -132,9 +138,11 @@ function resolveExercise(
 	};
 
 	// Use the central generator with the seed + position for uniqueness
+	// Variation selection (R3): Pass teacher-forced index if set
 	const result = generateExerciseInstance(template, {
 		seed: seed + worksheetExercise.position,
-		parseAST: false // Don't parse AST for student view (performance)
+		parseAST: false, // Don't parse AST for student view (performance)
+		variationIndex: worksheetExercise.variation_index ?? undefined
 	});
 
 	if (!result.success) {
@@ -244,6 +252,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				points,
 				custom_instructions,
 				correction_visible,
+				variation_index,
 				exercise:exercises (
 					id,
 					title,

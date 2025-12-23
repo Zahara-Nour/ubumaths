@@ -99,7 +99,6 @@
 import type {
 	Exercise,
 	ExerciseInstance,
-	ExerciseVariation,
 	GenerateInstanceOptions,
 	InstanceGenerationResult
 } from '../types';
@@ -251,8 +250,18 @@ function generateVariationsInstance(
 	seed: number,
 	options: GenerateInstanceOptions
 ): InstanceGenerationResult {
-	// 1. Select variation based on seed (deterministic)
-	const variationIndex = Math.abs(seed) % exercise.variations!.length;
+	// 1. Variation selection (R3): Use forced index if provided, otherwise seed-based
+	const variationCount = exercise.variations!.length;
+	let variationIndex: number;
+
+	if (options.variationIndex !== undefined) {
+		// Teacher-forced variation (clamped to valid range)
+		variationIndex = Math.max(0, Math.min(options.variationIndex, variationCount - 1));
+	} else {
+		// Seed-based selection (deterministic per student)
+		variationIndex = Math.abs(seed) % variationCount;
+	}
+
 	const selectedVariation = exercise.variations![variationIndex];
 
 	// 2. Merge shared defaults with variation
