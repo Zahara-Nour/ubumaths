@@ -10973,6 +10973,7 @@ export type Database = {
 					updated_at: string;
 					variant_config: Json | null;
 					variant_mode: string | null;
+					variation_index: number | null;
 					worksheet_id: string;
 				};
 				Insert: {
@@ -10987,6 +10988,7 @@ export type Database = {
 					updated_at?: string;
 					variant_config?: Json | null;
 					variant_mode?: string | null;
+					variation_index?: number | null;
 					worksheet_id: string;
 				};
 				Update: {
@@ -11001,6 +11003,7 @@ export type Database = {
 					updated_at?: string;
 					variant_config?: Json | null;
 					variant_mode?: string | null;
+					variation_index?: number | null;
 					worksheet_id?: string;
 				};
 				Relationships: [
@@ -12448,6 +12451,10 @@ export type Database = {
 			execute_trade: { Args: { p_trade_id: string }; Returns: Json };
 			exercise_has_multiple_variations: {
 				Args: { exercise_id: string };
+				Returns: boolean;
+			};
+			exercise_has_valid_share_token: {
+				Args: { exercise_uuid: string };
 				Returns: boolean;
 			};
 			exercise_variation_count: {

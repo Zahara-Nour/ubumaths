@@ -48,7 +48,9 @@ export type {
 	ParseOptions,
 	ParseResult,
 	MathPlaceholder,
-	RenderOptions
+	RenderOptions,
+	Variable,
+	ResolvedVariable
 } from '$lib/ubumark';
 
 export { DEFAULT_IMAGE_SIZE_MAPPINGS } from '$lib/ubumark';

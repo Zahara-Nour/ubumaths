@@ -809,7 +809,7 @@ export const actions: Actions = {
 		}
 
 		// Validate timetable
-		const validation = validateTimetable(timetable.periods);
+		const validation = validateTimetable(timetable.periods ?? []);
 		if (!validation.valid) {
 			return fail(400, {
 				message: 'Timetable validation failed',

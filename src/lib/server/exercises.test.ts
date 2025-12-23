@@ -63,7 +63,10 @@ describe('getExercises', () => {
 				is_public: false,
 				variables: {},
 				resources: {},
-				slug: null
+				slug: null,
+				generic_functions: null,
+				shared: null,
+				variations: null
 			}
 		];
 
@@ -156,7 +159,10 @@ describe('getExercise', () => {
 			is_public: false,
 			variables: {},
 			resources: {},
-			slug: null
+			slug: null,
+			generic_functions: null,
+			shared: null,
+			variations: null
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: mockExercise, error: null });
@@ -207,7 +213,10 @@ describe('createExercise', () => {
 			is_public: false,
 			variables: {},
 			resources: {},
-			slug: null
+			slug: null,
+			generic_functions: null,
+			shared: null,
+			variations: null
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: createdExercise, error: null });
@@ -246,7 +255,10 @@ describe('updateExercise', () => {
 			is_public: false,
 			variables: {},
 			resources: {},
-			slug: null
+			slug: null,
+			generic_functions: null,
+			shared: null,
+			variations: null
 		};
 
 		const updates = {
@@ -285,7 +297,10 @@ describe('updateExercise', () => {
 			is_public: false,
 			variables: {},
 			resources: {},
-			slug: null
+			slug: null,
+			generic_functions: null,
+			shared: null,
+			variations: null
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });
@@ -318,7 +333,10 @@ describe('deleteExercise', () => {
 			is_public: false,
 			variables: {},
 			resources: {},
-			slug: null
+			slug: null,
+			generic_functions: null,
+			shared: null,
+			variations: null
 		};
 
 		// Mock getExercise call - .single() returns the exercise
@@ -361,7 +379,10 @@ describe('deleteExercise', () => {
 			is_public: false,
 			variables: {},
 			resources: {},
-			slug: null
+			slug: null,
+			generic_functions: null,
+			shared: null,
+			variations: null
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });
