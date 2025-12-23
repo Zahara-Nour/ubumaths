@@ -37,6 +37,94 @@ export const codeSchema = z
  */
 export const cursorSchema = z.number().int().min(0).max(100_000);
 
+/**
+ * Line number schema (1-based)
+ */
+export const lineNumberSchema = z.number().int().min(1).max(50_000);
+
+// =============================================================================
+// Debug Schemas
+// =============================================================================
+
+/**
+ * Debug step action schema
+ */
+export const debugStepActionSchema = z.enum([
+	'step',
+	'step-over',
+	'step-out',
+	'continue',
+	'run-to-end'
+]);
+
+/**
+ * Debug trace event schema
+ */
+export const debugTraceEventSchema = z.enum(['line', 'call', 'return', 'exception']);
+
+/**
+ * Debug pause reason schema
+ */
+export const debugPauseReasonSchema = z.enum(['breakpoint', 'step', 'exception', 'start']);
+
+/**
+ * Worker breakpoint schema (for communication)
+ */
+export const workerBreakpointSchema = z.object({
+	lineNumber: lineNumberSchema,
+	enabled: z.boolean(),
+	condition: z.string().max(500).optional()
+});
+
+/**
+ * Debug variable schema
+ */
+export const debugVariableSchema = z.object({
+	name: z.string().min(1).max(200),
+	value: z.string().max(10_000),
+	type: z.string().min(1).max(100),
+	isBuiltin: z.boolean(),
+	isChanged: z.boolean(),
+	isNew: z.boolean().optional(),
+	objectId: z.string().max(100).optional()
+});
+
+/**
+ * Debug stack frame schema
+ */
+export const debugStackFrameSchema = z.object({
+	functionName: z.string().min(1).max(200),
+	filename: z.string().min(1).max(500),
+	lineNumber: lineNumberSchema,
+	locals: z.array(debugVariableSchema).max(500),
+	isCurrentFrame: z.boolean()
+});
+
+/**
+ * Debug loop info schema
+ */
+export const debugLoopInfoSchema = z.object({
+	loopId: z.string().min(1).max(100),
+	iterationCount: z.number().int().min(1),
+	maxIterations: z.number().int().min(1).optional(),
+	loopType: z.enum(['for', 'while']),
+	lineNumber: lineNumberSchema
+});
+
+/**
+ * Debug snapshot schema
+ */
+export const debugSnapshotSchema = z.object({
+	id: z.string().min(1).max(100),
+	lineNumber: lineNumberSchema,
+	timestamp: z.number().min(0),
+	callStack: z.array(debugStackFrameSchema).min(1).max(100),
+	globals: z.array(debugVariableSchema).max(500),
+	loops: z.array(debugLoopInfoSchema).max(20),
+	stdout: z.string().max(100_000),
+	event: debugTraceEventSchema
+});
+
 // =============================================================================
 // Messages: Main Thread -> Worker
 // =============================================================================
@@ -225,6 +313,40 @@ export const validateExerciseMessageSchema = z.object({
 	id: executionIdSchema
 });
 
+// =============================================================================
+// Debug Messages: Main Thread -> Worker
+// =============================================================================
+
+/**
+ * Debug start message schema
+ * Starts a debug session with optional breakpoints
+ */
+export const debugStartMessageSchema = z.object({
+	type: z.literal('debug-start'),
+	code: codeSchema,
+	id: executionIdSchema,
+	breakpoints: z.array(workerBreakpointSchema).max(100)
+});
+
+/**
+ * Debug step message schema
+ * Sends a step command during debug session
+ */
+export const debugStepMessageSchema = z.object({
+	type: z.literal('debug-step'),
+	id: executionIdSchema,
+	action: debugStepActionSchema
+});
+
+/**
+ * Debug stop message schema
+ * Stops the current debug session
+ */
+export const debugStopMessageSchema = z.object({
+	type: z.literal('debug-stop'),
+	id: executionIdSchema
+});
+
 /**
  * Union schema for all messages sent to the worker
  */
@@ -237,7 +359,10 @@ export const toWorkerMessageSchema = z.discriminatedUnion('type', [
 	destroyContextMessageSchema,
 	resetContextMessageSchema,
 	validateMessageSchema,
-	validateExerciseMessageSchema
+	validateExerciseMessageSchema,
+	debugStartMessageSchema,
+	debugStepMessageSchema,
+	debugStopMessageSchema
 ]);
 
 // =============================================================================
@@ -465,6 +590,40 @@ export const exerciseValidationResultMessageSchema = z.object({
 	id: executionIdSchema
 });
 
+// =============================================================================
+// Debug Messages: Worker -> Main Thread
+// =============================================================================
+
+/**
+ * Debug snapshot message schema
+ * Sent when execution pauses (at breakpoint, after step, etc.)
+ */
+export const debugSnapshotMessageSchema = z.object({
+	type: z.literal('debug-snapshot'),
+	id: executionIdSchema,
+	snapshot: debugSnapshotSchema
+});
+
+/**
+ * Debug paused message schema
+ * Indicates why execution paused
+ */
+export const debugPausedMessageSchema = z.object({
+	type: z.literal('debug-paused'),
+	id: executionIdSchema,
+	reason: debugPauseReasonSchema
+});
+
+/**
+ * Debug finished message schema
+ * Sent when debug session completes
+ */
+export const debugFinishedMessageSchema = z.object({
+	type: z.literal('debug-finished'),
+	id: executionIdSchema,
+	duration: z.number().min(0).max(300_000)
+});
+
 /**
  * Union schema for all messages sent from the worker
  */
@@ -486,7 +645,10 @@ export const fromWorkerMessageSchema = z.discriminatedUnion('type', [
 	contextDestroyedMessageSchema,
 	contextResetMessageSchema,
 	validationResultMessageSchema,
-	exerciseValidationResultMessageSchema
+	exerciseValidationResultMessageSchema,
+	debugSnapshotMessageSchema,
+	debugPausedMessageSchema,
+	debugFinishedMessageSchema
 ]);
 
 // =============================================================================
@@ -524,3 +686,19 @@ export type ExerciseValidationResultMessageSchema = z.infer<
 	typeof exerciseValidationResultMessageSchema
 >;
 export type FromWorkerMessageSchema = z.infer<typeof fromWorkerMessageSchema>;
+
+// Debug types
+export type DebugStepActionSchema = z.infer<typeof debugStepActionSchema>;
+export type DebugTraceEventSchema = z.infer<typeof debugTraceEventSchema>;
+export type DebugPauseReasonSchema = z.infer<typeof debugPauseReasonSchema>;
+export type WorkerBreakpointSchema = z.infer<typeof workerBreakpointSchema>;
+export type DebugVariableSchema = z.infer<typeof debugVariableSchema>;
+export type DebugStackFrameSchema = z.infer<typeof debugStackFrameSchema>;
+export type DebugLoopInfoSchema = z.infer<typeof debugLoopInfoSchema>;
+export type DebugSnapshotSchema = z.infer<typeof debugSnapshotSchema>;
+export type DebugStartMessageSchema = z.infer<typeof debugStartMessageSchema>;
+export type DebugStepMessageSchema = z.infer<typeof debugStepMessageSchema>;
+export type DebugStopMessageSchema = z.infer<typeof debugStopMessageSchema>;
+export type DebugSnapshotMessageSchema = z.infer<typeof debugSnapshotMessageSchema>;
+export type DebugPausedMessageSchema = z.infer<typeof debugPausedMessageSchema>;
+export type DebugFinishedMessageSchema = z.infer<typeof debugFinishedMessageSchema>;
