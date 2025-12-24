@@ -325,10 +325,33 @@ function parseBlocks(
 	// Use original lines for code blocks to preserve math expressions
 	const variationBlocks = findVariationBlocks(originalLines);
 	const probTreeBlocks = findProbTreeBlocks(originalLines);
-	// IMPORTANT: Find code blocks in BOTH arrays
-	// - codeBlocks (from lines): used for loop control (line indices match the loop)
-	// - originalCodeBlocks (from originalLines): used for content extraction (preserves math)
-	// This is necessary because math extraction can change line counts (multi-line $$ blocks collapse)
+
+	// =========================================================================
+	// CODE BLOCK LINE INDEX MISMATCH FIX
+	// =========================================================================
+	// PROBLEM: Math extraction can REDUCE line counts when multi-line block math
+	// ($$...\n...\n...$$) collapses into a single placeholder line.
+	//
+	// Example: If originalLines has 106 lines and extractMath produces 101 lines,
+	// a code block at originalLines[105] would be at lines[100].
+	//
+	// Previously, findCodeBlocks was only called on originalLines, returning
+	// code block ranges like {startIndex: 105, endIndex: 126}. But the main loop
+	// iterates over `lines` (101 elements, indices 0-100), so the condition
+	// `i >= 105` was NEVER true, causing the "```" fence at lines[100] to be
+	// parsed as a paragraph instead of a code block.
+	//
+	// When the inline parser encountered the unclosed "```" in paragraph mode,
+	// the backtick regex caused catastrophic backtracking, freezing the parser.
+	//
+	// SOLUTION: Find code blocks in BOTH arrays:
+	// - codeBlocks (from lines): indices match the loop, used for detection
+	// - originalCodeBlocks (from originalLines): used for content extraction
+	//   to preserve original math expressions (not placeholders) in code blocks
+	//
+	// We map between them by index: the Nth code block in `lines` corresponds
+	// to the Nth code block in `originalLines`.
+	// =========================================================================
 	const codeBlocks = findCodeBlocks(lines);
 	const originalCodeBlocks = findCodeBlocks(originalLines);
 	const blockquoteBlocks = findBlockquoteBlocks(lines);
@@ -383,10 +406,12 @@ function parseBlocks(
 		}
 
 		// PRIORITY 1c: Check if this line is part of a code block (highest priority)
+		// Uses codeBlocks (from `lines`) for detection - indices match the loop variable `i`
 		const codeBlock = codeBlocks.find((range) => i >= range.startIndex && i <= range.endIndex);
 		if (codeBlock) {
-			// Find the corresponding code block in originalLines for content extraction
-			// This preserves math expressions in code blocks (they shouldn't be processed)
+			// Map to the corresponding block in originalLines for content extraction.
+			// This ensures math expressions like $x^2$ are preserved verbatim in code,
+			// not replaced with __MATH_N__ placeholders.
 			const codeBlockIndex = codeBlocks.indexOf(codeBlock);
 			const originalBlock = originalCodeBlocks[codeBlockIndex];
 			if (originalBlock) {
@@ -396,12 +421,10 @@ function parseBlocks(
 					originalBlock.endIndex
 				);
 				if (code) {
-					// Important: Math expressions are preserved as-is in code blocks
-					// Code content is verbatim from original lines
 					blocks.push(code);
 				}
 			} else {
-				// Fallback: parse from lines (with math placeholders, less ideal but works)
+				// Fallback: if mapping fails, parse from `lines` (may contain placeholders)
 				const code = parseCodeBlock(lines, codeBlock.startIndex, codeBlock.endIndex);
 				if (code) {
 					blocks.push(code);
