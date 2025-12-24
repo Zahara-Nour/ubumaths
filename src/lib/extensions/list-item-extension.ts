@@ -27,11 +27,11 @@ export const CustomListItem = ListItem.extend({
 		return {
 			...this.parent?.(),
 
-			// Mod+Enter: Insert new paragraph in same list item
+			// Mod+Enter: Split paragraph at cursor position within same list item
 			'Mod-Enter': ({ editor }) => {
 				const { state } = editor;
 				const { selection } = state;
-				const { $from } = selection;
+				const { $from, from } = selection;
 
 				// Check if we're inside a listItem
 				let listItemDepth = -1;
@@ -53,20 +53,32 @@ export const CustomListItem = ListItem.extend({
 					return false;
 				}
 
-				// Find the end of the current block (paragraph) we're in
+				// Get current block info
 				const currentBlockDepth = $from.depth;
 				const currentBlockEnd = $from.end(currentBlockDepth);
 
-				// Create a new empty paragraph
-				const newParagraph = paragraphType.create();
+				// Get content after cursor (to move to new paragraph)
+				const contentAfterCursor = state.doc.slice(from, currentBlockEnd);
 
-				// Insert the new paragraph after the current block
 				const tr = state.tr;
-				tr.insert(currentBlockEnd + 1, newParagraph);
 
-				// Move cursor to the new paragraph
-				const newPos = currentBlockEnd + 2; // +1 for after current block, +1 to be inside new paragraph
-				tr.setSelection(TextSelection.create(tr.doc, newPos));
+				// Delete content after cursor from current paragraph
+				if (from < currentBlockEnd) {
+					tr.delete(from, currentBlockEnd);
+				}
+
+				// Calculate position after deletion for inserting new paragraph
+				const insertPos = from + 1; // +1 to be after the current paragraph's closing tag
+
+				// Create new paragraph with the content that was after cursor
+				const newParagraph = paragraphType.create(null, contentAfterCursor.content);
+
+				// Insert the new paragraph
+				tr.insert(insertPos, newParagraph);
+
+				// Move cursor to the beginning of the new paragraph
+				const newCursorPos = insertPos + 1; // +1 to be inside the new paragraph
+				tr.setSelection(TextSelection.create(tr.doc, newCursorPos));
 
 				editor.view.dispatch(tr);
 				return true;
