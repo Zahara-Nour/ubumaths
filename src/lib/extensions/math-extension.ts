@@ -31,7 +31,7 @@
 
 import { Node, mergeAttributes, InputRule } from '@tiptap/core';
 import type { NodeViewRendererProps } from '@tiptap/core';
-import { Plugin, PluginKey, Selection, NodeSelection } from '@tiptap/pm/state';
+import { Plugin, PluginKey, Selection, NodeSelection, TextSelection } from '@tiptap/pm/state';
 import { parseCustomSafe, toLatex, parseLatexSafe, toCustom } from '$lib/mathAST';
 
 // ============================================================================
@@ -182,6 +182,22 @@ const mathKeyboardNavPlugin = new Plugin({
 			// =================================================================
 			// BLOCK MATH NAVIGATION (ArrowDown/ArrowUp or ArrowRight/Left at edges)
 			// =================================================================
+			// Only handle navigation TO mathBlocks. For all other cases, let
+			// ProseMirror handle vertical navigation with its default behavior.
+
+			// For ArrowDown/ArrowUp: only proceed if we're at the visual edge
+			// of the textblock. This prevents interfering with intra-paragraph
+			// navigation (e.g., moving between lines in a multi-line paragraph).
+			if (event.key === 'ArrowDown') {
+				if (!view.endOfTextblock('down')) {
+					return false; // Not at visual bottom - let ProseMirror handle
+				}
+			} else if (event.key === 'ArrowUp') {
+				if (!view.endOfTextblock('up')) {
+					return false; // Not at visual top - let ProseMirror handle
+				}
+			}
+
 			const parent = $from.parent;
 			const parentStart = $from.start();
 			const parentEnd = parentStart + parent.content.size;
@@ -196,28 +212,108 @@ const mathKeyboardNavPlugin = new Plugin({
 			const grandParent = $from.node(depth - 1);
 			const parentIndex = $from.index(depth - 1);
 
-			// Navigate forward (ArrowDown or ArrowRight at end of block)
+			// Navigate forward (ArrowDown at visual end, or ArrowRight at text end)
 			if (event.key === 'ArrowDown' || (event.key === 'ArrowRight' && isAtEndOfBlock)) {
 				// Check if there's a next sibling block
 				if (parentIndex < grandParent.childCount - 1) {
 					const nextBlock = grandParent.child(parentIndex + 1);
+					const nextBlockPos = parentPos + parent.nodeSize;
+
 					if (nextBlock.type.name === 'mathBlock') {
-						// Calculate position of the next block
-						const nextBlockPos = parentPos + parent.nodeSize;
+						// Navigate into mathBlock
 						return focusMathfield(nextBlockPos, true);
+					}
+
+					// For ArrowDown: manually navigate to next block to avoid
+					// ProseMirror issues with cursor position near inline atoms.
+					// Try to preserve horizontal position like normal arrow navigation.
+					if (event.key === 'ArrowDown') {
+						event.preventDefault();
+
+						// Get current cursor X coordinate
+						const currentCoords = view.coordsAtPos(pos);
+
+						// Get coordinates of the next block's first position
+						const nextBlockStartPos = nextBlockPos + 1;
+						const nextBlockCoords = view.coordsAtPos(nextBlockStartPos);
+
+						// Try to find a position in the next block at the same X
+						const targetPos = view.posAtCoords({
+							left: currentCoords.left,
+							top: nextBlockCoords.top + 5 // Small offset into the line
+						});
+
+						// Verify the found position is actually in the next block
+						if (
+							targetPos &&
+							targetPos.pos >= nextBlockPos &&
+							targetPos.pos <= nextBlockPos + nextBlock.nodeSize
+						) {
+							view.dispatch(
+								state.tr
+									.setSelection(TextSelection.create(state.doc, targetPos.pos))
+									.scrollIntoView()
+							);
+						} else {
+							// Fallback: use Selection.near
+							const $nextPos = state.doc.resolve(nextBlockStartPos);
+							const nearSelection = Selection.near($nextPos, 1);
+							view.dispatch(state.tr.setSelection(nearSelection).scrollIntoView());
+						}
+						return true;
 					}
 				}
 			}
 
-			// Navigate backward (ArrowUp or ArrowLeft at start of block)
+			// Navigate backward (ArrowUp at visual start, or ArrowLeft at text start)
 			if (event.key === 'ArrowUp' || (event.key === 'ArrowLeft' && isAtStartOfBlock)) {
 				// Check if there's a previous sibling block
 				if (parentIndex > 0) {
 					const prevBlock = grandParent.child(parentIndex - 1);
+					const prevBlockPos = parentPos - prevBlock.nodeSize;
+
 					if (prevBlock.type.name === 'mathBlock') {
-						// Calculate position of the previous block
-						const prevBlockPos = parentPos - prevBlock.nodeSize;
+						// Navigate into mathBlock
 						return focusMathfield(prevBlockPos, false);
+					}
+
+					// For ArrowUp: manually navigate to previous block to avoid
+					// ProseMirror issues with cursor position near inline atoms.
+					// Try to preserve horizontal position like normal arrow navigation.
+					if (event.key === 'ArrowUp') {
+						event.preventDefault();
+
+						// Get current cursor X coordinate
+						const currentCoords = view.coordsAtPos(pos);
+
+						// Get coordinates of the previous block's last position
+						const prevBlockEndPos = parentPos - 1;
+						const prevBlockCoords = view.coordsAtPos(prevBlockEndPos);
+
+						// Try to find a position in the previous block at the same X
+						const targetPos = view.posAtCoords({
+							left: currentCoords.left,
+							top: prevBlockCoords.bottom - 5 // Small offset into the line from bottom
+						});
+
+						// Verify the found position is actually in the previous block
+						if (
+							targetPos &&
+							targetPos.pos >= prevBlockPos &&
+							targetPos.pos <= prevBlockPos + prevBlock.nodeSize
+						) {
+							view.dispatch(
+								state.tr
+									.setSelection(TextSelection.create(state.doc, targetPos.pos))
+									.scrollIntoView()
+							);
+						} else {
+							// Fallback: use Selection.near from end of previous block
+							const $prevPos = state.doc.resolve(prevBlockEndPos);
+							const nearSelection = Selection.near($prevPos, -1);
+							view.dispatch(state.tr.setSelection(nearSelection).scrollIntoView());
+						}
+						return true;
 					}
 				}
 			}
