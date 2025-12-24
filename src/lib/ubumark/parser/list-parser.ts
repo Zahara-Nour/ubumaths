@@ -273,7 +273,7 @@ export function parseList(lines: string[]): ListNode[] {
 			);
 			const trimmed = line.replace(indentPattern, '');
 
-			// Check if this continuation follows a hardbreak (line ending with \)
+			// Check if this continuation follows a hardbreak (line ending with \ or 2+ spaces)
 			// If so, append to the existing content/continuation instead of starting new paragraph
 			const lastContent = inLateContination
 				? currentItem.lateContinations[currentItem.lateContinations.length - 1] || ''
@@ -281,7 +281,7 @@ export function parseList(lines: string[]): ListNode[] {
 					? pendingContinuation[pendingContinuation.length - 1]
 					: currentItem.content;
 
-			if (lastContent.endsWith('\\')) {
+			if (lastContent.endsWith('\\') || / {2}$/.test(lastContent)) {
 				// Hardbreak continuation - append to the same paragraph
 				if (inLateContination) {
 					if (currentItem.lateContinations.length > 0) {

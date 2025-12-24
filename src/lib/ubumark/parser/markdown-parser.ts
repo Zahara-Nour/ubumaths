@@ -33,7 +33,8 @@ import type {
 	LinkNode,
 	HashtagNode,
 	MentionNode,
-	HintReferenceNode
+	HintReferenceNode,
+	LineBreakNode
 } from '../types';
 import {
 	extractMath,
@@ -887,6 +888,53 @@ function parseTextForHints(text: string): (string | HintReferenceNode)[] {
 }
 
 /**
+ * Parse text for hard line breaks
+ *
+ * Detects two syntaxes:
+ * - Backslash at end of line: `\\\n` or `\\` at end of text
+ * - Two or more spaces at end of line: `  \n`
+ *
+ * @param text - Text possibly containing hard break syntax
+ * @returns Array of strings (text segments) and LineBreakNodes
+ */
+function parseTextForHardbreaks(text: string): (string | LineBreakNode)[] {
+	if (!text) return [];
+
+	const results: (string | LineBreakNode)[] = [];
+	let position = 0;
+
+	// Regex to find hard breaks:
+	// - \\ followed by \n (backslash + newline)
+	// - \\ at end of string (backslash at end)
+	// - 2+ spaces followed by \n
+	const hardbreakRegex = /\\(?:\n|$)|[ ]{2,}\n/g;
+	let match: RegExpExecArray | null;
+
+	while ((match = hardbreakRegex.exec(text)) !== null) {
+		// Add text segment before this hard break
+		if (match.index > position) {
+			results.push(text.substring(position, match.index));
+		}
+
+		// Add hard break node
+		const lineBreakNode: LineBreakNode = {
+			type: 'line-break',
+			hard: true
+		};
+
+		results.push(lineBreakNode);
+		position = match.index + match[0].length;
+	}
+
+	// Add remaining text after last hard break
+	if (position < text.length) {
+		results.push(text.substring(position));
+	}
+
+	return results;
+}
+
+/**
  * Parse text formatting (bold, italic, code) for a single text segment
  *
  * Parses markdown inline formatting and returns text nodes with appropriate properties.
@@ -1031,9 +1079,19 @@ function parseTextFormatting(text: string): InlineNode[] {
 
 									for (const mentionSegment of mentionSegments) {
 										if (typeof mentionSegment === 'string') {
-											// Step 6: Parse text formatting on remaining text
-											const formatted = parseTextFormattingSegment(mentionSegment);
-											nodes.push(...formatted);
+											// Step 6: Extract hard breaks from text segment
+											const hardbreakSegments = parseTextForHardbreaks(mentionSegment);
+
+											for (const hardbreakSegment of hardbreakSegments) {
+												if (typeof hardbreakSegment === 'string') {
+													// Step 7: Parse text formatting on remaining text
+													const formatted = parseTextFormattingSegment(hardbreakSegment);
+													nodes.push(...formatted);
+												} else {
+													// LineBreakNode - add directly
+													nodes.push(hardbreakSegment);
+												}
+											}
 										} else {
 											// MentionNode - add directly
 											nodes.push(mentionSegment);
