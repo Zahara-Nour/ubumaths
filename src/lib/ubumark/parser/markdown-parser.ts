@@ -325,7 +325,12 @@ function parseBlocks(
 	// Use original lines for code blocks to preserve math expressions
 	const variationBlocks = findVariationBlocks(originalLines);
 	const probTreeBlocks = findProbTreeBlocks(originalLines);
-	const codeBlocks = findCodeBlocks(originalLines);
+	// IMPORTANT: Find code blocks in BOTH arrays
+	// - codeBlocks (from lines): used for loop control (line indices match the loop)
+	// - originalCodeBlocks (from originalLines): used for content extraction (preserves math)
+	// This is necessary because math extraction can change line counts (multi-line $$ blocks collapse)
+	const codeBlocks = findCodeBlocks(lines);
+	const originalCodeBlocks = findCodeBlocks(originalLines);
 	const blockquoteBlocks = findBlockquoteBlocks(lines);
 	const listBlocks = findListBlocks(lines);
 	const tableBlocks = findTableBlocks(lines);
@@ -380,12 +385,27 @@ function parseBlocks(
 		// PRIORITY 1c: Check if this line is part of a code block (highest priority)
 		const codeBlock = codeBlocks.find((range) => i >= range.startIndex && i <= range.endIndex);
 		if (codeBlock) {
-			// Use original lines to preserve math expressions in code blocks
-			const code = parseCodeBlock(originalLines, codeBlock.startIndex, codeBlock.endIndex);
-			if (code) {
-				// Important: Math expressions are preserved as-is in code blocks
-				// Code content is verbatim from original lines
-				blocks.push(code);
+			// Find the corresponding code block in originalLines for content extraction
+			// This preserves math expressions in code blocks (they shouldn't be processed)
+			const codeBlockIndex = codeBlocks.indexOf(codeBlock);
+			const originalBlock = originalCodeBlocks[codeBlockIndex];
+			if (originalBlock) {
+				const code = parseCodeBlock(
+					originalLines,
+					originalBlock.startIndex,
+					originalBlock.endIndex
+				);
+				if (code) {
+					// Important: Math expressions are preserved as-is in code blocks
+					// Code content is verbatim from original lines
+					blocks.push(code);
+				}
+			} else {
+				// Fallback: parse from lines (with math placeholders, less ideal but works)
+				const code = parseCodeBlock(lines, codeBlock.startIndex, codeBlock.endIndex);
+				if (code) {
+					blocks.push(code);
+				}
 			}
 			i = codeBlock.endIndex + 1;
 			continue;
