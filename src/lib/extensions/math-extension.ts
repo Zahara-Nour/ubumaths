@@ -208,6 +208,11 @@ const mathKeyboardNavPlugin = new Plugin({
 			const depth = $from.depth;
 			if (depth < 1) return false;
 
+			// Check if current paragraph contains inline math nodes.
+			// ProseMirror's coordsAtPos can return incorrect values near inline atoms,
+			// so we only do manual navigation when inline math is present.
+			const hasInlineMath = parent.content.content.some((node) => node.type.name === 'mathInline');
+
 			// Navigate forward (ArrowDown at visual end, or ArrowRight at text end)
 			if (event.key === 'ArrowDown' || (event.key === 'ArrowRight' && isAtEndOfBlock)) {
 				// Find the next block to navigate to, climbing up the tree if needed.
@@ -237,10 +242,10 @@ const mathKeyboardNavPlugin = new Plugin({
 						return focusMathfield(nextBlockPos, true);
 					}
 
-					// For ArrowDown: manually navigate to next block to avoid
-					// ProseMirror issues with cursor position near inline atoms.
-					// Try to preserve horizontal position like normal arrow navigation.
-					if (event.key === 'ArrowDown') {
+					// For ArrowDown: only manually navigate when current paragraph has
+					// inline math (where ProseMirror's default navigation can fail).
+					// Otherwise, let ProseMirror handle it normally.
+					if (event.key === 'ArrowDown' && hasInlineMath) {
 						event.preventDefault();
 
 						// Get current cursor X coordinate
@@ -307,10 +312,10 @@ const mathKeyboardNavPlugin = new Plugin({
 						return focusMathfield(prevBlockPos, false);
 					}
 
-					// For ArrowUp: manually navigate to previous block to avoid
-					// ProseMirror issues with cursor position near inline atoms.
-					// Try to preserve horizontal position like normal arrow navigation.
-					if (event.key === 'ArrowUp') {
+					// For ArrowUp: only manually navigate when current paragraph has
+					// inline math (where ProseMirror's default navigation can fail).
+					// Otherwise, let ProseMirror handle it normally.
+					if (event.key === 'ArrowUp' && hasInlineMath) {
 						event.preventDefault();
 
 						// Get current cursor X coordinate
