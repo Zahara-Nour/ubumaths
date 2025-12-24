@@ -539,15 +539,70 @@ export const MathInline = Node.create({
 
 				e.preventDefault();
 
-				// Calculate target position based on direction
-				// pos is the position of the node, node size is 1 for atoms
+				const { doc, tr } = editor.state;
+				const view = editor.view;
+
+				// Handle vertical navigation (upward/downward) - go to prev/next line
+				if (detail.direction === 'upward' || detail.direction === 'downward') {
+					// Strategy: Exit mathfield to a position that preserves horizontal context,
+					// then dispatch a synthetic arrow key event to let ProseMirror handle
+					// vertical navigation (which properly preserves horizontal position).
+
+					const mathfieldRect = mathfield.getBoundingClientRect();
+					const centerX = mathfieldRect.left + mathfieldRect.width / 2;
+					const centerY = mathfieldRect.top + mathfieldRect.height / 2;
+
+					// Try to find a text position at the horizontal center of the mathfield
+					// This gives us a better starting point for vertical navigation
+					let exitPos = pos; // Default: before the math node
+
+					const posAtCenter = view.posAtCoords({ left: centerX, top: centerY });
+					if (posAtCenter) {
+						// Check if this position is on the same line (not inside the math node)
+						if (posAtCenter.pos !== pos && posAtCenter.pos !== pos + 1) {
+							const coords = view.coordsAtPos(posAtCenter.pos);
+							// Verify it's on the same line as the mathfield
+							if (coords.top < mathfieldRect.bottom && coords.bottom > mathfieldRect.top) {
+								exitPos = posAtCenter.pos;
+							}
+						}
+					}
+
+					// If we couldn't find a position at center, use before/after math node
+					// based on direction (gives slightly better X preservation)
+					if (exitPos === pos) {
+						exitPos = detail.direction === 'downward' ? pos + 1 : pos;
+					}
+
+					// Exit mathfield and set cursor
+					const selection = TextSelection.create(doc, exitPos);
+					view.dispatch(tr.setSelection(selection));
+					view.focus();
+
+					// Dispatch synthetic arrow key event to trigger ProseMirror's
+					// vertical navigation, which properly handles X position preservation
+					setTimeout(() => {
+						const keyEvent = new KeyboardEvent('keydown', {
+							key: detail.direction === 'downward' ? 'ArrowDown' : 'ArrowUp',
+							code: detail.direction === 'downward' ? 'ArrowDown' : 'ArrowUp',
+							keyCode: detail.direction === 'downward' ? 40 : 38,
+							which: detail.direction === 'downward' ? 40 : 38,
+							bubbles: true,
+							cancelable: true
+						});
+						view.dom.dispatchEvent(keyEvent);
+					}, 0);
+
+					return;
+				}
+
+				// Handle horizontal navigation (forward/backward)
 				const targetPos =
 					detail.direction === 'forward'
 						? pos + 1 // After the math node
 						: pos; // Before the math node
 
 				// Check if the position is valid for text selection
-				const { doc, tr } = editor.state;
 				const clampedPos = Math.min(targetPos, doc.content.size);
 				const $pos = doc.resolve(clampedPos);
 
