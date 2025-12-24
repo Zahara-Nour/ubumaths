@@ -116,6 +116,8 @@
 		showSendButton?: boolean;
 		showClearButton?: boolean;
 		minHeight?: string;
+		/** Max height - enables internal scrolling with sticky toolbar within the container */
+		maxHeight?: string;
 		disabled?: boolean;
 		/** Image upload configuration - enables image button in toolbar when provided */
 		imageUpload?: ImageUploadConfig;
@@ -140,6 +142,7 @@
 		showSendButton,
 		showClearButton = true,
 		minHeight = '100px',
+		maxHeight,
 		disabled = false,
 		imageUpload,
 		genericFunctions,
@@ -882,10 +885,11 @@
 <div
 	class={isFullscreen
 		? 'fixed inset-0 z-50 flex flex-col bg-background'
-		: 'overflow-hidden rounded-lg border border-border bg-card'}
+		: `rounded-lg border border-border bg-card ${maxHeight ? 'overflow-y-auto' : 'overflow-clip'}`}
+	style={maxHeight && !isFullscreen ? `max-height: ${maxHeight}` : undefined}
 >
 	<!-- Toolbar -->
-	<div class="border-b border-border bg-muted/50">
+	<div class="sticky top-0 z-10 border-b border-border bg-muted">
 		<!-- Main Toolbar Row -->
 		<div class="flex flex-wrap items-center gap-1 p-2">
 			<!-- Text Section Toggle -->
