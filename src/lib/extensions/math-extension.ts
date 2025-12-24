@@ -204,20 +204,33 @@ const mathKeyboardNavPlugin = new Plugin({
 			const isAtEndOfBlock = pos === parentEnd;
 			const isAtStartOfBlock = pos === parentStart;
 
-			// Get the position of the parent block in the document
+			// Get the depth in the document tree
 			const depth = $from.depth;
 			if (depth < 1) return false;
 
-			const parentPos = $from.before(depth);
-			const grandParent = $from.node(depth - 1);
-			const parentIndex = $from.index(depth - 1);
-
 			// Navigate forward (ArrowDown at visual end, or ArrowRight at text end)
 			if (event.key === 'ArrowDown' || (event.key === 'ArrowRight' && isAtEndOfBlock)) {
-				// Check if there's a next sibling block
-				if (parentIndex < grandParent.childCount - 1) {
-					const nextBlock = grandParent.child(parentIndex + 1);
-					const nextBlockPos = parentPos + parent.nodeSize;
+				// Find the next block to navigate to, climbing up the tree if needed.
+				// This handles cases like navigating from the last paragraph of a
+				// list item to the next list item or the block after the list.
+				let nextBlockInfo: { block: typeof parent; pos: number } | null = null;
+
+				for (let d = depth; d >= 1; d--) {
+					const ancestorPos = $from.before(d);
+					const ancestorParent = $from.node(d - 1);
+					const ancestorIndex = $from.index(d - 1);
+
+					if (ancestorIndex < ancestorParent.childCount - 1) {
+						// Found a sibling at this level
+						const nextSibling = ancestorParent.child(ancestorIndex + 1);
+						const nextSiblingPos = ancestorPos + $from.node(d).nodeSize;
+						nextBlockInfo = { block: nextSibling, pos: nextSiblingPos };
+						break;
+					}
+				}
+
+				if (nextBlockInfo) {
+					const { block: nextBlock, pos: nextBlockPos } = nextBlockInfo;
 
 					if (nextBlock.type.name === 'mathBlock') {
 						// Navigate into mathBlock
@@ -233,9 +246,11 @@ const mathKeyboardNavPlugin = new Plugin({
 						// Get current cursor X coordinate
 						const currentCoords = view.coordsAtPos(pos);
 
-						// Get coordinates of the next block's first position
-						const nextBlockStartPos = nextBlockPos + 1;
-						const nextBlockCoords = view.coordsAtPos(nextBlockStartPos);
+						// Find the first text position in the next block (could be nested)
+						const $nextBlockStart = state.doc.resolve(nextBlockPos + 1);
+						const firstTextPos = Selection.near($nextBlockStart, 1);
+						const targetStartPos = firstTextPos.$from.pos;
+						const nextBlockCoords = view.coordsAtPos(targetStartPos);
 
 						// Try to find a position in the next block at the same X
 						const targetPos = view.posAtCoords({
@@ -243,7 +258,7 @@ const mathKeyboardNavPlugin = new Plugin({
 							top: nextBlockCoords.top + 5 // Small offset into the line
 						});
 
-						// Verify the found position is actually in the next block
+						// Verify the found position is actually within the next block's subtree
 						if (
 							targetPos &&
 							targetPos.pos >= nextBlockPos &&
@@ -255,10 +270,8 @@ const mathKeyboardNavPlugin = new Plugin({
 									.scrollIntoView()
 							);
 						} else {
-							// Fallback: use Selection.near
-							const $nextPos = state.doc.resolve(nextBlockStartPos);
-							const nearSelection = Selection.near($nextPos, 1);
-							view.dispatch(state.tr.setSelection(nearSelection).scrollIntoView());
+							// Fallback: use Selection.near to find first valid position
+							view.dispatch(state.tr.setSelection(firstTextPos).scrollIntoView());
 						}
 						return true;
 					}
@@ -267,10 +280,27 @@ const mathKeyboardNavPlugin = new Plugin({
 
 			// Navigate backward (ArrowUp at visual start, or ArrowLeft at text start)
 			if (event.key === 'ArrowUp' || (event.key === 'ArrowLeft' && isAtStartOfBlock)) {
-				// Check if there's a previous sibling block
-				if (parentIndex > 0) {
-					const prevBlock = grandParent.child(parentIndex - 1);
-					const prevBlockPos = parentPos - prevBlock.nodeSize;
+				// Find the previous block to navigate to, climbing up the tree if needed.
+				// This handles cases like navigating from the first paragraph of a
+				// list item to the previous list item or the block before the list.
+				let prevBlockInfo: { block: typeof parent; pos: number } | null = null;
+
+				for (let d = depth; d >= 1; d--) {
+					const ancestorPos = $from.before(d);
+					const ancestorParent = $from.node(d - 1);
+					const ancestorIndex = $from.index(d - 1);
+
+					if (ancestorIndex > 0) {
+						// Found a previous sibling at this level
+						const prevSibling = ancestorParent.child(ancestorIndex - 1);
+						const prevSiblingPos = ancestorPos - prevSibling.nodeSize;
+						prevBlockInfo = { block: prevSibling, pos: prevSiblingPos };
+						break;
+					}
+				}
+
+				if (prevBlockInfo) {
+					const { block: prevBlock, pos: prevBlockPos } = prevBlockInfo;
 
 					if (prevBlock.type.name === 'mathBlock') {
 						// Navigate into mathBlock
@@ -286,9 +316,12 @@ const mathKeyboardNavPlugin = new Plugin({
 						// Get current cursor X coordinate
 						const currentCoords = view.coordsAtPos(pos);
 
-						// Get coordinates of the previous block's last position
-						const prevBlockEndPos = parentPos - 1;
-						const prevBlockCoords = view.coordsAtPos(prevBlockEndPos);
+						// Find the last text position in the previous block (could be nested)
+						const prevBlockEndPos = prevBlockPos + prevBlock.nodeSize - 1;
+						const $prevBlockEnd = state.doc.resolve(prevBlockEndPos);
+						const lastTextPos = Selection.near($prevBlockEnd, -1);
+						const targetEndPos = lastTextPos.$from.pos;
+						const prevBlockCoords = view.coordsAtPos(targetEndPos);
 
 						// Try to find a position in the previous block at the same X
 						const targetPos = view.posAtCoords({
@@ -296,7 +329,7 @@ const mathKeyboardNavPlugin = new Plugin({
 							top: prevBlockCoords.bottom - 5 // Small offset into the line from bottom
 						});
 
-						// Verify the found position is actually in the previous block
+						// Verify the found position is actually within the previous block's subtree
 						if (
 							targetPos &&
 							targetPos.pos >= prevBlockPos &&
@@ -308,10 +341,8 @@ const mathKeyboardNavPlugin = new Plugin({
 									.scrollIntoView()
 							);
 						} else {
-							// Fallback: use Selection.near from end of previous block
-							const $prevPos = state.doc.resolve(prevBlockEndPos);
-							const nearSelection = Selection.near($prevPos, -1);
-							view.dispatch(state.tr.setSelection(nearSelection).scrollIntoView());
+							// Fallback: use Selection.near to find last valid position
+							view.dispatch(state.tr.setSelection(lastTextPos).scrollIntoView());
 						}
 						return true;
 					}
