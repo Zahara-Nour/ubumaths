@@ -38,11 +38,13 @@ import { MarkdownPaste } from './markdown-paste-extension';
 import { CustomCode, CustomCodeBlock } from '$lib/extensions/code-extension';
 import { CustomStrike } from '$lib/extensions/strike-extension';
 import { VariationTableExtension } from '$lib/extensions/variation-table-extension';
+import { CustomListItem } from '$lib/extensions/list-item-extension';
 
 // Note: Underline is included in StarterKit v3
 // Link is disabled in StarterKit and replaced with CustomLink to preserve title attribute
 // Code and CodeBlock are disabled and replaced with CustomCode/CustomCodeBlock for input rules
 // Strike is disabled and replaced with CustomStrike for ==text== input rule
+// ListItem is disabled and replaced with CustomListItem for Mod+Enter paragraph support
 
 /**
  * Module-level extension instances (singleton pattern)
@@ -65,7 +67,7 @@ const extensionsCache = new Map<string, Extensions>();
  * Updated cache key to invalidate old editor instances after markdown paste extension fixed
  */
 function getCacheKey(headingLevels: number): string {
-	return `h${headingLevels}-v27`; // v27: Added VariationTableExtension
+	return `h${headingLevels}-v28`; // v28: Added CustomListItem for Mod+Enter paragraph support
 }
 
 /**
@@ -94,9 +96,14 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 			code: false,
 			codeBlock: false,
 			// Disable StarterKit's Strike - we use CustomStrike for ==text== input rule
-			strike: false
+			strike: false,
+			// Disable StarterKit's ListItem - we use CustomListItem for Mod+Enter paragraph support
+			listItem: false
 			// Underline uses default configuration
 		}),
+
+		// Custom ListItem with Mod+Enter to create new paragraph in same item
+		CustomListItem.configure({}),
 
 		// Custom Code extensions with backtick input rules
 		CustomCode.configure({}),
