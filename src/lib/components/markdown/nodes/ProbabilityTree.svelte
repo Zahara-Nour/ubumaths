@@ -23,6 +23,7 @@
 		ProbTreeNode,
 		ProbTreeBranch
 	} from '$lib/ubumark/types/probability-tree';
+	import { toFrenchDecimal } from '$lib/utils/french-math';
 
 	interface Props {
 		node: ProbabilityTreeNode;
@@ -209,12 +210,15 @@
 
 	/**
 	 * Convert expression to proper LaTeX for MathLive rendering
+	 * Applies French decimal formatting (comma separator, thin spaces)
 	 */
 	function toLatex(expr: string): string {
-		return expr
+		const processed = expr
 			.replace(/\+inf/g, '+\\infty')
 			.replace(/-inf/g, '-\\infty')
 			.replace(/^inf$/g, '\\infty');
+		// Apply French number formatting (3.14 → 3{,}14)
+		return toFrenchDecimal(processed);
 	}
 
 	/**
