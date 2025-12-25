@@ -20,8 +20,8 @@ import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
-import { Table, TableRow } from '@tiptap/extension-table';
-import { CustomTableHeader, CustomTableCell } from '$lib/extensions/table-extension';
+import { TableRow } from '@tiptap/extension-table';
+import { CustomTable, CustomTableHeader, CustomTableCell } from '$lib/extensions/table-extension';
 import { CustomImage } from '$lib/extensions/image-extension';
 import { CustomLink } from '$lib/extensions/link-extension';
 import { Video } from '$lib/extensions/video-extension';
@@ -172,8 +172,8 @@ function createExtensionsInternal(headingLevels: number): Extensions {
 		// Videos with extended attributes (HTML5 and YouTube support)
 		Video.configure({}),
 
-		// Tables
-		Table.configure({
+		// Tables (CustomTable supports transpose attribute for :table-h)
+		CustomTable.configure({
 			resizable: false,
 			HTMLAttributes: {
 				class: 'border-collapse border border-border my-4'

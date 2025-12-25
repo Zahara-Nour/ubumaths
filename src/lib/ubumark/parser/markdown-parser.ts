@@ -488,8 +488,7 @@ function parseBlocks(
 			}
 
 			const tableLines = lines.slice(tableBlock.startIndex, tableBlock.endIndex + 1);
-			const orientation = tableBlock.isHorizontal ? 'horizontal' : 'vertical';
-			const table = parseTable(tableLines, orientation);
+			const table = parseTable(tableLines, tableBlock.transpose);
 			if (table) {
 				// Post-process table to restore math placeholders in cell content
 				const processedTable = processTableCellContent(table, placeholders);

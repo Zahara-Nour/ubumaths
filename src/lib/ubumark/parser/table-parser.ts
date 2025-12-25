@@ -199,7 +199,7 @@ function createCellNodes(
  * ```
  *
  * @param lines - Array of table lines (must be a valid table)
- * @param orientation - Table orientation: 'vertical' (default) or 'horizontal'
+ * @param transpose - If true, renderers will transpose the table (headers become first column)
  * @returns TableNode AST node or null if invalid
  *
  * @example
@@ -210,12 +210,9 @@ function createCellNodes(
  *   '| 1 | 2    |'
  * ];
  * const table = parseTable(lines);
- * const horizontalTable = parseTable(lines, 'horizontal');
+ * const transposedTable = parseTable(lines, true);
  */
-export function parseTable(
-	lines: string[],
-	orientation: 'vertical' | 'horizontal' = 'vertical'
-): TableNode | null {
+export function parseTable(lines: string[], transpose: boolean = false): TableNode | null {
 	if (!isValidTable(lines)) {
 		return null;
 	}
@@ -253,13 +250,18 @@ export function parseTable(
 		rows.push(createCellNodes(rowContents, alignments));
 	}
 
-	return {
+	const result: TableNode = {
 		type: 'table',
 		header,
 		rows,
-		alignments,
-		orientation
+		alignments
 	};
+
+	if (transpose) {
+		result.transpose = true;
+	}
+
+	return result;
 }
 
 // ============================================================================
@@ -326,8 +328,8 @@ export interface TableBlockRange {
 	startIndex: number;
 	/** End index of the table (last row) */
 	endIndex: number;
-	/** Whether this is a horizontal table (:table-h directive was present) */
-	isHorizontal: boolean;
+	/** Whether this table should be transposed (:table-h directive was present) */
+	transpose: boolean;
 	/** Line index of the :table-h directive, if present */
 	directiveIndex?: number;
 }
@@ -335,7 +337,7 @@ export interface TableBlockRange {
 /**
  * Find all table blocks in an array of lines, with directive detection
  *
- * Returns table block ranges with information about horizontal directives.
+ * Returns table block ranges with information about transpose directives.
  * A :table-h directive must immediately precede a table to be recognized.
  *
  * @param lines - Array of markdown lines
@@ -349,7 +351,7 @@ export interface TableBlockRange {
  *   '| c1 | c2 |'
  * ];
  * const blocks = findTableBlocksWithDirective(lines);
- * // Returns: [{ startIndex: 1, endIndex: 3, isHorizontal: true, directiveIndex: 0 }]
+ * // Returns: [{ startIndex: 1, endIndex: 3, transpose: true, directiveIndex: 0 }]
  */
 export function findTableBlocksWithDirective(lines: string[]): TableBlockRange[] {
 	const blocks: TableBlockRange[] = [];
@@ -357,13 +359,13 @@ export function findTableBlocksWithDirective(lines: string[]): TableBlockRange[]
 	let i = 0;
 	while (i < lines.length) {
 		// Check for :table-h directive
-		let isHorizontal = false;
+		let transpose = false;
 		let directiveIndex: number | undefined;
 
 		if (isHorizontalTableDirective(lines[i])) {
 			// Check if next line starts a table
 			if (i + 2 < lines.length && isTableRow(lines[i + 1]) && isAlignmentRow(lines[i + 2])) {
-				isHorizontal = true;
+				transpose = true;
 				directiveIndex = i;
 				i++; // Move past directive to table start
 			} else {
@@ -390,7 +392,7 @@ export function findTableBlocksWithDirective(lines: string[]): TableBlockRange[]
 			blocks.push({
 				startIndex: start,
 				endIndex: end,
-				isHorizontal,
+				transpose,
 				directiveIndex
 			});
 			i = end + 1;

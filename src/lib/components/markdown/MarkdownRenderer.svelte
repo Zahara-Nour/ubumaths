@@ -221,7 +221,8 @@
 						header={node.header}
 						rows={node.rows}
 						alignments={node.alignments}
-						orientation={node.orientation}
+						transpose={node.transpose}
+						{genericFunctions}
 					/>
 				{:else if node.type === 'image'}
 					<ImageDisplay

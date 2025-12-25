@@ -438,7 +438,9 @@ function convertMathBlockToMarkdown(math: JSONContent): string {
  * Convert table to Markdown (GFM format)
  * TipTap structure: table > tableRow > (tableHeader | tableCell)
  * Preserves column alignment with :---, :---:, ---: syntax
+ * Preserves transpose attribute with :table-h directive
  * Output:
+ * :table-h (if transpose)
  * | Header1 | Header2 |
  * |:--------|:-------:|
  * | Cell1   | Cell2   |
@@ -472,6 +474,11 @@ function convertTableToMarkdown(table: JSONContent): string {
 
 	// Build markdown table
 	const lines: string[] = [];
+
+	// Add :table-h directive if table is transposed
+	if (table.attrs?.transpose) {
+		lines.push(':table-h');
+	}
 
 	// Header row (first row)
 	const headerRow = rows[0];

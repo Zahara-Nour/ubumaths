@@ -390,25 +390,25 @@ describe('isHorizontalTableDirective', () => {
 });
 
 describe('findTableBlocksWithDirective', () => {
-	it('should detect horizontal table after :table-h', () => {
+	it('should detect transposed table after :table-h', () => {
 		const lines = [':table-h', '| A | B |', '|---|---|', '| 1 | 2 |'];
 
 		const blocks = findTableBlocksWithDirective(lines);
 
 		expect(blocks).toHaveLength(1);
-		expect(blocks[0].isHorizontal).toBe(true);
+		expect(blocks[0].transpose).toBe(true);
 		expect(blocks[0].directiveIndex).toBe(0);
 		expect(blocks[0].startIndex).toBe(1);
 		expect(blocks[0].endIndex).toBe(3);
 	});
 
-	it('should detect vertical table without directive', () => {
+	it('should detect normal table without directive', () => {
 		const lines = ['| A | B |', '|---|---|', '| 1 | 2 |'];
 
 		const blocks = findTableBlocksWithDirective(lines);
 
 		expect(blocks).toHaveLength(1);
-		expect(blocks[0].isHorizontal).toBe(false);
+		expect(blocks[0].transpose).toBe(false);
 		expect(blocks[0].directiveIndex).toBeUndefined();
 		expect(blocks[0].startIndex).toBe(0);
 		expect(blocks[0].endIndex).toBe(2);
@@ -429,9 +429,9 @@ describe('findTableBlocksWithDirective', () => {
 		const blocks = findTableBlocksWithDirective(lines);
 
 		expect(blocks).toHaveLength(2);
-		expect(blocks[0].isHorizontal).toBe(true);
+		expect(blocks[0].transpose).toBe(true);
 		expect(blocks[0].directiveIndex).toBe(0);
-		expect(blocks[1].isHorizontal).toBe(false);
+		expect(blocks[1].transpose).toBe(false);
 		expect(blocks[1].directiveIndex).toBeUndefined();
 	});
 
@@ -441,7 +441,7 @@ describe('findTableBlocksWithDirective', () => {
 		const blocks = findTableBlocksWithDirective(lines);
 
 		expect(blocks).toHaveLength(1);
-		expect(blocks[0].isHorizontal).toBe(true);
+		expect(blocks[0].transpose).toBe(true);
 		expect(blocks[0].directiveIndex).toBe(1);
 		expect(blocks[0].startIndex).toBe(2);
 	});
@@ -452,13 +452,13 @@ describe('findTableBlocksWithDirective', () => {
 		const blocks = findTableBlocksWithDirective(lines);
 
 		// The :table-h is not immediately before a table, so it should be ignored
-		// The table starting at line 2 should be detected as vertical
+		// The table starting at line 2 should be detected as normal
 		expect(blocks).toHaveLength(1);
-		expect(blocks[0].isHorizontal).toBe(false);
+		expect(blocks[0].transpose).toBe(false);
 		expect(blocks[0].startIndex).toBe(2);
 	});
 
-	it('should handle multiple horizontal tables', () => {
+	it('should handle multiple transposed tables', () => {
 		const lines = [
 			':table-h',
 			'| A | B |',
@@ -474,33 +474,33 @@ describe('findTableBlocksWithDirective', () => {
 		const blocks = findTableBlocksWithDirective(lines);
 
 		expect(blocks).toHaveLength(2);
-		expect(blocks[0].isHorizontal).toBe(true);
-		expect(blocks[1].isHorizontal).toBe(true);
+		expect(blocks[0].transpose).toBe(true);
+		expect(blocks[1].transpose).toBe(true);
 	});
 });
 
-describe('parseTable with orientation', () => {
-	it('should include orientation when specified', () => {
+describe('parseTable with transpose', () => {
+	it('should include transpose when specified', () => {
 		const lines = ['| Nom | Age |', '|---|---|', '| Alice | 25 |', '| Bob | 30 |'];
 
-		const table = parseTable(lines, 'horizontal');
+		const table = parseTable(lines, true);
 
-		expect(table?.orientation).toBe('horizontal');
+		expect(table?.transpose).toBe(true);
 	});
 
-	it('should default to vertical orientation', () => {
+	it('should default to no transpose', () => {
 		const lines = ['| A | B |', '|---|---|', '| 1 | 2 |'];
 
 		const table = parseTable(lines);
 
-		expect(table?.orientation).toBe('vertical');
+		expect(table?.transpose).toBeUndefined();
 	});
 
-	it('should accept explicit vertical orientation', () => {
+	it('should accept explicit false transpose', () => {
 		const lines = ['| A | B |', '|---|---|', '| 1 | 2 |'];
 
-		const table = parseTable(lines, 'vertical');
+		const table = parseTable(lines, false);
 
-		expect(table?.orientation).toBe('vertical');
+		expect(table?.transpose).toBeUndefined();
 	});
 });

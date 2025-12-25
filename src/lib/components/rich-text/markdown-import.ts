@@ -764,6 +764,7 @@ function convertTable(table: TableNode): JSONContent {
 
 	return {
 		type: 'table',
+		attrs: table.transpose ? { transpose: true } : undefined,
 		content: rows
 	};
 }
