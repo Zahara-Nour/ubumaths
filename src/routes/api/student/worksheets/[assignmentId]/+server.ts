@@ -45,7 +45,7 @@ import {
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
-import type { Exercise } from '$lib/exercises/types';
+import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/types';
 import type { Variable } from '$lib/ubumark';
 import type { ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 import type {
@@ -88,6 +88,10 @@ interface ExerciseData {
 	variables: Variable[] | null;
 	shared: SharedExerciseDefaults | null;
 	variations: ExerciseVariation[] | null;
+	/** Supplementary resources (videos, PDFs, links) */
+	resources: ExerciseResource[] | null;
+	/** Generic function names for math parsing */
+	generic_functions: string[] | null;
 }
 
 interface WorksheetExerciseData {
@@ -110,13 +114,23 @@ interface WorksheetExerciseData {
 // ============================================================================
 
 /**
+ * Result of resolving an exercise instance
+ */
+interface ResolvedExerciseResult {
+	statement: string;
+	correction: string | null;
+	/** Hints from the selected variation (if applicable) */
+	hints?: ExerciseHint[];
+}
+
+/**
  * Resolves an exercise using the central exercise generator.
  * Supports variations and AST parsing.
  */
 function resolveExercise(
 	worksheetExercise: WorksheetExerciseData,
 	seed: number
-): { statement: string; correction: string | null } {
+): ResolvedExerciseResult {
 	const exercise = worksheetExercise.exercise;
 
 	// Convert to Exercise template for the generator
@@ -165,7 +179,8 @@ function resolveExercise(
 
 	return {
 		statement: instance.statement_md,
-		correction: instance.solution_md || null
+		correction: instance.solution_md || null,
+		hints: instance.resolvedHints
 	};
 }
 
@@ -242,7 +257,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		);
 		const classData = getFirstOrSelf(assignment.classes as unknown as { name: string } | null);
 
-		// Fetch worksheet exercises with exercise data (R4: include variations and shared)
+		// Fetch worksheet exercises with exercise data (R4: include variations, shared, resources)
 		const { data: worksheetExercises, error: exercisesError } = await locals.supabase
 			.from('worksheet_exercises')
 			.select(
@@ -260,7 +275,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					solution_md,
 					variables,
 					shared,
-					variations
+					variations,
+					resources,
+					generic_functions
 				)
 			`
 			)
@@ -307,6 +324,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// Check if we have pre-resolved data in instance
 			let statement: string;
 			let correction: string | null;
+			let hints: ExerciseHint[] | undefined;
 
 			if (existingInstance?.instance_data) {
 				// Use pre-resolved instance data
@@ -315,6 +333,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 						exercise_id: string;
 						statement: string;
 						solution: string;
+						hints?: ExerciseHint[];
 					}>;
 				};
 				const instanceExercise = instanceData.exercises?.find(
@@ -324,6 +343,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				if (instanceExercise) {
 					statement = instanceExercise.statement;
 					correction = instanceExercise.solution || null;
+					hints = instanceExercise.hints;
 				} else {
 					// Fallback to dynamic resolution
 					const resolved = resolveExercise(
@@ -335,6 +355,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					);
 					statement = resolved.statement;
 					correction = resolved.correction;
+					hints = resolved.hints;
 				}
 			} else {
 				// No instance exists - resolve dynamically
@@ -347,12 +368,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				);
 				statement = resolved.statement;
 				correction = resolved.correction;
+				hints = resolved.hints;
 			}
 
 			// Determine if correction should be visible for this exercise
 			const correctionVisible = visibilityMap.get(we.id) ?? false;
 
-			exercises.push({
+			// Build exercise view with optional hints and resources
+			const exerciseView: StudentExerciseView = {
 				id: we.id,
 				exercise_id: exerciseData.id,
 				position: we.position,
@@ -361,7 +384,19 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				statement,
 				correction: correctionVisible ? correction : null,
 				correction_visible: correctionVisible
-			});
+			};
+
+			// Add hints if present (from variation or instance)
+			if (hints && hints.length > 0) {
+				exerciseView.hints = hints;
+			}
+
+			// Add resources if present (from exercise definition)
+			if (exerciseData.resources && exerciseData.resources.length > 0) {
+				exerciseView.resources = exerciseData.resources;
+			}
+
+			exercises.push(exerciseView);
 		}
 
 		// Build response

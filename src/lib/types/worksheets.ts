@@ -4,7 +4,12 @@
  */
 
 import type { Variable, DocumentNode } from '$lib/ubumark';
-import type { ExerciseVariation, SharedExerciseDefaults, ExerciseHint } from '$lib/exercises/types';
+import type {
+	ExerciseVariation,
+	SharedExerciseDefaults,
+	ExerciseHint,
+	ExerciseResource
+} from '$lib/exercises/types';
 
 // =============================================================================
 // ENUMS AND CONSTANTS
@@ -512,6 +517,10 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 		shared?: SharedExerciseDefaults | null;
 		/** Exercise variations for different guidance levels (new) */
 		variations?: ExerciseVariation[] | null;
+		/** Supplementary resources (videos, PDFs, links) */
+		resources?: ExerciseResource[] | null;
+		/** Generic function names for math parsing (e.g., ['f', 'g']) */
+		generic_functions?: string[] | null;
 	};
 }
 
@@ -572,6 +581,10 @@ export interface StudentExerciseView {
 	statement: string;
 	correction: string | null;
 	correction_visible: boolean;
+	/** Hints from selected variation (for guided exercises) */
+	hints?: ExerciseHint[];
+	/** Supplementary resources (videos, PDFs, links) */
+	resources?: ExerciseResource[];
 }
 
 /**
