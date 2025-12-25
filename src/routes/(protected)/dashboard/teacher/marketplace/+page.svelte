@@ -41,7 +41,15 @@
 	import ListingsMonitor from '$lib/components/marketplace/teacher/ListingsMonitor.svelte';
 	import MarketplaceAnalytics from '$lib/components/marketplace/teacher/MarketplaceAnalytics.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { RefreshCw, Settings, TrendingUp, Activity, Package, BarChart3 } from 'lucide-svelte';
+	import {
+		RefreshCw,
+		Settings,
+		TrendingUp,
+		Activity,
+		Package,
+		BarChart3,
+		ArrowLeftRight
+	} from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -191,26 +199,26 @@
 
 	<!-- Main Content Tabs -->
 	<Tabs bind:value={activeTab} class="space-y-4">
-		<TabsList class="grid w-full grid-cols-5">
+		<TabsList class="flex h-auto w-full flex-wrap justify-center gap-1">
 			<TabsTrigger value="overview" class="flex items-center gap-1">
 				<TrendingUp class="h-4 w-4" />
-				Vue d'ensemble
+				<span class="hidden sm:inline">Vue d'ensemble</span>
 			</TabsTrigger>
 			<TabsTrigger value="activity" class="flex items-center gap-1">
 				<Activity class="h-4 w-4" />
-				Activité
+				<span class="hidden sm:inline">Activité</span>
 			</TabsTrigger>
 			<TabsTrigger value="trades" class="flex items-center gap-1">
-				<Package class="h-4 w-4" />
-				Échanges
+				<ArrowLeftRight class="h-4 w-4" />
+				<span class="hidden sm:inline">Échanges</span>
 			</TabsTrigger>
 			<TabsTrigger value="listings" class="flex items-center gap-1">
 				<Package class="h-4 w-4" />
-				Annonces
+				<span class="hidden sm:inline">Annonces</span>
 			</TabsTrigger>
 			<TabsTrigger value="analytics" class="flex items-center gap-1">
 				<BarChart3 class="h-4 w-4" />
-				Analyses
+				<span class="hidden sm:inline">Analyses</span>
 			</TabsTrigger>
 		</TabsList>
 

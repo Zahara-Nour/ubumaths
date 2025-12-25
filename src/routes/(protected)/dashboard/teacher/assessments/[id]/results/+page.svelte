@@ -42,7 +42,7 @@
 
 	<!-- Statistics Cards -->
 	{#if data.statistics}
-		<div class="mb-8 grid gap-6 md:grid-cols-4">
+		<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-4">
 			<Card.Root>
 				<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
 					<Card.Title class="text-sm font-medium">Total Assigné</Card.Title>
