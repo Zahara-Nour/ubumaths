@@ -413,11 +413,9 @@
 	{#if data.classes && data.classes.length > 0}
 		<Tabs.Root value={data.classes[0]?.id} class="space-y-6">
 			<!-- Tab List -->
-			<Tabs.List
-				class="grid w-full grid-cols-{data.classes.length > 4 ? '5' : data.classes.length}"
-			>
+			<Tabs.List class="flex h-auto w-full flex-wrap justify-start gap-1">
 				{#each data.classes as classItem (classItem.id)}
-					<Tabs.Trigger value={classItem.id}>
+					<Tabs.Trigger value={classItem.id} class="flex-shrink-0">
 						{classItem.name}
 					</Tabs.Trigger>
 				{/each}
