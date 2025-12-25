@@ -198,7 +198,7 @@
 								aria-label={MASTERY_LABELS.not_worked}
 								aria-pressed={masteryStatus === 'not_worked'}
 							>
-								<Circle class="mr-1 h-4 w-4" />
+								<Circle class="mr-1.5 h-4 w-4" />
 								{MASTERY_LABELS.not_worked}
 							</Button>
 							<Button
@@ -208,7 +208,7 @@
 								aria-label={MASTERY_LABELS.mastered}
 								aria-pressed={masteryStatus === 'mastered'}
 							>
-								<CheckCircle class="mr-1 h-4 w-4" />
+								<CheckCircle class="mr-1.5 h-4 w-4" />
 								{MASTERY_LABELS.mastered}
 							</Button>
 							<Button
@@ -218,7 +218,7 @@
 								aria-label={MASTERY_LABELS.needs_review}
 								aria-pressed={masteryStatus === 'needs_review'}
 							>
-								<AlertCircle class="mr-1 h-4 w-4" />
+								<AlertCircle class="mr-1.5 h-4 w-4" />
 								{MASTERY_LABELS.needs_review}
 							</Button>
 						</div>
@@ -351,7 +351,7 @@
 							onclick={() => onMasteryChange('not_worked')}
 							aria-pressed={masteryStatus === 'not_worked'}
 						>
-							<Circle class="mr-1 h-3 w-3" />
+							<Circle class="mr-1.5 h-4 w-4" />
 							<span class="text-xs">{MASTERY_LABELS.not_worked}</span>
 						</Button>
 						<Button
@@ -360,7 +360,7 @@
 							onclick={() => onMasteryChange('mastered')}
 							aria-pressed={masteryStatus === 'mastered'}
 						>
-							<CheckCircle class="mr-1 h-3 w-3" />
+							<CheckCircle class="mr-1.5 h-4 w-4" />
 							<span class="text-xs">{MASTERY_LABELS.mastered}</span>
 						</Button>
 						<Button
@@ -369,7 +369,7 @@
 							onclick={() => onMasteryChange('needs_review')}
 							aria-pressed={masteryStatus === 'needs_review'}
 						>
-							<AlertCircle class="mr-1 h-3 w-3" />
+							<AlertCircle class="mr-1.5 h-4 w-4" />
 							<span class="text-xs">{MASTERY_LABELS.needs_review}</span>
 						</Button>
 					</div>

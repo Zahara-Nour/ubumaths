@@ -294,14 +294,14 @@
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-6 flex items-center justify-between">
-		<Button variant="ghost" href="/">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour à l'accueil
+	<div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+		<Button variant="ghost" href="/" class="self-start">
+			<ArrowLeft class="h-4 w-4 sm:mr-2" />
+			<span class="sr-only sm:not-sr-only">Retour à l'accueil</span>
 		</Button>
 
 		<!-- Action buttons -->
-		<div class="flex items-center gap-2">
+		<div class="flex flex-wrap items-center gap-2">
 			{#if hasVariables}
 				<Button
 					onclick={regenerate}
@@ -309,8 +309,8 @@
 					size="sm"
 					title="Générer de nouvelles valeurs"
 				>
-					<RefreshCw class="mr-2 h-4 w-4" />
-					Régénérer
+					<RefreshCw class="h-4 w-4 sm:mr-2" />
+					<span class="sr-only sm:not-sr-only">Régénérer</span>
 				</Button>
 			{/if}
 			<Button
@@ -321,20 +321,20 @@
 				disabled={isPdfLoading}
 			>
 				{#if isPdfLoading}
-					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-					Génération...
+					<Loader2 class="h-4 w-4 animate-spin sm:mr-2" />
+					<span class="sr-only sm:not-sr-only">Génération...</span>
 				{:else}
-					<Download class="mr-2 h-4 w-4" />
-					PDF
+					<Download class="h-4 w-4 sm:mr-2" />
+					<span class="sr-only sm:not-sr-only">PDF</span>
 				{/if}
 			</Button>
 			<Button onclick={copyLink} variant="outline" size="sm" title="Copier le lien partageable">
 				{#if linkCopied}
-					<Check class="mr-2 h-4 w-4 text-green-600" />
-					Copié !
+					<Check class="h-4 w-4 text-green-600 sm:mr-2" />
+					<span class="sr-only sm:not-sr-only">Copié !</span>
 				{:else}
-					<Link class="mr-2 h-4 w-4" />
-					Copier le lien
+					<Link class="h-4 w-4 sm:mr-2" />
+					<span class="sr-only sm:not-sr-only">Copier</span>
 				{/if}
 			</Button>
 		</div>
@@ -384,7 +384,7 @@
 
 				<!-- Variation selector -->
 				{#if hasVariations && variationOptions.length > 1}
-					<div class="sm:min-w-48">
+					<div class="w-full sm:w-auto sm:min-w-48">
 						<label class="mb-1 block text-sm font-medium text-muted-foreground">Version</label>
 						<MySelect
 							type="single"
