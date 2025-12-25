@@ -44,7 +44,12 @@ import {
 	restoreMathPlaceholders
 } from './math-extractor';
 import { parseList, findListBlocks, isListItem } from './list-parser';
-import { parseTable, findTableBlocks, isTableRow, isAlignmentRow } from './table-parser';
+import {
+	parseTable,
+	findTableBlocksWithDirective,
+	isTableRow,
+	isAlignmentRow
+} from './table-parser';
 import {
 	isBlockquoteLine,
 	findBlockquoteBlocks,
@@ -358,7 +363,7 @@ function parseBlocks(
 	const originalCodeBlocks = findCodeBlocks(originalLines);
 	const blockquoteBlocks = findBlockquoteBlocks(lines);
 	const listBlocks = findListBlocks(lines);
-	const tableBlocks = findTableBlocks(lines);
+	const tableBlocks = findTableBlocksWithDirective(lines);
 
 	while (i < lines.length) {
 		const line = lines[i];
@@ -471,18 +476,26 @@ function parseBlocks(
 			continue;
 		}
 
-		// Check if this line is part of a table block
-		const tableBlock = tableBlocks.find(([start, end]) => i >= start && i <= end);
+		// Check if this line is part of a table block (including :table-h directive)
+		const tableBlock = tableBlocks.find(
+			(block) => i >= (block.directiveIndex ?? block.startIndex) && i <= block.endIndex
+		);
 		if (tableBlock) {
-			const [start, end] = tableBlock;
-			const tableLines = lines.slice(start, end + 1);
-			const table = parseTable(tableLines);
+			// Skip the :table-h directive line if we're on it
+			if (tableBlock.directiveIndex !== undefined && i === tableBlock.directiveIndex) {
+				i++;
+				continue;
+			}
+
+			const tableLines = lines.slice(tableBlock.startIndex, tableBlock.endIndex + 1);
+			const orientation = tableBlock.isHorizontal ? 'horizontal' : 'vertical';
+			const table = parseTable(tableLines, orientation);
 			if (table) {
 				// Post-process table to restore math placeholders in cell content
 				const processedTable = processTableCellContent(table, placeholders);
 				blocks.push(processedTable);
 			}
-			i = end + 1;
+			i = tableBlock.endIndex + 1;
 			continue;
 		}
 

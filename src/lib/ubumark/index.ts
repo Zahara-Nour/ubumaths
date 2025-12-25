@@ -137,6 +137,9 @@ export type {
 // Code block types
 export type { CodeBlockRange } from './parser';
 
+// Table types
+export type { TableBlockRange } from './parser';
+
 // ============================================================================
 // CONSTANT EXPORTS
 // ============================================================================
@@ -205,9 +208,11 @@ export {
 	// Table parser
 	parseTable,
 	findTableBlocks,
+	findTableBlocksWithDirective,
 	isTableRow,
 	isAlignmentRow,
 	isValidTable,
+	isHorizontalTableDirective,
 	getColumnCount,
 	getRowCount,
 	getCellValue,

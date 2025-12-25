@@ -2078,3 +2078,134 @@ x^2 = 0 &\\Leftrightarrow \\begin{cases} x = 0 \\\\ \\text{ou} \\\\ x = 1 \\end{
 		expect(typst).not.toContain('end{cases}');
 	});
 });
+
+// ============================================================================
+// HORIZONTAL TABLES
+// ============================================================================
+describe('Horizontal Tables', () => {
+	it('should generate horizontal table with bold first column', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'Nom', align: 'left' },
+						{ content: 'Age', align: 'left' }
+					],
+					rows: [
+						[
+							{ content: 'Alice', align: 'left' },
+							{ content: '25', align: 'left' }
+						],
+						[
+							{ content: 'Bob', align: 'left' },
+							{ content: '30', align: 'left' }
+						]
+					],
+					alignments: ['left', 'left'],
+					orientation: 'horizontal'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Should have bold headers in first column
+		expect(typst).toContain('[*Nom*]');
+		expect(typst).toContain('[*Age*]');
+		// Should have data cells
+		expect(typst).toContain('[Alice]');
+		expect(typst).toContain('[Bob]');
+		expect(typst).toContain('[25]');
+		expect(typst).toContain('[30]');
+		// Should use table function
+		expect(typst).toContain('#table(');
+	});
+
+	it('should transpose data correctly for horizontal table', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'A', align: 'left' },
+						{ content: 'B', align: 'left' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'left' },
+							{ content: '2', align: 'left' }
+						],
+						[
+							{ content: '3', align: 'left' },
+							{ content: '4', align: 'left' }
+						]
+					],
+					alignments: ['left', 'left'],
+					orientation: 'horizontal'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Row 1: A, 1, 3 (transposed)
+		expect(typst).toContain('[*A*], [1], [3]');
+		// Row 2: B, 2, 4
+		expect(typst).toContain('[*B*], [2], [4]');
+	});
+
+	it('should set correct alignment for horizontal table', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [{ content: 'X', align: 'left' }],
+					rows: [[{ content: '1', align: 'left' }], [{ content: '2', align: 'left' }]],
+					alignments: ['left'],
+					orientation: 'horizontal'
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// First column left, rest centered
+		expect(typst).toContain('align: (left, center, center)');
+		// 3 columns: 1 header + 2 data rows
+		expect(typst).toContain('columns: 3');
+	});
+
+	it('should handle vertical table without orientation property', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'X', align: 'left' },
+						{ content: 'Y', align: 'left' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'left' },
+							{ content: '2', align: 'left' }
+						]
+					],
+					alignments: ['left', 'left']
+					// No orientation property = vertical
+				}
+			]
+		};
+
+		const typst = generateTypst(ast, { includeSetup: false });
+
+		// Standard vertical format uses table.header()
+		expect(typst).toContain('table.header(');
+		expect(typst).toContain('[*X*]');
+		expect(typst).toContain('[*Y*]');
+	});
+});

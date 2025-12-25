@@ -1738,4 +1738,93 @@ Text 3`;
 			expect(ast.children[4].type).toBe('paragraph');
 		});
 	});
+
+	// =========================================================================
+	// HORIZONTAL TABLES
+	// =========================================================================
+	describe('Horizontal Tables (:table-h)', () => {
+		it('should parse :table-h directive followed by table', () => {
+			const markdown = `:table-h
+| Nom | Alice | Bob |
+|-----|-------|-----|
+| Age | 25    | 30  |`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(1);
+			expect(ast.children[0].type).toBe('table');
+
+			const table = ast.children[0] as { type: string; orientation?: string };
+			expect(table.orientation).toBe('horizontal');
+		});
+
+		it('should parse vertical table without directive', () => {
+			const markdown = `| A | B |
+|---|---|
+| 1 | 2 |`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(1);
+			const table = ast.children[0] as { type: string; orientation?: string };
+			expect(table.orientation).toBe('vertical');
+		});
+
+		it('should handle mixed horizontal and vertical tables', () => {
+			const markdown = `:table-h
+| H1 | a | b |
+|----|---|---|
+| H2 | c | d |
+
+| V1 | V2 |
+|----|-----|
+| x  | y   |`;
+
+			const ast = parseMarkdown(markdown);
+
+			const tables = ast.children.filter((n) => n.type === 'table') as Array<{
+				type: string;
+				orientation?: string;
+			}>;
+			expect(tables).toHaveLength(2);
+			expect(tables[0].orientation).toBe('horizontal');
+			expect(tables[1].orientation).toBe('vertical');
+		});
+
+		it('should preserve math in horizontal table cells', () => {
+			const markdown = `:table-h
+| Variable | $x$ | $y$ |
+|----------|-----|-----|
+| Valeur   | 5   | 10  |`;
+
+			const ast = parseMarkdown(markdown);
+
+			const table = ast.children[0] as {
+				type: string;
+				header: Array<{ content: string }>;
+			};
+			expect(table.header[1].content).toContain('$');
+		});
+
+		it('should handle text before and after horizontal table', () => {
+			const markdown = `Some text before
+
+:table-h
+| A | B |
+|---|---|
+| 1 | 2 |
+
+Some text after`;
+
+			const ast = parseMarkdown(markdown);
+
+			expect(ast.children).toHaveLength(3);
+			expect(ast.children[0].type).toBe('paragraph');
+			expect(ast.children[1].type).toBe('table');
+			expect(ast.children[2].type).toBe('paragraph');
+
+			const table = ast.children[1] as { type: string; orientation?: string };
+			expect(table.orientation).toBe('horizontal');
+		});
+	});
 });

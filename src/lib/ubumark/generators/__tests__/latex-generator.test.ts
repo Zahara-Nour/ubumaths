@@ -1113,3 +1113,114 @@ describe('Edge Cases', () => {
 		expect(latex).toContain('\\end{tikzpicture}');
 	});
 });
+
+// ============================================================================
+// HORIZONTAL TABLES
+// ============================================================================
+describe('Horizontal Tables', () => {
+	it('should generate horizontal table with bold first column', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'Nom', align: 'left' },
+						{ content: 'Age', align: 'left' }
+					],
+					rows: [
+						[
+							{ content: 'Alice', align: 'left' },
+							{ content: '25', align: 'left' }
+						],
+						[
+							{ content: 'Bob', align: 'left' },
+							{ content: '30', align: 'left' }
+						]
+					],
+					alignments: ['left', 'left'],
+					orientation: 'horizontal'
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Should have bold headers in first column
+		expect(latex).toContain('\\textbf{Nom}');
+		expect(latex).toContain('\\textbf{Age}');
+		// Should have data cells
+		expect(latex).toContain('Alice');
+		expect(latex).toContain('Bob');
+		expect(latex).toContain('25');
+		expect(latex).toContain('30');
+		// Should use tabular environment
+		expect(latex).toContain('\\begin{tabular}');
+		expect(latex).toContain('\\end{tabular}');
+	});
+
+	it('should transpose data correctly for horizontal table', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'A', align: 'left' },
+						{ content: 'B', align: 'left' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'left' },
+							{ content: '2', align: 'left' }
+						],
+						[
+							{ content: '3', align: 'left' },
+							{ content: '4', align: 'left' }
+						]
+					],
+					alignments: ['left', 'left'],
+					orientation: 'horizontal'
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Row 1: A, 1, 3 (transposed: header A with first column from each data row)
+		expect(latex).toContain('\\textbf{A} & 1 & 3');
+		// Row 2: B, 2, 4
+		expect(latex).toContain('\\textbf{B} & 2 & 4');
+	});
+
+	it('should handle vertical table without orientation property', () => {
+		const ast: DocumentNode = {
+			type: 'document',
+			children: [
+				{
+					type: 'table',
+					header: [
+						{ content: 'X', align: 'left' },
+						{ content: 'Y', align: 'left' }
+					],
+					rows: [
+						[
+							{ content: '1', align: 'left' },
+							{ content: '2', align: 'left' }
+						]
+					],
+					alignments: ['left', 'left']
+					// No orientation property = vertical
+				}
+			]
+		};
+
+		const latex = generateLatex(ast, { includePreamble: false });
+
+		// Standard vertical format: header row first
+		expect(latex).toContain('X & Y');
+		expect(latex).toContain('1 & 2');
+		// No bold for vertical tables
+		expect(latex).not.toContain('\\textbf{X}');
+	});
+});
