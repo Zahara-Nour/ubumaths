@@ -79,11 +79,12 @@
 	});
 
 	// Compute trigger class based on variant (if not explicitly provided)
+	// Note: height stays h-9 on desktop, touch devices get 44px via @media (pointer: coarse)
 	const computedTriggerClass = $derived(
 		triggerClass ||
 			(variant === 'invisible'
-				? 'h-9 px-0 text-sm inline-flex items-center justify-between bg-transparent border-none min-w-[150px] [&>svg]:opacity-0 hover:[&>svg]:opacity-100 [&>svg]:transition-opacity'
-				: 'h-9 w-32 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between')
+				? 'select-trigger h-9 px-0 text-sm inline-flex items-center justify-between bg-transparent border-none min-w-[150px] [&>svg]:opacity-0 hover:[&>svg]:opacity-100 [&>svg]:transition-opacity'
+				: 'select-trigger h-9 w-32 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between')
 	);
 </script>
 
@@ -109,7 +110,7 @@
 							value={itemValue}
 							{label}
 							{disabled}
-							class="relative flex h-9 w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
+							class="select-item relative flex h-9 w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
 						>
 							{#snippet children({ selected })}
 								<span class="font-medium">{label}</span>
@@ -145,7 +146,7 @@
 							{value}
 							{label}
 							{disabled}
-							class="relative flex h-9 w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
+							class="select-item relative flex h-9 w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
 						>
 							{#snippet children({ selected })}
 								<span class="font-medium">{label}</span>
@@ -160,3 +161,18 @@
 		</Select.Portal>
 	</Select.Root>
 {/if}
+
+<style>
+	/* Touch-friendly sizing for select trigger and items */
+	@media (pointer: coarse) {
+		:global(.select-trigger) {
+			min-height: var(--min-touch-target, 44px);
+		}
+
+		/* Larger touch targets for select items */
+		:global(.select-item) {
+			min-height: var(--min-touch-target, 44px);
+			padding-block: 0.75rem;
+		}
+	}
+</style>

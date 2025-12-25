@@ -61,7 +61,7 @@
 	<a
 		bind:this={ref}
 		data-slot="button"
-		class={cn(buttonVariants({ variant, size }), className)}
+		class={cn(buttonVariants({ variant, size }), 'touch-target', className)}
 		{href}
 		inert={disabled ? true : undefined}
 		aria-disabled={disabled}
@@ -75,7 +75,7 @@
 	<button
 		bind:this={ref}
 		data-slot="button"
-		class={cn(buttonVariants({ variant, size }), className)}
+		class={cn(buttonVariants({ variant, size }), 'touch-target', className)}
 		{type}
 		{disabled}
 		{...restProps}
@@ -83,3 +83,23 @@
 		{@render children?.()}
 	</button>
 {/if}
+
+<style>
+	/* Touch-friendly sizing: increase height on touch devices */
+	@media (pointer: coarse) {
+		:global([data-slot='button'].touch-target) {
+			min-height: var(--min-touch-target, 44px);
+		}
+
+		/* Small buttons get slightly larger on touch */
+		:global([data-slot='button'].touch-target.h-9) {
+			min-height: 40px;
+		}
+
+		/* Icon buttons get touch-friendly size */
+		:global([data-slot='button'].touch-target.size-9) {
+			min-width: 40px;
+			min-height: 40px;
+		}
+	}
+</style>

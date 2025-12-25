@@ -50,8 +50,23 @@ Bits UI discriminated union type complexity requires casting restProps.
 			<SliderPrimitive.Thumb
 				data-slot="slider-thumb"
 				index={thumb}
-				class="block size-4 shrink-0 rounded-full border border-primary bg-background shadow-sm ring-ring/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+				class="slider-thumb block size-4 shrink-0 rounded-full border border-primary bg-background shadow-sm ring-ring/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
 			/>
 		{/each}
 	{/snippet}
 </SliderPrimitive.Root>
+
+<style>
+	/* Touch-friendly: larger thumb on touch devices */
+	@media (pointer: coarse) {
+		:global(.slider-thumb) {
+			width: 1.5rem !important; /* 24px */
+			height: 1.5rem !important;
+		}
+
+		/* Larger track hit area */
+		:global([data-slot='slider-track']) {
+			min-height: 0.5rem; /* 8px instead of 6px */
+		}
+	}
+</style>

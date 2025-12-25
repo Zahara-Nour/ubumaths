@@ -47,7 +47,7 @@
 	}
 </script>
 
-<div class="flex items-center gap-2">
+<div class="checkbox-wrapper flex items-center gap-2">
 	<Checkbox
 		{id}
 		bind:checked
@@ -68,3 +68,25 @@
 		</Label>
 	{/if}
 </div>
+
+<style>
+	/* Touch-friendly: extend clickable area on touch devices */
+	.checkbox-wrapper {
+		position: relative;
+	}
+
+	@media (pointer: coarse) {
+		.checkbox-wrapper {
+			min-height: var(--min-touch-target, 44px);
+			padding-block: 0.5rem;
+		}
+
+		/* Extend the clickable area with pseudo-element */
+		.checkbox-wrapper::before {
+			content: '';
+			position: absolute;
+			inset: -0.5rem;
+			z-index: -1;
+		}
+	}
+</style>
