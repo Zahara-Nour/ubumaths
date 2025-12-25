@@ -13774,3 +13774,112 @@ export const Constants = {
 		}
 	}
 } as const;
+
+// ============================================================================
+// CONVENIENCE TYPE ALIASES
+// ============================================================================
+
+// Table Row Types
+export type Class = Database['public']['Tables']['classes']['Row'];
+export type ClassSchedule = Database['public']['Tables']['class_schedules']['Row'];
+export type Notification = Database['public']['Tables']['notifications']['Row'];
+export type Profile = Database['public']['Tables']['profiles']['Row'];
+export type Friendship = Database['public']['Tables']['friendships']['Row'];
+
+// Enum Types
+export type UserRole = Database['public']['Enums']['user_role'];
+export type Gender = 'male' | 'female';
+
+// Friendship Types
+export type FriendshipStatus = 'pending' | 'accepted' | 'declined' | 'blocked';
+export type FriendshipRelationType = 'friend' | 'classmate' | 'family' | 'mentor';
+
+export interface FriendshipWithProfile extends Friendship {
+	friend_profile?: {
+		id: string;
+		full_name: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url: string | null;
+		gender: string | null;
+		role: UserRole;
+		presence?: { is_online: boolean; last_seen: string } | string;
+	};
+	requester_profile?: {
+		id: string;
+		full_name: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url: string | null;
+		gender: string | null;
+		role: UserRole;
+	};
+	addressee_profile?: {
+		id: string;
+		full_name: string | null;
+		firstname: string | null;
+		lastname: string | null;
+		avatar_url: string | null;
+		gender: string | null;
+		role: UserRole;
+	};
+}
+
+// Notification Types
+export type NotificationType =
+	| 'info'
+	| 'warning'
+	| 'success'
+	| 'error'
+	| 'announcement'
+	| 'system'
+	| 'alert'
+	| 'reminder';
+export type NotificationPriority = 'normal' | 'urgent' | 'important';
+export type NotificationTargetType = 'all' | 'role' | 'class' | 'user' | 'users';
+export type SystemEventType =
+	| 'maintenance'
+	| 'update'
+	| 'security'
+	| 'feature'
+	| 'deadline'
+	| 'reminder'
+	| 'assignment_created'
+	| 'resource_added'
+	| 'reward_earned'
+	| 'badge_unlocked'
+	| 'maintenance_scheduled'
+	| 'feature_released'
+	| 'assessment_assigned'
+	| 'assessment_graded'
+	| 'error_report_validated'
+	| 'error_report_rejected'
+	| 'pending_user'
+	| 'user_approved';
+
+// School Timetable Types (JSON structures, not DB tables)
+export interface SchoolPeriod {
+	number: number;
+	name?: string | null;
+	start_time: string;
+	end_time: string;
+	is_break?: boolean;
+}
+
+export interface SchoolTimetable {
+	id?: string;
+	school_id?: string;
+	name?: string;
+	periods: SchoolPeriod[];
+	week_config?: WeekConfig;
+	created_at?: string | null;
+	updated_at?: string | null;
+}
+
+// Week Configuration (JSON structure)
+export interface WeekConfig {
+	first_day: number; // 0-6 (0=Sunday)
+	last_day: number; // 0-6
+	school_days: number[]; // Array of school day numbers
+	weekend_days: number[]; // Array of weekend day numbers
+}

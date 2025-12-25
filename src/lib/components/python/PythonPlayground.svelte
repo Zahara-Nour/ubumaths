@@ -46,7 +46,7 @@
 	let isSaving = $derived(pythonStore.isSaving);
 
 	// Debug derived state
-	let isDebugging = $derived(debugStore.isDebugging);
+	let _isDebugging = $derived(debugStore.isDebugging);
 	let isDebugActive = $derived(debugStore.sessionState !== 'idle');
 
 	// Fullscreen state

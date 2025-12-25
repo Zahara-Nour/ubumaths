@@ -12,7 +12,18 @@
 	@see VariationTable.svelte for the rendering component
 -->
 <script lang="ts">
-	import { NodeViewWrapper, type NodeViewProps } from 'svelte-tiptap';
+	import { NodeViewWrapper } from 'svelte-tiptap';
+	import type { Editor } from '@tiptap/core';
+
+	// Local type definition for NodeViewProps (svelte-tiptap doesn't export it)
+	interface NodeViewProps {
+		editor: Editor;
+		node: { attrs: Record<string, unknown>; nodeSize: number };
+		updateAttributes: (attrs: Record<string, unknown>) => void;
+		deleteNode: () => void;
+		getPos: () => number | undefined;
+		selected: boolean;
+	}
 	import { Pencil, Trash2, Check, X, AlertCircle } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';

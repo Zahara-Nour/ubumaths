@@ -375,7 +375,7 @@
 	</div>
 
 	<ExerciseForm
-		exercise={data.exercise}
+		exercise={data.exercise as unknown as import('$lib/exercises/types').Exercise}
 		onsubmit={handleUpdate}
 		{submitting}
 		supabase={data.supabase}

@@ -409,10 +409,11 @@
 		};
 
 		// Always use variations
+		// @ts-expect-error - ExerciseVariation[] is compatible with Json at runtime
 		data.variations = variations;
 		data.shared =
 			shared && (shared.variables?.length || shared.statement_md || shared.solution_md)
-				? shared
+				? (shared as unknown as ExerciseInsert['shared'])
 				: undefined;
 		// Use first variation's content for backwards compatibility
 		data.statement_md = variations[0]?.statement_md || '';
@@ -505,7 +506,7 @@
 	<!-- Metadata (collapsible, closed by default when editing) -->
 	<Collapsible.Root bind:open={metadataOpen}>
 		<Card.Root>
-			<Collapsible.Trigger asChild>
+			<Collapsible.Trigger>
 				{#snippet child({ props })}
 					<Card.Header class="cursor-pointer py-3" {...props}>
 						<div class="flex items-center justify-between">
@@ -557,11 +558,12 @@
 							</Label>
 							<MySelect
 								type="single"
-								bind:value={difficulty}
+								value={String(difficulty)}
+								onValueChange={(v) => (difficulty = parseInt(v) as 1 | 2 | 3)}
 								items={[
-									{ value: 1, label: '1 - Facile' },
-									{ value: 2, label: '2 - Moyen' },
-									{ value: 3, label: '3 - Difficile' }
+									{ value: '1', label: '1 - Facile' },
+									{ value: '2', label: '2 - Moyen' },
+									{ value: '3', label: '3 - Difficile' }
 								]}
 								placeholder="Selectionnez..."
 							/>
@@ -735,7 +737,7 @@
 	<!-- Shared Variables (collapsible) -->
 	<Collapsible.Root bind:open={sharedVariablesOpen}>
 		<Card.Root>
-			<Collapsible.Trigger asChild>
+			<Collapsible.Trigger>
 				{#snippet child({ props })}
 					<Card.Header class="cursor-pointer" {...props}>
 						<div class="flex items-center justify-between">
@@ -826,7 +828,7 @@
 	<!-- Resources (collapsible) -->
 	<Collapsible.Root bind:open={resourcesOpen}>
 		<Card.Root>
-			<Collapsible.Trigger asChild>
+			<Collapsible.Trigger>
 				{#snippet child({ props })}
 					<Card.Header class="cursor-pointer" {...props}>
 						<div class="flex items-center justify-between">
@@ -865,7 +867,7 @@
 	<!-- Advanced: Generic Functions (collapsible) -->
 	<Collapsible.Root bind:open={genericFunctionsOpen}>
 		<Card.Root>
-			<Collapsible.Trigger asChild>
+			<Collapsible.Trigger>
 				{#snippet child({ props })}
 					<Card.Header class="cursor-pointer" {...props}>
 						<div class="flex items-center justify-between">

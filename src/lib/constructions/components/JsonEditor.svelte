@@ -191,9 +191,16 @@
 			// Error line decoration (red background)
 			const errorLineMark = Decoration.line({ class: 'cm-errorLine' });
 
-			// Error gutter marker (red dot) - imported from shared module
-			const { ErrorGutterMarker } = await import('$lib/utils/codemirror-error-marker');
-			const errorMarker = new ErrorGutterMarker();
+			// Error gutter marker (red dot)
+			class ErrorMarker extends GutterMarker {
+				toDOM() {
+					const marker = document.createElement('span');
+					marker.className = 'cm-error-marker';
+					marker.textContent = '●';
+					return marker;
+				}
+			}
+			const errorMarker = new ErrorMarker();
 
 			// State field to track error line and compute decorations
 			const errorLineFieldDef = StateField.define<{
@@ -388,7 +395,6 @@
 		{:else if loadError}
 			<div class="flex h-full flex-col items-center justify-center gap-2 p-4">
 				<p class="text-sm text-destructive">{loadError}</p>
-				<!-- svelte-ignore a11y_autocomplete_valid -->
 				<textarea
 					class="h-full w-full resize-none rounded border border-border bg-background p-4 font-mono text-sm text-foreground focus:outline-none"
 					bind:value
@@ -460,7 +466,7 @@
 		width: 16px;
 	}
 
-	:global(.cm-errorGutterMarker) {
+	:global(.cm-error-marker) {
 		color: #ef4444;
 		font-size: 12px;
 		line-height: 1;

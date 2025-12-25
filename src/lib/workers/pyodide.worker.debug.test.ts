@@ -98,7 +98,7 @@ describe('convertMapToObject', () => {
 
 	it('converts nested Map to object', () => {
 		const innerMap = new Map([['inner', 'value']]);
-		const map = new Map([
+		const map = new Map<string, string | Map<string, string>>([
 			['outer', innerMap],
 			['simple', 'text']
 		]);
@@ -118,7 +118,7 @@ describe('convertMapToObject', () => {
 	});
 
 	it('converts Map with non-string keys', () => {
-		const map = new Map([
+		const map = new Map<number | boolean, string>([
 			[123, 'number-key'],
 			[true, 'boolean-key']
 		]);
