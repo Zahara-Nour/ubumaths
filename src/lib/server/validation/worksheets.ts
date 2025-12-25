@@ -7,6 +7,7 @@
 
 import { z } from 'zod';
 import { uuidSchema } from './common';
+import { exerciseHintSchema } from './exercises';
 
 // ============================================================================
 // ENUM SCHEMAS
@@ -821,6 +822,18 @@ export const studentWorksheetsListResponseSchema = z.object({
 });
 
 /**
+ * Schema for exercise resources (videos, PDFs, links, etc.)
+ */
+export const exerciseResourceSchema = z.object({
+	type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
+		message: 'Resource type must be video, pdf, link, geogebra, or image'
+	}),
+	url: z.string().url('Invalid URL').max(2000, 'URL too long'),
+	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
+	description: z.string().trim().max(500, 'Description too long').optional()
+});
+
+/**
  * Student exercise view response
  */
 export const studentExerciseViewSchema = z.object({
@@ -831,7 +844,11 @@ export const studentExerciseViewSchema = z.object({
 	custom_instructions: z.string().nullable(),
 	statement: z.string(),
 	correction: z.string().nullable(),
-	correction_visible: z.boolean()
+	correction_visible: z.boolean(),
+	/** Hints from selected variation (for guided exercises) */
+	hints: z.array(exerciseHintSchema).optional(),
+	/** Supplementary resources (videos, PDFs, links) */
+	resources: z.array(exerciseResourceSchema).optional()
 });
 
 /**
