@@ -173,13 +173,13 @@ PythonPlayground
 
 ### Keyboard Shortcuts
 
-| Raccourci    | Action              |
-| ------------ | ------------------- |
-| F5           | Continue/Start      |
-| Shift+F5     | Stop debug          |
-| F10          | Step over           |
-| F11          | Step into           |
-| Shift+F11    | Step out            |
+| Raccourci | Action         |
+| --------- | -------------- |
+| F5        | Continue/Start |
+| Shift+F5  | Stop debug     |
+| F10       | Step over      |
+| F11       | Step into      |
+| Shift+F11 | Step out       |
 
 ### TODO (follow-up)
 
@@ -206,15 +206,15 @@ PythonPlayground
 
 ### Tests executes
 
-| Test suite                          | Tests | Statut |
-| ----------------------------------- | ----- | ------ |
-| types.test.ts                       | 30    | Pass   |
-| messages.debug.test.ts              | 53    | Pass   |
-| pyodide.worker.debug.test.ts        | 41    | Pass   |
-| pythonDebug.svelte.test.ts          | 114   | N/A*   |
-| **Total**                           | **124+** | **Pass** |
+| Test suite                   | Tests    | Statut   |
+| ---------------------------- | -------- | -------- |
+| types.test.ts                | 30       | Pass     |
+| messages.debug.test.ts       | 53       | Pass     |
+| pyodide.worker.debug.test.ts | 41       | Pass     |
+| pythonDebug.svelte.test.ts   | 114      | N/A\*    |
+| **Total**                    | **124+** | **Pass** |
 
-*Tests Svelte runes necessitent Playwright (pas installe)
+\*Tests Svelte runes necessitent Playwright (pas installe)
 
 ### ESLint
 

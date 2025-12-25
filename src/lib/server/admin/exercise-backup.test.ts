@@ -463,7 +463,13 @@ describe('Template Record Validation', () => {
 						id: '550e8400-e29b-41d4-a716-446655440000',
 						title: 'System Template',
 						description: 'A system template for equations',
-						template_data: { version: '1.0', difficulty: 1, tags: [], statement_md: '', solution_md: '' },
+						template_data: {
+							version: '1.0',
+							difficulty: 1,
+							tags: [],
+							statement_md: '',
+							solution_md: ''
+						},
 						is_system: true,
 						created_at: new Date().toISOString(),
 						updated_at: new Date().toISOString(),
@@ -501,7 +507,13 @@ describe('Template Record Validation', () => {
 						id: '550e8400-e29b-41d4-a716-446655440000',
 						title: 'User Template',
 						description: null,
-						template_data: { version: '1.0', difficulty: 2, tags: ['custom'], statement_md: 'Q', solution_md: 'A' },
+						template_data: {
+							version: '1.0',
+							difficulty: 2,
+							tags: ['custom'],
+							statement_md: 'Q',
+							solution_md: 'A'
+						},
 						is_system: false,
 						created_at: new Date().toISOString(),
 						updated_at: new Date().toISOString(),

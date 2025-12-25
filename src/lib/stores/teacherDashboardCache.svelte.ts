@@ -500,6 +500,48 @@ export class TeacherDashboardCache {
 	}
 
 	/**
+	 * Add a VIP card optimistically (instant UI feedback)
+	 *
+	 * @param classId - The class ID
+	 * @param studentId - The student ID
+	 * @param cardInstance - The new VIP card instance data
+	 */
+	addVipCardOptimistic(
+		classId: string,
+		studentId: string,
+		cardInstance: { id: string; card_id: string; status: string; granted_at: string }
+	): void {
+		const cached = this.rewardsCache.get(classId);
+		if (!cached) return;
+
+		const rewards = cached.rewards.get(studentId);
+		if (!rewards) return;
+
+		// Add the new card to the existing vip_cards
+		const currentCards = (rewards.vip_cards || {}) as StudentVipCards;
+		const updatedCards: StudentVipCards = {
+			...currentCards,
+			[cardInstance.id]: {
+				cardId: cardInstance.card_id,
+				earnedAt: cardInstance.granted_at,
+				usedAt: null
+			}
+		};
+
+		// Update the rewards with the new cards
+		const updatedRewards: StudentRewards = {
+			...rewards,
+			vip_cards: updatedCards
+		};
+
+		cached.rewards.set(studentId, updatedRewards);
+		this.log(
+			'trace',
+			`[Cache] Optimistic VIP card add: student ${studentId}, card ${cardInstance.card_id}`
+		);
+	}
+
+	/**
 	 * Update warnings optimistically (instant UI feedback)
 	 *
 	 * REACTIVITY: Creates new Map and uses .set() to trigger SvelteMap reactivity

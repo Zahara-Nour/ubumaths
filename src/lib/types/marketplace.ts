@@ -94,8 +94,10 @@ export interface MarketplaceTrade extends DbTrade {
 }
 
 // Trade offer types
-export interface MarketplaceTradeOffer
-	extends Omit<DbTradeOffer, 'initiator_cards' | 'partner_cards'> {
+export interface MarketplaceTradeOffer extends Omit<
+	DbTradeOffer,
+	'initiator_cards' | 'partner_cards'
+> {
 	// Override with expanded relation types
 	initiator_cards?: Array<{
 		id: string;

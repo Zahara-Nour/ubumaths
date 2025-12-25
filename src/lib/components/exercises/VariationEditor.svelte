@@ -138,7 +138,7 @@
 				<MySelect
 					type="single"
 					value={labelType}
-					onValueChange={handleLabelTypeChange}
+					onValueChange={handleLabelTypeChange as (value: string) => void}
 					items={guidanceLabelItems}
 					placeholder="Type"
 				/>
@@ -158,7 +158,7 @@
 	<!-- Statement (collapsible) -->
 	<Collapsible.Root bind:open={statementOpen}>
 		<Card.Root>
-			<Collapsible.Trigger asChild>
+			<Collapsible.Trigger>
 				{#snippet child({ props })}
 					<Card.Header class="cursor-pointer py-3" {...props}>
 						<div class="flex items-center justify-between">
@@ -195,7 +195,7 @@
 	<!-- Solution (collapsible) -->
 	<Collapsible.Root bind:open={solutionOpen}>
 		<Card.Root>
-			<Collapsible.Trigger asChild>
+			<Collapsible.Trigger>
 				{#snippet child({ props })}
 					<Card.Header class="cursor-pointer py-3" {...props}>
 						<div class="flex items-center justify-between">
@@ -232,7 +232,7 @@
 	<!-- Variables (collapsible) -->
 	<Collapsible.Root bind:open={variablesOpen}>
 		<Card.Root>
-			<Collapsible.Trigger asChild>
+			<Collapsible.Trigger>
 				{#snippet child({ props })}
 					<Card.Header class="cursor-pointer" {...props}>
 						<div class="flex items-center justify-between">
@@ -326,7 +326,7 @@
 	<!-- Hints (collapsible) -->
 	<Collapsible.Root bind:open={hintsOpen}>
 		<Card.Root>
-			<Collapsible.Trigger asChild>
+			<Collapsible.Trigger>
 				{#snippet child({ props })}
 					<Card.Header class="cursor-pointer" {...props}>
 						<div class="flex items-center justify-between">

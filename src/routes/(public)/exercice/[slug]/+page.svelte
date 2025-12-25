@@ -230,7 +230,8 @@
 			});
 
 			// Download the PDF
-			const blob = new Blob([compileResult.data as Uint8Array], { type: 'application/pdf' });
+			const pdfData = compileResult.data as Uint8Array;
+			const blob = new Blob([new Uint8Array(pdfData)], { type: 'application/pdf' });
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;

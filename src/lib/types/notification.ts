@@ -114,8 +114,12 @@ export interface UnreadCount {
  */
 export const NOTIFICATION_TYPE_ICONS: Record<NotificationType, string> = {
 	info: '🔔',
+	warning: '⚠️',
+	success: '✅',
+	error: '❌',
 	alert: '⚠️',
 	announcement: '📢',
+	system: '⚙️',
 	reminder: '⏰'
 };
 
@@ -152,8 +156,12 @@ export const NOTIFICATION_PRIORITY_COLORS: Record<
  */
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
 	info: 'Information',
+	warning: 'Avertissement',
+	success: 'Succès',
+	error: 'Erreur',
 	alert: 'Alerte',
 	announcement: 'Annonce',
+	system: 'Système',
 	reminder: 'Rappel'
 };
 
