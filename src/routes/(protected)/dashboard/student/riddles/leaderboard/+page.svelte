@@ -75,66 +75,63 @@
 
 	<!-- Podium (Top 3) -->
 	{#if data.leaderboard.length >= 3}
-		<div class="mb-8 grid grid-cols-3 gap-4">
+		<div class="mb-8 grid grid-cols-3 gap-2 sm:gap-4">
 			<!-- 2nd Place -->
 			<div class="order-1 flex flex-col items-center">
-				<div class="mb-2 text-4xl">🥈</div>
-				<Avatar.Root class="h-16 w-16 border-4 border-gray-400">
+				<div class="mb-1 text-2xl sm:mb-2 sm:text-4xl">🥈</div>
+				<Avatar.Root class="h-10 w-10 border-2 border-gray-400 sm:h-16 sm:w-16 sm:border-4">
 					<Avatar.Image src={data.leaderboard[1].profile.avatar_url} alt="Avatar 2ème" />
 					<Avatar.Fallback>
-						<User class="h-6 w-6" />
+						<User class="h-4 w-4 sm:h-6 sm:w-6" />
 					</Avatar.Fallback>
 				</Avatar.Root>
-				<p class="mt-2 text-center text-sm font-medium">
+				<p class="mt-1 line-clamp-1 text-center text-xs font-medium sm:mt-2 sm:text-sm">
 					{data.leaderboard[1].profile.firstname || ''}
-					{data.leaderboard[1].profile.lastname || ''}
 				</p>
-				<p class="text-lg font-bold text-yellow-600 dark:text-yellow-400">
+				<p class="text-base font-bold text-yellow-600 sm:text-lg dark:text-yellow-400">
 					{data.leaderboard[1].total_gidouilles_from_riddles}
 				</p>
-				<p class="text-xs text-muted-foreground">
+				<p class="hidden text-xs text-muted-foreground sm:block">
 					{data.leaderboard[1].riddles_completed} énigmes
 				</p>
 			</div>
 
 			<!-- 1st Place -->
 			<div class="order-2 flex flex-col items-center">
-				<div class="mb-2 text-5xl">🥇</div>
-				<Avatar.Root class="h-20 w-20 border-4 border-yellow-500">
+				<div class="mb-1 text-3xl sm:mb-2 sm:text-5xl">🥇</div>
+				<Avatar.Root class="h-14 w-14 border-2 border-yellow-500 sm:h-20 sm:w-20 sm:border-4">
 					<Avatar.Image src={data.leaderboard[0].profile.avatar_url} alt="Avatar 1er" />
 					<Avatar.Fallback>
-						<User class="h-8 w-8" />
+						<User class="h-5 w-5 sm:h-8 sm:w-8" />
 					</Avatar.Fallback>
 				</Avatar.Root>
-				<p class="mt-2 text-center font-bold">
+				<p class="mt-1 line-clamp-1 text-center text-sm font-bold sm:mt-2">
 					{data.leaderboard[0].profile.firstname || ''}
-					{data.leaderboard[0].profile.lastname || ''}
 				</p>
-				<p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+				<p class="text-xl font-bold text-yellow-600 sm:text-2xl dark:text-yellow-400">
 					{data.leaderboard[0].total_gidouilles_from_riddles}
 				</p>
-				<p class="text-xs text-muted-foreground">
+				<p class="hidden text-xs text-muted-foreground sm:block">
 					{data.leaderboard[0].riddles_completed} énigmes
 				</p>
 			</div>
 
 			<!-- 3rd Place -->
 			<div class="order-3 flex flex-col items-center">
-				<div class="mb-2 text-4xl">🥉</div>
-				<Avatar.Root class="h-16 w-16 border-4 border-amber-600">
+				<div class="mb-1 text-2xl sm:mb-2 sm:text-4xl">🥉</div>
+				<Avatar.Root class="h-10 w-10 border-2 border-amber-600 sm:h-16 sm:w-16 sm:border-4">
 					<Avatar.Image src={data.leaderboard[2].profile.avatar_url} alt="Avatar 3ème" />
 					<Avatar.Fallback>
-						<User class="h-6 w-6" />
+						<User class="h-4 w-4 sm:h-6 sm:w-6" />
 					</Avatar.Fallback>
 				</Avatar.Root>
-				<p class="mt-2 text-center text-sm font-medium">
+				<p class="mt-1 line-clamp-1 text-center text-xs font-medium sm:mt-2 sm:text-sm">
 					{data.leaderboard[2].profile.firstname || ''}
-					{data.leaderboard[2].profile.lastname || ''}
 				</p>
-				<p class="text-lg font-bold text-yellow-600 dark:text-yellow-400">
+				<p class="text-base font-bold text-yellow-600 sm:text-lg dark:text-yellow-400">
 					{data.leaderboard[2].total_gidouilles_from_riddles}
 				</p>
-				<p class="text-xs text-muted-foreground">
+				<p class="hidden text-xs text-muted-foreground sm:block">
 					{data.leaderboard[2].riddles_completed} énigmes
 				</p>
 			</div>

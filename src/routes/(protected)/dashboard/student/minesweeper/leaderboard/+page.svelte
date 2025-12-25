@@ -71,9 +71,9 @@
 	<Separator />
 
 	<!-- Difficulty Selector -->
-	<div class="flex items-center gap-4">
+	<div class="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4">
 		<label for="difficulty" class="font-semibold text-foreground">Difficulté:</label>
-		<div class="w-48">
+		<div class="w-full sm:w-48">
 			<MySelect type="single" bind:value={selectedDifficulty} items={difficultyItems} />
 		</div>
 	</div>
@@ -107,42 +107,57 @@
 				<table class="w-full text-sm">
 					<thead class="border-b border-border bg-muted/50">
 						<tr>
-							<th class="w-12 px-4 py-3 text-center font-semibold text-foreground">Rang</th>
-							<th class="px-4 py-3 text-left font-semibold text-foreground">Joueur</th>
-							<th class="px-4 py-3 text-center font-semibold text-foreground">Meilleur temps</th>
-							<th class="px-4 py-3 text-center font-semibold text-foreground">Gidouilles</th>
-							<th class="px-4 py-3 text-right font-semibold text-foreground">Taux victoire</th>
+							<th
+								class="w-10 px-2 py-2 text-center font-semibold text-foreground sm:w-12 sm:px-4 sm:py-3"
+								>Rang</th
+							>
+							<th class="px-2 py-2 text-left font-semibold text-foreground sm:px-4 sm:py-3"
+								>Joueur</th
+							>
+							<th class="px-2 py-2 text-center font-semibold text-foreground sm:px-4 sm:py-3"
+								>Temps</th
+							>
+							<th
+								class="hidden px-2 py-2 text-center font-semibold text-foreground sm:table-cell sm:px-4 sm:py-3"
+								>Gidouilles</th
+							>
+							<th
+								class="hidden px-2 py-2 text-right font-semibold text-foreground sm:table-cell sm:px-4 sm:py-3"
+								>Victoire</th
+							>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-border">
 						{#each currentLeaderboard as entry (entry.student_id + '-' + entry.difficulty)}
 							<tr class={`transition-colors hover:bg-muted/50 ${getRankClass(entry.rank || 0)}`}>
-								<td class="px-4 py-3 text-center font-bold text-foreground">
-									<span class="text-lg">{getMedalEmoji(entry.rank || 0)}</span>
-									<span class="ml-2">#{entry.rank || '—'}</span>
+								<td class="px-2 py-2 text-center font-bold text-foreground sm:px-4 sm:py-3">
+									<span class="text-base sm:text-lg">{getMedalEmoji(entry.rank || 0)}</span>
+									<span class="ml-1 text-xs sm:ml-2 sm:text-sm">#{entry.rank || '—'}</span>
 								</td>
-								<td class="px-4 py-3">
-									<div class="flex items-center gap-3">
+								<td class="px-2 py-2 sm:px-4 sm:py-3">
+									<div class="flex items-center gap-2 sm:gap-3">
 										<div>
-											<p class="font-semibold text-foreground">
+											<p class="text-xs font-semibold text-foreground sm:text-sm">
 												{entry.firstname || ''}
-												{entry.lastname || ''}
+												<span class="hidden sm:inline">{entry.lastname || ''}</span>
 											</p>
 											{#if entry.student_id === data.currentUserId}
-												<Badge class="mt-1" variant="default">C'est vous!</Badge>
+												<Badge class="mt-1" variant="default">Vous</Badge>
 											{/if}
 										</div>
 									</div>
 								</td>
-								<td class="px-4 py-3 text-center">
-									<span class="font-mono font-semibold text-foreground">
+								<td class="px-2 py-2 text-center sm:px-4 sm:py-3">
+									<span class="font-mono text-xs font-semibold text-foreground sm:text-sm">
 										{entry.best_time !== null ? formatTime(entry.best_time) : '—'}
 									</span>
 								</td>
-								<td class="px-4 py-3 text-center">
+								<td class="hidden px-2 py-2 text-center sm:table-cell sm:px-4 sm:py-3">
 									<span class="font-semibold text-amber-500">{entry.total_gidouilles || 0}</span>
 								</td>
-								<td class="px-4 py-3 text-right text-xs text-muted-foreground">
+								<td
+									class="hidden px-2 py-2 text-right text-xs text-muted-foreground sm:table-cell sm:px-4 sm:py-3"
+								>
 									<span class="inline-block rounded bg-muted px-2 py-1 text-xs">
 										{entry.win_rate || 0}%
 									</span>
