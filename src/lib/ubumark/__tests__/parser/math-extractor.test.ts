@@ -12,7 +12,8 @@ import {
 	getPlaceholderIndex,
 	findPlaceholder,
 	splitTextWithPlaceholders,
-	getMathStats
+	getMathStats,
+	restoreMathPlaceholders
 } from '../../parser/math-extractor';
 
 describe('extractMath', () => {
@@ -482,6 +483,74 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 			expect(result.placeholders[0].expression).toBe('x^2');
 			expect(result.placeholders[0].isBlock).toBe(true);
 			expect(result.text).toContain('~~~code~~~');
+		});
+	});
+
+	describe('restoreMathPlaceholders', () => {
+		it('should restore inline LaTeX placeholders', () => {
+			const markdown = 'Calculate $R_1$ and $x^2$';
+			const { text, placeholders } = extractMath(markdown);
+
+			// Text should contain placeholders
+			expect(text).toContain('__MATH_');
+
+			// Restore should bring back original expressions
+			const restored = restoreMathPlaceholders(text, placeholders);
+			expect(restored).toBe(markdown);
+		});
+
+		it('should restore block LaTeX placeholders', () => {
+			const markdown = 'Result: $$\\frac{1}{2}$$';
+			const { text, placeholders } = extractMath(markdown);
+
+			const restored = restoreMathPlaceholders(text, placeholders);
+			expect(restored).toBe(markdown);
+		});
+
+		it('should restore inline custom syntax placeholders', () => {
+			const markdown = 'Calculate ~2x+3~ here';
+			const { text, placeholders } = extractMath(markdown);
+
+			const restored = restoreMathPlaceholders(text, placeholders);
+			expect(restored).toBe(markdown);
+		});
+
+		it('should restore block custom syntax placeholders', () => {
+			const markdown = 'Formula: ~~f(x)=x^2~~';
+			const { text, placeholders } = extractMath(markdown);
+
+			const restored = restoreMathPlaceholders(text, placeholders);
+			expect(restored).toBe(markdown);
+		});
+
+		it('should restore mixed placeholders', () => {
+			const markdown = 'LaTeX $x$ and custom ~y~';
+			const { text, placeholders } = extractMath(markdown);
+
+			const restored = restoreMathPlaceholders(text, placeholders);
+			expect(restored).toBe(markdown);
+		});
+
+		it('should handle text without placeholders', () => {
+			const text = 'No math here';
+			const result = restoreMathPlaceholders(text, []);
+			expect(result).toBe(text);
+		});
+
+		it('should restore probtree event label placeholders', () => {
+			// This is the specific use case that was broken
+			const markdown = '$R_1$:0.85\n  Rouge:\\ldots';
+			const { text, placeholders } = extractMath(markdown);
+
+			// Should have extracted $R_1$
+			expect(text).toContain('__MATH_');
+			expect(placeholders).toHaveLength(1);
+			expect(placeholders[0].expression).toBe('R_1');
+
+			// Restore should bring back $R_1$
+			const restored = restoreMathPlaceholders(text, placeholders);
+			expect(restored).toBe(markdown);
+			expect(restored).toContain('$R_1$');
 		});
 	});
 });

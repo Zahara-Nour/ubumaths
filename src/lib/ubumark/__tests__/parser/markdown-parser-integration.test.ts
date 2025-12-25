@@ -235,4 +235,74 @@ code block
 			expect(codeBlock.code).toBe('');
 		});
 	});
+
+	describe('Probability Tree Integration', () => {
+		it('should preserve math expressions in probtree event labels inside list items', () => {
+			// This test verifies the fix for the bug where $R_1$ became __MATH_2__ in list items
+			const markdown = `
+1. La situation peut être représentée par l'arbre de probabilité ci-contre :
+
+   \`\`\`probtree
+   root: L
+
+   $R_1$:0.85
+     Rouge:\\ldots
+     Bleue:\\ldots
+   Bleue:\\ldots
+     Rouge:\\ldots
+     Bleue:\\ldots
+   \`\`\`
+
+2. Les évènements $R_1$ et $\\overline{R_1}$ partitionnent l'univers
+`;
+			const ast = parseMarkdown(markdown);
+
+			// Should have a list
+			expect(ast.children).toHaveLength(1);
+			expect(ast.children[0].type).toBe('list');
+
+			const list = ast.children[0] as ListNode;
+			expect(list.items).toHaveLength(2);
+
+			// First list item should contain a probability tree
+			const firstItem = list.items[0];
+			const probTree = firstItem.children.find((c) => c.type === 'probability-tree');
+			expect(probTree).toBeDefined();
+
+			// The event label should be $R_1$, not __MATH_N__
+			if (probTree && probTree.type === 'probability-tree') {
+				const firstBranch = probTree.root.branches[0];
+				expect(firstBranch.eventLabel).toBe('$R_1$');
+				// Should NOT contain placeholder
+				expect(firstBranch.eventLabel).not.toContain('__MATH_');
+			}
+		});
+
+		it('should handle probtree with custom math syntax in list items', () => {
+			const markdown = `
+- Item with probtree:
+
+  \`\`\`probtree
+  root: Test
+
+  ~A~:0.5
+    B:0.3
+  ~C~:0.5
+    D:0.7
+  \`\`\`
+`;
+			const ast = parseMarkdown(markdown);
+
+			const list = ast.children[0] as ListNode;
+			const probTree = list.items[0].children.find((c) => c.type === 'probability-tree');
+
+			if (probTree && probTree.type === 'probability-tree') {
+				// Custom math syntax should be preserved
+				expect(probTree.root.branches[0].eventLabel).toBe('~A~');
+				expect(probTree.root.branches[1].eventLabel).toBe('~C~');
+				// Should NOT contain placeholder
+				expect(probTree.root.branches[0].eventLabel).not.toContain('__MATH_');
+			}
+		});
+	});
 });

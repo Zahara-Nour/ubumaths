@@ -389,3 +389,40 @@ export function getMathStats(markdown: string): {
 		totalCount: placeholders.length
 	};
 }
+
+/**
+ * Restore math placeholders to their original expressions with delimiters
+ *
+ * This is useful when content with placeholders needs to be passed to a parser
+ * that expects the original math expressions (e.g., probtree parser).
+ *
+ * @param text - Text containing placeholders (e.g., "__MATH_0__")
+ * @param placeholders - Array of math placeholders from extraction
+ * @returns Text with placeholders replaced by original math expressions
+ *
+ * @example
+ * // If placeholder was extracted from "$R_1$"
+ * restoreMathPlaceholders("Event __MATH_0__:0.85", placeholders)
+ * // Returns: "Event $R_1$:0.85"
+ */
+export function restoreMathPlaceholders(text: string, placeholders: MathPlaceholder[]): string {
+	let result = text;
+
+	for (const p of placeholders) {
+		if (result.includes(p.placeholder)) {
+			// Reconstruct the original delimited expression
+			let original: string;
+			if (p.syntax === 'latex') {
+				original = p.isBlock ? `$$${p.expression}$$` : `$${p.expression}$`;
+			} else {
+				// Custom syntax
+				original = p.isBlock ? `~~${p.expression}~~` : `~${p.expression}~`;
+			}
+			// Use function replacer to avoid special $ interpretation in replace()
+			// (e.g., $$ becomes $ if used directly in replacement string)
+			result = result.replace(p.placeholder, () => original);
+		}
+	}
+
+	return result;
+}
