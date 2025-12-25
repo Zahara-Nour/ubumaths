@@ -285,20 +285,20 @@ For UI elements that should only appear for certain roles:
 
 ```svelte
 <script lang="ts">
-    let { data } = $props();
-    const { profile } = data;
+	let { data } = $props();
+	const { profile } = data;
 </script>
 
 {#if profile.role === 'admin'}
-    <AdminPanel />
+	<AdminPanel />
 {/if}
 
 {#if profile.role === 'teacher' || profile.role === 'admin'}
-    <TeacherTools />
+	<TeacherTools />
 {/if}
 
 {#if profile.role === 'student'}
-    <StudentView />
+	<StudentView />
 {/if}
 ```
 

@@ -52,7 +52,7 @@
 	function getPauseReasonText(reason: typeof pauseReason): string {
 		switch (reason) {
 			case 'breakpoint':
-				return 'Point d\'arrêt atteint';
+				return "Point d'arrêt atteint";
 			case 'step':
 				return 'Pas terminé';
 			case 'exception':
@@ -85,10 +85,7 @@
 
 {#if isDebugging && sessionState !== 'idle'}
 	<div
-		class={cn(
-			'flex flex-col gap-4 rounded-lg border border-border bg-background p-4',
-			className
-		)}
+		class={cn('flex flex-col gap-4 rounded-lg border border-border bg-background p-4', className)}
 	>
 		<!-- Header with debug info -->
 		<div class="flex items-center justify-between border-b border-border pb-3">

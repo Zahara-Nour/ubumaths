@@ -110,6 +110,7 @@ All endpoints follow consistent error patterns:
 ## Next Steps (Not in this task)
 
 1. **Frontend Integration**:
+
    - Exercise creation form
    - Exercise list view
    - Assignment interface
@@ -117,6 +118,7 @@ All endpoints follow consistent error patterns:
    - Results dashboard
 
 2. **Testing**:
+
    - Unit tests for each endpoint
    - Integration tests for workflows
    - E2E tests for student/teacher flows

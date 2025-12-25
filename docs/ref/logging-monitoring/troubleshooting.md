@@ -65,6 +65,7 @@
    ```
 
 3. **Check network tab**:
+
    - Look for `POST /api/errors/log`
    - Check response status (429 = rate limited)
 

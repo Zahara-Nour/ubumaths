@@ -1,8 +1,6 @@
 # Question Migration Progress
 
-> **Plan**: `/Users/david/.claude/plans/velvet-puzzling-crane.md`
-> **Branche**: `migration/questions`
-> **Derniere mise a jour**: 2025-11-30
+> **Plan**: `/Users/david/.claude/plans/velvet-puzzling-crane.md` > **Branche**: `migration/questions` > **Derniere mise a jour**: 2025-11-30
 
 ---
 

@@ -61,6 +61,7 @@ The pattern matching system for MathAST is a comprehensive feature that enables 
 ### By Module
 
 - **Constraints** (68 tests):
+
   - Type constraint validation
   - Numeric constraints (positive, negative, zero, integer)
   - Variable constraints and free-of checks
@@ -68,6 +69,7 @@ The pattern matching system for MathAST is a comprehensive feature that enables 
   - Custom constraint composition
 
 - **Matching** (78 tests):
+
   - Basic pattern matching (wildcards, literals)
   - Structural pattern matching (operations, functions)
   - Constraint-aware matching
@@ -75,6 +77,7 @@ The pattern matching system for MathAST is a comprehensive feature that enables 
   - Edge cases (empty expressions, nested patterns)
 
 - **Builder** (81 tests):
+
   - Pattern construction methods
   - Constraint chaining
   - Rule creation with options
@@ -82,6 +85,7 @@ The pattern matching system for MathAST is a comprehensive feature that enables 
   - Error handling
 
 - **Rules** (48 tests):
+
   - Rule instantiation with bindings
   - Variable substitution
   - Deep application (recursive transformation)

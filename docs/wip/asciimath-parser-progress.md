@@ -13,6 +13,7 @@ Successfully implemented a complete recursive descent parser for ASCIIMath expre
 ### Created Files
 
 1. **`src/lib/transpilers/asciimath-to-latex/parser.ts`** (495 lines)
+
    - Full recursive descent parser implementation
    - Handles all ASCIIMath grammar rules
    - Proper operator precedence and associativity
@@ -50,16 +51,19 @@ relation_op    = "=" | "<" | ">" | "<=" | ">=" | "!=" | "~~" | "-=" | "~" | "pro
 ### Special Rules Implemented
 
 1. **Unary Minus Restriction**
+
    - Only allowed at start of expression
    - Only allowed after opening delimiters: `(`, `[`, `{`, `|`
    - Correctly rejects: `3+-2`, `x*-y`, `a/-b`
    - Correctly accepts: `-3`, `(-2)`, `|-x|`
 
 2. **Fraction Associativity** (LEFT)
+
    - `a/b/c` → `(a/b)/c`
    - Implemented via left-recursive loop
 
 3. **Power/Subscript Associativity** (RIGHT)
+
    - `x^2^3` → `x^(2^3)`
    - `x_i_j` → `x_(i_j)`
    - Implemented via recursive parsing
@@ -92,6 +96,7 @@ The parser produces these node types:
 ### Test Categories
 
 1. **Atoms** (16 tests)
+
    - Numbers: integers, decimals, zero
    - Identifiers: single/multi-letter, with numbers
    - Greek letters: lowercase, uppercase
@@ -99,6 +104,7 @@ The parser produces these node types:
    - Templates: simple, with expressions, nested braces
 
 2. **Groups** (13 tests)
+
    - Parentheses: simple, with expressions, nested
    - Brackets: simple, with expressions
    - Braces: simple, with expressions
@@ -106,28 +112,33 @@ The parser produces these node types:
    - Error cases: unclosed, mismatched
 
 3. **Absolute Value** (5 tests)
+
    - Simple, with expressions, with negatives
    - Nested absolute values
    - Unclosed errors
 
 4. **Functions** (13 tests)
+
    - Standard: sqrt, sin, cos, tan, log, ln, exp, abs
    - Root function: square root, cube root, nth root
    - Nested functions
    - Error cases: missing parentheses
 
 5. **Binary Operators** (11 tests)
+
    - Addition, subtraction, multiplication (\*, :)
    - Operator precedence
    - Left-associativity
 
 6. **Fractions** (7 tests)
+
    - Simple fractions
    - Left-associativity: `a/b/c`
    - Expressions in numerator/denominator
    - Precedence
 
 7. **Power and Subscript** (15 tests)
+
    - Superscript: simple, nested, with expressions
    - Subscript: simple, nested, with numbers
    - Combined: `x_i^2`, `x^2_i`
@@ -135,15 +146,18 @@ The parser produces these node types:
    - Precedence
 
 8. **Relations** (11 tests)
+
    - All operators: =, <, >, <=, >=, !=, ~~, -=, ~, prop
    - With expressions
    - Chained relations
 
 9. **Unary Minus** (12 tests)
+
    - Valid cases: start, after delimiters, nested
    - Invalid cases: after binary operators (all correctly rejected)
 
 10. **Complex Expressions** (8 tests)
+
     - Quadratic formula
     - Trigonometric expressions
     - Nested fractions
@@ -153,6 +167,7 @@ The parser produces these node types:
     - Mixed expressions
 
 11. **Error Handling** (7 tests)
+
     - Empty input
     - Unexpected tokens
     - Position information
@@ -195,9 +210,11 @@ The parser produces these node types:
 ## Decisions Made
 
 1. **Right-associativity for multiple same scripts**: `x^2^3^4` parses as `x^(2^(3^4))` (not an error)
+
    - Rationale: Follows standard mathematical notation
 
 2. **Commas not supported**: Removed tests for `[0, 1]` and `lim_{x->oo}`
+
    - Rationale: ASCIIMath doesn't have comma as an operator; these require special handling if needed
 
 3. **Arrow operator not supported**: No `->` tokenization
@@ -206,16 +223,19 @@ The parser produces these node types:
 ## Next Steps (Phase 3)
 
 1. **Implement code generator** (`src/lib/transpilers/asciimath-to-latex/generator.ts`)
+
    - Traverse AST and generate LaTeX
    - Handle each node type appropriately
    - Preserve template placeholders
 
 2. **Create generator tests** (`__tests__/generator.test.ts`)
+
    - Test each node type
    - Test complex expressions
    - Verify LaTeX correctness
 
 3. **Implement main transpiler** (`src/lib/transpilers/asciimath-to-latex/index.ts`)
+
    - Combine tokenizer, parser, generator
    - Public API: `transpile(input: string, options?: TranspileOptions): TranspileResult`
 

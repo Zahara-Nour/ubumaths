@@ -90,10 +90,12 @@ All phases of the ContentField to branded markdown migration have been completed
 The following deprecated files have been successfully removed:
 
 1. **`src/lib/components/ContentFieldEditor.svelte`**
+
    - Legacy component for editing ContentField arrays
    - Replaced by generic `MarkdownEditor` component
 
 2. **`src/lib/utils/content-field-helpers.ts`**
+
    - Utility functions for ContentField operations
    - `extractImages` function inlined in components that needed it
 

@@ -240,7 +240,7 @@ Sections :
 | **Phase 4**  | ✅ Complète | REST API endpoints (6 endpoints)            |
 | **Phase 5**  | ✅ Complète | Teacher settings UI                         |
 | **Phase 6**  | ✅ Complète | Student coursework view (MVP)               |
-| **Phase 7**  | ⏳ TODO     | Class ↔ Course association UI               |
+| **Phase 7**  | ⏳ TODO     | Class ↔ Course association UI              |
 | **Phase 8**  | ⏳ TODO     | Teacher sharing interface                   |
 | **Phase 9**  | ⏳ TODO     | Auto-sync (cron/webhooks)                   |
 | **Phase 10** | ⏳ TODO     | Student analytics                           |

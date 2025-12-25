@@ -104,6 +104,7 @@ A test script to validate sanitization logic before running the full migration:
    ```
 
 3. **Verify staging results**:
+
    - Check modified notifications in database
    - Test rendering in UI
    - Confirm no functionality broken
@@ -213,6 +214,7 @@ After running migration, verify:
    ```
 
 2. **UI rendering**:
+
    - View notifications in teacher dashboard
    - View notifications in student dashboard
    - Confirm formatting preserved

@@ -13,6 +13,7 @@ Created a comprehensive side-by-side comparison component for reviewing question
 ### Components
 
 1. **QuestionCompareView.svelte**
+
    - Location: `src/lib/components/migration/QuestionCompareView.svelte`
    - Purpose: Main comparison component with two-column layout
    - Features:
@@ -37,16 +38,19 @@ Created a comprehensive side-by-side comparison component for reviewing question
 ### Supporting Files
 
 3. **QuestionCompareView.example.svelte**
+
    - Location: `src/lib/components/migration/QuestionCompareView.example.svelte`
    - Purpose: Example usage with sample data
    - Demonstrates: Basic usage, approve/reject callbacks, toast notifications
 
 4. **QuestionCompareView.md**
+
    - Location: `docs/components/QuestionCompareView.md`
    - Purpose: Comprehensive documentation
    - Contains: Props, usage examples, styling guide, accessibility notes
 
 5. **index.ts** (updated)
+
    - Location: `src/lib/components/migration/index.ts`
    - Added exports for QuestionCompareView and ReviewActions
 
@@ -216,6 +220,7 @@ Component doesn't call toast directly - parent should show:
 ### Pre-existing Issues (Not Related to This Component)
 
 1. **Missing Breadcrumb Component**
+
    - File: `src/routes/(protected)/dashboard/admin/migration/[theme]/[domain]/[subdomain]/+page.svelte`
    - Issue: Imports `$lib/components/ui/breadcrumb` which doesn't exist
    - Impact: Build fails, but unrelated to QuestionCompareView

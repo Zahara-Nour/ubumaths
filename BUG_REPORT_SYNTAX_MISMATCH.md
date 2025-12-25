@@ -132,6 +132,7 @@ generateInstance(dbTemplate) // → {
 ### Direct Impact (Must Modify)
 
 1. **Conversion point** (PRIMARY FIX)
+
    - `src/lib/questions/generator/variable-resolver.ts`
    - `src/lib/questions/generator/content-resolver.ts`
 
@@ -142,10 +143,12 @@ generateInstance(dbTemplate) // → {
 ### Indirect Impact (Must Update)
 
 3. **Tests** (currently use wrong syntax)
+
    - `src/lib/questions/**/*.test.ts` - 15 test files
    - Using `{{}}` instead of database `{}` syntax
 
 4. **Documentation**
+
    - Examples show inconsistent syntax
    - Migration guides need update
 

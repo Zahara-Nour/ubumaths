@@ -103,10 +103,12 @@ Supprimer le support de la syntaxe `-` (tiret simple) pour les plages et ne cons
 **Fichiers modifiés** :
 
 1. `src/lib/migration/syntax-converter.test.ts` : 163 tests
+
    - Tous les patterns de test convertis de `-` vers `..`
    - Exemples : `{{1-10}}` → `{{1..10}}`, `{{-5-5}}` → `{{-5..5}}`, etc.
 
 2. `src/lib/migration/syntax-converter-integration.test.ts` : Tests d'intégration
+
    - Patterns simples et complexes mis à jour
    - Patterns avec exclusions mis à jour
 
@@ -134,6 +136,7 @@ Supprimer le support de la syntaxe `-` (tiret simple) pour les plages et ne cons
 **Fichiers modifiés** :
 
 1. **`docs/ref/markdown.md`** - Documentation principale de la syntaxe
+
    - Section 1.2.1 : Table des syntaxes générales (`{{1-10}}` → `{{1..10}}`)
    - Section 1.2.2 : Plages d'entiers - suppression syntaxe `-`, conservation `..` uniquement
    - Section 1.2.3 : Plages décimales (`{{0.5-9.99:0.01}}` → `{{0.5..9.99:0.01}}`)

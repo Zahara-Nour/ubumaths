@@ -10,16 +10,19 @@ Implemented Jupyter notebook export functionality to convert our internal notebo
 ## Files Created
 
 1. **`src/lib/utils/notebook-export.ts`** (main implementation)
+
    - `exportToIpynb()`: Convert internal notebook to Jupyter JSON
    - `downloadIpynb()`: Trigger browser download of .ipynb file
    - Full Jupyter nbformat v4 support
 
 2. **`src/lib/utils/notebook-export.test.ts`** (server tests)
+
    - 15 test cases covering all export scenarios
    - Tests for all output types (stream, error, execute_result, display_data)
    - Edge cases (empty cells, multiline, metadata preservation)
 
 3. **`src/lib/utils/notebook-export.svelte.test.ts`** (client tests)
+
    - 5 test cases for download functionality
    - DOM interaction tests (link creation, blob handling, cleanup)
 

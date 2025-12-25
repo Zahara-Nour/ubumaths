@@ -76,8 +76,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 
 			// For teachers/admins, verify they have access to this student
-			const { verifyTeacherStudentWithRole } =
-				await import('$lib/server/middleware/student-access');
+			const { verifyTeacherStudentWithRole } = await import(
+				'$lib/server/middleware/student-access'
+			);
 			// Note: verifyTeacherStudentWithRole only uses profile.role, so casting is safe
 			const hasAccess = await verifyTeacherStudentWithRole(
 				user.id,

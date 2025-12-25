@@ -181,16 +181,19 @@ Ajoutée après la section Formule :
 Les extensions suivantes étaient déjà implémentées et ont été intégrées :
 
 1. **TemplateVariable** (`/src/lib/extensions/template-extensions.ts`)
+
    - Commande : `insertTemplateVariable(name: string)`
    - Syntaxe : `{{varName}}`
    - Validation : Nom de variable valide (lettres, chiffres, underscore)
 
 2. **TemplateRandom** (`/src/lib/extensions/template-extensions.ts`)
+
    - Commande : `insertTemplateRandom(spec: string)`
    - Syntaxe : `{{1..10}}`, `{{random:...}}`, `{{a|b|c}}`, `{{2.3}}`
    - Validation : Spec aléatoire valide (range, liste, decimal)
 
 3. **TemplateEval** (`/src/lib/extensions/template-extensions.ts`)
+
    - Commande : `insertTemplateEval(expression: string)`
    - Syntaxe : `{{eval:a+b}}`, `{{eval:x*y|d}}`
    - Validation : Expression non vide

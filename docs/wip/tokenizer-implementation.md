@@ -38,20 +38,25 @@ Successfully implemented the tokenizer for the ASCIIMath to LaTeX transpiler. Th
 **Test Coverage**: 82 tests across 12 categories
 
 1. **Numbers** (6 tests)
+
    - Integers, decimals, zero, negative numbers
 
 2. **Identifiers** (5 tests)
+
    - Single/multi-letter, uppercase, with numbers
 
 3. **Greek letters** (7 tests)
+
    - All lowercase/uppercase Greek, variants
 
 4. **Functions** (5 tests)
+
    - Trigonometric (sin, cos, tan)
    - Logarithmic (log, ln, exp)
    - Special (sqrt, abs, root)
 
 5. **Symbols** (17 tests)
+
    - Infinity (oo)
    - Plus-minus (+-/-+)
    - Relations (<=, >=, !=, <<, >>)
@@ -62,30 +67,37 @@ Successfully implemented the tokenizer for the ASCIIMath to LaTeX transpiler. Th
    - Other (approx, equiv, prop, therefore, because)
 
 6. **Operators** (3 tests)
+
    - Arithmetic (+, -, \*, /, ^, \_)
    - Relations (=, <, >)
 
 7. **Delimiters** (4 tests)
+
    - Parentheses, brackets, braces
 
 8. **Templates** (7 tests)
+
    - Simple templates `{{a}}`
    - Special syntax `{{eval:...}}`, `{{1..10}}`
    - Nested braces handling
    - Multiple templates in one expression
 
 9. **Whitespace** (4 tests)
+
    - Spaces, tabs, newlines
    - Consecutive whitespace grouping
 
 10. **Complex expressions** (10 tests)
+
     - Fractions, powers, functions with templates
     - Multiple operators and identifiers
 
 11. **Edge cases** (4 tests)
+
     - Empty string, EOF, unknown characters
 
 12. **Token positions** (4 tests)
+
     - Correct start/end positions for all tokens
 
 13. **Symbol precedence** (6 tests)

@@ -24,6 +24,7 @@ This section explains how to promote users to different roles in your UbuMaths a
 ### Method 1: Using the Scripts (Recommended)
 
 1. **Get your Supabase Service Role Key**:
+
    - Go to your Supabase dashboard
    - Navigate to Project Settings → API
    - Copy the `service_role` key (NOT the `anon` key)
@@ -37,6 +38,7 @@ This section explains how to promote users to different roles in your UbuMaths a
    ```
 
 3. **First, sign up a user** (if you haven't already):
+
    - Go to your app's signup page: http://localhost:5173/signup
    - Create an account with the email you want to promote
 
@@ -80,6 +82,7 @@ UPDATE profiles SET role = 'admin' WHERE email = 'user@example.com';
 After promoting a user to admin, you can verify by:
 
 1. **Check in Supabase dashboard**:
+
    - Go to Table Editor → profiles
    - Find the user and check their `role` column
 

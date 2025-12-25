@@ -52,10 +52,7 @@
 	/**
 	 * Get variable value at a specific snapshot
 	 */
-	function getVariableAtStep(
-		varName: string,
-		snapshot: DebugSnapshot
-	): DebugVariable | undefined {
+	function getVariableAtStep(varName: string, snapshot: DebugSnapshot): DebugVariable | undefined {
 		// First check locals in current frame (index 0 is innermost)
 		const currentFrame = snapshot.callStack[0];
 		if (currentFrame) {
@@ -218,18 +215,20 @@
 				Pas courant
 			</span>
 			<span class="flex items-center gap-1">
-				<span class="inline-block size-3 rounded ring-2 ring-inset ring-green-500"></span>
+				<span class="inline-block size-3 rounded ring-2 ring-green-500 ring-inset"></span>
 				Nouvelle variable
 			</span>
 			<span class="flex items-center gap-1">
-				<span class="inline-block size-3 rounded ring-2 ring-inset ring-amber-500"></span>
+				<span class="inline-block size-3 rounded ring-2 ring-amber-500 ring-inset"></span>
 				Valeur modifiée
 			</span>
 		</div>
 	</div>
 {:else if debugStore.sessionState !== 'idle'}
-	<div class="rounded-lg border border-border bg-muted/30 p-4 text-center text-sm text-muted-foreground">
+	<div
+		class="rounded-lg border border-border bg-muted/30 p-4 text-center text-sm text-muted-foreground"
+	>
 		<p>Aucune variable à afficher</p>
-		<p class="text-xs mt-1">Exécutez le code pas à pas pour voir l'évolution des variables</p>
+		<p class="mt-1 text-xs">Exécutez le code pas à pas pour voir l'évolution des variables</p>
 	</div>
 {/if}

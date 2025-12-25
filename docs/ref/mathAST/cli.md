@@ -193,24 +193,24 @@ replStore.clear();
 
 ```svelte
 <script lang="ts">
-  import { replStore } from '$lib/stores/repl.svelte';
+	import { replStore } from '$lib/stores/repl.svelte';
 
-  let input = $state('');
+	let input = $state('');
 
-  async function handleSubmit() {
-    const result = await replStore.execute(input);
-    // result contains output or error
-    input = '';
-  }
+	async function handleSubmit() {
+		const result = await replStore.execute(input);
+		// result contains output or error
+		input = '';
+	}
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
-  <input bind:value={input} placeholder="Enter expression..." />
+	<input bind:value={input} placeholder="Enter expression..." />
 </form>
 
 {#each replStore.history as entry}
-  <div class="input">&gt; {entry.input}</div>
-  <div class="output">{entry.output}</div>
+	<div class="input">&gt; {entry.input}</div>
+	<div class="output">{entry.output}</div>
 {/each}
 ```
 

@@ -71,6 +71,7 @@
 ### Fichiers créés/modifiés
 
 - `src/lib/transpilers/asciimath-to-latex/tokenizer.ts` (332 lignes)
+
   - Classe Tokenizer avec toutes les méthodes
   - Support pour PIPE et : operator
 
@@ -92,6 +93,7 @@
 ### Fichiers créés/modifiés
 
 - `src/lib/transpilers/asciimath-to-latex/parser.ts` (495 lignes)
+
   - Classe Parser avec parsing récursif descendant
   - Support complet de la grammaire ASCIIMath
   - Gestion de la précédence des opérateurs
@@ -107,12 +109,14 @@
 ### Fonctionnalités clés
 
 1. **Grammaire EBNF complète implémentée**
+
    - expression → relation → additive → multiplicative → fraction → power → unary → atom
    - Précédence correcte des opérateurs
    - Associativité gauche pour fractions: a/b/c = (a/b)/c
    - Associativité droite pour puissances: x^2^3 = x^(2^3)
 
 2. **Règles spéciales**
+
    - Moins unaire autorisé uniquement au début ou après (, [, {, |
    - Scripts combinés: x_i^2 et x^2_i → SubSupNode
    - Gestion des fonctions: sqrt, sin, cos, tan, log, ln, exp, abs, root
@@ -165,6 +169,7 @@ Exemples testés avec succès:
 ### Fichiers créés/modifiés
 
 - `src/lib/transpilers/asciimath-to-latex/generator.ts` (258 lignes)
+
   - Classe LatexGenerator pour convertir AST → LaTeX
   - Mapping complet de tous les types de noeuds AST
   - Préservation des templates {{...}}
@@ -178,6 +183,7 @@ Exemples testés avec succès:
 ### Fonctionnalités implémentées
 
 1. **Mapping des noeuds AST**
+
    - Literals: nombres, identifiants, grecques, symboles
    - Templates: préservation exacte de {{...}}
    - Groups: {}, (), [], ||
@@ -189,6 +195,7 @@ Exemples testés avec succès:
    - Racines: \sqrt[n]{radicand}
 
 2. **Mapping des opérateurs**
+
    - `*` → `\times` (avec espaces)
    - `:` → `\div` (avec espaces)
    - `<=`, `>=`, `!=` → `\leq`, `\geq`, `\neq`
@@ -248,6 +255,7 @@ Exemples testés avec succès:
 ### Fichiers créés/modifiés
 
 - `src/lib/transpilers/asciimath-to-latex/index.ts` (94 lignes)
+
   - Fonction principale `transpile(input: string): TranspileResult`
   - Re-exports de tous les composants (Tokenizer, Parser, LatexGenerator)
   - Re-exports de tous les types (Token, ASTNode, TranspileResult, etc.)
@@ -403,17 +411,21 @@ Ces issues sont mineurs et n'empêchent pas la mise en production.
 ### Fichiers créés/modifiés
 
 - `src/lib/transpilers/asciimath-to-latex/types.ts`
+
   - Added `ImplicitMulNode` interface for representing implicit multiplication
 
 - `src/lib/transpilers/asciimath-to-latex/parser.ts`
+
   - Modified `parseMultiplicative()` to detect juxtaposition
   - Added `canStartAtom()` helper to identify implicit multiplication opportunities
   - PIPE excluded from implicit mul detection (ambiguous with absolute value)
 
 - `src/lib/transpilers/asciimath-to-latex/generator.ts`
+
   - Added `ImplicitMul` case in generator (outputs juxtaposition, no symbol)
 
 - `src/lib/transpilers/asciimath-to-latex/index.ts`
+
   - Exported `ImplicitMulNode` type
 
 - `src/lib/transpilers/asciimath-to-latex/__tests__/index.test.ts`
@@ -422,6 +434,7 @@ Ces issues sont mineurs et n'empêchent pas la mise en production.
 ### Fonctionnalités implémentées
 
 1. **Juxtaposition patterns détectés**
+
    - Number-variable: `2x` → `2x`
    - Variable-variable: `xy` → `xy`
    - Number-parenthesis: `2(x+1)` → `2\left(x+1\right)`
@@ -431,6 +444,7 @@ Ces issues sont mineurs et n'empêchent pas la mise en production.
    - Template combinations: `{{a}}x`, `2{{b}}`
 
 2. **Distinction explicite vs implicite**
+
    - `2x` → `2x` (implicit - no symbol)
    - `2*x` → `2 \times x` (explicit - with \times)
    - `2:x` → `2 \div x` (division - with \div)

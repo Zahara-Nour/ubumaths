@@ -10,6 +10,7 @@
 ### Source Files
 
 1. **`src/lib/mathAST/normal/types.ts`** - All interface definitions
+
    - `Rational`: BigInt fraction (n/d), always reduced, d > 0
    - `SimplifiedRadical`: radicand^(1/index) with no extractable perfect powers
    - `AlgebraicTerm`: rational coefficient times product of radicals
@@ -21,6 +22,7 @@
    - `ComparisonResult`: -1 | 0 | 1 for ordering functions
 
 2. **`src/lib/mathAST/normal/rational.ts`** - Exact BigInt arithmetic
+
    - Constants: `ZERO`, `ONE`, `MINUS_ONE`, `TWO`, `HALF`
    - Helpers: `gcd`, `lcm`, `absBigInt`
    - Constructor: `rational(n, d)`, `fromInteger(n)`
@@ -30,6 +32,7 @@
    - Conversion: `rationalToNumber`, `rationalToString`, `parseRational`
 
 3. **`src/lib/mathAST/normal/radical.ts`** - Radical operations
+
    - Helpers: `integerNthRoot`, `extractPerfectPower`
    - Simplification: `simplifyRadical`, `createRadical`
    - Multiplication: `mulRadicalsSameIndex`, `mulRadicals`
@@ -69,6 +72,7 @@ All tests pass.
 4. **Radical ordering**: Radicals are ordered by index first (ascending), then by radicand (ascending). This means sqrt < cbrt < fourth root.
 
 5. **Term ordering**: AlgebraicTerms are ordered by:
+
    - Number of radicals (fewer = simpler = first)
    - Lexicographic comparison of radical arrays
    - Rational coefficient value

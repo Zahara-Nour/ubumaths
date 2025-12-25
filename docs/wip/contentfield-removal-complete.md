@@ -13,6 +13,7 @@ Successfully removed the ContentField type entirely from the codebase, completin
 ### Files Modified (16 files)
 
 1. **Component Files (7 files)**
+
    - `src/lib/components/QuestionPreview.svelte` - Removed ContentField import, replaced renderContent() with MarkdownRenderer
    - `src/lib/components/questions/CorrectionCard.svelte` - Removed ContentField usage
    - `src/lib/components/questions/FlashCard.svelte` - Removed ContentField usage
@@ -22,15 +23,18 @@ Successfully removed the ContentField type entirely from the codebase, completin
    - `src/lib/components/srs/CustomFlashCard.svelte` - Removed ContentField usage
 
 2. **Generator Files (2 files)**
+
    - `src/lib/questions/generator/content-resolver.ts` - Removed deprecated functions
    - `src/lib/questions/generator/instance-generator.ts` - Removed ContentField handling
 
 3. **Type Files (3 files)**
+
    - `src/lib/questions/types.ts` - Removed ContentField type definition
    - `src/lib/questions/index.ts` - Removed ContentField exports
    - `src/lib/srs/types.ts` - Removed ContentField imports
 
 4. **Validation/API Files (2 files)**
+
    - `src/lib/server/validation/srs.ts` - Removed deprecated schema
    - `src/routes/api/srs/review/due/+server.ts` - Updated to use markdown types
 

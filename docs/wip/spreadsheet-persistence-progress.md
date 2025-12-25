@@ -94,6 +94,7 @@ Tous les endpoints :
 ### Flow utilisateur
 
 1. **Liste** (`/spreadsheet`)
+
    - Affiche tous les spreadsheets de l'utilisateur
    - Bouton "Nouveau tableur" → Crée via API → Redirige vers `/spreadsheet/:id`
    - Click sur un spreadsheet → Redirige vers `/spreadsheet/:id`

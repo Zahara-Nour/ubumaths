@@ -43,6 +43,7 @@ The Python debug tracer presents unique testing challenges:
 The test file includes "specification tests" that describe expected behavior without executing code:
 
 - **Serialization specifications**:
+
   - Primitive types (int, str, bool, None, float, complex)
   - Collection limits (50 items max)
   - String truncation (200 chars max)
@@ -50,6 +51,7 @@ The test file includes "specification tests" that describe expected behavior wit
   - Circular reference detection
 
 - **Variable extraction specifications**:
+
   - Filtering internal variables (`_ubumaths_*`)
   - Filtering dunder variables (`__name__`, etc.)
   - Change detection (`isChanged` flag)
@@ -57,6 +59,7 @@ The test file includes "specification tests" that describe expected behavior wit
   - Type classification (`isBuiltin`)
 
 - **Snapshot creation specifications**:
+
   - Call stack ordering
   - Global variable extraction
   - Frame filtering (user code only)
@@ -327,6 +330,7 @@ pnpm test:e2e tests/e2e/python-debugger.spec.ts
    ```
 
 2. **Extract Python Code to Testable Modules**:
+
    - Move Python functions to separate files
    - Load them in both tests and worker
    - Easier to test independently

@@ -591,26 +591,26 @@ function startBackgroundRefresh() {
 
 ```svelte
 <script lang="ts">
-  let cacheAge = $derived(() => {
-    const cached = teacherCache.getRewardsSync(classId);
-    if (!cached) return null;
+	let cacheAge = $derived(() => {
+		const cached = teacherCache.getRewardsSync(classId);
+		if (!cached) return null;
 
-    const ageMs = Date.now() - cached.fetchedAt;
-    const ageMinutes = Math.floor(ageMs / 60000);
+		const ageMs = Date.now() - cached.fetchedAt;
+		const ageMinutes = Math.floor(ageMs / 60000);
 
-    return {
-      minutes: ageMinutes,
-      isStale: ageMinutes > 5,
-      isFresh: ageMinutes < 1
-    };
-  });
+		return {
+			minutes: ageMinutes,
+			isStale: ageMinutes > 5,
+			isFresh: ageMinutes < 1
+		};
+	});
 </script>
 
 {#if cacheAge?.isStale}
-  <span class="text-muted-foreground text-xs">
-    Mis à jour il y a {cacheAge.minutes} min
-    <button onclick={refresh}>Actualiser</button>
-  </span>
+	<span class="text-xs text-muted-foreground">
+		Mis à jour il y a {cacheAge.minutes} min
+		<button onclick={refresh}>Actualiser</button>
+	</span>
 {/if}
 ```
 
@@ -745,20 +745,20 @@ async function updateWithRollbackAnimation(studentId: string, delta: number) {
 
 ```svelte
 {#if isLoading}
-  <div class="space-y-2">
-    {#each { length: 5 } as _}
-      <div class="flex items-center gap-4 p-4 border rounded">
-        <Skeleton class="h-10 w-10 rounded-full" />
-        <div class="space-y-2 flex-1">
-          <Skeleton class="h-4 w-32" />
-          <Skeleton class="h-3 w-48" />
-        </div>
-        <Skeleton class="h-8 w-16" />
-      </div>
-    {/each}
-  </div>
+	<div class="space-y-2">
+		{#each { length: 5 } as _}
+			<div class="flex items-center gap-4 rounded border p-4">
+				<Skeleton class="h-10 w-10 rounded-full" />
+				<div class="flex-1 space-y-2">
+					<Skeleton class="h-4 w-32" />
+					<Skeleton class="h-3 w-48" />
+				</div>
+				<Skeleton class="h-8 w-16" />
+			</div>
+		{/each}
+	</div>
 {:else}
-  <!-- Actual content -->
+	<!-- Actual content -->
 {/if}
 ```
 

@@ -55,10 +55,12 @@ The following components already had proper readonly support:
 ### When readonly=true:
 
 1. **Visual Indicators**:
+
    - Blue banner at top with "Mode lecture seule" message
    - Eye icon indicating view-only mode
 
 2. **Disabled Operations**:
+
    - ❌ Cannot execute cells (Run, Run All buttons disabled)
    - ❌ Cannot add cells (Add dropdown hidden)
    - ❌ Cannot delete cells (Delete button hidden)

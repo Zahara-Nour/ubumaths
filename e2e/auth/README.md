@@ -17,11 +17,13 @@ Complete documentation with test details, helper functions, and troubleshooting.
 ## Quick Links
 
 - **Login flows** (32 tests) - `login.spec.ts`
+
   - Successful/failed login attempts
   - UI interactions and validation
   - Security (cookies, CSRF, rate limiting)
 
 - **Logout flows** (23 tests) - `logout.spec.ts`
+
   - Successful logout and redirects
   - Session clearing and invalidation
   - Post-logout behavior

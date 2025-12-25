@@ -137,11 +137,13 @@ Total: 133 tests passed
 
 1. **Brackets Validator**: Only checks parentheses `()`, NOT square brackets `[]`
 2. **Constraints**: Only applied when:
+
    - Answer is mathematically correct
    - LaTeX input is provided
    - Constraints are configured in question options
 
 3. **Constraint Modes**:
+
    - `strict`: Violation → `bad_form` (error severity, isCorrect=false)
    - `warn`: Violation → `unoptimal_form` (warning severity, isCorrect=true)
    - `off`: No checking

@@ -47,23 +47,27 @@
 ## Key Features Implemented
 
 1. **Unit System Core**
+
    - SI base units (m, kg, s, A, K, mol, cd)
    - SI prefixes (nano to giga)
    - Special units (L, h, min, €, $)
    - Unit aliases (litre → L)
 
 2. **Unit Operations**
+
    - Multiply, divide, power operations
    - Unit conversion with factors
    - Dimensional analysis
    - Unit formatting
 
 3. **LaTeX Parsing**
+
    - Parse MathLive output (`\text{ km }`, `\mathrm{m}`)
    - Handle composite units (km/h, m.s^-2)
    - Support arithmetic expressions
 
 4. **HMS Support**
+
    - Parse "2h30min", "3:25:10"
    - Format to various styles
    - HMS arithmetic (add, subtract, compare)

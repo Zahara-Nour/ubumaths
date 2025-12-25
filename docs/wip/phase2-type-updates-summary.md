@@ -13,6 +13,7 @@ Successfully updated all core type definitions to use the branded markdown types
 - Imported branded markdown types from `$lib/shared/markdown`
 - Added `@deprecated` JSDoc to `ContentField` type (kept for backward compatibility)
 - Updated `QuestionVariation` interface:
+
   - `statement: ContentField[]` → `statement: TemplateMarkdown`
   - `correction?: ContentField[]` → `correction?: TemplateMarkdown`
   - `choices.content: ContentField` → `choices.content: TemplateMarkdown`
@@ -32,10 +33,12 @@ Successfully updated all core type definitions to use the branded markdown types
 
 - Imported branded markdown types from `$lib/shared/markdown`
 - Updated `Card` interface:
+
   - `frontContent?: ContentField[]` → `frontContent?: TemplateMarkdown`
   - `backContent?: ContentField[]` → `backContent?: TemplateMarkdown`
 
 - Added clarifying comment to `DbCard` interface:
+
   - Database still stores `ContentField[]` for now (migration in Phase 7)
   - Conversion happens at the boundary layer
 
@@ -49,6 +52,7 @@ Successfully updated all core type definitions to use the branded markdown types
 
 - Created proper `variableSchema` for question variables
 - Created `variationSchema` that validates markdown strings:
+
   - `statement: z.string().min(1, "L'énoncé est requis")`
   - `correction: z.string().optional()`
   - `choices.content: z.string()`
@@ -64,6 +68,7 @@ Successfully updated all core type definitions to use the branded markdown types
 
 - Added `@deprecated` comment to `contentFieldSchema`
 - Updated `createCustomCardSchema`:
+
   - `frontContent: z.array(contentFieldSchema)` → `frontContent: z.string()`
   - `backContent: z.array(contentFieldSchema)` → `backContent: z.string()`
   - Added proper validation messages

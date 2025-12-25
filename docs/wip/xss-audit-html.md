@@ -387,6 +387,7 @@ import DOMPurify from 'isomorphic-dompurify';
 ### Critical (Fix Immediately)
 
 1. [ ] **VariantPreview.svelte** (4 usages)
+
    - Add DOMPurify sanitization for `exercise.statement` and `exercise.solution`
    - Create shared `sanitizeExerciseContent()` utility
 
@@ -398,6 +399,7 @@ import DOMPurify from 'isomorphic-dompurify';
 ### Recommended (Fix Soon)
 
 3. [ ] **Documentation pages** (2 usages)
+
    - Add DOMPurify to markdown parser output
    - Or use `marked` with `sanitize: true` option
 
@@ -408,6 +410,7 @@ import DOMPurify from 'isomorphic-dompurify';
 ### Nice-to-Have (Defense in Depth)
 
 5. [ ] **Rich text debug page** (1 usage)
+
    - Add DOMPurify even for admin debug pages
 
 6. [ ] **SVG content** (3 usages)

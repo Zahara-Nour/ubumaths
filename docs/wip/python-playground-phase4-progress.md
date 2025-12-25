@@ -75,12 +75,14 @@ Successfully implemented fullscreen mode for the Python Playground component, al
 ## Testing Recommendations
 
 1. **Functionality:**
+
    - Click maximize button → playground goes fullscreen
    - Click minimize button → playground returns to normal
    - Press Escape → exits fullscreen
    - Toggle multiple times → no memory leaks or scroll issues
 
 2. **Visual:**
+
    - Fullscreen covers entire viewport
    - No scrollbars on body when fullscreen
    - Toolbar remains visible and functional

@@ -17,12 +17,14 @@ Complete documentation with test details, helper functions, and troubleshooting.
 ## Quick Links
 
 - **Create assessments** (10 tests) - `create-assessment.spec.ts`
+
   - Assessment creation wizard
   - Question cart integration
   - Settings configuration
   - Validation (title, duration, attempts)
 
 - **View assessments** (20 tests) - `view-assessments.spec.ts`
+
   - List view with tabs (Drafts, Published, Archived)
   - Badge counts and empty states
   - Assessment cards display

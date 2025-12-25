@@ -168,12 +168,14 @@ All tests pass:
 ## Next Steps (Future Phases)
 
 1. **Phase 6**: Create UI components
+
    - REPL terminal component
    - AST tree viewer
    - History panel
    - Input controls
 
 2. **Phase 7**: Add features
+
    - Autocomplete for commands
    - Syntax highlighting for input
    - Export history to file

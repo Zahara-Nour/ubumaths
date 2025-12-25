@@ -220,13 +220,16 @@ The MathAST library is production-ready and demonstrates high-quality software e
 ## Files Modified
 
 1. `/Users/david/Coding/js/ubumaths/src/lib/mathAST/factory.ts`
+
    - Changed `args` parameter to `readonly MathNode[]`
 
 2. `/Users/david/Coding/js/ubumaths/src/lib/mathAST/guards.ts`
+
    - Added category type guards (isLiteralNode, isBinaryOperationNode, etc.)
    - Added imports for union types
 
 3. `/Users/david/Coding/js/ubumaths/src/lib/mathAST/types.ts`
+
    - Removed duplicate type guards
 
 4. `/Users/david/Coding/js/ubumaths/src/lib/mathAST/index.ts`

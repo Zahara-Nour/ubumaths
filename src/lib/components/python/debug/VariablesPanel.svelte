@@ -109,18 +109,32 @@
 								<span class="min-w-[80px] font-mono font-medium text-foreground">
 									{variable.name}
 								</span>
-								<span class={cn('rounded px-1.5 py-0.5 text-xs font-medium', getTypeBadgeClass(variable.type))}>
+								<span
+									class={cn(
+										'rounded px-1.5 py-0.5 text-xs font-medium',
+										getTypeBadgeClass(variable.type)
+									)}
+								>
 									{variable.type}
 								</span>
-								<span class="flex-1 truncate font-mono text-muted-foreground" title={variable.value}>
+								<span
+									class="flex-1 truncate font-mono text-muted-foreground"
+									title={variable.value}
+								>
 									{formatValue(variable.value)}
 								</span>
 								{#if variable.isNew}
-									<span class="text-xs text-green-600 dark:text-green-400" aria-label="Nouvelle variable">
+									<span
+										class="text-xs text-green-600 dark:text-green-400"
+										aria-label="Nouvelle variable"
+									>
 										nouveau
 									</span>
 								{:else if variable.isChanged}
-									<span class="text-xs text-yellow-600 dark:text-yellow-400" aria-label="Variable modifiée">
+									<span
+										class="text-xs text-yellow-600 dark:text-yellow-400"
+										aria-label="Variable modifiée"
+									>
 										modifié
 									</span>
 								{/if}
@@ -154,18 +168,32 @@
 								<span class="min-w-[80px] font-mono font-medium text-foreground">
 									{variable.name}
 								</span>
-								<span class={cn('rounded px-1.5 py-0.5 text-xs font-medium', getTypeBadgeClass(variable.type))}>
+								<span
+									class={cn(
+										'rounded px-1.5 py-0.5 text-xs font-medium',
+										getTypeBadgeClass(variable.type)
+									)}
+								>
 									{variable.type}
 								</span>
-								<span class="flex-1 truncate font-mono text-muted-foreground" title={variable.value}>
+								<span
+									class="flex-1 truncate font-mono text-muted-foreground"
+									title={variable.value}
+								>
 									{formatValue(variable.value)}
 								</span>
 								{#if variable.isNew}
-									<span class="text-xs text-green-600 dark:text-green-400" aria-label="Nouvelle variable">
+									<span
+										class="text-xs text-green-600 dark:text-green-400"
+										aria-label="Nouvelle variable"
+									>
 										nouveau
 									</span>
 								{:else if variable.isChanged}
-									<span class="text-xs text-yellow-600 dark:text-yellow-400" aria-label="Variable modifiée">
+									<span
+										class="text-xs text-yellow-600 dark:text-yellow-400"
+										aria-label="Variable modifiée"
+									>
 										modifié
 									</span>
 								{/if}

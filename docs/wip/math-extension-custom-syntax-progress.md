@@ -31,6 +31,7 @@ Ajouter le support de la syntaxe custom UbuMaths (~expression~ et ~~expression~~
 #### MathInline
 
 - **`$...$`** : Syntaxe LaTeX (existant, amélioré avec nouveaux attributs)
+
   - `syntax='latex'`
   - `originalExpression` = contenu brut
   - `latex` = transpilé si parsing custom réussit, sinon brut

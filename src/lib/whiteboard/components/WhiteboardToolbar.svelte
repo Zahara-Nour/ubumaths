@@ -1041,7 +1041,8 @@
 									>Espacement</span
 								>
 								<div class="flex items-center gap-2">
-									<Slider type="single"
+									<Slider
+										type="single"
 										value={[currentGridSpacing]}
 										onValueChange={handleGridSpacingChange}
 										min={5}
@@ -1061,7 +1062,8 @@
 								<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Intensité</span
 								>
 								<div class="flex items-center gap-2">
-									<Slider type="single"
+									<Slider
+										type="single"
 										value={[currentGridOpacity]}
 										onValueChange={handleGridOpacityChange}
 										min={0.1}
@@ -1460,7 +1462,8 @@
 			<div>
 				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Épaisseur</span>
 				<div class="flex items-center gap-2">
-					<Slider type="single"
+					<Slider
+						type="single"
 						value={[currentStrokeWidth]}
 						onValueChange={handleStrokeWidthChange}
 						min={STROKE_WIDTH_MIN}
@@ -1479,7 +1482,8 @@
 			<div>
 				<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Opacité</span>
 				<div class="flex items-center gap-2">
-					<Slider type="single"
+					<Slider
+						type="single"
 						value={[currentOpacity]}
 						onValueChange={handleOpacityChange}
 						min={0.1}
@@ -1666,7 +1670,8 @@
 				<div>
 					<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Opacité</span>
 					<div class="flex items-center gap-2">
-						<Slider type="single"
+						<Slider
+							type="single"
 							value={[currentFillOpacity]}
 							onValueChange={handleFillOpacityChange}
 							min={0.1}
@@ -1687,7 +1692,8 @@
 				<div>
 					<span class="mb-1.5 block text-xs font-medium text-muted-foreground">Arrondi</span>
 					<div class="flex items-center gap-2">
-						<Slider type="single"
+						<Slider
+							type="single"
 							value={[currentCornerRadius]}
 							onValueChange={handleCornerRadiusChange}
 							min={0}

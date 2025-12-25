@@ -987,7 +987,7 @@ Page de développement pour tester les fonctionnalités du RichTextEditor.
 | Onglet            | Description                                          |
 | ----------------- | ---------------------------------------------------- |
 | **Test Editor**   | Test général du RichTextEditor avec output HTML/JSON |
-| **Import/Export** | Test du round-trip Markdown ↔ TipTap                 |
+| **Import/Export** | Test du round-trip Markdown ↔ TipTap                |
 
 ### Import/Export Tab
 

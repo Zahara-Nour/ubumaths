@@ -123,6 +123,7 @@ Source record exists (e.g., in `gidouilles_history`) but no corresponding `rewar
    ```
 
 2. **Transaction rolled back**
+
    - If the original INSERT failed, the trigger never committed
    - Check application logs for transaction errors
 

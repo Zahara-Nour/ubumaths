@@ -16,10 +16,12 @@
 A comprehensive simplification system for transcendental functions including:
 
 1. **Trigonometric Functions** (19 rules)
+
    - All "valeurs remarquables" for sin, cos, tan
    - Angles: 0, π/6, π/4, π/3, π/2, π, 3π/2, 2π
 
 2. **Logarithmic Functions** (4 rules)
+
    - Natural logarithm (ln)
    - Common logarithm (log base 10)
    - General base logarithm

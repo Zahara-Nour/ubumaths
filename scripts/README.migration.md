@@ -251,11 +251,13 @@ pnpm tsx scripts/validate-phase1-questions.ts --verbose
 The validation script verifies:
 
 1. **Template Structure**
+
    - Required fields present
    - Correct data types
    - Valid question type
 
 2. **Instance Generation**
+
    - Variables can be processed
    - Answer can be generated
    - No runtime errors

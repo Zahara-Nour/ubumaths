@@ -419,11 +419,13 @@ Files over 500 lines that could benefit from splitting:
 ### High Priority
 
 1. **Audit `@html` Usage** (Security)
+
    - Review all 31 occurrences in 18 files
    - Ensure DOMPurify or equivalent sanitization
    - Document approved patterns
 
 2. **Split Large Components** (Maintainability)
+
    - Break rewards page into smaller components
    - Aim for <500 lines per component
 
@@ -434,10 +436,12 @@ Files over 500 lines that could benefit from splitting:
 ### Medium Priority
 
 4. **Document Store Architecture**
+
    - Create store relationship diagram
    - Document when to use which store
 
 5. **Archive WIP Documentation**
+
    - Move completed items to `/docs/archive/`
    - Consolidate active items
 
@@ -448,6 +452,7 @@ Files over 500 lines that could benefit from splitting:
 ### Low Priority
 
 7. **Optimize SvelteMap Updates**
+
    - Profile high-frequency update patterns
    - Consider mutation strategies
 

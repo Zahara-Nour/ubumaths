@@ -118,13 +118,16 @@ pnpm test:client src/lib/stores/pythonPlayground.svelte.test.ts
 ## Files Modified
 
 1. **`src/lib/stores/pythonPlayground.svelte.ts`**
+
    - Added `saveCode()` public method
 
 2. **`src/lib/components/python/PythonEditor.svelte`**
+
    - Added `onSave` prop
    - Added Ctrl+S keybinding
 
 3. **`src/lib/components/python/PythonPlayground.svelte`**
+
    - Imported toaster
    - Added `handleSave()` function
    - Connected save callback

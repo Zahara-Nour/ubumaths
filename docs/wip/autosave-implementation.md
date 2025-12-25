@@ -113,20 +113,24 @@ scheduleAutoSave(): void {
 ## Autosave Flow
 
 1. **User edits code/markdown**
+
    - Cell source is updated via `bind:value` in editor
    - NotebookView's autosave effect detects change via hash comparison
 
 2. **Dirty state set**
+
    - `notebook.markModified()` sets `isModified = true`
    - Status bar updates to show "Non enregistré"
 
 3. **Debounced save scheduled**
+
    - `notebook.scheduleAutoSave()` called
    - Previous timeout cancelled (if any)
    - New 2-second timeout started
    - If user continues typing, timer resets
 
 4. **Autosave executes**
+
    - After 2 seconds of inactivity, autosave runs
    - `isAutoSaving` set to true
    - Status bar shows "Sauvegarde automatique..." with pulsing dot

@@ -209,10 +209,12 @@ Output: Addition(2, 3)
 ### Alternative Approaches Considered
 
 1. **Parse and unwrap**: Parse `\textcolor{}{...}` fully, then extract content
+
    - ❌ Would still require special handling for operators
    - ❌ More complex unwrapping logic needed
 
 2. **Token-level color injection**: Apply colors at tokenizer level
+
    - ❌ Tokenizer doesn't understand expression structure
    - ❌ Would require significant tokenizer changes
 

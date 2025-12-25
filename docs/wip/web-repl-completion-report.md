@@ -302,18 +302,21 @@ All code is browser-safe:
 ### Phase 6: UI Components (Future)
 
 1. **Terminal Component**
+
    - Input area with syntax highlighting
    - Output display with HTML rendering
    - Command autocomplete
    - Keyboard shortcuts
 
 2. **AST Viewer Component**
+
    - Tree visualization
    - Bidirectional highlighting
    - Node inspection panel
    - Export options
 
 3. **History Panel**
+
    - Search/filter history
    - Re-execute entries
    - Export to file
@@ -351,12 +354,15 @@ All code is browser-safe:
 ## Known Limitations
 
 1. **AST Persistence**: AST nodes not saved to localStorage (too large)
+
    - Solution: Re-parse on load if needed
 
 2. **History Limit**: 100 entries max
+
    - Solution: Auto-prune old entries
 
 3. **Quota Exceeded**: Auto-reduces history by 50%
+
    - Solution: User can clear manually
 
 4. **No Undo/Redo**: Not implemented yet

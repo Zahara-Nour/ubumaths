@@ -123,10 +123,8 @@ export interface ShopItemWithStatus extends ShopItemTemplate {
  * Student inventory item with typed JSONB fields.
  * Represents an item owned by a student.
  */
-export interface StudentItemInventory extends Omit<
-	DbStudentItemInventory,
-	'acquisition_data' | 'instance_data'
-> {
+export interface StudentItemInventory
+	extends Omit<DbStudentItemInventory, 'acquisition_data' | 'instance_data'> {
 	acquisition_data: ItemAcquisitionData | null;
 	instance_data: ItemInstanceData | null;
 }

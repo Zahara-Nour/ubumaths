@@ -46,20 +46,24 @@ src/lib/math/            # NEW: shared module
 ### What Was Accomplished
 
 1. **Moved Compute Engine to Shared Location** (`$lib/math/compute-engine/`)
+
    - Moved from `$lib/questions/compute-engine/` to make it available for non-question code
    - Now accessible to ubumark without circular dependencies
 
 2. **Created MathAST Evaluation Function** (`$lib/mathAST/eval/evaluate-with-modifiers.ts`)
+
    - Replaced direct compute-engine dependency in ubumark
    - Supports evaluation modifiers (display, fixed, sci, etc.)
    - Cleaner separation of concerns
 
 3. **Created Generators Directory** (`$lib/ubumark/generators/`)
+
    - Moved LaTeX generator from typst module
    - Moved Typst generator from separate module
    - All markdown → other format conversions in one place
 
 4. **Created Importers Directory** (`$lib/ubumark/importers/`)
+
    - Moved LaTeX importer from `$lib/exercises/transpilers/latex-to-markdown/`
    - Clean separation: importers bring content IN, generators output content OUT
 

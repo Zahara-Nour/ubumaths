@@ -163,25 +163,30 @@ describe('Group Name', () => {
 ### Best Practices
 
 1. **Always use `expect.assertions(n)`**
+
    - Ensures all assertions run (catches early returns)
    - Documents expected assertion count
 
 2. **Use descriptive test names**
+
    - Start with `should` for behavior
    - Describe the expected outcome clearly
    - Example: `'should load classes with students including gidouilles and vip_cards'`
 
 3. **Group related tests**
+
    - Use `describe()` blocks for logical grouping
    - Example: "Layout Loading", "Error Handling"
 
 4. **Test edge cases**
+
    - Empty arrays/objects
    - Null/undefined fields
    - Missing data
    - Error conditions
 
 5. **Mock external dependencies**
+
    - Database queries (Supabase)
    - API calls
    - File system operations
@@ -197,11 +202,13 @@ describe('Group Name', () => {
 ## Test Coverage Goals
 
 - **Critical paths**: 100% coverage
+
   - Data loading workflows
   - Error handling paths
   - Security checks (auth, permissions)
 
 - **Edge cases**: Cover all realistic scenarios
+
   - Empty datasets
   - Null/undefined values
   - Boundary conditions
@@ -253,16 +260,19 @@ describe('Group Name', () => {
 Integration tests to add as features are developed:
 
 - **Student Dashboard Cache** (Phase 2)
+
   - Similar to teacher layout loading
   - Validates assignment data loading
   - Tests SRS review caching
 
 - **Assessment Workflow**
+
   - Create → Assign → Complete → Grade
   - Verify data flows correctly
   - Test concurrent submissions
 
 - **SRS Review Session**
+
   - Load deck → Review cards → Update stats
   - Test spaced repetition algorithm
   - Verify XP/progress calculations
