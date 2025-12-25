@@ -40,7 +40,8 @@ import {
 	extractMath,
 	isMathPlaceholder,
 	findPlaceholder,
-	splitTextWithPlaceholders
+	splitTextWithPlaceholders,
+	restoreMathPlaceholders
 } from './math-extractor';
 import { parseList, findListBlocks, isListItem } from './list-parser';
 import { parseTable, findTableBlocks, isTableRow, isAlignmentRow } from './table-parser';
@@ -1184,7 +1185,10 @@ function parseContentWithCodeBlocks(
 			}
 		} else if (language === 'probtree') {
 			// Parse as probability tree
-			const lines = ['```probtree', ...code.split('\n'), '```'];
+			// IMPORTANT: Restore math placeholders to original expressions (e.g., __MATH_0__ -> $R_1$)
+			// because probtree content may contain math in event labels that was extracted earlier
+			const restoredCode = restoreMathPlaceholders(code, placeholders);
+			const lines = ['```probtree', ...restoredCode.split('\n'), '```'];
 			const result = parseProbabilityTree(lines, 0, lines.length - 1);
 			if (result.node) {
 				blocks.push(result.node);
