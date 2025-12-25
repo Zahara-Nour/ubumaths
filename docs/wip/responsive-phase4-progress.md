@@ -1,7 +1,8 @@
 # Phase 4 : Experience Exercices - Progress
 
 **Date** : 2024-12-25
-**Statut** : En cours (Commit)
+**Statut** : ✅ Completee
+**Commit** : `6d70a31c`
 
 ---
 
