@@ -216,12 +216,20 @@ export interface TableCellNode {
 
 /**
  * Table node (GFM-style)
+ *
+ * Supports two orientations:
+ * - 'vertical' (default): Headers in first row, data in subsequent rows
+ * - 'horizontal': Headers in first column, data in subsequent columns
+ *
+ * Horizontal tables are specified with the `:table-h` directive before the table.
  */
 export interface TableNode extends BaseNode {
 	type: 'table';
 	header: TableCellNode[];
 	rows: TableCellNode[][];
 	alignments: ('left' | 'center' | 'right')[];
+	/** Table orientation: 'vertical' (default) or 'horizontal' (headers in first column) */
+	orientation?: 'vertical' | 'horizontal';
 }
 
 /**

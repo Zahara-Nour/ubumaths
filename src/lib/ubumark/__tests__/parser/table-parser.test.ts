@@ -353,3 +353,154 @@ describe('Edge Cases', () => {
 		expect(table?.alignments).toHaveLength(3);
 	});
 });
+
+// ============================================================================
+// HORIZONTAL TABLE SUPPORT
+// ============================================================================
+
+import {
+	isHorizontalTableDirective,
+	findTableBlocksWithDirective
+} from '../../parser/table-parser';
+
+describe('isHorizontalTableDirective', () => {
+	it('should identify :table-h directive', () => {
+		expect(isHorizontalTableDirective(':table-h')).toBe(true);
+	});
+
+	it('should handle whitespace around directive', () => {
+		expect(isHorizontalTableDirective('  :table-h  ')).toBe(true);
+		expect(isHorizontalTableDirective('\t:table-h\t')).toBe(true);
+	});
+
+	it('should reject partial matches', () => {
+		expect(isHorizontalTableDirective(':table')).toBe(false);
+		expect(isHorizontalTableDirective('table-h')).toBe(false);
+		expect(isHorizontalTableDirective(':table-horizontal')).toBe(false);
+	});
+
+	it('should reject table rows', () => {
+		expect(isHorizontalTableDirective('| cell |')).toBe(false);
+		expect(isHorizontalTableDirective('|---|---|')).toBe(false);
+	});
+
+	it('should reject text containing directive', () => {
+		expect(isHorizontalTableDirective('Use :table-h for horizontal')).toBe(false);
+	});
+});
+
+describe('findTableBlocksWithDirective', () => {
+	it('should detect horizontal table after :table-h', () => {
+		const lines = [':table-h', '| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].isHorizontal).toBe(true);
+		expect(blocks[0].directiveIndex).toBe(0);
+		expect(blocks[0].startIndex).toBe(1);
+		expect(blocks[0].endIndex).toBe(3);
+	});
+
+	it('should detect vertical table without directive', () => {
+		const lines = ['| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].isHorizontal).toBe(false);
+		expect(blocks[0].directiveIndex).toBeUndefined();
+		expect(blocks[0].startIndex).toBe(0);
+		expect(blocks[0].endIndex).toBe(2);
+	});
+
+	it('should handle mixed tables in document', () => {
+		const lines = [
+			':table-h',
+			'| H1 | H2 |',
+			'|---|---|',
+			'| a | b |',
+			'',
+			'| V1 | V2 |',
+			'|---|---|',
+			'| x | y |'
+		];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(2);
+		expect(blocks[0].isHorizontal).toBe(true);
+		expect(blocks[0].directiveIndex).toBe(0);
+		expect(blocks[1].isHorizontal).toBe(false);
+		expect(blocks[1].directiveIndex).toBeUndefined();
+	});
+
+	it('should handle :table-h with text before it', () => {
+		const lines = ['Some text', ':table-h', '| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].isHorizontal).toBe(true);
+		expect(blocks[0].directiveIndex).toBe(1);
+		expect(blocks[0].startIndex).toBe(2);
+	});
+
+	it('should ignore :table-h not followed by table', () => {
+		const lines = [':table-h', 'Not a table', '| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		// The :table-h is not immediately before a table, so it should be ignored
+		// The table starting at line 2 should be detected as vertical
+		expect(blocks).toHaveLength(1);
+		expect(blocks[0].isHorizontal).toBe(false);
+		expect(blocks[0].startIndex).toBe(2);
+	});
+
+	it('should handle multiple horizontal tables', () => {
+		const lines = [
+			':table-h',
+			'| A | B |',
+			'|---|---|',
+			'| 1 | 2 |',
+			'',
+			':table-h',
+			'| X | Y |',
+			'|---|---|',
+			'| 3 | 4 |'
+		];
+
+		const blocks = findTableBlocksWithDirective(lines);
+
+		expect(blocks).toHaveLength(2);
+		expect(blocks[0].isHorizontal).toBe(true);
+		expect(blocks[1].isHorizontal).toBe(true);
+	});
+});
+
+describe('parseTable with orientation', () => {
+	it('should include orientation when specified', () => {
+		const lines = ['| Nom | Age |', '|---|---|', '| Alice | 25 |', '| Bob | 30 |'];
+
+		const table = parseTable(lines, 'horizontal');
+
+		expect(table?.orientation).toBe('horizontal');
+	});
+
+	it('should default to vertical orientation', () => {
+		const lines = ['| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const table = parseTable(lines);
+
+		expect(table?.orientation).toBe('vertical');
+	});
+
+	it('should accept explicit vertical orientation', () => {
+		const lines = ['| A | B |', '|---|---|', '| 1 | 2 |'];
+
+		const table = parseTable(lines, 'vertical');
+
+		expect(table?.orientation).toBe('vertical');
+	});
+});

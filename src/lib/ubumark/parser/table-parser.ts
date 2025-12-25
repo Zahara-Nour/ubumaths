@@ -37,6 +37,12 @@ const TABLE_ROW_REGEX = /^\s*\|(.+)\|\s*$/;
  */
 const ALIGNMENT_ROW_REGEX = /^\s*\|(\s*:?-+:?\s*\|)+\s*$/;
 
+/**
+ * Regex to detect :table-h directive for horizontal tables
+ * Matches lines containing only ":table-h" with optional whitespace
+ */
+const TABLE_H_DIRECTIVE_REGEX = /^\s*:table-h\s*$/;
+
 // ============================================================================
 // TABLE DETECTION
 // ============================================================================
@@ -59,6 +65,16 @@ export function isTableRow(line: string): boolean {
  */
 export function isAlignmentRow(line: string): boolean {
 	return ALIGNMENT_ROW_REGEX.test(line);
+}
+
+/**
+ * Check if a line is a horizontal table directive (:table-h)
+ *
+ * @param line - Line to check
+ * @returns true if line is the :table-h directive
+ */
+export function isHorizontalTableDirective(line: string): boolean {
+	return TABLE_H_DIRECTIVE_REGEX.test(line);
 }
 
 /**
@@ -183,6 +199,7 @@ function createCellNodes(
  * ```
  *
  * @param lines - Array of table lines (must be a valid table)
+ * @param orientation - Table orientation: 'vertical' (default) or 'horizontal'
  * @returns TableNode AST node or null if invalid
  *
  * @example
@@ -193,8 +210,12 @@ function createCellNodes(
  *   '| 1 | 2    |'
  * ];
  * const table = parseTable(lines);
+ * const horizontalTable = parseTable(lines, 'horizontal');
  */
-export function parseTable(lines: string[]): TableNode | null {
+export function parseTable(
+	lines: string[],
+	orientation: 'vertical' | 'horizontal' = 'vertical'
+): TableNode | null {
 	if (!isValidTable(lines)) {
 		return null;
 	}
@@ -236,7 +257,8 @@ export function parseTable(lines: string[]): TableNode | null {
 		type: 'table',
 		header,
 		rows,
-		alignments
+		alignments,
+		orientation
 	};
 }
 
@@ -287,6 +309,90 @@ export function findTableBlocks(lines: string[]): [number, number][] {
 			}
 
 			blocks.push([start, end]);
+			i = end + 1;
+		} else {
+			i++;
+		}
+	}
+
+	return blocks;
+}
+
+/**
+ * Table block range with directive information
+ */
+export interface TableBlockRange {
+	/** Start index of the table (first row, not directive) */
+	startIndex: number;
+	/** End index of the table (last row) */
+	endIndex: number;
+	/** Whether this is a horizontal table (:table-h directive was present) */
+	isHorizontal: boolean;
+	/** Line index of the :table-h directive, if present */
+	directiveIndex?: number;
+}
+
+/**
+ * Find all table blocks in an array of lines, with directive detection
+ *
+ * Returns table block ranges with information about horizontal directives.
+ * A :table-h directive must immediately precede a table to be recognized.
+ *
+ * @param lines - Array of markdown lines
+ * @returns Array of TableBlockRange objects
+ *
+ * @example
+ * const lines = [
+ *   ':table-h',
+ *   '| h1 | h2 |',
+ *   '|----|-----|',
+ *   '| c1 | c2 |'
+ * ];
+ * const blocks = findTableBlocksWithDirective(lines);
+ * // Returns: [{ startIndex: 1, endIndex: 3, isHorizontal: true, directiveIndex: 0 }]
+ */
+export function findTableBlocksWithDirective(lines: string[]): TableBlockRange[] {
+	const blocks: TableBlockRange[] = [];
+
+	let i = 0;
+	while (i < lines.length) {
+		// Check for :table-h directive
+		let isHorizontal = false;
+		let directiveIndex: number | undefined;
+
+		if (isHorizontalTableDirective(lines[i])) {
+			// Check if next line starts a table
+			if (i + 2 < lines.length && isTableRow(lines[i + 1]) && isAlignmentRow(lines[i + 2])) {
+				isHorizontal = true;
+				directiveIndex = i;
+				i++; // Move past directive to table start
+			} else {
+				// Directive not followed by table, skip it
+				i++;
+				continue;
+			}
+		}
+
+		// Look for potential table start (header + alignment row)
+		if (i + 1 < lines.length && isTableRow(lines[i]) && isAlignmentRow(lines[i + 1])) {
+			const start = i;
+
+			// Find end of table
+			let end = i + 1; // At least include alignment row
+			for (let j = i + 2; j < lines.length; j++) {
+				if (isTableRow(lines[j])) {
+					end = j;
+				} else {
+					break; // Stop at first non-table line
+				}
+			}
+
+			blocks.push({
+				startIndex: start,
+				endIndex: end,
+				isHorizontal,
+				directiveIndex
+			});
 			i = end + 1;
 		} else {
 			i++;

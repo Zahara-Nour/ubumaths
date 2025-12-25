@@ -463,6 +463,37 @@ function generateListItemContent(
  * @returns Typst table
  */
 function generateTable(node: TableNode, _options: Required<TypstTranspilerOptions>): string {
+	const isHorizontal = node.orientation === 'horizontal';
+
+	if (isHorizontal) {
+		// Horizontal table: transpose data, first column is bold (headers)
+		// Number of output columns = 1 (header) + number of data rows
+		const numCols = 1 + node.rows.length;
+		// First column left-aligned, rest centered
+		const alignments = ['left', ...Array(node.rows.length).fill('center')];
+
+		// Transpose: each source column becomes an output row
+		const rows: string[] = [];
+		for (let col = 0; col < node.header.length; col++) {
+			const cells: string[] = [
+				// First cell: header in bold
+				`[*${escapeTypst(node.header[col].content)}*]`
+			];
+			// Data cells from each row
+			for (const row of node.rows) {
+				cells.push(`[${escapeTypst(row[col]?.content || '')}]`);
+			}
+			rows.push(cells.join(', '));
+		}
+
+		return `#table(
+  columns: ${numCols},
+  align: (${alignments.join(', ')}),
+  ${rows.join(',\n  ')}
+)`;
+	}
+
+	// Standard vertical table
 	const numCols = node.header.length;
 
 	// Map alignments

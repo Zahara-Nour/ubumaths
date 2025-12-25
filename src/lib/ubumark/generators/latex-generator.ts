@@ -343,6 +343,35 @@ function generateList(node: ListNode, options: Required<LatexTranspilerOptions>)
  * @returns LaTeX table environment
  */
 function generateTable(node: TableNode, _options: Required<LatexTranspilerOptions>): string {
+	const isHorizontal = node.orientation === 'horizontal';
+
+	if (isHorizontal) {
+		// Horizontal table: transpose data, first column is bold (headers)
+		// First column left-aligned, rest centered
+		const colSpec = 'l|' + Array(node.rows.length).fill('c').join('|');
+
+		// Transpose: each source column becomes an output row
+		const lines: string[] = [];
+		for (let col = 0; col < node.header.length; col++) {
+			const cells: string[] = [
+				// First cell: header in bold
+				`\\textbf{${escapeLatex(node.header[col].content)}}`
+			];
+			// Data cells from each row
+			for (const row of node.rows) {
+				cells.push(escapeLatex(row[col]?.content || ''));
+			}
+			lines.push(cells.join(' & '));
+		}
+
+		return `\\begin{tabular}{|${colSpec}|}
+\\hline
+${lines.join(' \\\\\n\\hline\n')} \\\\
+\\hline
+\\end{tabular}`;
+	}
+
+	// Standard vertical table
 	// Generate column specification
 	const colSpec = node.alignments
 		.map((align: string) => {

@@ -61,15 +61,20 @@ export {
 export {
 	parseTable,
 	findTableBlocks,
+	findTableBlocksWithDirective,
 	isTableRow,
 	isAlignmentRow,
 	isValidTable,
+	isHorizontalTableDirective,
 	getColumnCount,
 	getRowCount,
 	getCellValue,
 	tableToArray,
 	isEmptyTable
 } from './table-parser';
+
+// Table parser types
+export type { TableBlockRange } from './table-parser';
 
 // Code block parser
 export {

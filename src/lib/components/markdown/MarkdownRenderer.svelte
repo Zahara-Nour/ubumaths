@@ -217,7 +217,12 @@
 						{onHintOpen}
 					/>
 				{:else if node.type === 'table'}
-					<TableNode header={node.header} rows={node.rows} alignments={node.alignments} />
+					<TableNode
+						header={node.header}
+						rows={node.rows}
+						alignments={node.alignments}
+						orientation={node.orientation}
+					/>
 				{:else if node.type === 'image'}
 					<ImageDisplay
 						src={node.src}
