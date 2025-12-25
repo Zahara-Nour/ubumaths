@@ -68,7 +68,11 @@
 		<Label class="text-sm font-medium text-muted-foreground">
 			{isDebugging ? 'Debug' : 'Exécuter'}
 		</Label>
-		<Switch checked={isDebugging} onCheckedChange={handleModeToggle} disabled={disabled || isRunning} />
+		<Switch
+			checked={isDebugging}
+			onCheckedChange={handleModeToggle}
+			disabled={disabled || isRunning}
+		/>
 	</div>
 
 	<div class="h-6 w-px bg-border" aria-hidden="true"></div>
@@ -80,7 +84,7 @@
 				variant="default"
 				size="sm"
 				onclick={() => onStep('continue')}
-				disabled={disabled}
+				{disabled}
 				aria-label="Continuer l'exécution"
 			>
 				<Play class="size-4" />

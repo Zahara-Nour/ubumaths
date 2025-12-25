@@ -186,11 +186,13 @@ if ('serviceWorker' in navigator) {
 ### DevTools
 
 1. **Application → Service Workers**
+
    - View registration status
    - Force update
    - Unregister for testing
 
 2. **Application → Cache Storage**
+
    - Inspect cached entries
    - Delete individual entries
    - View cache size

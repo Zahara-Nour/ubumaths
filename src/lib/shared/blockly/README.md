@@ -51,9 +51,11 @@ console.error(ERROR_MESSAGES.TIMEOUT_JS);
 ### Core Types
 
 - **`ExecutorState`**: `'initial' | 'ready' | 'executing' | 'error'`
+
   - Lifecycle states for the Blockly executor
 
 - **`ExecutionLanguage`**: `'javascript' | 'python'`
+
   - Supported code generation languages
 
 - **`OutputLineType`**: `'stdout' | 'stderr' | 'info'`
@@ -62,17 +64,20 @@ console.error(ERROR_MESSAGES.TIMEOUT_JS);
 ### Data Structures
 
 - **`OutputLine`**: Single line of execution output
+
   - `type`: Output classification
   - `text`: Line content
   - `timestamp?`: Optional timestamp
 
 - **`BlocklyWorkspaceState`**: Workspace persistence state
+
   - `xml`: Workspace XML representation
   - `lastModified`: Modification timestamp
   - `language`: Selected language
   - `metadata?`: Optional workspace metadata
 
 - **`CodeGenerationResult`**: Result of code generation
+
   - `code`: Generated source code
   - `language`: Target language
   - `success`: Generation status
@@ -81,6 +86,7 @@ console.error(ERROR_MESSAGES.TIMEOUT_JS);
   - `warnings?`: Warning messages
 
 - **`ExecutionContext`**: Execution environment configuration
+
   - `id`: Unique execution ID
   - `language`: Target language
   - `jsTimeout`: JavaScript timeout (ms)

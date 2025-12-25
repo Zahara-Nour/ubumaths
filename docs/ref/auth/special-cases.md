@@ -220,26 +220,26 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 ```svelte
 <script lang="ts">
-    let { data } = $props();
+	let { data } = $props();
 </script>
 
-<div class="flex flex-col items-center justify-center min-h-screen">
-    <Card class="max-w-md">
-        <CardHeader>
-            <CardTitle>Compte en attente d'approbation</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <p>
-                Votre compte a été créé mais nécessite l'approbation d'un administrateur.
-                Vous recevrez une notification une fois votre compte activé.
-            </p>
-        </CardContent>
-        <CardFooter>
-            <form method="POST" action="/auth/logout">
-                <Button type="submit" variant="outline">Se déconnecter</Button>
-            </form>
-        </CardFooter>
-    </Card>
+<div class="flex min-h-screen flex-col items-center justify-center">
+	<Card class="max-w-md">
+		<CardHeader>
+			<CardTitle>Compte en attente d'approbation</CardTitle>
+		</CardHeader>
+		<CardContent>
+			<p>
+				Votre compte a été créé mais nécessite l'approbation d'un administrateur. Vous recevrez une
+				notification une fois votre compte activé.
+			</p>
+		</CardContent>
+		<CardFooter>
+			<form method="POST" action="/auth/logout">
+				<Button type="submit" variant="outline">Se déconnecter</Button>
+			</form>
+		</CardFooter>
+	</Card>
 </div>
 ```
 

@@ -60,10 +60,12 @@
 ### Code Review Fixes Applied
 
 1. **sqrt handling**: Now properly respects `allowFractionalExponents` option
+
    - Default (true): No error, returns fractional exponent result
    - When false: Returns null and adds NON_INTEGER_EXPONENT error
 
 2. **cbrt handling**: Added full support for cube root
+
    - Validates exponents divisible by 3
    - Same behavior as sqrt with `allowFractionalExponents` option
 

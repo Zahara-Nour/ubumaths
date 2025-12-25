@@ -304,28 +304,34 @@ pnpm db:start
 ### To Implement (⏳)
 
 1. **sync-triggers.test.ts** (Estimated: 1 hour)
+
    - `sync_class_members_insert/delete` - Class members ↔ profiles.class_ids sync
 
 2. **chat-triggers.test.ts** (Estimated: 2 hours)
+
    - `trigger_create_class_chat_room` - Auto-create chat when class created
    - `trigger_add_student_to_class_chat` - Add student to chat on join
    - `trigger_process_message_content` - Parse TipTap JSON, detect profanity
    - `trigger_update_conversation_last_message` - Denormalize last message
 
 3. **messaging-triggers.test.ts** (Estimated: 2 hours)
+
    - `trigger_update_message_search_index` - Full-text search TSVector
    - `trigger_update_search_index_on_attachment` - Update has_attachments flag
    - `trigger_update_folder_count_on_{insert,update,delete}` - Folder counts
 
 4. **error-monitoring-triggers.test.ts** (Estimated: 1.5 hours)
+
    - `trigger_set_error_signature` - Generate MD5 signature for deduplication
    - `trigger_update_error_occurrence` - Upsert aggregated error_occurrences
 
 5. **template-triggers.test.ts** (Estimated: 1 hour)
+
    - `trigger_save_template_version` - Version history on changes
    - `trigger_auto_log_template_changes` - Audit logging
 
 6. **cleanup-triggers.test.ts** (Estimated: 1.5 hours)
+
    - `trigger_delete_exercise_images` - Delete images from Storage
    - Requires Storage setup (see "Storage Testing" below)
 

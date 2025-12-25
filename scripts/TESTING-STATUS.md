@@ -11,6 +11,7 @@
 ### What's Complete ✅
 
 1. **Migration SQL File Created**
+
    - File: `supabase/migrations/20251117120527_unify_template_syntax_to_markdown.sql`
    - Status: Ready to execute
    - Features:
@@ -21,11 +22,13 @@
      - Performance optimizations (GIN indexes)
 
 2. **Comprehensive Test Plan Created**
+
    - File: `scripts/comprehensive-migration-test.md`
    - 80+ pages of detailed testing strategy
    - 10 test suites covering all scenarios
 
 3. **Automated Test Scripts Created**
+
    - `run-all-migration-tests.sh` - Main test runner (38+ tests)
    - `test-template-migration.sql` - Unit tests (13 tests)
    - `test-question-generation.ts` - Integration tests (6+ tests)
@@ -107,6 +110,7 @@ The script will output one of three decisions:
 ### What Gets Tested (38+ Tests)
 
 1. **Pre-Flight Checks** (5 tests)
+
    - Docker running
    - Supabase running
    - Database connection
@@ -114,6 +118,7 @@ The script will output one of three decisions:
    - Seed data loaded
 
 2. **Function Unit Tests** (13 tests)
+
    - Variable conversion: `{@:a}` → `{{a}}`
    - Hybrid conversion: `{{@:var}}` → `{{var}}`
    - Random expressions: `{#:1-10}` → `{{1-10}}`
@@ -124,17 +129,20 @@ The script will output one of three decisions:
    - NULL/empty handling
 
 3. **Pre-Migration Analysis** (3 tests)
+
    - Count templates with Questions syntax
    - Verify current state
    - Sample data inspection
 
 4. **Migration Dry Run** (5 tests)
+
    - Execute migration in transaction
    - Validate conversion completeness
    - Verify rollback works
    - Check data integrity
 
 5. **Edge Cases** (6 tests)
+
    - NULL values
    - Empty strings
    - Already converted (idempotence)
@@ -143,6 +151,7 @@ The script will output one of three decisions:
    - Complex eval
 
 6. **Performance** (2 tests)
+
    - Single template conversion speed (< 10ms)
    - Full migration estimate (< 5 seconds)
 

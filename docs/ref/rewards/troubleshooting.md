@@ -78,6 +78,7 @@ const { error } = await supabase.rpc('update_student_gidouilles', {
 **Possible Causes:**
 
 1. **Wrong class context**
+
    - Teacher viewing different class
    - Student in multiple classes
 

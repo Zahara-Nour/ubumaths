@@ -27,27 +27,32 @@ The flatten implementation demonstrates exceptional code quality with excellent 
 ## Strengths
 
 1. **Immutability Excellence**
+
    - All return types use `readonly` modifiers correctly
    - Functions return new objects without mutations
    - Proper use of `ReadonlyMap` for nested structures
 
 2. **TypeScript Best Practices**
+
    - No use of `any` type anywhere
    - Exhaustive switch statements
    - Well-defined discriminated union types
    - Excellent type inference
 
 3. **Code Organization**
+
    - Clear section divisions with comment separators
    - Logical grouping of related functions
    - Consistent naming conventions
 
 4. **Documentation**
+
    - Comprehensive JSDoc comments on all exported functions
    - Clear examples in comments
    - Well-explained algorithms
 
 5. **Algorithm Correctness**
+
    - Proper sign propagation in sums
    - Correct recursive flattening logic
    - Appropriate delimiter boundary handling

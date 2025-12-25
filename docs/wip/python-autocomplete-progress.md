@@ -9,18 +9,21 @@ Implemented intelligent Python autocompletion in the Python Playground using Pyo
 ## Files Modified
 
 1. **`src/lib/types/python-worker.ts`**
+
    - Added `AutocompleteMessage` interface for main thread -> worker messages
    - Added `CompletionItem` interface with type safety for completion types
    - Added `AutocompleteResultMessage` interface for worker -> main thread responses
    - Updated `ToWorkerMessage` and `FromWorkerMessage` union types
 
 2. **`src/lib/workers/pyodide.worker.ts`**
+
    - Added autocomplete message to Zod validation schema
    - Implemented `_ubumaths_get_completions(code, cursor_pos)` Python helper function
    - Implemented `handleAutocomplete()` function to bridge JS/Python
    - Added message handler case for 'autocomplete' type
 
 3. **`src/lib/stores/pythonPlayground.svelte.ts`**
+
    - Added `completionItemSchema` Zod schema for validation
    - Added `autocomplete-result` to `fromWorkerMessageSchema`
    - Added constants: `AUTOCOMPLETE_TIMEOUT_MS` (500ms), `AUTOCOMPLETE_DEBOUNCE_MS` (150ms)

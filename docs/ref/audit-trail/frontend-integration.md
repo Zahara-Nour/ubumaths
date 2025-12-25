@@ -42,6 +42,7 @@ interface Props {
 #### Features
 
 - **Icon mapping** by reward_type:
+
   - `gidouilles` → Coins icon
   - `bonus` → Star icon
   - `vip_card` → Crown icon
@@ -49,6 +50,7 @@ interface Props {
   - `item` → Package icon
 
 - **Color-coded badges** by event_type:
+
   - `earned`, `awarded`, `unlocked` → Green
   - `spent`, `used` → Orange
   - `traded` → Blue

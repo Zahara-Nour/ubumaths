@@ -226,8 +226,9 @@ export class BlocklyExecutor {
 
 		try {
 			// Dynamic import of Python executor
-			const { PlaygroundExecutor } =
-				await import('$lib/shared/python/execution/playground-executor.svelte');
+			const { PlaygroundExecutor } = await import(
+				'$lib/shared/python/execution/playground-executor.svelte'
+			);
 
 			this.pythonModuleLoaded = true;
 			this.pythonExecutor = new PlaygroundExecutor();

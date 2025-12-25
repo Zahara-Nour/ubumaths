@@ -64,6 +64,7 @@ Get Google OAuth credentials from [Google Cloud Console](https://console.cloud.g
 
 - Go to **Authentication → Email Templates** in Supabase Dashboard
 - Update redirect URLs:
+
   - **Confirm signup**: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup`
   - **Reset password**: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`
 

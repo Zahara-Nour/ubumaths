@@ -336,33 +336,33 @@ function processNode(node: ASTNode) {
 ```svelte
 <!-- MarkdownRenderer.svelte -->
 <script lang="ts">
-  // 1. Parse content to AST (with caching)
-  let ast = $derived.by<DocumentNode | null>(() => {
-    const cached = getCachedAST(content, parseOptions);
-    if (cached) return cached;
+	// 1. Parse content to AST (with caching)
+	let ast = $derived.by<DocumentNode | null>(() => {
+		const cached = getCachedAST(content, parseOptions);
+		if (cached) return cached;
 
-    const parsed = parseMarkdown(content, parseOptions);
-    setCachedAST(content, parsed, parseOptions);
-    return parsed;
-  });
+		const parsed = parseMarkdown(content, parseOptions);
+		setCachedAST(content, parsed, parseOptions);
+		return parsed;
+	});
 
-  // 2. Determine list numbering scheme
-  const effectiveListScheme = $derived.by<SchemeId | null>(() => {
-    const maxDepth = getMaxEnumerateDepth(ast);
-    return maxDepth > 1 ? config.schemeWithNesting : config.schemeWithoutNesting;
-  });
+	// 2. Determine list numbering scheme
+	const effectiveListScheme = $derived.by<SchemeId | null>(() => {
+		const maxDepth = getMaxEnumerateDepth(ast);
+		return maxDepth > 1 ? config.schemeWithNesting : config.schemeWithoutNesting;
+	});
 </script>
 
 <!-- 3. Render each block node -->
 {#each ast.children as node}
-  {#if node.type === 'paragraph'}
-    <ParagraphNode children={node.children} ... />
-  {:else if node.type === 'math-block'}
-    <MathBlock expression={node.expression} syntax={node.syntax} />
-  {:else if node.type === 'variation-table'}
-    <VariationTable {node} />
-  <!-- ... other node types -->
-  {/if}
+	{#if node.type === 'paragraph'}
+		<ParagraphNode children={node.children} ... />
+	{:else if node.type === 'math-block'}
+		<MathBlock expression={node.expression} syntax={node.syntax} />
+	{:else if node.type === 'variation-table'}
+		<VariationTable {node} />
+		<!-- ... other node types -->
+	{/if}
 {/each}
 ```
 
@@ -373,24 +373,22 @@ Each block type has a dedicated Svelte component:
 ```svelte
 <!-- MathBlock.svelte -->
 <script lang="ts">
-  interface Props {
-    expression: string;
-    syntax: 'latex' | 'custom';
-    genericFunctions?: GenericFunctionConfig;
-  }
+	interface Props {
+		expression: string;
+		syntax: 'latex' | 'custom';
+		genericFunctions?: GenericFunctionConfig;
+	}
 
-  let { expression, syntax, genericFunctions }: Props = $props();
+	let { expression, syntax, genericFunctions }: Props = $props();
 
-  // Convert custom syntax to LaTeX if needed
-  const latex = $derived(
-    syntax === 'custom'
-      ? expressionToLatex(expression, 'custom')
-      : toFrenchDecimal(expression)
-  );
+	// Convert custom syntax to LaTeX if needed
+	const latex = $derived(
+		syntax === 'custom' ? expressionToLatex(expression, 'custom') : toFrenchDecimal(expression)
+	);
 </script>
 
 <div class="math-block">
-  <MathLive {latex} displayMode />
+	<MathLive {latex} displayMode />
 </div>
 ```
 
@@ -399,15 +397,15 @@ Each block type has a dedicated Svelte component:
 ```svelte
 <!-- ParagraphNode.svelte -->
 {#each children as node}
-  {#if node.type === 'text'}
-    <span class:font-bold={node.bold} class:italic={node.italic}>
-      {node.content}
-    </span>
-  {:else if node.type === 'math-inline'}
-    <MathLive latex={processedLatex} />
-  {:else if node.type === 'blank'}
-    <BlankInput index={node.index} {inputs} {onInputChange} />
-  {/if}
+	{#if node.type === 'text'}
+		<span class:font-bold={node.bold} class:italic={node.italic}>
+			{node.content}
+		</span>
+	{:else if node.type === 'math-inline'}
+		<MathLive latex={processedLatex} />
+	{:else if node.type === 'blank'}
+		<BlankInput index={node.index} {inputs} {onInputChange} />
+	{/if}
 {/each}
 ```
 

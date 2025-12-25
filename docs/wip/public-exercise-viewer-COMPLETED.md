@@ -218,6 +218,7 @@ Updated:
 ## Test Coverage
 
 - **Token System**: 23/23 tests passing
+
   - Token generation (format, uniqueness, no ambiguous chars)
   - Token creation (with/without expiration)
   - Exercise retrieval via token

@@ -44,6 +44,7 @@ This document describes the executor pattern used for Python code execution in U
 Abstract base class providing:
 
 - **Reactive State (Svelte 5 runes)**
+
   - `state`: Executor lifecycle state (`initial` | `loading-pyodide` | `loading-packages` | `ready` | `executing` | `error`)
   - `stdout`, `stderr`: Execution output
   - `plotData`, `latexOutput`, `plotlyData`: Rich output types
@@ -53,15 +54,18 @@ Abstract base class providing:
   - Derived states: `isReady`, `isExecuting`, `isLoading`, `hasError`, `hasOutput`
 
 - **Worker Lifecycle**
+
   - `initPyodide()`: Initialize worker and Pyodide
   - `destroy()`: Terminate worker and cleanup resources
 
 - **Execution Methods**
+
   - `execute(code)`: Run Python code
   - `cancel()`: Cancel current execution
   - `clearOutput()`: Clear all outputs
 
 - **Autocompletion**
+
   - `requestCompletion(code, cursor)`: Get code completions with debouncing
 
 - **Abstract Methods** (must be implemented by subclasses)

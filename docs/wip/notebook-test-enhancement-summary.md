@@ -130,12 +130,14 @@ if (typeof data['application/json'] === 'string') {
 ### Strong Coverage Areas
 
 1. **Format Validation**
+
    - nbformat version checking
    - Required fields validation
    - Invalid JSON handling
    - Old format rejection (nbformat < 4)
 
 2. **Cell Conversion**
+
    - Code, markdown, raw cells
    - Source normalization (string vs array)
    - Execution counts
@@ -143,6 +145,7 @@ if (typeof data['application/json'] === 'string') {
    - ID generation and preservation
 
 3. **Output Types**
+
    - Stream outputs (stdout/stderr, string/array)
    - Error outputs with tracebacks
    - Execute result with execution counts
@@ -152,6 +155,7 @@ if (typeof data['application/json'] === 'string') {
    - JSON and Plotly outputs
 
 4. **Edge Cases**
+
    - Empty notebooks
    - Empty cells
    - Missing metadata

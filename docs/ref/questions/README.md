@@ -466,13 +466,13 @@ questionCart.clearCart();
 
 ```svelte
 <FlashCard
-  instance={questionInstance}
-  interactive={true}
-  size="md"
-  showCorrectionOnWrong={true}
-  maxAttempts={3}
-  onAnswerSubmit={(answer) => handleAnswer(answer)}
-  onComplete={(stats) => handleComplete(stats)}
+	instance={questionInstance}
+	interactive={true}
+	size="md"
+	showCorrectionOnWrong={true}
+	maxAttempts={3}
+	onAnswerSubmit={(answer) => handleAnswer(answer)}
+	onComplete={(stats) => handleComplete(stats)}
 />
 ```
 

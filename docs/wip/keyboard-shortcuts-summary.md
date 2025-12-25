@@ -104,6 +104,7 @@ Integrated the new help component into the toolbar.
 ### New Files
 
 1. **`src/lib/components/notebook/KeyboardShortcutsHelp.svelte`** (100 lines)
+
    - New visual help component
    - No dependencies on other notebook components
    - Reusable for any interface needing keyboard shortcut help

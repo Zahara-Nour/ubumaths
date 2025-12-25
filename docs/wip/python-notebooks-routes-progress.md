@@ -12,6 +12,7 @@ Created complete routes and API endpoints for the Python notebook feature, follo
 ### API Endpoints
 
 1. **`/api/python-notebooks/+server.ts`**
+
    - GET: List notebooks (own + public + assigned)
      - Query params: author_id, is_public, limit, offset
      - Teachers: own + public notebooks
@@ -22,6 +23,7 @@ Created complete routes and API endpoints for the Python notebook feature, follo
      - Creates initial content with one empty code cell
 
 2. **`/api/python-notebooks/[id]/+server.ts`**
+
    - GET: Get single notebook with full content
      - Access check: owner, public (teachers), assigned (students)
    - PUT: Update notebook (title, description, content, is_public)
@@ -39,11 +41,13 @@ Created complete routes and API endpoints for the Python notebook feature, follo
 ### Page Routes
 
 4. **`/python-notebook/+page.server.ts`**
+
    - Load user's notebooks
    - Load assigned notebooks (students)
    - Returns: notebooks, assignedNotebooks, userRole
 
 5. **`/python-notebook/+page.svelte`**
+
    - List view with grid layout
    - Create notebook button (teachers)
    - Delete notebook action (teachers)
@@ -51,6 +55,7 @@ Created complete routes and API endpoints for the Python notebook feature, follo
    - Uses shadcn Card components
 
 6. **`/python-notebook/[id]/+page.server.ts`**
+
    - Load single notebook with full content
    - Check access permissions
    - Returns: notebook, canEdit, readonly, isOwner, userRole

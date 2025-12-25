@@ -13,6 +13,7 @@ Created comprehensive TypeScript type definitions and configuration for the Bloc
 ### Core Module Files
 
 1. **`src/lib/shared/blockly/types.ts`** (197 lines)
+
    - Executor state types: `ExecutorState`, `ExecutionLanguage`
    - Output types: `OutputLine`, `OutputLineType`
    - Workspace state: `BlocklyWorkspaceState`
@@ -22,6 +23,7 @@ Created comprehensive TypeScript type definitions and configuration for the Bloc
    - Loading stages enum: `LoadingStageIndex`
 
 2. **`src/lib/shared/blockly/config.ts`** (153 lines)
+
    - Execution configuration: `BLOCKLY_CONFIG`
      - JS timeout: 10 seconds
      - Python timeout: 30 seconds
@@ -40,6 +42,7 @@ Created comprehensive TypeScript type definitions and configuration for the Bloc
 ### Documentation
 
 4. **`src/lib/shared/blockly/README.md`** (215 lines)
+
    - Module overview and structure
    - Type documentation
    - Configuration reference

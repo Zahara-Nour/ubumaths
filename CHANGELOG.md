@@ -1338,6 +1338,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### ✨ Features
 
 - **admin:** add bulk resolve errors feature for efficient error management ([#error-monitoring](https://github.com/Zahara-Nour/ubumaths/issues))
+
   - Implemented `POST /api/errors/bulk-resolve` endpoint with filter-based resolution
   - Added Zod validation schema `bulkResolveErrorsSchema` requiring at least one filter
   - Created confirmation modal in admin dashboard showing affected errors count and active filters

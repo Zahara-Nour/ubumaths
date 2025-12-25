@@ -33,40 +33,49 @@
 ## All 10 Constraint Checks
 
 1. **Spaces** (checkSpaces)
+
    - Input: LaTeX version of answer
    - Checks: Multi-digit number spacing rules
    - Example: `1234` vs `1 234` vs `1,234`
 
 2. **Products** (checkProducts)
+
    - Checks: Implicit vs explicit multiplication
    - Example: `2*x` vs `2x`
 
 3. **Brackets** (checkBrackets)
+
    - Checks: Unnecessary parentheses
    - Special: Allow brackets around first negative term
    - Example: `(5+3)+2` vs `5+3+2`
 
 4. **Zeros** (checkZeros)
+
    - Checks: Leading and trailing zeros
    - Example: `01` vs `1`, `1.0` vs `1`
 
 5. **Signs** (checkSigns)
+
    - Checks: Double sign simplification
    - Example: `--5` vs `5`, `+-3` simplification
 
 6. **Factors One** (checkFactorsOne)
+
    - Checks: 1 _ expression or expression _ 1
    - Example: `1*5*x` vs `5*x`
 
 7. **Factors Zero** (checkFactorsZero)
+
    - Checks: 0 \* expression simplification
    - Example: `0*5*x` vs `0`
 
 8. **Null Terms** (checkNullTerms)
+
    - Checks: +0 or -0 in sums
    - Example: `5 + 0 + x` vs `5 + x`
 
 9. **Fractions** (checkFractions)
+
    - Checks: Fraction reduction
    - Example: `4/8` vs `1/2`
 

@@ -90,9 +90,9 @@ const result = resolveText(template, resolved);
 
 ```svelte
 <script lang="ts">
-  import { MarkdownRenderer } from '$lib/components/markdown';
+	import { MarkdownRenderer } from '$lib/components/markdown';
 
-  let { content } = $props();
+	let { content } = $props();
 </script>
 
 <MarkdownRenderer {content} mode="rendered" />

@@ -250,7 +250,7 @@
 			<Card.Content class="pt-4">
 				<div class="text-center">
 					<div class="text-2xl font-bold">{stats.exercises}</div>
-					<div class="text-muted-foreground text-sm">Exercices</div>
+					<div class="text-sm text-muted-foreground">Exercices</div>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -258,7 +258,7 @@
 			<Card.Content class="pt-4">
 				<div class="text-center">
 					<div class="text-2xl font-bold">{stats.exercise_templates}</div>
-					<div class="text-muted-foreground text-sm">Templates</div>
+					<div class="text-sm text-muted-foreground">Templates</div>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -266,7 +266,7 @@
 			<Card.Content class="pt-4">
 				<div class="text-center">
 					<div class="text-2xl font-bold">{stats.exercise_favorites}</div>
-					<div class="text-muted-foreground text-sm">Favoris</div>
+					<div class="text-sm text-muted-foreground">Favoris</div>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -274,7 +274,7 @@
 			<Card.Content class="pt-4">
 				<div class="text-center">
 					<div class="text-2xl font-bold">{stats.exercise_share_tokens}</div>
-					<div class="text-muted-foreground text-sm">Tokens partage</div>
+					<div class="text-sm text-muted-foreground">Tokens partage</div>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -311,7 +311,7 @@
 					Telecharger SQL
 				</Button>
 			</div>
-			<p class="text-muted-foreground mt-4 text-sm">
+			<p class="mt-4 text-sm text-muted-foreground">
 				<Database class="mr-1 inline h-4 w-4" />
 				Total: {stats.total} enregistrements dans 4 tables
 			</p>
@@ -354,17 +354,17 @@
 					<div class="space-y-2">
 						<FileJson class="mx-auto h-12 w-12 text-green-500" />
 						<p class="font-medium">{importFile.name}</p>
-						<p class="text-muted-foreground text-sm">
+						<p class="text-sm text-muted-foreground">
 							{(importFile.size / 1024).toFixed(1)} Ko
 						</p>
 						<Button variant="ghost" size="sm" onclick={clearImport}>Changer de fichier</Button>
 					</div>
 				{:else}
 					<div class="space-y-2">
-						<Upload class="text-muted-foreground mx-auto h-12 w-12" />
+						<Upload class="mx-auto h-12 w-12 text-muted-foreground" />
 						<p class="text-muted-foreground">
 							Glissez un fichier JSON ici ou
-							<label class="text-primary cursor-pointer underline">
+							<label class="cursor-pointer text-primary underline">
 								parcourez
 								<input
 									id="file-input"
@@ -389,9 +389,12 @@
 						<MySelect type="single" bind:value={conflictStrategy} items={conflictItems} />
 					</div>
 
-					<MyCheckbox bind:checked={reassignOrphans} label="Reassigner les exercices orphelins a l'admin actuel" />
+					<MyCheckbox
+						bind:checked={reassignOrphans}
+						label="Reassigner les exercices orphelins a l'admin actuel"
+					/>
 
-					<p class="text-muted-foreground text-sm">
+					<p class="text-sm text-muted-foreground">
 						Les exercices dont le createur n'existe plus seront reassignes a votre compte si cette
 						option est activee.
 					</p>
@@ -475,7 +478,7 @@
 						</span>
 					</div>
 				</div>
-				<p class="text-muted-foreground text-xs">Format: importes / ignores / remplaces / echecs</p>
+				<p class="text-xs text-muted-foreground">Format: importes / ignores / remplaces / echecs</p>
 
 				<!-- Errors -->
 				{#if restoreResult.errors.length > 0}

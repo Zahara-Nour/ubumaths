@@ -50,18 +50,21 @@ type Step = PointStep | LineStep | ArcStep | ... | PauseStep | ParallelStep
 #### Exports Principaux
 
 1. **Types de Step** (nouveau format)
+
    - `Step`, `NonParallelStep`
    - `PointStep`, `LineStep`, `ArcStep`, `CircleStep`, `TextStep`, `MarkStep`
    - `MoveStep`, `ShowStep`, `HideStep`, `RotateStep`, `SpreadStep`, `RaiseStep`, `LowerStep`
    - `StyleStep`, `PauseStep`, `ParallelStep`
 
 2. **Types Auxiliaires**
+
    - `Coord` (alias de `CoordPair`)
    - `Target` (alias de `TargetRef`)
    - `Label` (alias de `LabelInput`)
    - `ParameterDef`, `CanvasConfig`, `InstrumentType`, etc.
 
 3. **Types Runtime**
+
    - `DrawnObjectState` (renommé depuis `ObjectState`)
    - `InstrumentRuntimeState`, `ConstructionState`
    - `ParameterValues`, `Position`
@@ -172,12 +175,14 @@ JSON Input
 ### Séparation des Responsabilités
 
 1. **schemas.ts** : Définit et exporte
+
    - Schémas Zod pour validation
    - Types `*Input` inférés depuis Zod (`z.infer`)
    - Type guards (isPointStep, etc.)
    - Fonctions de validation
 
 2. **types.ts** : Définit et exporte
+
    - Alias des types `*Input` comme types principaux
    - Types runtime non validés (state management)
    - Types utilitaires (Expr, Position, etc.)

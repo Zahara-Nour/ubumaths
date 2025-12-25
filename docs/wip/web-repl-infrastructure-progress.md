@@ -30,6 +30,7 @@ All types use `readonly` modifiers for immutability.
 Browser-safe replacement for chalk-based terminal formatting:
 
 - **CSS classes** instead of ANSI colors:
+
   - `repl-error` (red) - errors
   - `repl-success` (green) - success messages
   - `repl-hash` (cyan) - hash values
@@ -38,6 +39,7 @@ Browser-safe replacement for chalk-based terminal formatting:
   - `repl-info` (blue) - info messages
 
 - **Functions implemented**:
+
   - `formatErrorHtml()` - Format pipeline/command errors
   - `formatInputErrorHtml()` - Format parse errors with caret position
   - `formatSuccessHtml()` - Format success messages
@@ -51,11 +53,13 @@ Browser-safe replacement for chalk-based terminal formatting:
 Core browser-compatible REPL execution engine:
 
 - **Reuses CLI infrastructure**:
+
   - CommandRegistry from `cli/core`
   - Parse pipeline from `cli/core`
   - All commands from `cli/commands`
 
 - **Execution modes**:
+
   - Dot-commands (`.help`, `.tree`, `.simplify`, etc.)
   - Regular expressions (parse and display)
   - Equivalence syntax (`expr1 === expr2`)
@@ -80,6 +84,7 @@ Clean public API with:
 Reactive store with Svelte 5 runes:
 
 - **State management** (Svelte 5 runes):
+
   - `currentInput` - Current textarea value
   - `inputMode` - latex/custom/auto
   - `history` - Execution history (max 100 entries)
@@ -89,11 +94,13 @@ Reactive store with Svelte 5 runes:
   - `historyIndex` - Up/down arrow navigation
 
 - **Derived state**:
+
   - `lastAst` - Most recent AST
   - `hasHistory` - Whether history exists
   - `historyCount` - Number of entries
 
 - **Methods**:
+
   - `execute(input)` - Execute command/expression
   - `navigateHistory(direction)` - Up/down arrow navigation
   - `setInputMode(mode)` - Change input mode

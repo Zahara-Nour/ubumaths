@@ -157,10 +157,12 @@ Added two new methods to the `PythonPlaygroundStore` class:
 ## Known Limitations
 
 1. **Code Size**: Maximum ~2000 characters compressed
+
    - For longer code, users would need alternative sharing methods
    - Could be extended with backend storage if needed
 
 2. **Browser Compatibility**:
+
    - Requires `navigator.clipboard` API
    - Gracefully degrades if not available
 

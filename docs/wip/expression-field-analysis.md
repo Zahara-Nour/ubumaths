@@ -302,11 +302,13 @@ interface QuestionVariable {
 ## Questions ouvertes pour la prochaine session
 
 1. **Quelle syntaxe exacte pour les prompts MathLive dans le markdown ?**
+
    - `\placeholder[id]{}` ?
    - `{{prompt:id}}` ?
    - `{{blank:id}}` ?
 
 2. **Comment le renderer fait-il le lien prompt ↔ expectedAnswer ?**
+
    - Via l'id ?
    - Via la position ?
 

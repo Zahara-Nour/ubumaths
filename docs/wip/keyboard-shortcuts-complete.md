@@ -129,10 +129,12 @@ $effect(() => {
 ## Files Modified
 
 1. `/src/lib/components/notebook/NotebookView.svelte` (106 lines changed)
+
    - Enhanced `handleKeydown()` function
    - Keyboard event dispatcher logic
 
 2. `/src/lib/components/notebook/CodeCell.svelte` (45 lines added)
+
    - Added keyboard event listener
    - Added editor focus/blur logic
 

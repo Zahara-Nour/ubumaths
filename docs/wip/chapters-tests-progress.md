@@ -15,6 +15,7 @@ Created comprehensive test suite for the chapters/cours feature covering validat
 #### Chapter Schemas
 
 - ✓ `createChapterSchema` - 16 test cases
+
   - Valid data (minimal and complete)
   - Title validation (empty, max length, trimming)
   - Description validation (max length, null allowed)
@@ -31,15 +32,18 @@ Created comprehensive test suite for the chapters/cours feature covering validat
 #### Document Schemas
 
 - ✓ `createUploadDocumentSchema` - 5 test cases
+
   - Valid upload document
   - File size validation (0, max 100MB, above max)
   - Required fields (storagePath, fileName, mimeType)
 
 - ✓ `createGoogleDriveDocumentSchema` - 4 test cases
+
   - Valid Google Drive document
   - URL validation (googleDriveUrl, thumbnailUrl)
 
 - ✓ `createDocumentSchema` (discriminated union) - 2 test cases
+
   - Upload and Google Drive variants
 
 - ✓ `updateDocumentSchema` - 2 test cases
@@ -48,14 +52,17 @@ Created comprehensive test suite for the chapters/cours feature covering validat
 #### Checklist Schemas
 
 - ✓ `createChecklistItemSchema` - 5 test cases
+
   - Minimal valid item
   - Content validation (empty, max 500 chars)
   - Optional description
 
 - ✓ `updateChecklistItemSchema` - 2 test cases
+
   - Content update and empty update validation
 
 - ✓ `toggleChecklistSchema` - 3 test cases
+
   - Valid toggle with UUID and boolean
   - Invalid UUID rejection
   - Non-boolean rejection
@@ -68,6 +75,7 @@ Created comprehensive test suite for the chapters/cours feature covering validat
 #### Quiz Schemas
 
 - ✓ `addQuizQuestionSchema` - 5 test cases
+
   - Minimal valid data
   - Points override validation (negative, 0-100, above 100)
 
@@ -83,16 +91,19 @@ Created comprehensive test suite for the chapters/cours feature covering validat
 #### Chapter Functions
 
 - ✓ `createChapter` - 3 tests
+
   - Valid creation
   - Auto-increment display order
   - Class not found error handling
 
 - ✓ `updateChapter` - 3 tests
+
   - Title update
   - Visibility update
   - Database error handling
 
 - ✓ `deleteChapter` - 2 tests
+
   - Successful deletion
   - Deletion error handling
 
@@ -103,10 +114,12 @@ Created comprehensive test suite for the chapters/cours feature covering validat
 #### Document Functions
 
 - ✓ `addChapterDocument` - 2 tests
+
   - Upload document creation
   - Google Drive document creation
 
 - ✓ `updateChapterDocument` - 1 test
+
   - Title update
 
 - ✓ `deleteChapterDocument` - 1 test
@@ -115,10 +128,12 @@ Created comprehensive test suite for the chapters/cours feature covering validat
 #### Quiz Question Functions
 
 - ✓ `addQuizQuestion` - 2 tests
+
   - Add with auto display order
   - Add with custom display order
 
 - ✓ `removeQuizQuestion` - 1 test
+
   - Successful removal
 
 - ⏭️ `submitQuizAnswer` - 2 tests (skipped - complex mock chain setup)
@@ -128,12 +143,15 @@ Created comprehensive test suite for the chapters/cours feature covering validat
 #### Checklist Functions
 
 - ✓ `addChecklistItem` - 1 test
+
   - Valid creation
 
 - ✓ `updateChecklistItem` - 1 test
+
   - Content update
 
 - ✓ `deleteChecklistItem` - 1 test
+
   - Successful deletion
 
 - ✓ `toggleChecklistItem` - 3 tests
@@ -144,6 +162,7 @@ Created comprehensive test suite for the chapters/cours feature covering validat
 #### Exercise Functions
 
 - ✓ `linkExercise` - 1 test
+
   - Successful link creation
 
 - ✓ `unlinkExercise` - 1 test
@@ -252,6 +271,7 @@ For the skipped complex async tests, consider writing integration tests that hit
 ## Files Created/Modified
 
 1. **NEW**: `src/lib/server/chapters.test.ts` (1,495 lines)
+
    - Comprehensive test suite for chapters feature
    - 87 total tests covering validation and server functions
 

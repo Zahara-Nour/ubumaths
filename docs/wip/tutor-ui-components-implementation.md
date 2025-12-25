@@ -13,6 +13,7 @@ Created a complete set of UI components for the UbuMaths tutor system, enabling 
 ### Components (`src/lib/components/tutor/`)
 
 1. **TutorChat.svelte** (15.3 KB)
+
    - Main chat interface with tutor AI
    - Features:
      - Context-aware tutoring based on exercise
@@ -27,6 +28,7 @@ Created a complete set of UI components for the UbuMaths tutor system, enabling 
      - `initialHelpLevel?`: Starting help level (default: 0)
 
 2. **TutorHelpButton.svelte** (1.8 KB)
+
    - Button that opens tutor in a dialog modal
    - Features:
      - Customizable button variant
@@ -37,6 +39,7 @@ Created a complete set of UI components for the UbuMaths tutor system, enabling 
      - `variant?`: Button style variant
 
 3. **TutorWidget.svelte** (3.3 KB)
+
    - Floating widget for global tutor access
    - Features:
      - Bottom-right floating button
@@ -47,6 +50,7 @@ Created a complete set of UI components for the UbuMaths tutor system, enabling 
      - `exerciseContext?`: Optional exercise context
 
 4. **TutorUsageIndicator.svelte** (2.2 KB)
+
    - Shows remaining quotas with visual indicators
    - Features:
      - Color-coded quota display (green/yellow/red)
@@ -56,6 +60,7 @@ Created a complete set of UI components for the UbuMaths tutor system, enabling 
      - `remaining`: { exercise, hour, day }
 
 5. **index.ts** (1.4 KB)
+
    - Export barrel for all tutor components
    - Comprehensive JSDoc documentation
 
@@ -69,6 +74,7 @@ Created a complete set of UI components for the UbuMaths tutor system, enabling 
 ### Page (`src/routes/(protected)/tuteur/`)
 
 1. **+page.svelte** (2.7 KB)
+
    - Dedicated page for free-form tutoring
    - Features:
      - Full-screen tutor chat interface

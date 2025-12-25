@@ -95,11 +95,13 @@ Animation durations were being calculated in the converter and emitted in JSON. 
 Moved duration calculation to the Engine:
 
 1. **Timeline** (`timeline.svelte.ts`):
+
    - Added `LoadOptions` interface with optional `stepDurations: number[]`
    - `load()` method accepts options parameter
    - `#calculateStepTimings()` uses pre-calculated durations when provided
 
 2. **Engine** (`engine.svelte.ts`):
+
    - Added `#calculateStepDurations()` method that simulates step execution
    - Tracks instrument positions and rotations during simulation
    - Calculates durations based on distances (1.5ms/pixel) and angles (5ms/degree)

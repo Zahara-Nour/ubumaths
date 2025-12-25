@@ -12,6 +12,7 @@ Successfully implemented the Blockly visual programming playground with all requ
 ### Components (`src/lib/components/blockly/`)
 
 1. **BlocklyToolbar.svelte** - Toolbar with controls
+
    - Run/Execute button with loading state
    - Clear output button
    - Clear workspace (reset) button
@@ -19,12 +20,14 @@ Successfully implemented the Blockly visual programming playground with all requ
    - Proper disabled states during execution
 
 2. **BlocklyCodePreview.svelte** - Generated code display
+
    - Tabbed interface for JS/Python
    - Syntax-highlighted code preview
    - Empty state handling
    - Auto-sync with active language
 
 3. **BlocklyOutput.svelte** - Console output display
+
    - Color-coded output (stdout, stderr, info)
    - Timestamps for each line
    - Line count indicator
@@ -32,6 +35,7 @@ Successfully implemented the Blockly visual programming playground with all requ
    - Empty state handling
 
 4. **BlocklyPlayground.svelte** - Main orchestrator
+
    - Integrates all components
    - Debounced code generation (300ms)
    - JavaScript execution with timeout protection
@@ -44,6 +48,7 @@ Successfully implemented the Blockly visual programming playground with all requ
 ### Routes (`src/routes/(public)/blockly/playground/`)
 
 1. **+page.svelte** - Main page component
+
    - Full-screen layout
    - SEO meta tags
    - Imports BlocklyPlayground

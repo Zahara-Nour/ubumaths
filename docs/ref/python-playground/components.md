@@ -448,6 +448,7 @@ let {
    ```
 
    **Rendering**:
+
    - Plotly.js v2.27.0 loaded from CDN
    - JSON spec passed from worker to `Plotly.newPlot()`
    - Chart cleanup on unmount via `Plotly.purge()`

@@ -39,6 +39,7 @@ These tests verify that PostgreSQL's `SELECT FOR UPDATE` correctly prevents:
 **Files Created/Updated**:
 
 1. **`tests/database/helpers/supabase-client.ts`** (NEW)
+
    - Exports `createAuthenticatedClient(email, password?)` helper
    - Signs in test users with Supabase auth
    - Returns authenticated client with valid session token
@@ -105,18 +106,22 @@ All tests follow this pattern:
 **Test Cases**:
 
 1. **Double-spend with insufficient balance** (10 gidouilles, 2× 10g draws)
+
    - Result: 1 succeeds, 1 fails with "Insufficient gidouilles"
    - Final balance: 0 (not -10)
 
 2. **Triple-spend with partial balance** (20 gidouilles, 3× 10g draws)
+
    - Result: 2 succeed, 1 fails
    - Final balance: 0
 
 3. **Double-use of same VIP card** (1 card, 2 simultaneous uses)
+
    - Result: 1 succeeds, 1 fails with "VIP card already used"
    - Card marked as used exactly once
 
 4. **Triple-use of same VIP card** (1 card, 3 simultaneous uses)
+
    - Result: 1 succeeds, 2 fail
    - Card used exactly once
 

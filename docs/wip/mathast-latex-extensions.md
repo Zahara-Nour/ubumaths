@@ -192,14 +192,17 @@
 To add support for a new feature in mathAST custom syntax:
 
 1. **Update `custom-generator.ts`**:
+
    - Add to `SUPPORTED_GREEK` or create new symbol set
    - Add conversion logic in the appropriate method
 
 2. **Update `parser/custom/`**:
+
    - Add tokenization for new syntax
    - Add parsing rules
 
 3. **Update this tracker**:
+
    - Move feature from "Unsupported" to "Supported"
    - Update the date
 

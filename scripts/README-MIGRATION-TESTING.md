@@ -59,6 +59,7 @@ node --import tsx scripts/test-question-generation.ts
 ### Automated Test Suite (`run-all-migration-tests.sh`)
 
 1. **Pre-Flight Checks** (5 checks)
+
    - Docker running
    - Supabase running
    - Database connection
@@ -66,6 +67,7 @@ node --import tsx scripts/test-question-generation.ts
    - Seed data present
 
 2. **Function Unit Tests** (13 tests)
+
    - Simple variable conversion
    - Hybrid variable conversion
    - Random expressions
@@ -76,16 +78,19 @@ node --import tsx scripts/test-question-generation.ts
    - NULL/empty handling
 
 3. **Pre-Migration Analysis** (3 tests)
+
    - Count templates with Questions syntax
    - Verify no Markdown syntax yet
    - Inspect sample data
 
 4. **Migration Dry Run** (5 tests)
+
    - Transaction-wrapped execution
    - Conversion completeness
    - Rollback verification
 
 5. **Edge Cases** (6 tests)
+
    - NULL handling
    - Empty strings
    - Idempotence
@@ -94,6 +99,7 @@ node --import tsx scripts/test-question-generation.ts
    - Complex eval
 
 6. **Performance Testing** (2 tests)
+
    - Single template conversion speed
    - Full migration time estimate
 
@@ -306,10 +312,12 @@ Should return same count as step 2.
 ### If Tests Pass
 
 1. **Review Results**
+
    - Check `scripts/MIGRATION-TEST-REPORT.md`
    - Verify all test suites passed
 
 2. **Production Readiness**
+
    - Create production database backup
    - Schedule maintenance window (5-10 minutes)
    - Notify team
@@ -329,11 +337,13 @@ Should return same count as step 2.
 ### If Tests Fail
 
 1. **Document Failures**
+
    - Which tests failed?
    - What were the error messages?
    - Any patterns in failures?
 
 2. **Debug**
+
    - Review conversion function logic
    - Check edge cases
    - Test with smaller dataset

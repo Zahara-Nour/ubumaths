@@ -605,11 +605,13 @@ CREATE POLICY "Students read own instances"
 ## 10. Questions ouvertes
 
 1. **Performance**: Si un worksheet a 1000 eleves et on ajoute un exercice, faut-il :
+
    - Mise a jour synchrone (peut etre lent)
    - Job asynchrone (background task)
    - Lazy update (regenerer a l'acces)
 
 2. **Conflits**: Que faire si l'enseignant modifie pendant qu'un eleve consulte ?
+
    - L'eleve voit l'ancienne version jusqu'au refresh
 
 3. **Historique**: Faut-il garder un historique des modifications ?

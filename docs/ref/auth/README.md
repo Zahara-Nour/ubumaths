@@ -254,12 +254,12 @@ const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
 
 ```svelte
 <script lang="ts">
-    let { data } = $props();
-    const { user, profile } = data;
+	let { data } = $props();
+	const { user, profile } = data;
 </script>
 
 {#if profile?.role === 'admin'}
-    <AdminPanel />
+	<AdminPanel />
 {/if}
 ```
 

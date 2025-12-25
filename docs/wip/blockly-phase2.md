@@ -109,6 +109,7 @@ js-sandbox.worker.ts
 ### Sandbox Worker JS
 
 1. **Globals bloques** (30+) :
+
    - `window`, `document`, `fetch`, `XMLHttpRequest`
    - `eval`, `Function`, `Proxy`, `Reflect`
    - `setTimeout`, `setInterval`, `Worker`
@@ -116,20 +117,24 @@ js-sandbox.worker.ts
    - `crypto`, `performance`, `navigator`
 
 2. **Helpers math UbuMaths** :
+
    - `gcd()`, `lcm()`, `isPrime()`, `factorial()`
    - Avec validation des inputs et limites
 
 3. **Timeout** : 10 secondes + 2s buffer main thread
 
 4. **Protection prototype** :
+
    - `Object.freeze()` sur prototypes
    - Prevention pollution prototype
 
 5. **Blocage patterns dangereux** :
+
    - Detection regex: `.constructor(`, `__proto__`, `.prototype =`
    - Erreur avant execution si pattern detecte
 
 6. **Limites output** :
+
    - 100,000 caracteres cumules max
    - 10,000 caracteres par message
    - Troncature avec message d'avertissement

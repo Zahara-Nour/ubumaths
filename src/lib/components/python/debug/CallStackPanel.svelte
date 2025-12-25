@@ -63,7 +63,7 @@
 					onclick={() => handleFrameClick(originalIndex)}
 					class={cn(
 						'flex items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors',
-						'hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+						'hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
 						frame.isCurrentFrame && 'bg-muted/80'
 					)}
 					aria-current={frame.isCurrentFrame ? 'true' : undefined}
@@ -95,7 +95,8 @@
 
 		<!-- Stack depth indicator -->
 		<p class="mt-2 text-xs text-muted-foreground">
-			Profondeur : {callStack.length} {callStack.length === 1 ? 'niveau' : 'niveaux'}
+			Profondeur : {callStack.length}
+			{callStack.length === 1 ? 'niveau' : 'niveaux'}
 		</p>
 	{/if}
 </div>

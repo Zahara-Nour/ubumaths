@@ -978,29 +978,35 @@ type Line = {
 ### 10.1 Core Features (MUST IMPLEMENT)
 
 1. **Validation Status System** (6 statuses)
+
    - STATUS_EMPTY, STATUS_CORRECT, STATUS_INCORRECT
    - STATUS_UNOPTIMAL_FORM, STATUS_BAD_FORM, STATUS_BAD_UNIT
 
 2. **Constraint Validation** (10 constraint types)
+
    - Spaces, products, brackets, zeros, signs
    - Factors (one, zero), null terms, fractions, units
 
 3. **Form Checking** (3 strategies)
+
    - Custom format templates
    - One-form solution
    - Normal form after cleanup
 
 4. **Terms & Factors Ordering** (3 modes)
+
    - Disallow (strict)
    - Penalty (unoptimal)
    - Allow any (no check)
 
 5. **Test Answers** (Custom validation)
+
    - Pattern: `&answer` with `&&` joining
    - Supports all math operations
    - Must evaluate to boolean
 
 6. **Multiple Question Types**
+
    - Single choice, multiple choice
    - Fill-in-the-blanks
    - Result/rewrite
@@ -1008,6 +1014,7 @@ type Line = {
    - Free-form math
 
 7. **Feedback Messages** (26 unique messages)
+
    - Per-constraint messages
    - Single vs multiple answer variants
 
@@ -1020,14 +1027,17 @@ type Line = {
 ### 10.2 Math Processing Features (MUST MIGRATE)
 
 1. **Expression Validation**
+
    - `isCorrect()`, `isIncorrect()`
    - Parse and detect errors
 
 2. **Equivalence Checking**
+
    - `equals()` - normalized comparison
    - `strictlyEquals()` - string comparison
 
 3. **Simplification Chain** (must preserve order)
+
    - `removeZerosAndSpaces()`
    - `reduceFractions()`
    - `simplifyNullProducts()`
@@ -1038,24 +1048,29 @@ type Line = {
    - `removeMultOperator()`
 
 4. **Sorting**
+
    - `sortTerms()`, `sortFactors()`, `sortTermsAndFactors()`
    - Shallow variants for limited scope
 
 5. **Space & Zero Detection**
+
    - `searchUnecessaryZeros()` - regex patterns
    - `searchMisplacedSpaces()` - spacing rules
 
 6. **Type Detection**
+
    - Structure: `isSum()`, `isProduct()`, `isQuotient()`, etc.
    - Units: `isLength()`, `isMass()`, `isVolume()`, `isDuration()`
    - Special: `isTime()`, `isTemplate()`, `isHole()`
 
 7. **Evaluation**
+
    - `eval(params)` - numeric evaluation
    - `substitute(values)` - symbol replacement
    - Support for decimal precision
 
 8. **Template Matching**
+
    - `matchTemplate(template)` - format validation
    - Used in format verification
 

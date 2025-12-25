@@ -17,12 +17,14 @@ Complete documentation with test details, helper functions, and troubleshooting.
 ## Quick Links
 
 - **View assessments** (16 tests) - `view-assessments.spec.ts`
+
   - Assessment list with status badges
   - Section organization (To Do, Completed, Expired)
   - Action buttons (Start, Continue, View Results)
   - Score display and attempts info
 
 - **Take assessment** (16 tests) - `take-assessment.spec.ts`
+
   - Start and navigate to test page
   - Answer different question types
   - Question navigation and progress

@@ -205,30 +205,35 @@ pnpm test:server src/lib/spreadsheet/__tests__/types-import.test.ts
 Les types et l'AST sont prêts. Les prochaines étapes pour compléter le module spreadsheet :
 
 1. **Parser** (`src/lib/spreadsheet/parser/parse.ts`)
+
    - Lexer pour tokenization
    - Parser pour construire l'AST
    - Support FR + EN pour fonctions
    - Gestion des erreurs avec position
 
 2. **Evaluator** (`src/lib/spreadsheet/eval.ts`)
+
    - Évaluation des formules
    - Détection de références circulaires
    - Gestion des plages dans les fonctions
    - Error handling (#REF!, #DIV/0!, etc.)
 
 3. **Functions Library** (`src/lib/spreadsheet/functions.ts`)
+
    - SOMME/SUM, MOYENNE/AVERAGE
    - MIN, MAX, COUNT, COUNTA
    - SI/IF, ET/AND, OU/OR
    - Extensions futures
 
 4. **Spreadsheet Store** (`src/lib/spreadsheet/store.svelte.ts`)
+
    - State management Svelte 5
    - Réactivité sur changements de cellules
    - Persistence localStorage
    - Undo/Redo
 
 5. **UI Components**
+
    - SpreadsheetGrid.svelte (grid 20x20)
    - CellEditor.svelte (edit formulas)
    - FormatToolbar.svelte (bold, colors, etc.)

@@ -437,8 +437,8 @@ async function safeGetSession() {
 
 ```svelte
 <label>
-    <input type="checkbox" name="rememberMe" />
-    Se souvenir de moi pendant 30 jours
+	<input type="checkbox" name="rememberMe" />
+	Se souvenir de moi pendant 30 jours
 </label>
 ```
 
@@ -462,18 +462,18 @@ const sessionOptions = rememberMe
 
 ```svelte
 <script>
-    let password = $state('');
-    let strength = $derived(calculatePasswordStrength(password));
+	let password = $state('');
+	let strength = $derived(calculatePasswordStrength(password));
 </script>
 
 <Input type="password" bind:value={password} />
 
 <PasswordStrengthMeter {strength} />
 <ul class="text-sm">
-    <li class:text-green-500={strength.hasMinLength}>8+ caracteres</li>
-    <li class:text-green-500={strength.hasUppercase}>Une majuscule</li>
-    <li class:text-green-500={strength.hasNumber}>Un chiffre</li>
-    <li class:text-green-500={strength.hasSpecial}>Un caractere special</li>
+	<li class:text-green-500={strength.hasMinLength}>8+ caracteres</li>
+	<li class:text-green-500={strength.hasUppercase}>Une majuscule</li>
+	<li class:text-green-500={strength.hasNumber}>Un chiffre</li>
+	<li class:text-green-500={strength.hasSpecial}>Un caractere special</li>
 </ul>
 ```
 
@@ -490,8 +490,8 @@ const sessionOptions = rememberMe
 
 ```svelte
 <Button variant="outline" class="gap-2">
-    <GoogleIcon class="w-5 h-5" />
-    Continuer avec Google
+	<GoogleIcon class="h-5 w-5" />
+	Continuer avec Google
 </Button>
 ```
 
@@ -556,18 +556,22 @@ throw redirect(303, returnTo);
 
 ```svelte
 <script>
-    let loading = $state(false);
+	let loading = $state(false);
 </script>
 
-<form onsubmit={(e) => { loading = true; }}>
-    <Button type="submit" disabled={loading}>
-        {#if loading}
-            <Spinner class="mr-2" />
-            Connexion en cours...
-        {:else}
-            Se connecter
-        {/if}
-    </Button>
+<form
+	onsubmit={(e) => {
+		loading = true;
+	}}
+>
+	<Button type="submit" disabled={loading}>
+		{#if loading}
+			<Spinner class="mr-2" />
+			Connexion en cours...
+		{:else}
+			Se connecter
+		{/if}
+	</Button>
 </form>
 ```
 

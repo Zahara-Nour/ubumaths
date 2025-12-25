@@ -348,6 +348,7 @@ _This section will be updated after test execution._
 ### For User
 
 1. **Start Docker Desktop**
+
    - Ensure Docker is running: `docker ps`
 
 2. **Run Automated Test Suite**
@@ -358,6 +359,7 @@ _This section will be updated after test execution._
    ```
 
 3. **Review Output**
+
    - Script will provide APPROVED / REJECTED decision
    - Review any failures carefully
 

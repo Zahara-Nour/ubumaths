@@ -75,6 +75,7 @@
 ### Fichiers modifies
 
 1. `src/lib/types/worksheets.ts`:
+
    - `ERROR_REPORT_STATUSES` constant
    - `ErrorReportStatus` type
    - `WorksheetErrorReportRow` interface

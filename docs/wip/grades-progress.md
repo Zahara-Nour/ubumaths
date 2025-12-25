@@ -11,6 +11,7 @@ Single source of truth for the French educational grade system with proper depen
 ### Completed Tasks
 
 1. **Created core type definitions** (`src/lib/types/grades.ts`)
+
    - Defined canonical grade codes (18 total: CP, CE1, CE2, CM1, CM2, 6, 5, 4, 3, 2, 1_GEN, T_GEN, 1_SPE, T_SPE, T_EXP, T_COMP, 1_STMG, T_STMG)
    - Created type system for grades, school levels, tracks, and math intensity
    - Established GRADES constant as single source of truth with full metadata
@@ -24,6 +25,7 @@ Single source of truth for the French educational grade system with proper depen
    - Added helper constants (PRIMARY_GRADES, MIDDLE_GRADES, HIGH_GRADES)
 
 2. **Created utility functions** (`src/lib/utils/grades.ts`)
+
    - `getAccessibleGrades()`: BFS traversal with caching for grade hierarchy
    - `getReachableGrades()`: Forward traversal for progression paths
    - `parseGradeCode()`: Flexible parsing of 50+ input format variations
@@ -36,6 +38,7 @@ Single source of truth for the French educational grade system with proper depen
    - Cache management: `clearGradeCache()`
 
 3. **Created Zod validation schemas** (`src/lib/server/validation/grades.ts`)
+
    - `gradeCodeSchema`: Strict canonical codes only
    - `gradeFlexibleSchema`: Accepts variations and normalizes
    - `gradeArraySchema` / `gradeArrayFlexibleSchema`: Multiple grades with validation
@@ -53,6 +56,7 @@ Single source of truth for the French educational grade system with proper depen
    - `gradeUpdateSchema`: PATCH operation (replace/add/remove)
 
 4. **Created database migration** (`supabase/migrations/20251122212335_standardize_grades.sql`)
+
    - Normalization functions: `normalize_grade_value()`, `normalize_grade_array()`
    - Helper function: `is_valid_grade_array()`
    - Data migration: Converted existing grades to canonical format

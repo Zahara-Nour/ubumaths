@@ -278,12 +278,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 ```svelte
 <!-- +page.svelte -->
 <script lang="ts">
-    let { data } = $props();
-    const { user, profile, supabase } = data;
+	let { data } = $props();
+	const { user, profile, supabase } = data;
 </script>
 
 {#if user}
-    <p>Logged in as {user.email}</p>
+	<p>Logged in as {user.email}</p>
 {/if}
 ```
 

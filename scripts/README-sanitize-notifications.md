@@ -170,6 +170,7 @@ After running the migration:
    ```
 
 2. **Verify content integrity**:
+
    - Ensure legitimate HTML formatting is preserved (`<strong>`, `<em>`, etc.)
    - Confirm dangerous tags are removed (`<script>`, `<iframe>`, etc.)
    - Check that text content is intact

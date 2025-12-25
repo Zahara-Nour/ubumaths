@@ -13,6 +13,7 @@ Created the subdomain detail page that displays all questions within a specific 
 ### Route Files
 
 1. **`src/routes/(protected)/dashboard/admin/migration/[theme]/[domain]/[subdomain]/+page.server.ts`**
+
    - Server-side load function
    - Reads all `level-*.json` files from subdomain directory
    - Extracts properly capitalized names from question data
@@ -174,6 +175,7 @@ All components use proper TypeScript types:
 ## Next Steps (Phase 3.3)
 
 1. **Question Detail Modal/Page**
+
    - View full question data
    - Show transformed format
    - Display warnings and errors with details
@@ -181,6 +183,7 @@ All components use proper TypeScript types:
    - Edit/fix capabilities
 
 2. **Review Actions**
+
    - Approve question
    - Reject with reason
    - Flag for manual review

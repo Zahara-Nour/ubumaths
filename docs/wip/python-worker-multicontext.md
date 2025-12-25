@@ -127,10 +127,12 @@ Updated `_ubumaths_get_completions` Python function to accept an optional namesp
 All existing functionality is preserved:
 
 1. **Playground without contextId works exactly as before**
+
    - `execute` message without `contextId` uses isolated execution
    - Variables are not preserved between executions
 
 2. **All existing tests should pass**
+
    - No breaking changes to existing message formats
    - Optional `contextId` parameter is backwards compatible
 
@@ -158,6 +160,7 @@ CONTEXT_CONFIG = {
 ## Next Steps (Phase 1.3)
 
 1. **Write unit tests** for:
+
    - Context management (create, destroy, reset)
    - Persistent execution (variables preserved)
    - Isolated execution (variables not preserved)
@@ -174,11 +177,13 @@ CONTEXT_CONFIG = {
 ### Security Fixes Applied
 
 1. **Critical: Replaced `eval()` in autocomplete**
+
    - Old: `eval(obj_path, ns)` allowed code injection
    - New: Safe `getattr()` navigation through namespace
    - Prevents context cross-contamination attacks
 
 2. **Important: PyProxy cleanup in validateCode()**
+
    - Added `try/finally` to clean up `_ubumaths_validate_code` global
    - Prevents memory leaks from repeated validations
 
@@ -190,6 +195,7 @@ CONTEXT_CONFIG = {
 ### Known Limitations (Documented)
 
 1. **sys.modules sharing**: All contexts share Python's module cache
+
    - Not a vulnerability for educational use
    - Teacher demonstrations should not store sensitive data in module attributes
    - Local variables are properly isolated

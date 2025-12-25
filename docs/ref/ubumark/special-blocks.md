@@ -513,11 +513,13 @@ Uses Typst tree or custom drawing:
 ### Education Scenarios
 
 1. **Function Analysis**
+
    - Study of derivatives
    - Finding extrema
    - Sketching graphs
 
 2. **Probability Exercises**
+
    - Conditional probability
    - Bayes' theorem
    - Expected value calculations

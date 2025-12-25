@@ -84,15 +84,18 @@ Successfully implemented Phase 1 of the Python Playground improvements, adding m
 ## Files Modified
 
 1. `/Users/david/Coding/js/ubumaths/src/lib/stores/pythonPlayground.svelte.ts`
+
    - Added `_lastSavedCode` private state
    - Modified `isModified` derived state
    - Updated `loadFromStorage()`, `saveToStorage()`, `resetCode()`
 
 2. `/Users/david/Coding/js/ubumaths/src/lib/components/python/PythonToolbar.svelte`
+
    - Added `isModified` prop
    - Added modification indicator UI
 
 3. `/Users/david/Coding/js/ubumaths/src/lib/components/python/PythonOutput.svelte`
+
    - Added `downloadPlot()` function
    - Added download button UI
 

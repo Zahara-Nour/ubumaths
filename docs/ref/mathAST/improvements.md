@@ -646,11 +646,11 @@ Add visual tree editor component:
 
 ```svelte
 <MathASTEditor
-  bind:ast
-  on:nodeSelect={handleSelect}
-  on:nodeChange={handleChange}
-  highlightNode={selectedNode}
-  readOnly={false}
+	bind:ast
+	on:nodeSelect={handleSelect}
+	on:nodeChange={handleChange}
+	highlightNode={selectedNode}
+	readOnly={false}
 />
 ```
 

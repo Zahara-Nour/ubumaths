@@ -20,16 +20,19 @@ Created a CodeMirror-based JSON editor component for editing construction script
 ## Component Features
 
 1. **CodeMirror 6 Integration**
+
    - JSON syntax highlighting via `@codemirror/lang-json`
    - Line numbers, bracket matching
    - OneDark theme by default
 
 2. **Validation**
+
    - Two-phase validation: JSON parse → Zod schema
    - Debounced validation (300ms)
    - Uses `constructionScriptSchema` from `/Users/david/Coding/js/ubumaths/src/lib/constructions/schemas.ts`
 
 3. **Error Handling**
+
    - Red background highlighting for error lines (JSON parse errors)
    - Red gutter marker (●) for error lines
    - Error panel at bottom showing all validation errors
@@ -48,6 +51,7 @@ Created a CodeMirror-based JSON editor component for editing construction script
    ```
 
 5. **Lazy Loading**
+
    - All CodeMirror modules loaded on-demand
    - Loading spinner during initialization
    - Fallback textarea if loading fails

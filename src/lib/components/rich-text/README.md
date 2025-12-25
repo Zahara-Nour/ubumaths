@@ -218,30 +218,37 @@ Both extensions:
 ### 8 Curated Categories (200+ emojis)
 
 1. **Smileys** (37 emojis)
+
    - Emotions and expressions
    - Example: 😊 😀 😃 😄 🤓 🧐 🤔 😢 😭 😱
 
 2. **Feedback** (17 emojis)
+
    - Hand gestures for interaction
    - Example: 👍 👎 👏 🙌 👌 ✌️ 🤞 🙏 💪
 
 3. **Math & Science** (17 emojis)
+
    - Educational tools and symbols
    - Example: 📐 📏 📊 📈 🔬 🔭 ⚗️ 🧮 ⚛️ ➕ ➖ ✖️ ➗
 
 4. **School** (23 emojis)
+
    - Study materials and supplies
    - Example: 📚 📖 📝 ✏️ 🖊️ 🎓 🎒 🏫 💡 🧠
 
 5. **Stars & Symbols** (21 emojis)
+
    - Achievement and feedback markers
    - Example: ⭐ 🌟 ✨ 🔥 💥 ✅ ❌ ⚠️ 💯 🎯 🏆 🥇
 
 6. **Shapes** (26 emojis)
+
    - Geometric shapes and colors
    - Example: 🔴 🟠 🟡 🟢 🔵 🟣 🔶 🔷 🔺 🔻
 
 7. **Arrows** (19 emojis)
+
    - Direction indicators
    - Example: ⬆️ ➡️ ⬇️ ⬅️ ↔️ ↕️ 🔃 🔄
 

@@ -645,17 +645,17 @@ interface ParseError {
 
 ```svelte
 <div class="error">
-  <span class="error-code">{error.code}</span>
-  <span class="error-message">{error.message}</span>
+	<span class="error-code">{error.code}</span>
+	<span class="error-message">{error.message}</span>
 
-  {#if error.suggestion}
-    <div class="suggestion">
-      <Icon name="lightbulb" />
-      {error.suggestion}
-    </div>
-  {/if}
+	{#if error.suggestion}
+		<div class="suggestion">
+			<Icon name="lightbulb" />
+			{error.suggestion}
+		</div>
+	{/if}
 
-  <pre class="error-context">
+	<pre class="error-context">
     {lines[error.line - 1]}
     {' '.repeat(error.column)}{'~'.repeat(error.length)}
   </pre>

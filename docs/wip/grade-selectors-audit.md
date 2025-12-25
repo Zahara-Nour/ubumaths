@@ -250,6 +250,7 @@ Uses GradeMultiSelect in filter row with Label component nearby but not associat
   - No `id`, `for`, or `aria-label`
 
 - **Theme, Domain, Subdomain, Level filters** (line 536-594):
+
   - Same issue repeated across all filter selects
 
 - **Sort filter** (line 603-610):

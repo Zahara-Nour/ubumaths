@@ -32,18 +32,22 @@ Implemented all 11 API routes for the Chapter Templates feature following TDD pr
 #### Template Management Routes
 
 1. **`/api/teacher/chapter-templates` (+server.ts)**
+
    - GET: List templates with filters/pagination
    - POST: Create new template from scratch
 
 2. **`/api/teacher/chapter-templates/[id]` (+server.ts)**
+
    - GET: Retrieve single template
    - PATCH: Update template metadata/content
    - DELETE: Archive template (soft delete)
 
 3. **`/api/teacher/chapter-templates/[id]/publish` (+server.ts)**
+
    - POST: Publish draft template (with content validation)
 
 4. **`/api/teacher/chapter-templates/[id]/versions` (+server.ts)**
+
    - GET: List all versions
    - POST: Create new version with diff
 
@@ -53,12 +57,15 @@ Implemented all 11 API routes for the Chapter Templates feature following TDD pr
 #### Chapter-Template Integration Routes
 
 6. **`/api/teacher/chapters/[id]/create-template` (+server.ts)**
+
    - POST: Create template from existing chapter
 
 7. **`/api/teacher/chapters/[id]/template-updates` (+server.ts)**
+
    - GET: Check for template updates, optional preview
 
 8. **`/api/teacher/chapters/[id]/migrate` (+server.ts)**
+
    - POST: Migrate chapter to new template version
 
 9. **`/api/teacher/chapters/[id]/detach` (+server.ts)**
@@ -110,17 +117,20 @@ src/routes/api/teacher/
 ## Next Steps
 
 1. **Testing** (Pending)
+
    - Create comprehensive test file following project patterns
    - Test all endpoints for auth, validation, success, error cases
    - Mock Supabase responses
    - Run: `pnpm test:server src/routes/api/teacher/chapter-templates`
 
 2. **Code Review** (Pending)
+
    - Use `code-reviewer` agent
    - Verify best practices adherence
    - Check error handling completeness
 
 3. **Commit** (Pending)
+
    - Simple commit (9 new files)
    - Message: "feat(api): add chapter templates API routes"
 

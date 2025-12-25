@@ -276,16 +276,16 @@ Preferred approach - pre-fill cache from load function:
 
 ```svelte
 <script lang="ts">
-  import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-  let { data } = $props();
+	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	let { data } = $props();
 
-  $effect(() => {
-    // Hydrate from server data (no API call)
-    for (const cls of data.classes) {
-      teacherCache.hydrateStudents(cls.id, cls.students);
-      teacherCache.hydrateRewards(cls.id, cls.students);
-    }
-  });
+	$effect(() => {
+		// Hydrate from server data (no API call)
+		for (const cls of data.classes) {
+			teacherCache.hydrateStudents(cls.id, cls.students);
+			teacherCache.hydrateRewards(cls.id, cls.students);
+		}
+	});
 </script>
 ```
 

@@ -13,6 +13,7 @@ All planned features have been implemented and verified.
 ### New Files
 
 1. **`src/lib/server/worksheets/correction-release.ts`**
+
    - Core correction release business logic
    - Functions:
      - `canAccessCorrections()` - Check if student can access corrections based on assignment settings
@@ -23,21 +24,25 @@ All planned features have been implemented and verified.
      - `canStudentAccessInstanceCorrection()` - Check access for specific instance
 
 2. **`src/routes/api/worksheets/assignments/[assignmentId]/+server.ts`**
+
    - GET: Get assignment details with correction status
    - PATCH: Update assignment settings including correction configuration
    - POST: Actions (release_corrections, revoke_corrections)
    - DELETE: Delete draft assignments
 
 3. **`src/routes/api/worksheets/assignments/[assignmentId]/correction/+server.ts`**
+
    - GET: Generate personalized correction PDF for student
    - Security: Verifies student assignment and correction release status
    - Returns base64-encoded PDF or JSON correction data
 
 4. **`src/routes/api/worksheets/[id]/assignments/+server.ts`**
+
    - GET: List assignments for a worksheet
    - POST: Create new assignment with correction settings
 
 5. **`src/lib/components/worksheets/CorrectionManager.svelte`**
+
    - Teacher UI component for managing correction release
    - Features:
      - Display current release status
@@ -47,6 +52,7 @@ All planned features have been implemented and verified.
      - Scheduled date picker
 
 6. **`src/lib/components/worksheets/CorrectionSettings.svelte`**
+
    - Reusable correction settings form component
    - Bindable props for release mode, scheduled date, show solutions before due
 
@@ -58,6 +64,7 @@ All planned features have been implemented and verified.
 ### Modified Files
 
 1. **`src/lib/worksheets/typst-generator.ts`**
+
    - Added "CORRECTION" banner header in correction mode
    - Updated `generateHeader()` function with mode parameter
    - Green banner with white text for clear identification
@@ -79,15 +86,18 @@ All planned features have been implemented and verified.
 ## Key Features
 
 1. **Security**
+
    - Students can only access their own corrections
    - Corrections respect release timing settings
    - Teachers/admins always have access
 
 2. **Personalized Corrections**
+
    - Each student receives corrections matching their worksheet variant
    - Parameters and numeric values match their worksheet instance
 
 3. **French UI**
+
    - All labels and messages in French
    - Date formatting uses French locale
 

@@ -1234,6 +1234,7 @@ Le système de double token est un pattern de sécurité standard (OAuth 2.0) qu
 **Tests ajoutés le 2025-12-09** :
 
 1. **Test E2E** (`e2e/auth/login.spec.ts`) :
+
    - `error messages are identical for non-existent email and wrong password (enumeration protection)`
    - Compare les messages d'erreur entre email inexistant et mot de passe incorrect
    - S'assure qu'ils sont **identiques**
@@ -1329,6 +1330,7 @@ Le système de double token est un pattern de sécurité standard (OAuth 2.0) qu
 **Tests ajoutés le 2025-12-09** :
 
 1. **Test E2E** (`e2e/auth/login.spec.ts`) :
+
    - `does NOT display sign up link (controlled registration only)`
    - Vérifie qu'aucun lien "S'inscrire" n'est visible
    - Vérifie qu'aucun lien vers `/signup` ou `/register` n'existe
@@ -1679,6 +1681,7 @@ Fichier : `e2e/auth/protected-routes.spec.ts`
 ### Comportements étendus (tests ajoutés)
 
 1. **4.9 - Erreur email inexistant** ➕ : Tests de sécurité ajoutés
+
    - Test E2E : vérifie que les messages sont identiques
    - Test unitaire : vérifie le timing constant (protection timing attack)
    - Fichiers : `e2e/auth/login.spec.ts`, `tests/unit/api/auth/login-timing.test.ts`
