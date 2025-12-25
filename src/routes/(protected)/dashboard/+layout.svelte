@@ -53,6 +53,7 @@
 		Plus,
 		Maximize,
 		Minimize,
+		Menu,
 		// Upload, // Unused - for future features
 		Sparkles,
 		Bug,
@@ -83,8 +84,9 @@
 	import SkeletonForm from '$lib/components/skeleton/SkeletonForm.svelte';
 	import { getSkeletonType } from '$lib/utils/skeleton-detector';
 	import TestModeToggle from '$lib/components/teacher/TestModeToggle.svelte';
+	import MobileNavDrawer, { type NavItem } from '$lib/components/navigation/MobileNavDrawer.svelte';
 
-	import type { ComponentType, Snippet } from 'svelte';
+	import type { Component, Snippet } from 'svelte';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
@@ -94,6 +96,9 @@
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
+	// Mobile menu state
+	let mobileMenuOpen = $state(false);
+
 	// Navigation links based on role
 	const getNavLinks = (
 		role: string,
@@ -101,13 +106,13 @@
 	): Array<{
 		href: string;
 		label: string;
-		icon: ComponentType;
+		icon: Component;
 		badge?: number;
 	}> => {
 		const commonLinks: Array<{
 			href: string;
 			label: string;
-			icon: ComponentType;
+			icon: Component;
 			badge?: number;
 		}> = [{ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }];
 
@@ -309,9 +314,20 @@
 <div class="min-h-screen bg-background">
 	<!-- DASHBOARD HEADER (shared across all dashboard pages) -->
 	<header class="border-b border-border shadow-sm {getRoleHeaderColor(data.profile.role)}">
-		<div class="flex h-16 items-center justify-between gap-4 px-4">
-			<!-- Left side: Gidouille, Welcome message, and Avatar -->
-			<div class="flex items-center gap-4">
+		<div class="flex h-16 items-center justify-between gap-2 px-4 md:gap-4">
+			<!-- Left side: Hamburger (mobile), Gidouille, Title -->
+			<div class="flex items-center gap-2 md:gap-4">
+				<!-- Hamburger menu - mobile only -->
+				<Button
+					variant="ghost"
+					size="icon"
+					class="md:hidden"
+					onclick={() => (mobileMenuOpen = true)}
+					aria-label="Ouvrir le menu"
+				>
+					<Menu class="h-6 w-6" />
+				</Button>
+
 				<!-- Gidouille - links to home -->
 				<a
 					href="/"
@@ -322,8 +338,8 @@
 					<img src={gidouille} alt="Gidouille" class="h-8 w-8" />
 				</a>
 
-				<!-- Welcome message -->
-				<div>
+				<!-- Welcome message - hidden on very small screens -->
+				<div class="hidden sm:block">
 					<h1 class="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
 				</div>
 			</div>
@@ -331,12 +347,14 @@
 			<!-- Spacer -->
 			<div class="flex-1"></div>
 
-			<!-- Test Mode Toggle (teachers only) -->
+			<!-- Test Mode Toggle (teachers only) - hidden on mobile -->
 			{#if data.profile.role === 'teacher'}
-				<TestModeToggle currentUserIsTest={data.profile.is_test} />
+				<div class="hidden md:block">
+					<TestModeToggle currentUserIsTest={data.profile.is_test} />
+				</div>
 			{/if}
 
-			<!-- Right side: Controls -->
+			<!-- Right side: Avatar with dropdown -->
 			<div class="border-l pl-2">
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger
@@ -364,17 +382,60 @@
 							</Avatar.Fallback>
 						</Avatar.Root>
 					</DropdownMenu.Trigger>
-					<DropdownMenu.Content align="start" class="w-48">
+					<DropdownMenu.Content align="end" class="w-56">
 						<DropdownMenu.Label>{data.profile.email}</DropdownMenu.Label>
 						<DropdownMenu.Separator />
+
+						<!-- Mobile-only controls -->
+						<div class="md:hidden">
+							<!-- Dark mode toggle -->
+							<DropdownMenu.Item onclick={() => theme.toggle()}>
+								{#if theme.dark}
+									<Sun class="mr-2 h-4 w-4" />
+									Mode clair
+								{:else}
+									<Moon class="mr-2 h-4 w-4" />
+									Mode sombre
+								{/if}
+							</DropdownMenu.Item>
+
+							<!-- Font size controls -->
+							<DropdownMenu.Sub>
+								<DropdownMenu.SubTrigger>
+									<span class="mr-2 text-sm font-medium">A</span>
+									Taille du texte
+								</DropdownMenu.SubTrigger>
+								<DropdownMenu.SubContent>
+									<DropdownMenu.Item
+										onclick={() => fontSize.decrease()}
+										disabled={!fontSize.canDecrease}
+									>
+										<Minus class="mr-2 h-4 w-4" />
+										Réduire
+									</DropdownMenu.Item>
+									<DropdownMenu.Item
+										onclick={() => fontSize.increase()}
+										disabled={!fontSize.canIncrease}
+									>
+										<Plus class="mr-2 h-4 w-4" />
+										Agrandir
+									</DropdownMenu.Item>
+								</DropdownMenu.SubContent>
+							</DropdownMenu.Sub>
+
+							<DropdownMenu.Separator />
+						</div>
+
 						<DropdownMenu.Item onclick={handleLogout}>
 							<LogOut class="mr-2 h-4 w-4" />
-							Logout
+							Déconnexion
 						</DropdownMenu.Item>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 			</div>
-			<div class="flex items-center gap-2 border-l">
+
+			<!-- Desktop controls - hidden on mobile -->
+			<div class="hidden items-center gap-2 border-l md:flex">
 				<!-- Font size controls -->
 				<div class="flex items-center gap-1">
 					<Button
@@ -432,9 +493,9 @@
 		</div>
 	</header>
 
-	<div class="flex h-[calc(100vh-73px)]">
-		<!-- RAIL SIDEBAR - Vertical icon navigation (Claude AI style) -->
-		<div class="w-20 border-r border-border bg-card/50 shadow-sm dark:bg-card">
+	<div class="flex h-[calc(100vh-65px)] md:h-[calc(100vh-73px)]">
+		<!-- RAIL SIDEBAR - Vertical icon navigation (hidden on mobile) -->
+		<div class="hidden w-20 border-r border-border bg-card/50 shadow-sm md:block dark:bg-card">
 			<nav class="flex flex-col items-center gap-1 py-4">
 				{#each getNavLinks(data.profile.role, data.pendingVipRequestsCount) as link (link.href)}
 					<a
@@ -503,4 +564,11 @@
 			</div>
 		</main>
 	</div>
+
+	<!-- Mobile Navigation Drawer -->
+	<MobileNavDrawer
+		bind:open={mobileMenuOpen}
+		items={getNavLinks(data.profile.role, data.pendingVipRequestsCount) as NavItem[]}
+		{isActive}
+	/>
 </div>

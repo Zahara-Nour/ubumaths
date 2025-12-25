@@ -18,17 +18,28 @@
 	let {
 		open = $bindable(false),
 		items = [],
-		onNavigate
+		onNavigate,
+		isActive: customIsActive
 	}: {
 		open?: boolean;
 		items: NavItem[];
 		onNavigate?: () => void;
+		/** Custom function to check if a link is active (for complex route matching) */
+		isActive?: (href: string) => boolean;
 	} = $props();
 
-	// Check if a link is active
-	function isActive(href: string): boolean {
-		return page.url.pathname === href;
+	// Default active check: exact match or starts with (for nested routes)
+	function defaultIsActive(href: string): boolean {
+		const pathname = page.url.pathname;
+		// Exact match
+		if (pathname === href) return true;
+		// Nested route match (e.g., /messages/inbox/123 matches /messages/inbox)
+		if (href !== '/' && pathname.startsWith(href + '/')) return true;
+		return false;
 	}
+
+	// Use custom or default isActive function
+	const checkActive = customIsActive ?? defaultIsActive;
 
 	// Handle navigation - close drawer after click
 	function handleNavClick(): void {
@@ -50,7 +61,7 @@
 					data-sveltekit-preload-data="tap"
 					onclick={handleNavClick}
 					class="flex items-center gap-3 px-4 py-3 text-base transition-colors
-						{isActive(item.href)
+						{checkActive(item.href)
 						? 'bg-primary/10 font-medium text-primary'
 						: 'text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted/80'}"
 				>
