@@ -64,6 +64,11 @@
 
 	/* Exercise font family - default Inter */
 	--exercise-font-family: 'Inter', sans-serif;
+
+	/* Touch-friendly sizing tokens */
+	--min-touch-target: 44px;
+	--touch-padding: 12px;
+	--touch-gap: 12px;
 }
 
 @layer base {
