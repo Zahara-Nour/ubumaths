@@ -463,10 +463,8 @@ function generateListItemContent(
  * @returns Typst table
  */
 function generateTable(node: TableNode, _options: Required<TypstTranspilerOptions>): string {
-	const isHorizontal = node.orientation === 'horizontal';
-
-	if (isHorizontal) {
-		// Horizontal table: transpose data, first column is bold (headers)
+	if (node.transpose) {
+		// Transposed table: transpose data, first column is bold (headers)
 		// Number of output columns = 1 (header) + number of data rows
 		const numCols = 1 + node.rows.length;
 		// First column left-aligned, rest centered

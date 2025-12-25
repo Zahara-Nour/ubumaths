@@ -2080,10 +2080,10 @@ x^2 = 0 &\\Leftrightarrow \\begin{cases} x = 0 \\\\ \\text{ou} \\\\ x = 1 \\end{
 });
 
 // ============================================================================
-// HORIZONTAL TABLES
+// TRANSPOSED TABLES
 // ============================================================================
-describe('Horizontal Tables', () => {
-	it('should generate horizontal table with bold first column', () => {
+describe('Transposed Tables', () => {
+	it('should generate transposed table with bold first column', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -2104,7 +2104,7 @@ describe('Horizontal Tables', () => {
 						]
 					],
 					alignments: ['left', 'left'],
-					orientation: 'horizontal'
+					transpose: true
 				}
 			]
 		};
@@ -2123,7 +2123,7 @@ describe('Horizontal Tables', () => {
 		expect(typst).toContain('#table(');
 	});
 
-	it('should transpose data correctly for horizontal table', () => {
+	it('should transpose data correctly for transposed table', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -2144,7 +2144,7 @@ describe('Horizontal Tables', () => {
 						]
 					],
 					alignments: ['left', 'left'],
-					orientation: 'horizontal'
+					transpose: true
 				}
 			]
 		};
@@ -2157,7 +2157,7 @@ describe('Horizontal Tables', () => {
 		expect(typst).toContain('[*B*], [2], [4]');
 	});
 
-	it('should set correct alignment for horizontal table', () => {
+	it('should set correct alignment for transposed table', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -2166,7 +2166,7 @@ describe('Horizontal Tables', () => {
 					header: [{ content: 'X', align: 'left' }],
 					rows: [[{ content: '1', align: 'left' }], [{ content: '2', align: 'left' }]],
 					alignments: ['left'],
-					orientation: 'horizontal'
+					transpose: true
 				}
 			]
 		};
@@ -2179,7 +2179,7 @@ describe('Horizontal Tables', () => {
 		expect(typst).toContain('columns: 3');
 	});
 
-	it('should handle vertical table without orientation property', () => {
+	it('should handle normal table without transpose property', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -2196,7 +2196,7 @@ describe('Horizontal Tables', () => {
 						]
 					],
 					alignments: ['left', 'left']
-					// No orientation property = vertical
+					// No transpose property = normal table
 				}
 			]
 		};

@@ -1021,6 +1021,56 @@ Texte normal entre les citations.
 | 3 | ***Difficile*** | 300 |`
 		},
 
+		tables_horizontal: {
+			label: 'Tableaux transposes',
+			content: `# Tableaux transposes
+
+La directive \`:table-h\` transpose un tableau : les colonnes deviennent des lignes. Les en-tetes (premiere ligne) deviennent la premiere colonne.
+
+## Comparaison : sans et avec transposition
+
+**Sans \`:table-h\` (tableau vertical classique) :**
+
+| Eleve | Note | Mention |
+|-------|------|---------|
+| Alice | 18 | TB |
+| Bob | 14 | B |
+| Claire | 16 | TB |
+
+**Avec \`:table-h\` (meme tableau transpose) :**
+
+:table-h
+| Eleve | Note | Mention |
+|-------|------|---------|
+| Alice | 18 | TB |
+| Bob | 14 | B |
+| Claire | 16 | TB |
+
+Le markdown est identique, seule la directive change l'affichage.
+
+## Tableau transpose avec math
+
+:table-h
+| Fonction | Derivee | Primitive |
+|----------|---------|-----------|
+| $x^n$ | $nx^{n-1}$ | $\\frac{x^{n+1}}{n+1}$ |
+| $e^x$ | $e^x$ | $e^x$ |
+| $\\ln(x)$ | $\\frac{1}{x}$ | $x\\ln(x) - x$ |
+
+## Cas d'usage typique
+
+Pour afficher des proprietes par sujet (personnes, variables, etc.), on ecrit un tableau ou chaque ligne est un sujet :
+
+:table-h
+| Nom | Age | Ville |
+|-----|-----|-------|
+| Alice | 25 | Paris |
+| Bob | 30 | Lyon |
+| Claire | 28 | Nice |
+
+Resultat : les attributs (Nom, Age, Ville) sont en premiere colonne, chaque personne occupe une colonne.`
+		},
+
 		// Templates
 		templates_variables: {
 			label: 'Templates - Variables',
@@ -1201,6 +1251,7 @@ Le plus petit titre.`
 		{ value: 'tables_simple', label: 'Tableaux simples' },
 		{ value: 'tables_aligned', label: 'Tableaux avec alignement' },
 		{ value: 'tables_formatted', label: 'Tableaux avec formatage' },
+		{ value: 'tables_horizontal', label: 'Tableaux transposes' },
 		{ value: '_sep_templates', label: '--- Templates ---', disabled: true },
 		{ value: 'templates_variables', label: 'Variables {{var}}' },
 		{ value: 'templates_random', label: 'Aleatoire {{1..10}}' },

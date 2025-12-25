@@ -217,19 +217,20 @@ export interface TableCellNode {
 /**
  * Table node (GFM-style)
  *
- * Supports two orientations:
- * - 'vertical' (default): Headers in first row, data in subsequent rows
- * - 'horizontal': Headers in first column, data in subsequent columns
+ * Supports transposition via the `:table-h` directive:
+ * - When `transpose: false` (default): Normal table with headers in first row
+ * - When `transpose: true`: Table is transposed for display (rows become columns)
+ *   The original header cells become the first column (displayed as headers)
  *
- * Horizontal tables are specified with the `:table-h` directive before the table.
+ * The AST stores the table as written in markdown. Transposition is done by renderers.
  */
 export interface TableNode extends BaseNode {
 	type: 'table';
 	header: TableCellNode[];
 	rows: TableCellNode[][];
 	alignments: ('left' | 'center' | 'right')[];
-	/** Table orientation: 'vertical' (default) or 'horizontal' (headers in first column) */
-	orientation?: 'vertical' | 'horizontal';
+	/** When true, renderers transpose the table (headers become first column) */
+	transpose?: boolean;
 }
 
 /**

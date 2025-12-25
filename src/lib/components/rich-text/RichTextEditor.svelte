@@ -1808,4 +1808,30 @@
 		border-color: var(--color-primary, #3b82f6);
 		background: var(--color-background, #ffffff);
 	}
+
+	/*
+	 * Transposed Table Indicator
+	 * ==========================
+	 * Shows a visual badge for tables with data-transpose="true"
+	 * Actual transposition is only visible in MarkdownRenderer preview.
+	 */
+	:global(table[data-transpose='true']) {
+		position: relative;
+		border: 2px dashed hsl(var(--primary) / 0.4) !important;
+		margin-top: 1.75rem !important;
+	}
+
+	:global(table[data-transpose='true'])::before {
+		content: '↔ Transposé (voir aperçu)';
+		position: absolute;
+		top: -1.25rem;
+		left: 0;
+		padding: 0.125rem 0.5rem;
+		font-size: 0.625rem;
+		font-weight: 500;
+		color: hsl(var(--primary-foreground));
+		background: hsl(var(--primary));
+		border-radius: 0.25rem;
+		white-space: nowrap;
+	}
 </style>

@@ -1115,10 +1115,10 @@ describe('Edge Cases', () => {
 });
 
 // ============================================================================
-// HORIZONTAL TABLES
+// TRANSPOSED TABLES
 // ============================================================================
-describe('Horizontal Tables', () => {
-	it('should generate horizontal table with bold first column', () => {
+describe('Transposed Tables', () => {
+	it('should generate transposed table with bold first column', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1139,7 +1139,7 @@ describe('Horizontal Tables', () => {
 						]
 					],
 					alignments: ['left', 'left'],
-					orientation: 'horizontal'
+					transpose: true
 				}
 			]
 		};
@@ -1159,7 +1159,7 @@ describe('Horizontal Tables', () => {
 		expect(latex).toContain('\\end{tabular}');
 	});
 
-	it('should transpose data correctly for horizontal table', () => {
+	it('should transpose data correctly for transposed table', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1180,7 +1180,7 @@ describe('Horizontal Tables', () => {
 						]
 					],
 					alignments: ['left', 'left'],
-					orientation: 'horizontal'
+					transpose: true
 				}
 			]
 		};
@@ -1193,7 +1193,7 @@ describe('Horizontal Tables', () => {
 		expect(latex).toContain('\\textbf{B} & 2 & 4');
 	});
 
-	it('should handle vertical table without orientation property', () => {
+	it('should handle normal table without transpose property', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -1210,7 +1210,7 @@ describe('Horizontal Tables', () => {
 						]
 					],
 					alignments: ['left', 'left']
-					// No orientation property = vertical
+					// No transpose property = normal table
 				}
 			]
 		};

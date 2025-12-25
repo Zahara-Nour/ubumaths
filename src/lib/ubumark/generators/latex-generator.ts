@@ -343,10 +343,8 @@ function generateList(node: ListNode, options: Required<LatexTranspilerOptions>)
  * @returns LaTeX table environment
  */
 function generateTable(node: TableNode, _options: Required<LatexTranspilerOptions>): string {
-	const isHorizontal = node.orientation === 'horizontal';
-
-	if (isHorizontal) {
-		// Horizontal table: transpose data, first column is bold (headers)
+	if (node.transpose) {
+		// Transposed table: transpose data, first column is bold (headers)
 		// First column left-aligned, rest centered
 		const colSpec = 'l|' + Array(node.rows.length).fill('c').join('|');
 
