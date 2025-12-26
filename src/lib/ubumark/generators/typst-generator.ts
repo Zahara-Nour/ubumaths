@@ -1023,6 +1023,59 @@ function convertSubscriptSuperscript(str: string, operator: '^' | '_'): string {
 }
 
 /**
+ * Find the matching closing parenthesis for an opening parenthesis at the given position.
+ * Handles nested parentheses properly.
+ *
+ * @param str - The string to search in
+ * @param openPos - Position of the opening parenthesis
+ * @returns Position of the matching closing parenthesis, or -1 if not found
+ */
+function findMatchingParen(str: string, openPos: number): number {
+	if (str[openPos] !== '(') return -1;
+	let depth = 1;
+	let i = openPos + 1;
+	while (i < str.length && depth > 0) {
+		if (str[i] === '(') depth++;
+		else if (str[i] === ')') depth--;
+		i++;
+	}
+	return depth === 0 ? i - 1 : -1;
+}
+
+/**
+ * Add space after subscript parentheses when immediately followed by open parenthesis
+ * Handles nested parentheses properly (e.g., P_(overline(R_(n)))(x) -> P_(overline(R_(n))) (x))
+ *
+ * @param str - Input string
+ * @returns String with spaces added
+ */
+function addSpaceAfterSubscriptParens(str: string): string {
+	let result = str;
+	let i = 0;
+
+	while (i < result.length - 1) {
+		// Look for _( pattern
+		if (result[i] === '_' && result[i + 1] === '(') {
+			const openPos = i + 1;
+			const closePos = findMatchingParen(result, openPos);
+
+			if (closePos !== -1 && closePos + 1 < result.length && result[closePos + 1] === '(') {
+				// Insert space after the closing paren
+				result = result.slice(0, closePos + 1) + ' ' + result.slice(closePos + 1);
+				// Move past this subscript
+				i = closePos + 2;
+			} else {
+				i++;
+			}
+		} else {
+			i++;
+		}
+	}
+
+	return result;
+}
+
+/**
  * Convert LaTeX \frac{...}{...} and \dfrac{...}{...} to Typst frac(..., ...)
  * Handles nested braces properly (e.g., \dfrac{(-1)^{n+1}}{u^2_n})
  *
@@ -1490,10 +1543,9 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/_([a-zA-Z0-9])\(/g, '_$1 (');
 
 	// Add space after multi-character subscripts when followed by open parenthesis
-	// Handles cases like u_{n+1}(x) -> u_(n+1) (x)
-	// The subscript has already been converted from _{...} to _(...) above
-	// Pattern: _(...) immediately followed by ( needs a space
-	result = result.replace(/_\(([^()]*)\)\(/g, '_($1) (');
+	// Handles cases like P_(overline(R_(n)))(x) -> P_(overline(R_(n))) (x)
+	// Must use balanced parenthesis matching to handle nested parens like overline(R_(n))
+	result = addSpaceAfterSubscriptParens(result);
 
 	// ========================================================================
 	// UNKNOWN LATEX COMMANDS HANDLING
