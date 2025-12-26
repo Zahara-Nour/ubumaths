@@ -1247,6 +1247,141 @@ function containsBlockMath(content: string, placeholders: MathPlaceholder[]): bo
 }
 
 /**
+ * Check if content contains a markdown table
+ *
+ * A valid table requires:
+ * 1. A header row: | Header1 | Header2 |
+ * 2. An alignment row: |---|---| or |:---|:---:|
+ *
+ * Also checks for :table-h directive before tables.
+ */
+function containsTables(content: string): boolean {
+	const lines = content.split('\n');
+	for (let i = 0; i < lines.length - 1; i++) {
+		const line = lines[i].trim();
+		const nextLine = lines[i + 1]?.trim() || '';
+
+		// Check for :table-h directive followed by table
+		if (/^:table-h$/i.test(line)) {
+			// Check if next line is a table row and line after that is alignment row
+			if (i + 2 < lines.length) {
+				const tableRow = lines[i + 1]?.trim() || '';
+				const alignRow = lines[i + 2]?.trim() || '';
+				if (isTableRow(tableRow) && isAlignmentRow(alignRow)) {
+					return true;
+				}
+			}
+		}
+
+		// Check for table row followed by alignment row
+		if (isTableRow(line) && isAlignmentRow(nextLine)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Parse content that may contain markdown tables into block nodes
+ *
+ * Handles cases where list item content contains GFM tables.
+ * Returns an array of BlockNode (paragraphs and tables).
+ *
+ * @param content - Text content that may contain tables
+ * @param placeholders - Math placeholders from extraction
+ * @param options - Parse options
+ * @returns Array of block nodes
+ */
+function parseContentWithTables(
+	content: string,
+	placeholders: MathPlaceholder[],
+	options: ParseOptions
+): BlockNode[] {
+	const blocks: BlockNode[] = [];
+	const lines = content.split('\n');
+
+	// Find table blocks using findTableBlocksWithDirective
+	const tableBlockRanges = findTableBlocksWithDirective(lines);
+
+	if (tableBlockRanges.length === 0) {
+		// No tables found, parse as regular content
+		const parsedInline = parseInlineContent(content, placeholders, options);
+		if (parsedInline.length > 0) {
+			blocks.push({
+				type: 'paragraph',
+				children: parsedInline
+			});
+		}
+		return blocks;
+	}
+
+	let lastIndex = 0;
+	for (const tableBlock of tableBlockRanges) {
+		const startLine = tableBlock.directiveIndex ?? tableBlock.startIndex;
+
+		// Add content before the table as paragraph
+		if (startLine > lastIndex) {
+			const beforeLines = lines.slice(lastIndex, startLine);
+			const beforeText = beforeLines.join('\n').trim();
+			if (beforeText) {
+				// Recursively check if beforeText contains other block types
+				if (containsCodeBlocks(beforeText)) {
+					blocks.push(...parseContentWithCodeBlocks(beforeText, placeholders, options));
+				} else if (containsBlockMath(beforeText, placeholders)) {
+					blocks.push(...parseContentWithBlockMath(beforeText, placeholders, options));
+				} else {
+					const parsedInline = parseInlineContent(beforeText, placeholders, options);
+					if (parsedInline.length > 0) {
+						blocks.push({
+							type: 'paragraph',
+							children: parsedInline
+						});
+					}
+				}
+			}
+		}
+
+		// Parse the table
+		const tableLines = lines.slice(tableBlock.startIndex, tableBlock.endIndex + 1);
+		const table = parseTable(tableLines, tableBlock.transpose);
+		if (table) {
+			// Process table cell content to restore math placeholders
+			const processedTable = processTableCellContent(table, placeholders);
+			blocks.push(processedTable);
+		}
+
+		lastIndex = tableBlock.endIndex + 1;
+	}
+
+	// Add content after the last table
+	if (lastIndex < lines.length) {
+		const afterLines = lines.slice(lastIndex);
+		const afterText = afterLines.join('\n').trim();
+		if (afterText) {
+			// Recursively check if afterText contains other block types
+			if (containsCodeBlocks(afterText)) {
+				blocks.push(...parseContentWithCodeBlocks(afterText, placeholders, options));
+			} else if (containsBlockMath(afterText, placeholders)) {
+				blocks.push(...parseContentWithBlockMath(afterText, placeholders, options));
+			} else if (containsTables(afterText)) {
+				// There might be more tables
+				blocks.push(...parseContentWithTables(afterText, placeholders, options));
+			} else {
+				const parsedInline = parseInlineContent(afterText, placeholders, options);
+				if (parsedInline.length > 0) {
+					blocks.push({
+						type: 'paragraph',
+						children: parsedInline
+					});
+				}
+			}
+		}
+	}
+
+	return blocks;
+}
+
+/**
  * Parse content that may contain block math into block nodes
  *
  * Handles cases where list item content contains $$...$$ display math.
@@ -1358,6 +1493,12 @@ function processListInlineContent(
 					if (containsCodeBlocks(textContent)) {
 						// Parse as blocks (may return multiple nodes)
 						return parseContentWithCodeBlocks(textContent, placeholders, options);
+					}
+
+					// Check if content contains tables
+					if (containsTables(textContent)) {
+						// Parse as blocks (may return paragraphs and tables)
+						return parseContentWithTables(textContent, placeholders, options);
 					}
 
 					// Check if content contains block math ($$...$$)
