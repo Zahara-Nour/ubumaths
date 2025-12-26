@@ -52,8 +52,6 @@
 		Sigma,
 		Eraser,
 		MoreHorizontal,
-		ChevronDown,
-		ChevronRight,
 		Type,
 		PilcrowSquare,
 		Plus,
@@ -1003,18 +1001,12 @@
 					<Button
 						type="button"
 						variant={openSection === 'text' ? 'secondary' : 'ghost'}
-						size="sm"
+						size="icon"
 						onclick={() => toggleSection('text')}
-						class="font-medium"
 						{disabled}
+						title="Texte"
 					>
-						<Type class="mr-1 h-4 w-4" />
-						Texte
-						{#if openSection === 'text'}
-							<ChevronDown class="ml-1 h-3 w-3" />
-						{:else}
-							<ChevronRight class="ml-1 h-3 w-3" />
-						{/if}
+						<Type class="h-4 w-4" />
 					</Button>
 				{/if}
 
@@ -1023,18 +1015,12 @@
 					<Button
 						type="button"
 						variant={openSection === 'paragraph' ? 'secondary' : 'ghost'}
-						size="sm"
+						size="icon"
 						onclick={() => toggleSection('paragraph')}
-						class="font-medium"
 						{disabled}
+						title="Paragraphe"
 					>
-						<PilcrowSquare class="mr-1 h-4 w-4" />
-						Paragraphe
-						{#if openSection === 'paragraph'}
-							<ChevronDown class="ml-1 h-3 w-3" />
-						{:else}
-							<ChevronRight class="ml-1 h-3 w-3" />
-						{/if}
+						<PilcrowSquare class="h-4 w-4" />
 					</Button>
 				{/if}
 
@@ -1043,18 +1029,12 @@
 					<Button
 						type="button"
 						variant={openSection === 'insertion' ? 'secondary' : 'ghost'}
-						size="sm"
+						size="icon"
 						onclick={() => toggleSection('insertion')}
-						class="font-medium"
 						{disabled}
+						title="Insertion"
 					>
-						<Plus class="mr-1 h-4 w-4" />
-						Insertion
-						{#if openSection === 'insertion'}
-							<ChevronDown class="ml-1 h-3 w-3" />
-						{:else}
-							<ChevronRight class="ml-1 h-3 w-3" />
-						{/if}
+						<Plus class="h-4 w-4" />
 					</Button>
 				{/if}
 
@@ -1063,18 +1043,12 @@
 					<Button
 						type="button"
 						variant={openSection === 'formula' ? 'secondary' : 'ghost'}
-						size="sm"
+						size="icon"
 						onclick={() => toggleSection('formula')}
-						class="font-medium"
 						{disabled}
+						title="Formule"
 					>
-						<Sigma class="mr-1 h-4 w-4" />
-						Formule
-						{#if openSection === 'formula'}
-							<ChevronDown class="ml-1 h-3 w-3" />
-						{:else}
-							<ChevronRight class="ml-1 h-3 w-3" />
-						{/if}
+						<Sigma class="h-4 w-4" />
 					</Button>
 				{/if}
 
@@ -1086,10 +1060,10 @@
 								<button
 									{...props}
 									type="button"
-									class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+									title="Plus"
+									class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 								>
 									<MoreHorizontal class="h-4 w-4" />
-									Plus
 								</button>
 							{/snippet}
 						</DropdownMenu.Trigger>
@@ -1147,18 +1121,17 @@
 					<Button
 						type="button"
 						variant={isPreviewMode ? 'secondary' : 'ghost'}
-						size="sm"
+						size="icon"
 						onclick={togglePreview}
 						{disabled}
 						title={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
 						aria-label={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
 					>
 						{#if isPreviewMode}
-							<EyeOff class="mr-1 h-4 w-4" aria-hidden="true" />
+							<EyeOff class="h-4 w-4" aria-hidden="true" />
 						{:else}
-							<Eye class="mr-1 h-4 w-4" aria-hidden="true" />
+							<Eye class="h-4 w-4" aria-hidden="true" />
 						{/if}
-						Apercu
 					</Button>
 				{/if}
 
@@ -1167,7 +1140,7 @@
 					<Button
 						type="button"
 						variant={isFullscreen ? 'secondary' : 'ghost'}
-						size="sm"
+						size="icon"
 						onclick={toggleFullscreen}
 						{disabled}
 						title={isFullscreen ? 'Quitter plein ecran' : 'Plein ecran'}
@@ -1186,16 +1159,21 @@
 
 				<!-- Action Buttons (Always Visible) -->
 				{#if showClearButton}
-					<Button type="button" variant="ghost" size="sm" onclick={handleClear} {disabled}>
-						<Eraser class="mr-1 h-4 w-4" />
-						Effacer
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon"
+						onclick={handleClear}
+						{disabled}
+						title="Effacer"
+					>
+						<Eraser class="h-4 w-4" />
 					</Button>
 				{/if}
 
 				{#if effectiveShowSendButton}
-					<Button type="button" size="sm" onclick={handleSend} {disabled}>
-						<Send class="mr-1 h-4 w-4" />
-						Envoyer
+					<Button type="button" size="icon" onclick={handleSend} {disabled} title="Envoyer">
+						<Send class="h-4 w-4" />
 					</Button>
 				{/if}
 			</div>
