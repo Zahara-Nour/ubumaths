@@ -177,7 +177,7 @@
 	let hasInitialized = false;
 
 	// Toolbar Section State - only one section open at a time (accordion)
-	type ToolbarSection = 'text' | 'paragraph' | 'insertion' | 'formula' | 'templates' | null;
+	type ToolbarSection = 'text' | 'paragraph' | 'insertion' | 'formula' | null;
 	let openSection = $state<ToolbarSection>('text');
 
 	// Toggle section: if already open, close it; otherwise open it (closes others)
@@ -1078,27 +1078,7 @@
 					</Button>
 				{/if}
 
-				<!-- Templates Section Toggle -->
-				{#if showTemplates}
-					<Button
-						type="button"
-						variant={openSection === 'templates' ? 'secondary' : 'ghost'}
-						size="sm"
-						onclick={() => toggleSection('templates')}
-						class="font-medium"
-						{disabled}
-					>
-						<Braces class="mr-1 h-4 w-4" />
-						Templates
-						{#if openSection === 'templates'}
-							<ChevronDown class="ml-1 h-3 w-3" />
-						{:else}
-							<ChevronRight class="ml-1 h-3 w-3" />
-						{/if}
-					</Button>
-				{/if}
-
-				<!-- More Dropdown (Advanced Features) -->
+				<!-- More Dropdown (Advanced Features + Templates) -->
 				{#if showMore}
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger {disabled}>
@@ -1133,6 +1113,31 @@
 								<Minus class="mr-2 h-4 w-4" />
 								Ligne horizontale
 							</DropdownMenu.Item>
+
+							{#if showTemplates}
+								<DropdownMenu.Separator />
+								<DropdownMenu.Label>Templates UbuMark</DropdownMenu.Label>
+								<DropdownMenu.Item onclick={insertVariable}>
+									<Braces class="mr-2 h-4 w-4" />
+									<span class="font-mono">{'{{x}}'}</span>
+									<span class="ml-2 text-muted-foreground">Variable</span>
+								</DropdownMenu.Item>
+								<DropdownMenu.Item onclick={insertRandom}>
+									<Braces class="mr-2 h-4 w-4" />
+									<span class="font-mono">{'{{1..10}}'}</span>
+									<span class="ml-2 text-muted-foreground">Aléatoire</span>
+								</DropdownMenu.Item>
+								<DropdownMenu.Item onclick={insertEval}>
+									<Braces class="mr-2 h-4 w-4" />
+									<span class="font-mono">{'{{eval:}}'}</span>
+									<span class="ml-2 text-muted-foreground">Calcul</span>
+								</DropdownMenu.Item>
+								<DropdownMenu.Item onclick={insertBlank}>
+									<Braces class="mr-2 h-4 w-4" />
+									<span class="font-mono">[____]</span>
+									<span class="ml-2 text-muted-foreground">Champ réponse</span>
+								</DropdownMenu.Item>
+							{/if}
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
 				{/if}
@@ -1614,69 +1619,6 @@
 						class="font-mono"
 					>
 						$$...$$
-					</Button>
-				</div>
-			{/if}
-
-			<!-- Templates Section (Collapsible) -->
-			{#if showTemplates && openSection === 'templates'}
-				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
-					<!-- Variable Button -->
-					<Button
-						type="button"
-						variant="ghost"
-						size="sm"
-						onclick={insertVariable}
-						{disabled}
-						title="Variable"
-						class="font-mono"
-					>
-						{'{{x}}'}
-					</Button>
-
-					<div class="mx-1 h-6 w-px bg-border"></div>
-
-					<!-- Random Button -->
-					<Button
-						type="button"
-						variant="ghost"
-						size="sm"
-						onclick={insertRandom}
-						{disabled}
-						title="Valeur aléatoire"
-						class="font-mono"
-					>
-						{'{{1..10}}'}
-					</Button>
-
-					<div class="mx-1 h-6 w-px bg-border"></div>
-
-					<!-- Eval Button -->
-					<Button
-						type="button"
-						variant="ghost"
-						size="sm"
-						onclick={insertEval}
-						{disabled}
-						title="Expression évaluée"
-						class="font-mono"
-					>
-						{'{{eval:}}'}
-					</Button>
-
-					<div class="mx-1 h-6 w-px bg-border"></div>
-
-					<!-- Blank Field Button -->
-					<Button
-						type="button"
-						variant="ghost"
-						size="sm"
-						onclick={insertBlank}
-						{disabled}
-						title="Champ à remplir"
-						class="font-mono"
-					>
-						[____]
 					</Button>
 				</div>
 			{/if}
