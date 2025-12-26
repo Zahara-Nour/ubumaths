@@ -1175,6 +1175,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\left\s*/g, '');
 	result = result.replace(/\\right\s*/g, '');
 
+	// Remove \big, \Big, \bigg, \Bigg sizing commands (Typst auto-sizes delimiters)
+	// These commands just affect delimiter size in LaTeX, not needed in Typst
+	// Must be done BEFORE removing unknown commands to avoid "\big" becoming "big" text
+	result = result.replace(/\\[Bb]igg?\s*/g, '');
+
 	// Convert \dfrac{a}{b} and \frac{a}{b} to frac(a, b)
 	// Uses balanced brace matching to handle nested braces like \dfrac{(-1)^{n+1}}{u^2_n}
 	result = convertLatexFractions(result);
@@ -1404,6 +1409,13 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\mathbb\s*{Z}/g, 'ZZ');
 	result = result.replace(/\\mathbb\s*{Q}/g, 'QQ');
 	result = result.replace(/\\mathbb\s*{C}/g, 'CC');
+	// French shortcuts for number sets (common in French math documents)
+	// Must use word boundary (?![a-zA-Z]) to avoid matching \Natural, etc.
+	result = result.replace(/\\R(?![a-zA-Z])/g, 'RR');
+	result = result.replace(/\\N(?![a-zA-Z])/g, 'NN');
+	result = result.replace(/\\Z(?![a-zA-Z])/g, 'ZZ');
+	result = result.replace(/\\Q(?![a-zA-Z])/g, 'QQ');
+	result = result.replace(/\\C(?![a-zA-Z])/g, 'CC');
 
 	// 5. Math text styles (1 argument) - use balanced brace matching for nested content
 	result = convertLatexOneArgCommand(result, 'mathbf', 'bold');

@@ -1907,6 +1907,27 @@ describe('convertLatexToTypstMath - Unknown LaTeX commands', () => {
 		// \frac is converted to frac(...)
 		expect(convertLatexToTypstMath('\\frac{a}{b}')).toBe('frac(a, b)');
 	});
+
+	it('should remove \\big, \\Big, \\bigg, \\Bigg sizing commands', () => {
+		// These are delimiter sizing commands - Typst handles this automatically
+		expect(convertLatexToTypstMath('P\\big(A\\big)')).toBe('P(A)');
+		expect(convertLatexToTypstMath('P\\Big(A\\Big)')).toBe('P(A)');
+		expect(convertLatexToTypstMath('P\\bigg(A\\bigg)')).toBe('P(A)');
+		expect(convertLatexToTypstMath('P\\Bigg(A\\Bigg)')).toBe('P(A)');
+	});
+
+	it('should handle French number set shortcuts \\N, \\R, \\Z, \\Q, \\C', () => {
+		// Common French shortcuts for blackboard bold letters
+		expect(convertLatexToTypstMath('n \\in \\N')).toBe('n in NN');
+		expect(convertLatexToTypstMath('x \\in \\R')).toBe('x in RR');
+		expect(convertLatexToTypstMath('n \\in \\Z')).toBe('n in ZZ');
+		expect(convertLatexToTypstMath('r \\in \\Q')).toBe('r in QQ');
+		expect(convertLatexToTypstMath('z \\in \\C')).toBe('z in CC');
+	});
+
+	it('should handle \\N with superscript like \\N^{*}', () => {
+		expect(convertLatexToTypstMath('n \\in \\N^{*}')).toBe('n in NN^(*)');
+	});
 });
 
 // ============================================================================
