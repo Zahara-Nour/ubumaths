@@ -1116,7 +1116,10 @@
 					</DropdownMenu.Root>
 				{/if}
 
-				<!-- Preview Toggle -->
+				<!-- Spacer -->
+				<div class="flex-1"></div>
+
+				<!-- Right-side buttons: Preview, Clear, Fullscreen -->
 				{#if showPreview}
 					<Button
 						type="button"
@@ -1135,7 +1138,19 @@
 					</Button>
 				{/if}
 
-				<!-- Fullscreen Toggle -->
+				{#if showClearButton}
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon"
+						onclick={handleClear}
+						{disabled}
+						title="Effacer"
+					>
+						<Eraser class="h-4 w-4" />
+					</Button>
+				{/if}
+
 				{#if showFullscreen}
 					<Button
 						type="button"
@@ -1151,23 +1166,6 @@
 						{:else}
 							<Maximize class="h-4 w-4" aria-hidden="true" />
 						{/if}
-					</Button>
-				{/if}
-
-				<!-- Spacer -->
-				<div class="flex-1"></div>
-
-				<!-- Action Buttons (Always Visible) -->
-				{#if showClearButton}
-					<Button
-						type="button"
-						variant="ghost"
-						size="icon"
-						onclick={handleClear}
-						{disabled}
-						title="Effacer"
-					>
-						<Eraser class="h-4 w-4" />
 					</Button>
 				{/if}
 
