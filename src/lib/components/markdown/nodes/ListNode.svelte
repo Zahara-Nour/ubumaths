@@ -154,6 +154,7 @@
 		header: { content: string; align?: 'left' | 'center' | 'right' }[];
 		rows: { content: string; align?: 'left' | 'center' | 'right' }[][];
 		alignments: ('left' | 'center' | 'right')[];
+		transpose?: boolean;
 	} {
 		return node.type === 'table';
 	}
@@ -292,7 +293,12 @@
 							originalHeight={child.originalHeight}
 						/>
 					{:else if isTableNode(child)}
-						<TableNode header={child.header} rows={child.rows} alignments={child.alignments} />
+						<TableNode
+							header={child.header}
+							rows={child.rows}
+							alignments={child.alignments}
+							transpose={child.transpose}
+						/>
 					{:else if isCodeBlockNode(child)}
 						<CodeBlock code={child.code} language={child.language} />
 					{:else if isVariationTableNode(child)}
@@ -359,7 +365,12 @@
 							originalHeight={child.originalHeight}
 						/>
 					{:else if isTableNode(child)}
-						<TableNode header={child.header} rows={child.rows} alignments={child.alignments} />
+						<TableNode
+							header={child.header}
+							rows={child.rows}
+							alignments={child.alignments}
+							transpose={child.transpose}
+						/>
 					{:else if isCodeBlockNode(child)}
 						<CodeBlock code={child.code} language={child.language} />
 					{:else if isVariationTableNode(child)}
