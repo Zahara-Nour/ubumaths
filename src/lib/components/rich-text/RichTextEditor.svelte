@@ -229,6 +229,76 @@
 	let isMarkdownEditMode = $state(false);
 	let rawMarkdownContent = $state('');
 
+	// Scroll sync state (fullscreen preview mode)
+	let editorPanelRef = $state<HTMLElement | null>(null);
+	let previewPanelRef = $state<HTMLElement | null>(null);
+	let isSyncingScroll = false; // Non-reactive guard to prevent infinite loops
+
+	/**
+	 * Handle scroll sync between editor and preview panels (fullscreen only)
+	 */
+	function handleScrollSync(source: 'editor' | 'preview') {
+		if (!isFullscreen || !isPreviewMode || isSyncingScroll) return;
+
+		const sourcePanel = source === 'editor' ? editorPanelRef : previewPanelRef;
+		const targetPanel = source === 'editor' ? previewPanelRef : editorPanelRef;
+
+		if (!sourcePanel || !targetPanel) return;
+
+		const scrollableHeight = sourcePanel.scrollHeight - sourcePanel.clientHeight;
+		if (scrollableHeight <= 0) return;
+
+		const scrollPercent = sourcePanel.scrollTop / scrollableHeight;
+		const targetScrollableHeight = targetPanel.scrollHeight - targetPanel.clientHeight;
+
+		isSyncingScroll = true;
+		targetPanel.scrollTop = scrollPercent * targetScrollableHeight;
+		// Reset flag after a short delay to allow the scroll event to complete
+		requestAnimationFrame(() => {
+			isSyncingScroll = false;
+		});
+	}
+
+	// Resize handle state (inline mode only)
+	let containerRef = $state<HTMLElement | null>(null);
+	let userHeight = $state<number | null>(null); // User-defined height in pixels (overrides maxHeight)
+	let isResizing = $state(false);
+	let resizeStartY = 0;
+	let resizeStartHeight = 0;
+
+	/**
+	 * Start resizing on mousedown
+	 */
+	function handleResizeStart(e: MouseEvent) {
+		if (isFullscreen || !containerRef) return;
+		e.preventDefault();
+		isResizing = true;
+		resizeStartY = e.clientY;
+		resizeStartHeight = containerRef.offsetHeight;
+	}
+
+	/**
+	 * Handle resize mouse move (attached to document when resizing)
+	 */
+	function handleResizeMove(e: MouseEvent) {
+		if (!isResizing) return;
+		const delta = e.clientY - resizeStartY;
+		const newHeight = Math.max(150, resizeStartHeight + delta); // Min 150px
+		userHeight = newHeight;
+	}
+
+	/**
+	 * End resizing on mouseup
+	 */
+	function handleResizeEnd() {
+		isResizing = false;
+	}
+
+	// Computed height style for inline mode
+	let containerHeight = $derived(
+		isFullscreen ? undefined : userHeight ? `${userHeight}px` : maxHeight
+	);
+
 	/**
 	 * Toggle preview display mode between rendered and raw
 	 */
@@ -872,809 +942,882 @@
 			document.body.style.overflow = '';
 		};
 	});
+
+	/**
+	 * Prevent text selection and show resize cursor during resize
+	 */
+	$effect(() => {
+		if (!browser) return;
+		if (isResizing) {
+			document.body.style.userSelect = 'none';
+			document.body.style.cursor = 'ns-resize';
+		} else {
+			document.body.style.userSelect = '';
+			document.body.style.cursor = '';
+		}
+		return () => {
+			document.body.style.userSelect = '';
+			document.body.style.cursor = '';
+		};
+	});
 </script>
 
 <!--
 	ESC key handler for fullscreen exit
 -->
-<svelte:window onkeydown={handleFullscreenKeydown} />
+<svelte:window
+	onkeydown={handleFullscreenKeydown}
+	onmousemove={handleResizeMove}
+	onmouseup={handleResizeEnd}
+/>
 
 <!--
-	Editor Container with Organized Collapsible Toolbar
+	Editor Container
+	- Fullscreen: fixed positioning, full viewport
+	- Inline with resize: flex column with fixed height
+	- Inline without resize: auto height
 -->
 <div
+	bind:this={containerRef}
 	class={isFullscreen
 		? 'fixed inset-0 z-50 flex flex-col bg-background'
-		: `rounded-lg border border-border bg-card ${maxHeight ? 'overflow-y-auto' : 'overflow-clip'}`}
-	style={maxHeight && !isFullscreen ? `max-height: ${maxHeight}` : undefined}
+		: containerHeight
+			? 'relative flex flex-col rounded-lg border border-border bg-card'
+			: 'overflow-clip rounded-lg border border-border bg-card'}
+	style={!isFullscreen && containerHeight ? `height: ${containerHeight}` : undefined}
 >
-	<!-- Toolbar -->
-	<div class="sticky top-0 z-10 border-b border-border bg-muted">
-		<!-- Main Toolbar Row -->
-		<div class="flex flex-wrap items-center gap-1 p-2">
-			<!-- Text Section Toggle -->
-			{#if showText}
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={() => (textSectionOpen = !textSectionOpen)}
-					class="font-medium"
-					{disabled}
-				>
-					<Type class="mr-1 h-4 w-4" />
-					Texte
-					{#if textSectionOpen}
-						<ChevronDown class="ml-1 h-3 w-3" />
-					{:else}
-						<ChevronRight class="ml-1 h-3 w-3" />
-					{/if}
-				</Button>
-			{/if}
-
-			<!-- Paragraph Section Toggle -->
-			{#if showParagraph}
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={() => (paragraphSectionOpen = !paragraphSectionOpen)}
-					class="font-medium"
-					{disabled}
-				>
-					<PilcrowSquare class="mr-1 h-4 w-4" />
-					Paragraphe
-					{#if paragraphSectionOpen}
-						<ChevronDown class="ml-1 h-3 w-3" />
-					{:else}
-						<ChevronRight class="ml-1 h-3 w-3" />
-					{/if}
-				</Button>
-			{/if}
-
-			<!-- Insert Section Toggle -->
-			{#if showInsertion}
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={() => (insertSectionOpen = !insertSectionOpen)}
-					class="font-medium"
-					{disabled}
-				>
-					<Plus class="mr-1 h-4 w-4" />
-					Insertion
-					{#if insertSectionOpen}
-						<ChevronDown class="ml-1 h-3 w-3" />
-					{:else}
-						<ChevronRight class="ml-1 h-3 w-3" />
-					{/if}
-				</Button>
-			{/if}
-
-			<!-- Formule Section Toggle (only if showFormula and resolvedMathTemplates !== 'none') -->
-			{#if showFormula && resolvedMathTemplates !== 'none'}
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={() => (formuleSectionOpen = !formuleSectionOpen)}
-					class="font-medium"
-					{disabled}
-				>
-					<Sigma class="mr-1 h-4 w-4" />
-					Formule
-					{#if formuleSectionOpen}
-						<ChevronDown class="ml-1 h-3 w-3" />
-					{:else}
-						<ChevronRight class="ml-1 h-3 w-3" />
-					{/if}
-				</Button>
-			{/if}
-
-			<!-- Templates Section Toggle -->
-			{#if showTemplates}
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={() => (templatesSectionOpen = !templatesSectionOpen)}
-					class="font-medium"
-					{disabled}
-				>
-					<Braces class="mr-1 h-4 w-4" />
-					Templates
-					{#if templatesSectionOpen}
-						<ChevronDown class="ml-1 h-3 w-3" />
-					{:else}
-						<ChevronRight class="ml-1 h-3 w-3" />
-					{/if}
-				</Button>
-			{/if}
-
-			<!-- More Dropdown (Advanced Features) -->
-			{#if showMore}
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger {disabled}>
-						{#snippet child({ props })}
-							<button
-								{...props}
-								type="button"
-								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-							>
-								<MoreHorizontal class="h-4 w-4" />
-								Plus
-							</button>
-						{/snippet}
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content>
-						<DropdownMenu.Label>Blocs spéciaux</DropdownMenu.Label>
-						<DropdownMenu.Item
-							onclick={() => editor?.chain().focus().toggleBlockquote().run()}
-							class={isBlockquote ? 'bg-accent' : ''}
-						>
-							<Quote class="mr-2 h-4 w-4" />
-							Citation
-						</DropdownMenu.Item>
-						<DropdownMenu.Item
-							onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
-							class={isCodeBlock ? 'bg-accent' : ''}
-						>
-							<CodeSquare class="mr-2 h-4 w-4" />
-							Bloc de code
-						</DropdownMenu.Item>
-						<DropdownMenu.Item onclick={() => editor?.chain().focus().setHorizontalRule().run()}>
-							<Minus class="mr-2 h-4 w-4" />
-							Ligne horizontale
-						</DropdownMenu.Item>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-			{/if}
-
-			<!-- Preview Toggle -->
-			{#if showPreview}
-				<Button
-					type="button"
-					variant={isPreviewMode ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={togglePreview}
-					{disabled}
-					title={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
-					aria-label={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
-				>
-					{#if isPreviewMode}
-						<EyeOff class="mr-1 h-4 w-4" aria-hidden="true" />
-					{:else}
-						<Eye class="mr-1 h-4 w-4" aria-hidden="true" />
-					{/if}
-					Apercu
-				</Button>
-			{/if}
-
-			<!-- Fullscreen Toggle -->
-			{#if showFullscreen}
-				<Button
-					type="button"
-					variant={isFullscreen ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={toggleFullscreen}
-					{disabled}
-					title={isFullscreen ? 'Quitter plein ecran' : 'Plein ecran'}
-					aria-label={isFullscreen ? 'Quitter plein ecran' : 'Plein ecran'}
-				>
-					{#if isFullscreen}
-						<Minimize class="h-4 w-4" aria-hidden="true" />
-					{:else}
-						<Maximize class="h-4 w-4" aria-hidden="true" />
-					{/if}
-				</Button>
-			{/if}
-
-			<!-- Spacer -->
-			<div class="flex-1"></div>
-
-			<!-- Action Buttons (Always Visible) -->
-			{#if showClearButton}
-				<Button type="button" variant="ghost" size="sm" onclick={handleClear} {disabled}>
-					<Eraser class="mr-1 h-4 w-4" />
-					Effacer
-				</Button>
-			{/if}
-
-			{#if effectiveShowSendButton}
-				<Button type="button" size="sm" onclick={handleSend} {disabled}>
-					<Send class="mr-1 h-4 w-4" />
-					Envoyer
-				</Button>
-			{/if}
-		</div>
-
-		<!-- Text Section (Collapsible) -->
-		{#if showText && textSectionOpen}
-			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
-				<Button
-					type="button"
-					variant={isBold ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleBold().run()}
-					{disabled}
-					title="Gras"
-				>
-					<Bold class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={isItalic ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleItalic().run()}
-					{disabled}
-					title="Italique"
-				>
-					<Italic class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={isUnderline ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleUnderline().run()}
-					{disabled}
-					title="Souligne"
-				>
-					<UnderlineIcon class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={isStrike ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleStrike().run()}
-					{disabled}
-					title="Barre"
-				>
-					<Strikethrough class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={isCode ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleCode().run()}
-					{disabled}
-					title="Code inline"
-				>
-					<Code class="h-4 w-4" />
-				</Button>
-
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<Button
-					type="button"
-					variant={isSubscript ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleSubscript().run()}
-					{disabled}
-					title="Indice"
-				>
-					<SubscriptIcon class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={isSuperscript ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleSuperscript().run()}
-					{disabled}
-					title="Exposant"
-				>
-					<SuperscriptIcon class="h-4 w-4" />
-				</Button>
-			</div>
-		{/if}
-
-		<!-- Paragraph Section (Collapsible) -->
-		{#if showParagraph && paragraphSectionOpen}
-			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
-				<!-- Headings Dropdown -->
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger {disabled}>
-						{#snippet child({ props })}
-							<button
-								{...props}
-								type="button"
-								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 {currentHeading
-									? 'bg-accent'
-									: ''}"
-							>
-								<Heading class="mr-1 h-4 w-4" />
-								{#if currentHeading}
-									<span>H{currentHeading}</span>
-								{:else}
-									<span>Titre</span>
-								{/if}
-							</button>
-						{/snippet}
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content>
-						<DropdownMenu.Item onclick={() => editor?.chain().focus().setParagraph().run()}>
-							Paragraphe
-						</DropdownMenu.Item>
-						<DropdownMenu.Separator />
-						{#each [1, 2, 3, 4, 5, 6] as level (level)}
-							<DropdownMenu.Item onclick={() => setHeading(level)}>
-								Titre {level}
-							</DropdownMenu.Item>
-						{/each}
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Text Alignment -->
-				<Button
-					type="button"
-					variant={currentAlignment === 'left' ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().setTextAlign('left').run()}
-					{disabled}
-					title="Aligner a gauche"
-				>
-					<AlignLeft class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={currentAlignment === 'center' ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().setTextAlign('center').run()}
-					{disabled}
-					title="Centrer"
-				>
-					<AlignCenter class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={currentAlignment === 'right' ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().setTextAlign('right').run()}
-					{disabled}
-					title="Aligner a droite"
-				>
-					<AlignRight class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={currentAlignment === 'justify' ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().setTextAlign('justify').run()}
-					{disabled}
-					title="Justifier"
-				>
-					<AlignJustify class="h-4 w-4" />
-				</Button>
-			</div>
-		{/if}
-
-		<!-- Insert Section (Collapsible) -->
-		{#if showInsertion && insertSectionOpen}
-			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
-				<!-- Lists -->
-				<Button
-					type="button"
-					variant={isBulletList ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleBulletList().run()}
-					{disabled}
-					title="Liste a puces"
-				>
-					<List class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={isOrderedList ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleOrderedList().run()}
-					{disabled}
-					title="Liste numerotee"
-				>
-					<ListOrdered class="h-4 w-4" />
-				</Button>
-
-				<Button
-					type="button"
-					variant={isTaskList ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={() => editor?.chain().focus().toggleTaskList().run()}
-					{disabled}
-					title="Liste de taches"
-				>
-					<ListTodo class="h-4 w-4" />
-				</Button>
-
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Color Picker -->
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger {disabled}>
-						{#snippet child({ props })}
-							<button
-								{...props}
-								type="button"
-								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-							>
-								<Palette class="h-4 w-4" />
-							</button>
-						{/snippet}
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content>
-						<DropdownMenu.Label>Couleur du texte</DropdownMenu.Label>
-						<div class="grid grid-cols-4 gap-1 p-2">
-							{#each TEXT_COLORS as color (color.value)}
-								<button
-									type="button"
-									onclick={() => setColor(color.value)}
-									class="h-8 w-8 rounded border-2 border-border transition-transform hover:scale-110"
-									style="background-color: {color.value}"
-									title={color.name}
-									aria-label={color.name}
-								></button>
-							{/each}
-						</div>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-
-				<!-- Highlight Picker -->
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger {disabled}>
-						{#snippet child({ props })}
-							<button
-								{...props}
-								type="button"
-								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-							>
-								<Highlighter class="h-4 w-4" />
-							</button>
-						{/snippet}
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content>
-						<DropdownMenu.Label>Surlignage</DropdownMenu.Label>
-						<div class="grid grid-cols-4 gap-1 p-2">
-							{#each HIGHLIGHT_COLORS as color, i (i)}
-								<button
-									type="button"
-									onclick={() => setHighlight(color.value)}
-									class="flex h-8 w-8 items-center justify-center rounded border-2 border-border transition-transform hover:scale-110"
-									style="background-color: {color.value || 'transparent'}"
-									title={color.name}
-									aria-label={color.name}
-								>
-									{#if color.value === null}
-										<X class="h-4 w-4 text-muted-foreground" />
-									{/if}
-								</button>
-							{/each}
-						</div>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Link -->
-				<Button
-					type="button"
-					variant={editor?.isActive('link') ? 'secondary' : 'ghost'}
-					size="sm"
-					onclick={toggleLink}
-					{disabled}
-					title="Lien"
-				>
-					<LinkIcon class="h-4 w-4" />
-				</Button>
-
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Emoji Picker with Tabs -->
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger {disabled}>
-						{#snippet child({ props })}
-							<button
-								{...props}
-								type="button"
-								class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-							>
-								<Smile class="h-4 w-4" />
-							</button>
-						{/snippet}
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content class="w-80 p-0">
-						<Tabs.Root bind:value={selectedEmojiCategory} class="w-full">
-							<Tabs.List class="grid h-auto w-full grid-cols-4 rounded-none border-b">
-								{#each EMOJI_CATEGORIES.slice(0, 4) as category (category.name)}
-									<Tabs.Trigger value={category.name} class="px-2 py-1.5 text-xs">
-										{category.name.slice(0, 4)}
-									</Tabs.Trigger>
-								{/each}
-							</Tabs.List>
-							<Tabs.List class="grid h-auto w-full grid-cols-4 rounded-none border-b">
-								{#each EMOJI_CATEGORIES.slice(4, 8) as category (category.name)}
-									<Tabs.Trigger value={category.name} class="px-2 py-1.5 text-xs">
-										{category.name.slice(0, 4)}
-									</Tabs.Trigger>
-								{/each}
-							</Tabs.List>
-							{#each EMOJI_CATEGORIES as category (category.name)}
-								<Tabs.Content value={category.name} class="mt-0 p-2">
-									<div class="grid max-h-48 grid-cols-8 gap-1 overflow-y-auto">
-										{#each category.emojis as emoji (emoji)}
-											<button
-												type="button"
-												onclick={() => insertEmoji(emoji)}
-												class="rounded p-1 text-xl transition-colors hover:bg-accent"
-												title={emoji}
-											>
-												{emoji}
-											</button>
-										{/each}
-									</div>
-								</Tabs.Content>
-							{/each}
-						</Tabs.Root>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-
-				<!-- Image Upload Button (only if imageUpload is provided) -->
-				{#if imageUpload}
-					<div class="mx-1 h-6 w-px bg-border"></div>
-
+	<!-- Scrollable wrapper for inline mode with resize -->
+	<div
+		class={!isFullscreen && containerHeight
+			? 'flex min-h-0 flex-1 flex-col overflow-y-auto'
+			: 'contents'}
+	>
+		<!-- Toolbar -->
+		<div class="border-b border-border bg-muted">
+			<!-- Main Toolbar Row -->
+			<div class="flex flex-wrap items-center gap-1 p-2">
+				<!-- Text Section Toggle -->
+				{#if showText}
 					<Button
 						type="button"
 						variant="ghost"
 						size="sm"
-						onclick={handleImageUpload}
-						disabled={disabled || isUploadingImage}
-						title="Inserer une image"
+						onclick={() => (textSectionOpen = !textSectionOpen)}
+						class="font-medium"
+						{disabled}
 					>
-						{#if isUploadingImage}
-							<span class="h-4 w-4 animate-spin">⏳</span>
+						<Type class="mr-1 h-4 w-4" />
+						Texte
+						{#if textSectionOpen}
+							<ChevronDown class="ml-1 h-3 w-3" />
 						{:else}
-							<ImageIcon class="h-4 w-4" />
+							<ChevronRight class="ml-1 h-3 w-3" />
 						{/if}
 					</Button>
 				{/if}
 
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Variation Table Button -->
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={insertVariationTable}
-					{disabled}
-					title="Inserer un tableau de variation"
-				>
-					<TrendingUp class="h-4 w-4" />
-				</Button>
-			</div>
-		{/if}
-
-		<!-- Formule Section (Collapsible) - Only if showFormula and resolvedMathTemplates !== 'none' -->
-		{#if showFormula && formuleSectionOpen && resolvedMathTemplates !== 'none'}
-			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
-				<!-- Empty Formula Button -->
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={() => insertMathInline()}
-					{disabled}
-					title="Formule vide"
-					class="font-mono"
-				>
-					$$
-				</Button>
-
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Math Template Buttons -->
-				{#each mathTemplatesList as template (template.latex)}
+				<!-- Paragraph Section Toggle -->
+				{#if showParagraph}
 					<Button
 						type="button"
 						variant="ghost"
 						size="sm"
-						onclick={() => insertMathInline(template.latex)}
+						onclick={() => (paragraphSectionOpen = !paragraphSectionOpen)}
+						class="font-medium"
 						{disabled}
-						title={template.title}
-						class="font-mono text-base"
 					>
-						{template.icon}
+						<PilcrowSquare class="mr-1 h-4 w-4" />
+						Paragraphe
+						{#if paragraphSectionOpen}
+							<ChevronDown class="ml-1 h-3 w-3" />
+						{:else}
+							<ChevronRight class="ml-1 h-3 w-3" />
+						{/if}
 					</Button>
-				{/each}
+				{/if}
 
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Block Formula Button -->
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={() => insertMathBlock()}
-					{disabled}
-					title="Bloc de formule (centre)"
-					class="font-mono"
-				>
-					$$...$$
-				</Button>
-			</div>
-		{/if}
-
-		<!-- Templates Section (Collapsible) -->
-		{#if showTemplates && templatesSectionOpen}
-			<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
-				<!-- Variable Button -->
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={insertVariable}
-					{disabled}
-					title="Variable"
-					class="font-mono"
-				>
-					{'{{x}}'}
-				</Button>
-
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Random Button -->
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={insertRandom}
-					{disabled}
-					title="Valeur aléatoire"
-					class="font-mono"
-				>
-					{'{{1..10}}'}
-				</Button>
-
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Eval Button -->
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={insertEval}
-					{disabled}
-					title="Expression évaluée"
-					class="font-mono"
-				>
-					{'{{eval:}}'}
-				</Button>
-
-				<div class="mx-1 h-6 w-px bg-border"></div>
-
-				<!-- Blank Field Button -->
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					onclick={insertBlank}
-					{disabled}
-					title="Champ à remplir"
-					class="font-mono"
-				>
-					[____]
-				</Button>
-			</div>
-		{/if}
-	</div>
-
-	<!-- Link Dialog -->
-	{#if showLinkDialog}
-		<div class="flex items-center gap-2 border-b border-border bg-muted/50 p-3">
-			<Input
-				type="url"
-				bind:value={linkUrl}
-				placeholder="https://exemple.com"
-				class="flex-1"
-				onkeydown={(e) => {
-					if (e.key === 'Enter') {
-						setLink();
-					} else if (e.key === 'Escape') {
-						showLinkDialog = false;
-						linkUrl = '';
-					}
-				}}
-			/>
-			<Button type="button" size="sm" onclick={setLink}>Valider</Button>
-			<Button
-				type="button"
-				size="sm"
-				variant="ghost"
-				onclick={() => {
-					showLinkDialog = false;
-					linkUrl = '';
-				}}>Annuler</Button
-			>
-		</div>
-	{/if}
-
-	<!-- Editor Content Area with Split View -->
-	<div
-		class="flex min-h-0 flex-1 {isPreviewMode ? 'flex-col md:flex-row' : ''}"
-		style={isFullscreen ? '' : `min-height: ${minHeight}`}
-	>
-		<!-- Editor Panel -->
-		<div
-			class="relative {isPreviewMode
-				? 'h-1/2 min-h-0 overflow-y-auto md:h-full md:w-1/2 md:border-r md:border-border'
-				: 'h-full w-full'}"
-		>
-			<!-- Floating markdown edit mode toggle button -->
-			<button
-				type="button"
-				onclick={toggleMarkdownEditMode}
-				class="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-muted {isMarkdownEditMode
-					? 'bg-secondary'
-					: ''}"
-				title={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown'}
-				aria-label={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown brut'}
-				{disabled}
-			>
-				<FileCode class="h-4 w-4" />
-			</button>
-
-			<!-- TipTap editor - always in DOM, hidden when in markdown mode -->
-			<div
-				bind:this={editorElement}
-				class="h-full bg-background {isMarkdownEditMode ? 'hidden' : ''}"
-			></div>
-
-			<!-- CodeMirror markdown editor - shown only in markdown mode -->
-			{#if isMarkdownEditMode}
-				<div class="h-full pt-10">
-					<MarkdownCodeEditor
-						bind:value={rawMarkdownContent}
+				<!-- Insert Section Toggle -->
+				{#if showInsertion}
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={() => (insertSectionOpen = !insertSectionOpen)}
+						class="font-medium"
 						{disabled}
-						placeholder="Entrez votre markdown ici..."
-					/>
+					>
+						<Plus class="mr-1 h-4 w-4" />
+						Insertion
+						{#if insertSectionOpen}
+							<ChevronDown class="ml-1 h-3 w-3" />
+						{:else}
+							<ChevronRight class="ml-1 h-3 w-3" />
+						{/if}
+					</Button>
+				{/if}
+
+				<!-- Formule Section Toggle (only if showFormula and resolvedMathTemplates !== 'none') -->
+				{#if showFormula && resolvedMathTemplates !== 'none'}
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={() => (formuleSectionOpen = !formuleSectionOpen)}
+						class="font-medium"
+						{disabled}
+					>
+						<Sigma class="mr-1 h-4 w-4" />
+						Formule
+						{#if formuleSectionOpen}
+							<ChevronDown class="ml-1 h-3 w-3" />
+						{:else}
+							<ChevronRight class="ml-1 h-3 w-3" />
+						{/if}
+					</Button>
+				{/if}
+
+				<!-- Templates Section Toggle -->
+				{#if showTemplates}
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={() => (templatesSectionOpen = !templatesSectionOpen)}
+						class="font-medium"
+						{disabled}
+					>
+						<Braces class="mr-1 h-4 w-4" />
+						Templates
+						{#if templatesSectionOpen}
+							<ChevronDown class="ml-1 h-3 w-3" />
+						{:else}
+							<ChevronRight class="ml-1 h-3 w-3" />
+						{/if}
+					</Button>
+				{/if}
+
+				<!-- More Dropdown (Advanced Features) -->
+				{#if showMore}
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger {disabled}>
+							{#snippet child({ props })}
+								<button
+									{...props}
+									type="button"
+									class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+								>
+									<MoreHorizontal class="h-4 w-4" />
+									Plus
+								</button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content>
+							<DropdownMenu.Label>Blocs spéciaux</DropdownMenu.Label>
+							<DropdownMenu.Item
+								onclick={() => editor?.chain().focus().toggleBlockquote().run()}
+								class={isBlockquote ? 'bg-accent' : ''}
+							>
+								<Quote class="mr-2 h-4 w-4" />
+								Citation
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onclick={() => editor?.chain().focus().toggleCodeBlock().run()}
+								class={isCodeBlock ? 'bg-accent' : ''}
+							>
+								<CodeSquare class="mr-2 h-4 w-4" />
+								Bloc de code
+							</DropdownMenu.Item>
+							<DropdownMenu.Item onclick={() => editor?.chain().focus().setHorizontalRule().run()}>
+								<Minus class="mr-2 h-4 w-4" />
+								Ligne horizontale
+							</DropdownMenu.Item>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				{/if}
+
+				<!-- Preview Toggle -->
+				{#if showPreview}
+					<Button
+						type="button"
+						variant={isPreviewMode ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={togglePreview}
+						{disabled}
+						title={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
+						aria-label={isPreviewMode ? 'Masquer apercu' : 'Afficher apercu'}
+					>
+						{#if isPreviewMode}
+							<EyeOff class="mr-1 h-4 w-4" aria-hidden="true" />
+						{:else}
+							<Eye class="mr-1 h-4 w-4" aria-hidden="true" />
+						{/if}
+						Apercu
+					</Button>
+				{/if}
+
+				<!-- Fullscreen Toggle -->
+				{#if showFullscreen}
+					<Button
+						type="button"
+						variant={isFullscreen ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={toggleFullscreen}
+						{disabled}
+						title={isFullscreen ? 'Quitter plein ecran' : 'Plein ecran'}
+						aria-label={isFullscreen ? 'Quitter plein ecran' : 'Plein ecran'}
+					>
+						{#if isFullscreen}
+							<Minimize class="h-4 w-4" aria-hidden="true" />
+						{:else}
+							<Maximize class="h-4 w-4" aria-hidden="true" />
+						{/if}
+					</Button>
+				{/if}
+
+				<!-- Spacer -->
+				<div class="flex-1"></div>
+
+				<!-- Action Buttons (Always Visible) -->
+				{#if showClearButton}
+					<Button type="button" variant="ghost" size="sm" onclick={handleClear} {disabled}>
+						<Eraser class="mr-1 h-4 w-4" />
+						Effacer
+					</Button>
+				{/if}
+
+				{#if effectiveShowSendButton}
+					<Button type="button" size="sm" onclick={handleSend} {disabled}>
+						<Send class="mr-1 h-4 w-4" />
+						Envoyer
+					</Button>
+				{/if}
+			</div>
+
+			<!-- Text Section (Collapsible) -->
+			{#if showText && textSectionOpen}
+				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
+					<Button
+						type="button"
+						variant={isBold ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleBold().run()}
+						{disabled}
+						title="Gras"
+					>
+						<Bold class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={isItalic ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleItalic().run()}
+						{disabled}
+						title="Italique"
+					>
+						<Italic class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={isUnderline ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleUnderline().run()}
+						{disabled}
+						title="Souligne"
+					>
+						<UnderlineIcon class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={isStrike ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleStrike().run()}
+						{disabled}
+						title="Barre"
+					>
+						<Strikethrough class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={isCode ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleCode().run()}
+						{disabled}
+						title="Code inline"
+					>
+						<Code class="h-4 w-4" />
+					</Button>
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<Button
+						type="button"
+						variant={isSubscript ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleSubscript().run()}
+						{disabled}
+						title="Indice"
+					>
+						<SubscriptIcon class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={isSuperscript ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleSuperscript().run()}
+						{disabled}
+						title="Exposant"
+					>
+						<SuperscriptIcon class="h-4 w-4" />
+					</Button>
+				</div>
+			{/if}
+
+			<!-- Paragraph Section (Collapsible) -->
+			{#if showParagraph && paragraphSectionOpen}
+				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
+					<!-- Headings Dropdown -->
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger {disabled}>
+							{#snippet child({ props })}
+								<button
+									{...props}
+									type="button"
+									class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 {currentHeading
+										? 'bg-accent'
+										: ''}"
+								>
+									<Heading class="mr-1 h-4 w-4" />
+									{#if currentHeading}
+										<span>H{currentHeading}</span>
+									{:else}
+										<span>Titre</span>
+									{/if}
+								</button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content>
+							<DropdownMenu.Item onclick={() => editor?.chain().focus().setParagraph().run()}>
+								Paragraphe
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							{#each [1, 2, 3, 4, 5, 6] as level (level)}
+								<DropdownMenu.Item onclick={() => setHeading(level)}>
+									Titre {level}
+								</DropdownMenu.Item>
+							{/each}
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Text Alignment -->
+					<Button
+						type="button"
+						variant={currentAlignment === 'left' ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().setTextAlign('left').run()}
+						{disabled}
+						title="Aligner a gauche"
+					>
+						<AlignLeft class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={currentAlignment === 'center' ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().setTextAlign('center').run()}
+						{disabled}
+						title="Centrer"
+					>
+						<AlignCenter class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={currentAlignment === 'right' ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().setTextAlign('right').run()}
+						{disabled}
+						title="Aligner a droite"
+					>
+						<AlignRight class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={currentAlignment === 'justify' ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().setTextAlign('justify').run()}
+						{disabled}
+						title="Justifier"
+					>
+						<AlignJustify class="h-4 w-4" />
+					</Button>
+				</div>
+			{/if}
+
+			<!-- Insert Section (Collapsible) -->
+			{#if showInsertion && insertSectionOpen}
+				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
+					<!-- Lists -->
+					<Button
+						type="button"
+						variant={isBulletList ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleBulletList().run()}
+						{disabled}
+						title="Liste a puces"
+					>
+						<List class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={isOrderedList ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleOrderedList().run()}
+						{disabled}
+						title="Liste numerotee"
+					>
+						<ListOrdered class="h-4 w-4" />
+					</Button>
+
+					<Button
+						type="button"
+						variant={isTaskList ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={() => editor?.chain().focus().toggleTaskList().run()}
+						{disabled}
+						title="Liste de taches"
+					>
+						<ListTodo class="h-4 w-4" />
+					</Button>
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Color Picker -->
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger {disabled}>
+							{#snippet child({ props })}
+								<button
+									{...props}
+									type="button"
+									class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+								>
+									<Palette class="h-4 w-4" />
+								</button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content>
+							<DropdownMenu.Label>Couleur du texte</DropdownMenu.Label>
+							<div class="grid grid-cols-4 gap-1 p-2">
+								{#each TEXT_COLORS as color (color.value)}
+									<button
+										type="button"
+										onclick={() => setColor(color.value)}
+										class="h-8 w-8 rounded border-2 border-border transition-transform hover:scale-110"
+										style="background-color: {color.value}"
+										title={color.name}
+										aria-label={color.name}
+									></button>
+								{/each}
+							</div>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+
+					<!-- Highlight Picker -->
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger {disabled}>
+							{#snippet child({ props })}
+								<button
+									{...props}
+									type="button"
+									class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+								>
+									<Highlighter class="h-4 w-4" />
+								</button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content>
+							<DropdownMenu.Label>Surlignage</DropdownMenu.Label>
+							<div class="grid grid-cols-4 gap-1 p-2">
+								{#each HIGHLIGHT_COLORS as color, i (i)}
+									<button
+										type="button"
+										onclick={() => setHighlight(color.value)}
+										class="flex h-8 w-8 items-center justify-center rounded border-2 border-border transition-transform hover:scale-110"
+										style="background-color: {color.value || 'transparent'}"
+										title={color.name}
+										aria-label={color.name}
+									>
+										{#if color.value === null}
+											<X class="h-4 w-4 text-muted-foreground" />
+										{/if}
+									</button>
+								{/each}
+							</div>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Link -->
+					<Button
+						type="button"
+						variant={editor?.isActive('link') ? 'secondary' : 'ghost'}
+						size="sm"
+						onclick={toggleLink}
+						{disabled}
+						title="Lien"
+					>
+						<LinkIcon class="h-4 w-4" />
+					</Button>
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Emoji Picker with Tabs -->
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger {disabled}>
+							{#snippet child({ props })}
+								<button
+									{...props}
+									type="button"
+									class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+								>
+									<Smile class="h-4 w-4" />
+								</button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content class="w-80 p-0">
+							<Tabs.Root bind:value={selectedEmojiCategory} class="w-full">
+								<Tabs.List class="grid h-auto w-full grid-cols-4 rounded-none border-b">
+									{#each EMOJI_CATEGORIES.slice(0, 4) as category (category.name)}
+										<Tabs.Trigger value={category.name} class="px-2 py-1.5 text-xs">
+											{category.name.slice(0, 4)}
+										</Tabs.Trigger>
+									{/each}
+								</Tabs.List>
+								<Tabs.List class="grid h-auto w-full grid-cols-4 rounded-none border-b">
+									{#each EMOJI_CATEGORIES.slice(4, 8) as category (category.name)}
+										<Tabs.Trigger value={category.name} class="px-2 py-1.5 text-xs">
+											{category.name.slice(0, 4)}
+										</Tabs.Trigger>
+									{/each}
+								</Tabs.List>
+								{#each EMOJI_CATEGORIES as category (category.name)}
+									<Tabs.Content value={category.name} class="mt-0 p-2">
+										<div class="grid max-h-48 grid-cols-8 gap-1 overflow-y-auto">
+											{#each category.emojis as emoji (emoji)}
+												<button
+													type="button"
+													onclick={() => insertEmoji(emoji)}
+													class="rounded p-1 text-xl transition-colors hover:bg-accent"
+													title={emoji}
+												>
+													{emoji}
+												</button>
+											{/each}
+										</div>
+									</Tabs.Content>
+								{/each}
+							</Tabs.Root>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+
+					<!-- Image Upload Button (only if imageUpload is provided) -->
+					{#if imageUpload}
+						<div class="mx-1 h-6 w-px bg-border"></div>
+
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={handleImageUpload}
+							disabled={disabled || isUploadingImage}
+							title="Inserer une image"
+						>
+							{#if isUploadingImage}
+								<span class="h-4 w-4 animate-spin">⏳</span>
+							{:else}
+								<ImageIcon class="h-4 w-4" />
+							{/if}
+						</Button>
+					{/if}
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Variation Table Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertVariationTable}
+						{disabled}
+						title="Inserer un tableau de variation"
+					>
+						<TrendingUp class="h-4 w-4" />
+					</Button>
+				</div>
+			{/if}
+
+			<!-- Formule Section (Collapsible) - Only if showFormula and resolvedMathTemplates !== 'none' -->
+			{#if showFormula && formuleSectionOpen && resolvedMathTemplates !== 'none'}
+				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
+					<!-- Empty Formula Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={() => insertMathInline()}
+						{disabled}
+						title="Formule vide"
+						class="font-mono"
+					>
+						$$
+					</Button>
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Math Template Buttons -->
+					{#each mathTemplatesList as template (template.latex)}
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onclick={() => insertMathInline(template.latex)}
+							{disabled}
+							title={template.title}
+							class="font-mono text-base"
+						>
+							{template.icon}
+						</Button>
+					{/each}
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Block Formula Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={() => insertMathBlock()}
+						{disabled}
+						title="Bloc de formule (centre)"
+						class="font-mono"
+					>
+						$$...$$
+					</Button>
+				</div>
+			{/if}
+
+			<!-- Templates Section (Collapsible) -->
+			{#if showTemplates && templatesSectionOpen}
+				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
+					<!-- Variable Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertVariable}
+						{disabled}
+						title="Variable"
+						class="font-mono"
+					>
+						{'{{x}}'}
+					</Button>
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Random Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertRandom}
+						{disabled}
+						title="Valeur aléatoire"
+						class="font-mono"
+					>
+						{'{{1..10}}'}
+					</Button>
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Eval Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertEval}
+						{disabled}
+						title="Expression évaluée"
+						class="font-mono"
+					>
+						{'{{eval:}}'}
+					</Button>
+
+					<div class="mx-1 h-6 w-px bg-border"></div>
+
+					<!-- Blank Field Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertBlank}
+						{disabled}
+						title="Champ à remplir"
+						class="font-mono"
+					>
+						[____]
+					</Button>
 				</div>
 			{/if}
 		</div>
 
-		<!-- Preview Panel -->
-		{#if isPreviewMode}
-			<div
-				class="rich-text-preview relative h-1/2 overflow-y-auto border-t border-border bg-muted/20 p-4 md:h-full md:w-1/2 md:border-t-0"
-			>
-				<!-- Floating toggle button -->
-				<button
+		<!-- Link Dialog -->
+		{#if showLinkDialog}
+			<div class="flex items-center gap-2 border-b border-border bg-muted/50 p-3">
+				<Input
+					type="url"
+					bind:value={linkUrl}
+					placeholder="https://exemple.com"
+					class="flex-1"
+					onkeydown={(e) => {
+						if (e.key === 'Enter') {
+							setLink();
+						} else if (e.key === 'Escape') {
+							showLinkDialog = false;
+							linkUrl = '';
+						}
+					}}
+				/>
+				<Button type="button" size="sm" onclick={setLink}>Valider</Button>
+				<Button
 					type="button"
-					onclick={togglePreviewDisplayMode}
-					class="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-muted"
-					title={previewDisplayMode === 'rendered' ? 'Voir le source' : 'Voir le rendu'}
-					aria-label={previewDisplayMode === 'rendered'
-						? 'Voir le source markdown'
-						: 'Voir le rendu'}
+					size="sm"
+					variant="ghost"
+					onclick={() => {
+						showLinkDialog = false;
+						linkUrl = '';
+					}}>Annuler</Button
 				>
-					{#if previewDisplayMode === 'rendered'}
-						<FileCode class="h-4 w-4" />
-					{:else}
-						<Eye class="h-4 w-4" />
-					{/if}
-				</button>
-
-				<MarkdownRenderer content={previewMarkdown} mode={previewDisplayMode} {genericFunctions} />
 			</div>
 		{/if}
+
+		<!-- Editor Content Area with Split View -->
+		<div
+			class="flex min-h-0 flex-1 {isPreviewMode ? 'flex-col md:flex-row' : ''}"
+			style={isFullscreen ? '' : `min-height: ${minHeight}`}
+		>
+			<!-- Editor Panel -->
+			<div
+				bind:this={editorPanelRef}
+				onscroll={() => handleScrollSync('editor')}
+				class="relative min-h-0 overflow-y-auto {isPreviewMode
+					? 'h-1/2 md:h-full md:w-1/2 md:border-r md:border-border'
+					: 'h-full w-full'}"
+			>
+				<!-- Floating markdown edit mode toggle button -->
+				<button
+					type="button"
+					onclick={toggleMarkdownEditMode}
+					class="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-muted {isMarkdownEditMode
+						? 'bg-secondary'
+						: ''}"
+					title={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown'}
+					aria-label={isMarkdownEditMode ? 'Retour à TipTap' : 'Éditer le markdown brut'}
+					{disabled}
+				>
+					<FileCode class="h-4 w-4" />
+				</button>
+
+				<!-- TipTap editor - always in DOM, hidden when in markdown mode -->
+				<div
+					bind:this={editorElement}
+					class="h-full bg-background {isMarkdownEditMode ? 'hidden' : ''}"
+				></div>
+
+				<!-- CodeMirror markdown editor - shown only in markdown mode -->
+				{#if isMarkdownEditMode}
+					<div class="h-full pt-10">
+						<MarkdownCodeEditor
+							bind:value={rawMarkdownContent}
+							{disabled}
+							placeholder="Entrez votre markdown ici..."
+						/>
+					</div>
+				{/if}
+			</div>
+
+			<!-- Preview Panel -->
+			{#if isPreviewMode}
+				<div
+					bind:this={previewPanelRef}
+					onscroll={() => handleScrollSync('preview')}
+					class="rich-text-preview relative h-1/2 overflow-y-auto border-t border-border bg-muted/20 p-4 md:h-full md:w-1/2 md:border-t-0"
+				>
+					<!-- Floating toggle button -->
+					<button
+						type="button"
+						onclick={togglePreviewDisplayMode}
+						class="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background shadow-sm transition-colors hover:bg-muted"
+						title={previewDisplayMode === 'rendered' ? 'Voir le source' : 'Voir le rendu'}
+						aria-label={previewDisplayMode === 'rendered'
+							? 'Voir le source markdown'
+							: 'Voir le rendu'}
+					>
+						{#if previewDisplayMode === 'rendered'}
+							<FileCode class="h-4 w-4" />
+						{:else}
+							<Eye class="h-4 w-4" />
+						{/if}
+					</button>
+
+					<MarkdownRenderer
+						content={previewMarkdown}
+						mode={previewDisplayMode}
+						{genericFunctions}
+					/>
+				</div>
+			{/if}
+		</div>
+		<!-- Close scrollable wrapper -->
 	</div>
+
+	<!-- Resize Handle (inline mode only) -->
+	{#if !isFullscreen && containerHeight}
+		<div
+			role="separator"
+			aria-orientation="horizontal"
+			aria-label="Redimensionner l'éditeur"
+			tabindex="0"
+			onmousedown={handleResizeStart}
+			onkeydown={(e) => {
+				if (e.key === 'ArrowUp') {
+					e.preventDefault();
+					userHeight = Math.max(150, (userHeight ?? containerRef?.offsetHeight ?? 300) - 20);
+				} else if (e.key === 'ArrowDown') {
+					e.preventDefault();
+					userHeight = (userHeight ?? containerRef?.offsetHeight ?? 300) + 20;
+				}
+			}}
+			class="group flex h-3 w-full cursor-ns-resize items-center justify-center border-t border-border bg-muted/50 transition-colors hover:bg-muted {isResizing
+				? 'bg-muted'
+				: ''}"
+		>
+			<div
+				class="h-1 w-12 rounded-full bg-border transition-colors group-hover:bg-primary/50 {isResizing
+					? 'bg-primary/50'
+					: ''}"
+			></div>
+		</div>
+	{/if}
 </div>
 
 <!-- Image Gallery Modal -->
