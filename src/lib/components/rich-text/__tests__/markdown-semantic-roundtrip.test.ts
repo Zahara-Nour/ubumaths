@@ -291,6 +291,26 @@ describe('Stability: Second roundtrip matches first', () => {
 		it('table in list item is stable', () => {
 			assertStability('- Item\n\n  | A | B |\n  | --- | --- |\n  | 1 | 2 |');
 		});
+
+		it('table with :table-h directive is stable', () => {
+			assertStability(':table-h\n| A | B |\n|:---|:---|\n| 1 | 2 |');
+		});
+
+		it('table with :table-h directive in list item is stable', () => {
+			assertStability('- Item\n\n  :table-h\n  | A | B |\n  |:---|:---|\n  | 1 | 2 |');
+		});
+
+		it('ordered list with table and text is stable', () => {
+			assertStability(
+				'1. Voici le tableau donnant la loi de probabilité de Z.\n\n   | Eleve | Note | Mention |\n   |:---|:---|:---|\n   | Alice | 18 | TB |\n   | Bob | 14 | B |\n   | Claire | 16 | TB |'
+			);
+		});
+
+		it('ordered list with :table-h table is stable', () => {
+			assertStability(
+				'1. Voici le tableau.\n\n   :table-h\n   | Eleve | Note |\n   |:---|:---|\n   | Alice | 18 |'
+			);
+		});
 	});
 });
 
