@@ -979,6 +979,50 @@ function convertLatexOneArgCommand(str: string, latexCmd: string, typstFunc: str
 }
 
 /**
+ * Convert LaTeX subscript/superscript braces to Typst parentheses
+ * Handles nested braces properly (e.g., P_{\overline{R_{n}}} -> P_(overline(R_(n))))
+ *
+ * @param str - Input string
+ * @param operator - The operator to convert ('^' for superscript, '_' for subscript)
+ * @returns String with subscripts/superscripts converted
+ */
+function convertSubscriptSuperscript(str: string, operator: '^' | '_'): string {
+	let result = str;
+	// Escape the operator for regex (^ needs escaping)
+	const escapedOp = operator === '^' ? '\\^' : '_';
+	const pattern = new RegExp(`${escapedOp}\\{`, 'g');
+	let match;
+
+	// Keep converting until no more matches (handles nested cases)
+	let changed = true;
+	while (changed) {
+		changed = false;
+		pattern.lastIndex = 0;
+
+		while ((match = pattern.exec(result)) !== null) {
+			const startIndex = match.index;
+			const openBraceIndex = match.index + match[0].length - 1;
+
+			// Find matching closing brace
+			const closeIndex = findMatchingBrace(result, openBraceIndex);
+			if (closeIndex === -1) continue;
+
+			const content = result.slice(openBraceIndex + 1, closeIndex);
+
+			// Replace operator{...} with operator(...)
+			const replacement = `${operator}(${content})`;
+			result = result.slice(0, startIndex) + replacement + result.slice(closeIndex + 1);
+
+			changed = true;
+			pattern.lastIndex = 0;
+			break;
+		}
+	}
+
+	return result;
+}
+
+/**
  * Convert LaTeX \frac{...}{...} and \dfrac{...}{...} to Typst frac(..., ...)
  * Handles nested braces properly (e.g., \dfrac{(-1)^{n+1}}{u^2_n})
  *
@@ -1344,15 +1388,15 @@ export function convertLatexToTypstMath(latex: string): string {
 	// 2. Binomial coefficients (2 arguments)
 	result = result.replace(/\\binom\s*{([^{}]*)}\s*{([^{}]*)}/g, 'binom($1, $2)');
 
-	// 3. Vectors and accents (1 argument)
-	result = result.replace(/\\vec\s*{([^{}]*)}/g, 'arrow($1)');
-	result = result.replace(/\\hat\s*{([^{}]*)}/g, 'hat($1)');
-	result = result.replace(/\\bar\s*{([^{}]*)}/g, 'macron($1)');
-	result = result.replace(/\\tilde\s*{([^{}]*)}/g, 'tilde($1)');
-	result = result.replace(/\\dot\s*{([^{}]*)}/g, 'dot($1)');
-	result = result.replace(/\\ddot\s*{([^{}]*)}/g, 'diaer($1)');
-	result = result.replace(/\\overline\s*{([^{}]*)}/g, 'overline($1)');
-	result = result.replace(/\\underline\s*{([^{}]*)}/g, 'underline($1)');
+	// 3. Vectors and accents (1 argument) - use balanced brace matching for nested content
+	result = convertLatexOneArgCommand(result, 'vec', 'arrow');
+	result = convertLatexOneArgCommand(result, 'hat', 'hat');
+	result = convertLatexOneArgCommand(result, 'bar', 'macron');
+	result = convertLatexOneArgCommand(result, 'tilde', 'tilde');
+	result = convertLatexOneArgCommand(result, 'dot', 'dot');
+	result = convertLatexOneArgCommand(result, 'ddot', 'diaer');
+	result = convertLatexOneArgCommand(result, 'overline', 'overline');
+	result = convertLatexOneArgCommand(result, 'underline', 'underline');
 
 	// 4. Number sets (blackboard bold) - specific letters
 	result = result.replace(/\\mathbb\s*{R}/g, 'RR');
@@ -1423,9 +1467,9 @@ export function convertLatexToTypstMath(latex: string): string {
 
 	// Convert subscript and superscript braces to parentheses
 	// LaTeX: x^{2n} or x_{ij}  ->  Typst: x^(2n) or x_(ij)
-	// Single characters don't need grouping, but parentheses work for all cases
-	result = result.replace(/\^{([^{}]*)}/g, '^($1)');
-	result = result.replace(/_{([^{}]*)}/g, '_($1)');
+	// Use balanced brace matching to handle nested braces like P_{\overline{R_{n}}}
+	result = convertSubscriptSuperscript(result, '^');
+	result = convertSubscriptSuperscript(result, '_');
 
 	// Add space after single-letter subscripts when followed by open parenthesis
 	// Prevents Typst from parsing u_n(...) as u with subscript n(...)
