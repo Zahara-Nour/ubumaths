@@ -340,13 +340,16 @@
 	}
 
 	/**
-	 * Handle saving a single field from inline editing
+	 * Handle saving multiple fields from inline editing in a single request
+	 * Returns the updated worksheet data for syncing temp values
 	 */
-	async function handleFieldSave(field: string, value: unknown): Promise<void> {
+	async function handleFieldsSave(
+		changes: Record<string, unknown>
+	): Promise<Partial<WorksheetWithRelations>> {
 		const response = await fetch(`/api/worksheets/${worksheet.id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ [field]: value })
+			body: JSON.stringify(changes)
 		});
 
 		if (!response.ok) {
@@ -358,7 +361,10 @@
 		const { worksheet: updatedWorksheet } = await response.json();
 		worksheetData = { ...worksheetData, ...updatedWorksheet };
 
-		toaster.success('Modification enregistree');
+		toaster.success('Modifications enregistrees');
+
+		// Return updated data for caller to sync temp values
+		return updatedWorksheet;
 	}
 </script>
 
@@ -460,7 +466,7 @@
 	<!-- Content -->
 	<div class="space-y-6">
 		<!-- Metadata with inline editing -->
-		<MetadataCards {worksheet} {templates} onSave={isDraft ? handleFieldSave : undefined} />
+		<MetadataCards {worksheet} {templates} onSave={isDraft ? handleFieldsSave : undefined} />
 
 		<!-- Main content tabs -->
 		<Tabs.Root
