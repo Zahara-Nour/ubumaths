@@ -106,14 +106,47 @@ Comportements validés par l'utilisateur - voir conversation.
 
 **Agent** : `frontend-developer` (Opus)
 
+**Pattern à suivre** : `src/lib/stores/multiplayer.svelte.ts` (direct channel, pas central manager)
+
 **Tâches** :
-- Créer `src/lib/stores/guessWhoMultiplayer.svelte.ts` :
-  - État réactif avec Svelte 5 runes
-  - Connexion Supabase Realtime (channel `guess-who:${gameId}`)
-  - Méthodes : `createGame()`, `joinGame()`, `askQuestion()`, `answerQuestion()`, `guess()`, `eliminateNumbers()`
-  - Gestion timer 60s
-  - Gestion déconnexion (30s grace period)
-  - Gestion bonus turns (max 3)
+- Créer `src/lib/stores/guessWhoGame.svelte.ts` :
+
+  **Constants** (comme multiplayer.svelte.ts) :
+  ```typescript
+  const TURN_TIMEOUT_MS = 60000;        // 60s par action
+  const GRACE_PERIOD_MS = 30000;        // 30s tolérance déconnexion
+  const MAX_BONUS_TURNS = 3;            // Max tours bonus consécutifs
+  ```
+
+  **État réactif** (Svelte 5 runes) :
+  ```typescript
+  game = $state<GameState>({ status: 'idle', ... });
+  mySecretNumber = $state<number | null>(null);
+  eliminatedNumbers = $state<Set<number>>(new Set());
+  moves = $state<Move[]>([]);
+  timer = $state<number>(60);
+  bonusTurnsRemaining = $state<number>(0);
+  isMyTurn = $derived(...);
+  mustAnswer = $derived(...);
+  ```
+
+  **Hybrid Realtime** :
+  - **Broadcast** (~50ms) : `question_asked`, `answer_given`, `guess_made`, `timer_sync`
+  - **postgres_changes** (~300ms) : `guess_who_games` UPDATE, `guess_who_moves` INSERT
+
+  **Channel** : `supabase.channel(\`guess-who:\${gameId}\`)`
+
+  **Méthodes** :
+  - `init(supabase, userId)` / `reset()` / `cleanup()`
+  - `createGame()` → API call + subscribe channel
+  - `joinGame(token)` → API call + subscribe channel
+  - `askQuestion(type, param?)` → Broadcast + API persist
+  - `answerQuestion(answer)` → Broadcast + API persist + auto-validate
+  - `guess(number)` → Broadcast + API persist
+  - `eliminateNumber(n)` / `restoreNumber(n)` → local state + API sync
+  - `handleTimeout()` → auto-pass or auto-error
+
+  **Cleanup** : Via `$effect` return (timers, channel unsubscribe)
 
 **Validation** : Code review
 
@@ -246,13 +279,54 @@ Comportements validés par l'utilisateur - voir conversation.
 
 **Agent** : `supabase-expert` (Opus)
 
-**Tâches** :
-- Configurer postgres_changes sur `guess_who_games` et `guess_who_moves`
-- Broadcast pour timer sync
-- Gestion reconnexion
-- Tests de latence
+**Référence** : `docs/ref/realtime/` (architecture, best-practices, stores-reference)
 
-**Validation** : Code review
+**Tâches** :
+
+1. **Configuration postgres_changes** :
+   ```typescript
+   channel.on('postgres_changes', {
+     event: 'UPDATE',
+     schema: 'public',
+     table: 'guess_who_games',
+     filter: `id=eq.${gameId}`
+   }, handleGameUpdate);
+
+   channel.on('postgres_changes', {
+     event: 'INSERT',
+     schema: 'public',
+     table: 'guess_who_moves',
+     filter: `game_id=eq.${gameId}`
+   }, handleNewMove);
+   ```
+
+2. **Broadcast events** (FREE, ~50ms) :
+   - `question_asked` : { questionType, param, playerId }
+   - `answer_given` : { answer, isCorrect, correctAnswer, playerId }
+   - `guess_made` : { number, isCorrect, playerId }
+   - `timer_sync` : { remainingSeconds }
+   - `player_reconnected` : { playerId }
+
+3. **Gestion reconnexion** (pattern de multiplayer.svelte.ts) :
+   ```typescript
+   channel.on('system', { event: 'disconnect' }, handleDisconnect);
+   channel.on('system', { event: 'reconnect' }, handleReconnect);
+   ```
+   - Grace period 30s avant forfait
+   - Exponential backoff (5s, 10s, 20s, 40s, 80s max)
+   - Max 5 tentatives
+
+4. **Timer sync** :
+   - Le serveur est source de vérité
+   - Broadcast timer toutes les 10s pour sync
+   - Client affiche countdown local entre syncs
+
+5. **Validation payload runtime** (pattern de achievementsRealtime) :
+   ```typescript
+   private isValidMovePayload(payload: unknown): boolean { ... }
+   ```
+
+**Validation** : Code review + tests de latence manuels
 
 ---
 
