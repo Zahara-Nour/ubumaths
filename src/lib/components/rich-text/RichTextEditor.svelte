@@ -176,12 +176,14 @@
 	// Flag to track when editor is ready for user input (prevents onchange during init)
 	let hasInitialized = false;
 
-	// Toolbar Section State
-	let textSectionOpen = $state(true);
-	let paragraphSectionOpen = $state(false);
-	let insertSectionOpen = $state(false);
-	let formuleSectionOpen = $state(false);
-	let templatesSectionOpen = $state(false);
+	// Toolbar Section State - only one section open at a time (accordion)
+	type ToolbarSection = 'text' | 'paragraph' | 'insertion' | 'formula' | 'templates' | null;
+	let openSection = $state<ToolbarSection>('text');
+
+	// Toggle section: if already open, close it; otherwise open it (closes others)
+	function toggleSection(section: ToolbarSection) {
+		openSection = openSection === section ? null : section;
+	}
 
 	// Reactive formatting state
 	let isBold = $state(false);
@@ -1000,15 +1002,15 @@
 				{#if showText}
 					<Button
 						type="button"
-						variant="ghost"
+						variant={openSection === 'text' ? 'secondary' : 'ghost'}
 						size="sm"
-						onclick={() => (textSectionOpen = !textSectionOpen)}
+						onclick={() => toggleSection('text')}
 						class="font-medium"
 						{disabled}
 					>
 						<Type class="mr-1 h-4 w-4" />
 						Texte
-						{#if textSectionOpen}
+						{#if openSection === 'text'}
 							<ChevronDown class="ml-1 h-3 w-3" />
 						{:else}
 							<ChevronRight class="ml-1 h-3 w-3" />
@@ -1020,15 +1022,15 @@
 				{#if showParagraph}
 					<Button
 						type="button"
-						variant="ghost"
+						variant={openSection === 'paragraph' ? 'secondary' : 'ghost'}
 						size="sm"
-						onclick={() => (paragraphSectionOpen = !paragraphSectionOpen)}
+						onclick={() => toggleSection('paragraph')}
 						class="font-medium"
 						{disabled}
 					>
 						<PilcrowSquare class="mr-1 h-4 w-4" />
 						Paragraphe
-						{#if paragraphSectionOpen}
+						{#if openSection === 'paragraph'}
 							<ChevronDown class="ml-1 h-3 w-3" />
 						{:else}
 							<ChevronRight class="ml-1 h-3 w-3" />
@@ -1040,15 +1042,15 @@
 				{#if showInsertion}
 					<Button
 						type="button"
-						variant="ghost"
+						variant={openSection === 'insertion' ? 'secondary' : 'ghost'}
 						size="sm"
-						onclick={() => (insertSectionOpen = !insertSectionOpen)}
+						onclick={() => toggleSection('insertion')}
 						class="font-medium"
 						{disabled}
 					>
 						<Plus class="mr-1 h-4 w-4" />
 						Insertion
-						{#if insertSectionOpen}
+						{#if openSection === 'insertion'}
 							<ChevronDown class="ml-1 h-3 w-3" />
 						{:else}
 							<ChevronRight class="ml-1 h-3 w-3" />
@@ -1060,15 +1062,15 @@
 				{#if showFormula && resolvedMathTemplates !== 'none'}
 					<Button
 						type="button"
-						variant="ghost"
+						variant={openSection === 'formula' ? 'secondary' : 'ghost'}
 						size="sm"
-						onclick={() => (formuleSectionOpen = !formuleSectionOpen)}
+						onclick={() => toggleSection('formula')}
 						class="font-medium"
 						{disabled}
 					>
 						<Sigma class="mr-1 h-4 w-4" />
 						Formule
-						{#if formuleSectionOpen}
+						{#if openSection === 'formula'}
 							<ChevronDown class="ml-1 h-3 w-3" />
 						{:else}
 							<ChevronRight class="ml-1 h-3 w-3" />
@@ -1080,15 +1082,15 @@
 				{#if showTemplates}
 					<Button
 						type="button"
-						variant="ghost"
+						variant={openSection === 'templates' ? 'secondary' : 'ghost'}
 						size="sm"
-						onclick={() => (templatesSectionOpen = !templatesSectionOpen)}
+						onclick={() => toggleSection('templates')}
 						class="font-medium"
 						{disabled}
 					>
 						<Braces class="mr-1 h-4 w-4" />
 						Templates
-						{#if templatesSectionOpen}
+						{#if openSection === 'templates'}
 							<ChevronDown class="ml-1 h-3 w-3" />
 						{:else}
 							<ChevronRight class="ml-1 h-3 w-3" />
@@ -1194,7 +1196,7 @@
 			</div>
 
 			<!-- Text Section (Collapsible) -->
-			{#if showText && textSectionOpen}
+			{#if showText && openSection === 'text'}
 				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 					<Button
 						type="button"
@@ -1278,7 +1280,7 @@
 			{/if}
 
 			<!-- Paragraph Section (Collapsible) -->
-			{#if showParagraph && paragraphSectionOpen}
+			{#if showParagraph && openSection === 'paragraph'}
 				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 					<!-- Headings Dropdown -->
 					<DropdownMenu.Root>
@@ -1363,7 +1365,7 @@
 			{/if}
 
 			<!-- Insert Section (Collapsible) -->
-			{#if showInsertion && insertSectionOpen}
+			{#if showInsertion && openSection === 'insertion'}
 				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 					<!-- Lists -->
 					<Button
@@ -1567,7 +1569,7 @@
 			{/if}
 
 			<!-- Formule Section (Collapsible) - Only if showFormula and resolvedMathTemplates !== 'none' -->
-			{#if showFormula && formuleSectionOpen && resolvedMathTemplates !== 'none'}
+			{#if showFormula && openSection === 'formula' && resolvedMathTemplates !== 'none'}
 				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 					<!-- Empty Formula Button -->
 					<Button
@@ -1617,7 +1619,7 @@
 			{/if}
 
 			<!-- Templates Section (Collapsible) -->
-			{#if showTemplates && templatesSectionOpen}
+			{#if showTemplates && openSection === 'templates'}
 				<div class="flex flex-wrap items-center gap-1 border-t border-border/50 px-2 pt-2 pb-2">
 					<!-- Variable Button -->
 					<Button
