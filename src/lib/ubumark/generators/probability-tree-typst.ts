@@ -244,8 +244,14 @@ function generateBranches(
  * @returns Typst math expression
  */
 function formatTypstMath(expr: string): string {
+	// Strip surrounding $...$ delimiters if present (they'll be added by the generator)
+	let result = expr.trim();
+	if (result.startsWith('$') && result.endsWith('$')) {
+		result = result.slice(1, -1);
+	}
+
 	// Handle infinity shorthand
-	let result = expr
+	result = result
 		.replace(/\+inf/g, '+infinity')
 		.replace(/-inf/g, '-infinity')
 		.replace(/^inf$/g, 'infinity');
