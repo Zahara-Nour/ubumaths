@@ -252,7 +252,7 @@ export function getEditorProps(options: EditorPropsOptions = {}): EditorOptions[
 
 	return {
 		attributes: {
-			class: 'prose prose-sm max-w-none focus:outline-none p-3',
+			class: 'prose prose-sm max-w-none dark:prose-invert focus:outline-none p-3',
 			style: `min-height: ${minHeight}`
 		}
 	};
