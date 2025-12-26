@@ -1866,6 +1866,19 @@ describe('convertLatexToTypstMath - Multi-character subscripts with parentheses'
 		// No space needed when subscript is not followed by (
 		expect(convertLatexToTypstMath('x_{n+1} + y')).toBe('x_(n+1) + y');
 	});
+
+	it('should handle nested parentheses in subscripts like P_{\\overline{R_n}}(...)', () => {
+		// P_{\overline{R_n}}(x) -> P_(overline(R_n)) (x)
+		// The subscript contains nested parens from overline(), must still add space
+		const result = convertLatexToTypstMath('P_{\\overline{R_n}}(x)');
+		expect(result).toBe('P_(overline(R_n)) (x)');
+	});
+
+	it('should handle deeply nested subscripts', () => {
+		// P_{\overline{R_{n+1}}}(y) -> P_(overline(R_(n+1))) (y)
+		const result = convertLatexToTypstMath('P_{\\overline{R_{n+1}}}(y)');
+		expect(result).toBe('P_(overline(R_(n+1))) (y)');
+	});
 });
 
 describe('convertLatexToTypstMath - Unknown LaTeX commands', () => {
