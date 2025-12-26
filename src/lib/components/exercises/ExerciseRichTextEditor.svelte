@@ -119,6 +119,7 @@
 <RichTextEditor
 	bind:markdownValue={value}
 	preset="full"
+	maxHeight="50vh"
 	imageUpload={imageUploadConfig}
 	toolbar={{ preview: true }}
 	genericFunctions={genericFunctionsConfig}
