@@ -51,7 +51,7 @@
 	interface Props {
 		worksheet: WorksheetWithRelations;
 		templates?: TemplateOption[];
-		onSave?: (field: string, value: unknown) => Promise<void>;
+		onSave?: (changes: Record<string, unknown>) => Promise<Partial<WorksheetWithRelations> | void>;
 	}
 
 	let { worksheet, templates = [], onSave }: Props = $props();
@@ -91,6 +91,50 @@
 	let tempShuffleExercises = $state(worksheet.config?.shuffle_exercises ?? false);
 	let tempShuffleWithinSections = $state(worksheet.config?.shuffle_within_sections ?? false);
 
+	// Reset temp values to match the changes that were saved
+	// Only syncs the fields that were actually in the save request
+	function syncTempValues(
+		savedChanges: Record<string, unknown>,
+		updated: Partial<WorksheetWithRelations>
+	) {
+		// Sync info fields only if they were saved
+		if ('title' in savedChanges) {
+			tempTitle = (updated.title as string) ?? '';
+		}
+		if ('description' in savedChanges) {
+			tempDescription = (updated.description as string) ?? '';
+		}
+		if ('type' in savedChanges) {
+			tempType = (updated.type as string) ?? undefined;
+		}
+		if ('template_id' in savedChanges) {
+			tempTemplateId = (updated.template_id as string) ?? undefined;
+		}
+		if ('estimated_duration_minutes' in savedChanges) {
+			tempDuration = updated.estimated_duration_minutes ?? null;
+		}
+		if ('grade_levels' in savedChanges) {
+			tempGrades = (updated.grade_levels as GradeCode[]) ?? [];
+		}
+		if ('tags' in savedChanges) {
+			tempTags = (updated.tags as string[]) ?? [];
+		}
+
+		// Sync config fields only if config was saved
+		if ('config' in savedChanges) {
+			const config = updated.config;
+			tempShowTitle = config?.show_title ?? true;
+			tempShowDate = config?.show_date ?? true;
+			tempShowStudentName = config?.show_student_name ?? true;
+			tempShowClass = config?.show_class ?? true;
+			tempShowPoints = config?.show_points ?? true;
+			tempNumberingStyle = config?.numbering_style ?? 'numeric';
+			tempPageLayout = config?.page_layout ?? 'A4';
+			tempShuffleExercises = config?.shuffle_exercises ?? false;
+			tempShuffleWithinSections = config?.shuffle_within_sections ?? false;
+		}
+	}
+
 	// Per-field change detection for info
 	let titleChanged = $derived(tempTitle !== (worksheet.title || ''));
 	let descriptionChanged = $derived(tempDescription !== (worksheet.description || ''));
@@ -98,11 +142,11 @@
 	let templateChanged = $derived(tempTemplateId !== (worksheet.template_id || undefined));
 	let durationChanged = $derived(tempDuration !== worksheet.estimated_duration_minutes);
 	let gradesChanged = $derived(
-		JSON.stringify(tempGrades.sort()) !==
-			JSON.stringify(((worksheet.grade_levels as GradeCode[]) || []).sort())
+		JSON.stringify([...tempGrades].sort()) !==
+			JSON.stringify([...((worksheet.grade_levels as GradeCode[]) || [])].sort())
 	);
 	let tagsChanged = $derived(
-		JSON.stringify(tempTags.sort()) !== JSON.stringify((worksheet.tags || []).sort())
+		JSON.stringify([...tempTags].sort()) !== JSON.stringify([...(worksheet.tags || [])].sort())
 	);
 
 	// Config change detection
@@ -118,50 +162,52 @@
 			tempShuffleWithinSections !== (worksheet.config?.shuffle_within_sections ?? false)
 	);
 
-	// Global change detection (for showing save button)
-	let hasChanges = $derived(
+	// Per-card change detection (for showing save button on correct card)
+	let infoHasChanges = $derived(
 		titleChanged ||
 			descriptionChanged ||
 			typeChanged ||
 			templateChanged ||
 			durationChanged ||
 			gradesChanged ||
-			tagsChanged ||
-			configChanged
+			tagsChanged
 	);
 
-	// Global save function - saves all modified fields
+	// Global change detection (for save logic)
+	let hasChanges = $derived(infoHasChanges || configChanged);
+
+	// Global save function - saves all modified fields in a single request
 	async function handleSave() {
 		if (!onSave || isSaving || !hasChanges) return;
 		isSaving = true;
 
 		try {
-			// Save each modified field
-			const savePromises: Promise<void>[] = [];
+			// Build a single object with all changes
+			const changes: Record<string, unknown> = {};
 
 			if (titleChanged) {
-				savePromises.push(onSave('title', tempTitle.trim()));
+				changes.title = tempTitle.trim();
 			}
 			if (descriptionChanged) {
-				savePromises.push(onSave('description', tempDescription.trim() || null));
+				changes.description = tempDescription.trim() || null;
 			}
 			if (typeChanged) {
-				savePromises.push(onSave('type', tempType || null));
+				changes.type = tempType || null;
 			}
 			if (templateChanged) {
-				savePromises.push(onSave('template_id', tempTemplateId || null));
+				changes.template_id = tempTemplateId || null;
 			}
 			if (durationChanged) {
-				savePromises.push(onSave('estimated_duration_minutes', tempDuration));
+				changes.estimated_duration_minutes = tempDuration;
 			}
 			if (gradesChanged) {
-				savePromises.push(onSave('grade_levels', tempGrades));
+				changes.grade_levels = tempGrades;
 			}
 			if (tagsChanged) {
-				savePromises.push(onSave('tags', tempTags));
+				changes.tags = tempTags;
 			}
 			if (configChanged) {
-				const newConfig: WorksheetConfig = {
+				changes.config = {
 					...worksheet.config,
 					show_title: tempShowTitle,
 					show_date: tempShowDate,
@@ -172,12 +218,16 @@
 					page_layout: tempPageLayout as 'A4' | 'Letter',
 					shuffle_exercises: tempShuffleExercises,
 					shuffle_within_sections: tempShuffleWithinSections
-				};
-				savePromises.push(onSave('config', newConfig));
+				} satisfies WorksheetConfig;
 			}
 
-			// Execute all saves in parallel
-			await Promise.all(savePromises);
+			// Single request with all changes - returns updated worksheet data
+			const updatedData = await onSave(changes);
+
+			// Sync only the temp values that were saved to reset their hasChanges flags
+			if (updatedData) {
+				syncTempValues(changes, updatedData);
+			}
 
 			// Close all editing modes on success
 			closeAllEditing();
@@ -378,8 +428,8 @@
 <div class="space-y-4">
 	<!-- Information card -->
 	<Card.Root class="relative">
-		<!-- Floating save button (appears when changes detected) -->
-		{#if hasChanges && onSave && !isSaving}
+		<!-- Floating save button (appears when info changes detected) -->
+		{#if infoHasChanges && onSave && !isSaving}
 			<button
 				type="button"
 				class="absolute top-3 right-3 z-10 rounded-full bg-green-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-green-600 active:scale-95"
@@ -394,7 +444,7 @@
 			<div class="flex items-center gap-2">
 				<Card.Title class="text-lg">Informations</Card.Title>
 				<!-- Global cancel/loading indicator next to title -->
-				{#if hasChanges && onSave}
+				{#if infoHasChanges && onSave}
 					{#if isSaving}
 						<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
 					{:else}
@@ -688,8 +738,8 @@
 
 	<!-- Options d'affichage card -->
 	<Card.Root class="relative">
-		<!-- Floating save button (appears when changes detected, same as info card) -->
-		{#if hasChanges && onSave && !isSaving}
+		<!-- Floating save button (appears when config changes detected) -->
+		{#if configChanged && onSave && !isSaving}
 			<button
 				type="button"
 				class="absolute top-3 right-3 z-10 rounded-full bg-green-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-green-600 active:scale-95"
