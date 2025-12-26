@@ -1399,8 +1399,20 @@ describe('convertLatexToTypstMath - Vectors and Accents', () => {
 		expect(convertLatexToTypstMath('\\overline{AB}')).toBe('overline(AB)');
 	});
 
+	it('should convert \\overline with nested braces like \\overline{R_{n}}', () => {
+		expect(convertLatexToTypstMath('\\overline{R_{n}}')).toBe('overline(R_(n))');
+	});
+
+	it('should convert complex nested overline like P_{\\overline{R_{n}}}', () => {
+		expect(convertLatexToTypstMath('P_{\\overline{R_{n}}}')).toBe('P_(overline(R_(n)))');
+	});
+
 	it('should convert \\underline{x} to underline(x)', () => {
 		expect(convertLatexToTypstMath('\\underline{x}')).toBe('underline(x)');
+	});
+
+	it('should convert \\underline with nested braces', () => {
+		expect(convertLatexToTypstMath('\\underline{x_{i}}')).toBe('underline(x_(i))');
 	});
 });
 
