@@ -290,7 +290,8 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 			// For regular text, escape special Typst characters
 			let text = escapeTypst(unescapedContent);
 			if (node.bold) text = `*${text}*`;
-			if (node.italic) text = `_${text}_`;
+			// Use #emph[] instead of _..._ for italic - more reliable in content blocks
+			if (node.italic) text = `#emph[${text}]`;
 			if (node.strikethrough) text = `#strike[${text}]`;
 			if (node.highlight) text = `#highlight[${text}]`;
 			return text;
@@ -474,12 +475,12 @@ function generateTable(node: TableNode, _options: Required<TypstTranspilerOption
 		const rows: string[] = [];
 		for (let col = 0; col < node.header.length; col++) {
 			const cells: string[] = [
-				// First cell: header in bold
-				`[*${escapeTypst(node.header[col].content)}*]`
+				// First cell: header in bold (may contain math like $z_i$)
+				`[*${processTableCellContent(node.header[col].content)}*]`
 			];
-			// Data cells from each row
+			// Data cells from each row (may contain math)
 			for (const row of node.rows) {
-				cells.push(`[${escapeTypst(row[col]?.content || '')}]`);
+				cells.push(`[${processTableCellContent(row[col]?.content || '')}]`);
 			}
 			rows.push(cells.join(', '));
 		}
@@ -506,15 +507,17 @@ function generateTable(node: TableNode, _options: Required<TypstTranspilerOption
 		}
 	});
 
-	// Build header cells
+	// Build header cells (may contain math like $z_i$)
 	const headerCells = node.header
-		.map((cell: { content: string }) => `[*${escapeTypst(cell.content)}*]`)
+		.map((cell: { content: string }) => `[*${processTableCellContent(cell.content)}*]`)
 		.join(', ');
 
-	// Build body rows
+	// Build body rows (may contain math)
 	const bodyRows = node.rows
 		.map((row: { content: string }[]) =>
-			row.map((cell: { content: string }) => `[${escapeTypst(cell.content)}]`).join(', ')
+			row
+				.map((cell: { content: string }) => `[${processTableCellContent(cell.content)}]`)
+				.join(', ')
 		)
 		.join(',\n  ');
 
@@ -1149,16 +1152,17 @@ function replaceLatexCmd(str: string, latexCmd: string, typstCmd: string): strin
 	return str.replace(pattern, (match, offset) => {
 		let result = typstCmd;
 
-		// Add space BEFORE if preceded by a letter (prevents "xtimes")
-		if (offset > 0 && /[a-zA-Z]/.test(str[offset - 1])) {
+		// Add space BEFORE if preceded by letter or digit (prevents "xtimes" and "2sect")
+		if (offset > 0 && /[a-zA-Z0-9)]/.test(str[offset - 1])) {
 			result = ' ' + result;
 		}
 
-		// Add space AFTER if followed by digit or open paren
+		// Add space AFTER if followed by:
 		// - digit: prevents "times0" being parsed as variable
-		// - paren: prevents "times(...)" being parsed as function call
+		// - open paren: prevents "times(...)" being parsed as function call
+		// - backslash: prevents "sect\overline" becoming "sectoverline" after conversion
 		const afterPos = offset + match.length;
-		if (afterPos < str.length && /[\d(]/.test(str[afterPos])) {
+		if (afterPos < str.length && /[\d(\\]/.test(str[afterPos])) {
 			result = result + ' ';
 		}
 
@@ -1592,6 +1596,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Must be done AFTER \, -> thin conversion to avoid conflict.
 	result = result.replace(/<<<DECIMAL_COMMA>>>/g, '","');
 
+	// ========================================================================
+	// CLEANUP: Fix malformed double subscripts
+	// ========================================================================
+	// If LaTeX source has x_{{n}} (double braces), it becomes x_(_(n)) after conversion
+	// which is invalid Typst. Fix by removing the inner subscript operator.
+	// Pattern: _( immediately followed by _( -> replace with just _(
+	result = result.replace(/_\(_\(/g, '_(');
+
 	return result;
 }
 
@@ -1622,6 +1634,48 @@ export function escapeTypst(text: string): string {
 	};
 
 	return text.replace(/[\\#$@*_`<>]/g, (match) => replacements[match] || match);
+}
+
+/**
+ * Process table cell content that may contain inline math
+ *
+ * Handles mixed content like "Value: $z_i$" by:
+ * 1. Extracting inline math segments ($...$)
+ * 2. Converting math with convertLatexToTypstMath
+ * 3. Escaping only the text parts
+ * 4. Reassembling with proper Typst math delimiters
+ *
+ * @param content - Cell content possibly containing inline math
+ * @returns Processed content safe for Typst tables
+ */
+function processTableCellContent(content: string): string {
+	// Match inline math: $...$ (non-greedy, doesn't cross line breaks)
+	// Capture: text before, math content, text after
+	const parts: string[] = [];
+	let lastIndex = 0;
+	const mathRegex = /\$([^$\n]+)\$/g;
+	let match;
+
+	while ((match = mathRegex.exec(content)) !== null) {
+		// Add text before this math segment (escaped)
+		if (match.index > lastIndex) {
+			parts.push(escapeTypst(content.slice(lastIndex, match.index)));
+		}
+
+		// Convert and add the math segment
+		const mathContent = match[1];
+		const typstMath = convertLatexToTypstMath(mathContent);
+		parts.push(`$${typstMath}$`);
+
+		lastIndex = match.index + match[0].length;
+	}
+
+	// Add remaining text after last math segment (escaped)
+	if (lastIndex < content.length) {
+		parts.push(escapeTypst(content.slice(lastIndex)));
+	}
+
+	return parts.join('');
 }
 
 /**

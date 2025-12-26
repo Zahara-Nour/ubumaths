@@ -112,12 +112,15 @@ function generateTreeData(
 	// Calculate positions (similar to SVG component)
 	calculatePositions(root, 0, 0, positions, opts);
 
-	// Generate root label if present (positioned to the left of root node)
+	// Generate root label if present and non-empty (positioned to the left of root node)
 	if (root.label) {
 		const rootPos = positions.get(root.id);
 		if (rootPos) {
 			const label = formatTypstMath(root.label);
-			lines.push(`  content((${rootPos.x - LABEL_OFFSET_X}, ${rootPos.y}), $${label}$)`);
+			// Only generate label if non-empty after processing
+			if (label.trim()) {
+				lines.push(`  content((${rootPos.x - LABEL_OFFSET_X}, ${rootPos.y}), $${label}$)`);
+			}
 		}
 	}
 

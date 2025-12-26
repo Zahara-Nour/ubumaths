@@ -375,14 +375,15 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 		// Images: self + data URIs (base64 matplotlib plots) + blob + Supabase storage + Google profile pics + Blockly media + Picsum (test) + YouTube thumbnails
 		"img-src 'self' data: blob: https://*.supabase.co https://*.googleusercontent.com https://unpkg.com https://picsum.photos https://fastly.picsum.photos https://i.ytimg.com",
 
-		// Connect: API calls + WebSocket for realtime
+		// Connect: API calls + WebSocket for realtime + Typst packages
 		[
 			"connect-src 'self'",
 			'https://*.supabase.co',
 			'wss://*.supabase.co',
 			'https://cdn.jsdelivr.net',
 			'https://cdn.plot.ly',
-			'https://*.googleapis.com'
+			'https://*.googleapis.com',
+			'https://packages.typst.org'
 		].join(' '),
 
 		// Workers: for Pyodide Web Worker

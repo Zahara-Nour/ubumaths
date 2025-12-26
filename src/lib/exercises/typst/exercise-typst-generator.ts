@@ -178,6 +178,7 @@ export async function generateExerciseTypst(
 		}
 
 		logger.info('Typst generation complete', { typstLength: typst.length });
+
 		return {
 			success: true,
 			typstContent: typst,
