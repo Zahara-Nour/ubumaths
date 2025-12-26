@@ -24,13 +24,16 @@ import type { TypstCompiler, TypstCompilerState } from '../types';
 // ============================================================================
 
 const CDN_BASE = 'https://cdn.jsdelivr.net/npm';
-const TYPST_BUNDLE_URL = `${CDN_BASE}/@myriaddreamin/typst.ts/dist/esm/contrib/all-in-one-lite.bundle.js`;
-const COMPILER_WASM_URL = `${CDN_BASE}/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm`;
-const RENDERER_WASM_URL = `${CDN_BASE}/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm`;
+// Pin versions to ensure compatibility between bundle and WASM modules
+const TYPST_VERSION = '0.6.1-rc5';
+const TYPST_BUNDLE_URL = `${CDN_BASE}/@myriaddreamin/typst.ts@${TYPST_VERSION}/dist/esm/contrib/all-in-one-lite.bundle.js`;
+const COMPILER_WASM_URL = `${CDN_BASE}/@myriaddreamin/typst-ts-web-compiler@${TYPST_VERSION}/pkg/typst_ts_web_compiler_bg.wasm`;
+const RENDERER_WASM_URL = `${CDN_BASE}/@myriaddreamin/typst-ts-renderer@${TYPST_VERSION}/pkg/typst_ts_renderer_bg.wasm`;
 
 // Window keys for singleton state (survives HMR)
-const TYPST_INIT_KEY = '__typst_compiler_initialized__';
-const TYPST_SCRIPT_ID = 'typst-compiler-script';
+// Include version in key to force reinitialization when version changes
+const TYPST_INIT_KEY = `__typst_compiler_initialized_${TYPST_VERSION}__`;
+const TYPST_SCRIPT_ID = `typst-compiler-script-${TYPST_VERSION}`;
 
 // ============================================================================
 // SINGLETON STATE
@@ -116,10 +119,40 @@ export async function getTypstCompiler(): Promise<TypstCompiler> {
 }
 
 /**
+ * Clean up old Typst scripts from previous versions
+ */
+function cleanupOldScripts(): void {
+	const scripts = document.querySelectorAll('script[id^="typst-compiler-script"]');
+	let hadOldScripts = false;
+	scripts.forEach((script) => {
+		if (script.id !== TYPST_SCRIPT_ID) {
+			script.remove();
+			hadOldScripts = true;
+		}
+	});
+
+	// Also clean up old window flags
+	const windowKeys = Object.keys(window).filter(
+		(key) => key.startsWith('__typst_compiler_initialized') && key !== TYPST_INIT_KEY
+	);
+	windowKeys.forEach((key) => {
+		delete (window as unknown as Record<string, unknown>)[key];
+	});
+
+	// If we removed old scripts, also clear $typst to force fresh initialization
+	if (hadOldScripts) {
+		delete (window as { $typst?: unknown }).$typst;
+	}
+}
+
+/**
  * Load the Typst library from CDN
  */
 async function loadTypstLibrary(): Promise<TypstCompiler> {
 	compilerState = { ...compilerState, isLoading: true, error: null };
+
+	// Clean up any old version scripts first
+	cleanupOldScripts();
 
 	return new Promise((resolve, reject) => {
 		// Check if script already exists
