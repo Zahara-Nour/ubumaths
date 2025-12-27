@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getRemainingUsage } from '$lib/server/tutor/tutor-rate-limiter';
+import { requireAuth } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 
 const querySchema = z.object({
@@ -20,11 +21,8 @@ const querySchema = z.object({
  * If exerciseId is provided, also returns remaining for that exercise.
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
-	// Check authentication
-	const user = locals.user;
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+	// Check authentication with proper session validation
+	const { user } = await requireAuth(locals);
 
 	// Parse and validate query parameters
 	const exerciseIdParam = url.searchParams.get('exerciseId');
