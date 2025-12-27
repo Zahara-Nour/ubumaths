@@ -3,14 +3,24 @@
  *
  * Supports different types of items on the game grid:
  * - Numbers (existing packs)
- * - Fractions (new)
- * - More types can be added: shapes, expressions, etc.
+ * - Fractions
+ * - 2D Shapes
+ * - Algebraic Expressions
+ * - Function Graphs
+ * - 3D Polyhedra
  *
  * @module utils/guess-who/grid-item
  */
 
 import type { Fraction } from './fraction-properties';
 import { fractionToUbumark, fractionsEqual } from './fraction-properties';
+import type { Shape2D } from './shape2d-properties';
+import type { Expression } from './expression-properties';
+import { expressionToUbumark, expressionsEqual } from './expression-properties';
+import type { FunctionGraph } from './function-properties';
+import { functionToUbumark, functionsEqual } from './function-properties';
+import type { Polyhedron } from './polyhedron-properties';
+import { polyhedronToUbumark, polyhedraEqual } from './polyhedron-properties';
 
 // ============================================================================
 // GRID ITEM TYPES
@@ -34,10 +44,73 @@ export interface FractionGridItem {
 }
 
 /**
- * Union of all possible grid item types
- * Extensible for future types (shapes, expressions, etc.)
+ * A 2D shape item on the grid
  */
-export type GridItem = NumberGridItem | FractionGridItem;
+export interface Shape2DGridItem {
+	type: 'shape2d';
+	/** Shape name from SHAPES_2D */
+	shapeName: string;
+	/** Number of sides */
+	sideCount: number;
+	/** Is a regular polygon */
+	isRegular: boolean;
+	/** Is convex */
+	isConvex: boolean;
+	/** Has at least one right angle */
+	hasRightAngle: boolean;
+	/** French name for display */
+	nameFr: string;
+	/** SVG path data for rendering */
+	svgPath: string;
+}
+
+/**
+ * An algebraic expression item on the grid
+ */
+export interface ExpressionGridItem {
+	type: 'expression';
+	/** LaTeX representation */
+	latex: string;
+}
+
+/**
+ * A function graph item on the grid
+ */
+export interface FunctionGridItem {
+	type: 'function';
+	/** LaTeX representation of the function */
+	latex: string;
+}
+
+/**
+ * A 3D polyhedron item on the grid
+ */
+export interface PolyhedronGridItem {
+	type: 'polyhedron';
+	/** Polyhedron name from POLYHEDRA */
+	name: string;
+	/** French name for display */
+	nameFr: string;
+	/** Number of faces */
+	faceCount: number;
+	/** Number of vertices */
+	vertexCount: number;
+	/** Number of edges */
+	edgeCount: number;
+	/** Is a regular polyhedron (Platonic solid) */
+	isRegular: boolean;
+}
+
+/**
+ * Union of all possible grid item types
+ */
+export type GridItem =
+	| NumberGridItem
+	| FractionGridItem
+	| Shape2DGridItem
+	| ExpressionGridItem
+	| FunctionGridItem
+	| PolyhedronGridItem;
 
 /**
  * Type of grid item
@@ -60,6 +133,34 @@ export function isNumberItem(item: GridItem): item is NumberGridItem {
  */
 export function isFractionItem(item: GridItem): item is FractionGridItem {
 	return item.type === 'fraction';
+}
+
+/**
+ * Check if item is a 2D shape
+ */
+export function isShape2DItem(item: GridItem): item is Shape2DGridItem {
+	return item.type === 'shape2d';
+}
+
+/**
+ * Check if item is an expression
+ */
+export function isExpressionItem(item: GridItem): item is ExpressionGridItem {
+	return item.type === 'expression';
+}
+
+/**
+ * Check if item is a function
+ */
+export function isFunctionItem(item: GridItem): item is FunctionGridItem {
+	return item.type === 'function';
+}
+
+/**
+ * Check if item is a polyhedron
+ */
+export function isPolyhedronItem(item: GridItem): item is PolyhedronGridItem {
+	return item.type === 'polyhedron';
 }
 
 // ============================================================================
@@ -87,6 +188,57 @@ export function fractionItemFrom(f: Fraction): FractionGridItem {
 	return { type: 'fraction', numerator: f.numerator, denominator: f.denominator };
 }
 
+/**
+ * Create a 2D shape grid item from a Shape2D object
+ */
+export function shape2DItemFrom(shape: Shape2D): Shape2DGridItem {
+	return {
+		type: 'shape2d',
+		shapeName: shape.name,
+		sideCount: shape.sideCount,
+		isRegular: shape.isRegular,
+		isConvex: shape.isConvex,
+		hasRightAngle: shape.hasRightAngle,
+		nameFr: shape.nameFr,
+		svgPath: shape.svgPath
+	};
+}
+
+/**
+ * Create an expression grid item from an Expression object
+ */
+export function expressionItemFrom(expr: Expression): ExpressionGridItem {
+	return {
+		type: 'expression',
+		latex: expr.latex
+	};
+}
+
+/**
+ * Create a function grid item from a FunctionGraph object
+ */
+export function functionItemFrom(fn: FunctionGraph): FunctionGridItem {
+	return {
+		type: 'function',
+		latex: fn.latex
+	};
+}
+
+/**
+ * Create a polyhedron grid item from a Polyhedron object
+ */
+export function polyhedronItemFrom(p: Polyhedron): PolyhedronGridItem {
+	return {
+		type: 'polyhedron',
+		name: p.name,
+		nameFr: p.nameFr,
+		faceCount: p.faceCount,
+		vertexCount: p.vertexCount,
+		edgeCount: p.edgeCount,
+		isRegular: p.isRegular
+	};
+}
+
 // ============================================================================
 // DISPLAY FUNCTIONS
 // ============================================================================
@@ -101,6 +253,14 @@ export function gridItemToUbumark(item: GridItem): string {
 			return String(item.value);
 		case 'fraction':
 			return fractionToUbumark({ numerator: item.numerator, denominator: item.denominator });
+		case 'shape2d':
+			return item.nameFr;
+		case 'expression':
+			return expressionToUbumark({ latex: item.latex } as Expression);
+		case 'function':
+			return functionToUbumark({ latex: item.latex } as FunctionGraph);
+		case 'polyhedron':
+			return polyhedronToUbumark({ nameFr: item.nameFr } as Polyhedron);
 	}
 }
 
@@ -114,6 +274,14 @@ export function gridItemToKey(item: GridItem): string {
 			return `n:${item.value}`;
 		case 'fraction':
 			return `f:${item.numerator}/${item.denominator}`;
+		case 'shape2d':
+			return `s:${item.shapeName}`;
+		case 'expression':
+			return `e:${item.latex}`;
+		case 'function':
+			return `fn:${item.latex}`;
+		case 'polyhedron':
+			return `p:${item.name}`;
 	}
 }
 
@@ -137,6 +305,23 @@ export function gridItemsEqual(a: GridItem, b: GridItem): boolean {
 					numerator: (b as FractionGridItem).numerator,
 					denominator: (b as FractionGridItem).denominator
 				}
+			);
+		case 'shape2d':
+			return a.shapeName === (b as Shape2DGridItem).shapeName;
+		case 'expression':
+			return expressionsEqual(
+				{ latex: a.latex } as Expression,
+				{ latex: (b as ExpressionGridItem).latex } as Expression
+			);
+		case 'function':
+			return functionsEqual(
+				{ latex: a.latex } as FunctionGraph,
+				{ latex: (b as FunctionGridItem).latex } as FunctionGraph
+			);
+		case 'polyhedron':
+			return polyhedraEqual(
+				{ name: a.name } as Polyhedron,
+				{ name: (b as PolyhedronGridItem).name } as Polyhedron
 			);
 	}
 }
@@ -168,6 +353,14 @@ export function deserializeGridItem(data: unknown): GridItem {
 				return data as NumberGridItem;
 			case 'fraction':
 				return data as FractionGridItem;
+			case 'shape2d':
+				return data as Shape2DGridItem;
+			case 'expression':
+				return data as ExpressionGridItem;
+			case 'function':
+				return data as FunctionGridItem;
+			case 'polyhedron':
+				return data as PolyhedronGridItem;
 			default:
 				throw new Error(`Unknown grid item type: ${obj.type}`);
 		}
@@ -207,6 +400,34 @@ export function numbersToGridItems(numbers: number[]): GridItem[] {
  */
 export function fractionsToGridItems(fractions: Fraction[]): GridItem[] {
 	return fractions.map(fractionItemFrom);
+}
+
+/**
+ * Convert 2D shape array to GridItem array
+ */
+export function shapes2DToGridItems(shapes: Shape2D[]): GridItem[] {
+	return shapes.map(shape2DItemFrom);
+}
+
+/**
+ * Convert expression array to GridItem array
+ */
+export function expressionsToGridItems(expressions: Expression[]): GridItem[] {
+	return expressions.map(expressionItemFrom);
+}
+
+/**
+ * Convert function array to GridItem array
+ */
+export function functionsToGridItems(functions: FunctionGraph[]): GridItem[] {
+	return functions.map(functionItemFrom);
+}
+
+/**
+ * Convert polyhedron array to GridItem array
+ */
+export function polyhedraToGridItems(polyhedra: Polyhedron[]): GridItem[] {
+	return polyhedra.map(polyhedronItemFrom);
 }
 
 /**
