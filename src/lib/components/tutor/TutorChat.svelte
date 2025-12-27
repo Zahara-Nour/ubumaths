@@ -37,7 +37,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { User, Trash2, HelpCircle } from 'lucide-svelte';
+	import { User, Trash2, HelpCircle, Loader2 } from 'lucide-svelte';
 	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
@@ -108,6 +108,7 @@
 	// Persistence state
 	let conversationId = $state<string | null>(null);
 	let isLoadingConversation = $state(false);
+	let isClearing = $state(false);
 
 	// Track current exercise to avoid race conditions
 	let currentExerciseId = $state<string | null>(null);
@@ -596,11 +597,36 @@
 		}
 	}
 
-	// Clear chat history
-	function clearHistory() {
-		messages = [];
-		helpLevel = initialHelpLevel;
-		toaster.success('Conversation effacée !');
+	// Clear chat history (persisted to server)
+	async function clearHistory() {
+		if (!conversationId) {
+			// No conversation yet, just clear local state
+			messages = [];
+			helpLevel = initialHelpLevel;
+			return;
+		}
+
+		isClearing = true;
+		try {
+			const response = await fetch(`/api/tutor/conversations/${conversationId}/messages`, {
+				method: 'DELETE'
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				throw new Error(errorData.message || 'Failed to clear conversation');
+			}
+
+			// Clear local state after successful server deletion
+			messages = [];
+			helpLevel = initialHelpLevel;
+			toaster.success('Conversation effacée !');
+		} catch (error) {
+			logger.error('Error clearing conversation:', error);
+			toaster.error('Erreur lors de la suppression de la conversation');
+		} finally {
+			isClearing = false;
+		}
 	}
 </script>
 
@@ -652,12 +678,16 @@
 				variant="ghost"
 				size="icon"
 				onclick={clearHistory}
-				disabled={messages.length === 0}
+				disabled={messages.length === 0 || isClearing}
 				class="text-primary-foreground hover:bg-white/20"
 				title="Effacer la conversation"
-				aria-label="Effacer la conversation"
+				aria-label={isClearing ? 'Suppression en cours...' : 'Effacer la conversation'}
 			>
-				<Trash2 class="h-5 w-5" aria-hidden="true" />
+				{#if isClearing}
+					<Loader2 class="h-5 w-5 animate-spin" aria-hidden="true" />
+				{:else}
+					<Trash2 class="h-5 w-5" aria-hidden="true" />
+				{/if}
 			</Button>
 		</div>
 
@@ -675,7 +705,45 @@
 			aria-label="Historique de la conversation avec le tuteur"
 			aria-live="polite"
 		>
-			{#if messages.length === 0}
+			{#if isLoadingConversation}
+				<!-- Loading skeleton for conversation -->
+				<div class="space-y-4" role="status" aria-label="Chargement de la conversation">
+					<!-- Fake assistant message skeleton -->
+					<div class="flex justify-start gap-3">
+						<div
+							class="h-12 w-12 flex-shrink-0 animate-pulse rounded-full bg-muted-foreground/20"
+						></div>
+						<div
+							class="max-w-[80%] space-y-2 rounded-lg border border-border bg-card p-3 shadow-sm"
+						>
+							<div class="h-4 w-48 animate-pulse rounded bg-muted-foreground/20"></div>
+							<div class="h-4 w-32 animate-pulse rounded bg-muted-foreground/20"></div>
+						</div>
+					</div>
+					<!-- Fake user message skeleton -->
+					<div class="flex justify-end gap-3">
+						<div class="max-w-[80%] space-y-2 rounded-lg bg-primary/20 p-3 shadow-sm">
+							<div class="h-4 w-36 animate-pulse rounded bg-primary/30"></div>
+						</div>
+						<div
+							class="h-12 w-12 flex-shrink-0 animate-pulse rounded-full bg-muted-foreground/20"
+						></div>
+					</div>
+					<!-- Another assistant skeleton -->
+					<div class="flex justify-start gap-3">
+						<div
+							class="h-12 w-12 flex-shrink-0 animate-pulse rounded-full bg-muted-foreground/20"
+						></div>
+						<div
+							class="max-w-[80%] space-y-2 rounded-lg border border-border bg-card p-3 shadow-sm"
+						>
+							<div class="h-4 w-56 animate-pulse rounded bg-muted-foreground/20"></div>
+							<div class="h-4 w-40 animate-pulse rounded bg-muted-foreground/20"></div>
+							<div class="h-4 w-24 animate-pulse rounded bg-muted-foreground/20"></div>
+						</div>
+					</div>
+				</div>
+			{:else if messages.length === 0}
 				<div class="flex h-full items-center justify-center text-center">
 					<div class="space-y-4">
 						<div class="text-6xl">🎓</div>
