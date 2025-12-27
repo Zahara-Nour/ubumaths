@@ -29,6 +29,7 @@
 
 	// Mastery tracking state
 	let masteryMap = $state(new Map<string, MasteryStatus>());
+	let savingMasteryForExercise = $state<string | null>(null);
 
 	// Error reports state
 	let reportsMap = $state(new Map<string, StudentErrorReportView>());
@@ -37,6 +38,9 @@
 	let currentExercise = $derived(exercises[currentExerciseIndex]);
 	let currentExerciseMasteryStatus = $derived<MasteryStatus>(
 		currentExercise ? (masteryMap.get(currentExercise.exercise_id) ?? 'not_worked') : 'not_worked'
+	);
+	let isSavingMastery = $derived(
+		currentExercise ? savingMasteryForExercise === currentExercise.exercise_id : false
 	);
 
 	// Fetch mastery statuses and error reports on mount
@@ -86,6 +90,9 @@
 	}
 
 	async function updateMastery(exerciseId: string, status: MasteryStatus) {
+		// Set loading state
+		savingMasteryForExercise = exerciseId;
+
 		// Optimistic update
 		const previousStatus = masteryMap.get(exerciseId);
 		masteryMap.set(exerciseId, status);
@@ -107,7 +114,9 @@
 					masteryMap.delete(exerciseId);
 				}
 				masteryMap = new Map(masteryMap);
-				toaster.error('Erreur lors de la mise a jour du statut');
+				toaster.error('Erreur lors de la mise à jour du statut');
+			} else {
+				toaster.success('Statut mis à jour');
 			}
 		} catch (error) {
 			// Revert on error
@@ -118,7 +127,9 @@
 			}
 			masteryMap = new Map(masteryMap);
 			console.error('Error updating mastery status:', error);
-			toaster.error('Erreur lors de la mise a jour du statut');
+			toaster.error('Erreur lors de la mise à jour du statut');
+		} finally {
+			savingMasteryForExercise = null;
 		}
 	}
 
@@ -230,6 +241,7 @@
 	currentIndex={currentExerciseIndex}
 	open={modalOpen}
 	masteryStatus={currentExerciseMasteryStatus}
+	{isSavingMastery}
 	{assignmentId}
 	{reportsMap}
 	onOpenChange={handleOpenChange}
