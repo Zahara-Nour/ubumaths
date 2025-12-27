@@ -15,13 +15,15 @@
 import { toaster } from '$lib/stores/toaster.svelte';
 import { SvelteSet } from 'svelte/reactivity';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import type {
-	GuessWhoGame,
-	GuessWhoMove,
-	GameStatus,
-	QuestionType,
-	CreateGameResponse,
-	JoinGameResponse
+import {
+	GAME_PACKS,
+	type GuessWhoGame,
+	type GuessWhoMove,
+	type GameStatus,
+	type QuestionType,
+	type CreateGameResponse,
+	type JoinGameResponse,
+	type GamePackId
 } from '$lib/types/guess-who';
 
 // ============================================================================
@@ -160,6 +162,21 @@ class GuessWhoGameStore {
 	 */
 	get bonusTurnsRemaining(): number {
 		return this.game?.bonusTurnsRemaining ?? 0;
+	}
+
+	/**
+	 * Current game pack ID
+	 */
+	get packId(): GamePackId {
+		return this.game?.packId ?? 'naturals_medium';
+	}
+
+	/**
+	 * Available question types for the current pack
+	 */
+	get availableQuestions(): QuestionType[] {
+		const pack = GAME_PACKS[this.packId];
+		return pack?.availableQuestions ?? GAME_PACKS.naturals_medium.availableQuestions;
 	}
 
 	// ============================================================================
@@ -698,6 +715,7 @@ class GuessWhoGameStore {
 			player1Id: data.player1_id as string,
 			player2Id: (data.player2_id as string) || null,
 			status: data.status as GameStatus,
+			packId: (data.pack_id as GamePackId) || 'naturals_medium',
 			gridNumbers: data.grid_numbers as number[],
 			currentTurnPlayerId: (data.current_turn_player_id as string) || null,
 			bonusTurnsRemaining: (data.bonus_turns_remaining as number) ?? 0,

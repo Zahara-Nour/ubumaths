@@ -4,8 +4,11 @@
  * @module utils/guess-who/grid-generator
  */
 
+import { GAME_PACKS, type GamePackId } from '$lib/types/guess-who';
+
 /**
  * Generate a grid of 24 unique random numbers between 2 and 99
+ * @deprecated Use generateGridForPack instead
  */
 export function generateGrid(): number[] {
 	const numbers = new Set<number>();
@@ -17,6 +20,19 @@ export function generateGrid(): number[] {
 	}
 
 	return Array.from(numbers);
+}
+
+/**
+ * Generate a grid using the specified game pack
+ * @param packId - The pack identifier to use for generation
+ * @returns Array of numbers for the grid
+ */
+export function generateGridForPack(packId: GamePackId): number[] {
+	const pack = GAME_PACKS[packId];
+	if (!pack) {
+		throw new Error(`Unknown pack: ${packId}`);
+	}
+	return pack.generateNumbers();
 }
 
 /**

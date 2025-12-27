@@ -4,6 +4,7 @@
 	 *
 	 * Uses MySelect for question selection and shows parameter selector
 	 * when the selected question requires a parameter.
+	 * Filters available questions based on the game pack.
 	 */
 
 	import { Button } from '$lib/components/ui/button';
@@ -13,27 +14,40 @@
 	interface Props {
 		onSubmit: (type: QuestionType, param?: number) => void;
 		disabled?: boolean;
+		/** Available question types for this pack (if undefined, show all) */
+		availableQuestions?: QuestionType[];
 		class?: string;
 	}
 
-	let { onSubmit, disabled = false, class: className = '' }: Props = $props();
+	let { onSubmit, disabled = false, availableQuestions, class: className = '' }: Props = $props();
 
 	let selectedQuestionType = $state<string | undefined>(undefined);
 	let selectedParam = $state<string | undefined>(undefined);
 
+	// Filter questions based on pack's available questions
+	const filteredQuestionInfo = $derived(
+		availableQuestions
+			? QUESTION_INFO.filter((q) => availableQuestions.includes(q.type))
+			: QUESTION_INFO
+	);
+
 	// Find info for currently selected question
-	const selectedQuestionInfo = $derived(QUESTION_INFO.find((q) => q.type === selectedQuestionType));
+	const selectedQuestionInfo = $derived(
+		filteredQuestionInfo.find((q) => q.type === selectedQuestionType)
+	);
 
 	// Check if we can submit (have question, and param if required)
 	const canSubmit = $derived(
 		selectedQuestionType && (!selectedQuestionInfo?.requiresParam || selectedParam !== undefined)
 	);
 
-	// Prepare items for MySelect
-	const questionItems = QUESTION_INFO.map((q) => ({
-		value: q.type,
-		label: q.labelFr
-	}));
+	// Prepare items for MySelect (filtered by pack)
+	const questionItems = $derived(
+		filteredQuestionInfo.map((q) => ({
+			value: q.type,
+			label: q.labelFr
+		}))
+	);
 
 	const paramItems = $derived(
 		selectedQuestionInfo?.paramOptions?.map((p) => ({

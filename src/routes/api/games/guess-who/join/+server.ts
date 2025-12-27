@@ -105,6 +105,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				player1Id: updatedGame.player1_id,
 				player2Id: updatedGame.player2_id,
 				status: updatedGame.status,
+				packId: updatedGame.pack_id,
 				gridNumbers: updatedGame.grid_numbers,
 				currentTurnPlayerId: updatedGame.current_turn_player_id,
 				bonusTurnsRemaining: updatedGame.bonus_turns_remaining,

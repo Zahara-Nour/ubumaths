@@ -17,6 +17,7 @@ export type QuestionType =
 	| 'less_than'
 	| 'units_digit'
 	| 'tens_digit'
+	| 'hundreds_digit'
 	| 'is_perfect_square'
 	| 'sum_digits';
 
@@ -78,6 +79,13 @@ export function getTensDigit(n: number): number {
 }
 
 /**
+ * Get the hundreds digit of a number
+ */
+export function getHundredsDigit(n: number): number {
+	return Math.floor((n % 1000) / 100);
+}
+
+/**
  * Check if a number is a perfect square
  */
 export function isPerfectSquare(n: number): boolean {
@@ -124,6 +132,9 @@ export function checkProperty(n: number, questionType: QuestionType, param?: num
 		case 'tens_digit':
 			if (param === undefined) throw new Error('tens_digit requires param');
 			return getTensDigit(n) === param;
+		case 'hundreds_digit':
+			if (param === undefined) throw new Error('hundreds_digit requires param');
+			return getHundredsDigit(n) === param;
 		case 'is_perfect_square':
 			return isPerfectSquare(n);
 		case 'sum_digits':

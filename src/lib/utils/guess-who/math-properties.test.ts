@@ -13,6 +13,7 @@ import {
 	isMultipleOf,
 	getUnitsDigit,
 	getTensDigit,
+	getHundredsDigit,
 	isPerfectSquare,
 	sumOfDigits,
 	checkProperty
@@ -99,6 +100,16 @@ describe('getTensDigit', () => {
 	});
 });
 
+describe('getHundredsDigit', () => {
+	it('returns the hundreds digit', () => {
+		expect(getHundredsDigit(156)).toBe(1);
+		expect(getHundredsDigit(42)).toBe(0);
+		expect(getHundredsDigit(7)).toBe(0);
+		expect(getHundredsDigit(999)).toBe(9);
+		expect(getHundredsDigit(100)).toBe(1);
+	});
+});
+
 describe('isPerfectSquare', () => {
 	it('returns true for perfect squares', () => {
 		expect(isPerfectSquare(4)).toBe(true);
@@ -165,6 +176,12 @@ describe('checkProperty', () => {
 	it('checks tens_digit property with param', () => {
 		expect(checkProperty(42, 'tens_digit', 4)).toBe(true);
 		expect(checkProperty(42, 'tens_digit', 2)).toBe(false);
+	});
+
+	it('checks hundreds_digit property with param', () => {
+		expect(checkProperty(156, 'hundreds_digit', 1)).toBe(true);
+		expect(checkProperty(156, 'hundreds_digit', 5)).toBe(false);
+		expect(checkProperty(42, 'hundreds_digit', 0)).toBe(true);
 	});
 
 	it('checks is_perfect_square property', () => {

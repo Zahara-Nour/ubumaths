@@ -25,8 +25,20 @@ export const questionTypeSchema = z.enum([
 	'less_than',
 	'units_digit',
 	'tens_digit',
+	'hundreds_digit',
 	'is_perfect_square',
 	'sum_digits'
+]);
+
+/**
+ * Game pack IDs - different number sets and difficulty levels
+ */
+export const gamePackIdSchema = z.enum([
+	'naturals_easy', // CM1: 2-50
+	'naturals_medium', // CM2: 2-99 (default)
+	'naturals_hard', // 6ème: 10-200
+	'times_tables', // CM1-CM2: Multiples focus
+	'primes_focus' // 6ème: Prime numbers focus
 ]);
 
 // ============================================================================
@@ -38,10 +50,12 @@ export const questionTypeSchema = z.enum([
  * Create a new Guess Who game
  *
  * Security constraints:
- * - No body required (authenticated user becomes player1)
+ * - packId optional (defaults to 'naturals_medium')
  * - Game ID and secret number generated server-side
  */
-export const createGameSchema = z.object({});
+export const createGameSchema = z.object({
+	packId: gamePackIdSchema.optional().default('naturals_medium')
+});
 
 /**
  * POST /api/games/guess-who/join
@@ -77,7 +91,7 @@ export const askQuestionSchema = z
 			.number()
 			.int('Question parameter must be an integer')
 			.min(0, 'Question parameter must be >= 0')
-			.max(99, 'Question parameter must be <= 99')
+			.max(200, 'Question parameter must be <= 200')
 			.optional()
 	})
 	.refine(
@@ -90,6 +104,7 @@ export const askQuestionSchema = z
 				'less_than',
 				'units_digit',
 				'tens_digit',
+				'hundreds_digit',
 				'sum_digits'
 			].includes(data.questionType);
 
@@ -119,7 +134,7 @@ export const answerQuestionSchema = z.object({
  * Make a final guess of opponent's secret number
  *
  * Security constraints:
- * - guessedNumber must be integer 2-99 (game grid range)
+ * - guessedNumber must be integer 2-200 (game grid range varies by pack)
  * - Guess result verified server-side
  */
 export const guessSchema = z.object({
@@ -127,7 +142,7 @@ export const guessSchema = z.object({
 		.number()
 		.int('Guessed number must be an integer')
 		.min(2, 'Guessed number must be >= 2')
-		.max(99, 'Guessed number must be <= 99')
+		.max(200, 'Guessed number must be <= 200')
 });
 
 /**
@@ -135,7 +150,7 @@ export const guessSchema = z.object({
  * Update eliminated numbers on player's grid (client-side tracking only)
  *
  * Security constraints:
- * - eliminatedNumbers must be array of integers 2-99
+ * - eliminatedNumbers must be array of integers 2-200 (varies by pack)
  * - Max 24 numbers (allows eliminating up to 24 of 25 grid numbers)
  * - No duplicate numbers allowed
  */
@@ -146,7 +161,7 @@ export const eliminateSchema = z.object({
 				.number()
 				.int('Eliminated numbers must be integers')
 				.min(2, 'Eliminated numbers must be >= 2')
-				.max(99, 'Eliminated numbers must be <= 99'),
+				.max(200, 'Eliminated numbers must be <= 200'),
 			{
 				message: 'eliminatedNumbers must be an array of integers'
 			}
@@ -176,9 +191,11 @@ export const gameIdParamSchema = z.object({
 // TYPE EXPORTS
 // ============================================================================
 
+export type CreateGameInput = z.infer<typeof createGameSchema>;
 export type AskQuestionInput = z.infer<typeof askQuestionSchema>;
 export type AnswerQuestionInput = z.infer<typeof answerQuestionSchema>;
 export type GuessInput = z.infer<typeof guessSchema>;
 export type EliminateInput = z.infer<typeof eliminateSchema>;
 export type JoinGameInput = z.infer<typeof joinGameSchema>;
 export type GameIdParam = z.infer<typeof gameIdParamSchema>;
+export type GamePackIdInput = z.infer<typeof gamePackIdSchema>;

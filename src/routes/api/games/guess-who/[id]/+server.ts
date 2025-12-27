@@ -93,6 +93,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				player1Id: game.player1_id,
 				player2Id: game.player2_id,
 				status: game.status,
+				packId: game.pack_id,
 				gridNumbers: game.grid_numbers,
 				currentTurnPlayerId: game.current_turn_player_id,
 				bonusTurnsRemaining: game.bonus_turns_remaining,

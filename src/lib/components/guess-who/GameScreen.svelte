@@ -57,6 +57,7 @@
 	const pendingQuestion = $derived(guessWhoStore.pendingQuestion);
 	const isSubmitting = $derived(guessWhoStore.isSubmitting);
 	const isConnected = $derived(guessWhoStore.isConnected);
+	const availableQuestions = $derived(guessWhoStore.availableQuestions);
 
 	// Get current player name for display
 	const currentPlayerName = $derived.by(() => {
@@ -159,7 +160,11 @@
 						<!-- Can ask a question or make a guess -->
 						<Card class="p-4">
 							<div class="space-y-4">
-								<QuestionSelector onSubmit={handleAskQuestion} disabled={isSubmitting} />
+								<QuestionSelector
+									onSubmit={handleAskQuestion}
+									disabled={isSubmitting}
+									{availableQuestions}
+								/>
 
 								<Separator />
 

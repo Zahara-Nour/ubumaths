@@ -4,11 +4,23 @@
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
+	import MySelect from '$lib/components/ui/my-select/MySelect.svelte';
+	import { GAME_PACKS, type GamePackId } from '$lib/types/guess-who';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
 	let isCreating = $state(false);
+	let selectedPackId = $state<GamePackId>('naturals_medium');
+
+	// Convert GAME_PACKS to select items
+	const packItems = Object.values(GAME_PACKS).map((pack) => ({
+		value: pack.id,
+		label: `${pack.nameFr} (${pack.level})`
+	}));
+
+	// Get description of selected pack
+	const selectedPackDescription = $derived(GAME_PACKS[selectedPackId]?.descriptionFr ?? '');
 
 	/**
 	 * Create a new game
@@ -30,7 +42,7 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({})
+				body: JSON.stringify({ packId: selectedPackId })
 			});
 
 			if (!response.ok) {
@@ -78,22 +90,70 @@
 			<div class="space-y-3">
 				<h2 class="text-2xl font-semibold text-foreground">Comment jouer ?</h2>
 				<p class="text-muted-foreground">
-					Chaque joueur a un nombre secret entre 2 et 99. Posez des questions mathématiques à votre
-					adversaire pour deviner son nombre avant qu'il ne devine le vôtre !
+					Chaque joueur a un nombre secret. Posez des questions mathématiques à votre adversaire
+					pour deviner son nombre avant qu'il ne devine le vôtre ! Choisissez un pack adapté à votre
+					niveau.
 				</p>
 			</div>
 
 			<Separator />
 
-			<!-- Create Game Button -->
-			<div class="flex justify-center">
-				<Button onclick={handleCreateGame} disabled={isCreating} class="px-8 py-6 text-lg">
-					{#if isCreating}
-						Création en cours...
-					{:else}
-						Créer une partie
+			<!-- Available Packs -->
+			<div class="space-y-4">
+				<h3 class="text-xl font-semibold text-foreground">Packs disponibles</h3>
+				<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+					{#each Object.values(GAME_PACKS) as pack (pack.id)}
+						<div
+							class="rounded-lg border p-3 transition-colors {selectedPackId === pack.id
+								? 'border-primary bg-primary/5'
+								: 'border-border'}"
+						>
+							<div class="mb-1 flex items-center justify-between">
+								<span class="font-medium text-foreground">{pack.nameFr}</span>
+								<span
+									class="rounded-full px-2 py-0.5 text-xs {pack.level === 'CM1'
+										? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+										: pack.level === 'CM2'
+											? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+											: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'}"
+								>
+									{pack.level}
+								</span>
+							</div>
+							<p class="text-sm text-muted-foreground">{pack.descriptionFr}</p>
+						</div>
+					{/each}
+				</div>
+			</div>
+
+			<Separator />
+
+			<!-- Pack Selection & Create Game -->
+			<div class="space-y-4">
+				<div class="space-y-2">
+					<label for="pack-select" class="text-sm font-medium text-foreground">
+						Choisissez un pack de jeu
+					</label>
+					<MySelect
+						type="single"
+						bind:value={selectedPackId}
+						items={packItems}
+						placeholder="Sélectionner un pack..."
+					/>
+					{#if selectedPackDescription}
+						<p class="text-sm text-muted-foreground">{selectedPackDescription}</p>
 					{/if}
-				</Button>
+				</div>
+
+				<div class="flex justify-center pt-2">
+					<Button onclick={handleCreateGame} disabled={isCreating} class="px-8 py-6 text-lg">
+						{#if isCreating}
+							Création en cours...
+						{:else}
+							Créer une partie
+						{/if}
+					</Button>
+				</div>
 			</div>
 
 			<Separator />
