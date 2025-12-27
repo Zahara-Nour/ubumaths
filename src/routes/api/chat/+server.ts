@@ -202,6 +202,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 9. Increment usage AFTER successful response
 			await incrementTutorUsage(user.id, exerciseContext?.exerciseId);
 
+			// Calculate updated remaining counts (after increment)
+			const updatedRemaining = rateLimitResult.remaining
+				? {
+						exercise:
+							rateLimitResult.remaining.exercise !== null
+								? Math.max(0, rateLimitResult.remaining.exercise - 1)
+								: null,
+						hour: Math.max(0, rateLimitResult.remaining.hour - 1),
+						day: Math.max(0, rateLimitResult.remaining.day - 1)
+					}
+				: undefined;
+
 			// 10. Log to ai_chat_usage table (async, non-blocking)
 			Promise.resolve().then(async () => {
 				try {
@@ -262,7 +274,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					helpMethodUsed: selectedMethod,
 					helpLevel: helpLevel,
 					effortScore,
-					remaining: rateLimitResult.remaining
+					remaining: updatedRemaining
 				}
 			});
 		}
