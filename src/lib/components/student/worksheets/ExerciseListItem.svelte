@@ -52,7 +52,9 @@
 		</div>
 
 		<div class="flex-1">
-			<span class="font-medium">Exercice {index}</span>
+			<span class="font-medium"
+				>Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}</span
+			>
 			{#if exercise.custom_instructions}
 				<p class="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
 					{exercise.custom_instructions}
