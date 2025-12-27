@@ -16,7 +16,6 @@
 		ArrowLeft,
 		Calendar,
 		CheckCircle,
-		Clock,
 		FileText,
 		GraduationCap,
 		ClipboardList,
@@ -160,19 +159,17 @@
 		</Card.Header>
 
 		<Card.Content class="space-y-4">
-			<!-- Availability -->
-			<div
-				class="flex items-center gap-2"
-				class:text-destructive={closesInfo.urgent}
-				class:text-muted-foreground={!closesInfo.urgent}
-			>
-				{#if worksheet.closes_at}
+			<!-- Availability (only show if there's a deadline) -->
+			{#if worksheet.closes_at}
+				<div
+					class="flex items-center gap-2"
+					class:text-destructive={closesInfo.urgent}
+					class:text-muted-foreground={!closesInfo.urgent}
+				>
 					<Calendar class="h-4 w-4 flex-shrink-0" />
-				{:else}
-					<Clock class="h-4 w-4 flex-shrink-0" />
-				{/if}
-				<span class:font-medium={closesInfo.urgent}>{closesInfo.text}</span>
-			</div>
+					<span class:font-medium={closesInfo.urgent}>{closesInfo.text}</span>
+				</div>
+			{/if}
 
 			<!-- Description -->
 			{#if worksheet.description}
