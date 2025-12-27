@@ -12,7 +12,6 @@ import { analyzeMessage } from '$lib/server/tutor/cheat-detector';
 import { analyzeStudentMessages, calculateEffortScore } from '$lib/server/tutor/help-escalation';
 import { hybridSearch, formatResultsForPrompt } from '$lib/server/rag';
 import type { GradeCode } from '$lib/types/grades';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -238,12 +237,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 
 			// 11. Persist messages to tutor_messages if conversationId is provided
-			// Use service role client to bypass RLS (we already verified auth with requireAuth)
-			console.log('[API chat] Checking message persistence, conversationId:', conversationId);
+			// Uses locals.supabase which respects RLS (user must own the conversation)
 			if (conversationId) {
 				try {
-					const serviceClient = createServiceRoleClient();
-
 					// Insert user message and assistant response
 					const messagesToInsert = [
 						{
@@ -262,19 +258,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						}
 					];
 
-					console.log('[API chat] Inserting messages for conversation:', conversationId);
-					const { error: insertError } = await serviceClient
+					const { error: insertError } = await locals.supabase
 						.from('tutor_messages')
 						.insert(messagesToInsert);
 
 					if (insertError) {
 						console.error('[API chat] Message insert error:', insertError);
-					} else {
-						console.log('[API chat] Messages inserted successfully');
 					}
 
 					// Update conversation stats
-					const { error: updateError } = await serviceClient
+					const { error: updateError } = await locals.supabase
 						.from('tutor_conversations')
 						.update({
 							message_count: messages.length + 1,
@@ -286,11 +279,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						console.error('[API chat] Conversation update error:', updateError);
 					}
 				} catch (persistError) {
-					// Non-blocking - log but don't fail the request
 					console.error('[API chat] Failed to persist tutor messages:', persistError);
 				}
-			} else {
-				console.log('[API chat] No conversationId provided, skipping persistence');
 			}
 
 			return json({

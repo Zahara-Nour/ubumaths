@@ -290,20 +290,12 @@
 
 	// Find or create conversation when exercise/assignment change
 	async function findOrCreateConversation() {
-		console.log('[TutorChat] findOrCreateConversation called', {
-			exerciseId: exerciseContext?.exerciseId,
-			assignmentId,
-			currentExerciseId
-		});
-
 		if (!exerciseContext?.exerciseId || !assignmentId) {
-			console.log('[TutorChat] Missing exerciseId or assignmentId, aborting');
 			return;
 		}
 
 		// Prevent re-triggering if already loading this exercise
 		if (currentExerciseId === exerciseContext.exerciseId) {
-			console.log('[TutorChat] Already loading this exercise, aborting');
 			return;
 		}
 
@@ -330,29 +322,22 @@
 				exerciseId: loadingExerciseId,
 				assignmentId: assignmentId
 			});
-			console.log('[TutorChat] Fetching conversation with params:', searchParams.toString());
 			const getResponse = await fetch(`/api/tutor/conversations?${searchParams}`);
 
 			// Check if exercise changed during fetch (race condition)
 			if (currentExerciseId !== loadingExerciseId) {
-				console.log('[TutorChat] Race condition detected after GET, aborting');
 				return; // Abort - user switched to different exercise
 			}
 
-			console.log('[TutorChat] GET response status:', getResponse.status);
-
 			if (getResponse.ok) {
 				const data = await getResponse.json();
-				console.log('[TutorChat] GET response data:', data);
 				if (data.conversation) {
 					conversationId = data.conversation.id;
-					console.log('[TutorChat] Found existing conversation:', conversationId);
 					// Load existing messages (race condition check is inside loadMessages)
 					await loadMessages(data.conversation.id, loadingExerciseId);
 
 					// Check again after loading messages
 					if (currentExerciseId !== loadingExerciseId) {
-						console.log('[TutorChat] Race condition detected after loadMessages, aborting');
 						return;
 					}
 
@@ -360,19 +345,14 @@
 					await quotasPromise; // Wait for quotas
 					return;
 				}
-			} else {
-				const errorText = await getResponse.text();
-				console.error('[TutorChat] GET error:', getResponse.status, errorText);
 			}
 
 			// Check if exercise changed before creating
 			if (currentExerciseId !== loadingExerciseId) {
-				console.log('[TutorChat] Race condition before POST, aborting');
 				return;
 			}
 
 			// Create new conversation
-			console.log('[TutorChat] Creating new conversation...');
 			const postResponse = await fetch('/api/tutor/conversations', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -386,21 +366,16 @@
 
 			// Check if exercise changed during creation
 			if (currentExerciseId !== loadingExerciseId) {
-				console.log('[TutorChat] Race condition after POST, aborting');
 				return;
 			}
-
-			console.log('[TutorChat] POST response status:', postResponse.status);
 
 			if (postResponse.ok) {
 				const data = await postResponse.json();
 				conversationId = data.conversation.id;
-				console.log('[TutorChat] Created new conversation:', conversationId);
 				onConversationCreated?.(data.conversation.id);
 			} else if (postResponse.status === 409) {
 				// Conversation already exists - this can happen in race conditions
 				// Re-query to get the existing conversation
-				console.log('[TutorChat] POST returned 409, re-fetching existing conversation...');
 				const retryParams = new URLSearchParams({
 					exerciseId: loadingExerciseId,
 					assignmentId: assignmentId
@@ -409,7 +384,6 @@
 
 				// Check race condition
 				if (currentExerciseId !== loadingExerciseId) {
-					console.log('[TutorChat] Race condition after 409 retry, aborting');
 					return;
 				}
 
@@ -417,14 +391,10 @@
 					const retryData = await retryResponse.json();
 					if (retryData.conversation) {
 						conversationId = retryData.conversation.id;
-						console.log('[TutorChat] Retrieved existing conversation after 409:', conversationId);
 						await loadMessages(retryData.conversation.id, loadingExerciseId);
 						onConversationCreated?.(retryData.conversation.id);
 					}
 				}
-			} else {
-				const errorText = await postResponse.text();
-				console.error('[TutorChat] POST error:', postResponse.status, errorText);
 			}
 
 			await quotasPromise; // Wait for quotas
@@ -440,21 +410,16 @@
 
 	// Load messages for a conversation
 	async function loadMessages(convId: string, expectedExerciseId: string) {
-		console.log('[TutorChat] loadMessages called for conversation:', convId);
 		try {
 			const response = await fetch(`/api/tutor/conversations/${convId}/messages`);
 
 			// Check for race condition before updating state
 			if (currentExerciseId !== expectedExerciseId) {
-				console.log('[TutorChat] Race condition in loadMessages, aborting');
 				return;
 			}
 
-			console.log('[TutorChat] loadMessages response status:', response.status);
-
 			if (response.ok) {
 				const data = await response.json();
-				console.log('[TutorChat] Loaded messages count:', data.messages?.length || 0);
 				// Convert API messages to local Message format
 				messages = (data.messages || []).map(
 					(msg: { id: string; role: string; content: string; created_at: string }) => ({
@@ -465,23 +430,11 @@
 						avatarRotation: msg.role === 'assistant' ? generateRandomRotation() : undefined
 					})
 				);
-			} else {
-				const errorText = await response.text();
-				console.error('[TutorChat] loadMessages error:', response.status, errorText);
 			}
 		} catch (error) {
 			console.error('[TutorChat] Error loading messages:', error);
 		}
 	}
-
-	// Log on mount to verify component lifecycle with {#key}
-	$effect(() => {
-		console.log('[TutorChat] Component mounted/effect run', {
-			exerciseId: exerciseContext?.exerciseId,
-			assignmentId,
-			currentExerciseId
-		});
-	});
 
 	// Effect to load conversation when props change
 	// Dependencies: exerciseContext?.exerciseId, assignmentId
@@ -503,11 +456,6 @@
 
 	// Send message to tutor API
 	async function sendMessage(text: string) {
-		console.log('[TutorChat] sendMessage called', {
-			textLength: text.length,
-			conversationId,
-			helpLevel
-		});
 		if (!text.trim() || isLoading) return;
 
 		// Add user message
@@ -530,11 +478,6 @@
 				helpLevel,
 				conversationId
 			};
-			console.log('[TutorChat] Sending chat request:', {
-				conversationId: requestBody.conversationId,
-				messageCount: requestBody.messages.length,
-				helpLevel: requestBody.helpLevel
-			});
 
 			const response = await fetch('/api/chat', {
 				method: 'POST',
@@ -544,19 +487,13 @@
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				console.error('[TutorChat] Chat API error:', response.status, errorData);
 				throw new Error(errorData.message || `API Error: ${response.status}`);
 			}
 
 			const data = await response.json();
-			console.log('[TutorChat] Chat response received:', {
-				hasMessage: !!data.message,
-				tutorMetadata: data.tutorMetadata
-			});
 
 			// Update quotas from response
 			if (data.tutorMetadata?.remaining) {
-				console.log('[TutorChat] Updating remaining quotas:', data.tutorMetadata.remaining);
 				remaining = data.tutorMetadata.remaining;
 			}
 
