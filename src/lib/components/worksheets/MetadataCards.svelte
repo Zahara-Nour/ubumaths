@@ -198,51 +198,42 @@
 		{ value: 'A4', label: 'A4' },
 		{ value: 'Letter', label: 'Letter' }
 	];
-
-	function getNumberingLabel(value: string): string {
-		return numberingOptions.find((o) => o.value === value)?.label ?? value;
-	}
-
-	function getLayoutLabel(value: string): string {
-		return layoutOptions.find((o) => o.value === value)?.label ?? value;
-	}
 </script>
 
-<div class="space-y-4">
-	<!-- Information card -->
-	<Card.Root class="relative">
-		<!-- Floating save button -->
-		{#if hasPendingChanges && isEditable && !isSaving}
+<!-- Floating action buttons -->
+{#if hasPendingChanges && isEditable}
+	<div class="mb-3 flex items-center gap-2">
+		{#if isSaving}
+			<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+			<span class="text-sm text-muted-foreground">Enregistrement...</span>
+		{:else}
 			<button
 				type="button"
-				class="absolute top-3 right-3 z-10 rounded-full bg-green-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-green-600 active:scale-95"
+				class="flex items-center gap-1.5 rounded-md bg-green-500 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-green-600 active:scale-95"
 				onclick={handleSave}
-				aria-label="Enregistrer les modifications"
 			>
-				<Check class="h-4 w-4" />
+				<Check class="h-3.5 w-3.5" />
+				Enregistrer
+			</button>
+			<button
+				type="button"
+				class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+				onclick={handleCancelAll}
+			>
+				<X class="h-3.5 w-3.5" />
+				Annuler
 			</button>
 		{/if}
+	</div>
+{/if}
 
-		<Card.Header>
-			<div class="flex items-center gap-2">
-				<Card.Title class="text-lg">Informations</Card.Title>
-				{#if hasPendingChanges && isEditable}
-					{#if isSaving}
-						<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-					{:else}
-						<button
-							type="button"
-							class="rounded-full p-1 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={handleCancelAll}
-							aria-label="Annuler toutes les modifications"
-						>
-							<X class="h-4 w-4" />
-						</button>
-					{/if}
-				{/if}
-			</div>
+<div class="grid gap-4 md:grid-cols-2">
+	<!-- Information card -->
+	<Card.Root>
+		<Card.Header class="pb-3">
+			<Card.Title class="text-base">Informations</Card.Title>
 		</Card.Header>
-		<Card.Content class="space-y-3">
+		<Card.Content class="space-y-3 pt-0">
 			<!-- Title -->
 			<div>
 				<p class="text-xs text-muted-foreground">Titre</p>
@@ -454,109 +445,100 @@
 	</Card.Root>
 
 	<!-- Options d'affichage card -->
-	<Card.Root class="relative">
-		<Card.Header>
+	<Card.Root>
+		<Card.Header class="pb-3">
 			<div class="flex items-center gap-2">
-				<Settings class="h-5 w-5 text-muted-foreground" />
-				<Card.Title class="text-lg">Options d'affichage</Card.Title>
+				<Settings class="h-4 w-4 text-muted-foreground" />
+				<Card.Title class="text-base">Options d'affichage</Card.Title>
 			</div>
 		</Card.Header>
-		<Card.Content>
+		<Card.Content class="pt-0">
 			{#if !editingConfig}
-				<!-- Display mode: show current config values -->
+				<!-- Display mode: compact inline view -->
 				<button
 					type="button"
 					class="w-full text-left {isEditable ? 'cursor-pointer' : 'cursor-default'}"
 					onclick={() => startEdit('config')}
 					disabled={!isEditable}
 				>
-					<div class="space-y-6">
-						<!-- Elements affiches section -->
-						<div class="space-y-2">
-							<h4 class="text-sm font-medium text-muted-foreground">Elements affiches</h4>
-							<div class="flex flex-wrap gap-2">
+					<div class="space-y-3">
+						<!-- Elements affiches - inline -->
+						<div>
+							<p class="mb-1.5 text-xs text-muted-foreground">En-tete</p>
+							<div class="flex flex-wrap gap-1">
 								{#if worksheet.config?.show_title ?? true}
-									<Badge variant="secondary">Titre</Badge>
+									<Badge variant="secondary" class="text-xs">Titre</Badge>
 								{/if}
 								{#if worksheet.config?.show_date ?? true}
-									<Badge variant="secondary">Date</Badge>
+									<Badge variant="secondary" class="text-xs">Date</Badge>
 								{/if}
 								{#if worksheet.config?.show_student_name ?? true}
-									<Badge variant="secondary">Nom</Badge>
+									<Badge variant="secondary" class="text-xs">Nom</Badge>
 								{/if}
 								{#if worksheet.config?.show_class ?? true}
-									<Badge variant="secondary">Classe</Badge>
+									<Badge variant="secondary" class="text-xs">Classe</Badge>
 								{/if}
 								{#if worksheet.config?.show_points ?? true}
-									<Badge variant="secondary">Points</Badge>
+									<Badge variant="secondary" class="text-xs">Points</Badge>
 								{/if}
 								{#if !(worksheet.config?.show_title ?? true) && !(worksheet.config?.show_date ?? true) && !(worksheet.config?.show_student_name ?? true) && !(worksheet.config?.show_class ?? true) && !(worksheet.config?.show_points ?? true)}
-									<span class="text-sm text-muted-foreground/50 italic">Aucun element</span>
+									<span class="text-xs text-muted-foreground/50 italic">Aucun</span>
 								{/if}
 							</div>
 						</div>
 
-						<!-- Mise en page section -->
-						<div class="space-y-2">
-							<h4 class="text-sm font-medium text-muted-foreground">Mise en page</h4>
-							<div class="flex flex-wrap gap-4 text-sm">
-								<span>
-									<span class="text-muted-foreground">Numerotation:</span>
+						<!-- Mise en page - inline compact -->
+						<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+							<span>
+								<span class="text-muted-foreground">Num:</span>
+								<span class="font-medium">{worksheet.config?.numbering_style ?? '1,2,3'}</span>
+							</span>
+							<span>
+								<span class="text-muted-foreground">Format:</span>
+								<span class="font-medium">{worksheet.config?.page_layout ?? 'A4'}</span>
+							</span>
+							{#if worksheet.config?.shuffle_exercises || worksheet.config?.shuffle_within_sections}
+								<span class="text-muted-foreground">
+									Melange:
 									<span class="font-medium">
-										{getNumberingLabel(worksheet.config?.numbering_style ?? 'numeric')}
+										{#if worksheet.config?.shuffle_exercises && worksheet.config?.shuffle_within_sections}
+											Tout
+										{:else if worksheet.config?.shuffle_exercises}
+											Exercices
+										{:else}
+											Sections
+										{/if}
 									</span>
 								</span>
-								<span>
-									<span class="text-muted-foreground">Format:</span>
-									<span class="font-medium">
-										{getLayoutLabel(worksheet.config?.page_layout ?? 'A4')}
-									</span>
-								</span>
-							</div>
+							{/if}
 						</div>
 
-						<!-- Options de melange section -->
-						<div class="space-y-2">
-							<h4 class="text-sm font-medium text-muted-foreground">Options de melange</h4>
-							<div class="flex flex-wrap gap-2">
-								{#if worksheet.config?.shuffle_exercises}
-									<Badge variant="outline">Exercices melanges</Badge>
-								{/if}
-								{#if worksheet.config?.shuffle_within_sections}
-									<Badge variant="outline">Sections melangees</Badge>
-								{/if}
-								{#if !worksheet.config?.shuffle_exercises && !worksheet.config?.shuffle_within_sections}
-									<span class="text-sm text-muted-foreground/50 italic">Aucun melange</span>
-								{/if}
-							</div>
-						</div>
+						{#if isEditable}
+							<p class="text-xs text-muted-foreground/50 italic">Cliquer pour modifier</p>
+						{/if}
 					</div>
-
-					{#if isEditable}
-						<p class="mt-4 text-xs text-muted-foreground/60 italic">Cliquer pour modifier</p>
-					{/if}
 				</button>
 			{:else}
-				<!-- Edit mode: show checkboxes and selects -->
-				<div class="space-y-6">
-					<!-- Elements affiches section -->
-					<div class="space-y-4">
-						<h4 class="text-sm font-medium">Elements affiches</h4>
-						<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				<!-- Edit mode: compact grid -->
+				<div class="space-y-4">
+					<!-- Elements affiches -->
+					<div>
+						<p class="mb-2 text-xs font-medium text-muted-foreground">En-tete du document</p>
+						<div class="grid grid-cols-2 gap-2 text-sm">
 							<MyCheckbox
 								checked={worksheet.config?.show_title ?? true}
 								onchange={(v) => handleConfigChange('show_title', v)}
-								label="Afficher le titre"
+								label="Titre"
 							/>
 							<MyCheckbox
 								checked={worksheet.config?.show_date ?? true}
 								onchange={(v) => handleConfigChange('show_date', v)}
-								label="Afficher la date"
+								label="Date"
 							/>
 							<MyCheckbox
 								checked={worksheet.config?.show_student_name ?? true}
 								onchange={(v) => handleConfigChange('show_student_name', v)}
-								label="Nom de l'eleve"
+								label="Nom"
 							/>
 							<MyCheckbox
 								checked={worksheet.config?.show_class ?? true}
@@ -566,55 +548,43 @@
 							<MyCheckbox
 								checked={worksheet.config?.show_points ?? true}
 								onchange={(v) => handleConfigChange('show_points', v)}
-								label="Points par exercice"
+								label="Points"
 							/>
 						</div>
 					</div>
 
 					<Separator />
 
-					<!-- Mise en page section -->
-					<div class="space-y-4">
-						<h4 class="text-sm font-medium">Mise en page</h4>
-						<div class="grid gap-4 sm:grid-cols-2">
-							<div class="space-y-2">
-								<p class="text-xs text-muted-foreground">Numerotation</p>
-								<MySelect
-									value={worksheet.config?.numbering_style ?? 'numeric'}
-									onchange={(v) => handleConfigChange('numbering_style', v)}
-									items={numberingOptions}
-									placeholder="Style de numerotation"
-								/>
-							</div>
-							<div class="space-y-2">
-								<p class="text-xs text-muted-foreground">Format de page</p>
-								<MySelect
-									value={worksheet.config?.page_layout ?? 'A4'}
-									onchange={(v) => handleConfigChange('page_layout', v)}
-									items={layoutOptions}
-									placeholder="Format de page"
-								/>
-							</div>
-						</div>
-					</div>
-
-					<Separator />
-
-					<!-- Options de melange section -->
-					<div class="space-y-4">
-						<h4 class="text-sm font-medium">Options de melange</h4>
-						<div class="grid gap-4 sm:grid-cols-2">
-							<MyCheckbox
-								checked={worksheet.config?.shuffle_exercises ?? false}
-								onchange={(v) => handleConfigChange('shuffle_exercises', v)}
-								label="Melanger les exercices"
-							/>
-							<MyCheckbox
-								checked={worksheet.config?.shuffle_within_sections ?? false}
-								onchange={(v) => handleConfigChange('shuffle_within_sections', v)}
-								label="Melanger dans les sections"
+					<!-- Mise en page + melange - compact grid -->
+					<div class="grid grid-cols-2 gap-3">
+						<div>
+							<p class="mb-1 text-xs text-muted-foreground">Numerotation</p>
+							<MySelect
+								value={worksheet.config?.numbering_style ?? 'numeric'}
+								onchange={(v) => handleConfigChange('numbering_style', v)}
+								items={numberingOptions}
+								placeholder="Style"
 							/>
 						</div>
+						<div>
+							<p class="mb-1 text-xs text-muted-foreground">Format</p>
+							<MySelect
+								value={worksheet.config?.page_layout ?? 'A4'}
+								onchange={(v) => handleConfigChange('page_layout', v)}
+								items={layoutOptions}
+								placeholder="Format"
+							/>
+						</div>
+						<MyCheckbox
+							checked={worksheet.config?.shuffle_exercises ?? false}
+							onchange={(v) => handleConfigChange('shuffle_exercises', v)}
+							label="Melanger exercices"
+						/>
+						<MyCheckbox
+							checked={worksheet.config?.shuffle_within_sections ?? false}
+							onchange={(v) => handleConfigChange('shuffle_within_sections', v)}
+							label="Melanger sections"
+						/>
 					</div>
 				</div>
 			{/if}
