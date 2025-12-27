@@ -4,32 +4,46 @@
 	 *
 	 * Uses MySelect for question selection and shows parameter selector
 	 * when the selected question requires a parameter.
-	 * Filters available questions based on the game pack.
+	 * Filters available questions based on the game pack and item type.
 	 */
 
 	import { Button } from '$lib/components/ui/button';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { QUESTION_INFO, type QuestionType } from '$lib/types/guess-who';
+	import {
+		getQuestionInfoForType,
+		type AnyQuestionType,
+		type GridItemType
+	} from '$lib/types/guess-who';
 
 	interface Props {
-		onSubmit: (type: QuestionType, param?: number) => void;
+		onSubmit: (type: AnyQuestionType, param?: number) => void;
 		disabled?: boolean;
-		/** Available question types for this pack (if undefined, show all) */
-		availableQuestions?: QuestionType[];
+		/** Type of items in this pack (determines available question types) */
+		itemType?: GridItemType;
+		/** Available question types for this pack (if undefined, show all for itemType) */
+		availableQuestions?: AnyQuestionType[];
 		class?: string;
 	}
 
-	let { onSubmit, disabled = false, availableQuestions, class: className = '' }: Props = $props();
+	let {
+		onSubmit,
+		disabled = false,
+		itemType = 'number',
+		availableQuestions,
+		class: className = ''
+	}: Props = $props();
 
 	let selectedQuestionType = $state<string | undefined>(undefined);
 	let selectedParam = $state<string | undefined>(undefined);
 
-	// Filter questions based on pack's available questions
-	const filteredQuestionInfo = $derived(
-		availableQuestions
-			? QUESTION_INFO.filter((q) => availableQuestions.includes(q.type))
-			: QUESTION_INFO
-	);
+	// Get all questions for item type, then filter by pack's available questions
+	const filteredQuestionInfo = $derived.by(() => {
+		const allQuestions = getQuestionInfoForType(itemType);
+		if (availableQuestions) {
+			return allQuestions.filter((q) => availableQuestions.includes(q.type));
+		}
+		return allQuestions;
+	});
 
 	// Find info for currently selected question
 	const selectedQuestionInfo = $derived(
@@ -60,7 +74,7 @@
 		if (!selectedQuestionType || !canSubmit) return;
 
 		const param = selectedParam ? Number(selectedParam) : undefined;
-		onSubmit(selectedQuestionType as QuestionType, param);
+		onSubmit(selectedQuestionType as AnyQuestionType, param);
 
 		// Reset selection after submit
 		selectedQuestionType = undefined;

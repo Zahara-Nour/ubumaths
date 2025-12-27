@@ -19,12 +19,15 @@
 	import GameStatus from './GameStatus.svelte';
 	import Timer from './Timer.svelte';
 	import NumberGrid from './NumberGrid.svelte';
+	import ItemGrid from './ItemGrid.svelte';
 	import QuestionSelector from './QuestionSelector.svelte';
 	import AnswerPrompt from './AnswerPrompt.svelte';
 	import GuessPrompt from './GuessPrompt.svelte';
 	import MoveHistory from './MoveHistory.svelte';
 
-	import type { QuestionType } from '$lib/types/guess-who';
+	import { GAME_PACKS, type AnyQuestionType } from '$lib/types/guess-who';
+	import type { GridItem } from '$lib/utils/guess-who/grid-item';
+	import { gridItemToKey, numberItem } from '$lib/utils/guess-who/grid-item';
 
 	interface Props {
 		player1Name?: string;
@@ -58,6 +61,39 @@
 	const isSubmitting = $derived(guessWhoStore.isSubmitting);
 	const isConnected = $derived(guessWhoStore.isConnected);
 	const availableQuestions = $derived(guessWhoStore.availableQuestions);
+	const packId = $derived(guessWhoStore.packId);
+
+	// Get item type for current pack
+	const itemType = $derived(GAME_PACKS[packId]?.itemType ?? 'number');
+
+	// Whether using polymorphic items (non-number pack)
+	const isPolymorphic = $derived(itemType !== 'number');
+
+	// Grid items (from game or converted from numbers)
+	const gridItems = $derived.by((): GridItem[] => {
+		if (!game) return [];
+		if (game.gridItems && game.gridItems.length > 0) {
+			return game.gridItems;
+		}
+		// Fallback: convert numbers to NumberGridItems
+		return game.gridNumbers.map(numberItem);
+	});
+
+	// My secret item (from store data or converted from number)
+	const mySecretItem = $derived.by((): GridItem | undefined => {
+		if (mySecretNumber === null) return undefined;
+		// TODO: When store supports polymorphic items, use mySecretItem directly
+		return numberItem(mySecretNumber);
+	});
+
+	// Eliminated items as Set<string> for ItemGrid
+	const eliminatedItemKeys = $derived.by((): Set<string> => {
+		const keys = new Set<string>();
+		for (const num of eliminatedNumbers) {
+			keys.add(gridItemToKey(numberItem(num)));
+		}
+		return keys;
+	});
 
 	// Get current player name for display
 	const currentPlayerName = $derived.by(() => {
@@ -75,8 +111,18 @@
 		}
 	}
 
+	// Handle item toggle (for polymorphic grids)
+	function handleItemToggle(item: GridItem) {
+		// For now, convert to number if it's a number item
+		// TODO: When store supports polymorphic items, toggle item directly
+		if (item.type === 'number') {
+			handleNumberToggle(item.value);
+		}
+		// Non-number items: would need store support for eliminatedItems
+	}
+
 	// Handle asking a question
-	async function handleAskQuestion(type: QuestionType, param?: number) {
+	async function handleAskQuestion(type: AnyQuestionType, param?: number) {
 		await guessWhoStore.askQuestion(type, param);
 	}
 
@@ -127,22 +173,33 @@
 
 				<Separator />
 
-				<!-- My secret number badge -->
+				<!-- My secret number/item badge -->
 				<div class="flex items-center justify-center gap-3">
-					<span class="text-sm text-muted-foreground">Votre nombre secret :</span>
+					<span class="text-sm text-muted-foreground">
+						{isPolymorphic ? 'Votre élément secret :' : 'Votre nombre secret :'}
+					</span>
 					<Badge variant="secondary" class="px-4 py-2 text-xl font-bold">
 						{mySecretNumber}
 					</Badge>
 				</div>
 
-				<!-- Number Grid -->
+				<!-- Grid (Number or Polymorphic) -->
 				<Card class="p-4">
-					<NumberGrid
-						numbers={game.gridNumbers}
-						{eliminatedNumbers}
-						secretNumber={mySecretNumber}
-						onToggle={handleNumberToggle}
-					/>
+					{#if isPolymorphic}
+						<ItemGrid
+							items={gridItems}
+							eliminatedItems={eliminatedItemKeys}
+							secretItem={mySecretItem}
+							onToggle={handleItemToggle}
+						/>
+					{:else}
+						<NumberGrid
+							numbers={game.gridNumbers}
+							{eliminatedNumbers}
+							secretNumber={mySecretNumber}
+							onToggle={handleNumberToggle}
+						/>
+					{/if}
 				</Card>
 
 				<!-- Action area -->
@@ -163,6 +220,7 @@
 								<QuestionSelector
 									onSubmit={handleAskQuestion}
 									disabled={isSubmitting}
+									{itemType}
 									{availableQuestions}
 								/>
 

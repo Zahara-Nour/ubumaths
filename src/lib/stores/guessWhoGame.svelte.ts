@@ -373,12 +373,12 @@ class GuessWhoGameStore {
 	// ============================================================================
 
 	/**
-	 * Ask a question about opponent's secret number
-	 * @param type - The question type
+	 * Ask a question about opponent's secret item
+	 * @param type - The question type (supports all item types)
 	 * @param param - Optional parameter for the question
 	 * @returns true on success, false on failure
 	 */
-	async askQuestion(type: QuestionType, param?: number): Promise<boolean> {
+	async askQuestion(type: AnyQuestionType, param?: number): Promise<boolean> {
 		if (!this.game || !this.canAskQuestion) {
 			this.error = 'Impossible de poser une question maintenant';
 			return false;

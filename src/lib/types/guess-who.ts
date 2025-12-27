@@ -687,7 +687,10 @@ export interface GuessWhoGame {
 	player2Id: string | null;
 	status: GameStatus;
 	packId: GamePackId;
+	/** Grid numbers (for backward compatibility with number packs) */
 	gridNumbers: number[];
+	/** Polymorphic grid items (for all pack types) */
+	gridItems?: GridItem[];
 	currentTurnPlayerId: string | null;
 	bonusTurnsRemaining: number;
 	winnerId: string | null;
@@ -698,11 +701,14 @@ export interface GuessWhoGame {
 }
 
 /**
- * Player's view of the game (includes their secret number)
+ * Player's view of the game (includes their secret number/item)
  * Used to provide player-specific data while hiding opponent's secret
  */
 export interface GuessWhoPlayerView extends GuessWhoGame {
+	/** Secret number (for backward compatibility) */
 	mySecretNumber: number;
+	/** Polymorphic secret item (for all pack types) */
+	mySecretItem?: GridItem;
 	eliminatedNumbers: number[];
 }
 
