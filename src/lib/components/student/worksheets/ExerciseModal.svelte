@@ -10,7 +10,8 @@
 		Circle,
 		CheckCircle,
 		AlertCircle,
-		X
+		X,
+		Loader2
 	} from 'lucide-svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import ReportErrorButton from '$lib/components/worksheets/ReportErrorButton.svelte';
@@ -26,6 +27,7 @@
 		currentIndex: number;
 		open: boolean;
 		masteryStatus: MasteryStatus;
+		isSavingMastery?: boolean;
 		assignmentId: string;
 		reportsMap: Map<string, StudentErrorReportView>;
 		onOpenChange: (open: boolean) => void;
@@ -39,6 +41,7 @@
 		currentIndex,
 		open,
 		masteryStatus,
+		isSavingMastery = false,
 		assignmentId,
 		reportsMap,
 		onOpenChange,
@@ -191,10 +194,14 @@
 						<!-- Mastery status buttons -->
 						<div class="flex items-center justify-center gap-2">
 							<span class="mr-2 text-sm text-muted-foreground">Statut :</span>
+							{#if isSavingMastery}
+								<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+							{/if}
 							<Button
 								variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
 								size="sm"
 								onclick={() => onMasteryChange('not_worked')}
+								disabled={isSavingMastery}
 								aria-label={MASTERY_LABELS.not_worked}
 								aria-pressed={masteryStatus === 'not_worked'}
 							>
@@ -205,6 +212,7 @@
 								variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
 								size="sm"
 								onclick={() => onMasteryChange('mastered')}
+								disabled={isSavingMastery}
 								aria-label={MASTERY_LABELS.mastered}
 								aria-pressed={masteryStatus === 'mastered'}
 							>
@@ -215,6 +223,7 @@
 								variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
 								size="sm"
 								onclick={() => onMasteryChange('needs_review')}
+								disabled={isSavingMastery}
 								aria-label={MASTERY_LABELS.needs_review}
 								aria-pressed={masteryStatus === 'needs_review'}
 							>
@@ -345,10 +354,14 @@
 				<div class="flex w-full flex-col gap-3">
 					<!-- Mastery status buttons -->
 					<div class="flex flex-wrap items-center justify-center gap-2">
+						{#if isSavingMastery}
+							<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+						{/if}
 						<Button
 							variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
 							size="sm"
 							onclick={() => onMasteryChange('not_worked')}
+							disabled={isSavingMastery}
 							aria-pressed={masteryStatus === 'not_worked'}
 						>
 							<Circle class="mr-1.5 h-4 w-4" />
@@ -358,6 +371,7 @@
 							variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
 							size="sm"
 							onclick={() => onMasteryChange('mastered')}
+							disabled={isSavingMastery}
 							aria-pressed={masteryStatus === 'mastered'}
 						>
 							<CheckCircle class="mr-1.5 h-4 w-4" />
@@ -367,6 +381,7 @@
 							variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
 							size="sm"
 							onclick={() => onMasteryChange('needs_review')}
+							disabled={isSavingMastery}
 							aria-pressed={masteryStatus === 'needs_review'}
 						>
 							<AlertCircle class="mr-1.5 h-4 w-4" />
