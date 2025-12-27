@@ -4,7 +4,9 @@
  * @module utils/guess-who/grid-generator
  */
 
-import { GAME_PACKS, type GamePackId } from '$lib/types/guess-who';
+import { GAME_PACKS, isNumberPack, type GamePackId } from '$lib/types/guess-who';
+import type { GridItem } from '$lib/utils/guess-who/grid-item';
+import { numberItem } from '$lib/utils/guess-who/grid-item';
 
 /**
  * Generate a grid of 24 unique random numbers between 2 and 99
@@ -23,16 +25,37 @@ export function generateGrid(): number[] {
 }
 
 /**
- * Generate a grid using the specified game pack
+ * Generate a grid of numbers using the specified game pack
  * @param packId - The pack identifier to use for generation
  * @returns Array of numbers for the grid
+ * @deprecated Use generateGridItemsForPack for polymorphic support
  */
 export function generateGridForPack(packId: GamePackId): number[] {
 	const pack = GAME_PACKS[packId];
 	if (!pack) {
 		throw new Error(`Unknown pack: ${packId}`);
 	}
+	if (!isNumberPack(pack)) {
+		throw new Error(`Pack ${packId} is not a number pack. Use generateGridItemsForPack instead.`);
+	}
 	return pack.generateNumbers();
+}
+
+/**
+ * Generate a grid of items using the specified game pack
+ * Works with all pack types (numbers, fractions, shapes, etc.)
+ * @param packId - The pack identifier to use for generation
+ * @returns Array of GridItems for the grid
+ */
+export function generateGridItemsForPack(packId: GamePackId): GridItem[] {
+	const pack = GAME_PACKS[packId];
+	if (!pack) {
+		throw new Error(`Unknown pack: ${packId}`);
+	}
+	if (isNumberPack(pack)) {
+		return pack.generateNumbers().map(numberItem);
+	}
+	return pack.generateItems();
 }
 
 /**

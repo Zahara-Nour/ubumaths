@@ -21,6 +21,7 @@ import {
 	type GuessWhoMove,
 	type GameStatus,
 	type QuestionType,
+	type AnyQuestionType,
 	type CreateGameResponse,
 	type JoinGameResponse,
 	type GamePackId
@@ -174,7 +175,7 @@ class GuessWhoGameStore {
 	/**
 	 * Available question types for the current pack
 	 */
-	get availableQuestions(): QuestionType[] {
+	get availableQuestions(): AnyQuestionType[] {
 		const pack = GAME_PACKS[this.packId];
 		return pack?.availableQuestions ?? GAME_PACKS.naturals_medium.availableQuestions;
 	}
