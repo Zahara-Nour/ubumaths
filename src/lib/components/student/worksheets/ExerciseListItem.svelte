@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
-	import { CheckCircle, FileText } from 'lucide-svelte';
 	import ReportErrorButton from '$lib/components/worksheets/ReportErrorButton.svelte';
 	import type { StudentExerciseView, StudentErrorReportView } from '$lib/types/worksheets';
 	import type { MasteryStatus } from '$lib/types/exercise-mastery';
@@ -64,9 +63,12 @@
 
 		<div class="flex items-center gap-2">
 			{#if hasCorrection}
-				<CheckCircle class="h-4 w-4 text-green-600" />
-			{:else}
-				<FileText class="h-4 w-4 text-muted-foreground" />
+				<Badge
+					variant="outline"
+					class="border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300"
+				>
+					Correction
+				</Badge>
 			{/if}
 
 			{#if pointsLabel}
