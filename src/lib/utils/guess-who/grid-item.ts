@@ -12,16 +12,25 @@
  * @module utils/guess-who/grid-item
  */
 
-import type { Fraction } from './fraction-properties';
-import { fractionToUbumark, fractionsEqual } from './fraction-properties';
-import type { Shape2D } from './shape2d-properties';
-import { shape2DToSVG } from './shape2d-properties';
-import type { AlgebraicExpression } from './expression-properties';
-import { expressionToUbumark, expressionsEqual } from './expression-properties';
-import type { FunctionGraph } from './function-properties';
-import { functionToUbumark, functionsEqual } from './function-properties';
-import type { Polyhedron } from './polyhedron-properties';
-import { polyhedronToUbumark, polyhedraEqual } from './polyhedron-properties';
+import type { Fraction, FractionQuestionType } from './fraction-properties';
+import { fractionToUbumark, fractionsEqual, checkFractionProperty } from './fraction-properties';
+import type { Shape2D, Shape2DQuestionType } from './shape2d-properties';
+import { shape2DToSVG, checkShape2DProperty } from './shape2d-properties';
+import type { AlgebraicExpression, ExpressionQuestionType } from './expression-properties';
+import {
+	expressionToUbumark,
+	expressionsEqual,
+	checkExpressionProperty
+} from './expression-properties';
+import type { FunctionGraph, FunctionQuestionType } from './function-properties';
+import { functionToUbumark, functionsEqual, checkFunctionProperty } from './function-properties';
+import type { Polyhedron, PolyhedronQuestionType } from './polyhedron-properties';
+import {
+	polyhedronToUbumark,
+	polyhedraEqual,
+	checkPolyhedronProperty
+} from './polyhedron-properties';
+import { checkProperty, type QuestionType } from './math-properties';
 
 // ============================================================================
 // GRID ITEM TYPES
@@ -63,6 +72,8 @@ export interface Shape2DGridItem {
 	nameFr: string;
 	/** SVG path data for rendering */
 	svgPath: string;
+	/** Full shape data for property checking */
+	shape: Shape2D;
 }
 
 /**
@@ -72,6 +83,8 @@ export interface ExpressionGridItem {
 	type: 'expression';
 	/** LaTeX representation */
 	latex: string;
+	/** Full expression data for property checking */
+	expression: AlgebraicExpression;
 }
 
 /**
@@ -81,6 +94,8 @@ export interface FunctionGridItem {
 	type: 'function';
 	/** LaTeX representation of the function */
 	latex: string;
+	/** Full function data for property checking */
+	graph: FunctionGraph;
 }
 
 /**
@@ -100,6 +115,8 @@ export interface PolyhedronGridItem {
 	edgeCount: number;
 	/** Is a regular polyhedron (Platonic solid) */
 	isRegular: boolean;
+	/** Full polyhedron data for property checking */
+	polyhedron: Polyhedron;
 }
 
 /**
@@ -202,7 +219,8 @@ export function shape2DItemFrom(shape: Shape2D): Shape2DGridItem {
 		isConvex: shape.isConvex,
 		hasRightAngle: shape.hasRightAngles,
 		nameFr: shape.nameFr,
-		svgPath: svg.path
+		svgPath: svg.path,
+		shape
 	};
 }
 
@@ -212,7 +230,8 @@ export function shape2DItemFrom(shape: Shape2D): Shape2DGridItem {
 export function expressionItemFrom(expr: AlgebraicExpression): ExpressionGridItem {
 	return {
 		type: 'expression',
-		latex: expr.latex
+		latex: expr.latex,
+		expression: expr
 	};
 }
 
@@ -222,7 +241,8 @@ export function expressionItemFrom(expr: AlgebraicExpression): ExpressionGridIte
 export function functionItemFrom(fn: FunctionGraph): FunctionGridItem {
 	return {
 		type: 'function',
-		latex: fn.latex
+		latex: fn.latex,
+		graph: fn
 	};
 }
 
@@ -237,7 +257,8 @@ export function polyhedronItemFrom(p: Polyhedron): PolyhedronGridItem {
 		faceCount: p.faceCount,
 		vertexCount: p.vertexCount,
 		edgeCount: p.edgeCount,
-		isRegular: p.isRegular
+		isRegular: p.isRegular,
+		polyhedron: p
 	};
 }
 
@@ -443,4 +464,99 @@ export function gridItemsToNumbers(items: GridItem[]): number[] {
 		}
 		return item.value;
 	});
+}
+
+// ============================================================================
+// POLYMORPHIC QUESTION CHECKING
+// ============================================================================
+
+/**
+ * Union type for all question types
+ */
+export type AnyQuestionType =
+	| QuestionType
+	| FractionQuestionType
+	| Shape2DQuestionType
+	| ExpressionQuestionType
+	| FunctionQuestionType
+	| PolyhedronQuestionType;
+
+/**
+ * Check if a grid item satisfies a question/property
+ * Dispatches to the appropriate type-specific checker based on item type
+ *
+ * @param item - The grid item to check
+ * @param questionType - The question type (must match the item type)
+ * @param param - Optional parameter for questions that require one
+ * @returns true if the item satisfies the property
+ * @throws Error if question type doesn't match item type
+ */
+export function checkQuestion(
+	item: GridItem,
+	questionType: AnyQuestionType,
+	param?: number | string
+): boolean {
+	switch (item.type) {
+		case 'number':
+			return checkProperty(item.value, questionType as QuestionType, param as number);
+
+		case 'fraction':
+			return checkFractionProperty(
+				{ numerator: item.numerator, denominator: item.denominator },
+				questionType as FractionQuestionType,
+				param as number
+			);
+
+		case 'shape2d':
+			return checkShape2DProperty(item.shape, questionType as Shape2DQuestionType, param as number);
+
+		case 'expression':
+			return checkExpressionProperty(
+				item.expression,
+				questionType as ExpressionQuestionType,
+				param as number | string
+			);
+
+		case 'function':
+			return checkFunctionProperty(
+				item.graph,
+				questionType as FunctionQuestionType,
+				param as number
+			);
+
+		case 'polyhedron':
+			return checkPolyhedronProperty(
+				item.polyhedron,
+				questionType as PolyhedronQuestionType,
+				param as number
+			);
+	}
+}
+
+// ============================================================================
+// SECRET ITEM SELECTION
+// ============================================================================
+
+/**
+ * Pick two different random items from the grid as secret items
+ * @param grid - Array of grid items
+ * @returns Tuple of [secret1, secret2]
+ */
+export function assignSecretItems(grid: GridItem[]): [GridItem, GridItem] {
+	if (grid.length < 2) {
+		throw new Error('Grid must contain at least 2 items');
+	}
+
+	// Pick first secret item
+	const index1 = Math.floor(Math.random() * grid.length);
+	const secret1 = grid[index1];
+
+	// Pick second secret item (different from first)
+	let index2 = Math.floor(Math.random() * grid.length);
+	while (index2 === index1) {
+		index2 = Math.floor(Math.random() * grid.length);
+	}
+	const secret2 = grid[index2];
+
+	return [secret1, secret2];
 }

@@ -5,7 +5,7 @@
  */
 
 import type { QuestionType } from '$lib/utils/guess-who/math-properties';
-import type { GridItem, GridItemType } from '$lib/utils/guess-who/grid-item';
+import type { GridItem, GridItemType, AnyQuestionType } from '$lib/utils/guess-who/grid-item';
 import type { FractionQuestionType } from '$lib/utils/guess-who/fraction-properties';
 import { generateUniqueFractions } from '$lib/utils/guess-who/fraction-properties';
 import type { Shape2DQuestionType } from '$lib/utils/guess-who/shape2d-properties';
@@ -26,7 +26,8 @@ import {
 
 // Re-export for convenience
 export type { QuestionType } from '$lib/utils/guess-who/math-properties';
-export type { GridItem, GridItemType } from '$lib/utils/guess-who/grid-item';
+export type { GridItem, GridItemType, AnyQuestionType } from '$lib/utils/guess-who/grid-item';
+export { checkQuestion, assignSecretItems } from '$lib/utils/guess-who/grid-item';
 
 // ============================================================================
 // GAME PACKS
@@ -63,17 +64,6 @@ export type GamePackId =
 	| 'polyhedra_5eme' // 5ème: Basic solids
 	| 'polyhedra_4eme' // 4ème: Platonic + prisms
 	| 'polyhedra_3eme'; // 3ème: All polyhedra
-
-/**
- * All question types across all pack types
- */
-export type AnyQuestionType =
-	| QuestionType
-	| FractionQuestionType
-	| Shape2DQuestionType
-	| ExpressionQuestionType
-	| FunctionQuestionType
-	| PolyhedronQuestionType;
 
 /**
  * Levels available for packs
