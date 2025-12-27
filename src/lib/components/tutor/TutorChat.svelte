@@ -33,6 +33,7 @@
 -->
 
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -90,11 +91,18 @@
 	let typingMessageIndex = $state<number | null>(null);
 	let displayedText = $state<Record<number, string>>({});
 	let helpLevel = $state(initialHelpLevel);
-	let remaining = $state({ exercise: 15, hour: 30, day: 100 });
+	let remaining = $state<{ exercise: number | null; hour: number; day: number }>({
+		exercise: null,
+		hour: 30,
+		day: 100
+	});
 
 	// Persistence state
 	let conversationId = $state<string | null>(null);
 	let isLoadingConversation = $state(false);
+
+	// Track current exercise to avoid race conditions
+	let currentExerciseId = $state<string | null>(null);
 
 	// Refs
 	let messagesContainer: HTMLDivElement | undefined;
@@ -257,28 +265,78 @@
 		}
 	});
 
+	// Fetch remaining quotas for an exercise
+	async function fetchRemainingQuotas(exerciseId: string) {
+		try {
+			const response = await fetch(`/api/tutor/remaining?exerciseId=${exerciseId}`);
+			if (response.ok) {
+				const data = await response.json();
+				if (data.remaining) {
+					remaining = data.remaining;
+				}
+			}
+		} catch (error) {
+			console.error('Error fetching remaining quotas:', error);
+		}
+	}
+
 	// Find or create conversation when exercise/assignment change
 	async function findOrCreateConversation() {
 		if (!exerciseContext?.exerciseId || !assignmentId) return;
 
+		// Prevent re-triggering if already loading this exercise
+		if (currentExerciseId === exerciseContext.exerciseId) return;
+
+		// Store the exerciseId we're loading for
+		const loadingExerciseId = exerciseContext.exerciseId;
+		currentExerciseId = loadingExerciseId;
+
+		// Reset state for new exercise
+		messages = [];
+		conversationId = null;
+		helpLevel = initialHelpLevel;
+		// Don't read remaining here - it would create a dependency loop
+		// The actual values will be fetched from the API
+		remaining = { exercise: null, hour: 30, day: 100 };
+
 		isLoadingConversation = true;
 		try {
+			// Fetch remaining quotas in parallel with conversation lookup
+			const quotasPromise = fetchRemainingQuotas(loadingExerciseId);
+
 			// Try to find existing conversation
 			const searchParams = new URLSearchParams({
-				exerciseId: exerciseContext.exerciseId,
+				exerciseId: loadingExerciseId,
 				assignmentId: assignmentId
 			});
 			const getResponse = await fetch(`/api/tutor/conversations?${searchParams}`);
+
+			// Check if exercise changed during fetch (race condition)
+			if (currentExerciseId !== loadingExerciseId) {
+				return; // Abort - user switched to different exercise
+			}
 
 			if (getResponse.ok) {
 				const data = await getResponse.json();
 				if (data.conversation) {
 					conversationId = data.conversation.id;
-					// Load existing messages
-					await loadMessages(data.conversation.id);
+					// Load existing messages (race condition check is inside loadMessages)
+					await loadMessages(data.conversation.id, loadingExerciseId);
+
+					// Check again after loading messages
+					if (currentExerciseId !== loadingExerciseId) {
+						return;
+					}
+
 					onConversationCreated?.(data.conversation.id);
+					await quotasPromise; // Wait for quotas
 					return;
 				}
+			}
+
+			// Check if exercise changed before creating
+			if (currentExerciseId !== loadingExerciseId) {
+				return;
 			}
 
 			// Create new conversation
@@ -286,29 +344,45 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					exerciseId: exerciseContext.exerciseId,
+					exerciseId: loadingExerciseId,
 					assignmentId: assignmentId,
 					statement: exerciseContext.statement,
 					topic: exerciseContext.topic
 				})
 			});
 
+			// Check if exercise changed during creation
+			if (currentExerciseId !== loadingExerciseId) {
+				return;
+			}
+
 			if (postResponse.ok) {
 				const data = await postResponse.json();
 				conversationId = data.conversation.id;
 				onConversationCreated?.(data.conversation.id);
 			}
+
+			await quotasPromise; // Wait for quotas
 		} catch (error) {
 			console.error('Error finding/creating conversation:', error);
 		} finally {
-			isLoadingConversation = false;
+			// Only clear loading if we're still on the same exercise
+			if (currentExerciseId === exerciseContext?.exerciseId) {
+				isLoadingConversation = false;
+			}
 		}
 	}
 
 	// Load messages for a conversation
-	async function loadMessages(convId: string) {
+	async function loadMessages(convId: string, expectedExerciseId: string) {
 		try {
 			const response = await fetch(`/api/tutor/conversations/${convId}/messages`);
+
+			// Check for race condition before updating state
+			if (currentExerciseId !== expectedExerciseId) {
+				return;
+			}
+
 			if (response.ok) {
 				const data = await response.json();
 				// Convert API messages to local Message format
@@ -327,13 +401,13 @@
 	}
 
 	// Effect to load conversation when props change
+	// Dependencies: exerciseContext?.exerciseId, assignmentId
+	// Uses untrack to prevent tracking state reads inside the function
 	$effect(() => {
-		if (exerciseContext?.exerciseId && assignmentId) {
-			// Reset state for new exercise
-			messages = [];
-			conversationId = null;
-			helpLevel = initialHelpLevel;
-			findOrCreateConversation();
+		const exerciseId = exerciseContext?.exerciseId;
+		const assignment = assignmentId;
+		if (exerciseId && assignment) {
+			untrack(() => findOrCreateConversation());
 		}
 	});
 
