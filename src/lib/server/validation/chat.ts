@@ -124,9 +124,9 @@ const exerciseContextSchema = z.object({
 	attempts: z
 		.array(
 			z.object({
-				answer: z.string().max(1000, 'Réponse trop longue (max 1000 caractères)'),
+				answer: z.string().max(1000, 'Réponse trop longue (max 1000 caractères)').optional(),
 				isCorrect: z.boolean(),
-				timestamp: z.string().datetime('Timestamp invalide')
+				timestamp: z.string().datetime('Timestamp invalide').optional()
 			})
 		)
 		.max(20, 'Trop de tentatives dans le contexte (max 20)')

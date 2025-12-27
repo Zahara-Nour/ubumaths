@@ -174,7 +174,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const model = 'llama-3.3-70b-versatile';
 
 			// Call Groq API
-			const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+			const response = await fetch(env.GROQ_API_URL, {
 				method: 'POST',
 				headers: {
 					Authorization: `Bearer ${env.GROQ_API_KEY}`,
@@ -221,7 +221,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					};
 
 			// 10. Log to ai_chat_usage table (async, non-blocking)
-			Promise.resolve().then(async () => {
+			// Intentionally fire-and-forget: logging should not block response
+			void (async () => {
 				try {
 					await locals.supabase.from('ai_chat_usage').insert({
 						user_id: user.id,
@@ -234,7 +235,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				} catch (logError) {
 					console.error('Failed to log AI chat usage:', logError);
 				}
-			});
+			})();
 
 			// 11. Persist messages to tutor_messages if conversationId is provided
 			// Uses locals.supabase which respects RLS (user must own the conversation)
@@ -344,7 +345,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			: 'llama-3.3-70b-versatile';
 
 		// Call Groq API
-		const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+		const response = await fetch(env.GROQ_API_URL, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${env.GROQ_API_KEY}`,
@@ -374,7 +375,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const responseMessage = data.choices[0].message.content;
 
 		// Log usage to database (async, non-blocking)
-		Promise.resolve().then(async () => {
+		// Intentionally fire-and-forget: logging should not block response
+		void (async () => {
 			try {
 				await locals.supabase.from('ai_chat_usage').insert({
 					user_id: user.id,
@@ -388,7 +390,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				// Non-blocking error - don't fail the request
 				console.error('Failed to log AI chat usage:', logError);
 			}
-		});
+		})();
 
 		return json({
 			message: responseMessage

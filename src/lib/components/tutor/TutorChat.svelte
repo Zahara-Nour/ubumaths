@@ -43,6 +43,10 @@
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import TutorUsageIndicator from './TutorUsageIndicator.svelte';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
+	import { TUTOR_MAX_HELP_LEVEL } from '$lib/config/tutor-limits';
+	import { createLogger } from '$lib/utils/logger';
+
+	const logger = createLogger('TutorChat');
 
 	interface ExerciseContext {
 		exerciseId?: string;
@@ -98,6 +102,9 @@
 		day: 100
 	});
 
+	// Error state for graceful degradation
+	let componentError = $state<string | null>(null);
+
 	// Persistence state
 	let conversationId = $state<string | null>(null);
 	let isLoadingConversation = $state(false);
@@ -107,6 +114,9 @@
 
 	// Typing animation cleanup
 	let typingAnimationTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+	// AbortController for fetch requests
+	let abortController: AbortController | null = null;
 
 	// Refs
 	let messagesContainer: HTMLDivElement | undefined;
@@ -175,6 +185,9 @@
 
 	// Start typing animation
 	function startTypingAnimation(messageIndex: number, fullText: string) {
+		// Guard: Don't animate if message already exists with full text
+		if (displayedText[messageIndex] === fullText) return;
+
 		// Cancel any previous animation
 		cancelTypingAnimation();
 
@@ -248,10 +261,11 @@
 		}
 	}
 
-	// Cleanup typing animation on component destroy
+	// Cleanup typing animation and abort pending requests on component destroy
 	$effect(() => {
 		return () => {
 			cancelTypingAnimation();
+			abortController?.abort();
 		};
 	});
 
@@ -310,7 +324,7 @@
 				}
 			}
 		} catch (error) {
-			console.error('Error fetching remaining quotas:', error);
+			logger.warn('Error fetching remaining quotas:', error);
 		}
 	}
 
@@ -425,7 +439,8 @@
 
 			await quotasPromise; // Wait for quotas
 		} catch (error) {
-			console.error('[TutorChat] Error finding/creating conversation:', error);
+			logger.error('Error finding/creating conversation:', error);
+			componentError = 'Erreur lors du chargement de la conversation. Veuillez rafraîchir la page.';
 		} finally {
 			// Only clear loading if we're still on the same exercise
 			if (currentExerciseId === exerciseContext?.exerciseId) {
@@ -458,7 +473,7 @@
 				);
 			}
 		} catch (error) {
-			console.error('[TutorChat] Error loading messages:', error);
+			logger.error('Error loading messages:', error);
 		}
 	}
 
@@ -484,6 +499,10 @@
 	async function sendMessage(text: string) {
 		if (!text.trim() || isLoading) return;
 
+		// Cancel any pending request
+		abortController?.abort();
+		abortController = new AbortController();
+
 		// Add user message
 		const userMessage: Message = {
 			id: `local-user-${Date.now()}`,
@@ -508,7 +527,8 @@
 			const response = await fetch('/api/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(requestBody)
+				body: JSON.stringify(requestBody),
+				signal: abortController.signal
 			});
 
 			if (!response.ok) {
@@ -523,9 +543,9 @@
 				remaining = data.tutorMetadata.remaining;
 			}
 
-			// Increment help level for next message (capped at 7)
+			// Increment help level for next message (capped at max level)
 			if (!data.tutorMetadata?.cheatDetected) {
-				helpLevel = Math.min(helpLevel + 1, 7);
+				helpLevel = Math.min(helpLevel + 1, TUTOR_MAX_HELP_LEVEL);
 			}
 
 			// Add assistant response
@@ -545,7 +565,12 @@
 			// Start typing animation
 			startTypingAnimation(newMessageIndex, data.message);
 		} catch (error) {
-			console.error('Tutor Error:', error);
+			// Ignore aborted requests - they're intentional
+			if (error instanceof Error && error.name === 'AbortError') {
+				return;
+			}
+
+			logger.error('Tutor API error:', error);
 			const errorMsg = error instanceof Error ? error.message : 'Une erreur est survenue';
 			toaster.error(errorMsg);
 
@@ -579,213 +604,234 @@
 	}
 </script>
 
-<div class="flex h-full flex-col rounded-lg border border-border bg-card shadow-lg">
-	<!-- Header -->
+{#if componentError}
+	<!-- Error Fallback UI -->
 	<div
-		class="flex items-center justify-between gap-3 rounded-t-lg border-b border-border bg-primary p-4 text-primary-foreground"
+		class="flex h-full flex-col items-center justify-center rounded-lg border border-destructive bg-destructive/10 p-8 text-center"
 	>
-		<div class="flex items-center gap-3">
-			<HelpCircle class="h-5 w-5" />
-			<div>
-				<h2
-					class="font-semibold"
-					style="font-size: calc(1.125rem * var(--font-scale)); line-height: calc(1.5rem * var(--font-scale));"
-				>
-					Père Ubu - Tuteur
-				</h2>
-				{#if exerciseContext}
-					<p
-						class="opacity-90"
-						style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
-					>
-						Aide sur l'exercice
-					</p>
-				{/if}
-			</div>
-		</div>
-		<Button
-			variant="ghost"
-			size="icon"
-			onclick={clearHistory}
-			disabled={messages.length === 0}
-			class="text-primary-foreground hover:bg-white/20"
-			title="Effacer la conversation"
-			aria-label="Effacer la conversation"
+		<div class="mb-4 text-4xl">😵</div>
+		<h3 class="mb-2 font-semibold text-destructive">Oups ! Une erreur est survenue</h3>
+		<p class="mb-4 text-muted-foreground">{componentError}</p>
+		<button
+			type="button"
+			class="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+			onclick={() => {
+				componentError = null;
+				findOrCreateConversation();
+			}}
 		>
-			<Trash2 class="h-5 w-5" aria-hidden="true" />
-		</Button>
+			Réessayer
+		</button>
 	</div>
-
-	<!-- Usage Indicator -->
-	<div class="border-b border-border bg-muted/30 px-4 py-2">
-		<TutorUsageIndicator {remaining} />
-	</div>
-
-	<!-- Messages Container -->
-	<div
-		bind:this={messagesContainer}
-		class="flex-1 space-y-4 overflow-y-auto bg-muted/30 p-4"
-		style="max-height: calc(100vh - 320px); min-height: 300px;"
-		role="log"
-		aria-label="Historique de la conversation avec le tuteur"
-		aria-live="polite"
-	>
-		{#if messages.length === 0}
-			<div class="flex h-full items-center justify-center text-center">
-				<div class="space-y-4">
-					<div class="text-6xl">🎓</div>
-					<div class="text-muted-foreground">
+{:else}
+	<div class="flex h-full flex-col rounded-lg border border-border bg-card shadow-lg">
+		<!-- Header -->
+		<div
+			class="flex items-center justify-between gap-3 rounded-t-lg border-b border-border bg-primary p-4 text-primary-foreground"
+		>
+			<div class="flex items-center gap-3">
+				<HelpCircle class="h-5 w-5" />
+				<div>
+					<h2
+						class="font-semibold"
+						style="font-size: calc(1.125rem * var(--font-scale)); line-height: calc(1.5rem * var(--font-scale));"
+					>
+						Père Ubu - Tuteur
+					</h2>
+					{#if exerciseContext}
 						<p
-							class="font-medium"
-							style="font-size: calc(1.125rem * var(--font-scale)); line-height: calc(1.75rem * var(--font-scale));"
+							class="opacity-90"
+							style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
 						>
-							Bienvenue dans ma salle de tutorat !
+							Aide sur l'exercice
 						</p>
-						<p
-							class="mt-1"
-							style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
-						>
-							Je vais t'aider à comprendre sans te donner la réponse.
-						</p>
-					</div>
+					{/if}
 				</div>
 			</div>
-		{/if}
+			<Button
+				variant="ghost"
+				size="icon"
+				onclick={clearHistory}
+				disabled={messages.length === 0}
+				class="text-primary-foreground hover:bg-white/20"
+				title="Effacer la conversation"
+				aria-label="Effacer la conversation"
+			>
+				<Trash2 class="h-5 w-5" aria-hidden="true" />
+			</Button>
+		</div>
 
-		{#each messages as message, index (message.id)}
-			<div class="flex gap-3 {message.role === 'user' ? 'justify-end' : 'justify-start'}">
-				{#if message.role === 'assistant'}
+		<!-- Usage Indicator -->
+		<div class="border-b border-border bg-muted/30 px-4 py-2">
+			<TutorUsageIndicator {remaining} isLoading={isLoadingConversation} />
+		</div>
+
+		<!-- Messages Container -->
+		<div
+			bind:this={messagesContainer}
+			class="flex-1 space-y-4 overflow-y-auto bg-muted/30 p-4"
+			style="max-height: calc(100vh - 320px); min-height: 300px;"
+			role="log"
+			aria-label="Historique de la conversation avec le tuteur"
+			aria-live="polite"
+		>
+			{#if messages.length === 0}
+				<div class="flex h-full items-center justify-center text-center">
+					<div class="space-y-4">
+						<div class="text-6xl">🎓</div>
+						<div class="text-muted-foreground">
+							<p
+								class="font-medium"
+								style="font-size: calc(1.125rem * var(--font-scale)); line-height: calc(1.75rem * var(--font-scale));"
+							>
+								Bienvenue dans ma salle de tutorat !
+							</p>
+							<p
+								class="mt-1"
+								style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+							>
+								Je vais t'aider à comprendre sans te donner la réponse.
+							</p>
+						</div>
+					</div>
+				</div>
+			{/if}
+
+			{#each messages as message, index (message.id)}
+				<div class="flex gap-3 {message.role === 'user' ? 'justify-end' : 'justify-start'}">
+					{#if message.role === 'assistant'}
+						<Avatar.Root
+							class="h-12 w-12 flex-shrink-0 transition-transform duration-300"
+							style="transform: rotate({message.avatarRotation ?? 0}deg);"
+						>
+							<Avatar.Image src={pereUbuImage} alt="Père Ubu" />
+							<Avatar.Fallback class="text-lg">🎓</Avatar.Fallback>
+						</Avatar.Root>
+					{/if}
+
+					{#if message.role === 'assistant' && message.isTyping}
+						<button
+							type="button"
+							class="max-w-[80%] cursor-pointer space-y-2 rounded-lg border border-border bg-card p-3 text-left shadow-sm transition-colors hover:bg-muted/50"
+							onclick={() => skipTypingAnimation(index)}
+							aria-label="Cliquez pour afficher le message complet"
+						>
+							<div
+								class="leading-relaxed break-words"
+								style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+							>
+								<MarkdownRenderer
+									content={convertLegacyLatexToMarkdown(getDisplayedText(index, message) || '')}
+								/>
+								{#if isMessageTyping(index)}
+									<span class="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-current"></span>
+								{/if}
+							</div>
+
+							<div
+								class="text-right text-muted-foreground"
+								style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
+							>
+								{new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+									hour: '2-digit',
+									minute: '2-digit'
+								})}
+							</div>
+						</button>
+					{:else}
+						<div
+							class="max-w-[80%] space-y-2 rounded-lg p-3 shadow-sm {message.role === 'user'
+								? 'bg-primary text-primary-foreground'
+								: 'border border-border bg-card'}"
+						>
+							<div
+								class="leading-relaxed break-words"
+								style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+							>
+								<MarkdownRenderer
+									content={convertLegacyLatexToMarkdown(getDisplayedText(index, message) || '')}
+								/>
+							</div>
+
+							<div
+								class="text-right {message.role === 'user'
+									? 'text-primary-foreground/70'
+									: 'text-muted-foreground'}"
+								style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
+							>
+								{new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+									hour: '2-digit',
+									minute: '2-digit'
+								})}
+							</div>
+						</div>
+					{/if}
+
+					{#if message.role === 'user'}
+						<Avatar.Root class="h-12 w-12 flex-shrink-0">
+							<Avatar.Image src="" alt="Élève" />
+							<Avatar.Fallback class="bg-muted">
+								<User class="h-6 w-6 text-muted-foreground" />
+							</Avatar.Fallback>
+						</Avatar.Root>
+					{/if}
+				</div>
+			{/each}
+
+			{#if isLoading}
+				<div class="flex justify-start gap-3">
 					<Avatar.Root
-						class="h-12 w-12 flex-shrink-0 transition-transform duration-300"
-						style="transform: rotate({message.avatarRotation ?? 0}deg);"
+						class="h-12 w-12 flex-shrink-0 transition-transform"
+						style="transform: rotate({loadingRotation}deg);"
 					>
 						<Avatar.Image src={pereUbuImage} alt="Père Ubu" />
 						<Avatar.Fallback class="text-lg">🎓</Avatar.Fallback>
 					</Avatar.Root>
-				{/if}
 
-				{#if message.role === 'assistant' && message.isTyping}
-					<button
-						type="button"
-						class="max-w-[80%] cursor-pointer space-y-2 rounded-lg border border-border bg-card p-3 text-left shadow-sm transition-colors hover:bg-muted/50"
-						onclick={() => skipTypingAnimation(index)}
-						aria-label="Cliquez pour afficher le message complet"
-					>
-						<div
-							class="leading-relaxed break-words"
-							style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
-						>
-							<MarkdownRenderer
-								content={convertLegacyLatexToMarkdown(getDisplayedText(index, message) || '')}
-							/>
-							{#if isMessageTyping(index)}
-								<span class="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-current"></span>
-							{/if}
-						</div>
-
-						<div
-							class="text-right text-muted-foreground"
-							style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
-						>
-							{new Date(message.timestamp).toLocaleTimeString('fr-FR', {
-								hour: '2-digit',
-								minute: '2-digit'
-							})}
-						</div>
-					</button>
-				{:else}
-					<div
-						class="max-w-[80%] space-y-2 rounded-lg p-3 shadow-sm {message.role === 'user'
-							? 'bg-primary text-primary-foreground'
-							: 'border border-border bg-card'}"
-					>
-						<div
-							class="leading-relaxed break-words"
-							style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
-						>
-							<MarkdownRenderer
-								content={convertLegacyLatexToMarkdown(getDisplayedText(index, message) || '')}
-							/>
-						</div>
-
-						<div
-							class="text-right {message.role === 'user'
-								? 'text-primary-foreground/70'
-								: 'text-muted-foreground'}"
-							style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
-						>
-							{new Date(message.timestamp).toLocaleTimeString('fr-FR', {
-								hour: '2-digit',
-								minute: '2-digit'
-							})}
-						</div>
-					</div>
-				{/if}
-
-				{#if message.role === 'user'}
-					<Avatar.Root class="h-12 w-12 flex-shrink-0">
-						<Avatar.Image src="" alt="Élève" />
-						<Avatar.Fallback class="bg-muted">
-							<User class="h-6 w-6 text-muted-foreground" />
-						</Avatar.Fallback>
-					</Avatar.Root>
-				{/if}
-			</div>
-		{/each}
-
-		{#if isLoading}
-			<div class="flex justify-start gap-3">
-				<Avatar.Root
-					class="h-12 w-12 flex-shrink-0 transition-transform"
-					style="transform: rotate({loadingRotation}deg);"
-				>
-					<Avatar.Image src={pereUbuImage} alt="Père Ubu" />
-					<Avatar.Fallback class="text-lg">🎓</Avatar.Fallback>
-				</Avatar.Root>
-
-				<div class="max-w-[80%] rounded-lg border border-border bg-card p-3 shadow-sm">
-					<div class="flex items-center gap-2">
-						<div class="flex gap-1">
-							<span class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"></span>
+					<div class="max-w-[80%] rounded-lg border border-border bg-card p-3 shadow-sm">
+						<div class="flex items-center gap-2">
+							<div class="flex gap-1">
+								<span class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"></span>
+								<span
+									class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
+									style="animation-delay: 0.2s"
+								></span>
+								<span
+									class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
+									style="animation-delay: 0.4s"
+								></span>
+							</div>
 							<span
-								class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
-								style="animation-delay: 0.2s"
-							></span>
-							<span
-								class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
-								style="animation-delay: 0.4s"
-							></span>
+								class="text-muted-foreground"
+								style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
+								>Le Père Ubu réfléchit...</span
+							>
 						</div>
-						<span
-							class="text-muted-foreground"
-							style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
-							>Le Père Ubu réfléchit...</span
-						>
 					</div>
 				</div>
-			</div>
-		{/if}
-	</div>
+			{/if}
+		</div>
 
-	<!-- Input Area -->
-	<div class="border-t border-border bg-card p-2">
-		{#if isLoadingConversation}
-			<div
-				class="flex items-center justify-center py-4 text-muted-foreground"
-				role="status"
-				aria-live="polite"
-			>
-				<span class="animate-pulse">Chargement de la conversation...</span>
-			</div>
-		{:else}
-			<RichTextEditor
-				mode="chat"
-				onSend={handleRichTextSend}
-				mathTemplates="full"
-				disabled={isLoading}
-				minHeight="60px"
-				enterToSend
-			/>
-		{/if}
+		<!-- Input Area -->
+		<div class="border-t border-border bg-card p-2">
+			{#if isLoadingConversation}
+				<div
+					class="flex items-center justify-center py-4 text-muted-foreground"
+					role="status"
+					aria-live="polite"
+				>
+					<span class="animate-pulse">Chargement de la conversation...</span>
+				</div>
+			{:else}
+				<RichTextEditor
+					mode="chat"
+					onSend={handleRichTextSend}
+					mathTemplates="full"
+					disabled={isLoading}
+					minHeight="60px"
+					enterToSend
+				/>
+			{/if}
+		</div>
 	</div>
-</div>
+{/if}

@@ -35,9 +35,10 @@
 			hour: number;
 			day: number;
 		};
+		isLoading?: boolean;
 	}
 
-	let { remaining }: Props = $props();
+	let { remaining, isLoading = false }: Props = $props();
 
 	// Derived values for percentage calculations (for future visual bars if needed)
 	const exercisePercent = $derived(
@@ -67,6 +68,11 @@
 		>
 			<span class="text-sm">📝</span>
 			<span class="font-medium">{remaining.exercise}/{TUTOR_MAX_PER_EXERCISE}</span>
+		</span>
+	{:else if isLoading}
+		<span class="flex items-center gap-1 text-muted-foreground" title="Chargement des quotas...">
+			<span class="text-sm">📝</span>
+			<span class="animate-pulse font-medium">--/{TUTOR_MAX_PER_EXERCISE}</span>
 		</span>
 	{/if}
 	<span

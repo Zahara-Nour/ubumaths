@@ -556,41 +556,18 @@ export async function incrementTutorUsage(userId: string, exerciseId?: string): 
 	const now = new Date();
 
 	try {
-		// Helper to upsert a rate limit entry
-		// Uses ON CONFLICT to increment count if key exists, or insert new entry
-		const upsertEntry = async (key: string, expiresAt: Date) => {
-			// First try to update existing entry
-			const { data: existing } = await supabase
-				.from('rate_limits')
-				.select('id, count, expires_at')
-				.eq('key', key)
-				.gte('expires_at', now.toISOString())
-				.maybeSingle();
+		// Helper to atomically increment a rate limit entry using RPC
+		// This prevents TOCTOU race conditions by using a single atomic operation
+		// Note: The function is defined in migration 20251227160535_atomic_rate_limit_increment.sql
+		const incrementEntry = async (key: string, expiresAt: Date) => {
+			// Type assertion needed until database types are regenerated after migration
+			const { error } = await (supabase.rpc as CallableFunction)('increment_rate_limit', {
+				p_key: key,
+				p_expires_at: expiresAt.toISOString()
+			});
 
-			if (existing) {
-				// Update existing entry - increment count
-				const { error } = await supabase
-					.from('rate_limits')
-					.update({ count: existing.count + 1 })
-					.eq('id', existing.id);
-
-				if (error) {
-					logger.error('Erreur update rate limit tuteur:', { key, error });
-				}
-			} else {
-				// Insert new entry (or update expired one)
-				const { error } = await supabase.from('rate_limits').upsert(
-					{
-						key,
-						count: 1,
-						expires_at: expiresAt.toISOString()
-					},
-					{ onConflict: 'key' }
-				);
-
-				if (error) {
-					logger.error('Erreur upsert rate limit tuteur:', { key, error });
-				}
+			if (error) {
+				logger.error('Erreur increment rate limit tuteur:', { key, error });
 			}
 		};
 
@@ -598,7 +575,7 @@ export async function incrementTutorUsage(userId: string, exerciseId?: string): 
 		if (exerciseId) {
 			const exerciseKey = `tutor:exercise:${userId}:${exerciseId}`;
 			const exerciseExpiry = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 jours
-			await upsertEntry(exerciseKey, exerciseExpiry);
+			await incrementEntry(exerciseKey, exerciseExpiry);
 		}
 
 		// 2. Heure - expire dans 60 minutes
@@ -606,12 +583,12 @@ export async function incrementTutorUsage(userId: string, exerciseId?: string): 
 		const hourExpiry = new Date(
 			now.getTime() + TUTOR_RATE_LIMITS.perHour.windowMinutes * 60 * 1000
 		);
-		await upsertEntry(hourKey, hourExpiry);
+		await incrementEntry(hourKey, hourExpiry);
 
 		// 3. Jour - expire dans 1440 minutes (24h)
 		const dayKey = `tutor:day:${userId}`;
 		const dayExpiry = new Date(now.getTime() + TUTOR_RATE_LIMITS.perDay.windowMinutes * 60 * 1000);
-		await upsertEntry(dayKey, dayExpiry);
+		await incrementEntry(dayKey, dayExpiry);
 
 		logger.trace('Compteurs tuteur incrémentés', {
 			userId: maskKey(`user:${userId}`),
