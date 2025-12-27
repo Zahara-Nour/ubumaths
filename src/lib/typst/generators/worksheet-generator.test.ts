@@ -57,6 +57,7 @@ const createMockInstance = (overrides?: Partial<InstanceData>): InstanceData => 
 	exercises: [
 		{
 			exercise_id: 'ex-1',
+			title: 'Equation lineaire',
 			position: 1,
 			parameters: {},
 			statement: 'Solve for x: 2x + 3 = 7',
@@ -64,6 +65,7 @@ const createMockInstance = (overrides?: Partial<InstanceData>): InstanceData => 
 		},
 		{
 			exercise_id: 'ex-2',
+			title: null,
 			position: 2,
 			parameters: {},
 			statement: 'Calculate: 3 * 4 + 5',

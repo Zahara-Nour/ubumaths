@@ -166,6 +166,8 @@ export interface TemplatePlaceholder {
 
 export interface ResolvedExercise {
 	exercise_id: string;
+	/** Exercise title (displayed next to the exercise number) */
+	title: string | null;
 	position: number;
 	parameters: Record<string, number | string>;
 	statement: string;
@@ -575,6 +577,8 @@ export interface WorksheetAssignmentWithRelations extends WorksheetAssignmentRow
 export interface StudentExerciseView {
 	id: string;
 	exercise_id: string;
+	/** Exercise title (displayed next to the exercise number) */
+	title: string | null;
 	position: number;
 	points: number | null;
 	custom_instructions: string | null;
