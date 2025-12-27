@@ -15,7 +15,8 @@
 import type { Fraction } from './fraction-properties';
 import { fractionToUbumark, fractionsEqual } from './fraction-properties';
 import type { Shape2D } from './shape2d-properties';
-import type { Expression } from './expression-properties';
+import { shape2DToSVG } from './shape2d-properties';
+import type { AlgebraicExpression } from './expression-properties';
 import { expressionToUbumark, expressionsEqual } from './expression-properties';
 import type { FunctionGraph } from './function-properties';
 import { functionToUbumark, functionsEqual } from './function-properties';
@@ -192,22 +193,23 @@ export function fractionItemFrom(f: Fraction): FractionGridItem {
  * Create a 2D shape grid item from a Shape2D object
  */
 export function shape2DItemFrom(shape: Shape2D): Shape2DGridItem {
+	const svg = shape2DToSVG(shape);
 	return {
 		type: 'shape2d',
-		shapeName: shape.name,
-		sideCount: shape.sideCount,
+		shapeName: shape.type,
+		sideCount: shape.sides,
 		isRegular: shape.isRegular,
 		isConvex: shape.isConvex,
-		hasRightAngle: shape.hasRightAngle,
+		hasRightAngle: shape.hasRightAngles,
 		nameFr: shape.nameFr,
-		svgPath: shape.svgPath
+		svgPath: svg.path
 	};
 }
 
 /**
- * Create an expression grid item from an Expression object
+ * Create an expression grid item from an AlgebraicExpression object
  */
-export function expressionItemFrom(expr: Expression): ExpressionGridItem {
+export function expressionItemFrom(expr: AlgebraicExpression): ExpressionGridItem {
 	return {
 		type: 'expression',
 		latex: expr.latex
@@ -256,7 +258,7 @@ export function gridItemToUbumark(item: GridItem): string {
 		case 'shape2d':
 			return item.nameFr;
 		case 'expression':
-			return expressionToUbumark({ latex: item.latex } as Expression);
+			return expressionToUbumark({ latex: item.latex } as AlgebraicExpression);
 		case 'function':
 			return functionToUbumark({ latex: item.latex } as FunctionGraph);
 		case 'polyhedron':
@@ -310,8 +312,8 @@ export function gridItemsEqual(a: GridItem, b: GridItem): boolean {
 			return a.shapeName === (b as Shape2DGridItem).shapeName;
 		case 'expression':
 			return expressionsEqual(
-				{ latex: a.latex } as Expression,
-				{ latex: (b as ExpressionGridItem).latex } as Expression
+				{ latex: a.latex } as AlgebraicExpression,
+				{ latex: (b as ExpressionGridItem).latex } as AlgebraicExpression
 			);
 		case 'function':
 			return functionsEqual(
@@ -412,7 +414,7 @@ export function shapes2DToGridItems(shapes: Shape2D[]): GridItem[] {
 /**
  * Convert expression array to GridItem array
  */
-export function expressionsToGridItems(expressions: Expression[]): GridItem[] {
+export function expressionsToGridItems(expressions: AlgebraicExpression[]): GridItem[] {
 	return expressions.map(expressionItemFrom);
 }
 

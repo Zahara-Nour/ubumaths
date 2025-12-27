@@ -132,7 +132,7 @@ function getTermDegree(node: MathNode, variable: string = 'x'): number {
 /**
  * Extract signed terms from a polynomial expression using flattenSumDeep
  */
-function extractSignedTerms(node: MathNode): SignedTerm[] {
+function extractSignedTerms(node: MathNode): readonly SignedTerm[] {
 	const result = flattenSumDeep(node);
 	return result.terms;
 }
