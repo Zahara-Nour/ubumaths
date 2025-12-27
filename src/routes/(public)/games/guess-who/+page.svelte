@@ -4,7 +4,7 @@
 	import { Card } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import MySelect from '$lib/components/ui/my-select/MySelect.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { GAME_PACKS, type GamePackId } from '$lib/types/guess-who';
 	import type { PageData } from './$types';
 
