@@ -111,7 +111,7 @@
 				>
 					<div class="flex items-center gap-3">
 						<Dialog.Title class="flex items-center gap-3 text-xl font-semibold">
-							Exercice {currentIndex + 1}
+							Exercice {currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
 							{#if pointsLabel}
 								<Badge variant="outline" class="font-normal">
 									{pointsLabel}
@@ -266,7 +266,7 @@
 			<div class="flex items-center justify-between gap-4 border-b border-border bg-card px-4 py-3">
 				<div class="flex items-center gap-2">
 					<Dialog.Title class="flex items-center gap-2 text-lg font-semibold">
-						Exercice {currentIndex + 1}
+						Exercice {currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
 						{#if pointsLabel}
 							<Badge variant="outline" class="text-xs font-normal">
 								{pointsLabel}
