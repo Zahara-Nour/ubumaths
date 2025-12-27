@@ -38,14 +38,25 @@
 		placeholder?: string;
 		disabled?: boolean;
 		maxSelections?: number;
+		onchange?: (value: GradeCode[]) => void;
 	}
 
 	let {
 		value = $bindable([]),
 		placeholder = 'Ajouter des niveaux',
 		disabled = false,
-		maxSelections
+		maxSelections,
+		onchange
 	}: Props = $props();
+
+	// Helper to update value - calls onchange if provided, otherwise mutates bindable
+	function updateValue(newValue: GradeCode[]) {
+		if (onchange) {
+			onchange(newValue);
+		} else {
+			value = newValue;
+		}
+	}
 
 	// Local state for modal
 	let isModalOpen = $state(false);
@@ -73,7 +84,7 @@
 	 */
 	function removeGrade(grade: GradeCode): void {
 		if (disabled) return;
-		value = value.filter((g) => g !== grade);
+		updateValue(value.filter((g) => g !== grade));
 	}
 
 	/**
@@ -106,7 +117,7 @@
 	 * Confirm selection and close modal
 	 */
 	function confirmSelection(): void {
-		value = [...pendingSelection];
+		updateValue([...pendingSelection]);
 		isModalOpen = false;
 	}
 

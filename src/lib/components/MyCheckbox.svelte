@@ -26,6 +26,7 @@
 		checkboxRef = $bindable(null),
 		labelRef = $bindable(null),
 		onCheckedChange,
+		onchange,
 		class: className = '',
 		...restProps
 	}: WithoutChildrenOrChild<CheckboxPrimitive.RootProps> & {
@@ -34,12 +35,18 @@
 		checkboxRef?: HTMLButtonElement | null;
 		labelRef?: HTMLLabelElement | null;
 		onCheckedChange?: (checked: boolean | 'indeterminate') => void;
+		/** Alias for onCheckedChange - simpler signature with just boolean */
+		onchange?: (checked: boolean) => void;
 	} = $props();
 
 	function handleChange(value: boolean | 'indeterminate') {
 		// Only assign boolean values to checked, not 'indeterminate'
 		if (value !== 'indeterminate') {
 			checked = value;
+			// Call onchange alias with boolean value
+			if (onchange) {
+				onchange(value);
+			}
 		}
 		if (onCheckedChange) {
 			onCheckedChange(value);
