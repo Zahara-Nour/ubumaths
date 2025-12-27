@@ -558,13 +558,9 @@
 							class="leading-relaxed break-words"
 							style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
 						>
-							{#if message.role === 'assistant'}
-								<MarkdownRenderer
-									content={convertLegacyLatexToMarkdown(getDisplayedText(index, message) || '')}
-								/>
-							{:else}
-								<span class="whitespace-pre-wrap">{getMessageText(message.content)}</span>
-							{/if}
+							<MarkdownRenderer
+								content={convertLegacyLatexToMarkdown(getDisplayedText(index, message) || '')}
+							/>
 						</div>
 
 						<div
