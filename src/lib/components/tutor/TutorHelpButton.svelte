@@ -48,10 +48,11 @@
 
 	interface Props {
 		exerciseContext: ExerciseContext;
+		assignmentId?: string;
 		variant?: 'default' | 'outline' | 'ghost' | 'secondary' | 'destructive' | 'link';
 	}
 
-	let { exerciseContext, variant = 'outline' }: Props = $props();
+	let { exerciseContext, assignmentId, variant = 'outline' }: Props = $props();
 
 	// Dialog state
 	let open = $state(false);
@@ -68,9 +69,15 @@
 	</Dialog.Trigger>
 	<Dialog.Portal>
 		<Dialog.Overlay />
-		<Dialog.Content class="max-h-[85vh] max-w-3xl overflow-hidden p-0">
+		<Dialog.Content
+			class="max-h-[85vh] max-w-3xl overflow-hidden p-0"
+			aria-describedby="tutor-dialog-description"
+		>
+			<p id="tutor-dialog-description" class="sr-only">
+				Interface de discussion avec le tuteur Père Ubu pour obtenir de l'aide sur l'exercice.
+			</p>
 			<div class="flex h-[calc(85vh-2rem)] flex-col">
-				<TutorChat {exerciseContext} />
+				<TutorChat {exerciseContext} {assignmentId} />
 			</div>
 		</Dialog.Content>
 	</Dialog.Portal>

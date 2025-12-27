@@ -58,6 +58,10 @@ const envSchema = z
 		// AI Chatbot Configuration (Groq API)
 		// ====================================================================
 		GROQ_API_KEY: z.string().min(1, 'Groq API key required').optional(),
+		GROQ_API_URL: z
+			.string()
+			.url('Invalid Groq API URL')
+			.default('https://api.groq.com/openai/v1/chat/completions'),
 		GROQ_MODEL: z.string().default('llama-3.3-70b-versatile'),
 
 		// Legacy OpenAI support (optional, if migrating)

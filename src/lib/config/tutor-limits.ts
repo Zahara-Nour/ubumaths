@@ -28,10 +28,17 @@ export const TUTOR_MAX_PER_HOUR = 30;
 export const TUTOR_MAX_PER_DAY = 100;
 
 /**
+ * Maximum help level for progressive assistance
+ * Ranges from 0 (minimal) to 7 (maximum)
+ */
+export const TUTOR_MAX_HELP_LEVEL = 7;
+
+/**
  * All limits as an object for convenience
  */
 export const TUTOR_LIMITS = {
 	perExercise: TUTOR_MAX_PER_EXERCISE,
 	perHour: TUTOR_MAX_PER_HOUR,
-	perDay: TUTOR_MAX_PER_DAY
+	perDay: TUTOR_MAX_PER_DAY,
+	maxHelpLevel: TUTOR_MAX_HELP_LEVEL
 } as const;

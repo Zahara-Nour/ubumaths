@@ -6,8 +6,12 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { z } from 'zod';
 import { getTutorMessagesQuerySchema } from '$lib/server/validation/chat';
 import { requireAuth } from '$lib/server/middleware/auth';
+
+// UUID validation schema
+const conversationIdSchema = z.string().uuid('ID conversation invalide');
 
 /**
  * GET /api/tutor/conversations/[id]/messages?limit=50&before=timestamp
@@ -19,10 +23,12 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	// Check authentication with proper session validation
 	const { user } = await requireAuth(locals);
 
-	const conversationId = params.id;
-	if (!conversationId) {
-		throw error(400, 'ID conversation requis');
+	// Validate conversation ID as UUID
+	const idValidation = conversationIdSchema.safeParse(params.id);
+	if (!idValidation.success) {
+		throw error(400, idValidation.error.issues[0].message);
 	}
+	const conversationId = idValidation.data;
 
 	// Parse and validate query parameters
 	const limitParam = url.searchParams.get('limit');

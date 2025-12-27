@@ -16,9 +16,10 @@
 
 	interface Props {
 		exerciseContext?: ExerciseContext;
+		assignmentId?: string;
 	}
 
-	let { exerciseContext }: Props = $props();
+	let { exerciseContext, assignmentId }: Props = $props();
 
 	// Widget state
 	let isOpen = $state(false);
@@ -104,7 +105,7 @@
 		<!-- Chat content (hidden when minimized) -->
 		{#if !isMinimized}
 			<div class="flex-1 overflow-hidden">
-				<TutorChat {exerciseContext} />
+				<TutorChat {exerciseContext} {assignmentId} />
 			</div>
 		{/if}
 	</div>
