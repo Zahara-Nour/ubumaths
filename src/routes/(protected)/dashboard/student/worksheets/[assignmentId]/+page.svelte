@@ -204,10 +204,7 @@
 								{exercise}
 								index={i + 1}
 								masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
-								{assignmentId}
-								existingReport={reportsMap.get(exercise.id) ?? null}
 								onclick={() => openExercise(i)}
-								onReportCreated={(report) => handleReportCreated(exercise.id, report)}
 							/>
 						{/each}
 					</div>

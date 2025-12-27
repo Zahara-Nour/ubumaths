@@ -1,29 +1,17 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
 	import { CheckCircle, AlertCircle } from 'lucide-svelte';
-	import ReportErrorButton from '$lib/components/worksheets/ReportErrorButton.svelte';
-	import type { StudentExerciseView, StudentErrorReportView } from '$lib/types/worksheets';
+	import type { StudentExerciseView } from '$lib/types/worksheets';
 	import type { MasteryStatus } from '$lib/types/exercise-mastery';
 
 	interface Props {
 		exercise: StudentExerciseView;
 		index: number;
 		masteryStatus?: MasteryStatus;
-		assignmentId: string;
-		existingReport: StudentErrorReportView | null;
 		onclick: () => void;
-		onReportCreated: (report: StudentErrorReportView) => void;
 	}
 
-	let {
-		exercise,
-		index,
-		masteryStatus,
-		assignmentId,
-		existingReport,
-		onclick,
-		onReportCreated
-	}: Props = $props();
+	let { exercise, index, masteryStatus, onclick }: Props = $props();
 
 	let hasCorrection = $derived(exercise.correction_visible && exercise.correction !== null);
 	let pointsLabel = $derived(
@@ -79,15 +67,4 @@
 			{/if}
 		</div>
 	</button>
-
-	<!-- Report button - separate from clickable area -->
-	<div role="presentation" onclick={(e) => e.stopPropagation()}>
-		<ReportErrorButton
-			{assignmentId}
-			exerciseId={exercise.exercise_id}
-			exercisePosition={exercise.position}
-			{existingReport}
-			{onReportCreated}
-		/>
-	</div>
 </div>
