@@ -148,14 +148,6 @@
 
 			<!-- Title -->
 			<Card.Title class="text-2xl leading-tight sm:text-3xl">{worksheet.title}</Card.Title>
-
-			<!-- Class Name -->
-			{#if worksheet.class_name}
-				<Card.Description class="mt-2 flex items-center gap-1.5 text-base">
-					<GraduationCap class="h-4 w-4 flex-shrink-0" />
-					<span>{worksheet.class_name}</span>
-				</Card.Description>
-			{/if}
 		</Card.Header>
 
 		<Card.Content class="space-y-4">
