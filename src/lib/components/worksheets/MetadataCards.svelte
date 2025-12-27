@@ -3,20 +3,17 @@
 	=======================
 
 	Displays worksheet metadata in inline-editable cards format.
-	All editable fields are in a single card with a subtle floating save button.
-	Click to edit fields, ESC to cancel current field, X per field to cancel that field.
+	Uses controlled component pattern - all state is managed by parent.
 
 	Usage:
 	```svelte
-	<script lang="ts">
-	  import MetadataCards from '$lib/components/worksheets/MetadataCards.svelte';
-
-	  async function handleSave(field: string, value: unknown) {
-	    // Save field to database
-	  }
-	</script>
-
-	<MetadataCards {worksheet} {onSave} />
+	<MetadataCards
+		{worksheet}
+		{hasPendingChanges}
+		onFieldChange={(field, value) => pendingChanges[field] = value}
+		onSave={handleSave}
+		onCancel={() => pendingChanges = {}}
+	/>
 	```
 -->
 <script lang="ts">
@@ -47,16 +44,26 @@
 		description: string | null;
 	}
 
-	// Props
+	// Props - controlled component pattern
 	interface Props {
-		worksheet: WorksheetWithRelations;
+		worksheet: WorksheetWithRelations; // Already merged with pending changes
 		templates?: TemplateOption[];
-		onSave?: (changes: Record<string, unknown>) => Promise<Partial<WorksheetWithRelations> | void>;
+		hasPendingChanges?: boolean;
+		onFieldChange?: (field: string, value: unknown) => void;
+		onSave?: () => Promise<void>;
+		onCancel?: () => void;
 	}
 
-	let { worksheet, templates = [], onSave }: Props = $props();
+	let {
+		worksheet,
+		templates = [],
+		hasPendingChanges = false,
+		onFieldChange,
+		onSave,
+		onCancel
+	}: Props = $props();
 
-	// Per-field editing flags for info card
+	// Editing mode flags only (no temp values!)
 	let editingTitle = $state(false);
 	let editingDescription = $state(false);
 	let editingType = $state(false);
@@ -64,172 +71,21 @@
 	let editingDuration = $state(false);
 	let editingGrades = $state(false);
 	let editingTags = $state(false);
-
-	// Global saving state
-	let isSaving = $state(false);
-
-	// Temporary values for editing info fields
-	let tempTitle = $state(worksheet.title || '');
-	let tempDescription = $state(worksheet.description || '');
-	let tempType = $state<string | undefined>(worksheet.type || undefined);
-	let tempTemplateId = $state<string | undefined>(worksheet.template_id || undefined);
-	let tempDuration = $state<number | null>(worksheet.estimated_duration_minutes);
-	let tempGrades = $state<GradeCode[]>((worksheet.grade_levels as GradeCode[]) || []);
-	let tempTags = $state<string[]>(worksheet.tags || []);
-
-	// Config editing state
 	let editingConfig = $state(false);
 
-	// Temporary values for config options (initialize from worksheet.config)
-	let tempShowTitle = $state(worksheet.config?.show_title ?? true);
-	let tempShowDate = $state(worksheet.config?.show_date ?? true);
-	let tempShowStudentName = $state(worksheet.config?.show_student_name ?? true);
-	let tempShowClass = $state(worksheet.config?.show_class ?? true);
-	let tempShowPoints = $state(worksheet.config?.show_points ?? true);
-	let tempNumberingStyle = $state<string>(worksheet.config?.numbering_style ?? 'numeric');
-	let tempPageLayout = $state<string>(worksheet.config?.page_layout ?? 'A4');
-	let tempShuffleExercises = $state(worksheet.config?.shuffle_exercises ?? false);
-	let tempShuffleWithinSections = $state(worksheet.config?.shuffle_within_sections ?? false);
+	// Saving state
+	let isSaving = $state(false);
 
-	// Reset temp values to match the changes that were saved
-	// Only syncs the fields that were actually in the save request
-	function syncTempValues(
-		savedChanges: Record<string, unknown>,
-		updated: Partial<WorksheetWithRelations>
-	) {
-		// Sync info fields only if they were saved
-		if ('title' in savedChanges) {
-			tempTitle = (updated.title as string) ?? '';
-		}
-		if ('description' in savedChanges) {
-			tempDescription = (updated.description as string) ?? '';
-		}
-		if ('type' in savedChanges) {
-			tempType = (updated.type as string) ?? undefined;
-		}
-		if ('template_id' in savedChanges) {
-			tempTemplateId = (updated.template_id as string) ?? undefined;
-		}
-		if ('estimated_duration_minutes' in savedChanges) {
-			tempDuration = updated.estimated_duration_minutes ?? null;
-		}
-		if ('grade_levels' in savedChanges) {
-			tempGrades = (updated.grade_levels as GradeCode[]) ?? [];
-		}
-		if ('tags' in savedChanges) {
-			tempTags = (updated.tags as string[]) ?? [];
-		}
+	// Check if editable
+	let isEditable = $derived(!!onFieldChange);
 
-		// Sync config fields only if config was saved
-		if ('config' in savedChanges) {
-			const config = updated.config;
-			tempShowTitle = config?.show_title ?? true;
-			tempShowDate = config?.show_date ?? true;
-			tempShowStudentName = config?.show_student_name ?? true;
-			tempShowClass = config?.show_class ?? true;
-			tempShowPoints = config?.show_points ?? true;
-			tempNumberingStyle = config?.numbering_style ?? 'numeric';
-			tempPageLayout = config?.page_layout ?? 'A4';
-			tempShuffleExercises = config?.shuffle_exercises ?? false;
-			tempShuffleWithinSections = config?.shuffle_within_sections ?? false;
-		}
-	}
-
-	// Per-field change detection for info
-	let titleChanged = $derived(tempTitle !== (worksheet.title || ''));
-	let descriptionChanged = $derived(tempDescription !== (worksheet.description || ''));
-	let typeChanged = $derived(tempType !== (worksheet.type || undefined));
-	let templateChanged = $derived(tempTemplateId !== (worksheet.template_id || undefined));
-	let durationChanged = $derived(tempDuration !== worksheet.estimated_duration_minutes);
-	let gradesChanged = $derived(
-		JSON.stringify([...tempGrades].sort()) !==
-			JSON.stringify([...((worksheet.grade_levels as GradeCode[]) || [])].sort())
-	);
-	let tagsChanged = $derived(
-		JSON.stringify([...tempTags].sort()) !== JSON.stringify([...(worksheet.tags || [])].sort())
-	);
-
-	// Config change detection
-	let configChanged = $derived(
-		tempShowTitle !== (worksheet.config?.show_title ?? true) ||
-			tempShowDate !== (worksheet.config?.show_date ?? true) ||
-			tempShowStudentName !== (worksheet.config?.show_student_name ?? true) ||
-			tempShowClass !== (worksheet.config?.show_class ?? true) ||
-			tempShowPoints !== (worksheet.config?.show_points ?? true) ||
-			tempNumberingStyle !== (worksheet.config?.numbering_style ?? 'numeric') ||
-			tempPageLayout !== (worksheet.config?.page_layout ?? 'A4') ||
-			tempShuffleExercises !== (worksheet.config?.shuffle_exercises ?? false) ||
-			tempShuffleWithinSections !== (worksheet.config?.shuffle_within_sections ?? false)
-	);
-
-	// Per-card change detection (for showing save button on correct card)
-	let infoHasChanges = $derived(
-		titleChanged ||
-			descriptionChanged ||
-			typeChanged ||
-			templateChanged ||
-			durationChanged ||
-			gradesChanged ||
-			tagsChanged
-	);
-
-	// Global change detection (for save logic)
-	let hasChanges = $derived(infoHasChanges || configChanged);
-
-	// Global save function - saves all modified fields in a single request
+	// Handle save - just call parent's save function
 	async function handleSave() {
-		if (!onSave || isSaving || !hasChanges) return;
+		if (!onSave || isSaving || !hasPendingChanges) return;
 		isSaving = true;
 
 		try {
-			// Build a single object with all changes
-			const changes: Record<string, unknown> = {};
-
-			if (titleChanged) {
-				changes.title = tempTitle.trim();
-			}
-			if (descriptionChanged) {
-				changes.description = tempDescription.trim() || null;
-			}
-			if (typeChanged) {
-				changes.type = tempType || null;
-			}
-			if (templateChanged) {
-				changes.template_id = tempTemplateId || null;
-			}
-			if (durationChanged) {
-				changes.estimated_duration_minutes = tempDuration;
-			}
-			if (gradesChanged) {
-				changes.grade_levels = tempGrades;
-			}
-			if (tagsChanged) {
-				changes.tags = tempTags;
-			}
-			if (configChanged) {
-				changes.config = {
-					...worksheet.config,
-					show_title: tempShowTitle,
-					show_date: tempShowDate,
-					show_student_name: tempShowStudentName,
-					show_class: tempShowClass,
-					show_points: tempShowPoints,
-					numbering_style: tempNumberingStyle as 'numeric' | 'alphabetic' | 'roman',
-					page_layout: tempPageLayout as 'A4' | 'Letter',
-					shuffle_exercises: tempShuffleExercises,
-					shuffle_within_sections: tempShuffleWithinSections
-				} satisfies WorksheetConfig;
-			}
-
-			// Single request with all changes - returns updated worksheet data
-			const updatedData = await onSave(changes);
-
-			// Sync only the temp values that were saved to reset their hasChanges flags
-			if (updatedData) {
-				syncTempValues(changes, updatedData);
-			}
-
-			// Close all editing modes on success
+			await onSave();
 			closeAllEditing();
 		} catch (error) {
 			console.error('Save failed:', error);
@@ -239,7 +95,7 @@
 		}
 	}
 
-	// Close all editing modes (without resetting values)
+	// Close all editing modes
 	function closeAllEditing() {
 		editingTitle = false;
 		editingDescription = false;
@@ -251,139 +107,71 @@
 		editingConfig = false;
 	}
 
-	// Cancel all edits and restore original values
-	function cancelAllEdits() {
-		cancelTitle();
-		cancelDescription();
-		cancelType();
-		cancelTemplate();
-		cancelDuration();
-		cancelGrades();
-		cancelTags();
+	// Cancel all edits - calls parent's cancel
+	function handleCancelAll() {
+		if (onCancel) onCancel();
+		closeAllEditing();
 	}
 
-	// Cancel all config edits
-	function cancelAllConfigEdits() {
-		tempShowTitle = worksheet.config?.show_title ?? true;
-		tempShowDate = worksheet.config?.show_date ?? true;
-		tempShowStudentName = worksheet.config?.show_student_name ?? true;
-		tempShowClass = worksheet.config?.show_class ?? true;
-		tempShowPoints = worksheet.config?.show_points ?? true;
-		tempNumberingStyle = worksheet.config?.numbering_style ?? 'numeric';
-		tempPageLayout = worksheet.config?.page_layout ?? 'A4';
-		tempShuffleExercises = worksheet.config?.shuffle_exercises ?? false;
-		tempShuffleWithinSections = worksheet.config?.shuffle_within_sections ?? false;
-		editingConfig = false;
+	// Field change handler with config support
+	function handleConfigChange(configField: string, value: unknown) {
+		if (!onFieldChange) return;
+		const newConfig: WorksheetConfig = {
+			...worksheet.config,
+			[configField]: value
+		};
+		onFieldChange('config', newConfig);
 	}
 
-	// Per-field cancel functions (reset value + close editing)
-	function cancelTitle() {
-		tempTitle = worksheet.title || '';
-		editingTitle = false;
+	// Start editing functions
+	function startEdit(field: string) {
+		if (!isEditable) return;
+		switch (field) {
+			case 'title':
+				editingTitle = true;
+				break;
+			case 'description':
+				editingDescription = true;
+				break;
+			case 'type':
+				editingType = true;
+				break;
+			case 'template':
+				if (templates.length > 0) editingTemplate = true;
+				break;
+			case 'duration':
+				editingDuration = true;
+				break;
+			case 'grades':
+				editingGrades = true;
+				break;
+			case 'tags':
+				editingTags = true;
+				break;
+			case 'config':
+				editingConfig = true;
+				break;
+		}
 	}
 
-	function cancelDescription() {
-		tempDescription = worksheet.description || '';
-		editingDescription = false;
+	// ESC handler
+	function handleKeydown(e: KeyboardEvent, field: string) {
+		if (e.key === 'Escape') {
+			switch (field) {
+				case 'title':
+					editingTitle = false;
+					break;
+				case 'description':
+					editingDescription = false;
+					break;
+				case 'duration':
+					editingDuration = false;
+					break;
+			}
+		}
 	}
 
-	function cancelType() {
-		tempType = worksheet.type || undefined;
-		editingType = false;
-	}
-
-	function cancelTemplate() {
-		tempTemplateId = worksheet.template_id || undefined;
-		editingTemplate = false;
-	}
-
-	function cancelDuration() {
-		tempDuration = worksheet.estimated_duration_minutes;
-		editingDuration = false;
-	}
-
-	function cancelGrades() {
-		tempGrades = (worksheet.grade_levels as GradeCode[]) || [];
-		editingGrades = false;
-	}
-
-	function cancelTags() {
-		tempTags = worksheet.tags || [];
-		editingTags = false;
-	}
-
-	// Start editing functions (initialize temp values)
-	function startEditTitle() {
-		if (!onSave) return;
-		tempTitle = worksheet.title || '';
-		editingTitle = true;
-	}
-
-	function startEditDescription() {
-		if (!onSave) return;
-		tempDescription = worksheet.description || '';
-		editingDescription = true;
-	}
-
-	function startEditType() {
-		if (!onSave) return;
-		tempType = worksheet.type || undefined;
-		editingType = true;
-	}
-
-	function startEditTemplate() {
-		if (!onSave || templates.length === 0) return;
-		tempTemplateId = worksheet.template_id || undefined;
-		editingTemplate = true;
-	}
-
-	function startEditDuration() {
-		if (!onSave) return;
-		tempDuration = worksheet.estimated_duration_minutes;
-		editingDuration = true;
-	}
-
-	function startEditGrades() {
-		if (!onSave) return;
-		tempGrades = (worksheet.grade_levels as GradeCode[]) || [];
-		editingGrades = true;
-	}
-
-	function startEditTags() {
-		if (!onSave) return;
-		tempTags = worksheet.tags || [];
-		editingTags = true;
-	}
-
-	function startEditConfig() {
-		if (!onSave) return;
-		// Initialize temp values from current config
-		tempShowTitle = worksheet.config?.show_title ?? true;
-		tempShowDate = worksheet.config?.show_date ?? true;
-		tempShowStudentName = worksheet.config?.show_student_name ?? true;
-		tempShowClass = worksheet.config?.show_class ?? true;
-		tempShowPoints = worksheet.config?.show_points ?? true;
-		tempNumberingStyle = worksheet.config?.numbering_style ?? 'numeric';
-		tempPageLayout = worksheet.config?.page_layout ?? 'A4';
-		tempShuffleExercises = worksheet.config?.shuffle_exercises ?? false;
-		tempShuffleWithinSections = worksheet.config?.shuffle_within_sections ?? false;
-		editingConfig = true;
-	}
-
-	// Per-field ESC handlers (cancel only the current field)
-	function handleKeydownTitle(e: KeyboardEvent) {
-		if (e.key === 'Escape') cancelTitle();
-	}
-
-	function handleKeydownDescription(e: KeyboardEvent) {
-		if (e.key === 'Escape') cancelDescription();
-	}
-
-	function handleKeydownDuration(e: KeyboardEvent) {
-		if (e.key === 'Escape') cancelDuration();
-	}
-
-	// Type options for MySelect (convert to mutable array)
+	// Type options for MySelect
 	const typeOptions = [...WORKSHEET_TYPE_OPTIONS] as { value: string; label: string }[];
 
 	// Template options for MySelect
@@ -392,12 +180,9 @@
 	// Helper to get template name by ID
 	function getTemplateName(templateId: string | null | undefined): string {
 		if (!templateId) return '-';
-		// First check in templates prop
 		const template = templates.find((t) => t.id === templateId);
 		if (template) return template.name;
-		// Then check in worksheet.template (for pre-loaded template)
 		if (worksheet.template?.name) return worksheet.template.name;
-		// Fallback: show the ID if it looks like a default template ID
 		if (!templateId.includes('-')) return templateId.charAt(0).toUpperCase() + templateId.slice(1);
 		return '-';
 	}
@@ -414,12 +199,10 @@
 		{ value: 'Letter', label: 'Letter' }
 	];
 
-	// Helper to get display label for numbering style
 	function getNumberingLabel(value: string): string {
 		return numberingOptions.find((o) => o.value === value)?.label ?? value;
 	}
 
-	// Helper to get display label for page layout
 	function getLayoutLabel(value: string): string {
 		return layoutOptions.find((o) => o.value === value)?.label ?? value;
 	}
@@ -428,8 +211,8 @@
 <div class="space-y-4">
 	<!-- Information card -->
 	<Card.Root class="relative">
-		<!-- Floating save button (appears when info changes detected) -->
-		{#if infoHasChanges && onSave && !isSaving}
+		<!-- Floating save button -->
+		{#if hasPendingChanges && isEditable && !isSaving}
 			<button
 				type="button"
 				class="absolute top-3 right-3 z-10 rounded-full bg-green-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-green-600 active:scale-95"
@@ -443,15 +226,14 @@
 		<Card.Header>
 			<div class="flex items-center gap-2">
 				<Card.Title class="text-lg">Informations</Card.Title>
-				<!-- Global cancel/loading indicator next to title -->
-				{#if infoHasChanges && onSave}
+				{#if hasPendingChanges && isEditable}
 					{#if isSaving}
 						<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
 					{:else}
 						<button
 							type="button"
 							class="rounded-full p-1 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={cancelAllEdits}
+							onclick={handleCancelAll}
 							aria-label="Annuler toutes les modifications"
 						>
 							<X class="h-4 w-4" />
@@ -463,36 +245,25 @@
 		<Card.Content class="space-y-3">
 			<!-- Title -->
 			<div>
-				<div class="flex items-center gap-1">
-					<p class="text-xs text-muted-foreground">Titre</p>
-					{#if titleChanged}
-						<button
-							type="button"
-							class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={cancelTitle}
-							aria-label="Annuler la modification du titre"
-						>
-							<X class="h-3 w-3" />
-						</button>
-					{/if}
-				</div>
+				<p class="text-xs text-muted-foreground">Titre</p>
 				{#if !editingTitle}
 					<button
 						type="button"
-						class="w-full text-left font-semibold {onSave
+						class="w-full text-left font-semibold {isEditable
 							? 'cursor-pointer hover:text-primary'
 							: 'cursor-default'}"
-						onclick={startEditTitle}
-						disabled={!onSave}
+						onclick={() => startEdit('title')}
+						disabled={!isEditable}
 					>
 						{worksheet.title || '-'}
 					</button>
 				{:else}
 					<Input
-						bind:value={tempTitle}
+						value={worksheet.title || ''}
+						oninput={(e) => onFieldChange?.('title', e.currentTarget.value)}
 						class="w-full"
 						placeholder="Titre de la feuille"
-						onkeydown={handleKeydownTitle}
+						onkeydown={(e) => handleKeydown(e, 'title')}
 					/>
 				{/if}
 			</div>
@@ -500,36 +271,25 @@
 			<!-- Description -->
 			{#if worksheet.description || editingDescription}
 				<div>
-					<div class="flex items-center gap-1">
-						<p class="text-xs text-muted-foreground">Description</p>
-						{#if descriptionChanged}
-							<button
-								type="button"
-								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-								onclick={cancelDescription}
-								aria-label="Annuler la modification de la description"
-							>
-								<X class="h-3 w-3" />
-							</button>
-						{/if}
-					</div>
+					<p class="text-xs text-muted-foreground">Description</p>
 					{#if !editingDescription}
 						<button
 							type="button"
-							class="w-full text-left text-sm whitespace-pre-wrap text-muted-foreground {onSave
+							class="w-full text-left text-sm whitespace-pre-wrap text-muted-foreground {isEditable
 								? 'cursor-pointer hover:text-primary'
 								: 'cursor-default'}"
-							onclick={startEditDescription}
-							disabled={!onSave}
+							onclick={() => startEdit('description')}
+							disabled={!isEditable}
 						>
 							{worksheet.description}
 						</button>
 					{:else}
 						<Textarea
-							bind:value={tempDescription}
+							value={worksheet.description || ''}
+							oninput={(e) => onFieldChange?.('description', e.currentTarget.value || null)}
 							class="min-h-[60px] w-full"
 							placeholder="Description de la feuille..."
-							onkeydown={handleKeydownDescription}
+							onkeydown={(e) => handleKeydown(e, 'description')}
 						/>
 					{/if}
 				</div>
@@ -541,65 +301,48 @@
 			<div class="grid grid-cols-3 gap-4">
 				<!-- Type -->
 				<div>
-					<div class="flex items-center gap-1">
-						<p class="text-xs text-muted-foreground">Type</p>
-						{#if typeChanged}
-							<button
-								type="button"
-								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-								onclick={cancelType}
-								aria-label="Annuler la modification du type"
-							>
-								<X class="h-3 w-3" />
-							</button>
-						{/if}
-					</div>
+					<p class="text-xs text-muted-foreground">Type</p>
 					{#if !editingType}
 						<button
 							type="button"
-							class="text-left text-sm font-medium {onSave
+							class="text-left text-sm font-medium {isEditable
 								? 'cursor-pointer hover:text-primary'
 								: 'cursor-default'}"
-							onclick={startEditType}
-							disabled={!onSave}
+							onclick={() => startEdit('type')}
+							disabled={!isEditable}
 						>
 							{worksheet.type ? WORKSHEET_TYPE_LABELS[worksheet.type] : '-'}
 						</button>
 					{:else}
-						<MySelect type="single" bind:value={tempType} items={typeOptions} placeholder="Type" />
+						<MySelect
+							type="single"
+							value={worksheet.type || undefined}
+							onchange={(v) => onFieldChange?.('type', v || null)}
+							items={typeOptions}
+							placeholder="Type"
+						/>
 					{/if}
 				</div>
 
 				<!-- Template -->
 				<div>
-					<div class="flex items-center gap-1">
-						<p class="text-xs text-muted-foreground">Template</p>
-						{#if templateChanged}
-							<button
-								type="button"
-								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-								onclick={cancelTemplate}
-								aria-label="Annuler la modification du template"
-							>
-								<X class="h-3 w-3" />
-							</button>
-						{/if}
-					</div>
+					<p class="text-xs text-muted-foreground">Template</p>
 					{#if !editingTemplate}
 						<button
 							type="button"
-							class="text-left text-sm font-medium {onSave && templates.length > 0
+							class="text-left text-sm font-medium {isEditable && templates.length > 0
 								? 'cursor-pointer hover:text-primary'
 								: 'cursor-default'}"
-							onclick={startEditTemplate}
-							disabled={!onSave || templates.length === 0}
+							onclick={() => startEdit('template')}
+							disabled={!isEditable || templates.length === 0}
 						>
 							{getTemplateName(worksheet.template_id)}
 						</button>
 					{:else}
 						<MySelect
 							type="single"
-							bind:value={tempTemplateId}
+							value={worksheet.template_id || undefined}
+							onchange={(v) => onFieldChange?.('template_id', v || null)}
 							items={templateOptions}
 							placeholder="Template"
 						/>
@@ -608,27 +351,15 @@
 
 				<!-- Duration -->
 				<div>
-					<div class="flex items-center gap-1">
-						<p class="text-xs text-muted-foreground">Duree</p>
-						{#if durationChanged}
-							<button
-								type="button"
-								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-								onclick={cancelDuration}
-								aria-label="Annuler la modification de la duree"
-							>
-								<X class="h-3 w-3" />
-							</button>
-						{/if}
-					</div>
+					<p class="text-xs text-muted-foreground">Duree</p>
 					{#if !editingDuration}
 						<button
 							type="button"
-							class="text-left text-sm font-medium {onSave
+							class="text-left text-sm font-medium {isEditable
 								? 'cursor-pointer hover:text-primary'
 								: 'cursor-default'}"
-							onclick={startEditDuration}
-							disabled={!onSave}
+							onclick={() => startEdit('duration')}
+							disabled={!isEditable}
 						>
 							{formatDuration(worksheet.estimated_duration_minutes)}
 						</button>
@@ -636,12 +367,16 @@
 						<div class="flex items-center gap-1">
 							<Input
 								type="number"
-								bind:value={tempDuration}
+								value={worksheet.estimated_duration_minutes ?? ''}
+								oninput={(e) => {
+									const val = e.currentTarget.value;
+									onFieldChange?.('estimated_duration_minutes', val ? Number(val) : null);
+								}}
 								class="h-8 w-16"
 								min={0}
 								max={480}
 								placeholder="min"
-								onkeydown={handleKeydownDuration}
+								onkeydown={(e) => handleKeydown(e, 'duration')}
 							/>
 							<span class="text-xs text-muted-foreground">min</span>
 						</div>
@@ -655,27 +390,15 @@
 			<div class="grid grid-cols-2 gap-4">
 				<!-- Grade levels -->
 				<div>
-					<div class="flex items-center gap-1">
-						<p class="text-xs text-muted-foreground">Niveaux</p>
-						{#if gradesChanged}
-							<button
-								type="button"
-								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-								onclick={cancelGrades}
-								aria-label="Annuler la modification des niveaux"
-							>
-								<X class="h-3 w-3" />
-							</button>
-						{/if}
-					</div>
+					<p class="text-xs text-muted-foreground">Niveaux</p>
 					{#if !editingGrades}
 						<button
 							type="button"
-							class="w-full text-left {onSave
+							class="w-full text-left {isEditable
 								? 'cursor-pointer hover:text-primary'
 								: 'cursor-default'}"
-							onclick={startEditGrades}
-							disabled={!onSave}
+							onclick={() => startEdit('grades')}
+							disabled={!isEditable}
 						>
 							{#if worksheet.grade_levels && worksheet.grade_levels.length > 0}
 								<div class="flex flex-wrap gap-1">
@@ -690,33 +413,24 @@
 							{/if}
 						</button>
 					{:else}
-						<GradeBadgeSelector bind:value={tempGrades} />
+						<GradeBadgeSelector
+							value={(worksheet.grade_levels as GradeCode[]) || []}
+							onchange={(v) => onFieldChange?.('grade_levels', v)}
+						/>
 					{/if}
 				</div>
 
 				<!-- Tags -->
 				<div>
-					<div class="flex items-center gap-1">
-						<p class="text-xs text-muted-foreground">Tags</p>
-						{#if tagsChanged}
-							<button
-								type="button"
-								class="rounded-full p-0.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-								onclick={cancelTags}
-								aria-label="Annuler la modification des tags"
-							>
-								<X class="h-3 w-3" />
-							</button>
-						{/if}
-					</div>
+					<p class="text-xs text-muted-foreground">Tags</p>
 					{#if !editingTags}
 						<button
 							type="button"
-							class="w-full text-left {onSave
+							class="w-full text-left {isEditable
 								? 'cursor-pointer hover:text-primary'
 								: 'cursor-default'}"
-							onclick={startEditTags}
-							disabled={!onSave}
+							onclick={() => startEdit('tags')}
+							disabled={!isEditable}
 						>
 							{#if worksheet.tags && worksheet.tags.length > 0}
 								<div class="flex flex-wrap gap-1">
@@ -729,7 +443,10 @@
 							{/if}
 						</button>
 					{:else}
-						<TagBadgeSelector bind:value={tempTags} />
+						<TagBadgeSelector
+							value={worksheet.tags || []}
+							onchange={(v) => onFieldChange?.('tags', v)}
+						/>
 					{/if}
 				</div>
 			</div>
@@ -738,37 +455,10 @@
 
 	<!-- Options d'affichage card -->
 	<Card.Root class="relative">
-		<!-- Floating save button (appears when config changes detected) -->
-		{#if configChanged && onSave && !isSaving}
-			<button
-				type="button"
-				class="absolute top-3 right-3 z-10 rounded-full bg-green-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-green-600 active:scale-95"
-				onclick={handleSave}
-				aria-label="Enregistrer les modifications"
-			>
-				<Check class="h-4 w-4" />
-			</button>
-		{/if}
-
 		<Card.Header>
 			<div class="flex items-center gap-2">
 				<Settings class="h-5 w-5 text-muted-foreground" />
 				<Card.Title class="text-lg">Options d'affichage</Card.Title>
-				<!-- Cancel/loading indicator next to title -->
-				{#if configChanged && onSave}
-					{#if isSaving}
-						<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
-					{:else}
-						<button
-							type="button"
-							class="rounded-full p-1 text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-							onclick={cancelAllConfigEdits}
-							aria-label="Annuler les modifications d'affichage"
-						>
-							<X class="h-4 w-4" />
-						</button>
-					{/if}
-				{/if}
 			</div>
 		</Card.Header>
 		<Card.Content>
@@ -776,9 +466,9 @@
 				<!-- Display mode: show current config values -->
 				<button
 					type="button"
-					class="w-full text-left {onSave ? 'cursor-pointer' : 'cursor-default'}"
-					onclick={startEditConfig}
-					disabled={!onSave}
+					class="w-full text-left {isEditable ? 'cursor-pointer' : 'cursor-default'}"
+					onclick={() => startEdit('config')}
+					disabled={!isEditable}
 				>
 					<div class="space-y-6">
 						<!-- Elements affiches section -->
@@ -842,7 +532,7 @@
 						</div>
 					</div>
 
-					{#if onSave}
+					{#if isEditable}
 						<p class="mt-4 text-xs text-muted-foreground/60 italic">Cliquer pour modifier</p>
 					{/if}
 				</button>
@@ -853,11 +543,31 @@
 					<div class="space-y-4">
 						<h4 class="text-sm font-medium">Elements affiches</h4>
 						<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-							<MyCheckbox bind:checked={tempShowTitle} label="Afficher le titre" />
-							<MyCheckbox bind:checked={tempShowDate} label="Afficher la date" />
-							<MyCheckbox bind:checked={tempShowStudentName} label="Nom de l'eleve" />
-							<MyCheckbox bind:checked={tempShowClass} label="Classe" />
-							<MyCheckbox bind:checked={tempShowPoints} label="Points par exercice" />
+							<MyCheckbox
+								checked={worksheet.config?.show_title ?? true}
+								onchange={(v) => handleConfigChange('show_title', v)}
+								label="Afficher le titre"
+							/>
+							<MyCheckbox
+								checked={worksheet.config?.show_date ?? true}
+								onchange={(v) => handleConfigChange('show_date', v)}
+								label="Afficher la date"
+							/>
+							<MyCheckbox
+								checked={worksheet.config?.show_student_name ?? true}
+								onchange={(v) => handleConfigChange('show_student_name', v)}
+								label="Nom de l'eleve"
+							/>
+							<MyCheckbox
+								checked={worksheet.config?.show_class ?? true}
+								onchange={(v) => handleConfigChange('show_class', v)}
+								label="Classe"
+							/>
+							<MyCheckbox
+								checked={worksheet.config?.show_points ?? true}
+								onchange={(v) => handleConfigChange('show_points', v)}
+								label="Points par exercice"
+							/>
 						</div>
 					</div>
 
@@ -870,7 +580,8 @@
 							<div class="space-y-2">
 								<p class="text-xs text-muted-foreground">Numerotation</p>
 								<MySelect
-									bind:value={tempNumberingStyle}
+									value={worksheet.config?.numbering_style ?? 'numeric'}
+									onchange={(v) => handleConfigChange('numbering_style', v)}
 									items={numberingOptions}
 									placeholder="Style de numerotation"
 								/>
@@ -878,7 +589,8 @@
 							<div class="space-y-2">
 								<p class="text-xs text-muted-foreground">Format de page</p>
 								<MySelect
-									bind:value={tempPageLayout}
+									value={worksheet.config?.page_layout ?? 'A4'}
+									onchange={(v) => handleConfigChange('page_layout', v)}
 									items={layoutOptions}
 									placeholder="Format de page"
 								/>
@@ -892,9 +604,14 @@
 					<div class="space-y-4">
 						<h4 class="text-sm font-medium">Options de melange</h4>
 						<div class="grid gap-4 sm:grid-cols-2">
-							<MyCheckbox bind:checked={tempShuffleExercises} label="Melanger les exercices" />
 							<MyCheckbox
-								bind:checked={tempShuffleWithinSections}
+								checked={worksheet.config?.shuffle_exercises ?? false}
+								onchange={(v) => handleConfigChange('shuffle_exercises', v)}
+								label="Melanger les exercices"
+							/>
+							<MyCheckbox
+								checked={worksheet.config?.shuffle_within_sections ?? false}
+								onchange={(v) => handleConfigChange('shuffle_within_sections', v)}
 								label="Melanger dans les sections"
 							/>
 						</div>

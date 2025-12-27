@@ -46,36 +46,43 @@ export const numberingStyleSchema = z.enum(['numeric', 'alphabetic', 'roman'], {
 // ============================================================================
 
 /**
- * Worksheet config schema (for JSONB column)
+ * Base worksheet config object schema (without optional/default wrappers)
  */
-export const worksheetConfigSchema = z
-	.object({
-		show_title: z.boolean().optional(),
-		show_date: z.boolean().optional(),
-		show_student_name: z.boolean().optional(),
-		show_class: z.boolean().optional(),
-		show_points: z.boolean().optional(),
-		numbering_style: numberingStyleSchema.optional(),
-		shuffle_exercises: z.boolean().optional(),
-		shuffle_within_sections: z.boolean().optional(),
-		page_layout: z.enum(['A4', 'Letter']).optional(),
-		font_size: z
-			.number()
-			.int('Font size must be an integer')
-			.min(8, 'Font size too small')
-			.max(24, 'Font size too large')
-			.optional(),
-		margins: z
-			.object({
-				top: z.number().min(0).max(100),
-				bottom: z.number().min(0).max(100),
-				left: z.number().min(0).max(100),
-				right: z.number().min(0).max(100)
-			})
-			.optional()
-	})
-	.optional()
-	.default({});
+const worksheetConfigObjectSchema = z.object({
+	show_title: z.boolean().optional(),
+	show_date: z.boolean().optional(),
+	show_student_name: z.boolean().optional(),
+	show_class: z.boolean().optional(),
+	show_points: z.boolean().optional(),
+	numbering_style: numberingStyleSchema.optional(),
+	shuffle_exercises: z.boolean().optional(),
+	shuffle_within_sections: z.boolean().optional(),
+	page_layout: z.enum(['A4', 'Letter']).optional(),
+	font_size: z
+		.number()
+		.int('Font size must be an integer')
+		.min(8, 'Font size too small')
+		.max(24, 'Font size too large')
+		.optional(),
+	margins: z
+		.object({
+			top: z.number().min(0).max(100),
+			bottom: z.number().min(0).max(100),
+			left: z.number().min(0).max(100),
+			right: z.number().min(0).max(100)
+		})
+		.optional()
+});
+
+/**
+ * Worksheet config schema for CREATE (with default empty object)
+ */
+export const worksheetConfigSchema = worksheetConfigObjectSchema.optional().default({});
+
+/**
+ * Worksheet config schema for UPDATE (no default - only include if explicitly provided)
+ */
+export const worksheetConfigSchemaForUpdate = worksheetConfigObjectSchema.optional();
 
 /**
  * Variant config schema (for JSONB column)
@@ -138,9 +145,35 @@ export const createWorksheetSchema = z.object({
 
 /**
  * Schema for updating a worksheet (PUT /api/worksheets/[id])
- * All fields are optional for partial updates
+ * All fields are optional for partial updates.
+ * IMPORTANT: No defaults are applied - only explicitly provided fields are included.
+ * This prevents overwriting DB values when a field is not in the request.
  */
-export const updateWorksheetSchema = createWorksheetSchema.partial().extend({
+export const updateWorksheetSchema = z.object({
+	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long').optional(),
+	description: z.string().trim().max(5000, 'Description too long').optional().nullable(),
+	type: worksheetTypeSchema.optional(),
+	config: worksheetConfigSchemaForUpdate, // No default - won't be set if not in request
+	template_id: uuidSchema.optional().nullable(),
+	estimated_duration_minutes: z
+		.number()
+		.int('Duration must be an integer')
+		.positive('Duration must be positive')
+		.max(600, 'Duration too long (max 600 minutes)')
+		.optional()
+		.nullable(),
+	total_points: z
+		.number()
+		.int('Points must be an integer')
+		.positive('Points must be positive')
+		.max(10000, 'Points too high')
+		.optional()
+		.nullable(),
+	grade_levels: z
+		.array(z.string().trim().min(1).max(10))
+		.max(20, 'Maximum 20 grade levels')
+		.optional(), // No default - won't be set if not in request
+	tags: z.array(z.string().trim().min(1).max(50)).max(30, 'Maximum 30 tags').optional(), // No default - won't be set if not in request
 	status: worksheetStatusSchema.optional()
 });
 

@@ -44,14 +44,25 @@
 		placeholder?: string;
 		disabled?: boolean;
 		maxSelections?: number;
+		onchange?: (value: string[]) => void;
 	}
 
 	let {
 		value = $bindable([]),
 		placeholder = 'Ajouter des tags',
 		disabled = false,
-		maxSelections
+		maxSelections,
+		onchange
 	}: Props = $props();
+
+	// Helper to update value - calls onchange if provided, otherwise mutates bindable
+	function updateValue(newValue: string[]) {
+		if (onchange) {
+			onchange(newValue);
+		} else {
+			value = newValue;
+		}
+	}
 
 	// State
 	let isModalOpen = $state(false);
@@ -157,7 +168,7 @@
 	 */
 	function removeTag(tag: string): void {
 		if (disabled) return;
-		value = value.filter((t) => t !== tag);
+		updateValue(value.filter((t) => t !== tag));
 	}
 
 	/**
@@ -191,7 +202,7 @@
 	 * Confirm selection and close modal
 	 */
 	function confirmSelection(): void {
-		value = [...pendingSelection];
+		updateValue([...pendingSelection]);
 		isModalOpen = false;
 	}
 

@@ -82,14 +82,29 @@
 	);
 
 	// Type-safe worksheet access with local state for updates
-	// This allows both local optimistic updates AND server data sync
-	// eslint-disable-next-line svelte/prefer-writable-derived -- intentional local state + server sync pattern
 	let worksheetData = $state(data.worksheet as WorksheetWithRelations);
+
+	// Pending changes for metadata editing (single source of truth for edits)
+	let pendingChanges = $state<Partial<WorksheetWithRelations>>({});
 
 	// Update local state when data changes (e.g., after invalidateAll)
 	$effect(() => {
 		worksheetData = data.worksheet as WorksheetWithRelations;
+		pendingChanges = {}; // Reset pending changes when server data changes
 	});
+
+	// Effective worksheet = server data + pending changes (for display)
+	let effectiveWorksheet = $derived.by(() => {
+		const merged = { ...worksheetData, ...pendingChanges };
+		// Deep merge config if both exist
+		if (pendingChanges.config && worksheetData.config) {
+			merged.config = { ...worksheetData.config, ...pendingChanges.config };
+		}
+		return merged as WorksheetWithRelations;
+	});
+
+	// Check if there are pending changes
+	let hasPendingChanges = $derived(Object.keys(pendingChanges).length > 0);
 
 	// Load templates on mount (needed for editing)
 	onMount(() => {
@@ -340,16 +355,22 @@
 	}
 
 	/**
-	 * Handle saving multiple fields from inline editing in a single request
-	 * Returns the updated worksheet data for syncing temp values
+	 * Handle field change from MetadataCards (updates pending changes)
 	 */
-	async function handleFieldsSave(
-		changes: Record<string, unknown>
-	): Promise<Partial<WorksheetWithRelations>> {
+	function handleFieldChange(field: string, value: unknown) {
+		pendingChanges = { ...pendingChanges, [field]: value };
+	}
+
+	/**
+	 * Handle saving all pending changes to the server
+	 */
+	async function handleSaveChanges(): Promise<void> {
+		if (!hasPendingChanges) return;
+
 		const response = await fetch(`/api/worksheets/${worksheet.id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(changes)
+			body: JSON.stringify(pendingChanges)
 		});
 
 		if (!response.ok) {
@@ -361,10 +382,17 @@
 		const { worksheet: updatedWorksheet } = await response.json();
 		worksheetData = { ...worksheetData, ...updatedWorksheet };
 
-		toaster.success('Modifications enregistrees');
+		// Clear pending changes after successful save
+		pendingChanges = {};
 
-		// Return updated data for caller to sync temp values
-		return updatedWorksheet;
+		toaster.success('Modifications enregistrees');
+	}
+
+	/**
+	 * Cancel all pending changes
+	 */
+	function handleCancelChanges() {
+		pendingChanges = {};
 	}
 </script>
 
@@ -466,7 +494,14 @@
 	<!-- Content -->
 	<div class="space-y-6">
 		<!-- Metadata with inline editing -->
-		<MetadataCards {worksheet} {templates} onSave={isDraft ? handleFieldsSave : undefined} />
+		<MetadataCards
+			worksheet={effectiveWorksheet}
+			{templates}
+			{hasPendingChanges}
+			onFieldChange={isDraft ? handleFieldChange : undefined}
+			onSave={isDraft ? handleSaveChanges : undefined}
+			onCancel={isDraft ? handleCancelChanges : undefined}
+		/>
 
 		<!-- Main content tabs -->
 		<Tabs.Root
