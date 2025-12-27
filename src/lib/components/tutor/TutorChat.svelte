@@ -105,6 +105,9 @@
 	// Track current exercise to avoid race conditions
 	let currentExerciseId = $state<string | null>(null);
 
+	// Typing animation cleanup
+	let typingAnimationTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
 	// Refs
 	let messagesContainer: HTMLDivElement | undefined;
 
@@ -162,8 +165,19 @@
 		return textItem?.text || '';
 	}
 
+	// Cancel any ongoing typing animation
+	function cancelTypingAnimation() {
+		if (typingAnimationTimeoutId !== null) {
+			clearTimeout(typingAnimationTimeoutId);
+			typingAnimationTimeoutId = null;
+		}
+	}
+
 	// Start typing animation
 	function startTypingAnimation(messageIndex: number, fullText: string) {
+		// Cancel any previous animation
+		cancelTypingAnimation();
+
 		typingMessageIndex = messageIndex;
 		displayedText[messageIndex] = '';
 
@@ -187,9 +201,10 @@
 					}
 				}
 
-				setTimeout(typeNextChar, typingSpeed);
+				typingAnimationTimeoutId = setTimeout(typeNextChar, typingSpeed);
 			} else {
 				// Typing complete
+				typingAnimationTimeoutId = null;
 				typingMessageIndex = null;
 				messages[messageIndex].isTyping = false;
 
@@ -201,19 +216,23 @@
 
 		// Initial scroll
 		if (messagesContainer) {
-			setTimeout(() => {
+			typingAnimationTimeoutId = setTimeout(() => {
 				if (messagesContainer) {
 					messagesContainer.scrollTop = messagesContainer.scrollHeight;
 				}
+				typeNextChar();
 			}, 100);
+		} else {
+			typeNextChar();
 		}
-
-		typeNextChar();
 	}
 
 	// Skip typing animation
 	function skipTypingAnimation(messageIndex: number) {
 		if (typingMessageIndex === messageIndex) {
+			// Cancel the ongoing animation
+			cancelTypingAnimation();
+
 			const message = messages[messageIndex];
 			displayedText[messageIndex] = getMessageText(message.content);
 			typingMessageIndex = null;
@@ -228,6 +247,13 @@
 			}
 		}
 	}
+
+	// Cleanup typing animation on component destroy
+	$effect(() => {
+		return () => {
+			cancelTypingAnimation();
+		};
+	});
 
 	// Get displayed text for a message
 	function getDisplayedText(messageIndex: number, message: Message): string {
@@ -584,8 +610,9 @@
 			disabled={messages.length === 0}
 			class="text-primary-foreground hover:bg-white/20"
 			title="Effacer la conversation"
+			aria-label="Effacer la conversation"
 		>
-			<Trash2 class="h-5 w-5" />
+			<Trash2 class="h-5 w-5" aria-hidden="true" />
 		</Button>
 	</div>
 
@@ -599,6 +626,9 @@
 		bind:this={messagesContainer}
 		class="flex-1 space-y-4 overflow-y-auto bg-muted/30 p-4"
 		style="max-height: calc(100vh - 320px); min-height: 300px;"
+		role="log"
+		aria-label="Historique de la conversation avec le tuteur"
+		aria-live="polite"
 	>
 		{#if messages.length === 0}
 			<div class="flex h-full items-center justify-center text-center">
@@ -740,7 +770,11 @@
 	<!-- Input Area -->
 	<div class="border-t border-border bg-card p-2">
 		{#if isLoadingConversation}
-			<div class="flex items-center justify-center py-4 text-muted-foreground">
+			<div
+				class="flex items-center justify-center py-4 text-muted-foreground"
+				role="status"
+				aria-live="polite"
+			>
 				<span class="animate-pulse">Chargement de la conversation...</span>
 			</div>
 		{:else}

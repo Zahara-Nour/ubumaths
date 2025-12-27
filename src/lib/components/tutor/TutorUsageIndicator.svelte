@@ -23,6 +23,12 @@
 -->
 
 <script lang="ts">
+	import {
+		TUTOR_MAX_PER_EXERCISE,
+		TUTOR_MAX_PER_HOUR,
+		TUTOR_MAX_PER_DAY
+	} from '$lib/config/tutor-limits';
+
 	interface Props {
 		remaining: {
 			exercise: number | null;
@@ -35,10 +41,10 @@
 
 	// Derived values for percentage calculations (for future visual bars if needed)
 	const exercisePercent = $derived(
-		remaining.exercise !== null ? (remaining.exercise / 15) * 100 : null
+		remaining.exercise !== null ? (remaining.exercise / TUTOR_MAX_PER_EXERCISE) * 100 : null
 	);
-	const hourPercent = $derived((remaining.hour / 30) * 100);
-	const dayPercent = $derived((remaining.day / 100) * 100);
+	const hourPercent = $derived((remaining.hour / TUTOR_MAX_PER_HOUR) * 100);
+	const dayPercent = $derived((remaining.day / TUTOR_MAX_PER_DAY) * 100);
 
 	// Color coding based on remaining percentage
 	function getColorClass(percent: number): string {
@@ -51,28 +57,30 @@
 <div
 	class="flex flex-wrap gap-3 text-xs text-muted-foreground"
 	style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
+	role="status"
+	aria-label="Quotas de messages restants"
 >
 	{#if remaining.exercise !== null}
 		<span
 			class="flex items-center gap-1 {getColorClass(exercisePercent ?? 0)}"
-			title="Messages restants sur cet exercice (15 max)"
+			title="Messages restants sur cet exercice ({TUTOR_MAX_PER_EXERCISE} max)"
 		>
 			<span class="text-sm">📝</span>
-			<span class="font-medium">{remaining.exercise}/15</span>
+			<span class="font-medium">{remaining.exercise}/{TUTOR_MAX_PER_EXERCISE}</span>
 		</span>
 	{/if}
 	<span
 		class="flex items-center gap-1 {getColorClass(hourPercent)}"
-		title="Messages restants cette heure (30 max)"
+		title="Messages restants cette heure ({TUTOR_MAX_PER_HOUR} max)"
 	>
 		<span class="text-sm">⏱️</span>
-		<span class="font-medium">{remaining.hour}/30</span>
+		<span class="font-medium">{remaining.hour}/{TUTOR_MAX_PER_HOUR}</span>
 	</span>
 	<span
 		class="flex items-center gap-1 {getColorClass(dayPercent)}"
-		title="Messages restants aujourd'hui (100 max)"
+		title="Messages restants aujourd'hui ({TUTOR_MAX_PER_DAY} max)"
 	>
 		<span class="text-sm">📅</span>
-		<span class="font-medium">{remaining.day}/100</span>
+		<span class="font-medium">{remaining.day}/{TUTOR_MAX_PER_DAY}</span>
 	</span>
 </div>

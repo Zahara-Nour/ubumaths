@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTutorMessagesQuerySchema } from '$lib/server/validation/chat';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/tutor/conversations/[id]/messages?limit=50&before=timestamp
@@ -15,11 +16,8 @@ import { getTutorMessagesQuerySchema } from '$lib/server/validation/chat';
  * Only the conversation owner can access messages.
  */
 export const GET: RequestHandler = async ({ params, url, locals }) => {
-	// Check authentication
-	const user = locals.user;
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
+	// Check authentication with proper session validation
+	const { user } = await requireAuth(locals);
 
 	const conversationId = params.id;
 	if (!conversationId) {
@@ -41,10 +39,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	const { limit, before } = validation.data;
 
-	const supabase = locals.supabase;
-
 	// First, verify the user owns this conversation
-	const { data: conversation, error: convError } = await supabase
+	const { data: conversation, error: convError } = await locals.supabase
 		.from('tutor_conversations')
 		.select('id, student_id')
 		.eq('id', conversationId)
@@ -59,7 +55,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	}
 
 	// Build query for messages
-	let query = supabase
+	let query = locals.supabase
 		.from('tutor_messages')
 		.select('id, role, content, help_level, created_at')
 		.eq('conversation_id', conversationId)
@@ -74,7 +70,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const { data: messages, error: msgError } = await query;
 
 	if (msgError) {
-		console.error('Error fetching tutor messages:', msgError);
+		console.error('Tutor messages fetch error:', msgError);
 		throw error(500, 'Erreur lors du chargement des messages');
 	}
 

@@ -11,6 +11,7 @@ import {
 	getTutorConversationQuerySchema,
 	createTutorConversationSchema
 } from '$lib/server/validation/chat';
+import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/tutor/conversations?exerciseId=X&assignmentId=Y
@@ -19,22 +20,12 @@ import {
  * or null if no conversation exists.
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
-	console.log('[API tutor/conversations] GET called');
-
-	// Check authentication
-	const user = locals.user;
-	if (!user) {
-		console.log('[API tutor/conversations] GET: No user authenticated');
-		throw error(401, 'Non authentifié');
-	}
-
-	console.log('[API tutor/conversations] GET: User authenticated:', user.id);
+	// Check authentication with proper session validation
+	const { user } = await requireAuth(locals);
 
 	// Parse and validate query parameters
 	const exerciseId = url.searchParams.get('exerciseId');
 	const assignmentId = url.searchParams.get('assignmentId');
-
-	console.log('[API tutor/conversations] GET: Query params:', { exerciseId, assignmentId });
 
 	const validation = getTutorConversationQuerySchema.safeParse({
 		exerciseId,
@@ -42,15 +33,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	});
 
 	if (!validation.success) {
-		console.log('[API tutor/conversations] GET: Validation failed:', validation.error.issues);
 		throw error(400, validation.error.issues[0].message);
 	}
 
 	const { exerciseId: validExerciseId, assignmentId: validAssignmentId } = validation.data;
 
 	// Query for existing conversation
-	const supabase = locals.supabase;
-	const { data: conversation, error: dbError } = await supabase
+	const { data: conversation, error: dbError } = await locals.supabase
 		.from('tutor_conversations')
 		.select(
 			'id, exercise_id, assignment_id, started_at, message_count, max_help_level_reached, is_active'
@@ -61,11 +50,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.maybeSingle();
 
 	if (dbError) {
-		console.error('[API tutor/conversations] GET: DB error:', dbError);
+		console.error('Tutor conversations DB error:', dbError);
 		throw error(500, 'Erreur lors de la recherche de la conversation');
 	}
-
-	console.log('[API tutor/conversations] GET: Found conversation:', conversation?.id || 'null');
 
 	return json({ conversation });
 };
@@ -77,43 +64,26 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  * Fetches the exercise correction server-side (never from client).
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	console.log('[API tutor/conversations] POST called');
-
-	// Check authentication
-	const user = locals.user;
-	if (!user) {
-		console.log('[API tutor/conversations] POST: No user authenticated');
-		throw error(401, 'Non authentifié');
-	}
-
-	console.log('[API tutor/conversations] POST: User authenticated:', user.id);
+	// Check authentication with proper session validation
+	const { user } = await requireAuth(locals);
 
 	// Parse and validate body
 	let body: unknown;
 	try {
 		body = await request.json();
 	} catch {
-		console.log('[API tutor/conversations] POST: Invalid JSON body');
 		throw error(400, 'Corps de requête invalide');
 	}
 
 	const validation = createTutorConversationSchema.safeParse(body);
 	if (!validation.success) {
-		console.log('[API tutor/conversations] POST: Validation failed:', validation.error.issues);
 		throw error(400, validation.error.issues[0].message);
 	}
 
 	const { exerciseId, assignmentId, statement, topic, classId } = validation.data;
-	console.log('[API tutor/conversations] POST: Creating conversation for:', {
-		exerciseId,
-		assignmentId,
-		hasStatement: !!statement
-	});
-
-	const supabase = locals.supabase;
 
 	// Check if conversation already exists
-	const { data: existing } = await supabase
+	const { data: existing } = await locals.supabase
 		.from('tutor_conversations')
 		.select('id')
 		.eq('student_id', user.id)
@@ -122,12 +92,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.maybeSingle();
 
 	if (existing) {
-		console.log('[API tutor/conversations] POST: Conversation already exists:', existing.id);
 		throw error(409, 'Une conversation existe déjà pour cet exercice');
 	}
 
 	// Fetch the exercise correction server-side
-	const { data: exercise } = await supabase
+	const { data: exercise } = await locals.supabase
 		.from('exercises')
 		.select('solution_md')
 		.eq('id', exerciseId)
@@ -136,7 +105,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const correction = exercise?.solution_md || null;
 
 	// Create the conversation
-	const { data: conversation, error: createError } = await supabase
+	const { data: conversation, error: createError } = await locals.supabase
 		.from('tutor_conversations')
 		.insert({
 			student_id: user.id,
@@ -154,11 +123,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (createError) {
-		console.error('[API tutor/conversations] POST: DB error:', createError);
+		console.error('Tutor conversation creation error:', createError);
 		throw error(500, 'Erreur lors de la création de la conversation');
 	}
-
-	console.log('[API tutor/conversations] POST: Created conversation:', conversation.id);
 
 	return json({ conversation }, { status: 201 });
 };

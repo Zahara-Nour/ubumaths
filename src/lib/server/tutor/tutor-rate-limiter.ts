@@ -165,10 +165,16 @@ export interface TutorRateLimitResult {
  * - Fenêtre glissante de 1440 minutes (24h)
  * - Protège contre les abus automatisés
  */
+import {
+	TUTOR_MAX_PER_EXERCISE,
+	TUTOR_MAX_PER_HOUR,
+	TUTOR_MAX_PER_DAY
+} from '$lib/config/tutor-limits';
+
 export const TUTOR_RATE_LIMITS: TutorRateLimitConfig = {
-	perExercise: { max: 15 },
-	perHour: { max: 30, windowMinutes: 60 },
-	perDay: { max: 100, windowMinutes: 1440 }
+	perExercise: { max: TUTOR_MAX_PER_EXERCISE },
+	perHour: { max: TUTOR_MAX_PER_HOUR, windowMinutes: 60 },
+	perDay: { max: TUTOR_MAX_PER_DAY, windowMinutes: 1440 }
 };
 
 /**
