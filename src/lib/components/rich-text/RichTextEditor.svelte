@@ -126,6 +126,8 @@
 		genericFunctions?: GenericFunctionConfig | null;
 		/** Callback called when content changes (user input, not programmatic updates) */
 		onchange?: () => void;
+		/** Send message on Enter key (Shift+Enter for new line). Only works in chat mode. */
+		enterToSend?: boolean;
 	}
 
 	let {
@@ -144,7 +146,8 @@
 		disabled = false,
 		imageUpload,
 		genericFunctions,
-		onchange
+		onchange,
+		enterToSend = false
 	}: Props = $props();
 
 	// Resolve configuration: explicit props override preset values
@@ -1661,6 +1664,12 @@
 				<div
 					bind:this={editorElement}
 					class="h-full bg-background {isMarkdownEditMode ? 'hidden' : ''}"
+					onkeydown={(e) => {
+						if (enterToSend && mode === 'chat' && e.key === 'Enter' && !e.shiftKey) {
+							e.preventDefault();
+							handleSend();
+						}
+					}}
 				></div>
 
 				<!-- CodeMirror markdown editor - shown only in markdown mode -->

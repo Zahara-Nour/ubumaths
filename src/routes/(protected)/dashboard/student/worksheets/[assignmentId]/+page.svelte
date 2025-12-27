@@ -167,19 +167,6 @@
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<!-- Breadcrumb -->
-	<nav class="mb-6 text-sm text-muted-foreground" aria-label="Fil d'Ariane">
-		<ol class="flex items-center gap-2">
-			<li>
-				<a href="/dashboard/student/worksheets" class="hover:text-foreground hover:underline">
-					Mes Feuilles de Travail
-				</a>
-			</li>
-			<li aria-hidden="true">/</li>
-			<li class="truncate font-medium text-foreground" aria-current="page">
-				{worksheet.title}
-			</li>
-		</ol>
-	</nav>
 
 	<!-- Header -->
 	<WorksheetHeader {worksheet} />

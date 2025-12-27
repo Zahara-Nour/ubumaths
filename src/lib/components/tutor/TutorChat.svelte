@@ -639,6 +639,7 @@
 				mathTemplates="full"
 				disabled={isLoading}
 				minHeight="60px"
+				enterToSend
 			/>
 		{/if}
 	</div>
