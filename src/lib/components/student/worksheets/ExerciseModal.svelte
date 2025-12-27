@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
@@ -61,6 +62,26 @@
 
 	// Mobile tutor drawer state
 	let tutorDrawerOpen = $state(false);
+
+	// Viewport detection to mount only ONE TutorChat instance at a time
+	// This prevents race conditions between desktop and mobile instances
+	let isDesktop = $state(browser ? window.matchMedia('(min-width: 1024px)').matches : true);
+
+	$effect(() => {
+		if (!browser) return;
+
+		const mediaQuery = window.matchMedia('(min-width: 1024px)');
+		const handler = (e: MediaQueryListEvent) => {
+			isDesktop = e.matches;
+			// Close drawer when switching to desktop
+			if (e.matches) {
+				tutorDrawerOpen = false;
+			}
+		};
+
+		mediaQuery.addEventListener('change', handler);
+		return () => mediaQuery.removeEventListener('change', handler);
+	});
 
 	// Tutor context derived from current exercise
 	let tutorContext = $derived(
@@ -257,11 +278,14 @@
 				</div>
 			</div>
 
-			<!-- Tutor Panel (40%) -->
+			<!-- Tutor Panel (40%) - Only mount TutorChat on desktop to avoid dual instances -->
 			<div class="flex w-[40%] flex-col overflow-hidden bg-muted/30">
-				{#if tutorContext}
-					<TutorChat exerciseContext={tutorContext} {assignmentId} />
-				{:else}
+				{#if isDesktop && tutorContext}
+					<!-- Key forces remount when exercise changes, ensuring fresh state -->
+					{#key tutorContext.exerciseId}
+						<TutorChat exerciseContext={tutorContext} {assignmentId} />
+					{/key}
+				{:else if isDesktop}
 					<div class="flex h-full items-center justify-center text-muted-foreground">
 						<p>Selectionnez un exercice pour commencer</p>
 					</div>
@@ -403,19 +427,24 @@
 				</div>
 			</div>
 
-			<!-- Tutor FAB -->
-			<TutorFAB onclick={() => (tutorDrawerOpen = true)} />
+			<!-- Tutor FAB - Only show on mobile -->
+			{#if !isDesktop}
+				<TutorFAB onclick={() => (tutorDrawerOpen = true)} />
 
-			<!-- Tutor Drawer -->
-			<TutorDrawer open={tutorDrawerOpen} onClose={() => (tutorDrawerOpen = false)}>
-				{#if tutorContext}
-					<TutorChat exerciseContext={tutorContext} {assignmentId} />
-				{:else}
-					<div class="flex h-full items-center justify-center text-muted-foreground">
-						<p>Selectionnez un exercice pour commencer</p>
-					</div>
-				{/if}
-			</TutorDrawer>
+				<!-- Tutor Drawer - Only mount TutorChat on mobile to avoid dual instances -->
+				<TutorDrawer open={tutorDrawerOpen} onClose={() => (tutorDrawerOpen = false)}>
+					{#if tutorContext}
+						<!-- Key forces remount when exercise changes, ensuring fresh state -->
+						{#key tutorContext.exerciseId}
+							<TutorChat exerciseContext={tutorContext} {assignmentId} />
+						{/key}
+					{:else}
+						<div class="flex h-full items-center justify-center text-muted-foreground">
+							<p>Selectionnez un exercice pour commencer</p>
+						</div>
+					{/if}
+				</TutorDrawer>
+			{/if}
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

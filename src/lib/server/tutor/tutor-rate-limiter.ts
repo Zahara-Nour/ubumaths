@@ -242,18 +242,19 @@ async function getCurrentCount(key: string): Promise<number> {
 	const supabase = getTutorServiceRoleClient();
 
 	try {
-		const { count, error } = await supabase
+		const { data, error } = await supabase
 			.from('rate_limits')
-			.select('*', { count: 'exact', head: true })
+			.select('count')
 			.eq('key', key)
-			.gte('expires_at', new Date().toISOString());
+			.gte('expires_at', new Date().toISOString())
+			.maybeSingle();
 
 		if (error) {
 			logger.error('Erreur récupération count rate limit tuteur:', error);
 			return 0; // Fail open
 		}
 
-		return count || 0;
+		return data?.count || 0;
 	} catch (error) {
 		logger.error('Exception récupération count rate limit tuteur:', error);
 		return 0; // Fail open
@@ -549,18 +550,49 @@ export async function incrementTutorUsage(userId: string, exerciseId?: string): 
 	const now = new Date();
 
 	try {
-		// Préparer les entrées à insérer
-		const entries: Array<{ key: string; count: number; expires_at: string }> = [];
+		// Helper to upsert a rate limit entry
+		// Uses ON CONFLICT to increment count if key exists, or insert new entry
+		const upsertEntry = async (key: string, expiresAt: Date) => {
+			// First try to update existing entry
+			const { data: existing } = await supabase
+				.from('rate_limits')
+				.select('id, count, expires_at')
+				.eq('key', key)
+				.gte('expires_at', now.toISOString())
+				.maybeSingle();
+
+			if (existing) {
+				// Update existing entry - increment count
+				const { error } = await supabase
+					.from('rate_limits')
+					.update({ count: existing.count + 1 })
+					.eq('id', existing.id);
+
+				if (error) {
+					logger.error('Erreur update rate limit tuteur:', { key, error });
+				}
+			} else {
+				// Insert new entry (or update expired one)
+				const { error } = await supabase.from('rate_limits').upsert(
+					{
+						key,
+						count: 1,
+						expires_at: expiresAt.toISOString()
+					},
+					{ onConflict: 'key' }
+				);
+
+				if (error) {
+					logger.error('Erreur upsert rate limit tuteur:', { key, error });
+				}
+			}
+		};
 
 		// 1. Exercice (si fourni) - expire dans 7 jours
 		if (exerciseId) {
 			const exerciseKey = `tutor:exercise:${userId}:${exerciseId}`;
 			const exerciseExpiry = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 jours
-			entries.push({
-				key: exerciseKey,
-				count: 1,
-				expires_at: exerciseExpiry.toISOString()
-			});
+			await upsertEntry(exerciseKey, exerciseExpiry);
 		}
 
 		// 2. Heure - expire dans 60 minutes
@@ -568,34 +600,16 @@ export async function incrementTutorUsage(userId: string, exerciseId?: string): 
 		const hourExpiry = new Date(
 			now.getTime() + TUTOR_RATE_LIMITS.perHour.windowMinutes * 60 * 1000
 		);
-		entries.push({
-			key: hourKey,
-			count: 1,
-			expires_at: hourExpiry.toISOString()
-		});
+		await upsertEntry(hourKey, hourExpiry);
 
 		// 3. Jour - expire dans 1440 minutes (24h)
 		const dayKey = `tutor:day:${userId}`;
 		const dayExpiry = new Date(now.getTime() + TUTOR_RATE_LIMITS.perDay.windowMinutes * 60 * 1000);
-		entries.push({
-			key: dayKey,
-			count: 1,
-			expires_at: dayExpiry.toISOString()
-		});
-
-		// Insérer toutes les entrées
-		const { error } = await supabase.from('rate_limits').insert(entries);
-
-		if (error) {
-			logger.error('Erreur insertion rate limit tuteur:', error);
-			// Fail silent - ne pas bloquer la requête
-			return;
-		}
+		await upsertEntry(dayKey, dayExpiry);
 
 		logger.trace('Compteurs tuteur incrémentés', {
 			userId: maskKey(`user:${userId}`),
-			exerciseId: exerciseId ? maskKey(`exercise:${exerciseId}`) : null,
-			entriesCount: entries.length
+			exerciseId: exerciseId ? maskKey(`exercise:${exerciseId}`) : null
 		});
 	} catch (error) {
 		logger.error('Exception incrementTutorUsage:', error);

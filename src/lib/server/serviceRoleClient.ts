@@ -40,7 +40,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'.test.ts',
 	// Cleanup endpoints
 	'/api/cleanup/',
-	'/api/errors/cleanup'
+	'/api/errors/cleanup',
+	// Chat/Tutor API (message persistence requires service role)
+	'/api/chat/'
 ] as const;
 
 /**

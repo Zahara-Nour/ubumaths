@@ -12,6 +12,7 @@ import { analyzeMessage } from '$lib/server/tutor/cheat-detector';
 import { analyzeStudentMessages, calculateEffortScore } from '$lib/server/tutor/help-escalation';
 import { hybridSearch, formatResultsForPrompt } from '$lib/server/rag';
 import type { GradeCode } from '$lib/types/grades';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -203,6 +204,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			await incrementTutorUsage(user.id, exerciseContext?.exerciseId);
 
 			// Calculate updated remaining counts (after increment)
+			// Always provide remaining to ensure UI updates correctly
 			const updatedRemaining = rateLimitResult.remaining
 				? {
 						exercise:
@@ -212,7 +214,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						hour: Math.max(0, rateLimitResult.remaining.hour - 1),
 						day: Math.max(0, rateLimitResult.remaining.day - 1)
 					}
-				: undefined;
+				: {
+						// Fallback if remaining was not available (DB error during rate check)
+						exercise: null,
+						hour: 29, // Assume one message used
+						day: 99
+					};
 
 			// 10. Log to ai_chat_usage table (async, non-blocking)
 			Promise.resolve().then(async () => {
@@ -231,8 +238,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 
 			// 11. Persist messages to tutor_messages if conversationId is provided
+			// Use service role client to bypass RLS (we already verified auth with requireAuth)
+			console.log('[API chat] Checking message persistence, conversationId:', conversationId);
 			if (conversationId) {
 				try {
+					const serviceClient = createServiceRoleClient();
+
 					// Insert user message and assistant response
 					const messagesToInsert = [
 						{
@@ -240,7 +251,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 							role: 'user',
 							content: userMessageContent,
 							help_level: helpLevel,
-							cheat_detected: cheatAnalysis.isCheatAttempt ?? false
+							cheat_detected: cheatAnalysis.isCheatAttempt.isCheatAttempt
 						},
 						{
 							conversation_id: conversationId,
@@ -251,20 +262,35 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						}
 					];
 
-					await locals.supabase.from('tutor_messages').insert(messagesToInsert);
+					console.log('[API chat] Inserting messages for conversation:', conversationId);
+					const { error: insertError } = await serviceClient
+						.from('tutor_messages')
+						.insert(messagesToInsert);
+
+					if (insertError) {
+						console.error('[API chat] Message insert error:', insertError);
+					} else {
+						console.log('[API chat] Messages inserted successfully');
+					}
 
 					// Update conversation stats
-					await locals.supabase
+					const { error: updateError } = await serviceClient
 						.from('tutor_conversations')
 						.update({
 							message_count: messages.length + 1,
 							max_help_level_reached: helpLevel
 						})
 						.eq('id', conversationId);
+
+					if (updateError) {
+						console.error('[API chat] Conversation update error:', updateError);
+					}
 				} catch (persistError) {
 					// Non-blocking - log but don't fail the request
-					console.error('Failed to persist tutor messages:', persistError);
+					console.error('[API chat] Failed to persist tutor messages:', persistError);
 				}
+			} else {
+				console.log('[API chat] No conversationId provided, skipping persistence');
 			}
 
 			return json({
