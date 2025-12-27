@@ -56,37 +56,49 @@
 </script>
 
 <div
-	class="flex flex-wrap gap-3 text-xs text-muted-foreground"
+	class="flex flex-wrap items-center gap-3 text-xs text-muted-foreground"
 	style="font-size: calc(0.75rem * var(--font-scale)); line-height: calc(1rem * var(--font-scale));"
 	role="status"
 	aria-label="Quotas de messages restants"
 >
-	{#if remaining.exercise !== null}
-		<span
-			class="flex items-center gap-1 {getColorClass(exercisePercent ?? 0)}"
-			title="Messages restants sur cet exercice ({TUTOR_MAX_PER_EXERCISE} max)"
-		>
-			<span class="text-sm">📝</span>
-			<span class="font-medium">{remaining.exercise}/{TUTOR_MAX_PER_EXERCISE}</span>
-		</span>
-	{:else if isLoading}
+	{#if isLoading}
+		<!-- Loading state with skeleton -->
 		<span class="flex items-center gap-1 text-muted-foreground" title="Chargement des quotas...">
 			<span class="text-sm">📝</span>
-			<span class="animate-pulse font-medium">--/{TUTOR_MAX_PER_EXERCISE}</span>
+			<span class="h-4 w-8 animate-pulse rounded bg-muted-foreground/20"></span>
+		</span>
+		<span class="flex items-center gap-1 text-muted-foreground">
+			<span class="text-sm">⏱️</span>
+			<span class="h-4 w-10 animate-pulse rounded bg-muted-foreground/20"></span>
+		</span>
+		<span class="flex items-center gap-1 text-muted-foreground">
+			<span class="text-sm">📅</span>
+			<span class="h-4 w-12 animate-pulse rounded bg-muted-foreground/20"></span>
+		</span>
+	{:else}
+		<!-- Loaded state -->
+		{#if remaining.exercise !== null}
+			<span
+				class="flex items-center gap-1 {getColorClass(exercisePercent ?? 0)}"
+				title="Messages restants sur cet exercice ({TUTOR_MAX_PER_EXERCISE} max)"
+			>
+				<span class="text-sm">📝</span>
+				<span class="font-medium">{remaining.exercise}/{TUTOR_MAX_PER_EXERCISE}</span>
+			</span>
+		{/if}
+		<span
+			class="flex items-center gap-1 {getColorClass(hourPercent)}"
+			title="Messages restants cette heure ({TUTOR_MAX_PER_HOUR} max)"
+		>
+			<span class="text-sm">⏱️</span>
+			<span class="font-medium">{remaining.hour}/{TUTOR_MAX_PER_HOUR}</span>
+		</span>
+		<span
+			class="flex items-center gap-1 {getColorClass(dayPercent)}"
+			title="Messages restants aujourd'hui ({TUTOR_MAX_PER_DAY} max)"
+		>
+			<span class="text-sm">📅</span>
+			<span class="font-medium">{remaining.day}/{TUTOR_MAX_PER_DAY}</span>
 		</span>
 	{/if}
-	<span
-		class="flex items-center gap-1 {getColorClass(hourPercent)}"
-		title="Messages restants cette heure ({TUTOR_MAX_PER_HOUR} max)"
-	>
-		<span class="text-sm">⏱️</span>
-		<span class="font-medium">{remaining.hour}/{TUTOR_MAX_PER_HOUR}</span>
-	</span>
-	<span
-		class="flex items-center gap-1 {getColorClass(dayPercent)}"
-		title="Messages restants aujourd'hui ({TUTOR_MAX_PER_DAY} max)"
-	>
-		<span class="text-sm">📅</span>
-		<span class="font-medium">{remaining.day}/{TUTOR_MAX_PER_DAY}</span>
-	</span>
 </div>
