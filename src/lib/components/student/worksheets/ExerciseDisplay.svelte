@@ -42,8 +42,10 @@
 <Card.Root>
 	<Card.Header class="pb-3">
 		<div class="flex flex-wrap items-center justify-between gap-2">
-			<!-- Exercise Number -->
-			<Card.Title class="text-lg">Exercice {index}</Card.Title>
+			<!-- Exercise Number and Title -->
+			<Card.Title class="text-lg">
+				Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}
+			</Card.Title>
 
 			<!-- Points Badge -->
 			{#if pointsLabel}

@@ -233,6 +233,7 @@ function resolveExercise(
 
 	return {
 		exercise_id: exercise.exercise_id,
+		title: exercise.exercise?.title ?? null,
 		position,
 		parameters,
 		statement: instance.statement_md,

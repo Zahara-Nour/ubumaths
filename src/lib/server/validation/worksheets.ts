@@ -872,6 +872,8 @@ export const exerciseResourceSchema = z.object({
 export const studentExerciseViewSchema = z.object({
 	id: z.string().uuid(),
 	exercise_id: z.string().uuid(),
+	/** Exercise title (displayed next to the exercise number) */
+	title: z.string().nullable(),
 	position: z.number().int().nonnegative(),
 	points: z.number().int().nullable(),
 	custom_instructions: z.string().nullable(),

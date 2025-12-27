@@ -451,11 +451,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const config = this.worksheetConfig;
 		let content = '';
 
-		// Exercise header with number and optional points
+		// Exercise header with number, title, and optional points
+		const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
 		content += '#exercise-box[\n';
 		content += '  #grid(\n';
 		content += '    columns: (auto, 1fr, auto),\n';
-		content += `    [#text(size: 1.1em, weight: "bold")[Exercice ${number}]],\n`;
+		content += `    [#text(size: 1.1em, weight: "bold")[Exercice ${number}${titleSuffix}]],\n`;
 		content += '    [],\n';
 
 		if (config.show_points && exercise.position) {
@@ -556,9 +557,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const config = this.worksheetConfig;
 		let content = '';
 
-		// Exercise header
+		// Exercise header with title
+		const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
 		content += `#block(width: 100%, inset: 0pt)[
-  #text(size: 1.1em, weight: "bold")[Exercice ${number}]`;
+  #text(size: 1.1em, weight: "bold")[Exercice ${number}${titleSuffix}]`;
 
 		if (config.show_points && exercise.position) {
 			content += ` #h(1fr) #box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.position} pts]`;

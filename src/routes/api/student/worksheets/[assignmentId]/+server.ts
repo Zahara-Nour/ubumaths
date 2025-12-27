@@ -378,6 +378,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			const exerciseView: StudentExerciseView = {
 				id: we.id,
 				exercise_id: exerciseData.id,
+				title: exerciseData.title,
 				position: we.position,
 				points: we.points,
 				custom_instructions: we.custom_instructions,

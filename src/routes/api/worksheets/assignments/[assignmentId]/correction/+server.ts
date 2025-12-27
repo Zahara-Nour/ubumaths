@@ -240,6 +240,7 @@ function generateSimpleInstance(worksheet: WorksheetWithRelations): InstanceData
 
 	const resolvedExercises = sortedExercises.map((we) => ({
 		exercise_id: we.exercise_id,
+		title: we.exercise?.title ?? null,
 		position: we.position,
 		parameters: {},
 		statement: we.exercise?.statement_md || '',
