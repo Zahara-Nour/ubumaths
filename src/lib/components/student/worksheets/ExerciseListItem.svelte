@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
+	import { CheckCircle, AlertCircle } from 'lucide-svelte';
 	import ReportErrorButton from '$lib/components/worksheets/ReportErrorButton.svelte';
 	import type { StudentExerciseView, StudentErrorReportView } from '$lib/types/worksheets';
 	import type { MasteryStatus } from '$lib/types/exercise-mastery';
-	import { MASTERY_LABELS, MASTERY_COLORS } from '$lib/types/exercise-mastery';
 
 	interface Props {
 		exercise: StudentExerciseView;
@@ -24,11 +24,6 @@
 		onclick,
 		onReportCreated
 	}: Props = $props();
-
-	// Only show mastery badge if status is not 'not_worked'
-	let showMasteryBadge = $derived(masteryStatus && masteryStatus !== 'not_worked');
-	let masteryColors = $derived(masteryStatus ? MASTERY_COLORS[masteryStatus] : null);
-	let masteryLabel = $derived(masteryStatus ? MASTERY_LABELS[masteryStatus] : null);
 
 	let hasCorrection = $derived(exercise.correction_visible && exercise.correction !== null);
 	let pointsLabel = $derived(
@@ -77,13 +72,10 @@
 				</Badge>
 			{/if}
 
-			{#if showMasteryBadge && masteryColors && masteryLabel}
-				<Badge
-					variant="outline"
-					class="{masteryColors.bg} {masteryColors.text} {masteryColors.border} font-normal"
-				>
-					{masteryLabel}
-				</Badge>
+			{#if masteryStatus === 'mastered'}
+				<CheckCircle class="h-5 w-5 text-green-600" aria-label="Maîtrisé" />
+			{:else if masteryStatus === 'needs_review'}
+				<AlertCircle class="h-5 w-5 text-amber-500" aria-label="À retravailler" />
 			{/if}
 		</div>
 	</button>
