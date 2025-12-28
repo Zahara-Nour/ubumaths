@@ -134,16 +134,16 @@ describe('generateVariationTableTypst - Error Handling', () => {
 // ============================================================================
 
 describe('generateVariationTableTypst - Sign Rows', () => {
-	it('should generate simple sign row with +/- values', () => {
+	it('should generate sign row with interval-based format', () => {
 		const node = createBasicNode();
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('($+$');
-		expect(typst).toContain('"z"');
-		expect(typst).toContain('$-$');
+		// n-1 elements for n domain points
+		// First interval: $+$, second interval: ("z", $-$)
+		expect(typst).toContain('($+$, ("z", $-$))');
 	});
 
-	it('should convert zero marker to "z"', () => {
+	it('should combine zero marker with following sign', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -163,10 +163,11 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('"z"');
+		// Zero marker combined with sign: ("z", $-$)
+		expect(typst).toContain('($+$, ("z", $-$))');
 	});
 
-	it('should convert asymptote marker to "||"', () => {
+	it('should combine asymptote marker with following sign', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -186,10 +187,11 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('"||"');
+		// Asymptote marker combined with sign: ("||", $+$)
+		expect(typst).toContain('($+$, ("||", $+$))');
 	});
 
-	it('should convert forbidden marker to "||"', () => {
+	it('should combine forbidden marker with following sign', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -209,10 +211,11 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('"||"');
+		// Forbidden marker combined with sign: ("||", $+$)
+		expect(typst).toContain('($+$, ("||", $+$))');
 	});
 
-	it('should convert discontinuity marker to "||"', () => {
+	it('should combine discontinuity marker with following sign', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -232,7 +235,8 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('"||"');
+		// Discontinuity marker combined with sign: ("||", $-$)
+		expect(typst).toContain('($+$, ("||", $-$))');
 	});
 
 	it('should handle empty intervals with empty strings', () => {
@@ -260,6 +264,7 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
+		// Empty intervals as ""
 		expect(typst).toContain('""');
 	});
 });
@@ -613,8 +618,10 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		// Verify labels with content blocks
 		expect(typst).toContain('label: (([$f\'(x)$], "s"), ([$f(x)$], "v"))');
 
-		// Verify sign row
-		expect(typst).toContain('($+$, "z", $-$, "z", $+$, "z", $-$)');
+		// Verify sign row - interval-based format with markers combined
+		// Domain: 5 points -> 4 intervals
+		// Markers at -1, 0, 1 combined with their following signs
+		expect(typst).toContain('($+$, ("z", $-$), ("z", $+$), ("z", $-$))');
 
 		// Verify variation row (point format)
 		// 5 points for 5 domain points: each point gets (position, $value$)
@@ -654,8 +661,9 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('($-$, "z", $+$)');
-		expect(typst).toContain('($+$, "z", $-$)');
+		// Interval-based format with markers combined
+		expect(typst).toContain('($-$, ("z", $+$))');
+		expect(typst).toContain('($+$, ("z", $-$))');
 	});
 
 	it('should convert complex math expressions', () => {
