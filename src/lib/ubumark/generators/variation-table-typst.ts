@@ -344,30 +344,37 @@ function formatPointVariation(value: VariationValue | undefined): string {
 			const [leftLimit, rightLimit] = value.limits;
 			const leftExpr = formatMathExpression(leftLimit.expression);
 			const rightExpr = formatMathExpression(rightLimit.expression);
-			const leftPos = convertPosition(leftLimit.position) || 'center';
-			const rightPos = convertPosition(rightLimit.position) || 'center';
-			return `(${leftPos}, ${rightPos}, "||", $${leftExpr}$, $${rightExpr}$)`;
+			const leftPos = convertPosition(leftLimit.position);
+			const rightPos = convertPosition(rightLimit.position);
+			// Both positions required for asymptote with limits
+			return `(${leftPos || 'bottom'}, ${rightPos || 'top'}, "||", $${leftExpr}$, $${rightExpr}$)`;
 		}
 		// For single-limit asymptote (left side): show limit then asymptote bar
 		if (value.limitSide === 'left') {
 			const limitExpr = formatMathExpression(value.expression);
-			const limitPos = convertPosition(value.position) || 'center';
-			return `(${limitPos}, "||", $${limitExpr}$)`;
+			const limitPos = convertPosition(value.position);
+			return `(${limitPos || 'bottom'}, "||", $${limitExpr}$)`;
 		}
 		// For single-limit asymptote (right side): asymptote bar then limit
 		if (value.limitSide === 'right') {
 			const limitExpr = formatMathExpression(value.expression);
-			const limitPos = convertPosition(value.position) || 'center';
-			return `("||", ${limitPos}, $${limitExpr}$)`;
+			const limitPos = convertPosition(value.position);
+			return `("||", ${limitPos || 'top'}, $${limitExpr}$)`;
 		}
 		// For asymptote without explicit limits: just the marker
 		return '"||"';
 	}
 
-	// Normal value: (position, $value$)
+	// Normal value
 	const expr = formatMathExpression(value.expression);
-	const pos = convertPosition(value.position) || 'center';
-	return `(${pos}, $${expr}$)`;
+	const pos = convertPosition(value.position);
+
+	// Only use tuple format for top/bottom positions
+	// For center/default, just output the value directly
+	if (pos) {
+		return `(${pos}, $${expr}$)`;
+	}
+	return `$${expr}$`;
 }
 
 /**
