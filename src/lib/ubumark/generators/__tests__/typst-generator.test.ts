@@ -186,7 +186,7 @@ describe('generateTypst', () => {
 		expect(typst).toContain('please');
 	});
 
-	it('should use display mode for inline math with limits, wrapped in box', () => {
+	it('should wrap inline math with limits in box without display mode', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -203,9 +203,10 @@ describe('generateTypst', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		// Inline math with lim should use display() for proper limit rendering
-		// Also wrapped in #box[] to prevent line breaks
-		expect(typst).toContain('#box[$display(');
+		// All inline math uses standard inline mode like LaTeX
+		// Wrapped in #box[] to prevent line breaks
+		expect(typst).toContain('#box[$');
+		expect(typst).not.toContain('display(');
 		expect(typst).toContain('lim');
 	});
 
