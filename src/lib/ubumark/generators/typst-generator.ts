@@ -305,19 +305,18 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
 
-			// Check if math contains elements that need display mode:
-			// - Operators with limits (lim, sum, prod, etc.) for proper limit rendering
-			// - Fractions (frac) for larger, more readable display
+			// Check if math contains operators that need display mode for proper limit rendering
+			// (lim, sum, prod, etc. need limits above/below, not to the side)
+			// Note: Fractions stay in inline mode like LaTeX for proper baseline alignment
 			// Note: Can't use \b word boundary because _ is a word character (lim_ has no boundary)
 			const needsDisplayMode =
-				/(^|[^a-zA-Z])(lim|limsup|liminf|sum|prod|product|max|min|sup|inf|frac)([^a-zA-Z(]|$)/.test(
+				/(^|[^a-zA-Z])(lim|limsup|liminf|sum|prod|product|max|min|sup|inf)([^a-zA-Z]|$)/.test(
 					typstMath
-				) || typstMath.includes('frac(');
+				);
 
 			// Wrap inline math in #box[] to prevent line breaks within the expression
-			// Use baseline: 40% for display mode to align fraction bar with text baseline
 			if (needsDisplayMode) {
-				return `#box(baseline: 40%)[$display(${typstMath})$]`;
+				return `#box[$display(${typstMath})$]`;
 			}
 			return `#box[$${typstMath}$]`;
 		}
