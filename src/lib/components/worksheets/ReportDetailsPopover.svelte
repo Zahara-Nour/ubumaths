@@ -4,6 +4,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Info } from 'lucide-svelte';
 	import ReportStatusBadge from './ReportStatusBadge.svelte';
+	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import type { StudentErrorReportView } from '$lib/types/worksheets';
 
 	interface Props {
@@ -25,6 +26,44 @@
 			minute: '2-digit'
 		});
 	}
+
+	// Parse JSON description (TipTap format)
+	let descriptionContent = $derived.by(() => {
+		try {
+			// Handle both string JSON and already-parsed objects
+			const desc = report.description;
+			if (typeof desc === 'string') {
+				return JSON.parse(desc);
+			}
+			return desc;
+		} catch {
+			// Fallback for plain text or invalid JSON
+			const text =
+				typeof report.description === 'string' ? report.description : String(report.description);
+			return {
+				type: 'doc',
+				content: [{ type: 'paragraph', content: [{ type: 'text', text }] }]
+			};
+		}
+	});
+
+	// Parse JSON response (TipTap format) - only if present
+	let responseContent = $derived.by(() => {
+		if (!report.response) return null;
+		try {
+			const resp = report.response;
+			if (typeof resp === 'string') {
+				return JSON.parse(resp);
+			}
+			return resp;
+		} catch {
+			const text = typeof report.response === 'string' ? report.response : String(report.response);
+			return {
+				type: 'doc',
+				content: [{ type: 'paragraph', content: [{ type: 'text', text }] }]
+			};
+		}
+	});
 
 	let formattedCreatedAt = $derived(formatDate(report.created_at));
 	let formattedUpdatedAt = $derived(
@@ -60,13 +99,13 @@
 
 			<div>
 				<p class="mb-1 text-sm font-medium">Votre description</p>
-				<p class="text-sm text-muted-foreground">{report.description}</p>
+				<RichTextDisplay content={descriptionContent} class="text-sm text-muted-foreground" />
 			</div>
 
-			{#if report.response}
+			{#if responseContent}
 				<div>
 					<p class="mb-1 text-sm font-medium">Réponse de l'enseignant</p>
-					<p class="text-sm text-muted-foreground">{report.response}</p>
+					<RichTextDisplay content={responseContent} class="text-sm text-muted-foreground" />
 				</div>
 			{/if}
 
