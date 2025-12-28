@@ -220,48 +220,57 @@ function generateContent(node: VariationTableNode): string {
 /**
  * Generate a sign row for vartable
  *
- * Format: ($+$, "z", $-$, ...)
- * Values: $+$, $-$, "z" (zero), "||" (asymptote)
+ * Vartable uses interval-based format: n-1 elements for n domain points.
+ * Each element represents an interval.
+ * If there's a marker at the START of an interval, it's combined as a tuple.
+ *
+ * Format: ($+$, ("z", $-$), ...) or ($+$, $-$, ...)
  *
  * @param row - Sign row
  * @param domain - Domain points
- * @returns Sign row tuple
+ * @returns Sign row tuple with n-1 elements
  *
  * @example
- * Domain: [-inf, 0, +inf]
- * Values: {-inf,0: +, 0: z, 0,+inf: -}
- * Output: "($+$, \"z\", $-$)"
+ * Domain: [-inf, 0, +inf] with sign +, zero at 0, sign -
+ * Output: "($+$, (\"z\", $-$))"
  */
 function generateSignRow(row: SignRow, domain: DomainPoint[]): string {
 	const values: string[] = [];
 
-	// Generate values alternating: [interval0-1, point1, interval1-2, point2, ...]
-	// For each intermediate point, add interval BEFORE then point marker
+	// n-1 elements for n domain points (interval-based)
 	for (let i = 0; i < domain.length - 1; i++) {
-		const point = domain[i].expression;
-		const nextPoint = domain[i + 1].expression;
+		const startPoint = domain[i].expression;
+		const endPoint = domain[i + 1].expression;
 
-		// Add interval [i, i+1]
-		const intervalKey = `${point},${nextPoint}`;
+		// Get the sign for this interval
+		const intervalKey = `${startPoint},${endPoint}`;
 		const intervalValue = row.values.get(intervalKey);
 
-		if (intervalValue) {
-			if (intervalValue.type === 'sign') {
-				values.push(`$${intervalValue.value}$`);
-			} else {
-				values.push(convertSignMarkerToTypst(intervalValue.marker));
+		// Get marker at the START of this interval (if any, except for first interval)
+		let marker: string | null = null;
+		if (i > 0) {
+			const markerValue = row.values.get(startPoint);
+			if (markerValue && markerValue.type === 'marker') {
+				marker = convertSignMarkerToTypst(markerValue.marker);
 			}
-		} else {
-			// Empty interval - use empty string for spacing
-			values.push('""');
 		}
 
-		// Add point marker for nextPoint (if it's an intermediate point, not last)
-		if (i < domain.length - 2) {
-			const pointValue = row.values.get(nextPoint);
-			if (pointValue && pointValue.type === 'marker') {
-				values.push(convertSignMarkerToTypst(pointValue.marker));
+		// Format the element
+		let signStr = '""';
+		if (intervalValue) {
+			if (intervalValue.type === 'sign') {
+				signStr = `$${intervalValue.value}$`;
+			} else {
+				// Interval itself is a marker (e.g., hatched region)
+				signStr = convertSignMarkerToTypst(intervalValue.marker);
 			}
+		}
+
+		if (marker) {
+			// Combine marker with sign as tuple: (marker, sign)
+			values.push(`(${marker}, ${signStr})`);
+		} else {
+			values.push(signStr);
 		}
 	}
 
