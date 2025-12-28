@@ -292,8 +292,11 @@ async function initializeTypst(): Promise<TypstLibrary> {
 /**
  * Generate a simple instance from worksheet exercises
  */
-function generateSimpleInstance(worksheet: WorksheetWithRelations): InstanceData {
-	const exercises = worksheet.exercises || [];
+function generateSimpleInstance(
+	worksheet: WorksheetWithRelations & { worksheet_exercises?: WorksheetWithRelations['exercises'] }
+): InstanceData {
+	// Handle both property names: 'exercises' from composed response, 'worksheet_exercises' from joined query
+	const exercises = worksheet.exercises || worksheet.worksheet_exercises || [];
 
 	// Sort exercises by position
 	const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
