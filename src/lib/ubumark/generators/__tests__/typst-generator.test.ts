@@ -163,7 +163,7 @@ describe('generateTypst', () => {
 		expect(typst).toContain('Simple paragraph');
 	});
 
-	it('should generate inline math wrapped in box to prevent line breaks', () => {
+	it('should generate inline math with proper baseline alignment', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -181,12 +181,13 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		expect(typst).toContain('Calculate');
-		// Inline math is wrapped in #box[] to prevent line breaks within expressions
-		expect(typst).toContain('#box[$x^2$]');
+		// Inline math without box wrapper for proper baseline alignment
+		expect(typst).toContain('$x^2$');
+		expect(typst).not.toContain('#box');
 		expect(typst).toContain('please');
 	});
 
-	it('should wrap inline math with limits in box without display mode', () => {
+	it('should generate inline math with limits without box or display mode', () => {
 		const ast: DocumentNode = {
 			type: 'document',
 			children: [
@@ -204,8 +205,8 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// All inline math uses standard inline mode like LaTeX
-		// Wrapped in #box[] to prevent line breaks
-		expect(typst).toContain('#box[$');
+		// No box wrapper for proper baseline alignment
+		expect(typst).not.toContain('#box');
 		expect(typst).not.toContain('display(');
 		expect(typst).toContain('lim');
 	});

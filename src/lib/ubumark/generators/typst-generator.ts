@@ -305,9 +305,9 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
 
-			// Wrap inline math in #box[] to prevent line breaks within the expression
-			// All inline math uses standard inline mode like LaTeX for proper baseline alignment
-			return `#box[$${typstMath}$]`;
+			// Inline math without box wrapper - Typst handles baseline alignment naturally
+			// like LaTeX does with $...$
+			return `$${typstMath}$`;
 		}
 
 		case 'line-break':
