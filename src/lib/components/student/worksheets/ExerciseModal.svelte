@@ -209,71 +209,75 @@
 					{/if}
 				</div>
 
-				<!-- Footer with mastery and navigation -->
-				<div class="flex-shrink-0 border-t border-border bg-card px-6 py-4">
-					<div class="flex w-full flex-col gap-4">
+				<!-- Footer with mastery and navigation - compact single row -->
+				<div class="flex-shrink-0 border-t border-border bg-card px-6 py-2">
+					<div class="flex items-center justify-between gap-2">
+						<!-- Navigation prev -->
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={goPrev}
+							disabled={!canGoPrev}
+							aria-label="Exercice precedent (fleche gauche)"
+						>
+							<ChevronLeft class="h-4 w-4" />
+						</Button>
+
 						<!-- Mastery status buttons -->
-						<div class="flex items-center justify-center gap-2">
-							<span class="mr-2 text-sm text-muted-foreground">Statut :</span>
+						<div class="flex items-center gap-1">
 							{#if isSavingMastery}
-								<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+								<Loader2 class="mr-1 h-4 w-4 animate-spin text-muted-foreground" />
 							{/if}
 							<Button
 								variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
 								size="sm"
+								class="h-8 gap-1 px-2 text-xs"
 								onclick={() => onMasteryChange('not_worked')}
 								disabled={isSavingMastery}
-								aria-label={MASTERY_LABELS.not_worked}
+								title={MASTERY_LABELS.not_worked}
 								aria-pressed={masteryStatus === 'not_worked'}
 							>
-								<Circle class="mr-1.5 h-4 w-4" />
-								{MASTERY_LABELS.not_worked}
+								<Circle class="h-3.5 w-3.5" />
+								<span class="hidden sm:inline">Non fait</span>
 							</Button>
 							<Button
 								variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
 								size="sm"
+								class="h-8 gap-1 px-2 text-xs"
 								onclick={() => onMasteryChange('mastered')}
 								disabled={isSavingMastery}
-								aria-label={MASTERY_LABELS.mastered}
+								title={MASTERY_LABELS.mastered}
 								aria-pressed={masteryStatus === 'mastered'}
 							>
-								<CheckCircle class="mr-1.5 h-4 w-4" />
-								{MASTERY_LABELS.mastered}
+								<CheckCircle class="h-3.5 w-3.5" />
+								<span class="hidden sm:inline">OK</span>
 							</Button>
 							<Button
 								variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
 								size="sm"
+								class="h-8 gap-1 px-2 text-xs {masteryStatus === 'needs_review'
+									? 'bg-amber-500 hover:bg-amber-600'
+									: ''}"
 								onclick={() => onMasteryChange('needs_review')}
 								disabled={isSavingMastery}
-								aria-label={MASTERY_LABELS.needs_review}
+								title={MASTERY_LABELS.needs_review}
 								aria-pressed={masteryStatus === 'needs_review'}
 							>
-								<AlertCircle class="mr-1.5 h-4 w-4" />
-								{MASTERY_LABELS.needs_review}
+								<AlertCircle class="h-3.5 w-3.5" />
+								<span class="hidden sm:inline">A revoir</span>
 							</Button>
 						</div>
 
-						<!-- Navigation buttons -->
-						<div class="flex items-center justify-between">
-							<Button
-								variant="outline"
-								onclick={goPrev}
-								disabled={!canGoPrev}
-								aria-label="Exercice precedent (fleche gauche)"
-							>
-								<ChevronLeft class="mr-1 h-4 w-4" />
-								Precedent
-							</Button>
-							<Button
-								variant="outline"
-								onclick={goNext}
-								disabled={!canGoNext}
-								aria-label="Exercice suivant (fleche droite)"
-							>
-								Suivant
-								<ChevronRight class="ml-1 h-4 w-4" />
-							</Button>
-						</div>
+						<!-- Navigation next -->
+						<Button
+							variant="outline"
+							size="sm"
+							onclick={goNext}
+							disabled={!canGoNext}
+							aria-label="Exercice suivant (fleche droite)"
+						>
+							<ChevronRight class="h-4 w-4" />
+						</Button>
 					</div>
 				</div>
 			</div>
@@ -373,57 +377,72 @@
 				{/if}
 			</div>
 
-			<!-- Footer with mastery and navigation -->
-			<div class="flex-shrink-0 border-t border-border bg-card px-4 py-3">
-				<div class="flex w-full flex-col gap-3">
+			<!-- Footer with mastery and navigation - compact single row -->
+			<div class="flex-shrink-0 border-t border-border bg-card px-3 py-2">
+				<div class="flex items-center justify-between gap-1">
+					<!-- Navigation prev -->
+					<Button
+						variant="outline"
+						size="sm"
+						class="h-8 px-2"
+						onclick={goPrev}
+						disabled={!canGoPrev}
+					>
+						<ChevronLeft class="h-4 w-4" />
+					</Button>
+
 					<!-- Mastery status buttons -->
-					<div class="flex flex-wrap items-center justify-center gap-2">
+					<div class="flex items-center gap-1">
 						{#if isSavingMastery}
-							<Loader2 class="h-4 w-4 animate-spin text-muted-foreground" />
+							<Loader2 class="h-3 w-3 animate-spin text-muted-foreground" />
 						{/if}
 						<Button
 							variant={masteryStatus === 'not_worked' ? 'default' : 'outline'}
 							size="sm"
+							class="h-8 px-2"
 							onclick={() => onMasteryChange('not_worked')}
 							disabled={isSavingMastery}
+							title={MASTERY_LABELS.not_worked}
 							aria-pressed={masteryStatus === 'not_worked'}
 						>
-							<Circle class="mr-1.5 h-4 w-4" />
-							<span class="text-xs">{MASTERY_LABELS.not_worked}</span>
+							<Circle class="h-4 w-4" />
 						</Button>
 						<Button
 							variant={masteryStatus === 'mastered' ? 'default' : 'outline'}
 							size="sm"
+							class="h-8 px-2"
 							onclick={() => onMasteryChange('mastered')}
 							disabled={isSavingMastery}
+							title={MASTERY_LABELS.mastered}
 							aria-pressed={masteryStatus === 'mastered'}
 						>
-							<CheckCircle class="mr-1.5 h-4 w-4" />
-							<span class="text-xs">{MASTERY_LABELS.mastered}</span>
+							<CheckCircle class="h-4 w-4" />
 						</Button>
 						<Button
 							variant={masteryStatus === 'needs_review' ? 'default' : 'outline'}
 							size="sm"
+							class="h-8 px-2 {masteryStatus === 'needs_review'
+								? 'bg-amber-500 hover:bg-amber-600'
+								: ''}"
 							onclick={() => onMasteryChange('needs_review')}
 							disabled={isSavingMastery}
+							title={MASTERY_LABELS.needs_review}
 							aria-pressed={masteryStatus === 'needs_review'}
 						>
-							<AlertCircle class="mr-1.5 h-4 w-4" />
-							<span class="text-xs">{MASTERY_LABELS.needs_review}</span>
+							<AlertCircle class="h-4 w-4" />
 						</Button>
 					</div>
 
-					<!-- Navigation buttons -->
-					<div class="flex items-center justify-between">
-						<Button variant="outline" size="sm" onclick={goPrev} disabled={!canGoPrev}>
-							<ChevronLeft class="mr-1 h-4 w-4" />
-							Prec.
-						</Button>
-						<Button variant="outline" size="sm" onclick={goNext} disabled={!canGoNext}>
-							Suiv.
-							<ChevronRight class="ml-1 h-4 w-4" />
-						</Button>
-					</div>
+					<!-- Navigation next -->
+					<Button
+						variant="outline"
+						size="sm"
+						class="h-8 px-2"
+						onclick={goNext}
+						disabled={!canGoNext}
+					>
+						<ChevronRight class="h-4 w-4" />
+					</Button>
 				</div>
 			</div>
 
