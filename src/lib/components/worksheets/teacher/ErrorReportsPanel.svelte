@@ -2,49 +2,62 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import { AlertCircle, Loader2 } from 'lucide-svelte';
 	import ErrorReportCard from './ErrorReportCard.svelte';
 	import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
 
-	// Props
-	let {
-		worksheetId,
-		assignmentId
-	}: {
+	// Extended report type for worksheet-wide view
+	interface WorksheetReportView extends TeacherErrorReportView {
+		assignment_title?: string | null;
+		assignment_class_names?: string[];
+	}
+
+	interface AssignmentInfo {
+		id: string;
+		title: string | null;
+		class_names: string[];
+	}
+
+	// Props - assignmentId is now optional for worksheet-wide mode
+	interface Props {
 		worksheetId: string;
-		assignmentId: string;
-	} = $props();
+		assignmentId?: string;
+	}
+
+	let { worksheetId, assignmentId }: Props = $props();
+
+	// Derived: are we in worksheet-wide mode?
+	let isWorksheetWide = $derived(!assignmentId);
 
 	// State
 	let loading = $state(true);
-	let reports = $state<TeacherErrorReportView[]>([]);
+	let reports = $state<WorksheetReportView[]>([]);
 	let counts = $state({ pending: 0, fixed: 0, rejected: 0, total: 0 });
 	let currentFilter = $state<ErrorReportStatus | 'all'>('all');
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let limit = $state(50);
 
+	// Assignment filter state (for worksheet-wide mode)
+	let assignments = $state<AssignmentInfo[]>([]);
+	let selectedAssignmentId = $state<string>('');
+
+	// Assignment filter items for MySelect
+	let assignmentItems = $derived([
+		{ value: '', label: 'Toutes les assignations' },
+		...assignments.map((a) => ({
+			value: a.id,
+			label: a.title || a.class_names.join(', ') || 'Sans titre'
+		}))
+	]);
+
 	// Filter buttons configuration
 	let filterButtons = $derived([
-		{ label: 'Tous', value: 'all' as const, count: counts.total, variant: 'outline' as const },
-		{
-			label: 'En attente',
-			value: 'pending' as const,
-			count: counts.pending,
-			variant: 'default' as const
-		},
-		{
-			label: 'Corrigés',
-			value: 'fixed' as const,
-			count: counts.fixed,
-			variant: 'outline' as const
-		},
-		{
-			label: 'Rejetés',
-			value: 'rejected' as const,
-			count: counts.rejected,
-			variant: 'outline' as const
-		}
+		{ label: 'Tous', value: 'all' as const, count: counts.total },
+		{ label: 'En attente', value: 'pending' as const, count: counts.pending },
+		{ label: 'Corriges', value: 'fixed' as const, count: counts.fixed },
+		{ label: 'Rejetes', value: 'rejected' as const, count: counts.rejected }
 	]);
 
 	/**
@@ -65,9 +78,20 @@
 				params.set('status', currentFilter);
 			}
 
-			const response = await fetch(
-				`/api/worksheets/${worksheetId}/assignments/${assignmentId}/reports?${params.toString()}`
-			);
+			// Determine API endpoint
+			let url: string;
+			if (isWorksheetWide) {
+				// Worksheet-wide mode
+				url = `/api/worksheets/${worksheetId}/reports`;
+				if (selectedAssignmentId) {
+					params.set('assignmentId', selectedAssignmentId);
+				}
+			} else {
+				// Single assignment mode
+				url = `/api/worksheets/${worksheetId}/assignments/${assignmentId}/reports`;
+			}
+
+			const response = await fetch(`${url}?${params.toString()}`);
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({ message: 'Erreur serveur' }));
@@ -79,6 +103,11 @@
 			reports = data.reports || [];
 			counts = data.counts || { pending: 0, fixed: 0, rejected: 0, total: 0 };
 			totalPages = data.pagination?.totalPages || 1;
+
+			// In worksheet-wide mode, also get assignments list
+			if (isWorksheetWide && data.assignments) {
+				assignments = data.assignments;
+			}
 		} catch (err) {
 			console.error('Error loading reports:', err);
 			reports = [];
@@ -93,7 +122,15 @@
 	 */
 	function handleFilterChange(filter: ErrorReportStatus | 'all') {
 		currentFilter = filter;
-		currentPage = 1; // Reset to first page when changing filter
+		currentPage = 1;
+		loadReports();
+	}
+
+	/**
+	 * Handle assignment filter change
+	 */
+	function handleAssignmentFilterChange() {
+		currentPage = 1;
 		loadReports();
 	}
 
@@ -105,27 +142,56 @@
 		loadReports();
 	}
 
-	// Load reports on mount
+	// Load reports on mount and when props change
 	$effect(() => {
+		// Reset state when switching modes
+		currentPage = 1;
+		currentFilter = 'all';
+		selectedAssignmentId = '';
 		loadReports();
+	});
+
+	// Reload when assignment filter changes (for worksheet-wide mode)
+	$effect(() => {
+		if (isWorksheetWide) {
+			// This effect tracks selectedAssignmentId changes
+			const _ = selectedAssignmentId;
+		}
 	});
 </script>
 
 <div class="space-y-6">
-	<!-- Filter buttons -->
-	<div class="flex flex-wrap gap-2">
-		{#each filterButtons as filterBtn (filterBtn.value)}
-			<Button
-				variant={currentFilter === filterBtn.value ? 'default' : 'outline'}
-				size="sm"
-				onclick={() => handleFilterChange(filterBtn.value)}
-			>
-				{filterBtn.label}
-				<Badge variant={currentFilter === filterBtn.value ? 'secondary' : 'outline'} class="ml-2">
-					{filterBtn.count}
-				</Badge>
-			</Button>
-		{/each}
+	<!-- Filters row -->
+	<div class="flex flex-wrap items-center gap-4">
+		<!-- Assignment filter (only in worksheet-wide mode) -->
+		{#if isWorksheetWide && assignments.length > 1}
+			<div class="flex items-center gap-2">
+				<span class="text-sm text-muted-foreground">Assignation:</span>
+				<MySelect
+					type="single"
+					bind:value={selectedAssignmentId}
+					items={assignmentItems}
+					class="w-48"
+					onchange={handleAssignmentFilterChange}
+				/>
+			</div>
+		{/if}
+
+		<!-- Status filter buttons -->
+		<div class="flex flex-wrap gap-2">
+			{#each filterButtons as filterBtn (filterBtn.value)}
+				<Button
+					variant={currentFilter === filterBtn.value ? 'default' : 'outline'}
+					size="sm"
+					onclick={() => handleFilterChange(filterBtn.value)}
+				>
+					{filterBtn.label}
+					<Badge variant={currentFilter === filterBtn.value ? 'secondary' : 'outline'} class="ml-2">
+						{filterBtn.count}
+					</Badge>
+				</Button>
+			{/each}
+		</div>
 	</div>
 
 	<!-- Loading state -->
@@ -142,15 +208,19 @@
 			<Card.Content class="py-12 text-center">
 				<AlertCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
 				<p class="text-muted-foreground">
-					{currentFilter === 'all'
-						? 'Aucun signalement pour ce devoir.'
-						: `Aucun signalement ${
-								currentFilter === 'pending'
-									? 'en attente'
-									: currentFilter === 'fixed'
-										? 'corrigé'
-										: 'rejeté'
-							}.`}
+					{#if currentFilter === 'all'}
+						{#if isWorksheetWide}
+							Aucun signalement pour cette feuille.
+						{:else}
+							Aucun signalement pour ce devoir.
+						{/if}
+					{:else}
+						Aucun signalement {currentFilter === 'pending'
+							? 'en attente'
+							: currentFilter === 'fixed'
+								? 'corrige'
+								: 'rejete'}.
+					{/if}
 				</p>
 			</Card.Content>
 		</Card.Root>
@@ -158,7 +228,21 @@
 		<!-- Reports list -->
 		<div class="grid gap-4">
 			{#each reports as report (report.id)}
-				<ErrorReportCard {report} {worksheetId} />
+				<!-- Show assignment info in worksheet-wide mode -->
+				{#if isWorksheetWide && report.assignment_class_names}
+					<div class="space-y-1">
+						{#if report.assignment_title || report.assignment_class_names.length > 0}
+							<div class="flex items-center gap-2 text-xs text-muted-foreground">
+								<span class="font-medium">
+									{report.assignment_title || report.assignment_class_names.join(', ')}
+								</span>
+							</div>
+						{/if}
+						<ErrorReportCard {report} {worksheetId} />
+					</div>
+				{:else}
+					<ErrorReportCard {report} {worksheetId} />
+				{/if}
 			{/each}
 		</div>
 
@@ -171,12 +255,11 @@
 					disabled={currentPage === 1}
 					onclick={() => handlePageChange(currentPage - 1)}
 				>
-					Précédent
+					Precedent
 				</Button>
 
 				<div class="flex items-center gap-2">
 					{#each Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-						// Show pages around current page
 						let pageNum;
 						if (totalPages <= 5) {
 							pageNum = i + 1;
