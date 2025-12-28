@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.4](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.3...v0.5.4) (2025-12-28)
+
+### ✨ Features
+
+- **worksheets:** allow multiple error reports per exercise ([bc05f39](https://github.com/Zahara-Nour/ubumaths/commit/bc05f39595c254ae2bcf1c6b09a173289029a0c9))
+
 ### [0.5.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.2...v0.5.3) (2025-12-28)
 
 ### 🐛 Bug Fixes
