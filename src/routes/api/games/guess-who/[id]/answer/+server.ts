@@ -18,7 +18,12 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { answerQuestionSchema } from '$lib/server/validation/guess-who';
 import { sanitizePostgresError } from '$lib/server/utils/error-handler';
-import { checkProperty } from '$lib/utils/guess-who';
+import {
+	checkProperty,
+	checkQuestion,
+	deserializeGridItem,
+	type AnyQuestionType
+} from '$lib/utils/guess-who';
 import type { QuestionType } from '$lib/utils/guess-who/math-properties';
 
 const MAX_BONUS_TURNS = 3;
@@ -128,15 +133,31 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(400, 'Cette question a deja ete repondue');
 		}
 
-		// Get the respondent's secret number
-		const mySecret = isPlayer1 ? game.player1_secret : game.player2_secret;
+		// Get the respondent's secret (number or item)
+		const itemType = game.item_type || 'number';
+		let correctAnswer: boolean;
 
-		// Calculate the correct answer
-		const correctAnswer = checkProperty(
-			mySecret,
-			lastQuestion.question_type as QuestionType,
-			lastQuestion.question_param ?? undefined
-		);
+		if (itemType === 'number') {
+			// Number pack: use the numeric secret
+			const mySecret = isPlayer1 ? game.player1_secret : game.player2_secret;
+			correctAnswer = checkProperty(
+				mySecret,
+				lastQuestion.question_type as QuestionType,
+				lastQuestion.question_param ?? undefined
+			);
+		} else {
+			// Polymorphic pack: use the secret item
+			const mySecretItemData = isPlayer1 ? game.player1_secret_item : game.player2_secret_item;
+			if (!mySecretItemData) {
+				throw error(500, 'Secret item not found for polymorphic game');
+			}
+			const mySecretItem = deserializeGridItem(mySecretItemData);
+			correctAnswer = checkQuestion(
+				mySecretItem,
+				lastQuestion.question_type as AnyQuestionType,
+				lastQuestion.question_param ?? lastQuestion.question_param_text ?? undefined
+			);
+		}
 
 		const isCorrect = answer === correctAnswer;
 

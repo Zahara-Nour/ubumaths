@@ -2,8 +2,9 @@
  * API Endpoint: Make a Guess in Guess Who Game
  * Path: POST /api/games/guess-who/[id]/guess
  *
- * Allows the current player to guess the opponent's secret number.
+ * Allows the current player to guess the opponent's secret item.
  * A correct guess wins the game; an incorrect guess loses.
+ * Supports both number packs and polymorphic packs.
  */
 
 import { error, json } from '@sveltejs/kit';
@@ -12,25 +13,36 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { guessSchema } from '$lib/server/validation/guess-who';
 import { sanitizePostgresError } from '$lib/server/utils/error-handler';
+import {
+	deserializeGridItem,
+	gridItemsEqual,
+	serializeGridItem,
+	type GridItem
+} from '$lib/utils/guess-who';
 
 /**
  * POST /api/games/guess-who/[id]/guess
  *
- * Make a final guess of the opponent's secret number.
+ * Make a final guess of the opponent's secret item.
  *
  * **Security**:
  * - Requires authentication
  * - Must be player's turn
  * - Game must be in_progress
- * - Guessed number validated with Zod (2-99)
+ * - Guessed item validated with Zod
  *
  * **Game Logic**:
  * - Correct guess: Player wins, game completed
  * - Incorrect guess: Opponent wins, game completed
  *
- * **Request Body**:
+ * **Request Body (number packs)**:
  * ```json
  * { "guessedNumber": 42 }
+ * ```
+ *
+ * **Request Body (polymorphic packs)**:
+ * ```json
+ * { "guessedItem": { "type": "fraction", "numerator": 1, "denominator": 2, ... } }
  * ```
  *
  * **Response**:
@@ -39,7 +51,8 @@ import { sanitizePostgresError } from '$lib/server/utils/error-handler';
  *   "success": true,
  *   "isCorrect": true,
  *   "winnerId": "uuid",
- *   "opponentSecret": 42
+ *   "opponentSecret": 42,        // For number packs
+ *   "opponentSecretItem": {...}  // For polymorphic packs
  * }
  * ```
  */
@@ -57,7 +70,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { guessedNumber } = validation.data;
+	const { guessedNumber, guessedItem } = validation.data;
 
 	try {
 		// Fetch game to validate state
@@ -89,12 +102,41 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(400, "Ce n'est pas votre tour");
 		}
 
-		// Get opponent's secret number
-		const opponentSecret = isPlayer1 ? game.player2_secret : game.player1_secret;
 		const opponentId = isPlayer1 ? game.player2_id : game.player1_id;
+		const itemType = game.item_type || 'number';
 
-		// Check if guess is correct
-		const isCorrect = guessedNumber === opponentSecret;
+		let isCorrect: boolean;
+		let responseData: Record<string, unknown>;
+		let moveInsertData: Record<string, unknown>;
+
+		if (itemType === 'number') {
+			// Number pack: compare numbers
+			if (guessedNumber === undefined) {
+				throw error(400, 'guessedNumber is required for number packs');
+			}
+			const opponentSecret = isPlayer1 ? game.player2_secret : game.player1_secret;
+			isCorrect = guessedNumber === opponentSecret;
+			responseData = { opponentSecret };
+			moveInsertData = {
+				guessed_number: guessedNumber
+			};
+		} else {
+			// Polymorphic pack: compare items
+			if (!guessedItem) {
+				throw error(400, 'guessedItem is required for polymorphic packs');
+			}
+			const opponentSecretData = isPlayer1 ? game.player2_secret_item : game.player1_secret_item;
+			if (!opponentSecretData) {
+				throw error(500, 'Opponent secret item not found');
+			}
+			const opponentSecretItem = deserializeGridItem(opponentSecretData);
+			isCorrect = gridItemsEqual(guessedItem as GridItem, opponentSecretItem);
+			responseData = { opponentSecretItem };
+			moveInsertData = {
+				guessed_item: serializeGridItem(guessedItem as GridItem)
+			};
+		}
+
 		const winnerId = isCorrect ? user.id : opponentId;
 
 		// Get next move number
@@ -115,8 +157,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			player_id: user.id,
 			move_number: moveNumber,
 			move_type: 'guess',
-			guessed_number: guessedNumber,
-			is_correct: isCorrect
+			is_correct: isCorrect,
+			...moveInsertData
 		});
 
 		if (insertError) {
@@ -141,7 +183,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			success: true,
 			isCorrect,
 			winnerId,
-			opponentSecret
+			...responseData
 		});
 	} catch (err) {
 		sanitizePostgresError(err, 'GUESS_WHO_GUESS');
