@@ -30,7 +30,7 @@
 		masteryStatus: MasteryStatus;
 		isSavingMastery?: boolean;
 		assignmentId: string;
-		reportsMap: Map<string, StudentErrorReportView>;
+		reportsMap: Map<string, StudentErrorReportView[]>;
 		onOpenChange: (open: boolean) => void;
 		onNavigate: (index: number) => void;
 		onMasteryChange: (status: MasteryStatus) => void;
@@ -58,7 +58,7 @@
 	);
 	let canGoPrev = $derived(currentIndex > 0);
 	let canGoNext = $derived(currentIndex < exercises.length - 1);
-	let currentReport = $derived(exercise ? (reportsMap.get(exercise.id) ?? null) : null);
+	let currentReports = $derived(exercise ? (reportsMap.get(exercise.id) ?? []) : []);
 
 	// Mobile tutor drawer state
 	let tutorDrawerOpen = $state(false);
@@ -149,7 +149,7 @@
 								{assignmentId}
 								exerciseId={exercise.exercise_id}
 								exercisePosition={exercise.position}
-								existingReport={currentReport}
+								existingReports={currentReports}
 								onReportCreated={(report) => onReportCreated(exercise.id, report)}
 							/>
 						{/if}
@@ -317,7 +317,7 @@
 							{assignmentId}
 							exerciseId={exercise.exercise_id}
 							exercisePosition={exercise.position}
-							existingReport={currentReport}
+							existingReports={currentReports}
 							onReportCreated={(report) => onReportCreated(exercise.id, report)}
 						/>
 					{/if}
