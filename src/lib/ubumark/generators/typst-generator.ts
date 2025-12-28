@@ -311,10 +311,12 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 				/(^|[^a-zA-Z])(lim|limsup|liminf|sum|prod|product|max|min|sup|inf)([^a-zA-Z]|$)/.test(
 					typstMath
 				);
+
+			// Wrap inline math in #box[] to prevent line breaks within the expression
 			if (needsDisplayMode) {
-				return `$display(${typstMath})$`;
+				return `#box[$display(${typstMath})$]`;
 			}
-			return `$${typstMath}$`;
+			return `#box[$${typstMath}$]`;
 		}
 
 		case 'line-break':
