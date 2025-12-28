@@ -32,6 +32,33 @@ interface VariationTableTypstOptions {
 }
 
 // ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Format an array of elements as a Typst tuple
+ *
+ * In Typst, single-element tuples require a trailing comma: (x,)
+ * Without it, (x) is just parentheses around a value, not a tuple.
+ *
+ * @param elements - Array of stringified elements
+ * @returns Properly formatted Typst tuple
+ *
+ * @example
+ * formatTypstTuple(['$-$'])  // Returns "($-$,)"
+ * formatTypstTuple(['$+$', '$-$'])  // Returns "($+$, $-$)"
+ */
+function formatTypstTuple(elements: string[]): string {
+	if (elements.length === 0) {
+		return '()';
+	}
+	if (elements.length === 1) {
+		return `(${elements[0]},)`; // Trailing comma for single element
+	}
+	return `(${elements.join(', ')})`;
+}
+
+// ============================================================================
 // MAIN GENERATOR FUNCTION
 // ============================================================================
 
@@ -130,7 +157,7 @@ function generateDomain(domain: DomainPoint[]): string {
 		return `$${expr}$`;
 	});
 
-	return `(${points.join(', ')})`;
+	return formatTypstTuple(points);
 }
 
 /**
@@ -179,7 +206,7 @@ function generateLabels(rows: (SignRow | VariationRow)[]): string {
 		return `([$${converted}$], "${rowType}")`;
 	});
 
-	return `(${labels.join(', ')})`;
+	return formatTypstTuple(labels);
 }
 
 // ============================================================================
@@ -274,7 +301,7 @@ function generateSignRow(row: SignRow, domain: DomainPoint[]): string {
 		}
 	}
 
-	return `(${values.join(', ')})`;
+	return formatTypstTuple(values);
 }
 
 /**
@@ -333,7 +360,7 @@ function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string 
 		elements.push(formatted);
 	}
 
-	return `(${elements.join(', ')})`;
+	return formatTypstTuple(elements);
 }
 
 /**
