@@ -52,7 +52,7 @@ describe('generateVariationTableTypst - Basic Structure', () => {
 		const node = createBasicNode();
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('#import "@preview/vartable:0.2.3": tabvar');
+		expect(typst).toContain('#import "@preview/vartable:0.2.1": tabvar');
 	});
 
 	it('should generate tabvar function call', () => {
@@ -606,7 +606,7 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		const typst = generateVariationTableTypst(node);
 
 		// Verify structure
-		expect(typst).toContain('#import "@preview/vartable:0.2.3": tabvar');
+		expect(typst).toContain('#import "@preview/vartable:0.2.1": tabvar');
 		expect(typst).toContain('#tabvar(');
 
 		// Verify variable

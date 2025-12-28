@@ -73,7 +73,7 @@ export function generateVariationTableTypst(
 	}
 
 	try {
-		const importStatement = '#import "@preview/vartable:0.2.3": tabvar\n\n';
+		const importStatement = '#import "@preview/vartable:0.2.1": tabvar\n\n';
 		const variable = formatVariable(node.variable);
 		const domain = generateDomain(node.domain);
 		const labels = generateLabels(node.rows);
