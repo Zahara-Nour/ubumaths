@@ -19,6 +19,11 @@ import {
 	serializeGridItem,
 	type GridItem
 } from '$lib/utils/guess-who';
+import {
+	updatePlayerStats,
+	checkAndUnlockAchievements,
+	type GameCompletionData
+} from '$lib/server/guess-who/stats-tracker';
 
 /**
  * POST /api/games/guess-who/[id]/guess
@@ -179,10 +184,74 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			sanitizePostgresError(updateError, 'GUESS_WHO_GUESS_UPDATE');
 		}
 
+		// Track stats and achievements (async, don't block response)
+		const gameTimeSeconds = game.created_at
+			? Math.round((Date.now() - new Date(game.created_at).getTime()) / 1000)
+			: 0;
+
+		// Fetch all moves for stats calculation
+		const { data: allMoves } = await locals.supabase
+			.from('guess_who_moves')
+			.select('player_id, move_type, is_correct')
+			.eq('game_id', gameId);
+
+		const completionData: GameCompletionData = {
+			gameId,
+			packId: game.pack_id,
+			winnerId,
+			player1Id: game.player1_id,
+			player2Id: game.player2_id,
+			gameTimeSeconds,
+			moves: (allMoves || []).map((m) => ({
+				playerId: m.player_id,
+				moveType: m.move_type as 'question' | 'answer' | 'guess',
+				isCorrect: m.is_correct
+			}))
+		};
+
+		// Update stats (non-blocking)
+		updatePlayerStats(locals.supabase, completionData).catch((err) => {
+			console.error('Failed to update stats:', err);
+		});
+
+		// Check achievements for the winner
+		const questionsAsked = completionData.moves.filter(
+			(m) => m.playerId === winnerId && m.moveType === 'question'
+		).length;
+
+		const unlockedAchievements = await checkAndUnlockAchievements(
+			locals.supabase,
+			winnerId,
+			gameId,
+			game.pack_id,
+			true,
+			questionsAsked,
+			gameTimeSeconds
+		);
+
+		// Also check achievements for the loser (they still get accuracy achievements, etc.)
+		const loserId = winnerId === game.player1_id ? game.player2_id : game.player1_id;
+		const loserQuestionsAsked = completionData.moves.filter(
+			(m) => m.playerId === loserId && m.moveType === 'question'
+		).length;
+
+		checkAndUnlockAchievements(
+			locals.supabase,
+			loserId,
+			gameId,
+			game.pack_id,
+			false,
+			loserQuestionsAsked,
+			gameTimeSeconds
+		).catch((err) => {
+			console.error('Failed to check loser achievements:', err);
+		});
+
 		return json({
 			success: true,
 			isCorrect,
 			winnerId,
+			unlockedAchievements: isCorrect ? unlockedAchievements : [],
 			...responseData
 		});
 	} catch (err) {

@@ -1220,3 +1220,167 @@ export const QUESTION_INFO: Record<GridItemType, QuestionInfo[]> = {
 export function getQuestionInfoForType(itemType: GridItemType): QuestionInfo[] {
 	return QUESTION_INFO[itemType] ?? [];
 }
+
+// ============================================================================
+// PLAYER STATISTICS
+// ============================================================================
+
+/**
+ * Player statistics for a specific pack
+ */
+export interface GuessWhoPlayerStats {
+	id: string;
+	playerId: string;
+	packId: string;
+
+	// Game counts
+	gamesPlayed: number;
+	gamesWon: number;
+	gamesLost: number;
+
+	// Performance metrics
+	totalQuestionsAsked: number;
+	totalCorrectAnswers: number;
+	totalIncorrectAnswers: number;
+	totalGameTimeSeconds: number;
+	bestTimeSeconds: number | null;
+	fewestQuestionsWin: number | null;
+
+	// Streaks
+	currentWinStreak: number;
+	bestWinStreak: number;
+
+	// Computed
+	winRate: number;
+	accuracy: number;
+
+	updatedAt: string;
+}
+
+/**
+ * Aggregated stats across all packs
+ */
+export interface GuessWhoAggregatedStats {
+	totalGamesPlayed: number;
+	totalGamesWon: number;
+	overallWinRate: number;
+	overallAccuracy: number;
+	bestWinStreak: number;
+	packsPlayed: number;
+	favoritePackId: string | null;
+	totalPlayTimeSeconds: number;
+}
+
+/**
+ * Stats update payload (sent after game completion)
+ */
+export interface GuessWhoStatsUpdate {
+	playerId: string;
+	packId: string;
+	won: boolean;
+	questionsAsked: number;
+	correctAnswers: number;
+	incorrectAnswers: number;
+	gameTimeSeconds: number;
+}
+
+// ============================================================================
+// ACHIEVEMENTS
+// ============================================================================
+
+/**
+ * Achievement category
+ */
+export type AchievementCategory = 'general' | 'speed' | 'accuracy' | 'streak' | 'mastery';
+
+/**
+ * Achievement rarity
+ */
+export type AchievementRarity = 'common' | 'rare' | 'epic' | 'legendary';
+
+/**
+ * Achievement definition
+ */
+export interface GuessWhoAchievement {
+	id: string;
+	nameFr: string;
+	nameEn: string;
+	descriptionFr: string;
+	descriptionEn: string;
+	icon: string;
+	category: AchievementCategory;
+	points: number;
+	rarity: AchievementRarity;
+	sortOrder: number;
+}
+
+/**
+ * Player achievement (unlocked)
+ */
+export interface GuessWhoPlayerAchievement {
+	id: string;
+	playerId: string;
+	achievementId: string;
+	unlockedAt: string;
+	gameId: string | null;
+	packId: string | null;
+	achievement: GuessWhoAchievement;
+}
+
+/**
+ * Achievement with unlock status for display
+ */
+export interface GuessWhoAchievementDisplay extends GuessWhoAchievement {
+	unlocked: boolean;
+	unlockedAt: string | null;
+	progress?: number; // 0-100 for achievements with progress
+}
+
+/**
+ * Achievement IDs for programmatic use
+ */
+export type GuessWhoAchievementId =
+	| 'first_win'
+	| 'ten_wins'
+	| 'fifty_wins'
+	| 'speed_demon'
+	| 'quick_thinker'
+	| 'perfect_answers'
+	| 'truth_seeker'
+	| 'master_guesser'
+	| 'efficient'
+	| 'hot_streak'
+	| 'unstoppable'
+	| 'pack_explorer'
+	| 'math_master';
+
+// ============================================================================
+// LEADERBOARD
+// ============================================================================
+
+/**
+ * Leaderboard entry
+ */
+export interface GuessWhoLeaderboardEntry {
+	rank: number;
+	playerId: string;
+	displayName: string;
+	avatarUrl: string | null;
+	packId: string;
+	gamesPlayed: number;
+	gamesWon: number;
+	winRate: number;
+	bestTimeSeconds: number | null;
+	fewestQuestionsWin: number | null;
+	bestWinStreak: number;
+}
+
+/**
+ * Leaderboard filter options
+ */
+export interface GuessWhoLeaderboardFilter {
+	packId?: string;
+	limit?: number;
+	offset?: number;
+	sortBy?: 'win_rate' | 'games_won' | 'best_time' | 'best_streak';
+}
