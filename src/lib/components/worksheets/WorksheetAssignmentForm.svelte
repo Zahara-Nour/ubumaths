@@ -10,8 +10,10 @@
 	- Individual student selection with MultiClassStudentSelector
 	- Create and Edit modes
 	- Availability dates configuration
-	- Correction release settings
-	- Online consultation mode
+	- Online consultation mode toggle
+
+	Note: Correction settings (mode, publication date, per-exercise visibility)
+	are managed separately via CorrectionManager after assignment creation.
 
 	Props:
 	- worksheetId: string
@@ -27,14 +29,13 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import * as Alert from '$lib/components/ui/alert';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import CorrectionSettings from '$lib/components/worksheets/CorrectionSettings.svelte';
 	import MultiClassStudentSelector from '$lib/components/worksheets/MultiClassStudentSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, Users, Calendar, FileCheck, Monitor } from 'lucide-svelte';
+	import { Loader2, Users, Calendar, Monitor, Info } from 'lucide-svelte';
 	import type {
-		CorrectionReleaseMode,
 		WorksheetAssignmentInsert,
 		WorksheetAssignmentWithRelations
 	} from '$lib/types/worksheets';
@@ -95,17 +96,7 @@
 		assignment?.closes_at ? new Date(assignment.closes_at).toISOString().slice(0, 16) : ''
 	);
 
-	// Correction settings
-	let correctionReleaseMode = $state<CorrectionReleaseMode>(
-		assignment?.correction_release_mode || 'manual'
-	);
-	let correctionScheduledDate = $state<string>(
-		assignment?.correction_release_at
-			? new Date(assignment.correction_release_at).toISOString().slice(0, 16)
-			: ''
-	);
-
-	// Online consultation mode
+	// Online consultation mode (allows students to view the worksheet online)
 	let showCorrections = $state<boolean>(assignment?.show_corrections ?? false);
 
 	// Loading state
@@ -124,10 +115,7 @@
 	);
 
 	// Validation: at least one class or one student must be selected
-	let isValid = $derived(
-		(selectedClassIds.length > 0 || selectedStudentIds.length > 0) &&
-			(correctionReleaseMode !== 'scheduled' || correctionScheduledDate !== '')
-	);
+	let isValid = $derived(selectedClassIds.length > 0 || selectedStudentIds.length > 0);
 
 	// ============================================================================
 	// HANDLERS
@@ -167,11 +155,9 @@
 			individualized,
 			available_from: availableFrom ? new Date(availableFrom).toISOString() : undefined,
 			closes_at: closesAt ? new Date(closesAt).toISOString() : null,
-			correction_release_mode: correctionReleaseMode,
-			correction_release_at:
-				correctionReleaseMode === 'scheduled' && correctionScheduledDate
-					? new Date(correctionScheduledDate).toISOString()
-					: null,
+			// Default to manual mode - corrections are configured after creation
+			correction_release_mode: 'manual',
+			correction_release_at: null,
 			show_corrections: showCorrections,
 			status: 'active',
 			created_by: '' // Will be set by the API
@@ -193,6 +179,8 @@
 	async function updateAssignment(): Promise<void> {
 		if (!assignment) return;
 
+		// Note: correction_release_mode and correction_release_at are managed
+		// via CorrectionManager, not this form
 		const updateData = {
 			class_ids: selectedClassIds,
 			student_ids: selectedStudentIds,
@@ -200,11 +188,6 @@
 			instructions: instructions || null,
 			available_from: availableFrom ? new Date(availableFrom).toISOString() : undefined,
 			closes_at: closesAt ? new Date(closesAt).toISOString() : null,
-			correction_release_mode: correctionReleaseMode,
-			correction_release_at:
-				correctionReleaseMode === 'scheduled' && correctionScheduledDate
-					? new Date(correctionScheduledDate).toISOString()
-					: null,
 			show_corrections: showCorrections
 		};
 
@@ -337,51 +320,41 @@
 	<Card.Root>
 		<Card.Header>
 			<Card.Title class="flex items-center gap-2">
-				<FileCheck class="h-5 w-5" />
-				Publication des corrections
-			</Card.Title>
-		</Card.Header>
-		<Card.Content>
-			<CorrectionSettings
-				bind:releaseMode={correctionReleaseMode}
-				bind:scheduledDate={correctionScheduledDate}
-			/>
-		</Card.Content>
-	</Card.Root>
-
-	<Card.Root>
-		<Card.Header>
-			<Card.Title class="flex items-center gap-2">
 				<Monitor class="h-5 w-5" />
-				Mode consultation en ligne
+				Consultation en ligne
 			</Card.Title>
+			<Card.Description>
+				Permettre aux eleves de faire la feuille sur leur tableau de bord
+			</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-4">
 			<div class="flex items-start space-x-3">
 				<MyCheckbox id="show-corrections" bind:checked={showCorrections} />
 				<div class="space-y-1">
 					<Label for="show-corrections" class="cursor-pointer font-normal">
-						Activer le mode consultation
+						Activer la consultation en ligne
 					</Label>
 					<p class="text-xs text-muted-foreground">
-						Permet aux eleves de consulter la feuille directement en ligne sur leur tableau de bord.
+						Les eleves pourront faire les exercices directement depuis leur tableau de bord.
 					</p>
 				</div>
 			</div>
-
-			{#if showCorrections}
-				<div
-					class="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950"
-				>
-					<p class="text-sm text-blue-800 dark:text-blue-200">
-						{isEditMode
-							? 'Vous pouvez gerer la visibilite des corrections pour chaque exercice depuis la page de gestion.'
-							: "Une fois l'assignation creee, vous pourrez gerer la visibilite des corrections pour chaque exercice depuis la page de gestion."}
-					</p>
-				</div>
-			{/if}
 		</Card.Content>
 	</Card.Root>
+
+	<!-- Info about corrections -->
+	<Alert.Root>
+		<Info class="h-4 w-4" />
+		<Alert.Title>Gestion des corrections</Alert.Title>
+		<Alert.Description>
+			{#if isEditMode}
+				Les corrections se gerent depuis la vue de l'assignation (cliquez sur la carte de
+				l'assignation).
+			{:else}
+				Apres creation, vous pourrez configurer quand et comment les corrections sont publiees.
+			{/if}
+		</Alert.Description>
+	</Alert.Root>
 
 	<!-- Form actions -->
 	<div class="flex justify-end gap-4">

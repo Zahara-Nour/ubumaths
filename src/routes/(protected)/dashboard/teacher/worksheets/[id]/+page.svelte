@@ -656,6 +656,8 @@
 								totalStudents: number;
 							} | null}
 							worksheetId={worksheet.id}
+							classes={selectedClasses}
+							students={selectedStudents}
 							onUpdate={handleAssignmentUpdate}
 						/>
 					</div>
