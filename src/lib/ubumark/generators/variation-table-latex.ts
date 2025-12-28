@@ -443,11 +443,11 @@ function getVariationDirection(previousPos: string | null, currentPos: string): 
  * @returns Formatted LaTeX string
  */
 function formatVariationValue(value: VariationValue): string {
-	// Handle asymptotes with different left/right limits
+	// Handle asymptotes with two limits
 	if (value.marker === 'asymptote' && value.limits) {
 		const [leftLimit, rightLimit] = value.limits;
-		const formattedLeft = formatMathExpression(leftLimit);
-		const formattedRight = formatMathExpression(rightLimit);
+		const formattedLeft = formatMathExpression(leftLimit.expression);
+		const formattedRight = formatMathExpression(rightLimit.expression);
 
 		// Determine direction prefix based on limits
 		// If left is -inf and right is +inf: use -D+/
@@ -459,6 +459,17 @@ function formatVariationValue(value: VariationValue): string {
 		} else {
 			// Generic format for other limit combinations
 			return `-D+/$${formattedLeft}$/$${formattedRight}$`;
+		}
+	}
+
+	// Handle asymptotes with single limit (left or right)
+	if (value.marker === 'asymptote' && value.limitSide) {
+		const formattedExpr = formatMathExpression(value.expression);
+		// Single limit - format with position
+		if (value.limitSide === 'left') {
+			return `$${formattedExpr}$ / ||`;
+		} else {
+			return `|| / $${formattedExpr}$`;
 		}
 	}
 

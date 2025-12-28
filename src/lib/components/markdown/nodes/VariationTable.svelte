@@ -95,13 +95,17 @@
 	}
 
 	/**
-	 * Get the order (vertical position) for a value or limit expression
-	 * +inf = top (3), -inf = bottom (1), other = center (2)
+	 * Get position order from a LimitValue or position string
 	 */
-	function getExpressionOrder(expr: string): number {
-		if (expr.includes('+inf') || expr === 'inf') return 3;
-		if (expr.includes('-inf')) return 1;
-		return 2;
+	function getPositionOrder(position: string): number {
+		const positionOrderMap: Record<string, number> = {
+			top: 3,
+			'limit-top': 3,
+			center: 2,
+			bottom: 1,
+			'limit-bottom': 1
+		};
+		return positionOrderMap[position] ?? 2;
 	}
 
 	/**
@@ -118,31 +122,42 @@
 
 		if (!fromValue || !toValue) return null;
 
-		// Position order: top > center > bottom
-		const positionOrder: Record<string, number> = {
-			top: 3,
-			'limit-top': 3,
-			center: 2,
-			bottom: 1,
-			'limit-bottom': 1
-		};
-
 		// Determine the "from" order
 		let fromOrder: number;
-		if (fromValue.marker === 'asymptote' && fromValue.limits) {
-			// Leaving an asymptote: use the RIGHT limit (limits[1])
-			fromOrder = getExpressionOrder(fromValue.limits[1]);
+		if (fromValue.marker === 'asymptote') {
+			if (fromValue.limits) {
+				// Leaving an asymptote with two limits: use the RIGHT limit (limits[1])
+				fromOrder = getPositionOrder(fromValue.limits[1].position);
+			} else if (fromValue.limitSide === 'left') {
+				// Single limit on left: use that limit's position
+				fromOrder = getPositionOrder(fromValue.position);
+			} else if (fromValue.limitSide === 'right') {
+				// Single limit on right: arrow starts from the right limit
+				fromOrder = getPositionOrder(fromValue.position);
+			} else {
+				fromOrder = getPositionOrder(fromValue.position);
+			}
 		} else {
-			fromOrder = positionOrder[fromValue.position];
+			fromOrder = getPositionOrder(fromValue.position);
 		}
 
 		// Determine the "to" order
 		let toOrder: number;
-		if (toValue.marker === 'asymptote' && toValue.limits) {
-			// Approaching an asymptote: use the LEFT limit (limits[0])
-			toOrder = getExpressionOrder(toValue.limits[0]);
+		if (toValue.marker === 'asymptote') {
+			if (toValue.limits) {
+				// Approaching an asymptote with two limits: use the LEFT limit (limits[0])
+				toOrder = getPositionOrder(toValue.limits[0].position);
+			} else if (toValue.limitSide === 'left') {
+				// Single limit on left: arrow goes to the left limit
+				toOrder = getPositionOrder(toValue.position);
+			} else if (toValue.limitSide === 'right') {
+				// Single limit on right: use that limit's position
+				toOrder = getPositionOrder(toValue.position);
+			} else {
+				toOrder = getPositionOrder(toValue.position);
+			}
 		} else {
-			toOrder = positionOrder[toValue.position];
+			toOrder = getPositionOrder(toValue.position);
 		}
 
 		if (toOrder > fromOrder) return 'up';
@@ -152,13 +167,13 @@
 
 	/**
 	 * Check if a marker indicates a forbidden zone (no arrow should be drawn)
-	 * Asymptotes with limits still allow arrows - only pure forbidden zones block arrows
+	 * Asymptotes with limits (or limitSide) still allow arrows - only pure forbidden zones block arrows
 	 */
 	function isForbiddenZone(value: VariationValue | undefined): boolean {
 		if (!value) return false;
 		if (value.marker === 'forbidden') return true;
-		// Asymptote without limits is a forbidden zone
-		if (value.marker === 'asymptote' && !value.limits) return true;
+		// Asymptote without limits AND without limitSide is a forbidden zone
+		if (value.marker === 'asymptote' && !value.limits && !value.limitSide) return true;
 		return false;
 	}
 
@@ -326,14 +341,34 @@
 						<td class="vt-variation-value-cell">
 							{#if value}
 								{#if value.marker === 'asymptote' && value.limits}
-									<!-- Asymptote with limits -->
+									<!-- Asymptote with two limits -->
 									<div class="vt-asymptote-limits">
-										<span class="vt-limit vt-limit-left {getPositionClass('top')}">
-											<math-span>{toLatex(value.limits[0])}</math-span>
+										<span
+											class="vt-limit vt-limit-left {getPositionClass(value.limits[0].position)}"
+										>
+											<math-span>{toLatex(value.limits[0].expression)}</math-span>
 										</span>
 										<span class="vt-asymptote-bar"></span>
-										<span class="vt-limit vt-limit-right {getPositionClass('bottom')}">
-											<math-span>{toLatex(value.limits[1])}</math-span>
+										<span
+											class="vt-limit vt-limit-right {getPositionClass(value.limits[1].position)}"
+										>
+											<math-span>{toLatex(value.limits[1].expression)}</math-span>
+										</span>
+									</div>
+								{:else if value.marker === 'asymptote' && value.limitSide === 'left'}
+									<!-- Asymptote with single limit on the left -->
+									<div class="vt-asymptote-limits vt-asymptote-single-left">
+										<span class="vt-limit vt-limit-left {getPositionClass(value.position)}">
+											<math-span>{toLatex(value.expression)}</math-span>
+										</span>
+										<span class="vt-asymptote-bar"></span>
+									</div>
+								{:else if value.marker === 'asymptote' && value.limitSide === 'right'}
+									<!-- Asymptote with single limit on the right -->
+									<div class="vt-asymptote-limits vt-asymptote-single-right">
+										<span class="vt-asymptote-bar"></span>
+										<span class="vt-limit vt-limit-right {getPositionClass(value.position)}">
+											<math-span>{toLatex(value.expression)}</math-span>
 										</span>
 									</div>
 								{:else if value.marker === 'forbidden'}
@@ -621,17 +656,29 @@
 		gap: 0.25em;
 	}
 
+	/* Single limit asymptote - center horizontally */
+	.vt-asymptote-single-left,
+	.vt-asymptote-single-right {
+		justify-content: center;
+	}
+
 	.vt-limit {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 	}
 
-	.vt-limit-left {
-		align-items: flex-start;
+	/* Position classes for limits - use align-self to position within stretched container */
+	.vt-limit.vt-pos-top {
+		align-self: flex-start;
 	}
 
-	.vt-limit-right {
-		align-items: flex-end;
+	.vt-limit.vt-pos-bottom {
+		align-self: flex-end;
+	}
+
+	.vt-limit.vt-pos-center {
+		align-self: center;
 	}
 
 	.vt-asymptote-bar {

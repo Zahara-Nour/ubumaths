@@ -107,9 +107,34 @@ export interface SignRow {
 // ============================================================================
 
 /**
+ * Limit value with expression and position
+ *
+ * Used for asymptote limits in variation rows.
+ */
+export interface LimitValue {
+	/** Math expression for the limit (e.g., "-inf", "+inf", "3") */
+	expression: string;
+	/** Vertical position of this limit */
+	position: VariationPosition;
+}
+
+/**
+ * Side indicator for single-limit asymptotes
+ *
+ * - 'left': limit is displayed to the left of the asymptote bar
+ * - 'right': limit is displayed to the right of the asymptote bar
+ */
+export type LimitSide = 'left' | 'right';
+
+/**
  * Value in a variation row
  *
  * Represents a function value at a specific point with positioning information.
+ *
+ * For asymptotes, there are three possible configurations:
+ * 1. Single limit (left): `limitSide: 'left'` with expression/position for the limit
+ * 2. Single limit (right): `limitSide: 'right'` with expression/position for the limit
+ * 3. Two limits: `limits: [leftLimit, rightLimit]` array with both limits
  */
 export interface VariationValue {
 	/** Math expression for the value (e.g., "3", "-inf", "\frac{1}{2}") */
@@ -118,8 +143,18 @@ export interface VariationValue {
 	position: VariationPosition;
 	/** Optional marker (for asymptotes, discontinuities) */
 	marker?: VariationMarker;
-	/** Limits for asymptotes: [left limit, right limit] */
-	limits?: [string, string];
+	/**
+	 * Limits for asymptotes with two sides: [left limit, right limit]
+	 * Each limit has its own expression and position.
+	 */
+	limits?: [LimitValue, LimitValue];
+	/**
+	 * Side indicator for single-limit asymptotes.
+	 * When set, the expression/position fields represent the single limit value.
+	 * - 'left': limit is to the left of ||
+	 * - 'right': limit is to the right of ||
+	 */
+	limitSide?: LimitSide;
 }
 
 /**

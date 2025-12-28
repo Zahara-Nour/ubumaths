@@ -70,6 +70,8 @@ export type {
 	SignValue,
 	SignRow,
 	// Variation row types
+	LimitValue,
+	LimitSide,
 	VariationValue,
 	VariationRow,
 	// Domain types
