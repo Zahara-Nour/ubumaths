@@ -161,18 +161,20 @@ function formatMathExpression(expr: string): string {
 /**
  * Generate labels array for tabvar
  *
- * Format: ($label1$, $label2$, ...)
+ * Format: (($label1$, "s"), ($label2$, "v"), ...)
+ * where "s" is for sign rows and "v" is for variation rows
  *
  * @param rows - Table rows
  * @returns Labels tuple string
  *
  * @example
- * "($f'(x)$, $f(x)$)"
+ * "(($f'(x)$, \"s\"), ($f(x)$, \"v\"))"
  */
 function generateLabels(rows: (SignRow | VariationRow)[]): string {
 	const labels = rows.map((row) => {
 		const converted = convertLatexToTypstMath(row.label);
-		return `$${converted}$`;
+		const rowType = row.type === 'sign' ? 's' : 'v';
+		return `($${converted}$, "${rowType}")`;
 	});
 
 	return `(${labels.join(', ')})`;
