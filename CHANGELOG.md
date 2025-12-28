@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.2...v0.5.3) (2025-12-28)
+
+### 🐛 Bug Fixes
+
+- **worksheets:** display rich text in student report popover ([429b02a](https://github.com/Zahara-Nour/ubumaths/commit/429b02a4c98c6b257fbc3c7cd6a0eff7f839ae26))
+- **worksheets:** fix correction visibility for students ([74ff1d0](https://github.com/Zahara-Nour/ubumaths/commit/74ff1d0e693bca390f531ce37db57f96e927f518))
+
 ### [0.5.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.1...v0.5.2) (2025-12-28)
 
 ### ✨ Features
