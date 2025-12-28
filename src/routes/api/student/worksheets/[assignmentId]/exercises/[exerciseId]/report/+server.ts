@@ -26,13 +26,13 @@
  * - 401: Not authenticated
  * - 403: Not a student or no access to assignment
  * - 404: Assignment or exercise not found
- * - 409: Pending report already exists for this exercise
+ * - 429: Maximum reports limit reached (10 per exercise)
  * - 500: Server error
  *
  * SECURITY:
  * - Access verified via can_access_assignment() RPC
  * - RLS policies enforce student can only insert reports for their own ID
- * - Unique constraint prevents duplicate pending reports
+ * - Application-level limit of 10 reports per exercise per student
  *
  * SIDE EFFECTS:
  * - A database trigger (on_error_report_created) automatically creates
@@ -129,7 +129,27 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			throw error(404, 'Exercice non trouve dans ce devoir');
 		}
 
-		// Step 4: Insert the error report
+		// Step 4: Check report limit (max 10 per exercise per student)
+		const MAX_REPORTS_PER_EXERCISE = 10;
+		const { count: existingReportsCount, error: countError } = await locals.supabase
+			.from('worksheet_error_reports')
+			.select('id', { count: 'exact', head: true })
+			.eq('worksheet_exercise_id', worksheetExercise.id)
+			.eq('student_id', user.id);
+
+		if (countError) {
+			console.error('[API] Error counting existing reports:', countError);
+			throw error(500, 'Erreur lors de la verification des signalements');
+		}
+
+		if ((existingReportsCount ?? 0) >= MAX_REPORTS_PER_EXERCISE) {
+			throw error(
+				429,
+				`Limite de ${MAX_REPORTS_PER_EXERCISE} signalements atteinte pour cet exercice`
+			);
+		}
+
+		// Step 5: Insert the error report
 		const reportInsert: WorksheetErrorReportInsert = {
 			assignment_id: assignmentId,
 			worksheet_exercise_id: worksheetExercise.id,
@@ -144,11 +164,6 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (insertError) {
-			// Check for unique constraint violation (pending report already exists)
-			if (insertError.code === '23505') {
-				throw error(409, 'Un signalement est deja en cours pour cet exercice');
-			}
-
 			console.error('[API] Error inserting error report:', insertError);
 			throw error(500, 'Erreur lors de la creation du signalement');
 		}
@@ -156,7 +171,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Note: Notification is created automatically by database trigger
 		// (see migration: 20251213100000_error_report_notification_trigger.sql)
 
-		// Step 5: Build response
+		// Step 6: Build response
 		const reportView: StudentErrorReportView = {
 			id: newReport.id,
 			worksheet_exercise_id: newReport.worksheet_exercise_id,

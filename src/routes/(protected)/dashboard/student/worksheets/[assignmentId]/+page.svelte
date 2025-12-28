@@ -31,8 +31,8 @@
 	let masteryMap = $state(new Map<string, MasteryStatus>());
 	let savingMasteryForExercise = $state<string | null>(null);
 
-	// Error reports state
-	let reportsMap = $state(new Map<string, StudentErrorReportView>());
+	// Error reports state (array of reports per exercise)
+	let reportsMap = $state(new Map<string, StudentErrorReportView[]>());
 
 	// Current exercise mastery status for the modal
 	let currentExercise = $derived(exercises[currentExerciseIndex]);
@@ -78,10 +78,12 @@
 			}
 			const data: { reports: StudentErrorReportView[] } = await response.json();
 
-			// Populate the reports map (keyed by worksheet_exercise_id)
-			const newMap = new Map<string, StudentErrorReportView>();
+			// Group reports by worksheet_exercise_id
+			const newMap = new Map<string, StudentErrorReportView[]>();
 			for (const report of data.reports) {
-				newMap.set(report.worksheet_exercise_id, report);
+				const existing = newMap.get(report.worksheet_exercise_id) ?? [];
+				existing.push(report);
+				newMap.set(report.worksheet_exercise_id, existing);
 			}
 			reportsMap = newMap;
 		} catch (error) {
@@ -154,8 +156,10 @@
 	}
 
 	function handleReportCreated(worksheetExerciseId: string, report: StudentErrorReportView) {
-		// Add the new report to the map
-		reportsMap.set(worksheetExerciseId, report);
+		// Add the new report to the array for this exercise
+		const existing = reportsMap.get(worksheetExerciseId) ?? [];
+		// Add at the beginning (most recent first)
+		reportsMap.set(worksheetExerciseId, [report, ...existing]);
 		// Force reactivity
 		reportsMap = new Map(reportsMap);
 	}
