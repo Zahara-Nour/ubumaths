@@ -268,7 +268,7 @@ describe('generateVariationTableTypst - Sign Rows', () => {
 // ============================================================================
 
 describe('generateVariationTableTypst - Variation Rows', () => {
-	it('should generate variation row with positioned values (interval format)', () => {
+	it('should generate variation row with positioned values', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -288,14 +288,14 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Interval format: (startPos, endPos, startValue, endValue)
-		// First interval: bottom -> top, -inf -> 3
-		expect(typst).toContain('(bottom, top, $-infinity$, $3$)');
-		// Second interval: top -> bottom, 3 -> -inf
-		expect(typst).toContain('(top, bottom, $3$, $-infinity$)');
+		// Point format: n elements for n domain points
+		// Each element: (position, $value$)
+		expect(typst).toContain('(bottom, $-infinity$)'); // -inf point
+		expect(typst).toContain('(top, $3$)'); // 0 point
+		// Last point also (bottom, $-infinity$) - same as first
 	});
 
-	it('should use center position in interval format', () => {
+	it('should use center position for values', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -314,8 +314,9 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Interval format: (center, center, $0$, $1$)
-		expect(typst).toContain('(center, center, $0$, $1$)');
+		// Point format: each point gets (position, $value$)
+		expect(typst).toContain('(center, $0$)');
+		expect(typst).toContain('(center, $1$)');
 	});
 
 	it('should format infinity values correctly', () => {
@@ -364,7 +365,7 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 		expect(typst).toContain('"||"');
 	});
 
-	it('should handle asymptotes with limits (use "||" and let vartable infer)', () => {
+	it('should handle asymptotes with explicit limits', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -395,11 +396,11 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// vartable infers limits from surrounding values, so just use ||
-		expect(typst).toContain('"||"');
+		// Asymptote with explicit limits: (leftPos, rightPos, "||", leftValue, rightValue)
+		expect(typst).toContain('(bottom, top, "||", $-infinity$, $+infinity$)');
 	});
 
-	it('should map limit-top to top in interval format', () => {
+	it('should map limit-top to top position', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -418,11 +419,12 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Interval format: top -> bottom, 5 -> 0
-		expect(typst).toContain('(top, bottom, $5$, $0$)');
+		// Point format: each point gets (position, $value$)
+		expect(typst).toContain('(top, $5$)'); // limit-top maps to top
+		expect(typst).toContain('(bottom, $0$)');
 	});
 
-	it('should map limit-bottom to bottom in interval format', () => {
+	it('should map limit-bottom to bottom position', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -441,8 +443,9 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Interval format: bottom -> top, 2 -> 5
-		expect(typst).toContain('(bottom, top, $2$, $5$)');
+		// Point format: each point gets (position, $value$)
+		expect(typst).toContain('(bottom, $2$)'); // limit-bottom maps to bottom
+		expect(typst).toContain('(top, $5$)');
 	});
 });
 
@@ -607,12 +610,13 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		// Verify sign row
 		expect(typst).toContain('($+$, "z", $-$, "z", $+$, "z", $-$)');
 
-		// Verify variation row (interval format)
-		// 4 intervals for 5 domain points: bottom->top, top->bottom, bottom->top, top->bottom
-		expect(typst).toContain('(bottom, top, $-infinity$, $3$)');
-		expect(typst).toContain('(top, bottom, $3$, $0$)');
-		expect(typst).toContain('(bottom, top, $0$, $2$)');
-		expect(typst).toContain('(top, bottom, $2$, $-infinity$)');
+		// Verify variation row (point format)
+		// 5 points for 5 domain points: each point gets (position, $value$)
+		expect(typst).toContain('(bottom, $-infinity$)'); // -inf
+		expect(typst).toContain('(top, $3$)'); // -1
+		expect(typst).toContain('(bottom, $0$)'); // 0
+		expect(typst).toContain('(top, $2$)'); // 1
+		// +inf also has (bottom, $-infinity$) - same as first point
 	});
 
 	it('should handle multiple sign rows', () => {
@@ -748,7 +752,7 @@ describe('generateVariationTableTypst - LaTeX to Typst Conversion', () => {
 // ============================================================================
 
 describe('generateVariationTableTypst - Single Limit Asymptotes', () => {
-	it('should generate left-only limit asymptote (interval format)', () => {
+	it('should generate left-only limit asymptote', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -775,13 +779,13 @@ describe('generateVariationTableTypst - Single Limit Asymptotes', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Interval format with asymptote at end: (startPos, limitPos, "||", startValue, limitValue)
-		expect(typst).toContain('"||"');
-		expect(typst).toContain('$0$'); // start value
-		expect(typst).toContain('$-infinity$'); // limit value
+		// Point format: first point is normal, second is left asymptote
+		expect(typst).toContain('(top, $0$)'); // -inf point
+		// Left asymptote: (position, "||", $value$)
+		expect(typst).toContain('(bottom, "||", $-infinity$)');
 	});
 
-	it('should generate right-only limit asymptote (interval format)', () => {
+	it('should generate right-only limit asymptote', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -808,13 +812,13 @@ describe('generateVariationTableTypst - Single Limit Asymptotes', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Interval format with asymptote at start: (limitPos, endPos, "||", limitValue, endValue)
-		expect(typst).toContain('"||"');
-		expect(typst).toContain('$+infinity$'); // limit value
-		expect(typst).toContain('$0$'); // end value
+		// Point format: first point is right asymptote, second is normal
+		// Right asymptote: ("||", position, $value$)
+		expect(typst).toContain('("||", top, $+infinity$)');
+		expect(typst).toContain('(center, $0$)'); // +inf point
 	});
 
-	it('should generate two limits with explicit positions (interval format)', () => {
+	it('should generate two limits with explicit positions', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -845,10 +849,11 @@ describe('generateVariationTableTypst - Single Limit Asymptotes', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Should contain asymptote marker and limit values in both intervals
-		expect(typst).toContain('"||"');
-		expect(typst).toContain('$-infinity$'); // left limit
-		expect(typst).toContain('$+infinity$'); // right limit
+		// Point format: center point has asymptote with two limits
+		expect(typst).toContain('(center, $1$)'); // -inf point
+		// Asymptote with explicit limits: (leftPos, rightPos, "||", leftValue, rightValue)
+		expect(typst).toContain('(bottom, top, "||", $-infinity$, $+infinity$)'); // 0 point
+		expect(typst).toContain('(center, $1$)'); // +inf point
 	});
 });
 
