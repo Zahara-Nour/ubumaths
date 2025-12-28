@@ -85,7 +85,8 @@ describe('generateVariationTableTypst - Basic Structure', () => {
 		const typst = generateVariationTableTypst(node);
 
 		// Labels use content blocks [...] with embedded math
-		expect(typst).toContain('label: (([$f\'(x)$], "s"))');
+		// Single-element tuples need trailing comma in Typst: (element,)
+		expect(typst).toContain('label: (([$f\'(x)$], "s"),)');
 	});
 });
 
