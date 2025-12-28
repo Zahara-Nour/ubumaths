@@ -294,101 +294,103 @@ function convertSignMarkerToTypst(marker: string): string {
 /**
  * Generate a variation row for vartable
  *
- * Format: ((position, $value$), (position, $value$), ...)
- * Positions: top, bottom, middle (default)
+ * Vartable uses an interval-based model where each element describes
+ * what happens in that interval (n-1 elements for n domain points).
+ *
+ * Each interval element is a tuple: (startPos, endPos, startValue, endValue)
+ * For asymptotes: (startPos, endPos, "||", startValue, endValue)
  *
  * @param row - Variation row
  * @param domain - Domain points
- * @returns Variation row tuple
+ * @returns Variation row tuple with n-1 elements
  *
  * @example
- * "((bottom, $-infinity$), (top, $3$), (bottom, $0$), (top, $2$))"
+ * // Domain: (-inf, 0, +inf) with values: -inf->top, 0->center, +inf->bottom
+ * // Generates: ((top, center, $-infinity$, $0$), (center, bottom, $0$, $-infinity$))
  */
 function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string {
-	const values: string[] = [];
+	const intervals: string[] = [];
 
-	for (const point of domain) {
-		const value = row.values.get(point.expression);
+	// Generate one element per interval (n-1 elements for n domain points)
+	for (let i = 0; i < domain.length - 1; i++) {
+		const startPoint = domain[i].expression;
+		const endPoint = domain[i + 1].expression;
 
-		if (!value) {
-			continue;
-		}
+		const startValue = row.values.get(startPoint);
+		const endValue = row.values.get(endPoint);
 
-		// Format the variation value with position
-		const formatted = formatVariationValue(value);
-
-		// Handle array results (for asymptotes with limits)
-		if (Array.isArray(formatted)) {
-			values.push(...formatted);
-		} else {
-			values.push(formatted);
-		}
+		// Format the interval element
+		const formatted = formatIntervalVariation(startValue, endValue);
+		intervals.push(formatted);
 	}
 
-	return `(${values.join(', ')})`;
+	return `(${intervals.join(', ')})`;
 }
 
 /**
- * Format a variation value for Typst
+ * Format a variation interval for vartable
  *
- * Returns either:
- * - (position, $value$) for positioned values
- * - $value$ for middle/default position
- * - "||" for asymptotes without limits
- * - For single-limit asymptotes: value with position and "||"
- * - For two-limit asymptotes: left value, "||", right value
- *
- * @param value - Variation value
- * @returns Formatted Typst string or array for multi-value cells
+ * @param startValue - Value at interval start
+ * @param endValue - Value at interval end
+ * @returns Formatted interval tuple
  */
-function formatVariationValue(value: VariationValue): string | string[] {
-	// Handle asymptotes with two limits
-	if (value.marker === 'asymptote' && value.limits) {
-		const [leftLimit, rightLimit] = value.limits;
-		const leftExpr = formatMathExpression(leftLimit.expression);
-		const rightExpr = formatMathExpression(rightLimit.expression);
-		const leftPos = convertPosition(leftLimit.position);
-		const rightPos = convertPosition(rightLimit.position);
-
-		const leftFormatted = leftPos ? `(${leftPos}, $${leftExpr}$)` : `$${leftExpr}$`;
-		const rightFormatted = rightPos ? `(${rightPos}, $${rightExpr}$)` : `$${rightExpr}$`;
-
-		// Return as array for special handling in row generation
-		return [leftFormatted, '"||"', rightFormatted];
+function formatIntervalVariation(
+	startValue: VariationValue | undefined,
+	endValue: VariationValue | undefined
+): string {
+	// Handle missing values
+	if (!startValue && !endValue) {
+		return '()';
 	}
 
-	// Handle asymptotes with single limit (left or right)
-	if (value.marker === 'asymptote' && value.limitSide) {
-		const expr = formatMathExpression(value.expression);
-		const position = convertPosition(value.position);
-		const formatted = position ? `(${position}, $${expr}$)` : `$${expr}$`;
+	// Get positions and expressions
+	const startPos = startValue ? convertPosition(startValue.position) || 'center' : 'center';
+	const endPos = endValue ? convertPosition(endValue.position) || 'center' : 'center';
+	const startExpr = startValue ? formatMathExpression(startValue.expression) : '';
+	const endExpr = endValue ? formatMathExpression(endValue.expression) : '';
 
-		if (value.limitSide === 'left') {
-			return [formatted, '"||"'];
-		} else {
-			return ['"||"', formatted];
+	// Handle asymptote at end
+	if (endValue?.marker === 'asymptote') {
+		// For asymptote with two limits
+		if (endValue.limits) {
+			const [leftLimit, rightLimit] = endValue.limits;
+			const leftExpr = formatMathExpression(leftLimit.expression);
+			const rightExpr = formatMathExpression(rightLimit.expression);
+			const leftPos = convertPosition(leftLimit.position) || 'center';
+			const rightPos = convertPosition(rightLimit.position) || 'center';
+			return `(${startPos}, ${leftPos}, "||", $${startExpr}$, $${leftExpr}$, ${rightPos}, $${rightExpr}$)`;
 		}
+		// For single-limit asymptote (left side)
+		if (endValue.limitSide === 'left') {
+			const limitExpr = formatMathExpression(endValue.expression);
+			const limitPos = convertPosition(endValue.position) || 'center';
+			return `(${startPos}, ${limitPos}, "||", $${startExpr}$, $${limitExpr}$)`;
+		}
+		// For asymptote without limits
+		return `(${startPos}, center, "||", $${startExpr}$, ())`;
 	}
 
-	// Handle asymptotes without limits
-	if (value.marker === 'asymptote') {
-		return '"||"';
+	// Handle asymptote at start
+	if (startValue?.marker === 'asymptote') {
+		// For single-limit asymptote (right side)
+		if (startValue.limitSide === 'right') {
+			const limitExpr = formatMathExpression(startValue.expression);
+			const limitPos = convertPosition(startValue.position) || 'center';
+			return `(${limitPos}, ${endPos}, "||", $${limitExpr}$, $${endExpr}$)`;
+		}
+		// For asymptote with two limits
+		if (startValue.limits) {
+			const [_leftLimit, rightLimit] = startValue.limits;
+			const rightExpr = formatMathExpression(rightLimit.expression);
+			const rightPos = convertPosition(rightLimit.position) || 'center';
+			return `(${rightPos}, ${endPos}, "||", $${rightExpr}$, $${endExpr}$)`;
+		}
+		// For asymptote without limits
+		return `(center, ${endPos}, "||", (), $${endExpr}$)`;
 	}
 
-	// Format the expression
-	const expr = formatMathExpression(value.expression);
-	const mathValue = `$${expr}$`;
-
-	// Determine position
-	const position = convertPosition(value.position);
-
-	// If middle position, return value only (default)
-	if (position === '') {
-		return mathValue;
-	}
-
-	// Return positioned value
-	return `(${position}, ${mathValue})`;
+	// Normal interval (no asymptotes)
+	return `(${startPos}, ${endPos}, $${startExpr}$, $${endExpr}$)`;
 }
 
 /**
