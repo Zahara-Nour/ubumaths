@@ -13,7 +13,11 @@ import { page } from '@vitest/browser/context';
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import VariationTable from '../nodes/VariationTable.svelte';
-import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
+import type {
+	VariationTableNode,
+	VariationValue,
+	VariationRow
+} from '$lib/ubumark/types/variation-table';
 
 // Type-safe render wrapper for Svelte 5 component
 const renderTable = (props: { node: VariationTableNode; class?: string }) =>
@@ -65,30 +69,7 @@ function createSignRow(
 /**
  * Create a variation row with given values
  */
-function createVariationRow(
-	label: string,
-	values: Record<
-		string,
-		{
-			expression: string;
-			position: 'top' | 'bottom' | 'center' | 'limit-top' | 'limit-bottom';
-			marker?: 'asymptote' | 'forbidden';
-			limits?: [string, string];
-		}
-	>
-): {
-	type: 'variation';
-	label: string;
-	values: Map<
-		string,
-		{
-			expression: string;
-			position: 'top' | 'bottom' | 'center' | 'limit-top' | 'limit-bottom';
-			marker?: 'asymptote' | 'forbidden';
-			limits?: [string, string];
-		}
-	>;
-} {
+function createVariationRow(label: string, values: Record<string, VariationValue>): VariationRow {
 	return {
 		type: 'variation',
 		label,
@@ -405,7 +386,10 @@ describe('VariationTable Component', () => {
 							expression: '',
 							position: 'center',
 							marker: 'asymptote',
-							limits: ['-\\infty', '+\\infty']
+							limits: [
+								{ expression: '-\\infty', position: 'bottom' },
+								{ expression: '+\\infty', position: 'top' }
+							]
 						}
 					})
 				]
@@ -432,7 +416,10 @@ describe('VariationTable Component', () => {
 							expression: '',
 							position: 'center',
 							marker: 'asymptote',
-							limits: ['-\\infty', '+\\infty']
+							limits: [
+								{ expression: '-\\infty', position: 'bottom' },
+								{ expression: '+\\infty', position: 'top' }
+							]
 						},
 						'+\\infty': { expression: '0', position: 'center' }
 					})

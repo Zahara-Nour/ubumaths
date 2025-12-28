@@ -377,7 +377,10 @@ describe('generateVariationTableLatex - Variation Lines', () => {
 								expression: '',
 								position: 'center',
 								marker: 'asymptote',
-								limits: ['-inf', '+inf']
+								limits: [
+									{ expression: '-inf', position: 'bottom' },
+									{ expression: '+inf', position: 'top' }
+								]
 							}
 						],
 						['+inf', { expression: '0', position: 'center' }]
@@ -408,7 +411,10 @@ describe('generateVariationTableLatex - Variation Lines', () => {
 								expression: '',
 								position: 'center',
 								marker: 'asymptote',
-								limits: ['+inf', '-inf']
+								limits: [
+									{ expression: '+inf', position: 'top' },
+									{ expression: '-inf', position: 'bottom' }
+								]
 							}
 						],
 						['+inf', { expression: '0', position: 'center' }]

@@ -37,7 +37,9 @@ import type {
 	VariationMarker,
 	VariationTableParseError,
 	VariationTableParseResult,
-	TableRow
+	TableRow,
+	LimitValue,
+	LimitSide
 } from '../types/variation-table';
 
 // ============================================================================
@@ -104,6 +106,11 @@ const VALID_POSITIONS: VariationPosition[] = [
 	'limit-top',
 	'limit-bottom'
 ];
+
+/**
+ * Valid sides for single-limit asymptotes
+ */
+const VALID_SIDES: LimitSide[] = ['left', 'right'];
 
 // ============================================================================
 // DETECTION FUNCTIONS
@@ -272,11 +279,51 @@ function parsePosition(pos: string): VariationPosition | null {
 }
 
 /**
+ * Parse side string to LimitSide
+ *
+ * @param side - Side string
+ * @returns LimitSide or null if invalid
+ */
+function parseSide(side: string): LimitSide | null {
+	const trimmed = side.trim().toLowerCase();
+	if (VALID_SIDES.includes(trimmed as LimitSide)) {
+		return trimmed as LimitSide;
+	}
+	return null;
+}
+
+/**
+ * Auto-deduce position from expression value
+ *
+ * @param expr - Math expression
+ * @returns Deduced position: bottom for -inf, top for +inf, center otherwise
+ */
+function deducePositionFromExpression(expr: string): VariationPosition {
+	const trimmed = expr.trim().toLowerCase();
+	if (trimmed === '-inf' || trimmed === '-∞' || trimmed.includes('-inf')) {
+		return 'bottom';
+	}
+	if (
+		trimmed === '+inf' ||
+		trimmed === 'inf' ||
+		trimmed === '∞' ||
+		trimmed === '+∞' ||
+		trimmed.includes('+inf')
+	) {
+		return 'top';
+	}
+	return 'center';
+}
+
+/**
  * Parse a variation value from parts
  *
  * Formats:
  * - "3, top" -> expression=3, position=top
- * - "||, -inf, +inf" -> expression=||, marker=asymptote, limits=[-inf, +inf]
+ * - "||, left, -inf, bottom" -> single limit on left side
+ * - "||, right, +inf, top" -> single limit on right side
+ * - "||, -inf, bottom, +inf, top" -> two limits with explicit positions
+ * - "||, -inf, +inf" -> two limits with auto-deduced positions (legacy)
  * - "-inf, bottom" -> expression=-inf, position=bottom
  *
  * @param parts - Array of value parts split by comma
@@ -288,44 +335,91 @@ function parseVariationValue(parts: string[]): VariationValue | null {
 	const expression = parts[0].trim();
 	const secondPart = parts[1].trim();
 
-	// Check if it's an asymptote with limits: ||, -inf, +inf
-	if ((expression === '||' || expression === '|h|' || expression === 'd') && parts.length >= 3) {
-		const leftLimit = secondPart;
-		const rightLimit = parts[2].trim();
+	// Check if it's an asymptote/forbidden/discontinuity marker
+	if (expression === '||' || expression === '|h|' || expression === 'd') {
 		const marker: VariationMarker =
 			expression === '||' ? 'asymptote' : expression === '|h|' ? 'forbidden' : 'discontinuity';
 
-		return {
-			expression: '',
-			position: 'center',
-			marker,
-			limits: [leftLimit, rightLimit]
-		};
+		// Check for single-limit syntax: ||, left/right, value, position
+		const side = parseSide(secondPart);
+		if (side !== null) {
+			// If we have a side keyword, we MUST have 4 parts (||, side, value, position)
+			if (parts.length < 4) {
+				return null; // Invalid: missing position
+			}
+
+			const limitExpression = parts[2].trim();
+			const limitPosition = parsePosition(parts[3].trim());
+
+			if (!limitPosition) return null;
+
+			return {
+				expression: limitExpression,
+				position: limitPosition,
+				marker,
+				limitSide: side
+			};
+		}
+
+		// Check for two limits with explicit positions: ||, val1, pos1, val2, pos2
+		if (parts.length >= 5) {
+			const leftExpr = secondPart;
+			const leftPos = parsePosition(parts[2].trim());
+			const rightExpr = parts[3].trim();
+			const rightPos = parsePosition(parts[4].trim());
+
+			if (leftPos && rightPos) {
+				const leftLimit: LimitValue = { expression: leftExpr, position: leftPos };
+				const rightLimit: LimitValue = { expression: rightExpr, position: rightPos };
+
+				return {
+					expression: '',
+					position: 'center',
+					marker,
+					limits: [leftLimit, rightLimit]
+				};
+			}
+		}
+
+		// Legacy syntax with auto-deduced positions: ||, val1, val2
+		if (parts.length >= 3) {
+			const leftExpr = secondPart;
+			const rightExpr = parts[2].trim();
+
+			// Check if parts[2] is a position (then it's NOT legacy syntax, it's an error)
+			if (parsePosition(rightExpr) !== null) {
+				// This is likely ||, value, position which is invalid for marker
+				return null;
+			}
+
+			const leftLimit: LimitValue = {
+				expression: leftExpr,
+				position: deducePositionFromExpression(leftExpr)
+			};
+			const rightLimit: LimitValue = {
+				expression: rightExpr,
+				position: deducePositionFromExpression(rightExpr)
+			};
+
+			return {
+				expression: '',
+				position: 'center',
+				marker,
+				limits: [leftLimit, rightLimit]
+			};
+		}
+
+		// Invalid syntax for marker
+		return null;
 	}
 
 	// Regular value: expression, position
 	const position = parsePosition(secondPart);
 	if (!position) return null;
 
-	// Check for marker in expression
-	let marker: VariationMarker | undefined;
-	let actualExpression = expression;
-
-	if (expression === '||') {
-		marker = 'asymptote';
-		actualExpression = '';
-	} else if (expression === '|h|') {
-		marker = 'forbidden';
-		actualExpression = '';
-	} else if (expression === 'd') {
-		marker = 'discontinuity';
-		actualExpression = '';
-	}
-
 	return {
-		expression: actualExpression,
-		position,
-		marker
+		expression,
+		position
 	};
 }
 

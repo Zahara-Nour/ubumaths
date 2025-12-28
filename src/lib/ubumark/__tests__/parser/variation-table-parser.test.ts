@@ -239,7 +239,10 @@ describe('parseVariationTableContent - Asymptotes', () => {
 			expression: '',
 			position: 'center',
 			marker: 'asymptote',
-			limits: ['-inf', '+inf']
+			limits: [
+				{ expression: '-inf', position: 'bottom' },
+				{ expression: '+inf', position: 'top' }
+			]
 		});
 	});
 });
@@ -287,7 +290,10 @@ describe('parseVariationTableContent - Forbidden values', () => {
 			expression: '',
 			position: 'center',
 			marker: 'forbidden',
-			limits: ['1', '1']
+			limits: [
+				{ expression: '1', position: 'center' },
+				{ expression: '1', position: 'center' }
+			]
 		});
 	});
 });
@@ -632,8 +638,148 @@ describe('parseVariationTableContent - Discontinuity marker', () => {
 			expression: '',
 			position: 'center',
 			marker: 'discontinuity',
-			limits: ['0', '2']
+			limits: [
+				{ expression: '0', position: 'center' },
+				{ expression: '2', position: 'center' }
+			]
 		});
+	});
+});
+
+// ============================================================================
+// SINGLE LIMIT ASYMPTOTE TESTS
+// ============================================================================
+
+describe('parseVariationTableContent - Single limit asymptotes', () => {
+	it('should parse left-only limit with position', () => {
+		const content = [
+			'variable: x',
+			'domain: -inf, 1',
+			'',
+			'variation: f(x)',
+			'  -inf: 0, top',
+			'  1: ||, left, -inf, bottom'
+		];
+
+		const result = parseVariationTableContent(content);
+		const node = result.node!;
+		const variationRow = node.rows[0] as VariationRow;
+
+		const asymptoteValue = variationRow.values.get('1');
+		expect(asymptoteValue).toEqual({
+			expression: '-inf',
+			position: 'bottom',
+			marker: 'asymptote',
+			limitSide: 'left'
+		});
+	});
+
+	it('should parse right-only limit with position', () => {
+		const content = [
+			'variable: x',
+			'domain: 0, +inf',
+			'',
+			'variation: f(x)',
+			'  0: ||, right, +inf, top',
+			'  +inf: 0, center'
+		];
+
+		const result = parseVariationTableContent(content);
+		const node = result.node!;
+		const variationRow = node.rows[0] as VariationRow;
+
+		const asymptoteValue = variationRow.values.get('0');
+		expect(asymptoteValue).toEqual({
+			expression: '+inf',
+			position: 'top',
+			marker: 'asymptote',
+			limitSide: 'right'
+		});
+	});
+
+	it('should parse two limits with explicit positions (new syntax)', () => {
+		const content = [
+			'variable: x',
+			'domain: -inf, 0, +inf',
+			'',
+			'variation: f(x)',
+			'  -inf: 1, center',
+			'  0: ||, -inf, bottom, +inf, top',
+			'  +inf: 1, center'
+		];
+
+		const result = parseVariationTableContent(content);
+		const node = result.node!;
+		const variationRow = node.rows[0] as VariationRow;
+
+		const asymptoteValue = variationRow.values.get('0');
+		expect(asymptoteValue).toEqual({
+			expression: '',
+			position: 'center',
+			marker: 'asymptote',
+			limits: [
+				{ expression: '-inf', position: 'bottom' },
+				{ expression: '+inf', position: 'top' }
+			]
+		});
+	});
+
+	it('should parse two limits with auto-deduced positions (legacy syntax)', () => {
+		const content = [
+			'variable: x',
+			'domain: -inf, 0, +inf',
+			'',
+			'variation: f(x)',
+			'  -inf: 1, center',
+			'  0: ||, -inf, +inf',
+			'  +inf: 1, center'
+		];
+
+		const result = parseVariationTableContent(content);
+		const node = result.node!;
+		const variationRow = node.rows[0] as VariationRow;
+
+		const asymptoteValue = variationRow.values.get('0');
+		expect(asymptoteValue?.marker).toBe('asymptote');
+		expect(asymptoteValue?.limits).toBeDefined();
+		// Positions should be auto-deduced: -inf -> bottom, +inf -> top
+		expect(asymptoteValue?.limits?.[0]).toEqual({ expression: '-inf', position: 'bottom' });
+		expect(asymptoteValue?.limits?.[1]).toEqual({ expression: '+inf', position: 'top' });
+	});
+
+	it('should auto-deduce center position for finite values', () => {
+		const content = [
+			'variable: x',
+			'domain: -inf, 0, +inf',
+			'',
+			'variation: f(x)',
+			'  -inf: 1, center',
+			'  0: ||, 2, 3',
+			'  +inf: 1, center'
+		];
+
+		const result = parseVariationTableContent(content);
+		const node = result.node!;
+		const variationRow = node.rows[0] as VariationRow;
+
+		const asymptoteValue = variationRow.values.get('0');
+		expect(asymptoteValue?.limits?.[0]).toEqual({ expression: '2', position: 'center' });
+		expect(asymptoteValue?.limits?.[1]).toEqual({ expression: '3', position: 'center' });
+	});
+
+	it('should return error for invalid single limit syntax (missing position)', () => {
+		const content = [
+			'variable: x',
+			'domain: -inf, 1',
+			'',
+			'variation: f(x)',
+			'  -inf: 0, top',
+			'  1: ||, left, -inf'
+		];
+
+		const result = parseVariationTableContent(content);
+
+		expect(result.errors.some((e) => e.message.includes('Invalid'))).toBe(true);
 	});
 });
 

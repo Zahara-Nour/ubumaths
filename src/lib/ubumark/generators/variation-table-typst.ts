@@ -314,7 +314,13 @@ function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string 
 
 		// Format the variation value with position
 		const formatted = formatVariationValue(value);
-		values.push(formatted);
+
+		// Handle array results (for asymptotes with limits)
+		if (Array.isArray(formatted)) {
+			values.push(...formatted);
+		} else {
+			values.push(formatted);
+		}
 	}
 
 	return `(${values.join(', ')})`;
@@ -327,15 +333,43 @@ function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string 
  * - (position, $value$) for positioned values
  * - $value$ for middle/default position
  * - "||" for asymptotes without limits
+ * - For single-limit asymptotes: value with position and "||"
+ * - For two-limit asymptotes: left value, "||", right value
  *
  * @param value - Variation value
- * @returns Formatted Typst string
+ * @returns Formatted Typst string or array for multi-value cells
  */
-function formatVariationValue(value: VariationValue): string {
-	// Handle asymptotes
+function formatVariationValue(value: VariationValue): string | string[] {
+	// Handle asymptotes with two limits
+	if (value.marker === 'asymptote' && value.limits) {
+		const [leftLimit, rightLimit] = value.limits;
+		const leftExpr = formatMathExpression(leftLimit.expression);
+		const rightExpr = formatMathExpression(rightLimit.expression);
+		const leftPos = convertPosition(leftLimit.position);
+		const rightPos = convertPosition(rightLimit.position);
+
+		const leftFormatted = leftPos ? `(${leftPos}, $${leftExpr}$)` : `$${leftExpr}$`;
+		const rightFormatted = rightPos ? `(${rightPos}, $${rightExpr}$)` : `$${rightExpr}$`;
+
+		// Return as array for special handling in row generation
+		return [leftFormatted, '"||"', rightFormatted];
+	}
+
+	// Handle asymptotes with single limit (left or right)
+	if (value.marker === 'asymptote' && value.limitSide) {
+		const expr = formatMathExpression(value.expression);
+		const position = convertPosition(value.position);
+		const formatted = position ? `(${position}, $${expr}$)` : `$${expr}$`;
+
+		if (value.limitSide === 'left') {
+			return [formatted, '"||"'];
+		} else {
+			return ['"||"', formatted];
+		}
+	}
+
+	// Handle asymptotes without limits
 	if (value.marker === 'asymptote') {
-		// vartable uses || for asymptotes
-		// Limits are handled implicitly by surrounding values
 		return '"||"';
 	}
 

@@ -380,7 +380,10 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 								expression: '',
 								position: 'center',
 								marker: 'asymptote',
-								limits: ['-inf', '+inf']
+								limits: [
+									{ expression: '-inf', position: 'bottom' },
+									{ expression: '+inf', position: 'top' }
+								]
 							}
 						],
 						['+inf', { expression: '0', position: 'center' }]
@@ -721,6 +724,113 @@ describe('generateVariationTableTypst - LaTeX to Typst Conversion', () => {
 
 		// \text{max} should become "max"
 		expect(typst).toContain('"max"');
+	});
+});
+
+// ============================================================================
+// SINGLE LIMIT ASYMPTOTE TESTS
+// ============================================================================
+
+describe('generateVariationTableTypst - Single Limit Asymptotes', () => {
+	it('should generate left-only limit asymptote', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '-inf' }, { expression: '1' }],
+			rows: [
+				{
+					type: 'variation',
+					label: 'f(x)',
+					values: new Map([
+						['-inf', { expression: '0', position: 'top' }],
+						[
+							'1',
+							{
+								expression: '-inf',
+								position: 'bottom',
+								marker: 'asymptote',
+								limitSide: 'left'
+							}
+						]
+					])
+				}
+			]
+		};
+
+		const typst = generateVariationTableTypst(node);
+
+		// Should contain the limit value with position and asymptote marker
+		expect(typst).toContain('(bottom, $-infinity$)');
+		expect(typst).toContain('"||"');
+	});
+
+	it('should generate right-only limit asymptote', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '0' }, { expression: '+inf' }],
+			rows: [
+				{
+					type: 'variation',
+					label: 'f(x)',
+					values: new Map([
+						[
+							'0',
+							{
+								expression: '+inf',
+								position: 'top',
+								marker: 'asymptote',
+								limitSide: 'right'
+							}
+						],
+						['+inf', { expression: '0', position: 'center' }]
+					])
+				}
+			]
+		};
+
+		const typst = generateVariationTableTypst(node);
+
+		// Should contain the asymptote marker then the limit value
+		expect(typst).toContain('"||"');
+		expect(typst).toContain('(top, $+infinity$)');
+	});
+
+	it('should generate two limits with explicit positions', () => {
+		const node: VariationTableNode = {
+			type: 'variation-table',
+			variable: 'x',
+			domain: [{ expression: '-inf' }, { expression: '0' }, { expression: '+inf' }],
+			rows: [
+				{
+					type: 'variation',
+					label: 'f(x)',
+					values: new Map([
+						['-inf', { expression: '1', position: 'center' }],
+						[
+							'0',
+							{
+								expression: '',
+								position: 'center',
+								marker: 'asymptote',
+								limits: [
+									{ expression: '-inf', position: 'bottom' },
+									{ expression: '+inf', position: 'top' }
+								]
+							}
+						],
+						['+inf', { expression: '1', position: 'center' }]
+					])
+				}
+			]
+		};
+
+		const typst = generateVariationTableTypst(node);
+
+		// Should contain both limits with their positions
+		expect(typst).toContain('(bottom, $-infinity$)');
+		expect(typst).toContain('"||"');
+		expect(typst).toContain('(top, $+infinity$)');
 	});
 });
 
