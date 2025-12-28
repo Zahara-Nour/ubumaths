@@ -80,11 +80,12 @@ describe('generateVariationTableTypst - Basic Structure', () => {
 		expect(typst).toContain('domain: ($-infinity$, $0$, $+infinity$)');
 	});
 
-	it('should include labels as tuple', () => {
+	it('should include labels as tuple with content blocks', () => {
 		const node = createBasicNode();
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('label: (($f\'(x)$, "s"))');
+		// Labels use content blocks [...] with embedded math
+		expect(typst).toContain('label: (([$f\'(x)$], "s"))');
 	});
 });
 
@@ -295,7 +296,7 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 		// Last point also (bottom, $-infinity$) - same as first
 	});
 
-	it('should output center values without position wrapper', () => {
+	it('should use center position for values', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -314,9 +315,9 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Center values are output directly without position tuple
-		// The variation row should contain just the values: ($0$, $1$)
-		expect(typst).toMatch(/\(\$0\$, \$1\$\)/);
+		// Center is a valid position in vartable
+		expect(typst).toContain('(center, $0$)');
+		expect(typst).toContain('(center, $1$)');
 	});
 
 	it('should format infinity values correctly', () => {
@@ -362,8 +363,8 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Center values without position wrapper, asymptote as "||"
-		expect(typst).toContain('$0$');
+		// Center values with position, asymptote as "||"
+		expect(typst).toContain('(center, $0$)');
 		expect(typst).toContain('"||"');
 	});
 
@@ -398,8 +399,8 @@ describe('generateVariationTableTypst - Variation Rows', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Center values without position wrapper
-		expect(typst).toContain('$0$');
+		// Center values with position
+		expect(typst).toContain('(center, $0$)');
 		// Asymptote with explicit limits: (leftPos, rightPos, "||", leftValue, rightValue)
 		expect(typst).toContain('(bottom, top, "||", $-infinity$, $+infinity$)');
 	});
@@ -508,7 +509,7 @@ describe('generateVariationTableTypst - Domain', () => {
 // ============================================================================
 
 describe('generateVariationTableTypst - Labels', () => {
-	it('should generate labels with correct conversions', () => {
+	it('should generate labels with content blocks', () => {
 		const node: VariationTableNode = {
 			type: 'variation-table',
 			variable: 'x',
@@ -529,7 +530,8 @@ describe('generateVariationTableTypst - Labels', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain('label: (($f\'(x)$, "s"), ($f(x)$, "v"))');
+		// Labels use content blocks [...] with embedded math
+		expect(typst).toContain('label: (([$f\'(x)$], "s"), ([$f(x)$], "v"))');
 	});
 
 	it('should convert LaTeX in labels to Typst', () => {
@@ -608,8 +610,8 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		// Verify domain
 		expect(typst).toContain('domain: ($-infinity$, $-1$, $0$, $1$, $+infinity$)');
 
-		// Verify labels
-		expect(typst).toContain('label: (($f\'(x)$, "s"), ($f(x)$, "v"))');
+		// Verify labels with content blocks
+		expect(typst).toContain('label: (([$f\'(x)$], "s"), ([$f(x)$], "v"))');
 
 		// Verify sign row
 		expect(typst).toContain('($+$, "z", $-$, "z", $+$, "z", $-$)');
@@ -819,8 +821,8 @@ describe('generateVariationTableTypst - Single Limit Asymptotes', () => {
 		// Point format: first point is right asymptote, second is normal
 		// Right asymptote: ("||", position, $value$)
 		expect(typst).toContain('("||", top, $+infinity$)');
-		// Center value without position wrapper
-		expect(typst).toContain('$0$');
+		// Center value with position
+		expect(typst).toContain('(center, $0$)');
 	});
 
 	it('should generate two limits with explicit positions', () => {
@@ -854,8 +856,8 @@ describe('generateVariationTableTypst - Single Limit Asymptotes', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		// Center values without position wrapper
-		expect(typst).toContain('$1$');
+		// Center values with position
+		expect(typst).toContain('(center, $1$)');
 		// Asymptote with explicit limits: (leftPos, rightPos, "||", leftValue, rightValue)
 		expect(typst).toContain('(bottom, top, "||", $-infinity$, $+infinity$)');
 	});

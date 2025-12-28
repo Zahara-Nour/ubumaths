@@ -161,20 +161,22 @@ function formatMathExpression(expr: string): string {
 /**
  * Generate labels array for tabvar
  *
- * Format: (($label1$, "s"), ($label2$, "v"), ...)
+ * Format: (([label1], "s"), ([label2], "v"), ...)
  * where "s" is for sign rows and "v" is for variation rows
+ * Labels use content blocks [...] with embedded math
  *
  * @param rows - Table rows
  * @returns Labels tuple string
  *
  * @example
- * "(($f'(x)$, \"s\"), ($f(x)$, \"v\"))"
+ * "([$f'(x)$], \"s\"), ([$f(x)$], \"v\"))"
  */
 function generateLabels(rows: (SignRow | VariationRow)[]): string {
 	const labels = rows.map((row) => {
 		const converted = convertLatexToTypstMath(row.label);
 		const rowType = row.type === 'sign' ? 's' : 'v';
-		return `($${converted}$, "${rowType}")`;
+		// Use content blocks [...] for labels, with embedded math
+		return `([$${converted}$], "${rowType}")`;
 	});
 
 	return `(${labels.join(', ')})`;
@@ -344,37 +346,30 @@ function formatPointVariation(value: VariationValue | undefined): string {
 			const [leftLimit, rightLimit] = value.limits;
 			const leftExpr = formatMathExpression(leftLimit.expression);
 			const rightExpr = formatMathExpression(rightLimit.expression);
-			const leftPos = convertPosition(leftLimit.position);
-			const rightPos = convertPosition(rightLimit.position);
-			// Both positions required for asymptote with limits
-			return `(${leftPos || 'bottom'}, ${rightPos || 'top'}, "||", $${leftExpr}$, $${rightExpr}$)`;
+			const leftPos = convertPosition(leftLimit.position) || 'center';
+			const rightPos = convertPosition(rightLimit.position) || 'center';
+			return `(${leftPos}, ${rightPos}, "||", $${leftExpr}$, $${rightExpr}$)`;
 		}
 		// For single-limit asymptote (left side): show limit then asymptote bar
 		if (value.limitSide === 'left') {
 			const limitExpr = formatMathExpression(value.expression);
-			const limitPos = convertPosition(value.position);
-			return `(${limitPos || 'bottom'}, "||", $${limitExpr}$)`;
+			const limitPos = convertPosition(value.position) || 'center';
+			return `(${limitPos}, "||", $${limitExpr}$)`;
 		}
 		// For single-limit asymptote (right side): asymptote bar then limit
 		if (value.limitSide === 'right') {
 			const limitExpr = formatMathExpression(value.expression);
-			const limitPos = convertPosition(value.position);
-			return `("||", ${limitPos || 'top'}, $${limitExpr}$)`;
+			const limitPos = convertPosition(value.position) || 'center';
+			return `("||", ${limitPos}, $${limitExpr}$)`;
 		}
 		// For asymptote without explicit limits: just the marker
 		return '"||"';
 	}
 
-	// Normal value
+	// Normal value: (position, $value$)
 	const expr = formatMathExpression(value.expression);
-	const pos = convertPosition(value.position);
-
-	// Only use tuple format for top/bottom positions
-	// For center/default, just output the value directly
-	if (pos) {
-		return `(${pos}, $${expr}$)`;
-	}
-	return `$${expr}$`;
+	const pos = convertPosition(value.position) || 'center';
+	return `(${pos}, $${expr}$)`;
 }
 
 /**
