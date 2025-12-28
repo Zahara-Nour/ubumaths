@@ -240,12 +240,13 @@ export async function releaseCorrections(
 		};
 	}
 
-	// Update the correction_release_at timestamp
+	// Update the correction_release_at timestamp AND show_corrections
 	const now = new Date().toISOString();
 	const { error: updateError } = await supabase
 		.from('worksheet_assignments')
 		.update({
 			correction_release_at: now,
+			show_corrections: true, // Sync with correction_release_at
 			updated_at: now
 		})
 		.eq('id', assignmentId);
@@ -324,11 +325,12 @@ export async function revokeCorrections(
 		};
 	}
 
-	// Clear the correction_release_at timestamp
+	// Clear the correction_release_at timestamp AND show_corrections
 	const { error: updateError } = await supabase
 		.from('worksheet_assignments')
 		.update({
 			correction_release_at: null,
+			show_corrections: false, // Sync with correction_release_at
 			updated_at: new Date().toISOString()
 		})
 		.eq('id', assignmentId);
@@ -469,20 +471,12 @@ export async function getCorrectionReleaseStatus(
 			assignment.class_id
 		);
 
-		if (studentIds.size > 0) {
-			// Get instances for all assigned students
-			const { count } = await supabase
-				.from('worksheet_instances')
-				.select('id', { count: 'exact', head: true })
-				.eq('worksheet_id', assignment.worksheet_id)
-				.in('student_id', Array.from(studentIds));
+		// Total students = number of assigned students (not instances)
+		totalStudents = studentIds.size;
 
-			totalStudents = count ?? 0;
-
-			// If corrections are released, all students have access
-			if (accessResult.canAccess) {
-				studentsWithAccess = totalStudents;
-			}
+		// If corrections are released, all assigned students have access
+		if (accessResult.canAccess) {
+			studentsWithAccess = totalStudents;
 		}
 
 		return {
