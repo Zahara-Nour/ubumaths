@@ -1141,7 +1141,7 @@ describe('Text Formatting', () => {
 
 		const typst = generateTypst(ast, { includeSetup: false });
 
-		expect(typst).toContain('_Italic_');
+		expect(typst).toContain('#emph[Italic]');
 	});
 
 	it('should generate inline code', () => {

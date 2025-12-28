@@ -63,7 +63,7 @@ describe('generateVariationTableTypst - Basic Structure', () => {
 		expect(typst).toContain('variable:');
 		expect(typst).toContain('domain:');
 		expect(typst).toContain('label:');
-		expect(typst).toContain('content:');
+		expect(typst).toContain('contents:');
 	});
 
 	it('should include variable in math mode', () => {
