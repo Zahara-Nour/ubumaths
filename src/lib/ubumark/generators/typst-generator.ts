@@ -1530,6 +1530,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\;/g, ' thick ');
 	result = result.replace(/\\!/g, ' negthin ');
 
+	// 8. LaTeX tilde (~) is a non-breaking space in math mode
+	// In Typst math, ~ would be interpreted as tilde symbol, so convert to space
+	result = result.replace(/~/g, ' ');
+
 	// 10. Double backslash for line breaks (align environment)
 	result = result.replace(/\\\\/g, '\\');
 

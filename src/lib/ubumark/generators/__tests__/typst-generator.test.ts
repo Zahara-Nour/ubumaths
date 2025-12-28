@@ -1462,6 +1462,13 @@ describe('convertLatexToTypstMath - Math Spaces', () => {
 	it('should convert \\qquad to wide with surrounding spaces', () => {
 		expect(convertLatexToTypstMath('a\\qquad b')).toBe('a wide  b');
 	});
+
+	it('should convert LaTeX tilde (~) to space', () => {
+		// In LaTeX math, ~ is a non-breaking space
+		// In Typst math, ~ would be interpreted as tilde symbol, so convert to space
+		expect(convertLatexToTypstMath('a~b')).toBe('a b');
+		expect(convertLatexToTypstMath(']-\\infty~;~1[')).toBe(']-infinity ; 1[');
+	});
 });
 
 describe('convertLatexToTypstMath - Number Sets (Blackboard Bold)', () => {
