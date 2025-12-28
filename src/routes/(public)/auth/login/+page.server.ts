@@ -38,7 +38,7 @@
  * 6. User is redirected to dashboard (or original page if specified)
  */
 import { redirect, fail } from '@sveltejs/kit';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import {
 	checkLoginRateLimitByIP,
@@ -48,6 +48,16 @@ import {
 import { validateFormData, loginFormSchema } from '$lib/server/validation';
 
 const logger = createLogger('login/+page.server.ts');
+
+/**
+ * Redirect already authenticated users to dashboard
+ */
+export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
+	const { user } = await safeGetSession();
+	if (user) {
+		throw redirect(303, '/dashboard');
+	}
+};
 
 export const actions = {
 	/**
