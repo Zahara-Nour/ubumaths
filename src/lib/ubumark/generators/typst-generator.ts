@@ -315,8 +315,9 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 				) || typstMath.includes('frac(');
 
 			// Wrap inline math in #box[] to prevent line breaks within the expression
+			// Use baseline: 40% for display mode to align fraction bar with text baseline
 			if (needsDisplayMode) {
-				return `#box[$display(${typstMath})$]`;
+				return `#box(baseline: 40%)[$display(${typstMath})$]`;
 			}
 			return `#box[$${typstMath}$]`;
 		}
