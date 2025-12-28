@@ -305,12 +305,14 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
 
-			// Check if math contains operators that need display mode for proper limit rendering
+			// Check if math contains elements that need display mode:
+			// - Operators with limits (lim, sum, prod, etc.) for proper limit rendering
+			// - Fractions (frac) for larger, more readable display
 			// Note: Can't use \b word boundary because _ is a word character (lim_ has no boundary)
 			const needsDisplayMode =
-				/(^|[^a-zA-Z])(lim|limsup|liminf|sum|prod|product|max|min|sup|inf)([^a-zA-Z]|$)/.test(
+				/(^|[^a-zA-Z])(lim|limsup|liminf|sum|prod|product|max|min|sup|inf|frac)([^a-zA-Z(]|$)/.test(
 					typstMath
-				);
+				) || typstMath.includes('frac(');
 
 			// Wrap inline math in #box[] to prevent line breaks within the expression
 			if (needsDisplayMode) {
