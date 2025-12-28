@@ -793,7 +793,7 @@
 				{/if}
 			</Tabs.Content>
 
-			<!-- Reports Tab -->
+			<!-- Reports Tab - Worksheet-wide aggregated view -->
 			<Tabs.Content value="reports" class="space-y-6">
 				{#if worksheet.status === 'draft'}
 					<Card.Root>
@@ -803,31 +803,9 @@
 							</p>
 						</Card.Content>
 					</Card.Root>
-				{:else if selectedAssignment}
-					<!-- Show reports for selected assignment -->
-					<div class="space-y-4">
-						<div class="flex items-center justify-between">
-							<h3 class="text-lg font-medium">
-								Signalements: {selectedAssignment.title || worksheet.title}
-							</h3>
-							<Button variant="outline" onclick={() => (selectedAssignment = null)}>
-								<ArrowLeft class="mr-2 h-4 w-4" />
-								Retour aux assignations
-							</Button>
-						</div>
-						<ErrorReportsPanel worksheetId={worksheet.id} assignmentId={selectedAssignment.id} />
-					</div>
 				{:else}
-					<!-- No assignment selected, show message to select one -->
-					<Card.Root>
-						<Card.Content class="py-12 text-center">
-							<AlertCircle class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-							<p class="text-muted-foreground">
-								Veuillez d'abord sélectionner une assignation dans l'onglet "Assignations" pour voir
-								ses signalements.
-							</p>
-						</Card.Content>
-					</Card.Root>
+					<!-- Show all reports across all assignments with assignment filter -->
+					<ErrorReportsPanel worksheetId={worksheet.id} />
 				{/if}
 			</Tabs.Content>
 
