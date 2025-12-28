@@ -12,6 +12,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import {
 		ArrowLeft,
 		Calendar,
@@ -22,8 +23,13 @@
 		FileQuestion,
 		PenLine,
 		BookOpen,
-		Info
+		Info,
+		Download,
+		Loader2
 	} from 'lucide-svelte';
+	import { getTypstService, PRIORITY } from '$lib/typst/service';
+	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWorksheetView, WorksheetType } from '$lib/types/worksheets';
 
 	interface Props {
@@ -31,6 +37,74 @@
 	}
 
 	let { worksheet }: Props = $props();
+
+	// PDF download state
+	let isPdfLoading = $state(false);
+	let showPdfDialog = $state(false);
+
+	// ============================================================================
+	// PDF DOWNLOAD
+	// ============================================================================
+
+	/**
+	 * Handle PDF download button click
+	 * If corrections are available, show dialog to choose
+	 * Otherwise, download directly without corrections
+	 */
+	function handlePdfClick() {
+		if (worksheet.show_corrections) {
+			showPdfDialog = true;
+		} else {
+			downloadPdf(false);
+		}
+	}
+
+	/**
+	 * Download worksheet as PDF
+	 */
+	async function downloadPdf(includeSolution: boolean) {
+		showPdfDialog = false;
+		isPdfLoading = true;
+
+		try {
+			// Generate Typst content
+			const typstContent = generateStudentWorksheetTypst(worksheet, includeSolution);
+
+			// Compile to PDF using TypstService
+			const service = getTypstService();
+			await service.initialize();
+
+			const result = await service.compileWithPriority(
+				typstContent,
+				{ format: 'pdf' },
+				PRIORITY.URGENT
+			);
+
+			if (!result.success || !result.data) {
+				toaster.error(result.error || 'Erreur lors de la compilation PDF');
+				return;
+			}
+
+			// Download the PDF
+			const pdfData = result.data as Uint8Array;
+			const blob = new Blob([new Uint8Array(pdfData)], { type: 'application/pdf' });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+
+			toaster.success('PDF telecharge !');
+		} catch (error) {
+			console.error('[PDF] Error during PDF generation:', error);
+			toaster.error('Erreur lors de la generation du PDF');
+		} finally {
+			isPdfLoading = false;
+		}
+	}
 
 	// Get icon and label for worksheet type (same logic as WorksheetCard)
 	function getTypeInfo(type: WorksheetType): { icon: typeof FileText; label: string } {
@@ -133,17 +207,36 @@
 	<Card.Root>
 		<Card.Header>
 			<!-- Badges Row -->
-			<div class="mb-3 flex flex-wrap items-center gap-2">
-				<Badge variant={typeBadgeVariant}>
-					<TypeIcon class="mr-1 h-3 w-3" />
-					{typeInfo.label}
-				</Badge>
-				{#if worksheet.show_corrections}
-					<Badge variant="success">
-						<CheckCircle class="mr-1 h-3 w-3" />
-						Corrections disponibles
+			<div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+				<div class="flex flex-wrap items-center gap-2">
+					<Badge variant={typeBadgeVariant}>
+						<TypeIcon class="mr-1 h-3 w-3" />
+						{typeInfo.label}
 					</Badge>
-				{/if}
+					{#if worksheet.show_corrections}
+						<Badge variant="success">
+							<CheckCircle class="mr-1 h-3 w-3" />
+							Corrections disponibles
+						</Badge>
+					{/if}
+				</div>
+
+				<!-- PDF Download Button -->
+				<Button
+					onclick={handlePdfClick}
+					variant="outline"
+					size="sm"
+					title="Telecharger en PDF"
+					disabled={isPdfLoading}
+				>
+					{#if isPdfLoading}
+						<Loader2 class="h-4 w-4 animate-spin sm:mr-2" />
+						<span class="sr-only sm:not-sr-only">Generation...</span>
+					{:else}
+						<Download class="h-4 w-4 sm:mr-2" />
+						<span class="sr-only sm:not-sr-only">PDF</span>
+					{/if}
+				</Button>
 			</div>
 
 			<!-- Title -->
@@ -187,3 +280,19 @@
 		</Card.Content>
 	</Card.Root>
 </div>
+
+<!-- PDF Download Dialog -->
+<Dialog.Root bind:open={showPdfDialog}>
+	<Dialog.Content class="sm:max-w-md">
+		<Dialog.Header>
+			<Dialog.Title>Telecharger en PDF</Dialog.Title>
+			<Dialog.Description>Voulez-vous inclure les corrections dans le PDF ?</Dialog.Description>
+		</Dialog.Header>
+		<Dialog.Footer class="flex-col gap-2 sm:flex-row">
+			<Button variant="outline" onclick={() => downloadPdf(false)} class="w-full sm:w-auto">
+				Sans corrections
+			</Button>
+			<Button onclick={() => downloadPdf(true)} class="w-full sm:w-auto">Avec corrections</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
