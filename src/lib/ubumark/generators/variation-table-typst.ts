@@ -294,103 +294,80 @@ function convertSignMarkerToTypst(marker: string): string {
 /**
  * Generate a variation row for vartable
  *
- * Vartable uses an interval-based model where each element describes
- * what happens in that interval (n-1 elements for n domain points).
+ * Vartable uses a point-based model where each element describes
+ * the value at that domain point (n elements for n domain points).
  *
- * Each interval element is a tuple: (startPos, endPos, startValue, endValue)
- * For asymptotes: (startPos, endPos, "||", startValue, endValue)
+ * Each point element is a tuple:
+ * - Normal: (position, $value$)
+ * - Asymptote with limits: (leftPos, rightPos, "||", $leftValue$, $rightValue$)
  *
  * @param row - Variation row
  * @param domain - Domain points
- * @returns Variation row tuple with n-1 elements
+ * @returns Variation row tuple with n elements
  *
  * @example
- * // Domain: (-inf, 0, +inf) with values: -inf->top, 0->center, +inf->bottom
- * // Generates: ((top, center, $-infinity$, $0$), (center, bottom, $0$, $-infinity$))
+ * // Domain: (-inf, 0, +inf) with values: -inf->bottom, 0->top, +inf->bottom
+ * // Generates: ((bottom, $-infinity$), (top, $0$), (bottom, $-infinity$))
  */
 function generateVariationRow(row: VariationRow, domain: DomainPoint[]): string {
-	const intervals: string[] = [];
+	const elements: string[] = [];
 
-	// Generate one element per interval (n-1 elements for n domain points)
-	for (let i = 0; i < domain.length - 1; i++) {
-		const startPoint = domain[i].expression;
-		const endPoint = domain[i + 1].expression;
+	// Generate one element per domain point (n elements for n domain points)
+	for (let i = 0; i < domain.length; i++) {
+		const point = domain[i].expression;
+		const value = row.values.get(point);
 
-		const startValue = row.values.get(startPoint);
-		const endValue = row.values.get(endPoint);
-
-		// Format the interval element
-		const formatted = formatIntervalVariation(startValue, endValue);
-		intervals.push(formatted);
+		// Format the element for this domain point
+		const formatted = formatPointVariation(value);
+		elements.push(formatted);
 	}
 
-	return `(${intervals.join(', ')})`;
+	return `(${elements.join(', ')})`;
 }
 
 /**
- * Format a variation interval for vartable
+ * Format a variation point for vartable
  *
- * @param startValue - Value at interval start
- * @param endValue - Value at interval end
- * @returns Formatted interval tuple
+ * @param value - Value at the domain point
+ * @returns Formatted point tuple
  */
-function formatIntervalVariation(
-	startValue: VariationValue | undefined,
-	endValue: VariationValue | undefined
-): string {
+function formatPointVariation(value: VariationValue | undefined): string {
 	// Handle missing values
-	if (!startValue && !endValue) {
+	if (!value) {
 		return '()';
 	}
 
-	// Get positions and expressions
-	const startPos = startValue ? convertPosition(startValue.position) || 'center' : 'center';
-	const endPos = endValue ? convertPosition(endValue.position) || 'center' : 'center';
-	const startExpr = startValue ? formatMathExpression(startValue.expression) : '';
-	const endExpr = endValue ? formatMathExpression(endValue.expression) : '';
-
-	// Handle asymptote at end
-	if (endValue?.marker === 'asymptote') {
-		// For asymptote with two limits
-		if (endValue.limits) {
-			const [leftLimit, rightLimit] = endValue.limits;
+	// Handle asymptote
+	if (value.marker === 'asymptote') {
+		// For asymptote with two limits: (leftPos, rightPos, "||", leftValue, rightValue)
+		if (value.limits) {
+			const [leftLimit, rightLimit] = value.limits;
 			const leftExpr = formatMathExpression(leftLimit.expression);
 			const rightExpr = formatMathExpression(rightLimit.expression);
 			const leftPos = convertPosition(leftLimit.position) || 'center';
 			const rightPos = convertPosition(rightLimit.position) || 'center';
-			return `(${startPos}, ${leftPos}, "||", $${startExpr}$, $${leftExpr}$, ${rightPos}, $${rightExpr}$)`;
+			return `(${leftPos}, ${rightPos}, "||", $${leftExpr}$, $${rightExpr}$)`;
 		}
-		// For single-limit asymptote (left side)
-		if (endValue.limitSide === 'left') {
-			const limitExpr = formatMathExpression(endValue.expression);
-			const limitPos = convertPosition(endValue.position) || 'center';
-			return `(${startPos}, ${limitPos}, "||", $${startExpr}$, $${limitExpr}$)`;
+		// For single-limit asymptote (left side): show limit then asymptote bar
+		if (value.limitSide === 'left') {
+			const limitExpr = formatMathExpression(value.expression);
+			const limitPos = convertPosition(value.position) || 'center';
+			return `(${limitPos}, "||", $${limitExpr}$)`;
 		}
-		// For asymptote without limits
-		return `(${startPos}, center, "||", $${startExpr}$, ())`;
+		// For single-limit asymptote (right side): asymptote bar then limit
+		if (value.limitSide === 'right') {
+			const limitExpr = formatMathExpression(value.expression);
+			const limitPos = convertPosition(value.position) || 'center';
+			return `("||", ${limitPos}, $${limitExpr}$)`;
+		}
+		// For asymptote without explicit limits: just the marker
+		return '"||"';
 	}
 
-	// Handle asymptote at start
-	if (startValue?.marker === 'asymptote') {
-		// For single-limit asymptote (right side)
-		if (startValue.limitSide === 'right') {
-			const limitExpr = formatMathExpression(startValue.expression);
-			const limitPos = convertPosition(startValue.position) || 'center';
-			return `(${limitPos}, ${endPos}, "||", $${limitExpr}$, $${endExpr}$)`;
-		}
-		// For asymptote with two limits
-		if (startValue.limits) {
-			const [_leftLimit, rightLimit] = startValue.limits;
-			const rightExpr = formatMathExpression(rightLimit.expression);
-			const rightPos = convertPosition(rightLimit.position) || 'center';
-			return `(${rightPos}, ${endPos}, "||", $${rightExpr}$, $${endExpr}$)`;
-		}
-		// For asymptote without limits
-		return `(center, ${endPos}, "||", (), $${endExpr}$)`;
-	}
-
-	// Normal interval (no asymptotes)
-	return `(${startPos}, ${endPos}, $${startExpr}$, $${endExpr}$)`;
+	// Normal value: (position, $value$)
+	const expr = formatMathExpression(value.expression);
+	const pos = convertPosition(value.position) || 'center';
+	return `(${pos}, $${expr}$)`;
 }
 
 /**
