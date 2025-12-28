@@ -305,8 +305,9 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
 
-			// Inline math without box wrapper - Typst handles baseline alignment naturally
-			// like LaTeX does with $...$
+			// No box wrapper - Typst handles baseline alignment naturally like LaTeX
+			// Note: box() causes baseline shift (known Typst bug #4796), so we avoid it
+			// Line breaks within inline math are rare and acceptable
 			return `$${typstMath}$`;
 		}
 
