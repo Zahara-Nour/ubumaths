@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.1...v0.5.2) (2025-12-28)
+
+### ✨ Features
+
+- **worksheets:** add worksheet-wide error reports aggregation ([67cfe32](https://github.com/Zahara-Nour/ubumaths/commit/67cfe32c65161cf977640d427851face807ede2c))
+
+### 🐛 Bug Fixes
+
+- **auth:** redirect authenticated users away from login page ([96053b1](https://github.com/Zahara-Nour/ubumaths/commit/96053b1c199fc5f4201494809ea1f1efc3a40672))
+- **student:** remove duplicate report button from exercise list ([7a06c62](https://github.com/Zahara-Nour/ubumaths/commit/7a06c623f704a922797386e230db92f3227c0a91))
+- **worksheets:** fix empty correction PDF by handling worksheet_exercises property name ([eb4b32c](https://github.com/Zahara-Nour/ubumaths/commit/eb4b32c5518689c7d90b4c0e9cf3d64a518c7920))
+
 ### [0.5.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.0...v0.5.1) (2025-12-27)
 
 ### 📚 Documentation
