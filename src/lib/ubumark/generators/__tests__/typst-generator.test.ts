@@ -204,8 +204,8 @@ describe('generateTypst', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Inline math with lim should use display() for proper limit rendering
-		// Also wrapped in #box[] with baseline alignment to prevent line breaks
-		expect(typst).toContain('#box(baseline: 40%)[$display(');
+		// Also wrapped in #box[] to prevent line breaks
+		expect(typst).toContain('#box[$display(');
 		expect(typst).toContain('lim');
 	});
 
