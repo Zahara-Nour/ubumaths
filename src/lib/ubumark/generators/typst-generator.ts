@@ -1411,6 +1411,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'nabla', 'nabla');
 	result = replaceLatexCmd(result, 'ell', 'ell'); // Script lowercase L (ℓ)
 	result = replaceLatexCmd(result, 'prime', 'prime'); // Prime symbol (′)
+	result = replaceLatexCmd(result, 'doubleprime', 'prime.double'); // Double prime (″)
 
 	// Convert text command
 	result = result.replace(/\\text\s*{([^{}]*)}/g, '"$1"');
@@ -1517,6 +1518,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\longleftarrow/g, '<--');
 	result = result.replace(/\\mapsto/g, '|->');
 	result = result.replace(/\\iff/g, '<=>');
+	result = result.replace(/\\implies/g, '=>');
+	result = result.replace(/\\impliedby/g, 'arrow.l.double');
 
 	// 7. Math spaces - ORDER MATTERS: qquad before quad
 	// Add spaces around to prevent merging with adjacent letters (e.g., "a\:n" -> "a med n", not "amedn")

@@ -52,7 +52,7 @@ interface VariationTableTypstOptions {
  * //   variable: $x$,
  * //   domain: ($-infinity$, $-1$, $0$, $1$, $+infinity$),
  * //   label: ($f'(x)$, $f(x)$),
- * //   content: (
+ * //   contents: (
  * //     ($+$, "z", $-$, "z", $+$, "z", $-$),
  * //     ((bottom, $-infinity$), (top, $3$), (bottom, $0$), (top, $2$), (bottom, $-infinity$))
  * //   )
@@ -83,7 +83,7 @@ export function generateVariationTableTypst(
   variable: ${variable},
   domain: ${domain},
   label: ${labels},
-  content: (
+  contents: (
 ${content}
   )
 )`;
