@@ -84,7 +84,7 @@ describe('generateVariationTableTypst - Basic Structure', () => {
 		const node = createBasicNode();
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain("label: ($f'(x)$)");
+		expect(typst).toContain('label: (($f\'(x)$, "s"))');
 	});
 });
 
@@ -513,7 +513,7 @@ describe('generateVariationTableTypst - Labels', () => {
 
 		const typst = generateVariationTableTypst(node);
 
-		expect(typst).toContain("label: ($f'(x)$, $f(x)$)");
+		expect(typst).toContain('label: (($f\'(x)$, "s"), ($f(x)$, "v"))');
 	});
 
 	it('should convert LaTeX in labels to Typst', () => {
@@ -593,7 +593,7 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		expect(typst).toContain('domain: ($-infinity$, $-1$, $0$, $1$, $+infinity$)');
 
 		// Verify labels
-		expect(typst).toContain("label: ($f'(x)$, $f(x)$)");
+		expect(typst).toContain('label: (($f\'(x)$, "s"), ($f(x)$, "v"))');
 
 		// Verify sign row
 		expect(typst).toContain('($+$, "z", $-$, "z", $+$, "z", $-$)');
