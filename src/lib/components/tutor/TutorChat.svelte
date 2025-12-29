@@ -746,7 +746,10 @@
 			{:else if messages.length === 0}
 				<div class="flex h-full items-center justify-center text-center">
 					<div class="space-y-4">
-						<div class="text-6xl">🎓</div>
+						<Avatar.Root class="mx-auto h-20 w-20">
+							<Avatar.Image src={pereUbuImage} alt="Père Ubu" />
+							<Avatar.Fallback class="text-3xl">🎓</Avatar.Fallback>
+						</Avatar.Root>
 						<div class="text-muted-foreground">
 							<p
 								class="font-medium"
