@@ -32,6 +32,7 @@ Le systeme de bug reports permet aux utilisateurs de signaler:
 - **Screenshots** : Upload avec validation des magic bytes
 - **Export Claude Code** : Markdown optimise pour le debugging
 - **Workflow admin** : Statuts, notes de resolution, filtres
+- **Operations en lot** : Selection multiple, changement de statut/suppression en masse
 
 ---
 
@@ -71,6 +72,8 @@ Le systeme de bug reports permet aux utilisateurs de signaler:
 │  │  GET    /[reportId]          │ Get report details                   │   │
 │  │  PATCH  /[reportId]          │ Update (user: pending, admin: all)   │   │
 │  │  DELETE /[reportId]          │ Delete (admin only)                  │   │
+│  │  PATCH  /batch               │ Batch update status (admin only)     │   │
+│  │  DELETE /batch               │ Batch delete (admin only)            │   │
 │  │  POST   /[reportId]/screenshot│ Upload screenshot                   │   │
 │  │  GET    /[reportId]/export   │ Export markdown (admin only)         │   │
 │  └─────────────────────────────────────────────────────────────────────┘   │
@@ -293,6 +296,7 @@ Les administrateurs peuvent activer/desactiver les fonctionnalites du systeme de
 | ------------------------------------------------------------- | ------------------ |
 | `src/routes/api/bug-reports/+server.ts`                       | GET, POST          |
 | `src/routes/api/bug-reports/[reportId]/+server.ts`            | GET, PATCH, DELETE |
+| `src/routes/api/bug-reports/batch/+server.ts`                 | PATCH, DELETE      |
 | `src/routes/api/bug-reports/[reportId]/screenshot/+server.ts` | POST               |
 | `src/routes/api/bug-reports/[reportId]/export/+server.ts`     | GET                |
 | `src/routes/api/bug-reports/config/+server.ts`                | GET, PATCH         |

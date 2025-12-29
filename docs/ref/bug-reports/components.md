@@ -230,7 +230,7 @@ async function handleSubmit() {
 
 ## BugReportCard
 
-Carte affichant un resume de rapport.
+Carte affichant un resume de rapport avec support de selection.
 
 ### Fichier
 
@@ -238,11 +238,14 @@ Carte affichant un resume de rapport.
 
 ### Props
 
-| Prop         | Type                  | Default  | Description                    |
-| ------------ | --------------------- | -------- | ------------------------------ |
-| `report`     | `BugReportWithAuthor` | required | Donnees du rapport             |
-| `onclick`    | `() => void`          | -        | Handler de clic (optionnel)    |
-| `showAuthor` | `boolean`             | `false`  | Afficher l'auteur (admin view) |
+| Prop                | Type                        | Default  | Description                    |
+| ------------------- | --------------------------- | -------- | ------------------------------ |
+| `report`            | `BugReportWithAuthor`       | required | Donnees du rapport             |
+| `onclick`           | `() => void`                | -        | Handler de clic (optionnel)    |
+| `showAuthor`        | `boolean`                   | `false`  | Afficher l'auteur (admin view) |
+| `selectable`        | `boolean`                   | `false`  | Affiche une checkbox           |
+| `selected`          | `boolean`                   | `false`  | Etat de selection              |
+| `onSelectionChange` | `(selected: boolean)=>void` | -        | Callback de changement         |
 
 ### Usage
 
@@ -256,6 +259,27 @@ Carte affichant un resume de rapport.
 
 {#each reports as report (report.id)}
 	<BugReportCard {report} onclick={() => (selectedReport = report)} showAuthor={isAdmin} />
+{/each}
+```
+
+### Usage avec selection (admin batch operations)
+
+```svelte
+<script lang="ts">
+	let selectedIds = $state<Set<string>>(new Set());
+</script>
+
+{#each reports as report (report.id)}
+	<BugReportCard
+		{report}
+		selectable={true}
+		selected={selectedIds.has(report.id)}
+		onSelectionChange={(selected) => {
+			if (selected) selectedIds.add(report.id);
+			else selectedIds.delete(report.id);
+			selectedIds = selectedIds; // trigger reactivity
+		}}
+	/>
 {/each}
 ```
 
@@ -277,7 +301,7 @@ Carte affichant un resume de rapport.
 
 ## BugReportList
 
-Liste filtrable de rapports.
+Liste filtrable de rapports avec support de selection en lot.
 
 ### Fichier
 
@@ -285,12 +309,16 @@ Liste filtrable de rapports.
 
 ### Props
 
-| Prop       | Type                                    | Default  | Description        |
-| ---------- | --------------------------------------- | -------- | ------------------ |
-| `reports`  | `BugReportWithAuthor[]`                 | required | Liste des rapports |
-| `isAdmin`  | `boolean`                               | `false`  | Mode admin         |
-| `onSelect` | `(report: BugReportWithAuthor) => void` | -        | Selection callback |
-| `loading`  | `boolean`                               | `false`  | Etat de chargement |
+| Prop                | Type                                    | Default     | Description                |
+| ------------------- | --------------------------------------- | ----------- | -------------------------- |
+| `reports`           | `BugReportWithAuthor[]`                 | required    | Liste des rapports         |
+| `loading`           | `boolean`                               | `false`     | Etat de chargement         |
+| `showFilters`       | `boolean`                               | `true`      | Afficher les filtres       |
+| `onReportClick`     | `(report: BugReportWithAuthor) => void` | -           | Callback clic rapport      |
+| `onFilterChange`    | `(filters) => void`                     | -           | Callback changement filtre |
+| `selectable`        | `boolean`                               | `false`     | Active les checkboxes      |
+| `selectedIds`       | `Set<string>`                           | `new Set()` | IDs selectionnes           |
+| `onSelectionChange` | `(ids: Set<string>) => void`            | -           | Callback selection         |
 
 ### Filtres
 
@@ -319,12 +347,50 @@ const filteredReports = $derived(
 	let selectedReport = $state<BugReportWithAuthor | null>(null);
 </script>
 
+<BugReportList reports={data.reports} onReportClick={(report) => (selectedReport = report)} />
+```
+
+### Usage avec selection en lot (admin)
+
+```svelte
+<script lang="ts">
+	import BugReportList from '$lib/components/bug-reports/BugReportList.svelte';
+
+	let { data } = $props();
+	let selectedIds = $state<Set<string>>(new Set());
+
+	function handleBatchDelete() {
+		// Call batch API
+		fetch('/api/bug-reports/batch', {
+			method: 'DELETE',
+			body: JSON.stringify({ reportIds: [...selectedIds] })
+		});
+	}
+</script>
+
 <BugReportList
 	reports={data.reports}
-	isAdmin={data.profile.role === 'admin'}
-	onSelect={(report) => (selectedReport = report)}
+	selectable={true}
+	{selectedIds}
+	onSelectionChange={(ids) => (selectedIds = ids)}
+	onReportClick={(report) => console.log('clicked', report)}
 />
+
+{#if selectedIds.size > 0}
+	<div class="fixed bottom-4 left-1/2 -translate-x-1/2">
+		<span>{selectedIds.size} selectionne(s)</span>
+		<button onclick={handleBatchDelete}>Supprimer</button>
+	</div>
+{/if}
 ```
+
+### Fonctionnalite "Tout selectionner"
+
+Quand `selectable=true`, un header avec checkbox "Tout selectionner" apparait.
+
+- Coche tous les rapports affiches (filtres appliques)
+- Gere l'etat indeterminate (selection partielle)
+- Affiche un compteur de selection
 
 ---
 
