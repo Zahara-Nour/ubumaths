@@ -203,7 +203,9 @@ function generateLabels(rows: (SignRow | VariationRow)[]): string {
 		const converted = convertLatexToTypstMath(row.label);
 		const rowType = row.type === 'sign' ? 's' : 'v';
 		// Use content blocks [...] for labels, with embedded math
-		return `([$${converted}$], "${rowType}")`;
+		// Sign rows get smaller height (1cm) than variation rows (2cm)
+		const height = row.type === 'sign' ? '1cm' : '2cm';
+		return `([$${converted}$], ${height}, "${rowType}")`;
 	});
 
 	return formatTypstTuple(labels);
@@ -293,9 +295,24 @@ function generateSignRow(row: SignRow, domain: DomainPoint[]): string {
 			}
 		}
 
-		if (marker) {
+		// Check for trailing marker at the END of this interval (only for last interval)
+		let trailingMarker: string | null = null;
+		if (i === domain.length - 2) {
+			const trailingValue = row.values.get(endPoint);
+			if (trailingValue && trailingValue.type === 'marker') {
+				trailingMarker = convertSignMarkerToTypst(trailingValue.marker);
+			}
+		}
+
+		if (marker && trailingMarker) {
+			// Both leading and trailing markers: (marker, sign, trailingMarker)
+			values.push(`(${marker}, ${signStr}, ${trailingMarker})`);
+		} else if (marker) {
 			// Combine marker with sign as tuple: (marker, sign)
 			values.push(`(${marker}, ${signStr})`);
+		} else if (trailingMarker) {
+			// Sign with trailing marker: (sign, trailingMarker)
+			values.push(`(${signStr}, ${trailingMarker})`);
 		} else {
 			values.push(signStr);
 		}
