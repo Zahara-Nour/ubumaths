@@ -61,9 +61,18 @@
 	// State
 	let statementMd = $state(report.statement_md);
 	let solutionMd = $state(report.solution_md ?? '');
-	let rejectionReason = $state('');
+	let rejectionReasonJson = $state<object | null>(null); // TipTap JSON format
 	let isRejecting = $state(false);
 	let isSubmitting = $state(false);
+
+	// Check if rejection reason has content (not just empty paragraph)
+	function hasRejectionContent(json: object | null): boolean {
+		if (!json) return false;
+		const doc = json as { type?: string; content?: Array<{ content?: unknown[] }> };
+		if (doc.type !== 'doc' || !doc.content) return false;
+		// Check if there's any actual content (not just empty paragraphs)
+		return doc.content.some((node) => node.content && node.content.length > 0);
+	}
 
 	// Derived values
 	let isPending = $derived(report.status === 'pending');
@@ -88,10 +97,25 @@
 		try {
 			return JSON.parse(report.response);
 		} catch {
-			// Fallback for plain text
+			const text = report.response;
+			// Check if it looks like HTML (legacy format)
+			if (text.includes('<p>') || text.includes('<br>') || text.includes('<strong>')) {
+				// Convert simple HTML to TipTap format by stripping tags
+				const plainText = text
+					.replace(/<br\s*\/?>/gi, '\n')
+					.replace(/<p>/gi, '')
+					.replace(/<\/p>/gi, '\n')
+					.replace(/<[^>]+>/g, '')
+					.trim();
+				return {
+					type: 'doc',
+					content: [{ type: 'paragraph', content: [{ type: 'text', text: plainText }] }]
+				};
+			}
+			// Plain text fallback
 			return {
 				type: 'doc',
-				content: [{ type: 'paragraph', content: [{ type: 'text', text: report.response }] }]
+				content: [{ type: 'paragraph', content: [{ type: 'text', text }] }]
 			};
 		}
 	});
@@ -163,7 +187,8 @@
 			body.statement_md = statementMd;
 			body.solution_md = solutionMd || null;
 		} else {
-			body.response = rejectionReason;
+			// Store as JSON string (TipTap format) for RichTextDisplay compatibility
+			body.response = rejectionReasonJson ? JSON.stringify(rejectionReasonJson) : null;
 		}
 
 		// Validate client-side
@@ -226,7 +251,7 @@
 	// Cancel rejection mode
 	function cancelRejection(): void {
 		isRejecting = false;
-		rejectionReason = '';
+		rejectionReasonJson = null;
 	}
 </script>
 
@@ -306,7 +331,7 @@
 						<p class="mb-2 text-sm font-medium text-foreground">Motif du rejet (obligatoire) :</p>
 						<RichTextEditor
 							mode="form"
-							bind:htmlValue={rejectionReason}
+							bind:jsonValue={rejectionReasonJson}
 							mathTemplates="basic"
 							minHeight="100px"
 							disabled={isSubmitting}
@@ -316,7 +341,7 @@
 						<Button
 							variant="destructive"
 							onclick={handleReject}
-							disabled={!canSubmit || !rejectionReason.trim()}
+							disabled={!canSubmit || !hasRejectionContent(rejectionReasonJson)}
 							class="gap-2"
 						>
 							{#if isSubmitting}
