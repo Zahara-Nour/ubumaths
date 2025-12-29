@@ -78,24 +78,18 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		googleIntegration?.scopes?.includes('https://www.googleapis.com/auth/gmail.send') ?? false;
 
 	// Check if welcome email was already sent
-	// Note: welcome_emails_sent table may not exist yet, handle gracefully
 	let previousEmail: { sent_at: string } | null = null;
 
-	try {
-		const { data: emailRecord, error: emailError } = await supabase
-			.from('welcome_emails_sent')
-			.select('sent_at')
-			.eq('student_id', student_id)
-			.order('sent_at', { ascending: false })
-			.limit(1)
-			.single();
+	const { data: emailRecord } = await supabase
+		.from('welcome_emails_sent')
+		.select('sent_at')
+		.eq('student_id', student_id)
+		.order('sent_at', { ascending: false })
+		.limit(1)
+		.maybeSingle();
 
-		if (!emailError && emailRecord) {
-			previousEmail = emailRecord;
-		}
-	} catch {
-		// Table may not exist yet, ignore error
-		console.log('[Welcome Email] welcome_emails_sent table not found or query failed');
+	if (emailRecord) {
+		previousEmail = emailRecord;
 	}
 
 	return {
