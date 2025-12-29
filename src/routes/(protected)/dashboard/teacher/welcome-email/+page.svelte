@@ -44,11 +44,11 @@
 	// Email template content
 	const emailSubject = 'Bienvenue sur UbuMaths !';
 	const emailBody = $derived(
-		`Bonjour ${data.student.firstname || 'cher eleve'},
+		`Bonjour ${data.student.firstname || 'cher(e) élève'},
 
-Ton compte UbuMaths a ete valide. Tu peux maintenant te connecter sur https://ubumaths.com.
+Ton compte UbuMaths a été validé. Tu peux maintenant te connecter sur https://ubumaths-6op8.vercel.app/ .
 
-Bonne annee scolaire !`
+Bonne année mathématique !`
 	);
 
 	// Handle send button click
@@ -97,9 +97,6 @@ Bonne annee scolaire !`
 			<Mail class="h-8 w-8 text-primary" />
 			<h1 class="text-3xl font-bold tracking-tight">Email de bienvenue</h1>
 		</div>
-		<p class="text-muted-foreground">
-			Envoyez un email de bienvenue a l'eleve nouvellement approuve.
-		</p>
 	</div>
 
 	<!-- Gmail Access Warning -->
@@ -114,7 +111,7 @@ Bonne annee scolaire !`
 				</p>
 				<Button variant="outline" size="sm" href="/dashboard/teacher/settings/google" class="mt-2">
 					<ExternalLink class="mr-2 h-4 w-4" />
-					Configurer l'integration Google
+					Configurer l'intégration Google
 				</Button>
 			</Alert.Description>
 		</Alert.Root>
@@ -124,9 +121,9 @@ Bonne annee scolaire !`
 	{#if data.previousEmail}
 		<Alert.Root>
 			<CheckCircle2 class="h-4 w-4" />
-			<Alert.Title>Email deja envoye</Alert.Title>
+			<Alert.Title>Email déjà envoyé</Alert.Title>
 			<Alert.Description>
-				Un email de bienvenue a deja ete envoye a cet eleve le {formatDate(
+				Un email de bienvenue a déjà été envoyé à cet élève le {formatDate(
 					data.previousEmail.sent_at
 				)}.
 			</Alert.Description>

@@ -59,15 +59,15 @@ function base64urlEncode(str: string): string {
 }
 
 /**
- * Build a MIME message for email sending
+ * Build a MIME message for email sending (HTML format)
  *
  * @param to - Recipient email address
  * @param from - Sender email address
  * @param subject - Email subject
- * @param body - Email body (plain text)
+ * @param htmlBody - Email body (HTML)
  * @returns MIME formatted message string
  */
-function buildMimeMessage(to: string, from: string, subject: string, body: string): string {
+function buildMimeMessage(to: string, from: string, subject: string, htmlBody: string): string {
 	// Encode subject for UTF-8 support (RFC 2047)
 	const encodedSubject = `=?UTF-8?B?${Buffer.from(subject, 'utf-8').toString('base64')}?=`;
 
@@ -77,10 +77,10 @@ function buildMimeMessage(to: string, from: string, subject: string, body: strin
 		`To: ${to}`,
 		`Subject: ${encodedSubject}`,
 		'MIME-Version: 1.0',
-		'Content-Type: text/plain; charset=UTF-8',
+		'Content-Type: text/html; charset=UTF-8',
 		'Content-Transfer-Encoding: base64',
 		'',
-		Buffer.from(body, 'utf-8').toString('base64')
+		Buffer.from(htmlBody, 'utf-8').toString('base64')
 	];
 
 	return messageParts.join('\r\n');
@@ -223,13 +223,22 @@ export async function sendWelcomeEmail(
 	studentFirstname: string,
 	fromEmail: string
 ): Promise<EmailSendResult> {
-	const subject = 'Ton compte UbuMaths est active !';
+	const subject = 'Bienvenue sur UbuMaths !';
 
-	const body = `Bonjour ${studentFirstname},
+	const siteUrl = 'https://ubumaths-6op8.vercel.app/';
+	const greeting = studentFirstname || 'cher(e) élève';
 
-Ton compte UbuMaths a ete valide. Tu peux maintenant te connecter sur https://ubumaths.com.
+	const htmlBody = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+  <p>Bonjour ${greeting},</p>
+  <p>Ton compte UbuMaths a été validé. Tu peux maintenant te connecter sur <a href="${siteUrl}" style="color: #2563eb; text-decoration: underline;">${siteUrl}</a>.</p>
+  <p>Bonne année mathématique !</p>
+</body>
+</html>`;
 
-Bonne annee scolaire !`;
-
-	return sendEmail(accessToken, toEmail, fromEmail, subject, body);
+	return sendEmail(accessToken, toEmail, fromEmail, subject, htmlBody);
 }
