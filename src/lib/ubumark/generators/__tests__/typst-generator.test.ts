@@ -1523,6 +1523,32 @@ describe('convertLatexToTypstMath - Math Text Styles', () => {
 	});
 });
 
+describe('convertLatexToTypstMath - Text with nested math', () => {
+	it('should convert \\text{simple} to quoted string', () => {
+		expect(convertLatexToTypstMath('\\text{simple}')).toBe('"simple"');
+	});
+
+	it('should convert \\text{car $x-1<0$} with nested math', () => {
+		// Typst automatically handles spacing for operators in math mode
+		expect(convertLatexToTypstMath('\\text{car $x-1<0$}')).toBe('"car " x-1<0');
+	});
+
+	it('should convert \\text{where $a > b$ and $c < d$} with multiple nested math', () => {
+		expect(convertLatexToTypstMath('\\text{where $a > b$ and $c < d$}')).toBe(
+			'"where " a > b " and " c < d'
+		);
+	});
+
+	it('should convert \\text{$x$ is positive} with math at start', () => {
+		expect(convertLatexToTypstMath('\\text{$x$ is positive}')).toBe('x " is positive"');
+	});
+
+	it('should convert \\text{car $\\frac{x}{y}$} with LaTeX commands', () => {
+		// LaTeX commands inside nested math should be converted
+		expect(convertLatexToTypstMath('\\text{car $\\frac{x}{y}$}')).toBe('"car " frac(x, y)');
+	});
+});
+
 describe('convertLatexToTypstMath - Integrals and Big Operators', () => {
 	it('should convert \\int to integral', () => {
 		expect(convertLatexToTypstMath('\\int')).toBe('integral');

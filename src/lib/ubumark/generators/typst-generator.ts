@@ -1002,6 +1002,78 @@ function convertLatexOneArgCommand(str: string, latexCmd: string, typstFunc: str
 }
 
 /**
+ * Convert LaTeX \text{...} commands to Typst, handling nested math expressions.
+ *
+ * In LaTeX, \text{car $x-1<0$} contains text "car " and math "$x-1<0$".
+ * In Typst math mode, this becomes: "car " x - 1 < 0
+ *
+ * @param str - Input string containing \text{...} commands
+ * @returns String with \text commands converted
+ */
+function convertTextCommand(str: string): string {
+	let result = str;
+	const pattern = /\\text\s*\{/g;
+	let match;
+
+	let changed = true;
+	while (changed) {
+		changed = false;
+		pattern.lastIndex = 0;
+
+		while ((match = pattern.exec(result)) !== null) {
+			const startIndex = match.index;
+			const openBraceIndex = match.index + match[0].length - 1;
+
+			// Find matching closing brace
+			const closeIndex = findMatchingBrace(result, openBraceIndex);
+			if (closeIndex === -1) continue;
+
+			const content = result.slice(openBraceIndex + 1, closeIndex);
+
+			// Parse content for $...$ math segments
+			const parts: string[] = [];
+			let lastIndex = 0;
+			const mathRegex = /\$([^$]+)\$/g;
+			let mathMatch;
+
+			while ((mathMatch = mathRegex.exec(content)) !== null) {
+				// Add text before this math segment (quoted)
+				if (mathMatch.index > lastIndex) {
+					const textPart = content.slice(lastIndex, mathMatch.index);
+					if (textPart) {
+						parts.push(`"${textPart}"`);
+					}
+				}
+
+				// Add the math segment (will be converted by the outer function)
+				// Just remove the $ delimiters - the math is already in math mode
+				parts.push(mathMatch[1]);
+
+				lastIndex = mathMatch.index + mathMatch[0].length;
+			}
+
+			// Add remaining text after last math segment (quoted)
+			if (lastIndex < content.length) {
+				const textPart = content.slice(lastIndex);
+				if (textPart) {
+					parts.push(`"${textPart}"`);
+				}
+			}
+
+			// If no math was found, just quote the whole content
+			const replacement = parts.length > 0 ? parts.join(' ') : `"${content}"`;
+			result = result.slice(0, startIndex) + replacement + result.slice(closeIndex + 1);
+
+			changed = true;
+			pattern.lastIndex = 0;
+			break;
+		}
+	}
+
+	return result;
+}
+
+/**
  * Convert LaTeX subscript/superscript braces to Typst parentheses
  * Handles nested braces properly (e.g., P_{\overline{R_{n}}} -> P_(overline(R_(n))))
  *
@@ -1444,8 +1516,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'prime', 'prime'); // Prime symbol (′)
 	result = replaceLatexCmd(result, 'doubleprime', 'prime.double'); // Double prime (″)
 
-	// Convert text command
-	result = result.replace(/\\text\s*{([^{}]*)}/g, '"$1"');
+	// Convert text command (handles nested math like \text{car $x-1<0$})
+	result = convertTextCommand(result);
 	result = result.replace(/\\textbf\s*{([^{}]*)}/g, 'bold("$1")');
 	result = result.replace(/\\textit\s*{([^{}]*)}/g, 'italic("$1")');
 
