@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.8](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.7...v0.5.8) (2025-12-29)
+
+### 🐛 Bug Fixes
+
+- **admin:** add Tooltip.Provider and use Svelte 5 snippet pattern ([638e025](https://github.com/Zahara-Nour/ubumaths/commit/638e0256371cee9a20f1757507adaef3b0548e7e))
+- **welcome-email:** correct link to Google settings page ([3eb6c54](https://github.com/Zahara-Nour/ubumaths/commit/3eb6c54238f2c69e972161f62c122d975f038bc0))
+
+### ✨ Features
+
+- **teacher-classes:** add student list with welcome email status ([b0d7f46](https://github.com/Zahara-Nour/ubumaths/commit/b0d7f4635f438d5b815f684f6a28a3600e7f3a9a))
+- **welcome-email:** use HTML format for clickable links ([b8fce4c](https://github.com/Zahara-Nour/ubumaths/commit/b8fce4ccb3e2a70379b4a36c624e157fe8de534c))
+
 ### [0.5.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.6...v0.5.7) (2025-12-29)
 
 ### ✨ Features
