@@ -86,7 +86,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 			.from('welcome_emails_sent')
 			.select('sent_at')
 			.eq('student_id', student_id)
-			.eq('teacher_id', user.id)
+			.order('sent_at', { ascending: false })
+			.limit(1)
 			.single();
 
 		if (!emailError && emailRecord) {
