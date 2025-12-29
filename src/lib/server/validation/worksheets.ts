@@ -883,7 +883,9 @@ export const studentExerciseViewSchema = z.object({
 	/** Hints from selected variation (for guided exercises) */
 	hints: z.array(exerciseHintSchema).optional(),
 	/** Supplementary resources (videos, PDFs, links) */
-	resources: z.array(exerciseResourceSchema).optional()
+	resources: z.array(exerciseResourceSchema).optional(),
+	/** Exercise tags for categorization */
+	tags: z.array(z.string()).optional()
 });
 
 /**

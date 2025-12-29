@@ -589,6 +589,8 @@ export interface StudentExerciseView {
 	hints?: ExerciseHint[];
 	/** Supplementary resources (videos, PDFs, links) */
 	resources?: ExerciseResource[];
+	/** Exercise tags for categorization */
+	tags?: string[];
 }
 
 /**

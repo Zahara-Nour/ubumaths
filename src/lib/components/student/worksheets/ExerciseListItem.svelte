@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
-	import { CheckCircle, AlertCircle } from 'lucide-svelte';
+	import { CheckCircle, AlertCircle, BookOpen } from 'lucide-svelte';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
 	import type { MasteryStatus } from '$lib/types/exercise-mastery';
 
@@ -34,9 +34,24 @@
 		</div>
 
 		<div class="flex-1">
-			<span class="font-medium"
-				>Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}</span
-			>
+			<div class="flex items-center gap-2">
+				<span class="font-medium"
+					>Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}</span
+				>
+				{#if hasCorrection}
+					<BookOpen
+						class="h-4 w-4 text-green-600 dark:text-green-500"
+						aria-label="Correction disponible"
+					/>
+				{/if}
+			</div>
+			{#if exercise.tags && exercise.tags.length > 0}
+				<div class="mt-1 flex flex-wrap gap-1">
+					{#each exercise.tags as tag (tag)}
+						<Badge variant="secondary" class="text-xs">{tag}</Badge>
+					{/each}
+				</div>
+			{/if}
 			{#if exercise.custom_instructions}
 				<p class="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
 					{exercise.custom_instructions}
@@ -45,15 +60,6 @@
 		</div>
 
 		<div class="flex items-center gap-2">
-			{#if hasCorrection}
-				<Badge
-					variant="outline"
-					class="border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300"
-				>
-					Correction
-				</Badge>
-			{/if}
-
 			{#if pointsLabel}
 				<Badge variant="outline" class="font-normal">
 					{pointsLabel}
