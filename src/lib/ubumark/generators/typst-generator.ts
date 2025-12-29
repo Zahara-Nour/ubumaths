@@ -1139,7 +1139,11 @@ function convertLatexFractions(str: string): string {
 			const denominator = result.slice(denomStart + 1, denomEnd);
 
 			// Replace the whole \frac{...}{...} with frac(...)
-			const replacement = 'frac(' + numerator + ', ' + denominator + ')';
+			// Add space before frac() if preceded by a letter to prevent fusion
+			// Example: \times\dfrac{...} should become "\times frac(...)" not "\timesfrac(...)"
+			// This allows the later \times conversion to match properly.
+			const needsSpace = startIndex > 0 && /[a-zA-Z]/.test(result[startIndex - 1]);
+			const replacement = (needsSpace ? ' ' : '') + 'frac(' + numerator + ', ' + denominator + ')';
 			result = result.slice(0, startIndex) + replacement + result.slice(denomEnd + 1);
 
 			changed = true;
@@ -1210,6 +1214,17 @@ export function convertLatexToTypstMath(latex: string): string {
 	// The placeholder avoids conflicts between these two conversions.
 	// Final replacement happens at the end of this function (Step 2).
 	result = result.replace(/\{,\}/g, '<<<DECIMAL_COMMA>>>');
+
+	// ========================================================================
+	// ARROW PLACEHOLDERS (Step 1 of 2)
+	// ========================================================================
+	// MUST be done BEFORE \left/\right handling because \leftarrow and
+	// \leftrightarrow would otherwise match the \left\s* fallback pattern.
+	// Final restoration happens at the end of this function (Step 2).
+	result = result.replace(/\\leftrightarrow/g, '<<<ARROW_LEFTRIGHT>>>');
+	result = result.replace(/\\leftarrow/g, '<<<ARROW_LEFT>>>');
+	result = result.replace(/\\rightarrow/g, '<<<ARROW_RIGHT>>>');
+	result = result.replace(/\\to(?![a-z])/g, '<<<ARROW_RIGHT>>>');
 
 	// Convert \left( ... \right) to ( ... ) - Typst auto-sizes
 	result = result.replace(/\\left\s*\(/g, '(');
@@ -1397,14 +1412,10 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'equiv', 'equiv');
 	result = replaceLatexCmd(result, 'sim', 'tilde.eq');
 
-	// Convert arrows
-	result = result.replace(/\\to/g, '->');
-	result = result.replace(/\\rightarrow/g, '->');
-	result = result.replace(/\\leftarrow/g, '<-');
-	result = result.replace(/\\leftrightarrow/g, '<->');
-	result = result.replace(/\\Rightarrow/g, '=>');
-	result = result.replace(/\\Leftarrow/g, '<=');
-	result = result.replace(/\\Leftrightarrow/g, '<=>');
+	// Double arrows - use placeholders (single arrows handled earlier)
+	result = result.replace(/\\Rightarrow/g, '<<<ARROW_DOUBLE_RIGHT>>>');
+	result = result.replace(/\\Leftarrow/g, '<<<ARROW_DOUBLE_LEFT>>>');
+	result = result.replace(/\\Leftrightarrow/g, '<<<ARROW_DOUBLE_LEFTRIGHT>>>');
 
 	// Integrals - MUST be before \in conversion (otherwise \int becomes "int")
 	// Order matters: longer commands first
@@ -1527,19 +1538,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Limit operator
 	result = replaceLatexCmd(result, 'lim', 'lim');
 
-	// Arrow operators
-	result = result.replace(/\\to(?![a-z])/g, '->');
-	result = result.replace(/\\rightarrow/g, '->');
-	result = result.replace(/\\leftarrow/g, '<-');
-	result = result.replace(/\\Rightarrow/g, '=>');
-	result = result.replace(/\\Leftarrow/g, '<=');
-	result = result.replace(/\\Leftrightarrow/g, '<=>');
-	result = result.replace(/\\longrightarrow/g, '-->');
-	result = result.replace(/\\longleftarrow/g, '<--');
-	result = result.replace(/\\mapsto/g, '|->');
-	result = result.replace(/\\iff/g, '<=>');
-	result = result.replace(/\\implies/g, '=>');
-	result = result.replace(/\\impliedby/g, 'arrow.l.double');
+	// Arrow operators - handled via placeholders earlier to prevent "<-" confusion
+	// Additional arrows not handled in the main placeholder section:
+	result = result.replace(/\\longrightarrow/g, '<<<ARROW_LONG_RIGHT>>>');
+	result = result.replace(/\\longleftarrow/g, '<<<ARROW_LONG_LEFT>>>');
+	result = result.replace(/\\mapsto/g, '<<<ARROW_MAPSTO>>>');
+	result = result.replace(/\\iff/g, '<<<ARROW_DOUBLE_LEFTRIGHT>>>');
+	result = result.replace(/\\implies/g, '<<<ARROW_DOUBLE_RIGHT>>>');
+	result = result.replace(/\\impliedby/g, '<<<ARROW_IMPLIED_BY>>>');
 
 	// 7. Math spaces - ORDER MATTERS: qquad before quad
 	// Add spaces around to prevent merging with adjacent letters (e.g., "a\:n" -> "a med n", not "amedn")
@@ -1630,6 +1636,26 @@ export function convertLatexToTypstMath(latex: string): string {
 	// which is invalid Typst. Fix by removing the inner subscript operator.
 	// Pattern: _( immediately followed by _( -> replace with just _(
 	result = result.replace(/_\(_\(/g, '_(');
+
+	// ========================================================================
+	// ARROW HANDLING: Prevent "< -x" from becoming left arrow
+	// ========================================================================
+	// In Typst, `<-` is interpreted as a left arrow symbol.
+	// But "< -x" (less than negative x) should NOT be an arrow.
+	// We use placeholders for intentional arrows, then:
+	// 1. Add space between < and - to prevent unintended arrows
+	// 2. Restore intentional arrow placeholders
+	result = result.replace(/<-/g, '< -'); // Fix "less than negative"
+	result = result.replace(/<<<ARROW_RIGHT>>>/g, '->');
+	result = result.replace(/<<<ARROW_LEFT>>>/g, '<-');
+	result = result.replace(/<<<ARROW_LEFTRIGHT>>>/g, '<->');
+	result = result.replace(/<<<ARROW_DOUBLE_RIGHT>>>/g, '=>');
+	result = result.replace(/<<<ARROW_DOUBLE_LEFT>>>/g, '<=');
+	result = result.replace(/<<<ARROW_DOUBLE_LEFTRIGHT>>>/g, '<=>');
+	result = result.replace(/<<<ARROW_LONG_RIGHT>>>/g, '-->');
+	result = result.replace(/<<<ARROW_LONG_LEFT>>>/g, '<--');
+	result = result.replace(/<<<ARROW_MAPSTO>>>/g, '|->');
+	result = result.replace(/<<<ARROW_IMPLIED_BY>>>/g, 'arrow.l.double');
 
 	return result;
 }

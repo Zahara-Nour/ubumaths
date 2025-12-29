@@ -1774,6 +1774,12 @@ describe('convertLatexToTypstMath - Operators with spacing', () => {
 		expect(convertLatexToTypstMath('0.75x\\times0.15')).toBe('0.75x times 0.15');
 	});
 
+	it('should handle times followed by dfrac without fusion', () => {
+		// Bug fix: \times\dfrac was becoming timesfrac instead of times frac(...)
+		expect(convertLatexToTypstMath('8\\times\\dfrac{1}{2}')).toBe('8 times frac(1, 2)');
+		expect(convertLatexToTypstMath('a\\times\\frac{b}{c}')).toBe('a times frac(b, c)');
+	});
+
 	it('should add space before approx when preceded by letter', () => {
 		expect(convertLatexToTypstMath('x\\approx0')).toBe('x approx 0');
 	});
@@ -1813,6 +1819,19 @@ describe('convertLatexToTypstMath - Operators with spacing', () => {
 		const result = convertLatexToTypstMath('u_n(1-0.15u_n)');
 		// Both u_n should have space before their following parens
 		expect(result).toBe('u_n (1-0.15u_n)');
+	});
+
+	it('should not convert "< -" (less than negative) to left arrow', () => {
+		// Bug fix: "< -x" was being converted to "← x" (left arrow)
+		// In Typst, "<-" is the left arrow symbol, but "< -x" means "less than negative x"
+		expect(convertLatexToTypstMath('x < -8')).toBe('x < -8');
+		expect(convertLatexToTypstMath('n < -\\ln(8)')).toBe('n < -ln(8)');
+	});
+
+	it('should preserve intentional left arrow from LaTeX command', () => {
+		expect(convertLatexToTypstMath('x \\leftarrow y')).toBe('x <- y');
+		expect(convertLatexToTypstMath('x \\rightarrow y')).toBe('x -> y');
+		expect(convertLatexToTypstMath('x \\Leftrightarrow y')).toBe('x <=> y');
 	});
 });
 
