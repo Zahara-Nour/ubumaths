@@ -28,6 +28,7 @@
 	import { Switch } from '$lib/components/ui/switch';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 
 	// Extended profile type that includes related data from API responses
 	type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -107,6 +108,9 @@
 		if (tempIsTest !== selectedUser.is_test) fields.add('is_test');
 		return fields;
 	});
+
+	// Derived: check if pending user has at least one class assigned
+	const hasClassAssigned = $derived(selectedUser?.class_ids && selectedUser.class_ids.length > 0);
 
 	/**
 	 * Utility Functions
@@ -357,6 +361,7 @@
 
 	/**
 	 * Approve a pending user
+	 * Sends profile updates along with approval status
 	 */
 	async function approveUser() {
 		if (!selectedUser || selectedUser.status !== 'pending') return;
@@ -364,10 +369,21 @@
 		isApproving = true;
 
 		try {
+			// Prepare approval data with profile updates
+			const approvalData = {
+				status: 'approved' as const,
+				// Include profile fields (convert empty strings back to null for API)
+				firstname: tempFirstname || null,
+				lastname: tempLastname || null,
+				gender: (tempGender || null) as 'boy' | 'girl' | null,
+				school_id: tempSchoolId || null,
+				is_test: tempIsTest
+			};
+
 			const response = await fetch(`/api/admin/users/${selectedUser.id}/status`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ status: 'approved' })
+				body: JSON.stringify(approvalData)
 			});
 
 			if (!response.ok) {
@@ -380,6 +396,25 @@
 			if (result.success && result.profile) {
 				// Update selected user
 				selectedUser = { ...result.profile, class_ids: result.profile.class_ids || [] };
+
+				// Reinit temp values from saved data
+				initTempValues(result.profile);
+
+				// Update search results
+				if (searchResults.length > 0) {
+					const index = searchResults.findIndex((u) => u.id === result.profile.id);
+					if (index !== -1) {
+						searchResults[index] = { ...result.profile, class_ids: result.profile.class_ids || [] };
+					}
+				}
+
+				// Update class results if present
+				if (classResults.length > 0) {
+					const index = classResults.findIndex((u) => u.id === result.profile.id);
+					if (index !== -1) {
+						classResults[index] = { ...result.profile, class_ids: result.profile.class_ids || [] };
+					}
+				}
 
 				// Remove from pending results if showing pending
 				if (showPendingOnly) {
@@ -394,6 +429,10 @@
 		} catch (err) {
 			console.error('Error approving user:', err);
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'approbation");
+			// Reinitialize temp values to ensure consistency after error
+			if (selectedUser) {
+				initTempValues(selectedUser);
+			}
 		} finally {
 			isApproving = false;
 		}
@@ -995,19 +1034,40 @@
 												{/if}
 												Refuser
 											</Button>
-											<Button
-												size="sm"
-												onclick={approveUser}
-												disabled={isApproving || isRejecting}
-												class="bg-green-600 hover:bg-green-700"
-											>
-												{#if isApproving}
-													<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-												{:else}
-													<Check class="mr-2 h-4 w-4" />
-												{/if}
-												Approuver
-											</Button>
+
+											<!-- Approve button with tooltip if no class assigned -->
+											{#if !hasClassAssigned}
+												<Tooltip.Root>
+													<Tooltip.Trigger asChild let:builder>
+														<Button
+															{...builder}
+															size="sm"
+															disabled={true}
+															class="bg-green-600 hover:bg-green-700"
+														>
+															<Check class="mr-2 h-4 w-4" />
+															Approuver
+														</Button>
+													</Tooltip.Trigger>
+													<Tooltip.Content>
+														<p>Veuillez assigner au moins une classe avant d'approuver</p>
+													</Tooltip.Content>
+												</Tooltip.Root>
+											{:else}
+												<Button
+													size="sm"
+													onclick={approveUser}
+													disabled={isApproving || isRejecting}
+													class="bg-green-600 hover:bg-green-700"
+												>
+													{#if isApproving}
+														<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+													{:else}
+														<Check class="mr-2 h-4 w-4" />
+													{/if}
+													Approuver
+												</Button>
+											{/if}
 										</div>
 									</div>
 								</div>
@@ -1230,8 +1290,8 @@
 									</button>
 								</div>
 
-								<!-- Save/Reset Buttons -->
-								{#if hasChanges}
+								<!-- Save/Reset Buttons (hidden for pending users) -->
+								{#if hasChanges && selectedUser.status !== 'pending'}
 									<div class="sticky bottom-4 mt-6 flex justify-end gap-2 pt-4">
 										<Button variant="outline" onclick={resetAllChanges} disabled={isSavingAll}>
 											<RotateCcw class="h-4 w-4" />

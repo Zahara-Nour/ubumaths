@@ -10612,6 +10612,84 @@ export type Database = {
 					}
 				];
 			};
+			welcome_emails_sent: {
+				Row: {
+					id: string;
+					sent_at: string;
+					sent_by: string;
+					student_id: string;
+				};
+				Insert: {
+					id?: string;
+					sent_at?: string;
+					sent_by: string;
+					student_id: string;
+				};
+				Update: {
+					id?: string;
+					sent_at?: string;
+					sent_by?: string;
+					student_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'welcome_emails_sent_sent_by_fkey';
+						columns: ['sent_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'welcome_emails_sent_sent_by_fkey';
+						columns: ['sent_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'welcome_emails_sent_sent_by_fkey';
+						columns: ['sent_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'welcome_emails_sent_sent_by_fkey';
+						columns: ['sent_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'welcome_emails_sent_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'welcome_emails_sent_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'welcome_emails_sent_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'welcome_emails_sent_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			worksheet_assignment_classes: {
 				Row: {
 					assignment_id: string;
