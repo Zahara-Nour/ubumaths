@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.6...v0.5.7) (2025-12-29)
+
+### ✨ Features
+
+- **admin:** add Gmail welcome email for approved students ([2a9efe1](https://github.com/Zahara-Nour/ubumaths/commit/2a9efe1329ca9cc858240e4a25da86be43fbd543))
+
 ### [0.5.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.5...v0.5.6) (2025-12-29)
 
 ### ✨ Features
