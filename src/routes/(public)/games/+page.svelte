@@ -65,7 +65,7 @@
 	<title>Jeux Mathématiques | UbuMaths</title>
 	<meta
 		name="description"
-		content="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Père Ubu, Trio, Mathémo et Navadra."
+		content="Apprenez les mathématiques en vous amusant avec nos jeux éducatifs : Trio, Mathémo, 2048 et Navadra."
 	/>
 </svelte:head>
 
