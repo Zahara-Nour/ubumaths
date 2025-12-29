@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.11](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.10...v0.5.11) (2025-12-29)
+
+### 🐛 Bug Fixes
+
+- **freeze-detection:** eliminate false positives from sleep/wake ([bc08e87](https://github.com/Zahara-Nour/ubumaths/commit/bc08e87a7afbd18711d5eebc1b9000cec8564009))
+
+### 📚 Documentation
+
+- **freeze-detection:** add comprehensive false positive prevention ([5521f07](https://github.com/Zahara-Nour/ubumaths/commit/5521f070d49c8b8061eb9e0ebbf1c6b98db27d26))
+
 ### [0.5.10](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.9...v0.5.10) (2025-12-29)
 
 ### 🐛 Bug Fixes
