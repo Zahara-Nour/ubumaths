@@ -18,6 +18,7 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Mail, AlertTriangle, CheckCircle2, ExternalLink, Send } from 'lucide-svelte';
+	import { WELCOME_EMAIL_SUBJECT, getWelcomeEmailText } from '$lib/email-templates/welcome';
 
 	let { data }: { data: PageData } = $props();
 
@@ -41,15 +42,9 @@
 			: data.student.email
 	);
 
-	// Email template content
-	const emailSubject = 'Bienvenue sur UbuMaths !';
-	const emailBody = $derived(
-		`Bonjour ${data.student.firstname || 'cher(e) élève'},
-
-Ton compte UbuMaths a été validé. Tu peux maintenant te connecter sur https://ubumaths-6op8.vercel.app/ .
-
-Bonne année mathématique !`
-	);
+	// Email template content (from shared template)
+	const emailSubject = WELCOME_EMAIL_SUBJECT;
+	const emailBody = $derived(getWelcomeEmailText(data.student.firstname));
 
 	// Handle send button click
 	async function handleSendEmail() {
