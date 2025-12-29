@@ -223,22 +223,13 @@ export async function sendWelcomeEmail(
 	studentFirstname: string,
 	fromEmail: string
 ): Promise<EmailSendResult> {
-	const subject = 'Bienvenue sur UbuMaths !';
+	// Use shared template for consistency with preview
+	const { WELCOME_EMAIL_SUBJECT, getWelcomeEmailHtml } = await import(
+		'$lib/email-templates/welcome'
+	);
 
-	const siteUrl = 'https://ubumaths-6op8.vercel.app/';
-	const greeting = studentFirstname || 'cher(e) élève';
-
-	const htmlBody = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-  <p>Bonjour ${greeting},</p>
-  <p>Ton compte UbuMaths a été validé. Tu peux maintenant te connecter sur <a href="${siteUrl}" style="color: #2563eb; text-decoration: underline;">${siteUrl}</a>.</p>
-  <p>Bonne année mathématique !</p>
-</body>
-</html>`;
+	const subject = WELCOME_EMAIL_SUBJECT;
+	const htmlBody = getWelcomeEmailHtml(studentFirstname);
 
 	return sendEmail(accessToken, toEmail, fromEmail, subject, htmlBody);
 }
