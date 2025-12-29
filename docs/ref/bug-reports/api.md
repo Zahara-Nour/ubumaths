@@ -12,6 +12,8 @@
   - [Get Bug Report](#get-bug-report)
   - [Update Bug Report](#update-bug-report)
   - [Delete Bug Report](#delete-bug-report)
+  - [Batch Update Status](#batch-update-status)
+  - [Batch Delete](#batch-delete)
   - [Upload Screenshot](#upload-screenshot)
   - [Export Report](#export-report)
 - [Validation Schemas](#validation-schemas)
@@ -21,15 +23,17 @@
 
 ## Vue d'ensemble
 
-| Endpoint                           | Methode | Auth       | Description          |
-| ---------------------------------- | ------- | ---------- | -------------------- |
-| `/api/bug-reports`                 | GET     | User/Admin | Lister les rapports  |
-| `/api/bug-reports`                 | POST    | User       | Creer un rapport     |
-| `/api/bug-reports/[id]`            | GET     | User/Admin | Details d'un rapport |
-| `/api/bug-reports/[id]`            | PATCH   | User/Admin | Modifier un rapport  |
-| `/api/bug-reports/[id]`            | DELETE  | Admin      | Supprimer un rapport |
-| `/api/bug-reports/[id]/screenshot` | POST    | User       | Upload screenshot    |
-| `/api/bug-reports/[id]/export`     | GET     | Admin      | Export Markdown      |
+| Endpoint                           | Methode | Auth       | Description            |
+| ---------------------------------- | ------- | ---------- | ---------------------- |
+| `/api/bug-reports`                 | GET     | User/Admin | Lister les rapports    |
+| `/api/bug-reports`                 | POST    | User       | Creer un rapport       |
+| `/api/bug-reports/[id]`            | GET     | User/Admin | Details d'un rapport   |
+| `/api/bug-reports/[id]`            | PATCH   | User/Admin | Modifier un rapport    |
+| `/api/bug-reports/[id]`            | DELETE  | Admin      | Supprimer un rapport   |
+| `/api/bug-reports/batch`           | PATCH   | Admin      | Modifier statut en lot |
+| `/api/bug-reports/batch`           | DELETE  | Admin      | Supprimer en lot       |
+| `/api/bug-reports/[id]/screenshot` | POST    | User       | Upload screenshot      |
+| `/api/bug-reports/[id]/export`     | GET     | Admin      | Export Markdown        |
 
 ---
 
@@ -408,6 +412,105 @@ if (response.status === 403) {
 
 ---
 
+### Batch Update Status
+
+```http
+PATCH /api/bug-reports/batch
+```
+
+Met a jour le statut de plusieurs rapports. **Admin only.**
+
+#### Request Body
+
+```typescript
+interface BatchUpdateRequest {
+	reportIds: string[]; // 1-100 UUIDs
+	status: 'pending' | 'acknowledged' | 'in_progress' | 'resolved' | 'wont_fix' | 'duplicate';
+}
+```
+
+#### Response
+
+```typescript
+{
+  success: true,
+  updated: number,           // Nombre de rapports mis a jour
+  failed: Array<{           // Rapports echoues
+    id: string,
+    reason: string
+  }>
+}
+```
+
+#### Comportement
+
+- `resolved_by` et `resolved_at` sont sets automatiquement pour les statuts de resolution
+- Les IDs invalides sont ignores et retournes dans `failed`
+
+#### Exemple
+
+```typescript
+const response = await fetch('/api/bug-reports/batch', {
+	method: 'PATCH',
+	headers: { 'Content-Type': 'application/json' },
+	body: JSON.stringify({
+		reportIds: ['uuid-1', 'uuid-2', 'uuid-3'],
+		status: 'resolved'
+	})
+});
+
+const result = await response.json();
+console.log(`${result.updated} rapports mis a jour`);
+```
+
+---
+
+### Batch Delete
+
+```http
+DELETE /api/bug-reports/batch
+```
+
+Supprime plusieurs rapports. **Admin only.**
+
+#### Request Body
+
+```typescript
+interface BatchDeleteRequest {
+	reportIds: string[]; // 1-100 UUIDs
+}
+```
+
+#### Response
+
+```typescript
+{
+  success: true,
+  deleted: number,          // Nombre de rapports supprimes
+  failed: Array<{          // Rapports echoues
+    id: string,
+    reason: string
+  }>
+}
+```
+
+#### Exemple
+
+```typescript
+const response = await fetch('/api/bug-reports/batch', {
+	method: 'DELETE',
+	headers: { 'Content-Type': 'application/json' },
+	body: JSON.stringify({
+		reportIds: ['uuid-1', 'uuid-2', 'uuid-3']
+	})
+});
+
+const result = await response.json();
+console.log(`${result.deleted} rapports supprimes`);
+```
+
+---
+
 ### Upload Screenshot
 
 ```http
@@ -690,6 +793,29 @@ export const listBugReportsQuerySchema = z.object({
 });
 ```
 
+### batchUpdateBugReportsSchema
+
+```typescript
+export const batchUpdateBugReportsSchema = z.object({
+	reportIds: z
+		.array(z.string().uuid('ID de rapport invalide'))
+		.min(1, 'Au moins un rapport doit etre selectionne')
+		.max(100, 'Maximum 100 rapports par operation'),
+	status: bugReportStatusSchema
+});
+```
+
+### batchDeleteBugReportsSchema
+
+```typescript
+export const batchDeleteBugReportsSchema = z.object({
+	reportIds: z
+		.array(z.string().uuid('ID de rapport invalide'))
+		.min(1, 'Au moins un rapport doit etre selectionne')
+		.max(100, 'Maximum 100 rapports par operation')
+});
+```
+
 ### sessionContextSchema
 
 ```typescript
@@ -781,6 +907,7 @@ async function createBugReport(data: CreateBugReportRequest) {
 | ------------------------------------------------------------- | ------------------- |
 | `src/routes/api/bug-reports/+server.ts`                       | GET, POST           |
 | `src/routes/api/bug-reports/[reportId]/+server.ts`            | GET, PATCH, DELETE  |
+| `src/routes/api/bug-reports/batch/+server.ts`                 | PATCH, DELETE batch |
 | `src/routes/api/bug-reports/[reportId]/screenshot/+server.ts` | POST screenshot     |
 | `src/routes/api/bug-reports/[reportId]/export/+server.ts`     | GET export          |
 | `src/lib/server/validation/bug-reports.ts`                    | Zod schemas         |
