@@ -37,7 +37,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { User, Trash2, HelpCircle, Loader2 } from 'lucide-svelte';
+	import { User, Trash2, Loader2 } from 'lucide-svelte';
 	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
@@ -656,13 +656,12 @@
 			class="flex items-center justify-between gap-3 rounded-t-lg border-b border-border bg-primary p-4 text-primary-foreground"
 		>
 			<div class="flex items-center gap-3">
-				<HelpCircle class="h-5 w-5" />
 				<div>
 					<h2
 						class="font-semibold"
 						style="font-size: calc(1.125rem * var(--font-scale)); line-height: calc(1.5rem * var(--font-scale));"
 					>
-						Père Ubu - Tuteur
+						Père Ubu
 					</h2>
 					{#if exerciseContext}
 						<p
@@ -750,20 +749,6 @@
 							<Avatar.Image src={pereUbuImage} alt="Père Ubu" />
 							<Avatar.Fallback class="text-3xl">🎓</Avatar.Fallback>
 						</Avatar.Root>
-						<div class="text-muted-foreground">
-							<p
-								class="font-medium"
-								style="font-size: calc(1.125rem * var(--font-scale)); line-height: calc(1.75rem * var(--font-scale));"
-							>
-								Bienvenue dans ma salle de tutorat !
-							</p>
-							<p
-								class="mt-1"
-								style="font-size: calc(0.875rem * var(--font-scale)); line-height: calc(1.25rem * var(--font-scale));"
-							>
-								Je vais t'aider à comprendre sans te donner la réponse.
-							</p>
-						</div>
 					</div>
 				</div>
 			{/if}
