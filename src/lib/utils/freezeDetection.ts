@@ -302,9 +302,20 @@ function initHeartbeat(): void {
 		const now = Date.now();
 		const drift = now - expectedHeartbeatTime;
 
-		// Skip freeze detection if page was hidden (backgrounded tab)
-		// Browser throttles timers for backgrounded tabs, causing false positives
-		if (pageWasHiddenDuringHeartbeat) {
+		// Skip freeze detection if:
+		// 1. Page is currently hidden (browser throttles timers for backgrounded tabs)
+		// 2. Page visibility changed during this heartbeat interval
+		// 3. Large drift detected while page is/was hidden (computer sleep/wake)
+		// All these cases cause false positives due to timer throttling, not real freezes
+		const isCurrentlyHidden = document.hidden;
+		const shouldSkip = isCurrentlyHidden || pageWasHiddenDuringHeartbeat;
+
+		if (shouldSkip) {
+			if (isCurrentlyHidden) {
+				console.debug('[Freeze Detection] Skipping check - page is hidden');
+			} else if (pageWasHiddenDuringHeartbeat) {
+				console.debug('[Freeze Detection] Skipping check - page was hidden during interval');
+			}
 			pageWasHiddenDuringHeartbeat = false;
 			state.isUnresponsive = false;
 			state.lastHeartbeat = now;
@@ -313,8 +324,33 @@ function initHeartbeat(): void {
 			return;
 		}
 
-		// Check for significant drift (freeze detected)
+		// Check for significant drift (potential freeze detected)
 		if (drift > FREEZE_PROMPT_THRESHOLD_MS) {
+			// Before prompting user, verify this is a real freeze by checking for
+			// corroborating Long Task events. A real JavaScript freeze would be
+			// detected by Long Task Observer. If we have large drift but no
+			// corresponding long tasks, it's likely computer sleep/wake.
+			const recentLongTasks = state.freezeEvents.filter((e) => {
+				const eventTime = new Date(e.timestamp).getTime();
+				const timeSinceEvent = now - eventTime;
+				// Look for long tasks in the last 30 seconds with significant duration
+				return e.type === 'long_task' && timeSinceEvent < 30000 && e.duration > 1000;
+			});
+
+			if (recentLongTasks.length === 0) {
+				// No corroborating long tasks - this is likely sleep/wake, not a real freeze
+				console.debug(
+					`[Freeze Detection] Large drift (${drift}ms) but no corroborating long tasks - likely sleep/wake, skipping`
+				);
+				state.lastHeartbeat = now;
+				expectedHeartbeatTime = now + HEARTBEAT_INTERVAL_MS;
+				heartbeatTimeout = setTimeout(checkHeartbeat, HEARTBEAT_INTERVAL_MS);
+				return;
+			}
+
+			console.debug(
+				`[Freeze Detection] Large drift (${drift}ms) with ${recentLongTasks.length} corroborating long tasks - real freeze detected`
+			);
 			state.isUnresponsive = true;
 
 			const freezeEvent: Omit<FreezeEvent, 'id'> = {
