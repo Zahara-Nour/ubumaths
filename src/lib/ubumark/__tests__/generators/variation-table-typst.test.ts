@@ -86,7 +86,7 @@ describe('generateVariationTableTypst - Basic Structure', () => {
 
 		// Labels use content blocks [...] with embedded math
 		// Single-element tuples need trailing comma in Typst: (element,)
-		expect(typst).toContain('label: (([$f\'(x)$], "s"),)');
+		expect(typst).toContain('label: (([$f\'(x)$], 1cm, "s"),)');
 	});
 });
 
@@ -537,7 +537,7 @@ describe('generateVariationTableTypst - Labels', () => {
 		const typst = generateVariationTableTypst(node);
 
 		// Labels use content blocks [...] with embedded math
-		expect(typst).toContain('label: (([$f\'(x)$], "s"), ([$f(x)$], "v"))');
+		expect(typst).toContain('label: (([$f\'(x)$], 1cm, "s"), ([$f(x)$], 2cm, "v"))');
 	});
 
 	it('should convert LaTeX in labels to Typst', () => {
@@ -617,7 +617,7 @@ describe('generateVariationTableTypst - Complex Tables', () => {
 		expect(typst).toContain('domain: ($-infinity$, $-1$, $0$, $1$, $+infinity$)');
 
 		// Verify labels with content blocks
-		expect(typst).toContain('label: (([$f\'(x)$], "s"), ([$f(x)$], "v"))');
+		expect(typst).toContain('label: (([$f\'(x)$], 1cm, "s"), ([$f(x)$], 2cm, "v"))');
 
 		// Verify sign row - interval-based format with markers combined
 		// Domain: 5 points -> 4 intervals
