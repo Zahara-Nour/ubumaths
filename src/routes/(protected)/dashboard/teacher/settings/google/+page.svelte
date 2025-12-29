@@ -1,18 +1,23 @@
 <!--
-	Google Classroom Settings Page
-	===============================
+	Google Integration Settings Page
+	=================================
 
-	Teacher interface for managing Google Classroom integration.
-	Allows teachers to connect, sync, and disconnect their Google Classroom account.
+	Teacher interface for managing Google integration (Classroom + Gmail).
+	Allows teachers to connect, sync, and disconnect their Google account.
 
 	FEATURES:
 	- Connection status display (connected/not connected)
 	- Connect button (redirects to Google OAuth)
-	- Sync button (triggers manual sync)
+	- Sync button (triggers manual sync for Classroom)
 	- Disconnect button (with confirmation)
 	- Toast notifications for user feedback
 	- Loading states for all async operations
 	- OAuth callback success handling
+
+	SCOPES REQUESTED:
+	- Google Classroom (courses, topics, coursework)
+	- Gmail (send emails to students)
+	- Google Drive (read files attached to coursework)
 
 	NAVIGATION:
 	- Accessible via teacher dashboard settings
@@ -22,7 +27,7 @@
 	1. Page loads and fetches connection status
 	2. User clicks "Connect" → redirects to Google OAuth
 	3. After OAuth: redirects back with ?connected=true
-	4. User clicks "Sync" → triggers sync via API
+	4. User clicks "Sync" → triggers manual sync via API
 	5. User clicks "Disconnect" → confirms and disconnects
 
 	SECURITY:
@@ -86,7 +91,7 @@
 
 		// Check if we just returned from OAuth
 		if ($page.url.searchParams.get('connected') === 'true') {
-			toaster.success('Google Classroom connecté avec succès');
+			toaster.success('Compte Google connecté avec succès');
 
 			// Clean up URL (remove query param)
 			const url = new URL($page.url);
@@ -189,12 +194,12 @@
 	}
 
 	/**
-	 * Disconnect Google Classroom integration
+	 * Disconnect Google integration
 	 * Requires confirmation before proceeding
 	 */
 	async function handleDisconnect() {
 		// Confirm with user
-		if (!confirm('Êtes-vous sûr de vouloir déconnecter Google Classroom ?')) {
+		if (!confirm('Êtes-vous sûr de vouloir déconnecter votre compte Google ?')) {
 			return;
 		}
 
@@ -208,7 +213,7 @@
 				throw new Error('Failed to disconnect');
 			}
 
-			toaster.success('Google Classroom déconnecté avec succès');
+			toaster.success('Compte Google déconnecté avec succès');
 
 			// Refresh status
 			await fetchStatus();
@@ -263,15 +268,15 @@
 </script>
 
 <svelte:head>
-	<title>Google Classroom - UbuMaths</title>
+	<title>Integration Google - UbuMaths</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl space-y-6 p-6">
 	<!-- Page Header -->
 	<div>
-		<h1 class="text-3xl font-bold text-foreground">Google Classroom</h1>
+		<h1 class="text-3xl font-bold text-foreground">Integration Google</h1>
 		<p class="mt-2 text-muted-foreground">
-			Synchronisez vos cours et travaux depuis Google Classroom
+			Connectez votre compte Google pour synchroniser Classroom et envoyer des emails
 		</p>
 	</div>
 
@@ -331,13 +336,15 @@
 
 						<!-- Information Box -->
 						<div class="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
-							<p class="font-medium">Comment ça marche ?</p>
+							<p class="font-medium">Fonctionnalités activées :</p>
 							<ul class="mt-2 ml-5 list-disc space-y-1">
 								<li>
-									Vos cours Google Classroom sont synchronisés avec vos classes UbuMaths par nom
+									<strong>Google Classroom</strong> : Synchronisation de vos cours et travaux
 								</li>
-								<li>Les travaux sont importés et peuvent être assignés aux élèves</li>
-								<li>La synchronisation ne modifie jamais vos données Google Classroom</li>
+								<li>
+									<strong>Gmail</strong> : Envoi d'emails de bienvenue aux élèves
+								</li>
+								<li>La synchronisation ne modifie jamais vos données Google</li>
 							</ul>
 						</div>
 					</div>
@@ -345,18 +352,19 @@
 					<!-- Not Connected State -->
 					<div class="space-y-4">
 						<p class="text-muted-foreground">
-							Connectez votre compte Google Classroom pour synchroniser automatiquement vos cours et
-							travaux avec UbuMaths.
+							Connectez votre compte Google pour accéder aux fonctionnalités Classroom et Gmail.
 						</p>
 
 						<!-- Benefits List -->
 						<div class="rounded-lg border border-border bg-muted/30 p-4">
-							<p class="mb-3 font-medium text-foreground">Avantages de la connexion :</p>
+							<p class="mb-3 font-medium text-foreground">Fonctionnalités disponibles :</p>
 							<ul class="ml-5 list-disc space-y-2 text-sm text-muted-foreground">
-								<li>Importez vos cours Google Classroom existants</li>
-								<li>Synchronisez les devoirs et exercices automatiquement</li>
-								<li>Gagnez du temps en évitant la saisie manuelle</li>
-								<li>Gardez vos cours à jour facilement</li>
+								<li><strong>Google Classroom</strong> : Importez vos cours et travaux existants</li>
+								<li>
+									<strong>Gmail</strong> : Envoyez des emails de bienvenue aux nouveaux élèves
+								</li>
+								<li>Synchronisation automatique de vos données</li>
+								<li>Vos données Google ne sont jamais modifiées</li>
 							</ul>
 						</div>
 					</div>
@@ -405,7 +413,7 @@
 							Connexion...
 						</span>
 					{:else}
-						Connecter Google Classroom
+						Connecter mon compte Google
 					{/if}
 				</Button>
 			{/if}
