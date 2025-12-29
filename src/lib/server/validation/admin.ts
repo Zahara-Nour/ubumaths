@@ -159,6 +159,8 @@ export const classStudentsQuerySchema = z.object({
 /**
  * Schema for updating user approval status (PATCH /api/admin/users/[id]/status)
  * Admin-only: Approve or reject pending users
+ *
+ * When approving, profile fields can be updated at the same time
  */
 export const updateUserStatusSchema = z.object({
 	status: z.enum(['approved', 'rejected'], {
@@ -168,5 +170,19 @@ export const updateUserStatusSchema = z.object({
 		.string()
 		.max(500, 'Raison trop longue (max 500 caractères)')
 		.nullable()
-		.optional()
+		.optional(),
+	// Optional profile fields (for approval with updates)
+	firstname: z
+		.string()
+		.min(1, 'Prénom invalide')
+		.max(100, 'Prénom trop long')
+		.nullable()
+		.optional(),
+	lastname: z.string().min(1, 'Nom invalide').max(100, 'Nom trop long').nullable().optional(),
+	gender: z
+		.enum(['boy', 'girl'], { message: 'Le genre doit être "boy" ou "girl"' })
+		.nullable()
+		.optional(),
+	school_id: z.string().uuid('ID école invalide').nullable().optional(),
+	is_test: z.boolean({ message: 'is_test doit être un booléen' }).optional()
 });

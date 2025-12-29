@@ -33,11 +33,18 @@ const uuidSchema = z.string().uuid('Invalid user ID format');
  * PATCH /api/admin/users/[id]/status
  *
  * Update user approval status (approve or reject)
+ * When approving, profile fields can also be updated in the same request
  *
  * Request body:
  * {
  *   status: 'approved' | 'rejected',
- *   rejection_reason?: string | null  // Required if status is 'rejected'
+ *   rejection_reason?: string | null,  // Required if status is 'rejected'
+ *   // Optional profile fields (typically used when approving):
+ *   firstname?: string | null,
+ *   lastname?: string | null,
+ *   gender?: 'boy' | 'girl' | null,
+ *   school_id?: string | null,
+ *   is_test?: boolean
  * }
  *
  * Response: 200 with updated profile
@@ -75,7 +82,8 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { status, rejection_reason } = validation.data;
+		const { status, rejection_reason, firstname, lastname, gender, school_id, is_test } =
+			validation.data;
 
 		// Check if user exists and get current data
 		const { data: existingUser, error: checkError } = await supabase
@@ -93,20 +101,21 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			throw error(404, `User with ID "${userId}" not found`);
 		}
 
-		// Build update object
-		const updateData: {
-			status: 'approved' | 'rejected';
-			rejection_reason: string | null;
-			status_changed_at: string;
-			status_changed_by: string;
-			updated_at: string;
-		} = {
+		// Build update object with status fields
+		const updateData: Record<string, unknown> = {
 			status,
 			rejection_reason: status === 'rejected' ? (rejection_reason ?? null) : null,
 			status_changed_at: new Date().toISOString(),
 			status_changed_by: approverProfile.id,
 			updated_at: new Date().toISOString()
 		};
+
+		// Add profile fields if provided (typically when approving)
+		if (firstname !== undefined) updateData.firstname = firstname;
+		if (lastname !== undefined) updateData.lastname = lastname;
+		if (gender !== undefined) updateData.gender = gender;
+		if (school_id !== undefined) updateData.school_id = school_id;
+		if (is_test !== undefined) updateData.is_test = is_test;
 
 		// Update profile
 		const { error: updateError } = await supabase
@@ -119,13 +128,14 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			throw error(500, 'Failed to update user status');
 		}
 
-		// If approving, create a notification for the user
+		// If approving, create notifications
 		if (status === 'approved') {
 			const fullName =
 				existingUser.firstname && existingUser.lastname
 					? `${existingUser.firstname} ${existingUser.lastname}`
 					: existingUser.email;
 
+			// Notification for the approved user
 			await createSystemNotification(supabase, {
 				title: 'Compte approuvé',
 				message: `Bienvenue ${fullName} ! Votre compte a été approuvé. Vous pouvez maintenant accéder à toutes les fonctionnalités de l'application.`,
@@ -137,6 +147,60 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 				action_label: 'Accéder au tableau de bord',
 				action_url: '/dashboard'
 			});
+
+			// Notify teachers of the student's classes
+			const { data: studentClasses } = await supabase
+				.from('class_members')
+				.select('class_id, classes!inner(id, name, teacher_id)')
+				.eq('student_id', userId);
+
+			if (studentClasses && studentClasses.length > 0) {
+				// Get unique teacher IDs with their class info
+				const teacherClassMap = new Map<
+					string,
+					{ teacherId: string; classNames: string[]; studentId: string }
+				>();
+
+				for (const membership of studentClasses) {
+					const classInfo = membership.classes as unknown as {
+						id: string;
+						name: string;
+						teacher_id: string | null;
+					};
+					if (classInfo?.teacher_id) {
+						const existing = teacherClassMap.get(classInfo.teacher_id);
+						if (existing) {
+							existing.classNames.push(classInfo.name);
+						} else {
+							teacherClassMap.set(classInfo.teacher_id, {
+								teacherId: classInfo.teacher_id,
+								classNames: [classInfo.name],
+								studentId: userId
+							});
+						}
+					}
+				}
+
+				// Create notification for each unique teacher
+				for (const { teacherId, classNames, studentId } of teacherClassMap.values()) {
+					const classText =
+						classNames.length === 1
+							? `la classe ${classNames[0]}`
+							: `les classes ${classNames.join(', ')}`;
+
+					await createSystemNotification(supabase, {
+						title: 'Nouvel élève approuvé',
+						message: `${fullName} a été ajouté à ${classText}. Vous pouvez lui envoyer un email de bienvenue.`,
+						type: 'info',
+						priority: 'normal',
+						system_event_type: 'student_approved',
+						target_type: 'users',
+						target_user_ids: [teacherId],
+						action_label: 'Envoyer email de bienvenue',
+						action_url: `/dashboard/teacher/welcome-email?student_id=${studentId}`
+					});
+				}
+			}
 		}
 
 		// Fetch updated profile with school relation
