@@ -3,6 +3,7 @@
 	 * Admin Bug Reports Page
 	 *
 	 * Displays all bug reports with filtering and management actions.
+	 * Supports batch operations (status change, delete) with selection.
 	 */
 	import { goto, invalidateAll } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
@@ -18,6 +19,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
+	import { fly } from 'svelte/transition';
 	import type { BugReportWithAuthor, BugReportStatus } from '$lib/types/bug-reports';
 	import {
 		BUG_REPORT_CATEGORY_LABELS,
@@ -26,7 +28,17 @@
 		BUG_REPORT_SEVERITY_LABELS,
 		BUG_REPORT_SEVERITY_COLORS
 	} from '$lib/types/bug-reports';
-	import { Bug, AlertTriangle, Clock, Calendar, Loader2, ArrowLeft, Trash2 } from 'lucide-svelte';
+	import {
+		Bug,
+		AlertTriangle,
+		Clock,
+		Calendar,
+		Loader2,
+		ArrowLeft,
+		Trash2,
+		X,
+		CheckSquare
+	} from 'lucide-svelte';
 
 	let { data } = $props();
 
@@ -35,11 +47,22 @@
 	let selectedReport = $state<BugReportWithAuthor | null>(null);
 	let deleteDialogOpen = $state(false);
 
-	// Edit state
+	// Edit state (single report)
 	let isUpdating = $state(false);
 	let isDeleting = $state(false);
 	let newStatus = $state<BugReportStatus | ''>('');
 	let resolutionNotes = $state('');
+
+	// Batch selection state
+	let selectedIds = $state<Set<string>>(new Set());
+	let batchStatusDialogOpen = $state(false);
+	let batchDeleteDialogOpen = $state(false);
+	let batchNewStatus = $state<BugReportStatus | ''>('');
+	let isBatchUpdating = $state(false);
+	let isBatchDeleting = $state(false);
+
+	// Derived selection state
+	const hasSelection = $derived(selectedIds.size > 0);
 
 	// Status options for update
 	const statusItems = Object.entries(BUG_REPORT_STATUS_LABELS).map(([value, label]) => ({
@@ -133,6 +156,98 @@
 		const author = report.author as { full_name: string | null; email: string };
 		return author.full_name || author.email;
 	}
+
+	// Handle selection change from BugReportList
+	function handleSelectionChange(ids: Set<string>) {
+		selectedIds = ids;
+	}
+
+	// Clear selection
+	function clearSelection() {
+		selectedIds = new Set();
+	}
+
+	// Batch update status
+	async function handleBatchUpdateStatus() {
+		if (selectedIds.size === 0 || !batchNewStatus) return;
+
+		isBatchUpdating = true;
+		try {
+			const response = await fetch('/api/bug-reports/batch', {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					reportIds: [...selectedIds],
+					status: batchNewStatus
+				})
+			});
+
+			if (!response.ok) {
+				const err = await response.json();
+				throw new Error(err.message || 'Erreur lors de la mise à jour');
+			}
+
+			const result = await response.json();
+
+			if (result.failed && result.failed.length > 0) {
+				toaster.warning(
+					`${result.updated} rapport(s) mis à jour, ${result.failed.length} échec(s)`
+				);
+			} else {
+				toaster.success(`${result.updated} rapport(s) mis à jour`);
+			}
+
+			batchStatusDialogOpen = false;
+			batchNewStatus = '';
+			clearSelection();
+			await invalidateAll();
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Erreur inconnue';
+			toaster.error(message);
+		} finally {
+			isBatchUpdating = false;
+		}
+	}
+
+	// Batch delete
+	async function handleBatchDelete() {
+		if (selectedIds.size === 0) return;
+
+		isBatchDeleting = true;
+		try {
+			const response = await fetch('/api/bug-reports/batch', {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					reportIds: [...selectedIds]
+				})
+			});
+
+			if (!response.ok) {
+				const err = await response.json();
+				throw new Error(err.message || 'Erreur lors de la suppression');
+			}
+
+			const result = await response.json();
+
+			if (result.failed && result.failed.length > 0) {
+				toaster.warning(
+					`${result.deleted} rapport(s) supprimé(s), ${result.failed.length} échec(s)`
+				);
+			} else {
+				toaster.success(`${result.deleted} rapport(s) supprimé(s)`);
+			}
+
+			batchDeleteDialogOpen = false;
+			clearSelection();
+			await invalidateAll();
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Erreur inconnue';
+			toaster.error(message);
+		} finally {
+			isBatchDeleting = false;
+		}
+	}
 </script>
 
 <div class="container mx-auto py-8">
@@ -221,10 +336,62 @@
 				reports={data.reports}
 				onReportClick={handleReportClick}
 				onFilterChange={handleFilterChange}
+				selectable={true}
+				{selectedIds}
+				onSelectionChange={handleSelectionChange}
 			/>
 		</Card.Content>
 	</Card.Root>
 </div>
+
+<!-- Floating action bar for batch operations -->
+{#if hasSelection}
+	<div
+		class="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-lg border bg-background px-4 py-3 shadow-lg"
+		transition:fly={{ y: 50, duration: 200 }}
+		role="status"
+		aria-live="polite"
+	>
+		<div class="flex items-center gap-2">
+			<CheckSquare class="h-4 w-4 text-primary" />
+			<span class="text-sm font-medium">
+				{selectedIds.size} rapport{selectedIds.size > 1 ? 's' : ''} sélectionné{selectedIds.size > 1
+					? 's'
+					: ''}
+			</span>
+		</div>
+
+		<div class="mx-2 h-6 w-px bg-border" />
+
+		<Button
+			variant="outline"
+			size="sm"
+			onclick={() => (batchStatusDialogOpen = true)}
+			disabled={isBatchUpdating || isBatchDeleting}
+		>
+			Changer statut
+		</Button>
+
+		<Button
+			variant="destructive"
+			size="sm"
+			onclick={() => (batchDeleteDialogOpen = true)}
+			disabled={isBatchUpdating || isBatchDeleting}
+		>
+			<Trash2 class="mr-2 h-4 w-4" />
+			Supprimer
+		</Button>
+
+		<Button
+			variant="ghost"
+			size="sm"
+			onclick={clearSelection}
+			disabled={isBatchUpdating || isBatchDeleting}
+		>
+			<X class="h-4 w-4" />
+		</Button>
+	</div>
+{/if}
 
 <!-- Detail/Edit dialog -->
 <Dialog.Root bind:open={detailDialogOpen}>
@@ -363,7 +530,7 @@
 	</Dialog.Content>
 </Dialog.Root>
 
-<!-- Delete confirmation dialog -->
+<!-- Delete confirmation dialog (single report) -->
 <Dialog.Root bind:open={deleteDialogOpen}>
 	<Dialog.Content>
 		<Dialog.Header>
@@ -383,6 +550,82 @@
 					Suppression...
 				{:else}
 					Supprimer
+				{/if}
+			</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Batch status change dialog -->
+<Dialog.Root bind:open={batchStatusDialogOpen}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Changer le statut</Dialog.Title>
+			<Dialog.Description>
+				Modifier le statut de {selectedIds.size} rapport{selectedIds.size > 1 ? 's' : ''} sélectionné{selectedIds.size >
+				1
+					? 's'
+					: ''}
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<div class="space-y-4 py-4">
+			<div class="space-y-2">
+				<Label>Nouveau statut</Label>
+				<MySelect type="single" bind:value={batchNewStatus} items={statusItems} />
+			</div>
+		</div>
+
+		<Dialog.Footer>
+			<Button
+				variant="outline"
+				onclick={() => {
+					batchStatusDialogOpen = false;
+					batchNewStatus = '';
+				}}
+				disabled={isBatchUpdating}
+			>
+				Annuler
+			</Button>
+			<Button onclick={handleBatchUpdateStatus} disabled={isBatchUpdating || !batchNewStatus}>
+				{#if isBatchUpdating}
+					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+					Mise à jour...
+				{:else}
+					Confirmer
+				{/if}
+			</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Batch delete confirmation dialog -->
+<Dialog.Root bind:open={batchDeleteDialogOpen}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title class="text-destructive">Supprimer les rapports ?</Dialog.Title>
+			<Dialog.Description>
+				Cette action est irréversible. {selectedIds.size} rapport{selectedIds.size > 1 ? 's' : ''} sera{selectedIds.size >
+				1
+					? 'ont'
+					: ''} définitivement supprimé{selectedIds.size > 1 ? 's' : ''}.
+			</Dialog.Description>
+		</Dialog.Header>
+
+		<Dialog.Footer>
+			<Button
+				variant="outline"
+				onclick={() => (batchDeleteDialogOpen = false)}
+				disabled={isBatchDeleting}
+			>
+				Annuler
+			</Button>
+			<Button variant="destructive" onclick={handleBatchDelete} disabled={isBatchDeleting}>
+				{#if isBatchDeleting}
+					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+					Suppression...
+				{:else}
+					Supprimer {selectedIds.size} rapport{selectedIds.size > 1 ? 's' : ''}
 				{/if}
 			</Button>
 		</Dialog.Footer>

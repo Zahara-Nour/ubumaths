@@ -211,3 +211,26 @@ export const updateBugReportsConfigSchema = z
 	});
 
 export type UpdateBugReportsConfigInput = z.infer<typeof updateBugReportsConfigSchema>;
+
+// =============================================================================
+// Batch Operations Schemas
+// =============================================================================
+
+export const batchUpdateBugReportsSchema = z.object({
+	reportIds: z
+		.array(z.string().uuid('ID de rapport invalide'))
+		.min(1, 'Au moins un rapport doit être sélectionné')
+		.max(100, 'Maximum 100 rapports par opération'),
+	status: bugReportStatusSchema
+});
+
+export type BatchUpdateBugReportsInput = z.infer<typeof batchUpdateBugReportsSchema>;
+
+export const batchDeleteBugReportsSchema = z.object({
+	reportIds: z
+		.array(z.string().uuid('ID de rapport invalide'))
+		.min(1, 'Au moins un rapport doit être sélectionné')
+		.max(100, 'Maximum 100 rapports par opération')
+});
+
+export type BatchDeleteBugReportsInput = z.infer<typeof batchDeleteBugReportsSchema>;
