@@ -588,6 +588,105 @@ export type Database = {
 					}
 				];
 			};
+			bug_reports: {
+				Row: {
+					id: string;
+					user_id: string;
+					category: 'bug' | 'content' | 'ux' | 'feature' | 'other';
+					severity: 'low' | 'medium' | 'high' | 'critical';
+					title: string;
+					description: string;
+					screenshot_url: string | null;
+					screenshot_path: string | null;
+					page_url: string | null;
+					user_agent: string | null;
+					viewport_size: string | null;
+					session_context: Json;
+					status:
+						| 'pending'
+						| 'acknowledged'
+						| 'in_progress'
+						| 'resolved'
+						| 'wont_fix'
+						| 'duplicate';
+					resolution_notes: string | null;
+					resolved_by: string | null;
+					resolved_at: string | null;
+					auto_generated: boolean;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					user_id: string;
+					category: 'bug' | 'content' | 'ux' | 'feature' | 'other';
+					severity?: 'low' | 'medium' | 'high' | 'critical';
+					title: string;
+					description: string;
+					screenshot_url?: string | null;
+					screenshot_path?: string | null;
+					page_url?: string | null;
+					user_agent?: string | null;
+					viewport_size?: string | null;
+					session_context?: Json;
+					status?:
+						| 'pending'
+						| 'acknowledged'
+						| 'in_progress'
+						| 'resolved'
+						| 'wont_fix'
+						| 'duplicate';
+					resolution_notes?: string | null;
+					resolved_by?: string | null;
+					resolved_at?: string | null;
+					auto_generated?: boolean;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: {
+					id?: string;
+					user_id?: string;
+					category?: 'bug' | 'content' | 'ux' | 'feature' | 'other';
+					severity?: 'low' | 'medium' | 'high' | 'critical';
+					title?: string;
+					description?: string;
+					screenshot_url?: string | null;
+					screenshot_path?: string | null;
+					page_url?: string | null;
+					user_agent?: string | null;
+					viewport_size?: string | null;
+					session_context?: Json;
+					status?:
+						| 'pending'
+						| 'acknowledged'
+						| 'in_progress'
+						| 'resolved'
+						| 'wont_fix'
+						| 'duplicate';
+					resolution_notes?: string | null;
+					resolved_by?: string | null;
+					resolved_at?: string | null;
+					auto_generated?: boolean;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'bug_reports_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_resolved_by_fkey';
+						columns: ['resolved_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			chapter_checklist_items: {
 				Row: {
 					chapter_id: string;

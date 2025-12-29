@@ -18,6 +18,7 @@ import type {
 	SystemEventType
 } from '$lib/types/notification';
 import { sanitizeNotificationHtml } from './sanitization';
+import { escapeHtml } from '$lib/utils/html-escape';
 
 type SupabaseClientType = SupabaseClient<Database>;
 
@@ -640,6 +641,56 @@ export async function notifyAdminsOfPendingUser(
 		target_roles: ['admin'],
 		action_label: 'Voir les utilisateurs',
 		action_url: '/dashboard/admin/users?status=pending'
+	});
+}
+
+/**
+ * Notify admins of a new bug report
+ *
+ * @param supabase - Supabase client
+ * @param data - Bug report data
+ * @returns { success: boolean, error?: string }
+ */
+export async function notifyAdminsOfNewBugReport(
+	supabase: SupabaseClientType,
+	data: {
+		reportId: string;
+		userName: string;
+		category: string;
+		severity: string;
+		title: string;
+	}
+): Promise<{ success: boolean; error?: string }> {
+	const categoryLabels: Record<string, string> = {
+		bug: '🐛 Bug',
+		content: '📝 Contenu',
+		ux: '🎨 UX',
+		feature: '💡 Suggestion',
+		other: '❓ Autre'
+	};
+
+	const severityLabels: Record<string, string> = {
+		low: 'Faible',
+		medium: 'Moyenne',
+		high: '⚠️ Haute',
+		critical: '🔴 Critique'
+	};
+
+	const categoryLabel = categoryLabels[data.category] || data.category;
+	const severityLabel = severityLabels[data.severity] || data.severity;
+
+	const message = `<p><strong>${escapeHtml(data.userName)}</strong> a signalé : ${categoryLabel}</p><p>${escapeHtml(data.title)}</p>`;
+
+	return createSystemNotification(supabase, {
+		title: `Nouveau signalement (${severityLabel})`,
+		message,
+		type: data.severity === 'critical' ? 'alert' : 'info',
+		priority: data.severity === 'critical' || data.severity === 'high' ? 'important' : 'normal',
+		system_event_type: 'bug_reported',
+		target_type: 'role',
+		target_roles: ['admin'],
+		action_label: 'Voir le rapport',
+		action_url: `/dashboard/admin/bug-reports?id=${data.reportId}`
 	});
 }
 
