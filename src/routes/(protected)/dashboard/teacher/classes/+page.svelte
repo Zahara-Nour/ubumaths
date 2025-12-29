@@ -38,13 +38,20 @@
 	import type { PageData } from './$types';
 	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
 	import type { ScheduleFormData } from '$lib/components/ScheduleEntryModal.svelte';
+	import type { StudentWithEmailStatus } from './+page.server';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import * as Card from '$lib/components/ui/card';
+	import * as Avatar from '$lib/components/ui/avatar';
+	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
 	import ClassStatsCard from '$lib/components/ClassStatsCard.svelte';
 	import ClassScheduleGrid from '$lib/components/ClassScheduleGrid.svelte';
 	import ScheduleEntryModal from '$lib/components/ScheduleEntryModal.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
+	import { getAvatarUrl } from '$lib/utils/avatar';
+	import { Mail, CheckCircle2 } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -284,6 +291,31 @@
 		selectedEntry = undefined;
 	}
 
+	// ============================================================================
+	// Student List Helpers
+	// ============================================================================
+
+	/**
+	 * Get display name for a student
+	 */
+	function getStudentDisplayName(student: StudentWithEmailStatus): string {
+		if (student.firstname && student.lastname) {
+			return `${student.firstname} ${student.lastname}`;
+		}
+		return student.firstname || student.email || 'Élève';
+	}
+
+	/**
+	 * Format date for display
+	 */
+	function formatDate(dateString: string): string {
+		return new Date(dateString).toLocaleDateString('fr-FR', {
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric'
+		});
+	}
+
 	/**
 	 * Handle form save (create or update)
 	 * Submits schedule entry data to appropriate server action
@@ -451,6 +483,77 @@
 							onCellClick={(day, time, entry) => handleCellClick(classItem.id, day, time, entry)}
 						/>
 					</div>
+
+					<!-- Student List -->
+					{@const students = data.classStudentsMap[classItem.id] || []}
+					<Card.Root>
+						<Card.Header>
+							<Card.Title class="flex items-center gap-2">
+								Élèves
+								<Badge variant="secondary">{students.length}</Badge>
+							</Card.Title>
+							<Card.Description>
+								Liste des élèves de cette classe avec leur statut d'email de bienvenue
+							</Card.Description>
+						</Card.Header>
+						<Card.Content>
+							{#if students.length === 0}
+								<p class="py-4 text-center text-muted-foreground">Aucun élève dans cette classe</p>
+							{:else}
+								<div class="divide-y divide-border">
+									{#each students as student (student.id)}
+										<div class="flex items-center justify-between py-3">
+											<div class="flex items-center gap-3">
+												<Avatar.Root class="size-8">
+													<Avatar.Image
+														src={getAvatarUrl({ avatar_url: student.avatar_url })}
+														alt={getStudentDisplayName(student)}
+													/>
+													<Avatar.Fallback>
+														{student.firstname?.charAt(0).toUpperCase() || '?'}
+													</Avatar.Fallback>
+												</Avatar.Root>
+												<div>
+													<p class="font-medium text-foreground">
+														{getStudentDisplayName(student)}
+													</p>
+													{#if student.email}
+														<p class="text-sm text-muted-foreground">{student.email}</p>
+													{:else}
+														<p class="text-sm text-muted-foreground italic">Pas d'email</p>
+													{/if}
+												</div>
+											</div>
+											<div class="flex items-center gap-2">
+												{#if student.welcomeEmailSentAt}
+													<Badge variant="outline" class="gap-1 text-green-600">
+														<CheckCircle2 class="h-3 w-3" />
+														Envoyé le {formatDate(student.welcomeEmailSentAt)}
+													</Badge>
+												{:else if student.email}
+													<Button
+														variant="outline"
+														size="sm"
+														href="/dashboard/teacher/welcome-email?student_id={student.id}"
+													>
+														<Mail class="mr-2 h-4 w-4" />
+														Envoyer email
+													</Button>
+												{:else}
+													<Badge
+														variant="secondary"
+														title="L'élève doit avoir une adresse email pour recevoir le message de bienvenue"
+													>
+														Email requis
+													</Badge>
+												{/if}
+											</div>
+										</div>
+									{/each}
+								</div>
+							{/if}
+						</Card.Content>
+					</Card.Root>
 				</Tabs.Content>
 			{/each}
 		</Tabs.Root>

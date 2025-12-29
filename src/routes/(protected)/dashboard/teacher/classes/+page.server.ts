@@ -21,8 +21,21 @@ import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Database } from '$lib/types/database';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { getTeacherTestMode } from '$lib/server/test-mode';
 
 type School = Database['public']['Tables']['schools']['Row'];
+
+/**
+ * Student with email status for welcome email feature
+ */
+export interface StudentWithEmailStatus {
+	id: string;
+	firstname: string;
+	lastname: string | null;
+	email: string | null;
+	avatar_url: string | null;
+	welcomeEmailSentAt: string | null;
+}
 import {
 	validateFormData,
 	createScheduleEntrySchema,
@@ -63,6 +76,95 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Automatically handles test mode filtering
 	const classesWithData = await getTeacherClassesWithCounts(user.id, supabase);
 
+	// Get teacher's test mode preference
+	const isTestMode = await getTeacherTestMode(user.id, supabase);
+
+	// Fetch students for all classes in batch (avoids N+1 queries)
+	const classStudentsMap: Record<string, StudentWithEmailStatus[]> = {};
+	const allClassIds = classesWithData.map((c) => c.id);
+
+	if (allClassIds.length > 0) {
+		// Batch fetch ALL students for ALL classes in one query
+		const { data: allMembers, error: membersError } = await supabase
+			.from('class_members')
+			.select(
+				`
+				class_id,
+				student_id,
+				profiles!class_members_student_id_fkey (
+					id,
+					firstname,
+					lastname,
+					email,
+					avatar_url,
+					is_test
+				)
+			`
+			)
+			.in('class_id', allClassIds);
+
+		if (membersError) {
+			console.error('[Teacher Classes] Error fetching students:', membersError);
+		}
+
+		// Get all unique student IDs across all classes
+		const allStudentIds = [
+			...new Set(
+				(allMembers || [])
+					.map((m) => {
+						const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+						return profile?.id;
+					})
+					.filter((id): id is string => !!id)
+			)
+		];
+
+		// Batch fetch ALL welcome emails in one query
+		const welcomeEmailMap = new Map<string, string>();
+		if (allStudentIds.length > 0) {
+			const { data: allWelcomeEmails } = await supabase
+				.from('welcome_emails_sent')
+				.select('student_id, sent_at')
+				.in('student_id', allStudentIds);
+
+			for (const email of allWelcomeEmails || []) {
+				welcomeEmailMap.set(email.student_id, email.sent_at);
+			}
+		}
+
+		// Group members by class and transform
+		for (const classItem of classesWithData) {
+			const classMembers = (allMembers || []).filter((m) => m.class_id === classItem.id);
+
+			const students: StudentWithEmailStatus[] = classMembers
+				.map((member) => {
+					const profile = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
+					if (!profile) return null;
+
+					// Filter by test mode
+					if (profile.is_test !== isTestMode) return null;
+
+					return {
+						id: profile.id,
+						firstname: profile.firstname || '',
+						lastname: profile.lastname || null,
+						email: profile.email || null,
+						avatar_url: profile.avatar_url || null,
+						welcomeEmailSentAt: welcomeEmailMap.get(profile.id) || null
+					};
+				})
+				.filter((s): s is StudentWithEmailStatus => s !== null)
+				.sort((a, b) => {
+					// Sort by lastname then firstname
+					const lastNameCompare = (a.lastname || '').localeCompare(b.lastname || '', 'fr');
+					if (lastNameCompare !== 0) return lastNameCompare;
+					return a.firstname.localeCompare(b.firstname, 'fr');
+				});
+
+			classStudentsMap[classItem.id] = students;
+		}
+	}
+
 	// Fetch school timetable (needed for period selection in schedule modal)
 	let school: School | null = null;
 	if (profile.school_id) {
@@ -81,7 +183,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		classes: classesWithData,
-		school
+		school,
+		classStudentsMap
 	};
 };
 
