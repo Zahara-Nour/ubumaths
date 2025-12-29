@@ -112,7 +112,7 @@ Bonne annee scolaire !`
 					Pour envoyer des emails, vous devez d'abord connecter votre compte Google avec les
 					permissions Gmail.
 				</p>
-				<Button variant="outline" size="sm" href="/dashboard/teacher/marketplace" class="mt-2">
+				<Button variant="outline" size="sm" href="/dashboard/teacher/settings/google" class="mt-2">
 					<ExternalLink class="mr-2 h-4 w-4" />
 					Configurer l'integration Google
 				</Button>
