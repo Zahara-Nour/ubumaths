@@ -29,15 +29,31 @@
 	let canAddReport = $derived(reportCount < MAX_REPORTS);
 	let hasReports = $derived(reportCount > 0);
 
-	// Parse description content (TipTap JSON format)
+	// Parse description content (TipTap JSON format or legacy HTML)
 	function parseDescription(description: unknown): object {
 		try {
 			if (typeof description === 'string') {
+				// Try to parse as JSON (TipTap format)
 				return JSON.parse(description);
 			}
 			return description as object;
 		} catch {
 			const text = typeof description === 'string' ? description : String(description);
+			// Check if it looks like HTML (legacy format)
+			if (text.includes('<p>') || text.includes('<br>') || text.includes('<strong>')) {
+				// Convert simple HTML to TipTap format by stripping tags
+				const plainText = text
+					.replace(/<br\s*\/?>/gi, '\n')
+					.replace(/<p>/gi, '')
+					.replace(/<\/p>/gi, '\n')
+					.replace(/<[^>]+>/g, '')
+					.trim();
+				return {
+					type: 'doc',
+					content: [{ type: 'paragraph', content: [{ type: 'text', text: plainText }] }]
+				};
+			}
+			// Plain text fallback
 			return {
 				type: 'doc',
 				content: [{ type: 'paragraph', content: [{ type: 'text', text }] }]
