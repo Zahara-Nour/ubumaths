@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.9](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.8...v0.5.9) (2025-12-29)
+
+### 🐛 Bug Fixes
+
+- **welcome-email:** fix query column name for email sent check ([9330c1a](https://github.com/Zahara-Nour/ubumaths/commit/9330c1a1ce926996449fed1525edc0313462963b))
+- **welcome-email:** fix RLS policy and query for email sent check ([1a7d6b4](https://github.com/Zahara-Nour/ubumaths/commit/1a7d6b4572cbf58c784938a578b5cc0d7cf97f48))
+
 ### [0.5.8](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.7...v0.5.8) (2025-12-29)
 
 ### 🐛 Bug Fixes
