@@ -2,15 +2,15 @@
  * Bug Reports Config API
  * =======================
  *
- * GET   /api/bug-reports/config - Get current configuration (admin only)
+ * GET   /api/bug-reports/config - Get current configuration (all authenticated users)
  * PATCH /api/bug-reports/config - Update configuration (admin only)
  *
- * AUTH: Admin users only
+ * AUTH: GET = authenticated, PATCH = admin only
  */
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAuth, requireRole } from '$lib/server/middleware/auth';
 import { updateBugReportsConfigSchema } from '$lib/server/validation/bug-reports';
 import type { BugReportsConfig } from '$lib/types/bug-reports';
 
@@ -19,7 +19,7 @@ import type { BugReportsConfig } from '$lib/types/bug-reports';
 // =============================================================================
 
 export const GET: RequestHandler = async ({ locals }) => {
-	await requireRole(locals, 'admin');
+	await requireAuth(locals);
 
 	try {
 		const { data: config, error: queryError } = await locals.supabase
