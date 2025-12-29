@@ -295,27 +295,20 @@ function generateSignRow(row: SignRow, domain: DomainPoint[]): string {
 			}
 		}
 
-		// Check for trailing marker at the END of this interval (only for last interval)
-		let trailingMarker: string | null = null;
-		if (i === domain.length - 2) {
-			const trailingValue = row.values.get(endPoint);
-			if (trailingValue && trailingValue.type === 'marker') {
-				trailingMarker = convertSignMarkerToTypst(trailingValue.marker);
-			}
-		}
-
-		if (marker && trailingMarker) {
-			// Both leading and trailing markers: (marker, sign, trailingMarker)
-			values.push(`(${marker}, ${signStr}, ${trailingMarker})`);
-		} else if (marker) {
+		if (marker) {
 			// Combine marker with sign as tuple: (marker, sign)
 			values.push(`(${marker}, ${signStr})`);
-		} else if (trailingMarker) {
-			// Sign with trailing marker: (sign, trailingMarker)
-			values.push(`(${signStr}, ${trailingMarker})`);
 		} else {
 			values.push(signStr);
 		}
+	}
+
+	// Check for trailing marker at the LAST domain point (separate element)
+	// vartable handles "||" at the end by drawing a bar at the boundary
+	const lastPoint = domain[domain.length - 1].expression;
+	const trailingValue = row.values.get(lastPoint);
+	if (trailingValue && trailingValue.type === 'marker') {
+		values.push(convertSignMarkerToTypst(trailingValue.marker));
 	}
 
 	return formatTypstTuple(values);
