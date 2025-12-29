@@ -1690,8 +1690,10 @@ function processTableCellContent(content: string): string {
 		}
 
 		// Convert and add the math segment
+		// Apply toFrenchDecimal first to convert decimal points to French commas
 		const mathContent = match[1];
-		const typstMath = convertLatexToTypstMath(mathContent);
+		const frenchMath = toFrenchDecimal(mathContent);
+		const typstMath = convertLatexToTypstMath(frenchMath);
 		parts.push(`$${typstMath}$`);
 
 		lastIndex = match.index + match[0].length;
