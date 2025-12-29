@@ -131,8 +131,8 @@
 		</Popover.Root>
 	{/if}
 
-	<!-- Report button (always visible if under limit) -->
-	{#if canAddReport}
+	<!-- Report button (only visible if no existing reports) -->
+	{#if canAddReport && !hasReports}
 		<Button
 			variant="ghost"
 			size="sm"
@@ -141,9 +141,7 @@
 			aria-label="Signaler une erreur dans cet exercice"
 		>
 			<AlertTriangle class="h-4 w-4" />
-			{#if !hasReports}
-				<span class="text-xs">Signaler</span>
-			{/if}
+			<span class="text-xs">Signaler</span>
 		</Button>
 	{/if}
 </div>
