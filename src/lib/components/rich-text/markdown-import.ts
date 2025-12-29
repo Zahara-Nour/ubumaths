@@ -511,10 +511,15 @@ function convertVariationTable(node: VariationTableNode): JSONContent {
 			for (const [key, value] of row.values) {
 				let lineContent = `  ${key}: `;
 				if (value.marker === 'asymptote' && value.limits) {
-					// Asymptote with limits: ||, leftLimit, rightLimit
-					lineContent += `||, ${value.limits[0]}, ${value.limits[1]}`;
+					// Asymptote with two limits: ||, leftExpr, leftPos, rightExpr, rightPos
+					const left = value.limits[0];
+					const right = value.limits[1];
+					lineContent += `||, ${left.expression}, ${left.position}, ${right.expression}, ${right.position}`;
+				} else if (value.marker === 'asymptote' && value.limitSide) {
+					// Asymptote with single limit: ||, left/right, expr, pos
+					lineContent += `||, ${value.limitSide}, ${value.expression}, ${value.position}`;
 				} else if (value.marker) {
-					// Other markers
+					// Other markers (zero, forbidden, discontinuity, or asymptote without limits)
 					const markerMap: Record<string, string> = {
 						zero: 'z',
 						asymptote: '||',
