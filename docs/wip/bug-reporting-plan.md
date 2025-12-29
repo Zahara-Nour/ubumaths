@@ -1,8 +1,9 @@
 # Plan d'implémentation : Système de rapport de bugs
 
-> **Statut** : En attente de validation Phase 0
+> **Statut** : ✅ Phase 0 validée - Prêt pour implémentation
 > **Branche** : `claude/bug-reporting-feature-xyhVR`
 > **Créé le** : 2025-12-29
+> **Mis à jour** : 2025-12-29
 
 ---
 
@@ -66,12 +67,26 @@
 32. **Cas limite** : Rejet si format non supporté (acceptés: jpeg, png, gif, webp)
 33. **Cas erreur** : Validation magic bytes (signature fichier)
 
-#### Questions pour clarification
+##### H. Export pour Claude Code (admin)
 
-1. **Catégories** : `bug`, `content`, `ux`, `feature`, `other` - OK ?
-2. **Sévérités** : `low`, `medium`, `high`, `critical` - OK ?
-3. **Statuts** : `pending`, `acknowledged`, `in_progress`, `resolved`, `wont_fix`, `duplicate` - OK ?
-4. **Rôle FAB** : Bouton flottant visible sur TOUTES les pages protégées, ou certaines seulement ?
+34. **Cas nominal** : Un admin peut exporter un rapport au format Markdown optimisé pour Claude Code
+35. **Cas nominal** : L'export contient le contexte complet (titre, description, erreurs, stack traces, actions)
+36. **Cas nominal** : L'export suggère les fichiers potentiellement concernés (basé sur stack traces)
+37. **Cas nominal** : L'export inclut les commandes utiles (chemins fichiers, patterns de recherche)
+38. **Cas nominal** : Le screenshot est inclus comme lien ou base64 dans l'export
+39. **Cas limite** : L'export est copié dans le presse-papier en un clic
+40. **Cas limite** : L'export peut être téléchargé comme fichier `.md`
+
+#### Décisions validées
+
+| Question | Réponse |
+|----------|---------|
+| **Catégories** | `bug`, `content`, `ux`, `feature`, `other` ✅ |
+| **Sévérités** | `low`, `medium`, `high`, `critical` ✅ |
+| **Statuts** | `pending`, `acknowledged`, `in_progress`, `resolved`, `wont_fix`, `duplicate` ✅ |
+| **FAB** | Visible sur TOUTES les pages protégées ✅ |
+| **Icône FAB** | Fourmi 🐜 (style Claude Code web) ✅ |
+| **Export Claude Code** | Format Markdown structuré pour debugging ✅ |
 
 ---
 
@@ -136,16 +151,20 @@
 | 3.3 | `GET /api/bug-reports/[id]` - Détail | `backend-developer` | Sonnet |
 | 3.4 | `PATCH /api/bug-reports/[id]` - Modifier statut (admin) | `backend-developer` | Sonnet |
 | 3.5 | `POST /api/bug-reports/[id]/screenshot` - Upload image | `backend-developer` | Opus |
-| 3.6 | Fonction `notifyAdminsOfNewBugReport` | Direct | - |
-| 3.7 | Tests API endpoints | `test-automator` | Sonnet |
-| 3.8 | Security audit endpoints | `security-auditor` | Opus |
+| 3.6 | `GET /api/bug-reports/[id]/export` - Export Markdown pour Claude Code | `backend-developer` | Opus |
+| 3.7 | Fonction `notifyAdminsOfNewBugReport` | Direct | - |
+| 3.8 | Fonction `generateClaudeCodeExport` | Direct | - |
+| 3.9 | Tests API endpoints | `test-automator` | Sonnet |
+| 3.10 | Security audit endpoints | `security-auditor` | Opus |
 
 ### Livrables
 
 - `src/routes/api/bug-reports/+server.ts`
 - `src/routes/api/bug-reports/[reportId]/+server.ts`
 - `src/routes/api/bug-reports/[reportId]/screenshot/+server.ts`
+- `src/routes/api/bug-reports/[reportId]/export/+server.ts`
 - `src/lib/server/notifications.ts` (mise à jour)
+- `src/lib/server/bug-report-export.ts` (générateur export)
 - Tests API
 
 ### Validation
@@ -198,12 +217,13 @@
 | 5.4 | `BugReportStatusBadge.svelte` - Badge statut | `frontend-developer` | Haiku |
 | 5.5 | `BugReportList.svelte` - Liste avec filtres | `frontend-developer` | Sonnet |
 | 5.6 | `FreezeReportPrompt.svelte` - Prompt après freeze | `frontend-developer` | Sonnet |
-| 5.7 | Tests composants | `test-automator` | Sonnet |
-| 5.8 | Accessibility audit | `accessibility-tester` | Sonnet |
+| 5.7 | `ExportClaudeCodeButton.svelte` - Bouton export + dialog preview | `frontend-developer` | Opus |
+| 5.8 | Tests composants | `test-automator` | Sonnet |
+| 5.9 | Accessibility audit | `accessibility-tester` | Sonnet |
 
 ### Livrables
 
-- `src/lib/components/bug-reports/*.svelte` (6 composants)
+- `src/lib/components/bug-reports/*.svelte` (7 composants)
 - Tests composants
 
 ### Validation
@@ -297,15 +317,17 @@
 
 ## Récapitulatif des fichiers à créer/modifier
 
-### Nouveaux fichiers (17)
+### Nouveaux fichiers (20)
 
 ```
 supabase/migrations/
 └── YYYYMMDDHHMMSS_create_bug_reports.sql
 
 src/lib/
-├── server/validation/
-│   └── bug-reports.ts
+├── server/
+│   ├── validation/
+│   │   └── bug-reports.ts
+│   └── bug-report-export.ts          # Générateur export Claude Code
 ├── types/
 │   └── bug-reports.ts
 ├── utils/
@@ -313,20 +335,23 @@ src/lib/
 ├── stores/
 │   └── activityStore.svelte.ts
 └── components/bug-reports/
-    ├── BugReportFAB.svelte
+    ├── BugReportFAB.svelte            # Bouton flottant avec icône fourmi 🐜
     ├── BugReportDialog.svelte
     ├── BugReportCard.svelte
     ├── BugReportStatusBadge.svelte
     ├── BugReportList.svelte
-    └── FreezeReportPrompt.svelte
+    ├── FreezeReportPrompt.svelte
+    └── ExportClaudeCodeButton.svelte  # Export pour Claude Code
 
 src/routes/
 ├── api/bug-reports/
 │   ├── +server.ts
 │   └── [reportId]/
 │       ├── +server.ts
-│       └── screenshot/
-│           └── +server.ts
+│       ├── screenshot/
+│       │   └── +server.ts
+│       └── export/
+│           └── +server.ts             # Export Markdown
 └── (protected)/dashboard/
     ├── bug-reports/
     │   ├── +page.svelte
@@ -344,6 +369,80 @@ src/lib/server/notifications.ts    # Ajouter notifyAdminsOfNewBugReport
 src/hooks.client.ts                # Init freeze detection
 src/routes/(protected)/+layout.svelte  # Ajouter FAB
 docs/architecture/database-schema.md   # Documenter table
+```
+
+---
+
+## Format Export Claude Code
+
+L'export génère un fichier Markdown structuré optimisé pour Claude Code :
+
+```markdown
+# Bug Report: [Titre du rapport]
+
+## Informations générales
+- **ID**: `uuid`
+- **Catégorie**: bug | content | ux | feature | other
+- **Sévérité**: low | medium | high | critical
+- **Statut**: pending | acknowledged | in_progress | resolved
+- **Créé le**: YYYY-MM-DD HH:mm:ss
+- **Auteur**: Nom (rôle)
+
+## Description du problème
+[Description complète fournie par l'utilisateur]
+
+## Contexte technique
+
+### Page concernée
+- **URL**: /chemin/vers/page
+- **Viewport**: 1920x1080
+- **Navigateur**: Chrome 120 (Windows)
+
+### Erreurs récentes (5 dernières minutes)
+| Timestamp | Type | Message | Fichier | Ligne |
+|-----------|------|---------|---------|-------|
+| HH:mm:ss | client_js | TypeError: Cannot read... | src/lib/... | 42 |
+
+### Stack traces
+```
+TypeError: Cannot read property 'foo' of undefined
+    at handleClick (src/lib/components/Example.svelte:42:15)
+    at HTMLButtonElement.onclick (src/routes/+page.svelte:18:9)
+```
+
+### Freezes détectés
+| Timestamp | Durée | Type |
+|-----------|-------|------|
+| HH:mm:ss | 2500ms | long_task |
+
+### Actions utilisateur récentes
+1. `HH:mm:ss` - click sur `#submit-button`
+2. `HH:mm:ss` - input dans `.search-field`
+3. `HH:mm:ss` - navigation vers `/dashboard`
+
+### Web Vitals
+- LCP: 2.1s (good)
+- FID: 45ms (good)
+- CLS: 0.05 (good)
+- INP: 180ms (needs improvement)
+
+## Fichiers potentiellement concernés
+Basé sur les stack traces et l'URL :
+- `src/lib/components/Example.svelte:42`
+- `src/routes/+page.svelte:18`
+- `src/routes/api/example/+server.ts`
+
+## Commandes utiles
+```bash
+# Rechercher les occurrences de l'erreur
+grep -r "Cannot read property" src/
+
+# Ouvrir les fichiers concernés
+code src/lib/components/Example.svelte src/routes/+page.svelte
+```
+
+## Screenshot
+[Lien vers le screenshot si disponible]
 ```
 
 ---
@@ -376,7 +475,7 @@ docs/architecture/database-schema.md   # Documenter table
 
 | Phase | Statut | Date | Notes |
 |-------|--------|------|-------|
-| 0 - Spec TDD | ⏳ En attente validation | - | - |
+| 0 - Spec TDD | ✅ Validée | 2025-12-29 | 40 comportements, icône fourmi, export Claude Code |
 | 1 - Database | ⬜ À faire | - | - |
 | 2 - Validation | ⬜ À faire | - | - |
 | 3 - API | ⬜ À faire | - | - |
