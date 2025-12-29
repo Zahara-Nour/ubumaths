@@ -12,6 +12,7 @@
 		BUG_REPORT_SEVERITY_COLORS
 	} from '$lib/types/bug-reports';
 	import BugReportStatusBadge from './BugReportStatusBadge.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 
@@ -19,9 +20,19 @@
 		report: BugReportWithAuthor;
 		onclick?: () => void;
 		class?: string;
+		selectable?: boolean;
+		selected?: boolean;
+		onSelectionChange?: (selected: boolean) => void;
 	}
 
-	let { report, onclick, class: className }: Props = $props();
+	let {
+		report,
+		onclick,
+		class: className,
+		selectable = false,
+		selected = false,
+		onSelectionChange
+	}: Props = $props();
 
 	const categoryIcon = $derived(BUG_REPORT_CATEGORY_ICONS[report.category]);
 	const categoryLabel = $derived(BUG_REPORT_CATEGORY_LABELS[report.category]);
@@ -37,11 +48,28 @@
 					(report.author as { email: string }).email
 			: 'Utilisateur'
 	);
+
+	// Handle selection change
+	function handleSelectionChange(checked: boolean) {
+		onSelectionChange?.(checked);
+	}
+
+	// Handle card click - don't trigger if selection mode is active
+	function handleCardClick(event: MouseEvent) {
+		// Prevent card click when clicking on checkbox or its label
+		if (selectable && event.target instanceof HTMLElement) {
+			const checkboxWrapper = event.target.closest('.checkbox-wrapper');
+			if (checkboxWrapper) {
+				return;
+			}
+		}
+		onclick?.();
+	}
 </script>
 
 <button
 	type="button"
-	{onclick}
+	onclick={handleCardClick}
 	class={cn(
 		'w-full rounded-lg border bg-card p-4 text-left',
 		'transition-colors hover:bg-muted/50',
@@ -50,6 +78,12 @@
 	)}
 >
 	<div class="flex items-start justify-between gap-3">
+		{#if selectable}
+			<div class="flex-shrink-0 pt-1" onclick={(e) => e.stopPropagation()}>
+				<MyCheckbox checked={selected} onCheckedChange={handleSelectionChange} />
+			</div>
+		{/if}
+
 		<div class="min-w-0 flex-1">
 			<!-- Title with category icon -->
 			<div class="flex items-center gap-2">
