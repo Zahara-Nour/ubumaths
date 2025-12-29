@@ -6,11 +6,37 @@
  * 2. Heartbeat System - Detects complete unresponsiveness > 15s
  * 3. Activity Tracking - Records user actions for context
  *
+ * FALSE POSITIVE PREVENTION:
+ * The heartbeat system is inherently prone to false positives because timer
+ * delays can be caused by many things besides actual JS freezes:
+ *
+ * 1. Background tab throttling (Chrome "intensive throttling" after 5min)
+ * 2. Computer sleep/wake (no visibility event fires)
+ * 3. Page Lifecycle API freeze/resume events
+ * 4. Chrome Energy Saver mode (throttles when battery <20%)
+ * 5. iOS Low Power Mode (throttles rAF to 30fps)
+ * 6. Browser extensions blocking execution
+ * 7. Garbage collection pauses
+ * 8. DevTools profiling
+ *
+ * To prevent false positives, we:
+ * - Check document.hidden directly (not just visibility change events)
+ * - Listen to pagehide (more reliable than visibilitychange in some browsers)
+ * - Listen to freeze/resume events (Page Lifecycle API)
+ * - Track user idle time (> 5min idle + drift = likely throttling)
+ * - Require corroborating Long Task events (real freezes have them)
+ *
  * Configuration:
  * - LONG_TASK_THRESHOLD: 100ms (notable), 500ms (error logging)
  * - FREEZE_PROMPT_THRESHOLD: 15000ms (prompt user)
  * - FREEZE_AUTO_REPORT_THRESHOLD: 30000ms (silent report)
  * - RETENTION: 20 last actions, 15 minutes of freezes
+ *
+ * References:
+ * - https://developer.chrome.com/blog/timer-throttling-in-chrome-88
+ * - https://developer.chrome.com/blog/page-lifecycle-api
+ * - https://tech.trivago.com/post/2020-11-17-exploringthepagevisibilityapifordetectin
+ * - https://developer.chrome.com/blog/memory-and-energy-saver-mode
  */
 
 import { browser } from '$app/environment';
@@ -105,6 +131,10 @@ const state: FreezeStoreState = {
 
 // Track page visibility to avoid false positives from backgrounded tabs
 let pageWasHiddenDuringHeartbeat = false;
+// Track if page was frozen by browser (Page Lifecycle API)
+let pageWasFrozen = false;
+// Track last user interaction time to detect idle periods
+let lastUserInteractionTime = Date.now();
 
 /**
  * Generate unique ID
@@ -233,6 +263,27 @@ let longTaskObserver: PerformanceObserver | null = null;
 /**
  * Initialize Long Task Observer
  * Detects JavaScript tasks that block the main thread for > 50ms
+ *
+ * RESEARCH FINDINGS - Long Task API limitations:
+ *
+ * 1. Browser support: Chromium only (Chrome, Edge) - NOT Firefox/Safari
+ *    Reference: https://web.dev/articles/custom-metrics
+ *
+ * 2. The buffered flag is NOT supported for longtask entries
+ *    Must initialize in <head> before any other scripts to catch all tasks
+ *    Reference: https://w3c.github.io/longtasks/
+ *
+ * 3. Cross-origin attribution is limited:
+ *    - Only 3 iframes get attribution
+ *    - After 10 long tasks, attribution becomes "unknown"
+ *    Reference: https://github.com/w3c/longtasks
+ *
+ * 4. 50ms threshold, 1ms granularity
+ *    High-resolution timing reduced due to Spectre mitigations
+ *
+ * Despite limitations, Long Task Observer is critical for distinguishing
+ * real freezes from sleep/wake: a real JS freeze would be detected here,
+ * while computer sleep would NOT generate any long task events.
  */
 function initLongTaskObserver(): void {
 	if (!browser || !('PerformanceObserver' in window)) return;
@@ -292,6 +343,34 @@ let expectedHeartbeatTime = 0;
 /**
  * Initialize Heartbeat System
  * Detects complete UI freezes by checking if setTimeout is delayed
+ *
+ * RESEARCH FINDINGS - Why heartbeat detection is problematic:
+ *
+ * The heartbeat approach (checking setTimeout drift) is fundamentally
+ * unreliable because many things can delay timers that are NOT real freezes:
+ *
+ * 1. Computer sleep/wake (no visibilitychange event, just timer delay)
+ *    Reference: https://medium.com/@erlan.zharkeev/how-to-detect-when-a-computer-wakes-up-from-sleep-my-experience-solving-the-problem-with-6639f79e5275
+ *
+ * 2. Background tab throttling (Chrome intensive throttling = 1 check/min)
+ *    Reference: https://developer.chrome.com/blog/timer-throttling-in-chrome-88
+ *
+ * 3. Energy saver modes (Chrome Energy Saver, iOS Low Power Mode)
+ *    Reference: https://developer.chrome.com/blog/memory-and-energy-saver-mode
+ *
+ * 4. Garbage Collection pauses all JS execution (looks like freeze)
+ *    Reference: https://developer.chrome.com/docs/devtools/memory-problems
+ *
+ * 5. Browser extensions can block execution
+ *    Reference: https://learn.microsoft.com/en-us/microsoft-edge/extensions/developer-guide/minimize-page-load-time-impact
+ *
+ * 6. performance.now() behavior varies by platform during sleep:
+ *    - Windows: timers delayed during sleep
+ *    - Linux: timers fire immediately on wake if due during sleep
+ *    - macOS: monotonic clock may drift
+ *    Reference: https://github.com/nodejs/node/issues/6763
+ *
+ * SOLUTION: We use multiple verification layers (see FALSE POSITIVE PREVENTION below)
  */
 function initHeartbeat(): void {
 	if (!browser) return;
@@ -302,22 +381,44 @@ function initHeartbeat(): void {
 		const now = Date.now();
 		const drift = now - expectedHeartbeatTime;
 
-		// Skip freeze detection if:
-		// 1. Page is currently hidden (browser throttles timers for backgrounded tabs)
-		// 2. Page visibility changed during this heartbeat interval
-		// 3. Large drift detected while page is/was hidden (computer sleep/wake)
-		// All these cases cause false positives due to timer throttling, not real freezes
-		const isCurrentlyHidden = document.hidden;
-		const shouldSkip = isCurrentlyHidden || pageWasHiddenDuringHeartbeat;
+		// =================================================================
+		// FALSE POSITIVE PREVENTION
+		// =================================================================
+		// Many things can cause timer drift that are NOT real JS freezes:
+		// 1. Page hidden (browser throttles timers for backgrounded tabs)
+		// 2. Page visibility changed during interval
+		// 3. Page frozen by browser (Page Lifecycle API)
+		// 4. Computer sleep/wake (no visibility event fires)
+		// 5. Chrome Energy Saver mode (throttles timers when battery <20%)
+		// 6. Long idle period (browser may throttle inactive tabs)
+		// =================================================================
 
-		if (shouldSkip) {
-			if (isCurrentlyHidden) {
-				console.debug('[Freeze Detection] Skipping check - page is hidden');
-			} else if (pageWasHiddenDuringHeartbeat) {
-				console.debug('[Freeze Detection] Skipping check - page was hidden during interval');
-			}
+		const isCurrentlyHidden = document.hidden;
+		const timeSinceLastInteraction = now - lastUserInteractionTime;
+		const isLongIdle = timeSinceLastInteraction > 5 * 60 * 1000; // 5 minutes
+
+		// Reasons to skip freeze detection
+		const skipReasons: string[] = [];
+		if (isCurrentlyHidden) skipReasons.push('page is hidden');
+		if (pageWasHiddenDuringHeartbeat) skipReasons.push('page was hidden during interval');
+		if (pageWasFrozen) skipReasons.push('page was frozen by browser');
+
+		if (skipReasons.length > 0) {
+			console.debug(`[Freeze Detection] Skipping check - ${skipReasons.join(', ')}`);
 			pageWasHiddenDuringHeartbeat = false;
+			pageWasFrozen = false;
 			state.isUnresponsive = false;
+			state.lastHeartbeat = now;
+			expectedHeartbeatTime = now + HEARTBEAT_INTERVAL_MS;
+			heartbeatTimeout = setTimeout(checkHeartbeat, HEARTBEAT_INTERVAL_MS);
+			return;
+		}
+
+		// Additional check: long idle + large drift = likely browser throttling
+		if (isLongIdle && drift > 5000) {
+			console.debug(
+				`[Freeze Detection] Large drift (${drift}ms) during idle period (${Math.round(timeSinceLastInteraction / 1000)}s since last interaction) - likely browser throttling, skipping`
+			);
 			state.lastHeartbeat = now;
 			expectedHeartbeatTime = now + HEARTBEAT_INTERVAL_MS;
 			heartbeatTimeout = setTimeout(checkHeartbeat, HEARTBEAT_INTERVAL_MS);
@@ -326,19 +427,34 @@ function initHeartbeat(): void {
 
 		// Check for significant drift (potential freeze detected)
 		if (drift > FREEZE_PROMPT_THRESHOLD_MS) {
-			// Before prompting user, verify this is a real freeze by checking for
-			// corroborating Long Task events. A real JavaScript freeze would be
-			// detected by Long Task Observer. If we have large drift but no
-			// corresponding long tasks, it's likely computer sleep/wake.
+			// =================================================================
+			// CORROBORATION CHECK - The key insight from research
+			// =================================================================
+			// A real JavaScript freeze (blocking the main thread) would be
+			// detected by BOTH:
+			//   1. Heartbeat system (timer drift)
+			//   2. Long Task Observer (PerformanceObserver)
+			//
+			// However, sleep/wake and browser throttling would ONLY cause:
+			//   - Timer drift (heartbeat)
+			//   - NO long task events (because JS wasn't running, it was suspended)
+			//
+			// Therefore: large drift + no long tasks = NOT a real freeze
+			//
+			// This is the most reliable way to distinguish real freezes from
+			// system-level events like sleep/wake.
+			// Reference: https://medium.com/@erlan.zharkeev/how-to-detect-when-a-computer-wakes-up-from-sleep-my-experience-solving-the-problem-with-6639f79e5275
+			// =================================================================
 			const recentLongTasks = state.freezeEvents.filter((e) => {
 				const eventTime = new Date(e.timestamp).getTime();
 				const timeSinceEvent = now - eventTime;
 				// Look for long tasks in the last 30 seconds with significant duration
+				// Threshold of 1000ms ensures we're looking for real blocking, not minor hiccups
 				return e.type === 'long_task' && timeSinceEvent < 30000 && e.duration > 1000;
 			});
 
 			if (recentLongTasks.length === 0) {
-				// No corroborating long tasks - this is likely sleep/wake, not a real freeze
+				// No corroborating long tasks = almost certainly sleep/wake or throttling
 				console.debug(
 					`[Freeze Detection] Large drift (${drift}ms) but no corroborating long tasks - likely sleep/wake, skipping`
 				);
@@ -348,6 +464,7 @@ function initHeartbeat(): void {
 				return;
 			}
 
+			// We have corroborating evidence - this appears to be a real freeze
 			console.debug(
 				`[Freeze Detection] Large drift (${drift}ms) with ${recentLongTasks.length} corroborating long tasks - real freeze detected`
 			);
@@ -434,6 +551,7 @@ function initActivityTracking(): void {
 	document.addEventListener(
 		'click',
 		(e) => {
+			lastUserInteractionTime = Date.now();
 			const target = e.target as HTMLElement;
 			if (target) {
 				addAction({
@@ -450,6 +568,7 @@ function initActivityTracking(): void {
 	document.addEventListener(
 		'input',
 		(e) => {
+			lastUserInteractionTime = Date.now();
 			clearTimeout(inputTimeout);
 			inputTimeout = setTimeout(() => {
 				const target = e.target as HTMLElement;
@@ -470,6 +589,7 @@ function initActivityTracking(): void {
 	window.addEventListener(
 		'scroll',
 		() => {
+			lastUserInteractionTime = Date.now();
 			const now = Date.now();
 			if (now - lastScrollTime > 2000) {
 				// Max once per 2s
@@ -481,6 +601,30 @@ function initActivityTracking(): void {
 					});
 					lastScrollTime = now;
 				}, 500);
+			}
+		},
+		{ passive: true }
+	);
+
+	// Track keyboard activity (for idle detection, not logged as action)
+	document.addEventListener(
+		'keydown',
+		() => {
+			lastUserInteractionTime = Date.now();
+		},
+		{ passive: true, capture: true }
+	);
+
+	// Track mouse movement (for idle detection, not logged as action)
+	let lastMouseMoveTime = 0;
+	document.addEventListener(
+		'mousemove',
+		() => {
+			const now = Date.now();
+			// Throttle to once per second to avoid performance impact
+			if (now - lastMouseMoveTime > 1000) {
+				lastUserInteractionTime = now;
+				lastMouseMoveTime = now;
 			}
 		},
 		{ passive: true }
@@ -556,14 +700,70 @@ export function initFreezeDetection(): void {
 /**
  * Initialize Page Visibility Tracking
  * Prevents false freeze reports when tab is backgrounded
+ *
+ * RESEARCH FINDINGS - Why multiple events are needed:
+ *
+ * 1. visibilitychange alone is insufficient:
+ *    - Doesn't fire for computer sleep/wake (no visibility change occurs)
+ *    - Browser inconsistencies: Chrome/Firefox don't fire in all cases that pagehide does
+ *    - Screen magnifiers can set hidden=false even when page is fully obscured
+ *    Reference: https://tech.trivago.com/post/2020-11-17-exploringthepagevisibilityapifordetectin
+ *
+ * 2. Browser timer throttling is aggressive:
+ *    - Chrome "intensive throttling": after 5min hidden + 30s silent → timers checked 1x/min
+ *    - Exemptions: WebSockets, WebRTC, audio playing, Web Workers
+ *    Reference: https://developer.chrome.com/blog/timer-throttling-in-chrome-88
+ *
+ * 3. Page Lifecycle API (freeze/resume):
+ *    - Browsers can freeze pages to save resources
+ *    - No timer callbacks run during freeze
+ *    Reference: https://developer.chrome.com/blog/page-lifecycle-api
+ *
+ * 4. Energy saver modes cause additional throttling:
+ *    - Chrome Energy Saver: reduces refresh to 30fps when battery <20%
+ *    - iOS Low Power Mode: throttles rAF to 30fps
+ *    Reference: https://developer.chrome.com/blog/memory-and-energy-saver-mode
  */
 function initVisibilityTracking(): void {
 	if (!browser) return;
 
+	// visibilitychange: Standard visibility API
+	// Fires when user switches tabs or minimizes browser
+	// Note: Does NOT fire for computer sleep/wake!
 	document.addEventListener('visibilitychange', () => {
-		// When tab is hidden or becomes visible again, mark to skip next heartbeat check
-		// This prevents false freeze reports from browser timer throttling
 		pageWasHiddenDuringHeartbeat = true;
+	});
+
+	// pagehide: More reliable than visibilitychange in some browsers
+	// Research by trivago found this fires in cases where visibilitychange doesn't
+	// See: https://tech.trivago.com/post/2020-11-17-exploringthepagevisibilityapifordetectin
+	window.addEventListener('pagehide', () => {
+		pageWasHiddenDuringHeartbeat = true;
+	});
+
+	// Page Lifecycle API: freeze/resume events
+	// Chrome can freeze background tabs to save memory/battery
+	// During freeze, no JS runs and timers are suspended
+	// See: https://developer.chrome.com/blog/page-lifecycle-api
+	document.addEventListener('freeze', () => {
+		pageWasFrozen = true;
+		console.debug('[Freeze Detection] Page frozen by browser');
+	});
+
+	document.addEventListener('resume', () => {
+		pageWasFrozen = true; // Mark to skip next check after resume
+		console.debug('[Freeze Detection] Page resumed from frozen state');
+	});
+
+	// blur + hidden: Additional signal for edge cases
+	// Note: blur alone doesn't mean throttling (page can be visible but unfocused)
+	// Only relevant when combined with hidden state
+	// Research: focus/blur != visibility - a page can be visible but not focused
+	// See: https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+	window.addEventListener('blur', () => {
+		if (document.hidden) {
+			pageWasHiddenDuringHeartbeat = true;
+		}
 	});
 }
 

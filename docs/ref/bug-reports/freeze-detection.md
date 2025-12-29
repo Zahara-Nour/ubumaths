@@ -14,6 +14,7 @@
 - [Callbacks](#callbacks)
 - [API Reference](#api-reference)
 - [Configuration](#configuration)
+- [False Positive Prevention](#false-positive-prevention)
 
 ---
 
@@ -242,7 +243,10 @@ function initHeartbeat(): void {
 
 - Fonctionne sur tous les navigateurs
 - Detecte les freezes complets (JS + rendering)
-- Pas de faux positifs (un freeze de 15s est clairement anormal)
+
+### Prevention des faux positifs
+
+Le systeme heartbeat est inherement susceptible aux faux positifs car de nombreux facteurs peuvent retarder les timers sans qu'il y ait de freeze reel. Voir [False Positive Prevention](#false-positive-prevention) pour les details.
 
 ---
 
@@ -826,3 +830,180 @@ const observer = new PerformanceObserver((list) => {
 });
 observer.observe({ entryTypes: ['longtask'] });
 ```
+
+---
+
+## False Positive Prevention
+
+Le systeme de heartbeat est inherement susceptible aux faux positifs car de nombreux facteurs peuvent retarder les timers JavaScript sans qu'il y ait de freeze reel de l'interface.
+
+### Sources de faux positifs
+
+#### 1. Background Tab Throttling
+
+Les navigateurs throttlent agressivement les timers des onglets en arriere-plan pour economiser les ressources.
+
+| Navigateur | Comportement                                                                    |
+| ---------- | ------------------------------------------------------------------------------- |
+| Chrome     | "Intensive throttling" apres 5 min hidden + 30s silent → timers verifies 1x/min |
+| Firefox    | Throttling similaire pour les onglets inactifs                                  |
+| Safari     | Throttling agressif, surtout sur iOS                                            |
+
+**Exceptions au throttling:**
+
+- Onglets jouant de l'audio
+- WebSockets/WebRTC actifs
+- Web Workers (non throttles)
+
+> **Reference:** [Chrome Timer Throttling](https://developer.chrome.com/blog/timer-throttling-in-chrome-88)
+
+#### 2. Computer Sleep/Wake
+
+Quand l'ordinateur passe en veille:
+
+- Aucun evenement `visibilitychange` n'est emis
+- Les timers sont simplement retardes, pas les taches JS
+- `performance.now()` peut se comporter differemment selon la plateforme
+
+| Plateforme | Comportement de performance.now()                          |
+| ---------- | ---------------------------------------------------------- |
+| Windows    | Timers retardes pendant le sleep                           |
+| Linux      | Timers fires immediatement au wake si dus pendant le sleep |
+| macOS      | Possible drift de l'horloge monotonique                    |
+
+> **Reference:** [Medium - Detecting Computer Wake](https://medium.com/@erlan.zharkeev/how-to-detect-when-a-computer-wakes-up-from-sleep-my-experience-solving-the-problem-with-6639f79e5275)
+
+#### 3. Page Visibility API Edge Cases
+
+L'API `visibilitychange` ne couvre pas tous les cas:
+
+- `pagehide` est plus fiable dans certains navigateurs
+- Les lecteurs d'ecran peuvent definir `hidden=false` meme si la page est masquee
+- `focus`/`blur` ≠ visibilite (une page peut etre visible mais non focusee)
+
+> **Reference:** [trivago - Page Visibility API](https://tech.trivago.com/post/2020-11-17-exploringthepagevisibilityapifordetectin)
+
+#### 4. Energy/Battery Saver Modes
+
+| Mode                         | Impact                                              |
+| ---------------------------- | --------------------------------------------------- |
+| Chrome Energy Saver          | Reduit le refresh rate a 30fps quand batterie < 20% |
+| iOS Low Power Mode           | Throttle rAF et animations CSS a 30fps              |
+| Android Battery Saver        | Impact significatif sur les performances web        |
+| iframes cross-origin sur iOS | Throttles a 30fps                                   |
+
+> **Reference:** [Chrome Energy Saver Mode](https://developer.chrome.com/blog/memory-and-energy-saver-mode)
+
+#### 5. Long Task API Limitations
+
+| Limitation               | Impact                                        |
+| ------------------------ | --------------------------------------------- |
+| Support navigateur       | Chromium uniquement (pas Firefox/Safari)      |
+| Flag `buffered`          | Non supporte (doit initialiser dans `<head>`) |
+| Attribution cross-origin | Limitee a 3 iframes                           |
+| Apres 10 long tasks      | Attribution devient "unknown"                 |
+
+#### 6. Autres sources
+
+- **Garbage Collection**: Pause toute execution JS, ressemble a un freeze
+- **JIT Compilation**: Pauses imprevisibles pendant l'optimisation
+- **Extensions navigateur**: Content scripts peuvent bloquer l'execution
+- **DevTools**: Le profiling memoire prend des snapshots frequents (50ms)
+
+### Strategies de prevention implementees
+
+#### 1. Check document.hidden directement
+
+```typescript
+const isCurrentlyHidden = document.hidden;
+if (isCurrentlyHidden) {
+	// Skip - page is backgrounded, timer throttling expected
+}
+```
+
+#### 2. Ecouter plusieurs evenements
+
+```typescript
+// visibilitychange: standard mais incomplet
+document.addEventListener('visibilitychange', () => {
+	pageWasHiddenDuringHeartbeat = true;
+});
+
+// pagehide: plus fiable dans certains navigateurs
+window.addEventListener('pagehide', () => {
+	pageWasHiddenDuringHeartbeat = true;
+});
+
+// Page Lifecycle API: freeze/resume par le navigateur
+document.addEventListener('freeze', () => {
+	pageWasFrozen = true;
+});
+document.addEventListener('resume', () => {
+	pageWasFrozen = true;
+});
+```
+
+> **Reference:** [Page Lifecycle API](https://developer.chrome.com/blog/page-lifecycle-api)
+
+#### 3. Detection d'inactivite utilisateur
+
+Si l'utilisateur n'a pas interagi depuis > 5 minutes et qu'on detecte un drift, c'est probablement du throttling navigateur:
+
+```typescript
+const timeSinceLastInteraction = now - lastUserInteractionTime;
+const isLongIdle = timeSinceLastInteraction > 5 * 60 * 1000;
+
+if (isLongIdle && drift > 5000) {
+	// Skip - likely browser throttling during idle period
+}
+```
+
+#### 4. Corroboration par Long Task Observer
+
+Un vrai freeze JavaScript serait detecte par le Long Task Observer. Si on a un grand drift sans long tasks correspondantes, c'est probablement un sleep/wake:
+
+```typescript
+const recentLongTasks = state.freezeEvents.filter((e) => {
+	const timeSinceEvent = now - new Date(e.timestamp).getTime();
+	return e.type === 'long_task' && timeSinceEvent < 30000 && e.duration > 1000;
+});
+
+if (recentLongTasks.length === 0) {
+	// No corroborating long tasks - likely sleep/wake, not real freeze
+}
+```
+
+### Resume des checks
+
+| Check                   | Ce qu'il detecte                                   |
+| ----------------------- | -------------------------------------------------- |
+| `document.hidden`       | Page actuellement en arriere-plan                  |
+| `visibilitychange`      | Transitions hidden/visible                         |
+| `pagehide`              | Plus fiable que visibilitychange dans certains cas |
+| `freeze`/`resume`       | Gel de page par le navigateur (Page Lifecycle API) |
+| `blur` + hidden         | Perte de focus pendant que la page est cachee      |
+| Idle detection          | Aucune activite utilisateur depuis > 5 min         |
+| Long Task corroboration | Un vrai freeze aurait des evenements Long Task     |
+
+### Interactions trackees pour la detection d'idle
+
+| Event       | Debounce                              |
+| ----------- | ------------------------------------- |
+| `click`     | Non                                   |
+| `input`     | Non (pour idle), 500ms (pour logging) |
+| `scroll`    | Non (pour idle)                       |
+| `keydown`   | Non                                   |
+| `mousemove` | 1s (throttle pour performance)        |
+
+### Logs de debug
+
+```
+[Freeze Detection] Skipping check - page is hidden
+[Freeze Detection] Skipping check - page was hidden during interval
+[Freeze Detection] Skipping check - page was frozen by browser
+[Freeze Detection] Large drift (XXms) during idle period - likely browser throttling, skipping
+[Freeze Detection] Large drift (XXms) but no corroborating long tasks - likely sleep/wake, skipping
+[Freeze Detection] Large drift (XXms) with N corroborating long tasks - real freeze detected
+```
+
+---
