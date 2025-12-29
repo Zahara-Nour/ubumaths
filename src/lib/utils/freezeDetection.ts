@@ -103,6 +103,9 @@ const state: FreezeStoreState = {
 	lastHeartbeat: Date.now()
 };
 
+// Track page visibility to avoid false positives from backgrounded tabs
+let pageWasHiddenDuringHeartbeat = false;
+
 /**
  * Generate unique ID
  */
@@ -299,6 +302,17 @@ function initHeartbeat(): void {
 		const now = Date.now();
 		const drift = now - expectedHeartbeatTime;
 
+		// Skip freeze detection if page was hidden (backgrounded tab)
+		// Browser throttles timers for backgrounded tabs, causing false positives
+		if (pageWasHiddenDuringHeartbeat) {
+			pageWasHiddenDuringHeartbeat = false;
+			state.isUnresponsive = false;
+			state.lastHeartbeat = now;
+			expectedHeartbeatTime = now + HEARTBEAT_INTERVAL_MS;
+			heartbeatTimeout = setTimeout(checkHeartbeat, HEARTBEAT_INTERVAL_MS);
+			return;
+		}
+
 		// Check for significant drift (freeze detected)
 		if (drift > FREEZE_PROMPT_THRESHOLD_MS) {
 			state.isUnresponsive = true;
@@ -493,6 +507,7 @@ export function initFreezeDetection(): void {
 	initLongTaskObserver();
 	initHeartbeat();
 	initActivityTracking();
+	initVisibilityTracking();
 
 	// Clean up old freeze events on init
 	const cutoff = Date.now() - FREEZE_RETENTION_MS;
@@ -500,6 +515,20 @@ export function initFreezeDetection(): void {
 	persistState();
 
 	console.debug('[Freeze Detection] Initialized');
+}
+
+/**
+ * Initialize Page Visibility Tracking
+ * Prevents false freeze reports when tab is backgrounded
+ */
+function initVisibilityTracking(): void {
+	if (!browser) return;
+
+	document.addEventListener('visibilitychange', () => {
+		// When tab is hidden or becomes visible again, mark to skip next heartbeat check
+		// This prevents false freeze reports from browser timer throttling
+		pageWasHiddenDuringHeartbeat = true;
+	});
 }
 
 /**
