@@ -94,6 +94,7 @@
 		getFreezeDetectionContext
 	} from '$lib/utils/freezeDetection';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { bugReportsConfigStore } from '$lib/stores/bugReportsConfig.svelte';
 
 	import type { Component, Snippet } from 'svelte';
 
@@ -290,6 +291,9 @@
 		// No automatic polling - counters update on user actions only
 		activityStore.refresh();
 
+		// Load bug reports configuration
+		bugReportsConfigStore.load();
+
 		// Start real-time notifications
 		if (data.supabase && data.user) {
 			notificationsRealtimeManager.init(data.supabase, data.user.id);
@@ -305,15 +309,30 @@
 	});
 
 	// Set up freeze detection callbacks
+	// Callbacks check config flags before executing
 	$effect(() => {
 		// Callback for freeze prompt (> 15s)
+		// Only shows prompt if freeze detection AND freeze prompt are enabled
 		setFreezePromptCallback((duration) => {
+			if (
+				!bugReportsConfigStore.freezeDetectionEnabled ||
+				!bugReportsConfigStore.freezePromptEnabled
+			) {
+				return;
+			}
 			freezePromptDuration = duration;
 			freezePromptOpen = true;
 		});
 
 		// Callback for auto report (> 30s)
+		// Only sends auto report if freeze detection AND auto report are enabled
 		setAutoReportCallback(async (duration) => {
+			if (
+				!bugReportsConfigStore.freezeDetectionEnabled ||
+				!bugReportsConfigStore.autoReportEnabled
+			) {
+				return;
+			}
 			try {
 				const context = getFreezeDetectionContext();
 				const response = await fetch('/api/bug-reports', {
@@ -637,8 +656,10 @@
 	/>
 </div>
 
-<!-- Bug Report FAB (visible on all dashboard pages) -->
-<BugReportFAB onclick={() => (bugReportDialogOpen = true)} />
+<!-- Bug Report FAB (visible on all dashboard pages, if enabled) -->
+{#if bugReportsConfigStore.fabEnabled}
+	<BugReportFAB onclick={() => (bugReportDialogOpen = true)} />
+{/if}
 
 <!-- Bug Report Dialog -->
 <BugReportDialog

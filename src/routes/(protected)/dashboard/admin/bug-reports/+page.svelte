@@ -10,6 +10,7 @@
 	import BugReportList from '$lib/components/bug-reports/BugReportList.svelte';
 	import BugReportStatusBadge from '$lib/components/bug-reports/BugReportStatusBadge.svelte';
 	import ExportClaudeCodeButton from '$lib/components/bug-reports/ExportClaudeCodeButton.svelte';
+	import BugReportsConfigCard from '$lib/components/bug-reports/BugReportsConfigCard.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -204,6 +205,11 @@
 		</Card.Root>
 	</div>
 
+	<!-- Configuration -->
+	<div class="mb-8">
+		<BugReportsConfigCard />
+	</div>
+
 	<!-- Reports list -->
 	<Card.Root>
 		<Card.Header>
@@ -293,10 +299,10 @@
 
 				<!-- Session context preview -->
 				{#if selectedReport.session_context}
+					{@const ctx = selectedReport.session_context as Record<string, unknown>}
 					<div class="space-y-2">
 						<h3 class="font-medium">Contexte de session</h3>
 						<div class="rounded-lg bg-muted p-3 text-xs">
-							{@const ctx = selectedReport.session_context as Record<string, unknown>}
 							{#if ctx.freezeEvents && Array.isArray(ctx.freezeEvents) && ctx.freezeEvents.length > 0}
 								<p>🥶 {ctx.freezeEvents.length} freeze(s) détecté(s)</p>
 							{/if}

@@ -255,19 +255,37 @@ VALUES (
 );
 ```
 
+### Feature Flags Admin
+
+Les administrateurs peuvent activer/desactiver les fonctionnalites du systeme depuis:
+
+- Page Admin > Bug Reports > Configuration
+- Page Admin > Settings > Bug Reports
+
+| Flag                       | Default | Description                                           |
+| -------------------------- | ------- | ----------------------------------------------------- |
+| `fab_enabled`              | `true`  | Affiche le bouton flottant pour signaler un bug       |
+| `freeze_detection_enabled` | `true`  | Active la detection automatique des ralentissements   |
+| `freeze_prompt_enabled`    | `true`  | Affiche une alerte apres 15 secondes de freeze        |
+| `auto_report_enabled`      | `true`  | Envoie automatiquement un rapport apres 30s de freeze |
+
+**Table database:** `bug_reports_config` (singleton)
+**API:** `GET/PATCH /api/bug-reports/config` (admin only)
+
 ---
 
 ## Fichiers sources
 
 ### Core
 
-| Fichier                                                     | Description         |
-| ----------------------------------------------------------- | ------------------- |
-| `src/lib/types/bug-reports.ts`                              | Types et constantes |
-| `src/lib/server/validation/bug-reports.ts`                  | Schemas Zod         |
-| `src/lib/server/bug-report-export.ts`                       | Generateur Markdown |
-| `src/lib/server/notifications.ts`                           | Notification admins |
-| `supabase/migrations/20251229000000_create_bug_reports.sql` | Migration DB        |
+| Fichier                                                            | Description          |
+| ------------------------------------------------------------------ | -------------------- |
+| `src/lib/types/bug-reports.ts`                                     | Types et constantes  |
+| `src/lib/server/validation/bug-reports.ts`                         | Schemas Zod          |
+| `src/lib/server/bug-report-export.ts`                              | Generateur Markdown  |
+| `src/lib/server/notifications.ts`                                  | Notification admins  |
+| `supabase/migrations/20251229000000_create_bug_reports.sql`        | Migration DB reports |
+| `supabase/migrations/20251229100000_create_bug_reports_config.sql` | Migration DB config  |
 
 ### API
 
@@ -277,6 +295,7 @@ VALUES (
 | `src/routes/api/bug-reports/[reportId]/+server.ts`            | GET, PATCH, DELETE |
 | `src/routes/api/bug-reports/[reportId]/screenshot/+server.ts` | POST               |
 | `src/routes/api/bug-reports/[reportId]/export/+server.ts`     | GET                |
+| `src/routes/api/bug-reports/config/+server.ts`                | GET, PATCH         |
 
 ### Components
 
@@ -289,13 +308,15 @@ VALUES (
 | `src/lib/components/bug-reports/BugReportStatusBadge.svelte`   | Badge de statut          |
 | `src/lib/components/bug-reports/FreezeReportPrompt.svelte`     | Prompt freeze            |
 | `src/lib/components/bug-reports/ExportClaudeCodeButton.svelte` | Export admin             |
+| `src/lib/components/bug-reports/BugReportsConfigCard.svelte`   | Config admin UI          |
 
 ### Client-side
 
-| Fichier                                  | Description          |
-| ---------------------------------------- | -------------------- |
-| `src/lib/utils/freezeDetection.ts`       | Systeme de detection |
-| `src/lib/stores/activityStore.svelte.ts` | Store reactif        |
+| Fichier                                     | Description          |
+| ------------------------------------------- | -------------------- |
+| `src/lib/utils/freezeDetection.ts`          | Systeme de detection |
+| `src/lib/stores/activityStore.svelte.ts`    | Store reactif        |
+| `src/lib/stores/bugReportsConfig.svelte.ts` | Store configuration  |
 
 ### Pages
 
