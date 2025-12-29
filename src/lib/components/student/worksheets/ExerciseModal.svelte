@@ -153,9 +153,6 @@
 								onReportCreated={(report) => onReportCreated(exercise.id, report)}
 							/>
 						{/if}
-						<div class="text-sm text-muted-foreground">
-							{currentIndex + 1} / {exercises.length}
-						</div>
 						<Button variant="ghost" size="icon" onclick={closeModal} aria-label="Fermer">
 							<X class="h-5 w-5" />
 						</Button>
@@ -268,16 +265,21 @@
 							</Button>
 						</div>
 
-						<!-- Navigation next -->
-						<Button
-							variant="outline"
-							size="sm"
-							onclick={goNext}
-							disabled={!canGoNext}
-							aria-label="Exercice suivant (fleche droite)"
-						>
-							<ChevronRight class="h-4 w-4" />
-						</Button>
+						<!-- Pagination + Navigation next -->
+						<div class="flex items-center gap-2">
+							<span class="text-sm text-muted-foreground">
+								{currentIndex + 1}/{exercises.length}
+							</span>
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={goNext}
+								disabled={!canGoNext}
+								aria-label="Exercice suivant (fleche droite)"
+							>
+								<ChevronRight class="h-4 w-4" />
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -321,9 +323,6 @@
 							onReportCreated={(report) => onReportCreated(exercise.id, report)}
 						/>
 					{/if}
-					<span class="text-xs text-muted-foreground">
-						{currentIndex + 1}/{exercises.length}
-					</span>
 					<Button variant="ghost" size="icon" onclick={closeModal} aria-label="Fermer">
 						<X class="h-5 w-5" />
 					</Button>
@@ -433,16 +432,21 @@
 						</Button>
 					</div>
 
-					<!-- Navigation next -->
-					<Button
-						variant="outline"
-						size="sm"
-						class="h-8 px-2"
-						onclick={goNext}
-						disabled={!canGoNext}
-					>
-						<ChevronRight class="h-4 w-4" />
-					</Button>
+					<!-- Pagination + Navigation next -->
+					<div class="flex items-center gap-1">
+						<span class="text-xs text-muted-foreground">
+							{currentIndex + 1}/{exercises.length}
+						</span>
+						<Button
+							variant="outline"
+							size="sm"
+							class="h-8 px-2"
+							onclick={goNext}
+							disabled={!canGoNext}
+						>
+							<ChevronRight class="h-4 w-4" />
+						</Button>
+					</div>
 				</div>
 			</div>
 
