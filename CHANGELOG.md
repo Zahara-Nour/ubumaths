@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.10](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.9...v0.5.10) (2025-12-29)
+
+### 🐛 Bug Fixes
+
+- **bug-reports:** allow all authenticated users to read config ([a2dbc0f](https://github.com/Zahara-Nour/ubumaths/commit/a2dbc0fc1ff4e4f940f6b9716c10d90d7e32db8f))
+- **freeze-detection:** ignore backgrounded tabs ([dc2c8ba](https://github.com/Zahara-Nour/ubumaths/commit/dc2c8ba7b299f9cfed061b271259ee9b4ccc08e7))
+- **notifications:** allow system notifications from any user ([efda86c](https://github.com/Zahara-Nour/ubumaths/commit/efda86ca6411b778d9753fd89213ebc1836fe603))
+
+### ✨ Features
+
+- **bug-reports:** add admin config for feature flags ([a34aca0](https://github.com/Zahara-Nour/ubumaths/commit/a34aca0a8e187d852ed5e23cd6bcf8ed8f8b0cb1))
+- **bug-reports:** add batch operations for admin ([046a4b7](https://github.com/Zahara-Nour/ubumaths/commit/046a4b70cc16c3f2b17cc512d74616033a6ace0c))
+- **bug-reports:** implement complete bug reporting system ([3a2e14b](https://github.com/Zahara-Nour/ubumaths/commit/3a2e14be787981ff07d29326a9aa7ebcf0f4c16d))
+
+### 📚 Documentation
+
+- add bug reporting feature implementation plan ([7bd05d9](https://github.com/Zahara-Nour/ubumaths/commit/7bd05d97bae30cafeb4ae361974b658c930ef639))
+- **bug-reports:** add batch operations documentation ([46e94c4](https://github.com/Zahara-Nour/ubumaths/commit/46e94c4e01e9917233f9ebcbddaddce6d6f7c6f3))
+- **bug-reports:** add comprehensive technical documentation ([9d02707](https://github.com/Zahara-Nour/ubumaths/commit/9d02707d11c3cdbe87f54ba0e8b515729d30d7d0))
+- update bug reporting plan with Phase 0 validation ([455368b](https://github.com/Zahara-Nour/ubumaths/commit/455368bc54a9d95bca6ec49fab3d12b8a68db548))
+
 ### [0.5.9](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.8...v0.5.9) (2025-12-29)
 
 ### 🐛 Bug Fixes
