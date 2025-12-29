@@ -1037,22 +1037,26 @@
 
 											<!-- Approve button with tooltip if no class assigned -->
 											{#if !hasClassAssigned}
-												<Tooltip.Root>
-													<Tooltip.Trigger asChild let:builder>
-														<Button
-															{...builder}
-															size="sm"
-															disabled={true}
-															class="bg-green-600 hover:bg-green-700"
-														>
-															<Check class="mr-2 h-4 w-4" />
-															Approuver
-														</Button>
-													</Tooltip.Trigger>
-													<Tooltip.Content>
-														<p>Veuillez assigner au moins une classe avant d'approuver</p>
-													</Tooltip.Content>
-												</Tooltip.Root>
+												<Tooltip.Provider>
+													<Tooltip.Root>
+														<Tooltip.Trigger>
+															{#snippet child({ props })}
+																<Button
+																	{...props}
+																	size="sm"
+																	disabled={true}
+																	class="bg-green-600 hover:bg-green-700"
+																>
+																	<Check class="mr-2 h-4 w-4" />
+																	Approuver
+																</Button>
+															{/snippet}
+														</Tooltip.Trigger>
+														<Tooltip.Content>
+															<p>Veuillez assigner au moins une classe avant d'approuver</p>
+														</Tooltip.Content>
+													</Tooltip.Root>
+												</Tooltip.Provider>
 											{:else}
 												<Button
 													size="sm"
