@@ -24,6 +24,7 @@
 	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
 	import { NUMBERING_SCHEMES, type SchemeId } from '$lib/types/list-numbering';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import BugReportsConfigCard from '$lib/components/bug-reports/BugReportsConfigCard.svelte';
 
 	// Convert schemes to select items
 	const schemeItems = Object.values(NUMBERING_SCHEMES).map((s) => ({
@@ -201,6 +202,9 @@
 			</div>
 		</Card.Content>
 	</Card.Root>
+
+	<!-- Bug Reports Configuration Card -->
+	<BugReportsConfigCard />
 
 	<!-- Version Update Instructions Card -->
 	<Card.Root>

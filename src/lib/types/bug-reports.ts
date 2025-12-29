@@ -237,3 +237,45 @@ export interface ClaudeCodeExport {
 	filename: string;
 	generatedAt: string;
 }
+
+// =============================================================================
+// Config Types
+// =============================================================================
+
+/** Bug reports feature configuration */
+export interface BugReportsConfig {
+	fabEnabled: boolean;
+	freezeDetectionEnabled: boolean;
+	freezePromptEnabled: boolean;
+	autoReportEnabled: boolean;
+	updatedAt: string;
+}
+
+/** Default configuration values */
+export const DEFAULT_BUG_REPORTS_CONFIG: BugReportsConfig = {
+	fabEnabled: true,
+	freezeDetectionEnabled: true,
+	freezePromptEnabled: true,
+	autoReportEnabled: true,
+	updatedAt: new Date().toISOString()
+};
+
+/** Config feature flag labels (French UI) */
+export const BUG_REPORTS_CONFIG_LABELS: Record<keyof Omit<BugReportsConfig, 'updatedAt'>, string> =
+	{
+		fabEnabled: 'Bouton de signalement (FAB)',
+		freezeDetectionEnabled: 'Détection des freezes',
+		freezePromptEnabled: 'Alerte freeze (15s)',
+		autoReportEnabled: 'Rapport automatique (30s)'
+	};
+
+/** Config feature flag descriptions (French UI) */
+export const BUG_REPORTS_CONFIG_DESCRIPTIONS: Record<
+	keyof Omit<BugReportsConfig, 'updatedAt'>,
+	string
+> = {
+	fabEnabled: 'Affiche le bouton flottant pour signaler un bug',
+	freezeDetectionEnabled: 'Active la détection automatique des ralentissements',
+	freezePromptEnabled: 'Affiche une alerte après 15 secondes de freeze',
+	autoReportEnabled: 'Envoie automatiquement un rapport après 30 secondes de freeze'
+};

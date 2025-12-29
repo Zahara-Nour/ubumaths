@@ -194,3 +194,20 @@ export const exportBugReportSchema = z.object({
 });
 
 export type ExportBugReportInput = z.infer<typeof exportBugReportSchema>;
+
+// =============================================================================
+// Bug Reports Config Schema
+// =============================================================================
+
+export const updateBugReportsConfigSchema = z
+	.object({
+		fabEnabled: z.boolean().optional(),
+		freezeDetectionEnabled: z.boolean().optional(),
+		freezePromptEnabled: z.boolean().optional(),
+		autoReportEnabled: z.boolean().optional()
+	})
+	.refine((data) => Object.keys(data).length > 0, {
+		message: 'Au moins un paramètre doit être modifié'
+	});
+
+export type UpdateBugReportsConfigInput = z.infer<typeof updateBugReportsConfigSchema>;
