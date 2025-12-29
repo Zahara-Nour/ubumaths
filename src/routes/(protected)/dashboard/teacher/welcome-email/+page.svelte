@@ -112,71 +112,83 @@
 		</Alert.Root>
 	{/if}
 
-	<!-- Previous Email Sent Notice -->
+	<!-- Email Already Sent - Success State -->
 	{#if data.previousEmail}
-		<Alert.Root>
-			<CheckCircle2 class="h-4 w-4" />
-			<Alert.Title>Email déjà envoyé</Alert.Title>
-			<Alert.Description>
-				Un email de bienvenue a déjà été envoyé à cet élève le {formatDate(
-					data.previousEmail.sent_at
-				)}.
-			</Alert.Description>
-		</Alert.Root>
-	{/if}
-
-	<!-- Student Info Card -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title>Informations de l'eleve</Card.Title>
-		</Card.Header>
-		<Card.Content class="space-y-3">
-			<div class="grid grid-cols-[120px_1fr] gap-2 text-sm">
-				<span class="font-medium text-muted-foreground">Nom :</span>
-				<span>{studentName}</span>
-
-				<span class="font-medium text-muted-foreground">Email :</span>
-				<span class="break-all">{data.student.email}</span>
-			</div>
-		</Card.Content>
-	</Card.Root>
-
-	<!-- Email Preview Card -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title>Apercu de l'email</Card.Title>
-			<Card.Description>
-				Cet email sera envoye a l'adresse : {data.student.email}
-			</Card.Description>
-		</Card.Header>
-		<Card.Content class="space-y-4">
-			<!-- Subject -->
-			<div class="space-y-1">
-				<span class="text-sm font-medium text-muted-foreground">Objet :</span>
-				<p class="rounded-md border bg-muted/50 px-3 py-2 text-sm">{emailSubject}</p>
-			</div>
-
-			<!-- Body -->
-			<div class="space-y-1">
-				<span class="text-sm font-medium text-muted-foreground">Message :</span>
-				<div class="rounded-md border bg-muted/50 px-3 py-2 text-sm whitespace-pre-wrap">
-					{emailBody}
+		<Card.Root class="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950">
+			<Card.Header>
+				<div class="flex items-center gap-3">
+					<CheckCircle2 class="h-8 w-8 text-green-600" />
+					<div>
+						<Card.Title class="text-green-800 dark:text-green-200">Email déjà envoyé</Card.Title>
+						<Card.Description class="text-green-700 dark:text-green-300">
+							Un email de bienvenue a été envoyé à {studentName} le {formatDate(
+								data.previousEmail.sent_at
+							)}.
+						</Card.Description>
+					</div>
 				</div>
-			</div>
-		</Card.Content>
+			</Card.Header>
+			<Card.Content>
+				<p class="text-sm text-green-700 dark:text-green-300">
+					L'élève a reçu toutes les informations nécessaires pour se connecter à UbuMaths.
+				</p>
+			</Card.Content>
+			<Card.Footer>
+				<Button href="/dashboard/teacher/classes">Retour aux classes</Button>
+			</Card.Footer>
+		</Card.Root>
+	{:else}
+		<!-- Student Info Card -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Informations de l'eleve</Card.Title>
+			</Card.Header>
+			<Card.Content class="space-y-3">
+				<div class="grid grid-cols-[120px_1fr] gap-2 text-sm">
+					<span class="font-medium text-muted-foreground">Nom :</span>
+					<span>{studentName}</span>
 
-		<Card.Footer class="flex justify-end gap-2">
-			<Button variant="outline" href="/dashboard/teacher/classes">Annuler</Button>
-			<Button onclick={handleSendEmail} disabled={!data.hasGmailAccess || isSending}>
-				<Send class="mr-2 h-4 w-4" />
-				{#if isSending}
-					Envoi en cours...
-				{:else if data.previousEmail}
-					Renvoyer l'email
-				{:else}
-					Envoyer l'email
-				{/if}
-			</Button>
-		</Card.Footer>
-	</Card.Root>
+					<span class="font-medium text-muted-foreground">Email :</span>
+					<span class="break-all">{data.student.email}</span>
+				</div>
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Email Preview Card -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Apercu de l'email</Card.Title>
+				<Card.Description>
+					Cet email sera envoye a l'adresse : {data.student.email}
+				</Card.Description>
+			</Card.Header>
+			<Card.Content class="space-y-4">
+				<!-- Subject -->
+				<div class="space-y-1">
+					<span class="text-sm font-medium text-muted-foreground">Objet :</span>
+					<p class="rounded-md border bg-muted/50 px-3 py-2 text-sm">{emailSubject}</p>
+				</div>
+
+				<!-- Body -->
+				<div class="space-y-1">
+					<span class="text-sm font-medium text-muted-foreground">Message :</span>
+					<div class="rounded-md border bg-muted/50 px-3 py-2 text-sm whitespace-pre-wrap">
+						{emailBody}
+					</div>
+				</div>
+			</Card.Content>
+
+			<Card.Footer class="flex justify-end gap-2">
+				<Button variant="outline" href="/dashboard/teacher/classes">Annuler</Button>
+				<Button onclick={handleSendEmail} disabled={!data.hasGmailAccess || isSending}>
+					<Send class="mr-2 h-4 w-4" />
+					{#if isSending}
+						Envoi en cours...
+					{:else}
+						Envoyer l'email
+					{/if}
+				</Button>
+			</Card.Footer>
+		</Card.Root>
+	{/if}
 </div>
