@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.5...v0.5.6) (2025-12-29)
+
+### ✨ Features
+
+- **worksheets:** display exercise tags in student worksheet list ([8ce67ca](https://github.com/Zahara-Nour/ubumaths/commit/8ce67ca16194404da558ce60a235ac1c1f7c27bc))
+
+### 🐛 Bug Fixes
+
+- **tutor:** replace graduation cap with Pere Ubu avatar in empty chat ([f3db0ba](https://github.com/Zahara-Nour/ubumaths/commit/f3db0bac841864db624646754311a3cdb06381c5))
+- **worksheets:** show single report icon in exercise modal ([06cd964](https://github.com/Zahara-Nour/ubumaths/commit/06cd9641fae1559d79592955322a6673892e660b))
+- **worksheets:** use JSON format for teacher rejection responses ([0e3701b](https://github.com/Zahara-Nour/ubumaths/commit/0e3701bdf3f5c3ecabd5d042c4aa7378edfc2494))
+
 ### [0.5.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.4...v0.5.5) (2025-12-29)
 
 ### ✨ Features
