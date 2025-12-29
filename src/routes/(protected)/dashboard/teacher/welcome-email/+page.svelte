@@ -114,13 +114,13 @@
 
 	<!-- Email Already Sent - Success State -->
 	{#if data.previousEmail}
-		<Card.Root class="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950">
+		<Card.Root>
 			<Card.Header>
 				<div class="flex items-center gap-3">
-					<CheckCircle2 class="h-8 w-8 text-green-600" />
+					<CheckCircle2 class="h-8 w-8 text-primary" />
 					<div>
-						<Card.Title class="text-green-800 dark:text-green-200">Email déjà envoyé</Card.Title>
-						<Card.Description class="text-green-700 dark:text-green-300">
+						<Card.Title>Email déjà envoyé</Card.Title>
+						<Card.Description>
 							Un email de bienvenue a été envoyé à {studentName} le {formatDate(
 								data.previousEmail.sent_at
 							)}.
@@ -129,7 +129,7 @@
 				</div>
 			</Card.Header>
 			<Card.Content>
-				<p class="text-sm text-green-700 dark:text-green-300">
+				<p class="text-sm text-muted-foreground">
 					L'élève a reçu toutes les informations nécessaires pour se connecter à UbuMaths.
 				</p>
 			</Card.Content>
