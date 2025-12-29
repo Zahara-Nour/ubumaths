@@ -305,9 +305,35 @@ function generateInline(node: InlineNode, _options: Required<TypstTranspilerOpti
 			// Convert LaTeX math to Typst math syntax
 			const typstMath = convertLatexToTypstMath(latex);
 
-			// No box wrapper - Typst handles baseline alignment naturally like LaTeX
-			// Note: box() causes baseline shift (known Typst bug #4796), so we avoid it
-			// Line breaks within inline math are rare and acceptable
+			// ============================================================================
+			// IMPORTANT: Why we DON'T use #box[] for inline math
+			// ============================================================================
+			//
+			// Problem: We wanted to use #box[$...$] to prevent line breaks within
+			// inline math expressions. However, this causes baseline misalignment.
+			//
+			// Root cause: Known Typst bug #4796 - "Boxing an inline equation shifts
+			// the baseline". When wrapping inline math in box(), Typst shifts the
+			// baseline to the vertical center instead of preserving the equation's
+			// natural baseline.
+			//
+			// See:
+			// - https://github.com/typst/typst/issues/4796
+			// - https://forum.typst.app/t/how-to-force-inline-equation-not-to-break-without-baseline-shift/5406
+			// - https://github.com/typst/typst/discussions/4751
+			//
+			// Attempted solutions that DON'T work:
+			// - #box[$...$]              → baseline shifts to center (bug)
+			// - #box(baseline: 40%)[$...$] → manual value, not universal
+			// - #box(baseline: 50%)[$...$] → still misaligned
+			//
+			// Current solution: No box wrapper. Typst handles baseline alignment
+			// naturally like LaTeX does with $...$. The tradeoff is that very long
+			// inline equations might break across lines, but this is rare and
+			// acceptable (same behavior as LaTeX).
+			//
+			// Future: When Typst fixes bug #4796, we can reconsider using box().
+			// ============================================================================
 			return `$${typstMath}$`;
 		}
 
