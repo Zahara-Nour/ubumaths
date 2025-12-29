@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.4...v0.5.5) (2025-12-29)
+
+### ✨ Features
+
+- **typst:** use display mode for fractions in inline math ([f1bf660](https://github.com/Zahara-Nour/ubumaths/commit/f1bf660659127db600409a97e08841d28a7749bf))
+- **ubumark:** add single-limit asymptote syntax for variation tables ([764ffdd](https://github.com/Zahara-Nour/ubumaths/commit/764ffdddc1407a9e8c14afd266ba262df0262944))
+- **worksheets:** add PDF download for student worksheet view ([0a63fcb](https://github.com/Zahara-Nour/ubumaths/commit/0a63fcb4284eb91f7d15e65d7ceb64dcf699aa74))
+
+### ⏪ Reverts
+
+- **typst:** use inline mode for fractions like LaTeX ([f71a258](https://github.com/Zahara-Nour/ubumaths/commit/f71a258d7d8d5fd482fec0017e1e6241a2ce2f8c))
+
+### 📚 Documentation
+
+- **typst:** document inline math baseline bug workaround ([8f9a7b5](https://github.com/Zahara-Nour/ubumaths/commit/8f9a7b5b6d69c26ed0c10c42d4f629f8dd528091)), closes [#4796](https://github.com/Zahara-Nour/ubumaths/issues/4796) [#4751](https://github.com/Zahara-Nour/ubumaths/issues/4751)
+
+### 🐛 Bug Fixes
+
+- **rich-text:** preserve asymptote limit info in variation table import ([4584b6f](https://github.com/Zahara-Nour/ubumaths/commit/4584b6f20305123a806423f316909cfef16988fd))
+- **typst:** add trailing comma for single-element tuples in vartable ([7f5070e](https://github.com/Zahara-Nour/ubumaths/commit/7f5070e6c6be14337ebca99391bfe2dc771960a9))
+- **typst:** align display-mode fractions with text baseline ([d2abfb4](https://github.com/Zahara-Nour/ubumaths/commit/d2abfb4feab519a17b14cefa3b57ff6091bbcf5d))
+- **typst:** apply French decimal formatting in table cells ([b3eefa4](https://github.com/Zahara-Nour/ubumaths/commit/b3eefa489f4699e9eb5f616b5172286da228a0d5))
+- **typst:** avoid box wrapper due to known baseline bug ([5615ed3](https://github.com/Zahara-Nour/ubumaths/commit/5615ed3f4b50055b77f2e0c8313166c46911c80b)), closes [#4796](https://github.com/Zahara-Nour/ubumaths/issues/4796)
+- **typst:** convert LaTeX tilde (~) to space in math mode ([3f94ad2](https://github.com/Zahara-Nour/ubumaths/commit/3f94ad2184d8f104d5afad536fba0ca105134f42))
+- **typst:** handle nested math inside \text{...} commands ([200abe8](https://github.com/Zahara-Nour/ubumaths/commit/200abe85a2667b6ed418a8d88b462f090f0067a4))
+- **typst:** output trailing asymptote as separate element in sign rows ([e280aa8](https://github.com/Zahara-Nour/ubumaths/commit/e280aa8a1b02f80c020fe5267e028f257001d9d9))
+- **typst:** prevent timesfrac fusion and arrow misinterpretation ([9b2aafb](https://github.com/Zahara-Nour/ubumaths/commit/9b2aafb1c275f9b933fdd200b6e1f1dab1294ac3))
+- **typst:** remove box wrapper for proper baseline alignment ([194b217](https://github.com/Zahara-Nour/ubumaths/commit/194b2171a2dbfc1c3f8f7002fdca31d6c99007a2))
+- **typst:** render asymptote markers at last domain point in sign rows ([b953379](https://github.com/Zahara-Nour/ubumaths/commit/b95337995111e91db5d7aa49082b1e2043bbb2c0))
+- **typst:** wrap inline math in box to prevent line breaks ([81171f4](https://github.com/Zahara-Nour/ubumaths/commit/81171f4d720404665ab84a17c95519bee6f93579))
+- **ubumark:** correct vartable label format with row types ([68f4bc6](https://github.com/Zahara-Nour/ubumaths/commit/68f4bc63f52c0588c05e5b370e04531e09a12427))
+- **ubumark:** correct vartable Typst parameter and add missing LaTeX commands ([ea53b97](https://github.com/Zahara-Nour/ubumaths/commit/ea53b9797b91432ff2ecfde57b4716a70dfa364d))
+- **ubumark:** remove invalid center position from vartable output ([47f1799](https://github.com/Zahara-Nour/ubumaths/commit/47f1799662d37e6340d8d673f133283c7d1a7c85))
+- **ubumark:** rewrite sign row to use interval-based format for vartable ([87cc7f1](https://github.com/Zahara-Nour/ubumaths/commit/87cc7f135c9055b8540dde701776204dcfd2c983))
+- **ubumark:** rewrite variation row to use interval-based format for vartable ([8d1ddff](https://github.com/Zahara-Nour/ubumaths/commit/8d1ddfffc0849a0b63247bd6f2840017a6c681a5))
+- **ubumark:** use content blocks for vartable labels and restore center ([65f55e7](https://github.com/Zahara-Nour/ubumaths/commit/65f55e7cf190d40428530c5f16aea3a9c62f1f3b))
+- **ubumark:** use existing vartable version 0.2.1 instead of 0.2.3 ([1009b08](https://github.com/Zahara-Nour/ubumaths/commit/1009b08f536ac42f9a0b4bedf4bc05e3d59302ca))
+- **ubumark:** use point-based format for vartable variation rows ([f109c5a](https://github.com/Zahara-Nour/ubumaths/commit/f109c5a3ab9852262260379394c04d7937bbd68f))
+
 ### [0.5.4](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.3...v0.5.4) (2025-12-28)
 
 ### ✨ Features
