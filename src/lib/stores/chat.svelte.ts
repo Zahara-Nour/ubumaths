@@ -539,9 +539,12 @@ class ChatStore {
 					deleted_at: null, // Not returned by function
 					is_flagged: msg.is_flagged,
 					flag_reason: null, // Not returned by function
+					sender_firstname: msg.sender_firstname,
+					sender_lastname: msg.sender_lastname,
+					sender_avatar_url: msg.sender_avatar_url,
 					sender: {
 						id: msg.sender_id,
-						full_name: `${msg.sender_firstname} ${msg.sender_lastname}`.trim(),
+						full_name: `${msg.sender_firstname || ''} ${msg.sender_lastname || ''}`.trim() || null,
 						avatar_url: msg.sender_avatar_url
 					}
 				}));
@@ -612,9 +615,12 @@ class ChatStore {
 					deleted_at: null,
 					is_flagged: msg.is_flagged,
 					flag_reason: null,
+					sender_firstname: msg.sender_firstname,
+					sender_lastname: msg.sender_lastname,
+					sender_avatar_url: msg.sender_avatar_url,
 					sender: {
 						id: msg.sender_id,
-						full_name: `${msg.sender_firstname} ${msg.sender_lastname}`.trim(),
+						full_name: `${msg.sender_firstname || ''} ${msg.sender_lastname || ''}`.trim() || null,
 						avatar_url: msg.sender_avatar_url
 					}
 				}));
@@ -786,7 +792,8 @@ class ChatStore {
 				flag_reason,
 				sender:profiles!sender_id (
 					id,
-					full_name,
+					firstname,
+					lastname,
 					avatar_url
 				)
 			`
@@ -824,6 +831,15 @@ class ChatStore {
 			}
 
 			// 6. Update optimistic message with DB data
+			const dbSenderData = Array.isArray(insertedMessage.sender)
+				? insertedMessage.sender[0]
+				: insertedMessage.sender;
+			const dbSenderFirstname = dbSenderData?.firstname ?? null;
+			const dbSenderLastname = dbSenderData?.lastname ?? null;
+			const dbSenderAvatarUrl = dbSenderData?.avatar_url ?? null;
+			const dbSenderFullName =
+				`${dbSenderFirstname || ''} ${dbSenderLastname || ''}`.trim() || null;
+
 			const dbMessage: Message = {
 				id: insertedMessage.id,
 				conversation_id: insertedMessage.conversation_id,
@@ -838,15 +854,16 @@ class ChatStore {
 				attachments: messageAttachments,
 				reactions: [],
 				is_optimistic: false,
-				sender: Array.isArray(insertedMessage.sender)
-					? undefined
-					: insertedMessage.sender
-						? {
-								id: insertedMessage.sender.id,
-								full_name: insertedMessage.sender.full_name,
-								avatar_url: insertedMessage.sender.avatar_url
-							}
-						: undefined
+				sender_firstname: dbSenderFirstname,
+				sender_lastname: dbSenderLastname,
+				sender_avatar_url: dbSenderAvatarUrl,
+				sender: dbSenderData
+					? {
+							id: dbSenderData.id,
+							full_name: dbSenderFullName,
+							avatar_url: dbSenderAvatarUrl
+						}
+					: undefined
 			};
 
 			const currentMessages = this.messages.get(conversationId) || [];
@@ -920,7 +937,7 @@ class ChatStore {
 				.select(
 					`
 					*,
-					sender:profiles!sender_id(id, full_name, avatar_url)
+					sender:profiles!sender_id(id, firstname, lastname, avatar_url)
 				`
 				)
 				.eq('id', newMessage.id)
@@ -936,6 +953,13 @@ class ChatStore {
 			}
 
 			// Transform to Message type
+			// Extract sender info (handle both array and object formats from Supabase)
+			const senderData = Array.isArray(data.sender) ? data.sender[0] : data.sender;
+			const senderFirstname = senderData?.firstname ?? null;
+			const senderLastname = senderData?.lastname ?? null;
+			const senderAvatarUrl = senderData?.avatar_url ?? null;
+			const senderFullName = `${senderFirstname || ''} ${senderLastname || ''}`.trim() || null;
+
 			const fullMessage: Message = {
 				id: data.id,
 				conversation_id: data.conversation_id,
@@ -947,19 +971,16 @@ class ChatStore {
 				deleted_at: data.deleted_at,
 				is_flagged: data.is_flagged,
 				flag_reason: data.flag_reason,
-				sender: Array.isArray(data.sender)
+				sender_firstname: senderFirstname,
+				sender_lastname: senderLastname,
+				sender_avatar_url: senderAvatarUrl,
+				sender: senderData
 					? {
-							id: data.sender[0]?.id ?? '',
-							full_name: data.sender[0]?.full_name ?? null,
-							avatar_url: data.sender[0]?.avatar_url ?? null
+							id: senderData.id ?? '',
+							full_name: senderFullName,
+							avatar_url: senderAvatarUrl
 						}
-					: data.sender
-						? {
-								id: data.sender.id,
-								full_name: data.sender.full_name,
-								avatar_url: data.sender.avatar_url
-							}
-						: undefined
+					: undefined
 			};
 
 			const existingMessages = this.messages.get(data.conversation_id) || [];
