@@ -23,31 +23,6 @@ import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
-// Mock friendsManager (since friends.svelte.ts has TypeScript errors unrelated to this PR)
-const friendsManager = {
-	friendships: [] as Array<{
-		id: string;
-		user_id: string;
-		friend_id: string;
-		status: 'accepted' | 'pending';
-		created_at: string;
-		friend_profile: {
-			id: string;
-			full_name: string | null;
-			avatar_url: string | null;
-		};
-	}>
-};
-
-// Mock the module
-vi.mock('./friends.svelte', () => ({
-	friendsManager: {
-		get friendships() {
-			return friendsManager.friendships;
-		}
-	}
-}));
-
 // ============================================================================
 // TEST SETUP
 // ============================================================================
@@ -2088,24 +2063,6 @@ describe('Phase 2: Conversation Management', () => {
 	});
 
 	describe('create1on1Chat()', () => {
-		beforeEach(() => {
-			// Mock friendsManager to have a friend
-			friendsManager.friendships = [
-				{
-					id: 'friendship-1',
-					user_id: userId,
-					friend_id: 'user-2',
-					status: 'accepted',
-					created_at: new Date().toISOString(),
-					friend_profile: {
-						id: 'user-2',
-						full_name: 'Alice Smith',
-						avatar_url: null
-					}
-				}
-			];
-		});
-
 		it('should create 1-on-1 chat via RPC', async () => {
 			const rpcMock = vi.fn(() =>
 				Promise.resolve({
@@ -2148,14 +2105,23 @@ describe('Phase 2: Conversation Management', () => {
 			expect(conversationId).toBe('existing-conv');
 		});
 
-		it('should reject if users are not friends', async () => {
-			// Mock friendsManager with no friends
-			friendsManager.friendships = [];
+		it('should reject if users are not friends (server-side validation)', async () => {
+			// Server validates friendship in create_1on1_chat RPC via validate_1on1_chat_creation()
+			const rpcMock = vi.fn(() =>
+				Promise.resolve({
+					data: null,
+					error: { message: 'Users are not friends' }
+				})
+			);
+			supabase.rpc = rpcMock as unknown as typeof supabase.rpc;
 
 			const conversationId = await chatStore.create1on1Chat('user-99');
 
 			expect(conversationId).toBe(null);
-			expect(supabase.rpc).not.toHaveBeenCalled();
+			expect(rpcMock).toHaveBeenCalledWith('create_1on1_chat', {
+				p_user1_id: userId,
+				p_user2_id: 'user-99'
+			});
 		});
 
 		it('should handle RPC errors', async () => {

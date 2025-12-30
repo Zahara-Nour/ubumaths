@@ -205,7 +205,7 @@
 
 		<!-- Rich Text Editor -->
 		<div class="flex-1">
-			<RichTextEditor mode="chat" onSend={handleSend} />
+			<RichTextEditor mode="chat" onSend={handleSend} enterToSend />
 		</div>
 	</div>
 
