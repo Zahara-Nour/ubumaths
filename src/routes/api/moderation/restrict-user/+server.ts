@@ -95,38 +95,36 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 	} else if (scopeType === 'conversation' && scopeId) {
-		// Verify conversation exists and teacher has access to it
-		// RLS policies will ensure teacher can only access their own conversations
-		const { data: conversation, error: conversationError } = await locals.supabase
-			.from('conversations')
-			.select('id')
-			.eq('id', scopeId)
-			.maybeSingle();
+		// For conversation-scoped restrictions, verify teacher has moderation rights
+		// Either: teacher is participant OR student is in teacher's classes
 
-		if (conversationError) {
-			console.error('Failed to fetch conversation:', conversationError);
-			throw error(500, 'Failed to verify conversation access');
-		}
+		if (locals.profile?.role !== 'admin') {
+			// First check if teacher is a participant
+			const { data: membership } = await locals.supabase
+				.from('conversation_participants')
+				.select('user_id')
+				.eq('conversation_id', scopeId)
+				.eq('user_id', locals.user.id)
+				.maybeSingle();
 
-		if (!conversation) {
-			throw error(404, 'Conversation not found');
-		}
+			// If not a participant, verify the target student is in teacher's classes
+			if (!membership) {
+				const { data: studentMembership, error: studentMembershipError } = await locals.supabase
+					.from('class_members')
+					.select('student_id')
+					.eq('student_id', userId)
+					.eq('teacher_id', locals.user.id)
+					.maybeSingle();
 
-		// Additional check: Verify teacher is actually in this conversation
-		const { data: membership, error: membershipError } = await locals.supabase
-			.from('conversation_participants')
-			.select('user_id')
-			.eq('conversation_id', scopeId)
-			.eq('user_id', locals.user.id)
-			.maybeSingle();
+				if (studentMembershipError) {
+					console.error('Failed to verify teacher-student relationship:', studentMembershipError);
+					throw error(500, 'Failed to verify authorization');
+				}
 
-		if (membershipError) {
-			console.error('Failed to verify conversation membership:', membershipError);
-			throw error(500, 'Failed to verify conversation access');
-		}
-
-		if (!membership) {
-			throw error(403, 'You do not have access to this conversation');
+				if (!studentMembership) {
+					throw error(403, 'You can only restrict students in your classes');
+				}
+			}
 		}
 	}
 
