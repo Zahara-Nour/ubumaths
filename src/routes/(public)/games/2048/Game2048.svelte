@@ -20,10 +20,38 @@
 		{ value: 'fractions', label: 'Fractions' }
 	];
 
+	// Storage keys
+	const STORAGE_KEY_BEST_SCORE = '2048-best-score';
+	const STORAGE_KEY_GAME_STATE = '2048-game-state';
+
 	// State management with Svelte 5 runes
 	let selectedMode = $state<GameMode>('classic');
 	let gameState = $state<GameState>(initializeBoard(selectedMode));
-	let bestScore = $state(browser ? parseInt(localStorage.getItem('2048-best-score') || '0') : 0);
+	let bestScore = $state(0);
+
+	// Restore game state and best score from localStorage on init
+	if (browser) {
+		// Restore best score
+		const savedBestScore = localStorage.getItem(STORAGE_KEY_BEST_SCORE);
+		if (savedBestScore) {
+			bestScore = parseInt(savedBestScore);
+		}
+
+		// Try to restore game state
+		const savedGameState = localStorage.getItem(STORAGE_KEY_GAME_STATE);
+		if (savedGameState) {
+			try {
+				const parsed = JSON.parse(savedGameState) as GameState;
+				// Only restore if same mode and game not over
+				if (parsed.mode === selectedMode && !parsed.gameOver) {
+					gameState = parsed;
+				}
+			} catch {
+				// Invalid saved state, start fresh
+				localStorage.removeItem(STORAGE_KEY_GAME_STATE);
+			}
+		}
+	}
 	let showEducationalHints = $state(true);
 	let showGameOverDialog = $state(false);
 	let showVictoryDialog = $state(false);
@@ -36,6 +64,7 @@
 
 	// Track localStorage save timer for debouncing
 	let saveScoreTimer: ReturnType<typeof setTimeout> | null = null;
+	let saveGameTimer: ReturnType<typeof setTimeout> | null = null;
 
 	// Memoize active tiles to avoid redundant array operations on every render
 	let activeTiles = $derived(gameState.board.flat().filter((t): t is Tile => t !== null));
@@ -61,10 +90,21 @@
 			if (browser) {
 				if (saveScoreTimer) clearTimeout(saveScoreTimer);
 				saveScoreTimer = setTimeout(() => {
-					localStorage.setItem('2048-best-score', bestScore.toString());
+					localStorage.setItem(STORAGE_KEY_BEST_SCORE, bestScore.toString());
 					saveScoreTimer = null;
 				}, 500);
 			}
+		}
+	});
+
+	// Save game state on every change (debounced)
+	$effect(() => {
+		if (browser && !gameState.gameOver) {
+			if (saveGameTimer) clearTimeout(saveGameTimer);
+			saveGameTimer = setTimeout(() => {
+				localStorage.setItem(STORAGE_KEY_GAME_STATE, JSON.stringify(gameState));
+				saveGameTimer = null;
+			}, 1000);
 		}
 	});
 
@@ -74,8 +114,16 @@
 			if (saveScoreTimer) {
 				clearTimeout(saveScoreTimer);
 			}
-			if (browser && bestScore > 0) {
-				localStorage.setItem('2048-best-score', bestScore.toString());
+			if (saveGameTimer) {
+				clearTimeout(saveGameTimer);
+			}
+			if (browser) {
+				if (bestScore > 0) {
+					localStorage.setItem(STORAGE_KEY_BEST_SCORE, bestScore.toString());
+				}
+				if (!gameState.gameOver) {
+					localStorage.setItem(STORAGE_KEY_GAME_STATE, JSON.stringify(gameState));
+				}
 			}
 		};
 	});
@@ -88,6 +136,11 @@
 		showGameOverDialog = false;
 		showVictoryDialog = false;
 		victoryCelebrated = false;
+
+		// Clear saved game state when starting fresh
+		if (browser) {
+			localStorage.removeItem(STORAGE_KEY_GAME_STATE);
+		}
 	}
 
 	/**
