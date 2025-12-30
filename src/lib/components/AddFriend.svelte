@@ -5,7 +5,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Search, UserPlus, Check, Clock, UserX, Users } from 'lucide-svelte';
+	import { Search, UserPlus, Check, Clock, UserX, Users, Loader2 } from 'lucide-svelte';
 	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Friendship relationship type (different from status which is 'pending' | 'accepted' | 'blocked')
@@ -30,6 +30,9 @@
 	let classesWithClassmates = $state<ClassWithClassmates[]>([]);
 	let isLoadingClassmates = $state(true);
 	let classmatesLoaded = $state(false);
+
+	// Track which users are being added (for loading state)
+	let sendingRequestTo = $state<Set<string>>(new Set());
 
 	// Load classmates when friendsManager is initialized
 	$effect(() => {
@@ -71,25 +74,35 @@
 	}
 
 	async function handleSendRequest(userId: string, userName: string) {
-		const success = await friendsManager.sendFriendRequest(userId, selectedFriendshipType);
-		if (success) {
-			toaster.success(`Demande d'ami envoyée à ${userName}`);
-			// Refresh search results and classmates to update status
-			searchResults = await friendsManager.searchUsers(searchQuery);
-			await refreshClassmates();
-		} else {
-			toaster.error("Impossible d'envoyer la demande");
+		sendingRequestTo = new Set([...sendingRequestTo, userId]);
+		try {
+			const success = await friendsManager.sendFriendRequest(userId, selectedFriendshipType);
+			if (success) {
+				toaster.success(`Demande d'ami envoyée à ${userName}`);
+				// Refresh search results and classmates to update status
+				searchResults = await friendsManager.searchUsers(searchQuery);
+				await refreshClassmates();
+			} else {
+				toaster.error("Impossible d'envoyer la demande");
+			}
+		} finally {
+			sendingRequestTo = new Set([...sendingRequestTo].filter((id) => id !== userId));
 		}
 	}
 
 	async function handleSendRequestToClassmate(userId: string, userName: string) {
-		// For classmates, always use 'classmate' as the friendship type
-		const success = await friendsManager.sendFriendRequest(userId, 'classmate');
-		if (success) {
-			toaster.success(`Demande d'ami envoyée à ${userName}`);
-			await refreshClassmates();
-		} else {
-			toaster.error("Impossible d'envoyer la demande");
+		sendingRequestTo = new Set([...sendingRequestTo, userId]);
+		try {
+			// For classmates, always use 'classmate' as the friendship type
+			const success = await friendsManager.sendFriendRequest(userId, 'classmate');
+			if (success) {
+				toaster.success(`Demande d'ami envoyée à ${userName}`);
+				await refreshClassmates();
+			} else {
+				toaster.error("Impossible d'envoyer la demande");
+			}
+		} finally {
+			sendingRequestTo = new Set([...sendingRequestTo].filter((id) => id !== userId));
 		}
 	}
 
@@ -191,12 +204,19 @@
 												{badge.label}
 											</div>
 										{:else}
+											{@const isLoading = sendingRequestTo.has(classmate.id)}
 											<Button
 												size="sm"
+												disabled={isLoading}
 												onclick={() => handleSendRequestToClassmate(classmate.id, displayName)}
 											>
-												<UserPlus class="mr-1 size-4" />
-												Ajouter
+												{#if isLoading}
+													<Loader2 class="mr-1 size-4 animate-spin" />
+													Envoi...
+												{:else}
+													<UserPlus class="mr-1 size-4" />
+													Ajouter
+												{/if}
 											</Button>
 										{/if}
 									</div>
@@ -291,9 +311,19 @@
 								{badge.label}
 							</div>
 						{:else}
-							<Button size="sm" onclick={() => handleSendRequest(user.id, getDisplayName(user))}>
-								<UserPlus class="mr-1 size-4" />
-								Ajouter
+							{@const isLoading = sendingRequestTo.has(user.id)}
+							<Button
+								size="sm"
+								disabled={isLoading}
+								onclick={() => handleSendRequest(user.id, getDisplayName(user))}
+							>
+								{#if isLoading}
+									<Loader2 class="mr-1 size-4 animate-spin" />
+									Envoi...
+								{:else}
+									<UserPlus class="mr-1 size-4" />
+									Ajouter
+								{/if}
 							</Button>
 						{/if}
 					</div>
