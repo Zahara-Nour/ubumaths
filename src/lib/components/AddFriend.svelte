@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { friendsManager } from '$lib/stores/friends.svelte';
+	import { friendsManager, type ClassWithClassmates } from '$lib/stores/friends.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Search, UserPlus, Check, Clock, UserX } from 'lucide-svelte';
+	import { Search, UserPlus, Check, Clock, UserX, Users } from 'lucide-svelte';
 	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Friendship relationship type (different from status which is 'pending' | 'accepted' | 'blocked')
@@ -25,6 +25,29 @@
 	>([]);
 	let isSearching = $state(false);
 	let selectedFriendshipType = $state<FriendshipRelationType>('classmate');
+
+	// Classmates state
+	let classesWithClassmates = $state<ClassWithClassmates[]>([]);
+	let isLoadingClassmates = $state(true);
+	let classmatesLoaded = $state(false);
+
+	// Load classmates when friendsManager is initialized
+	$effect(() => {
+		if (friendsManager.initialized && !classmatesLoaded) {
+			loadClassmates();
+		}
+	});
+
+	async function loadClassmates() {
+		isLoadingClassmates = true;
+		classesWithClassmates = await friendsManager.getClassmates();
+		isLoadingClassmates = false;
+		classmatesLoaded = true;
+	}
+
+	async function refreshClassmates() {
+		classesWithClassmates = await friendsManager.getClassmates();
+	}
 
 	// Items for MySelect
 	const friendshipTypeItems = [
@@ -51,8 +74,20 @@
 		const success = await friendsManager.sendFriendRequest(userId, selectedFriendshipType);
 		if (success) {
 			toaster.success(`Demande d'ami envoyée à ${userName}`);
-			// Refresh search results to update status
+			// Refresh search results and classmates to update status
 			searchResults = await friendsManager.searchUsers(searchQuery);
+			await refreshClassmates();
+		} else {
+			toaster.error("Impossible d'envoyer la demande");
+		}
+	}
+
+	async function handleSendRequestToClassmate(userId: string, userName: string) {
+		// For classmates, always use 'classmate' as the friendship type
+		const success = await friendsManager.sendFriendRequest(userId, 'classmate');
+		if (success) {
+			toaster.success(`Demande d'ami envoyée à ${userName}`);
+			await refreshClassmates();
 		} else {
 			toaster.error("Impossible d'envoyer la demande");
 		}
@@ -96,7 +131,94 @@
 	}
 </script>
 
-<div class="space-y-4">
+<div class="space-y-6">
+	<!-- Classmates Section -->
+	{#if isLoadingClassmates}
+		<div class="rounded-lg border border-border bg-card p-6 text-center">
+			<p class="text-muted-foreground">Chargement des camarades de classe...</p>
+		</div>
+	{:else if classesWithClassmates.length > 0}
+		<div class="space-y-4">
+			<div class="flex items-center gap-2">
+				<Users class="size-5 text-primary" />
+				<h2 class="text-lg font-semibold">Mes camarades de classe</h2>
+			</div>
+
+			{#each classesWithClassmates as classData (classData.class_id)}
+				<div class="space-y-2">
+					<!-- Class name header -->
+					<h3 class="border-b border-border pb-1 text-sm font-medium text-muted-foreground">
+						{classData.class_name}
+					</h3>
+
+					{#if classData.classmates.length === 0}
+						<p class="py-2 text-sm text-muted-foreground italic">
+							Aucun autre élève dans cette classe
+						</p>
+					{:else}
+						<div class="space-y-2">
+							{#each classData.classmates as classmate (classmate.id)}
+								{@const displayName =
+									classmate.full_name ||
+									`${classmate.firstname || ''} ${classmate.lastname || ''}`.trim() ||
+									'Utilisateur inconnu'}
+								{@const badge = getStatusBadge(classmate.friendship_status ?? null)}
+								<div
+									class="flex items-center justify-between rounded-lg border border-border bg-card p-3"
+								>
+									<div class="flex items-center gap-3">
+										<!-- Avatar -->
+										<Avatar.Root class="size-9">
+											<Avatar.Image src={getAvatarUrl(classmate)} alt={displayName} />
+											<Avatar.Fallback>
+												{displayName.charAt(0).toUpperCase()}
+											</Avatar.Fallback>
+										</Avatar.Root>
+
+										<!-- Name -->
+										<p class="font-medium">{displayName}</p>
+									</div>
+
+									<!-- Action or Status -->
+									<div>
+										{#if classmate.friendship_status}
+											<div
+												class="flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium {badge.class}"
+											>
+												{#if badge.icon}
+													<badge.icon class="size-4" />
+												{/if}
+												{badge.label}
+											</div>
+										{:else}
+											<Button
+												size="sm"
+												onclick={() => handleSendRequestToClassmate(classmate.id, displayName)}
+											>
+												<UserPlus class="mr-1 size-4" />
+												Ajouter
+											</Button>
+										{/if}
+									</div>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			{/each}
+		</div>
+
+		<!-- Separator -->
+		<div class="relative">
+			<div class="absolute inset-0 flex items-center">
+				<span class="w-full border-t border-border"></span>
+			</div>
+			<div class="relative flex justify-center text-xs uppercase">
+				<span class="bg-background px-2 text-muted-foreground">ou rechercher</span>
+			</div>
+		</div>
+	{/if}
+
 	<!-- Search Section -->
 	<div class="space-y-3">
 		<div class="flex gap-2">

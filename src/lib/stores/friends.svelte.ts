@@ -5,6 +5,22 @@ import type {
 	FriendshipRelationType,
 	FriendshipStatus
 } from '$lib/types/database';
+
+export type ClassmateInfo = {
+	id: string;
+	full_name: string | null;
+	firstname: string | null;
+	lastname: string | null;
+	avatar_url: string | null;
+	role: 'student' | 'teacher' | 'admin';
+	friendship_status: 'pending' | 'accepted' | 'rejected' | null;
+};
+
+export type ClassWithClassmates = {
+	class_id: string;
+	class_name: string;
+	classmates: ClassmateInfo[];
+};
 import { presenceManager } from './presence.svelte';
 
 class FriendsManager {
@@ -16,6 +32,7 @@ class FriendsManager {
 	pendingSent = $state<FriendshipWithProfile[]>([]);
 	loading = $state(false);
 	error = $state<string | null>(null);
+	initialized = $state(false);
 
 	/**
 	 * Initialize the friends manager with Supabase client
@@ -23,6 +40,7 @@ class FriendsManager {
 	init(supabase: SupabaseClient<Database>, userId: string): void {
 		this.supabase = supabase;
 		this.currentUserId = userId;
+		this.initialized = true;
 	}
 
 	/**
@@ -359,6 +377,126 @@ class FriendsManager {
 			}));
 		} catch (err) {
 			console.error('Error searching users:', err);
+			return [];
+		}
+	}
+
+	/**
+	 * Get classmates grouped by class for the current user
+	 * Only returns students (not teachers), excludes current user
+	 */
+	async getClassmates(): Promise<ClassWithClassmates[]> {
+		if (!this.supabase || !this.currentUserId) {
+			console.error('Friends manager not initialized');
+			return [];
+		}
+
+		try {
+			// 1. Get classes where current user is a member
+			const { data: userClasses, error: classesError } = await this.supabase
+				.from('class_members')
+				.select('class_id, classes(id, name)')
+				.eq('student_id', this.currentUserId);
+
+			if (classesError) {
+				throw classesError;
+			}
+
+			if (!userClasses || userClasses.length === 0) {
+				return [];
+			}
+
+			// 2. Get all class IDs
+			const classIds = userClasses.map((uc) => uc.class_id);
+
+			// 3. Get all members of these classes (excluding current user)
+			const { data: allMembers, error: membersError } = await this.supabase
+				.from('class_members')
+				.select('class_id, student_id')
+				.in('class_id', classIds)
+				.neq('student_id', this.currentUserId);
+
+			if (membersError) {
+				throw membersError;
+			}
+
+			if (!allMembers || allMembers.length === 0) {
+				// User is alone in all classes
+				return userClasses
+					.filter((uc) => uc.classes)
+					.map((uc) => ({
+						class_id: uc.class_id,
+						class_name: (uc.classes as { id: string; name: string }).name,
+						classmates: []
+					}));
+			}
+
+			// 4. Get unique student IDs
+			const studentIds = [...new Set(allMembers.map((m) => m.student_id))];
+
+			// 5. Fetch profiles for all students
+			const { data: profiles, error: profilesError } = await this.supabase
+				.from('profiles')
+				.select('id, full_name, firstname, lastname, avatar_url, role')
+				.in('id', studentIds);
+
+			if (profilesError) {
+				throw profilesError;
+			}
+
+			// 6. Get existing friendships with these students
+			const { data: existingFriendships, error: friendshipsError } = await this.supabase
+				.from('friendships')
+				.select('addressee_id, requester_id, status')
+				.or(`requester_id.eq.${this.currentUserId},addressee_id.eq.${this.currentUserId}`);
+
+			if (friendshipsError) {
+				console.warn('Error fetching existing friendships:', friendshipsError);
+			}
+
+			// 7. Create maps for quick lookup
+			const profileMap = new Map(profiles?.map((p) => [p.id, p]) ?? []);
+			const friendshipMap = new Map<string, 'pending' | 'accepted' | 'rejected'>();
+			existingFriendships?.forEach((f) => {
+				const friendId = f.requester_id === this.currentUserId ? f.addressee_id : f.requester_id;
+				friendshipMap.set(friendId, f.status as 'pending' | 'accepted' | 'rejected');
+			});
+
+			// 8. Group classmates by class
+			const classMap = new Map<string, ClassmateInfo[]>();
+			allMembers.forEach((member) => {
+				const profile = profileMap.get(member.student_id);
+				if (!profile) return; // Skip if no profile or not a student
+
+				const classmate: ClassmateInfo = {
+					id: profile.id,
+					full_name: profile.full_name,
+					firstname: profile.firstname,
+					lastname: profile.lastname,
+					avatar_url: profile.avatar_url,
+					role: profile.role as 'student' | 'teacher' | 'admin',
+					friendship_status: friendshipMap.get(profile.id) ?? null
+				};
+
+				const existing = classMap.get(member.class_id) ?? [];
+				// Avoid duplicates (same student can appear multiple times in different queries)
+				if (!existing.some((c) => c.id === classmate.id)) {
+					existing.push(classmate);
+				}
+				classMap.set(member.class_id, existing);
+			});
+
+			// 9. Build final result
+			return userClasses
+				.filter((uc) => uc.classes)
+				.map((uc) => ({
+					class_id: uc.class_id,
+					class_name: (uc.classes as { id: string; name: string }).name,
+					classmates: classMap.get(uc.class_id) ?? []
+				}))
+				.sort((a, b) => a.class_name.localeCompare(b.class_name));
+		} catch (err) {
+			console.error('Error fetching classmates:', err);
 			return [];
 		}
 	}
