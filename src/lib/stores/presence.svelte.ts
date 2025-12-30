@@ -184,8 +184,11 @@ class PresenceManager {
 			}
 		);
 
-		// Handle system events for reconnection
-		channel.on('system', { event: 'error' } as never, () => {
+		// Handle system events - only trigger reconnection on actual errors
+		channel.on('system', {} as never, (payload: { status?: string; message?: string }) => {
+			if (payload?.status === 'ok') {
+				return; // Ignore success messages
+			}
 			this.handleSystemError();
 		});
 
@@ -444,7 +447,8 @@ class PresenceManager {
 					}
 				);
 
-				channel.on('system', { event: 'error' } as never, () => {
+				channel.on('system', {} as never, (payload: { status?: string }) => {
+					if (payload?.status === 'ok') return;
 					this.handleSystemError();
 				});
 
