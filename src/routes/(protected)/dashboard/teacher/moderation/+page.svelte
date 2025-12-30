@@ -17,10 +17,12 @@
 	import { invalidateAll } from '$app/navigation';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '$lib/components/ui/button';
 	import ActiveRestrictionsTable from '$lib/components/moderation/ActiveRestrictionsTable.svelte';
 	import ModerationLogsTable from '$lib/components/moderation/ModerationLogsTable.svelte';
 	import MessageReportsTable from '$lib/components/moderation/MessageReportsTable.svelte';
-	import { ShieldAlert, Flag } from 'lucide-svelte';
+	import RestrictUserDialog from '$lib/components/moderation/RestrictUserDialog.svelte';
+	import { ShieldAlert, Flag, UserX } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	// Page Props
@@ -29,6 +31,9 @@
 	}
 
 	let { data }: Props = $props();
+
+	// State for new restriction dialog
+	let showNewRestrictionDialog = $state(false);
 
 	/**
 	 * Handle successful unrestrict action
@@ -42,6 +47,14 @@
 	 * Handle successful report review
 	 */
 	async function handleReportReview(): Promise<void> {
+		// Refresh data from server
+		await invalidateAll();
+	}
+
+	/**
+	 * Handle successful new restriction
+	 */
+	async function handleNewRestriction(): Promise<void> {
 		// Refresh data from server
 		await invalidateAll();
 	}
@@ -93,11 +106,19 @@
 
 		<!-- Restrictions Tab -->
 		<Tabs.Content value="restrictions" class="space-y-4 pt-6">
-			<div>
-				<h2 class="mb-2 text-xl font-semibold">Restrictions actives</h2>
-				<p class="text-sm text-muted-foreground">
-					Liste des restrictions que vous avez appliquées aux utilisateurs.
-				</p>
+			<div class="flex items-start justify-between">
+				<div>
+					<h2 class="mb-2 text-xl font-semibold">Restrictions actives</h2>
+					<p class="text-sm text-muted-foreground">
+						Liste des restrictions que vous avez appliquées aux utilisateurs.
+					</p>
+				</div>
+				{#if data.students.length > 0}
+					<Button onclick={() => (showNewRestrictionDialog = true)}>
+						<UserX class="mr-2 h-4 w-4" />
+						Nouvelle restriction
+					</Button>
+				{/if}
 			</div>
 			<ActiveRestrictionsTable restrictions={data.restrictions} onUnrestrict={handleUnrestrict} />
 		</Tabs.Content>
@@ -114,3 +135,10 @@
 		</Tabs.Content>
 	</Tabs.Root>
 </div>
+
+<!-- New Restriction Dialog -->
+<RestrictUserDialog
+	bind:open={showNewRestrictionDialog}
+	students={data.students}
+	onSuccess={handleNewRestriction}
+/>
