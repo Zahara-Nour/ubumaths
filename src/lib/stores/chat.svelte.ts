@@ -536,7 +536,7 @@ class ChatStore {
 					plain_text: msg.plain_text,
 					created_at: msg.created_at,
 					edited_at: msg.edited_at,
-					deleted_at: null, // Not returned by function
+					deleted_at: msg.deleted_at ?? null,
 					is_flagged: msg.is_flagged,
 					flag_reason: null, // Not returned by function
 					sender_firstname: msg.sender_firstname,
@@ -612,7 +612,7 @@ class ChatStore {
 					plain_text: msg.plain_text,
 					created_at: msg.created_at,
 					edited_at: msg.edited_at,
-					deleted_at: null,
+					deleted_at: msg.deleted_at ?? null,
 					is_flagged: msg.is_flagged,
 					flag_reason: null,
 					sender_firstname: msg.sender_firstname,
