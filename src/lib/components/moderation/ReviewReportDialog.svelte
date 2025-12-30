@@ -26,7 +26,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Badge } from '$lib/components/ui/badge';
-	import { CheckCircle, XCircle, AlertTriangle, Loader2, Trash2 } from 'lucide-svelte';
+	import RestrictUserDialog from './RestrictUserDialog.svelte';
+	import { CheckCircle, XCircle, AlertTriangle, Loader2, Trash2, UserX } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { formatDistanceToNow, format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
@@ -77,6 +78,8 @@
 	// State
 	let decision = $state<'dismissed' | 'reviewed' | 'actioned'>('reviewed');
 	let deleteMessage = $state(false);
+	let restrictUser = $state(false);
+	let showRestrictDialog = $state(false);
 	let reviewNotes = $state('');
 	let isSubmitting = $state(false);
 	let contextMessages = $state<ContextMessage[]>([]);
@@ -86,6 +89,24 @@
 	 * Character count
 	 */
 	const characterCount = $derived(reviewNotes.length);
+
+	/**
+	 * Get conversation ID from context messages
+	 */
+	const conversationId = $derived.by(() => {
+		if (contextMessages.length > 0) {
+			return contextMessages[0].conversation_id;
+		}
+		return null;
+	});
+
+	/**
+	 * Get sender full name
+	 */
+	const senderName = $derived.by(() => {
+		if (!report) return '';
+		return getSenderName(report.sender_firstname, report.sender_lastname);
+	});
 
 	/**
 	 * Decision descriptions
@@ -174,10 +195,18 @@
 						: 'Signalement marqué comme lu';
 
 			toaster.success(actionMessage);
-			closeDialog();
-			onSuccess();
-		} catch (error) {
-			console.error('Failed to review report:', error);
+
+			// If user wants to restrict the author, open the restriction dialog
+			if (restrictUser && report) {
+				showRestrictDialog = true;
+				// Don't close immediately, wait for restriction to complete
+				onSuccess();
+			} else {
+				closeDialog();
+				onSuccess();
+			}
+		} catch (err) {
+			console.error('Failed to review report:', err);
 			toaster.error('Erreur lors du traitement du signalement');
 		} finally {
 			isSubmitting = false;
@@ -191,6 +220,7 @@
 		open = false;
 		decision = 'reviewed';
 		deleteMessage = false;
+		restrictUser = false;
 		reviewNotes = '';
 		contextMessages = [];
 	}
@@ -235,12 +265,21 @@
 		if (report) {
 			decision = 'reviewed';
 			deleteMessage = false;
+			restrictUser = false;
 			reviewNotes = '';
 			contextMessages = [];
 			// Load context messages
 			loadContext(report.message_id);
 		}
 	});
+
+	/**
+	 * Close restriction dialog and main dialog when restriction is done
+	 */
+	function handleRestrictionComplete(): void {
+		showRestrictDialog = false;
+		closeDialog();
+	}
 </script>
 
 <Dialog.Root bind:open>
@@ -384,18 +423,34 @@
 					</RadioGroup.Root>
 				</div>
 
-				<!-- Delete Message Checkbox (only if actioned) -->
+				<!-- Action options (only if actioned) -->
 				{#if decision === 'actioned'}
-					<div class="rounded-lg border border-destructive/50 bg-destructive/10 p-3">
-						<MyCheckbox bind:checked={deleteMessage} disabled={isSubmitting}>
-							<div class="flex items-center gap-2">
-								<Trash2 class="h-4 w-4 text-destructive" />
-								<span>Supprimer le message</span>
-							</div>
-						</MyCheckbox>
-						<p class="mt-1 ml-6 text-sm text-muted-foreground">
-							Le message sera masqué pour tous les participants
-						</p>
+					<div class="space-y-3">
+						<!-- Delete Message Checkbox -->
+						<div class="rounded-lg border border-destructive/50 bg-destructive/10 p-3">
+							<MyCheckbox bind:checked={deleteMessage} disabled={isSubmitting}>
+								<div class="flex items-center gap-2">
+									<Trash2 class="h-4 w-4 text-destructive" />
+									<span>Supprimer le message</span>
+								</div>
+							</MyCheckbox>
+							<p class="mt-1 ml-6 text-sm text-muted-foreground">
+								Le message sera masqué pour tous les participants
+							</p>
+						</div>
+
+						<!-- Restrict User Checkbox -->
+						<div class="rounded-lg border border-orange-500/50 bg-orange-500/10 p-3">
+							<MyCheckbox bind:checked={restrictUser} disabled={isSubmitting}>
+								<div class="flex items-center gap-2">
+									<UserX class="h-4 w-4 text-orange-600" />
+									<span>Restreindre l'auteur</span>
+								</div>
+							</MyCheckbox>
+							<p class="mt-1 ml-6 text-sm text-muted-foreground">
+								Configurer une restriction (mute, timeout, ban) après le traitement
+							</p>
+						</div>
 					</div>
 				{/if}
 
@@ -438,3 +493,14 @@
 		{/if}
 	</Dialog.Content>
 </Dialog.Root>
+
+<!-- Nested Restrict User Dialog -->
+{#if report}
+	<RestrictUserDialog
+		bind:open={showRestrictDialog}
+		userId={report.sender_id}
+		userName={senderName}
+		{conversationId}
+		onSuccess={handleRestrictionComplete}
+	/>
+{/if}

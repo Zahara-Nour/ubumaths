@@ -3,16 +3,21 @@
 	============================
 
 	Dialog to restrict a user (mute, timeout, or ban) at conversation or global scope.
+	Supports two modes:
+	- Predefined: userId/userName provided (from report review)
+	- Selection: students list provided (from moderation page)
 
 	Props:
 		- open: Dialog open state (bindable)
-		- userId: ID of user to restrict
-		- userName: Display name of user
+		- userId: ID of user to restrict (optional if students provided)
+		- userName: Display name of user (optional if students provided)
 		- conversationId: ID of conversation (null for global only)
+		- students: List of students to select from (for selection mode)
 		- onSuccess: Callback after successful restriction
 
 	Features:
 		- Dialog with form
+		- Student selector (if students provided and no userId)
 		- Radio group for restriction type (mute | timeout | ban)
 		- Scope toggle (conversation vs global)
 		- Datetime picker for expiration (if timeout)
@@ -28,32 +33,78 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Ban, Clock, AlertTriangle, Loader2 } from 'lucide-svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import { Ban, Clock, AlertTriangle, Loader2, UserX } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+
+	// Student type for selection mode
+	interface StudentOption {
+		id: string;
+		firstname: string;
+		lastname: string | null;
+		avatar_url?: string | null;
+	}
 
 	// Component Props
 	interface Props {
 		open?: boolean;
-		userId: string;
-		userName: string;
+		userId?: string | null;
+		userName?: string | null;
 		conversationId?: string | null;
+		students?: StudentOption[];
 		onSuccess?: () => void;
 	}
 
 	let {
 		open = $bindable(false),
-		userId,
-		userName,
+		userId = null,
+		userName = null,
 		conversationId = null,
+		students = [],
 		onSuccess = () => {}
 	}: Props = $props();
 
 	// State
+	let selectedUserId = $state<string | null>(null);
 	let restrictionType = $state<'mute' | 'timeout' | 'ban'>('mute');
 	let isGlobal = $state(false);
 	let expiresAt = $state('');
 	let reason = $state('');
 	let isSubmitting = $state(false);
+
+	/**
+	 * Determine if we're in selection mode (no userId provided, students available)
+	 */
+	const isSelectionMode = $derived(!userId && students.length > 0);
+
+	/**
+	 * Get the effective user ID (provided or selected)
+	 */
+	const effectiveUserId = $derived(userId || selectedUserId);
+
+	/**
+	 * Get the effective user name
+	 */
+	const effectiveUserName = $derived.by(() => {
+		if (userName) return userName;
+		if (selectedUserId && students.length > 0) {
+			const student = students.find((s) => s.id === selectedUserId);
+			if (student) {
+				return `${student.firstname} ${student.lastname || ''}`.trim();
+			}
+		}
+		return "l'utilisateur";
+	});
+
+	/**
+	 * Format students for MySelect
+	 */
+	const studentItems = $derived(
+		students.map((s) => ({
+			value: s.id,
+			label: `${s.firstname} ${s.lastname || ''}`.trim()
+		}))
+	);
 
 	/**
 	 * Character count
@@ -63,7 +114,12 @@
 	/**
 	 * Check if form is valid
 	 */
-	const isValid = $derived(() => {
+	const isValid = $derived.by(() => {
+		// Must have a user selected
+		if (!effectiveUserId) {
+			return false;
+		}
+
 		// Reason must be 5-500 chars
 		if (reason.trim().length < 5 || reason.length > 500) {
 			return false;
@@ -90,7 +146,7 @@
 	 * Submit form
 	 */
 	async function submitRestriction(): Promise<void> {
-		if (!isValid()) return;
+		if (!isValid || !effectiveUserId) return;
 
 		isSubmitting = true;
 
@@ -109,7 +165,7 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					userId,
+					userId: effectiveUserId,
 					scopeType,
 					scopeId,
 					restrictionType,
@@ -119,15 +175,15 @@
 			});
 
 			if (!response.ok) {
-				const error = await response.text();
-				throw new Error(error || 'Failed to restrict user');
+				const errorText = await response.text();
+				throw new Error(errorText || 'Failed to restrict user');
 			}
 
 			toaster.success('Restriction appliquée avec succès');
 			closeDialog();
 			onSuccess();
-		} catch (error) {
-			console.error('Failed to restrict user:', error);
+		} catch (err) {
+			console.error('Failed to restrict user:', err);
 			toaster.error('Erreur lors de la restriction');
 		} finally {
 			isSubmitting = false;
@@ -139,6 +195,7 @@
 	 */
 	function closeDialog(): void {
 		open = false;
+		selectedUserId = null;
 		restrictionType = 'mute';
 		isGlobal = false;
 		expiresAt = '';
@@ -158,18 +215,55 @@
 		const minutes = String(now.getMinutes()).padStart(2, '0');
 		return `${year}-${month}-${day}T${hours}:${minutes}`;
 	}
+
+	/**
+	 * Reset form when dialog opens
+	 */
+	$effect(() => {
+		if (open) {
+			selectedUserId = null;
+			restrictionType = 'mute';
+			isGlobal = false;
+			expiresAt = '';
+			reason = '';
+		}
+	});
 </script>
 
 <Dialog.Root bind:open>
 	<Dialog.Content class="max-w-md">
 		<Dialog.Header>
-			<Dialog.Title>Restreindre {userName}</Dialog.Title>
+			<Dialog.Title class="flex items-center gap-2">
+				<UserX class="h-5 w-5 text-destructive" />
+				{#if isSelectionMode}
+					Nouvelle restriction
+				{:else}
+					Restreindre {effectiveUserName}
+				{/if}
+			</Dialog.Title>
 			<Dialog.Description>
-				Choisissez le type de restriction et fournissez une raison.
+				{#if isSelectionMode}
+					Sélectionnez un élève et configurez la restriction.
+				{:else}
+					Choisissez le type de restriction et fournissez une raison.
+				{/if}
 			</Dialog.Description>
 		</Dialog.Header>
 
 		<div class="space-y-4 py-4">
+			<!-- Student Selector (selection mode only) -->
+			{#if isSelectionMode}
+				<div class="space-y-2">
+					<Label>Élève à restreindre</Label>
+					<MySelect
+						type="single"
+						bind:value={selectedUserId}
+						items={studentItems}
+						placeholder="Sélectionner un élève..."
+					/>
+				</div>
+			{/if}
+
 			<!-- Restriction Type -->
 			<div class="space-y-2">
 				<Label>Type de restriction</Label>
@@ -231,6 +325,13 @@
 						{/if}
 					</p>
 				</div>
+			{:else}
+				<!-- In selection mode without conversation, always global -->
+				<div class="rounded-md bg-muted/50 p-3">
+					<p class="text-sm text-muted-foreground">
+						La restriction s'appliquera à <strong>toutes les conversations</strong>.
+					</p>
+				</div>
 			{/if}
 
 			<!-- Expiration Date (only for timeout) -->
@@ -270,7 +371,7 @@
 
 		<Dialog.Footer>
 			<Button variant="outline" onclick={closeDialog} disabled={isSubmitting}>Annuler</Button>
-			<Button onclick={submitRestriction} disabled={!isValid() || isSubmitting}>
+			<Button onclick={submitRestriction} disabled={!isValid || isSubmitting} variant="destructive">
 				{#if isSubmitting}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />
 				{/if}
