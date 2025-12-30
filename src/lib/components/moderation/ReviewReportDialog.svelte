@@ -199,8 +199,7 @@
 			// If user wants to restrict the author, open the restriction dialog
 			if (restrictUser && report) {
 				showRestrictDialog = true;
-				// Don't close immediately, wait for restriction to complete
-				onSuccess();
+				// Don't close or call onSuccess yet - wait for restriction to complete
 			} else {
 				closeDialog();
 				onSuccess();
@@ -279,6 +278,7 @@
 	function handleRestrictionComplete(): void {
 		showRestrictDialog = false;
 		closeDialog();
+		onSuccess(); // Refresh data after restriction is created
 	}
 </script>
 
