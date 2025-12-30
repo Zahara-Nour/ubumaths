@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.12](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.11...v0.5.12) (2025-12-30)
+
+### 📚 Documentation
+
+- **games/2048:** add comprehensive game documentation (1,250 lines) ([c0fee3b](https://github.com/Zahara-Nour/ubumaths/commit/c0fee3b7b3e23a91530d65306510bca06da45cf6))
+
+### ⚡ Performance Improvements
+
+- **games/2048:** optimize performance and fix security issues ([a43b7a6](https://github.com/Zahara-Nour/ubumaths/commit/a43b7a6bd74b1ab2919e87bf260d1a807ed5ed50))
+
+### 🐛 Bug Fixes
+
+- **2048:** correct rotation values for up/down movements ([c4161d3](https://github.com/Zahara-Nour/ubumaths/commit/c4161d36e881697b899b5d55300cc943aedc1f9f))
+- **2048:** integrate canMerge for educational modes and add game persistence ([aced469](https://github.com/Zahara-Nour/ubumaths/commit/aced469fc8291e7592576b16d584627869dadcd7))
+
+### ✨ Features
+
+- **2048:** add merge animation with ghost tiles ([e658b1d](https://github.com/Zahara-Nour/ubumaths/commit/e658b1d97e9c75d99a0aaf3a9e51aaebe505eb9c))
+- **2048:** improve tile sliding animations ([d705a8e](https://github.com/Zahara-Nour/ubumaths/commit/d705a8e3a4a56490c65b33e23212098fb43fa774))
+- **games/2048:** add database and API support for educational modes ([8ef16f1](https://github.com/Zahara-Nour/ubumaths/commit/8ef16f1b556f6c726b7ec2bfb63df9ed638fb829))
+- **games/2048:** add educational modes (multiplication, equations, fractions) ([a978028](https://github.com/Zahara-Nour/ubumaths/commit/a9780286acaedd36a7bb204720b4c3b6355c0ce5))
+- **games:** add 2048 backend API with leaderboard and security ([1b7c210](https://github.com/Zahara-Nour/ubumaths/commit/1b7c21095bb7b2d34c6b169b874d520203e8f87f))
+- **games:** add 2048 game to games page ([1791d26](https://github.com/Zahara-Nour/ubumaths/commit/1791d26fa0218c65d6d2c61640e2bd8b105e7b09))
+- **games:** add 2048 game UI with Svelte 5 and responsive design ([2c4f6ac](https://github.com/Zahara-Nour/ubumaths/commit/2c4f6ac4071b4d7a6931c559e4f86af169d46369))
+- **games:** implement 2048 game logic with SSR compatibility ([c1c7c30](https://github.com/Zahara-Nour/ubumaths/commit/c1c7c305f930b72a5cbd157d32b5d3a00e3cff63))
+- **games:** integrate 2048 game into games hub page ([387bcad](https://github.com/Zahara-Nour/ubumaths/commit/387bcad88b97fa73df4b287ab938ce7947dd9803))
+
 ### [0.5.11](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.10...v0.5.11) (2025-12-29)
 
 ### 🐛 Bug Fixes
