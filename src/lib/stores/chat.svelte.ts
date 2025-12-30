@@ -222,6 +222,8 @@ class ChatStore {
 	private supabase: SupabaseClient<Database> | null = null;
 	private userId: string | null = null;
 	private currentUser: {
+		firstname: string | null;
+		lastname: string | null;
 		full_name: string | null;
 		avatar_url: string | null;
 	} | null = null;
@@ -344,7 +346,12 @@ class ChatStore {
 	init(
 		client: SupabaseClient<Database>,
 		currentUserId: string,
-		user?: { full_name: string | null; avatar_url: string | null }
+		user?: {
+			firstname?: string | null;
+			lastname?: string | null;
+			full_name?: string | null;
+			avatar_url: string | null;
+		}
 	): void {
 		if (!browser) {
 			logger.warn('Cannot initialize chat store on server');
@@ -359,7 +366,17 @@ class ChatStore {
 
 		this.supabase = client;
 		this.userId = currentUserId;
-		this.currentUser = user ?? null;
+		if (user) {
+			const computedFullName = `${user.firstname || ''} ${user.lastname || ''}`.trim();
+			this.currentUser = {
+				firstname: user.firstname ?? null,
+				lastname: user.lastname ?? null,
+				full_name: user.full_name ?? (computedFullName || null),
+				avatar_url: user.avatar_url
+			};
+		} else {
+			this.currentUser = null;
+		}
 
 		logger.info('Chat store initialized for user:', currentUserId);
 	}
@@ -653,10 +670,17 @@ class ChatStore {
 			logger.info('Fetching user profile for message send...');
 			const { data: profile } = await this.supabase
 				.from('profiles')
-				.select('full_name, avatar_url')
+				.select('firstname, lastname, avatar_url')
 				.eq('id', this.userId)
 				.single();
-			this.currentUser = profile ?? { full_name: null, avatar_url: null };
+			this.currentUser = profile
+				? {
+						firstname: profile.firstname,
+						lastname: profile.lastname,
+						full_name: `${profile.firstname || ''} ${profile.lastname || ''}`.trim() || null,
+						avatar_url: profile.avatar_url
+					}
+				: { firstname: null, lastname: null, full_name: null, avatar_url: null };
 		}
 
 		// Convert content to the expected format
@@ -694,6 +718,9 @@ class ChatStore {
 			attachments: messageAttachments,
 			reactions: [],
 			is_optimistic: true,
+			sender_firstname: this.currentUser.firstname,
+			sender_lastname: this.currentUser.lastname,
+			sender_avatar_url: this.currentUser.avatar_url,
 			sender: {
 				id: this.userId,
 				full_name: this.currentUser.full_name,
