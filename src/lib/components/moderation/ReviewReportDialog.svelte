@@ -10,7 +10,7 @@
 		- onSuccess: Callback after successful review
 
 	Features:
-		- Display reported message content
+		- Display reported message with context (10 previous messages)
 		- Radio group for decision (dismissed | reviewed | actioned)
 		- Checkbox to delete message (if actioned)
 		- Textarea for review notes
@@ -28,7 +28,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { CheckCircle, XCircle, AlertTriangle, Loader2, Trash2 } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { formatDistanceToNow } from 'date-fns';
+	import { formatDistanceToNow, format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 
 	// Report type from RPC response
@@ -51,6 +51,20 @@
 		created_at: string;
 	}
 
+	// Context message type from API
+	interface ContextMessage {
+		id: string;
+		conversation_id: string;
+		sender_id: string;
+		sender_firstname: string | null;
+		sender_lastname: string | null;
+		sender_avatar_url: string | null;
+		content: unknown;
+		plain_text: string | null;
+		created_at: string;
+		is_reported_message: boolean;
+	}
+
 	// Component Props
 	interface Props {
 		open?: boolean;
@@ -65,6 +79,8 @@
 	let deleteMessage = $state(false);
 	let reviewNotes = $state('');
 	let isSubmitting = $state(false);
+	let contextMessages = $state<ContextMessage[]>([]);
+	let isLoadingContext = $state(false);
 
 	/**
 	 * Character count
@@ -176,16 +192,53 @@
 		decision = 'reviewed';
 		deleteMessage = false;
 		reviewNotes = '';
+		contextMessages = [];
 	}
 
 	/**
-	 * Reset form when report changes
+	 * Load context messages for the reported message
+	 */
+	async function loadContext(messageId: string): Promise<void> {
+		isLoadingContext = true;
+		try {
+			const response = await fetch(`/api/moderation/messages/${messageId}/context?count=10`);
+			if (response.ok) {
+				const data = await response.json();
+				contextMessages = data.messages || [];
+			} else {
+				console.error('Failed to load context:', await response.text());
+				contextMessages = [];
+			}
+		} catch (error) {
+			console.error('Failed to load context:', error);
+			contextMessages = [];
+		} finally {
+			isLoadingContext = false;
+		}
+	}
+
+	/**
+	 * Format time for context messages
+	 */
+	function formatMessageTime(dateString: string): string {
+		try {
+			return format(new Date(dateString), 'HH:mm', { locale: fr });
+		} catch {
+			return '';
+		}
+	}
+
+	/**
+	 * Reset form and load context when report changes
 	 */
 	$effect(() => {
 		if (report) {
 			decision = 'reviewed';
 			deleteMessage = false;
 			reviewNotes = '';
+			contextMessages = [];
+			// Load context messages
+			loadContext(report.message_id);
 		}
 	});
 </script>
@@ -227,21 +280,62 @@
 					{/if}
 				</div>
 
-				<!-- Reported Message -->
+				<!-- Conversation Context -->
 				<div class="space-y-2">
-					<Label>Message signalé</Label>
-					<div class="rounded-lg border border-border bg-background p-4">
-						<div class="mb-2 flex items-center justify-between text-sm">
-							<span class="font-medium">
-								{getSenderName(report.sender_firstname, report.sender_lastname)}
-							</span>
-							<span class="text-xs text-muted-foreground">
-								{report.conversation_name || 'Conversation'}
-							</span>
-						</div>
-						<p class="text-sm whitespace-pre-wrap">
-							{report.message_plain_text || '[Contenu non disponible]'}
-						</p>
+					<div class="flex items-center justify-between">
+						<Label>Contexte de la conversation</Label>
+						<span class="text-xs text-muted-foreground">
+							{report.conversation_name || 'Conversation'}
+						</span>
+					</div>
+					<div class="max-h-64 overflow-y-auto rounded-lg border border-border bg-background p-3">
+						{#if isLoadingContext}
+							<div class="flex items-center justify-center py-4 text-muted-foreground">
+								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+								<span class="text-sm">Chargement du contexte...</span>
+							</div>
+						{:else if contextMessages.length === 0}
+							<!-- Fallback to just the reported message -->
+							<div class="rounded-md border-l-4 border-destructive bg-destructive/10 p-3">
+								<div class="mb-1 flex items-center justify-between text-xs">
+									<span class="font-semibold text-destructive">
+										{getSenderName(report.sender_firstname, report.sender_lastname)}
+									</span>
+								</div>
+								<p class="text-sm whitespace-pre-wrap">
+									{report.message_plain_text || '[Contenu non disponible]'}
+								</p>
+							</div>
+						{:else}
+							<div class="space-y-2">
+								{#each contextMessages as msg (msg.id)}
+									<div
+										class="rounded-md p-2 {msg.is_reported_message
+											? 'border-l-4 border-destructive bg-destructive/10'
+											: 'bg-muted/50'}"
+									>
+										<div class="mb-1 flex items-center justify-between text-xs">
+											<span
+												class="font-semibold {msg.is_reported_message ? 'text-destructive' : ''}"
+											>
+												{getSenderName(msg.sender_firstname, msg.sender_lastname)}
+												{#if msg.is_reported_message}
+													<Badge variant="destructive" class="ml-1 px-1 py-0 text-[10px]">
+														signalé
+													</Badge>
+												{/if}
+											</span>
+											<span class="text-muted-foreground">
+												{formatMessageTime(msg.created_at)}
+											</span>
+										</div>
+										<p class="text-sm whitespace-pre-wrap">
+											{msg.plain_text || '[Contenu non disponible]'}
+										</p>
+									</div>
+								{/each}
+							</div>
+						{/if}
 					</div>
 				</div>
 
