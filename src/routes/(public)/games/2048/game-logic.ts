@@ -330,20 +330,21 @@ export function move(state: GameState, direction: Direction): GameState {
 	let rotations = 0;
 
 	// Rotate board so direction becomes "left"
+	// rotations = number of clockwise rotations performed (for inverse calculation)
 	switch (direction) {
 		case 'left':
 			rotations = 0;
 			break;
 		case 'right':
-			rotations = 2; // 180 degrees
+			rotations = 2; // 180 degrees (2 clockwise rotations)
 			board = rotateBoardClockwise(rotateBoardClockwise(board));
 			break;
 		case 'up':
-			rotations = 1; // 90 degrees counter-clockwise = move what was on top to the left
+			rotations = 3; // 1 counter-clockwise = 3 clockwise
 			board = rotateBoardCounterClockwise(board);
 			break;
 		case 'down':
-			rotations = 3; // 90 degrees clockwise = move what was on bottom to the left
+			rotations = 1; // 1 clockwise rotation
 			board = rotateBoardClockwise(board);
 			break;
 	}
