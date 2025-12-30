@@ -48,6 +48,13 @@
 			color: 'from-cyan-500 to-blue-600',
 			// emoji: '🔤',
 			public: true
+		},
+		{
+			title: '2048',
+			description: 'Fusionnez les tuiles pour atteindre 2048 !',
+			href: '/games/2048',
+			color: 'from-amber-500 to-orange-600',
+			public: true
 		}
 		// {
 		// 	title: 'Navadra',
