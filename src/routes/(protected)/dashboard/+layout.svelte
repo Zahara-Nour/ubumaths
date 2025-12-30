@@ -64,7 +64,8 @@
 		AlertTriangle,
 		Book,
 		Layers,
-		FileSpreadsheet
+		FileSpreadsheet,
+		ShieldAlert
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -173,6 +174,7 @@
 				{ href: '/dashboard/teacher/marketplace', label: 'Marché', icon: ShoppingBag },
 				{ href: '/dashboard/teacher/google', label: 'Google Classroom', icon: School },
 				{ href: '/dashboard/teacher/warnings', label: 'Avertissements', icon: AlertTriangle },
+				{ href: '/dashboard/teacher/moderation', label: 'Modération', icon: ShieldAlert },
 				{ href: '/dashboard/bug-reports', label: 'Signalements', icon: Bug }
 			];
 		} else if (role === 'admin') {
@@ -217,6 +219,10 @@
 		// For bug reports page, match /dashboard/bug-reports
 		if (href === '/dashboard/bug-reports') {
 			return page.url.pathname.startsWith('/dashboard/bug-reports');
+		}
+		// For moderation pages, match any /dashboard/teacher/moderation/* route
+		if (href === '/dashboard/teacher/moderation') {
+			return page.url.pathname.startsWith('/dashboard/teacher/moderation');
 		}
 		// For admin bug reports page
 		if (href === '/dashboard/admin/bug-reports') {

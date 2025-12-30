@@ -11,17 +11,17 @@ import { error } from '@sveltejs/kit';
  * Only accessible by teachers and admins
  */
 export const load: PageServerLoad = async ({ locals }) => {
+	const { user, profile, supabase } = locals;
+
 	// Check authentication
-	if (!locals.user) {
+	if (!user || !profile) {
 		throw error(401, 'Not authenticated');
 	}
 
 	// Check teacher role
-	if (!['teacher', 'admin'].includes(locals.user.role ?? '')) {
+	if (!['teacher', 'admin'].includes(profile.role)) {
 		throw error(403, 'Access denied');
 	}
-
-	const supabase = locals.supabase;
 
 	// Fetch active restrictions for this teacher's students
 	const { data: restrictions, error: restrictionsError } = await supabase
