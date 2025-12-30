@@ -208,14 +208,6 @@
 	}
 
 	/**
-	 * Handle typing indicator
-	 */
-	function handleTyping(isTyping: boolean): void {
-		if (!chatStore.activeConversationId) return;
-		chatStore.sendTypingIndicator(chatStore.activeConversationId, isTyping);
-	}
-
-	/**
 	 * Handle new chat creation
 	 */
 	function handleNewChat(): void {
@@ -429,7 +421,6 @@
 						messages={chatStore.activeMessages}
 						currentUserId={userId}
 						currentUserRole={isTeacher ? 'teacher' : 'student'}
-						typingUsers={chatStore.activeTypingUsers}
 						hasMore={true}
 						isLoading={chatStore.isLoadingMessages}
 						onLoadMore={handleLoadMore}
@@ -452,7 +443,6 @@
 					{isTeacher}
 					disabled={userRestriction !== null}
 					onSend={handleSendMessage}
-					onTyping={handleTyping}
 				/>
 			{:else}
 				<!-- No Conversation Selected -->
