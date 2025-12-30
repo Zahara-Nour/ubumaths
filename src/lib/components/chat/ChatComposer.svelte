@@ -5,17 +5,14 @@
 	Message composition area with:
 	- RichTextEditor integration
 	- File attachment support (teachers only)
-	- Typing indicator emission
 	- Send button
 
 	Props:
 		- conversationId: string
 		- isTeacher: boolean
 		- onSend: (content: any, attachments: File[]) => Promise<void>
-		- onTyping: (isTyping: boolean) => void
 
 	Features:
-		- Debounced typing indicators
 		- File preview before upload
 		- Disabled state while sending
 -->
@@ -31,22 +28,19 @@
 		isTeacher?: boolean;
 		disabled?: boolean;
 		onSend: (content: unknown, attachments: File[]) => Promise<void>;
-		onTyping: (isTyping: boolean) => void;
 	}
 
 	let {
 		conversationId: _conversationId,
 		isTeacher = false,
 		disabled = false,
-		onSend,
-		onTyping
+		onSend
 	}: Props = $props(); // conversationId for future features
 
 	// Component State
 	let attachments = $state<File[]>([]);
 	let isSending = $state(false);
 	let fileInput = $state<HTMLInputElement | null>(null);
-	let typingTimeout = $state<number | null>(null);
 
 	/**
 	 * Handle file selection
@@ -98,13 +92,6 @@
 		// Prevent sending if disabled or already sending
 		if (disabled || isSending) return;
 
-		// Stop typing indicator
-		onTyping(false);
-		if (typingTimeout) {
-			clearTimeout(typingTimeout);
-			typingTimeout = null;
-		}
-
 		isSending = true;
 
 		try {
@@ -119,37 +106,6 @@
 			isSending = false;
 		}
 	}
-
-	/**
-	 * Handle typing indicator (debounced)
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	function handleTypingIndicator(): void {
-		// For future typing indicators
-		// Send typing = true
-		onTyping(true);
-
-		// Clear existing timeout
-		if (typingTimeout) {
-			clearTimeout(typingTimeout);
-		}
-
-		// Set typing = false after 3 seconds of inactivity
-		typingTimeout = setTimeout(() => {
-			onTyping(false);
-		}, 3000) as unknown as number;
-	}
-
-	/**
-	 * Cleanup on unmount
-	 */
-	$effect(() => {
-		return () => {
-			if (typingTimeout) {
-				clearTimeout(typingTimeout);
-			}
-		};
-	});
 </script>
 
 <div class="border-t border-border bg-card p-4 {disabled ? 'pointer-events-none opacity-50' : ''}">

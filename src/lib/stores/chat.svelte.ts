@@ -34,15 +34,6 @@ const broadcastMessagePayloadSchema = z.object({
 });
 
 /**
- * Schema for typing indicator payload
- */
-const broadcastTypingPayloadSchema = z.object({
-	type: z.literal('typing_indicator'),
-	userId: z.string().uuid(),
-	isTyping: z.boolean()
-});
-
-/**
  * Schema for reaction payload
  */
 const broadcastReactionPayloadSchema = z.object({
@@ -82,15 +73,6 @@ export interface Conversation {
 	is_muted: boolean;
 	created_at: string | null;
 	updated_at: string | null;
-}
-
-/**
- * Typing user with full profile information
- */
-export interface TypingUser {
-	id: string;
-	firstname: string | null;
-	lastname: string | null;
 }
 
 /**
@@ -167,15 +149,6 @@ interface BroadcastMessagePayload {
 }
 
 /**
- * Broadcast typing indicator payload
- */
-interface BroadcastTypingPayload {
-	type: 'typing_indicator';
-	userId: string;
-	isTyping: boolean;
-}
-
-/**
  * Broadcast message reaction payload
  */
 interface BroadcastReactionPayload {
@@ -202,7 +175,6 @@ interface BroadcastReadReceiptPayload {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type BroadcastPayload =
 	| BroadcastMessagePayload
-	| BroadcastTypingPayload
 	| BroadcastReactionPayload
 	| BroadcastReadReceiptPayload;
 
@@ -241,9 +213,6 @@ type BroadcastPayload =
  *
  * // Access messages
  * const messages = chatStore.getMessages('conv-123');
- *
- * // Send typing indicator
- * chatStore.sendTypingIndicator('conv-123', true);
  *
  * // Cleanup
  * await chatStore.unsubscribeFromConversation('conv-123');
@@ -298,18 +267,6 @@ class ChatStore {
 	activeConversationId = $state<string | null>(null);
 
 	/**
-	 * Typing users per conversation (user ID only)
-	 * Using SvelteMap for reactivity
-	 */
-	private typingUsers = new SvelteMap<string, Set<string>>();
-
-	/**
-	 * Typing users with full profile information per conversation
-	 * Using SvelteMap for reactivity
-	 */
-	private typingUsersMap = new SvelteMap<string, Map<string, TypingUser>>();
-
-	/**
 	 * Conversations list organized by ID
 	 * Using SvelteMap for reactivity
 	 */
@@ -337,11 +294,6 @@ class ChatStore {
 	loading = $state<boolean>(false);
 
 	/**
-	 * Typing timeout timers per user per conversation
-	 */
-	private typingTimers = new Map<string, Map<string, ReturnType<typeof setTimeout>>>();
-
-	/**
 	 * Get all conversations sorted by last message timestamp
 	 */
 	get conversations(): Conversation[] {
@@ -366,15 +318,6 @@ class ChatStore {
 	 */
 	get activeMessages(): Message[] {
 		return this.activeConversationId ? this.getMessages(this.activeConversationId) : [];
-	}
-
-	/**
-	 * Get typing users with profile info for the active conversation
-	 */
-	get activeTypingUsers(): TypingUser[] {
-		if (!this.activeConversationId) return [];
-		const typingSet = this.typingUsersMap.get(this.activeConversationId);
-		return typingSet ? Array.from(typingSet.values()) : [];
 	}
 
 	/**
@@ -450,15 +393,6 @@ class ChatStore {
 				this.handleBroadcastMessage(validation.data as BroadcastMessagePayload);
 			});
 
-			channel.on('broadcast', { event: 'typing_indicator' }, ({ payload }) => {
-				const validation = broadcastTypingPayloadSchema.safeParse(payload);
-				if (!validation.success) {
-					logger.warn('Invalid typing indicator payload:', validation.error.issues);
-					return;
-				}
-				this.handleTypingIndicator(validation.data, conversationId);
-			});
-
 			channel.on('broadcast', { event: 'message_reaction' }, ({ payload }) => {
 				const validation = broadcastReactionPayloadSchema.safeParse(payload);
 				if (!validation.success) {
@@ -527,19 +461,6 @@ class ChatStore {
 
 		try {
 			await supabaseRealtimeManager.unsubscribeChannel(channelName);
-
-			// Clear typing indicators for this conversation
-			this.typingUsers.delete(conversationId);
-			this.typingUsersMap.delete(conversationId);
-
-			// Clear all typing timers for this conversation (prevents memory leak)
-			const timerMap = this.typingTimers.get(conversationId);
-			if (timerMap) {
-				for (const timer of timerMap.values()) {
-					clearTimeout(timer);
-				}
-				this.typingTimers.delete(conversationId);
-			}
 
 			// Clear reconnection state for this conversation
 			const reconnectTimer = this.reconnectTimers.get(conversationId);
@@ -1042,103 +963,6 @@ class ChatStore {
 	}
 
 	/**
-	 * Send typing indicator (Broadcast only, ephemeral)
-	 *
-	 * @param conversationId - The conversation ID
-	 * @param isTyping - Whether the user is typing
-	 */
-	sendTypingIndicator(conversationId: string, isTyping: boolean): void {
-		if (!browser || !this.userId) {
-			return;
-		}
-
-		const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
-		if (!channel) {
-			logger.warn('Channel not found for typing indicator:', conversationId);
-			return;
-		}
-
-		channel
-			.send({
-				type: 'broadcast',
-				event: 'typing_indicator',
-				payload: {
-					type: 'typing_indicator',
-					userId: this.userId,
-					isTyping
-				} satisfies BroadcastTypingPayload
-			})
-			.catch((error) => {
-				logger.error('Failed to send typing indicator:', error);
-			});
-	}
-
-	/**
-	 * Handle incoming typing indicator
-	 *
-	 * @param payload - Typing indicator payload (validated by Zod)
-	 * @param conversationId - The conversation ID from the channel context (fixes race condition)
-	 */
-	private handleTypingIndicator(
-		payload: z.infer<typeof broadcastTypingPayloadSchema>,
-		conversationId: string
-	): void {
-		// Ignore self
-		if (payload.userId === this.userId) {
-			return;
-		}
-
-		// conversationId is now passed from channel context, not derived from activeConversationId
-		// This fixes the race condition where typing indicators could be applied to the wrong conversation
-
-		let typingSet = this.typingUsers.get(conversationId);
-		if (!typingSet) {
-			// eslint-disable-next-line svelte/prefer-svelte-reactivity
-			typingSet = new Set();
-			this.typingUsers.set(conversationId, typingSet);
-		}
-
-		// Get or create timer map for this conversation
-		let timerMap = this.typingTimers.get(conversationId);
-		if (!timerMap) {
-			// eslint-disable-next-line svelte/prefer-svelte-reactivity
-			timerMap = new Map();
-			this.typingTimers.set(conversationId, timerMap);
-		}
-
-		if (payload.isTyping) {
-			// Add user to typing set
-			typingSet.add(payload.userId);
-
-			// Clear existing timer
-			const existingTimer = timerMap.get(payload.userId);
-			if (existingTimer) {
-				clearTimeout(existingTimer);
-			}
-
-			// Auto-clear after 3 seconds
-			const timer = setTimeout(() => {
-				typingSet.delete(payload.userId);
-				timerMap.delete(payload.userId);
-			}, 3000);
-
-			timerMap.set(payload.userId, timer);
-		} else {
-			// Remove user from typing set
-			typingSet.delete(payload.userId);
-
-			// Clear timer
-			const timer = timerMap.get(payload.userId);
-			if (timer) {
-				clearTimeout(timer);
-				timerMap.delete(payload.userId);
-			}
-		}
-
-		logger.info('Typing indicator updated for user:', payload.userId, payload.isTyping);
-	}
-
-	/**
 	 * Handle incoming message reaction
 	 *
 	 * @param payload - Reaction payload
@@ -1200,16 +1024,6 @@ class ChatStore {
 		const messages = this.messages.get(conversationId);
 		// Reverse to display in chronological order (oldest first)
 		return messages ? messages.slice().reverse() : [];
-	}
-
-	/**
-	 * Get typing users for a conversation
-	 *
-	 * @param conversationId - The conversation ID
-	 * @returns Set of user IDs who are currently typing
-	 */
-	getTypingUsers(conversationId: string): Set<string> {
-		return this.typingUsers.get(conversationId) || new Set();
 	}
 
 	/**
@@ -1692,8 +1506,6 @@ class ChatStore {
 		// Clear all state
 		this.messages.clear();
 		this.conversationsMap.clear();
-		this.typingUsers.clear();
-		this.typingUsersMap.clear();
 		this.hasMore.clear();
 		this.activeConversationId = null;
 

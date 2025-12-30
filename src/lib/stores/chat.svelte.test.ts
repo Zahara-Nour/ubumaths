@@ -13,12 +13,11 @@
  * 4. postgres_changes Integration
  * 5. Message Lifecycle (send, rollback, replace)
  * 6. Conversation Management
- * 7. Typing Indicators
- * 8. Error Handling & Edge Cases
+ * 7. Error Handling & Edge Cases
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { chatStore, type TypingUser } from './chat.svelte';
+import { chatStore } from './chat.svelte';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
@@ -185,7 +184,6 @@ describe('CRITICAL: Message Deduplication', () => {
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
-		chatStore['typingUsers'].clear();
 		chatStore['hasMore'].clear();
 	});
 
@@ -605,7 +603,6 @@ describe('Optimistic UI Updates', () => {
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
-		chatStore['typingUsers'].clear();
 		chatStore['hasMore'].clear();
 	});
 
@@ -747,7 +744,6 @@ describe('Broadcast Channel Integration', () => {
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
-		chatStore['typingUsers'].clear();
 		chatStore['hasMore'].clear();
 	});
 
@@ -847,7 +843,6 @@ describe('postgres_changes Integration', () => {
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
-		chatStore['typingUsers'].clear();
 		chatStore['hasMore'].clear();
 	});
 
@@ -993,7 +988,6 @@ describe('Conversation Management', () => {
 		chatStore.init(supabase, userId, currentUser);
 		// Clear all messages from previous tests
 		chatStore['messages'].clear();
-		chatStore['typingUsers'].clear();
 		chatStore['hasMore'].clear();
 	});
 
@@ -1123,90 +1117,7 @@ describe('Conversation Management', () => {
 });
 
 // ============================================================================
-// 6. Typing Indicators
-// ============================================================================
-
-describe('Typing Indicators', () => {
-	let supabase: SupabaseClient<Database>;
-	const conversationId = 'conv-1';
-	const userId = 'user-1';
-	const currentUser = { full_name: 'Test User', avatar_url: null };
-
-	beforeEach(() => {
-		supabase = createMockSupabaseClient();
-		mockBrowser(true);
-		// Reset chatStore internal state to allow re-initialization with new mock
-		chatStore['supabase'] = null;
-		chatStore['userId'] = null;
-		chatStore['currentUser'] = null;
-		chatStore.init(supabase, userId, currentUser);
-		chatStore.activeConversationId = conversationId;
-		// Clear all messages from previous tests
-		chatStore['messages'].clear();
-		chatStore['typingUsers'].clear();
-		chatStore['hasMore'].clear();
-	});
-
-	afterEach(() => {
-		restoreBrowser();
-		vi.clearAllMocks();
-	});
-
-	it('should send typing indicator via broadcast', () => {
-		const mockChannel = createMockChannel(`chat-${conversationId}`);
-		vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
-
-		chatStore.sendTypingIndicator(conversationId, true);
-
-		expect(mockChannel.send).toHaveBeenCalledWith({
-			type: 'broadcast',
-			event: 'typing_indicator',
-			payload: {
-				type: 'typing_indicator',
-				userId: userId,
-				isTyping: true
-			}
-		});
-	});
-
-	it('should receive typing indicators from other users', async () => {
-		const mockChannel = createMockChannel(`chat-${conversationId}`);
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-
-		await chatStore.subscribeToConversation(conversationId);
-
-		// Simulate typing indicator
-		mockChannel.simulateBroadcast('typing_indicator', {
-			type: 'typing_indicator',
-			userId: 'user-2',
-			isTyping: true
-		});
-
-		const typingUsers = chatStore.getTypingUsers(conversationId);
-		expect(typingUsers.has('user-2')).toBe(true);
-	});
-
-	it('should ignore typing indicator from self', async () => {
-		const mockChannel = createMockChannel(`chat-${conversationId}`);
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-
-		await chatStore.subscribeToConversation(conversationId);
-
-		mockChannel.simulateBroadcast('typing_indicator', {
-			type: 'typing_indicator',
-			userId: userId,
-			isTyping: true
-		});
-
-		const typingUsers = chatStore.getTypingUsers(conversationId);
-		expect(typingUsers.size).toBe(0);
-	});
-});
-
-// ============================================================================
-// 7. Error Handling & Edge Cases
+// 6. Error Handling & Edge Cases
 // ============================================================================
 
 describe('Error Handling & Edge Cases', () => {
@@ -1250,18 +1161,6 @@ describe('Error Handling & Edge Cases', () => {
 		expect(messages).toEqual([]);
 	});
 
-	it('should handle channel not found for typing indicator', () => {
-		mockBrowser(true);
-		chatStore.init(supabase, userId, currentUser);
-
-		vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(undefined);
-
-		// Should not throw
-		expect(() => {
-			chatStore.sendTypingIndicator(conversationId, true);
-		}).not.toThrow();
-	});
-
 	it('should return false for canLoadMore when no messages loaded', () => {
 		mockBrowser(true);
 		chatStore.init(supabase, userId, currentUser);
@@ -1298,14 +1197,15 @@ describe('Phase 1: Initialization & Active Conversation', () => {
 			chatStore.init(supabase, userId, currentUser);
 
 			// Verify initialization by checking if methods work
-			expect(() => chatStore.sendTypingIndicator('conv-1', true)).not.toThrow();
+			expect(chatStore['supabase']).toBe(supabase);
+			expect(chatStore['userId']).toBe(userId);
 		});
 
 		it('should initialize without user profile (will fetch lazily)', () => {
 			chatStore.init(supabase, userId);
 
 			// Should not throw
-			expect(() => chatStore.sendTypingIndicator('conv-1', true)).not.toThrow();
+			expect(chatStore['supabase']).toBe(supabase);
 		});
 
 		it('should guard against re-initialization', () => {
@@ -1587,7 +1487,6 @@ describe('Phase 1: Reactive Getters', () => {
 		chatStore.init(supabase, userId, currentUser);
 		chatStore['conversationsMap'].clear();
 		chatStore['messages'].clear();
-		chatStore['typingUsersMap'].clear();
 	});
 
 	afterEach(() => {
@@ -1725,42 +1624,6 @@ describe('Phase 1: Reactive Getters', () => {
 			const messages = chatStore.activeMessages;
 
 			expect(messages).toEqual([]);
-		});
-	});
-
-	describe('activeTypingUsers getter', () => {
-		it('should return typing users for active conversation', () => {
-			chatStore.activeConversationId = 'conv-1';
-
-			const typingMap = new Map<string, TypingUser>();
-			typingMap.set('user-2', {
-				id: 'user-2',
-				firstname: 'Alice',
-				lastname: 'Smith'
-			});
-
-			chatStore['typingUsersMap'].set('conv-1', typingMap);
-
-			const typingUsers = chatStore.activeTypingUsers;
-
-			expect(typingUsers).toHaveLength(1);
-			expect(typingUsers[0].id).toBe('user-2');
-		});
-
-		it('should return empty array when no typing users', () => {
-			chatStore.activeConversationId = 'conv-1';
-
-			const typingUsers = chatStore.activeTypingUsers;
-
-			expect(typingUsers).toEqual([]);
-		});
-
-		it('should return empty array when no active conversation', () => {
-			chatStore.activeConversationId = null;
-
-			const typingUsers = chatStore.activeTypingUsers;
-
-			expect(typingUsers).toEqual([]);
 		});
 	});
 
@@ -2431,186 +2294,5 @@ describe('Phase 3: Reactions & Reporting', () => {
 			expect(success).toBe(false);
 			expect(fetchMock).not.toHaveBeenCalled();
 		});
-	});
-});
-
-// ============================================================================
-// 12. Typing Timer Memory Leak Prevention
-// ============================================================================
-
-describe('Typing Timer Memory Leak Prevention', () => {
-	let supabase: SupabaseClient<Database>;
-	const conversationId = 'conv-1';
-	const userId = 'user-1';
-	const currentUser = { full_name: 'Test User', avatar_url: null };
-
-	beforeEach(() => {
-		supabase = createMockSupabaseClient();
-		vi.useFakeTimers();
-		mockBrowser(true);
-		// Reset chatStore internal state to allow re-initialization with new mock
-		chatStore['supabase'] = null;
-		chatStore['userId'] = null;
-		chatStore['currentUser'] = null;
-		chatStore.init(supabase, userId, currentUser);
-		chatStore['messages'].clear();
-		chatStore['typingUsers'].clear();
-		chatStore['typingTimers'].clear();
-		chatStore['hasMore'].clear();
-	});
-
-	afterEach(() => {
-		vi.useRealTimers();
-		restoreBrowser();
-		vi.clearAllMocks();
-	});
-
-	it('should clear all typing timers on unsubscribe', async () => {
-		const mockChannel = createMockChannel(`chat-${conversationId}`);
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
-
-		await chatStore.subscribeToConversation(conversationId);
-		chatStore.activeConversationId = conversationId;
-
-		// Simulate multiple users typing
-		for (let i = 0; i < 5; i++) {
-			mockChannel.simulateBroadcast('typing_indicator', {
-				type: 'typing_indicator',
-				userId: `user-${i + 10}`,
-				isTyping: true
-			});
-		}
-
-		// Should have typing timers set (one for each user)
-		expect(chatStore['typingTimers'].get(conversationId)?.size).toBe(5);
-
-		// Track timer count before unsubscribe
-		const timerCountBefore = vi.getTimerCount();
-		expect(timerCountBefore).toBeGreaterThanOrEqual(5);
-
-		// Unsubscribe should clear all timers
-		await chatStore.unsubscribeFromConversation(conversationId);
-
-		// Typing timers map should be cleared
-		expect(chatStore['typingTimers'].has(conversationId)).toBe(false);
-
-		// Timer count should be reduced (all typing timers cleared)
-		const timerCountAfter = vi.getTimerCount();
-		expect(timerCountAfter).toBeLessThan(timerCountBefore);
-	});
-
-	it('should clear timer when user stops typing', async () => {
-		const mockChannel = createMockChannel(`chat-${conversationId}`);
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-
-		await chatStore.subscribeToConversation(conversationId);
-		chatStore.activeConversationId = conversationId;
-
-		// User starts typing
-		mockChannel.simulateBroadcast('typing_indicator', {
-			type: 'typing_indicator',
-			userId: 'user-2',
-			isTyping: true
-		});
-
-		// Should have a typing timer
-		expect(chatStore['typingTimers'].get(conversationId)?.has('user-2')).toBe(true);
-
-		const timerCountAfterStart = vi.getTimerCount();
-
-		// User stops typing
-		mockChannel.simulateBroadcast('typing_indicator', {
-			type: 'typing_indicator',
-			userId: 'user-2',
-			isTyping: false
-		});
-
-		// Timer should be cleared
-		expect(chatStore['typingTimers'].get(conversationId)?.has('user-2')).toBe(false);
-
-		// Timer count should be reduced
-		const timerCountAfterStop = vi.getTimerCount();
-		expect(timerCountAfterStop).toBeLessThan(timerCountAfterStart);
-	});
-
-	it('should not leak timers when rapidly toggling typing', async () => {
-		const mockChannel = createMockChannel(`chat-${conversationId}`);
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-
-		await chatStore.subscribeToConversation(conversationId);
-		chatStore.activeConversationId = conversationId;
-
-		// Rapidly toggle typing 10 times
-		for (let i = 0; i < 10; i++) {
-			mockChannel.simulateBroadcast('typing_indicator', {
-				type: 'typing_indicator',
-				userId: 'user-2',
-				isTyping: true
-			});
-			mockChannel.simulateBroadcast('typing_indicator', {
-				type: 'typing_indicator',
-				userId: 'user-2',
-				isTyping: false
-			});
-		}
-
-		// Should have at most 1 timer for this user (the current one if typing)
-		const userTimers = chatStore['typingTimers'].get(conversationId);
-		expect(userTimers?.size ?? 0).toBeLessThanOrEqual(1);
-	});
-
-	it('should clear typing indicators on unsubscribe', async () => {
-		const mockChannel = createMockChannel(`chat-${conversationId}`);
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-		vi.spyOn(supabaseRealtimeManager, 'unsubscribeChannel').mockResolvedValue(undefined);
-
-		await chatStore.subscribeToConversation(conversationId);
-		chatStore.activeConversationId = conversationId;
-
-		// Simulate typing
-		mockChannel.simulateBroadcast('typing_indicator', {
-			type: 'typing_indicator',
-			userId: 'user-2',
-			isTyping: true
-		});
-
-		// Verify typing user is tracked
-		expect(chatStore.getTypingUsers(conversationId).has('user-2')).toBe(true);
-
-		// Unsubscribe
-		await chatStore.unsubscribeFromConversation(conversationId);
-
-		// Typing users should be cleared
-		expect(chatStore.getTypingUsers(conversationId).size).toBe(0);
-	});
-
-	it('should auto-clear typing indicator after timeout', async () => {
-		const mockChannel = createMockChannel(`chat-${conversationId}`);
-		vi.spyOn(supabaseRealtimeManager, 'createChannel').mockReturnValue(mockChannel);
-		vi.spyOn(supabaseRealtimeManager, 'subscribeChannel').mockResolvedValue(undefined);
-
-		await chatStore.subscribeToConversation(conversationId);
-		chatStore.activeConversationId = conversationId;
-
-		// User starts typing
-		mockChannel.simulateBroadcast('typing_indicator', {
-			type: 'typing_indicator',
-			userId: 'user-2',
-			isTyping: true
-		});
-
-		// Verify typing user is tracked
-		expect(chatStore.getTypingUsers(conversationId).has('user-2')).toBe(true);
-
-		// Advance time past the typing timeout (typically 3-5 seconds)
-		await vi.advanceTimersByTimeAsync(5000);
-
-		// Typing indicator should auto-clear
-		expect(chatStore.getTypingUsers(conversationId).has('user-2')).toBe(false);
 	});
 });

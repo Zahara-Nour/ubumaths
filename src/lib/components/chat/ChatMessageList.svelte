@@ -8,13 +8,11 @@
 	- Timestamps
 	- Emoji reactions
 	- File attachments
-	- Typing indicators
 	- Infinite scroll pagination
 
 	Props:
 		- messages: Message[]
 		- currentUserId: string
-		- typingUsers: TypingUser[]
 		- hasMore: boolean
 		- isLoading: boolean
 		- onLoadMore: () => void
@@ -34,7 +32,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { MoreVertical, Flag, Download, Trash2 } from 'lucide-svelte';
 	import DeleteMessageDialog from '$lib/components/moderation/DeleteMessageDialog.svelte';
-	import type { Message, TypingUser } from '$lib/stores/chat.svelte';
+	import type { Message } from '$lib/stores/chat.svelte';
 	import { getAvatarUrl } from '$lib/utils/avatar';
 
 	// Tiptap JSON node interface
@@ -111,7 +109,6 @@
 		messages: Message[];
 		currentUserId: string;
 		currentUserRole?: string;
-		typingUsers?: TypingUser[];
 		hasMore?: boolean;
 		isLoading?: boolean;
 		onLoadMore?: () => void;
@@ -124,7 +121,6 @@
 		messages,
 		currentUserId,
 		currentUserRole = 'student',
-		typingUsers = [],
 		hasMore = false,
 		isLoading = false,
 		onLoadMore,
@@ -270,17 +266,6 @@
 	onMount(() => {
 		scrollToBottom(false);
 	});
-
-	/**
-	 * Format typing users text
-	 */
-	function formatTypingUsers(users: TypingUser[]): string {
-		if (users.length === 0) return '';
-		if (users.length === 1) return `${users[0].firstname} est en train d'écrire...`;
-		if (users.length === 2)
-			return `${users[0].firstname} et ${users[1].firstname} sont en train d'écrire...`;
-		return `${users[0].firstname}, ${users[1].firstname} et ${users.length - 2} autre${users.length - 2 > 1 ? 's' : ''} sont en train d'écrire...`;
-	}
 </script>
 
 <div class="flex h-full flex-col">
@@ -469,24 +454,6 @@
 					</div>
 				</div>
 			{/each}
-		{/if}
-
-		<!-- Typing Indicator -->
-		{#if typingUsers.length > 0}
-			<div class="flex items-center gap-2 text-sm text-muted-foreground">
-				<div class="flex gap-1">
-					<span class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"></span>
-					<span
-						class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
-						style="animation-delay: 0.2s"
-					></span>
-					<span
-						class="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
-						style="animation-delay: 0.4s"
-					></span>
-				</div>
-				<span>{formatTypingUsers(typingUsers)}</span>
-			</div>
 		{/if}
 	</div>
 </div>
