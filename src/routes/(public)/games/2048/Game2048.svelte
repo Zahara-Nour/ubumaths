@@ -8,8 +8,9 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import Tile2048 from './Tile2048.svelte';
+	import GhostTile2048 from './GhostTile2048.svelte';
 	import { initializeBoard, move } from './game-logic';
-	import type { GameState, Direction, GameMode, Tile } from './types';
+	import type { GameState, Direction, GameMode, Tile, GhostTile } from './types';
 	import { browser } from '$app/environment';
 
 	// Game mode options
@@ -55,6 +56,10 @@
 	let showEducationalHints = $state(true);
 	let showGameOverDialog = $state(false);
 	let showVictoryDialog = $state(false);
+
+	// Ghost tiles for merge animations (tiles sliding to merge position)
+	let ghostTiles = $state<GhostTile[]>([]);
+	let ghostTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Track if victory has already been celebrated (to avoid multiple confetti)
 	let victoryCelebrated = $state(false);
@@ -163,10 +168,33 @@
 	function handleMove(direction: Direction) {
 		if (gameState.gameOver) return;
 
-		const newState = move(gameState, direction);
-		if (newState !== gameState) {
-			gameState = newState;
+		const result = move(gameState, direction);
+		if (!result.moved) return;
+
+		// Animation timing constants (must match CSS in GhostTile2048.svelte)
+		const GHOST_SLIDE_DURATION = 300;
+		const GHOST_CLEANUP_BUFFER = 20;
+
+		// If there are merge animations, create ghost tiles
+		if (result.mergeAnimations.length > 0) {
+			// Clear previous timeout AND ghost tiles immediately (atomic operation)
+			if (ghostTimeout) {
+				clearTimeout(ghostTimeout);
+				ghostTimeout = null;
+			}
+			ghostTiles = [];
+
+			// Create new ghost tiles
+			ghostTiles = result.mergeAnimations.flatMap((anim) => anim.tiles);
+
+			// Clear ghost tiles after animation completes
+			ghostTimeout = setTimeout(() => {
+				ghostTiles = [];
+				ghostTimeout = null;
+			}, GHOST_SLIDE_DURATION + GHOST_CLEANUP_BUFFER);
 		}
+
+		gameState = result.state;
 	}
 
 	/**
@@ -285,6 +313,11 @@
 				clearInterval(confettiInterval);
 				confettiInterval = null;
 			}
+			// Clean up ghost tile timeout
+			if (ghostTimeout) {
+				clearTimeout(ghostTimeout);
+				ghostTimeout = null;
+			}
 		};
 	});
 </script>
@@ -340,6 +373,13 @@
 			<div class="grid grid-cols-4 gap-2 sm:gap-3" aria-hidden="true">
 				{#each Array(16) as _, index (index)}
 					<div class="empty-cell h-16 w-16 rounded-lg bg-muted/30 sm:h-20 sm:w-20"></div>
+				{/each}
+			</div>
+
+			<!-- Ghost tiles (sliding to merge position) -->
+			<div class="absolute inset-0 p-0">
+				{#each ghostTiles as ghost (ghost.id)}
+					<GhostTile2048 {ghost} />
 				{/each}
 			</div>
 

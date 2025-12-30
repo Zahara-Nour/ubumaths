@@ -119,20 +119,28 @@
 		}
 	}
 
-	/* Merge animation - pulse effect */
+	/* Merge animation - delayed pop-in effect after ghost tiles finish sliding
+	 * The 300ms delay must match GHOST_SLIDE_DURATION in Game2048.svelte
+	 * The 'backwards' fill mode keeps the tile at scale(0) during the delay */
 	.tile-merged {
-		animation: tile-merge 300ms ease-in-out;
+		animation: tile-merge-appear 200ms ease-out 300ms backwards;
 	}
 
-	@keyframes tile-merge {
-		0%,
+	@keyframes tile-merge-appear {
+		0% {
+			transform: translate(calc(var(--col) * var(--grid-size)), calc(var(--row) * var(--grid-size)))
+				scale(0);
+			opacity: 0;
+		}
+		60% {
+			transform: translate(calc(var(--col) * var(--grid-size)), calc(var(--row) * var(--grid-size)))
+				scale(1.15);
+			opacity: 1;
+		}
 		100% {
 			transform: translate(calc(var(--col) * var(--grid-size)), calc(var(--row) * var(--grid-size)))
 				scale(1);
-		}
-		50% {
-			transform: translate(calc(var(--col) * var(--grid-size)), calc(var(--row) * var(--grid-size)))
-				scale(1.1);
+			opacity: 1;
 		}
 	}
 
