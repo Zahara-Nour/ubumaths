@@ -643,26 +643,20 @@ class ChatStore {
 			public_url: string;
 		}>
 	): Promise<Message | null> {
-		if (!browser || !this.supabase || !this.userId || !this.currentUser) {
+		if (!browser || !this.supabase || !this.userId) {
 			logger.warn('Cannot send message: not initialized');
+			return null;
+		}
 
-			// If currentUser is missing, try to fetch it
-			if (this.supabase && this.userId && !this.currentUser) {
-				const { data: profile } = await this.supabase
-					.from('profiles')
-					.select('full_name, avatar_url')
-					.eq('id', this.userId)
-					.single();
-				this.currentUser = profile ?? { full_name: null, avatar_url: null };
-
-				// If still no user, bail out
-				if (!this.currentUser) {
-					logger.error('Cannot send message: user profile not found');
-					return null;
-				}
-			} else {
-				return null;
-			}
+		// If currentUser is missing, try to fetch it
+		if (!this.currentUser) {
+			logger.info('Fetching user profile for message send...');
+			const { data: profile } = await this.supabase
+				.from('profiles')
+				.select('full_name, avatar_url')
+				.eq('id', this.userId)
+				.single();
+			this.currentUser = profile ?? { full_name: null, avatar_url: null };
 		}
 
 		// Convert content to the expected format
