@@ -399,10 +399,15 @@ li .code-block-wrapper {
 }
 
 /* TipTap editor base styles */
+/* Base ProseMirror styles - for all instances */
 .ProseMirror {
-	min-height: 100px;
 	color: var(--color-foreground) !important;
 	background-color: var(--color-background) !important;
+}
+
+/* Min-height only for editable editors, not read-only displays */
+.ProseMirror[contenteditable='true'] {
+	min-height: 100px;
 }
 
 .ProseMirror:focus {

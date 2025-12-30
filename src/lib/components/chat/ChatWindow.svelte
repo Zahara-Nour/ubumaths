@@ -57,9 +57,10 @@
 	} | null>(null);
 	let restrictionCheckTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	// Initialize chat store
+	// Initialize chat store and load conversations
 	onMount(() => {
 		chatStore.init(supabase, userId);
+		chatStore.loadConversations();
 
 		// Check window width for mobile detection
 		checkMobileView();

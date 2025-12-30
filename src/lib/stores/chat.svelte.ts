@@ -3,8 +3,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { supabaseRealtimeManager } from './supabaseRealtime.svelte';
 import { createLogger } from '$lib/utils/logger';
-import { friendsManager } from './friends.svelte';
 import { z } from 'zod';
+import { SvelteMap } from 'svelte/reactivity';
 
 const logger = createLogger('chat.svelte.ts');
 
@@ -288,8 +288,9 @@ class ChatStore {
 
 	/**
 	 * Messages organized by conversation ID
+	 * Using SvelteMap for reactivity
 	 */
-	private messages = $state<Map<string, Message[]>>(new Map());
+	private messages = new SvelteMap<string, Message[]>();
 
 	/**
 	 * Currently active conversation ID
@@ -298,18 +299,21 @@ class ChatStore {
 
 	/**
 	 * Typing users per conversation (user ID only)
+	 * Using SvelteMap for reactivity
 	 */
-	private typingUsers = $state<Map<string, Set<string>>>(new Map());
+	private typingUsers = new SvelteMap<string, Set<string>>();
 
 	/**
 	 * Typing users with full profile information per conversation
+	 * Using SvelteMap for reactivity
 	 */
-	private typingUsersMap = $state<Map<string, Map<string, TypingUser>>>(new Map());
+	private typingUsersMap = new SvelteMap<string, Map<string, TypingUser>>();
 
 	/**
 	 * Conversations list organized by ID
+	 * Using SvelteMap for reactivity
 	 */
-	private conversationsMap = $state<Map<string, Conversation>>(new Map());
+	private conversationsMap = new SvelteMap<string, Conversation>();
 
 	/**
 	 * Loading state for conversations list
@@ -323,8 +327,9 @@ class ChatStore {
 
 	/**
 	 * Pagination tracking - whether more messages exist
+	 * Using SvelteMap for reactivity
 	 */
-	private hasMore = $state<Map<string, boolean>>(new Map());
+	private hasMore = new SvelteMap<string, boolean>();
 
 	/**
 	 * General loading state (legacy, kept for backward compatibility)
@@ -1189,10 +1194,12 @@ class ChatStore {
 	 * Get messages for a conversation
 	 *
 	 * @param conversationId - The conversation ID
-	 * @returns Array of messages (newest first)
+	 * @returns Array of messages (oldest first, for chronological display)
 	 */
 	getMessages(conversationId: string): Message[] {
-		return this.messages.get(conversationId) || [];
+		const messages = this.messages.get(conversationId);
+		// Reverse to display in chronological order (oldest first)
+		return messages ? messages.slice().reverse() : [];
 	}
 
 	/**
@@ -1372,15 +1379,8 @@ class ChatStore {
 			return null;
 		}
 
-		// Pre-check if users are friends (client-side validation for immediate feedback)
-		const areFriends = friendsManager.friendships.some(
-			(f) => f.friend_profile?.id === friendId && f.status === 'accepted'
-		);
-
-		if (!areFriends) {
-			logger.warn('Cannot create chat: users are not friends', { friendId });
-			return null;
-		}
+		// Note: Friendship validation is done server-side in the create_1on1_chat RPC
+		// via validate_1on1_chat_creation() which checks for accepted friendships
 
 		try {
 			// Call create_1on1_chat RPC (exists in migration 037)

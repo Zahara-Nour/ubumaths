@@ -28,7 +28,7 @@
 -->
 <script lang="ts">
 	import { onMount, tick } from 'svelte'; // onMount for future scroll handling
-	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
+	import { MarkdownRenderer } from '$lib/components/markdown';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -36,6 +36,75 @@
 	import DeleteMessageDialog from '$lib/components/moderation/DeleteMessageDialog.svelte';
 	import type { Message, TypingUser } from '$lib/stores/chat.svelte';
 	import { getAvatarUrl } from '$lib/utils/avatar';
+
+	// Tiptap JSON node interface
+	interface TiptapNode {
+		type: string;
+		attrs?: Record<string, unknown>;
+		content?: TiptapNode[];
+		text?: string;
+		marks?: Array<{ type: string; attrs?: Record<string, unknown> }>;
+	}
+
+	/**
+	 * Convert Tiptap JSON to Markdown text
+	 * Handles text formatting, math nodes, and links
+	 */
+	function convertTiptapToMarkdown(json: unknown): string {
+		if (!json || typeof json !== 'object') return '';
+
+		// Handle string content (already plain text)
+		if (typeof json === 'string') return json;
+
+		const doc = json as { type?: string; content?: TiptapNode[] };
+		if (doc.type !== 'doc' || !doc.content) return '';
+
+		const processNode = (node: TiptapNode): string => {
+			switch (node.type) {
+				case 'text': {
+					let text = node.text || '';
+					// Apply marks (bold, italic, etc.)
+					if (node.marks) {
+						for (const mark of node.marks) {
+							switch (mark.type) {
+								case 'bold':
+									text = `**${text}**`;
+									break;
+								case 'italic':
+									text = `*${text}*`;
+									break;
+								case 'underline':
+									text = `<u>${text}</u>`;
+									break;
+								case 'link':
+									text = `[${text}](${mark.attrs?.href || ''})`;
+									break;
+							}
+						}
+					}
+					return text;
+				}
+				case 'mathInline':
+					// Math node - wrap in $...$
+					return `$${(node.attrs?.latex as string) || ''}$`;
+				case 'mathBlock':
+					// Block math - wrap in $$...$$
+					return `$$${(node.attrs?.latex as string) || ''}$$`;
+				case 'paragraph':
+					return (node.content || []).map(processNode).join('');
+				case 'hardBreak':
+					return '\n';
+				default:
+					// For other nodes, try to process children
+					if (node.content) {
+						return node.content.map(processNode).join('');
+					}
+					return '';
+			}
+		};
+
+		return doc.content.map(processNode).join('\n\n').trim();
+	}
 
 	// Component Props
 	interface Props {
@@ -293,9 +362,11 @@
 								<div class="text-muted-foreground italic">Message supprimé par un modérateur</div>
 							{:else}
 								<div
-									class="prose prose-sm max-w-none {isOwnMessage(message) ? 'prose-invert' : ''}"
+									class="leading-relaxed break-words {isOwnMessage(message)
+										? 'text-primary-foreground'
+										: ''}"
 								>
-									<RichTextDisplay content={message.content} />
+									<MarkdownRenderer content={convertTiptapToMarkdown(message.content)} />
 								</div>
 							{/if}
 
