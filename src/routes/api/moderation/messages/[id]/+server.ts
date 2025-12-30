@@ -130,8 +130,8 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			const studentIds = participants.map((p) => p.user_id);
 			const { count } = await locals.supabase
 				.from('class_members')
-				.select('student_id', { count: 'exact', head: true })
-				.eq('teacher_id', locals.user.id)
+				.select('student_id, classes!inner(teacher_id)', { count: 'exact', head: true })
+				.eq('classes.teacher_id', locals.user.id)
 				.in('student_id', studentIds);
 
 			if (count !== 2) {

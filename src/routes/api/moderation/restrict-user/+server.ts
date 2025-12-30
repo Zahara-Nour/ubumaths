@@ -80,9 +80,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Teachers can only globally restrict students in their classes
 			const { data: membership, error: membershipError } = await locals.supabase
 				.from('class_members')
-				.select('student_id')
+				.select('student_id, classes!inner(teacher_id)')
 				.eq('student_id', userId)
-				.eq('teacher_id', locals.user.id)
+				.eq('classes.teacher_id', locals.user.id)
 				.maybeSingle();
 
 			if (membershipError) {
@@ -111,9 +111,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (!membership) {
 				const { data: studentMembership, error: studentMembershipError } = await locals.supabase
 					.from('class_members')
-					.select('student_id')
+					.select('student_id, classes!inner(teacher_id)')
 					.eq('student_id', userId)
-					.eq('teacher_id', locals.user.id)
+					.eq('classes.teacher_id', locals.user.id)
 					.maybeSingle();
 
 				if (studentMembershipError) {
