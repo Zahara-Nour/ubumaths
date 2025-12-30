@@ -427,8 +427,14 @@ class ChatStore {
 				}
 			);
 
-			// Handle system errors for reconnection (same pattern as presence.svelte.ts)
-			channel.on('system', { event: 'error' } as never, () => {
+			// Handle system events - only trigger reconnection on actual errors
+			channel.on('system', {} as never, (payload: { status?: string; message?: string }) => {
+				if (payload?.status === 'ok') {
+					logger.info('Chat channel system event:', payload.message);
+					return;
+				}
+				// Only handle actual errors
+				logger.error('Chat channel system error:', payload);
 				this.handleSystemError(conversationId);
 			});
 
