@@ -48,6 +48,15 @@
 			color: 'from-cyan-500 to-blue-600',
 			// emoji: '🔤',
 			public: true
+		},
+		{
+			title: 'Campus',
+			description: 'Retournez tous les jetons avec le moins de lancers de dés possible.',
+			// icon: Target,
+			href: '/games/campus',
+			color: 'from-amber-500 to-orange-600',
+			// emoji: '🎲',
+			public: true
 		}
 		// {
 		// 	title: 'Navadra',
