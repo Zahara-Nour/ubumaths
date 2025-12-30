@@ -391,6 +391,109 @@ describe('2048 Game Logic', () => {
 			const newState = move(state, 'left');
 			expect(newState.won).toBe(true);
 		});
+
+		it('should move tiles up correctly', () => {
+			const board = createEmptyBoard();
+			// Place a tile at bottom, expect it to move to top
+			board[3][0] = { id: '1', value: 2, position: { row: 3, col: 0 }, isNew: false };
+
+			const state = {
+				board,
+				score: 0,
+				gameOver: false,
+				won: false,
+				canUndo: false,
+				mode: 'classic' as const
+			};
+
+			const newState = move(state, 'up');
+			// Tile should now be at row 0, col 0
+			expect(newState.board[0][0]?.value).toBe(2);
+			// Note: Can't check if (3,0) is null as a new tile might spawn there
+		});
+
+		it('should move tiles down correctly', () => {
+			const board = createEmptyBoard();
+			// Place a tile at top, expect it to move to bottom
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+
+			const state = {
+				board,
+				score: 0,
+				gameOver: false,
+				won: false,
+				canUndo: false,
+				mode: 'classic' as const
+			};
+
+			const newState = move(state, 'down');
+			// Tile should now be at row 3, col 0
+			expect(newState.board[3][0]?.value).toBe(2);
+			// Note: Can't check if (0,0) is null as a new tile might spawn there
+		});
+
+		it('should merge tiles correctly when moving up', () => {
+			const board = createEmptyBoard();
+			// Two tiles in the same column
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[2][0] = { id: '2', value: 2, position: { row: 2, col: 0 }, isNew: false };
+
+			const state = {
+				board,
+				score: 0,
+				gameOver: false,
+				won: false,
+				canUndo: false,
+				mode: 'classic' as const
+			};
+
+			const newState = move(state, 'up');
+			// Should merge to 4 at row 0
+			expect(newState.board[0][0]?.value).toBe(4);
+			// Note: Can't check if (2,0) is null as a new tile might spawn there
+			expect(newState.score).toBe(4);
+		});
+
+		it('should merge tiles correctly when moving down', () => {
+			const board = createEmptyBoard();
+			// Two tiles in the same column
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[2][0] = { id: '2', value: 2, position: { row: 2, col: 0 }, isNew: false };
+
+			const state = {
+				board,
+				score: 0,
+				gameOver: false,
+				won: false,
+				canUndo: false,
+				mode: 'classic' as const
+			};
+
+			const newState = move(state, 'down');
+			// Should merge to 4 at row 3
+			expect(newState.board[3][0]?.value).toBe(4);
+			// Note: Can't check if (0,0) is null as a new tile might spawn there
+			expect(newState.score).toBe(4);
+		});
+
+		it('should not change state if up move is not possible', () => {
+			const board = createEmptyBoard();
+			// Tiles already at top
+			board[0][0] = { id: '1', value: 2, position: { row: 0, col: 0 }, isNew: false };
+			board[0][1] = { id: '2', value: 4, position: { row: 0, col: 1 }, isNew: false };
+
+			const state = {
+				board,
+				score: 0,
+				gameOver: false,
+				won: false,
+				canUndo: false,
+				mode: 'classic' as const
+			};
+
+			const newState = move(state, 'up');
+			expect(newState).toBe(state); // Should return same state
+		});
 	});
 
 	describe('getTilePower', () => {
