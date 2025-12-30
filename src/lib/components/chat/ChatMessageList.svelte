@@ -251,7 +251,7 @@
 
 					<!-- Message Content -->
 					<div
-						class="flex max-w-[70%] min-w-0 flex-col {isOwnMessage(message)
+						class="group flex max-w-[70%] min-w-0 flex-col {isOwnMessage(message)
 							? 'items-end'
 							: 'items-start'}"
 					>
@@ -262,57 +262,62 @@
 							</span>
 						{/if}
 
-						<!-- Message Bubble -->
+						<!-- Message Bubble + Actions Row -->
 						<div
-							class="group relative rounded-lg px-4 py-2 {isOwnMessage(message)
-								? 'bg-primary text-primary-foreground'
-								: 'bg-muted text-foreground'}"
+							class="flex items-start gap-1 {isOwnMessage(message)
+								? 'flex-row-reverse'
+								: 'flex-row'}"
 						>
-							<!-- Flagged Warning -->
-							{#if message.is_flagged}
-								<div class="mb-2 rounded bg-destructive/10 p-2 text-xs text-destructive">
-									⚠️ Ce message a été signalé automatiquement
-								</div>
-							{/if}
-
-							<!-- Rich Text Content or Deleted State -->
-							{#if message.deleted_at}
-								<div class="text-muted-foreground italic">Message supprimé par un modérateur</div>
-							{:else}
-								<div
-									class="leading-relaxed break-words {isOwnMessage(message)
-										? 'text-primary-foreground'
-										: ''}"
-								>
-									<MarkdownRenderer content={tipTapToMarkdown(message.content as JSONContent)} />
-								</div>
-							{/if}
-
-							<!-- Attachments -->
-							{#if message.attachments && message.attachments.length > 0}
-								<div class="mt-2 space-y-2">
-									{#each message.attachments as attachment (attachment.id)}
-										<a
-											href={attachment.public_url}
-											target="_blank"
-											rel="noopener noreferrer"
-											data-sveltekit-preload-data="off"
-											class="flex items-center gap-2 rounded border border-border bg-background/50 p-2 text-sm hover:bg-background"
-										>
-											<Download class="h-4 w-4" />
-											<span class="truncate">{attachment.file_name}</span>
-											<span class="text-xs text-muted-foreground">
-												({Math.round(attachment.file_size / 1024)}KB)
-											</span>
-										</a>
-									{/each}
-								</div>
-							{/if}
-
-							<!-- Message Actions (3-dot menu) -->
+							<!-- Message Bubble -->
 							<div
-								class="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100"
+								class="rounded-lg px-4 py-2 {isOwnMessage(message)
+									? 'bg-primary text-primary-foreground'
+									: 'bg-muted text-foreground'}"
 							>
+								<!-- Flagged Warning -->
+								{#if message.is_flagged}
+									<div class="mb-2 rounded bg-destructive/10 p-2 text-xs text-destructive">
+										⚠️ Ce message a été signalé automatiquement
+									</div>
+								{/if}
+
+								<!-- Rich Text Content or Deleted State -->
+								{#if message.deleted_at}
+									<div class="text-muted-foreground italic">Message supprimé par un modérateur</div>
+								{:else}
+									<div
+										class="leading-relaxed break-words {isOwnMessage(message)
+											? 'text-primary-foreground'
+											: ''}"
+									>
+										<MarkdownRenderer content={tipTapToMarkdown(message.content as JSONContent)} />
+									</div>
+								{/if}
+
+								<!-- Attachments -->
+								{#if message.attachments && message.attachments.length > 0}
+									<div class="mt-2 space-y-2">
+										{#each message.attachments as attachment (attachment.id)}
+											<a
+												href={attachment.public_url}
+												target="_blank"
+												rel="noopener noreferrer"
+												data-sveltekit-preload-data="off"
+												class="flex items-center gap-2 rounded border border-border bg-background/50 p-2 text-sm hover:bg-background"
+											>
+												<Download class="h-4 w-4" />
+												<span class="truncate">{attachment.file_name}</span>
+												<span class="text-xs text-muted-foreground">
+													({Math.round(attachment.file_size / 1024)}KB)
+												</span>
+											</a>
+										{/each}
+									</div>
+								{/if}
+							</div>
+
+							<!-- Message Actions (3-dot menu) - Outside bubble -->
+							<div class="flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
 								<DropdownMenu.Root>
 									<DropdownMenu.Trigger class="cursor-pointer">
 										<Button variant="ghost" size="sm" class="h-6 w-6 p-0">

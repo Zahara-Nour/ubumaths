@@ -7,6 +7,7 @@ import { error } from '@sveltejs/kit';
  * Loads:
  * - Active restrictions created by this teacher
  * - Moderation logs for this teacher's actions
+ * - Message reports for moderation
  *
  * Only accessible by teachers and admins
  */
@@ -23,46 +24,71 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(403, 'Access denied');
 	}
 
-	// Fetch active restrictions for this teacher's students
-	const { data: restrictions, error: restrictionsError } = await supabase
-		.from('user_restrictions')
-		.select(
+	// Fetch all data in parallel
+	const [restrictionsResult, logsResult, reportsResult, pendingCountResult] = await Promise.all([
+		// Active restrictions for this teacher's students
+		supabase
+			.from('user_restrictions')
+			.select(
+				`
+				*,
+				user:profiles!user_restrictions_user_id_fkey(id, firstname, lastname),
+				restricted_by_profile:profiles!user_restrictions_restricted_by_fkey(firstname, lastname),
+				conversation:conversations(name)
 			`
-      *,
-      user:profiles!user_restrictions_user_id_fkey(id, firstname, lastname),
-      restricted_by_profile:profiles!user_restrictions_restricted_by_fkey(firstname, lastname),
-      conversation:conversations(name)
-    `
-		)
-		.eq('restricted_by', locals.user.id)
-		.or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
-		.order('created_at', { ascending: false });
+			)
+			.eq('restricted_by', user.id)
+			.or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+			.order('created_at', { ascending: false }),
 
-	if (restrictionsError) {
-		console.error('Failed to fetch restrictions:', restrictionsError);
+		// Moderation logs for this teacher
+		supabase
+			.from('moderation_logs')
+			.select(
+				`
+				*,
+				moderator:profiles!moderation_logs_moderator_id_fkey(firstname, lastname)
+			`
+			)
+			.eq('moderator_id', user.id)
+			.order('created_at', { ascending: false })
+			.limit(100),
+
+		// Message reports via RPC
+		supabase.rpc('get_reports_for_moderation', {
+			p_status: null, // All reports
+			p_limit: 100,
+			p_offset: 0
+		}),
+
+		// Pending reports count via RPC
+		supabase.rpc('get_pending_reports_count')
+	]);
+
+	if (restrictionsResult.error) {
+		console.error('Failed to fetch restrictions:', restrictionsResult.error);
 		throw error(500, 'Failed to load restrictions');
 	}
 
-	// Fetch moderation logs for this teacher
-	const { data: logs, error: logsError } = await supabase
-		.from('moderation_logs')
-		.select(
-			`
-      *,
-      moderator:profiles!moderation_logs_moderator_id_fkey(firstname, lastname)
-    `
-		)
-		.eq('moderator_id', locals.user.id)
-		.order('created_at', { ascending: false })
-		.limit(100);
-
-	if (logsError) {
-		console.error('Failed to fetch logs:', logsError);
+	if (logsResult.error) {
+		console.error('Failed to fetch logs:', logsResult.error);
 		throw error(500, 'Failed to load logs');
 	}
 
+	if (reportsResult.error) {
+		console.error('Failed to fetch reports:', reportsResult.error);
+		// Don't throw, just log - reports feature might not be set up
+	}
+
+	if (pendingCountResult.error) {
+		console.error('Failed to fetch pending count:', pendingCountResult.error);
+		// Don't throw, just log
+	}
+
 	return {
-		restrictions: restrictions || [],
-		logs: logs || []
+		restrictions: restrictionsResult.data || [],
+		logs: logsResult.data || [],
+		reports: reportsResult.data || [],
+		pendingReportsCount: pendingCountResult.data ?? 0
 	};
 };
