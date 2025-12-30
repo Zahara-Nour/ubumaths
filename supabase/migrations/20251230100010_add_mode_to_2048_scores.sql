@@ -19,7 +19,7 @@ CHECK (mode IN ('classic', 'multiplication', 'equations', 'fractions'));
 
 -- Add composite index for efficient leaderboard queries per mode
 CREATE INDEX idx_game_2048_scores_mode_score
-ON public.game_2048_scores (mode, score DESC);
+ON public.game_2048_scores (mode, best_score DESC);
 
 -- Update existing composite unique constraint to include mode
 -- This allows same user to have best scores for different modes
