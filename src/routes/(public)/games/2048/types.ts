@@ -98,3 +98,42 @@ export interface Move {
 	/** Previous state (for undo) */
 	previousState: GameState;
 }
+
+/**
+ * Represents a tile that is animating towards a merge
+ * These "ghost" tiles slide to the merge position before disappearing
+ */
+export interface GhostTile {
+	/** Original tile ID */
+	id: string;
+	/** Tile value */
+	value: number;
+	/** Starting position (before animation) */
+	fromPosition: Position;
+	/** Ending position (merge destination) */
+	toPosition: Position;
+	/** Display value for educational modes */
+	displayValue?: string;
+}
+
+/**
+ * Information about a merge animation
+ */
+export interface MergeAnimation {
+	/** The two tiles that are merging */
+	tiles: [GhostTile, GhostTile];
+	/** The resulting merged tile */
+	resultTile: Tile;
+}
+
+/**
+ * Result of a move operation, including animation data
+ */
+export interface MoveResult {
+	/** The new game state after the move */
+	state: GameState;
+	/** Whether any movement occurred */
+	moved: boolean;
+	/** Merge animations to play (empty if no merges) */
+	mergeAnimations: MergeAnimation[];
+}

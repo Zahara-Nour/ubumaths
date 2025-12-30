@@ -340,16 +340,17 @@ describe('2048 Game Logic', () => {
 				mode: 'classic' as const
 			};
 
-			const newState = move(state, 'left');
-			expect(newState).toBe(state); // Should return same state
+			const result = move(state, 'left');
+			expect(result.moved).toBe(false);
+			expect(result.state).toBe(state); // Should return same state
 		});
 
 		it('should add new tile after successful move', () => {
 			const state = initializeBoard();
-			const tilesBefore = state.board.flat().filter((t) => t !== null).length;
+			const tilesBefore = state.board.flat().filter((t): t is Tile => t !== null).length;
 
-			const newState = move(state, 'left');
-			const tilesAfter = newState.board.flat().filter((t) => t !== null).length;
+			const result = move(state, 'left');
+			const tilesAfter = result.state.board.flat().filter((t): t is Tile => t !== null).length;
 
 			// Should have one more tile (unless a merge occurred)
 			expect(tilesAfter).toBeGreaterThanOrEqual(tilesBefore);
@@ -369,9 +370,9 @@ describe('2048 Game Logic', () => {
 				mode: 'classic' as const
 			};
 
-			const newState = move(state, 'left');
-			expect(newState.score).toBeGreaterThan(0);
-			expect(newState.canUndo).toBe(true);
+			const result = move(state, 'left');
+			expect(result.state.score).toBeGreaterThan(0);
+			expect(result.state.canUndo).toBe(true);
 		});
 
 		it('should set won flag when reaching 2048', () => {
@@ -388,8 +389,8 @@ describe('2048 Game Logic', () => {
 				mode: 'classic' as const
 			};
 
-			const newState = move(state, 'left');
-			expect(newState.won).toBe(true);
+			const result = move(state, 'left');
+			expect(result.state.won).toBe(true);
 		});
 
 		it('should move tiles up correctly', () => {
@@ -406,9 +407,9 @@ describe('2048 Game Logic', () => {
 				mode: 'classic' as const
 			};
 
-			const newState = move(state, 'up');
+			const result = move(state, 'up');
 			// Tile should now be at row 0, col 0
-			expect(newState.board[0][0]?.value).toBe(2);
+			expect(result.state.board[0][0]?.value).toBe(2);
 			// Note: Can't check if (3,0) is null as a new tile might spawn there
 		});
 
@@ -426,9 +427,9 @@ describe('2048 Game Logic', () => {
 				mode: 'classic' as const
 			};
 
-			const newState = move(state, 'down');
+			const result = move(state, 'down');
 			// Tile should now be at row 3, col 0
-			expect(newState.board[3][0]?.value).toBe(2);
+			expect(result.state.board[3][0]?.value).toBe(2);
 			// Note: Can't check if (0,0) is null as a new tile might spawn there
 		});
 
@@ -447,11 +448,11 @@ describe('2048 Game Logic', () => {
 				mode: 'classic' as const
 			};
 
-			const newState = move(state, 'up');
+			const result = move(state, 'up');
 			// Should merge to 4 at row 0
-			expect(newState.board[0][0]?.value).toBe(4);
+			expect(result.state.board[0][0]?.value).toBe(4);
 			// Note: Can't check if (2,0) is null as a new tile might spawn there
-			expect(newState.score).toBe(4);
+			expect(result.state.score).toBe(4);
 		});
 
 		it('should merge tiles correctly when moving down', () => {
@@ -469,11 +470,11 @@ describe('2048 Game Logic', () => {
 				mode: 'classic' as const
 			};
 
-			const newState = move(state, 'down');
+			const result = move(state, 'down');
 			// Should merge to 4 at row 3
-			expect(newState.board[3][0]?.value).toBe(4);
+			expect(result.state.board[3][0]?.value).toBe(4);
 			// Note: Can't check if (0,0) is null as a new tile might spawn there
-			expect(newState.score).toBe(4);
+			expect(result.state.score).toBe(4);
 		});
 
 		it('should not change state if up move is not possible', () => {
@@ -491,8 +492,9 @@ describe('2048 Game Logic', () => {
 				mode: 'classic' as const
 			};
 
-			const newState = move(state, 'up');
-			expect(newState).toBe(state); // Should return same state
+			const result = move(state, 'up');
+			expect(result.moved).toBe(false);
+			expect(result.state).toBe(state); // Should return same state
 		});
 	});
 

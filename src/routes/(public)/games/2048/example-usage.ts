@@ -24,7 +24,10 @@ export function exampleGameFlow(): void {
 	for (const direction of moves) {
 		if (!gameState.gameOver) {
 			const previousScore = gameState.score;
-			gameState = move(gameState, direction);
+			const result = move(gameState, direction);
+			if (result.moved) {
+				gameState = result.state;
+			}
 
 			if (gameState.score > previousScore) {
 				const scoreGain = gameState.score - previousScore;

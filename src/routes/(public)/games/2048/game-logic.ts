@@ -3,9 +3,32 @@
  * All functions are pure (no side effects, no mutations)
  */
 
-import type { GameBoard, GameState, Tile, Direction, Position, GameMode } from './types';
+import type {
+	GameBoard,
+	GameState,
+	Tile,
+	Direction,
+	Position,
+	GameMode,
+	MoveResult,
+	MergeAnimation
+} from './types';
 import { generateTileId } from './game-utils';
 import { generateEducationalTile, getWinningValue, canMerge } from './educational-modes';
+
+/**
+ * Internal type for merge info at row level (before coordinate transformation)
+ */
+interface RowMergeInfo {
+	/** First tile that merged */
+	tile1: { id: string; value: number; originalCol: number; displayValue?: string };
+	/** Second tile that merged */
+	tile2: { id: string; value: number; originalCol: number; displayValue?: string };
+	/** Destination column in the row */
+	destCol: number;
+	/** The resulting merged tile */
+	resultTile: Tile;
+}
 
 const BOARD_SIZE = 4;
 
@@ -150,7 +173,7 @@ function rotateBoardCounterClockwise(board: GameBoard): GameBoard {
  * Moves and merges tiles in a single row to the left
  * @param row - Row of tiles
  * @param mode - Game mode (determines merge logic)
- * @returns Object with new row, score gain, and whether any merges occurred
+ * @returns Object with new row, score gain, merge info for animations, and whether any merges occurred
  */
 export function moveTilesInRow(
 	row: (Tile | null)[],
@@ -159,33 +182,65 @@ export function moveTilesInRow(
 	row: (Tile | null)[];
 	scoreGain: number;
 	merges: boolean;
+	mergeInfos: RowMergeInfo[];
 } {
-	// Extract non-null tiles
-	const tiles = row.filter((tile): tile is Tile => tile !== null);
+	// Extract non-null tiles with their original column index
+	const tilesWithCols: Array<{ tile: Tile; originalCol: number }> = [];
+	for (let col = 0; col < row.length; col++) {
+		const tile = row[col];
+		if (tile) {
+			tilesWithCols.push({ tile, originalCol: col });
+		}
+	}
 
-	if (tiles.length === 0) {
-		return { row, scoreGain: 0, merges: false };
+	if (tilesWithCols.length === 0) {
+		return { row, scoreGain: 0, merges: false, mergeInfos: [] };
 	}
 
 	const newRow: (Tile | null)[] = [];
+	const mergeInfos: RowMergeInfo[] = [];
 	let scoreGain = 0;
 	let merges = false;
 	let i = 0;
 
-	while (i < tiles.length) {
-		const currentTile = tiles[i];
+	while (i < tilesWithCols.length) {
+		const { tile: currentTile, originalCol: currentCol } = tilesWithCols[i];
 
 		// Check if we can merge with next tile (uses mode-aware canMerge)
-		if (i + 1 < tiles.length && canMerge(currentTile.value, tiles[i + 1].value, mode)) {
+		if (
+			i + 1 < tilesWithCols.length &&
+			canMerge(currentTile.value, tilesWithCols[i + 1].tile.value, mode)
+		) {
+			const { tile: nextTile, originalCol: nextCol } = tilesWithCols[i + 1];
+			const destCol = newRow.length;
+
 			// Merge tiles
 			const mergedValue = currentTile.value * 2;
 			const mergedTile: Tile = {
 				id: generateTileId(),
 				value: mergedValue,
-				position: { row: 0, col: newRow.length }, // Position will be updated later
+				position: { row: 0, col: destCol }, // Position will be updated later
 				isNew: false,
-				mergedFrom: [currentTile.id, tiles[i + 1].id]
+				mergedFrom: [currentTile.id, nextTile.id]
 			};
+
+			// Store merge info for animation
+			mergeInfos.push({
+				tile1: {
+					id: currentTile.id,
+					value: currentTile.value,
+					originalCol: currentCol,
+					displayValue: currentTile.displayValue
+				},
+				tile2: {
+					id: nextTile.id,
+					value: nextTile.value,
+					originalCol: nextCol,
+					displayValue: nextTile.displayValue
+				},
+				destCol,
+				resultTile: mergedTile
+			});
 
 			newRow.push(mergedTile);
 			scoreGain += mergedValue;
@@ -206,37 +261,71 @@ export function moveTilesInRow(
 		newRow.push(null);
 	}
 
-	return { row: newRow, scoreGain, merges };
+	return { row: newRow, scoreGain, merges, mergeInfos };
+}
+
+/**
+ * Merge info at board level (with full positions)
+ */
+interface BoardMergeInfo {
+	tile1: { id: string; value: number; fromPosition: Position; displayValue?: string };
+	tile2: { id: string; value: number; fromPosition: Position; displayValue?: string };
+	toPosition: Position;
+	resultTile: Tile;
 }
 
 /**
  * Moves all tiles on the board to the left
  * @param board - Current board
  * @param mode - Game mode (determines merge logic)
- * @returns Object with new board, score gain, and whether board changed
+ * @returns Object with new board, score gain, merge infos, and whether board changed
  */
 function moveLeft(
 	board: GameBoard,
 	mode: GameMode = 'classic'
-): { board: GameBoard; scoreGain: number; changed: boolean } {
+): { board: GameBoard; scoreGain: number; changed: boolean; mergeInfos: BoardMergeInfo[] } {
 	const newBoard = createEmptyBoard();
+	const allMergeInfos: BoardMergeInfo[] = [];
 	let totalScoreGain = 0;
 	let boardChanged = false;
 
-	for (let row = 0; row < BOARD_SIZE; row++) {
-		const { row: newRow, scoreGain } = moveTilesInRow(board[row], mode);
+	for (let rowIdx = 0; rowIdx < BOARD_SIZE; rowIdx++) {
+		const { row: newRow, scoreGain, mergeInfos } = moveTilesInRow(board[rowIdx], mode);
+
+		// Convert row-level merge infos to board-level (with full positions)
+		for (const mergeInfo of mergeInfos) {
+			allMergeInfos.push({
+				tile1: {
+					id: mergeInfo.tile1.id,
+					value: mergeInfo.tile1.value,
+					fromPosition: { row: rowIdx, col: mergeInfo.tile1.originalCol },
+					displayValue: mergeInfo.tile1.displayValue
+				},
+				tile2: {
+					id: mergeInfo.tile2.id,
+					value: mergeInfo.tile2.value,
+					fromPosition: { row: rowIdx, col: mergeInfo.tile2.originalCol },
+					displayValue: mergeInfo.tile2.displayValue
+				},
+				toPosition: { row: rowIdx, col: mergeInfo.destCol },
+				resultTile: {
+					...mergeInfo.resultTile,
+					position: { row: rowIdx, col: mergeInfo.destCol }
+				}
+			});
+		}
 
 		// Update positions for the row
 		for (let col = 0; col < BOARD_SIZE; col++) {
 			const tile = newRow[col];
 			if (tile) {
-				newBoard[row][col] = {
+				newBoard[rowIdx][col] = {
 					...tile,
-					position: { row, col }
+					position: { row: rowIdx, col }
 				};
 
 				// Check if tile moved or merged
-				const originalTile = board[row][col];
+				const originalTile = board[rowIdx][col];
 				if (!originalTile || originalTile.id !== tile.id || tile.mergedFrom) {
 					boardChanged = true;
 				}
@@ -246,7 +335,12 @@ function moveLeft(
 		totalScoreGain += scoreGain;
 	}
 
-	return { board: newBoard, scoreGain: totalScoreGain, changed: boardChanged };
+	return {
+		board: newBoard,
+		scoreGain: totalScoreGain,
+		changed: boardChanged,
+		mergeInfos: allMergeInfos
+	};
 }
 
 /**
@@ -316,17 +410,41 @@ export function isGameOver(board: GameBoard, mode: GameMode = 'classic'): boolea
 }
 
 /**
+ * Transforms a position by applying N clockwise rotations
+ * @param pos - Position to transform
+ * @param rotations - Number of clockwise rotations (0-3)
+ * @returns Transformed position
+ */
+function transformPosition(pos: Position, rotations: number): Position {
+	let { row, col } = pos;
+
+	for (let i = 0; i < rotations; i++) {
+		// Single clockwise rotation: (row, col) -> (col, BOARD_SIZE - 1 - row)
+		const newRow = col;
+		const newCol = BOARD_SIZE - 1 - row;
+		row = newRow;
+		col = newCol;
+	}
+
+	return { row, col };
+}
+
+/**
  * Performs a move in the specified direction
  * @param state - Current game state
  * @param direction - Direction to move
- * @returns New game state after the move
+ * @returns MoveResult with new state and merge animations
  */
-export function move(state: GameState, direction: Direction): GameState {
+export function move(state: GameState, direction: Direction): MoveResult {
 	if (state.gameOver) {
-		return state;
+		return { state, moved: false, mergeAnimations: [] };
 	}
 
-	let board = state.board;
+	// Clear animation flags from PREVIOUS move first (on the input board)
+	// This ensures new tiles from THIS move will have their flags intact
+	let board = state.board.map((row) =>
+		row.map((tile) => (tile ? { ...tile, isNew: false, mergedFrom: undefined } : null))
+	);
 	let rotations = 0;
 
 	// Rotate board so direction becomes "left"
@@ -350,26 +468,49 @@ export function move(state: GameState, direction: Direction): GameState {
 	}
 
 	// Move tiles left (pass mode for correct merge logic)
-	const { board: movedBoard, scoreGain, changed } = moveLeft(board, state.mode);
+	const { board: movedBoard, scoreGain, changed, mergeInfos } = moveLeft(board, state.mode);
 
 	if (!changed) {
 		// No movement occurred, return same state
-		return state;
+		return { state, moved: false, mergeAnimations: [] };
 	}
+
+	// Number of clockwise rotations to apply to transform positions back
+	const inverseRotations = (4 - rotations) % 4;
+
+	// Transform merge animations back to original orientation
+	const mergeAnimations: MergeAnimation[] = mergeInfos.map((info) => ({
+		tiles: [
+			{
+				id: info.tile1.id,
+				value: info.tile1.value,
+				fromPosition: transformPosition(info.tile1.fromPosition, inverseRotations),
+				toPosition: transformPosition(info.toPosition, inverseRotations),
+				displayValue: info.tile1.displayValue
+			},
+			{
+				id: info.tile2.id,
+				value: info.tile2.value,
+				fromPosition: transformPosition(info.tile2.fromPosition, inverseRotations),
+				toPosition: transformPosition(info.toPosition, inverseRotations),
+				displayValue: info.tile2.displayValue
+			}
+		],
+		resultTile: {
+			...info.resultTile,
+			position: transformPosition(info.toPosition, inverseRotations)
+		}
+	}));
 
 	// Rotate board back to original orientation
 	let finalBoard = movedBoard;
-	for (let i = 0; i < (4 - rotations) % 4; i++) {
+	for (let i = 0; i < inverseRotations; i++) {
 		finalBoard = rotateBoardClockwise(finalBoard);
 	}
 
-	// Clear animation flags from previous move BEFORE adding new tile
-	// This ensures CSS transitions work correctly on subsequent moves
-	finalBoard = finalBoard.map((row) =>
-		row.map((tile) => (tile ? { ...tile, isNew: false, mergedFrom: undefined } : null))
-	);
-
 	// Add random tile (will have isNew: true for appear animation)
+	// Note: Animation flags were cleared at the START of this function,
+	// so merged tiles from THIS move still have their mergedFrom flag intact
 	finalBoard = addRandomTile(finalBoard, state.mode);
 
 	// Update game state
@@ -377,7 +518,7 @@ export function move(state: GameState, direction: Direction): GameState {
 	const won = state.won || isGameWon(finalBoard, state.mode);
 	const gameOver = isGameOver(finalBoard, state.mode);
 
-	return {
+	const newState: GameState = {
 		board: finalBoard,
 		score: newScore,
 		gameOver,
@@ -385,4 +526,6 @@ export function move(state: GameState, direction: Direction): GameState {
 		canUndo: true,
 		mode: state.mode
 	};
+
+	return { state: newState, moved: true, mergeAnimations };
 }
