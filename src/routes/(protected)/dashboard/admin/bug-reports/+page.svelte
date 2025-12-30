@@ -209,33 +209,43 @@
 		}
 	}
 
-	// Batch delete
+	// Batch delete (handles >100 items by chunking)
 	async function handleBatchDelete() {
 		if (selectedIds.size === 0) return;
 
 		isBatchDeleting = true;
-		try {
-			const response = await fetch('/api/bug-reports/batch', {
-				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					reportIds: [...selectedIds]
-				})
-			});
+		const BATCH_SIZE = 100;
+		const allIds = [...selectedIds];
+		let totalDeleted = 0;
+		let totalFailed: { id: string; reason: string }[] = [];
 
-			if (!response.ok) {
-				const err = await response.json();
-				throw new Error(err.message || 'Erreur lors de la suppression');
+		try {
+			// Split into chunks of BATCH_SIZE
+			for (let i = 0; i < allIds.length; i += BATCH_SIZE) {
+				const chunk = allIds.slice(i, i + BATCH_SIZE);
+
+				const response = await fetch('/api/bug-reports/batch', {
+					method: 'DELETE',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ reportIds: chunk })
+				});
+
+				if (!response.ok) {
+					const err = await response.json();
+					throw new Error(err.message || 'Erreur lors de la suppression');
+				}
+
+				const result = await response.json();
+				totalDeleted += result.deleted;
+				if (result.failed) {
+					totalFailed = [...totalFailed, ...result.failed];
+				}
 			}
 
-			const result = await response.json();
-
-			if (result.failed && result.failed.length > 0) {
-				toaster.warning(
-					`${result.deleted} rapport(s) supprimé(s), ${result.failed.length} échec(s)`
-				);
+			if (totalFailed.length > 0) {
+				toaster.warning(`${totalDeleted} rapport(s) supprimé(s), ${totalFailed.length} échec(s)`);
 			} else {
-				toaster.success(`${result.deleted} rapport(s) supprimé(s)`);
+				toaster.success(`${totalDeleted} rapport(s) supprimé(s)`);
 			}
 
 			batchDeleteDialogOpen = false;
