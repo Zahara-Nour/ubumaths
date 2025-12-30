@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// 2. Check teacher role
-	if (!['teacher', 'admin'].includes(locals.user.role ?? '')) {
+	if (!locals.profile || !['teacher', 'admin'].includes(locals.profile.role ?? '')) {
 		throw error(403, 'Only teachers and admins can restrict users');
 	}
 
@@ -68,14 +68,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Teachers cannot restrict other teachers or admins
-	if (locals.user.role === 'teacher' && targetUser.role !== 'student') {
+	if (locals.profile?.role === 'teacher' && targetUser.role !== 'student') {
 		throw error(403, 'Teachers can only restrict students');
 	}
 
 	// 5. Additional authorization checks
 	if (scopeType === 'global') {
 		// CRITICAL FIX: For global restrictions, verify teacher has access to this student
-		if (locals.user.role !== 'admin') {
+		if (locals.profile?.role !== 'admin') {
 			// Admins can globally restrict anyone
 			// Teachers can only globally restrict students in their classes
 			const { data: membership, error: membershipError } = await locals.supabase
