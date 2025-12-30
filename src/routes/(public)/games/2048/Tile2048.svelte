@@ -95,14 +95,15 @@
 	/* Smooth transform transition for movement (separate from animations) */
 	.tile:not(.tile-new):not(.tile-merged) {
 		transition:
-			transform 150ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+			transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
 			background-color 200ms ease-in-out,
 			color 200ms ease-in-out;
 	}
 
 	/* New tile appearance animation - scale up from 0 */
+	/* Delay matches the movement transition duration so tile appears after sliding */
 	.tile-new {
-		animation: tile-appear 200ms ease-out;
+		animation: tile-appear 150ms ease-out 300ms backwards;
 	}
 
 	@keyframes tile-appear {

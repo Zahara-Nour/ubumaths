@@ -363,13 +363,14 @@ export function move(state: GameState, direction: Direction): GameState {
 		finalBoard = rotateBoardClockwise(finalBoard);
 	}
 
-	// Add random tile
-	finalBoard = addRandomTile(finalBoard, state.mode);
-
-	// Clear isNew flag from previous tiles
+	// Clear animation flags from previous move BEFORE adding new tile
+	// This ensures CSS transitions work correctly on subsequent moves
 	finalBoard = finalBoard.map((row) =>
-		row.map((tile) => (tile && !tile.isNew ? { ...tile, isNew: false } : tile))
+		row.map((tile) => (tile ? { ...tile, isNew: false, mergedFrom: undefined } : null))
 	);
+
+	// Add random tile (will have isNew: true for appear animation)
+	finalBoard = addRandomTile(finalBoard, state.mode);
 
 	// Update game state
 	const newScore = state.score + scoreGain;
