@@ -168,10 +168,19 @@ function restoreBrowser() {
 // 1. MESSAGE DEDUPLICATION (CRITICAL)
 // ============================================================================
 
+// Valid RFC 4122 UUIDs for tests (Zod validation requires proper UUID format)
+// Format: xxxxxxxx-xxxx-Vxxx-Yxxx-xxxxxxxxxxxx where V=[1-8] (version) and Y=[89ab] (variant)
+const TEST_CONVERSATION_ID = '11111111-1111-4111-a111-111111111111';
+const TEST_USER_ID = '22222222-2222-4222-a222-222222222222';
+const TEST_REMOTE_USER_ID = '33333333-3333-4333-a333-333333333333';
+const TEST_MESSAGE_ID = '44444444-4444-4444-a444-444444444444';
+const TEST_BROADCAST_MESSAGE_ID = '55555555-5555-4555-a555-555555555555';
+const TEST_DB_MESSAGE_ID = '66666666-6666-4666-a666-666666666666';
+
 describe('CRITICAL: Message Deduplication', () => {
 	let supabase: SupabaseClient<Database>;
-	const conversationId = 'conv-1';
-	const userId = 'user-1';
+	const conversationId = TEST_CONVERSATION_ID;
+	const userId = TEST_USER_ID;
 	const currentUser = { full_name: 'Test User', avatar_url: null };
 
 	beforeEach(() => {
@@ -324,14 +333,14 @@ describe('CRITICAL: Message Deduplication', () => {
 		const broadcastPayload = {
 			type: 'new_message' as const,
 			message: {
-				id: 'broadcast-remote-123',
+				id: TEST_BROADCAST_MESSAGE_ID,
 				conversation_id: conversationId,
-				sender_id: 'user-2',
+				sender_id: TEST_REMOTE_USER_ID,
 				content: { text: 'Remote message' },
 				plain_text: 'Remote message',
 				created_at: broadcastCreatedAt,
 				sender: {
-					id: 'user-2',
+					id: TEST_REMOTE_USER_ID,
 					full_name: 'Remote User',
 					avatar_url: null
 				}
@@ -343,7 +352,7 @@ describe('CRITICAL: Message Deduplication', () => {
 		// Step 1: Broadcast message should appear
 		let messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
-		expect(messages[0].id).toBe('broadcast-remote-123');
+		expect(messages[0].id).toBe(TEST_BROADCAST_MESSAGE_ID);
 		expect(messages[0].is_broadcast).toBe(true);
 
 		// Mock the DB SELECT query that handlePostgresMessage will make
@@ -353,9 +362,9 @@ describe('CRITICAL: Message Deduplication', () => {
 					single: vi.fn(() =>
 						Promise.resolve({
 							data: {
-								id: 'db-msg-456',
+								id: TEST_DB_MESSAGE_ID,
 								conversation_id: conversationId,
-								sender_id: 'user-2',
+								sender_id: TEST_REMOTE_USER_ID,
 								content: { text: 'Remote message' },
 								plain_text: 'Remote message',
 								created_at: broadcastCreatedAt, // Same timestamp for deduplication
@@ -364,7 +373,7 @@ describe('CRITICAL: Message Deduplication', () => {
 								is_flagged: false,
 								flag_reason: null,
 								sender: {
-									id: 'user-2',
+									id: TEST_REMOTE_USER_ID,
 									full_name: 'Remote User',
 									avatar_url: null
 								}
@@ -381,9 +390,9 @@ describe('CRITICAL: Message Deduplication', () => {
 		// Deduplication happens via created_at timestamp match
 		mockChannel.simulatePostgresChanges({
 			new: {
-				id: 'db-msg-456',
+				id: TEST_DB_MESSAGE_ID,
 				conversation_id: conversationId,
-				sender_id: 'user-2',
+				sender_id: TEST_REMOTE_USER_ID,
 				content: { text: 'Remote message' },
 				plain_text: 'Remote message',
 				created_at: broadcastCreatedAt
@@ -399,7 +408,7 @@ describe('CRITICAL: Message Deduplication', () => {
 		// Should have replaced broadcast with DB version
 		messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
-		expect(messages[0].id).toBe('db-msg-456');
+		expect(messages[0].id).toBe(TEST_DB_MESSAGE_ID);
 		expect(messages[0].is_broadcast).toBeUndefined();
 	});
 
@@ -416,14 +425,14 @@ describe('CRITICAL: Message Deduplication', () => {
 		mockChannel.simulateBroadcast('new_message', {
 			type: 'new_message',
 			message: {
-				id: 'temp-123',
+				id: TEST_BROADCAST_MESSAGE_ID,
 				conversation_id: conversationId,
-				sender_id: 'user-2',
+				sender_id: TEST_REMOTE_USER_ID,
 				content: { text: 'Message' },
 				plain_text: 'Message',
 				created_at: timestamp,
 				sender: {
-					id: 'user-2',
+					id: TEST_REMOTE_USER_ID,
 					full_name: 'User 2',
 					avatar_url: null
 				}
@@ -440,9 +449,9 @@ describe('CRITICAL: Message Deduplication', () => {
 					single: vi.fn(() =>
 						Promise.resolve({
 							data: {
-								id: 'db-msg-456',
+								id: TEST_DB_MESSAGE_ID,
 								conversation_id: conversationId,
-								sender_id: 'user-2',
+								sender_id: TEST_REMOTE_USER_ID,
 								content: { text: 'Message' },
 								plain_text: 'Message',
 								created_at: timestamp,
@@ -451,7 +460,7 @@ describe('CRITICAL: Message Deduplication', () => {
 								is_flagged: false,
 								flag_reason: null,
 								sender: {
-									id: 'user-2',
+									id: TEST_REMOTE_USER_ID,
 									full_name: 'User 2',
 									avatar_url: null
 								}
@@ -467,9 +476,9 @@ describe('CRITICAL: Message Deduplication', () => {
 		// Simulate postgres_changes with different ID but same timestamp
 		mockChannel.simulatePostgresChanges({
 			new: {
-				id: 'db-msg-456',
+				id: TEST_DB_MESSAGE_ID,
 				conversation_id: conversationId,
-				sender_id: 'user-2',
+				sender_id: TEST_REMOTE_USER_ID,
 				content: { text: 'Message' },
 				plain_text: 'Message',
 				created_at: timestamp // Same timestamp!
@@ -484,7 +493,7 @@ describe('CRITICAL: Message Deduplication', () => {
 		// Should deduplicate based on timestamp
 		messages = chatStore.getMessages(conversationId);
 		expect(messages).toHaveLength(1);
-		expect(messages[0].id).toBe('db-msg-456');
+		expect(messages[0].id).toBe(TEST_DB_MESSAGE_ID);
 	});
 
 	it('CRITICAL: should ignore broadcast from self (already have optimistic)', async () => {
@@ -505,7 +514,7 @@ describe('CRITICAL: Message Deduplication', () => {
 		mockChannel.simulateBroadcast('new_message', {
 			type: 'new_message',
 			message: {
-				id: 'temp-456',
+				id: TEST_MESSAGE_ID,
 				conversation_id: conversationId,
 				sender_id: userId, // Same as current user
 				content: { text: 'My message' },
@@ -730,8 +739,8 @@ describe('Optimistic UI Updates', () => {
 
 describe('Broadcast Channel Integration', () => {
 	let supabase: SupabaseClient<Database>;
-	const conversationId = 'conv-1';
-	const userId = 'user-1';
+	const conversationId = TEST_CONVERSATION_ID;
+	const userId = TEST_USER_ID;
 	const currentUser = { full_name: 'Test User', avatar_url: null };
 
 	beforeEach(() => {
@@ -785,14 +794,14 @@ describe('Broadcast Channel Integration', () => {
 		mockChannel.simulateBroadcast('new_message', {
 			type: 'new_message',
 			message: {
-				id: 'temp-remote',
+				id: TEST_BROADCAST_MESSAGE_ID,
 				conversation_id: conversationId,
-				sender_id: 'user-2',
+				sender_id: TEST_REMOTE_USER_ID,
 				content: { text: 'Remote message' },
 				plain_text: 'Remote message',
 				created_at: new Date().toISOString(),
 				sender: {
-					id: 'user-2',
+					id: TEST_REMOTE_USER_ID,
 					full_name: 'Remote User',
 					avatar_url: null
 				}
