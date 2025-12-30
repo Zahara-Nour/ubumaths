@@ -5,10 +5,9 @@
 
 import type { GameBoard, GameState, Tile, Direction, Position, GameMode } from './types';
 import { generateTileId } from './game-utils';
-import { generateEducationalTile, getWinningValue } from './educational-modes';
+import { generateEducationalTile, getWinningValue, canMerge } from './educational-modes';
 
 const BOARD_SIZE = 4;
-const _WIN_TILE_VALUE = 2048;
 
 /**
  * Creates an empty 4x4 game board
@@ -150,9 +149,13 @@ function rotateBoardCounterClockwise(board: GameBoard): GameBoard {
 /**
  * Moves and merges tiles in a single row to the left
  * @param row - Row of tiles
+ * @param mode - Game mode (determines merge logic)
  * @returns Object with new row, score gain, and whether any merges occurred
  */
-export function moveTilesInRow(row: (Tile | null)[]): {
+export function moveTilesInRow(
+	row: (Tile | null)[],
+	mode: GameMode = 'classic'
+): {
 	row: (Tile | null)[];
 	scoreGain: number;
 	merges: boolean;
@@ -172,8 +175,8 @@ export function moveTilesInRow(row: (Tile | null)[]): {
 	while (i < tiles.length) {
 		const currentTile = tiles[i];
 
-		// Check if we can merge with next tile
-		if (i + 1 < tiles.length && tiles[i + 1].value === currentTile.value) {
+		// Check if we can merge with next tile (uses mode-aware canMerge)
+		if (i + 1 < tiles.length && canMerge(currentTile.value, tiles[i + 1].value, mode)) {
 			// Merge tiles
 			const mergedValue = currentTile.value * 2;
 			const mergedTile: Tile = {
@@ -209,15 +212,19 @@ export function moveTilesInRow(row: (Tile | null)[]): {
 /**
  * Moves all tiles on the board to the left
  * @param board - Current board
+ * @param mode - Game mode (determines merge logic)
  * @returns Object with new board, score gain, and whether board changed
  */
-function moveLeft(board: GameBoard): { board: GameBoard; scoreGain: number; changed: boolean } {
+function moveLeft(
+	board: GameBoard,
+	mode: GameMode = 'classic'
+): { board: GameBoard; scoreGain: number; changed: boolean } {
 	const newBoard = createEmptyBoard();
 	let totalScoreGain = 0;
 	let boardChanged = false;
 
 	for (let row = 0; row < BOARD_SIZE; row++) {
-		const { row: newRow, scoreGain } = moveTilesInRow(board[row]);
+		const { row: newRow, scoreGain } = moveTilesInRow(board[row], mode);
 
 		// Update positions for the row
 		for (let col = 0; col < BOARD_SIZE; col++) {
@@ -264,31 +271,32 @@ export function isGameWon(board: GameBoard, mode: GameMode = 'classic'): boolean
 /**
  * Checks if any move is possible
  * @param board - Current board
+ * @param mode - Game mode (determines merge logic)
  * @returns True if any move is possible
  */
-export function canMove(board: GameBoard): boolean {
+export function canMove(board: GameBoard, mode: GameMode = 'classic'): boolean {
 	// Check for empty cells
 	if (getEmptyCells(board).length > 0) {
 		return true;
 	}
 
-	// Check for adjacent tiles with same value (horizontal)
+	// Check for adjacent tiles that can merge (horizontal)
 	for (let row = 0; row < BOARD_SIZE; row++) {
 		for (let col = 0; col < BOARD_SIZE - 1; col++) {
 			const tile1 = board[row][col];
 			const tile2 = board[row][col + 1];
-			if (tile1 && tile2 && tile1.value === tile2.value) {
+			if (tile1 && tile2 && canMerge(tile1.value, tile2.value, mode)) {
 				return true;
 			}
 		}
 	}
 
-	// Check for adjacent tiles with same value (vertical)
+	// Check for adjacent tiles that can merge (vertical)
 	for (let row = 0; row < BOARD_SIZE - 1; row++) {
 		for (let col = 0; col < BOARD_SIZE; col++) {
 			const tile1 = board[row][col];
 			const tile2 = board[row + 1][col];
-			if (tile1 && tile2 && tile1.value === tile2.value) {
+			if (tile1 && tile2 && canMerge(tile1.value, tile2.value, mode)) {
 				return true;
 			}
 		}
@@ -300,10 +308,11 @@ export function canMove(board: GameBoard): boolean {
 /**
  * Checks if the game is over (no moves possible)
  * @param board - Current board
+ * @param mode - Game mode (determines merge logic)
  * @returns True if game over
  */
-export function isGameOver(board: GameBoard): boolean {
-	return !canMove(board);
+export function isGameOver(board: GameBoard, mode: GameMode = 'classic'): boolean {
+	return !canMove(board, mode);
 }
 
 /**
@@ -339,8 +348,8 @@ export function move(state: GameState, direction: Direction): GameState {
 			break;
 	}
 
-	// Move tiles left
-	const { board: movedBoard, scoreGain, changed } = moveLeft(board);
+	// Move tiles left (pass mode for correct merge logic)
+	const { board: movedBoard, scoreGain, changed } = moveLeft(board, state.mode);
 
 	if (!changed) {
 		// No movement occurred, return same state
@@ -364,7 +373,7 @@ export function move(state: GameState, direction: Direction): GameState {
 	// Update game state
 	const newScore = state.score + scoreGain;
 	const won = state.won || isGameWon(finalBoard, state.mode);
-	const gameOver = isGameOver(finalBoard);
+	const gameOver = isGameOver(finalBoard, state.mode);
 
 	return {
 		board: finalBoard,

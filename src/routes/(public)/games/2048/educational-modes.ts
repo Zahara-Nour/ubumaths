@@ -268,8 +268,11 @@ export function getMergeDisplayValue(value: number, mode: GameMode): string {
  * @param mode - Current game mode
  * @returns Whether tiles can merge
  */
-export function canMerge(tile1Value: number, tile2Value: number, _mode: GameMode): boolean {
-	// In classic mode and educational modes, tiles merge if values are equal
+export function canMerge(tile1Value: number, tile2Value: number, mode: GameMode): boolean {
+	// In all modes, tiles merge if their encoded values are equal
+	// Note: For future extension, mode could enable equivalent fraction merging
+	// (e.g., 1/2 and 2/4) but current implementation uses value equality
+	void mode; // Acknowledge parameter for future use
 	return tile1Value === tile2Value;
 }
 
