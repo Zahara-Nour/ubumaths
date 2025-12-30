@@ -30,7 +30,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	}
 
 	// 2. Check teacher role
-	if (!['teacher', 'admin'].includes(locals.user.role ?? '')) {
+	if (!locals.profile || !['teacher', 'admin'].includes(locals.profile.role ?? '')) {
 		throw error(403, 'Only teachers and admins can delete messages');
 	}
 
@@ -88,7 +88,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	// - Have both students in their classes (for 1-on-1 student chats)
 	// - Be an admin (can moderate any message)
 
-	if (locals.user.role === 'admin') {
+	if (locals.profile?.role === 'admin') {
 		// Admins can delete any message - skip authorization checks
 	} else {
 		// Check if teacher is a participant in the conversation
