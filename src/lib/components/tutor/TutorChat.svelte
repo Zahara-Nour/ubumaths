@@ -45,6 +45,8 @@
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import { TUTOR_MAX_HELP_LEVEL } from '$lib/config/tutor-limits';
 	import { createLogger } from '$lib/utils/logger';
+	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
+	import type { JSONContent } from '@tiptap/core';
 
 	const logger = createLogger('TutorChat');
 
@@ -121,48 +123,6 @@
 
 	// Refs
 	let messagesContainer: HTMLDivElement | undefined;
-
-	// Tiptap JSON node interface
-	interface TiptapNode {
-		type: string;
-		attrs?: Record<string, unknown>;
-		content?: TiptapNode[];
-		text?: string;
-	}
-
-	/**
-	 * Convert Tiptap JSON to plain text with LaTeX math
-	 * Math nodes become $latex$
-	 */
-	function convertTiptapJsonToText(json: unknown): string {
-		if (!json || typeof json !== 'object') return '';
-
-		const doc = json as { type?: string; content?: TiptapNode[] };
-		if (doc.type !== 'doc' || !doc.content) return '';
-
-		const processNode = (node: TiptapNode): string => {
-			switch (node.type) {
-				case 'text':
-					return node.text || '';
-				case 'mathInline':
-					// Math node - wrap in $...$
-					return `$${(node.attrs?.latex as string) || ''}$`;
-				case 'paragraph':
-				case 'doc':
-					return (node.content || []).map(processNode).join('');
-				case 'hardBreak':
-					return '\n';
-				default:
-					// For other nodes, try to process children
-					if (node.content) {
-						return node.content.map(processNode).join('');
-					}
-					return '';
-			}
-		};
-
-		return doc.content.map(processNode).join('\n').trim();
-	}
 
 	// Generate random rotation for avatar
 	function generateRandomRotation(): number {
@@ -491,7 +451,7 @@
 
 	// Handle rich text editor send
 	async function handleRichTextSend(jsonContent: unknown) {
-		const textContent = convertTiptapJsonToText(jsonContent);
+		const textContent = tipTapToMarkdown(jsonContent as JSONContent);
 		if (!textContent.trim()) return;
 		await sendMessage(textContent);
 	}
