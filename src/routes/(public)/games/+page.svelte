@@ -76,7 +76,7 @@
 	/>
 </svelte:head>
 
-<div class="mx-auto max-w-6xl">
+<div class="mx-auto max-w-6xl p-4 md:p-6">
 	<!-- Hero Section -->
 	<section class="mb-12 text-center">
 		<div class="mb-4 flex justify-center">

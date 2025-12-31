@@ -107,7 +107,6 @@
 			class="relative flex-1"
 			class:overflow-y-auto={!isWhiteboardRoute}
 			class:overflow-hidden={isWhiteboardRoute}
-			class:p-6={!isDashboardRoute && !isWhiteboardRoute}
 		>
 			<!-- Always render children so page can load -->
 			<div
@@ -120,7 +119,7 @@
 
 			<!-- Overlay skeleton during navigation (only for non-dashboard routes) -->
 			{#if $navigating && !isDashboardRoute}
-				<div class="absolute inset-0 bg-background p-6">
+				<div class="absolute inset-0 bg-background">
 					{#if skeletonType === 'dashboard'}
 						<SkeletonDashboard />
 					{:else if skeletonType === 'list'}
