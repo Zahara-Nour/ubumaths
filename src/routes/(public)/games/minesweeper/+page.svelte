@@ -247,7 +247,7 @@
 										Mes succès
 									</Button>
 								</a>
-								<a href="/dashboard/student/minesweeper/leaderboard" class="block">
+								<a href="/leaderboards/minesweeper" class="block">
 									<Button variant="outline" class="w-full justify-start">
 										<span class="mr-2">🏆</span>
 										Classement global
