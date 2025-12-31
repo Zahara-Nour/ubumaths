@@ -109,17 +109,6 @@
 				<div class="flex items-center justify-between">
 					<div>
 						<h1 class="text-3xl font-bold text-foreground md:text-4xl">Démineur</h1>
-						<p class="mt-1 text-sm text-muted-foreground">
-							Difficulté: <span class="font-semibold capitalize">
-								{#if game.difficulty === 'beginner'}
-									Débutant
-								{:else if game.difficulty === 'intermediate'}
-									Intermédiaire
-								{:else}
-									Expert
-								{/if}
-							</span>
-						</p>
 					</div>
 					<Button
 						onclick={backToMenu}
