@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.14](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.13...v0.5.14) (2025-12-31)
+
+### ✨ Features
+
+- **responsive:** add mobile drawer navigation to public header ([3a58619](https://github.com/Zahara-Nour/ubumaths/commit/3a58619ac53b2f3c38960eeae2fd04702b0e90f3))
+
 ### [0.5.13](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.12...v0.5.13) (2025-12-31)
 
 ### ✨ Features
