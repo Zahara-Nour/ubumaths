@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.15](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.14...v0.5.15) (2025-12-31)
+
+### ✨ Features
+
+- **minesweeper:** rotate expert grid 90° on mobile for better fit ([6241d44](https://github.com/Zahara-Nour/ubumaths/commit/6241d4405810c3bcf20613e5bc7e4ac4b9abcd5e))
+
 ### [0.5.14](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.13...v0.5.14) (2025-12-31)
 
 ### ✨ Features
