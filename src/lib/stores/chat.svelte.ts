@@ -555,6 +555,9 @@ class ChatStore {
 				// Update hasMore flag
 				this.hasMore.set(conversationId, data.length === limit);
 
+				// Load reactions for these messages
+				await this.loadReactionsForMessages(conversationId, transformedMessages);
+
 				logger.info(`Loaded ${data.length} messages for conversation ${conversationId}`);
 			}
 		} catch (error) {
@@ -563,6 +566,64 @@ class ChatStore {
 		} finally {
 			this.loadingMessages = false;
 			this.loading = false;
+		}
+	}
+
+	/**
+	 * Load reactions for a set of messages
+	 * Fetches from message_reactions table and merges into message objects
+	 *
+	 * @param conversationId - The conversation ID
+	 * @param messages - Messages to load reactions for
+	 */
+	private async loadReactionsForMessages(
+		conversationId: string,
+		messages: Message[]
+	): Promise<void> {
+		if (!this.supabase || messages.length === 0) {
+			return;
+		}
+
+		const messageIds = messages.map((m) => m.id);
+
+		try {
+			const { data: reactions, error } = await this.supabase
+				.from('message_reactions')
+				.select('id, message_id, user_id, emoji, created_at')
+				.in('message_id', messageIds);
+
+			if (error) {
+				logger.error('Failed to load reactions:', error);
+				return;
+			}
+
+			if (reactions && reactions.length > 0) {
+				// Group reactions by message_id
+				const reactionsByMessage = new Map<string, MessageReaction[]>();
+				for (const reaction of reactions) {
+					const existing = reactionsByMessage.get(reaction.message_id) || [];
+					existing.push({
+						id: reaction.id,
+						message_id: reaction.message_id,
+						user_id: reaction.user_id,
+						emoji: reaction.emoji,
+						created_at: reaction.created_at
+					});
+					reactionsByMessage.set(reaction.message_id, existing);
+				}
+
+				// Merge reactions into messages
+				for (const message of messages) {
+					message.reactions = reactionsByMessage.get(message.id) || [];
+				}
+
+				// Trigger reactivity
+				this.messages.set(conversationId, [...messages]);
+
+				logger.trace(`Loaded ${reactions.length} reactions for ${messages.length} messages`);
+			}
+		} catch (error) {
+			logger.error('Failed to load reactions:', error);
 		}
 	}
 
@@ -625,7 +686,10 @@ class ChatStore {
 					}
 				}));
 
-				// Append older messages
+				// Load reactions for these messages first
+				await this.loadReactionsForMessages(conversationId, transformedMessages);
+
+				// Append older messages (reactions already loaded)
 				const updated = [...existingMessages, ...transformedMessages];
 				this.messages.set(conversationId, updated);
 
@@ -1275,93 +1339,117 @@ class ChatStore {
 
 	/**
 	 * Toggle reaction on a message (add or remove)
-	 * Uses Broadcast API (ephemeral, not persisted to database)
+	 * Persists to database and broadcasts to other users
 	 *
 	 * @param messageId - Message ID
 	 * @param emoji - Emoji to toggle
 	 */
-	toggleReaction(messageId: string, emoji: string): void {
-		if (!browser || !this.userId) {
+	async toggleReaction(messageId: string, emoji: string): Promise<void> {
+		if (!browser || !this.userId || !this.supabase) {
 			logger.warn('Cannot toggle reaction: not initialized');
 			return;
 		}
 
-		// Find message across all conversations
+		// Find message and conversation
+		let foundConversationId: string | null = null;
+		let foundMessage: Message | null = null;
+
 		for (const [conversationId, messages] of this.messages.entries()) {
-			const messageIndex = messages.findIndex((msg) => msg.id === messageId);
-
-			if (messageIndex !== -1) {
-				const message = messages[messageIndex];
-
-				// Initialize reactions array if needed
-				if (!message.reactions) {
-					message.reactions = [];
-				}
-
-				// Check if user already reacted with this emoji
-				const existingReactionIndex = message.reactions.findIndex(
-					(r) => r.user_id === this.userId && r.emoji === emoji
-				);
-
-				if (existingReactionIndex !== -1) {
-					// Remove reaction (toggle off)
-					message.reactions.splice(existingReactionIndex, 1);
-
-					// Broadcast removal
-					const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
-					if (channel) {
-						channel
-							.send({
-								type: 'broadcast',
-								event: 'message_reaction',
-								payload: {
-									type: 'message_reaction',
-									messageId,
-									userId: this.userId,
-									emoji,
-									action: 'remove'
-								} satisfies BroadcastReactionPayload
-							})
-							.catch((err) => logger.error('Failed to broadcast reaction removal:', err));
-					}
-
-					logger.trace('Reaction removed:', { messageId, emoji, userId: this.userId });
-				} else {
-					// Add reaction (toggle on)
-					message.reactions.push({
-						id: crypto.randomUUID(),
-						message_id: messageId,
-						user_id: this.userId,
-						emoji,
-						created_at: new Date().toISOString()
-					});
-
-					// Broadcast addition
-					const channel = supabaseRealtimeManager.getChannel(`chat-${conversationId}`);
-					if (channel) {
-						channel
-							.send({
-								type: 'broadcast',
-								event: 'message_reaction',
-								payload: {
-									type: 'message_reaction',
-									messageId,
-									userId: this.userId,
-									emoji,
-									action: 'add'
-								} satisfies BroadcastReactionPayload
-							})
-							.catch((err) => logger.error('Failed to broadcast reaction:', err));
-					}
-
-					logger.trace('Reaction added:', { messageId, emoji, userId: this.userId });
-				}
-
-				// Trigger reactivity by replacing the messages array
-				this.messages.set(conversationId, [...messages]);
-
+			const message = messages.find((msg) => msg.id === messageId);
+			if (message) {
+				foundConversationId = conversationId;
+				foundMessage = message;
 				break;
 			}
+		}
+
+		if (!foundConversationId || !foundMessage) {
+			logger.warn('Message not found for reaction:', messageId);
+			return;
+		}
+
+		// Optimistic update: determine action before API call
+		if (!foundMessage.reactions) {
+			foundMessage.reactions = [];
+		}
+
+		const existingReactionIndex = foundMessage.reactions.findIndex(
+			(r) => r.user_id === this.userId && r.emoji === emoji
+		);
+		const isAdding = existingReactionIndex === -1;
+
+		// Apply optimistic update
+		if (isAdding) {
+			foundMessage.reactions.push({
+				id: crypto.randomUUID(),
+				message_id: messageId,
+				user_id: this.userId,
+				emoji,
+				created_at: new Date().toISOString()
+			});
+		} else {
+			foundMessage.reactions.splice(existingReactionIndex, 1);
+		}
+
+		// Trigger reactivity
+		const messages = this.messages.get(foundConversationId)!;
+		this.messages.set(foundConversationId, [...messages]);
+
+		try {
+			// Persist to database via RPC
+			const { error } = await this.supabase.rpc('toggle_reaction', {
+				p_message_id: messageId,
+				p_emoji: emoji
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			// Broadcast to other users
+			const channel = supabaseRealtimeManager.getChannel(`chat-${foundConversationId}`);
+			if (channel) {
+				channel
+					.send({
+						type: 'broadcast',
+						event: 'message_reaction',
+						payload: {
+							type: 'message_reaction',
+							messageId,
+							userId: this.userId,
+							emoji,
+							action: isAdding ? 'add' : 'remove'
+						} satisfies BroadcastReactionPayload
+					})
+					.catch((err) => logger.error('Failed to broadcast reaction:', err));
+			}
+
+			logger.trace('Reaction toggled:', { messageId, emoji, action: isAdding ? 'add' : 'remove' });
+		} catch (error) {
+			// Rollback optimistic update on error
+			logger.error('Failed to toggle reaction:', error);
+
+			if (isAdding) {
+				// Remove the optimistically added reaction
+				const idx = foundMessage.reactions?.findIndex(
+					(r) => r.user_id === this.userId && r.emoji === emoji
+				);
+				if (idx !== undefined && idx !== -1) {
+					foundMessage.reactions?.splice(idx, 1);
+				}
+			} else {
+				// Re-add the optimistically removed reaction
+				foundMessage.reactions?.push({
+					id: crypto.randomUUID(),
+					message_id: messageId,
+					user_id: this.userId,
+					emoji,
+					created_at: new Date().toISOString()
+				});
+			}
+
+			// Trigger reactivity for rollback
+			this.messages.set(foundConversationId, [...messages]);
 		}
 	}
 
