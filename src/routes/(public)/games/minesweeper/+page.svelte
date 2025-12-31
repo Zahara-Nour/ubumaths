@@ -129,19 +129,15 @@
 				<!-- Game board and controls in responsive layout -->
 				<div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
 					<!-- Board (main area) -->
-					<div class="lg:col-span-3">
-						<Card class="p-6">
-							<div class="flex justify-center">
-								<MinesweeperBoard
-									difficulty={game.difficulty}
-									gameState={game}
-									onCellReveal={(row, col) => minesweeperStore.revealCell(row, col)}
-									onCellFlag={(row, col) => minesweeperStore.toggleFlag(row, col)}
-									onCellChord={(row, col) => minesweeperStore.chordClick(row, col)}
-									disabled={game.status === 'won' || game.status === 'lost'}
-								/>
-							</div>
-						</Card>
+					<div class="flex justify-center lg:col-span-3">
+						<MinesweeperBoard
+							difficulty={game.difficulty}
+							gameState={game}
+							onCellReveal={(row, col) => minesweeperStore.revealCell(row, col)}
+							onCellFlag={(row, col) => minesweeperStore.toggleFlag(row, col)}
+							onCellChord={(row, col) => minesweeperStore.chordClick(row, col)}
+							disabled={game.status === 'won' || game.status === 'lost'}
+						/>
 					</div>
 
 					<!-- Controls (sidebar) -->
