@@ -1126,36 +1126,85 @@ class ChatStore {
 	 * @param payload - Reaction payload
 	 */
 	private handleReaction(payload: BroadcastReactionPayload): void {
+		console.log('[handleReaction] Received broadcast:', payload);
+
 		// Find the message across all conversations
 		for (const [conversationId, messages] of this.messages.entries()) {
 			const messageIndex = messages.findIndex((msg) => msg.id === payload.messageId);
 
 			if (messageIndex !== -1) {
 				const message = messages[messageIndex];
+				const currentReactions = message.reactions || [];
 
-				if (!message.reactions) {
-					message.reactions = [];
-				}
+				let newReactions: MessageReaction[];
 
 				if (payload.action === 'add') {
-					// Add reaction
-					message.reactions.push({
-						id: crypto.randomUUID(),
-						message_id: payload.messageId,
-						user_id: payload.userId,
-						emoji: payload.emoji,
-						created_at: new Date().toISOString()
-					});
+					// Check if this emoji already exists (aggregated format)
+					const existingIndex = currentReactions.findIndex((r) => r.emoji === payload.emoji);
+
+					if (existingIndex !== -1) {
+						// Increment count
+						newReactions = currentReactions.map((r) =>
+							r.emoji === payload.emoji
+								? {
+										...r,
+										count: (r.count || 1) + 1,
+										// Mark user_reacted if it's the current user (shouldn't happen via broadcast)
+										user_reacted: r.user_reacted || payload.userId === this.userId
+									}
+								: r
+						);
+					} else {
+						// Add new aggregated reaction
+						newReactions = [
+							...currentReactions,
+							{
+								id: crypto.randomUUID(),
+								message_id: payload.messageId,
+								user_id: payload.userId,
+								emoji: payload.emoji,
+								created_at: new Date().toISOString(),
+								count: 1,
+								user_reacted: payload.userId === this.userId
+							}
+						];
+					}
 				} else {
 					// Remove reaction
-					message.reactions = message.reactions.filter(
-						(r) => !(r.user_id === payload.userId && r.emoji === payload.emoji)
-					);
+					const existingIndex = currentReactions.findIndex((r) => r.emoji === payload.emoji);
+
+					if (existingIndex !== -1) {
+						const existing = currentReactions[existingIndex];
+						if ((existing.count || 1) > 1) {
+							// Decrement count
+							newReactions = currentReactions.map((r) =>
+								r.emoji === payload.emoji
+									? {
+											...r,
+											count: (r.count || 1) - 1,
+											user_reacted: payload.userId === this.userId ? false : r.user_reacted
+										}
+									: r
+							);
+						} else {
+							// Remove entirely
+							newReactions = currentReactions.filter((r) => r.emoji !== payload.emoji);
+						}
+					} else {
+						newReactions = currentReactions;
+					}
 				}
 
-				// Trigger reactivity
-				this.messages.set(conversationId, [...messages]);
+				// Create new message object for Svelte 5 reactivity
+				const updatedMessage = { ...message, reactions: newReactions };
 
+				// Update messages array with new message object
+				const updatedMessages = messages.map((msg) =>
+					msg.id === payload.messageId ? updatedMessage : msg
+				);
+				this.messages.set(conversationId, updatedMessages);
+
+				console.log('[handleReaction] Updated reactions for message:', payload.messageId);
 				logger.info('Reaction updated:', payload);
 				break;
 			}
