@@ -571,7 +571,7 @@ class ChatStore {
 
 	/**
 	 * Load reactions for a set of messages
-	 * Fetches from message_reactions table and merges into message objects
+	 * Fetches from message_reactions table, aggregates by emoji, and merges into message objects
 	 *
 	 * @param conversationId - The conversation ID
 	 * @param messages - Messages to load reactions for
@@ -598,21 +598,39 @@ class ChatStore {
 			}
 
 			if (reactions && reactions.length > 0) {
-				// Group reactions by message_id
+				// Group reactions by message_id, then aggregate by emoji
 				const reactionsByMessage = new Map<string, MessageReaction[]>();
+
 				for (const reaction of reactions) {
-					const existing = reactionsByMessage.get(reaction.message_id) || [];
-					existing.push({
-						id: reaction.id,
-						message_id: reaction.message_id,
-						user_id: reaction.user_id,
-						emoji: reaction.emoji,
-						created_at: reaction.created_at
-					});
-					reactionsByMessage.set(reaction.message_id, existing);
+					const messageReactions = reactionsByMessage.get(reaction.message_id) || [];
+
+					// Find existing aggregation for this emoji
+					const existingIndex = messageReactions.findIndex((r) => r.emoji === reaction.emoji);
+
+					if (existingIndex !== -1) {
+						// Increment count and check if current user reacted
+						messageReactions[existingIndex].count =
+							(messageReactions[existingIndex].count || 1) + 1;
+						if (reaction.user_id === this.userId) {
+							messageReactions[existingIndex].user_reacted = true;
+						}
+					} else {
+						// Create new aggregated reaction
+						messageReactions.push({
+							id: reaction.id,
+							message_id: reaction.message_id,
+							user_id: reaction.user_id,
+							emoji: reaction.emoji,
+							created_at: reaction.created_at,
+							count: 1,
+							user_reacted: reaction.user_id === this.userId
+						});
+					}
+
+					reactionsByMessage.set(reaction.message_id, messageReactions);
 				}
 
-				// Merge reactions into messages
+				// Merge aggregated reactions into messages
 				for (const message of messages) {
 					message.reactions = reactionsByMessage.get(message.id) || [];
 				}
@@ -1369,31 +1387,61 @@ class ChatStore {
 		}
 
 		// Optimistic update: determine action before API call
-		if (!foundMessage.reactions) {
-			foundMessage.reactions = [];
-		}
+		// Reactions are aggregated by emoji with count and user_reacted
+		const currentReactions = foundMessage.reactions || [];
 
-		const existingReactionIndex = foundMessage.reactions.findIndex(
-			(r) => r.user_id === this.userId && r.emoji === emoji
-		);
-		const isAdding = existingReactionIndex === -1;
+		// Check if user already reacted with this emoji
+		const existingEmojiIndex = currentReactions.findIndex((r) => r.emoji === emoji);
+		const existingReaction =
+			existingEmojiIndex !== -1 ? currentReactions[existingEmojiIndex] : null;
+		const isAdding = !existingReaction?.user_reacted;
 
-		// Apply optimistic update
+		// Create new reactions array (immutable update for reactivity)
+		let newReactions: MessageReaction[];
 		if (isAdding) {
-			foundMessage.reactions.push({
-				id: crypto.randomUUID(),
-				message_id: messageId,
-				user_id: this.userId,
-				emoji,
-				created_at: new Date().toISOString()
-			});
+			if (existingReaction) {
+				// Increment existing emoji count
+				newReactions = currentReactions.map((r) =>
+					r.emoji === emoji ? { ...r, count: (r.count || 1) + 1, user_reacted: true } : r
+				);
+			} else {
+				// Add new emoji reaction
+				newReactions = [
+					...currentReactions,
+					{
+						id: crypto.randomUUID(),
+						message_id: messageId,
+						user_id: this.userId,
+						emoji,
+						created_at: new Date().toISOString(),
+						count: 1,
+						user_reacted: true
+					}
+				];
+			}
 		} else {
-			foundMessage.reactions.splice(existingReactionIndex, 1);
+			// Remove user's reaction
+			if (existingReaction && (existingReaction.count || 1) > 1) {
+				// Decrement count
+				newReactions = currentReactions.map((r) =>
+					r.emoji === emoji ? { ...r, count: (r.count || 1) - 1, user_reacted: false } : r
+				);
+			} else {
+				// Remove the emoji entirely
+				newReactions = currentReactions.filter((r) => r.emoji !== emoji);
+			}
 		}
 
-		// Trigger reactivity
+		// Create new message object with updated reactions (for Svelte reactivity)
+		const updatedMessage = { ...foundMessage, reactions: newReactions };
+
+		// Update messages array with new message object
 		const messages = this.messages.get(foundConversationId)!;
-		this.messages.set(foundConversationId, [...messages]);
+		const updatedMessages = messages.map((msg) => (msg.id === messageId ? updatedMessage : msg));
+		this.messages.set(foundConversationId, updatedMessages);
+
+		// Update foundMessage reference for rollback
+		foundMessage = updatedMessage;
 
 		try {
 			// Persist to database via RPC
@@ -1429,27 +1477,61 @@ class ChatStore {
 			// Rollback optimistic update on error
 			logger.error('Failed to toggle reaction:', error);
 
+			// Restore original reactions (reverse of what we did)
+			const currentReactionsForRollback = foundMessage.reactions || [];
+			let rolledBackReactions: MessageReaction[];
+
 			if (isAdding) {
-				// Remove the optimistically added reaction
-				const idx = foundMessage.reactions?.findIndex(
-					(r) => r.user_id === this.userId && r.emoji === emoji
-				);
-				if (idx !== undefined && idx !== -1) {
-					foundMessage.reactions?.splice(idx, 1);
+				// We added a reaction, so remove it
+				const existingIdx = currentReactionsForRollback.findIndex((r) => r.emoji === emoji);
+				if (existingIdx !== -1) {
+					const existing = currentReactionsForRollback[existingIdx];
+					if ((existing.count || 1) > 1) {
+						// Decrement count
+						rolledBackReactions = currentReactionsForRollback.map((r) =>
+							r.emoji === emoji ? { ...r, count: (r.count || 1) - 1, user_reacted: false } : r
+						);
+					} else {
+						// Remove entirely
+						rolledBackReactions = currentReactionsForRollback.filter((r) => r.emoji !== emoji);
+					}
+				} else {
+					rolledBackReactions = currentReactionsForRollback;
 				}
 			} else {
-				// Re-add the optimistically removed reaction
-				foundMessage.reactions?.push({
-					id: crypto.randomUUID(),
-					message_id: messageId,
-					user_id: this.userId,
-					emoji,
-					created_at: new Date().toISOString()
-				});
+				// We removed a reaction, so add it back
+				const existingIdx = currentReactionsForRollback.findIndex((r) => r.emoji === emoji);
+				if (existingIdx !== -1) {
+					// Increment count
+					rolledBackReactions = currentReactionsForRollback.map((r) =>
+						r.emoji === emoji ? { ...r, count: (r.count || 1) + 1, user_reacted: true } : r
+					);
+				} else {
+					// Add back
+					rolledBackReactions = [
+						...currentReactionsForRollback,
+						{
+							id: crypto.randomUUID(),
+							message_id: messageId,
+							user_id: this.userId,
+							emoji,
+							created_at: new Date().toISOString(),
+							count: 1,
+							user_reacted: true
+						}
+					];
+				}
 			}
 
-			// Trigger reactivity for rollback
-			this.messages.set(foundConversationId, [...messages]);
+			// Create new message object for rollback
+			const rolledBackMessage = { ...foundMessage, reactions: rolledBackReactions };
+
+			// Update messages array
+			const currentMessages = this.messages.get(foundConversationId)!;
+			const rolledBackMessages = currentMessages.map((msg) =>
+				msg.id === messageId ? rolledBackMessage : msg
+			);
+			this.messages.set(foundConversationId, rolledBackMessages);
 		}
 	}
 
