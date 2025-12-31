@@ -211,33 +211,30 @@
 						<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
 							<Button
 								onclick={() => startGame('beginner')}
-								variant="outline"
+								variant="secondary"
 								class="h-auto flex-col gap-1 py-4"
 								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
 							>
-								<span class="text-2xl">🌱</span>
 								<span class="font-semibold">Débutant</span>
-								<span class="text-xs text-muted-foreground">9×9 · 10 mines</span>
+								<span class="text-xs opacity-70">9×9 · 10 mines</span>
 							</Button>
 							<Button
 								onclick={() => startGame('intermediate')}
-								variant="outline"
+								variant="secondary"
 								class="h-auto flex-col gap-1 py-4"
 								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
 							>
-								<span class="text-2xl">⚡</span>
 								<span class="font-semibold">Intermédiaire</span>
-								<span class="text-xs text-muted-foreground">16×16 · 40 mines</span>
+								<span class="text-xs opacity-70">16×16 · 40 mines</span>
 							</Button>
 							<Button
 								onclick={() => startGame('expert')}
-								variant="outline"
+								variant="secondary"
 								class="h-auto flex-col gap-1 py-4"
 								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
 							>
-								<span class="text-2xl">🔥</span>
 								<span class="font-semibold">Expert</span>
-								<span class="text-xs text-muted-foreground">16×30 · 99 mines</span>
+								<span class="text-xs opacity-70">16×30 · 99 mines</span>
 							</Button>
 						</div>
 					</div>
