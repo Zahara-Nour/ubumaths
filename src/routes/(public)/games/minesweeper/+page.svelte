@@ -83,9 +83,14 @@
 
 	// Return to menu
 	function backToMenu() {
+		// Save current game if in progress
+		if (minesweeperStore.currentGame?.status === 'in_progress') {
+			savedGame = minesweeperStore.currentGame;
+		} else {
+			savedGame = null;
+		}
 		gameStarted = false;
-		savedGame = null;
-		minesweeperStore.cleanup();
+		minesweeperStore.currentGame = null;
 	}
 
 	// Cleanup on component destroy
