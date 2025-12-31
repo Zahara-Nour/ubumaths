@@ -263,16 +263,24 @@ body {
 
 /* Fix header and sidebar font sizes to prevent scaling */
 header,
-header *:not(svg):not(img) {
+header *:not(svg):not(img):not(h1) {
 	font-size: 1rem !important;
 	line-height: 1.5 !important;
 }
 
-/* Override Tailwind text-* classes in header */
+/* Override Tailwind text-* classes in header - responsive */
 header h1,
 header .text-2xl {
-	font-size: 1.5rem !important;
-	line-height: 2rem !important;
+	font-size: 1.25rem !important; /* 20px on mobile */
+	line-height: 1.75rem !important;
+}
+
+@media (min-width: 768px) {
+	header h1,
+	header .text-2xl {
+		font-size: 1.5rem !important; /* 24px on desktop */
+		line-height: 2rem !important;
+	}
 }
 
 header p,
@@ -282,7 +290,7 @@ header .text-sm {
 }
 
 header span:not(.sr-only),
-header .text-xl {
+header .text-xl:not(h1) {
 	font-size: 1rem !important;
 	line-height: 1.5 !important;
 }
@@ -297,20 +305,23 @@ aside {
 	/* Don't override font-size - let Tailwind classes work */
 }
 
-/* Apply scaling to main content headings */
+/* Apply scaling to main content headings with responsive clamp() */
+/* h1: 28px (mobile) → 36px (desktop) */
 main h1 {
-	font-size: calc(2.25rem * var(--font-scale)) !important;
-	line-height: calc(2.5rem * var(--font-scale)) !important;
+	font-size: calc(clamp(1.75rem, 1.25rem + 2vw, 2.25rem) * var(--font-scale)) !important;
+	line-height: calc(clamp(2rem, 1.5rem + 2vw, 2.5rem) * var(--font-scale)) !important;
 }
 
+/* h2: 24px (mobile) → 30px (desktop) */
 main h2 {
-	font-size: calc(1.875rem * var(--font-scale)) !important;
-	line-height: calc(2.25rem * var(--font-scale)) !important;
+	font-size: calc(clamp(1.5rem, 1rem + 1.75vw, 1.875rem) * var(--font-scale)) !important;
+	line-height: calc(clamp(1.75rem, 1.25rem + 2vw, 2.25rem) * var(--font-scale)) !important;
 }
 
+/* h3: 20px (mobile) → 24px (desktop) */
 main h3 {
-	font-size: calc(1.5rem * var(--font-scale)) !important;
-	line-height: calc(2rem * var(--font-scale)) !important;
+	font-size: calc(clamp(1.25rem, 0.875rem + 1.5vw, 1.5rem) * var(--font-scale)) !important;
+	line-height: calc(clamp(1.5rem, 1rem + 2vw, 2rem) * var(--font-scale)) !important;
 }
 
 main h4 {
