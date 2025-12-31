@@ -580,11 +580,20 @@ class ChatStore {
 		conversationId: string,
 		messages: Message[]
 	): Promise<void> {
+		console.log(
+			'[loadReactionsForMessages] Called for conversation:',
+			conversationId,
+			'messages:',
+			messages.length
+		);
+
 		if (!this.supabase || messages.length === 0) {
+			console.log('[loadReactionsForMessages] EARLY RETURN: no supabase or no messages');
 			return;
 		}
 
 		const messageIds = messages.map((m) => m.id);
+		console.log('[loadReactionsForMessages] Loading reactions for messageIds:', messageIds);
 
 		try {
 			const { data: reactions, error } = await this.supabase
@@ -592,12 +601,16 @@ class ChatStore {
 				.select('id, message_id, user_id, emoji, created_at')
 				.in('message_id', messageIds);
 
+			console.log('[loadReactionsForMessages] Query result:', { reactions, error });
+
 			if (error) {
 				logger.error('Failed to load reactions:', error);
 				return;
 			}
 
 			if (reactions && reactions.length > 0) {
+				console.log('[loadReactionsForMessages] Raw reactions from DB:', reactions);
+
 				// Group reactions by message_id, then aggregate by emoji
 				const reactionsByMessage = new Map<string, MessageReaction[]>();
 
@@ -630,15 +643,30 @@ class ChatStore {
 					reactionsByMessage.set(reaction.message_id, messageReactions);
 				}
 
-				// Merge aggregated reactions into messages
-				for (const message of messages) {
-					message.reactions = reactionsByMessage.get(message.id) || [];
-				}
+				console.log('[loadReactionsForMessages] Aggregated by message:', [
+					...reactionsByMessage.entries()
+				]);
 
-				// Trigger reactivity
-				this.messages.set(conversationId, [...messages]);
+				// Create NEW message objects with reactions (for Svelte 5 reactivity)
+				const messagesWithReactions = messages.map((message) => ({
+					...message,
+					reactions: reactionsByMessage.get(message.id) || []
+				}));
+
+				console.log(
+					'[loadReactionsForMessages] Messages with reactions:',
+					messagesWithReactions
+						.filter((m) => m.reactions.length > 0)
+						.map((m) => ({ id: m.id, reactions: m.reactions }))
+				);
+
+				// Update store with new message objects
+				this.messages.set(conversationId, messagesWithReactions);
 
 				logger.trace(`Loaded ${reactions.length} reactions for ${messages.length} messages`);
+				console.log('[loadReactionsForMessages] Updated messages in store');
+			} else {
+				console.log('[loadReactionsForMessages] No reactions found');
 			}
 		} catch (error) {
 			logger.error('Failed to load reactions:', error);
@@ -1363,8 +1391,16 @@ class ChatStore {
 	 * @param emoji - Emoji to toggle
 	 */
 	async toggleReaction(messageId: string, emoji: string): Promise<void> {
+		console.log('[toggleReaction] Called with:', { messageId, emoji });
+		console.log('[toggleReaction] State:', {
+			browser,
+			userId: this.userId,
+			hasSupabase: !!this.supabase
+		});
+
 		if (!browser || !this.userId || !this.supabase) {
 			logger.warn('Cannot toggle reaction: not initialized');
+			console.log('[toggleReaction] EARLY RETURN: not initialized');
 			return;
 		}
 
@@ -1383,8 +1419,11 @@ class ChatStore {
 
 		if (!foundConversationId || !foundMessage) {
 			logger.warn('Message not found for reaction:', messageId);
+			console.log('[toggleReaction] EARLY RETURN: message not found');
+			console.log('[toggleReaction] Available conversations:', [...this.messages.keys()]);
 			return;
 		}
+		console.log('[toggleReaction] Found message in conversation:', foundConversationId);
 
 		// Optimistic update: determine action before API call
 		// Reactions are aggregated by emoji with count and user_reacted
@@ -1445,10 +1484,12 @@ class ChatStore {
 
 		try {
 			// Persist to database via RPC
-			const { error } = await this.supabase.rpc('toggle_reaction', {
+			console.log('[toggleReaction] Calling RPC toggle_reaction:', { messageId, emoji });
+			const { data, error } = await this.supabase.rpc('toggle_reaction', {
 				p_message_id: messageId,
 				p_emoji: emoji
 			});
+			console.log('[toggleReaction] RPC result:', { data, error });
 
 			if (error) {
 				throw error;
@@ -1475,6 +1516,7 @@ class ChatStore {
 			logger.trace('Reaction toggled:', { messageId, emoji, action: isAdding ? 'add' : 'remove' });
 		} catch (error) {
 			// Rollback optimistic update on error
+			console.error('[toggleReaction] ERROR:', error);
 			logger.error('Failed to toggle reaction:', error);
 
 			// Restore original reactions (reverse of what we did)
