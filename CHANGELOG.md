@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.13](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.12...v0.5.13) (2025-12-31)
+
+### ✨ Features
+
+- **chat:** implement persistent emoji reactions ([5c736b6](https://github.com/Zahara-Nour/ubumaths/commit/5c736b6b4b1716c75ba3b46e1c7a4c4a60eb1d7b))
+- **db:** enable Realtime on messages table ([b19d564](https://github.com/Zahara-Nour/ubumaths/commit/b19d564ed03bbc4e94b27f4f184349296ed74ba6))
+- **friends:** add classmates list in friend search ([c20e55d](https://github.com/Zahara-Nour/ubumaths/commit/c20e55d41b2420f8788def449fbe3e395c4e27c8))
+- **friends:** add loading feedback on add friend button ([c9857d7](https://github.com/Zahara-Nour/ubumaths/commit/c9857d79c5cdc9cd71c583c216dc48f3f12d4477))
+- **moderation:** add message reports tab to teacher moderation page ([8e10675](https://github.com/Zahara-Nour/ubumaths/commit/8e10675e421a6d9f5a0d81947ae7b8df1e8aaab4))
+- **moderation:** add moderation link to teacher dashboard sidebar ([c7fd35e](https://github.com/Zahara-Nour/ubumaths/commit/c7fd35ed5af94734ac1f4a4f1a1df044369d3f91))
+- **moderation:** add UI to apply user restrictions ([ddcab69](https://github.com/Zahara-Nour/ubumaths/commit/ddcab690aea0607604b3e49589603f03d0357462))
+- **moderation:** show conversation context when reviewing reports ([f4caf3f](https://github.com/Zahara-Nour/ubumaths/commit/f4caf3f05ab1b1c50f62f86177f446459da6cc45))
+
+### 🐛 Bug Fixes
+
+- **bug-reports:** handle batch delete for >100 reports ([054d984](https://github.com/Zahara-Nour/ubumaths/commit/054d9849e07e280f713933c8ab64be1c0b5d7ca7))
+- **chat:** add sender firstname/lastname to optimistic messages ([f1a04ec](https://github.com/Zahara-Nour/ubumaths/commit/f1a04ecf0c7786df2924f63bb471aec761383a84))
+- **chat:** add sender_firstname/lastname to all message transformations ([47db861](https://github.com/Zahara-Nour/ubumaths/commit/47db8618a2b88fe907fc8a6b8914583d2679a472))
+- **chat:** fix emoji reactions display with aggregated data ([6bb1171](https://github.com/Zahara-Nour/ubumaths/commit/6bb117123a0067b5fc2065a5b0b41f9e142cf052))
+- **chat:** fix reactions persistence and display after refresh ([b809caa](https://github.com/Zahara-Nour/ubumaths/commit/b809caa121c63a8c5505d499f300743a68d37836))
+- **chat:** hide 3-dot menu when empty ([026e288](https://github.com/Zahara-Nour/ubumaths/commit/026e288e76023f9c1e55f80116e90ff2905dc4ad))
+- **chat:** improve chat UX and fix multiple issues ([ca61e29](https://github.com/Zahara-Nour/ubumaths/commit/ca61e292951dc9175c1c9e86d167ca4be57992b9))
+- **chat:** improve sendMessage initialization check ([835d9b6](https://github.com/Zahara-Nour/ubumaths/commit/835d9b6d87d2d7e02da0a4a1af1dcc2a643a6425))
+- **chat:** only show reactions for other users' messages ([600fc41](https://github.com/Zahara-Nour/ubumaths/commit/600fc4109e15cdac4f424b9121c693ccf1f659db))
+- **chat:** real-time reaction broadcast to other participants ([86ba96b](https://github.com/Zahara-Nour/ubumaths/commit/86ba96b69e066f5de025e5285f194b29a85863a3))
+- **db:** resolve migration conflicts and fix chat function ([1eeb6fa](https://github.com/Zahara-Nour/ubumaths/commit/1eeb6fa6099300f01bedf602cf8c6d6e70cac4fd))
+- **minesweeper:** show saved game when returning to menu ([9629f03](https://github.com/Zahara-Nour/ubumaths/commit/9629f03f1c2a162885abdae22acc70a560f506c5))
+- **moderation:** allow restriction from reports without conversation access ([e56f6ae](https://github.com/Zahara-Nour/ubumaths/commit/e56f6ae2de7ab03be51f8d831aeb60fd09980ffd))
+- **moderation:** refresh data after restriction created from report ([9b3b971](https://github.com/Zahara-Nour/ubumaths/commit/9b3b971ac0b44ef870a75c9a3ec0fb051f93b91c))
+- **moderation:** use locals.profile.role instead of locals.user.role ([fb15f30](https://github.com/Zahara-Nour/ubumaths/commit/fb15f303b8a4caef73d521c6803688757716883f))
+- **moderation:** use proper join to check teacher-student relationship ([1772f48](https://github.com/Zahara-Nour/ubumaths/commit/1772f48b7c407c7b8fa5ede2eb0321784a439a06))
+- **realtime:** ignore success messages in system event handlers ([b8716e2](https://github.com/Zahara-Nour/ubumaths/commit/b8716e20cada56f97dddd3cc1ed3c819c43e1473))
+- **tests:** use RFC 4122 compliant UUIDs in chat store tests ([02c8700](https://github.com/Zahara-Nour/ubumaths/commit/02c87006a8eb59cd5089cfdf52048a6846def1cd))
+
 ### [0.5.12](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.11...v0.5.12) (2025-12-30)
 
 ### 📚 Documentation
