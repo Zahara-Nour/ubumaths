@@ -38,13 +38,14 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import * as Sheet from '$lib/components/ui/sheet';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { User } from '@supabase/supabase-js';
 	import type { Profile } from '$lib/types/database';
+	import type { Component } from 'svelte';
 	import {
 		Menu,
-		X,
 		LogIn,
 		LogOut,
 		LayoutDashboard,
@@ -56,11 +57,15 @@
 		Minimize,
 		Users,
 		MessageCircle,
-		Mail
+		Mail,
+		Home,
+		Gamepad2,
+		FileSpreadsheet
 	} from 'lucide-svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { getAvatarInitials, getAvatarUrl } from '$lib/utils/avatar';
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 
 	// Fullscreen state
 	let isFullscreen = $state(false);
@@ -90,6 +95,9 @@
 		};
 	});
 
+	// Navigation item type
+	type NavItem = { label: string; href: string; icon: Component; roles?: string[] };
+
 	// Props received from parent layout (+layout.svelte)
 	// These are automatically reactive in Svelte 5
 	let {
@@ -97,20 +105,52 @@
 		user = null,
 		profile = null,
 		sidebarItems = [
-			{ label: 'Accueil', href: '/', icon: '🏠' },
-			{ label: 'Jeux', href: '/games', icon: '🎮' }
+			{ label: 'Accueil', href: '/', icon: Home },
+			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
+			{
+				label: 'Worksheets',
+				href: '/dashboard/teacher/worksheets',
+				icon: FileSpreadsheet,
+				roles: ['teacher']
+			},
+			{
+				label: 'Mes Fiches',
+				href: '/dashboard/student/worksheets',
+				icon: FileSpreadsheet,
+				roles: ['student']
+			}
 		]
 	}: {
 		title?: string;
 		user?: User | null; // Verified user from server
 		profile?: Profile | null; // User profile from database
-		sidebarItems?: Array<{ label: string; href: string; icon?: string }>;
+		sidebarItems?: NavItem[];
 	} = $props();
+
+	// Filter items based on user role
+	let visibleItems = $derived(
+		sidebarItems.filter((item) => {
+			// If no roles specified, show to everyone
+			if (!item.roles) return true;
+			// If roles specified, check if user has one of the required roles
+			if (!profile) return false;
+			return item.roles.includes(profile.role);
+		})
+	);
+
+	// Check if a link is active
+	function isActive(href: string): boolean {
+		const pathname = page.url.pathname;
+		if (pathname === href) return true;
+		if (href !== '/' && pathname.startsWith(href + '/')) return true;
+		return false;
+	}
 
 	// Mobile menu state
 	let mobileMenuOpen = $state(false);
 
-	function closeMobileMenu() {
+	// Handle navigation - close drawer after click
+	function handleNavClick(): void {
 		mobileMenuOpen = false;
 	}
 
@@ -138,38 +178,13 @@
 <header class="border-b border-border bg-background shadow-sm">
 	<div class="flex h-16 items-center gap-4 px-4">
 		<!-- Hamburger menu - visible only on mobile (lg:hidden) -->
-		<div class="lg:hidden">
-			<DropdownMenu.Root bind:open={mobileMenuOpen}>
-				<DropdownMenu.Trigger
-					class="inline-flex h-9 w-9 cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-				>
-					{#if mobileMenuOpen}
-						<X class="h-6 w-6" />
-					{:else}
-						<Menu class="h-6 w-6" />
-					{/if}
-					<span class="sr-only">Afficher le menu</span>
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content align="start" class="w-64">
-					<DropdownMenu.Label>Navigation</DropdownMenu.Label>
-					<DropdownMenu.Separator />
-					{#each sidebarItems as item (item.href)}
-						<DropdownMenu.Item>
-							<a
-								href={resolve(item.href as '/')}
-								class="flex w-full items-center"
-								onclick={closeMobileMenu}
-							>
-								{#if item.icon}
-									<span class="mr-2">{item.icon}</span>
-								{/if}
-								{item.label}
-							</a>
-						</DropdownMenu.Item>
-					{/each}
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
-		</div>
+		<button
+			class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none lg:hidden"
+			onclick={() => (mobileMenuOpen = true)}
+			aria-label="Ouvrir le menu"
+		>
+			<Menu class="h-6 w-6" />
+		</button>
 
 		<!-- Title with Gidouille - links to home -->
 		<a href={resolve('/')} class="flex items-center gap-3 transition-opacity hover:opacity-80">
@@ -307,3 +322,29 @@
 		</nav>
 	</div>
 </header>
+
+<!-- Mobile Navigation Drawer -->
+<Sheet.Root bind:open={mobileMenuOpen}>
+	<Sheet.Content side="left" class="w-72 p-0">
+		<Sheet.Header class="border-b border-border px-4 py-3">
+			<Sheet.Title class="text-lg font-semibold">Navigation</Sheet.Title>
+		</Sheet.Header>
+
+		<nav class="flex flex-col py-2" aria-label="Navigation principale">
+			{#each visibleItems as item (item.href)}
+				<a
+					href={resolve(item.href as '/')}
+					data-sveltekit-preload-data="tap"
+					onclick={handleNavClick}
+					class="flex items-center gap-3 px-4 py-3 text-base transition-colors
+						{isActive(item.href)
+						? 'bg-primary/10 font-medium text-primary'
+						: 'text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted/80'}"
+				>
+					<item.icon class="h-5 w-5 shrink-0" />
+					<span class="flex-1">{item.label}</span>
+				</a>
+			{/each}
+		</nav>
+	</Sheet.Content>
+</Sheet.Root>
