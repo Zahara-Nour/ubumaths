@@ -1,6 +1,7 @@
 <script lang="ts">
-	import type { GameState } from '$lib/types/minesweeper';
+	import type { GameState, CellState } from '$lib/types/minesweeper';
 	import MinesweeperCell from './MinesweeperCell.svelte';
+	import { mobileStore } from '$lib/stores/mobile.svelte';
 
 	// Props
 	let {
@@ -35,13 +36,40 @@
 		expert: 32
 	};
 
+	// Rotate expert grid 90° on mobile to fit screen width
+	// Normal: 30 cols × 16 rows = 674px width (too wide for mobile)
+	// Rotated: 16 cols × 30 rows = 366px width (fits mobile)
+	const shouldRotate = $derived(difficulty === 'expert' && mobileStore.isMobile);
+	const displayRows = $derived(shouldRotate ? gameState.cols : gameState.rows);
+	const displayCols = $derived(shouldRotate ? gameState.rows : gameState.cols);
+
+	// Coordinate mapping for rotated display (90° clockwise rotation)
+	function getLogicalCoordinates(
+		visualRow: number,
+		visualCol: number
+	): { row: number; col: number } {
+		if (shouldRotate) {
+			return {
+				row: gameState.rows - 1 - visualCol,
+				col: visualRow
+			};
+		}
+		return { row: visualRow, col: visualCol };
+	}
+
+	function getCellAt(visualRow: number, visualCol: number): CellState {
+		const { row, col } = getLogicalCoordinates(visualRow, visualCol);
+		return gameState.grid[row][col];
+	}
+
 	// Calculate adaptive cell size based on container width
 	const cellSize = $derived.by(() => {
 		if (!containerWidth || containerWidth === 0) {
 			return defaultCellSizes[difficulty];
 		}
 
-		const cols = gameState.cols;
+		// Use displayCols for rotated grid calculation
+		const cols = displayCols;
 		const availableWidth = containerWidth - PADDING * 2;
 		const totalGapWidth = (cols - 1) * GAP;
 		const calculatedSize = Math.floor((availableWidth - totalGapWidth) / cols);
@@ -51,8 +79,8 @@
 		return Math.max(MIN_CELL_SIZE, Math.min(calculatedSize, maxSize));
 	});
 
-	// Grid template columns using calculated cell size
-	const gridCols = $derived(`repeat(${gameState.cols}, ${cellSize}px)`);
+	// Grid template columns using calculated cell size (uses displayCols for rotation)
+	const gridCols = $derived(`repeat(${displayCols}, ${cellSize}px)`);
 
 	// Observe container size changes
 	$effect(() => {
@@ -83,11 +111,13 @@
 				? 'intermédiaire'
 				: 'expert'}"
 	>
-		{#each gameState.grid as row, rowIndex (rowIndex)}
-			{#each row as cell, colIndex (`${rowIndex}-${colIndex}`)}
+		{#each { length: displayRows } as _, visualRow (visualRow)}
+			{#each { length: displayCols } as _, visualCol (`${visualRow}-${visualCol}`)}
+				{@const cell = getCellAt(visualRow, visualCol)}
+				{@const coords = getLogicalCoordinates(visualRow, visualCol)}
 				<MinesweeperCell
-					row={rowIndex}
-					col={colIndex}
+					row={coords.row}
+					col={coords.col}
 					isRevealed={cell.isRevealed}
 					isFlagged={cell.isFlagged}
 					isMine={cell.isMine}
