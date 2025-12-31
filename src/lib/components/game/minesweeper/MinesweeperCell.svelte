@@ -39,14 +39,14 @@
 
 	// Number color mapping (classic minesweeper colors)
 	const numberColors: Record<number, string> = {
-		1: 'text-blue-600 dark:text-blue-400',
-		2: 'text-green-600 dark:text-green-400',
-		3: 'text-red-600 dark:text-red-400',
-		4: 'text-blue-800 dark:text-blue-500',
-		5: 'text-red-800 dark:text-red-500',
-		6: 'text-cyan-600 dark:text-cyan-400',
-		7: 'text-black dark:text-white',
-		8: 'text-gray-600 dark:text-gray-400'
+		1: 'text-blue-600 num-1',
+		2: 'text-green-600 num-2',
+		3: 'text-red-600 num-3',
+		4: 'text-blue-800 num-4',
+		5: 'text-red-800 num-5',
+		6: 'text-cyan-600 num-6',
+		7: 'text-black num-7',
+		8: 'text-gray-600 num-8'
 	};
 
 	// Cell display content
@@ -127,10 +127,10 @@
 		'flex items-center justify-center font-bold transition-all',
 		'border border-border',
 		'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
-		!isRevealed && !isFlagged && 'bg-muted hover:bg-muted/80 active:scale-95',
-		!isRevealed && isFlagged && 'bg-muted',
-		isRevealed && !isMine && 'bg-card',
-		isRevealed && isMine && !isExploded && 'bg-card',
+		!isRevealed && !isFlagged && 'cell-unrevealed bg-muted hover:bg-muted/80 active:scale-95',
+		!isRevealed && isFlagged && 'cell-unrevealed bg-muted',
+		isRevealed && !isMine && 'cell-revealed bg-card',
+		isRevealed && isMine && !isExploded && 'cell-mine bg-card',
 		isRevealed &&
 			adjacentMines > 0 &&
 			onChord &&
@@ -154,9 +154,58 @@
 		class={cn(
 			'font-bold select-none',
 			textSizeClasses,
-			isRevealed && adjacentMines > 0 && numberColors[adjacentMines]
+			isRevealed && adjacentMines > 0 && numberColors[adjacentMines],
+			isRevealed && isMine && 'dark:drop-shadow-[0_0_4px_rgba(255,255,255,0.8)]'
 		)}
 	>
 		{cellContent}
 	</span>
 </button>
+
+<style>
+	/* Light mode - slightly darker unrevealed cells */
+	button.cell-unrevealed {
+		background-color: rgb(212 212 216); /* gray-300 */
+	}
+	button.cell-unrevealed:hover {
+		background-color: rgb(190 190 195);
+	}
+
+	/* Dark mode overrides for better contrast */
+	:global(.dark) button.cell-unrevealed {
+		background-color: rgb(82 82 91); /* zinc-600 */
+	}
+	:global(.dark) button.cell-unrevealed:hover {
+		background-color: rgb(113 113 122); /* zinc-500 */
+	}
+	:global(.dark) button.cell-revealed,
+	:global(.dark) button.cell-mine {
+		background-color: rgb(39 39 42); /* zinc-800 */
+	}
+
+	/* Number colors - dark mode overrides */
+	:global(.dark) .num-1 {
+		color: rgb(147 197 253); /* blue-300 */
+	}
+	:global(.dark) .num-2 {
+		color: rgb(134 239 172); /* green-300 */
+	}
+	:global(.dark) .num-3 {
+		color: rgb(248 113 113); /* red-400 */
+	}
+	:global(.dark) .num-4 {
+		color: rgb(165 180 252); /* indigo-300 */
+	}
+	:global(.dark) .num-5 {
+		color: rgb(253 186 116); /* orange-300 */
+	}
+	:global(.dark) .num-6 {
+		color: rgb(103 232 249); /* cyan-300 */
+	}
+	:global(.dark) .num-7 {
+		color: rgb(255 255 255); /* white */
+	}
+	:global(.dark) .num-8 {
+		color: rgb(212 212 216); /* gray-300 */
+	}
+</style>
