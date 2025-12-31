@@ -12,17 +12,12 @@ import type {
 	DatabaseGameStatus
 } from '$lib/types/minesweeper';
 import { DIFFICULTY_CONFIGS } from '$lib/types/minesweeper';
-import { SvelteSet } from 'svelte/reactivity';
 
 const logger = createLogger('minesweeper.svelte.ts');
 
 type User = Database['public']['Tables']['profiles']['Row'];
 
-// ⚡ PERFORMANCE: Reduced from 10s to 15s for 33% less network traffic
-// Impact: ~48 KB/min instead of ~72 KB/min in expert mode
-// UX: 15s is still frequent enough for good auto-save experience
-const AUTOSAVE_INTERVAL = 15000; // 15 seconds (optimized from 10s)
-const AUTOSAVE_DEBOUNCE = 5000; // 5 seconds after last user action (OPT-3)
+const AUTOSAVE_INTERVAL = 10000; // 10 seconds
 const TIMER_INTERVAL = 1000; // 1 second
 const LOCALSTORAGE_KEY = 'minesweeper_game';
 
@@ -139,43 +134,14 @@ class MinesweeperStore {
 	hintItemsAvailable = $state(0);
 
 	/**
-	 * ⚡ OPT-5: Track changed cells for fine-grained reactivity
-	 * Only cells in this Set will trigger re-renders in components
-	 * Impact: 75% fewer re-renders (1-10 cells vs 81-480 total cells)
-	 */
-	changedCells = $state(new SvelteSet<string>());
-
-	/**
-	 * ⚡ OPT-4: Incremental tracking arrays for optimized DTO conversion
-	 * These arrays are maintained during gameplay instead of reconstructed on each save
-	 * Impact: 70% faster gridToDTO (40-60ms → 10-15ms)
-	 */
-	private minesArray: [number, number][] = [];
-	private revealedArray: [number, number][] = [];
-	private flaggedArray: [number, number][] = [];
-	private adjacentCountsMap: Record<string, number> = {};
-
-	/**
 	 * Timer interval
 	 */
 	private timerInterval: ReturnType<typeof setInterval> | null = null;
 
 	/**
-	 * Auto-save interval for students (fixed 15s)
+	 * Auto-save interval for students
 	 */
 	private autoSaveInterval: ReturnType<typeof setInterval> | null = null;
-
-	/**
-	 * Debounce timer for user activity-based auto-save (5s after last action)
-	 * ⚡ OPT-3: Saves 5s after last move OR at 15s interval (whichever comes first)
-	 */
-	private debounceTimer: ReturnType<typeof setTimeout> | null = null;
-
-	/**
-	 * Track if game state has changed since last save
-	 * ⚡ OPT-3: Prevents unnecessary saves when no changes occurred
-	 */
-	private isDirty = false;
 
 	/**
 	 * Cleanup handler for window unload
@@ -409,31 +375,18 @@ class MinesweeperStore {
 			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
 		}
 
-		// ⚡ OPT-4: Initialize tracking arrays
-		this.minesArray = [];
-		this.revealedArray = [];
-		this.flaggedArray = [];
-		this.adjacentCountsMap = {};
-
 		// Place mines
 		const minesToPlace = Math.min(mines, shuffled.length);
 		for (let i = 0; i < minesToPlace; i++) {
 			const { row, col } = shuffled[i];
 			grid[row][col].isMine = true;
-			// ⚡ OPT-4: Track mine positions
-			this.minesArray.push([row, col]);
 		}
 
 		// Calculate adjacent mine counts for each cell
 		for (let row = 0; row < rows; row++) {
 			for (let col = 0; col < cols; col++) {
 				if (!grid[row][col].isMine) {
-					const count = this.countAdjacentMines(grid, row, col);
-					grid[row][col].adjacentMines = count;
-					// ⚡ OPT-4: Track adjacent counts
-					if (count > 0) {
-						this.adjacentCountsMap[`${row},${col}`] = count;
-					}
+					grid[row][col].adjacentMines = this.countAdjacentMines(grid, row, col);
 				}
 			}
 		}
@@ -476,34 +429,42 @@ class MinesweeperStore {
 	 * **Validation**: Performs client-side sanity checks before returning DTO.
 	 * Server-side validation with Zod will perform comprehensive validation.
 	 *
-	 * ⚡ OPT-4: Now uses pre-maintained tracking arrays instead of traversing grid
-	 * Reduces complexity from O(rows × cols) to O(1) for DTO construction
-	 * Impact: 70% faster (40-60ms → 10-15ms on expert grids)
-	 *
 	 * @param grid - Internal grid representation
 	 * @returns GridStateDTO format for API/database
 	 * @throws Error if DTO is invalid (defense in depth)
 	 */
 	private gridToDTO(grid: CellState[][]): import('$lib/types/minesweeper').GridStateDTO {
-		// ✅ FIX: Rebuild revealed array from grid (source of truth) to eliminate duplicates
-		// This prevents validation failures caused by duplicate entries in revealedArray
+		// Build arrays from grid (source of truth)
+		const mines: [number, number][] = [];
 		const revealed: [number, number][] = [];
+		const flagged: [number, number][] = [];
+		const adjacentCounts: Record<string, number> = {};
+
 		for (let row = 0; row < grid.length; row++) {
 			for (let col = 0; col < grid[row].length; col++) {
-				if (grid[row][col].isRevealed && !grid[row][col].isMine) {
+				const cell = grid[row][col];
+				if (cell.isMine) {
+					mines.push([row, col]);
+				}
+				if (cell.isRevealed && !cell.isMine) {
 					revealed.push([row, col]);
+				}
+				if (cell.isFlagged) {
+					flagged.push([row, col]);
+				}
+				if (cell.adjacentMines > 0) {
+					adjacentCounts[`${row},${col}`] = cell.adjacentMines;
 				}
 			}
 		}
 
-		// ⚡ OPT-4: Use pre-maintained arrays for mines, flagged, adjacentCounts (less critical)
 		const dto = {
 			rows: grid.length,
 			cols: grid[0]?.length || 0,
-			mines: this.minesArray,
-			revealed, // ✅ Use rebuilt array from grid
-			flagged: this.flaggedArray,
-			adjacentCounts: this.adjacentCountsMap
+			mines,
+			revealed,
+			flagged,
+			adjacentCounts
 		};
 
 		// ✅ CRITICAL FIX (C-1): Client-side validation before sending to API
@@ -570,8 +531,6 @@ class MinesweeperStore {
 	/**
 	 * Convert API GridStateDTO format to internal CellState[][]
 	 *
-	 * ⚡ OPT-4: Also initializes tracking arrays from DTO for resumed games
-	 *
 	 * @param dto - GridStateDTO from API/database
 	 * @returns Internal grid representation
 	 */
@@ -580,12 +539,6 @@ class MinesweeperStore {
 		const mineSet = new Set(dto.mines.map(([r, c]) => `${r},${c}`));
 		const revealedSet = new Set(dto.revealed.map(([r, c]) => `${r},${c}`));
 		const flaggedSet = new Set(dto.flagged.map(([r, c]) => `${r},${c}`));
-
-		// ⚡ OPT-4: Initialize tracking arrays from DTO
-		this.minesArray = [...dto.mines];
-		this.revealedArray = [...dto.revealed];
-		this.flaggedArray = [...dto.flagged];
-		this.adjacentCountsMap = { ...dto.adjacentCounts };
 
 		for (let row = 0; row < dto.rows; row++) {
 			grid[row] = [];
@@ -636,10 +589,8 @@ class MinesweeperStore {
 			game.startedAt = new Date();
 			this.startTimer();
 
-			// Start auto-save for students
-			if (this.shouldUseDatabase() && game.id) {
-				this.startAutoSave();
-			}
+			// Start auto-save (database for students, localStorage for others)
+			this.startAutoSave();
 
 			// ✅ H-3 SECURITY FIX: Disable first-click regeneration for daily challenges
 			// Daily challenges must use pre-determined grids (seeded) for fairness
@@ -675,8 +626,6 @@ class MinesweeperStore {
 			currentCell.isRevealed = true;
 			currentCell.isExploded = true;
 			game.cellsRevealed++;
-			// ⚡ OPT-5: Track changed cell
-			this.changedCells.add(`${row},${col}`);
 			// Don't set game.status here - let completeGame() handle it
 			this.completeGame(false);
 			return;
@@ -690,9 +639,6 @@ class MinesweeperStore {
 		if (game.cellsRevealed === totalCells - game.minesCount) {
 			// Don't set game.status here - let completeGame() handle it
 			this.completeGame(true);
-		} else {
-			// ⚡ OPT-3: Trigger debounced save after user action
-			this.debouncedSave();
 		}
 
 		// Trigger reactivity
@@ -702,20 +648,6 @@ class MinesweeperStore {
 	/**
 	 * Cascade reveal using BFS (breadth-first search)
 	 *
-	 * **Algorithm Complexity**:
-	 * - Time: O(rows × cols) worst case (revealing entire grid)
-	 * - Space: O(rows × cols) for visited Set + queue
-	 *
-	 * **Performance Optimizations (OPT-2)**:
-	 * - Pre-filters cells before adding to queue (avoids redundant checks)
-	 * - Only adds unrevealed, unflagged, non-mine cells to queue
-	 * - Impact: ~70% faster on large cascades (60-100ms → 15-30ms)
-	 *
-	 * **Safety Features**:
-	 * - Validates queue items are not undefined
-	 * - Checks coordinates are within grid bounds
-	 * - Uses SvelteSet for reactive tracking
-	 *
 	 * @param startRow - Starting cell row
 	 * @param startCol - Starting cell column
 	 */
@@ -724,7 +656,7 @@ class MinesweeperStore {
 
 		const game = this.currentGame;
 		const queue: { row: number; col: number }[] = [{ row: startRow, col: startCol }];
-		const visited = new SvelteSet<string>();
+		const visited = new Set<string>();
 
 		while (queue.length > 0) {
 			const next = queue.shift();
@@ -753,43 +685,27 @@ class MinesweeperStore {
 
 			const cell = game.grid[row]?.[col];
 
-			// ⚡ OPT-2: Removed redundant isRevealed check
-			// The visited Set + pre-filtering when adding to queue handles this
-			// Skip only invalid, flagged, or mine cells
-			if (!cell || cell.isFlagged || cell.isMine) {
-				continue;
-			}
-
-			// Skip if already revealed (can happen if cell was revealed by previous action)
-			if (cell.isRevealed) {
+			// Skip invalid, flagged, mine, or already revealed cells
+			if (!cell || cell.isFlagged || cell.isMine || cell.isRevealed) {
 				continue;
 			}
 
 			// Reveal the cell
 			cell.isRevealed = true;
 			game.cellsRevealed++;
-			// ⚡ OPT-4: Track revealed cell
-			this.revealedArray.push([row, col]);
-			// ⚡ OPT-5: Track changed cell
-			this.changedCells.add(key);
 
 			// If cell has adjacent mines, stop cascading in this direction
 			if (cell.adjacentMines > 0) {
 				continue;
 			}
 
-			// ⚡ OPT-2: Pre-filter neighbors before adding to queue
-			// Only add unrevealed, unflagged, non-mine cells
-			// This reduces queue size and redundant processing
+			// Add valid neighbors to queue
 			for (const [dRow, dCol] of NEIGHBOR_DIRECTIONS) {
 				const newRow = row + dRow;
 				const newCol = col + dCol;
 
-				// Check bounds
 				if (newRow >= 0 && newRow < game.rows && newCol >= 0 && newCol < game.cols) {
 					const neighbor = game.grid[newRow][newCol];
-
-					// ⚡ OPTIMIZATION: Only queue cells that need processing
 					if (neighbor && !neighbor.isRevealed && !neighbor.isFlagged && !neighbor.isMine) {
 						queue.push({ row: newRow, col: newCol });
 					}
@@ -827,8 +743,6 @@ class MinesweeperStore {
 		if (cell.isFlagged) {
 			cell.isFlagged = false;
 			game.flagsUsed--;
-			// ⚡ OPT-4: Remove from flagged array
-			this.flaggedArray = this.flaggedArray.filter(([r, c]) => r !== row || c !== col);
 		} else {
 			// Check if we have flags remaining
 			if (game.flagsUsed >= game.minesCount) {
@@ -838,15 +752,7 @@ class MinesweeperStore {
 
 			cell.isFlagged = true;
 			game.flagsUsed++;
-			// ⚡ OPT-4: Add to flagged array
-			this.flaggedArray.push([row, col]);
 		}
-
-		// ⚡ OPT-5: Track changed cell
-		this.changedCells.add(`${row},${col}`);
-
-		// ⚡ OPT-3: Trigger debounced save after flag action
-		this.debouncedSave();
 
 		// Trigger reactivity
 		this.currentGame = { ...game };
@@ -913,8 +819,6 @@ class MinesweeperStore {
 				// Hit a mine! Game over
 				neighborCell.isRevealed = true;
 				neighborCell.isExploded = true;
-				// ⚡ OPT-5: Track changed cell
-				this.changedCells.add(`${neighbor.row},${neighbor.col}`);
 				hitMine = true;
 			} else {
 				// Safe cell - reveal it (only if not already revealed by previous cascade)
@@ -922,10 +826,6 @@ class MinesweeperStore {
 				if (!neighborCell.isRevealed) {
 					neighborCell.isRevealed = true;
 					game.cellsRevealed++;
-					// ⚡ OPT-4: Track revealed cell
-					this.revealedArray.push([neighbor.row, neighbor.col]);
-					// ⚡ OPT-5: Track changed cell
-					this.changedCells.add(`${neighbor.row},${neighbor.col}`);
 
 					// Cascade if empty
 					if (neighborCell.adjacentMines === 0) {
@@ -942,9 +842,6 @@ class MinesweeperStore {
 			if (this.checkWinCondition()) {
 				this.handleWin();
 			} else {
-				// ⚡ OPT-3: Trigger debounced save after chord click
-				this.debouncedSave();
-
 				// Trigger reactivity
 				this.currentGame = { ...game };
 			}
@@ -1026,10 +923,6 @@ class MinesweeperStore {
 			if (!cell.isRevealed) {
 				cell.isRevealed = true;
 				game.cellsRevealed++;
-				// ⚡ OPT-4: Track revealed cell
-				this.revealedArray.push([selectedCell.row, selectedCell.col]);
-				// ⚡ OPT-5: Track changed cell
-				this.changedCells.add(`${selectedCell.row},${selectedCell.col}`);
 
 				// Cascade reveal if it's an empty cell
 				if (cell.adjacentMines === 0) {
@@ -1044,9 +937,6 @@ class MinesweeperStore {
 			if (this.checkWinCondition()) {
 				this.handleWin();
 			} else {
-				// ⚡ OPT-3: Trigger debounced save after hint use
-				this.debouncedSave();
-
 				// Trigger reactivity
 				this.currentGame = { ...game };
 			}
@@ -1173,73 +1063,32 @@ class MinesweeperStore {
 	}
 
 	/**
-	 * Start auto-save system for students
-	 *
-	 * ⚡ OPT-3: Hybrid auto-save strategy
-	 * - Fixed interval (15s): Safety net, only saves if isDirty
-	 * - Debounced (5s): Saves after last user action
-	 * - Impact: 20% fewer requests, better UX (no data loss)
+	 * Start auto-save system (saves every 10s)
+	 * - Students: saves to database
+	 * - Public/teachers/admins: saves to localStorage
 	 */
 	private startAutoSave(): void {
-		if (!browser || this.autoSaveInterval || !this.shouldUseDatabase()) {
+		if (!browser || this.autoSaveInterval) {
 			return;
 		}
 
-		// ⚡ OPT-3: Fixed interval only saves if game state changed
 		this.autoSaveInterval = setInterval(() => {
-			if (this.isDirty) {
-				this.saveGame().catch((err) => {
-					logger.error('Auto-save (interval) failed:', err);
-				});
-				this.isDirty = false;
-			}
+			this.saveGame().catch((err) => {
+				logger.error('Auto-save failed:', err);
+			});
 		}, AUTOSAVE_INTERVAL);
 
-		logger.info('Auto-save started (15s interval + 5s debounce)');
+		logger.info('Auto-save started (10s interval)');
 	}
 
 	/**
-	 * Debounced save triggered by user actions
-	 * ⚡ OPT-3: Saves 5s after last move, OR at 15s interval (whichever comes first)
-	 */
-	private debouncedSave(): void {
-		if (!this.shouldUseDatabase()) {
-			return;
-		}
-
-		this.isDirty = true;
-
-		// Clear existing debounce timer
-		if (this.debounceTimer) {
-			clearTimeout(this.debounceTimer);
-		}
-
-		// Set new debounce timer (5s)
-		this.debounceTimer = setTimeout(() => {
-			this.saveGame().catch((err) => {
-				logger.error('Auto-save (debounced) failed:', err);
-			});
-			this.isDirty = false;
-			this.debounceTimer = null;
-		}, AUTOSAVE_DEBOUNCE);
-	}
-
-	/**
-	 * Stop auto-save system (interval + debounce timer)
+	 * Stop auto-save system
 	 */
 	private stopAutoSave(): void {
 		if (this.autoSaveInterval) {
 			clearInterval(this.autoSaveInterval);
 			this.autoSaveInterval = null;
 		}
-
-		// ⚡ OPT-3: Clear debounce timer
-		if (this.debounceTimer) {
-			clearTimeout(this.debounceTimer);
-			this.debounceTimer = null;
-		}
-
-		this.isDirty = false;
 		logger.info('Auto-save stopped');
 	}
 
@@ -1685,14 +1534,6 @@ class MinesweeperStore {
 	}
 
 	/**
-	 * ⚡ OPT-5: Clear changed cells set (called by UI components after render)
-	 * This allows the UI to track which cells changed and only re-render those
-	 */
-	clearChangedCells(): void {
-		this.changedCells.clear();
-	}
-
-	/**
 	 * Cleanup intervals and state
 	 * ⚠️ IMPORTANT: This is now called automatically on beforeunload,
 	 * but components should still call it in onDestroy() for proper cleanup.
@@ -1706,8 +1547,6 @@ class MinesweeperStore {
 		this.error = null;
 		this.newlyUnlockedAchievements = [];
 		this.hintItemsAvailable = 0;
-		// ⚡ OPT-5: Clear changed cells
-		this.changedCells.clear();
 
 		// Remove beforeunload listener if exists
 		if (this.cleanupHandler) {
