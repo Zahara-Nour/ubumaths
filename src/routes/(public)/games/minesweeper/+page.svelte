@@ -187,17 +187,19 @@
 						<div class="space-y-4">
 							<h3 class="text-lg font-semibold text-foreground">Partie en cours</h3>
 							<SavedGameInfo {savedGame} />
-							<Button
-								onclick={continueGame}
-								size="lg"
-								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
-							>
-								{#if isLoadingSavedGame}
-									Chargement...
-								{:else}
-									Continuer la partie
-								{/if}
-							</Button>
+							<div class="flex justify-center">
+								<Button
+									onclick={continueGame}
+									size="lg"
+									disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+								>
+									{#if isLoadingSavedGame}
+										Chargement...
+									{:else}
+										Continuer la partie
+									{/if}
+								</Button>
+							</div>
 						</div>
 
 						<Separator />
