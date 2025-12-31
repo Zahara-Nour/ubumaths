@@ -144,6 +144,20 @@
 	}
 
 	/**
+	 * Check if user can report this message
+	 */
+	function canReportMessage(message: Message): boolean {
+		return !!onReport && !isOwnMessage(message) && !message.deleted_at;
+	}
+
+	/**
+	 * Check if user can delete this message (teacher/admin only)
+	 */
+	function canDeleteMessage(message: Message): boolean {
+		return (currentUserRole === 'teacher' || currentUserRole === 'admin') && !message.deleted_at;
+	}
+
+	/**
 	 * Get sender name
 	 */
 	function getSenderName(message: Message): string {
@@ -317,35 +331,37 @@
 							</div>
 
 							<!-- Message Actions (3-dot menu) - Outside bubble -->
-							<div class="flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
-								<DropdownMenu.Root>
-									<DropdownMenu.Trigger class="cursor-pointer">
-										<Button variant="ghost" size="sm" class="h-6 w-6 p-0">
-											<MoreVertical class="h-4 w-4" />
-										</Button>
-									</DropdownMenu.Trigger>
-									<DropdownMenu.Content>
-										{#if onReport && !isOwnMessage(message) && !message.deleted_at}
-											<DropdownMenu.Item onclick={() => onReport?.(message.id)}>
-												<Flag class="mr-2 h-4 w-4" />
-												Signaler
-											</DropdownMenu.Item>
-										{/if}
-										{#if (currentUserRole === 'teacher' || currentUserRole === 'admin') && !message.deleted_at}
-											{#if onReport && !isOwnMessage(message)}
-												<DropdownMenu.Separator />
+							{#if canReportMessage(message) || canDeleteMessage(message)}
+								<div class="flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
+									<DropdownMenu.Root>
+										<DropdownMenu.Trigger class="cursor-pointer">
+											<Button variant="ghost" size="sm" class="h-6 w-6 p-0">
+												<MoreVertical class="h-4 w-4" />
+											</Button>
+										</DropdownMenu.Trigger>
+										<DropdownMenu.Content>
+											{#if canReportMessage(message)}
+												<DropdownMenu.Item onclick={() => onReport?.(message.id)}>
+													<Flag class="mr-2 h-4 w-4" />
+													Signaler
+												</DropdownMenu.Item>
 											{/if}
-											<DropdownMenu.Item
-												onclick={() => openDeleteDialog(message.id)}
-												class="text-destructive focus:text-destructive"
-											>
-												<Trash2 class="mr-2 h-4 w-4" />
-												Supprimer le message
-											</DropdownMenu.Item>
-										{/if}
-									</DropdownMenu.Content>
-								</DropdownMenu.Root>
-							</div>
+											{#if canDeleteMessage(message)}
+												{#if canReportMessage(message)}
+													<DropdownMenu.Separator />
+												{/if}
+												<DropdownMenu.Item
+													onclick={() => openDeleteDialog(message.id)}
+													class="text-destructive focus:text-destructive"
+												>
+													<Trash2 class="mr-2 h-4 w-4" />
+													Supprimer le message
+												</DropdownMenu.Item>
+											{/if}
+										</DropdownMenu.Content>
+									</DropdownMenu.Root>
+								</div>
+							{/if}
 						</div>
 
 						<!-- Timestamp & Reactions -->
