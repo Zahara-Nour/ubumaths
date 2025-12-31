@@ -2,35 +2,18 @@
  * Minesweeper Leaderboard Page - Server Load
  * ==========================================
  *
- * Loads global leaderboard data from the minesweeper_leaderboard view.
- * The leaderboard shows top players by difficulty level.
- *
- * The minesweeper_leaderboard view includes:
- * - Player rank
- * - Player name
- * - Best time for that difficulty
- * - Total gidouilles earned
- * - Completion date
- * - Difficulty level
- *
- * Loads top 100 players for the initial difficulty (beginner).
- * Client can filter by difficulty using the view data.
+ * Public leaderboard - accessible to everyone.
+ * If user is authenticated, their position is highlighted.
  */
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	// Must be logged in as student
-	if (!user || !profile || profile.role !== 'student') {
-		throw error(403, 'Accès refusé');
-	}
+	const { user, supabase } = locals;
 
 	try {
 		// Fetch leaderboard from the minesweeper_leaderboard view
-		// The view provides pre-calculated stats and ranking
 		const { data: leaderboardData, error: leaderboardError } = await supabase
 			.from('minesweeper_leaderboard')
 			.select(
@@ -55,18 +38,20 @@ export const load: PageServerLoad = async ({ locals }) => {
 			byDifficulty.get(difficulty)!.push(entry);
 		}
 
-		// Find current user's position in each difficulty
+		// Find current user's position in each difficulty (if authenticated)
 		const userPositions = new Map<string, number | null>();
-		for (const [difficulty, entries] of byDifficulty.entries()) {
-			const userEntry = entries.find((e) => e.student_id === user.id);
-			userPositions.set(difficulty, userEntry?.rank || null);
+		if (user) {
+			for (const [difficulty, entries] of byDifficulty.entries()) {
+				const userEntry = entries.find((e) => e.student_id === user.id);
+				userPositions.set(difficulty, userEntry?.rank || null);
+			}
 		}
 
 		return {
 			leaderboard: leaderboardData || [],
 			leaderboardByDifficulty: Object.fromEntries(byDifficulty),
 			userPositions: Object.fromEntries(userPositions),
-			currentUserId: user.id
+			currentUserId: user?.id || null
 		};
 	} catch (err) {
 		console.error('[Leaderboard] Error loading leaderboard:', err);

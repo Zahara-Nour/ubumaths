@@ -147,7 +147,7 @@
 					Comparez vos performances avec les autres joueurs
 				</p>
 			</div>
-			<a href="/dashboard/student/minesweeper/leaderboard">
+			<a href="/leaderboards/minesweeper">
 				<Button>Classement →</Button>
 			</a>
 		</div>

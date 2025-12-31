@@ -269,7 +269,7 @@
 					Même grille pour tous ! Classement journalier avec bonus pour le top 3.
 				</p>
 			</div>
-			<a href="/dashboard/student/minesweeper/leaderboard">
+			<a href="/leaderboards/minesweeper">
 				<Button variant="outline">Classement global</Button>
 			</a>
 		</div>
