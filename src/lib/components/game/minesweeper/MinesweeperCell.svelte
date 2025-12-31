@@ -1,6 +1,15 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
 
+	// Long press configuration
+	const LONG_PRESS_DURATION = 400; // ms
+	const TOUCH_MOVE_THRESHOLD = 10; // px - cancel if finger moves more than this
+
+	// Touch state for long press detection
+	let longPressTimer: ReturnType<typeof setTimeout> | null = null;
+	let touchStartPos: { x: number; y: number } | null = null;
+	let didLongPress = false;
+
 	// Props
 	let {
 		row,
@@ -73,6 +82,12 @@
 	function handleClick(event: MouseEvent) {
 		if (disabled) return;
 
+		// Prevent click after long press (touch flag)
+		if (didLongPress) {
+			didLongPress = false;
+			return;
+		}
+
 		// Chord click: Shift+Click or Middle Click on revealed cell
 		if (isRevealed && onChord && (event.shiftKey || event.button === 1)) {
 			event.preventDefault();
@@ -119,6 +134,58 @@
 			}
 		}
 	}
+
+	// Touch handlers for long press (mobile flag)
+	function handleTouchStart(event: TouchEvent) {
+		if (disabled || isRevealed) return;
+
+		const touch = event.touches[0];
+		touchStartPos = { x: touch.clientX, y: touch.clientY };
+		didLongPress = false;
+
+		longPressTimer = setTimeout(() => {
+			didLongPress = true;
+			onFlag(row, col);
+			// Vibrate if available (haptic feedback)
+			if (navigator.vibrate) {
+				navigator.vibrate(50);
+			}
+		}, LONG_PRESS_DURATION);
+	}
+
+	function handleTouchMove(event: TouchEvent) {
+		if (!longPressTimer || !touchStartPos) return;
+
+		const touch = event.touches[0];
+		const dx = Math.abs(touch.clientX - touchStartPos.x);
+		const dy = Math.abs(touch.clientY - touchStartPos.y);
+
+		// Cancel long press if finger moved too much
+		if (dx > TOUCH_MOVE_THRESHOLD || dy > TOUCH_MOVE_THRESHOLD) {
+			clearTimeout(longPressTimer);
+			longPressTimer = null;
+			touchStartPos = null;
+		}
+	}
+
+	function handleTouchEnd() {
+		if (longPressTimer) {
+			clearTimeout(longPressTimer);
+			longPressTimer = null;
+		}
+		touchStartPos = null;
+		// Note: don't reset didLongPress here - handleClick needs to check it
+		// handleClick will reset it after preventing the click
+	}
+
+	function handleTouchCancel() {
+		if (longPressTimer) {
+			clearTimeout(longPressTimer);
+			longPressTimer = null;
+		}
+		touchStartPos = null;
+		didLongPress = false;
+	}
 </script>
 
 <button
@@ -143,6 +210,10 @@
 	onmousedown={handleMouseDown}
 	oncontextmenu={handleRightClick}
 	onkeydown={handleKeyDown}
+	ontouchstart={handleTouchStart}
+	ontouchmove={handleTouchMove}
+	ontouchend={handleTouchEnd}
+	ontouchcancel={handleTouchCancel}
 	aria-label={ariaLabel}
 	aria-pressed={isRevealed}
 	tabindex={disabled ? -1 : 0}
