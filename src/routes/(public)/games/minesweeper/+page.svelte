@@ -189,7 +189,6 @@
 							<SavedGameInfo {savedGame} />
 							<Button
 								onclick={continueGame}
-								class="w-full"
 								size="lg"
 								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
 							>
