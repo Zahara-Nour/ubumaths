@@ -69,6 +69,107 @@
 	--min-touch-target: 44px;
 	--touch-padding: 12px;
 	--touch-gap: 12px;
+
+	/* Animation tokens for shadcn/bits-ui components */
+	--animate-in-duration: 200ms;
+	--animate-out-duration: 150ms;
+}
+
+/* Shadcn/Bits UI Animation Keyframes */
+@keyframes enter-from-left {
+	from {
+		opacity: 0;
+		transform: translateX(-100%);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes exit-to-left {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(-100%);
+	}
+}
+
+@keyframes enter-from-right {
+	from {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes exit-to-right {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+/*
+ * Sheet/Dialog Animations for bits-ui components
+ * Uses data-state attribute set by bits-ui for open/closed states
+ * - side="left" uses class "start-0"
+ * - side="right" uses class "end-0"
+ */
+
+/* Sheet content - slide from left (side="left") */
+[data-slot='sheet-content'].start-0[data-state='open'] {
+	animation: enter-from-left 300ms ease-out;
+}
+
+[data-slot='sheet-content'].start-0[data-state='closed'] {
+	animation: exit-to-left 200ms ease-in;
+}
+
+/* Sheet content - slide from right (side="right") */
+[data-slot='sheet-content'].end-0[data-state='open'] {
+	animation: enter-from-right 300ms ease-out;
+}
+
+[data-slot='sheet-content'].end-0[data-state='closed'] {
+	animation: exit-to-right 200ms ease-in;
+}
+
+/* Sheet overlay - fade */
+[data-slot='sheet-overlay'][data-state='open'] {
+	animation: fade-in 300ms ease-out;
+}
+
+[data-slot='sheet-overlay'][data-state='closed'] {
+	animation: fade-out 200ms ease-in;
 }
 
 @layer base {
