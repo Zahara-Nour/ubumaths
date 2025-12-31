@@ -375,8 +375,8 @@
 							{/if}
 						</div>
 
-						<!-- Quick Reactions -->
-						{#if onReact}
+						<!-- Quick Reactions (only for other users' messages) -->
+						{#if onReact && !isOwnMessage(message)}
 							<div class="mt-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
 								{#each reactionEmojis as emoji (emoji)}
 									<button
