@@ -230,7 +230,7 @@
 					</div>
 
 					{#if data.profile?.role === 'student'}
-						<!-- Links to stats, achievements, and leaderboard -->
+						<!-- Links to stats, achievements, and leaderboard for students -->
 						<div>
 							<Separator />
 							<div class="space-y-2 pt-6">
@@ -247,6 +247,19 @@
 										Mes succès
 									</Button>
 								</a>
+								<a href="/leaderboards/minesweeper" class="block">
+									<Button variant="outline" class="w-full justify-start">
+										<span class="mr-2">🏆</span>
+										Classement global
+									</Button>
+								</a>
+							</div>
+						</div>
+					{:else if data.profile?.role === 'teacher'}
+						<!-- Leaderboard link for teachers -->
+						<div>
+							<Separator />
+							<div class="space-y-2 pt-6">
 								<a href="/leaderboards/minesweeper" class="block">
 									<Button variant="outline" class="w-full justify-start">
 										<span class="mr-2">🏆</span>
