@@ -150,11 +150,15 @@ class MinesweeperStore {
 
 	/**
 	 * Check if current user should use database storage
-	 * Only students use database. Teachers and admins use localStorage like anonymous users.
-	 * @returns true if user is a student with database access
+	 * Students and teachers use database. Admins use localStorage like anonymous users.
+	 * @returns true if user is a student or teacher with database access
 	 */
 	private shouldUseDatabase(): boolean {
-		return !!(this.user && this.supabase && this.user.role === 'student');
+		return !!(
+			this.user &&
+			this.supabase &&
+			(this.user.role === 'student' || this.user.role === 'teacher')
+		);
 	}
 
 	/**
