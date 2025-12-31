@@ -6,7 +6,6 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import MinesweeperBoard from '$lib/components/game/minesweeper/MinesweeperBoard.svelte';
 	import GameControls from '$lib/components/game/minesweeper/GameControls.svelte';
-	import DifficultySelector from '$lib/components/game/minesweeper/DifficultySelector.svelte';
 	import SavedGameInfo from '$lib/components/game/minesweeper/SavedGameInfo.svelte';
 	import AchievementToast from '$lib/components/game/minesweeper/AchievementToast.svelte';
 	import type { PageData } from './$types';
@@ -16,7 +15,6 @@
 
 	// Game state
 	let gameStarted = $state(false);
-	let selectedDifficulty = $state<Difficulty>('beginner');
 	let savedGame = $state<GameState | null>(null);
 	let isLoadingSavedGame = $state(false);
 
@@ -68,15 +66,10 @@
 		}
 	});
 
-	// Handle difficulty selection (just update the selected difficulty)
-	function handleDifficultySelect(difficulty: Difficulty) {
-		selectedDifficulty = difficulty;
-	}
-
-	// Start a new game
-	async function startNewGame() {
+	// Start a new game with selected difficulty
+	async function startGame(difficulty: Difficulty) {
 		gameStarted = true;
-		await minesweeperStore.startNewGame(selectedDifficulty);
+		await minesweeperStore.startNewGame(difficulty);
 	}
 
 	// Continue saved game
@@ -163,7 +156,7 @@
 							timeElapsed={game.timeElapsed}
 							minesRemaining={game.minesCount - game.flagsUsed}
 							gameStatus={game.status}
-							onReset={() => startNewGame()}
+							onReset={() => startGame(game.difficulty)}
 							difficulty={game.difficulty}
 							hintsUsed={game.hintsUsed || 0}
 							hintItemsAvailable={minesweeperStore.hintItemsAvailable}
@@ -186,60 +179,65 @@
 			<div class="mx-auto max-w-2xl space-y-8">
 				<div class="space-y-3 text-center">
 					<h1 class="text-4xl font-bold text-foreground md:text-5xl">Démineur</h1>
-					<p class="text-lg text-muted-foreground">
-						Révélez les cellules sans faire exploser les mines!
-					</p>
 				</div>
 
 				<Card class="space-y-6 p-8">
-					<!-- Difficulty selector with cards -->
-					<DifficultySelector
-						selected={selectedDifficulty}
-						onSelect={handleDifficultySelect}
-						disabled={minesweeperStore.isLoading || isLoadingSavedGame}
-					/>
-
-					<Separator />
-
-					<!-- Game launch section -->
-					<div class="space-y-4">
-						<h3 class="text-sm font-medium text-foreground">Lancer une partie</h3>
-
-						<!-- Saved game info (if exists) -->
-						{#if savedGame}
+					<!-- Saved game section (if exists) -->
+					{#if savedGame}
+						<div class="space-y-4">
+							<h3 class="text-lg font-semibold text-foreground">Partie en cours</h3>
 							<SavedGameInfo {savedGame} />
-						{/if}
-
-						<!-- Launch buttons -->
-						<div class="flex flex-col gap-3 sm:flex-row">
-							<!-- New game button (always visible) -->
 							<Button
-								onclick={startNewGame}
-								class="flex-1"
+								onclick={continueGame}
+								class="w-full"
+								size="lg"
 								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
 							>
-								{#if minesweeperStore.isLoading}
-									Création...
+								{#if isLoadingSavedGame}
+									Chargement...
 								{:else}
-									Nouvelle partie
+									Continuer la partie
 								{/if}
 							</Button>
+						</div>
 
-							<!-- Continue game button (only if saved game exists) -->
-							{#if savedGame}
-								<Button
-									onclick={continueGame}
-									variant="secondary"
-									class="flex-1"
-									disabled={minesweeperStore.isLoading || isLoadingSavedGame}
-								>
-									{#if isLoadingSavedGame}
-										Chargement...
-									{:else}
-										Continuer la partie
-									{/if}
-								</Button>
-							{/if}
+						<Separator />
+					{/if}
+
+					<!-- New game section -->
+					<div class="space-y-4">
+						<h3 class="text-lg font-semibold text-foreground">Nouvelle partie</h3>
+						<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+							<Button
+								onclick={() => startGame('beginner')}
+								variant="outline"
+								class="h-auto flex-col gap-1 py-4"
+								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+							>
+								<span class="text-2xl">🌱</span>
+								<span class="font-semibold">Débutant</span>
+								<span class="text-xs text-muted-foreground">9×9 · 10 mines</span>
+							</Button>
+							<Button
+								onclick={() => startGame('intermediate')}
+								variant="outline"
+								class="h-auto flex-col gap-1 py-4"
+								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+							>
+								<span class="text-2xl">⚡</span>
+								<span class="font-semibold">Intermédiaire</span>
+								<span class="text-xs text-muted-foreground">16×16 · 40 mines</span>
+							</Button>
+							<Button
+								onclick={() => startGame('expert')}
+								variant="outline"
+								class="h-auto flex-col gap-1 py-4"
+								disabled={minesweeperStore.isLoading || isLoadingSavedGame}
+							>
+								<span class="text-2xl">🔥</span>
+								<span class="font-semibold">Expert</span>
+								<span class="text-xs text-muted-foreground">16×30 · 99 mines</span>
+							</Button>
 						</div>
 					</div>
 
