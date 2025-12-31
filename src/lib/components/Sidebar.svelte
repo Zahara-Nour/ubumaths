@@ -70,7 +70,7 @@
 </script>
 
 <!-- RAIL SIDEBAR - Vertical icon navigation (Claude AI style) -->
-<aside class="hidden w-20 border-r border-border bg-card/50 shadow-sm lg:block dark:bg-card">
+<aside class="hidden w-20 border-r border-border bg-card/50 shadow-sm md:block dark:bg-card">
 	<nav class="flex flex-col items-center gap-1 py-4">
 		{#each visibleItems as item (item.href)}
 			<a

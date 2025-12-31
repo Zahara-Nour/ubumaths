@@ -177,23 +177,26 @@
 
 <header class="border-b border-border bg-background shadow-sm">
 	<div class="flex h-16 items-center gap-4 px-4">
-		<!-- Hamburger menu - visible only on mobile (lg:hidden) -->
+		<!-- Hamburger menu - visible only on mobile (md:hidden) -->
 		<button
-			class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none lg:hidden"
+			class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none md:hidden"
 			onclick={() => (mobileMenuOpen = true)}
 			aria-label="Ouvrir le menu"
 		>
 			<Menu class="h-6 w-6" />
 		</button>
 
-		<!-- Title with Gidouille - links to home -->
-		<a href={resolve('/')} class="flex items-center gap-3 transition-opacity hover:opacity-80">
-			<img src={gidouille} alt="Gidouille" class="h-8 w-8" />
-			<h1 class="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
+		<!-- Gidouille + Title - centered on mobile, left-aligned on desktop -->
+		<a
+			href={resolve('/')}
+			class="flex flex-1 items-center justify-center gap-2 transition-opacity hover:opacity-80 md:flex-none md:justify-start"
+		>
+			<img src={gidouille} alt="Gidouille" class="h-6 w-6" />
+			<h1 class="text-xl font-bold tracking-tight text-foreground md:text-2xl">{title}</h1>
 		</a>
 
-		<!-- Spacer -->
-		<div class="flex-1"></div>
+		<!-- Spacer - only on desktop -->
+		<div class="hidden flex-1 md:block"></div>
 
 		<!-- Navigation -->
 		<nav class="flex items-center gap-2">
@@ -228,6 +231,47 @@
 						<DropdownMenu.Content align="end" class="w-56">
 							<DropdownMenu.Label>{user?.email}</DropdownMenu.Label>
 							<DropdownMenu.Separator />
+
+							<!-- Mobile-only controls -->
+							<div class="md:hidden">
+								<!-- Dark mode toggle -->
+								<DropdownMenu.Item onclick={() => theme.toggle()}>
+									{#if theme.dark}
+										<Sun class="mr-2 h-4 w-4" />
+										Mode clair
+									{:else}
+										<Moon class="mr-2 h-4 w-4" />
+										Mode sombre
+									{/if}
+								</DropdownMenu.Item>
+
+								<!-- Font size controls -->
+								<DropdownMenu.Sub>
+									<DropdownMenu.SubTrigger>
+										<span class="mr-2 text-sm font-medium">A</span>
+										Taille du texte
+									</DropdownMenu.SubTrigger>
+									<DropdownMenu.SubContent>
+										<DropdownMenu.Item
+											onclick={() => fontSize.decrease()}
+											disabled={!fontSize.canDecrease}
+										>
+											<Minus class="mr-2 h-4 w-4" />
+											Réduire
+										</DropdownMenu.Item>
+										<DropdownMenu.Item
+											onclick={() => fontSize.increase()}
+											disabled={!fontSize.canIncrease}
+										>
+											<Plus class="mr-2 h-4 w-4" />
+											Agrandir
+										</DropdownMenu.Item>
+									</DropdownMenu.SubContent>
+								</DropdownMenu.Sub>
+
+								<DropdownMenu.Separator />
+							</div>
+
 							<DropdownMenu.Item>
 								<a href={resolve('/dashboard')} class="flex w-full items-center">
 									<LayoutDashboard class="mr-2 h-4 w-4" />
@@ -266,71 +310,74 @@
 				>
 			{/if}
 
-			<!-- Font size controls -->
-			<div class="flex items-center gap-1 border-l pl-2">
+			<!-- Desktop controls - hidden on mobile -->
+			<div class="hidden items-center gap-2 border-l pl-2 md:flex">
+				<!-- Font size controls -->
+				<div class="flex items-center gap-1">
+					<Button
+						onclick={() => fontSize.decrease()}
+						disabled={!fontSize.canDecrease}
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Réduire la taille du texte"
+						title="Réduire la taille du texte"
+					>
+						<Minus class="h-5 w-5" />
+					</Button>
+					<span class="text-sm font-medium">A</span>
+					<Button
+						onclick={() => fontSize.increase()}
+						disabled={!fontSize.canIncrease}
+						variant="ghost"
+						size="icon-sm"
+						aria-label="Augmenter la taille du texte"
+						title="Augmenter la taille du texte"
+					>
+						<Plus class="h-5 w-5" />
+					</Button>
+				</div>
+
+				<!-- Dark mode toggle -->
 				<Button
-					onclick={() => fontSize.decrease()}
-					disabled={!fontSize.canDecrease}
+					onclick={() => theme.toggle()}
 					variant="ghost"
 					size="icon-sm"
-					aria-label="Réduire la taille du texte"
-					title="Réduire la taille du texte"
+					aria-label="Basculer le mode sombre"
 				>
-					<Minus class="h-5 w-5" />
+					{#if theme.dark}
+						<Sun class="h-6 w-6" />
+					{:else}
+						<Moon class="h-6 w-6" />
+					{/if}
 				</Button>
-				<span class="text-sm font-medium">A</span>
+
+				<!-- Fullscreen toggle -->
 				<Button
-					onclick={() => fontSize.increase()}
-					disabled={!fontSize.canIncrease}
+					onclick={toggleFullscreen}
 					variant="ghost"
 					size="icon-sm"
-					aria-label="Augmenter la taille du texte"
-					title="Augmenter la taille du texte"
+					aria-label="Basculer le plein écran"
+					title="Basculer le plein écran"
 				>
-					<Plus class="h-5 w-5" />
+					{#if isFullscreen}
+						<Minimize class="h-6 w-6" />
+					{:else}
+						<Maximize class="h-6 w-6" />
+					{/if}
 				</Button>
 			</div>
-
-			<!-- Dark mode toggle -->
-			<Button
-				onclick={() => theme.toggle()}
-				variant="ghost"
-				size="icon-sm"
-				aria-label="Basculer le mode sombre"
-			>
-				{#if theme.dark}
-					<Sun class="h-6 w-6" />
-				{:else}
-					<Moon class="h-6 w-6" />
-				{/if}
-			</Button>
-
-			<!-- Fullscreen toggle -->
-			<Button
-				onclick={toggleFullscreen}
-				variant="ghost"
-				size="icon-sm"
-				aria-label="Basculer le plein écran"
-				title="Basculer le plein écran"
-			>
-				{#if isFullscreen}
-					<Minimize class="h-6 w-6" />
-				{:else}
-					<Maximize class="h-6 w-6" />
-				{/if}
-			</Button>
 		</nav>
 	</div>
 </header>
 
 <!-- Mobile Navigation Drawer -->
 <Sheet.Root bind:open={mobileMenuOpen}>
-	<Sheet.Content side="left" class="w-72 p-0">
+	<Sheet.Content side="left" class="flex w-72 flex-col p-0">
 		<Sheet.Header class="border-b border-border px-4 py-3">
 			<Sheet.Title class="text-lg font-semibold">Navigation</Sheet.Title>
 		</Sheet.Header>
 
-		<nav class="flex flex-col py-2" aria-label="Navigation principale">
+		<nav class="flex flex-1 flex-col py-2" aria-label="Navigation principale">
 			{#each visibleItems as item (item.href)}
 				<a
 					href={resolve(item.href as '/')}
@@ -346,5 +393,47 @@
 				</a>
 			{/each}
 		</nav>
+
+		<!-- Settings section at bottom -->
+		<div class="border-t border-border px-4 py-3">
+			<p class="mb-2 text-xs font-medium text-muted-foreground uppercase">Paramètres</p>
+			<div class="flex items-center justify-between gap-4">
+				<!-- Dark mode toggle -->
+				<button
+					onclick={() => theme.toggle()}
+					class="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+					aria-label="Basculer le mode sombre"
+				>
+					{#if theme.dark}
+						<Sun class="h-5 w-5" />
+						<span>Clair</span>
+					{:else}
+						<Moon class="h-5 w-5" />
+						<span>Sombre</span>
+					{/if}
+				</button>
+
+				<!-- Font size controls -->
+				<div class="flex items-center gap-1">
+					<button
+						onclick={() => fontSize.decrease()}
+						disabled={!fontSize.canDecrease}
+						class="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-muted disabled:opacity-50"
+						aria-label="Réduire la taille du texte"
+					>
+						<Minus class="h-4 w-4" />
+					</button>
+					<span class="text-sm font-medium">A</span>
+					<button
+						onclick={() => fontSize.increase()}
+						disabled={!fontSize.canIncrease}
+						class="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-muted disabled:opacity-50"
+						aria-label="Augmenter la taille du texte"
+					>
+						<Plus class="h-4 w-4" />
+					</button>
+				</div>
+			</div>
+		</div>
 	</Sheet.Content>
 </Sheet.Root>
