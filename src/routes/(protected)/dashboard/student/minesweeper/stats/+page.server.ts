@@ -18,6 +18,7 @@ type GameStats = {
 	gamesWon: number;
 	bestTime: number | null;
 	totalGidouilles: number;
+	totalPoints: number;
 	winRate: number;
 };
 
@@ -33,7 +34,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Fetch all minesweeper games for this student
 		const { data: games, error: gamesError } = await supabase
 			.from('minesweeper_games')
-			.select('id, difficulty, time_seconds, status, created_at, gidouilles_awarded')
+			.select('id, difficulty, time_seconds, status, created_at, gidouilles_awarded, points_earned')
 			.eq('student_id', user.id)
 			.order('created_at', { ascending: false });
 
@@ -58,6 +59,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				gamesWon: 0,
 				bestTime: null,
 				totalGidouilles: 0,
+				totalPoints: 0,
 				winRate: 0
 			});
 		}
@@ -70,6 +72,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			status: string;
 			created_at: string;
 			gidouilles_awarded: number;
+			points_earned: number;
 		}> = [];
 
 		for (const game of games || []) {
@@ -80,6 +83,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				if (game.status === 'won') {
 					stats.gamesWon++;
 					stats.totalGidouilles += game.gidouilles_awarded || 0;
+					stats.totalPoints += game.points_earned || 0;
 
 					// Track best time (only for won games)
 					if (
@@ -99,7 +103,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 					time_seconds: game.time_seconds || 0,
 					status: game.status,
 					created_at: game.created_at,
-					gidouilles_awarded: game.gidouilles_awarded || 0
+					gidouilles_awarded: game.gidouilles_awarded || 0,
+					points_earned: game.points_earned || 0
 				});
 			}
 		}

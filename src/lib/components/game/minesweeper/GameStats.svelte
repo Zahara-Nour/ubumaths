@@ -7,12 +7,14 @@
 		gamesWon,
 		bestTime,
 		totalGidouilles,
+		totalPoints = 0,
 		difficulty
 	}: {
 		gamesPlayed: number;
 		gamesWon: number;
 		bestTime: number | null;
 		totalGidouilles: number;
+		totalPoints?: number;
 		difficulty: string;
 	} = $props();
 
@@ -40,6 +42,10 @@
 
 	const formattedGidouilles = $derived.by(() => {
 		return totalGidouilles.toLocaleString('fr-FR');
+	});
+
+	const formattedPoints = $derived.by(() => {
+		return totalPoints.toLocaleString('fr-FR');
 	});
 </script>
 
@@ -75,13 +81,22 @@
 				<dd class="font-mono font-semibold tabular-nums">{formattedBestTime}</dd>
 			</div>
 
-			<!-- Total gidouilles -->
+			<!-- Total points -->
 			<div class="flex items-center justify-between border-t border-border pt-3">
+				<dt class="flex items-center gap-1 text-sm text-muted-foreground">
+					<span aria-hidden="true">🏆</span>
+					<span>Points totaux</span>
+				</dt>
+				<dd class="text-lg font-bold text-primary tabular-nums">{formattedPoints}</dd>
+			</div>
+
+			<!-- Total gidouilles -->
+			<div class="flex items-center justify-between">
 				<dt class="flex items-center gap-1 text-sm text-muted-foreground">
 					<span aria-hidden="true">💰</span>
 					<span>Gidouilles gagnées</span>
 				</dt>
-				<dd class="text-lg font-bold text-primary tabular-nums">{formattedGidouilles}</dd>
+				<dd class="font-semibold text-amber-500 tabular-nums">{formattedGidouilles}</dd>
 			</div>
 		</dl>
 
