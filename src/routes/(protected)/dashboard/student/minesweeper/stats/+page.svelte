@@ -95,7 +95,10 @@
 							<th class="px-4 py-3 text-left font-semibold text-foreground">Difficulté</th>
 							<th class="px-4 py-3 text-center font-semibold text-foreground">Statut</th>
 							<th class="px-4 py-3 text-center font-semibold text-foreground">Temps</th>
-							<th class="px-4 py-3 text-center font-semibold text-foreground">Gidouilles</th>
+							<th class="px-4 py-3 text-center font-semibold text-foreground">Points</th>
+							<th class="hidden px-4 py-3 text-center font-semibold text-foreground sm:table-cell"
+								>Gidouilles</th
+							>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-border">
@@ -124,6 +127,13 @@
 									{formatTime(game.time_seconds)}
 								</td>
 								<td class="px-4 py-3 text-center font-medium text-foreground">
+									{#if game.status === 'won' && game.points_earned > 0}
+										<span class="text-primary">+{game.points_earned}</span>
+									{:else}
+										<span class="text-muted-foreground">—</span>
+									{/if}
+								</td>
+								<td class="hidden px-4 py-3 text-center font-medium text-foreground sm:table-cell">
 									{#if game.status === 'won' && game.gidouilles_awarded > 0}
 										<span class="text-amber-500">+{game.gidouilles_awarded}</span>
 									{:else}

@@ -1256,8 +1256,10 @@ class MinesweeperStore {
 						const response = data as {
 							gidouilles_earned: number;
 							achievements?: UnlockedAchievement[];
+							points_earned?: number;
 						};
 						const gidouilles = response.gidouilles_earned;
+						const points = response.points_earned || 0;
 
 						// Store newly unlocked achievements for toast display
 						if (response.achievements && response.achievements.length > 0) {
@@ -1265,8 +1267,13 @@ class MinesweeperStore {
 							logger.info('Unlocked achievements:', response.achievements);
 						}
 
-						if (gidouilles > 0) {
+						// Build toast message with gidouilles and points
+						if (gidouilles > 0 && points > 0) {
+							toaster.success(`Victoire ! +${gidouilles} gidouilles • +${points} pts 🎉`);
+						} else if (gidouilles > 0) {
 							toaster.success(`Victoire ! +${gidouilles} gidouilles 🎉`);
+						} else if (points > 0) {
+							toaster.success(`Victoire ! +${points} pts 🎉`);
 						} else {
 							toaster.success('Victoire ! 🎉');
 						}
