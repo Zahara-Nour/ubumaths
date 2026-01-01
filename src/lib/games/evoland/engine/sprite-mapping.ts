@@ -80,6 +80,23 @@ export const MONSTER_SPRITES = {
 	bat: { col: 0, row: 4 }
 } as const;
 
+/**
+ * Sword sprite configuration (uses col 3 for sword swing).
+ */
+export const SWORD_SPRITES: Record<number, SpritePosition> = {
+	[Direction.Down]: { col: 3, row: 1 },
+	[Direction.Up]: { col: 3, row: 1 },
+	[Direction.Left]: { col: 3, row: 1 },
+	[Direction.Right]: { col: 3, row: 1 }
+};
+
+/**
+ * Get sword sprite position.
+ */
+export function getSwordSprite(direction: number): SpritePosition {
+	return SWORD_SPRITES[direction] ?? SWORD_SPRITES[Direction.Down];
+}
+
 // ============================================================================
 // TILE SPRITE POSITIONS (tiles_alpha.png)
 // ============================================================================

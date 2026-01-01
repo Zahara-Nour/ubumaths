@@ -189,7 +189,8 @@ export class GameState {
 			{ x: 53, y: 78, kind: ChestKind.CLeftCtrl, opened: false }, // Unlock left
 			{ x: 55, y: 78, kind: ChestKind.CRightCtrl, opened: false }, // Unlock up/down
 			{ x: 53, y: 76, kind: ChestKind.CWeapon, opened: false }, // Get sword
-			{ x: 55, y: 76, kind: ChestKind.CMonsters, opened: false } // Enable monsters
+			{ x: 55, y: 76, kind: ChestKind.CMonsters, opened: false }, // Enable monsters
+			{ x: 57, y: 76, kind: ChestKind.CLevelUp, opened: false } // Enable XP/leveling
 		];
 
 		// Add test monsters (they won't appear until CMonsters chest is opened)
@@ -331,35 +332,62 @@ export class GameState {
 	 * Check for collisions between hero and monsters.
 	 */
 	private checkMonsterCollisions(): void {
-		// Skip if hero is in hit recovery (invulnerable)
-		if (this.hero.hitRecovery > 0) return;
+		// Check if hero sword hits monsters
+		if (this.hero.sword.active) {
+			const swordHitbox = this.hero.getSwordHitbox();
+			if (swordHitbox) {
+				const killedMonsters = this.monsterManager.checkSwordHits(swordHitbox);
 
-		const monsters = this.monsterManager.getMonsters();
-
-		for (const monster of monsters) {
-			// Skip dead monsters
-			if (monster.removed) continue;
-
-			// Check if hero sword hits monster
-			if (this.hero.sword.active) {
-				// Simple collision check - TODO: implement proper sword bounds
-				const dx = Math.abs(monster.x - this.hero.x);
-				const dy = Math.abs(monster.y - this.hero.y);
-				if (dx < 24 && dy < 24) {
-					monster.hp -= 1;
-					if (monster.hp <= 0) {
-						monster.removed = true;
-						this.hero.addXP(10);
+				for (const monster of killedMonsters) {
+					// Award XP
+					if (this.progression.getFlags().levelUpEnabled) {
+						const leveledUp = this.hero.addXP(monster.xpReward);
+						if (leveledUp) {
+							evolandStore.showDialog({
+								title: 'Niveau!',
+								message: `Vous etes maintenant niveau ${this.hero.inventory.level}!`
+							});
+						}
 					}
+
+					// Gold drop
+					const goldDrop = monster.calculateGoldDrop();
+					if (goldDrop > 0) {
+						this.hero.addGold(goldDrop);
+					}
+
+					// Track kill count
+					this.progression.addKill();
 				}
 			}
+		}
 
-			// Check if monster hits hero
-			const dx = Math.abs(monster.x - this.hero.x);
-			const dy = Math.abs(monster.y - this.hero.y);
-			if (dx < 12 && dy < 12) {
-				this.hero.takeDamage(1);
-			}
+		// Skip hero-monster collision if in hit recovery (invulnerable)
+		if (this.hero.hitRecovery > 0) return;
+
+		// Check if monster hits hero
+		const heroBounds = this.hero.getBounds();
+		if (
+			this.monsterManager.checkHeroHit(
+				heroBounds.x,
+				heroBounds.y,
+				heroBounds.width,
+				heroBounds.height
+			)
+		) {
+			this.hero.takeDamage(1);
+		}
+
+		// Check if fireball hits hero
+		if (
+			this.monsterManager.checkFireballHit(
+				heroBounds.x,
+				heroBounds.y,
+				heroBounds.width,
+				heroBounds.height
+			)
+		) {
+			this.hero.takeDamage(1);
 		}
 	}
 
