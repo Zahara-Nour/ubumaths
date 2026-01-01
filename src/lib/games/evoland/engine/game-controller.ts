@@ -218,11 +218,12 @@ export class GameController {
 	private update(dt: number): void {
 		if (!this.input) return;
 
-		// Update input state
-		this.input.update();
-
-		// Get input state
+		// Get input state FIRST (before frame counter increment)
+		// This ensures isToggled() detects keys pressed since last frame
 		const inputState = this.input.getState();
+
+		// Update input state (increment frame counter for next frame)
+		this.input.update();
 
 		// Handle game logic based on current screen
 		switch (evolandStore.screen) {
