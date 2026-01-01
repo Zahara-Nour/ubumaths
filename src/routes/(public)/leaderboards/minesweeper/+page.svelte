@@ -35,7 +35,10 @@
 
 <svelte:head>
 	<title>Classement Démineur | UbuMaths</title>
-	<meta name="description" content="Classement global du jeu Démineur par points" />
+	<meta
+		name="description"
+		content="Classement global du jeu Démineur - Moyenne des 10 meilleures parties"
+	/>
 </svelte:head>
 
 <div class="mx-auto max-w-4xl p-4 md:p-6">
@@ -54,7 +57,9 @@
 			</div>
 			<div>
 				<h1 class="text-2xl font-bold text-foreground md:text-3xl">Démineur</h1>
-				<p class="text-sm text-muted-foreground">Classement global par points</p>
+				<p class="text-sm text-muted-foreground">
+					Classement par moyenne des 10 meilleures parties
+				</p>
 			</div>
 		</div>
 	</div>
@@ -63,25 +68,27 @@
 
 	<!-- Scoring Info Card -->
 	<Card class="mb-6 bg-muted/50 p-4">
-		<h3 class="mb-2 font-semibold text-foreground">Comment sont calculés les points ?</h3>
+		<h3 class="mb-2 font-semibold text-foreground">Comment fonctionne le classement ?</h3>
 		<ul class="space-y-1 text-sm text-muted-foreground">
+			<li>
+				<span class="font-medium text-foreground">Classement :</span> Basé sur la moyenne de vos 10 meilleures
+				parties
+			</li>
+			<li>
+				<span class="font-medium text-foreground">Équité :</span> Jouer plus ne donne pas d'avantage,
+				seul le skill compte
+			</li>
+			<li>
+				<span class="font-medium text-foreground">Pas de stress :</span> Une mauvaise partie n'affecte
+				pas votre classement
+			</li>
 			<li>
 				<span class="font-medium text-foreground">Points de base :</span> Débutant 50 • Intermédiaire
 				200 • Expert 500
 			</li>
 			<li>
-				<span class="font-medium text-foreground">Bonus de vitesse :</span> Jusqu'à +100% selon le temps
-			</li>
-			<li>
-				<span class="font-medium text-foreground">Malus indices :</span> -10% par indice utilisé
-			</li>
-			<li>
-				<span class="font-medium text-foreground">Bonus série :</span> +5% par victoire consécutive (max
-				+25%)
-			</li>
-			<li>
-				<span class="font-medium text-foreground">Bonus quotidien :</span> +20 pts pour la 1ère victoire
-				du jour
+				<span class="font-medium text-foreground">Bonus :</span> Vitesse (+100% max) • Série (+25% max)
+				• Quotidien (+20 pts)
 			</li>
 		</ul>
 	</Card>
@@ -122,15 +129,19 @@
 						<th class="px-2 py-2 text-left font-semibold text-foreground sm:px-4 sm:py-3">Joueur</th
 						>
 						<th class="px-2 py-2 text-center font-semibold text-foreground sm:px-4 sm:py-3"
-							>Points</th
+							>Moyenne</th
 						>
 						<th
 							class="hidden px-2 py-2 text-center font-semibold text-foreground sm:table-cell sm:px-4 sm:py-3"
+							>Top 10</th
+						>
+						<th
+							class="hidden px-2 py-2 text-center font-semibold text-foreground sm:px-4 sm:py-3 md:table-cell"
 							>Victoires</th
 						>
 						<th
-							class="hidden px-2 py-2 text-right font-semibold text-foreground sm:px-4 sm:py-3 md:table-cell"
-							>Taux</th
+							class="hidden px-2 py-2 text-right font-semibold text-foreground sm:px-4 sm:py-3 lg:table-cell"
+							>Total pts</th
 						>
 					</tr>
 				</thead>
@@ -156,17 +167,25 @@
 							</td>
 							<td class="px-2 py-2 text-center sm:px-4 sm:py-3">
 								<span class="font-mono text-xs font-bold text-primary sm:text-sm">
-									{formatPoints(entry.total_points || 0)}
+									{formatPoints(entry.avg_top_10 || 0)}
 								</span>
 							</td>
 							<td class="hidden px-2 py-2 text-center sm:table-cell sm:px-4 sm:py-3">
-								<span class="font-semibold text-foreground">{entry.games_won || 0}</span>
+								<span class="font-semibold text-foreground">
+									{entry.top_games_count || 0}/10
+									{#if (entry.top_games_count || 0) < 10}
+										<span class="ml-1 text-amber-500" title="Classement provisoire">*</span>
+									{/if}
+								</span>
+							</td>
+							<td class="hidden px-2 py-2 text-center sm:px-4 sm:py-3 md:table-cell">
+								<span class="text-muted-foreground">{entry.games_won || 0}</span>
 							</td>
 							<td
-								class="hidden px-2 py-2 text-right text-xs text-muted-foreground sm:px-4 sm:py-3 md:table-cell"
+								class="hidden px-2 py-2 text-right text-xs text-muted-foreground sm:px-4 sm:py-3 lg:table-cell"
 							>
 								<span class="inline-block rounded bg-muted px-2 py-1 text-xs">
-									{entry.win_rate || 0}%
+									{formatPoints(entry.total_points || 0)}
 								</span>
 							</td>
 						</tr>

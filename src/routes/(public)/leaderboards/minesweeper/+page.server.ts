@@ -14,11 +14,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { user, supabase } = locals;
 
 	try {
-		// Fetch global leaderboard ranked by total points
+		// Fetch global leaderboard ranked by average of top 10 games
 		const { data: leaderboardData, error: leaderboardError } = await supabase
 			.from('minesweeper_leaderboard')
 			.select(
-				'student_id, firstname, lastname, games_won, games_played, total_points, total_gidouilles, best_time_beginner, best_time_intermediate, best_time_expert, win_rate, rank'
+				'student_id, firstname, lastname, avg_top_10, top_games_count, games_won, games_played, total_points, win_rate, rank'
 			)
 			.order('rank', { ascending: true })
 			.limit(100);
