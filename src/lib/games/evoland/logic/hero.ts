@@ -197,17 +197,18 @@ export class Hero extends Entity {
 
 	/**
 	 * Check if a direction input is pressed and allowed.
+	 * Evoland progression: Right first, then Left, then Up/Down.
 	 */
 	private canInputDirection(dir: Direction): boolean {
 		switch (dir) {
 			case Direction.Up:
-				return this.inputState.up;
+				return this.inputState.up && this.flags.canMoveAll;
 			case Direction.Down:
-				return this.inputState.down;
+				return this.inputState.down && this.flags.canMoveAll;
 			case Direction.Left:
 				return this.inputState.left && this.flags.canMoveLeft;
 			case Direction.Right:
-				return this.inputState.right;
+				return this.inputState.right; // Always allowed from start
 		}
 	}
 
