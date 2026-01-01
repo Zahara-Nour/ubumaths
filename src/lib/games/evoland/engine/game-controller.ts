@@ -14,7 +14,6 @@ import { evolandStore } from '../stores/evoland.svelte';
 import { SpriteCache, EVOLAND_SPRITES, DEFAULT_TILE_SIZE } from './sprite-sheet';
 import {
 	getHeroSprite,
-	CHEST_SPRITES,
 	getTileSprite,
 	DARK_TILE_COLOR,
 	MONSTER_SPRITES,
@@ -349,21 +348,27 @@ export class GameController {
 		const spritesSheet = this.sprites?.getSheet('sprites');
 
 		// Render chests
-		for (const chest of this.gameState.getChests()) {
+		const chests = this.gameState.getChests();
+		for (const chest of chests) {
 			const chestScreenX = chest.x * TILE_SIZE - camera.x;
 			const chestScreenY = chest.y * TILE_SIZE - camera.y;
 
-			if (spritesSheet?.isLoaded) {
-				const chestSprite = chest.opened ? CHEST_SPRITES.open : CHEST_SPRITES.closed;
-				spritesSheet.drawSprite(ctx, chestSprite.col, chestSprite.row, chestScreenX, chestScreenY);
-			} else {
-				// Fallback: colored rectangles
-				ctx.fillStyle = chest.opened ? '#654321' : '#ffd700';
-				ctx.fillRect(chestScreenX + 2, chestScreenY + 4, 12, 10);
-				if (!chest.opened) {
-					ctx.fillStyle = '#daa520';
-					ctx.fillRect(chestScreenX + 1, chestScreenY + 2, 14, 4);
-				}
+			// Skip if off-screen
+			if (
+				chestScreenX < -TILE_SIZE ||
+				chestScreenX > 240 ||
+				chestScreenY < -TILE_SIZE ||
+				chestScreenY > 160
+			) {
+				continue;
+			}
+
+			// Use colored rectangles (TODO: find correct sprite positions in sprites_alpha.png)
+			ctx.fillStyle = chest.opened ? '#654321' : '#ffd700';
+			ctx.fillRect(chestScreenX + 2, chestScreenY + 4, 12, 10);
+			if (!chest.opened) {
+				ctx.fillStyle = '#daa520';
+				ctx.fillRect(chestScreenX + 1, chestScreenY + 2, 14, 4);
 			}
 		}
 
