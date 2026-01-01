@@ -596,8 +596,10 @@ export class ProgressionManager {
 	 */
 	fromState(state: ProgressionState): void {
 		this.flags = { ...state.flags };
-		this.openedChests = new Set(state.openedChests);
-		this.scrollLevels = new Map(Object.entries(state.scrollLevels).map(([k, v]) => [Number(k), v]));
+		this.openedChests = new Set(state.openedChests as ChestKind[]);
+		this.scrollLevels = new Map(
+			Object.entries(state.scrollLevels).map(([k, v]) => [Number(k) as ChestKind, v])
+		);
 		this.gold = state.gold;
 		this.keys = state.keys;
 		this.xp = state.xp;
@@ -680,6 +682,6 @@ export function getChestData(kind: ChestKind): ChestData {
  * Check if a chest kind is a feature unlock (vs item pickup).
  */
 export function isFeatureUnlock(kind: ChestKind): boolean {
-	const itemPickups = [ChestKind.CGoldCoin, ChestKind.CKey];
+	const itemPickups: ChestKind[] = [ChestKind.CGoldCoin, ChestKind.CKey];
 	return !itemPickups.includes(kind);
 }

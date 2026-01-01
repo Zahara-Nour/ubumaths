@@ -14,6 +14,10 @@ import {
 } from './save-system';
 import { Direction } from './constants';
 
+// Helper type to make all properties mutable (for testing)
+type Mutable<T> = { -readonly [P in keyof T]: Mutable<T[P]> };
+type MutableSaveData = Mutable<SaveData>;
+
 // Mock localStorage
 const mockStorage: Record<string, string> = {};
 
@@ -49,11 +53,11 @@ afterEach(() => {
 
 describe('SaveSystem', () => {
 	let saveSystem: SaveSystem;
-	let validSaveData: SaveData;
+	let validSaveData: MutableSaveData;
 
 	beforeEach(() => {
 		saveSystem = new SaveSystem();
-		validSaveData = createEmptySaveData();
+		validSaveData = createEmptySaveData() as MutableSaveData;
 	});
 
 	describe('save', () => {
@@ -212,7 +216,7 @@ describe('SaveSystem', () => {
 
 	describe('data validation', () => {
 		it('should validate progression bounds', () => {
-			const invalidData = createEmptySaveData();
+			const invalidData = createEmptySaveData() as MutableSaveData;
 			invalidData.progression.level = 1000; // Max is 99
 
 			const result = saveSystem.save(0, invalidData);
@@ -220,7 +224,7 @@ describe('SaveSystem', () => {
 		});
 
 		it('should validate hero position bounds', () => {
-			const invalidData = createEmptySaveData();
+			const invalidData = createEmptySaveData() as MutableSaveData;
 			invalidData.hero.x = -100; // Min is 0
 
 			const result = saveSystem.save(0, invalidData);
@@ -228,7 +232,7 @@ describe('SaveSystem', () => {
 		});
 
 		it('should validate color level bounds', () => {
-			const invalidData = createEmptySaveData();
+			const invalidData = createEmptySaveData() as MutableSaveData;
 			invalidData.progression.flags.colorLevel = 10; // Max is 4
 
 			const result = saveSystem.save(0, invalidData);
