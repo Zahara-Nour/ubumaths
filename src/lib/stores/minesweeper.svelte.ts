@@ -1249,37 +1249,42 @@ class MinesweeperStore {
 				const gridState = this.gridToDTO(game.grid);
 
 				if (won) {
-					// WIN: Call SECURITY DEFINER RPC to validate grid, calculate rewards, and update achievements
-					const { data, error } = await this.supabase!.rpc('complete_minesweeper_game', {
-						p_game_id: game.id,
-						p_grid_state: gridState as unknown as Json
+					// WIN: Call API endpoint to validate grid, calculate rewards, and update achievements
+					// Using API instead of direct RPC for better auth handling (401 on session expiry)
+					const response = await fetch(`/api/games/minesweeper/${game.id}/complete`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ grid_state: gridState })
 					});
 
-					if (error) {
-						throw error;
+					// Handle session expiry (401) with user-friendly message
+					if (response.status === 401) {
+						toaster.error('Session expirée. Veuillez vous reconnecter.');
+						logger.warn('Session expired during game completion');
+						// Show victory modal without rewards (game was won locally)
+						this.showVictoryModalWithoutRewards(game);
+						return;
 					}
 
-					// Parse response and show victory modal
-					// RPC returns TABLE which Supabase returns as array, or single object
-					const row = Array.isArray(data) ? data[0] : data;
-					if (row && typeof row === 'object' && 'gidouilles_earned' in row) {
-						const response = row as unknown as {
-							gidouilles_earned: number;
-							achievements?: UnlockedAchievement[];
-							points_earned?: number;
-							breakdown?: RewardBreakdown;
-						};
-						const gidouilles = response.gidouilles_earned;
-						const points = response.points_earned || 0;
+					if (!response.ok) {
+						const errorData = await response.json().catch(() => ({}));
+						throw new Error(errorData.message || `Erreur ${response.status}`);
+					}
+
+					const data = await response.json();
+
+					if (data.success) {
+						const gidouilles = data.gidouilles || 0;
+						const points = data.points || 0;
 
 						// Store newly unlocked achievements for modal display
-						if (response.achievements && response.achievements.length > 0) {
-							this.newlyUnlockedAchievements = response.achievements;
-							logger.info('Unlocked achievements:', response.achievements);
+						if (data.achievements && data.achievements.length > 0) {
+							this.newlyUnlockedAchievements = data.achievements;
+							logger.info('Unlocked achievements:', data.achievements);
 						}
 
 						// Get breakdown or create default
-						const breakdown: RewardBreakdown = response.breakdown || {
+						const breakdown: RewardBreakdown = data.breakdown || {
 							cycle: null,
 							base_reward: DIFFICULTY_CONFIGS[game.difficulty].baseGidouilles,
 							reference_time: DIFFICULTY_CONFIGS[game.difficulty].baseTime,
@@ -1314,39 +1319,8 @@ class MinesweeperStore {
 						});
 					} else {
 						// Fallback if response format is unexpected
-						logger.warn('Unexpected RPC response format:', data);
-						// Show simple victory modal
-						const defaultBreakdown: RewardBreakdown = {
-							cycle: null,
-							base_reward: DIFFICULTY_CONFIGS[game.difficulty].baseGidouilles,
-							reference_time: DIFFICULTY_CONFIGS[game.difficulty].baseTime,
-							time_seconds: game.timeElapsed,
-							time_mult: 1.0,
-							hints_used: game.hintsUsed || 0,
-							hints_from_items: 0,
-							hint_penalty: 0,
-							theoretical_reward: 0,
-							actual_reward: 0,
-							is_first_win_of_day: false,
-							week_best_reward: 0
-						};
-						modalStack.push({
-							component: VictoryModal,
-							props: {
-								gidouilles: 0,
-								points: 0,
-								breakdown: defaultBreakdown,
-								difficulty: game.difficulty,
-								achievements: [],
-								isPublicUser: false,
-								onPlayAgain: () => {
-									modalStack.clear();
-									this.startNewGame(game.difficulty);
-								},
-								onClose: () => modalStack.pop()
-							},
-							canDismiss: true
-						});
+						logger.warn('Unexpected API response format:', data);
+						this.showVictoryModalWithoutRewards(game);
 					}
 
 					logger.info('Game completed (win):', { gameId: game.id });
@@ -1602,6 +1576,46 @@ class MinesweeperStore {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Show victory modal without rewards (used when session expired or API error)
+	 * The game was won locally but couldn't be recorded server-side
+	 */
+	private showVictoryModalWithoutRewards(game: GameState): void {
+		const config = DIFFICULTY_CONFIGS[game.difficulty];
+		const fallbackBreakdown: RewardBreakdown = {
+			cycle: null,
+			base_reward: config.baseGidouilles,
+			reference_time: config.baseTime,
+			time_seconds: game.timeElapsed,
+			time_mult: 1.0,
+			hints_used: game.hintsUsed || 0,
+			hints_from_items: 0,
+			hint_penalty: 0,
+			theoretical_reward: 0,
+			actual_reward: 0,
+			is_first_win_of_day: false,
+			week_best_reward: 0
+		};
+
+		modalStack.push({
+			component: VictoryModal,
+			props: {
+				gidouilles: 0,
+				points: 0,
+				breakdown: fallbackBreakdown,
+				difficulty: game.difficulty,
+				achievements: [],
+				isPublicUser: true, // Treat as public since save failed
+				onPlayAgain: () => {
+					modalStack.clear();
+					this.startNewGame(game.difficulty);
+				},
+				onClose: () => modalStack.pop()
+			},
+			canDismiss: true
+		});
 	}
 
 	/**

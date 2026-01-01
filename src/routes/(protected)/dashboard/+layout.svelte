@@ -48,6 +48,7 @@
 		Gift,
 		LogOut,
 		Sun,
+		Clock,
 		Moon,
 		Minus,
 		Plus,
@@ -186,6 +187,7 @@
 				{ href: '/dashboard/admin/questions', label: 'Questions', icon: BookOpen },
 				{ href: '/dashboard/admin/vip-cards', label: 'VIP Cards', icon: Sparkles },
 				{ href: '/dashboard/admin/bug-reports', label: 'Bug Reports', icon: Bug },
+				{ href: '/dashboard/admin/cron', label: 'CRON Jobs', icon: Clock },
 				{ href: '/dashboard/admin/docs', label: 'Documentation', icon: FileText },
 				{ href: '/dashboard/admin/debug/database', label: 'Debug', icon: Settings },
 				{ href: '/dashboard/admin/settings', label: 'Settings', icon: Settings }
