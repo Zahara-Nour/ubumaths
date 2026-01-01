@@ -8,6 +8,12 @@
 
 	let { data }: { data: PageData } = $props();
 
+	// Split leaderboard into ranked (10+ games) and provisional (< 10 games)
+	const rankedPlayers = $derived(data.leaderboard.filter((e) => (e.top_games_count || 0) >= 10));
+	const provisionalPlayers = $derived(
+		data.leaderboard.filter((e) => (e.top_games_count || 0) < 10)
+	);
+
 	// Get medal emoji for top 3
 	function getMedalEmoji(rank: number): string {
 		return (
@@ -81,96 +87,97 @@
 		</Card>
 	{/if}
 
-	<!-- Leaderboard Table -->
-	{#if data.leaderboard.length === 0}
+	<!-- Ranked Players Table (10+ games) -->
+	{#if rankedPlayers.length === 0 && provisionalPlayers.length === 0}
 		<Card class="p-12 text-center">
 			<Trophy class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
 			<p class="mb-4 text-muted-foreground">Aucun joueur dans le classement</p>
 		</Card>
 	{:else}
-		<div class="overflow-x-auto rounded-lg border border-border">
-			<table class="w-full text-sm">
-				<thead class="border-b border-border bg-muted/50">
-					<tr>
-						<th
-							class="w-10 px-2 py-2 text-center font-semibold text-foreground sm:w-12 sm:px-4 sm:py-3"
-							>Rang</th
-						>
-						<th class="px-2 py-2 text-left font-semibold text-foreground sm:px-4 sm:py-3">Joueur</th
-						>
-						<th class="px-2 py-2 text-center font-semibold text-foreground sm:px-4 sm:py-3"
-							>Moyenne</th
-						>
-						<th
-							class="hidden px-2 py-2 text-center font-semibold text-foreground sm:table-cell sm:px-4 sm:py-3"
-							title="Nombre de parties prises en compte pour la moyenne">Base</th
-						>
-						<th
-							class="hidden px-2 py-2 text-center font-semibold text-foreground sm:px-4 sm:py-3 md:table-cell"
-							>Victoires</th
-						>
-						<th
-							class="hidden px-2 py-2 text-right font-semibold text-foreground sm:px-4 sm:py-3 lg:table-cell"
-							>Total pts</th
-						>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-border">
-					{#each data.leaderboard as entry (entry.student_id)}
-						<tr class={`transition-colors hover:bg-muted/50 ${getRankClass(entry.rank || 0)}`}>
-							<td class="px-2 py-2 text-center font-bold text-foreground sm:px-4 sm:py-3">
-								<span class="text-base sm:text-lg">{getMedalEmoji(entry.rank || 0)}</span>
-								<span class="ml-1 text-xs sm:ml-2 sm:text-sm">#{entry.rank || '—'}</span>
-							</td>
-							<td class="px-2 py-2 sm:px-4 sm:py-3">
-								<div class="flex items-center gap-2 sm:gap-3">
-									<div>
-										<p class="text-xs font-semibold text-foreground sm:text-sm">
+		{#if rankedPlayers.length > 0}
+			<div class="overflow-x-auto rounded-lg border border-border">
+				<table class="w-full text-sm">
+					<thead class="border-b border-border bg-muted/50">
+						<tr>
+							<th class="w-16 px-3 py-3 text-center font-semibold text-foreground">Rang</th>
+							<th class="px-3 py-3 text-left font-semibold text-foreground">Joueur</th>
+							<th class="px-3 py-3 text-center font-semibold text-foreground">Moyenne</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-border">
+						{#each rankedPlayers as entry, index (entry.student_id)}
+							<tr class={`transition-colors hover:bg-muted/50 ${getRankClass(index + 1)}`}>
+								<td class="px-3 py-3 text-center font-bold text-foreground">
+									<span class="text-lg">{getMedalEmoji(index + 1)}</span>
+									<span class="ml-2 text-sm">#{index + 1}</span>
+								</td>
+								<td class="px-3 py-3">
+									<p class="font-semibold text-foreground">
+										{entry.firstname || ''}
+										<span class="hidden sm:inline">{entry.lastname || ''}</span>
+									</p>
+									{#if entry.student_id === data.currentUserId}
+										<Badge class="mt-1" variant="default">Vous</Badge>
+									{/if}
+								</td>
+								<td class="px-3 py-3 text-center">
+									<span class="font-mono font-bold text-primary">
+										{formatPoints(entry.avg_top_10 || 0)}
+									</span>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{:else}
+			<Card class="p-8 text-center">
+				<p class="text-muted-foreground">Aucun joueur classé (10 parties minimum)</p>
+			</Card>
+		{/if}
+
+		<!-- Provisional Players (< 10 games) -->
+		{#if provisionalPlayers.length > 0}
+			<div class="mt-8">
+				<h2 class="mb-3 text-lg font-semibold text-muted-foreground">
+					Non classés (moins de 10 parties)
+				</h2>
+				<div class="overflow-x-auto rounded-lg border border-border/50">
+					<table class="w-full text-sm">
+						<thead class="border-b border-border bg-muted/30">
+							<tr>
+								<th class="px-3 py-2 text-left font-medium text-muted-foreground">Joueur</th>
+								<th class="px-3 py-2 text-center font-medium text-muted-foreground">Moyenne</th>
+								<th class="px-3 py-2 text-center font-medium text-muted-foreground">Parties</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-border/50">
+							{#each provisionalPlayers as entry (entry.student_id)}
+								<tr class="transition-colors hover:bg-muted/30">
+									<td class="px-3 py-2">
+										<p class="text-foreground">
 											{entry.firstname || ''}
 											<span class="hidden sm:inline">{entry.lastname || ''}</span>
 										</p>
 										{#if entry.student_id === data.currentUserId}
-											<Badge class="mt-1" variant="default">Vous</Badge>
+											<Badge class="mt-1" variant="secondary">Vous</Badge>
 										{/if}
-									</div>
-								</div>
-							</td>
-							<td class="px-2 py-2 text-center sm:px-4 sm:py-3">
-								<span class="font-mono text-xs font-bold text-primary sm:text-sm">
-									{formatPoints(entry.avg_top_10 || 0)}
-								</span>
-							</td>
-							<td class="hidden px-2 py-2 text-center sm:table-cell sm:px-4 sm:py-3">
-								<span
-									class="font-semibold {(entry.top_games_count || 0) < 10
-										? 'text-amber-500'
-										: 'text-foreground'}"
-									title={`Moyenne calculée sur ${entry.top_games_count || 0} partie${(entry.top_games_count || 0) > 1 ? 's' : ''}`}
-								>
-									{entry.top_games_count || 0}
-								</span>
-							</td>
-							<td class="hidden px-2 py-2 text-center sm:px-4 sm:py-3 md:table-cell">
-								<span class="text-muted-foreground">{entry.games_won || 0}</span>
-							</td>
-							<td
-								class="hidden px-2 py-2 text-right text-xs text-muted-foreground sm:px-4 sm:py-3 lg:table-cell"
-							>
-								<span class="inline-block rounded bg-muted px-2 py-1 text-xs">
-									{formatPoints(entry.total_points || 0)}
-								</span>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-
-		<!-- Legend -->
-		<p class="mt-3 text-xs text-muted-foreground">
-			<span class="text-amber-500">Chiffre orange</span> = classement provisoire (moins de 10 parties).
-			La moyenne est calculée sur les meilleures parties (max 10).
-		</p>
+									</td>
+									<td class="px-3 py-2 text-center">
+										<span class="font-mono text-muted-foreground">
+											{formatPoints(entry.avg_top_10 || 0)}
+										</span>
+									</td>
+									<td class="px-3 py-2 text-center text-muted-foreground">
+										{entry.top_games_count || 0}/10
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{/if}
 	{/if}
 
 	<!-- Navigation -->
