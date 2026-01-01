@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.17](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.16...v0.5.17) (2026-01-01)
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** display readable time format for long games ([892cbb1](https://github.com/Zahara-Nour/ubumaths/commit/892cbb1ccce1577512c21fae819effbe70b308ac))
+- **minesweeper:** restore correct elapsed time when continuing game ([e25312c](https://github.com/Zahara-Nour/ubumaths/commit/e25312c52423f244410e62dadcfa1a4f393a614f))
+
+### ✨ Features
+
+- **grades:** add French pedagogical cycles (cycle 2-4, seconde, terminal) ([32928cf](https://github.com/Zahara-Nour/ubumaths/commit/32928cf72addb7aca5446af6ae555d581ab0087c))
+- **minesweeper:** implement dynamic reference times by pedagogical cycle ([67042c7](https://github.com/Zahara-Nour/ubumaths/commit/67042c7c90172930be4b60a75fa8f95493aba132))
+- **minesweeper:** implement Strategy D with decimal gidouilles ([4b4c9cc](https://github.com/Zahara-Nour/ubumaths/commit/4b4c9cc2bff01716a50317c2bd9a177f8572ba80))
+- **minesweeper:** replace toast with victory/defeat modals ([699af55](https://github.com/Zahara-Nour/ubumaths/commit/699af55431030b4b2f4e27355d037760f5c77b6a))
+
 ### [0.5.16](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.15...v0.5.16) (2026-01-01)
 
 ### ✨ Features
