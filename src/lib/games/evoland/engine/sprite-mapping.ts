@@ -44,24 +44,27 @@ export const HERO_SPRITES: Record<number, HeroSpriteConfig> = {
 };
 
 /**
- * Hero walking animation frames (2 frames per direction).
+ * Hero walking animation frames.
+ * EKind.Hero = 6 → row 6 (down/left/right)
+ * EKind.HeroUp = 7 → row 7 (up)
+ * Animation frames are columns within each row.
  */
 export const HERO_WALK_SPRITES: Record<number, SpritePosition[]> = {
 	[Direction.Down]: [
-		{ col: 0, row: 3 },
-		{ col: 1, row: 3 }
+		{ col: 0, row: 6 },
+		{ col: 1, row: 6 }
 	],
 	[Direction.Up]: [
-		{ col: 2, row: 3 },
-		{ col: 3, row: 3 }
+		{ col: 0, row: 7 },
+		{ col: 1, row: 7 }
 	],
 	[Direction.Left]: [
-		{ col: 4, row: 3 },
-		{ col: 5, row: 3 }
+		{ col: 0, row: 6 },
+		{ col: 1, row: 6 }
 	],
 	[Direction.Right]: [
-		{ col: 6, row: 3 },
-		{ col: 7, row: 3 }
+		{ col: 0, row: 6 },
+		{ col: 1, row: 6 }
 	]
 };
 
@@ -78,11 +81,39 @@ export const CHEST_SPRITES = {
  * Monster sprite positions in sprites_alpha.png.
  * EKind.Monster = 2 → row 2
  * EKind.Bat = 8 → row 8
+ * EKind.Knight = 9 → row 9
+ * EKind.Fireball = 10 → row 10
  */
 export const MONSTER_SPRITES = {
 	slime: { col: 0, row: 2 },
-	bat: { col: 0, row: 8 }
+	bat: { col: 0, row: 8 },
+	knight: { col: 0, row: 9 },
+	fireball: { col: 0, row: 10 }
 } as const;
+
+/**
+ * NPC sprite positions in sprites_alpha.png.
+ * EKind.NPC = 0 → row 0
+ * Different NPCs are in different columns.
+ */
+export const NPC_SPRITES = {
+	default: { col: 0, row: 0 },
+	villager1: { col: 1, row: 0 },
+	villager2: { col: 2, row: 0 },
+	princess: { col: 3, row: 0 }
+} as const;
+
+/**
+ * SavePoint sprite position.
+ * EKind.SavePoint = 4 → row 4
+ */
+export const SAVEPOINT_SPRITE: SpritePosition = { col: 0, row: 4 };
+
+/**
+ * Cursor sprite position.
+ * EKind.Cursor = 5 → row 5
+ */
+export const CURSOR_SPRITE: SpritePosition = { col: 0, row: 5 };
 
 /**
  * Sword sprite configuration.
