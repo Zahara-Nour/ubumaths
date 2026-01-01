@@ -20,14 +20,26 @@ export interface SpritePosition {
 }
 
 /**
- * Hero sprite positions in sprites_alpha.png.
- * The hero has different sprites for each direction.
+ * Hero sprite configuration.
+ * Initial GameBoy-style hero uses a single sprite for all directions.
+ * The 'flip' property indicates if the sprite should be flipped horizontally.
  */
-export const HERO_SPRITES: Record<number, SpritePosition> = {
-	[Direction.Down]: { col: 0, row: 0 },
-	[Direction.Up]: { col: 1, row: 0 },
-	[Direction.Left]: { col: 2, row: 0 },
-	[Direction.Right]: { col: 3, row: 0 }
+export interface HeroSpriteConfig {
+	readonly col: number;
+	readonly row: number;
+	readonly flipX: boolean;
+}
+
+/**
+ * Hero sprite positions in sprites_alpha.png.
+ * Initial hero (col 0, row 0) is the simple GameBoy-style sprite.
+ * For Right direction, we flip the sprite horizontally.
+ */
+export const HERO_SPRITES: Record<number, HeroSpriteConfig> = {
+	[Direction.Down]: { col: 0, row: 0, flipX: false },
+	[Direction.Up]: { col: 0, row: 0, flipX: false },
+	[Direction.Left]: { col: 0, row: 0, flipX: false },
+	[Direction.Right]: { col: 0, row: 0, flipX: true }
 };
 
 /**
@@ -94,9 +106,9 @@ export function getTileSprite(block: number): SpritePosition | undefined {
 }
 
 /**
- * Get the hero sprite for a direction.
+ * Get the hero sprite configuration for a direction.
  */
-export function getHeroSprite(direction: number): SpritePosition {
+export function getHeroSprite(direction: number): HeroSpriteConfig {
 	return HERO_SPRITES[direction] ?? HERO_SPRITES[Direction.Down];
 }
 
