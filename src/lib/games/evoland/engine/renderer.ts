@@ -299,8 +299,9 @@ export class Renderer {
 	private backBuffer: OffscreenCanvas;
 	private backCtx: OffscreenCanvasRenderingContext2D;
 	private scale: number;
-	private colorLevel: number = COLOR_LEVELS.FULL_COLOR;
-	private targetColorLevel: number = COLOR_LEVELS.FULL_COLOR;
+	// Start at grayscale (0) like the original game - colors are unlocked via CColor chests
+	private colorLevel: number = COLOR_LEVELS.GRAYSCALE;
+	private targetColorLevel: number = COLOR_LEVELS.GRAYSCALE;
 	private colorTransition: number = 1; // 0-1 for smooth transitions
 	private transitionSpeed: number = 0.05; // Transition speed per frame
 	private depthManager: DepthManager;

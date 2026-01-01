@@ -255,6 +255,23 @@ export class GameController {
 
 		// Update game state
 		this.gameState.update(dt);
+
+		// Sync renderer with progression flags
+		this.syncRendererWithProgression();
+	}
+
+	/**
+	 * Synchronize renderer settings with progression flags.
+	 */
+	private syncRendererWithProgression(): void {
+		if (!this.renderer || !this.gameState) return;
+
+		const flags = this.gameState.getProgression().getFlags();
+
+		// Sync color level
+		if (this.renderer.getColorLevel() !== flags.colorLevel) {
+			this.renderer.setColorLevel(flags.colorLevel);
+		}
 	}
 
 	/**
