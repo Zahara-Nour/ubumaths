@@ -14,6 +14,7 @@ import { evolandStore } from '../stores/evoland.svelte';
 import { SpriteCache, EVOLAND_SPRITES, DEFAULT_TILE_SIZE } from './sprite-sheet';
 import {
 	getHeroSprite,
+	getHeroWalkSprite,
 	getTileSprite,
 	DARK_TILE_COLOR,
 	getSwordSprite,
@@ -394,14 +395,17 @@ export class GameController {
 		const heroScreenY = Math.round(hero.y) - camY;
 
 		if (spritesSheet?.isLoaded) {
-			const heroSprite = getHeroSprite(hero.direction);
+			// Use animation frame when moving, static frame when still
+			const animFrame = hero.animation.playing ? hero.animation.frame : 0;
+			const walkSprite = getHeroWalkSprite(hero.direction, animFrame);
+			const heroConfig = getHeroSprite(hero.direction); // For flipX
 			spritesSheet.drawSprite(
 				ctx,
-				heroSprite.col,
-				heroSprite.row,
+				walkSprite.col,
+				walkSprite.row,
 				heroScreenX,
 				heroScreenY,
-				heroSprite.flipX
+				heroConfig.flipX
 			);
 		} else {
 			// Fallback: colored rectangle with direction indicator
