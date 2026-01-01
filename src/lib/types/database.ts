@@ -590,90 +590,86 @@ export type Database = {
 			};
 			bug_reports: {
 				Row: {
-					id: string;
-					user_id: string;
-					category: 'bug' | 'content' | 'ux' | 'feature' | 'other';
-					severity: 'low' | 'medium' | 'high' | 'critical';
-					title: string;
-					description: string;
-					screenshot_url: string | null;
-					screenshot_path: string | null;
-					page_url: string | null;
-					user_agent: string | null;
-					viewport_size: string | null;
-					session_context: Json;
-					status:
-						| 'pending'
-						| 'acknowledged'
-						| 'in_progress'
-						| 'resolved'
-						| 'wont_fix'
-						| 'duplicate';
-					resolution_notes: string | null;
-					resolved_by: string | null;
-					resolved_at: string | null;
-					auto_generated: boolean;
+					auto_generated: boolean | null;
+					category: string;
 					created_at: string;
+					description: string;
+					id: string;
+					page_url: string | null;
+					resolution_notes: string | null;
+					resolved_at: string | null;
+					resolved_by: string | null;
+					screenshot_path: string | null;
+					screenshot_url: string | null;
+					session_context: Json | null;
+					severity: string;
+					status: string;
+					title: string;
 					updated_at: string;
+					user_agent: string | null;
+					user_id: string;
+					viewport_size: string | null;
 				};
 				Insert: {
-					id?: string;
-					user_id: string;
-					category: 'bug' | 'content' | 'ux' | 'feature' | 'other';
-					severity?: 'low' | 'medium' | 'high' | 'critical';
-					title: string;
-					description: string;
-					screenshot_url?: string | null;
-					screenshot_path?: string | null;
-					page_url?: string | null;
-					user_agent?: string | null;
-					viewport_size?: string | null;
-					session_context?: Json;
-					status?:
-						| 'pending'
-						| 'acknowledged'
-						| 'in_progress'
-						| 'resolved'
-						| 'wont_fix'
-						| 'duplicate';
-					resolution_notes?: string | null;
-					resolved_by?: string | null;
-					resolved_at?: string | null;
-					auto_generated?: boolean;
+					auto_generated?: boolean | null;
+					category: string;
 					created_at?: string;
+					description: string;
+					id?: string;
+					page_url?: string | null;
+					resolution_notes?: string | null;
+					resolved_at?: string | null;
+					resolved_by?: string | null;
+					screenshot_path?: string | null;
+					screenshot_url?: string | null;
+					session_context?: Json | null;
+					severity?: string;
+					status?: string;
+					title: string;
 					updated_at?: string;
+					user_agent?: string | null;
+					user_id: string;
+					viewport_size?: string | null;
 				};
 				Update: {
-					id?: string;
-					user_id?: string;
-					category?: 'bug' | 'content' | 'ux' | 'feature' | 'other';
-					severity?: 'low' | 'medium' | 'high' | 'critical';
-					title?: string;
-					description?: string;
-					screenshot_url?: string | null;
-					screenshot_path?: string | null;
-					page_url?: string | null;
-					user_agent?: string | null;
-					viewport_size?: string | null;
-					session_context?: Json;
-					status?:
-						| 'pending'
-						| 'acknowledged'
-						| 'in_progress'
-						| 'resolved'
-						| 'wont_fix'
-						| 'duplicate';
-					resolution_notes?: string | null;
-					resolved_by?: string | null;
-					resolved_at?: string | null;
-					auto_generated?: boolean;
+					auto_generated?: boolean | null;
+					category?: string;
 					created_at?: string;
+					description?: string;
+					id?: string;
+					page_url?: string | null;
+					resolution_notes?: string | null;
+					resolved_at?: string | null;
+					resolved_by?: string | null;
+					screenshot_path?: string | null;
+					screenshot_url?: string | null;
+					session_context?: Json | null;
+					severity?: string;
+					status?: string;
+					title?: string;
 					updated_at?: string;
+					user_agent?: string | null;
+					user_id?: string;
+					viewport_size?: string | null;
 				};
 				Relationships: [
 					{
-						foreignKeyName: 'bug_reports_user_id_fkey';
-						columns: ['user_id'];
+						foreignKeyName: 'bug_reports_resolved_by_fkey';
+						columns: ['resolved_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_resolved_by_fkey';
+						columns: ['resolved_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_resolved_by_fkey';
+						columns: ['resolved_by'];
 						isOneToOne: false;
 						referencedRelation: 'profiles';
 						referencedColumns: ['id'];
@@ -682,8 +678,98 @@ export type Database = {
 						foreignKeyName: 'bug_reports_resolved_by_fkey';
 						columns: ['resolved_by'];
 						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
 						referencedRelation: 'profiles';
 						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			bug_reports_config: {
+				Row: {
+					auto_report_enabled: boolean;
+					fab_enabled: boolean;
+					freeze_detection_enabled: boolean;
+					freeze_prompt_enabled: boolean;
+					id: string;
+					singleton_key: string;
+					updated_at: string;
+					updated_by: string | null;
+				};
+				Insert: {
+					auto_report_enabled?: boolean;
+					fab_enabled?: boolean;
+					freeze_detection_enabled?: boolean;
+					freeze_prompt_enabled?: boolean;
+					id?: string;
+					singleton_key?: string;
+					updated_at?: string;
+					updated_by?: string | null;
+				};
+				Update: {
+					auto_report_enabled?: boolean;
+					fab_enabled?: boolean;
+					freeze_detection_enabled?: boolean;
+					freeze_prompt_enabled?: boolean;
+					id?: string;
+					singleton_key?: string;
+					updated_at?: string;
+					updated_by?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'bug_reports_config_updated_by_fkey';
+						columns: ['updated_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_config_updated_by_fkey';
+						columns: ['updated_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_config_updated_by_fkey';
+						columns: ['updated_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'bug_reports_config_updated_by_fkey';
+						columns: ['updated_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
 					}
 				];
 			};
@@ -2726,6 +2812,42 @@ export type Database = {
 						referencedColumns: ['student_id'];
 					}
 				];
+			};
+			game_2048_scores: {
+				Row: {
+					best_score: number;
+					created_at: string;
+					games_played: number;
+					id: string;
+					mode: string;
+					tiles_2048_reached: number;
+					tiles_4096_reached: number;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					best_score?: number;
+					created_at?: string;
+					games_played?: number;
+					id?: string;
+					mode?: string;
+					tiles_2048_reached?: number;
+					tiles_4096_reached?: number;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					best_score?: number;
+					created_at?: string;
+					games_played?: number;
+					id?: string;
+					mode?: string;
+					tiles_2048_reached?: number;
+					tiles_4096_reached?: number;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [];
 			};
 			game_achievements: {
 				Row: {
@@ -6095,9 +6217,11 @@ export type Database = {
 					gidouilles_awarded: number | null;
 					grid_state: Json;
 					hint_penalty_applied: boolean;
+					hints_from_items: number;
 					hints_used: number;
 					id: string;
 					mines_count: number;
+					points_earned: number;
 					started_at: string | null;
 					status: string;
 					student_id: string | null;
@@ -6112,9 +6236,11 @@ export type Database = {
 					gidouilles_awarded?: number | null;
 					grid_state: Json;
 					hint_penalty_applied?: boolean;
+					hints_from_items?: number;
 					hints_used?: number;
 					id?: string;
 					mines_count: number;
+					points_earned?: number;
 					started_at?: string | null;
 					status: string;
 					student_id?: string | null;
@@ -6129,9 +6255,11 @@ export type Database = {
 					gidouilles_awarded?: number | null;
 					grid_state?: Json;
 					hint_penalty_applied?: boolean;
+					hints_from_items?: number;
 					hints_used?: number;
 					id?: string;
 					mines_count?: number;
+					points_earned?: number;
 					started_at?: string | null;
 					status?: string;
 					student_id?: string | null;
@@ -6359,6 +6487,81 @@ export type Database = {
 					total_matches?: number | null;
 					updated_at?: string;
 					win_streak?: number | null;
+				};
+				Relationships: [];
+			};
+			minesweeper_reference_times: {
+				Row: {
+					calculated_at: string | null;
+					created_at: string;
+					cycle: string;
+					difficulty: string;
+					fallback_time: number;
+					max_bound: number;
+					min_bound: number;
+					min_samples: number;
+					reference_time: number;
+					sample_count: number | null;
+					updated_at: string;
+				};
+				Insert: {
+					calculated_at?: string | null;
+					created_at?: string;
+					cycle: string;
+					difficulty: string;
+					fallback_time: number;
+					max_bound: number;
+					min_bound: number;
+					min_samples?: number;
+					reference_time: number;
+					sample_count?: number | null;
+					updated_at?: string;
+				};
+				Update: {
+					calculated_at?: string | null;
+					created_at?: string;
+					cycle?: string;
+					difficulty?: string;
+					fallback_time?: number;
+					max_bound?: number;
+					min_bound?: number;
+					min_samples?: number;
+					reference_time?: number;
+					sample_count?: number | null;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			minesweeper_reference_times_history: {
+				Row: {
+					created_at: string;
+					cycle: string;
+					difficulty: string;
+					id: string;
+					reference_time: number;
+					sample_count: number;
+					week_end: string;
+					week_start: string;
+				};
+				Insert: {
+					created_at?: string;
+					cycle: string;
+					difficulty: string;
+					id?: string;
+					reference_time: number;
+					sample_count: number;
+					week_end: string;
+					week_start: string;
+				};
+				Update: {
+					created_at?: string;
+					cycle?: string;
+					difficulty?: string;
+					id?: string;
+					reference_time?: number;
+					sample_count?: number;
+					week_end?: string;
+					week_start?: string;
 				};
 				Relationships: [];
 			};
@@ -12001,16 +12204,16 @@ export type Database = {
 			};
 			minesweeper_leaderboard: {
 				Row: {
-					best_time: number | null;
-					difficulty: string | null;
+					avg_top_10: number | null;
 					firstname: string | null;
 					games_played: number | null;
 					games_won: number | null;
-					hints_used: number | null;
 					lastname: string | null;
 					rank: number | null;
 					student_id: string | null;
+					top_games_count: number | null;
 					total_gidouilles: number | null;
+					total_points: number | null;
 					win_rate: number | null;
 				};
 				Relationships: [
@@ -12046,12 +12249,12 @@ export type Database = {
 			};
 			minesweeper_leaderboard_public: {
 				Row: {
-					best_time: number | null;
-					difficulty: string | null;
+					avg_top_10: number | null;
+					firstname: string | null;
 					games_won: number | null;
-					hints_used: number | null;
 					player_id: string | null;
 					rank: number | null;
+					top_games_count: number | null;
 					win_rate: number | null;
 				};
 				Relationships: [];
@@ -12463,6 +12666,7 @@ export type Database = {
 				Args: { p_amount: number; p_student_id: string };
 				Returns: number;
 			};
+			are_classmates: { Args: { p_user_id: string }; Returns: boolean };
 			auto_expire_listings: { Args: never; Returns: number };
 			award_achievement_manual: {
 				Args: {
@@ -12494,17 +12698,41 @@ export type Database = {
 				Returns: string;
 			};
 			calculate_daily_challenge_gidouilles: {
-				Args: { p_difficulty: string; p_time_seconds: number };
+				Args: {
+					p_difficulty: string;
+					p_student_id: string;
+					p_time_seconds: number;
+				};
 				Returns: number;
 			};
 			calculate_elo_change: {
 				Args: { p_loser_elo: number; p_winner_elo: number };
 				Returns: number;
 			};
-			calculate_minesweeper_gidouilles: {
+			calculate_minesweeper_gidouilles:
+				| {
+						Args: {
+							p_difficulty: string;
+							p_hints_used?: number;
+							p_student_id: string;
+							p_time_seconds: number;
+						};
+						Returns: number;
+				  }
+				| {
+						Args: {
+							p_difficulty: string;
+							p_hints_from_items?: number;
+							p_hints_used?: number;
+							p_student_id: string;
+							p_time_seconds: number;
+						};
+						Returns: number;
+				  };
+			calculate_minesweeper_points: {
 				Args: {
 					p_difficulty: string;
-					p_hints_used?: number;
+					p_hints_used: number;
 					p_student_id: string;
 					p_time_seconds: number;
 				};
@@ -12580,7 +12808,9 @@ export type Database = {
 				Args: { p_game_id: string; p_grid_state: Json };
 				Returns: {
 					achievements: Json;
+					breakdown: Json;
 					gidouilles_earned: number;
+					points_earned: number;
 				}[];
 			};
 			complete_multiplayer_match: {
@@ -12661,16 +12891,27 @@ export type Database = {
 				Returns: string;
 			};
 			generate_join_code: { Args: never; Returns: string };
-			generate_reward_event_description: {
-				Args: {
-					p_amount: number;
-					p_event_type: Database['public']['Enums']['reward_event_type'];
-					p_item_name: string;
-					p_metadata: Json;
-					p_reward_type: Database['public']['Enums']['reward_type'];
-				};
-				Returns: string;
-			};
+			generate_reward_event_description:
+				| {
+						Args: {
+							p_amount: number;
+							p_event_type: Database['public']['Enums']['reward_event_type'];
+							p_item_name: string;
+							p_metadata: Json;
+							p_reward_type: Database['public']['Enums']['reward_type'];
+						};
+						Returns: string;
+				  }
+				| {
+						Args: {
+							p_amount: number;
+							p_event_type: Database['public']['Enums']['reward_event_type'];
+							p_item_name: string;
+							p_metadata: Json;
+							p_reward_type: Database['public']['Enums']['reward_type'];
+						};
+						Returns: string;
+				  };
 			generate_share_token: { Args: never; Returns: string };
 			generate_variant_seed: {
 				Args: {
@@ -12823,6 +13064,7 @@ export type Database = {
 					user_id: string;
 				}[];
 			};
+			get_cycle_for_grade: { Args: { p_grade: string }; Returns: string };
 			get_database_stats: { Args: never; Returns: Json };
 			get_deck_stats: {
 				Args: { p_deck_id: string; p_user_id: string };
@@ -12891,6 +13133,21 @@ export type Database = {
 					uploader_lastname: string;
 				}[];
 			};
+			get_message_context_for_moderation: {
+				Args: { p_before_count?: number; p_message_id: string };
+				Returns: {
+					content: Json;
+					conversation_id: string;
+					created_at: string;
+					id: string;
+					is_reported_message: boolean;
+					plain_text: string;
+					sender_avatar_url: string;
+					sender_firstname: string;
+					sender_id: string;
+					sender_lastname: string;
+				}[];
+			};
 			get_message_details: {
 				Args: { p_message_id: string; p_user_id: string };
 				Returns: {
@@ -12949,6 +13206,7 @@ export type Database = {
 					content: Json;
 					conversation_id: string;
 					created_at: string;
+					deleted_at: string;
 					edited_at: string;
 					id: string;
 					is_flagged: boolean;
@@ -12958,6 +13216,10 @@ export type Database = {
 					sender_id: string;
 					sender_lastname: string;
 				}[];
+			};
+			get_minesweeper_reference_time: {
+				Args: { p_cycle: string; p_difficulty: string };
+				Returns: number;
 			};
 			get_my_exercise_assignments: {
 				Args: never;
@@ -13293,6 +13555,14 @@ export type Database = {
 					target_type: string;
 				}[];
 			};
+			get_user_rank_in_mode: {
+				Args: { p_mode: string; p_user_id: string };
+				Returns: {
+					total_players: number;
+					user_rank: number;
+					user_score: number;
+				}[];
+			};
 			get_user_sent_messages: {
 				Args: { p_limit?: number; p_offset?: number; p_user_id: string };
 				Returns: {
@@ -13338,6 +13608,7 @@ export type Database = {
 			};
 			is_class_student: { Args: { p_class_id: string }; Returns: boolean };
 			is_class_teacher: { Args: { p_class_id: string }; Returns: boolean };
+			is_classmate: { Args: { p_class_id: string }; Returns: boolean };
 			is_conversation_participant: {
 				Args: { p_conversation_id: string; p_user_id: string };
 				Returns: boolean;
@@ -13503,6 +13774,17 @@ export type Database = {
 					document_title: string;
 					fts_score: number;
 					vector_score: number;
+				}[];
+			};
+			recalculate_minesweeper_reference_times: {
+				Args: never;
+				Returns: {
+					cycle: string;
+					difficulty: string;
+					new_time: number;
+					old_time: number;
+					sample_count: number;
+					updated: boolean;
 				}[];
 			};
 			record_daily_challenge_attempt: {
@@ -13752,6 +14034,20 @@ export type Database = {
 					p_user_id: string;
 				};
 				Returns: Json;
+			};
+			upsert_2048_score: {
+				Args: {
+					p_mode: string;
+					p_reached_2048: boolean;
+					p_reached_4096: boolean;
+					p_score: number;
+					p_user_id: string;
+				};
+				Returns: {
+					best_score: number;
+					games_played: number;
+					is_new_best: boolean;
+				}[];
 			};
 			upsert_error_occurrence: {
 				Args: {

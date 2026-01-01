@@ -284,6 +284,9 @@ export const GRADE_OPTIONS: Array<{ value: GradeCode; label: string }> = GRADE_C
 // - Seconde: Cycle de détermination (2nde)
 // - Cycle terminal: 1ère and Terminale
 
+// Define CycleCode first to avoid circular reference
+export type CycleCode = 'cycle_2' | 'cycle_3' | 'cycle_4' | 'seconde' | 'cycle_terminal';
+
 export interface CycleInfo {
 	code: CycleCode;
 	name: string;
@@ -292,45 +295,43 @@ export interface CycleInfo {
 	ageRange: readonly [number, number];
 }
 
-export const CYCLES = {
+export const CYCLES: Record<CycleCode, CycleInfo> = {
 	cycle_2: {
-		code: 'cycle_2' as const,
+		code: 'cycle_2',
 		name: 'Cycle des apprentissages fondamentaux',
 		shortName: 'Cycle 2',
-		grades: ['CP', 'CE1', 'CE2'] as const,
-		ageRange: [6, 9] as const
+		grades: ['CP', 'CE1', 'CE2'],
+		ageRange: [6, 9]
 	},
 	cycle_3: {
-		code: 'cycle_3' as const,
+		code: 'cycle_3',
 		name: 'Cycle de consolidation',
 		shortName: 'Cycle 3',
-		grades: ['CM1', 'CM2', '6'] as const,
-		ageRange: [9, 12] as const
+		grades: ['CM1', 'CM2', '6'],
+		ageRange: [9, 12]
 	},
 	cycle_4: {
-		code: 'cycle_4' as const,
+		code: 'cycle_4',
 		name: 'Cycle des approfondissements',
 		shortName: 'Cycle 4',
-		grades: ['5', '4', '3'] as const,
-		ageRange: [12, 15] as const
+		grades: ['5', '4', '3'],
+		ageRange: [12, 15]
 	},
 	seconde: {
-		code: 'seconde' as const,
+		code: 'seconde',
 		name: 'Cycle de détermination',
 		shortName: 'Seconde',
-		grades: ['2'] as const,
-		ageRange: [15, 16] as const
+		grades: ['2'],
+		ageRange: [15, 16]
 	},
 	cycle_terminal: {
-		code: 'cycle_terminal' as const,
+		code: 'cycle_terminal',
 		name: 'Cycle terminal',
 		shortName: 'Cycle terminal',
-		grades: ['1_GEN', 'T_GEN', '1_SPE', 'T_SPE', 'T_EXP', 'T_COMP', '1_STMG', 'T_STMG'] as const,
-		ageRange: [16, 18] as const
+		grades: ['1_GEN', 'T_GEN', '1_SPE', 'T_SPE', 'T_EXP', 'T_COMP', '1_STMG', 'T_STMG'],
+		ageRange: [16, 18]
 	}
-} as const satisfies Record<string, CycleInfo>;
-
-export type CycleCode = keyof typeof CYCLES;
+};
 
 export const CYCLE_CODES: readonly CycleCode[] = [
 	'cycle_2',
@@ -338,7 +339,7 @@ export const CYCLE_CODES: readonly CycleCode[] = [
 	'cycle_4',
 	'seconde',
 	'cycle_terminal'
-] as const;
+];
 
 /**
  * Get the pedagogical cycle for a given grade.
