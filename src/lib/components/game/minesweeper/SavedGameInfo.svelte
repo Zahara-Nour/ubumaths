@@ -6,10 +6,15 @@
 	// Props
 	let { savedGame }: { savedGame: GameState | null } = $props();
 
-	// Format time as MM:SS
+	// Format time as MM:SS or Xh YYm for longer times
 	function formatTime(seconds: number): string {
-		const mins = Math.floor(seconds / 60);
+		const hours = Math.floor(seconds / 3600);
+		const mins = Math.floor((seconds % 3600) / 60);
 		const secs = seconds % 60;
+
+		if (hours > 0) {
+			return `${hours}h ${mins.toString().padStart(2, '0')}m`;
+		}
 		return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 	}
 
