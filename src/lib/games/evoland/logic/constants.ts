@@ -162,6 +162,9 @@ export const ChestKind = {
 
 export type ChestKind = (typeof ChestKind)[keyof typeof ChestKind];
 
+/** Maximum ChestKind value for validation */
+export const MAX_CHEST_KIND = 26; // CPrincess
+
 // ============================================================================
 // DIRECTION
 // ============================================================================
