@@ -197,7 +197,7 @@ export class GameState {
 		// Hero starts at (51, 78), so place chests to the right
 		this.chests = [
 			{ x: 53, y: 78, kind: ChestKind.CLeftCtrl, opened: false }, // Unlock left
-			{ x: 55, y: 78, kind: ChestKind.CRightCtrl, opened: false }, // Unlock up/down
+			{ x: 55, y: 78, kind: ChestKind.C2D, opened: false }, // Unlock up/down (2D movement)
 			{ x: 57, y: 78, kind: ChestKind.CScroll, opened: false }, // Enable scrolling
 			{ x: 53, y: 76, kind: ChestKind.CWeapon, opened: false }, // Get sword
 			{ x: 55, y: 76, kind: ChestKind.CMonsters, opened: false }, // Enable monsters
