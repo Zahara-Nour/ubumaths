@@ -66,33 +66,6 @@
 
 	<Separator class="mb-6" />
 
-	<!-- Scoring Info Card -->
-	<Card class="mb-6 bg-muted/50 p-4">
-		<h3 class="mb-2 font-semibold text-foreground">Comment fonctionne le classement ?</h3>
-		<ul class="space-y-1 text-sm text-muted-foreground">
-			<li>
-				<span class="font-medium text-foreground">Classement :</span> Basé sur la moyenne de vos 10 meilleures
-				parties
-			</li>
-			<li>
-				<span class="font-medium text-foreground">Équité :</span> Jouer plus ne donne pas d'avantage,
-				seul le skill compte
-			</li>
-			<li>
-				<span class="font-medium text-foreground">Pas de stress :</span> Une mauvaise partie n'affecte
-				pas votre classement
-			</li>
-			<li>
-				<span class="font-medium text-foreground">Points de base :</span> Débutant 50 • Intermédiaire
-				200 • Expert 500
-			</li>
-			<li>
-				<span class="font-medium text-foreground">Bonus :</span> Vitesse (+100% max) • Série (+25% max)
-				• Quotidien (+20 pts)
-			</li>
-		</ul>
-	</Card>
-
 	<!-- User's Rank Card (only if authenticated and has a rank) -->
 	{#if data.currentUserId && data.userRank}
 		<Card class="mb-6 border-primary/20 bg-primary/5 p-4 md:p-6">
@@ -113,9 +86,6 @@
 		<Card class="p-12 text-center">
 			<Trophy class="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
 			<p class="mb-4 text-muted-foreground">Aucun joueur dans le classement</p>
-			<a href="/games/minesweeper">
-				<Button>Jouer maintenant</Button>
-			</a>
 		</Card>
 	{:else}
 		<div class="overflow-x-auto rounded-lg border border-border">
@@ -194,14 +164,4 @@
 			</table>
 		</div>
 	{/if}
-
-	<!-- Navigation -->
-	<div class="mt-6 flex flex-wrap gap-3">
-		<a href="/leaderboards">
-			<Button variant="outline">Tous les classements</Button>
-		</a>
-		<a href="/games/minesweeper">
-			<Button>Jouer une partie</Button>
-		</a>
-	</div>
 </div>
