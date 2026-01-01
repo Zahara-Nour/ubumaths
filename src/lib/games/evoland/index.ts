@@ -11,8 +11,9 @@ export * from './logic/constants';
 
 // Logic (pure functions)
 export * from './logic/world';
-// export * from './logic/hero';
-// export * from './logic/monster';
+export * from './logic/entities';
+export * from './logic/hero';
+export * from './logic/monster';
 // export * from './logic/progression';
 
 // Engine
@@ -22,6 +23,7 @@ export * from './engine/game-loop';
 export * from './engine/input-manager';
 export * from './engine/audio-manager';
 export * from './engine/world-renderer';
+export * from './engine/entity-renderer';
 
 // Components
 // export { default as EvolandGame } from './components/EvolandGame.svelte';
