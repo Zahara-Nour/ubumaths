@@ -8,6 +8,8 @@
 import { Renderer } from './renderer';
 import { InputManager, createInputManager, type InputState } from './input-manager';
 import { GameLoop, createEvolandLoop } from './game-loop';
+import { GameState, createGameState } from '../logic/game-state';
+import { TILE_SIZE } from '../logic/constants';
 import { evolandStore } from '../stores/evoland.svelte';
 
 // ============================================================================
@@ -66,6 +68,7 @@ export class GameController {
 	private renderer: Renderer | null = null;
 	private input: InputManager | null = null;
 	private gameLoop: GameLoop | null = null;
+	private gameState: GameState | null = null;
 
 	private _initialized: boolean = false;
 
@@ -88,6 +91,10 @@ export class GameController {
 
 			// Initialize input (using document for keyboard, canvas for touch)
 			this.input = createInputManager(this.canvas);
+
+			// Initialize game state
+			this.gameState = createGameState();
+			await this.gameState.initialize();
 
 			// Create game loop
 			this.gameLoop = createEvolandLoop(
@@ -160,6 +167,7 @@ export class GameController {
 		this.renderer = null;
 		this.input = null;
 		this.gameLoop = null;
+		this.gameState = null;
 		this._initialized = false;
 	}
 
@@ -219,16 +227,14 @@ export class GameController {
 	/**
 	 * Update game while playing.
 	 */
-	private updatePlaying(_dt: number, inputState: InputState): void {
-		// TODO: Implement actual game logic
-		// For now, just log input for testing
-		if (inputState.moveX !== 0 || inputState.moveY !== 0) {
-			// Movement detected
-		}
+	private updatePlaying(dt: number, inputState: InputState): void {
+		if (!this.gameState) return;
 
-		if (inputState.action) {
-			// Action button pressed (attack/interact)
-		}
+		// Pass input to game state
+		this.gameState.handleInput(inputState);
+
+		// Update game state
+		this.gameState.update(dt);
 	}
 
 	/**
@@ -264,36 +270,100 @@ export class GameController {
 	 * Render the game world.
 	 */
 	private renderGame(): void {
-		if (!this.renderer) return;
+		if (!this.renderer || !this.gameState) return;
 
-		// TODO: Implement actual game rendering
-		// For now, just draw a placeholder
-
-		// Draw a simple gradient background
+		// Get back buffer context for rendering
 		const ctx = (this.renderer as unknown as { backCtx: CanvasRenderingContext2D }).backCtx;
-		if (ctx) {
-			// Dark blue background
-			ctx.fillStyle = '#1a1a2e';
-			ctx.fillRect(0, 0, 240, 160);
+		if (!ctx) return;
 
-			// Draw a simple grid for testing
-			ctx.strokeStyle = '#333';
-			for (let x = 0; x < 240; x += 16) {
-				ctx.beginPath();
-				ctx.moveTo(x, 0);
-				ctx.lineTo(x, 160);
-				ctx.stroke();
-			}
-			for (let y = 0; y < 160; y += 16) {
-				ctx.beginPath();
-				ctx.moveTo(0, y);
-				ctx.lineTo(240, y);
-				ctx.stroke();
-			}
+		const camera = this.gameState.getCamera();
+		const hero = this.gameState.getHero();
+		const world = this.gameState.getWorld();
 
-			// Draw a placeholder hero
-			ctx.fillStyle = '#4a9eff';
-			ctx.fillRect(112, 72, 16, 16);
+		// Clear with dark background
+		ctx.fillStyle = '#1a1a2e';
+		ctx.fillRect(0, 0, 240, 160);
+
+		// Calculate visible tile range
+		const startTileX = Math.floor(camera.x / TILE_SIZE);
+		const startTileY = Math.floor(camera.y / TILE_SIZE);
+		const endTileX = Math.ceil((camera.x + 240) / TILE_SIZE);
+		const endTileY = Math.ceil((camera.y + 160) / TILE_SIZE);
+
+		// Render tiles (simple colored squares for now)
+		for (let ty = startTileY; ty <= endTileY; ty++) {
+			for (let tx = startTileX; tx <= endTileX; tx++) {
+				const tile = world.getTile(tx, ty);
+				const screenX = tx * TILE_SIZE - camera.x;
+				const screenY = ty * TILE_SIZE - camera.y;
+
+				// Color based on tile type
+				switch (tile) {
+					case 1: // Grass
+						ctx.fillStyle = '#3a5f3a';
+						break;
+					case 4: // Tree
+						ctx.fillStyle = '#2a4f2a';
+						break;
+					case 0: // Dark/empty
+					default:
+						ctx.fillStyle = '#1a1a2e';
+						break;
+				}
+
+				ctx.fillRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+
+				// Draw grid lines for visibility
+				ctx.strokeStyle = '#333';
+				ctx.strokeRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
+			}
+		}
+
+		// Render hero
+		const heroScreenX = hero.x - camera.x;
+		const heroScreenY = hero.y - camera.y;
+
+		// Hero body
+		ctx.fillStyle = '#4a9eff';
+		ctx.fillRect(heroScreenX, heroScreenY, 16, 16);
+
+		// Hero direction indicator
+		ctx.fillStyle = '#fff';
+		const dir = hero.direction;
+		const cx = heroScreenX + 8;
+		const cy = heroScreenY + 8;
+		ctx.beginPath();
+		switch (dir) {
+			case 0: // Up
+				ctx.moveTo(cx, cy - 6);
+				ctx.lineTo(cx - 3, cy);
+				ctx.lineTo(cx + 3, cy);
+				break;
+			case 1: // Down
+				ctx.moveTo(cx, cy + 6);
+				ctx.lineTo(cx - 3, cy);
+				ctx.lineTo(cx + 3, cy);
+				break;
+			case 2: // Left
+				ctx.moveTo(cx - 6, cy);
+				ctx.lineTo(cx, cy - 3);
+				ctx.lineTo(cx, cy + 3);
+				break;
+			case 3: // Right
+				ctx.moveTo(cx + 6, cy);
+				ctx.lineTo(cx, cy - 3);
+				ctx.lineTo(cx, cy + 3);
+				break;
+		}
+		ctx.fill();
+
+		// Render monsters
+		for (const monster of this.gameState.getMonsters()) {
+			if (monster.removed) continue;
+			const mx = monster.x - camera.x;
+			const my = monster.y - camera.y;
+			ctx.fillStyle = '#ff4a4a';
+			ctx.fillRect(mx, my, 16, 16);
 		}
 	}
 
