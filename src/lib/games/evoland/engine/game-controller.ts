@@ -295,9 +295,13 @@ export class GameController {
 		const ctx = (this.renderer as unknown as { backCtx: CanvasRenderingContext2D }).backCtx;
 		if (!ctx) return;
 
-		const camera = this.gameState.getCamera();
+		const cameraRaw = this.gameState.getCamera();
 		const hero = this.gameState.getHero();
 		const world = this.gameState.getWorld();
+
+		// Round camera position to avoid sub-pixel rendering artifacts (flashing lines between tiles)
+		const camX = Math.round(cameraRaw.x);
+		const camY = Math.round(cameraRaw.y);
 
 		// Clear with dark background
 		ctx.fillStyle = DARK_TILE_COLOR;
@@ -307,17 +311,17 @@ export class GameController {
 		const tilesSheet = this.sprites?.getSheet('tiles');
 
 		// Calculate visible tile range
-		const startTileX = Math.floor(camera.x / TILE_SIZE);
-		const startTileY = Math.floor(camera.y / TILE_SIZE);
-		const endTileX = Math.ceil((camera.x + 240) / TILE_SIZE);
-		const endTileY = Math.ceil((camera.y + 160) / TILE_SIZE);
+		const startTileX = Math.floor(camX / TILE_SIZE);
+		const startTileY = Math.floor(camY / TILE_SIZE);
+		const endTileX = Math.ceil((camX + 240) / TILE_SIZE);
+		const endTileY = Math.ceil((camY + 160) / TILE_SIZE);
 
 		// Render tiles
 		for (let ty = startTileY; ty <= endTileY; ty++) {
 			for (let tx = startTileX; tx <= endTileX; tx++) {
 				const tile = world.getTile(tx, ty);
-				const screenX = tx * TILE_SIZE - camera.x;
-				const screenY = ty * TILE_SIZE - camera.y;
+				const screenX = tx * TILE_SIZE - camX;
+				const screenY = ty * TILE_SIZE - camY;
 
 				// Try to use sprite, fall back to color
 				const tileSprite = getTileSprite(tile);
@@ -352,8 +356,8 @@ export class GameController {
 		// Render chests
 		const chests = this.gameState.getChests();
 		for (const chest of chests) {
-			const chestScreenX = chest.x * TILE_SIZE - camera.x;
-			const chestScreenY = chest.y * TILE_SIZE - camera.y;
+			const chestScreenX = chest.x * TILE_SIZE - camX;
+			const chestScreenY = chest.y * TILE_SIZE - camY;
 
 			// Skip if off-screen
 			if (
@@ -380,8 +384,8 @@ export class GameController {
 		}
 
 		// Render hero
-		const heroScreenX = hero.x - camera.x;
-		const heroScreenY = hero.y - camera.y;
+		const heroScreenX = Math.round(hero.x) - camX;
+		const heroScreenY = Math.round(hero.y) - camY;
 
 		if (spritesSheet?.isLoaded) {
 			const heroSprite = getHeroSprite(hero.direction);
@@ -482,8 +486,8 @@ export class GameController {
 		if (flags.monstersEnabled) {
 			for (const monster of this.gameState.getMonsters()) {
 				if (monster.removed) continue;
-				const mx = monster.x - camera.x;
-				const my = monster.y - camera.y;
+				const mx = Math.round(monster.x) - camX;
+				const my = Math.round(monster.y) - camY;
 
 				const isBat = monster.behavior === 'bat';
 				if (spritesSheet?.isLoaded) {
