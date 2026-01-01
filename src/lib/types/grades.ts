@@ -273,3 +273,88 @@ export const GRADE_OPTIONS: Array<{ value: GradeCode; label: string }> = GRADE_C
 		label: GRADES[code].displayName
 	})
 );
+
+// ============================================================================
+// Pedagogical Cycles (French official system)
+// ============================================================================
+// Source: https://fr.wikipedia.org/wiki/Cycles_(système_éducatif_français)
+// - Cycle 2: Apprentissages fondamentaux (CP, CE1, CE2)
+// - Cycle 3: Consolidation (CM1, CM2, 6ème) - Note: 6ème is part of cycle 3!
+// - Cycle 4: Approfondissements (5ème, 4ème, 3ème)
+// - Seconde: Cycle de détermination (2nde)
+// - Cycle terminal: 1ère and Terminale
+
+export interface CycleInfo {
+	code: CycleCode;
+	name: string;
+	shortName: string;
+	grades: readonly GradeCode[];
+	ageRange: readonly [number, number];
+}
+
+export const CYCLES = {
+	cycle_2: {
+		code: 'cycle_2' as const,
+		name: 'Cycle des apprentissages fondamentaux',
+		shortName: 'Cycle 2',
+		grades: ['CP', 'CE1', 'CE2'] as const,
+		ageRange: [6, 9] as const
+	},
+	cycle_3: {
+		code: 'cycle_3' as const,
+		name: 'Cycle de consolidation',
+		shortName: 'Cycle 3',
+		grades: ['CM1', 'CM2', '6'] as const,
+		ageRange: [9, 12] as const
+	},
+	cycle_4: {
+		code: 'cycle_4' as const,
+		name: 'Cycle des approfondissements',
+		shortName: 'Cycle 4',
+		grades: ['5', '4', '3'] as const,
+		ageRange: [12, 15] as const
+	},
+	seconde: {
+		code: 'seconde' as const,
+		name: 'Cycle de détermination',
+		shortName: 'Seconde',
+		grades: ['2'] as const,
+		ageRange: [15, 16] as const
+	},
+	cycle_terminal: {
+		code: 'cycle_terminal' as const,
+		name: 'Cycle terminal',
+		shortName: 'Cycle terminal',
+		grades: ['1_GEN', 'T_GEN', '1_SPE', 'T_SPE', 'T_EXP', 'T_COMP', '1_STMG', 'T_STMG'] as const,
+		ageRange: [16, 18] as const
+	}
+} as const satisfies Record<string, CycleInfo>;
+
+export type CycleCode = keyof typeof CYCLES;
+
+export const CYCLE_CODES: readonly CycleCode[] = [
+	'cycle_2',
+	'cycle_3',
+	'cycle_4',
+	'seconde',
+	'cycle_terminal'
+] as const;
+
+/**
+ * Get the pedagogical cycle for a given grade.
+ * Returns null if grade is null/undefined/unknown (no gidouilles awarded in Minesweeper).
+ *
+ * @param grade - The grade code to look up
+ * @returns The cycle code, or null if grade is invalid/missing
+ */
+export function getCycleForGrade(grade: GradeCode | string | null | undefined): CycleCode | null {
+	if (!grade) return null;
+
+	for (const [cycleCode, cycle] of Object.entries(CYCLES)) {
+		if ((cycle.grades as readonly string[]).includes(grade)) {
+			return cycleCode as CycleCode;
+		}
+	}
+
+	return null;
+}
