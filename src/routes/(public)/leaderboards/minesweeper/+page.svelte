@@ -103,7 +103,7 @@
 						>
 						<th
 							class="hidden px-2 py-2 text-center font-semibold text-foreground sm:table-cell sm:px-4 sm:py-3"
-							>Top 10</th
+							title="Nombre de parties prises en compte pour la moyenne">Base</th
 						>
 						<th
 							class="hidden px-2 py-2 text-center font-semibold text-foreground sm:px-4 sm:py-3 md:table-cell"
@@ -141,11 +141,13 @@
 								</span>
 							</td>
 							<td class="hidden px-2 py-2 text-center sm:table-cell sm:px-4 sm:py-3">
-								<span class="font-semibold text-foreground">
-									{entry.top_games_count || 0}/10
-									{#if (entry.top_games_count || 0) < 10}
-										<span class="ml-1 text-amber-500" title="Classement provisoire">*</span>
-									{/if}
+								<span
+									class="font-semibold {(entry.top_games_count || 0) < 10
+										? 'text-amber-500'
+										: 'text-foreground'}"
+									title={`Moyenne calculée sur ${entry.top_games_count || 0} partie${(entry.top_games_count || 0) > 1 ? 's' : ''}`}
+								>
+									{entry.top_games_count || 0}
 								</span>
 							</td>
 							<td class="hidden px-2 py-2 text-center sm:px-4 sm:py-3 md:table-cell">
@@ -163,5 +165,21 @@
 				</tbody>
 			</table>
 		</div>
+
+		<!-- Legend -->
+		<p class="mt-3 text-xs text-muted-foreground">
+			<span class="text-amber-500">Chiffre orange</span> = classement provisoire (moins de 10 parties).
+			La moyenne est calculée sur les meilleures parties (max 10).
+		</p>
 	{/if}
+
+	<!-- Navigation -->
+	<div class="mt-6 flex flex-wrap gap-3">
+		<a href="/leaderboards">
+			<Button variant="outline">Tous les classements</Button>
+		</a>
+		<a href="/games/minesweeper">
+			<Button>Jouer une partie</Button>
+		</a>
+	</div>
 </div>
