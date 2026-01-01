@@ -60,9 +60,9 @@ export interface Chest {
 const SCREEN_WIDTH = 240;
 const SCREEN_HEIGHT = 160;
 
-/** Hero starting position in Evoland */
-const DEFAULT_START_X = 51;
-const DEFAULT_START_Y = 78;
+/** Hero starting position in Evoland (from Game.hx DEF_PROPS.pos) */
+const DEFAULT_START_X = 21;
+const DEFAULT_START_Y = 76;
 
 // ============================================================================
 // GAME STATE CLASS
@@ -129,15 +129,20 @@ export class GameState {
 
 	/**
 	 * Initialize the game state.
-	 * Loads world data and sets up initial state.
+	 * Loads world data from world.png and sets up initial state.
 	 */
 	async initialize(): Promise<void> {
 		if (this._initialized) return;
 
 		try {
-			// For now, we'll use a simple test world
-			// In the future, this will load from PNG or JSON
-			this.initializeTestWorld();
+			// Load world from PNG
+			await this.world.loadFromPNG('/games/evoland/world.png');
+
+			// Initialize chests from world data
+			this.initializeChestsFromWorld();
+
+			// Initialize monsters from world data (they won't appear until CMonsters chest is opened)
+			this.initializeMonstersFromWorld();
 
 			// Apply initial progression state
 			this.applyProgressionToHero();
@@ -214,6 +219,30 @@ export class GameState {
 
 		// Spawn a bat (west of hero)
 		this.monsterManager.spawn(EKind.Bat, 47 * TILE_SIZE, 78 * TILE_SIZE);
+	}
+
+	/**
+	 * Initialize chests from the world PNG data.
+	 */
+	private initializeChestsFromWorld(): void {
+		const worldChests = this.world.getChests();
+		this.chests = worldChests.map((chest) => ({
+			x: chest.x,
+			y: chest.y,
+			kind: chest.kind,
+			opened: false
+		}));
+	}
+
+	/**
+	 * Initialize monsters from the world PNG data.
+	 * Monsters won't appear until CMonsters chest is opened.
+	 */
+	private initializeMonstersFromWorld(): void {
+		const worldMonsters = this.world.getMonsters();
+		for (const monster of worldMonsters) {
+			this.monsterManager.spawn(monster.kind, monster.x * TILE_SIZE, monster.y * TILE_SIZE);
+		}
 	}
 
 	// ========================================================================
@@ -510,13 +539,17 @@ export class GameState {
 			targetY: this.hero.y - SCREEN_HEIGHT / 2
 		};
 
-		// Clear monsters
+		// Clear and respawn monsters from world data
 		this.monsterManager.clear();
+		this.initializeMonstersFromWorld();
 
 		// Reset chests
 		for (const chest of this.chests) {
 			chest.opened = false;
 		}
+
+		// Reset removed tiles
+		this.world.resetRemoved();
 
 		// Reset progression
 		this.progression = createProgressionManager();
