@@ -179,14 +179,4 @@
 			</div>
 		{/if}
 	{/if}
-
-	<!-- Navigation -->
-	<div class="mt-6 flex flex-wrap gap-3">
-		<a href="/leaderboards">
-			<Button variant="outline">Tous les classements</Button>
-		</a>
-		<a href="/games/minesweeper">
-			<Button>Jouer une partie</Button>
-		</a>
-	</div>
 </div>
