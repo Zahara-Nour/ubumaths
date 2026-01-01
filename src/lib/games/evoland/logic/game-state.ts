@@ -64,9 +64,6 @@ const SCREEN_HEIGHT = 160;
 const DEFAULT_START_X = 51;
 const DEFAULT_START_Y = 78;
 
-/** Camera smoothing factor */
-const CAMERA_SMOOTHING = 0.1;
-
 // ============================================================================
 // GAME STATE CLASS
 // ============================================================================
@@ -320,8 +317,9 @@ export class GameState {
 
 	/**
 	 * Update camera position to follow hero.
+	 * Like the original Evoland, camera directly follows hero without smoothing.
 	 */
-	private updateCamera(dt: number): void {
+	private updateCamera(_dt: number): void {
 		// Check progression flag (unlocked by CScroll chest)
 		const flags = this.progression.getFlags();
 		if (!flags.scrolling) {
@@ -329,14 +327,11 @@ export class GameState {
 			return;
 		}
 
-		// Update camera target to center on hero
-		this.camera.targetX = this.hero.x - SCREEN_WIDTH / 2;
-		this.camera.targetY = this.hero.y - SCREEN_HEIGHT / 2;
-
-		// Smooth camera movement
-		const smoothing = 1 - Math.pow(1 - CAMERA_SMOOTHING, dt);
-		this.camera.x += (this.camera.targetX - this.camera.x) * smoothing;
-		this.camera.y += (this.camera.targetY - this.camera.y) * smoothing;
+		// Camera directly follows hero (no smoothing, like original Evoland)
+		this.camera.x = this.hero.x - SCREEN_WIDTH / 2;
+		this.camera.y = this.hero.y - SCREEN_HEIGHT / 2;
+		this.camera.targetX = this.camera.x;
+		this.camera.targetY = this.camera.y;
 	}
 
 	/**
