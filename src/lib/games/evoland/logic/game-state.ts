@@ -157,29 +157,37 @@ export class GameState {
 
 	/**
 	 * Initialize a simple test world for development.
+	 * Large enough to test scrolling (30x25 tiles).
 	 */
 	private initializeTestWorld(): void {
-		// Create a simple field with some obstacles
-		for (let x = 45; x < 60; x++) {
-			for (let y = 73; y < 85; y++) {
+		// Create a large field (30x25 tiles) for scrolling test
+		for (let x = 40; x < 70; x++) {
+			for (let y = 65; y < 90; y++) {
 				this.world.setTile(x, y, Block.Field);
 			}
 		}
 
-		// Add some trees around the edges
-		for (let x = 45; x < 60; x++) {
-			this.world.setTile(x, 73, Block.Tree);
-			this.world.setTile(x, 84, Block.Tree);
+		// Add trees around the edges
+		for (let x = 40; x < 70; x++) {
+			this.world.setTile(x, 65, Block.Tree);
+			this.world.setTile(x, 89, Block.Tree);
 		}
-		for (let y = 73; y < 85; y++) {
-			this.world.setTile(45, y, Block.Tree);
-			this.world.setTile(59, y, Block.Tree);
+		for (let y = 65; y < 90; y++) {
+			this.world.setTile(40, y, Block.Tree);
+			this.world.setTile(69, y, Block.Tree);
 		}
 
-		// Clear starting area
-		for (let x = 49; x < 54; x++) {
-			for (let y = 76; y < 81; y++) {
-				this.world.setTile(x, y, Block.Field);
+		// Add some scattered trees and rocks for visual interest
+		this.world.setTile(48, 72, Block.Tree);
+		this.world.setTile(62, 75, Block.Tree);
+		this.world.setTile(55, 82, Block.Rock);
+		this.world.setTile(45, 85, Block.Bush);
+		this.world.setTile(65, 70, Block.Bush);
+
+		// Add a water area
+		for (let x = 42; x < 46; x++) {
+			for (let y = 68; y < 72; y++) {
+				this.world.setTile(x, y, Block.Water);
 			}
 		}
 
@@ -188,6 +196,7 @@ export class GameState {
 		this.chests = [
 			{ x: 53, y: 78, kind: ChestKind.CLeftCtrl, opened: false }, // Unlock left
 			{ x: 55, y: 78, kind: ChestKind.CRightCtrl, opened: false }, // Unlock up/down
+			{ x: 57, y: 78, kind: ChestKind.CScroll, opened: false }, // Enable scrolling
 			{ x: 53, y: 76, kind: ChestKind.CWeapon, opened: false }, // Get sword
 			{ x: 55, y: 76, kind: ChestKind.CMonsters, opened: false }, // Enable monsters
 			{ x: 57, y: 76, kind: ChestKind.CLevelUp, opened: false } // Enable XP/leveling
@@ -313,8 +322,10 @@ export class GameState {
 	 * Update camera position to follow hero.
 	 */
 	private updateCamera(dt: number): void {
-		if (!this.config.scrolling) {
-			// Fixed camera at start position
+		// Check progression flag (unlocked by CScroll chest)
+		const flags = this.progression.getFlags();
+		if (!flags.scrolling) {
+			// Fixed camera until scrolling is unlocked
 			return;
 		}
 
