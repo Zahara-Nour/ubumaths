@@ -8,6 +8,7 @@
 
 	import { onMount } from 'svelte';
 	import { evolandStore } from '../stores/evoland.svelte';
+	import { GameController } from '../engine/game-controller';
 	import GameHUD from './GameHUD.svelte';
 	import TitleScreen from './TitleScreen.svelte';
 	import PauseMenu from './PauseMenu.svelte';
@@ -29,9 +30,12 @@
 
 	let { width = 240, height = 160, scale = 4, showFps = false }: Props = $props();
 
-	// Canvas reference
+	// Canvas and container references
 	let canvas: HTMLCanvasElement;
 	let container: HTMLDivElement;
+
+	// Game controller
+	let controller: GameController | null = null;
 
 	// Computed dimensions
 	const scaledWidth = $derived(width * scale);
@@ -41,25 +45,32 @@
 	onMount(() => {
 		if (!canvas) return;
 
-		const ctx = canvas.getContext('2d');
-		if (!ctx) {
-			console.error('Failed to get 2D context');
-			return;
-		}
+		// Create and initialize the game controller
+		controller = new GameController({
+			canvas,
+			scale,
+			showFps
+		});
 
-		// Disable image smoothing for pixel-perfect rendering
-		ctx.imageSmoothingEnabled = false;
+		// Initialize asynchronously
+		controller.initialize().catch((error) => {
+			console.error('Failed to initialize game:', error);
+		});
 
-		// Initialize game systems here
-		// This would connect to the engine modules
-
-		evolandStore.setLoading(false);
+		// Focus the container for keyboard input
+		container?.focus();
 
 		// Cleanup on unmount
 		return () => {
-			// Stop game loop, cleanup resources
+			controller?.destroy();
+			controller = null;
 		};
 	});
+
+	// Start game when user clicks "New Game" from title screen
+	function handleStartGame() {
+		controller?.start();
+	}
 
 	// Handle keyboard focus
 	function handleContainerClick() {
@@ -69,14 +80,24 @@
 	// Handle keyboard events
 	function handleKeyDown(event: KeyboardEvent) {
 		// Escape toggles pause
-		if (event.key === 'Escape' && evolandStore.screen === 'playing') {
-			evolandStore.pauseGame();
-			event.preventDefault();
-		} else if (event.key === 'Escape' && evolandStore.screen === 'paused') {
-			evolandStore.resumeGame();
-			event.preventDefault();
+		if (event.key === 'Escape') {
+			if (evolandStore.screen === 'playing') {
+				controller?.pause();
+				event.preventDefault();
+			} else if (evolandStore.screen === 'paused') {
+				controller?.resume();
+				event.preventDefault();
+			}
 		}
 	}
+
+	// Expose start game handler to title screen
+	$effect(() => {
+		// This makes the handleStartGame function available when title screen needs it
+		if (evolandStore.screen === 'title' && controller?.state.initialized) {
+			// Ready to start
+		}
+	});
 </script>
 
 <div
@@ -102,7 +123,7 @@
 	<div class="evoland-ui">
 		<!-- Title Screen -->
 		{#if evolandStore.screen === 'title'}
-			<TitleScreen />
+			<TitleScreen onStartGame={handleStartGame} />
 		{/if}
 
 		<!-- HUD (visible during gameplay) -->
@@ -112,7 +133,13 @@
 
 		<!-- Pause Menu -->
 		{#if evolandStore.screen === 'paused'}
-			<PauseMenu />
+			<PauseMenu
+				onResume={() => controller?.resume()}
+				onQuit={() => {
+					controller?.stop();
+					evolandStore.goToTitle();
+				}}
+			/>
 		{/if}
 
 		<!-- Dialog Popup -->
@@ -127,7 +154,7 @@
 
 		<!-- Game Over Screen -->
 		{#if evolandStore.screen === 'gameover'}
-			<GameOverScreen />
+			<GameOverScreen onRetry={handleStartGame} />
 		{/if}
 
 		<!-- Victory Screen -->

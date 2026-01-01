@@ -9,12 +9,20 @@
 	import { evolandStore } from '../stores/evoland.svelte';
 	import { Button } from '$lib/components/ui/button';
 
+	// Props
+	interface Props {
+		/** Called when starting a new game */
+		onStartGame?: () => void;
+	}
+
+	let { onStartGame }: Props = $props();
+
 	// Check if continue is available
 	const hasSaveData = $derived(evolandStore.saveSlots.some((s) => s.exists));
 
 	// Menu actions
 	function handleNewGame() {
-		evolandStore.startNewGame();
+		onStartGame?.();
 	}
 
 	function handleContinue() {

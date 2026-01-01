@@ -8,9 +8,16 @@
 	import { evolandStore } from '../stores/evoland.svelte';
 	import { Button } from '$lib/components/ui/button';
 
+	// Props
+	interface Props {
+		/** Called when retrying the game */
+		onRetry?: () => void;
+	}
+
+	let { onRetry }: Props = $props();
+
 	function handleContinue() {
-		// TODO: Load from last save
-		evolandStore.goToTitle();
+		onRetry?.();
 	}
 
 	function handleQuit() {
