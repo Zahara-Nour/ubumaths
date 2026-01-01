@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.16](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.15...v0.5.16) (2026-01-01)
+
+### ✨ Features
+
+- **leaderboards:** make leaderboards public and reorganize routes ([d870fb0](https://github.com/Zahara-Nour/ubumaths/commit/d870fb0e22b60d4d64ab5702ff1e39970a719ede))
+- **minesweeper:** add long press to flag cells on mobile ([bb2425e](https://github.com/Zahara-Nour/ubumaths/commit/bb2425eee55f3ae4e2d67d4691be1c4f51daaea9))
+- **minesweeper:** add points-based global leaderboard ([0667225](https://github.com/Zahara-Nour/ubumaths/commit/06672259f4b73caef57b53e8dd91c6ee2b5aa106))
+- **minesweeper:** rank leaderboard by average of top 10 games ([049a0f6](https://github.com/Zahara-Nour/ubumaths/commit/049a0f6057bbd6a9799b2c56bb54c3036c90c9bb))
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** add profiles RLS policy for leaderboard visibility ([d129fdf](https://github.com/Zahara-Nour/ubumaths/commit/d129fdfb373e03ac16fdfeee58f15e02ba94ed49))
+- **minesweeper:** add RLS policy for leaderboard visibility ([f0feef4](https://github.com/Zahara-Nour/ubumaths/commit/f0feef4ae42daa5dcb507c2e332622b3dd3ec5f5))
+- **minesweeper:** allow teachers to use database storage ([8c3e29f](https://github.com/Zahara-Nour/ubumaths/commit/8c3e29f7f0c18753adf1fd842678770081bfd06a))
+- **minesweeper:** cap time to constraint limits in complete_minesweeper_game ([c0cb554](https://github.com/Zahara-Nour/ubumaths/commit/c0cb5542e2a78b98f04dce5dc8f409dc83b8148a))
+- **minesweeper:** handle RPC array response for points display ([8efa98e](https://github.com/Zahara-Nour/ubumaths/commit/8efa98ef1b32dd1ded324219ca8e3620620b581e))
+- **minesweeper:** only award gidouilles to students, not teachers ([ae38a62](https://github.com/Zahara-Nour/ubumaths/commit/ae38a62292334cc682e4616e7942ed94094a4974))
+- **minesweeper:** show leaderboard link for teachers ([b38e264](https://github.com/Zahara-Nour/ubumaths/commit/b38e2641eebd873eba753da9707d7ede38d3b144))
+
 ### [0.5.15](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.14...v0.5.15) (2025-12-31)
 
 ### ✨ Features
