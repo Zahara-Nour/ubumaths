@@ -101,7 +101,7 @@ function getPixelPerfectContext(
  * Optimized for 16x16 pixel tile-based sprite sheets.
  */
 export class SpriteSheet {
-	private image: HTMLImageElement | null = null;
+	private image: HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | null = null;
 	private canvas: OffscreenCanvas | HTMLCanvasElement | null = null;
 	private ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null = null;
 	private readonly tileSize: number;
@@ -139,7 +139,6 @@ export class SpriteSheet {
 			const img = new Image();
 
 			img.onload = () => {
-				this.image = img;
 				this.cols = Math.floor(img.width / this.tileSize);
 				this.rows = Math.floor(img.height / this.tileSize);
 
@@ -149,6 +148,14 @@ export class SpriteSheet {
 
 				// Draw the full image to the internal canvas
 				this.ctx.drawImage(img, 0, 0);
+
+				// Apply magenta transparency (convert magenta pixels to transparent)
+				const imageData = this.ctx.getImageData(0, 0, img.width, img.height);
+				applyMagentaTransparency(imageData);
+				this.ctx.putImageData(imageData, 0, 0);
+
+				// Use the processed canvas as the image source for drawSprite
+				this.image = this.canvas;
 
 				this.loaded = true;
 				resolve();
