@@ -69,12 +69,12 @@ export const HERO_WALK_SPRITES: Record<number, SpritePosition[]> = {
 };
 
 /**
- * Chest sprite positions in sprites_alpha.png.
+ * Chest sprite position in sprites_alpha.png.
  * EKind.Chest = 1, so chests are in row 1.
+ * Note: In original Evoland, opened chests disappear (no "open" sprite).
  */
 export const CHEST_SPRITES = {
-	closed: { col: 0, row: 1 },
-	open: { col: 1, row: 1 }
+	closed: { col: 0, row: 1 }
 } as const;
 
 /**

@@ -356,6 +356,9 @@ export class GameController {
 		// Render chests
 		const chests = this.gameState.getChests();
 		for (const chest of chests) {
+			// Skip opened chests (they disappear after opening, like in original Evoland)
+			if (chest.opened) continue;
+
 			const chestScreenX = chest.x * TILE_SIZE - camX;
 			const chestScreenY = chest.y * TILE_SIZE - camY;
 
@@ -370,16 +373,19 @@ export class GameController {
 			}
 
 			if (spritesSheet?.isLoaded) {
-				const chestSprite = chest.opened ? CHEST_SPRITES.open : CHEST_SPRITES.closed;
-				spritesSheet.drawSprite(ctx, chestSprite.col, chestSprite.row, chestScreenX, chestScreenY);
+				spritesSheet.drawSprite(
+					ctx,
+					CHEST_SPRITES.closed.col,
+					CHEST_SPRITES.closed.row,
+					chestScreenX,
+					chestScreenY
+				);
 			} else {
-				// Fallback: colored rectangles
-				ctx.fillStyle = chest.opened ? '#654321' : '#ffd700';
+				// Fallback: colored rectangle (chest shape)
+				ctx.fillStyle = '#ffd700';
 				ctx.fillRect(chestScreenX + 2, chestScreenY + 4, 12, 10);
-				if (!chest.opened) {
-					ctx.fillStyle = '#daa520';
-					ctx.fillRect(chestScreenX + 1, chestScreenY + 2, 14, 4);
-				}
+				ctx.fillStyle = '#daa520';
+				ctx.fillRect(chestScreenX + 1, chestScreenY + 2, 14, 4);
 			}
 		}
 
