@@ -319,6 +319,27 @@ export class GameController {
 			}
 		}
 
+		// Render chests
+		for (const chest of this.gameState.getChests()) {
+			const chestScreenX = chest.x * TILE_SIZE - camera.x;
+			const chestScreenY = chest.y * TILE_SIZE - camera.y;
+
+			if (chest.opened) {
+				// Opened chest (darker)
+				ctx.fillStyle = '#654321';
+			} else {
+				// Closed chest (golden)
+				ctx.fillStyle = '#ffd700';
+			}
+			ctx.fillRect(chestScreenX + 2, chestScreenY + 4, 12, 10);
+
+			// Chest lid
+			if (!chest.opened) {
+				ctx.fillStyle = '#daa520';
+				ctx.fillRect(chestScreenX + 1, chestScreenY + 2, 14, 4);
+			}
+		}
+
 		// Render hero
 		const heroScreenX = hero.x - camera.x;
 		const heroScreenY = hero.y - camera.y;

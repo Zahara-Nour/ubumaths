@@ -9,7 +9,7 @@ import { World } from './world';
 import { Hero, createHeroAtGrid } from './hero';
 import { MonsterManager, createMonsterManager, type Monster } from './monster';
 import { ProgressionManager, createProgressionManager } from './progression';
-import { Block } from './constants';
+import { Block, ChestKind, CHEST_DATA, TILE_SIZE } from './constants';
 import type { InputState } from '../engine/input-manager';
 import { evolandStore } from '../stores/evoland.svelte';
 
@@ -36,6 +36,20 @@ export interface GameStateConfig {
 	readonly startY?: number;
 	/** Whether to enable scrolling camera */
 	readonly scrolling?: boolean;
+}
+
+/**
+ * Chest entity in the world.
+ */
+export interface Chest {
+	/** Grid X position */
+	readonly x: number;
+	/** Grid Y position */
+	readonly y: number;
+	/** Chest content type */
+	readonly kind: (typeof ChestKind)[keyof typeof ChestKind];
+	/** Whether the chest has been opened */
+	opened: boolean;
 }
 
 // ============================================================================
@@ -88,6 +102,7 @@ export class GameState {
 	private progression: ProgressionManager;
 	private camera: Camera;
 	private config: GameStateConfig;
+	private chests: Chest[] = [];
 
 	private _initialized: boolean = false;
 
@@ -167,6 +182,14 @@ export class GameState {
 				this.world.setTile(x, y, Block.Field);
 			}
 		}
+
+		// Add test chests for progression
+		// Hero starts at (51, 78), so place chests to the right
+		this.chests = [
+			{ x: 53, y: 78, kind: ChestKind.CLeftCtrl, opened: false }, // Unlock left
+			{ x: 55, y: 78, kind: ChestKind.CRightCtrl, opened: false }, // Unlock up/down
+			{ x: 57, y: 78, kind: ChestKind.CWeapon, opened: false } // Get sword
+		];
 	}
 
 	// ========================================================================
@@ -206,6 +229,9 @@ export class GameState {
 		// Update monsters
 		this.monsterManager.update(dt, this.world, this.hero.x, this.hero.y);
 
+		// Check for hero-chest collisions
+		this.checkChestCollisions();
+
 		// Check for hero-monster collisions
 		this.checkMonsterCollisions();
 
@@ -218,6 +244,47 @@ export class GameState {
 		// Check for game over
 		if (this.hero.hp <= 0) {
 			evolandStore.gameOver();
+		}
+	}
+
+	/**
+	 * Check for collisions between hero and chests.
+	 */
+	private checkChestCollisions(): void {
+		// Get hero grid position
+		const heroGridX = Math.floor(this.hero.x / TILE_SIZE);
+		const heroGridY = Math.floor(this.hero.y / TILE_SIZE);
+
+		for (const chest of this.chests) {
+			if (chest.opened) continue;
+
+			// Check if hero is on the chest tile
+			if (heroGridX === chest.x && heroGridY === chest.y) {
+				this.openChest(chest);
+			}
+		}
+	}
+
+	/**
+	 * Open a chest and apply its effects.
+	 */
+	private openChest(chest: Chest): void {
+		chest.opened = true;
+
+		// Apply chest effect through progression system
+		this.progression.openChest(chest.kind, this.hero);
+
+		// Update hero flags from progression
+		this.applyProgressionToHero();
+
+		// Get chest data for dialog
+		const chestData = CHEST_DATA[chest.kind];
+		if (chestData) {
+			// Show dialog with chest content
+			evolandStore.showDialog({
+				title: chestData.name,
+				message: chestData.description
+			});
 		}
 	}
 
@@ -361,6 +428,13 @@ export class GameState {
 		return this.progression;
 	}
 
+	/**
+	 * Get all chests.
+	 */
+	getChests(): readonly Chest[] {
+		return this.chests;
+	}
+
 	// ========================================================================
 	// RESET
 	// ========================================================================
@@ -385,8 +459,16 @@ export class GameState {
 		// Clear monsters
 		this.monsterManager.clear();
 
+		// Reset chests
+		for (const chest of this.chests) {
+			chest.opened = false;
+		}
+
 		// Reset progression
 		this.progression = createProgressionManager();
+
+		// Apply initial progression to hero
+		this.applyProgressionToHero();
 
 		// Sync to store
 		this.syncToStore();

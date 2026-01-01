@@ -5,6 +5,8 @@ import { completeGameSchema, validateGridState } from '$lib/server/validation/mi
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 import { validateUuidParam } from '$lib/server/validation/params';
 
+import type { RewardBreakdown } from '$lib/types/minesweeper';
+
 /**
  * Type for the complete_minesweeper_game RPC response
  *
@@ -13,7 +15,6 @@ import { validateUuidParam } from '$lib/server/validation/params';
  * - Formula: base × time_mult × (1 - hint_penalty) × daily_mult
  */
 interface CompleteMinesweeperGameResponse {
-	success: boolean;
 	gidouilles_earned: number; // Decimal: 0.3-8.0 per game
 	points_earned: number; // Integer points for leaderboard
 	achievements: Array<{
@@ -22,6 +23,7 @@ interface CompleteMinesweeperGameResponse {
 		icon: string;
 		difficulty: string | null;
 	}>;
+	breakdown: RewardBreakdown; // Detailed calculation factors
 }
 
 /**
@@ -141,12 +143,13 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		// Strategy D: gidouilles_earned is now decimal (0.3-8.0 range)
 		const response = data as CompleteMinesweeperGameResponse;
 
-		// ✅ Return success with gidouilles (decimal), points, and achievements
+		// ✅ Return success with gidouilles (decimal), points, achievements, and breakdown
 		return json({
 			success: true,
 			gidouilles: response.gidouilles_earned, // Decimal: e.g., 1.3, 5.2
 			points: response.points_earned, // Integer for leaderboard
-			achievements: response.achievements || []
+			achievements: response.achievements || [],
+			breakdown: response.breakdown // Detailed calculation factors for VictoryModal
 		});
 	} catch (err) {
 		sanitizePostgresError(err, 'MINESWEEPER_COMPLETE');
