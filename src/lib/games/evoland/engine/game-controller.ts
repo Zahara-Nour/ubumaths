@@ -440,26 +440,27 @@ export class GameController {
 			let rotation = 0;
 
 			// Position sword based on direction
+			// Note: The sword sprite in the sheet points DOWN, so rotations are relative to that
 			switch (hero.direction) {
 				case Direction.Up:
 					swordX += 0;
 					swordY -= 14;
-					rotation = -Math.PI / 2;
+					rotation = Math.PI; // 180° to flip from down to up
 					break;
 				case Direction.Down:
 					swordX += 0;
 					swordY += 14;
-					rotation = Math.PI / 2;
+					rotation = 0; // No rotation needed, sprite already points down
 					break;
 				case Direction.Left:
 					swordX -= 14;
 					swordY += 0;
-					rotation = Math.PI;
+					rotation = Math.PI / 2; // 90° clockwise to go from down to left
 					break;
 				case Direction.Right:
 					swordX += 14;
 					swordY += 0;
-					rotation = 0;
+					rotation = -Math.PI / 2; // 90° counter-clockwise to go from down to right
 					break;
 			}
 
