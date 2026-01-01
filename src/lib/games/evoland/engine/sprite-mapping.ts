@@ -85,13 +85,15 @@ export const MONSTER_SPRITES = {
 } as const;
 
 /**
- * Sword sprite configuration (uses col 3 for sword swing).
+ * Sword sprite configuration.
+ * EKind.Sword = 3 → row 3 in sprites_alpha.png
+ * Column 0 is the sword sprite.
  */
 export const SWORD_SPRITES: Record<number, SpritePosition> = {
-	[Direction.Down]: { col: 3, row: 1 },
-	[Direction.Up]: { col: 3, row: 1 },
-	[Direction.Left]: { col: 3, row: 1 },
-	[Direction.Right]: { col: 3, row: 1 }
+	[Direction.Down]: { col: 0, row: 3 },
+	[Direction.Up]: { col: 0, row: 3 },
+	[Direction.Left]: { col: 0, row: 3 },
+	[Direction.Right]: { col: 0, row: 3 }
 };
 
 /**
