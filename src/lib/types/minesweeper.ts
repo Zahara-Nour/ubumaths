@@ -159,17 +159,29 @@ export interface GameStats {
 }
 
 /**
- * Reward breakdown from Strategy D calculation
+ * Reward breakdown from Strategy D calculation with daily limit system
  * Returned by complete_minesweeper_game RPC for VictoryModal display
+ *
+ * NEW SYSTEM (2026-01):
+ * - Max 1 gidouille per day across all games
+ * - theoretical_reward = what you would have earned
+ * - actual_reward = what you actually earned (0 or 1)
+ * - Week's best theoretical reward is tracked for weekly bonus
  */
 export interface RewardBreakdown {
+	// Calculation factors
+	cycle: string | null; // Pedagogical cycle (e.g., 'cycle_2', 'cycle_3')
 	base_reward: number; // 1.0 / 3.0 / 6.0
-	reference_time: number; // 180 / 600 / 1200 seconds
+	reference_time: number; // Dynamic based on cycle/difficulty
 	time_seconds: number; // Actual completion time
 	time_mult: number; // 0.8 to 1.3
 	hints_used: number; // Total hints used
 	hints_from_items: number; // Hints from shop items (half penalty)
 	hint_penalty: number; // 0 to 0.50
-	wins_today: number; // Wins before this one (same day)
-	daily_mult: number; // 0.3 to 1.0
+
+	// Daily limit system (replaces wins_today and daily_mult)
+	theoretical_reward: number; // base × time_mult × (1 - hint_penalty)
+	actual_reward: number; // 0 or 1 (first win of day)
+	is_first_win_of_day: boolean; // Whether this was first win today
+	week_best_reward: number; // Best theoretical reward this week
 }

@@ -1280,6 +1280,7 @@ class MinesweeperStore {
 
 						// Get breakdown or create default
 						const breakdown: RewardBreakdown = response.breakdown || {
+							cycle: null,
 							base_reward: DIFFICULTY_CONFIGS[game.difficulty].baseGidouilles,
 							reference_time: DIFFICULTY_CONFIGS[game.difficulty].baseTime,
 							time_seconds: game.timeElapsed,
@@ -1287,8 +1288,10 @@ class MinesweeperStore {
 							hints_used: game.hintsUsed || 0,
 							hints_from_items: 0,
 							hint_penalty: 0,
-							wins_today: 0,
-							daily_mult: 1.0
+							theoretical_reward: 0,
+							actual_reward: 0,
+							is_first_win_of_day: false,
+							week_best_reward: 0
 						};
 
 						// Show victory modal with detailed breakdown
@@ -1314,6 +1317,7 @@ class MinesweeperStore {
 						logger.warn('Unexpected RPC response format:', data);
 						// Show simple victory modal
 						const defaultBreakdown: RewardBreakdown = {
+							cycle: null,
 							base_reward: DIFFICULTY_CONFIGS[game.difficulty].baseGidouilles,
 							reference_time: DIFFICULTY_CONFIGS[game.difficulty].baseTime,
 							time_seconds: game.timeElapsed,
@@ -1321,8 +1325,10 @@ class MinesweeperStore {
 							hints_used: game.hintsUsed || 0,
 							hints_from_items: 0,
 							hint_penalty: 0,
-							wins_today: 0,
-							daily_mult: 1.0
+							theoretical_reward: 0,
+							actual_reward: 0,
+							is_first_win_of_day: false,
+							week_best_reward: 0
 						};
 						modalStack.push({
 							component: VictoryModal,
@@ -1393,6 +1399,7 @@ class MinesweeperStore {
 				if (won) {
 					// Create a simple breakdown for public users
 					const publicBreakdown: RewardBreakdown = {
+						cycle: null,
 						base_reward: config.baseGidouilles,
 						reference_time: config.baseTime,
 						time_seconds: game.timeElapsed,
@@ -1400,8 +1407,10 @@ class MinesweeperStore {
 						hints_used: game.hintsUsed || 0,
 						hints_from_items: 0,
 						hint_penalty: 0,
-						wins_today: 0,
-						daily_mult: 1.0
+						theoretical_reward: 0,
+						actual_reward: 0,
+						is_first_win_of_day: false,
+						week_best_reward: 0
 					};
 
 					modalStack.push({
@@ -1465,6 +1474,7 @@ class MinesweeperStore {
 
 				if (won) {
 					const errorBreakdown: RewardBreakdown = {
+						cycle: null,
 						base_reward: config.baseGidouilles,
 						reference_time: config.baseTime,
 						time_seconds: game.timeElapsed,
@@ -1472,8 +1482,10 @@ class MinesweeperStore {
 						hints_used: game.hintsUsed || 0,
 						hints_from_items: 0,
 						hint_penalty: 0,
-						wins_today: 0,
-						daily_mult: 1.0
+						theoretical_reward: 0,
+						actual_reward: 0,
+						is_first_win_of_day: false,
+						week_best_reward: 0
 					};
 
 					modalStack.push({
@@ -1518,6 +1530,7 @@ class MinesweeperStore {
 
 				if (won) {
 					const fallbackBreakdown: RewardBreakdown = {
+						cycle: null,
 						base_reward: config.baseGidouilles,
 						reference_time: config.baseTime,
 						time_seconds: game.timeElapsed,
@@ -1525,8 +1538,10 @@ class MinesweeperStore {
 						hints_used: game.hintsUsed || 0,
 						hints_from_items: 0,
 						hint_penalty: 0,
-						wins_today: 0,
-						daily_mult: 1.0
+						theoretical_reward: 0,
+						actual_reward: 0,
+						is_first_win_of_day: false,
+						week_best_reward: 0
 					};
 
 					modalStack.push({
