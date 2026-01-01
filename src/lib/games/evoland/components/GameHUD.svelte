@@ -11,6 +11,7 @@
 
 	// Derived values
 	const hud = $derived(evolandStore.hud);
+	const flags = $derived(evolandStore.flags);
 	const hpPercentage = $derived(evolandStore.hpPercentage);
 	const xpPercentage = $derived(evolandStore.xpPercentage);
 </script>
@@ -27,8 +28,8 @@
 			</div>
 		</div>
 
-		<!-- XP Bar (only show if level system enabled) -->
-		{#if hud.level > 0}
+		<!-- XP Bar (only show after CLevelUp chest) -->
+		{#if flags.levelUpEnabled}
 			<div class="stat-bar xp-bar">
 				<span class="stat-icon" aria-hidden="true">⭐</span>
 				<div class="bar-container">
@@ -41,8 +42,8 @@
 
 	<!-- Top Right: Items -->
 	<div class="hud-items">
-		<!-- Gold -->
-		{#if hud.gold > 0 || true}
+		<!-- Gold (only show when you have some) -->
+		{#if hud.gold > 0}
 			<div class="item gold" aria-label="{hud.gold} gold">
 				<span class="item-icon" aria-hidden="true">🪙</span>
 				<span class="item-count">{hud.gold}</span>
