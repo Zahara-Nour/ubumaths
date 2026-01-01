@@ -166,8 +166,6 @@ export interface TemplatePlaceholder {
 
 export interface ResolvedExercise {
 	exercise_id: string;
-	/** Exercise title (displayed next to the exercise number) */
-	title: string | null;
 	position: number;
 	parameters: Record<string, number | string>;
 	statement: string;
@@ -519,10 +517,6 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 		shared?: SharedExerciseDefaults | null;
 		/** Exercise variations for different guidance levels (new) */
 		variations?: ExerciseVariation[] | null;
-		/** Supplementary resources (videos, PDFs, links) */
-		resources?: ExerciseResource[] | null;
-		/** Generic function names for math parsing (e.g., ['f', 'g']) */
-		generic_functions?: string[] | null;
 	};
 }
 
@@ -577,20 +571,16 @@ export interface WorksheetAssignmentWithRelations extends WorksheetAssignmentRow
 export interface StudentExerciseView {
 	id: string;
 	exercise_id: string;
-	/** Exercise title (displayed next to the exercise number) */
-	title: string | null;
 	position: number;
 	points: number | null;
 	custom_instructions: string | null;
 	statement: string;
 	correction: string | null;
 	correction_visible: boolean;
-	/** Hints from selected variation (for guided exercises) */
+	/** Hints from the selected variation (for guided exercises) */
 	hints?: ExerciseHint[];
 	/** Supplementary resources (videos, PDFs, links) */
 	resources?: ExerciseResource[];
-	/** Exercise tags for categorization */
-	tags?: string[];
 }
 
 /**

@@ -11,6 +11,8 @@ import { GameLoop, createEvolandLoop } from './game-loop';
 import { GameState, createGameState } from '../logic/game-state';
 import { TILE_SIZE } from '../logic/constants';
 import { evolandStore } from '../stores/evoland.svelte';
+import { SpriteCache, EVOLAND_SPRITES, DEFAULT_TILE_SIZE } from './sprite-sheet';
+import { getHeroSprite, CHEST_SPRITES } from './sprite-mapping';
 
 // ============================================================================
 // TYPES
@@ -69,6 +71,7 @@ export class GameController {
 	private input: InputManager | null = null;
 	private gameLoop: GameLoop | null = null;
 	private gameState: GameState | null = null;
+	private sprites: SpriteCache | null = null;
 
 	private _initialized: boolean = false;
 
@@ -88,6 +91,13 @@ export class GameController {
 		try {
 			// Initialize renderer
 			this.renderer = new Renderer(this.canvas, this.scale);
+
+			// Load sprites
+			this.sprites = new SpriteCache();
+			await this.sprites.loadSheets([
+				{ name: 'tiles', src: EVOLAND_SPRITES.tiles, tileSize: DEFAULT_TILE_SIZE },
+				{ name: 'sprites', src: EVOLAND_SPRITES.sprites, tileSize: DEFAULT_TILE_SIZE }
+			]);
 
 			// Initialize input (using document for keyboard, canvas for touch)
 			this.input = createInputManager(this.canvas);
@@ -319,24 +329,25 @@ export class GameController {
 			}
 		}
 
+		// Get sprite sheets
+		const spritesSheet = this.sprites?.getSheet('sprites');
+
 		// Render chests
 		for (const chest of this.gameState.getChests()) {
 			const chestScreenX = chest.x * TILE_SIZE - camera.x;
 			const chestScreenY = chest.y * TILE_SIZE - camera.y;
 
-			if (chest.opened) {
-				// Opened chest (darker)
-				ctx.fillStyle = '#654321';
+			if (spritesSheet?.isLoaded) {
+				const chestSprite = chest.opened ? CHEST_SPRITES.open : CHEST_SPRITES.closed;
+				spritesSheet.drawSprite(ctx, chestSprite.col, chestSprite.row, chestScreenX, chestScreenY);
 			} else {
-				// Closed chest (golden)
-				ctx.fillStyle = '#ffd700';
-			}
-			ctx.fillRect(chestScreenX + 2, chestScreenY + 4, 12, 10);
-
-			// Chest lid
-			if (!chest.opened) {
-				ctx.fillStyle = '#daa520';
-				ctx.fillRect(chestScreenX + 1, chestScreenY + 2, 14, 4);
+				// Fallback: colored rectangles
+				ctx.fillStyle = chest.opened ? '#654321' : '#ffd700';
+				ctx.fillRect(chestScreenX + 2, chestScreenY + 4, 12, 10);
+				if (!chest.opened) {
+					ctx.fillStyle = '#daa520';
+					ctx.fillRect(chestScreenX + 1, chestScreenY + 2, 14, 4);
+				}
 			}
 		}
 
@@ -344,39 +355,43 @@ export class GameController {
 		const heroScreenX = hero.x - camera.x;
 		const heroScreenY = hero.y - camera.y;
 
-		// Hero body
-		ctx.fillStyle = '#4a9eff';
-		ctx.fillRect(heroScreenX, heroScreenY, 16, 16);
+		if (spritesSheet?.isLoaded) {
+			const heroSprite = getHeroSprite(hero.direction);
+			spritesSheet.drawSprite(ctx, heroSprite.col, heroSprite.row, heroScreenX, heroScreenY);
+		} else {
+			// Fallback: colored rectangle with direction indicator
+			ctx.fillStyle = '#4a9eff';
+			ctx.fillRect(heroScreenX, heroScreenY, 16, 16);
 
-		// Hero direction indicator
-		ctx.fillStyle = '#fff';
-		const dir = hero.direction;
-		const cx = heroScreenX + 8;
-		const cy = heroScreenY + 8;
-		ctx.beginPath();
-		switch (dir) {
-			case 0: // Up
-				ctx.moveTo(cx, cy - 6);
-				ctx.lineTo(cx - 3, cy);
-				ctx.lineTo(cx + 3, cy);
-				break;
-			case 1: // Down
-				ctx.moveTo(cx, cy + 6);
-				ctx.lineTo(cx - 3, cy);
-				ctx.lineTo(cx + 3, cy);
-				break;
-			case 2: // Left
-				ctx.moveTo(cx - 6, cy);
-				ctx.lineTo(cx, cy - 3);
-				ctx.lineTo(cx, cy + 3);
-				break;
-			case 3: // Right
-				ctx.moveTo(cx + 6, cy);
-				ctx.lineTo(cx, cy - 3);
-				ctx.lineTo(cx, cy + 3);
-				break;
+			ctx.fillStyle = '#fff';
+			const dir = hero.direction;
+			const cx = heroScreenX + 8;
+			const cy = heroScreenY + 8;
+			ctx.beginPath();
+			switch (dir) {
+				case 0: // Up
+					ctx.moveTo(cx, cy - 6);
+					ctx.lineTo(cx - 3, cy);
+					ctx.lineTo(cx + 3, cy);
+					break;
+				case 1: // Down
+					ctx.moveTo(cx, cy + 6);
+					ctx.lineTo(cx - 3, cy);
+					ctx.lineTo(cx + 3, cy);
+					break;
+				case 2: // Left
+					ctx.moveTo(cx - 6, cy);
+					ctx.lineTo(cx, cy - 3);
+					ctx.lineTo(cx, cy + 3);
+					break;
+				case 3: // Right
+					ctx.moveTo(cx + 6, cy);
+					ctx.lineTo(cx, cy - 3);
+					ctx.lineTo(cx, cy + 3);
+					break;
+			}
+			ctx.fill();
 		}
-		ctx.fill();
 
 		// Render monsters
 		for (const monster of this.gameState.getMonsters()) {
