@@ -1417,6 +1417,13 @@ class MinesweeperStore {
 					data.grid_state as unknown as import('$lib/types/minesweeper').GridStateDTO
 				);
 
+				// Calculate elapsed time from started_at for in-progress games
+				let timeElapsed = 0;
+				if (data.started_at) {
+					const startedAt = new Date(data.started_at);
+					timeElapsed = Math.floor((Date.now() - startedAt.getTime()) / 1000);
+				}
+
 				const game: GameState = {
 					id: data.id,
 					difficulty,
@@ -1427,8 +1434,8 @@ class MinesweeperStore {
 					minesCount: config.mines,
 					flagsUsed: this.countFlags(grid),
 					cellsRevealed: this.countRevealed(grid),
-					timeElapsed: data.time_seconds ?? 0,
-					startedAt: new Date(data.created_at)
+					timeElapsed,
+					startedAt: data.started_at ? new Date(data.started_at) : undefined
 				};
 
 				this.currentGame = game;
