@@ -93,18 +93,36 @@ This phase connects the canvas renderer to actual game logic with sprite renderi
 
 ### 10. Real World Loading from PNG
 
-- `GameState.initialize()` now loads from `/games/evoland/world.png`
+**Approach**: Runtime PNG decoding (faithful to original Haxe)
+
+The original Haxe loads PNG at runtime:
+
+```haxe
+world = new World(openfl.Assets.getBitmapData("world.png"));
+```
+
+Our implementation does the same:
+
+```typescript
+await this.world.loadFromPNG('/games/evoland/world.png');
+```
+
+**Implementation details:**
+
+- `GameState.initialize()` loads from `/games/evoland/world.png`
 - Hero starting position corrected to (21, 76) from original Game.hx `DEF_PROPS.pos`
 - Chests initialized from world PNG via `world.getChests()`
 - Monsters initialized from world PNG via `world.getMonsters()`
-- Color decoding maps 24-bit RGB to Block enum:
+- Color decoding in `world.ts` (`decodePNG()`, `decodeColor()`) maps 24-bit RGB to Block enum:
   - `0x64FD4D` → Field
   - `0x0F6D01` → Tree
   - `0x65B4FB` → Water
   - `0xDA0205` → Monster spawn (uses tile above for ground)
   - `0xFFFFxx` → Chest (last byte = ChestKind enum index)
   - ... and 20+ other block types
-- `reset()` now respawns monsters from world data and resets removed tiles
+- `reset()` respawns monsters from world data and resets removed tiles
+
+**Note**: No pre-conversion script needed (plan mentioned `scripts/convert-evoland-assets.ts` but runtime approach is simpler and faithful to original)
 
 ---
 
