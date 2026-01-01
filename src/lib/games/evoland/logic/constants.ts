@@ -387,20 +387,24 @@ export const CHEST_DATA: Record<ChestKind, ChestData> = {
 
 /**
  * Set of blocks that are walkable (non-collision).
+ * Based on the original Haxe World.collide() method.
  */
 export const WALKABLE_BLOCKS: ReadonlySet<Block> = new Set([
 	Block.Field,
 	Block.BridgeUD,
 	Block.BridgeLR,
 	Block.Detail,
+	Block.RiverBank, // Decoration, not blocking
 	Block.SavePoint,
 	Block.Sand,
+	Block.SandBank, // Decoration, not blocking
 	Block.SandDetail,
-	Block.Door,
+	Block.Dungeon, // Dungeon entrance, walkable
 	Block.DungeonSoil,
 	Block.DungeonStairs,
 	Block.DungeonFakeWall,
 	Block.DungeonPuzzle,
+	Block.MonsterGenerator, // Walkable to allow movement
 	Block.FakeTree,
 	Block.DungeonExit,
 	Block.Free,
@@ -409,20 +413,18 @@ export const WALKABLE_BLOCKS: ReadonlySet<Block> = new Set([
 
 /**
  * Set of blocks that are solid (cause collision).
+ * Based on the original Haxe World.collide() method.
  */
 export const SOLID_BLOCKS: ReadonlySet<Block> = new Set([
 	Block.Dark,
 	Block.Tree,
 	Block.Water,
 	Block.Bush,
-	Block.RiverBank,
 	Block.Rock,
-	Block.SandBank,
 	Block.Cactus,
-	Block.Dungeon,
+	Block.Door, // Doors block until opened
 	Block.DungeonWall,
 	Block.DungeonStat,
-	Block.MonsterGenerator,
 	Block.DarkDungeon,
 	Block.Lock
 ]);
