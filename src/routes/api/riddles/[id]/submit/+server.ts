@@ -49,8 +49,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		isCorrect = null;
 	}
 
-	// Submit attempt using RPC function
-	const { data: attemptId, error: submitError } = await locals.supabase.rpc(
+	// Submit attempt using RPC function (now returns table with reward info)
+	const { data: rpcResult, error: submitError } = await locals.supabase.rpc(
 		'submit_riddle_attempt',
 		{
 			p_riddle_id: riddleId,
@@ -63,6 +63,14 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	if (submitError) {
 		console.error('Error submitting attempt:', submitError);
 		throw error(500, 'Erreur lors de la soumission de la tentative');
+	}
+
+	// RPC now returns array with one row containing all reward info
+	const rewardInfo = Array.isArray(rpcResult) ? rpcResult[0] : rpcResult;
+	const attemptId = rewardInfo?.attempt_id;
+
+	if (!attemptId) {
+		throw error(500, 'Erreur lors de la création de la tentative');
 	}
 
 	// Fetch the created attempt to return full details
@@ -104,7 +112,19 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 	}
 
-	return json({
+	// Build response with reward info
+	const response: {
+		success: boolean;
+		attempt: typeof attempt;
+		isCorrect: boolean | null;
+		message: string;
+		rewards?: {
+			theoretical_reward: number;
+			actual_reward: number;
+			is_first_win: boolean;
+			week_best_reward: number;
+		};
+	} = {
 		success: true,
 		attempt,
 		isCorrect,
@@ -114,5 +134,17 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				: isCorrect === false
 					? 'Réponse incorrecte'
 					: 'Réponse envoyée au professeur pour validation'
-	});
+	};
+
+	// Add reward info if correct answer
+	if (isCorrect === true && rewardInfo) {
+		response.rewards = {
+			theoretical_reward: Number(rewardInfo.theoretical_reward) || 0,
+			actual_reward: Number(rewardInfo.actual_reward) || 0,
+			is_first_win: Boolean(rewardInfo.is_first_win),
+			week_best_reward: Number(rewardInfo.week_best_reward) || 0
+		};
+	}
+
+	return json(response);
 };

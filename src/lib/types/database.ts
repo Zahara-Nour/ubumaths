@@ -1930,6 +1930,74 @@ export type Database = {
 					}
 				];
 			};
+			daily_game_rewards: {
+				Row: {
+					actual_reward: number;
+					created_at: string;
+					game_date: string;
+					game_id: string;
+					game_type: string;
+					id: string;
+					is_first_win_of_day: boolean;
+					student_id: string;
+					theoretical_reward: number;
+					week_start: string;
+				};
+				Insert: {
+					actual_reward?: number;
+					created_at?: string;
+					game_date: string;
+					game_id: string;
+					game_type: string;
+					id?: string;
+					is_first_win_of_day?: boolean;
+					student_id: string;
+					theoretical_reward: number;
+					week_start: string;
+				};
+				Update: {
+					actual_reward?: number;
+					created_at?: string;
+					game_date?: string;
+					game_id?: string;
+					game_type?: string;
+					id?: string;
+					is_first_win_of_day?: boolean;
+					student_id?: string;
+					theoretical_reward?: number;
+					week_start?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'daily_game_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'daily_game_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'daily_game_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'daily_game_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			daily_summaries: {
 				Row: {
 					bonus_gained: number | null;
@@ -10845,6 +10913,77 @@ export type Database = {
 					}
 				];
 			};
+			weekly_best_rewards: {
+				Row: {
+					best_reward_game_id: string | null;
+					best_reward_game_type: string | null;
+					best_theoretical_reward: number;
+					bonus_awarded: number | null;
+					bonus_awarded_at: string | null;
+					created_at: string;
+					id: string;
+					student_id: string;
+					updated_at: string;
+					week_end: string;
+					week_start: string;
+				};
+				Insert: {
+					best_reward_game_id?: string | null;
+					best_reward_game_type?: string | null;
+					best_theoretical_reward?: number;
+					bonus_awarded?: number | null;
+					bonus_awarded_at?: string | null;
+					created_at?: string;
+					id?: string;
+					student_id: string;
+					updated_at?: string;
+					week_end: string;
+					week_start: string;
+				};
+				Update: {
+					best_reward_game_id?: string | null;
+					best_reward_game_type?: string | null;
+					best_theoretical_reward?: number;
+					bonus_awarded?: number | null;
+					bonus_awarded_at?: string | null;
+					created_at?: string;
+					id?: string;
+					student_id?: string;
+					updated_at?: string;
+					week_end?: string;
+					week_start?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'weekly_best_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'weekly_best_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'weekly_best_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'weekly_best_rewards_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			weekly_rewards: {
 				Row: {
 					class_id: string;
@@ -12686,6 +12825,10 @@ export type Database = {
 				Args: { p_count: number; p_filters?: Json; p_student_id: string };
 				Returns: Json;
 			};
+			award_weekly_best_bonuses: {
+				Args: { p_week_end: string; p_week_start: string };
+				Returns: number;
+			};
 			award_weekly_reward: {
 				Args: {
 					p_class_id: string;
@@ -12741,6 +12884,13 @@ export type Database = {
 			calculate_riddle_gidouilles: {
 				Args: { p_attempt_number: number; p_difficulty: number };
 				Returns: number;
+			};
+			calculate_week_boundaries: {
+				Args: { p_date: string; p_first_day: number };
+				Returns: {
+					week_end: string;
+					week_start: string;
+				}[];
 			};
 			calculate_worksheet_total_points: {
 				Args: { p_worksheet_id: string };
@@ -13353,6 +13503,14 @@ export type Database = {
 					teacher_name: string;
 				}[];
 			};
+			get_student_week_best: {
+				Args: { p_school_id: string; p_student_id: string };
+				Returns: {
+					best_theoretical_reward: number;
+					week_end: string;
+					week_start: string;
+				}[];
+			};
 			get_students_in_class: {
 				Args: { class_uuid: string };
 				Returns: {
@@ -13800,6 +13958,20 @@ export type Database = {
 					success: boolean;
 				}[];
 			};
+			record_game_reward: {
+				Args: {
+					p_game_id: string;
+					p_game_type: string;
+					p_school_id: string;
+					p_student_id: string;
+					p_theoretical_reward: number;
+				};
+				Returns: {
+					actual_reward: number;
+					is_first_win: boolean;
+					week_best_reward: number;
+				}[];
+			};
 			record_listing_view: {
 				Args: { p_listing_id: string; p_user_id: string };
 				Returns: Json;
@@ -13936,7 +14108,13 @@ export type Database = {
 					p_student_id: string;
 					p_submitted_answer: Json;
 				};
-				Returns: string;
+				Returns: {
+					actual_reward: number;
+					attempt_id: string;
+					is_first_win: boolean;
+					theoretical_reward: number;
+					week_best_reward: number;
+				}[];
 			};
 			teacher_owns_riddle: {
 				Args: { p_riddle_id: string; p_teacher_id: string };
@@ -14101,7 +14279,13 @@ export type Database = {
 					p_is_correct: boolean;
 					p_teacher_id: string;
 				};
-				Returns: boolean;
+				Returns: {
+					actual_reward: number;
+					is_first_win: boolean;
+					success: boolean;
+					theoretical_reward: number;
+					week_best_reward: number;
+				}[];
 			};
 		};
 		Enums: {

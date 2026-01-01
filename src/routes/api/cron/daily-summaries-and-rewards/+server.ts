@@ -58,6 +58,11 @@ interface ProcessingResults {
 		classesProcessed: number;
 		errors: string[];
 	};
+	weeklyBestBonuses: {
+		success: boolean;
+		count: number;
+		errors: string[];
+	};
 	minesweeperReferenceTimes: {
 		success: boolean;
 		updated: number;
@@ -94,6 +99,11 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			classesProcessed: 0,
 			errors: []
 		},
+		weeklyBestBonuses: {
+			success: true,
+			count: 0,
+			errors: []
+		},
 		minesweeperReferenceTimes: {
 			success: true,
 			updated: 0,
@@ -126,7 +136,7 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			.select(
 				'id, name, teacher_id, school_id, created_at, updated_at, schools(timezone, timetable)'
 			)
-			.eq('status', 'active');
+			.eq('is_active', true);
 
 		if (classesError) {
 			throw new Error(`Failed to fetch classes: ${classesError.message}`);
@@ -225,7 +235,64 @@ const cronHandler: RequestHandler = async ({ request }) => {
 		}
 
 		// ============================================================
-		// STEP 3: Recalculate Minesweeper Reference Times (Sunday only)
+		// STEP 3: Award Weekly Best Game Bonuses (on weekly rewards day)
+		// ============================================================
+		// This awards the best theoretical game reward of the previous week
+		// to each student who played at least one game
+		{
+			// Get unique school week configs to process
+			const schoolsProcessed = new Set<string>();
+
+			for (const classData of classes as ClassData[]) {
+				const schoolId = classData.school_id;
+				if (schoolsProcessed.has(schoolId)) continue;
+				schoolsProcessed.add(schoolId);
+
+				try {
+					const timezone = classData.schools?.timezone || 'Europe/Paris';
+					const weekConfig = classData.schools?.timetable?.week_config || DEFAULT_WEEK_CONFIG;
+					const currentDayOfWeek = getCurrentDayOfWeekInTimezone(timezone);
+
+					if (isWeeklyRewardsDay(weekConfig, currentDayOfWeek)) {
+						// Import helper to calculate previous week range
+						const { getWeekRangeInTimezone } = await import('$lib/server/summaries/timezone-utils');
+						const { format } = await import('date-fns');
+
+						const { start: weekStart, end: weekEnd } = getWeekRangeInTimezone(timezone, weekConfig);
+
+						console.log(
+							`[Cron] Awarding weekly best bonuses for week ${format(weekStart, 'yyyy-MM-dd')} to ${format(weekEnd, 'yyyy-MM-dd')}`
+						);
+
+						// Type assertion: award_weekly_best_bonuses is defined in migration 20260101200000
+						// Types will be regenerated after migration is applied
+						const { data: bonusCount, error: bonusError } = await (
+							serviceClient.rpc as unknown as (
+								fn: 'award_weekly_best_bonuses',
+								params: { p_week_start: string; p_week_end: string }
+							) => Promise<{ data: number | null; error: { message: string } | null }>
+						)('award_weekly_best_bonuses', {
+							p_week_start: format(weekStart, 'yyyy-MM-dd'),
+							p_week_end: format(weekEnd, 'yyyy-MM-dd')
+						});
+
+						if (bonusError) {
+							throw new Error(`RPC error: ${bonusError.message}`);
+						}
+
+						results.weeklyBestBonuses.count += bonusCount || 0;
+						console.log(`[Cron] Awarded ${bonusCount || 0} weekly best bonuses`);
+					}
+				} catch (err) {
+					const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+					results.weeklyBestBonuses.errors.push(`School ${schoolId}: ${errorMsg}`);
+					console.error(`[Cron] Error awarding weekly best bonuses:`, err);
+				}
+			}
+		}
+
+		// ============================================================
+		// STEP 4: Recalculate Minesweeper Reference Times (Sunday only)
 		// ============================================================
 		// Use Europe/Paris as reference timezone for consistency
 		const dayOfWeekParis = getCurrentDayOfWeekInTimezone('Europe/Paris');
@@ -269,15 +336,17 @@ const cronHandler: RequestHandler = async ({ request }) => {
 		}
 
 		// ============================================================
-		// STEP 4: Determine overall status
+		// STEP 5: Determine overall status
 		// ============================================================
 		results.dailySummaries.success = results.dailySummaries.errors.length === 0;
 		results.weeklyRewards.success = results.weeklyRewards.errors.length === 0;
+		results.weeklyBestBonuses.success = results.weeklyBestBonuses.errors.length === 0;
 		results.minesweeperReferenceTimes.success =
 			results.minesweeperReferenceTimes.errors.length === 0;
 		results.success =
 			results.dailySummaries.success &&
 			results.weeklyRewards.success &&
+			results.weeklyBestBonuses.success &&
 			results.minesweeperReferenceTimes.success;
 
 		const status = results.success ? 'success' : 'partial_failure';
@@ -287,8 +356,10 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			daily_summaries_classes: results.dailySummaries.classesProcessed,
 			weekly_rewards_awarded: results.weeklyRewards.count,
 			weekly_rewards_classes: results.weeklyRewards.classesProcessed,
+			weekly_best_bonuses_awarded: results.weeklyBestBonuses.count,
 			daily_summaries_errors: results.dailySummaries.errors.length,
 			weekly_rewards_errors: results.weeklyRewards.errors.length,
+			weekly_best_bonuses_errors: results.weeklyBestBonuses.errors.length,
 			minesweeper_ref_times_updated: results.minesweeperReferenceTimes.updated,
 			minesweeper_ref_times_skipped: results.minesweeperReferenceTimes.skipped,
 			minesweeper_ref_times_errors: results.minesweeperReferenceTimes.errors.length
@@ -326,6 +397,13 @@ const cronHandler: RequestHandler = async ({ request }) => {
 					awarded: results.weeklyRewards.count,
 					classesProcessed: results.weeklyRewards.classesProcessed,
 					errors: results.weeklyRewards.errors.length > 0 ? results.weeklyRewards.errors : undefined
+				},
+				weeklyBestBonuses: {
+					awarded: results.weeklyBestBonuses.count,
+					errors:
+						results.weeklyBestBonuses.errors.length > 0
+							? results.weeklyBestBonuses.errors
+							: undefined
 				},
 				minesweeperReferenceTimes: {
 					updated: results.minesweeperReferenceTimes.updated,
@@ -372,6 +450,9 @@ const cronHandler: RequestHandler = async ({ request }) => {
 				weeklyRewards: {
 					awarded: results.weeklyRewards.count,
 					classesProcessed: results.weeklyRewards.classesProcessed
+				},
+				weeklyBestBonuses: {
+					awarded: results.weeklyBestBonuses.count
 				},
 				minesweeperReferenceTimes: {
 					updated: results.minesweeperReferenceTimes.updated,

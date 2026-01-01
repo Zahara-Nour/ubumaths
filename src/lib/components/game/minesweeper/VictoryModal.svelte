@@ -90,17 +90,22 @@
 		};
 	});
 
-	// Daily status
+	// Daily limit status
 	const dailyStatus = $derived.by(() => {
-		const winsToday = breakdown.wins_today;
-		if (winsToday === 0) {
-			return { label: '1ère victoire du jour', emoji: '🌟', color: 'text-green-500' };
+		if (breakdown.is_first_win_of_day) {
+			return {
+				label: '1ère victoire du jour !',
+				emoji: '🌟',
+				color: 'text-green-500',
+				message: '+1 gidouille'
+			};
 		}
-		const position = winsToday + 1;
-		if (position <= 3) {
-			return { label: `${position}e victoire du jour`, emoji: '✓', color: 'text-blue-500' };
-		}
-		return { label: `${position}e victoire du jour`, emoji: '📉', color: 'text-orange-500' };
+		return {
+			label: "Déjà gagné aujourd'hui",
+			emoji: '📊',
+			color: 'text-muted-foreground',
+			message: '+0 gidouille'
+		};
 	});
 
 	// Format multiplier with sign
@@ -186,25 +191,50 @@
 					</span>
 				</div>
 
-				<!-- Daily multiplier -->
+				<!-- Divider -->
+				<div class="my-2 border-t border-border"></div>
+
+				<!-- Theoretical reward (what you would have earned) -->
+				<div class="flex items-center justify-between text-sm">
+					<span class="flex items-center gap-2">
+						<span>💎</span>
+						<span>Valeur théorique</span>
+					</span>
+					<span class="font-mono font-medium text-muted-foreground">
+						{breakdown.theoretical_reward.toFixed(2)} gidouilles
+					</span>
+				</div>
+
+				<!-- Daily limit status -->
 				<div class="flex items-center justify-between text-sm">
 					<span class="flex items-center gap-2">
 						<span class={dailyStatus.color}>{dailyStatus.emoji}</span>
 						<span>{dailyStatus.label}</span>
 					</span>
-					<span class={`font-mono font-medium ${getMultColor(breakdown.daily_mult)}`}>
-						{formatMult(breakdown.daily_mult)}
+					<span class={`font-mono font-medium ${dailyStatus.color}`}>
+						{dailyStatus.message}
 					</span>
 				</div>
 
 				<!-- Divider -->
 				<div class="my-2 border-t border-border"></div>
 
-				<!-- Formula result -->
+				<!-- Actual result -->
 				<div class="flex items-center justify-between text-sm font-medium">
-					<span>Total</span>
+					<span>Gain réel</span>
 					<span class="font-mono text-primary">
-						= {gidouilles.toFixed(2)} gidouilles
+						+{gidouilles.toFixed(0)} gidouille{gidouilles !== 1 ? 's' : ''}
+					</span>
+				</div>
+
+				<!-- Week best reward -->
+				<div class="mt-2 flex items-center justify-between rounded bg-primary/10 p-2 text-sm">
+					<span class="flex items-center gap-2">
+						<span>🏆</span>
+						<span>Meilleur cette semaine</span>
+					</span>
+					<span class="font-mono font-medium text-primary">
+						{breakdown.week_best_reward.toFixed(2)} gidouilles
 					</span>
 				</div>
 			</div>
