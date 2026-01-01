@@ -357,7 +357,14 @@ export class GameController {
 
 		if (spritesSheet?.isLoaded) {
 			const heroSprite = getHeroSprite(hero.direction);
-			spritesSheet.drawSprite(ctx, heroSprite.col, heroSprite.row, heroScreenX, heroScreenY);
+			spritesSheet.drawSprite(
+				ctx,
+				heroSprite.col,
+				heroSprite.row,
+				heroScreenX,
+				heroScreenY,
+				heroSprite.flipX
+			);
 		} else {
 			// Fallback: colored rectangle with direction indicator
 			ctx.fillStyle = '#4a9eff';
