@@ -16,11 +16,11 @@ export * from './logic/constants';
 // export * from './logic/progression';
 
 // Engine
-// export * from './engine/renderer';
-// export * from './engine/sprite-sheet';
-// export * from './engine/game-loop';
-// export * from './engine/input-manager';
-// export * from './engine/audio-manager';
+export * from './engine/sprite-sheet';
+export * from './engine/renderer';
+export * from './engine/game-loop';
+export * from './engine/input-manager';
+export * from './engine/audio-manager';
 
 // Components
 // export { default as EvolandGame } from './components/EvolandGame.svelte';
