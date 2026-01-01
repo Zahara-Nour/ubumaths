@@ -32,14 +32,15 @@ export interface HeroSpriteConfig {
 
 /**
  * Hero sprite positions in sprites_alpha.png.
- * Initial hero (col 0, row 0) is the simple GameBoy-style sprite.
- * For Right direction, we flip the sprite horizontally.
+ * EKind.Hero = 6 → row 6 (facing down/left/right)
+ * EKind.HeroUp = 7 → row 7 (facing up)
+ * For Right direction, we flip the Left sprite horizontally.
  */
 export const HERO_SPRITES: Record<number, HeroSpriteConfig> = {
-	[Direction.Down]: { col: 0, row: 0, flipX: false },
-	[Direction.Up]: { col: 0, row: 0, flipX: false },
-	[Direction.Left]: { col: 0, row: 0, flipX: false },
-	[Direction.Right]: { col: 0, row: 0, flipX: true }
+	[Direction.Down]: { col: 0, row: 6, flipX: false },
+	[Direction.Up]: { col: 0, row: 7, flipX: false },
+	[Direction.Left]: { col: 0, row: 6, flipX: false },
+	[Direction.Right]: { col: 0, row: 6, flipX: true }
 };
 
 /**
@@ -66,18 +67,21 @@ export const HERO_WALK_SPRITES: Record<number, SpritePosition[]> = {
 
 /**
  * Chest sprite positions in sprites_alpha.png.
+ * EKind.Chest = 1, so chests are in row 1.
  */
 export const CHEST_SPRITES = {
-	closed: { col: 4, row: 0 },
-	open: { col: 5, row: 0 }
+	closed: { col: 0, row: 1 },
+	open: { col: 1, row: 1 }
 } as const;
 
 /**
  * Monster sprite positions in sprites_alpha.png.
+ * EKind.Monster = 2 → row 2
+ * EKind.Bat = 8 → row 8
  */
 export const MONSTER_SPRITES = {
-	slime: { col: 0, row: 1 },
-	bat: { col: 0, row: 4 }
+	slime: { col: 0, row: 2 },
+	bat: { col: 0, row: 8 }
 } as const;
 
 /**
