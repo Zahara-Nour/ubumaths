@@ -8,6 +8,15 @@
 export type Difficulty = 'beginner' | 'intermediate' | 'expert';
 
 /**
+ * Difficulty labels in French for UI display
+ */
+export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+	beginner: 'Débutant',
+	intermediate: 'Intermédiaire',
+	expert: 'Expert'
+} as const;
+
+/**
  * Database-only status values (CHECK constraint: only these 3 are allowed)
  * Note: Client-side uses 'not_started' for UX, but database uses 'in_progress' for persistence
  */
@@ -147,4 +156,20 @@ export interface GameStats {
 	bestTime: number | null; // In seconds
 	totalGidouilles: number;
 	difficulty: string;
+}
+
+/**
+ * Reward breakdown from Strategy D calculation
+ * Returned by complete_minesweeper_game RPC for VictoryModal display
+ */
+export interface RewardBreakdown {
+	base_reward: number; // 1.0 / 3.0 / 6.0
+	reference_time: number; // 180 / 600 / 1200 seconds
+	time_seconds: number; // Actual completion time
+	time_mult: number; // 0.8 to 1.3
+	hints_used: number; // Total hints used
+	hints_from_items: number; // Hints from shop items (half penalty)
+	hint_penalty: number; // 0 to 0.50
+	wins_today: number; // Wins before this one (same day)
+	daily_mult: number; // 0.3 to 1.0
 }
