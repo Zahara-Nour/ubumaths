@@ -357,6 +357,7 @@ export class ProgressionManager {
 
 			// UI unlocks
 			case ChestKind.CTitleScreen:
+				// Original Haxe: no fx (just triggers popup)
 				this.flags.titleScreenEnabled = true;
 				break;
 
@@ -370,8 +371,9 @@ export class ProgressionManager {
 
 			// Item pickups
 			case ChestKind.CGoldCoin:
-				this.gold += 10;
-				if (hero) hero.addGold(10);
+				// Original Haxe: props.gold++ (gold coins are counted, not actual gold value)
+				this.gold += 1;
+				if (hero) hero.addGold(1);
 				break;
 
 			case ChestKind.CKey:

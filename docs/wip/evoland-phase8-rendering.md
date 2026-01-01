@@ -159,6 +159,50 @@ await this.world.loadFromPNG('/games/evoland/world.png');
 
 **Overall fidelity: ~90%** - Core world logic and rendering faithful to original. Sound/particle effects can be added later.
 
+### 12. Chest Effect Comparison (getChest in Game.hx)
+
+#### ✅ Correct
+
+| ChestKind  | Haxe                  | Our code              |
+| ---------- | --------------------- | --------------------- |
+| CLeftCtrl  | props.left = true     | canMoveLeft = true    |
+| C2D        | props.bars = false    | mode2D + canMoveAll   |
+| CRightCtrl | no fx                 | nothing               |
+| CAllowSave | props.canSave = true  | canSave = true        |
+| CKey       | props.keys++          | keys += 1             |
+| CFreeMove  | props.freeMove = true | freeMovement = true   |
+| CFarming   | no fx                 | farmingEnabled = true |
+| CSounds    | props.sounds = true   | soundsEnabled = true  |
+| CMusic     | props.music = true    | musicEnabled = true   |
+| CGoldCoin  | props.gold++          | gold += 1 (fixed!)    |
+
+#### ⚠️ Simplified (missing levels)
+
+These chests have multiple levels in Haxe but we use a single flag:
+
+| ChestKind | Haxe                      | Our code                    | Note                  |
+| --------- | ------------------------- | --------------------------- | --------------------- |
+| CScroll   | props.scroll++ (0→1→2→3)  | scrolling = true            | Missing scroll levels |
+| CColor    | props.color++ (0→1→2→3→4) | colorLevel via scrollLevels | Needs verification    |
+| CMonsters | props.monsters++          | monstersEnabled = true      | Missing levels        |
+| CWeapon   | props.weapons++           | hasWeapon = true            | Missing levels        |
+| CZoom     | props.zoom-- (4→3→2→1)    | zoomLevel++                 | Inverted direction?   |
+| CWeb      | props.web++               | webEnabled = true           | Missing levels        |
+| CNpc      | props.npc++               | npcsEnabled = true          | Missing levels        |
+
+#### ⚠️ Missing functionality (advanced features)
+
+| ChestKind     | Haxe                               | Our code                  | Missing                 |
+| ------------- | ---------------------------------- | ------------------------- | ----------------------- |
+| CDungeon      | hero.teleport(26,57) + initDungeon | dungeonAccess = true      | Teleport + world switch |
+| CDungeonKills | world.remove(26, 23)               | dungeonKillCounter = true | Tile removal            |
+| CPuzzle       | props.puzzle + world.remove(42,45) | puzzlesEnabled = true     | Tile removal            |
+| CDiablo       | life=50, xp=0                      | diabloMode = true         | HP/XP initialization    |
+| CLevelUp      | level++, special @10               | levelUpEnabled = true     | Level up logic          |
+| CPrincess     | win()                              | Not implemented           | End game sequence       |
+| CExit         | nothing                            | Not implemented           | Dungeon exit            |
+| CPorn         | props.porn = true                  | Not implemented           | Web feature             |
+
 ---
 
 ## Commits
