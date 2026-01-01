@@ -8,12 +8,22 @@
 	import { evolandStore } from '../stores/evoland.svelte';
 	import { Button } from '$lib/components/ui/button';
 
+	// Props
+	interface Props {
+		/** Called when resuming the game */
+		onResume?: () => void;
+		/** Called when quitting to title */
+		onQuit?: () => void;
+	}
+
+	let { onResume, onQuit }: Props = $props();
+
 	// Check if save is available
 	const canSave = $derived(evolandStore.canSaveGame);
 
 	// Menu actions
 	function handleResume() {
-		evolandStore.resumeGame();
+		onResume?.();
 	}
 
 	function handleSave() {
@@ -27,7 +37,7 @@
 	}
 
 	function handleQuit() {
-		evolandStore.goToTitle();
+		onQuit?.();
 	}
 
 	// Keyboard navigation
