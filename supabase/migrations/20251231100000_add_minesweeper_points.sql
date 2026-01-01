@@ -148,6 +148,7 @@ SET search_path = public
 AS $$
 DECLARE
   v_game_record RECORD;
+  v_user_role TEXT;
   v_time_seconds INTEGER;
   v_gidouilles INTEGER;
   v_points INTEGER;
@@ -166,20 +167,23 @@ BEGIN
     RAISE EXCEPTION 'Game not found, not owned by you, or already completed';
   END IF;
 
-  -- Step 2: Validate grid_state represents a legitimate win
+  -- Step 2: Get user role (only students earn gidouilles)
+  SELECT role INTO v_user_role FROM public.profiles WHERE id = v_game_record.student_id;
+
+  -- Step 3: Validate grid_state represents a legitimate win
   v_is_valid := public.validate_minesweeper_win(p_grid_state, v_game_record.difficulty);
 
   IF NOT v_is_valid THEN
     RAISE EXCEPTION 'Invalid grid state: does not represent a valid win condition';
   END IF;
 
-  -- Step 3: Validate grid_state size to prevent payload attacks
+  -- Step 4: Validate grid_state size to prevent payload attacks
   v_grid_size := pg_column_size(p_grid_state);
   IF v_grid_size > 100000 THEN -- 100KB limit
     RAISE EXCEPTION 'Grid state too large: exceeds 100KB';
   END IF;
 
-  -- Step 4: Calculate time_seconds server-side and cap to constraint limits
+  -- Step 5: Calculate time_seconds server-side and cap to constraint limits
   IF v_game_record.started_at IS NOT NULL THEN
     v_time_seconds := GREATEST(1, EXTRACT(EPOCH FROM (NOW() - v_game_record.started_at))::INTEGER);
   ELSE
@@ -196,15 +200,19 @@ BEGIN
       v_time_seconds := LEAST(v_time_seconds, 14400); -- max 4 hours
   END CASE;
 
-  -- Step 5: Calculate gidouilles using the correct parameter order
-  v_gidouilles := public.calculate_minesweeper_gidouilles(
-    v_game_record.difficulty,              -- p_difficulty TEXT
-    v_time_seconds,                        -- p_time_seconds INTEGER
-    v_game_record.student_id,              -- p_student_id UUID
-    COALESCE(v_game_record.hints_used, 0)  -- p_hints_used INTEGER
-  );
+  -- Step 6: Calculate gidouilles (only for students)
+  IF v_user_role = 'student' THEN
+    v_gidouilles := public.calculate_minesweeper_gidouilles(
+      v_game_record.difficulty,              -- p_difficulty TEXT
+      v_time_seconds,                        -- p_time_seconds INTEGER
+      v_game_record.student_id,              -- p_student_id UUID
+      COALESCE(v_game_record.hints_used, 0)  -- p_hints_used INTEGER
+    );
+  ELSE
+    v_gidouilles := 0;  -- Teachers don't earn gidouilles
+  END IF;
 
-  -- Step 6: Calculate points
+  -- Step 7: Calculate points (everyone earns points for leaderboard)
   v_points := public.calculate_minesweeper_points(
     v_game_record.difficulty,
     v_time_seconds,
@@ -212,7 +220,7 @@ BEGIN
     v_game_record.student_id
   );
 
-  -- Step 7: Update game record
+  -- Step 8: Update game record
   UPDATE public.minesweeper_games
   SET
     status = 'won',
@@ -223,23 +231,25 @@ BEGIN
     grid_state = p_grid_state
   WHERE id = p_game_id;
 
-  -- Step 8: Award gidouilles to student
-  UPDATE public.profiles
-  SET gidouilles = COALESCE(gidouilles, 0) + v_gidouilles
-  WHERE id = v_game_record.student_id;
+  -- Step 9: Award gidouilles to student only
+  IF v_user_role = 'student' AND v_gidouilles > 0 THEN
+    UPDATE public.profiles
+    SET gidouilles = COALESCE(gidouilles, 0) + v_gidouilles
+    WHERE id = v_game_record.student_id;
 
-  -- Step 9: Record transaction in gidouilles_history
-  INSERT INTO public.gidouilles_history (student_id, delta, reason)
-  VALUES (
-    v_game_record.student_id,
-    v_gidouilles,
-    'Minesweeper win: ' || v_game_record.difficulty || ' (' || v_time_seconds || 's) +' || v_points || ' pts'
-  );
+    -- Step 10: Record transaction in gidouilles_history (students only)
+    INSERT INTO public.gidouilles_history (student_id, delta, reason)
+    VALUES (
+      v_game_record.student_id,
+      v_gidouilles,
+      'Minesweeper win: ' || v_game_record.difficulty || ' (' || v_time_seconds || 's) +' || v_points || ' pts'
+    );
+  END IF;
 
-  -- Step 10: Check and unlock achievements
+  -- Step 11: Check and unlock achievements
   v_unlocked_achievements := public.check_and_unlock_achievements(p_game_id);
 
-  -- Step 11: Return gidouilles_earned, achievements, and points_earned
+  -- Step 12: Return gidouilles_earned, achievements, and points_earned
   RETURN QUERY SELECT v_gidouilles, v_unlocked_achievements, v_points;
 END;
 $$;
