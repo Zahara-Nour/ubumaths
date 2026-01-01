@@ -6,7 +6,10 @@ import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error
 
 /**
  * Type definition for use_hint RPC function return value
- * Updated to support shop item-based hints (no penalty when using items)
+ *
+ * Strategy D Update:
+ * - Hint cost: 1.0 gidouille (was 10)
+ * - Progressive penalties: 10/22/35% (gidouilles) vs 5/11/17% (items)
  */
 interface UseHintResult {
 	success: boolean;
@@ -14,8 +17,8 @@ interface UseHintResult {
 	hints_remaining: number;
 	source: 'item' | 'gidouilles';
 	item_consumed: boolean;
-	gidouilles_spent: number;
-	remaining_gidouilles?: number;
+	gidouilles_spent: number; // Now 1.0 (decimal)
+	remaining_gidouilles?: number; // Decimal value
 	penalty_notice: string;
 }
 
@@ -39,10 +42,11 @@ interface UseHintResult {
  * - RPC function is SECURITY DEFINER (bypasses RLS for transaction atomicity)
  * - RPC verifies ownership and game state server-side
  *
- * **Cost & Limits**:
- * - Cost: 10 gidouilles per hint (or free if using inventory items)
+ * **Cost & Limits** (Strategy D):
+ * - Cost: 1.0 gidouille per hint (or free if using inventory items)
  * - Maximum: 3 hints per game
- * - Penalty: 30% penalty on final reward ONLY when using gidouilles (not items)
+ * - Progressive penalty (gidouilles hints): 10% / 22% / 35% for 1/2/3 hints
+ * - Progressive penalty (item hints): 5% / 11% / 17% for 1/2/3 hints (half rate)
  *
  * **Priority**: First tries to consume "Indice Demineur" item from inventory,
  * then falls back to gidouilles if no items available.
@@ -71,9 +75,9 @@ interface UseHintResult {
  *   "hints_remaining": 2,
  *   "source": "gidouilles",
  *   "item_consumed": false,
- *   "gidouilles_spent": 10,
- *   "remaining_gidouilles": 90,
- *   "penalty_notice": "Using gidouilles hints applies 30% penalty..."
+ *   "gidouilles_spent": 1.0,
+ *   "remaining_gidouilles": 4.5,
+ *   "penalty_notice": "Progressive penalty: -10/22/35% based on total hints..."
  * }
  * ```
  *
