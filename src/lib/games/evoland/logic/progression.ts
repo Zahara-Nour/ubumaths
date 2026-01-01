@@ -282,8 +282,8 @@ export class ProgressionManager {
 				break;
 
 			case ChestKind.CRightCtrl:
-				this.flags.canMoveAll = true;
-				hero?.unlockAllDirections();
+				// In original Haxe, CRightCtrl does nothing (just a bonus chest "Right Key")
+				// The actual up/down movement is unlocked by C2D (props.bars = false)
 				break;
 
 			case ChestKind.CFreeMove:
@@ -293,7 +293,10 @@ export class ProgressionManager {
 
 			// Display unlocks
 			case ChestKind.C2D:
+				// In original Haxe: props.bars = false (removes black bars, allows vertical movement)
 				this.flags.mode2D = true;
+				this.flags.canMoveAll = true;
+				hero?.unlockAllDirections();
 				break;
 
 			case ChestKind.CScroll:

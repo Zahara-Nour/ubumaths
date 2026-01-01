@@ -279,8 +279,8 @@ export const CHEST_DATA: Record<ChestKind, ChestData> = {
 		description: "Vous pouvez maintenant aller a gauche avec la fleche gauche ou 'Q'!"
 	},
 	[ChestKind.C2D]: {
-		name: 'Mode 2D',
-		description: 'Le monde devient 2D! Vous pouvez voir plus loin maintenant.'
+		name: 'Mouvement 2D',
+		description: 'Vous pouvez maintenant vous deplacer en haut et en bas!'
 	},
 	[ChestKind.CScroll]: {
 		name: 'Defilement',
