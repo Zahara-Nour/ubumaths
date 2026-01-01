@@ -12,13 +12,7 @@ import { GameState, createGameState } from '../logic/game-state';
 import { TILE_SIZE } from '../logic/constants';
 import { evolandStore } from '../stores/evoland.svelte';
 import { SpriteCache, EVOLAND_SPRITES, DEFAULT_TILE_SIZE } from './sprite-sheet';
-import {
-	getHeroSprite,
-	getTileSprite,
-	DARK_TILE_COLOR,
-	MONSTER_SPRITES,
-	getSwordSprite
-} from './sprite-mapping';
+import { getHeroSprite, getTileSprite, DARK_TILE_COLOR, getSwordSprite } from './sprite-mapping';
 import { Direction } from '../logic/constants';
 
 // ============================================================================
@@ -478,15 +472,25 @@ export class GameController {
 				const mx = monster.x - camera.x;
 				const my = monster.y - camera.y;
 
-				if (spritesSheet?.isLoaded) {
-					// Use slime sprite for basic monsters, bat sprite for bats
-					const isBat = monster.behavior === 'bat';
-					const monsterSprite = isBat ? MONSTER_SPRITES.bat : MONSTER_SPRITES.slime;
-					spritesSheet.drawSprite(ctx, monsterSprite.col, monsterSprite.row, mx, my);
+				// Use colored shapes (TODO: find correct sprite positions)
+				const isBat = monster.behavior === 'bat';
+				if (isBat) {
+					// Bat: purple with wings
+					ctx.fillStyle = '#8b4a8b';
+					ctx.fillRect(mx + 2, my + 6, 12, 8);
+					ctx.fillStyle = '#6b2a6b';
+					ctx.fillRect(mx, my + 4, 4, 6);
+					ctx.fillRect(mx + 12, my + 4, 4, 6);
 				} else {
-					// Fallback: colored rectangle
-					ctx.fillStyle = '#ff4a4a';
-					ctx.fillRect(mx, my, 16, 16);
+					// Slime: green blob
+					ctx.fillStyle = '#4aff4a';
+					ctx.beginPath();
+					ctx.ellipse(mx + 8, my + 10, 7, 5, 0, 0, Math.PI * 2);
+					ctx.fill();
+					ctx.fillStyle = '#2a8f2a';
+					ctx.beginPath();
+					ctx.ellipse(mx + 8, my + 8, 5, 4, 0, 0, Math.PI * 2);
+					ctx.fill();
 				}
 			}
 		}
