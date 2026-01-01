@@ -124,6 +124,41 @@ await this.world.loadFromPNG('/games/evoland/world.png');
 
 **Note**: No pre-conversion script needed (plan mentioned `scripts/convert-evoland-assets.ts` but runtime approach is simpler and faithful to original)
 
+### 11. Haxe vs TypeScript Fidelity Analysis
+
+#### ✅ 100% Faithful
+
+| Aspect                | Status                                                |
+| --------------------- | ----------------------------------------------------- |
+| **Block enum**        | Identical (30 types, indices 0-29)                    |
+| **decodeColor()**     | All color mappings identical                          |
+| **Monster colors**    | `0xDA0205`→Monster, `0xFD2B2E`→Bat, `0xA70204`→Knight |
+| **Chest/NPC colors**  | `0xFFFFxx`→Chest, `0xFD4DD3`→NPC+Free                 |
+| **Monster recursion** | `decodeColor(x, y-1)` for tile above ✓                |
+| **collide()**         | Same solid/walkable blocks                            |
+| **getSoil()**         | Same neighbor logic + priority by index               |
+| **2-pass rendering**  | Terrain → Details (like original)                     |
+
+#### ✅ ~95% Faithful
+
+| Aspect                | Note                                               |
+| --------------------- | -------------------------------------------------- |
+| **SeededRandom**      | Seed 42, similar LCG algorithm                     |
+| **Detail placement**  | `rng.random(3) === 0`, random offsets ✓            |
+| **Tree variant bias** | `Math.min(rng.random(4), rng.random(4))` ✓         |
+| **Bank/shore**        | Implemented for Water/Field                        |
+| **Shadows**           | Ellipses alpha 0.15, slightly different dimensions |
+
+#### ❌ Missing (Low Priority)
+
+| Aspect                  | Impact                             |
+| ----------------------- | ---------------------------------- |
+| **Sounds.play("open")** | No sound when tile removed         |
+| **Part.explode()**      | No particle explosion effect       |
+| **removedBitmaps**      | Not stored for explosion animation |
+
+**Overall fidelity: ~90%** - Core world logic and rendering faithful to original. Sound/particle effects can be added later.
+
 ---
 
 ## Commits
