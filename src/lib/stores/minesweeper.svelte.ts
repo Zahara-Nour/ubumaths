@@ -1256,8 +1256,10 @@ class MinesweeperStore {
 					}
 
 					// Show reward notification and handle achievements
-					if (data && typeof data === 'object' && 'gidouilles_earned' in data) {
-						const response = data as {
+					// RPC returns TABLE which Supabase returns as array, or single object
+					const row = Array.isArray(data) ? data[0] : data;
+					if (row && typeof row === 'object' && 'gidouilles_earned' in row) {
+						const response = row as {
 							gidouilles_earned: number;
 							achievements?: UnlockedAchievement[];
 							points_earned?: number;
@@ -1281,6 +1283,10 @@ class MinesweeperStore {
 						} else {
 							toaster.success('Victoire ! 🎉');
 						}
+					} else {
+						// Fallback if response format is unexpected
+						logger.warn('Unexpected RPC response format:', data);
+						toaster.success('Victoire ! 🎉');
 					}
 
 					logger.info('Game completed (win):', { gameId: game.id });
