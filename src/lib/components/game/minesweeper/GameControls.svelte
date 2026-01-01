@@ -29,10 +29,15 @@
 		isLoading?: boolean;
 	} = $props();
 
-	// Format time as MM:SS
+	// Format time as MM:SS or HH:MM:SS for longer times
 	const formattedTime = $derived.by(() => {
-		const minutes = Math.floor(timeElapsed / 60);
+		const hours = Math.floor(timeElapsed / 3600);
+		const minutes = Math.floor((timeElapsed % 3600) / 60);
 		const seconds = timeElapsed % 60;
+
+		if (hours > 0) {
+			return `${hours}h ${minutes.toString().padStart(2, '0')}m`;
+		}
 		return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 	});
 
