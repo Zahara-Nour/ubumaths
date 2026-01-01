@@ -3,13 +3,17 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Json } from '$lib/types/database';
 import { createLogger } from '$lib/utils/logger';
 import { toaster } from '$lib/stores/toaster.svelte';
+import { modalStack } from '$lib/stores/modalStack.svelte';
+import VictoryModal from '$lib/components/game/minesweeper/VictoryModal.svelte';
+import DefeatModal from '$lib/components/game/minesweeper/DefeatModal.svelte';
 import type {
 	GameState,
 	CellState,
 	DifficultyConfig,
 	Difficulty,
 	GameStatus,
-	DatabaseGameStatus
+	DatabaseGameStatus,
+	RewardBreakdown
 } from '$lib/types/minesweeper';
 import { DIFFICULTY_CONFIGS } from '$lib/types/minesweeper';
 
@@ -1255,38 +1259,88 @@ class MinesweeperStore {
 						throw error;
 					}
 
-					// Show reward notification and handle achievements
+					// Parse response and show victory modal
 					// RPC returns TABLE which Supabase returns as array, or single object
 					const row = Array.isArray(data) ? data[0] : data;
 					if (row && typeof row === 'object' && 'gidouilles_earned' in row) {
-						const response = row as {
+						const response = row as unknown as {
 							gidouilles_earned: number;
 							achievements?: UnlockedAchievement[];
 							points_earned?: number;
+							breakdown?: RewardBreakdown;
 						};
 						const gidouilles = response.gidouilles_earned;
 						const points = response.points_earned || 0;
 
-						// Store newly unlocked achievements for toast display
+						// Store newly unlocked achievements for modal display
 						if (response.achievements && response.achievements.length > 0) {
 							this.newlyUnlockedAchievements = response.achievements;
 							logger.info('Unlocked achievements:', response.achievements);
 						}
 
-						// Build toast message with gidouilles and points
-						if (gidouilles > 0 && points > 0) {
-							toaster.success(`Victoire ! +${gidouilles} gidouilles • +${points} pts 🎉`);
-						} else if (gidouilles > 0) {
-							toaster.success(`Victoire ! +${gidouilles} gidouilles 🎉`);
-						} else if (points > 0) {
-							toaster.success(`Victoire ! +${points} pts 🎉`);
-						} else {
-							toaster.success('Victoire ! 🎉');
-						}
+						// Get breakdown or create default
+						const breakdown: RewardBreakdown = response.breakdown || {
+							base_reward: DIFFICULTY_CONFIGS[game.difficulty].baseGidouilles,
+							reference_time: DIFFICULTY_CONFIGS[game.difficulty].baseTime,
+							time_seconds: game.timeElapsed,
+							time_mult: 1.0,
+							hints_used: game.hintsUsed || 0,
+							hints_from_items: 0,
+							hint_penalty: 0,
+							wins_today: 0,
+							daily_mult: 1.0
+						};
+
+						// Show victory modal with detailed breakdown
+						modalStack.push({
+							component: VictoryModal,
+							props: {
+								gidouilles,
+								points,
+								breakdown,
+								difficulty: game.difficulty,
+								achievements: this.newlyUnlockedAchievements,
+								isPublicUser: false,
+								onPlayAgain: () => {
+									modalStack.clear();
+									this.startNewGame(game.difficulty);
+								},
+								onClose: () => modalStack.pop()
+							},
+							canDismiss: true
+						});
 					} else {
 						// Fallback if response format is unexpected
 						logger.warn('Unexpected RPC response format:', data);
-						toaster.success('Victoire ! 🎉');
+						// Show simple victory modal
+						const defaultBreakdown: RewardBreakdown = {
+							base_reward: DIFFICULTY_CONFIGS[game.difficulty].baseGidouilles,
+							reference_time: DIFFICULTY_CONFIGS[game.difficulty].baseTime,
+							time_seconds: game.timeElapsed,
+							time_mult: 1.0,
+							hints_used: game.hintsUsed || 0,
+							hints_from_items: 0,
+							hint_penalty: 0,
+							wins_today: 0,
+							daily_mult: 1.0
+						};
+						modalStack.push({
+							component: VictoryModal,
+							props: {
+								gidouilles: 0,
+								points: 0,
+								breakdown: defaultBreakdown,
+								difficulty: game.difficulty,
+								achievements: [],
+								isPublicUser: false,
+								onPlayAgain: () => {
+									modalStack.clear();
+									this.startNewGame(game.difficulty);
+								},
+								onClose: () => modalStack.pop()
+							},
+							canDismiss: true
+						});
 					}
 
 					logger.info('Game completed (win):', { gameId: game.id });
@@ -1304,7 +1358,27 @@ class MinesweeperStore {
 
 					// Reveal all mines on loss
 					this.revealAllMines();
-					toaster.error('Défaite ! Réessayez 💥');
+
+					// Calculate total cells (non-mine cells)
+					const config = DIFFICULTY_CONFIGS[game.difficulty];
+					const totalCells = config.rows * config.cols - config.mines;
+
+					// Show defeat modal
+					modalStack.push({
+						component: DefeatModal,
+						props: {
+							difficulty: game.difficulty,
+							timeElapsed: game.timeElapsed,
+							cellsRevealed: game.cellsRevealed,
+							totalCells,
+							onPlayAgain: () => {
+								modalStack.clear();
+								this.startNewGame(game.difficulty);
+							},
+							onClose: () => modalStack.pop()
+						},
+						canDismiss: true
+					});
 
 					logger.info('Game completed (loss):', {
 						gameId: game.id,
@@ -1312,13 +1386,60 @@ class MinesweeperStore {
 					});
 				}
 			} else {
-				// Public user - just show message
+				// Public user - show modal without gidouilles
+				const config = DIFFICULTY_CONFIGS[game.difficulty];
+				const totalCells = config.rows * config.cols - config.mines;
+
 				if (won) {
-					toaster.success('Victoire ! 🎉');
+					// Create a simple breakdown for public users
+					const publicBreakdown: RewardBreakdown = {
+						base_reward: config.baseGidouilles,
+						reference_time: config.baseTime,
+						time_seconds: game.timeElapsed,
+						time_mult: 1.0,
+						hints_used: game.hintsUsed || 0,
+						hints_from_items: 0,
+						hint_penalty: 0,
+						wins_today: 0,
+						daily_mult: 1.0
+					};
+
+					modalStack.push({
+						component: VictoryModal,
+						props: {
+							gidouilles: 0,
+							points: 0,
+							breakdown: publicBreakdown,
+							difficulty: game.difficulty,
+							achievements: [],
+							isPublicUser: true,
+							onPlayAgain: () => {
+								modalStack.clear();
+								this.startNewGame(game.difficulty);
+							},
+							onClose: () => modalStack.pop()
+						},
+						canDismiss: true
+					});
 				} else {
 					// Reveal all mines on loss
 					this.revealAllMines();
-					toaster.error('Défaite ! Réessayez 💥');
+
+					modalStack.push({
+						component: DefeatModal,
+						props: {
+							difficulty: game.difficulty,
+							timeElapsed: game.timeElapsed,
+							cellsRevealed: game.cellsRevealed,
+							totalCells,
+							onPlayAgain: () => {
+								modalStack.clear();
+								this.startNewGame(game.difficulty);
+							},
+							onClose: () => modalStack.pop()
+						},
+						canDismiss: true
+					});
 				}
 
 				// Clear localStorage
@@ -1334,20 +1455,114 @@ class MinesweeperStore {
 			this.error = message;
 
 			// Show error toast for students (database save failed)
+			// Keep toasts only for errors as per user request
 			if (this.shouldUseDatabase() && game.id) {
-				toaster.error('Erreur lors de la sauvegarde. Vérifiez votre connexion.');
+				toaster.error('Erreur lors de la sauvegarde. Verifiez votre connexion.');
 
-				// Still update UI to show result (but user knows it wasn't saved)
-				if (!won) {
-					this.revealAllMines();
-				}
-			} else {
-				// Public users, teachers, and admins - no save expected, show result normally
+				// Still show modal for the result (but user knows it wasn't saved)
+				const config = DIFFICULTY_CONFIGS[game.difficulty];
+				const totalCells = config.rows * config.cols - config.mines;
+
 				if (won) {
-					toaster.success('Victoire ! 🎉');
+					const errorBreakdown: RewardBreakdown = {
+						base_reward: config.baseGidouilles,
+						reference_time: config.baseTime,
+						time_seconds: game.timeElapsed,
+						time_mult: 1.0,
+						hints_used: game.hintsUsed || 0,
+						hints_from_items: 0,
+						hint_penalty: 0,
+						wins_today: 0,
+						daily_mult: 1.0
+					};
+
+					modalStack.push({
+						component: VictoryModal,
+						props: {
+							gidouilles: 0,
+							points: 0,
+							breakdown: errorBreakdown,
+							difficulty: game.difficulty,
+							achievements: [],
+							isPublicUser: true, // Treat as public since save failed
+							onPlayAgain: () => {
+								modalStack.clear();
+								this.startNewGame(game.difficulty);
+							},
+							onClose: () => modalStack.pop()
+						},
+						canDismiss: true
+					});
 				} else {
 					this.revealAllMines();
-					toaster.error('Défaite ! Réessayez 💥');
+					modalStack.push({
+						component: DefeatModal,
+						props: {
+							difficulty: game.difficulty,
+							timeElapsed: game.timeElapsed,
+							cellsRevealed: game.cellsRevealed,
+							totalCells,
+							onPlayAgain: () => {
+								modalStack.clear();
+								this.startNewGame(game.difficulty);
+							},
+							onClose: () => modalStack.pop()
+						},
+						canDismiss: true
+					});
+				}
+			} else {
+				// Public users, teachers, and admins - no save expected, show modal normally
+				const config = DIFFICULTY_CONFIGS[game.difficulty];
+				const totalCells = config.rows * config.cols - config.mines;
+
+				if (won) {
+					const fallbackBreakdown: RewardBreakdown = {
+						base_reward: config.baseGidouilles,
+						reference_time: config.baseTime,
+						time_seconds: game.timeElapsed,
+						time_mult: 1.0,
+						hints_used: game.hintsUsed || 0,
+						hints_from_items: 0,
+						hint_penalty: 0,
+						wins_today: 0,
+						daily_mult: 1.0
+					};
+
+					modalStack.push({
+						component: VictoryModal,
+						props: {
+							gidouilles: 0,
+							points: 0,
+							breakdown: fallbackBreakdown,
+							difficulty: game.difficulty,
+							achievements: [],
+							isPublicUser: true,
+							onPlayAgain: () => {
+								modalStack.clear();
+								this.startNewGame(game.difficulty);
+							},
+							onClose: () => modalStack.pop()
+						},
+						canDismiss: true
+					});
+				} else {
+					this.revealAllMines();
+					modalStack.push({
+						component: DefeatModal,
+						props: {
+							difficulty: game.difficulty,
+							timeElapsed: game.timeElapsed,
+							cellsRevealed: game.cellsRevealed,
+							totalCells,
+							onPlayAgain: () => {
+								modalStack.clear();
+								this.startNewGame(game.difficulty);
+							},
+							onClose: () => modalStack.pop()
+						},
+						canDismiss: true
+					});
 				}
 			}
 		}
