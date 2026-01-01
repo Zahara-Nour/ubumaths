@@ -5,30 +5,37 @@
  * Original: https://github.com/deepnight/evolern
  */
 
-// Types
-export * from './logic/types';
-export * from './logic/constants';
+// Types (main type definitions)
+export type {
+	Position,
+	Bounds,
+	GridPosition,
+	EntityState,
+	HeroState,
+	MonsterState,
+	SwordState,
+	WorldState,
+	GameState,
+	InputState
+} from './logic/types';
 
-// Logic (pure functions)
-export * from './logic/world';
-export * from './logic/entities';
-export * from './logic/hero';
-export * from './logic/monster';
-// export * from './logic/progression';
+// Constants (game configuration)
+export {
+	Direction,
+	Block,
+	EKind,
+	ChestKind,
+	// Timing
+	TARGET_FPS,
+	FRAME_DURATION,
+	// World
+	WORLD_SIZE,
+	TILE_SIZE,
+	// Hero
+	HERO_BASE_SPEED,
+	SWORD_DURATION,
+	HIT_RECOVER_FRAMES
+} from './logic/constants';
 
-// Engine
-export * from './engine/sprite-sheet';
-export * from './engine/renderer';
-export * from './engine/game-loop';
-export * from './engine/input-manager';
-export * from './engine/audio-manager';
-export * from './engine/world-renderer';
-export * from './engine/entity-renderer';
-
-// Components
-// export { default as EvolandGame } from './components/EvolandGame.svelte';
-// export { default as GameHUD } from './components/GameHUD.svelte';
-// export { default as DialogPopup } from './components/DialogPopup.svelte';
-
-// Store
-// export { evolandStore } from './stores/evoland.svelte';
+// Store (for external state access)
+export { evolandStore } from './stores/evoland.svelte';

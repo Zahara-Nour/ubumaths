@@ -282,18 +282,9 @@ describe('Touch swipe detection', () => {
 			force: 1
 		} as Touch;
 
-		const touchList = {
-			length: 1,
-			item: () => touch,
-			[0]: touch,
-			[Symbol.iterator]: function* () {
-				yield touch;
-			}
-		} as unknown as TouchList;
-
 		return new TouchEvent(type, {
-			touches: type === 'touchstart' ? touchList : ([] as unknown as TouchList),
-			changedTouches: touchList,
+			touches: type === 'touchstart' ? ([touch] as unknown as Touch[]) : [],
+			changedTouches: [touch] as unknown as Touch[],
 			bubbles: true,
 			cancelable: true
 		});

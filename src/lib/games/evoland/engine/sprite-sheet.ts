@@ -513,7 +513,6 @@ export class SpriteCache {
 	 */
 	clear(): void {
 		this.sheets.clear();
-		this.loadPromise = null;
 	}
 }
 

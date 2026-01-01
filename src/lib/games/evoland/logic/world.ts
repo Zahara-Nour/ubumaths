@@ -224,7 +224,7 @@ export class World {
 		// Load tiles
 		for (let x = 0; x < WORLD_SIZE; x++) {
 			for (let y = 0; y < WORLD_SIZE; y++) {
-				this.tiles[x][y] = data.tiles[x]?.[y] ?? Block.Dark;
+				this.tiles[x][y] = (data.tiles[x]?.[y] ?? Block.Dark) as Block;
 			}
 		}
 
