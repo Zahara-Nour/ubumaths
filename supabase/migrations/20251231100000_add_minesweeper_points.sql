@@ -179,12 +179,22 @@ BEGIN
     RAISE EXCEPTION 'Grid state too large: exceeds 100KB';
   END IF;
 
-  -- Step 4: Calculate time_seconds server-side
+  -- Step 4: Calculate time_seconds server-side and cap to constraint limits
   IF v_game_record.started_at IS NOT NULL THEN
     v_time_seconds := GREATEST(1, EXTRACT(EPOCH FROM (NOW() - v_game_record.started_at))::INTEGER);
   ELSE
     v_time_seconds := 1;
   END IF;
+
+  -- Cap time to reasonable bounds per difficulty (constraint: reasonable_time_bounds)
+  CASE v_game_record.difficulty
+    WHEN 'beginner' THEN
+      v_time_seconds := LEAST(v_time_seconds, 3600);  -- max 1 hour
+    WHEN 'intermediate' THEN
+      v_time_seconds := LEAST(v_time_seconds, 7200);  -- max 2 hours
+    WHEN 'expert' THEN
+      v_time_seconds := LEAST(v_time_seconds, 14400); -- max 4 hours
+  END CASE;
 
   -- Step 5: Calculate gidouilles using the correct parameter order
   v_gidouilles := public.calculate_minesweeper_gidouilles(
