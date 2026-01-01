@@ -351,8 +351,8 @@ export const CHEST_DATA: Record<ChestKind, ChestData> = {
 		description: 'Le jeu a maintenant un ecran titre!'
 	},
 	[ChestKind.CRightCtrl]: {
-		name: 'Fleche Droite',
-		description: "Vous pouvez maintenant aller a droite avec la fleche droite ou 'D'!"
+		name: 'Fleches Haut/Bas',
+		description: "Vous pouvez maintenant aller en haut et en bas avec les fleches ou 'Z' et 'S'!"
 	},
 	[ChestKind.CPushBlock]: {
 		name: 'Pousser',
