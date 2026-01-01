@@ -91,6 +91,21 @@ This phase connects the canvas renderer to actual game logic with sprite renderi
 
 - CRightCtrl renamed to "Fleches Haut/Bas" (unlocks up/down, not right)
 
+### 10. Real World Loading from PNG
+
+- `GameState.initialize()` now loads from `/games/evoland/world.png`
+- Hero starting position corrected to (21, 76) from original Game.hx `DEF_PROPS.pos`
+- Chests initialized from world PNG via `world.getChests()`
+- Monsters initialized from world PNG via `world.getMonsters()`
+- Color decoding maps 24-bit RGB to Block enum:
+  - `0x64FD4D` → Field
+  - `0x0F6D01` → Tree
+  - `0x65B4FB` → Water
+  - `0xDA0205` → Monster spawn (uses tile above for ground)
+  - `0xFFFFxx` → Chest (last byte = ChestKind enum index)
+  - ... and 20+ other block types
+- `reset()` now respawns monsters from world data and resets removed tiles
+
 ---
 
 ## Commits
@@ -176,7 +191,7 @@ Current test world (30x25 tiles) includes:
 
 ## Next Steps
 
-1. **Load real world from PNG** - Convert world.png to tile data
+1. ~~**Load real world from PNG** - Convert world.png to tile data~~ ✅ DONE
 2. **Add more chest types** - Color levels, zoom, sounds, music
 3. **Dungeon system** - Load dungeon.png, separate world
 4. **NPC interactions** - Dialog system for NPCs
