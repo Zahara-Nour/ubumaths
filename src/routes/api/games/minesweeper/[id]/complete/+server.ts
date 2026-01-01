@@ -7,11 +7,15 @@ import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
  * Type for the complete_minesweeper_game RPC response
+ *
+ * Strategy D Update:
+ * - gidouilles_awarded is now decimal (0.3-8.0 range)
+ * - Formula: base × time_mult × (1 - hint_penalty) × daily_mult
  */
 interface CompleteMinesweeperGameResponse {
 	success: boolean;
-	gidouilles_awarded: number;
-	time_seconds: number;
+	gidouilles_earned: number; // Decimal: 0.3-8.0 per game
+	points_earned: number; // Integer points for leaderboard
 	achievements: Array<{
 		achievement_id: string;
 		name: string;
@@ -53,12 +57,12 @@ interface CompleteMinesweeperGameResponse {
  * }
  * ```
  *
- * **Response**:
+ * **Response** (Strategy D):
  * ```json
  * {
  *   "success": true,
- *   "gidouilles": 10,
- *   "time": 145,
+ *   "gidouilles": 1.3,
+ *   "points": 65,
  *   "achievements": [
  *     {
  *       "achievement_id": "first_victory",
@@ -69,6 +73,13 @@ interface CompleteMinesweeperGameResponse {
  *   ]
  * }
  * ```
+ *
+ * **Gidouilles Calculation** (Strategy D):
+ * - Base: Beginner=1.0, Intermediate=3.0, Expert=6.0
+ * - Time mult: 1.3 (fast) to 0.8 (at/beyond reference)
+ * - Hint penalty: Progressive (10/22/35% gidouilles, 5/11/17% items)
+ * - Daily mult: 100% first win, -15% each, min 30%
+ * - Bounds: 0.3 min, 8.0 max per game
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const id = validateUuidParam(params.id);
@@ -127,13 +138,14 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		// Type assertion for RPC response
+		// Strategy D: gidouilles_earned is now decimal (0.3-8.0 range)
 		const response = data as CompleteMinesweeperGameResponse;
 
-		// ✅ Return success with gidouilles, time, and newly unlocked achievements
+		// ✅ Return success with gidouilles (decimal), points, and achievements
 		return json({
 			success: true,
-			gidouilles: response.gidouilles_awarded,
-			time: response.time_seconds,
+			gidouilles: response.gidouilles_earned, // Decimal: e.g., 1.3, 5.2
+			points: response.points_earned, // Integer for leaderboard
 			achievements: response.achievements || []
 		});
 	} catch (err) {

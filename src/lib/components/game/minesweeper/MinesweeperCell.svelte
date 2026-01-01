@@ -88,14 +88,27 @@
 			return;
 		}
 
-		// Chord click: Shift+Click or Middle Click on revealed cell
-		if (isRevealed && onChord && (event.shiftKey || event.button === 1)) {
+		// Shift+Click: contextual action (unified modifier)
+		// - On revealed cell: chord (reveal neighbors)
+		// - On unrevealed cell: toggle flag
+		if (event.shiftKey) {
+			event.preventDefault();
+			if (isRevealed && onChord) {
+				onChord(row, col);
+			} else if (!isRevealed) {
+				onFlag(row, col);
+			}
+			return;
+		}
+
+		// Middle click: chord on revealed cell
+		if (event.button === 1 && isRevealed && onChord) {
 			event.preventDefault();
 			onChord(row, col);
 			return;
 		}
 
-		// Normal click
+		// Normal click: reveal
 		if (isRevealed || isFlagged) return;
 		onReveal(row, col);
 	}
@@ -218,8 +231,10 @@
 	aria-pressed={isRevealed}
 	tabindex={disabled ? -1 : 0}
 	title={isRevealed && adjacentMines > 0 && onChord
-		? 'Shift+Clic ou clic molette pour révélation rapide'
-		: ''}
+		? 'Shift+Clic pour révélation rapide'
+		: !isRevealed && !isFlagged
+			? 'Shift+Clic pour drapeau'
+			: ''}
 >
 	<span
 		class={cn(
