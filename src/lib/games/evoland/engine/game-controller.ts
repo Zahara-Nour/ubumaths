@@ -17,8 +17,10 @@ import {
 	CHEST_SPRITES,
 	getTileSprite,
 	DARK_TILE_COLOR,
-	MONSTER_SPRITES
+	MONSTER_SPRITES,
+	getSwordSprite
 } from './sprite-mapping';
+import { Direction } from '../logic/constants';
 
 // ============================================================================
 // TYPES
@@ -412,6 +414,55 @@ export class GameController {
 					break;
 			}
 			ctx.fill();
+		}
+
+		// Render sword if active
+		if (hero.sword.active && this.gameState.getProgression().getFlags().hasWeapon) {
+			const swordSprite = getSwordSprite(hero.direction);
+			let swordX = heroScreenX;
+			let swordY = heroScreenY;
+			let rotation = 0;
+
+			// Position sword based on direction
+			switch (hero.direction) {
+				case Direction.Up:
+					swordX += 0;
+					swordY -= 14;
+					rotation = -Math.PI / 2;
+					break;
+				case Direction.Down:
+					swordX += 0;
+					swordY += 14;
+					rotation = Math.PI / 2;
+					break;
+				case Direction.Left:
+					swordX -= 14;
+					swordY += 0;
+					rotation = Math.PI;
+					break;
+				case Direction.Right:
+					swordX += 14;
+					swordY += 0;
+					rotation = 0;
+					break;
+			}
+
+			if (spritesSheet?.isLoaded) {
+				// Draw rotated sword sprite
+				ctx.save();
+				ctx.translate(swordX + 8, swordY + 8);
+				ctx.rotate(rotation);
+				spritesSheet.drawSprite(ctx, swordSprite.col, swordSprite.row, -8, -8);
+				ctx.restore();
+			} else {
+				// Fallback: simple line
+				ctx.strokeStyle = '#ffd700';
+				ctx.lineWidth = 3;
+				ctx.beginPath();
+				ctx.moveTo(heroScreenX + 8, heroScreenY + 8);
+				ctx.lineTo(swordX + 8, swordY + 8);
+				ctx.stroke();
+			}
 		}
 
 		// Render monsters (only if enabled)
