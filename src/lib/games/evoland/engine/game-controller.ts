@@ -12,7 +12,13 @@ import { GameState, createGameState } from '../logic/game-state';
 import { TILE_SIZE } from '../logic/constants';
 import { evolandStore } from '../stores/evoland.svelte';
 import { SpriteCache, EVOLAND_SPRITES, DEFAULT_TILE_SIZE } from './sprite-sheet';
-import { getHeroSprite, CHEST_SPRITES } from './sprite-mapping';
+import {
+	getHeroSprite,
+	CHEST_SPRITES,
+	getTileSprite,
+	DARK_TILE_COLOR,
+	MONSTER_SPRITES
+} from './sprite-mapping';
 
 // ============================================================================
 // TYPES
@@ -291,8 +297,11 @@ export class GameController {
 		const world = this.gameState.getWorld();
 
 		// Clear with dark background
-		ctx.fillStyle = '#1a1a2e';
+		ctx.fillStyle = DARK_TILE_COLOR;
 		ctx.fillRect(0, 0, 240, 160);
+
+		// Get tile sprite sheet
+		const tilesSheet = this.sprites?.getSheet('tiles');
 
 		// Calculate visible tile range
 		const startTileX = Math.floor(camera.x / TILE_SIZE);
@@ -300,32 +309,37 @@ export class GameController {
 		const endTileX = Math.ceil((camera.x + 240) / TILE_SIZE);
 		const endTileY = Math.ceil((camera.y + 160) / TILE_SIZE);
 
-		// Render tiles (simple colored squares for now)
+		// Render tiles
 		for (let ty = startTileY; ty <= endTileY; ty++) {
 			for (let tx = startTileX; tx <= endTileX; tx++) {
 				const tile = world.getTile(tx, ty);
 				const screenX = tx * TILE_SIZE - camera.x;
 				const screenY = ty * TILE_SIZE - camera.y;
 
-				// Color based on tile type
-				switch (tile) {
-					case 1: // Grass
-						ctx.fillStyle = '#3a5f3a';
-						break;
-					case 4: // Tree
-						ctx.fillStyle = '#2a4f2a';
-						break;
-					case 0: // Dark/empty
-					default:
-						ctx.fillStyle = '#1a1a2e';
-						break;
+				// Try to use sprite, fall back to color
+				const tileSprite = getTileSprite(tile);
+
+				if (tilesSheet?.isLoaded && tileSprite) {
+					tilesSheet.drawSprite(ctx, tileSprite.col, tileSprite.row, screenX, screenY);
+				} else {
+					// Fallback: colored squares
+					switch (tile) {
+						case 1: // Field/Grass
+							ctx.fillStyle = '#3a5f3a';
+							break;
+						case 2: // Tree
+							ctx.fillStyle = '#2a4f2a';
+							break;
+						case 3: // Water
+							ctx.fillStyle = '#2a4a8f';
+							break;
+						case 0: // Dark/empty
+						default:
+							ctx.fillStyle = DARK_TILE_COLOR;
+							break;
+					}
+					ctx.fillRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
 				}
-
-				ctx.fillRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
-
-				// Draw grid lines for visibility
-				ctx.strokeStyle = '#333';
-				ctx.strokeRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
 			}
 		}
 
@@ -400,13 +414,25 @@ export class GameController {
 			ctx.fill();
 		}
 
-		// Render monsters
-		for (const monster of this.gameState.getMonsters()) {
-			if (monster.removed) continue;
-			const mx = monster.x - camera.x;
-			const my = monster.y - camera.y;
-			ctx.fillStyle = '#ff4a4a';
-			ctx.fillRect(mx, my, 16, 16);
+		// Render monsters (only if enabled)
+		const flags = this.gameState.getProgression().getFlags();
+		if (flags.monstersEnabled) {
+			for (const monster of this.gameState.getMonsters()) {
+				if (monster.removed) continue;
+				const mx = monster.x - camera.x;
+				const my = monster.y - camera.y;
+
+				if (spritesSheet?.isLoaded) {
+					// Use slime sprite for basic monsters, bat sprite for bats
+					const isBat = monster.behavior === 'bat';
+					const monsterSprite = isBat ? MONSTER_SPRITES.bat : MONSTER_SPRITES.slime;
+					spritesSheet.drawSprite(ctx, monsterSprite.col, monsterSprite.row, mx, my);
+				} else {
+					// Fallback: colored rectangle
+					ctx.fillStyle = '#ff4a4a';
+					ctx.fillRect(mx, my, 16, 16);
+				}
+			}
 		}
 	}
 

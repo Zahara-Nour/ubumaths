@@ -9,7 +9,7 @@ import { World } from './world';
 import { Hero, createHeroAtGrid } from './hero';
 import { MonsterManager, createMonsterManager, type Monster } from './monster';
 import { ProgressionManager, createProgressionManager } from './progression';
-import { Block, ChestKind, CHEST_DATA, TILE_SIZE } from './constants';
+import { Block, ChestKind, CHEST_DATA, TILE_SIZE, EKind } from './constants';
 import type { InputState } from '../engine/input-manager';
 import { evolandStore } from '../stores/evoland.svelte';
 
@@ -188,8 +188,25 @@ export class GameState {
 		this.chests = [
 			{ x: 53, y: 78, kind: ChestKind.CLeftCtrl, opened: false }, // Unlock left
 			{ x: 55, y: 78, kind: ChestKind.CRightCtrl, opened: false }, // Unlock up/down
-			{ x: 57, y: 78, kind: ChestKind.CWeapon, opened: false } // Get sword
+			{ x: 53, y: 76, kind: ChestKind.CWeapon, opened: false }, // Get sword
+			{ x: 55, y: 76, kind: ChestKind.CMonsters, opened: false } // Enable monsters
 		];
+
+		// Add test monsters (they won't appear until CMonsters chest is opened)
+		this.spawnTestMonsters();
+	}
+
+	/**
+	 * Spawn test monsters for development.
+	 */
+	private spawnTestMonsters(): void {
+		// Spawn a few slimes in the test area (north of hero)
+		this.monsterManager.spawn(EKind.Monster, 50 * TILE_SIZE, 75 * TILE_SIZE);
+		this.monsterManager.spawn(EKind.Monster, 52 * TILE_SIZE, 75 * TILE_SIZE);
+		this.monsterManager.spawn(EKind.Monster, 54 * TILE_SIZE, 75 * TILE_SIZE);
+
+		// Spawn a bat (west of hero)
+		this.monsterManager.spawn(EKind.Bat, 47 * TILE_SIZE, 78 * TILE_SIZE);
 	}
 
 	// ========================================================================
@@ -226,14 +243,17 @@ export class GameState {
 		// Update hero
 		this.hero.update(dt, this.world);
 
-		// Update monsters
-		this.monsterManager.update(dt, this.world, this.hero.x, this.hero.y);
+		// Update monsters (only if enabled)
+		const flags = this.progression.getFlags();
+		if (flags.monstersEnabled) {
+			this.monsterManager.update(dt, this.world, this.hero.x, this.hero.y);
+
+			// Check for hero-monster collisions
+			this.checkMonsterCollisions();
+		}
 
 		// Check for hero-chest collisions
 		this.checkChestCollisions();
-
-		// Check for hero-monster collisions
-		this.checkMonsterCollisions();
 
 		// Update camera
 		this.updateCamera(dt);

@@ -87,15 +87,23 @@ export const MONSTER_SPRITES = {
 /**
  * Tile sprite positions in tiles_alpha.png.
  * Maps Block types to sprite sheet positions.
+ * Based on analysis of the actual tile sheet.
  */
 export const TILE_SPRITES: Partial<Record<number, SpritePosition>> = {
-	[Block.Field]: { col: 4, row: 3 }, // Grass tile
-	[Block.Tree]: { col: 0, row: 0 }, // Tree
+	[Block.Field]: { col: 5, row: 2 }, // Grass tile (plain green)
+	[Block.Tree]: { col: 0, row: 0 }, // Tree (large tree)
 	[Block.Water]: { col: 0, row: 1 }, // Water
-	[Block.Rock]: { col: 2, row: 3 }, // Rock
-	[Block.Sand]: { col: 0, row: 4 }, // Sand
-	[Block.BridgeUD]: { col: 4, row: 4 } // Bridge vertical
+	[Block.Rock]: { col: 3, row: 3 }, // Rock/stone
+	[Block.Sand]: { col: 0, row: 4 }, // Sand/desert
+	[Block.Bush]: { col: 3, row: 2 }, // Bush
+	[Block.BridgeUD]: { col: 5, row: 3 }, // Bridge vertical
+	[Block.BridgeLR]: { col: 6, row: 3 } // Bridge horizontal
 };
+
+/**
+ * Dark/empty tile color (for tiles without sprites).
+ */
+export const DARK_TILE_COLOR = '#1a1a2e';
 
 /**
  * Get the sprite position for a tile type.
