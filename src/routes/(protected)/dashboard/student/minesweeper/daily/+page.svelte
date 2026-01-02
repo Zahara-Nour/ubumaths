@@ -260,13 +260,32 @@
 </svelte:head>
 
 <div class="space-y-8 pb-8">
+	<!-- Tournament Banner -->
+	<a
+		href="/dashboard/student/minesweeper/tournaments"
+		class="block rounded-lg border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 p-4 transition-colors hover:border-primary/40 hover:bg-primary/15"
+	>
+		<div class="flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<span class="text-2xl" aria-hidden="true">🏆</span>
+				<div>
+					<p class="font-semibold text-foreground">Participez aux tournois !</p>
+					<p class="text-sm text-muted-foreground">
+						Affrontez d'autres joueurs et gagnez des recompenses
+					</p>
+				</div>
+			</div>
+			<span class="text-muted-foreground" aria-hidden="true">→</span>
+		</div>
+	</a>
+
 	<!-- Header -->
 	<div class="space-y-4">
 		<div class="flex flex-wrap items-center justify-between gap-4">
 			<div>
-				<h1 class="text-3xl font-bold text-foreground">Défi Quotidien</h1>
+				<h1 class="text-3xl font-bold text-foreground">Defi Quotidien</h1>
 				<p class="mt-1 text-muted-foreground">
-					Même grille pour tous ! Classement journalier avec bonus pour le top 3.
+					Meme grille pour tous ! Classement journalier avec bonus pour le top 3.
 				</p>
 			</div>
 			<a href="/leaderboards/minesweeper">
@@ -456,6 +475,9 @@
 
 	<!-- Navigation -->
 	<div class="flex flex-wrap gap-3">
+		<a href="/dashboard/student/minesweeper/tournaments">
+			<Button variant="outline">Tournois</Button>
+		</a>
 		<a href="/dashboard/student/minesweeper/stats">
 			<Button variant="outline">Mes statistiques</Button>
 		</a>
