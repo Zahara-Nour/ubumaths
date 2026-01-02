@@ -119,14 +119,6 @@
 		standings = data.standings;
 		userStanding = data.userStanding;
 		inProgressGame = data.inProgressGame;
-
-		// Debug logging for resume functionality
-		console.log('[Tournament Page] Data synced:', {
-			hasInProgressGame: !!inProgressGame,
-			hasGridState: !!inProgressGame?.grid_state,
-			gameId: inProgressGame?.id,
-			currentGame: !!currentGame
-		});
 	});
 
 	// Watch for tournament mode exit to refresh standings
