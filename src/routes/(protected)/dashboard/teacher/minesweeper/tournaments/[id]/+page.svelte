@@ -13,15 +13,7 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import {
-		ArrowLeft,
-		Users,
-		Trophy,
-		RefreshCw,
-		XCircle,
-		CheckCircle2,
-		AlertTriangle
-	} from 'lucide-svelte';
+	import { ArrowLeft, Users, Trophy, RefreshCw, XCircle, AlertTriangle } from 'lucide-svelte';
 	import { DIFFICULTY_LABELS, type TournamentStatus } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
 
@@ -29,12 +21,10 @@
 
 	let isRefreshing = $state(false);
 	let isCancelling = $state(false);
-	let isFinalizing = $state(false);
 	let showCancelDialog = $state(false);
-	let showFinalizeDialog = $state(false);
 
-	function handleBack() {
-		goto('/dashboard/teacher/minesweeper/tournaments').then(() => {});
+	async function handleBack() {
+		await goto('/dashboard/teacher/minesweeper/tournaments');
 	}
 
 	async function handleRefresh() {
@@ -70,35 +60,6 @@
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'annulation");
 		} finally {
 			isCancelling = false;
-		}
-	}
-
-	async function handleFinalize() {
-		isFinalizing = true;
-		try {
-			const response = await fetch(
-				`/api/games/minesweeper/tournaments/${data.tournament.id}/finalize`,
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ force_early: true })
-				}
-			);
-
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || 'Erreur lors de la finalisation');
-			}
-
-			const result = await response.json();
-			toaster.success(`Tournoi finalise ! ${result.podium?.length || 0} recompenses distribuees`);
-			showFinalizeDialog = false;
-			await invalidateAll();
-		} catch (err) {
-			console.error('Failed to finalize tournament:', err);
-			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la finalisation');
-		} finally {
-			isFinalizing = false;
 		}
 	}
 
@@ -176,9 +137,6 @@
 	// Can cancel if not yet ended and not cancelled
 	let canCancel = $derived(!isEnded && !isCancelled);
 
-	// Can finalize only if ended but not yet finalized in DB
-	let canFinalize = $derived(isEnded && data.tournament.status !== 'completed' && !isCancelled);
-
 	// Time remaining for active tournaments
 	let timeRemaining = $derived.by(() => {
 		if (isEnded) return null;
@@ -194,11 +152,6 @@
 		if (hours > 0) return `${hours}h ${minutes}m`;
 		return `${minutes}m`;
 	});
-
-	// Get total rewards to distribute
-	let totalRewards = $derived(
-		Object.values(data.tournament.podium_rewards || {}).reduce((sum, v) => sum + (v || 0), 0)
-	);
 </script>
 
 <svelte:head>
@@ -228,20 +181,12 @@
 			</div>
 		</div>
 
-		<div class="flex gap-2">
-			{#if canFinalize}
-				<Button variant="outline" onclick={() => (showFinalizeDialog = true)}>
-					<CheckCircle2 class="mr-2 h-4 w-4" />
-					Finaliser
-				</Button>
-			{/if}
-			{#if canCancel}
-				<Button variant="destructive" onclick={() => (showCancelDialog = true)}>
-					<XCircle class="mr-2 h-4 w-4" />
-					Annuler
-				</Button>
-			{/if}
-		</div>
+		{#if canCancel}
+			<Button variant="destructive" onclick={() => (showCancelDialog = true)}>
+				<XCircle class="mr-2 h-4 w-4" />
+				Annuler
+			</Button>
+		{/if}
 	</div>
 
 	<!-- Tournament Info Card (simplified like student view) -->
@@ -394,53 +339,6 @@
 			</Button>
 			<Button variant="destructive" onclick={handleCancel} disabled={isCancelling}>
 				{isCancelling ? 'Annulation...' : "Confirmer l'annulation"}
-			</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
-
-<!-- Finalize Dialog -->
-<Dialog.Root bind:open={showFinalizeDialog}>
-	<Dialog.Content>
-		<Dialog.Header>
-			<Dialog.Title>Finaliser le tournoi</Dialog.Title>
-			<Dialog.Description>
-				Terminer le tournoi maintenant et distribuer les recompenses aux gagnants.
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<div class="space-y-4">
-			<Alert.Root>
-				<Trophy class="h-4 w-4" />
-				<Alert.Title>Distribution des recompenses</Alert.Title>
-				<Alert.Description>
-					{data.tournament.podium_places} joueur{data.tournament.podium_places > 1 ? 's' : ''} recevront
-					un total de {totalRewards} gidouilles.
-				</Alert.Description>
-			</Alert.Root>
-
-			{#if data.standings.length < data.tournament.podium_places}
-				<Alert.Root variant="destructive">
-					<AlertTriangle class="h-4 w-4" />
-					<Alert.Title>Participants insuffisants</Alert.Title>
-					<Alert.Description>
-						Il n'y a que {data.standings.length} participant{data.standings.length > 1 ? 's' : ''} pour
-						{data.tournament.podium_places} places sur le podium.
-					</Alert.Description>
-				</Alert.Root>
-			{/if}
-		</div>
-
-		<Dialog.Footer>
-			<Button
-				variant="outline"
-				onclick={() => (showFinalizeDialog = false)}
-				disabled={isFinalizing}
-			>
-				Retour
-			</Button>
-			<Button onclick={handleFinalize} disabled={isFinalizing}>
-				{isFinalizing ? 'Finalisation...' : 'Confirmer la finalisation'}
 			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
