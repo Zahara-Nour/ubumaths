@@ -32,11 +32,9 @@
 		return medals[position] || '';
 	}
 
-	// Format time as MM:SS
-	function formatTime(seconds: number): string {
-		const mins = Math.floor(seconds / 60);
-		const secs = Math.floor(seconds % 60);
-		return `${mins}:${secs.toString().padStart(2, '0')}`;
+	// Format score with "pts" suffix
+	function formatScore(score: number): string {
+		return `${Math.round(score)} pts`;
 	}
 
 	// Get rank CSS class for top 3
@@ -109,8 +107,9 @@
 								'px-4 py-3 text-center font-semibold text-foreground',
 								compact && 'px-2 py-2'
 							)}
+							title="Score base sur l'efficacite 3BV/s"
 						>
-							Temps moyen
+							Score moyen
 						</th>
 					</tr>
 				</thead>
@@ -151,7 +150,7 @@
 						</td>
 						<td class={cn('px-4 py-3 text-center', compact && 'px-2 py-2')}>
 							<span class={cn('font-mono font-semibold text-foreground', compact && 'text-sm')}>
-								{formatTime(entry.average_time)}
+								{formatScore(entry.average_score)}
 							</span>
 						</td>
 					</tr>

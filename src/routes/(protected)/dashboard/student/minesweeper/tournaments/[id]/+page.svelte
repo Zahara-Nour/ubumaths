@@ -65,11 +65,9 @@
 		return new Date() > endDate;
 	});
 
-	// Format time as MM:SS
-	function formatTime(seconds: number): string {
-		const mins = Math.floor(seconds / 60);
-		const secs = Math.floor(seconds % 60);
-		return `${mins}:${secs.toString().padStart(2, '0')}`;
+	// Format score with "pts" suffix
+	function formatScore(score: number): string {
+		return `${Math.round(score)} pts`;
 	}
 
 	// Start a new tournament game using the store's tournament methods
@@ -218,7 +216,7 @@
 								<span class="text-muted-foreground"> victoires</span>
 							</div>
 							<div>
-								<span class="font-bold">{formatTime(userStanding.average_time)}</span>
+								<span class="font-bold">{formatScore(userStanding.average_score)}</span>
 								<span class="text-muted-foreground"> moy.</span>
 							</div>
 						</div>
