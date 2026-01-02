@@ -172,7 +172,7 @@
 		<!-- Tournament Info Card -->
 		<Card class="bg-card p-6">
 			<div class="flex flex-wrap items-center justify-between gap-4">
-				<div class="space-y-2">
+				<div class="space-y-3">
 					<div class="flex items-center gap-2 text-sm">
 						<span aria-hidden="true">⏳</span>
 						<span class={cn(isTournamentEnded && 'font-semibold text-destructive')}>
@@ -183,9 +183,22 @@
 						<span aria-hidden="true">🏆</span>
 						<span>Moyenne des {tournament.top_x_games} meilleures parties</span>
 					</div>
-					<div class="flex items-center gap-2 text-sm text-muted-foreground">
-						<span aria-hidden="true">🥇</span>
-						<span>Top {tournament.podium_places} recompenses</span>
+					<div class="flex flex-wrap items-center gap-3 text-sm">
+						{#each Object.entries(tournament.podium_rewards) as [place, reward] (place)}
+							<div class="flex items-center gap-1">
+								{#if place === '1'}
+									<span>🥇</span>
+								{:else if place === '2'}
+									<span>🥈</span>
+								{:else if place === '3'}
+									<span>🥉</span>
+								{:else}
+									<span>#{place}</span>
+								{/if}
+								<span class="font-bold text-amber-500">{reward}</span>
+							</div>
+						{/each}
+						<span class="text-muted-foreground">gidouilles</span>
 					</div>
 				</div>
 
@@ -219,8 +232,6 @@
 
 	<!-- Game Section -->
 	<div class="space-y-4">
-		<h2 class="text-2xl font-bold text-foreground">Jouer</h2>
-
 		{#if isTournamentEnded}
 			<!-- Tournament ended -->
 			<Card class="p-8 text-center">
@@ -284,28 +295,6 @@
 
 		<TournamentLeaderboard {standings} currentUserId={data.currentUserId} maxRows={20} />
 	</div>
-
-	<!-- Podium Rewards Info -->
-	<Card class="bg-muted/30 p-4">
-		<h3 class="mb-3 font-semibold text-foreground">Recompenses du podium</h3>
-		<div class="flex flex-wrap gap-4">
-			{#each Object.entries(tournament.podium_rewards) as [place, reward] (place)}
-				<div class="flex items-center gap-2">
-					{#if place === '1'}
-						<span class="text-xl">🥇</span>
-					{:else if place === '2'}
-						<span class="text-xl">🥈</span>
-					{:else if place === '3'}
-						<span class="text-xl">🥉</span>
-					{:else}
-						<span class="text-lg">#{place}</span>
-					{/if}
-					<span class="font-bold text-amber-500">{reward}</span>
-					<span class="text-muted-foreground">gidouilles</span>
-				</div>
-			{/each}
-		</div>
-	</Card>
 
 	<!-- Navigation -->
 	<div class="flex flex-wrap gap-3">
