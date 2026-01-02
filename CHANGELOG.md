@@ -2,6 +2,75 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.18](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.17...v0.5.18) (2026-01-02)
+
+### 📚 Documentation
+
+- **evoland:** add Haxe vs TypeScript fidelity analysis ([f155bb3](https://github.com/Zahara-Nour/ubumaths/commit/f155bb319df764b7134651dc3b8c96f113d22f7c))
+- **evoland:** add Phase 6-7 progress documentation ([2843547](https://github.com/Zahara-Nour/ubumaths/commit/284354700d9827fb93485d1a0ebba6ddd2416e4c))
+- **evoland:** add Phase 8 rendering progress documentation ([2a0d368](https://github.com/Zahara-Nour/ubumaths/commit/2a0d368d926ef655120cac71eec137b94450adbe))
+- **evoland:** clarify runtime PNG loading approach ([0f34be7](https://github.com/Zahara-Nour/ubumaths/commit/0f34be78d639f2cecaebd473386be8894c5a5f04))
+
+### ✨ Features
+
+- **evoland:** add game controller and connect components ([0a21f18](https://github.com/Zahara-Nour/ubumaths/commit/0a21f18fe540d5f988741f9491578380096f985c))
+- **evoland:** add game engine phase 2 ([92a1fb4](https://github.com/Zahara-Nour/ubumaths/commit/92a1fb47be1b967b4560c28381d217b585dd2845))
+- **evoland:** add GameState manager and connect to controller ([69f30a8](https://github.com/Zahara-Nour/ubumaths/commit/69f30a80675b8452c9059ddf71531977a0450740))
+- **evoland:** add hero walking animation ([4b9144a](https://github.com/Zahara-Nour/ubumaths/commit/4b9144aff0cdc505b1527d736b633b23141fd7f4))
+- **evoland:** add monsters with progression-based spawning ([88fc565](https://github.com/Zahara-Nour/ubumaths/commit/88fc56560b9314d0bd6a3a5fbb0e3b92ed3bb8b7))
+- **evoland:** add Phase 1 - types, constants, and assets ([8db821e](https://github.com/Zahara-Nour/ubumaths/commit/8db821ef7ecc6c887ae3e0f2ea736d927dc6b896))
+- **evoland:** add progression and save systems (Phase 5) ([01513d5](https://github.com/Zahara-Nour/ubumaths/commit/01513d5214907a6c91ae01ff04f7390733e5443a))
+- **evoland:** add sprite rendering for hero and chests ([bd46eb9](https://github.com/Zahara-Nour/ubumaths/commit/bd46eb97c88bdf7187fc610c0ca799c6e7305ccc))
+- **evoland:** add UI components and reactive store (Phase 6) ([11a4562](https://github.com/Zahara-Nour/ubumaths/commit/11a456226a5aacde2c19eda1881957871dab098d))
+- **evoland:** add world system phase 3 ([822d0b8](https://github.com/Zahara-Nour/ubumaths/commit/822d0b855b9d5680afa489fa9e6b7afd0dba9ca6))
+- **evoland:** implement combat system with sword, XP, and progression ([438fd5e](https://github.com/Zahara-Nour/ubumaths/commit/438fd5efd2c399083550578323a45309f9535bc9))
+- **evoland:** implement entity system with hero and monsters ([3bb7440](https://github.com/Zahara-Nour/ubumaths/commit/3bb744018c0e82c494290a4c41a59ce08c64de80))
+- **evoland:** integrate game route and fix TypeScript issues (Phase 7) ([c8a3cce](https://github.com/Zahara-Nour/ubumaths/commit/c8a3cce88155e39d41522b722924fa4fbb54d261))
+- **evoland:** load real world from PNG instead of test world ([9c93cbb](https://github.com/Zahara-Nour/ubumaths/commit/9c93cbb8ab71ea8d31197ad4fdc4614dfaba2848))
+- **minesweeper:** add 3BV-based tournament scoring ([29e575c](https://github.com/Zahara-Nour/ubumaths/commit/29e575c459071321bd7e38787ec92114ce5993ac))
+- **minesweeper:** add tournament navigation links ([c8d9ff2](https://github.com/Zahara-Nour/ubumaths/commit/c8d9ff27bd06953bdd78708a49b9ff4f55455fa2))
+- **minesweeper:** add tournament system ([5d2feac](https://github.com/Zahara-Nour/ubumaths/commit/5d2feace49570337ea807629470fe4460bcc0d16))
+- **minesweeper:** auto-finalize tournaments when creator views ([1582a24](https://github.com/Zahara-Nour/ubumaths/commit/1582a24141b030da83c15a76893fe7a97d211fbf))
+- **minesweeper:** show toast when tournament auto-finalizes ([05fd3ca](https://github.com/Zahara-Nour/ubumaths/commit/05fd3ca1eb6241d2ff425dffbd5d7bd2c80822ac))
+- **rewards:** implement daily limit and weekly bonus system ([a2f4841](https://github.com/Zahara-Nour/ubumaths/commit/a2f4841636b295b171b14d94f992d9ea0869fb43))
+
+### 🐛 Bug Fixes
+
+- **evoland:** apply magenta transparency to sprite sheets ([a8ca3b7](https://github.com/Zahara-Nour/ubumaths/commit/a8ca3b7cc1dee16444cbeb50eadc52ceebdd4a7d))
+- **evoland:** c2d chest should unlock up/down movement ([b6c954b](https://github.com/Zahara-Nour/ubumaths/commit/b6c954ba3b80e5a43cc379264744d5d11fb4d3ec))
+- **evoland:** chests disappear when opened (match original behavior) ([730e9d3](https://github.com/Zahara-Nour/ubumaths/commit/730e9d32eab1217713fd1f5e18f7b3a800e151c2))
+- **evoland:** correct all sprite positions based on Haxe EKind enum ([fb18024](https://github.com/Zahara-Nour/ubumaths/commit/fb180243183a73b01c681fade049b56fd4acaf40))
+- **evoland:** correct CRightCtrl chest name and description ([83384a4](https://github.com/Zahara-Nour/ubumaths/commit/83384a48b3af98bdc98b8637b6cb945e9d9f09a8))
+- **evoland:** correct gold coin value and document chest differences ([d264ccb](https://github.com/Zahara-Nour/ubumaths/commit/d264ccb9017fd129aa2575d78bcd69f2b29db883))
+- **evoland:** correct sprite positions based on Haxe EKind enum ([1904518](https://github.com/Zahara-Nour/ubumaths/commit/190451842d9064d7230881bd8c17a242d05df1f1))
+- **evoland:** correct sword sprite position to row 3 (EKind.Sword = 3) ([c7cf90b](https://github.com/Zahara-Nour/ubumaths/commit/c7cf90b45850bdd9552c05c1f8c1f5c14dec06d5))
+- **evoland:** correct sword sprite rotation angles ([bf57132](https://github.com/Zahara-Nour/ubumaths/commit/bf57132c74d9ae9c64fb41b8d8f0f87bbf2f857d))
+- **evoland:** correct tile sprite positions based on Haxe World.hx ([f280c85](https://github.com/Zahara-Nour/ubumaths/commit/f280c85eec6f16c2acbf58dce825b0859e1b7985))
+- **evoland:** enforce movement direction progression ([4c4fbf4](https://github.com/Zahara-Nour/ubumaths/commit/4c4fbf4d362f6944a85a374c74d1217a0bfb6c14))
+- **evoland:** fix camera scrolling to use progression flag ([3d41ae8](https://github.com/Zahara-Nour/ubumaths/commit/3d41ae8cadbb9922513c8d024ab6f5806ad2fe1c))
+- **evoland:** fix hero sprite disappearing when moving right ([07d579f](https://github.com/Zahara-Nour/ubumaths/commit/07d579f362966d3f78f0ec4a69c38e7371cb3c6f))
+- **evoland:** fix input toggle detection by getting state before frame increment ([e1919bf](https://github.com/Zahara-Nour/ubumaths/commit/e1919bfd9afd9566cacfe09da07c6b49f4c28a07))
+- **evoland:** hide XP bar until CLevelUp chest is opened ([80fedee](https://github.com/Zahara-Nour/ubumaths/commit/80fedee751b49a52ad1010bf9e22fb2d04e52001))
+- **evoland:** remove camera smoothing to match original Evoland behavior ([870d9af](https://github.com/Zahara-Nour/ubumaths/commit/870d9af1fb0ab10081576b1f5a6eed480d8d1acf))
+- **evoland:** round camera and entity positions to prevent sub-pixel artifacts ([e6f2f33](https://github.com/Zahara-Nour/ubumaths/commit/e6f2f333ab68ef3c740ddfeee48e2e88af79cb35))
+- **evoland:** start game in grayscale mode ([a70b757](https://github.com/Zahara-Nour/ubumaths/commit/a70b75778d18d4e7e39561debd97ff7a0b2d47de))
+- **evoland:** use fallback rendering for chests ([eac31d9](https://github.com/Zahara-Nour/ubumaths/commit/eac31d9df93b40a9d379e3b33244c274647c3ef9))
+- **evoland:** use fallback rendering for monsters ([722d701](https://github.com/Zahara-Nour/ubumaths/commit/722d701491b139ec355ff8b356cdc8ca1d0ed54f))
+- **minesweeper:** add auto-recovery for tournament rewards ([6be5f2d](https://github.com/Zahara-Nour/ubumaths/commit/6be5f2df528ca4df0a4ca2ac073ea806609baee8))
+- **minesweeper:** add creator_id to get_tournament_details ([fcf1184](https://github.com/Zahara-Nour/ubumaths/commit/fcf11840e5438bbcdbf9463e0b82b76daa952905))
+- **minesweeper:** consolidate tournament info cards ([26a8e74](https://github.com/Zahara-Nour/ubumaths/commit/26a8e747916d899948992c0e9b9dc63df1c96632))
+- **minesweeper:** fix ambiguous column reference in start_tournament_game ([0cbb617](https://github.com/Zahara-Nour/ubumaths/commit/0cbb617ef76df9b598ee029a1758fb1fe6ba9676))
+- **minesweeper:** fix checkbox binding in tournament creation ([e32b652](https://github.com/Zahara-Nour/ubumaths/commit/e32b652d49756e4c01f12c7d517dcddd7ed0cebd))
+- **minesweeper:** fix infinite loop in tournament creation ([3380d28](https://github.com/Zahara-Nour/ubumaths/commit/3380d28f9c234264115655fbde889f1351d05808))
+- **minesweeper:** fix RLS infinite recursion in tournament tables ([e8e462a](https://github.com/Zahara-Nour/ubumaths/commit/e8e462a83970ccca3c3a48d6eef21f430101d040))
+- **minesweeper:** improve teacher tournament view UI and logic ([7072e0b](https://github.com/Zahara-Nour/ubumaths/commit/7072e0b722fed8b2c5ec96fe24f245309ee86206))
+- **minesweeper:** initialize store in tournament page ([46793f6](https://github.com/Zahara-Nour/ubumaths/commit/46793f62044f12e86828947c555f70faeb973696))
+- **minesweeper:** remove stale inProgressGame reference ([9301f97](https://github.com/Zahara-Nour/ubumaths/commit/9301f97a436e373dd9cb32f4a152ff81ed6baa2d))
+- **minesweeper:** revert to API call for auto-finalization ([1340593](https://github.com/Zahara-Nour/ubumaths/commit/1340593d2e49a73ef79e264408663561e2a51bf6))
+- **minesweeper:** simplify tournament play button ([4c51fff](https://github.com/Zahara-Nour/ubumaths/commit/4c51ffff3fcc478bb635c2ea2cbc7e1b7f76b62f))
+- **minesweeper:** tournament standings RLS and UI improvements ([50d16df](https://github.com/Zahara-Nour/ubumaths/commit/50d16df376b5b415c1cb23b779c16646372dde05))
+- **minesweeper:** use API endpoint instead of direct RPC for game completion ([1d8791c](https://github.com/Zahara-Nour/ubumaths/commit/1d8791c3ac1c41567f79d9ee26d99ad08d64e185))
+
 ### [0.5.17](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.16...v0.5.17) (2026-01-01)
 
 ### 🐛 Bug Fixes
