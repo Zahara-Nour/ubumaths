@@ -2002,7 +2002,6 @@ class MinesweeperStore {
 			started_at: string;
 			grid_state: import('$lib/types/minesweeper').GridStateDTO;
 			time_seconds: number | null;
-			flags_used: number | null;
 		}
 	): void {
 		if (!browser) {
@@ -2048,7 +2047,7 @@ class MinesweeperStore {
 			rows: config.rows,
 			cols: config.cols,
 			minesCount: config.mines,
-			flagsUsed: gameData.flags_used || this.countFlags(grid),
+			flagsUsed: this.countFlags(grid),
 			cellsRevealed,
 			timeElapsed,
 			startedAt: gameData.started_at ? new Date(gameData.started_at) : undefined,
