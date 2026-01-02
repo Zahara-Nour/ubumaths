@@ -11,7 +11,6 @@
 	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
 	import { cn } from '$lib/utils';
 	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
-	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 
 	// Props
@@ -23,7 +22,6 @@
 	let userStanding = $state(data.userStanding);
 	let inProgressGame = $state(data.inProgressGame);
 	let isStartingGame = $state(false);
-	let isAbandoningGame = $state(false);
 
 	// Derived state
 	let difficultyLabel = $derived(DIFFICULTY_LABELS[tournament.difficulty] || tournament.difficulty);
@@ -72,33 +70,6 @@
 		return `${Math.round(score)} pts`;
 	}
 
-	// Abandon an orphaned in-progress game
-	async function abandonOrphanedGame() {
-		if (!inProgressGame || isAbandoningGame) return;
-
-		isAbandoningGame = true;
-
-		try {
-			const response = await fetch(
-				`/api/games/minesweeper/tournaments/${tournament.id}/games/${inProgressGame.id}/abandon`,
-				{ method: 'POST' }
-			);
-
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.message || "Erreur lors de l'abandon");
-			}
-
-			inProgressGame = null;
-			toaster.info('Partie abandonnee');
-		} catch (err) {
-			console.error('Error abandoning game:', err);
-			toaster.error("Erreur lors de l'abandon de la partie");
-		} finally {
-			isAbandoningGame = false;
-		}
-	}
-
 	// Resume an in-progress game
 	function resumeGame() {
 		if (!inProgressGame || !inProgressGame.grid_state || isTournamentEnded) return;
@@ -121,38 +92,20 @@
 	async function startNewGame() {
 		if (isStartingGame || isTournamentEnded) return;
 
-		// If there's a known in-progress game, abandon it first
-		if (inProgressGame && !currentGame) {
-			await abandonOrphanedGame();
-		}
-
 		isStartingGame = true;
 
 		try {
+			// Always try to abandon any in-progress game first (silent, no error if none exists)
+			await fetch(`/api/games/minesweeper/tournaments/${tournament.id}/games/abandon-current`, {
+				method: 'POST'
+			});
+
+			// Clear local state
+			inProgressGame = null;
+
 			// Use the store's tournament method - it handles the API call and game initialization
 			await minesweeperStore.startTournamentGame(tournament.id, tournament.difficulty);
-
-			// The store now shows modals on game completion,
-			// so we need to refresh standings when returning from modal
 		} catch (err) {
-			// If failed because of in-progress game we didn't know about, abandon and retry
-			if (err instanceof Error && err.message.includes('en cours')) {
-				try {
-					// Try to find and abandon the unknown in-progress game
-					const response = await fetch(
-						`/api/games/minesweeper/tournaments/${tournament.id}/games/abandon-current`,
-						{ method: 'POST' }
-					);
-
-					if (response.ok) {
-						// Retry starting the game
-						await minesweeperStore.startTournamentGame(tournament.id, tournament.difficulty);
-						return;
-					}
-				} catch {
-					// Fall through to original error handling
-				}
-			}
 			// Error is already handled by the store with toaster
 			console.error('Error starting tournament game:', err);
 		} finally {
@@ -341,13 +294,8 @@
 						</p>
 						<div class="flex gap-3">
 							<Button onclick={resumeGame} size="lg">Reprendre</Button>
-							<Button
-								onclick={startNewGame}
-								variant="outline"
-								size="lg"
-								disabled={isStartingGame || isAbandoningGame}
-							>
-								{#if isStartingGame || isAbandoningGame}
+							<Button onclick={startNewGame} variant="outline" size="lg" disabled={isStartingGame}>
+								{#if isStartingGame}
 									<span class="mr-2 animate-spin">⏳</span>
 								{/if}
 								Nouvelle partie
