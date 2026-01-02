@@ -16,7 +16,7 @@ export interface TournamentDetailsPageData {
 	justFinalized?: boolean;
 }
 
-export const load: PageServerLoad = async ({ params, locals, fetch }) => {
+export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw redirect(303, '/auth/signin');
@@ -75,7 +75,11 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 				`/api/games/minesweeper/tournaments/${tournamentId}/finalize`,
 				{
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' }
+					headers: {
+						'Content-Type': 'application/json',
+						Origin: url.origin,
+						Host: url.host
+					}
 				}
 			);
 
