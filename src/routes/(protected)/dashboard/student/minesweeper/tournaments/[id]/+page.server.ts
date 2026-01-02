@@ -47,10 +47,10 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 			? await standingsRes.json()
 			: { standings: [], user_standing: null };
 
-		// Check for in-progress game
+		// Check for in-progress game (include grid_state for resuming)
 		const { data: inProgressGame, error: gameError } = await locals.supabase
 			.from('minesweeper_tournament_games')
-			.select('id, seed, game_number, started_at')
+			.select('id, seed, game_number, started_at, grid_state, time_seconds, flags_used')
 			.eq('tournament_id', tournamentId)
 			.eq('student_id', user.id)
 			.eq('status', 'in_progress')

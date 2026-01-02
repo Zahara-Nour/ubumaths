@@ -99,11 +99,29 @@
 		}
 	}
 
+	// Resume an in-progress game
+	function resumeGame() {
+		if (!inProgressGame || !inProgressGame.grid_state || isTournamentEnded) return;
+
+		minesweeperStore.resumeTournamentGame(tournament.id, tournament.difficulty, {
+			id: inProgressGame.id,
+			seed: inProgressGame.seed,
+			game_number: inProgressGame.game_number,
+			started_at: inProgressGame.started_at,
+			grid_state: inProgressGame.grid_state,
+			time_seconds: inProgressGame.time_seconds,
+			flags_used: inProgressGame.flags_used
+		});
+
+		// Clear the in-progress game since it's now active in the store
+		inProgressGame = null;
+	}
+
 	// Start a new tournament game using the store's tournament methods
 	async function startNewGame() {
 		if (isStartingGame || isTournamentEnded) return;
 
-		// If there's an orphaned in-progress game, abandon it first
+		// If there's an in-progress game, abandon it first
 		if (inProgressGame && !currentGame) {
 			await abandonOrphanedGame();
 		}
@@ -295,16 +313,40 @@
 				{/if}
 			</div>
 		{:else if !isTournamentEnded}
-			<!-- No active game - show start button -->
-			<div class="flex justify-center py-4">
-				<Button onclick={startNewGame} disabled={isStartingGame} size="lg">
-					{#if isStartingGame}
-						<span class="mr-2 animate-spin">⏳</span>
-						Demarrage...
-					{:else}
-						Jouer
-					{/if}
-				</Button>
+			<!-- No active game -->
+			<div class="flex flex-col items-center gap-4 py-4">
+				{#if inProgressGame?.grid_state}
+					<!-- Has resumable game -->
+					<div class="text-center">
+						<p class="mb-4 text-muted-foreground">
+							Vous avez une partie en cours (partie {inProgressGame.game_number})
+						</p>
+						<div class="flex gap-3">
+							<Button onclick={resumeGame} size="lg">Reprendre</Button>
+							<Button
+								onclick={startNewGame}
+								variant="outline"
+								size="lg"
+								disabled={isStartingGame || isAbandoningGame}
+							>
+								{#if isStartingGame || isAbandoningGame}
+									<span class="mr-2 animate-spin">⏳</span>
+								{/if}
+								Nouvelle partie
+							</Button>
+						</div>
+					</div>
+				{:else}
+					<!-- No in-progress game -->
+					<Button onclick={startNewGame} disabled={isStartingGame} size="lg">
+						{#if isStartingGame}
+							<span class="mr-2 animate-spin">⏳</span>
+							Demarrage...
+						{:else}
+							Jouer
+						{/if}
+					</Button>
+				{/if}
 			</div>
 		{/if}
 	</div>

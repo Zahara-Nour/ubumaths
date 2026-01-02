@@ -1948,6 +1948,96 @@ class MinesweeperStore {
 	}
 
 	/**
+	 * Resume an in-progress tournament game
+	 *
+	 * @param tournamentId - Tournament ID
+	 * @param difficulty - Tournament difficulty
+	 * @param gameData - In-progress game data from server
+	 */
+	resumeTournamentGame(
+		tournamentId: string,
+		difficulty: Difficulty,
+		gameData: {
+			id: string;
+			seed: string;
+			game_number: number;
+			started_at: string;
+			grid_state: import('$lib/types/minesweeper').GridStateDTO;
+			time_seconds: number | null;
+			flags_used: number | null;
+		}
+	): void {
+		if (!browser) {
+			throw new Error('Cannot resume tournament game on server');
+		}
+
+		if (!this.shouldUseDatabase()) {
+			throw new Error('Must be logged in as student to play tournament');
+		}
+
+		// Stop existing timers
+		this.stopTimer();
+		this.stopAutoSave();
+
+		// Store tournament context
+		this.tournamentId = tournamentId;
+		this.tournamentGameId = gameData.id;
+		this.tournamentGameNumber = gameData.game_number;
+		this.tournamentDifficulty = difficulty;
+
+		// Get difficulty config
+		const config = DIFFICULTY_CONFIGS[difficulty];
+
+		// Restore grid from saved state
+		const grid = this.dtoToGrid(gameData.grid_state);
+
+		// Calculate elapsed time from started_at
+		let timeElapsed = 0;
+		if (gameData.started_at) {
+			const startedAt = new Date(gameData.started_at);
+			timeElapsed = Math.floor((Date.now() - startedAt.getTime()) / 1000);
+		}
+
+		// Count revealed cells
+		const cellsRevealed = this.countRevealed(grid);
+
+		// Create game state
+		const resumedGame: GameState = {
+			id: gameData.id,
+			difficulty,
+			status: cellsRevealed > 0 ? 'in_progress' : 'not_started',
+			grid,
+			rows: config.rows,
+			cols: config.cols,
+			minesCount: config.mines,
+			flagsUsed: gameData.flags_used || this.countFlags(grid),
+			cellsRevealed,
+			timeElapsed,
+			startedAt: gameData.started_at ? new Date(gameData.started_at) : undefined,
+			seed: gameData.seed,
+			hintsUsed: 0
+		};
+
+		this.currentGame = resumedGame;
+
+		// Start timer if game was already in progress
+		if (resumedGame.status === 'in_progress') {
+			this.startTimer();
+			this.startAutoSave();
+		}
+
+		logger.info('Resumed tournament game:', {
+			tournamentId,
+			gameId: gameData.id,
+			gameNumber: gameData.game_number,
+			timeElapsed,
+			cellsRevealed
+		});
+
+		toaster.info(`Partie ${gameData.game_number} reprise`);
+	}
+
+	/**
 	 * Complete current tournament game
 	 * Called when game is won or lost
 	 *
