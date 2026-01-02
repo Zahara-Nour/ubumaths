@@ -23,6 +23,18 @@
 	let isCancelling = $state(false);
 	let showCancelDialog = $state(false);
 
+	// Show toast when tournament was just auto-finalized
+	$effect(() => {
+		if (data.justFinalized) {
+			const podiumCount = data.standings.filter(
+				(s) => s.position <= data.tournament.podium_places
+			).length;
+			toaster.success(
+				`Tournoi finalise ! ${podiumCount} recompense${podiumCount > 1 ? 's' : ''} distribuee${podiumCount > 1 ? 's' : ''}`
+			);
+		}
+	});
+
 	async function handleBack() {
 		await goto('/dashboard/teacher/minesweeper/tournaments');
 	}

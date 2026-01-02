@@ -13,6 +13,7 @@ export interface TournamentDetailsPageData {
 	tournament: TournamentWithDetails;
 	standings: TournamentStanding[];
 	totalParticipants: number;
+	justFinalized?: boolean;
 }
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
@@ -58,6 +59,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	// Auto-finalize if tournament ended but not yet finalized
 	const isEnded = new Date(tournament.end_date) < new Date();
 	const needsFinalization = isEnded && tournament.status !== 'completed';
+	let justFinalized = false;
 
 	if (needsFinalization) {
 		try {
@@ -70,6 +72,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 			);
 
 			if (finalizeResponse.ok) {
+				justFinalized = true;
 				// Refresh tournament data after finalization
 				const refreshResponse = await fetch(`/api/games/minesweeper/tournaments/${tournamentId}`);
 				if (refreshResponse.ok) {
@@ -100,6 +103,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	return {
 		tournament,
 		standings,
-		totalParticipants
+		totalParticipants,
+		justFinalized
 	};
 };
