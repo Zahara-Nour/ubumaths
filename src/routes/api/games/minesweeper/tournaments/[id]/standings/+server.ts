@@ -89,6 +89,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		}
 
 		// Query the standings view
+		// RLS policy "Users can view tournament co-participants profiles" allows
+		// students to see names of other participants in the same tournament
 		const { data: standingsData, error: standingsError } = await locals.supabase
 			.from('minesweeper_tournament_standings')
 			.select('*')
@@ -134,7 +136,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 						average_score: userStanding.average_score
 					}
 				: null,
-			total_participants: totalParticipants || 0
+			total_participants: totalParticipants
 		});
 	} catch (err) {
 		sanitizePostgresError(err, 'MINESWEEPER_TOURNAMENT_STANDINGS');
