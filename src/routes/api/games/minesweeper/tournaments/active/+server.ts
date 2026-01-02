@@ -35,7 +35,9 @@ import { sanitizePostgresError } from '$lib/server/utils/error-handler';
  *       "podium_places": 3,
  *       "podium_rewards": { "1": 10, "2": 5, "3": 3 },
  *       "my_games_count": 5,
- *       "my_best_time": 120,
+ *       "my_wins_count": 3,
+ *       "my_average_score": 125,
+ *       "has_in_progress_game": false,
  *       "time_remaining_seconds": 86400
  *     }
  *   ]
@@ -149,8 +151,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 				const myGames = games || [];
 				const wonGames = myGames.filter((g) => g.status === 'won' && g.time_seconds);
-				const myBestTime =
-					wonGames.length > 0 ? Math.min(...wonGames.map((g) => g.time_seconds as number)) : null;
+
+				// Get average score from standings view (already calculated)
+				const { data: standing } = await locals.supabase
+					.from('minesweeper_tournament_standings')
+					.select('average_score')
+					.eq('tournament_id', tournament.id)
+					.eq('student_id', user.id)
+					.single();
+
+				const myAverageScore = standing?.average_score ? Math.round(standing.average_score) : null;
 
 				// Calculate time remaining
 				const endDate = new Date(tournament.end_date);
@@ -176,7 +186,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					podium_rewards: tournament.podium_rewards,
 					my_games_count: myGames.length,
 					my_wins_count: wonGames.length,
-					my_best_time: myBestTime,
+					my_average_score: myAverageScore,
 					has_in_progress_game: hasInProgressGame,
 					time_remaining_seconds: timeRemainingSeconds
 				};

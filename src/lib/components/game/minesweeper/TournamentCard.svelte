@@ -15,7 +15,7 @@
 		top_x_games: number;
 		my_games_count: number;
 		my_wins_count: number;
-		my_best_time: number | null;
+		my_average_score: number | null;
 		has_in_progress_game: boolean;
 		time_remaining_seconds: number;
 		// Additional properties from API (not used in display)
@@ -41,22 +41,35 @@
 		}
 	});
 
-	// Format time remaining as countdown
-	let timeRemaining = $derived.by(() => {
-		const seconds = tournament.time_remaining_seconds;
-		if (seconds <= 0) return 'Termine';
+	// Check if tournament has started
+	let isStarted = $derived(new Date(tournament.start_date) <= new Date());
 
+	// Format time as countdown
+	function formatCountdown(seconds: number): string {
 		const days = Math.floor(seconds / 86400);
 		const hours = Math.floor((seconds % 86400) / 3600);
 		const minutes = Math.floor((seconds % 3600) / 60);
 
-		if (days > 0) {
-			return `${days}j ${hours}h`;
-		}
-		if (hours > 0) {
-			return `${hours}h ${minutes}m`;
-		}
+		if (days > 0) return `${days}j ${hours}h`;
+		if (hours > 0) return `${hours}h ${minutes}m`;
 		return `${minutes}m`;
+	}
+
+	// Time remaining (for active tournaments)
+	let timeRemaining = $derived.by(() => {
+		if (!isStarted) return null;
+		const seconds = tournament.time_remaining_seconds;
+		if (seconds <= 0) return 'Termine';
+		return formatCountdown(seconds);
+	});
+
+	// Time until start (for scheduled tournaments)
+	let timeUntilStart = $derived.by(() => {
+		if (isStarted) return null;
+		const startDate = new Date(tournament.start_date);
+		const now = new Date();
+		const seconds = Math.max(0, Math.floor((startDate.getTime() - now.getTime()) / 1000));
+		return formatCountdown(seconds);
 	});
 
 	// Format date range
@@ -69,13 +82,6 @@
 		};
 		return `${start.toLocaleDateString('fr-FR', options)} - ${end.toLocaleDateString('fr-FR', options)}`;
 	});
-
-	// Format best time
-	function formatTime(seconds: number): string {
-		const mins = Math.floor(seconds / 60);
-		const secs = Math.floor(seconds % 60);
-		return `${mins}:${secs.toString().padStart(2, '0')}`;
-	}
 </script>
 
 <a href="/dashboard/student/minesweeper/tournaments/{tournament.id}" class="block">
@@ -99,23 +105,27 @@
 		</div>
 
 		<!-- Tournament info -->
-		<div class="mb-4 space-y-2 text-sm">
+		<div class={cn('space-y-2 text-sm', isStarted && 'mb-4')}>
 			<!-- Date range -->
 			<div class="flex items-center gap-2 text-muted-foreground">
 				<span aria-hidden="true">📅</span>
 				<span>{dateRange}</span>
 			</div>
 
-			<!-- Time remaining -->
+			<!-- Time remaining / Time until start -->
 			<div class="flex items-center gap-2">
 				<span aria-hidden="true">⏳</span>
-				<span
-					class={cn(tournament.time_remaining_seconds < 3600 && 'font-semibold text-orange-600')}
-				>
-					{tournament.time_remaining_seconds > 0
-						? `Temps restant : ${timeRemaining}`
-						: 'Tournoi termine'}
-				</span>
+				{#if !isStarted}
+					<span>Debut dans : <strong>{timeUntilStart}</strong></span>
+				{:else if tournament.time_remaining_seconds > 0}
+					<span
+						class={cn(tournament.time_remaining_seconds < 3600 && 'font-semibold text-orange-600')}
+					>
+						Temps restant : {timeRemaining}
+					</span>
+				{:else}
+					<span class="text-muted-foreground">Tournoi termine</span>
+				{/if}
 			</div>
 
 			<!-- Top X games info -->
@@ -125,30 +135,32 @@
 			</div>
 		</div>
 
-		<!-- Player stats -->
-		<div class="rounded-lg bg-muted/50 p-3">
-			<h4 class="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-				Mes statistiques
-			</h4>
-			<div class="grid grid-cols-3 gap-2 text-center">
-				<div>
-					<p class="text-lg font-bold text-foreground">{tournament.my_games_count}</p>
-					<p class="text-xs text-muted-foreground">Parties</p>
-				</div>
-				<div>
-					<p class="text-lg font-bold text-green-600 dark:text-green-400">
-						{tournament.my_wins_count}
-					</p>
-					<p class="text-xs text-muted-foreground">Victoires</p>
-				</div>
-				<div>
-					<p class="text-lg font-bold text-foreground">
-						{tournament.my_best_time !== null ? formatTime(tournament.my_best_time) : '-'}
-					</p>
-					<p class="text-xs text-muted-foreground">Meilleur temps</p>
+		<!-- Player stats (only show if tournament has started) -->
+		{#if isStarted}
+			<div class="rounded-lg bg-muted/50 p-3">
+				<h4 class="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+					Mes statistiques
+				</h4>
+				<div class="grid grid-cols-3 gap-2 text-center">
+					<div>
+						<p class="text-lg font-bold text-foreground">{tournament.my_games_count}</p>
+						<p class="text-xs text-muted-foreground">Parties</p>
+					</div>
+					<div>
+						<p class="text-lg font-bold text-green-600 dark:text-green-400">
+							{tournament.my_wins_count}
+						</p>
+						<p class="text-xs text-muted-foreground">Victoires</p>
+					</div>
+					<div>
+						<p class="text-lg font-bold text-foreground">
+							{tournament.my_average_score !== null ? `${tournament.my_average_score} pts` : '-'}
+						</p>
+						<p class="text-xs text-muted-foreground">Score moyen</p>
+					</div>
 				</div>
 			</div>
-		</div>
+		{/if}
 
 		<!-- In-progress indicator -->
 		{#if tournament.has_in_progress_game}
