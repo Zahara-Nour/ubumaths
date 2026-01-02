@@ -113,21 +113,20 @@
 		}
 	}
 
+	// Sync local state when data changes (after invalidation or navigation)
+	$effect(() => {
+		tournament = data.tournament;
+		standings = data.standings;
+		userStanding = data.userStanding;
+		inProgressGame = data.inProgressGame;
+	});
+
 	// Watch for tournament mode exit to refresh standings
 	$effect(() => {
 		// When the store exits tournament mode (after modal interaction),
 		// refresh the page data to get updated standings
 		if (!minesweeperStore.isInTournamentMode() && !minesweeperStore.currentGame) {
-			// Only refresh if we had an active game before
-			if (standings.length > 0) {
-				invalidateAll().then(() => {
-					// Update local state from refreshed data
-					tournament = data.tournament;
-					standings = data.standings;
-					userStanding = data.userStanding;
-					inProgressGame = data.inProgressGame;
-				});
-			}
+			invalidateAll();
 		}
 	});
 
