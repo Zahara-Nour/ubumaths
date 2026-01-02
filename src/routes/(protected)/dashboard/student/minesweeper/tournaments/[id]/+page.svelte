@@ -121,7 +121,7 @@
 	async function startNewGame() {
 		if (isStartingGame || isTournamentEnded) return;
 
-		// If there's an in-progress game, abandon it first
+		// If there's a known in-progress game, abandon it first
 		if (inProgressGame && !currentGame) {
 			await abandonOrphanedGame();
 		}
@@ -135,6 +135,24 @@
 			// The store now shows modals on game completion,
 			// so we need to refresh standings when returning from modal
 		} catch (err) {
+			// If failed because of in-progress game we didn't know about, abandon and retry
+			if (err instanceof Error && err.message.includes('en cours')) {
+				try {
+					// Try to find and abandon the unknown in-progress game
+					const response = await fetch(
+						`/api/games/minesweeper/tournaments/${tournament.id}/games/abandon-current`,
+						{ method: 'POST' }
+					);
+
+					if (response.ok) {
+						// Retry starting the game
+						await minesweeperStore.startTournamentGame(tournament.id, tournament.difficulty);
+						return;
+					}
+				} catch {
+					// Fall through to original error handling
+				}
+			}
 			// Error is already handled by the store with toaster
 			console.error('Error starting tournament game:', err);
 		} finally {
@@ -366,18 +384,5 @@
 		</div>
 
 		<TournamentLeaderboard {standings} currentUserId={data.currentUserId} maxRows={20} />
-	</div>
-
-	<!-- Navigation -->
-	<div class="flex flex-wrap gap-3">
-		<a href="/dashboard/student/minesweeper/tournaments">
-			<Button variant="outline">Tous les tournois</Button>
-		</a>
-		<a href="/dashboard/student/minesweeper/stats">
-			<Button variant="outline">Mes statistiques</Button>
-		</a>
-		<a href="/games/minesweeper">
-			<Button variant="outline">Jeu libre</Button>
-		</a>
 	</div>
 </div>
