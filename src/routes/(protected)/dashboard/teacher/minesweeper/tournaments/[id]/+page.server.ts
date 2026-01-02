@@ -61,8 +61,16 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const needsFinalization = isEnded && tournament.status !== 'completed';
 	let justFinalized = false;
 
+	console.log('[Tournament] Status check:', {
+		tournamentId,
+		dbStatus: tournament.status,
+		isEnded,
+		needsFinalization
+	});
+
 	if (needsFinalization) {
 		try {
+			console.log('[Tournament] Attempting auto-finalization...');
 			const finalizeResponse = await fetch(
 				`/api/games/minesweeper/tournaments/${tournamentId}/finalize`,
 				{
@@ -70,6 +78,13 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 					headers: { 'Content-Type': 'application/json' }
 				}
 			);
+
+			const finalizeResult = await finalizeResponse.json().catch(() => null);
+			console.log('[Tournament] Finalization response:', {
+				ok: finalizeResponse.ok,
+				status: finalizeResponse.status,
+				result: finalizeResult
+			});
 
 			if (finalizeResponse.ok) {
 				justFinalized = true;
@@ -81,8 +96,63 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 				}
 			}
 		} catch (err) {
-			// Silent fail - finalization will happen next time
 			console.error('[Tournament] Auto-finalization failed:', err);
+		}
+	}
+
+	// Debug: Check games state directly
+	const { data: gamesDebug } = await locals.supabase
+		.from('minesweeper_tournament_games')
+		.select('id, status, score, grid_3bv, time_seconds')
+		.eq('tournament_id', tournamentId)
+		.eq('status', 'won');
+
+	const gamesWithNullScore = gamesDebug?.filter((g) => g.score === null) || [];
+
+	console.log('[Tournament] Games state:', {
+		tournamentId,
+		wonGames: gamesDebug?.length || 0,
+		gamesWithScore: gamesDebug?.filter((g) => g.score !== null).length || 0,
+		gamesWithNullScore: gamesWithNullScore.length,
+		games: gamesDebug
+	});
+
+	// Auto-backfill scores for games that have NULL score (pre-3BV migration games)
+	if (gamesWithNullScore.length > 0) {
+		console.log('[Tournament] Backfilling scores for', gamesWithNullScore.length, 'games...');
+		const { error: backfillError } = await locals.supabase.rpc('backfill_tournament_scores', {
+			p_tournament_id: tournamentId
+		});
+		if (backfillError) {
+			console.error('[Tournament] Backfill failed:', backfillError);
+		} else {
+			console.log('[Tournament] Backfill successful');
+		}
+	}
+
+	// If tournament is already completed, check if rewards need to be redistributed
+	// (this handles the case where finalization ran with empty standings due to NULL scores)
+	if (tournament.status === 'completed' && !justFinalized) {
+		console.log('[Tournament] Checking if rewards need redistribution...');
+		const { data: redistributeResult, error: redistributeError } = await locals.supabase.rpc(
+			'redistribute_tournament_rewards',
+			{ p_tournament_id: tournamentId }
+		);
+
+		if (redistributeError) {
+			// Expected error if rewards were already distributed
+			if (!redistributeError.message?.includes('already been distributed')) {
+				console.error('[Tournament] Redistribution failed:', redistributeError.message);
+			} else {
+				console.log('[Tournament] Rewards were already distributed');
+			}
+		} else if (redistributeResult?.[0]?.rewards_distributed > 0) {
+			console.log(
+				'[Tournament] Redistributed',
+				redistributeResult[0].rewards_distributed,
+				'rewards'
+			);
+			justFinalized = true; // Show toast to user
 		}
 	}
 
@@ -98,6 +168,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		const standingsData = await standingsResponse.json();
 		standings = standingsData.standings || [];
 		totalParticipants = standingsData.total_participants || 0;
+		console.log('[Tournament] Standings:', { count: standings.length, totalParticipants });
 	}
 
 	return {
