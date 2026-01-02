@@ -6710,6 +6710,194 @@ export type Database = {
 					}
 				];
 			};
+			minesweeper_tournament_classes: {
+				Row: {
+					class_id: string;
+					tournament_id: string;
+				};
+				Insert: {
+					class_id: string;
+					tournament_id: string;
+				};
+				Update: {
+					class_id?: string;
+					tournament_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'minesweeper_tournament_classes_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournament_classes_tournament_id_fkey';
+						columns: ['tournament_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_tournaments';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			minesweeper_tournament_games: {
+				Row: {
+					completed_at: string | null;
+					game_number: number;
+					grid_state: Json | null;
+					id: string;
+					seed: string;
+					started_at: string;
+					status: string;
+					student_id: string;
+					time_seconds: number | null;
+					tournament_id: string;
+				};
+				Insert: {
+					completed_at?: string | null;
+					game_number: number;
+					grid_state?: Json | null;
+					id?: string;
+					seed: string;
+					started_at?: string;
+					status?: string;
+					student_id: string;
+					time_seconds?: number | null;
+					tournament_id: string;
+				};
+				Update: {
+					completed_at?: string | null;
+					game_number?: number;
+					grid_state?: Json | null;
+					id?: string;
+					seed?: string;
+					started_at?: string;
+					status?: string;
+					student_id?: string;
+					time_seconds?: number | null;
+					tournament_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'minesweeper_tournament_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournament_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournament_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournament_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournament_games_tournament_id_fkey';
+						columns: ['tournament_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_tournaments';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			minesweeper_tournaments: {
+				Row: {
+					created_at: string;
+					creator_id: string;
+					creator_role: string;
+					description: string | null;
+					difficulty: string;
+					end_date: string;
+					id: string;
+					name: string;
+					podium_places: number;
+					podium_rewards: Json;
+					scope: string;
+					start_date: string;
+					status: string;
+					top_x_games: number;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					creator_id: string;
+					creator_role: string;
+					description?: string | null;
+					difficulty: string;
+					end_date: string;
+					id?: string;
+					name: string;
+					podium_places?: number;
+					podium_rewards?: Json;
+					scope: string;
+					start_date: string;
+					status?: string;
+					top_x_games?: number;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					creator_id?: string;
+					creator_role?: string;
+					description?: string | null;
+					difficulty?: string;
+					end_date?: string;
+					id?: string;
+					name?: string;
+					podium_places?: number;
+					podium_rewards?: Json;
+					scope?: string;
+					start_date?: string;
+					status?: string;
+					top_x_games?: number;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'minesweeper_tournaments_creator_id_fkey';
+						columns: ['creator_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournaments_creator_id_fkey';
+						columns: ['creator_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournaments_creator_id_fkey';
+						columns: ['creator_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournaments_creator_id_fkey';
+						columns: ['creator_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			moderation_logs: {
 				Row: {
 					action: string;
@@ -12496,6 +12684,54 @@ export type Database = {
 					}
 				];
 			};
+			minesweeper_tournament_standings: {
+				Row: {
+					average_time: number | null;
+					firstname: string | null;
+					games_won: number | null;
+					lastname: string | null;
+					position: number | null;
+					student_id: string | null;
+					tournament_id: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'minesweeper_tournament_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournament_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournament_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournament_games_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'minesweeper_tournament_games_tournament_id_fkey';
+						columns: ['tournament_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_tournaments';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			riddle_progress: {
 				Row: {
 					avatar_url: string | null;
@@ -12797,6 +13033,7 @@ export type Database = {
 				Args: { p_match_id: string; p_reason?: string };
 				Returns: Json;
 			};
+			abandon_tournament_game: { Args: { p_game_id: string }; Returns: boolean };
 			accept_proposal_atomic: {
 				Args: { p_proposal_id: string; p_user_id: string };
 				Returns: Json;
@@ -12806,6 +13043,7 @@ export type Database = {
 				Returns: number;
 			};
 			are_classmates: { Args: { p_user_id: string }; Returns: boolean };
+			auto_activate_scheduled_tournaments: { Args: never; Returns: number };
 			auto_expire_listings: { Args: never; Returns: number };
 			award_achievement_manual: {
 				Args: {
@@ -12904,6 +13142,10 @@ export type Database = {
 				Args: { message_uuid: string; moderator_uuid: string };
 				Returns: boolean;
 			};
+			can_participate_in_tournament: {
+				Args: { p_student_id: string; p_tournament_id: string };
+				Returns: boolean;
+			};
 			can_view_student_profile: {
 				Args: { student_profile_id: string };
 				Returns: boolean;
@@ -12967,6 +13209,18 @@ export type Database = {
 				Args: { p_grid_state: Json; p_match_id: string; p_time_seconds: number };
 				Returns: Json;
 			};
+			complete_tournament_game: {
+				Args: {
+					p_game_id: string;
+					p_grid_state: Json;
+					p_status: string;
+					p_time_seconds: number;
+				};
+				Returns: {
+					final_status: string;
+					success: boolean;
+				}[];
+			};
 			compute_daily_summary: {
 				Args: {
 					p_class_id: string;
@@ -12979,6 +13233,20 @@ export type Database = {
 			count_user_python_files: { Args: { p_user_id: string }; Returns: number };
 			create_1on1_chat: {
 				Args: { p_user1_id: string; p_user2_id: string };
+				Returns: string;
+			};
+			create_tournament: {
+				Args: {
+					p_class_ids?: string[];
+					p_description?: string;
+					p_difficulty: string;
+					p_end_date: string;
+					p_name: string;
+					p_podium_places?: number;
+					p_podium_rewards?: Json;
+					p_start_date: string;
+					p_top_x_games?: number;
+				};
 				Returns: string;
 			};
 			delete_all_resolved_errors: { Args: never; Returns: number };
@@ -13030,6 +13298,17 @@ export type Database = {
 			extract_plain_text_from_tiptap: {
 				Args: { p_content: Json };
 				Returns: string;
+			};
+			finalize_tournament: {
+				Args: { p_tournament_id: string };
+				Returns: {
+					average_time: number;
+					firstname: string;
+					gidouilles_awarded: number;
+					lastname: string;
+					place: number;
+					student_id: string;
+				}[];
 			};
 			generate_error_signature: {
 				Args: {
@@ -13642,6 +13921,10 @@ export type Database = {
 					variables: Json;
 				}[];
 			};
+			get_tournament_details: {
+				Args: { p_tournament_id: string };
+				Returns: Json;
+			};
 			get_unread_count: {
 				Args: { p_conversation_id: string; p_user_id: string };
 				Returns: number;
@@ -14091,6 +14374,14 @@ export type Database = {
 				Returns: string;
 			};
 			start_match: { Args: { p_match_id: string }; Returns: Json };
+			start_tournament_game: {
+				Args: { p_tournament_id: string };
+				Returns: {
+					game_id: string;
+					game_number: number;
+					seed: string;
+				}[];
+			};
 			student_has_exercise_access:
 				| { Args: { p_exercise_id: string }; Returns: boolean }
 				| {
