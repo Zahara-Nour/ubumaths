@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.19](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.18...v0.5.19) (2026-01-02)
+
+### ✨ Features
+
+- **minesweeper:** add loading indicator for standings refresh ([5a0c058](https://github.com/Zahara-Nour/ubumaths/commit/5a0c058a9b26d84669ede4149fdab6b583d56f4f))
+- **minesweeper:** add resume tournament game functionality ([7e2a0f0](https://github.com/Zahara-Nour/ubumaths/commit/7e2a0f05a328208686e332183e7b2ae7546123bd))
+- **minesweeper:** auto-complete tournaments when end_date passes ([4575fb2](https://github.com/Zahara-Nour/ubumaths/commit/4575fb28e2b649362c1c87398e93751b77a1a033))
+- **minesweeper:** improve tournament card for scheduled and active states ([28f620d](https://github.com/Zahara-Nour/ubumaths/commit/28f620da2ad559771a4b8431ebfb4e6882ba135a))
+- **minesweeper:** remove daily challenge feature and improve tournament UI ([a768803](https://github.com/Zahara-Nour/ubumaths/commit/a7688032309b85a53d74d5f3e437e57d90d58e59))
+- **minesweeper:** show completed tournaments in student view ([fb92cc7](https://github.com/Zahara-Nour/ubumaths/commit/fb92cc795b47d5c587168833050486c3a7b38f0f))
+- **minesweeper:** show rewards in completed tournament leaderboard ([8f84327](https://github.com/Zahara-Nour/ubumaths/commit/8f843279e8acd942a703225ca7a714da38ce4a62))
+
+### 🐛 Bug Fixes
+
+- **minesweeper:** add Origin/Host headers to internal fetch ([9881ccd](https://github.com/Zahara-Nour/ubumaths/commit/9881ccd21b1d26145032f5bcdf51b3cd7734b723))
+- **minesweeper:** add RLS policy to allow tournament game saves ([4e65899](https://github.com/Zahara-Nour/ubumaths/commit/4e65899c9369010484dd2c6be906da7e74bfc1df))
+- **minesweeper:** allow 0 second time for instant bomb clicks ([f9f581e](https://github.com/Zahara-Nour/ubumaths/commit/f9f581e1107d7000b6ba411bc3fe5ffea40a1fe6))
+- **minesweeper:** auto-abandon orphaned tournament games ([b85ed6a](https://github.com/Zahara-Nour/ubumaths/commit/b85ed6a640928129d2d5685ece79868f7fff14eb))
+- **minesweeper:** auto-abandon unknown in-progress games on retry ([e0902e9](https://github.com/Zahara-Nour/ubumaths/commit/e0902e90971011bba77f59e6b1d818a051168e68))
+- **minesweeper:** fix cascade reveal not propagating after chord-click/hint ([d608e2c](https://github.com/Zahara-Nour/ubumaths/commit/d608e2ccf5fe33a62b969d6a1d22c6180b97cf24))
+- **minesweeper:** import navigating from correct module ([3bb7e28](https://github.com/Zahara-Nour/ubumaths/commit/3bb7e2819c3cd8279211c3e0290addfdad01377e))
+- **minesweeper:** keep board visible during tournament game completion ([e63fb95](https://github.com/Zahara-Nour/ubumaths/commit/e63fb958976c3210c103824c9d78da61cfba9e53))
+- **minesweeper:** pre-emptively abandon before starting new game ([6107566](https://github.com/Zahara-Nour/ubumaths/commit/6107566d84f37f2d17115ffea0205d8ae21743ae))
+- **minesweeper:** remove flags_used from tournament game queries ([d9b4042](https://github.com/Zahara-Nour/ubumaths/commit/d9b4042924e137e8f967f0de2757eeed6adcb356))
+- **minesweeper:** save grid state immediately on first click ([09093f1](https://github.com/Zahara-Nour/ubumaths/commit/09093f1d814515a83464140fee0e73d8a7cff3b1))
+- **minesweeper:** save tournament games to correct table ([7044539](https://github.com/Zahara-Nour/ubumaths/commit/70445394d6725b2951a127932c05bebf3409612b))
+- **minesweeper:** show "Voir" button for completed tournaments ([df208ae](https://github.com/Zahara-Nour/ubumaths/commit/df208aefa2e10ce41c2c6a4e2fa04e73d8f8e858))
+- **minesweeper:** sync standings after tournament game completion ([d0217a6](https://github.com/Zahara-Nour/ubumaths/commit/d0217a6d7b9ac3f423f44576afd31cd64266162f))
+- **minesweeper:** use correct columns for tournament game save ([43e3c1f](https://github.com/Zahara-Nour/ubumaths/commit/43e3c1f5899b4626a8f7c0056ac97d36b8a4c7c6))
+
 ### [0.5.18](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.17...v0.5.18) (2026-01-02)
 
 ### 📚 Documentation
