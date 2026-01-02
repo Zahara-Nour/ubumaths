@@ -59,7 +59,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(400, validation.error.issues[0].message);
 		}
 
-		const { include_upcoming, limit } = validation.data;
+		const { include_upcoming, include_completed, limit } = validation.data;
 
 		// Get student's class IDs
 		const { data: classMemberships, error: membershipError } = await locals.supabase
@@ -74,7 +74,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const studentClassIds = (classMemberships || []).map((m) => m.class_id);
 
 		// Build the status filter
-		const statuses = include_upcoming ? ['active', 'scheduled'] : ['active'];
+		const statuses: string[] = ['active'];
+		if (include_upcoming) statuses.push('scheduled');
+		if (include_completed) statuses.push('completed');
 
 		// Query tournaments that are:
 		// 1. Global (scope = 'global') OR
