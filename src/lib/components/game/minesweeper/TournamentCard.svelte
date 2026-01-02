@@ -11,6 +11,7 @@
 		name: string;
 		description?: string | null;
 		difficulty: Difficulty;
+		status: 'scheduled' | 'active' | 'completed' | 'cancelled';
 		start_date: string;
 		end_date: string;
 		top_x_games: number;
@@ -151,7 +152,10 @@
 	<!-- Action button -->
 	<a href="/dashboard/student/minesweeper/tournaments/{tournament.id}" class="block">
 		<Button class="w-full" variant={tournament.has_in_progress_game ? 'default' : 'outline'}>
-			{#if tournament.has_in_progress_game}
+			{#if tournament.status === 'completed'}
+				<span class="mr-2" aria-hidden="true">👁️</span>
+				Voir
+			{:else if tournament.has_in_progress_game}
 				<span class="mr-2" aria-hidden="true">▶️</span>
 				Continuer la partie
 			{:else}
