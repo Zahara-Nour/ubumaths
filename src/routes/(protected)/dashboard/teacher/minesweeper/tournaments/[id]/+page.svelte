@@ -151,10 +151,26 @@
 
 	// Time remaining for active tournaments
 	let timeRemaining = $derived.by(() => {
-		if (isEnded) return null;
+		if (isEnded || !isStarted) return null;
 		const endDate = new Date(data.tournament.end_date);
 		const now = new Date();
 		const seconds = Math.max(0, Math.floor((endDate.getTime() - now.getTime()) / 1000));
+
+		const days = Math.floor(seconds / 86400);
+		const hours = Math.floor((seconds % 86400) / 3600);
+		const minutes = Math.floor((seconds % 3600) / 60);
+
+		if (days > 0) return `${days}j ${hours}h`;
+		if (hours > 0) return `${hours}h ${minutes}m`;
+		return `${minutes}m`;
+	});
+
+	// Time until start for scheduled tournaments
+	let timeUntilStart = $derived.by(() => {
+		if (isStarted) return null;
+		const startDate = new Date(data.tournament.start_date);
+		const now = new Date();
+		const seconds = Math.max(0, Math.floor((startDate.getTime() - now.getTime()) / 1000));
 
 		const days = Math.floor(seconds / 86400);
 		const hours = Math.floor((seconds % 86400) / 3600);
@@ -210,6 +226,8 @@
 					<span aria-hidden="true">{isEnded ? '🏁' : '⏳'}</span>
 					{#if isEnded}
 						<span class="font-semibold text-muted-foreground">Tournoi termine</span>
+					{:else if !isStarted}
+						<span>Debut dans : <strong>{timeUntilStart}</strong></span>
 					{:else}
 						<span>Temps restant : <strong>{timeRemaining}</strong></span>
 					{/if}
@@ -251,80 +269,82 @@
 		</div>
 	</Card.Root>
 
-	<!-- Leaderboard -->
-	<Card.Root>
-		<Card.Header>
-			<div class="flex items-center justify-between">
-				<Card.Title class="flex items-center gap-2">
-					<Trophy class="h-5 w-5" />
-					{isEnded ? 'Classement final' : 'Classement'}
-				</Card.Title>
-				{#if !isEnded}
-					<Button variant="outline" size="sm" onclick={handleRefresh} disabled={isRefreshing}>
-						<RefreshCw class="mr-2 h-4 w-4 {isRefreshing ? 'animate-spin' : ''}" />
-						Actualiser
-					</Button>
-				{/if}
-			</div>
-		</Card.Header>
-		<Card.Content>
-			{#if data.standings.length === 0}
-				<div class="py-12 text-center text-muted-foreground">
-					<Users class="mx-auto mb-4 h-12 w-12 opacity-50" />
-					<p>Aucun participant pour le moment</p>
-					<p class="mt-2 text-sm">Les resultats apparaitront ici des que des eleves joueront</p>
+	<!-- Leaderboard (only show if tournament has started) -->
+	{#if isStarted}
+		<Card.Root>
+			<Card.Header>
+				<div class="flex items-center justify-between">
+					<Card.Title class="flex items-center gap-2">
+						<Trophy class="h-5 w-5" />
+						{isEnded ? 'Classement final' : 'Classement'}
+					</Card.Title>
+					{#if !isEnded}
+						<Button variant="outline" size="sm" onclick={handleRefresh} disabled={isRefreshing}>
+							<RefreshCw class="mr-2 h-4 w-4 {isRefreshing ? 'animate-spin' : ''}" />
+							Actualiser
+						</Button>
+					{/if}
 				</div>
-			{:else}
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head class="w-16">Rang</Table.Head>
-							<Table.Head>Joueur</Table.Head>
-							<Table.Head class="text-right">Score moyen</Table.Head>
-							{#if isEnded}
-								<Table.Head class="text-right">Recompense</Table.Head>
-							{/if}
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each data.standings as standing (standing.student_id)}
-							<Table.Row
-								class={standing.position <= data.tournament.podium_places ? 'bg-muted/50' : ''}
-							>
-								<Table.Cell>
-									<span
-										class="inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold {getMedalClass(
-											standing.position
-										)}"
-									>
-										{getMedalEmoji(standing.position)}
-									</span>
-								</Table.Cell>
-								<Table.Cell class="font-medium">
-									{standing.firstname}
-									{standing.lastname}
-								</Table.Cell>
-								<Table.Cell class="text-right font-mono">
-									{Math.round(standing.average_score)} pts
-								</Table.Cell>
+			</Card.Header>
+			<Card.Content>
+				{#if data.standings.length === 0}
+					<div class="py-12 text-center text-muted-foreground">
+						<Users class="mx-auto mb-4 h-12 w-12 opacity-50" />
+						<p>Aucun participant pour le moment</p>
+						<p class="mt-2 text-sm">Les resultats apparaitront ici des que des eleves joueront</p>
+					</div>
+				{:else}
+					<Table.Root>
+						<Table.Header>
+							<Table.Row>
+								<Table.Head class="w-16">Rang</Table.Head>
+								<Table.Head>Joueur</Table.Head>
+								<Table.Head class="text-right">Score moyen</Table.Head>
 								{#if isEnded}
-									<Table.Cell class="text-right">
-										{#if standing.position <= data.tournament.podium_places}
-											<Badge variant="outline" class="bg-yellow-50 dark:bg-yellow-950">
-												{data.tournament.podium_rewards?.[String(standing.position)] || 0} gidouilles
-											</Badge>
-										{:else}
-											<span class="text-muted-foreground">-</span>
-										{/if}
-									</Table.Cell>
+									<Table.Head class="text-right">Recompense</Table.Head>
 								{/if}
 							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
-			{/if}
-		</Card.Content>
-	</Card.Root>
+						</Table.Header>
+						<Table.Body>
+							{#each data.standings as standing (standing.student_id)}
+								<Table.Row
+									class={standing.position <= data.tournament.podium_places ? 'bg-muted/50' : ''}
+								>
+									<Table.Cell>
+										<span
+											class="inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold {getMedalClass(
+												standing.position
+											)}"
+										>
+											{getMedalEmoji(standing.position)}
+										</span>
+									</Table.Cell>
+									<Table.Cell class="font-medium">
+										{standing.firstname}
+										{standing.lastname}
+									</Table.Cell>
+									<Table.Cell class="text-right font-mono">
+										{Math.round(standing.average_score)} pts
+									</Table.Cell>
+									{#if isEnded}
+										<Table.Cell class="text-right">
+											{#if standing.position <= data.tournament.podium_places}
+												<Badge variant="outline" class="bg-yellow-50 dark:bg-yellow-950">
+													{data.tournament.podium_rewards?.[String(standing.position)] || 0} gidouilles
+												</Badge>
+											{:else}
+												<span class="text-muted-foreground">-</span>
+											{/if}
+										</Table.Cell>
+									{/if}
+								</Table.Row>
+							{/each}
+						</Table.Body>
+					</Table.Root>
+				{/if}
+			</Card.Content>
+		</Card.Root>
+	{/if}
 </div>
 
 <!-- Cancel Dialog -->

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
 	import { Card } from '$lib/components/ui/card';
 	import { cn } from '$lib/utils';
 	import { DIFFICULTY_LABELS, type Difficulty } from '$lib/types/minesweeper';
@@ -11,7 +10,6 @@
 		name: string;
 		description?: string | null;
 		difficulty: Difficulty;
-		status: 'scheduled' | 'active' | 'completed' | 'cancelled';
 		start_date: string;
 		end_date: string;
 		top_x_games: number;
@@ -80,100 +78,88 @@
 	}
 </script>
 
-<Card
-	class={cn(
-		'relative overflow-hidden p-4 transition-shadow hover:shadow-md',
-		tournament.has_in_progress_game && 'ring-2 ring-primary'
-	)}
->
-	<!-- Header: Name and Difficulty -->
-	<div class="mb-3 flex items-start justify-between gap-2">
-		<div class="min-w-0 flex-1">
-			<h3 class="truncate text-lg font-semibold text-foreground">{tournament.name}</h3>
-			{#if tournament.description}
-				<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">{tournament.description}</p>
-			{/if}
-		</div>
-		<Badge class={cn('shrink-0', difficultyColor)}>
-			{difficultyLabel}
-		</Badge>
-	</div>
-
-	<!-- Tournament info -->
-	<div class="mb-4 space-y-2 text-sm">
-		<!-- Date range -->
-		<div class="flex items-center gap-2 text-muted-foreground">
-			<span aria-hidden="true">📅</span>
-			<span>{dateRange}</span>
-		</div>
-
-		<!-- Time remaining -->
-		<div class="flex items-center gap-2">
-			<span aria-hidden="true">⏳</span>
-			<span class={cn(tournament.time_remaining_seconds < 3600 && 'font-semibold text-orange-600')}>
-				{tournament.time_remaining_seconds > 0
-					? `Temps restant : ${timeRemaining}`
-					: 'Tournoi termine'}
-			</span>
-		</div>
-
-		<!-- Top X games info -->
-		<div class="flex items-center gap-2 text-muted-foreground">
-			<span aria-hidden="true">🏆</span>
-			<span>Moyenne des {tournament.top_x_games} meilleures parties</span>
-		</div>
-	</div>
-
-	<!-- Player stats -->
-	<div class="mb-4 rounded-lg bg-muted/50 p-3">
-		<h4 class="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-			Mes statistiques
-		</h4>
-		<div class="grid grid-cols-3 gap-2 text-center">
-			<div>
-				<p class="text-lg font-bold text-foreground">{tournament.my_games_count}</p>
-				<p class="text-xs text-muted-foreground">Parties</p>
+<a href="/dashboard/student/minesweeper/tournaments/{tournament.id}" class="block">
+	<Card
+		class={cn(
+			'relative cursor-pointer overflow-hidden p-4 transition-all hover:scale-[1.02] hover:shadow-md',
+			tournament.has_in_progress_game && 'ring-2 ring-primary'
+		)}
+	>
+		<!-- Header: Name and Difficulty -->
+		<div class="mb-3 flex items-start justify-between gap-2">
+			<div class="min-w-0 flex-1">
+				<h3 class="truncate text-lg font-semibold text-foreground">{tournament.name}</h3>
+				{#if tournament.description}
+					<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">{tournament.description}</p>
+				{/if}
 			</div>
-			<div>
-				<p class="text-lg font-bold text-green-600 dark:text-green-400">
-					{tournament.my_wins_count}
-				</p>
-				<p class="text-xs text-muted-foreground">Victoires</p>
-			</div>
-			<div>
-				<p class="text-lg font-bold text-foreground">
-					{tournament.my_best_time !== null ? formatTime(tournament.my_best_time) : '-'}
-				</p>
-				<p class="text-xs text-muted-foreground">Meilleur temps</p>
-			</div>
+			<Badge class={cn('shrink-0', difficultyColor)}>
+				{difficultyLabel}
+			</Badge>
 		</div>
-	</div>
 
-	<!-- Action button -->
-	<a href="/dashboard/student/minesweeper/tournaments/{tournament.id}" class="block">
-		<Button class="w-full" variant={tournament.has_in_progress_game ? 'default' : 'outline'}>
-			{#if tournament.status === 'completed'}
-				<span class="mr-2" aria-hidden="true">👁️</span>
-				Voir
-			{:else if tournament.has_in_progress_game}
-				<span class="mr-2" aria-hidden="true">▶️</span>
-				Continuer la partie
-			{:else}
-				<span class="mr-2" aria-hidden="true">🎮</span>
-				Jouer
-			{/if}
-		</Button>
-	</a>
+		<!-- Tournament info -->
+		<div class="mb-4 space-y-2 text-sm">
+			<!-- Date range -->
+			<div class="flex items-center gap-2 text-muted-foreground">
+				<span aria-hidden="true">📅</span>
+				<span>{dateRange}</span>
+			</div>
 
-	<!-- In-progress indicator -->
-	{#if tournament.has_in_progress_game}
-		<div class="absolute top-2 right-2">
-			<span class="relative flex h-3 w-3">
+			<!-- Time remaining -->
+			<div class="flex items-center gap-2">
+				<span aria-hidden="true">⏳</span>
 				<span
-					class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"
-				></span>
-				<span class="relative inline-flex h-3 w-3 rounded-full bg-primary"></span>
-			</span>
+					class={cn(tournament.time_remaining_seconds < 3600 && 'font-semibold text-orange-600')}
+				>
+					{tournament.time_remaining_seconds > 0
+						? `Temps restant : ${timeRemaining}`
+						: 'Tournoi termine'}
+				</span>
+			</div>
+
+			<!-- Top X games info -->
+			<div class="flex items-center gap-2 text-muted-foreground">
+				<span aria-hidden="true">🏆</span>
+				<span>Moyenne des {tournament.top_x_games} meilleures parties</span>
+			</div>
 		</div>
-	{/if}
-</Card>
+
+		<!-- Player stats -->
+		<div class="rounded-lg bg-muted/50 p-3">
+			<h4 class="mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+				Mes statistiques
+			</h4>
+			<div class="grid grid-cols-3 gap-2 text-center">
+				<div>
+					<p class="text-lg font-bold text-foreground">{tournament.my_games_count}</p>
+					<p class="text-xs text-muted-foreground">Parties</p>
+				</div>
+				<div>
+					<p class="text-lg font-bold text-green-600 dark:text-green-400">
+						{tournament.my_wins_count}
+					</p>
+					<p class="text-xs text-muted-foreground">Victoires</p>
+				</div>
+				<div>
+					<p class="text-lg font-bold text-foreground">
+						{tournament.my_best_time !== null ? formatTime(tournament.my_best_time) : '-'}
+					</p>
+					<p class="text-xs text-muted-foreground">Meilleur temps</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- In-progress indicator -->
+		{#if tournament.has_in_progress_game}
+			<div class="absolute top-2 right-2">
+				<span class="relative flex h-3 w-3">
+					<span
+						class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"
+					></span>
+					<span class="relative inline-flex h-3 w-3 rounded-full bg-primary"></span>
+				</span>
+			</div>
+		{/if}
+	</Card>
+</a>
