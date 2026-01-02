@@ -88,12 +88,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 
 			if (finalizeResponse.ok) {
 				justFinalized = true;
-				// Refresh tournament data after finalization
-				const refreshResponse = await fetch(`/api/games/minesweeper/tournaments/${tournamentId}`);
-				if (refreshResponse.ok) {
-					const refreshed = await refreshResponse.json();
-					tournament.status = refreshed.tournament.status;
-				}
+				tournament.status = 'completed';
 			}
 		} catch (err) {
 			console.error('[Tournament] Auto-finalization failed:', err);
