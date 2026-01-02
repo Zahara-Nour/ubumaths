@@ -62,6 +62,15 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 			console.error('[Tournament] Error checking in-progress game:', gameError);
 		}
 
+		// Debug logging for resume functionality
+		console.log('[Tournament] In-progress game check:', {
+			tournamentId,
+			userId: user.id,
+			found: !!inProgressGame,
+			hasGridState: !!inProgressGame?.grid_state,
+			gameId: inProgressGame?.id
+		});
+
 		return {
 			tournament,
 			standings: standingsData.standings || [],
