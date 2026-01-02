@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -69,9 +70,12 @@
 		const places = parseInt(podiumPlaces, 10);
 		const newRewards: Record<string, number> = {};
 
+		// Use untrack to read current rewards without creating a dependency
+		const currentRewards = untrack(() => podiumRewards);
+
 		for (let i = 1; i <= places; i++) {
 			// Preserve existing rewards, or calculate default
-			newRewards[String(i)] = podiumRewards[String(i)] ?? Math.max(1, 11 - i);
+			newRewards[String(i)] = currentRewards[String(i)] ?? Math.max(1, 11 - i);
 		}
 
 		podiumRewards = newRewards;
