@@ -657,6 +657,13 @@ class MinesweeperStore {
 					'Attention : Vous avez cliqué sur une mine ! Les défis quotidiens utilisent la même grille pour tous.'
 				);
 			}
+
+			// Immediately save the game state so it can be resumed if page is reloaded
+			// before the first auto-save interval (10 seconds)
+			// This must happen AFTER potential grid regeneration to save the correct grid
+			this.saveGame().catch((err) => {
+				logger.error('Immediate save after first click failed:', err);
+			});
 		}
 
 		// Update cell reference after potential regeneration
