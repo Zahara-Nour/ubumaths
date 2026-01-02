@@ -46,7 +46,10 @@ const uuidSchema = z.string().uuid();
  * ```json
  * {
  *   "success": true,
- *   "status": "won"
+ *   "status": "won",
+ *   "grid_3bv": 48,        // only for wins
+ *   "score": 145,          // only for wins
+ *   "actual_3bvs": 0.384   // only for wins
  * }
  * ```
  */
@@ -119,12 +122,21 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(500, 'Erreur lors de la completion de la partie');
 		}
 
-		// Type the response
-		const result = data as { success: boolean; final_status: string };
+		// Type the response (matches CompleteTournamentGameResponse from types)
+		const result = data as {
+			success: boolean;
+			final_status: string;
+			grid_3bv?: number | null;
+			score?: number | null;
+			actual_3bvs?: number | null;
+		};
 
 		return json({
 			success: result.success,
-			status: result.final_status
+			status: result.final_status,
+			grid_3bv: result.grid_3bv ?? null,
+			score: result.score ?? null,
+			actual_3bvs: result.actual_3bvs ?? null
 		});
 	} catch (err) {
 		sanitizePostgresError(err, 'MINESWEEPER_TOURNAMENT_COMPLETE_GAME');

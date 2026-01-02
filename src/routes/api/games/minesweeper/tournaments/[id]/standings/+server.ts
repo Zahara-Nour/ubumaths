@@ -13,7 +13,7 @@ import type { TournamentStanding } from '$lib/types/minesweeper';
  * GET /api/games/minesweeper/tournaments/[id]/standings
  *
  * Returns the tournament leaderboard from the `minesweeper_tournament_standings` view.
- * The view calculates average time of top X games for each student.
+ * The view calculates average score (3BV-based) of top X games for each student.
  *
  * **Security**:
  * - Requires authentication
@@ -32,14 +32,15 @@ import type { TournamentStanding } from '$lib/types/minesweeper';
  *       "firstname": "Jane",
  *       "lastname": "Doe",
  *       "games_won": 5,
- *       "average_time": 120.50,
+ *       "average_score": 145.5,
+ *       "average_3bvs": 0.384,
  *       "position": 1
  *     }
  *   ],
  *   "user_standing": {
  *     "position": 5,
  *     "games_won": 3,
- *     "average_time": 145.25
+ *     "average_score": 120.3
  *   } | null,
  *   "total_participants": 25
  * }
@@ -105,7 +106,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			firstname: entry.firstname,
 			lastname: entry.lastname,
 			games_won: entry.games_won,
-			average_time: entry.average_time,
+			average_score: entry.average_score,
+			average_3bvs: entry.average_3bvs,
 			position: entry.position
 		}));
 
@@ -129,7 +131,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 				? {
 						position: userStanding.position,
 						games_won: userStanding.games_won,
-						average_time: userStanding.average_time
+						average_score: userStanding.average_score
 					}
 				: null,
 			total_participants: totalParticipants || 0

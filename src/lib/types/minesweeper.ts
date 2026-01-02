@@ -243,12 +243,15 @@ export interface TournamentGame {
 	status: TournamentGameStatus;
 	time_seconds?: number | null;
 	grid_state?: GridStateDTO | null;
+	grid_3bv?: number | null; // 3BV of the grid (minimum clicks to solve)
+	score?: number | null; // Calculated score based on 3BV/s efficiency
 	started_at: string;
 	completed_at?: string | null;
 }
 
 /**
  * Tournament leaderboard entry (from minesweeper_tournament_standings view)
+ * Ranked by average_score (3BV-based efficiency)
  */
 export interface TournamentStanding {
 	tournament_id: string;
@@ -256,7 +259,8 @@ export interface TournamentStanding {
 	firstname: string;
 	lastname: string;
 	games_won: number;
-	average_time: number;
+	average_score: number; // Average score from top X games
+	average_3bvs?: number; // Average 3BV/s efficiency
 	position: number;
 }
 
@@ -272,7 +276,7 @@ export interface TournamentWithDetails extends Tournament {
 	my_stats?: {
 		position: number;
 		games_won: number;
-		average_time: number;
+		average_score: number;
 		total_games: number;
 	} | null;
 	top_players?: TournamentStanding[];
@@ -313,6 +317,17 @@ export interface CompleteTournamentGamePayload {
 }
 
 /**
+ * Tournament game completion response (from RPC)
+ */
+export interface CompleteTournamentGameResponse {
+	success: boolean;
+	final_status: 'won' | 'lost';
+	grid_3bv?: number | null; // 3BV of the grid (only for wins)
+	score?: number | null; // Calculated score (only for wins)
+	actual_3bvs?: number | null; // Player's 3BV/s efficiency (only for wins)
+}
+
+/**
  * Tournament finalization result (podium winners)
  */
 export interface TournamentFinalizationResult {
@@ -320,6 +335,6 @@ export interface TournamentFinalizationResult {
 	student_id: string;
 	firstname: string;
 	lastname: string;
-	average_time: number;
+	average_score: number;
 	gidouilles_awarded: number;
 }

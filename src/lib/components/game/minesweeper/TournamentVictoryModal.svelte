@@ -2,7 +2,7 @@
 	TournamentVictoryModal Component
 	================================
 
-	Displays a victory screen for tournament games.
+	Displays a victory screen for tournament games with 3BV-based scoring.
 	No gidouilles are awarded during the tournament - rewards come at the end.
 
 	USAGE:
@@ -16,6 +16,9 @@
 			timeSeconds: 125,
 			gameNumber: 3,
 			difficulty: 'intermediate',
+			grid3bv: 48,
+			score: 145,
+			actual3bvs: 0.384,
 			onPlayAgain: () => { ... },
 			onBackToTournament: () => { ... }
 		}
@@ -35,28 +38,34 @@
 		timeSeconds: number;
 		gameNumber: number;
 		difficulty: Difficulty;
+		grid3bv: number;
+		score: number;
+		actual3bvs: number;
 		onPlayAgain: () => void;
 		onBackToTournament: () => void;
 	}
 
-	let { timeSeconds, gameNumber, difficulty, onPlayAgain, onBackToTournament }: Props = $props();
+	let {
+		timeSeconds,
+		gameNumber,
+		difficulty,
+		grid3bv,
+		score,
+		actual3bvs,
+		onPlayAgain,
+		onBackToTournament
+	}: Props = $props();
 
-	// Time performance assessment
-	const timePerformance = $derived.by(() => {
-		// Reference times for each difficulty
-		const refTimes: Record<Difficulty, number> = {
-			beginner: 180,
-			intermediate: 600,
-			expert: 1200
-		};
-		const refTime = refTimes[difficulty];
-		const ratio = timeSeconds / refTime;
-
-		if (ratio <= 0.33)
-			return { label: 'Temps incroyable !', emoji: '⚡', color: 'text-yellow-500' };
-		if (ratio <= 0.66) return { label: 'Excellent temps !', emoji: '🚀', color: 'text-green-500' };
-		if (ratio <= 1.0) return { label: 'Bon temps !', emoji: '👍', color: 'text-blue-500' };
-		return { label: 'Terminé !', emoji: '✓', color: 'text-muted-foreground' };
+	// Score performance assessment
+	const scorePerformance = $derived.by(() => {
+		// Score ranges: 10-300, with 100 being "reference" performance
+		if (score >= 200)
+			return { label: 'Performance exceptionnelle !', emoji: '⚡', color: 'text-yellow-500' };
+		if (score >= 150)
+			return { label: 'Excellente efficacite !', emoji: '🚀', color: 'text-green-500' };
+		if (score >= 100) return { label: 'Bonne performance !', emoji: '👍', color: 'text-blue-500' };
+		if (score >= 50) return { label: 'Continue comme ca !', emoji: '💪', color: 'text-cyan-500' };
+		return { label: 'Partie terminee !', emoji: '✓', color: 'text-muted-foreground' };
 	});
 </script>
 
@@ -74,23 +83,39 @@
 			Partie {gameNumber} - {DIFFICULTY_LABELS[difficulty]}
 		</div>
 
-		<!-- Time display -->
+		<!-- Score display (primary metric) -->
 		<div class="py-4 text-center">
 			<div class="text-4xl font-bold text-primary">
-				{formatDuration(timeSeconds)}
+				{score} pts
 			</div>
 			<div class="mt-2 flex items-center justify-center gap-2">
-				<span class={timePerformance.color}>{timePerformance.emoji}</span>
-				<span class={`text-sm ${timePerformance.color}`}>{timePerformance.label}</span>
+				<span class={scorePerformance.color}>{scorePerformance.emoji}</span>
+				<span class={`text-sm ${scorePerformance.color}`}>{scorePerformance.label}</span>
+			</div>
+		</div>
+
+		<!-- 3BV metrics (educational) -->
+		<div class="grid grid-cols-3 gap-2 rounded-lg bg-muted/50 p-3 text-center">
+			<div>
+				<div class="text-xs text-muted-foreground">Temps</div>
+				<div class="font-mono font-semibold">{formatDuration(timeSeconds)}</div>
+			</div>
+			<div>
+				<div class="text-xs text-muted-foreground">3BV</div>
+				<div class="font-mono font-semibold">{grid3bv}</div>
+			</div>
+			<div>
+				<div class="text-xs text-muted-foreground">3BV/s</div>
+				<div class="font-mono font-semibold">{actual3bvs.toFixed(2)}</div>
 			</div>
 		</div>
 
 		<!-- Tournament info -->
-		<div class="rounded-lg bg-muted/50 p-4 text-center">
+		<div class="rounded-lg border border-border bg-card p-3 text-center">
 			<p class="text-sm text-muted-foreground">
-				Ce temps sera pris en compte pour le classement du tournoi.
+				Ce score sera pris en compte pour le classement du tournoi.
 			</p>
-			<p class="mt-2 text-xs text-muted-foreground">Seules vos meilleures parties comptent !</p>
+			<p class="mt-1 text-xs text-muted-foreground">Seuls vos meilleurs scores comptent !</p>
 		</div>
 	</Card.Content>
 

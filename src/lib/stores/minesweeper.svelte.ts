@@ -1994,17 +1994,26 @@ class MinesweeperStore {
 				throw new Error(errorData.message || `Erreur ${response.status}`);
 			}
 
-			// Consume the response (we don't use the data, but need to parse it)
-			await response.json();
+			// Parse the response to get 3BV scoring data
+			const responseData = (await response.json()) as {
+				success: boolean;
+				status: string;
+				grid_3bv: number | null;
+				score: number | null;
+				actual_3bvs: number | null;
+			};
 
 			if (won) {
-				// Show tournament victory modal (no gidouilles, just stats)
+				// Show tournament victory modal with 3BV-based scoring
 				modalStack.push({
 					component: TournamentVictoryModal,
 					props: {
 						timeSeconds: game.timeElapsed,
 						gameNumber: this.tournamentGameNumber || 1,
 						difficulty: game.difficulty,
+						grid3bv: responseData.grid_3bv ?? 0,
+						score: responseData.score ?? 0,
+						actual3bvs: responseData.actual_3bvs ?? 0,
 						onPlayAgain: () => {
 							modalStack.clear();
 							// Start new tournament game with same tournament/difficulty
