@@ -53,6 +53,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// This ensures tournaments become active even without a cron job
 		await locals.supabase.rpc('auto_activate_scheduled_tournaments');
 
+		// Auto-complete active tournaments that have passed their end date
+		await locals.supabase.rpc('auto_complete_ended_tournaments');
+
 		// Validate query parameters with Zod
 		const queryParams = Object.fromEntries(url.searchParams);
 		const validation = listActiveTournamentsSchema.safeParse(queryParams);
