@@ -181,6 +181,10 @@ export const listActiveTournamentsSchema = z.object({
 		.string()
 		.optional()
 		.transform((v) => v === 'true'),
+	include_completed: z
+		.string()
+		.optional()
+		.transform((v) => v === 'true'),
 	limit: z
 		.string()
 		.optional()

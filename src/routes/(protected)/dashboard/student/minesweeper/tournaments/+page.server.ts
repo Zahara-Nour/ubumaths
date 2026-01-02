@@ -24,9 +24,9 @@ export const load: PageServerLoad = async ({ locals, fetch }) => {
 	}
 
 	try {
-		// Fetch active and upcoming tournaments
+		// Fetch active, upcoming, and completed tournaments
 		const tournamentsRes = await fetch(
-			'/api/games/minesweeper/tournaments/active?include_upcoming=true&limit=50'
+			'/api/games/minesweeper/tournaments/active?include_upcoming=true&include_completed=true&limit=50'
 		);
 
 		if (!tournamentsRes.ok) {

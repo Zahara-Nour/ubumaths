@@ -14,6 +14,7 @@
 	// Derived state
 	let activeTournaments = $derived(tournaments.filter((t) => t.status === 'active'));
 	let upcomingTournaments = $derived(tournaments.filter((t) => t.status === 'scheduled'));
+	let completedTournaments = $derived(tournaments.filter((t) => t.status === 'completed'));
 </script>
 
 <svelte:head>
@@ -87,6 +88,26 @@
 
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#each upcomingTournaments as tournament (tournament.id)}
+					<TournamentCard {tournament} />
+				{/each}
+			</div>
+		</div>
+	{/if}
+
+	<!-- Completed Tournaments (if any) -->
+	{#if completedTournaments.length > 0}
+		<Separator />
+
+		<div class="space-y-4">
+			<h2 class="text-2xl font-bold text-foreground">
+				Tournois termines
+				<span class="ml-2 text-lg font-normal text-muted-foreground">
+					({completedTournaments.length})
+				</span>
+			</h2>
+
+			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				{#each completedTournaments as tournament (tournament.id)}
 					<TournamentCard {tournament} />
 				{/each}
 			</div>
