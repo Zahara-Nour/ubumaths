@@ -5,7 +5,6 @@
 -->
 
 <script lang="ts">
-	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -65,21 +64,19 @@
 		data.classes.filter((c) => selectedClasses[c.id]).reduce((sum, c) => sum + c.student_count, 0)
 	);
 
-	// Update podium rewards when podium places changes
-	$effect(() => {
-		const places = parseInt(podiumPlaces, 10);
+	// Handler for podium places change - updates rewards to match new place count
+	function handlePodiumPlacesChange(newPlaces: string) {
+		podiumPlaces = newPlaces;
+		const places = parseInt(newPlaces, 10);
 		const newRewards: Record<string, number> = {};
-
-		// Use untrack to read current rewards without creating a dependency
-		const currentRewards = untrack(() => podiumRewards);
 
 		for (let i = 1; i <= places; i++) {
 			// Preserve existing rewards, or calculate default
-			newRewards[String(i)] = currentRewards[String(i)] ?? Math.max(1, 11 - i);
+			newRewards[String(i)] = podiumRewards[String(i)] ?? Math.max(1, 11 - i);
 		}
 
 		podiumRewards = newRewards;
-	});
+	}
 
 	function handleBack() {
 		goto('/dashboard/teacher/minesweeper/tournaments').then(() => {});
@@ -372,7 +369,8 @@
 					<Label>Nombre de places sur le podium</Label>
 					<MySelect
 						type="single"
-						bind:value={podiumPlaces}
+						value={podiumPlaces}
+						onchange={handlePodiumPlacesChange}
 						items={podiumPlacesItems}
 						placeholder="Selectionnez le nombre de places"
 					/>
