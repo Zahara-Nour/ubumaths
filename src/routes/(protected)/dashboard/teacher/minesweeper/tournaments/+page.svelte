@@ -16,10 +16,23 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Filter tournaments by status
-	let scheduled = $derived(data.tournaments.filter((t) => t.status === 'scheduled'));
-	let active = $derived(data.tournaments.filter((t) => t.status === 'active'));
-	let completed = $derived(data.tournaments.filter((t) => t.status === 'completed'));
+	// Helper to check tournament state based on dates (more accurate than status field)
+	function isEnded(t: { end_date: string; status: string }): boolean {
+		return new Date(t.end_date) < new Date() || t.status === 'completed';
+	}
+
+	function isStarted(t: { start_date: string }): boolean {
+		return new Date(t.start_date) <= new Date();
+	}
+
+	// Filter tournaments by actual state (dates + status)
+	let scheduled = $derived(
+		data.tournaments.filter((t) => t.status !== 'cancelled' && !isStarted(t) && !isEnded(t))
+	);
+	let active = $derived(
+		data.tournaments.filter((t) => t.status !== 'cancelled' && isStarted(t) && !isEnded(t))
+	);
+	let completed = $derived(data.tournaments.filter((t) => t.status !== 'cancelled' && isEnded(t)));
 	let cancelled = $derived(data.tournaments.filter((t) => t.status === 'cancelled'));
 
 	function handleCreateNew() {

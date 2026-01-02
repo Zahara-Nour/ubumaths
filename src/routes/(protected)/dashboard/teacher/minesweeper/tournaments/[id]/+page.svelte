@@ -15,15 +15,12 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		ArrowLeft,
-		Calendar,
 		Users,
 		Trophy,
-		Clock,
 		RefreshCw,
 		XCircle,
 		CheckCircle2,
-		AlertTriangle,
-		Medal
+		AlertTriangle
 	} from 'lucide-svelte';
 	import { DIFFICULTY_LABELS, type TournamentStatus } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
@@ -135,22 +132,6 @@
 		}
 	}
 
-	function formatDate(dateString: string): string {
-		return new Date(dateString).toLocaleDateString('fr-FR', {
-			day: 'numeric',
-			month: 'long',
-			year: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit'
-		});
-	}
-
-	function formatTime(seconds: number): string {
-		const mins = Math.floor(seconds / 60);
-		const secs = Math.floor(seconds % 60);
-		return `${mins}:${secs.toString().padStart(2, '0')}`;
-	}
-
 	function getMedalEmoji(position: number): string {
 		switch (position) {
 			case 1:
@@ -177,13 +158,42 @@
 		}
 	}
 
-	// Can cancel if scheduled or active
-	let canCancel = $derived(
-		data.tournament.status === 'scheduled' || data.tournament.status === 'active'
+	// Determine actual tournament state based on dates (more accurate than status field)
+	let isEnded = $derived(
+		new Date(data.tournament.end_date) < new Date() || data.tournament.status === 'completed'
 	);
+	let isStarted = $derived(new Date(data.tournament.start_date) <= new Date());
+	let isCancelled = $derived(data.tournament.status === 'cancelled');
 
-	// Can finalize if active
-	let canFinalize = $derived(data.tournament.status === 'active');
+	// Actual status for display (based on dates, not just DB status)
+	let actualStatus = $derived.by((): TournamentStatus => {
+		if (isCancelled) return 'cancelled';
+		if (isEnded) return 'completed';
+		if (isStarted) return 'active';
+		return 'scheduled';
+	});
+
+	// Can cancel if not yet ended and not cancelled
+	let canCancel = $derived(!isEnded && !isCancelled);
+
+	// Can finalize only if ended but not yet finalized in DB
+	let canFinalize = $derived(isEnded && data.tournament.status !== 'completed' && !isCancelled);
+
+	// Time remaining for active tournaments
+	let timeRemaining = $derived.by(() => {
+		if (isEnded) return null;
+		const endDate = new Date(data.tournament.end_date);
+		const now = new Date();
+		const seconds = Math.max(0, Math.floor((endDate.getTime() - now.getTime()) / 1000));
+
+		const days = Math.floor(seconds / 86400);
+		const hours = Math.floor((seconds % 86400) / 3600);
+		const minutes = Math.floor((seconds % 3600) / 60);
+
+		if (days > 0) return `${days}j ${hours}h`;
+		if (hours > 0) return `${hours}h ${minutes}m`;
+		return `${minutes}m`;
+	});
 
 	// Get total rewards to distribute
 	let totalRewards = $derived(
@@ -205,8 +215,11 @@
 			<div>
 				<div class="flex items-center gap-3">
 					<h1 class="text-3xl font-bold tracking-tight">{data.tournament.name}</h1>
-					<Badge class={getStatusBadgeClass(data.tournament.status)}>
-						{getStatusLabel(data.tournament.status)}
+					<Badge
+						class="{getStatusBadgeClass(actualStatus)} {isEnded ? 'px-4 py-1.5 text-base' : ''}"
+					>
+						{#if isEnded}🏁{/if}
+						{getStatusLabel(actualStatus)}
 					</Badge>
 				</div>
 				{#if data.tournament.description}
@@ -231,88 +244,54 @@
 		</div>
 	</div>
 
-	<!-- Info Cards -->
-	<div class="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-		<Card.Root>
-			<Card.Content class="flex items-center gap-4 pt-6">
-				<div class="rounded-full bg-primary/10 p-3">
-					<Calendar class="h-6 w-6 text-primary" />
+	<!-- Tournament Info Card (simplified like student view) -->
+	<Card.Root class="mb-8 p-6">
+		<div class="flex flex-wrap items-center justify-between gap-6">
+			<div class="space-y-3">
+				<!-- Status / Time remaining -->
+				<div class="flex items-center gap-2 text-sm">
+					<span aria-hidden="true">{isEnded ? '🏁' : '⏳'}</span>
+					{#if isEnded}
+						<span class="font-semibold text-muted-foreground">Tournoi termine</span>
+					{:else}
+						<span>Temps restant : <strong>{timeRemaining}</strong></span>
+					{/if}
 				</div>
-				<div>
-					<p class="text-sm text-muted-foreground">Periode</p>
-					<p class="font-semibold">{formatDate(data.tournament.start_date).split(' a ')[0]}</p>
-					<p class="text-sm text-muted-foreground">
-						au {formatDate(data.tournament.end_date).split(' a ')[0]}
-					</p>
-				</div>
-			</Card.Content>
-		</Card.Root>
 
-		<Card.Root>
-			<Card.Content class="flex items-center gap-4 pt-6">
-				<div class="rounded-full bg-primary/10 p-3">
-					<Users class="h-6 w-6 text-primary" />
+				<!-- Parameters -->
+				<div class="flex items-center gap-2 text-sm text-muted-foreground">
+					<span aria-hidden="true">⚙️</span>
+					<span
+						>{DIFFICULTY_LABELS[data.tournament.difficulty]} · Top {data.tournament.top_x_games} parties</span
+					>
 				</div>
-				<div>
-					<p class="text-sm text-muted-foreground">Participants</p>
-					<p class="text-2xl font-bold">{data.totalParticipants}</p>
-				</div>
-			</Card.Content>
-		</Card.Root>
 
-		<Card.Root>
-			<Card.Content class="flex items-center gap-4 pt-6">
-				<div class="rounded-full bg-primary/10 p-3">
-					<Clock class="h-6 w-6 text-primary" />
+				<!-- Podium rewards (inline with emojis) -->
+				<div class="flex flex-wrap items-center gap-3 text-sm">
+					{#each Object.entries(data.tournament.podium_rewards || {}) as [place, reward] (place)}
+						<div class="flex items-center gap-1">
+							{#if place === '1'}
+								<span>🥇</span>
+							{:else if place === '2'}
+								<span>🥈</span>
+							{:else if place === '3'}
+								<span>🥉</span>
+							{:else}
+								<span>#{place}</span>
+							{/if}
+							<span class="font-bold text-amber-500">{reward}</span>
+						</div>
+					{/each}
+					<span class="text-muted-foreground">gidouilles</span>
 				</div>
-				<div>
-					<p class="text-sm text-muted-foreground">Parametres</p>
-					<p class="font-semibold">{DIFFICULTY_LABELS[data.tournament.difficulty]}</p>
-					<p class="text-sm text-muted-foreground">Top {data.tournament.top_x_games} parties</p>
-				</div>
-			</Card.Content>
-		</Card.Root>
-
-		<Card.Root>
-			<Card.Content class="flex items-center gap-4 pt-6">
-				<div class="rounded-full bg-primary/10 p-3">
-					<Trophy class="h-6 w-6 text-primary" />
-				</div>
-				<div>
-					<p class="text-sm text-muted-foreground">Recompenses</p>
-					<p class="text-2xl font-bold">{totalRewards}</p>
-					<p class="text-sm text-muted-foreground">gidouilles au total</p>
-				</div>
-			</Card.Content>
-		</Card.Root>
-	</div>
-
-	<!-- Podium Configuration -->
-	<Card.Root class="mb-8">
-		<Card.Header>
-			<Card.Title class="flex items-center gap-2">
-				<Medal class="h-5 w-5" />
-				Configuration du podium
-			</Card.Title>
-		</Card.Header>
-		<Card.Content>
-			<div class="flex flex-wrap gap-4">
-				{#each Array.from({ length: data.tournament.podium_places }) as _, i (i)}
-					{@const place = i + 1}
-					{@const reward = data.tournament.podium_rewards?.[String(place)] || 0}
-					<div class="flex items-center gap-2 rounded-lg border p-3">
-						<span
-							class="flex h-8 w-8 items-center justify-center rounded-full font-bold {getMedalClass(
-								place
-							)}"
-						>
-							{place}
-						</span>
-						<span class="font-medium">{reward} gidouilles</span>
-					</div>
-				{/each}
 			</div>
-		</Card.Content>
+
+			<!-- Participants count -->
+			<div class="rounded-lg bg-muted/50 p-4 text-center">
+				<p class="text-sm text-muted-foreground">Participants</p>
+				<p class="text-3xl font-bold text-foreground">{data.totalParticipants}</p>
+			</div>
+		</div>
 	</Card.Root>
 
 	<!-- Leaderboard -->
@@ -321,12 +300,14 @@
 			<div class="flex items-center justify-between">
 				<Card.Title class="flex items-center gap-2">
 					<Trophy class="h-5 w-5" />
-					Classement
+					{isEnded ? 'Classement final' : 'Classement'}
 				</Card.Title>
-				<Button variant="outline" size="sm" onclick={handleRefresh} disabled={isRefreshing}>
-					<RefreshCw class="mr-2 h-4 w-4 {isRefreshing ? 'animate-spin' : ''}" />
-					Actualiser
-				</Button>
+				{#if !isEnded}
+					<Button variant="outline" size="sm" onclick={handleRefresh} disabled={isRefreshing}>
+						<RefreshCw class="mr-2 h-4 w-4 {isRefreshing ? 'animate-spin' : ''}" />
+						Actualiser
+					</Button>
+				{/if}
 			</div>
 		</Card.Header>
 		<Card.Content>
@@ -342,9 +323,8 @@
 						<Table.Row>
 							<Table.Head class="w-16">Rang</Table.Head>
 							<Table.Head>Joueur</Table.Head>
-							<Table.Head class="text-right">Parties gagnees</Table.Head>
-							<Table.Head class="text-right">Temps moyen</Table.Head>
-							{#if data.tournament.status === 'completed'}
+							<Table.Head class="text-right">Score moyen</Table.Head>
+							{#if isEnded}
 								<Table.Head class="text-right">Recompense</Table.Head>
 							{/if}
 						</Table.Row>
@@ -367,9 +347,10 @@
 									{standing.firstname}
 									{standing.lastname}
 								</Table.Cell>
-								<Table.Cell class="text-right">{standing.games_won}</Table.Cell>
-								<Table.Cell class="text-right">{formatTime(standing.average_time)}</Table.Cell>
-								{#if data.tournament.status === 'completed'}
+								<Table.Cell class="text-right font-mono">
+									{Math.round(standing.average_score)} pts
+								</Table.Cell>
+								{#if isEnded}
 									<Table.Cell class="text-right">
 										{#if standing.position <= data.tournament.podium_places}
 											<Badge variant="outline" class="bg-yellow-50 dark:bg-yellow-950">
