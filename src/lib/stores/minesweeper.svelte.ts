@@ -13,9 +13,12 @@ import type {
 	Difficulty,
 	GameStatus,
 	DatabaseGameStatus,
-	RewardBreakdown
+	RewardBreakdown,
+	TournamentGameStartResponse
 } from '$lib/types/minesweeper';
 import { DIFFICULTY_CONFIGS } from '$lib/types/minesweeper';
+import TournamentVictoryModal from '$lib/components/game/minesweeper/TournamentVictoryModal.svelte';
+import TournamentDefeatModal from '$lib/components/game/minesweeper/TournamentDefeatModal.svelte';
 
 const logger = createLogger('minesweeper.svelte.ts');
 
@@ -136,6 +139,30 @@ class MinesweeperStore {
 	 * Used to show "No penalty" indicator when items are available
 	 */
 	hintItemsAvailable = $state(0);
+
+	// ============================================================================
+	// Tournament Mode State
+	// ============================================================================
+
+	/**
+	 * Current tournament ID (null if not in tournament mode)
+	 */
+	tournamentId = $state<string | null>(null);
+
+	/**
+	 * Current tournament game ID (null if not in tournament mode)
+	 */
+	tournamentGameId = $state<string | null>(null);
+
+	/**
+	 * Current tournament game number (for display)
+	 */
+	tournamentGameNumber = $state<number | null>(null);
+
+	/**
+	 * Tournament difficulty (cached from tournament config)
+	 */
+	tournamentDifficulty = $state<Difficulty | null>(null);
 
 	/**
 	 * Timer interval
@@ -1221,12 +1248,18 @@ class MinesweeperStore {
 
 	/**
 	 * Complete the game (win or loss)
+	 * Automatically detects tournament mode and routes to appropriate handler
 	 *
 	 * @param won - Whether the player won
 	 */
 	async completeGame(won: boolean): Promise<void> {
 		if (!browser || !this.currentGame) {
 			return;
+		}
+
+		// Route to tournament completion if in tournament mode
+		if (this.isInTournamentMode()) {
+			return this.completeTournamentGame(won);
 		}
 
 		const game = this.currentGame;
@@ -1801,6 +1834,301 @@ class MinesweeperStore {
 		this.newlyUnlockedAchievements = [];
 	}
 
+	// ============================================================================
+	// Tournament Mode Methods
+	// ============================================================================
+
+	/**
+	 * Check if currently in tournament mode
+	 * @returns True if a tournament game is active
+	 */
+	isInTournamentMode(): boolean {
+		return this.tournamentId !== null && this.tournamentGameId !== null;
+	}
+
+	/**
+	 * Start a new tournament game
+	 *
+	 * @param tournamentId - Tournament ID
+	 * @param difficulty - Tournament difficulty (from tournament config)
+	 * @returns Promise that resolves with game info or throws on error
+	 */
+	async startTournamentGame(
+		tournamentId: string,
+		difficulty: Difficulty
+	): Promise<TournamentGameStartResponse> {
+		if (!browser) {
+			throw new Error('Cannot start tournament game on server');
+		}
+
+		if (!this.shouldUseDatabase()) {
+			throw new Error('Must be logged in as student to play tournament');
+		}
+
+		this.isLoading = true;
+		this.error = null;
+
+		try {
+			// Call API to start tournament game
+			const response = await fetch(
+				`/api/games/minesweeper/tournaments/${tournamentId}/games/start`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				throw new Error(errorData.message || `Erreur ${response.status}`);
+			}
+
+			const gameData: TournamentGameStartResponse = await response.json();
+
+			// Store tournament context
+			this.tournamentId = tournamentId;
+			this.tournamentGameId = gameData.game_id;
+			this.tournamentGameNumber = gameData.game_number;
+			this.tournamentDifficulty = difficulty;
+
+			// Stop existing timers
+			this.stopTimer();
+			this.stopAutoSave();
+
+			// Get difficulty config
+			const config = DIFFICULTY_CONFIGS[difficulty];
+
+			// Generate grid with tournament seed (same for all players)
+			const grid = this.generateGrid(config, undefined, undefined, gameData.seed);
+
+			// Create game state
+			const newGame: GameState = {
+				id: gameData.game_id,
+				difficulty,
+				status: 'not_started',
+				grid,
+				rows: config.rows,
+				cols: config.cols,
+				minesCount: config.mines,
+				flagsUsed: 0,
+				cellsRevealed: 0,
+				timeElapsed: 0,
+				startedAt: undefined,
+				seed: gameData.seed,
+				hintsUsed: 0 // No hints in tournament mode
+			};
+
+			this.currentGame = newGame;
+
+			logger.info('Started tournament game:', {
+				tournamentId,
+				gameId: gameData.game_id,
+				gameNumber: gameData.game_number,
+				seed: gameData.seed
+			});
+
+			toaster.success(`Partie ${gameData.game_number} du tournoi démarrée !`);
+
+			return gameData;
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Échec du démarrage de la partie';
+			logger.error('Failed to start tournament game:', err);
+			this.error = message;
+			toaster.error(message);
+			throw err;
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	/**
+	 * Complete current tournament game
+	 * Called when game is won or lost
+	 *
+	 * @param won - Whether the player won
+	 */
+	async completeTournamentGame(won: boolean): Promise<void> {
+		if (!browser || !this.currentGame) {
+			return;
+		}
+
+		if (!this.isInTournamentMode()) {
+			logger.error('Cannot complete tournament game: not in tournament mode');
+			return;
+		}
+
+		const game = this.currentGame;
+
+		// Guard: Prevent double-completion
+		if (game.status !== 'in_progress') {
+			logger.warn('Attempted to complete non-active tournament game:', { status: game.status });
+			return;
+		}
+
+		// Stop timers
+		this.stopTimer();
+		this.stopAutoSave();
+
+		// Update game status
+		game.status = won ? 'won' : 'lost';
+
+		try {
+			const gridState = this.gridToDTO(game.grid);
+
+			// Call tournament game complete API
+			const response = await fetch(
+				`/api/games/minesweeper/tournaments/${this.tournamentId}/games/${this.tournamentGameId}/complete`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						status: won ? 'won' : 'lost',
+						time_seconds: game.timeElapsed,
+						grid_state: gridState
+					})
+				}
+			);
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				throw new Error(errorData.message || `Erreur ${response.status}`);
+			}
+
+			// Consume the response (we don't use the data, but need to parse it)
+			await response.json();
+
+			if (won) {
+				// Show tournament victory modal (no gidouilles, just stats)
+				modalStack.push({
+					component: TournamentVictoryModal,
+					props: {
+						timeSeconds: game.timeElapsed,
+						gameNumber: this.tournamentGameNumber || 1,
+						difficulty: game.difficulty,
+						onPlayAgain: () => {
+							modalStack.clear();
+							// Start new tournament game with same tournament/difficulty
+							if (this.tournamentId && this.tournamentDifficulty) {
+								this.startTournamentGame(this.tournamentId, this.tournamentDifficulty);
+							}
+						},
+						onBackToTournament: () => {
+							modalStack.clear();
+							this.exitTournamentMode();
+						}
+					},
+					canDismiss: true
+				});
+			} else {
+				// Reveal all mines on loss
+				this.revealAllMines();
+
+				// Show tournament defeat modal
+				const config = DIFFICULTY_CONFIGS[game.difficulty];
+				const totalCells = config.rows * config.cols - config.mines;
+
+				modalStack.push({
+					component: TournamentDefeatModal,
+					props: {
+						timeElapsed: game.timeElapsed,
+						cellsRevealed: game.cellsRevealed,
+						totalCells,
+						gameNumber: this.tournamentGameNumber || 1,
+						difficulty: game.difficulty,
+						onPlayAgain: () => {
+							modalStack.clear();
+							// Start new tournament game
+							if (this.tournamentId && this.tournamentDifficulty) {
+								this.startTournamentGame(this.tournamentId, this.tournamentDifficulty);
+							}
+						},
+						onBackToTournament: () => {
+							modalStack.clear();
+							this.exitTournamentMode();
+						}
+					},
+					canDismiss: true
+				});
+			}
+
+			logger.info('Tournament game completed:', {
+				tournamentId: this.tournamentId,
+				gameId: this.tournamentGameId,
+				won,
+				timeSeconds: game.timeElapsed
+			});
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Échec de la sauvegarde';
+			logger.error('Failed to complete tournament game:', err);
+			this.error = message;
+			toaster.error('Erreur lors de la sauvegarde. Votre partie a peut-être été enregistrée.');
+		}
+
+		// Trigger reactivity
+		this.currentGame = { ...game };
+	}
+
+	/**
+	 * Abandon current tournament game
+	 * Used when player wants to quit without finishing
+	 */
+	async abandonTournamentGame(): Promise<void> {
+		if (!browser || !this.isInTournamentMode()) {
+			return;
+		}
+
+		this.isLoading = true;
+
+		try {
+			// Call API to mark game as abandoned
+			const response = await fetch(
+				`/api/games/minesweeper/tournaments/${this.tournamentId}/games/${this.tournamentGameId}/abandon`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				throw new Error(errorData.message || `Erreur ${response.status}`);
+			}
+
+			logger.info('Tournament game abandoned:', {
+				tournamentId: this.tournamentId,
+				gameId: this.tournamentGameId
+			});
+
+			// Clean up
+			this.exitTournamentMode();
+
+			toaster.info('Partie abandonnée');
+		} catch (err) {
+			const message = err instanceof Error ? err.message : "Échec de l'abandon";
+			logger.error('Failed to abandon tournament game:', err);
+			this.error = message;
+			toaster.error(message);
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	/**
+	 * Exit tournament mode and clean up state
+	 */
+	exitTournamentMode(): void {
+		this.stopTimer();
+		this.stopAutoSave();
+		this.currentGame = null;
+		this.tournamentId = null;
+		this.tournamentGameId = null;
+		this.tournamentGameNumber = null;
+		this.tournamentDifficulty = null;
+		this.error = null;
+
+		logger.info('Exited tournament mode');
+	}
+
 	/**
 	 * Cleanup intervals and state
 	 * ⚠️ IMPORTANT: This is now called automatically on beforeunload,
@@ -1815,6 +2143,12 @@ class MinesweeperStore {
 		this.error = null;
 		this.newlyUnlockedAchievements = [];
 		this.hintItemsAvailable = 0;
+
+		// Clear tournament state
+		this.tournamentId = null;
+		this.tournamentGameId = null;
+		this.tournamentGameNumber = null;
+		this.tournamentDifficulty = null;
 
 		// Remove beforeunload listener if exists
 		if (this.cleanupHandler) {

@@ -185,3 +185,141 @@ export interface RewardBreakdown {
 	is_first_win_of_day: boolean; // Whether this was first win today
 	week_best_reward: number; // Best theoretical reward this week
 }
+
+// ============================================================================
+// Tournament Types
+// ============================================================================
+
+/**
+ * Tournament status lifecycle
+ */
+export type TournamentStatus = 'scheduled' | 'active' | 'completed' | 'cancelled';
+
+/**
+ * Tournament scope - who can participate
+ */
+export type TournamentScope = 'classes' | 'global';
+
+/**
+ * Tournament creator role
+ */
+export type TournamentCreatorRole = 'teacher' | 'admin';
+
+/**
+ * Tournament configuration
+ */
+export interface Tournament {
+	id: string;
+	creator_id: string;
+	creator_role: TournamentCreatorRole;
+	scope: TournamentScope;
+	name: string;
+	description?: string | null;
+	difficulty: Difficulty;
+	start_date: string;
+	end_date: string;
+	top_x_games: number;
+	podium_rewards: Record<string, number>; // {"1": 10, "2": 5, "3": 3}
+	podium_places: number;
+	status: TournamentStatus;
+	created_at: string;
+	updated_at: string;
+}
+
+/**
+ * Tournament game status (extends DatabaseGameStatus)
+ */
+export type TournamentGameStatus = DatabaseGameStatus | 'abandoned';
+
+/**
+ * Individual game record in a tournament
+ */
+export interface TournamentGame {
+	id: string;
+	tournament_id: string;
+	student_id: string;
+	game_number: number;
+	seed: string;
+	status: TournamentGameStatus;
+	time_seconds?: number | null;
+	grid_state?: GridStateDTO | null;
+	started_at: string;
+	completed_at?: string | null;
+}
+
+/**
+ * Tournament leaderboard entry (from minesweeper_tournament_standings view)
+ */
+export interface TournamentStanding {
+	tournament_id: string;
+	student_id: string;
+	firstname: string;
+	lastname: string;
+	games_won: number;
+	average_time: number;
+	position: number;
+}
+
+/**
+ * Tournament with additional UI data
+ */
+export interface TournamentWithDetails extends Tournament {
+	classes?: Array<{
+		id: string;
+		name: string;
+		teacher_name: string;
+	}>;
+	my_stats?: {
+		position: number;
+		games_won: number;
+		average_time: number;
+		total_games: number;
+	} | null;
+	top_players?: TournamentStanding[];
+	participant_count?: number;
+}
+
+/**
+ * Tournament creation payload
+ */
+export interface CreateTournamentPayload {
+	name: string;
+	description?: string;
+	difficulty: Difficulty;
+	start_date: string;
+	end_date: string;
+	top_x_games: number;
+	podium_rewards: Record<string, number>;
+	podium_places: number;
+	class_ids?: string[]; // null/empty for global tournaments
+}
+
+/**
+ * Tournament game start response
+ */
+export interface TournamentGameStartResponse {
+	game_id: string;
+	seed: string;
+	game_number: number;
+}
+
+/**
+ * Tournament game completion payload
+ */
+export interface CompleteTournamentGamePayload {
+	status: 'won' | 'lost';
+	time_seconds: number;
+	grid_state: GridStateDTO;
+}
+
+/**
+ * Tournament finalization result (podium winners)
+ */
+export interface TournamentFinalizationResult {
+	place: number;
+	student_id: string;
+	firstname: string;
+	lastname: string;
+	average_time: number;
+	gidouilles_awarded: number;
+}
