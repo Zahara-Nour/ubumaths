@@ -127,10 +127,11 @@
 	// Get current game state from store
 	let currentGame = $derived(minesweeperStore.currentGame);
 	let minesRemaining = $derived(currentGame ? currentGame.minesCount - currentGame.flagsUsed : 0);
-	let hasActiveGame = $derived(
+	let isGameInProgress = $derived(
 		currentGame && currentGame.status !== 'won' && currentGame.status !== 'lost'
 	);
 	let isLoading = $derived(minesweeperStore.isLoading);
+	let isCompletingGame = $derived(minesweeperStore.isCompletingGame);
 
 	// Reset handler (for failed games)
 	function handleReset() {
@@ -230,8 +231,8 @@
 
 	<!-- Game Section -->
 	<div class="space-y-4">
-		{#if hasActiveGame && currentGame}
-			<!-- Active game in progress -->
+		{#if currentGame}
+			<!-- Game in progress or completing -->
 			<div class="mx-auto max-w-4xl space-y-4">
 				<!-- Game Controls -->
 				<GameControls
@@ -249,12 +250,12 @@
 					onCellReveal={(row, col) => minesweeperStore.revealCell(row, col)}
 					onCellFlag={(row, col) => minesweeperStore.toggleFlag(row, col)}
 					onCellChord={(row, col) => minesweeperStore.chordClick(row, col)}
-					disabled={currentGame.status === 'won' || currentGame.status === 'lost' || isLoading}
+					disabled={!isGameInProgress || isLoading || isCompletingGame}
 				/>
 
-				{#if isLoading}
+				{#if isCompletingGame}
 					<div class="text-center">
-						<p class="text-muted-foreground">Enregistrement de votre resultat...</p>
+						<p class="animate-pulse text-muted-foreground">Enregistrement de votre resultat...</p>
 					</div>
 				{/if}
 			</div>
