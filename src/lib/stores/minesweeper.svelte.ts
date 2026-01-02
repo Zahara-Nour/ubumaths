@@ -661,6 +661,11 @@ class MinesweeperStore {
 			// Immediately save the game state so it can be resumed if page is reloaded
 			// before the first auto-save interval (10 seconds)
 			// This must happen AFTER potential grid regeneration to save the correct grid
+			logger.info('Triggering immediate save after first click', {
+				tournamentMode: this.isInTournamentMode(),
+				tournamentGameId: this.tournamentGameId,
+				gameId: game.id
+			});
 			this.saveGame().catch((err) => {
 				logger.error('Immediate save after first click failed:', err);
 			});
@@ -1154,7 +1159,7 @@ class MinesweeperStore {
 		// Only save games that are still in progress to avoid RLS policy violations
 		// Completed games are saved via completeGame() RPC functions
 		if (game.status !== 'in_progress') {
-			logger.trace('Skipping auto-save for completed game:', { status: game.status });
+			logger.info('Skipping save for non-in-progress game:', { status: game.status });
 			return;
 		}
 
@@ -1163,35 +1168,64 @@ class MinesweeperStore {
 				// Save to database for students
 				const gridState = this.gridToDTO(game.grid);
 
-				// Build update payload (exclude time_seconds - it's server-controlled)
-				// The complete_minesweeper_game() function sets time_seconds when game ends
-				const updatePayload: {
-					grid_state: Json;
-					status: DatabaseGameStatus;
-					flags_used: number;
-					cells_revealed: number;
-					hints_used: number;
-				} = {
-					grid_state: gridState as unknown as Json,
-					status: this.toDbStatus(game.status),
-					flags_used: game.flagsUsed,
-					cells_revealed: game.cellsRevealed,
-					hints_used: game.hintsUsed || 0
-				};
+				// Check if we're in tournament mode
+				if (this.isInTournamentMode() && this.tournamentGameId) {
+					// Save to tournament games table
+					const updatePayload = {
+						grid_state: gridState as unknown as Json,
+						status: this.toDbStatus(game.status),
+						flags_used: game.flagsUsed,
+						cells_revealed: game.cellsRevealed
+					};
 
-				const { error } = await this.supabase!.from('minesweeper_games')
-					.update(updatePayload)
-					.eq('id', game.id);
+					const { error } = await this.supabase!.from('minesweeper_tournament_games')
+						.update(updatePayload)
+						.eq('id', this.tournamentGameId);
 
-				if (error) {
-					throw error;
+					if (error) {
+						throw error;
+					}
+
+					logger.info('Tournament game saved to database:', {
+						gameId: this.tournamentGameId,
+						cellsRevealed: game.cellsRevealed,
+						flagsUsed: game.flagsUsed
+					});
+				} else {
+					// Save to regular games table
+					// Build update payload (exclude time_seconds - it's server-controlled)
+					// The complete_minesweeper_game() function sets time_seconds when game ends
+					const updatePayload: {
+						grid_state: Json;
+						status: DatabaseGameStatus;
+						flags_used: number;
+						cells_revealed: number;
+						hints_used: number;
+					} = {
+						grid_state: gridState as unknown as Json,
+						status: this.toDbStatus(game.status),
+						flags_used: game.flagsUsed,
+						cells_revealed: game.cellsRevealed,
+						hints_used: game.hintsUsed || 0
+					};
+
+					const { error } = await this.supabase!.from('minesweeper_games')
+						.update(updatePayload)
+						.eq('id', game.id);
+
+					if (error) {
+						throw error;
+					}
+
+					logger.info('Regular game saved to database:', {
+						gameId: game.id,
+						cellsRevealed: game.cellsRevealed
+					});
 				}
-
-				logger.trace('Game saved to database');
 			} else {
 				// Save to localStorage for public users, teachers, and admins
 				this.saveToLocalStorage(game);
-				logger.trace('Game saved to localStorage');
+				logger.info('Game saved to localStorage');
 			}
 		} catch (err) {
 			logger.error('Failed to save game:', err);
