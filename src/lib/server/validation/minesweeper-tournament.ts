@@ -131,7 +131,7 @@ export const completeTournamentGameSchema = z.object({
 	time_seconds: z
 		.number()
 		.int()
-		.min(1, 'Le temps doit être au moins 1 seconde')
+		.min(0, 'Le temps ne peut pas être négatif')
 		.max(14400, 'Le temps ne peut pas dépasser 4 heures'),
 	grid_state: gridStateSchema
 });
