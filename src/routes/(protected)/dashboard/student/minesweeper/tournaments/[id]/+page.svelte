@@ -81,8 +81,7 @@
 			game_number: inProgressGame.game_number,
 			started_at: inProgressGame.started_at,
 			grid_state: inProgressGame.grid_state,
-			time_seconds: inProgressGame.time_seconds,
-			flags_used: inProgressGame.flags_used
+			time_seconds: inProgressGame.time_seconds
 		});
 
 		// Clear the in-progress game since it's now active in the store
