@@ -230,14 +230,7 @@
 
 	<!-- Game Section -->
 	<div class="space-y-4">
-		{#if isTournamentEnded}
-			<!-- Tournament ended -->
-			<Card class="p-8 text-center">
-				<span class="mb-4 block text-4xl">🏁</span>
-				<p class="text-lg font-semibold text-foreground">Ce tournoi est termine</p>
-				<p class="mt-2 text-muted-foreground">Consultez le classement final ci-dessous</p>
-			</Card>
-		{:else if hasActiveGame && currentGame}
+		{#if hasActiveGame && currentGame}
 			<!-- Active game in progress -->
 			<div class="mx-auto max-w-4xl space-y-4">
 				<!-- Game Controls -->
@@ -265,7 +258,7 @@
 					</div>
 				{/if}
 			</div>
-		{:else}
+		{:else if !isTournamentEnded}
 			<!-- No active game - show start button -->
 			<div class="flex justify-center py-4">
 				<Button onclick={startNewGame} disabled={isStartingGame} size="lg">
@@ -285,7 +278,10 @@
 	<!-- Leaderboard Section -->
 	<div class="space-y-4">
 		<div class="flex items-center justify-between">
-			<h2 class="text-2xl font-bold text-foreground">Classement</h2>
+			<h2 class="text-2xl font-bold text-foreground">
+				{#if isTournamentEnded}<span class="mr-2">🏁</span>{/if}Classement{#if isTournamentEnded}
+					final{/if}
+			</h2>
 			<Badge variant="outline" class="px-3 py-1">
 				{standings.length} participant{standings.length !== 1 ? 's' : ''}
 			</Badge>
