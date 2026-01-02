@@ -295,11 +295,11 @@
 		<a href="/dashboard/student/minesweeper/tournaments">
 			<Button variant="outline">Tous les tournois</Button>
 		</a>
-		<a href="/dashboard/student/minesweeper/daily">
-			<Button variant="outline">Defi quotidien</Button>
-		</a>
 		<a href="/dashboard/student/minesweeper/stats">
 			<Button variant="outline">Mes statistiques</Button>
+		</a>
+		<a href="/games/minesweeper">
+			<Button variant="outline">Jeu libre</Button>
 		</a>
 	</div>
 </div>

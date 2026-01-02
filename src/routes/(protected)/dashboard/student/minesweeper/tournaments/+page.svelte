@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
 	import { Card } from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
 	import TournamentCard from '$lib/components/game/minesweeper/TournamentCard.svelte';
@@ -31,13 +30,7 @@
 		<div class="flex flex-wrap items-center justify-between gap-4">
 			<div>
 				<h1 class="text-3xl font-bold text-foreground">Tournois</h1>
-				<p class="mt-1 text-muted-foreground">
-					Affrontez d'autres joueurs et gagnez des recompenses !
-				</p>
 			</div>
-			<a href="/dashboard/student/minesweeper/daily">
-				<Button variant="outline">Defi quotidien</Button>
-			</a>
 		</div>
 	</div>
 
@@ -58,12 +51,6 @@
 			<Card class="p-12 text-center">
 				<span class="mb-4 block text-4xl">🎮</span>
 				<p class="text-lg text-muted-foreground">Aucun tournoi en cours pour le moment</p>
-				<p class="mt-2 text-sm text-muted-foreground">
-					Revenez plus tard ou jouez au defi quotidien en attendant !
-				</p>
-				<a href="/dashboard/student/minesweeper/daily" class="mt-4 inline-block">
-					<Button variant="default">Jouer au defi quotidien</Button>
-				</a>
 			</Card>
 		{:else}
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -113,19 +100,4 @@
 			</div>
 		</div>
 	{/if}
-
-	<!-- Navigation -->
-	<Separator />
-
-	<div class="flex flex-wrap gap-3">
-		<a href="/dashboard/student/minesweeper/daily">
-			<Button variant="outline">Defi quotidien</Button>
-		</a>
-		<a href="/dashboard/student/minesweeper/stats">
-			<Button variant="outline">Mes statistiques</Button>
-		</a>
-		<a href="/games/minesweeper">
-			<Button variant="outline">Jeu libre</Button>
-		</a>
-	</div>
 </div>
