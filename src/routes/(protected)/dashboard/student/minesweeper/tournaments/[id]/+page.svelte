@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { invalidateAll } from '$app/navigation';
+	import { invalidateAll, navigating } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Card } from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
@@ -155,6 +155,7 @@
 	);
 	let isLoading = $derived(minesweeperStore.isLoading);
 	let isCompletingGame = $derived(minesweeperStore.isCompletingGame);
+	let isRefreshingStandings = $derived($navigating !== null);
 
 	// Reset handler (for failed games)
 	function handleReset() {
@@ -324,18 +325,25 @@
 			<h2 class="text-2xl font-bold text-foreground">
 				{#if isTournamentEnded}<span class="mr-2">🏁</span>{/if}Classement{#if isTournamentEnded}
 					final{/if}
+				{#if isRefreshingStandings}
+					<span
+						class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
+					></span>
+				{/if}
 			</h2>
 			<Badge variant="outline" class="px-3 py-1">
 				{standings.length} participant{standings.length !== 1 ? 's' : ''}
 			</Badge>
 		</div>
 
-		<TournamentLeaderboard
-			{standings}
-			currentUserId={data.currentUserId}
-			maxRows={20}
-			isCompleted={isTournamentEnded}
-			podiumRewards={tournament.podium_rewards}
-		/>
+		<div class={cn(isRefreshingStandings && 'opacity-50 transition-opacity')}>
+			<TournamentLeaderboard
+				{standings}
+				currentUserId={data.currentUserId}
+				maxRows={20}
+				isCompleted={isTournamentEnded}
+				podiumRewards={tournament.podium_rewards}
+			/>
+		</div>
 	</div>
 </div>
