@@ -1171,11 +1171,9 @@ class MinesweeperStore {
 				// Check if we're in tournament mode
 				if (this.isInTournamentMode() && this.tournamentGameId) {
 					// Save to tournament games table
+					// Note: tournament_games table only has grid_state column for auto-save
 					const updatePayload = {
-						grid_state: gridState as unknown as Json,
-						status: this.toDbStatus(game.status),
-						flags_used: game.flagsUsed,
-						cells_revealed: game.cellsRevealed
+						grid_state: gridState as unknown as Json
 					};
 
 					const { error } = await this.supabase!.from('minesweeper_tournament_games')
@@ -1188,8 +1186,7 @@ class MinesweeperStore {
 
 					logger.info('Tournament game saved to database:', {
 						gameId: this.tournamentGameId,
-						cellsRevealed: game.cellsRevealed,
-						flagsUsed: game.flagsUsed
+						cellsRevealed: game.cellsRevealed
 					});
 				} else {
 					// Save to regular games table
