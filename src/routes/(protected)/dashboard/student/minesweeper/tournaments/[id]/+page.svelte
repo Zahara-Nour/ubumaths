@@ -104,7 +104,6 @@
 					tournament = data.tournament;
 					standings = data.standings;
 					userStanding = data.userStanding;
-					inProgressGame = data.inProgressGame;
 				});
 			}
 		}
