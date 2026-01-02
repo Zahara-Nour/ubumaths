@@ -873,17 +873,16 @@ class MinesweeperStore {
 				neighborCell.isRevealed = true;
 				neighborCell.isExploded = true;
 				hitMine = true;
-			} else {
-				// Safe cell - reveal it (only if not already revealed by previous cascade)
-				// ✅ FIX: Prevent double-counting if cascade from previous neighbor already revealed this cell
-				if (!neighborCell.isRevealed) {
+			} else if (!neighborCell.isRevealed) {
+				// Safe cell - reveal it
+				if (neighborCell.adjacentMines === 0) {
+					// Empty cell: let cascadeReveal handle revealing and propagation
+					// ✅ FIX: Don't reveal before cascadeReveal - it expects unrevealed cells
+					this.cascadeReveal(neighbor.row, neighbor.col);
+				} else {
+					// Numbered cell: reveal directly (no cascade needed)
 					neighborCell.isRevealed = true;
 					game.cellsRevealed++;
-
-					// Cascade if empty
-					if (neighborCell.adjacentMines === 0) {
-						this.cascadeReveal(neighbor.row, neighbor.col);
-					}
 				}
 			}
 		}
@@ -972,14 +971,15 @@ class MinesweeperStore {
 			const cell = game.grid[selectedCell.row][selectedCell.col];
 
 			// Reveal the cell (defensive check in case it was already revealed)
-			// ✅ FIX: Prevent double-counting if cell was somehow revealed between selection and now
 			if (!cell.isRevealed) {
-				cell.isRevealed = true;
-				game.cellsRevealed++;
-
-				// Cascade reveal if it's an empty cell
 				if (cell.adjacentMines === 0) {
+					// Empty cell: let cascadeReveal handle revealing and propagation
+					// ✅ FIX: Don't reveal before cascadeReveal - it expects unrevealed cells
 					this.cascadeReveal(selectedCell.row, selectedCell.col);
+				} else {
+					// Numbered cell: reveal directly (no cascade needed)
+					cell.isRevealed = true;
+					game.cellsRevealed++;
 				}
 			}
 
