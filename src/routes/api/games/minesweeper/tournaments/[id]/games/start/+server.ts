@@ -53,6 +53,14 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			.single();
 
 		if (rpcError) {
+			// Log the actual error for debugging
+			console.error('[TOURNAMENT_START_GAME] RPC Error:', {
+				code: rpcError.code,
+				message: rpcError.message,
+				details: rpcError.details,
+				hint: rpcError.hint
+			});
+
 			// Handle specific RPC errors with French messages
 			if (rpcError.message?.includes('not found') || rpcError.message?.includes('introuvable')) {
 				throw error(404, 'Tournoi introuvable');
