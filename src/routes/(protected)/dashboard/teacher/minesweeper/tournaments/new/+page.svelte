@@ -46,6 +46,16 @@
 		label
 	}));
 
+	// Helper to format Date as local datetime-local string (YYYY-MM-DDTHH:mm)
+	function toLocalDateTimeString(date: Date): string {
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+		const hours = String(date.getHours()).padStart(2, '0');
+		const minutes = String(date.getMinutes()).padStart(2, '0');
+		return `${year}-${month}-${day}T${hours}:${minutes}`;
+	}
+
 	// Podium places options for MySelect
 	const podiumPlacesItems = Array.from({ length: 10 }, (_, i) => ({
 		value: String(i + 1),
@@ -167,19 +177,19 @@
 		}
 	}
 
-	// Set default dates (start: tomorrow, end: in one week)
+	// Set default dates (start: tomorrow 8h, end: in one week 18h)
 	$effect(() => {
 		if (!startDate) {
 			const tomorrow = new Date();
 			tomorrow.setDate(tomorrow.getDate() + 1);
 			tomorrow.setHours(8, 0, 0, 0);
-			startDate = tomorrow.toISOString().slice(0, 16);
+			startDate = toLocalDateTimeString(tomorrow);
 		}
 		if (!endDate) {
 			const nextWeek = new Date();
 			nextWeek.setDate(nextWeek.getDate() + 8);
 			nextWeek.setHours(18, 0, 0, 0);
-			endDate = nextWeek.toISOString().slice(0, 16);
+			endDate = toLocalDateTimeString(nextWeek);
 		}
 	});
 </script>
