@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { invalidateAll, navigating } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
+	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import { Card } from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
