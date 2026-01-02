@@ -258,24 +258,16 @@
 			</div>
 		{:else}
 			<!-- No active game - show start button -->
-			<Card class="p-8 text-center">
-				<span class="mb-4 block text-4xl">🎮</span>
-				<p class="mb-4 text-lg text-muted-foreground">
-					Pret a jouer ? Lancez une nouvelle partie !
-				</p>
-				<Button onclick={startNewGame} disabled={isStartingGame} size="lg" class="min-w-48">
+			<div class="flex justify-center py-4">
+				<Button onclick={startNewGame} disabled={isStartingGame} size="lg">
 					{#if isStartingGame}
 						<span class="mr-2 animate-spin">⏳</span>
 						Demarrage...
 					{:else}
-						<span class="mr-2" aria-hidden="true">▶️</span>
-						Nouvelle partie
+						Jouer
 					{/if}
 				</Button>
-				<p class="mt-4 text-sm text-muted-foreground">
-					Difficulte : {difficultyLabel}
-				</p>
-			</Card>
+			</div>
 		{/if}
 	</div>
 
