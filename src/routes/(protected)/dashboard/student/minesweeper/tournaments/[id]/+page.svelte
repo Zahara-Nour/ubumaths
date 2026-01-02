@@ -20,7 +20,7 @@
 	let tournament = $state(data.tournament);
 	let standings = $state(data.standings);
 	let userStanding = $state(data.userStanding);
-	let inProgressGame = $state(data.inProgressGame);
+	let _inProgressGame = $state(data.inProgressGame);
 	let isStartingGame = $state(false);
 
 	// Derived state
@@ -110,14 +110,16 @@
 		}
 	});
 
-	// Resume in-progress game on mount
+	// Initialize store and handle in-progress game on mount
 	onMount(async () => {
-		if (inProgressGame) {
-			// Resume the in-progress game using tournament mode
-			// Note: For now, we use startTournamentGame which will create a new game
-			// Future: implement resume functionality in the store
-			// For simplicity, just start a new game
+		// Initialize minesweeper store with supabase client and profile
+		// These come from parent layout data
+		if (data.supabase && data.profile) {
+			minesweeperStore.init(data.supabase, data.profile);
 		}
+
+		// TODO: Resume in-progress game if exists
+		// For now, user needs to start a new game
 	});
 
 	// Cleanup on destroy
