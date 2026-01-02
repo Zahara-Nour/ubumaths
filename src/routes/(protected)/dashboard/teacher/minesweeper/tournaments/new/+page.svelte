@@ -331,7 +331,8 @@
 						{#each data.classes as classItem (classItem.id)}
 							<div class="rounded-lg border p-4 transition-colors hover:bg-muted/50">
 								<MyCheckbox
-									bind:checked={selectedClasses[classItem.id]}
+									checked={selectedClasses[classItem.id] ?? false}
+									onchange={(value) => (selectedClasses[classItem.id] = value)}
 									label={`${classItem.name} (${classItem.student_count} eleves)`}
 								/>
 							</div>
