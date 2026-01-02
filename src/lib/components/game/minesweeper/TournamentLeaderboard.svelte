@@ -10,14 +10,24 @@
 		currentUserId,
 		showHeader = true,
 		maxRows = 10,
-		compact = false
+		compact = false,
+		isCompleted = false,
+		podiumRewards = {}
 	}: {
 		standings: TournamentStanding[];
 		currentUserId: string;
 		showHeader?: boolean;
 		maxRows?: number;
 		compact?: boolean;
+		isCompleted?: boolean;
+		podiumRewards?: Record<string, number>;
 	} = $props();
+
+	// Get reward for a position
+	function getReward(position: number): number | null {
+		const reward = podiumRewards[String(position)];
+		return reward ?? null;
+	}
 
 	// Derived state
 	let displayedStandings = $derived(standings.slice(0, maxRows));
@@ -111,6 +121,16 @@
 						>
 							Score moyen
 						</th>
+						{#if isCompleted}
+							<th
+								class={cn(
+									'px-4 py-3 text-center font-semibold text-foreground',
+									compact && 'px-2 py-2'
+								)}
+							>
+								Recompense
+							</th>
+						{/if}
 					</tr>
 				</thead>
 			{/if}
@@ -153,6 +173,18 @@
 								{formatScore(entry.average_score)}
 							</span>
 						</td>
+						{#if isCompleted}
+							{@const reward = getReward(entry.position)}
+							<td class={cn('px-4 py-3 text-center', compact && 'px-2 py-2')}>
+								{#if reward}
+									<span class={cn('font-bold text-amber-500', compact && 'text-sm')}>
+										+{reward}
+									</span>
+								{:else}
+									<span class="text-muted-foreground">-</span>
+								{/if}
+							</td>
+						{/if}
 					</tr>
 				{/each}
 			</tbody>
