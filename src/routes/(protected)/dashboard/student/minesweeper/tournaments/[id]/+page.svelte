@@ -330,6 +330,12 @@
 			</Badge>
 		</div>
 
-		<TournamentLeaderboard {standings} currentUserId={data.currentUserId} maxRows={20} />
+		<TournamentLeaderboard
+			{standings}
+			currentUserId={data.currentUserId}
+			maxRows={20}
+			isCompleted={isTournamentEnded}
+			podiumRewards={tournament.podium_rewards}
+		/>
 	</div>
 </div>
