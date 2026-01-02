@@ -21,9 +21,9 @@
 	import vipMemberImage from '$lib/assets/images/VIP-member.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { getStudentCardCounts } from '$lib/utils/vip-cards';
-	import { resolve } from '$app/paths';
 	import StudentVipCardsModal from '$lib/components/StudentVipCardsModal.svelte';
 	import BonusHistoryModal from '$lib/components/BonusHistoryModal.svelte';
+	import GidouilleHistoryModal from '$lib/components/GidouilleHistoryModal.svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 
@@ -65,6 +65,15 @@
 			canDismiss: true
 		});
 	}
+
+	// Open gidouille history modal
+	function openGidouilleHistoryModal() {
+		modalStack.push({
+			component: GidouilleHistoryModal,
+			props: {},
+			canDismiss: true
+		});
+	}
 </script>
 
 <div class="rounded-lg border border-border bg-card p-6 shadow">
@@ -77,9 +86,10 @@
 	<!-- Tiles Grid -->
 	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 		<!-- Gidouilles Tile -->
-		<a
-			href={resolve('/dashboard')}
-			class="group relative flex items-center gap-4 overflow-hidden p-6 transition-all hover:shadow-lg dark:border-amber-800 dark:from-amber-950 dark:to-orange-950"
+		<button
+			type="button"
+			onclick={openGidouilleHistoryModal}
+			class="group relative flex w-full cursor-pointer items-center gap-4 overflow-hidden p-6 text-left transition-all hover:shadow-lg"
 		>
 			<!-- Image -->
 			<div class="flex-shrink-0">
@@ -95,7 +105,7 @@
 				<p class="text-sm font-medium text-amber-800 dark:text-amber-200">Gidouilles</p>
 				<p class="mt-1 text-3xl font-bold text-amber-600 dark:text-amber-400">{gidouilles}</p>
 			</div>
-		</a>
+		</button>
 
 		<!-- Bonus Tile -->
 		<button
