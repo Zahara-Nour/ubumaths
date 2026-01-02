@@ -125,6 +125,12 @@ class MinesweeperStore {
 	isLoading = $state(false);
 
 	/**
+	 * Game completion in progress (waiting for API response)
+	 * Used to keep the board visible while saving result
+	 */
+	isCompletingGame = $state(false);
+
+	/**
 	 * Error state
 	 */
 	error = $state<string | null>(null);
@@ -1972,6 +1978,9 @@ class MinesweeperStore {
 		// Update game status
 		game.status = won ? 'won' : 'lost';
 
+		// Mark as completing (keeps board visible during API call)
+		this.isCompletingGame = true;
+
 		try {
 			const gridState = this.gridToDTO(game.grid);
 
@@ -2060,6 +2069,9 @@ class MinesweeperStore {
 				});
 			}
 
+			// Modal is now visible, completion is done
+			this.isCompletingGame = false;
+
 			logger.info('Tournament game completed:', {
 				tournamentId: this.tournamentId,
 				gameId: this.tournamentGameId,
@@ -2070,6 +2082,7 @@ class MinesweeperStore {
 			const message = err instanceof Error ? err.message : 'Échec de la sauvegarde';
 			logger.error('Failed to complete tournament game:', err);
 			this.error = message;
+			this.isCompletingGame = false;
 			toaster.error('Erreur lors de la sauvegarde. Votre partie a peut-être été enregistrée.');
 		}
 
@@ -2133,6 +2146,7 @@ class MinesweeperStore {
 		this.tournamentGameId = null;
 		this.tournamentGameNumber = null;
 		this.tournamentDifficulty = null;
+		this.isCompletingGame = false;
 		this.error = null;
 
 		logger.info('Exited tournament mode');
@@ -2150,6 +2164,7 @@ class MinesweeperStore {
 		this.stopAutoSave();
 		this.currentGame = null;
 		this.error = null;
+		this.isCompletingGame = false;
 		this.newlyUnlockedAchievements = [];
 		this.hintItemsAvailable = 0;
 
