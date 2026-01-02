@@ -55,6 +55,34 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		throw error(403, 'Vous ne pouvez gerer que vos propres tournois');
 	}
 
+	// Auto-finalize if tournament ended but not yet finalized
+	const isEnded = new Date(tournament.end_date) < new Date();
+	const needsFinalization = isEnded && tournament.status !== 'completed';
+
+	if (needsFinalization) {
+		try {
+			const finalizeResponse = await fetch(
+				`/api/games/minesweeper/tournaments/${tournamentId}/finalize`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' }
+				}
+			);
+
+			if (finalizeResponse.ok) {
+				// Refresh tournament data after finalization
+				const refreshResponse = await fetch(`/api/games/minesweeper/tournaments/${tournamentId}`);
+				if (refreshResponse.ok) {
+					const refreshed = await refreshResponse.json();
+					tournament.status = refreshed.tournament.status;
+				}
+			}
+		} catch (err) {
+			// Silent fail - finalization will happen next time
+			console.error('[Tournament] Auto-finalization failed:', err);
+		}
+	}
+
 	// Fetch standings
 	const standingsResponse = await fetch(
 		`/api/games/minesweeper/tournaments/${tournamentId}/standings?limit=100`
