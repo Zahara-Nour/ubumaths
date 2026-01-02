@@ -11,6 +11,7 @@
 	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
 	import { cn } from '$lib/utils';
 	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 
 	// Props
@@ -20,8 +21,9 @@
 	let tournament = $state(data.tournament);
 	let standings = $state(data.standings);
 	let userStanding = $state(data.userStanding);
-	let _inProgressGame = $state(data.inProgressGame);
+	let inProgressGame = $state(data.inProgressGame);
 	let isStartingGame = $state(false);
+	let isAbandoningGame = $state(false);
 
 	// Derived state
 	let difficultyLabel = $derived(DIFFICULTY_LABELS[tournament.difficulty] || tournament.difficulty);
@@ -70,9 +72,41 @@
 		return `${Math.round(score)} pts`;
 	}
 
+	// Abandon an orphaned in-progress game
+	async function abandonOrphanedGame() {
+		if (!inProgressGame || isAbandoningGame) return;
+
+		isAbandoningGame = true;
+
+		try {
+			const response = await fetch(
+				`/api/games/minesweeper/tournaments/${tournament.id}/games/${inProgressGame.id}/abandon`,
+				{ method: 'POST' }
+			);
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message || "Erreur lors de l'abandon");
+			}
+
+			inProgressGame = null;
+			toaster.info('Partie abandonnee');
+		} catch (err) {
+			console.error('Error abandoning game:', err);
+			toaster.error("Erreur lors de l'abandon de la partie");
+		} finally {
+			isAbandoningGame = false;
+		}
+	}
+
 	// Start a new tournament game using the store's tournament methods
 	async function startNewGame() {
 		if (isStartingGame || isTournamentEnded) return;
+
+		// If there's an orphaned in-progress game, abandon it first
+		if (inProgressGame && !currentGame) {
+			await abandonOrphanedGame();
+		}
 
 		isStartingGame = true;
 
@@ -102,6 +136,7 @@
 					tournament = data.tournament;
 					standings = data.standings;
 					userStanding = data.userStanding;
+					inProgressGame = data.inProgressGame;
 				});
 			}
 		}
