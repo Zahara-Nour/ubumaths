@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import { shopStore } from '$lib/stores/shop.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -11,7 +10,7 @@
 	import MyListings from '$lib/components/marketplace/MyListings.svelte';
 	import MyTrades from '$lib/components/marketplace/MyTrades.svelte';
 	import CreateListingModal from '$lib/components/marketplace/CreateListingModal.svelte';
-	import ShopBrowse from '$lib/components/shop/ShopBrowse.svelte';
+	import VipCardShopSection from '$lib/components/vip-cards/VipCardShopSection.svelte';
 
 	// Props from server
 	let { data } = $props();
@@ -24,12 +23,10 @@
 	$effect(() => {
 		if (data.supabase && data.user) {
 			marketplaceStore.init(data.supabase, data.user.id);
-			shopStore.init(data.supabase, data.user.id);
 		}
 
 		return () => {
 			marketplaceStore.cleanup();
-			shopStore.cleanup();
 		};
 	});
 
@@ -126,7 +123,7 @@
 		</Tabs.List>
 
 		<Tabs.Content value="shop" class="mt-6">
-			<ShopBrowse />
+			<VipCardShopSection supabase={data.supabase} userId={data.user.id} />
 		</Tabs.Content>
 
 		<Tabs.Content value="exchanges" class="mt-6">
