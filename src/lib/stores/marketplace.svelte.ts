@@ -2,7 +2,10 @@
 // ================
 // Main store for managing marketplace state with Svelte 5 runes and Supabase realtime
 
+import { get } from 'svelte/store';
 import { supabaseRealtimeManager } from '$lib/stores/supabaseRealtime.svelte';
+import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import type {
 	MarketplaceListing,
@@ -642,18 +645,89 @@ class MarketplaceStore {
 	}
 
 	// Fetch my VIP cards with lock status
+	// Uses student cache for cards + templates, only fetches locks from DB
 	async fetchMyVipCards() {
 		if (!this.supabase || !this.userId) return;
 
 		this.isLoading.cards = true;
 
 		try {
-			// This would typically call an API endpoint that returns cards with lock status
-			// For now, we'll simulate the structure
-			const response = await fetch('/api/vip-cards/my-cards?include_locked=true');
-			if (response.ok) {
-				this.myVipCards = await response.json();
+			// Get VIP cards from student cache (already loaded)
+			const rewards = await studentCache.getRewards();
+			const vipCards = rewards.vip_cards ?? {};
+			const cardInstanceIds = Object.keys(vipCards);
+
+			if (cardInstanceIds.length === 0) {
+				this.myVipCards = [];
+				return;
 			}
+
+			// Fetch only locks from DB (lightweight query)
+			const { data: locks, error: locksError } = await this.supabase
+				.from('marketplace_locked_cards')
+				.select('card_instance_id, locked_for, locked_entity_id')
+				.eq('student_id', this.userId);
+
+			if (locksError) {
+				console.error('Failed to fetch card locks:', locksError);
+				this.myVipCards = [];
+				return;
+			}
+
+			// Create lock map
+			const lockMap = new Map(
+				(locks || []).map((lock) => [
+					lock.card_instance_id,
+					{
+						locked_for: lock.locked_for as 'listing' | 'trade',
+						locked_entity_id: lock.locked_entity_id
+					}
+				])
+			);
+
+			// Get templates from store (already loaded at app startup)
+			const templates = get(vipCardTemplates);
+			const templateMap = new Map(templates.map((t) => [t.id, t]));
+
+			// Build VipCardWithLockStatus array
+			const result: VipCardWithLockStatus[] = [];
+
+			for (const [instanceId, cardData] of Object.entries(vipCards)) {
+				// Skip used cards
+				if (cardData.usedAt) continue;
+
+				const template = templateMap.get(cardData.cardId);
+				if (!template) continue;
+
+				const lock = lockMap.get(instanceId);
+
+				result.push({
+					id: instanceId,
+					template_id: cardData.cardId,
+					earned_at: cardData.earnedAt,
+					is_locked: !!lock,
+					lock_reason: lock
+						? lock.locked_for === 'listing'
+							? 'in_listing'
+							: 'in_trade'
+						: undefined,
+					locked_for_listing_id: lock?.locked_for === 'listing' ? lock.locked_entity_id : null,
+					locked_for_trade_id: lock?.locked_for === 'trade' ? lock.locked_entity_id : null,
+					template: {
+						id: template.id,
+						name: template.name,
+						description: template.description,
+						image_path: template.image_path,
+						rarity: template.rarity as 'common' | 'rare' | 'epic' | 'legendary',
+						category: template.category ?? null
+					}
+				});
+			}
+
+			// Sort by earned_at (most recent first)
+			result.sort((a, b) => new Date(b.earned_at).getTime() - new Date(a.earned_at).getTime());
+
+			this.myVipCards = result;
 		} catch (_error) {
 			console.error('Failed to fetch VIP cards:', _error);
 		} finally {
@@ -661,20 +735,13 @@ class MarketplaceStore {
 		}
 	}
 
-	// Fetch user's gidouilles balance
+	// Fetch user's gidouilles balance from student cache
 	async fetchUserGidouilles() {
-		if (!this.supabase || !this.userId) return;
+		if (!this.userId) return;
 
 		try {
-			const { data, error } = await this.supabase
-				.from('profiles')
-				.select('gidouilles')
-				.eq('id', this.userId)
-				.single();
-
-			if (data && !error) {
-				this.userGidouilles = data.gidouilles || 0;
-			}
+			const rewards = await studentCache.getRewards();
+			this.userGidouilles = rewards.gidouilles || 0;
 		} catch (_error) {
 			console.error('Failed to fetch user gidouilles:', _error);
 		}
