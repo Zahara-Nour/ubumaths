@@ -123,7 +123,7 @@
 {#if groupedCards.length === 0}
 	<p class="py-6 text-center text-sm text-muted-foreground">Aucune carte disponible</p>
 {:else}
-	<div class="grid grid-cols-3 gap-2 overflow-hidden sm:grid-cols-4 lg:grid-cols-5">
+	<div class="flex flex-wrap gap-2">
 		{#each groupedCards as group (group.cardId)}
 			<button
 				type="button"
