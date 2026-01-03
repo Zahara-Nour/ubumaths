@@ -641,13 +641,16 @@
 		<!-- This is where child routes are rendered -->
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
+		{@const isFullWidthRoute = page.url.pathname.includes('/marketplace/trade/')}
 		<main class="dashboard-content flex-1 overflow-y-auto bg-background">
 			<!-- Notification Banner (sticky at top) -->
-			<NotificationBanner />
+			{#if !isFullWidthRoute}
+				<NotificationBanner />
+			{/if}
 
-			<!-- Main content with padding -->
-			<div class="relative p-4 sm:p-6 lg:p-8">
-				<div class="mx-auto max-w-4xl">
+			<!-- Main content with padding (disabled for full-width routes like trade board) -->
+			<div class="relative {isFullWidthRoute ? '' : 'p-4 sm:p-6 lg:p-8'}">
+				<div class={isFullWidthRoute ? 'w-full' : 'mx-auto max-w-4xl'}>
 					<!-- Always render children so page can load -->
 					<div class:opacity-0={$navigating} class="transition-opacity duration-200">
 						{@render children()}
