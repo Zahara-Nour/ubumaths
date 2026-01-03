@@ -120,14 +120,26 @@
 </script>
 
 <div class="flex flex-col gap-4">
-	<!-- Header -->
-	<div class="flex items-center justify-between">
-		<h2 class="text-xl font-bold">{title}</h2>
-		{#if validated}
-			<Badge variant="default" class="gap-1 bg-green-600">
-				<Check class="h-3 w-3" />
-				Valide
-			</Badge>
+	<!-- Header with Validate Button -->
+	<div class="flex items-center justify-between gap-3">
+		<div class="flex items-center gap-2">
+			<h2 class="text-xl font-bold">{title}</h2>
+			{#if validated}
+				<Badge variant="default" class="gap-1 bg-green-600">
+					<Check class="h-3 w-3" />
+					Valide
+				</Badge>
+			{/if}
+		</div>
+
+		<!-- Validate Button in header for visibility -->
+		{#if isMyPanel && !validated}
+			<Button size="sm" onclick={onValidate} disabled={!canValidate}>
+				<Check class="mr-1 h-4 w-4" />
+				Valider
+			</Button>
+		{:else if isMyPanel && validated}
+			<Button variant="outline" size="sm" onclick={onValidate}>Modifier</Button>
 		{/if}
 	</div>
 
@@ -182,14 +194,4 @@
 			Resume : <span class="text-foreground">{summaryText}</span>
 		</p>
 	</div>
-
-	<!-- Validate Button (only for my panel, not yet validated) -->
-	{#if isMyPanel && !validated}
-		<Button onclick={onValidate} disabled={!canValidate} class="w-full">
-			<Check class="mr-2 h-4 w-4" />
-			Valider mon offre
-		</Button>
-	{:else if isMyPanel && validated}
-		<Button variant="outline" onclick={onValidate} class="w-full">Modifier mon offre</Button>
-	{/if}
 </div>
