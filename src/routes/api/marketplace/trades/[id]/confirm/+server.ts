@@ -136,53 +136,35 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	}
 
 	// BOTH have confirmed - execute the trade!
+	// Note: execute_trade RPC handles setting status to 'completed' and all transfers
+	// It expects status to be 'negotiating' and returns JSONB with success field
 
-	// Set final trade data - use .select().single() to detect race condition
-	const { data: updatedTrade, error: updateError } = await supabase
-		.from('marketplace_trades')
-		.update({
-			status: 'completed',
-			final_trade: trade.current_offer,
-			completed_at: new Date().toISOString(),
-			updated_at: new Date().toISOString()
-		})
-		.eq('id', tradeId)
-		// Only update if status is still 'negotiating' (prevent race condition)
-		.eq('status', 'negotiating')
-		.select()
-		.single();
-
-	// If no row was updated, another request already completed this trade
-	if (updateError || !updatedTrade) {
-		// This is not an error - just means the trade was already completed
-		return json({
-			success: true,
-			confirmed: true,
-			executed: true,
-			message: 'Echange deja complete'
-		});
-	}
-
-	// Execute the trade using RPC
-	const { error: executeError } = await supabase.rpc('execute_trade', {
+	const { data: rpcResult, error: rpcError } = await supabase.rpc('execute_trade', {
 		p_trade_id: tradeId
 	});
 
-	if (executeError) {
-		console.error('Error executing trade:', executeError);
-
-		// Rollback: revert trade status
-		await supabase
-			.from('marketplace_trades')
-			.update({
-				status: 'negotiating',
-				final_trade: null,
-				completed_at: null,
-				updated_at: new Date().toISOString()
-			})
-			.eq('id', tradeId);
-
+	// Check for RPC call error (HTTP/connection level)
+	if (rpcError) {
+		console.error('RPC call error:', rpcError);
 		throw error(500, "Erreur lors de l'execution de l'echange");
+	}
+
+	// Check for business logic error (RPC returned {success: false, error: '...'})
+	if (!rpcResult?.success) {
+		const errorMsg = rpcResult?.error || 'Unknown error';
+		console.error('Trade execution failed:', errorMsg);
+
+		// If trade was already completed by another request, that's OK
+		if (errorMsg.includes('not in negotiating status')) {
+			return json({
+				success: true,
+				confirmed: true,
+				executed: true,
+				message: 'Echange deja complete'
+			});
+		}
+
+		throw error(500, `Erreur: ${errorMsg}`);
 	}
 
 	// Notify both participants of completion
