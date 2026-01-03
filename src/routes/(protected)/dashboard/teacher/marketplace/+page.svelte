@@ -54,9 +54,11 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// State
-	let selectedClassId = $state(data.selectedClassId || '');
-	let selectedPeriod = $state(data.period);
+	// URL params are the source of truth - use $derived instead of $state + $effect sync
+	let selectedClassId = $derived(data.selectedClassId || data.teacherClasses[0]?.id || '');
+	let selectedPeriod = $derived(data.period);
+
+	// Local UI state (not derived from URL)
 	let isLoading = $state(false);
 	let activeTab = $state('overview');
 	let showSettings = $state(false);
@@ -87,20 +89,20 @@
 		{ value: 'month', label: 'Ce mois' }
 	]);
 
-	// Handle filter changes
-	async function handleClassChange() {
+	// Handle filter changes - receive new value directly from onchange callback
+	async function handleClassChange(newClassId: string) {
 		const url = new URL($page.url);
-		if (selectedClassId) {
-			url.searchParams.set('class_id', selectedClassId);
+		if (newClassId) {
+			url.searchParams.set('class_id', newClassId);
 		} else {
 			url.searchParams.delete('class_id');
 		}
 		await goto(url.toString());
 	}
 
-	async function handlePeriodChange() {
+	async function handlePeriodChange(newPeriod: string) {
 		const url = new URL($page.url);
-		url.searchParams.set('period', selectedPeriod);
+		url.searchParams.set('period', newPeriod);
 		await goto(url.toString());
 	}
 
@@ -132,15 +134,6 @@
 	function formatNumber(num: number): string {
 		return num.toLocaleString('fr-FR');
 	}
-
-	// Sync local state from URL params (source of truth) when data changes.
-	// This is needed for browser back/forward navigation to update the UI correctly.
-	// This pattern is acceptable as it syncs from an external source (URL via props),
-	// not deriving state from other local state.
-	$effect(() => {
-		selectedClassId = data.selectedClassId || data.teacherClasses[0]?.id || '';
-		selectedPeriod = data.period;
-	});
 </script>
 
 <div class="container mx-auto space-y-6 p-6">
@@ -228,7 +221,7 @@
 					<label for="class-filter" class="mb-1 block text-sm font-medium">Classe</label>
 					<MySelect
 						type="single"
-						bind:value={selectedClassId}
+						value={selectedClassId}
 						items={classOptions}
 						onchange={handleClassChange}
 					/>
@@ -237,7 +230,7 @@
 					<label for="period-filter" class="mb-1 block text-sm font-medium">Période</label>
 					<MySelect
 						type="single"
-						bind:value={selectedPeriod}
+						value={selectedPeriod}
 						items={periodOptions}
 						onchange={handlePeriodChange}
 					/>
