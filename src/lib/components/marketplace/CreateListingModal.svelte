@@ -2,7 +2,7 @@
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
 	import type { CreateListingData } from '$lib/types/marketplace';
-	import type { VipCard } from '$lib/types/vip-card';
+	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -11,7 +11,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import VipCardSelector from './VipCardSelector.svelte';
-	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+	import VipCard from '$lib/components/VipCard.svelte';
 	import { RARITY_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
 	import { Info, Check } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -145,8 +145,8 @@
 
 	// Templates are loaded in root layout, no need to fetch here
 
-	// Convert template to VipCard format for VipCardHolo
-	function templateToVipCard(template: (typeof $vipCardTemplates)[0]): VipCard {
+	// Convert template to VipCard format
+	function templateToVipCard(template: (typeof $vipCardTemplates)[0]): VipCardType {
 		return {
 			id: template.id,
 			name: template.name,
@@ -335,16 +335,7 @@
 												: 'border-transparent hover:border-foreground/20'
 										)}
 									>
-										<div class="w-16">
-											<VipCardHolo
-												card={templateToVipCard(template)}
-												enableDescriptionOverlay={false}
-												enableRarityIndicator={true}
-												enablePopover={false}
-												enable3d={true}
-												enableHoloEffect={true}
-											/>
-										</div>
+										<VipCard card={templateToVipCard(template)} size="sm" clickable={false} />
 										<div class="text-center">
 											<div class="line-clamp-1 text-xs font-medium">{template.name}</div>
 											<Badge

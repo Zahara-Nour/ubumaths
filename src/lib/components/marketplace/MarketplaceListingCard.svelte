@@ -1,13 +1,13 @@
 <script lang="ts">
 	import type { MarketplaceListing } from '$lib/types/marketplace';
-	import type { VipCard } from '$lib/types/vip-card';
+	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Clock, Eye, MessageSquare, Coins } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
-	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+	import VipCard from '$lib/components/VipCard.svelte';
 
 	// Props
 	let {
@@ -54,26 +54,26 @@
 	);
 
 	// Convert offered cards to VipCard format for display (max 3 thumbnails)
-	let offeredCardsForDisplay = $derived.by((): VipCard[] => {
+	let offeredCardsForDisplay = $derived.by((): VipCardType[] => {
 		if (!listing.offered_cards?.length) return [];
 		return listing.offered_cards.slice(0, 3).map((card) => ({
 			id: card.template_id,
 			name: card.template.name,
 			description: card.template.description,
 			imagePath: card.template.image_path ?? undefined,
-			rarity: card.template.rarity as VipCard['rarity']
+			rarity: card.template.rarity as VipCardType['rarity']
 		}));
 	});
 
 	// Convert wanted templates to VipCard format for display (max 3 thumbnails)
-	let wantedCardsForDisplay = $derived.by((): VipCard[] => {
+	let wantedCardsForDisplay = $derived.by((): VipCardType[] => {
 		if (!listing.wanted_templates?.length) return [];
 		return listing.wanted_templates.slice(0, 3).map((template) => ({
 			id: template.id,
 			name: template.name,
 			description: template.description,
 			imagePath: template.image_path ?? undefined,
-			rarity: template.rarity as VipCard['rarity']
+			rarity: template.rarity as VipCardType['rarity']
 		}));
 	});
 
@@ -130,7 +130,7 @@
 				</span>
 			</div>
 
-			<!-- Offer/Demand with VipCardHolo -->
+			<!-- Offer/Demand with VipCard -->
 			<div class="space-y-3">
 				<!-- Offered Cards -->
 				<div class="space-y-1">
@@ -138,16 +138,7 @@
 					<div class="flex items-center gap-2">
 						{#if offeredCardsForDisplay.length > 0}
 							{#each offeredCardsForDisplay as card (card.id)}
-								<div class="w-10" title={card.name}>
-									<VipCardHolo
-										{card}
-										enableDescriptionOverlay={false}
-										enableRarityIndicator={true}
-										enablePopover={false}
-										enable3d={false}
-										enableHoloEffect={false}
-									/>
-								</div>
+								<VipCard {card} size="sm" clickable={false} />
 							{/each}
 							{#if extraOfferedCount > 0}
 								<span class="text-xs text-muted-foreground">+{extraOfferedCount}</span>
@@ -172,16 +163,7 @@
 					<div class="flex items-center gap-2">
 						{#if wantedCardsForDisplay.length > 0}
 							{#each wantedCardsForDisplay as card (card.id)}
-								<div class="w-10" title={card.name}>
-									<VipCardHolo
-										{card}
-										enableDescriptionOverlay={false}
-										enableRarityIndicator={true}
-										enablePopover={false}
-										enable3d={false}
-										enableHoloEffect={false}
-									/>
-								</div>
+								<VipCard {card} size="sm" clickable={false} />
 							{/each}
 							{#if extraWantedCount > 0}
 								<span class="text-xs text-muted-foreground">+{extraWantedCount}</span>
@@ -277,16 +259,7 @@
 							<span class="font-medium text-foreground">Offre:</span>
 							{#if offeredCardsForDisplay.length > 0}
 								{#each offeredCardsForDisplay as card (card.id)}
-									<div class="w-8" title={card.name}>
-										<VipCardHolo
-											{card}
-											enableDescriptionOverlay={false}
-											enableRarityIndicator={true}
-											enablePopover={false}
-											enable3d={false}
-											enableHoloEffect={false}
-										/>
-									</div>
+									<VipCard {card} size="sm" clickable={false} />
 								{/each}
 								{#if extraOfferedCount > 0}
 									<span>+{extraOfferedCount}</span>
@@ -309,16 +282,7 @@
 							<span class="font-medium text-foreground">Demande:</span>
 							{#if wantedCardsForDisplay.length > 0}
 								{#each wantedCardsForDisplay as card (card.id)}
-									<div class="w-8" title={card.name}>
-										<VipCardHolo
-											{card}
-											enableDescriptionOverlay={false}
-											enableRarityIndicator={true}
-											enablePopover={false}
-											enable3d={false}
-											enableHoloEffect={false}
-										/>
-									</div>
+									<VipCard {card} size="sm" clickable={false} />
 								{/each}
 								{#if extraWantedCount > 0}
 									<span>+{extraWantedCount}</span>
