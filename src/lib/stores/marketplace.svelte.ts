@@ -807,6 +807,9 @@ class MarketplaceStore {
 				this.invalidateCache('myListings');
 				this.invalidateCache('listings');
 
+				// Refresh card locks (cards are now locked for this listing)
+				await this.fetchMyVipCards();
+
 				return true;
 			} else {
 				// Rollback on error
@@ -848,6 +851,8 @@ class MarketplaceStore {
 				const proposal = await response.json();
 				this.myProposals = [proposal, ...this.myProposals];
 				toaster.success('Proposition envoyée');
+				// Refresh card locks (cards are now locked for this proposal)
+				await this.fetchMyVipCards();
 				return true;
 			} else {
 				const error = await response.text();
@@ -872,6 +877,39 @@ class MarketplaceStore {
 			return false;
 		}
 
+		// Find the proposal and listing to calculate deltas
+		const proposal = this.receivedProposals.find((p) => p.id === proposalId);
+		const listing = proposal ? this.myListings.find((l) => l.id === proposal.listing_id) : null;
+
+		// Calculate gidouilles delta: I receive proposal.offered, I give listing.offered
+		const gidouillesDelta =
+			(proposal?.offered_gidouilles || 0) - (listing?.offered_gidouilles || 0);
+
+		// Save current cards state for potential rollback
+		const currentRewards = studentCache.getRewardsSync();
+		const originalCards = currentRewards?.vip_cards ? { ...currentRewards.vip_cards } : null;
+
+		// Optimistic update BEFORE API call
+		if (gidouillesDelta !== 0) {
+			studentCache.updateGidouillesOptimistic(gidouillesDelta);
+		}
+
+		// Optimistic update for cards: remove given cards, add received cards
+		if (originalCards && (listing?.offered_cards?.length || proposal?.offered_cards?.length)) {
+			const newCards = { ...originalCards };
+			// Remove cards I'm giving (from my listing)
+			listing?.offered_cards?.forEach((card) => delete newCards[card.id]);
+			// Add cards I'm receiving (from proposal)
+			proposal?.offered_cards?.forEach((card) => {
+				newCards[card.id] = {
+					cardId: card.template_id,
+					earnedAt: new Date().toISOString(),
+					usedAt: null
+				};
+			});
+			studentCache.updateVipCardsOptimistic(newCards);
+		}
+
 		try {
 			const response = await fetch(`/api/marketplace/proposals/${proposalId}/accept`, {
 				method: 'POST',
@@ -882,15 +920,33 @@ class MarketplaceStore {
 			if (response.ok) {
 				toaster.success('Proposition acceptée - échange effectué');
 				this.announceStatus('Proposition acceptée avec succès');
-				await this.fetchMyListings();
-				await this.fetchReceivedProposals();
+				// Cache already updated optimistically, just refresh UI state
+				await Promise.all([
+					this.fetchMyListings(),
+					this.fetchReceivedProposals(),
+					this.fetchMyVipCards() // Refresh locks status
+				]);
 				return true;
 			} else {
+				// Rollback on error
+				if (gidouillesDelta !== 0) {
+					studentCache.updateGidouillesOptimistic(-gidouillesDelta);
+				}
+				if (originalCards) {
+					studentCache.updateVipCardsOptimistic(originalCards);
+				}
 				const error = await response.text();
 				toaster.error(error || "Erreur lors de l'acceptation");
 				return false;
 			}
 		} catch (_error) {
+			// Rollback on error
+			if (gidouillesDelta !== 0) {
+				studentCache.updateGidouillesOptimistic(-gidouillesDelta);
+			}
+			if (originalCards) {
+				studentCache.updateVipCardsOptimistic(originalCards);
+			}
 			toaster.error("Erreur lors de l'acceptation");
 			return false;
 		}
@@ -943,6 +999,8 @@ class MarketplaceStore {
 			if (response.ok) {
 				this.myListings = this.myListings.filter((l) => l.id !== listingId);
 				toaster.success('Annonce annulée');
+				// Refresh card locks (cards are now unlocked)
+				await this.fetchMyVipCards();
 				return true;
 			} else {
 				const error = await response.text();
@@ -1039,6 +1097,50 @@ class MarketplaceStore {
 
 	// Accept trade offer
 	async acceptTradeOffer(tradeId: string): Promise<boolean> {
+		// Find the trade to calculate deltas
+		const trade = this.activeTrades.find((t) => t.id === tradeId);
+		const offer = trade?.latest_offer;
+		const amInitiator = trade?.initiator_id === this.userId;
+
+		// Calculate what I give and receive based on my role
+		// Initiator gives initiator_*, receives partner_*
+		// Partner gives partner_*, receives initiator_*
+		const gidouillesIGive = amInitiator
+			? offer?.initiator_gidouilles || 0
+			: offer?.partner_gidouilles || 0;
+		const gidouillesIReceive = amInitiator
+			? offer?.partner_gidouilles || 0
+			: offer?.initiator_gidouilles || 0;
+		const gidouillesDelta = gidouillesIReceive - gidouillesIGive;
+
+		const cardsIGive = amInitiator ? offer?.initiator_cards : offer?.partner_cards;
+		const cardsIReceive = amInitiator ? offer?.partner_cards : offer?.initiator_cards;
+
+		// Save current state for rollback
+		const currentRewards = studentCache.getRewardsSync();
+		const originalCards = currentRewards?.vip_cards ? { ...currentRewards.vip_cards } : null;
+
+		// Optimistic update BEFORE API call
+		if (gidouillesDelta !== 0) {
+			studentCache.updateGidouillesOptimistic(gidouillesDelta);
+		}
+
+		// Optimistic update for cards
+		if (originalCards && (cardsIGive?.length || cardsIReceive?.length)) {
+			const newCards = { ...originalCards };
+			// Remove cards I'm giving
+			cardsIGive?.forEach((card) => delete newCards[card.id]);
+			// Add cards I'm receiving
+			cardsIReceive?.forEach((card) => {
+				newCards[card.id] = {
+					cardId: card.template_id,
+					earnedAt: new Date().toISOString(),
+					usedAt: null
+				};
+			});
+			studentCache.updateVipCardsOptimistic(newCards);
+		}
+
 		try {
 			const response = await fetch(`/api/marketplace/trades/${tradeId}/accept`, {
 				method: 'POST'
@@ -1046,15 +1148,29 @@ class MarketplaceStore {
 
 			if (response.ok) {
 				toaster.success('Échange accepté et complété!');
-				await this.fetchMyTrades();
-				await this.fetchMyVipCards();
+				// Cache already updated optimistically, just refresh UI state
+				await Promise.all([this.fetchMyTrades(), this.fetchMyVipCards()]);
 				return true;
 			} else {
+				// Rollback on error
+				if (gidouillesDelta !== 0) {
+					studentCache.updateGidouillesOptimistic(-gidouillesDelta);
+				}
+				if (originalCards) {
+					studentCache.updateVipCardsOptimistic(originalCards);
+				}
 				const error = await response.text();
 				toaster.error(error || "Erreur lors de l'acceptation");
 				return false;
 			}
 		} catch (_error) {
+			// Rollback on error
+			if (gidouillesDelta !== 0) {
+				studentCache.updateGidouillesOptimistic(-gidouillesDelta);
+			}
+			if (originalCards) {
+				studentCache.updateVipCardsOptimistic(originalCards);
+			}
 			toaster.error("Erreur lors de l'acceptation");
 			return false;
 		}
@@ -1073,6 +1189,8 @@ class MarketplaceStore {
 					this.selectedTrade = null;
 				}
 				toaster.info('Échange annulé');
+				// Refresh card locks (cards are now unlocked)
+				await this.fetchMyVipCards();
 				return true;
 			} else {
 				const error = await response.text();
