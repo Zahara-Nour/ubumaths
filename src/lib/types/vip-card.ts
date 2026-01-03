@@ -5,6 +5,11 @@
 import type { WarningType } from '$lib/server/warnings';
 
 /**
+ * How the VIP card was acquired
+ */
+export type VipCardAcquisitionSource = 'draw' | 'purchase' | 'gift' | 'exchange';
+
+/**
  * Represents an instance of a VIP card owned by a student.
  * Each card can have multiple instances (student can collect duplicates).
  *
@@ -13,6 +18,11 @@ import type { WarningType } from '$lib/server/warnings';
  * 2. Pending approval: activationRequestedAt != null && activationApprovedAt = null
  * 3. Approved (ready to activate): activationApprovedAt != null && usedAt = null
  * 4. Activated (used): usedAt != null
+ *
+ * CONSUMABLE CARDS:
+ * - usesRemaining starts at uses_total from template
+ * - Each use decrements usesRemaining
+ * - When usesRemaining = 0, usedAt is set
  */
 export interface VipCardInstance {
 	cardId: string; // ID of the card definition
@@ -22,6 +32,11 @@ export interface VipCardInstance {
 	activationRequestedBy?: string | null; // UUID of student who requested activation
 	activationApprovedAt?: string | null; // ISO timestamp when teacher approved the activation
 	activationApprovedBy?: string | null; // UUID of teacher who approved activation
+	// Purchase fields
+	purchasedAt?: string | null; // ISO timestamp when card was purchased (null if not purchased)
+	acquiredFrom?: VipCardAcquisitionSource; // How the card was acquired
+	// Consumable fields
+	usesRemaining?: number | null; // For consumables: remaining uses. null = single-use card
 }
 
 /**
@@ -31,7 +46,8 @@ export type VipCardCategory =
 	| 'bonus' // Bonus points and academic rewards
 	| 'privilege' // Classroom privileges and special permissions
 	| 'social' // Social and team-related perks
-	| 'power'; // Special abilities and game-changers
+	| 'power' // Special abilities and game-changers
+	| 'consumable'; // Multi-use cards (uses_total > 1)
 
 /**
  * Rarity level of VIP card (required for all cards)
@@ -156,7 +172,7 @@ export type VipCardAction =
 	| ChooseCardAction;
 
 /**
- * Definition of a VIP card type
+ * Definition of a VIP card type (template)
  */
 export interface VipCard {
 	id: string; // Unique identifier (matches image filename without extension)
@@ -166,6 +182,66 @@ export interface VipCard {
 	category?: VipCardCategory | null; // Optional category for UI filtering (null from database)
 	rarity: VipCardRarity; // Required rarity level
 	action?: VipCardAction | null; // Optional action that can be activated (null from database)
+	// Purchase fields (from database)
+	basePrice?: number; // Price in gidouilles (common=20, rare=50, epic=150, legendary=500)
+	isPurchasable?: boolean; // Whether this card can be purchased
+	maxOwnedPerStudent?: number; // Maximum active copies a student can own (default: 5)
+	// Consumable fields
+	usesTotal?: number | null; // Number of uses for consumables (null = single-use)
+}
+
+/**
+ * Rarity-based pricing map
+ */
+export const RARITY_PRICES: Record<VipCardRarity, number> = {
+	common: 20,
+	rare: 50,
+	epic: 150,
+	legendary: 500
+};
+
+/**
+ * Get the base price for a card based on its rarity
+ */
+export function getRarityPrice(rarity: VipCardRarity): number {
+	return RARITY_PRICES[rarity];
+}
+
+/**
+ * Result of a VIP card purchase attempt
+ */
+export interface PurchaseVipCardResult {
+	success: boolean;
+	instance?: {
+		instanceId: string;
+		cardId: string;
+		purchasedAt: string;
+		acquiredFrom: 'purchase';
+		usesRemaining: number | null;
+	};
+	oldBalance?: number;
+	newBalance?: number;
+	priceDeducted?: number;
+	currentOwned?: number;
+	maxOwned?: number;
+	error?: string;
+}
+
+/**
+ * Result of using a consumable VIP card
+ */
+export interface UseConsumableResult {
+	success: boolean;
+	usesRemaining?: number | null;
+	isFullyConsumed?: boolean;
+	usedAt?: string | null;
+	activityMetadata?: {
+		usesRemaining: number | null;
+		useNumber: number;
+		totalUses: number;
+		fullyConsumed: boolean;
+	};
+	error?: string;
 }
 
 /**
