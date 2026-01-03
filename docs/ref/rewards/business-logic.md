@@ -362,6 +362,8 @@ WHERE student_id = $1
 
 ```sql
 -- Run weekly (e.g., Sunday night)
+-- Note: class_members.status can be 'active' or 'archived'
+-- Only active members should receive weekly rewards
 INSERT INTO weekly_rewards (student_id, class_id, week_start, week_end)
 SELECT
     cm.student_id,
