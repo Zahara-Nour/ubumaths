@@ -1373,18 +1373,21 @@ export type Database = {
 					class_id: string;
 					id: string;
 					joined_at: string;
+					status: 'active' | 'archived';
 					student_id: string;
 				};
 				Insert: {
 					class_id: string;
 					id?: string;
 					joined_at?: string;
+					status?: 'active' | 'archived';
 					student_id: string;
 				};
 				Update: {
 					class_id?: string;
 					id?: string;
 					joined_at?: string;
+					status?: 'active' | 'archived';
 					student_id?: string;
 				};
 				Relationships: [
