@@ -7,12 +7,21 @@
 	import { RARITY_PRICES } from '$lib/types/vip-card';
 	import { RARITY_ACCENT_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
 
+	// Result from server after successful purchase
+	interface PurchaseResult {
+		instanceId: string;
+		cardId: string;
+		purchasedAt: string;
+		acquiredFrom: string;
+		usesRemaining: number | null;
+	}
+
 	interface Props {
 		open: boolean;
 		card: VipCard;
 		currentBalance: number;
 		onOptimisticPurchase?: (price: number) => void;
-		onPurchaseComplete?: () => void;
+		onPurchaseComplete?: (result: PurchaseResult) => void;
 		onPurchaseError?: (price: number) => void;
 	}
 
@@ -63,12 +72,12 @@
 
 			const result = await response.json();
 
-			if (result.success) {
+			if (result.success && result.instance) {
 				purchaseSuccess = true;
 				toaster.success(`${card.name} achetee !`);
 
-				// 2. SYNC FROM SERVER - confirm optimistic update
-				onPurchaseComplete?.();
+				// 2. SYNC FROM SERVER - update cache with server data
+				onPurchaseComplete?.(result.instance);
 
 				// Close modal after short delay
 				setTimeout(() => {

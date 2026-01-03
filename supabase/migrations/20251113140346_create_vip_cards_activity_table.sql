@@ -98,7 +98,23 @@ WITH CHECK (
     )
 );
 
--- Create trigger function to log VIP card changes
+-- ============================================================================
+-- TRIGGER FUNCTION: Log VIP card removals ONLY
+-- ============================================================================
+-- ARCHITECTURE:
+--   - 'gained' actions: Logged by RPC functions (purchase_vip_card, award_vip_card_no_cost)
+--   - 'used' actions: Logged by RPC functions (use_consumable_card)
+--   - 'removed' actions: Logged by THIS TRIGGER (catches admin/manual deletions)
+--
+-- This separation ensures:
+--   1. No duplicate inserts (no race condition between trigger and RPC)
+--   2. Rich metadata from RPCs that know the context
+--   3. Safety net for manual removals via trigger
+--
+-- IMPORTANT: Uses jsonb_each() because vip_cards is stored as an OBJECT:
+--   {"uuid1": {"cardId": "...", ...}, "uuid2": {...}}
+-- NOT as an ARRAY: [{"id": "...", "cardId": "..."}, ...]
+
 CREATE OR REPLACE FUNCTION public.log_vip_card_changes()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -111,12 +127,12 @@ DECLARE
 BEGIN
     -- Only process if vip_cards column changed
     IF OLD.vip_cards IS DISTINCT FROM NEW.vip_cards THEN
-        v_old_cards := COALESCE(OLD.vip_cards, '[]'::JSONB);
-        v_new_cards := COALESCE(NEW.vip_cards, '[]'::JSONB);
+        -- Default to empty object (not array!) if null
+        v_old_cards := COALESCE(OLD.vip_cards, '{}'::JSONB);
+        v_new_cards := COALESCE(NEW.vip_cards, '{}'::JSONB);
 
-        -- FIX (Issue #2): Use set-based operations instead of nested loops to prevent race conditions
-
-        -- Log removed cards (in OLD but not in NEW)
+        -- Log ONLY removed cards (in OLD but not in NEW)
+        -- This catches admin deletions, exchanges, and any direct SQL modifications
         INSERT INTO public.vip_cards_activity (
             student_id,
             card_instance_id,
@@ -126,63 +142,23 @@ BEGIN
         )
         SELECT
             NEW.id,
-            old_card->>'id',
-            old_card->>'cardId',
+            old_cards.instance_id,
+            old_cards.card_data->>'cardId',
             'removed',
-            jsonb_build_object('removed_by', auth.uid())
-        FROM jsonb_array_elements(v_old_cards) AS old_card
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM jsonb_array_elements(v_new_cards) AS new_card
-            WHERE new_card->>'id' = old_card->>'id'
-        )
-        ON CONFLICT (student_id, card_instance_id, action, created_at) DO NOTHING;
-
-        -- Log gained cards (in NEW but not in OLD)
-        INSERT INTO public.vip_cards_activity (
-            student_id,
-            card_instance_id,
-            card_template_id,
-            action,
-            metadata
-        )
-        SELECT
-            NEW.id,
-            new_card->>'id',
-            new_card->>'cardId',
-            'gained',
-            jsonb_build_object('gained_at', new_card->>'gainedAt')
-        FROM jsonb_array_elements(v_new_cards) AS new_card
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM jsonb_array_elements(v_old_cards) AS old_card
-            WHERE old_card->>'id' = new_card->>'id'
-        )
-        ON CONFLICT (student_id, card_instance_id, action, created_at) DO NOTHING;
-
-        -- Log status changes (cards that were marked as used)
-        INSERT INTO public.vip_cards_activity (
-            student_id,
-            card_instance_id,
-            card_template_id,
-            action,
-            metadata
-        )
-        SELECT
-            NEW.id,
-            new_card->>'id',
-            new_card->>'cardId',
-            'used',
             jsonb_build_object(
-                'used_at', new_card->>'usedAt',
-                'assignment_id', new_card->>'assignmentId'
+                'removed_by', COALESCE(auth.uid()::TEXT, 'system'),
+                'removed_at', to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+                'was_used', (old_cards.card_data->>'usedAt') IS NOT NULL
             )
-        FROM jsonb_array_elements(v_new_cards) AS new_card
-        JOIN jsonb_array_elements(v_old_cards) AS old_card
-            ON new_card->>'id' = old_card->>'id'
-        WHERE (old_card->>'used')::BOOLEAN = FALSE
-          AND (new_card->>'used')::BOOLEAN = TRUE
-        ON CONFLICT (student_id, card_instance_id, action, created_at) DO NOTHING;
+        FROM jsonb_each(v_old_cards) AS old_cards(instance_id, card_data)
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM jsonb_each(v_new_cards) AS new_cards(instance_id, card_data)
+            WHERE new_cards.instance_id = old_cards.instance_id
+        );
+
+        -- NOTE: 'gained' and 'used' actions are NOT logged here.
+        -- They are handled by their respective RPC functions with richer metadata.
     END IF;
 
     RETURN NEW;

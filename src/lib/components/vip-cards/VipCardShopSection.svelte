@@ -2,18 +2,24 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Search, ShoppingCart, Coins, Sparkles } from 'lucide-svelte';
+	import Badge from '$lib/components/ui/badge/badge.svelte';
+	import { Search, ShoppingCart, Sparkles, Gem } from 'lucide-svelte';
+	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import VipCardPurchaseModal from './VipCardPurchaseModal.svelte';
 	import type { VipCard, VipCardRarity } from '$lib/types/vip-card';
 	import { RARITY_PRICES } from '$lib/types/vip-card';
 	import {
-		RARITY_COLORS,
-		RARITY_TEXT_COLORS,
-		RARITY_LABELS,
 		RARITY_ORDER,
-		RARITY_FILTER_OPTIONS
+		RARITY_FILTER_OPTIONS,
+		RARITY_SECTION_CONFIG,
+		RARITY_DISPLAY_ORDER
 	} from '$lib/constants/vip-card-ui';
+	import { cn } from '$lib/utils';
+	import { syncGidouilles, syncVipCards, rollbackGidouilles } from '$lib/utils/cache-sync';
+	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
+	import type { CacheContext } from '$lib/types/cache-context';
+	import type { StudentVipCards } from '$lib/types/vip-card';
 
 	interface Props {
 		supabase: unknown; // Only used to detect auth context
@@ -26,16 +32,15 @@
 	let cards = $state<VipCard[]>([]);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
-	let serverBalance = $state(0); // Balance from server
-	let optimisticDeduction = $state(0); // Pending deductions
 	let searchValue = $state('');
 	let selectedRarity = $state<VipCardRarity | 'all'>('all');
 	let selectedSort = $state<'price' | 'name' | 'rarity'>('price');
 	let selectedCard = $state<VipCard | null>(null);
 	let showPurchaseModal = $state(false);
 
-	// Optimistic balance (server balance - pending deductions)
-	let gidouillesBalance = $derived(serverBalance - optimisticDeduction);
+	// Balance from studentCache (reactive via sync getter)
+	// Returns cached value or 0 if not yet loaded
+	let gidouillesBalance = $derived(studentCache.getRewardsSync()?.gidouilles ?? 0);
 
 	// Sort options
 	const sortOptions = [
@@ -44,7 +49,7 @@
 		{ value: 'rarity', label: 'Rarete' }
 	];
 
-	// Fetch shop cards and balance from API
+	// Fetch shop cards from API (balance comes from studentCache)
 	async function fetchShopData() {
 		isLoading = true;
 		error = null;
@@ -56,8 +61,6 @@
 			}
 			const shopData = await shopResponse.json();
 			cards = shopData.cards || [];
-			serverBalance = shopData.balance ?? 0;
-			optimisticDeduction = 0; // Reset on fresh fetch
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Erreur inconnue';
 		} finally {
@@ -65,10 +68,15 @@
 		}
 	}
 
-	// Initial fetch
+	// Initial fetch - load shop cards AND ensure rewards cache is populated
 	$effect(() => {
 		if (!supabase || !userId) return;
+
+		// Fetch shop cards
 		fetchShopData();
+
+		// Ensure rewards cache is populated for balance display
+		studentCache.getRewards();
 	});
 
 	// Filtered and sorted cards
@@ -104,31 +112,84 @@
 		return result;
 	});
 
+	// Group filtered cards by rarity for section display
+	let cardsByRarity = $derived.by(() => {
+		const grouped: Record<VipCardRarity, VipCard[]> = {
+			legendary: [],
+			epic: [],
+			rare: [],
+			common: []
+		};
+
+		filteredCards.forEach((card) => {
+			grouped[card.rarity].push(card);
+		});
+
+		return grouped;
+	});
+
+	// Cache context for student
+	const cacheContext: CacheContext = { type: 'student' };
+
 	// Handle purchase click
 	function handlePurchaseClick(card: VipCard) {
 		selectedCard = card;
 		showPurchaseModal = true;
 	}
 
-	// Handle optimistic purchase - instant UI update before server confirms
+	// Handle optimistic purchase - instant gidouilles update before server confirms
+	// Following the pattern: gidouilles = predictive optimistic (before API)
 	function handleOptimisticPurchase(price: number) {
-		optimisticDeduction += price;
+		syncGidouilles(cacheContext, -price);
 	}
 
-	// Handle purchase complete - refresh from server to get confirmed state
-	async function handlePurchaseComplete() {
-		await fetchShopData();
+	// Handle purchase complete - add new card to cache with server data
+	// Following the pattern: VIP cards = server-confirmed (after API success)
+	function handlePurchaseComplete(result: {
+		instanceId: string;
+		cardId: string;
+		purchasedAt: string;
+		acquiredFrom: string;
+		usesRemaining: number | null;
+	}) {
+		// Get current VIP cards from cache
+		const currentRewards = studentCache.getRewardsSync();
+		const currentVipCards: StudentVipCards = currentRewards?.vip_cards ?? {};
+
+		// Add new card from server response
+		const updatedVipCards: StudentVipCards = {
+			...currentVipCards,
+			[result.instanceId]: {
+				cardId: result.cardId,
+				earnedAt: result.purchasedAt,
+				purchasedAt: result.purchasedAt,
+				acquiredFrom: result.acquiredFrom as 'purchase',
+				usedAt: null,
+				usesRemaining: result.usesRemaining
+			}
+		};
+
+		// Update cache with new VIP cards (instant UI update)
+		syncVipCards(cacheContext, updatedVipCards);
 	}
 
-	// Handle purchase error - rollback optimistic update
+	// Handle purchase error - rollback gidouilles optimistic update
 	function handlePurchaseError(price: number) {
-		optimisticDeduction = Math.max(0, optimisticDeduction - price);
+		rollbackGidouilles(cacheContext, -price);
 	}
 
 	// Get card price
 	function getCardPrice(card: VipCard): number {
 		return card.basePrice ?? RARITY_PRICES[card.rarity] ?? 20;
 	}
+
+	// Rarity gem colors (same as VipCard component)
+	const rarityGemColors = {
+		common: { color: '#9ca3af', glow: false },
+		rare: { color: '#3b82f6', glow: true },
+		epic: { color: '#a855f7', glow: true },
+		legendary: { color: '#f59e0b', glow: true }
+	};
 </script>
 
 <div class="space-y-6">
@@ -142,7 +203,7 @@
 			<p class="text-muted-foreground">Achete des cartes VIP avec tes gidouilles</p>
 		</div>
 		<div class="flex items-center gap-2 rounded-lg border bg-card px-4 py-2 shadow-sm">
-			<Coins class="h-5 w-5 text-yellow-500" />
+			<img src={gidouilleImage} alt="Gidouille" class="h-5 w-5" />
 			<span class="text-lg font-semibold">{gidouillesBalance.toFixed(1)}</span>
 			<span class="text-sm text-muted-foreground">gidouilles</span>
 		</div>
@@ -214,92 +275,141 @@
 			</p>
 		</div>
 	{:else}
-		<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-			{#each filteredCards as card (card.id)}
-				{@const price = getCardPrice(card)}
-				{@const canAfford = gidouillesBalance >= price}
-				<button
-					type="button"
-					class="group relative flex flex-col overflow-hidden rounded-lg border-2 transition-all hover:shadow-lg {RARITY_COLORS[
-						card.rarity
-					]} {canAfford ? 'cursor-pointer' : 'cursor-not-allowed opacity-75'}"
-					onclick={() => handlePurchaseClick(card)}
-					disabled={!canAfford}
-				>
-					<!-- Card Image -->
-					<div class="relative aspect-[3/4] w-full overflow-hidden bg-muted">
-						{#if card.imagePath}
-							{@const imgPath = card.imagePath}
-							<img
-								src={imgPath}
-								alt={card.name}
-								class="h-full w-full object-cover transition-transform group-hover:scale-105"
-								onerror={(e) => {
-									const target = e.currentTarget as HTMLImageElement;
-									target.style.display = 'none';
-									const fallback = target.nextElementSibling as HTMLElement | null;
-									if (fallback) fallback.classList.remove('hidden');
-								}}
-							/>
-							<div
-								class="fallback-icon absolute inset-0 flex hidden h-full w-full items-center justify-center"
-							>
-								<Sparkles class="h-16 w-16 text-muted-foreground" />
-							</div>
-						{:else}
-							<div class="flex h-full w-full items-center justify-center">
-								<Sparkles class="h-16 w-16 text-muted-foreground" />
-							</div>
-						{/if}
+		<div class="space-y-8">
+			{#each RARITY_DISPLAY_ORDER as rarity (rarity)}
+				{@const rarityCards = cardsByRarity[rarity]}
+				{@const config = RARITY_SECTION_CONFIG[rarity]}
 
-						<!-- Rarity Badge -->
-						<div class="absolute top-2 right-2">
-							<span
-								class="rounded-full px-2 py-1 text-xs font-semibold {RARITY_TEXT_COLORS[
-									card.rarity
-								]} bg-background/90 backdrop-blur-sm"
-							>
-								{RARITY_LABELS[card.rarity]}
-							</span>
+				{#if rarityCards.length > 0}
+					<section class="space-y-4">
+						<!-- Rarity Section Header -->
+						<div
+							class={cn(
+								'flex items-center gap-3 rounded-lg border-2 p-4',
+								config.bgColor,
+								config.borderColor
+							)}
+						>
+							<Gem class={cn('h-7 w-7', config.color)} />
+							<h3 class={cn('text-2xl font-bold', config.color)}>
+								{config.label}
+							</h3>
+							<Badge variant="outline" class={cn('ml-auto text-sm', config.color)}>
+								{rarityCards.length}
+								{rarityCards.length === 1 ? 'carte' : 'cartes'}
+							</Badge>
 						</div>
 
-						<!-- Uses Badge (for consumables) -->
-						{#if card.usesTotal}
-							<div class="absolute top-2 left-2">
-								<span
-									class="rounded-full bg-background/90 px-2 py-1 text-xs font-semibold backdrop-blur-sm"
+						<!-- Cards Grid -->
+						<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+							{#each rarityCards as card (card.id)}
+								{@const price = getCardPrice(card)}
+								{@const canAfford = gidouillesBalance >= price}
+								<button
+									type="button"
+									class="group relative flex flex-col overflow-hidden rounded-xl border-3 bg-card transition-all hover:shadow-lg {canAfford
+										? 'cursor-pointer'
+										: 'cursor-not-allowed opacity-75'}"
+									onclick={() => handlePurchaseClick(card)}
+									disabled={!canAfford}
 								>
-									x{card.usesTotal}
-								</span>
-							</div>
-						{/if}
-					</div>
+									<!-- Card Image -->
+									<div class="relative aspect-[4/5] w-full overflow-hidden bg-muted">
+										{#if card.imagePath}
+											{@const imgPath = card.imagePath}
+											<img
+												src={imgPath}
+												alt={card.name}
+												class="h-full w-full object-cover transition-transform group-hover:scale-105"
+												onerror={(e) => {
+													const target = e.currentTarget as HTMLImageElement;
+													target.style.display = 'none';
+													const fallback = target.nextElementSibling as HTMLElement | null;
+													if (fallback) fallback.classList.remove('hidden');
+												}}
+											/>
+											<div
+												class="fallback-icon absolute inset-0 flex hidden h-full w-full items-center justify-center"
+											>
+												<Sparkles class="h-16 w-16 text-muted-foreground" />
+											</div>
+										{:else}
+											<div class="flex h-full w-full items-center justify-center">
+												<Sparkles class="h-16 w-16 text-muted-foreground" />
+											</div>
+										{/if}
 
-					<!-- Card Info -->
-					<div class="flex flex-1 flex-col gap-2 p-3">
-						<h3 class="line-clamp-1 font-semibold">{card.name}</h3>
-						<p class="line-clamp-2 flex-1 text-xs text-muted-foreground">
-							{card.description}
-						</p>
+										<!-- Rarity Gem (same as VipCard component) -->
+										<div class="absolute top-2 left-2 z-10">
+											<div
+												class="h-6 w-6 rounded-full bg-white/60 p-1 shadow-lg backdrop-blur-sm"
+												style="color: {rarityGemColors[card.rarity].color}; {rarityGemColors[
+													card.rarity
+												].glow
+													? 'filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 10px currentColor);'
+													: ''}"
+											>
+												<svg
+													class="h-full w-full"
+													viewBox="0 0 24 24"
+													fill="none"
+													xmlns="http://www.w3.org/2000/svg"
+												>
+													<path
+														d="M12 2L4 8L2 12L12 22L22 12L20 8L12 2Z"
+														fill="currentColor"
+														stroke="currentColor"
+														stroke-width="1.5"
+														stroke-linejoin="round"
+													/>
+													<path d="M12 2L8 8H16L12 2Z" fill="white" opacity="0.3" />
+													<path d="M4 8L8 8L12 22L4 8Z" fill="black" opacity="0.2" />
+													<path d="M20 8L16 8L12 22L20 8Z" fill="black" opacity="0.2" />
+												</svg>
+											</div>
+										</div>
 
-						<!-- Price -->
-						<div class="flex items-center justify-between border-t pt-2">
-							<div class="flex items-center gap-1">
-								<Coins class="h-4 w-4 text-yellow-500" />
-								<span class="font-bold">{price}</span>
-							</div>
-							<Button
-								size="sm"
-								variant={canAfford ? 'default' : 'secondary'}
-								disabled={!canAfford}
-								class="gap-1"
-							>
-								<ShoppingCart class="h-3 w-3" />
-								{canAfford ? 'Acheter' : 'Insuffisant'}
-							</Button>
+										<!-- Uses Badge (for consumables) -->
+										{#if card.usesTotal}
+											<div class="absolute top-2 right-2">
+												<span
+													class="rounded-full bg-background/90 px-2 py-1 text-xs font-semibold backdrop-blur-sm"
+												>
+													x{card.usesTotal}
+												</span>
+											</div>
+										{/if}
+									</div>
+
+									<!-- Card Info -->
+									<div class="flex flex-1 flex-col gap-1 p-2">
+										<h3 class="line-clamp-1 text-sm font-semibold">{card.name}</h3>
+										<p class="line-clamp-2 flex-1 text-xs text-muted-foreground">
+											{card.description}
+										</p>
+
+										<!-- Price -->
+										<div class="flex items-center justify-between border-t pt-1.5">
+											<div class="flex items-center gap-1">
+												<img src={gidouilleImage} alt="Gidouille" class="h-3.5 w-3.5" />
+												<span class="text-sm font-bold">{price}</span>
+											</div>
+											<Button
+												size="sm"
+												variant={canAfford ? 'default' : 'secondary'}
+												disabled={!canAfford}
+												class="h-7 gap-1 px-2 text-xs"
+											>
+												<ShoppingCart class="h-3 w-3" />
+												{canAfford ? 'Acheter' : 'Insuffisant'}
+											</Button>
+										</div>
+									</div>
+								</button>
+							{/each}
 						</div>
-					</div>
-				</button>
+					</section>
+				{/if}
 			{/each}
 		</div>
 	{/if}
