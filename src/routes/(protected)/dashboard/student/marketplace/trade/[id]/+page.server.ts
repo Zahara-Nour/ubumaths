@@ -88,24 +88,32 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const theirProfile = isInitiator ? partnerData : initiatorData;
 
 	// Parse VIP cards - filter out used cards and map to VipCardInstance
-	const parseVipCards = (
-		vipCards: unknown
-	): (VipCardInstance & { instanceId: string; name?: string })[] => {
-		if (!vipCards || !Array.isArray(vipCards)) return [];
+	// vip_cards is stored as Record<instanceId, VipCardInstance> in the database
+	const parseVipCards = (vipCards: unknown): (VipCardInstance & { instanceId: string })[] => {
+		if (!vipCards || typeof vipCards !== 'object') return [];
 
-		return vipCards
-			.filter((card) => {
+		// Handle both object format (Record<string, VipCardInstance>) and array format
+		const entries = Array.isArray(vipCards)
+			? vipCards.map((card) => [card.id || card.instanceId, card] as const)
+			: Object.entries(vipCards as Record<string, unknown>);
+
+		return entries
+			.filter(([, card]) => {
+				if (!card || typeof card !== 'object') return false;
+				const c = card as Record<string, unknown>;
 				// Only include unused cards
-				if (card.usedAt || card.used_at) return false;
+				if (c.usedAt || c.used_at) return false;
 				return true;
 			})
-			.map((card) => ({
-				instanceId: card.id || card.instanceId,
-				cardId: card.template_id || card.cardId,
-				earnedAt: card.obtained_at || card.earnedAt || card.earned_at,
-				usedAt: card.usedAt || card.used_at || null,
-				name: card.name
-			}));
+			.map(([instanceId, card]) => {
+				const c = card as Record<string, unknown>;
+				return {
+					instanceId: String(instanceId),
+					cardId: String(c.cardId || c.template_id || ''),
+					earnedAt: String(c.earnedAt || c.earned_at || c.obtained_at || ''),
+					usedAt: (c.usedAt || c.used_at || null) as string | null
+				};
+			});
 	};
 
 	// Get cards for both participants
