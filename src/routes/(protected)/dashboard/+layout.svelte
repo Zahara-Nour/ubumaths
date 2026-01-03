@@ -66,7 +66,8 @@
 		Book,
 		Layers,
 		FileSpreadsheet,
-		ShieldAlert
+		ShieldAlert,
+		Package
 	} from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -121,7 +122,8 @@
 	// Navigation links based on role
 	const getNavLinks = (
 		role: string,
-		pendingVipRequestsCount: number = 0
+		pendingVipRequestsCount: number = 0,
+		marketplaceEnabled: boolean = false
 	): Array<{
 		href: string;
 		label: string;
@@ -136,7 +138,7 @@
 		}> = [{ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }];
 
 		if (role === 'student') {
-			return [
+			const studentLinks = [
 				...commonLinks,
 				{ href: '/dashboard/student/cours', label: 'Cours', icon: Book },
 				{ href: '/dashboard/student/worksheets', label: 'Mes Fiches', icon: FileSpreadsheet },
@@ -150,9 +152,25 @@
 					href: '/dashboard/student/vip-cards/collection',
 					label: 'Collection VIP',
 					icon: Sparkles
-				},
-				{ href: '/dashboard/bug-reports', label: 'Mes Signalements', icon: Bug }
+				}
 			];
+
+			// Only show marketplace if enabled for the student's class
+			if (marketplaceEnabled) {
+				studentLinks.push({
+					href: '/dashboard/student/marketplace',
+					label: 'Boutique',
+					icon: ShoppingBag
+				});
+			}
+
+			// Inventory is always visible (student can see their items)
+			studentLinks.push(
+				{ href: '/dashboard/student/inventory', label: 'Inventaire', icon: Package },
+				{ href: '/dashboard/bug-reports', label: 'Mes Signalements', icon: Bug }
+			);
+
+			return studentLinks;
 		} else if (role === 'teacher') {
 			return [
 				...commonLinks,
@@ -588,7 +606,7 @@
 		<!-- RAIL SIDEBAR - Vertical icon navigation (hidden on mobile) -->
 		<div class="hidden w-20 border-r border-border bg-card/50 shadow-sm md:block dark:bg-card">
 			<nav class="flex flex-col items-center gap-1 py-4">
-				{#each getNavLinks(data.profile.role, data.pendingVipRequestsCount) as link (link.href)}
+				{#each getNavLinks(data.profile.role, data.pendingVipRequestsCount, data.marketplaceEnabled) as link (link.href)}
 					<a
 						href={link.href}
 						class="group relative flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
@@ -659,7 +677,11 @@
 	<!-- Mobile Navigation Drawer -->
 	<MobileNavDrawer
 		bind:open={mobileMenuOpen}
-		items={getNavLinks(data.profile.role, data.pendingVipRequestsCount) as NavItem[]}
+		items={getNavLinks(
+			data.profile.role,
+			data.pendingVipRequestsCount,
+			data.marketplaceEnabled
+		) as NavItem[]}
 		{isActive}
 	/>
 </div>

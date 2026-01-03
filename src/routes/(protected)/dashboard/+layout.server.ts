@@ -8,18 +8,24 @@
  * For teachers:
  * - Loads count of pending VIP card activation requests (for sidebar badge)
  *
- * For students/admins:
- * - Returns 0 pending requests (not applicable)
+ * For students:
+ * - Checks if marketplace is enabled for their class
+ *
+ * For admins:
+ * - Returns default values (not applicable)
  */
 
 import type { LayoutServerLoad } from './$types';
 import { countPendingActivationRequests } from '$lib/server/vip-card-queries';
+import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const { supabase, profile } = locals;
 
 	// Only count pending requests for teachers
 	let pendingVipRequestsCount = 0;
+	// Check if marketplace is enabled for students
+	let marketplaceEnabled = false;
 
 	if (profile?.role === 'teacher' && profile?.id) {
 		try {
@@ -31,7 +37,18 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		}
 	}
 
+	if (profile?.role === 'student' && profile?.id) {
+		try {
+			marketplaceEnabled = await isMarketplaceEnabled(supabase, profile.id);
+		} catch (error) {
+			console.error('❌ [dashboard/+layout.server.ts] Error checking marketplace status:', error);
+			// Don't throw - just return false on error
+			marketplaceEnabled = false;
+		}
+	}
+
 	return {
-		pendingVipRequestsCount
+		pendingVipRequestsCount,
+		marketplaceEnabled
 	};
 };

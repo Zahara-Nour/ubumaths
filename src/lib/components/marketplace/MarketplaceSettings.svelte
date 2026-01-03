@@ -27,10 +27,14 @@
 	let {
 		config,
 		isTeacher = false,
+		classId = '',
+		className = '',
 		onUpdate = () => {}
 	}: {
 		config: MarketplaceConfig | null;
 		isTeacher?: boolean;
+		classId?: string;
+		className?: string;
 		onUpdate?: () => void;
 	} = $props();
 
@@ -41,20 +45,20 @@
 	let isLoading = $state(false);
 	let hasChanges = $state(false);
 
-	// Validation schema
+	// Validation schema (must match backend validation in src/lib/server/marketplace/validation.ts)
 	const configSchema = z.object({
 		is_enabled: z.boolean(),
 		max_listings_per_student: z
 			.number()
 			.int('Doit être un nombre entier')
 			.min(1, 'Minimum 1 annonce')
-			.max(20, 'Maximum 20 annonces')
+			.max(10, 'Maximum 10 annonces')
 			.finite('La valeur doit être un nombre fini'),
 		max_trades_per_day: z
 			.number()
 			.int('Doit être un nombre entier')
 			.min(1, 'Minimum 1 échange')
-			.max(50, 'Maximum 50 échanges')
+			.max(20, 'Maximum 20 échanges')
 			.finite('La valeur doit être un nombre fini')
 	});
 
@@ -86,8 +90,14 @@
 
 		isLoading = true;
 		try {
-			const response = await fetch('/api/marketplace/config', {
-				method: 'POST',
+			// Use class_id query param for class-level config
+			const url = new URL('/api/marketplace/config', window.location.origin);
+			if (classId) {
+				url.searchParams.set('class_id', classId);
+			}
+
+			const response = await fetch(url.toString(), {
+				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					enabled_for_class: isEnabled,
@@ -149,10 +159,12 @@
 					Marché d'échange
 				</CardTitle>
 				<CardDescription>
-					{#if isTeacher}
-						Configurez le marché d'échange pour votre école
+					{#if isTeacher && className}
+						Configurez le marché d'échange pour la classe {className}
+					{:else if isTeacher}
+						Configurez le marché d'échange pour cette classe
 					{:else}
-						Gérez les paramètres du marché d'échange pour l'école
+						Gérez les paramètres du marché d'échange
 					{/if}
 				</CardDescription>
 			</div>
@@ -211,7 +223,7 @@
 						type="number"
 						bind:value={maxListingsPerStudent}
 						min={1}
-						max={20}
+						max={10}
 						class="w-32"
 					/>
 				</div>
@@ -226,7 +238,7 @@
 						type="number"
 						bind:value={maxTradesPerDay}
 						min={1}
-						max={50}
+						max={20}
 						class="w-32"
 					/>
 				</div>

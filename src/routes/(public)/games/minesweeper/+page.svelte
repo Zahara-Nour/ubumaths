@@ -8,6 +8,7 @@
 	import GameControls from '$lib/components/game/minesweeper/GameControls.svelte';
 	import SavedGameInfo from '$lib/components/game/minesweeper/SavedGameInfo.svelte';
 	import AchievementToast from '$lib/components/game/minesweeper/AchievementToast.svelte';
+	import UndoConfirmModal from '$lib/components/game/minesweeper/UndoConfirmModal.svelte';
 	import type { PageData } from './$types';
 	import type { GameState, Difficulty } from '$lib/types/minesweeper';
 
@@ -29,9 +30,12 @@
 			try {
 				await Promise.all([
 					minesweeperStore.loadSavedGame(),
-					// Fetch hint item count for students
+					// Fetch hint and undo item counts for students
 					data.profile.role === 'student'
 						? minesweeperStore.fetchHintItemCount()
+						: Promise.resolve(),
+					data.profile.role === 'student'
+						? minesweeperStore.fetchUndoItemCount()
 						: Promise.resolve()
 				]);
 				// Check if a saved game was loaded
@@ -341,6 +345,15 @@
 		autoDismiss={5000}
 	/>
 {/each}
+
+<!-- Undo confirmation modal (display when player clicks on a bomb with undo item available) -->
+{#if minesweeperStore.pendingBombCell}
+	<UndoConfirmModal
+		onUseUndo={() => minesweeperStore.useUndo()}
+		onDecline={() => minesweeperStore.declineUndo()}
+		isLoading={minesweeperStore.isLoading}
+	/>
+{/if}
 
 <style>
 	:global(:root) {

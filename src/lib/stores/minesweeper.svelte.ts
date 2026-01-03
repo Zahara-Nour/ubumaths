@@ -34,6 +34,10 @@ const HINT_COST_GIDOUILLES = 10; // Gidouilles cost per hint
 const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward (only for gidouilles hints)
 const HINT_ITEM_INTERNAL_NAME = 'minesweeper_hint'; // Shop item internal name
 
+// Undo (Seconde Chance) item configuration
+const UNDO_ITEM_INTERNAL_NAME = 'minesweeper_undo'; // Shop item internal name
+// Note: Max 1 undo per game is enforced server-side in use_minesweeper_undo RPC
+
 /**
  * 8 neighboring cell directions (relative positions)
  * Used for mine counting and cascade reveal algorithms
@@ -145,6 +149,22 @@ class MinesweeperStore {
 	 * Used to show "No penalty" indicator when items are available
 	 */
 	hintItemsAvailable = $state(0);
+
+	/**
+	 * Number of undo (Seconde Chance) items available in student's inventory
+	 */
+	undoItemsAvailable = $state(0);
+
+	/**
+	 * Whether undo has been used in the current game (max 1 per game)
+	 */
+	undoUsedThisGame = $state(false);
+
+	/**
+	 * Pending bomb cell coordinates (when player clicks on a bomb and has undo available)
+	 * Used to show the UndoConfirmModal
+	 */
+	pendingBombCell = $state<{ row: number; col: number } | null>(null);
 
 	// ============================================================================
 	// Tournament Mode State
@@ -285,6 +305,10 @@ class MinesweeperStore {
 				seed, // Store seed for potential grid regeneration
 				hintsUsed: 0 // Initialize hints counter
 			};
+
+			// Reset undo state for new game
+			this.undoUsedThisGame = false;
+			this.pendingBombCell = null;
 
 			// Stop existing timers
 			this.stopTimer();
@@ -674,12 +698,23 @@ class MinesweeperStore {
 		// Update cell reference after potential regeneration
 		const currentCell = game.grid[row][col];
 
-		// If mine, game over
+		// If mine, check for undo item before game over
 		if (currentCell.isMine) {
 			currentCell.isRevealed = true;
 			currentCell.isExploded = true;
 			game.cellsRevealed++;
-			// Don't set game.status here - let completeGame() handle it
+
+			// Check if player has undo available (not in tournament mode)
+			if (this.canUseUndo() && !this.isInTournamentMode() && this.shouldUseDatabase()) {
+				// Store pending bomb cell and show confirmation modal
+				this.pendingBombCell = { row, col };
+				// Trigger reactivity to show the modal
+				this.currentGame = { ...game };
+				logger.info('Bomb hit - undo available, showing confirmation modal', { row, col });
+				return;
+			}
+
+			// No undo available - proceed with game over
 			this.completeGame(false);
 			return;
 		}
@@ -1085,6 +1120,160 @@ class MinesweeperStore {
 	 */
 	async refreshHintItemCount(): Promise<void> {
 		await this.fetchHintItemCount();
+	}
+
+	/**
+	 * Fetch the count of undo items available in student's inventory
+	 * Updates `undoItemsAvailable` state
+	 *
+	 * @returns Promise that resolves with the count of available undo items
+	 */
+	async fetchUndoItemCount(): Promise<number> {
+		if (!browser || !this.shouldUseDatabase()) {
+			this.undoItemsAvailable = 0;
+			return 0;
+		}
+
+		try {
+			// Query for minesweeper_undo items in student's inventory
+			const { data, error } = await this.supabase!.from('student_item_inventory')
+				.select(
+					`
+					quantity,
+					shop_item_templates!inner(internal_name)
+				`
+				)
+				.eq('student_id', this.user!.id)
+				.eq('shop_item_templates.internal_name', UNDO_ITEM_INTERNAL_NAME)
+				.eq('is_locked', false)
+				.gt('quantity', 0);
+
+			if (error) {
+				logger.error('Failed to fetch undo item count:', error);
+				this.undoItemsAvailable = 0;
+				return 0;
+			}
+
+			// Sum up all quantities
+			const totalCount = data?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
+			this.undoItemsAvailable = totalCount;
+
+			logger.info(`Undo items available: ${totalCount}`);
+			return totalCount;
+		} catch (err) {
+			logger.error('Failed to fetch undo item count:', err);
+			this.undoItemsAvailable = 0;
+			return 0;
+		}
+	}
+
+	/**
+	 * Check if undo is available for the current game
+	 * Requires: undo item in inventory AND not already used in this game
+	 */
+	canUseUndo(): boolean {
+		return this.undoItemsAvailable > 0 && !this.undoUsedThisGame;
+	}
+
+	/**
+	 * Use the undo item to revert a bomb reveal
+	 * Called when player confirms they want to use their "Seconde Chance"
+	 */
+	async useUndo(): Promise<void> {
+		if (!browser || !this.currentGame || !this.pendingBombCell) {
+			toaster.error('Aucune action à annuler');
+			return;
+		}
+
+		const game = this.currentGame;
+		const { row, col } = this.pendingBombCell;
+
+		// Validate game state
+		if (game.status !== 'in_progress') {
+			toaster.error('La partie doit être en cours');
+			this.pendingBombCell = null;
+			return;
+		}
+
+		// Verify undo is available
+		if (!this.canUseUndo()) {
+			toaster.error('Seconde Chance non disponible');
+			this.pendingBombCell = null;
+			return;
+		}
+
+		// Must have a game ID for database games
+		if (!this.shouldUseDatabase() || !game.id) {
+			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser la Seconde Chance");
+			this.pendingBombCell = null;
+			return;
+		}
+
+		this.isLoading = true;
+		try {
+			// Revert the cell state (hide the bomb)
+			const cell = game.grid[row][col];
+			cell.isRevealed = false;
+			cell.isExploded = false;
+			game.cellsRevealed--; // Undo the increment from revealCell
+
+			// Prepare grid state for API
+			const gridState = this.gridToDTO(game.grid);
+
+			// Call API to consume the undo item
+			const response = await fetch(`/api/games/minesweeper/${game.id}/undo`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ grid_state: gridState })
+			});
+
+			if (!response.ok) {
+				// Revert the cell state changes if API fails
+				cell.isRevealed = true;
+				cell.isExploded = true;
+				game.cellsRevealed++;
+
+				const error = await response.json();
+				throw new Error(error.message || 'Échec de la Seconde Chance');
+			}
+
+			// Success - mark undo as used and clear pending state
+			this.undoUsedThisGame = true;
+			this.pendingBombCell = null;
+
+			// Decrement local undo item count
+			if (this.undoItemsAvailable > 0) {
+				this.undoItemsAvailable--;
+			}
+
+			// Trigger reactivity
+			this.currentGame = { ...game };
+
+			toaster.success('Seconde Chance utilisée ! Continuez à jouer.');
+			logger.info('Undo used successfully', { row, col, gameId: game.id });
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Échec de la Seconde Chance';
+			logger.error('Failed to use undo:', err);
+			toaster.error(message);
+		} finally {
+			this.isLoading = false;
+		}
+	}
+
+	/**
+	 * Decline to use the undo item - proceed with game over
+	 * Called when player chooses not to use their "Seconde Chance"
+	 */
+	declineUndo(): void {
+		if (!this.pendingBombCell) {
+			return;
+		}
+
+		// Clear pending state
+		this.pendingBombCell = null;
+
+		// Proceed with normal game over
+		this.completeGame(false);
 	}
 
 	/**
@@ -2294,6 +2483,9 @@ class MinesweeperStore {
 		this.isCompletingGame = false;
 		this.newlyUnlockedAchievements = [];
 		this.hintItemsAvailable = 0;
+		this.undoItemsAvailable = 0;
+		this.undoUsedThisGame = false;
+		this.pendingBombCell = null;
 
 		// Clear tournament state
 		this.tournamentId = null;
