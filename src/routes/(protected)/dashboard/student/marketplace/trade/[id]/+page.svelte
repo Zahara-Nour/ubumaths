@@ -189,7 +189,7 @@
 
 <div class="flex h-[calc(100vh-4rem)] flex-col overflow-hidden bg-background">
 	<!-- Header -->
-	<header class="flex items-center justify-between border-b bg-card px-4 py-3">
+	<header class="flex items-center justify-between border-b bg-card px-2 py-2 sm:px-3">
 		<div class="flex items-center gap-3">
 			<Button variant="ghost" size="sm" onclick={goBack}>
 				<ArrowLeft class="h-5 w-5" />
@@ -228,7 +228,7 @@
 			<!-- Mobile Layout: Stacked panels -->
 			<div class="flex flex-1 flex-col overflow-auto">
 				<!-- My Offer Panel -->
-				<div class="border-b p-4">
+				<div class="border-b p-2">
 					<TradeOfferPanel
 						isMyPanel={true}
 						cards={data.myCards}
@@ -243,7 +243,7 @@
 				</div>
 
 				<!-- Partner Offer Panel -->
-				<div class="p-4">
+				<div class="p-2">
 					<TradeOfferPanel
 						isMyPanel={false}
 						cards={partnerOfferedCards}
@@ -256,9 +256,9 @@
 			</div>
 		{:else}
 			<!-- Desktop Layout: 3 columns -->
-			<div class="grid flex-1 grid-cols-[1fr_350px_1fr] overflow-hidden">
+			<div class="grid flex-1 grid-cols-[1fr_300px_1fr] overflow-hidden">
 				<!-- My Offer Panel -->
-				<div class="overflow-auto border-r p-4">
+				<div class="overflow-auto border-r p-2">
 					<TradeOfferPanel
 						isMyPanel={true}
 						cards={data.myCards}
@@ -274,12 +274,12 @@
 
 				<!-- Chat Panel (Desktop) -->
 				<div class="flex flex-col overflow-hidden border-r bg-muted/30">
-					<div class="border-b bg-card p-3">
-						<h2 class="font-semibold">Chat</h2>
+					<div class="border-b bg-card p-2">
+						<h2 class="text-sm font-semibold">Chat</h2>
 					</div>
 					<div class="flex flex-1 flex-col overflow-hidden">
 						<!-- Chat messages -->
-						<div class="flex-1 overflow-auto p-3">
+						<div class="flex-1 overflow-auto p-2">
 							{#if tradeRealtimeStore.messages.length === 0}
 								<p class="py-8 text-center text-sm text-muted-foreground">
 									Aucun message. Commencez la discussion !
@@ -309,7 +309,7 @@
 						</div>
 
 						<!-- Chat input -->
-						<div class="border-t bg-card p-3">
+						<div class="border-t bg-card p-2">
 							<form
 								onsubmit={(e) => {
 									e.preventDefault();
@@ -325,18 +325,18 @@
 								<input
 									type="text"
 									name="message"
-									placeholder="Ecrivez un message..."
+									placeholder="Message..."
 									maxlength="500"
-									class="flex-1 rounded-md border bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+									class="flex-1 rounded-md border bg-background px-2 py-1.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
 								/>
-								<Button type="submit" size="sm">Envoyer</Button>
+								<Button type="submit" size="sm">OK</Button>
 							</form>
 						</div>
 					</div>
 				</div>
 
 				<!-- Partner Offer Panel -->
-				<div class="overflow-auto p-4">
+				<div class="overflow-auto p-2">
 					<TradeOfferPanel
 						isMyPanel={false}
 						cards={partnerOfferedCards}
