@@ -202,7 +202,6 @@
 	}
 
 	// Load activities on mount if not in compact mode with initial data
-	// Note: Parent uses {#key classId} so component is recreated when classId changes
 	onMount(() => {
 		if (!compact || initialActivities.length === 0) {
 			fetchActivities();
@@ -215,6 +214,13 @@
 				refreshInterval = null;
 			}
 		};
+	});
+
+	// Refetch when classId changes
+	$effect(() => {
+		if (classId !== undefined && !compact) {
+			fetchActivities();
+		}
 	});
 </script>
 
