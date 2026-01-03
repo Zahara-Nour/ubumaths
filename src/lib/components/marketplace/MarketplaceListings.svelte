@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -67,10 +68,8 @@
 	}
 
 	// Cleanup timer on unmount
-	$effect(() => {
-		return () => {
-			clearTimeout(searchTimer);
-		};
+	onDestroy(() => {
+		clearTimeout(searchTimer);
 	});
 
 	// Load more listings

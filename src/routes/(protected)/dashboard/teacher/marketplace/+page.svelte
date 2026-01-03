@@ -133,7 +133,10 @@
 		return num.toLocaleString('fr-FR');
 	}
 
-	// Update selected values when data changes
+	// Sync local state from URL params (source of truth) when data changes.
+	// This is needed for browser back/forward navigation to update the UI correctly.
+	// This pattern is acceptable as it syncs from an external source (URL via props),
+	// not deriving state from other local state.
 	$effect(() => {
 		selectedClassId = data.selectedClassId || data.teacherClasses[0]?.id || '';
 		selectedPeriod = data.period;

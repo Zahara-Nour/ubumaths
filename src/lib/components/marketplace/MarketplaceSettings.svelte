@@ -43,7 +43,6 @@
 	let maxListingsPerStudent = $state(config?.max_listings_per_student || 5);
 	let maxTradesPerDay = $state(config?.max_trades_per_day || 10);
 	let isLoading = $state(false);
-	let hasChanges = $state(false);
 
 	// Validation schema (must match backend validation in src/lib/server/marketplace/validation.ts)
 	const configSchema = z.object({
@@ -62,17 +61,14 @@
 			.finite('La valeur doit être un nombre fini')
 	});
 
-	// Track changes
-	$effect(() => {
-		if (config) {
-			hasChanges =
-				isEnabled !== config.is_enabled ||
-				maxListingsPerStudent !== config.max_listings_per_student ||
-				maxTradesPerDay !== config.max_trades_per_day;
-		} else {
-			hasChanges = true; // New config, any values are changes
-		}
-	});
+	// Track changes - use $derived instead of $effect to avoid updating state from effect
+	let hasChanges = $derived(
+		config
+			? isEnabled !== config.is_enabled ||
+					maxListingsPerStudent !== config.max_listings_per_student ||
+					maxTradesPerDay !== config.max_trades_per_day
+			: true // New config, any values are changes
+	);
 
 	// Save settings
 	async function saveSettings() {
@@ -112,7 +108,7 @@
 			}
 
 			toaster.success('Paramètres du marché sauvegardés');
-			hasChanges = false;
+			// hasChanges is now $derived, it will auto-update when parent refreshes config
 			onUpdate();
 		} catch (err) {
 			console.error('Error saving marketplace settings:', err);
@@ -133,7 +129,7 @@
 			maxListingsPerStudent = 5;
 			maxTradesPerDay = 10;
 		}
-		hasChanges = false;
+		// hasChanges is $derived, it will automatically be false after resetting to config values
 		toaster.info('Paramètres réinitialisés');
 	}
 
