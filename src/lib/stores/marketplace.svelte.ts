@@ -865,9 +865,26 @@ class MarketplaceStore {
 		}
 	}
 
-	// Accept a proposal
+	/**
+	 * Accept a proposal on one of my listings
+	 *
+	 * CACHE UPDATE STRATEGY:
+	 * We use two different patterns for gidouilles vs VIP cards:
+	 *
+	 * 1. GIDOUILLES - Predictive optimistic update:
+	 *    - Delta is predictable (I receive proposal.offered - I give listing.offered)
+	 *    - Update cache BEFORE API call for instant UI feedback
+	 *    - Rollback on error by applying inverse delta
+	 *
+	 * 2. VIP CARDS - Server-confirmed update:
+	 *    - We know the instanceIds of cards exchanged
+	 *    - BUT we don't know the template_id of cards we receive (they belong to proposer)
+	 *    - Cannot do optimistic update without template_id (needed for display)
+	 *    - Solution: invalidate cache after success, let next access refetch from server
+	 *
+	 * @see cache-sync.ts for pattern documentation
+	 */
 	async acceptProposal(proposalId: string, responseMessage?: string): Promise<boolean> {
-		// Validate data with Zod
 		const validation = updateProposalSchema.safeParse({
 			status: 'accepted',
 			response_message: responseMessage
@@ -877,37 +894,17 @@ class MarketplaceStore {
 			return false;
 		}
 
-		// Find the proposal and listing to calculate deltas
+		// Find the proposal and listing to calculate gidouilles delta
 		const proposal = this.receivedProposals.find((p) => p.id === proposalId);
 		const listing = proposal ? this.myListings.find((l) => l.id === proposal.listing_id) : null;
 
-		// Calculate gidouilles delta: I receive proposal.offered, I give listing.offered
+		// Gidouilles delta: I receive what proposer offers, I give what my listing offers
 		const gidouillesDelta =
 			(proposal?.offered_gidouilles || 0) - (listing?.offered_gidouilles || 0);
 
-		// Save current cards state for potential rollback
-		const currentRewards = studentCache.getRewardsSync();
-		const originalCards = currentRewards?.vip_cards ? { ...currentRewards.vip_cards } : null;
-
-		// Optimistic update BEFORE API call
+		// GIDOUILLES: Predictive optimistic update BEFORE API call
 		if (gidouillesDelta !== 0) {
 			studentCache.updateGidouillesOptimistic(gidouillesDelta);
-		}
-
-		// Optimistic update for cards: remove given cards, add received cards
-		if (originalCards && (listing?.offered_cards?.length || proposal?.offered_cards?.length)) {
-			const newCards = { ...originalCards };
-			// Remove cards I'm giving (from my listing)
-			listing?.offered_cards?.forEach((card) => delete newCards[card.id]);
-			// Add cards I'm receiving (from proposal)
-			proposal?.offered_cards?.forEach((card) => {
-				newCards[card.id] = {
-					cardId: card.template_id,
-					earnedAt: new Date().toISOString(),
-					usedAt: null
-				};
-			});
-			studentCache.updateVipCardsOptimistic(newCards);
 		}
 
 		try {
@@ -920,32 +917,31 @@ class MarketplaceStore {
 			if (response.ok) {
 				toaster.success('Proposition acceptée - échange effectué');
 				this.announceStatus('Proposition acceptée avec succès');
-				// Cache already updated optimistically, just refresh UI state
+
+				// VIP CARDS: Server-confirmed pattern - invalidate to force refetch
+				// This syncs the new cards (with their templates) from the server
+				studentCache.invalidateRewards();
+
+				// Refresh marketplace UI state
 				await Promise.all([
 					this.fetchMyListings(),
 					this.fetchReceivedProposals(),
-					this.fetchMyVipCards() // Refresh locks status
+					this.fetchMyVipCards()
 				]);
 				return true;
 			} else {
-				// Rollback on error
+				// ROLLBACK: Reverse gidouilles delta on error
 				if (gidouillesDelta !== 0) {
 					studentCache.updateGidouillesOptimistic(-gidouillesDelta);
-				}
-				if (originalCards) {
-					studentCache.updateVipCardsOptimistic(originalCards);
 				}
 				const error = await response.text();
 				toaster.error(error || "Erreur lors de l'acceptation");
 				return false;
 			}
 		} catch (_error) {
-			// Rollback on error
+			// ROLLBACK: Reverse gidouilles delta on error
 			if (gidouillesDelta !== 0) {
 				studentCache.updateGidouillesOptimistic(-gidouillesDelta);
-			}
-			if (originalCards) {
-				studentCache.updateVipCardsOptimistic(originalCards);
 			}
 			toaster.error("Erreur lors de l'acceptation");
 			return false;
@@ -1095,14 +1091,30 @@ class MarketplaceStore {
 		}
 	}
 
-	// Accept trade offer
+	/**
+	 * Accept the current offer in a friend trade
+	 *
+	 * CACHE UPDATE STRATEGY (same as acceptProposal):
+	 *
+	 * 1. GIDOUILLES - Predictive optimistic update:
+	 *    - Delta calculated based on role (initiator vs partner)
+	 *    - Initiator gives initiator_gidouilles, receives partner_gidouilles
+	 *    - Partner gives partner_gidouilles, receives initiator_gidouilles
+	 *    - Update BEFORE API, rollback on error
+	 *
+	 * 2. VIP CARDS - Server-confirmed update:
+	 *    - Cards in offer belong to the other user (partner's cards for me to receive)
+	 *    - We don't have their template_id in our local cache
+	 *    - Must invalidate and refetch after success to get complete card data
+	 *
+	 * @see acceptProposal for detailed pattern explanation
+	 */
 	async acceptTradeOffer(tradeId: string): Promise<boolean> {
-		// Find the trade to calculate deltas
 		const trade = this.activeTrades.find((t) => t.id === tradeId);
 		const offer = trade?.latest_offer;
 		const amInitiator = trade?.initiator_id === this.userId;
 
-		// Calculate what I give and receive based on my role
+		// Calculate gidouilles delta based on my role in the trade
 		// Initiator gives initiator_*, receives partner_*
 		// Partner gives partner_*, receives initiator_*
 		const gidouillesIGive = amInitiator
@@ -1113,32 +1125,9 @@ class MarketplaceStore {
 			: offer?.initiator_gidouilles || 0;
 		const gidouillesDelta = gidouillesIReceive - gidouillesIGive;
 
-		const cardsIGive = amInitiator ? offer?.initiator_cards : offer?.partner_cards;
-		const cardsIReceive = amInitiator ? offer?.partner_cards : offer?.initiator_cards;
-
-		// Save current state for rollback
-		const currentRewards = studentCache.getRewardsSync();
-		const originalCards = currentRewards?.vip_cards ? { ...currentRewards.vip_cards } : null;
-
-		// Optimistic update BEFORE API call
+		// GIDOUILLES: Predictive optimistic update BEFORE API call
 		if (gidouillesDelta !== 0) {
 			studentCache.updateGidouillesOptimistic(gidouillesDelta);
-		}
-
-		// Optimistic update for cards
-		if (originalCards && (cardsIGive?.length || cardsIReceive?.length)) {
-			const newCards = { ...originalCards };
-			// Remove cards I'm giving
-			cardsIGive?.forEach((card) => delete newCards[card.id]);
-			// Add cards I'm receiving
-			cardsIReceive?.forEach((card) => {
-				newCards[card.id] = {
-					cardId: card.template_id,
-					earnedAt: new Date().toISOString(),
-					usedAt: null
-				};
-			});
-			studentCache.updateVipCardsOptimistic(newCards);
 		}
 
 		try {
@@ -1148,28 +1137,26 @@ class MarketplaceStore {
 
 			if (response.ok) {
 				toaster.success('Échange accepté et complété!');
-				// Cache already updated optimistically, just refresh UI state
+
+				// VIP CARDS: Server-confirmed pattern - invalidate to force refetch
+				studentCache.invalidateRewards();
+
+				// Refresh marketplace UI state
 				await Promise.all([this.fetchMyTrades(), this.fetchMyVipCards()]);
 				return true;
 			} else {
-				// Rollback on error
+				// ROLLBACK: Reverse gidouilles delta on error
 				if (gidouillesDelta !== 0) {
 					studentCache.updateGidouillesOptimistic(-gidouillesDelta);
-				}
-				if (originalCards) {
-					studentCache.updateVipCardsOptimistic(originalCards);
 				}
 				const error = await response.text();
 				toaster.error(error || "Erreur lors de l'acceptation");
 				return false;
 			}
 		} catch (_error) {
-			// Rollback on error
+			// ROLLBACK: Reverse gidouilles delta on error
 			if (gidouillesDelta !== 0) {
 				studentCache.updateGidouillesOptimistic(-gidouillesDelta);
-			}
-			if (originalCards) {
-				studentCache.updateVipCardsOptimistic(originalCards);
 			}
 			toaster.error("Erreur lors de l'acceptation");
 			return false;
