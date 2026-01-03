@@ -66,3 +66,46 @@ export const RARITY_FILTER_OPTIONS = [
 	{ value: 'epic', label: 'Epique' },
 	{ value: 'legendary', label: 'Legendaire' }
 ] as const;
+
+/**
+ * Section header styling for rarity groups (used in galleries/collections)
+ */
+export const RARITY_SECTION_CONFIG: Record<
+	VipCardRarity,
+	{
+		label: string;
+		color: string;
+		bgColor: string;
+		borderColor: string;
+	}
+> = {
+	legendary: {
+		label: 'Légendaire',
+		color: 'text-orange-500 dark:text-orange-400',
+		bgColor: 'bg-orange-500/10 dark:bg-orange-400/10',
+		borderColor: 'border-orange-500/50 dark:border-orange-400/50'
+	},
+	epic: {
+		label: 'Épique',
+		color: 'text-purple-500 dark:text-purple-400',
+		bgColor: 'bg-purple-500/10 dark:bg-purple-400/10',
+		borderColor: 'border-purple-500/50 dark:border-purple-400/50'
+	},
+	rare: {
+		label: 'Rare',
+		color: 'text-blue-500 dark:text-blue-400',
+		bgColor: 'bg-blue-500/10 dark:bg-blue-400/10',
+		borderColor: 'border-blue-500/50 dark:border-blue-400/50'
+	},
+	common: {
+		label: 'Commune',
+		color: 'text-gray-500 dark:text-gray-400',
+		bgColor: 'bg-gray-500/10 dark:bg-gray-400/10',
+		borderColor: 'border-gray-500/50 dark:border-gray-400/50'
+	}
+};
+
+/**
+ * Order of rarities for display (legendary first)
+ */
+export const RARITY_DISPLAY_ORDER: VipCardRarity[] = ['legendary', 'epic', 'rare', 'common'];

@@ -283,6 +283,7 @@ BEGIN
   WHERE id = p_student_id;
 
   -- Log the purchase in activity table
+  -- Note: The trigger only logs 'removed' actions, so no conflict possible here
   INSERT INTO vip_cards_activity (
     student_id,
     card_instance_id,
@@ -298,7 +299,8 @@ BEGIN
       'acquired_from', 'purchase',
       'price_paid', v_template.base_price,
       'old_balance', v_current_balance,
-      'new_balance', v_new_balance
+      'new_balance', v_new_balance,
+      'rarity', v_template.rarity
     )
   );
 
@@ -449,6 +451,7 @@ BEGIN
   WHERE id = p_student_id;
 
   -- Log the use in activity table
+  -- Note: The trigger only logs 'removed' actions, so no conflict possible here
   INSERT INTO vip_cards_activity (
     student_id,
     card_instance_id,
@@ -589,6 +592,25 @@ BEGIN
     vip_cards = v_vip_cards,
     updated_at = v_now
   WHERE id = p_student_id;
+
+  -- Log the draw in activity table
+  -- Note: The trigger only logs 'removed' actions, so no conflict possible here
+  INSERT INTO vip_cards_activity (
+    student_id,
+    card_instance_id,
+    card_template_id,
+    action,
+    metadata
+  ) VALUES (
+    p_student_id,
+    v_instance_id::TEXT,
+    v_selected_card_id,
+    'gained',
+    jsonb_build_object(
+      'acquired_from', 'draw',
+      'rarity', (SELECT rarity FROM vip_card_templates WHERE id = v_selected_card_id)
+    )
+  );
 
   RETURN v_selected_card_id;
 END;
