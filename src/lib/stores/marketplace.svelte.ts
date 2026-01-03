@@ -349,7 +349,8 @@ class MarketplaceStore {
 		try {
 			const response = await fetch('/api/marketplace/trades');
 			if (response.ok) {
-				this.activeTrades = await response.json();
+				const data = await response.json();
+				this.activeTrades = data.trades || [];
 				this.stats.my_active_trades = this.activeTrades.filter(
 					(t) => t.status === 'negotiating'
 				).length;
