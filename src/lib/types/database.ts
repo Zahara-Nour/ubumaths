@@ -4949,6 +4949,8 @@ export type Database = {
 					validated_at: string | null;
 					validated_by_initiator: boolean;
 					validated_by_partner: boolean;
+					confirmed_by_initiator: boolean;
+					confirmed_by_partner: boolean;
 				};
 				Insert: {
 					cancelled_at?: string | null;
@@ -4970,6 +4972,8 @@ export type Database = {
 					validated_at?: string | null;
 					validated_by_initiator?: boolean;
 					validated_by_partner?: boolean;
+					confirmed_by_initiator?: boolean;
+					confirmed_by_partner?: boolean;
 				};
 				Update: {
 					cancelled_at?: string | null;
@@ -4991,6 +4995,8 @@ export type Database = {
 					validated_at?: string | null;
 					validated_by_initiator?: boolean;
 					validated_by_partner?: boolean;
+					confirmed_by_initiator?: boolean;
+					confirmed_by_partner?: boolean;
 				};
 				Relationships: [
 					{
