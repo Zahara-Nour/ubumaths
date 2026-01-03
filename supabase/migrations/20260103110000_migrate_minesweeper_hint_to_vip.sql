@@ -32,7 +32,6 @@ INSERT INTO public.vip_card_templates (
   image_path,
   action,
   is_enabled,
-  draw_weight,
   base_price,
   is_purchasable,
   max_owned_per_student,
@@ -46,7 +45,6 @@ INSERT INTO public.vip_card_templates (
   '/images/vip-cards/minesweeper-hint.webp',
   '{"type": "use_consumable", "context": "minesweeper", "effect": "reveal_safe_cell"}'::JSONB,
   true,
-  0,  -- Draw weight = 0: Cannot be drawn, only purchased
   1,  -- 1 gidouille (same as current hint cost)
   true,
   99, -- Can stock up many
