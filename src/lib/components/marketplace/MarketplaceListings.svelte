@@ -66,11 +66,6 @@
 		}, 500);
 	}
 
-	// Handle filter changes
-	$effect(() => {
-		applyFilters();
-	});
-
 	// Cleanup timer on unmount
 	$effect(() => {
 		return () => {
@@ -165,17 +160,32 @@
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
 						<div class="space-y-2">
 							<Label>Type d'annonce</Label>
-							<MySelect type="single" bind:value={selectedType} items={typeOptions} />
+							<MySelect
+								type="single"
+								bind:value={selectedType}
+								items={typeOptions}
+								onchange={applyFilters}
+							/>
 						</div>
 
 						<div class="space-y-2">
 							<Label>Rareté des cartes</Label>
-							<MySelect type="single" bind:value={selectedRarity} items={rarityOptions} />
+							<MySelect
+								type="single"
+								bind:value={selectedRarity}
+								items={rarityOptions}
+								onchange={applyFilters}
+							/>
 						</div>
 
 						<div class="space-y-2">
 							<Label>Trier par</Label>
-							<MySelect type="single" bind:value={selectedSort} items={sortOptions} />
+							<MySelect
+								type="single"
+								bind:value={selectedSort}
+								items={sortOptions}
+								onchange={applyFilters}
+							/>
 						</div>
 					</div>
 				</Card.Content>

@@ -208,6 +208,9 @@ class MarketplaceStore {
 	private async subscribeToRealtime() {
 		if (!this.supabase || !this.userId) return;
 
+		// Initialize the underlying realtime manager
+		supabaseRealtimeManager.init(this.supabase, this.userId);
+
 		// Subscribe to new listings (all active)
 		this.listingsChannel = supabaseRealtimeManager.createChannel('marketplace-listings');
 		this.listingsChannel
