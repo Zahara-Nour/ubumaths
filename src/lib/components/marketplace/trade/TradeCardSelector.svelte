@@ -2,20 +2,21 @@
 	TradeCardSelector Component
 	===========================
 	Grid of VIP cards for selection in trades.
-	Adapted from VipCardChooseModal pattern.
+	Follows VipCardExchangeModal pattern: cards grouped by template with counter.
 
 	Features:
-	- Responsive grid (2/3/4 columns)
-	- Toggle selection with checkmark badge
+	- Cards grouped by template (cardId)
+	- Click to increment selection counter
+	- Click when all selected → deselect all
+	- Badge showing selectedCount/totalCount
 	- Read-only mode for partner's cards
-	- Cards grouped by rarity (legendary first)
 
 	Props:
-	- cards: VipCardInstance[] - Available cards
-	- selectedCardIds: string[] - Currently selected card IDs
+	- cards: TradeCard[] - Available cards with instanceId
+	- selectedCardIds: string[] - Currently selected instance IDs
 	- readonly: boolean - Disable selection
-	- onSelect?: (cardId: string) => void
-	- onDeselect?: (cardId: string) => void
+	- onSelect?: (cardId: string) => void - Called with instanceId to select
+	- onDeselect?: (cardId: string) => void - Called with instanceId to deselect
 -->
 <script lang="ts">
 	import VipCard from '$lib/components/VipCard.svelte';
@@ -25,7 +26,7 @@
 		templateToVipCard
 	} from '$lib/stores/vipCardTemplates.svelte';
 	import { getRarityPoints } from '$lib/types/vip-card';
-	import type { VipCardInstance } from '$lib/types/vip-card';
+	import type { VipCardInstance, VipCard as VipCardType } from '$lib/types/vip-card';
 	import { cn } from '$lib/utils';
 
 	// Extended type for cards with instanceId
@@ -35,92 +36,129 @@
 		cards: TradeCard[];
 		selectedCardIds: string[];
 		readonly?: boolean;
-		onSelect?: (cardId: string) => void;
-		onDeselect?: (cardId: string) => void;
+		onSelect?: (instanceId: string) => void;
+		onDeselect?: (instanceId: string) => void;
 	}
 
 	let { cards, selectedCardIds, readonly = false, onSelect, onDeselect }: Props = $props();
 
-	// Sort cards by rarity (legendary first) then by name
-	let sortedCards = $derived.by(() => {
-		return [...cards].sort((a, b) => {
-			const templateA = getTemplateById(a.cardId, $vipCardTemplates);
-			const templateB = getTemplateById(b.cardId, $vipCardTemplates);
+	// Group cards by template (cardId)
+	let groupedCards = $derived.by(() => {
+		const groups = new Map<
+			string,
+			{
+				cardId: string;
+				card: VipCardType | null;
+				instances: TradeCard[];
+				totalCount: number;
+				selectedCount: number;
+			}
+		>();
 
-			if (!templateA || !templateB) return 0;
+		// Group by cardId (template)
+		for (const tradeCard of cards) {
+			const template = getTemplateById(tradeCard.cardId, $vipCardTemplates);
+			const card = template ? templateToVipCard(template) : null;
 
-			// Higher rarity first (legendary = 27, epic = 9, rare = 3, common = 1)
-			const rarityDiff =
-				getRarityPoints(templateB.rarity as 'common' | 'rare' | 'epic' | 'legendary') -
-				getRarityPoints(templateA.rarity as 'common' | 'rare' | 'epic' | 'legendary');
+			if (!groups.has(tradeCard.cardId)) {
+				groups.set(tradeCard.cardId, {
+					cardId: tradeCard.cardId,
+					card,
+					instances: [],
+					totalCount: 0,
+					selectedCount: 0
+				});
+			}
 
-			if (rarityDiff !== 0) return rarityDiff;
+			const group = groups.get(tradeCard.cardId)!;
+			group.instances.push(tradeCard);
+			group.totalCount++;
 
-			// Then by name
-			return templateA.name.localeCompare(templateB.name);
-		});
+			if (selectedCardIds.includes(tradeCard.instanceId)) {
+				group.selectedCount++;
+			}
+		}
+
+		// Convert to array and sort by rarity (legendary first)
+		return Array.from(groups.values())
+			.filter((g) => g.card !== null)
+			.sort((a, b) => {
+				const rarityA = getRarityPoints(a.card!.rarity as 'common' | 'rare' | 'epic' | 'legendary');
+				const rarityB = getRarityPoints(b.card!.rarity as 'common' | 'rare' | 'epic' | 'legendary');
+				// Higher rarity first
+				return rarityB - rarityA;
+			});
 	});
 
 	/**
-	 * Get VipCard object from template
+	 * Toggle card group selection
+	 * - If some unselected: select next unselected instance
+	 * - If all selected: deselect all instances of this group
 	 */
-	function getCardData(cardId: string) {
-		const template = getTemplateById(cardId, $vipCardTemplates);
-		return template ? templateToVipCard(template) : null;
-	}
-
-	/**
-	 * Check if card is selected
-	 */
-	function isSelected(instanceId: string): boolean {
-		return selectedCardIds.includes(instanceId);
-	}
-
-	/**
-	 * Toggle card selection
-	 */
-	function toggleCard(instanceId: string): void {
+	function toggleCardGroup(cardId: string): void {
 		if (readonly) return;
 
-		if (isSelected(instanceId)) {
-			onDeselect?.(instanceId);
+		const group = groupedCards.find((g) => g.cardId === cardId);
+		if (!group) return;
+
+		// Find first unselected instance
+		const unselectedInstance = group.instances.find(
+			(inst) => !selectedCardIds.includes(inst.instanceId)
+		);
+
+		if (unselectedInstance) {
+			// Select next unselected instance
+			onSelect?.(unselectedInstance.instanceId);
 		} else {
-			onSelect?.(instanceId);
+			// All selected → deselect all instances of this group
+			for (const inst of group.instances) {
+				if (selectedCardIds.includes(inst.instanceId)) {
+					onDeselect?.(inst.instanceId);
+				}
+			}
 		}
 	}
 </script>
 
-{#if cards.length === 0}
+{#if groupedCards.length === 0}
 	<p class="py-6 text-center text-sm text-muted-foreground">Aucune carte disponible</p>
 {:else}
 	<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-		{#each sortedCards as card (card.instanceId)}
-			{@const cardData = getCardData(card.cardId)}
-			{@const selected = isSelected(card.instanceId)}
+		{#each groupedCards as group (group.cardId)}
+			<button
+				type="button"
+				onclick={() => toggleCardGroup(group.cardId)}
+				disabled={readonly}
+				class={cn(
+					'relative rounded-lg border-2 p-1.5 transition-all',
+					group.selectedCount > 0 ? 'border-primary bg-primary/10 shadow-lg' : 'border-transparent',
+					readonly ? 'cursor-default' : 'cursor-pointer hover:border-primary/50'
+				)}
+			>
+				<VipCard card={group.card} size="sm" clickable={false} />
 
-			{#if cardData}
-				<button
-					type="button"
-					onclick={() => toggleCard(card.instanceId)}
-					disabled={readonly}
-					class={cn(
-						'relative rounded-lg border-2 p-1.5 transition-all',
-						selected ? 'border-primary bg-primary/10 shadow-lg' : 'border-transparent',
-						readonly ? 'cursor-default' : 'cursor-pointer hover:border-primary/50'
-					)}
-				>
-					<VipCard card={cardData} size="sm" clickable={false} />
-
-					<!-- Selection checkmark -->
-					{#if selected}
-						<div
-							class="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-md"
-						>
-							&#10003;
-						</div>
-					{/if}
-				</button>
-			{/if}
+				<!-- Selection badge -->
+				{#if group.totalCount > 1}
+					<!-- Multiple cards: show counter -->
+					<div
+						class={cn(
+							'absolute -top-2 -right-2 flex h-7 min-w-[1.75rem] items-center justify-center rounded-full px-1.5 text-xs font-bold shadow-md',
+							group.selectedCount > 0
+								? 'bg-primary text-primary-foreground'
+								: 'bg-muted text-muted-foreground'
+						)}
+					>
+						{group.selectedCount}/{group.totalCount}
+					</div>
+				{:else if group.selectedCount > 0}
+					<!-- Single card selected: show checkmark -->
+					<div
+						class="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-md"
+					>
+						&#10003;
+					</div>
+				{/if}
+			</button>
 		{/each}
 	</div>
 {/if}
