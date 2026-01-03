@@ -123,14 +123,14 @@
 {#if groupedCards.length === 0}
 	<p class="py-6 text-center text-sm text-muted-foreground">Aucune carte disponible</p>
 {:else}
-	<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+	<div class="grid grid-cols-3 gap-2 overflow-hidden sm:grid-cols-4 lg:grid-cols-5">
 		{#each groupedCards as group (group.cardId)}
 			<button
 				type="button"
 				onclick={() => toggleCardGroup(group.cardId)}
 				disabled={readonly}
 				class={cn(
-					'relative rounded-lg border-2 p-1.5 transition-all',
+					'relative rounded-lg border-2 p-0.5 transition-all',
 					group.selectedCount > 0 ? 'border-primary bg-primary/10 shadow-lg' : 'border-transparent',
 					readonly ? 'cursor-default' : 'cursor-pointer hover:border-primary/50'
 				)}

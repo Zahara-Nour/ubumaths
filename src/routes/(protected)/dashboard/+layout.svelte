@@ -651,7 +651,7 @@
 			{/if}
 
 			<!-- Main content with padding (disabled for full-width routes like trade board) -->
-			<div class="relative {isFullWidthRoute ? '' : 'p-4 sm:p-6 lg:p-8'}">
+			<div class="relative {isFullWidthRoute ? 'p-2' : 'p-4 sm:p-6 lg:p-8'}">
 				<div class={isFullWidthRoute ? 'w-full' : 'mx-auto max-w-4xl'}>
 					<!-- Always render children so page can load -->
 					<div class:opacity-0={$navigating} class="transition-opacity duration-200">
