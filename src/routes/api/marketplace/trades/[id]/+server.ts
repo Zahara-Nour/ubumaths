@@ -135,11 +135,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		throw error(403, 'Cet échange ne peut plus être annulé');
 	}
 
-	// Update trade status to cancelled
+	// Update trade status to cancelled (cancelled_at required by valid_completion constraint)
 	const { error: updateError } = await supabase
 		.from('marketplace_trades')
 		.update({
 			status: 'cancelled',
+			cancelled_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()
 		})
 		.eq('id', tradeId);
