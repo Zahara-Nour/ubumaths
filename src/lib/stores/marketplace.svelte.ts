@@ -194,7 +194,8 @@ class MarketplaceStore {
 		try {
 			const response = await fetch('/api/marketplace/config');
 			if (response.ok) {
-				this.config = await response.json();
+				const data = await response.json();
+				this.config = data.config || null;
 			}
 		} catch (_error) {
 			console.error('Failed to fetch marketplace config:', _error);

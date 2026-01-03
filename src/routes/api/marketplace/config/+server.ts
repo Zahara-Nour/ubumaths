@@ -103,6 +103,33 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 			return json({ configs: configs || [] });
 		}
+	} else if (profile.role === 'student') {
+		// Student can only see their class's config
+		// Get student's class membership
+		const { data: membership, error: membershipError } = await supabase
+			.from('class_members')
+			.select('class_id')
+			.eq('student_id', userId)
+			.limit(1)
+			.single();
+
+		if (membershipError || !membership) {
+			// Student not in any class
+			return json({ config: null });
+		}
+
+		const { data: config, error: configError } = await supabase
+			.from('marketplace_config')
+			.select('*')
+			.eq('class_id', membership.class_id)
+			.single();
+
+		if (configError) {
+			// No config for this class
+			return json({ config: null });
+		}
+
+		return json({ config });
 	} else if (profile.role === 'teacher') {
 		// Teacher can only see configs for their classes
 		if (class_id) {
