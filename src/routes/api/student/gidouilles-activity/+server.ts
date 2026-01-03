@@ -1,8 +1,8 @@
 /**
- * GET /api/student/gidouilles-history
- * ====================================
+ * GET /api/student/gidouilles-activity
+ * =====================================
  *
- * Returns the logged-in student's gidouilles history (earned, spent, removed).
+ * Returns the logged-in student's gidouilles activity (earned, spent, removed).
  *
  * AUTH: Student only (must be logged in)
  *
@@ -11,7 +11,7 @@
  *
  * RESPONSE:
  * {
- *   history: GidouilleHistoryEntry[]
+ *   activity: GidouilleActivityEntry[]
  * }
  *
  * Each entry contains:
@@ -27,11 +27,11 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 
 // Validation schema for query parameters
-const getGidouillesHistorySchema = z.object({
+const getGidouillesActivitySchema = z.object({
 	limit: z.coerce.number().int().positive().max(100).default(50)
 });
 
-export interface GidouilleHistoryEntry {
+export interface GidouilleActivityEntry {
 	id: string;
 	delta: number;
 	reason: string | null;
@@ -53,7 +53,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	}
 
 	// Validate query parameters
-	const validation = getGidouillesHistorySchema.safeParse({
+	const validation = getGidouillesActivitySchema.safeParse({
 		limit: url.searchParams.get('limit') ?? 50
 	});
 
@@ -64,10 +64,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { limit } = validation.data;
 
 	try {
-		// Fetch gidouilles history with creator's name
+		// Fetch gidouilles activity with creator's name
 		// Using left join to get creator's display_name
-		const { data: historyData, error: fetchError } = await supabase
-			.from('gidouilles_history')
+		const { data: activityData, error: fetchError } = await supabase
+			.from('gidouilles_activity')
 			.select(
 				`
 				id,
@@ -75,7 +75,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				reason,
 				created_at,
 				created_by,
-				creator:profiles!gidouilles_history_created_by_fkey(full_name)
+				creator:profiles!gidouilles_activity_created_by_fkey(full_name)
 			`
 			)
 			.eq('student_id', user.id)
@@ -83,13 +83,13 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.limit(limit);
 
 		if (fetchError) {
-			console.error('[API] Error fetching gidouilles history:', fetchError);
-			throw error(500, 'Failed to fetch gidouilles history');
+			console.error('[API] Error fetching gidouilles activity:', fetchError);
+			throw error(500, 'Failed to fetch gidouilles activity');
 		}
 
 		// Transform data to include creator name
 		// Note: Supabase returns the joined table as an array, take first element
-		const history: GidouilleHistoryEntry[] = (historyData || []).map((entry) => {
+		const activity: GidouilleActivityEntry[] = (activityData || []).map((entry) => {
 			// Handle the joined creator data (Supabase returns array for joins)
 			const creator = Array.isArray(entry.creator) ? entry.creator[0] : entry.creator;
 			return {
@@ -101,14 +101,14 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			};
 		});
 
-		return json({ history });
+		return json({ activity });
 	} catch (err) {
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/gidouilles-history:', err);
+		console.error('[API] Unexpected error in GET /api/student/gidouilles-activity:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };

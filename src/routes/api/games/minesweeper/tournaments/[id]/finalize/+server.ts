@@ -19,7 +19,7 @@ const uuidSchema = z.string().uuid();
  * - Validates caller is creator or admin
  * - Calculates final standings from top X games
  * - Awards gidouilles based on podium_rewards configuration
- * - Logs rewards to gidouilles_history for audit
+ * - Logs rewards to gidouilles_activity for audit
  * - Marks tournament as completed
  *
  * **Security**:

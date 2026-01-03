@@ -13,7 +13,8 @@ import { z } from 'zod';
 const schema = z.object({
 	studentId: z.string().uuid(),
 	classId: z.string().uuid(), // Required for history tracking
-	delta: z.number().int().min(-1000).max(1000) // Safety bounds
+	delta: z.number().int().min(-1000).max(1000), // Safety bounds
+	reason: z.string().max(200).optional() // Optional reason for the adjustment
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -29,7 +30,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { studentId, classId, delta } = validation.data;
+	const { studentId, classId, delta, reason } = validation.data;
 	const supabase = locals.supabase;
 
 	try {
@@ -37,7 +38,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: newValue, error: rpcError } = await supabase.rpc('update_student_gidouilles', {
 			p_student_id: studentId,
 			p_class_id: classId,
-			p_delta: delta
+			p_delta: delta,
+			p_reason: reason ?? 'Modifié par professeur',
+			p_created_by: user.id
 		});
 
 		if (rpcError) {

@@ -10,7 +10,7 @@
  * DO NOT use these types outside of src/lib/server/summaries/
  *
  * These definitions match the exact schemas from migrations:
- *   - 20251113140344_create_gidouilles_history_table.sql
+ *   - 20251113140344_create_gidouilles_history_table.sql (renamed to gidouilles_activity)
  *   - 20251113140345_create_bonus_history_table.sql
  *   - 20251113140347_modify_student_warnings_soft_delete.sql
  *   - 20251113140346_create_vip_cards_activity_table.sql
@@ -40,10 +40,10 @@ export interface WeekConfig {
 // =============================================================================
 
 /**
- * gidouilles_history table row type
- * Migration: 20251113140344_create_gidouilles_history_table.sql
+ * gidouilles_activity table row type (renamed from gidouilles_history)
+ * Migration: 20251113140344_create_gidouilles_history_table.sql + 20260103235000_rename
  */
-export interface GidouillesHistoryRow {
+export interface GidouillesActivityRow {
 	id: string;
 	student_id: string;
 	class_id: string | null;
@@ -140,9 +140,9 @@ export interface WeeklyRewardRow {
 // =============================================================================
 
 /**
- * gidouilles_history insert type
+ * gidouilles_activity insert type (renamed from gidouilles_history)
  */
-export interface GidouillesHistoryInsert {
+export interface GidouillesActivityInsert {
 	student_id: string;
 	class_id: string;
 	delta: number;
@@ -259,15 +259,15 @@ export interface UpdateStudentBonusParams {
  * USAGE:
  * ```typescript
  * const client = supabase as unknown as DbClientWithNewTables;
- * const { data } = await client.from('gidouilles_history').select('*');
+ * const { data } = await client.from('gidouilles_activity').select('*');
  * ```
  */
 export type DbClientWithNewTables = SupabaseClient<Database>;
 
 /**
- * Type guard to check if a value is a valid gidouilles_history record
+ * Type guard to check if a value is a valid gidouilles_activity record
  */
-export function isGidouillesHistoryRow(value: unknown): value is GidouillesHistoryRow {
+export function isGidouillesActivityRow(value: unknown): value is GidouillesActivityRow {
 	return (
 		typeof value === 'object' &&
 		value !== null &&
