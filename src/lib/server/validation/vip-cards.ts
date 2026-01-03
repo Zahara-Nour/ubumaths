@@ -119,3 +119,28 @@ export const getPurchasableCardsSchema = z
 	.strict();
 
 export type GetPurchasableCardsInput = z.infer<typeof getPurchasableCardsSchema>;
+
+// ============================================================================
+// PURCHASE VIP CARD BODY SCHEMA (for API endpoint)
+// ============================================================================
+
+/**
+ * Schema for the purchase endpoint body
+ *
+ * Used by: POST /api/vip-cards/purchase
+ *
+ * Note: studentId is NOT accepted in the body for security.
+ * The endpoint uses session.user.id instead.
+ */
+export const purchaseVipCardBodySchema = z
+	.object({
+		/** ID of the VIP card template to purchase */
+		cardId: z
+			.string()
+			.min(1, 'Card ID is required')
+			.max(50, 'Card ID too long')
+			.regex(/^[a-zA-Z0-9-]+$/, 'Card ID must be alphanumeric with hyphens only')
+	})
+	.strict();
+
+export type PurchaseVipCardBodyInput = z.infer<typeof purchaseVipCardBodySchema>;
