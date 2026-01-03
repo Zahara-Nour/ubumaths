@@ -99,6 +99,27 @@ export const useConsumableSchema = z
 export type UseConsumableInput = z.infer<typeof useConsumableSchema>;
 
 // ============================================================================
+// USE CONSUMABLE BODY SCHEMA (for API endpoint)
+// ============================================================================
+
+/**
+ * Schema for the use consumable endpoint body
+ *
+ * Used by: POST /api/vip-cards/use-consumable
+ *
+ * Note: studentId is NOT accepted in the body for security.
+ * The endpoint uses session.user.id instead.
+ */
+export const useConsumableBodySchema = z
+	.object({
+		/** UUID of the VIP card instance to use */
+		instanceId: z.string().uuid('Invalid instance ID format')
+	})
+	.strict();
+
+export type UseConsumableBodyInput = z.infer<typeof useConsumableBodySchema>;
+
+// ============================================================================
 // GET PURCHASABLE CARDS SCHEMA
 // ============================================================================
 
