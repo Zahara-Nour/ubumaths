@@ -29,10 +29,17 @@
 		templateToVipCard
 	} from '$lib/stores/vipCardTemplates.svelte';
 	import { Check, X, Clock, ArrowRightLeft, Coins } from 'lucide-svelte';
-	import type { VipCardInstance } from '$lib/types/vip-card';
+	import type { VipCardInstance, VipCard as VipCardType } from '$lib/types/vip-card';
 
 	// Extended type for cards with instanceId
 	type TradeCard = VipCardInstance & { instanceId: string };
+
+	// Grouped card type
+	type GroupedCard = {
+		cardId: string;
+		card: VipCardType;
+		count: number;
+	};
 
 	interface Props {
 		myOffer: { cards: TradeCard[]; gidouilles: number };
@@ -70,6 +77,34 @@
 	// Timer is critical (< 60 seconds)
 	let isCritical = $derived(remainingSeconds < 60);
 
+	// Group cards by template for display
+	function groupCards(cards: TradeCard[]): GroupedCard[] {
+		const groups = new Map<string, GroupedCard>();
+
+		for (const tradeCard of cards) {
+			const template = getTemplateById(tradeCard.cardId, $vipCardTemplates);
+			if (!template) continue;
+
+			const card = templateToVipCard(template);
+
+			if (groups.has(tradeCard.cardId)) {
+				groups.get(tradeCard.cardId)!.count++;
+			} else {
+				groups.set(tradeCard.cardId, {
+					cardId: tradeCard.cardId,
+					card,
+					count: 1
+				});
+			}
+		}
+
+		return Array.from(groups.values());
+	}
+
+	// Grouped cards for display
+	let myGroupedCards = $derived(groupCards(myOffer.cards));
+	let partnerGroupedCards = $derived(groupCards(partnerOffer.cards));
+
 	// Update countdown
 	onMount(() => {
 		if (deadline) {
@@ -98,14 +133,6 @@
 		if (diff <= 0 && timerInterval) {
 			clearInterval(timerInterval);
 		}
-	}
-
-	/**
-	 * Get VipCard object from template
-	 */
-	function getCardData(cardId: string) {
-		const template = getTemplateById(cardId, $vipCardTemplates);
-		return template ? templateToVipCard(template) : null;
 	}
 </script>
 
@@ -145,14 +172,20 @@
 				<div class="rounded-lg border bg-card p-3">
 					<h3 class="mb-3 font-semibold">Vous donnez</h3>
 
-					<!-- Cards -->
-					{#if myOffer.cards.length > 0}
+					<!-- Cards (grouped) -->
+					{#if myGroupedCards.length > 0}
 						<div class="mb-3 grid grid-cols-3 gap-2">
-							{#each myOffer.cards as card (card.instanceId)}
-								{@const cardData = getCardData(card.cardId)}
-								{#if cardData}
-									<VipCard card={cardData} size="sm" clickable={false} />
-								{/if}
+							{#each myGroupedCards as group (group.cardId)}
+								<div class="relative">
+									<VipCard card={group.card} size="sm" clickable={false} />
+									{#if group.count > 1}
+										<div
+											class="absolute -top-2 -right-2 flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-primary px-1 text-xs font-bold text-primary-foreground shadow-md"
+										>
+											x{group.count}
+										</div>
+									{/if}
+								</div>
 							{/each}
 						</div>
 					{:else}
@@ -172,14 +205,20 @@
 				<div class="rounded-lg border bg-card p-3">
 					<h3 class="mb-3 font-semibold">Vous recevez de {partnerName}</h3>
 
-					<!-- Cards -->
-					{#if partnerOffer.cards.length > 0}
+					<!-- Cards (grouped) -->
+					{#if partnerGroupedCards.length > 0}
 						<div class="mb-3 grid grid-cols-3 gap-2">
-							{#each partnerOffer.cards as card (card.instanceId)}
-								{@const cardData = getCardData(card.cardId)}
-								{#if cardData}
-									<VipCard card={cardData} size="sm" clickable={false} />
-								{/if}
+							{#each partnerGroupedCards as group (group.cardId)}
+								<div class="relative">
+									<VipCard card={group.card} size="sm" clickable={false} />
+									{#if group.count > 1}
+										<div
+											class="absolute -top-2 -right-2 flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-primary px-1 text-xs font-bold text-primary-foreground shadow-md"
+										>
+											x{group.count}
+										</div>
+									{/if}
+								</div>
 							{/each}
 						</div>
 					{:else}
