@@ -16,7 +16,7 @@ const CONFIRMATION_TIMEOUT = 5 * 60 * 1000;
  * 1. Verifies both parties have validated the current offer
  * 2. Checks the confirmation hasn't expired (5 min window)
  * 3. Records the user's confirmation
- * 4. If both have confirmed, executes the trade via RPC
+ * 4. If BOTH have confirmed, executes the trade via RPC
  */
 export const POST: RequestHandler = async ({ params, locals }) => {
 	const tradeId = validateUuidParam(params.id);
@@ -48,7 +48,13 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 	// Verify trade is still negotiating
 	if (trade.status !== 'negotiating') {
-		throw error(403, "Cet echange n'est plus en negociation");
+		// Trade already completed or cancelled
+		return json({
+			success: true,
+			confirmed: true,
+			executed: trade.status === 'completed',
+			message: trade.status === 'completed' ? 'Echange deja complete' : 'Echange annule'
+		});
 	}
 
 	// Verify both have validated
@@ -65,12 +71,14 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	const confirmationStartedAt = new Date(trade.confirmation_started_at).getTime();
 	const now = Date.now();
 	if (now - confirmationStartedAt > CONFIRMATION_TIMEOUT) {
-		// Reset validations since confirmation expired
+		// Reset validations and confirmations since confirmation expired
 		await supabase
 			.from('marketplace_trades')
 			.update({
 				validated_by_initiator: false,
 				validated_by_partner: false,
+				confirmed_by_initiator: false,
+				confirmed_by_partner: false,
 				confirmation_started_at: null,
 				updated_at: new Date().toISOString()
 			})
@@ -79,19 +87,55 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 		throw error(410, 'La confirmation a expire. Veuillez revalider.');
 	}
 
-	// Check if partner has already confirmed by looking at validated_at timestamp
-	// validated_at is set by the trigger when both validate, but we need another way
-	// to track individual confirmations. We'll use the current_offer to store confirmation state
-	// or simply execute the trade immediately since the store tracks confirmation via broadcast.
-	//
-	// For simplicity in this implementation:
-	// - First confirmer: returns success with executed=false
-	// - Second confirmer: executes the trade
-	//
-	// We use a simple approach: check if the other party has set their field
-	// Since we don't have separate confirmed_by fields, we'll execute immediately
-	// when this endpoint is called and both have validated.
-	// The frontend handles the "waiting for partner" state via broadcast.
+	// Record this user's confirmation
+	const confirmField = isInitiator ? 'confirmed_by_initiator' : 'confirmed_by_partner';
+
+	const { error: confirmError } = await supabase
+		.from('marketplace_trades')
+		.update({
+			[confirmField]: true,
+			updated_at: new Date().toISOString()
+		})
+		.eq('id', tradeId)
+		.eq('status', 'negotiating');
+
+	if (confirmError) {
+		throw error(500, 'Erreur lors de la confirmation');
+	}
+
+	// Re-fetch trade to get LATEST state (handles race condition where both confirm simultaneously)
+	const { data: updatedTradeState, error: refetchError } = await supabase
+		.from('marketplace_trades')
+		.select('confirmed_by_initiator, confirmed_by_partner, status')
+		.eq('id', tradeId)
+		.single();
+
+	if (refetchError || !updatedTradeState) {
+		throw error(500, 'Erreur lors de la verification');
+	}
+
+	// Trade may have been completed by the other user in a race condition
+	if (updatedTradeState.status !== 'negotiating') {
+		return json({
+			success: true,
+			confirmed: true,
+			executed: updatedTradeState.status === 'completed',
+			message: updatedTradeState.status === 'completed' ? 'Echange complete' : 'Echange annule'
+		});
+	}
+
+	// Check if BOTH have now confirmed (using LATEST state)
+	if (!updatedTradeState.confirmed_by_initiator || !updatedTradeState.confirmed_by_partner) {
+		// Partner hasn't confirmed yet - wait for them
+		return json({
+			success: true,
+			confirmed: true,
+			executed: false,
+			message: 'En attente de la confirmation du partenaire'
+		});
+	}
+
+	// BOTH have confirmed - execute the trade!
 
 	// Set final trade data - use .select().single() to detect race condition
 	const { data: updatedTrade, error: updateError } = await supabase
