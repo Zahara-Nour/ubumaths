@@ -57,7 +57,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 
 	try {
-		// Fetch class memberships with class and teacher details
+		// Fetch active class memberships with class and teacher details
 		const { data: memberships, error: membershipError } = await supabase
 			.from('class_members')
 			.select(
@@ -76,6 +76,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			`
 			)
 			.eq('student_id', user.id)
+			.eq('status', 'active')
 			.order('joined_at', { ascending: false });
 
 		if (membershipError) {

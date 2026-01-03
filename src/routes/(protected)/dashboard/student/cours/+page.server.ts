@@ -58,6 +58,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		`
 		)
 		.eq('student_id', user.id)
+		.eq('status', 'active')
 		.eq('is_test', false);
 
 	if (membershipError) {

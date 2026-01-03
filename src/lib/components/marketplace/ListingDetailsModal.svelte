@@ -4,9 +4,12 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Clock, Eye, MessageSquare } from 'lucide-svelte';
+	import { Clock, Eye, MessageSquare, Coins } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
+	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+	import { RARITY_LABELS, RARITY_COLORS } from '$lib/constants/vip-card-ui';
+	import CreateProposalModal from './CreateProposalModal.svelte';
 
 	// Props
 	let {
@@ -21,6 +24,9 @@
 		isOwner?: boolean;
 	}>();
 
+	// State for proposal modal
+	let showProposalModal = $state(false);
+
 	// Format time
 	function formatTime(dateString: string) {
 		return formatDistanceToNow(new Date(dateString), {
@@ -34,10 +40,34 @@
 		open = false;
 		onclose();
 	}
+
+	// Convert offered cards to VipCard format
+	let offeredCardsForDisplay = $derived.by(() => {
+		if (!listing.offered_cards?.length) return [];
+		return listing.offered_cards.map((card) => ({
+			id: card.template_id,
+			name: card.template.name,
+			description: card.template.description,
+			imagePath: card.template.image_path,
+			rarity: card.template.rarity
+		}));
+	});
+
+	// Convert wanted templates to VipCard format
+	let wantedCardsForDisplay = $derived.by(() => {
+		if (!listing.wanted_templates?.length) return [];
+		return listing.wanted_templates.map((template) => ({
+			id: template.id,
+			name: template.name,
+			description: template.description,
+			imagePath: template.image_path,
+			rarity: template.rarity
+		}));
+	});
 </script>
 
 <Dialog.Root bind:open onOpenChange={(v) => !v && handleClose()}>
-	<Dialog.Content class="max-w-2xl">
+	<Dialog.Content class="max-h-[90vh] max-w-3xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center justify-between">
 				{listing.title}
@@ -88,31 +118,81 @@
 				</span>
 			</div>
 
-			<!-- Offer/Demand Details -->
-			<div class="grid grid-cols-2 gap-4">
-				<div class="space-y-2 rounded-lg border p-4">
-					<h4 class="font-medium">Offre</h4>
-					{#if listing.offered_card_ids?.length}
-						<p>{listing.offered_card_ids.length} carte(s)</p>
+			<!-- Offer/Demand Details with Cards -->
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+				<!-- Offered Section -->
+				<div class="space-y-3 rounded-lg border p-4">
+					<h4 class="font-semibold text-green-600">Offre</h4>
+
+					{#if offeredCardsForDisplay.length > 0}
+						<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+							{#each offeredCardsForDisplay as card (card.id)}
+								<div class="flex flex-col items-center gap-2">
+									<div class="w-24">
+										<VipCardHolo
+											{card}
+											enableDescriptionOverlay={true}
+											enableRarityIndicator={true}
+											enablePopover={false}
+											enable3d={true}
+										/>
+									</div>
+									<Badge variant="outline" class="border-2 {RARITY_COLORS[card.rarity]}">
+										{RARITY_LABELS[card.rarity]}
+									</Badge>
+								</div>
+							{/each}
+						</div>
 					{/if}
-					{#if listing.offered_gidouilles}
-						<p>{listing.offered_gidouilles} gidouilles</p>
+
+					{#if listing.offered_gidouilles && listing.offered_gidouilles > 0}
+						<div class="flex items-center gap-2 rounded-lg bg-yellow-50 p-3 dark:bg-yellow-950/30">
+							<Coins class="h-5 w-5 text-yellow-500" />
+							<span class="font-semibold">{listing.offered_gidouilles}</span>
+							<span class="text-muted-foreground">gidouilles</span>
+						</div>
 					{/if}
-					{#if !listing.offered_card_ids?.length && !listing.offered_gidouilles}
-						<p class="text-muted-foreground">Rien</p>
+
+					{#if !offeredCardsForDisplay.length && !listing.offered_gidouilles}
+						<p class="text-muted-foreground italic">Aucune offre</p>
 					{/if}
 				</div>
 
-				<div class="space-y-2 rounded-lg border p-4">
-					<h4 class="font-medium">Demande</h4>
-					{#if listing.wanted_card_template_ids?.length}
-						<p>{listing.wanted_card_template_ids.length} type(s) de carte</p>
+				<!-- Wanted Section -->
+				<div class="space-y-3 rounded-lg border p-4">
+					<h4 class="font-semibold text-blue-600">Demande</h4>
+
+					{#if wantedCardsForDisplay.length > 0}
+						<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+							{#each wantedCardsForDisplay as card (card.id)}
+								<div class="flex flex-col items-center gap-2">
+									<div class="w-24">
+										<VipCardHolo
+											{card}
+											enableDescriptionOverlay={true}
+											enableRarityIndicator={true}
+											enablePopover={false}
+											enable3d={true}
+										/>
+									</div>
+									<Badge variant="outline" class="border-2 {RARITY_COLORS[card.rarity]}">
+										{RARITY_LABELS[card.rarity]}
+									</Badge>
+								</div>
+							{/each}
+						</div>
 					{/if}
-					{#if listing.wanted_gidouilles}
-						<p>{listing.wanted_gidouilles} gidouilles</p>
+
+					{#if listing.wanted_gidouilles && listing.wanted_gidouilles > 0}
+						<div class="flex items-center gap-2 rounded-lg bg-yellow-50 p-3 dark:bg-yellow-950/30">
+							<Coins class="h-5 w-5 text-yellow-500" />
+							<span class="font-semibold">{listing.wanted_gidouilles}</span>
+							<span class="text-muted-foreground">gidouilles</span>
+						</div>
 					{/if}
-					{#if !listing.wanted_card_template_ids?.length && !listing.wanted_gidouilles}
-						<p class="text-muted-foreground">Rien</p>
+
+					{#if !wantedCardsForDisplay.length && !listing.wanted_gidouilles}
+						<p class="text-muted-foreground italic">Aucune demande spécifique</p>
 					{/if}
 				</div>
 			</div>
@@ -121,8 +201,13 @@
 		<Dialog.Footer>
 			<Button variant="outline" onclick={handleClose}>Fermer</Button>
 			{#if !isOwner}
-				<Button>Faire une proposition</Button>
+				<Button onclick={() => (showProposalModal = true)}>Faire une proposition</Button>
 			{/if}
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
+
+<!-- Proposal Modal -->
+{#if !isOwner}
+	<CreateProposalModal {listing} bind:open={showProposalModal} onSuccess={handleClose} />
+{/if}

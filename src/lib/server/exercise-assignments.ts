@@ -540,6 +540,7 @@ export async function getAssignmentsForStudent(
 				.from('class_members')
 				.select('class_id')
 				.eq('student_id', studentId)
+				.eq('status', 'active')
 				.then((res) => res.data?.map((cm) => cm.class_id) || []))
 		]);
 
@@ -1391,7 +1392,8 @@ export async function getStudentClasses(
 	const { data, error } = await supabase
 		.from('class_members')
 		.select('class_id')
-		.eq('student_id', studentId);
+		.eq('student_id', studentId)
+		.eq('status', 'active');
 
 	if (error) {
 		console.error('Error fetching student classes:', error);

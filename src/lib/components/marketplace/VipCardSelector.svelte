@@ -1,9 +1,12 @@
 <script lang="ts">
 	import type { VipCardWithLockStatus } from '$lib/types/marketplace';
 	import type { Database } from '$lib/types/database';
+	import type { VipCard } from '$lib/types/vip-card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Lock, Check } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
+	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+	import { RARITY_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
 
 	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
 
@@ -31,7 +34,7 @@
 	}>();
 
 	// Group cards by template for display
-	let groupedCards = $derived(() => {
+	let groupedCards = $derived.by(() => {
 		const groups = new Map<
 			string,
 			{
@@ -71,7 +74,7 @@
 	});
 
 	// Count selected cards per template
-	let selectedCountPerTemplate = $derived(() => {
+	let selectedCountPerTemplate = $derived.by(() => {
 		const counts = new Map<string, number>();
 		for (const cardId of selectedCardIds) {
 			const card = cards.find((c: { id: string; template_id: string }) => c.id === cardId);
@@ -85,7 +88,7 @@
 
 	// Toggle card selection
 	function toggleCardSelection(templateId: string) {
-		const group = groupedCards().find((g) => g.template.id === templateId);
+		const group = groupedCards.find((g) => g.template.id === templateId);
 		if (!group) return;
 
 		// Find available cards from this template
@@ -119,11 +122,11 @@
 
 	// Increase/decrease selection count for a template
 	function adjustSelection(templateId: string, delta: number) {
-		const group = groupedCards().find((g) => g.template.id === templateId);
+		const group = groupedCards.find((g) => g.template.id === templateId);
 		if (!group) return;
 
 		const availableCards = group.cards.filter((c) => !c.is_locked || !excludeLocked);
-		const currentCount = selectedCountPerTemplate().get(templateId) || 0;
+		const currentCount = selectedCountPerTemplate.get(templateId) || 0;
 		const newCount = Math.max(0, Math.min(availableCards.length, currentCount + delta));
 
 		// Remove all current selections for this template
@@ -139,22 +142,16 @@
 		onselectionchange?.(selectedCardIds);
 	}
 
-	// Get rarity badge variant
-	function getRarityBadgeVariant(
-		rarity: string
-	): 'default' | 'secondary' | 'destructive' | 'outline' {
-		switch (rarity) {
-			case 'legendary':
-				return 'default';
-			case 'epic':
-				return 'secondary';
-			case 'rare':
-				return 'secondary';
-			case 'common':
-				return 'outline';
-			default:
-				return 'outline';
-		}
+	// Convert template to VipCard format for VipCardHolo
+	function templateToVipCard(template: VipCardTemplate): VipCard {
+		return {
+			id: template.id,
+			name: template.name,
+			description: template.description,
+			imagePath: template.image_path ?? undefined,
+			rarity: template.rarity as VipCard['rarity'],
+			category: template.category as VipCard['category']
+		};
 	}
 </script>
 
@@ -173,8 +170,8 @@
 				: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
 		)}
 	>
-		{#each groupedCards() as group (group.template.id)}
-			{@const selectedCount = selectedCountPerTemplate().get(group.template.id) || 0}
+		{#each groupedCards as group (group.template.id)}
+			{@const selectedCount = selectedCountPerTemplate.get(group.template.id) || 0}
 			{@const isDisabled =
 				group.availableCount === 0 ||
 				(maxSelection && selectedCardIds.length >= maxSelection && selectedCount === 0)}
@@ -200,84 +197,69 @@
 				)}
 			>
 				{#if compact}
-					<!-- Compact view -->
-					<div class="flex items-center gap-2">
-						{#if group.template.image_path}
-							<img
-								src={group.template.image_path}
-								alt={`Carte VIP ${group.template.name}, rareté ${group.template.rarity}, ${group.availableCount} disponible(s)`}
-								class="h-12 w-12 rounded object-cover"
+					<!-- Compact view with VipCardHolo -->
+					<div class="flex flex-col items-center gap-2">
+						<div class="w-16">
+							<VipCardHolo
+								card={templateToVipCard(group.template)}
+								count={showQuantity ? group.availableCount : 1}
+								enableDescriptionOverlay={false}
+								enableRarityIndicator={true}
+								enablePopover={false}
+								enable3d={true}
+								enableHoloEffect={true}
 							/>
-						{:else}
-							<div class="flex h-12 w-12 items-center justify-center rounded bg-muted text-lg">
-								🎴
-							</div>
-						{/if}
-
-						<div class="flex-1 text-left">
+						</div>
+						<div class="text-center">
 							<div class="line-clamp-1 text-xs font-medium">
 								{group.template.name}
 							</div>
-							<div class="mt-1 flex items-center gap-1">
-								<Badge
-									variant={getRarityBadgeVariant(group.template.rarity)}
-									class="px-1 py-0 text-xs"
-								>
-									{group.template.rarity}
-								</Badge>
-								{#if showQuantity}
-									<span class="text-xs text-muted-foreground">
-										x{group.availableCount}
-									</span>
-								{/if}
-							</div>
-						</div>
-
-						{#if selectedCount > 0}
-							<div
-								class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground"
+							<Badge
+								variant="outline"
+								class="mt-1 border {RARITY_COLORS[
+									group.template.rarity as keyof typeof RARITY_COLORS
+								]} text-xs"
 							>
-								{selectedCount}
-							</div>
-						{/if}
+								{RARITY_LABELS[group.template.rarity as keyof typeof RARITY_LABELS]}
+							</Badge>
+						</div>
 					</div>
 				{:else}
-					<!-- Full view -->
-					<div class="space-y-2">
-						{#if group.template.image_path}
-							<img
-								src={group.template.image_path}
-								alt={`Carte VIP ${group.template.name}, rareté ${group.template.rarity}, ${group.availableCount} disponible(s)`}
-								class="h-32 w-full rounded object-cover"
+					<!-- Full view with VipCardHolo -->
+					<div class="flex flex-col items-center gap-3">
+						<div class="w-24">
+							<VipCardHolo
+								card={templateToVipCard(group.template)}
+								count={showQuantity ? group.availableCount : 1}
+								enableDescriptionOverlay={true}
+								enableRarityIndicator={true}
+								enablePopover={false}
+								enable3d={true}
+								enableHoloEffect={true}
 							/>
-						{:else}
-							<div class="flex h-32 w-full items-center justify-center rounded bg-muted text-4xl">
-								🎴
-							</div>
-						{/if}
+						</div>
 
-						<div>
+						<div class="w-full text-center">
 							<h4 class="line-clamp-1 text-sm font-medium">
 								{group.template.name}
 							</h4>
-							<p class="mt-1 line-clamp-2 text-xs text-muted-foreground">
-								{group.template.description}
-							</p>
-						</div>
-
-						<div class="flex items-center justify-between">
-							<Badge variant={getRarityBadgeVariant(group.template.rarity)} class="text-xs">
-								{group.template.rarity}
+							<Badge
+								variant="outline"
+								class="mt-1 border {RARITY_COLORS[
+									group.template.rarity as keyof typeof RARITY_COLORS
+								]} text-xs"
+							>
+								{RARITY_LABELS[group.template.rarity as keyof typeof RARITY_LABELS]}
 							</Badge>
 							{#if showQuantity}
-								<span class="text-xs text-muted-foreground">
-									Disponible: {group.availableCount}
-								</span>
+								<p class="mt-1 text-xs text-muted-foreground">
+									{group.availableCount} disponible{group.availableCount > 1 ? 's' : ''}
+								</p>
 							{/if}
 						</div>
 
 						{#if mode === 'multiple' && group.availableCount > 1}
-							<div class="mt-2 flex items-center justify-between">
+							<div class="flex w-full items-center justify-between">
 								<button
 									type="button"
 									onclick={(e) => {
@@ -324,7 +306,7 @@
 		{/each}
 	</div>
 
-	{#if groupedCards().length === 0}
+	{#if groupedCards.length === 0}
 		<div class="py-8 text-center text-muted-foreground">
 			{#if studentId}
 				Cet étudiant n'a pas de cartes VIP disponibles

@@ -57,6 +57,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 		`
 		)
 		.eq('student_id', user.id)
+		.eq('status', 'active')
 		.order('classes(name)');
 
 	if (classesError) {

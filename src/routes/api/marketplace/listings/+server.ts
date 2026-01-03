@@ -8,7 +8,8 @@ import {
 	lockCardsForEntity,
 	checkActiveListingsLimit,
 	isMarketplaceEnabled,
-	getStudentSchoolId
+	getStudentSchoolId,
+	enrichListingsWithCardData
 } from '$lib/server/marketplace/helpers';
 // TODO: Add cache invalidation when cache-manager is properly implemented
 // import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
@@ -146,8 +147,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 	}
 
+	// Enrich listings with card template data
+	const enrichedListings = await enrichListingsWithCardData(supabase, listings || []);
+
 	return json({
-		listings,
+		listings: enrichedListings,
 		pagination: {
 			page,
 			limit,
@@ -274,5 +278,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// TODO: Invalidate caches when cache-manager is implemented
 	// await invalidateListingCaches(supabase, userId);
 
-	return json(listing, { status: 201 });
+	// Enrich the newly created listing with card template data
+	const [enrichedListing] = await enrichListingsWithCardData(supabase, [listing]);
+
+	return json(enrichedListing, { status: 201 });
 };

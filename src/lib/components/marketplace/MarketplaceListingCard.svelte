@@ -1,11 +1,13 @@
 <script lang="ts">
 	import type { MarketplaceListing } from '$lib/types/marketplace';
+	import type { VipCard } from '$lib/types/vip-card';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Clock, Eye, MessageSquare } from 'lucide-svelte';
+	import { Clock, Eye, MessageSquare, Coins } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
+	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
 
 	// Props
 	let {
@@ -19,7 +21,7 @@
 	}>();
 
 	// Calculate time until expiry
-	let expiryText = $derived(() => {
+	let expiryText = $derived.by(() => {
 		if (!listing.expires_at) return '';
 
 		const expiryDate = new Date(listing.expires_at);
@@ -36,7 +38,7 @@
 	});
 
 	// Check if expiring soon (less than 24 hours)
-	let isExpiringSoon = $derived(() => {
+	let isExpiringSoon = $derived.by(() => {
 		if (!listing.expires_at) return false;
 
 		const expiryDate = new Date(listing.expires_at);
@@ -51,38 +53,33 @@
 		listing.listing_type === 'sell' ? 'default' : 'secondary'
 	);
 
-	// Format offer/demand text
-	let offerText = $derived(() => {
-		const parts = [];
-
-		if (listing.offered_card_ids?.length) {
-			parts.push(
-				`${listing.offered_card_ids.length} carte${listing.offered_card_ids.length > 1 ? 's' : ''}`
-			);
-		}
-
-		if (listing.offered_gidouilles && listing.offered_gidouilles > 0) {
-			parts.push(`${listing.offered_gidouilles} gidouilles`);
-		}
-
-		return parts.length > 0 ? parts.join(' + ') : 'Rien';
+	// Convert offered cards to VipCard format for display (max 3 thumbnails)
+	let offeredCardsForDisplay = $derived.by((): VipCard[] => {
+		if (!listing.offered_cards?.length) return [];
+		return listing.offered_cards.slice(0, 3).map((card) => ({
+			id: card.template_id,
+			name: card.template.name,
+			description: card.template.description,
+			imagePath: card.template.image_path ?? undefined,
+			rarity: card.template.rarity as VipCard['rarity']
+		}));
 	});
 
-	let demandText = $derived(() => {
-		const parts = [];
-
-		if (listing.wanted_card_template_ids?.length) {
-			parts.push(
-				`${listing.wanted_card_template_ids.length} type${listing.wanted_card_template_ids.length > 1 ? 's' : ''} de carte`
-			);
-		}
-
-		if (listing.wanted_gidouilles && listing.wanted_gidouilles > 0) {
-			parts.push(`${listing.wanted_gidouilles} gidouilles`);
-		}
-
-		return parts.length > 0 ? parts.join(' + ') : 'Rien';
+	// Convert wanted templates to VipCard format for display (max 3 thumbnails)
+	let wantedCardsForDisplay = $derived.by((): VipCard[] => {
+		if (!listing.wanted_templates?.length) return [];
+		return listing.wanted_templates.slice(0, 3).map((template) => ({
+			id: template.id,
+			name: template.name,
+			description: template.description,
+			imagePath: template.image_path ?? undefined,
+			rarity: template.rarity as VipCard['rarity']
+		}));
 	});
+
+	// Count extra cards not shown
+	let extraOfferedCount = $derived(Math.max(0, (listing.offered_cards?.length || 0) - 3));
+	let extraWantedCount = $derived(Math.max(0, (listing.wanted_templates?.length || 0) - 3));
 </script>
 
 {#if viewMode === 'grid'}
@@ -100,7 +97,7 @@
 				<Badge variant={typeVariant} class="text-xs">
 					{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 				</Badge>
-				{#if isExpiringSoon()}
+				{#if isExpiringSoon}
 					<Badge variant="destructive" class="text-xs">Expire bientôt</Badge>
 				{/if}
 			</div>
@@ -133,15 +130,75 @@
 				</span>
 			</div>
 
-			<!-- Offer/Demand Summary -->
-			<div class="space-y-2">
-				<div class="flex items-start gap-2">
-					<span class="min-w-[50px] text-xs font-medium">Offre:</span>
-					<span class="text-xs text-muted-foreground">{offerText()}</span>
+			<!-- Offer/Demand with VipCardHolo -->
+			<div class="space-y-3">
+				<!-- Offered Cards -->
+				<div class="space-y-1">
+					<span class="text-xs font-medium">Offre:</span>
+					<div class="flex items-center gap-2">
+						{#if offeredCardsForDisplay.length > 0}
+							{#each offeredCardsForDisplay as card (card.id)}
+								<div class="w-10" title={card.name}>
+									<VipCardHolo
+										{card}
+										enableDescriptionOverlay={false}
+										enableRarityIndicator={true}
+										enablePopover={false}
+										enable3d={false}
+										enableHoloEffect={false}
+									/>
+								</div>
+							{/each}
+							{#if extraOfferedCount > 0}
+								<span class="text-xs text-muted-foreground">+{extraOfferedCount}</span>
+							{/if}
+						{/if}
+						{#if listing.offered_gidouilles && listing.offered_gidouilles > 0}
+							<div
+								class="flex items-center gap-0.5 rounded bg-yellow-50 px-1.5 py-0.5 text-xs dark:bg-yellow-950/30"
+							>
+								<Coins class="h-3 w-3 text-yellow-500" />
+								<span class="font-medium">{listing.offered_gidouilles}</span>
+							</div>
+						{/if}
+						{#if !offeredCardsForDisplay.length && !listing.offered_gidouilles}
+							<span class="text-xs text-muted-foreground italic">Rien</span>
+						{/if}
+					</div>
 				</div>
-				<div class="flex items-start gap-2">
-					<span class="min-w-[50px] text-xs font-medium">Demande:</span>
-					<span class="text-xs text-muted-foreground">{demandText()}</span>
+				<!-- Wanted Cards -->
+				<div class="space-y-1">
+					<span class="text-xs font-medium">Demande:</span>
+					<div class="flex items-center gap-2">
+						{#if wantedCardsForDisplay.length > 0}
+							{#each wantedCardsForDisplay as card (card.id)}
+								<div class="w-10" title={card.name}>
+									<VipCardHolo
+										{card}
+										enableDescriptionOverlay={false}
+										enableRarityIndicator={true}
+										enablePopover={false}
+										enable3d={false}
+										enableHoloEffect={false}
+									/>
+								</div>
+							{/each}
+							{#if extraWantedCount > 0}
+								<span class="text-xs text-muted-foreground">+{extraWantedCount}</span>
+							{/if}
+						{/if}
+						{#if listing.wanted_gidouilles && listing.wanted_gidouilles > 0}
+							<div
+								class="flex items-center gap-0.5 rounded bg-yellow-50 px-1.5 py-0.5 text-xs dark:bg-yellow-950/30"
+							>
+								<Coins class="h-3 w-3 text-yellow-500" />
+								<span class="font-medium">{listing.wanted_gidouilles}</span>
+							</div>
+						{/if}
+						{#if !wantedCardsForDisplay.length && !listing.wanted_gidouilles}
+							<span class="text-xs text-muted-foreground italic">Rien</span>
+						{/if}
+					</div>
 				</div>
 			</div>
 		</Card.Content>
@@ -165,7 +222,7 @@
 
 				<span class="flex items-center gap-1">
 					<Clock class="h-3 w-3" />
-					{expiryText()}
+					{expiryText}
 				</span>
 			</div>
 		</Card.Footer>
@@ -201,7 +258,7 @@
 							<Badge variant={typeVariant} class="text-xs">
 								{listing.listing_type === 'sell' ? 'Vente' : 'Achat'}
 							</Badge>
-							{#if isExpiringSoon()}
+							{#if isExpiringSoon}
 								<Badge variant="destructive" class="text-xs">Expire bientôt</Badge>
 							{/if}
 						</div>
@@ -213,10 +270,72 @@
 						</p>
 					{/if}
 
-					<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+					<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
 						<span>Par {listing.creator?.username || 'Anonyme'}</span>
-						<span>Offre: {offerText()}</span>
-						<span>Demande: {demandText()}</span>
+						<!-- Offer thumbnails -->
+						<div class="flex items-center gap-1.5">
+							<span class="font-medium text-foreground">Offre:</span>
+							{#if offeredCardsForDisplay.length > 0}
+								{#each offeredCardsForDisplay as card (card.id)}
+									<div class="w-8" title={card.name}>
+										<VipCardHolo
+											{card}
+											enableDescriptionOverlay={false}
+											enableRarityIndicator={true}
+											enablePopover={false}
+											enable3d={false}
+											enableHoloEffect={false}
+										/>
+									</div>
+								{/each}
+								{#if extraOfferedCount > 0}
+									<span>+{extraOfferedCount}</span>
+								{/if}
+							{/if}
+							{#if listing.offered_gidouilles && listing.offered_gidouilles > 0}
+								<span
+									class="flex items-center gap-0.5 rounded bg-yellow-50 px-1 py-0.5 dark:bg-yellow-950/30"
+								>
+									<Coins class="h-3 w-3 text-yellow-500" />
+									{listing.offered_gidouilles}
+								</span>
+							{/if}
+							{#if !offeredCardsForDisplay.length && !listing.offered_gidouilles}
+								<span class="italic">Rien</span>
+							{/if}
+						</div>
+						<!-- Demand thumbnails -->
+						<div class="flex items-center gap-1.5">
+							<span class="font-medium text-foreground">Demande:</span>
+							{#if wantedCardsForDisplay.length > 0}
+								{#each wantedCardsForDisplay as card (card.id)}
+									<div class="w-8" title={card.name}>
+										<VipCardHolo
+											{card}
+											enableDescriptionOverlay={false}
+											enableRarityIndicator={true}
+											enablePopover={false}
+											enable3d={false}
+											enableHoloEffect={false}
+										/>
+									</div>
+								{/each}
+								{#if extraWantedCount > 0}
+									<span>+{extraWantedCount}</span>
+								{/if}
+							{/if}
+							{#if listing.wanted_gidouilles && listing.wanted_gidouilles > 0}
+								<span
+									class="flex items-center gap-0.5 rounded bg-yellow-50 px-1 py-0.5 dark:bg-yellow-950/30"
+								>
+									<Coins class="h-3 w-3 text-yellow-500" />
+									{listing.wanted_gidouilles}
+								</span>
+							{/if}
+							{#if !wantedCardsForDisplay.length && !listing.wanted_gidouilles}
+								<span class="italic">Rien</span>
+							{/if}
+						</div>
 
 						<div class="ml-auto flex items-center gap-3">
 							{#if listing.proposal_count > 0}
@@ -233,7 +352,7 @@
 							{/if}
 							<span class="flex items-center gap-1">
 								<Clock class="h-3 w-3" />
-								{expiryText()}
+								{expiryText}
 							</span>
 						</div>
 					</div>

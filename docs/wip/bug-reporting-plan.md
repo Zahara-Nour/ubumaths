@@ -1,8 +1,7 @@
 # Plan d'implémentation : Système de rapport de bugs
 
 > **Statut** : ✅ Phase 0 validée - Prêt pour implémentation
-> **Branche** : `claude/bug-reporting-feature-xyhVR`
-> **Créé le** : 2025-12-29
+> **Branche** : `claude/bug-reporting-feature-xyhVR` > **Créé le** : 2025-12-29
 > **Mis à jour** : 2025-12-29
 
 ---
@@ -79,14 +78,14 @@
 
 #### Décisions validées
 
-| Question | Réponse |
-|----------|---------|
-| **Catégories** | `bug`, `content`, `ux`, `feature`, `other` ✅ |
-| **Sévérités** | `low`, `medium`, `high`, `critical` ✅ |
-| **Statuts** | `pending`, `acknowledged`, `in_progress`, `resolved`, `wont_fix`, `duplicate` ✅ |
-| **FAB** | Visible sur TOUTES les pages protégées ✅ |
-| **Icône FAB** | Fourmi 🐜 (style Claude Code web) ✅ |
-| **Export Claude Code** | Format Markdown structuré pour debugging ✅ |
+| Question               | Réponse                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| **Catégories**         | `bug`, `content`, `ux`, `feature`, `other` ✅                                    |
+| **Sévérités**          | `low`, `medium`, `high`, `critical` ✅                                           |
+| **Statuts**            | `pending`, `acknowledged`, `in_progress`, `resolved`, `wont_fix`, `duplicate` ✅ |
+| **FAB**                | Visible sur TOUTES les pages protégées ✅                                        |
+| **Icône FAB**          | Fourmi 🐜 (style Claude Code web) ✅                                             |
+| **Export Claude Code** | Format Markdown structuré pour debugging ✅                                      |
 
 ---
 
@@ -94,14 +93,14 @@
 
 ### Tâches
 
-| # | Tâche | Agent | Modèle |
-|---|-------|-------|--------|
-| 1.1 | Créer migration `bug_reports` table | `supabase-expert` | Opus |
-| 1.2 | Créer bucket Storage `bug-report-screenshots` | `supabase-expert` | Opus |
-| 1.3 | Configurer RLS policies (user voit ses rapports, admin voit tout) | `supabase-expert` | Opus |
-| 1.4 | Créer index optimisés | `supabase-expert` | Opus |
-| 1.5 | Mettre à jour `src/lib/types/database.ts` | Direct | - |
-| 1.6 | Mettre à jour `docs/architecture/database-schema.md` | `documentation-writer` | Haiku |
+| #   | Tâche                                                             | Agent                  | Modèle |
+| --- | ----------------------------------------------------------------- | ---------------------- | ------ |
+| 1.1 | Créer migration `bug_reports` table                               | `supabase-expert`      | Opus   |
+| 1.2 | Créer bucket Storage `bug-report-screenshots`                     | `supabase-expert`      | Opus   |
+| 1.3 | Configurer RLS policies (user voit ses rapports, admin voit tout) | `supabase-expert`      | Opus   |
+| 1.4 | Créer index optimisés                                             | `supabase-expert`      | Opus   |
+| 1.5 | Mettre à jour `src/lib/types/database.ts`                         | Direct                 | -      |
+| 1.6 | Mettre à jour `docs/architecture/database-schema.md`              | `documentation-writer` | Haiku  |
 
 ### Livrables
 
@@ -121,11 +120,11 @@
 
 ### Tâches
 
-| # | Tâche | Agent | Modèle |
-|---|-------|-------|--------|
-| 2.1 | Créer schémas Zod pour bug reports | Direct | - |
-| 2.2 | Créer types TypeScript dédiés | `typescript-expert` | Sonnet |
-| 2.3 | Tests unitaires validation | `test-automator` | Sonnet |
+| #   | Tâche                              | Agent               | Modèle |
+| --- | ---------------------------------- | ------------------- | ------ |
+| 2.1 | Créer schémas Zod pour bug reports | Direct              | -      |
+| 2.2 | Créer types TypeScript dédiés      | `typescript-expert` | Sonnet |
+| 2.3 | Tests unitaires validation         | `test-automator`    | Sonnet |
 
 ### Livrables
 
@@ -144,18 +143,18 @@
 
 ### Tâches
 
-| # | Tâche | Agent | Modèle |
-|---|-------|-------|--------|
-| 3.1 | `POST /api/bug-reports` - Créer rapport | `backend-developer` | Opus |
-| 3.2 | `GET /api/bug-reports` - Liste (user: ses rapports, admin: tous) | `backend-developer` | Opus |
-| 3.3 | `GET /api/bug-reports/[id]` - Détail | `backend-developer` | Sonnet |
-| 3.4 | `PATCH /api/bug-reports/[id]` - Modifier statut (admin) | `backend-developer` | Sonnet |
-| 3.5 | `POST /api/bug-reports/[id]/screenshot` - Upload image | `backend-developer` | Opus |
-| 3.6 | `GET /api/bug-reports/[id]/export` - Export Markdown pour Claude Code | `backend-developer` | Opus |
-| 3.7 | Fonction `notifyAdminsOfNewBugReport` | Direct | - |
-| 3.8 | Fonction `generateClaudeCodeExport` | Direct | - |
-| 3.9 | Tests API endpoints | `test-automator` | Sonnet |
-| 3.10 | Security audit endpoints | `security-auditor` | Opus |
+| #    | Tâche                                                                 | Agent               | Modèle |
+| ---- | --------------------------------------------------------------------- | ------------------- | ------ |
+| 3.1  | `POST /api/bug-reports` - Créer rapport                               | `backend-developer` | Opus   |
+| 3.2  | `GET /api/bug-reports` - Liste (user: ses rapports, admin: tous)      | `backend-developer` | Opus   |
+| 3.3  | `GET /api/bug-reports/[id]` - Détail                                  | `backend-developer` | Sonnet |
+| 3.4  | `PATCH /api/bug-reports/[id]` - Modifier statut (admin)               | `backend-developer` | Sonnet |
+| 3.5  | `POST /api/bug-reports/[id]/screenshot` - Upload image                | `backend-developer` | Opus   |
+| 3.6  | `GET /api/bug-reports/[id]/export` - Export Markdown pour Claude Code | `backend-developer` | Opus   |
+| 3.7  | Fonction `notifyAdminsOfNewBugReport`                                 | Direct              | -      |
+| 3.8  | Fonction `generateClaudeCodeExport`                                   | Direct              | -      |
+| 3.9  | Tests API endpoints                                                   | `test-automator`    | Sonnet |
+| 3.10 | Security audit endpoints                                              | `security-auditor`  | Opus   |
 
 ### Livrables
 
@@ -179,14 +178,14 @@
 
 ### Tâches
 
-| # | Tâche | Agent | Modèle |
-|---|-------|-------|--------|
-| 4.1 | Créer `freezeDetection.ts` (Long Task Observer) | `frontend-developer` | Opus |
-| 4.2 | Implémenter Heartbeat system | `frontend-developer` | Opus |
-| 4.3 | Créer `activityStore` (tracking actions) | `frontend-developer` | Sonnet |
-| 4.4 | Persistence sessionStorage | `frontend-developer` | Sonnet |
-| 4.5 | Intégration dans `hooks.client.ts` | Direct | - |
-| 4.6 | Tests unitaires freeze detection | `test-automator` | Sonnet |
+| #   | Tâche                                           | Agent                | Modèle |
+| --- | ----------------------------------------------- | -------------------- | ------ |
+| 4.1 | Créer `freezeDetection.ts` (Long Task Observer) | `frontend-developer` | Opus   |
+| 4.2 | Implémenter Heartbeat system                    | `frontend-developer` | Opus   |
+| 4.3 | Créer `activityStore` (tracking actions)        | `frontend-developer` | Sonnet |
+| 4.4 | Persistence sessionStorage                      | `frontend-developer` | Sonnet |
+| 4.5 | Intégration dans `hooks.client.ts`              | Direct               | -      |
+| 4.6 | Tests unitaires freeze detection                | `test-automator`     | Sonnet |
 
 ### Livrables
 
@@ -209,17 +208,17 @@
 
 ### Tâches
 
-| # | Tâche | Agent | Modèle |
-|---|-------|-------|--------|
-| 5.1 | `BugReportFAB.svelte` - Bouton flottant | `frontend-developer` | Sonnet |
-| 5.2 | `BugReportDialog.svelte` - Formulaire complet | `frontend-developer` | Opus |
-| 5.3 | `BugReportCard.svelte` - Affichage rapport | `frontend-developer` | Sonnet |
-| 5.4 | `BugReportStatusBadge.svelte` - Badge statut | `frontend-developer` | Haiku |
-| 5.5 | `BugReportList.svelte` - Liste avec filtres | `frontend-developer` | Sonnet |
-| 5.6 | `FreezeReportPrompt.svelte` - Prompt après freeze | `frontend-developer` | Sonnet |
-| 5.7 | `ExportClaudeCodeButton.svelte` - Bouton export + dialog preview | `frontend-developer` | Opus |
-| 5.8 | Tests composants | `test-automator` | Sonnet |
-| 5.9 | Accessibility audit | `accessibility-tester` | Sonnet |
+| #   | Tâche                                                            | Agent                  | Modèle |
+| --- | ---------------------------------------------------------------- | ---------------------- | ------ |
+| 5.1 | `BugReportFAB.svelte` - Bouton flottant                          | `frontend-developer`   | Sonnet |
+| 5.2 | `BugReportDialog.svelte` - Formulaire complet                    | `frontend-developer`   | Opus   |
+| 5.3 | `BugReportCard.svelte` - Affichage rapport                       | `frontend-developer`   | Sonnet |
+| 5.4 | `BugReportStatusBadge.svelte` - Badge statut                     | `frontend-developer`   | Haiku  |
+| 5.5 | `BugReportList.svelte` - Liste avec filtres                      | `frontend-developer`   | Sonnet |
+| 5.6 | `FreezeReportPrompt.svelte` - Prompt après freeze                | `frontend-developer`   | Sonnet |
+| 5.7 | `ExportClaudeCodeButton.svelte` - Bouton export + dialog preview | `frontend-developer`   | Opus   |
+| 5.8 | Tests composants                                                 | `test-automator`       | Sonnet |
+| 5.9 | Accessibility audit                                              | `accessibility-tester` | Sonnet |
 
 ### Livrables
 
@@ -239,12 +238,12 @@
 
 ### Tâches
 
-| # | Tâche | Agent | Modèle |
-|---|-------|-------|--------|
+| #   | Tâche                                     | Agent                 | Modèle |
+| --- | ----------------------------------------- | --------------------- | ------ |
 | 6.1 | Page utilisateur `/dashboard/bug-reports` | `fullstack-developer` | Sonnet |
-| 6.2 | Page admin `/dashboard/admin/bug-reports` | `fullstack-developer` | Opus |
-| 6.3 | Intégrer FAB dans layout protected | Direct | - |
-| 6.4 | Tests E2E parcours utilisateur | `test-automator` | Sonnet |
+| 6.2 | Page admin `/dashboard/admin/bug-reports` | `fullstack-developer` | Opus   |
+| 6.3 | Intégrer FAB dans layout protected        | Direct                | -      |
+| 6.4 | Tests E2E parcours utilisateur            | `test-automator`      | Sonnet |
 
 ### Livrables
 
@@ -267,13 +266,13 @@
 
 ### Tâches
 
-| # | Tâche | Agent | Modèle |
-|---|-------|-------|--------|
-| 7.1 | Intégration FAB + Dialog dans app | Direct | - |
-| 7.2 | Intégration FreezeReportPrompt | Direct | - |
-| 7.3 | Test manuel parcours complet | Direct | - |
-| 7.4 | Performance audit | `performance-optimizer` | Sonnet |
-| 7.5 | Security audit final | `security-auditor` | Opus |
+| #   | Tâche                             | Agent                   | Modèle |
+| --- | --------------------------------- | ----------------------- | ------ |
+| 7.1 | Intégration FAB + Dialog dans app | Direct                  | -      |
+| 7.2 | Intégration FreezeReportPrompt    | Direct                  | -      |
+| 7.3 | Test manuel parcours complet      | Direct                  | -      |
+| 7.4 | Performance audit                 | `performance-optimizer` | Sonnet |
+| 7.5 | Security audit final              | `security-auditor`      | Opus   |
 
 ### Livrables
 
@@ -292,13 +291,13 @@
 
 ### Tâches
 
-| # | Tâche | Agent | Modèle |
-|---|-------|-------|--------|
-| 8.1 | `pnpm check` - Vérification types | Direct | - |
-| 8.2 | `pnpm lint` - Linting | Direct | - |
-| 8.3 | `pnpm build` - Build production | Direct | - |
-| 8.4 | Documentation feature | `documentation-writer` | Sonnet |
-| 8.5 | Commit final | `commit-manager` | Sonnet |
+| #   | Tâche                             | Agent                  | Modèle |
+| --- | --------------------------------- | ---------------------- | ------ |
+| 8.1 | `pnpm check` - Vérification types | Direct                 | -      |
+| 8.2 | `pnpm lint` - Linting             | Direct                 | -      |
+| 8.3 | `pnpm build` - Build production   | Direct                 | -      |
+| 8.4 | Documentation feature             | `documentation-writer` | Sonnet |
+| 8.5 | Commit final                      | `commit-manager`       | Sonnet |
 
 ### Livrables
 
@@ -381,6 +380,7 @@ L'export génère un fichier Markdown structuré optimisé pour Claude Code :
 # Bug Report: [Titre du rapport]
 
 ## Informations générales
+
 - **ID**: `uuid`
 - **Catégorie**: bug | content | ux | feature | other
 - **Sévérité**: low | medium | high | critical
@@ -389,26 +389,31 @@ L'export génère un fichier Markdown structuré optimisé pour Claude Code :
 - **Auteur**: Nom (rôle)
 
 ## Description du problème
+
 [Description complète fournie par l'utilisateur]
 
 ## Contexte technique
 
 ### Page concernée
+
 - **URL**: /chemin/vers/page
 - **Viewport**: 1920x1080
 - **Navigateur**: Chrome 120 (Windows)
 
 ### Erreurs récentes (5 dernières minutes)
-| Timestamp | Type | Message | Fichier | Ligne |
-|-----------|------|---------|---------|-------|
-| HH:mm:ss | client_js | TypeError: Cannot read... | src/lib/... | 42 |
+
+| Timestamp | Type      | Message                   | Fichier     | Ligne |
+| --------- | --------- | ------------------------- | ----------- | ----- |
+| HH:mm:ss  | client_js | TypeError: Cannot read... | src/lib/... | 42    |
 
 ### Stack traces
 ```
+
 TypeError: Cannot read property 'foo' of undefined
-    at handleClick (src/lib/components/Example.svelte:42:15)
-    at HTMLButtonElement.onclick (src/routes/+page.svelte:18:9)
-```
+at handleClick (src/lib/components/Example.svelte:42:15)
+at HTMLButtonElement.onclick (src/routes/+page.svelte:18:9)
+
+````
 
 ### Freezes détectés
 | Timestamp | Durée | Type |
@@ -439,10 +444,12 @@ grep -r "Cannot read property" src/
 
 # Ouvrir les fichiers concernés
 code src/lib/components/Example.svelte src/routes/+page.svelte
-```
+````
 
 ## Screenshot
+
 [Lien vers le screenshot si disponible]
+
 ```
 
 ---
@@ -484,3 +491,4 @@ code src/lib/components/Example.svelte src/routes/+page.svelte
 | 6 - Pages | ⬜ À faire | - | - |
 | 7 - Intégration | ⬜ À faire | - | - |
 | 8 - Finalisation | ⬜ À faire | - | - |
+```

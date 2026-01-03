@@ -387,3 +387,153 @@ export async function getStudentGidouilles(
 
 	return error || !data ? 0 : data.gidouilles;
 }
+
+// ============================================================================
+// LISTING ENRICHMENT
+// ============================================================================
+
+/**
+ * Template data structure for card display
+ */
+export interface CardTemplateInfo {
+	id: string;
+	name: string;
+	description: string;
+	image_path: string | null;
+	rarity: 'common' | 'rare' | 'epic' | 'legendary';
+	category: string | null;
+}
+
+/**
+ * Enriched card data for offered cards
+ */
+export interface OfferedCardInfo {
+	id: string;
+	template_id: string;
+	template: CardTemplateInfo;
+}
+
+/**
+ * Enriches marketplace listings with card template data
+ * @param supabase Supabase client
+ * @param listings Array of marketplace listings to enrich
+ * @returns Enriched listings with offered_cards and wanted_templates populated
+ */
+export async function enrichListingsWithCardData<
+	T extends {
+		creator_id: string;
+		offered_card_ids: string[] | null;
+		wanted_card_template_ids: string[] | null;
+	}
+>(
+	supabase: SupabaseClient<Database>,
+	listings: T[]
+): Promise<
+	(T & {
+		offered_cards?: OfferedCardInfo[];
+		wanted_templates?: CardTemplateInfo[];
+	})[]
+> {
+	if (listings.length === 0) return listings;
+
+	// Collect unique creator IDs and template IDs
+	const creatorIds = new Set<string>();
+	const wantedTemplateIds = new Set<string>();
+
+	for (const listing of listings) {
+		creatorIds.add(listing.creator_id);
+		if (listing.wanted_card_template_ids) {
+			for (const id of listing.wanted_card_template_ids) {
+				wantedTemplateIds.add(id);
+			}
+		}
+	}
+
+	// Fetch creators' vip_cards to map instance IDs to template IDs
+	const { data: creators } = await supabase
+		.from('profiles')
+		.select('id, vip_cards')
+		.in('id', Array.from(creatorIds));
+
+	// Build a map of creator -> card instance -> template_id
+	const creatorCardsMap = new Map<string, Map<string, string>>();
+	const offeredTemplateIds = new Set<string>();
+
+	if (creators) {
+		for (const creator of creators) {
+			const cardMap = new Map<string, string>();
+			const vipCards = creator.vip_cards as VipCard[] | null;
+			if (vipCards) {
+				for (const card of vipCards) {
+					cardMap.set(card.id, card.template_id);
+					offeredTemplateIds.add(card.template_id);
+				}
+			}
+			creatorCardsMap.set(creator.id, cardMap);
+		}
+	}
+
+	// Fetch all needed templates in one query
+	const allTemplateIds = [...offeredTemplateIds, ...wantedTemplateIds];
+	const templateMap = new Map<string, CardTemplateInfo>();
+
+	if (allTemplateIds.length > 0) {
+		const { data: templates } = await supabase
+			.from('vip_card_templates')
+			.select('id, name, description, image_path, rarity, category')
+			.in('id', allTemplateIds);
+
+		if (templates) {
+			for (const template of templates) {
+				templateMap.set(template.id, {
+					id: template.id,
+					name: template.name,
+					description: template.description,
+					image_path: template.image_path,
+					rarity: template.rarity as 'common' | 'rare' | 'epic' | 'legendary',
+					category: template.category
+				});
+			}
+		}
+	}
+
+	// Enrich each listing
+	return listings.map((listing) => {
+		const creatorCards = creatorCardsMap.get(listing.creator_id);
+
+		// Map offered card IDs to templates
+		const offeredCards: OfferedCardInfo[] = [];
+		if (listing.offered_card_ids && creatorCards) {
+			for (const cardId of listing.offered_card_ids) {
+				const templateId = creatorCards.get(cardId);
+				if (templateId) {
+					const template = templateMap.get(templateId);
+					if (template) {
+						offeredCards.push({
+							id: cardId,
+							template_id: templateId,
+							template
+						});
+					}
+				}
+			}
+		}
+
+		// Get wanted templates
+		const wantedTemplates: CardTemplateInfo[] = [];
+		if (listing.wanted_card_template_ids) {
+			for (const templateId of listing.wanted_card_template_ids) {
+				const template = templateMap.get(templateId);
+				if (template) {
+					wantedTemplates.push(template);
+				}
+			}
+		}
+
+		return {
+			...listing,
+			offered_cards: offeredCards.length > 0 ? offeredCards : undefined,
+			wanted_templates: wantedTemplates.length > 0 ? wantedTemplates : undefined
+		};
+	});
+}
