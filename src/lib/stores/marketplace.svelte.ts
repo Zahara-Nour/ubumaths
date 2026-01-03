@@ -1,12 +1,11 @@
 // Marketplace Store
 // ================
-// Main store for managing marketplace state with Svelte 5 runes and Supabase realtime
+// Main store for managing marketplace state with Svelte 5 runes
 
 import { get } from 'svelte/store';
-import { supabaseRealtimeManager } from '$lib/stores/supabaseRealtime.svelte';
 import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
-import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
 	MarketplaceListing,
 	MarketplaceTrade,
@@ -97,10 +96,6 @@ class MarketplaceStore {
 	private supabase: SupabaseClient | null = null;
 	private userId: string | null = null;
 	private classId: string | null = null;
-	private listingsChannel: RealtimeChannel | null = null;
-	private tradesChannel: RealtimeChannel | null = null;
-	private proposalsChannel: RealtimeChannel | null = null;
-	private chatChannel: RealtimeChannel | null = null;
 
 	// Cache management
 	private lastFetch = {
@@ -110,7 +105,7 @@ class MarketplaceStore {
 		trades: 0,
 		cards: 0
 	};
-	private readonly CACHE_TTL = 300000; // 5 minutes (realtime handles instant updates)
+	private readonly CACHE_TTL = 60000; // 1 minute - shorter TTL since no realtime
 
 	// Cache helper methods
 	private shouldRefetch(key: keyof typeof this.lastFetch): boolean {
@@ -134,9 +129,15 @@ class MarketplaceStore {
 		this.supabase = supabase;
 		this.userId = userId;
 		this.classId = classId || null;
-		await this.subscribeToRealtime();
 		await this.fetchConfig();
 		await this.fetchInitialData();
+	}
+
+	// Refresh all marketplace data (manual refresh button)
+	async refresh() {
+		this.invalidateAllCaches();
+		await this.fetchInitialData();
+		toaster.success('Données actualisées');
 	}
 
 	// Announce status to screen readers for accessibility
@@ -165,288 +166,6 @@ class MarketplaceStore {
 				announcer.textContent = '';
 			}
 		}, 1000);
-	}
-
-	// Reconnect realtime subscriptions after connection loss
-	private async reconnectRealtime() {
-		console.log('Attempting to reconnect realtime subscriptions...');
-		try {
-			// Cleanup existing subscriptions
-			await this.cleanupRealtime();
-
-			// Resubscribe
-			await this.subscribeToRealtime();
-
-			// Invalidate all caches to force data refetch
-			this.invalidateAllCaches();
-
-			toaster.success('Connexion rétablie');
-		} catch (error) {
-			console.error('Failed to reconnect realtime:', error);
-			toaster.error('Échec de la reconnexion');
-		}
-	}
-
-	// Cleanup realtime subscriptions
-	private async cleanupRealtime() {
-		if (this.listingsChannel) {
-			await supabaseRealtimeManager.unsubscribeChannel('marketplace-listings');
-			this.listingsChannel = null;
-		}
-		if (this.tradesChannel) {
-			await supabaseRealtimeManager.unsubscribeChannel(`marketplace-trades-${this.userId}`);
-			this.tradesChannel = null;
-		}
-		if (this.proposalsChannel) {
-			await supabaseRealtimeManager.unsubscribeChannel(`marketplace-proposals-${this.userId}`);
-			this.proposalsChannel = null;
-		}
-		if (this.chatChannel) {
-			await supabaseRealtimeManager.unsubscribeChannel(this.chatChannel.topic);
-			this.chatChannel = null;
-		}
-	}
-
-	// Realtime subscriptions
-	private async subscribeToRealtime() {
-		if (!this.supabase || !this.userId) return;
-
-		// Initialize the underlying realtime manager
-		supabaseRealtimeManager.init(this.supabase, this.userId);
-
-		// Subscribe to new listings (all active)
-		this.listingsChannel = supabaseRealtimeManager.createChannel('marketplace-listings');
-		this.listingsChannel
-			.on(
-				'postgres_changes',
-				{
-					event: 'INSERT',
-					schema: 'public',
-					table: 'marketplace_listings',
-					filter: 'status=eq.active'
-				},
-				this.handleNewListing.bind(this)
-			)
-			.on(
-				'postgres_changes',
-				{
-					event: 'UPDATE',
-					schema: 'public',
-					table: 'marketplace_listings'
-				},
-				this.handleListingUpdate.bind(this)
-			)
-			.on(
-				'postgres_changes',
-				{
-					event: 'DELETE',
-					schema: 'public',
-					table: 'marketplace_listings'
-				},
-				this.handleListingDelete.bind(this)
-			)
-			.on('system', { event: 'error' }, (payload) => {
-				console.error('Realtime error on listings channel:', payload);
-				toaster.error('Connexion temps réel perdue. Actualisation...');
-				// Attempt to reconnect after 5 seconds
-				setTimeout(() => {
-					this.reconnectRealtime();
-				}, 5000);
-			});
-
-		try {
-			await supabaseRealtimeManager.subscribeChannel('marketplace-listings');
-		} catch (error) {
-			// Channel may be closed during navigation - this is expected
-			console.warn('Failed to subscribe to marketplace-listings:', error);
-			return; // Don't try to subscribe to other channels if this one failed
-		}
-
-		// Subscribe to trades I'm involved in
-		this.tradesChannel = supabaseRealtimeManager.createChannel(`marketplace-trades-${this.userId}`);
-		this.tradesChannel
-			.on(
-				'postgres_changes',
-				{
-					event: '*',
-					schema: 'public',
-					table: 'marketplace_trades',
-					filter: `initiator_id=eq.${this.userId}`
-				},
-				this.handleTradeUpdate.bind(this)
-			)
-			.on(
-				'postgres_changes',
-				{
-					event: '*',
-					schema: 'public',
-					table: 'marketplace_trades',
-					filter: `partner_id=eq.${this.userId}`
-				},
-				this.handleTradeUpdate.bind(this)
-			);
-
-		try {
-			await supabaseRealtimeManager.subscribeChannel(`marketplace-trades-${this.userId}`);
-		} catch (error) {
-			console.warn('Failed to subscribe to marketplace-trades:', error);
-			return;
-		}
-
-		// Subscribe to proposals on my listings and my proposals
-		this.proposalsChannel = supabaseRealtimeManager.createChannel(
-			`marketplace-proposals-${this.userId}`
-		);
-		this.proposalsChannel.on(
-			'postgres_changes',
-			{
-				event: '*',
-				schema: 'public',
-				table: 'marketplace_proposals',
-				filter: `proposer_id=eq.${this.userId}`
-			},
-			this.handleProposalUpdate.bind(this)
-		);
-
-		try {
-			await supabaseRealtimeManager.subscribeChannel(`marketplace-proposals-${this.userId}`);
-		} catch (error) {
-			console.warn('Failed to subscribe to marketplace-proposals:', error);
-		}
-	}
-
-	// TODO Phase 6: Implement trade chat feature
-	// Subscribe to trade chat
-	// async subscribeToTradeChat(tradeId: string) {
-	// 	if (!this.supabase || !tradeId) return;
-
-	// 	const channelName = `trade-chat-${tradeId}`;
-
-	// 	// Unsubscribe from previous chat if any
-	// 	if (this.chatChannel) {
-	// 		await supabaseRealtimeManager.unsubscribeChannel(this.chatChannel.topic);
-	// 	}
-
-	// 	this.chatChannel = supabaseRealtimeManager.createChannel(channelName);
-	// 	this.chatChannel.on(
-	// 		'postgres_changes',
-	// 		{
-	// 			event: 'INSERT',
-	// 			schema: 'public',
-	// 			table: 'marketplace_trade_chat',
-	// 			filter: `trade_id=eq.${tradeId}`
-	// 		},
-	// 		(payload: { new: Record<string, unknown> }) => {
-	// 			const message = payload.new as MarketplaceTradeChatMessage;
-	// 			const messages = this.tradeChatMessages.get(tradeId) || [];
-	// 			this.tradeChatMessages.set(tradeId, [...messages, message]);
-	// 		}
-	// 	);
-
-	// 	await supabaseRealtimeManager.subscribeChannel(channelName);
-	// }
-
-	// Handlers
-	private handleNewListing(payload: { new: Record<string, unknown> }) {
-		const newListing = payload.new as unknown as MarketplaceListing;
-		// Add to listings if not already present and not created by current user
-		if (
-			!this.listings.find((l) => l.id === newListing.id) &&
-			newListing.creator_id !== this.userId
-		) {
-			this.listings = [newListing, ...this.listings];
-			this.stats.active_listings++;
-
-			// Show toast notification
-			toaster.info(`Nouvelle annonce: ${newListing.title}`);
-		}
-		// Invalidate cache to force refetch on next navigation
-		this.invalidateCache('listings');
-	}
-
-	private handleListingUpdate(payload: { new: Record<string, unknown> }) {
-		const updated = payload.new as unknown as MarketplaceListing;
-		this.listings = this.listings.map((l) => (l.id === updated.id ? updated : l));
-		this.myListings = this.myListings.map((l) => (l.id === updated.id ? updated : l));
-
-		// Update selected if viewing
-		if (this.selectedListing?.id === updated.id) {
-			this.selectedListing = updated;
-		}
-
-		// Invalidate caches
-		this.invalidateCache('listings');
-		this.invalidateCache('myListings');
-	}
-
-	private handleListingDelete(payload: { old: Record<string, unknown> }) {
-		const deletedId = (payload.old as { id: string }).id;
-		this.listings = this.listings.filter((l) => l.id !== deletedId);
-		this.myListings = this.myListings.filter((l) => l.id !== deletedId);
-
-		if (this.selectedListing?.id === deletedId) {
-			this.selectedListing = null;
-		}
-	}
-
-	private handleTradeUpdate(payload: { new: Record<string, unknown> }) {
-		const trade = payload.new as unknown as MarketplaceTrade;
-		const existing = this.activeTrades.find((t) => t.id === trade.id);
-
-		if (existing) {
-			this.activeTrades = this.activeTrades.map((t) => (t.id === trade.id ? trade : t));
-
-			// Show toast if status changed
-			if (existing.status !== trade.status) {
-				if (trade.status === 'completed') {
-					toaster.success('Échange terminé!');
-				} else if (trade.status === 'cancelled') {
-					toaster.info('Échange annulé');
-				}
-			}
-		} else {
-			this.activeTrades = [...this.activeTrades, trade];
-		}
-
-		// Update pending count
-		this.updatePendingCounts();
-
-		// Update selected if viewing
-		if (this.selectedTrade?.id === trade.id) {
-			this.selectedTrade = trade;
-		}
-
-		// Invalidate cache
-		this.invalidateCache('trades');
-	}
-
-	private handleProposalUpdate(payload: { new: Record<string, unknown> }) {
-		const proposal = payload.new as unknown as MarketplaceProposal;
-
-		// Update my proposals
-		if (proposal.proposer_id === this.userId) {
-			const existing = this.myProposals.find((p) => p.id === proposal.id);
-			if (existing) {
-				this.myProposals = this.myProposals.map((p) => (p.id === proposal.id ? proposal : p));
-
-				// Show toast if status changed
-				if (existing.status !== proposal.status) {
-					if (proposal.status === 'accepted') {
-						toaster.success('Votre proposition a été acceptée!');
-					} else if (proposal.status === 'rejected') {
-						toaster.warning('Votre proposition a été refusée');
-					}
-				}
-			} else {
-				this.myProposals = [...this.myProposals, proposal];
-			}
-		}
-
-		// Update pending counts
-		this.updatePendingCounts();
-
-		// Invalidate cache
-		this.invalidateCache('proposals');
 	}
 
 	// Update pending action counts
@@ -1258,9 +977,7 @@ class MarketplaceStore {
 	}
 
 	// Cleanup
-	async cleanup() {
-		await this.cleanupRealtime();
-
+	cleanup() {
 		// Reset state
 		this.listings = [];
 		this.myListings = [];
