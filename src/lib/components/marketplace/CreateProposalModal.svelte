@@ -9,10 +9,10 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import VipCardSelector from './VipCardSelector.svelte';
-	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+	import VipCard from '$lib/components/VipCard.svelte';
 	import { Info, Coins, ArrowRight } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import type { VipCard } from '$lib/types/vip-card';
+	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 
 	// Props
 	let {
@@ -51,8 +51,8 @@
 			name: template.name,
 			description: template.description,
 			imagePath: template.image_path ?? undefined,
-			rarity: template.rarity as VipCard['rarity'],
-			category: template.category as VipCard['category']
+			rarity: template.rarity as VipCardType['rarity'],
+			category: template.category as VipCardType['category']
 		}));
 	});
 
@@ -143,16 +143,7 @@
 						{#if wantedCardsForDisplay.length > 0}
 							<div class="flex gap-2">
 								{#each wantedCardsForDisplay.slice(0, 3) as card (card.id)}
-									<div class="w-12">
-										<VipCardHolo
-											{card}
-											enableDescriptionOverlay={false}
-											enableRarityIndicator={true}
-											enablePopover={false}
-											enable3d={false}
-											enableHoloEffect={false}
-										/>
-									</div>
+									<VipCard {card} size="sm" clickable={false} />
 								{/each}
 								{#if wantedCardsForDisplay.length > 3}
 									<span class="text-sm text-muted-foreground"

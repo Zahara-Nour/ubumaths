@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { VipCardWithLockStatus } from '$lib/types/marketplace';
 	import type { Database } from '$lib/types/database';
-	import type { VipCard } from '$lib/types/vip-card';
+	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Lock, Check } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
-	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+	import VipCard from '$lib/components/VipCard.svelte';
 	import { RARITY_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
 
 	type VipCardTemplate = Database['public']['Tables']['vip_card_templates']['Row'];
@@ -142,8 +142,8 @@
 		onselectionchange?.(selectedCardIds);
 	}
 
-	// Convert template to VipCard format for VipCardHolo
-	function templateToVipCard(template: VipCardTemplate): VipCard {
+	// Convert template to VipCard format
+	function templateToVipCard(template: VipCardTemplate): VipCardType {
 		return {
 			id: template.id,
 			name: template.name,
@@ -197,19 +197,14 @@
 				)}
 			>
 				{#if compact}
-					<!-- Compact view with VipCardHolo -->
+					<!-- Compact view with VipCard -->
 					<div class="flex flex-col items-center gap-2">
-						<div class="w-16">
-							<VipCardHolo
-								card={templateToVipCard(group.template)}
-								count={showQuantity ? group.availableCount : 1}
-								enableDescriptionOverlay={false}
-								enableRarityIndicator={true}
-								enablePopover={false}
-								enable3d={true}
-								enableHoloEffect={true}
-							/>
-						</div>
+						<VipCard
+							card={templateToVipCard(group.template)}
+							count={showQuantity ? group.availableCount : 1}
+							size="sm"
+							clickable={false}
+						/>
 						<div class="text-center">
 							<div class="line-clamp-1 text-xs font-medium">
 								{group.template.name}
@@ -225,19 +220,14 @@
 						</div>
 					</div>
 				{:else}
-					<!-- Full view with VipCardHolo -->
+					<!-- Full view with VipCard -->
 					<div class="flex flex-col items-center gap-3">
-						<div class="w-24">
-							<VipCardHolo
-								card={templateToVipCard(group.template)}
-								count={showQuantity ? group.availableCount : 1}
-								enableDescriptionOverlay={true}
-								enableRarityIndicator={true}
-								enablePopover={false}
-								enable3d={true}
-								enableHoloEffect={true}
-							/>
-						</div>
+						<VipCard
+							card={templateToVipCard(group.template)}
+							count={showQuantity ? group.availableCount : 1}
+							size="md"
+							clickable={false}
+						/>
 
 						<div class="w-full text-center">
 							<h4 class="line-clamp-1 text-sm font-medium">

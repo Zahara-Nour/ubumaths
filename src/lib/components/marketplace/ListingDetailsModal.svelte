@@ -7,8 +7,7 @@
 	import { Clock, Eye, MessageSquare, Coins } from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
-	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
-	import { RARITY_LABELS, RARITY_COLORS } from '$lib/constants/vip-card-ui';
+	import VipCard from '$lib/components/VipCard.svelte';
 	import CreateProposalModal from './CreateProposalModal.svelte';
 
 	// Props
@@ -127,20 +126,7 @@
 					{#if offeredCardsForDisplay.length > 0}
 						<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
 							{#each offeredCardsForDisplay as card (card.id)}
-								<div class="flex flex-col items-center gap-2">
-									<div class="w-24">
-										<VipCardHolo
-											{card}
-											enableDescriptionOverlay={true}
-											enableRarityIndicator={true}
-											enablePopover={false}
-											enable3d={true}
-										/>
-									</div>
-									<Badge variant="outline" class="border-2 {RARITY_COLORS[card.rarity]}">
-										{RARITY_LABELS[card.rarity]}
-									</Badge>
-								</div>
+								<VipCard {card} size="sm" clickable={false} />
 							{/each}
 						</div>
 					{/if}
@@ -165,20 +151,7 @@
 					{#if wantedCardsForDisplay.length > 0}
 						<div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
 							{#each wantedCardsForDisplay as card (card.id)}
-								<div class="flex flex-col items-center gap-2">
-									<div class="w-24">
-										<VipCardHolo
-											{card}
-											enableDescriptionOverlay={true}
-											enableRarityIndicator={true}
-											enablePopover={false}
-											enable3d={true}
-										/>
-									</div>
-									<Badge variant="outline" class="border-2 {RARITY_COLORS[card.rarity]}">
-										{RARITY_LABELS[card.rarity]}
-									</Badge>
-								</div>
+								<VipCard {card} size="sm" clickable={false} />
 							{/each}
 						</div>
 					{/if}
