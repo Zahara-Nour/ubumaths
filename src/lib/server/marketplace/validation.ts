@@ -108,18 +108,14 @@ export const updateListingSchema = z.object({
  * Schema for querying listings with pagination and filters
  */
 export const listingsQuerySchema = z.object({
-	page: z.coerce
-		.number()
-		.int('Le numéro de page doit être un entier')
-		.min(1, 'Le numéro de page doit être au moins 1')
-		.finite('La valeur doit être un nombre fini')
+	// Use nullish() before default() because url.searchParams.get() returns null, not undefined
+	page: z
+		.union([z.coerce.number().int().min(1).finite(), z.null()])
+		.transform((val) => val ?? 1)
 		.default(1),
-	limit: z.coerce
-		.number()
-		.int('La limite doit être un entier')
-		.min(1, 'La limite doit être au moins 1')
-		.max(50, 'La limite ne peut pas dépasser 50')
-		.finite('La valeur doit être un nombre fini')
+	limit: z
+		.union([z.coerce.number().int().min(1).max(50).finite(), z.null()])
+		.transform((val) => val ?? 20)
 		.default(20),
 	type: z.enum(['sell', 'buy']).nullish(),
 	card_template_id: z.string().uuid('ID de modèle de carte invalide').nullish()
@@ -296,18 +292,14 @@ export const adminTradesQuerySchema = z.object({
 	status: z.enum(['negotiating', 'completed', 'cancelled']).nullish(),
 	date_from: z.string().datetime('Format de date invalide').nullish(),
 	date_to: z.string().datetime('Format de date invalide').nullish(),
-	page: z.coerce
-		.number()
-		.int('Le numéro de page doit être un entier')
-		.min(1, 'Le numéro de page doit être au moins 1')
-		.finite('La valeur doit être un nombre fini')
+	// Use union with null because url.searchParams.get() returns null, not undefined
+	page: z
+		.union([z.coerce.number().int().min(1).finite(), z.null()])
+		.transform((val) => val ?? 1)
 		.default(1),
-	limit: z.coerce
-		.number()
-		.int('La limite doit être un entier')
-		.min(1, 'La limite doit être au moins 1')
-		.max(100, 'La limite ne peut pas dépasser 100')
-		.finite('La valeur doit être un nombre fini')
+	limit: z
+		.union([z.coerce.number().int().min(1).max(100).finite(), z.null()])
+		.transform((val) => val ?? 50)
 		.default(50)
 });
 
