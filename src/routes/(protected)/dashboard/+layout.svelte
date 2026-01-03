@@ -109,6 +109,9 @@
 	// Determine which skeleton variant to show based on current route
 	let skeletonType = $derived(getSkeletonType(page.url.pathname));
 
+	// Full-width routes (no padding/max-width constraints)
+	let isFullWidthRoute = $derived(page.url.pathname.includes('/marketplace/trade/'));
+
 	// Mobile menu state
 	let mobileMenuOpen = $state(false);
 
@@ -641,7 +644,6 @@
 		<!-- This is where child routes are rendered -->
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
-		{@const isFullWidthRoute = page.url.pathname.includes('/marketplace/trade/')}
 		<main class="dashboard-content flex-1 overflow-y-auto bg-background">
 			<!-- Notification Banner (sticky at top) -->
 			{#if !isFullWidthRoute}
