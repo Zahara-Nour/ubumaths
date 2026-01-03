@@ -137,18 +137,22 @@
 
 ### marketplace_trades
 
-| Column          | Type  | Description                             |
-| --------------- | ----- | --------------------------------------- |
-| `id`            | UUID  | Primary key                             |
-| `trade_type`    | TEXT  | 'friend' or 'marketplace'               |
-| `status`        | TEXT  | 'negotiating', 'completed', 'cancelled' |
-| `initiator_id`  | UUID  | Trade initiator                         |
-| `partner_id`    | UUID  | Trade partner                           |
-| `listing_id`    | UUID  | Source listing (if marketplace)         |
-| `proposal_id`   | UUID  | Source proposal (if marketplace)        |
-| `current_offer` | JSONB | Current negotiation state               |
-| `final_trade`   | JSONB | Final executed trade                    |
-| `last_offer_by` | UUID  | Who made last offer                     |
+| Column                    | Type        | Description                                      |
+| ------------------------- | ----------- | ------------------------------------------------ |
+| `id`                      | UUID        | Primary key                                      |
+| `trade_type`              | TEXT        | 'friend' or 'marketplace'                        |
+| `status`                  | TEXT        | 'negotiating', 'completed', 'cancelled'          |
+| `initiator_id`            | UUID        | Trade initiator                                  |
+| `partner_id`              | UUID        | Trade partner                                    |
+| `listing_id`              | UUID        | Source listing (if marketplace)                  |
+| `proposal_id`             | UUID        | Source proposal (if marketplace)                 |
+| `current_offer`           | JSONB       | Current negotiation state                        |
+| `final_trade`             | JSONB       | Final executed trade                             |
+| `last_offer_by`           | UUID        | Who made last offer                              |
+| `validated_by_initiator`  | BOOLEAN     | TRUE when initiator validated current offer      |
+| `validated_by_partner`    | BOOLEAN     | TRUE when partner validated current offer        |
+| `validated_at`            | TIMESTAMPTZ | Timestamp when both parties validated (auto-set) |
+| `confirmation_started_at` | TIMESTAMPTZ | Timestamp when confirmation modal opened         |
 
 ### shop_item_templates
 

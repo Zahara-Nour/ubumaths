@@ -4932,6 +4932,7 @@ export type Database = {
 				Row: {
 					cancelled_at: string | null;
 					completed_at: string | null;
+					confirmation_started_at: string | null;
 					conversation_id: string | null;
 					created_at: string;
 					current_offer: Json | null;
@@ -4945,10 +4946,14 @@ export type Database = {
 					status: string;
 					trade_type: string;
 					updated_at: string;
+					validated_at: string | null;
+					validated_by_initiator: boolean;
+					validated_by_partner: boolean;
 				};
 				Insert: {
 					cancelled_at?: string | null;
 					completed_at?: string | null;
+					confirmation_started_at?: string | null;
 					conversation_id?: string | null;
 					created_at?: string;
 					current_offer?: Json | null;
@@ -4962,10 +4967,14 @@ export type Database = {
 					status?: string;
 					trade_type: string;
 					updated_at?: string;
+					validated_at?: string | null;
+					validated_by_initiator?: boolean;
+					validated_by_partner?: boolean;
 				};
 				Update: {
 					cancelled_at?: string | null;
 					completed_at?: string | null;
+					confirmation_started_at?: string | null;
 					conversation_id?: string | null;
 					created_at?: string;
 					current_offer?: Json | null;
@@ -4979,6 +4988,9 @@ export type Database = {
 					status?: string;
 					trade_type?: string;
 					updated_at?: string;
+					validated_at?: string | null;
+					validated_by_initiator?: boolean;
+					validated_by_partner?: boolean;
 				};
 				Relationships: [
 					{
