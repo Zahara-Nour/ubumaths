@@ -14,12 +14,17 @@
 		XCircle,
 		MessageSquare,
 		RefreshCw,
-		AlertCircle
+		AlertCircle,
+		Plus
 	} from 'lucide-svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import TradeNegotiationModal from './TradeNegotiationModal.svelte';
+	import StartFriendTradeModal from './StartFriendTradeModal.svelte';
 	import { page } from '$app/stores';
+
+	// Get supabase client from page data
+	let supabase = $derived($page.data.supabase);
 
 	// Get current user ID
 	let userId = $derived($page.data.user?.id);
@@ -27,6 +32,7 @@
 	// State
 	let selectedTab = $state<'active' | 'completed'>('active');
 	let selectedTrade = $state<MarketplaceTrade | null>(null);
+	let showStartTradeModal = $state(false);
 
 	// Filter trades by status
 	let activeTrades = $derived(
@@ -41,6 +47,7 @@
 
 	// Check if it's my turn to respond
 	function isMyTurn(trade: MarketplaceTrade): boolean {
+		if (!userId) return false;
 		return trade.last_offer_by !== null && trade.last_offer_by !== userId;
 	}
 
@@ -83,6 +90,19 @@
 	// Refresh trades
 	function refresh() {
 		marketplaceStore.fetchMyTrades();
+	}
+
+	// Handle trade started from modal
+	function handleTradeStarted(tradeId: string) {
+		showStartTradeModal = false;
+		// Refresh trades to get the new one
+		marketplaceStore.fetchMyTrades().then(() => {
+			// Find and open the newly created trade
+			const newTrade = marketplaceStore.activeTrades.find((t) => t.id === tradeId);
+			if (newTrade) {
+				openTradeNegotiation(newTrade);
+			}
+		});
 	}
 
 	// Type for current offer structure
@@ -141,9 +161,15 @@
 				</Badge>
 			{/if}
 		</div>
-		<Button variant="outline" size="icon" onclick={refresh} aria-label="Actualiser les échanges">
-			<RefreshCw class="h-4 w-4" />
-		</Button>
+		<div class="flex items-center gap-2">
+			<Button size="sm" onclick={() => (showStartTradeModal = true)} class="gap-1.5">
+				<Plus class="h-4 w-4" />
+				Nouvel échange
+			</Button>
+			<Button variant="outline" size="icon" onclick={refresh} aria-label="Actualiser les échanges">
+				<RefreshCw class="h-4 w-4" />
+			</Button>
+		</div>
 	</div>
 
 	<!-- Tabs for trade status -->
@@ -337,4 +363,15 @@
 {#if selectedTrade}
 	{@const isOpen = !!selectedTrade}
 	<TradeNegotiationModal trade={selectedTrade} open={isOpen} onClose={closeTradeNegotiation} />
+{/if}
+
+<!-- Start Friend Trade Modal -->
+{#if supabase && userId}
+	<StartFriendTradeModal
+		bind:open={showStartTradeModal}
+		onClose={() => (showStartTradeModal = false)}
+		onTradeStarted={handleTradeStarted}
+		{supabase}
+		{userId}
+	/>
 {/if}

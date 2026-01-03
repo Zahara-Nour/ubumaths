@@ -5,7 +5,6 @@ import { createTradeSchema } from '$lib/server/marketplace/validation';
 import {
 	validateCardOwnership,
 	checkCardsUnused,
-	lockCardsForEntity,
 	isMarketplaceEnabled,
 	verifyFriendship,
 	createMarketplaceNotification,
@@ -236,20 +235,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	}
 
-	// Create the trade
+	// Create the trade (without initial offer - will be added in negotiation modal)
 	const { data: trade, error: tradeError } = await supabase
 		.from('marketplace_trades')
 		.insert({
 			initiator_id: userId,
 			partner_id: partner_id,
-			type: 'friend',
+			trade_type: 'friend',
 			status: 'negotiating',
-			current_offer: {
-				initiator_cards: initial_offer.cards,
-				initiator_gidouilles: initial_offer.gidouilles,
-				partner_cards: [],
-				partner_gidouilles: 0
-			}
+			current_offer: null
 		})
 		.select(
 			`
@@ -273,42 +267,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (tradeError) {
 		console.error('Error creating trade:', tradeError);
 		throw error(500, "Erreur lors de la création de l'échange");
-	}
-
-	// Create the first offer record
-	const { error: offerError } = await supabase.from('marketplace_trade_offers').insert({
-		trade_id: trade.id,
-		offer_by: userId,
-		initiator_cards: initial_offer.cards,
-		initiator_gidouilles: initial_offer.gidouilles,
-		partner_cards: [],
-		partner_gidouilles: 0,
-		message: null
-	});
-
-	if (offerError) {
-		console.error('Error creating initial offer:', offerError);
-		// Rollback: delete the trade
-		await supabase.from('marketplace_trades').delete().eq('id', trade.id);
-		throw error(500, "Erreur lors de la création de l'offre initiale");
-	}
-
-	// Lock cards if offering any
-	if (initial_offer.cards.length > 0) {
-		const lockResult = await lockCardsForEntity(
-			supabase,
-			userId,
-			initial_offer.cards,
-			trade.id,
-			'trade'
-		);
-
-		if (!lockResult.success) {
-			// Rollback: delete the trade and offer
-			await supabase.from('marketplace_trades').delete().eq('id', trade.id);
-
-			throw error(500, lockResult.error || 'Erreur lors du verrouillage des cartes');
-		}
 	}
 
 	// Create notification for partner
