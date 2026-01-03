@@ -132,6 +132,8 @@ class SupabaseRealtimeManager {
 					case 'CLOSED':
 						this.connectionStatus = 'disconnected';
 						logger.info(`Channel "${channelName}" closed`);
+						// Reject to prevent hanging Promise when channel is closed during subscription
+						reject(new Error(`Channel "${channelName}" closed during subscription`));
 						break;
 
 					case 'CHANNEL_ERROR':

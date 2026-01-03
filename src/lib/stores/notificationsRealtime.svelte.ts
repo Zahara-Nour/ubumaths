@@ -127,10 +127,14 @@ class NotificationsRealtimeManager {
 		);
 
 		// Subscribe to the channel
-		await supabaseRealtimeManager.subscribeChannel(CHANNEL_NAME);
-
-		this.isListening = true;
-		logger.info('Successfully started listening to notification changes');
+		try {
+			await supabaseRealtimeManager.subscribeChannel(CHANNEL_NAME);
+			this.isListening = true;
+			logger.info('Successfully started listening to notification changes');
+		} catch (error) {
+			logger.warn('Failed to subscribe to notifications channel:', error);
+			this.isListening = false;
+		}
 	}
 
 	/**

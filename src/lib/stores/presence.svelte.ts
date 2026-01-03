@@ -192,7 +192,12 @@ class PresenceManager {
 			this.handleSystemError();
 		});
 
-		await supabaseRealtimeManager.subscribeChannel(CHANNEL_NAME);
+		try {
+			await supabaseRealtimeManager.subscribeChannel(CHANNEL_NAME);
+		} catch (error) {
+			logger.warn('Failed to subscribe to presence channel:', error);
+			return;
+		}
 
 		// Fetch initial presence state
 		await this.fetchInitialPresence();

@@ -251,7 +251,13 @@ class MarketplaceStore {
 				}, 5000);
 			});
 
-		await supabaseRealtimeManager.subscribeChannel('marketplace-listings');
+		try {
+			await supabaseRealtimeManager.subscribeChannel('marketplace-listings');
+		} catch (error) {
+			// Channel may be closed during navigation - this is expected
+			console.warn('Failed to subscribe to marketplace-listings:', error);
+			return; // Don't try to subscribe to other channels if this one failed
+		}
 
 		// Subscribe to trades I'm involved in
 		this.tradesChannel = supabaseRealtimeManager.createChannel(`marketplace-trades-${this.userId}`);
@@ -277,7 +283,12 @@ class MarketplaceStore {
 				this.handleTradeUpdate.bind(this)
 			);
 
-		await supabaseRealtimeManager.subscribeChannel(`marketplace-trades-${this.userId}`);
+		try {
+			await supabaseRealtimeManager.subscribeChannel(`marketplace-trades-${this.userId}`);
+		} catch (error) {
+			console.warn('Failed to subscribe to marketplace-trades:', error);
+			return;
+		}
 
 		// Subscribe to proposals on my listings and my proposals
 		this.proposalsChannel = supabaseRealtimeManager.createChannel(
@@ -294,7 +305,11 @@ class MarketplaceStore {
 			this.handleProposalUpdate.bind(this)
 		);
 
-		await supabaseRealtimeManager.subscribeChannel(`marketplace-proposals-${this.userId}`);
+		try {
+			await supabaseRealtimeManager.subscribeChannel(`marketplace-proposals-${this.userId}`);
+		} catch (error) {
+			console.warn('Failed to subscribe to marketplace-proposals:', error);
+		}
 	}
 
 	// TODO Phase 6: Implement trade chat feature
