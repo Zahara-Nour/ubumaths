@@ -6179,102 +6179,6 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-			minesweeper_daily_attempts: {
-				Row: {
-					challenge_id: string;
-					completed_at: string;
-					gidouilles_earned: number;
-					grid_state: Json;
-					id: string;
-					rank: number | null;
-					status: string;
-					student_id: string;
-					time_seconds: number;
-				};
-				Insert: {
-					challenge_id: string;
-					completed_at?: string;
-					gidouilles_earned?: number;
-					grid_state: Json;
-					id?: string;
-					rank?: number | null;
-					status: string;
-					student_id: string;
-					time_seconds: number;
-				};
-				Update: {
-					challenge_id?: string;
-					completed_at?: string;
-					gidouilles_earned?: number;
-					grid_state?: Json;
-					id?: string;
-					rank?: number | null;
-					status?: string;
-					student_id?: string;
-					time_seconds?: number;
-				};
-				Relationships: [
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_challenge_id_fkey';
-						columns: ['challenge_id'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_daily_challenges';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'assessment_results';
-						referencedColumns: ['student_user_id'];
-					},
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					}
-				];
-			};
-			minesweeper_daily_challenges: {
-				Row: {
-					challenge_date: string;
-					created_at: string;
-					difficulty: string;
-					id: string;
-					seed: string;
-				};
-				Insert: {
-					challenge_date: string;
-					created_at?: string;
-					difficulty: string;
-					id?: string;
-					seed: string;
-				};
-				Update: {
-					challenge_date?: string;
-					created_at?: string;
-					difficulty?: string;
-					id?: string;
-					seed?: string;
-				};
-				Relationships: [];
-			};
 			minesweeper_games: {
 				Row: {
 					cells_revealed: number | null;
@@ -6294,6 +6198,7 @@ export type Database = {
 					status: string;
 					student_id: string | null;
 					time_seconds: number | null;
+					undo_used: boolean;
 				};
 				Insert: {
 					cells_revealed?: number | null;
@@ -6313,6 +6218,7 @@ export type Database = {
 					status: string;
 					student_id?: string | null;
 					time_seconds?: number | null;
+					undo_used?: boolean;
 				};
 				Update: {
 					cells_revealed?: number | null;
@@ -6332,6 +6238,7 @@ export type Database = {
 					status?: string;
 					student_id?: string | null;
 					time_seconds?: number | null;
+					undo_used?: boolean;
 				};
 				Relationships: [
 					{
@@ -6710,6 +6617,30 @@ export type Database = {
 					}
 				];
 			};
+			minesweeper_tournament_3bv_reference: {
+				Row: {
+					cycle: string;
+					difficulty: string;
+					reference_3bvs: number;
+					sample_count: number;
+					updated_at: string;
+				};
+				Insert: {
+					cycle: string;
+					difficulty: string;
+					reference_3bvs: number;
+					sample_count?: number;
+					updated_at?: string;
+				};
+				Update: {
+					cycle?: string;
+					difficulty?: string;
+					reference_3bvs?: number;
+					sample_count?: number;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
 			minesweeper_tournament_classes: {
 				Row: {
 					class_id: string;
@@ -6744,8 +6675,10 @@ export type Database = {
 				Row: {
 					completed_at: string | null;
 					game_number: number;
+					grid_3bv: number | null;
 					grid_state: Json | null;
 					id: string;
+					score: number | null;
 					seed: string;
 					started_at: string;
 					status: string;
@@ -6756,8 +6689,10 @@ export type Database = {
 				Insert: {
 					completed_at?: string | null;
 					game_number: number;
+					grid_3bv?: number | null;
 					grid_state?: Json | null;
 					id?: string;
+					score?: number | null;
 					seed: string;
 					started_at?: string;
 					status?: string;
@@ -6768,8 +6703,10 @@ export type Database = {
 				Update: {
 					completed_at?: string | null;
 					game_number?: number;
+					grid_3bv?: number | null;
 					grid_state?: Json | null;
 					id?: string;
+					score?: number | null;
 					seed?: string;
 					started_at?: string;
 					status?: string;
@@ -11003,42 +10940,54 @@ export type Database = {
 			vip_card_templates: {
 				Row: {
 					action: Json | null;
+					base_price: number;
 					category: string | null;
 					created_at: string;
 					description: string;
 					id: string;
 					image_path: string;
 					is_enabled: boolean;
+					is_purchasable: boolean;
+					max_owned_per_student: number;
 					name: string;
 					rarity: string;
 					sort_order: number | null;
 					updated_at: string;
+					uses_total: number | null;
 				};
 				Insert: {
 					action?: Json | null;
+					base_price?: number;
 					category?: string | null;
 					created_at?: string;
 					description: string;
 					id: string;
 					image_path: string;
 					is_enabled?: boolean;
+					is_purchasable?: boolean;
+					max_owned_per_student?: number;
 					name: string;
 					rarity: string;
 					sort_order?: number | null;
 					updated_at?: string;
+					uses_total?: number | null;
 				};
 				Update: {
 					action?: Json | null;
+					base_price?: number;
 					category?: string | null;
 					created_at?: string;
 					description?: string;
 					id?: string;
 					image_path?: string;
 					is_enabled?: boolean;
+					is_purchasable?: boolean;
+					max_owned_per_student?: number;
 					name?: string;
 					rarity?: string;
 					sort_order?: number | null;
 					updated_at?: string;
+					uses_total?: number | null;
 				};
 				Relationships: [];
 			};
@@ -12477,58 +12426,6 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-			minesweeper_daily_leaderboard: {
-				Row: {
-					challenge_date: string | null;
-					challenge_id: string | null;
-					completed_at: string | null;
-					difficulty: string | null;
-					firstname: string | null;
-					gidouilles_earned: number | null;
-					lastname: string | null;
-					position: number | null;
-					rank: number | null;
-					student_id: string | null;
-					time_seconds: number | null;
-				};
-				Relationships: [
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_challenge_id_fkey';
-						columns: ['challenge_id'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_daily_challenges';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'assessment_results';
-						referencedColumns: ['student_user_id'];
-					},
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'minesweeper_daily_attempts_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					}
-				];
-			};
 			minesweeper_leaderboard: {
 				Row: {
 					avg_top_10: number | null;
@@ -12686,7 +12583,8 @@ export type Database = {
 			};
 			minesweeper_tournament_standings: {
 				Row: {
-					average_time: number | null;
+					average_3bvs: number | null;
+					average_score: number | null;
 					firstname: string | null;
 					games_won: number | null;
 					lastname: string | null;
@@ -13044,6 +12942,7 @@ export type Database = {
 			};
 			are_classmates: { Args: { p_user_id: string }; Returns: boolean };
 			auto_activate_scheduled_tournaments: { Args: never; Returns: number };
+			auto_complete_ended_tournaments: { Args: never; Returns: number };
 			auto_expire_listings: { Args: never; Returns: number };
 			award_achievement_manual: {
 				Args: {
@@ -13078,6 +12977,13 @@ export type Database = {
 				};
 				Returns: string;
 			};
+			backfill_tournament_scores: {
+				Args: { p_tournament_id: string };
+				Returns: {
+					updated_count: number;
+				}[];
+			};
+			calculate_3bv: { Args: { p_grid_state: Json }; Returns: number };
 			calculate_daily_challenge_gidouilles: {
 				Args: {
 					p_difficulty: string;
@@ -13121,6 +13027,15 @@ export type Database = {
 			};
 			calculate_riddle_gidouilles: {
 				Args: { p_attempt_number: number; p_difficulty: number };
+				Returns: number;
+			};
+			calculate_tournament_score: {
+				Args: {
+					p_cycle: string;
+					p_difficulty: string;
+					p_grid_3bv: number;
+					p_time_seconds: number;
+				};
 				Returns: number;
 			};
 			calculate_week_boundaries: {
@@ -13217,7 +13132,10 @@ export type Database = {
 					p_time_seconds: number;
 				};
 				Returns: {
+					actual_3bvs: number;
 					final_status: string;
+					grid_3bv: number;
+					score: number;
 					success: boolean;
 				}[];
 			};
@@ -13228,6 +13146,10 @@ export type Database = {
 					p_summary_date: string;
 				};
 				Returns: string;
+			};
+			count_student_active_cards: {
+				Args: { p_card_id: string; p_lock_row?: boolean; p_student_id: string };
+				Returns: number;
 			};
 			count_user_notebooks: { Args: { p_user_id: string }; Returns: number };
 			count_user_python_files: { Args: { p_user_id: string }; Returns: number };
@@ -13302,12 +13224,9 @@ export type Database = {
 			finalize_tournament: {
 				Args: { p_tournament_id: string };
 				Returns: {
-					average_time: number;
-					firstname: string;
-					gidouilles_awarded: number;
-					lastname: string;
-					place: number;
-					student_id: string;
+					reference_updates: number;
+					rewards_distributed: number;
+					success: boolean;
 				}[];
 			};
 			generate_error_signature: {
@@ -13684,7 +13603,6 @@ export type Database = {
 				Args: { p_riddle_id: string; p_student_id: string };
 				Returns: number;
 			};
-			get_or_create_daily_challenge: { Args: never; Returns: Json };
 			get_pending_reports_count: { Args: never; Returns: number };
 			get_private_messages_unread_count: {
 				Args: { p_user_id: string };
@@ -13923,7 +13841,21 @@ export type Database = {
 			};
 			get_tournament_details: {
 				Args: { p_tournament_id: string };
-				Returns: Json;
+				Returns: {
+					creator_id: string;
+					description: string;
+					difficulty: string;
+					end_date: string;
+					games_played: number;
+					id: string;
+					name: string;
+					participant_count: number;
+					podium_places: number;
+					podium_rewards: Json;
+					start_date: string;
+					status: string;
+					top_x_games: number;
+				}[];
 			};
 			get_unread_count: {
 				Args: { p_conversation_id: string; p_user_id: string };
@@ -14197,6 +14129,10 @@ export type Database = {
 				};
 				Returns: Json;
 			};
+			purchase_vip_card: {
+				Args: { p_card_id: string; p_student_id: string };
+				Returns: Json;
+			};
 			rag_hybrid_search: {
 				Args: {
 					filter_grade_levels?: string[];
@@ -14228,19 +14164,6 @@ export type Database = {
 					updated: boolean;
 				}[];
 			};
-			record_daily_challenge_attempt: {
-				Args: {
-					p_challenge_id: string;
-					p_grid_state: Json;
-					p_status: string;
-					p_time_seconds: number;
-				};
-				Returns: {
-					attempt_id: string;
-					gidouilles_earned: number;
-					success: boolean;
-				}[];
-			};
 			record_game_reward: {
 				Args: {
 					p_game_id: string;
@@ -14266,6 +14189,13 @@ export type Database = {
 			record_minesweeper_loss: {
 				Args: { p_game_id: string; p_grid_state: Json };
 				Returns: {
+					success: boolean;
+				}[];
+			};
+			redistribute_tournament_rewards: {
+				Args: { p_tournament_id: string };
+				Returns: {
+					rewards_distributed: number;
 					success: boolean;
 				}[];
 			};
@@ -14364,6 +14294,7 @@ export type Database = {
 				Args: { p_date: string; p_riddle_id: string; p_selected_by: string };
 				Returns: string;
 			};
+			shares_tournament: { Args: { target_user_id: string }; Returns: boolean };
 			soft_delete_message: {
 				Args: { p_message_id: string };
 				Returns: undefined;
@@ -14432,6 +14363,10 @@ export type Database = {
 				Args: { p_student_id: string };
 				Returns: string;
 			};
+			try_consume_minesweeper_undo_item: {
+				Args: { p_student_id: string };
+				Returns: boolean;
+			};
 			unaccent: { Args: { '': string }; Returns: string };
 			unlock_cards: { Args: { p_entity_id: string }; Returns: number };
 			unlock_items: {
@@ -14454,10 +14389,6 @@ export type Database = {
 			update_class_gidouilles: {
 				Args: { p_class_id: string; p_delta: number };
 				Returns: number;
-			};
-			update_daily_challenge_rankings: {
-				Args: { p_challenge_id: string };
-				Returns: undefined;
 			};
 			update_game_state: {
 				Args: {
@@ -14535,9 +14466,17 @@ export type Database = {
 				Args: { p_status: string; p_user_id: string };
 				Returns: undefined;
 			};
+			use_consumable_card: {
+				Args: { p_instance_id: string; p_student_id: string };
+				Returns: Json;
+			};
 			use_hint: { Args: { p_game_id: string }; Returns: Json };
 			use_item: {
 				Args: { p_context: string; p_inventory_id: string; p_usage_data?: Json };
+				Returns: Json;
+			};
+			use_minesweeper_undo: {
+				Args: { p_game_id: string; p_grid_state: Json };
 				Returns: Json;
 			};
 			use_vip_card: {
