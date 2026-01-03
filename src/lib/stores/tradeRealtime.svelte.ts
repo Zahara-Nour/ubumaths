@@ -547,6 +547,11 @@ class TradeRealtimeStore {
 				this.handleTradeCancelled(validation.data);
 			});
 
+			// Subscribe to trade completion
+			channel.on('broadcast', { event: 'trade_completed' }, () => {
+				this.handleTradeCompleted();
+			});
+
 			// Subscribe to presence updates
 			channel.on('broadcast', { event: 'presence' }, ({ payload }) => {
 				const validation = presencePayloadSchema.safeParse(payload);
@@ -742,10 +747,31 @@ class TradeRealtimeStore {
 			const updateField =
 				this.myRole === 'initiator' ? 'validated_by_initiator' : 'validated_by_partner';
 
+			// Build current_offer in the format expected by execute_trade RPC
+			// Structure: { from_initiator: {cards, gidouilles}, from_partner: {cards, gidouilles} }
+			const currentOffer =
+				this.myRole === 'initiator'
+					? {
+							from_initiator: { cards: this.myOffer.cards, gidouilles: this.myOffer.gidouilles },
+							from_partner: {
+								cards: this.partnerOffer.cards,
+								gidouilles: this.partnerOffer.gidouilles
+							}
+						}
+					: {
+							from_initiator: {
+								cards: this.partnerOffer.cards,
+								gidouilles: this.partnerOffer.gidouilles
+							},
+							from_partner: { cards: this.myOffer.cards, gidouilles: this.myOffer.gidouilles }
+						};
+
 			const { error } = await this.supabase
 				.from('marketplace_trades')
 				.update({
 					[updateField]: newValidation,
+					// Save current offer state when validating
+					current_offer: currentOffer,
 					updated_at: new Date().toISOString()
 				})
 				.eq('id', this.tradeId);
@@ -843,6 +869,8 @@ class TradeRealtimeStore {
 				throw new Error(data.message);
 			}
 
+			const result = await response.json();
+
 			// Update local state
 			this.myConfirmation = true;
 
@@ -851,10 +879,26 @@ class TradeRealtimeStore {
 
 			logger.info('Trade confirmed by:', this.myRole);
 
-			// If both confirmed, trade is complete
-			if (this.partnerConfirmation) {
-				logger.info('Trade completed - both parties confirmed');
-				// The API should handle the actual trade execution
+			// If trade was executed (both confirmed), update trade status
+			if (result.executed && this.trade) {
+				logger.info('Trade executed successfully!');
+				this.trade = {
+					...this.trade,
+					status: 'completed',
+					completed_at: new Date().toISOString()
+				};
+
+				// Broadcast trade completion so partner's page also updates
+				const channel = supabaseRealtimeManager.getChannel(`trade:${this.tradeId}`);
+				if (channel) {
+					channel
+						.send({
+							type: 'broadcast',
+							event: 'trade_completed',
+							payload: { tradeId: this.tradeId }
+						})
+						.catch((err) => logger.error('Failed to broadcast trade completion:', err));
+				}
 			}
 		} catch (err) {
 			logger.error('Failed to confirm trade:', err);
@@ -1270,6 +1314,25 @@ class TradeRealtimeStore {
 		}
 
 		// Close confirmation modal if open
+		this.showConfirmationModal = false;
+	}
+
+	/**
+	 * Handle trade completion broadcast from partner
+	 */
+	private handleTradeCompleted(): void {
+		logger.info('Trade completed - received broadcast');
+
+		// Update trade status
+		if (this.trade) {
+			this.trade = {
+				...this.trade,
+				status: 'completed',
+				completed_at: new Date().toISOString()
+			};
+		}
+
+		// Close confirmation modal
 		this.showConfirmationModal = false;
 	}
 
