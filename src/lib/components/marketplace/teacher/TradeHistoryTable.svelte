@@ -172,6 +172,15 @@
 		}
 	}
 
+	// Track previous classId to detect changes (not initial render)
+	let prevClassId: string | undefined = undefined;
+
+	// Handle classId changes - reset pagination and refetch
+	function handleClassIdChange() {
+		currentPage = 1;
+		fetchTrades();
+	}
+
 	// Set default date range (last 30 days)
 	onMount(() => {
 		const today = new Date();
@@ -180,15 +189,19 @@
 
 		dateFrom = formatDateForInput(thirtyDaysAgo);
 		dateTo = formatDateForInput(today);
+		prevClassId = classId;
 
 		fetchTrades();
 	});
 
-	// Refetch when classId changes
+	// Refetch when classId changes (only after initial mount).
+	// Note: handleClassIdChange updates currentPage which is state, but this is intentional -
+	// we need to reset pagination when the filter changes. This is a legitimate side effect
+	// of a prop change, not deriving state from state.
 	$effect(() => {
-		if (classId !== undefined) {
-			currentPage = 1;
-			fetchTrades();
+		if (prevClassId !== undefined && classId !== prevClassId) {
+			prevClassId = classId;
+			handleClassIdChange();
 		}
 	});
 </script>
