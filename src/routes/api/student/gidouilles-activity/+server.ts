@@ -75,7 +75,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				reason,
 				created_at,
 				created_by,
-				creator:profiles!gidouilles_activity_created_by_fkey(full_name)
+				creator:profiles!gidouilles_history_created_by_fkey(full_name)
 			`
 			)
 			.eq('student_id', user.id)
