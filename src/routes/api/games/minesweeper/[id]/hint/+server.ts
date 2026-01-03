@@ -32,7 +32,7 @@ interface UseHintResult {
  * - Checking hint limit (maximum 3 hints per game)
  * - Checking gidouilles balance (cost: 10 gidouilles per hint)
  * - Deducting gidouilles from student's balance
- * - Recording transaction in gidouilles_history
+ * - Recording transaction in gidouilles_activity
  * - Incrementing hints_used counter on game
  * - Atomic transaction (all operations succeed or fail together)
  *

@@ -10,7 +10,7 @@ import type { DailyChanges, ClassWithSchool } from './types';
 import { createDailySummaryNotification } from './notifications';
 import { getDayBoundariesInTimezone } from './timezone-utils';
 import type {
-	GidouillesHistoryRow,
+	GidouillesActivityRow,
 	BonusHistoryRow,
 	VipCardsActivityRow,
 	DailySummaryInsert
@@ -111,7 +111,7 @@ export async function aggregateDailyChanges(
 		// 1. Aggregate gidouilles changes
 		const { data: gidouillesData, error: gidouillesError } = await (
 			supabase as unknown as {
-				from(table: 'gidouilles_history'): {
+				from(table: 'gidouilles_activity'): {
 					select(columns: 'delta'): {
 						eq(
 							column: 'student_id',
@@ -129,7 +129,7 @@ export async function aggregateDailyChanges(
 										column: 'created_at',
 										value: string
 									): Promise<{
-										data: Pick<GidouillesHistoryRow, 'delta'>[] | null;
+										data: Pick<GidouillesActivityRow, 'delta'>[] | null;
 										error: unknown;
 									}>;
 								};
@@ -139,7 +139,7 @@ export async function aggregateDailyChanges(
 				};
 			}
 		)
-			.from('gidouilles_history')
+			.from('gidouilles_activity')
 			.select('delta')
 			.eq('student_id', studentId)
 			.eq('class_id', classId)

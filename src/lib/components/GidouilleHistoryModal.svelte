@@ -46,14 +46,14 @@
 		errorMessage = null;
 
 		try {
-			const response = await fetch('/api/student/gidouilles-history');
+			const response = await fetch('/api/student/gidouilles-activity');
 			const data = await response.json();
 
 			if (!response.ok) {
 				throw new Error(data.message || 'Erreur lors du chargement');
 			}
 
-			history = data.history;
+			history = data.activity;
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Erreur inconnue';
 			errorMessage = message;
