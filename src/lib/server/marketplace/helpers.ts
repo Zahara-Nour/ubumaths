@@ -361,7 +361,7 @@ export async function verifyFriendship(
 		.from('friendships')
 		.select('id')
 		.or(
-			`and(user_id.eq.${userId1},friend_id.eq.${userId2}),and(user_id.eq.${userId2},friend_id.eq.${userId1})`
+			`and(requester_id.eq.${userId1},addressee_id.eq.${userId2}),and(requester_id.eq.${userId2},addressee_id.eq.${userId1})`
 		)
 		.eq('status', 'accepted')
 		.limit(1);
