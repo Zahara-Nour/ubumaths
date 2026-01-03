@@ -187,171 +187,168 @@
 	<title>Echange en cours - Ubumaths</title>
 </svelte:head>
 
-<!-- Break out of parent layout constraints (p-4/6/8 and max-w-4xl) -->
-<div class="-m-4 sm:-m-6 lg:-m-8">
-	<div class="flex h-[calc(100vh-4rem)] flex-col overflow-hidden bg-background">
-		<!-- Header -->
-		<header class="flex items-center justify-between border-b bg-card px-2 py-2 sm:px-3">
-			<div class="flex items-center gap-3">
-				<Button variant="ghost" size="sm" onclick={goBack}>
-					<ArrowLeft class="h-5 w-5" />
-				</Button>
-				<div>
-					<h1 class="text-lg font-semibold">Echange avec {partnerName}</h1>
-					<TradePresenceIndicator online={tradeRealtimeStore.partnerOnline} />
-				</div>
+<div class="flex h-[calc(100vh-4rem)] flex-col overflow-hidden bg-background">
+	<!-- Header -->
+	<header class="flex items-center justify-between border-b bg-card px-2 py-2 sm:px-3">
+		<div class="flex items-center gap-3">
+			<Button variant="ghost" size="sm" onclick={goBack}>
+				<ArrowLeft class="h-5 w-5" />
+			</Button>
+			<div>
+				<h1 class="text-lg font-semibold">Echange avec {partnerName}</h1>
+				<TradePresenceIndicator online={tradeRealtimeStore.partnerOnline} />
 			</div>
+		</div>
 
-			<div class="flex items-center gap-2">
-				<!-- Mobile chat button -->
-				{#if isMobileView}
-					<Button variant="outline" size="sm" onclick={openChatDrawer} class="relative">
-						<MessageCircle class="h-5 w-5" />
-						{#if unreadCount > 0}
-							<span
-								class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs text-destructive-foreground"
-							>
-								{unreadCount > 9 ? '9+' : unreadCount}
-							</span>
-						{/if}
-					</Button>
-				{/if}
-
-				<Button variant="destructive" size="sm" onclick={handleCancel}>
-					<X class="mr-1 h-4 w-4" />
-					Annuler
-				</Button>
-			</div>
-		</header>
-
-		<!-- Main Content -->
-		<main class="flex flex-1 overflow-hidden">
+		<div class="flex items-center gap-2">
+			<!-- Mobile chat button -->
 			{#if isMobileView}
-				<!-- Mobile Layout: Stacked panels -->
-				<div class="flex flex-1 flex-col overflow-auto">
-					<!-- My Offer Panel -->
-					<div class="border-b p-2">
-						<TradeOfferPanel
-							isMyPanel={true}
-							cards={data.myCards}
-							offer={tradeRealtimeStore.myOffer}
-							validated={tradeRealtimeStore.myValidation}
-							gidouillesBalance={data.gidouillesBalance}
-							onSelectCard={handleSelectCard}
-							onDeselectCard={handleDeselectCard}
-							onSetGidouilles={handleSetGidouilles}
-							onValidate={handleValidate}
-						/>
-					</div>
-
-					<!-- Partner Offer Panel -->
-					<div class="p-2">
-						<TradeOfferPanel
-							isMyPanel={false}
-							cards={partnerOfferedCards}
-							offer={tradeRealtimeStore.partnerOffer}
-							validated={tradeRealtimeStore.partnerValidation}
-							gidouillesBalance={0}
-							{partnerName}
-						/>
-					</div>
-				</div>
-			{:else}
-				<!-- Desktop Layout: 3 columns -->
-				<div class="grid flex-1 grid-cols-[1fr_300px_1fr] overflow-hidden">
-					<!-- My Offer Panel -->
-					<div class="overflow-auto border-r p-2">
-						<TradeOfferPanel
-							isMyPanel={true}
-							cards={data.myCards}
-							offer={tradeRealtimeStore.myOffer}
-							validated={tradeRealtimeStore.myValidation}
-							gidouillesBalance={data.gidouillesBalance}
-							onSelectCard={handleSelectCard}
-							onDeselectCard={handleDeselectCard}
-							onSetGidouilles={handleSetGidouilles}
-							onValidate={handleValidate}
-						/>
-					</div>
-
-					<!-- Chat Panel (Desktop) -->
-					<div class="flex flex-col overflow-hidden border-r bg-muted/30">
-						<div class="border-b bg-card p-2">
-							<h2 class="text-sm font-semibold">Chat</h2>
-						</div>
-						<div class="flex flex-1 flex-col overflow-hidden">
-							<!-- Chat messages -->
-							<div class="flex-1 overflow-auto p-2">
-								{#if tradeRealtimeStore.messages.length === 0}
-									<p class="py-8 text-center text-sm text-muted-foreground">
-										Aucun message. Commencez la discussion !
-									</p>
-								{:else}
-									<div class="space-y-3">
-										{#each tradeRealtimeStore.messages as message (message.id)}
-											{@const isOwn = message.senderId === user?.id}
-											<div class="flex {isOwn ? 'justify-end' : 'justify-start'}">
-												<div
-													class="max-w-[80%] rounded-lg px-3 py-2 {isOwn
-														? 'bg-primary text-primary-foreground'
-														: 'bg-muted text-foreground'}"
-												>
-													<p class="text-sm">{message.message}</p>
-													<p class="mt-1 text-xs opacity-70">
-														{new Date(message.createdAt).toLocaleTimeString('fr-FR', {
-															hour: '2-digit',
-															minute: '2-digit'
-														})}
-													</p>
-												</div>
-											</div>
-										{/each}
-									</div>
-								{/if}
-							</div>
-
-							<!-- Chat input -->
-							<div class="border-t bg-card p-2">
-								<form
-									onsubmit={(e) => {
-										e.preventDefault();
-										const form = e.target as HTMLFormElement;
-										const input = form.elements.namedItem('message') as HTMLInputElement;
-										if (input.value.trim()) {
-											handleSendMessage(input.value.trim());
-											input.value = '';
-										}
-									}}
-									class="flex gap-2"
-								>
-									<input
-										type="text"
-										name="message"
-										placeholder="Message..."
-										maxlength="500"
-										class="flex-1 rounded-md border bg-background px-2 py-1.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
-									/>
-									<Button type="submit" size="sm">OK</Button>
-								</form>
-							</div>
-						</div>
-					</div>
-
-					<!-- Partner Offer Panel -->
-					<div class="overflow-auto p-2">
-						<TradeOfferPanel
-							isMyPanel={false}
-							cards={partnerOfferedCards}
-							offer={tradeRealtimeStore.partnerOffer}
-							validated={tradeRealtimeStore.partnerValidation}
-							gidouillesBalance={0}
-							{partnerName}
-						/>
-					</div>
-				</div>
+				<Button variant="outline" size="sm" onclick={openChatDrawer} class="relative">
+					<MessageCircle class="h-5 w-5" />
+					{#if unreadCount > 0}
+						<span
+							class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs text-destructive-foreground"
+						>
+							{unreadCount > 9 ? '9+' : unreadCount}
+						</span>
+					{/if}
+				</Button>
 			{/if}
-		</main>
-	</div>
+
+			<Button variant="destructive" size="sm" onclick={handleCancel}>
+				<X class="mr-1 h-4 w-4" />
+				Annuler
+			</Button>
+		</div>
+	</header>
+
+	<!-- Main Content -->
+	<main class="flex flex-1 overflow-hidden">
+		{#if isMobileView}
+			<!-- Mobile Layout: Stacked panels -->
+			<div class="flex flex-1 flex-col overflow-auto">
+				<!-- My Offer Panel -->
+				<div class="border-b p-2">
+					<TradeOfferPanel
+						isMyPanel={true}
+						cards={data.myCards}
+						offer={tradeRealtimeStore.myOffer}
+						validated={tradeRealtimeStore.myValidation}
+						gidouillesBalance={data.gidouillesBalance}
+						onSelectCard={handleSelectCard}
+						onDeselectCard={handleDeselectCard}
+						onSetGidouilles={handleSetGidouilles}
+						onValidate={handleValidate}
+					/>
+				</div>
+
+				<!-- Partner Offer Panel -->
+				<div class="p-2">
+					<TradeOfferPanel
+						isMyPanel={false}
+						cards={partnerOfferedCards}
+						offer={tradeRealtimeStore.partnerOffer}
+						validated={tradeRealtimeStore.partnerValidation}
+						gidouillesBalance={0}
+						{partnerName}
+					/>
+				</div>
+			</div>
+		{:else}
+			<!-- Desktop Layout: 3 columns -->
+			<div class="grid flex-1 grid-cols-[1fr_300px_1fr] overflow-hidden">
+				<!-- My Offer Panel -->
+				<div class="overflow-auto border-r p-2">
+					<TradeOfferPanel
+						isMyPanel={true}
+						cards={data.myCards}
+						offer={tradeRealtimeStore.myOffer}
+						validated={tradeRealtimeStore.myValidation}
+						gidouillesBalance={data.gidouillesBalance}
+						onSelectCard={handleSelectCard}
+						onDeselectCard={handleDeselectCard}
+						onSetGidouilles={handleSetGidouilles}
+						onValidate={handleValidate}
+					/>
+				</div>
+
+				<!-- Chat Panel (Desktop) -->
+				<div class="flex flex-col overflow-hidden border-r bg-muted/30">
+					<div class="border-b bg-card p-2">
+						<h2 class="text-sm font-semibold">Chat</h2>
+					</div>
+					<div class="flex flex-1 flex-col overflow-hidden">
+						<!-- Chat messages -->
+						<div class="flex-1 overflow-auto p-2">
+							{#if tradeRealtimeStore.messages.length === 0}
+								<p class="py-8 text-center text-sm text-muted-foreground">
+									Aucun message. Commencez la discussion !
+								</p>
+							{:else}
+								<div class="space-y-3">
+									{#each tradeRealtimeStore.messages as message (message.id)}
+										{@const isOwn = message.senderId === user?.id}
+										<div class="flex {isOwn ? 'justify-end' : 'justify-start'}">
+											<div
+												class="max-w-[80%] rounded-lg px-3 py-2 {isOwn
+													? 'bg-primary text-primary-foreground'
+													: 'bg-muted text-foreground'}"
+											>
+												<p class="text-sm">{message.message}</p>
+												<p class="mt-1 text-xs opacity-70">
+													{new Date(message.createdAt).toLocaleTimeString('fr-FR', {
+														hour: '2-digit',
+														minute: '2-digit'
+													})}
+												</p>
+											</div>
+										</div>
+									{/each}
+								</div>
+							{/if}
+						</div>
+
+						<!-- Chat input -->
+						<div class="border-t bg-card p-2">
+							<form
+								onsubmit={(e) => {
+									e.preventDefault();
+									const form = e.target as HTMLFormElement;
+									const input = form.elements.namedItem('message') as HTMLInputElement;
+									if (input.value.trim()) {
+										handleSendMessage(input.value.trim());
+										input.value = '';
+									}
+								}}
+								class="flex gap-2"
+							>
+								<input
+									type="text"
+									name="message"
+									placeholder="Message..."
+									maxlength="500"
+									class="flex-1 rounded-md border bg-background px-2 py-1.5 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+								/>
+								<Button type="submit" size="sm">OK</Button>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<!-- Partner Offer Panel -->
+				<div class="overflow-auto p-2">
+					<TradeOfferPanel
+						isMyPanel={false}
+						cards={partnerOfferedCards}
+						offer={tradeRealtimeStore.partnerOffer}
+						validated={tradeRealtimeStore.partnerValidation}
+						gidouillesBalance={0}
+						{partnerName}
+					/>
+				</div>
+			</div>
+		{/if}
+	</main>
 </div>
 
 <!-- Confirmation Modal -->
