@@ -392,11 +392,12 @@ class FriendsManager {
 		}
 
 		try {
-			// 1. Get classes where current user is a member
+			// 1. Get classes where current user is an active member
 			const { data: userClasses, error: classesError } = await this.supabase
 				.from('class_members')
 				.select('class_id, classes(id, name)')
-				.eq('student_id', this.currentUserId);
+				.eq('student_id', this.currentUserId)
+				.eq('status', 'active');
 
 			if (classesError) {
 				throw classesError;
@@ -409,11 +410,12 @@ class FriendsManager {
 			// 2. Get all class IDs
 			const classIds = userClasses.map((uc) => uc.class_id);
 
-			// 3. Get all members of these classes (excluding current user)
+			// 3. Get all active members of these classes (excluding current user)
 			const { data: allMembers, error: membersError } = await this.supabase
 				.from('class_members')
 				.select('class_id, student_id')
 				.in('class_id', classIds)
+				.eq('status', 'active')
 				.neq('student_id', this.currentUserId);
 
 			if (membersError) {

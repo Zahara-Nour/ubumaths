@@ -190,6 +190,7 @@ export async function getClassStudents(
 		.from('class_members')
 		.select(selectFields)
 		.eq('class_id', classId)
+		.eq('status', 'active')
 		.eq('profiles.is_test', isTestMode); // KEY: Filter by test mode
 
 	if (error) {
@@ -342,6 +343,7 @@ export async function getClassStudentCount(
 		.from('class_members')
 		.select('student_id, profiles!inner(is_test)', { count: 'exact', head: true })
 		.eq('class_id', classId)
+		.eq('status', 'active')
 		.eq('profiles.is_test', isTestMode);
 
 	if (error) {

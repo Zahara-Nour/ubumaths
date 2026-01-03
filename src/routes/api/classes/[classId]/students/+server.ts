@@ -64,7 +64,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(403, 'You do not have permission to view this class');
 		}
 
-		// Fetch student profiles via class_members join
+		// Fetch active student profiles via class_members join
 		const { data: members, error: membersError } = await locals.supabase
 			.from('class_members')
 			.select(
@@ -82,6 +82,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			`
 			)
 			.eq('class_id', classId)
+			.eq('status', 'active')
 			.eq('profiles.is_test', isTestMode);
 
 		if (membersError) {

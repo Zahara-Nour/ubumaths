@@ -270,11 +270,12 @@ export async function getPendingActivationRequests(
 
 	const classIds = teacherClasses.map((c) => c.id);
 
-	// Step 2: Get all student IDs in these classes
+	// Step 2: Get all active student IDs in these classes
 	const { data: classMembers, error: membersError } = await supabase
 		.from('class_members')
 		.select('student_id, profiles!inner(email, firstname, lastname)')
-		.in('class_id', classIds);
+		.in('class_id', classIds)
+		.eq('status', 'active');
 
 	if (membersError) {
 		console.error('❌ [vip-card-queries] Error fetching class members:', membersError);

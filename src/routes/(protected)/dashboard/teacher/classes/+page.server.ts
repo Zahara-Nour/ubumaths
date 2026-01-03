@@ -84,7 +84,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const allClassIds = classesWithData.map((c) => c.id);
 
 	if (allClassIds.length > 0) {
-		// Batch fetch ALL students for ALL classes in one query
+		// Batch fetch ALL active students for ALL classes in one query
 		const { data: allMembers, error: membersError } = await supabase
 			.from('class_members')
 			.select(
@@ -101,7 +101,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				)
 			`
 			)
-			.in('class_id', allClassIds);
+			.in('class_id', allClassIds)
+			.eq('status', 'active');
 
 		if (membersError) {
 			console.error('[Teacher Classes] Error fetching students:', membersError);

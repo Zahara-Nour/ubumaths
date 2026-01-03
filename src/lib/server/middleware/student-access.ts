@@ -147,7 +147,7 @@ export async function verifyTeacherStudent(
 ): Promise<boolean> {
 	// Query class_members with JOIN to classes to check teacher relationship
 	// This is a single efficient query that checks:
-	// 1. Student is enrolled in classes (class_members.student_id = studentId)
+	// 1. Student is actively enrolled in classes (class_members.student_id = studentId, status = 'active')
 	// 2. At least one class is taught by this teacher (classes.teacher_id = teacherId)
 	const { data: classMemberships, error: membershipError } = await supabase
 		.from('class_members')
@@ -159,7 +159,8 @@ export async function verifyTeacherStudent(
 			)
 		`
 		)
-		.eq('student_id', studentId);
+		.eq('student_id', studentId)
+		.eq('status', 'active');
 
 	// Fail closed: if query errors, deny access
 	if (membershipError) {

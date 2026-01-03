@@ -26,8 +26,9 @@ export interface MarketplaceListing extends DbListing {
 	offered_cards?: Array<{
 		id: string;
 		template_id: string;
-		earned_at: string;
-		template?: {
+		earned_at?: string;
+		template: {
+			id?: string;
 			name: string;
 			description: string;
 			image_path: string | null;

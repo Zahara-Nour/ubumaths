@@ -56,7 +56,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(500, 'Erreur lors du chargement des chapitres');
 	}
 
-	// Get students in this class for progress view
+	// Get active students in this class for progress view
 	const { data: students } = await locals.supabase
 		.from('class_members')
 		.select(
@@ -70,6 +70,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		`
 		)
 		.eq('class_id', classId)
+		.eq('status', 'active')
 		.eq('is_test', false);
 
 	const studentList = (students || [])

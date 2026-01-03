@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await requireRole(locals, 'teacher');
 	const supabase = locals.supabase;
 
-	// Get all students that this teacher teaches
+	// Get all active students that this teacher teaches
 	const { data: classMembers, error: classMembersError } = await supabase
 		.from('class_members')
 		.select(
@@ -35,6 +35,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			classes!inner(teacher_id)
 		`
 		)
+		.eq('status', 'active')
 		.eq('classes.teacher_id', user.id);
 
 	if (classMembersError) {

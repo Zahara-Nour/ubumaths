@@ -64,6 +64,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			`
 			)
 			.eq('student_id', user.id)
+			.eq('status', 'active')
 			.order('joined_at', { ascending: false });
 
 		if (membershipError) {

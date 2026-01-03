@@ -63,7 +63,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw error(403, 'You do not have permission to view this class');
 		}
 
-		// Fetch gidouilles data via class_members join
+		// Fetch gidouilles data via class_members join (active members only)
 		const { data: members, error: membersError } = await locals.supabase
 			.from('class_members')
 			.select(
@@ -79,6 +79,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			`
 			)
 			.eq('class_id', classId)
+			.eq('status', 'active')
 			.eq('profiles.is_test', isTestMode);
 
 		if (membersError) {

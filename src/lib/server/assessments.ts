@@ -350,11 +350,12 @@ export async function removeAssignment(
  * Includes assessments assigned directly or through class membership
  */
 export async function getStudentAssignments(supabase: TypedSupabaseClient, studentId: string) {
-	// Get student's classes
+	// Get student's active classes
 	const { data: classMemberships } = await supabase
 		.from('class_members')
 		.select('class_id')
-		.eq('student_id', studentId);
+		.eq('student_id', studentId)
+		.eq('status', 'active');
 
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
 
@@ -574,13 +575,14 @@ export async function getAssessmentResults(
 	const classIds = [...new Set(assignments.filter((a) => a.class_id).map((a) => a.class_id!))];
 	const directStudentIds = assignments.filter((a) => a.student_id).map((a) => a.student_id!);
 
-	// Step 4: Batch fetch all class members (1 query)
+	// Step 4: Batch fetch all active class members (1 query)
 	const classMembersMap = new Map<string, Array<{ student_id: string; class_id: string }>>();
 	if (classIds.length > 0) {
 		const { data: classMembers } = await supabase
 			.from('class_members')
 			.select('student_id, class_id')
-			.in('class_id', classIds);
+			.in('class_id', classIds)
+			.eq('status', 'active');
 
 		for (const member of classMembers || []) {
 			if (!classMembersMap.has(member.class_id)) {

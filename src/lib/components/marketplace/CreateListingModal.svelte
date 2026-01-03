@@ -2,6 +2,7 @@
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
 	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
 	import type { CreateListingData } from '$lib/types/marketplace';
+	import type { VipCard } from '$lib/types/vip-card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -10,8 +11,11 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import VipCardSelector from './VipCardSelector.svelte';
-	import { Info } from 'lucide-svelte';
+	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
+	import { RARITY_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
+	import { Info, Check } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { cn } from '$lib/utils';
 
 	// Props
 	let { open = $bindable(false) } = $props<{
@@ -48,7 +52,7 @@
 	];
 
 	// Validation
-	let isValid = $derived(() => {
+	let isValid = $derived.by(() => {
 		// Title is required
 		if (!title.trim()) return false;
 
@@ -69,7 +73,7 @@
 	});
 
 	// Get selected template names for display
-	let selectedTemplateNames = $derived(() => {
+	let selectedTemplateNames = $derived.by(() => {
 		if (!$vipCardTemplates.length) return [];
 
 		return wantedCardTemplateIds.map((id) => {
@@ -93,7 +97,7 @@
 
 	// Submit form
 	async function handleSubmit() {
-		if (!isValid() || isSubmitting) return;
+		if (!isValid || isSubmitting) return;
 
 		isSubmitting = true;
 
@@ -140,6 +144,18 @@
 	}
 
 	// Templates are loaded in root layout, no need to fetch here
+
+	// Convert template to VipCard format for VipCardHolo
+	function templateToVipCard(template: (typeof $vipCardTemplates)[0]): VipCard {
+		return {
+			id: template.id,
+			name: template.name,
+			description: template.description,
+			imagePath: template.image_path ?? undefined,
+			rarity: template.rarity as VipCard['rarity'],
+			category: template.category as VipCard['category']
+		};
+	}
 
 	// Reset when closing
 	$effect(() => {
@@ -287,9 +303,9 @@
 				<div class="space-y-2">
 					<Label>Types de cartes recherchés</Label>
 
-					{#if selectedTemplateNames().length > 0}
+					{#if selectedTemplateNames.length > 0}
 						<div class="mb-2 flex flex-wrap gap-2">
-							{#each selectedTemplateNames() as name (name)}
+							{#each selectedTemplateNames as name (name)}
 								<Badge variant="secondary">{name}</Badge>
 							{/each}
 						</div>
@@ -305,35 +321,48 @@
 					</Button>
 
 					{#if showTemplateSelector}
-						<div class="mt-2 max-h-64 overflow-y-auto rounded-lg border p-2">
-							<div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+						<div class="mt-2 max-h-80 overflow-y-auto rounded-lg border p-3">
+							<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
 								{#each $vipCardTemplates as template (template.id)}
+									{@const isSelected = wantedCardTemplateIds.includes(template.id)}
 									<button
 										type="button"
 										onclick={() => toggleTemplate(template.id)}
-										class="flex items-center gap-2 rounded border p-2 text-left text-sm transition-colors hover:bg-accent {wantedCardTemplateIds.includes(
-											template.id
-										)
-											? 'border-primary bg-primary/10'
-											: ''}"
+										class={cn(
+											'relative flex flex-col items-center gap-2 rounded-lg border-2 p-2 transition-all hover:scale-105',
+											isSelected
+												? 'border-primary bg-primary/10 ring-2 ring-primary'
+												: 'border-transparent hover:border-foreground/20'
+										)}
 									>
-										{#if template.image_path}
-											<img
-												src={template.image_path}
-												alt={template.name}
-												class="h-8 w-8 rounded object-cover"
+										<div class="w-16">
+											<VipCardHolo
+												card={templateToVipCard(template)}
+												enableDescriptionOverlay={false}
+												enableRarityIndicator={true}
+												enablePopover={false}
+												enable3d={true}
+												enableHoloEffect={true}
 											/>
-										{:else}
-											<div class="flex h-8 w-8 items-center justify-center rounded bg-muted">
-												🎴
-											</div>
-										{/if}
-										<div class="min-w-0 flex-1">
-											<div class="truncate font-medium">{template.name}</div>
-											<Badge variant="outline" class="text-xs">
-												{template.rarity}
+										</div>
+										<div class="text-center">
+											<div class="line-clamp-1 text-xs font-medium">{template.name}</div>
+											<Badge
+												variant="outline"
+												class="mt-1 border {RARITY_COLORS[
+													template.rarity as keyof typeof RARITY_COLORS
+												]} text-xs"
+											>
+												{RARITY_LABELS[template.rarity as keyof typeof RARITY_LABELS]}
 											</Badge>
 										</div>
+										{#if isSelected}
+											<div
+												class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg"
+											>
+												<Check class="h-3 w-3" />
+											</div>
+										{/if}
 									</button>
 								{/each}
 							</div>
@@ -375,7 +404,7 @@
 
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => (open = false)}>Annuler</Button>
-			<Button onclick={handleSubmit} disabled={!isValid() || isSubmitting}>
+			<Button onclick={handleSubmit} disabled={!isValid || isSubmitting}>
 				{isSubmitting ? 'Création...' : "Créer l'annonce"}
 			</Button>
 		</Dialog.Footer>
