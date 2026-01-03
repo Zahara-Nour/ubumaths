@@ -595,14 +595,14 @@ class MarketplaceStore {
 		}
 	}
 
-	// Fetch my proposals
+	// Fetch my proposals (proposals I made on other people's listings)
 	async fetchMyProposals() {
 		if (!this.userId) return;
 
 		this.isLoading.proposals = true;
 
 		try {
-			const response = await fetch('/api/marketplace/proposals?proposer_id=' + this.userId);
+			const response = await fetch('/api/marketplace/proposals/my');
 			if (response.ok) {
 				this.myProposals = await response.json();
 				this.stats.my_pending_proposals = this.myProposals.filter(

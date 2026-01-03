@@ -20,11 +20,17 @@ import {
 } from '$lib/server/marketplace/item-helpers';
 import { z } from 'zod';
 
-// Query schema
+// Query schema - use union with null because url.searchParams.get() returns null, not undefined
 const tradesQuerySchema = z.object({
 	status: z.enum(['negotiating', 'completed', 'cancelled']).nullish(),
-	page: z.coerce.number().int().min(1).default(1),
-	limit: z.coerce.number().int().min(1).max(50).default(20)
+	page: z
+		.union([z.coerce.number().int().min(1).finite(), z.null()])
+		.transform((val) => val ?? 1)
+		.default(1),
+	limit: z
+		.union([z.coerce.number().int().min(1).max(50).finite(), z.null()])
+		.transform((val) => val ?? 20)
+		.default(20)
 });
 
 /**
