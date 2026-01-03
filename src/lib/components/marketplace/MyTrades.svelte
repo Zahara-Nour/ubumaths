@@ -22,6 +22,7 @@
 	import TradeNegotiationModal from './TradeNegotiationModal.svelte';
 	import StartFriendTradeModal from './StartFriendTradeModal.svelte';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
 	// Get supabase client from page data
 	let supabase = $derived($page.data.supabase);
@@ -70,6 +71,12 @@
 
 	// Open trade negotiation
 	function openTradeNegotiation(trade: MarketplaceTrade) {
+		// Friend trades use the new real-time trade board
+		if (trade.trade_type === 'friend') {
+			goto(`/dashboard/student/marketplace/trade/${trade.id}`);
+			return;
+		}
+		// Marketplace trades use the modal
 		selectedTrade = trade;
 		marketplaceStore.selectTrade(trade);
 	}
@@ -95,14 +102,8 @@
 	// Handle trade started from modal
 	function handleTradeStarted(tradeId: string) {
 		showStartTradeModal = false;
-		// Refresh trades to get the new one
-		marketplaceStore.fetchMyTrades().then(() => {
-			// Find and open the newly created trade
-			const newTrade = marketplaceStore.activeTrades.find((t) => t.id === tradeId);
-			if (newTrade) {
-				openTradeNegotiation(newTrade);
-			}
-		});
+		// Navigate directly to the new trade board
+		goto(`/dashboard/student/marketplace/trade/${tradeId}`);
 	}
 
 	// Type for current offer structure
