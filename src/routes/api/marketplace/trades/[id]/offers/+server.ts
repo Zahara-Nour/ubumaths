@@ -122,7 +122,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		throw error(500, "Erreur lors de la création de l'offre");
 	}
 
-	// Update current offer in trade
+	// Update current offer in trade and reset validations
+	// When the offer changes, both parties must re-validate
 	const { error: updateError } = await supabase
 		.from('marketplace_trades')
 		.update({
@@ -132,6 +133,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				partner_cards: data.partner_cards,
 				partner_gidouilles: data.partner_gidouilles
 			},
+			// Reset validations when offer changes
+			validated_by_initiator: false,
+			validated_by_partner: false,
+			confirmation_started_at: null,
 			updated_at: new Date().toISOString()
 		})
 		.eq('id', data.trade_id);
