@@ -52,6 +52,13 @@
 		return `${partner.firstname || ''} ${partner.lastname || ''}`.trim() || 'Partenaire';
 	});
 
+	// Filter partner cards to only show those in the offer (not all their cards)
+	let partnerOfferedCards = $derived(
+		data.partnerCards.filter((card) =>
+			tradeRealtimeStore.partnerOffer.cards.includes(card.instanceId)
+		)
+	);
+
 	// Initialize store on mount
 	onMount(() => {
 		// Check window width for mobile detection
@@ -239,7 +246,7 @@
 				<div class="p-4">
 					<TradeOfferPanel
 						isMyPanel={false}
-						cards={data.partnerCards}
+						cards={partnerOfferedCards}
 						offer={tradeRealtimeStore.partnerOffer}
 						validated={tradeRealtimeStore.partnerValidation}
 						gidouillesBalance={0}
@@ -332,7 +339,7 @@
 				<div class="overflow-auto p-4">
 					<TradeOfferPanel
 						isMyPanel={false}
-						cards={data.partnerCards}
+						cards={partnerOfferedCards}
 						offer={tradeRealtimeStore.partnerOffer}
 						validated={tradeRealtimeStore.partnerValidation}
 						gidouillesBalance={0}
