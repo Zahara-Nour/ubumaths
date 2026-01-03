@@ -315,9 +315,12 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 			throw error(403, 'Accès réservé aux enseignants et administrateurs');
 		}
 	} else if (schoolId) {
-		// Updating school-level config (admin only)
-		if (profile.role !== 'admin') {
-			throw error(403, 'Seuls les administrateurs peuvent modifier la configuration école');
+		// Updating school-level config (admin or teacher in that school)
+		if (profile.role !== 'admin' && profile.role !== 'teacher') {
+			throw error(
+				403,
+				'Seuls les enseignants et administrateurs peuvent modifier la configuration'
+			);
 		}
 
 		if (profile.school_id !== schoolId) {

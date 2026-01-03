@@ -290,28 +290,47 @@ export const refundPurchaseSchema = z.object({
 // ============================================================================
 
 /**
+ * Helper to preprocess nullable URL params to undefined for proper default handling
+ */
+const nullToUndefined = <T>(val: T | null | undefined): T | undefined =>
+	val === null ? undefined : val;
+
+/**
  * Schema for shop items listing query parameters.
+ * Note: URL params return null when not present, so we preprocess to undefined
  */
 export const shopItemsQuerySchema = z.object({
-	category: shopItemCategorySchema.optional(),
-	rarity: shopItemRaritySchema.optional(),
-	search: z.string().max(100, 'Recherche trop longue (max 100 caracteres)').optional(),
-	page: z.coerce
-		.number()
-		.int('Le numero de page doit etre un entier')
-		.min(1, 'Le numero de page doit etre au moins 1')
-		.finite('La valeur doit etre un nombre fini')
-		.default(1),
-	limit: z.coerce
-		.number()
-		.int('La limite doit etre un entier')
-		.min(1, 'La limite doit etre au moins 1')
-		.max(100, 'La limite ne peut pas depasser 100')
-		.finite('La valeur doit etre un nombre fini')
-		.default(20),
-	active_only: z.coerce.boolean().default(true),
-	sort_by: z.enum(['price', 'name', 'rarity', 'sort_order']).default('sort_order'),
-	sort_order: z.enum(['asc', 'desc']).default('asc')
+	category: z.preprocess(nullToUndefined, shopItemCategorySchema.optional()),
+	rarity: z.preprocess(nullToUndefined, shopItemRaritySchema.optional()),
+	search: z.preprocess(
+		nullToUndefined,
+		z.string().max(100, 'Recherche trop longue (max 100 caracteres)').optional()
+	),
+	page: z.preprocess(
+		nullToUndefined,
+		z.coerce
+			.number()
+			.int('Le numero de page doit etre un entier')
+			.min(1, 'Le numero de page doit etre au moins 1')
+			.finite('La valeur doit etre un nombre fini')
+			.default(1)
+	),
+	limit: z.preprocess(
+		nullToUndefined,
+		z.coerce
+			.number()
+			.int('La limite doit etre un entier')
+			.min(1, 'La limite doit etre au moins 1')
+			.max(100, 'La limite ne peut pas depasser 100')
+			.finite('La valeur doit etre un nombre fini')
+			.default(20)
+	),
+	active_only: z.preprocess(nullToUndefined, z.coerce.boolean().default(true)),
+	sort_by: z.preprocess(
+		nullToUndefined,
+		z.enum(['price', 'name', 'rarity', 'sort_order']).default('sort_order')
+	),
+	sort_order: z.preprocess(nullToUndefined, z.enum(['asc', 'desc']).default('asc'))
 });
 
 /**

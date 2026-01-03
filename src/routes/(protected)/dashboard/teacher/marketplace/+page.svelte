@@ -40,6 +40,7 @@
 	import ActivityFeed from '$lib/components/marketplace/teacher/ActivityFeed.svelte';
 	import ListingsMonitor from '$lib/components/marketplace/teacher/ListingsMonitor.svelte';
 	import MarketplaceAnalytics from '$lib/components/marketplace/teacher/MarketplaceAnalytics.svelte';
+	import MarketplaceSettings from '$lib/components/marketplace/MarketplaceSettings.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		RefreshCw,
@@ -58,15 +59,27 @@
 	let selectedPeriod = $state(data.period);
 	let isLoading = $state(false);
 	let activeTab = $state('overview');
+	let showSettings = $state(false);
 
 	// Derived values
 	let classOptions = $derived([
-		{ value: '', label: 'Toutes les classes' },
 		...data.teacherClasses.map((c) => ({
 			value: c.id,
 			label: c.name
 		}))
 	]);
+
+	// Get selected class info
+	let selectedClass = $derived(
+		data.teacherClasses.find((c) => c.id === selectedClassId) || data.teacherClasses[0]
+	);
+
+	// Get config for selected class
+	let currentConfig = $derived(
+		selectedClassId && data.configByClass[selectedClassId]
+			? data.configByClass[selectedClassId]
+			: null
+	);
 
 	let periodOptions = $derived([
 		{ value: 'day', label: "Aujourd'hui" },
@@ -105,9 +118,14 @@
 		}
 	}
 
-	// Navigate to settings
-	function goToSettings() {
-		goto('/dashboard/teacher/classes');
+	// Toggle settings panel
+	function toggleSettings() {
+		showSettings = !showSettings;
+	}
+
+	// Handle settings update (refresh data after saving)
+	async function handleSettingsUpdate() {
+		await goto($page.url.toString(), { invalidateAll: true });
 	}
 
 	// Format number with spaces as thousands separator
@@ -117,7 +135,7 @@
 
 	// Update selected values when data changes
 	$effect(() => {
-		selectedClassId = data.selectedClassId || '';
+		selectedClassId = data.selectedClassId || data.teacherClasses[0]?.id || '';
 		selectedPeriod = data.period;
 	});
 </script>
@@ -134,42 +152,70 @@
 				<RefreshCw class={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
 				Actualiser
 			</Button>
-			<Button onclick={goToSettings} variant="outline">
+			<Button onclick={toggleSettings} variant={showSettings ? 'default' : 'outline'}>
 				<Settings class="mr-2 h-4 w-4" />
-				Paramètres
+				{showSettings ? 'Fermer' : 'Paramètres'}
 			</Button>
 		</div>
 	</div>
 
-	<!-- Status Card -->
-	<Card>
-		<CardHeader class="pb-3">
-			<div class="flex items-center justify-between">
-				<CardTitle class="text-lg">État du marché</CardTitle>
-				{#if data.marketplaceConfig.is_enabled}
-					<Badge class="bg-green-100 text-green-800">Activé</Badge>
-				{:else}
-					<Badge variant="secondary">Désactivé</Badge>
-				{/if}
-			</div>
-		</CardHeader>
-		<CardContent>
-			<div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
-				<div>
-					<span class="text-muted-foreground">Nombre d'élèves:</span>
-					<span class="ml-2 font-semibold">{formatNumber(data.studentCount)}</span>
+	<!-- Settings Panel (collapsible) -->
+	{#if showSettings && selectedClass}
+		<MarketplaceSettings
+			config={currentConfig
+				? {
+						is_enabled: currentConfig.enabled_for_class,
+						max_listings_per_student: currentConfig.max_listings_per_student,
+						max_trades_per_day: currentConfig.max_trades_per_day
+					}
+				: null}
+			isTeacher={true}
+			classId={selectedClass.id}
+			className={selectedClass.name}
+			onUpdate={handleSettingsUpdate}
+		/>
+	{:else if showSettings}
+		<Card>
+			<CardContent class="py-8 text-center text-muted-foreground">
+				Sélectionnez une classe pour configurer le marketplace
+			</CardContent>
+		</Card>
+	{:else}
+		<!-- Status Card (compact view when settings are hidden) -->
+		<Card>
+			<CardHeader class="pb-3">
+				<div class="flex items-center justify-between">
+					<CardTitle class="text-lg">
+						État du marché
+						{#if selectedClass}
+							<span class="font-normal text-muted-foreground">— {selectedClass.name}</span>
+						{/if}
+					</CardTitle>
+					{#if currentConfig?.enabled_for_class}
+						<Badge class="bg-green-100 text-green-800">Activé</Badge>
+					{:else}
+						<Badge variant="secondary">Désactivé</Badge>
+					{/if}
 				</div>
-				<div>
-					<span class="text-muted-foreground">Max annonces/élève:</span>
-					<span class="ml-2 font-semibold">{data.marketplaceConfig.max_listings_per_student}</span>
+			</CardHeader>
+			<CardContent>
+				<div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
+					<div>
+						<span class="text-muted-foreground">Nombre d'élèves:</span>
+						<span class="ml-2 font-semibold">{formatNumber(data.studentCount)}</span>
+					</div>
+					<div>
+						<span class="text-muted-foreground">Max annonces/élève:</span>
+						<span class="ml-2 font-semibold">{currentConfig?.max_listings_per_student ?? 5}</span>
+					</div>
+					<div>
+						<span class="text-muted-foreground">Max échanges/jour:</span>
+						<span class="ml-2 font-semibold">{currentConfig?.max_trades_per_day ?? 10}</span>
+					</div>
 				</div>
-				<div>
-					<span class="text-muted-foreground">Max échanges/jour:</span>
-					<span class="ml-2 font-semibold">{data.marketplaceConfig.max_trades_per_day}</span>
-				</div>
-			</div>
-		</CardContent>
-	</Card>
+			</CardContent>
+		</Card>
+	{/if}
 
 	<!-- Filters -->
 	<Card>

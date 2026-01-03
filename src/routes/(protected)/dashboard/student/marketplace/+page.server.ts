@@ -1,18 +1,19 @@
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const supabase = locals.supabase;
 	const userId = locals.user?.id;
 
 	if (!userId) {
-		return {
-			config: null,
-			initialStats: {
-				my_active_listings: 0,
-				my_pending_proposals: 0,
-				my_active_trades: 0
-			}
-		};
+		redirect(303, '/dashboard');
+	}
+
+	// Check if marketplace is enabled for this student
+	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
+	if (!marketplaceEnabled) {
+		redirect(303, '/dashboard');
 	}
 
 	// Fetch marketplace configuration

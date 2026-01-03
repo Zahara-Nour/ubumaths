@@ -40,17 +40,31 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		throw error(500, 'Erreur lors de la récupération des classes');
 	}
 
-	// Get marketplace configuration for the school
-	const { data: marketplaceConfig, error: configError } = await supabase
+	// Get marketplace configurations for each teacher's class
+	const classIds = (teacherClasses || []).map((c: { id: string }) => c.id);
+	const { data: classConfigs, error: configError } = await supabase
 		.from('marketplace_config')
 		.select('*')
-		.eq('school_id', profile.school_id)
-		.single();
+		.in('class_id', classIds.length > 0 ? classIds : ['no-class']);
 
 	if (configError && configError.code !== 'PGRST116') {
 		// PGRST116 means no rows returned, which is fine
 		console.error('Error fetching marketplace config:', configError);
 	}
+
+	// Create a map of class_id -> config
+	type MarketplaceConfigRow = NonNullable<typeof classConfigs>[number];
+	const configByClass: Record<string, MarketplaceConfigRow> = {};
+	for (const config of classConfigs || []) {
+		if (config.class_id) {
+			configByClass[config.class_id] = config;
+		}
+	}
+
+	// Get config for selected class, or first class, or default
+	const activeClassId = selectedClassId || (teacherClasses?.[0]?.id ?? null);
+	const marketplaceConfig =
+		activeClassId && configByClass[activeClassId] ? configByClass[activeClassId] : null;
 
 	// Get basic stats for initial display
 	const statsUrl = new URL('/api/marketplace/admin/stats', url.origin);
@@ -114,8 +128,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	return {
 		teacherClasses: teacherClasses || [],
-		selectedClassId,
+		selectedClassId: activeClassId,
 		period,
+		schoolId: profile.school_id,
+		configByClass,
 		marketplaceConfig: marketplaceConfig || {
 			is_enabled: false,
 			max_listings_per_student: 5,
