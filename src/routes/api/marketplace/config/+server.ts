@@ -241,12 +241,11 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 
 				return json(updatedConfig);
 			} else {
-				// Create new config
+				// Create new config (class-level: only class_id, no school_id due to XOR constraint)
 				const { data: newConfig, error: createError } = await supabase
 					.from('marketplace_config')
 					.insert({
 						class_id: classId,
-						school_id: classData.school_id,
 						...updates
 					})
 					.select()
@@ -295,11 +294,11 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 
 				return json(updatedConfig);
 			} else {
+				// Create new config (class-level: only class_id, no school_id due to XOR constraint)
 				const { data: newConfig, error: createError } = await supabase
 					.from('marketplace_config')
 					.insert({
 						class_id: classId,
-						school_id: profile.school_id,
 						...updates
 					})
 					.select()
