@@ -56,11 +56,12 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { page, limit, classId, categoryId } = validation.data;
 
 	try {
-		// First, fetch student's classes
+		// First, fetch student's active classes
 		const { data: studentClasses, error: classesError } = await locals.supabase
 			.from('class_members')
 			.select('class_id')
-			.eq('student_id', user.id);
+			.eq('student_id', user.id)
+			.eq('status', 'active');
 
 		if (classesError) {
 			console.error('[Student Shared Coursework] Classes fetch error:', classesError);

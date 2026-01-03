@@ -67,7 +67,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { data: studentClasses, error: classesError } = await locals.supabase
 		.from('class_members')
 		.select('class_id')
-		.eq('student_id', user.id);
+		.eq('student_id', user.id)
+		.eq('status', 'active');
 
 	if (classesError) {
 		console.error('[Student Shared Materials] Error fetching student classes:', classesError);

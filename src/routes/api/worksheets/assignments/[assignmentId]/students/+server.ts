@@ -168,7 +168,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 					profiles!class_members_student_id_fkey(id, firstname, lastname)
 				`
 				)
-				.eq('class_id', ca.class_id);
+				.eq('class_id', ca.class_id)
+				.eq('status', 'active');
 
 			if (membersError) {
 				console.error('Error fetching class members:', membersError);

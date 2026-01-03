@@ -72,7 +72,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				)
 			`
 			)
-			.eq('class_id', classId);
+			.eq('class_id', classId)
+			.eq('status', 'active');
 
 		if (queryError) {
 			console.error('[GET /api/admin/class-students] Error fetching students:', queryError);

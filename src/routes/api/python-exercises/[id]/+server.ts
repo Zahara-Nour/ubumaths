@@ -227,7 +227,8 @@ async function getStudentClassIds(
 	const { data: classes } = await supabase
 		.from('class_members')
 		.select('class_id')
-		.eq('student_id', studentId);
+		.eq('student_id', studentId)
+		.eq('status', 'active');
 
 	if (!classes || classes.length === 0) {
 		return '';

@@ -48,6 +48,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.select('id')
 			.eq('class_id', assignment.class_id)
 			.eq('student_id', user.id)
+			.eq('status', 'active')
 			.single();
 
 		isAssignedViaClass = !!membership;

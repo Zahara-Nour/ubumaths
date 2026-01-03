@@ -100,7 +100,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const { data: studentClasses } = await supabase
 			.from('class_members')
 			.select('class_id, classes!inner(teacher_id)')
-			.eq('student_id', data.student_id);
+			.eq('student_id', data.student_id)
+			.eq('status', 'active');
 
 		if (!studentClasses || studentClasses.length === 0) {
 			throw error(404, 'Étudiant introuvable dans vos classes');

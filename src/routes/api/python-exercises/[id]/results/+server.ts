@@ -129,7 +129,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const { data: classMembers } = await supabase
 			.from('class_members')
 			.select('student_id')
-			.eq('class_id', class_id);
+			.eq('class_id', class_id)
+			.eq('status', 'active');
 
 		if (!classMembers || classMembers.length === 0) {
 			return json({ results: [] });
@@ -150,7 +151,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			const { data: classMembers } = await supabase
 				.from('class_members')
 				.select('student_id')
-				.in('class_id', classIds);
+				.in('class_id', classIds)
+				.eq('status', 'active');
 
 			if (classMembers && classMembers.length > 0) {
 				const studentIds = classMembers.map((cm) => cm.student_id);

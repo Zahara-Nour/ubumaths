@@ -50,7 +50,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			)
 		`
 		)
-		.eq('classes.teacher_id', user.id);
+		.eq('classes.teacher_id', user.id)
+		.eq('status', 'active');
 
 	if (class_id) {
 		studentIdsQuery = studentIdsQuery.eq('class_id', class_id);
@@ -135,6 +136,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				`
 				)
 				.eq('student_id', file.owner_id)
+				.eq('status', 'active')
 				.eq('classes.teacher_id', user.id);
 
 			return {
