@@ -25,7 +25,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
 	import { Check, Coins } from 'lucide-svelte';
 	import TradeCardSelector from './TradeCardSelector.svelte';
 	import type { VipCardInstance } from '$lib/types/vip-card';
@@ -119,7 +118,7 @@
 	}
 </script>
 
-<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-2">
 	<!-- Header with Validate Button -->
 	<div class="flex items-center justify-between gap-3">
 		<div class="flex items-center gap-2">
@@ -144,9 +143,9 @@
 	</div>
 
 	<!-- Card Selector -->
-	<div class="rounded-lg border bg-card p-3">
-		<h3 class="mb-3 text-sm font-medium text-muted-foreground">
-			{isMyPanel ? 'Selectionnez les cartes a echanger' : 'Cartes proposees'}
+	<div class="rounded-lg border bg-card p-2">
+		<h3 class="mb-2 text-xs font-medium text-muted-foreground">
+			{isMyPanel ? 'Selectionnez les cartes' : 'Cartes proposees'}
 		</h3>
 		<TradeCardSelector
 			{cards}
@@ -159,38 +158,31 @@
 
 	<!-- Gidouilles Input (only for my panel) -->
 	{#if isMyPanel}
-		<div class="rounded-lg border bg-card p-3">
-			<Label for="gidouilles-input" class="mb-2 flex items-center gap-2 text-sm font-medium">
-				<Coins class="h-4 w-4 text-amber-500" />
-				Gidouilles a ajouter
-			</Label>
-			<div class="flex items-center gap-2">
-				<Input
-					id="gidouilles-input"
-					type="number"
-					min="0"
-					max={gidouillesBalance}
-					value={gidouillesInput}
-					onchange={handleGidouillesChange}
-					disabled={validated}
-					class="max-w-32"
-				/>
-				<span class="text-sm text-muted-foreground">/ {gidouillesBalance} disponibles</span>
-			</div>
+		<div class="flex items-center gap-2 rounded-lg border bg-card p-2">
+			<Coins class="h-4 w-4 text-amber-500" />
+			<Input
+				id="gidouilles-input"
+				type="number"
+				min="0"
+				max={gidouillesBalance}
+				value={gidouillesInput}
+				onchange={handleGidouillesChange}
+				disabled={validated}
+				class="max-w-24"
+			/>
+			<span class="text-xs text-muted-foreground">/ {gidouillesBalance}</span>
 		</div>
 	{:else if offer.gidouilles > 0}
 		<!-- Show partner's gidouilles offer -->
-		<div class="rounded-lg border bg-card p-3">
-			<div class="flex items-center gap-2">
-				<Coins class="h-4 w-4 text-amber-500" />
-				<span class="font-medium">{offer.gidouilles} gidouilles</span>
-			</div>
+		<div class="flex items-center gap-2 rounded-lg border bg-card p-2">
+			<Coins class="h-4 w-4 text-amber-500" />
+			<span class="font-medium">{offer.gidouilles} gidouilles</span>
 		</div>
 	{/if}
 
 	<!-- Summary -->
-	<div class="rounded-lg bg-muted p-3">
-		<p class="text-sm font-medium">
+	<div class="rounded-lg bg-muted p-2">
+		<p class="text-xs font-medium">
 			Resume : <span class="text-foreground">{summaryText}</span>
 		</p>
 	</div>
