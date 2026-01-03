@@ -307,9 +307,7 @@
 					<CardDescription>Tous les événements récents du marché</CardDescription>
 				</CardHeader>
 				<CardContent>
-					{#key selectedClassId}
-						<ActivityFeed classId={selectedClassId} limit={50} />
-					{/key}
+					<ActivityFeed classId={selectedClassId} limit={50} />
 				</CardContent>
 			</Card>
 		</TabsContent>
@@ -322,9 +320,7 @@
 					<CardDescription>Consultez tous les échanges entre élèves</CardDescription>
 				</CardHeader>
 				<CardContent>
-					{#key selectedClassId}
-						<TradeHistoryTable classId={selectedClassId} />
-					{/key}
+					<TradeHistoryTable classId={selectedClassId} />
 				</CardContent>
 			</Card>
 		</TabsContent>
@@ -337,21 +333,17 @@
 					<CardDescription>Surveillez les annonces créées par vos élèves</CardDescription>
 				</CardHeader>
 				<CardContent>
-					{#key selectedClassId}
-						<ListingsMonitor classId={selectedClassId} />
-					{/key}
+					<ListingsMonitor classId={selectedClassId} />
 				</CardContent>
 			</Card>
 		</TabsContent>
 
 		<!-- Analytics Tab -->
 		<TabsContent value="analytics" class="space-y-4">
-			{#key `${selectedClassId}-${selectedPeriod}`}
-				<MarketplaceAnalytics
-					classId={selectedClassId}
-					dateFrom={getDateFromPeriod(selectedPeriod)}
-				/>
-			{/key}
+			<MarketplaceAnalytics
+				classId={selectedClassId}
+				dateFrom={getDateFromPeriod(selectedPeriod)}
+			/>
 		</TabsContent>
 	</Tabs>
 </div>
