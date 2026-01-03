@@ -178,15 +178,9 @@
 	}
 
 	// Load on mount
+	// Note: Parent uses {#key `${classId}-${period}`} so component is recreated when params change
 	onMount(() => {
 		fetchAnalytics();
-	});
-
-	// Refetch when parameters change
-	$effect(() => {
-		if (classId !== undefined || dateFrom !== undefined) {
-			fetchAnalytics();
-		}
 	});
 </script>
 

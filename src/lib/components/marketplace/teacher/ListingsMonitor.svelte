@@ -217,15 +217,9 @@
 	}
 
 	// Load on mount
+	// Note: Parent uses {#key classId} so component is recreated when classId changes
 	onMount(() => {
 		fetchListings();
-	});
-
-	// Refetch when classId changes
-	$effect(() => {
-		if (classId !== undefined) {
-			fetchListings();
-		}
 	});
 </script>
 
