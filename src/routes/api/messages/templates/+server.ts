@@ -94,7 +94,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const { data: classMembers } = await supabase
 			.from('class_members')
 			.select('class_id')
-			.eq('student_id', user.id);
+			.eq('student_id', user.id)
+			.eq('status', 'active');
 
 		const studentClassIds = classMembers?.map((cm: { class_id: string }) => cm.class_id) || [];
 

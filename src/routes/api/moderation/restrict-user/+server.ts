@@ -82,6 +82,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.from('class_members')
 				.select('student_id, classes!inner(teacher_id)')
 				.eq('student_id', userId)
+				.eq('status', 'active')
 				.eq('classes.teacher_id', locals.user.id)
 				.maybeSingle();
 
@@ -113,6 +114,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					.from('class_members')
 					.select('student_id, classes!inner(teacher_id)')
 					.eq('student_id', userId)
+					.eq('status', 'active')
 					.eq('classes.teacher_id', locals.user.id)
 					.maybeSingle();
 

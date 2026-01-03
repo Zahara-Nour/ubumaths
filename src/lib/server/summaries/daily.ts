@@ -332,6 +332,7 @@ export async function generateDailySummary(
 			.from('class_members')
 			.select('student_id')
 			.eq('class_id', classData.id)
+			.eq('status', 'active') // Only active members
 			.eq('is_test', false); // Skip test students
 
 		if (membersError) {

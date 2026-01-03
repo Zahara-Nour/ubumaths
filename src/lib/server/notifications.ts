@@ -540,7 +540,8 @@ export async function getCreatedNotifications(
 			const { data: classMembers } = await supabase
 				.from('class_members')
 				.select('class_id')
-				.in('class_id', Array.from(uniqueClassIds));
+				.in('class_id', Array.from(uniqueClassIds))
+				.eq('status', 'active');
 
 			for (const member of classMembers || []) {
 				classMemberCountsMap.set(

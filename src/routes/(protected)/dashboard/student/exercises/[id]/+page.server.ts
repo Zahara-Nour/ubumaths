@@ -46,11 +46,12 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		.eq('student_id', user.id)
 		.maybeSingle();
 
-	// Get student's classes (for per_group mode)
+	// Get student's active classes (for per_group mode)
 	const { data: classMemberships } = await locals.supabase
 		.from('class_members')
 		.select('class_id')
-		.eq('student_id', user.id);
+		.eq('student_id', user.id)
+		.eq('status', 'active');
 
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];
 

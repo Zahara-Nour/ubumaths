@@ -204,6 +204,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.from('class_members')
 		.select('student_id, profiles:student_id (id, full_name, avatar_url)')
 		.eq('class_id', classId)
+		.eq('status', 'active')
 		.eq('is_test', false);
 
 	const studentList = (students || [])

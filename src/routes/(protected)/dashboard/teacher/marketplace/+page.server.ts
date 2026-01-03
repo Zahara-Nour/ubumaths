@@ -115,14 +115,16 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		const { count } = await supabase
 			.from('class_members')
 			.select('*', { count: 'exact', head: true })
-			.eq('class_id', selectedClassId);
+			.eq('class_id', selectedClassId)
+			.eq('status', 'active');
 		studentCount = count || 0;
 	} else if (teacherClasses && teacherClasses.length > 0) {
 		const classIds = teacherClasses.map((c: { id: string }) => c.id);
 		const { count } = await supabase
 			.from('class_members')
 			.select('*', { count: 'exact', head: true })
-			.in('class_id', classIds);
+			.in('class_id', classIds)
+			.eq('status', 'active');
 		studentCount = count || 0;
 	}
 

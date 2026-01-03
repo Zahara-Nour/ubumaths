@@ -59,7 +59,8 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 				student:profiles!class_members_student_id_fkey(id, firstname, lastname)
 			`
 			)
-			.in('class_id', classIds);
+			.in('class_id', classIds)
+			.eq('status', 'active');
 
 		students =
 			studentsData?.map((cm) => {
