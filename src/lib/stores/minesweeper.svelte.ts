@@ -30,9 +30,10 @@ const LOCALSTORAGE_KEY = 'minesweeper_game';
 
 // ✅ FIX (I-2): Hints system configuration constants
 const MAX_HINTS_PER_GAME = 3; // Maximum hints allowed per game
-const HINT_COST_GIDOUILLES = 10; // Gidouilles cost per hint
+const HINT_COST_GIDOUILLES = 1; // Gidouilles cost per hint (Strategy D: 1.0)
 const HINT_PENALTY_PERCENTAGE = 30; // Percentage penalty on final reward (only for gidouilles hints)
-const HINT_ITEM_INTERNAL_NAME = 'minesweeper_hint'; // Shop item internal name
+// VIP card hint (migrated from shop item in Phase 4)
+const _HINT_VIP_CARD_ID = 'minesweeper-hint'; // VIP card id for hints
 
 // Undo (Seconde Chance) item configuration
 const UNDO_ITEM_INTERNAL_NAME = 'minesweeper_undo'; // Shop item internal name
@@ -1030,11 +1031,11 @@ class MinesweeperStore {
 			}
 
 			// Show appropriate toast based on hint source
-			if (result.source === 'item') {
+			if (result.source === 'vip_card' || result.source === 'item') {
 				toaster.success(
-					`Indice utilisé (${game.hintsUsed}/${MAX_HINTS_PER_GAME}). Aucune pénalité !`
+					`Indice utilisé (${game.hintsUsed}/${MAX_HINTS_PER_GAME}). Pénalité réduite !`
 				);
-				// Decrement local hint item count
+				// Decrement local hint card count
 				if (this.hintItemsAvailable > 0) {
 					this.hintItemsAvailable--;
 				}
@@ -1071,10 +1072,13 @@ class MinesweeperStore {
 	}
 
 	/**
-	 * Fetch the count of hint items available in student's inventory
+	 * Fetch the count of hint VIP cards available in student's collection
 	 * Updates `hintItemsAvailable` state
 	 *
-	 * @returns Promise that resolves with the count of available hint items
+	 * NOTE: Migrated from shop items to VIP cards in Phase 4.
+	 * Now uses count_vip_hint_cards RPC function.
+	 *
+	 * @returns Promise that resolves with the count of available hint cards
 	 */
 	async fetchHintItemCount(): Promise<number> {
 		if (!browser || !this.shouldUseDatabase()) {
@@ -1083,33 +1087,24 @@ class MinesweeperStore {
 		}
 
 		try {
-			// Query for minesweeper_hint items in student's inventory
-			const { data, error } = await this.supabase!.from('student_item_inventory')
-				.select(
-					`
-					quantity,
-					shop_item_templates!inner(internal_name)
-				`
-				)
-				.eq('student_id', this.user!.id)
-				.eq('shop_item_templates.internal_name', HINT_ITEM_INTERNAL_NAME)
-				.eq('is_locked', false)
-				.gt('quantity', 0);
+			// Query VIP hint cards count using RPC
+			const { data, error } = await this.supabase!.rpc('count_vip_hint_cards', {
+				p_student_id: this.user!.id
+			});
 
 			if (error) {
-				logger.error('Failed to fetch hint item count:', error);
+				logger.error('Failed to fetch hint card count:', error);
 				this.hintItemsAvailable = 0;
 				return 0;
 			}
 
-			// Sum up all quantities (should typically be 1 row but could be multiple)
-			const totalCount = data?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
+			const totalCount = data || 0;
 			this.hintItemsAvailable = totalCount;
 
-			logger.info(`Hint items available: ${totalCount}`);
+			logger.info(`VIP hint cards available: ${totalCount}`);
 			return totalCount;
 		} catch (err) {
-			logger.error('Failed to fetch hint item count:', err);
+			logger.error('Failed to fetch hint card count:', err);
 			this.hintItemsAvailable = 0;
 			return 0;
 		}
