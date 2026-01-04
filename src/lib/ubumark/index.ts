@@ -61,6 +61,9 @@ export type {
 	LinkNode,
 	HashtagNode,
 	MentionNode,
+	HintReferenceNode,
+	InternalLinkNode,
+	InternalLinkReferenceType,
 	InlineNode,
 	// Block nodes
 	ParagraphNode,

@@ -21,7 +21,7 @@
 	@see BlankInput.svelte for blank input rendering
 -->
 <script lang="ts">
-	import type { InlineNode, InputState } from '$lib/ubumark';
+	import type { InlineNode, InputState, InternalLinkReferenceType } from '$lib/ubumark';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import type { ExerciseHint } from '$lib/exercises/types';
 	import MathInline from './MathInline.svelte';
@@ -29,6 +29,7 @@
 	import TextNode from './TextNode.svelte';
 	import BlankInput from './BlankInput.svelte';
 	import HintReference from './HintReference.svelte';
+	import InternalLink from './InternalLink.svelte';
 	import { hasPrompts } from '../utils/math-utils';
 
 	interface Props {
@@ -52,6 +53,10 @@
 		hints?: ExerciseHint[];
 		/** Callback when a hint is opened */
 		onHintOpen?: (hintId: string) => void;
+		/** User role for internal links (student or teacher) */
+		internalLinkRole?: 'student' | 'teacher';
+		/** Callback when an internal link is clicked */
+		onInternalLinkClick?: (referenceType: InternalLinkReferenceType, uuid: string) => void;
 	}
 
 	let {
@@ -65,15 +70,20 @@
 		onMentionClick,
 		genericFunctions,
 		hints = [],
-		onHintOpen
+		onHintOpen,
+		internalLinkRole = 'student',
+		onInternalLinkClick
 	}: Props = $props();
 
 	/**
-	 * Check if adjacent node is inline-block (math, blank, or hint) for whitespace handling
+	 * Check if adjacent node is inline-block (math, blank, hint, or internal-link) for whitespace handling
 	 */
 	function isInlineBlockNode(node: InlineNode | undefined): boolean {
 		return (
-			node?.type === 'math-inline' || node?.type === 'blank' || node?.type === 'hint-reference'
+			node?.type === 'math-inline' ||
+			node?.type === 'blank' ||
+			node?.type === 'hint-reference' ||
+			node?.type === 'internal-link'
 		);
 	}
 
@@ -198,6 +208,14 @@
 			{/if}
 		{:else if child.type === 'hint-reference'}
 			<HintReference hintId={child.hintId} {hints} {onHintOpen} />
+		{:else if child.type === 'internal-link'}
+			<InternalLink
+				referenceType={child.referenceType}
+				uuid={child.uuid}
+				label={child.label}
+				role={internalLinkRole}
+				onClick={onInternalLinkClick}
+			/>
 		{:else if child.type === 'line-break'}
 			{#if child.hard}<br />{/if}
 		{/if}

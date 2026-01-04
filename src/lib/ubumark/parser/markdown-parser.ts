@@ -34,7 +34,9 @@ import type {
 	HashtagNode,
 	MentionNode,
 	HintReferenceNode,
-	LineBreakNode
+	LineBreakNode,
+	InternalLinkNode,
+	InternalLinkReferenceType
 } from '../types';
 import {
 	extractMath,
@@ -257,6 +259,37 @@ const MENTION_REGEX = /(?<![a-zA-Z0-9.@])@([a-zA-Z][a-zA-Z0-9_.-]*)/g;
  * ```
  */
 const HINT_REFERENCE_REGEX = /\{\{hint:([a-zA-Z][a-zA-Z0-9_-]*)\}\}/g;
+
+/**
+ * Valid reference types for internal links
+ */
+const VALID_INTERNAL_LINK_TYPES: InternalLinkReferenceType[] = [
+	'chapter',
+	'document',
+	'exercise',
+	'assessment'
+];
+
+/**
+ * Regex for internal links: [[type:uuid|label]]
+ *
+ * Links to internal resources like chapters, documents, exercises, assessments.
+ * UUID must be a valid 36-character UUID (8-4-4-4-12 format).
+ * Label can contain any character except ].
+ *
+ * Captures:
+ * - Group 1: reference type (chapter, document, exercise, assessment)
+ * - Group 2: UUID (36 chars, lowercase hex with dashes)
+ * - Group 3: label (display text)
+ *
+ * @example
+ * ```
+ * [[chapter:550e8400-e29b-41d4-a716-446655440000|Chapitre Fractions]]
+ * [[exercise:123e4567-e89b-12d3-a456-426614174000|Exercice 5]]
+ * ```
+ */
+const INTERNAL_LINK_REGEX =
+	/\[\[(\w+):([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\|([^\]]+)\]\]/gi;
 
 // ============================================================================
 // MAIN PARSE FUNCTION
@@ -901,6 +934,63 @@ function parseTextForHints(text: string): (string | HintReferenceNode)[] {
 }
 
 /**
+ * Parse text for internal links ([[type:uuid|label]])
+ *
+ * Extracts internal link markers from text and returns an array of
+ * text segments and InternalLinkNodes. Only valid reference types
+ * (chapter, document, exercise, assessment) and valid UUIDs are recognized.
+ *
+ * @param text - Text possibly containing [[type:uuid|label]] syntax
+ * @returns Array of strings (text segments) and InternalLinkNodes
+ */
+function parseTextForInternalLinks(text: string): (string | InternalLinkNode)[] {
+	if (!text) return [];
+
+	const results: (string | InternalLinkNode)[] = [];
+	let position = 0;
+
+	// Reset regex state for global matching
+	const internalLinkRegex = new RegExp(INTERNAL_LINK_REGEX.source, 'gi');
+	let match: RegExpExecArray | null;
+
+	while ((match = internalLinkRegex.exec(text)) !== null) {
+		const referenceType = match[1].toLowerCase();
+		const uuid = match[2].toLowerCase();
+		const label = match[3];
+
+		// Only parse if type is valid and label is not empty
+		if (
+			VALID_INTERNAL_LINK_TYPES.includes(referenceType as InternalLinkReferenceType) &&
+			label.trim().length > 0
+		) {
+			// Add text segment before this internal link
+			if (match.index > position) {
+				results.push(text.substring(position, match.index));
+			}
+
+			// Add internal link node
+			const internalLinkNode: InternalLinkNode = {
+				type: 'internal-link',
+				referenceType: referenceType as InternalLinkReferenceType,
+				uuid,
+				label
+			};
+
+			results.push(internalLinkNode);
+			position = match.index + match[0].length;
+		}
+		// If invalid type or empty label, we skip this match and let it remain as plain text
+	}
+
+	// Add remaining text after last internal link
+	if (position < text.length) {
+		results.push(text.substring(position));
+	}
+
+	return results;
+}
+
+/**
  * Parse text for hard line breaks
  *
  * Detects two syntaxes:
@@ -1047,20 +1137,22 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 }
 
 /**
- * Parse text formatting (bold, italic, code) with blank, hint, link, hashtag, and mention support
+ * Parse text formatting (bold, italic, code) with blank, hint, internal-link, link, hashtag, and mention support
  *
  * Processing pipeline:
  * 1. Extract {{blank:N}} placeholders
  * 2. Extract {{hint:id}} references
- * 3. Extract [text](url) links
- * 4. Extract #hashtags
- * 5. Extract @mentions
- * 6. Parse remaining text for formatting (bold, italic, code)
+ * 3. Extract [[type:uuid|label]] internal links
+ * 4. Extract [text](url) links
+ * 5. Extract #hashtags
+ * 6. Extract @mentions
+ * 7. Extract hard line breaks
+ * 8. Parse remaining text for formatting (bold, italic, code)
  *
- * Priority order: blanks > hints > links > hashtags > mentions > code > bold > italic
+ * Priority order: blanks > hints > internal-links > links > hashtags > mentions > hardbreaks > code > bold > italic
  *
- * @param text - Plain text possibly with markdown formatting, blanks, hints, links, hashtags, and mentions
- * @returns Array of inline nodes (text, blank, hint-reference, link, hashtag, mention)
+ * @param text - Plain text possibly with markdown formatting, blanks, hints, internal links, links, hashtags, and mentions
+ * @returns Array of inline nodes (text, blank, hint-reference, internal-link, link, hashtag, mention)
  */
 function parseTextFormatting(text: string): InlineNode[] {
 	if (!text) return [];
@@ -1068,7 +1160,7 @@ function parseTextFormatting(text: string): InlineNode[] {
 	// Step 1: Extract blanks first
 	const blankSegments = parseTextForBlanks(text);
 
-	// Step 2-6: Process each segment through the pipeline
+	// Step 2-8: Process each segment through the pipeline
 	const nodes: InlineNode[] = [];
 	for (const blankSegment of blankSegments) {
 		if (typeof blankSegment === 'string') {
@@ -1077,47 +1169,57 @@ function parseTextFormatting(text: string): InlineNode[] {
 
 			for (const hintSegment of hintSegments) {
 				if (typeof hintSegment === 'string') {
-					// Step 3: Extract links from text segment
-					const linkSegments = parseTextForLinks(hintSegment);
+					// Step 3: Extract internal links from text segment
+					const internalLinkSegments = parseTextForInternalLinks(hintSegment);
 
-					for (const linkSegment of linkSegments) {
-						if (typeof linkSegment === 'string') {
-							// Step 4: Extract hashtags from text segment
-							const hashtagSegments = parseTextForHashtags(linkSegment);
+					for (const internalLinkSegment of internalLinkSegments) {
+						if (typeof internalLinkSegment === 'string') {
+							// Step 4: Extract regular links from text segment
+							const linkSegments = parseTextForLinks(internalLinkSegment);
 
-							for (const hashtagSegment of hashtagSegments) {
-								if (typeof hashtagSegment === 'string') {
-									// Step 5: Extract mentions from text segment
-									const mentionSegments = parseTextForMentions(hashtagSegment);
+							for (const linkSegment of linkSegments) {
+								if (typeof linkSegment === 'string') {
+									// Step 5: Extract hashtags from text segment
+									const hashtagSegments = parseTextForHashtags(linkSegment);
 
-									for (const mentionSegment of mentionSegments) {
-										if (typeof mentionSegment === 'string') {
-											// Step 6: Extract hard breaks from text segment
-											const hardbreakSegments = parseTextForHardbreaks(mentionSegment);
+									for (const hashtagSegment of hashtagSegments) {
+										if (typeof hashtagSegment === 'string') {
+											// Step 6: Extract mentions from text segment
+											const mentionSegments = parseTextForMentions(hashtagSegment);
 
-											for (const hardbreakSegment of hardbreakSegments) {
-												if (typeof hardbreakSegment === 'string') {
-													// Step 7: Parse text formatting on remaining text
-													const formatted = parseTextFormattingSegment(hardbreakSegment);
-													nodes.push(...formatted);
+											for (const mentionSegment of mentionSegments) {
+												if (typeof mentionSegment === 'string') {
+													// Step 7: Extract hard breaks from text segment
+													const hardbreakSegments = parseTextForHardbreaks(mentionSegment);
+
+													for (const hardbreakSegment of hardbreakSegments) {
+														if (typeof hardbreakSegment === 'string') {
+															// Step 8: Parse text formatting on remaining text
+															const formatted = parseTextFormattingSegment(hardbreakSegment);
+															nodes.push(...formatted);
+														} else {
+															// LineBreakNode - add directly
+															nodes.push(hardbreakSegment);
+														}
+													}
 												} else {
-													// LineBreakNode - add directly
-													nodes.push(hardbreakSegment);
+													// MentionNode - add directly
+													nodes.push(mentionSegment);
 												}
 											}
 										} else {
-											// MentionNode - add directly
-											nodes.push(mentionSegment);
+											// HashtagNode - add directly
+											nodes.push(hashtagSegment);
 										}
 									}
 								} else {
-									// HashtagNode - add directly
-									nodes.push(hashtagSegment);
+									// LinkNode - add directly
+									nodes.push(linkSegment);
 								}
 							}
 						} else {
-							// LinkNode - add directly
-							nodes.push(linkSegment);
+							// InternalLinkNode - add directly
+							nodes.push(internalLinkSegment);
 						}
 					}
 				} else {

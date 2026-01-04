@@ -153,6 +153,38 @@ export interface HintReferenceNode extends BaseNode {
 }
 
 /**
+ * Valid reference types for internal links
+ */
+export type InternalLinkReferenceType = 'chapter' | 'document' | 'exercise' | 'assessment';
+
+/**
+ * Internal link node - references internal resources
+ *
+ * Syntax in markdown: [[type:uuid|label]]
+ *
+ * Supported types:
+ * - chapter: Link to a chapter/lesson
+ * - document: Link to a document
+ * - exercise: Link to an exercise
+ * - assessment: Link to an assessment
+ *
+ * @example
+ * ```markdown
+ * Voir le [[chapter:550e8400-e29b-41d4-a716-446655440000|Chapitre Fractions]] pour plus de details.
+ * Exercice similaire: [[exercise:123e4567-e89b-12d3-a456-426614174000|Exercice 5]]
+ * ```
+ */
+export interface InternalLinkNode extends BaseNode {
+	type: 'internal-link';
+	/** The type of resource being referenced */
+	referenceType: InternalLinkReferenceType;
+	/** UUID of the referenced resource */
+	uuid: string;
+	/** Display label for the link */
+	label: string;
+}
+
+/**
  * Union of inline nodes (can appear within paragraphs, headings, etc.)
  */
 export type InlineNode =
@@ -163,7 +195,8 @@ export type InlineNode =
 	| LinkNode
 	| HashtagNode
 	| MentionNode
-	| HintReferenceNode;
+	| HintReferenceNode
+	| InternalLinkNode;
 
 // ============================================================================
 // BLOCK NODES
