@@ -53,6 +53,11 @@
 	// isParameterized is true if there are variables OR variations (affects link sharing)
 	const isParameterized = $derived(hasVariables || hasVariations);
 
+	// Meta description for SEO
+	const metaDescription = $derived(
+		getExerciseContentSafe(data.exercise).statement_md.slice(0, 160).replace(/[#*$]/g, '')
+	);
+
 	/**
 	 * Get default variation index based on priority order
 	 * Priority: URL param > autonomous > intermediate > guided > index 0
@@ -286,8 +291,7 @@
 
 <svelte:head>
 	<title>{data.exercise.title || 'Exercice'} | UbuMaths</title>
-	{@const content = getExerciseContentSafe(data.exercise)}
-	<meta name="description" content={content.statement_md.slice(0, 160).replace(/[#*$]/g, '')} />
+	<meta name="description" content={metaDescription} />
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
