@@ -18,6 +18,7 @@
 	import { goto } from '$app/navigation';
 	import { tradeRealtimeStore } from '$lib/stores/tradeRealtime.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowLeft, MessageCircle, X } from 'lucide-svelte';
 
@@ -26,6 +27,7 @@
 	import TradeConfirmationModal from '$lib/components/marketplace/trade/TradeConfirmationModal.svelte';
 	import TradeChatDrawer from '$lib/components/marketplace/trade/TradeChatDrawer.svelte';
 	import TradePresenceIndicator from '$lib/components/marketplace/trade/TradePresenceIndicator.svelte';
+	import IdleWarningModal from '$lib/components/marketplace/trade/IdleWarningModal.svelte';
 
 	// Props from server (includes parent layout data: user, supabase)
 	let { data } = $props();
@@ -59,11 +61,19 @@
 		)
 	);
 
+	// Beforeunload handler to cleanup on tab close
+	function handleBeforeUnload(): void {
+		tradeRealtimeStore.destroy();
+	}
+
 	// Initialize store on mount
 	onMount(() => {
 		// Check window width for mobile detection
 		checkMobileView();
 		window.addEventListener('resize', checkMobileView);
+
+		// Add beforeunload to cleanup on tab close (best effort)
+		window.addEventListener('beforeunload', handleBeforeUnload);
 
 		// Initialize realtime store
 		if (data.trade && user && supabase) {
@@ -76,6 +86,7 @@
 
 		return () => {
 			window.removeEventListener('resize', checkMobileView);
+			window.removeEventListener('beforeunload', handleBeforeUnload);
 			tradeRealtimeStore.destroy();
 		};
 	});
@@ -84,6 +95,9 @@
 	$effect(() => {
 		if (tradeRealtimeStore.trade) {
 			if (tradeRealtimeStore.trade.status === 'completed') {
+				// Invalidate rewards cache to refresh gidouilles and VIP cards
+				// This is executed for BOTH students (the confirmer and the partner who receives broadcast)
+				studentCache.invalidateRewards();
 				toaster.success('Echange complete avec succes !');
 				// Use untrack to avoid reactivity tracking for navigation
 				goto('/dashboard/student/marketplace?tab=exchanges');
@@ -95,6 +109,34 @@
 			}
 		}
 	});
+
+	// Watch for session end (after user clicks "Quit" in idle warning)
+	$effect(() => {
+		// When store is destroyed (tradeId becomes null) and not due to completion/cancellation
+		if (
+			tradeRealtimeStore.tradeId === null &&
+			data.trade &&
+			tradeRealtimeStore.trade?.status !== 'completed' &&
+			tradeRealtimeStore.trade?.status !== 'cancelled'
+		) {
+			goto('/dashboard/student/marketplace?tab=exchanges');
+		}
+	});
+
+	/**
+	 * Handle continue session from idle warning
+	 */
+	function handleContinueSession(): void {
+		tradeRealtimeStore.continueSession();
+	}
+
+	/**
+	 * Handle quit session from idle warning
+	 */
+	function handleQuitSession(): void {
+		tradeRealtimeStore.endSession();
+		goto('/dashboard/student/marketplace?tab=exchanges');
+	}
 
 	/**
 	 * Check if mobile view (< 1024px for 3-column layout)
@@ -382,4 +424,9 @@
 		onSend={handleSendMessage}
 		onClose={closeChatDrawer}
 	/>
+{/if}
+
+<!-- Idle Warning Modal -->
+{#if tradeRealtimeStore.showIdleWarning}
+	<IdleWarningModal onContinue={handleContinueSession} onQuit={handleQuitSession} />
 {/if}
