@@ -260,6 +260,52 @@ WHERE status = 'running'
 
 ---
 
+### Weekly Best Game Bonuses
+
+**Migration** : `supabase/migrations/20260104150000_pg_cron_weekly_best_bonuses.sql`
+
+| Propriete     | Valeur                              |
+| ------------- | ----------------------------------- |
+| Schedule      | `0 0,12 * * *` (00:00 et 12:00 UTC) |
+| Fonction      | `public.run_weekly_best_bonuses()`  |
+| Duree typique | < 1s                                |
+
+#### Objectif
+
+Attribue le bonus hebdomadaire = meilleur score theorique de la semaine a chaque eleve ayant joue au moins une partie.
+
+#### Logique Timezone-Aware
+
+Le job tourne 2x/jour et pour chaque ecole :
+
+1. Verifie si le jour actuel (dans la timezone de l'ecole) = jour des recompenses
+2. Verifie si l'heure actuelle >= 12 (apres-midi)
+3. Si les 2 conditions sont vraies, calcule la semaine precedente et appelle `award_weekly_best_bonuses()`
+
+```sql
+-- Pour chaque ecole, verifie si c'est le moment d'attribuer les bonus
+SELECT s.id
+FROM schools s
+WHERE
+    -- Jour des recompenses = (last_day + 1) % 7
+    ((s.timetable->'week_config'->>'last_day')::INT + 1) % 7
+        = EXTRACT(DOW FROM NOW() AT TIME ZONE s.timezone)::INT
+    -- ET apres-midi local
+    AND EXTRACT(HOUR FROM NOW() AT TIME ZONE s.timezone) >= 12;
+```
+
+#### Metadata Generee
+
+```json
+{
+	"schools_processed": 2,
+	"schools_skipped": 5,
+	"total_bonuses_awarded": 45
+}
+```
+
+---
+
 ## Gestion des Jobs
 
 ### Voir les jobs planifies
