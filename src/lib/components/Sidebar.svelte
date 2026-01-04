@@ -3,7 +3,8 @@
 	import {
 		Home,
 		Gamepad2,
-		FileSpreadsheet
+		FileSpreadsheet,
+		BookOpen
 		// Calculator,
 		// Terminal,
 		// CalculatorIcon,
@@ -30,6 +31,18 @@
 				label: 'Mes Fiches',
 				href: '/dashboard/student/worksheets',
 				icon: FileSpreadsheet,
+				roles: ['student']
+			},
+			{
+				label: 'Cahier',
+				href: '/dashboard/teacher/cahier-texte',
+				icon: BookOpen,
+				roles: ['teacher']
+			},
+			{
+				label: 'Cahier',
+				href: '/dashboard/student/cahier-texte',
+				icon: BookOpen,
 				roles: ['student']
 			}
 			// { label: 'Automaths', href: '/automaths', icon: Calculator },
