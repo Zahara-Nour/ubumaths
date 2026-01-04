@@ -28,6 +28,7 @@
 	import type { GradeCode } from '$lib/types/grades';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import type { Exercise } from '$lib/exercises/types';
+	import { getExerciseContentSafe } from '$lib/exercises/types';
 
 	// Props
 	interface Props {
@@ -36,6 +37,9 @@
 	}
 
 	let { exercise, compact = false }: Props = $props();
+
+	// Get content from variations (single source of truth)
+	let content = $derived(getExerciseContentSafe(exercise));
 
 	// Local state for solution toggle
 	let showSolution = $state(false);
@@ -122,7 +126,7 @@
 	</div>
 
 	<!-- Solution toggle for compact mode -->
-	{#if compact && exercise.solution_md}
+	{#if compact && content.solution_md}
 		<div class="flex justify-end">
 			<Button
 				variant="ghost"

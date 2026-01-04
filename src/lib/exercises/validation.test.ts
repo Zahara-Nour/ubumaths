@@ -47,7 +47,7 @@ describe('validateExerciseExport', () => {
 
 	it('should reject invalid version', () => {
 		const invalidExport = {
-			version: '2.0', // Invalid version
+			version: '3.0', // Invalid version (only 1.0 and 2.0 are valid)
 			difficulty: 2,
 			tags: [],
 			statement_md: 'Test',
@@ -58,7 +58,8 @@ describe('validateExerciseExport', () => {
 
 		expect(result.success).toBe(false);
 		expect(result.error).toBeDefined();
-		expect(result.error).toContain('version');
+		// Union schema errors are generic "Invalid input"
+		expect(result.error).toContain('Invalid');
 	});
 
 	it('should reject invalid difficulty', () => {
@@ -74,7 +75,8 @@ describe('validateExerciseExport', () => {
 
 		expect(result.success).toBe(false);
 		expect(result.error).toBeDefined();
-		expect(result.error).toContain('difficulty');
+		// Union schema errors are generic "Invalid input" when any branch fails to match
+		expect(result.error).toContain('Invalid');
 	});
 
 	it('should reject empty statement', () => {

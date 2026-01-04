@@ -31,6 +31,7 @@
 		InstanceData,
 		WorksheetExerciseWithExercise
 	} from '$lib/types/worksheets';
+	import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 	import JSZip from 'jszip';
 	import {
 		getTypstCompiler,
@@ -145,14 +146,19 @@
 		// Sort exercises by position
 		const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
 
-		// Map to resolved exercises
-		const resolvedExercises = sortedExercises.map((we: WorksheetExerciseWithExercise) => ({
-			exercise_id: we.exercise_id,
-			position: we.position,
-			parameters: {},
-			statement: we.exercise?.statement_md || '',
-			solution: we.exercise?.solution_md || ''
-		}));
+		// Map to resolved exercises (using variations as source of truth)
+		const resolvedExercises = sortedExercises.map((we: WorksheetExerciseWithExercise) => {
+			const content = we.exercise
+				? getExerciseContentSafe(we.exercise as Exercise)
+				: { statement_md: '', solution_md: '' };
+			return {
+				exercise_id: we.exercise_id,
+				position: we.position,
+				parameters: {},
+				statement: content.statement_md,
+				solution: content.solution_md
+			};
+		});
 
 		// Generate a deterministic seed based on student ID if provided
 		const seed = studentId ? hashString(ws.id + studentId) : Math.floor(Math.random() * 1000000);

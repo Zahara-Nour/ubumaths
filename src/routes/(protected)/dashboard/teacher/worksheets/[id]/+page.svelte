@@ -28,7 +28,8 @@
 		FilePenLine,
 		Pencil,
 		UserPlus,
-		AlertCircle
+		AlertCircle,
+		Eye
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type {
@@ -631,6 +632,14 @@
 								<Button
 									variant="outline"
 									size="sm"
+									href="/dashboard/teacher/worksheets/{worksheet.id}/assignments/{selectedAssignment.id}/preview"
+								>
+									<Eye class="mr-2 h-4 w-4" />
+									Previsualiser
+								</Button>
+								<Button
+									variant="outline"
+									size="sm"
 									onclick={(e) => {
 										if (selectedAssignment) {
 											handleEditAssignment(selectedAssignment, e);
@@ -764,6 +773,16 @@
 														</Badge>
 													</div>
 													<div class="flex gap-1">
+														<Button
+															variant="ghost"
+															size="sm"
+															href="/dashboard/teacher/worksheets/{worksheet.id}/assignments/{assignment.id}/preview"
+															onclick={(e) => e.stopPropagation()}
+															title="Previsualiser comme eleve"
+														>
+															<Eye class="h-4 w-4" />
+															<span class="sr-only">Previsualiser</span>
+														</Button>
 														<Button
 															variant="ghost"
 															size="sm"

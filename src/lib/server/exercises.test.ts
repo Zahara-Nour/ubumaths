@@ -228,7 +228,10 @@ describe('createExercise', () => {
 			...newExercise,
 			distribution_mode: 'on_demand', // Default value
 			variables: undefined, // Empty variables array becomes undefined
-			created_by: 'user-123'
+			created_by: 'user-123',
+			slug: expect.any(String), // Auto-generated slug
+			shared: undefined, // Passed through (JSONB)
+			variations: undefined // Passed through (JSONB)
 		});
 		expect(result.data).toEqual(createdExercise);
 		expect(result.error).toBeNull();

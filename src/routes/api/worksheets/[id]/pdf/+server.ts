@@ -15,6 +15,7 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
+import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 import type { InstanceData, WorksheetWithRelations } from '$lib/types/worksheets';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -223,15 +224,20 @@ function generateSimpleInstance(
 	// Sort exercises by position
 	const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
 
-	// Map to resolved exercises
-	const resolvedExercises = sortedExercises.map((we) => ({
-		exercise_id: we.exercise_id,
-		title: we.exercise?.title ?? null,
-		position: we.position,
-		parameters: {},
-		statement: we.exercise?.statement_md || '',
-		solution: we.exercise?.solution_md || ''
-	}));
+	// Map to resolved exercises using variations (single source of truth)
+	const resolvedExercises = sortedExercises.map((we) => {
+		const content = we.exercise
+			? getExerciseContentSafe(we.exercise as unknown as Exercise)
+			: { statement_md: '', solution_md: '' };
+		return {
+			exercise_id: we.exercise_id,
+			title: we.exercise?.title ?? null,
+			position: we.position,
+			parameters: {},
+			statement: content.statement_md,
+			solution: content.solution_md
+		};
+	});
 
 	return {
 		exercises: resolvedExercises,

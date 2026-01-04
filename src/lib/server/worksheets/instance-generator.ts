@@ -162,14 +162,20 @@ function toExerciseTemplate(worksheetExercise: WorksheetExerciseWithExercise): E
 		throw new Error(`Exercise not found for worksheet_exercise ${worksheetExercise.id}`);
 	}
 
+	// Variations are the single source of truth - legacy fields are ignored
+	if (!ex.variations || !Array.isArray(ex.variations) || ex.variations.length === 0) {
+		throw new Error(
+			`Exercise ${ex.id} has no variations. All exercises must use the variations system.`
+		);
+	}
+
 	return {
 		id: ex.id,
 		title: ex.title,
-		statement_md: ex.statement_md,
-		solution_md: ex.solution_md ?? '',
+		// Legacy fields deprecated - content comes from variations
 		variables: ex.variables ?? undefined,
 		shared: ex.shared ?? undefined,
-		variations: ex.variations ?? undefined,
+		variations: ex.variations,
 		distribution_mode: 'on_demand', // Worksheets handle their own distribution
 		difficulty: (ex.difficulty as 1 | 2 | 3) ?? 1,
 		tags: [],

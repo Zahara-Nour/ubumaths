@@ -21,20 +21,68 @@ import type { Exercise } from '../types';
 // ============================================================================
 
 /**
- * Create a minimal valid exercise for testing
+ * Create a minimal valid exercise for testing.
+ * All exercises must use the variations system (single source of truth).
+ * Variables should be placed in shared.variables.
+ *
+ * MIGRATION NOTE: Tests can still pass `variables` at the top level.
+ * This helper converts them to `shared.variables` automatically.
  */
 function createExercise(overrides: Partial<Exercise> = {}): Exercise {
+	// Handle variables: can come from shared.variables or top-level variables (legacy test pattern)
+	const topLevelVars = (overrides.variables as Array<{ name: string; expression: string }>) ?? [];
+	const passedShared = overrides.shared as
+		| {
+				variables?: Array<{ name: string; expression: string }>;
+				statement_md?: string;
+				solution_md?: string;
+		  }
+		| undefined;
+	const sharedVars = passedShared?.variables ?? [];
+
+	// Merge: top-level variables go into shared
+	const allVars = [...topLevelVars, ...sharedVars];
+
+	// If variations is explicitly passed, use it; otherwise create default from statement_md/solution_md
+	const passedVariations = overrides.variations as
+		| Array<{ label: string; statement_md: string; solution_md: string }>
+		| undefined;
+	const variations = passedVariations ?? [
+		{
+			label: 'default',
+			statement_md: (overrides.statement_md as string) ?? 'Test statement',
+			solution_md: (overrides.solution_md as string) ?? 'Test solution'
+		}
+	];
+
+	// Build shared object: merge passed shared with converted variables
+	const shared =
+		allVars.length > 0 || passedShared
+			? {
+					...passedShared,
+					...(allVars.length > 0 ? { variables: allVars } : {})
+				}
+			: undefined;
+
 	return {
 		id: 'test-exercise-id',
 		difficulty: 1,
 		tags: ['test'],
-		statement_md: 'Test statement',
-		solution_md: 'Test solution',
 		distribution_mode: 'on_demand',
 		created_at: '2024-01-01T00:00:00Z',
 		updated_at: '2024-01-01T00:00:00Z',
 		created_by: 'test-user-id',
-		...overrides
+		// Variations is the single source of truth
+		variations,
+		// Include shared if present
+		...(shared ? { shared } : {}),
+		// Apply other overrides (excluding statement_md/solution_md/variables/variations/shared which are handled above)
+		...Object.fromEntries(
+			Object.entries(overrides).filter(
+				([key]) =>
+					!['statement_md', 'solution_md', 'shared', 'variables', 'variations'].includes(key)
+			)
+		)
 	};
 }
 
@@ -921,7 +969,9 @@ describe('Variations System', () => {
 // ============================================================================
 
 describe('Backward Compatibility', () => {
-	it('should handle legacy exercise without variations', () => {
+	it('should handle exercise with simple variables (converted to variations)', () => {
+		// Note: Legacy exercises without variations are no longer supported.
+		// The createExercise helper now auto-creates a default variation.
 		const exercise = createExercise({
 			variables: [{ name: 'a', expression: '5' }],
 			statement_md: 'Value: {{a}}',
@@ -932,9 +982,10 @@ describe('Backward Compatibility', () => {
 
 		expect(result.success).toBe(true);
 		if (result.success && result.instance) {
-			// Should not have variation tracking fields
-			expect(result.instance.selectedVariationIndex).toBeUndefined();
-			expect(result.instance.selectedVariationLabel).toBeUndefined();
+			// Now has variation tracking fields since all exercises use variations
+			expect(result.instance.selectedVariationIndex).toBe(0);
+			expect(result.instance.selectedVariationLabel).toBe('default');
+			// No hints in this variation
 			expect(result.instance.resolvedHints).toBeUndefined();
 
 			// Should still resolve variables correctly

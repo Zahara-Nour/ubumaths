@@ -32,6 +32,7 @@
 		generateGroupSeed
 	} from '$lib/exercises/generator/instance-generator';
 	import type { Exercise, ExerciseInstance } from '$lib/exercises/types';
+	import { getExerciseContentSafe } from '$lib/exercises/types';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
@@ -144,13 +145,16 @@
 	// DERIVED VALUES
 	// ============================================================================
 
+	// Get content from variations (single source of truth)
+	let exerciseContent = $derived(getExerciseContentSafe(exercise));
+
 	// Determine which content to display (instance or template)
 	let displayStatementMd = $derived(
-		currentInstance ? currentInstance.statement_md : exercise.statement_md
+		currentInstance ? currentInstance.statement_md : exerciseContent.statement_md
 	);
 
 	let displaySolutionMd = $derived(
-		currentInstance ? currentInstance.solution_md : exercise.solution_md
+		currentInstance ? currentInstance.solution_md : exerciseContent.solution_md
 	);
 
 	// Hints from resolved variation (if available)
