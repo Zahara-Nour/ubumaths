@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.20](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.19...v0.5.20) (2026-01-04)
+
+### ⏪ Reverts
+
+- remove {#key} pattern, restore $effect for side effects ([fe7ca06](https://github.com/Zahara-Nour/ubumaths/commit/fe7ca06b23c75368b048242d90fc0f61c66ab12a))
+
+### 📚 Documentation
+
+- finalize VIP cards unification ([d713307](https://github.com/Zahara-Nour/ubumaths/commit/d713307275d2c67a12944d69a76e5d8548ebdd5c))
+
+### 🐛 Bug Fixes
+
+- **api:** add missing endpoints and fix Zod null handling ([4c9b5e2](https://github.com/Zahara-Nour/ubumaths/commit/4c9b5e25b7de48401ebfb2a78ed4e1d44c5fa40f))
+- **api:** use correct FK name for gidouilles activity join ([0947104](https://github.com/Zahara-Nour/ubumaths/commit/0947104c7a7152e544056e624e0190a6d9fb4bc9))
+- **class-members:** add status='active' filter to all queries ([1863522](https://github.com/Zahara-Nour/ubumaths/commit/1863522559ca851ed57043b8812d404f9112a6a4))
+- **db:** add status column to class_members table ([8d1f1a9](https://github.com/Zahara-Nour/ubumaths/commit/8d1f1a9cb93a91d5e23ac6134b720aa2f3972170))
+- **db:** remove INTEGER overload of generate_reward_event_description ([685aa0b](https://github.com/Zahara-Nour/ubumaths/commit/685aa0b961a20e6a2f98eeeb9ddabc7d0a72062d))
+- **db:** use NUMERIC for generate_reward_event_description delta param ([9c50037](https://github.com/Zahara-Nour/ubumaths/commit/9c500375687382e4f50ebf00a61997c634487976))
+- **marketplace:** add 'traded' action to vip_cards_activity constraint ([8a271c8](https://github.com/Zahara-Nour/ubumaths/commit/8a271c8f0ca025cb68dc2daf827b65d066d94952))
+- **marketplace:** add cancelled_at to DELETE trade endpoint ([081fe48](https://github.com/Zahara-Nour/ubumaths/commit/081fe486d2b94bd6ee5653126f456f294fdb7dfb))
+- **marketplace:** add card_template_id to execute_trade activity logging ([9f4aa10](https://github.com/Zahara-Nour/ubumaths/commit/9f4aa10575aff3e29e7f24c634a24698d3b99949))
+- **marketplace:** add missing cancel endpoint for trades ([669fb5d](https://github.com/Zahara-Nour/ubumaths/commit/669fb5d1c28d30466c12556854556f0787e55426))
+- **marketplace:** allow students to access config endpoint ([e06fcbc](https://github.com/Zahara-Nour/ubumaths/commit/e06fcbc824d69e14454442f16dfa8feb7a0ee9e8))
+- **marketplace:** call execute_trade before status change ([7f85634](https://github.com/Zahara-Nour/ubumaths/commit/7f8563423dac27e07a4ab6ba3b653106321a3622))
+- **marketplace:** extract trades array from API response ([49fcfb4](https://github.com/Zahara-Nour/ubumaths/commit/49fcfb429bfcbb34d0ee171f5bf8c3f50a3d2577))
+- **marketplace:** fix infinite loop and realtime init ([8626389](https://github.com/Zahara-Nour/ubumaths/commit/8626389619960aab9ded645f896a4f72941ede45))
+- **marketplace:** group cards by template in trade selector ([e461324](https://github.com/Zahara-Nour/ubumaths/commit/e4613249fb328697319954454fee55240ec504f8))
+- **marketplace:** implement optimistic updates for cache ([5bc74ad](https://github.com/Zahara-Nour/ubumaths/commit/5bc74ad91bdd5b03f49a2fd7ad7d4db854d72ce4))
+- **marketplace:** make trade board use full page width ([c445b11](https://github.com/Zahara-Nour/ubumaths/commit/c445b11b71904f17ab5aa17633ed86827a82c310))
+- **marketplace:** maximize trade board space with reduced padding ([836572a](https://github.com/Zahara-Nour/ubumaths/commit/836572a06440f1e0d9c2dde4d9fdbe06c51604c5))
+- **marketplace:** move validate button to header for visibility ([87a0e51](https://github.com/Zahara-Nour/ubumaths/commit/87a0e51c62b7b432a0263f32185cd44c203fbf4f))
+- **marketplace:** only show partner's offered cards, not all cards ([91b69e1](https://github.com/Zahara-Nour/ubumaths/commit/91b69e16866814d067b235876c89a24f0ce5c1c3))
+- **marketplace:** parse vip_cards as object instead of array ([44b8104](https://github.com/Zahara-Nour/ubumaths/commit/44b81042d4e6acf4408f84c4b83ed9fb7c7b4c20))
+- **marketplace:** prevent card overflow in trade selector ([7811ff8](https://github.com/Zahara-Nour/ubumaths/commit/7811ff847762e794ed8e931f0cba7dea1172f62e))
+- **marketplace:** remove non-existent username column from trade confirm ([1e7c2dd](https://github.com/Zahara-Nour/ubumaths/commit/1e7c2dd65558d4e95db981da4549028c5d6605de))
+- **marketplace:** remove username column references from trade APIs and RPC ([f3ab8bb](https://github.com/Zahara-Nour/ubumaths/commit/f3ab8bb30a4aa7bfbc0c8b6a05ec2150a7192eb3))
+- **marketplace:** require dual confirmation before trade execution ([15c8bec](https://github.com/Zahara-Nour/ubumaths/commit/15c8becfcd792d9183b8db3b56e3855b33691a22))
+- **marketplace:** resolve duplicate key violation and add optimistic UI for purchases ([9e65f59](https://github.com/Zahara-Nour/ubumaths/commit/9e65f59872d2eee617ecf85d160def557b237da3))
+- **marketplace:** respect XOR constraint for class-level config ([16020c0](https://github.com/Zahara-Nour/ubumaths/commit/16020c05e429ea454a72997781c7741c7bcf786e))
+- **marketplace:** save offer to DB and handle trade completion ([208c2f0](https://github.com/Zahara-Nour/ubumaths/commit/208c2f0f26018a59d525a0070fddefacbcbe1b20))
+- **marketplace:** use $derived instead of [@const](https://github.com/const) for route check ([775b50a](https://github.com/Zahara-Nour/ubumaths/commit/775b50ade556fd5f41feee8acea80d86a3d3b945))
+- **marketplace:** use flexbox for card selector layout ([ff019ef](https://github.com/Zahara-Nour/ubumaths/commit/ff019ef4a4409e1608ceca0593ba62f5a07aa026))
+- **marketplace:** use full width layout for trade board ([b5f07a7](https://github.com/Zahara-Nour/ubumaths/commit/b5f07a76bf5322afd9f18c8c1e64cd8d017bb82e))
+- **marketplace:** use VipCard instead of VipCardHolo for card display ([2400beb](https://github.com/Zahara-Nour/ubumaths/commit/2400beb2cd513ff4fa19f938ba05c5d2a1a27344))
+- **minesweeper:** remove invalid cm.status column reference ([cee2fa6](https://github.com/Zahara-Nour/ubumaths/commit/cee2fa685b308b2f34154f68b2f6354d7901ae31))
+- **realtime:** handle channel closed during subscription ([be59d72](https://github.com/Zahara-Nour/ubumaths/commit/be59d726839e2b6be71c5827fac3b7a1dfb47c42))
+- **types:** define local types for notification, timetable, and week-config ([000eea9](https://github.com/Zahara-Nour/ubumaths/commit/000eea9ea63ec6d3fd656e297e82e905e8846e26))
+
+### ✨ Features
+
+- **marketplace:** add direct friend trade functionality ([badaab9](https://github.com/Zahara-Nour/ubumaths/commit/badaab967069de3895bc8182e11994b1d1835d81))
+- **marketplace:** add pg_cron job to cleanup stale trades ([fc4e2d4](https://github.com/Zahara-Nour/ubumaths/commit/fc4e2d4f718a66dce8403e5722a4b94311aa525c))
+- **marketplace:** add real-time trade board for friend exchanges ([31b0d20](https://github.com/Zahara-Nour/ubumaths/commit/31b0d20046f0239042aea437169b441326710b5f))
+- **marketplace:** improve VIP cards activity logging ([b7d43cf](https://github.com/Zahara-Nour/ubumaths/commit/b7d43cf790996630f6f9309616e9173c45ef586b))
+- **marketplace:** optimize realtime quota usage for trades ([2f7e088](https://github.com/Zahara-Nour/ubumaths/commit/2f7e088a74ef72d8000fccc716c13222b6341a3a))
+- **marketplace:** redirect friend trades to new trade board ([3a2fab4](https://github.com/Zahara-Nour/ubumaths/commit/3a2fab4106ac721095ba72ff5171d90343164765))
+- **marketplace:** use VipCardHolo for card display throughout marketplace ([93fc079](https://github.com/Zahara-Nour/ubumaths/commit/93fc079c47e971622477c73bbdd61e87d7e3d3fc))
+- **minesweeper,marketplace:** add Seconde Chance item and per-class marketplace config ([0de7ee3](https://github.com/Zahara-Nour/ubumaths/commit/0de7ee32c0f35c7a67f165a2d50a67669bf276e6))
+- **ui:** add VIP card shop section with optimistic updates ([d6cedf1](https://github.com/Zahara-Nour/ubumaths/commit/d6cedf1a2bfb32605043cddf9b363af0fea01960))
+- **vip-cards:** add consumable usage API endpoint ([1186500](https://github.com/Zahara-Nour/ubumaths/commit/11865002efc0c13b211c9a966f2f14f4c45e5d9b))
+- **vip-cards:** add purchase API endpoints ([f06026e](https://github.com/Zahara-Nour/ubumaths/commit/f06026e4a315273cd435e99820fa0b3d1c315bca))
+- **vip-cards:** extend schema for purchase and consumables ([34358f1](https://github.com/Zahara-Nour/ubumaths/commit/34358f1099be86f3b725ea33b2113622ef5eccd1))
+
 ### [0.5.19](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.18...v0.5.19) (2026-01-02)
 
 ### ✨ Features
