@@ -36,6 +36,51 @@ import { createLogger } from '$lib/utils/logger';
 
 const logger = createLogger('+layout.ts', 'error');
 
+// Module-level state to persist across load function executions
+// Note: These are reset if Vite HMR reloads the module, so we also use sessionStorage
+let authListenerInitialized = false;
+
+// Session storage keys for persisting state across HMR reloads
+const STORAGE_KEY_USER_ID = 'ubumaths_current_user_id';
+const STORAGE_KEY_LAST_REFRESH = 'ubumaths_last_auth_refresh';
+
+/**
+ * Get persisted user ID (survives Vite HMR)
+ */
+function getPersistedUserId(): string | null {
+	if (typeof sessionStorage === 'undefined') return null;
+	return sessionStorage.getItem(STORAGE_KEY_USER_ID);
+}
+
+/**
+ * Set persisted user ID
+ */
+function setPersistedUserId(userId: string | null): void {
+	if (typeof sessionStorage === 'undefined') return;
+	if (userId) {
+		sessionStorage.setItem(STORAGE_KEY_USER_ID, userId);
+	} else {
+		sessionStorage.removeItem(STORAGE_KEY_USER_ID);
+	}
+}
+
+/**
+ * Get last refresh timestamp (survives Vite HMR)
+ */
+function getLastRefresh(): number {
+	if (typeof sessionStorage === 'undefined') return 0;
+	const stored = sessionStorage.getItem(STORAGE_KEY_LAST_REFRESH);
+	return stored ? parseInt(stored, 10) : 0;
+}
+
+/**
+ * Set last refresh timestamp
+ */
+function setLastRefresh(timestamp: number): void {
+	if (typeof sessionStorage === 'undefined') return;
+	sessionStorage.setItem(STORAGE_KEY_LAST_REFRESH, timestamp.toString());
+}
+
 export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// Register this load function to re-run when 'supabase:auth' is invalidated
 	// This enables reactive auth state updates throughout the app
@@ -101,18 +146,83 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	 * 5. Verified data flows back to this function and to all components
 	 *
 	 * This ensures all auth data in the app is always verified by the server.
+	 *
+	 * OPTIMIZATION: TOKEN_REFRESHED events are throttled to avoid unnecessary
+	 * reloads when switching virtual screens or tabs. A full refresh only occurs
+	 * if more than 30 minutes have passed since the last one.
 	 */
-	if (isBrowser()) {
-		supabase.auth.onAuthStateChange((event) => {
-			logger.info('Auth state changed:', event);
+	if (isBrowser() && !authListenerInitialized) {
+		// Only set up listener once (persists across load function executions)
+		authListenerInitialized = true;
 
-			// On these events, reload verified data from server
-			if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-				logger.info('Invalidating supabase:auth');
-				// This triggers the reactive chain:
-				// invalidate → depends() → re-run this load → +layout.server.ts → verified data
+		// Initialize persisted state if not already set
+		if (!getPersistedUserId() && data.user?.id) {
+			setPersistedUserId(data.user.id);
+		}
+		if (!getLastRefresh()) {
+			setLastRefresh(Date.now());
+		}
+
+		const REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
+
+		supabase.auth.onAuthStateChange((event, session) => {
+			// Always log the event for debugging
+			console.log(`🔐 [AUTH] Event: ${event}`);
+
+			// Handle SIGNED_OUT - always reload
+			if (event === 'SIGNED_OUT') {
+				console.log('🔐 [AUTH] Invalidating (signed out)');
+				setPersistedUserId(null);
 				invalidate('supabase:auth');
+				setLastRefresh(Date.now());
+				return;
 			}
+
+			// Handle SIGNED_IN - only reload if user changed (not just Vite HMR)
+			if (event === 'SIGNED_IN') {
+				const newUserId = session?.user?.id ?? null;
+				const currentUserId = getPersistedUserId();
+
+				if (newUserId && newUserId === currentUserId) {
+					// Same user - this is likely Vite HMR or tab refocus, skip reload
+					console.log('🔐 [AUTH] Skipping invalidation (same user already signed in)');
+					return;
+				}
+				// Different user or first sign-in - reload
+				console.log('🔐 [AUTH] Invalidating (new user signed in)');
+				setPersistedUserId(newUserId);
+				invalidate('supabase:auth');
+				setLastRefresh(Date.now());
+				return;
+			}
+
+			// Throttle TOKEN_REFRESHED: only reload if > 30 min since last refresh
+			// This avoids unnecessary reloads when switching virtual screens/tabs
+			if (event === 'TOKEN_REFRESHED') {
+				const lastRefresh = getLastRefresh();
+				const timeSinceLastRefresh = Date.now() - lastRefresh;
+				if (timeSinceLastRefresh > REFRESH_INTERVAL) {
+					console.log(
+						`🔐 [AUTH] Invalidating (token refresh after ${Math.round(timeSinceLastRefresh / 60000)} min)`
+					);
+					invalidate('supabase:auth');
+					setLastRefresh(Date.now());
+				} else {
+					console.log(
+						`🔐 [AUTH] Skipping invalidation (only ${Math.round(timeSinceLastRefresh / 60000)} min since last refresh)`
+					);
+				}
+				return;
+			}
+
+			// INITIAL_SESSION is emitted on first load - no action needed
+			if (event === 'INITIAL_SESSION') {
+				console.log('🔐 [AUTH] Initial session detected (no action needed)');
+				return;
+			}
+
+			// Log any other events we might have missed
+			console.log(`🔐 [AUTH] Unhandled event: ${event} (no action taken)`);
 		});
 	}
 
