@@ -36,8 +36,11 @@
 
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
+	import type { Tables } from '$lib/types/database';
+	import type { SchoolPeriod } from '$lib/utils/timetable';
 	import type { ScheduleFormData } from '$lib/components/ScheduleEntryModal.svelte';
+
+	type ClassSchedule = Tables<'class_schedules'>;
 	import type { StudentWithEmailStatus } from './+page.server';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Card from '$lib/components/ui/card';

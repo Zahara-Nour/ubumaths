@@ -48,7 +48,7 @@
 -->
 
 <script lang="ts">
-	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
+	import type { Tables } from '$lib/types/database';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -56,7 +56,9 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { getDayName } from '$lib/utils/schedule';
-	import { formatPeriodDisplay } from '$lib/utils/timetable';
+	import { formatPeriodDisplay, type SchoolPeriod } from '$lib/utils/timetable';
+
+	type ClassSchedule = Tables<'class_schedules'>;
 	import { Trash2 } from 'lucide-svelte';
 
 	export interface ScheduleFormData {

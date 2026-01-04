@@ -5,22 +5,61 @@
  * enriched notification data, and statistics.
  */
 
-import type {
-	Notification,
-	NotificationType,
-	NotificationPriority,
-	NotificationTargetType,
-	SystemEventType
-} from './database';
+import type { Tables } from './database';
 
-// Re-export base types for convenience
-export type {
-	Notification,
-	NotificationType,
-	NotificationPriority,
-	NotificationTargetType,
-	SystemEventType
-};
+// Base notification type from database
+export type Notification = Tables<'notifications'>;
+
+// Notification enums (matching database constraints)
+export type NotificationType =
+	| 'info'
+	| 'warning'
+	| 'success'
+	| 'error'
+	| 'alert'
+	| 'announcement'
+	| 'system'
+	| 'reminder';
+
+export type NotificationPriority = 'normal' | 'important' | 'urgent';
+
+export type NotificationTargetType =
+	| 'all'
+	| 'role'
+	| 'roles'
+	| 'class'
+	| 'classes'
+	| 'user'
+	| 'users';
+
+export type SystemEventType =
+	| 'maintenance'
+	| 'maintenance_scheduled'
+	| 'update'
+	| 'security'
+	| 'feature'
+	| 'feature_released'
+	| 'announcement'
+	| 'reminder'
+	// Student/User events
+	| 'pending_user'
+	| 'user_approved'
+	| 'student_approved'
+	// Assessment/Assignment events
+	| 'assessment_assigned'
+	| 'assessment_graded'
+	| 'assignment_created'
+	| 'resource_added'
+	// Reward events
+	| 'badge_unlocked'
+	| 'reward_earned'
+	| 'weekly_reward'
+	| 'daily_summary'
+	// Error/Bug events
+	| 'bug_reported'
+	| 'error_critical'
+	| 'error_report_validated'
+	| 'error_report_rejected';
 
 /**
  * Data required to create a new notification

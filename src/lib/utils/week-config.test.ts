@@ -5,9 +5,9 @@ import {
 	isSchoolDay,
 	getSchoolDays,
 	getWeekendDays,
-	isValidWeekConfig
+	isValidWeekConfig,
+	type WeekConfig
 } from './week-config';
-import type { WeekConfig } from '$lib/types/database';
 
 describe('DEFAULT_WEEK_CONFIG', () => {
 	test('is a valid Israeli school week', () => {

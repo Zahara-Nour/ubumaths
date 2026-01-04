@@ -48,9 +48,11 @@
 -->
 
 <script lang="ts">
-	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
+	import type { Tables } from '$lib/types/database';
 	import { getDayName, formatScheduleDisplay, formatTimeDisplay } from '$lib/utils/schedule';
-	import { formatPeriodName, formatPeriodTimes } from '$lib/utils/timetable';
+	import { formatPeriodName, formatPeriodTimes, type SchoolPeriod } from '$lib/utils/timetable';
+
+	type ClassSchedule = Tables<'class_schedules'>;
 
 	interface Props {
 		schedules: ClassSchedule[];

@@ -20,8 +20,8 @@
 	import TimezoneSelect from './TimezoneSelect.svelte';
 	import WeekConfigEditor from './WeekConfigEditor.svelte';
 	import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
-	import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-	import type { WeekConfig, SchoolTimetable } from '$lib/types/database';
+	import { DEFAULT_WEEK_CONFIG, type WeekConfig } from '$lib/utils/week-config';
+	import type { SchoolTimetable } from '$lib/utils/timetable';
 
 	type School = {
 		id: string;
