@@ -9,13 +9,12 @@ import Description from './dialog-description.svelte';
 import Trigger from './dialog-trigger.svelte';
 import Close from './dialog-close.svelte';
 
-const Root = DialogPrimitive.Root;
-const Portal = DialogPrimitive.Portal;
+// Re-export bits-ui Dialog components with getter to avoid SSR issues
+export const Root = DialogPrimitive.Root;
+export const Portal = DialogPrimitive.Portal;
 
 export {
-	Root,
 	Title,
-	Portal,
 	Footer,
 	Header,
 	Trigger,

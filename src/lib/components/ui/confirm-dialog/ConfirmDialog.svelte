@@ -1,6 +1,11 @@
 <script lang="ts">
+	import { Dialog } from 'bits-ui';
 	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog';
+	import DialogContent from '$lib/components/ui/dialog/dialog-content.svelte';
+	import DialogHeader from '$lib/components/ui/dialog/dialog-header.svelte';
+	import DialogFooter from '$lib/components/ui/dialog/dialog-footer.svelte';
+	import DialogTitle from '$lib/components/ui/dialog/dialog-title.svelte';
+	import DialogDescription from '$lib/components/ui/dialog/dialog-description.svelte';
 
 	let {
 		open = $bindable(false),
@@ -34,18 +39,18 @@
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Content>
-		<Dialog.Header>
-			<Dialog.Title>{title}</Dialog.Title>
-			<Dialog.Description>{description}</Dialog.Description>
-		</Dialog.Header>
-		<Dialog.Footer>
+	<DialogContent>
+		<DialogHeader>
+			<DialogTitle>{title}</DialogTitle>
+			<DialogDescription>{description}</DialogDescription>
+		</DialogHeader>
+		<DialogFooter>
 			<Button variant="outline" onclick={handleCancel}>
 				{cancelLabel}
 			</Button>
 			<Button {variant} onclick={handleConfirm}>
 				{confirmLabel}
 			</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
+		</DialogFooter>
+	</DialogContent>
 </Dialog.Root>
