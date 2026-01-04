@@ -22,12 +22,12 @@
 	- onValidate?: () => void
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
-	import { Check, Coins } from 'lucide-svelte';
+	import { Check } from 'lucide-svelte';
 	import TradeCardSelector from './TradeCardSelector.svelte';
 	import type { VipCardInstance } from '$lib/types/vip-card';
+	import gidouilleImg from '$lib/assets/images/gidouille.png';
 
 	// Extended type for cards with instanceId
 	type TradeCard = VipCardInstance & { instanceId: string };
@@ -42,7 +42,6 @@
 		onSelectCard?: (cardId: string) => void;
 		onDeselectCard?: (cardId: string) => void;
 		onSetGidouilles?: (amount: number) => void;
-		onValidate?: () => void;
 	}
 
 	let {
@@ -54,8 +53,7 @@
 		partnerName = 'Partenaire',
 		onSelectCard,
 		onDeselectCard,
-		onSetGidouilles,
-		onValidate
+		onSetGidouilles
 	}: Props = $props();
 
 	// Local state for gidouilles input
@@ -81,9 +79,6 @@
 		}
 		return parts.length > 0 ? parts.join(' + ') : 'Aucune offre';
 	});
-
-	// Can validate (has at least something in offer)
-	let canValidate = $derived(cardCount > 0 || offer.gidouilles > 0);
 
 	/**
 	 * Handle gidouilles input change
@@ -119,26 +114,14 @@
 </script>
 
 <div class="flex flex-col gap-2">
-	<!-- Header with Validate Button -->
-	<div class="flex items-center justify-between gap-3">
-		<div class="flex items-center gap-2">
-			<h2 class="text-xl font-bold">{title}</h2>
-			{#if validated}
-				<Badge variant="default" class="gap-1 bg-green-600">
-					<Check class="h-3 w-3" />
-					Valide
-				</Badge>
-			{/if}
-		</div>
-
-		<!-- Validate Button in header for visibility -->
-		{#if isMyPanel && !validated}
-			<Button size="sm" onclick={onValidate} disabled={!canValidate}>
-				<Check class="mr-1 h-4 w-4" />
-				Valider
-			</Button>
-		{:else if isMyPanel && validated}
-			<Button variant="outline" size="sm" onclick={onValidate}>Modifier</Button>
+	<!-- Header -->
+	<div class="flex items-center gap-2">
+		<h2 class="text-xl font-bold">{title}</h2>
+		{#if validated}
+			<Badge variant="default" class="gap-1 bg-green-600">
+				<Check class="h-3 w-3" />
+				Valide
+			</Badge>
 		{/if}
 	</div>
 
@@ -159,7 +142,7 @@
 	<!-- Gidouilles Input (only for my panel) -->
 	{#if isMyPanel}
 		<div class="flex items-center gap-2 rounded-lg border bg-card p-2">
-			<Coins class="h-4 w-4 text-amber-500" />
+			<img src={gidouilleImg} alt="Gidouille" class="h-5 w-5" />
 			<Input
 				id="gidouilles-input"
 				type="number"
@@ -175,7 +158,7 @@
 	{:else if offer.gidouilles > 0}
 		<!-- Show partner's gidouilles offer -->
 		<div class="flex items-center gap-2 rounded-lg border bg-card p-2">
-			<Coins class="h-4 w-4 text-amber-500" />
+			<img src={gidouilleImg} alt="Gidouille" class="h-5 w-5" />
 			<span class="font-medium">{offer.gidouilles} gidouilles</span>
 		</div>
 	{/if}

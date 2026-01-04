@@ -28,8 +28,9 @@
 		getTemplateById,
 		templateToVipCard
 	} from '$lib/stores/vipCardTemplates.svelte';
-	import { Check, X, Clock, ArrowRightLeft, Coins } from 'lucide-svelte';
+	import { Check, X, Clock, ArrowRightLeft, Loader2 } from 'lucide-svelte';
 	import type { VipCardInstance, VipCard as VipCardType } from '$lib/types/vip-card';
+	import gidouilleImg from '$lib/assets/images/gidouille.png';
 
 	// Extended type for cards with instanceId
 	type TradeCard = VipCardInstance & { instanceId: string };
@@ -66,6 +67,9 @@
 	// Countdown state
 	let remainingSeconds = $state(300); // 5 minutes default
 	let timerInterval: ReturnType<typeof setInterval> | null = null;
+
+	// Loading state for confirm button
+	let confirming = $state(false);
 
 	// Format remaining time
 	let formattedTime = $derived.by(() => {
@@ -134,6 +138,18 @@
 			clearInterval(timerInterval);
 		}
 	}
+
+	/**
+	 * Handle confirm click with loading state
+	 */
+	async function handleConfirm(): Promise<void> {
+		confirming = true;
+		try {
+			await onConfirm();
+		} finally {
+			confirming = false;
+		}
+	}
 </script>
 
 <!-- Modal Backdrop -->
@@ -154,23 +170,27 @@
 			<p class="text-sm text-muted-foreground">Verifiez les details et confirmez l'echange</p>
 		</div>
 
-		<!-- Timer -->
-		<div
-			class="flex items-center justify-center gap-2 border-b p-3 {isCritical
-				? 'bg-destructive/10 text-destructive'
-				: 'bg-muted'}"
-		>
-			<Clock class="h-5 w-5" />
-			<span class="font-mono text-lg font-bold">{formattedTime}</span>
-			<span class="text-sm">restant</span>
-		</div>
-
 		<!-- Content -->
 		<div class="max-h-[60vh] overflow-auto p-4">
 			<div class="grid gap-6 md:grid-cols-2">
 				<!-- My Offer -->
 				<div class="rounded-lg border bg-card p-3">
-					<h3 class="mb-3 font-semibold">Vous donnez</h3>
+					<div class="mb-3 flex items-center justify-between">
+						<h3 class="font-semibold">Vous donnez</h3>
+						<!-- My confirmation badge -->
+						<div
+							class="flex h-7 w-7 items-center justify-center rounded-full {myConfirmation
+								? 'bg-green-500 text-white'
+								: 'bg-muted-foreground/20'}"
+							title={myConfirmation ? 'Vous avez confirme' : "Vous n'avez pas confirme"}
+						>
+							{#if myConfirmation}
+								<Check class="h-4 w-4" />
+							{:else}
+								<span class="text-xs">?</span>
+							{/if}
+						</div>
+					</div>
 
 					<!-- Cards (grouped) -->
 					{#if myGroupedCards.length > 0}
@@ -195,7 +215,7 @@
 					<!-- Gidouilles -->
 					{#if myOffer.gidouilles > 0}
 						<div class="flex items-center gap-2 rounded bg-muted p-2">
-							<Coins class="h-4 w-4 text-amber-500" />
+							<img src={gidouilleImg} alt="Gidouille" class="h-5 w-5" />
 							<span class="font-medium">{myOffer.gidouilles} gidouilles</span>
 						</div>
 					{/if}
@@ -203,7 +223,24 @@
 
 				<!-- Partner Offer -->
 				<div class="rounded-lg border bg-card p-3">
-					<h3 class="mb-3 font-semibold">Vous recevez de {partnerName}</h3>
+					<div class="mb-3 flex items-center justify-between">
+						<h3 class="font-semibold">Vous recevez de {partnerName}</h3>
+						<!-- Partner confirmation badge -->
+						<div
+							class="flex h-7 w-7 items-center justify-center rounded-full {partnerConfirmation
+								? 'bg-green-500 text-white'
+								: 'bg-muted-foreground/20'}"
+							title={partnerConfirmation
+								? `${partnerName} a confirme`
+								: `${partnerName} n'a pas confirme`}
+						>
+							{#if partnerConfirmation}
+								<Check class="h-4 w-4" />
+							{:else}
+								<span class="text-xs">?</span>
+							{/if}
+						</div>
+					</div>
 
 					<!-- Cards (grouped) -->
 					{#if partnerGroupedCards.length > 0}
@@ -228,69 +265,47 @@
 					<!-- Gidouilles -->
 					{#if partnerOffer.gidouilles > 0}
 						<div class="flex items-center gap-2 rounded bg-muted p-2">
-							<Coins class="h-4 w-4 text-amber-500" />
+							<img src={gidouilleImg} alt="Gidouille" class="h-5 w-5" />
 							<span class="font-medium">{partnerOffer.gidouilles} gidouilles</span>
 						</div>
 					{/if}
 				</div>
 			</div>
-
-			<!-- Confirmation Status -->
-			<div class="mt-6 rounded-lg bg-muted p-4">
-				<h3 class="mb-3 font-semibold">Statut des confirmations</h3>
-				<div class="grid gap-3 md:grid-cols-2">
-					<!-- My status -->
-					<div class="flex items-center gap-3">
-						<div
-							class="flex h-8 w-8 items-center justify-center rounded-full {myConfirmation
-								? 'bg-green-500 text-white'
-								: 'bg-muted-foreground/20'}"
-						>
-							{#if myConfirmation}
-								<Check class="h-5 w-5" />
-							{:else}
-								<span class="text-sm">?</span>
-							{/if}
-						</div>
-						<span class={myConfirmation ? 'font-medium text-green-600' : 'text-muted-foreground'}>
-							Vous {myConfirmation ? 'avez confirme' : "n'avez pas confirme"}
-						</span>
-					</div>
-
-					<!-- Partner status -->
-					<div class="flex items-center gap-3">
-						<div
-							class="flex h-8 w-8 items-center justify-center rounded-full {partnerConfirmation
-								? 'bg-green-500 text-white'
-								: 'bg-muted-foreground/20'}"
-						>
-							{#if partnerConfirmation}
-								<Check class="h-5 w-5" />
-							{:else}
-								<span class="text-sm">?</span>
-							{/if}
-						</div>
-						<span
-							class={partnerConfirmation ? 'font-medium text-green-600' : 'text-muted-foreground'}
-						>
-							{partnerName}
-							{partnerConfirmation ? 'a confirme' : "n'a pas confirme"}
-						</span>
-					</div>
-				</div>
-			</div>
 		</div>
 
-		<!-- Footer -->
-		<div class="flex justify-end gap-3 border-t p-4">
-			<Button variant="destructive" onclick={onRefuse}>
-				<X class="mr-2 h-4 w-4" />
-				Refuser
-			</Button>
-			<Button onclick={onConfirm} disabled={myConfirmation}>
-				<Check class="mr-2 h-4 w-4" />
-				{myConfirmation ? 'En attente...' : 'Confirmer'}
-			</Button>
+		<!-- Footer with Timer and Buttons -->
+		<div
+			class="flex items-center justify-between gap-3 border-t p-4 {isCritical
+				? 'bg-destructive/10'
+				: 'bg-muted/50'}"
+		>
+			<!-- Timer -->
+			<div
+				class="flex items-center gap-2 {isCritical ? 'text-destructive' : 'text-muted-foreground'}"
+			>
+				<Clock class="h-5 w-5" />
+				<span class="font-mono text-lg font-bold">{formattedTime}</span>
+			</div>
+
+			<!-- Buttons -->
+			<div class="flex gap-3">
+				<Button variant="destructive" onclick={onRefuse}>
+					<X class="mr-2 h-4 w-4" />
+					Refuser
+				</Button>
+				<Button onclick={handleConfirm} disabled={myConfirmation || confirming}>
+					{#if confirming}
+						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+						Confirmation...
+					{:else if myConfirmation}
+						<Check class="mr-2 h-4 w-4" />
+						En attente...
+					{:else}
+						<Check class="mr-2 h-4 w-4" />
+						Confirmer
+					{/if}
+				</Button>
+			</div>
 		</div>
 	</div>
 </div>
