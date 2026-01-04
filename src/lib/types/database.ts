@@ -1368,6 +1368,81 @@ export type Database = {
 					}
 				];
 			};
+			class_journal_entries: {
+				Row: {
+					class_id: string;
+					created_at: string;
+					entry_date: string;
+					homework_content: string | null;
+					homework_due_date: string | null;
+					id: string;
+					is_published: boolean;
+					lesson_content: string | null;
+					teacher_id: string;
+					updated_at: string;
+				};
+				Insert: {
+					class_id: string;
+					created_at?: string;
+					entry_date: string;
+					homework_content?: string | null;
+					homework_due_date?: string | null;
+					id?: string;
+					is_published?: boolean;
+					lesson_content?: string | null;
+					teacher_id: string;
+					updated_at?: string;
+				};
+				Update: {
+					class_id?: string;
+					created_at?: string;
+					entry_date?: string;
+					homework_content?: string | null;
+					homework_due_date?: string | null;
+					id?: string;
+					is_published?: boolean;
+					lesson_content?: string | null;
+					teacher_id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'class_journal_entries_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'class_journal_entries_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'class_journal_entries_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'class_journal_entries_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'class_journal_entries_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			class_members: {
 				Row: {
 					class_id: string;
@@ -2464,13 +2539,6 @@ export type Database = {
 						foreignKeyName: 'exercise_completions_assignment_id_fkey';
 						columns: ['assignment_id'];
 						isOneToOne: false;
-						referencedRelation: 'assigned_exercises_with_details';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'exercise_completions_assignment_id_fkey';
-						columns: ['assignment_id'];
-						isOneToOne: false;
 						referencedRelation: 'exercise_assignments';
 						referencedColumns: ['id'];
 					},
@@ -2712,9 +2780,7 @@ export type Database = {
 					resources: Json | null;
 					shared: Json | null;
 					slug: string | null;
-					solution_md: string;
 					source: string | null;
-					statement_md: string;
 					tags: string[];
 					title: string | null;
 					topic: string | null;
@@ -2734,9 +2800,7 @@ export type Database = {
 					resources?: Json | null;
 					shared?: Json | null;
 					slug?: string | null;
-					solution_md: string;
 					source?: string | null;
-					statement_md: string;
 					tags?: string[];
 					title?: string | null;
 					topic?: string | null;
@@ -2756,9 +2820,7 @@ export type Database = {
 					resources?: Json | null;
 					shared?: Json | null;
 					slug?: string | null;
-					solution_md?: string;
 					source?: string | null;
-					statement_md?: string;
 					tags?: string[];
 					title?: string | null;
 					topic?: string | null;
@@ -11876,135 +11938,6 @@ export type Database = {
 					}
 				];
 			};
-			assigned_exercises_with_details: {
-				Row: {
-					assigned_at: string | null;
-					assigned_by: string | null;
-					assigned_by_name: string | null;
-					assigned_by_role: Database['public']['Enums']['user_role'] | null;
-					assigned_to_name: string | null;
-					assigned_to_type: string | null;
-					class_id: string | null;
-					class_name: string | null;
-					difficulty: number | null;
-					distribution_mode: string | null;
-					exercise_creator_id: string | null;
-					exercise_id: string | null;
-					exercise_is_public: boolean | null;
-					exercise_title: string | null;
-					grade_levels: string[] | null;
-					id: string | null;
-					is_active: boolean | null;
-					notes: string | null;
-					optional_deadline: string | null;
-					solution_md: string | null;
-					statement_md: string | null;
-					student_email: string | null;
-					student_id: string | null;
-					tags: string[] | null;
-					variables: Json | null;
-				};
-				Relationships: [
-					{
-						foreignKeyName: 'exercise_assignments_assigned_by_fkey';
-						columns: ['assigned_by'];
-						isOneToOne: false;
-						referencedRelation: 'assessment_results';
-						referencedColumns: ['student_user_id'];
-					},
-					{
-						foreignKeyName: 'exercise_assignments_assigned_by_fkey';
-						columns: ['assigned_by'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'exercise_assignments_assigned_by_fkey';
-						columns: ['assigned_by'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'exercise_assignments_assigned_by_fkey';
-						columns: ['assigned_by'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'exercise_assignments_class_id_fkey';
-						columns: ['class_id'];
-						isOneToOne: false;
-						referencedRelation: 'classes';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'exercise_assignments_exercise_id_fkey';
-						columns: ['exercise_id'];
-						isOneToOne: false;
-						referencedRelation: 'exercises';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'exercise_assignments_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'assessment_results';
-						referencedColumns: ['student_user_id'];
-					},
-					{
-						foreignKeyName: 'exercise_assignments_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'exercise_assignments_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'exercise_assignments_student_id_fkey';
-						columns: ['student_id'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'exercises_created_by_fkey';
-						columns: ['exercise_creator_id'];
-						isOneToOne: false;
-						referencedRelation: 'assessment_results';
-						referencedColumns: ['student_user_id'];
-					},
-					{
-						foreignKeyName: 'exercises_created_by_fkey';
-						columns: ['exercise_creator_id'];
-						isOneToOne: false;
-						referencedRelation: 'minesweeper_student_achievement_progress';
-						referencedColumns: ['student_id'];
-					},
-					{
-						foreignKeyName: 'exercises_created_by_fkey';
-						columns: ['exercise_creator_id'];
-						isOneToOne: false;
-						referencedRelation: 'profiles';
-						referencedColumns: ['id'];
-					},
-					{
-						foreignKeyName: 'exercises_created_by_fkey';
-						columns: ['exercise_creator_id'];
-						isOneToOne: false;
-						referencedRelation: 'riddle_progress';
-						referencedColumns: ['student_id'];
-					}
-				];
-			};
 			deck_stats_view: {
 				Row: {
 					config: Json | null;
@@ -12977,12 +12910,12 @@ export type Database = {
 					is_active: boolean;
 					notes: string;
 					optional_deadline: string;
-					solution_md: string;
-					statement_md: string;
+					shared: Json;
 					student_email: string;
 					student_id: string;
 					tags: string[];
 					variables: Json;
+					variations: Json;
 				}[];
 			};
 			get_allowed_recipients: {
@@ -13266,12 +13199,12 @@ export type Database = {
 					is_active: boolean;
 					notes: string;
 					optional_deadline: string;
-					solution_md: string;
-					statement_md: string;
+					shared: Json;
 					student_email: string;
 					student_id: string;
 					tags: string[];
 					variables: Json;
+					variations: Json;
 				}[];
 			};
 			get_next_riddle_attempt_number: {
@@ -13457,12 +13390,12 @@ export type Database = {
 					is_active: boolean;
 					notes: string;
 					optional_deadline: string;
-					solution_md: string;
-					statement_md: string;
+					shared: Json;
 					student_email: string;
 					student_id: string;
 					tags: string[];
 					variables: Json;
+					variations: Json;
 				}[];
 			};
 			get_teacher_override_impact: {
@@ -13897,6 +13830,7 @@ export type Database = {
 				};
 				Returns: undefined;
 			};
+			run_cleanup_all: { Args: never; Returns: undefined };
 			run_daily_summaries: { Args: never; Returns: undefined };
 			run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined };
 			run_weekly_best_bonuses: { Args: never; Returns: undefined };
