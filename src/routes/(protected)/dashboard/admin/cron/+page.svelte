@@ -159,7 +159,8 @@
 			auto_select_daily_riddle: '/api/riddles/auto-select-daily',
 			// pg_cron jobs (triggered via RPC, not HTTP)
 			cleanup_stale_trades: 'rpc:cleanup_stale_trades',
-			recalculate_minesweeper_ref_times: 'rpc:run_recalculate_minesweeper_ref_times'
+			recalculate_minesweeper_ref_times: 'rpc:run_recalculate_minesweeper_ref_times',
+			cleanup_stuck_job_runs: 'rpc:cleanup_stuck_job_runs'
 		};
 		return pathMap[jobName] ?? '';
 	}

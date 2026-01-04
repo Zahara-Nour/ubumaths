@@ -210,6 +210,56 @@ $$;
 
 ---
 
+### Cleanup Stuck Job Runs
+
+**Migration** : `supabase/migrations/20260104140000_pg_cron_cleanup_stuck_jobs.sql`
+
+| Propriete     | Valeur                            |
+| ------------- | --------------------------------- |
+| Schedule      | `30 * * * *` (chaque heure a :30) |
+| Fonction      | `public.cleanup_stuck_job_runs()` |
+| Duree typique | < 100ms                           |
+
+#### Objectif
+
+Marque automatiquement les jobs bloques en status `running` comme `timeout` :
+
+- Detecte les jobs en cours depuis > 1 heure
+- Les marque comme `timeout` avec message explicatif
+- Evite l'accumulation de jobs "fantomes" dans le dashboard
+
+#### Cas d'usage
+
+Jobs peuvent rester bloques si :
+
+- Vercel CRON timeout (10s sur free tier)
+- Crash avant `complete_job_run()`
+- Problemes reseau
+
+#### Code
+
+```sql
+UPDATE background_job_runs
+SET
+    status = 'timeout',
+    completed_at = NOW(),
+    execution_time_ms = 2147483647,  -- Max INT
+    error_message = 'Auto-marked as timeout: job exceeded 1 hour runtime'
+WHERE status = 'running'
+  AND started_at < NOW() - INTERVAL '1 hour';
+```
+
+#### Metadata Generee
+
+```json
+{
+	"stuck_jobs_marked": 2,
+	"threshold_hours": 1
+}
+```
+
+---
+
 ## Gestion des Jobs
 
 ### Voir les jobs planifies
