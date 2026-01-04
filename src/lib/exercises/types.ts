@@ -294,25 +294,6 @@ export interface Exercise {
 	/** Tags for categorization (e.g., ['algèbre', 'équations', '3ème']) */
 	tags: string[];
 
-	// Content (markdown with LaTeX and optional {{}} parameterization)
-	/**
-	 * Exercise statement in markdown with $...$ and $$...$$ for math
-	 *
-	 * @deprecated Use variations[].statement_md instead. This field is kept for
-	 * backwards compatibility but should not be used in new code.
-	 * Use getExerciseContent() helper to access content.
-	 */
-	statement_md?: string;
-
-	/**
-	 * Solution/correction in markdown with LaTeX math
-	 *
-	 * @deprecated Use variations[].solution_md instead. This field is kept for
-	 * backwards compatibility but should not be used in new code.
-	 * Use getExerciseContent() helper to access content.
-	 */
-	solution_md?: string;
-
 	// Parameterization
 	/**
 	 * Variable definitions for parameterized exercises
