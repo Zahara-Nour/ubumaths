@@ -592,17 +592,21 @@ export const worksheetExerciseResponseSchema = z.object({
 
 /**
  * Worksheet exercise with joined exercise data
+ * Note: statement_md/solution_md are now in variations (single source of truth)
  */
 export const worksheetExerciseWithDataResponseSchema = worksheetExerciseResponseSchema.extend({
+	correction_visible: z.boolean().optional(),
+	variation_index: z.number().int().nullable().optional(),
 	exercise: z
 		.object({
 			id: z.string().uuid(),
 			title: z.string().nullable(),
-			statement_md: z.string(),
-			solution_md: z.string().nullable(),
 			difficulty: z.number().int().nullable(),
-			variables: z.unknown().nullable()
+			variables: z.unknown().nullable(),
+			shared: z.unknown().nullable(),
+			variations: z.array(z.unknown()).nullable()
 		})
+		.nullable()
 		.optional()
 });
 
