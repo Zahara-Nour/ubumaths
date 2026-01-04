@@ -460,30 +460,53 @@ class TradeRealtimeStore {
 
 		// Parse current offer if exists
 		if (trade.current_offer) {
+			// Support both formats:
+			// - New format: { from_initiator: {cards, gidouilles}, from_partner: {cards, gidouilles} }
+			// - Legacy format: { initiator_cards, initiator_gidouilles, partner_cards, partner_gidouilles }
 			const offer = trade.current_offer as {
+				// New format
+				from_initiator?: { cards?: string[]; gidouilles?: number };
+				from_partner?: { cards?: string[]; gidouilles?: number };
+				// Legacy format
 				initiator_cards?: string[];
 				initiator_gidouilles?: number;
 				partner_cards?: string[];
 				partner_gidouilles?: number;
 			};
 
+			// Determine which format we're dealing with
+			const hasNewFormat = offer.from_initiator || offer.from_partner;
+
+			const initiatorCards = hasNewFormat
+				? (offer.from_initiator?.cards ?? [])
+				: (offer.initiator_cards ?? []);
+			const initiatorGidouilles = hasNewFormat
+				? (offer.from_initiator?.gidouilles ?? 0)
+				: (offer.initiator_gidouilles ?? 0);
+			const partnerCards = hasNewFormat
+				? (offer.from_partner?.cards ?? [])
+				: (offer.partner_cards ?? []);
+			const partnerGidouilles = hasNewFormat
+				? (offer.from_partner?.gidouilles ?? 0)
+				: (offer.partner_gidouilles ?? 0);
+
 			if (this.myRole === 'initiator') {
 				this.myOffer = {
-					cards: offer.initiator_cards ?? [],
-					gidouilles: offer.initiator_gidouilles ?? 0
+					cards: initiatorCards,
+					gidouilles: initiatorGidouilles
 				};
 				this.partnerOffer = {
-					cards: offer.partner_cards ?? [],
-					gidouilles: offer.partner_gidouilles ?? 0
+					cards: partnerCards,
+					gidouilles: partnerGidouilles
 				};
 			} else {
 				this.myOffer = {
-					cards: offer.partner_cards ?? [],
-					gidouilles: offer.partner_gidouilles ?? 0
+					cards: partnerCards,
+					gidouilles: partnerGidouilles
 				};
 				this.partnerOffer = {
-					cards: offer.initiator_cards ?? [],
-					gidouilles: offer.initiator_gidouilles ?? 0
+					cards: initiatorCards,
+					gidouilles: initiatorGidouilles
 				};
 			}
 		}
@@ -681,7 +704,7 @@ class TradeRealtimeStore {
 	// =========================================================================
 
 	/**
-	 * Update current user's offer (debounced, broadcasts)
+	 * Update current user's offer (debounced, broadcasts and saves to DB)
 	 *
 	 * @param offer - New offer
 	 */
@@ -696,14 +719,55 @@ class TradeRealtimeStore {
 			this.broadcastValidationChanged(false);
 		}
 
-		// Debounce broadcast
+		// Debounce broadcast and DB save
 		if (this.debounceTimer) {
 			clearTimeout(this.debounceTimer);
 		}
 
 		this.debounceTimer = setTimeout(() => {
 			this.broadcastOfferUpdated();
+			// Also persist to database so partner sees it when they open the trade
+			this.saveOfferToDatabase();
 		}, this.DEBOUNCE_DELAY);
+	}
+
+	/**
+	 * Save current offer to database (persists for when partner opens trade)
+	 */
+	private async saveOfferToDatabase(): Promise<void> {
+		if (!this.supabase || !this.tradeId || !this.myRole) return;
+
+		// Build current_offer in the format expected by execute_trade RPC
+		const currentOffer =
+			this.myRole === 'initiator'
+				? {
+						from_initiator: { cards: this.myOffer.cards, gidouilles: this.myOffer.gidouilles },
+						from_partner: {
+							cards: this.partnerOffer.cards,
+							gidouilles: this.partnerOffer.gidouilles
+						}
+					}
+				: {
+						from_initiator: {
+							cards: this.partnerOffer.cards,
+							gidouilles: this.partnerOffer.gidouilles
+						},
+						from_partner: { cards: this.myOffer.cards, gidouilles: this.myOffer.gidouilles }
+					};
+
+		const { error } = await this.supabase
+			.from('marketplace_trades')
+			.update({
+				current_offer: currentOffer,
+				updated_at: new Date().toISOString()
+			})
+			.eq('id', this.tradeId);
+
+		if (error) {
+			logger.error('Failed to save offer to database:', error);
+		} else {
+			logger.trace('Offer saved to database');
+		}
 	}
 
 	/**
