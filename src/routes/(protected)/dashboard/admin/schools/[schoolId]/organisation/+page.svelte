@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
-	import type { SchoolPeriod } from '$lib/types/database';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -11,7 +10,8 @@
 		validateTimetable,
 		sortPeriods,
 		getNextPeriodNumber,
-		createDefaultTimetable
+		createDefaultTimetable,
+		type SchoolPeriod
 	} from '$lib/utils/timetable';
 	import {
 		ArrowLeft,

@@ -1,4 +1,12 @@
-import type { WeekConfig } from '$lib/types/database';
+/**
+ * Week configuration type - defines school days and weekend
+ */
+export interface WeekConfig {
+	first_day: number; // 0-6 (0 = Sunday)
+	last_day: number; // 0-6
+	school_days: number[]; // Array of day numbers (0-6)
+	weekend_days: number[]; // Array of day numbers (0-6)
+}
 
 /**
  * Default week configuration for Israeli schools

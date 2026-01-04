@@ -17,8 +17,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-	import type { WeekConfig } from '$lib/types/database';
+	import { DEFAULT_WEEK_CONFIG, type WeekConfig } from '$lib/utils/week-config';
 
 	let {
 		config = $bindable<WeekConfig>(structuredClone(DEFAULT_WEEK_CONFIG)),

@@ -12,7 +12,7 @@ import type { RequestHandler } from './$types';
 import { updateSchoolConfigSchema } from '$lib/server/validation/school-config';
 import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
 import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-import type { SchoolTimetable } from '$lib/types/database';
+import type { SchoolTimetable } from '$lib/utils/timetable';
 
 /**
  * Update school configuration (timezone and week_config)

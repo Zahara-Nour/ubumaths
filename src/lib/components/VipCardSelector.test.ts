@@ -29,11 +29,37 @@ import {
 // ============================================================================
 
 /**
+ * Default values for new VipCardTemplate fields
+ * These fields were added to the schema and need to be present in all mock data
+ */
+const DEFAULT_VIP_CARD_FIELDS = {
+	base_price: 100,
+	is_purchasable: false,
+	max_owned_per_student: 1,
+	uses_total: null
+} as const;
+
+/**
+ * Create a mock VipCardTemplate with all required fields
+ */
+function createMockTemplate(
+	partial: Omit<
+		VipCardTemplate,
+		'base_price' | 'is_purchasable' | 'max_owned_per_student' | 'uses_total'
+	>
+): VipCardTemplate {
+	return {
+		...partial,
+		...DEFAULT_VIP_CARD_FIELDS
+	};
+}
+
+/**
  * Create mock VIP card templates for testing
  */
 function createMockCards(): VipCardTemplate[] {
 	return [
-		{
+		createMockTemplate({
 			id: 'card-legendary',
 			name: 'Carte Legendaire',
 			description: 'Une carte extremement rare',
@@ -45,8 +71,8 @@ function createMockCards(): VipCardTemplate[] {
 			action: { type: 'draw_cards', count: 3 },
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		},
-		{
+		}),
+		createMockTemplate({
 			id: 'card-common',
 			name: 'Carte Commune',
 			description: 'Une carte tres commune',
@@ -58,8 +84,8 @@ function createMockCards(): VipCardTemplate[] {
 			action: null,
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		},
-		{
+		}),
+		createMockTemplate({
 			id: 'card-rare',
 			name: 'Carte Rare',
 			description: 'Une carte assez rare',
@@ -71,7 +97,7 @@ function createMockCards(): VipCardTemplate[] {
 			action: null,
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		}
+		})
 	];
 }
 
@@ -134,7 +160,7 @@ describe('VipCardSelector - Card Lookup', () => {
 
 	it('returns first match when duplicates exist', () => {
 		const cardsWithDuplicates: VipCardTemplate[] = [
-			{
+			createMockTemplate({
 				id: 'duplicate',
 				name: 'First',
 				description: 'First card',
@@ -146,8 +172,8 @@ describe('VipCardSelector - Card Lookup', () => {
 				action: null,
 				created_at: '2025-01-01T00:00:00Z',
 				updated_at: '2025-01-01T00:00:00Z'
-			},
-			{
+			}),
+			createMockTemplate({
 				id: 'duplicate',
 				name: 'Second',
 				description: 'Second card',
@@ -159,7 +185,7 @@ describe('VipCardSelector - Card Lookup', () => {
 				action: null,
 				created_at: '2025-01-01T00:00:00Z',
 				updated_at: '2025-01-01T00:00:00Z'
-			}
+			})
 		];
 
 		const result = getTemplateById('duplicate', cardsWithDuplicates);
@@ -186,7 +212,7 @@ describe('VipCardSelector - Template Conversion', () => {
 	});
 
 	it('converts snake_case fields to camelCase', () => {
-		const template: VipCardTemplate = {
+		const template = createMockTemplate({
 			id: 'test',
 			name: 'Test',
 			description: 'Test card',
@@ -198,7 +224,7 @@ describe('VipCardSelector - Template Conversion', () => {
 			action: null,
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		};
+		});
 
 		const vipCard = templateToVipCard(template);
 
@@ -207,7 +233,7 @@ describe('VipCardSelector - Template Conversion', () => {
 	});
 
 	it('handles action field correctly', () => {
-		const templateWithAction: VipCardTemplate = {
+		const templateWithAction = createMockTemplate({
 			id: 'test',
 			name: 'Test',
 			description: 'Test card',
@@ -219,14 +245,14 @@ describe('VipCardSelector - Template Conversion', () => {
 			action: { type: 'draw_cards', count: 3 },
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		};
+		});
 
 		const vipCard = templateToVipCard(templateWithAction);
 		expect(vipCard.action).toEqual({ type: 'draw_cards', count: 3 });
 	});
 
 	it('converts null action to undefined', () => {
-		const templateWithoutAction: VipCardTemplate = {
+		const templateWithoutAction = createMockTemplate({
 			id: 'test',
 			name: 'Test',
 			description: 'Test card',
@@ -238,14 +264,14 @@ describe('VipCardSelector - Template Conversion', () => {
 			action: null,
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		};
+		});
 
 		const vipCard = templateToVipCard(templateWithoutAction);
 		expect(vipCard.action).toBeUndefined();
 	});
 
 	it('handles null category correctly', () => {
-		const template: VipCardTemplate = {
+		const template = createMockTemplate({
 			id: 'test',
 			name: 'Test',
 			description: 'Test card',
@@ -257,7 +283,7 @@ describe('VipCardSelector - Template Conversion', () => {
 			action: null,
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		};
+		});
 
 		const vipCard = templateToVipCard(template);
 		// templateToVipCard preserves null (doesn't convert to undefined)
@@ -273,7 +299,7 @@ describe('VipCardSelector - Template Conversion', () => {
 		];
 
 		rarities.forEach((rarity) => {
-			const template: VipCardTemplate = {
+			const template = createMockTemplate({
 				id: `test-${rarity}`,
 				name: 'Test',
 				description: 'Test card',
@@ -285,7 +311,7 @@ describe('VipCardSelector - Template Conversion', () => {
 				action: null,
 				created_at: '2025-01-01T00:00:00Z',
 				updated_at: '2025-01-01T00:00:00Z'
-			};
+			});
 
 			const vipCard = templateToVipCard(template);
 			expect(vipCard.rarity).toBe(rarity);
@@ -337,7 +363,7 @@ describe('VipCardSelector - ARIA Labels', () => {
 	});
 
 	it('handles cards with long names', () => {
-		const longNameCard: VipCardTemplate = {
+		const longNameCard = createMockTemplate({
 			id: 'long',
 			name: 'Carte avec un nom extremement long qui pourrait poser probleme',
 			description: 'Description',
@@ -349,7 +375,7 @@ describe('VipCardSelector - ARIA Labels', () => {
 			action: null,
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		};
+		});
 
 		const label = generateAriaLabel(longNameCard);
 		expect(label).toContain(longNameCard.name);
@@ -357,7 +383,7 @@ describe('VipCardSelector - ARIA Labels', () => {
 	});
 
 	it('handles cards with special characters in name', () => {
-		const specialCard: VipCardTemplate = {
+		const specialCard = createMockTemplate({
 			id: 'special',
 			name: 'Carte "speciale" & unique',
 			description: 'Description',
@@ -369,7 +395,7 @@ describe('VipCardSelector - ARIA Labels', () => {
 			action: null,
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		};
+		});
 
 		const label = generateAriaLabel(specialCard);
 		expect(label).toContain(specialCard.name);
@@ -405,7 +431,7 @@ describe('VipCardSelector - Edge Cases', () => {
 	});
 
 	it('handles card with minimal valid data', () => {
-		const minimalCard: VipCardTemplate = {
+		const minimalCard = createMockTemplate({
 			id: 'minimal',
 			name: 'M',
 			description: '',
@@ -417,7 +443,7 @@ describe('VipCardSelector - Edge Cases', () => {
 			action: null,
 			created_at: '2025-01-01T00:00:00Z',
 			updated_at: '2025-01-01T00:00:00Z'
-		};
+		});
 
 		const vipCard = templateToVipCard(minimalCard);
 		expect(vipCard.id).toBe('minimal');
@@ -437,19 +463,21 @@ describe('VipCardSelector - Edge Cases', () => {
 	});
 
 	it('handles large card arrays efficiently', () => {
-		const manyCards: VipCardTemplate[] = Array.from({ length: 1000 }, (_, i) => ({
-			id: `card-${i}`,
-			name: `Card ${i}`,
-			description: `Description ${i}`,
-			image_path: `/card-${i}.jpg`,
-			category: 'bonus' as const,
-			rarity: 'common' as const,
-			is_enabled: true,
-			sort_order: i,
-			action: null,
-			created_at: '2025-01-01T00:00:00Z',
-			updated_at: '2025-01-01T00:00:00Z'
-		}));
+		const manyCards: VipCardTemplate[] = Array.from({ length: 1000 }, (_, i) =>
+			createMockTemplate({
+				id: `card-${i}`,
+				name: `Card ${i}`,
+				description: `Description ${i}`,
+				image_path: `/card-${i}.jpg`,
+				category: 'bonus' as const,
+				rarity: 'common' as const,
+				is_enabled: true,
+				sort_order: i,
+				action: null,
+				created_at: '2025-01-01T00:00:00Z',
+				updated_at: '2025-01-01T00:00:00Z'
+			})
+		);
 
 		const startTime = performance.now();
 		const result = getTemplateById('card-500', manyCards);

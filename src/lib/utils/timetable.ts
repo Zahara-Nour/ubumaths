@@ -1,5 +1,21 @@
-import type { SchoolTimetable, SchoolPeriod } from '$lib/types/database';
 import { formatTimeDisplay, timeToMinutes } from './schedule';
+
+/**
+ * School period type - represents a single period in a school timetable
+ */
+export interface SchoolPeriod {
+	number: number;
+	name: string | null;
+	start_time: string; // HH:MM:SS format
+	end_time: string; // HH:MM:SS format
+}
+
+/**
+ * School timetable type - contains an array of periods
+ */
+export interface SchoolTimetable {
+	periods: SchoolPeriod[];
+}
 
 /**
  * Timetable Utility Functions

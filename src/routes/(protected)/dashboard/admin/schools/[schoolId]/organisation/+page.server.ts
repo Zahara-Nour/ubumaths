@@ -1,7 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { SchoolTimetable } from '$lib/types/database';
-import { validateTimetable } from '$lib/utils/timetable';
+import { validateTimetable, type SchoolTimetable } from '$lib/utils/timetable';
 import { validateUuidParam } from '$lib/server/validation/params';
 import {
 	createSchoolYearSchema,
