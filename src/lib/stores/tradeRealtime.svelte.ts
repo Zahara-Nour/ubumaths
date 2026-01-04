@@ -733,40 +733,60 @@ class TradeRealtimeStore {
 
 	/**
 	 * Save current offer to database (persists for when partner opens trade)
+	 * Only updates own part of the offer to avoid overwriting partner's changes
 	 */
 	private async saveOfferToDatabase(): Promise<void> {
 		if (!this.supabase || !this.tradeId || !this.myRole) return;
 
-		// Build current_offer in the format expected by execute_trade RPC
-		const currentOffer =
-			this.myRole === 'initiator'
-				? {
-						from_initiator: { cards: this.myOffer.cards, gidouilles: this.myOffer.gidouilles },
-						from_partner: {
-							cards: this.partnerOffer.cards,
-							gidouilles: this.partnerOffer.gidouilles
+		try {
+			// Read current offer from database to preserve partner's part
+			const { data: trade, error: readError } = await this.supabase
+				.from('marketplace_trades')
+				.select('current_offer')
+				.eq('id', this.tradeId)
+				.single();
+
+			if (readError) {
+				logger.error('Failed to read current offer:', readError);
+				return;
+			}
+
+			// Parse existing offer or create empty structure
+			const existingOffer =
+				(trade?.current_offer as {
+					from_initiator?: { cards?: string[]; gidouilles?: number };
+					from_partner?: { cards?: string[]; gidouilles?: number };
+				}) || {};
+
+			// Build updated offer - only modify own part, preserve partner's part
+			const myOfferData = { cards: this.myOffer.cards, gidouilles: this.myOffer.gidouilles };
+
+			const updatedOffer =
+				this.myRole === 'initiator'
+					? {
+							from_initiator: myOfferData,
+							from_partner: existingOffer.from_partner || { cards: [], gidouilles: 0 }
 						}
-					}
-				: {
-						from_initiator: {
-							cards: this.partnerOffer.cards,
-							gidouilles: this.partnerOffer.gidouilles
-						},
-						from_partner: { cards: this.myOffer.cards, gidouilles: this.myOffer.gidouilles }
-					};
+					: {
+							from_initiator: existingOffer.from_initiator || { cards: [], gidouilles: 0 },
+							from_partner: myOfferData
+						};
 
-		const { error } = await this.supabase
-			.from('marketplace_trades')
-			.update({
-				current_offer: currentOffer,
-				updated_at: new Date().toISOString()
-			})
-			.eq('id', this.tradeId);
+			const { error: updateError } = await this.supabase
+				.from('marketplace_trades')
+				.update({
+					current_offer: updatedOffer,
+					updated_at: new Date().toISOString()
+				})
+				.eq('id', this.tradeId);
 
-		if (error) {
-			logger.error('Failed to save offer to database:', error);
-		} else {
-			logger.trace('Offer saved to database');
+			if (updateError) {
+				logger.error('Failed to save offer to database:', updateError);
+			} else {
+				logger.trace('Offer saved to database (own part only)');
+			}
+		} catch (err) {
+			logger.error('Error in saveOfferToDatabase:', err);
 		}
 	}
 
