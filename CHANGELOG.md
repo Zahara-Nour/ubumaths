@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.21](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.20...v0.5.21) (2026-01-04)
+
+### 📚 Documentation
+
+- **cron:** add comprehensive technical guide for CRON jobs ([b2f357f](https://github.com/Zahara-Nour/ubumaths/commit/b2f357f58927c7d25956bd656cb78894f032b9d1))
+
+### ✨ Features
+
+- **cron:** add pg_cron job to cleanup stuck job runs ([2917927](https://github.com/Zahara-Nour/ubumaths/commit/291792755b5177128ff50ec15a494827298c6e89))
+- **cron:** migrate all jobs to pg_cron ([b8f457d](https://github.com/Zahara-Nour/ubumaths/commit/b8f457d5c5a6d1998ed2ea6adcd7324b2c11622b))
+- **cron:** migrate Minesweeper ref times to pg_cron ([f160230](https://github.com/Zahara-Nour/ubumaths/commit/f160230842d24768be0d5f3de076597e1d94d1f4))
+- **cron:** migrate weekly best bonuses to pg_cron ([89c49e5](https://github.com/Zahara-Nour/ubumaths/commit/89c49e5cf458261b4695c99659f1ba5b798f70ab))
+- **cron:** migrate weekly rewards to pg_cron ([8a17750](https://github.com/Zahara-Nour/ubumaths/commit/8a17750e57d7588e179e403214cac63ecfab43be))
+
 ### [0.5.20](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.19...v0.5.20) (2026-01-04)
 
 ### ⏪ Reverts
