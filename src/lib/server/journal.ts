@@ -430,11 +430,12 @@ export async function getUpcomingHomework(
 	const endDate = new Date(today);
 	endDate.setDate(endDate.getDate() + daysAhead);
 
-	// Get student's classes
+	// Get student's active classes only
 	const { data: memberships, error: membershipError } = await supabase
 		.from('class_members')
 		.select('class_id')
-		.eq('student_id', studentId);
+		.eq('student_id', studentId)
+		.eq('status', 'active');
 
 	if (membershipError) {
 		console.error('[getUpcomingHomework] Error fetching memberships:', membershipError);

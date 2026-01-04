@@ -124,6 +124,37 @@ export interface JournalWeekView {
 // ============================================================================
 
 /**
+ * Simplified day view with basic entry info (for student views)
+ */
+export interface JournalDayView {
+	/** Date object for this day */
+	date: Date;
+	/** Day of week short name (lun, mar, etc.) */
+	dayOfWeek: string;
+	/** Is this today? */
+	isToday: boolean;
+	/** Entry summaries for this day (can be from multiple classes) */
+	entries: JournalDayEntry[];
+}
+
+/**
+ * Entry summary for day view
+ */
+export interface JournalDayEntry {
+	id: string;
+	hasLesson: boolean;
+	hasHomework: boolean;
+	homeworkDueDate: string | null;
+	isPublished: boolean;
+	className: string;
+	classId: string;
+}
+
+// ============================================================================
+// STATISTICS TYPES
+// ============================================================================
+
+/**
  * Statistics for journal entries (teacher dashboard)
  */
 export interface JournalStatistics {
