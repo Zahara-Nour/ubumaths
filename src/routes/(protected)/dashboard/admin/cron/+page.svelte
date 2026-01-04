@@ -158,7 +158,8 @@
 			cleanup_all: '/api/cleanup/all',
 			auto_select_daily_riddle: '/api/riddles/auto-select-daily',
 			// pg_cron jobs (triggered via RPC, not HTTP)
-			cleanup_stale_trades: 'rpc:cleanup_stale_trades'
+			cleanup_stale_trades: 'rpc:cleanup_stale_trades',
+			recalculate_minesweeper_ref_times: 'rpc:run_recalculate_minesweeper_ref_times'
 		};
 		return pathMap[jobName] ?? '';
 	}

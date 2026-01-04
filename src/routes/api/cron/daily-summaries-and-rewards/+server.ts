@@ -63,12 +63,7 @@ interface ProcessingResults {
 		count: number;
 		errors: string[];
 	};
-	minesweeperReferenceTimes: {
-		success: boolean;
-		updated: number;
-		skipped: number;
-		errors: string[];
-	};
+	// NOTE: minesweeperReferenceTimes moved to pg_cron job (run_recalculate_minesweeper_ref_times)
 }
 
 /**
@@ -103,13 +98,8 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			success: true,
 			count: 0,
 			errors: []
-		},
-		minesweeperReferenceTimes: {
-			success: true,
-			updated: 0,
-			skipped: 0,
-			errors: []
 		}
+		// NOTE: minesweeperReferenceTimes moved to pg_cron job
 	};
 
 	try {
@@ -291,63 +281,19 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			}
 		}
 
-		// ============================================================
-		// STEP 4: Recalculate Minesweeper Reference Times (Sunday only)
-		// ============================================================
-		// Use Europe/Paris as reference timezone for consistency
-		const dayOfWeekParis = getCurrentDayOfWeekInTimezone('Europe/Paris');
-
-		if (dayOfWeekParis === 0) {
-			// Sunday
-			console.log('[Cron] Sunday - recalculating Minesweeper reference times by cycle');
-
-			try {
-				const { data: refResults, error: refError } = await serviceClient.rpc(
-					'recalculate_minesweeper_reference_times'
-				);
-
-				if (refError) {
-					throw new Error(`RPC error: ${refError.message}`);
-				}
-
-				// Process results
-				for (const result of refResults || []) {
-					if (result.updated) {
-						results.minesweeperReferenceTimes.updated++;
-						console.log(
-							`[Cron] Updated ${result.cycle}/${result.difficulty}: ${result.old_time}s -> ${result.new_time}s (${result.sample_count} samples)`
-						);
-					} else {
-						results.minesweeperReferenceTimes.skipped++;
-					}
-				}
-
-				console.log(
-					`[Cron] Reference times: ${results.minesweeperReferenceTimes.updated} updated, ${results.minesweeperReferenceTimes.skipped} skipped (not enough samples)`
-				);
-			} catch (err) {
-				const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-				results.minesweeperReferenceTimes.errors.push(errorMsg);
-				results.minesweeperReferenceTimes.success = false;
-				console.error('[Cron] Failed to recalculate Minesweeper reference times:', err);
-			}
-		} else {
-			console.log('[Cron] Not Sunday - skipping Minesweeper reference times recalculation');
-		}
+		// NOTE: Minesweeper Reference Times recalculation moved to pg_cron job
+		// (run_recalculate_minesweeper_ref_times, runs Sundays at 01:30 UTC)
 
 		// ============================================================
-		// STEP 5: Determine overall status
+		// STEP 4: Determine overall status
 		// ============================================================
 		results.dailySummaries.success = results.dailySummaries.errors.length === 0;
 		results.weeklyRewards.success = results.weeklyRewards.errors.length === 0;
 		results.weeklyBestBonuses.success = results.weeklyBestBonuses.errors.length === 0;
-		results.minesweeperReferenceTimes.success =
-			results.minesweeperReferenceTimes.errors.length === 0;
 		results.success =
 			results.dailySummaries.success &&
 			results.weeklyRewards.success &&
-			results.weeklyBestBonuses.success &&
-			results.minesweeperReferenceTimes.success;
+			results.weeklyBestBonuses.success;
 
 		const status = results.success ? 'success' : 'partial_failure';
 		const metadata = {
@@ -359,10 +305,7 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			weekly_best_bonuses_awarded: results.weeklyBestBonuses.count,
 			daily_summaries_errors: results.dailySummaries.errors.length,
 			weekly_rewards_errors: results.weeklyRewards.errors.length,
-			weekly_best_bonuses_errors: results.weeklyBestBonuses.errors.length,
-			minesweeper_ref_times_updated: results.minesweeperReferenceTimes.updated,
-			minesweeper_ref_times_skipped: results.minesweeperReferenceTimes.skipped,
-			minesweeper_ref_times_errors: results.minesweeperReferenceTimes.errors.length
+			weekly_best_bonuses_errors: results.weeklyBestBonuses.errors.length
 		};
 
 		// Complete job run with results
@@ -404,15 +347,8 @@ const cronHandler: RequestHandler = async ({ request }) => {
 						results.weeklyBestBonuses.errors.length > 0
 							? results.weeklyBestBonuses.errors
 							: undefined
-				},
-				minesweeperReferenceTimes: {
-					updated: results.minesweeperReferenceTimes.updated,
-					skipped: results.minesweeperReferenceTimes.skipped,
-					errors:
-						results.minesweeperReferenceTimes.errors.length > 0
-							? results.minesweeperReferenceTimes.errors
-							: undefined
 				}
+				// NOTE: minesweeperReferenceTimes moved to pg_cron (run_recalculate_minesweeper_ref_times)
 			},
 			{
 				status: results.success ? 200 : 207 // 207 Multi-Status for partial success
@@ -453,10 +389,6 @@ const cronHandler: RequestHandler = async ({ request }) => {
 				},
 				weeklyBestBonuses: {
 					awarded: results.weeklyBestBonuses.count
-				},
-				minesweeperReferenceTimes: {
-					updated: results.minesweeperReferenceTimes.updated,
-					skipped: results.minesweeperReferenceTimes.skipped
 				}
 			},
 			{ status: 500 }

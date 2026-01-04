@@ -125,6 +125,91 @@ SELECT cron.schedule(
 
 ---
 
+### Recalculate Minesweeper Reference Times
+
+**Migration** : `supabase/migrations/20260104130000_pg_cron_minesweeper_ref_times.sql`
+
+| Propriete     | Valeur                                           |
+| ------------- | ------------------------------------------------ |
+| Schedule      | `30 1 * * 0` (dimanche 01:30 UTC)                |
+| Fonction      | `public.run_recalculate_minesweeper_ref_times()` |
+| Duree typique | < 5s                                             |
+
+#### Objectif
+
+Recalcule les temps de reference Minesweeper par cycle pedagogique :
+
+- Calcule la mediane des temps sur 4 semaines
+- Met a jour `minesweeper_reference_times` si assez d'echantillons
+- Applique les bornes min/max de securite
+
+#### Logique
+
+```sql
+-- Pour chaque combinaison cycle/difficulte
+SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY time_seconds)
+FROM minesweeper_games mg
+JOIN profiles p ON mg.student_id = p.id
+WHERE mg.status = 'won'
+  AND mg.completed_at >= week_start
+  AND get_cycle_for_grade(p.grade) = current_cycle
+  AND mg.difficulty = current_difficulty;
+```
+
+#### Code Complet (Wrapper)
+
+```sql
+CREATE OR REPLACE FUNCTION public.run_recalculate_minesweeper_ref_times()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_run_id UUID;
+    v_results RECORD;
+    v_updated_count INTEGER := 0;
+    v_skipped_count INTEGER := 0;
+BEGIN
+    v_run_id := start_job_run('recalculate_minesweeper_ref_times', '{}'::jsonb);
+
+    BEGIN
+        FOR v_results IN SELECT * FROM recalculate_minesweeper_reference_times()
+        LOOP
+            IF v_results.updated THEN
+                v_updated_count := v_updated_count + 1;
+            ELSE
+                v_skipped_count := v_skipped_count + 1;
+            END IF;
+        END LOOP;
+
+        PERFORM complete_job_run(v_run_id, 'success', NULL,
+            jsonb_build_object(
+                'updated_count', v_updated_count,
+                'skipped_count', v_skipped_count
+            ));
+
+    EXCEPTION WHEN OTHERS THEN
+        PERFORM complete_job_run(v_run_id, 'failed', SQLERRM, NULL);
+        RAISE;
+    END;
+END;
+$$;
+```
+
+#### Metadata Generee
+
+```json
+{
+	"updated_count": 5,
+	"skipped_count": 10,
+	"total_samples": 1250,
+	"combinations_processed": 15
+}
+```
+
+---
+
 ## Gestion des Jobs
 
 ### Voir les jobs planifies
