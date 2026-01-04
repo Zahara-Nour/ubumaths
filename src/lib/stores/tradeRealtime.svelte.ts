@@ -248,6 +248,11 @@ class TradeRealtimeStore {
 	 */
 	error = $state<string | null>(null);
 
+	/**
+	 * Whether to show idle warning modal
+	 */
+	showIdleWarning = $state(false);
+
 	// =========================================================================
 	// PRIVATE STATE
 	// =========================================================================
@@ -258,6 +263,9 @@ class TradeRealtimeStore {
 	private confirmationTimer: ReturnType<typeof setTimeout> | null = null;
 	private presenceInterval: ReturnType<typeof setInterval> | null = null;
 	private confirmationPhaseStarting = false;
+	private visibilityHandler: (() => void) | null = null;
+	private idleTimer: ReturnType<typeof setTimeout> | null = null;
+	private idleActivityHandler: (() => void) | null = null;
 
 	/**
 	 * Max cards per offer
@@ -283,6 +291,11 @@ class TradeRealtimeStore {
 	 * Presence heartbeat interval (30 seconds)
 	 */
 	private readonly PRESENCE_INTERVAL = 30_000;
+
+	/**
+	 * Idle timeout before auto-disconnect (10 minutes)
+	 */
+	private readonly IDLE_TIMEOUT = 10 * 60 * 1000;
 
 	// =========================================================================
 	// DERIVED STATE
@@ -347,6 +360,12 @@ class TradeRealtimeStore {
 
 			// Start presence heartbeat
 			this.startPresenceHeartbeat();
+
+			// Setup visibility handler (pause heartbeat when tab hidden)
+			this.setupVisibilityHandler();
+
+			// Setup idle timeout (auto-disconnect after inactivity)
+			this.setupIdleTimeout();
 
 			logger.info('Trade realtime store initialized:', { tradeId, userId, role: this.myRole });
 		} catch (err) {
@@ -607,6 +626,25 @@ class TradeRealtimeStore {
 			this.presenceInterval = null;
 		}
 
+		// Clear visibility handler
+		if (this.visibilityHandler) {
+			document.removeEventListener('visibilitychange', this.visibilityHandler);
+			this.visibilityHandler = null;
+		}
+
+		// Clear idle timeout and activity listener
+		if (this.idleTimer) {
+			clearTimeout(this.idleTimer);
+			this.idleTimer = null;
+		}
+		if (this.idleActivityHandler) {
+			document.removeEventListener('mousemove', this.idleActivityHandler);
+			document.removeEventListener('keydown', this.idleActivityHandler);
+			document.removeEventListener('click', this.idleActivityHandler);
+			document.removeEventListener('touchstart', this.idleActivityHandler);
+			this.idleActivityHandler = null;
+		}
+
 		// Unsubscribe from channel
 		if (this.tradeId) {
 			const channelName = `trade:${this.tradeId}`;
@@ -633,6 +671,7 @@ class TradeRealtimeStore {
 		this.messages = [];
 		this.loading = false;
 		this.error = null;
+		this.showIdleWarning = false;
 		this.supabase = null;
 		this.userId = null;
 	}
@@ -1172,6 +1211,98 @@ class TradeRealtimeStore {
 		this.presenceInterval = setInterval(() => {
 			this.broadcastPresence(true);
 		}, this.PRESENCE_INTERVAL);
+	}
+
+	/**
+	 * Setup visibility change handler to pause heartbeat when tab is hidden
+	 * This significantly reduces realtime quota usage for background tabs
+	 */
+	private setupVisibilityHandler(): void {
+		this.visibilityHandler = () => {
+			if (document.hidden) {
+				// Tab hidden → stop heartbeat and broadcast offline
+				logger.info('Tab hidden, pausing presence heartbeat');
+				this.broadcastPresence(false);
+				if (this.presenceInterval) {
+					clearInterval(this.presenceInterval);
+					this.presenceInterval = null;
+				}
+			} else {
+				// Tab visible → resume heartbeat
+				logger.info('Tab visible, resuming presence heartbeat');
+				this.broadcastPresence(true);
+				this.startPresenceHeartbeat();
+				// Reset idle timer on tab focus
+				this.resetIdleTimer();
+			}
+		};
+		document.addEventListener('visibilitychange', this.visibilityHandler);
+	}
+
+	/**
+	 * Setup idle timeout to auto-disconnect after prolonged inactivity
+	 * Prevents forgotten tabs from consuming realtime quota
+	 */
+	private setupIdleTimeout(): void {
+		// Activity events that reset the idle timer
+		this.idleActivityHandler = () => {
+			this.resetIdleTimer();
+		};
+
+		document.addEventListener('mousemove', this.idleActivityHandler);
+		document.addEventListener('keydown', this.idleActivityHandler);
+		document.addEventListener('click', this.idleActivityHandler);
+		document.addEventListener('touchstart', this.idleActivityHandler);
+
+		// Start the idle timer
+		this.resetIdleTimer();
+	}
+
+	/**
+	 * Reset the idle timer (called on user activity)
+	 */
+	private resetIdleTimer(): void {
+		// Don't reset if warning modal is shown (user must explicitly respond)
+		if (this.showIdleWarning) return;
+
+		if (this.idleTimer) {
+			clearTimeout(this.idleTimer);
+		}
+
+		this.idleTimer = setTimeout(() => {
+			logger.warn('Idle timeout reached, showing warning modal');
+			this.showIdleWarning = true;
+			// Pause heartbeat while waiting for user response
+			if (this.presenceInterval) {
+				clearInterval(this.presenceInterval);
+				this.presenceInterval = null;
+			}
+		}, this.IDLE_TIMEOUT);
+	}
+
+	/**
+	 * Continue session after idle warning (user clicked "Continue")
+	 */
+	continueSession(): void {
+		logger.info('User chose to continue session');
+		this.showIdleWarning = false;
+		// Resume heartbeat and reset idle timer
+		this.broadcastPresence(true);
+		this.startPresenceHeartbeat();
+		if (this.idleTimer) {
+			clearTimeout(this.idleTimer);
+			this.idleTimer = null;
+		}
+		this.resetIdleTimer();
+	}
+
+	/**
+	 * End session after idle warning (user clicked "Quit")
+	 */
+	endSession(): void {
+		logger.info('User chose to end session');
+		this.showIdleWarning = false;
+		this.destroy();
 	}
 
 	// =========================================================================
