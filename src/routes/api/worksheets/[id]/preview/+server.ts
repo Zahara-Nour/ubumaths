@@ -87,8 +87,6 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 				exercise:exercises (
 					id,
 					title,
-					statement_md,
-					solution_md,
 					difficulty,
 					variables,
 					shared,

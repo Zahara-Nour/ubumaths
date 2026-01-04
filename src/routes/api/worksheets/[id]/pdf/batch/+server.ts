@@ -88,8 +88,6 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 					exercise:exercises(
 						id,
 						title,
-						statement_md,
-						solution_md,
 						difficulty,
 						variables,
 						shared,
