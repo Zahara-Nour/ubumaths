@@ -11,9 +11,31 @@
 	} from '$lib/types/notification';
 	import { Button } from '$lib/components/ui/button';
 	import { sanitizeNotificationHtml } from '$lib/utils/sanitize-notification';
+	import {
+		formatDailySummaryFromMetadata,
+		isDailySummaryMetadata
+	} from '$lib/utils/notification-formatters';
 	import { Bell, Loader2 } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+
+	/**
+	 * Get the display message for a notification.
+	 * For daily_summary notifications with metadata, format from metadata.
+	 * Otherwise, use the stored message.
+	 */
+	function getNotificationMessage(notification: NotificationWithDetails): string {
+		// Daily summary notifications: format from metadata if available
+		if (
+			notification.system_event_type === 'daily_summary' &&
+			notification.metadata &&
+			isDailySummaryMetadata(notification.metadata)
+		) {
+			return formatDailySummaryFromMetadata(notification.metadata);
+		}
+		// Default: use stored message
+		return notification.message;
+	}
 
 	const notifications = $derived(notificationStore.notifications);
 	const isLoading = $derived(notificationStore.isLoading);
@@ -150,11 +172,11 @@
 
 								<!-- Message (HTML) -->
 								<div
-									class="prose prose-sm max-w-none dark:prose-invert {getPriorityColors(
+									class="prose prose-sm max-w-none whitespace-pre-line dark:prose-invert {getPriorityColors(
 										notification
 									).text}"
 								>
-									{@html sanitizeNotificationHtml(notification.message)}
+									{@html sanitizeNotificationHtml(getNotificationMessage(notification))}
 								</div>
 
 								<!-- Action button (if present) -->

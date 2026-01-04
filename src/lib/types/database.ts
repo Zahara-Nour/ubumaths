@@ -6892,6 +6892,7 @@ export type Database = {
 					id: string;
 					is_system: boolean;
 					message: string;
+					metadata: Json | null;
 					priority: string;
 					system_event_type: string | null;
 					target_class_ids: string[] | null;
@@ -6911,6 +6912,7 @@ export type Database = {
 					id?: string;
 					is_system?: boolean;
 					message: string;
+					metadata?: Json | null;
 					priority?: string;
 					system_event_type?: string | null;
 					target_class_ids?: string[] | null;
@@ -6930,6 +6932,7 @@ export type Database = {
 					id?: string;
 					is_system?: boolean;
 					message?: string;
+					metadata?: Json | null;
 					priority?: string;
 					system_event_type?: string | null;
 					target_class_ids?: string[] | null;
@@ -11761,6 +11764,42 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			admin_pg_cron_jobs: {
+				Row: {
+					active: boolean | null;
+					command: string | null;
+					database: string | null;
+					jobid: number | null;
+					last_run: Json | null;
+					nodename: string | null;
+					nodeport: number | null;
+					schedule: string | null;
+					username: string | null;
+				};
+				Insert: {
+					active?: boolean | null;
+					command?: string | null;
+					database?: string | null;
+					jobid?: number | null;
+					last_run?: never;
+					nodename?: string | null;
+					nodeport?: number | null;
+					schedule?: string | null;
+					username?: string | null;
+				};
+				Update: {
+					active?: boolean | null;
+					command?: string | null;
+					database?: string | null;
+					jobid?: number | null;
+					last_run?: never;
+					nodename?: string | null;
+					nodeport?: number | null;
+					schedule?: string | null;
+					username?: string | null;
+				};
+				Relationships: [];
+			};
 			admin_user_activity: {
 				Row: {
 					active_users_7d: number | null;
@@ -12741,6 +12780,8 @@ export type Database = {
 			};
 			cleanup_stale_presence: { Args: never; Returns: undefined };
 			cleanup_stale_queue_entries: { Args: never; Returns: undefined };
+			cleanup_stale_trades: { Args: never; Returns: undefined };
+			cleanup_stuck_job_runs: { Args: never; Returns: undefined };
 			complete_job_run: {
 				Args: {
 					p_error_message?: string;
@@ -13856,6 +13897,10 @@ export type Database = {
 				};
 				Returns: undefined;
 			};
+			run_daily_summaries: { Args: never; Returns: undefined };
+			run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined };
+			run_weekly_best_bonuses: { Args: never; Returns: undefined };
+			run_weekly_rewards: { Args: never; Returns: undefined };
 			search_private_messages: {
 				Args: {
 					p_date_from?: string;

@@ -55,15 +55,15 @@ export type CronJobsQuery = z.infer<typeof cronJobsQuerySchema>;
  * - RPC paths: rpc:function_name (pg_cron database functions)
  */
 const ALLOWED_JOB_PATHS = [
-	'/api/cron/daily-summaries-and-rewards',
-	'/api/cleanup/all',
 	'/api/riddles/auto-select-daily',
 	// pg_cron jobs (database RPC functions)
 	'rpc:cleanup_stale_trades',
 	'rpc:run_recalculate_minesweeper_ref_times',
 	'rpc:cleanup_stuck_job_runs',
 	'rpc:run_weekly_best_bonuses',
-	'rpc:run_weekly_rewards'
+	'rpc:run_weekly_rewards',
+	'rpc:run_daily_summaries',
+	'rpc:run_cleanup_all'
 ] as const;
 
 /**

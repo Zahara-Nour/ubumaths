@@ -356,6 +356,138 @@ NOT EXISTS (
 
 ---
 
+### Daily Summaries
+
+**Migration** : `supabase/migrations/20260104170000_pg_cron_daily_summaries.sql`
+
+| Propriete     | Valeur                                |
+| ------------- | ------------------------------------- |
+| Schedule      | `0 * * * *` (chaque heure a :00)      |
+| Fonction      | `public.run_daily_summaries()`        |
+| Duree typique | < 5s (optimise: 5 queries par classe) |
+
+#### Objectif
+
+Genere les bilans quotidiens d'activite pour chaque eleve ayant eu cours la veille :
+
+- Gidouilles gagnees/perdues
+- Bonus gagnes/utilises
+- Avertissements recus/retires
+- Cartes VIP gagnees/utilisees
+
+#### Logique Timezone-Aware
+
+Le job tourne **toutes les heures** et pour chaque ecole :
+
+1. Verifie si l'heure actuelle (dans la timezone de l'ecole) = 18:00
+2. Si oui, calcule "hier" dans la timezone locale
+3. Pour chaque classe active ayant eu cours hier :
+   - Agregation optimisee (5 CTEs par classe, pas par eleve)
+   - Insere dans `daily_summaries` table
+   - Cree notification avec metadata (formatage client-side)
+
+```sql
+-- Check si c'est 18h local
+v_current_hour := EXTRACT(HOUR FROM NOW() AT TIME ZONE v_school.timezone);
+IF v_current_hour != 18 THEN
+    CONTINUE;  -- Skip cette ecole
+END IF;
+
+-- Agregation optimisee avec CTEs
+WITH students AS (...),
+     gidouilles_agg AS (SELECT student_id, SUM(...) FROM gidouilles_activity GROUP BY student_id),
+     bonus_agg AS (...),
+     vip_agg AS (...),
+     warnings_agg AS (...)
+SELECT ... FROM students
+LEFT JOIN gidouilles_agg ...
+LEFT JOIN bonus_agg ...
+```
+
+#### Client-Side Formatting
+
+Les notifications stockent les donnees brutes dans `metadata` :
+
+```json
+{
+	"class_name": "6eme A",
+	"summary_date": "2026-01-03",
+	"gidouilles_gained": 5,
+	"gidouilles_lost": 2,
+	"bonus_gained": 3,
+	"bonus_used": 1,
+	"warnings_issued": 0,
+	"warnings_removed": 0,
+	"vip_cards_gained": 1,
+	"vip_cards_used": 0
+}
+```
+
+Le client utilise `formatDailySummaryFromMetadata()` pour l'affichage :
+
+```
+📊 Bilan du 3 janvier 2026 - 6eme A
+
+🪙 Gidouilles : +5 gagnees, -2 perdues (Total : +3)
+⭐ Bonus : +3 gagnes, -1 utilise (Total : +2)
+🎴 Cartes VIP : 1 gagnee
+```
+
+#### Metadata Generee
+
+```json
+{
+	"schools_processed": 2,
+	"schools_skipped": 5,
+	"classes_processed": 8,
+	"total_summaries": 120
+}
+```
+
+---
+
+### Cleanup All
+
+**Migration** : `supabase/migrations/20260104180000_pg_cron_cleanup_all.sql`
+
+| Propriete     | Valeur                     |
+| ------------- | -------------------------- |
+| Schedule      | `0 2 * * *` (02:00 UTC)    |
+| Fonction      | `public.run_cleanup_all()` |
+| Duree typique | < 1s                       |
+
+#### Objectif
+
+Consolide toutes les taches de nettoyage en un seul job :
+
+1. **Cache cleanup** : Supprime les entrees expirees de `server_cache`
+2. **Notifications cleanup** : Hard delete des notifications expirees (> date expiration)
+
+#### Code Simplifie
+
+```sql
+-- 1. Cache cleanup (appelle fonction existante)
+v_cache_deleted := cleanup_expired_cache();
+
+-- 2. Notifications cleanup
+DELETE FROM notifications WHERE expires_at < NOW();
+GET DIAGNOSTICS v_notifications_deleted = ROW_COUNT;
+```
+
+#### Metadata Generee
+
+```json
+{
+	"cache_deleted": 15,
+	"notifications_deleted": 42,
+	"total_deleted": 57,
+	"cache_success": true,
+	"notifications_success": true
+}
+```
+
+---
+
 ## Gestion des Jobs
 
 ### Voir les jobs planifies
