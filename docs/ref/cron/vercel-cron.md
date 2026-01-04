@@ -47,11 +47,10 @@
 3. Weekly Best Bonuses (si dernier jour de semaine)
    └─ RPC award_weekly_best_bonuses()
    └─ Attribue meilleur bonus theorique de la semaine
-
-4. Minesweeper Reference Times (dimanche seulement)
-   └─ RPC recalculate_minesweeper_reference_times()
-   └─ Recalcule temps de reference par cycle/difficulte
 ```
+
+> **Note** : Minesweeper Reference Times a ete migre vers pg_cron
+> (voir `run_recalculate_minesweeper_ref_times` dans pg-cron.md)
 
 #### Metadata Generee
 
@@ -62,9 +61,7 @@
 	"daily_summaries_classes": 10,
 	"weekly_rewards_awarded": 45,
 	"weekly_rewards_classes": 15,
-	"weekly_best_bonuses_awarded": 30,
-	"minesweeper_ref_times_updated": 5,
-	"minesweeper_ref_times_skipped": 10
+	"weekly_best_bonuses_awarded": 30
 }
 ```
 

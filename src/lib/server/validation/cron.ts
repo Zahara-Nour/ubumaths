@@ -59,7 +59,8 @@ const ALLOWED_JOB_PATHS = [
 	'/api/cleanup/all',
 	'/api/riddles/auto-select-daily',
 	// pg_cron jobs (database RPC functions)
-	'rpc:cleanup_stale_trades'
+	'rpc:cleanup_stale_trades',
+	'rpc:run_recalculate_minesweeper_ref_times'
 ] as const;
 
 /**
