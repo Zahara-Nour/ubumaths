@@ -51,11 +51,15 @@ export type CronJobsQuery = z.infer<typeof cronJobsQuerySchema>;
 
 /**
  * Allowed CRON job paths that can be triggered manually
+ * - HTTP paths: /api/cron/... (Vercel cron jobs)
+ * - RPC paths: rpc:function_name (pg_cron database functions)
  */
 const ALLOWED_JOB_PATHS = [
 	'/api/cron/daily-summaries-and-rewards',
 	'/api/cleanup/all',
-	'/api/riddles/auto-select-daily'
+	'/api/riddles/auto-select-daily',
+	// pg_cron jobs (database RPC functions)
+	'rpc:cleanup_stale_trades'
 ] as const;
 
 /**
