@@ -28,6 +28,10 @@ Le systeme CRON est compose de **3 couches** :
 │  │ Cleanup Stuck Jobs  │  │ Weekly Best Bonuses │          │
 │  │ 30 * * * * (1x/h)   │  │ 0 0,12 * * * (2x/j) │          │
 │  └─────────────────────┘  └─────────────────────┘          │
+│  ┌─────────────────────┐                                   │
+│  │ Weekly Rewards      │                                   │
+│  │ 0 0,12 * * * (2x/j) │                                   │
+│  └─────────────────────┘                                   │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -44,19 +48,20 @@ Le systeme CRON est compose de **3 couches** :
 
 | Job                                                                           | Type    | Schedule       | Frequence             |
 | ----------------------------------------------------------------------------- | ------- | -------------- | --------------------- |
-| [Daily Summaries & Rewards](./vercel-cron.md#daily-summaries--rewards)        | Vercel  | `0 1 * * *`    | 1x/jour 01:00 UTC     |
+| [Daily Summaries](./vercel-cron.md#daily-summaries)                           | Vercel  | `0 1 * * *`    | 1x/jour 01:00 UTC     |
 | [Cleanup All](./vercel-cron.md#cleanup-all)                                   | Vercel  | `0 2 * * *`    | 1x/jour 02:00 UTC     |
 | [Cleanup Stale Trades](./pg-cron.md#cleanup-stale-trades)                     | pg_cron | `*/10 * * * *` | 10 min                |
 | [Minesweeper Ref Times](./pg-cron.md#recalculate-minesweeper-reference-times) | pg_cron | `30 1 * * 0`   | 1x/sem dimanche 01:30 |
 | [Cleanup Stuck Jobs](./pg-cron.md#cleanup-stuck-job-runs)                     | pg_cron | `30 * * * *`   | 1x/heure              |
 | [Weekly Best Bonuses](./pg-cron.md#weekly-best-game-bonuses)                  | pg_cron | `0 0,12 * * *` | 2x/jour               |
+| [Weekly Rewards](./pg-cron.md#weekly-rewards-no-warnings-bonus)               | pg_cron | `0 0,12 * * *` | 2x/jour               |
 
 ## Quotas
 
 | Plateforme      | Free Tier  | Utilisation   |
 | --------------- | ---------- | ------------- |
 | **Vercel Cron** | 2 jobs max | 2/2 (100%)    |
-| **pg_cron**     | Illimite   | 4 jobs actifs |
+| **pg_cron**     | Illimite   | 5 jobs actifs |
 
 ## Fichiers Cles
 
@@ -83,7 +88,8 @@ supabase/migrations/
 ├── 20260104120000_pg_cron_cleanup_stale_trades.sql
 ├── 20260104130000_pg_cron_minesweeper_ref_times.sql
 ├── 20260104140000_pg_cron_cleanup_stuck_jobs.sql
-└── 20260104150000_pg_cron_weekly_best_bonuses.sql
+├── 20260104150000_pg_cron_weekly_best_bonuses.sql
+└── 20260104160000_pg_cron_weekly_rewards.sql
 
 vercel.json                        # Configuration Vercel CRON
 ```

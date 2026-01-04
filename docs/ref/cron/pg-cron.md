@@ -278,20 +278,17 @@ Attribue le bonus hebdomadaire = meilleur score theorique de la semaine a chaque
 
 Le job tourne 2x/jour et pour chaque ecole :
 
-1. Verifie si le jour actuel (dans la timezone de l'ecole) = jour des recompenses
+1. Verifie si le jour actuel (dans la timezone de l'ecole) = jour des recompenses (6eme jour = first_day + 5)
 2. Verifie si l'heure actuelle >= 12 (apres-midi)
 3. Si les 2 conditions sont vraies, calcule la semaine precedente et appelle `award_weekly_best_bonuses()`
 
 ```sql
 -- Pour chaque ecole, verifie si c'est le moment d'attribuer les bonus
-SELECT s.id
-FROM schools s
-WHERE
-    -- Jour des recompenses = (last_day + 1) % 7
-    ((s.timetable->'week_config'->>'last_day')::INT + 1) % 7
-        = EXTRACT(DOW FROM NOW() AT TIME ZONE s.timezone)::INT
-    -- ET apres-midi local
-    AND EXTRACT(HOUR FROM NOW() AT TIME ZONE s.timezone) >= 12;
+-- Jour des recompenses = 6eme jour de la semaine = (first_day + 5) % 7
+v_rewards_day := (v_first_day + 5) % 7;
+
+-- Exemple: ecole francaise (first_day=1) -> rewards_day = 6 (samedi)
+-- Exemple: ecole israelienne (first_day=0) -> rewards_day = 5 (vendredi)
 ```
 
 #### Metadata Generee
@@ -301,6 +298,59 @@ WHERE
 	"schools_processed": 2,
 	"schools_skipped": 5,
 	"total_bonuses_awarded": 45
+}
+```
+
+---
+
+### Weekly Rewards (No Warnings Bonus)
+
+**Migration** : `supabase/migrations/20260104160000_pg_cron_weekly_rewards.sql`
+
+| Propriete     | Valeur                              |
+| ------------- | ----------------------------------- |
+| Schedule      | `0 0,12 * * *` (00:00 et 12:00 UTC) |
+| Fonction      | `public.run_weekly_rewards()`       |
+| Duree typique | < 1s                                |
+
+#### Objectif
+
+Attribue 1 gidouille aux eleves qui n'ont eu aucun avertissement pendant la semaine.
+
+#### Logique Timezone-Aware
+
+Le job tourne 2x/jour et pour chaque classe :
+
+1. Verifie si le jour actuel (dans la timezone de l'ecole) = jour des recompenses (6eme jour = first_day + 5)
+2. Verifie si l'heure actuelle >= 12 (apres-midi)
+3. Si les 2 conditions sont vraies :
+   - Calcule le debut de la semaine actuelle
+   - Pour chaque eleve actif (is_test=false, status='active')
+   - Verifie s'il n'a aucun avertissement actif depuis le debut de la semaine
+   - Si aucun avertissement : attribue 1 gidouille + cree notification
+
+```sql
+-- Calcul du debut de semaine actuelle
+v_days_since_week_start := (v_current_day - v_first_day + 7) % 7;
+v_current_week_start := v_today - v_days_since_week_start;
+
+-- Check des warnings (timezone-aware)
+NOT EXISTS (
+    SELECT 1 FROM student_warnings sw
+    WHERE sw.student_id = cm.student_id
+      AND sw.class_id = v_class_id
+      AND sw.deleted_at IS NULL
+      AND sw.created_at >= (v_current_week_start::TIMESTAMP AT TIME ZONE v_timezone)
+)
+```
+
+#### Metadata Generee
+
+```json
+{
+	"classes_processed": 5,
+	"classes_skipped": 10,
+	"total_rewards_awarded": 85
 }
 ```
 
