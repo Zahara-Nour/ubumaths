@@ -80,24 +80,6 @@
 	}
 
 	/**
-	 * Get icon component based on reference type
-	 */
-	const iconComponent = $derived.by(() => {
-		switch (referenceType) {
-			case 'chapter':
-				return BookOpen;
-			case 'document':
-				return FileText;
-			case 'exercise':
-				return PencilRuler;
-			case 'assessment':
-				return ClipboardCheck;
-			default:
-				return FileText;
-		}
-	});
-
-	/**
 	 * Get French label for reference type (for accessibility)
 	 */
 	function getTypeLabel(): string {
@@ -128,7 +110,16 @@
 	)}
 	aria-label="{getTypeLabel()}: {label}"
 >
-	{@const Icon = iconComponent}
-	<Icon class="h-3.5 w-3.5 flex-shrink-0" />
+	{#if referenceType === 'chapter'}
+		<BookOpen class="h-3.5 w-3.5 flex-shrink-0" />
+	{:else if referenceType === 'document'}
+		<FileText class="h-3.5 w-3.5 flex-shrink-0" />
+	{:else if referenceType === 'exercise'}
+		<PencilRuler class="h-3.5 w-3.5 flex-shrink-0" />
+	{:else if referenceType === 'assessment'}
+		<ClipboardCheck class="h-3.5 w-3.5 flex-shrink-0" />
+	{:else}
+		<FileText class="h-3.5 w-3.5 flex-shrink-0" />
+	{/if}
 	<span>{label}</span>
 </a>

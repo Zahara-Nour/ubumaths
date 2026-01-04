@@ -30,7 +30,7 @@
 		FileText,
 		ClipboardList,
 		Globe,
-		GlobeOff,
+		EyeOff,
 		Calendar
 	} from 'lucide-svelte';
 	import type { PageData, ActionData } from './$types';
@@ -187,7 +187,7 @@
 						<Globe class="mr-2 h-4 w-4" />
 						Publie
 					{:else}
-						<GlobeOff class="mr-2 h-4 w-4" />
+						<EyeOff class="mr-2 h-4 w-4" />
 						Non publie
 					{/if}
 				</Button>
