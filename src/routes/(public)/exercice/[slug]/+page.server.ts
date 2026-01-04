@@ -34,8 +34,6 @@ function dbRowToExercise(
 		source: dbExercise.source ?? undefined,
 		difficulty: dbExercise.difficulty as 1 | 2 | 3,
 		tags: (dbExercise.tags as string[]) || [],
-		statement_md: dbExercise.statement_md,
-		solution_md: dbExercise.solution_md,
 		variables: dbExercise.variables as unknown as Exercise['variables'],
 		distribution_mode: dbExercise.distribution_mode as Exercise['distribution_mode'],
 		is_public: dbExercise.is_public,
