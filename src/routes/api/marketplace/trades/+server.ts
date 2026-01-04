@@ -105,9 +105,39 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		throw error(500, 'Erreur lors de la récupération des échanges');
 	}
 
-	// Process trades to include only the latest offer
+	// Helper to transform user data with username
+	const transformUser = (
+		user: { id: string; firstname: string; lastname: string; avatar_url: string | null } | null
+	) => {
+		if (!user) return undefined;
+		return {
+			id: user.id,
+			username: `${user.firstname} ${user.lastname}`.trim(),
+			avatar_url: user.avatar_url,
+			first_name: user.firstname,
+			last_name: user.lastname
+		};
+	};
+
+	// Process trades to include only the latest offer and transform user data
 	const processedTrades = (trades || []).map((trade) => ({
 		...trade,
+		initiator: transformUser(
+			trade.initiator as {
+				id: string;
+				firstname: string;
+				lastname: string;
+				avatar_url: string | null;
+			} | null
+		),
+		partner: transformUser(
+			trade.partner as {
+				id: string;
+				firstname: string;
+				lastname: string;
+				avatar_url: string | null;
+			} | null
+		),
 		latest_offer: trade.latest_offer?.[0] || null
 	}));
 
@@ -275,5 +305,39 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		initiator_id: userId
 	});
 
-	return json(trade, { status: 201 });
+	// Transform user data with username for response
+	const transformUserResponse = (
+		user: { id: string; firstname: string; lastname: string; avatar_url: string | null } | null
+	) => {
+		if (!user) return undefined;
+		return {
+			id: user.id,
+			username: `${user.firstname} ${user.lastname}`.trim(),
+			avatar_url: user.avatar_url,
+			first_name: user.firstname,
+			last_name: user.lastname
+		};
+	};
+
+	const processedTrade = {
+		...trade,
+		initiator: transformUserResponse(
+			trade.initiator as {
+				id: string;
+				firstname: string;
+				lastname: string;
+				avatar_url: string | null;
+			} | null
+		),
+		partner: transformUserResponse(
+			trade.partner as {
+				id: string;
+				firstname: string;
+				lastname: string;
+				avatar_url: string | null;
+			} | null
+		)
+	};
+
+	return json(processedTrade, { status: 201 });
 };
