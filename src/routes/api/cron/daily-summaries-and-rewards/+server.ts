@@ -1,16 +1,16 @@
 /**
  * GET/POST /api/cron/daily-summaries-and-rewards
  *
- * Daily cron job that processes summaries and rewards for all classes:
- * 1. Daily Summaries: For each class that had a lesson yesterday, generates a daily summary
- *    for each student showing their activity (gidouilles, bonuses, warnings, VIP cards)
- * 2. Weekly Rewards: On the last day of the week (based on school's week_config), awards
- *    1 gidouille to each student who had zero warnings during the previous week
+ * Daily cron job that generates daily summaries for all classes:
+ * For each class that had a lesson yesterday, generates a daily summary
+ * for each student showing their activity (gidouilles, bonuses, warnings, VIP cards)
+ *
+ * NOTE: Weekly Rewards moved to pg_cron (run_weekly_rewards)
  *
  * Scheduled to run daily at 1:00 AM UTC via Vercel cron.
  * Vercel cron jobs use GET requests, but POST is also supported for manual triggers.
  *
- * @returns JSON with success status and detailed results for each operation
+ * @returns JSON with success status and detailed results
  */
 
 import { json } from '@sveltejs/kit';
@@ -19,14 +19,9 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { verifyCronAuth } from '$lib/server/auth/cron';
 import {
 	getYesterdayInTimezone,
-	getCurrentDayOfWeekInTimezone,
 	checkClassSchedule,
-	generateDailySummary,
-	isWeeklyRewardsDay,
-	generateWeeklyRewards
+	generateDailySummary
 } from '$lib/server/summaries';
-import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-import type { WeekConfig } from '$lib/server/summaries/database-types';
 
 interface ClassData {
 	id: string;
@@ -37,9 +32,6 @@ interface ClassData {
 	updated_at: string;
 	schools: {
 		timezone: string;
-		timetable: {
-			week_config?: WeekConfig;
-		} | null;
 	} | null;
 }
 
@@ -52,12 +44,7 @@ interface ProcessingResults {
 		classesProcessed: number;
 		errors: string[];
 	};
-	weeklyRewards: {
-		success: boolean;
-		count: number;
-		classesProcessed: number;
-		errors: string[];
-	};
+	// NOTE: weeklyRewards moved to pg_cron (run_weekly_rewards)
 	// NOTE: minesweeperReferenceTimes moved to pg_cron (run_recalculate_minesweeper_ref_times)
 	// NOTE: weeklyBestBonuses moved to pg_cron (run_weekly_best_bonuses)
 }
@@ -83,14 +70,8 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			count: 0,
 			classesProcessed: 0,
 			errors: []
-		},
-		weeklyRewards: {
-			success: true,
-			count: 0,
-			classesProcessed: 0,
-			errors: []
 		}
-		// NOTE: minesweeperReferenceTimes and weeklyBestBonuses moved to pg_cron
+		// NOTE: weeklyRewards, minesweeperReferenceTimes, weeklyBestBonuses moved to pg_cron
 	};
 
 	try {
@@ -107,16 +88,14 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			runId = startData;
 		}
 
-		console.log('[Cron] Starting daily summaries and weekly rewards processing');
+		console.log('[Cron] Starting daily summaries processing');
 
 		// ============================================================
 		// STEP 1: Fetch all active classes with school information
 		// ============================================================
 		const { data: classes, error: classesError } = await serviceClient
 			.from('classes')
-			.select(
-				'id, name, teacher_id, school_id, created_at, updated_at, schools(timezone, timetable)'
-			)
+			.select('id, name, teacher_id, school_id, created_at, updated_at, schools(timezone)')
 			.eq('is_active', true);
 
 		if (classesError) {
@@ -140,9 +119,8 @@ const cronHandler: RequestHandler = async ({ request }) => {
 		// ============================================================
 		for (const classData of classes as ClassData[]) {
 			try {
-				// Extract timezone and week_config from school
+				// Extract timezone from school
 				const timezone = classData.schools?.timezone || 'Europe/Paris';
-				const weekConfig = classData.schools?.timetable?.week_config || DEFAULT_WEEK_CONFIG;
 
 				console.log(
 					`[Cron] Processing class ${classData.name} (${classData.id}) in timezone ${timezone}`
@@ -179,42 +157,21 @@ const cronHandler: RequestHandler = async ({ request }) => {
 					);
 				}
 
-				// Check if today is the weekly rewards day (last day of week)
-				const currentDayOfWeek = getCurrentDayOfWeekInTimezone(timezone);
-
-				if (isWeeklyRewardsDay(weekConfig, currentDayOfWeek)) {
-					console.log(
-						`[Cron] Today is weekly rewards day for class ${classData.name}, processing rewards`
-					);
-
-					// Generate weekly rewards for students with no warnings
-					const rewardsCount = await generateWeeklyRewards(
-						serviceClient,
-						classData,
-						weekConfig,
-						timezone
-					);
-
-					results.weeklyRewards.count += rewardsCount;
-					results.weeklyRewards.classesProcessed++;
-
-					console.log(`[Cron] Awarded ${rewardsCount} weekly rewards for class ${classData.name}`);
-				}
+				// NOTE: Weekly rewards moved to pg_cron (run_weekly_rewards)
 			} catch (err) {
 				const errorMsg = err instanceof Error ? err.message : 'Unknown error';
 				const errorLog = `Class ${classData.id} (${classData.name}): ${errorMsg}`;
 
 				console.error(`[Cron] Error processing class ${classData.id}:`, err);
 
-				// Track errors for both operations (we don't know which one failed)
 				results.dailySummaries.errors.push(errorLog);
-				results.weeklyRewards.errors.push(errorLog);
 				results.success = false;
 
 				// Continue processing other classes
 			}
 		}
 
+		// NOTE: Weekly Rewards moved to pg_cron (run_weekly_rewards)
 		// NOTE: Weekly Best Game Bonuses moved to pg_cron (run_weekly_best_bonuses)
 		// NOTE: Minesweeper Reference Times moved to pg_cron (run_recalculate_minesweeper_ref_times)
 
@@ -222,18 +179,14 @@ const cronHandler: RequestHandler = async ({ request }) => {
 		// STEP 3: Determine overall status
 		// ============================================================
 		results.dailySummaries.success = results.dailySummaries.errors.length === 0;
-		results.weeklyRewards.success = results.weeklyRewards.errors.length === 0;
-		results.success = results.dailySummaries.success && results.weeklyRewards.success;
+		results.success = results.dailySummaries.success;
 
 		const status = results.success ? 'success' : 'partial_failure';
 		const metadata = {
 			classes_processed: results.classesProcessed,
 			daily_summaries_generated: results.dailySummaries.count,
 			daily_summaries_classes: results.dailySummaries.classesProcessed,
-			weekly_rewards_awarded: results.weeklyRewards.count,
-			weekly_rewards_classes: results.weeklyRewards.classesProcessed,
-			daily_summaries_errors: results.dailySummaries.errors.length,
-			weekly_rewards_errors: results.weeklyRewards.errors.length
+			daily_summaries_errors: results.dailySummaries.errors.length
 		};
 
 		// Complete job run with results
@@ -248,13 +201,10 @@ const cronHandler: RequestHandler = async ({ request }) => {
 		console.log('[Cron] Processing complete:', {
 			classes: results.classesProcessed,
 			dailySummaries: results.dailySummaries.count,
-			weeklyRewards: results.weeklyRewards.count,
-			errors: results.dailySummaries.errors.length + results.weeklyRewards.errors.length
+			errors: results.dailySummaries.errors.length
 		});
 
 		// Return results (200 OK even with partial errors)
-		// NOTE: weeklyBestBonuses moved to pg_cron (run_weekly_best_bonuses)
-		// NOTE: minesweeperReferenceTimes moved to pg_cron (run_recalculate_minesweeper_ref_times)
 		return json(
 			{
 				success: results.success,
@@ -265,11 +215,6 @@ const cronHandler: RequestHandler = async ({ request }) => {
 					classesProcessed: results.dailySummaries.classesProcessed,
 					errors:
 						results.dailySummaries.errors.length > 0 ? results.dailySummaries.errors : undefined
-				},
-				weeklyRewards: {
-					awarded: results.weeklyRewards.count,
-					classesProcessed: results.weeklyRewards.classesProcessed,
-					errors: results.weeklyRewards.errors.length > 0 ? results.weeklyRewards.errors : undefined
 				}
 			},
 			{
@@ -287,8 +232,7 @@ const cronHandler: RequestHandler = async ({ request }) => {
 				p_error_message: errorMsg,
 				p_metadata: {
 					classes_processed: results.classesProcessed,
-					daily_summaries_generated: results.dailySummaries.count,
-					weekly_rewards_awarded: results.weeklyRewards.count
+					daily_summaries_generated: results.dailySummaries.count
 				}
 			});
 		}
@@ -304,10 +248,6 @@ const cronHandler: RequestHandler = async ({ request }) => {
 				dailySummaries: {
 					generated: results.dailySummaries.count,
 					classesProcessed: results.dailySummaries.classesProcessed
-				},
-				weeklyRewards: {
-					awarded: results.weeklyRewards.count,
-					classesProcessed: results.weeklyRewards.classesProcessed
 				}
 			},
 			{ status: 500 }

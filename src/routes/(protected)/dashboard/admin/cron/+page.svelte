@@ -161,7 +161,8 @@
 			cleanup_stale_trades: 'rpc:cleanup_stale_trades',
 			recalculate_minesweeper_ref_times: 'rpc:run_recalculate_minesweeper_ref_times',
 			cleanup_stuck_job_runs: 'rpc:cleanup_stuck_job_runs',
-			weekly_best_bonuses: 'rpc:run_weekly_best_bonuses'
+			weekly_best_bonuses: 'rpc:run_weekly_best_bonuses',
+			weekly_rewards: 'rpc:run_weekly_rewards'
 		};
 		return pathMap[jobName] ?? '';
 	}

@@ -5,7 +5,7 @@
 -- ============================================================================
 --
 -- This job runs twice daily (00:00 and 12:00 UTC) and for each school:
--- 1. Checks if current day in school's timezone = rewards day (day after last_day)
+-- 1. Checks if current day in school's timezone = rewards day (6th day = first_day + 5)
 -- 2. Checks if current hour >= 12 (afternoon)
 -- 3. If both conditions are true, calculates previous week range and awards bonuses
 --
@@ -61,8 +61,8 @@ BEGIN
             v_first_day := v_school.first_day;
             v_last_day := v_school.last_day;
 
-            -- Calculate rewards day (day after last_day, with wrap-around)
-            v_rewards_day := (v_last_day + 1) % 7;
+            -- Calculate rewards day (6th day of week = first day of weekend)
+            v_rewards_day := (v_first_day + 5) % 7;
 
             -- Get current day and hour in school's timezone
             v_current_day := EXTRACT(DOW FROM NOW() AT TIME ZONE v_school.timezone)::INTEGER;
@@ -132,7 +132,7 @@ $$;
 
 COMMENT ON FUNCTION public.run_weekly_best_bonuses() IS
     'pg_cron job that awards weekly best game bonuses. Runs 2x/day, processes each school
-     when it''s their rewards day (day after last_day) AND afternoon (hour >= 12) locally.';
+     when it''s their rewards day (6th day = first_day + 5) AND afternoon (hour >= 12) locally.';
 
 -- Grant execute to service_role for manual triggers
 GRANT EXECUTE ON FUNCTION public.run_weekly_best_bonuses() TO service_role;

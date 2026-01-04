@@ -62,7 +62,8 @@ const ALLOWED_JOB_PATHS = [
 	'rpc:cleanup_stale_trades',
 	'rpc:run_recalculate_minesweeper_ref_times',
 	'rpc:cleanup_stuck_job_runs',
-	'rpc:run_weekly_best_bonuses'
+	'rpc:run_weekly_best_bonuses',
+	'rpc:run_weekly_rewards'
 ] as const;
 
 /**
