@@ -14,19 +14,10 @@
 	import { page } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import {
-		BookOpen,
-		GraduationCap,
-		ChevronLeft,
-		ChevronRight,
-		Calendar,
-		FileText,
-		BookCheck,
-		Globe,
-		Plus
-	} from 'lucide-svelte';
+	import JournalWeekGrid from '$lib/components/journal/JournalWeekGrid.svelte';
+	import JournalDatePicker from '$lib/components/journal/JournalDatePicker.svelte';
+	import { BookOpen, GraduationCap, Calendar } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	interface Props {
@@ -38,9 +29,6 @@
 	// Derived values
 	let hasClasses = $derived(data.classes.length > 0);
 
-	// Day names for the week grid (Sunday-Thursday for French school system)
-	const DAY_SHORT = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-
 	// Class items for the selector
 	let classItems = $derived(
 		data.classes.map((c) => ({
@@ -48,45 +36,6 @@
 			label: `${c.name}${!c.is_active ? ' (inactive)' : ''}`
 		}))
 	);
-
-	/**
-	 * Format week range for display
-	 */
-	function formatWeekRange(weekStart: string): string {
-		const start = new Date(weekStart);
-		const end = new Date(start);
-		end.setDate(end.getDate() + 6);
-
-		const startMonth = start.toLocaleDateString('fr-FR', { month: 'short' });
-		const endMonth = end.toLocaleDateString('fr-FR', { month: 'short' });
-
-		if (startMonth === endMonth) {
-			return `${start.getDate()} - ${end.getDate()} ${startMonth} ${start.getFullYear()}`;
-		}
-		return `${start.getDate()} ${startMonth} - ${end.getDate()} ${endMonth} ${start.getFullYear()}`;
-	}
-
-	/**
-	 * Get entry status badge
-	 */
-	function getEntryStatus(
-		entry: { isPublished: boolean; lessonContent: string | null } | undefined
-	): {
-		variant: 'default' | 'secondary' | 'outline';
-		label: string;
-		color: string;
-	} {
-		if (!entry) {
-			return { variant: 'outline', label: 'Vide', color: 'text-muted-foreground' };
-		}
-		if (entry.isPublished) {
-			return { variant: 'default', label: 'Publie', color: 'text-blue-600' };
-		}
-		if (entry.lessonContent) {
-			return { variant: 'secondary', label: 'Fait', color: 'text-green-600' };
-		}
-		return { variant: 'secondary', label: 'Prevu', color: 'text-orange-500' };
-	}
 
 	/**
 	 * Navigate to previous week
@@ -152,6 +101,23 @@
 	 * Check if current week includes today
 	 */
 	let isCurrentWeek = $derived(data.weekView?.days.some((d) => d.isToday) ?? false);
+
+	/**
+	 * Format week range for display
+	 */
+	function formatWeekRange(weekStart: string): string {
+		const start = new Date(weekStart);
+		const end = new Date(start);
+		end.setDate(end.getDate() + 6);
+
+		const startMonth = start.toLocaleDateString('fr-FR', { month: 'short' });
+		const endMonth = end.toLocaleDateString('fr-FR', { month: 'short' });
+
+		if (startMonth === endMonth) {
+			return `${start.getDate()} - ${end.getDate()} ${startMonth} ${start.getFullYear()}`;
+		}
+		return `${start.getDate()} ${startMonth} - ${end.getDate()} ${endMonth} ${start.getFullYear()}`;
+	}
 </script>
 
 <svelte:head>
@@ -200,25 +166,13 @@
 			</div>
 
 			<!-- Week navigation -->
-			<div class="flex items-center gap-2">
-				<Button variant="outline" size="icon" onclick={goToPreviousWeek} title="Semaine precedente">
-					<ChevronLeft class="h-4 w-4" />
-				</Button>
-
-				<Button
-					variant={isCurrentWeek() ? 'secondary' : 'outline'}
-					size="sm"
-					onclick={goToCurrentWeek}
-					title="Semaine actuelle"
-				>
-					<Calendar class="mr-2 h-4 w-4" />
-					Aujourd'hui
-				</Button>
-
-				<Button variant="outline" size="icon" onclick={goToNextWeek} title="Semaine suivante">
-					<ChevronRight class="h-4 w-4" />
-				</Button>
-			</div>
+			<JournalDatePicker
+				weekStart={new Date(data.weekStart)}
+				onPrevious={goToPreviousWeek}
+				onNext={goToNextWeek}
+				onToday={goToCurrentWeek}
+				{isCurrentWeek}
+			/>
 		</div>
 
 		<!-- Week indicator -->
@@ -233,101 +187,7 @@
 
 		<!-- Week grid -->
 		{#if data.weekView}
-			<div class="grid gap-4 md:grid-cols-5 lg:grid-cols-7">
-				{#each data.weekView.days as day (day.date.toISOString())}
-					{@const status = getEntryStatus(day.entry)}
-					{@const isWeekend = day.isWeekend}
-					{@const hasClass = day.hasScheduledClass}
-
-					<Card.Root
-						class="relative transition-all {isWeekend
-							? 'opacity-50'
-							: 'cursor-pointer hover:border-primary/50 hover:shadow-md'} {day.isToday
-							? 'ring-2 ring-primary'
-							: ''}"
-						onclick={() => !isWeekend && goToEntry(day.date)}
-						onkeydown={(e) => e.key === 'Enter' && !isWeekend && goToEntry(day.date)}
-						role="button"
-						tabindex={isWeekend ? -1 : 0}
-					>
-						<Card.Header class="p-3 pb-2">
-							<div class="flex items-center justify-between">
-								<span class="text-sm font-medium {day.isToday ? 'text-primary' : ''}">
-									{DAY_SHORT[day.dayOfWeek]}
-								</span>
-								{#if day.isToday}
-									<Badge variant="default" class="text-xs">Aujourd'hui</Badge>
-								{/if}
-							</div>
-							<span class="text-2xl font-bold">{day.date.getDate()}</span>
-						</Card.Header>
-
-						<Card.Content class="p-3 pt-0">
-							{#if isWeekend}
-								<p class="text-xs text-muted-foreground">Week-end</p>
-							{:else if day.entry}
-								<!-- Entry exists -->
-								<div class="space-y-2">
-									<Badge variant={status.variant} class="text-xs {status.color}">
-										{#if day.entry.isPublished}
-											<Globe class="mr-1 h-3 w-3" />
-										{:else if day.entry.lessonContent}
-											<BookCheck class="mr-1 h-3 w-3" />
-										{:else}
-											<FileText class="mr-1 h-3 w-3" />
-										{/if}
-										{status.label}
-									</Badge>
-
-									{#if day.entry.lessonContent}
-										<p class="line-clamp-2 text-xs text-muted-foreground">
-											{day.entry.lessonContent.replace(/<[^>]*>/g, '').slice(0, 50)}...
-										</p>
-									{/if}
-
-									{#if day.entry.homeworkContent}
-										<div class="flex items-center gap-1 text-xs text-orange-600">
-											<FileText class="h-3 w-3" />
-											<span>Devoir</span>
-										</div>
-									{/if}
-								</div>
-							{:else}
-								<!-- No entry -->
-								<div
-									class="flex flex-col items-center justify-center py-2 text-muted-foreground/60"
-								>
-									<Plus class="h-5 w-5" />
-									<span class="text-xs">Ajouter</span>
-								</div>
-							{/if}
-
-							{#if hasClass && !isWeekend}
-								<div class="mt-2 flex items-center gap-1 text-xs text-primary/60">
-									<Calendar class="h-3 w-3" />
-									<span>Cours prevu</span>
-								</div>
-							{/if}
-						</Card.Content>
-					</Card.Root>
-				{/each}
-			</div>
-
-			<!-- Legend -->
-			<div class="mt-6 flex flex-wrap gap-4 text-sm text-muted-foreground">
-				<div class="flex items-center gap-2">
-					<div class="h-3 w-3 rounded-full bg-orange-500"></div>
-					<span>Prevu</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<div class="h-3 w-3 rounded-full bg-green-500"></div>
-					<span>Fait</span>
-				</div>
-				<div class="flex items-center gap-2">
-					<div class="h-3 w-3 rounded-full bg-blue-500"></div>
-					<span>Publie</span>
-				</div>
-			</div>
+			<JournalWeekGrid days={data.weekView.days} onDayClick={goToEntry} />
 		{:else}
 			<!-- No class selected or error loading -->
 			<Card.Root>
