@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.22](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.21...v0.5.22) (2026-01-04)
+
+### 🐛 Bug Fixes
+
+- **marketplace:** display initiator name in trades instead of 'Anonyme' ([8739c58](https://github.com/Zahara-Nour/ubumaths/commit/8739c58f6200c798eb942db554c42524af28400c))
+- **trade:** only update own part of offer to avoid race conditions ([d740668](https://github.com/Zahara-Nour/ubumaths/commit/d7406682c190f32f780c885a8a394b5957ebfa2f))
+- **trade:** persist offers to database and support both offer formats ([8c418ad](https://github.com/Zahara-Nour/ubumaths/commit/8c418ad4509db95b94dd052c5a81214d199a9205))
+
+### ✨ Features
+
+- **trade:** improve trade board and confirmation modal UI ([de50c12](https://github.com/Zahara-Nour/ubumaths/commit/de50c12dff955d61e2efabd3c62b66492453240d))
+
+### ⚡ Performance Improvements
+
+- **auth:** throttle auth state changes to prevent unnecessary reloads ([74c3e99](https://github.com/Zahara-Nour/ubumaths/commit/74c3e99fb9869c3db6d5b1caa3d5145b5b3bd25f))
+
+### 📚 Documentation
+
+- **auth:** add detailed comments explaining throttling decisions ([dba3303](https://github.com/Zahara-Nour/ubumaths/commit/dba3303e63ed3234f3456e0effe49e691850740b))
+
 ### [0.5.21](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.20...v0.5.21) (2026-01-04)
 
 ### 📚 Documentation
