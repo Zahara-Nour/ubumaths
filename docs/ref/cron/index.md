@@ -24,6 +24,10 @@ Le systeme CRON est compose de **3 couches** :
 │  │ Cleanup Stale Trades│  │ Minesweeper Ref     │          │
 │  │ */10 * * * *        │  │ 30 1 * * 0 (dim)    │          │
 │  └─────────────────────┘  └─────────────────────┘          │
+│  ┌─────────────────────┐                                   │
+│  │ Cleanup Stuck Jobs  │                                   │
+│  │ 30 * * * * (1x/h)   │                                   │
+│  └─────────────────────┘                                   │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -44,13 +48,14 @@ Le systeme CRON est compose de **3 couches** :
 | [Cleanup All](./vercel-cron.md#cleanup-all)                                   | Vercel  | `0 2 * * *`    | 1x/jour 02:00 UTC     |
 | [Cleanup Stale Trades](./pg-cron.md#cleanup-stale-trades)                     | pg_cron | `*/10 * * * *` | 10 min                |
 | [Minesweeper Ref Times](./pg-cron.md#recalculate-minesweeper-reference-times) | pg_cron | `30 1 * * 0`   | 1x/sem dimanche 01:30 |
+| [Cleanup Stuck Jobs](./pg-cron.md#cleanup-stuck-job-runs)                     | pg_cron | `30 * * * *`   | 1x/heure              |
 
 ## Quotas
 
 | Plateforme      | Free Tier  | Utilisation   |
 | --------------- | ---------- | ------------- |
 | **Vercel Cron** | 2 jobs max | 2/2 (100%)    |
-| **pg_cron**     | Illimite   | 2 jobs actifs |
+| **pg_cron**     | Illimite   | 3 jobs actifs |
 
 ## Fichiers Cles
 
@@ -75,7 +80,8 @@ src/
 supabase/migrations/
 ├── 20251107112527_create_background_job_runs.sql
 ├── 20260104120000_pg_cron_cleanup_stale_trades.sql
-└── 20260104130000_pg_cron_minesweeper_ref_times.sql
+├── 20260104130000_pg_cron_minesweeper_ref_times.sql
+└── 20260104140000_pg_cron_cleanup_stuck_jobs.sql
 
 vercel.json                        # Configuration Vercel CRON
 ```
