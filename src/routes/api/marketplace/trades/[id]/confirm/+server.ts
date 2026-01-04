@@ -170,26 +170,22 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	// Notify both participants of completion
 	const { data: initiatorProfile } = await supabase
 		.from('profiles')
-		.select('username, firstname, lastname')
+		.select('firstname, lastname')
 		.eq('id', trade.initiator_id)
 		.single();
 
 	const { data: partnerProfile } = await supabase
 		.from('profiles')
-		.select('username, firstname, lastname')
+		.select('firstname, lastname')
 		.eq('id', trade.partner_id)
 		.single();
 
 	const initiatorName = initiatorProfile
-		? initiatorProfile.username ||
-			`${initiatorProfile.firstname || ''} ${initiatorProfile.lastname || ''}`.trim() ||
-			'Un eleve'
+		? `${initiatorProfile.firstname || ''} ${initiatorProfile.lastname || ''}`.trim() || 'Un eleve'
 		: 'Un eleve';
 
 	const partnerName = partnerProfile
-		? partnerProfile.username ||
-			`${partnerProfile.firstname || ''} ${partnerProfile.lastname || ''}`.trim() ||
-			'Un eleve'
+		? `${partnerProfile.firstname || ''} ${partnerProfile.lastname || ''}`.trim() || 'Un eleve'
 		: 'Un eleve';
 
 	// Notify both participants
