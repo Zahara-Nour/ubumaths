@@ -210,20 +210,26 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.sort(([, a], [, b]) => b - a)
 		.slice(0, 5);
 
-	// Fetch usernames for top traders
+	// Fetch names for top traders
 	const topTraderIds = topTradersData.map(([id]) => id);
 	const { data: traderProfiles } = await supabase
 		.from('profiles')
-		.select('id, username')
+		.select('id, firstname, lastname')
 		.in('id', topTraderIds);
 
-	const topTraders = topTradersData.map(([id, count]) => ({
-		student_id: id,
-		username:
-			traderProfiles?.find((p: { id: string; username: string | null }) => p.id === id)?.username ||
-			'Inconnu',
-		trade_count: count
-	}));
+	const topTraders = topTradersData.map(([id, count]) => {
+		const profile = traderProfiles?.find(
+			(p: { id: string; firstname: string | null; lastname: string | null }) => p.id === id
+		);
+		const displayName = profile
+			? `${profile.firstname || ''} ${profile.lastname || ''}`.trim() || 'Inconnu'
+			: 'Inconnu';
+		return {
+			student_id: id,
+			username: displayName,
+			trade_count: count
+		};
+	});
 
 	// Calculate averages
 	const averageGidouillesPerTrade =
