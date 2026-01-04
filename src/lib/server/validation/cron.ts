@@ -61,7 +61,8 @@ const ALLOWED_JOB_PATHS = [
 	// pg_cron jobs (database RPC functions)
 	'rpc:cleanup_stale_trades',
 	'rpc:run_recalculate_minesweeper_ref_times',
-	'rpc:cleanup_stuck_job_runs'
+	'rpc:cleanup_stuck_job_runs',
+	'rpc:run_weekly_best_bonuses'
 ] as const;
 
 /**

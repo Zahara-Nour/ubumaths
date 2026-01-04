@@ -58,12 +58,8 @@ interface ProcessingResults {
 		classesProcessed: number;
 		errors: string[];
 	};
-	weeklyBestBonuses: {
-		success: boolean;
-		count: number;
-		errors: string[];
-	};
-	// NOTE: minesweeperReferenceTimes moved to pg_cron job (run_recalculate_minesweeper_ref_times)
+	// NOTE: minesweeperReferenceTimes moved to pg_cron (run_recalculate_minesweeper_ref_times)
+	// NOTE: weeklyBestBonuses moved to pg_cron (run_weekly_best_bonuses)
 }
 
 /**
@@ -93,13 +89,8 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			count: 0,
 			classesProcessed: 0,
 			errors: []
-		},
-		weeklyBestBonuses: {
-			success: true,
-			count: 0,
-			errors: []
 		}
-		// NOTE: minesweeperReferenceTimes moved to pg_cron job
+		// NOTE: minesweeperReferenceTimes and weeklyBestBonuses moved to pg_cron
 	};
 
 	try {
@@ -224,76 +215,15 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			}
 		}
 
-		// ============================================================
-		// STEP 3: Award Weekly Best Game Bonuses (on weekly rewards day)
-		// ============================================================
-		// This awards the best theoretical game reward of the previous week
-		// to each student who played at least one game
-		{
-			// Get unique school week configs to process
-			const schoolsProcessed = new Set<string>();
-
-			for (const classData of classes as ClassData[]) {
-				const schoolId = classData.school_id;
-				if (schoolsProcessed.has(schoolId)) continue;
-				schoolsProcessed.add(schoolId);
-
-				try {
-					const timezone = classData.schools?.timezone || 'Europe/Paris';
-					const weekConfig = classData.schools?.timetable?.week_config || DEFAULT_WEEK_CONFIG;
-					const currentDayOfWeek = getCurrentDayOfWeekInTimezone(timezone);
-
-					if (isWeeklyRewardsDay(weekConfig, currentDayOfWeek)) {
-						// Import helper to calculate previous week range
-						const { getWeekRangeInTimezone } = await import('$lib/server/summaries/timezone-utils');
-						const { format } = await import('date-fns');
-
-						const { start: weekStart, end: weekEnd } = getWeekRangeInTimezone(timezone, weekConfig);
-
-						console.log(
-							`[Cron] Awarding weekly best bonuses for week ${format(weekStart, 'yyyy-MM-dd')} to ${format(weekEnd, 'yyyy-MM-dd')}`
-						);
-
-						// Type assertion: award_weekly_best_bonuses is defined in migration 20260101200000
-						// Types will be regenerated after migration is applied
-						const { data: bonusCount, error: bonusError } = await (
-							serviceClient.rpc as unknown as (
-								fn: 'award_weekly_best_bonuses',
-								params: { p_week_start: string; p_week_end: string }
-							) => Promise<{ data: number | null; error: { message: string } | null }>
-						)('award_weekly_best_bonuses', {
-							p_week_start: format(weekStart, 'yyyy-MM-dd'),
-							p_week_end: format(weekEnd, 'yyyy-MM-dd')
-						});
-
-						if (bonusError) {
-							throw new Error(`RPC error: ${bonusError.message}`);
-						}
-
-						results.weeklyBestBonuses.count += bonusCount || 0;
-						console.log(`[Cron] Awarded ${bonusCount || 0} weekly best bonuses`);
-					}
-				} catch (err) {
-					const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-					results.weeklyBestBonuses.errors.push(`School ${schoolId}: ${errorMsg}`);
-					console.error(`[Cron] Error awarding weekly best bonuses:`, err);
-				}
-			}
-		}
-
-		// NOTE: Minesweeper Reference Times recalculation moved to pg_cron job
-		// (run_recalculate_minesweeper_ref_times, runs Sundays at 01:30 UTC)
+		// NOTE: Weekly Best Game Bonuses moved to pg_cron (run_weekly_best_bonuses)
+		// NOTE: Minesweeper Reference Times moved to pg_cron (run_recalculate_minesweeper_ref_times)
 
 		// ============================================================
-		// STEP 4: Determine overall status
+		// STEP 3: Determine overall status
 		// ============================================================
 		results.dailySummaries.success = results.dailySummaries.errors.length === 0;
 		results.weeklyRewards.success = results.weeklyRewards.errors.length === 0;
-		results.weeklyBestBonuses.success = results.weeklyBestBonuses.errors.length === 0;
-		results.success =
-			results.dailySummaries.success &&
-			results.weeklyRewards.success &&
-			results.weeklyBestBonuses.success;
+		results.success = results.dailySummaries.success && results.weeklyRewards.success;
 
 		const status = results.success ? 'success' : 'partial_failure';
 		const metadata = {
@@ -302,10 +232,8 @@ const cronHandler: RequestHandler = async ({ request }) => {
 			daily_summaries_classes: results.dailySummaries.classesProcessed,
 			weekly_rewards_awarded: results.weeklyRewards.count,
 			weekly_rewards_classes: results.weeklyRewards.classesProcessed,
-			weekly_best_bonuses_awarded: results.weeklyBestBonuses.count,
 			daily_summaries_errors: results.dailySummaries.errors.length,
-			weekly_rewards_errors: results.weeklyRewards.errors.length,
-			weekly_best_bonuses_errors: results.weeklyBestBonuses.errors.length
+			weekly_rewards_errors: results.weeklyRewards.errors.length
 		};
 
 		// Complete job run with results
@@ -325,6 +253,8 @@ const cronHandler: RequestHandler = async ({ request }) => {
 		});
 
 		// Return results (200 OK even with partial errors)
+		// NOTE: weeklyBestBonuses moved to pg_cron (run_weekly_best_bonuses)
+		// NOTE: minesweeperReferenceTimes moved to pg_cron (run_recalculate_minesweeper_ref_times)
 		return json(
 			{
 				success: results.success,
@@ -340,15 +270,7 @@ const cronHandler: RequestHandler = async ({ request }) => {
 					awarded: results.weeklyRewards.count,
 					classesProcessed: results.weeklyRewards.classesProcessed,
 					errors: results.weeklyRewards.errors.length > 0 ? results.weeklyRewards.errors : undefined
-				},
-				weeklyBestBonuses: {
-					awarded: results.weeklyBestBonuses.count,
-					errors:
-						results.weeklyBestBonuses.errors.length > 0
-							? results.weeklyBestBonuses.errors
-							: undefined
 				}
-				// NOTE: minesweeperReferenceTimes moved to pg_cron (run_recalculate_minesweeper_ref_times)
 			},
 			{
 				status: results.success ? 200 : 207 // 207 Multi-Status for partial success
@@ -386,9 +308,6 @@ const cronHandler: RequestHandler = async ({ request }) => {
 				weeklyRewards: {
 					awarded: results.weeklyRewards.count,
 					classesProcessed: results.weeklyRewards.classesProcessed
-				},
-				weeklyBestBonuses: {
-					awarded: results.weeklyBestBonuses.count
 				}
 			},
 			{ status: 500 }
