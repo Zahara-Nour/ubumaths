@@ -1,181 +1,25 @@
 # Vercel CRON Jobs
 
-> Jobs HTTP planifies via Vercel (2 max sur free tier).
+> Reference pour les jobs HTTP planifies via Vercel (2 max sur free tier).
 
-## Configuration
+## Statut Actuel
 
-**Fichier** : `vercel.json`
+**Aucun job Vercel CRON actif** - Tous les jobs ont ete migres vers pg_cron.
 
 ```json
+// vercel.json
 {
-	"crons": [
-		{
-			"path": "/api/cron/daily-summaries-and-rewards",
-			"schedule": "0 1 * * *"
-		},
-		{
-			"path": "/api/cleanup/all",
-			"schedule": "0 2 * * *"
-		}
-	]
+	"crons": []
 }
 ```
 
-## Jobs Actifs
-
-### Daily Summaries & Rewards
-
-**Fichier** : `src/routes/api/cron/daily-summaries-and-rewards/+server.ts`
-
-| Propriete     | Valeur                           |
-| ------------- | -------------------------------- |
-| Schedule      | `0 1 * * *` (01:00 UTC)          |
-| Methodes      | GET (Vercel auto), POST (manuel) |
-| Duree typique | 2-10s selon nombre de classes    |
-
-#### Operations
-
-```
-1. Daily Summaries
-   └─ Pour chaque classe ayant eu cours hier
-      └─ Genere resume quotidien par eleve
-         (gidouilles, bonus, avertissements)
-
-2. Weekly Rewards (si dernier jour de semaine)
-   └─ +1 gidouille aux eleves avec 0 avertissement
-
-3. Weekly Best Bonuses (si dernier jour de semaine)
-   └─ RPC award_weekly_best_bonuses()
-   └─ Attribue meilleur bonus theorique de la semaine
-```
-
-> **Note** : Minesweeper Reference Times a ete migre vers pg_cron
-> (voir `run_recalculate_minesweeper_ref_times` dans pg-cron.md)
-
-#### Metadata Generee
-
-```json
-{
-	"classes_processed": 15,
-	"daily_summaries_generated": 120,
-	"daily_summaries_classes": 10,
-	"weekly_rewards_awarded": 45,
-	"weekly_rewards_classes": 15,
-	"weekly_best_bonuses_awarded": 30
-}
-```
-
-#### Code Simplifie
-
-```typescript
-const cronHandler: RequestHandler = async ({ request }) => {
-	verifyCronAuth(request);
-
-	const serviceClient = createServiceRoleClient();
-	const runId = await serviceClient.rpc('start_job_run', {
-		p_job_name: 'daily_summaries_and_rewards'
-	});
-
-	// Fetch classes avec timezone
-	const { data: classes } = await serviceClient
-		.from('classes')
-		.select('*, schools(timezone, timetable)')
-		.eq('is_active', true);
-
-	for (const classData of classes) {
-		const timezone = classData.schools?.timezone || 'Europe/Paris';
-		const yesterday = getYesterdayInTimezone(timezone);
-
-		// Daily summaries si cours hier
-		if (await checkClassSchedule(serviceClient, classData.id, yesterday)) {
-			await generateDailySummary(serviceClient, classData, yesterday);
-		}
-
-		// Weekly rewards si fin de semaine
-		if (isWeeklyRewardsDay(weekConfig, currentDayOfWeek)) {
-			await generateWeeklyRewards(serviceClient, classData);
-		}
-	}
-
-	await serviceClient.rpc('complete_job_run', {
-		p_run_id: runId,
-		p_status: 'success',
-		p_metadata: results
-	});
-
-	return json(results);
-};
-```
+> **Migration complete** : Daily Summaries, Weekly Rewards, Weekly Best Bonuses et Cleanup All
+> ont tous ete migres vers pg_cron pour beneficier d'une execution sans timeout et timezone-aware.
+> Voir [pg-cron.md](./pg-cron.md) pour la liste complete des jobs.
 
 ---
 
-### Cleanup All
-
-**Fichier** : `src/routes/api/cleanup/all/+server.ts`
-
-| Propriete     | Valeur                  |
-| ------------- | ----------------------- |
-| Schedule      | `0 2 * * *` (02:00 UTC) |
-| Methodes      | GET, POST               |
-| Duree typique | < 1s                    |
-
-#### Operations
-
-```
-1. Cache Cleanup
-   └─ RPC cleanup_expired_cache()
-   └─ Supprime entries expirees de server_cache
-
-2. Notifications Cleanup
-   └─ cleanupExpiredNotifications()
-   └─ Hard delete notifications expirees (> 30 jours)
-```
-
-#### Metadata Generee
-
-```json
-{
-	"cache_deleted": 15,
-	"notifications_deleted": 42,
-	"total_deleted": 57,
-	"cache_success": true,
-	"notifications_success": true
-}
-```
-
-#### Code Simplifie
-
-```typescript
-const cleanupHandler: RequestHandler = async ({ request, locals }) => {
-	verifyCronAuth(request);
-
-	const serviceClient = createServiceRoleClient();
-	const runId = await serviceClient.rpc('start_job_run', {
-		p_job_name: 'cleanup_all'
-	});
-
-	// 1. Cache cleanup
-	const { data: cacheDeleted } = await serviceClient.rpc('cleanup_expired_cache');
-
-	// 2. Notifications cleanup
-	const notifResult = await cleanupExpiredNotifications(locals.supabase);
-
-	await serviceClient.rpc('complete_job_run', {
-		p_run_id: runId,
-		p_status: 'success',
-		p_metadata: {
-			cache_deleted: cacheDeleted,
-			notifications_deleted: notifResult.deletedCount
-		}
-	});
-
-	return json(results);
-};
-```
-
----
-
-## Creer un Nouveau Job Vercel
+## Creer un Nouveau Job Vercel (si necessaire)
 
 ### 1. Creer l'endpoint
 
@@ -236,7 +80,6 @@ export const POST = cronHandler; // Manual trigger
 ```json
 {
 	"crons": [
-		// ... jobs existants ...
 		{
 			"path": "/api/cron/my-job-name",
 			"schedule": "0 3 * * *"
@@ -245,15 +88,11 @@ export const POST = cronHandler; // Manual trigger
 }
 ```
 
-> **Attention** : Free tier limite a 2 jobs. Si deja atteint, utiliser pg_cron.
-
 ### 3. Ajouter dans validation
 
 ```typescript
 // src/lib/server/validation/cron.ts
 const ALLOWED_JOB_PATHS = [
-	'/api/cron/daily-summaries-and-rewards',
-	'/api/cleanup/all',
 	'/api/cron/my-job-name' // Nouveau
 ] as const;
 ```
@@ -264,8 +103,6 @@ const ALLOWED_JOB_PATHS = [
 // src/routes/(protected)/dashboard/admin/cron/+page.svelte
 function getJobPath(jobName: string): string {
 	const pathMap: Record<string, string> = {
-		daily_summaries_and_rewards: '/api/cron/daily-summaries-and-rewards',
-		cleanup_all: '/api/cleanup/all',
 		my_job_name: '/api/cron/my-job-name' // Nouveau
 	};
 	return pathMap[jobName] ?? '';
@@ -303,8 +140,11 @@ function getJobPath(jobName: string): string {
 | Timeout execution  | 10 secondes |
 | Frequence minimale | 1x/jour     |
 
-Pour contourner :
+Pour contourner ces limitations, utiliser **pg_cron** :
 
-- **Plus de jobs** : Utiliser pg_cron
-- **Timeout** : Decouperlogique en plusieurs appels
-- **Frequence** : Utiliser pg_cron (1x/min possible)
+- Nombre de jobs illimite
+- Pas de timeout
+- Frequence jusqu'a 1x/minute
+- Execution timezone-aware
+
+Voir [pg-cron.md](./pg-cron.md) pour plus de details.

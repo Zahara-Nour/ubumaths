@@ -4,19 +4,9 @@
 
 ## Architecture
 
-Le systeme CRON est compose de **3 couches** :
+Le systeme CRON est compose de **2 couches** :
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      VERCEL CRON                            │
-│  (2 jobs max free tier - orchestration quotidienne)         │
-│  ┌─────────────────────┐  ┌─────────────────────┐          │
-│  │ Daily Summaries     │  │ Cleanup All         │          │
-│  │ 01:00 UTC           │  │ 02:00 UTC           │          │
-│  └─────────────────────┘  └─────────────────────┘          │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                       PG_CRON                               │
 │  (PostgreSQL natif - taches frequentes illimitees)          │
@@ -28,9 +18,13 @@ Le systeme CRON est compose de **3 couches** :
 │  │ Cleanup Stuck Jobs  │  │ Weekly Best Bonuses │          │
 │  │ 30 * * * * (1x/h)   │  │ 0 0,12 * * * (2x/j) │          │
 │  └─────────────────────┘  └─────────────────────┘          │
+│  ┌─────────────────────┐  ┌─────────────────────┐          │
+│  │ Weekly Rewards      │  │ Daily Summaries     │          │
+│  │ 0 0,12 * * * (2x/j) │  │ 0 * * * * (1x/h)    │          │
+│  └─────────────────────┘  └─────────────────────┘          │
 │  ┌─────────────────────┐                                   │
-│  │ Weekly Rewards      │                                   │
-│  │ 0 0,12 * * * (2x/j) │                                   │
+│  │ Cleanup All         │                                   │
+│  │ 0 2 * * * (02:00)   │                                   │
 │  └─────────────────────┘                                   │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -48,40 +42,38 @@ Le systeme CRON est compose de **3 couches** :
 
 | Job                                                                           | Type    | Schedule       | Frequence             |
 | ----------------------------------------------------------------------------- | ------- | -------------- | --------------------- |
-| [Daily Summaries](./vercel-cron.md#daily-summaries)                           | Vercel  | `0 1 * * *`    | 1x/jour 01:00 UTC     |
-| [Cleanup All](./vercel-cron.md#cleanup-all)                                   | Vercel  | `0 2 * * *`    | 1x/jour 02:00 UTC     |
 | [Cleanup Stale Trades](./pg-cron.md#cleanup-stale-trades)                     | pg_cron | `*/10 * * * *` | 10 min                |
 | [Minesweeper Ref Times](./pg-cron.md#recalculate-minesweeper-reference-times) | pg_cron | `30 1 * * 0`   | 1x/sem dimanche 01:30 |
 | [Cleanup Stuck Jobs](./pg-cron.md#cleanup-stuck-job-runs)                     | pg_cron | `30 * * * *`   | 1x/heure              |
 | [Weekly Best Bonuses](./pg-cron.md#weekly-best-game-bonuses)                  | pg_cron | `0 0,12 * * *` | 2x/jour               |
 | [Weekly Rewards](./pg-cron.md#weekly-rewards-no-warnings-bonus)               | pg_cron | `0 0,12 * * *` | 2x/jour               |
+| [Daily Summaries](./pg-cron.md#daily-summaries)                               | pg_cron | `0 * * * *`    | 1x/heure (18h local)  |
+| [Cleanup All](./pg-cron.md#cleanup-all)                                       | pg_cron | `0 2 * * *`    | 1x/jour 02:00 UTC     |
 
 ## Quotas
 
-| Plateforme      | Free Tier  | Utilisation   |
-| --------------- | ---------- | ------------- |
-| **Vercel Cron** | 2 jobs max | 2/2 (100%)    |
-| **pg_cron**     | Illimite   | 5 jobs actifs |
+| Plateforme      | Free Tier  | Utilisation           |
+| --------------- | ---------- | --------------------- |
+| **Vercel Cron** | 2 jobs max | 0/2 (100% disponible) |
+| **pg_cron**     | Illimite   | 7 jobs actifs         |
 
 ## Fichiers Cles
 
 ```
 src/
-├── lib/server/
-│   ├── auth/cron.ts              # Authentification CRON
-│   └── validation/cron.ts        # Schemas Zod
+├── lib/
+│   ├── server/
+│   │   ├── auth/cron.ts              # Authentification CRON
+│   │   └── validation/cron.ts        # Schemas Zod
+│   └── utils/
+│       └── notification-formatters.ts # Formatage daily_summary client-side
 ├── routes/
-│   ├── api/
-│   │   ├── cron/
-│   │   │   └── daily-summaries-and-rewards/+server.ts
-│   │   ├── cleanup/
-│   │   │   └── all/+server.ts
-│   │   └── admin/cron/
-│   │       ├── jobs/+server.ts   # GET list jobs
-│   │       └── trigger/+server.ts # POST manual trigger
+│   ├── api/admin/cron/
+│   │   ├── jobs/+server.ts           # GET list jobs
+│   │   └── trigger/+server.ts        # POST manual trigger
 │   └── (protected)/dashboard/admin/cron/
 │       ├── +page.server.ts
-│       └── +page.svelte          # Interface admin
+│       └── +page.svelte              # Interface admin
 
 supabase/migrations/
 ├── 20251107112527_create_background_job_runs.sql
@@ -89,18 +81,20 @@ supabase/migrations/
 ├── 20260104130000_pg_cron_minesweeper_ref_times.sql
 ├── 20260104140000_pg_cron_cleanup_stuck_jobs.sql
 ├── 20260104150000_pg_cron_weekly_best_bonuses.sql
-└── 20260104160000_pg_cron_weekly_rewards.sql
-
-vercel.json                        # Configuration Vercel CRON
+├── 20260104160000_pg_cron_weekly_rewards.sql
+├── 20260104170000_pg_cron_daily_summaries.sql
+└── 20260104180000_pg_cron_cleanup_all.sql
 ```
 
 ## Documentation
 
-- [Vercel CRON](./vercel-cron.md) - Jobs HTTP planifies
-- [pg_cron](./pg-cron.md) - Jobs PostgreSQL
+- [pg_cron](./pg-cron.md) - Jobs PostgreSQL (tous les jobs)
 - [Monitoring](./monitoring.md) - Table background_job_runs
 - [Authentification](./authentication.md) - Securite CRON_SECRET
 - [Interface Admin](./admin-interface.md) - Dashboard monitoring
+
+> **Note** : Tous les jobs CRON ont ete migres vers pg_cron pour beneficier
+> d'une execution sans timeout et timezone-aware.
 
 ## Variables d'Environnement
 

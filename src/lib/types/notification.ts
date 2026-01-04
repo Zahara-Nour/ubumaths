@@ -113,6 +113,8 @@ export interface NotificationWithDetails {
 	expires_at: string;
 	is_system: boolean;
 	system_event_type: SystemEventType | null;
+	/** Optional JSON metadata for system notifications (e.g., daily_summary raw data) */
+	metadata?: Record<string, unknown> | null;
 
 	// Enriched fields
 	creator?: {

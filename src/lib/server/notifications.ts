@@ -321,6 +321,7 @@ export async function getUnreadNotifications(
 			expires_at: n.expires_at,
 			is_system: n.is_system,
 			system_event_type: n.system_event_type as SystemEventType | null,
+			metadata: (n as { metadata?: Record<string, unknown> | null }).metadata || null,
 			creator: n.creator || undefined,
 			is_read: false
 		}));

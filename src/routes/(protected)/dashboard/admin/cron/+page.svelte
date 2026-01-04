@@ -154,15 +154,15 @@
 
 	function getJobPath(jobName: string): string {
 		const pathMap: Record<string, string> = {
-			daily_summaries_and_rewards: '/api/cron/daily-summaries-and-rewards',
-			cleanup_all: '/api/cleanup/all',
 			auto_select_daily_riddle: '/api/riddles/auto-select-daily',
 			// pg_cron jobs (triggered via RPC, not HTTP)
+			cleanup_all: 'rpc:run_cleanup_all',
 			cleanup_stale_trades: 'rpc:cleanup_stale_trades',
 			recalculate_minesweeper_ref_times: 'rpc:run_recalculate_minesweeper_ref_times',
 			cleanup_stuck_job_runs: 'rpc:cleanup_stuck_job_runs',
 			weekly_best_bonuses: 'rpc:run_weekly_best_bonuses',
-			weekly_rewards: 'rpc:run_weekly_rewards'
+			weekly_rewards: 'rpc:run_weekly_rewards',
+			daily_summaries: 'rpc:run_daily_summaries'
 		};
 		return pathMap[jobName] ?? '';
 	}
