@@ -5,7 +5,9 @@
  * Admin-only endpoint with rate limiting (1 req/min per job).
  *
  * Body:
- * - job_path: The API path of the job to trigger (e.g., "/api/cron/daily-summaries-and-rewards")
+ * - job_path: The API path of the job to trigger
+ *   - HTTP jobs: "/api/cron/daily-summaries-and-rewards"
+ *   - RPC jobs: "rpc:cleanup_stale_trades" (pg_cron functions)
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -13,6 +15,7 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getEnv } from '$lib/server/env';
 import { cronTriggerBodySchema, type CronTriggerResponse } from '$lib/server/validation/cron';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 // Simple in-memory rate limit store
 // WARNING: Resets on server restart. In Vercel serverless, each cold start
@@ -53,18 +56,24 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 		);
 	}
 
-	// Get CRON_SECRET for authentication
-	const env = getEnv();
-	if (!env.CRON_SECRET) {
-		throw error(503, 'CRON trigger disabled: CRON_SECRET not configured');
-	}
-
-	// Build the full URL for the CRON endpoint
-	const baseUrl = url.origin;
-	const cronUrl = `${baseUrl}${job_path}`;
-
 	try {
 		console.log(`[CRON Trigger] Admin triggering job: ${job_path}`);
+
+		// Check if this is an RPC job (pg_cron function)
+		if (job_path.startsWith('rpc:')) {
+			const functionName = job_path.replace('rpc:', '');
+			return await triggerRpcJob(functionName, job_path, now);
+		}
+
+		// HTTP job - requires CRON_SECRET
+		const env = getEnv();
+		if (!env.CRON_SECRET) {
+			throw error(503, 'CRON trigger disabled: CRON_SECRET not configured');
+		}
+
+		// Build the full URL for the CRON endpoint
+		const baseUrl = url.origin;
+		const cronUrl = `${baseUrl}${job_path}`;
 
 		// Call the CRON endpoint with Bearer token
 		const response = await fetch(cronUrl, {
@@ -130,3 +139,45 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 		return json(triggerResponse, { status: 500 });
 	}
 };
+
+/**
+ * Trigger a pg_cron RPC function
+ */
+async function triggerRpcJob(
+	functionName: string,
+	job_path: string,
+	now: number
+): Promise<Response> {
+	const serviceClient = createServiceRoleClient();
+
+	// Call the RPC function
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const { error: rpcError } = await serviceClient.rpc(functionName as any);
+
+	// Update rate limit
+	rateLimitStore.set(job_path, now);
+
+	if (rpcError) {
+		console.error(`[CRON Trigger] RPC job failed:`, rpcError);
+
+		const triggerResponse: CronTriggerResponse = {
+			success: false,
+			message: `RPC job failed: ${rpcError.message}`,
+			job_path,
+			triggered_at: new Date().toISOString()
+		};
+
+		return json(triggerResponse, { status: 500 });
+	}
+
+	console.log(`[CRON Trigger] RPC job completed successfully:`, functionName);
+
+	const triggerResponse: CronTriggerResponse = {
+		success: true,
+		message: 'RPC job triggered successfully',
+		job_path,
+		triggered_at: new Date().toISOString()
+	};
+
+	return json(triggerResponse);
+}

@@ -156,7 +156,9 @@
 		const pathMap: Record<string, string> = {
 			daily_summaries_and_rewards: '/api/cron/daily-summaries-and-rewards',
 			cleanup_all: '/api/cleanup/all',
-			auto_select_daily_riddle: '/api/riddles/auto-select-daily'
+			auto_select_daily_riddle: '/api/riddles/auto-select-daily',
+			// pg_cron jobs (triggered via RPC, not HTTP)
+			cleanup_stale_trades: 'rpc:cleanup_stale_trades'
 		};
 		return pathMap[jobName] ?? '';
 	}
