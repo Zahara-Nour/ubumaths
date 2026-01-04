@@ -434,6 +434,7 @@
 							{@const alreadyAdded = isAlreadyAdded(exercise.id)}
 							{@const selected = isSelected(exercise.id)}
 							{@const disabled = alreadyAdded || (!selected && !canSelectMore)}
+							{@const content = getExerciseContentSafe(exercise)}
 
 							<div
 								class="flex items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50 {selected &&
@@ -458,7 +459,6 @@
 											<h4 class="truncate font-medium text-foreground">
 												{exercise.title || '(Sans titre)'}
 											</h4>
-											{@const content = getExerciseContentSafe(exercise)}
 											<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
 												{content.statement_md.slice(0, 150)}{content.statement_md.length > 150
 													? '...'
