@@ -366,8 +366,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				exercise:exercises (
 					id,
 					title,
-					statement_md,
-					solution_md,
 					variables,
 					shared,
 					variations,
