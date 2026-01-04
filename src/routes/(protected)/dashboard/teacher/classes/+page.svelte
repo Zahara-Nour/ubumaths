@@ -54,7 +54,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { getAvatarUrl } from '$lib/utils/avatar';
-	import { Mail, CheckCircle2 } from 'lucide-svelte';
+	import { Mail, CheckCircle2, BookOpen } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -461,13 +461,21 @@
 				<Tabs.Content value={classItem.id} class="space-y-6">
 					<!-- Class Info Header -->
 					<div class="rounded-lg border border-border bg-muted/30 p-4">
-						<h2 class="text-xl font-semibold text-foreground">{classItem.name}</h2>
-						{#if classItem.description}
-							<p class="mt-1 text-sm text-muted-foreground">{classItem.description}</p>
-						{/if}
-						<p class="mt-2 text-sm text-muted-foreground">
-							Code de classe: <span class="font-mono font-semibold">{classItem.join_code}</span>
-						</p>
+						<div class="flex items-start justify-between gap-4">
+							<div>
+								<h2 class="text-xl font-semibold text-foreground">{classItem.name}</h2>
+								{#if classItem.description}
+									<p class="mt-1 text-sm text-muted-foreground">{classItem.description}</p>
+								{/if}
+								<p class="mt-2 text-sm text-muted-foreground">
+									Code de classe: <span class="font-mono font-semibold">{classItem.join_code}</span>
+								</p>
+							</div>
+							<Button variant="outline" href="/dashboard/teacher/cahier-texte?class={classItem.id}">
+								<BookOpen class="mr-2 h-4 w-4" />
+								Cahier de Texte
+							</Button>
+						</div>
 					</div>
 
 					<!-- Stats Card -->
