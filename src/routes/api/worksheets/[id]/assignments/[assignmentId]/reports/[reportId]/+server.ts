@@ -348,24 +348,47 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 		const classId = assignmentData?.class_id;
 
-		// Step 4: If status is 'fixed', update the original exercise
+		// Step 4: If status is 'fixed', update the exercise content in variations
 		if (newStatus === 'fixed' && newStatementMd) {
-			const exerciseUpdate: { statement_md: string; solution_md?: string | null } = {
-				statement_md: newStatementMd
-			};
+			// Fetch current exercise to get existing variations
+			const { data: currentExercise, error: fetchExerciseError } = await locals.supabase
+				.from('exercises')
+				.select('variations, shared')
+				.eq('id', exerciseId)
+				.single();
 
-			// Only update solution_md if it was provided (could be null to clear it)
-			if (newSolutionMd !== undefined) {
-				exerciseUpdate.solution_md = newSolutionMd;
+			if (fetchExerciseError || !currentExercise) {
+				console.error('[API] Error fetching exercise:', fetchExerciseError);
+				throw error(500, "Erreur lors de la recuperation de l'exercice");
+			}
+
+			// Update variations - content is in variations[0] (single source of truth)
+			const variations = (currentExercise.variations as Array<Record<string, unknown>>) || [];
+			const updatedVariations = [...variations];
+
+			if (updatedVariations.length === 0) {
+				// Create first variation if none exists
+				updatedVariations.push({
+					label: 'default',
+					statement_md: newStatementMd,
+					solution_md: newSolutionMd ?? ''
+				});
+			} else {
+				// Update first variation
+				updatedVariations[0] = {
+					...updatedVariations[0],
+					statement_md: newStatementMd,
+					...(newSolutionMd !== undefined && { solution_md: newSolutionMd })
+				};
 			}
 
 			const { error: exerciseUpdateError } = await locals.supabase
 				.from('exercises')
-				.update(exerciseUpdate)
+				.update({ variations: updatedVariations })
 				.eq('id', exerciseId);
 
 			if (exerciseUpdateError) {
-				console.error('[API] Error updating exercise:', exerciseUpdateError);
+				console.error('[API] Error updating exercise variations:', exerciseUpdateError);
 				throw error(500, "Erreur lors de la mise a jour de l'exercice");
 			}
 
