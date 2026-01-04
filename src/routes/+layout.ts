@@ -36,13 +36,17 @@ import { createLogger } from '$lib/utils/logger';
 
 const logger = createLogger('+layout.ts', 'error');
 
-// Module-level state to persist across load function executions
-// Note: These are reset if Vite HMR reloads the module, so we also use sessionStorage
+// =============================================================================
+// AUTH STATE THROTTLING
+// =============================================================================
+// Prevents unnecessary layout reloads when switching virtual screens/tabs.
+// Uses sessionStorage to persist state across Vite HMR reloads (dev) and page refreshes.
+
 let authListenerInitialized = false;
 
-// Session storage keys for persisting state across HMR reloads
-const STORAGE_KEY_USER_ID = 'ubumaths_current_user_id';
-const STORAGE_KEY_LAST_REFRESH = 'ubumaths_last_auth_refresh';
+const STORAGE_KEY_USER_ID = 'ubumaths_auth_user_id';
+const STORAGE_KEY_LAST_REFRESH = 'ubumaths_auth_last_refresh';
+const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
 
 /**
  * Get persisted user ID (survives Vite HMR)
@@ -163,8 +167,6 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 			setLastRefresh(Date.now());
 		}
 
-		const REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
-
 		supabase.auth.onAuthStateChange((event, session) => {
 			// Always log the event for debugging
 			console.log(`🔐 [AUTH] Event: ${event}`);
@@ -201,7 +203,7 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 			if (event === 'TOKEN_REFRESHED') {
 				const lastRefresh = getLastRefresh();
 				const timeSinceLastRefresh = Date.now() - lastRefresh;
-				if (timeSinceLastRefresh > REFRESH_INTERVAL) {
+				if (timeSinceLastRefresh > REFRESH_INTERVAL_MS) {
 					console.log(
 						`🔐 [AUTH] Invalidating (token refresh after ${Math.round(timeSinceLastRefresh / 60000)} min)`
 					);
