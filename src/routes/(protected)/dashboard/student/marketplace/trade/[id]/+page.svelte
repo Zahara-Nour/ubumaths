@@ -20,7 +20,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, MessageCircle, X } from 'lucide-svelte';
+	import { ArrowLeft, MessageCircle, X, Check, Pencil } from 'lucide-svelte';
 
 	// Components
 	import TradeOfferPanel from '$lib/components/marketplace/trade/TradeOfferPanel.svelte';
@@ -59,6 +59,11 @@
 		data.partnerCards.filter((card) =>
 			tradeRealtimeStore.partnerOffer.cards.includes(card.instanceId)
 		)
+	);
+
+	// Can validate (has at least something in offer)
+	let canValidate = $derived(
+		tradeRealtimeStore.myOffer.cards.length > 0 || tradeRealtimeStore.myOffer.gidouilles > 0
 	);
 
 	// Beforeunload handler to cleanup on tab close
@@ -257,6 +262,19 @@
 				</Button>
 			{/if}
 
+			<!-- Validate / Modify button -->
+			{#if !tradeRealtimeStore.myValidation}
+				<Button size="sm" onclick={handleValidate} disabled={!canValidate}>
+					<Check class="mr-1 h-4 w-4" />
+					Valider
+				</Button>
+			{:else}
+				<Button variant="outline" size="sm" onclick={handleValidate}>
+					<Pencil class="mr-1 h-4 w-4" />
+					Modifier
+				</Button>
+			{/if}
+
 			<Button variant="destructive" size="sm" onclick={handleCancel}>
 				<X class="mr-1 h-4 w-4" />
 				Annuler
@@ -280,7 +298,6 @@
 						onSelectCard={handleSelectCard}
 						onDeselectCard={handleDeselectCard}
 						onSetGidouilles={handleSetGidouilles}
-						onValidate={handleValidate}
 					/>
 				</div>
 
@@ -310,7 +327,6 @@
 						onSelectCard={handleSelectCard}
 						onDeselectCard={handleDeselectCard}
 						onSetGidouilles={handleSetGidouilles}
-						onValidate={handleValidate}
 					/>
 				</div>
 
