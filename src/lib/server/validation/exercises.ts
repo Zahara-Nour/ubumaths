@@ -132,97 +132,99 @@ export const sharedExerciseDefaultsSchema = z
 	})
 	.optional();
 
-export const createExerciseSchema = z
-	.object({
-		// Statement and solution are optional when using variations system
-		statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
-		solution_md: z.string().trim().max(50000, 'Solution too long').optional(),
-		difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)], {
-			message: 'Difficulty must be 1 (easy), 2 (medium), or 3 (hard)'
-		}),
-		slug: z
-			.string()
-			.trim()
-			.min(3, 'Slug must be at least 3 characters')
-			.max(100, 'Slug too long')
-			.regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, 'Slug must be lowercase alphanumeric with dashes')
-			.optional()
-			.nullable(),
-		tags: z
-			.array(z.string().trim().min(1).max(50))
-			.max(20, 'Maximum 20 tags allowed')
-			.default([])
-			.optional()
-			.nullable(),
-		grade_levels: z
-			.array(z.string().trim().min(1).max(20))
-			.max(7, 'Maximum 7 grade levels')
-			.optional()
-			.nullable()
-			.default([]),
-		topic: z.string().trim().max(100, 'Topic too long').optional().nullable(),
-		source: z.string().trim().max(200, 'Source too long').optional().nullable(),
-		title: z.string().trim().max(200, 'Title too long').optional().nullable(),
-		// Legacy variables format (kept for backward compatibility)
-		variables: z
-			.union([z.array(z.any()), z.record(z.string(), z.any())])
-			.optional()
-			.nullable(),
-		is_public: z.boolean().default(false).optional(),
-		resources: z
-			.array(
-				z.object({
-					type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
-						message: 'Resource type must be video, pdf, link, geogebra, or image'
-					}),
-					url: z.string().url('Invalid URL').max(2000, 'URL too long'),
-					title: z.string().trim().min(1, 'Title required').max(200, 'Title too long'),
-					description: z.string().trim().max(500, 'Description too long').optional()
-				})
-			)
-			.max(20, 'Maximum 20 resources')
-			.optional()
-			.nullable()
-			.default([]),
-		/**
-		 * Custom function identifiers to recognize in math expressions.
-		 * When set, these identifiers will be parsed as function calls (e.g., P(x), Q'(x))
-		 * instead of implicit multiplication.
-		 *
-		 * - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
-		 * - null: Use parser defaults
-		 * - []: Disable generic function parsing entirely
-		 * - ['f', 'P', 'Q']: Recognize only these identifiers as functions
-		 */
-		generic_functions: z
-			.array(functionIdentifierSchema)
-			.max(50, 'Maximum 50 function names')
-			.optional()
-			.nullable(),
-		// NEW: Variations system
-		shared: sharedExerciseDefaultsSchema,
-		variations: z
-			.array(exerciseVariationSchema)
-			.min(1, 'At least one variation required')
-			.max(10, 'Maximum 10 variations')
-			.optional()
-	})
-	.refine(
-		(data) => {
-			// Either use variations OR legacy fields (statement_md + solution_md)
-			const hasVariations = data.variations && data.variations.length > 0;
-			const hasLegacy = data.statement_md && data.solution_md;
+// Base schema without refinement (needed for .partial() in Zod v4)
+const exerciseBaseSchema = z.object({
+	// Statement and solution are optional when using variations system
+	statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
+	solution_md: z.string().trim().max(50000, 'Solution too long').optional(),
+	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)], {
+		message: 'Difficulty must be 1 (easy), 2 (medium), or 3 (hard)'
+	}),
+	slug: z
+		.string()
+		.trim()
+		.min(3, 'Slug must be at least 3 characters')
+		.max(100, 'Slug too long')
+		.regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, 'Slug must be lowercase alphanumeric with dashes')
+		.optional()
+		.nullable(),
+	tags: z
+		.array(z.string().trim().min(1).max(50))
+		.max(20, 'Maximum 20 tags allowed')
+		.default([])
+		.optional()
+		.nullable(),
+	grade_levels: z
+		.array(z.string().trim().min(1).max(20))
+		.max(7, 'Maximum 7 grade levels')
+		.optional()
+		.nullable()
+		.default([]),
+	topic: z.string().trim().max(100, 'Topic too long').optional().nullable(),
+	source: z.string().trim().max(200, 'Source too long').optional().nullable(),
+	title: z.string().trim().max(200, 'Title too long').optional().nullable(),
+	// Legacy variables format (kept for backward compatibility)
+	variables: z
+		.union([z.array(z.any()), z.record(z.string(), z.any())])
+		.optional()
+		.nullable(),
+	is_public: z.boolean().default(false).optional(),
+	resources: z
+		.array(
+			z.object({
+				type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
+					message: 'Resource type must be video, pdf, link, geogebra, or image'
+				}),
+				url: z.string().url('Invalid URL').max(2000, 'URL too long'),
+				title: z.string().trim().min(1, 'Title required').max(200, 'Title too long'),
+				description: z.string().trim().max(500, 'Description too long').optional()
+			})
+		)
+		.max(20, 'Maximum 20 resources')
+		.optional()
+		.nullable()
+		.default([]),
+	/**
+	 * Custom function identifiers to recognize in math expressions.
+	 * When set, these identifiers will be parsed as function calls (e.g., P(x), Q'(x))
+	 * instead of implicit multiplication.
+	 *
+	 * - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
+	 * - null: Use parser defaults
+	 * - []: Disable generic function parsing entirely
+	 * - ['f', 'P', 'Q']: Recognize only these identifiers as functions
+	 */
+	generic_functions: z
+		.array(functionIdentifierSchema)
+		.max(50, 'Maximum 50 function names')
+		.optional()
+		.nullable(),
+	// NEW: Variations system
+	shared: sharedExerciseDefaultsSchema,
+	variations: z
+		.array(exerciseVariationSchema)
+		.min(1, 'At least one variation required')
+		.max(10, 'Maximum 10 variations')
+		.optional()
+});
 
-			return hasVariations || hasLegacy;
-		},
-		{ message: 'Must provide either variations or statement_md/solution_md' }
-	);
+export const createExerciseSchema = exerciseBaseSchema.refine(
+	(data) => {
+		// Either use variations OR legacy fields (statement_md + solution_md)
+		const hasVariations = data.variations && data.variations.length > 0;
+		const hasLegacy = data.statement_md && data.solution_md;
+
+		return hasVariations || hasLegacy;
+	},
+	{ message: 'Must provide either variations or statement_md/solution_md' }
+);
 
 /**
  * Schema for updating an exercise (PUT /api/exercises/[id])
  * All fields are optional for partial updates
+ * Note: Uses base schema without refinement (Zod v4 limitation)
  */
-export const updateExerciseSchema = createExerciseSchema.partial();
+export const updateExerciseSchema = exerciseBaseSchema.partial();
 
 /**
  * Schema for listing exercises query parameters (GET /api/exercises)
