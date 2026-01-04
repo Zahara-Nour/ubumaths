@@ -10,6 +10,8 @@ import type { ExerciseHint, ExerciseVariation, SharedExerciseDefaults } from '$l
 
 describe('Instance Generator', () => {
 	// Mock worksheet exercises with parameterized content
+	// Note: variations is the single source of truth for content
+	// Variables should be in shared.variables (not at exercise.variables level)
 	const mockExercises: WorksheetExerciseWithExercise[] = [
 		{
 			id: 'we1',
@@ -28,14 +30,21 @@ describe('Instance Generator', () => {
 			exercise: {
 				id: 'e1',
 				title: 'Addition simple',
-				statement_md: 'Calculer {{a}} + {{b}}',
-				solution_md: '{{a}} + {{b}} = {{sum}}',
 				difficulty: 1,
-				variables: [
-					{ name: 'a', expression: '{{random:1..10}}' },
-					{ name: 'b', expression: '{{random:1..10}}' },
-					{ name: 'sum', expression: '{{eval:a+b}}' }
-				]
+				shared: {
+					variables: [
+						{ name: 'a', expression: '{{random:1..10}}' },
+						{ name: 'b', expression: '{{random:1..10}}' },
+						{ name: 'sum', expression: '{{eval:a+b}}' }
+					]
+				} as SharedExerciseDefaults,
+				variations: [
+					{
+						label: 'default',
+						statement_md: 'Calculer {{a}} + {{b}}',
+						solution_md: '{{a}} + {{b}} = {{sum}}'
+					}
+				] as ExerciseVariation[]
 			}
 		},
 		{
@@ -55,14 +64,21 @@ describe('Instance Generator', () => {
 			exercise: {
 				id: 'e2',
 				title: 'Multiplication',
-				statement_md: 'Calculer {{x}} × {{y}}',
-				solution_md: '{{x}} × {{y}} = {{product}}',
 				difficulty: 2,
-				variables: [
-					{ name: 'x', expression: '{{random:2..9}}' },
-					{ name: 'y', expression: '{{random:2..9}}' },
-					{ name: 'product', expression: '{{eval:x*y}}' }
-				]
+				shared: {
+					variables: [
+						{ name: 'x', expression: '{{random:2..9}}' },
+						{ name: 'y', expression: '{{random:2..9}}' },
+						{ name: 'product', expression: '{{eval:x*y}}' }
+					]
+				} as SharedExerciseDefaults,
+				variations: [
+					{
+						label: 'default',
+						statement_md: 'Calculer {{x}} × {{y}}',
+						solution_md: '{{x}} × {{y}} = {{product}}'
+					}
+				] as ExerciseVariation[]
 			}
 		}
 	];
@@ -212,10 +228,15 @@ describe('Instance Generator', () => {
 					exercise: {
 						id: 'e3',
 						title: 'Static exercise',
-						statement_md: 'What is 2 + 2?',
-						solution_md: '2 + 2 = 4',
 						difficulty: 1,
-						variables: []
+						variables: [],
+						variations: [
+							{
+								label: 'default',
+								statement_md: 'What is 2 + 2?',
+								solution_md: '2 + 2 = 4'
+							}
+						]
 					}
 				}
 			];
@@ -327,15 +348,22 @@ describe('Instance Generator', () => {
 					exercise: {
 						id: 'e4',
 						title: 'Complex parameters',
-						statement_md: 'Le résultat est {{result}}',
-						solution_md: 'Détails: a={{a}}, b={{b}}, sum={{sum}}',
 						difficulty: 3,
-						variables: [
-							{ name: 'a', expression: '{{random:10..20}}' },
-							{ name: 'b', expression: '{{random:5..15}}' },
-							{ name: 'sum', expression: '{{eval:a+b}}' },
-							{ name: 'result', expression: '{{eval:(a+b)*2}}' }
-						]
+						shared: {
+							variables: [
+								{ name: 'a', expression: '{{random:10..20}}' },
+								{ name: 'b', expression: '{{random:5..15}}' },
+								{ name: 'sum', expression: '{{eval:a+b}}' },
+								{ name: 'result', expression: '{{eval:(a+b)*2}}' }
+							]
+						} as SharedExerciseDefaults,
+						variations: [
+							{
+								label: 'default',
+								statement_md: 'Le résultat est {{result}}',
+								solution_md: 'Détails: a={{a}}, b={{b}}, sum={{sum}}'
+							}
+						] as ExerciseVariation[]
 					}
 				}
 			];
@@ -384,10 +412,17 @@ describe('Instance Generator', () => {
 					exercise: {
 						id: 'typed-ex',
 						title: 'Typed exercise',
-						statement_md: 'x = {{x}}, y = {{y}}',
-						solution_md: 'y = 2x',
 						difficulty: 1,
-						variables: typedVariables // Should be Variable[], not unknown[]
+						shared: {
+							variables: typedVariables // Should be Variable[], not unknown[]
+						} as SharedExerciseDefaults,
+						variations: [
+							{
+								label: 'default',
+								statement_md: 'x = {{x}}, y = {{y}}',
+								solution_md: 'y = 2x'
+							}
+						] as ExerciseVariation[]
 					}
 				}
 			];
@@ -637,10 +672,15 @@ describe('Instance Generator', () => {
 					exercise: {
 						id: 'e-static-ast',
 						title: 'Static for AST test',
-						statement_md: 'Calculate $2 + 3$',
-						solution_md: 'The answer is $5$',
 						difficulty: 1,
-						variables: []
+						variables: [],
+						variations: [
+							{
+								label: 'default',
+								statement_md: 'Calculate $2 + 3$',
+								solution_md: 'The answer is $5$'
+							}
+						]
 					}
 				}
 			];

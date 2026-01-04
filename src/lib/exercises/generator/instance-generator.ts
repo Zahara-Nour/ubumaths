@@ -215,13 +215,17 @@ export function generateExerciseInstance(
 		// Generate seed if not provided
 		const seed = options.seed ?? Math.floor(Math.random() * 1000000);
 
-		// Check if exercise uses variations system
-		if (isVariationsExercise(exercise)) {
-			return generateVariationsInstance(exercise, seed, options);
+		// All exercises must use variations system (single source of truth)
+		if (!isVariationsExercise(exercise)) {
+			return {
+				success: false,
+				errors: [
+					`Exercise ${exercise.id} has no variations. All exercises must use the variations system.`
+				]
+			};
 		}
 
-		// Legacy path: exercise without variations
-		return generateLegacyInstance(exercise, seed, options);
+		return generateVariationsInstance(exercise, seed, options);
 	} catch (error) {
 		// Catch any unexpected errors
 		return {
@@ -364,118 +368,6 @@ function generateVariationsInstance(
 }
 
 // ============================================================================
-// LEGACY INSTANCE GENERATOR
-// ============================================================================
-
-/**
- * Generate instance for legacy exercise (without variations)
- *
- * This handles exercises that use the original format with:
- * - Direct statement_md/solution_md fields
- * - Optional variables array at exercise level
- *
- * @param exercise - Legacy exercise without variations
- * @param seed - Random seed for reproducible generation
- * @param options - Generation options
- * @returns Generation result with instance or errors
- */
-function generateLegacyInstance(
-	exercise: Exercise,
-	seed: number,
-	options: GenerateInstanceOptions
-): InstanceGenerationResult {
-	// Check if exercise is parameterized
-	const parameterized = isParameterized(exercise);
-
-	let resolvedStatementMd: string;
-	let resolvedSolutionMd: string;
-	let resolvedVariables: Array<{ name: string; value: string }> = [];
-
-	if (parameterized) {
-		// Parameterized: resolve variables and content
-
-		// Check for circular dependencies first
-		const circularResult = detectCircularDependencies(exercise.variables!);
-		if (!circularResult.valid) {
-			return {
-				success: false,
-				errors: circularResult.errors.map((e) => e.message)
-			};
-		}
-
-		try {
-			// Resolve variables using shared library
-			resolvedVariables = resolveVariables(exercise.variables!, seed);
-
-			// Resolve {{}} syntax in content using resolved variables
-			resolvedStatementMd = resolveText(exercise.statement_md, resolvedVariables);
-			resolvedSolutionMd = resolveText(exercise.solution_md, resolvedVariables);
-		} catch (error) {
-			// Catch errors from variable resolution or text resolution
-			return {
-				success: false,
-				errors: [error instanceof Error ? error.message : String(error)]
-			};
-		}
-	} else {
-		// Static: passthrough content unchanged
-		resolvedStatementMd = exercise.statement_md;
-		resolvedSolutionMd = exercise.solution_md;
-	}
-
-	// Optionally parse markdown to AST
-	let statementAst;
-	let solutionAst;
-
-	if (options.parseAST === true) {
-		try {
-			statementAst = parseMarkdown(resolvedStatementMd);
-			solutionAst = parseMarkdown(resolvedSolutionMd);
-		} catch (error) {
-			return {
-				success: false,
-				errors: [
-					`Markdown parsing failed: ${error instanceof Error ? error.message : String(error)}`
-				]
-			};
-		}
-	}
-
-	// Construct instance
-	const instance: ExerciseInstance = {
-		// Metadata from template
-		exerciseId: exercise.id,
-		title: exercise.title,
-		difficulty: exercise.difficulty,
-		tags: exercise.tags,
-		source: exercise.source,
-		grade_levels: exercise.grade_levels,
-		topic: exercise.topic,
-
-		// Instance-specific data
-		seed,
-		resolvedVariables,
-
-		// Resolved content
-		statement_md: resolvedStatementMd,
-		solution_md: resolvedSolutionMd,
-
-		// Optional AST
-		statement_ast: statementAst,
-		solution_ast: solutionAst,
-
-		// Generation metadata
-		generatedAt: new Date(),
-		distributionMode: exercise.distribution_mode
-	};
-
-	return {
-		success: true,
-		instance
-	};
-}
-
-// ============================================================================
 // SEED GENERATION UTILITIES
 // ============================================================================
 
@@ -557,7 +449,17 @@ export function generateGroupSeed(exerciseId: string, groupId: string): number {
  * ```
  */
 export function isParameterized(exercise: Exercise): boolean {
-	return exercise.variables !== undefined && exercise.variables.length > 0;
+	// Check for variables in multiple locations:
+	// 1. Legacy: exercise.variables (deprecated, kept for compatibility)
+	// 2. New: exercise.shared.variables (shared across variations)
+	// 3. New: exercise.variations[n].variables (per-variation)
+	const hasLegacyVars = exercise.variables !== undefined && exercise.variables.length > 0;
+	const hasSharedVars =
+		exercise.shared?.variables !== undefined && exercise.shared.variables.length > 0;
+	const hasVariationVars =
+		exercise.variations?.some((v) => v.variables !== undefined && v.variables.length > 0) ?? false;
+
+	return hasLegacyVars || hasSharedVars || hasVariationVars;
 }
 
 // ============================================================================

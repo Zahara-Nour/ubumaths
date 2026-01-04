@@ -12,6 +12,7 @@ import {
 	createTutorConversationSchema
 } from '$lib/server/validation/chat';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 
 /**
  * GET /api/tutor/conversations?exerciseId=X&assignmentId=Y
@@ -95,14 +96,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(409, 'Une conversation existe déjà pour cet exercice');
 	}
 
-	// Fetch the exercise correction server-side
+	// Fetch the exercise correction server-side (from variations)
 	const { data: exercise } = await locals.supabase
 		.from('exercises')
-		.select('solution_md')
+		.select('id, shared, variations')
 		.eq('id', exerciseId)
 		.single();
 
-	const correction = exercise?.solution_md || null;
+	// Use variations as single source of truth
+	const content = exercise
+		? getExerciseContentSafe(exercise as unknown as Exercise)
+		: { statement_md: '', solution_md: '' };
+	const correction = content.solution_md || null;
 
 	// Create the conversation
 	const { data: conversation, error: createError } = await locals.supabase

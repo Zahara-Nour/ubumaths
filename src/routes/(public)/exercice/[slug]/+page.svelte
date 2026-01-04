@@ -16,7 +16,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
-	import { isVariationsExercise } from '$lib/exercises/types';
+	import { isVariationsExercise, getExerciseContentSafe } from '$lib/exercises/types';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
 	import { getTypstService, PRIORITY } from '$lib/typst/service';
@@ -286,10 +286,8 @@
 
 <svelte:head>
 	<title>{data.exercise.title || 'Exercice'} | UbuMaths</title>
-	<meta
-		name="description"
-		content={data.exercise.statement_md.slice(0, 160).replace(/[#*$]/g, '')}
-	/>
+	{@const content = getExerciseContentSafe(data.exercise)}
+	<meta name="description" content={content.statement_md.slice(0, 160).replace(/[#*$]/g, '')} />
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">

@@ -298,19 +298,20 @@ export interface Exercise {
 	/**
 	 * Exercise statement in markdown with $...$ and $$...$$ for math
 	 *
-	 * May contain parameterization syntax:
-	 * - Variable references: {{varName}}
-	 * - Random numbers: {{1..10}}, {{2.3}}, {{0.5..9.99:0.01}}
-	 * - Expressions: {{eval:a+b}}
+	 * @deprecated Use variations[].statement_md instead. This field is kept for
+	 * backwards compatibility but should not be used in new code.
+	 * Use getExerciseContent() helper to access content.
 	 */
-	statement_md: string;
+	statement_md?: string;
 
 	/**
 	 * Solution/correction in markdown with LaTeX math
 	 *
-	 * May contain same parameterization syntax as statement_md
+	 * @deprecated Use variations[].solution_md instead. This field is kept for
+	 * backwards compatibility but should not be used in new code.
+	 * Use getExerciseContent() helper to access content.
 	 */
-	solution_md: string;
+	solution_md?: string;
 
 	// Parameterization
 	/**
@@ -2329,4 +2330,73 @@ export function resolveExerciseVariationWithShared(
 		variables: mergeExerciseVariables(shared.variables, variation.variables),
 		hints: variation.hints
 	};
+}
+
+/**
+ * Get exercise content from variations (the single source of truth)
+ *
+ * This helper retrieves statement_md and solution_md from the variations array,
+ * applying shared defaults as needed. Use this instead of accessing the deprecated
+ * exercise.statement_md and exercise.solution_md fields directly.
+ *
+ * @param exercise - The exercise object
+ * @param variationIndex - Index of the variation to use (default: 0)
+ * @returns Object with statement_md and solution_md strings
+ * @throws Error if exercise has no variations
+ *
+ * @example Basic usage
+ * ```typescript
+ * const { statement_md, solution_md } = getExerciseContent(exercise);
+ * ```
+ *
+ * @example Get specific variation
+ * ```typescript
+ * const { statement_md, solution_md } = getExerciseContent(exercise, 1);
+ * ```
+ */
+export function getExerciseContent(
+	exercise: Exercise,
+	variationIndex = 0
+): { statement_md: string; solution_md: string; hints?: ExerciseHint[] } {
+	if (!exercise.variations || exercise.variations.length === 0) {
+		throw new Error(`Exercise ${exercise.id} has no variations`);
+	}
+
+	// Clamp index to valid range
+	const index = Math.max(0, Math.min(variationIndex, exercise.variations.length - 1));
+	const variation = exercise.variations[index];
+
+	// Apply shared defaults
+	const resolved = resolveExerciseVariationWithShared(exercise.shared, variation);
+
+	return {
+		statement_md: resolved.statement_md,
+		solution_md: resolved.solution_md,
+		hints: resolved.hints
+	};
+}
+
+/**
+ * Safely get exercise content, falling back to empty strings if no variations
+ *
+ * Use this when you can't guarantee the exercise has variations (e.g., during
+ * migration or when handling legacy data).
+ *
+ * @param exercise - The exercise object
+ * @param variationIndex - Index of the variation to use (default: 0)
+ * @returns Object with statement_md and solution_md strings (empty if no variations)
+ */
+export function getExerciseContentSafe(
+	exercise: Exercise,
+	variationIndex = 0
+): { statement_md: string; solution_md: string; hints?: ExerciseHint[] } {
+	if (!exercise.variations || exercise.variations.length === 0) {
+		return {
+			statement_md: '',
+			solution_md: '',
+			hints: undefined
+		};
+	}
+
+	return getExerciseContent(exercise, variationIndex);
 }

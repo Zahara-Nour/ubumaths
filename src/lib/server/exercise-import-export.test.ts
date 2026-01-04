@@ -18,15 +18,13 @@ import {
 } from './exercise-import-export';
 import type { Exercise } from '$lib/exercises/types';
 
-// Sample exercise for testing
+// Sample exercise for testing (with variations - single source of truth)
 const sampleExercise: Exercise = {
 	id: 'ex-123',
 	title: 'Test Exercise',
 	source: 'Test Book',
 	difficulty: 2,
 	tags: ['algèbre', 'équations'],
-	statement_md: 'Résoudre $x^2 = 4$',
-	solution_md: '$x = \\pm 2$',
 	grade_levels: ['3', '2'],
 	topic: 'Algèbre',
 	created_at: '2024-01-01T00:00:00Z',
@@ -34,7 +32,15 @@ const sampleExercise: Exercise = {
 	created_by: 'user-123',
 	distribution_mode: 'on_demand',
 	is_public: false,
-	variables: []
+	variables: [],
+	// Content is in variations (single source of truth)
+	variations: [
+		{
+			label: 'default',
+			statement_md: 'Résoudre $x^2 = 4$',
+			solution_md: '$x = \\pm 2$'
+		}
+	]
 };
 
 // Mock Supabase client
@@ -60,7 +66,7 @@ describe('exportExerciseToJSON', () => {
 		const json = exportExerciseToJSON(sampleExercise);
 		const parsed = JSON.parse(json);
 
-		expect(parsed.version).toBe('1.0');
+		expect(parsed.version).toBe('2.0');
 		expect(parsed.difficulty).toBe(2);
 		expect(parsed.tags).toEqual(['algèbre', 'équations']);
 		expect(parsed.statement_md).toBe('Résoudre $x^2 = 4$');
@@ -69,6 +75,10 @@ describe('exportExerciseToJSON', () => {
 		expect(parsed.source).toBe('Test Book');
 		expect(parsed.grade_levels).toEqual(['3', '2']);
 		expect(parsed.topic).toBe('Algèbre');
+		// v2.0 includes variations
+		expect(parsed.variations).toEqual([
+			{ label: 'default', statement_md: 'Résoudre $x^2 = 4$', solution_md: '$x = \\pm 2$' }
+		]);
 	});
 
 	it('should export with pretty print by default', () => {
@@ -82,7 +92,7 @@ describe('exportExerciseToJSON', () => {
 		const json = exportExerciseToJSON(sampleExercise, false);
 		const parsed = JSON.parse(json);
 
-		expect(parsed.version).toBe('1.0');
+		expect(parsed.version).toBe('2.0');
 		expect(json).not.toContain('\n  '); // No indentation
 	});
 
@@ -91,23 +101,27 @@ describe('exportExerciseToJSON', () => {
 			id: 'ex-min',
 			difficulty: 1,
 			tags: [],
-			statement_md: 'Simple question',
-			solution_md: 'Simple answer',
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
 			created_by: 'user-123',
-			distribution_mode: 'on_demand'
+			distribution_mode: 'on_demand',
+			variations: [
+				{ label: 'default', statement_md: 'Simple question', solution_md: 'Simple answer' }
+			]
 		};
 
 		const json = exportExerciseToJSON(minimalExercise);
 		const parsed = JSON.parse(json);
 
-		expect(parsed.version).toBe('1.0');
+		expect(parsed.version).toBe('2.0');
 		expect(parsed.difficulty).toBe(1);
 		expect(parsed.tags).toEqual([]);
 		// Optional fields that are undefined in source are not included in export
 		expect(parsed.title).toBeUndefined();
 		expect(parsed.source).toBeUndefined();
+		// Content from variations
+		expect(parsed.statement_md).toBe('Simple question');
+		expect(parsed.solution_md).toBe('Simple answer');
 	});
 });
 
@@ -117,7 +131,7 @@ describe('exportExerciseToMarkdown', () => {
 
 		expect(markdown).toContain('---');
 		expect(markdown).toContain('version:');
-		expect(markdown).toContain('1.0');
+		expect(markdown).toContain('2.0');
 		expect(markdown).toContain('difficulty: 2');
 		expect(markdown).toContain('title:');
 		expect(markdown).toContain('Test Exercise');
@@ -134,12 +148,11 @@ describe('exportExerciseToMarkdown', () => {
 			id: 'ex-min',
 			difficulty: 1,
 			tags: [],
-			statement_md: 'Q',
-			solution_md: 'A',
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
 			created_by: 'user-123',
-			distribution_mode: 'on_demand'
+			distribution_mode: 'on_demand',
+			variations: [{ label: 'default', statement_md: 'Q', solution_md: 'A' }]
 		};
 
 		const markdown = exportExerciseToMarkdown(minimalExercise);
@@ -236,9 +249,18 @@ describe('importExerciseFromJSON', () => {
 			title: 'Duplicate'
 		};
 
-		// Mock duplicate found (limit returns the duplicate)
+		// Mock duplicate found (limit returns the duplicate with variations for content extraction)
 		mockSupabase.__mockQuery.limit.mockResolvedValue({
-			data: [{ id: 'existing-ex-id', statement_md: 'Duplicate Question', title: 'Duplicate' }],
+			data: [
+				{
+					id: 'existing-ex-id',
+					title: 'Duplicate',
+					shared: null,
+					variations: [
+						{ label: 'default', statement_md: 'Duplicate Question', solution_md: 'Answer' }
+					]
+				}
+			],
 			error: null
 		});
 
@@ -262,9 +284,18 @@ describe('importExerciseFromJSON', () => {
 			title: 'Updated Title'
 		};
 
-		// Mock duplicate found
+		// Mock duplicate found (with variations for content extraction)
 		mockSupabase.__mockQuery.limit.mockResolvedValueOnce({
-			data: [{ id: 'existing-ex-id', statement_md: 'Updated Question', title: 'Updated Title' }],
+			data: [
+				{
+					id: 'existing-ex-id',
+					title: 'Updated Title',
+					shared: null,
+					variations: [
+						{ label: 'default', statement_md: 'Updated Question', solution_md: 'Updated Answer' }
+					]
+				}
+			],
 			error: null
 		});
 
@@ -311,9 +342,16 @@ describe('importExerciseFromJSON', () => {
 			title: 'Title'
 		};
 
-		// Mock duplicate found
+		// Mock duplicate found (with variations for content extraction)
 		mockSupabase.__mockQuery.limit.mockResolvedValueOnce({
-			data: [{ id: 'other-user-ex-id', statement_md: 'Question', title: 'Title' }],
+			data: [
+				{
+					id: 'other-user-ex-id',
+					title: 'Title',
+					shared: null,
+					variations: [{ label: 'default', statement_md: 'Question', solution_md: 'Answer' }]
+				}
+			],
 			error: null
 		});
 
@@ -338,7 +376,14 @@ describe('importExerciseFromJSON', () => {
 			eq: vi.fn().mockReturnThis(),
 			limit: vi.fn().mockResolvedValue({
 				data: [
-					{ id: 'existing-ex-id', statement_md: 'Duplicate Question', title: 'Original Title' }
+					{
+						id: 'existing-ex-id',
+						title: 'Original Title',
+						shared: undefined,
+						variations: [
+							{ label: 'default', statement_md: 'Duplicate Question', solution_md: 'Answer' }
+						]
+					}
 				],
 				error: null
 			})
@@ -401,7 +446,14 @@ describe('importExerciseFromJSON', () => {
 			select: vi.fn().mockReturnThis(),
 			eq: vi.fn().mockReturnThis(),
 			limit: vi.fn().mockResolvedValue({
-				data: [{ id: 'existing-ex-id', statement_md: 'Question', title: 'Title' }],
+				data: [
+					{
+						id: 'existing-ex-id',
+						title: 'Title',
+						shared: undefined,
+						variations: [{ label: 'default', statement_md: 'Question', solution_md: 'Answer' }]
+					}
+				],
 				error: null
 			})
 		};
@@ -470,7 +522,8 @@ describe('importExerciseFromJSON', () => {
 
 		expect(result.success).toBe(false);
 		expect(result.error).toBeDefined();
-		expect(result.error).toContain('difficulty');
+		// Union validation fails when difficulty is invalid (99 doesn't match 1|2|3)
+		expect(result.error).toContain('Invalid');
 	});
 
 	it('should skip validation when validate is false', async () => {
@@ -645,7 +698,14 @@ describe('importExercisesFromJSON', () => {
 
 		// Second: duplicate found
 		mockSupabase.__mockQuery.limit.mockResolvedValueOnce({
-			data: [{ id: 'existing', statement_md: 'Duplicate', title: 'Dup' }],
+			data: [
+				{
+					id: 'existing',
+					title: 'Dup',
+					shared: undefined,
+					variations: [{ label: 'default', statement_md: 'Duplicate', solution_md: 'A' }]
+				}
+			],
 			error: null
 		});
 
@@ -660,7 +720,8 @@ describe('importExercisesFromJSON', () => {
 		expect(result.importedIds).toEqual(['ex-1']);
 		expect(result.errors).toHaveLength(1);
 		expect(result.errors[0].index).toBe(2);
-		expect(result.errors[0].error).toContain('difficulty');
+		// Union validation fails when difficulty is invalid (99 doesn't match 1|2|3)
+		expect(result.errors[0].error).toContain('Invalid');
 	});
 
 	it('should reject non-array input', async () => {

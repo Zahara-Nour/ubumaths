@@ -17,6 +17,7 @@ import type {
 	ImportResult,
 	ImportOptions
 } from '$lib/exercises/types';
+import { getExerciseContentSafe } from '$lib/exercises/types';
 import {
 	validateExerciseExport,
 	sanitizeExerciseForInsert,
@@ -41,14 +42,16 @@ import { createHash } from 'crypto';
  * @returns Clean export format without id, timestamps, created_by (v1.0 format)
  */
 export function exerciseToExport(exercise: Exercise): ExerciseExportV1 {
+	// Get content from variations (single source of truth)
+	const content = getExerciseContentSafe(exercise);
 	return {
 		version: '1.0',
 		title: exercise.title,
 		source: exercise.source,
 		difficulty: exercise.difficulty,
 		tags: exercise.tags,
-		statement_md: exercise.statement_md,
-		solution_md: exercise.solution_md,
+		statement_md: content.statement_md,
+		solution_md: content.solution_md,
 		grade_levels: exercise.grade_levels,
 		topic: exercise.topic
 	};
@@ -65,14 +68,18 @@ export function exerciseToExportV2(exercise: Exercise): ExerciseExportV2 {
 	const variations = exercise.variations as Exercise['variations'];
 	const shared = exercise.shared as Exercise['shared'];
 
+	// Get content from variations (single source of truth) for legacy fields
+	const content = getExerciseContentSafe(exercise);
+
 	return {
 		version: '2.0',
 		title: exercise.title,
 		source: exercise.source,
 		difficulty: exercise.difficulty,
 		tags: exercise.tags,
-		statement_md: exercise.statement_md,
-		solution_md: exercise.solution_md,
+		// Legacy fields populated from variations for backward compatibility
+		statement_md: content.statement_md,
+		solution_md: content.solution_md,
 		grade_levels: exercise.grade_levels,
 		topic: exercise.topic,
 		variations: variations,
@@ -179,9 +186,10 @@ async function findDuplicateExercise(
 	const hash = computeExerciseHash(exercise.statement_md, exercise.title);
 
 	// Query exercises by user with matching title or content hash
+	// Include variations and shared for content extraction
 	const { data } = await supabase
 		.from('exercises')
-		.select('id, statement_md, title')
+		.select('id, title, shared, variations')
 		.eq('created_by', userId)
 		.limit(100);
 
@@ -189,7 +197,12 @@ async function findDuplicateExercise(
 
 	// Check for duplicates by content hash
 	for (const existing of data) {
-		const existingHash = computeExerciseHash(existing.statement_md, existing.title ?? undefined);
+		// Get content from variations (single source of truth)
+		const existingContent = getExerciseContentSafe(existing as unknown as Exercise);
+		const existingHash = computeExerciseHash(
+			existingContent.statement_md,
+			existing.title ?? undefined
+		);
 		if (existingHash === hash) {
 			return existing.id;
 		}

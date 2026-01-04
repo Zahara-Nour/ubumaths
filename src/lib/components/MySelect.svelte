@@ -16,6 +16,8 @@
 		variant?: 'default' | 'invisible';
 		class?: string;
 		id?: string;
+		/** If true, the trigger width adapts to the widest item label */
+		fitContent?: boolean;
 	};
 
 	type SingleSelectProps = BaseProps & {
@@ -46,6 +48,7 @@
 		onValueChange,
 		onchange,
 		type = 'single',
+		fitContent = false,
 		...restProps
 	}: Props = $props();
 
@@ -80,86 +83,117 @@
 
 	// Compute trigger class based on variant (if not explicitly provided)
 	// Note: height stays h-9 on desktop, touch devices get 44px via @media (pointer: coarse)
+	// When fitContent is true, we use w-auto instead of w-full
 	const computedTriggerClass = $derived(
 		triggerClass ||
 			(variant === 'invisible'
 				? 'select-trigger h-9 px-0 text-sm inline-flex items-center justify-between bg-transparent border-none min-w-[150px] [&>svg]:opacity-0 hover:[&>svg]:opacity-100 [&>svg]:transition-opacity'
-				: 'select-trigger h-9 w-32 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between')
+				: `select-trigger h-9 ${fitContent ? 'w-auto' : 'w-full'} rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between`)
 	);
+
+	// For fitContent mode: class for the invisible measuring elements
+	const measureClass = 'invisible h-0 px-3 text-sm whitespace-nowrap col-start-1 row-start-1';
 </script>
 
-{#if type === 'multiple'}
-	<Select.Root
-		type="multiple"
-		bind:value={value as string[]}
-		onValueChange={handleMultipleValueChange}
-		{...restProps}
-	>
-		<Select.Trigger class={computedTriggerClass} aria-label={placeholder}>
-			{selectedLabel}
-		</Select.Trigger>
-		<Select.Portal>
-			<Select.Content
-				class="z-50 max-h-96 w-[var(--bits-select-anchor-width)] overflow-hidden rounded-md border bg-popover p-1 shadow-md"
-				sideOffset={4}
-				{...contentProps}
+{#snippet selectContent()}
+	<Select.Portal>
+		<Select.Content
+			class="z-50 max-h-96 w-[var(--bits-select-anchor-width)] overflow-hidden rounded-md border bg-popover p-1 shadow-md"
+			sideOffset={4}
+			{...contentProps}
+		>
+			<Select.Viewport class="p-1">
+				{#each items as item (item.value)}
+					<Select.Item
+						value={item.value}
+						label={item.label}
+						disabled={item.disabled}
+						class="select-item relative flex h-9 w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
+					>
+						{#snippet children({ selected })}
+							<span class="font-medium">{item.label}</span>
+							{#if selected}
+								<span class="ml-auto">✓</span>
+							{/if}
+						{/snippet}
+					</Select.Item>
+				{/each}
+			</Select.Viewport>
+		</Select.Content>
+	</Select.Portal>
+{/snippet}
+
+{#if fitContent}
+	<!-- Grid layout to measure width from all labels -->
+	<div class="inline-grid">
+		<!-- Invisible labels for width measurement -->
+		{#each items as item (item.value)}
+			<span class={measureClass} aria-hidden="true">{item.label}</span>
+		{/each}
+		{#if placeholder}
+			<span class={measureClass} aria-hidden="true">{placeholder}</span>
+		{/if}
+
+		<!-- Actual select in same grid cell -->
+		{#if type === 'multiple'}
+			<Select.Root
+				type="multiple"
+				bind:value={value as string[]}
+				onValueChange={handleMultipleValueChange}
+				{...restProps}
 			>
-				<Select.Viewport class="p-1">
-					{#each items as { value: itemValue, label, disabled } (itemValue)}
-						<Select.Item
-							value={itemValue}
-							{label}
-							{disabled}
-							class="select-item relative flex h-9 w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
-						>
-							{#snippet children({ selected })}
-								<span class="font-medium">{label}</span>
-								{#if selected}
-									<span class="ml-auto">✓</span>
-								{/if}
-							{/snippet}
-						</Select.Item>
-					{/each}
-				</Select.Viewport>
-			</Select.Content>
-		</Select.Portal>
-	</Select.Root>
+				<Select.Trigger
+					class="{computedTriggerClass} col-start-1 row-start-1"
+					aria-label={placeholder}
+				>
+					{selectedLabel}
+				</Select.Trigger>
+				{@render selectContent()}
+			</Select.Root>
+		{:else}
+			<Select.Root
+				type="single"
+				bind:value={value as string}
+				onValueChange={handleSingleValueChange}
+				{...restProps}
+			>
+				<Select.Trigger
+					class="{computedTriggerClass} col-start-1 row-start-1"
+					aria-label={placeholder}
+				>
+					{selectedLabel}
+				</Select.Trigger>
+				{@render selectContent()}
+			</Select.Root>
+		{/if}
+	</div>
 {:else}
-	<Select.Root
-		type="single"
-		bind:value={value as string}
-		onValueChange={handleSingleValueChange}
-		{...restProps}
-	>
-		<Select.Trigger class={computedTriggerClass} aria-label={placeholder}>
-			{selectedLabel}
-		</Select.Trigger>
-		<Select.Portal>
-			<Select.Content
-				class="z-50 max-h-96 w-[var(--bits-select-anchor-width)] overflow-hidden rounded-md border bg-popover p-1 shadow-md"
-				sideOffset={4}
-				{...contentProps}
-			>
-				<Select.Viewport class="p-1">
-					{#each items as { value, label, disabled } (value)}
-						<Select.Item
-							{value}
-							{label}
-							{disabled}
-							class="select-item relative flex h-9 w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-disabled:opacity-50 data-highlighted:bg-accent data-highlighted:text-accent-foreground"
-						>
-							{#snippet children({ selected })}
-								<span class="font-medium">{label}</span>
-								{#if selected}
-									<span class="ml-auto">✓</span>
-								{/if}
-							{/snippet}
-						</Select.Item>
-					{/each}
-				</Select.Viewport>
-			</Select.Content>
-		</Select.Portal>
-	</Select.Root>
+	<!-- Standard layout -->
+	{#if type === 'multiple'}
+		<Select.Root
+			type="multiple"
+			bind:value={value as string[]}
+			onValueChange={handleMultipleValueChange}
+			{...restProps}
+		>
+			<Select.Trigger class={computedTriggerClass} aria-label={placeholder}>
+				{selectedLabel}
+			</Select.Trigger>
+			{@render selectContent()}
+		</Select.Root>
+	{:else}
+		<Select.Root
+			type="single"
+			bind:value={value as string}
+			onValueChange={handleSingleValueChange}
+			{...restProps}
+		>
+			<Select.Trigger class={computedTriggerClass} aria-label={placeholder}>
+				{selectedLabel}
+			</Select.Trigger>
+			{@render selectContent()}
+		</Select.Root>
+	{/if}
 {/if}
 
 <style>

@@ -29,6 +29,7 @@
 	import type { PageData } from './$types';
 	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import type { ExerciseShareToken } from '$lib/exercises/types';
+	import { getExerciseContentSafe } from '$lib/exercises/types';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -80,6 +81,11 @@
 
 	// Format JSON for display
 	let formattedJson = $derived(JSON.stringify(data.exercise, null, 2));
+
+	// Get content from variations (single source of truth)
+	let exerciseContent = $derived(
+		getExerciseContentSafe(data.exercise as import('$lib/exercises/types').Exercise)
+	);
 
 	// Generic functions config for markdown rendering
 	let genericFunctionsConfig = $derived.by<GenericFunctionConfig | undefined>(() => {
@@ -437,7 +443,7 @@
 						<h3 class="mb-2 text-sm font-medium text-muted-foreground">Source Markdown</h3>
 						<div class="h-[50vh] overflow-hidden rounded-lg border">
 							<CodeViewer
-								value={data.exercise.statement_md || '(Aucun énoncé)'}
+								value={exerciseContent.statement_md || '(Aucun énoncé)'}
 								height="100%"
 								label="Énoncé markdown"
 								lineWrap
@@ -448,9 +454,9 @@
 					<div class="flex flex-col">
 						<h3 class="mb-2 text-sm font-medium text-muted-foreground">Rendu</h3>
 						<div class="h-[50vh] overflow-auto rounded-lg border bg-background p-4">
-							{#if data.exercise.statement_md}
+							{#if exerciseContent.statement_md}
 								<MarkdownRenderer
-									content={data.exercise.statement_md}
+									content={exerciseContent.statement_md}
 									genericFunctions={genericFunctionsConfig}
 								/>
 							{:else}
@@ -468,7 +474,7 @@
 						<h3 class="mb-2 text-sm font-medium text-muted-foreground">Source Markdown</h3>
 						<div class="h-[50vh] overflow-hidden rounded-lg border">
 							<CodeViewer
-								value={data.exercise.solution_md || '(Aucune solution)'}
+								value={exerciseContent.solution_md || '(Aucune solution)'}
 								height="100%"
 								label="Solution markdown"
 								lineWrap
@@ -479,9 +485,9 @@
 					<div class="flex flex-col">
 						<h3 class="mb-2 text-sm font-medium text-muted-foreground">Rendu</h3>
 						<div class="h-[50vh] overflow-auto rounded-lg border bg-background p-4">
-							{#if data.exercise.solution_md}
+							{#if exerciseContent.solution_md}
 								<MarkdownRenderer
-									content={data.exercise.solution_md}
+									content={exerciseContent.solution_md}
 									genericFunctions={genericFunctionsConfig}
 								/>
 							{:else}

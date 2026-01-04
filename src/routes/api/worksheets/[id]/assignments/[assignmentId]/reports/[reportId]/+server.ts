@@ -22,6 +22,7 @@ import {
 	notifyErrorReportRejected
 } from '$lib/server/auto-notifications';
 import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
+import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -111,8 +112,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					exercise_id,
 					exercise:exercises!worksheet_exercises_exercise_id_fkey (
 						id,
-						statement_md,
-						solution_md
+						shared,
+						variations
 					)
 				)
 			`
@@ -145,6 +146,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		if (!exercise) {
 			throw error(500, "Donnees de l'exercice non trouvees");
 		}
+
+		// Get content from variations (single source of truth)
+		const exerciseContent = getExerciseContentSafe(exercise as unknown as Exercise);
 
 		// Step 2: Find next pending report for this assignment (for navigation)
 		const { data: nextPendingReports, error: nextError } = await locals.supabase
@@ -181,8 +185,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			response: reportData.response,
 			created_at: reportData.created_at,
 			updated_at: reportData.updated_at,
-			statement_md: exercise.statement_md,
-			solution_md: exercise.solution_md
+			statement_md: exerciseContent.statement_md,
+			solution_md: exerciseContent.solution_md
 		};
 
 		const responseData = {

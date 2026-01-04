@@ -15,6 +15,7 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
+import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 import type {
 	WorksheetWithRelations,
 	InstanceData,
@@ -241,14 +242,20 @@ function generateSimpleInstance(
 
 	const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
 
-	const resolvedExercises = sortedExercises.map((we) => ({
-		exercise_id: we.exercise_id,
-		title: we.exercise?.title ?? null,
-		position: we.position,
-		parameters: {},
-		statement: we.exercise?.statement_md || '',
-		solution: we.exercise?.solution_md || ''
-	}));
+	const resolvedExercises = sortedExercises.map((we) => {
+		// Use content from variations (single source of truth)
+		const content = we.exercise
+			? getExerciseContentSafe(we.exercise as unknown as Exercise)
+			: { statement_md: '', solution_md: '' };
+		return {
+			exercise_id: we.exercise_id,
+			title: we.exercise?.title ?? null,
+			position: we.position,
+			parameters: {},
+			statement: content.statement_md,
+			solution: content.solution_md
+		};
+	});
 
 	return {
 		exercises: resolvedExercises,

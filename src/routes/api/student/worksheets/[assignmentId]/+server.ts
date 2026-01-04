@@ -46,6 +46,7 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-visibility';
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 import type { Exercise, ExerciseResource, ExerciseHint } from '$lib/exercises/types';
+import { getExerciseContentSafe } from '$lib/exercises/types';
 import type { Variable } from '$lib/ubumark';
 import type { ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 import type {
@@ -139,8 +140,6 @@ function resolveExercise(
 	const template: Exercise = {
 		id: exercise.id,
 		title: exercise.title ?? undefined,
-		statement_md: exercise.statement_md,
-		solution_md: exercise.solution_md ?? '',
 		variables: exercise.variables ?? undefined,
 		shared: exercise.shared ?? undefined,
 		variations: exercise.variations ?? undefined,
@@ -164,18 +163,21 @@ function resolveExercise(
 	if (!result.success) {
 		const errorMessage = result.errors?.join(', ') ?? 'Unknown error';
 		console.error(`[API] Failed to resolve exercise ${exercise.id}: ${errorMessage}`);
-		// Return original content as fallback
+		// Fallback: use content from variations (single source of truth)
+		const content = getExerciseContentSafe(template);
 		return {
-			statement: exercise.statement_md,
-			correction: exercise.solution_md
+			statement: content.statement_md,
+			correction: content.solution_md
 		};
 	}
 
 	const instance = result.instance;
 	if (!instance) {
+		// Fallback: use content from variations (single source of truth)
+		const content = getExerciseContentSafe(template);
 		return {
-			statement: exercise.statement_md,
-			correction: exercise.solution_md
+			statement: content.statement_md,
+			correction: content.solution_md
 		};
 	}
 

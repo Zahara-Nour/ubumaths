@@ -71,15 +71,16 @@
 	let genericFunctions = $state<string[]>(exercise?.generic_functions ?? []);
 
 	/**
-	 * Variations (always used - legacy exercises are auto-converted to single variation).
-	 * The Exercise type from $lib/exercises/types includes this field with proper typing.
+	 * Variations are the single source of truth for exercise content.
+	 * New exercises start with a single empty 'guided' variation.
+	 * Existing exercises must have variations (legacy fields are deprecated).
 	 */
 	let variations = $state<ExerciseVariation[]>(
 		exercise?.variations ?? [
 			{
 				label: 'guided',
-				statement_md: exercise?.statement_md || '',
-				solution_md: exercise?.solution_md || '',
+				statement_md: '',
+				solution_md: '',
 				hints: []
 			}
 		]
@@ -408,16 +409,14 @@
 			is_public: isPublic
 		};
 
-		// Always use variations
+		// Always use variations - they are the single source of truth
+		// Legacy statement_md/solution_md fields are no longer saved
 		// @ts-expect-error - ExerciseVariation[] is compatible with Json at runtime
 		data.variations = variations;
 		data.shared =
 			shared && (shared.variables?.length || shared.statement_md || shared.solution_md)
 				? (shared as unknown as ExerciseInsert['shared'])
 				: undefined;
-		// Use first variation's content for backwards compatibility
-		data.statement_md = variations[0]?.statement_md || '';
-		data.solution_md = variations[0]?.solution_md || '';
 
 		await onsubmit(data);
 		// Reset dirty state after successful save

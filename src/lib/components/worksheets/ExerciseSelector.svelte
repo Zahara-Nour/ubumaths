@@ -57,6 +57,7 @@
 	import { formatGradeShort } from '$lib/utils/grades';
 	import type { GradeCode } from '$lib/types/grades';
 	import type { Exercise } from '$lib/exercises/types';
+	import { getExerciseContentSafe } from '$lib/exercises/types';
 	import ExercisePreview from './ExercisePreview.svelte';
 
 	// Types
@@ -457,8 +458,9 @@
 											<h4 class="truncate font-medium text-foreground">
 												{exercise.title || '(Sans titre)'}
 											</h4>
+											{@const content = getExerciseContentSafe(exercise)}
 											<p class="mt-1 line-clamp-2 text-sm text-muted-foreground">
-												{exercise.statement_md.slice(0, 150)}{exercise.statement_md.length > 150
+												{content.statement_md.slice(0, 150)}{content.statement_md.length > 150
 													? '...'
 													: ''}
 											</p>
