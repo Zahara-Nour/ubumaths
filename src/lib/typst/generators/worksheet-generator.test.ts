@@ -44,7 +44,7 @@ const createMockWorksheet = (overrides?: Partial<WorksheetRow>): WorksheetRow =>
 	template_id: null,
 	estimated_duration_minutes: 30,
 	total_points: 20,
-	grade_levels: ['3eme'],
+	grades: ['3eme'],
 	tags: ['algebra'],
 	created_by: 'teacher-id',
 	school_id: 'school-id',

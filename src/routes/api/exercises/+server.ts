@@ -39,7 +39,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(400, `Invalid query parameters: ${errorMsg}`);
 	}
 
-	const { page, limit, difficulty, tags, topic, grade_levels, search } = queryValidation.data;
+	const { page, limit, difficulty, tags, topic, grades, search } = queryValidation.data;
 
 	// Build filters
 	const filters: ExerciseFilters = {};
@@ -56,8 +56,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		filters.topic = topic;
 	}
 
-	if (grade_levels) {
-		filters.grade_levels = grade_levels.split(',').filter(Boolean);
+	if (grades) {
+		filters.grades = grades.split(',').filter(Boolean);
 	}
 
 	if (search) {

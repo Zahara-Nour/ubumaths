@@ -187,7 +187,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (data.estimated_duration_minutes !== undefined)
 		updateData.estimated_duration_minutes = data.estimated_duration_minutes;
 	if (data.total_points !== undefined) updateData.total_points = data.total_points;
-	if (data.grade_levels !== undefined) updateData.grade_levels = data.grade_levels;
+	if (data.grades !== undefined) updateData.grades = data.grades;
 	if (data.tags !== undefined) updateData.tags = data.tags;
 
 	// Handle status changes with timestamps

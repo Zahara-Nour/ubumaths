@@ -54,7 +54,7 @@ describe('getExercises', () => {
 				tags: ['algèbre'],
 				statement_md: 'Test statement',
 				solution_md: 'Test solution',
-				grade_levels: ['3'],
+				grades: ['3'],
 				topic: 'Algèbre',
 				created_at: '2024-01-01T00:00:00Z',
 				updated_at: '2024-01-01T00:00:00Z',
@@ -107,13 +107,13 @@ describe('getExercises', () => {
 		]);
 	});
 
-	it('should apply grade_levels filter with overlaps', async () => {
+	it('should apply grades filter with overlaps', async () => {
 		const mockSupabase = createMockSupabase() as any;
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: [], error: null, count: 0 });
 
-		await getExercises(mockSupabase, { grade_levels: ['3', '2'] });
+		await getExercises(mockSupabase, { grades: ['3', '2'] });
 
-		expect(mockSupabase.__mockQuery.overlaps).toHaveBeenCalledWith('grade_levels', ['3', '2']);
+		expect(mockSupabase.__mockQuery.overlaps).toHaveBeenCalledWith('grades', ['3', '2']);
 	});
 
 	it('should handle pagination correctly', async () => {
@@ -150,7 +150,7 @@ describe('getExercise', () => {
 			tags: ['algèbre'],
 			statement_md: 'Test statement',
 			solution_md: 'Test solution',
-			grade_levels: ['3'],
+			grades: ['3'],
 			topic: 'Algèbre',
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
@@ -204,7 +204,7 @@ describe('createExercise', () => {
 			...newExercise,
 			title: null,
 			source: null,
-			grade_levels: null,
+			grades: null,
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
@@ -249,7 +249,7 @@ describe('updateExercise', () => {
 			tags: ['algèbre'],
 			statement_md: 'Original statement',
 			solution_md: 'Original solution',
-			grade_levels: ['3'],
+			grades: ['3'],
 			topic: 'Algèbre',
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
@@ -291,7 +291,7 @@ describe('updateExercise', () => {
 			tags: [],
 			statement_md: 'Test',
 			solution_md: 'Test',
-			grade_levels: null,
+			grades: null,
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
@@ -327,7 +327,7 @@ describe('deleteExercise', () => {
 			tags: [],
 			statement_md: 'Test',
 			solution_md: 'Test',
-			grade_levels: null,
+			grades: null,
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',
@@ -373,7 +373,7 @@ describe('deleteExercise', () => {
 			tags: [],
 			statement_md: 'Test',
 			solution_md: 'Test',
-			grade_levels: null,
+			grades: null,
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
 			updated_at: '2024-01-01T00:00:00Z',

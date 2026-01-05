@@ -108,7 +108,7 @@
 				config,
 				template_id: templateId,
 				estimated_duration_minutes: estimatedDuration,
-				grade_levels: selectedGrades,
+				grades: selectedGrades,
 				tags: selectedTags
 			};
 

@@ -336,16 +336,16 @@
 									</Badge>
 								</Table.Cell>
 								<Table.Cell>
-									{#if worksheet.grade_levels && worksheet.grade_levels.length > 0}
+									{#if worksheet.grades && worksheet.grades.length > 0}
 										<div class="flex flex-wrap gap-1">
-											{#each worksheet.grade_levels.slice(0, 3) as grade, i (i)}
+											{#each worksheet.grades.slice(0, 3) as grade, i (i)}
 												<Badge variant="outline" class="text-xs">
 													{formatGradeShort(grade as unknown as GradeCode)}
 												</Badge>
 											{/each}
-											{#if worksheet.grade_levels.length > 3}
+											{#if worksheet.grades.length > 3}
 												<Badge variant="outline" class="text-xs">
-													+{worksheet.grade_levels.length - 3}
+													+{worksheet.grades.length - 3}
 												</Badge>
 											{/if}
 										</div>

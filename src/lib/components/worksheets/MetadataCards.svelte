@@ -391,9 +391,9 @@
 							onclick={() => startEdit('grades')}
 							disabled={!isEditable}
 						>
-							{#if worksheet.grade_levels && worksheet.grade_levels.length > 0}
+							{#if worksheet.grades && worksheet.grades.length > 0}
 								<div class="flex flex-wrap gap-1">
-									{#each worksheet.grade_levels as grade, i (i)}
+									{#each worksheet.grades as grade, i (i)}
 										<Badge variant="outline" class="text-xs">
 											{formatGradeShort(String(grade) as GradeCode)}
 										</Badge>
@@ -405,8 +405,8 @@
 						</button>
 					{:else}
 						<GradeBadgeSelector
-							value={(worksheet.grade_levels as GradeCode[]) || []}
-							onchange={(v) => onFieldChange?.('grade_levels', v)}
+							value={(worksheet.grades as GradeCode[]) || []}
+							onchange={(v) => onFieldChange?.('grades', v)}
 						/>
 					{/if}
 				</div>

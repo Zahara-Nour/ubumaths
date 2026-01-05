@@ -85,7 +85,7 @@ async function executeHybridSearch(
 			match_count: options.limit,
 			vector_weight: options.vectorWeight,
 			fts_weight: options.ftsWeight,
-			filter_grade_levels: options.gradeLevel ? [options.gradeLevel] : null,
+			filter_grades: options.gradeLevel ? [options.gradeLevel] : null,
 			filter_topics: options.topics && options.topics.length > 0 ? options.topics : null
 		});
 
@@ -162,7 +162,7 @@ async function executeFtsSearch(
 				rag_documents!inner (
 					id,
 					title,
-					grade_levels,
+					grades,
 					topics,
 					enabled_for_rag
 				)
@@ -176,7 +176,7 @@ async function executeFtsSearch(
 
 		// Apply filters
 		if (options.gradeLevel) {
-			query = query.contains('rag_documents.grade_levels', [options.gradeLevel]);
+			query = query.contains('rag_documents.grades', [options.gradeLevel]);
 		}
 
 		if (options.topics && options.topics.length > 0) {

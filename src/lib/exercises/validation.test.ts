@@ -19,7 +19,7 @@ describe('validateExerciseExport', () => {
 			solution_md: '$x = \\pm 2$',
 			title: 'Équation du second degré',
 			source: 'Livre de maths',
-			grade_levels: ['3', '2'],
+			grades: ['3', '2'],
 			topic: 'Algèbre'
 		};
 
@@ -160,7 +160,7 @@ describe('validateExerciseExport', () => {
 		expect(result.success).toBe(true);
 		expect(result.data?.title).toBeUndefined();
 		expect(result.data?.source).toBeUndefined();
-		expect(result.data?.grade_levels).toBeUndefined();
+		expect(result.data?.grades).toBeUndefined();
 		expect(result.data?.topic).toBeUndefined();
 	});
 });

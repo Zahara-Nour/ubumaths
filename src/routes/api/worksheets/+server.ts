@@ -145,7 +145,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			template_id: data.template_id ?? null,
 			estimated_duration_minutes: data.estimated_duration_minutes ?? null,
 			total_points: data.total_points ?? null,
-			grade_levels: data.grade_levels ?? [],
+			grades: data.grades ?? [],
 			tags: data.tags ?? [],
 			created_by: user.id,
 			school_id: profile.school_id ?? null

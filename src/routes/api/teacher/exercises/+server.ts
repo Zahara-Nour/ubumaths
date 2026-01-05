@@ -11,7 +11,7 @@ import { getTeacherExercises } from '$lib/server/exercises';
  * - search: string (full-text search)
  * - difficulty: 1 | 2 | 3
  * - tags: string (comma-separated)
- * - grade_levels: string (comma-separated)
+ * - grades: string (comma-separated)
  * - page: number (default: 1)
  * - limit: number (default: 50, max: 100)
  * - sort: 'title' | 'updated_at' (default: 'updated_at')
@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Parse query parameters
 		const difficulty = url.searchParams.get('difficulty');
 		const tags = url.searchParams.get('tags')?.split(',').filter(Boolean);
-		const grade_levels = url.searchParams.get('grade_levels')?.split(',').filter(Boolean);
+		const grades = url.searchParams.get('grades')?.split(',').filter(Boolean);
 		const search = url.searchParams.get('search') || '';
 		const page = parseInt(url.searchParams.get('page') || '1');
 		const limit = parseInt(url.searchParams.get('limit') || '50');
@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const filters: {
 			difficulty?: 1 | 2 | 3;
 			tags?: string[];
-			grade_levels?: string[];
+			grades?: string[];
 			search?: string;
 		} = {};
 
@@ -57,8 +57,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			filters.tags = tags;
 		}
 
-		if (grade_levels && grade_levels.length > 0) {
-			filters.grade_levels = grade_levels;
+		if (grades && grades.length > 0) {
+			filters.grades = grades;
 		}
 
 		if (search) {

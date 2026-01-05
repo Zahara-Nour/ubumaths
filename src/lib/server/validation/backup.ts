@@ -67,7 +67,7 @@ export const exerciseBackupRecordSchema = z.object({
 	solution_md: z.string(),
 
 	// Additional metadata
-	grade_levels: z.array(z.string()).nullable(),
+	grades: z.array(z.string()).nullable(),
 	topic: z.string().nullable(),
 	is_public: z.boolean(),
 	distribution_mode: z.string(),

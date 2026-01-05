@@ -53,7 +53,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		if (gradeLevel) {
-			query = query.contains('grade_levels', [gradeLevel]);
+			query = query.contains('grades', [gradeLevel]);
 		}
 
 		if (topic) {
@@ -104,7 +104,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			id: doc.id,
 			title: doc.title,
 			sourceType: doc.source_type,
-			gradeLevels: doc.grade_levels,
+			gradeLevels: doc.grades,
 			topics: doc.topics,
 			enabledForRag: doc.enabled_for_rag,
 			chunkCount: chunkCounts[doc.id] || 0,
@@ -232,7 +232,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		// Update other fields
 		const updateFields: Record<string, unknown> = {};
 		if (validation.data.title) updateFields.title = validation.data.title;
-		if (validation.data.gradeLevels) updateFields.grade_levels = validation.data.gradeLevels;
+		if (validation.data.gradeLevels) updateFields.grades = validation.data.gradeLevels;
 		if (validation.data.topics) updateFields.topics = validation.data.topics;
 
 		if (Object.keys(updateFields).length > 0) {

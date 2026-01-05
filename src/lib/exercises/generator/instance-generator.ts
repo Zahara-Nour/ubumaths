@@ -336,7 +336,7 @@ function generateVariationsInstance(
 		difficulty: exercise.difficulty,
 		tags: exercise.tags,
 		source: exercise.source,
-		grade_levels: exercise.grade_levels,
+		grades: exercise.grades,
 		topic: exercise.topic,
 
 		// Instance-specific data

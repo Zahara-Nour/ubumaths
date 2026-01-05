@@ -223,8 +223,8 @@
 						<div class="flex flex-wrap gap-4 text-sm text-muted-foreground">
 							<span>Difficulté: {exercise.difficulty}/3</span>
 
-							{#if exercise.grade_levels && exercise.grade_levels.length > 0}
-								<span>Niveaux: {exercise.grade_levels.join(', ')}</span>
+							{#if exercise.grades && exercise.grades.length > 0}
+								<span>Niveaux: {exercise.grades.join(', ')}</span>
 							{/if}
 
 							{#if exercise.distribution_mode === 'per_student'}

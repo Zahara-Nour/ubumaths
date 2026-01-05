@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.select(
 			`
 			*,
-			exercise:exercises(id, title, topic, difficulty, grade_levels)
+			exercise:exercises(id, title, topic, difficulty, grades)
 		`
 		)
 		.eq('chapter_id', chapterId)

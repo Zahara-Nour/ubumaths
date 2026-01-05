@@ -177,7 +177,7 @@ export async function exportBackupJSON(
 			tags: ex.tags,
 			statement_md: ex.statement_md,
 			solution_md: ex.solution_md,
-			grade_levels: ex.grade_levels,
+			grades: ex.grades,
 			topic: ex.topic,
 			is_public: ex.is_public,
 			distribution_mode: ex.distribution_mode,
@@ -308,7 +308,7 @@ export async function exportBackupSQL(
 		for (const ex of backup.data.exercises) {
 			lines.push(`INSERT INTO exercises (
   id, slug, title, source, difficulty, tags, statement_md, solution_md,
-  grade_levels, topic, is_public, distribution_mode, variables, variations,
+  grades, topic, is_public, distribution_mode, variables, variations,
   shared, resources, generic_functions, created_at, updated_at, created_by
 ) VALUES (
   ${escapeSQL(ex.id)},
@@ -319,7 +319,7 @@ export async function exportBackupSQL(
   ${escapeSQL(ex.tags)},
   ${escapeSQL(ex.statement_md)},
   ${escapeSQL(ex.solution_md)},
-  ${escapeSQL(ex.grade_levels)},
+  ${escapeSQL(ex.grades)},
   ${escapeSQL(ex.topic)},
   ${ex.is_public},
   ${escapeSQL(ex.distribution_mode)},
@@ -339,7 +339,7 @@ export async function exportBackupSQL(
   tags = EXCLUDED.tags,
   statement_md = EXCLUDED.statement_md,
   solution_md = EXCLUDED.solution_md,
-  grade_levels = EXCLUDED.grade_levels,
+  grades = EXCLUDED.grades,
   topic = EXCLUDED.topic,
   is_public = EXCLUDED.is_public,
   distribution_mode = EXCLUDED.distribution_mode,
@@ -588,7 +588,7 @@ async function restoreExercises(
 						tags: record.tags,
 						statement_md: record.statement_md,
 						solution_md: record.solution_md,
-						grade_levels: record.grade_levels,
+						grades: record.grades,
 						topic: record.topic,
 						is_public: record.is_public,
 						distribution_mode: record.distribution_mode,
@@ -618,7 +618,7 @@ async function restoreExercises(
 					tags: record.tags,
 					statement_md: record.statement_md,
 					solution_md: record.solution_md,
-					grade_levels: record.grade_levels,
+					grades: record.grades,
 					topic: record.topic,
 					is_public: record.is_public,
 					distribution_mode: record.distribution_mode,

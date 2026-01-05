@@ -58,7 +58,7 @@
 	let difficulty = $state<1 | 2 | 3>((exercise?.difficulty as 1 | 2 | 3) || 2);
 	let tags = $state<string[]>(exercise?.tags || []);
 	let topic = $state(exercise?.topic || '');
-	let gradeLevels = $state<GradeCode[]>((exercise?.grade_levels as GradeCode[]) || []);
+	let gradeLevels = $state<GradeCode[]>((exercise?.grades as GradeCode[]) || []);
 	let resources = $state<ExerciseResource[]>(
 		(exercise?.resources as unknown as ExerciseResource[]) || []
 	);
@@ -403,7 +403,7 @@
 			difficulty,
 			tags,
 			topic: topic.trim() || null,
-			grade_levels: gradeLevels,
+			grades: gradeLevels,
 			resources: (resources.length > 0 ? resources : null) as ExerciseInsert['resources'],
 			generic_functions: genericFunctions.length > 0 ? genericFunctions : null,
 			is_public: isPublic

@@ -135,7 +135,7 @@ export const createWorksheetSchema = z.object({
 		.max(10000, 'Points too high')
 		.optional()
 		.nullable(),
-	grade_levels: z
+	grades: z
 		.array(z.string().trim().min(1).max(10))
 		.max(20, 'Maximum 20 grade levels')
 		.optional()
@@ -169,10 +169,7 @@ export const updateWorksheetSchema = z.object({
 		.max(10000, 'Points too high')
 		.optional()
 		.nullable(),
-	grade_levels: z
-		.array(z.string().trim().min(1).max(10))
-		.max(20, 'Maximum 20 grade levels')
-		.optional(), // No default - won't be set if not in request
+	grades: z.array(z.string().trim().min(1).max(10)).max(20, 'Maximum 20 grade levels').optional(), // No default - won't be set if not in request
 	tags: z.array(z.string().trim().min(1).max(50)).max(30, 'Maximum 30 tags').optional(), // No default - won't be set if not in request
 	status: worksheetStatusSchema.optional()
 });
@@ -551,7 +548,7 @@ export const worksheetResponseSchema = z.object({
 	template_id: z.string().uuid().nullable(),
 	estimated_duration_minutes: z.number().int().nullable(),
 	total_points: z.number().nullable(),
-	grade_levels: z.array(z.string()),
+	grades: z.array(z.string()),
 	tags: z.array(z.string()),
 	created_by: z.string().uuid(),
 	school_id: z.string().uuid().nullable(),

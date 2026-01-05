@@ -25,7 +25,7 @@ const sampleExercise: Exercise = {
 	source: 'Test Book',
 	difficulty: 2,
 	tags: ['algèbre', 'équations'],
-	grade_levels: ['3', '2'],
+	grades: ['3', '2'],
 	topic: 'Algèbre',
 	created_at: '2024-01-01T00:00:00Z',
 	updated_at: '2024-01-01T00:00:00Z',
@@ -73,7 +73,7 @@ describe('exportExerciseToJSON', () => {
 		expect(parsed.solution_md).toBe('$x = \\pm 2$');
 		expect(parsed.title).toBe('Test Exercise');
 		expect(parsed.source).toBe('Test Book');
-		expect(parsed.grade_levels).toEqual(['3', '2']);
+		expect(parsed.grades).toEqual(['3', '2']);
 		expect(parsed.topic).toBe('Algèbre');
 		// v2.0 includes variations
 		expect(parsed.variations).toEqual([
