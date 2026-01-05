@@ -7,7 +7,7 @@
  */
 
 import { z } from 'zod';
-import { gradeCodeSchema } from './grades';
+import { gradeCodeSchema, gradeFlexibleSchema } from './grades';
 
 // ============================================================================
 // RE-EXPORT EXISTING VALIDATION
@@ -249,7 +249,20 @@ export const listExercisesQuerySchema = z.object({
 		.min(1, 'Difficulty must be 1, 2, or 3')
 		.max(3, 'Difficulty must be 1, 2, or 3')
 		.optional(),
-	grades: z.string().max(200).optional(), // Comma-separated
+	grades: z
+		.string()
+		.max(200)
+		.optional()
+		.transform((val) => {
+			if (!val) return undefined;
+			const grades = val
+				.split(',')
+				.map((s) => s.trim())
+				.filter(Boolean);
+			if (grades.length === 0) return undefined;
+			return grades;
+		})
+		.pipe(z.array(gradeFlexibleSchema).optional()), // Validates grade codes
 	topic: z.string().trim().max(100).optional(),
 	tags: z.string().max(500).optional(), // Comma-separated
 	search: z.string().trim().max(200, 'Search query too long').optional()
