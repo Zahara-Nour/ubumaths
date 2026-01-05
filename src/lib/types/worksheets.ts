@@ -50,6 +50,10 @@ export interface WorksheetErrorReportRow {
 	reviewed_by: string | null;
 	reviewed_at: string | null;
 	response: string | null;
+	/** Index of the variation the student saw (0-based). NULL for legacy reports. */
+	variation_index: number | null;
+	/** Seed used to generate the student instance. Allows preview of what student saw. */
+	seed: number | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -59,6 +63,10 @@ export interface WorksheetErrorReportInsert {
 	worksheet_exercise_id: string;
 	student_id: string;
 	description: string;
+	/** Index of the variation the student saw (0-based). Optional for backwards compatibility. */
+	variation_index?: number | null;
+	/** Seed used to generate the student instance. Optional for backwards compatibility. */
+	seed?: number | null;
 }
 
 export interface WorksheetErrorReportUpdate {
@@ -119,6 +127,10 @@ export interface TeacherErrorReportView {
 	description: string;
 	status: ErrorReportStatus;
 	response: string | null;
+	/** Index of the variation the student saw (0-based). NULL for legacy reports. */
+	variation_index: number | null;
+	/** Seed used to generate the student instance. NULL for legacy reports. */
+	seed: number | null;
 	created_at: string;
 	updated_at: string;
 }
