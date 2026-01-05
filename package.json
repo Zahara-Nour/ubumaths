@@ -123,7 +123,7 @@
 		],
 		"overrides": {
 			"parse5": "7.2.1",
-			"html-encoding-sniffer": "4.0.0"
+			"jsdom": "26.1.0"
 		}
 	},
 	"dependencies": {
