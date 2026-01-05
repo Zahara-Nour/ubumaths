@@ -501,13 +501,23 @@ export function validateUpdateAssignment(data: unknown) {
 // ============================================================================
 
 /**
+ * Exercise variation schema for response
+ */
+const exerciseVariationResponseSchema = z.object({
+	label: z.string(),
+	statement_md: z.string(),
+	solution_md: z.string(),
+	hints: z.array(z.unknown()).optional(),
+	variables: z.array(z.unknown()).optional()
+});
+
+/**
  * Single exercise response schema
+ * Note: statement_md/solution_md are now in variations (single source of truth)
  */
 export const exerciseResponseSchema = z.object({
 	id: z.string().uuid(),
 	slug: z.string().nullable().optional(),
-	statement_md: z.string(),
-	solution_md: z.string(),
 	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
 	tags: z.array(z.string()).optional(),
 	grade_levels: z.array(z.string()).optional(),
@@ -521,6 +531,12 @@ export const exerciseResponseSchema = z.object({
 		.optional(),
 	// Generic function identifiers for math parsing
 	generic_functions: z.array(z.string()).nullable().optional(),
+	// Variations contain statement_md and solution_md
+	variations: z.array(exerciseVariationResponseSchema).nullable().optional(),
+	// Shared content across variations
+	shared: z.unknown().nullable().optional(),
+	// Resources (images, files)
+	resources: z.unknown().nullable().optional(),
 	is_public: z.boolean(),
 	created_by: z.string().uuid(),
 	// Supabase returns datetime with +00:00 offset, not Z suffix
