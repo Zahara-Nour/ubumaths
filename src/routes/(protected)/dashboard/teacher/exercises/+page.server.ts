@@ -1,4 +1,5 @@
 import type { PageServerLoad, Actions } from './$types';
+import type { GradeCode } from '$lib/types/grades';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { getTeacherExercises, deleteExercise } from '$lib/server/exercises';
 
@@ -28,7 +29,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		difficulty?: 1 | 2 | 3;
 		tags?: string[];
 		topic?: string;
-		grades?: string[];
+		grades?: GradeCode[];
 		search?: string;
 	} = {};
 
@@ -45,7 +46,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	if (grades && grades.length > 0) {
-		filters.grades = grades;
+		filters.grades = grades as GradeCode[];
 	}
 
 	if (search) {

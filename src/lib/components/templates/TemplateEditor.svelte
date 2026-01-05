@@ -14,6 +14,7 @@
 		TemplateStatus
 	} from '$lib/types/chapter-templates';
 	import { GRADE_LEVELS } from '$lib/types/chapter-templates';
+	import type { GradeCode } from '$lib/types/grades';
 	import type { ChapterColor, ChapterIcon } from '$lib/types/chapters';
 	import { CHAPTER_COLORS, CHAPTER_ICONS } from '$lib/types/chapters';
 	import { Button } from '$lib/components/ui/button';
@@ -62,7 +63,7 @@
 		onSave: (data: {
 			title: string;
 			description: string | null;
-			grades: string[];
+			grades: GradeCode[];
 			color: ChapterColor | null;
 			icon: ChapterIcon | null;
 			status: TemplateStatus;
@@ -77,7 +78,7 @@
 	// Form state - Metadata
 	let title = $state(template?.title ?? '');
 	let description = $state(template?.description ?? '');
-	let selectedGrades = $state<string[]>(template?.grades ?? []);
+	let selectedGrades = $state<GradeCode[]>(template?.grades ?? []);
 	let color = $state<ChapterColor | null>(template?.color ?? null);
 	let icon = $state<ChapterIcon | null>(template?.icon ?? 'book');
 	let status = $state<TemplateStatus>(template?.status ?? 'draft');

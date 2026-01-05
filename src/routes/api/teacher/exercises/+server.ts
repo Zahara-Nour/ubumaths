@@ -1,5 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import type { GradeCode } from '$lib/types/grades';
 import { getTeacherExercises } from '$lib/server/exercises';
 
 /**
@@ -45,7 +46,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const filters: {
 			difficulty?: 1 | 2 | 3;
 			tags?: string[];
-			grades?: string[];
+			grades?: GradeCode[];
 			search?: string;
 		} = {};
 
@@ -58,7 +59,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		}
 
 		if (grades && grades.length > 0) {
-			filters.grades = grades;
+			filters.grades = grades as GradeCode[];
 		}
 
 		if (search) {
