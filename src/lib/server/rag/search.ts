@@ -12,7 +12,8 @@ import { getEmbeddingService } from './embeddings';
 
 export interface SearchOptions {
 	limit?: number;
-	gradeLevel?: string;
+	/** Single grade filter (e.g., '6', 'CM2') */
+	grade?: string;
 	topics?: string[];
 	vectorWeight?: number;
 	ftsWeight?: number;
@@ -38,7 +39,7 @@ export async function hybridSearch(
 	query: string,
 	options: SearchOptions = {}
 ): Promise<SearchResult[]> {
-	const { limit = 5, gradeLevel, topics, vectorWeight = 0.7, ftsWeight = 0.3 } = options;
+	const { limit = 5, grade, topics, vectorWeight = 0.7, ftsWeight = 0.3 } = options;
 
 	// Try to get query embedding
 	const embeddingService = getEmbeddingService();
@@ -48,7 +49,7 @@ export async function hybridSearch(
 		// Full hybrid search with embeddings
 		return executeHybridSearch(supabase, queryEmbedding, query, {
 			limit,
-			gradeLevel,
+			grade,
 			topics,
 			vectorWeight,
 			ftsWeight
@@ -56,7 +57,7 @@ export async function hybridSearch(
 	} else {
 		// Fallback to FTS-only
 		console.warn('Embeddings unavailable, falling back to FTS-only search');
-		return executeFtsSearch(supabase, query, { limit, gradeLevel, topics });
+		return executeFtsSearch(supabase, query, { limit, grade, topics });
 	}
 }
 
@@ -69,7 +70,7 @@ async function executeHybridSearch(
 	queryText: string,
 	options: {
 		limit: number;
-		gradeLevel?: string;
+		grade?: string;
 		topics?: string[];
 		vectorWeight: number;
 		ftsWeight: number;
@@ -85,7 +86,7 @@ async function executeHybridSearch(
 			match_count: options.limit,
 			vector_weight: options.vectorWeight,
 			fts_weight: options.ftsWeight,
-			filter_grades: options.gradeLevel ? [options.gradeLevel] : null,
+			filter_grades: options.grade ? [options.grade] : null,
 			filter_topics: options.topics && options.topics.length > 0 ? options.topics : null
 		});
 
@@ -94,7 +95,7 @@ async function executeHybridSearch(
 			// Fallback to FTS
 			return executeFtsSearch(supabase, queryText, {
 				limit: options.limit,
-				gradeLevel: options.gradeLevel,
+				grade: options.grade,
 				topics: options.topics
 			});
 		}
@@ -122,7 +123,7 @@ async function executeHybridSearch(
 		console.error('Hybrid search failed:', error);
 		return executeFtsSearch(supabase, queryText, {
 			limit: options.limit,
-			gradeLevel: options.gradeLevel,
+			grade: options.grade,
 			topics: options.topics
 		});
 	}
@@ -136,7 +137,7 @@ async function executeFtsSearch(
 	queryText: string,
 	options: {
 		limit: number;
-		gradeLevel?: string;
+		grade?: string;
 		topics?: string[];
 	}
 ): Promise<SearchResult[]> {
@@ -175,8 +176,8 @@ async function executeFtsSearch(
 			.limit(options.limit);
 
 		// Apply filters
-		if (options.gradeLevel) {
-			query = query.contains('rag_documents.grades', [options.gradeLevel]);
+		if (options.grade) {
+			query = query.contains('rag_documents.grades', [options.grade]);
 		}
 
 		if (options.topics && options.topics.length > 0) {
@@ -255,14 +256,14 @@ export async function searchSimilarExercises(
 	supabase: SupabaseClient,
 	exerciseStatement: string,
 	options: {
-		gradeLevel?: string;
+		grade?: string;
 		topic?: string;
 		limit?: number;
 	} = {}
 ): Promise<SearchResult[]> {
 	return hybridSearch(supabase, exerciseStatement, {
 		limit: options.limit || 3,
-		gradeLevel: options.gradeLevel,
+		grade: options.grade,
 		topics: options.topic ? [options.topic] : undefined,
 		// Favor semantic similarity for exercises
 		vectorWeight: 0.8,

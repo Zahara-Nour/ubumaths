@@ -3,6 +3,7 @@
  */
 
 import { z } from 'zod';
+import { gradeCodeSchema } from './grades';
 
 // Maximum file size: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -28,7 +29,7 @@ export const documentUploadSchema = z.object({
 		.string()
 		.max(1000, 'La description ne peut pas dépasser 1000 caractères')
 		.optional(),
-	gradeLevels: z.array(z.string()).max(15, 'Maximum 15 niveaux').default([]),
+	grades: z.array(gradeCodeSchema).max(15, 'Maximum 15 niveaux').default([]),
 	topics: z.array(z.string().max(50)).max(10, 'Maximum 10 thèmes').default([]),
 	enabledForRag: z.boolean().default(true)
 });
@@ -60,7 +61,8 @@ export const documentListQuerySchema = z.object({
 	sourceType: z
 		.enum(['question_template', 'exercise', 'markdown_doc', 'google_drive', 'manual_upload'])
 		.optional(),
-	gradeLevel: z.string().optional(),
+	/** Single grade filter */
+	grade: gradeCodeSchema.optional(),
 	topic: z.string().optional(),
 	enabledOnly: z
 		.enum(['true', 'false'])
@@ -74,7 +76,7 @@ export const documentListQuerySchema = z.object({
 export const documentUpdateSchema = z.object({
 	title: z.string().min(1).max(200).optional(),
 	description: z.string().max(1000).optional(),
-	gradeLevels: z.array(z.string()).max(15).optional(),
+	grades: z.array(gradeCodeSchema).max(15).optional(),
 	topics: z.array(z.string().max(50)).max(10).optional(),
 	enabledForRag: z.boolean().optional()
 });

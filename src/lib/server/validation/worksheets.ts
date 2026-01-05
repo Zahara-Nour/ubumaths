@@ -8,6 +8,7 @@
 import { z } from 'zod';
 import { uuidSchema } from './common';
 import { exerciseHintSchema } from './exercises';
+import { gradeCodeSchema } from './grades';
 
 // ============================================================================
 // ENUM SCHEMAS
@@ -169,7 +170,7 @@ export const updateWorksheetSchema = z.object({
 		.max(10000, 'Points too high')
 		.optional()
 		.nullable(),
-	grades: z.array(z.string().trim().min(1).max(10)).max(20, 'Maximum 20 grade levels').optional(), // No default - won't be set if not in request
+	grades: z.array(gradeCodeSchema).max(20, 'Maximum 20 grade levels').optional(), // No default - won't be set if not in request
 	tags: z.array(z.string().trim().min(1).max(50)).max(30, 'Maximum 30 tags').optional(), // No default - won't be set if not in request
 	status: worksheetStatusSchema.optional()
 });
@@ -548,7 +549,7 @@ export const worksheetResponseSchema = z.object({
 	template_id: z.string().uuid().nullable(),
 	estimated_duration_minutes: z.number().int().nullable(),
 	total_points: z.number().nullable(),
-	grades: z.array(z.string()),
+	grades: z.array(gradeCodeSchema),
 	tags: z.array(z.string()),
 	created_by: z.string().uuid(),
 	school_id: z.string().uuid().nullable(),

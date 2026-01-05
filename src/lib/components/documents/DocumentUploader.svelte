@@ -109,7 +109,7 @@
 				JSON.stringify({
 					title: title.trim(),
 					description: description.trim() || undefined,
-					gradeLevels: selectedGrades,
+					grades: selectedGrades,
 					topics: topics
 						.split(',')
 						.map((t) => t.trim())

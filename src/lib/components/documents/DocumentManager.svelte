@@ -11,7 +11,7 @@
 		id: string;
 		title: string;
 		sourceType: string;
-		gradeLevels: string[];
+		grades: string[];
 		topics: string[];
 		enabledForRag: boolean;
 		chunkCount: number;
