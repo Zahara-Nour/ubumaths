@@ -5,7 +5,7 @@
  *
  * Accepts multipart form data with:
  * - file: The document file (PDF, TXT, MD)
- * - metadata: JSON string with title, gradeLevels, topics, etc.
+ * - metadata: JSON string with title, grades, topics, etc.
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -64,7 +64,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		let metadata: {
 			title: string;
 			description?: string;
-			gradeLevels: string[];
+			grades: string[];
 			topics: string[];
 			enabledForRag: boolean;
 		};
@@ -87,7 +87,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Use filename as title if no metadata provided
 			metadata = {
 				title: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
-				gradeLevels: [],
+				grades: [],
 				topics: [],
 				enabledForRag: true
 			};
@@ -129,7 +129,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				pdfMetadata: extraction.metadata
 			},
 			teacherId: user.id,
-			gradeLevels: metadata.gradeLevels,
+			grades: metadata.grades,
 			topics: metadata.topics
 		});
 

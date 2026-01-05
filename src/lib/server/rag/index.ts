@@ -11,7 +11,7 @@
  *
  * // Search for relevant content
  * const results = await hybridSearch(supabase, 'fractions équivalentes', {
- *   gradeLevel: '6',
+ *   grade: '6',
  *   topics: ['fractions'],
  *   limit: 3
  * });

@@ -131,7 +131,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				try {
 					const ragResults = await hybridSearch(locals.supabase, userMessageContent, {
 						limit: 3,
-						gradeLevel: gradeCode,
+						grade: gradeCode,
 						topics: topicValue ? [topicValue] : undefined
 					});
 

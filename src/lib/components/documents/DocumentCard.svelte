@@ -9,7 +9,7 @@
 		id: string;
 		title: string;
 		sourceType: string;
-		gradeLevels: string[];
+		grades: string[];
 		topics: string[];
 		enabledForRag: boolean;
 		chunkCount: number;
@@ -124,10 +124,10 @@
 			<span>Créé le {formatDate(document.createdAt)}</span>
 		</div>
 
-		<!-- Grade levels -->
-		{#if document.gradeLevels.length > 0}
+		<!-- Grades -->
+		{#if document.grades.length > 0}
 			<div class="flex flex-wrap gap-1">
-				{#each document.gradeLevels as grade (grade)}
+				{#each document.grades as grade (grade)}
 					<Badge variant="outline" class="text-xs">{grade}</Badge>
 				{/each}
 			</div>

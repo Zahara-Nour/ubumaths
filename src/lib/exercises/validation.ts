@@ -8,6 +8,10 @@
  */
 
 import { z } from 'zod';
+import { GRADE_CODES } from '$lib/types/grades';
+
+// Grade validation schema - uses centralized GRADE_CODES from unified grade system
+const gradeCodeSchema = z.enum(GRADE_CODES);
 
 // ============================================================================
 // BASE SCHEMAS
@@ -43,12 +47,10 @@ const tagsSchema = z
 	.transform((tags) => tags.filter(Boolean)); // Remove empty strings
 
 /**
- * Schema for grade levels array
+ * Schema for grades array - uses centralized grade validation
+ * Accepts only valid GradeCode values from the unified grade system
  */
-const gradeLevelsSchema = z
-	.array(z.string().trim())
-	.optional()
-	.transform((levels) => (levels ? levels.filter(Boolean) : undefined));
+const gradesSchema = z.array(gradeCodeSchema).optional();
 
 // ============================================================================
 // EXPORT FORMAT SCHEMA
@@ -124,7 +126,7 @@ const exerciseExportSchemaV1 = z.object({
 	solution_md: z.string().trim().min(1, 'Exercise solution cannot be empty'),
 
 	// Additional metadata
-	grades: gradeLevelsSchema,
+	grades: gradesSchema,
 	topic: z.string().trim().optional()
 });
 
@@ -160,7 +162,7 @@ const exerciseExportSchemaV2 = z.object({
 	solution_md: z.string().trim().min(1, 'Exercise solution cannot be empty'),
 
 	// Additional metadata
-	grades: gradeLevelsSchema,
+	grades: gradesSchema,
 	topic: z.string().trim().optional(),
 
 	// Variations system
@@ -223,7 +225,7 @@ export const exerciseFrontmatterSchema = z.object({
 	source: z.string().trim().optional(),
 	difficulty: difficultySchema,
 	tags: tagsSchema,
-	grades: gradeLevelsSchema,
+	grades: gradesSchema,
 	topic: z.string().trim().optional()
 });
 

@@ -7,6 +7,7 @@
  */
 
 import { z } from 'zod';
+import { gradeCodeSchema } from './grades';
 
 // ============================================================================
 // RE-EXPORT EXISTING VALIDATION
@@ -520,7 +521,7 @@ export const exerciseResponseSchema = z.object({
 	slug: z.string().nullable().optional(),
 	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
 	tags: z.array(z.string()).optional(),
-	grades: z.array(z.string()).optional(),
+	grades: z.array(gradeCodeSchema).optional(),
 	topic: z.string().nullable().optional(),
 	source: z.string().nullable().optional(),
 	title: z.string().nullable().optional(),
@@ -605,7 +606,7 @@ export const assignedExerciseSchema = z.object({
 	solution_md: z.string(),
 	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
 	tags: z.array(z.string()).optional(),
-	grades: z.array(z.string()).optional(),
+	grades: z.array(gradeCodeSchema).optional(),
 	topic: z.string().nullable().optional(),
 	title: z.string().nullable().optional(),
 	assignment_id: z.string().uuid().nullable().optional(),

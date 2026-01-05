@@ -26,7 +26,8 @@ export interface DocumentInput {
 	content: string;
 	metadata?: Record<string, unknown>;
 	teacherId?: string;
-	gradeLevels?: string[];
+	/** Applicable grades (e.g., ['6', '5', 'CM2']) */
+	grades?: string[];
 	topics?: string[];
 }
 
@@ -79,7 +80,7 @@ export async function indexDocument(
 			content_hash: contentHash,
 			metadata: input.metadata || {},
 			teacher_id: input.teacherId || null,
-			grades: input.gradeLevels || [],
+			grades: input.grades || [],
 			topics: input.topics || [],
 			enabled_for_rag: true
 		};

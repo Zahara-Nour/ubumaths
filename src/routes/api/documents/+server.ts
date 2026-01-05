@@ -35,8 +35,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw error(400, { message: queryValidation.error.issues[0].message });
 		}
 
-		const { page, limit, search, sourceType, gradeLevel, topic, enabledOnly } =
-			queryValidation.data;
+		const { page, limit, search, sourceType, grade, topic, enabledOnly } = queryValidation.data;
 		const offset = (page - 1) * limit;
 
 		// Build query
@@ -52,8 +51,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			query = query.eq('source_type', sourceType);
 		}
 
-		if (gradeLevel) {
-			query = query.contains('grades', [gradeLevel]);
+		if (grade) {
+			query = query.contains('grades', [grade]);
 		}
 
 		if (topic) {
@@ -104,7 +103,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			id: doc.id,
 			title: doc.title,
 			sourceType: doc.source_type,
-			gradeLevels: doc.grades,
+			grades: doc.grades,
 			topics: doc.topics,
 			enabledForRag: doc.enabled_for_rag,
 			chunkCount: chunkCounts[doc.id] || 0,
@@ -232,7 +231,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		// Update other fields
 		const updateFields: Record<string, unknown> = {};
 		if (validation.data.title) updateFields.title = validation.data.title;
-		if (validation.data.gradeLevels) updateFields.grades = validation.data.gradeLevels;
+		if (validation.data.grades) updateFields.grades = validation.data.grades;
 		if (validation.data.topics) updateFields.topics = validation.data.topics;
 
 		if (Object.keys(updateFields).length > 0) {

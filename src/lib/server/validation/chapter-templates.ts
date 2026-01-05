@@ -8,6 +8,7 @@
 import { z } from 'zod';
 import { uuidSchema, paginationSchema } from './common';
 import { chapterColorSchema, chapterIconSchema, displayOrderSchema } from './chapters';
+import { gradeCodeSchema } from './grades';
 
 // ============================================================================
 // COMMON SCHEMAS
@@ -24,21 +25,17 @@ const TEMPLATE_STATUS_VALUES = ['draft', 'published', 'archived'] as const;
 export const templateStatusSchema = z.enum(TEMPLATE_STATUS_VALUES);
 
 /**
- * Grade level values (French middle/high school)
+ * Grade level validation - uses centralized grade system with all French school levels
+ * Includes: CP-CM2 (primary), 6e-3e (middle), 2nde-Terminale (high school with all tracks)
  */
-const GRADE_LEVEL_VALUES = ['6', '5', '4', '3', '2', '1', 'T'] as const;
+export const gradeLevelSchema = gradeCodeSchema;
 
 /**
- * Grade level validation
- */
-export const gradeLevelSchema = z.enum(GRADE_LEVEL_VALUES);
-
-/**
- * Grades array validation
+ * Grades array validation - accepts all valid grade codes
  */
 export const gradesArraySchema = z
-	.array(gradeLevelSchema)
-	.max(7, 'Trop de niveaux selectionnes (max 7)');
+	.array(gradeCodeSchema)
+	.max(18, 'Trop de niveaux selectionnes (max 18)');
 
 // ============================================================================
 // CONTENT SNAPSHOT SCHEMAS
@@ -424,7 +421,7 @@ export const templateResponseSchema = z.object({
 	isPublic: z.boolean(),
 	title: z.string(),
 	description: z.string().nullable(),
-	grades: z.array(z.string()),
+	grades: z.array(gradeCodeSchema),
 	color: chapterColorSchema.nullable(),
 	icon: chapterIconSchema.nullable(),
 	instantiationCount: z.number().int().nonnegative(),
