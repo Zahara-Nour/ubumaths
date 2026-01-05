@@ -33,9 +33,15 @@ import type { MathPlaceholder } from '../types';
 // CONSTANTS
 // ============================================================================
 
-/** Placeholder prefix (must not conflict with normal markdown) */
-const PLACEHOLDER_PREFIX = '__MATH_';
-const PLACEHOLDER_SUFFIX = '__';
+/**
+ * Placeholder prefix/suffix (must not conflict with normal markdown)
+ *
+ * IMPORTANT: These must NOT contain * or _ characters, as they would
+ * interfere with bold/italic parsing regex which uses [^*_]+ patterns.
+ * Using § (section sign) which is unlikely to appear in normal text.
+ */
+const PLACEHOLDER_PREFIX = '§M:';
+const PLACEHOLDER_SUFFIX = '§';
 
 /**
  * Regex for matching inline math $...$
@@ -127,20 +133,20 @@ const ESCAPED_TILDE_PLACEHOLDER = '___ESCAPED_TILDE___';
  * @example LaTeX syntax
  * ```typescript
  * const result = extractMath("Calculate $x^2$ and $$\\int x dx$$");
- * // result.text = "Calculate __MATH_0__ and __MATH_1__"
+ * // result.text = "Calculate §M:0§ and §M:1§"
  * // result.placeholders = [
- * //   { placeholder: '__MATH_0__', expression: 'x^2', syntax: 'latex', isBlock: false, ... },
- * //   { placeholder: '__MATH_1__', expression: '\\int x dx', syntax: 'latex', isBlock: true, ... }
+ * //   { placeholder: '§M:0§', expression: 'x^2', syntax: 'latex', isBlock: false, ... },
+ * //   { placeholder: '§M:1§', expression: '\\int x dx', syntax: 'latex', isBlock: true, ... }
  * // ]
  * ```
  *
  * @example Custom syntax (expressions stored as-is)
  * ```typescript
  * const result = extractMath("Calculate ~2x^2+3~ and ~~f(x)=x^2~~");
- * // result.text = "Calculate __MATH_0__ and __MATH_1__"
+ * // result.text = "Calculate §M:0§ and §M:1§"
  * // result.placeholders = [
- * //   { placeholder: '__MATH_0__', expression: '2x^2+3', syntax: 'custom', isBlock: false, ... },
- * //   { placeholder: '__MATH_1__', expression: 'f(x)=x^2', syntax: 'custom', isBlock: true, ... }
+ * //   { placeholder: '§M:0§', expression: '2x^2+3', syntax: 'custom', isBlock: false, ... },
+ * //   { placeholder: '§M:1§', expression: 'f(x)=x^2', syntax: 'custom', isBlock: true, ... }
  * // ]
  * ```
  */
@@ -249,7 +255,7 @@ export function extractMath(markdown: string): {
  * @returns true if text is a placeholder, false otherwise
  *
  * @example
- * isMathPlaceholder('__MATH_0__') // true
+ * isMathPlaceholder('§M:0§') // true
  * isMathPlaceholder('regular text') // false
  */
 export function isMathPlaceholder(text: string): boolean {
@@ -259,11 +265,11 @@ export function isMathPlaceholder(text: string): boolean {
 /**
  * Extract placeholder index from a placeholder string
  *
- * @param placeholder - Placeholder string (e.g., '__MATH_5__')
+ * @param placeholder - Placeholder string (e.g., '§M:5§')
  * @returns Placeholder index (e.g., 5), or null if invalid
  *
  * @example
- * getPlaceholderIndex('__MATH_5__') // 5
+ * getPlaceholderIndex('§M:5§') // 5
  * getPlaceholderIndex('not a placeholder') // null
  */
 export function getPlaceholderIndex(placeholder: string): number | null {
@@ -304,7 +310,7 @@ export function findPlaceholder(
  * @returns Array of segments (strings or MathPlaceholder objects)
  *
  * @example
- * const text = "Calculate __MATH_0__ and __MATH_1__ please";
+ * const text = "Calculate §M:0§ and §M:1§ please";
  * const segments = splitTextWithPlaceholders(text, placeholders);
  * // ['Calculate ', MathPlaceholder{...}, ' and ', MathPlaceholder{...}, ' please']
  */
@@ -396,13 +402,13 @@ export function getMathStats(markdown: string): {
  * This is useful when content with placeholders needs to be passed to a parser
  * that expects the original math expressions (e.g., probtree parser).
  *
- * @param text - Text containing placeholders (e.g., "__MATH_0__")
+ * @param text - Text containing placeholders (e.g., "§M:0§")
  * @param placeholders - Array of math placeholders from extraction
  * @returns Text with placeholders replaced by original math expressions
  *
  * @example
  * // If placeholder was extracted from "$R_1$"
- * restoreMathPlaceholders("Event __MATH_0__:0.85", placeholders)
+ * restoreMathPlaceholders("Event §M:0§:0.85", placeholders)
  * // Returns: "Event $R_1$:0.85"
  */
 export function restoreMathPlaceholders(text: string, placeholders: MathPlaceholder[]): string {

@@ -40,7 +40,7 @@ result = x**2 + y**2
 			const codeBlock = ast.children[0] as CodeBlockNode;
 			// Math expressions should remain intact in code blocks
 			expect(codeBlock.code).toContain('$x^2 + y^2$');
-			expect(codeBlock.code).not.toContain('__MATH_');
+			expect(codeBlock.code).not.toContain('§M:');
 		});
 	});
 
@@ -238,7 +238,7 @@ code block
 
 	describe('Probability Tree Integration', () => {
 		it('should preserve math expressions in probtree event labels inside list items', () => {
-			// This test verifies the fix for the bug where $R_1$ became __MATH_2__ in list items
+			// This test verifies the fix for the bug where $R_1$ became §M:2§ in list items
 			const markdown = `
 1. La situation peut être représentée par l'arbre de probabilité ci-contre :
 
@@ -269,12 +269,12 @@ code block
 			const probTree = firstItem.children.find((c) => c.type === 'probability-tree');
 			expect(probTree).toBeDefined();
 
-			// The event label should be $R_1$, not __MATH_N__
+			// The event label should be $R_1$, not §M:N§
 			if (probTree && probTree.type === 'probability-tree') {
 				const firstBranch = probTree.root.branches[0];
 				expect(firstBranch.eventLabel).toBe('$R_1$');
 				// Should NOT contain placeholder
-				expect(firstBranch.eventLabel).not.toContain('__MATH_');
+				expect(firstBranch.eventLabel).not.toContain('§M:');
 			}
 		});
 
@@ -301,7 +301,7 @@ code block
 				expect(probTree.root.branches[0].eventLabel).toBe('~A~');
 				expect(probTree.root.branches[1].eventLabel).toBe('~C~');
 				// Should NOT contain placeholder
-				expect(probTree.root.branches[0].eventLabel).not.toContain('__MATH_');
+				expect(probTree.root.branches[0].eventLabel).not.toContain('§M:');
 			}
 		});
 	});
