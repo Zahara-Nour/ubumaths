@@ -23,6 +23,7 @@
 	let { data }: { data: PageData } = $props();
 
 	let isSending = $state(false);
+	let previousEmail = $state(data.previousEmail);
 
 	// Format date for display
 	function formatDate(dateString: string): string {
@@ -70,8 +71,8 @@
 
 			toaster.success('Email de bienvenue envoyé avec succès !');
 
-			// Update the previous email data to show the "already sent" notice
-			data.previousEmail = { sent_at: new Date().toISOString() };
+			// Update local state to show the "already sent" notice
+			previousEmail = { sent_at: new Date().toISOString() };
 		} catch (err) {
 			console.error('[Welcome Email] Send error:', err);
 			toaster.error(err instanceof Error ? err.message : "Erreur lors de l'envoi de l'email");
@@ -113,7 +114,7 @@
 	{/if}
 
 	<!-- Email Already Sent - Success State -->
-	{#if data.previousEmail}
+	{#if previousEmail}
 		<Card.Root>
 			<Card.Header>
 				<div class="flex items-center gap-3">
@@ -122,7 +123,7 @@
 						<Card.Title>Email déjà envoyé</Card.Title>
 						<Card.Description>
 							Un email de bienvenue a été envoyé à {studentName} le {formatDate(
-								data.previousEmail.sent_at
+								previousEmail.sent_at
 							)}.
 						</Card.Description>
 					</div>
