@@ -68,26 +68,39 @@
 		}
 	} as const;
 
-	// Day checkboxes state
-	let schoolDaysChecked = $state<Record<number, boolean>>({});
-	let weekendDaysChecked = $state<Record<number, boolean>>({});
-
-	// Initialize checkboxes from config
-	$effect(() => {
-		const newSchoolDays: Record<number, boolean> = {};
-		const newWeekendDays: Record<number, boolean> = {};
-
+	// Helper to create initial checkbox state from config
+	function createCheckboxState(config: WeekConfig): {
+		school: Record<number, boolean>;
+		weekend: Record<number, boolean>;
+	} {
+		const school: Record<number, boolean> = {};
+		const weekend: Record<number, boolean> = {};
 		for (let i = 0; i < 7; i++) {
-			newSchoolDays[i] = config.school_days.includes(i);
-			newWeekendDays[i] = config.weekend_days.includes(i);
+			school[i] = config.school_days.includes(i);
+			weekend[i] = config.weekend_days.includes(i);
 		}
+		return { school, weekend };
+	}
 
-		schoolDaysChecked = newSchoolDays;
-		weekendDaysChecked = newWeekendDays;
+	// Initialize with all 7 days to avoid undefined values
+	const initial = createCheckboxState(config);
+	let schoolDaysChecked = $state<Record<number, boolean>>(initial.school);
+	let weekendDaysChecked = $state<Record<number, boolean>>(initial.weekend);
+
+	// Track config changes to sync checkbox state (for presets)
+	let lastConfigJson = $state(JSON.stringify(config));
+	$effect(() => {
+		const currentJson = JSON.stringify(config);
+		if (currentJson !== lastConfigJson) {
+			lastConfigJson = currentJson;
+			const updated = createCheckboxState(config);
+			schoolDaysChecked = updated.school;
+			weekendDaysChecked = updated.weekend;
+		}
 	});
 
 	// Validation error
-	const validationError = $derived(() => {
+	const validationError = $derived.by(() => {
 		const schoolDays = Object.entries(schoolDaysChecked)
 			.filter(([, checked]) => checked)
 			.map(([day]) => Number(day));
@@ -225,7 +238,7 @@
 				{#each Array(7) as _, dayIndex (dayIndex)}
 					<div class="flex justify-center">
 						<MyCheckbox
-							bind:checked={schoolDaysChecked[dayIndex]}
+							checked={schoolDaysChecked[dayIndex]}
 							onCheckedChange={(checked) => handleSchoolDayChange(dayIndex, checked === true)}
 							{disabled}
 							class="h-5 w-5"
@@ -242,7 +255,7 @@
 				{#each Array(7) as _, dayIndex (dayIndex)}
 					<div class="flex justify-center">
 						<MyCheckbox
-							bind:checked={weekendDaysChecked[dayIndex]}
+							checked={weekendDaysChecked[dayIndex]}
 							onCheckedChange={(checked) => handleWeekendDayChange(dayIndex, checked === true)}
 							{disabled}
 							class="h-5 w-5"
@@ -254,11 +267,11 @@
 	</div>
 
 	<!-- Validation Error -->
-	{#if validationError()}
+	{#if validationError}
 		<div
 			class="rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive"
 		>
-			{validationError()}
+			{validationError}
 		</div>
 	{/if}
 
