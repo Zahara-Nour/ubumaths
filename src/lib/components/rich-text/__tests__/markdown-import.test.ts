@@ -557,8 +557,10 @@ describe('markdownToTipTap - Horizontal Rules', () => {
 		expect(result.content?.[1].type).toBe('horizontalRule');
 	});
 
-	it('converts *** to horizontalRule', () => {
-		const markdown = '***';
+	it('converts -- to horizontalRule (ubumark syntax)', () => {
+		// Note: UbuMark uses -- for horizontal rules, not ***, ---, or ___
+		// (*** and ___ are reserved for bold+italic formatting)
+		const markdown = '--';
 		const result = markdownToTipTap(markdown);
 
 		expect(result.content?.[0].type).toBe('horizontalRule');
