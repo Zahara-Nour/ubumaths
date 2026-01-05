@@ -122,7 +122,8 @@
 			"esbuild"
 		],
 		"overrides": {
-			"parse5": "7.2.1"
+			"parse5": "7.2.1",
+			"html-encoding-sniffer": "4.0.0"
 		}
 	},
 	"dependencies": {
