@@ -10,6 +10,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import { GRADES, type GradeCode, GRADE_CODES } from '$lib/types/grades';
 
 	let { data }: { data: PageData } = $props();
 
@@ -30,6 +31,7 @@
 		description: '',
 		teacher_id: '',
 		school_id: '',
+		grade: '',
 		join_code: '',
 		is_active: true
 	});
@@ -79,6 +81,15 @@
 		}))
 	]);
 
+	// Grade items for the selector
+	let gradeItems = [
+		{ value: '', label: 'Aucun niveau' },
+		...GRADE_CODES.map((code) => ({
+			value: code,
+			label: GRADES[code].displayName
+		}))
+	];
+
 	// Open create modal
 	function openCreateModal() {
 		editingClass = null;
@@ -88,6 +99,7 @@
 			description: '',
 			teacher_id: '',
 			school_id: selectedSchool || '',
+			grade: '',
 			join_code: '',
 			is_active: true
 		};
@@ -103,6 +115,7 @@
 			description: classItem.description || '',
 			teacher_id: classItem.teacher_id,
 			school_id: classItem.school_id || '',
+			grade: classItem.grade || '',
 			join_code: classItem.join_code,
 			is_active: classItem.is_active
 		};
@@ -207,6 +220,11 @@
 						<th
 							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
+							Niveau
+						</th>
+						<th
+							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
+						>
 							Code d'Accès
 						</th>
 						<th
@@ -239,6 +257,15 @@
 								{#if classItem.description}
 									<div class="mt-1 text-xs text-muted-foreground">{classItem.description}</div>
 								{/if}
+							</td>
+							<td class="px-6 py-4 whitespace-nowrap">
+								<div class="text-sm text-muted-foreground">
+									{#if classItem.grade}
+										{GRADES[classItem.grade as GradeCode]?.displayName ?? classItem.grade}
+									{:else}
+										—
+									{/if}
+								</div>
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap">
 								<div class="flex items-center gap-2">
@@ -372,7 +399,7 @@
 						</tr>
 					{:else}
 						<tr>
-							<td colspan="6" class="px-6 py-8 text-center text-muted-foreground">
+							<td colspan="7" class="px-6 py-8 text-center text-muted-foreground">
 								{#if selectedSchool}
 									Aucune classe trouvée pour cette école. Cliquez sur "Ajouter une Classe" pour en
 									créer une.
@@ -507,6 +534,19 @@
 										Sélectionnez d'abord une école pour voir les enseignants disponibles.
 									</p>
 								{/if}
+							</div>
+
+							<!-- Grade -->
+							<div>
+								<span class="mb-1 block text-sm font-medium text-foreground">Niveau</span>
+								<input type="hidden" name="grade" value={formData.grade} />
+								<MySelect
+									type="single"
+									bind:value={formData.grade}
+									items={gradeItems}
+									placeholder="Aucun niveau"
+									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+								/>
 							</div>
 
 							<!-- Join Code -->

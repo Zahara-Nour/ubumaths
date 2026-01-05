@@ -23,6 +23,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { FileText, BookCheck, Globe, Calendar, ClipboardList } from 'lucide-svelte';
 	import type { ClassJournalEntry, JournalEntryWithClass } from '$lib/types/journal';
+	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import { cn } from '$lib/utils';
 
 	interface Props {
@@ -85,7 +86,7 @@
 	 * Check if entry has class info
 	 */
 	function hasClassInfo(e: ClassJournalEntry | JournalEntryWithClass): e is JournalEntryWithClass {
-		return 'className' in e && 'classLevel' in e;
+		return 'className' in e && 'classGrade' in e;
 	}
 </script>
 
@@ -112,7 +113,11 @@
 				<!-- Class name (if showClass) -->
 				{#if showClass && hasClassInfo(entry)}
 					<h3 class="font-semibold">{entry.className}</h3>
-					<p class="text-sm text-muted-foreground">{entry.classLevel}</p>
+					{#if entry.classGrade}
+						<p class="text-sm text-muted-foreground">
+							{GRADES[entry.classGrade as GradeCode]?.displayName ?? entry.classGrade}
+						</p>
+					{/if}
 				{/if}
 			</div>
 

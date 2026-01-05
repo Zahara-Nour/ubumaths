@@ -63,7 +63,7 @@ export interface ClassJournalEntry {
  */
 export interface JournalEntryWithClass extends ClassJournalEntry {
 	className: string;
-	classLevel: string;
+	classGrade: string | null;
 }
 
 /**
@@ -73,7 +73,7 @@ export interface UpcomingHomework {
 	id: string;
 	classId: string;
 	className: string;
-	classLevel: string;
+	classGrade: string | null;
 	entryDate: string; // When it was assigned
 	homeworkContent: string;
 	homeworkDueDate: string; // When it's due
@@ -116,7 +116,7 @@ export interface JournalWeekView {
 	/** Class information */
 	classId: string;
 	className: string;
-	classLevel: string;
+	classGrade: string | null;
 }
 
 // ============================================================================

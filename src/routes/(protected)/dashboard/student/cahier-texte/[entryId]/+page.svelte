@@ -15,6 +15,7 @@
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import { Badge } from '$lib/components/ui/badge';
 	import { transformMathHtml } from '$lib/utils/sanitize';
+	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import {
 		BookOpen,
 		ArrowLeft,
@@ -133,7 +134,8 @@
 					{formatDateLong(data.entry.entryDate)}
 				</h1>
 				<p class="text-muted-foreground">
-					{data.classData.name} - {data.classData.level}
+					{data.classData.name}{#if data.classData.grade}
+						- {GRADES[data.classData.grade as GradeCode]?.displayName ?? data.classData.grade}{/if}
 				</p>
 			</div>
 		</div>

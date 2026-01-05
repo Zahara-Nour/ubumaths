@@ -294,7 +294,7 @@ export const upcomingHomeworkResponseSchema = z.object({
 	id: uuidSchema,
 	classId: uuidSchema,
 	className: z.string(),
-	classLevel: z.string(),
+	classGrade: z.string().nullable(),
 	entryDate: dateSchema,
 	homeworkContent: z.string(),
 	homeworkDueDate: dateSchema,

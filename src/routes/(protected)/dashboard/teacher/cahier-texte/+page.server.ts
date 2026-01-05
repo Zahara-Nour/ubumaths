@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// Get teacher's classes
 	const { data: classes, error: classesError } = await locals.supabase
 		.from('classes')
-		.select('id, name, level, is_active')
+		.select('id, name, grade, is_active')
 		.eq('teacher_id', user.id)
 		.order('name');
 
