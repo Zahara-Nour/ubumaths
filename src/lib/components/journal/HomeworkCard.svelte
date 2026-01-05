@@ -21,6 +21,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { ClipboardList, Calendar, Clock, AlertCircle } from 'lucide-svelte';
 	import type { UpcomingHomework } from '$lib/types/journal';
+	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import { cn } from '$lib/utils';
 
 	interface Props {
@@ -99,7 +100,11 @@
 			<div class="flex-1">
 				<!-- Class name -->
 				<h3 class="font-semibold">{homework.className}</h3>
-				<p class="text-sm text-muted-foreground">{homework.classLevel}</p>
+				{#if homework.classGrade}
+					<p class="text-sm text-muted-foreground">
+						{GRADES[homework.classGrade as GradeCode]?.displayName ?? homework.classGrade}
+					</p>
+				{/if}
 			</div>
 
 			<!-- Urgency badge -->

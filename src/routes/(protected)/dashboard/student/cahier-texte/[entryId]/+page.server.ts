@@ -64,7 +64,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			teacher_id,
 			created_at,
 			updated_at,
-			classes!inner(name, level),
+			classes!inner(name, grade),
 			profiles!inner(display_name)
 		`
 		)
@@ -84,7 +84,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	// Transform to application format
-	const classData = entry.classes as unknown as { name: string; level: string };
+	const classData = entry.classes as unknown as { name: string; grade: string | null };
 	const teacherData = entry.profiles as unknown as { display_name: string | null };
 
 	return {
@@ -101,7 +101,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		classData: {
 			id: entry.class_id,
 			name: classData.name,
-			level: classData.level
+			grade: classData.grade
 		},
 		teacherName: teacherData.display_name || 'Professeur'
 	};

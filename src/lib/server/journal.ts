@@ -240,7 +240,7 @@ export async function getJournalEntriesForWeek(
 	// Get class info
 	const { data: classData, error: classError } = await supabase
 		.from('classes')
-		.select('id, name, level')
+		.select('id, name, grade')
 		.eq('id', classId)
 		.single();
 
@@ -309,7 +309,7 @@ export async function getJournalEntriesForWeek(
 		days,
 		classId: classData.id,
 		className: classData.name,
-		classLevel: classData.level
+		classGrade: classData.grade
 	};
 
 	return { data: weekView, error: null };
@@ -355,11 +355,11 @@ export async function getTeacherJournalEntries(
 
 	const entries: JournalEntryWithClass[] = (data || []).map((row) => {
 		const entry = convertJournalEntry(row as unknown as DbClassJournalEntry);
-		const classInfo = (row as unknown as { class: { name: string; level: string } }).class;
+		const classInfo = (row as unknown as { class: { name: string; grade: string | null } }).class;
 		return {
 			...entry,
 			className: classInfo.name,
-			classLevel: classInfo.level
+			classGrade: classInfo.grade
 		};
 	});
 
@@ -454,7 +454,7 @@ export async function getUpcomingHomework(
 		.select(
 			`
 			*,
-			class:classes!inner(name, level)
+			class:classes!inner(name, grade)
 		`
 		)
 		.in('class_id', classIds)
@@ -473,7 +473,7 @@ export async function getUpcomingHomework(
 
 	const homework: UpcomingHomework[] = (entries || []).map((row) => {
 		const entry = row as unknown as DbClassJournalEntry & {
-			class: { name: string; level: string };
+			class: { name: string; grade: string | null };
 		};
 		const dueDate = new Date(entry.homework_due_date!);
 		const daysUntilDue = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -482,7 +482,7 @@ export async function getUpcomingHomework(
 			id: entry.id,
 			classId: entry.class_id,
 			className: entry.class.name,
-			classLevel: entry.class.level,
+			classGrade: entry.class.grade,
 			entryDate: entry.entry_date,
 			homeworkContent: entry.homework_content!,
 			homeworkDueDate: entry.homework_due_date!,

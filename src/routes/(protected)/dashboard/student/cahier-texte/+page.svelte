@@ -18,6 +18,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { JournalDatePicker, HomeworkCard } from '$lib/components/journal';
 	import { BookOpen, Calendar, ClipboardList, ChevronRight } from 'lucide-svelte';
+	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';
 
 	interface Props {
@@ -234,7 +235,9 @@
 												{formatDateLong(entry.entryDate)}
 											</Card.Title>
 											<Card.Description>
-												{entry.className} - {entry.classLevel}
+												{entry.className}{#if entry.classGrade}
+													- {GRADES[entry.classGrade as GradeCode]?.displayName ??
+														entry.classGrade}{/if}
 											</Card.Description>
 										</div>
 										<div class="flex gap-2">

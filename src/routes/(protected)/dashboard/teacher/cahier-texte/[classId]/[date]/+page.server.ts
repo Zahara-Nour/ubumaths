@@ -51,7 +51,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Verify teacher owns this class
 	const { data: classData, error: classError } = await locals.supabase
 		.from('classes')
-		.select('id, name, level')
+		.select('id, name, grade')
 		.eq('id', classId)
 		.eq('teacher_id', user.id)
 		.single();

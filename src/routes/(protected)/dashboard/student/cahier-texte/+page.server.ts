@@ -56,7 +56,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			classes!inner(
 				id,
 				name,
-				level
+				grade
 			)
 		`
 		)
@@ -69,11 +69,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	// Transform class data
 	const classes = (memberships || []).map((item) => {
-		const classData = item.classes as unknown as { id: string; name: string; level: string };
+		const classData = item.classes as unknown as { id: string; name: string; grade: string | null };
 		return {
 			id: classData.id,
 			name: classData.name,
-			level: classData.level
+			grade: classData.grade
 		};
 	});
 
@@ -110,7 +110,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		homework_content: string | null;
 		homework_due_date: string | null;
 		class_id: string;
-		classes: { name: string; level: string };
+		classes: { name: string; grade: string | null };
 	}> = [];
 
 	if (filteredClassIds.length > 0) {
@@ -124,7 +124,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				homework_content,
 				homework_due_date,
 				class_id,
-				classes!inner(name, level)
+				classes!inner(name, grade)
 			`
 			)
 			.in('class_id', filteredClassIds)
@@ -139,7 +139,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		} else {
 			weekEntries = (entries || []).map((e) => ({
 				...e,
-				classes: e.classes as unknown as { name: string; level: string }
+				classes: e.classes as unknown as { name: string; grade: string | null }
 			}));
 		}
 	}
@@ -203,7 +203,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			homeworkContent: e.homework_content,
 			homeworkDueDate: e.homework_due_date,
 			className: e.classes.name,
-			classLevel: e.classes.level,
+			classGrade: e.classes.grade,
 			classId: e.class_id
 		})),
 		upcomingHomework

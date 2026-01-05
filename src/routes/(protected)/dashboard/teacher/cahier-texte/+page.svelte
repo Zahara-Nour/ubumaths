@@ -18,6 +18,7 @@
 	import JournalWeekGrid from '$lib/components/journal/JournalWeekGrid.svelte';
 	import JournalDatePicker from '$lib/components/journal/JournalDatePicker.svelte';
 	import { BookOpen, GraduationCap, Calendar } from 'lucide-svelte';
+	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';
 
 	interface Props {
@@ -180,7 +181,9 @@
 			<h2 class="text-lg font-semibold">{formatWeekRange(data.weekStart)}</h2>
 			{#if data.weekView}
 				<p class="text-sm text-muted-foreground">
-					{data.weekView.className} - {data.weekView.classLevel}
+					{data.weekView.className}{#if data.weekView.classGrade}
+						- {GRADES[data.weekView.classGrade as GradeCode]?.displayName ??
+							data.weekView.classGrade}{/if}
 				</p>
 			{/if}
 		</div>

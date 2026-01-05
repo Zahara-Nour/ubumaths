@@ -1588,6 +1588,7 @@ export type Database = {
 				Row: {
 					created_at: string;
 					description: string | null;
+					grade: string | null;
 					id: string;
 					is_active: boolean;
 					join_code: string;
@@ -1600,6 +1601,7 @@ export type Database = {
 				Insert: {
 					created_at?: string;
 					description?: string | null;
+					grade?: string | null;
 					id?: string;
 					is_active?: boolean;
 					join_code: string;
@@ -1612,6 +1614,7 @@ export type Database = {
 				Update: {
 					created_at?: string;
 					description?: string | null;
+					grade?: string | null;
 					id?: string;
 					is_active?: boolean;
 					join_code?: string;
@@ -11207,9 +11210,11 @@ export type Database = {
 					response: string | null;
 					reviewed_at: string | null;
 					reviewed_by: string | null;
+					seed: number | null;
 					status: string;
 					student_id: string;
 					updated_at: string;
+					variation_index: number | null;
 					worksheet_exercise_id: string;
 				};
 				Insert: {
@@ -11220,9 +11225,11 @@ export type Database = {
 					response?: string | null;
 					reviewed_at?: string | null;
 					reviewed_by?: string | null;
+					seed?: number | null;
 					status?: string;
 					student_id: string;
 					updated_at?: string;
+					variation_index?: number | null;
 					worksheet_exercise_id: string;
 				};
 				Update: {
@@ -11233,9 +11240,11 @@ export type Database = {
 					response?: string | null;
 					reviewed_at?: string | null;
 					reviewed_by?: string | null;
+					seed?: number | null;
 					status?: string;
 					student_id?: string;
 					updated_at?: string;
+					variation_index?: number | null;
 					worksheet_exercise_id?: string;
 				};
 				Relationships: [

@@ -93,6 +93,7 @@ export const actions: Actions = {
 		const description = formData.get('description') as string;
 		const teacher_id = formData.get('teacher_id') as string;
 		const school_id = formData.get('school_id') as string;
+		const grade = formData.get('grade') as string | null;
 		const custom_join_code = formData.get('join_code') as string;
 
 		// Validate required fields
@@ -138,6 +139,7 @@ export const actions: Actions = {
 			description: description || null,
 			teacher_id,
 			school_id: school_id || null,
+			grade: grade || null,
 			join_code,
 			is_active: true
 		});
@@ -163,6 +165,7 @@ export const actions: Actions = {
 		const description = formData.get('description') as string;
 		const teacher_id = formData.get('teacher_id') as string;
 		const school_id = formData.get('school_id') as string;
+		const grade = formData.get('grade') as string | null;
 		const join_code = formData.get('join_code') as string;
 		const is_active = formData.get('is_active') === 'true';
 
@@ -209,6 +212,7 @@ export const actions: Actions = {
 				description: description || null,
 				teacher_id,
 				school_id: school_id || null,
+				grade: grade || null,
 				join_code,
 				is_active
 			})
