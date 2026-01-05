@@ -374,8 +374,8 @@
 							{/if}
 						</span>
 
-						{#if data.exercise.grade_levels && data.exercise.grade_levels.length > 0}
-							<span>Niveaux : {data.exercise.grade_levels.join(', ')}</span>
+						{#if data.exercise.grades && data.exercise.grades.length > 0}
+							<span>Niveaux : {data.exercise.grades.join(', ')}</span>
 						{/if}
 
 						{#if data.exercise.source}

@@ -154,7 +154,7 @@ const exerciseBaseSchema = z.object({
 		.default([])
 		.optional()
 		.nullable(),
-	grade_levels: z
+	grades: z
 		.array(z.string().trim().min(1).max(20))
 		.max(7, 'Maximum 7 grade levels')
 		.optional()
@@ -248,7 +248,7 @@ export const listExercisesQuerySchema = z.object({
 		.min(1, 'Difficulty must be 1, 2, or 3')
 		.max(3, 'Difficulty must be 1, 2, or 3')
 		.optional(),
-	grade_levels: z.string().max(200).optional(), // Comma-separated
+	grades: z.string().max(200).optional(), // Comma-separated
 	topic: z.string().trim().max(100).optional(),
 	tags: z.string().max(500).optional(), // Comma-separated
 	search: z.string().trim().max(200, 'Search query too long').optional()
@@ -520,7 +520,7 @@ export const exerciseResponseSchema = z.object({
 	slug: z.string().nullable().optional(),
 	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
 	tags: z.array(z.string()).optional(),
-	grade_levels: z.array(z.string()).optional(),
+	grades: z.array(z.string()).optional(),
 	topic: z.string().nullable().optional(),
 	source: z.string().nullable().optional(),
 	title: z.string().nullable().optional(),
@@ -605,7 +605,7 @@ export const assignedExerciseSchema = z.object({
 	solution_md: z.string(),
 	difficulty: z.union([z.literal(1), z.literal(2), z.literal(3)]),
 	tags: z.array(z.string()).optional(),
-	grade_levels: z.array(z.string()).optional(),
+	grades: z.array(z.string()).optional(),
 	topic: z.string().nullable().optional(),
 	title: z.string().nullable().optional(),
 	assignment_id: z.string().uuid().nullable().optional(),

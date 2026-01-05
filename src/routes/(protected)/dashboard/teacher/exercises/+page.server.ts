@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const difficulty = url.searchParams.get('difficulty');
 	const tags = url.searchParams.get('tags')?.split(',').filter(Boolean);
 	const topic = url.searchParams.get('topic');
-	const grade_levels = url.searchParams.get('grade_levels')?.split(',').filter(Boolean);
+	const grades = url.searchParams.get('grades')?.split(',').filter(Boolean);
 	const search = url.searchParams.get('search') || '';
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const limit = parseInt(url.searchParams.get('limit') || '50');
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		difficulty?: 1 | 2 | 3;
 		tags?: string[];
 		topic?: string;
-		grade_levels?: string[];
+		grades?: string[];
 		search?: string;
 	} = {};
 
@@ -44,8 +44,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		filters.topic = topic;
 	}
 
-	if (grade_levels && grade_levels.length > 0) {
-		filters.grade_levels = grade_levels;
+	if (grades && grades.length > 0) {
+		filters.grades = grades;
 	}
 
 	if (search) {
@@ -77,7 +77,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			difficulty: difficulty ? parseInt(difficulty) : null,
 			tags: tags || [],
 			topic: topic || '',
-			grade_levels: grade_levels || [],
+			grades: grades || [],
 			search
 		},
 		sortBy,

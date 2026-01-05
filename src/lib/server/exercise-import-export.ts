@@ -52,7 +52,7 @@ export function exerciseToExport(exercise: Exercise): ExerciseExportV1 {
 		tags: exercise.tags,
 		statement_md: content.statement_md,
 		solution_md: content.solution_md,
-		grade_levels: exercise.grade_levels,
+		grades: exercise.grades,
 		topic: exercise.topic
 	};
 }
@@ -80,7 +80,7 @@ export function exerciseToExportV2(exercise: Exercise): ExerciseExportV2 {
 		// Legacy fields populated from variations for backward compatibility
 		statement_md: content.statement_md,
 		solution_md: content.solution_md,
-		grade_levels: exercise.grade_levels,
+		grades: exercise.grades,
 		topic: exercise.topic,
 		variations: variations,
 		shared: shared

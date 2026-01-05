@@ -89,16 +89,16 @@
 			{/if}
 
 			<!-- Grade levels -->
-			{#if exercise.grade_levels && exercise.grade_levels.length > 0}
+			{#if exercise.grades && exercise.grades.length > 0}
 				<div class="flex items-center gap-1">
 					<GraduationCap class="h-4 w-4 text-muted-foreground" />
-					{#each exercise.grade_levels.slice(0, 3) as grade (grade)}
+					{#each exercise.grades.slice(0, 3) as grade (grade)}
 						<Badge variant="outline" class="text-xs">
 							{formatGradeShort(grade as GradeCode)}
 						</Badge>
 					{/each}
-					{#if exercise.grade_levels.length > 3}
-						<span class="text-xs text-muted-foreground">+{exercise.grade_levels.length - 3}</span>
+					{#if exercise.grades.length > 3}
+						<span class="text-xs text-muted-foreground">+{exercise.grades.length - 3}</span>
 					{/if}
 				</div>
 			{/if}

@@ -27,7 +27,7 @@ export interface ExerciseFilters {
 	difficulty?: 1 | 2 | 3;
 	tags?: string[];
 	topic?: string;
-	grade_levels?: string[];
+	grades?: string[];
 	search?: string; // Full-text search on title and source
 	parameterized?: boolean; // Filter for exercises with/without variables
 }
@@ -126,8 +126,8 @@ export async function getExercises(
 		query = query.eq('topic', filters.topic);
 	}
 
-	if (filters.grade_levels && filters.grade_levels.length > 0) {
-		query = query.overlaps('grade_levels', filters.grade_levels);
+	if (filters.grades && filters.grades.length > 0) {
+		query = query.overlaps('grades', filters.grades);
 	}
 
 	if (filters.search) {
@@ -415,8 +415,8 @@ export async function getTeacherExercises(
 		query = query.eq('topic', filters.topic);
 	}
 
-	if (filters.grade_levels && filters.grade_levels.length > 0) {
-		query = query.overlaps('grade_levels', filters.grade_levels);
+	if (filters.grades && filters.grades.length > 0) {
+		query = query.overlaps('grades', filters.grades);
 	}
 
 	if (filters.search) {

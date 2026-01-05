@@ -2777,7 +2777,7 @@ export type Database = {
 					difficulty: number;
 					distribution_mode: string;
 					generic_functions: string[] | null;
-					grade_levels: string[] | null;
+					grades: string[] | null;
 					id: string;
 					is_public: boolean;
 					resources: Json | null;
@@ -2797,7 +2797,7 @@ export type Database = {
 					difficulty: number;
 					distribution_mode?: string;
 					generic_functions?: string[] | null;
-					grade_levels?: string[] | null;
+					grades?: string[] | null;
 					id?: string;
 					is_public?: boolean;
 					resources?: Json | null;
@@ -2817,7 +2817,7 @@ export type Database = {
 					difficulty?: number;
 					distribution_mode?: string;
 					generic_functions?: string[] | null;
-					grade_levels?: string[] | null;
+					grades?: string[] | null;
 					id?: string;
 					is_public?: boolean;
 					resources?: Json | null;
@@ -8049,7 +8049,7 @@ export type Database = {
 					content_hash: string;
 					created_at: string;
 					enabled_for_rag: boolean | null;
-					grade_levels: string[] | null;
+					grades: string[] | null;
 					id: string;
 					metadata: Json | null;
 					source_id: string | null;
@@ -8064,7 +8064,7 @@ export type Database = {
 					content_hash: string;
 					created_at?: string;
 					enabled_for_rag?: boolean | null;
-					grade_levels?: string[] | null;
+					grades?: string[] | null;
 					id?: string;
 					metadata?: Json | null;
 					source_id?: string | null;
@@ -8079,7 +8079,7 @@ export type Database = {
 					content_hash?: string;
 					created_at?: string;
 					enabled_for_rag?: boolean | null;
-					grade_levels?: string[] | null;
+					grades?: string[] | null;
 					id?: string;
 					metadata?: Json | null;
 					source_id?: string | null;
@@ -11579,7 +11579,7 @@ export type Database = {
 					created_by: string;
 					description: string | null;
 					estimated_duration_minutes: number | null;
-					grade_levels: string[] | null;
+					grades: string[] | null;
 					id: string;
 					published_at: string | null;
 					school_id: string | null;
@@ -11599,7 +11599,7 @@ export type Database = {
 					created_by: string;
 					description?: string | null;
 					estimated_duration_minutes?: number | null;
-					grade_levels?: string[] | null;
+					grades?: string[] | null;
 					id?: string;
 					published_at?: string | null;
 					school_id?: string | null;
@@ -11619,7 +11619,7 @@ export type Database = {
 					created_by?: string;
 					description?: string | null;
 					estimated_duration_minutes?: number | null;
-					grade_levels?: string[] | null;
+					grades?: string[] | null;
 					id?: string;
 					published_at?: string | null;
 					school_id?: string | null;
@@ -12914,7 +12914,7 @@ export type Database = {
 					exercise_id: string;
 					exercise_is_public: boolean;
 					exercise_title: string;
-					grade_levels: string[];
+					grades: string[];
 					id: string;
 					is_active: boolean;
 					notes: string;
@@ -13203,7 +13203,7 @@ export type Database = {
 					exercise_id: string;
 					exercise_is_public: boolean;
 					exercise_title: string;
-					grade_levels: string[];
+					grades: string[];
 					id: string;
 					is_active: boolean;
 					notes: string;
@@ -13297,14 +13297,14 @@ export type Database = {
 					distribution_mode: string;
 					exercise_id: string;
 					exercise_title: string;
-					grade_levels: string[];
+					grades: string[];
 					last_viewed_at: string;
 					notes: string;
 					optional_deadline: string;
-					solution_md: string;
-					statement_md: string;
+					shared: Json;
 					tags: string[];
 					variables: Json;
+					variations: Json;
 					view_count: number;
 				}[];
 			};
@@ -13394,7 +13394,7 @@ export type Database = {
 					exercise_id: string;
 					exercise_is_public: boolean;
 					exercise_title: string;
-					grade_levels: string[];
+					grades: string[];
 					id: string;
 					is_active: boolean;
 					notes: string;
@@ -13737,7 +13737,7 @@ export type Database = {
 			};
 			rag_hybrid_search: {
 				Args: {
-					filter_grade_levels?: string[];
+					filter_grades?: string[];
 					filter_topics?: string[];
 					fts_weight?: number;
 					match_count?: number;
@@ -13751,8 +13751,6 @@ export type Database = {
 					combined_score: number;
 					document_id: string;
 					document_title: string;
-					fts_score: number;
-					vector_score: number;
 				}[];
 			};
 			recalculate_minesweeper_reference_times: {

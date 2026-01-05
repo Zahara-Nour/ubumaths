@@ -22,8 +22,8 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Sort type including client-side grade_levels sorting
-	type SortByField = 'title' | 'updated_at' | 'grade_levels';
+	// Sort type including client-side grades sorting
+	type SortByField = 'title' | 'updated_at' | 'grades';
 
 	// Local state for exercises (allows fetch-based updates)
 	let exercises = $state(data.exercises);
@@ -35,7 +35,7 @@
 	// Filter state
 	let searchQuery = $state(data.filters.search);
 	let selectedDifficulty = $state(data.filters.difficulty?.toString() || '');
-	let selectedGradeLevels = $state<GradeCode[]>((data.filters.grade_levels || []) as GradeCode[]);
+	let selectedGradeLevels = $state<GradeCode[]>((data.filters.grades || []) as GradeCode[]);
 
 	// Delete confirmation
 	let deletingId = $state<string | null>(null);
@@ -141,10 +141,10 @@
 
 		if (searchQuery) params.set('search', searchQuery);
 		if (selectedDifficulty) params.set('difficulty', selectedDifficulty);
-		if (selectedGradeLevels.length > 0) params.set('grade_levels', selectedGradeLevels.join(','));
-		// grade_levels sorting is client-side only, don't send to API
-		if (sortBy !== 'updated_at' && sortBy !== 'grade_levels') params.set('sortBy', sortBy);
-		if (sortBy === 'grade_levels') params.set('sortBy', 'grade_levels'); // For URL persistence
+		if (selectedGradeLevels.length > 0) params.set('grades', selectedGradeLevels.join(','));
+		// grades sorting is client-side only, don't send to API
+		if (sortBy !== 'updated_at' && sortBy !== 'grades') params.set('sortBy', sortBy);
+		if (sortBy === 'grades') params.set('sortBy', 'grades'); // For URL persistence
 		if (sortOrder !== 'desc') params.set('order', sortOrder);
 		if (page > 1) params.set('page', String(page));
 
@@ -162,12 +162,12 @@
 	}
 
 	/**
-	 * Sort exercises by grade_levels (client-side)
+	 * Sort exercises by grades (client-side)
 	 */
 	function sortByGradeLevels(exerciseList: typeof exercises): typeof exercises {
 		return [...exerciseList].sort((a, b) => {
-			const orderA = getMinGradeOrder(a.grade_levels as GradeCode[] | null);
-			const orderB = getMinGradeOrder(b.grade_levels as GradeCode[] | null);
+			const orderA = getMinGradeOrder(a.grades as GradeCode[] | null);
+			const orderB = getMinGradeOrder(b.grades as GradeCode[] | null);
 			return sortOrder === 'asc' ? orderA - orderB : orderB - orderA;
 		});
 	}
@@ -179,8 +179,8 @@
 		isLoading = true;
 
 		const params = buildParams(page);
-		// Don't send grade_levels sort to API
-		if (sortBy === 'grade_levels') {
+		// Don't send grades sort to API
+		if (sortBy === 'grades') {
 			params.delete('sortBy');
 		}
 		updateUrl(buildParams(page)); // URL keeps sortBy for persistence
@@ -190,8 +190,8 @@
 			if (!response.ok) throw new Error('Failed to fetch');
 
 			const result = await response.json();
-			// Apply client-side sorting for grade_levels
-			if (sortBy === 'grade_levels') {
+			// Apply client-side sorting for grades
+			if (sortBy === 'grades') {
 				exercises = sortByGradeLevels(result.exercises);
 			} else {
 				exercises = result.exercises;
@@ -230,9 +230,9 @@
 			// Same column: toggle order
 			sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
 		} else {
-			// Different column: switch to it with asc order for grade_levels, desc for others
+			// Different column: switch to it with asc order for grades, desc for others
 			sortBy = column;
-			sortOrder = column === 'grade_levels' ? 'asc' : 'desc';
+			sortOrder = column === 'grades' ? 'asc' : 'desc';
 		}
 		fetchExercises(1);
 	}
@@ -395,11 +395,11 @@
 						<Table.Head>Difficulté</Table.Head>
 						<Table.Head>
 							<button
-								onclick={() => toggleSort('grade_levels')}
+								onclick={() => toggleSort('grades')}
 								class="flex items-center gap-1 hover:text-foreground"
 							>
 								Niveau
-								{#if sortBy === 'grade_levels'}
+								{#if sortBy === 'grades'}
 									{#if sortOrder === 'desc'}
 										<ArrowDown class="h-4 w-4" />
 									{:else}
@@ -469,15 +469,15 @@
 								</Table.Cell>
 								<Table.Cell>
 									<div class="flex flex-wrap gap-1">
-										{#if exercise.grade_levels && exercise.grade_levels.length > 0}
-											{#each exercise.grade_levels.slice(0, 3) as grade (grade)}
+										{#if exercise.grades && exercise.grades.length > 0}
+											{#each exercise.grades.slice(0, 3) as grade (grade)}
 												<Badge variant="secondary" class="text-xs"
 													>{formatGradeShort(grade as GradeCode)}</Badge
 												>
 											{/each}
-											{#if exercise.grade_levels.length > 3}
+											{#if exercise.grades.length > 3}
 												<Badge variant="secondary" class="text-xs">
-													+{exercise.grade_levels.length - 3}
+													+{exercise.grades.length - 3}
 												</Badge>
 											{/if}
 										{:else}

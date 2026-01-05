@@ -105,7 +105,7 @@ tags:
   - algèbre
 title: "Advanced Algebra"
 source: "Algebra Book"
-grade_levels:
+grades:
   - "2"
   - "1"
 topic: "Algèbre avancée"
@@ -123,7 +123,7 @@ Detailed solution
 		const result = parseMarkdownWithFrontmatter(markdown);
 
 		expect(result.success).toBe(true);
-		expect(result.data?.grade_levels).toEqual(['2', '1']);
+		expect(result.data?.grades).toEqual(['2', '1']);
 		expect(result.data?.topic).toBe('Algèbre avancée');
 	});
 
@@ -302,7 +302,7 @@ describe('serializeToMarkdown', () => {
 			solution_md: '$x = \\pm 2$',
 			title: 'Équation du second degré',
 			source: 'Livre de maths',
-			grade_levels: ['3', '2'],
+			grades: ['3', '2'],
 			topic: 'Algèbre'
 		};
 
@@ -360,7 +360,7 @@ describe('round-trip serialization', () => {
 			solution_md: 'Test answer',
 			title: 'Round Trip Test',
 			source: 'Test Source',
-			grade_levels: ['3'],
+			grades: ['3'],
 			topic: 'Testing'
 		};
 
@@ -379,7 +379,7 @@ describe('round-trip serialization', () => {
 		expect(result.data?.solution_md).toBe(original.solution_md);
 		expect(result.data?.title).toBe(original.title);
 		expect(result.data?.source).toBe(original.source);
-		expect(result.data?.grade_levels).toEqual(original.grade_levels);
+		expect(result.data?.grades).toEqual(original.grades);
 		expect(result.data?.topic).toBe(original.topic);
 	});
 

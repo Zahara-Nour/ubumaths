@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 			template_id: original.template_id,
 			estimated_duration_minutes: original.estimated_duration_minutes,
 			total_points: original.total_points,
-			grade_levels: original.grade_levels,
+			grades: original.grades,
 			tags: original.tags,
 			created_by: user.id,
 			school_id: profile.school_id

@@ -148,8 +148,8 @@
 					<div class="mt-3 flex flex-wrap gap-3 text-sm text-muted-foreground">
 						<span>Difficulté: {data.exercise.difficulty}/3</span>
 
-						{#if data.exercise.grade_levels && data.exercise.grade_levels.length > 0}
-							<span>Niveaux: {data.exercise.grade_levels.join(', ')}</span>
+						{#if data.exercise.grades && data.exercise.grades.length > 0}
+							<span>Niveaux: {data.exercise.grades.join(', ')}</span>
 						{/if}
 					</div>
 				</div>

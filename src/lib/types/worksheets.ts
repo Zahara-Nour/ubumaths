@@ -233,7 +233,7 @@ export interface WorksheetRow {
 	template_id: string | null;
 	estimated_duration_minutes: number | null;
 	total_points: number | null;
-	grade_levels: string[];
+	grades: string[];
 	tags: string[];
 	created_by: string;
 	school_id: string | null;
@@ -351,7 +351,7 @@ export interface WorksheetInsert {
 	template_id?: string | null;
 	estimated_duration_minutes?: number | null;
 	total_points?: number | null;
-	grade_levels?: number[];
+	grades?: number[];
 	tags?: string[];
 	created_by: string;
 	school_id?: string | null;
@@ -458,7 +458,7 @@ export interface WorksheetUpdate {
 	template_id?: string | null;
 	estimated_duration_minutes?: number | null;
 	total_points?: number | null;
-	grade_levels?: number[];
+	grades?: number[];
 	tags?: string[];
 	school_id?: string | null;
 }
@@ -638,7 +638,7 @@ export interface WorksheetFormData {
 	type: WorksheetType;
 	config: WorksheetConfig;
 	estimated_duration_minutes: number | null;
-	grade_levels: string[];
+	grades: string[];
 	tags: string[];
 	template_id: string | null;
 }

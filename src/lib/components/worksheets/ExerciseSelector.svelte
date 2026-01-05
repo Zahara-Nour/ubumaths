@@ -139,7 +139,7 @@
 				params.set('difficulty', selectedDifficulty);
 			}
 			if (selectedGrades) {
-				params.set('grade_levels', selectedGrades);
+				params.set('grades', selectedGrades);
 			}
 			if (selectedTags) {
 				params.set('tags', selectedTags);
@@ -488,15 +488,15 @@
 											<Badge variant="outline">Parametrable</Badge>
 										{/if}
 
-										{#if exercise.grade_levels && exercise.grade_levels.length > 0}
-											{#each exercise.grade_levels.slice(0, 2) as grade (grade)}
+										{#if exercise.grades && exercise.grades.length > 0}
+											{#each exercise.grades.slice(0, 2) as grade (grade)}
 												<Badge variant="outline" class="text-xs">
 													{formatGradeShort(grade as GradeCode)}
 												</Badge>
 											{/each}
-											{#if exercise.grade_levels.length > 2}
+											{#if exercise.grades.length > 2}
 												<span class="text-xs text-muted-foreground">
-													+{exercise.grade_levels.length - 2}
+													+{exercise.grades.length - 2}
 												</span>
 											{/if}
 										{/if}

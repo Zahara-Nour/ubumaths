@@ -271,8 +271,8 @@ function generateHeader(
 		}
 
 		// Grade levels
-		if (exercise.grade_levels?.length) {
-			meta.push(`Niveaux : ${exercise.grade_levels.join(', ')}`);
+		if (exercise.grades?.length) {
+			meta.push(`Niveaux : ${exercise.grades.join(', ')}`);
 		}
 
 		// Source

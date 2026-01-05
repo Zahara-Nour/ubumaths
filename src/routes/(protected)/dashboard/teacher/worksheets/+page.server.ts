@@ -144,7 +144,7 @@ export const actions: Actions = {
 			type: original.type,
 			config: original.config,
 			estimated_duration_minutes: original.estimated_duration_minutes,
-			grade_levels: original.grade_levels,
+			grades: original.grades,
 			tags: original.tags
 		};
 

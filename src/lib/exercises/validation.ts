@@ -124,7 +124,7 @@ const exerciseExportSchemaV1 = z.object({
 	solution_md: z.string().trim().min(1, 'Exercise solution cannot be empty'),
 
 	// Additional metadata
-	grade_levels: gradeLevelsSchema,
+	grades: gradeLevelsSchema,
 	topic: z.string().trim().optional()
 });
 
@@ -160,7 +160,7 @@ const exerciseExportSchemaV2 = z.object({
 	solution_md: z.string().trim().min(1, 'Exercise solution cannot be empty'),
 
 	// Additional metadata
-	grade_levels: gradeLevelsSchema,
+	grades: gradeLevelsSchema,
 	topic: z.string().trim().optional(),
 
 	// Variations system
@@ -223,7 +223,7 @@ export const exerciseFrontmatterSchema = z.object({
 	source: z.string().trim().optional(),
 	difficulty: difficultySchema,
 	tags: tagsSchema,
-	grade_levels: gradeLevelsSchema,
+	grades: gradeLevelsSchema,
 	topic: z.string().trim().optional()
 });
 

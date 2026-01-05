@@ -325,7 +325,7 @@ export interface Exercise {
 
 	// Additional metadata
 	/** Applicable grade levels (e.g., ['3', '2', '1_SPE']) - uses GradeCode from unified system */
-	grade_levels?: string[];
+	grades?: string[];
 
 	/** Topic category (e.g., 'Algèbre', 'Géométrie') */
 	topic?: string;
@@ -696,7 +696,7 @@ export interface ExerciseInstance {
 	source?: string;
 
 	/** Grade levels (copied from template) */
-	grade_levels?: string[];
+	grades?: string[];
 
 	/** Topic (copied from template) */
 	topic?: string;
@@ -997,7 +997,7 @@ export interface ExerciseExportV1 {
 	solution_md: string;
 
 	// Additional metadata
-	grade_levels?: string[];
+	grades?: string[];
 	topic?: string;
 }
 
@@ -1020,7 +1020,7 @@ export interface ExerciseExportV2 {
 	solution_md: string;
 
 	// Additional metadata
-	grade_levels?: string[];
+	grades?: string[];
 	topic?: string;
 
 	// Variations system
@@ -1048,7 +1048,7 @@ export interface ExerciseFrontmatterV1 {
 	source?: string;
 	difficulty: 1 | 2 | 3;
 	tags: string[];
-	grade_levels?: string[];
+	grades?: string[];
 	topic?: string;
 }
 
@@ -1064,7 +1064,7 @@ export interface ExerciseFrontmatterV2 {
 	source?: string;
 	difficulty: 1 | 2 | 3;
 	tags: string[];
-	grade_levels?: string[];
+	grades?: string[];
 	topic?: string;
 
 	// Variations system
@@ -1584,7 +1584,7 @@ export interface ValidatedAssignmentData extends CreateExerciseAssignment {
  *   exercise_is_public: false,
  *   difficulty: 2,
  *   tags: ['géométrie', 'pythagore'],
- *   grade_levels: ['3'],
+ *   grades: ['3'],
  *
  *   // Creator details
  *   assigned_by_name: 'Marie Dupont',
@@ -1615,7 +1615,7 @@ export interface AssignedExerciseWithDetails extends ExerciseAssignment {
 	tags: string[];
 
 	/** Applicable grade levels */
-	grade_levels: string[] | null;
+	grades: string[] | null;
 
 	// From profiles (teacher)
 	/** Full name of teacher who assigned */

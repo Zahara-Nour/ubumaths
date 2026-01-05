@@ -128,7 +128,7 @@ describe('Static Exercises', () => {
 			difficulty: 2,
 			tags: ['addition', 'arithmetic'],
 			source: 'Test Book',
-			grade_levels: ['6', '5'],
+			grades: ['6', '5'],
 			topic: 'Algèbre'
 		});
 
@@ -140,7 +140,7 @@ describe('Static Exercises', () => {
 			expect(result.instance.difficulty).toBe(2);
 			expect(result.instance.tags).toEqual(['addition', 'arithmetic']);
 			expect(result.instance.source).toBe('Test Book');
-			expect(result.instance.grade_levels).toEqual(['6', '5']);
+			expect(result.instance.grades).toEqual(['6', '5']);
 			expect(result.instance.topic).toBe('Algèbre');
 			expect(result.instance.exerciseId).toBe(exercise.id);
 			expect(result.instance.distributionMode).toBe('on_demand');

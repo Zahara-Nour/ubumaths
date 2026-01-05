@@ -79,7 +79,7 @@ export async function indexDocument(
 			content_hash: contentHash,
 			metadata: input.metadata || {},
 			teacher_id: input.teacherId || null,
-			grade_levels: input.gradeLevels || [],
+			grades: input.gradeLevels || [],
 			topics: input.topics || [],
 			enabled_for_rag: true
 		};
@@ -270,7 +270,7 @@ export async function reindexAllDocuments(supabase: SupabaseClient): Promise<{
 }> {
 	const { data: documents, error } = await supabase
 		.from('rag_documents')
-		.select('id, source_type, title, content, metadata, teacher_id, grade_levels, topics')
+		.select('id, source_type, title, content, metadata, teacher_id, grades, topics')
 		.eq('enabled_for_rag', true);
 
 	if (error || !documents) {
