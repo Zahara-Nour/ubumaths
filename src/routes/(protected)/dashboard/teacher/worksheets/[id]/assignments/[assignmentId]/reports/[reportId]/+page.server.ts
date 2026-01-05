@@ -51,6 +51,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	return {
 		report: data.report,
+		exercise: data.exercise,
 		context: data.context,
 		nextPendingReportId: data.next_pending_report_id,
 		worksheetId: params.id,

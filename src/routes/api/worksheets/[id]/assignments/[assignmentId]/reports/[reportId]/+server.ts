@@ -22,7 +22,6 @@ import {
 	notifyErrorReportRejected
 } from '$lib/server/auto-notifications';
 import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
-import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -100,6 +99,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				description,
 				status,
 				response,
+				variation_index,
+				seed,
 				created_at,
 				updated_at,
 				student:profiles!worksheet_error_reports_student_id_fkey (
@@ -112,8 +113,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					exercise_id,
 					exercise:exercises!worksheet_exercises_exercise_id_fkey (
 						id,
+						slug,
 						shared,
-						variations
+						variations,
+						generic_functions
 					)
 				)
 			`
@@ -146,9 +149,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		if (!exercise) {
 			throw error(500, "Donnees de l'exercice non trouvees");
 		}
-
-		// Get content from variations (single source of truth)
-		const exerciseContent = getExerciseContentSafe(exercise as unknown as Exercise);
 
 		// Step 2: Find next pending report for this assignment (for navigation)
 		const { data: nextPendingReports, error: nextError } = await locals.supabase
@@ -183,14 +183,31 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			description: reportData.description,
 			status: reportData.status as ErrorReportStatus,
 			response: reportData.response,
+			variation_index: reportData.variation_index ?? null,
+			seed: reportData.seed ?? null,
 			created_at: reportData.created_at,
-			updated_at: reportData.updated_at,
-			statement_md: exerciseContent.statement_md,
-			solution_md: exerciseContent.solution_md
+			updated_at: reportData.updated_at
+		};
+
+		// Build exercise data with all variations
+		const exerciseView = {
+			id: exercise.id,
+			slug: exercise.slug ?? '',
+			variations:
+				(exercise.variations as Array<{
+					label: string;
+					statement_md: string;
+					solution_md: string;
+					hints?: unknown[];
+					variables?: unknown[];
+				}>) ?? [],
+			shared: exercise.shared ?? null,
+			generic_functions: (exercise.generic_functions as string[]) ?? null
 		};
 
 		const responseData = {
 			report: reportView,
+			exercise: exerciseView,
 			context: {
 				worksheet_title: worksheet.title,
 				student_name: studentName,
@@ -283,6 +300,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const {
 		status: newStatus,
 		response: teacherResponse,
+		variations: newVariations,
 		statement_md: newStatementMd,
 		solution_md: newSolutionMd
 	} = bodyValidation.data;
@@ -349,37 +367,44 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const classId = assignmentData?.class_id;
 
 		// Step 4: If status is 'fixed', update the exercise content in variations
-		if (newStatus === 'fixed' && newStatementMd) {
-			// Fetch current exercise to get existing variations
-			const { data: currentExercise, error: fetchExerciseError } = await locals.supabase
-				.from('exercises')
-				.select('variations, shared')
-				.eq('id', exerciseId)
-				.single();
+		if (newStatus === 'fixed') {
+			let updatedVariations: Array<Record<string, unknown>>;
 
-			if (fetchExerciseError || !currentExercise) {
-				console.error('[API] Error fetching exercise:', fetchExerciseError);
-				throw error(500, "Erreur lors de la recuperation de l'exercice");
-			}
+			if (newVariations && newVariations.length > 0) {
+				// New format: Use the full variations array from the request
+				updatedVariations = newVariations;
+			} else if (newStatementMd) {
+				// Legacy format: Update only the first variation with statement_md/solution_md
+				const { data: currentExercise, error: fetchExerciseError } = await locals.supabase
+					.from('exercises')
+					.select('variations')
+					.eq('id', exerciseId)
+					.single();
 
-			// Update variations - content is in variations[0] (single source of truth)
-			const variations = (currentExercise.variations as Array<Record<string, unknown>>) || [];
-			const updatedVariations = [...variations];
+				if (fetchExerciseError || !currentExercise) {
+					console.error('[API] Error fetching exercise:', fetchExerciseError);
+					throw error(500, "Erreur lors de la recuperation de l'exercice");
+				}
 
-			if (updatedVariations.length === 0) {
-				// Create first variation if none exists
-				updatedVariations.push({
-					label: 'default',
-					statement_md: newStatementMd,
-					solution_md: newSolutionMd ?? ''
-				});
+				const existingVariations =
+					(currentExercise.variations as Array<Record<string, unknown>>) || [];
+				updatedVariations = [...existingVariations];
+
+				if (updatedVariations.length === 0) {
+					updatedVariations.push({
+						label: 'default',
+						statement_md: newStatementMd,
+						solution_md: newSolutionMd ?? ''
+					});
+				} else {
+					updatedVariations[0] = {
+						...updatedVariations[0],
+						statement_md: newStatementMd,
+						...(newSolutionMd !== undefined && { solution_md: newSolutionMd })
+					};
+				}
 			} else {
-				// Update first variation
-				updatedVariations[0] = {
-					...updatedVariations[0],
-					statement_md: newStatementMd,
-					...(newSolutionMd !== undefined && { solution_md: newSolutionMd })
-				};
+				throw error(400, "Les variations ou l'enonce corrige sont requis");
 			}
 
 			const { error: exerciseUpdateError } = await locals.supabase
@@ -432,6 +457,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 				description,
 				status,
 				response,
+				variation_index,
+				seed,
 				created_at,
 				updated_at,
 				student:profiles!worksheet_error_reports_student_id_fkey (
@@ -478,6 +505,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			description: updatedReport.description,
 			status: updatedReport.status as ErrorReportStatus,
 			response: updatedReport.response,
+			variation_index: updatedReport.variation_index ?? null,
+			seed: updatedReport.seed ?? null,
 			created_at: updatedReport.created_at,
 			updated_at: updatedReport.updated_at
 		};

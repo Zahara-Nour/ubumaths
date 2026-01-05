@@ -1024,6 +1024,17 @@ export const updateStudentErrorReportSchema = z.object({
  * - response is required (rejection reason)
  * - statement_md and solution_md are ignored
  */
+/**
+ * Variation schema for review error report
+ */
+const reviewVariationSchema = z.object({
+	label: z.string(),
+	statement_md: z.string(),
+	solution_md: z.string(),
+	hints: z.array(z.unknown()).optional(),
+	variables: z.array(z.unknown()).optional()
+});
+
 export const reviewErrorReportSchema = z
 	.object({
 		status: z.enum(['fixed', 'rejected'], {
@@ -1037,6 +1048,9 @@ export const reviewErrorReportSchema = z
 			.nullable()
 			.optional()
 			.default(null),
+		// New: Accept full variations array
+		variations: z.array(reviewVariationSchema).optional(),
+		// Legacy: Keep for backwards compatibility
 		statement_md: z
 			.string()
 			.trim()
@@ -1065,8 +1079,13 @@ export const reviewErrorReportSchema = z
 	)
 	.refine(
 		(data) => {
-			// If status is 'fixed', statement_md is required
+			// If status is 'fixed', either variations or statement_md is required
 			if (data.status === 'fixed') {
+				// New format: variations array
+				if (data.variations && data.variations.length > 0) {
+					return true;
+				}
+				// Legacy format: statement_md
 				return (
 					data.statement_md !== undefined &&
 					data.statement_md !== null &&
@@ -1076,8 +1095,8 @@ export const reviewErrorReportSchema = z
 			return true;
 		},
 		{
-			message: "L'enonce corrige est requis pour valider la correction",
-			path: ['statement_md']
+			message: "Les variations ou l'enonce corrige sont requis pour valider la correction",
+			path: ['variations']
 		}
 	);
 
@@ -1149,6 +1168,10 @@ export const teacherErrorReportViewSchema = z.object({
 	description: z.string(),
 	status: errorReportStatusSchema,
 	response: z.string().nullable(),
+	/** Index of the variation the student saw (0-based). NULL for legacy reports. */
+	variation_index: z.number().int().nonnegative().nullable(),
+	/** Seed used to generate the student instance. NULL for legacy reports. */
+	seed: z.number().int().nullable(),
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -1195,13 +1218,30 @@ export const reviewErrorReportResponseSchema = z.object({
 });
 
 /**
+ * Exercise variation schema for error report detail response
+ */
+const exerciseVariationSchema = z.object({
+	label: z.string(),
+	statement_md: z.string(),
+	solution_md: z.string(),
+	hints: z.array(z.unknown()).optional(),
+	variables: z.array(z.unknown()).optional()
+});
+
+/**
  * Get single error report detail response (for teacher review page)
  * GET /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]
+ *
+ * Now returns the full exercise with all variations for editing
  */
 export const getErrorReportDetailResponseSchema = z.object({
-	report: teacherErrorReportViewSchema.extend({
-		statement_md: z.string(),
-		solution_md: z.string().nullable()
+	report: teacherErrorReportViewSchema,
+	exercise: z.object({
+		id: z.string().uuid(),
+		slug: z.string(),
+		variations: z.array(exerciseVariationSchema),
+		shared: z.unknown().nullable(),
+		generic_functions: z.array(z.string()).nullable()
 	}),
 	context: z.object({
 		worksheet_title: z.string(),

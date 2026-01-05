@@ -5,11 +5,16 @@
 	Dedicated page for reviewing a single error report.
 	Allows teachers to:
 	- View the student's report description
-	- Edit the exercise statement and solution
+	- Edit ALL variations of the exercise using VariationEditor
+	- See which variation the student saw (highlighted)
+	- Preview what the student saw with their seed
 	- Validate (fix) or reject the report
 
 	Features:
-	- Live preview of markdown content
+	- Full VariationEditor with rich text editing
+	- Tabs for all variations
+	- Visual indicator for the reported variation
+	- Student preview with seed-based rendering
 	- Rich text editor for rejection reason
 	- Auto-navigation to next pending report
 -->
@@ -19,12 +24,14 @@
 	import { z } from 'zod';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import LaTeXEditor from '$lib/components/LaTeXEditor.svelte';
-	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import VariationEditor from '$lib/components/exercises/VariationEditor.svelte';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Check, X, Loader2 } from 'lucide-svelte';
+	import { ArrowLeft, Check, X, Loader2, AlertTriangle } from 'lucide-svelte';
+	import type { ExerciseVariation } from '$lib/exercises/types';
 
 	// Types
 	interface ReportData {
@@ -38,10 +45,18 @@
 		description: string;
 		status: 'pending' | 'fixed' | 'rejected';
 		response: string | null;
+		variation_index: number | null;
+		seed: number | null;
 		created_at: string;
 		updated_at: string;
-		statement_md: string;
-		solution_md: string | null;
+	}
+
+	interface ExerciseData {
+		id: string;
+		slug: string;
+		variations: ExerciseVariation[];
+		shared: unknown;
+		generic_functions: string[] | null;
 	}
 
 	interface ContextData {
@@ -55,35 +70,67 @@
 
 	// Cast for type safety
 	const report = data.report as ReportData;
+	const exercise = data.exercise as ExerciseData;
 	const context = data.context as ContextData;
 	const nextPendingReportId = data.nextPendingReportId as string | null;
 
-	// State
-	let statementMd = $state(report.statement_md);
-	let solutionMd = $state(report.solution_md ?? '');
-	let rejectionReasonJson = $state<object | null>(null); // TipTap JSON format
+	// State - deep copy variations for editing
+	let variations = $state<ExerciseVariation[]>(JSON.parse(JSON.stringify(exercise.variations)));
+
+	// Active variation tab - default to the reported variation or first
+	let activeVariationTab = $state<string>(
+		report.variation_index !== null ? String(report.variation_index) : '0'
+	);
+
+	let rejectionReasonJson = $state<object | null>(null);
 	let isRejecting = $state(false);
 	let isSubmitting = $state(false);
-
-	// Check if rejection reason has content (not just empty paragraph)
-	function hasRejectionContent(json: object | null): boolean {
-		if (!json) return false;
-		const doc = json as { type?: string; content?: Array<{ content?: unknown[] }> };
-		if (doc.type !== 'doc' || !doc.content) return false;
-		// Check if there's any actual content (not just empty paragraphs)
-		return doc.content.some((node) => node.content && node.content.length > 0);
-	}
 
 	// Derived values
 	let isPending = $derived(report.status === 'pending');
 	let canSubmit = $derived(!isSubmitting && isPending);
+
+	// Safe reported variation with bounds checking
+	let reportedVariationIndex = $derived.by(() => {
+		if (report.variation_index === null) return 0;
+		if (report.variation_index >= variations.length) {
+			console.warn(
+				`[ErrorReport] variation_index ${report.variation_index} out of bounds (${variations.length} variations)`
+			);
+			return 0;
+		}
+		return report.variation_index;
+	});
+
+	let reportedVariation = $derived.by(() => {
+		if (report.variation_index === null || variations.length === 0) return null;
+		if (report.variation_index >= variations.length) return null;
+		return variations[report.variation_index];
+	});
+
+	// Get variation display label
+	function getVariationDisplayLabel(variation: ExerciseVariation): string {
+		const labelMap: Record<string, string> = {
+			guided: 'Guidee',
+			intermediate: 'Intermediaire',
+			autonomous: 'Autonome'
+		};
+		return labelMap[variation.label] ?? variation.label;
+	}
+
+	// Check if rejection reason has content
+	function hasRejectionContent(json: object | null): boolean {
+		if (!json) return false;
+		const doc = json as { type?: string; content?: Array<{ content?: unknown[] }> };
+		if (doc.type !== 'doc' || !doc.content) return false;
+		return doc.content.some((node) => node.content && node.content.length > 0);
+	}
 
 	// Parse JSON description (TipTap format)
 	let descriptionContent = $derived.by(() => {
 		try {
 			return JSON.parse(report.description);
 		} catch {
-			// Fallback for plain text or invalid JSON
 			return {
 				type: 'doc',
 				content: [{ type: 'paragraph', content: [{ type: 'text', text: report.description }] }]
@@ -91,16 +138,14 @@
 		}
 	});
 
-	// Parse JSON response if exists (for already-processed reports)
+	// Parse JSON response if exists
 	let responseContent = $derived.by(() => {
 		if (!report.response) return null;
 		try {
 			return JSON.parse(report.response);
 		} catch {
 			const text = report.response;
-			// Check if it looks like HTML (legacy format)
-			if (text.includes('<p>') || text.includes('<br>') || text.includes('<strong>')) {
-				// Convert simple HTML to TipTap format by stripping tags
+			if (text.includes('<p>') || text.includes('<br>')) {
 				const plainText = text
 					.replace(/<br\s*\/?>/gi, '\n')
 					.replace(/<p>/gi, '')
@@ -112,7 +157,6 @@
 					content: [{ type: 'paragraph', content: [{ type: 'text', text: plainText }] }]
 				};
 			}
-			// Plain text fallback
 			return {
 				type: 'doc',
 				content: [{ type: 'paragraph', content: [{ type: 'text', text }] }]
@@ -120,7 +164,7 @@
 		}
 	});
 
-	// Format date for display
+	// Format date
 	function formatDate(dateString: string): string {
 		return new Date(dateString).toLocaleDateString('fr-FR', {
 			day: 'numeric',
@@ -131,13 +175,12 @@
 		});
 	}
 
-	// Client-side validation schema (mirrors server schema)
+	// Client-side validation
 	const reviewSchema = z
 		.object({
 			status: z.enum(['fixed', 'rejected']),
 			response: z.string().trim().min(1).max(2000).nullable().optional(),
-			statement_md: z.string().trim().min(1).max(50000).optional(),
-			solution_md: z.string().trim().max(50000).nullable().optional()
+			variations: z.array(z.unknown()).optional()
 		})
 		.refine(
 			(d) => {
@@ -147,25 +190,15 @@
 				return true;
 			},
 			{ message: 'Le motif de rejet est requis', path: ['response'] }
-		)
-		.refine(
-			(d) => {
-				if (d.status === 'fixed') {
-					return d.statement_md !== undefined && d.statement_md.length > 0;
-				}
-				return true;
-			},
-			{ message: "L'enonce corrige est requis", path: ['statement_md'] }
 		);
 
-	// Navigate to the reports list
+	// Navigation
 	function navigateToReportsList(): void {
 		goto(
 			`/dashboard/teacher/worksheets/${data.worksheetId}/assignments/${data.assignmentId}/reports`
 		);
 	}
 
-	// Navigate to next pending report or back to list
 	function navigateToNextOrList(): void {
 		if (nextPendingReportId) {
 			goto(
@@ -176,22 +209,18 @@
 		}
 	}
 
-	// Submit the review to the API
+	// Submit review
 	async function submitReview(status: 'fixed' | 'rejected'): Promise<void> {
 		if (!canSubmit) return;
 
-		// Build request body
 		const body: Record<string, unknown> = { status };
 
 		if (status === 'fixed') {
-			body.statement_md = statementMd;
-			body.solution_md = solutionMd || null;
+			body.variations = variations;
 		} else {
-			// Store as JSON string (TipTap format) for RichTextDisplay compatibility
 			body.response = rejectionReasonJson ? JSON.stringify(rejectionReasonJson) : null;
 		}
 
-		// Validate client-side
 		const validation = reviewSchema.safeParse(body);
 		if (!validation.success) {
 			toaster.error(validation.error.issues[0].message);
@@ -215,14 +244,12 @@
 				throw new Error(errorData.message || `Erreur ${response.status}`);
 			}
 
-			// Success feedback
 			if (status === 'fixed') {
 				toaster.success('Signalement valide et exercice mis a jour');
 			} else {
 				toaster.info('Signalement rejete');
 			}
 
-			// Navigate to next
 			navigateToNextOrList();
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Une erreur est survenue';
@@ -232,23 +259,18 @@
 		}
 	}
 
-	// Handle validate action
 	function handleValidate(): void {
 		submitReview('fixed');
 	}
 
-	// Handle reject action
 	function handleReject(): void {
 		if (!isRejecting) {
-			// Show rejection form
 			isRejecting = true;
 		} else {
-			// Submit rejection
 			submitReview('rejected');
 		}
 	}
 
-	// Cancel rejection mode
 	function cancelRejection(): void {
 		isRejecting = false;
 		rejectionReasonJson = null;
@@ -260,7 +282,7 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl py-6">
-	<!-- Header with back button -->
+	<!-- Header -->
 	<div class="mb-6 flex items-start gap-4">
 		<Button variant="ghost" size="icon" onclick={navigateToReportsList} class="mt-1">
 			<ArrowLeft class="h-5 w-5" />
@@ -289,6 +311,17 @@
 					<span class="font-medium text-foreground">Exercice :</span>
 					{context.exercise_position + 1}
 				</span>
+				{#if report.variation_index !== null}
+					<span>
+						<span class="font-medium text-foreground">Variation :</span>
+						{getVariationDisplayLabel(variations[report.variation_index] ?? variations[0])}
+					</span>
+				{/if}
+				{#if report.seed !== null}
+					<span class="text-xs">
+						(seed: {report.seed})
+					</span>
+				{/if}
 				{#if !isPending}
 					<span
 						class="rounded-full px-2 py-0.5 text-xs font-medium {report.status === 'fixed'
@@ -308,7 +341,30 @@
 		</Card.Content>
 	</Card.Root>
 
-	<!-- Action buttons (only for pending reports) -->
+	<!-- Student preview (what they saw) -->
+	{#if reportedVariation}
+		<Card.Root class="mb-6 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+			<Card.Header class="pb-2">
+				<Card.Title class="flex items-center gap-2 text-base">
+					<AlertTriangle class="h-4 w-4" />
+					Ce que l'eleve a vu
+				</Card.Title>
+				<Card.Description>
+					Variation "{getVariationDisplayLabel(reportedVariation)}"
+					{#if report.seed !== null}
+						avec seed {report.seed}
+					{/if}
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<div class="rounded-md border bg-background p-4">
+					<MarkdownRenderer content={reportedVariation.statement_md} />
+				</div>
+			</Card.Content>
+		</Card.Root>
+	{/if}
+
+	<!-- Action buttons -->
 	{#if isPending}
 		<div class="mb-6 flex flex-wrap items-center gap-3">
 			{#if !isRejecting}
@@ -318,14 +374,13 @@
 					{:else}
 						<Check class="h-4 w-4" />
 					{/if}
-					Valider
+					Valider les modifications
 				</Button>
 				<Button variant="destructive" onclick={handleReject} disabled={!canSubmit} class="gap-2">
 					<X class="h-4 w-4" />
 					Rejeter
 				</Button>
 			{:else}
-				<!-- Rejection mode -->
 				<div class="flex w-full flex-col gap-4">
 					<div>
 						<p class="mb-2 text-sm font-medium text-foreground">Motif du rejet (obligatoire) :</p>
@@ -358,89 +413,63 @@
 				</div>
 			{/if}
 		</div>
-	{:else}
-		<!-- Show response for non-pending reports -->
-		{#if responseContent}
-			<Card.Root class="mb-6 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
-				<Card.Header class="pb-2">
-					<Card.Title class="text-base">Reponse du professeur</Card.Title>
-				</Card.Header>
-				<Card.Content>
-					<RichTextDisplay
-						content={responseContent}
-						class="prose prose-sm max-w-none dark:prose-invert"
-					/>
-				</Card.Content>
-			</Card.Root>
-		{/if}
+	{:else if responseContent}
+		<Card.Root class="mb-6 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+			<Card.Header class="pb-2">
+				<Card.Title class="text-base">Reponse du professeur</Card.Title>
+			</Card.Header>
+			<Card.Content>
+				<RichTextDisplay
+					content={responseContent}
+					class="prose prose-sm max-w-none dark:prose-invert"
+				/>
+			</Card.Content>
+		</Card.Root>
 	{/if}
 
-	<!-- Editor and Preview side by side -->
-	<div class="grid gap-6 lg:grid-cols-2">
-		<!-- Editor Column -->
-		<div class="flex flex-col gap-6">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Enonce</Card.Title>
-					<Card.Description>Modifiez l'enonce de l'exercice en Markdown/LaTeX</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<LaTeXEditor
-						bind:value={statementMd}
-						disabled={!isPending || isSubmitting}
-						height="300px"
-						placeholder="Entrez l'enonce de l'exercice..."
-					/>
-				</Card.Content>
-			</Card.Root>
+	<!-- Variations Editor -->
+	<Card.Root>
+		<Card.Header>
+			<Card.Title>Variations de l'exercice</Card.Title>
+			<Card.Description>
+				Modifiez les variations de l'exercice. La variation signalee est marquee.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content>
+			<Tabs.Root bind:value={activeVariationTab}>
+				<div class="sticky top-0 z-10 mb-4 bg-card py-2">
+					<Tabs.List class="flex-wrap">
+						{#each variations as variation, index (index)}
+							<Tabs.Trigger
+								value={String(index)}
+								class="relative {index === reportedVariationIndex
+									? 'ring-2 ring-amber-500 ring-offset-1'
+									: ''}"
+							>
+								{getVariationDisplayLabel(variation)}
+								{#if index === reportedVariationIndex}
+									<span
+										class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] text-white"
+										title="Variation signalee"
+									>
+										!
+									</span>
+								{/if}
+							</Tabs.Trigger>
+						{/each}
+					</Tabs.List>
+				</div>
 
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Solution (optionnelle)</Card.Title>
-					<Card.Description>Modifiez la solution de l'exercice en Markdown/LaTeX</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<LaTeXEditor
-						bind:value={solutionMd}
-						disabled={!isPending || isSubmitting}
-						height="300px"
-						placeholder="Entrez la solution de l'exercice..."
-					/>
-				</Card.Content>
-			</Card.Root>
-		</div>
-
-		<!-- Preview Column -->
-		<div class="flex flex-col gap-6">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Apercu de l'enonce</Card.Title>
-				</Card.Header>
-				<Card.Content>
-					<div class="min-h-[300px] rounded-md border border-border bg-muted/50 p-4">
-						{#if statementMd.trim()}
-							<MarkdownRenderer content={statementMd} />
-						{:else}
-							<p class="text-sm text-muted-foreground italic">Aucun contenu a afficher</p>
-						{/if}
-					</div>
-				</Card.Content>
-			</Card.Root>
-
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Apercu de la solution</Card.Title>
-				</Card.Header>
-				<Card.Content>
-					<div class="min-h-[300px] rounded-md border border-border bg-muted/50 p-4">
-						{#if solutionMd.trim()}
-							<MarkdownRenderer content={solutionMd} />
-						{:else}
-							<p class="text-sm text-muted-foreground italic">Aucune solution definie</p>
-						{/if}
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</div>
-	</div>
+				{#each variations as _, index (index)}
+					<Tabs.Content value={String(index)}>
+						<VariationEditor
+							bind:variation={variations[index]}
+							genericFunctions={exercise.generic_functions ?? undefined}
+							imageSlug={exercise.slug || undefined}
+						/>
+					</Tabs.Content>
+				{/each}
+			</Tabs.Root>
+		</Card.Content>
+	</Card.Root>
 </div>

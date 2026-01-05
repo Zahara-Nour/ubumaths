@@ -147,6 +147,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				description,
 				status,
 				response,
+				variation_index,
+				seed,
 				created_at,
 				updated_at,
 				student:profiles!worksheet_error_reports_student_id_fkey (
@@ -210,6 +212,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				description: report.description,
 				status: report.status as ErrorReportStatus,
 				response: report.response,
+				variation_index: report.variation_index ?? null,
+				seed: report.seed ?? null,
 				created_at: report.created_at,
 				updated_at: report.updated_at
 			};

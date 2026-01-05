@@ -129,7 +129,47 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			throw error(404, 'Exercice non trouve dans ce devoir');
 		}
 
-		// Step 4: Check report limit (max 10 per exercise per student)
+		// Step 4: Get student's instance to retrieve variation_index and seed
+		let variationIndex: number | null = null;
+		let seed: number | null = null;
+
+		const { data: instanceData, error: instanceError } = await locals.supabase
+			.from('worksheet_instances')
+			.select('variant_seed, instance_data')
+			.eq('worksheet_id', worksheet.id)
+			.eq('student_id', user.id)
+			.single();
+
+		if (instanceError) {
+			// Log but continue - variation info is optional for backwards compatibility
+			console.warn(
+				`[API] Could not retrieve student instance for variation tracking: ${instanceError.message}`,
+				{ worksheetId: worksheet.id, studentId: user.id }
+			);
+		} else if (instanceData) {
+			seed = instanceData.variant_seed ?? null;
+
+			// Extract selectedVariationIndex from instance_data.exercises[position]
+			const exercises = (
+				instanceData.instance_data as { exercises?: Array<{ selectedVariationIndex?: number }> }
+			)?.exercises;
+
+			if (!exercises || !Array.isArray(exercises)) {
+				console.warn('[API] Instance data has no exercises array', {
+					worksheetId: worksheet.id,
+					studentId: user.id
+				});
+			} else if (worksheetExercise.position >= exercises.length) {
+				console.warn('[API] Exercise position out of bounds in instance data', {
+					position: worksheetExercise.position,
+					exercisesLength: exercises.length
+				});
+			} else {
+				variationIndex = exercises[worksheetExercise.position]?.selectedVariationIndex ?? null;
+			}
+		}
+
+		// Step 5: Check report limit (max 10 per exercise per student)
 		const MAX_REPORTS_PER_EXERCISE = 10;
 		const { count: existingReportsCount, error: countError } = await locals.supabase
 			.from('worksheet_error_reports')
@@ -149,12 +189,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			);
 		}
 
-		// Step 5: Insert the error report
+		// Step 6: Insert the error report with variation info
 		const reportInsert: WorksheetErrorReportInsert = {
 			assignment_id: assignmentId,
 			worksheet_exercise_id: worksheetExercise.id,
 			student_id: user.id,
-			description
+			description,
+			variation_index: variationIndex,
+			seed: seed
 		};
 
 		const { data: newReport, error: insertError } = await locals.supabase
