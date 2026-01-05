@@ -288,7 +288,7 @@ describe('markdownToTipTap - Blank Fields', () => {
 		const blankNode = findNodeByType(content, 'blankField');
 
 		expect(blankNode).toBeDefined();
-		expect(blankNode?.attrs?.index).toBe(1);
+		expect(blankNode?.attrs?.number).toBe(1);
 	});
 
 	it('converts multiple blanks with different indices', () => {
@@ -299,9 +299,9 @@ describe('markdownToTipTap - Blank Fields', () => {
 		const blankNodes = content?.filter((n) => n.type === 'blankField');
 
 		expect(blankNodes).toHaveLength(3);
-		expect(blankNodes?.[0].attrs?.index).toBe(1);
-		expect(blankNodes?.[1].attrs?.index).toBe(2);
-		expect(blankNodes?.[2].attrs?.index).toBe(3);
+		expect(blankNodes?.[0].attrs?.number).toBe(1);
+		expect(blankNodes?.[1].attrs?.number).toBe(2);
+		expect(blankNodes?.[2].attrs?.number).toBe(3);
 	});
 });
 
