@@ -259,7 +259,9 @@ export function extractMath(markdown: string): {
  * isMathPlaceholder('regular text') // false
  */
 export function isMathPlaceholder(text: string): boolean {
-	return text.startsWith(PLACEHOLDER_PREFIX) && text.endsWith(PLACEHOLDER_SUFFIX);
+	// Must match the EXACT format §M:N§ where N is a non-negative integer
+	// Using regex to ensure the ENTIRE string is a placeholder, not just prefix/suffix
+	return /^§M:\d+§$/.test(text);
 }
 
 /**
