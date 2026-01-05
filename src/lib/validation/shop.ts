@@ -157,90 +157,95 @@ export const equipItemRequestSchema = z.object({
 // ============================================================================
 
 /**
+ * Base shop item object schema (without refinements)
+ * Used for partial() in update schema
+ */
+const shopItemBaseSchema = z.object({
+	internal_name: z
+		.string()
+		.min(1, 'Nom interne requis')
+		.max(100, 'Nom interne trop long (max 100 caracteres)')
+		.regex(
+			/^[a-z][a-z0-9_]*$/,
+			'Format invalide: snake_case requis, doit commencer par une lettre minuscule'
+		),
+	display_name: z
+		.string()
+		.min(1, "Nom d'affichage requis")
+		.max(100, "Nom d'affichage trop long (max 100 caracteres)"),
+	description: z.string().max(500, 'Description trop longue (max 500 caracteres)').optional(),
+	category: shopItemCategorySchema,
+	item_type: z
+		.string()
+		.min(1, "Type d'article requis")
+		.max(50, "Type d'article trop long (max 50 caracteres)"),
+	rarity: shopItemRaritySchema.default('common'),
+	base_price: z
+		.number()
+		.int('Le prix doit etre un nombre entier')
+		.min(1, 'Prix minimum: 1 gidouille')
+		.max(100000, 'Prix maximum: 100000 gidouilles')
+		.finite('La valeur doit etre un nombre fini'),
+	discount_percentage: z
+		.number()
+		.int('La remise doit etre un nombre entier')
+		.min(0, 'La remise ne peut pas etre negative')
+		.max(99, 'Remise maximum: 99%')
+		.finite('La valeur doit etre un nombre fini')
+		.default(0),
+	is_active: z.boolean().default(true),
+	available_from: z.string().datetime('Format de date invalide (ISO 8601 requis)').optional(),
+	available_until: z.string().datetime('Format de date invalide (ISO 8601 requis)').optional(),
+	max_owned_per_student: z
+		.number()
+		.int('La limite doit etre un nombre entier')
+		.min(1, 'Minimum: 1')
+		.max(1000, 'Maximum: 1000')
+		.finite('La valeur doit etre un nombre fini')
+		.optional(),
+	daily_purchase_limit: z
+		.number()
+		.int('La limite doit etre un nombre entier')
+		.min(1, 'Minimum: 1')
+		.max(100, 'Maximum: 100 par jour')
+		.finite('La valeur doit etre un nombre fini')
+		.optional(),
+	weekly_purchase_limit: z
+		.number()
+		.int('La limite doit etre un nombre entier')
+		.min(1, 'Minimum: 1')
+		.max(500, 'Maximum: 500 par semaine')
+		.finite('La valeur doit etre un nombre fini')
+		.optional(),
+	purchase_cooldown_hours: z
+		.number()
+		.int('Le delai doit etre un nombre entier')
+		.min(1, 'Minimum: 1 heure')
+		.max(168, 'Maximum: 168 heures (1 semaine)')
+		.finite('La valeur doit etre un nombre fini')
+		.optional(),
+	properties: shopItemPropertiesSchema.default({}),
+	is_tradeable: z.boolean().default(true),
+	trade_cooldown_hours: z
+		.number()
+		.int('Le delai doit etre un nombre entier')
+		.min(0, 'Minimum: 0 heure')
+		.max(168, 'Maximum: 168 heures (1 semaine)')
+		.finite('La valeur doit etre un nombre fini')
+		.default(24),
+	icon_url: z.string().url("URL de l'icone invalide").optional(),
+	sort_order: z
+		.number()
+		.int("L'ordre doit etre un nombre entier")
+		.min(0, 'Minimum: 0')
+		.finite('La valeur doit etre un nombre fini')
+		.default(0)
+});
+
+/**
  * Schema for creating a new shop item template.
  */
-export const createShopItemSchema = z
-	.object({
-		internal_name: z
-			.string()
-			.min(1, 'Nom interne requis')
-			.max(100, 'Nom interne trop long (max 100 caracteres)')
-			.regex(
-				/^[a-z][a-z0-9_]*$/,
-				'Format invalide: snake_case requis, doit commencer par une lettre minuscule'
-			),
-		display_name: z
-			.string()
-			.min(1, "Nom d'affichage requis")
-			.max(100, "Nom d'affichage trop long (max 100 caracteres)"),
-		description: z.string().max(500, 'Description trop longue (max 500 caracteres)').optional(),
-		category: shopItemCategorySchema,
-		item_type: z
-			.string()
-			.min(1, "Type d'article requis")
-			.max(50, "Type d'article trop long (max 50 caracteres)"),
-		rarity: shopItemRaritySchema.default('common'),
-		base_price: z
-			.number()
-			.int('Le prix doit etre un nombre entier')
-			.min(1, 'Prix minimum: 1 gidouille')
-			.max(100000, 'Prix maximum: 100000 gidouilles')
-			.finite('La valeur doit etre un nombre fini'),
-		discount_percentage: z
-			.number()
-			.int('La remise doit etre un nombre entier')
-			.min(0, 'La remise ne peut pas etre negative')
-			.max(99, 'Remise maximum: 99%')
-			.finite('La valeur doit etre un nombre fini')
-			.default(0),
-		is_active: z.boolean().default(true),
-		available_from: z.string().datetime('Format de date invalide (ISO 8601 requis)').optional(),
-		available_until: z.string().datetime('Format de date invalide (ISO 8601 requis)').optional(),
-		max_owned_per_student: z
-			.number()
-			.int('La limite doit etre un nombre entier')
-			.min(1, 'Minimum: 1')
-			.max(1000, 'Maximum: 1000')
-			.finite('La valeur doit etre un nombre fini')
-			.optional(),
-		daily_purchase_limit: z
-			.number()
-			.int('La limite doit etre un nombre entier')
-			.min(1, 'Minimum: 1')
-			.max(100, 'Maximum: 100 par jour')
-			.finite('La valeur doit etre un nombre fini')
-			.optional(),
-		weekly_purchase_limit: z
-			.number()
-			.int('La limite doit etre un nombre entier')
-			.min(1, 'Minimum: 1')
-			.max(500, 'Maximum: 500 par semaine')
-			.finite('La valeur doit etre un nombre fini')
-			.optional(),
-		purchase_cooldown_hours: z
-			.number()
-			.int('Le delai doit etre un nombre entier')
-			.min(1, 'Minimum: 1 heure')
-			.max(168, 'Maximum: 168 heures (1 semaine)')
-			.finite('La valeur doit etre un nombre fini')
-			.optional(),
-		properties: shopItemPropertiesSchema.default({}),
-		is_tradeable: z.boolean().default(true),
-		trade_cooldown_hours: z
-			.number()
-			.int('Le delai doit etre un nombre entier')
-			.min(0, 'Minimum: 0 heure')
-			.max(168, 'Maximum: 168 heures (1 semaine)')
-			.finite('La valeur doit etre un nombre fini')
-			.default(24),
-		icon_url: z.string().url("URL de l'icone invalide").optional(),
-		sort_order: z
-			.number()
-			.int("L'ordre doit etre un nombre entier")
-			.min(0, 'Minimum: 0')
-			.finite('La valeur doit etre un nombre fini')
-			.default(0)
-	})
+export const createShopItemSchema = shopItemBaseSchema
 	.refine(
 		(data) => {
 			if (data.available_from && data.available_until) {
@@ -269,8 +274,9 @@ export const createShopItemSchema = z
 
 /**
  * Schema for updating an existing shop item template.
+ * Note: Refinements are not applied on partial updates to allow single-field updates
  */
-export const updateShopItemSchema = createShopItemSchema.partial().extend({
+export const updateShopItemSchema = shopItemBaseSchema.partial().extend({
 	id: z.string().uuid("ID de l'article invalide")
 });
 

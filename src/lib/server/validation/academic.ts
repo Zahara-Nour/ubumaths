@@ -33,6 +33,24 @@ const hexColorSchema = z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Couleur invalide (
 // ========================================
 
 /**
+ * Base school year object schema (without refinements)
+ * Used for partial() in update schema
+ */
+const schoolYearBaseSchema = z.object({
+	school_id: uuidSchema,
+	name: z
+		.string()
+		.trim()
+		.min(1, 'Nom requis')
+		.max(50, 'Nom trop long')
+		.regex(/^\d{4}-\d{4}$/, 'Format attendu: YYYY-YYYY (ex: 2024-2025)'),
+	start_date: dateSchema,
+	end_date: dateSchema,
+	is_active: z.boolean().default(false),
+	metadata: z.record(z.string(), z.any()).optional().default({})
+});
+
+/**
  * Create school year schema
  *
  * Validates:
@@ -50,20 +68,7 @@ const hexColorSchema = z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Couleur invalide (
  *   is_active: true
  * });
  */
-export const createSchoolYearSchema = z
-	.object({
-		school_id: uuidSchema,
-		name: z
-			.string()
-			.trim()
-			.min(1, 'Nom requis')
-			.max(50, 'Nom trop long')
-			.regex(/^\d{4}-\d{4}$/, 'Format attendu: YYYY-YYYY (ex: 2024-2025)'),
-		start_date: dateSchema,
-		end_date: dateSchema,
-		is_active: z.boolean().default(false),
-		metadata: z.record(z.string(), z.any()).optional().default({})
-	})
+export const createSchoolYearSchema = schoolYearBaseSchema
 	.refine((data) => new Date(data.end_date) > new Date(data.start_date), {
 		message: 'La date de fin doit être après la date de début',
 		path: ['end_date']
@@ -84,6 +89,7 @@ export const createSchoolYearSchema = z
 
 /**
  * Update school year schema (all fields optional except id)
+ * Note: Refinements are not applied on partial updates to allow single-field updates
  *
  * @example
  * const validation = updateSchoolYearSchema.safeParse({
@@ -91,7 +97,7 @@ export const createSchoolYearSchema = z
  *   is_active: true
  * });
  */
-export const updateSchoolYearSchema = createSchoolYearSchema.partial().extend({
+export const updateSchoolYearSchema = schoolYearBaseSchema.partial().extend({
 	id: uuidSchema
 });
 
@@ -133,6 +139,25 @@ export type SetActiveYearData = z.infer<typeof setActiveYearSchema>;
 // ========================================
 
 /**
+ * Base academic period object schema (without refinements)
+ * Used for partial() in update schema
+ */
+const academicPeriodBaseSchema = z.object({
+	school_year_id: uuidSchema,
+	type: periodTypeSchema,
+	name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long'),
+	start_date: dateSchema,
+	end_date: dateSchema,
+	period_order: z
+		.number()
+		.int('Doit être un nombre entier')
+		.positive('Doit être positif')
+		.max(10, 'Maximum 10 périodes par année'),
+	color: hexColorSchema.default('#3b82f6'),
+	metadata: z.record(z.string(), z.any()).optional().default({})
+});
+
+/**
  * Create academic period schema
  *
  * Validates:
@@ -154,28 +179,17 @@ export type SetActiveYearData = z.infer<typeof setActiveYearSchema>;
  *   color: "#3b82f6"
  * });
  */
-export const createAcademicPeriodSchema = z
-	.object({
-		school_year_id: uuidSchema,
-		type: periodTypeSchema,
-		name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long'),
-		start_date: dateSchema,
-		end_date: dateSchema,
-		period_order: z
-			.number()
-			.int('Doit être un nombre entier')
-			.positive('Doit être positif')
-			.max(10, 'Maximum 10 périodes par année'),
-		color: hexColorSchema.default('#3b82f6'),
-		metadata: z.record(z.string(), z.any()).optional().default({})
-	})
-	.refine((data) => new Date(data.end_date) > new Date(data.start_date), {
+export const createAcademicPeriodSchema = academicPeriodBaseSchema.refine(
+	(data) => new Date(data.end_date) > new Date(data.start_date),
+	{
 		message: 'La date de fin doit être après la date de début',
 		path: ['end_date']
-	});
+	}
+);
 
 /**
  * Update academic period schema (all fields optional except id)
+ * Note: Refinements are not applied on partial updates to allow single-field updates
  *
  * @example
  * const validation = updateAcademicPeriodSchema.safeParse({
@@ -184,7 +198,7 @@ export const createAcademicPeriodSchema = z
  *   color: "#ef4444"
  * });
  */
-export const updateAcademicPeriodSchema = createAcademicPeriodSchema.partial().extend({
+export const updateAcademicPeriodSchema = academicPeriodBaseSchema.partial().extend({
 	id: uuidSchema
 });
 
@@ -210,6 +224,17 @@ export type DeleteAcademicPeriodData = z.infer<typeof deleteAcademicPeriodSchema
 // ========================================
 
 /**
+ * Base school holiday object schema (without refinements)
+ * Used for partial() in update schema
+ */
+const schoolHolidayBaseSchema = z.object({
+	school_year_id: uuidSchema,
+	name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long'),
+	start_date: dateSchema,
+	end_date: dateSchema
+});
+
+/**
  * Create school holiday schema
  *
  * Validates:
@@ -225,20 +250,17 @@ export type DeleteAcademicPeriodData = z.infer<typeof deleteAcademicPeriodSchema
  *   end_date: "2025-01-05"
  * });
  */
-export const createSchoolHolidaySchema = z
-	.object({
-		school_year_id: uuidSchema,
-		name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long'),
-		start_date: dateSchema,
-		end_date: dateSchema
-	})
-	.refine((data) => new Date(data.end_date) > new Date(data.start_date), {
+export const createSchoolHolidaySchema = schoolHolidayBaseSchema.refine(
+	(data) => new Date(data.end_date) > new Date(data.start_date),
+	{
 		message: 'La date de fin doit être après la date de début',
 		path: ['end_date']
-	});
+	}
+);
 
 /**
  * Update school holiday schema (all fields optional except id)
+ * Note: Refinements are not applied on partial updates to allow single-field updates
  *
  * @example
  * const validation = updateSchoolHolidaySchema.safeParse({
@@ -247,7 +269,7 @@ export const createSchoolHolidaySchema = z
  *   end_date: "2025-01-06"
  * });
  */
-export const updateSchoolHolidaySchema = createSchoolHolidaySchema.partial().extend({
+export const updateSchoolHolidaySchema = schoolHolidayBaseSchema.partial().extend({
 	id: uuidSchema
 });
 

@@ -55,39 +55,44 @@ export const podiumRewardsSchema = z.record(z.string(), z.number().int().min(0).
 );
 
 /**
+ * Base tournament object schema (without refinements)
+ * Used for partial() in update schema
+ */
+const tournamentBaseSchema = z.object({
+	name: z
+		.string()
+		.min(3, 'Le nom doit contenir au moins 3 caractères')
+		.max(100, 'Le nom ne peut pas dépasser 100 caractères'),
+	description: z
+		.string()
+		.max(1000, 'La description ne peut pas dépasser 1000 caractères')
+		.optional()
+		.nullable(),
+	difficulty: difficultySchema,
+	start_date: z.string().datetime({ message: 'Date de début invalide' }),
+	end_date: z.string().datetime({ message: 'Date de fin invalide' }),
+	top_x_games: z
+		.number()
+		.int()
+		.min(1, 'Au moins 1 partie doit compter')
+		.max(20, 'Maximum 20 parties'),
+	podium_rewards: podiumRewardsSchema,
+	podium_places: z
+		.number()
+		.int()
+		.min(1, 'Au moins 1 place sur le podium')
+		.max(10, 'Maximum 10 places'),
+	class_ids: z
+		.array(uuidSchema)
+		.min(1, 'Au moins une classe doit être sélectionnée')
+		.optional()
+		.nullable()
+});
+
+/**
  * Create tournament request validation
  */
-export const createTournamentSchema = z
-	.object({
-		name: z
-			.string()
-			.min(3, 'Le nom doit contenir au moins 3 caractères')
-			.max(100, 'Le nom ne peut pas dépasser 100 caractères'),
-		description: z
-			.string()
-			.max(1000, 'La description ne peut pas dépasser 1000 caractères')
-			.optional()
-			.nullable(),
-		difficulty: difficultySchema,
-		start_date: z.string().datetime({ message: 'Date de début invalide' }),
-		end_date: z.string().datetime({ message: 'Date de fin invalide' }),
-		top_x_games: z
-			.number()
-			.int()
-			.min(1, 'Au moins 1 partie doit compter')
-			.max(20, 'Maximum 20 parties'),
-		podium_rewards: podiumRewardsSchema,
-		podium_places: z
-			.number()
-			.int()
-			.min(1, 'Au moins 1 place sur le podium')
-			.max(10, 'Maximum 10 places'),
-		class_ids: z
-			.array(uuidSchema)
-			.min(1, 'Au moins une classe doit être sélectionnée')
-			.optional()
-			.nullable()
-	})
+export const createTournamentSchema = tournamentBaseSchema
 	.refine((data) => new Date(data.end_date) > new Date(data.start_date), {
 		message: 'La date de fin doit être après la date de début',
 		path: ['end_date']
@@ -196,8 +201,9 @@ export type ListActiveTournamentsInput = z.infer<typeof listActiveTournamentsSch
 
 /**
  * Update tournament (only allowed before start)
+ * Note: Refinements are not applied on partial updates to allow single-field updates
  */
-export const updateTournamentSchema = createTournamentSchema.partial().extend({
+export const updateTournamentSchema = tournamentBaseSchema.partial().extend({
 	id: uuidSchema
 });
 
