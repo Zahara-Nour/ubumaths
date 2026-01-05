@@ -67,10 +67,10 @@ const CODE_FENCE_OPEN_REGEX = /^(`{3,}|~{3,})(\S*)(.*)$/;
 const CODE_FENCE_CLOSE_REGEX = /^(`{3,}|~{3,})\s*$/;
 
 /**
- * Regex to detect math placeholders (__MATH_N__)
+ * Regex to detect math placeholders (§M:N§)
  * These should be preserved in code blocks
  */
-const MATH_PLACEHOLDER_REGEX = /__MATH_\d+__/;
+const MATH_PLACEHOLDER_REGEX = /§M:\d+§/;
 
 // ============================================================================
 // DETECTION
@@ -322,7 +322,7 @@ export function parseCodeBlock(
 /**
  * Check if code contains math placeholders
  *
- * Math placeholders (__MATH_N__) should be preserved in code blocks
+ * Math placeholders (§M:N§) should be preserved in code blocks
  * and not replaced with actual math expressions.
  *
  * @param code - Code content to check
@@ -330,7 +330,7 @@ export function parseCodeBlock(
  *
  * @example
  * ```typescript
- * containsMathPlaceholders('const formula = __MATH_0__;');  // true
+ * containsMathPlaceholders('const formula = §M:0§;');  // true
  * containsMathPlaceholders('console.log("hello");');         // false
  * ```
  */

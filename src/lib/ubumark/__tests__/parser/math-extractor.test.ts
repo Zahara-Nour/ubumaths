@@ -28,8 +28,8 @@ describe('extractMath', () => {
 		expect(result.placeholders[1].expression).toBe('y^3');
 		expect(result.placeholders[1].syntax).toBe('latex');
 		expect(result.placeholders[1].isBlock).toBe(false);
-		expect(result.text).toContain('__MATH_0__');
-		expect(result.text).toContain('__MATH_1__');
+		expect(result.text).toContain('§M:0§');
+		expect(result.text).toContain('§M:1§');
 	});
 
 	it('should extract block math expressions', () => {
@@ -40,7 +40,7 @@ describe('extractMath', () => {
 		expect(result.placeholders[0].expression).toBe('\\int_0^\\pi \\sin(x) dx');
 		expect(result.placeholders[0].syntax).toBe('latex');
 		expect(result.placeholders[0].isBlock).toBe(true);
-		expect(result.text).toContain('__MATH_0__');
+		expect(result.text).toContain('§M:0§');
 	});
 
 	it('should handle mixed inline and block math', () => {
@@ -103,28 +103,28 @@ describe('extractMath', () => {
 
 describe('isMathPlaceholder', () => {
 	it('should identify valid placeholders', () => {
-		expect(isMathPlaceholder('__MATH_0__')).toBe(true);
-		expect(isMathPlaceholder('__MATH_123__')).toBe(true);
+		expect(isMathPlaceholder('§M:0§')).toBe(true);
+		expect(isMathPlaceholder('§M:123§')).toBe(true);
 	});
 
 	it('should reject invalid placeholders', () => {
 		expect(isMathPlaceholder('regular text')).toBe(false);
 		expect(isMathPlaceholder('MATH_0')).toBe(false);
-		expect(isMathPlaceholder('__MATH_')).toBe(false);
-		expect(isMathPlaceholder('__MATH_0')).toBe(false);
+		expect(isMathPlaceholder('§M:')).toBe(false);
+		expect(isMathPlaceholder('§M:0')).toBe(false);
 	});
 });
 
 describe('getPlaceholderIndex', () => {
 	it('should extract index from valid placeholder', () => {
-		expect(getPlaceholderIndex('__MATH_0__')).toBe(0);
-		expect(getPlaceholderIndex('__MATH_42__')).toBe(42);
-		expect(getPlaceholderIndex('__MATH_999__')).toBe(999);
+		expect(getPlaceholderIndex('§M:0§')).toBe(0);
+		expect(getPlaceholderIndex('§M:42§')).toBe(42);
+		expect(getPlaceholderIndex('§M:999§')).toBe(999);
 	});
 
 	it('should return null for invalid placeholder', () => {
 		expect(getPlaceholderIndex('regular text')).toBe(null);
-		expect(getPlaceholderIndex('__MATH_')).toBe(null);
+		expect(getPlaceholderIndex('§M:')).toBe(null);
 	});
 });
 
@@ -133,7 +133,7 @@ describe('findPlaceholder', () => {
 		const markdown = 'Test $x^2$ end';
 		const { placeholders } = extractMath(markdown);
 
-		const found = findPlaceholder(placeholders, '__MATH_0__');
+		const found = findPlaceholder(placeholders, '§M:0§');
 		expect(found).toBeDefined();
 		expect(found?.expression).toBe('x^2');
 	});
@@ -142,7 +142,7 @@ describe('findPlaceholder', () => {
 		const markdown = 'Test $x^2$ end';
 		const { placeholders } = extractMath(markdown);
 
-		const found = findPlaceholder(placeholders, '__MATH_999__');
+		const found = findPlaceholder(placeholders, '§M:999§');
 		expect(found).toBeUndefined();
 	});
 });
@@ -492,7 +492,7 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 			const { text, placeholders } = extractMath(markdown);
 
 			// Text should contain placeholders
-			expect(text).toContain('__MATH_');
+			expect(text).toContain('§M:');
 
 			// Restore should bring back original expressions
 			const restored = restoreMathPlaceholders(text, placeholders);
@@ -543,7 +543,7 @@ describe('Custom Math Syntax (~...~ and ~~...~~)', () => {
 			const { text, placeholders } = extractMath(markdown);
 
 			// Should have extracted $R_1$
-			expect(text).toContain('__MATH_');
+			expect(text).toContain('§M:');
 			expect(placeholders).toHaveLength(1);
 			expect(placeholders[0].expression).toBe('R_1');
 

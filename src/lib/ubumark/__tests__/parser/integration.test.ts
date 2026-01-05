@@ -23,19 +23,14 @@ describe('Code Block Parser Integration', () => {
 	});
 
 	it('should handle math placeholders correctly', () => {
-		const lines = [
-			'```python',
-			'# Calculate using formula __MATH_0__',
-			'result = solve(__MATH_1__)',
-			'```'
-		];
+		const lines = ['```python', '# Calculate using formula §M:0§', 'result = solve(§M:1§)', '```'];
 
 		const node = parseCodeBlock(lines, 0, 3);
 		expect(node).toBeDefined();
 
 		// Math placeholders should be preserved as-is
-		expect(node?.code).toContain('__MATH_0__');
-		expect(node?.code).toContain('__MATH_1__');
+		expect(node?.code).toContain('§M:0§');
+		expect(node?.code).toContain('§M:1§');
 	});
 
 	it('should work with real markdown content', () => {
@@ -103,12 +98,7 @@ console.log(factorial(5)); // Should output 120
 	});
 
 	it('should handle code blocks with special characters used in math', () => {
-		const lines = [
-			'```latex',
-			'\\frac{a}{b} = \\frac{__MATH_0__}{__MATH_1__}',
-			'\\sqrt{x^2 + y^2}',
-			'```'
-		];
+		const lines = ['```latex', '\\frac{a}{b} = \\frac{§M:0§}{§M:1§}', '\\sqrt{x^2 + y^2}', '```'];
 
 		const node = parseCodeBlock(lines, 0, 3);
 		expect(node).toBeDefined();

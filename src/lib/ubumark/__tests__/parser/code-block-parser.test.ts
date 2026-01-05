@@ -210,12 +210,12 @@ describe('Code Block Parser', () => {
 		});
 
 		it('should preserve special characters', () => {
-			const lines = ['```', '$ echo "test"', '{{ variable }}', '__MATH_0__', '```'];
+			const lines = ['```', '$ echo "test"', '{{ variable }}', '§M:0§', '```'];
 			const node = parseCodeBlock(lines, 0, 4);
 
 			expect(node).toEqual({
 				type: 'code-block',
-				code: '$ echo "test"\n{{ variable }}\n__MATH_0__',
+				code: '$ echo "test"\n{{ variable }}\n§M:0§',
 				language: undefined
 			});
 		});
@@ -247,9 +247,9 @@ describe('Code Block Parser', () => {
 
 	describe('containsMathPlaceholders', () => {
 		it('should detect math placeholders', () => {
-			expect(containsMathPlaceholders('const formula = __MATH_0__;')).toBe(true);
-			expect(containsMathPlaceholders('__MATH_42__ + __MATH_100__')).toBe(true);
-			expect(containsMathPlaceholders('text with __MATH_999__ inside')).toBe(true);
+			expect(containsMathPlaceholders('const formula = §M:0§;')).toBe(true);
+			expect(containsMathPlaceholders('§M:42§ + §M:100§')).toBe(true);
+			expect(containsMathPlaceholders('text with §M:999§ inside')).toBe(true);
 		});
 
 		it('should not detect when no placeholders', () => {

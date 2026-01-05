@@ -163,9 +163,9 @@ describe('parseMarkdown', () => {
 				const paragraph = firstItem.children[0];
 				expect(paragraph.children[0].type).toBe('math-inline');
 
-				// Should NOT contain __MATH_1__ placeholder
+				// Should NOT contain §M:N§ placeholder
 				if (paragraph.children[0].type === 'text') {
-					expect(paragraph.children[0].content).not.toContain('__MATH_');
+					expect(paragraph.children[0].content).not.toContain('§M:');
 				}
 			}
 		}
@@ -513,6 +513,93 @@ $$\\int_0^\\pi \\sin(x) dx = 2$$`;
 		// Check for block math
 		const mathBlockNode = ast.children.find((child) => child.type === 'math-block');
 		expect(mathBlockNode).toBeDefined();
+	});
+});
+
+describe('parseMarkdown - bold with math regression', () => {
+	it('should render bold text that contains math expressions', () => {
+		// Regression test: **Étude de la fonction $\sinh$** was not rendering bold
+		// because the old placeholder format (__MATH_N__) contained underscores which broke the bold regex
+		const markdown = '**Étude de la fonction $\\sinh$**';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have 3 children: bold text, math, bold text
+			expect(paragraph.children.length).toBeGreaterThanOrEqual(2);
+
+			// First text should be bold
+			const firstChild = paragraph.children[0];
+			expect(firstChild.type).toBe('text');
+			if (firstChild.type === 'text') {
+				expect(firstChild.bold).toBe(true);
+				expect(firstChild.content).toBe('Étude de la fonction ');
+			}
+
+			// Should have math inline
+			const mathChild = paragraph.children.find((c) => c.type === 'math-inline');
+			expect(mathChild).toBeDefined();
+			if (mathChild && mathChild.type === 'math-inline') {
+				expect(mathChild.expression).toBe('\\sinh');
+			}
+		}
+	});
+
+	it('should render bold list items with math in nested lists', () => {
+		// The original bug case from the user
+		const markdown = `1. **Étude de la fonction $\\sinh$**
+   1. Montrer que la fonction $\\sinh$ est impaire.
+   2. Calculer la fonction dérivée de $\\sinh$, en préciser le signe.`;
+
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('list');
+
+		if (ast.children[0].type === 'list') {
+			const list = ast.children[0];
+			expect(list.items).toHaveLength(1);
+
+			// First item's first paragraph should contain bold text
+			const firstItem = list.items[0];
+			expect(firstItem.children[0].type).toBe('paragraph');
+
+			if (firstItem.children[0].type === 'paragraph') {
+				const paragraph = firstItem.children[0];
+
+				// First child should be bold text
+				const boldText = paragraph.children.find((c) => c.type === 'text' && c.bold);
+				expect(boldText).toBeDefined();
+
+				// Should also contain math
+				const mathNode = paragraph.children.find((c) => c.type === 'math-inline');
+				expect(mathNode).toBeDefined();
+			}
+		}
+	});
+
+	it('should handle italic with math', () => {
+		const markdown = '*calcul de $x^2$*';
+		const ast = parseMarkdown(markdown);
+
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+
+		if (ast.children[0].type === 'paragraph') {
+			const paragraph = ast.children[0];
+
+			// Should have italic text
+			const italicChild = paragraph.children.find((c) => c.type === 'text' && c.italic);
+			expect(italicChild).toBeDefined();
+
+			// Should have math
+			const mathChild = paragraph.children.find((c) => c.type === 'math-inline');
+			expect(mathChild).toBeDefined();
+		}
 	});
 });
 

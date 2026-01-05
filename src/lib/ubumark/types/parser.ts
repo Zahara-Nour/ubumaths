@@ -72,7 +72,7 @@ export type ParseResult<T> =
  * Math placeholder for extraction/replacement during parsing
  */
 export interface MathPlaceholder {
-	placeholder: string; // Unique placeholder string (e.g., "__MATH_0__")
+	placeholder: string; // Unique placeholder string (e.g., "§M:0§")
 	/** Math expression in its original syntax (LaTeX or custom) */
 	expression: string;
 	isBlock: boolean; // true for $$...$$ (block), false for $...$ (inline)

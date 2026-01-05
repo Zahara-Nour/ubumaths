@@ -451,7 +451,7 @@ function parseBlocks(
 		if (codeBlock) {
 			// Map to the corresponding block in originalLines for content extraction.
 			// This ensures math expressions like $x^2$ are preserved verbatim in code,
-			// not replaced with __MATH_N__ placeholders.
+			// not replaced with §M:N§ placeholders.
 			const codeBlockIndex = codeBlocks.indexOf(codeBlock);
 			const originalBlock = originalCodeBlocks[codeBlockIndex];
 			if (originalBlock) {
@@ -670,6 +670,10 @@ function parseParagraph(
  *
  * This is where we handle bold, italic, code, and math placeholders.
  *
+ * IMPORTANT: We parse formatting FIRST on the full text (with placeholders intact),
+ * then split text nodes that contain placeholders. This allows formatting to span
+ * across math expressions, e.g., **bold $math$ text** works correctly.
+ *
  * @param text - Text with inline formatting
  * @param placeholders - Math placeholders
  * @param options - Parse options
@@ -680,23 +684,51 @@ function parseInlineContent(
 	placeholders: MathPlaceholder[],
 	_options: ParseOptions
 ): InlineNode[] {
+	// Step 1: Parse formatting on the full text (placeholders are treated as regular text)
+	const formattedNodes = parseTextFormatting(text);
+
+	// Step 2: For each text node, split by placeholders if needed
 	const nodes: InlineNode[] = [];
 
-	// Split text by math placeholders first
-	const segments = splitTextWithPlaceholders(text, placeholders);
+	for (const node of formattedNodes) {
+		if (node.type === 'text') {
+			// Check if this text node contains any placeholders
+			const hasPlaceholders = placeholders.some((p) => node.content.includes(p.placeholder));
 
-	for (const segment of segments) {
-		if (typeof segment === 'string') {
-			// Parse text for formatting (bold, italic, code)
-			const formatted = parseTextFormatting(segment);
-			nodes.push(...formatted);
+			if (hasPlaceholders) {
+				// Split this text node by placeholders
+				const segments = splitTextWithPlaceholders(node.content, placeholders);
+
+				for (const segment of segments) {
+					if (typeof segment === 'string') {
+						// Preserve formatting from the original node
+						if (segment.length > 0) {
+							nodes.push({
+								type: 'text',
+								content: segment,
+								...(node.bold && { bold: true }),
+								...(node.italic && { italic: true }),
+								...(node.code && { code: true }),
+								...(node.strikethrough && { strikethrough: true }),
+								...(node.highlight && { highlight: true })
+							});
+						}
+					} else {
+						// Math placeholder → inline math node
+						nodes.push({
+							type: 'math-inline',
+							expression: segment.expression,
+							syntax: segment.syntax
+						});
+					}
+				}
+			} else {
+				// No placeholders, keep node as-is
+				nodes.push(node);
+			}
 		} else {
-			// Math placeholder → inline math node
-			nodes.push({
-				type: 'math-inline',
-				expression: segment.expression,
-				syntax: segment.syntax
-			});
+			// Non-text nodes (blank, link, hashtag, mention, line-break, etc.) pass through
+			nodes.push(node);
 		}
 	}
 
@@ -1299,7 +1331,7 @@ function parseContentWithCodeBlocks(
 			}
 		} else if (language === 'probtree') {
 			// Parse as probability tree
-			// IMPORTANT: Restore math placeholders to original expressions (e.g., __MATH_0__ -> $R_1$)
+			// IMPORTANT: Restore math placeholders to original expressions (e.g., §M:0§ -> $R_1$)
 			// because probtree content may contain math in event labels that was extracted earlier
 			const restoredCode = restoreMathPlaceholders(code, placeholders);
 			const lines = ['```probtree', ...restoredCode.split('\n'), '```'];
@@ -1633,7 +1665,7 @@ function processListInlineContent(
 /**
  * Restore math placeholders in a string to their original markdown syntax
  *
- * This converts __MATH_0__ back to $expression$ or ~expression~ etc.
+ * This converts §M:0§ back to $expression$ or ~expression~ etc.
  * Used for table cell content which stores strings, not parsed InlineNodes.
  *
  * @param text - Text with placeholders
