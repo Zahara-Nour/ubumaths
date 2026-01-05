@@ -7,6 +7,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { Exercise, DistributionMode, InstanceGenerationResult } from '$lib/exercises/types';
+import type { GradeCode } from '$lib/types/grades';
 import type { Variable } from '$lib/ubumark';
 import {
 	generateExerciseInstance,
@@ -27,7 +28,7 @@ export interface ExerciseFilters {
 	difficulty?: 1 | 2 | 3;
 	tags?: string[];
 	topic?: string;
-	grades?: string[];
+	grades?: GradeCode[];
 	search?: string; // Full-text search on title and source
 	parameterized?: boolean; // Filter for exercises with/without variables
 }

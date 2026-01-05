@@ -18,6 +18,7 @@
 // ============================================================================
 
 import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
+import type { GradeCode } from '$lib/types/grades';
 
 // Re-export AST types from ubumark for backwards compatibility
 export type {
@@ -325,7 +326,7 @@ export interface Exercise {
 
 	// Additional metadata
 	/** Applicable grade levels (e.g., ['3', '2', '1_SPE']) - uses GradeCode from unified system */
-	grades?: string[];
+	grades?: GradeCode[];
 
 	/** Topic category (e.g., 'Algèbre', 'Géométrie') */
 	topic?: string;
@@ -696,7 +697,7 @@ export interface ExerciseInstance {
 	source?: string;
 
 	/** Grade levels (copied from template) */
-	grades?: string[];
+	grades?: GradeCode[];
 
 	/** Topic (copied from template) */
 	topic?: string;
@@ -997,7 +998,7 @@ export interface ExerciseExportV1 {
 	solution_md: string;
 
 	// Additional metadata
-	grades?: string[];
+	grades?: GradeCode[];
 	topic?: string;
 }
 
@@ -1020,7 +1021,7 @@ export interface ExerciseExportV2 {
 	solution_md: string;
 
 	// Additional metadata
-	grades?: string[];
+	grades?: GradeCode[];
 	topic?: string;
 
 	// Variations system
@@ -1048,7 +1049,7 @@ export interface ExerciseFrontmatterV1 {
 	source?: string;
 	difficulty: 1 | 2 | 3;
 	tags: string[];
-	grades?: string[];
+	grades?: GradeCode[];
 	topic?: string;
 }
 
@@ -1064,7 +1065,7 @@ export interface ExerciseFrontmatterV2 {
 	source?: string;
 	difficulty: 1 | 2 | 3;
 	tags: string[];
-	grades?: string[];
+	grades?: GradeCode[];
 	topic?: string;
 
 	// Variations system
@@ -1615,7 +1616,7 @@ export interface AssignedExerciseWithDetails extends ExerciseAssignment {
 	tags: string[];
 
 	/** Applicable grade levels */
-	grades: string[] | null;
+	grades: GradeCode[] | null;
 
 	// From profiles (teacher)
 	/** Full name of teacher who assigned */

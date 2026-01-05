@@ -10,6 +10,7 @@ import { error } from '@sveltejs/kit';
 import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import type { PageServerLoad } from './$types';
+import type { GradeCode } from '$lib/types/grades';
 
 /**
  * Get the latest export folder from data/migration-output/
@@ -59,7 +60,7 @@ export interface QuestionEntry {
 		title: string;
 		description?: string;
 		variations?: unknown[];
-		grades?: string[];
+		grades?: GradeCode[];
 		theme?: string;
 		domain?: string;
 		level?: number;

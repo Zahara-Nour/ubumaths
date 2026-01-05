@@ -10,6 +10,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import type { GradeCode } from '$lib/types/grades';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { documentUploadSchema, fileValidationSchema } from '$lib/server/validation/documents';
 import { extractText } from '$lib/server/documents/pdf-extractor';
@@ -64,7 +65,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		let metadata: {
 			title: string;
 			description?: string;
-			grades: string[];
+			grades: GradeCode[];
 			topics: string[];
 			enabledForRag: boolean;
 		};

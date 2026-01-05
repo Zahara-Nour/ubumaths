@@ -8,6 +8,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { GradeCode } from '$lib/types/grades';
 import { getEmbeddingService } from './embeddings';
 import { chunkText, chunkMarkdown, chunkExercise, type Chunk } from './chunker';
 import { createHash } from 'crypto';
@@ -27,7 +28,7 @@ export interface DocumentInput {
 	metadata?: Record<string, unknown>;
 	teacherId?: string;
 	/** Applicable grades (e.g., ['6', '5', 'CM2']) */
-	grades?: string[];
+	grades?: GradeCode[];
 	topics?: string[];
 }
 

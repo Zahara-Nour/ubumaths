@@ -7,6 +7,7 @@
  */
 
 import type { ChapterColor, ChapterIcon } from './chapters';
+import { GRADE_CODES, type GradeCode } from './grades';
 
 // ===========================================================================
 // ENUMS & CONSTANTS
@@ -18,10 +19,11 @@ import type { ChapterColor, ChapterIcon } from './chapters';
 export type TemplateStatus = 'draft' | 'published' | 'archived';
 
 /**
- * Available grade levels
+ * Available grade levels - re-exported from unified grades system
+ * @deprecated Use GRADE_CODES from '$lib/types/grades' directly
  */
-export const GRADE_LEVELS = ['6', '5', '4', '3', '2', '1', 'T'] as const;
-export type GradeLevel = (typeof GRADE_LEVELS)[number];
+export const GRADE_LEVELS = GRADE_CODES;
+export type GradeLevel = GradeCode;
 
 // ===========================================================================
 // CONTENT SNAPSHOT TYPES
@@ -137,7 +139,7 @@ export interface ChapterTemplate {
 	isPublic: boolean;
 	title: string;
 	description: string | null;
-	grades: string[];
+	grades: GradeCode[];
 	color: ChapterColor | null;
 	icon: ChapterIcon | null;
 	contentSnapshot: TemplateContentSnapshot;
@@ -197,7 +199,7 @@ export interface TemplateSummary {
 	id: string;
 	title: string;
 	description: string | null;
-	grades: string[];
+	grades: GradeCode[];
 	color: ChapterColor | null;
 	icon: ChapterIcon | null;
 	status: TemplateStatus;
@@ -330,7 +332,7 @@ export function dbTemplateToApp(db: DbChapterTemplate): ChapterTemplate {
 		isPublic: db.is_public,
 		title: db.title,
 		description: db.description,
-		grades: db.grades,
+		grades: db.grades as GradeCode[],
 		color: db.color as ChapterColor | null,
 		icon: db.icon as ChapterIcon | null,
 		contentSnapshot: parseContentSnapshot(db.content_snapshot),
@@ -417,7 +419,7 @@ export function getContentCounts(snapshot: TemplateContentSnapshot): {
 /**
  * Format grade levels for display
  */
-export function formatGrades(grades: string[]): string {
+export function formatGrades(grades: GradeCode[]): string {
 	if (grades.length === 0) return 'Tous niveaux';
 	return grades.map((g) => `${g}e`).join(', ');
 }

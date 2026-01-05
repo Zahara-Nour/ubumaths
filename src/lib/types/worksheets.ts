@@ -10,6 +10,7 @@ import type {
 	ExerciseHint,
 	ExerciseResource
 } from '$lib/exercises/types';
+import type { GradeCode } from '$lib/types/grades';
 
 // =============================================================================
 // ENUMS AND CONSTANTS
@@ -638,7 +639,7 @@ export interface WorksheetFormData {
 	type: WorksheetType;
 	config: WorksheetConfig;
 	estimated_duration_minutes: number | null;
-	grades: string[];
+	grades: GradeCode[];
 	tags: string[];
 	template_id: string | null;
 }

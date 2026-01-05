@@ -4,12 +4,13 @@
 	import * as Card from '$lib/components/ui/card';
 	import { FileText, Trash2, ToggleLeft, ToggleRight, Edit } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import type { GradeCode } from '$lib/types/grades';
 
 	interface Document {
 		id: string;
 		title: string;
 		sourceType: string;
-		grades: string[];
+		grades: GradeCode[];
 		topics: string[];
 		enabledForRag: boolean;
 		chunkCount: number;

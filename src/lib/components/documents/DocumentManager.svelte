@@ -6,12 +6,13 @@
 	import DocumentUploader from './DocumentUploader.svelte';
 	import DocumentCard from './DocumentCard.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import type { GradeCode } from '$lib/types/grades';
 
 	interface Document {
 		id: string;
 		title: string;
 		sourceType: string;
-		grades: string[];
+		grades: GradeCode[];
 		topics: string[];
 		enabledForRag: boolean;
 		chunkCount: number;
