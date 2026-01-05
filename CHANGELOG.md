@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.23](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.22...v0.5.23) (2026-01-05)
+
+### 📚 Documentation
+
+- **diary:** add comprehensive technical documentation for cahier de texte ([d24de6c](https://github.com/Zahara-Nour/ubumaths/commit/d24de6c3299295693bfa73263c9b1227787d4b9f))
+
+### 🐛 Bug Fixes
+
+- **api:** remove dropped statement_md/solution_md columns from queries ([26ec451](https://github.com/Zahara-Nour/ubumaths/commit/26ec4519012daf270d38c88a8e929289c323fccb))
+- **api:** update error report review to write to variations ([d25014b](https://github.com/Zahara-Nour/ubumaths/commit/d25014b389861b38facb9fbf11c229d5ada76e2b))
+- **deps:** override html-encoding-sniffer to 4.0.0 for ESM compatibility ([cad8f91](https://github.com/Zahara-Nour/ubumaths/commit/cad8f91510623ad9347148dfedc4a2b6f455d294))
+- **deps:** override jsdom to 26.1.0 for ESM compatibility ([e34135e](https://github.com/Zahara-Nour/ubumaths/commit/e34135ee3da632b827835b433b5360c2c2ccd9c8))
+- **deps:** resolve compatibility issues after dependency update ([22b5e33](https://github.com/Zahara-Nour/ubumaths/commit/22b5e337c666f3554daaf9a503c2c2edf607ed80))
+- **exercises:** move [@const](https://github.com/const) out of svelte:head ([2cef8c5](https://github.com/Zahara-Nour/ubumaths/commit/2cef8c53b58e21afd9655b37decc7b67abb73efd))
+- **journal:** resolve build errors ([7022ec6](https://github.com/Zahara-Nour/ubumaths/commit/7022ec6dc1adc58b60be4360dd054c86e5b44542))
+- **ubumark:** bold text with math expressions now renders correctly ([5c160fa](https://github.com/Zahara-Nour/ubumaths/commit/5c160fadf592195e53ac03143c5a69ccf9377286))
+- **ubumark:** fix infinite loop when parsing multiple math expressions ([a4d4e8d](https://github.com/Zahara-Nour/ubumaths/commit/a4d4e8d09367044e985ccc3c107c0374d2c3bd87))
+- **validation:** update exerciseResponseSchema for variations structure ([3064c86](https://github.com/Zahara-Nour/ubumaths/commit/3064c863f191aea59356d9877ef6cb9f2412af58))
+- **validation:** update worksheetExerciseWithDataResponseSchema for variations ([e78b3fc](https://github.com/Zahara-Nour/ubumaths/commit/e78b3fc9f91caf4f4863b224429c635b85f49b69))
+- **WeekConfigEditor:** initialize checkbox state to prevent undefined binding error ([b7e7d36](https://github.com/Zahara-Nour/ubumaths/commit/b7e7d36f05071e6c6c4f3b5b565a9007ca252d0b))
+- **worksheets:** move [@const](https://github.com/const) to valid position in ExerciseSelector ([4bb69bc](https://github.com/Zahara-Nour/ubumaths/commit/4bb69bc37d240d47e1da343e8bee45f53a40c3d7))
+- **zod:** extract base schemas for Zod 4 partial() compatibility ([a0adbff](https://github.com/Zahara-Nour/ubumaths/commit/a0adbffa491b6b667c88e4c23dbea7b6a08031da))
+
+### ✨ Features
+
+- **classes:** add grade field to classes table ([9c4ad48](https://github.com/Zahara-Nour/ubumaths/commit/9c4ad487e23b9dc3198997aff139fa34fdefb3a1))
+- **db:** drop legacy statement_md/solution_md columns ([b9e481e](https://github.com/Zahara-Nour/ubumaths/commit/b9e481eefd234540c2de6094a12c9c069d462a9a))
+- **journal:** add backend types, validation schemas and server functions ([b53ab1b](https://github.com/Zahara-Nour/ubumaths/commit/b53ab1bffaffbb10feda6a9f66ef9ee8dce2a809))
+- **journal:** add class_journal_entries table for cahier de texte ([f160ec7](https://github.com/Zahara-Nour/ubumaths/commit/f160ec77aa943ead475a32d4d2570e4c397adc08))
+- **journal:** add student routes for class journal ([b82f4e5](https://github.com/Zahara-Nour/ubumaths/commit/b82f4e5600321ec7e9c2d32f4a60113634f94c16))
+- **journal:** add teacher routes for class journal (cahier de texte) ([6ed8c11](https://github.com/Zahara-Nour/ubumaths/commit/6ed8c11b81c8ef239be6499730c7e417d5c6e55d))
+- **journal:** create reusable UI components for class journal ([127ee13](https://github.com/Zahara-Nour/ubumaths/commit/127ee132aa069a9fabee43808a173328c1cad4ad))
+- **journal:** integrate journal into navigation ([701f615](https://github.com/Zahara-Nour/ubumaths/commit/701f615b05a587ecc0988d99930b6b10eee994f1))
+- **ubumark:** add internal link support [[type:uuid|label]] ([3b02931](https://github.com/Zahara-Nour/ubumaths/commit/3b02931b6d6cc31d2f7df53a816507d425ec3ee9))
+- **worksheets:** improve error report review with variation tracking ([d239a8c](https://github.com/Zahara-Nour/ubumaths/commit/d239a8c0857ec0e6b6d7dc81a5e69e5508f96fc8))
+
 ### [0.5.22](https://github.com/Zahara-Nour/ubumaths/compare/v0.5.21...v0.5.22) (2026-01-04)
 
 ### 🐛 Bug Fixes
