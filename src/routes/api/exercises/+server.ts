@@ -57,7 +57,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	}
 
 	if (grades) {
-		filters.grades = grades.split(',').filter(Boolean);
+		filters.grades = grades; // Already validated as GradeCode[] by schema
 	}
 
 	if (search) {
