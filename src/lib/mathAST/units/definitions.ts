@@ -438,3 +438,63 @@ export function resolveUnit(symbol: string): BaseUnitDef | null {
 	// Not recognized
 	return null;
 }
+
+// =============================================================================
+// UNIT FAMILIES (for 'best' conversion mode)
+// =============================================================================
+
+/**
+ * Unit families for the 'best' unit selection algorithm.
+ *
+ * Maps base SI symbols to ordered arrays of compatible unit symbols.
+ * Units are ordered from largest to smallest coefficient for efficient
+ * selection of the most readable unit for a given value.
+ *
+ * The algorithm will choose the first unit that puts the value
+ * in the "readable" range (0.1 to 1000).
+ *
+ * @example
+ * // For length:
+ * UNIT_FAMILIES['m'] = ['km', 'm', 'dm', 'cm', 'mm', 'μm', 'nm']
+ *
+ * // 5000 m -> 5 km (first unit that fits in 0.1-1000)
+ * // 0.005 m -> 5 mm
+ */
+export const UNIT_FAMILIES: Readonly<Record<string, readonly string[]>> = {
+	// Length (meter-based)
+	m: ['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm', 'μm', 'nm'],
+
+	// Mass (gram-based)
+	g: ['t', 'q', 'kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg', 'μg'],
+
+	// Time (second-based)
+	s: ['an', 'mois', 'semaine', 'j', 'h', 'min', 's', 'ms', 'μs', 'ns'],
+
+	// Volume (liter-based)
+	L: ['kL', 'hL', 'daL', 'L', 'dL', 'cL', 'mL', 'μL'],
+
+	// Angle (radian-based)
+	rad: ['rad', '°'],
+
+	// Currency
+	'€': ['€'],
+	$: ['$']
+} as const;
+
+/**
+ * Get the unit family for a given base symbol.
+ *
+ * Returns all compatible units ordered from largest to smallest coefficient.
+ * If no family is found, returns an array with just the base symbol.
+ *
+ * @param baseSymbol - The SI base symbol (e.g., 'm', 'g', 's')
+ * @returns Array of compatible unit symbols, largest to smallest
+ *
+ * @example
+ * getUnitFamily('m')  // ['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm', 'μm', 'nm']
+ * getUnitFamily('g')  // ['t', 'q', 'kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg', 'μg']
+ * getUnitFamily('A')  // ['A'] (no family defined, returns just the base)
+ */
+export function getUnitFamily(baseSymbol: string): readonly string[] {
+	return UNIT_FAMILIES[baseSymbol] ?? [baseSymbol];
+}
