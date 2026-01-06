@@ -30,7 +30,10 @@ export type ErrorCode =
 	| 'UNKNOWN_COMMAND'
 	| 'UNKNOWN_ERROR'
 	| 'INVALID_OPTIONS'
-	| 'UNSUPPORTED_FORMAT';
+	| 'UNSUPPORTED_FORMAT'
+	| 'UNKNOWN_UNIT'
+	| 'DIMENSION_MISMATCH'
+	| 'MATH_ERROR';
 
 /**
  * Structured error for command execution

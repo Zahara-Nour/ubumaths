@@ -606,12 +606,12 @@ describe('Color markers', () => {
 // =============================================================================
 
 describe('Position tracking', () => {
-	it('should track positions in simple expression (whitespace stripped)', () => {
+	it('should track positions in simple expression (whitespace preserved)', () => {
 		const tokens = tokenize('x + 2');
-		// After whitespace stripping: "x+2"
+		// Positions reflect original input with whitespace preserved
 		expect(tokens[0]).toEqual({ type: 'LETTER', value: 'x', position: 0, length: 1 });
-		expect(tokens[1]).toEqual({ type: 'PLUS', value: '+', position: 1, length: 1 });
-		expect(tokens[2]).toEqual({ type: 'NUMBER', value: '2', position: 2, length: 1 });
+		expect(tokens[1]).toEqual({ type: 'PLUS', value: '+', position: 2, length: 1 });
+		expect(tokens[2]).toEqual({ type: 'NUMBER', value: '2', position: 4, length: 1 });
 	});
 
 	it('should track positions with functions', () => {
@@ -816,9 +816,9 @@ describe('CustomTokenizer class', () => {
 	});
 
 	describe('getInput()', () => {
-		it('should return input with whitespace stripped', () => {
+		it('should return the original input (whitespace preserved)', () => {
 			const tokenizer = new CustomTokenizer('a + b');
-			expect(tokenizer.getInput()).toBe('a+b');
+			expect(tokenizer.getInput()).toBe('a + b');
 		});
 	});
 });
@@ -1047,38 +1047,54 @@ describe('Edge cases', () => {
 });
 
 // =============================================================================
-// Whitespace Stripping
+// Whitespace Handling
 // =============================================================================
 
-describe('Whitespace stripping', () => {
-	it('should strip spaces', () => {
+describe('Whitespace handling', () => {
+	it('should preserve original input but skip whitespace during scanning', () => {
 		const tokenizer = new CustomTokenizer('a b c');
-		expect(tokenizer.getInput()).toBe('abc');
+		// Original input is preserved
+		expect(tokenizer.getInput()).toBe('a b c');
+		// But tokens are correctly extracted, skipping whitespace
+		const tokens = tokenize('a b c');
+		expect(getValues(tokens.slice(0, -1))).toEqual(['a', 'b', 'c']);
 	});
 
-	it('should strip tabs', () => {
-		const tokenizer = new CustomTokenizer('a\tb\tc');
-		expect(tokenizer.getInput()).toBe('abc');
+	it('should handle tabs correctly', () => {
+		const tokens = tokenize('a\tb\tc');
+		expect(getValues(tokens.slice(0, -1))).toEqual(['a', 'b', 'c']);
 	});
 
-	it('should strip newlines', () => {
-		const tokenizer = new CustomTokenizer('a\nb\nc');
-		expect(tokenizer.getInput()).toBe('abc');
+	it('should handle newlines correctly', () => {
+		const tokens = tokenize('a\nb\nc');
+		expect(getValues(tokens.slice(0, -1))).toEqual(['a', 'b', 'c']);
 	});
 
-	it('should strip carriage returns', () => {
-		const tokenizer = new CustomTokenizer('a\r\nb\r\nc');
-		expect(tokenizer.getInput()).toBe('abc');
+	it('should handle carriage returns correctly', () => {
+		const tokens = tokenize('a\r\nb\r\nc');
+		expect(getValues(tokens.slice(0, -1))).toEqual(['a', 'b', 'c']);
 	});
 
-	it('should strip all whitespace types together', () => {
-		const tokenizer = new CustomTokenizer('  a \t b \n c \r\n d  ');
-		expect(tokenizer.getInput()).toBe('abcd');
+	it('should handle all whitespace types together', () => {
+		const tokens = tokenize('  a \t b \n c \r\n d  ');
+		expect(getValues(tokens.slice(0, -1))).toEqual(['a', 'b', 'c', 'd']);
 	});
 
-	it('should produce correct tokens from whitespace-stripped input', () => {
+	it('should produce correct tokens with whitespace in input', () => {
 		const tokens = tokenize('  x  +  2  ');
 		expect(getTypes(tokens.slice(0, -1))).toEqual(['LETTER', 'PLUS', 'NUMBER']);
 		expect(getValues(tokens.slice(0, -1))).toEqual(['x', '+', '2']);
+	});
+
+	it('should distinguish "1,2" (decimal) from "1, 2" (comma separator)', () => {
+		// Without space: comma is decimal separator (French format)
+		const decimal = tokenize('1,2');
+		expect(getTypes(decimal.slice(0, -1))).toEqual(['NUMBER']);
+		expect(getValues(decimal.slice(0, -1))).toEqual(['1.2']);
+
+		// With space: comma is separator (function arguments)
+		const separated = tokenize('1, 2');
+		expect(getTypes(separated.slice(0, -1))).toEqual(['NUMBER', 'COMMA', 'NUMBER']);
+		expect(getValues(separated.slice(0, -1))).toEqual(['1', ',', '2']);
 	});
 });

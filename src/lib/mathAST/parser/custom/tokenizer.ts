@@ -132,7 +132,15 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'ln',
 	'log',
 	'exp',
-	'sqrt'
+	'sqrt',
+	// Statistical functions
+	'mean',
+	'median',
+	'variance',
+	'stdev',
+	'min',
+	'max',
+	'sum'
 ]);
 
 /**
@@ -140,12 +148,19 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
  * This ensures that "sqrt" is matched before "s" when checking prefixes.
  */
 const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
+	'variance', // 8 chars
+	'median', // 6 chars
+	'stdev', // 5 chars
 	'sqrt', // 4 chars
+	'mean', // 4 chars
 	'sin', // 3 chars
 	'cos', // 3 chars
 	'tan', // 3 chars
 	'log', // 3 chars
 	'exp', // 3 chars
+	'min', // 3 chars
+	'max', // 3 chars
+	'sum', // 3 chars
 	'ln' // 2 chars
 ];
 
@@ -156,7 +171,9 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 /**
  * Custom syntax tokenizer that provides both streaming and batch tokenization.
  *
- * Whitespace is stripped from input at construction time.
+ * Whitespace is skipped dynamically during scanning to preserve comma semantics:
+ * - "1,2" → decimal number 1.2 (French format)
+ * - "1, 2" → two numbers 1 and 2 with comma separator (function arguments)
  *
  * Usage:
  * ```typescript
@@ -179,9 +196,19 @@ export class CustomTokenizer {
 	private cachePosition: number = 0;
 
 	constructor(input: string) {
-		// Strip all whitespace at construction time
-		this.input = input.replace(/\s+/g, '');
+		// Keep original input (don't strip whitespace)
+		// Whitespace is skipped dynamically during scanning
+		this.input = input;
 		this.length = this.input.length;
+	}
+
+	/**
+	 * Skips over any whitespace at the current position.
+	 */
+	private skipWhitespace(): void {
+		while (this.position < this.length && /\s/.test(this.input[this.position])) {
+			this.position++;
+		}
 	}
 
 	/**
@@ -238,7 +265,7 @@ export class CustomTokenizer {
 	}
 
 	/**
-	 * Returns the processed input (with whitespace stripped).
+	 * Returns the original input (whitespace preserved).
 	 */
 	getInput(): string {
 		return this.input;
@@ -252,6 +279,9 @@ export class CustomTokenizer {
 	 * Scans and returns the next token from the input.
 	 */
 	private scanToken(): CustomToken {
+		// Skip any whitespace before the token
+		this.skipWhitespace();
+
 		// Check for EOF
 		if (this.position >= this.length) {
 			return this.makeToken('EOF', '', this.position);

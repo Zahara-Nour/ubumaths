@@ -521,7 +521,13 @@ export const FUNCTION_COMMANDS: ReadonlySet<string> = new Set<string>([
 	'gcd',
 	'lcm',
 	'arg',
-	'mod'
+	'mod',
+	// Statistical functions
+	'mean',
+	'median',
+	'variance',
+	'stdev',
+	'sum'
 ]);
 
 /**

@@ -454,3 +454,205 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 		});
 	});
 });
+
+// =============================================================================
+// Phase 4: Statistics Tests
+// =============================================================================
+
+describe('WebReplEngine - Statistics (Phase 4)', () => {
+	let engine: WebReplEngine;
+
+	beforeEach(() => {
+		engine = new WebReplEngine();
+	});
+
+	// ===========================================================================
+	// Statistical Functions in Expressions
+	// ===========================================================================
+
+	describe('statistical functions', () => {
+		it('evaluates mean function', () => {
+			const result = engine.execute('mean(1, 2, 3, 4, 5)');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('3');
+		});
+
+		it('evaluates median function with odd count', () => {
+			const result = engine.execute('median(1, 2, 3, 4, 5)');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('3');
+		});
+
+		it('evaluates median function with even count', () => {
+			const result = engine.execute('median(1, 2, 3, 4)');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('2.5');
+		});
+
+		it('evaluates variance function', () => {
+			const result = engine.execute('variance(2, 4, 4, 4, 5, 5, 7, 9)');
+
+			expect(result.success).toBe(true);
+			// Sample variance should be calculated
+			expect(result.output).not.toBe('');
+		});
+
+		it('evaluates stdev function', () => {
+			const result = engine.execute('stdev(2, 4, 4, 4, 5, 5, 7, 9)');
+
+			expect(result.success).toBe(true);
+		});
+
+		it('evaluates min function', () => {
+			const result = engine.execute('min(5, 2, 8, 1, 9)');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('1');
+		});
+
+		it('evaluates max function', () => {
+			const result = engine.execute('max(5, 2, 8, 1, 9)');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('9');
+		});
+
+		it('evaluates sum function', () => {
+			const result = engine.execute('sum(1, 2, 3, 4, 5)');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('15');
+		});
+	});
+
+	// ===========================================================================
+	// .stats Command
+	// ===========================================================================
+
+	describe('.stats command', () => {
+		it('computes basic statistics for a list of numbers', () => {
+			const result = engine.execute('.stats 1, 2, 3, 4, 5');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('Moyenne');
+			expect(result.output).toContain('3');
+			expect(result.output).toContain('Mediane');
+			expect(result.output).toContain('Min');
+			expect(result.output).toContain('Max');
+		});
+
+		it('computes variance and stdev for 2+ values', () => {
+			const result = engine.execute('.stats 1, 2, 3, 4, 5');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('Ecart-type');
+			expect(result.output).toContain('Variance');
+		});
+
+		it('handles single value (no variance/stdev)', () => {
+			const result = engine.execute('.stats 42');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('42');
+			expect(result.output).not.toContain('Variance');
+		});
+
+		it('returns error for no arguments', () => {
+			const result = engine.execute('.stats');
+
+			expect(result.success).toBe(false);
+			expect(result.output).toContain('Usage');
+		});
+
+		it('returns error for invalid numbers', () => {
+			const result = engine.execute('.stats 1, abc, 3');
+
+			expect(result.success).toBe(false);
+			expect(result.output).toContain('valides');
+		});
+
+		it('handles decimal numbers', () => {
+			const result = engine.execute('.stats 1.5, 2.5, 3.5');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('2.5'); // mean
+		});
+
+		it('handles negative numbers', () => {
+			const result = engine.execute('.stats -5, 0, 5');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('0'); // mean
+		});
+	});
+
+	// ===========================================================================
+	// .linreg Command
+	// ===========================================================================
+
+	describe('.linreg command', () => {
+		it('computes linear regression for perfect fit', () => {
+			const result = engine.execute('.linreg 1,2,3 : 2,4,6');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('Pente');
+			expect(result.output).toContain('2');
+			expect(result.output).toContain('R²');
+			expect(result.output).toContain('1');
+		});
+
+		it('computes linear regression with intercept', () => {
+			const result = engine.execute('.linreg 0,1,2 : 1,3,5');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('Equation');
+			expect(result.output).toContain('y =');
+		});
+
+		it('returns error without colon separator', () => {
+			const result = engine.execute('.linreg 1,2,3,4,5,6');
+
+			expect(result.success).toBe(false);
+			expect(result.output).toContain(':');
+		});
+
+		it('returns error for mismatched lengths', () => {
+			const result = engine.execute('.linreg 1,2,3 : 4,5');
+
+			expect(result.success).toBe(false);
+			expect(result.output).toContain('different');
+		});
+
+		it('returns error for single point', () => {
+			const result = engine.execute('.linreg 1 : 2');
+
+			expect(result.success).toBe(false);
+			expect(result.output).toContain('2 points');
+		});
+
+		it('returns error for constant X values', () => {
+			const result = engine.execute('.linreg 5,5,5 : 1,2,3');
+
+			expect(result.success).toBe(false);
+			expect(result.output).toContain('identiques');
+		});
+
+		it('handles negative slope', () => {
+			const result = engine.execute('.linreg 1,2,3 : 6,4,2');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('-2');
+		});
+
+		it('returns R² for non-perfect fit', () => {
+			const result = engine.execute('.linreg 1,2,3,4,5 : 1,3,2,4,5');
+
+			expect(result.success).toBe(true);
+			expect(result.output).toContain('R²');
+			// R² should be less than 1 for non-perfect fit
+		});
+	});
+});
