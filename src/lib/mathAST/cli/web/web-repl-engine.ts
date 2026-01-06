@@ -19,6 +19,11 @@ import {
 	formatTreeHtml
 } from './output-formatter-web';
 import { toCustom, toLatex, getVariables, hasAllBindings, evaluate, substitute } from '../../index';
+import { evaluateWithUnits, DimensionalEvaluationError } from '../../eval/evaluate-with-units';
+import type { EvalResultWithUnit, UnitConversionMode } from '../../eval/types';
+import { isUnit } from '../../guards';
+import { parse as parseUnit } from '../../units/parser';
+import { getConversionFactor } from '../../units/conversion';
 
 // =============================================================================
 // Web REPL Engine
@@ -57,6 +62,8 @@ export class WebReplEngine {
 	private inputMode: ReplInputMode = 'auto';
 	private lastAst: MathNode | undefined;
 	private evalState: EvalState;
+	private unitConversionMode: UnitConversionMode = 'first';
+	private lastUnitResult: EvalResultWithUnit | undefined;
 
 	constructor() {
 		this.registry = createDefaultRegistry();
@@ -210,6 +217,38 @@ export class WebReplEngine {
 		return this.evalState;
 	}
 
+	/**
+	 * Get the unit conversion mode for unit-aware evaluation.
+	 *
+	 * @returns Current unit conversion mode ('first', 'si', or 'best')
+	 */
+	getUnitConversionMode(): UnitConversionMode {
+		return this.unitConversionMode;
+	}
+
+	/**
+	 * Set the unit conversion mode for unit-aware evaluation.
+	 *
+	 * @param mode - The conversion mode to use:
+	 *   - 'first': Convert to the first unit encountered (default)
+	 *   - 'si': Normalize to SI base units
+	 *   - 'best': Choose the most human-readable unit
+	 */
+	setUnitConversionMode(mode: UnitConversionMode): void {
+		this.unitConversionMode = mode;
+	}
+
+	/**
+	 * Get the last unit-aware evaluation result.
+	 *
+	 * Used by the .convert command to convert the last result to a different unit.
+	 *
+	 * @returns Last unit evaluation result, or undefined if none
+	 */
+	getLastUnitResult(): EvalResultWithUnit | undefined {
+		return this.lastUnitResult;
+	}
+
 	// ===========================================================================
 	// Private Execution Handlers
 	// ===========================================================================
@@ -246,6 +285,38 @@ export class WebReplEngine {
 				output: 'Input mode: Auto-detect',
 				outputHtml: formatSuccessHtml('Input mode: Auto-detect')
 			};
+		}
+
+		// Handle unit conversion mode commands
+		if (cmdName === 'unitmode') {
+			const mode = args.toLowerCase();
+			if (mode === 'first' || mode === 'si' || mode === 'best') {
+				this.unitConversionMode = mode;
+				return {
+					success: true,
+					output: `Unit conversion mode: ${mode}`,
+					outputHtml: formatSuccessHtml(
+						`Unit conversion mode: <span class="text-blue-400">${mode}</span>`
+					)
+				};
+			}
+			return {
+				success: false,
+				output: 'Usage: .unitmode first|si|best',
+				outputHtml: formatErrorHtml({
+					code: 'INVALID_OPTIONS',
+					message: 'Usage: .unitmode first|si|best'
+				}),
+				error: {
+					code: 'INVALID_OPTIONS',
+					message: 'Invalid unit mode. Use: first, si, or best'
+				}
+			};
+		}
+
+		// Handle .convert command
+		if (cmdName === 'convert') {
+			return this.executeConvertCommand(args);
 		}
 
 		// Look up command in registry
@@ -512,8 +583,17 @@ export class WebReplEngine {
 			// Substitute variables
 			const substituted = substitute(ast, bindings);
 
-			// Evaluate using current mode
+			// Check if expression contains units
+			const hasUnits = this.expressionHasUnits(substituted);
+
+			if (hasUnits) {
+				// Use unit-aware evaluation
+				return this.createUnitAwareResult(substituted, bindingsStr);
+			}
+
+			// Evaluate using current mode (no units)
 			const evalResult = evaluate(substituted, { mode: this.evalState.mode });
+			this.lastUnitResult = undefined; // Clear last unit result
 
 			// Format the result
 			const resultStr = toCustom(evalResult.node);
@@ -550,6 +630,11 @@ export class WebReplEngine {
 				ast: evalResult.node
 			};
 		} catch (err) {
+			// Handle dimensional errors with pedagogical messages
+			if (err instanceof DimensionalEvaluationError) {
+				return this.createDimensionalErrorResult(err);
+			}
+
 			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
 			return {
 				success: false,
@@ -566,9 +651,309 @@ export class WebReplEngine {
 		}
 	}
 
+	/**
+	 * Execute the .convert command to convert the last result to a different unit.
+	 */
+	private executeConvertCommand(targetUnitStr: string): ReplExecutionResult {
+		// Check if we have a last unit result
+		if (!this.lastUnitResult) {
+			return {
+				success: false,
+				output:
+					"Aucune expression avec unites a convertir. Evaluez d'abord une expression avec des unites.",
+				outputHtml: formatErrorHtml({
+					code: 'NO_AST',
+					message: 'Aucune expression avec unites a convertir',
+					suggestion: "Evaluez d'abord une expression avec des unites, ex: 5 km + 3000 m"
+				}),
+				error: {
+					code: 'NO_AST',
+					message: 'No unit result to convert'
+				}
+			};
+		}
+
+		if (!targetUnitStr.trim()) {
+			return {
+				success: false,
+				output: 'Usage: .convert <unite>\nExemple: .convert m',
+				outputHtml: formatErrorHtml({
+					code: 'INVALID_OPTIONS',
+					message: 'Usage: .convert <unite>',
+					suggestion: 'Exemple: .convert m'
+				}),
+				error: {
+					code: 'INVALID_OPTIONS',
+					message: 'Target unit is required'
+				}
+			};
+		}
+
+		try {
+			// Parse the target unit
+			const targetUnit = parseUnit(targetUnitStr.trim());
+
+			if (!targetUnit) {
+				return {
+					success: false,
+					output: `Unite inconnue: ${targetUnitStr}`,
+					outputHtml: formatErrorHtml({
+						code: 'UNKNOWN_UNIT',
+						message: `Unite inconnue: ${targetUnitStr}`,
+						suggestion: 'Utilisez un symbole valide comme m, km, s, kg, etc.'
+					}),
+					error: {
+						code: 'UNKNOWN_UNIT',
+						message: `Unknown unit: ${targetUnitStr}`
+					}
+				};
+			}
+
+			// Check dimensional compatibility
+			const factor = getConversionFactor(this.lastUnitResult.unit, targetUnit);
+
+			if (factor === null) {
+				// Incompatible units
+				const sourceUnitStr =
+					this.lastUnitResult.unit.original || this.formatUnitComponents(this.lastUnitResult.unit);
+				return {
+					success: false,
+					output: `Impossible de convertir ${sourceUnitStr} en ${targetUnitStr}: dimensions incompatibles`,
+					outputHtml: formatErrorHtml({
+						code: 'DIMENSION_MISMATCH',
+						message: `Impossible de convertir ${sourceUnitStr} en ${targetUnitStr}`,
+						suggestion:
+							'Les unites doivent avoir des dimensions compatibles (ex: longueur vers longueur)'
+					}),
+					error: {
+						code: 'DIMENSION_MISMATCH',
+						message: 'Incompatible dimensions'
+					}
+				};
+			}
+
+			// Convert the value
+			const sourceValue = this.getNumericValue(this.lastUnitResult.value);
+
+			const convertedValue = sourceValue * factor;
+			const resultStr = `${convertedValue} ${targetUnitStr}`;
+
+			// Build output
+			const sourceUnitStr =
+				this.lastUnitResult.unit.original || this.formatUnitComponents(this.lastUnitResult.unit);
+			const lines = [
+				`Converted: ${sourceValue} ${sourceUnitStr} → ${resultStr}`,
+				`Factor: ${factor}`
+			];
+			const output = lines.join('\n');
+
+			// HTML output
+			const htmlLines = [
+				`<strong>Converted:</strong> <span class="text-gray-400">${sourceValue} ${this.escapeHtml(sourceUnitStr)}</span> → <span class="text-cyan-400">${this.escapeHtml(resultStr)}</span>`,
+				`<span class="text-gray-400">Factor:</span> ${factor}`
+			];
+			const outputHtml = htmlLines.join('<br>');
+
+			return {
+				success: true,
+				output,
+				outputHtml
+			};
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Unknown error during conversion';
+			return {
+				success: false,
+				output: `Conversion error: ${message}`,
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: `Conversion error: ${message}`
+				}),
+				error: {
+					code: 'PARSE_ERROR',
+					message
+				}
+			};
+		}
+	}
+
+	// ===========================================================================
+	// Unit-Aware Evaluation Helpers
+	// ===========================================================================
+
+	/**
+	 * Check if an expression contains any unit nodes.
+	 */
+	private expressionHasUnits(node: MathNode): boolean {
+		if (isUnit(node)) {
+			return true;
+		}
+
+		// Check children based on node type
+		switch (node.type) {
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+				return this.expressionHasUnits(node.left) || this.expressionHasUnits(node.right);
+			case 'division':
+				return this.expressionHasUnits(node.numerator) || this.expressionHasUnits(node.denominator);
+			case 'superscript':
+				return this.expressionHasUnits(node.base) || this.expressionHasUnits(node.superscript);
+			case 'subscript':
+				return this.expressionHasUnits(node.base) || this.expressionHasUnits(node.subscript);
+			case 'opposite':
+			case 'positive':
+				return this.expressionHasUnits(node.operand);
+			case 'delimiter':
+				return this.expressionHasUnits(node.content);
+			case 'function':
+				return node.args.some((arg) => this.expressionHasUnits(arg));
+			case 'relation':
+				return this.expressionHasUnits(node.left) || this.expressionHasUnits(node.right);
+			case 'composition':
+				return this.expressionHasUnits(node.outer) || this.expressionHasUnits(node.inner);
+			default:
+				return false;
+		}
+	}
+
+	/**
+	 * Create evaluation result for expression with units.
+	 */
+	private createUnitAwareResult(ast: MathNode, bindingsStr: string): ReplExecutionResult {
+		// Evaluate with units
+		const evalResult = evaluateWithUnits(ast, {
+			mode: this.evalState.mode,
+			conversionMode: this.unitConversionMode
+		});
+
+		// Store for .convert command
+		this.lastUnitResult = evalResult;
+
+		// Format value
+		const valueNum = this.getNumericValue(evalResult.value);
+
+		// Format unit string (use original if available)
+		const unitStr = evalResult.unit.original || this.formatUnitComponents(evalResult.unit);
+
+		// Format result
+		const resultStr = `${valueNum} ${unitStr}`;
+		const latexStr = toLatex(evalResult.node);
+		const exactStr = evalResult.exact ? '(exact)' : '(approximate)';
+
+		// Build output
+		const lines: string[] = [];
+		if (bindingsStr) {
+			lines.push(`Evaluating with: ${bindingsStr}`);
+		}
+		lines.push(`Result: ${resultStr} ${exactStr}`);
+		lines.push(`LaTeX:  ${latexStr}`);
+		lines.push(`Mode:   ${this.unitConversionMode}`);
+		const output = lines.join('\n');
+
+		// Build HTML output
+		const exactClass = evalResult.exact ? 'text-green-400' : 'text-yellow-400';
+		const htmlLines: string[] = [];
+		if (bindingsStr) {
+			htmlLines.push(
+				`<span class="text-gray-400">Evaluating with:</span> ${this.escapeHtml(bindingsStr)}`
+			);
+		}
+		htmlLines.push(
+			`<strong>Result:</strong> <span class="text-cyan-400">${this.escapeHtml(resultStr)}</span> <span class="${exactClass}">${exactStr}</span>`
+		);
+		htmlLines.push(`<span class="text-gray-400">LaTeX:</span>  ${this.escapeHtml(latexStr)}`);
+		htmlLines.push(
+			`<span class="text-gray-400">Mode:</span>   <span class="text-blue-400">${this.unitConversionMode}</span>`
+		);
+		const outputHtml = htmlLines.join('<br>');
+
+		return {
+			success: true,
+			output,
+			outputHtml,
+			ast: evalResult.node,
+			latex: latexStr
+		};
+	}
+
+	/**
+	 * Format unit components as string (fallback when no original).
+	 */
+	private formatUnitComponents(unit: { components: ReadonlyMap<string, number> }): string {
+		const parts: string[] = [];
+		const negativeParts: string[] = [];
+
+		for (const [symbol, exponent] of unit.components) {
+			if (exponent > 0) {
+				parts.push(exponent === 1 ? symbol : `${symbol}^${exponent}`);
+			} else if (exponent < 0) {
+				negativeParts.push(exponent === -1 ? symbol : `${symbol}^${-exponent}`);
+			}
+		}
+
+		if (negativeParts.length === 0) {
+			return parts.join('·') || '1';
+		}
+		if (parts.length === 0) {
+			return `1/${negativeParts.join('·')}`;
+		}
+		return `${parts.join('·')}/${negativeParts.join('·')}`;
+	}
+
+	/**
+	 * Create pedagogical error result for dimensional errors.
+	 */
+	private createDimensionalErrorResult(err: DimensionalEvaluationError): ReplExecutionResult {
+		const mainMessage = err.message;
+
+		// Build pedagogical suggestions
+		const suggestions: string[] = [];
+		for (const e of err.errors) {
+			if (e.code === 'DIMENSION_MISMATCH') {
+				suggestions.push('💡 Verifiez que les unites sont compatibles pour cette operation.');
+				suggestions.push(
+					'   Par exemple: on peut additionner des metres et des kilometres, mais pas des metres et des secondes.'
+				);
+			} else if (e.code === 'INCOMPATIBLE_DIMENSIONS') {
+				suggestions.push(`💡 ${e.message}`);
+			} else {
+				suggestions.push(`💡 ${e.message}`);
+			}
+		}
+
+		const output = [mainMessage, '', ...suggestions].join('\n');
+
+		// HTML output with styling
+		const htmlLines = [
+			`<span class="text-red-400 font-bold">Erreur dimensionnelle</span>`,
+			`<span class="text-red-300">${this.escapeHtml(mainMessage)}</span>`,
+			'<br>',
+			...suggestions.map((s) => `<span class="text-yellow-400">${this.escapeHtml(s)}</span>`)
+		];
+		const outputHtml = htmlLines.join('<br>');
+
+		return {
+			success: false,
+			output,
+			outputHtml,
+			error: {
+				code: 'DIMENSION_ERROR',
+				message: mainMessage
+			}
+		};
+	}
+
 	// ===========================================================================
 	// Helper Methods
 	// ===========================================================================
+
+	/**
+	 * Extract numeric value from Rational or number.
+	 */
+	private getNumericValue(value: { n: bigint; d: bigint } | number): number {
+		if (typeof value === 'number') return value;
+		return Number(value.n) / Number(value.d);
+	}
 
 	/**
 	 * Type guard to check if an object is error-like (has code and/or message).
