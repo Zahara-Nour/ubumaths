@@ -267,3 +267,57 @@ describe('evaluateWithUnits - exact mode', () => {
 		expect(toNumber(result.value)).toBeCloseTo(1 / 3, 10);
 	});
 });
+
+// =============================================================================
+// Edge Cases Tests
+// =============================================================================
+
+describe('evaluateWithUnits - edge cases', () => {
+	describe('zero and near-zero values', () => {
+		it('best mode handles zero value: 0 km stays in base unit', () => {
+			const expr = quantity('0', 'km');
+			const result = evaluateWithUnits(expr, { conversionMode: 'best' });
+
+			expect(toNumber(result.value)).toBe(0);
+			// Zero values stay in SI base unit
+			expect(result.unit.coefficient).toBe(1);
+		});
+
+		it('best mode handles near-zero value: 1e-12 m stays in base unit', () => {
+			const expr = quantity('1e-12', 'm');
+			const result = evaluateWithUnits(expr, { conversionMode: 'best' });
+
+			const value = toNumber(result.value);
+			// Value is too small to convert meaningfully
+			expect(value).toBeCloseTo(1e-12, 15);
+		});
+
+		it('si mode handles zero correctly: 0 km = 0 m', () => {
+			const expr = quantity('0', 'km');
+			const result = evaluateWithUnits(expr, { conversionMode: 'si' });
+
+			expect(toNumber(result.value)).toBe(0);
+			expect(result.unit.coefficient).toBe(1);
+		});
+	});
+
+	describe('complex expressions in units', () => {
+		it('handles addition inside unit: (2+3) km in SI mode = 5000 m', () => {
+			const innerExpr = add(number('2'), number('3'));
+			const expr = withUnit(innerExpr, UnitAST.unit('km')!);
+			const result = evaluateWithUnits(expr, { conversionMode: 'si' });
+
+			expect(toNumber(result.value)).toBeCloseTo(5000, 5);
+			expect(result.unit.coefficient).toBe(1); // m
+		});
+
+		it('handles multiplication inside unit: (2*3) m in first mode', () => {
+			const innerExpr = multiply(number('2'), number('3'));
+			const expr = withUnit(innerExpr, UnitAST.unit('m')!);
+			const result = evaluateWithUnits(expr, { conversionMode: 'first' });
+
+			expect(toNumber(result.value)).toBe(6);
+			expect(result.unit.components.get('m')).toBe(1);
+		});
+	});
+});
