@@ -476,6 +476,18 @@ export const UNIT_FAMILIES: Readonly<Record<string, readonly string[]>> = {
 	// Angle (radian-based)
 	rad: ['rad', '°'],
 
+	// Electric current (ampere-based)
+	A: ['kA', 'A', 'mA', 'μA', 'nA'],
+
+	// Amount of substance (mole-based)
+	mol: ['mol', 'mmol', 'μmol', 'nmol'],
+
+	// Temperature (kelvin - no common alternatives in SI)
+	K: ['K'],
+
+	// Luminous intensity (candela - no common alternatives)
+	cd: ['cd'],
+
 	// Currency
 	'€': ['€'],
 	$: ['$']
@@ -493,7 +505,8 @@ export const UNIT_FAMILIES: Readonly<Record<string, readonly string[]>> = {
  * @example
  * getUnitFamily('m')  // ['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm', 'μm', 'nm']
  * getUnitFamily('g')  // ['t', 'q', 'kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg', 'μg']
- * getUnitFamily('A')  // ['A'] (no family defined, returns just the base)
+ * getUnitFamily('A')  // ['kA', 'A', 'mA', 'μA', 'nA']
+ * getUnitFamily('xyz')  // ['xyz'] (unknown unit, returns just the symbol)
  */
 export function getUnitFamily(baseSymbol: string): readonly string[] {
 	return UNIT_FAMILIES[baseSymbol] ?? [baseSymbol];
