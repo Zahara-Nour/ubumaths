@@ -1001,7 +1001,13 @@ export class WebReplEngine {
 	 * adding HTML formatting and preserving AST.
 	 */
 	private commandResultToReplResult(
-		cmdResult: { output: string; success: boolean; error?: unknown; ast?: MathNode },
+		cmdResult: {
+			output: string;
+			success: boolean;
+			error?: unknown;
+			ast?: MathNode;
+			outputHtml?: string;
+		},
 		ast?: MathNode
 	): ReplExecutionResult {
 		if (!cmdResult.success && cmdResult.error) {
@@ -1018,6 +1024,16 @@ export class WebReplEngine {
 					code: errorCode,
 					message: errorMessage
 				}
+			};
+		}
+
+		// Use provided HTML output if available (e.g., from help command)
+		if (cmdResult.outputHtml) {
+			return {
+				success: true,
+				output: cmdResult.output,
+				outputHtml: cmdResult.outputHtml,
+				ast: cmdResult.ast || ast
 			};
 		}
 
