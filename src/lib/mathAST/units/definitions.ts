@@ -170,6 +170,36 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 			name: 'jour'
 		}
 	],
+	[
+		'semaine',
+		{
+			symbol: 'semaine',
+			baseSymbol: 's',
+			coefficient: 604800,
+			dimension: 'time',
+			name: 'semaine'
+		}
+	],
+	[
+		'mois',
+		{
+			symbol: 'mois',
+			baseSymbol: 's',
+			coefficient: 2592000,
+			dimension: 'time',
+			name: 'mois'
+		}
+	],
+	[
+		'an',
+		{
+			symbol: 'an',
+			baseSymbol: 's',
+			coefficient: 31536000,
+			dimension: 'time',
+			name: 'année'
+		}
+	],
 
 	// =========== MASS UNITS ===========
 	[
@@ -263,18 +293,42 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
  * UNIT_ALIASES.get('minute') // 'min'
  */
 export const UNIT_ALIASES: ReadonlyMap<string, string> = new Map([
+	// Currency
 	['euro', '€'],
+	['euros', '€'],
+	['EUR', '€'],
 	['dollar', '$'],
-	['minute', 'min'],
-	['heure', 'h'],
-	['jour', 'j'],
+
+	// Volume
 	['litre', 'L'],
+	['litres', 'L'],
+	['l', 'L'],
+
+	// Time (full names and plurals)
+	['minute', 'min'],
+	['mins', 'min'],
+	['heure', 'h'],
+	['heures', 'h'],
+	['jour', 'j'],
+	['jours', 'j'],
+	['semaines', 'semaine'],
+	['ans', 'an'],
+
+	// Base units (French names)
 	['metre', 'm'],
 	['gramme', 'g'],
 	['seconde', 's'],
+
+	// Angle
 	['degré', 'deg'],
+	['degres', '°'],
 	['degree', 'deg'],
-	['l', 'L'],
+	['degrees', '°'],
+
+	// Micro (ASCII alternative)
+	['u', 'μ'],
+
+	// Other
 	['ohm', 'Ω']
 ]);
 

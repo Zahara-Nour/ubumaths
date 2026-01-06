@@ -8,196 +8,64 @@
  * - HMS (Hours-Minutes-Seconds) time format
  * - Dimensional analysis
  *
+ * MIGRATION NOTE: Base types (Unit, Dimension, BaseUnitDef) are now imported
+ * from mathAST/units which is the source of truth. This module re-exports them
+ * and adds question-specific types (Quantity, HMS, validation results, etc.)
+ *
  * @module questions/units/types
  */
 
 // ============================================================================
-// PHYSICAL DIMENSIONS
+// RE-EXPORTS FROM MATHAST (source of truth)
+// ============================================================================
+
+// Re-export base types from mathAST/units
+export type { Unit, Dimension, BaseUnitDef } from '$lib/mathAST/units/types';
+
+// Import Unit type for use in this module's type definitions
+import type { Unit } from '$lib/mathAST/units/types';
+
+// ============================================================================
+// MUTABLE UNIT (for internal operations that need mutability)
 // ============================================================================
 
 /**
- * Physical dimensions for dimensional analysis
+ * Mutable version of Unit for internal operations
  *
- * Based on SI base quantities plus common derived/practical dimensions.
+ * Some parsing and manipulation operations need to build units incrementally.
+ * This type allows mutation during construction, before converting to immutable Unit.
  *
- * @example
- * const lengthDim: Dimension = 'length';     // meters, kilometers, etc.
- * const massDim: Dimension = 'mass';         // kilograms, grams, etc.
- * const timeDim: Dimension = 'time';         // seconds, hours, etc.
- * const volumeDim: Dimension = 'volume';     // liters (derived from length^3)
- * const currencyDim: Dimension = 'currency'; // euros, dollars (non-physical)
+ * @internal
  */
-export type Dimension =
-	| 'length' // SI: meter (m)
-	| 'mass' // SI: kilogram (kg)
-	| 'time' // SI: second (s)
-	| 'electric_current' // SI: ampere (A)
-	| 'temperature' // SI: kelvin (K)
-	| 'amount' // SI: mole (mol)
-	| 'luminous_intensity' // SI: candela (cd)
-	| 'volume' // Derived: liter (L) - special case for convenience
-	| 'currency' // Non-physical: euro, dollar
-	| 'angle' // Plane angle: radian, degree
-	| 'dimensionless'; // Pure numbers, ratios, percentages
-
-// ============================================================================
-// BASE UNIT DEFINITION
-// ============================================================================
-
-/**
- * Base unit definition with conversion information
- *
- * Defines a single unit (possibly with SI prefix) and how to convert
- * it to the reference base unit for its dimension.
- *
- * @example Kilometer (length)
- * const km: BaseUnitDef = {
- *   symbol: 'km',
- *   name: 'kilometre',
- *   dimension: 'length',
- *   coefficient: 1000,    // 1 km = 1000 m
- *   baseSymbol: 'm'
- * };
- *
- * @example Millisecond (time)
- * const ms: BaseUnitDef = {
- *   symbol: 'ms',
- *   name: 'milliseconde',
- *   dimension: 'time',
- *   coefficient: 0.001,   // 1 ms = 0.001 s
- *   baseSymbol: 's'
- * };
- *
- * @example Liter with alias (volume)
- * const L: BaseUnitDef = {
- *   symbol: 'L',
- *   name: 'litre',
- *   dimension: 'length',   // Volume units use length dimension with power 3
- *   coefficient: 0.1,      // Coefficient in dm for volume calculations
- *   baseSymbol: 'm',
- *   aliases: ['l']         // Alternative lowercase symbol
- * };
- */
-export interface BaseUnitDef {
-	/**
-	 * Display symbol for the unit
-	 * Examples: 'km', 'm', 'cm', 'mm', 'kg', 'g', 'mg', 's', 'ms', 'L', 'mL'
-	 */
-	symbol: string;
-
-	/**
-	 * Full name of the unit (typically in French for this application)
-	 * Examples: 'metre', 'kilometre', 'gramme', 'seconde', 'litre'
-	 */
-	name: string;
-
-	/**
-	 * Physical dimension this unit measures
-	 */
-	dimension: Dimension;
-
-	/**
-	 * Conversion coefficient to the base unit
-	 * value_in_base = value_in_this_unit * coefficient
-	 *
-	 * Examples:
-	 * - km -> m: coefficient = 1000
-	 * - cm -> m: coefficient = 0.01
-	 * - g -> kg: coefficient = 0.001
-	 */
+export interface MutableUnit {
+	components: Map<string, number>;
 	coefficient: number;
-
-	/**
-	 * Reference base unit symbol for this dimension
-	 * This is the unit to which all units of the same dimension are converted.
-	 * Examples: 'm' for length, 'g' for mass, 's' for time, 'L' for volume
-	 */
-	baseSymbol: string;
-
-	/**
-	 * Alternative symbols for this unit (optional)
-	 * Examples: ['l'] for 'L' (liter), ['°'] for 'deg' (degree)
-	 */
-	aliases?: string[];
 }
 
-// ============================================================================
-// COMPOSITE UNIT
-// ============================================================================
+/**
+ * Convert a MutableUnit to an immutable Unit
+ *
+ * @param mutable - The mutable unit to convert
+ * @returns An immutable Unit
+ */
+export function toImmutableUnit(mutable: MutableUnit): Unit {
+	return {
+		components: mutable.components,
+		coefficient: mutable.coefficient
+	};
+}
 
 /**
- * Unit representation supporting both simple and composite units
+ * Convert an immutable Unit to a MutableUnit
  *
- * A unit is represented as a product of base units with integer exponents.
- * The coefficient handles any scaling factor from prefixes or derived units.
- *
- * Components map: base symbol -> exponent
- * - Positive exponent: unit in numerator
- * - Negative exponent: unit in denominator
- * - Exponent = 0: unit cancels out (removed from map)
- *
- * @example Simple unit: meters
- * const meter: Unit = {
- *   components: new Map([['m', 1]]),
- *   coefficient: 1
- * };
- *
- * @example With prefix: kilometers
- * const kilometer: Unit = {
- *   components: new Map([['m', 1]]),
- *   coefficient: 1000  // 1 km = 1000 m
- * };
- *
- * @example Square meters
- * const squareMeter: Unit = {
- *   components: new Map([['m', 2]]),
- *   coefficient: 1
- * };
- *
- * @example Velocity: m/s
- * const velocity: Unit = {
- *   components: new Map([['m', 1], ['s', -1]]),
- *   coefficient: 1
- * };
- *
- * @example Acceleration: m/s^2 (or m*s^-2)
- * const acceleration: Unit = {
- *   components: new Map([['m', 1], ['s', -2]]),
- *   coefficient: 1
- * };
- *
- * @example Energy: kg*m^2/s^2 (Joule)
- * const joule: Unit = {
- *   components: new Map([['kg', 1], ['m', 2], ['s', -2]]),
- *   coefficient: 1
- * };
- *
- * @example Velocity in km/h
- * const kmPerHour: Unit = {
- *   components: new Map([['m', 1], ['s', -1]]),
- *   coefficient: 1000 / 3600  // 1 km/h = (1000/3600) m/s
- * };
+ * @param unit - The immutable unit to convert
+ * @returns A mutable copy
  */
-export interface Unit {
-	/**
-	 * Map of base unit symbols to their exponents
-	 *
-	 * Keys are base unit symbols (e.g., 'm', 'kg', 's')
-	 * Values are integer exponents (positive, negative, or fractional for roots)
-	 *
-	 * Empty map represents a dimensionless unit.
-	 */
-	components: Map<string, number>;
-
-	/**
-	 * Total conversion factor to SI base units
-	 *
-	 * When converting a quantity to base units:
-	 * value_in_base = value * coefficient
-	 *
-	 * This factor combines all prefix scalings and derived unit conversions.
-	 */
-	coefficient: number;
+export function toMutableUnit(unit: Unit): MutableUnit {
+	return {
+		components: new Map(unit.components),
+		coefficient: unit.coefficient
+	};
 }
 
 // ============================================================================
@@ -532,6 +400,9 @@ export type ConversionResult =
 // ============================================================================
 // DIMENSION MAP
 // ============================================================================
+
+// Import Dimension type for DimensionMap
+import type { Dimension } from '$lib/mathAST/units/types';
 
 /**
  * Dimensional signature of a unit
