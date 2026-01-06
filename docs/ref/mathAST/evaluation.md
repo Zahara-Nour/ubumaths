@@ -8,6 +8,7 @@ The evaluation system provides:
 
 - **Substitution**: Replace variables with values or expressions
 - **Evaluation**: Compute numeric results
+- **Unit-aware evaluation**: Evaluate with unit propagation and validation
 - **Function bindings**: Define custom functions
 - **Exact arithmetic**: BigInt-based rational numbers
 
@@ -375,8 +376,163 @@ try {
 }
 ```
 
+## Unit-Aware Evaluation
+
+Evaluate expressions with unit propagation and dimensional validation.
+
+### Basic Usage
+
+```typescript
+import { evaluateWithUnits } from '$lib/mathAST';
+
+// Simple quantity
+const expr = parseLatex('5~\\unit{km}');
+const result = evaluateWithUnits(expr);
+// result.value = 5
+// result.unit = km (coefficient: 1000)
+
+// Addition with same units
+const sum = parseLatex('5~\\unit{m} + 3~\\unit{m}');
+const result2 = evaluateWithUnits(sum);
+// result2.value = 8
+// result2.unit = m
+```
+
+### Conversion Modes
+
+Three modes control how units are converted:
+
+```typescript
+type UnitConversionMode = 'first' | 'si' | 'best';
+```
+
+#### Mode 'first' (default)
+
+Converts to the first unit encountered:
+
+```typescript
+const expr = parseLatex('5~\\unit{km} + 3000~\\unit{m}');
+evaluateWithUnits(expr, { conversionMode: 'first' });
+// value: 8, unit: km (first unit)
+
+const expr2 = parseLatex('500~\\unit{m} + 2~\\unit{km}');
+evaluateWithUnits(expr2, { conversionMode: 'first' });
+// value: 2500, unit: m (first unit)
+```
+
+#### Mode 'si'
+
+Normalizes to SI base units:
+
+```typescript
+const expr = parseLatex('5~\\unit{km} + 3000~\\unit{m}');
+evaluateWithUnits(expr, { conversionMode: 'si' });
+// value: 8000, unit: m (SI base)
+
+const time = parseLatex('1~\\unit{h} + 30~\\unit{min}');
+evaluateWithUnits(time, { conversionMode: 'si' });
+// value: 5400, unit: s (SI base)
+```
+
+#### Mode 'best'
+
+Chooses the most readable unit (value in range 0.1-1000):
+
+```typescript
+const expr = parseLatex('0.005~\\unit{km} + 3~\\unit{m}');
+evaluateWithUnits(expr, { conversionMode: 'best' });
+// value: 8, unit: m (more readable than 0.008 km)
+
+const large = parseLatex('5000~\\unit{m}');
+evaluateWithUnits(large, { conversionMode: 'best' });
+// value: 5, unit: km (more readable than 5000 m)
+```
+
+### Derived Units
+
+Multiplication and division create derived units:
+
+```typescript
+// Area: m * m = m^2
+const area = parseLatex('4~\\unit{m} \\times 3~\\unit{m}');
+const result = evaluateWithUnits(area);
+// value: 12, unit: m^2
+
+// Velocity: m / s = m.s^-1
+const velocity = parseLatex('100~\\unit{m} / 10~\\unit{s}');
+const result2 = evaluateWithUnits(velocity);
+// value: 10, unit: m/s
+
+// Dimensionless: m / m = 1
+const ratio = parseLatex('10~\\unit{m} / 2~\\unit{m}');
+const result3 = evaluateWithUnits(ratio);
+// value: 5, unit: dimensionless
+```
+
+### Error Handling
+
+Throws `DimensionalEvaluationError` for incompatible units:
+
+```typescript
+import { evaluateWithUnits, DimensionalEvaluationError } from '$lib/mathAST';
+
+try {
+	// Cannot add meters and seconds
+	evaluateWithUnits(parseLatex('5~\\unit{m} + 3~\\unit{s}'));
+} catch (e) {
+	if (e instanceof DimensionalEvaluationError) {
+		console.error(e.message);
+		// Access structured errors
+		e.errors.forEach(({ code, message }) => {
+			console.error(`${code}: ${message}`);
+		});
+	}
+}
+```
+
+### Result Type
+
+```typescript
+interface EvalResultWithUnit {
+	value: Rational | number; // Computed value
+	node: MathNode; // Result as AST
+	exact: boolean; // True if no approximation
+	unit: Unit; // Result unit (always present)
+	originalUnit?: Unit; // Original unit if converted
+}
+```
+
+### Options
+
+```typescript
+interface EvalWithUnitsOptions {
+	mode?: 'exact' | 'decimal'; // Arithmetic mode
+	precision?: number; // Decimal precision
+	conversionMode?: 'first' | 'si' | 'best'; // Unit conversion
+	variableUnits?: Map<string, Unit>; // Units for variables
+	functions?: FunctionBindings; // Custom functions
+}
+```
+
+### With Functions
+
+Unit-aware evaluation works with functions:
+
+```typescript
+// sqrt halves exponents: sqrt(m^2) = m
+const expr = parseLatex('\\sqrt{4~\\unit{m}^2}');
+const result = evaluateWithUnits(expr);
+// value: 2, unit: m
+
+// abs preserves units
+const expr2 = parseLatex('|{-5}|~\\unit{m}');
+const result2 = evaluateWithUnits(expr2);
+// value: 5, unit: m
+```
+
 ## See Also
 
+- [Units System](./units.md) - Unit representation and conversion
 - [Pattern Matching](./patterns.md) - Symbolic pattern matching
 - [Normalization](./normalization.md) - Canonical form conversion
 - [Calculus](./calculus.md) - Differentiation and Taylor series
