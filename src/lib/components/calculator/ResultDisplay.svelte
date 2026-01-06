@@ -1,16 +1,26 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
-	import { Copy, ChevronDown, AlertCircle, Lightbulb, TrendingUp } from 'lucide-svelte';
+	import { Copy, ChevronDown, AlertCircle, Lightbulb, TrendingUp, Loader2 } from 'lucide-svelte';
 	import type { CalculationResult } from '$lib/stores/calculator.svelte';
+	import StepsDisplay from './StepsDisplay.svelte';
+	import {
+		generateSteps,
+		canGenerateSteps,
+		suggestLevel,
+		type StepGenerationResult,
+		type SchoolLevel
+	} from '$lib/mathAST/step-generator';
+	import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 
 	interface Props {
 		result: CalculationResult;
 		onCopy?: () => void;
 		onPlot?: (expression: string) => void;
+		schoolLevel?: SchoolLevel;
 	}
 
-	let { result, onCopy, onPlot }: Props = $props();
+	let { result, onCopy, onPlot, schoolLevel = 'college' }: Props = $props();
 
 	/**
 	 * Check if the result is plottable (contains a free variable 'x')
@@ -30,8 +40,56 @@
 		}
 	}
 
-	// State for steps expansion (disabled for now)
+	// State for steps
 	let showSteps = $state(false);
+	let stepsResult = $state<StepGenerationResult | null>(null);
+	let stepsError = $state<string | null>(null);
+	let isGeneratingSteps = $state(false);
+
+	/**
+	 * Check if steps can be generated for this result
+	 */
+	function canShowSteps(): boolean {
+		if (result.isError) return false;
+		// Commands start with '.' - can't generate steps for them
+		if (result.input.trim().startsWith('.')) return false;
+		return true;
+	}
+
+	/**
+	 * Toggle steps display and generate if needed
+	 */
+	async function toggleSteps() {
+		if (showSteps) {
+			showSteps = false;
+			return;
+		}
+
+		// Generate steps if not already done
+		if (!stepsResult && !stepsError) {
+			isGeneratingSteps = true;
+			try {
+				// Parse the input expression
+				const parseResult = parseCustomSafe(result.input);
+				if (!parseResult.ast) {
+					stepsError = 'Impossible de parser cette expression';
+				} else if (!canGenerateSteps(parseResult.ast)) {
+					stepsError = "Pas d'étapes pour ce calcul simple";
+				} else {
+					// Suggest level based on complexity or use provided level
+					const level = schoolLevel || suggestLevel(parseResult.ast);
+					stepsResult = generateSteps(parseResult.ast, { level });
+				}
+			} catch (err) {
+				stepsError = 'Erreur lors de la génération des étapes';
+				console.error('Step generation error:', err);
+			} finally {
+				isGeneratingSteps = false;
+			}
+		}
+
+		showSteps = true;
+	}
 
 	// Handle copy action
 	async function handleCopy() {
@@ -102,19 +160,25 @@
 				</Button>
 			{/if}
 
-			<!-- Steps button (disabled for Phase 5) -->
-			<Button
-				variant="ghost"
-				size="sm"
-				disabled
-				onclick={() => (showSteps = !showSteps)}
-				class="gap-1 text-muted-foreground"
-				aria-label="Afficher les etapes de calcul"
-				aria-expanded={showSteps}
-			>
-				<ChevronDown class={cn('h-4 w-4 transition-transform', showSteps && 'rotate-180')} />
-				<span class="hidden sm:inline">Etapes</span>
-			</Button>
+			<!-- Steps button -->
+			{#if canShowSteps()}
+				<Button
+					variant="ghost"
+					size="sm"
+					onclick={toggleSteps}
+					disabled={isGeneratingSteps}
+					class="gap-1 text-muted-foreground hover:text-foreground"
+					aria-label="Afficher les etapes de calcul"
+					aria-expanded={showSteps}
+				>
+					{#if isGeneratingSteps}
+						<Loader2 class="h-4 w-4 animate-spin" />
+					{:else}
+						<ChevronDown class={cn('h-4 w-4 transition-transform', showSteps && 'rotate-180')} />
+					{/if}
+					<span class="hidden sm:inline">Étapes</span>
+				</Button>
+			{/if}
 
 			<!-- Copy button -->
 			<Button
@@ -129,10 +193,16 @@
 		</div>
 	</div>
 
-	<!-- Steps panel (placeholder for Phase 5) -->
+	<!-- Steps panel -->
 	{#if showSteps}
 		<div class="mt-2 rounded-lg border border-border bg-muted/50 p-4">
-			<p class="text-sm text-muted-foreground">Les etapes de calcul seront disponibles bientot.</p>
+			{#if stepsError}
+				<p class="text-sm text-muted-foreground italic">{stepsError}</p>
+			{:else if stepsResult}
+				<StepsDisplay steps={stepsResult.steps} level={stepsResult.level} />
+			{:else}
+				<p class="text-sm text-muted-foreground">Chargement des étapes...</p>
+			{/if}
 		</div>
 	{/if}
 {/if}
