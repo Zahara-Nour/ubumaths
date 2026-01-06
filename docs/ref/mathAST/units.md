@@ -432,4 +432,4 @@ const keExpr = MathAST.withUnit(MathAST.number(String(ke)), joule);
 
 - [Types & Nodes](./types.md) - UnitNode definition
 - [Parsing](./parsing.md) - Unit syntax in expressions
-- [Evaluation](./evaluation.md) - Numeric computation with units
+- [Evaluation](./evaluation.md#unit-aware-evaluation) - `evaluateWithUnits()` for unit-aware computation
