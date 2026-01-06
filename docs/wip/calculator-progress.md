@@ -1,11 +1,48 @@
 # Calculator Implementation Progress
 
-## Current Status: Phase 1 Complete
+## Current Status: Phase 3 Complete
 
 **Date**: 2026-01-06
-**Commit**: `c1fe3d7a` - feat(calculator): implement Phase 1 - base calculator with MathLive input
+**Commit**: (pending) - feat(calculator): implement Phase 3 - Grapheur integration
 
 ## Completed Phases
+
+### Phase 3: Grapheur Integration
+
+**Files Modified**:
+
+- `src/lib/components/calculator/CalculatorContainer.svelte` - Added GrapheurContainer to graph tab
+- `src/lib/components/calculator/ResultDisplay.svelte` - Added "Tracer" button for plottable expressions
+
+**Features Implemented**:
+
+- GrapheurContainer integrated in Graphique tab
+- "Tracer" button on results containing variable `x`
+- Click "Tracer" adds function to grapheur and switches to graph tab
+- Context sharing between Calcul and Grapheur via grapheurStore
+
+**Tests**: All existing 89 tests still passing
+
+---
+
+### Phase 2: Unit Integration
+
+**Files Modified/Created**:
+
+- `src/lib/mathAST/cli/web/web-repl-engine.ts` - Added unit-aware evaluation
+- `src/lib/mathAST/cli/web/web-repl-engine.test.ts` - 45 tests
+
+**Features Implemented**:
+
+- `evaluateWithUnits` integration for expressions with units
+- `.convert` command to convert last result to target unit
+- `.unitmode` command to switch conversion modes (first/si/best)
+- Pedagogical error messages for dimensional mismatches (French)
+- Unit detection in expressions via AST traversal
+
+**Tests**: 45 passing
+
+---
 
 ### Phase 1: Base Calculator
 
@@ -46,18 +83,6 @@
 - Fixed event listener cleanup in MathField action
 
 ## Pending Phases
-
-### Phase 2: Unit Integration
-
-- Integrate `evaluateWithUnits` in WebReplEngine
-- Create `.convert` command
-- Display pedagogical errors for incompatible dimensions
-
-### Phase 3: Grapheur Integration
-
-- Add GrapheurContainer to Graphique tab
-- Share functions between Calcul and Grapheur
-- Add "Tracer" button on function results
 
 ### Phase 4: Statistics
 

@@ -6,7 +6,9 @@
 	import UnifiedInput from './UnifiedInput.svelte';
 	import ResultDisplay from './ResultDisplay.svelte';
 	import CalculatorKeyboard from './CalculatorKeyboard.svelte';
+	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { calculatorStore } from '$lib/stores/calculator.svelte';
+	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import { browser } from '$app/environment';
 
 	let activeTab = $state('calc');
@@ -89,6 +91,15 @@
 			}
 		}
 	}
+
+	/**
+	 * Trace une expression dans le grapheur
+	 * Ajoute la fonction au grapheurStore et bascule vers l'onglet Graphique
+	 */
+	function handlePlot(expression: string) {
+		grapheurStore.addFunction(expression);
+		activeTab = 'graph';
+	}
 </script>
 
 <Tabs.Root bind:value={activeTab} class="w-full">
@@ -109,7 +120,7 @@
 				<h3 class="text-sm font-medium text-muted-foreground">Historique</h3>
 				<div class="max-h-[300px] space-y-2 overflow-y-auto">
 					{#each calculatorStore.history as result (result.id)}
-						<ResultDisplay {result} />
+						<ResultDisplay {result} onPlot={handlePlot} />
 					{/each}
 				</div>
 			</div>
@@ -142,8 +153,8 @@
 	</Tabs.Content>
 
 	<Tabs.Content value="graph" class="mt-4">
-		<div class="rounded-lg border border-border bg-card p-6 text-card-foreground">
-			<p class="text-muted-foreground">Grapheur (Phase 3)</p>
+		<div class="h-[600px] rounded-lg border border-border">
+			<GrapheurContainer />
 		</div>
 	</Tabs.Content>
 </Tabs.Root>

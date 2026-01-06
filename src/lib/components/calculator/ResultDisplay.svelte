@@ -1,15 +1,34 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
-	import { Copy, ChevronDown, AlertCircle, Lightbulb } from 'lucide-svelte';
+	import { Copy, ChevronDown, AlertCircle, Lightbulb, TrendingUp } from 'lucide-svelte';
 	import type { CalculationResult } from '$lib/stores/calculator.svelte';
 
 	interface Props {
 		result: CalculationResult;
 		onCopy?: () => void;
+		onPlot?: (expression: string) => void;
 	}
 
-	let { result, onCopy }: Props = $props();
+	let { result, onCopy, onPlot }: Props = $props();
+
+	/**
+	 * Check if the result is plottable (contains a free variable 'x')
+	 * Simple heuristic: check if output contains 'x' as a variable
+	 */
+	function isPlottable(): boolean {
+		if (result.isError) return false;
+		const output = result.output;
+		// Check for 'x' as a standalone variable (not part of exp, max, etc.)
+		// Match x that is not preceded/followed by letters
+		return /(?<![a-zA-Z])x(?![a-zA-Z])/.test(output);
+	}
+
+	function handlePlot() {
+		if (onPlot) {
+			onPlot(result.output);
+		}
+	}
 
 	// State for steps expansion (disabled for now)
 	let showSteps = $state(false);
@@ -69,6 +88,20 @@
 
 		<!-- Actions -->
 		<div class="flex shrink-0 items-center gap-1">
+			<!-- Plot button (only for plottable expressions) -->
+			{#if onPlot && isPlottable()}
+				<Button
+					variant="ghost"
+					size="sm"
+					onclick={handlePlot}
+					class="gap-1 text-muted-foreground hover:text-foreground"
+					aria-label="Tracer la courbe"
+				>
+					<TrendingUp class="h-4 w-4" />
+					<span class="hidden sm:inline">Tracer</span>
+				</Button>
+			{/if}
+
 			<!-- Steps button (disabled for Phase 5) -->
 			<Button
 				variant="ghost"
