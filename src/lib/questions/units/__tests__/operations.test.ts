@@ -63,7 +63,7 @@ describe('Unit Resolution', () => {
 			const result = resolveUnit('m');
 			expect(result).toEqual({
 				symbol: 'm',
-				name: 'metre',
+				name: 'mètre',
 				baseSymbol: 'm',
 				coefficient: 1,
 				dimension: 'length'
@@ -207,8 +207,14 @@ describe('Unit Resolution', () => {
 
 		test('resolves radian', () => {
 			const result = resolveUnit('rad');
-			expect(result).toEqual(SPECIAL_UNITS.rad);
-			expect(result?.coefficient).toBe(1);
+			// rad is now a BASE_UNIT in mathAST (not SPECIAL_UNITS)
+			expect(result).toEqual({
+				symbol: 'rad',
+				name: 'radian',
+				baseSymbol: 'rad',
+				coefficient: 1,
+				dimension: 'angle'
+			});
 		});
 
 		test('resolves tonne (t)', () => {
