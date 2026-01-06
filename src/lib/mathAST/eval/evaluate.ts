@@ -388,6 +388,60 @@ const SUPPORTED_FUNCTIONS: Record<
 	round: (args) => {
 		if (args.length !== 1) throw new Error('round requires exactly 1 argument');
 		return Math.round(toNumber(args[0]));
+	},
+
+	// ==========================================================================
+	// Statistical Functions
+	// ==========================================================================
+
+	mean: (args) => {
+		if (args.length === 0) throw new Error('mean requires at least 1 argument');
+		const values = args.map(toNumber);
+		return values.reduce((a, b) => a + b, 0) / values.length;
+	},
+
+	median: (args) => {
+		if (args.length === 0) throw new Error('median requires at least 1 argument');
+		const values = args.map(toNumber).sort((a, b) => a - b);
+		const mid = Math.floor(values.length / 2);
+		if (values.length % 2 === 0) {
+			return (values[mid - 1] + values[mid]) / 2;
+		}
+		return values[mid];
+	},
+
+	variance: (args) => {
+		if (args.length < 2) throw new Error('variance requires at least 2 arguments');
+		const values = args.map(toNumber);
+		const mean = values.reduce((a, b) => a + b, 0) / values.length;
+		const squaredDiffs = values.map((v) => (v - mean) ** 2);
+		// Sample variance (n-1)
+		return squaredDiffs.reduce((a, b) => a + b, 0) / (values.length - 1);
+	},
+
+	stdev: (args) => {
+		if (args.length < 2) throw new Error('stdev requires at least 2 arguments');
+		const values = args.map(toNumber);
+		const mean = values.reduce((a, b) => a + b, 0) / values.length;
+		const squaredDiffs = values.map((v) => (v - mean) ** 2);
+		// Sample standard deviation (n-1)
+		const variance = squaredDiffs.reduce((a, b) => a + b, 0) / (values.length - 1);
+		return Math.sqrt(variance);
+	},
+
+	min: (args) => {
+		if (args.length === 0) throw new Error('min requires at least 1 argument');
+		return Math.min(...args.map(toNumber));
+	},
+
+	max: (args) => {
+		if (args.length === 0) throw new Error('max requires at least 1 argument');
+		return Math.max(...args.map(toNumber));
+	},
+
+	sum: (args) => {
+		if (args.length === 0) throw new Error('sum requires at least 1 argument');
+		return args.map(toNumber).reduce((a, b) => a + b, 0);
 	}
 };
 

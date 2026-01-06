@@ -45,7 +45,8 @@ const CUSTOM_PATTERNS: readonly RegExp[] = [
 	/\\\|.*\\\|/,
 	// Functions without backslash: sqrt(, sin(, cos(, tan(, ln(, log(, exp(, abs(
 	// These are custom syntax - LaTeX requires \sqrt, \sin, etc.
-	/\b(sqrt|sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|abs)\s*\(/
+	// Also includes statistical functions: mean, median, variance, stdev, min, max, sum
+	/\b(sqrt|sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|sinh|cosh|tanh|ln|log|exp|abs|mean|median|variance|stdev|min|max|sum)\s*\(/
 ];
 
 /**

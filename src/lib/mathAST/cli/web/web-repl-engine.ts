@@ -319,6 +319,16 @@ export class WebReplEngine {
 			return this.executeConvertCommand(args);
 		}
 
+		// Handle .stats command
+		if (cmdName === 'stats') {
+			return this.executeStatsCommand(args);
+		}
+
+		// Handle .linreg command
+		if (cmdName === 'linreg') {
+			return this.executeLinregCommand(args);
+		}
+
 		// Look up command in registry
 		const command = this.registry.get(cmdName);
 		if (!command) {
@@ -1030,5 +1040,300 @@ export class WebReplEngine {
 			outputHtml,
 			ast: cmdResult.ast || ast
 		};
+	}
+
+	// ===========================================================================
+	// Statistical Commands
+	// ===========================================================================
+
+	/**
+	 * Execute the .stats command.
+	 *
+	 * Usage: .stats 1, 2, 3, 4, 5
+	 * Returns: mean, median, stdev, variance, min, max
+	 */
+	private executeStatsCommand(args: string): ReplExecutionResult {
+		if (!args.trim()) {
+			return {
+				success: false,
+				output: 'Usage: .stats n1, n2, n3, ...',
+				outputHtml: formatErrorHtml({
+					code: 'INVALID_OPTIONS',
+					message: 'Usage: .stats n1, n2, n3, ...',
+					suggestion: 'Entrez une liste de nombres separes par des virgules'
+				}),
+				error: {
+					code: 'INVALID_OPTIONS',
+					message: 'No data provided'
+				}
+			};
+		}
+
+		// Parse comma-separated values
+		const values = args
+			.split(',')
+			.map((s) => s.trim())
+			.filter((s) => s.length > 0)
+			.map((s) => parseFloat(s));
+
+		// Check for parsing errors
+		if (values.some((v) => isNaN(v))) {
+			return {
+				success: false,
+				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: 'Certaines valeurs ne sont pas des nombres valides'
+				}),
+				error: {
+					code: 'PARSE_ERROR',
+					message: 'Invalid numbers in input'
+				}
+			};
+		}
+
+		if (values.length === 0) {
+			return {
+				success: false,
+				output: 'Erreur: aucune valeur fournie',
+				outputHtml: formatErrorHtml({
+					code: 'INVALID_OPTIONS',
+					message: 'Aucune valeur fournie'
+				}),
+				error: {
+					code: 'INVALID_OPTIONS',
+					message: 'No values provided'
+				}
+			};
+		}
+
+		// Compute statistics
+		const n = values.length;
+		const sum = values.reduce((a, b) => a + b, 0);
+		const mean = sum / n;
+		const sorted = [...values].sort((a, b) => a - b);
+		const mid = Math.floor(n / 2);
+		const median = n % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+		const min = sorted[0];
+		const max = sorted[n - 1];
+
+		let variance = 0;
+		let stdev = 0;
+		if (n >= 2) {
+			const squaredDiffs = values.map((v) => (v - mean) ** 2);
+			variance = squaredDiffs.reduce((a, b) => a + b, 0) / (n - 1);
+			stdev = Math.sqrt(variance);
+		}
+
+		// Format output
+		const lines = [
+			`Statistiques (n=${n}):`,
+			`  Moyenne (mean): ${this.formatNumber(mean)}`,
+			`  Mediane: ${this.formatNumber(median)}`,
+			`  Min: ${this.formatNumber(min)}`,
+			`  Max: ${this.formatNumber(max)}`
+		];
+
+		if (n >= 2) {
+			lines.push(`  Ecart-type (stdev): ${this.formatNumber(stdev)}`);
+			lines.push(`  Variance: ${this.formatNumber(variance)}`);
+		}
+
+		const output = lines.join('\n');
+
+		// HTML output
+		const htmlLines = [
+			`<strong>Statistiques</strong> <span class="text-gray-400">(n=${n})</span>`,
+			`<span class="text-gray-400">Moyenne:</span> <span class="text-cyan-400">${this.formatNumber(mean)}</span>`,
+			`<span class="text-gray-400">Mediane:</span> <span class="text-cyan-400">${this.formatNumber(median)}</span>`,
+			`<span class="text-gray-400">Min:</span> ${this.formatNumber(min)}`,
+			`<span class="text-gray-400">Max:</span> ${this.formatNumber(max)}`
+		];
+
+		if (n >= 2) {
+			htmlLines.push(
+				`<span class="text-gray-400">Ecart-type:</span> <span class="text-cyan-400">${this.formatNumber(stdev)}</span>`
+			);
+			htmlLines.push(`<span class="text-gray-400">Variance:</span> ${this.formatNumber(variance)}`);
+		}
+
+		const outputHtml = htmlLines.join('<br>');
+
+		return {
+			success: true,
+			output,
+			outputHtml
+		};
+	}
+
+	/**
+	 * Execute the .linreg command (linear regression).
+	 *
+	 * Usage: .linreg x1,x2,x3 : y1,y2,y3
+	 * Returns: slope (a), intercept (b), r² (coefficient of determination)
+	 */
+	private executeLinregCommand(args: string): ReplExecutionResult {
+		if (!args.includes(':')) {
+			return {
+				success: false,
+				output: 'Usage: .linreg x1,x2,x3 : y1,y2,y3',
+				outputHtml: formatErrorHtml({
+					code: 'INVALID_OPTIONS',
+					message: 'Usage: .linreg x1,x2,x3 : y1,y2,y3',
+					suggestion: 'Separez les valeurs X et Y par deux-points (:)'
+				}),
+				error: {
+					code: 'INVALID_OPTIONS',
+					message: 'Invalid syntax'
+				}
+			};
+		}
+
+		const [xPart, yPart] = args.split(':').map((s) => s.trim());
+
+		// Parse X values
+		const xValues = xPart
+			.split(',')
+			.map((s) => s.trim())
+			.filter((s) => s.length > 0)
+			.map((s) => parseFloat(s));
+
+		// Parse Y values
+		const yValues = yPart
+			.split(',')
+			.map((s) => s.trim())
+			.filter((s) => s.length > 0)
+			.map((s) => parseFloat(s));
+
+		// Validation
+		if (xValues.some((v) => isNaN(v)) || yValues.some((v) => isNaN(v))) {
+			return {
+				success: false,
+				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: 'Certaines valeurs ne sont pas des nombres valides'
+				}),
+				error: {
+					code: 'PARSE_ERROR',
+					message: 'Invalid numbers'
+				}
+			};
+		}
+
+		if (xValues.length !== yValues.length) {
+			return {
+				success: false,
+				output: `Erreur: nombre de valeurs X (${xValues.length}) different de Y (${yValues.length})`,
+				outputHtml: formatErrorHtml({
+					code: 'INVALID_OPTIONS',
+					message: `Nombre de valeurs X (${xValues.length}) different de Y (${yValues.length})`
+				}),
+				error: {
+					code: 'INVALID_OPTIONS',
+					message: 'X and Y must have same length'
+				}
+			};
+		}
+
+		if (xValues.length < 2) {
+			return {
+				success: false,
+				output: 'Erreur: au moins 2 points sont necessaires',
+				outputHtml: formatErrorHtml({
+					code: 'INVALID_OPTIONS',
+					message: 'Au moins 2 points sont necessaires pour une regression'
+				}),
+				error: {
+					code: 'INVALID_OPTIONS',
+					message: 'Need at least 2 points'
+				}
+			};
+		}
+
+		// Linear regression calculation
+		const n = xValues.length;
+		const sumX = xValues.reduce((a, b) => a + b, 0);
+		const sumY = yValues.reduce((a, b) => a + b, 0);
+		const sumXY = xValues.reduce((acc, x, i) => acc + x * yValues[i], 0);
+		const sumX2 = xValues.reduce((acc, x) => acc + x * x, 0);
+		const sumY2 = yValues.reduce((acc, y) => acc + y * y, 0);
+
+		const meanX = sumX / n;
+		const meanY = sumY / n;
+
+		// Slope (a) and intercept (b)
+		const denominator = sumX2 - (sumX * sumX) / n;
+		if (Math.abs(denominator) < 1e-10) {
+			return {
+				success: false,
+				output: 'Erreur: les valeurs X sont toutes identiques (regression impossible)',
+				outputHtml: formatErrorHtml({
+					code: 'MATH_ERROR',
+					message: 'Les valeurs X sont toutes identiques'
+				}),
+				error: {
+					code: 'MATH_ERROR',
+					message: 'X values are constant'
+				}
+			};
+		}
+
+		const a = (sumXY - (sumX * sumY) / n) / denominator;
+		const b = meanY - a * meanX;
+
+		// R² (coefficient of determination)
+		const ssTotal = sumY2 - (sumY * sumY) / n;
+		const ssRes = yValues.reduce((acc, y, i) => {
+			const predicted = a * xValues[i] + b;
+			return acc + (y - predicted) ** 2;
+		}, 0);
+		const r2 = ssTotal > 0 ? 1 - ssRes / ssTotal : 1;
+
+		// Format output
+		const equation =
+			b >= 0
+				? `y = ${this.formatNumber(a)}x + ${this.formatNumber(b)}`
+				: `y = ${this.formatNumber(a)}x - ${this.formatNumber(Math.abs(b))}`;
+
+		const lines = [
+			`Regression lineaire (n=${n}):`,
+			`  Equation: ${equation}`,
+			`  Pente (a): ${this.formatNumber(a)}`,
+			`  Ordonnee a l'origine (b): ${this.formatNumber(b)}`,
+			`  R²: ${this.formatNumber(r2)}`
+		];
+
+		const output = lines.join('\n');
+
+		// HTML output
+		const htmlLines = [
+			`<strong>Regression lineaire</strong> <span class="text-gray-400">(n=${n})</span>`,
+			`<span class="text-cyan-400">${this.escapeHtml(equation)}</span>`,
+			`<span class="text-gray-400">Pente (a):</span> ${this.formatNumber(a)}`,
+			`<span class="text-gray-400">Ordonnee (b):</span> ${this.formatNumber(b)}`,
+			`<span class="text-gray-400">R²:</span> <span class="text-green-400">${this.formatNumber(r2)}</span>`
+		];
+
+		const outputHtml = htmlLines.join('<br>');
+
+		return {
+			success: true,
+			output,
+			outputHtml,
+			latex: equation
+		};
+	}
+
+	/**
+	 * Format a number for display, with appropriate precision.
+	 */
+	private formatNumber(value: number): string {
+		if (Number.isInteger(value)) {
+			return value.toString();
+		}
+		// Round to 6 significant digits for display
+		const rounded = parseFloat(value.toPrecision(6));
+		return rounded.toString();
 	}
 }
