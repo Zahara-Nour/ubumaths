@@ -96,12 +96,13 @@ export interface CommandInfo {
 
 /**
  * Serialized history entry for localStorage.
+ * SECURITY: outputHtml is NOT stored to prevent XSS via localStorage poisoning.
  */
 interface SerializedCalculationResult {
 	id: string;
 	input: string;
 	output: string;
-	outputHtml?: string;
+	// outputHtml intentionally excluded from storage for security
 	isError: boolean;
 	errorMessage?: string;
 	timestamp: number;
@@ -387,11 +388,13 @@ class CalculatorStore {
 			for (const entry of parsed) {
 				const validation = HistoryEntrySchema.safeParse(entry);
 				if (validation.success) {
+					// SECURITY: Do NOT load outputHtml from storage to prevent XSS
+					// HTML will be regenerated from LaTeX output when displayed
 					validatedHistory.push({
 						id: validation.data.id,
 						input: validation.data.input,
 						output: validation.data.output,
-						outputHtml: validation.data.outputHtml,
+						// outputHtml intentionally not loaded from storage
 						isError: validation.data.isError,
 						errorMessage: validation.data.errorMessage,
 						timestamp: validation.data.timestamp
@@ -415,16 +418,19 @@ class CalculatorStore {
 
 	/**
 	 * Save history to localStorage.
+	 * SECURITY: outputHtml is NOT stored to prevent XSS via localStorage poisoning.
+	 * HTML is regenerated from LaTeX output when displayed.
 	 */
 	private saveHistory(): void {
 		if (!browser) return;
 
 		try {
+			// SECURITY: Exclude outputHtml from storage to prevent XSS attacks
 			const serialized: SerializedCalculationResult[] = this.history.map((entry) => ({
 				id: entry.id,
 				input: entry.input,
 				output: entry.output,
-				outputHtml: entry.outputHtml,
+				// outputHtml intentionally excluded - regenerated on display
 				isError: entry.isError,
 				errorMessage: entry.errorMessage,
 				timestamp: entry.timestamp
@@ -439,11 +445,12 @@ class CalculatorStore {
 				// Try with reduced history
 				const reducedHistory = this.history.slice(0, Math.floor(MAX_HISTORY / 2));
 				try {
+					// SECURITY: Exclude outputHtml from storage
 					const serialized: SerializedCalculationResult[] = reducedHistory.map((entry) => ({
 						id: entry.id,
 						input: entry.input,
 						output: entry.output,
-						outputHtml: entry.outputHtml,
+						// outputHtml intentionally excluded
 						isError: entry.isError,
 						errorMessage: entry.errorMessage,
 						timestamp: entry.timestamp

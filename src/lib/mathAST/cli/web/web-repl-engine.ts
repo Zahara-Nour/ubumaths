@@ -1070,11 +1070,30 @@ export class WebReplEngine {
 		}
 
 		// Parse comma-separated values
-		const values = args
+		const rawValues = args
 			.split(',')
 			.map((s) => s.trim())
-			.filter((s) => s.length > 0)
-			.map((s) => parseFloat(s));
+			.filter((s) => s.length > 0);
+
+		// SECURITY: Limit number of values to prevent DoS
+		const MAX_STATS_VALUES = 1000;
+		if (rawValues.length > MAX_STATS_VALUES) {
+			return {
+				success: false,
+				output: `Erreur: trop de valeurs (max: ${MAX_STATS_VALUES})`,
+				outputHtml: formatErrorHtml({
+					code: 'INVALID_OPTIONS',
+					message: `Limite de ${MAX_STATS_VALUES} valeurs depassee`,
+					suggestion: 'Reduisez le nombre de valeurs'
+				}),
+				error: {
+					code: 'INVALID_OPTIONS',
+					message: `Too many values (max: ${MAX_STATS_VALUES})`
+				}
+			};
+		}
+
+		const values = rawValues.map((s) => parseFloat(s));
 
 		// Check for parsing errors
 		if (values.some((v) => isNaN(v))) {
@@ -1192,18 +1211,37 @@ export class WebReplEngine {
 		const [xPart, yPart] = args.split(':').map((s) => s.trim());
 
 		// Parse X values
-		const xValues = xPart
+		const xRaw = xPart
 			.split(',')
 			.map((s) => s.trim())
-			.filter((s) => s.length > 0)
-			.map((s) => parseFloat(s));
+			.filter((s) => s.length > 0);
 
 		// Parse Y values
-		const yValues = yPart
+		const yRaw = yPart
 			.split(',')
 			.map((s) => s.trim())
-			.filter((s) => s.length > 0)
-			.map((s) => parseFloat(s));
+			.filter((s) => s.length > 0);
+
+		// SECURITY: Limit number of values to prevent DoS
+		const MAX_LINREG_VALUES = 1000;
+		if (xRaw.length > MAX_LINREG_VALUES || yRaw.length > MAX_LINREG_VALUES) {
+			return {
+				success: false,
+				output: `Erreur: trop de valeurs (max: ${MAX_LINREG_VALUES})`,
+				outputHtml: formatErrorHtml({
+					code: 'INVALID_OPTIONS',
+					message: `Limite de ${MAX_LINREG_VALUES} valeurs depassee`,
+					suggestion: 'Reduisez le nombre de valeurs'
+				}),
+				error: {
+					code: 'INVALID_OPTIONS',
+					message: `Too many values (max: ${MAX_LINREG_VALUES})`
+				}
+			};
+		}
+
+		const xValues = xRaw.map((s) => parseFloat(s));
+		const yValues = yRaw.map((s) => parseFloat(s));
 
 		// Validation
 		if (xValues.some((v) => isNaN(v)) || yValues.some((v) => isNaN(v))) {

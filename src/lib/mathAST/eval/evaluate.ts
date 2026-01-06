@@ -450,14 +450,26 @@ const SUPPORTED_FUNCTIONS: Record<
 // =============================================================================
 
 /**
+ * Maximum recursion depth for expression evaluation.
+ * Prevents stack overflow from deeply nested expressions.
+ */
+const MAX_EVAL_DEPTH = 100;
+
+/**
  * Evaluates a MathNode to an intermediate value (Rational or number).
  *
  * @param node - The node to evaluate
  * @param exactMode - Whether to prefer exact (rational) results
+ * @param depth - Current recursion depth (internal use)
  * @returns The computed value
  * @throws Error for unevaluable nodes or mathematical errors
  */
-function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
+function evaluateNode(node: MathNode, exactMode: boolean, depth = 0): IntermediateValue {
+	// SECURITY: Prevent stack overflow from deeply nested expressions
+	if (depth > MAX_EVAL_DEPTH) {
+		throw new Error(`Expression too deeply nested (max depth: ${MAX_EVAL_DEPTH})`);
+	}
+
 	// NumberNode
 	if (isNumber(node)) {
 		return parseNumber(node.value);
@@ -493,8 +505,8 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 
 	// AdditionNode
 	if (isAddition(node)) {
-		const left = evaluateNode(node.left, exactMode);
-		const right = evaluateNode(node.right, exactMode);
+		const left = evaluateNode(node.left, exactMode, depth + 1);
+		const right = evaluateNode(node.right, exactMode, depth + 1);
 
 		if (isRational(left) && isRational(right)) {
 			return addRational(left, right);
@@ -504,8 +516,8 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 
 	// SubtractionNode
 	if (isSubtraction(node)) {
-		const left = evaluateNode(node.left, exactMode);
-		const right = evaluateNode(node.right, exactMode);
+		const left = evaluateNode(node.left, exactMode, depth + 1);
+		const right = evaluateNode(node.right, exactMode, depth + 1);
 
 		if (isRational(left) && isRational(right)) {
 			return subRational(left, right);
@@ -515,8 +527,8 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 
 	// MultiplicationNode
 	if (isMultiplication(node)) {
-		const left = evaluateNode(node.left, exactMode);
-		const right = evaluateNode(node.right, exactMode);
+		const left = evaluateNode(node.left, exactMode, depth + 1);
+		const right = evaluateNode(node.right, exactMode, depth + 1);
 
 		if (isRational(left) && isRational(right)) {
 			return mulRational(left, right);
@@ -526,8 +538,8 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 
 	// DivisionNode
 	if (isDivision(node)) {
-		const num = evaluateNode(node.numerator, exactMode);
-		const den = evaluateNode(node.denominator, exactMode);
+		const num = evaluateNode(node.numerator, exactMode, depth + 1);
+		const den = evaluateNode(node.denominator, exactMode, depth + 1);
 
 		// Check for division by zero
 		if (isRational(den)) {
@@ -546,7 +558,7 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 
 	// OppositeNode (negation)
 	if (isOpposite(node)) {
-		const operand = evaluateNode(node.operand, exactMode);
+		const operand = evaluateNode(node.operand, exactMode, depth + 1);
 
 		if (isRational(operand)) {
 			return negRational(operand);
@@ -556,13 +568,13 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 
 	// PositiveNode
 	if (isPositive(node)) {
-		return evaluateNode(node.operand, exactMode);
+		return evaluateNode(node.operand, exactMode, depth + 1);
 	}
 
 	// SuperscriptNode (power)
 	if (isSuperscript(node)) {
-		const base = evaluateNode(node.base, exactMode);
-		const exp = evaluateNode(node.superscript, exactMode);
+		const base = evaluateNode(node.base, exactMode, depth + 1);
+		const exp = evaluateNode(node.superscript, exactMode, depth + 1);
 
 		// Check for integer exponent for exact evaluation
 		if (isRational(exp) && isExactInteger(exp)) {
@@ -609,14 +621,14 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 		}
 
 		// Evaluate all arguments
-		const evaluatedArgs = node.args.map((arg) => evaluateNode(arg, exactMode));
+		const evaluatedArgs = node.args.map((arg) => evaluateNode(arg, exactMode, depth + 1));
 
 		return handler(evaluatedArgs, exactMode);
 	}
 
 	// DelimiterNode (parentheses)
 	if (isDelimiter(node)) {
-		return evaluateNode(node.content, exactMode);
+		return evaluateNode(node.content, exactMode, depth + 1);
 	}
 
 	// SubscriptNode - cannot evaluate numerically
@@ -631,7 +643,7 @@ function evaluateNode(node: MathNode, exactMode: boolean): IntermediateValue {
 
 	// UnitNode - evaluate the expression part (ignore the unit)
 	if (isUnit(node)) {
-		return evaluateNode(node.expression, exactMode);
+		return evaluateNode(node.expression, exactMode, depth + 1);
 	}
 
 	// CompositionNode - cannot evaluate directly without application
