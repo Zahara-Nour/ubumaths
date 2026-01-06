@@ -251,11 +251,21 @@ function selectBestUnit(valueInSI: number, baseUnit: Unit): { value: number; uni
  * @param node - The expression to transform
  * @param targetUnit - The target unit for conversion
  * @returns Transformed expression with values converted
+ *
+ * @example
+ * // For expression: 5 km + 3000 m, with targetUnit = km
+ * // - 5 km:   factor = 1 (km → km), no conversion needed
+ * // - 3000 m: factor = 0.001 (m → km), becomes 3 km
+ * // Result: 5 km + 3 km
  */
 function transformToTargetUnit(node: MathNode, targetUnit: Unit): MathNode {
 	return mapNode(node, (n) => {
 		if (isUnit(n)) {
-			// Get conversion factor from this unit to target
+			// Get conversion factor: how many targetUnits equal one source unit
+			// Examples:
+			// - m → km:  factor = 0.001 (1 m = 0.001 km)
+			// - km → m:  factor = 1000  (1 km = 1000 m)
+			// - km → km: factor = 1     (no conversion)
 			const factor = getConversionFactor(n.unit, targetUnit);
 
 			if (factor === null) {
@@ -263,14 +273,15 @@ function transformToTargetUnit(node: MathNode, targetUnit: Unit): MathNode {
 				return n;
 			}
 
+			// If factor ≈ 1, source and target units are the same (or equivalent).
+			// Skip conversion to avoid unnecessary computation.
+			// We use EPSILON tolerance for floating-point comparison safety.
 			if (Math.abs(factor - 1) < EPSILON) {
-				// No conversion needed
 				return n;
 			}
 
-			// Apply conversion factor to the inner expression
-			// This is a simplified approach - for complex inner expressions,
-			// we multiply the whole expression by the factor
+			// Apply conversion: newValue = originalValue * factor
+			// Example: 3000 m → km = 3000 * 0.001 = 3 km
 			const innerNode = n.expression;
 
 			if (innerNode.type === 'number') {
@@ -280,8 +291,8 @@ function transformToTargetUnit(node: MathNode, targetUnit: Unit): MathNode {
 				return withUnit(number(String(convertedValue)), targetUnit);
 			}
 
-			// For complex expressions, wrap with multiplication
-			// This will be evaluated correctly by evaluate()
+			// For complex expressions (e.g., (2+3) km), wrap with multiplication.
+			// The multiplication will be evaluated later by evaluate().
 			return withUnit(
 				{
 					type: 'multiplication',
