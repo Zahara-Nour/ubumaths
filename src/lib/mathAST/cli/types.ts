@@ -79,6 +79,8 @@ export interface CommandResult {
 	readonly success: boolean;
 	readonly error?: CommandError;
 	readonly ast?: MathNode;
+	/** Optional HTML-formatted output for web display */
+	readonly outputHtml?: string;
 }
 
 // =============================================================================

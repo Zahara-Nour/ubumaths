@@ -19,28 +19,28 @@ import type { CommandRegistry } from '../core/command-registry';
  */
 const COMMAND_CATEGORIES: { name: string; commands: string[]; description: string }[] = [
 	{
-		name: 'Core Commands',
-		description: 'Basic parsing and output',
+		name: 'Commandes de base',
+		description: 'Parsing et affichage',
 		commands: ['parse', 'tree', 'latex', 'custom', 'help']
 	},
 	{
-		name: 'Normalization Commands',
-		description: 'Simplification and equivalence',
+		name: 'Normalisation',
+		description: 'Simplification et equivalence',
 		commands: ['simplify', 'normal', 'hash', 'equiv']
 	},
 	{
-		name: 'Variable Commands',
-		description: 'Variable bindings and state',
+		name: 'Variables',
+		description: 'Liaisons de variables',
 		commands: ['let', 'vars', 'unset', 'clear', 'mode', 'eval']
 	},
 	{
-		name: 'Function Commands',
-		description: 'Define and manage functions',
+		name: 'Fonctions',
+		description: 'Definition de fonctions',
 		commands: ['def', "def'", 'fns', 'undef', 'inv']
 	},
 	{
-		name: 'Calculus Commands',
-		description: 'Differentiation and series',
+		name: 'Calcul',
+		description: 'Derivation et series',
 		commands: ['diff', 'taylor']
 	}
 ];
@@ -54,33 +54,11 @@ const COMMAND_CATEGORIES: { name: string; commands: string[]; description: strin
  *
  * Lists all registered commands with their descriptions and aliases,
  * organized by category. Also shows inline syntax shortcuts.
- *
- * @example
- * ```
- * > help
- * MathAST CLI - Available Commands
- *
- * Core Commands:
- *   parse (p)       Parse expression and display AST + LaTeX
- *   tree (t, ast)   Display the AST as a tree
- *   ...
- *
- * Function Commands:
- *   def (fn)        Define a function: .def f(x) = x^2
- *   ...
- *
- * Inline Syntax:
- *   x = 5           Assign value to variable (same as .let x = 5)
- *   f(x) = x^2      Define function (same as .def f(x) = x^2)
- *   expr1 === expr2 Check equivalence
- *
- * In REPL, prefix commands with . (e.g., .help, .tree)
- * ```
  */
 export class HelpCommand extends BaseCommand {
 	readonly name = 'help';
 	readonly aliases = ['h', '?'] as const;
-	readonly description = 'Show available commands';
+	readonly description = 'Afficher les commandes disponibles';
 	readonly usage = 'help [command]';
 	readonly requiresAst = false;
 
@@ -94,8 +72,6 @@ export class HelpCommand extends BaseCommand {
 	/**
 	 * Set the command registry reference.
 	 * Called after registration to allow access to all commands.
-	 *
-	 * @param registry - The command registry
 	 */
 	setRegistry(registry: CommandRegistry): void {
 		this.registry = registry;
@@ -110,9 +86,7 @@ export class HelpCommand extends BaseCommand {
 			};
 		}
 
-		const lines: string[] = [chalk.bold('MathAST CLI - Available Commands'), ''];
-
-		// Build a map of command names to commands for quick lookup
+		// Build command map for lookup
 		const commandMap = new Map<
 			string,
 			typeof this.registry extends { all(): Iterable<infer T> } ? T : never
@@ -121,26 +95,28 @@ export class HelpCommand extends BaseCommand {
 			commandMap.set(cmd.name, cmd);
 		}
 
-		// Track which commands we've displayed
+		// Track displayed commands
 		const displayedCommands = new Set<string>();
 
-		// Display commands by category
+		// =================================================================
+		// Plain text output (for terminal)
+		// =================================================================
+		const lines: string[] = [chalk.bold('MathAST CAS - Commandes disponibles'), ''];
+
 		for (const category of COMMAND_CATEGORIES) {
 			lines.push(chalk.bold.yellow(category.name + ':'));
-
 			for (const cmdName of category.commands) {
 				const cmd = commandMap.get(cmdName);
 				if (cmd) {
 					const aliases = cmd.aliases.length > 0 ? chalk.gray(` (${cmd.aliases.join(', ')})`) : '';
-					lines.push(`  ${chalk.cyan(cmd.name)}${aliases}`);
-					lines.push(`    ${cmd.description}`);
+					lines.push(`  ${chalk.cyan(cmd.name)}${aliases} - ${cmd.description}`);
 					displayedCommands.add(cmd.name);
 				}
 			}
 			lines.push('');
 		}
 
-		// Display any uncategorized commands
+		// Uncategorized commands
 		const uncategorized: string[] = [];
 		for (const cmd of this.registry.all()) {
 			if (!displayedCommands.has(cmd.name)) {
@@ -149,27 +125,115 @@ export class HelpCommand extends BaseCommand {
 		}
 
 		if (uncategorized.length > 0) {
-			lines.push(chalk.bold.yellow('Other Commands:'));
+			lines.push(chalk.bold.yellow('Autres:'));
 			for (const cmdName of uncategorized) {
 				const cmd = commandMap.get(cmdName);
 				if (cmd) {
 					const aliases = cmd.aliases.length > 0 ? chalk.gray(` (${cmd.aliases.join(', ')})`) : '';
-					lines.push(`  ${chalk.cyan(cmd.name)}${aliases}`);
-					lines.push(`    ${cmd.description}`);
+					lines.push(`  ${chalk.cyan(cmd.name)}${aliases} - ${cmd.description}`);
 				}
 			}
 			lines.push('');
 		}
 
-		// Add inline syntax section
-		lines.push(chalk.bold.yellow('Inline Syntax:'));
-		lines.push(`  ${chalk.cyan('x = 5')}           Assign value to variable (same as .let x = 5)`);
-		lines.push(`  ${chalk.cyan('f(x) = x^2')}      Define function (same as .def f(x) = x^2)`);
-		lines.push(`  ${chalk.cyan('expr1 === expr2')} Check equivalence`);
+		lines.push(chalk.bold.yellow('Syntaxe directe:'));
+		lines.push(`  ${chalk.cyan('x = 5')}           Assigner une variable`);
+		lines.push(`  ${chalk.cyan('f(x) = x^2')}      Definir une fonction`);
+		lines.push(`  ${chalk.cyan('expr1 === expr2')} Tester l'equivalence`);
 		lines.push('');
+		lines.push(chalk.gray('Prefixez les commandes avec . (ex: .help, .tree)'));
 
-		lines.push(chalk.gray('In REPL, prefix commands with . (e.g., .help, .tree)'));
+		// =================================================================
+		// HTML output (for web REPL) - compact monospace style
+		// =================================================================
+		const htmlParts: string[] = [];
 
-		return { success: true, output: lines.join('\n') };
+		htmlParts.push('<div class="font-mono text-sm leading-relaxed">');
+
+		// Reset displayed for HTML generation
+		displayedCommands.clear();
+
+		// Categories as compact sections
+		for (const category of COMMAND_CATEGORIES) {
+			htmlParts.push(
+				`<div class="text-yellow-500 font-medium mt-3 first:mt-0">${this.escapeHtml(category.name)}</div>`
+			);
+
+			for (const cmdName of category.commands) {
+				const cmd = commandMap.get(cmdName);
+				if (cmd) {
+					const aliasStr =
+						cmd.aliases.length > 0
+							? ` <span class="text-muted-foreground">(${cmd.aliases.join(', ')})</span>`
+							: '';
+					htmlParts.push(
+						`<div class="pl-2"><span class="text-cyan-400">.${this.escapeHtml(cmd.name)}</span>${aliasStr} <span class="text-foreground/70">- ${this.escapeHtml(cmd.description)}</span></div>`
+					);
+					displayedCommands.add(cmd.name);
+				}
+			}
+		}
+
+		// Uncategorized
+		const uncategorizedHtml: string[] = [];
+		for (const cmd of this.registry.all()) {
+			if (!displayedCommands.has(cmd.name)) {
+				uncategorizedHtml.push(cmd.name);
+			}
+		}
+
+		if (uncategorizedHtml.length > 0) {
+			htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Autres</div>');
+			for (const cmdName of uncategorizedHtml) {
+				const cmd = commandMap.get(cmdName);
+				if (cmd) {
+					const aliasStr =
+						cmd.aliases.length > 0
+							? ` <span class="text-muted-foreground">(${cmd.aliases.join(', ')})</span>`
+							: '';
+					htmlParts.push(
+						`<div class="pl-2"><span class="text-cyan-400">.${this.escapeHtml(cmd.name)}</span>${aliasStr} <span class="text-foreground/70">- ${this.escapeHtml(cmd.description)}</span></div>`
+					);
+				}
+			}
+		}
+
+		// Inline syntax section
+		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Syntaxe directe</div>');
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">x = 5</span> <span class="text-foreground/70">- Assigner une variable</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">f(x) = x^2</span> <span class="text-foreground/70">- Definir une fonction</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">a === b</span> <span class="text-foreground/70">- Tester l\'equivalence</span></div>'
+		);
+
+		// Keyboard shortcuts - inline
+		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Raccourcis</div>');
+		htmlParts.push(
+			'<div class="pl-2 text-foreground/70">↑↓ historique · Ctrl+R rechercher · Esc annuler · Enter executer</div>'
+		);
+
+		htmlParts.push('</div>');
+
+		return {
+			success: true,
+			output: lines.join('\n'),
+			outputHtml: htmlParts.join('\n')
+		};
+	}
+
+	/**
+	 * Escape HTML special characters.
+	 */
+	private escapeHtml(text: string): string {
+		return text
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
 	}
 }

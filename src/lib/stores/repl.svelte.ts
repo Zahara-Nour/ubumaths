@@ -105,6 +105,18 @@ class ReplStore {
 	/** Temporary storage for current input when navigating history */
 	private savedInput = $state('');
 
+	/** Whether history search mode is active (Ctrl+R) */
+	isSearching = $state(false);
+
+	/** Current search query for history search */
+	searchQuery = $state('');
+
+	/** Current search result index */
+	searchResultIndex = $state(0);
+
+	/** Saved input specifically for search (separate from history navigation) */
+	private searchSavedInput = $state('');
+
 	// ===========================================================================
 	// REPL Engine
 	// ===========================================================================
@@ -123,6 +135,20 @@ class ReplStore {
 
 	/** Count of history entries */
 	historyCount = $derived(this.history.length);
+
+	/** Filtered history entries matching search query */
+	searchResults = $derived.by(() => {
+		if (!this.searchQuery.trim()) return [];
+		const query = this.searchQuery.toLowerCase();
+		return this.history.filter((entry) => entry.input.toLowerCase().includes(query));
+	});
+
+	/** Current search result (if any) */
+	currentSearchResult = $derived.by(() => {
+		if (this.searchResults.length === 0) return null;
+		const index = Math.min(this.searchResultIndex, this.searchResults.length - 1);
+		return this.searchResults[index] ?? null;
+	});
 
 	// ===========================================================================
 	// Initialization
@@ -253,6 +279,103 @@ class ReplStore {
 	 */
 	clearOutput(): void {
 		this.clearHistory();
+	}
+
+	/**
+	 * Cancel history navigation and restore original input.
+	 * Called when user presses Escape while navigating with arrows.
+	 */
+	cancelHistoryNavigation(): void {
+		if (this.historyIndex === -1) return; // Not navigating
+
+		this.currentInput = this.savedInput;
+		this.historyIndex = -1;
+		this.savedInput = '';
+	}
+
+	/**
+	 * Whether currently navigating through history (historyIndex !== -1).
+	 */
+	get isNavigatingHistory(): boolean {
+		return this.historyIndex !== -1;
+	}
+
+	// ===========================================================================
+	// History Search (Ctrl+R)
+	// ===========================================================================
+
+	/**
+	 * Start history search mode (Ctrl+R).
+	 * Saves current input and activates search UI.
+	 */
+	startHistorySearch(): void {
+		if (this.history.length === 0) return;
+
+		// Save current input to dedicated search variable
+		this.searchSavedInput = this.currentInput;
+		this.isSearching = true;
+		this.searchQuery = '';
+		this.searchResultIndex = 0;
+	}
+
+	/**
+	 * Update search query and reset result index.
+	 *
+	 * @param query - The search string
+	 */
+	updateSearchQuery(query: string): void {
+		this.searchQuery = query;
+		this.searchResultIndex = 0;
+	}
+
+	/**
+	 * Navigate to next search result (Ctrl+R again).
+	 */
+	nextSearchResult(): void {
+		if (this.searchResults.length === 0) return;
+		this.searchResultIndex = (this.searchResultIndex + 1) % this.searchResults.length;
+	}
+
+	/**
+	 * Navigate to previous search result (Ctrl+S in search mode).
+	 */
+	prevSearchResult(): void {
+		if (this.searchResults.length === 0) return;
+		this.searchResultIndex =
+			(this.searchResultIndex - 1 + this.searchResults.length) % this.searchResults.length;
+	}
+
+	/**
+	 * Select current search result and exit search mode.
+	 * The selected command is placed in the input for editing.
+	 */
+	selectSearchResult(): void {
+		const result = this.currentSearchResult;
+		if (result) {
+			this.currentInput = result.input;
+		}
+		this.cancelHistorySearch();
+	}
+
+	/**
+	 * Cancel history search and restore previous input.
+	 */
+	cancelHistorySearch(): void {
+		this.isSearching = false;
+		this.searchQuery = '';
+		this.searchResultIndex = 0;
+		// Note: savedInput is NOT restored - user may want to keep the selected result
+	}
+
+	/**
+	 * Cancel history search and restore original input.
+	 */
+	abortHistorySearch(): void {
+		// Restore the input that was saved when search started
+		this.currentInput = this.searchSavedInput;
+		this.isSearching = false;
+		this.searchQuery = '';
+		this.searchResultIndex = 0;
 	}
 
 	/**
