@@ -2,7 +2,7 @@
 	import type { MathfieldElement } from 'mathlive';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
-	import { Keyboard } from 'lucide-svelte';
+	import { Keyboard, Share2, Download, Trash2 } from 'lucide-svelte';
 	import UnifiedInput from './UnifiedInput.svelte';
 	import ResultDisplay from './ResultDisplay.svelte';
 	import CalculatorKeyboard from './CalculatorKeyboard.svelte';
@@ -10,6 +10,18 @@
 	import { calculatorStore } from '$lib/stores/calculator.svelte';
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import { browser } from '$app/environment';
+	import { page } from '$app/state';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import { z } from 'zod';
+
+	// Schema for validating shared URL parameters
+	const SharedCalcSchema = z.object({
+		expr: z
+			.string()
+			.max(200)
+			.refine((s) => !s.trim().startsWith('.'), 'Commands not allowed'),
+		result: z.string().max(200).optional()
+	});
 
 	let activeTab = $state('calc');
 	let showKeyboard = $state(false);
@@ -100,6 +112,133 @@
 		grapheurStore.addFunction(expression);
 		activeTab = 'graph';
 	}
+
+	/**
+	 * Partage l'historique via URL base64 (avec limites de taille)
+	 */
+	async function handleShare() {
+		if (!calculatorStore.hasHistory) {
+			toaster.warning('Aucun calcul à partager');
+			return;
+		}
+
+		const lastResult = calculatorStore.lastResult;
+
+		// Truncate if too long
+		const maxLen = 150;
+		const expr =
+			lastResult.input.length > maxLen
+				? lastResult.input.slice(0, maxLen) + '...'
+				: lastResult.input;
+		const result = lastResult.output.slice(0, maxLen);
+
+		const data = { expr, result };
+		const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
+
+		// Final safety check
+		if (encoded.length > 400) {
+			toaster.error('Expression trop longue pour partager');
+			return;
+		}
+
+		const shareUrl = `${page.url.origin}/calc?share=${encoded}`;
+
+		try {
+			await navigator.clipboard.writeText(shareUrl);
+			toaster.success('Lien copié dans le presse-papiers');
+		} catch {
+			toaster.error('Impossible de copier le lien');
+		}
+	}
+
+	/**
+	 * Exporte l'historique en texte
+	 */
+	function handleExportText() {
+		if (!calculatorStore.hasHistory) {
+			toaster.warning('Aucun calcul à exporter');
+			return;
+		}
+
+		const lines = calculatorStore.history.map((r) => {
+			const status = r.isError ? '[ERREUR]' : '';
+			return `${r.input} = ${r.output} ${status}`.trim();
+		});
+
+		const text = lines.join('\n');
+		downloadFile('calculs.txt', text, 'text/plain');
+		toaster.success('Historique exporté');
+	}
+
+	/**
+	 * Exporte l'historique en LaTeX
+	 */
+	function handleExportLatex() {
+		if (!calculatorStore.hasHistory) {
+			toaster.warning('Aucun calcul à exporter');
+			return;
+		}
+
+		const lines = calculatorStore.history.map((r) => {
+			if (r.isError) {
+				return `% Erreur: ${r.input}`;
+			}
+			return `${r.input} &= ${r.output} \\\\`;
+		});
+
+		const latex = `\\begin{align*}\n${lines.join('\n')}\n\\end{align*}`;
+		downloadFile('calculs.tex', latex, 'text/plain');
+		toaster.success('Export LaTeX créé');
+	}
+
+	/**
+	 * Télécharge un fichier texte
+	 */
+	function downloadFile(filename: string, content: string, mimeType: string) {
+		const blob = new Blob([content], { type: mimeType });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
+
+	// Track if share URL was already processed (run-once)
+	let shareUrlProcessed = $state(false);
+
+	// Charger une expression partagée depuis l'URL (avec validation sécurité)
+	$effect(() => {
+		if (!browser || shareUrlProcessed) return;
+
+		const shareParam = page.url.searchParams.get('share');
+		if (!shareParam || shareParam.length > 500) return; // Size limit
+
+		try {
+			const decoded = JSON.parse(decodeURIComponent(atob(shareParam)));
+			const validation = SharedCalcSchema.safeParse(decoded);
+
+			if (!validation.success) {
+				console.warn('Invalid share URL:', validation.error);
+				toaster.error('Lien de partage invalide');
+			} else {
+				// Execute the shared expression
+				calculatorStore.execute({ type: 'expression', expression: validation.data.expr });
+				toaster.success('Expression partagée chargée');
+			}
+
+			// Clean URL regardless of validation result
+			const url = new URL(page.url);
+			url.searchParams.delete('share');
+			window.history.replaceState({}, '', url.toString());
+			shareUrlProcessed = true;
+		} catch {
+			console.error('Invalid share URL encoding');
+			toaster.error('Lien de partage corrompu');
+		}
+	});
 </script>
 
 <Tabs.Root bind:value={activeTab} class="w-full">
@@ -117,7 +256,51 @@
 		<!-- Historique des résultats -->
 		{#if calculatorStore.hasHistory}
 			<div class="space-y-2">
-				<h3 class="text-sm font-medium text-muted-foreground">Historique</h3>
+				<div class="flex items-center justify-between">
+					<h3 class="text-sm font-medium text-muted-foreground">Historique</h3>
+					<div class="flex gap-1">
+						<Button
+							variant="ghost"
+							size="sm"
+							onclick={handleShare}
+							class="h-7 gap-1 px-2 text-xs"
+							aria-label="Partager le dernier calcul"
+						>
+							<Share2 class="size-3" />
+							<span class="hidden sm:inline">Partager</span>
+						</Button>
+						<Button
+							variant="ghost"
+							size="sm"
+							onclick={handleExportLatex}
+							class="h-7 gap-1 px-2 text-xs"
+							aria-label="Exporter en LaTeX"
+						>
+							<Download class="size-3" />
+							<span class="hidden sm:inline">LaTeX</span>
+						</Button>
+						<Button
+							variant="ghost"
+							size="sm"
+							onclick={handleExportText}
+							class="h-7 gap-1 px-2 text-xs"
+							aria-label="Exporter en texte"
+						>
+							<Download class="size-3" />
+							<span class="hidden sm:inline">Texte</span>
+						</Button>
+						<Button
+							variant="ghost"
+							size="sm"
+							onclick={() => calculatorStore.clearHistory()}
+							class="h-7 gap-1 px-2 text-xs text-destructive hover:text-destructive"
+							aria-label="Effacer l'historique"
+						>
+							<Trash2 class="size-3" />
+							<span class="hidden sm:inline">Effacer</span>
+						</Button>
+					</div>
+				</div>
 				<div class="max-h-[300px] space-y-2 overflow-y-auto">
 					{#each calculatorStore.history as result (result.id)}
 						<ResultDisplay {result} onPlot={handlePlot} />

@@ -28,6 +28,19 @@ const CalculatorInputSchema = z.object({
 	expression: z.string().max(MAX_EXPRESSION_LENGTH)
 });
 
+/**
+ * Schema for validating localStorage history entries (security hardening)
+ */
+const HistoryEntrySchema = z.object({
+	id: z.string().max(50),
+	input: z.string().max(MAX_EXPRESSION_LENGTH),
+	output: z.string().max(1000),
+	outputHtml: z.string().max(2000).optional(),
+	isError: z.boolean(),
+	errorMessage: z.string().max(500).optional(),
+	timestamp: z.number().int().positive()
+});
+
 // =============================================================================
 // Types
 // =============================================================================
@@ -352,31 +365,50 @@ class CalculatorStore {
 	// ===========================================================================
 
 	/**
-	 * Load history from localStorage.
+	 * Load history from localStorage with security validation.
 	 */
 	private loadHistory(): void {
 		try {
 			const stored = localStorage.getItem(STORAGE_KEY);
 			if (!stored) return;
 
+			// Size limit to prevent DoS
+			if (stored.length > 100000) {
+				console.warn('localStorage history too large, clearing');
+				localStorage.removeItem(STORAGE_KEY);
+				return;
+			}
+
 			const parsed = JSON.parse(stored);
 			if (!Array.isArray(parsed)) return;
 
-			// Deserialize and validate history entries
-			this.history = (parsed as SerializedCalculationResult[])
-				.filter((entry) => this.isValidEntry(entry))
-				.map((entry) => ({
-					id: entry.id,
-					input: entry.input,
-					output: entry.output,
-					outputHtml: entry.outputHtml,
-					isError: entry.isError,
-					errorMessage: entry.errorMessage,
-					timestamp: entry.timestamp
-				}))
-				.slice(0, MAX_HISTORY);
+			// Validate each entry with Zod schema
+			const validatedHistory: CalculationResult[] = [];
+			for (const entry of parsed) {
+				const validation = HistoryEntrySchema.safeParse(entry);
+				if (validation.success) {
+					validatedHistory.push({
+						id: validation.data.id,
+						input: validation.data.input,
+						output: validation.data.output,
+						outputHtml: validation.data.outputHtml,
+						isError: validation.data.isError,
+						errorMessage: validation.data.errorMessage,
+						timestamp: validation.data.timestamp
+					});
+				}
+			}
+
+			this.history = validatedHistory.slice(0, MAX_HISTORY);
+
+			// If all entries were invalid, clear corrupted storage
+			if (parsed.length > 0 && validatedHistory.length === 0) {
+				console.warn('All history entries invalid, clearing localStorage');
+				localStorage.removeItem(STORAGE_KEY);
+			}
 		} catch (error) {
 			console.error('Failed to load calculator history from localStorage:', error);
+			localStorage.removeItem(STORAGE_KEY);
 			this.history = [];
 		}
 	}
@@ -424,22 +456,6 @@ class CalculatorStore {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Validate a serialized history entry.
-	 */
-	private isValidEntry(entry: unknown): entry is SerializedCalculationResult {
-		if (typeof entry !== 'object' || entry === null) return false;
-
-		const e = entry as Record<string, unknown>;
-		return (
-			typeof e.id === 'string' &&
-			typeof e.input === 'string' &&
-			typeof e.output === 'string' &&
-			typeof e.isError === 'boolean' &&
-			typeof e.timestamp === 'number'
-		);
 	}
 }
 

@@ -1,18 +1,24 @@
 /**
- * Service Worker for Pyodide and CDN caching
+ * Service Worker for UbuMaths PWA caching
  *
  * Caches files from:
- * - cdn.jsdelivr.net (Pyodide, Typst WASM)
+ * - cdn.jsdelivr.net (Pyodide, Typst WASM, MathLive)
  * - cdn.plot.ly (Plotly.js)
+ * - unpkg.com (MathLive fallback)
  *
  * Strategy: Cache-first for CDN resources
- * This dramatically improves reload times for the Python playground.
+ * This dramatically improves reload times and enables offline usage
+ * for the calculator, Python playground, and other tools.
  */
 
-const CACHE_NAME = 'pyodide-cache-v2';
+const CACHE_NAME = 'ubumaths-cache-v3';
 
 // Hosts to cache (CDNs with versioned URLs)
-const CACHEABLE_HOSTS = ['cdn.jsdelivr.net', 'cdn.plot.ly'];
+const CACHEABLE_HOSTS = [
+	'cdn.jsdelivr.net', // Pyodide, Typst WASM, MathLive
+	'cdn.plot.ly', // Plotly.js
+	'unpkg.com' // MathLive fallback
+];
 
 // Install: skip waiting to activate immediately
 self.addEventListener('install', () => {
