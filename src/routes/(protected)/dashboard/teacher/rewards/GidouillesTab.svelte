@@ -303,7 +303,7 @@
 								</p>
 							</div>
 						{:else}
-							<div class="overflow-hidden rounded-lg border border-border bg-card">
+							<div class="overflow-x-auto rounded-lg border border-border bg-card">
 								<div class="border-b border-border bg-muted/30 px-6 py-4">
 									<h3 class="text-lg font-semibold text-foreground">
 										Eleves ({filteredStudents.length})
