@@ -1,11 +1,61 @@
 # Calculator Implementation Progress
 
-## Current Status: Phase 4 Complete
+## Current Status: Phase 6 In Progress
 
 **Date**: 2026-01-06
-**Commit**: `4a0c069a` - feat(calculator): add statistical functions and commands (Phase 4)
+**Latest Commit**: `5e4c76bc` - feat(calculator): add pedagogical step generation (Phase 5)
 
 ## Completed Phases
+
+### Phase 5: Pedagogical Steps
+
+**Files Created**:
+
+- `src/lib/mathAST/step-generator/types.ts` - Type definitions
+- `src/lib/mathAST/step-generator/arithmetic-steps.ts` - Step generation logic
+- `src/lib/mathAST/step-generator/index.ts` - Main entry point with Zod validation
+- `src/lib/mathAST/step-generator/__tests__/step-generator.test.ts` - 22 tests
+- `src/lib/components/calculator/StepsDisplay.svelte` - UI component
+
+**Files Modified**:
+
+- `src/lib/components/calculator/ResultDisplay.svelte` - Integrated step display
+
+**Features Implemented**:
+
+- Recursive AST traversal for step generation
+- French descriptions adapted to 4 school levels (primaire, college, lycee, superieur)
+- Collapsible sub-steps
+- Zod validation for configuration
+- Complexity-based level suggestion
+
+**Tests**: 22 passing
+
+---
+
+### Phase 6: Sync + PWA + Finitions (In Progress)
+
+**Files Modified**:
+
+- `src/lib/components/calculator/CalculatorContainer.svelte` - Added sharing/export
+- `static/service-worker.js` - Updated cache for MathLive
+
+**Features Implemented**:
+
+- URL sharing with base64 encoding
+- Export to LaTeX format
+- Export to plain text format
+- Service worker caching for MathLive CDN assets
+
+**Pending**:
+
+- Accessibility audit results
+- Security audit results
+- Performance audit results
+- Quality checks
+- Final commit
+
+---
 
 ### Phase 4: Statistics
 
@@ -105,24 +155,6 @@
 - Added Zod validation in store
 - Added clipboard error handling
 - Fixed event listener cleanup in MathField action
-
-## Pending Phases
-
-### Phase 5: Pedagogical Steps
-
-- Create step generator
-- Create StepsDisplay component
-- Adapt detail level to school level
-
-### Phase 6: Sync + PWA + Finitions
-
-- Supabase sync for history
-- Service worker PWA
-- URL sharing (base64)
-- Export LaTeX/text
-- Accessibility audit
-- Security audit
-- Performance audit
 
 ## Plan Reference
 
