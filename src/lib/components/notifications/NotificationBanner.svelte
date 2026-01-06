@@ -31,11 +31,11 @@
 		currentIndex = (currentIndex + 1) % notifications.length;
 	}
 
-	// Mark as read and close
-	async function handleDismiss() {
+	// Mark as read and close (optimistic UI - no await needed)
+	function handleDismiss() {
 		if (!currentNotification) return;
 
-		await notificationStore.markAsRead(currentNotification.id);
+		notificationStore.markAsRead(currentNotification.id);
 
 		// Reset index if we dismissed the last notification
 		if (currentIndex >= notifications.length) {
@@ -43,20 +43,20 @@
 		}
 	}
 
-	// Handle action button click
-	async function handleAction() {
+	// Handle action button click (optimistic UI - no await needed)
+	function handleAction() {
 		if (!currentNotification?.action_url) return;
 
-		// Capture values before async operation (derived value may change after await)
+		// Capture values before state changes
 		const notificationId = currentNotification.id;
 		const actionUrl = currentNotification.action_url;
 
-		// Mark as read
-		await notificationStore.markAsRead(notificationId);
+		// Mark as read (optimistic, fire-and-forget)
+		notificationStore.markAsRead(notificationId);
 
-		// Navigate to action URL (using then to handle promise)
+		// Navigate to action URL
 		// Type assertion: action_url comes from database, assumed to be valid route
-		goto(actionUrl as Parameters<typeof goto>[0]).then(() => {});
+		goto(actionUrl as Parameters<typeof goto>[0]);
 	}
 
 	// Get priority colors

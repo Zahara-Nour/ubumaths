@@ -6,6 +6,7 @@
  */
 
 import type { NotificationWithDetails } from '$lib/types/notification';
+import { toaster } from '$lib/stores/toaster.svelte';
 
 /**
  * Notification store class
@@ -107,63 +108,81 @@ class NotificationStore {
 	}
 
 	/**
-	 * Mark a notification as read
+	 * Mark a notification as read (optimistic UI)
+	 * Updates UI immediately, shows toast only on error
+	 * Uses granular rollback to avoid conflicts with concurrent operations
 	 */
-	async markAsRead(notificationId: string): Promise<boolean> {
-		try {
-			const response = await fetch('/api/notifications/mark-read', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ notificationId })
+	markAsRead(notificationId: string): void {
+		// Find the notification and its index for granular rollback
+		const index = this.notifications.findIndex((n) => n.id === notificationId);
+		if (index === -1) return; // Already removed or doesn't exist
+
+		const removedNotification = this.notifications[index];
+
+		// Optimistic update - immediate UI feedback
+		this.notifications = this.notifications.filter((n) => n.id !== notificationId);
+		this.unreadCount = Math.max(0, this.unreadCount - 1);
+
+		// Fire request in background
+		fetch('/api/notifications/mark-read', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ notificationId })
+		})
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Failed to mark notification as read');
+				}
+			})
+			.catch((err) => {
+				console.error('Error marking notification as read:', err);
+				// Granular rollback: only re-insert the failed notification
+				const currentNotifications = [...this.notifications];
+				const insertIndex = Math.min(index, currentNotifications.length);
+				currentNotifications.splice(insertIndex, 0, removedNotification);
+				this.notifications = currentNotifications;
+				this.unreadCount = this.unreadCount + 1;
+				// Show error toast
+				toaster.error('Erreur lors du marquage de la notification');
 			});
-
-			if (!response.ok) {
-				throw new Error('Failed to mark notification as read');
-			}
-
-			// Optimistic update
-			this.notifications = this.notifications.filter((n) => n.id !== notificationId);
-			this.unreadCount = Math.max(0, this.unreadCount - 1);
-
-			return true;
-		} catch (err) {
-			console.error('Error marking notification as read:', err);
-			// Rollback - refetch to get correct state
-			await this.fetchUnread();
-			return false;
-		}
 	}
 
 	/**
-	 * Mark all notifications as read
+	 * Mark all notifications as read (optimistic UI)
+	 * Updates UI immediately, shows toast only on error
 	 */
-	async markAllAsRead(): Promise<boolean> {
+	markAllAsRead(): void {
 		if (this.unreadCount === 0) {
-			return true;
+			return;
 		}
 
-		try {
-			const response = await fetch('/api/notifications/mark-all-read', {
-				method: 'POST'
+		// Save previous state for rollback
+		const previousNotifications = this.notifications;
+		const previousUnreadCount = this.unreadCount;
+
+		// Optimistic update - immediate UI feedback
+		this.notifications = [];
+		this.unreadCount = 0;
+
+		// Fire request in background
+		fetch('/api/notifications/mark-all-read', {
+			method: 'POST'
+		})
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Failed to mark all notifications as read');
+				}
+			})
+			.catch((err) => {
+				console.error('Error marking all notifications as read:', err);
+				// Rollback on error
+				this.notifications = previousNotifications;
+				this.unreadCount = previousUnreadCount;
+				// Show error toast
+				toaster.error('Erreur lors du marquage des notifications');
 			});
-
-			if (!response.ok) {
-				throw new Error('Failed to mark all notifications as read');
-			}
-
-			// Optimistic update
-			this.notifications = [];
-			this.unreadCount = 0;
-
-			return true;
-		} catch (err) {
-			console.error('Error marking all notifications as read:', err);
-			// Rollback - refetch to get correct state
-			await this.fetchUnread();
-			return false;
-		}
 	}
 
 	/**
