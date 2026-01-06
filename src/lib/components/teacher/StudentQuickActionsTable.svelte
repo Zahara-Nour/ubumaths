@@ -89,6 +89,7 @@
 	import { Star } from 'lucide-svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
+	import { getTotalUnusedCards } from '$lib/utils/vip-cards';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 
 	// ============================================================================
@@ -553,7 +554,7 @@
 					{@const bonus = student.bonus}
 					{@const vipCards = student.vipCards}
 					{@const warnings = student.warnings}
-					{@const vipCardCount = Object.keys(vipCards).length}
+					{@const vipCardCount = getTotalUnusedCards(vipCards)}
 
 					<Table.Row>
 						<!-- Name with Avatar -->
