@@ -1,6 +1,6 @@
 # Calculator Implementation Progress
 
-## Current Status: COMPLETE
+## Current Status: COMPLETE + DOCUMENTED
 
 **Date**: 2026-01-06
 **Latest Commits**:
@@ -57,6 +57,57 @@
 - Accessibility (a11y) audit - WCAG compliance review done
 - Security audit - Critical vulnerabilities fixed
 - Performance audit - Recommendations documented
+
+---
+
+### Security Hardening (Post-Audit Fixes)
+
+**Date**: 2026-01-06
+
+**CRITICAL-1 Fixed**: XSS via localStorage `outputHtml`
+
+- `outputHtml` is no longer stored in localStorage
+- Only LaTeX output is persisted (safe for rendering)
+- Files modified: `src/lib/stores/calculator.svelte.ts`
+
+**CRITICAL-2 Fixed**: Incomplete input validation on shared expressions
+
+- Added character whitelist regex (`SAFE_MATH_CHARS`)
+- Added dangerous pattern detection (script injection, eval, etc.)
+- Added balanced parentheses validation
+- Files modified: `src/lib/components/calculator/CalculatorContainer.svelte`
+
+**Security Measures Now in Place**:
+
+1. Zod validation on all user inputs
+2. Character whitelist for shared expressions
+3. Dangerous pattern blacklist
+4. localStorage size limits (100KB max)
+5. Expression length limits (200 chars shared, 1000 chars input)
+6. No HTML stored in localStorage
+7. Command injection prevention (`.` prefix blocked in shares)
+
+---
+
+### MEDIUM Priority Fixes (DoS Prevention)
+
+**Date**: 2026-01-06
+
+**MEDIUM-1 Fixed**: `.stats` and `.linreg` value limits
+
+- Added `MAX_STATS_VALUES = 1000` limit
+- Added `MAX_LINREG_VALUES = 1000` limit
+- Prevents CPU exhaustion from processing millions of values
+- Files modified: `src/lib/mathAST/cli/web/web-repl-engine.ts`
+
+**MEDIUM-2 Fixed**: Evaluation depth limit
+
+- Added `MAX_EVAL_DEPTH = 100` in evaluator
+- Prevents stack overflow from deeply nested expressions like `(((((...)))))`
+- All recursive calls now track and check depth
+- Files modified: `src/lib/mathAST/eval/evaluate.ts`
+
+**Tests**: All 282 eval tests + 110 REPL tests passing
 
 ---
 
@@ -158,6 +209,21 @@
 - Added Zod validation in store
 - Added clipboard error handling
 - Fixed event listener cleanup in MathField action
+
+## Technical Documentation
+
+Complete technical reference: `docs/ref/calculator/`
+
+| Document                                                      | Description                 |
+| ------------------------------------------------------------- | --------------------------- |
+| [README.md](../../ref/calculator/README.md)                   | Overview and quick start    |
+| [architecture.md](../../ref/calculator/architecture.md)       | System design and data flow |
+| [components.md](../../ref/calculator/components.md)           | Svelte component reference  |
+| [store-api.md](../../ref/calculator/store-api.md)             | Calculator store API        |
+| [web-repl-engine.md](../../ref/calculator/web-repl-engine.md) | Evaluation engine API       |
+| [commands.md](../../ref/calculator/commands.md)               | CAS command reference       |
+| [step-generator.md](../../ref/calculator/step-generator.md)   | Pedagogical step generation |
+| [security.md](../../ref/calculator/security.md)               | Security measures           |
 
 ## Plan Reference
 

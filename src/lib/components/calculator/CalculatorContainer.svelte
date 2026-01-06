@@ -14,13 +14,49 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { z } from 'zod';
 
+	// SECURITY: Character whitelist for math expressions
+	// Allows: digits, letters, math operators, parentheses, spaces, common math symbols
+	const SAFE_MATH_CHARS = /^[\d\w\s+\-*/^=<>()[\]{}.,;:|!?\\πΠ√∫∑∏∞°′″αβγδεθλμσφωΩ]+$/u;
+
+	// SECURITY: Patterns that should never appear in shared expressions
+	const DANGEROUS_PATTERNS = [
+		/<script/i, // Script injection
+		/javascript:/i, // JavaScript protocol
+		/on\w+=/i, // Event handlers
+		/data:/i, // Data URIs
+		/eval\s*\(/i, // Eval calls
+		/function\s*\(/i, // Function definitions
+		/=>\s*{/i, // Arrow functions
+		/import\s*\(/i, // Dynamic imports
+		/require\s*\(/i // CommonJS require
+	];
+
 	// Schema for validating shared URL parameters
 	const SharedCalcSchema = z.object({
 		expr: z
 			.string()
 			.max(200)
-			.refine((s) => !s.trim().startsWith('.'), 'Commands not allowed'),
-		result: z.string().max(200).optional()
+			.refine((s) => !s.trim().startsWith('.'), 'Commands not allowed')
+			.refine((s) => SAFE_MATH_CHARS.test(s), 'Invalid characters in expression')
+			.refine(
+				(s) => !DANGEROUS_PATTERNS.some((p) => p.test(s)),
+				'Expression contains forbidden patterns'
+			)
+			.refine((s) => {
+				// Validate balanced parentheses
+				let depth = 0;
+				for (const char of s) {
+					if (char === '(' || char === '[' || char === '{') depth++;
+					if (char === ')' || char === ']' || char === '}') depth--;
+					if (depth < 0) return false;
+				}
+				return depth === 0;
+			}, 'Unbalanced parentheses'),
+		result: z
+			.string()
+			.max(200)
+			.refine((s) => SAFE_MATH_CHARS.test(s), 'Invalid characters in result')
+			.optional()
 	});
 
 	let activeTab = $state('calc');
