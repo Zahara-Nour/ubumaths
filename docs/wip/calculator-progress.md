@@ -1,11 +1,35 @@
 # Calculator Implementation Progress
 
-## Current Status: Phase 3 Complete
+## Current Status: Phase 4 Complete
 
 **Date**: 2026-01-06
-**Commit**: (pending) - feat(calculator): implement Phase 3 - Grapheur integration
+**Commit**: `4a0c069a` - feat(calculator): add statistical functions and commands (Phase 4)
 
 ## Completed Phases
+
+### Phase 4: Statistics
+
+**Files Modified**:
+
+- `src/lib/mathAST/eval/evaluate.ts` - Added statistical functions
+- `src/lib/mathAST/cli/web/web-repl-engine.ts` - Added .stats and .linreg commands
+- `src/lib/mathAST/cli/web/web-repl-engine.test.ts` - 68 tests (202 new lines)
+- `src/lib/mathAST/cli/types.ts` - Added error codes
+- `src/lib/mathAST/parser/custom/tokenizer.ts` - Added statistical function names, fixed whitespace handling
+- `src/lib/mathAST/parser/types.ts` - Added statistical functions to FUNCTION_COMMANDS
+- `src/lib/mathAST/cli/core/input-detector.ts` - Added statistical functions to detector
+
+**Features Implemented**:
+
+- Statistical functions: mean, median, variance, stdev, min, max, sum
+- `.stats` command for full statistical summary
+- `.linreg` command for linear regression with slope, intercept, and R²
+- Tokenizer whitespace fix to distinguish "1,2" (decimal) from "1, 2" (separator)
+- New error codes: UNKNOWN_UNIT, DIMENSION_MISMATCH, MATH_ERROR
+
+**Tests**: 68 passing (7 new for Phase 4)
+
+---
 
 ### Phase 3: Grapheur Integration
 
@@ -83,11 +107,6 @@
 - Fixed event listener cleanup in MathField action
 
 ## Pending Phases
-
-### Phase 4: Statistics
-
-- Implement mean, median, stdev, variance, linreg
-- Create `.stats` command
 
 ### Phase 5: Pedagogical Steps
 
