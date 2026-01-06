@@ -9,6 +9,7 @@
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
 import type { FunctionBindings } from './function-bindings';
+import type { Unit } from '../units/types';
 
 // =============================================================================
 // Binding Types
@@ -148,6 +149,116 @@ export interface EvalResult {
 
 	/** True if the result is exact (no approximation or rounding) */
 	readonly exact: boolean;
+}
+
+// =============================================================================
+// Unit-Aware Evaluation Types
+// =============================================================================
+
+/**
+ * Conversion mode for unit-aware evaluation.
+ *
+ * - 'first': Convert to the first unit encountered (5 km + 3000 m = 8 km)
+ * - 'si': Normalize to SI base units (5 km + 3000 m = 8000 m)
+ * - 'best': Choose the "best" unit based on numeric result readability
+ *           (prefer values between 0.1 and 1000 for human readability)
+ */
+export type UnitConversionMode = 'first' | 'si' | 'best';
+
+/**
+ * Options for unit-aware evaluation.
+ *
+ * Extends EvalOptions with unit-specific settings.
+ *
+ * @example
+ * // Default: convert to first unit encountered
+ * const options: EvalWithUnitsOptions = { conversionMode: 'first' };
+ *
+ * // Normalize to SI base units
+ * const options: EvalWithUnitsOptions = { conversionMode: 'si' };
+ *
+ * // Choose best unit for readability
+ * const options: EvalWithUnitsOptions = { conversionMode: 'best' };
+ *
+ * // With variable units
+ * const options: EvalWithUnitsOptions = {
+ *   variableUnits: new Map([['v', velocityUnit]])
+ * };
+ */
+export interface EvalWithUnitsOptions extends EvalOptions {
+	/**
+	 * How to handle unit conversion when combining values.
+	 * Default: 'first'
+	 */
+	readonly conversionMode?: UnitConversionMode;
+
+	/**
+	 * Unit bindings for variables.
+	 * Maps variable names to their units for dimensional analysis.
+	 */
+	readonly variableUnits?: ReadonlyMap<string, Unit>;
+}
+
+/**
+ * Default options for unit-aware evaluation.
+ */
+export const DEFAULT_EVAL_WITH_UNITS_OPTIONS: Required<
+	Omit<EvalWithUnitsOptions, 'functions' | 'variableUnits'>
+> & {
+	functions: FunctionBindings;
+	variableUnits: ReadonlyMap<string, Unit>;
+} = {
+	mode: 'exact',
+	precision: 15,
+	functions: {},
+	conversionMode: 'first',
+	variableUnits: new Map()
+} as const;
+
+/**
+ * Result of evaluating an expression with unit propagation.
+ *
+ * Extends EvalResult with a mandatory unit field.
+ *
+ * @example
+ * // Result with unit
+ * const result: EvalResultWithUnit = {
+ *   value: 8,
+ *   node: number('8'),
+ *   exact: true,
+ *   unit: { components: new Map([['m', 1]]), coefficient: 1000 } // km
+ * };
+ *
+ * // Result with conversion applied
+ * const result: EvalResultWithUnit = {
+ *   value: 8000,
+ *   node: number('8000'),
+ *   exact: true,
+ *   unit: { components: new Map([['m', 1]]), coefficient: 1 }, // m
+ *   originalUnit: { components: new Map([['m', 1]]), coefficient: 1000 } // was km
+ * };
+ */
+export interface EvalResultWithUnit {
+	/** The computed value as a Rational (exact mode) or number (decimal mode) */
+	readonly value: Rational | number;
+
+	/** The simplified AST node representing the result */
+	readonly node: MathNode;
+
+	/** True if the result is exact (no approximation or rounding) */
+	readonly exact: boolean;
+
+	/**
+	 * The resulting unit of the expression.
+	 * Always present (may be dimensionless for pure numbers).
+	 */
+	readonly unit: Unit;
+
+	/**
+	 * Original unit before conversion (if different from unit).
+	 * Useful for understanding what conversion was applied.
+	 */
+	readonly originalUnit?: Unit;
 }
 
 // =============================================================================

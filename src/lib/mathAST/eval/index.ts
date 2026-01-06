@@ -75,10 +75,18 @@ export type {
 	EvalMode,
 	EvalOptions,
 	EvalResult,
-	SubstituteOptions
+	SubstituteOptions,
+	// Unit-aware evaluation types
+	UnitConversionMode,
+	EvalWithUnitsOptions,
+	EvalResultWithUnit
 } from './types';
 
-export { DEFAULT_EVAL_OPTIONS, DEFAULT_SUBSTITUTE_OPTIONS } from './types';
+export {
+	DEFAULT_EVAL_OPTIONS,
+	DEFAULT_SUBSTITUTE_OPTIONS,
+	DEFAULT_EVAL_WITH_UNITS_OPTIONS
+} from './types';
 
 // =============================================================================
 // Function Binding Types and Functions
@@ -116,3 +124,9 @@ export type { SubstituteAllOptions } from './substitute';
 export { evaluate } from './evaluate';
 
 export { evaluateWithModifiers } from './evaluate-with-modifiers';
+
+// =============================================================================
+// Unit-Aware Evaluation
+// =============================================================================
+
+export { evaluateWithUnits, DimensionalEvaluationError } from './evaluate-with-units';
