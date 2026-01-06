@@ -23,6 +23,9 @@ import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { notificationStore } from './notifications.svelte';
 import type { NotificationWithDetails } from '$lib/types/notification';
 
+// Helper to flush all pending promises (for testing fire-and-forget async operations)
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 // ============================================================================
 // TEST SETUP
 // ============================================================================
@@ -545,7 +548,7 @@ describe('NotificationStore - Pagination', () => {
 	// INTEGRATION: markAsRead() WITH PAGINATION
 	// ============================================================================
 
-	test('markAsRead() removes notification from paginated list', async () => {
+	test('markAsRead() removes notification immediately (optimistic UI)', async () => {
 		// Setup: Load notifications
 		notificationStore.notifications = [
 			createMockNotification('notif-1'),
@@ -560,62 +563,91 @@ describe('NotificationStore - Pagination', () => {
 			json: async () => ({ success: true })
 		});
 
-		// Act
-		await notificationStore.markAsRead('notif-2');
+		// Act - now synchronous (fire-and-forget)
+		notificationStore.markAsRead('notif-2');
 
-		// Assert: Notification removed
+		// Assert: Optimistic update happens immediately
 		expect(notificationStore.notifications.length).toBe(2);
 		expect(notificationStore.notifications.find((n) => n.id === 'notif-2')).toBeUndefined();
-
-		// Assert: Unread count decremented
 		expect(notificationStore.unreadCount).toBe(2);
+
+		// Wait for background fetch to complete
+		await flushPromises();
+
+		// Assert: State remains after successful fetch
+		expect(notificationStore.notifications.length).toBe(2);
 	});
 
-	test('markAsRead() rolls back on error by refetching', async () => {
+	test('markAsRead() rolls back on error (optimistic UI)', async () => {
 		// Setup: Load notifications
-		notificationStore.notifications = [
-			createMockNotification('notif-1'),
-			createMockNotification('notif-2')
-		];
+		const notif1 = createMockNotification('notif-1');
+		const notif2 = createMockNotification('notif-2');
+		notificationStore.notifications = [notif1, notif2];
 		notificationStore.unreadCount = 2;
 
 		// Mock mark as read to fail
+		global.fetch = vi.fn().mockResolvedValueOnce({
+			ok: false,
+			status: 500
+		});
+
+		// Act - synchronous call
+		notificationStore.markAsRead('notif-1');
+
+		// Assert: Optimistic update happens immediately
+		expect(notificationStore.notifications.length).toBe(1);
+		expect(notificationStore.unreadCount).toBe(1);
+
+		// Wait for background fetch to complete and rollback
+		await flushPromises();
+
+		// Assert: State rolled back after error
+		expect(notificationStore.notifications.length).toBe(2);
+		expect(notificationStore.unreadCount).toBe(2);
+
+		// Assert: Only one fetch call (no refetch, direct rollback)
+		expect(global.fetch).toHaveBeenCalledTimes(1);
+	});
+
+	test('markAsRead() granular rollback does not affect concurrent successful operations', async () => {
+		// Setup: 3 notifications
+		const notif1 = createMockNotification('notif-1');
+		const notif2 = createMockNotification('notif-2');
+		const notif3 = createMockNotification('notif-3');
+		notificationStore.notifications = [notif1, notif2, notif3];
+		notificationStore.unreadCount = 3;
+
+		// Mock: first call succeeds, second call fails
 		global.fetch = vi
 			.fn()
-			.mockResolvedValueOnce({
-				ok: false,
-				status: 500
-			})
-			// Mock refetch response
-			.mockResolvedValueOnce({
-				ok: true,
-				json: async () => ({
-					notifications: [createMockNotification('notif-1'), createMockNotification('notif-2')],
-					pagination: {
-						page: 1,
-						limit: 20,
-						total: 2,
-						totalPages: 1,
-						hasMore: false
-					}
-				})
-			});
+			.mockResolvedValueOnce({ ok: true }) // notif-1 succeeds
+			.mockResolvedValueOnce({ ok: false, status: 500 }); // notif-2 fails
 
-		// Act
-		const result = await notificationStore.markAsRead('notif-1');
+		// Act - mark two notifications concurrently
+		notificationStore.markAsRead('notif-1'); // will succeed
+		notificationStore.markAsRead('notif-2'); // will fail
 
-		// Assert: Operation failed
-		expect(result).toBe(false);
+		// Assert: Both removed optimistically
+		expect(notificationStore.notifications.length).toBe(1);
+		expect(notificationStore.notifications[0].id).toBe('notif-3');
+		expect(notificationStore.unreadCount).toBe(1);
 
-		// Assert: Refetch was called to restore correct state
-		expect(global.fetch).toHaveBeenCalledTimes(2);
+		// Wait for background fetches to complete
+		await flushPromises();
+
+		// Assert: Only notif-2 is rolled back, notif-1 stays removed
+		expect(notificationStore.notifications.length).toBe(2);
+		expect(notificationStore.notifications.map((n) => n.id)).toContain('notif-2');
+		expect(notificationStore.notifications.map((n) => n.id)).toContain('notif-3');
+		expect(notificationStore.notifications.map((n) => n.id)).not.toContain('notif-1');
+		expect(notificationStore.unreadCount).toBe(2);
 	});
 
 	// ============================================================================
 	// INTEGRATION: markAllAsRead() WITH PAGINATION
 	// ============================================================================
 
-	test('markAllAsRead() clears all paginated notifications', async () => {
+	test('markAllAsRead() clears all notifications immediately (optimistic UI)', async () => {
 		// Setup: Multiple pages of notifications
 		notificationStore.notifications = [
 			createMockNotification('page1-1'),
@@ -631,15 +663,22 @@ describe('NotificationStore - Pagination', () => {
 			json: async () => ({ success: true })
 		});
 
-		// Act
-		await notificationStore.markAllAsRead();
+		// Act - synchronous call
+		notificationStore.markAllAsRead();
 
-		// Assert: All notifications cleared
+		// Assert: Optimistic update happens immediately
+		expect(notificationStore.notifications).toEqual([]);
+		expect(notificationStore.unreadCount).toBe(0);
+
+		// Wait for background fetch to complete
+		await flushPromises();
+
+		// Assert: State remains after successful fetch
 		expect(notificationStore.notifications).toEqual([]);
 		expect(notificationStore.unreadCount).toBe(0);
 	});
 
-	test('markAllAsRead() does nothing when unreadCount is 0', async () => {
+	test('markAllAsRead() does nothing when unreadCount is 0', () => {
 		// Setup: No unread notifications
 		notificationStore.notifications = [];
 		notificationStore.unreadCount = 0;
@@ -647,8 +686,8 @@ describe('NotificationStore - Pagination', () => {
 		// Mock fetch (should NOT be called)
 		global.fetch = vi.fn();
 
-		// Act
-		await notificationStore.markAllAsRead();
+		// Act - synchronous call
+		notificationStore.markAllAsRead();
 
 		// Assert: No API call made
 		expect(global.fetch).not.toHaveBeenCalled();

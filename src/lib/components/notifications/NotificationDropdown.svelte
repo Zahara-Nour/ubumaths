@@ -22,29 +22,29 @@
 	// State for popover
 	let isOpen = $state(false);
 
-	// Handle mark as read
-	async function handleMarkAsRead(notificationId: string) {
-		await notificationStore.markAsRead(notificationId);
+	// Handle mark as read (optimistic UI - no await needed)
+	function handleMarkAsRead(notificationId: string) {
+		notificationStore.markAsRead(notificationId);
 	}
 
-	// Handle mark all as read
-	async function handleMarkAllAsRead() {
-		await notificationStore.markAllAsRead();
+	// Handle mark all as read (optimistic UI - no await needed)
+	function handleMarkAllAsRead() {
+		notificationStore.markAllAsRead();
 		isOpen = false;
 	}
 
-	// Handle notification click (with action)
-	async function handleNotificationClick(notification: NotificationWithDetails) {
-		// Mark as read
-		await notificationStore.markAsRead(notification.id);
+	// Handle notification click (with action) (optimistic UI - no await needed)
+	function handleNotificationClick(notification: NotificationWithDetails) {
+		// Mark as read (optimistic, fire-and-forget)
+		notificationStore.markAsRead(notification.id);
 
 		// Close popover
 		isOpen = false;
 
-		// Navigate if action URL exists (using then to handle promise)
+		// Navigate if action URL exists
 		// Type assertion: action_url comes from database, assumed to be valid route
 		if (notification.action_url) {
-			goto(notification.action_url as Parameters<typeof goto>[0]).then(() => {});
+			goto(notification.action_url as Parameters<typeof goto>[0]);
 		}
 	}
 

@@ -48,14 +48,14 @@
 		notificationStore.fetchUnread();
 	});
 
-	// Handle mark as read
-	async function handleMarkAsRead(notificationId: string) {
-		await notificationStore.markAsRead(notificationId);
+	// Handle mark as read (optimistic UI - no await needed)
+	function handleMarkAsRead(notificationId: string) {
+		notificationStore.markAsRead(notificationId);
 	}
 
-	// Handle mark all as read
-	async function handleMarkAllAsRead() {
-		await notificationStore.markAllAsRead();
+	// Handle mark all as read (optimistic UI - no await needed)
+	function handleMarkAllAsRead() {
+		notificationStore.markAllAsRead();
 	}
 
 	// Handle load more
@@ -63,14 +63,14 @@
 		notificationStore.loadMore();
 	}
 
-	// Handle notification click (with action)
-	async function handleNotificationClick(notification: NotificationWithDetails) {
-		// Mark as read
-		await notificationStore.markAsRead(notification.id);
+	// Handle notification click (with action) (optimistic UI - no await needed)
+	function handleNotificationClick(notification: NotificationWithDetails) {
+		// Mark as read (optimistic, fire-and-forget)
+		notificationStore.markAsRead(notification.id);
 
 		// Navigate if action URL exists
 		if (notification.action_url) {
-			goto(notification.action_url).then(() => {});
+			goto(notification.action_url);
 		}
 	}
 
