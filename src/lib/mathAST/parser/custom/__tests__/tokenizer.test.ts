@@ -23,6 +23,7 @@ import {
 	tokenize,
 	isBinaryOperator,
 	isRelationToken,
+	isAssignmentToken,
 	isLeftDelimiter,
 	isRightDelimiter,
 	tokenTypeToString,
@@ -403,6 +404,57 @@ describe('Operator tokenization', () => {
 			const tokens = tokenize('a:');
 			expect(tokens[0].type).toBe('LETTER');
 			expect(tokens[1].type).toBe('COLON');
+		});
+	});
+
+	describe('Assignment operators', () => {
+		it('should tokenize := as ASSIGN token', () => {
+			const tokens = tokenize(':=');
+			expect(tokens[0]).toEqual({
+				type: 'ASSIGN',
+				value: ':=',
+				position: 0,
+				length: 2
+			});
+		});
+
+		it('should tokenize <- as ARROW token', () => {
+			const tokens = tokenize('<-');
+			expect(tokens[0]).toEqual({
+				type: 'ARROW',
+				value: '<-',
+				position: 0,
+				length: 2
+			});
+		});
+
+		it('should tokenize := in assignment expression', () => {
+			const tokens = tokenize('x:=5');
+			expect(getTypes(tokens.slice(0, -1))).toEqual(['LETTER', 'ASSIGN', 'NUMBER']);
+		});
+
+		it('should tokenize <- in assignment expression', () => {
+			const tokens = tokenize('x<-5');
+			expect(getTypes(tokens.slice(0, -1))).toEqual(['LETTER', 'ARROW', 'NUMBER']);
+		});
+
+		it('should prefer <- over < followed by MINUS', () => {
+			// Adjacent <- is ARROW, not < then -
+			const tokens = tokenize('x<-5');
+			expect(tokens[0].type).toBe('LETTER');
+			expect(tokens[1].type).toBe('ARROW');
+			expect(tokens[2].type).toBe('NUMBER');
+		});
+
+		it('should tokenize < - with space as separate tokens', () => {
+			// Space breaks the ARROW pattern, so we get LESS, MINUS
+			const tokens = tokenize('x < -5');
+			expect(getTypes(tokens.slice(0, -1))).toEqual(['LETTER', 'LESS', 'MINUS', 'NUMBER']);
+		});
+
+		it('should prefer := over : followed by =', () => {
+			const tokens = tokenize('x:=y');
+			expect(tokens[1].type).toBe('ASSIGN');
 		});
 	});
 });
@@ -871,6 +923,29 @@ describe('Utility functions', () => {
 			expect(isRelationToken(tokenize('x')[0])).toBe(false);
 			expect(isRelationToken(tokenize('+')[0])).toBe(false);
 		});
+
+		it('should return false for assignment operators', () => {
+			expect(isRelationToken(tokenize(':=')[0])).toBe(false);
+			expect(isRelationToken(tokenize('<-')[0])).toBe(false);
+		});
+	});
+
+	describe('isAssignmentToken()', () => {
+		it('should return true for ASSIGN', () => {
+			expect(isAssignmentToken(tokenize(':=')[0])).toBe(true);
+		});
+
+		it('should return true for ARROW', () => {
+			expect(isAssignmentToken(tokenize('<-')[0])).toBe(true);
+		});
+
+		it('should return false for non-assignment operators', () => {
+			expect(isAssignmentToken(tokenize('=')[0])).toBe(false);
+			expect(isAssignmentToken(tokenize('+')[0])).toBe(false);
+			expect(isAssignmentToken(tokenize('x')[0])).toBe(false);
+			expect(isAssignmentToken(tokenize('<')[0])).toBe(false);
+			expect(isAssignmentToken(tokenize(':')[0])).toBe(false);
+		});
 	});
 
 	describe('isLeftDelimiter()', () => {
@@ -904,6 +979,8 @@ describe('Utility functions', () => {
 			expect(tokenTypeToString('FUNC')).toBe('function');
 			expect(tokenTypeToString('PLUS')).toBe("'+'");
 			expect(tokenTypeToString('COLON_SLASH')).toBe("':/'");
+			expect(tokenTypeToString('ASSIGN')).toBe("':='");
+			expect(tokenTypeToString('ARROW')).toBe("'<-'");
 			expect(tokenTypeToString('IFF')).toBe("'<=>'");
 			expect(tokenTypeToString('EOF')).toBe('end of input');
 		});
