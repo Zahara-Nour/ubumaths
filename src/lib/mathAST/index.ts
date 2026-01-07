@@ -69,6 +69,7 @@ export type {
 	SuperscriptNode,
 	RelationNode,
 	UnitNode,
+	MatrixNode,
 
 	// Union types
 	LiteralNode,
@@ -161,7 +162,14 @@ export {
 	// Units
 	withUnit,
 	quantity,
-	quantityVar
+	quantityVar,
+
+	// Matrices
+	matrix,
+	rowVector,
+	columnVector,
+	identityMatrix,
+	zeroMatrix
 } from './factory';
 
 // Options types for extended metadata
@@ -228,6 +236,10 @@ export {
 	isSuperscript,
 	isRelation,
 	isUnit,
+	isMatrix,
+	isRowVector,
+	isColumnVector,
+	isSquareMatrix,
 
 	// Utility predicates
 	hasDerivativeOrder,
@@ -646,3 +658,30 @@ export type {
 	ASTVisitor,
 	TransformVisitor
 } from './visitor';
+
+// =============================================================================
+// Matrix Operations
+// =============================================================================
+
+export type {
+	MatrixType,
+	MatrixOptions,
+	MatrixDimensions,
+	MatrixVerbosity,
+	MatrixStep,
+	MatrixOperationOptions
+} from './matrix';
+
+export { MatrixDimensionError, MatrixOperationError } from './matrix';
+
+export {
+	getDimensions,
+	matrixAdd,
+	matrixSubtract,
+	scalarMultiply,
+	matrixMultiply,
+	transpose,
+	trace,
+	determinant,
+	inverse
+} from './matrix';

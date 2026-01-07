@@ -209,7 +209,11 @@ export type ParseErrorCode =
 	| 'EMPTY_GROUP' // Empty braces {}
 	| 'UNBALANCED_DELIMITERS' // Mismatched delimiters
 	| 'INVALID_SUBSCRIPT' // Invalid subscript expression
-	| 'INVALID_SUPERSCRIPT'; // Invalid superscript expression
+	| 'INVALID_SUPERSCRIPT' // Invalid superscript expression
+	| 'SYNTAX_ERROR' // General syntax error
+	| 'UNKNOWN_ENVIRONMENT' // Unknown LaTeX environment (e.g., \begin{xyz})
+	| 'UNCLOSED_ENVIRONMENT' // Environment not closed (missing \end)
+	| 'MISMATCHED_ENVIRONMENT'; // Begin/end environment names don't match
 
 /**
  * Context around an error showing surrounding text.
