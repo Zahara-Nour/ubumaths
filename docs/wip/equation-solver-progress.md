@@ -1,6 +1,6 @@
 # Equation Solver Progress
 
-## Status: Phase 1 Complete
+## Status: Phase 2 Complete
 
 ## Phase 1: Types et Solveur Lineaire
 
@@ -59,22 +59,45 @@
 - Verbosity levels: result, summarized, detailed
 - French descriptions verified
 
-### Code Review Fixes Applied
+---
 
-- Removed unused `hasVariable` import from linear.ts
-- Removed unused imports from classify.ts (isRelation, isSuperscript, isVariable, isGreek)
-- Added negative coefficient test (-2x+6=0)
+## Phase 2: Solveur Quadratique
+
+**Status**: Complete
+**Date**: 2025-01-07
+
+### Implemented
+
+1. **Quadratic Solver** (`src/lib/mathAST/solve/solvers/quadratic.ts`)
+
+   - Solves ax^2 + bx + c = 0
+   - Coefficient extraction from quadratic expressions
+   - Discriminant calculation (Delta = b^2 - 4ac)
+   - Three cases handled:
+     - Delta > 0: two distinct real solutions
+     - Delta = 0: one double solution
+     - Delta < 0: no real solution
+   - Irrational solutions (sqrt in answer) with numeric approximations
+   - French step descriptions for discriminant interpretation
+
+2. **Updated Descriptions** (`src/lib/mathAST/solve/descriptions-fr.ts`)
+   - Added quadratic-specific rules: `quadratic-formula`, `double-solution`, `no-real-solution`
+   - Enhanced `describeDiscriminant()` with numeric value interpretation
+
+### Tests
+
+- 18 new tests (37 total)
+- Two distinct solutions: x^2 - 5x + 6 = 0, x^2 - 4 = 0, 2x^2 - 8x + 6 = 0
+- Double solution: x^2 - 4x + 4 = 0, x^2 + 6x + 9 = 0, 4x^2 - 4x + 1 = 0
+- No real solution: x^2 + 1 = 0, x^2 + x + 1 = 0, 2x^2 + 3x + 5 = 0
+- Irrational solutions: x^2 - 2 = 0, x^2 - 3x + 1 = 0
+- Special forms: x^2 = 9, x^2 = 0
+- Discriminant steps verification
+- Variable auto-detection (y)
 
 ---
 
 ## Pending Phases
-
-### Phase 2: Solveur Quadratique
-
-- Tests TDD (doivent echouer d'abord)
-- Implementation ax^2 + bx + c = 0
-- Discriminant calculation and interpretation
-- Solution verification
 
 ### Phase 3: Solveurs Polynomial et Transcendant
 
@@ -100,15 +123,17 @@
 
 ## Files Modified
 
-| File                                             | Action  |
-| ------------------------------------------------ | ------- |
-| `src/lib/mathAST/solve/types.ts`                 | Created |
-| `src/lib/mathAST/solve/descriptions-fr.ts`       | Created |
-| `src/lib/mathAST/solve/step-recorder.ts`         | Created |
-| `src/lib/mathAST/solve/classify.ts`              | Created |
-| `src/lib/mathAST/solve/solvers/linear.ts`        | Created |
-| `src/lib/mathAST/solve/solvers/index.ts`         | Created |
-| `src/lib/mathAST/solve/solve.ts`                 | Created |
-| `src/lib/mathAST/solve/index.ts`                 | Created |
-| `src/lib/mathAST/solve/__tests__/linear.test.ts` | Created |
-| `docs/wip/equation-solver-progress.md`           | Created |
+| File                                                | Action   |
+| --------------------------------------------------- | -------- |
+| `src/lib/mathAST/solve/types.ts`                    | Created  |
+| `src/lib/mathAST/solve/descriptions-fr.ts`          | Modified |
+| `src/lib/mathAST/solve/step-recorder.ts`            | Created  |
+| `src/lib/mathAST/solve/classify.ts`                 | Created  |
+| `src/lib/mathAST/solve/solvers/linear.ts`           | Created  |
+| `src/lib/mathAST/solve/solvers/quadratic.ts`        | Created  |
+| `src/lib/mathAST/solve/solvers/index.ts`            | Modified |
+| `src/lib/mathAST/solve/solve.ts`                    | Modified |
+| `src/lib/mathAST/solve/index.ts`                    | Modified |
+| `src/lib/mathAST/solve/__tests__/linear.test.ts`    | Created  |
+| `src/lib/mathAST/solve/__tests__/quadratic.test.ts` | Created  |
+| `docs/wip/equation-solver-progress.md`              | Created  |

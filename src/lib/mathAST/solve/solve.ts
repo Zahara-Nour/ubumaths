@@ -20,6 +20,7 @@ import { classifyEquation, toStandardForm, detectVariable } from './classify';
 import { createStepRecorder } from './step-recorder';
 import { linearSolver } from './solvers/linear';
 import { quadraticSolver } from './solvers/quadratic';
+import { transcendentalSolver } from './solvers/transcendental';
 import { normalize, normalFormsEquivalent } from '../normal';
 import { number } from '../factory';
 
@@ -66,11 +67,12 @@ function selectSolver(classification: ClassificationResult): EquationSolver | nu
 		case 'quadratic':
 			return quadraticSolver;
 
+		case 'exponential':
+		case 'logarithmic':
+		case 'trigonometric':
+			return transcendentalSolver;
+
 		// Future: case 'polynomial': return polynomialSolver;
-		// Future: case 'exponential':
-		// Future: case 'logarithmic':
-		// Future: case 'trigonometric':
-		// Future:   return transcendentalSolver;
 
 		default:
 			return null;
