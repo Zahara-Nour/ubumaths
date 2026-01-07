@@ -675,8 +675,8 @@ export class SolveCommand extends BaseCommand {
 		const headerLines: string[] = [];
 		const headerHtmlLines: string[] = [];
 
-		// Show pedagogical steps for supported equation types
-		if (verbosity !== 'result' && result.status === 'unique' && result.solutions.length > 0) {
+		// Show pedagogical steps only in detailed (verbose) mode
+		if (verbosity === 'detailed' && result.status === 'unique' && result.solutions.length > 0) {
 			const solutionValue = result.solutions[0].value;
 
 			// Generate pedagogical steps based on equation type
