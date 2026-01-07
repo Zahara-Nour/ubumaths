@@ -1501,12 +1501,13 @@ export class WebReplEngine {
 		}
 
 		// Build export data (oldest to newest for chronological order)
+		// Strip ANSI codes from output for clean JSON
 		const entries = [...this.historyRef]
 			.reverse()
 			.filter((entry) => !entry.isCommand || !entry.input.startsWith('.export'))
 			.map((entry) => ({
 				input: entry.input,
-				output: entry.result.output
+				output: this.stripAnsi(entry.result.output)
 			}));
 
 		const exportData = {
