@@ -91,6 +91,9 @@ export interface CommandResult {
 	readonly decimalOutputHtml?: string;
 	/** Whether user can toggle between exact and decimal display */
 	readonly canToggle?: boolean;
+
+	/** Initial display mode (true = show decimal first, false = show exact first) */
+	readonly showDecimalInitially?: boolean;
 }
 
 // =============================================================================

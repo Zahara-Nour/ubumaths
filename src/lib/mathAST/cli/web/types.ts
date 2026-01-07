@@ -92,6 +92,9 @@ export interface ReplExecutionResult {
 	/** Whether user can toggle between exact and decimal display */
 	readonly canToggle?: boolean;
 
+	/** Initial display mode (true = show decimal first, false = show exact first) */
+	readonly showDecimalInitially?: boolean;
+
 	// =========================================================================
 	// Export Support
 	// =========================================================================

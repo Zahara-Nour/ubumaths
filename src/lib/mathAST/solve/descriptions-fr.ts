@@ -7,7 +7,7 @@
  */
 
 import type { MathNode } from '../types';
-import { toLatex } from '../latex-generator';
+import { toCustom } from '../custom-generator';
 
 // =============================================================================
 // Solving Step Descriptions
@@ -118,28 +118,28 @@ export function getRuleDescription(rule: SolvingRule | string): string {
  * Create a description for subtracting a value from both sides.
  */
 export function describeSubtract(value: MathNode): string {
-	return `On soustrait ${toLatex(value)} aux deux membres`;
+	return `On soustrait ${toCustom(value)} aux deux membres`;
 }
 
 /**
  * Create a description for adding a value to both sides.
  */
 export function describeAdd(value: MathNode): string {
-	return `On ajoute ${toLatex(value)} aux deux membres`;
+	return `On ajoute ${toCustom(value)} aux deux membres`;
 }
 
 /**
  * Create a description for dividing both sides by a value.
  */
 export function describeDivide(value: MathNode): string {
-	return `On divise les deux membres par ${toLatex(value)}`;
+	return `On divise les deux membres par ${toCustom(value)}`;
 }
 
 /**
  * Create a description for multiplying both sides by a value.
  */
 export function describeMultiply(value: MathNode): string {
-	return `On multiplie les deux membres par ${toLatex(value)}`;
+	return `On multiplie les deux membres par ${toCustom(value)}`;
 }
 
 /**
@@ -147,16 +147,16 @@ export function describeMultiply(value: MathNode): string {
  */
 export function describeCoefficients(a: MathNode, b: MathNode, c?: MathNode): string {
 	if (c !== undefined) {
-		return `On identifie les coefficients: a = ${toLatex(a)}, b = ${toLatex(b)}, c = ${toLatex(c)}`;
+		return `On identifie les coefficients: a = ${toCustom(a)}, b = ${toCustom(b)}, c = ${toCustom(c)}`;
 	}
-	return `On identifie les coefficients: a = ${toLatex(a)}, b = ${toLatex(b)}`;
+	return `On identifie les coefficients: a = ${toCustom(a)}, b = ${toCustom(b)}`;
 }
 
 /**
  * Create a description for discriminant computation.
  */
 export function describeDiscriminant(value: MathNode, numericValue?: number | null): string {
-	const valueStr = toLatex(value);
+	const valueStr = toCustom(value);
 	if (numericValue !== null && numericValue !== undefined) {
 		if (numericValue > 0) {
 			return `Le discriminant vaut Delta = ${valueStr} > 0, donc il y a deux solutions reelles distinctes`;
@@ -174,9 +174,9 @@ export function describeDiscriminant(value: MathNode, numericValue?: number | nu
  */
 export function describeSolution(variable: string, value: MathNode, index?: number): string {
 	if (index !== undefined) {
-		return `Solution ${index}: ${variable} = ${toLatex(value)}`;
+		return `Solution ${index}: ${variable} = ${toCustom(value)}`;
 	}
-	return `Solution: ${variable} = ${toLatex(value)}`;
+	return `Solution: ${variable} = ${toCustom(value)}`;
 }
 
 /**
@@ -208,7 +208,7 @@ export function describeVerification(
 	success: boolean
 ): string {
 	const symbol = success ? '=' : '!=';
-	return `Verification: en substituant ${variable} = ${toLatex(value)}, on obtient ${leftResult} ${symbol} ${rightResult}`;
+	return `Verification: en substituant ${variable} = ${toCustom(value)}, on obtient ${leftResult} ${symbol} ${rightResult}`;
 }
 
 // =============================================================================

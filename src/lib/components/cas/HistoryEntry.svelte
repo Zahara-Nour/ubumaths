@@ -11,8 +11,8 @@
 
 	let { entry, variant }: Props = $props();
 
-	// Local toggle state (false = exact, true = decimal)
-	let showDecimal = $state(false);
+	// Local toggle state - initialize from result's showDecimalInitially
+	let showDecimal = $state(entry.result.showDecimalInitially ?? false);
 
 	// Determine if entry is an error
 	const isError = $derived(!entry.result.success);
