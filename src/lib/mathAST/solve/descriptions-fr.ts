@@ -32,6 +32,9 @@ export type SolvingRule =
 	| 'discriminant-zero'
 	| 'discriminant-negative'
 	| 'apply-quadratic-formula'
+	| 'quadratic-formula'
+	| 'double-solution'
+	| 'no-real-solution'
 	| 'simplify-solution'
 	// Transcendental solving
 	| 'apply-logarithm'
@@ -72,6 +75,9 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	'discriminant-zero': "Delta = 0, l'equation a une solution double",
 	'discriminant-negative': "Delta < 0, l'equation n'a pas de solution reelle",
 	'apply-quadratic-formula': 'On applique la formule: x = (-b +/- sqrt(Delta)) / (2a)',
+	'quadratic-formula': 'On applique la formule quadratique',
+	'double-solution': 'Le discriminant est nul, il y a une solution double',
+	'no-real-solution': "Le discriminant est negatif, il n'y a pas de solution reelle",
 	'simplify-solution': 'On simplifie la solution',
 
 	// Transcendental solving
@@ -149,8 +155,18 @@ export function describeCoefficients(a: MathNode, b: MathNode, c?: MathNode): st
 /**
  * Create a description for discriminant computation.
  */
-export function describeDiscriminant(value: MathNode): string {
-	return `Le discriminant vaut Delta = ${toLatex(value)}`;
+export function describeDiscriminant(value: MathNode, numericValue?: number | null): string {
+	const valueStr = toLatex(value);
+	if (numericValue !== null && numericValue !== undefined) {
+		if (numericValue > 0) {
+			return `Le discriminant vaut Delta = ${valueStr} > 0, donc il y a deux solutions reelles distinctes`;
+		} else if (numericValue === 0) {
+			return `Le discriminant vaut Delta = ${valueStr} = 0, donc il y a une solution double`;
+		} else {
+			return `Le discriminant vaut Delta = ${valueStr} < 0, donc il n'y a pas de solution reelle`;
+		}
+	}
+	return `Le discriminant vaut Delta = ${valueStr}`;
 }
 
 /**

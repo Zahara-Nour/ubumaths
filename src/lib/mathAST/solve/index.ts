@@ -71,6 +71,7 @@ export {
 // =============================================================================
 
 export { linearSolver } from './solvers/linear';
+export { quadraticSolver } from './solvers/quadratic';
 export { ALL_SOLVERS, getSolverByName } from './solvers';
 
 // =============================================================================
