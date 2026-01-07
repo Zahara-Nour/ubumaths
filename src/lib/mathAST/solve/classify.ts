@@ -130,7 +130,7 @@ function getPolynomialDegreeRecursive(node: MathNode, variable: string): number 
 		case 'variable':
 			return node.name === variable ? 1 : 0;
 
-		case 'greekLetter':
+		case 'greek':
 			return node.letter === variable ? 1 : 0;
 
 		case 'addition': {
