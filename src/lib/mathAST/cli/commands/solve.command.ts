@@ -815,21 +815,61 @@ export class SolveCommand extends BaseCommand {
 					.map((sol) => `${result.variable} = ${toCustom(sol.value)}`)
 					.join(result.solutions.length > 1 ? ' ou ' : '');
 
-				// Check if any solution has a meaningful decimal approximation
-				// (i.e., exact form is not already a simple number equal to approximate)
+				// Check if a fraction has a terminating decimal representation
+				// A fraction in lowest terms has terminating decimal iff denominator only has factors 2 and 5
+				const hasTerminatingDecimal = (n: bigint, d: bigint): boolean => {
+					// Reduce to lowest terms using GCD
+					const gcd = (a: bigint, b: bigint): bigint => (b === 0n ? a : gcd(b, a % b));
+					const g = gcd(n < 0n ? -n : n, d < 0n ? -d : d);
+					let denom = (d < 0n ? -d : d) / g;
+					// Remove factors of 2 and 5
+					while (denom % 2n === 0n) denom /= 2n;
+					while (denom % 5n === 0n) denom /= 5n;
+					return denom === 1n;
+				};
+
+				// Helper to check if exact value has a terminating decimal
+				const isTerminatingDecimal = (evalResult: ReturnType<typeof evaluate>): boolean => {
+					if (!evalResult.exact) return false;
+					const val = evalResult.value;
+					if (typeof val === 'number') return Number.isInteger(val);
+					// Handle BigInt fraction { n: bigint, d: bigint }
+					if (val && typeof val === 'object' && 'n' in val && 'd' in val) {
+						return hasTerminatingDecimal(val.n as bigint, val.d as bigint);
+					}
+					return false;
+				};
+
+				// Check if any solution benefits from showing a decimal approximation
+				// True if the exact form is not a simple number (contains /, sqrt, etc.)
 				const hasUsefulApproximate = result.solutions.some((sol) => {
 					if (sol.approximate === undefined) return false;
 					const exactStr = toCustom(sol.value);
+					// If exact string is a simple number (parses cleanly), no toggle needed
 					const exactNum = parseFloat(exactStr);
-					// If exact string parses to the same number, approximation is not useful
-					return isNaN(exactNum) || Math.abs(exactNum - sol.approximate) > 1e-10;
+					if (!isNaN(exactNum) && exactStr === exactNum.toString()) {
+						return false; // exact is already a simple decimal/integer
+					}
+					return true; // exact contains fraction, sqrt, or other non-decimal representation
 				});
 
+				// Format decimal solutions - use = for terminating decimals, ≈ for approximations
 				const decimalSolutions = hasUsefulApproximate
 					? result.solutions
 							.map((sol) => {
 								if (sol.approximate !== undefined) {
-									return `${result.variable} ≈ ${sol.approximate.toPrecision(6)}`;
+									// Check if this specific solution has terminating decimal
+									let isExact = false;
+									try {
+										const evalResult = evaluate(sol.value);
+										isExact = isTerminatingDecimal(evalResult);
+									} catch {
+										// Evaluation failed
+									}
+									// Format without trailing zeros
+									const formatted = sol.approximate.toString();
+									const symbol = isExact ? '=' : '≈';
+									return `${result.variable} ${symbol} ${formatted}`;
 								}
 								return `${result.variable} = ${toCustom(sol.value)}`;
 							})
