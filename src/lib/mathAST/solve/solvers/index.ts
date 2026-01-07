@@ -7,19 +7,21 @@
  */
 
 export { linearSolver } from './linear';
-// Future: export { quadraticSolver } from './quadratic';
+export { quadraticSolver } from './quadratic';
 // Future: export { polynomialSolver } from './polynomial';
 // Future: export { transcendentalSolver } from './transcendental';
 // Future: export { numericSolver } from './numeric';
 
 import type { EquationSolver } from '../types';
 import { linearSolver } from './linear';
+import { quadraticSolver } from './quadratic';
 
 /**
  * All available solvers in order of preference.
  */
 export const ALL_SOLVERS: readonly EquationSolver[] = [
-	linearSolver
+	linearSolver,
+	quadraticSolver
 	// Future solvers will be added here
 ];
 

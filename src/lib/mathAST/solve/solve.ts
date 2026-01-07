@@ -19,6 +19,7 @@ import { isRelation } from '../guards';
 import { classifyEquation, toStandardForm, detectVariable } from './classify';
 import { createStepRecorder } from './step-recorder';
 import { linearSolver } from './solvers/linear';
+import { quadraticSolver } from './solvers/quadratic';
 import { normalize, normalFormsEquivalent } from '../normal';
 import { number } from '../factory';
 
@@ -62,7 +63,9 @@ function selectSolver(classification: ClassificationResult): EquationSolver | nu
 		case 'linear':
 			return linearSolver;
 
-		// Future: case 'quadratic': return quadraticSolver;
+		case 'quadratic':
+			return quadraticSolver;
+
 		// Future: case 'polynomial': return polynomialSolver;
 		// Future: case 'exponential':
 		// Future: case 'logarithmic':
