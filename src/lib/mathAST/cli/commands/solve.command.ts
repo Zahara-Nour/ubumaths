@@ -643,17 +643,29 @@ export class SolveCommand extends BaseCommand {
 					.map((sol) => `${result.variable} = ${toCustom(sol.value)}`)
 					.join(result.solutions.length > 1 ? ' ou ' : '');
 
-				const decimalSolutions = result.solutions
-					.map((sol) => {
-						if (sol.approximate !== undefined) {
-							return `${result.variable} ≈ ${sol.approximate.toPrecision(6)}`;
-						}
-						return `${result.variable} = ${toCustom(sol.value)}`;
-					})
-					.join(result.solutions.length > 1 ? ' ou ' : '');
+				// Check if any solution has a meaningful decimal approximation
+				// (i.e., exact form is not already a simple number equal to approximate)
+				const hasUsefulApproximate = result.solutions.some((sol) => {
+					if (sol.approximate === undefined) return false;
+					const exactStr = toCustom(sol.value);
+					const exactNum = parseFloat(exactStr);
+					// If exact string parses to the same number, approximation is not useful
+					return isNaN(exactNum) || Math.abs(exactNum - sol.approximate) > 1e-10;
+				});
 
-				// Check if toggle makes sense
-				const canToggle = exactSolutions !== decimalSolutions;
+				const decimalSolutions = hasUsefulApproximate
+					? result.solutions
+							.map((sol) => {
+								if (sol.approximate !== undefined) {
+									return `${result.variable} ≈ ${sol.approximate.toPrecision(6)}`;
+								}
+								return `${result.variable} = ${toCustom(sol.value)}`;
+							})
+							.join(result.solutions.length > 1 ? ' ou ' : '')
+					: exactSolutions;
+
+				// Only toggle if decimal provides different/useful info
+				const canToggle = hasUsefulApproximate;
 
 				// Build full output strings
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
