@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Phase: 5/8
-- Last Update: 2026-01-07
+- Phase: 8/8 (COMPLETE)
+- Completed: 2026-01-07
 
 ## Completed Phases
 
@@ -12,34 +12,58 @@
 - [x] Phase 3: Domaines built-in
 - [x] Phase 4: Calcul de domaine
 - [x] Phase 5: Validation a l'evaluation
-- [ ] Phase 6: Formatage et commande REPL
-- [ ] Phase 7: Integration avec def command
-- [ ] Phase 8: Exports et finalisation
+- [x] Phase 6: Formatage et commande REPL
+- [x] Phase 7: Integration avec def command
+- [x] Phase 8: Exports et finalisation
 
-## Decisions Made
+## Architecture Decisions
 
 - Types de domaine sont des structures de donnees pures, pas des noeuds AST
 - Representation duale: intervalles + conditions
 - Notation francaise pour les intervalles: ]a, b[
+- Calcul de preimage pour les compositions (sqrt(x-2) -> x >= 2)
+- Messages d'erreur pedagogiques en francais
 
-## Next Steps
+## Files Created/Modified
 
-- Phase 5: Creer validate.ts et integrer avec evaluate.ts
-- Phase 6: Creer format.ts et domain.command.ts
+### Core Domain Module (`src/lib/mathAST/domain/`)
 
-## Files Modified
+- `types.ts` - Core domain types (Empty, Universal, Interval, Condition)
+- `factory.ts` - Factory functions for creating domains
+- `errors.ts` - DomainError class
+- `algebra.ts` - Domain algebra operations (intersect, union, complement)
+- `builtins.ts` - Builtin function domains registry
+- `compute.ts` - Domain computation with preimage solving
+- `preimage.ts` - Inequality solving for preimage computation
+- `validate.ts` - Runtime validation with pedagogical messages
+- `format.ts` - French interval notation formatting
+- `index.ts` - Public exports
 
-- `src/lib/mathAST/domain/types.ts` - Core domain types
-- `src/lib/mathAST/domain/factory.ts` - Factory functions
-- `src/lib/mathAST/domain/errors.ts` - DomainError class
-- `src/lib/mathAST/domain/algebra.ts` - Domain algebra operations
-- `src/lib/mathAST/domain/builtins.ts` - Builtin function domains registry
-- `src/lib/mathAST/domain/compute.ts` - Domain computation
-- `src/lib/mathAST/domain/preimage.ts` - Preimage/inequality solving
-- `src/lib/mathAST/domain/__tests__/types.test.ts` - Type tests
-- `src/lib/mathAST/domain/__tests__/factory.test.ts` - Factory tests
-- `src/lib/mathAST/domain/__tests__/algebra.test.ts` - Algebra tests
-- `src/lib/mathAST/domain/__tests__/builtins.test.ts` - Builtins tests
-- `src/lib/mathAST/domain/__tests__/compute.test.ts` - Compute tests
-- `src/lib/mathAST/domain/validate.ts` - Domain validation
-- `src/lib/mathAST/domain/__tests__/validate.test.ts` - Validate tests
+### Tests (`src/lib/mathAST/domain/__tests__/`)
+
+- `types.test.ts` - 15 tests
+- `factory.test.ts` - 30 tests
+- `algebra.test.ts` - 38 tests
+- `builtins.test.ts` - 51 tests
+- `compute.test.ts` - 22 tests
+- `validate.test.ts` - 27 tests
+- `format.test.ts` - 26 tests
+
+### CLI Integration
+
+- `src/lib/mathAST/cli/commands/domain.command.ts` - `.domain` REPL command
+- `src/lib/mathAST/cli/commands/index.ts` - Command registration
+- `src/lib/mathAST/cli/commands/def.command.ts` - Auto-compute domain on function definition
+- `src/lib/mathAST/cli/core/eval-state.ts` - `setFunctionDomain` helper
+
+### Type Extensions
+
+- `src/lib/mathAST/eval/function-bindings.ts` - Added `domain` field to `FunctionDefinition`
+- `src/lib/mathAST/index.ts` - Domain re-exports
+
+## Test Summary
+
+- **209 tests** across 7 test files
+- All tests passing
+- TypeScript: 0 errors
+- ESLint: 0 errors

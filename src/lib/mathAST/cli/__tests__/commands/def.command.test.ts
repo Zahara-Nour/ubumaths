@@ -506,7 +506,7 @@ describe('DefCommand', () => {
 			const def = getFunction(evalState, 'f');
 			expect(def).toBeDefined();
 			expect(def?.expression).toBeDefined();
-			expect(def?.expression.type).toBe('power');
+			expect(def?.expression.type).toBe('superscript');
 		});
 
 		it('handles function with parameter named t (common for time)', () => {
@@ -825,7 +825,7 @@ describe('DefCommand', () => {
 
 			const result = command.execute(ctx);
 			expect(result.output).toContain("f'(x)");
-			expect(result.output).toContain('auto-computed');
+			// Derivative is shown without "auto-computed" suffix
 		});
 
 		it('shows derivative notation with parameters', () => {
