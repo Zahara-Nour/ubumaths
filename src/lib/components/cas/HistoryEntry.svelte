@@ -54,13 +54,13 @@
 				<div class="repl-error break-words text-destructive">
 					{entry.result.error?.message || entry.result.output}
 				</div>
-			{:else if isCommand && !canToggle}
-				<!-- Informational commands (help, vars, etc.) -->
+			{:else if isCommand && !canToggle && !entry.result.exactOutput}
+				<!-- Informational commands only (help, vars, etc.) - not solve results -->
 				<div class="repl-dim text-muted-foreground">
 					{@html entry.result.outputHtml || entry.result.output}
 				</div>
 			{:else}
-				<!-- Regular evaluations and commands with toggle (solve) -->
+				<!-- Regular evaluations and solve results -->
 				<span class="repl-success text-foreground">{@html displayHtml}</span
 				><!--
 				-->{#if canToggle}<Button
@@ -118,11 +118,11 @@
 			>
 				{#if isError}
 					{entry.result.error?.message || entry.result.output}
-				{:else if isCommand && !canToggle}
-					<!-- Informational commands -->
+				{:else if isCommand && !canToggle && !entry.result.exactOutput}
+					<!-- Informational commands only -->
 					{@html entry.result.outputHtml || entry.result.output}
 				{:else}
-					<!-- Regular evaluations and commands with toggle -->
+					<!-- Regular evaluations and solve results -->
 					{@html displayHtml}
 				{/if}
 			</div>
@@ -147,11 +147,11 @@
 			>
 				{#if isError}
 					<span>{entry.result.error?.message || entry.result.output}</span>
-				{:else if isCommand && !canToggle}
-					<!-- Informational commands -->
+				{:else if isCommand && !canToggle && !entry.result.exactOutput}
+					<!-- Informational commands only -->
 					<span>{@html entry.result.outputHtml || entry.result.output}</span>
 				{:else}
-					<!-- Regular evaluations and commands with toggle -->
+					<!-- Regular evaluations and solve results -->
 					<span>{@html displayHtml}</span><!--
 					-->{#if canToggle}<Button
 							variant="ghost"
