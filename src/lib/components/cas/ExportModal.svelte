@@ -49,20 +49,20 @@
 </script>
 
 <Dialog.Root bind:open onOpenChange={handleOpenChange}>
-	<Dialog.Content class="max-w-2xl">
-		<Dialog.Header>
+	<Dialog.Content class="flex max-h-[80vh] max-w-2xl flex-col">
+		<Dialog.Header class="shrink-0">
 			<Dialog.Title>Export de l'historique</Dialog.Title>
 			<Dialog.Description>
 				Copiez le contenu ou enregistrez-le dans un fichier JSON.
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<div class="my-4">
+		<div class="min-h-0 flex-1 overflow-hidden py-4">
 			<pre
-				class="max-h-[400px] overflow-auto rounded-lg bg-muted p-4 font-mono text-sm">{content}</pre>
+				class="h-full max-h-[50vh] overflow-auto rounded-lg bg-muted p-4 font-mono text-sm">{content}</pre>
 		</div>
 
-		<Dialog.Footer class="flex gap-2">
+		<Dialog.Footer class="flex shrink-0 gap-2 border-t pt-4">
 			<Button variant="outline" onclick={handleCopy}>
 				{#if copied}
 					<Check class="mr-2 size-4" />
