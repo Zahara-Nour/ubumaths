@@ -91,6 +91,17 @@ export interface ReplExecutionResult {
 
 	/** Whether user can toggle between exact and decimal display */
 	readonly canToggle?: boolean;
+
+	// =========================================================================
+	// Export Support
+	// =========================================================================
+
+	/** Data for file export (triggers download in UI) */
+	readonly exportData?: {
+		readonly content: string;
+		readonly filename: string;
+		readonly mimeType: string;
+	};
 }
 
 // =============================================================================

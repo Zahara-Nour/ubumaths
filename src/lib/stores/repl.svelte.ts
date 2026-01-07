@@ -185,8 +185,16 @@ class ReplStore {
 		// Synchronize engine input mode with store
 		this.engine.setInputMode(this.inputMode);
 
+		// Pass current history to engine (for .export command)
+		this.engine.setHistory(this.history);
+
 		// Execute the input
 		const result = this.engine.execute(trimmedInput);
+
+		// Handle export data (trigger file download)
+		if (result.exportData && browser) {
+			this.triggerDownload(result.exportData);
+		}
 
 		// Create history entry
 		const entry: ReplHistoryEntry = {
@@ -512,6 +520,27 @@ class ReplStore {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Trigger a file download in the browser.
+	 *
+	 * @param data - Export data with content, filename, and mimeType
+	 */
+	private triggerDownload(data: {
+		readonly content: string;
+		readonly filename: string;
+		readonly mimeType: string;
+	}): void {
+		const blob = new Blob([data.content], { type: data.mimeType });
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = data.filename;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
 	}
 }
 

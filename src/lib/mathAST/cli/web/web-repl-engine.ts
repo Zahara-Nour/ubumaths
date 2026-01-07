@@ -11,7 +11,12 @@ import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding }
 import { getFunctionNames, getFunction } from '../core/eval-state';
 import type { EvalState } from '../core';
 import { createDefaultRegistry } from '../commands';
-import type { ReplExecutionResult, ReplInputMode, WebFunctionInfo } from './types';
+import type {
+	ReplExecutionResult,
+	ReplInputMode,
+	WebFunctionInfo,
+	ReplHistoryEntry
+} from './types';
 import {
 	formatErrorHtml,
 	formatInputErrorHtml,
@@ -64,6 +69,7 @@ export class WebReplEngine {
 	private evalState: EvalState;
 	private unitConversionMode: UnitConversionMode = 'first';
 	private lastUnitResult: EvalResultWithUnit | undefined;
+	private historyRef: ReadonlyArray<ReplHistoryEntry> = [];
 
 	constructor() {
 		this.registry = createDefaultRegistry();
@@ -239,6 +245,18 @@ export class WebReplEngine {
 	}
 
 	/**
+	 * Set the history reference for export functionality.
+	 *
+	 * Should be called by the REPL store before each execute() call
+	 * to keep the engine's view of history up to date.
+	 *
+	 * @param history - Current history array (newest first)
+	 */
+	setHistory(history: ReadonlyArray<ReplHistoryEntry>): void {
+		this.historyRef = history;
+	}
+
+	/**
 	 * Get the last unit-aware evaluation result.
 	 *
 	 * Used by the .convert command to convert the last result to a different unit.
@@ -343,6 +361,11 @@ export class WebReplEngine {
 		// Handle .linreg command
 		if (cmdName === 'linreg') {
 			return this.executeLinregCommand(args);
+		}
+
+		// Handle .export command
+		if (cmdName === 'export' || cmdName === 'exp') {
+			return this.executeExportCommand();
 		}
 
 		// Look up command in registry
@@ -1439,5 +1462,60 @@ export class WebReplEngine {
 		// Round to 6 significant digits for display
 		const rounded = parseFloat(value.toPrecision(6));
 		return rounded.toString();
+	}
+
+	// ===========================================================================
+	// Export Command
+	// ===========================================================================
+
+	/**
+	 * Execute the .export command.
+	 *
+	 * Exports the REPL history to a JSON file containing input/output pairs.
+	 */
+	private executeExportCommand(): ReplExecutionResult {
+		if (this.historyRef.length === 0) {
+			return {
+				success: false,
+				output: 'Aucun historique a exporter',
+				outputHtml: formatErrorHtml({
+					code: 'NO_AST',
+					message: 'Aucun historique a exporter',
+					suggestion: "Executez quelques expressions d'abord"
+				}),
+				error: {
+					code: 'NO_AST',
+					message: 'No history to export'
+				}
+			};
+		}
+
+		// Build export data (oldest to newest for chronological order)
+		const entries = [...this.historyRef]
+			.reverse()
+			.filter((entry) => !entry.isCommand || !entry.input.startsWith('.export'))
+			.map((entry) => ({
+				input: entry.input,
+				output: entry.result.output
+			}));
+
+		const exportData = {
+			exportedAt: new Date().toISOString(),
+			entries
+		};
+
+		const jsonContent = JSON.stringify(exportData, null, 2);
+		const filename = `mathast-session-${Date.now()}.json`;
+
+		return {
+			success: true,
+			output: `Export: ${entries.length} entrees`,
+			outputHtml: `<span class="text-green-400">Export: ${entries.length} entrees</span>`,
+			exportData: {
+				content: jsonContent,
+				filename,
+				mimeType: 'application/json'
+			}
+		};
 	}
 }

@@ -210,10 +210,43 @@ export class HelpCommand extends BaseCommand {
 			'<div class="pl-2"><span class="text-cyan-400">a === b</span> <span class="text-foreground/70">- Tester l\'equivalence</span></div>'
 		);
 
-		// Keyboard shortcuts - inline
-		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Raccourcis</div>');
+		// Mode shortcuts
+		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Modes</div>');
 		htmlParts.push(
-			'<div class="pl-2 text-foreground/70">↑↓ historique · Ctrl+R rechercher · Esc annuler · Enter executer</div>'
+			'<div class="pl-2"><span class="text-cyan-400">.exact</span> <span class="text-foreground/70">- Resultats exacts (1/3)</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">.decimal</span> <span class="text-foreground/70">- Resultats decimaux (≈0.333)</span></div>'
+		);
+
+		// Unit commands
+		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Unites</div>');
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">5[km]</span> ou <span class="text-cyan-400">5~\\unit{km}</span> <span class="text-foreground/70">- Quantite avec unite</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">.convert m</span> <span class="text-foreground/70">- Convertir le dernier resultat</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">.unitmode first|si|best</span> <span class="text-foreground/70">- Mode de conversion</span></div>'
+		);
+
+		// Utilities
+		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Utilitaires</div>');
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">.export</span> <span class="text-foreground/70">- Exporter l\'historique (JSON)</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">.stats</span> <span class="text-foreground/70">- Statistiques (moyenne, mediane...)</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">.linreg</span> <span class="text-foreground/70">- Regression lineaire</span></div>'
+		);
+
+		// Keyboard shortcuts - inline
+		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Raccourcis clavier</div>');
+		htmlParts.push(
+			'<div class="pl-2 text-foreground/70">↑↓ historique · Ctrl+R rechercher · Esc annuler</div>'
 		);
 
 		htmlParts.push('</div>');
