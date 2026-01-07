@@ -2,7 +2,7 @@
 
 ## Current Status
 
-- Phase: 4/8
+- Phase: 5/8
 - Last Update: 2026-01-07
 
 ## Completed Phases
@@ -11,7 +11,7 @@
 - [x] Phase 2: Algebre des domaines
 - [x] Phase 3: Domaines built-in
 - [x] Phase 4: Calcul de domaine
-- [ ] Phase 5: Validation a l'evaluation
+- [x] Phase 5: Validation a l'evaluation
 - [ ] Phase 6: Formatage et commande REPL
 - [ ] Phase 7: Integration avec def command
 - [ ] Phase 8: Exports et finalisation
@@ -41,3 +41,5 @@
 - `src/lib/mathAST/domain/__tests__/algebra.test.ts` - Algebra tests
 - `src/lib/mathAST/domain/__tests__/builtins.test.ts` - Builtins tests
 - `src/lib/mathAST/domain/__tests__/compute.test.ts` - Compute tests
+- `src/lib/mathAST/domain/validate.ts` - Domain validation
+- `src/lib/mathAST/domain/__tests__/validate.test.ts` - Validate tests
