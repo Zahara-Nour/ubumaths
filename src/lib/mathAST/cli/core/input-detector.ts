@@ -35,8 +35,10 @@ const CUSTOM_PATTERNS: readonly RegExp[] = [
 	// Color syntax: @red{...} or @#FF0000{...}
 	/@[a-zA-Z]+\{/,
 	/@#[0-9A-Fa-f]{6}\{/,
-	// Units in brackets: [m/s], [kg], [m]
-	/\d+\[[a-zA-Z/]+\]/,
+	// Units in brackets: 5[m], 1/2[m], x[kg], etc.
+	// Can have optional space before the bracket
+	// Must be preceded by number, letter, or closing paren/bracket
+	/[\d\w)]\s*\[[a-zA-Z][a-zA-Z0-9^/*-]*\]/,
 	// Inline division: :/
 	/:\/(?![/])/,
 	// nth root: sqrt[3](x)

@@ -15,10 +15,10 @@ import type { ReplExecutionResult, ReplInputMode, WebFunctionInfo } from './type
 import {
 	formatErrorHtml,
 	formatInputErrorHtml,
-	formatSuccessHtml,
+	escapeWithLabel,
 	formatTreeHtml
 } from './output-formatter-web';
-import { toCustom, toLatex, getVariables, hasAllBindings, evaluate, substitute } from '../../index';
+import { toCustom, getVariables, hasAllBindings, evaluate, substitute } from '../../index';
 import { evaluateWithUnits, DimensionalEvaluationError } from '../../eval/evaluate-with-units';
 import type { EvalResultWithUnit, UnitConversionMode } from '../../eval/types';
 import { isUnit } from '../../guards';
@@ -267,7 +267,7 @@ export class WebReplEngine {
 			return {
 				success: true,
 				output: 'Input mode: LaTeX',
-				outputHtml: formatSuccessHtml('Input mode: LaTeX')
+				outputHtml: escapeWithLabel('Input mode: LaTeX')
 			};
 		}
 		if (cmdName === 'custom') {
@@ -275,7 +275,7 @@ export class WebReplEngine {
 			return {
 				success: true,
 				output: 'Input mode: Custom syntax',
-				outputHtml: formatSuccessHtml('Input mode: Custom syntax')
+				outputHtml: escapeWithLabel('Input mode: Custom syntax')
 			};
 		}
 		if (cmdName === 'auto') {
@@ -283,7 +283,25 @@ export class WebReplEngine {
 			return {
 				success: true,
 				output: 'Input mode: Auto-detect',
-				outputHtml: formatSuccessHtml('Input mode: Auto-detect')
+				outputHtml: escapeWithLabel('Input mode: Auto-detect')
+			};
+		}
+
+		// Evaluation mode shortcuts: .exact and .decimal
+		if (cmdName === 'exact') {
+			this.evalState.mode = 'exact';
+			return {
+				success: true,
+				output: 'Mode: exact',
+				outputHtml: 'Mode: <span class="text-green-400">exact</span>'
+			};
+		}
+		if (cmdName === 'decimal') {
+			this.evalState.mode = 'decimal';
+			return {
+				success: true,
+				output: 'Mode: decimal',
+				outputHtml: 'Mode: <span class="text-yellow-400">decimal</span>'
 			};
 		}
 
@@ -295,9 +313,7 @@ export class WebReplEngine {
 				return {
 					success: true,
 					output: `Unit conversion mode: ${mode}`,
-					outputHtml: formatSuccessHtml(
-						`Unit conversion mode: <span class="text-blue-400">${mode}</span>`
-					)
+					outputHtml: `Unit conversion mode: <span class="text-blue-400">${mode}</span>`
 				};
 			}
 			return {
@@ -571,24 +587,12 @@ export class WebReplEngine {
 
 	/**
 	 * Create auto-evaluation result for an expression with all variables bound.
+	 * Computes both exact and decimal representations for toggle support.
 	 */
 	private createAutoEvaluationResult(ast: MathNode): ReplExecutionResult {
 		try {
 			const bindings = bindingsToRecord(this.evalState.bindings);
 			const variables = getVariables(ast);
-
-			// Show which bindings are being used (only if there are variables)
-			let bindingsStr = '';
-			if (variables.size > 0) {
-				const bindingsList: string[] = [];
-				for (const varName of variables) {
-					const value = this.evalState.bindings.get(varName);
-					if (value) {
-						bindingsList.push(`${varName}: ${toCustom(value)}`);
-					}
-				}
-				bindingsStr = '{' + bindingsList.join(', ') + '}';
-			}
 
 			// Substitute variables
 			const substituted = substitute(ast, bindings);
@@ -597,47 +601,63 @@ export class WebReplEngine {
 			const hasUnits = this.expressionHasUnits(substituted);
 
 			if (hasUnits) {
-				// Use unit-aware evaluation
-				return this.createUnitAwareResult(substituted, bindingsStr);
+				// Use unit-aware evaluation (keeps detailed output for units)
+				return this.createUnitAwareResult(substituted, '');
 			}
 
-			// Evaluate using current mode (no units)
-			const evalResult = evaluate(substituted, { mode: this.evalState.mode });
+			// Evaluate in BOTH modes to enable toggle
+			const exactResult = evaluate(substituted, { mode: 'exact' });
+			const decimalResult = evaluate(substituted, { mode: 'decimal' });
 			this.lastUnitResult = undefined; // Clear last unit result
 
-			// Format the result
-			const resultStr = toCustom(evalResult.node);
-			const latexStr = toLatex(evalResult.node);
-			const exactStr = evalResult.exact ? '(exact)' : '(approximate)';
+			// Format exact result
+			const exactStr = toCustom(exactResult.node);
+			const exactOutput = exactStr;
+			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
 
-			// Build output
-			const lines: string[] = [];
-			if (bindingsStr) {
-				lines.push(`Evaluating with: ${bindingsStr}`);
+			// Format decimal result
+			const decimalStr = toCustom(decimalResult.node);
+			const decimalPrefix = decimalResult.exact ? '' : '≈ ';
+			const decimalOutput = `${decimalPrefix}${decimalStr}`;
+			let decimalOutputHtml: string;
+			if (decimalResult.exact) {
+				decimalOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(decimalStr)}</span>`;
+			} else {
+				decimalOutputHtml = `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimalStr)}</span>`;
 			}
-			lines.push(`Result: ${resultStr} ${exactStr}`);
-			lines.push(`LaTeX:  ${latexStr}`);
-			const output = lines.join('\n');
 
-			// Build HTML output
-			const exactClass = evalResult.exact ? 'text-green-400' : 'text-yellow-400';
-			const htmlLines: string[] = [];
-			if (bindingsStr) {
-				htmlLines.push(
-					`<span class="text-gray-400">Evaluating with:</span> ${this.escapeHtml(bindingsStr)}`
-				);
+			// Determine if toggle makes sense (results are different)
+			const canToggle = exactStr !== decimalStr;
+
+			// Use current mode to determine primary output
+			const currentMode = this.evalState.mode;
+			const output = currentMode === 'exact' ? exactOutput : decimalOutput;
+			let outputHtml = currentMode === 'exact' ? exactOutputHtml : decimalOutputHtml;
+
+			// Add bindings info if variables were substituted
+			if (variables.size > 0) {
+				const bindingsList: string[] = [];
+				for (const varName of variables) {
+					const value = this.evalState.bindings.get(varName);
+					if (value) {
+						bindingsList.push(`${varName}=${toCustom(value)}`);
+					}
+				}
+				const bindingsStr = bindingsList.join(', ');
+				outputHtml += `<span class="text-muted-foreground text-xs ml-2">[${this.escapeHtml(bindingsStr)}]</span>`;
 			}
-			htmlLines.push(
-				`<strong>Result:</strong> <span class="text-cyan-400">${this.escapeHtml(resultStr)}</span> <span class="${exactClass}">${exactStr}</span>`
-			);
-			htmlLines.push(`<span class="text-gray-400">LaTeX:</span>  ${this.escapeHtml(latexStr)}`);
-			const outputHtml = htmlLines.join('<br>');
 
 			return {
 				success: true,
 				output,
 				outputHtml,
-				ast: evalResult.node
+				ast: currentMode === 'exact' ? exactResult.node : decimalResult.node,
+				// Toggle support fields
+				exactOutput,
+				exactOutputHtml,
+				decimalOutput,
+				decimalOutputHtml,
+				canToggle
 			};
 		} catch (err) {
 			// Handle dimensional errors with pedagogical messages
@@ -828,61 +848,63 @@ export class WebReplEngine {
 
 	/**
 	 * Create evaluation result for expression with units.
+	 * Computes both exact and decimal representations for toggle support.
 	 */
-	private createUnitAwareResult(ast: MathNode, bindingsStr: string): ReplExecutionResult {
-		// Evaluate with units
-		const evalResult = evaluateWithUnits(ast, {
-			mode: this.evalState.mode,
+	private createUnitAwareResult(ast: MathNode, _bindingsStr: string): ReplExecutionResult {
+		// Evaluate with units in BOTH modes
+		const exactEvalResult = evaluateWithUnits(ast, {
+			mode: 'exact',
+			conversionMode: this.unitConversionMode
+		});
+		const decimalEvalResult = evaluateWithUnits(ast, {
+			mode: 'decimal',
 			conversionMode: this.unitConversionMode
 		});
 
-		// Store for .convert command
-		this.lastUnitResult = evalResult;
+		// Store for .convert command (use current mode)
+		const currentMode = this.evalState.mode;
+		this.lastUnitResult = currentMode === 'exact' ? exactEvalResult : decimalEvalResult;
 
-		// Format value
-		const valueNum = this.getNumericValue(evalResult.value);
+		// Format unit string (same for both modes)
+		const unitStr =
+			exactEvalResult.unit.original || this.formatUnitComponents(exactEvalResult.unit);
 
-		// Format unit string (use original if available)
-		const unitStr = evalResult.unit.original || this.formatUnitComponents(evalResult.unit);
+		// Format exact result - preserve fraction format if Rational
+		const exactValueStr = this.formatValueForDisplay(exactEvalResult.value, true);
+		const exactResultStr = `${exactValueStr} ${unitStr}`;
+		const exactOutput = exactResultStr;
+		const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactResultStr)}</span>`;
 
-		// Format result
-		const resultStr = `${valueNum} ${unitStr}`;
-		const latexStr = toLatex(evalResult.node);
-		const exactStr = evalResult.exact ? '(exact)' : '(approximate)';
-
-		// Build output
-		const lines: string[] = [];
-		if (bindingsStr) {
-			lines.push(`Evaluating with: ${bindingsStr}`);
+		// Format decimal result - always as decimal number
+		const decimalValueNum = this.getNumericValue(decimalEvalResult.value);
+		const decimalResultStr = `${decimalValueNum} ${unitStr}`;
+		const decimalPrefix = decimalEvalResult.exact ? '' : '≈ ';
+		const decimalOutput = `${decimalPrefix}${decimalResultStr}`;
+		let decimalOutputHtml: string;
+		if (decimalEvalResult.exact) {
+			decimalOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(decimalResultStr)}</span>`;
+		} else {
+			decimalOutputHtml = `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimalResultStr)}</span>`;
 		}
-		lines.push(`Result: ${resultStr} ${exactStr}`);
-		lines.push(`LaTeX:  ${latexStr}`);
-		lines.push(`Mode:   ${this.unitConversionMode}`);
-		const output = lines.join('\n');
 
-		// Build HTML output
-		const exactClass = evalResult.exact ? 'text-green-400' : 'text-yellow-400';
-		const htmlLines: string[] = [];
-		if (bindingsStr) {
-			htmlLines.push(
-				`<span class="text-gray-400">Evaluating with:</span> ${this.escapeHtml(bindingsStr)}`
-			);
-		}
-		htmlLines.push(
-			`<strong>Result:</strong> <span class="text-cyan-400">${this.escapeHtml(resultStr)}</span> <span class="${exactClass}">${exactStr}</span>`
-		);
-		htmlLines.push(`<span class="text-gray-400">LaTeX:</span>  ${this.escapeHtml(latexStr)}`);
-		htmlLines.push(
-			`<span class="text-gray-400">Mode:</span>   <span class="text-blue-400">${this.unitConversionMode}</span>`
-		);
-		const outputHtml = htmlLines.join('<br>');
+		// Determine if toggle makes sense (results are different)
+		const canToggle = exactResultStr !== decimalResultStr;
+
+		// Use current mode to determine primary output
+		const output = currentMode === 'exact' ? exactOutput : decimalOutput;
+		const outputHtml = currentMode === 'exact' ? exactOutputHtml : decimalOutputHtml;
 
 		return {
 			success: true,
 			output,
 			outputHtml,
-			ast: evalResult.node,
-			latex: latexStr
+			ast: currentMode === 'exact' ? exactEvalResult.node : decimalEvalResult.node,
+			// Toggle support fields
+			exactOutput,
+			exactOutputHtml,
+			decimalOutput,
+			decimalOutputHtml,
+			canToggle
 		};
 	}
 
@@ -963,6 +985,34 @@ export class WebReplEngine {
 	private getNumericValue(value: { n: bigint; d: bigint } | number): number {
 		if (typeof value === 'number') return value;
 		return Number(value.n) / Number(value.d);
+	}
+
+	/**
+	 * Format a value for display, preserving fraction format if exact mode.
+	 *
+	 * @param value - Rational or number to format
+	 * @param preserveFraction - If true, format Rational as "n/d" instead of decimal
+	 */
+	private formatValueForDisplay(
+		value: { n: bigint; d: bigint } | number,
+		preserveFraction: boolean
+	): string {
+		if (typeof value === 'number') {
+			return String(value);
+		}
+
+		// It's a Rational { n, d }
+		if (preserveFraction && value.d !== 1n) {
+			// Format as fraction "n/d"
+			return `${value.n}/${value.d}`;
+		}
+
+		// Format as integer or decimal
+		if (value.d === 1n) {
+			return String(value.n);
+		}
+
+		return String(Number(value.n) / Number(value.d));
 	}
 
 	/**
