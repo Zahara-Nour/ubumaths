@@ -79,11 +79,23 @@ function wrapForDivision(expr: string): string {
 }
 
 /**
- * Format a pedagogical step with aligned = signs.
- * Returns [descriptionLine, resultLine] where both = are vertically aligned.
+ * Result of formatting a pedagogical step with alignment.
  */
-function formatAlignedStep(step: PedagogicalStep): [string, string] {
-	const descLine = `${step.description}: ${step.transformation}`;
+interface AlignedStepFormat {
+	/** Plain text: description line */
+	textDescLine: string;
+	/** Plain text: result line with space padding */
+	textResultLine: string;
+	/** Number of characters for HTML padding (use &nbsp;) */
+	htmlPadding: number;
+}
+
+/**
+ * Format a pedagogical step with aligned = signs.
+ * Returns both plain text lines and the padding count for HTML.
+ */
+function formatAlignedStep(step: PedagogicalStep): AlignedStepFormat {
+	const textDescLine = `${step.description}: ${step.transformation}`;
 
 	// Find position of = in transformation and result
 	const eqIndexTransform = step.transformation.indexOf('=');
@@ -91,7 +103,11 @@ function formatAlignedStep(step: PedagogicalStep): [string, string] {
 
 	if (eqIndexTransform === -1 || eqIndexResult === -1) {
 		// Fallback: no alignment possible
-		return [descLine, `    ${step.result}`];
+		return {
+			textDescLine,
+			textResultLine: `    ${step.result}`,
+			htmlPadding: 4
+		};
 	}
 
 	// Position of = in full description line
@@ -101,7 +117,11 @@ function formatAlignedStep(step: PedagogicalStep): [string, string] {
 	const padding = eqPosLine1 - eqIndexResult;
 	const actualPadding = Math.max(4, padding); // minimum 4 spaces indent
 
-	return [descLine, ' '.repeat(actualPadding) + step.result];
+	return {
+		textDescLine,
+		textResultLine: ' '.repeat(actualPadding) + step.result,
+		htmlPadding: actualPadding
+	};
 }
 
 // =============================================================================
@@ -525,18 +545,21 @@ export class SolveCommand extends BaseCommand {
 				headerHtmlLines.push('<br>');
 
 				for (const step of pedagogicalSteps) {
-					// Plain text with aligned = signs
-					const [descLine, resultLine] = formatAlignedStep(step);
-					headerLines.push(descLine);
-					headerLines.push(resultLine);
+					// Get aligned formatting for both text and HTML
+					const aligned = formatAlignedStep(step);
 
-					// HTML: styled output
+					// Plain text with aligned = signs
+					headerLines.push(aligned.textDescLine);
+					headerLines.push(aligned.textResultLine);
+
+					// HTML: styled output with &nbsp; for alignment
+					const htmlPadding = '&nbsp;'.repeat(aligned.htmlPadding);
 					headerHtmlLines.push(
 						`<br><span class="text-muted-foreground">${this.escapeHtml(step.description)}:</span> ` +
 							`<span class="text-cyan-400">${this.escapeHtml(step.transformation)}</span>`
 					);
 					headerHtmlLines.push(
-						`<br><span class="pl-4 text-green-400">${this.escapeHtml(step.result)}</span>`
+						`<br><span class="text-green-400">${htmlPadding}${this.escapeHtml(step.result)}</span>`
 					);
 				}
 			}
