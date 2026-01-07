@@ -629,8 +629,15 @@ export class WebReplEngine {
 			}
 
 			// Evaluate in BOTH modes to enable toggle
-			const exactResult = evaluate(substituted, { mode: 'exact' });
-			const decimalResult = evaluate(substituted, { mode: 'decimal' });
+			// Pass user-defined functions from evalState
+			const exactResult = evaluate(substituted, {
+				mode: 'exact',
+				functions: this.evalState.functions
+			});
+			const decimalResult = evaluate(substituted, {
+				mode: 'decimal',
+				functions: this.evalState.functions
+			});
 			this.lastUnitResult = undefined; // Clear last unit result
 
 			// Format exact result
@@ -875,13 +882,16 @@ export class WebReplEngine {
 	 */
 	private createUnitAwareResult(ast: MathNode, _bindingsStr: string): ReplExecutionResult {
 		// Evaluate with units in BOTH modes
+		// Pass user-defined functions from evalState
 		const exactEvalResult = evaluateWithUnits(ast, {
 			mode: 'exact',
-			conversionMode: this.unitConversionMode
+			conversionMode: this.unitConversionMode,
+			functions: this.evalState.functions
 		});
 		const decimalEvalResult = evaluateWithUnits(ast, {
 			mode: 'decimal',
-			conversionMode: this.unitConversionMode
+			conversionMode: this.unitConversionMode,
+			functions: this.evalState.functions
 		});
 
 		// Store for .convert command (use current mode)
