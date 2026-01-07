@@ -632,3 +632,17 @@ export type {
 	CompletionContext,
 	CompletionOptions
 } from './cli/completion';
+
+// =============================================================================
+// Visitor Pattern
+// =============================================================================
+
+export { visitAST, transformAST } from './visitor';
+export type {
+	VisitorContext,
+	EnterResult,
+	TransformEnterResult,
+	TransformLeaveResult,
+	ASTVisitor,
+	TransformVisitor
+} from './visitor';

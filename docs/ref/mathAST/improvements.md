@@ -1210,7 +1210,7 @@ interface SystemNode {
 | Modular Builds          | High      | High      | **P2**   | Pending         |
 | Equation Solving        | Very High | Very High | **P2**   | **IMPLEMENTED** |
 | Worker Offloading       | Medium    | Medium    | **P2**   | Pending         |
-| Visitor Enhancement     | Medium    | Medium    | **P3**   | Pending         |
+| Visitor Enhancement     | Medium    | Medium    | **P3**   | **IMPLEMENTED** |
 | Lazy Evaluation         | High      | Medium    | **P3**   | Pending         |
 | Complex Numbers         | High      | Medium    | **P3**   | Pending         |
 | Limits/Summations       | Very High | High      | **P3**   | Pending         |
@@ -1314,6 +1314,53 @@ const completions = provider.getCompletions('sin', {
 ```
 
 **Files:** `src/lib/mathAST/cli/completion/provider.ts`
+
+### Visitor Pattern (P3) - IMPLEMENTED
+
+```typescript
+import { visitAST, transformAST, type ASTVisitor, type TransformVisitor } from '$lib/mathAST';
+
+// Read-only traversal: collect all variables
+const variables = new Set<string>();
+visitAST(ast, {
+	enterVariable: (node) => {
+		variables.add(node.name);
+	}
+});
+
+// Transformation: replace variables with numbers
+const result = transformAST(ast, {
+	leaveVariable: (node) => {
+		if (node.name === 'x') return number('5');
+	}
+});
+
+// Context information: parent, path, depth
+visitAST(ast, {
+	enterNode: (node, context) => {
+		console.log(`Depth: ${context.depth}, Path: ${context.path.join('/')}`);
+		if (context.parent?.type === 'division') {
+			// Check if we're in a denominator
+		}
+	}
+});
+
+// Skip children
+visitAST(ast, {
+	enterParentheses: () => 'skip' // Don't visit content of parentheses
+});
+```
+
+**Features:**
+
+- `visitAST` - Read-only traversal with enter/leave callbacks
+- `transformAST` - Immutable transformation with node replacement
+- Type-specific callbacks: `enterNumber`, `leaveAddition`, etc. (18 node types)
+- Context: `{ parent, path, depth }`
+- Skip children with `'skip'` return value
+- Transform with replacement: return `MathNode` or `{ node, skip: true }`
+
+**Files:** `src/lib/mathAST/visitor.ts`
 
 ---
 
