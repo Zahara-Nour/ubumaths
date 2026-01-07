@@ -21,6 +21,16 @@ import type { Exercise } from '../types';
 // ============================================================================
 
 /**
+ * Test helper parameters - allows legacy statement_md/solution_md for convenience
+ * These are converted to variations internally
+ */
+type TestExerciseParams = Partial<Exercise> & {
+	statement_md?: string;
+	solution_md?: string;
+	variables?: Array<{ name: string; expression: string }>;
+};
+
+/**
  * Create a minimal valid exercise for testing.
  * All exercises must use the variations system (single source of truth).
  * Variables should be placed in shared.variables.
@@ -28,30 +38,22 @@ import type { Exercise } from '../types';
  * MIGRATION NOTE: Tests can still pass `variables` at the top level.
  * This helper converts them to `shared.variables` automatically.
  */
-function createExercise(overrides: Partial<Exercise> = {}): Exercise {
+function createExercise(overrides: TestExerciseParams = {}): Exercise {
 	// Handle variables: can come from shared.variables or top-level variables (legacy test pattern)
-	const topLevelVars = (overrides.variables as Array<{ name: string; expression: string }>) ?? [];
-	const passedShared = overrides.shared as
-		| {
-				variables?: Array<{ name: string; expression: string }>;
-				statement_md?: string;
-				solution_md?: string;
-		  }
-		| undefined;
+	const topLevelVars = overrides.variables ?? [];
+	const passedShared = overrides.shared;
 	const sharedVars = passedShared?.variables ?? [];
 
 	// Merge: top-level variables go into shared
 	const allVars = [...topLevelVars, ...sharedVars];
 
 	// If variations is explicitly passed, use it; otherwise create default from statement_md/solution_md
-	const passedVariations = overrides.variations as
-		| Array<{ label: string; statement_md: string; solution_md: string }>
-		| undefined;
+	const passedVariations = overrides.variations;
 	const variations = passedVariations ?? [
 		{
 			label: 'default',
-			statement_md: (overrides.statement_md as string) ?? 'Test statement',
-			solution_md: (overrides.solution_md as string) ?? 'Test solution'
+			statement_md: overrides.statement_md ?? 'Test statement',
+			solution_md: overrides.solution_md ?? 'Test solution'
 		}
 	];
 

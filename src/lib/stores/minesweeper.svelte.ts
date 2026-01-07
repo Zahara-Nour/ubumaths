@@ -1131,7 +1131,11 @@ class MinesweeperStore {
 
 		try {
 			// Query for minesweeper_undo items in student's inventory
-			const { data, error } = await this.supabase!.from('student_item_inventory')
+			// Note: student_item_inventory table may not be in generated types yet
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const supabaseAny = this.supabase as any;
+			const { data, error } = await supabaseAny
+				.from('student_item_inventory')
 				.select(
 					`
 					quantity,
@@ -1150,7 +1154,11 @@ class MinesweeperStore {
 			}
 
 			// Sum up all quantities
-			const totalCount = data?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
+			const totalCount =
+				(data as Array<{ quantity: number }> | null)?.reduce(
+					(sum, item) => sum + (item.quantity || 0),
+					0
+				) || 0;
 			this.undoItemsAvailable = totalCount;
 
 			logger.info(`Undo items available: ${totalCount}`);

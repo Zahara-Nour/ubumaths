@@ -168,6 +168,13 @@ export async function exportBackupJSON(
 	// Transform to backup format
 	const exerciseRecords: ExerciseBackupRecord[] = (exercises ?? []).map((ex) => {
 		const profile = ex.profiles as { email: string } | null;
+		// Note: statement_md and solution_md are now in variations, but backup format preserves them for compatibility
+		// We extract from the first variation if available, or use empty strings
+		const variations = ex.variations as Array<{
+			statement_md?: string;
+			solution_md?: string;
+		}> | null;
+		const firstVariation = variations?.[0];
 		return {
 			id: ex.id,
 			slug: ex.slug,
@@ -175,8 +182,8 @@ export async function exportBackupJSON(
 			source: ex.source,
 			difficulty: ex.difficulty,
 			tags: ex.tags,
-			statement_md: ex.statement_md,
-			solution_md: ex.solution_md,
+			statement_md: firstVariation?.statement_md || '',
+			solution_md: firstVariation?.solution_md || '',
 			grades: ex.grades,
 			topic: ex.topic,
 			is_public: ex.is_public,
@@ -306,8 +313,9 @@ export async function exportBackupSQL(
 		lines.push('');
 
 		for (const ex of backup.data.exercises) {
+			// Note: statement_md and solution_md are deprecated in DB schema but preserved in backup for compatibility
 			lines.push(`INSERT INTO exercises (
-  id, slug, title, source, difficulty, tags, statement_md, solution_md,
+  id, slug, title, source, difficulty, tags,
   grades, topic, is_public, distribution_mode, variables, variations,
   shared, resources, generic_functions, created_at, updated_at, created_by
 ) VALUES (
@@ -317,8 +325,6 @@ export async function exportBackupSQL(
   ${escapeSQL(ex.source)},
   ${ex.difficulty},
   ${escapeSQL(ex.tags)},
-  ${escapeSQL(ex.statement_md)},
-  ${escapeSQL(ex.solution_md)},
   ${escapeSQL(ex.grades)},
   ${escapeSQL(ex.topic)},
   ${ex.is_public},
@@ -337,8 +343,6 @@ export async function exportBackupSQL(
   source = EXCLUDED.source,
   difficulty = EXCLUDED.difficulty,
   tags = EXCLUDED.tags,
-  statement_md = EXCLUDED.statement_md,
-  solution_md = EXCLUDED.solution_md,
   grades = EXCLUDED.grades,
   topic = EXCLUDED.topic,
   is_public = EXCLUDED.is_public,
@@ -577,7 +581,7 @@ async function restoreExercises(
 					continue;
 				}
 
-				// Replace
+				// Replace - Note: statement_md and solution_md are no longer in DB schema
 				const { error } = await supabase
 					.from('exercises')
 					.update({
@@ -586,8 +590,6 @@ async function restoreExercises(
 						source: record.source,
 						difficulty: record.difficulty,
 						tags: record.tags,
-						statement_md: record.statement_md,
-						solution_md: record.solution_md,
 						grades: record.grades,
 						topic: record.topic,
 						is_public: record.is_public,
@@ -609,6 +611,7 @@ async function restoreExercises(
 				}
 			} else {
 				// Insert new - use type assertion for id since backup restore needs explicit id
+				// Note: statement_md and solution_md are no longer in DB schema
 				const insertData = {
 					id: record.id,
 					slug: record.slug,
@@ -616,8 +619,6 @@ async function restoreExercises(
 					source: record.source,
 					difficulty: record.difficulty,
 					tags: record.tags,
-					statement_md: record.statement_md,
-					solution_md: record.solution_md,
 					grades: record.grades,
 					topic: record.topic,
 					is_public: record.is_public,

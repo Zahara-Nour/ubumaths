@@ -145,8 +145,8 @@
 		border-radius: 0.5rem;
 		padding: 1rem;
 		overflow-x: auto;
-		font-family:
-			ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+			monospace;
 		font-size: 0.875rem;
 		line-height: 1.5;
 		margin: 0;

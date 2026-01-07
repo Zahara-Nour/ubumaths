@@ -442,8 +442,8 @@ export function move(state: GameState, direction: Direction): MoveResult {
 
 	// Clear animation flags from PREVIOUS move first (on the input board)
 	// This ensures new tiles from THIS move will have their flags intact
-	let board = state.board.map((row) =>
-		row.map((tile) => (tile ? { ...tile, isNew: false, mergedFrom: undefined } : null))
+	let board: GameBoard = state.board.map((row) =>
+		row.map((tile): Tile | null => (tile ? { ...tile, isNew: false, mergedFrom: undefined } : null))
 	);
 	let rotations = 0;
 

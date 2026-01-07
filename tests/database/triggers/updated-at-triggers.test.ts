@@ -210,10 +210,10 @@ describe('Updated_at Triggers (Parameterized)', () => {
 
 			const startTime = Date.now();
 
-			// Act: Bulk update
+			// Act: Bulk update - update title instead of deprecated statement_md
 			await serviceClient
 				.from('exercises')
-				.update({ statement_md: 'Bulk updated' })
+				.update({ title: 'Bulk updated' })
 				.in(
 					'id',
 					exercises.map((e) => e.id)

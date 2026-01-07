@@ -51,7 +51,7 @@ HTML output formatting (replaces chalk).
 
 - `formatErrorHtml()` - Format errors with `.repl-error` class
 - `formatInputErrorHtml()` - Parse errors with position indicator
-- `formatSuccessHtml()` - Success messages with `.repl-success`
+- `escapeWithLabel()` - Escape text for HTML with optional label
 - `formatTreeHtml()` - Convert box-drawing chars to HTML
 - `formatHashHtml()` - Hash values with `.repl-hash` class
 

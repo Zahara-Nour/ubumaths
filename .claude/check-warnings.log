@@ -1,617 +1,191 @@
+
+> ubumaths@0.5.23 check /Users/david/Coding/js/ubumaths
+> NODE_OPTIONS='--max-old-space-size=8192' svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+
 Loading svelte-check in workspace: /Users/david/Coding/js/ubumaths
 Getting Svelte diagnostics...
 
-/Users/david/Coding/js/ubumaths/src/lib/types/notification.ts:9:2
-Error: Module '"./database"' has no exported member 'Notification'. 
-import type {
-	Notification,
-	NotificationType,
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:52:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/types/notification.ts:10:2
-Error: Module '"./database"' has no exported member 'NotificationType'. 
-	Notification,
-	NotificationType,
-	NotificationPriority,
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:62:31
+Error: Argument of type '{ props: { visible: boolean; onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { visible: boolean; onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { visible: boolean; onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = { ...getDefaultProps(), visible: false };
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/types/notification.ts:11:2
-Error: Module '"./database"' has no exported member 'NotificationPriority'. 
-	NotificationType,
-	NotificationPriority,
-	NotificationTargetType,
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:71:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/types/notification.ts:12:2
-Error: Module '"./database"' has no exported member 'NotificationTargetType'. 
-	NotificationPriority,
-	NotificationTargetType,
-	SystemEventType
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:82:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/types/notification.ts:13:2
-Error: Module '"./database"' has no exported member 'SystemEventType'. 
-	NotificationTargetType,
-	SystemEventType
-} from './database';
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:90:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/utils/timetable.ts:1:15
-Error: Module '"$lib/types/database"' has no exported member 'SchoolTimetable'. 
-import type { SchoolTimetable, SchoolPeriod } from '$lib/types/database';
-import { formatTimeDisplay, timeToMinutes } from './schedule';
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:99:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/utils/timetable.ts:1:32
-Error: Module '"$lib/types/database"' has no exported member 'SchoolPeriod'. 
-import type { SchoolTimetable, SchoolPeriod } from '$lib/types/database';
-import { formatTimeDisplay, timeToMinutes } from './schedule';
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:114:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:36:3
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: { type: "draw_cards"; count: number; }; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	return [
-		{
-			id: 'card-legendary',
-			name: 'Carte Legendaire',
-			description: 'Une carte extremement rare',
-			image_path: '/images/cards/legendary.jpg',
-			category: 'power',
-			rarity: 'legendary',
-			is_enabled: true,
-			sort_order: 1,
-			action: { type: 'draw_cards', count: 3 },
-			created_at: '2025-01-01T00:00:00Z',
-			updated_at: '2025-01-01T00:00:00Z'
-		},
-		{
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:124:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:49:3
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		},
-		{
-			id: 'card-common',
-			name: 'Carte Commune',
-			description: 'Une carte tres commune',
-			image_path: '/images/cards/common.jpg',
-			category: 'bonus',
-			rarity: 'common',
-			is_enabled: true,
-			sort_order: 2,
-			action: null,
-			created_at: '2025-01-01T00:00:00Z',
-			updated_at: '2025-01-01T00:00:00Z'
-		},
-		{
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:134:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:62:3
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		},
-		{
-			id: 'card-rare',
-			name: 'Carte Rare',
-			description: 'Une carte assez rare',
-			image_path: '/images/cards/rare.jpg',
-			category: 'privilege',
-			rarity: 'rare',
-			is_enabled: true,
-			sort_order: 3,
-			action: null,
-			created_at: '2025-01-01T00:00:00Z',
-			updated_at: '2025-01-01T00:00:00Z'
-		}
-	];
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:145:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:137:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		const cardsWithDuplicates: VipCardTemplate[] = [
-			{
-				id: 'duplicate',
-				name: 'First',
-				description: 'First card',
-				image_path: '/first.jpg',
-				category: 'bonus',
-				rarity: 'common',
-				is_enabled: true,
-				sort_order: 1,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			},
-			{
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:156:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:150:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: 'duplicate',
-				name: 'Second',
-				description: 'Second card',
-				image_path: '/second.jpg',
-				category: 'bonus',
-				rarity: 'common',
-				is_enabled: true,
-				sort_order: 2,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			}
-		];
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:166:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:189:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('converts snake_case fields to camelCase', () => {
-		const template: VipCardTemplate = {
-			id: 'test',
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:182:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:210:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: { type: "draw_cards"; count: number; }; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('handles action field correctly', () => {
-		const templateWithAction: VipCardTemplate = {
-			id: 'test',
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:192:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:229:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('converts null action to undefined', () => {
-		const templateWithoutAction: VipCardTemplate = {
-			id: 'test',
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:203:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:248:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: null; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('handles null category correctly', () => {
-		const template: VipCardTemplate = {
-			id: 'test',
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:213:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:276:10
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: "common" | "rare" | "epic" | "legendary"; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		rarities.forEach((rarity) => {
-			const template: VipCardTemplate = {
-				id: `test-${rarity}`,
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:229:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:340:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('handles cards with long names', () => {
-		const longNameCard: VipCardTemplate = {
-			id: 'long',
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:237:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:360:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('handles cards with special characters in name', () => {
-		const specialCard: VipCardTemplate = {
-			id: 'special',
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:245:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:408:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: null; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('handles card with minimal valid data', () => {
-		const minimalCard: VipCardTemplate = {
-			id: 'minimal',
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:259:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelector.test.ts:440:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: "bonus"; rarity: "common"; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }[]' is not assignable to type 'VipCardTemplate[]'.
-  Type '{ id: string; name: string; description: string; image_path: string; category: "bonus"; rarity: "common"; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('handles large card arrays efficiently', () => {
-		const manyCards: VipCardTemplate[] = Array.from({ length: 1000 }, (_, i) => ({
-			id: `card-${i}`,
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:271:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:31:3
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	return [
-		{
-			id: 'card-common-1',
-			name: 'Carte Commune 1',
-			description: 'Une carte très commune',
-			image_path: '/images/cards/common-1.jpg',
-			category: 'bonus',
-			rarity: 'common',
-			is_enabled: true,
-			sort_order: 1,
-			action: null,
-			created_at: '2025-01-01T00:00:00Z',
-			updated_at: '2025-01-01T00:00:00Z'
-		},
-		{
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:287:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:44:3
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: { type: "draw_cards"; count: number; }; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		},
-		{
-			id: 'card-legendary-1',
-			name: 'Carte Légendaire 1',
-			description: 'Une carte extrêmement rare',
-			image_path: '/images/cards/legendary-1.jpg',
-			category: 'power',
-			rarity: 'legendary',
-			is_enabled: true,
-			sort_order: 2,
-			action: { type: 'draw_cards', count: 3 },
-			created_at: '2025-01-01T00:00:00Z',
-			updated_at: '2025-01-01T00:00:00Z'
-		},
-		{
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:302:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:57:3
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		},
-		{
-			id: 'card-rare-1',
-			name: 'Carte Rare 1',
-			description: 'Une carte assez rare',
-			image_path: '/images/cards/rare-1.jpg',
-			category: 'privilege',
-			rarity: 'rare',
-			is_enabled: true,
-			sort_order: 3,
-			action: null,
-			created_at: '2025-01-01T00:00:00Z',
-			updated_at: '2025-01-01T00:00:00Z'
-		},
-		{
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:321:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:70:3
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: { type: "add_gidouilles"; amount: number; }; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		},
-		{
-			id: 'card-epic-1',
-			name: 'Carte Épique 1',
-			description: 'Une carte très rare',
-			image_path: '/images/cards/epic-1.jpg',
-			category: 'social',
-			rarity: 'epic',
-			is_enabled: true,
-			sort_order: 4,
-			action: { type: 'add_gidouilles', amount: 100 },
-			created_at: '2025-01-01T00:00:00Z',
-			updated_at: '2025-01-01T00:00:00Z'
-		},
-		{
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:335:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; visible: boolean; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
+			const props = getDefaultProps();
+			render(CalculatorKeyboard, { props });
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:83:3
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		},
-		{
-			id: 'card-common-2',
-			name: 'Carte Commune 2',
-			description: 'Une autre carte commune',
-			image_path: '/images/cards/common-2.jpg',
-			category: 'bonus',
-			rarity: 'common',
-			is_enabled: true,
-			sort_order: 5,
-			action: null,
-			created_at: '2025-01-01T00:00:00Z',
-			updated_at: '2025-01-01T00:00:00Z'
-		}
-	];
+/Users/david/Coding/js/ubumaths/src/lib/components/calculator/CalculatorKeyboard.svelte.test.ts:364:31
+Error: Argument of type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; }; }' is not assignable to parameter of type 'SvelteComponentOptions<Component<Props, {}, "">> | undefined'.
+  Type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; }; }' is not assignable to type 'MountOptions<Props>'.
+    Property 'target' is missing in type '{ props: { onInput: Mock<Procedure>; onSubmit: Mock<Procedure>; onBackspace: Mock<Procedure>; onClear: Mock<Procedure>; onAllClear: Mock<...>; }; }' but required in type '{ target: Document | Element | ShadowRoot; anchor?: Node | undefined; events?: Record<string, (e: any) => any> | undefined; context?: Map<...> | undefined; intro?: boolean | undefined; }'. 
 
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:146:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		const cards: VipCardTemplate[] = [
-			{
-				id: 'epic',
-				name: 'Epic',
-				description: 'Epic card',
-				image_path: '/epic.jpg',
-				category: 'bonus',
-				rarity: 'epic',
-				is_enabled: true,
-				sort_order: 1,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:159:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: 'legendary',
-				name: 'Legendary',
-				description: 'Legendary card',
-				image_path: '/legendary.jpg',
-				category: 'power',
-				rarity: 'legendary',
-				is_enabled: true,
-				sort_order: 2,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			}
-		];
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:181:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		const cards: VipCardTemplate[] = [
-			{
-				id: 'rare',
-				name: 'Rare',
-				description: 'Rare card',
-				image_path: '/rare.jpg',
-				category: 'bonus',
-				rarity: 'rare',
-				is_enabled: true,
-				sort_order: 1,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:194:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: 'epic',
-				name: 'Epic',
-				description: 'Epic card',
-				image_path: '/epic.jpg',
-				category: 'power',
-				rarity: 'epic',
-				is_enabled: true,
-				sort_order: 2,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			}
-		];
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:216:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		const cards: VipCardTemplate[] = [
-			{
-				id: 'common',
-				name: 'Common',
-				description: 'Common card',
-				image_path: '/common.jpg',
-				category: 'bonus',
-				rarity: 'common',
-				is_enabled: true,
-				sort_order: 1,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:229:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: 'rare',
-				name: 'Rare',
-				description: 'Rare card',
-				image_path: '/rare.jpg',
-				category: 'power',
-				rarity: 'rare',
-				is_enabled: true,
-				sort_order: 2,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			}
-		];
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:251:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		const cards: VipCardTemplate[] = [
-			{
-				id: 'rare-1',
-				name: 'Rare A',
-				description: 'First rare',
-				image_path: '/rare-1.jpg',
-				category: 'bonus',
-				rarity: 'rare',
-				is_enabled: true,
-				sort_order: 1,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:264:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: 'rare-2',
-				name: 'Rare B',
-				description: 'Second rare',
-				image_path: '/rare-2.jpg',
-				category: 'bonus',
-				rarity: 'rare',
-				is_enabled: true,
-				sort_order: 2,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:277:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: 'rare-3',
-				name: 'Rare C',
-				description: 'Third rare',
-				image_path: '/rare-3.jpg',
-				category: 'bonus',
-				rarity: 'rare',
-				is_enabled: true,
-				sort_order: 3,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			}
-		];
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:314:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		const cards: VipCardTemplate[] = [
-			{
-				id: 'single',
-				name: 'Single Card',
-				description: 'Only card',
-				image_path: '/single.jpg',
-				category: 'bonus',
-				rarity: 'common',
-				is_enabled: true,
-				sort_order: 1,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			}
-		];
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:336:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: "common"; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		const cards: VipCardTemplate[] = [
-			{
-				id: 'no-rarity',
-				name: 'No Rarity',
-				description: 'Card without rarity',
-				image_path: '/no-rarity.jpg',
-				category: 'bonus',
-				rarity: null as unknown as 'common', // Simulate null from database
-				is_enabled: true,
-				sort_order: 1,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:349:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: 'legendary',
-				name: 'Legendary',
-				description: 'Legendary card',
-				image_path: '/legendary.jpg',
-				category: 'power',
-				rarity: 'legendary',
-				is_enabled: true,
-				sort_order: 2,
-				action: null,
-				created_at: '2025-01-01T00:00:00Z',
-				updated_at: '2025-01-01T00:00:00Z'
-			}
-		];
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:375:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: "bonus"; rarity: "common" | "rare" | "epic" | "legendary"; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }[]' is not assignable to type 'VipCardTemplate[]'.
-  Type '{ id: string; name: string; description: string; image_path: string; category: "bonus"; rarity: "common" | "rare" | "epic" | "legendary"; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('handles large arrays efficiently (50+ cards)', () => {
-		const manyCards: VipCardTemplate[] = Array.from({ length: 100 }, (_, i) => ({
-			id: `card-${i}`,
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:419:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-		const cards: VipCardTemplate[] = [
-			{
-				id: '1',
-				name: 'C1',
-				description: '',
-				image_path: '',
-				category: 'bonus',
-				rarity: 'common',
-				is_enabled: true,
-				sort_order: 1,
-				action: null,
-				created_at: '',
-				updated_at: ''
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:432:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: '2',
-				name: 'L1',
-				description: '',
-				image_path: '',
-				category: 'bonus',
-				rarity: 'legendary',
-				is_enabled: true,
-				sort_order: 2,
-				action: null,
-				created_at: '',
-				updated_at: ''
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:445:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: '3',
-				name: 'R1',
-				description: '',
-				image_path: '',
-				category: 'bonus',
-				rarity: 'rare',
-				is_enabled: true,
-				sort_order: 3,
-				action: null,
-				created_at: '',
-				updated_at: ''
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:458:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: '4',
-				name: 'E1',
-				description: '',
-				image_path: '',
-				category: 'bonus',
-				rarity: 'epic',
-				is_enabled: true,
-				sort_order: 4,
-				action: null,
-				created_at: '',
-				updated_at: ''
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:471:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: '5',
-				name: 'C2',
-				description: '',
-				image_path: '',
-				category: 'bonus',
-				rarity: 'common',
-				is_enabled: true,
-				sort_order: 5,
-				action: null,
-				created_at: '',
-				updated_at: ''
-			},
-			{
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:484:4
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-			},
-			{
-				id: '6',
-				name: 'L2',
-				description: '',
-				image_path: '',
-				category: 'bonus',
-				rarity: 'legendary',
-				is_enabled: true,
-				sort_order: 6,
-				action: null,
-				created_at: '',
-				updated_at: ''
-			}
-		];
-
-/Users/david/Coding/js/ubumaths/src/lib/components/VipCardSelectorModal.test.ts:517:9
-Error: Type '{ id: string; name: string; description: string; image_path: string; category: string; rarity: string; is_enabled: true; sort_order: number; action: null; created_at: string; updated_at: string; }' is missing the following properties from type 'VipCardTemplate': base_price, is_purchasable, max_owned_per_student, uses_total 
-	it('accepts valid VipCardTemplate objects', () => {
-		const validCard: VipCardTemplate = {
-			id: 'test',
+			render(CalculatorKeyboard, { props });
 
 /Users/david/Coding/js/ubumaths/src/lib/components/markdown/nodes/VariationTable.svelte:247:25
 Warn: Redundant role 'table'
@@ -962,56 +536,56 @@ https://svelte.dev/e/a11y_figcaption_parent (svelte)
 				<figcaption class="image-caption">{caption}</figcaption>
 			{/if}
 
-/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:78:21
+/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:79:21
 Warn: This reference only captures the initial value of `template`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	// Form state - Metadata
 	let title = $state(template?.title ?? '');
 	let description = $state(template?.description ?? '');
 
-/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:79:27
+/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:80:27
 Warn: This reference only captures the initial value of `template`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let title = $state(template?.title ?? '');
 	let description = $state(template?.description ?? '');
-	let selectedGrades = $state<string[]>(template?.grades ?? []);
+	let selectedGrades = $state<GradeCode[]>(template?.grades ?? []);
 
-/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:80:40
+/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:81:43
 Warn: This reference only captures the initial value of `template`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let description = $state(template?.description ?? '');
-	let selectedGrades = $state<string[]>(template?.grades ?? []);
+	let selectedGrades = $state<GradeCode[]>(template?.grades ?? []);
 	let color = $state<ChapterColor | null>(template?.color ?? null);
 
-/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:81:42
+/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:82:42
 Warn: This reference only captures the initial value of `template`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
-	let selectedGrades = $state<string[]>(template?.grades ?? []);
+	let selectedGrades = $state<GradeCode[]>(template?.grades ?? []);
 	let color = $state<ChapterColor | null>(template?.color ?? null);
 	let icon = $state<ChapterIcon | null>(template?.icon ?? 'book');
 
-/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:82:40
+/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:83:40
 Warn: This reference only captures the initial value of `template`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let color = $state<ChapterColor | null>(template?.color ?? null);
 	let icon = $state<ChapterIcon | null>(template?.icon ?? 'book');
 	let status = $state<TemplateStatus>(template?.status ?? 'draft');
 
-/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:83:38
+/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:84:38
 Warn: This reference only captures the initial value of `template`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let icon = $state<ChapterIcon | null>(template?.icon ?? 'book');
 	let status = $state<TemplateStatus>(template?.status ?? 'draft');
 	let isPublic = $state(template?.isPublic ?? false);
 
-/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:84:24
+/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:85:24
 Warn: This reference only captures the initial value of `template`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let status = $state<TemplateStatus>(template?.status ?? 'draft');
 	let isPublic = $state(template?.isPublic ?? false);
 	let isSubmitting = $state(false);
 
-/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:89:3
+/Users/david/Coding/js/ubumaths/src/lib/components/templates/TemplateEditor.svelte:90:3
 Warn: This reference only captures the initial value of `template`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let contentSnapshot = $state<TemplateContentSnapshot>(
@@ -1129,156 +703,6 @@ https://svelte.dev/e/perf_avoid_nested_class (svelte)
 			}
 			const errorMarker = new ErrorMarker();
 
-/Users/david/Coding/js/ubumaths/src/lib/server/bug-report-export.ts:214:23
-Error: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<BugReportCategory, string>'.
-  No index signature with a parameter of type 'string' was found on type 'Record<BugReportCategory, string>'. 
-	sections.push(
-		`- **Catégorie**: ${BUG_REPORT_CATEGORY_LABELS[report.category]} (${report.category})`
-	);
-
-/Users/david/Coding/js/ubumaths/src/lib/server/bug-report-export.ts:217:22
-Error: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<BugReportSeverity, string>'.
-  No index signature with a parameter of type 'string' was found on type 'Record<BugReportSeverity, string>'. 
-	sections.push(
-		`- **Sévérité**: ${BUG_REPORT_SEVERITY_LABELS[report.severity]} (${report.severity})`
-	);
-
-/Users/david/Coding/js/ubumaths/src/lib/server/bug-report-export.ts:219:33
-Error: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<BugReportStatus, string>'.
-  No index signature with a parameter of type 'string' was found on type 'Record<BugReportStatus, string>'. 
-	);
-	sections.push(`- **Statut**: ${BUG_REPORT_STATUS_LABELS[report.status]} (${report.status})`);
-	sections.push(`- **Créé le**: ${formatTimestamp(report.created_at)}`);
-
-/Users/david/Coding/js/ubumaths/src/lib/server/summaries/index.ts:62:2
-Error: Module '"./database-types"' has no exported member 'GidouillesHistoryRow'. 
-	WeeklyRewardInsert,
-	GidouillesHistoryRow,
-	BonusHistoryRow,
-
-/Users/david/Coding/js/ubumaths/src/lib/utils/week-config.ts:1:15
-Error: Module '"$lib/types/database"' has no exported member 'WeekConfig'. 
-import type { WeekConfig } from '$lib/types/database';
-
-/Users/david/Coding/js/ubumaths/src/lib/server/worksheets/instance-generator.ts:236:3
-Error: Object literal may only specify known properties, and 'title' does not exist in type 'ResolvedExercise'. 
-		exercise_id: exercise.exercise_id,
-		title: exercise.exercise?.title ?? null,
-		position,
-
-/Users/david/Coding/js/ubumaths/src/lib/stores/friends.svelte.ts:4:2
-Error: Module '"$lib/types/database"' has no exported member 'FriendshipWithProfile'. 
-	Database,
-	FriendshipWithProfile,
-	FriendshipRelationType,
-
-/Users/david/Coding/js/ubumaths/src/lib/stores/friends.svelte.ts:5:2
-Error: Module '"$lib/types/database"' has no exported member 'FriendshipRelationType'. 
-	FriendshipWithProfile,
-	FriendshipRelationType,
-	FriendshipStatus
-
-/Users/david/Coding/js/ubumaths/src/lib/stores/friends.svelte.ts:6:2
-Error: Module '"$lib/types/database"' has no exported member 'FriendshipStatus'. 
-	FriendshipRelationType,
-	FriendshipStatus
-} from '$lib/types/database';
-
-/Users/david/Coding/js/ubumaths/src/lib/stores/marketplace.svelte.ts:492:4
-Error: Object literal may only specify known properties, and 'offered_item_ids' does not exist in type 'MarketplaceListing'. 
-			offered_gidouilles: validation.data.offered_gidouilles || null,
-			offered_item_ids: null,
-			wanted_card_template_ids: validation.data.wanted_card_template_ids || null,
-
-/Users/david/Coding/js/ubumaths/src/lib/stores/minesweeper.svelte.ts:1134:34
-Error: Type instantiation is excessively deep and possibly infinite. 
-			// Query for minesweeper_undo items in student's inventory
-			const { data, error } = await this.supabase!.from('student_item_inventory')
-				.select(
-					`
-					quantity,
-					shop_item_templates!inner(internal_name)
-				`
-				)
-				.eq('student_id', this.user!.id)
-
-/Users/david/Coding/js/ubumaths/src/lib/stores/minesweeper.svelte.ts:1134:54
-Error: No overload matches this call.
-  Overload 1 of 2, '(relation: "school_years" | "profiles" | "achievements" | "assessments" | "classes" | "academic_periods" | "class_chapters" | "exercises" | "question_templates" | "chapter_quiz_questions" | ... 153 more ... | "worksheet_instances"): PostgrestQueryBuilder<...>', gave the following error.
-    Argument of type '"student_item_inventory"' is not assignable to parameter of type '"school_years" | "profiles" | "achievements" | "assessments" | "classes" | "academic_periods" | "class_chapters" | "exercises" | "question_templates" | "chapter_quiz_questions" | ... 153 more ... | "worksheet_instances"'.
-  Overload 2 of 2, '(relation: "assessment_results" | "minesweeper_student_achievement_progress" | "riddle_progress" | "user_conversations_view" | "student_coursework_view" | "assigned_exercises_with_details" | ... 17 more ... | "student_achievement_stats"): PostgrestQueryBuilder<...>', gave the following error.
-    Argument of type '"student_item_inventory"' is not assignable to parameter of type '"assessment_results" | "minesweeper_student_achievement_progress" | "riddle_progress" | "user_conversations_view" | "student_coursework_view" | "assigned_exercises_with_details" | ... 17 more ... | "student_achievement_stats"'. 
-			// Query for minesweeper_undo items in student's inventory
-			const { data, error } = await this.supabase!.from('student_item_inventory')
-				.select(
-
-/Users/david/Coding/js/ubumaths/src/lib/stores/minesweeper.svelte.ts:1153:63
-Error: Property 'quantity' does not exist on type 'ResultOne'. 
-			// Sum up all quantities
-			const totalCount = data?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
-			this.undoItemsAvailable = totalCount;
-
-/Users/david/Coding/js/ubumaths/src/lib/stores/selectedClass.svelte.ts:48:15
-Error: Module '"$lib/types/database"' has no exported member 'Class'. 
-
-import type { Class } from '$lib/types/database';
-
-/Users/david/Coding/js/ubumaths/src/lib/typst/generators/worksheet-generator.ts:455:32
-Error: Property 'title' does not exist on type 'ResolvedExercise'. 
-		// Exercise header with number, title, and optional points
-		const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
-		content += '#exercise-box[\n';
-
-/Users/david/Coding/js/ubumaths/src/lib/typst/generators/worksheet-generator.ts:455:67
-Error: Property 'title' does not exist on type 'ResolvedExercise'. 
-		// Exercise header with number, title, and optional points
-		const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
-		content += '#exercise-box[\n';
-
-/Users/david/Coding/js/ubumaths/src/lib/typst/generators/worksheet-generator.ts:561:32
-Error: Property 'title' does not exist on type 'ResolvedExercise'. 
-		// Exercise header with title
-		const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
-		content += `#block(width: 100%, inset: 0pt)[
-
-/Users/david/Coding/js/ubumaths/src/lib/typst/generators/worksheet-generator.ts:561:67
-Error: Property 'title' does not exist on type 'ResolvedExercise'. 
-		// Exercise header with title
-		const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
-		content += `#block(width: 100%, inset: 0pt)[
-
-/Users/david/Coding/js/ubumaths/src/lib/typst/generators/worksheet-generator.test.ts:60:4
-Error: Object literal may only specify known properties, and 'title' does not exist in type 'ResolvedExercise'. 
-			exercise_id: 'ex-1',
-			title: 'Equation lineaire',
-			position: 1,
-
-/Users/david/Coding/js/ubumaths/src/lib/typst/generators/worksheet-generator.test.ts:68:4
-Error: Object literal may only specify known properties, and 'title' does not exist in type 'ResolvedExercise'. 
-			exercise_id: 'ex-2',
-			title: null,
-			position: 2,
-
-/Users/david/Coding/js/ubumaths/src/lib/utils/avatar.ts:1:15
-Error: Module '"$lib/types/database"' has no exported member 'Gender'. 
-import type { Gender, UserRole } from '$lib/types/database';
-
-/Users/david/Coding/js/ubumaths/src/lib/utils/avatar.ts:1:23
-Error: Module '"$lib/types/database"' has no exported member 'UserRole'. 
-import type { Gender, UserRole } from '$lib/types/database';
-
-/Users/david/Coding/js/ubumaths/src/lib/utils/timeMatching.ts:42:15
-Error: Module '"$lib/types/database"' has no exported member 'Class'. 
-
-import type { Class, ClassSchedule } from '$lib/types/database';
-import { formatTimeDisplay, getDayName } from './schedule';
-
-/Users/david/Coding/js/ubumaths/src/lib/utils/timeMatching.ts:42:22
-Error: Module '"$lib/types/database"' has no exported member 'ClassSchedule'. 
-
-import type { Class, ClassSchedule } from '$lib/types/database';
-import { formatTimeDisplay, getDayName } from './schedule';
-
 /Users/david/Coding/js/ubumaths/src/lib/components/VipCardHolo.svelte:96:21
 Warn: This reference only captures the initial value of `card`. Did you mean to reference it inside a closure instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
@@ -1296,11 +720,6 @@ Warn: This reference only captures the initial value of `showcase`. Did you mean
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let showcaseTimerEnd: number | undefined = $state();
 	let showcaseRunning = $state(showcase);
-
-/Users/david/Coding/js/ubumaths/src/lib/utils/week-config.test.ts:10:15
-Error: Module '"$lib/types/database"' has no exported member 'WeekConfig'. 
-} from './week-config';
-import type { WeekConfig } from '$lib/types/database';
 
 /Users/david/Coding/js/ubumaths/src/lib/whiteboard/components/TextBlock.svelte:40:27
 Warn: This reference only captures the initial value of `element`. Did you mean to reference it inside a derived instead?
@@ -1758,89 +1177,6 @@ https://svelte.dev/e/a11y_no_noninteractive_element_interactions (svelte)
 				</div>
 			{/each}
 
-/Users/david/Coding/js/ubumaths/src/lib/worksheets/student-worksheet-typst.ts:79:35
-Error: Property 'title' does not exist on type 'StudentExerciseView'. 
-		// Exercise header with title if present
-		const exerciseHeader = exercise.title
-			? `Exercice ${exercise.position} - ${escapeTypst(exercise.title)}`
-
-/Users/david/Coding/js/ubumaths/src/lib/worksheets/student-worksheet-typst.ts:80:62
-Error: Property 'title' does not exist on type 'StudentExerciseView'. 
-		const exerciseHeader = exercise.title
-			? `Exercice ${exercise.position} - ${escapeTypst(exercise.title)}`
-			: `Exercice ${exercise.position}`;
-
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/admin/schools/[schoolId]/organisation/+page.server.ts:3:15
-Error: Module '"$lib/types/database"' has no exported member 'SchoolTimetable'. 
-import type { PageServerLoad, Actions } from './$types';
-import type { SchoolTimetable } from '$lib/types/database';
-import { validateTimetable } from '$lib/utils/timetable';
-
-/Users/david/Coding/js/ubumaths/src/routes/(public)/games/2048/game-logic.ts:458:4
-Error: Type 'GameBoard' is not assignable to type '({ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string | undefined; } | null)[][]'.
-  Type '(Tile | null)[]' is not assignable to type '({ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string | undefined; } | null)[]'.
-    Type 'Tile | null' is not assignable to type '{ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string | undefined; } | null'.
-      Type 'Tile' is not assignable to type '{ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string; }'.
-        Types of property 'mergedFrom' are incompatible.
-          Type 'string[] | undefined' is not assignable to type 'undefined'.
-            Type 'string[]' is not assignable to type 'undefined'. 
-			rotations = 2; // 180 degrees (2 clockwise rotations)
-			board = rotateBoardClockwise(rotateBoardClockwise(board));
-			break;
-
-/Users/david/Coding/js/ubumaths/src/routes/(public)/games/2048/game-logic.ts:462:4
-Error: Type 'GameBoard' is not assignable to type '({ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string | undefined; } | null)[][]'.
-  Type '(Tile | null)[]' is not assignable to type '({ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string | undefined; } | null)[]'.
-    Type 'Tile | null' is not assignable to type '{ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string | undefined; } | null'.
-      Type 'Tile' is not assignable to type '{ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string; }'.
-        Types of property 'mergedFrom' are incompatible.
-          Type 'string[] | undefined' is not assignable to type 'undefined'.
-            Type 'string[]' is not assignable to type 'undefined'. 
-			rotations = 3; // 1 counter-clockwise = 3 clockwise
-			board = rotateBoardCounterClockwise(board);
-			break;
-
-/Users/david/Coding/js/ubumaths/src/routes/(public)/games/2048/game-logic.ts:466:4
-Error: Type 'GameBoard' is not assignable to type '({ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string | undefined; } | null)[][]'.
-  Type '(Tile | null)[]' is not assignable to type '({ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string | undefined; } | null)[]'.
-    Type 'Tile | null' is not assignable to type '{ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string | undefined; } | null'.
-      Type 'Tile' is not assignable to type '{ isNew: boolean; mergedFrom: undefined; id: string; value: number; position: Position; displayValue?: string; }'.
-        Types of property 'mergedFrom' are incompatible.
-          Type 'string[] | undefined' is not assignable to type 'undefined'.
-            Type 'string[]' is not assignable to type 'undefined'. 
-			rotations = 1; // 1 clockwise rotation
-			board = rotateBoardClockwise(board);
-			break;
-
-/Users/david/Coding/js/ubumaths/src/routes/api/admin/schools/[schoolId]/config/+server.ts:15:15
-Error: Module '"$lib/types/database"' has no exported member 'SchoolTimetable'. 
-import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-import type { SchoolTimetable } from '$lib/types/database';
-
-/Users/david/Coding/js/ubumaths/src/routes/api/student/worksheets/[assignmentId]/+server.ts:384:5
-Error: Object literal may only specify known properties, and 'title' does not exist in type 'StudentExerciseView'. 
-				exercise_id: exerciseData.id,
-				title: exerciseData.title,
-				position: we.position,
-
-/Users/david/Coding/js/ubumaths/src/routes/api/student/worksheets/[assignmentId]/+server.ts:405:18
-Error: Property 'tags' does not exist on type 'StudentExerciseView'. 
-			if (exerciseData.tags && exerciseData.tags.length > 0) {
-				exerciseView.tags = exerciseData.tags;
-			}
-
-/Users/david/Coding/js/ubumaths/src/lib/components/ClassScheduleGrid.svelte:51:16
-Error: Module '"$lib/types/database"' has no exported member 'ClassSchedule'. (ts)
-<script lang="ts">
-	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
-	import { getDayName, formatScheduleDisplay, formatTimeDisplay } from '$lib/utils/schedule';
-
-/Users/david/Coding/js/ubumaths/src/lib/components/ClassScheduleGrid.svelte:51:31
-Error: Module '"$lib/types/database"' has no exported member 'SchoolPeriod'. (ts)
-<script lang="ts">
-	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
-	import { getDayName, formatScheduleDisplay, formatTimeDisplay } from '$lib/utils/schedule';
-
 /Users/david/Coding/js/ubumaths/src/lib/components/Header.svelte:45:16
 Error: Module '"$lib/types/database"' has no exported member 'Profile'. (ts)
 	import type { User } from '@supabase/supabase-js';
@@ -1982,154 +1318,115 @@ https://svelte.dev/e/state_referenced_locally (svelte)
 		template?.variations.map((v) => correctionToString(v.correction)) || ['']
 	);
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:97:7
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:99:7
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let formData = $state<ScheduleFormData>({
 		id: entry?.id,
 		day_of_week: entry?.day_of_week ?? defaultDay,
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:98:16
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:100:16
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		id: entry?.id,
 		day_of_week: entry?.day_of_week ?? defaultDay,
 		start_time: entry?.start_time ?? (periods[0]?.start_time || '08:00:00'),
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:98:38
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:100:38
 Warn: This reference only captures the initial value of `defaultDay`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		id: entry?.id,
 		day_of_week: entry?.day_of_week ?? defaultDay,
 		start_time: entry?.start_time ?? (periods[0]?.start_time || '08:00:00'),
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:99:15
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:101:15
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		day_of_week: entry?.day_of_week ?? defaultDay,
 		start_time: entry?.start_time ?? (periods[0]?.start_time || '08:00:00'),
 		end_time: entry?.end_time ?? (periods[0]?.end_time || '09:00:00'),
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:99:37
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:101:37
 Warn: This reference only captures the initial value of `periods`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		day_of_week: entry?.day_of_week ?? defaultDay,
 		start_time: entry?.start_time ?? (periods[0]?.start_time || '08:00:00'),
 		end_time: entry?.end_time ?? (periods[0]?.end_time || '09:00:00'),
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:100:13
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:102:13
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		start_time: entry?.start_time ?? (periods[0]?.start_time || '08:00:00'),
 		end_time: entry?.end_time ?? (periods[0]?.end_time || '09:00:00'),
 		period_number: entry?.period_number ?? (periods[0]?.number || 1),
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:100:33
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:102:33
 Warn: This reference only captures the initial value of `periods`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		start_time: entry?.start_time ?? (periods[0]?.start_time || '08:00:00'),
 		end_time: entry?.end_time ?? (periods[0]?.end_time || '09:00:00'),
 		period_number: entry?.period_number ?? (periods[0]?.number || 1),
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:101:18
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:103:18
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		end_time: entry?.end_time ?? (periods[0]?.end_time || '09:00:00'),
 		period_number: entry?.period_number ?? (periods[0]?.number || 1),
 		subject: entry?.subject ?? '',
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:101:43
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:103:43
 Warn: This reference only captures the initial value of `periods`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		end_time: entry?.end_time ?? (periods[0]?.end_time || '09:00:00'),
 		period_number: entry?.period_number ?? (periods[0]?.number || 1),
 		subject: entry?.subject ?? '',
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:102:12
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:104:12
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		period_number: entry?.period_number ?? (periods[0]?.number || 1),
 		subject: entry?.subject ?? '',
 		room: entry?.room ?? '',
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:103:9
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:105:9
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		subject: entry?.subject ?? '',
 		room: entry?.room ?? '',
 		notes: entry?.notes ?? ''
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:104:10
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:106:10
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 		room: entry?.room ?? '',
 		notes: entry?.notes ?? ''
 	});
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:178:34
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:180:34
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	// Initialize with derived values to avoid capturing stale initial state
 	let selectedDay = $state(String(entry?.day_of_week ?? defaultDay));
 	let selectedPeriod = $state(String(entry?.period_number ?? (periods[0]?.number || 1)));
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:178:56
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:180:56
 Warn: This reference only captures the initial value of `defaultDay`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	// Initialize with derived values to avoid capturing stale initial state
 	let selectedDay = $state(String(entry?.day_of_week ?? defaultDay));
 	let selectedPeriod = $state(String(entry?.period_number ?? (periods[0]?.number || 1)));
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:179:37
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:181:37
 Warn: This reference only captures the initial value of `entry`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let selectedDay = $state(String(entry?.day_of_week ?? defaultDay));
 	let selectedPeriod = $state(String(entry?.period_number ?? (periods[0]?.number || 1)));
 
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:179:62
+/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:181:62
 Warn: This reference only captures the initial value of `periods`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let selectedDay = $state(String(entry?.day_of_week ?? defaultDay));
 	let selectedPeriod = $state(String(entry?.period_number ?? (periods[0]?.number || 1)));
-
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:51:16
-Error: Module '"$lib/types/database"' has no exported member 'ClassSchedule'. (ts)
-<script lang="ts">
-	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
-	import { Button } from '$lib/components/ui/button';
-
-/Users/david/Coding/js/ubumaths/src/lib/components/ScheduleEntryModal.svelte:51:31
-Error: Module '"$lib/types/database"' has no exported member 'SchoolPeriod'. (ts)
-<script lang="ts">
-	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
-	import { Button } from '$lib/components/ui/button';
-
-/Users/david/Coding/js/ubumaths/src/lib/components/admin/WeekConfigEditor.svelte:21:16
-Error: Module '"$lib/types/database"' has no exported member 'WeekConfig'. (ts)
-	import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-	import type { WeekConfig } from '$lib/types/database';
-
-/Users/david/Coding/js/ubumaths/src/lib/components/admin/WeekConfigEditor.svelte:273:31
-Error: Parameter 'd' implicitly has an 'any' type. (ts)
-				{#if config.school_days.length > 0}
-					{config.school_days.map((d) => DAY_NAMES_SHORT[d]).join(', ')}
-				{:else}
-
-/Users/david/Coding/js/ubumaths/src/lib/components/admin/WeekConfigEditor.svelte:281:32
-Error: Parameter 'd' implicitly has an 'any' type. (ts)
-				{#if config.weekend_days.length > 0}
-					{config.weekend_days.map((d) => DAY_NAMES_SHORT[d]).join(', ')}
-				{:else}
-
-/Users/david/Coding/js/ubumaths/src/lib/components/admin/SchoolConfigModal.svelte:24:16
-Error: Module '"$lib/types/database"' has no exported member 'WeekConfig'. (ts)
-	import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-	import type { WeekConfig, SchoolTimetable } from '$lib/types/database';
-
-/Users/david/Coding/js/ubumaths/src/lib/components/admin/SchoolConfigModal.svelte:24:28
-Error: Module '"$lib/types/database"' has no exported member 'SchoolTimetable'. (ts)
-	import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
-	import type { WeekConfig, SchoolTimetable } from '$lib/types/database';
 
 /Users/david/Coding/js/ubumaths/src/lib/components/assessments/AssessmentConfigForm.svelte:44:21
 Warn: This reference only captures the initial value of `initialData`. Did you mean to reference it inside a derived instead?
@@ -2282,6 +1579,12 @@ https://svelte.dev/e/state_referenced_locally (svelte)
 	// Track expanded state for collapsible nodes
 	let expanded = $state(depth < 2);
 
+/Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseMarkdownPreview.svelte:31:3
+Error: Object literal may only specify known properties, and 'statement_md' does not exist in type 'Exercise'. (ts)
+		id: 'preview-temp',
+		statement_md: markdown,
+		solution_md: '',
+
 /Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:55:21
 Warn: This reference only captures the initial value of `exercise`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
@@ -2322,13 +1625,13 @@ Warn: This reference only captures the initial value of `exercise`. Did you mean
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let tags = $state<string[]>(exercise?.tags || []);
 	let topic = $state(exercise?.topic || '');
-	let gradeLevels = $state<GradeCode[]>((exercise?.grade_levels as GradeCode[]) || []);
+	let gradeLevels = $state<GradeCode[]>((exercise?.grades as GradeCode[]) || []);
 
 /Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:61:41
 Warn: This reference only captures the initial value of `exercise`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let topic = $state(exercise?.topic || '');
-	let gradeLevels = $state<GradeCode[]>((exercise?.grade_levels as GradeCode[]) || []);
+	let gradeLevels = $state<GradeCode[]>((exercise?.grades as GradeCode[]) || []);
 	let resources = $state<ExerciseResource[]>(
 
 /Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:63:4
@@ -2350,34 +1653,20 @@ https://svelte.dev/e/state_referenced_locally (svelte)
 	 */
 	let genericFunctions = $state<string[]>(exercise?.generic_functions ?? []);
 
-/Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:78:3
+/Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:79:3
 Warn: This reference only captures the initial value of `exercise`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let variations = $state<ExerciseVariation[]>(
 		exercise?.variations ?? [
 			{
 
-/Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:81:19
-Warn: This reference only captures the initial value of `exercise`. Did you mean to reference it inside a derived instead?
-https://svelte.dev/e/state_referenced_locally (svelte)
-				label: 'guided',
-				statement_md: exercise?.statement_md || '',
-				solution_md: exercise?.solution_md || '',
-
-/Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:82:18
-Warn: This reference only captures the initial value of `exercise`. Did you mean to reference it inside a derived instead?
-https://svelte.dev/e/state_referenced_locally (svelte)
-				statement_md: exercise?.statement_md || '',
-				solution_md: exercise?.solution_md || '',
-				hints: []
-
-/Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:92:58
+/Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:93:58
 Warn: This reference only captures the initial value of `exercise`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	 */
 	let shared = $state<SharedExerciseDefaults | undefined>(exercise?.shared);
 
-/Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:114:29
+/Users/david/Coding/js/ubumaths/src/lib/components/exercises/ExerciseForm.svelte:115:29
 Warn: This reference only captures the initial value of `exercise`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	// Metadata collapsed by default when editing, open when creating
@@ -2498,7 +1787,7 @@ Error: Type 'VipCard | null' is not assignable to type 'VipCard'.
 			>
 				<VipCard card={group.card} size="sm" clickable={false} />
 
-/Users/david/Coding/js/ubumaths/src/lib/components/marketplace/trade/TradeOfferPanel.svelte:62:31
+/Users/david/Coding/js/ubumaths/src/lib/components/marketplace/trade/TradeOfferPanel.svelte:60:31
 Warn: This reference only captures the initial value of `offer`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	// Local state for gidouilles input
@@ -2756,72 +2045,6 @@ Warn: This reference only captures the initial value of `initialSelection`. Did 
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let isLoading = $state(true);
 	let selectionCount = $state(initialSelection.length); // Track count separately
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseDisplay.svelte:47:35
-Error: Property 'title' does not exist on type 'StudentExerciseView'. (ts)
-			<Card.Title class="text-lg">
-				Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}
-			</Card.Title>
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseDisplay.svelte:47:59
-Error: Property 'title' does not exist on type 'StudentExerciseView'. (ts)
-			<Card.Title class="text-lg">
-				Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}
-			</Card.Title>
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseListItem.svelte:39:37
-Error: Property 'title' does not exist on type 'StudentExerciseView'. (ts)
-				<span class="font-medium"
-					>Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}</span
-				>
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseListItem.svelte:39:61
-Error: Property 'title' does not exist on type 'StudentExerciseView'. (ts)
-				<span class="font-medium"
-					>Exercice {index}{#if exercise.title}&nbsp;: {exercise.title}{/if}</span
-				>
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseListItem.svelte:48:18
-Error: Property 'tags' does not exist on type 'StudentExerciseView'. (ts)
-			</div>
-			{#if exercise.tags && exercise.tags.length > 0}
-				<div class="mt-1 flex flex-wrap gap-1">
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseListItem.svelte:48:35
-Error: Property 'tags' does not exist on type 'StudentExerciseView'. (ts)
-			</div>
-			{#if exercise.tags && exercise.tags.length > 0}
-				<div class="mt-1 flex flex-wrap gap-1">
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseListItem.svelte:50:22
-Error: Property 'tags' does not exist on type 'StudentExerciseView'. (ts)
-				<div class="mt-1 flex flex-wrap gap-1">
-					{#each exercise.tags as tag (tag)}
-						<Badge variant="secondary" class="text-xs">{tag}</Badge>
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseModal.svelte:138:50
-Error: Property 'title' does not exist on type 'StudentExerciseView'. (ts)
-						<Dialog.Title class="flex items-center gap-3 text-xl font-semibold">
-							Exercice {currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
-							{#if pointsLabel}
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseModal.svelte:138:74
-Error: Property 'title' does not exist on type 'StudentExerciseView'. (ts)
-						<Dialog.Title class="flex items-center gap-3 text-xl font-semibold">
-							Exercice {currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
-							{#if pointsLabel}
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseModal.svelte:308:49
-Error: Property 'title' does not exist on type 'StudentExerciseView'. (ts)
-					<Dialog.Title class="flex items-center gap-2 text-lg font-semibold">
-						Exercice {currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
-						{#if pointsLabel}
-
-/Users/david/Coding/js/ubumaths/src/lib/components/student/worksheets/ExerciseModal.svelte:308:73
-Error: Property 'title' does not exist on type 'StudentExerciseView'. (ts)
-					<Dialog.Title class="flex items-center gap-2 text-lg font-semibold">
-						Exercice {currentIndex + 1}{#if exercise?.title}&nbsp;: {exercise.title}{/if}
-						{#if pointsLabel}
 
 /Users/david/Coding/js/ubumaths/src/lib/components/test/TestTimer.svelte:69:25
 Warn: This reference only captures the initial value of `duration`. Did you mean to reference it inside a closure instead?
@@ -3886,16 +3109,6 @@ Error: Type 'typeof Settings' is not assignable to type 'Component<{}, {}, strin
 				{ href: '/dashboard/admin/settings', label: 'Settings', icon: Settings }
 			];
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/TeacherDashboard.svelte:66:16
-Error: Module '"$lib/types/database"' has no exported member 'Class'. (ts)
-	import type { ClassWithData } from '$lib/server/students';
-	import type { Class, ClassSchedule, Database } from '$lib/types/database';
-
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/TeacherDashboard.svelte:66:23
-Error: Module '"$lib/types/database"' has no exported member 'ClassSchedule'. (ts)
-	import type { ClassWithData } from '$lib/server/students';
-	import type { Class, ClassSchedule, Database } from '$lib/types/database';
-
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/admin/backup/+page.svelte:43:34
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
@@ -4142,12 +3355,6 @@ https://svelte.dev/e/state_referenced_locally (svelte)
 	let selectedYearId = $state<string | undefined>(data.activeYear?.id);
 	let editingYear = $state<SchoolYear | null>(null);
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/admin/schools/[schoolId]/organisation/+page.svelte:3:16
-Error: Module '"$lib/types/database"' has no exported member 'SchoolPeriod'. (ts)
-	import type { PageData, ActionData } from './$types';
-	import type { SchoolPeriod } from '$lib/types/database';
-	import { Button } from '$lib/components/ui/button';
-
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/admin/users/+page.svelte:55:28
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
@@ -4293,14 +3500,14 @@ Error: 'data.user' is possibly 'null'. (ts)
 			<VipCardShopSection supabase={data.supabase} userId={data.user.id} />
 		</Tabs.Content>
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/student/marketplace/trade/[id]/+page.svelte:34:19
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/student/marketplace/trade/[id]/+page.svelte:36:19
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a closure instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	// Get supabase client and user from parent layout data
 	const supabase = data.supabase;
 	const user = data.user;
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/student/marketplace/trade/[id]/+page.svelte:35:15
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/student/marketplace/trade/[id]/+page.svelte:37:15
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a closure instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	const supabase = data.supabase;
@@ -4423,17 +3630,39 @@ https://svelte.dev/e/state_referenced_locally (svelte)
 	// Classes loaded via SSR hydration
 	let classes = $state<ClassWithData[]>(data.classes || []);
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/classes/+page.svelte:39:16
-Error: Module '"$lib/types/database"' has no exported member 'ClassSchedule'. (ts)
-	import type { PageData } from './$types';
-	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
-	import type { ScheduleFormData } from '$lib/components/ScheduleEntryModal.svelte';
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.svelte:46:29
+Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+	// Form state
+	let lessonContent = $state(data.entry?.lessonContent || '');
+	let homeworkContent = $state(data.entry?.homeworkContent || '');
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/classes/+page.svelte:39:31
-Error: Module '"$lib/types/database"' has no exported member 'SchoolPeriod'. (ts)
-	import type { PageData } from './$types';
-	import type { ClassSchedule, SchoolPeriod } from '$lib/types/database';
-	import type { ScheduleFormData } from '$lib/components/ScheduleEntryModal.svelte';
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.svelte:47:31
+Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+	let lessonContent = $state(data.entry?.lessonContent || '');
+	let homeworkContent = $state(data.entry?.homeworkContent || '');
+	let homeworkDueDate = $state(data.entry?.homeworkDueDate || '');
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.svelte:48:31
+Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+	let homeworkContent = $state(data.entry?.homeworkContent || '');
+	let homeworkDueDate = $state(data.entry?.homeworkDueDate || '');
+	let isPublished = $state(data.entry?.isPublished || false);
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.svelte:49:27
+Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+	let homeworkDueDate = $state(data.entry?.homeworkDueDate || '');
+	let isPublished = $state(data.entry?.isPublished || false);
+	let isSaving = $state(false);
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/cahier-texte/[classId]/[date]/+page.svelte:346:2
+Error: Object literal may only specify known properties, and '"confirmText"' does not exist in type '$$ComponentProps'. (ts)
+	)} sera definitivement supprimee."
+	confirmText="Supprimer"
+	confirmVariant="destructive"
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/exercises/+page.svelte:29:25
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
@@ -4475,13 +3704,24 @@ Warn: This reference only captures the initial value of `data`. Did you mean to 
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let searchQuery = $state(data.filters.search);
 	let selectedDifficulty = $state(data.filters.difficulty?.toString() || '');
-	let selectedGradeLevels = $state<GradeCode[]>((data.filters.grade_levels || []) as GradeCode[]);
+	let selectedGradeLevels = $state<GradeCode[]>((data.filters.grades || []) as GradeCode[]);
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/exercises/+page.svelte:38:49
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	let selectedDifficulty = $state(data.filters.difficulty?.toString() || '');
-	let selectedGradeLevels = $state<GradeCode[]>((data.filters.grade_levels || []) as GradeCode[]);
+	let selectedGradeLevels = $state<GradeCode[]>((data.filters.grades || []) as GradeCode[]);
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/exercises/[id]/+page.svelte:87:26
+Error: Conversion of type '{ created_at: string; created_by: string; difficulty: number; distribution_mode: string; generic_functions: string[] | null; grades: string[] | null; id: string; is_public: boolean; resources: Json; ... 8 more ...; variations: Json; }' to type 'Exercise' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'variables' are incompatible.
+    Type 'Json' is not comparable to type 'Variable[] | undefined'.
+      Type 'Json[]' is not comparable to type 'Variable[]'.
+        Type 'Json' is not comparable to type 'Variable'.
+          Type 'Json[]' is missing the following properties from type 'Variable': name, expression (ts)
+	let exerciseContent = $derived(
+		getExerciseContentSafe(data.exercise as import('$lib/exercises/types').Exercise)
+	);
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/google/+page.svelte:162:33
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
@@ -4589,12 +3829,30 @@ https://svelte.dev/e/state_referenced_locally (svelte)
 	let showCustomCardEditor = $state(false);
 	let cards = $state([...data.cards]);
 
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/templates/+page.svelte:167:12
+Error: This comparison appears to be unintentional because the types '"2" | "3" | "4" | "5" | "6" | "CP" | "CE1" | "CE2" | "CM1" | "CM2" | "1_GEN" | "T_GEN" | "1_SPE" | "T_SPE" | "T_EXP" | "T_COMP" | "1_STMG" | "T_STMG"' and '"T"' have no overlap. (ts)
+									<Badge variant="outline" class="text-xs">
+										{grade === 'T' ? 'Term' : `${grade}ème`}
+									</Badge>
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/templates/[templateId]/+page.svelte:190:10
+Error: This comparison appears to be unintentional because the types '"2" | "3" | "4" | "5" | "6" | "CP" | "CE1" | "CE2" | "CM1" | "CM2" | "1_GEN" | "T_GEN" | "1_SPE" | "T_SPE" | "T_EXP" | "T_COMP" | "1_STMG" | "T_STMG"' and '"T"' have no overlap. (ts)
+							<Badge variant="outline">
+								{grade === 'T' ? 'Terminale' : `${grade}ème`}
+							</Badge>
+
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/vip-cards/+page.svelte:12:2
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a closure instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	const initialOverrides: Record<string, boolean> = {};
 	data.overrides.forEach((override) => {
 		initialOverrides[override.card_id] = override.is_enabled;
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/welcome-email/+page.svelte:26:29
+Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+	let isSending = $state(false);
+	let previousEmail = $state(data.previousEmail);
 
 /Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/+page.svelte:33:27
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
@@ -4616,27 +3874,41 @@ https://svelte.dev/e/state_referenced_locally (svelte)
 	let selectedStatus = $state<string>(data.filters.status || '');
 	let selectedType = $state<string>(data.filters.type || '');
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/+page.svelte:85:29
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/+page.svelte:86:29
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a derived instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	// Type-safe worksheet access with local state for updates
 	let worksheetData = $state(data.worksheet as WorksheetWithRelations);
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+page.svelte:57:17
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/assignments/[assignmentId]/preview/+page.svelte:317:12
+Error: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'. (ts)
+						type="single"
+						bind:value={selectedStudentId}
+						items={studentOptions}
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+page.svelte:72:17
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a closure instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	// Cast for type safety
 	const report = data.report as ReportData;
-	const context = data.context as ContextData;
+	const exercise = data.exercise as ExerciseData;
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+page.svelte:58:18
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+page.svelte:73:19
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a closure instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	const report = data.report as ReportData;
+	const exercise = data.exercise as ExerciseData;
+	const context = data.context as ContextData;
+
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+page.svelte:74:18
+Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+	const exercise = data.exercise as ExerciseData;
 	const context = data.context as ContextData;
 	const nextPendingReportId = data.nextPendingReportId as string | null;
 
-/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+page.svelte:59:30
+/Users/david/Coding/js/ubumaths/src/routes/(protected)/dashboard/teacher/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+page.svelte:75:30
 Warn: This reference only captures the initial value of `data`. Did you mean to reference it inside a closure instead?
 https://svelte.dev/e/state_referenced_locally (svelte)
 	const context = data.context as ContextData;
@@ -4758,7 +4030,7 @@ https://svelte.dev/e/state_referenced_locally (svelte)
 	let currentSeed = $state(data.initialSeed ?? Math.floor(Math.random() * 1000000));
 	let linkCopied = $state(false);
 
-/Users/david/Coding/js/ubumaths/src/routes/(public)/exercice/[slug]/+page.svelte:388:7
+/Users/david/Coding/js/ubumaths/src/routes/(public)/exercice/[slug]/+page.svelte:390:7
 Warn: A form label must be associated with a control
 https://svelte.dev/e/a11y_label_has_associated_control (svelte)
 					<div class="w-full sm:w-auto sm:min-w-48">
@@ -4792,23 +4064,6 @@ https://svelte.dev/e/state_referenced_locally (svelte)
 	let selecteds: Position[] = $state([]); // Currently selected cells (max 3)
 	let gridSize = $state(size); // Current grid dimensions
 
-/Users/david/Coding/js/ubumaths/tests/unit/vip-card-consumable.test.ts:86:30
-Error: Cannot find name 'ConsumableVipCardTemplate'. Did you mean '_ConsumableVipCardTemplate'? 
-			// Template structure verification
-			const consumableTemplate: ConsumableVipCardTemplate = {
-				id: 'homework-pass-3x',
-
-/Users/david/Coding/js/ubumaths/tests/unit/vip-card-consumable.test.ts:385:30
-Error: Cannot find name 'ConsumableVipCardInstance'. Did you mean '_ConsumableVipCardInstance'? 
-			// Instance with uses remaining
-			const consumableInstance: ConsumableVipCardInstance = {
-				instanceId: '123e4567-e89b-12d3-a456-426614174030',
-
-/Users/david/Coding/js/ubumaths/tests/unit/vip-card-consumable.test.ts:399:29
-Error: Cannot find name 'ConsumableVipCardInstance'. Did you mean '_ConsumableVipCardInstance'? 
-		it('should show fully consumed instance', () => {
-			const fullyUsedInstance: ConsumableVipCardInstance = {
-				instanceId: '123e4567-e89b-12d3-a456-426614174031',
-
 ====================================
-svelte-check found 208 errors and 343 warnings in 133 files
+svelte-check found 132 errors and 347 warnings in 110 files
+ ELIFECYCLE  Command failed with exit code 1.

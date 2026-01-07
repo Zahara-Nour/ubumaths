@@ -160,7 +160,7 @@ describe('evaluateWithUnits - compatible units', () => {
 
 describe('evaluateWithUnits - multiplication/division', () => {
 	it('multiplies to create derived unit: 4 m * 3 m = 12 m^2', () => {
-		const expr = multiply(quantity('4', 'm'), quantity('3', 'm'));
+		const expr = multiply(quantity('4', 'm'), quantity('3', 'm'), 'implicit');
 		const result = evaluateWithUnits(expr);
 
 		expect(toNumber(result.value)).toBe(12);
@@ -168,7 +168,7 @@ describe('evaluateWithUnits - multiplication/division', () => {
 	});
 
 	it('divides to create derived unit: 100 m / 10 s = 10 m/s', () => {
-		const expr = divide(quantity('100', 'm'), quantity('10', 's'));
+		const expr = divide(quantity('100', 'm'), quantity('10', 's'), 'fraction');
 		const result = evaluateWithUnits(expr);
 
 		expect(toNumber(result.value)).toBe(10);
@@ -177,7 +177,7 @@ describe('evaluateWithUnits - multiplication/division', () => {
 	});
 
 	it('cancels units: 10 m / 2 m = 5 (dimensionless)', () => {
-		const expr = divide(quantity('10', 'm'), quantity('2', 'm'));
+		const expr = divide(quantity('10', 'm'), quantity('2', 'm'), 'fraction');
 		const result = evaluateWithUnits(expr);
 
 		expect(toNumber(result.value)).toBe(5);
@@ -249,7 +249,7 @@ describe('evaluateWithUnits - functions', () => {
 
 describe('evaluateWithUnits - exact mode', () => {
 	it('preserves exact arithmetic with units', () => {
-		const expr = divide(quantity('1', 'm'), quantity('3', 's'));
+		const expr = divide(quantity('1', 'm'), quantity('3', 's'), 'fraction');
 		const result = evaluateWithUnits(expr, { mode: 'exact' });
 
 		expect(result.exact).toBe(true);
@@ -260,7 +260,7 @@ describe('evaluateWithUnits - exact mode', () => {
 	});
 
 	it('decimal mode works with units', () => {
-		const expr = divide(quantity('1', 'm'), quantity('3', 's'));
+		const expr = divide(quantity('1', 'm'), quantity('3', 's'), 'fraction');
 		const result = evaluateWithUnits(expr, { mode: 'decimal' });
 
 		expect(typeof result.value).toBe('number');
@@ -312,7 +312,7 @@ describe('evaluateWithUnits - edge cases', () => {
 		});
 
 		it('handles multiplication inside unit: (2*3) m in first mode', () => {
-			const innerExpr = multiply(number('2'), number('3'));
+			const innerExpr = multiply(number('2'), number('3'), 'implicit');
 			const expr = withUnit(innerExpr, UnitAST.unit('m')!);
 			const result = evaluateWithUnits(expr, { conversionMode: 'first' });
 

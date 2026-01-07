@@ -183,6 +183,8 @@ export interface ResolvedExercise {
 	parameters: Record<string, number | string>;
 	statement: string;
 	solution: string;
+	/** Optional title for the exercise */
+	title?: string | null;
 	/** Parsed AST for the statement (for rich rendering) */
 	statement_ast?: DocumentNode;
 	/** Parsed AST for the solution (for rich rendering) */
@@ -521,14 +523,16 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 	exercise?: {
 		id: string;
 		title: string;
-		statement_md: string;
-		solution_md: string | null;
+		/** @deprecated Use variations array instead - kept for backward compatibility */
+		statement_md?: string;
+		/** @deprecated Use variations array instead - kept for backward compatibility */
+		solution_md?: string | null;
 		difficulty: number | null;
-		/** Strongly typed variables (was unknown[]) */
-		variables: Variable[] | null;
-		/** Shared defaults for variations (new) */
+		/** @deprecated Use shared.variables instead - kept for backward compatibility */
+		variables?: Variable[] | null;
+		/** Shared defaults for variations (recommended) */
 		shared?: SharedExerciseDefaults | null;
-		/** Exercise variations for different guidance levels (new) */
+		/** Exercise variations for different guidance levels (recommended) */
 		variations?: ExerciseVariation[] | null;
 	};
 }
@@ -590,6 +594,10 @@ export interface StudentExerciseView {
 	statement: string;
 	correction: string | null;
 	correction_visible: boolean;
+	/** Optional title for the exercise */
+	title?: string | null;
+	/** Tags associated with the exercise */
+	tags?: string[];
 	/** Hints from the selected variation (for guided exercises) */
 	hints?: ExerciseHint[];
 	/** Supplementary resources (videos, PDFs, links) */

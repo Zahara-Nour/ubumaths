@@ -37,7 +37,7 @@ function dbRowToExercise(
 		variables: dbExercise.variables as unknown as Exercise['variables'],
 		distribution_mode: dbExercise.distribution_mode as Exercise['distribution_mode'],
 		is_public: dbExercise.is_public,
-		grades: dbExercise.grades ?? undefined,
+		grades: (dbExercise.grades as Exercise['grades']) ?? undefined,
 		topic: dbExercise.topic ?? undefined,
 		resources: dbExercise.resources as unknown as Exercise['resources'],
 		created_at: dbExercise.created_at,

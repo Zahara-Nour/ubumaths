@@ -368,8 +368,8 @@ export function validateQuantityAnswer(
  * @returns True if units are exactly the same
  */
 function checkExactUnitMatch(
-	userUnit: { components: Map<string, number>; coefficient: number },
-	expectedUnit: { components: Map<string, number>; coefficient: number }
+	userUnit: { components: ReadonlyMap<string, number>; coefficient: number },
+	expectedUnit: { components: ReadonlyMap<string, number>; coefficient: number }
 ): boolean {
 	// Check coefficient match (with small epsilon for floating point)
 	const epsilon = 1e-9;
@@ -402,8 +402,8 @@ function checkExactUnitMatch(
  * @returns True if unit symbols are the same
  */
 function checkSameSymbol(
-	userUnit: { components: Map<string, number> },
-	expectedUnit: { components: Map<string, number> }
+	userUnit: { components: ReadonlyMap<string, number> },
+	expectedUnit: { components: ReadonlyMap<string, number> }
 ): boolean {
 	// Check components match (ignoring coefficient)
 	if (userUnit.components.size !== expectedUnit.components.size) {
@@ -433,7 +433,7 @@ function checkSameSymbol(
  * formatUnitForDisplay(new Map([['m', 1], ['s', -1]])) // 'm·s^-1'
  * formatUnitForDisplay(new Map()) // null
  */
-function formatUnitForDisplay(components: Map<string, number>): string | null {
+function formatUnitForDisplay(components: ReadonlyMap<string, number>): string | null {
 	// Check if dimensionless
 	if (components.size === 0) {
 		return null;

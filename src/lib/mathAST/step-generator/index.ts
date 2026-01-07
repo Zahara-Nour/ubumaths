@@ -73,7 +73,7 @@ export function generateSteps(
 	let result: string;
 	try {
 		const evalResult = evaluate(ast);
-		result = toLatex(evalResult);
+		result = toLatex(evalResult.node);
 	} catch {
 		result = original;
 	}

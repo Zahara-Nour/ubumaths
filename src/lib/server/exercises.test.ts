@@ -52,8 +52,6 @@ describe('getExercises', () => {
 				source: 'Test Book',
 				difficulty: 2,
 				tags: ['algèbre'],
-				statement_md: 'Test statement',
-				solution_md: 'Test solution',
 				grades: ['3'],
 				topic: 'Algèbre',
 				created_at: '2024-01-01T00:00:00Z',
@@ -66,7 +64,13 @@ describe('getExercises', () => {
 				slug: null,
 				generic_functions: null,
 				shared: null,
-				variations: null
+				variations: [
+					{
+						label: 'default',
+						statement_md: 'Test statement',
+						solution_md: 'Test solution'
+					}
+				]
 			}
 		];
 
@@ -148,8 +152,6 @@ describe('getExercise', () => {
 			source: 'Test Book',
 			difficulty: 2,
 			tags: ['algèbre'],
-			statement_md: 'Test statement',
-			solution_md: 'Test solution',
 			grades: ['3'],
 			topic: 'Algèbre',
 			created_at: '2024-01-01T00:00:00Z',
@@ -162,7 +164,13 @@ describe('getExercise', () => {
 			slug: null,
 			generic_functions: null,
 			shared: null,
-			variations: null
+			variations: [
+				{
+					label: 'default',
+					statement_md: 'Test statement',
+					solution_md: 'Test solution'
+				}
+			]
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: mockExercise, error: null });
@@ -195,13 +203,19 @@ describe('createExercise', () => {
 		const newExercise = {
 			difficulty: 2 as const,
 			tags: ['algèbre'],
-			statement_md: 'Test statement',
-			solution_md: 'Test solution'
+			variations: [
+				{
+					label: 'default',
+					statement_md: 'Test statement',
+					solution_md: 'Test solution'
+				}
+			]
 		};
 
 		const createdExercise: ExerciseRow = {
 			id: 'new-ex-123',
-			...newExercise,
+			difficulty: 2,
+			tags: ['algèbre'],
 			title: null,
 			source: null,
 			grades: null,
@@ -216,7 +230,13 @@ describe('createExercise', () => {
 			slug: null,
 			generic_functions: null,
 			shared: null,
-			variations: null
+			variations: [
+				{
+					label: 'default',
+					statement_md: 'Test statement',
+					solution_md: 'Test solution'
+				}
+			]
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: createdExercise, error: null });
@@ -247,8 +267,6 @@ describe('updateExercise', () => {
 			source: 'Original Source',
 			difficulty: 2,
 			tags: ['algèbre'],
-			statement_md: 'Original statement',
-			solution_md: 'Original solution',
 			grades: ['3'],
 			topic: 'Algèbre',
 			created_at: '2024-01-01T00:00:00Z',
@@ -261,7 +279,13 @@ describe('updateExercise', () => {
 			slug: null,
 			generic_functions: null,
 			shared: null,
-			variations: null
+			variations: [
+				{
+					label: 'default',
+					statement_md: 'Original statement',
+					solution_md: 'Original solution'
+				}
+			]
 		};
 
 		const updates = {
@@ -289,8 +313,6 @@ describe('updateExercise', () => {
 			source: null,
 			difficulty: 2,
 			tags: [],
-			statement_md: 'Test',
-			solution_md: 'Test',
 			grades: null,
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
@@ -303,7 +325,13 @@ describe('updateExercise', () => {
 			slug: null,
 			generic_functions: null,
 			shared: null,
-			variations: null
+			variations: [
+				{
+					label: 'default',
+					statement_md: 'Test',
+					solution_md: 'Test'
+				}
+			]
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });
@@ -325,8 +353,6 @@ describe('deleteExercise', () => {
 			source: null,
 			difficulty: 1,
 			tags: [],
-			statement_md: 'Test',
-			solution_md: 'Test',
 			grades: null,
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
@@ -339,7 +365,13 @@ describe('deleteExercise', () => {
 			slug: null,
 			generic_functions: null,
 			shared: null,
-			variations: null
+			variations: [
+				{
+					label: 'default',
+					statement_md: 'Test',
+					solution_md: 'Test'
+				}
+			]
 		};
 
 		// Mock getExercise call - .single() returns the exercise
@@ -371,8 +403,6 @@ describe('deleteExercise', () => {
 			source: null,
 			difficulty: 1,
 			tags: [],
-			statement_md: 'Test',
-			solution_md: 'Test',
 			grades: null,
 			topic: null,
 			created_at: '2024-01-01T00:00:00Z',
@@ -385,7 +415,13 @@ describe('deleteExercise', () => {
 			slug: null,
 			generic_functions: null,
 			shared: null,
-			variations: null
+			variations: [
+				{
+					label: 'default',
+					statement_md: 'Test',
+					solution_md: 'Test'
+				}
+			]
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: existingExercise, error: null });

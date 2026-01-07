@@ -154,8 +154,13 @@ export class ExerciseBuilder {
 			id: generateTestId('exercise'),
 			created_by: createdBy,
 			difficulty: 1,
-			statement_md: 'What is 2 + 2?',
-			solution_md: 'The answer is 4',
+			variations: [
+				{
+					label: 'default',
+					statement_md: 'What is 2 + 2?',
+					solution_md: 'The answer is 4'
+				}
+			],
 			is_public: false,
 			created_at: new Date().toISOString()
 		};
@@ -167,17 +172,41 @@ export class ExerciseBuilder {
 	}
 
 	withStatement(statement: string): this {
-		this.data.statement_md = statement;
+		// Update the default variation's statement
+		if (this.data.variations && Array.isArray(this.data.variations) && this.data.variations[0]) {
+			const variation = this.data.variations[0] as {
+				label: string;
+				statement_md: string;
+				solution_md: string;
+			};
+			variation.statement_md = statement;
+		}
 		return this;
 	}
 
 	withQuestion(question: string): this {
-		this.data.statement_md = question;
+		// Update the default variation's statement
+		if (this.data.variations && Array.isArray(this.data.variations) && this.data.variations[0]) {
+			const variation = this.data.variations[0] as {
+				label: string;
+				statement_md: string;
+				solution_md: string;
+			};
+			variation.statement_md = question;
+		}
 		return this;
 	}
 
 	withSolution(solution: string): this {
-		this.data.solution_md = solution;
+		// Update the default variation's solution
+		if (this.data.variations && Array.isArray(this.data.variations) && this.data.variations[0]) {
+			const variation = this.data.variations[0] as {
+				label: string;
+				statement_md: string;
+				solution_md: string;
+			};
+			variation.solution_md = solution;
+		}
 		return this;
 	}
 

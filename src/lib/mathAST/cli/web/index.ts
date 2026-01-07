@@ -26,7 +26,7 @@ export type { ReplInputMode, TabStyle, ReplExecutionResult, ReplHistoryEntry } f
 export {
 	formatErrorHtml,
 	formatInputErrorHtml,
-	formatSuccessHtml,
+	escapeWithLabel,
 	formatTreeHtml,
 	formatHashHtml
 } from './output-formatter-web';

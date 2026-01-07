@@ -48,6 +48,9 @@ interface _ConsumableVipCardTemplate {
 	uses_total: number; // Number of times this card can be used (null = unlimited/single-use)
 }
 
+// Aliases for direct use in tests (without underscore prefix)
+type ConsumableVipCardTemplate = _ConsumableVipCardTemplate;
+
 /**
  * Expected structure of a consumable VIP card instance
  */
@@ -59,6 +62,9 @@ interface _ConsumableVipCardInstance {
 	usesRemaining: number | null; // For consumables, decrements with each use
 	acquiredFrom: 'draw' | 'purchase' | 'gift' | 'exchange';
 }
+
+// Alias for direct use in tests
+type ConsumableVipCardInstance = _ConsumableVipCardInstance;
 
 /**
  * Expected result of using a consumable card
