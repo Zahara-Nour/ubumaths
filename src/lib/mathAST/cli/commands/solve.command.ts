@@ -78,6 +78,32 @@ function wrapForDivision(expr: string): string {
 	return needsBraces ? `{${expr}}` : expr;
 }
 
+/**
+ * Format a pedagogical step with aligned = signs.
+ * Returns [descriptionLine, resultLine] where both = are vertically aligned.
+ */
+function formatAlignedStep(step: PedagogicalStep): [string, string] {
+	const descLine = `${step.description}: ${step.transformation}`;
+
+	// Find position of = in transformation and result
+	const eqIndexTransform = step.transformation.indexOf('=');
+	const eqIndexResult = step.result.indexOf('=');
+
+	if (eqIndexTransform === -1 || eqIndexResult === -1) {
+		// Fallback: no alignment possible
+		return [descLine, `    ${step.result}`];
+	}
+
+	// Position of = in full description line
+	const eqPosLine1 = step.description.length + 2 + eqIndexTransform; // +2 for ": "
+
+	// Calculate padding to align = in result line
+	const padding = eqPosLine1 - eqIndexResult;
+	const actualPadding = Math.max(4, padding); // minimum 4 spaces indent
+
+	return [descLine, ' '.repeat(actualPadding) + step.result];
+}
+
 // =============================================================================
 // Pedagogical Step Types
 // =============================================================================
@@ -499,10 +525,10 @@ export class SolveCommand extends BaseCommand {
 				headerHtmlLines.push('<br>');
 
 				for (const step of pedagogicalSteps) {
-					// Plain text: description: transformation
-					//             result
-					headerLines.push(`${step.description}: ${step.transformation}`);
-					headerLines.push(`    ${step.result}`);
+					// Plain text with aligned = signs
+					const [descLine, resultLine] = formatAlignedStep(step);
+					headerLines.push(descLine);
+					headerLines.push(resultLine);
 
 					// HTML: styled output
 					headerHtmlLines.push(
