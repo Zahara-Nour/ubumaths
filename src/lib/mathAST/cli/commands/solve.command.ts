@@ -82,45 +82,72 @@ function wrapForDivision(expr: string): string {
  * Result of formatting all pedagogical steps with global alignment.
  */
 interface GlobalAlignedSteps {
+	/** Formatted header line (Equation type: ...) */
+	headerText: string;
+	headerHtml: string;
+	/** Formatted step lines */
 	textLines: string[];
 	htmlLines: string[];
 }
 
 /**
- * Format all pedagogical steps with globally aligned = signs.
- * All = signs across all steps are vertically aligned.
+ * Format header and all pedagogical steps with globally aligned = signs.
+ * All = signs (including header) are vertically aligned.
+ * Padding is added AFTER the colon, BEFORE the equation.
  */
 function formatAllStepsGloballyAligned(
+	headerPrefix: string, // e.g., "Equation lineaire"
+	headerEquation: string, // e.g., "-3x+4=1"
 	steps: PedagogicalStep[],
 	escapeHtml: (s: string) => string
 ): GlobalAlignedSteps {
-	const textLines: string[] = [];
-	const htmlLines: string[] = [];
+	// Find position of = in each line to determine max
+	const getEqIndex = (s: string) => s.indexOf('=');
 
-	if (steps.length === 0) {
-		return { textLines, htmlLines };
-	}
+	// Calculate = position for header: "Equation lineaire: -3x+4=1"
+	const headerEqIndex = getEqIndex(headerEquation);
+	const headerDescLen = headerPrefix.length + 2; // +2 for ": "
+	let maxEqPos = headerEqIndex !== -1 ? headerDescLen + headerEqIndex : 0;
 
-	// First pass: find max = position across ALL transformation lines
-	let maxEqPos = 0;
+	// Calculate = position for each transformation line
 	for (const step of steps) {
-		const eqIndexTransform = step.transformation.indexOf('=');
-		if (eqIndexTransform !== -1) {
-			// Position of = in "{description}: {left_part} ="
+		const eqIndex = getEqIndex(step.transformation);
+		if (eqIndex !== -1) {
 			const descLen = step.description.length + 2; // +2 for ": "
-			const eqPos = descLen + eqIndexTransform;
-			maxEqPos = Math.max(maxEqPos, eqPos);
+			maxEqPos = Math.max(maxEqPos, descLen + eqIndex);
 		}
 	}
 
-	// Second pass: format all lines aligned to maxEqPos
+	// Format header with padding AFTER colon, BEFORE equation
+	let headerText: string;
+	let headerHtml: string;
+	if (headerEqIndex !== -1) {
+		const headerPadding = maxEqPos - headerDescLen - headerEqIndex;
+		const paddingStr = ' '.repeat(Math.max(0, headerPadding));
+		const htmlPadding = '&nbsp;'.repeat(Math.max(0, headerPadding));
+		headerText = `${headerPrefix}: ${paddingStr}${headerEquation}`;
+		headerHtml =
+			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
+			`${htmlPadding}<span class="text-cyan-400">${escapeHtml(headerEquation)}</span>`;
+	} else {
+		headerText = `${headerPrefix}: ${headerEquation}`;
+		headerHtml =
+			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
+			`<span class="text-cyan-400">${escapeHtml(headerEquation)}</span>`;
+	}
+
+	// Format step lines
+	const textLines: string[] = [];
+	const htmlLines: string[] = [];
+
 	for (const step of steps) {
-		const eqIndexTransform = step.transformation.indexOf('=');
-		const eqIndexResult = step.result.indexOf('=');
+		const eqIndexTransform = getEqIndex(step.transformation);
+		const eqIndexResult = getEqIndex(step.result);
+		const descPrefix = `${step.description}: `;
 
 		if (eqIndexTransform === -1) {
 			// No = in transformation, fallback
-			textLines.push(`${step.description}: ${step.transformation}`);
+			textLines.push(`${descPrefix}${step.transformation}`);
 			textLines.push(`    ${step.result}`);
 			htmlLines.push(
 				`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
@@ -132,37 +159,26 @@ function formatAllStepsGloballyAligned(
 			continue;
 		}
 
-		// Split transformation at =
-		const transformLeft = step.transformation.substring(0, eqIndexTransform);
-		const transformRight = step.transformation.substring(eqIndexTransform); // includes "= ..."
-
-		// Current = position
-		const descPrefix = `${step.description}: `;
-		const currentEqPos = descPrefix.length + transformLeft.length;
-
-		// Padding needed to reach maxEqPos
+		// Padding AFTER colon, BEFORE equation (not between left and =)
+		const currentEqPos = descPrefix.length + eqIndexTransform;
 		const transformPadding = maxEqPos - currentEqPos;
-		const transformPaddingStr = ' '.repeat(Math.max(0, transformPadding));
+		const paddingStr = ' '.repeat(Math.max(0, transformPadding));
+		const htmlPadding = '&nbsp;'.repeat(Math.max(0, transformPadding));
 
-		// Format transformation line with padding before =
-		const textDescLine = descPrefix + transformLeft + transformPaddingStr + transformRight;
-		textLines.push(textDescLine);
-
-		// HTML version
-		const htmlTransformPadding = '&nbsp;'.repeat(Math.max(0, transformPadding));
+		textLines.push(`${descPrefix}${paddingStr}${step.transformation}`);
 		htmlLines.push(
 			`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
-				`<span class="text-cyan-400">${escapeHtml(transformLeft)}${htmlTransformPadding}${escapeHtml(transformRight)}</span>`
+				`${htmlPadding}<span class="text-cyan-400">${escapeHtml(step.transformation)}</span>`
 		);
 
 		// Format result line - align = to maxEqPos
 		if (eqIndexResult !== -1) {
 			const resultPadding = maxEqPos - eqIndexResult;
-			const actualResultPadding = Math.max(4, resultPadding); // minimum 4 spaces
-
-			textLines.push(' '.repeat(actualResultPadding) + step.result);
-
+			const actualResultPadding = Math.max(4, resultPadding);
+			const resultPaddingStr = ' '.repeat(actualResultPadding);
 			const htmlResultPadding = '&nbsp;'.repeat(actualResultPadding);
+
+			textLines.push(`${resultPaddingStr}${step.result}`);
 			htmlLines.push(
 				`<br><span class="text-green-400">${htmlResultPadding}${escapeHtml(step.result)}</span>`
 			);
@@ -174,7 +190,7 @@ function formatAllStepsGloballyAligned(
 		}
 	}
 
-	return { textLines, htmlLines };
+	return { headerText, headerHtml, textLines, htmlLines };
 }
 
 // =============================================================================
@@ -565,17 +581,11 @@ export class SolveCommand extends BaseCommand {
 		};
 
 		const typeLabel = typeLabels[result.equationType] ?? result.equationType;
+		const headerPrefix = `Equation ${typeLabel}`;
 
 		// Build header lines (for detailed/summarized verbosity)
 		const headerLines: string[] = [];
 		const headerHtmlLines: string[] = [];
-
-		if (verbosity !== 'result') {
-			headerLines.push(`Equation ${typeLabel}: ${eqCustom}`);
-			headerHtmlLines.push(
-				`<span class="text-muted-foreground">Equation ${typeLabel}:</span> <span class="text-cyan-400">${this.escapeHtml(eqCustom)}</span>`
-			);
-		}
 
 		// Show pedagogical steps for supported equation types
 		if (verbosity !== 'result' && result.status === 'unique' && result.solutions.length > 0) {
@@ -592,20 +602,37 @@ export class SolveCommand extends BaseCommand {
 				);
 			}
 
-			// Display pedagogical steps with global = alignment
+			// Format header + steps with global = alignment
 			if (pedagogicalSteps.length > 0) {
-				headerLines.push('');
-				headerHtmlLines.push('<br>');
-
-				// Format all steps with globally aligned = signs
 				const globalAligned = formatAllStepsGloballyAligned(
+					headerPrefix,
+					eqCustom,
 					pedagogicalSteps,
 					this.escapeHtml.bind(this)
 				);
 
+				// Use aligned header
+				headerLines.push(globalAligned.headerText);
+				headerHtmlLines.push(globalAligned.headerHtml);
+
+				// Add blank line then steps
+				headerLines.push('');
+				headerHtmlLines.push('<br>');
 				headerLines.push(...globalAligned.textLines);
 				headerHtmlLines.push(...globalAligned.htmlLines);
+			} else {
+				// No steps, just show header without alignment
+				headerLines.push(`${headerPrefix}: ${eqCustom}`);
+				headerHtmlLines.push(
+					`<span class="text-muted-foreground">${headerPrefix}:</span> <span class="text-cyan-400">${this.escapeHtml(eqCustom)}</span>`
+				);
 			}
+		} else if (verbosity !== 'result') {
+			// No steps available, show simple header
+			headerLines.push(`${headerPrefix}: ${eqCustom}`);
+			headerHtmlLines.push(
+				`<span class="text-muted-foreground">${headerPrefix}:</span> <span class="text-cyan-400">${this.escapeHtml(eqCustom)}</span>`
+			);
 		}
 
 		// Handle different result statuses
