@@ -648,12 +648,20 @@ export class LatexGenerator {
 	}
 
 	/**
+	 * Map MatrixType to LaTeX environment name.
+	 * 'plain' maps to 'matrix', others map to themselves.
+	 */
+	private getLatexMatrixEnv(matrixType: string): string {
+		return matrixType === 'plain' ? 'matrix' : matrixType;
+	}
+
+	/**
 	 * Emits spans for a matrix node.
 	 * Renders as \begin{matrixType}...\end{matrixType}
 	 */
 	private visitMatrixSpans(node: MatrixNode): void {
-		const matrixType = node.matrixType;
-		this.emit(`\\begin{${matrixType}}`, node.metadata);
+		const envName = this.getLatexMatrixEnv(node.matrixType);
+		this.emit(`\\begin{${envName}}`, node.metadata);
 
 		for (let i = 0; i < node.rows.length; i++) {
 			const row = node.rows[i];
@@ -668,7 +676,7 @@ export class LatexGenerator {
 			}
 		}
 
-		this.emit(`\\end{${matrixType}}`, node.metadata);
+		this.emit(`\\end{${envName}}`, node.metadata);
 	}
 
 	/**
@@ -1039,9 +1047,9 @@ export class LatexGenerator {
 	 * Renders as \begin{matrixType}...\end{matrixType}
 	 */
 	private generateMatrix(node: MatrixNode): string {
-		const matrixType = node.matrixType;
+		const envName = this.getLatexMatrixEnv(node.matrixType);
 		const rows = node.rows.map((row) => row.map((elem) => this.generateNode(elem)).join(' & '));
-		return `\\begin{${matrixType}}${rows.join(' \\\\ ')}\\end{${matrixType}}`;
+		return `\\begin{${envName}}${rows.join(' \\\\ ')}\\end{${envName}}`;
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {
