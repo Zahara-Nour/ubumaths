@@ -226,38 +226,208 @@ parseLatex(input, { security: { maxInputLength: 5000 } });
 
 ---
 
-### 2. Expression Complexity Analysis
+### 2. Operation-Specific Safety Checks
 
 **Current State:**
-No way to assess expression complexity before processing.
+No way to predict if an operation will be expensive before executing it.
+
+**Problem with generic "complexity analysis":**
+AST size ≠ computational cost. `x^{999999999}` is 3 nodes but expensive to evaluate numerically. `(x+1)^{100}` is 5 nodes but expands to 101 terms during normalization.
 
 **Proposal:**
-Add complexity metrics:
+Add operation-specific pre-checks instead of generic metrics.
+
+#### 2.1 Expansion Estimation (for normalization)
 
 ```typescript
-interface ComplexityMetrics {
-	depth: number;
-	nodeCount: number;
-	operationCount: number;
-	functionCount: number;
-	variableCount: number;
-	estimatedEvalCost: number;
+interface ExpansionEstimate {
+	upperBound: number; // Upper bound on term count (may over-estimate, safe)
+	wouldExceed: boolean; // true if upperBound > maxTerms
+	reason?: string; // e.g., "binomial (x+1)^100 → 101 terms"
 }
 
-function analyzeComplexity(node: MathNode): ComplexityMetrics;
+interface ExpansionOptions {
+	maxTerms?: number; // Default: 10000
+}
 
-// Reject overly complex expressions
-const metrics = analyzeComplexity(ast);
-if (metrics.estimatedEvalCost > THRESHOLD) {
-	throw new ComplexityError('Expression too complex');
+function estimateExpansion(node: MathNode, options?: ExpansionOptions): ExpansionEstimate;
+```
+
+**Expansion cases handled:**
+
+| Expression        | Type            | Estimation                         |
+| ----------------- | --------------- | ---------------------------------- |
+| `(x+1)^{100}`     | Binomial        | C(100,0..100) = 101 terms          |
+| `(x+y+z)^{10}`    | Multinomial     | C(n+k-1, k-1) = C(12,2) = 66 terms |
+| `((x+1)^2 + y)^3` | Nested          | Recursive estimation               |
+| `(x+1)(x+2)(x+3)` | Product of sums | Product of term counts             |
+| `x + x + x`       | Collection only | Low estimate (no expansion)        |
+
+**Notes:**
+
+- Over-estimation is acceptable for safety. We're being conservative.
+- For symbolic exponents like `(x+1)^n`, return `wouldExceed: true` with reason "cannot estimate with symbolic exponent n"
+- For non-integer/negative exponents like `(x+1)^{-2}` or `(x+1)^{0.5}`, return low estimate (no polynomial expansion)
+
+```typescript
+// Usage
+const estimate = estimateExpansion(parseLatex('(x+1)^{100}'), { maxTerms: 1000 });
+if (estimate.wouldExceed) {
+	throw new ExpansionError(estimate.reason); // "binomial (x+1)^100 → 101 terms"
 }
 ```
 
+#### 2.2 Evaluation Safety Check
+
+```typescript
+type EvalDanger =
+	| 'huge-exponent' // 2^{999999999}
+	| 'huge-factorial' // 10000!
+	| 'power-tower' // 2^{2^{2^{2}}} - exponential explosion
+	| 'division-underflow'; // 1/10^{-400} → Infinity
+
+interface EvalSafetyCheck {
+	safe: boolean;
+	dangers: EvalDanger[]; // All detected dangers (not just first)
+	details: string[]; // Human-readable explanations
+}
+
+interface EvalSafetyOptions {
+	mode?: 'numeric' | 'symbolic'; // Default: 'numeric'
+	maxExponent?: number; // Default: 10000
+	maxFactorialArg?: number; // Default: 170 (JS safe limit)
+	maxPowerTowerDepth?: number; // Default: 4
+}
+
+function checkEvalSafety(node: MathNode, options?: EvalSafetyOptions): EvalSafetyCheck;
+```
+
+**Key insight on mode:**
+
+- `numeric`: `x^{999999999}` is dangerous (actual computation)
+- `symbolic`: `x^{999999999}` is safe (just 3-node storage)
+
+```typescript
+// Usage - numeric evaluation
+const check = checkEvalSafety(parseLatex('2^{999999999}'), { mode: 'numeric' });
+if (!check.safe) {
+	// dangers: ['huge-exponent']
+	// details: ['Exponent 999999999 exceeds safe limit 10000']
+	throw new EvalSafetyError(check.details.join('; '));
+}
+
+// Usage - symbolic mode allows large exponents
+const check2 = checkEvalSafety(parseLatex('x^{999999999}'), { mode: 'symbolic' });
+// check2.safe === true (symbolic storage is fine)
+```
+
+#### 2.3 AST Depth Check (for traversal)
+
+```typescript
+function getASTDepth(node: MathNode): number;
+
+// Usage - before any recursive operation
+const depth = getASTDepth(ast);
+if (depth > 500) {
+	throw new DepthError(`Expression too deeply nested (${depth} levels)`);
+}
+```
+
+**Why 500?** Conservative limit given:
+
+- JS stack: ~10,000-20,000 frames
+- Each recursive operation may use multiple frames
+- Better safe than sorry
+
+#### 2.4 Integration Points
+
+These checks should be called at entry points of expensive operations:
+
+```typescript
+// In normalize.ts
+export function normalize(node: MathNode, options?: NormalizeOptions): MathNode {
+	// Pre-check expansion cost
+	const estimate = estimateExpansion(node, { maxTerms: options?.maxTerms ?? 10000 });
+	if (estimate.wouldExceed) {
+		throw new ExpansionError(estimate.reason);
+	}
+
+	// Pre-check depth for recursion safety
+	if (getASTDepth(node) > 500) {
+		throw new DepthError('Expression too deeply nested for normalization');
+	}
+
+	// ... proceed with normalization
+}
+
+// In evaluate.ts
+export function evaluate(node: MathNode, bindings: Bindings): number {
+	// Pre-check evaluation safety
+	const safety = checkEvalSafety(node, { mode: 'numeric' });
+	if (!safety.safe) {
+		throw new EvalSafetyError(safety.details.join('; '));
+	}
+
+	// ... proceed with evaluation
+}
+```
+
+#### 2.5 Fallback Timeout (Last Line of Defense)
+
+Even with pre-checks, add a general timeout wrapper for defense in depth:
+
+```typescript
+async function withTimeout<T>(fn: () => T, ms: number): Promise<T> {
+	return Promise.race([
+		Promise.resolve(fn()),
+		new Promise<never>((_, reject) =>
+			setTimeout(() => reject(new TimeoutError(`Operation timed out after ${ms}ms`)), ms)
+		)
+	]);
+}
+
+// Usage
+const result = await withTimeout(() => normalize(ast), 5000);
+```
+
+**⚠️ Limitation:** This timeout pattern **cannot interrupt synchronous CPU-bound operations** in JavaScript's single-threaded model. The timeout callback won't fire until `fn()` returns.
+
+**True timeout solutions:**
+
+1. **Web Workers** - Run expensive operations in a separate thread (can be terminated)
+2. **Cooperative yielding** - Check elapsed time periodically within the algorithm:
+
+```typescript
+function normalizeWithTimeout(node: MathNode, maxMs: number): MathNode {
+	const start = performance.now();
+	const checkTimeout = () => {
+		if (performance.now() - start > maxMs) {
+			throw new TimeoutError(`Normalization exceeded ${maxMs}ms`);
+		}
+	};
+	// Call checkTimeout() periodically during normalization
+	return normalizeInternal(node, { onStep: checkTimeout });
+}
+```
+
+**Recommendation:** Pre-checks (2.1-2.3) are the primary defense. Timeout is secondary for async boundaries or Web Worker scenarios.
+
+**Key insights:**
+
+- Symbolic storage of `x^{999999999}` is fine (3 nodes)
+- Numeric evaluation of `2^{999999999}` is dangerous
+- Expansion of `(a+b)^{100}` creates 101 terms
+- Each operation has its own cost model
+- Over-estimation is acceptable for safety
+- Defense in depth: pre-checks + timeout fallback
+
 **Benefits:**
 
-- Pre-evaluate resource requirements
-- Reject malicious inputs early
-- Inform UI about expected wait times
+- Context-aware protection (not blanket rejection)
+- Accurate predictions per operation type
+- Clear error messages explaining why
+- All dangers reported (not just first)
+- Configurable thresholds per use case
 
 **Effort:** Medium | **Impact:** High
 
@@ -1033,26 +1203,26 @@ interface SystemNode {
 
 ## Implementation Priority Matrix
 
-| Improvement            | Effort    | Impact    | Priority | Status          |
-| ---------------------- | --------- | --------- | -------- | --------------- |
-| Input Size Limits      | Low       | High      | **P0**   | **IMPLEMENTED** |
-| Rich Error Messages    | Medium    | High      | **P0**   | **IMPLEMENTED** |
-| Expression Caching     | Medium    | High      | **P1**   | **IMPLEMENTED** |
-| Validation with Zod    | Medium    | High      | **P1**   | **IMPLEMENTED** |
-| Step-by-Step Transform | Medium    | High      | **P1**   | **IMPLEMENTED** |
-| Auto-Completion API    | Medium    | High      | **P1**   | **IMPLEMENTED** |
-| Complexity Analysis    | Medium    | High      | **P1**   | Pending         |
-| Plugin Architecture    | High      | High      | **P2**   | Pending         |
-| Modular Builds         | High      | High      | **P2**   | Pending         |
-| Equation Solving       | Very High | Very High | **P2**   | Pending         |
-| Worker Offloading      | Medium    | Medium    | **P2**   | Pending         |
-| Visitor Enhancement    | Medium    | Medium    | **P3**   | Pending         |
-| Lazy Evaluation        | High      | Medium    | **P3**   | Pending         |
-| Complex Numbers        | High      | Medium    | **P3**   | Pending         |
-| Limits/Summations      | Very High | High      | **P3**   | Pending         |
-| Matrix Operations      | Very High | High      | **P3**   | Pending         |
-| Symbolic Integration   | Very High | High      | **P3**   | Pending         |
-| WASM Acceleration      | Very High | High      | **P4**   | Pending         |
+| Improvement             | Effort    | Impact    | Priority | Status          |
+| ----------------------- | --------- | --------- | -------- | --------------- |
+| Input Size Limits       | Low       | High      | **P0**   | **IMPLEMENTED** |
+| Rich Error Messages     | Medium    | High      | **P0**   | **IMPLEMENTED** |
+| Expression Caching      | Medium    | High      | **P1**   | **IMPLEMENTED** |
+| Validation with Zod     | Medium    | High      | **P1**   | **IMPLEMENTED** |
+| Step-by-Step Transform  | Medium    | High      | **P1**   | **IMPLEMENTED** |
+| Auto-Completion API     | Medium    | High      | **P1**   | **IMPLEMENTED** |
+| Operation Safety Checks | Medium    | High      | **P1**   | Pending         |
+| Plugin Architecture     | High      | High      | **P2**   | Pending         |
+| Modular Builds          | High      | High      | **P2**   | Pending         |
+| Equation Solving        | Very High | Very High | **P2**   | Pending         |
+| Worker Offloading       | Medium    | Medium    | **P2**   | Pending         |
+| Visitor Enhancement     | Medium    | Medium    | **P3**   | Pending         |
+| Lazy Evaluation         | High      | Medium    | **P3**   | Pending         |
+| Complex Numbers         | High      | Medium    | **P3**   | Pending         |
+| Limits/Summations       | Very High | High      | **P3**   | Pending         |
+| Matrix Operations       | Very High | High      | **P3**   | Pending         |
+| Symbolic Integration    | Very High | High      | **P3**   | Pending         |
+| WASM Acceleration       | Very High | High      | **P4**   | Pending         |
 
 ---
 
@@ -1158,7 +1328,7 @@ const completions = provider.getCompletions('sin', {
 The MathAST system is architecturally sound with room for growth in:
 
 1. **Immediate wins** (P0): ~~Security hardening, error messages~~ **DONE**
-2. **Near-term** (P1): ~~Caching, validation, UX improvements~~ **MOSTLY DONE** (complexity analysis pending)
+2. **Near-term** (P1): ~~Caching, validation, UX improvements~~ **MOSTLY DONE** (operation safety checks pending)
 3. **Medium-term** (P2): Plugin system, modular builds, equation solving
 4. **Long-term** (P3-P4): Advanced math features, performance optimization
 
