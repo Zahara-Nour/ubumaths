@@ -17,7 +17,14 @@ import type {
 import { getPolynomialDegree } from '../classify';
 import { getVariables } from '../../eval/substitute';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
-import { number, divide, opposite, multiply, equals, variable as varNode } from '../../factory';
+import {
+	number,
+	fraction,
+	opposite,
+	implicitMultiply,
+	equals,
+	variable as varNode
+} from '../../factory';
 import { simplify, denormalize, normalize, normalFormsEquivalent } from '../../normal';
 import { toLatex } from '../../latex-generator';
 import {
@@ -62,12 +69,13 @@ function extractLinearCoefficients(
 	// So the coefficient is the sum of the c's
 
 	// Build the constant b
+	// Note: unflattenSum returns null only for empty arrays, which we've already handled
 	const b =
 		constantTerms.length === 0
 			? number('0')
 			: constantTerms.length === 1
 				? constantTerms[0]
-				: unflattenSum(constantTerms.map((t) => ({ sign: '+' as const, term: t })));
+				: unflattenSum(constantTerms.map((t) => ({ sign: '+' as const, term: t })))!;
 
 	// For the coefficient a, we need to extract it from terms like 2x, -3x, x
 	// The simplest approach: coefficient = (expr - b) / x when evaluated with x=1
@@ -80,14 +88,15 @@ function extractLinearCoefficients(
 	}
 
 	// Sum the variable terms
+	// Note: unflattenSum returns null only for empty arrays, which we've already handled
 	const variableSum =
 		variableTerms.length === 1
 			? variableTerms[0]
-			: unflattenSum(variableTerms.map((t) => ({ sign: '+' as const, term: t })));
+			: unflattenSum(variableTerms.map((t) => ({ sign: '+' as const, term: t })))!;
 
 	// Extract coefficient by dividing by x
 	// variableSum / x should give us the coefficient
-	const coeffExpr = divide(variableSum, varNode(variable));
+	const coeffExpr = fraction(variableSum, varNode(variable));
 	const coeffSimplified = denormalize(normalize(coeffExpr));
 
 	return { a: coeffSimplified, b };
@@ -214,7 +223,7 @@ export const linearSolver: EquationSolver = {
 		// Solve: x = -b/a
 		// Step 1: ax = -b (subtract b from both sides)
 		const negB = opposite(b);
-		const axEqualsNegB = equals(multiply(a, varNode(variable)), negB);
+		const axEqualsNegB = equals(implicitMultiply(a, varNode(variable)), negB);
 
 		recorder.recordStep(
 			'subtract-constant',
@@ -226,7 +235,7 @@ export const linearSolver: EquationSolver = {
 		);
 
 		// Step 2: x = -b/a (divide both sides by a)
-		const solution = divide(negB, a);
+		const solution = fraction(negB, a);
 		const solutionSimplified = denormalize(normalize(solution));
 
 		recorder.recordStep(

@@ -10,7 +10,7 @@ import type { MathNode } from '../../types';
 import type { EquationSolver, SolveResult, SolveOptions, SolveStepRecorder } from '../types';
 import { containsTranscendental, getTranscendentalType } from '../classify';
 import { isFunction, isNumber } from '../../guards';
-import { number, functionCall, variable as varNode, equals, divide } from '../../factory';
+import { number, func, variable as varNode, equals, fraction } from '../../factory';
 import { denormalize, normalize } from '../../normal';
 import { mapNode } from '../../transforms';
 import { getVariables } from '../../eval/substitute';
@@ -94,14 +94,19 @@ function solveExponential(
 
 	if (!base || !exponent) return null;
 
+	// TypeScript needs help with closure-assigned variables
+	// Use explicit type assertions since TypeScript doesn't track assignments inside closures
+	const foundBase = base as MathNode;
+	const _foundExponent = exponent as MathNode;
+
 	// Extract the constant from the expression
 	// For e^x - c = 0, we need to find c
 	// This is tricky in standard form, so we'll use numeric approximation
 
 	// Check if base is 'e' (Euler's number)
 	const isEulerBase =
-		(base.type === 'variable' && base.name === 'e') ||
-		(base.type === 'number' && Math.abs(parseFloat(base.value) - Math.E) < 0.0001);
+		(foundBase.type === 'variable' && foundBase.name === 'e') ||
+		(foundBase.type === 'number' && Math.abs(parseFloat(foundBase.value) - Math.E) < 0.0001);
 
 	// Try to extract the constant by evaluating expr with x=0
 	// If e^x - c = 0, then at x=0: e^0 - c = 1 - c, so c = 1 - expr(0)
@@ -112,7 +117,7 @@ function solveExponential(
 
 	let constantTerm: MathNode | null = null;
 	mapNode(expr, (n) => {
-		if (isNumber(n) || (n.type === 'negative' && isNumber(n.operand))) {
+		if (isNumber(n) || (n.type === 'opposite' && isNumber(n.operand))) {
 			const vars = getVariables(n);
 			if (vars.size === 0) {
 				constantTerm = n;
@@ -160,7 +165,7 @@ function solveExponential(
 
 	if (isEulerBase) {
 		// e^x = c => x = ln(c)
-		solution = functionCall('ln', number(constant.toString()));
+		solution = func('ln', [number(constant.toString())]);
 		approximate = Math.log(constant);
 
 		recorder.recordStep(
@@ -172,12 +177,12 @@ function solveExponential(
 		);
 	} else {
 		// a^x = c => x = ln(c) / ln(a)
-		const baseValue = computeNumericValue(base);
+		const baseValue = computeNumericValue(foundBase);
 		if (baseValue === null || baseValue <= 0 || baseValue === 1) {
 			return null;
 		}
 
-		solution = divide(functionCall('ln', number(constant.toString())), functionCall('ln', base));
+		solution = fraction(func('ln', [number(constant.toString())]), func('ln', [foundBase]));
 		approximate = Math.log(constant) / Math.log(baseValue);
 
 		recorder.recordStep(
@@ -249,7 +254,7 @@ function solveLogarithmic(
 	// Extract the constant
 	let constant: number = 0;
 	mapNode(expr, (n) => {
-		if (isNumber(n) || (n.type === 'negative' && isNumber(n.operand))) {
+		if (isNumber(n) || (n.type === 'opposite' && isNumber(n.operand))) {
 			const vars = getVariables(n);
 			if (vars.size === 0) {
 				const val = computeNumericValue(n);
@@ -359,7 +364,7 @@ function solveTrigonometric(
 	// Extract the constant
 	let constant: number = 0;
 	mapNode(expr, (n) => {
-		if (isNumber(n) || (n.type === 'negative' && isNumber(n.operand))) {
+		if (isNumber(n) || (n.type === 'opposite' && isNumber(n.operand))) {
 			const vars = getVariables(n);
 			if (vars.size === 0) {
 				const val = computeNumericValue(n);
@@ -399,16 +404,16 @@ function solveTrigonometric(
 	if (funcName === 'sin') {
 		inverseFuncName = 'arcsin';
 		approximate = Math.asin(constant);
-		solution = functionCall('arcsin', number(constant.toString()));
+		solution = func('arcsin', [number(constant.toString())]);
 	} else if (funcName === 'cos') {
 		inverseFuncName = 'arccos';
 		approximate = Math.acos(constant);
-		solution = functionCall('arccos', number(constant.toString()));
+		solution = func('arccos', [number(constant.toString())]);
 	} else {
 		// tan
 		inverseFuncName = 'arctan';
 		approximate = Math.atan(constant);
-		solution = functionCall('arctan', number(constant.toString()));
+		solution = func('arctan', [number(constant.toString())]);
 	}
 
 	recorder.recordStep(

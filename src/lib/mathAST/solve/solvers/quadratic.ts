@@ -19,9 +19,9 @@ import { getVariables } from '../../eval/substitute';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import {
 	number,
-	divide,
+	fraction,
 	opposite,
-	multiply,
+	implicitMultiply,
 	add,
 	subtract,
 	equals,
@@ -71,12 +71,13 @@ function extractQuadraticCoefficients(
 	// Build coefficient a (sum of x^2 terms divided by x^2)
 	const a = extractCoefficient(aTerms, variable, 2);
 	const b = extractCoefficient(bTerms, variable, 1);
+	// Note: unflattenSum returns null only for empty arrays, which we've already handled
 	const c =
 		cTerms.length === 0
 			? number('0')
 			: cTerms.length === 1
 				? cTerms[0]
-				: unflattenSum(cTerms.map((t) => ({ sign: '+' as const, term: t })));
+				: unflattenSum(cTerms.map((t) => ({ sign: '+' as const, term: t })))!;
 
 	return { a, b, c };
 }
@@ -96,31 +97,31 @@ function getTermDegree(term: MathNode, variable: string): number {
 		if (exp.type === 'number' && exp.value === '1') return 1;
 	}
 
-	// c * x^2 term
-	if (term.type === 'product') {
-		for (const factor of term.factors) {
+	// c * x^2 term (multiplication)
+	if (term.type === 'multiplication') {
+		// Check left and right for x^2 pattern
+		const checkSide = (side: MathNode): number => {
 			if (
-				factor.type === 'superscript' &&
-				factor.base.type === 'variable' &&
-				factor.base.name === variable
+				side.type === 'superscript' &&
+				side.base.type === 'variable' &&
+				side.base.name === variable
 			) {
-				const exp = factor.superscript;
+				const exp = side.superscript;
 				if (exp.type === 'number' && exp.value === '2') return 2;
 			}
-		}
-		// Check for simple x (degree 1)
-		for (const factor of term.factors) {
-			if (factor.type === 'variable' && factor.name === variable) {
-				return 1;
-			}
-		}
+			if (side.type === 'variable' && side.name === variable) return 1;
+			return 0;
+		};
+		const leftDeg = checkSide(term.left);
+		const rightDeg = checkSide(term.right);
+		if (leftDeg > 0 || rightDeg > 0) return Math.max(leftDeg, rightDeg);
 	}
 
 	// Simple variable x (degree 1)
 	if (term.type === 'variable' && term.name === variable) return 1;
 
-	// Negative term
-	if (term.type === 'negative') {
+	// Opposite term
+	if (term.type === 'opposite') {
 		return getTermDegree(term.operand, variable);
 	}
 
@@ -135,14 +136,15 @@ function extractCoefficient(terms: MathNode[], variable: string, degree: number)
 	if (terms.length === 0) return number('0');
 
 	// Sum the terms
+	// Note: unflattenSum returns null only for empty arrays, which we've already handled
 	const termSum =
 		terms.length === 1
 			? terms[0]
-			: unflattenSum(terms.map((t) => ({ sign: '+' as const, term: t })));
+			: unflattenSum(terms.map((t) => ({ sign: '+' as const, term: t })))!;
 
 	// Divide by x^degree to get coefficient
 	const divisor = degree === 2 ? power(varNode(variable), number('2')) : varNode(variable);
-	const coeffExpr = divide(termSum, divisor);
+	const coeffExpr = fraction(termSum, divisor);
 	const coeffSimplified = denormalize(normalize(coeffExpr));
 
 	return coeffSimplified;
@@ -283,8 +285,8 @@ export const quadraticSolver: EquationSolver = {
 		);
 
 		// Compute discriminant: Delta = b^2 - 4ac
-		const bSquared = multiply(b, b);
-		const fourAC = multiply(number('4'), multiply(a, c));
+		const bSquared = implicitMultiply(b, b);
+		const fourAC = implicitMultiply(number('4'), implicitMultiply(a, c));
 		const discriminant = subtract(bSquared, fourAC);
 		const discriminantSimplified = denormalize(normalize(discriminant));
 		const discriminantValue = computeNumericValue(discriminantSimplified);
@@ -323,12 +325,12 @@ export const quadraticSolver: EquationSolver = {
 		}
 
 		// Compute solutions
-		const twoA = multiply(number('2'), a);
+		const twoA = implicitMultiply(number('2'), a);
 		const negB = opposite(b);
 
 		if (isDiscriminantZero || (discriminantValue !== null && discriminantValue === 0)) {
 			// One double solution: x = -b / (2a)
-			const solution = divide(negB, twoA);
+			const solution = fraction(negB, twoA);
 			const solutionSimplified = denormalize(normalize(solution));
 
 			recorder.recordStep(
@@ -370,12 +372,12 @@ export const quadraticSolver: EquationSolver = {
 
 		// x1 = (-b + sqrt(Delta)) / (2a)
 		const x1Numerator = add(negB, sqrtDiscriminant);
-		const x1 = divide(x1Numerator, twoA);
+		const x1 = fraction(x1Numerator, twoA);
 		const x1Simplified = denormalize(normalize(x1));
 
 		// x2 = (-b - sqrt(Delta)) / (2a)
 		const x2Numerator = subtract(negB, sqrtDiscriminant);
-		const x2 = divide(x2Numerator, twoA);
+		const x2 = fraction(x2Numerator, twoA);
 		const x2Simplified = denormalize(normalize(x2));
 
 		recorder.recordStep(
