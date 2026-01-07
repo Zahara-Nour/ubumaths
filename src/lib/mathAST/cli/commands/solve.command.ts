@@ -675,44 +675,53 @@ export class SolveCommand extends BaseCommand {
 		const headerLines: string[] = [];
 		const headerHtmlLines: string[] = [];
 
-		// Show pedagogical steps only in detailed (verbose) mode
-		if (verbosity === 'detailed' && result.status === 'unique' && result.solutions.length > 0) {
+		// Generate pedagogical steps for linear equations
+		let pedagogicalSteps: PedagogicalStep[] = [];
+		if (
+			verbosity !== 'result' &&
+			result.status === 'unique' &&
+			result.solutions.length > 0 &&
+			result.equationType === 'linear' &&
+			isRelation(equation)
+		) {
 			const solutionValue = result.solutions[0].value;
+			pedagogicalSteps = generateLinearPedagogicalSteps(
+				equation as RelationNode,
+				result.variable,
+				solutionValue
+			);
+		}
 
-			// Generate pedagogical steps based on equation type
-			let pedagogicalSteps: PedagogicalStep[] = [];
-
-			if (result.equationType === 'linear' && isRelation(equation)) {
-				pedagogicalSteps = generateLinearPedagogicalSteps(
-					equation as RelationNode,
-					result.variable,
-					solutionValue
-				);
-			}
-
-			// Format header + steps with global = alignment
-			if (pedagogicalSteps.length > 0) {
-				const globalAligned = formatAllStepsGloballyAligned(
-					headerPrefix,
-					eqCustom,
-					pedagogicalSteps,
-					this.escapeHtml.bind(this)
-				);
-
-				// Use aligned header then steps (no blank line)
-				headerLines.push(globalAligned.headerText);
-				headerHtmlLines.push(globalAligned.headerHtml);
-				headerLines.push(...globalAligned.textLines);
-				headerHtmlLines.push(...globalAligned.htmlLines);
-			} else {
-				// No steps, just show header without alignment
-				headerLines.push(`${headerPrefix}: ${eqCustom}`);
+		// Format output based on verbosity
+		if (verbosity === 'detailed' && pedagogicalSteps.length > 0) {
+			// Detailed: full steps with transformations and aligned equations
+			const globalAligned = formatAllStepsGloballyAligned(
+				headerPrefix,
+				eqCustom,
+				pedagogicalSteps,
+				this.escapeHtml.bind(this)
+			);
+			headerLines.push(globalAligned.headerText);
+			headerHtmlLines.push(globalAligned.headerHtml);
+			headerLines.push(...globalAligned.textLines);
+			headerHtmlLines.push(...globalAligned.htmlLines);
+		} else if (verbosity === 'summarized' && pedagogicalSteps.length > 0) {
+			// Summarized: header + step descriptions only (no transformations)
+			const formattedHeaderEq = eqCustom.replace(/=/, ' = ');
+			headerLines.push(`${headerPrefix}: ${formattedHeaderEq}`);
+			headerHtmlLines.push(
+				`<span class="text-muted-foreground">${headerPrefix}:</span> ` +
+					`<span class="text-cyan-400">${this.escapeHtml(formattedHeaderEq)}</span>`
+			);
+			// Add step descriptions with arrow prefix
+			for (const step of pedagogicalSteps) {
+				headerLines.push(`→ ${step.description}`);
 				headerHtmlLines.push(
-					`<span class="text-muted-foreground">${headerPrefix}:</span> <span class="text-cyan-400">${this.escapeHtml(eqCustom)}</span>`
+					`<br><span class="text-muted-foreground">→ ${this.escapeHtml(step.description)}</span>`
 				);
 			}
 		} else if (verbosity !== 'result') {
-			// No steps available, show simple header
+			// Fallback: just header
 			headerLines.push(`${headerPrefix}: ${eqCustom}`);
 			headerHtmlLines.push(
 				`<span class="text-muted-foreground">${headerPrefix}:</span> <span class="text-cyan-400">${this.escapeHtml(eqCustom)}</span>`
