@@ -553,6 +553,234 @@ function generateLinearPedagogicalSteps(
 }
 
 // =============================================================================
+// Quadratic Equation Pedagogical Steps
+// =============================================================================
+
+/**
+ * Extract coefficients a, b, c from a quadratic expression.
+ * Simplified version for display purposes.
+ */
+function extractQuadraticCoeffsForDisplay(
+	expr: MathNode,
+	variable: string
+): { a: string; b: string; c: string } | null {
+	const flatSum = flattenSumShallow(expr);
+
+	let aStr = '0';
+	let bStr = '0';
+	let cStr = '0';
+
+	for (const { sign, term } of flatSum) {
+		const signedTerm = sign === '-' ? opposite(term) : term;
+		const degree = getQuadraticTermDegree(signedTerm, variable);
+
+		if (degree === 2) {
+			const coeff = extractQuadraticCoeff(signedTerm, variable, 2);
+			aStr = aStr === '0' ? coeff : `${aStr}+${coeff}`;
+		} else if (degree === 1) {
+			const coeff = extractQuadraticCoeff(signedTerm, variable, 1);
+			bStr = bStr === '0' ? coeff : `${bStr}+${coeff}`;
+		} else if (degree === 0) {
+			const termStr = toCustom(signedTerm);
+			cStr = cStr === '0' ? termStr : `${cStr}+${termStr}`;
+		}
+	}
+
+	// Simplify coefficient strings
+	aStr = toCustom(evalSimplify(parse(aStr).ast!));
+	bStr = toCustom(evalSimplify(parse(bStr).ast!));
+	cStr = toCustom(evalSimplify(parse(cStr).ast!));
+
+	return { a: aStr, b: bStr, c: cStr };
+}
+
+/**
+ * Get the degree of a term in the given variable.
+ */
+function getQuadraticTermDegree(term: MathNode, variable: string): number {
+	const vars = getVariables(term);
+	if (!vars.has(variable)) return 0;
+
+	// x^2 term
+	if (term.type === 'superscript' && term.base.type === 'variable' && term.base.name === variable) {
+		const exp = term.superscript;
+		if (exp.type === 'number' && exp.value === '2') return 2;
+		if (exp.type === 'number' && exp.value === '1') return 1;
+	}
+
+	// c * x^2 term (multiplication)
+	if (term.type === 'multiplication') {
+		const checkSide = (side: MathNode): number => {
+			if (
+				side.type === 'superscript' &&
+				side.base.type === 'variable' &&
+				side.base.name === variable
+			) {
+				const exp = side.superscript;
+				if (exp.type === 'number' && exp.value === '2') return 2;
+			}
+			if (side.type === 'variable' && side.name === variable) return 1;
+			return 0;
+		};
+		const leftDeg = checkSide(term.left);
+		const rightDeg = checkSide(term.right);
+		if (leftDeg > 0 || rightDeg > 0) return Math.max(leftDeg, rightDeg);
+	}
+
+	// Simple variable x (degree 1)
+	if (term.type === 'variable' && term.name === variable) return 1;
+
+	// Opposite term
+	if (term.type === 'opposite') {
+		return getQuadraticTermDegree(term.operand, variable);
+	}
+
+	return 0;
+}
+
+/**
+ * Extract coefficient from a term of given degree.
+ */
+function extractQuadraticCoeff(term: MathNode, variable: string, degree: number): string {
+	// Simple cases
+	if (term.type === 'variable' && term.name === variable && degree === 1) {
+		return '1';
+	}
+	if (
+		term.type === 'superscript' &&
+		term.base.type === 'variable' &&
+		term.base.name === variable &&
+		degree === 2
+	) {
+		return '1';
+	}
+	if (term.type === 'opposite') {
+		const inner = extractQuadraticCoeff(term.operand, variable, degree);
+		return inner === '1' ? '-1' : `-${inner}`;
+	}
+	if (term.type === 'multiplication') {
+		// Find which side has the variable
+		const leftDeg = getQuadraticTermDegree(term.left, variable);
+		const rightDeg = getQuadraticTermDegree(term.right, variable);
+		if (leftDeg === degree) return toCustom(term.right);
+		if (rightDeg === degree) return toCustom(term.left);
+	}
+	return toCustom(term);
+}
+
+/**
+ * Generate pedagogical steps for a quadratic equation.
+ * Shows: identify coefficients, compute discriminant, interpret, apply formula.
+ */
+function generateQuadraticPedagogicalSteps(
+	equation: RelationNode,
+	variable: string,
+	solutions: Array<{ value: MathNode; approximate?: number }>
+): PedagogicalStep[] {
+	const steps: PedagogicalStep[] = [];
+	const lhs = equation.left;
+	const rhs = equation.right;
+
+	// Get left - right to have standard form = 0
+	const standardExpr =
+		toCustom(rhs) === '0' ? lhs : { type: 'addition' as const, left: lhs, right: opposite(rhs) };
+
+	// Extract coefficients
+	const coeffs = extractQuadraticCoeffsForDisplay(standardExpr, variable);
+	if (!coeffs) return steps;
+
+	const { a, b, c } = coeffs;
+
+	// Step 1: Identify coefficients
+	steps.push({
+		description: 'On identifie les coefficients',
+		transformation: `a${variable}^2 + b${variable} + c = 0`,
+		result: `a = ${a}, b = ${b}, c = ${c}`
+	});
+
+	// Step 2: Compute discriminant
+	// Delta = b^2 - 4ac
+	const bSquaredVal = evalSimplify(parse(`(${b})^2`).ast!);
+	const fourACVal = evalSimplify(parse(`4*${a}*${c}`).ast!);
+	const deltaVal = evalSimplify(parse(`(${b})^2 - 4*${a}*${c}`).ast!);
+	const deltaStr = toCustom(deltaVal);
+
+	const bSquaredStr = toCustom(bSquaredVal);
+	const fourACStr = toCustom(fourACVal);
+	// Handle the subtraction display: if 4ac is negative, show as + |4ac|
+	const fourACNum = parseFloat(fourACStr);
+	const discriminantCalc =
+		fourACNum < 0
+			? `Delta = ${bSquaredStr} + ${toCustom(negate(fourACVal))} = ${deltaStr}`
+			: `Delta = ${bSquaredStr} - ${fourACStr} = ${deltaStr}`;
+
+	steps.push({
+		description: 'On calcule le discriminant',
+		transformation: `Delta = b^2 - 4ac`,
+		result: discriminantCalc
+	});
+
+	// Step 3: Interpret discriminant
+	const deltaNum = parseFloat(deltaStr);
+	let interpretation: string;
+	if (deltaNum > 0) {
+		interpretation = `Delta = ${deltaStr} > 0, deux solutions reelles`;
+	} else if (deltaNum === 0) {
+		interpretation = `Delta = ${deltaStr} = 0, une solution double`;
+	} else {
+		interpretation = `Delta = ${deltaStr} < 0, pas de solution reelle`;
+		steps.push({
+			description: 'On interprete le discriminant',
+			transformation: `Delta = ${deltaStr}`,
+			result: interpretation
+		});
+		return steps;
+	}
+
+	steps.push({
+		description: 'On interprete le discriminant',
+		transformation: `Delta = ${deltaStr}`,
+		result: interpretation
+	});
+
+	// Step 4: Apply quadratic formula
+	// Handle -b display: if b is negative, -b is positive
+	const bNum = parseFloat(b);
+	const negBStr = bNum < 0 ? toCustom(negate(parse(b).ast!)) : `-${b}`;
+
+	if (deltaNum === 0) {
+		// Double solution: x = -b / (2a)
+		const solutionStr = solutions.length > 0 ? toCustom(solutions[0].value) : `${negBStr}/(2×${a})`;
+		steps.push({
+			description: 'On applique la formule',
+			transformation: `${variable} = -b / (2a)`,
+			result: `${variable} = ${solutionStr}`
+		});
+	} else {
+		// Two solutions: x = (-b ± sqrt(Delta)) / (2a)
+		const sqrtDelta = `sqrt(${deltaStr})`;
+		steps.push({
+			description: 'On applique la formule quadratique',
+			transformation: `${variable} = (-b ± sqrt(Delta)) / (2a)`,
+			result: `${variable} = (${negBStr} ± ${sqrtDelta}) / (2×${a})`
+		});
+
+		// Show both solutions
+		if (solutions.length >= 2) {
+			const sol1Str = toCustom(solutions[0].value);
+			const sol2Str = toCustom(solutions[1].value);
+			steps.push({
+				description: 'On simplifie les solutions',
+				transformation: `${variable} = (${negBStr} + ${sqrtDelta}) / (2×${a}), ${variable} = (${negBStr} - ${sqrtDelta}) / (2×${a})`,
+				result: `${variable} = ${sol1Str} ou ${variable} = ${sol2Str}`
+			});
+		}
+	}
+
+	return steps;
+}
+
+// =============================================================================
 // Solve Command
 // =============================================================================
 
@@ -756,21 +984,26 @@ export class SolveCommand extends BaseCommand {
 		const headerLines: string[] = [];
 		const headerHtmlLines: string[] = [];
 
-		// Generate pedagogical steps for linear equations
+		// Generate pedagogical steps based on equation type
 		let pedagogicalSteps: PedagogicalStep[] = [];
-		if (
-			verbosity !== 'result' &&
-			result.status === 'unique' &&
-			result.solutions.length > 0 &&
-			result.equationType === 'linear' &&
-			isRelation(equation)
-		) {
-			const solutionValue = result.solutions[0].value;
-			pedagogicalSteps = generateLinearPedagogicalSteps(
-				equation as RelationNode,
-				result.variable,
-				solutionValue
-			);
+		if (verbosity !== 'result' && result.solutions.length > 0 && isRelation(equation)) {
+			if (result.equationType === 'linear' && result.status === 'unique') {
+				const solutionValue = result.solutions[0].value;
+				pedagogicalSteps = generateLinearPedagogicalSteps(
+					equation as RelationNode,
+					result.variable,
+					solutionValue
+				);
+			} else if (
+				result.equationType === 'quadratic' &&
+				(result.status === 'unique' || result.status === 'multiple')
+			) {
+				pedagogicalSteps = generateQuadraticPedagogicalSteps(
+					equation as RelationNode,
+					result.variable,
+					result.solutions
+				);
+			}
 		}
 
 		// Format output based on verbosity
