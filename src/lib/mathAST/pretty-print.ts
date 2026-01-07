@@ -18,6 +18,7 @@ import type {
 	DelimiterNode,
 	RelationNode,
 	UnitNode,
+	MatrixNode,
 	CompositionNode
 } from './types';
 import { format as formatUnit } from './units/formatter';
@@ -311,6 +312,13 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			printComposition(node, ctx, prefix, childPrefix);
 			break;
 
+		// =========================================================================
+		// Matrix
+		// =========================================================================
+		case 'matrix':
+			printMatrix(node, ctx, prefix, childPrefix);
+			break;
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = node;
@@ -516,6 +524,44 @@ function printComposition(
 		{ label: 'inner', node: node.inner }
 	];
 	printChildren(children, ctx, childPrefix);
+}
+
+/**
+ * Print matrix node
+ */
+function printMatrix(
+	node: MatrixNode,
+	ctx: PrintContext,
+	prefix: string,
+	childPrefix: string
+): void {
+	const numRows = node.rows.length;
+	const numCols = node.rows[0]?.length ?? 0;
+	const header = `Matrix [${numRows}x${numCols}] (${node.matrixType})`;
+
+	addLine(ctx, prefix, header, node.metadata);
+
+	// Print each row as a labeled group
+	node.rows.forEach((row, rowIndex) => {
+		const isLastRow = rowIndex === node.rows.length - 1;
+		const rowBranch = isLastRow ? TREE.last : TREE.branch;
+		const rowPrefix = isLastRow ? TREE.space : TREE.pipe;
+		const rowLabel = `row[${rowIndex}]`;
+
+		// Print row header
+		ctx.lines.push(childPrefix + rowBranch + rowLabel);
+
+		// Print elements in the row
+		row.forEach((elem, colIndex) => {
+			const isLastCol = colIndex === row.length - 1;
+			const colBranch = isLastCol ? TREE.last : TREE.branch;
+			const colNextPrefix = isLastCol ? TREE.space : TREE.pipe;
+			const elemPrefix = childPrefix + rowPrefix + colBranch;
+			const elemChildPrefix = childPrefix + rowPrefix + colNextPrefix;
+
+			printNode(elem, ctx, elemPrefix, elemChildPrefix);
+		});
+	});
 }
 
 /**

@@ -15,6 +15,7 @@ import {
 	func,
 	greek,
 	hole,
+	matrix,
 	multiply,
 	number,
 	opposite,
@@ -207,6 +208,10 @@ export function getChildren(node: MathNode): MathNode[] {
 		// Composition
 		case 'composition':
 			return [node.outer, node.inner];
+
+		// Matrix - flatten all elements in row-major order
+		case 'matrix':
+			return node.rows.flat();
 	}
 }
 
@@ -358,6 +363,15 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				metadata: node.metadata
 			});
 			break;
+
+		case 'matrix': {
+			const mappedRows = node.rows.map((row) => row.map((elem) => mapNode(elem, fn)));
+			transformedNode = matrix(mappedRows, {
+				matrixType: node.matrixType,
+				metadata: node.metadata
+			});
+			break;
+		}
 	}
 
 	// Then apply transformation to the parent
@@ -523,6 +537,16 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 					metadata: transformedParent.metadata
 				}
 			);
+
+		case 'matrix': {
+			const mappedRows = transformedParent.rows.map((row) =>
+				row.map((elem) => mapNodeTopDown(elem, fn))
+			);
+			return matrix(mappedRows, {
+				matrixType: transformedParent.matrixType,
+				metadata: transformedParent.metadata
+			});
+		}
 	}
 }
 
@@ -723,6 +747,14 @@ export function cloneNode<T extends MathNode>(node: T): T {
 				operatorMetadata: node.operatorMetadata,
 				metadata: node.metadata
 			}) as T;
+
+		case 'matrix': {
+			const clonedRows = node.rows.map((row) => row.map((elem) => cloneNode(elem)));
+			return matrix(clonedRows, {
+				matrixType: node.matrixType,
+				metadata: node.metadata
+			}) as T;
+		}
 	}
 }
 

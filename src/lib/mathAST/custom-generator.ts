@@ -40,6 +40,7 @@ import type {
 	RelationNode,
 	UnitNode,
 	CompositionNode,
+	MatrixNode,
 	RelationType,
 	GreekLetter,
 	NodeMetadata
@@ -275,6 +276,7 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'relation':
 		case 'unit':
 		case 'composition':
+		case 'matrix':
 			return true;
 
 		default: {
@@ -434,6 +436,10 @@ export class CustomGenerator {
 
 			case 'composition':
 				this.visitCompositionSpans(node);
+				break;
+
+			case 'matrix':
+				this.visitMatrixSpans(node);
 				break;
 
 			default: {
@@ -715,6 +721,27 @@ export class CustomGenerator {
 	}
 
 	/**
+	 * Emits spans for a matrix node.
+	 * Renders as [[row1],[row2],...]
+	 */
+	private visitMatrixSpans(node: MatrixNode): void {
+		this.emit('[[', node.metadata);
+		for (let i = 0; i < node.rows.length; i++) {
+			if (i > 0) {
+				this.emit('],[', node.metadata);
+			}
+			const row = node.rows[i];
+			for (let j = 0; j < row.length; j++) {
+				if (j > 0) {
+					this.emit(',', node.metadata);
+				}
+				this.visitWithSpans(row[j]);
+			}
+		}
+		this.emit(']]', node.metadata);
+	}
+
+	/**
 	 * Visits a node with inherited metadata.
 	 * If the node has its own metadata, uses that; otherwise uses the inherited metadata.
 	 */
@@ -813,6 +840,9 @@ export class CustomGenerator {
 				break;
 			case 'composition':
 				content = this.generateComposition(node);
+				break;
+			case 'matrix':
+				content = this.generateMatrix(node);
 				break;
 			default: {
 				const exhaustive: never = node;
@@ -1047,6 +1077,15 @@ export class CustomGenerator {
 		const outer = this.generateNode(node.outer);
 		const inner = this.generateNode(node.inner);
 		return `${outer}@${inner}`;
+	}
+
+	/**
+	 * Generates custom syntax for a matrix node.
+	 * Renders as [[row1],[row2],...] (Python-like syntax)
+	 */
+	private generateMatrix(node: MatrixNode): string {
+		const rows = node.rows.map((row) => row.map((elem) => this.generateNode(elem)).join(','));
+		return `[[${rows.join('],[')}]]`;
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {

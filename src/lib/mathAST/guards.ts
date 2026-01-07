@@ -24,6 +24,7 @@ import type {
 	SuperscriptNode,
 	RelationNode,
 	UnitNode,
+	MatrixNode,
 	CompositionNode,
 	LiteralNode,
 	BinaryOperationNode,
@@ -229,6 +230,41 @@ export function isComposition(node: MathNode): node is CompositionNode {
 	return node.type === 'composition';
 }
 
+/**
+ * Type guard for MatrixNode
+ */
+export function isMatrix(node: MathNode): node is MatrixNode {
+	return node.type === 'matrix';
+}
+
+// =============================================================================
+// Matrix Predicates
+// =============================================================================
+
+/**
+ * Returns true if node is a row vector (1xN matrix)
+ */
+export function isRowVector(node: MathNode): node is MatrixNode {
+	if (!isMatrix(node)) return false;
+	return node.rows.length === 1;
+}
+
+/**
+ * Returns true if node is a column vector (Nx1 matrix)
+ */
+export function isColumnVector(node: MathNode): node is MatrixNode {
+	if (!isMatrix(node)) return false;
+	return node.rows.length > 0 && node.rows[0].length === 1;
+}
+
+/**
+ * Returns true if node is a square matrix (NxN)
+ */
+export function isSquareMatrix(node: MathNode): node is MatrixNode {
+	if (!isMatrix(node)) return false;
+	return node.rows.length > 0 && node.rows.length === node.rows[0].length;
+}
+
 // =============================================================================
 // Utility Predicates
 // =============================================================================
@@ -262,6 +298,9 @@ export function hasChildren(node: MathNode): boolean {
 		return true;
 	}
 	if (isComposition(node)) {
+		return true;
+	}
+	if (isMatrix(node)) {
 		return true;
 	}
 	return false;
@@ -452,6 +491,9 @@ export function hasUnitDescendant(node: MathNode): boolean {
 
 		case 'composition':
 			return hasUnitDescendant(node.outer) || hasUnitDescendant(node.inner);
+
+		case 'matrix':
+			return node.rows.some((row) => row.some(hasUnitDescendant));
 
 		default: {
 			const _exhaustive: never = node;

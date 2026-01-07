@@ -6,6 +6,7 @@
  */
 
 import type { Unit } from './units/types';
+import type { MatrixType } from './matrix/types';
 
 // =============================================================================
 // Greek Letters
@@ -391,6 +392,27 @@ export interface UnitNode extends BaseNode {
 }
 
 // =============================================================================
+// Matrix Node
+// =============================================================================
+
+/**
+ * Represents a matrix (2D array of mathematical expressions).
+ *
+ * Examples:
+ * - 2x2 matrix: [[1, 2], [3, 4]]
+ * - Row vector: [[1, 2, 3]]
+ * - Column vector: [[1], [2], [3]]
+ * - Identity matrix: [[1, 0], [0, 1]]
+ *
+ * The matrixType controls LaTeX rendering (pmatrix, bmatrix, etc.)
+ */
+export interface MatrixNode extends BaseNode {
+	readonly type: 'matrix';
+	readonly rows: readonly (readonly MathNode[])[];
+	readonly matrixType: MatrixType;
+}
+
+// =============================================================================
 // Function Composition Node
 // =============================================================================
 
@@ -436,6 +458,7 @@ export type MathNode =
 	| SuperscriptNode
 	| RelationNode
 	| UnitNode
+	| MatrixNode
 	| CompositionNode;
 
 // =============================================================================

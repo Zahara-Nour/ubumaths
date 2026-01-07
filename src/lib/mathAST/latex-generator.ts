@@ -25,6 +25,7 @@ import type {
 	RelationNode,
 	UnitNode,
 	CompositionNode,
+	MatrixNode,
 	MathSymbol,
 	RelationType,
 	GreekLetter,
@@ -378,6 +379,10 @@ export class LatexGenerator {
 				this.visitCompositionSpans(node);
 				break;
 
+			case 'matrix':
+				this.visitMatrixSpans(node);
+				break;
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -643,6 +648,30 @@ export class LatexGenerator {
 	}
 
 	/**
+	 * Emits spans for a matrix node.
+	 * Renders as \begin{matrixType}...\end{matrixType}
+	 */
+	private visitMatrixSpans(node: MatrixNode): void {
+		const matrixType = node.matrixType;
+		this.emit(`\\begin{${matrixType}}`, node.metadata);
+
+		for (let i = 0; i < node.rows.length; i++) {
+			const row = node.rows[i];
+			for (let j = 0; j < row.length; j++) {
+				this.visitWithSpans(row[j]);
+				if (j < row.length - 1) {
+					this.emit(' & ', node.metadata);
+				}
+			}
+			if (i < node.rows.length - 1) {
+				this.emit(' \\\\ ', node.metadata);
+			}
+		}
+
+		this.emit(`\\end{${matrixType}}`, node.metadata);
+	}
+
+	/**
 	 * Visits a node with inherited metadata.
 	 * If the node has its own metadata, uses that; otherwise uses the inherited metadata.
 	 */
@@ -743,6 +772,9 @@ export class LatexGenerator {
 				break;
 			case 'composition':
 				content = this.generateComposition(node);
+				break;
+			case 'matrix':
+				content = this.generateMatrix(node);
 				break;
 			default: {
 				const exhaustive: never = node;
@@ -1000,6 +1032,16 @@ export class LatexGenerator {
 		const outer = this.generateNode(node.outer);
 		const inner = this.generateNode(node.inner);
 		return `${outer} \\circ ${inner}`;
+	}
+
+	/**
+	 * Generates LaTeX for a matrix node.
+	 * Renders as \begin{matrixType}...\end{matrixType}
+	 */
+	private generateMatrix(node: MatrixNode): string {
+		const matrixType = node.matrixType;
+		const rows = node.rows.map((row) => row.map((elem) => this.generateNode(elem)).join(' & '));
+		return `\\begin{${matrixType}}${rows.join(' \\\\ ')}\\end{${matrixType}}`;
 	}
 
 	private wrapWithMetadata(content: string, node: MathNode): string {

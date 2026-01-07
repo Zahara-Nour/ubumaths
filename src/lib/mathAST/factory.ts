@@ -19,6 +19,7 @@ import type {
 	HoleNode,
 	MathNode,
 	MathSymbol,
+	MatrixNode,
 	MultiplicationDisplayStyle,
 	MultiplicationNode,
 	NodeMetadata,
@@ -34,6 +35,8 @@ import type {
 	UnitNode,
 	VariableNode
 } from './types';
+import type { MatrixType, MatrixOptions } from './matrix/types';
+import { MatrixDimensionError } from './matrix/types';
 import type { Unit } from './units/types';
 import { parseOrThrow } from './units/parser';
 import { unflattenRelationChain } from './flatten';
@@ -1152,6 +1155,221 @@ export function quantityVar(
 }
 
 // =============================================================================
+// Matrix Factories
+// =============================================================================
+
+/** Maximum matrix dimension for v1 (educational context) */
+const MAX_MATRIX_SIZE = 5;
+
+/**
+ * Validates matrix dimensions
+ * @throws MatrixDimensionError for invalid dimensions
+ */
+function validateMatrixDimensions(rows: number, cols: number): void {
+	if (rows <= 0) {
+		throw new MatrixDimensionError('Matrix must have at least 1 row', 1, undefined, rows, cols);
+	}
+	if (cols <= 0) {
+		throw new MatrixDimensionError('Matrix must have at least 1 column', undefined, 1, rows, cols);
+	}
+	if (rows > MAX_MATRIX_SIZE) {
+		throw new MatrixDimensionError(
+			`Matrix rows exceed maximum size of ${MAX_MATRIX_SIZE}`,
+			MAX_MATRIX_SIZE,
+			undefined,
+			rows,
+			cols
+		);
+	}
+	if (cols > MAX_MATRIX_SIZE) {
+		throw new MatrixDimensionError(
+			`Matrix columns exceed maximum size of ${MAX_MATRIX_SIZE}`,
+			undefined,
+			MAX_MATRIX_SIZE,
+			rows,
+			cols
+		);
+	}
+}
+
+/**
+ * Creates a matrix node from a 2D array of MathNodes.
+ *
+ * @param rows - 2D array of MathNode elements (row-major order)
+ * @param options - Optional matrixType and metadata
+ * @throws MatrixDimensionError for empty matrix, empty rows, or rows with different lengths
+ *
+ * @example
+ * // 2x2 matrix
+ * matrix([[number('1'), number('2')], [number('3'), number('4')]])
+ *
+ * // With options
+ * matrix([[number('1')]], { matrixType: 'bmatrix', metadata: { color: 'red' } })
+ */
+export function matrix(
+	rows: readonly (readonly MathNode[])[],
+	options?: MatrixOptions
+): MatrixNode {
+	// Validate non-empty
+	if (rows.length === 0) {
+		throw new MatrixDimensionError('Matrix must have at least 1 row', 1, undefined, 0, 0);
+	}
+
+	const numCols = rows[0].length;
+	if (numCols === 0) {
+		throw new MatrixDimensionError(
+			'Matrix rows must have at least 1 element',
+			undefined,
+			1,
+			rows.length,
+			0
+		);
+	}
+
+	// Validate all rows have the same length
+	for (let i = 0; i < rows.length; i++) {
+		if (rows[i].length !== numCols) {
+			throw new MatrixDimensionError(
+				`Row ${i + 1} has ${rows[i].length} elements, expected ${numCols}`,
+				rows.length,
+				numCols,
+				rows.length,
+				rows[i].length
+			);
+		}
+	}
+
+	// Validate size limits
+	validateMatrixDimensions(rows.length, numCols);
+
+	const matrixType: MatrixType = options?.matrixType ?? 'pmatrix';
+
+	return {
+		type: 'matrix',
+		rows,
+		matrixType,
+		...(options?.metadata && { metadata: options.metadata })
+	} as const;
+}
+
+/**
+ * Creates a row vector (1xN matrix).
+ *
+ * @param elements - Array of MathNode elements
+ * @param options - Optional matrixType and metadata
+ * @throws MatrixDimensionError for empty elements
+ *
+ * @example
+ * rowVector([number('1'), number('2'), number('3')])
+ */
+export function rowVector(elements: readonly MathNode[], options?: MatrixOptions): MatrixNode {
+	if (elements.length === 0) {
+		throw new MatrixDimensionError('Row vector must have at least 1 element', 1, 1, 1, 0);
+	}
+	return matrix([elements], options);
+}
+
+/**
+ * Creates a column vector (Nx1 matrix).
+ *
+ * @param elements - Array of MathNode elements
+ * @param options - Optional matrixType and metadata
+ * @throws MatrixDimensionError for empty elements
+ *
+ * @example
+ * columnVector([number('1'), number('2'), number('3')])
+ */
+export function columnVector(elements: readonly MathNode[], options?: MatrixOptions): MatrixNode {
+	if (elements.length === 0) {
+		throw new MatrixDimensionError('Column vector must have at least 1 element', 1, 1, 0, 1);
+	}
+	// Convert to column format: [[e1], [e2], [e3]]
+	const rows = elements.map((elem) => [elem]);
+	return matrix(rows, options);
+}
+
+/**
+ * Creates an identity matrix of size n.
+ *
+ * @param size - Size of the square identity matrix (1 to 5)
+ * @param options - Optional matrixType and metadata
+ * @throws MatrixDimensionError for invalid size
+ *
+ * @example
+ * identityMatrix(3) // 3x3 identity matrix with 1s on diagonal
+ */
+export function identityMatrix(size: number, options?: MatrixOptions): MatrixNode {
+	if (!Number.isInteger(size) || size <= 0) {
+		throw new MatrixDimensionError(
+			'Identity matrix size must be a positive integer',
+			1,
+			1,
+			size,
+			size
+		);
+	}
+	validateMatrixDimensions(size, size);
+
+	const rows: MathNode[][] = [];
+	for (let i = 0; i < size; i++) {
+		const row: MathNode[] = [];
+		for (let j = 0; j < size; j++) {
+			row.push(number(i === j ? '1' : '0'));
+		}
+		rows.push(row);
+	}
+
+	return matrix(rows, options);
+}
+
+/**
+ * Creates a zero matrix of size rows x cols.
+ *
+ * @param rows - Number of rows
+ * @param cols - Number of columns (defaults to rows for square matrix)
+ * @param options - Optional matrixType and metadata
+ * @throws MatrixDimensionError for invalid dimensions
+ *
+ * @example
+ * zeroMatrix(2, 3) // 2x3 zero matrix
+ * zeroMatrix(3)    // 3x3 zero matrix
+ */
+export function zeroMatrix(numRows: number, numCols?: number, options?: MatrixOptions): MatrixNode {
+	const cols = numCols ?? numRows;
+
+	if (!Number.isInteger(numRows) || numRows <= 0) {
+		throw new MatrixDimensionError(
+			'Zero matrix rows must be a positive integer',
+			1,
+			undefined,
+			numRows,
+			cols
+		);
+	}
+	if (!Number.isInteger(cols) || cols <= 0) {
+		throw new MatrixDimensionError(
+			'Zero matrix columns must be a positive integer',
+			undefined,
+			1,
+			numRows,
+			cols
+		);
+	}
+	validateMatrixDimensions(numRows, cols);
+
+	const rows: MathNode[][] = [];
+	for (let i = 0; i < numRows; i++) {
+		const row: MathNode[] = [];
+		for (let j = 0; j < cols; j++) {
+			row.push(number('0'));
+		}
+		rows.push(row);
+	}
+
+	return matrix(rows, options);
+}
+
+// =============================================================================
 // MathAST Namespace
 // =============================================================================
 
@@ -1231,6 +1449,13 @@ export const MathAST = {
 	withUnit,
 	quantity,
 	quantityVar,
+
+	// Matrices
+	matrix,
+	rowVector,
+	columnVector,
+	identityMatrix,
+	zeroMatrix,
 
 	// Composition
 	compose
