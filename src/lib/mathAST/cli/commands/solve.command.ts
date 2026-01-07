@@ -841,16 +841,13 @@ export class SolveCommand extends BaseCommand {
 				};
 
 				// Check if any solution benefits from showing a decimal approximation
-				// True if the exact form is not a simple number (contains /, sqrt, etc.)
+				// True if exact and decimal representations are visually different
 				const hasUsefulApproximate = result.solutions.some((sol) => {
 					if (sol.approximate === undefined) return false;
 					const exactStr = toCustom(sol.value);
-					// If exact string is a simple number (parses cleanly), no toggle needed
-					const exactNum = parseFloat(exactStr);
-					if (!isNaN(exactNum) && exactStr === exactNum.toString()) {
-						return false; // exact is already a simple decimal/integer
-					}
-					return true; // exact contains fraction, sqrt, or other non-decimal representation
+					const decimalStr = sol.approximate.toString();
+					// Toggle is useful only if representations differ
+					return exactStr !== decimalStr;
 				});
 
 				// Format decimal solutions - use = for terminating decimals, ≈ for approximations
