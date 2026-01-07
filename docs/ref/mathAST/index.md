@@ -16,6 +16,7 @@ MathAST (Mathematical Abstract Syntax Tree) is a fully-featured computer algebra
 - **Security** with configurable input limits and DoS protection
 - **Expression caching** with LRU cache for performance
 - **Auto-completion** API for IDE-like input assistance
+- **Visitor pattern** with enter/leave hooks for flexible AST traversal
 
 ## Quick Start
 
@@ -55,7 +56,8 @@ mathAST/
 │   ├── types.ts          # 18 node type definitions
 │   ├── factory.ts        # Factory functions (MathAST namespace)
 │   ├── guards.ts         # Type guards and predicates
-│   └── transforms.ts     # Tree traversal and transformation
+│   ├── transforms.ts     # Tree traversal and transformation
+│   └── visitor.ts        # Visitor pattern (enter/leave hooks)
 │
 ├── Parsing
 │   ├── parser/           # Parser subsystem
@@ -95,6 +97,7 @@ mathAST/
 | ----------------------------------------------- | ----------------------------------------------- |
 | [Types & Nodes](./types.md)                     | Node types, interfaces, and type system         |
 | [Factory & Transforms](./factory-transforms.md) | Creating and manipulating AST nodes             |
+| [Visitor Pattern](./visitor.md)                 | Enter/leave hooks for AST traversal             |
 | [Parsing](./parsing.md)                         | LaTeX and custom syntax parsing                 |
 | [Evaluation](./evaluation.md)                   | Numeric evaluation and substitution             |
 | [Pattern Matching](./patterns.md)               | Pattern matching and rule-based transformations |
