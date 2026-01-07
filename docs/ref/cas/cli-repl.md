@@ -363,19 +363,17 @@ Press `Ctrl+R` to activate reverse search mode. Type to filter history entries:
 
 These shortcuts provide a more natural syntax without dot-commands:
 
-| Syntax        | Equivalent Command | Description           |
-| ------------- | ------------------ | --------------------- |
-| `x := 5`      | `.let x = 5`       | Variable assignment   |
-| `x <- 5`      | `.let x = 5`       | Assignment (R-style)  |
-| `f(x) := x^2` | `.def f(x) = x^2`  | Function definition   |
-| `a = b`       | (relation node)    | Equality test         |
-| `a === b`     | `.equiv a, b`      | Equivalence (algebra) |
+| Syntax        | Equivalent Command | Description          |
+| ------------- | ------------------ | -------------------- |
+| `x := 5`      | `.let x = 5`       | Variable assignment  |
+| `x <- 5`      | `.let x = 5`       | Assignment (R-style) |
+| `f(x) := x^2` | `.def f(x) = x^2`  | Function definition  |
+| `a = b`       | `.equiv a, b`      | Equivalence test     |
 
 **Assignment vs Equality**:
 
 - `:=` and `<-` assign values to variables
-- `=` creates a mathematical equality (relation node)
-- `===` tests structural equivalence (algebra)
+- `=` tests algebraic equivalence (returns `true` or `false`)
 
 ## REPL Engine Architecture
 
