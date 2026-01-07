@@ -40,6 +40,7 @@ import {
 	delimiter,
 	divide,
 	func,
+	matrix,
 	multiply,
 	opposite,
 	positive,
@@ -252,7 +253,8 @@ const TYPE_TO_METHOD_NAME: Record<MathNode['type'], string> = {
 	superscript: 'Superscript',
 	relation: 'Relation',
 	unit: 'Unit',
-	composition: 'Composition'
+	composition: 'Composition',
+	matrix: 'Matrix'
 };
 
 // =============================================================================
@@ -356,6 +358,17 @@ function getChildrenWithPaths(node: MathNode): ChildInfo[] {
 				{ child: node.outer, pathSegments: ['outer'] },
 				{ child: node.inner, pathSegments: ['inner'] }
 			];
+
+		// Matrix - return all elements in row-major order
+		case 'matrix': {
+			const children: ChildInfo[] = [];
+			node.rows.forEach((row, rowIndex) => {
+				row.forEach((element, colIndex) => {
+					children.push({ child: element, pathSegments: ['rows', rowIndex, colIndex] });
+				});
+			});
+			return children;
+		}
 	}
 }
 
@@ -529,6 +542,20 @@ function reconstructNode(original: MathNode, transformedChildren: Map<string, Ma
 				operatorMetadata: original.operatorMetadata,
 				metadata: original.metadata
 			});
+
+		// Matrix - reconstruct with transformed elements
+		case 'matrix': {
+			const transformedRows = original.rows.map((row, rowIndex) =>
+				row.map((element, colIndex) => {
+					const key = `rows,${rowIndex},${colIndex}`;
+					return transformedChildren.get(key) ?? element;
+				})
+			);
+			return matrix(transformedRows, {
+				matrixType: original.matrixType,
+				metadata: original.metadata
+			});
+		}
 	}
 }
 

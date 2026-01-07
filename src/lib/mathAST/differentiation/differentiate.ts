@@ -248,6 +248,14 @@ function differentiateNode(
 				'Apply the composition to an argument first, e.g., (f o g)(x)'
 			);
 
+		case 'matrix':
+			// Matrix differentiation is not yet supported in Phase 1
+			throw new DifferentiationError(
+				'Cannot differentiate matrix nodes',
+				'matrix',
+				'Matrix calculus is not yet implemented'
+			);
+
 		default: {
 			const _exhaustive: never = node;
 			return _exhaustive;

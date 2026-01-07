@@ -81,6 +81,10 @@ function containsVariable(node: MathNode, varName: string): boolean {
 		case 'composition':
 			return containsVariable(node.outer, varName) || containsVariable(node.inner, varName);
 
+		case 'matrix':
+			// Check all matrix elements for the variable
+			return node.rows.some((row) => row.some((elem) => containsVariable(elem, varName)));
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = node;

@@ -1031,6 +1031,17 @@ function analyzeNode(
 			// whose output unit depends on the specific functions involved
 			return null;
 
+		case 'matrix':
+			// Matrix: analyze all elements for dimensional consistency
+			// All elements should have compatible dimensions (this is a simplification)
+			for (const row of node.rows) {
+				for (const elem of row) {
+					analyzeNode(elem, context, errors, warnings);
+				}
+			}
+			// Matrices don't have a single unit - return null
+			return null;
+
 		default: {
 			// TypeScript exhaustiveness check
 			const _exhaustive: never = node;
