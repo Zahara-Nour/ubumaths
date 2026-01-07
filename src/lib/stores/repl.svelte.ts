@@ -123,6 +123,11 @@ class ReplStore {
 	/** Saved input specifically for search (separate from history navigation) */
 	private searchSavedInput = $state('');
 
+	/** Export modal state */
+	exportModalOpen = $state(false);
+	exportContent = $state('');
+	exportFilename = $state('');
+
 	// ===========================================================================
 	// REPL Engine
 	// ===========================================================================
@@ -191,9 +196,11 @@ class ReplStore {
 		// Execute the input
 		const result = this.engine.execute(trimmedInput);
 
-		// Handle export data (trigger file download)
+		// Handle export data (show modal instead of auto-download)
 		if (result.exportData && browser) {
-			this.triggerDownload(result.exportData);
+			this.exportContent = result.exportData.content;
+			this.exportFilename = result.exportData.filename;
+			this.exportModalOpen = true;
 		}
 
 		// Create history entry
@@ -523,24 +530,12 @@ class ReplStore {
 	}
 
 	/**
-	 * Trigger a file download in the browser.
-	 *
-	 * @param data - Export data with content, filename, and mimeType
+	 * Close the export modal.
 	 */
-	private triggerDownload(data: {
-		readonly content: string;
-		readonly filename: string;
-		readonly mimeType: string;
-	}): void {
-		const blob = new Blob([data.content], { type: data.mimeType });
-		const url = URL.createObjectURL(blob);
-		const link = document.createElement('a');
-		link.href = url;
-		link.download = data.filename;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		URL.revokeObjectURL(url);
+	closeExportModal(): void {
+		this.exportModalOpen = false;
+		this.exportContent = '';
+		this.exportFilename = '';
 	}
 }
 
