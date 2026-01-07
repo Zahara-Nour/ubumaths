@@ -41,6 +41,9 @@ export { TaylorCommand } from './taylor.command';
 // Domain command
 export { DomainCommand } from './domain.command';
 
+// Equation solving
+export { SolveCommand } from './solve.command';
+
 // =============================================================================
 // Default Registry Factory
 // =============================================================================
@@ -69,6 +72,7 @@ import { UndefCommand } from './undef.command';
 import { DiffCommand } from './diff.command';
 import { TaylorCommand } from './taylor.command';
 import { DomainCommand } from './domain.command';
+import { SolveCommand } from './solve.command';
 
 /**
  * Create a command registry with all default commands registered.
@@ -134,6 +138,9 @@ export function createDefaultRegistry(): CommandRegistry {
 
 	// Domain command
 	registry.register(new DomainCommand());
+
+	// Equation solving
+	registry.register(new SolveCommand());
 
 	// Set registry reference for help command after registration
 	helpCmd.setRegistry(registry);
