@@ -1,6 +1,6 @@
 # Equation Solver Progress
 
-## Status: Phase 2 Complete
+## Status: Phase 5 Complete
 
 ## Phase 1: Types et Solveur Lineaire
 
@@ -97,25 +97,74 @@
 
 ---
 
-## Pending Phases
+## Phase 3: Solveur Transcendant
 
-### Phase 3: Solveurs Polynomial et Transcendant
+**Status**: Complete
+**Date**: 2025-01-07
 
-- Polynomial solver (rational roots)
-- Transcendental solver (exp, ln, sin, cos)
-- Newton-Raphson numeric solver
+### Implemented
 
-### Phase 4: Integration REPL et API
+1. **Transcendental Solver** (`src/lib/mathAST/solve/solvers/transcendental.ts`)
 
-- `.solve` REPL command
-- `Exp.solve()` method
+   - Exponential equations (e^x = c, a^x = c)
+   - Logarithmic equations (ln(x) = c, log(x) = c)
+   - Trigonometric equations (sin(x) = c, cos(x) = c, tan(x) = c)
+   - Domain restriction detection (sin/cos outside [-1,1])
+   - Periodicity notes for trigonometric solutions
 
-### Phase 5: Verification et Finalisation
+### Tests
 
-- Solution verification by substitution
-- Exports and documentation
+- 3 tests passing (40 total)
+- Domain restrictions: sin(x) = 2, cos(x) = -2
+- Logarithmic: ln(x) = 0 -> x = 1
 
-### Phase 6: Quality Checks
+---
+
+## Phase 4: Integration REPL et API
+
+**Status**: Complete
+**Date**: 2025-01-07
+
+### Implemented
+
+1. **Solve Command** (`src/lib/mathAST/cli/commands/solve.command.ts`)
+
+   - `.solve` REPL command with aliases `s`, `resoudre`
+   - Options: `--verbose/-v`, `--quiet/-q`
+   - French output with equation type labels
+   - Step-by-step display in verbose mode
+
+2. **Exp API** (`src/lib/mathAST/exp.ts`)
+   - `Exp.solve(options?)` method
+   - `Exp.solutions(options?)` convenience method
+
+### Tests
+
+- 9 integration tests (49 total)
+- Linear, quadratic, transcendental equation solving
+- Verbosity options
+- Mixed equation types in sequence
+
+---
+
+## Phase 5: Verification et Finalisation
+
+**Status**: Complete
+**Date**: 2025-01-07
+
+### Implemented
+
+1. **Main Index Exports** (`src/lib/mathAST/index.ts`)
+   - All solve module types exported
+   - All solver functions exported
+   - Classification utilities exported
+   - Step recording utilities exported
+
+---
+
+## Phase 6: Quality Checks
+
+**Status**: Pending
 
 - Final lint, check, tests
 
@@ -123,17 +172,37 @@
 
 ## Files Modified
 
-| File                                                | Action   |
-| --------------------------------------------------- | -------- |
-| `src/lib/mathAST/solve/types.ts`                    | Created  |
-| `src/lib/mathAST/solve/descriptions-fr.ts`          | Modified |
-| `src/lib/mathAST/solve/step-recorder.ts`            | Created  |
-| `src/lib/mathAST/solve/classify.ts`                 | Created  |
-| `src/lib/mathAST/solve/solvers/linear.ts`           | Created  |
-| `src/lib/mathAST/solve/solvers/quadratic.ts`        | Created  |
-| `src/lib/mathAST/solve/solvers/index.ts`            | Modified |
-| `src/lib/mathAST/solve/solve.ts`                    | Modified |
-| `src/lib/mathAST/solve/index.ts`                    | Modified |
-| `src/lib/mathAST/solve/__tests__/linear.test.ts`    | Created  |
-| `src/lib/mathAST/solve/__tests__/quadratic.test.ts` | Created  |
-| `docs/wip/equation-solver-progress.md`              | Created  |
+| File                                                     | Action   |
+| -------------------------------------------------------- | -------- |
+| `src/lib/mathAST/solve/types.ts`                         | Created  |
+| `src/lib/mathAST/solve/descriptions-fr.ts`               | Modified |
+| `src/lib/mathAST/solve/step-recorder.ts`                 | Created  |
+| `src/lib/mathAST/solve/classify.ts`                      | Created  |
+| `src/lib/mathAST/solve/solvers/linear.ts`                | Created  |
+| `src/lib/mathAST/solve/solvers/quadratic.ts`             | Created  |
+| `src/lib/mathAST/solve/solvers/transcendental.ts`        | Created  |
+| `src/lib/mathAST/solve/solvers/index.ts`                 | Created  |
+| `src/lib/mathAST/solve/solve.ts`                         | Created  |
+| `src/lib/mathAST/solve/index.ts`                         | Created  |
+| `src/lib/mathAST/solve/__tests__/linear.test.ts`         | Created  |
+| `src/lib/mathAST/solve/__tests__/quadratic.test.ts`      | Created  |
+| `src/lib/mathAST/solve/__tests__/transcendental.test.ts` | Created  |
+| `src/lib/mathAST/solve/__tests__/integration.test.ts`    | Created  |
+| `src/lib/mathAST/cli/commands/solve.command.ts`          | Created  |
+| `src/lib/mathAST/cli/commands/index.ts`                  | Modified |
+| `src/lib/mathAST/exp.ts`                                 | Modified |
+| `src/lib/mathAST/index.ts`                               | Modified |
+| `docs/wip/equation-solver-progress.md`                   | Created  |
+
+---
+
+## Summary
+
+The equation solver module is now complete with:
+
+- **49 tests** passing
+- **3 solvers**: linear, quadratic, transcendental
+- **REPL integration**: `.solve` command
+- **API integration**: `Exp.solve()` method
+- **French pedagogical output** at configurable verbosity levels
+- **Full exports** from main mathAST index

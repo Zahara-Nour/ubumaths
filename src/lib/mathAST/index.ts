@@ -478,6 +478,50 @@ export { differentiate, differentiateN, DifferentiationError } from './different
 export type { DifferentiationOptions } from './differentiation';
 
 // =============================================================================
+// Equation Solving
+// =============================================================================
+
+export { solve, solveEquation, SolveError } from './solve';
+export {
+	// Classification
+	classifyEquation,
+	toStandardForm,
+	detectVariable,
+	getPolynomialDegree,
+	isPolynomialIn,
+	containsTranscendental,
+	getTranscendentalType,
+	// Step recording
+	createStepRecorder,
+	// Descriptions (French)
+	getRuleDescription,
+	describeDiscriminant,
+	describeSolution,
+	// Solvers
+	linearSolver,
+	quadraticSolver,
+	transcendentalSolver,
+	ALL_SOLVERS,
+	getSolverByName
+} from './solve';
+
+export type {
+	EquationType,
+	SolvingStrategy,
+	SolutionStatus,
+	SolvingVerbosity,
+	Solution,
+	SolveStep,
+	SolveResult,
+	SolveOptions,
+	ClassificationResult,
+	EquationSolver,
+	SolveStepRecorder
+} from './solve';
+
+export { DEFAULT_SOLVE_OPTIONS } from './solve';
+
+// =============================================================================
 // Domain of Definition
 // =============================================================================
 
