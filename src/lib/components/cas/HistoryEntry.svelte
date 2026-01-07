@@ -49,7 +49,7 @@
 		</div>
 
 		<!-- Output line -->
-		<div class="flex items-center gap-2 pl-6">
+		<div class="pl-6">
 			{#if isError}
 				<div class="repl-error break-words text-destructive">
 					{entry.result.error?.message || entry.result.output}
@@ -61,20 +61,16 @@
 				</div>
 			{:else}
 				<!-- Regular evaluations and commands with toggle (solve) -->
-				<div class="repl-success text-foreground">
-					{@html displayHtml}
-				</div>
-				{#if canToggle}
-					<Button
+				<span class="repl-success text-foreground">{@html displayHtml}</span
+				><!--
+				-->{#if canToggle}<Button
 						variant="ghost"
 						size="icon"
-						class="size-6"
+						class="ml-1 inline-flex size-5 align-middle"
 						onclick={handleToggle}
 						aria-label={showDecimal ? 'Afficher exact' : 'Afficher décimal'}
-					>
-						<ArrowRightLeft class="size-3" />
-					</Button>
-				{/if}
+						><ArrowRightLeft class="size-3" /></Button
+					>{/if}
 			{/if}
 		</div>
 	</div>
@@ -145,7 +141,7 @@
 		<div class="ml-6">
 			<div
 				class={cn(
-					'flex items-center gap-2 rounded px-3 py-2 text-sm',
+					'rounded px-3 py-2 text-sm',
 					isError ? 'bg-destructive/10 text-destructive' : 'bg-muted/70 font-mono text-foreground'
 				)}
 			>
@@ -156,18 +152,15 @@
 					<span>{@html entry.result.outputHtml || entry.result.output}</span>
 				{:else}
 					<!-- Regular evaluations and commands with toggle -->
-					<span>{@html displayHtml}</span>
-					{#if canToggle}
-						<Button
+					<span>{@html displayHtml}</span><!--
+					-->{#if canToggle}<Button
 							variant="ghost"
 							size="icon"
-							class="size-6 shrink-0"
+							class="ml-1 inline-flex size-5 align-middle"
 							onclick={handleToggle}
 							aria-label={showDecimal ? 'Afficher exact' : 'Afficher décimal'}
-						>
-							<ArrowRightLeft class="size-3" />
-						</Button>
-					{/if}
+							><ArrowRightLeft class="size-3" /></Button
+						>{/if}
 				{/if}
 			</div>
 		</div>
