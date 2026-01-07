@@ -24,6 +24,7 @@ import {
 	formatTreeHtml
 } from './output-formatter-web';
 import { toCustom, getVariables, hasAllBindings, evaluate, substitute } from '../../index';
+import { normalize, normalFormsEquivalent } from '../../normal';
 import { evaluateWithUnits, DimensionalEvaluationError } from '../../eval/evaluate-with-units';
 import type { EvalResultWithUnit, UnitConversionMode } from '../../eval/types';
 import { isUnit, isVariable } from '../../guards';
@@ -120,9 +121,10 @@ export class WebReplEngine {
 			return this.executeInlineFunctionDefinition(funcName, params, bodyExpr);
 		}
 
-		// Handle equivalence syntax: expr1 === expr2
-		if (trimmedInput.includes('===')) {
-			return this.executeEquivalence(trimmedInput);
+		// Handle equality/equivalence syntax: expr1 = expr2
+		// Matches = not preceded by <, >, !, :, = and not followed by =, >
+		if (/(?<![<>!=:])=(?![=>])/.test(trimmedInput)) {
+			return this.executeEquality(trimmedInput);
 		}
 
 		// Handle regular expression
@@ -560,32 +562,145 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Execute equivalence check: expr1 === expr2
+	 * Execute equality check: expr1 = expr2
+	 * Tests if two expressions are algebraically equivalent.
 	 */
-	private executeEquivalence(input: string): ReplExecutionResult {
-		const equivCmd = this.registry.get('equiv');
-		if (!equivCmd) {
+	private executeEquality(input: string): ReplExecutionResult {
+		// Split by standalone = (not <=, >=, !=, :=, =>)
+		// Use the same regex pattern to find and split
+		const equalityRegex = /(?<![<>!=:])=(?![=>])/;
+		const parts = input.split(equalityRegex);
+
+		if (parts.length !== 2) {
 			return {
 				success: false,
-				output: 'equiv command not available',
+				output: 'Syntaxe invalide. Utilisez: expr1 = expr2',
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: 'Syntaxe invalide. Utilisez: expr1 = expr2'
+				}),
 				error: {
-					code: 'UNKNOWN_COMMAND',
-					message: 'equiv command not available'
+					code: 'PARSE_ERROR',
+					message: 'Syntaxe invalide. Utilisez: expr1 = expr2'
 				}
 			};
 		}
 
-		const ctx: CommandContext = {
-			ast: undefined,
-			input,
-			format: this.inputMode === 'auto' ? 'latex' : this.inputMode,
-			options: {},
-			isRepl: true,
-			evalState: this.evalState
-		};
+		const expr1Str = parts[0].trim();
+		const expr2Str = parts[1].trim();
 
-		const result = equivCmd.execute(ctx);
-		return this.commandResultToReplResult(result);
+		if (!expr1Str || !expr2Str) {
+			return {
+				success: false,
+				output: 'Les deux expressions sont requises',
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: 'Les deux expressions sont requises'
+				}),
+				error: {
+					code: 'PARSE_ERROR',
+					message: 'Les deux expressions sont requises'
+				}
+			};
+		}
+
+		// Parse both expressions
+		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
+		const result1 = parse(expr1Str, forceFormat ? { forceFormat } : undefined);
+		const result2 = parse(expr2Str, forceFormat ? { forceFormat } : undefined);
+
+		if (!result1.ast) {
+			const error = result1.errors[0];
+			return {
+				success: false,
+				output: `Erreur dans l'expression 1: ${error?.message || 'parse error'}`,
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: `Erreur dans l'expression 1: ${error?.message || 'parse error'}`
+				}),
+				error: {
+					code: 'PARSE_ERROR',
+					message: error?.message || 'parse error'
+				}
+			};
+		}
+
+		if (!result2.ast) {
+			const error = result2.errors[0];
+			return {
+				success: false,
+				output: `Erreur dans l'expression 2: ${error?.message || 'parse error'}`,
+				outputHtml: formatErrorHtml({
+					code: 'PARSE_ERROR',
+					message: `Erreur dans l'expression 2: ${error?.message || 'parse error'}`
+				}),
+				error: {
+					code: 'PARSE_ERROR',
+					message: error?.message || 'parse error'
+				}
+			};
+		}
+
+		// Substitute bound variables before comparison
+		const bindings = bindingsToRecord(this.evalState.bindings);
+		const substituted1 =
+			Object.keys(bindings).length > 0 ? substitute(result1.ast, bindings) : result1.ast;
+		const substituted2 =
+			Object.keys(bindings).length > 0 ? substitute(result2.ast, bindings) : result2.ast;
+
+		// Try numeric evaluation first if both sides can be fully evaluated
+		try {
+			const exactResult1 = evaluate(substituted1, {
+				mode: 'exact',
+				functions: this.evalState.functions
+			});
+			const exactResult2 = evaluate(substituted2, {
+				mode: 'exact',
+				functions: this.evalState.functions
+			});
+
+			// If both evaluate to numbers, compare them
+			if (exactResult1.node.type === 'number' && exactResult2.node.type === 'number') {
+				// Compare the values (handle both Rational and number)
+				const val1 = this.getNumericValue(exactResult1.value);
+				const val2 = this.getNumericValue(exactResult2.value);
+				const isEqual = val1 === val2;
+				return this.createEqualityResult(isEqual);
+			}
+		} catch {
+			// Numeric evaluation failed, fall through to algebraic comparison
+		}
+
+		// Use algebraic equivalence check
+		try {
+			const form1 = normalize(substituted1);
+			const form2 = normalize(substituted2);
+			const isEquivalent = normalFormsEquivalent(form1, form2);
+
+			return this.createEqualityResult(isEquivalent, expr1Str, expr2Str);
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Erreur lors de la comparaison';
+			return {
+				success: false,
+				output: message,
+				outputHtml: formatErrorHtml({ code: 'PARSE_ERROR', message }),
+				error: { code: 'PARSE_ERROR', message }
+			};
+		}
+	}
+
+	/**
+	 * Create result for equality check.
+	 */
+	private createEqualityResult(isEqual: boolean): ReplExecutionResult {
+		const resultStr = isEqual ? 'true' : 'false';
+		const colorClass = isEqual ? 'text-green-400' : 'text-red-400';
+
+		return {
+			success: true,
+			output: resultStr,
+			outputHtml: `<span class="${colorClass} font-bold">${resultStr}</span>`
+		};
 	}
 
 	/**
