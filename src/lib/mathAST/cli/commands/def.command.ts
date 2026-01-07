@@ -13,8 +13,15 @@ import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../index';
 import { parse } from '../core/pipeline';
-import { createFunctionBinding, hasFunction, setFunctionDerivative } from '../core/eval-state';
+import {
+	createFunctionBinding,
+	hasFunction,
+	setFunctionDerivative,
+	setFunctionDomain
+} from '../core/eval-state';
 import { differentiate, DifferentiationError } from '../../differentiation';
+import { computeDomain } from '../../domain/compute';
+import { formatDomainCondition } from '../../domain/format';
 
 // =============================================================================
 // Def Command
@@ -152,11 +159,7 @@ export class DefCommand extends BaseCommand {
 			setFunctionDerivative(ctx.evalState, funcName, derivative);
 			const derivStr = toCustom(derivative);
 			derivativeInfo =
-				'\n  ' +
-				chalk.dim(`${funcName}'(${paramsDisplay})`) +
-				' = ' +
-				chalk.dim(derivStr) +
-				chalk.dim(' (auto-computed)');
+				'\n  ' + chalk.dim(`${funcName}'(${paramsDisplay})`) + ' = ' + chalk.dim(derivStr);
 		} catch (err) {
 			// Differentiation failed - show warning but continue
 			if (err instanceof DifferentiationError) {
@@ -164,6 +167,20 @@ export class DefCommand extends BaseCommand {
 					'\n  ' + chalk.yellow(`Warning: Could not auto-compute derivative: ${err.message}`);
 			}
 			// For other errors, silently ignore (function is still defined)
+		}
+
+		// Auto-compute domain (with respect to first parameter)
+		let domainInfo = '';
+		try {
+			const domainResult = computeDomain(parseResult.ast, params[0]);
+			setFunctionDomain(ctx.evalState, funcName, domainResult.domain);
+			const domainStr = formatDomainCondition(domainResult.domain, params[0]);
+			// Only show domain if it's not universal (x ∈ ℝ)
+			if (domainResult.domain.kind !== 'universal') {
+				domainInfo = '\n  ' + chalk.dim('Domaine : ') + chalk.dim(domainStr);
+			}
+		} catch {
+			// Domain computation failed - silently ignore
 		}
 
 		// Format output
@@ -175,7 +192,8 @@ export class DefCommand extends BaseCommand {
 			chalk.bold(`${funcName}(${paramsDisplay})`) +
 			' = ' +
 			chalk.cyan(valueStr) +
-			derivativeInfo;
+			derivativeInfo +
+			domainInfo;
 
 		return {
 			success: true,

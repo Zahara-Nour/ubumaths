@@ -8,7 +8,7 @@ MathAST includes:
 
 - **REPL**: Interactive expression evaluation
 - **Web REPL**: Browser-based interface
-- **Commands**: 17+ specialized commands
+- **Commands**: 20+ specialized commands
 
 ## REPL Commands
 
@@ -118,6 +118,8 @@ f^{-1}(x) = sqrt(x - 1)
 .diff <expr> <v>  Differentiate with respect to variable
 .taylor <expr>    Taylor expansion (default 5 terms)
 .taylor <e> <n>   Taylor expansion with n terms
+.domain <expr>    Compute domain of definition
+.domain <e> <v>   Compute domain for variable
 ```
 
 **Examples:**
@@ -134,6 +136,19 @@ x - x^3/6 + x^5/120
 
 > .taylor e^x 4
 1 + x + x^2/2 + x^3/6
+
+> .domain sqrt(x)
+Expression : sqrt(x)
+Domaine : [0, +∞[
+Condition : x >= 0
+
+> .domain ln(x) + sqrt(1-x)
+Expression : ln(x) + sqrt(1-x)
+Contraintes :
+  • ln(x) requiert x > 0
+  • sqrt(1-x) requiert x <= 1
+Domaine : ]0, 1]
+Condition : 0 < x <= 1
 ```
 
 ### Simplification & Normalization
@@ -328,6 +343,7 @@ export const evalCommand: Command = {
 | `.fns`       | `.f`    | List functions       |
 | `.diff`      | `.d`    | Differentiate        |
 | `.taylor`    | -       | Taylor series        |
+| `.domain`    | `.dom`  | Domain of definition |
 | `.simplify`  | `.s`    | Simplify             |
 | `.normal`    | `.n`    | Normalize            |
 | `.hash`      | -       | Compute hash         |
@@ -391,4 +407,5 @@ pnpm test:server src/lib/mathAST/cli/commands/eval.command.test.ts
 
 - [Evaluation](./evaluation.md) - Underlying evaluation system
 - [Parsing](./parsing.md) - Expression parsing
+- [Domain of Definition](./domain.md) - Domain computation system
 - [Pattern Matching](./patterns.md) - Simplification rules

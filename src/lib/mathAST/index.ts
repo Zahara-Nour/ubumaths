@@ -476,3 +476,60 @@ export {
 
 export { differentiate, differentiateN, DifferentiationError } from './differentiation';
 export type { DifferentiationOptions } from './differentiation';
+
+// =============================================================================
+// Domain of Definition
+// =============================================================================
+
+export {
+	// Factory functions
+	emptyDomain,
+	universalDomain,
+	intervalDomain,
+	conditionDomain,
+	positiveReals,
+	nonNegativeReals,
+	nonZeroReals,
+	unitInterval,
+	// Algebra (renamed to avoid conflicts with factory exports)
+	isEmpty as domainIsEmpty,
+	containsValue,
+	intersect as domainIntersect,
+	union as domainUnion,
+	complement as domainComplement,
+	excludePoints as domainExcludePoints,
+	// Computation
+	computeDomain,
+	// Validation
+	isInDomain,
+	getDomainViolations,
+	// Formatting
+	formatDomainInterval,
+	formatDomainCondition,
+	formatDomainFull,
+	// Builtins
+	getBuiltinDomain,
+	hasRestrictedDomain,
+	getBuiltinConstraintDescription,
+	// Errors
+	DomainError
+} from './domain';
+
+export type {
+	Domain,
+	EmptyDomain,
+	UniversalDomain,
+	IntervalDomain,
+	ConditionDomain,
+	Interval,
+	Endpoint,
+	EndpointValue,
+	ExcludedPoint,
+	Condition as DomainCondition,
+	ComparisonCondition,
+	DomainViolation,
+	DomainResult,
+	DomainStep,
+	ComputeDomainOptions,
+	Bindings as DomainBindings
+} from './domain';

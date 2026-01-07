@@ -11,6 +11,7 @@ MathAST (Mathematical Abstract Syntax Tree) is a fully-featured computer algebra
 - **Symbolic computation** including evaluation, differentiation, and Taylor expansion
 - **Pattern matching** with constraint-based rule transformations
 - **Normalization** to canonical polynomial form for equivalence checking
+- **Domain of definition** computation with French interval notation
 - **Physical units** with dimensional analysis and conversion
 
 ## Quick Start
@@ -64,7 +65,8 @@ mathAST/
 │   ├── eval/             # Evaluation and substitution
 │   ├── normal/           # Normalization (canonical form)
 │   ├── differentiation/  # Symbolic derivatives
-│   └── taylor/           # Taylor series expansion
+│   ├── taylor/           # Taylor series expansion
+│   └── domain/           # Domain of definition
 │
 ├── Pattern Matching
 │   └── pattern/          # Pattern matching and rules
@@ -87,6 +89,7 @@ mathAST/
 | [Pattern Matching](./patterns.md)               | Pattern matching and rule-based transformations |
 | [Normalization](./normalization.md)             | Canonical forms and equivalence                 |
 | [Differentiation & Taylor](./calculus.md)       | Symbolic differentiation and series             |
+| [Domain of Definition](./domain.md)             | Domain computation and validation               |
 | [Physical Units](./units.md)                    | Unit system with dimensional analysis           |
 | [CLI & REPL](./cli.md)                          | Command-line interface and web REPL             |
 
@@ -216,6 +219,7 @@ The system has evolved through several iterations:
 4. **Units**: Physical unit system with dimensional analysis
 5. **Advanced calculus**: Differentiation and Taylor expansion
 6. **Function composition**: Support for f o g notation
+7. **Domain system**: Domain of definition with French interval notation
 
 ## See Also
 

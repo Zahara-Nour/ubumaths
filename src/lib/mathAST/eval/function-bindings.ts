@@ -9,6 +9,7 @@
 
 import type { MathNode, FunctionNode, CompositionNode } from '../types';
 import type { SubstituteOptions } from './types';
+import type { Domain } from '../domain/types';
 import { DEFAULT_SUBSTITUTE_OPTIONS } from './types';
 import { mapNode } from '../transforms';
 import {
@@ -76,6 +77,11 @@ export interface FunctionDefinition {
 	 * Should use the same parameter names as the function.
 	 */
 	readonly inverse?: MathNode;
+	/**
+	 * Optional domain of definition.
+	 * Auto-computed when the function is defined.
+	 */
+	readonly domain?: Domain;
 }
 
 /**

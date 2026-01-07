@@ -11,6 +11,7 @@
 import type { MathNode } from '../../types';
 import type { EvalBindings } from '../../eval';
 import type { FunctionBindings, FunctionDefinition } from '../../eval/function-bindings';
+import type { Domain } from '../../domain/types';
 
 // =============================================================================
 // Types
@@ -177,6 +178,7 @@ export function toggleMode(state: EvalState): EvalMode {
  * @param expression - The function body as a MathNode
  * @param derivative - Optional pre-computed derivative expression
  * @param inverse - Optional pre-computed inverse expression
+ * @param domain - Optional computed domain of definition
  */
 export function createFunctionBinding(
 	state: EvalState,
@@ -184,13 +186,15 @@ export function createFunctionBinding(
 	params: readonly string[],
 	expression: MathNode,
 	derivative?: MathNode,
-	inverse?: MathNode
+	inverse?: MathNode,
+	domain?: Domain
 ): void {
 	const definition: FunctionDefinition = {
 		expression,
 		parameters: params,
 		...(derivative && { derivative }),
-		...(inverse && { inverse })
+		...(inverse && { inverse }),
+		...(domain && { domain })
 	};
 
 	state.functions[name] = definition;
@@ -237,6 +241,26 @@ export function setFunctionInverse(state: EvalState, name: string, inverse: Math
 	state.functions[name] = {
 		...existing,
 		inverse
+	};
+	return true;
+}
+
+/**
+ * Set the domain for an existing function
+ * @param state - Evaluation state to modify
+ * @param name - Function name
+ * @param domain - The domain of definition
+ * @returns True if the function exists and was updated, false otherwise
+ */
+export function setFunctionDomain(state: EvalState, name: string, domain: Domain): boolean {
+	const existing = state.functions[name];
+	if (!existing) {
+		return false;
+	}
+
+	state.functions[name] = {
+		...existing,
+		domain
 	};
 	return true;
 }

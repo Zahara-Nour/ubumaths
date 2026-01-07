@@ -336,11 +336,9 @@ function computePreimage(expr: MathNode, targetDomain: Domain, variable: string)
 	let resultDomain: Domain = universalDomain();
 
 	// Check lower bound constraint
-	if (interval.lower.value !== 'negative_infinity') {
-		const bound =
-			typeof interval.lower.value === 'number'
-				? interval.lower.value
-				: tryEvaluateConstant(interval.lower.value);
+	const lowerValue = interval.lower.value;
+	if (lowerValue !== 'negative_infinity' && lowerValue !== 'positive_infinity') {
+		const bound = typeof lowerValue === 'number' ? lowerValue : tryEvaluateConstant(lowerValue);
 
 		if (bound !== null) {
 			const strict = interval.lower.type === 'open';
@@ -352,11 +350,9 @@ function computePreimage(expr: MathNode, targetDomain: Domain, variable: string)
 	}
 
 	// Check upper bound constraint
-	if (interval.upper.value !== 'positive_infinity') {
-		const bound =
-			typeof interval.upper.value === 'number'
-				? interval.upper.value
-				: tryEvaluateConstant(interval.upper.value);
+	const upperValue = interval.upper.value;
+	if (upperValue !== 'positive_infinity' && upperValue !== 'negative_infinity') {
+		const bound = typeof upperValue === 'number' ? upperValue : tryEvaluateConstant(upperValue);
 
 		if (bound !== null) {
 			const strict = interval.upper.type === 'open';
