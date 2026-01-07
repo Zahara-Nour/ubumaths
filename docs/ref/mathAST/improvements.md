@@ -921,45 +921,39 @@ toLatex(expr, { locale: frLocale });
 
 ## Feature Improvements
 
-### 1. Equation Solving
+### 1. Equation Solving - IMPLEMENTED
 
-**Current State:**
-No symbolic equation solving.
+**Status:** IMPLEMENTED (2025-01-07)
 
-**Proposal:**
-Add algebraic equation solver:
+See `src/lib/mathAST/solve/` module.
+
+**Features:**
+
+- Linear equations (ax + b = 0)
+- Quadratic equations (ax² + bx + c = 0) with discriminant analysis
+- Transcendental equations (exp, ln, log, sin, cos, tan)
+- French pedagogical step-by-step output
+- 3 verbosity levels: result, summarized, detailed
+- REPL command: `.solve`
+- Fluent API: `Exp.solve()`, `Exp.solutions()`
 
 ```typescript
-interface Solution {
-	variable: string;
-	value: MathNode;
-	conditions?: MathNode[]; // e.g., "x ≠ 0"
-}
+import { solve, solveEquation, Exp } from '$lib/mathAST';
 
-function solveEquation(
-	equation: RelationNode,
-	variable: string
-): Solution[] | 'no-solution' | 'infinite-solutions';
+// Direct API
+const result = solveEquation('2x + 6 = 0');
+// { status: 'unique', solutions: [{ value: -3 }], steps: [...] }
 
-// Examples
-solve(parseLatex('x + 3 = 5'), 'x');
-// [{ variable: 'x', value: number('2') }]
+// Fluent API
+const solutions = Exp.from('x^2 - 5x + 6 = 0').solutions();
+// [Exp(-3), Exp(-2)]
 
-solve(parseLatex('x^2 = 4'), 'x');
-// [{ variable: 'x', value: number('2') },
-//  { variable: 'x', value: number('-2') }]
-
-solve(parseLatex('ax + b = 0'), 'x');
-// [{ variable: 'x', value: fraction(-b, a), conditions: ['a ≠ 0'] }]
+// With verbosity
+const detailed = solve(parseLatex('x^2 + 1 = 0'), { verbosity: 'detailed' });
+// { status: 'no-real-solution', steps: [...discriminant analysis...] }
 ```
 
-**Benefits:**
-
-- Core educational feature
-- Automatic problem solving
-- Step-by-step solutions
-
-**Effort:** Very High | **Impact:** Very High
+**Tests:** 49 tests passing
 
 ---
 
@@ -1214,7 +1208,7 @@ interface SystemNode {
 | Operation Safety Checks | Medium    | High      | **P1**   | Pending         |
 | Plugin Architecture     | High      | High      | **P2**   | Pending         |
 | Modular Builds          | High      | High      | **P2**   | Pending         |
-| Equation Solving        | Very High | Very High | **P2**   | Pending         |
+| Equation Solving        | Very High | Very High | **P2**   | **IMPLEMENTED** |
 | Worker Offloading       | Medium    | Medium    | **P2**   | Pending         |
 | Visitor Enhancement     | Medium    | Medium    | **P3**   | Pending         |
 | Lazy Evaluation         | High      | Medium    | **P3**   | Pending         |
