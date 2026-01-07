@@ -18,8 +18,200 @@ import { BaseCommand, type OptionDefinition } from './base-command';
 import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
 import { parse } from '../core/pipeline';
-import { solve, type SolvingVerbosity, SolveError, shouldIncludeStep } from '../../solve';
-import { isRelation } from '../../guards';
+import { solve, type SolvingVerbosity, SolveError } from '../../solve';
+import { isRelation, isMultiplication, isOpposite, isVariable } from '../../guards';
+import type { MathNode, RelationNode } from '../../types';
+import { simplify } from '../../normal';
+import { number, opposite, add, implicitMultiply } from '../../factory';
+import { flattenSumShallow, unflattenSum } from '../../flatten';
+import { getVariables } from '../../eval/substitute';
+
+// =============================================================================
+// Pedagogical Step Types
+// =============================================================================
+
+interface PedagogicalStep {
+	/** Description of the operation */
+	description: string;
+	/** Equation with operation applied (before simplification) */
+	transformation: string;
+	/** Simplified result */
+	result: string;
+}
+
+// =============================================================================
+// Linear Equation Pedagogical Steps
+// =============================================================================
+
+/**
+ * Extract coefficient from a multiplication term like 3x or -2x.
+ * Returns the coefficient (e.g., 3, -2) or null if not a simple multiplication.
+ */
+function extractCoefficientFromTerm(term: MathNode, variable: string): MathNode | null {
+	// Case: just the variable x -> coefficient is 1
+	if (isVariable(term) && term.name === variable) {
+		return number('1');
+	}
+
+	// Case: -x -> coefficient is -1
+	if (isOpposite(term)) {
+		const inner = term.operand;
+		if (isVariable(inner) && inner.name === variable) {
+			return number('-1');
+		}
+		// Case: -(3x) -> coefficient is -3
+		const innerCoeff = extractCoefficientFromTerm(inner, variable);
+		if (innerCoeff) {
+			return opposite(innerCoeff);
+		}
+	}
+
+	// Case: multiplication (3x, 3*x, etc.)
+	if (isMultiplication(term)) {
+		const { left, right } = term;
+		// Check if one side is the variable
+		if (isVariable(right) && right.name === variable) {
+			return left;
+		}
+		if (isVariable(left) && left.name === variable) {
+			return right;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Extract coefficient and constant from a linear expression ax + b.
+ * Returns { a, b } where expr = ax + b.
+ */
+function extractLinearParts(expr: MathNode, variable: string): { a: MathNode; b: MathNode } | null {
+	const flatSum = flattenSumShallow(expr);
+	const coefficients: MathNode[] = [];
+	const constantTerms: MathNode[] = [];
+
+	for (const { sign, term } of flatSum) {
+		const signedTerm = sign === '-' ? opposite(term) : term;
+		const vars = getVariables(signedTerm);
+
+		if (vars.has(variable)) {
+			// This term contains the variable - extract coefficient
+			const coeff = extractCoefficientFromTerm(signedTerm, variable);
+			if (coeff) {
+				coefficients.push(coeff);
+			}
+		} else {
+			// Constant term
+			constantTerms.push(signedTerm);
+		}
+	}
+
+	// Sum all coefficients
+	let a: MathNode =
+		coefficients.length === 0
+			? number('0')
+			: coefficients.length === 1
+				? coefficients[0]
+				: coefficients.reduce((acc, c) => add(acc, c));
+	a = simplify(a);
+
+	// Sum all constants
+	const b =
+		constantTerms.length === 0
+			? number('0')
+			: constantTerms.length === 1
+				? constantTerms[0]
+				: unflattenSum(constantTerms.map((t) => ({ sign: '+' as const, term: t })))!;
+
+	return { a, b: simplify(b) };
+}
+
+/**
+ * Generate pedagogical steps for a linear equation.
+ * Input: ax + b = c (where lhs = ax + b, rhs = c)
+ */
+function generateLinearPedagogicalSteps(
+	equation: RelationNode,
+	variable: string,
+	solutionValue: MathNode
+): PedagogicalStep[] {
+	const steps: PedagogicalStep[] = [];
+	const lhs = equation.left;
+	const rhs = equation.right;
+
+	// Extract ax + b from lhs
+	const parts = extractLinearParts(lhs, variable);
+	if (!parts) return steps;
+
+	const { a, b } = parts;
+	const aStr = toCustom(a);
+	const bSimplified = simplify(b);
+
+	// Current state: lhs = rhs
+	let currentLhs = lhs;
+	let currentRhs = rhs;
+
+	// Step 1: Add/subtract constant to isolate variable term
+	// If b != 0, we need to eliminate it
+	const bIsZero = toCustom(bSimplified) === '0';
+
+	if (!bIsZero) {
+		// Determine if we add or subtract
+		// If b is negative (e.g., -4), we add |b| (add 4)
+		// If b is positive (e.g., +4), we subtract b (subtract 4)
+		const bStr = toCustom(bSimplified);
+		const isNegative = bStr.startsWith('-');
+
+		let operationDesc: string;
+		let transformLhs: string;
+		let transformRhs: string;
+
+		if (isNegative) {
+			// b is negative, so we add |b|
+			const absB = simplify(opposite(bSimplified));
+			const absBStr = toCustom(absB);
+			operationDesc = `On ajoute ${absBStr} aux deux membres`;
+			transformLhs = `${toCustom(currentLhs)} + ${absBStr}`;
+			transformRhs = `${toCustom(currentRhs)} + ${absBStr}`;
+		} else {
+			// b is positive, so we subtract b
+			operationDesc = `On soustrait ${bStr} aux deux membres`;
+			transformLhs = `${toCustom(currentLhs)} - ${bStr}`;
+			transformRhs = `${toCustom(currentRhs)} - ${bStr}`;
+		}
+
+		// Compute simplified result: ax = c - b
+		const newRhs = simplify(add(currentRhs, opposite(bSimplified)));
+		const varNode: MathNode = { type: 'variable', name: variable };
+		const newLhs = toCustom(simplify(a)) === '1' ? varNode : implicitMultiply(a, varNode);
+
+		steps.push({
+			description: operationDesc,
+			transformation: `${transformLhs} = ${transformRhs}`,
+			result: `${toCustom(simplify(newLhs))} = ${toCustom(newRhs)}`
+		});
+
+		currentLhs = newLhs;
+		currentRhs = newRhs;
+	}
+
+	// Step 2: Divide by coefficient if a != 1
+	const aIsOne = toCustom(simplify(a)) === '1';
+
+	if (!aIsOne) {
+		const operationDesc = `On divise les deux membres par ${aStr}`;
+		const transformLhs = `${toCustom(currentLhs)}/${aStr}`;
+		const transformRhs = `${toCustom(currentRhs)}/${aStr}`;
+
+		steps.push({
+			description: operationDesc,
+			transformation: `${transformLhs} = ${transformRhs}`,
+			result: `${variable} = ${toCustom(solutionValue)}`
+		});
+	}
+
+	return steps;
+}
 
 // =============================================================================
 // Solve Command
@@ -231,20 +423,39 @@ export class SolveCommand extends BaseCommand {
 			);
 		}
 
-		// Show steps filtered by verbosity level
-		if (verbosity !== 'result' && result.steps.length > 0) {
-			// Filter steps based on requested verbosity
-			const filteredSteps = result.steps.filter((step) =>
-				shouldIncludeStep(step.verbosityLevel, verbosity)
-			);
+		// Show pedagogical steps for supported equation types
+		if (verbosity !== 'result' && result.status === 'unique' && result.solutions.length > 0) {
+			const solutionValue = result.solutions[0].value;
 
-			if (filteredSteps.length > 0) {
+			// Generate pedagogical steps based on equation type
+			let pedagogicalSteps: PedagogicalStep[] = [];
+
+			if (result.equationType === 'linear' && isRelation(equation)) {
+				pedagogicalSteps = generateLinearPedagogicalSteps(
+					equation as RelationNode,
+					result.variable,
+					solutionValue
+				);
+			}
+
+			// Display pedagogical steps with nice formatting
+			if (pedagogicalSteps.length > 0) {
 				headerLines.push('');
 				headerHtmlLines.push('<br>');
-				for (const step of filteredSteps) {
-					headerLines.push(`[${step.rule}] ${step.description}`);
+
+				for (const step of pedagogicalSteps) {
+					// Plain text: description: transformation
+					//             result
+					headerLines.push(`${step.description}: ${step.transformation}`);
+					headerLines.push(`    ${step.result}`);
+
+					// HTML: styled output
 					headerHtmlLines.push(
-						`<br><span class="text-yellow-400">[${step.rule}]</span> ${this.escapeHtml(step.description)}`
+						`<br><span class="text-muted-foreground">${this.escapeHtml(step.description)}:</span> ` +
+							`<span class="text-cyan-400">${this.escapeHtml(step.transformation)}</span>`
+					);
+					headerHtmlLines.push(
+						`<br><span class="pl-4 text-green-400">${this.escapeHtml(step.result)}</span>`
 					);
 				}
 			}
