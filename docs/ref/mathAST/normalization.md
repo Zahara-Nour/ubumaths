@@ -48,61 +48,131 @@ const node = denormalize(norm1);
 
 ### Polynomial Representation
 
-Expressions are normalized to polynomial form:
+Expressions are normalized to a fraction of polynomials:
 
 ```
-Polynomial = sum of Terms
-Term = coefficient * product of Powers
-Power = base ^ exponent
+NormalForm = Numerator / Denominator
+Polynomial = sum of NormalTerms
+NormalTerm = AlgebraicCoefficient × Monomial
+Monomial = product of SymbolicFactors (base^exponent)
 
 Example: 2x^2 + 3xy - 5
-= Term(2, {x: 2}) + Term(3, {x: 1, y: 1}) + Term(-5, {})
+= NormalTerm(coeff=2, monomial=x²) + NormalTerm(coeff=3, monomial=xy) + NormalTerm(coeff=-5, monomial=1)
 ```
 
 ### Core Types
 
 ```typescript
-// Rational number (BigInt-based)
+// Rational number (BigInt-based, always reduced)
 interface Rational {
-	n: bigint; // Numerator
-	d: bigint; // Denominator (always positive)
+	readonly n: bigint; // Numerator (sign stored here)
+	readonly d: bigint; // Denominator (always positive)
 }
 
-// Monomial: product of variable powers
-interface Monomial {
-	readonly powers: ReadonlyMap<string, number>;
+// Simplified radical: radicand^(1/index) with no extractable perfect factors
+interface SimplifiedRadical {
+	readonly radicand: bigint; // e.g., 2n for √2
+	readonly index: bigint; // e.g., 2n for square root, 3n for cube root
 }
 
-// Term: coefficient * monomial
-interface Term {
-	readonly coefficient: AlgebraicNumber;
-	readonly monomial: Monomial;
+// Algebraic term: rational coefficient × product of radicals
+// Example: 3√2 = { rational: 3, radicals: [√2] }
+// Example: √6 = { rational: 1, radicals: [√6] } (result of √2 × √3)
+interface AlgebraicTerm {
+	readonly rational: Rational;
+	readonly radicals: readonly SimplifiedRadical[];
 }
 
-// Normal form (polynomial)
-type NormalForm = readonly Term[];
+// Algebraic coefficient: SUM of algebraic terms
+// Supports expressions like √3 + √5 or 2 + 3√2 - √7
+interface AlgebraicCoefficient {
+	readonly terms: readonly AlgebraicTerm[];
+}
+
+// Symbolic factor: MathNode base raised to rational exponent
+// Example: x² = { base: Variable('x'), exponent: 2 }
+interface SymbolicFactor {
+	readonly base: MathNode;
+	readonly exponent: Rational;
+}
+
+// Normal term: algebraic coefficient × monomial
+interface NormalTerm {
+	readonly coefficient: AlgebraicCoefficient;
+	readonly monomial: readonly SymbolicFactor[];
+}
+
+// Complete normal form: fraction with hash
+interface NormalForm {
+	readonly numerator: readonly NormalTerm[];
+	readonly denominator: readonly NormalTerm[];
+	readonly hash: string; // Canonical identifier for equivalence
+}
 ```
 
-### Algebraic Numbers
+### Multi-Radical Coefficients
 
-Coefficients can be exact algebraic expressions:
+The system fully supports coefficients with multiple radicals:
 
 ```typescript
-// Algebraic number: rational + radical part
-interface AlgebraicNumber {
-	rational: Rational;
-	radical?: RadicalPart;
+// √3 + √5 (single AlgebraicCoefficient with 2 terms)
+{
+  terms: [
+    { rational: { n: 1n, d: 1n }, radicals: [{ radicand: 3n, index: 2n }] },
+    { rational: { n: 1n, d: 1n }, radicals: [{ radicand: 5n, index: 2n }] }
+  ]
 }
 
-// Radical: coefficient * sqrt(radicand)
-interface RadicalPart {
-	coefficient: Rational;
-	radicand: bigint;
+// 2 + 3√2 - √7 (single AlgebraicCoefficient with 3 terms)
+{
+  terms: [
+    { rational: { n: 2n, d: 1n }, radicals: [] },                           // 2
+    { rational: { n: 3n, d: 1n }, radicals: [{ radicand: 2n, index: 2n }] }, // 3√2
+    { rational: { n: -1n, d: 1n }, radicals: [{ radicand: 7n, index: 2n }] } // -√7
+  ]
 }
 
-// Examples:
-// 3/4 -> { n: 3n, d: 4n }
-// 2 + 3*sqrt(5) -> { rational: {n: 2n, d: 1n}, radical: {coefficient: {n: 3n, d: 1n}, radicand: 5n} }
+// (√3 + √5)x as a single NormalTerm
+{
+  coefficient: {
+    terms: [
+      { rational: { n: 1n, d: 1n }, radicals: [{ radicand: 3n, index: 2n }] },
+      { rational: { n: 1n, d: 1n }, radicals: [{ radicand: 5n, index: 2n }] }
+    ]
+  },
+  monomial: [{ base: Variable('x'), exponent: { n: 1n, d: 1n } }]
+}
+```
+
+### Radical Arithmetic
+
+Multiplication automatically simplifies radicals:
+
+```typescript
+// √2 × √3 = √6
+mulAlgebraic(sqrt2_coeff, sqrt3_coeff);
+// Result: { terms: [{ rational: 1, radicals: [{ radicand: 6n, index: 2n }] }] }
+
+// √2 × √2 = 2 (becomes rational)
+mulAlgebraic(sqrt2_coeff, sqrt2_coeff);
+// Result: { terms: [{ rational: { n: 2n, d: 1n }, radicals: [] }] }
+
+// √12 automatically simplifies to 2√3
+simplifyRadical(12n, 2n);
+// Result: { coefficient: 2n, radicand: 3n }
+```
+
+### Like Terms Combination
+
+Terms with different radicals but same monomial are combined:
+
+```typescript
+// √3·x + √5·x = (√3 + √5)·x
+// Before: two NormalTerms with monomial [x]
+// After: one NormalTerm with multi-radical coefficient
+
+// 3√2·x + 2√2·x = 5√2·x
+// Same radical signature → coefficients are added
 ```
 
 ## Normalization API
@@ -114,14 +184,32 @@ Convert AST to canonical form:
 ```typescript
 import { normalize } from '$lib/mathAST/normal';
 
+// Simple polynomial
 normalize(parseLatex('x + x'));
-// [{ coefficient: 2, monomial: { powers: Map{ x: 1 } } }]
+// {
+//   numerator: [{
+//     coefficient: { terms: [{ rational: { n: 2n, d: 1n }, radicals: [] }] },
+//     monomial: [{ base: Variable('x'), exponent: { n: 1n, d: 1n } }]
+//   }],
+//   denominator: [ONE_TERM],
+//   hash: "2x"
+// }
 
-normalize(parseLatex('x^2 - y^2'));
-// [
-//   { coefficient: 1, monomial: { powers: Map{ x: 2 } } },
-//   { coefficient: -1, monomial: { powers: Map{ y: 2 } } }
-// ]
+// With radicals
+normalize(parseLatex('\\sqrt{3} + \\sqrt{5}'));
+// {
+//   numerator: [{
+//     coefficient: {
+//       terms: [
+//         { rational: { n: 1n, d: 1n }, radicals: [{ radicand: 3n, index: 2n }] },
+//         { rational: { n: 1n, d: 1n }, radicals: [{ radicand: 5n, index: 2n }] }
+//       ]
+//     },
+//     monomial: []  // constant term
+//   }],
+//   denominator: [ONE_TERM],
+//   hash: "sqrt(3)+sqrt(5)"
+// }
 ```
 
 ### `denormalize(form: NormalForm): MathNode`
@@ -278,53 +366,97 @@ simplifyRadical(9n);
 ## Monomial Operations
 
 ```typescript
-import {
-	createMonomial,
-	monomialDegree,
-	monomialMultiply,
-	monomialEquals,
-	monomialContains
-} from '$lib/mathAST/normal';
+import { symbolicFactor, mulMonomials, monomialsEqual, hashMonomial } from '$lib/mathAST/normal';
+import { MathAST } from '$lib/mathAST';
 
-// Create monomial: x^2 * y
-const m = createMonomial({ x: 2, y: 1 });
+// Create symbolic factor: x^2
+const x2 = symbolicFactor(MathAST.variable('x'), { n: 2n, d: 1n });
 
-// Total degree
-monomialDegree(m); // 3
+// Create monomial: x^2 * y (array of symbolic factors)
+const m1 = [
+	symbolicFactor(MathAST.variable('x'), { n: 2n, d: 1n }),
+	symbolicFactor(MathAST.variable('y'), { n: 1n, d: 1n })
+];
 
-// Multiply monomials
-const m2 = createMonomial({ y: 1, z: 2 });
-monomialMultiply(m, m2);
-// x^2 * y^2 * z^2
+// Multiply monomials: x^2*y * y*z^2 = x^2*y^2*z^2
+const m2 = [
+	symbolicFactor(MathAST.variable('y'), { n: 1n, d: 1n }),
+	symbolicFactor(MathAST.variable('z'), { n: 2n, d: 1n })
+];
+mulMonomials(m1, m2);
+// [x^2, y^2, z^2]
 
-// Check if variable present
-monomialContains(m, 'x'); // true
-monomialContains(m, 'z'); // false
+// Check equality (canonical form comparison)
+monomialsEqual(m1, m1); // true
+
+// Get hash for grouping like terms
+hashMonomial(m1); // deterministic string
 ```
 
 ## Term Operations
 
 ```typescript
-import {
-	createTerm,
-	termMultiply,
-	termNegate,
-	termsCanCombine,
-	combineTerms
-} from '$lib/mathAST/normal';
+import { normalTerm, mulTerms, negTerm, areLikeTerms, addLikeTerms } from '$lib/mathAST/normal';
+import { algebraicFromRational } from '$lib/mathAST/normal';
 
 // Create term: 3x^2
-const t1 = createTerm({ n: 3n, d: 1n }, { x: 2 });
+const coeff3 = algebraicFromRational({ n: 3n, d: 1n });
+const t1 = normalTerm(coeff3, [symbolicFactor(MathAST.variable('x'), { n: 2n, d: 1n })]);
 
 // Create term: 2x^2
-const t2 = createTerm({ n: 2n, d: 1n }, { x: 2 });
+const coeff2 = algebraicFromRational({ n: 2n, d: 1n });
+const t2 = normalTerm(coeff2, [symbolicFactor(MathAST.variable('x'), { n: 2n, d: 1n })]);
 
 // Check if combinable (same monomial)
-termsCanCombine(t1, t2); // true
+areLikeTerms(t1, t2); // true
 
 // Combine: 3x^2 + 2x^2 = 5x^2
-combineTerms([t1, t2]);
-// [{ coefficient: 5, monomial: x^2 }]
+addLikeTerms(t1, t2);
+// { coefficient: { terms: [{ rational: { n: 5n, d: 1n }, radicals: [] }] }, monomial: [x^2] }
+
+// Multiply terms
+mulTerms(t1, t2);
+// 6x^4
+
+// Negate term
+negTerm(t1);
+// -3x^2
+```
+
+## Algebraic Coefficient Operations
+
+```typescript
+import {
+	addAlgebraic,
+	mulAlgebraic,
+	negAlgebraic,
+	algebraicFromRational,
+	algebraicFromRadical,
+	isZeroAlgebraic,
+	isPureRational
+} from '$lib/mathAST/normal';
+
+// Create √2 coefficient
+const sqrt2 = algebraicFromRadical({ radicand: 2n, index: 2n });
+
+// Create √3 coefficient
+const sqrt3 = algebraicFromRadical({ radicand: 3n, index: 2n });
+
+// √2 + √3 (multi-radical coefficient)
+const sum = addAlgebraic(sqrt2, sqrt3);
+// { terms: [√2_term, √3_term] }
+
+// √2 × √3 = √6
+const product = mulAlgebraic(sqrt2, sqrt3);
+// { terms: [{ rational: 1, radicals: [{ radicand: 6n, index: 2n }] }] }
+
+// √2 × √2 = 2
+const squared = mulAlgebraic(sqrt2, sqrt2);
+// { terms: [{ rational: { n: 2n, d: 1n }, radicals: [] }] }
+isPureRational(squared); // true
+
+// Check if zero
+isZeroAlgebraic(addAlgebraic(sqrt2, negAlgebraic(sqrt2))); // true
 ```
 
 ## Complete Example

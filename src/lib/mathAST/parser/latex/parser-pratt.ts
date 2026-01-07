@@ -14,15 +14,39 @@
  * @module mathAST/parser/parser-pratt
  */
 
-import type { MathNode, GreekLetter, MathSymbol, RelationType, NodeMetadata } from '../../types';
+import type {
+	MathNode,
+	GreekLetter,
+	MathSymbol,
+	RelationType,
+	NodeMetadata,
+	MatrixType
+} from '../../types';
 import type { Token, ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
 import { Tokenizer } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from './color-stack';
-import { MathAST, compose } from '../../factory';
+import { MathAST, compose, matrix } from '../../factory';
 import { parse as parseUnit } from '../../units/parser';
 import { FUNCTION_COMMANDS, GREEK_COMMANDS, RELATION_COMMANDS } from '../types';
 import { SecurityError, checkInputLength, getEffectiveSecurityOptions } from '../security';
 import type { ParserSecurityOptions } from '../security';
+
+// =============================================================================
+// Matrix Environment Names
+// =============================================================================
+
+/**
+ * Valid matrix environment names mapped to their MatrixType
+ */
+const MATRIX_ENVIRONMENTS: Record<string, MatrixType> = {
+	matrix: 'plain',
+	pmatrix: 'pmatrix',
+	bmatrix: 'bmatrix',
+	Bmatrix: 'Bmatrix',
+	vmatrix: 'vmatrix',
+	Vmatrix: 'Vmatrix',
+	smallmatrix: 'smallmatrix'
+};
 
 // =============================================================================
 // Binding Power (Precedence)
@@ -511,7 +535,8 @@ class PrattParser {
 					token.value === 'frac' ||
 					token.value === 'dfrac' ||
 					token.value === 'sqrt' ||
-					token.value === 'left'
+					token.value === 'left' ||
+					token.value === 'begin'
 				) {
 					return BP.MULTIPLY;
 				}
@@ -767,6 +792,9 @@ class PrattParser {
 
 			case 'placeholder':
 				return this.parsePlaceholder();
+
+			case 'begin':
+				return this.parseEnvironment();
 
 			default:
 				this.error(`Unknown command: \\${cmd}`, token.position, token.length, 'UNKNOWN_COMMAND');
@@ -1064,7 +1092,7 @@ class PrattParser {
 		}
 
 		// Tokens that CAN trigger implicit multiplication:
-		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt)
+		// NUMBER, LETTER, LPAREN, COMMAND (greek, function, symbol, \left, \frac, \sqrt, \begin)
 		return (
 			token.type === 'NUMBER' ||
 			token.type === 'LETTER' ||
@@ -1076,7 +1104,8 @@ class PrattParser {
 					token.value === 'frac' ||
 					token.value === 'dfrac' ||
 					token.value === 'sqrt' ||
-					token.value === 'left'))
+					token.value === 'left' ||
+					token.value === 'begin'))
 		);
 	}
 
@@ -1203,6 +1232,209 @@ class PrattParser {
 		this.expect('RBRACE', "Expected '}' to close \\placeholder");
 
 		return this.applyColor(MathAST.hole(index));
+	}
+
+	// =========================================================================
+	// Matrix Environments
+	// =========================================================================
+
+	/**
+	 * Parse a LaTeX environment: \begin{envname}...\end{envname}
+	 * Currently only matrix environments are supported.
+	 */
+	private parseEnvironment(): MathNode {
+		const beginToken = this.currentToken;
+		this.advance(); // consume \begin
+
+		// Parse environment name: {envname}
+		this.expect('LBRACE', "Expected '{' after \\begin");
+
+		// Collect environment name from consecutive LETTER tokens
+		let envName = '';
+		while (this.check('LETTER')) {
+			envName += this.advance().value;
+		}
+
+		if (envName === '') {
+			this.error(
+				'Expected environment name after \\begin{',
+				this.currentToken.position,
+				this.currentToken.length,
+				'SYNTAX_ERROR'
+			);
+		}
+		this.expect('RBRACE', "Expected '}' after environment name");
+
+		// Check if it's a matrix environment
+		if (!(envName in MATRIX_ENVIRONMENTS)) {
+			this.error(
+				`Unknown environment: ${envName}`,
+				beginToken.position,
+				beginToken.length,
+				'UNKNOWN_ENVIRONMENT' as ParseErrorCode
+			);
+		}
+
+		const matrixType = MATRIX_ENVIRONMENTS[envName];
+		const rows = this.parseMatrixContent();
+
+		// Parse \end{envname}
+		if (!this.checkCommand('end')) {
+			this.error(
+				`Expected \\end{${envName}} to close environment`,
+				this.currentToken.position,
+				this.currentToken.length,
+				'UNCLOSED_ENVIRONMENT' as ParseErrorCode
+			);
+		}
+		this.advance(); // consume \end
+
+		this.expect('LBRACE', "Expected '{' after \\end");
+
+		// Collect environment name from consecutive LETTER tokens
+		let endEnvName = '';
+		while (this.check('LETTER')) {
+			endEnvName += this.advance().value;
+		}
+
+		if (endEnvName === '') {
+			this.error(
+				'Expected environment name after \\end{',
+				this.currentToken.position,
+				this.currentToken.length,
+				'SYNTAX_ERROR'
+			);
+		}
+		this.expect('RBRACE', "Expected '}' after environment name");
+
+		// Check environment names match
+		if (endEnvName !== envName) {
+			this.error(
+				`Mismatched environments: \\begin{${envName}} closed by \\end{${endEnvName}}`,
+				this.currentToken.position,
+				this.currentToken.length,
+				'MISMATCHED_ENVIRONMENT' as ParseErrorCode
+			);
+		}
+
+		return this.applyColor(matrix(rows, { matrixType }));
+	}
+
+	/**
+	 * Check if current token is a row separator (\\)
+	 */
+	private isRowSeparator(): boolean {
+		return this.currentToken.type === 'COMMAND' && this.currentToken.value === '\\';
+	}
+
+	/**
+	 * Parse matrix content: rows separated by \\, columns by &
+	 */
+	private parseMatrixContent(): MathNode[][] {
+		const rows: MathNode[][] = [];
+		let currentRow: MathNode[] = [];
+
+		// Parse elements until we hit \end
+		while (!this.check('EOF') && !this.checkCommand('end')) {
+			// Check for row separator: \\
+			if (this.isRowSeparator()) {
+				this.advance();
+				if (currentRow.length > 0) {
+					rows.push(currentRow);
+					currentRow = [];
+				}
+				continue;
+			}
+
+			// Check for column separator: &
+			if (this.check('AMPERSAND')) {
+				this.advance();
+				// Add empty element if we have nothing yet in this position
+				if (
+					currentRow.length === 0 ||
+					this.check('AMPERSAND') ||
+					this.isRowSeparator() ||
+					this.checkCommand('end')
+				) {
+					// Empty cell - add placeholder zero
+					currentRow.push(MathAST.number(0));
+				}
+				continue;
+			}
+
+			// Parse a matrix element (expression until & or \\ or \end)
+			const element = this.parseMatrixElement();
+			currentRow.push(element);
+		}
+
+		// Add final row if non-empty
+		if (currentRow.length > 0) {
+			rows.push(currentRow);
+		}
+
+		// Handle empty matrix
+		if (rows.length === 0) {
+			this.error(
+				'Matrix cannot be empty',
+				this.currentToken.position,
+				this.currentToken.length,
+				'SYNTAX_ERROR'
+			);
+		}
+
+		return rows;
+	}
+
+	/**
+	 * Parse a single matrix element (expression until & or \\ or \end)
+	 */
+	private parseMatrixElement(): MathNode {
+		// Parse expression with lowest precedence, stopping at matrix delimiters
+		return this.parseExpressionUntilMatrixDelimiter();
+	}
+
+	/**
+	 * Check if current position is a matrix delimiter (& \\ \end)
+	 */
+	private isMatrixDelimiter(): boolean {
+		return this.check('AMPERSAND') || this.isRowSeparator() || this.checkCommand('end');
+	}
+
+	/**
+	 * Parse expression stopping at matrix delimiters (& \\ \end)
+	 */
+	private parseExpressionUntilMatrixDelimiter(): MathNode {
+		// Check for empty element
+		if (this.isMatrixDelimiter()) {
+			return MathAST.number(0);
+		}
+
+		// Parse using standard expression parsing but with special termination
+		const left = this.nud();
+		return this.parseInfixUntilMatrixDelimiter(left, BP.NONE);
+	}
+
+	/**
+	 * Parse infix operators, stopping at matrix delimiters
+	 */
+	private parseInfixUntilMatrixDelimiter(left: MathNode, minBP: number): MathNode {
+		let result = left;
+
+		while (!this.check('EOF')) {
+			// Stop at matrix delimiters
+			if (this.isMatrixDelimiter()) {
+				break;
+			}
+
+			const bp = this.getLeftBindingPower();
+			if (bp <= minBP) {
+				break;
+			}
+
+			result = this.led(result, bp);
+		}
+
+		return result;
 	}
 
 	// =========================================================================
@@ -1670,6 +1902,13 @@ function getNodeChildren(node: MathNode): MathNode[] {
 			break;
 		case 'unit':
 			if (node.expression) children.push(node.expression);
+			break;
+		case 'matrix':
+			for (const row of node.rows) {
+				for (const elem of row) {
+					children.push(elem);
+				}
+			}
 			break;
 		// Leaf nodes: number, variable, greek, symbol, hole
 	}

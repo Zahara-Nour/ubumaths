@@ -1075,23 +1075,97 @@ isElementOf(x, A);
 
 ---
 
-### 5. Limits and Summations
+### 5. Limits - DETAILED ROADMAP
 
 **Current State:**
-No limit or summation notation.
+No limit notation or evaluation.
 
-**Proposal:**
-Add limit, sum, and product nodes:
+**Target Capabilities:**
+
+| Feature               | Description                                                                     |
+| --------------------- | ------------------------------------------------------------------------------- |
+| **Parsing**           | `\lim_{x \to a}`, `\lim_{x \to a^+}`, `\lim_{x \to a^-}`, `\lim_{x \to \infty}` |
+| **Known limits**      | Pattern-match standard limits (sin(x)/x, (1+1/x)^x, etc.)                       |
+| **L'Hôpital**         | Detect 0/0, ∞/∞ and apply derivative rule                                       |
+| **Algebraic**         | Factoring, rationalization, simplification                                      |
+| **Squeeze theorem**   | Bound-based limit proofs                                                        |
+| **One-sided**         | Left/right limits, discontinuity analysis                                       |
+| **Infinity**          | x→∞, x→-∞, limits at infinity                                                   |
+| **Pedagogical steps** | French step-by-step reasoning                                                   |
+
+**New Node Types:**
 
 ```typescript
-interface LimitNode {
+type LimitDirection = 'left' | 'right' | 'both';
+
+interface LimitNode extends BaseNode {
 	readonly type: 'limit';
-	readonly expression: MathNode;
-	readonly variable: string;
-	readonly approach: MathNode;
-	readonly direction?: 'left' | 'right' | 'both';
+	readonly expression: MathNode; // f(x)
+	readonly variable: string; // 'x'
+	readonly approach: MathNode; // a, ∞, -∞
+	readonly direction: LimitDirection; // default 'both'
 }
 
+interface InfinityNode extends BaseNode {
+	readonly type: 'infinity';
+	readonly sign: 'positive' | 'negative';
+}
+```
+
+**Implementation Phases:**
+
+| Phase     | Description                             | Lines     | Files   |
+| --------- | --------------------------------------- | --------- | ------- |
+| 1         | Foundation (types, parsing, generation) | ~400      | 9       |
+| 2         | Known limits table                      | ~300      | 3       |
+| 3         | L'Hôpital's rule                        | ~400      | 3       |
+| 4         | Algebraic manipulation                  | ~500      | 2       |
+| 5         | Squeeze theorem                         | ~200      | 1       |
+| 6         | Pedagogical steps                       | ~300      | 2       |
+| 7         | One-sided limits                        | ~300      | 2       |
+| -         | Tests                                   | ~600      | 5+      |
+| **Total** |                                         | **~3000** | **~27** |
+
+**Design Decisions:**
+
+| Question                | Decision                                                   |
+| ----------------------- | ---------------------------------------------------------- |
+| Infinity representation | Dedicated `InfinityNode` (semantically correct, type-safe) |
+| Numeric fallback        | Optional `{ allowNumeric: true/false }` parameter          |
+| Multi-variable limits   | Single variable only                                       |
+| Asymptotic notation     | Not needed                                                 |
+
+**File Structure:**
+
+```
+src/lib/mathAST/limits/
+├── index.ts              # Public API
+├── types.ts              # LimitResult, LimitStep types
+├── evaluate.ts           # Main evaluation entry point
+├── known-limits.ts       # Standard limits database
+├── indeterminate.ts      # Indeterminate form detection
+├── lhopital.ts           # L'Hôpital's rule
+├── algebraic.ts          # Algebraic manipulation strategies
+├── squeeze.ts            # Squeeze theorem
+├── one-sided.ts          # One-sided limit handling
+└── step-recorder.ts      # Pedagogical step recording
+```
+
+**Full roadmap:** See `/Users/david/.claude/plans/inherited-marinating-pudding.md`
+
+**Effort:** Very High | **Impact:** High
+
+---
+
+### 5b. Summations and Products
+
+**Current State:**
+No summation or product notation.
+
+**Proposal:**
+Add sum and product nodes (after limits):
+
+```typescript
 interface SummationNode {
 	readonly type: 'summation';
 	readonly expression: MathNode;
@@ -1100,20 +1174,27 @@ interface SummationNode {
 	readonly upper: MathNode;
 }
 
+interface ProductNode {
+	readonly type: 'product';
+	readonly expression: MathNode;
+	readonly variable: string;
+	readonly lower: MathNode;
+	readonly upper: MathNode;
+}
+
 // Parsing
-parseLatex('\\lim_{x \\to 0} \\frac{\\sin x}{x}');
 parseLatex('\\sum_{i=1}^{n} i^2');
 parseLatex('\\prod_{k=1}^{n} k');
 
 // Evaluation
-evaluateLimit(limitNode); // Symbolic or numeric
 evaluateSum(sumNode); // Closed form or numeric
+evaluateProduct(prodNode); // Closed form or numeric
 ```
 
 **Benefits:**
 
-- Calculus completeness
 - Series analysis
+- Factorial representation
 - Mathematical notation fidelity
 
 **Effort:** Very High | **Impact:** High
@@ -1211,9 +1292,11 @@ interface SystemNode {
 | Equation Solving        | Very High | Very High | **P2**   | **IMPLEMENTED** |
 | Worker Offloading       | Medium    | Medium    | **P2**   | Pending         |
 | Visitor Enhancement     | Medium    | Medium    | **P3**   | **IMPLEMENTED** |
+| Visitor Refactoring     | Low       | Medium    | **P3**   | Analysis Done   |
 | Lazy Evaluation         | High      | Medium    | **P3**   | Pending         |
 | Complex Numbers         | High      | Medium    | **P3**   | Pending         |
-| Limits/Summations       | Very High | High      | **P3**   | Pending         |
+| Limits                  | Very High | High      | **P3**   | **ROADMAP**     |
+| Summations              | Very High | High      | **P3**   | Pending         |
 | Matrix Operations       | Very High | High      | **P3**   | Pending         |
 | Symbolic Integration    | Very High | High      | **P3**   | Pending         |
 | WASM Acceleration       | Very High | High      | **P4**   | Pending         |
@@ -1361,6 +1444,135 @@ visitAST(ast, {
 - Transform with replacement: return `MathNode` or `{ node, skip: true }`
 
 **Files:** `src/lib/mathAST/visitor.ts`
+
+---
+
+## Visitor Pattern Refactoring Opportunities
+
+Analysis of which existing code could be refactored to use the visitor pattern (January 2025).
+
+### Candidates Summary
+
+| Priority | Module        | Functions                                  | Lines Saved | ROI      |
+| -------- | ------------- | ------------------------------------------ | ----------- | -------- |
+| **P1**   | transforms.ts | findNodes, findFirst, countNodes, getDepth | ~50         | High     |
+| **P1**   | transforms.ts | cloneNode                                  | ~120        | High     |
+| **P2**   | rules.ts      | containsVariable (deduplicate)             | ~58         | Medium   |
+| **Skip** | substitute.ts | getVariables, hasVariable                  | N/A         | Low      |
+| **Skip** | evaluate.ts   | evaluateNode                               | N/A         | Negative |
+| **Skip** | flatten.ts    | flattenSum\*, flattenProduct\*             | N/A         | Negative |
+| **Skip** | match.ts      | match, matchAddition                       | N/A         | Negative |
+
+### P1: transforms.ts Utilities (RECOMMENDED)
+
+**Current implementations** use manual recursion with `getChildren()`:
+
+```typescript
+// Current findNodes (15 lines)
+export function findNodes(node: MathNode, predicate: (n: MathNode) => boolean): MathNode[] {
+	const results: MathNode[] = [];
+	function collect(n: MathNode) {
+		if (predicate(n)) results.push(n);
+		for (const child of getChildren(n)) collect(child);
+	}
+	collect(node);
+	return results;
+}
+
+// With visitor (6 lines)
+export function findNodes(node: MathNode, predicate: (n: MathNode) => boolean): MathNode[] {
+	const results: MathNode[] = [];
+	visitAST(node, {
+		enterNode: (n) => {
+			if (predicate(n)) results.push(n);
+		}
+	});
+	return results;
+}
+```
+
+**cloneNode** is currently 120 lines of switch statement:
+
+```typescript
+// With visitor (3 lines)
+export function cloneNode(node: MathNode): MathNode {
+	return transformAST(node, {}); // Identity transform = deep clone
+}
+```
+
+### P2: Deduplicate containsVariable
+
+`containsVariable` exists in **3 copies**:
+
+- `differentiation/rules.ts:596` (58 lines) - exported
+- `pattern/constraints.ts:34` (50 lines) - private
+- `templates/templateEngine.ts:397` - different module (text templates)
+
+**Solution**: Replace with `hasVariable` from substitute.ts:
+
+```typescript
+// In differentiation/rules.ts
+import { hasVariable } from '../eval/substitute';
+export { hasVariable as containsVariable };
+```
+
+### NOT Recommended for Refactoring
+
+| Function                         | Reason                                                      |
+| -------------------------------- | ----------------------------------------------------------- |
+| `getVariables`                   | Works well with mapNode, 30+ usages across codebase         |
+| `hasVariable`                    | Uses flag-based early-exit, efficient                       |
+| `containsVariable` (constraints) | Internal function, early-exit via `\|\|` short-circuit      |
+| `evaluateNode`                   | Returns complex IntermediateValue, type-specific logic      |
+| `computeDomainNode`              | Complex step recording, restructuring not worth it          |
+| `flattenSum*`, `flattenProduct*` | Specialized sign tracking, delimiter boundaries             |
+| `match`, `matchAddition`         | Commutative matching, binding accumulation, domain-specific |
+
+### Performance Analysis
+
+| AST Size    | Direct Recursion | visitAST | Impact      |
+| ----------- | ---------------- | -------- | ----------- |
+| 10-100      | 2-20μs           | 8-80μs   | Negligible  |
+| 1000+ nodes | 200μs            | 800μs    | Perceptible |
+
+**Verdict**: Negligible for typical expressions (< 100 nodes).
+
+**Exception**: `containsVariable` in differentiation uses `||` short-circuit for early-exit. Refactoring to visitor would **lose** this optimization.
+
+### Dependencies
+
+Functions with high usage (refactor carefully):
+
+- `getVariables`: 30+ usages (solve, cli, eval, grapheur)
+- `containsVariable`: 20+ usages (differentiation, pattern)
+
+Functions with low usage (safe to refactor):
+
+- `cloneNode`: 15 usages (mostly tests)
+- `findNodes/findFirst`: 15 usages (tests, exp.ts)
+- `countNodes/getDepth`: 17 usages (tests)
+
+### Implementation Checklist
+
+If proceeding with refactoring:
+
+**Phase 1: transforms.ts**
+
+- [ ] Import `visitAST`, `transformAST` from `./visitor`
+- [ ] Refactor `findNodes` (15→6 lines)
+- [ ] Refactor `findFirst` (18→8 lines, keep flag pattern)
+- [ ] Refactor `countNodes` (8→5 lines)
+- [ ] Refactor `getDepth` (12→6 lines)
+- [ ] Refactor `cloneNode` (120→3 lines)
+- [ ] Run `pnpm test:server transforms`
+
+**Phase 2: Deduplication**
+
+- [ ] In `differentiation/rules.ts`: import `hasVariable`, export as `containsVariable`
+- [ ] Remove manual implementation (~58 lines)
+- [ ] Run `pnpm test:server differentiation`
+
+**Total savings**: ~230 lines
 
 ---
 
