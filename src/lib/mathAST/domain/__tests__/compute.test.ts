@@ -1,0 +1,246 @@
+/**
+ * Tests for domain computation
+ */
+
+import { describe, it, expect } from 'vitest';
+import { computeDomain } from '../compute';
+import {
+	variable,
+	number,
+	add,
+	subtract,
+	multiply,
+	fraction,
+	power,
+	sqrt,
+	ln,
+	func
+} from '../../factory';
+import { containsValue } from '../algebra';
+
+describe('computeDomain()', () => {
+	describe('simple expressions', () => {
+		it('variable x has universal domain', () => {
+			const expr = variable('x');
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('universal');
+		});
+
+		it('number has universal domain', () => {
+			const expr = number('5');
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('universal');
+		});
+
+		it('sqrt(x) has domain [0, +inf[', () => {
+			const expr = sqrt(variable('x'));
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('interval_domain');
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 4)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(false);
+		});
+
+		it('ln(x) has domain ]0, +inf[', () => {
+			const expr = ln(variable('x'));
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('interval_domain');
+			expect(containsValue(result.domain, 0)).toBe(false);
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(false);
+		});
+
+		it('1/x has domain R \\ {0}', () => {
+			const expr = fraction(number('1'), variable('x'));
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('interval_domain');
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+			expect(containsValue(result.domain, 0)).toBe(false);
+		});
+
+		it('arcsin(x) has domain [-1, 1]', () => {
+			const expr = func('asin', [variable('x')]);
+			const result = computeDomain(expr, 'x');
+			expect(result.domain.kind).toBe('interval_domain');
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+			expect(containsValue(result.domain, 2)).toBe(false);
+		});
+	});
+
+	describe('addition and multiplication (intersection)', () => {
+		it('sqrt(x) + ln(x) has domain ]0, +inf[', () => {
+			const expr = add(sqrt(variable('x')), ln(variable('x')));
+			const result = computeDomain(expr, 'x');
+			// sqrt needs x >= 0, ln needs x > 0
+			// intersection is ]0, +inf[
+			expect(containsValue(result.domain, 0)).toBe(false);
+			expect(containsValue(result.domain, 0.5)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(false);
+		});
+
+		it('sqrt(x) * arcsin(x) has domain [0, 1]', () => {
+			const expr = multiply(sqrt(variable('x')), func('asin', [variable('x')]), 'dot');
+			const result = computeDomain(expr, 'x');
+			// sqrt needs x >= 0, arcsin needs -1 <= x <= 1
+			// intersection is [0, 1]
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 0.5)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -0.5)).toBe(false);
+			expect(containsValue(result.domain, 2)).toBe(false);
+		});
+	});
+
+	describe('division (exclude zeros)', () => {
+		it('1/(x-1) has domain R \\ {1}', () => {
+			const expr = fraction(number('1'), subtract(variable('x'), number('1')));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 2)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(false);
+		});
+
+		it('sqrt(x)/(x-2) has domain [0, +inf[ \\ {2}', () => {
+			const expr = fraction(sqrt(variable('x')), subtract(variable('x'), number('2')));
+			const result = computeDomain(expr, 'x');
+			// sqrt needs x >= 0, denominator can't be 0 (x != 2)
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, 3)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(false);
+			expect(containsValue(result.domain, 2)).toBe(false);
+		});
+	});
+
+	describe('composition with preimage resolution', () => {
+		it('sqrt(x-2) has domain [2, +inf[', () => {
+			// sqrt requires its argument >= 0
+			// So x-2 >= 0, which means x >= 2
+			const expr = sqrt(subtract(variable('x'), number('2')));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 2)).toBe(true);
+			expect(containsValue(result.domain, 3)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(false);
+			expect(containsValue(result.domain, 1.999)).toBe(false);
+		});
+
+		it('ln(1-x) has domain ]-inf, 1[', () => {
+			// ln requires its argument > 0
+			// So 1-x > 0, which means x < 1
+			const expr = ln(subtract(number('1'), variable('x')));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, -10)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(false);
+			expect(containsValue(result.domain, 2)).toBe(false);
+		});
+
+		it('sqrt(4-x²) has domain [-2, 2]', () => {
+			// sqrt requires 4-x² >= 0
+			// x² <= 4, so -2 <= x <= 2
+			const xSquared = power(variable('x'), number('2'));
+			const expr = sqrt(subtract(number('4'), xSquared));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 2)).toBe(true);
+			expect(containsValue(result.domain, -2)).toBe(true);
+			expect(containsValue(result.domain, 1.5)).toBe(true);
+			expect(containsValue(result.domain, 3)).toBe(false);
+			expect(containsValue(result.domain, -3)).toBe(false);
+		});
+
+		it('ln(x²) has domain R \\ {0}', () => {
+			// ln requires x² > 0
+			// x² > 0 for all x != 0
+			const expr = ln(power(variable('x'), number('2')));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+			expect(containsValue(result.domain, 0)).toBe(false);
+		});
+	});
+
+	describe('nested compositions', () => {
+		it('ln(sqrt(x)) has domain ]0, +inf[', () => {
+			// sqrt(x) requires x >= 0
+			// ln(sqrt(x)) requires sqrt(x) > 0, so x > 0
+			const expr = ln(sqrt(variable('x')));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 0)).toBe(false);
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, 0.01)).toBe(true);
+		});
+
+		it('sqrt(ln(x)) has domain [1, +inf[', () => {
+			// ln(x) requires x > 0
+			// sqrt(ln(x)) requires ln(x) >= 0, so x >= 1
+			const expr = sqrt(ln(variable('x')));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, 10)).toBe(true);
+			expect(containsValue(result.domain, 0.5)).toBe(false);
+			expect(containsValue(result.domain, 0)).toBe(false);
+		});
+
+		it('ln(x) + sqrt(1-x) has domain ]0, 1]', () => {
+			// ln(x) requires x > 0
+			// sqrt(1-x) requires 1-x >= 0, so x <= 1
+			// Intersection: ]0, 1]
+			const expr = add(ln(variable('x')), sqrt(subtract(number('1'), variable('x'))));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 0.5)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, 0)).toBe(false);
+			expect(containsValue(result.domain, 2)).toBe(false);
+		});
+	});
+
+	describe('power expressions', () => {
+		it('x^(-1) has domain R \\ {0}', () => {
+			const expr = power(variable('x'), number('-1'));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 1)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(true);
+			expect(containsValue(result.domain, 0)).toBe(false);
+		});
+
+		it('x^(1/2) has domain [0, +inf[', () => {
+			const expr = power(variable('x'), fraction(number('1'), number('2')));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 4)).toBe(true);
+			expect(containsValue(result.domain, -1)).toBe(false);
+		});
+
+		it('(x-1)^(-2) has domain R \\ {1}', () => {
+			const expr = power(subtract(variable('x'), number('1')), number('-2'));
+			const result = computeDomain(expr, 'x');
+			expect(containsValue(result.domain, 0)).toBe(true);
+			expect(containsValue(result.domain, 2)).toBe(true);
+			expect(containsValue(result.domain, 1)).toBe(false);
+		});
+	});
+
+	describe('options', () => {
+		it('respects variable option', () => {
+			// sqrt(y) with respect to x should be universal (no x in expression)
+			const expr = sqrt(variable('y'));
+			const resultX = computeDomain(expr, 'x');
+			expect(resultX.domain.kind).toBe('universal');
+
+			// sqrt(y) with respect to y should be [0, +inf[
+			const resultY = computeDomain(expr, 'y');
+			expect(containsValue(resultY.domain, 0)).toBe(true);
+			expect(containsValue(resultY.domain, -1)).toBe(false);
+		});
+
+		it('returns the variable in the result', () => {
+			const expr = sqrt(variable('t'));
+			const result = computeDomain(expr, 't');
+			expect(result.variable).toBe('t');
+		});
+	});
+});
