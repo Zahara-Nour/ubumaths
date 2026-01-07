@@ -11,6 +11,7 @@
  * - Backslash symbols: \pi, \alpha, \beta, \gamma, \theta, \infty
  * - Functions: sin, cos, tan, ln, log, exp, sqrt
  * - Operators: + - * / : :/ ^ _
+ * - Assignment: := <- (variable/function assignment)
  * - Delimiters: { } ( ) [ ] |
  * - Relations: = < > <= >= != <=> =>
  * - Colors: @ # (for hex colors)
@@ -50,6 +51,8 @@ export type CustomTokenType =
 	| 'SLASH' // /
 	| 'COLON' // :
 	| 'COLON_SLASH' // :/ (TWO chars, single token)
+	| 'ASSIGN' // := (assignment operator)
+	| 'ARROW' // <- (assignment operator, R-style)
 	| 'CARET' // ^
 	| 'UNDERSCORE' // _
 	| 'PIPE' // |
@@ -312,6 +315,12 @@ export class CustomTokenizer {
 			return this.scanMultiChar('IFF', '<=>', 3);
 		}
 
+		// <- (arrow assignment, MUST be before <= for greedy matching)
+		// Only matches when chars are adjacent (no space between)
+		if (char === '<' && this.peekChar(1) === '-') {
+			return this.scanMultiChar('ARROW', '<-', 2);
+		}
+
 		// <=
 		if (char === '<' && this.peekChar(1) === '=') {
 			return this.scanMultiChar('LESS_EQUAL', '<=', 2);
@@ -330,6 +339,11 @@ export class CustomTokenizer {
 		// =>
 		if (char === '=' && this.peekChar(1) === '>') {
 			return this.scanMultiChar('IMPLIES', '=>', 2);
+		}
+
+		// :=
+		if (char === ':' && this.peekChar(1) === '=') {
+			return this.scanMultiChar('ASSIGN', ':=', 2);
 		}
 
 		// :/
@@ -663,6 +677,13 @@ export function isRelationToken(token: CustomToken): boolean {
 }
 
 /**
+ * Checks if a token represents an assignment operator.
+ */
+export function isAssignmentToken(token: CustomToken): boolean {
+	return token.type === 'ASSIGN' || token.type === 'ARROW';
+}
+
+/**
  * Checks if a token is a left delimiter that could start a group.
  */
 export function isLeftDelimiter(token: CustomToken): boolean {
@@ -713,6 +734,10 @@ export function tokenTypeToString(type: CustomTokenType): string {
 			return "':'";
 		case 'COLON_SLASH':
 			return "':/'";
+		case 'ASSIGN':
+			return "':='";
+		case 'ARROW':
+			return "'<-'";
 		case 'CARET':
 			return "'^'";
 		case 'UNDERSCORE':

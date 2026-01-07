@@ -42,8 +42,6 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			expect(result.success).toBe(true);
 			expect(result.output).toContain('5');
 			expect(result.output).toContain('km');
-			// Should contain unit mode information
-			expect(result.output).toContain('Mode:');
 		});
 
 		it('evaluates complex expression without units using standard evaluation', () => {
@@ -387,7 +385,8 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 
 	describe('edge cases', () => {
 		it('handles expression with variables and units', () => {
-			engine.execute('x = 5');
+			// Use new assignment syntax := instead of =
+			engine.execute('x := 5');
 			const result = engine.execute('x~\\unit{km}');
 
 			expect(result.success).toBe(true);

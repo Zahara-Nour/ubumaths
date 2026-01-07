@@ -26,7 +26,7 @@ import {
 import { toCustom, getVariables, hasAllBindings, evaluate, substitute } from '../../index';
 import { evaluateWithUnits, DimensionalEvaluationError } from '../../eval/evaluate-with-units';
 import type { EvalResultWithUnit, UnitConversionMode } from '../../eval/types';
-import { isUnit } from '../../guards';
+import { isUnit, isVariable } from '../../guards';
 import { parse as parseUnit } from '../../units/parser';
 import { getConversionFactor } from '../../units/conversion';
 
@@ -101,11 +101,23 @@ export class WebReplEngine {
 			return this.executeCommand(trimmedInput);
 		}
 
-		// Check for inline assignment syntax: "x = 5" or "x=5"
-		// But not equivalence syntax (===)
-		const assignmentMatch = trimmedInput.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$/);
-		if (assignmentMatch && !trimmedInput.includes('===')) {
-			return this.executeInlineAssignment(assignmentMatch[1], assignmentMatch[2]);
+		// Check for inline assignment syntax: "x := 5" or "x <- 5"
+		// Supports both := (CAS-style) and <- (R/algo-style)
+		const assignmentMatch = trimmedInput.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*(:=|<-)\s*(.+)$/);
+		if (assignmentMatch) {
+			return this.executeInlineAssignment(assignmentMatch[1], assignmentMatch[3]);
+		}
+
+		// Check for function definition syntax: "f(x) := x^2" or "f(x) <- x^2"
+		// Also handles multi-parameter: "f(x, y) := x + y"
+		const funcDefMatch = trimmedInput.match(
+			/^([a-zA-Z_][a-zA-Z0-9_]*)\s*\(\s*([a-zA-Z_][a-zA-Z0-9_]*(?:\s*,\s*[a-zA-Z_][a-zA-Z0-9_]*)*)\s*\)\s*(:=|<-)\s*(.+)$/
+		);
+		if (funcDefMatch) {
+			const funcName = funcDefMatch[1];
+			const params = funcDefMatch[2].split(',').map((p) => p.trim());
+			const bodyExpr = funcDefMatch[4];
+			return this.executeInlineFunctionDefinition(funcName, params, bodyExpr);
 		}
 
 		// Handle equivalence syntax: expr1 === expr2
@@ -442,7 +454,7 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Execute inline variable assignment: "x = 5" or "x=5"
+	 * Execute inline variable assignment: "x := 5" or "x <- 5"
 	 * Parses the value and stores it in evalState.bindings.
 	 */
 	private executeInlineAssignment(varName: string, valueExpr: string): ReplExecutionResult {
@@ -481,6 +493,63 @@ export class WebReplEngine {
 		const valueStr = toCustom(parseResult.ast);
 		const output = `${varName} = ${valueStr}`;
 		const outputHtml = `<strong>${this.escapeHtml(varName)}</strong> = <span class="text-cyan-400">${this.escapeHtml(valueStr)}</span>`;
+
+		return {
+			success: true,
+			output,
+			outputHtml,
+			ast: parseResult.ast
+		};
+	}
+
+	/**
+	 * Execute inline function definition: "f(x) := x^2" or "f(x) <- x^2"
+	 * Parses the body expression and stores it in evalState.functions.
+	 */
+	private executeInlineFunctionDefinition(
+		funcName: string,
+		parameters: string[],
+		bodyExpr: string
+	): ReplExecutionResult {
+		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
+		const parseResult = parse(bodyExpr, forceFormat ? { forceFormat } : undefined);
+
+		if (parseResult.errors.length > 0 || !parseResult.ast) {
+			const error = parseResult.errors[0];
+			let outputHtml: string;
+
+			if (error?.position !== undefined) {
+				outputHtml = formatInputErrorHtml(bodyExpr, error.position, error.message);
+			} else {
+				outputHtml = formatErrorHtml(
+					error || { code: 'PARSE_ERROR', message: 'Failed to parse expression' }
+				);
+			}
+
+			return {
+				success: false,
+				output: error?.message || 'Failed to parse expression',
+				outputHtml,
+				error: {
+					code: error?.code || 'PARSE_ERROR',
+					message: error?.message || 'Failed to parse expression',
+					position: error?.position
+				}
+			};
+		}
+
+		// Store the function definition
+		this.evalState.functions[funcName] = {
+			parameters,
+			expression: parseResult.ast
+		};
+		this.lastAst = parseResult.ast;
+
+		// Format output
+		const paramsStr = parameters.join(', ');
+		const bodyStr = toCustom(parseResult.ast);
+		const output = `${funcName}(${paramsStr}) = ${bodyStr}`;
+		const outputHtml = `<strong>${this.escapeHtml(funcName)}</strong>(${this.escapeHtml(paramsStr)}) = <span class="text-cyan-400">${this.escapeHtml(bodyStr)}</span>`;
 
 		return {
 			success: true,
@@ -570,6 +639,14 @@ export class WebReplEngine {
 
 		// Update last AST
 		this.lastAst = result.ast;
+
+		// Check if input is a single variable name that matches a defined function
+		if (isVariable(result.ast)) {
+			const funcDef = this.evalState.functions[result.ast.name];
+			if (funcDef) {
+				return this.createFunctionInfoResult(result.ast.name, funcDef);
+			}
+		}
 
 		// Check if expression has variables and all are bound - auto-evaluate
 		const bindings = bindingsToRecord(this.evalState.bindings);
@@ -1005,6 +1082,67 @@ export class WebReplEngine {
 				code: 'DIMENSION_ERROR',
 				message: mainMessage
 			}
+		};
+	}
+
+	/**
+	 * Create display result for a function lookup.
+	 * When user types just a function name, show its definition.
+	 */
+	private createFunctionInfoResult(
+		funcName: string,
+		funcDef: {
+			parameters: readonly string[];
+			expression: MathNode;
+			derivative?: MathNode;
+			inverse?: MathNode;
+		}
+	): ReplExecutionResult {
+		const paramsStr = funcDef.parameters.join(', ');
+		const bodyStr = toCustom(funcDef.expression);
+		const signature = `${funcName}(${paramsStr})`;
+
+		// Build output lines
+		const lines: string[] = [`Fonction: ${signature} = ${bodyStr}`];
+
+		if (funcDef.derivative) {
+			const derivStr = toCustom(funcDef.derivative);
+			lines.push(`Derivee: ${funcName}'(${paramsStr}) = ${derivStr}`);
+		}
+
+		if (funcDef.inverse) {
+			const invStr = toCustom(funcDef.inverse);
+			lines.push(`Inverse: ${funcName}^{-1}(${paramsStr}) = ${invStr}`);
+		}
+
+		const output = lines.join('\n');
+
+		// Build HTML output
+		const htmlLines: string[] = [
+			`<span class="text-muted-foreground">Fonction:</span> <strong>${this.escapeHtml(signature)}</strong> = <span class="text-cyan-400">${this.escapeHtml(bodyStr)}</span>`
+		];
+
+		if (funcDef.derivative) {
+			const derivStr = toCustom(funcDef.derivative);
+			htmlLines.push(
+				`<span class="text-muted-foreground">Derivee:</span> ${this.escapeHtml(funcName)}'(${this.escapeHtml(paramsStr)}) = <span class="text-cyan-400">${this.escapeHtml(derivStr)}</span>`
+			);
+		}
+
+		if (funcDef.inverse) {
+			const invStr = toCustom(funcDef.inverse);
+			htmlLines.push(
+				`<span class="text-muted-foreground">Inverse:</span> ${this.escapeHtml(funcName)}⁻¹(${this.escapeHtml(paramsStr)}) = <span class="text-cyan-400">${this.escapeHtml(invStr)}</span>`
+			);
+		}
+
+		const outputHtml = htmlLines.join('<br>');
+
+		return {
+			success: true,
+			output,
+			outputHtml,
+			ast: funcDef.expression
 		};
 	}
 

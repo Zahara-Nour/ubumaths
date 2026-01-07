@@ -186,10 +186,17 @@ y = 2π
 
 ### Inline Assignment Syntax
 
+Assignment uses `:=` (CAS-style) or `<-` (R/algo-style):
+
 ```
-> x = 5          # equivalent to .let x = 5
+> x := 5          # equivalent to .let x = 5
 x = 5
+
+> y <- 10         # alternative syntax
+y = 10
 ```
+
+**Note**: The `=` operator is reserved for testing equality (e.g., `2 + 3 = 5`).
 
 ### Listing Variables
 
@@ -227,9 +234,14 @@ Function f defined
 
 ### Inline Definition Syntax
 
+Function definition uses `:=` or `<-`:
+
 ```
-> f(x) = x^2 + 1    # equivalent to .def f(x) = x^2 + 1
-Function f defined
+> f(x) := x^2 + 1   # equivalent to .def f(x) = x^2 + 1
+f(x) = x² + 1
+
+> g(x) <- sin(x)    # alternative syntax
+g(x) = sin(x)
 ```
 
 ### With Derivative
@@ -351,11 +363,19 @@ Press `Ctrl+R` to activate reverse search mode. Type to filter history entries:
 
 These shortcuts provide a more natural syntax without dot-commands:
 
-| Syntax       | Equivalent Command |
-| ------------ | ------------------ |
-| `x = 5`      | `.let x = 5`       |
-| `f(x) = x^2` | `.def f(x) = x^2`  |
-| `a === b`    | `.equiv a, b`      |
+| Syntax        | Equivalent Command | Description           |
+| ------------- | ------------------ | --------------------- |
+| `x := 5`      | `.let x = 5`       | Variable assignment   |
+| `x <- 5`      | `.let x = 5`       | Assignment (R-style)  |
+| `f(x) := x^2` | `.def f(x) = x^2`  | Function definition   |
+| `a = b`       | (relation node)    | Equality test         |
+| `a === b`     | `.equiv a, b`      | Equivalence (algebra) |
+
+**Assignment vs Equality**:
+
+- `:=` and `<-` assign values to variables
+- `=` creates a mathematical equality (relation node)
+- `===` tests structural equivalence (algebra)
 
 ## REPL Engine Architecture
 

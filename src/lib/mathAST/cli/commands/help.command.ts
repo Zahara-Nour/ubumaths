@@ -137,9 +137,11 @@ export class HelpCommand extends BaseCommand {
 		}
 
 		lines.push(chalk.bold.yellow('Syntaxe directe:'));
-		lines.push(`  ${chalk.cyan('x = 5')}           Assigner une variable`);
-		lines.push(`  ${chalk.cyan('f(x) = x^2')}      Definir une fonction`);
-		lines.push(`  ${chalk.cyan('expr1 === expr2')} Tester l'equivalence`);
+		lines.push(`  ${chalk.cyan('x := 5')}          Assigner une variable`);
+		lines.push(`  ${chalk.cyan('x <- 5')}          Assigner (style R/algo)`);
+		lines.push(`  ${chalk.cyan('f(x) := x^2')}     Definir une fonction`);
+		lines.push(`  ${chalk.cyan('a = b')}           Tester l'egalite`);
+		lines.push(`  ${chalk.cyan('a === b')}         Tester l'equivalence`);
 		lines.push('');
 		lines.push(chalk.gray('Prefixez les commandes avec . (ex: .help, .tree)'));
 
@@ -201,10 +203,16 @@ export class HelpCommand extends BaseCommand {
 		// Inline syntax section
 		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Syntaxe directe</div>');
 		htmlParts.push(
-			'<div class="pl-2"><span class="text-cyan-400">x = 5</span> <span class="text-foreground/70">- Assigner une variable</span></div>'
+			'<div class="pl-2"><span class="text-cyan-400">x := 5</span> <span class="text-foreground/70">- Assigner une variable</span></div>'
 		);
 		htmlParts.push(
-			'<div class="pl-2"><span class="text-cyan-400">f(x) = x^2</span> <span class="text-foreground/70">- Definir une fonction</span></div>'
+			'<div class="pl-2"><span class="text-cyan-400">x &lt;- 5</span> <span class="text-foreground/70">- Assigner (style R/algo)</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">f(x) := x^2</span> <span class="text-foreground/70">- Definir une fonction</span></div>'
+		);
+		htmlParts.push(
+			'<div class="pl-2"><span class="text-cyan-400">a = b</span> <span class="text-foreground/70">- Tester l\'egalite</span></div>'
 		);
 		htmlParts.push(
 			'<div class="pl-2"><span class="text-cyan-400">a === b</span> <span class="text-foreground/70">- Tester l\'equivalence</span></div>'
