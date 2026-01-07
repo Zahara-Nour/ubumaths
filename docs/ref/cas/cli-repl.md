@@ -67,7 +67,7 @@ const registry = createDefaultRegistry();
 
 ### Available Commands
 
-#### Core Commands
+#### Commandes de base
 
 | Command  | Aliases  | Description                        |
 | -------- | -------- | ---------------------------------- |
@@ -77,7 +77,7 @@ const registry = createDefaultRegistry();
 | `custom` | `c`      | Convert to custom notation         |
 | `help`   | `h`, `?` | Show help information              |
 
-#### Normalization Commands
+#### Normalisation
 
 | Command    | Aliases | Description                         |
 | ---------- | ------- | ----------------------------------- |
@@ -86,41 +86,50 @@ const registry = createDefaultRegistry();
 | `hash`     | -       | Show canonical hash                 |
 | `equiv`    | `eq`    | Test equivalence of two expressions |
 
-#### Evaluation Commands
+#### Variables
 
 | Command | Aliases | Description                         |
 | ------- | ------- | ----------------------------------- |
-| `eval`  | `e`     | Evaluate expression numerically     |
 | `let`   | -       | Define variable binding             |
 | `vars`  | `v`     | Show all variable bindings          |
 | `unset` | -       | Remove variable binding             |
 | `clear` | `clr`   | Clear all bindings                  |
 | `mode`  | `m`     | Set evaluation mode (exact/decimal) |
+| `eval`  | `e`     | Evaluate expression numerically     |
 
-#### Function Commands
+#### Fonctions
 
-| Command     | Aliases | Description                     |
-| ----------- | ------- | ------------------------------- |
-| `def`       | `d`     | Define a function               |
-| `def-deriv` | `dd`    | Define function with derivative |
-| `inv`       | -       | Define inverse function         |
-| `fns`       | `f`     | List all functions              |
-| `undef`     | -       | Remove function definition      |
+| Command | Aliases | Description                     |
+| ------- | ------- | ------------------------------- |
+| `def`   | `d`     | Define a function               |
+| `def'`  | `dd`    | Define function with derivative |
+| `fns`   | `f`     | List all functions              |
+| `undef` | -       | Remove function definition      |
+| `inv`   | -       | Define inverse function         |
 
-#### Calculus Commands
+#### Calcul
 
-| Command  | Aliases         | Description                                        |
-| -------- | --------------- | -------------------------------------------------- |
-| `diff`   | -               | Differentiate expression                           |
-| `taylor` | -               | Taylor series expansion                            |
-| `solve`  | `s`, `resoudre` | Solve equation (linear, quadratic, transcendental) |
+| Command  | Aliases          | Description                                        |
+| -------- | ---------------- | -------------------------------------------------- |
+| `diff`   | -                | Differentiate expression                           |
+| `solve`  | `s`, `resoudre`  | Solve equation (linear, quadratic, transcendental) |
+| `domain` | `dom`, `domaine` | Compute domain of definition                       |
+| `taylor` | -                | Taylor series expansion                            |
 
-#### Unit Commands
+#### Unites
 
 | Command    | Aliases | Description                         |
 | ---------- | ------- | ----------------------------------- |
 | `convert`  | -       | Convert last result to target unit  |
 | `unitmode` | -       | Set conversion mode (first/si/best) |
+
+#### Utilitaires
+
+| Command  | Aliases | Description                         |
+| -------- | ------- | ----------------------------------- |
+| `export` | -       | Export history (JSON)               |
+| `stats`  | -       | Statistics (mean, median, stdev...) |
+| `linreg` | -       | Linear regression                   |
 
 ## Command Syntax
 
@@ -294,6 +303,34 @@ x = 1
 
 > .solve sin(x) = 2
 Pas de solution reelle (sin hors domaine [-1,1])
+```
+
+## Domain of Definition
+
+### Basic Usage
+
+```
+> .domain 1/x
+Domaine: x ≠ 0
+
+> .domain ln(x)
+Domaine: x > 0
+
+> .domain sqrt(x)
+Domaine: x >= 0
+
+> .domain 1/(x-2) + ln(x)
+Domaine: x > 0 et x ≠ 2
+```
+
+### With Verbose Option
+
+```
+> .domain sqrt(x-1) --verbose
+Expression: sqrt(x - 1)
+Contraintes:
+  - sqrt: argument >= 0 => x - 1 >= 0 => x >= 1
+Domaine: x >= 1
 ```
 
 ### With Inverse
